@@ -1,4 +1,5 @@
 # Logs
+data/logs
 logs
 *.log
 npm-debug.log*
@@ -132,3 +133,6 @@ dist
 # IDEs
 .idea
 .vscode
+
+# Other data directories
+data/
