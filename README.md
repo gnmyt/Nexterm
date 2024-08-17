@@ -7,7 +7,7 @@
 
 <br />
 <p align="center">
-  <a href="https://github.com/gnmyt/MCDash">
+  <a href="https://github.com/gnmyt/Nexterm">
     <picture>
         <source media="(prefers-color-scheme: dark)" srcset="https://i.imgur.com/WhNYRgX.png">
         <img alt="Nexterm Banner" src="https://i.imgur.com/TBMT7dt.png">
