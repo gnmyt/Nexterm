@@ -16,6 +16,12 @@
     "ssh2": "^1.15.0"
   },
   "devDependencies": {
+    "concurrently": "^8.2.2",
     "nodemon": "^3.1.4"
+  },
+  "scripts": {
+    "dev:server": "nodemon server/index.js",
+    "dev:client": "cd client && yarn run dev",
+    "dev": "concurrently --kill-others-on-fail \"yarn dev:server\" \"yarn dev:client\""
   }
 }
