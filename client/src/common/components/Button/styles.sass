@@ -1,0 +1,25 @@
+@import "@/common/styles/colors"
+
+.btn
+  display: flex
+  align-items: center
+  justify-content: center
+  background-color: $primary-opacity
+  border: 1px solid $gray
+  color: $white
+  border-radius: 0.5rem
+  padding: 0.8rem 1rem
+  cursor: pointer
+  transition: all 0.2s
+
+  h3
+    margin: 0
+    font-size: 1rem
+    font-weight: 500
+    color: $white
+
+  &:hover
+    transform: rotate(2deg) scale(1.05)
+
+  &:active
+    transform: rotate(-2deg) scale(0.95)
