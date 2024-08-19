@@ -1,0 +1,51 @@
+@import "@/common/styles/colors"
+
+.login-dialog
+  display: flex
+  flex-direction: column
+  align-items: center
+  justify-content: center
+  gap: 1em
+  user-select: none
+  margin: 1rem 1.5rem
+
+  .error
+    display: flex
+    align-items: center
+    justify-content: center
+    width: 18rem
+    padding: 0.5rem 1rem
+    background-color: $error-opacity
+    border: 1px solid $error
+    color: $error
+    border-radius: 0.5rem
+    font-size: 0.9rem
+    margin: 0
+
+.login-logo
+  display: flex
+  align-items: center
+  gap: 1rem
+
+  img
+    width: 3rem
+    height: 3rem
+
+  h1
+    margin: 0
+
+.login-form
+  display: flex
+  flex-direction: column
+  gap: 1.5rem
+
+
+
+  .form-group
+    display: flex
+    flex-direction: column
+    gap: 0.3rem
+
+    label
+      color: $subtext
+      font-weight: 600
