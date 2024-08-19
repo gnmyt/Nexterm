@@ -1,0 +1,1 @@
+export {IconInput as default} from "./IconInput.jsx"
