@@ -19,6 +19,7 @@ app.use("/api/auth", require("./routes/auth"));
 
 app.use("/api/sessions", authenticate, require("./routes/session"));
 app.use("/api/folders", authenticate, require("./routes/folder"));
+app.use("/api/servers", authenticate, require("./routes/server"));
 
 if (process.env.NODE_ENV === 'production') {
     app.use(express.static(path.join(__dirname, '../dist')));
