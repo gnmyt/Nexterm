@@ -1,0 +1,52 @@
+@import "@/common/styles/colors"
+
+.dialog-area
+  position: fixed
+  top: 0
+  bottom: 0
+  left: 0
+  right: 0
+  width: 100%
+  height: 100%
+  background-color: rgba(0, 0, 0, 0.25)
+  display: flex
+  align-items: center
+  z-index: 10
+  justify-content: center
+  backdrop-filter: blur(0.5rem)
+  transition: all 0.2s
+  animation: opacity 0.3s
+
+.dialog-area-hidden
+  opacity: 0
+  animation: opacity 0.3s reverse
+
+.dialog
+  padding: 15px
+  background-color: $darker-gray
+  border: 1px solid $dark-gray
+  color: $white
+  border-radius: 15px
+  transition: all 0.2s
+  animation: fadeIn 0.3s
+
+.dialog-hidden
+  visibility: hidden
+  opacity: 0
+  animation: fadeOut 0.3s
+
+@keyframes fadeIn
+  0%
+    opacity: 0
+    transform: scale(0.4)
+    filter: blur(5px)
+  100%
+    opacity: 1
+
+@keyframes fadeOut
+  0%
+    opacity: 1
+  100%
+    opacity: 0
+    transform: scale(0.4)
+    filter: blur(5px)
