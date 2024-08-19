@@ -36,7 +36,7 @@ module.exports.renameFolder = async (accountId, folderId, name) => {
     await Folder.update({ name: name }, { where: { id: folderId } });
 };
 
-module.exports.listFolders = async (accountId) => {
+module.exports.listFolders = async (accountId, showFolderType = false) => {
     const folders = await Folder.findAll({
         where: {
             accountId: accountId,
@@ -50,6 +50,7 @@ module.exports.listFolders = async (accountId) => {
         folderMap.set(folder.id, {
             id: folder.id,
             name: folder.name,
+            type: showFolderType ? "folder" : undefined,
             entries: [],
         });
     });
