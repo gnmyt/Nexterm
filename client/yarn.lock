@@ -1360,6 +1360,11 @@ gopd@^1.0.1:
   dependencies:
     get-intrinsic "^1.1.3"
 
+guacamole-common-js@^1.5.0:
+  version "1.5.0"
+  resolved "https://registry.yarnpkg.com/guacamole-common-js/-/guacamole-common-js-1.5.0.tgz#50d814c09628b8a65451973d1acc68bc1612558d"
+  integrity sha512-zxztif3GGhKbg1RgOqwmqot8kXgv2HmHFg1EvWwd4q7UfEKvBcYZ0f+7G8HzvU+FUxF0Psqm9Kl5vCbgfrRgJg==
+
 has-bigints@^1.0.1, has-bigints@^1.0.2:
   version "1.0.2"
   resolved "https://registry.npmjs.org/has-bigints/-/has-bigints-1.0.2.tgz"
