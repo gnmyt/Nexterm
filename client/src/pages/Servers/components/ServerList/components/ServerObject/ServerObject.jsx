@@ -15,9 +15,9 @@ const loadIcon = (icon) => {
     }
 };
 
-export const ServerObject = ({ name, nestedLevel, icon }) => {
+export const ServerObject = ({ id, name, nestedLevel, icon }) => {
     return (
-        <div className="server-object" style={{ paddingLeft: `${25 + (nestedLevel * 15)}px` }}>
+        <div className="server-object" style={{ paddingLeft: `${15 + (nestedLevel * 15)}px` }} data-id={id}>
             <div className="system-icon">
                 <Icon path={loadIcon(icon)} />
             </div>
