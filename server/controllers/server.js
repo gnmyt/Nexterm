@@ -37,6 +37,8 @@ module.exports.deleteServer = async (accountId, serverId) => {
         return { code: 401, message: "Server does not exist" };
     }
 
+    await Identity.destroy({ where: { id: JSON.parse(server.identities) } });
+
     await Server.destroy({ where: { id: serverId } });
 };
 
@@ -92,7 +94,8 @@ module.exports.listServers = async (accountId) => {
     servers.forEach(server => {
         const folder = folderMap.get(server.folderId);
         if (folder) {
-            folder.entries.push({ type: "server", id: server.id, icon: server.icon, name: server.name });
+            folder.entries.push({ type: "server", id: server.id, icon: server.icon, name: server.name,
+                identities: JSON.parse(server.identities) });
         }
     });
 
