@@ -1,0 +1,76 @@
+@import "@/common/styles/colors"
+
+.server-dialog
+  display: flex
+  flex-direction: column
+  gap: 1rem
+  user-select: none
+  width: 28rem
+
+  .server-dialog-content
+    display: flex
+    flex-direction: column
+    gap: 0.5rem
+
+  .name-row
+    display: grid
+    grid-template-columns: 4fr 1fr
+    gap: 1rem
+
+  .address-row
+    display: flex
+    gap: 1rem
+
+  .form-group
+    display: flex
+    flex-direction: column
+    gap: 0.3rem
+
+    label
+      color: $subtext
+      font-weight: 600
+
+    .small-input
+      padding: 0.8rem
+      width: 3rem
+      border: 1px solid $gray
+      background-color: $dark-gray
+      color: $light-gray
+      border-radius: 0.5rem
+      font-size: 14pt
+      outline: none
+
+      &:focus
+        border: 1px solid $primary
+        background-color: $gray
+
+  .server-dialog-title
+    h2
+      font-size: 1.3rem
+      margin: 0
+
+
+  .server-dialog-tabs
+    display: flex
+    gap: 1rem
+
+  .tabs-item
+    padding: 0.5rem 1rem
+    border-bottom: 2px solid transparent
+    cursor: pointer
+    border-radius: 0.5rem
+
+    h3
+      margin: 0
+      font-weight: 600
+
+    &:hover
+      background-color: $darker-gray
+
+  .tabs-item-active
+    background-color: $gray
+    border-bottom: 2px solid $primary
+    border-radius: 0.5rem 0.5rem 0 0
+
+    &:hover
+      background-color: $gray
