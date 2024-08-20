@@ -1,0 +1,36 @@
+@import "@/common/styles/colors"
+
+.server-list
+  width: 18rem
+  background-color: $lighter-background
+  height: 100vh
+  display: flex
+  flex-direction: column
+  align-items: center
+  border-right: 2px solid $dark-gray
+
+  .server-list-inner
+    margin-top: 1rem
+    display: flex
+    flex-direction: column
+    width: 95%
+    height: 100%
+
+    .servers
+      margin-top: 1rem
+      display: flex
+      flex-direction: column
+      gap: 0.2rem
+      user-select: none
+
+    .no-servers
+      display: flex
+      height: 100%
+      flex-direction: column
+      justify-content: center
+      align-items: center
+      color: $subtext
+
+      svg
+        width: 5rem
+        height: 5rem
