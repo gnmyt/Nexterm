@@ -7,8 +7,7 @@ export const ServerContext = createContext({});
 export const ServerProvider = ({ children }) => {
 
     const [servers, setServers] = useState(null);
-
-    const {user} = useContext(UserContext);
+    const {user, sessionToken} = useContext(UserContext);
 
     const loadServers = async () => {
         try {
@@ -29,6 +28,8 @@ export const ServerProvider = ({ children }) => {
             }, 5000);
 
             return () => clearInterval(interval);
+        } else if (!sessionToken) {
+            setServers([]);
         }
     }, [user]);
 
