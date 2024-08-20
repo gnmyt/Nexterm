@@ -7,7 +7,7 @@ module.exports.createServerValidation = Joi.object({
     protocol: Joi.string().valid('ssh', 'rdp', 'vnc').required(),
     ip: Joi.string().required(),
     port: Joi.number().required(),
-    identities: Joi.array().items(Joi.string()).optional(),
+    identities: Joi.array().items(Joi.number()).optional(),
 });
 
 module.exports.updateServerValidation = Joi.object({
@@ -17,5 +17,5 @@ module.exports.updateServerValidation = Joi.object({
     protocol: Joi.string().valid('ssh', 'rdp', 'vnc').optional(),
     ip: Joi.string().optional(),
     port: Joi.number().optional(),
-    identities: Joi.array().items(Joi.string()).optional(),
+    identities: Joi.array().items(Joi.number()).optional(),
 });
