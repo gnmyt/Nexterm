@@ -33,7 +33,7 @@ new GuacamoleLite({ port: 58391 }, { port: 4822 }, {
     log: { level: 0 },
 });
 
-app.use("/servers/guacd", createProxyMiddleware({
+app.use("/api/servers/guacd", createProxyMiddleware({
     changeOrigin: true,
     ws: true,
     router: async (req) => {
