@@ -1,0 +1,1 @@
+export {ServerTabs as default} from "./ServerTabs.jsx";
