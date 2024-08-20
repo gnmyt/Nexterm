@@ -3,7 +3,7 @@ import "./styles.sass";
 
 export const DialogContext = createContext({});
 
-export const DialogProvider = ({ disableClosing, open, children }) => {
+export const DialogProvider = ({ disableClosing, open, children, onClose }) => {
     const areaRef = useRef();
     const ref = useRef();
 
@@ -38,6 +38,7 @@ export const DialogProvider = ({ disableClosing, open, children }) => {
         if (isClosing) {
             setIsVisible(false);
             setIsClosing(false);
+            if (onClose) onClose();
         }
     };
 
