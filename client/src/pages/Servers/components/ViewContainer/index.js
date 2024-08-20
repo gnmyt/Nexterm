@@ -1,0 +1,1 @@
+export {ViewContainer as default} from "./ViewContainer";
