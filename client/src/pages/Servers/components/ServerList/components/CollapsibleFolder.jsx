@@ -2,13 +2,14 @@ import FolderObject from "@/pages/Servers/components/ServerList/components/Folde
 import ServerEntries from "./ServerEntries.jsx";
 import { useState } from "react";
 
-const CollapsibleFolder = ({ name, entries, nestedLevel }) => {
+const CollapsibleFolder = ({ id, name, entries, nestedLevel }) => {
     const [isOpen, setIsOpen] = useState(true);
     const toggleFolder = () => setIsOpen(!isOpen);
 
     return (
         <>
-            <FolderObject name={name} nestedLevel={nestedLevel} onClick={toggleFolder} />
+            <FolderObject id={id} name={name} nestedLevel={nestedLevel} onClick={toggleFolder}
+                isOpen={isOpen} />
             {isOpen && (
                 <ServerEntries entries={entries} nestedLevel={nestedLevel + 1} />
             )}
