@@ -1,5 +1,5 @@
 import { createContext, useEffect, useState } from "react";
-import LoginDialog from "@/common/components/LoginDialog/index.js";
+import LoginDialog from "@/common/components/LoginDialog";
 import { getRequest } from "@/common/utils/RequestUtil.js";
 
 export const UserContext = createContext({});
@@ -7,7 +7,7 @@ export const UserContext = createContext({});
 export const UserProvider = ({ children }) => {
 
     const [sessionToken, setSessionToken] = useState(localStorage.getItem("sessionToken"));
-    const [user, setUser] = useState();
+    const [user, setUser] = useState(null);
 
     const updateSessionToken = (sessionToken) => {
         setSessionToken(sessionToken);
