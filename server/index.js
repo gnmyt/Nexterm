@@ -23,16 +23,6 @@ app.use(express.json());
 app.use("/api/accounts", require("./routes/account"));
 app.use("/api/auth", require("./routes/auth"));
 
-app.use("/api/sessions", authenticate, require("./routes/session"));
-app.use("/api/folders", authenticate, require("./routes/folder"));
-app.use("/api/servers", authenticate, require("./routes/server"));
-app.use("/api/identities", authenticate, require("./routes/identity"));
-
-new GuacamoleLite({ port: 58391 }, { port: 4822 }, {
-    crypt: { cypher: "AES-256-CBC", key: module.exports.GUACD_TOKEN },
-    log: { level: 0 },
-});
-
 app.use("/api/servers/guacd", createProxyMiddleware({
     changeOrigin: true,
     ws: true,
@@ -42,6 +32,16 @@ app.use("/api/servers/guacd", createProxyMiddleware({
         return "ws://localhost:" + 58391 + "/?token=" + token;
     },
 }));
+
+app.use("/api/sessions", authenticate, require("./routes/session"));
+app.use("/api/folders", authenticate, require("./routes/folder"));
+app.use("/api/servers", authenticate, require("./routes/server"));
+app.use("/api/identities", authenticate, require("./routes/identity"));
+
+new GuacamoleLite({ port: 58391 }, { port: 4822 }, {
+    crypt: { cypher: "AES-256-CBC", key: module.exports.GUACD_TOKEN },
+    log: { level: 0 },
+});
 
 if (process.env.NODE_ENV === "production") {
     app.use(express.static(path.join(__dirname, "../dist")));
