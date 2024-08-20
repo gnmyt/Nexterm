@@ -1,5 +1,8 @@
 const Account = require("../models/Account");
 const Session = require("../models/Session");
+const Server = require("../models/Server");
+const Identity = require("../models/Identity");
+const { createRDPToken, createVNCToken } = require("../utils/tokenGenerator");
 
 module.exports.authenticate = async (req, res, next) => {
     const authHeader = req.header("authorization");
@@ -22,4 +25,46 @@ module.exports.authenticate = async (req, res, next) => {
         return res.status(401).json({ message: "The account associated to the token is not registered" });
 
     next();
+};
+
+
+module.exports.authorizeGuacamole = async (req) => {
+    const query = req.url.split("?")[1].split("&").map((x) => x.split("=")).reduce((acc, x) => {
+        acc[x[0]] = x[1];
+        return acc;
+    }, {});
+
+    if (Object.keys(query).length === 0) return;
+
+    req.session = await Session.findOne({ where: { token: query?.sessionToken } });
+
+    if (req.session === null) return;
+
+    await Session.update({ lastActivity: new Date() }, { where: { id: req.session.id } });
+
+    req.user = await Account.findByPk(req.session.accountId);
+    if (req.user === null) return;
+
+    if (!query.serverId) return;
+
+    const server = await Server.findByPk(query.serverId);
+    if (server === null) return;
+
+
+    if (server.identities.length === 0 && query.identity) return;
+
+    const identity = await Identity.findByPk(query.identity || server.identities[0]);
+    if (identity === null) return;
+
+    console.log("Authorized connection to server " + server.ip + " with identity " + identity.name);
+
+    switch (server.protocol) {
+        case "rdp":
+            const token = createRDPToken(server.ip, server.port, identity.username, identity.password);
+            return token;
+        case "vnc":
+            return createVNCToken(server.ip, server.port, identity.username, identity.password);
+            default:
+            return;
+    }
 };
