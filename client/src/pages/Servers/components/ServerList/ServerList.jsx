@@ -1,10 +1,11 @@
 import "./styles.sass";
 import ServerSearch from "./components/ServerSearch";
-import { useContext, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { ServerContext } from "@/common/contexts/ServerContext.jsx";
 import ServerEntries from "./components/ServerEntries.jsx";
 import Icon from "@mdi/react";
 import { mdiServerNetworkOff } from "@mdi/js";
+import ContextMenu from "./components/ContextMenu";
 
 const filterEntries = (entries, searchTerm) => {
     return entries
@@ -27,20 +28,60 @@ const filterEntries = (entries, searchTerm) => {
 export const ServerList = () => {
     const { servers } = useContext(ServerContext);
     const [search, setSearch] = useState("");
+    const [contextMenuPosition, setContextMenuPosition] = useState(null);
+
+    const [contextClickedType, setContextClickedType] = useState(null);
+    const [contextClickedId, setContextClickedId] = useState(null);
 
     const filteredServers = search ? filterEntries(servers, search) : servers;
+
+    const handleContextMenu = (e) => {
+        e.preventDefault();
+
+        const targetElement = e.target.closest("[data-id]");
+
+        if (targetElement !== null) {
+            setContextClickedId(targetElement.getAttribute("data-id"));
+            setContextClickedType(targetElement.classList[0]);
+        } else {
+            setContextClickedId(null);
+            setContextClickedType(null);
+        }
+
+        setContextMenuPosition({ x: e.pageX, y: e.pageY });
+    };
+
+    const handleClick = () => {
+        setContextClickedId(null);
+        setContextClickedType(null);
+        setContextMenuPosition(null);
+    };
+
+    useEffect(() => {
+        document.addEventListener("click", handleClick);
+        return () => {
+            document.removeEventListener("click", handleClick);
+        };
+    }, []);
 
     return (
         <div className="server-list">
             <div className="server-list-inner">
                 <ServerSearch search={search} setSearch={setSearch} />
-                {servers && servers.length >= 1 && <div className="servers">
-                    <ServerEntries entries={filteredServers} nestedLevel={0} />
-                </div>}
-                {servers && servers.length === 0 && <p className="no-servers">
-                    <Icon path={mdiServerNetworkOff} />
-                    <p>No servers created</p>
-                </p>}
+                {servers && servers.length >= 1 && (
+                    <div className="servers" onContextMenu={handleContextMenu}>
+                        <ServerEntries entries={filteredServers} nestedLevel={0} />
+                    </div>
+                )}
+                {servers && servers.length === 0 && (
+                    <p className="no-servers">
+                        <Icon path={mdiServerNetworkOff} />
+                        <p>No servers created</p>
+                    </p>
+                )}
+                {contextMenuPosition && (
+                    <ContextMenu position={contextMenuPosition} type={contextClickedType} id={contextClickedId} />
+                )}
             </div>
         </div>
     );
