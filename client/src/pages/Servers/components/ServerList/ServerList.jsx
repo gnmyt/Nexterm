@@ -34,7 +34,7 @@ const applyRenameState = (folderId) => (entry) => {
     return entry;
 }
 
-export const ServerList = () => {
+export const ServerList = ({setServerDialogOpen}) => {
     const { servers } = useContext(ServerContext);
     const [search, setSearch] = useState("");
     const [contextMenuPosition, setContextMenuPosition] = useState(null);
@@ -94,7 +94,7 @@ export const ServerList = () => {
                 )}
                 {contextMenuPosition && (
                     <ContextMenu position={contextMenuPosition} type={contextClickedType} id={contextClickedId}
-                                    setRenameStateId={setRenameStateId} />
+                                    setRenameStateId={setRenameStateId} setServerDialogOpen={setServerDialogOpen} />
                 )}
             </div>
         </div>
