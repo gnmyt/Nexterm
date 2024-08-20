@@ -1,0 +1,57 @@
+@import "@/common/styles/colors"
+
+.select-box
+  position: relative
+  user-select: none
+  cursor: pointer
+
+
+  &__selected
+    padding: 0.8rem
+    border: 1px solid $gray
+    background-color: $dark-gray
+    color: $light-gray
+    box-sizing: border-box
+    border-radius: 0.7rem
+    font-size: 14pt
+    width: 100%
+    outline: none
+    display: flex
+    justify-content: space-between
+    align-items: center
+
+    svg
+      width: 1.5rem
+      height: 1.5rem
+
+
+  &__arrow
+    margin-left: 10px
+    transition: transform 0.3s ease
+
+    &.open
+      transform: rotate(180deg)
+
+  &__options
+    position: absolute
+    top: calc(100% + 5px)
+    left: 0
+    width: 100%
+    border: 1px solid $gray
+    background-color: $gray-full
+    backdrop-filter: blur(1rem)
+    border-radius: 0.7rem
+    z-index: 1000
+
+  &__option
+    padding: 10px
+    margin: 5px
+    border-radius: 0.7rem
+    display: flex
+    justify-content: center
+
+    &:last-child
+      border-bottom: none
+
+    &:hover, &.selected
+      background-color: $gray
