@@ -34,7 +34,7 @@ const applyRenameState = (folderId) => (entry) => {
     return entry;
 }
 
-export const ServerList = ({setServerDialogOpen}) => {
+export const ServerList = ({setServerDialogOpen, setCurrentFolderId, setEditServerId}) => {
     const { servers } = useContext(ServerContext);
     const [search, setSearch] = useState("");
     const [contextMenuPosition, setContextMenuPosition] = useState(null);
@@ -87,14 +87,15 @@ export const ServerList = ({setServerDialogOpen}) => {
                     </div>
                 )}
                 {servers && servers.length === 0 && (
-                    <p className="no-servers" onContextMenu={handleContextMenu}>
+                    <div className="no-servers" onContextMenu={handleContextMenu}>
                         <Icon path={mdiCursorDefaultClick} />
                         <p>Right-click to add a new server</p>
-                    </p>
+                    </div>
                 )}
                 {contextMenuPosition && (
                     <ContextMenu position={contextMenuPosition} type={contextClickedType} id={contextClickedId}
-                                    setRenameStateId={setRenameStateId} setServerDialogOpen={setServerDialogOpen} />
+                                    setRenameStateId={setRenameStateId} setServerDialogOpen={setServerDialogOpen}
+                                    setCurrentFolderId={setCurrentFolderId} setEditServerId={setEditServerId} />
                 )}
             </div>
         </div>
