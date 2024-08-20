@@ -1,0 +1,32 @@
+@import "@/common/styles/colors"
+
+.server-object
+  display: flex
+  align-items: center
+  gap: 0.5rem
+  color: $light-gray
+  border: 1px solid transparent
+  padding: 0.4rem
+  cursor: pointer
+  font-weight: 600
+
+  .system-icon
+    width: 1.5rem
+    height: 1.5rem
+    display: flex
+    border-radius: 0.2rem
+    justify-content: center
+    align-items: center
+    background-color: $primary
+    svg
+      width: 1rem
+
+  p
+    margin: 0
+    flex: 1
+
+  &:hover
+    color: $white
+    background-color: $dark-gray
+    border: 1px solid $gray
+    border-radius: 0.3rem
