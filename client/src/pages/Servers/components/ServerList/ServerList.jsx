@@ -25,6 +25,15 @@ const filterEntries = (entries, searchTerm) => {
         .filter(entry => entry !== null);
 };
 
+const applyRenameState = (folderId) => (entry) => {
+    if (entry.type === "folder" && entry.id === parseInt(folderId)) {
+        return { ...entry, renameState: true };
+    } else if (entry.type === "folder" && entry.entries) {
+        return { ...entry, entries: entry.entries.map(applyRenameState(folderId)) };
+    }
+    return entry;
+}
+
 export const ServerList = () => {
     const { servers } = useContext(ServerContext);
     const [search, setSearch] = useState("");
@@ -33,7 +42,10 @@ export const ServerList = () => {
     const [contextClickedType, setContextClickedType] = useState(null);
     const [contextClickedId, setContextClickedId] = useState(null);
 
+    const [renameStateId, setRenameStateId] = useState(null);
+
     const filteredServers = search ? filterEntries(servers, search) : servers;
+    const renameStateServers = renameStateId ? filteredServers.map(applyRenameState(renameStateId)) : filteredServers;
 
     const handleContextMenu = (e) => {
         e.preventDefault();
@@ -70,7 +82,8 @@ export const ServerList = () => {
                 <ServerSearch search={search} setSearch={setSearch} />
                 {servers && servers.length >= 1 && (
                     <div className="servers" onContextMenu={handleContextMenu}>
-                        <ServerEntries entries={filteredServers} nestedLevel={0} />
+                        <ServerEntries entries={renameStateServers} setRenameStateId={setRenameStateId}
+                                       nestedLevel={0} />
                     </div>
                 )}
                 {servers && servers.length === 0 && (
@@ -80,7 +93,8 @@ export const ServerList = () => {
                     </p>
                 )}
                 {contextMenuPosition && (
-                    <ContextMenu position={contextMenuPosition} type={contextClickedType} id={contextClickedId} />
+                    <ContextMenu position={contextMenuPosition} type={contextClickedType} id={contextClickedId}
+                                    setRenameStateId={setRenameStateId} />
                 )}
             </div>
         </div>
