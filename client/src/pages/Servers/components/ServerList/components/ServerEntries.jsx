@@ -8,6 +8,7 @@ const ServerEntries = ({ entries, nestedLevel }) => {
                 if (entry.type === "folder") {
                     return (
                         <CollapsibleFolder
+                            id={entry.id}
                             key={entry.id}
                             name={entry.name}
                             entries={entry.entries}
@@ -17,6 +18,7 @@ const ServerEntries = ({ entries, nestedLevel }) => {
                 } else if (entry.type === "server") {
                     return (
                         <ServerObject
+                            id={entry.id}
                             key={entry.id}
                             name={entry.name}
                             nestedLevel={nestedLevel}
