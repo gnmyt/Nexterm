@@ -15,13 +15,13 @@ app.put("/", async (req, res) => {
     const folder = await createFolder(req.user.id, req.body);
     if (folder?.code) return res.json(folder);
 
-    res.json({ message: "Folder has been successfully created" });
+    res.json({ message: "Folder has been successfully created", id: folder.id });
 });
 
 app.patch("/:folderId/rename", async (req, res) => {
     if (validateSchema(res, folderRenameValidation, req.body)) return;
 
-    const response = await renameFolder(req.params.folderId, req.body.name);
+    const response = await renameFolder(req.user.id, req.params.folderId, req.body.name);
     if (response) return res.json(response);
 
     res.json({ message: "Folder has been successfully renamed" });
