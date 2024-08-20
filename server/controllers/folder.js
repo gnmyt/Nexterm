@@ -1,4 +1,5 @@
 const Folder = require("../models/Folder");
+const Server = require("../models/Server");
 
 module.exports.createFolder = async (accountId, configuration) => {
     if (configuration.parentId) {
@@ -22,6 +23,13 @@ module.exports.deleteFolder = async (accountId, folderId) => {
     if (folder === null) {
         return { code: 301, message: "Folder does not exist" };
     }
+
+    let subfolders = await Folder.findAll({ where: { parentId: folderId } });
+    for (let subfolder of subfolders) {
+        await module.exports.deleteFolder(accountId, subfolder.id);
+    }
+
+    await Server.destroy({ where: { folderId: folderId } });
 
     await Folder.destroy({ where: { id: folderId } });
 };
