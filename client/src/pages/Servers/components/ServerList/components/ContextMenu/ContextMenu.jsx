@@ -13,7 +13,7 @@ import { deleteRequest, putRequest } from "@/common/utils/RequestUtil.js";
 import { ServerContext } from "@/common/contexts/ServerContext.jsx";
 import { useContext } from "react";
 
-export const ContextMenu = ({ position, id, type, setRenameStateId, setServerDialogOpen }) => {
+export const ContextMenu = ({ position, id, type, setRenameStateId, setServerDialogOpen, setCurrentFolderId, setEditServerId }) => {
 
     const { loadServers } = useContext(ServerContext);
 
@@ -30,11 +30,17 @@ export const ContextMenu = ({ position, id, type, setRenameStateId, setServerDia
 
     const deleteServer = () => deleteRequest("servers/" + id).then(loadServers);
 
-    const createServer = () => setServerDialogOpen();
+    const createServer = () => {
+        setCurrentFolderId(id);
+        setServerDialogOpen();
+    }
 
     const connectToServer = () => {} // TODO implement
 
-    const editServer = () => {} // TODO implement
+    const editServer = () => {
+        setEditServerId(id);
+        setServerDialogOpen();
+    }
 
 
     return (
