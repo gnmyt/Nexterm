@@ -4,7 +4,7 @@ import { useContext, useEffect, useState } from "react";
 import { ServerContext } from "@/common/contexts/ServerContext.jsx";
 import ServerEntries from "./components/ServerEntries.jsx";
 import Icon from "@mdi/react";
-import { mdiServerNetworkOff } from "@mdi/js";
+import { mdiCursorDefaultClick } from "@mdi/js";
 import ContextMenu from "./components/ContextMenu";
 
 const filterEntries = (entries, searchTerm) => {
@@ -87,9 +87,9 @@ export const ServerList = ({setServerDialogOpen}) => {
                     </div>
                 )}
                 {servers && servers.length === 0 && (
-                    <p className="no-servers">
-                        <Icon path={mdiServerNetworkOff} />
-                        <p>No servers created</p>
+                    <p className="no-servers" onContextMenu={handleContextMenu}>
+                        <Icon path={mdiCursorDefaultClick} />
+                        <p>Right-click to add a new server</p>
                     </p>
                 )}
                 {contextMenuPosition && (
