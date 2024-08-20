@@ -1,4 +1,5 @@
 const Server = require("../models/Server");
+const Identity = require("../models/Identity");
 const Folder = require("../models/Folder");
 const { listFolders } = require("./folder");
 
@@ -14,6 +15,13 @@ module.exports.createServer = async (accountId, configuration) => {
         configuration.icon = "server";
     }
 
+    if (configuration.identities) {
+        const identities = await Identity.findAll({ where: { accountId, id: configuration.identities } });
+        if (identities.length !== configuration.identities.length) {
+            return { code: 501, message: "One or more identities do not exist" };
+        }
+    }
+
     const server = await Server.create({
         ...configuration,
         accountId,
@@ -26,7 +34,7 @@ module.exports.deleteServer = async (accountId, serverId) => {
     const server = await Server.findOne({ where: { accountId: accountId, id: serverId } });
 
     if (server === null) {
-        return { code: 301, message: "Server does not exist" };
+        return { code: 401, message: "Server does not exist" };
     }
 
     await Server.destroy({ where: { id: serverId } });
@@ -36,13 +44,20 @@ module.exports.editServer = async (accountId, serverId, configuration) => {
     const server = await Server.findOne({ where: { accountId: accountId, id: serverId } });
 
     if (server === null) {
-        return { code: 301, message: "Server does not exist" };
+        return { code: 401, message: "Server does not exist" };
     }
 
     if (configuration.folderId) {
         const folder = await Folder.findOne({ where: { accountId: accountId, id: configuration.folderId } });
         if (folder === null) {
-            return { code: 303, message: "Folder does not exist" };
+            return { code: 301, message: "Folder does not exist" };
+        }
+    }
+
+    if (configuration.identities) {
+        const identities = await Identity.findAll({ where: { accountId, id: configuration.identities } });
+        if (identities.length !== configuration.identities.length) {
+            return { code: 501, message: "One or more identities do not exist" };
         }
     }
 
@@ -53,7 +68,7 @@ module.exports.getServer = async (accountId, serverId) => {
     const server = await Server.findOne({ where: { accountId: accountId, id: serverId } });
 
     if (server === null) {
-        return { code: 301, message: "Server does not exist" };
+        return { code: 401, message: "Server does not exist" };
     }
 
     return server;
