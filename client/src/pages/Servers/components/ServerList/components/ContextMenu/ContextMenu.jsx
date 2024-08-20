@@ -13,7 +13,7 @@ import { deleteRequest, putRequest } from "@/common/utils/RequestUtil.js";
 import { ServerContext } from "@/common/contexts/ServerContext.jsx";
 import { useContext } from "react";
 
-export const ContextMenu = ({ position, id, type, setRenameStateId }) => {
+export const ContextMenu = ({ position, id, type, setRenameStateId, setServerDialogOpen }) => {
 
     const { loadServers } = useContext(ServerContext);
 
@@ -30,6 +30,13 @@ export const ContextMenu = ({ position, id, type, setRenameStateId }) => {
 
     const deleteServer = () => deleteRequest("servers/" + id).then(loadServers);
 
+    const createServer = () => setServerDialogOpen();
+
+    const connectToServer = () => {} // TODO implement
+
+    const editServer = () => {} // TODO implement
+
+
     return (
         <div className="context-menu" style={{ top: position.y, left: position.x }}>
             {type !== "server-object" && <div className="context-item" onClick={createFolder}>
@@ -45,17 +52,17 @@ export const ContextMenu = ({ position, id, type, setRenameStateId }) => {
                     <Icon path={mdiFormTextbox} />
                     <p>Rename Folder</p>
                 </div>
-                <div className="context-item">
+                <div className="context-item" onClick={createServer}>
                     <Icon path={mdiServerPlus} />
                     <p>Create Server</p>
                 </div>
             </>}
             {type === "server-object" && <>
-                <div className="context-item">
+                <div className="context-item" onClick={connectToServer}>
                     <Icon path={mdiConnection} />
                     <p>Connect</p>
                 </div>
-                <div className="context-item">
+                <div className="context-item" onClick={editServer}>
                     <Icon path={mdiPencil} />
                     <p>Edit Server</p>
                 </div>
