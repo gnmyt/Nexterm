@@ -5,6 +5,7 @@ import DetailsPage from "@/pages/Servers/components/ServerDialog/pages/DetailsPa
 import Button from "@/common/components/Button/index.js";
 import { getRequest, patchRequest, putRequest } from "@/common/utils/RequestUtil.js";
 import { ServerContext } from "@/common/contexts/ServerContext.jsx";
+import IdentityPage from "@/pages/Servers/components/ServerDialog/pages/IdentityPage.jsx";
 
 const tabs = ["Details", "Identities", "Settings"];
 
@@ -17,13 +18,59 @@ export const ServerDialog = ({open, onClose, currentFolderId, editServerId}) => 
     const [ip, setIp] = useState("");
     const [port, setPort] = useState("");
     const [protocol, setProtocol] = useState(null);
+    const [identities, setIdentities] = useState([]);
+
+    const [identityUpdates, setIdentityUpdates] = useState({});
 
     const [activeTab, setActiveTab] = useState(0);
 
+    const postIdentity = async (identity) => {
+        try {
+            const result = await putRequest("identities", { name: identity.name, username: identity.username,
+                type: identity.authType, password: identity.password });
+
+            if (result.id) {
+                setIdentityUpdates({});
+            }
+
+            return result;
+        } catch (error) {
+            console.error(error);
+        }
+    }
+
+    const patchIdentity = async (identity) => {
+        try {
+            await patchRequest("identities/" + identity.id, { name: identity.name, username: identity.username,
+                type: identity.authType, password: identity.password });
+
+            setIdentityUpdates({});
+            refreshIdentities();
+        } catch (error) {
+            console.error(error);
+        }
+    }
+
+    const updateIdentities = async () => {
+        console.log("identityUpdates", identityUpdates);
+        for (const identityId of Object.keys(identityUpdates)) {
+            if (identityId === "new") {
+                return await postIdentity(identityUpdates[identityId]);
+            } else {
+                await patchIdentity({ ...identityUpdates[identityId], id: identityId });
+            }
+        }
+    }
+
     const createServer = async () => {
         try {
+            const {id} = await updateIdentities();
+
+            console.log("id", id);
+
             const result = await putRequest("servers", { name, icon: icon, ip, port,
-                protocol: protocol, folderId: currentFolderId });
+                protocol: protocol, folderId: currentFolderId, identities: id ? [id] : [] });
+
             loadServers();
             if (result.id) onClose();
         } catch (error) {
@@ -33,8 +80,11 @@ export const ServerDialog = ({open, onClose, currentFolderId, editServerId}) => 
 
     const patchServer = async () => {
         try {
+            await updateIdentities();
+
             await patchRequest("servers/" + editServerId, { name, icon: icon, ip, port,
                 protocol: protocol });
+
             loadServers();
             onClose();
         } catch (error) {
@@ -52,15 +102,19 @@ export const ServerDialog = ({open, onClose, currentFolderId, editServerId}) => 
                 setIp(server.ip);
                 setPort(server.port);
                 setProtocol(server.protocol);
+                setIdentities(server.identities);
             });
-
         } else {
             setName("");
             setIcon(null);
             setIp("");
             setPort("");
             setProtocol(null);
+            setIdentities([]);
         }
+
+        setIdentityUpdates({});
+        setActiveTab(0);
 
         const submitOnEnter = (event) => {
             if (event.key === "Enter") {
@@ -74,6 +128,14 @@ export const ServerDialog = ({open, onClose, currentFolderId, editServerId}) => 
             document.removeEventListener("keydown", submitOnEnter);
         }
     }, [open]);
+
+    const refreshIdentities = () => {
+        if (!editServerId) return;
+
+        getRequest("servers/" + editServerId).then((server) => {
+            setIdentities(server.identities);
+        });
+    }
 
     return (
         <DialogProvider open={open} onClose={onClose}>
@@ -96,7 +158,8 @@ export const ServerDialog = ({open, onClose, currentFolderId, editServerId}) => 
                                                      icon={icon} setIcon={setIcon} ip={ip} setIp={setIp}
                                                      port={port} setPort={setPort}
                                                      protocol={protocol} setProtocol={setProtocol} />}
-                    {activeTab === 1 && <div>Identities Page</div>}
+                    {activeTab === 1 && <IdentityPage serverIdentities={identities} setIdentityUpdates={setIdentityUpdates}
+                                                      refreshIdentities={refreshIdentities} identityUpdates={identityUpdates} />}
                     {activeTab === 2 && <div>Settings Page</div>}
                 </div>
 
