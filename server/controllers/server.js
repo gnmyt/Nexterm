@@ -71,7 +71,7 @@ module.exports.getServer = async (accountId, serverId) => {
         return { code: 401, message: "Server does not exist" };
     }
 
-    return server;
+    return { ...server, identities: JSON.parse(server.identities) };
 };
 
 module.exports.listServers = async (accountId) => {
