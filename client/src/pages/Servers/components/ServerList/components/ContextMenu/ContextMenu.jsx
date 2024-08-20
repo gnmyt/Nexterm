@@ -13,13 +13,18 @@ import { deleteRequest, putRequest } from "@/common/utils/RequestUtil.js";
 import { ServerContext } from "@/common/contexts/ServerContext.jsx";
 import { useContext } from "react";
 
-export const ContextMenu = ({ position, id, type }) => {
+export const ContextMenu = ({ position, id, type, setRenameStateId }) => {
 
     const { loadServers } = useContext(ServerContext);
 
-    const createFolder = () => putRequest("folders", {
-        name: "New Folder", parentId: id === null ? undefined : id,
-    }).then(loadServers);
+    const createFolder = () => {
+        putRequest("folders", {
+            name: "New Folder", parentId: id === null ? undefined : id,
+        }).then(async (result) => {
+            await loadServers();
+            if (result.id) setRenameStateId(result.id);
+        });
+    }
 
     const deleteFolder = () => deleteRequest("folders/" + id).then(loadServers);
 
@@ -36,7 +41,7 @@ export const ContextMenu = ({ position, id, type }) => {
                     <Icon path={mdiFolderRemove} />
                     <p>Delete Folder</p>
                 </div>
-                <div className="context-item">
+                <div className="context-item" onClick={() => setRenameStateId(id)}>
                     <Icon path={mdiFormTextbox} />
                     <p>Rename Folder</p>
                 </div>
