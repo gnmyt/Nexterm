@@ -9,7 +9,7 @@ const ServerEntries = ({ entries, nestedLevel, setRenameStateId }) => {
                     return (
                         <CollapsibleFolder
                             id={entry.id}
-                            key={entry.id}
+                            key={"f"+entry.id}
                             name={entry.name}
                             entries={entry.entries}
                             renameState={entry.renameState}
@@ -21,7 +21,7 @@ const ServerEntries = ({ entries, nestedLevel, setRenameStateId }) => {
                     return (
                         <ServerObject
                             id={entry.id}
-                            key={entry.id}
+                            key={"s"+entry.id}
                             name={entry.name}
                             nestedLevel={nestedLevel}
                             icon={entry.icon}
