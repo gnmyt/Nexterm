@@ -2,7 +2,7 @@ name: Deploy Development Release to DockerHub
 
 on:
   push:
-    branches: [ "development" ]
+    branches: [ "main" ]
 
 jobs:
   docker:
