@@ -1,0 +1,46 @@
+@import "@/common/styles/colors"
+
+.server-tabs
+  display: flex
+  padding: 0.7rem 1rem 0 1rem
+  gap: 1rem
+  align-items: center
+  user-select: none
+
+  svg
+    width: 2rem
+    height: 2rem
+
+  .tabs
+    display: flex
+    gap: 0.5rem
+
+
+    .server-tab
+      display: flex
+      gap: 0.5rem
+      padding: 0.5rem 1rem
+      align-items: center
+      border-radius: 0.5rem 0.5rem 0 0
+      border-bottom: 2px solid transparent
+      cursor: pointer
+
+      &:hover
+        background-color: $gray
+        border-bottom: 2px solid $primary-opacity
+
+      svg
+        width: 1.5rem
+        height: 1.5rem
+
+      h2
+        margin: 0
+        font-size: 1.3rem
+
+    .server-tab-active
+      background-color: $gray
+      border-bottom: 2px solid $primary
+
+      &:hover
+        background-color: $gray
+        border-bottom: 2px solid $primary
