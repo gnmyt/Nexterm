@@ -15,7 +15,7 @@ const encryptToken = (value) => {
 };
 
 module.exports.createVNCToken = (hostname, port, username, password) => {
-    return encryptToken({ connection: { type: "vnc", settings: { hostname, port, username, password } } });
+    return encryptToken({ connection: { type: "vnc", settings: { hostname, port, password, "ignore-cert": true, "resize-method": "display-update" } } });
 };
 
 module.exports.createRDPToken = (hostname, port, username, password) => {
