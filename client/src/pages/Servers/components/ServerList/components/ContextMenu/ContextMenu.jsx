@@ -13,9 +13,14 @@ import { deleteRequest, putRequest } from "@/common/utils/RequestUtil.js";
 import { ServerContext } from "@/common/contexts/ServerContext.jsx";
 import { useContext } from "react";
 
-export const ContextMenu = ({ position, id, type, setRenameStateId, setServerDialogOpen, setCurrentFolderId, setEditServerId }) => {
+export const ContextMenu = ({
+                                position, id, type, setRenameStateId, setServerDialogOpen, setCurrentFolderId,
+                                setEditServerId, connectToServer,
+                            }) => {
 
-    const { loadServers } = useContext(ServerContext);
+    const { loadServers, getServerById } = useContext(ServerContext);
+
+    const server = getServerById(id);
 
     const createFolder = () => {
         putRequest("folders", {
@@ -24,7 +29,7 @@ export const ContextMenu = ({ position, id, type, setRenameStateId, setServerDia
             await loadServers();
             if (result.id) setRenameStateId(result.id);
         });
-    }
+    };
 
     const deleteFolder = () => deleteRequest("folders/" + id).then(loadServers);
 
@@ -33,14 +38,16 @@ export const ContextMenu = ({ position, id, type, setRenameStateId, setServerDia
     const createServer = () => {
         setCurrentFolderId(id);
         setServerDialogOpen();
-    }
+    };
 
-    const connectToServer = () => {} // TODO implement
+    const connect = () => {
+        connectToServer(server?.id, server?.identities[0]);
+    };
 
     const editServer = () => {
         setEditServerId(id);
         setServerDialogOpen();
-    }
+    };
 
 
     return (
@@ -64,10 +71,10 @@ export const ContextMenu = ({ position, id, type, setRenameStateId, setServerDia
                 </div>
             </>}
             {type === "server-object" && <>
-                <div className="context-item" onClick={connectToServer}>
+                {server?.identities?.length !== 0 && <div className="context-item" onClick={connect}>
                     <Icon path={mdiConnection} />
                     <p>Connect</p>
-                </div>
+                </div>}
                 <div className="context-item" onClick={editServer}>
                     <Icon path={mdiPencil} />
                     <p>Edit Server</p>
