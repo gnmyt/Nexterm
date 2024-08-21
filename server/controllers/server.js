@@ -95,7 +95,7 @@ module.exports.listServers = async (accountId) => {
         const folder = folderMap.get(server.folderId);
         if (folder) {
             folder.entries.push({ type: "server", id: server.id, icon: server.icon, name: server.name,
-                identities: JSON.parse(server.identities) });
+                identities: JSON.parse(server.identities), protocol: server.protocol });
         }
     });
 
