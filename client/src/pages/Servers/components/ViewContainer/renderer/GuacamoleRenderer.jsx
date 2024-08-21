@@ -78,7 +78,8 @@ const GuacamoleRenderer = ({ session, disconnectFromServer }) => {
     return (
         <div className="guac-container" ref={ref} tabIndex="0" onClick={() => ref.current.focus()}
              style={{position: 'relative', zIndex: 1, outline: "none", display: "flex", justifyContent: "center",
-                 alignItems: "center", width: "100%", height: "100%", overflow: "hidden", backgroundColor: "#000000"}}
+                 alignItems: "center", width: "100%", height: "100%", overflow: "hidden", backgroundColor: "#000000",
+                 cursor: "none"}}
         />
     );
 }
