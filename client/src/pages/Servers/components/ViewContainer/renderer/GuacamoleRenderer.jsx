@@ -1,5 +1,5 @@
 import { useEffect, useRef, useContext } from "react";
-import Guacamole from 'guacamole-common-js';
+import Guacamole from "guacamole-common-js";
 import { UserContext } from "@/common/contexts/UserContext.jsx";
 
 const GuacamoleRenderer = ({ session, disconnectFromServer }) => {
@@ -23,7 +23,7 @@ const GuacamoleRenderer = ({ session, disconnectFromServer }) => {
             return;
         }
 
-        const tunnel = new Guacamole.WebSocketTunnel('ws://localhost:6989/api/servers/guacd');
+        const tunnel = new Guacamole.WebSocketTunnel(process.env.NODE_ENV === "production" ? "/api/servers/guacd" : "ws://localhost:6989/api/servers/guacd");
         const client = new Guacamole.Client(tunnel);
 
         clientRef.current = client;
@@ -63,25 +63,27 @@ const GuacamoleRenderer = ({ session, disconnectFromServer }) => {
     }, [sessionToken, session]);
 
     useEffect(() => {
-        window.addEventListener('resize', resizeHandler);
+        window.addEventListener("resize", resizeHandler);
 
         const interval = setInterval(() => {
             if (clientRef.current) resizeHandler();
         }, 500);
 
         return () => {
-            window.removeEventListener('resize', resizeHandler);
+            window.removeEventListener("resize", resizeHandler);
             clearInterval(interval);
         };
     }, []);
 
     return (
         <div className="guac-container" ref={ref} tabIndex="0" onClick={() => ref.current.focus()}
-             style={{position: 'relative', zIndex: 1, outline: "none", display: "flex", justifyContent: "center",
+             style={{
+                 position: "relative", zIndex: 1, outline: "none", display: "flex", justifyContent: "center",
                  alignItems: "center", width: "100%", height: "100%", overflow: "hidden", backgroundColor: "#000000",
-                 cursor: "none"}}
+                 cursor: "none",
+             }}
         />
     );
-}
+};
 
 export default GuacamoleRenderer;
