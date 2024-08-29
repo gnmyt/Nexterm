@@ -6,17 +6,15 @@ import { IdentityProvider } from "@/common/contexts/IdentityContext.jsx";
 
 export default () => {
     return (
-        <div className="root">
-            <UserProvider>
-                <ServerProvider>
-                    <IdentityProvider>
-                        <div className="content-wrapper">
-                            <Sidebar />
-                            <Outlet />
-                        </div>
-                    </IdentityProvider>
-                </ServerProvider>
-            </UserProvider>
-        </div>
+        <UserProvider>
+            <ServerProvider>
+                <IdentityProvider>
+                    <div className="content-wrapper">
+                        <Sidebar />
+                        <Outlet />
+                    </div>
+                </IdentityProvider>
+            </ServerProvider>
+        </UserProvider>
     )
 }
