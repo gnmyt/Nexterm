@@ -11,16 +11,32 @@ import { UserContext } from "@/common/contexts/UserContext.jsx";
 export const LoginDialog = ({ open }) => {
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
+    const [firstName, setFirstName] = useState("");
+    const [lastName, setLastName] = useState("");
     const [code, setCode] = useState("");
 
     const [totpRequired, setTotpRequired] = useState(false);
 
     const [error, setError] = useState("");
 
-    const { updateSessionToken } = useContext(UserContext);
+    const { updateSessionToken, firstTimeSetup } = useContext(UserContext);
+
+    const createAccountFirst = async () => {
+        let resultObj;
+        try {
+            resultObj = await request("accounts/register", "POST", { username, password, firstName, lastName });
+
+            if (resultObj.code) throw new Error(resultObj.message);
+        } catch (error) {
+            setError(error.message || "An error occurred");
+            return;
+        }
+    }
 
     const submit = async (event) => {
         event.preventDefault();
+
+        if (firstTimeSetup) await createAccountFirst();
 
         let resultObj;
         try {
@@ -37,7 +53,6 @@ export const LoginDialog = ({ open }) => {
 
         if (resultObj.code === 203) setError("Invalid two-factor code");
 
-
         if (resultObj.token) {
             updateSessionToken(resultObj.token);
         }
@@ -52,10 +67,27 @@ export const LoginDialog = ({ open }) => {
             <div className="login-dialog">
                 <div className="login-logo">
                     <img src={NextermLogo} alt="Nexterm" />
-                    <h1>Nexterm</h1>
+                    <h1>{firstTimeSetup ? "Registration" : "Nexterm"}</h1>
                 </div>
                 {error && <div className="error">{error}</div>}
                 <form className="login-form" onSubmit={submit}>
+                    {firstTimeSetup &&
+                        <div className="register-name-row">
+                            <div className="form-group">
+                                <label htmlFor="firstName">First Name</label>
+                                <Input type="text" id="firstName" required icon={mdiAccountCircleOutline}
+                                    placeholder="First" autoComplete="given-name"
+                                    value={firstName} setValue={setFirstName} />
+                            </div>
+                            <div className="form-group">
+                                <label htmlFor="lastName">Last Name</label>
+                                <Input type="text" id="lastName" required icon={mdiAccountCircleOutline}
+                                    placeholder="Last" autoComplete="family-name"
+                                    value={lastName} setValue={setLastName} />
+                            </div>
+                        </div>
+                    }
+
                     {!totpRequired && <>
                         <div className="form-group">
                             <label htmlFor="username">Username</label>
@@ -80,7 +112,7 @@ export const LoginDialog = ({ open }) => {
                         </div>
                     </>}
 
-                    <Button text="Login" />
+                    <Button text={firstTimeSetup ? "Register" : "Login"} />
                 </form>
             </div>
         </DialogProvider>
