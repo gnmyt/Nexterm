@@ -24,6 +24,17 @@
   .password-row
     width: 100%
 
+  .keyfile-row
+    display: flex
+    gap: 1rem
+
+    input[type="file"]
+      cursor: pointer
+
+    input[type="file"]::-webkit-file-upload-button
+      display: none
+
+
   .form-group
     display: flex
     flex-direction: column
