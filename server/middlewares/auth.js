@@ -60,8 +60,7 @@ module.exports.authorizeGuacamole = async (req) => {
 
     switch (server.protocol) {
         case "rdp":
-            const token = createRDPToken(server.ip, server.port, identity.username, identity.password);
-            return token;
+            return createRDPToken(server.ip, server.port, identity.username, identity.password);
         case "vnc":
             return createVNCToken(server.ip, server.port, identity.username, identity.password);
             default:
