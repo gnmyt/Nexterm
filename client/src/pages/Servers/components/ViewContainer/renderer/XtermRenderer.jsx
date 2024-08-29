@@ -35,12 +35,20 @@ const XtermRenderer = ({ session, disconnectFromServer }) => {
         const url = process.env.NODE_ENV === "production" ? `${window.location.host}/api/servers/sshd` : "localhost:6989/api/servers/sshd";
         const ws = new WebSocket(`${protocol}://${url}?sessionToken=${sessionToken}&serverId=${session.server}&identityId=${session.identity}`);
 
-        ws.onopen = () => setTimeout(() => {
-            handleResize();
-        }, 500);
+
+        let interval = setInterval(() => {
+            if (ws.readyState === ws.OPEN) handleResize();
+        }, 1000);
+
+        ws.onopen = () => {
+            ws.send(`\x01${term.cols},${term.rows}`);
+        }
 
         ws.onclose = (event) => {
-            if (event.wasClean) disconnectFromServer(session.id);
+            if (event.wasClean) {
+                clearInterval(interval);
+                disconnectFromServer(session.id);
+            }
         };
 
         ws.onmessage = (event) => {
@@ -55,6 +63,7 @@ const XtermRenderer = ({ session, disconnectFromServer }) => {
             window.removeEventListener("resize", handleResize);
             ws.close();
             term.dispose();
+            clearInterval(interval);
         };
     }, [sessionToken]);
 
