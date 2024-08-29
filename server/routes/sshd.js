@@ -56,7 +56,7 @@ module.exports = async (ws, req) => {
             username: identity.username,
             password: identity.password,
         };
-    } else if (identity.type === "sshKey") {
+    } else if (identity.type === "ssh") {
         options = {
             host: server.ip,
             port: server.port,
@@ -68,9 +68,13 @@ module.exports = async (ws, req) => {
 
     console.log("Authorized connection to server " + server.ip + " with identity " + identity.name);
 
-    const ssh = new sshd.Client();
+    let ssh = new sshd.Client();
+    try {
+        ssh.connect(options);
+    } catch (err) {
+        ws.close(4004, err.message);
+    }
 
-    ssh.connect(options);
 
     ssh.on("error", (err) => {
         ws.close(4005, err.message);
