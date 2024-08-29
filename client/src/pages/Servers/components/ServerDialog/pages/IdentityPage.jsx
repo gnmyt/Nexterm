@@ -1,24 +1,36 @@
-import { mdiAccountCircleOutline } from "@mdi/js";
+import { mdiAccountCircleOutline, mdiFileUploadOutline, mdiLockOutline } from "@mdi/js";
 import Input from "@/common/components/IconInput";
 import SelectBox from "@/common/components/SelectBox";
 import { useContext, useEffect, useState } from "react";
 import { IdentityContext } from "@/common/contexts/IdentityContext.jsx";
 
-const Identity = ({ newIdentity, name, username, onUpdate, password }) => {
+const Identity = ({ newIdentity, type, name, username, onUpdate }) => {
 
     const [identityName, setIdentityName] = useState(name || (newIdentity ? "Auto-generated identity" : ""));
     const [identityUsername, setIdentityUsername] = useState(username || "");
-    const [authType, setAuthType] = useState("password");
-    const [identityPassword, setIdentityPassword] = useState(password || (newIdentity ? "" : "********"));
+    const [authType, setAuthType] = useState(type || "password");
+    const [identityPassword, setIdentityPassword] = useState(newIdentity ? "" : "********");
+    const [identityKeyfile, setIdentityKeyfile] = useState(null);
+    const [identityPassphrase, setIdentityPassphrase] = useState(newIdentity ? "" : "********");
+
+    const readFile = (event) => {
+        const file = event.target.files[0];
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            setIdentityKeyfile(e.target.result);
+        };
+        reader.readAsText(file);
+    }
 
     useEffect(() => {
         if (authType === "password") {
             onUpdate({ name: identityName, username: identityUsername, authType, password: identityPassword === "********"
                     ? undefined : identityPassword });
         } else {
-            onUpdate({ name: identityName, username: identityUsername, authType });
+            onUpdate({ name: identityName, username: identityUsername, authType, sshKey: identityKeyfile,
+                passphrase: identityPassphrase === "********" ? undefined : identityPassphrase });
         }
-    }, [identityName, identityUsername, authType, identityPassword]);
+    }, [identityName, identityUsername, authType, identityPassword, identityKeyfile, identityPassphrase]);
 
     return (
         <div className="identity">
@@ -45,6 +57,21 @@ const Identity = ({ newIdentity, name, username, onUpdate, password }) => {
                         <label htmlFor="password">Password</label>
                         <Input icon={mdiAccountCircleOutline} type="password" placeholder="Password" id="password"
                                  autoComplete="off" value={identityPassword} setValue={setIdentityPassword} />
+                    </div>
+                </div>
+            )}
+
+            {authType === "ssh" && (
+                <div className="keyfile-row">
+                    <div className="form-group">
+                        <label htmlFor="keyfile">Keyfile</label>
+                        <Input icon={mdiFileUploadOutline} type="file" id="keyfile" autoComplete="off"
+                               onChange={readFile} />
+                    </div>
+                    <div className="form-group">
+                        <label htmlFor="passphrase">Passphrase</label>
+                        <Input icon={mdiLockOutline} type="password" placeholder="Passphrase" id="passphrase"
+                               autoComplete="off" value={identityPassphrase} setValue={setIdentityPassphrase} />
                     </div>
                 </div>
             )}
