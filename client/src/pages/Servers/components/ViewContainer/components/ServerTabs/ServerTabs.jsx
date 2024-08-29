@@ -11,7 +11,7 @@ export const ServerTabs = ({activeSessions, setActiveSessionId, activeSessionId,
 
     return (
         <div className="server-tabs">
-            <Icon path={mdiViewSplitVertical} />
+            <Icon path={mdiViewSplitVertical} onClick={() => alert("Not implemented yet")} />
             <div className="tabs">
                 {activeSessions.map(session => {
                     const server = getServerById(session.server);
