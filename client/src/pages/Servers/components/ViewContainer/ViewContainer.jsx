@@ -13,16 +13,18 @@ export const ViewContainer = ({activeSessions, activeSessionId, setActiveSession
             <ServerTabs activeSessions={activeSessions} setActiveSessionId={setActiveSessionId}
                         activeSessionId={activeSessionId} disconnectFromServer={disconnectFromServer} />
 
-            {activeSessions.map(session => {
-                const server = getServerById(session.server);
-                return (
-                    <div key={session.id} className={"view" + (session.id === activeSessionId ? " view-active" : "")}>
-                        {(server.protocol === "vnc" || server.protocol === "rdp") &&
-                            <GuacamoleRenderer session={session} disconnectFromServer={disconnectFromServer} />}
-                        {server.protocol === "ssh" && <XtermRenderer session={session} disconnectFromServer={disconnectFromServer} />}
-                    </div>
-                )
-            })}
+            <div className="view-layouter">
+                {activeSessions.map(session => {
+                    const server = getServerById(session.server);
+                    return (
+                        <div key={session.id} className={"view" + (session.id === activeSessionId ? " view-active" : "")}>
+                            {(server.protocol === "vnc" || server.protocol === "rdp") &&
+                                <GuacamoleRenderer session={session} disconnectFromServer={disconnectFromServer} />}
+                            {server.protocol === "ssh" && <XtermRenderer session={session} disconnectFromServer={disconnectFromServer} />}
+                        </div>
+                    )
+                })}
+            </div>
         </div>
     )
 }
