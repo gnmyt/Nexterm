@@ -9,9 +9,9 @@ import IdentityPage from "@/pages/Servers/components/ServerDialog/pages/Identity
 
 const tabs = ["Details", "Identities", "Settings"];
 
-export const ServerDialog = ({open, onClose, currentFolderId, editServerId}) => {
+export const ServerDialog = ({ open, onClose, currentFolderId, editServerId }) => {
 
-    const {loadServers} = useContext(ServerContext);
+    const { loadServers } = useContext(ServerContext);
 
     const [name, setName] = useState("");
     const [icon, setIcon] = useState(null);
@@ -26,33 +26,35 @@ export const ServerDialog = ({open, onClose, currentFolderId, editServerId}) => 
 
     const postIdentity = async (identity) => {
         try {
-            const result = await putRequest("identities", { name: identity.name, username: identity.username,
-                type: identity.authType, password: identity.password });
+            console.log(identity);
+            const result = await putRequest("identities", {
+                name: identity.name, username: identity.username, type: identity.authType,
+                password: identity.password, sshKey: identity.sshKey, passphrase: identity.passphrase,
+            });
 
-            if (result.id) {
-                setIdentityUpdates({});
-            }
+            if (result.id) setIdentityUpdates({});
 
             return result;
         } catch (error) {
             console.error(error);
         }
-    }
+    };
 
     const patchIdentity = async (identity) => {
         try {
-            await patchRequest("identities/" + identity.id, { name: identity.name, username: identity.username,
-                type: identity.authType, password: identity.password });
+            await patchRequest("identities/" + identity.id, {
+                name: identity.name, username: identity.username, type: identity.authType,
+                password: identity.password, sshKey: identity.sshKey, passphrase: identity.passphrase,
+            });
 
             setIdentityUpdates({});
             refreshIdentities();
         } catch (error) {
             console.error(error);
         }
-    }
+    };
 
     const updateIdentities = async () => {
-        console.log("identityUpdates", identityUpdates);
         for (const identityId of Object.keys(identityUpdates)) {
             if (identityId === "new") {
                 return await postIdentity(identityUpdates[identityId]);
@@ -60,37 +62,36 @@ export const ServerDialog = ({open, onClose, currentFolderId, editServerId}) => 
                 await patchIdentity({ ...identityUpdates[identityId], id: identityId });
             }
         }
-    }
+    };
 
     const createServer = async () => {
         try {
-            const {id} = await updateIdentities();
+            const { id } = await updateIdentities();
 
-            console.log("id", id);
-
-            const result = await putRequest("servers", { name, icon: icon, ip, port,
-                protocol: protocol, folderId: currentFolderId, identities: id ? [id] : [] });
+            const result = await putRequest("servers", {
+                name, icon: icon, ip, port, protocol: protocol,
+                folderId: currentFolderId, identities: id ? [id] : [],
+            });
 
             loadServers();
             if (result.id) onClose();
         } catch (error) {
             console.error(error);
         }
-    }
+    };
 
     const patchServer = async () => {
         try {
             await updateIdentities();
 
-            await patchRequest("servers/" + editServerId, { name, icon: icon, ip, port,
-                protocol: protocol });
+            await patchRequest("servers/" + editServerId, { name, icon: icon, ip, port, protocol: protocol });
 
             loadServers();
             onClose();
         } catch (error) {
             console.error(error);
         }
-    }
+    };
 
     useEffect(() => {
         if (!open) return;
@@ -120,13 +121,13 @@ export const ServerDialog = ({open, onClose, currentFolderId, editServerId}) => 
             if (event.key === "Enter") {
                 editServerId ? patchServer() : createServer();
             }
-        }
+        };
 
         document.addEventListener("keydown", submitOnEnter);
 
         return () => {
             document.removeEventListener("keydown", submitOnEnter);
-        }
+        };
     }, [open]);
 
     const refreshIdentities = () => {
@@ -135,7 +136,16 @@ export const ServerDialog = ({open, onClose, currentFolderId, editServerId}) => 
         getRequest("servers/" + editServerId).then((server) => {
             setIdentities(server.identities);
         });
-    }
+    };
+
+    useEffect(() => {
+        if (!open) return;
+
+        // Default port for each protocol
+        if (protocol === "ssh" && (port === "3389" || port === "5900" || port === "")) setPort("22");
+        if (protocol === "rdp" && (port === "22" || port === "5900" || port === "")) setPort("3389");
+        if (protocol === "vnc" && (port === "22" || port === "3389" || port === "")) setPort("5900");
+    }, [protocol]);
 
     return (
         <DialogProvider open={open} onClose={onClose}>
@@ -158,8 +168,9 @@ export const ServerDialog = ({open, onClose, currentFolderId, editServerId}) => 
                                                      icon={icon} setIcon={setIcon} ip={ip} setIp={setIp}
                                                      port={port} setPort={setPort}
                                                      protocol={protocol} setProtocol={setProtocol} />}
-                    {activeTab === 1 && <IdentityPage serverIdentities={identities} setIdentityUpdates={setIdentityUpdates}
-                                                      refreshIdentities={refreshIdentities} identityUpdates={identityUpdates} />}
+                    {activeTab === 1 &&
+                        <IdentityPage serverIdentities={identities} setIdentityUpdates={setIdentityUpdates}
+                                      refreshIdentities={refreshIdentities} identityUpdates={identityUpdates} />}
                     {activeTab === 2 && <div>Settings Page</div>}
                 </div>
 
@@ -168,5 +179,5 @@ export const ServerDialog = ({open, onClose, currentFolderId, editServerId}) => 
             </div>
 
         </DialogProvider>
-    )
-}
+    );
+};
