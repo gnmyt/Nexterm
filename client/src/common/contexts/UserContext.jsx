@@ -7,6 +7,7 @@ export const UserContext = createContext({});
 export const UserProvider = ({ children }) => {
 
     const [sessionToken, setSessionToken] = useState(localStorage.getItem("sessionToken"));
+    const [firstTimeSetup, setFirstTimeSetup] = useState(false);
     const [user, setUser] = useState(null);
 
     const updateSessionToken = (sessionToken) => {
@@ -14,6 +15,15 @@ export const UserProvider = ({ children }) => {
         localStorage.setItem("sessionToken", sessionToken);
 
         login();
+    }
+
+    const checkFirstTimeSetup = async () => {
+        try {
+            const response = await getRequest("service/is-fts");
+            setFirstTimeSetup(response);
+        } catch (error) {
+            console.error(error);
+        }
     }
 
     const login = async () => {
@@ -30,13 +40,11 @@ export const UserProvider = ({ children }) => {
     }
 
     useEffect(() => {
-        if (sessionToken) {
-            login();
-        }
+        sessionToken ? login() : checkFirstTimeSetup();
     }, []);
 
     return (
-        <UserContext.Provider value={{updateSessionToken, user, sessionToken}}>
+        <UserContext.Provider value={{updateSessionToken, user, sessionToken, firstTimeSetup}}>
             <LoginDialog open={!sessionToken} />
             {children}
         </UserContext.Provider>
