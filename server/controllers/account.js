@@ -55,3 +55,7 @@ module.exports.updateTOTP = async (id, status) => {
 
     await Account.update({ totpEnabled: status }, { where: { id } });
 };
+
+module.exports.getFTSStatus = async () => {
+    return await Account.count() === 0;
+}
