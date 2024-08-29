@@ -59,7 +59,7 @@ export const Servers = () => {
                 </div>
                 <img src={WelcomeImage} alt="Welcome" />
             </div>}
-            {activeSessions && <ViewContainer activeSessions={activeSessions} disconnectFromServer={disconnectFromServer}
+            {activeSessions.length > 0 && <ViewContainer activeSessions={activeSessions} disconnectFromServer={disconnectFromServer}
                                               activeSessionId={activeSessionId} setActiveSessionId={setActiveSessionId} />}
         </div>
     )
