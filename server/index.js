@@ -4,9 +4,9 @@ module.exports.GUACD_TOKEN = crypto.randomBytes(16).toString("hex");
 const express = require("express");
 const path = require("path");
 const db = require("./utils/database");
-const { authenticate, authorizeGuacamole } = require("./middlewares/auth");
+const { authenticate } = require("./middlewares/auth");
 const GuacamoleLite = require("guacamole-lite");
-const { createProxyMiddleware } = require("http-proxy-middleware");
+const expressWs = require("express-ws");
 
 require("./utils/folder");  // Create needed data folders
 
@@ -14,24 +14,18 @@ process.on("uncaughtException", err => require("./utils/errorHandling")(err));
 
 const APP_PORT = process.env.SERVER_PORT || 6989;
 
-const app = express();
+const app = expressWs(express()).app;
 
 app.disable("x-powered-by");
-
 app.use(express.json());
 
+app.use("/api/service", require("./routes/service"));
 app.use("/api/accounts", require("./routes/account"));
 app.use("/api/auth", require("./routes/auth"));
 
-app.use("/api/servers/guacd", createProxyMiddleware({
-    changeOrigin: true,
-    ws: true,
-    router: async (req) => {
-        const token = await authorizeGuacamole(req);
-        if (!token) return null;
-        return "ws://localhost:" + 58391 + "/?token=" + token;
-    },
-}));
+app.ws("/api/servers/sshd", require("./routes/sshd"));
+
+app.use("/api/servers/guacd", require("./middlewares/guacamole"));
 
 app.use("/api/sessions", authenticate, require("./routes/session"));
 app.use("/api/folders", authenticate, require("./routes/folder"));
