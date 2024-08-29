@@ -2,7 +2,7 @@ import { ServerContext } from "@/common/contexts/ServerContext.jsx";
 import { useContext } from "react";
 import Icon from "@mdi/react";
 import { loadIcon } from "@/pages/Servers/components/ServerList/components/ServerObject/ServerObject.jsx";
-import { mdiClose, mdiTableColumnPlusAfter } from "@mdi/js";
+import { mdiClose, mdiViewSplitVertical } from "@mdi/js";
 import "./styles.sass";
 
 export const ServerTabs = ({activeSessions, setActiveSessionId, activeSessionId, disconnectFromServer}) => {
@@ -11,7 +11,7 @@ export const ServerTabs = ({activeSessions, setActiveSessionId, activeSessionId,
 
     return (
         <div className="server-tabs">
-            <Icon path={mdiTableColumnPlusAfter} />
+            <Icon path={mdiViewSplitVertical} />
             <div className="tabs">
                 {activeSessions.map(session => {
                     const server = getServerById(session.server);
