@@ -1,0 +1,21 @@
+name: 💡 Suggest idea
+description:  Do you have an idea? You're in the right place
+title: "[Feature] "
+labels: ["enhancement"]
+body:
+  - type: checkboxes
+    attributes:
+      label: General
+      description: Please confirm the following statements
+      options:
+        - label: My feature does not exist in the latest version of Nexterm.
+          required: true
+        - label: I have checked that my feature has not been suggested by anyone else.
+          required: true
+  - type: textarea
+    attributes:
+      label: Your Idea
+      description: What can we add? Describe your idea as precisely as possible.
+      placeholder: My idea would be to ...
+    validations:
+      required: true

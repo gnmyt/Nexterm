@@ -1,0 +1,43 @@
+name: 🐛 Report a Bug
+description:  Report a bug or issue in Nexterm
+title: "[Bug] "
+labels: ["bug"]
+body:
+  - type: checkboxes
+    attributes:
+      label: General
+      description: Please confirm the following statements
+      options:
+        - label: I have updated to the latest version of Nexterm.
+          required: true
+        - label: My bug has not been reported yet.
+          required: true
+  - type: textarea
+    attributes:
+      label: The Bug
+      description: Describe the bug/issue in detail. If possible, include screenshots and provide steps to reproduce the error.
+      placeholder: An error occurs when ...
+    validations:
+      required: true
+  - type: dropdown
+    id: browsers
+    attributes:
+      label: What device are you using to access the page?
+      multiple: true
+      options:
+        - In the browser
+        - On mobile
+        - On a tablet
+    validations:
+      required: true
+  - type: dropdown
+    id: server
+    attributes:
+      label: Which operating system is your Nexterm instance running on?
+      multiple: true
+      options:
+        - Linux
+        - Windows
+        - macOS
+    validations:
+      required: true
