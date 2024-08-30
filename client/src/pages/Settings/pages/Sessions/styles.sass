@@ -1,0 +1,41 @@
+@import "@/common/styles/colors"
+
+.sessions-page
+  display: flex
+  flex-direction: column
+  margin-top: 1rem
+  gap: 2rem
+
+
+  .session
+    border: 2px solid $gray
+    padding: 1rem 1.5rem
+    border-radius: 1rem
+    display: flex
+    justify-content: space-between
+    align-items: center
+
+    .session-info
+      display: flex
+      gap: 1.5rem
+      align-items: center
+
+    .session-details
+      display: flex
+      flex-direction: column
+      gap: 0.5rem
+
+      h2, p
+        margin: 0
+
+    .icon-container
+      display: flex
+      align-items: center
+      justify-content: center
+      padding: 0.7rem
+      background-color: $primary-opacity
+      border-radius: 1rem
+
+      svg
+        width: 2rem
+        height: 2rem
