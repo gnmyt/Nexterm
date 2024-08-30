@@ -44,7 +44,7 @@ export const UserProvider = ({ children }) => {
     }, []);
 
     return (
-        <UserContext.Provider value={{updateSessionToken, user, sessionToken, firstTimeSetup}}>
+        <UserContext.Provider value={{updateSessionToken, user, sessionToken, firstTimeSetup, login}}>
             <LoginDialog open={!sessionToken} />
             {children}
         </UserContext.Provider>
