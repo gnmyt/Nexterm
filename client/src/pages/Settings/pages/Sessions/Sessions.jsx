@@ -50,7 +50,7 @@ export const Sessions = () => {
         <div className="sessions-page">
 
             {sessions.map(session => (
-                <div className="session">
+                <div className="session" key={session.id}>
                     <div className="session-info">
                         <div className={"icon-container" + (session.current ? " icon-current" : "")}>
                             <Icon path={getIconFromDevice(parser.setUA(session.userAgent).getDevice().type)} />
