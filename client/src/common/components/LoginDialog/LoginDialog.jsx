@@ -76,13 +76,13 @@ export const LoginDialog = ({ open }) => {
                             <div className="form-group">
                                 <label htmlFor="firstName">First Name</label>
                                 <Input type="text" id="firstName" required icon={mdiAccountCircleOutline}
-                                    placeholder="First" autoComplete="given-name"
+                                    placeholder="First name" autoComplete="given-name"
                                     value={firstName} setValue={setFirstName} />
                             </div>
                             <div className="form-group">
                                 <label htmlFor="lastName">Last Name</label>
                                 <Input type="text" id="lastName" required icon={mdiAccountCircleOutline}
-                                    placeholder="Last" autoComplete="family-name"
+                                    placeholder="Last name" autoComplete="family-name"
                                     value={lastName} setValue={setLastName} />
                             </div>
                         </div>
