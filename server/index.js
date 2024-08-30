@@ -55,3 +55,11 @@ db.authenticate().catch(err => {
 
     app.listen(APP_PORT, () => console.log(`Server listening on port ${APP_PORT}`));
 });
+
+process.on("SIGINT", async () => {
+    console.log("Shutting down the server...");
+
+    await db.close();
+
+    process.exit(0);
+});
