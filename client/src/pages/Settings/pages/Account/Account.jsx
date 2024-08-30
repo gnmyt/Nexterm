@@ -4,16 +4,19 @@ import { mdiAccountCircleOutline } from "@mdi/js";
 import { useContext, useEffect, useState } from "react";
 import { UserContext } from "@/common/contexts/UserContext.jsx";
 import Button from "@/common/components/Button";
-import { patchRequest } from "@/common/utils/RequestUtil.js";
+import { patchRequest, postRequest } from "@/common/utils/RequestUtil.js";
+import TwoFactorAuthentication from "@/pages/Settings/pages/Account/dialogs/TwoFactorAuthentication";
 
 export const Account = () => {
+
+    const [twoFactorOpen, setTwoFactorOpen] = useState(false);
 
     const { user, login } = useContext(UserContext);
 
     const [updatedField, setUpdatedField] = useState(null);
 
-    const [firstName, setFirstName] = useState(user?.firstName);
-    const [lastName, setLastName] = useState(user?.lastName);
+    const [firstName, setFirstName] = useState("");
+    const [lastName, setLastName] = useState("");
 
     const updateName = (config) => {
         if (config.firstName && config.firstName === user.firstName) return;
@@ -31,27 +34,36 @@ export const Account = () => {
             .catch(err => console.error(err));
     }
 
+    const disable2FA = () => {
+        postRequest("accounts/totp/disable").then(() => {
+                login();
+            }).catch(err => console.error(err));
+    }
+
     useEffect(() => {
-        setFirstName(user?.firstName);
-        setLastName(user?.lastName);
+        if (user) {
+            setFirstName(user.firstName);
+            setLastName(user.lastName);
+        }
     }, [user]);
 
     return (
         <div className="account-page">
+            <TwoFactorAuthentication open={twoFactorOpen} onClose={() => setTwoFactorOpen(false)} />
             <div className="account-section">
                 <h2>Account name</h2>
                 <div className="section-inner">
                     <div className="form-group">
                         <label htmlFor="firstName">First name</label>
                         <IconInput icon={mdiAccountCircleOutline} placeholder="First name"
-                                      name="firstName" customClass={updatedField === "firstName" ? " fd-updated" : ""}
+                                      id="firstName" customClass={updatedField === "firstName" ? " fd-updated" : ""}
                                    value={firstName} setValue={setFirstName}
                                    onBlur={(event) => updateName({ firstName: event.target.value })}   />
                     </div>
 
                     <div className="form-group">
                         <label htmlFor="lastName">Last name</label>
-                        <IconInput icon={mdiAccountCircleOutline} placeholder="Last name" name="lastName"
+                        <IconInput icon={mdiAccountCircleOutline} placeholder="Last name" id="lastName"
                                       value={lastName} setValue={setLastName}
                                         customClass={updatedField === "lastName" ? " fd-updated" : ""}
                                    onBlur={(event) => updateName({ lastName: event.target.value })} />
@@ -60,11 +72,15 @@ export const Account = () => {
             </div>
 
             <div className="account-section">
-                <h2>Two-factor authentication</h2>
+                <div className="tfa-title">
+                    <h2>Two-factor authentication</h2>
+                    {user?.totpEnabled ? <p className="active">Active</p> : <p className="inactive">Inactive</p>}
+                </div>
                 <div className="section-inner">
                     <p style={{ maxWidth: "25rem" }}>Add an extra layer of security to your account by enabling
                         two-factor authentication.</p>
-                    <Button text="Enable 2FA" />
+                    {!user?.totpEnabled && <Button text="Enable 2FA" onClick={() => setTwoFactorOpen(true)} />}
+                    {user?.totpEnabled ? <Button text="Disable 2FA" onClick={disable2FA} /> : null}
                 </div>
             </div>
 

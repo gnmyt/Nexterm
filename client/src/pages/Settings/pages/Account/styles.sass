@@ -9,8 +9,27 @@
 .account-section
   h2
     margin: 0
+
   p
     color: $subtext
+
+  .tfa-title
+    display: flex
+    align-items: center
+    gap: 0.5rem
+
+    p
+      margin: 0
+      padding: 0.2rem 0.5rem
+      border-radius: 0.5rem
+
+    .active
+      background-color: $success-opacity
+      color: $success
+
+    .inactive
+      background-color: $error-opacity
+      color: $error
 
   .section-inner
     margin-top: 1rem
