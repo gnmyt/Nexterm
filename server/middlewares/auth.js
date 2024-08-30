@@ -18,7 +18,7 @@ module.exports.authenticate = async (req, res, next) => {
     if (req.session === null)
         return res.status(401).json({ message: "The provided token is not valid" });
 
-    await Session.update({ lastActivity: new Date() }, { where: { id: req.session.id } });
+    await Session.update({ lastActivity: new Date(), ip: req.ip }, { where: { id: req.session.id } });
 
     req.user = await Account.findByPk(req.session.accountId);
     if (req.user === null)
