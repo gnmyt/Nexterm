@@ -1,0 +1,35 @@
+@import "@/common/styles/colors"
+
+.settings-page
+  display: grid
+  grid-template-columns: 18rem 1fr
+
+
+  .settings-content
+    padding: 1rem 2rem
+
+    hr
+      background-color: $gray
+      width: 100%
+      height: 3px
+      border: none
+      border-radius: 5px
+
+    .settings-content-inner
+      width: 80%
+      overflow-x: hidden
+      overflow-y: scroll
+
+  .settings-header
+    display: flex
+    align-items: center
+    padding-bottom: 0.5rem
+    gap: 1rem
+
+    svg
+      width: 2.5rem
+      height: 2.5rem
+
+    h1
+      margin: 0
+      font-size: 24pt
