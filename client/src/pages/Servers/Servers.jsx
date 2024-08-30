@@ -6,7 +6,7 @@ import Button from "@/common/components/Button";
 import WelcomeImage from "@/common/img/welcome.png";
 import { GITHUB_URL } from "@/App.jsx";
 import ServerDialog from "@/pages/Servers/components/ServerDialog";
-import ViewContainer from "@/pages/Servers/components/ViewContainer/index.js";
+import ViewContainer from "@/pages/Servers/components/ViewContainer";
 
 export const Servers = () => {
 

@@ -3,7 +3,7 @@ import "./styles.sass";
 import { mdiAccountCircleOutline } from "@mdi/js";
 import { useContext } from "react";
 import { UserContext } from "@/common/contexts/UserContext.jsx";
-import Button from "@/common/components/Button/index.js";
+import Button from "@/common/components/Button";
 
 export const Account = () => {
 

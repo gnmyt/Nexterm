@@ -2,7 +2,7 @@ import { DialogProvider } from "@/common/components/Dialog";
 import "./styles.sass";
 import { useContext, useEffect, useState } from "react";
 import DetailsPage from "@/pages/Servers/components/ServerDialog/pages/DetailsPage.jsx";
-import Button from "@/common/components/Button/index.js";
+import Button from "@/common/components/Button";
 import { getRequest, patchRequest, putRequest } from "@/common/utils/RequestUtil.js";
 import { ServerContext } from "@/common/contexts/ServerContext.jsx";
 import IdentityPage from "@/pages/Servers/components/ServerDialog/pages/IdentityPage.jsx";
