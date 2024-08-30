@@ -19,7 +19,7 @@ const App = () => {
             children: [
                 { path: "/", element: <Navigate to="/servers" /> },
                 { path: "/servers", element: <Servers /> },
-                { path: "/settings", element: <Settings/> },
+                { path: "/settings/*", element: <Settings/> },
             ],
         },
     ]);
