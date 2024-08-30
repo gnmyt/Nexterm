@@ -171,7 +171,7 @@ export const ServerDialog = ({ open, onClose, currentFolderId, editServerId }) =
                     {activeTab === 1 &&
                         <IdentityPage serverIdentities={identities} setIdentityUpdates={setIdentityUpdates}
                                       refreshIdentities={refreshIdentities} identityUpdates={identityUpdates} />}
-                    {activeTab === 2 && <div>Settings Page</div>}
+                    {activeTab === 2 && <p style={{textAlign: "center"}}>Not yet implemented</p>}
                 </div>
 
                 <Button className="server-dialog-button" onClick={editServerId ? patchServer : createServer}
