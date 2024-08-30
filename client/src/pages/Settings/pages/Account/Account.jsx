@@ -6,10 +6,12 @@ import { UserContext } from "@/common/contexts/UserContext.jsx";
 import Button from "@/common/components/Button";
 import { patchRequest, postRequest } from "@/common/utils/RequestUtil.js";
 import TwoFactorAuthentication from "@/pages/Settings/pages/Account/dialogs/TwoFactorAuthentication";
+import PasswordChange from "@/pages/Settings/pages/Account/dialogs/PasswordChange";
 
 export const Account = () => {
 
     const [twoFactorOpen, setTwoFactorOpen] = useState(false);
+    const [passwordChangeOpen, setPasswordChangeOpen] = useState(false);
 
     const { user, login } = useContext(UserContext);
 
@@ -50,6 +52,7 @@ export const Account = () => {
     return (
         <div className="account-page">
             <TwoFactorAuthentication open={twoFactorOpen} onClose={() => setTwoFactorOpen(false)} />
+            <PasswordChange open={passwordChangeOpen} onClose={() => setPasswordChangeOpen(false)} />
             <div className="account-section">
                 <h2>Account name</h2>
                 <div className="section-inner">
@@ -89,7 +92,7 @@ export const Account = () => {
                 <div className="section-inner">
                     <p style={{ maxWidth: "25rem" }}>Choose a new and secure password for your account here.</p>
 
-                    <Button text="Change password" />
+                    <Button text="Change password" onClick={() => setPasswordChangeOpen(true)} />
                 </div>
             </div>
 
