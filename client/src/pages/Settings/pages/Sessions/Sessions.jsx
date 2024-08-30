@@ -52,7 +52,7 @@ export const Sessions = () => {
             {sessions.map(session => (
                 <div className="session">
                     <div className="session-info">
-                        <div className="icon-container">
+                        <div className={"icon-container" + (session.current ? " icon-current" : "")}>
                             <Icon path={getIconFromDevice(parser.setUA(session.userAgent).getDevice().type)} />
                         </div>
                         <div className="session-details">
@@ -60,11 +60,12 @@ export const Sessions = () => {
                                 {parser.setUA(session.userAgent).getBrowser().name} {parser.setUA(session.userAgent).getBrowser().version}
                                 &nbsp;on {parser.setUA(session.userAgent).getOS().name} {parser.setUA(session.userAgent).getOS().version}
                             </h2>
-                            <p>Last activity: {new Date(session.lastActivity).toLocaleString()} from {session.ip}</p>
+                            {!session.current && <p>Last activity: {new Date(session.lastActivity).toLocaleString()} from {session.ip}</p>}
+                            {session.current && <p>Current session</p>}
                         </div>
                     </div>
                     <div className="session-actions">
-                        <button className="btn btn-danger" onClick={() => logout(session.id)}>Logout</button>
+                        <button className="btn btn-danger" onClick={() => logout(session.id)}>{session.current ? "Logout" : "Revoke"}</button>
                     </div>
                 </div>
             ))}
