@@ -1,13 +1,40 @@
 import IconInput from "@/common/components/IconInput";
 import "./styles.sass";
 import { mdiAccountCircleOutline } from "@mdi/js";
-import { useContext } from "react";
+import { useContext, useEffect, useState } from "react";
 import { UserContext } from "@/common/contexts/UserContext.jsx";
 import Button from "@/common/components/Button";
+import { patchRequest } from "@/common/utils/RequestUtil.js";
 
 export const Account = () => {
 
-    const { user } = useContext(UserContext);
+    const { user, login } = useContext(UserContext);
+
+    const [updatedField, setUpdatedField] = useState(null);
+
+    const [firstName, setFirstName] = useState(user?.firstName);
+    const [lastName, setLastName] = useState(user?.lastName);
+
+    const updateName = (config) => {
+        if (config.firstName && config.firstName === user.firstName) return;
+        if (config.lastName && config.lastName === user.lastName) return;
+
+        patchRequest(`accounts/name`, config)
+            .then(() => {
+                login();
+                setUpdatedField(Object.keys(config)[0]);
+
+                setTimeout(() => {
+                    setUpdatedField(null);
+                }, 1500);
+            })
+            .catch(err => console.error(err));
+    }
+
+    useEffect(() => {
+        setFirstName(user?.firstName);
+        setLastName(user?.lastName);
+    }, [user]);
 
     return (
         <div className="account-page">
@@ -15,15 +42,19 @@ export const Account = () => {
                 <h2>Account name</h2>
                 <div className="section-inner">
                     <div className="form-group">
-                        <label htmlFor="name">First name</label>
+                        <label htmlFor="firstName">First name</label>
                         <IconInput icon={mdiAccountCircleOutline} placeholder="First name"
-                                   value={user?.firstName} />
+                                      name="firstName" customClass={updatedField === "firstName" ? " fd-updated" : ""}
+                                   value={firstName} setValue={setFirstName}
+                                   onBlur={(event) => updateName({ firstName: event.target.value })}   />
                     </div>
 
                     <div className="form-group">
-                        <label htmlFor="name">Last name</label>
-                        <IconInput icon={mdiAccountCircleOutline} placeholder="Last name"
-                                   value={user?.lastName} />
+                        <label htmlFor="lastName">Last name</label>
+                        <IconInput icon={mdiAccountCircleOutline} placeholder="Last name" name="lastName"
+                                      value={lastName} setValue={setLastName}
+                                        customClass={updatedField === "lastName" ? " fd-updated" : ""}
+                                   onBlur={(event) => updateName({ lastName: event.target.value })} />
                     </div>
                 </div>
             </div>
