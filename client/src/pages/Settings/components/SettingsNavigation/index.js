@@ -1,0 +1,1 @@
+export {SettingsNavigation as default} from "./SettingsNavigation.jsx";
