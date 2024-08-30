@@ -4,7 +4,7 @@ const { listSessions, destroySession } = require("../controllers/session");
 const app = Router();
 
 app.get("/list", async (req, res) => {
-    res.json(await listSessions(req.user.id));
+    res.json(await listSessions(req.user.id, req.session.id));
 });
 
 app.delete("/:id", async (req, res) => {
