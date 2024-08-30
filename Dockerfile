@@ -2,11 +2,11 @@ FROM node:18 AS client-builder
 
 WORKDIR /app/client
 
-COPY client/package.json client/yarn.lock ./
-RUN yarn install
+COPY client/package.json ./
+RUN npm install
 
 COPY client/ .
-RUN yarn run build
+RUN npm run build
 
 FROM node:18
 
@@ -38,7 +38,7 @@ WORKDIR /app
 
 COPY --from=client-builder /app/client/dist ./dist
 
-COPY package.json yarn.lock ./
+COPY package.json ./
 RUN npm install
 
 COPY server/ server/
