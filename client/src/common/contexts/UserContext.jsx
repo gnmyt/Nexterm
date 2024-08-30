@@ -35,7 +35,6 @@ export const UserProvider = ({ children }) => {
                 setSessionToken(null);
                 localStorage.removeItem("sessionToken");
             }
-            return;
         }
     }
 
