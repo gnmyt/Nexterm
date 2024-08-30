@@ -1,0 +1,36 @@
+@import "@/common/styles/colors"
+
+.two-factor-dialog
+  display: flex
+  align-items: center
+  gap: 2rem
+  user-select: none
+  padding: 0.5rem 1rem
+
+  .info-area
+    display: flex
+    flex-direction: column
+    gap: 1rem
+    width: 25rem
+    padding: 1rem 0
+    overflow-wrap: break-word
+
+    h1, p
+      margin: 0
+
+    .totp-code
+      user-select: text
+      color: $primary
+
+
+  .setup-error
+    border: 1px solid $error
+
+  .action-row
+    display: flex
+    gap: 1rem
+
+  .qr-code
+    padding: 0.5rem
+    border-radius: 0.5rem
+    background-color: #fff
