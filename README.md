@@ -19,6 +19,10 @@
 
 The open source server management software for SSH, VNC & RDP
 
+## 🚀 Run preview
+
+You can run a preview of Nexterm by clicking [here](https://docs.nexterm.dev/preview).
+
 ## License
 
 Distributed under the MIT license. See `LICENSE` for more information.
