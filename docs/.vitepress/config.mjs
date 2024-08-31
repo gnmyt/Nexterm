@@ -17,6 +17,9 @@ export default defineConfig({
         }],
         ["meta", { property: "og:site_name", content: "Nexterm" }],
         ["meta", { property: "og:image", content: "/thumbnail.png" }],
+        ["meta", { property: "og:image:type", content: "image/png" }],
+        ["meta", { property: "twitter:card", content: "summary_large_image" }],
+        ["meta", { property: "twitter:image:src", content: "/thumbnail.png" }],
         ["meta", { property: "og:url", content: "https://docs.nexterm.dev" }],
     ],
     themeConfig: {
