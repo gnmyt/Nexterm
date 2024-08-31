@@ -136,3 +136,7 @@ dist
 
 # Other data directories
 data/
+
+# Docs
+docs/.vitepress/dist
+docs/.vitepress/cache
