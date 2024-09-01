@@ -50,3 +50,48 @@ module.exports.openVNCConsole = async (server = { ip: "", port: 0 }, node, vmId,
 
     return response.data.data;
 };
+
+module.exports.startPVEServer = async (server = { ip: "", port: 0, username: "", password: "" }, vmId, type) => {
+    const ticket = await this.createTicket(server, server.username, server.password);
+    const node = await this.getPrimaryNode(server, ticket);
+
+    const response = await axios.post(`https://${server.ip}:${server.port}/api2/json/nodes/${node.node}/${type}/${vmId}/status/start`, {}, {
+        httpsAgent: new https.Agent({ rejectUnauthorized: false }),
+        headers: {
+            Cookie: `PVEAuthCookie=${ticket.ticket}`,
+            CSRFPreventionToken: ticket.CSRFPreventionToken,
+        },
+    });
+
+    return response.data.data;
+}
+
+module.exports.stopPVEServer = async (server = { ip: "", port: 0, username: "", password: "" },  vmId, type) => {
+    const ticket = await this.createTicket(server, server.username, server.password);
+    const node = await this.getPrimaryNode(server, ticket);
+
+    const response = await axios.post(`https://${server.ip}:${server.port}/api2/json/nodes/${node.node}/${type}/${vmId}/status/stop`, {}, {
+        httpsAgent: new https.Agent({ rejectUnauthorized: false }),
+        headers: {
+            Cookie: `PVEAuthCookie=${ticket.ticket}`,
+            CSRFPreventionToken: ticket.CSRFPreventionToken,
+        },
+    });
+
+    return response.data.data;
+}
+
+module.exports.shutdownPVEServer = async (server = { ip: "", port: 0, username: "", password: "" },  vmId, type) => {
+    const ticket = await this.createTicket(server, server.username, server.password);
+    const node = await this.getPrimaryNode(server, ticket);
+
+    const response = await axios.post(`https://${server.ip}:${server.port}/api2/json/nodes/${node.node}/${type}/${vmId}/status/shutdown`, {}, {
+        httpsAgent: new https.Agent({ rejectUnauthorized: false }),
+        headers: {
+            Cookie: `PVEAuthCookie=${ticket.ticket}`,
+            CSRFPreventionToken: ticket.CSRFPreventionToken,
+        },
+    });
+
+    return response.data.data;
+}
