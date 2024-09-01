@@ -34,7 +34,7 @@ const applyRenameState = (folderId) => (entry) => {
     return entry;
 }
 
-export const ServerList = ({setServerDialogOpen, setCurrentFolderId, setEditServerId, connectToServer}) => {
+export const ServerList = ({setServerDialogOpen, setCurrentFolderId, setEditServerId, connectToServer, connectToPVEServer}) => {
     const { servers } = useContext(ServerContext);
     const [search, setSearch] = useState("");
     const [contextMenuPosition, setContextMenuPosition] = useState(null);
@@ -83,7 +83,7 @@ export const ServerList = ({setServerDialogOpen, setCurrentFolderId, setEditServ
                 {servers && servers.length >= 1 && (
                     <div className="servers" onContextMenu={handleContextMenu}>
                         <ServerEntries entries={renameStateServers} setRenameStateId={setRenameStateId}
-                                       nestedLevel={0} connectToServer={connectToServer} />
+                                       nestedLevel={0} connectToServer={connectToServer} connectToPVEServer={connectToPVEServer} />
                     </div>
                 )}
                 {servers && servers.length === 0 && (
