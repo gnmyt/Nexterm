@@ -1,8 +1,11 @@
 const PVEServer = require("../models/PVEServer");
 const axios = require("axios");
 const { Agent } = require("https");
+const { createTicket } = require("../controllers/pve");
 
 let timer = null;
+
+
 
 module.exports.updatePVEServerResources = async (accountId, serverId) => {
     const server = await PVEServer.findOne({ where: { accountId: accountId, id: serverId } });
@@ -10,10 +13,14 @@ module.exports.updatePVEServerResources = async (accountId, serverId) => {
     if (server === null) return false;
 
     try {
+        const ticket = await createTicket({ ip: server.ip, port: server.port }, server.username, server.password);
+
         const { data } = await axios.get(`https://${server.ip}:${server.port}/api2/json/cluster/resources?type=vm`, {
             timeout: 3000,
             httpsAgent: new Agent({ rejectUnauthorized: false }),
-            headers: { Authorization: `PVEAPIToken=${server.token}` },
+            headers: {
+                Cookie: `PVEAuthCookie=${ticket.ticket}`,
+            }
         });
 
         const resources = data.data.map(resource => ({

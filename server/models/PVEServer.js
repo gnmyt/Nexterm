@@ -22,7 +22,11 @@ module.exports = db.define("pve_servers", {
         type: Sequelize.INTEGER,
         allowNull: false,
     },
-    token: {
+    username: {
+        type: Sequelize.STRING,
+        allowNull: false,
+    },
+    password: {
         type: Sequelize.STRING,
         allowNull: false,
     },

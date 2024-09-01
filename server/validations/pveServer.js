@@ -5,7 +5,8 @@ module.exports.createPVEServerValidation = Joi.object({
     folderId: Joi.number().required(),
     ip: Joi.string().required(),
     port: Joi.number().required(),
-    token: Joi.string().required(),
+    username: Joi.string().required(),
+    password: Joi.string().required(),
 });
 
 module.exports.updatePVEServerValidation = Joi.object({
@@ -13,5 +14,6 @@ module.exports.updatePVEServerValidation = Joi.object({
     folderId: Joi.number().optional(),
     ip: Joi.string().optional(),
     port: Joi.number().optional(),
-    token: Joi.string().optional(),
+    username: Joi.string().optional(),
+    password: Joi.string().optional(),
 });
