@@ -25,6 +25,13 @@ export const Servers = () => {
         setActiveSessionId(sessionId);
     }
 
+    const connectToPVEServer = (serverId, containerId) => {
+        const sessionId = "session-" + (Math.random().toString(36).substring(2, 15))
+        setActiveSessions(activeSessions => [...activeSessions, {server: serverId, containerId: containerId, id: sessionId}]);
+
+        setActiveSessionId(sessionId);
+    }
+
     const disconnectFromServer = (sessionId) => {
         setActiveSessions(activeSessions => {
             const newSessions = activeSessions.filter(session => session.id !== sessionId);
@@ -50,6 +57,7 @@ export const Servers = () => {
             <ServerDialog open={serverDialogOpen} onClose={closeDialog} currentFolderId={currentFolderId}
                             editServerId={editServerId}/>
             <ServerList setServerDialogOpen={() => setServerDialogOpen(true)} connectToServer={connectToServer}
+                        connectToPVEServer={connectToPVEServer}
                         setCurrentFolderId={setCurrentFolderId} setEditServerId={setEditServerId}/>
             {activeSessions.length === 0 &&<div className="welcome-area">
                 <div className="area-left">
