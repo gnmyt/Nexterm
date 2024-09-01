@@ -66,7 +66,7 @@ module.exports.startPVEUpdater = () => {
 
     this.updatePVE();
 
-    timer = setInterval(this.updatePVE, 60000);
+    timer = setInterval(this.updatePVE, 1000 * 60 * 60); // every hour
 };
 
 module.exports.stopPVEUpdater = () => {
