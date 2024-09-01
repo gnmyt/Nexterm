@@ -19,6 +19,31 @@ export const ServerProvider = ({ children }) => {
         }
     }
 
+    const getPVEServerById = (serverId, entries) => {
+        if (!entries) entries = servers;
+        for (const server of entries) {
+            if (server.id === parseInt(serverId) && server.type === "pve-server") {
+                return server;
+            } else if (server.type === "folder") {
+                const result = getPVEServerById(serverId, server.entries);
+                if (result) {
+                    return result;
+                }
+            }
+        }
+        return null;
+    }
+
+    const getPVEContainerById = (serverId, containerId) => {
+        const pveServer = getPVEServerById(serverId);
+        if (!pveServer) return null;
+
+        for (const container of pveServer.entries) {
+            if (container.id === parseInt(containerId)) {
+                return container;
+            }
+        }
+    }
 
     const getServerById = (serverId, entries) => {
         if (!entries) entries = servers;
@@ -50,7 +75,7 @@ export const ServerProvider = ({ children }) => {
     }, [user]);
 
     return (
-        <ServerContext.Provider value={{servers, loadServers, getServerById}}>
+        <ServerContext.Provider value={{servers, loadServers, getServerById, getPVEServerById, getPVEContainerById}}>
             {children}
         </ServerContext.Provider>
     )
