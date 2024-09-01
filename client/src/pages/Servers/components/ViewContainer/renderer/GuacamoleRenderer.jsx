@@ -12,9 +12,18 @@ const GuacamoleRenderer = ({ session, disconnectFromServer, pve }) => {
             const displayElement = clientRef.current.getDisplay().getElement();
             const width = ref.current.clientWidth;
             const height = ref.current.clientHeight;
-            if (displayElement.clientWidth !== width || displayElement.clientHeight !== height) {
+
+            if (displayElement.clientWidth !== width || displayElement.clientHeight !== height)
                 clientRef.current.sendSize(width, height);
-            }
+
+            const scale = Math.min(width / displayElement.clientWidth, height / displayElement.clientHeight);
+
+            displayElement.style.transform = `scale(${scale})`;
+            displayElement.style.transformOrigin = "top left";
+
+            displayElement.style.position = "absolute";
+            displayElement.style.left = `${(width - displayElement.clientWidth * scale) / 2}px`;
+            displayElement.style.top = `${(height - displayElement.clientHeight * scale) / 2}px`;
         }
     };
 
