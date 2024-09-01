@@ -42,12 +42,19 @@ module.exports.editPVEServer = async (accountId, serverId, configuration) => {
     await PVEServer.update(configuration, { where: { id: serverId } });
 };
 
-module.exports.getPVEServer = async (accountId, serverId) => {
+module.exports.getPVEServerUnsafe = async (accountId, serverId) => {
     const server = await PVEServer.findOne({ where: { accountId: accountId, id: serverId } });
 
     if (server === null) {
         return { code: 401, message: "Server does not exist" };
     }
 
-    return { ...server, password: undefined };
+    return { ...server };
 };
+
+module.exports.getPVEServer = async (accountId, serverId) => {
+    const server = await this.getPVEServerUnsafe(accountId, serverId);
+    if (server.code) return server;
+
+    return { ...server, password: undefined };
+}
