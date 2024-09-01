@@ -33,7 +33,7 @@ const ServerEntries = ({ entries, nestedLevel, setRenameStateId, connectToServer
                     );
                 } else if (entry.type === "pve-server") {
                     return (
-                        <PVEObject name={entry.name} nestedLevel={nestedLevel} key={"pve"+entry.id}
+                        <PVEObject name={entry.name} nestedLevel={nestedLevel} key={"pve"+entry.id} online={entry.online}
                                    id={entry.id} entries={entry.entries} connectToPVEServer={connectToPVEServer} />
                     );
                 }

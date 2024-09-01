@@ -27,7 +27,8 @@ export const Servers = () => {
 
     const connectToPVEServer = (serverId, containerId) => {
         const sessionId = "session-" + (Math.random().toString(36).substring(2, 15))
-        setActiveSessions(activeSessions => [...activeSessions, {server: serverId, containerId: containerId, id: sessionId}]);
+        setActiveSessions(activeSessions => [...activeSessions, {server: serverId.toString().replace("pve-", ""),
+            containerId: containerId.toString().split("-")[containerId.toString().split("-").length - 1], id: sessionId}]);
 
         setActiveSessionId(sessionId);
     }

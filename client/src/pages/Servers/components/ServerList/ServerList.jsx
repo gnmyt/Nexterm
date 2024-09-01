@@ -96,7 +96,7 @@ export const ServerList = ({setServerDialogOpen, setCurrentFolderId, setEditServ
                     <ContextMenu position={contextMenuPosition} type={contextClickedType} id={contextClickedId}
                                     setRenameStateId={setRenameStateId} setServerDialogOpen={setServerDialogOpen}
                                     setCurrentFolderId={setCurrentFolderId} setEditServerId={setEditServerId}
-                                 connectToServer={connectToServer} />
+                                 connectToServer={connectToServer} connectToPVEServer={connectToPVEServer} />
                 )}
             </div>
         </div>
