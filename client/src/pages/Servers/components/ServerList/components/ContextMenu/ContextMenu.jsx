@@ -12,16 +12,17 @@ import {
 import { deleteRequest, postRequest, putRequest } from "@/common/utils/RequestUtil.js";
 import { ServerContext } from "@/common/contexts/ServerContext.jsx";
 import { useContext } from "react";
+import ProxmoxLogo from "./assets/proxmox.png";
 
 export const ContextMenu = ({
                                 position, id, type, setRenameStateId, setServerDialogOpen, setCurrentFolderId,
-                                setEditServerId, connectToServer, connectToPVEServer,
+                                setEditServerId, connectToServer, connectToPVEServer, setProxmoxDialogOpen,
                             }) => {
 
     const { loadServers, getServerById, getPVEServerById, getPVEContainerById } = useContext(ServerContext);
 
-    const server = type === "server-object" ? getServerById(id) : type === "pve-object"
-        ? getPVEServerById(id.split("-")[1]) : getPVEContainerById(id.split("-")[1], id.split("-")[2]);
+    const server = id ? type === "server-object" ? getServerById(id) : type === "pve-object"
+        ? getPVEServerById(id.split("-")[1]) : getPVEContainerById(id.split("-")[1], id.split("-")[2]) : null;
 
     const createFolder = () => {
         putRequest("folders", {
@@ -41,6 +42,11 @@ export const ContextMenu = ({
         setServerDialogOpen();
     };
 
+    const createPVEServer = () => {
+        setCurrentFolderId(id);
+        setProxmoxDialogOpen();
+    };
+
     const connect = () => {
         if (type === "pve-entry") {
             connectToPVEServer(id.split("-")[1], id.split("-")[2]);
@@ -55,6 +61,11 @@ export const ContextMenu = ({
         setServerDialogOpen();
     };
 
+    const editPVEServer = () => {
+        setEditServerId(id);
+        setProxmoxDialogOpen();
+    }
+
     const postPVEAction = (type) => {
         const serverType = server?.type === "pve-qemu" ? "qemu" : "lxc";
         postRequest("pve-servers/" + serverType + "/" + id.split("-")[1] + "/" + server?.id + "/" + type)
@@ -63,7 +74,7 @@ export const ContextMenu = ({
 
     const deletePVEServer = () => {
         deleteRequest("pve-servers/" + id.split("-")[1]).then(loadServers);
-    }
+    };
 
     return (
         <div className="context-menu" style={{ top: position.y, left: position.x }}>
@@ -85,6 +96,10 @@ export const ContextMenu = ({
                     <Icon path={mdiServerPlus} />
                     <p>Create Server</p>
                 </div>
+                <div className="context-item" onClick={createPVEServer}>
+                    <img src={ProxmoxLogo} alt="Proxmox" />
+                    <p>Import PVE</p>
+                </div>
             </>}
             {type === "server-object" && <>
                 {server?.identities?.length !== 0 && <div className="context-item" onClick={connect}>
@@ -102,7 +117,7 @@ export const ContextMenu = ({
             </>}
 
             {type === "pve-object" && <>
-                <div className="context-item" onClick={editServer}>
+                <div className="context-item" onClick={editPVEServer}>
                     <Icon path={mdiPencil} />
                     <p>Edit PVE</p>
                 </div>
