@@ -17,21 +17,26 @@ export const loadIcon = (icon) => {
     }
 };
 
-export const ServerObject = ({ id, name, nestedLevel, icon, connectToServer }) => {
+export const ServerObject = ({ id, name, nestedLevel, icon, connectToServer, isPVE }) => {
 
     const { getServerById } = useContext(ServerContext);
 
     const connect = () => {
+        if (isPVE) {
+            connectToServer(id);
+            return;
+        }
+
         const server = getServerById(id);
 
         connectToServer(server.id, server.identities[0]);
     }
 
     return (
-        <div className="server-object" style={{ paddingLeft: `${15 + (nestedLevel * 15)}px` }} data-id={id}
+        <div className={(isPVE ? "pve-object " : "") + "server-object"} style={{ paddingLeft: `${15 + (nestedLevel * 15)}px` }} data-id={id}
              onDoubleClick={connect}>
-            <div className="system-icon">
-                <Icon path={loadIcon(icon)} />
+            <div className={"system-icon " + (isPVE ? " pve-icon" : "")}>
+                <Icon path={isPVE ? icon : loadIcon(icon)} />
             </div>
             <p>{name}</p>
         </div>
