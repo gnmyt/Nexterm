@@ -26,6 +26,9 @@ export const ViewContainer = ({activeSessions, activeSessionId, setActiveSession
                                 <GuacamoleRenderer session={session} disconnectFromServer={disconnectFromServer} />}
                             {server.protocol === "ssh" && <XtermRenderer session={session} disconnectFromServer={disconnectFromServer} />}
 
+                            {isPVE && server.type === "pve-qemu" &&
+                                <GuacamoleRenderer session={session} disconnectFromServer={disconnectFromServer} pve />}
+
                             {isPVE && (server.type === "pve-shell" || server.type === "pve-lxc") &&
                                 <XtermRenderer session={session} disconnectFromServer={disconnectFromServer} pve />}
                         </div>
