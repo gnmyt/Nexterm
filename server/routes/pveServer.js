@@ -3,6 +3,7 @@ const { validateSchema } = require("../utils/schema");
 const { getPVEServer, createPVEServer, deletePVEServer, editPVEServer, getPVEServerUnsafe } = require("../controllers/pveServer");
 const { createPVEServerValidation, updatePVEServerValidation } = require("../validations/pveServer");
 const { startPVEServer, shutdownPVEServer, stopPVEServer } = require("../controllers/pve");
+const { updatePVEAccount } = require("../utils/pveUpdater");
 
 const app = Router();
 
@@ -88,6 +89,12 @@ app.post("/:type/:pveId/:vmId/shutdown", async (req, res) => {
     }
 
     res.json({ message: "Server got successfully shutdown" });
+});
+
+app.post("/refresh", async (req, res) => {
+    await updatePVEAccount(req.user.id);
+
+    res.json({ message: "Server got successfully refreshed" });
 });
 
 module.exports = app;
