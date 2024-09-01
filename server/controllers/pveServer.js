@@ -49,5 +49,5 @@ module.exports.getPVEServer = async (accountId, serverId) => {
         return { code: 401, message: "Server does not exist" };
     }
 
-    return { ...server, token: undefined };
+    return { ...server, password: undefined };
 };
