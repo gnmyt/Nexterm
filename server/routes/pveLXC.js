@@ -1,46 +1,12 @@
-const Session = require("../models/Session");
-const Account = require("../models/Account");
-const PVEServer = require("../models/PVEServer");
 const { openLXCConsole, getPrimaryNode, createTicket } = require("../controllers/pve");
 const { WebSocket } = require("ws");
+const preparePVE = require("../middlewares/pve");
 
 module.exports = async (ws, req) => {
-    const authHeader = req.query["sessionToken"];
-    const serverId = req.query["serverId"];
-    let containerId = req.query["containerId"];
+    const pveObj = await preparePVE(ws, req);
+    if (!pveObj) return;
 
-    if (!authHeader) {
-        ws.close(4001, "You need to provide the token in the 'sessionToken' parameter");
-        return;
-    }
-
-    if (!serverId) {
-        ws.close(4002, "You need to provide the serverId in the 'serverId' parameter");
-        return;
-    }
-
-    if (!containerId) {
-        containerId = "0";
-    }
-
-    req.session = await Session.findOne({ where: { token: authHeader } });
-    if (req.session === null) {
-        ws.close(4003, "The token is not valid");
-        return;
-    }
-
-    await Session.update({ lastActivity: new Date() }, { where: { id: req.session.id } });
-
-    req.user = await Account.findByPk(req.session.accountId);
-    if (req.user === null) {
-        ws.close(4004, "The token is not valid");
-        return;
-    }
-
-    const server = await PVEServer.findByPk(serverId);
-    if (server === null) return;
-
-    console.log("Authorized connection to pve server " + server.ip + " with container " + containerId);
+    const { server, containerId } = pveObj;
 
     let keepAliveTimer;
 
@@ -96,7 +62,6 @@ module.exports = async (ws, req) => {
             if (message instanceof Buffer) message = message.toString();
 
             if (message !== "OK") ws.send(message);
-
         });
     } catch (error) {
         if (keepAliveTimer) clearInterval(keepAliveTimer);
