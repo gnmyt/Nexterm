@@ -25,6 +25,7 @@ app.use("/api/accounts", require("./routes/account"));
 app.use("/api/auth", require("./routes/auth"));
 
 app.ws("/api/servers/sshd", require("./routes/sshd"));
+app.ws("/api/servers/pve-lxc", require("./routes/pveLXC"));
 
 app.use("/api/servers/guacd", require("./middlewares/guacamole"));
 
