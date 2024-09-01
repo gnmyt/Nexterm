@@ -2,7 +2,7 @@ import { useEffect, useRef, useContext } from "react";
 import Guacamole from "guacamole-common-js";
 import { UserContext } from "@/common/contexts/UserContext.jsx";
 
-const GuacamoleRenderer = ({ session, disconnectFromServer }) => {
+const GuacamoleRenderer = ({ session, disconnectFromServer, pve }) => {
     const ref = useRef(null);
     const { sessionToken } = useContext(UserContext);
     const clientRef = useRef(null);
@@ -12,9 +12,18 @@ const GuacamoleRenderer = ({ session, disconnectFromServer }) => {
             const displayElement = clientRef.current.getDisplay().getElement();
             const width = ref.current.clientWidth;
             const height = ref.current.clientHeight;
-            if (displayElement.clientWidth !== width || displayElement.clientHeight !== height) {
+
+            if (displayElement.clientWidth !== width || displayElement.clientHeight !== height)
                 clientRef.current.sendSize(width, height);
-            }
+
+            const scale = Math.min(width / displayElement.clientWidth, height / displayElement.clientHeight);
+
+            displayElement.style.transform = `scale(${scale})`;
+            displayElement.style.transformOrigin = "top left";
+
+            displayElement.style.position = "absolute";
+            displayElement.style.left = `${(width - displayElement.clientWidth * scale) / 2}px`;
+            displayElement.style.top = `${(height - displayElement.clientHeight * scale) / 2}px`;
         }
     };
 
@@ -23,7 +32,10 @@ const GuacamoleRenderer = ({ session, disconnectFromServer }) => {
             return;
         }
 
-        const tunnel = new Guacamole.WebSocketTunnel(process.env.NODE_ENV === "production" ? "/api/servers/guacd" : "ws://localhost:6989/api/servers/guacd");
+        const urlSuffix = pve ? "pve-qemu" : "guacd";
+
+        const tunnel = new Guacamole.WebSocketTunnel((process.env.NODE_ENV === "production" ? "/api/servers/"
+                : "ws://localhost:6989/api/servers/") + urlSuffix);
         const client = new Guacamole.Client(tunnel);
 
         clientRef.current = client;
@@ -31,7 +43,11 @@ const GuacamoleRenderer = ({ session, disconnectFromServer }) => {
         const displayElement = client.getDisplay().getElement();
         ref.current.appendChild(displayElement);
 
-        client.connect(`sessionToken=${sessionToken}&serverId=${session.server}&identity=${session.identity}`);
+        if (pve) {
+            client.connect(`sessionToken=${sessionToken}&serverId=${session.server}&containerId=${session.containerId}`);
+        } else {
+            client.connect(`sessionToken=${sessionToken}&serverId=${session.server}&identity=${session.identity}`);
+        }
 
         const mouse = new Guacamole.Mouse(displayElement);
         mouse.onmousedown = mouse.onmouseup = mouse.onmousemove = (mouseState) => {

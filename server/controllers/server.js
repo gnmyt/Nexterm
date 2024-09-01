@@ -1,4 +1,5 @@
 const Server = require("../models/Server");
+const PVEServer = require("../models/PVEServer");
 const Identity = require("../models/Identity");
 const Folder = require("../models/Folder");
 const { listFolders } = require("./folder");
@@ -96,6 +97,16 @@ module.exports.listServers = async (accountId) => {
         if (folder) {
             folder.entries.push({ type: "server", id: server.id, icon: server.icon, name: server.name,
                 identities: JSON.parse(server.identities), protocol: server.protocol });
+        }
+    });
+
+    const pveServers = await PVEServer.findAll({ where: { accountId } });
+
+    pveServers.forEach(server => {
+        const folder = folderMap.get(server.folderId);
+        if (folder) {
+            folder.entries.push({ type: "pve-server", id: server.id, name: server.name, online: server.online === 1,
+                entries: JSON.parse(server.resources) });
         }
     });
 

@@ -6,7 +6,7 @@ import { FitAddon } from "xterm-addon-fit/src/FitAddon";
 import "xterm/css/xterm.css";
 import "./styles/xterm.sass";
 
-const XtermRenderer = ({ session, disconnectFromServer }) => {
+const XtermRenderer = ({ session, disconnectFromServer, pve }) => {
     const ref = useRef(null);
     const { sessionToken } = useContext(UserContext);
 
@@ -32,13 +32,21 @@ const XtermRenderer = ({ session, disconnectFromServer }) => {
         window.addEventListener("resize", handleResize);
 
         const protocol = location.protocol === "https:" ? "wss" : "ws";
-        const url = process.env.NODE_ENV === "production" ? `${window.location.host}/api/servers/sshd` : "localhost:6989/api/servers/sshd";
-        const ws = new WebSocket(`${protocol}://${url}?sessionToken=${sessionToken}&serverId=${session.server}&identityId=${session.identity}`);
 
+        let url;
+        let ws;
+
+        if (pve) {
+            url = process.env.NODE_ENV === "production" ? `${window.location.host}/api/servers/pve-lxc` : "localhost:6989/api/servers/pve-lxc";
+            ws = new WebSocket(`${protocol}://${url}?sessionToken=${sessionToken}&serverId=${session.server}&containerId=${session.containerId}`);
+        } else {
+            url = process.env.NODE_ENV === "production" ? `${window.location.host}/api/servers/sshd` : "localhost:6989/api/servers/sshd";
+            ws = new WebSocket(`${protocol}://${url}?sessionToken=${sessionToken}&serverId=${session.server}&identityId=${session.identity}`);
+        }
 
         let interval = setInterval(() => {
             if (ws.readyState === ws.OPEN) handleResize();
-        }, 1000);
+        }, 300);
 
         ws.onopen = () => {
             ws.send(`\x01${term.cols},${term.rows}`);

@@ -32,9 +32,12 @@ const applyRenameState = (folderId) => (entry) => {
         return { ...entry, entries: entry.entries.map(applyRenameState(folderId)) };
     }
     return entry;
-}
+};
 
-export const ServerList = ({setServerDialogOpen, setCurrentFolderId, setEditServerId, connectToServer}) => {
+export const ServerList = ({
+                               setServerDialogOpen, setCurrentFolderId, setProxmoxDialogOpen,
+                               setEditServerId, connectToServer, connectToPVEServer,
+                           }) => {
     const { servers } = useContext(ServerContext);
     const [search, setSearch] = useState("");
     const [contextMenuPosition, setContextMenuPosition] = useState(null);
@@ -83,7 +86,8 @@ export const ServerList = ({setServerDialogOpen, setCurrentFolderId, setEditServ
                 {servers && servers.length >= 1 && (
                     <div className="servers" onContextMenu={handleContextMenu}>
                         <ServerEntries entries={renameStateServers} setRenameStateId={setRenameStateId}
-                                       nestedLevel={0} connectToServer={connectToServer} />
+                                       nestedLevel={0} connectToServer={connectToServer}
+                                       connectToPVEServer={connectToPVEServer} />
                     </div>
                 )}
                 {servers && servers.length === 0 && (
@@ -94,9 +98,10 @@ export const ServerList = ({setServerDialogOpen, setCurrentFolderId, setEditServ
                 )}
                 {contextMenuPosition && (
                     <ContextMenu position={contextMenuPosition} type={contextClickedType} id={contextClickedId}
-                                    setRenameStateId={setRenameStateId} setServerDialogOpen={setServerDialogOpen}
-                                    setCurrentFolderId={setCurrentFolderId} setEditServerId={setEditServerId}
-                                 connectToServer={connectToServer} />
+                                 setRenameStateId={setRenameStateId} setServerDialogOpen={setServerDialogOpen}
+                                 setCurrentFolderId={setCurrentFolderId} setEditServerId={setEditServerId}
+                                 setProxmoxDialogOpen={setProxmoxDialogOpen}
+                                 connectToServer={connectToServer} connectToPVEServer={connectToPVEServer} />
                 )}
             </div>
         </div>

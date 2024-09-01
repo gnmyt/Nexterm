@@ -7,6 +7,7 @@ const db = require("./utils/database");
 const { authenticate } = require("./middlewares/auth");
 const GuacamoleLite = require("guacamole-lite");
 const expressWs = require("express-ws");
+const { startPVEUpdater } = require("./utils/pveUpdater");
 
 require("./utils/folder");  // Create needed data folders
 
@@ -24,12 +25,15 @@ app.use("/api/accounts", require("./routes/account"));
 app.use("/api/auth", require("./routes/auth"));
 
 app.ws("/api/servers/sshd", require("./routes/sshd"));
+app.ws("/api/servers/pve-lxc", require("./routes/pveLXC"));
+app.ws("/api/servers/pve-qemu", require("./routes/pveQEMU"));
 
 app.use("/api/servers/guacd", require("./middlewares/guacamole"));
 
 app.use("/api/sessions", authenticate, require("./routes/session"));
 app.use("/api/folders", authenticate, require("./routes/folder"));
 app.use("/api/servers", authenticate, require("./routes/server"));
+app.use("/api/pve-servers", authenticate, require("./routes/pveServer"));
 app.use("/api/identities", authenticate, require("./routes/identity"));
 
 new GuacamoleLite({ port: 58391 }, { port: 4822 }, {
@@ -52,6 +56,8 @@ db.authenticate().catch(err => {
     console.log("Successfully connected to the database " + (process.env.DB_TYPE === "mysql" ? "server" : "file"));
 
     await db.sync({ alter: true, force: false });
+
+    startPVEUpdater();
 
     app.listen(APP_PORT, () => console.log(`Server listening on port ${APP_PORT}`));
 });
