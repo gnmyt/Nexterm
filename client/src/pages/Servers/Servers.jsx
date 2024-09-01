@@ -58,11 +58,17 @@ export const Servers = () => {
         setEditServerId(null);
     };
 
+    const closePVEDialog = () => {
+        setProxmoxDialogOpen(false);
+        setCurrentFolderId(null);
+        setEditServerId(null);
+    }
+
     return (
         <div className="server-page">
             <ServerDialog open={serverDialogOpen} onClose={closeDialog} currentFolderId={currentFolderId}
                           editServerId={editServerId} />
-            <ProxmoxDialog open={proxmoxDialogOpen} onClose={() => setProxmoxDialogOpen(false)}
+            <ProxmoxDialog open={proxmoxDialogOpen} onClose={closePVEDialog}
                            currentFolderId={currentFolderId}
                            editServerId={editServerId} />
             <ServerList setServerDialogOpen={() => setServerDialogOpen(true)} connectToServer={connectToServer}

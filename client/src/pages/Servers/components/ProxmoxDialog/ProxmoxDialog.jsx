@@ -20,9 +20,9 @@ export const ProxmoxDialog = ({ open, onClose, currentFolderId, editServerId }) 
         putRequest("pve-servers", {
             name, folderId: currentFolderId, ip, port, username, password,
         }).then(async () => {
-            await postRequest("pve-servers/refresh");
-            loadServers();
             onClose();
+            loadServers();
+            await postRequest("pve-servers/refresh");
         }).catch(err => console.error(err));
     };
 
@@ -45,8 +45,14 @@ export const ProxmoxDialog = ({ open, onClose, currentFolderId, editServerId }) 
                 setUsername(server.username);
                 setPassword("********");
             }).catch(err => console.error(err));
+        } else {
+            setName("");
+            setIp("");
+            setPort("8006");
+            setUsername("");
+            setPassword("");
         }
-    }, [editServerId]);
+    }, [editServerId, open]);
 
     const { loadServers } = useContext(ServerContext);
 
