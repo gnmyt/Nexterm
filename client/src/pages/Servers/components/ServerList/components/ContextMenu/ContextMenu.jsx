@@ -135,7 +135,7 @@ export const ContextMenu = ({
                 </div>
             </>}
 
-            {server?.status === "running" && server.type === "pve-qemu" && <>
+            {server?.status === "running" && server.type !== "pve-shell" && <>
                 <div className="context-item" onClick={() => postPVEAction("shutdown")}>
                     <Icon path={mdiPower} />
                     <p>Shutdown</p>
