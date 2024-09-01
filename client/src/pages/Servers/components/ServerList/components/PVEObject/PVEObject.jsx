@@ -24,7 +24,7 @@ export const PVEObject = ({ nestedLevel, name, id, online, entries, connectToPVE
 
     return (
         <>
-            <div className={"pve-object" + (online ? "" : " pve-offline")} style={{ paddingLeft: `${10 + (nestedLevel * 15)}px` }} data-id={"pve-" + id}
+            <div className={"pve-object" + (online ? "" : " pve-offline")} style={{ paddingLeft: `${15 + (nestedLevel * 15)}px` }} data-id={"pve-" + id}
                  onClick={() => setIsOpen(!isOpen)}>
                 <img src={ProxmoxIcon} alt="Proxmox" />
                 <p>{name}</p>
