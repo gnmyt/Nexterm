@@ -1,6 +1,6 @@
 import { createContext, useContext, useEffect, useState } from "react";
 import { UserContext } from "@/common/contexts/UserContext.jsx";
-import { getRequest } from "@/common/utils/RequestUtil.js";
+import { getRequest, postRequest } from "@/common/utils/RequestUtil.js";
 
 export const ServerContext = createContext({});
 
@@ -11,6 +11,8 @@ export const ServerProvider = ({ children }) => {
 
     const loadServers = async () => {
         try {
+            postRequest("pve-servers/refresh").then(() => {});
+
             getRequest("/servers/list").then((response) => {
                 setServers(response);
             });
