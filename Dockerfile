@@ -14,6 +14,11 @@ RUN apk add --no-cache \
     cairo-dev jpeg-dev libpng-dev ossp-uuid-dev ffmpeg-dev \
     pango-dev libvncserver-dev libwebp-dev openssl-dev freerdp-dev freerdp \
     autoconf automake libtool libpulse libogg libc-dev \
+    python3 py3-pip py3-setuptools \
+    && python3 -m venv /opt/venv \
+    && . /opt/venv/bin/activate \
+    && pip install --upgrade pip setuptools \
+    && deactivate \
     && apk add --no-cache --virtual .build-deps build-base git
 
 RUN git clone --depth=1 https://github.com/apache/guacamole-server.git \
