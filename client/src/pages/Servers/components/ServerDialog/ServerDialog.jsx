@@ -27,6 +27,11 @@ export const ServerDialog = ({ open, onClose, currentFolderId, editServerId }) =
     const postIdentity = async (identity) => {
         try {
             console.log(identity);
+
+            if (identity.username === "") identity.username = undefined;
+            if (identity.passphrase === "") identity.passphrase = undefined;
+            if (identity.password === "") identity.password = undefined;
+
             const result = await putRequest("identities", {
                 name: identity.name, username: identity.username, type: identity.authType,
                 password: identity.password, sshKey: identity.sshKey, passphrase: identity.passphrase,
@@ -42,6 +47,10 @@ export const ServerDialog = ({ open, onClose, currentFolderId, editServerId }) =
 
     const patchIdentity = async (identity) => {
         try {
+            if (identity.username === "") identity.username = undefined;
+            if (identity.passphrase === "") identity.passphrase = undefined;
+            if (identity.password === "") identity.password = undefined;
+
             await patchRequest("identities/" + identity.id, {
                 name: identity.name, username: identity.username, type: identity.authType,
                 password: identity.password, sshKey: identity.sshKey, passphrase: identity.passphrase,
@@ -66,7 +75,12 @@ export const ServerDialog = ({ open, onClose, currentFolderId, editServerId }) =
 
     const createServer = async () => {
         try {
-            const { id } = await updateIdentities();
+            let id = null;
+            if (Object.keys(identityUpdates).length > 0) {
+                id = await updateIdentities();
+
+                if (!id) return;
+            }
 
             const result = await putRequest("servers", {
                 name, icon: icon, ip, port, protocol: protocol,
@@ -82,9 +96,10 @@ export const ServerDialog = ({ open, onClose, currentFolderId, editServerId }) =
 
     const patchServer = async () => {
         try {
-            await updateIdentities();
+            const identity = await updateIdentities();
 
-            await patchRequest("servers/" + editServerId, { name, icon: icon, ip, port, protocol: protocol });
+            await patchRequest("servers/" + editServerId, { name, icon: icon, ip, port, protocol: protocol,
+                identities: identity.id ? [identity.id] : [] });
 
             loadServers();
             onClose();
