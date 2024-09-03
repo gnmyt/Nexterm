@@ -29,6 +29,7 @@ export const ServerDialog = ({ open, onClose, currentFolderId, editServerId }) =
             if (identity.username === "") identity.username = undefined;
             if (identity.passphrase === "") identity.passphrase = undefined;
             if (identity.password === "") identity.password = undefined;
+            if (identity.sshKey === null) identity.sshKey = undefined;
 
             const result = await putRequest("identities", {
                 name: identity.name, username: identity.username, type: identity.authType,
@@ -48,6 +49,7 @@ export const ServerDialog = ({ open, onClose, currentFolderId, editServerId }) =
             if (identity.username === "") identity.username = undefined;
             if (identity.passphrase === "") identity.passphrase = undefined;
             if (identity.password === "") identity.password = undefined;
+            if (identity.sshKey === null) identity.sshKey = undefined;
 
             await patchRequest("identities/" + identity.id, {
                 name: identity.name, username: identity.username, type: identity.authType,
@@ -97,7 +99,7 @@ export const ServerDialog = ({ open, onClose, currentFolderId, editServerId }) =
             const identity = await updateIdentities();
 
             await patchRequest("servers/" + editServerId, { name, icon: icon, ip, port, protocol: protocol,
-                identities: identity.id ? [identity.id] : [] });
+                identities: identity?.id ? [identity?.id] : undefined });
 
             loadServers();
             onClose();
