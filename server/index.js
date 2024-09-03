@@ -5,9 +5,9 @@ const express = require("express");
 const path = require("path");
 const db = require("./utils/database");
 const { authenticate } = require("./middlewares/auth");
-const GuacamoleLite = require("guacamole-lite");
 const expressWs = require("express-ws");
 const { startPVEUpdater } = require("./utils/pveUpdater");
+const { startGuacamole } = require("./utils/guacamoleStarter");
 
 require("./utils/folder");  // Create needed data folders
 
@@ -36,11 +36,6 @@ app.use("/api/servers", authenticate, require("./routes/server"));
 app.use("/api/pve-servers", authenticate, require("./routes/pveServer"));
 app.use("/api/identities", authenticate, require("./routes/identity"));
 
-new GuacamoleLite({ port: 58391 }, { port: 4822 }, {
-    crypt: { cypher: "AES-256-CBC", key: module.exports.GUACD_TOKEN },
-    log: { level: 0 },
-});
-
 if (process.env.NODE_ENV === "production") {
     app.use(express.static(path.join(__dirname, "../dist")));
 
@@ -54,6 +49,8 @@ db.authenticate().catch(err => {
     process.exit(111);
 }).then(async () => {
     console.log("Successfully connected to the database " + (process.env.DB_TYPE === "mysql" ? "server" : "file"));
+
+    await startGuacamole();
 
     await db.sync({ alter: true, force: false });
 
