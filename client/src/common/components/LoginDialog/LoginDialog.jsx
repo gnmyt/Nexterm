@@ -22,21 +22,25 @@ export const LoginDialog = ({ open }) => {
     const { updateSessionToken, firstTimeSetup } = useContext(UserContext);
 
     const createAccountFirst = async () => {
-        let resultObj;
         try {
-            resultObj = await request("accounts/register", "POST", { username, password, firstName, lastName });
+            await request("accounts/register", "POST", { username, password, firstName, lastName });
 
-            if (resultObj.code) throw new Error(resultObj.message);
+            return true;
         } catch (error) {
+            if (error.message.toString().includes("^(?=.*[0-9])")) {
+                setError("Password must contain at least one number and one special character");
+                return false;
+            }
+
             setError(error.message || "An error occurred");
-            return;
+            return false;
         }
     }
 
     const submit = async (event) => {
         event.preventDefault();
 
-        if (firstTimeSetup) await createAccountFirst();
+        if (firstTimeSetup && !await createAccountFirst()) return;
 
         let resultObj;
         try {
@@ -60,7 +64,7 @@ export const LoginDialog = ({ open }) => {
 
     useEffect(() => {
         setError("");
-    }, [username, password, code]);
+    }, [username, firstName, lastName, password, code]);
 
     return (
         <DialogProvider disableClosing open={open}>
