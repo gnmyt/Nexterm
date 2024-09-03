@@ -1,7 +1,9 @@
 const WebSocket = require("ws");
+const { getGuacamolePort } = require("../utils/guacamoleStarter");
+
 module.exports = async (ws, token) => {
     try {
-        const guacdUrl = `ws://localhost:58391/?token=${token}`;
+        const guacdUrl = `ws://localhost:${getGuacamolePort()}/?token=${token}`;
         const guacdSocket = new WebSocket(guacdUrl);
 
         ws.on("message", (message) => {
