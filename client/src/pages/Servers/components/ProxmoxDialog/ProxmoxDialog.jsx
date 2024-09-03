@@ -37,7 +37,7 @@ export const ProxmoxDialog = ({ open, onClose, currentFolderId, editServerId }) 
     }
 
     useEffect(() => {
-        if (editServerId) {
+        if (editServerId && open) {
             getRequest(`pve-servers/${editServerId.split("-")[1]}`).then(server => {
                 setName(server.name);
                 setIp(server.ip);

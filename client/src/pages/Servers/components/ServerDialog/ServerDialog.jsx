@@ -6,12 +6,14 @@ import Button from "@/common/components/Button";
 import { getRequest, patchRequest, putRequest } from "@/common/utils/RequestUtil.js";
 import { ServerContext } from "@/common/contexts/ServerContext.jsx";
 import IdentityPage from "@/pages/Servers/components/ServerDialog/pages/IdentityPage.jsx";
+import { IdentityContext } from "@/common/contexts/IdentityContext.jsx";
 
 const tabs = ["Details", "Identities", "Settings"];
 
 export const ServerDialog = ({ open, onClose, currentFolderId, editServerId }) => {
 
     const { loadServers } = useContext(ServerContext);
+    const { loadIdentities } = useContext(IdentityContext);
 
     const [name, setName] = useState("");
     const [icon, setIcon] = useState(null);
@@ -26,13 +28,19 @@ export const ServerDialog = ({ open, onClose, currentFolderId, editServerId }) =
 
     const postIdentity = async (identity) => {
         try {
-            console.log(identity);
+            if (identity.username === "") identity.username = undefined;
+            if (identity.passphrase === "") identity.passphrase = undefined;
+            if (identity.password === "") identity.password = undefined;
+            if (identity.sshKey === null) identity.sshKey = undefined;
+
             const result = await putRequest("identities", {
                 name: identity.name, username: identity.username, type: identity.authType,
                 password: identity.password, sshKey: identity.sshKey, passphrase: identity.passphrase,
             });
 
             if (result.id) setIdentityUpdates({});
+
+            refreshIdentities();
 
             return result;
         } catch (error) {
@@ -42,6 +50,11 @@ export const ServerDialog = ({ open, onClose, currentFolderId, editServerId }) =
 
     const patchIdentity = async (identity) => {
         try {
+            if (identity.username === "") identity.username = undefined;
+            if (identity.passphrase === "") identity.passphrase = undefined;
+            if (identity.password === "") identity.password = undefined;
+            if (identity.sshKey === null) identity.sshKey = undefined;
+
             await patchRequest("identities/" + identity.id, {
                 name: identity.name, username: identity.username, type: identity.authType,
                 password: identity.password, sshKey: identity.sshKey, passphrase: identity.passphrase,
@@ -66,11 +79,18 @@ export const ServerDialog = ({ open, onClose, currentFolderId, editServerId }) =
 
     const createServer = async () => {
         try {
-            const { id } = await updateIdentities();
+            let identity = null;
+            if (Object.keys(identityUpdates).length > 0) {
+                identity = await updateIdentities();
+
+                if (!identity) return;
+
+                loadIdentities();
+            }
 
             const result = await putRequest("servers", {
                 name, icon: icon, ip, port, protocol: protocol,
-                folderId: currentFolderId, identities: id ? [id] : [],
+                folderId: currentFolderId, identities: identity?.id ? [identity?.id] : [],
             });
 
             loadServers();
@@ -82,9 +102,10 @@ export const ServerDialog = ({ open, onClose, currentFolderId, editServerId }) =
 
     const patchServer = async () => {
         try {
-            await updateIdentities();
+            const identity = await updateIdentities();
 
-            await patchRequest("servers/" + editServerId, { name, icon: icon, ip, port, protocol: protocol });
+            await patchRequest("servers/" + editServerId, { name, icon: icon, ip, port, protocol: protocol,
+                identities: identity?.id ? [identity?.id] : undefined });
 
             loadServers();
             onClose();
