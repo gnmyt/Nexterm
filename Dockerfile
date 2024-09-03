@@ -3,7 +3,7 @@ FROM node:18-alpine AS client-builder
 WORKDIR /app/client
 
 COPY client/package.json ./
-RUN npm install --only=production && npm cache clean --force
+RUN npm install
 
 COPY client/ .
 RUN npm run build
