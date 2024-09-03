@@ -26,8 +26,6 @@ export const ServerDialog = ({ open, onClose, currentFolderId, editServerId }) =
 
     const postIdentity = async (identity) => {
         try {
-            console.log(identity);
-
             if (identity.username === "") identity.username = undefined;
             if (identity.passphrase === "") identity.passphrase = undefined;
             if (identity.password === "") identity.password = undefined;
