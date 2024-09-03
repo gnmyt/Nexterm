@@ -12,7 +12,7 @@ module.exports = db.define("identities", {
     },
     username: {
         type: Sequelize.STRING,
-        allowNull: false,
+        allowNull: true,
     },
     type: {
         type: Sequelize.STRING,
