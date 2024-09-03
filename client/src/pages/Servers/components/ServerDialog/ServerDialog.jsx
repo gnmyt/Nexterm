@@ -6,12 +6,14 @@ import Button from "@/common/components/Button";
 import { getRequest, patchRequest, putRequest } from "@/common/utils/RequestUtil.js";
 import { ServerContext } from "@/common/contexts/ServerContext.jsx";
 import IdentityPage from "@/pages/Servers/components/ServerDialog/pages/IdentityPage.jsx";
+import { IdentityContext } from "@/common/contexts/IdentityContext.jsx";
 
 const tabs = ["Details", "Identities", "Settings"];
 
 export const ServerDialog = ({ open, onClose, currentFolderId, editServerId }) => {
 
     const { loadServers } = useContext(ServerContext);
+    const { loadIdentities } = useContext(IdentityContext);
 
     const [name, setName] = useState("");
     const [icon, setIcon] = useState(null);
@@ -37,6 +39,8 @@ export const ServerDialog = ({ open, onClose, currentFolderId, editServerId }) =
             });
 
             if (result.id) setIdentityUpdates({});
+
+            refreshIdentities();
 
             return result;
         } catch (error) {
@@ -75,16 +79,18 @@ export const ServerDialog = ({ open, onClose, currentFolderId, editServerId }) =
 
     const createServer = async () => {
         try {
-            let id = null;
+            let identity = null;
             if (Object.keys(identityUpdates).length > 0) {
-                id = await updateIdentities();
+                identity = await updateIdentities();
 
-                if (!id) return;
+                if (!identity) return;
+
+                loadIdentities();
             }
 
             const result = await putRequest("servers", {
                 name, icon: icon, ip, port, protocol: protocol,
-                folderId: currentFolderId, identities: id ? [id] : [],
+                folderId: currentFolderId, identities: identity?.id ? [identity?.id] : [],
             });
 
             loadServers();
