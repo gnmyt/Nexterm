@@ -18,6 +18,7 @@ const XtermRenderer = ({ session, disconnectFromServer, pve }) => {
             fontSize: 16,
             fontFamily: "monospace",
             theme: { background: "#13181C" },
+            //macOptionIsMeta: true
         });
 
         const fitAddon = new FitAddon();
@@ -59,8 +60,50 @@ const XtermRenderer = ({ session, disconnectFromServer, pve }) => {
             }
         };
 
+        
+        let totpCode = "";
+        let content;
         ws.onmessage = (event) => {
-            term.write(event.data);
+            content = event.data;
+            try {
+               content = JSON.parse(event.data)
+
+              if(content.event == "keyboard-interactive" && content.type == "totp") {
+                term.write(content.prompt)
+                
+                const onDataDisposable = term.onData((data) => {
+                    term.write(data)
+                    totpCode += data;
+                    
+                    // stop listening for the event  
+                    onDataDisposable.dispose();
+
+                });
+
+                const disposable = term.onKey((key) => {
+
+                  if(key.domEvent.key == "Enter") {
+                    console.log("Sending otp:", totpCode);
+
+                    if(totpCode !== "" && Number.isSafeInteger(Number(totpCode))) {
+                      ws.send('{"event": "totp-answer", "value": "' + totpCode + '"}');
+                      totpCode = "";
+                    }
+                    
+                    // stop listening for the event
+                    key.domEvent.stopPropagation()
+                    key.domEvent.preventDefault()
+                    disposable.dispose();
+                  }
+                })
+
+              }
+              content = undefined;
+              return;
+            } catch (e) {
+                term.write(content);
+
+            }    // will only throw json parsing errors -> we don't need it    
         };
 
         term.onData((data) => {

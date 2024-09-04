@@ -5,6 +5,8 @@ const Identity = require("../models/Identity");
 
 const sshd = require("ssh2");
 
+const readline = require('readline');
+
 module.exports = async (ws, req) => {
     const authHeader = req.query["sessionToken"];
     const serverId = req.query["serverId"];
@@ -63,33 +65,90 @@ module.exports = async (ws, req) => {
             username: identity.username,
             privateKey: identity.sshKey,
             passphrase: identity.passphrase,
+            tryKeyboard: true,
+            debug: true
         };
     }
 
     console.log("Authorized connection to server " + server.ip + " with identity " + identity.name);
 
+
+    let rl = readline.createInterface({
+      input: process.stdin,
+      output: process.stdout,
+      terminal: false
+    });
+
+    
+
     let ssh = new sshd.Client();
+
+    /*
+     * Events avaible in ssh2 package:
+     * - "tcp connection"
+     * - "unix connection"
+     * - "x11"
+     * - "timeout"
+     * - "hostkeys"
+     * - "change password"
+     * - "connect"
+     * - "banner"
+     * - "greeting"
+     * - "handshake"
+     */
+
+
+    ssh.on("error", (error) => {
+      if(error.level == "client-timeout") {
+         ws.close(4007, "Client Timeout reached");
+      } else {
+         console.log("error:", error)
+         ws.close(4005, error.message);
+      }
+    });
+
+    let json;
+    ssh.on("keyboard-interactive", (name, instructions, lang, prompts, finish) => {
+
+      if(prompts[0]['prompt'].toString()?.startsWith("Verification code:")) {
+          ws.send('{"event": "keyboard-interactive", "type": "totp", "prompt":"Verification Code: "}')
+          //may be add here later a nice propt for the ui for the verifaction code like termius it is doing 
+
+          ws.onmessage = (event) => {
+
+            try {
+                json = JSON.parse(event.data);
+         
+                if(json.event == "totp-answer" && Number.isSafeInteger(Number(json.value))) {
+                    finish([json.value + ""])
+                }
+            } catch(error) {}   //ignore, because it will only print json parsing errors
+          }
+
+      } else {
+        finish([identity.password]);
+      }
+      
+    });
     try {
         ssh.connect(options);
     } catch (err) {
+        console.log(err)
         ws.close(4004, err.message);
     }
 
-
-    ssh.on("error", (err) => {
-        ws.close(4005, err.message);
-    });
 
     ssh.on("end", () => {
         ws.close(4006, "Connection closed");
     });
 
-    ssh.on("close", () => {
-        ws.close(4007, "Connection closed");
+    ssh.on("exit", () => {
+        ws.close(4006, "Connection exitted");
     });
 
-    ssh.on("keyboard-interactive", (name, instructions, instructionsLang, prompts, finish) => {
-        finish([identity.password]);
+
+    ssh.on("close", () => {
+        ws.close(4007, "Connection closed");
     });
 
     ssh.on("ready", () => {
@@ -101,7 +160,17 @@ module.exports = async (ws, req) => {
 
             stream.on("close", () => ws.close());
 
-            stream.on("data", (data) => ws.send(data.toString()));
+            stream.on("data", (data) => { 
+                let isJSON = false;
+                try {
+                    JSON.parse(data.toString())
+                    isJSON = true;
+                } catch(e) {}
+
+                if(!isJSON) {
+                    ws.send(data.toString())
+                }
+            });
 
             ws.on("message", (data) => {
                 if (data.startsWith("\x01")) {
