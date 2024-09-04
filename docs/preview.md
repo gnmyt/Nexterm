@@ -20,7 +20,7 @@ services:
     restart: always
     volumes:
       - nexterm:/app/data
-    image: germannewsmaker/nexterm:latest
+    image: germannewsmaker/nexterm:1.0.1-OPEN-PREVIEW
 volumes:
   nexterm:
 ```
