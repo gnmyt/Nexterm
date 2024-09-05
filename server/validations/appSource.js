@@ -1,7 +1,7 @@
 const Joi = require('joi');
 
 module.exports.appObject = Joi.object({
-    name: Joi.string().alphanum().required(),
+    name: Joi.string().required(),
     version: Joi.string().required(),
     description: Joi.string().required(),
     icon: Joi.string().uri().required(),
