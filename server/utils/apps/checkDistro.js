@@ -7,8 +7,7 @@ module.exports.checkDistro = (ssh, ws) => {
 
             stream.on("close", () => {
                 const [distro, version] = data.split("\n");
-                console.log(distro, version);
-                ws.send(`\x021${distro},${version}`);
+                ws.send(`\x021,${distro},${version}`);
                 resolve();
             });
 
