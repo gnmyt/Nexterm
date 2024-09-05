@@ -2,8 +2,7 @@ const Session = require("../models/Session");
 const Account = require("../models/Account");
 const Server = require("../models/Server");
 const Identity = require("../models/Identity");
-
-const sshd = require("ssh2");
+const prepareSSH = require("../utils/prepareSSH");
 
 module.exports = async (ws, req) => {
     const authHeader = req.query["sessionToken"];
@@ -48,49 +47,7 @@ module.exports = async (ws, req) => {
     const identity = await Identity.findByPk(identityId || server.identities[0]);
     if (identity === null) return;
 
-    let options;
-    if (identity.type === "password") {
-        options = {
-            host: server.ip,
-            port: server.port,
-            username: identity.username,
-            password: identity.password,
-        };
-    } else if (identity.type === "ssh") {
-        options = {
-            host: server.ip,
-            port: server.port,
-            username: identity.username,
-            privateKey: identity.sshKey,
-            passphrase: identity.passphrase,
-        };
-    }
-
-    console.log("Authorized connection to server " + server.ip + " with identity " + identity.name);
-
-    let ssh = new sshd.Client();
-    try {
-        ssh.connect(options);
-    } catch (err) {
-        ws.close(4004, err.message);
-    }
-
-
-    ssh.on("error", (err) => {
-        ws.close(4005, err.message);
-    });
-
-    ssh.on("end", () => {
-        ws.close(4006, "Connection closed");
-    });
-
-    ssh.on("close", () => {
-        ws.close(4007, "Connection closed");
-    });
-
-    ssh.on("keyboard-interactive", (name, instructions, instructionsLang, prompts, finish) => {
-        finish([identity.password]);
-    });
+    const ssh = await prepareSSH(server, identity, ws);
 
     ssh.on("ready", () => {
         ssh.shell({ term: "xterm-256color" }, (err, stream) => {
