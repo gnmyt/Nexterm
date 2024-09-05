@@ -12,7 +12,7 @@ module.exports.runPostInstallCommand = (ssh, ws, postInstallCommand) => {
     return new Promise((resolve, reject) => {
         ssh.exec(postInstallCommand, (err) => {
             if (err) return reject(new Error("Failed to run post-install command"));
-            ws.send("\x02\x25,Post-install command completed");
+            ws.send("\x026,Post-install command completed");
             resolve();
         });
     });
