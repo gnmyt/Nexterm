@@ -5,8 +5,6 @@ const Identity = require("../models/Identity");
 
 const sshd = require("ssh2");
 
-const readline = require('readline');
-
 module.exports = async (ws, req) => {
     const authHeader = req.query["sessionToken"];
     const serverId = req.query["serverId"];
@@ -71,14 +69,6 @@ module.exports = async (ws, req) => {
     }
 
     console.log("Authorized connection to server " + server.ip + " with identity " + identity.name);
-
-
-    let rl = readline.createInterface({
-      input: process.stdin,
-      output: process.stdout,
-      terminal: false
-    });
-
     
 
     let ssh = new sshd.Client();
