@@ -2,7 +2,7 @@ import "./styles.sass";
 import Button from "@/common/components/Button";
 import { mdiRocketLaunch } from "@mdi/js";
 
-export const AppItem = ({ onClick, icon, version, title, description }) => {
+export const AppItem = ({ onClick, icon, version, title, description, installing }) => {
     return (
         <div className="app-item">
             <div className="app-header">
@@ -19,7 +19,7 @@ export const AppItem = ({ onClick, icon, version, title, description }) => {
             <p>{description}</p>
 
             <div className="action-area">
-                <Button text="Deploy" icon={mdiRocketLaunch} onClick={onClick} />
+                <Button text="Deploy" icon={mdiRocketLaunch} onClick={onClick} disabled={installing} />
             </div>
         </div>
     );
