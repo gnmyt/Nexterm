@@ -3,7 +3,7 @@ module.exports.installDocker = (ssh, ws) => {
         ssh.exec("docker --version && (docker-compose --version || docker compose version)", (err, stream) => {
             let dockerInstalled = false;
 
-            stream.on("data", (data) => {
+            stream.on("data", () => {
                 dockerInstalled = true;
                 ws.send("\x023,Docker and Docker Compose are already installed");
                 resolve();
@@ -15,6 +15,10 @@ module.exports.installDocker = (ssh, ws) => {
                         if (err) {
                             return reject(new Error("Failed to install Docker using the installation script"));
                         }
+
+                        stream.on("data", (data) => {
+                            ws.send("\x01" + data.toString());
+                        });
 
                         stream.on("close", () => {
                             ssh.exec("docker --version && (docker-compose --version || docker compose version)", (err, stream) => {

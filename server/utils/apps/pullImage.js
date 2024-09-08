@@ -39,16 +39,26 @@ module.exports.downloadBaseImage = (ssh, ws, appId) => {
     const folderAppId = appId.replace("/", "_");
 
     return new Promise((resolve, reject) => {
-        ssh.exec(`mkdir /opt/nexterm_apps/${folderAppId}`, (err, stream) => {
+        ssh.exec(`mkdir -p /opt/nexterm_apps/${folderAppId}`, (err, stream) => {
             if (err) return reject(new Error("Failed to create app folder"));
+
+            stream.on("data", (data) => {
+                ws.send("\x01" + data.toString());
+            });
 
             const fileContent = getComposeFile(appId);
             const escapedContent = fileContent.replace(/\\/g, "\\\\").replace(/"/g, "\\\"");
 
-            ssh.exec(`echo "${escapedContent}" > /opt/nexterm_apps/${folderAppId}/docker-compose.yml`, (err, stream) => {
-                if (err) return reject(new Error("Failed to write docker-compose file"));
+            stream.on("close", () => {
+                ssh.exec(`echo "${escapedContent}" > /opt/nexterm_apps/${folderAppId}/docker-compose.yml`, (err, stream) => {
+                    if (err) return reject(new Error("Failed to write docker-compose file"));
 
-                this.pullImage(ssh, ws, appId, resolve, reject);
+                    stream.on("data", (data) => {
+                        ws.send("\x01" + data.toString());
+                    });
+
+                    this.pullImage(ssh, ws, appId, resolve, reject);
+                });
             });
         });
     });
@@ -58,18 +68,20 @@ module.exports.pullImage = (ssh, ws, image, resolve, reject, useStandalone = tru
     ssh.exec(`${useStandalone ? "docker-compose" : "docker compose"} -f /opt/nexterm_apps/${image.replace("/", "_")}/docker-compose.yml pull`, (err, stream) => {
         let layerProgress = {};
 
-        stream.on("data", () => {
+        stream.on("data", (data) => {
+            ws.send("\x01" + data.toString());
         });
 
         stream.on("close", (code) => {
             if (code !== 0 && !useStandalone) return reject(new Error("Failed to pull image"));
             if (code !== 0 && useStandalone) return this.pullImage(ssh, ws, image, resolve, reject, false);
 
-            ws.send("\x025,Image pulled successfully");
+            ws.send("\x024,Image pulled successfully");
             resolve();
         });
 
         stream.stderr.on("data", data => {
+            ws.send("\x01" + data.toString());
             parseDockerPullOutput(layerProgress, data.toString());
 
             const totalProgress = Object.values(layerProgress).reduce((acc, curr) => acc + curr, 0) / Object.keys(layerProgress).length;
