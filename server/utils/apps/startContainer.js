@@ -16,6 +16,10 @@ module.exports.startContainer = startContainer = (ssh, ws, appId, resolve, rejec
             ws.send("\x01" + data.toString());
         });
 
+        stream.stderr.on("data", (data) => {
+            ws.send("\x01" + data.toString());
+        });
+
         stream.on("close", (code) => {
             if (code !== 0) {
                 if (useStandalone) {
