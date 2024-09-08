@@ -1,5 +1,5 @@
 import Button from "@/common/components/Button";
-import { mdiConsoleLine } from "@mdi/js";
+import { mdiConsoleLine, mdiOpenInNew } from "@mdi/js";
 import InstallStep from "@/pages/Apps/components/AppInstaller/components/InstallStep";
 import "./styles.sass";
 import { useContext, useEffect, useState } from "react";
@@ -7,9 +7,11 @@ import { UserContext } from "@/common/contexts/UserContext.jsx";
 import DebianImage from "./os_images/debian.png";
 import LinuxImage from "./os_images/linux.png";
 import LogDialog from "@/pages/Apps/components/AppInstaller/components/LogDialog";
+import { ServerContext } from "@/common/contexts/ServerContext.jsx";
 
-export const AppInstaller = ({ app }) => {
+export const AppInstaller = ({ serverId, app,setInstalling }) => {
 
+    const {retrieveServerById} = useContext(ServerContext);
     const { sessionToken } = useContext(UserContext);
 
     const [logOpen, setLogOpen] = useState(false);
@@ -37,7 +39,7 @@ export const AppInstaller = ({ app }) => {
         const protocol = location.protocol === "https:" ? "wss" : "ws";
 
         const url = process.env.NODE_ENV === "production" ? `${window.location.host}/api/apps/installer` : "localhost:6989/api/apps/installer";
-        const ws = new WebSocket(`${protocol}://${url}?sessionToken=${sessionToken}&serverId=1&appId=${app?.id}`);
+        const ws = new WebSocket(`${protocol}://${url}?sessionToken=${sessionToken}&serverId=${serverId}&appId=${app?.id}`);
 
         ws.onmessage = (event) => {
             const data = event.data.toString();
@@ -75,6 +77,7 @@ export const AppInstaller = ({ app }) => {
 
         ws.onclose = () => {
             setLogContent(logContent => logContent + "Installation finished\n");
+            setInstalling(false);
         }
     };
 
@@ -107,14 +110,22 @@ export const AppInstaller = ({ app }) => {
         setOSImage(null);
         setLogContent("");
 
+        setInstalling(true);
+
         let timer = setTimeout(() => {
             installApp();
         }, 1000);
 
         return () => {
             clearTimeout(timer);
+            setInstalling(false);
         }
     }, [app]);
+
+    const openApp = async () => {
+        const server = await retrieveServerById(serverId);
+        window.open(`http://${server.ip}:${app.port}`);
+    }
 
     return (
         <div className="app-installer">
@@ -139,6 +150,7 @@ export const AppInstaller = ({ app }) => {
 
             <div className="install-actions">
                 <Button text="Logs" icon={mdiConsoleLine} onClick={() => setLogOpen(true)} />
+                {currentStep === steps.length && <Button text="Open" icon={mdiOpenInNew} onClick={openApp} />}
             </div>
         </div>
     );
