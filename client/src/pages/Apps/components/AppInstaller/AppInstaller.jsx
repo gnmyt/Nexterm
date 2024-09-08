@@ -6,10 +6,14 @@ import { useContext, useEffect, useState } from "react";
 import { UserContext } from "@/common/contexts/UserContext.jsx";
 import DebianImage from "./os_images/debian.png";
 import LinuxImage from "./os_images/linux.png";
+import LogDialog from "@/pages/Apps/components/AppInstaller/components/LogDialog";
 
 export const AppInstaller = ({ app }) => {
 
     const { sessionToken } = useContext(UserContext);
+
+    const [logOpen, setLogOpen] = useState(false);
+    const [logContent, setLogContent] = useState("");
 
     const steps = ["Look up Linux distro", "Check permissions", "Install Docker Engine","Download base image",
         "Run pre-install command",  "Start Docker container", "Run post-install command"];
@@ -41,7 +45,7 @@ export const AppInstaller = ({ app }) => {
             const message = data.substring(1);
 
             if (type === "\x01") {
-
+                setLogContent(logContent => logContent + message + "\n");
             } else if (type === "\x02") {
                 let step = parseInt(message.split(",")[0]);
 
@@ -55,15 +59,22 @@ export const AppInstaller = ({ app }) => {
                 if ((step === 4 && !app.preInstallCommand) || (step === 7 && !app.postInstallCommand))
                     step++;
 
+                setLogContent(logContent => logContent + "Step " + step + " completed\n");
+
                 setCurrentStep(step+1);
             } else if (type === "\x03") {
                 setCurrentStep(currentStep => {
                     setFailedStep(currentStep);
+                    setLogContent(logContent => logContent + "Step " + currentStep + " failed: " + message + "\n");
                     return currentStep;
                 });
             } else if (type === "\x04") {
                 setCurrentProgress(parseInt(message));
             }
+        }
+
+        ws.onclose = () => {
+            setLogContent(logContent => logContent + "Installation finished\n");
         }
     };
 
@@ -93,6 +104,8 @@ export const AppInstaller = ({ app }) => {
         setFailedStep(null);
         setCurrentProgress(null);
         setFoundOS(null);
+        setOSImage(null);
+        setLogContent("");
 
         let timer = setTimeout(() => {
             installApp();
@@ -105,13 +118,15 @@ export const AppInstaller = ({ app }) => {
 
     return (
         <div className="app-installer">
+            <LogDialog open={logOpen} onClose={() => setLogOpen(false)} content={logContent} />
             <div className="install-header">
                 <div className="app-img">
                     <img src={app.icon} alt={app.name} />
                 </div>
                 <div className="install-info">
                     <h2>{app.name}</h2>
-                    <p>Deploying...</p>
+                    <p>{failedStep ? "Deployment failed" :
+                        currentStep === steps.length ? "Deployment completed" : "Deploying..."}</p>
                 </div>
             </div>
 
@@ -123,7 +138,7 @@ export const AppInstaller = ({ app }) => {
             </div>
 
             <div className="install-actions">
-                <Button text="Logs" icon={mdiConsoleLine} onClick={() => installApp()} />
+                <Button text="Logs" icon={mdiConsoleLine} onClick={() => setLogOpen(true)} />
             </div>
         </div>
     );
