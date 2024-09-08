@@ -1,0 +1,1 @@
+export {InstallStep as default} from "./InstallStep.jsx";
