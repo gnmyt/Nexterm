@@ -8,6 +8,7 @@ import Root from "@/common/layouts/Root.jsx";
 import Servers from "@/pages/Servers";
 import "@/common/styles/main.sass";
 import Settings from "@/pages/Settings";
+import Apps from "@/pages/Apps";
 
 export const GITHUB_URL = "https://github.com/gnmyt/Nexterm";
 
@@ -20,6 +21,7 @@ const App = () => {
                 { path: "/", element: <Navigate to="/servers" /> },
                 { path: "/servers", element: <Servers /> },
                 { path: "/settings/*", element: <Settings/> },
+                { path: "/apps/*", element: <Apps /> }
             ],
         },
     ]);
