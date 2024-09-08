@@ -55,7 +55,7 @@ module.exports = async (ws, req) => {
         return;
     }
 
-    const server = await Server.findByPk(serverId);
+    const server = await Server.findOne({ where: { id: serverId, accountId: req.user.id }});
     if (server === null) {
         ws.close(4006, "The server does not exist");
         return;

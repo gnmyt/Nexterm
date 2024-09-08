@@ -29,9 +29,6 @@ app.ws("/api/servers/sshd", require("./routes/sshd"));
 app.ws("/api/servers/pve-lxc", require("./routes/pveLXC"));
 app.ws("/api/servers/pve-qemu", require("./routes/pveQEMU"));
 
-app.ws("/api/apps/installer", require("./routes/appInstaller"));
-app.use("/api/apps", require("./routes/apps"));
-
 app.use("/api/servers/guacd", require("./middlewares/guacamole"));
 
 app.use("/api/sessions", authenticate, require("./routes/session"));
@@ -39,6 +36,9 @@ app.use("/api/folders", authenticate, require("./routes/folder"));
 app.use("/api/servers", authenticate, require("./routes/server"));
 app.use("/api/pve-servers", authenticate, require("./routes/pveServer"));
 app.use("/api/identities", authenticate, require("./routes/identity"));
+
+app.ws("/api/apps/installer", require("./routes/appInstaller"));
+app.use("/api/apps", authenticate, require("./routes/apps"));
 
 if (process.env.NODE_ENV === "production") {
     app.use(express.static(path.join(__dirname, "../dist")));

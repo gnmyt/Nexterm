@@ -47,7 +47,7 @@ module.exports.authorizeGuacamole = async (req) => {
 
     if (!query.serverId) return;
 
-    const server = await Server.findByPk(query.serverId);
+    const server = await Server.findOne({ where: { id: query.serverId, accountId: req.user.id } });
     if (server === null) return;
 
 

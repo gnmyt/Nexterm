@@ -39,7 +39,7 @@ module.exports = async (ws, req) => {
         return;
     }
 
-    const server = await Server.findByPk(serverId);
+    const server = await Server.findOne({ where: { id: serverId, accountId: req.user.id } });
     if (server === null) return;
 
     if (server.identities.length === 0 && identityId) return;
