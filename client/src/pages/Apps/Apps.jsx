@@ -8,11 +8,15 @@ import { mdiPackageVariant, mdiSignCaution } from "@mdi/js";
 import Icon from "@mdi/react";
 import AppInstaller from "@/pages/Apps/components/AppInstaller";
 import { useLocation, useNavigate } from "react-router-dom";
+import DeployServerDialog from "@/pages/Apps/components/DeployServerDialog";
 
 export const Apps = () => {
-
     const location = useLocation();
     const navigate = useNavigate();
+
+    const [serverDialogOpen, setServerDialogOpen] = useState(false);
+    const [deployAppId, setDeployAppId] = useState(null);
+    const [serverId, setServerId] = useState(null);
 
     const [installing, setInstalling] = useState(false);
     const [selectedApp, setSelectedApp] = useState(null);
@@ -61,9 +65,22 @@ export const Apps = () => {
         reloadList();
     }, [search, location]);
 
+    const deployApp = (id) => {
+        setDeployAppId(id);
+        setServerDialogOpen(true);
+    }
+
+    const startDeployment = (serverId) => {
+        setServerId(serverId);
+        updateSelectedApp(deployAppId);
+        setDeployAppId(null);
+    }
+
     return (
         <div className="apps-page">
             <AppNavigation search={search} setSearch={setSearch} />
+            <DeployServerDialog open={serverDialogOpen} onClose={() => setServerDialogOpen(false)}
+                                onDeploy={(serverId) => startDeployment(serverId)} app={apps.find((app) => app.id === deployAppId)} />
             <div className="app-content">
                 <StoreHeader />
 
@@ -71,7 +88,7 @@ export const Apps = () => {
                     <div className="app-list">
                         {apps.map((app) => {
                             return <AppItem key={app.id} icon={app.icon} id={app.id} description={app.description} installing={installing}
-                                            title={app.name} version={app.version} onClick={() => updateSelectedApp(app.id)} />;
+                                            title={app.name} version={app.version} onClick={() => deployApp(app.id)} />
                         })}
                         {apps.length === 0 && <div className="no-apps">
                             <Icon path={mdiSignCaution} />
@@ -81,7 +98,7 @@ export const Apps = () => {
                     </div>
 
                     <div className="app-details">
-                        {selectedApp !== null && <AppInstaller serverId={1} app={selectedApp} setInstalling={setInstalling} />}
+                        {selectedApp !== null && <AppInstaller serverId={serverId} app={selectedApp} setInstalling={setInstalling} />}
                         {selectedApp === null && <div className="select-app">
                             <Icon path={mdiPackageVariant} />
                             <h3>Select app to continue</h3>
