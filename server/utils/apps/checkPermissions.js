@@ -3,15 +3,16 @@ const checkSudoPermissions = (ssh, ws, identity) => {
         ssh.exec("sudo -n true", (err) => {
             if (!err) {
                 ws.send(`\x022,Sudo access granted`);
-                return resolve();
+                return resolve("sudo ");
             }
 
             ssh.exec(`echo ${identity.password} | sudo -S true`, (err) => {
                 if (err) {
                     return reject(new Error("Failed to get sudo permissions"));
                 }
+
                 ws.send(`\x022,Sudo access granted`);
-                resolve();
+                resolve(`echo ${identity.password} | sudo -S `);
             });
         });
     });
@@ -26,7 +27,7 @@ module.exports.checkPermissions = (ssh, ws, identity) => {
                 const userId = data.toString().trim();
                 if (userId === "0") {
                     ws.send(`\x022,Root permissions detected`);
-                    resolve();
+                    resolve("");
                 } else {
                     checkSudoPermissions(ssh, ws, identity).then(resolve).catch(reject);
                 }

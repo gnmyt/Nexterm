@@ -82,26 +82,29 @@ module.exports = async (ws, req) => {
 
     ssh.on("ready", async () => {
         try {
+
+
             await checkDistro(ssh, ws);
             await wait();
-            await checkPermissions(ssh, ws, identity);
+            const cmdPrefix = await checkPermissions(ssh, ws, identity);
+
             await wait();
-            await installDocker(ssh, ws);
+            await installDocker(ssh, ws, cmdPrefix);
 
             if (app.preInstallCommand) {
                 await wait();
-                await runPreInstallCommand(ssh, ws, replaceCommandVariables(app.preInstallCommand, app.id));
+                await runPreInstallCommand(ssh, ws, replaceCommandVariables(app.preInstallCommand, app.id), cmdPrefix);
             }
 
             await wait();
-            await downloadBaseImage(ssh, ws, app.id);
+            await downloadBaseImage(ssh, ws, app.id, cmdPrefix);
 
             await wait();
-            await startContainer(ssh, ws, app.id);
+            await startContainer(ssh, ws, app.id, undefined, undefined, true, cmdPrefix);
 
             if (app.postInstallCommand) {
                 await wait();
-                await runPostInstallCommand(ssh, ws, replaceCommandVariables(app.postInstallCommand, app.id));
+                await runPostInstallCommand(ssh, ws, replaceCommandVariables(app.postInstallCommand, app.id), cmdPrefix);
             }
 
             ssh.end();

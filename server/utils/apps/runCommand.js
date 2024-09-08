@@ -1,6 +1,6 @@
-module.exports.runPreInstallCommand = (ssh, ws, preInstallCommand) => {
+module.exports.runPreInstallCommand = (ssh, ws, preInstallCommand, cmdPrefix) => {
     return new Promise((resolve, reject) => {
-        ssh.exec(preInstallCommand, (err, stream) => {
+        ssh.exec(cmdPrefix + preInstallCommand, (err, stream) => {
             if (err) return reject(new Error("Failed to run pre-install command"));
 
             stream.on("data", (data) => {
@@ -13,9 +13,9 @@ module.exports.runPreInstallCommand = (ssh, ws, preInstallCommand) => {
     });
 }
 
-module.exports.runPostInstallCommand = (ssh, ws, postInstallCommand) => {
+module.exports.runPostInstallCommand = (ssh, ws, postInstallCommand, cmdPrefix) => {
     return new Promise((resolve, reject) => {
-        ssh.exec(postInstallCommand, (err, stream) => {
+        ssh.exec(cmdPrefix + postInstallCommand, (err, stream) => {
             if (err) return reject(new Error("Failed to run post-install command"));
 
             stream.on("data", (data) => {

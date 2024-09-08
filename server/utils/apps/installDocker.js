@@ -1,6 +1,6 @@
-module.exports.installDocker = (ssh, ws) => {
+module.exports.installDocker = (ssh, ws, cmdPrefix) => {
     return new Promise((resolve, reject) => {
-        ssh.exec("docker --version && (docker-compose --version || docker compose version)", (err, stream) => {
+        ssh.exec(`${cmdPrefix}docker --version && (${cmdPrefix}docker-compose --version || ${cmdPrefix}docker compose version)`, (err, stream) => {
             let dockerInstalled = false;
 
             stream.on("data", () => {
@@ -11,7 +11,7 @@ module.exports.installDocker = (ssh, ws) => {
 
             stream.stderr.on("data", () => {
                 if (!dockerInstalled) {
-                    ssh.exec("curl -fsSL https://get.docker.com | sudo sh", (err, stream) => {
+                    ssh.exec(`curl -fsSL https://get.docker.com | ${cmdPrefix}sh`, (err, stream) => {
                         if (err) {
                             return reject(new Error("Failed to install Docker using the installation script"));
                         }
@@ -21,7 +21,7 @@ module.exports.installDocker = (ssh, ws) => {
                         });
 
                         stream.on("close", () => {
-                            ssh.exec("docker --version && (docker-compose --version || docker compose version)", (err, stream) => {
+                            ssh.exec(`${cmdPrefix}docker --version && (${cmdPrefix}docker-compose --version || ${cmdPrefix}docker compose version)`, (err, stream) => {
                                 if (err) {
                                     return reject(new Error("Failed to verify Docker installation"));
                                 }
