@@ -9,6 +9,8 @@ const { appObject } = require("../validations/appSource");
 let apps = [];
 let refreshTimer;
 
+const OFFICIAL_SOURCE = "https://github.com/gnmyt/Nexterm-AppStore/archive/refs/heads/main.zip";
+
 module.exports.createAppSource = async configuration => {
     const appSource = await AppSource.findOne({ where: { name: configuration.name } });
 
@@ -128,6 +130,14 @@ module.exports.refreshAppSources = async () => {
 
     console.log("Refreshed app sources");
 };
+
+module.exports.insertOfficialSource = async () => {
+    const officialSource = await AppSource.findOne({ where: { name: "official" } });
+
+    if (officialSource !== null) return;
+
+    await AppSource.create({ name: "official", url: OFFICIAL_SOURCE });
+}
 
 module.exports.startAppUpdater = async () => {
     refreshTimer = setInterval(async () => {
