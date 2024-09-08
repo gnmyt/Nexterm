@@ -8,8 +8,9 @@ const { authenticate } = require("./middlewares/auth");
 const expressWs = require("express-ws");
 const { startPVEUpdater } = require("./utils/pveUpdater");
 const { startGuacamole } = require("./utils/guacamoleStarter");
+const { refreshAppSources, startAppUpdater, insertOfficialSource } = require("./controllers/appSource");
 
-require("./utils/folder");  // Create needed data folders
+require("./utils/folder");
 
 process.on("uncaughtException", err => require("./utils/errorHandling")(err));
 
@@ -27,6 +28,9 @@ app.use("/api/auth", require("./routes/auth"));
 app.ws("/api/servers/sshd", require("./routes/sshd"));
 app.ws("/api/servers/pve-lxc", require("./routes/pveLXC"));
 app.ws("/api/servers/pve-qemu", require("./routes/pveQEMU"));
+
+app.ws("/api/apps/installer", require("./routes/appInstaller"));
+app.use("/api/apps", require("./routes/apps"));
 
 app.use("/api/servers/guacd", require("./middlewares/guacamole"));
 
@@ -55,6 +59,12 @@ db.authenticate().catch(err => {
     await db.sync({ alter: true, force: false });
 
     startPVEUpdater();
+
+    startAppUpdater();
+
+    await insertOfficialSource();
+
+    await refreshAppSources();
 
     app.listen(APP_PORT, () => console.log(`Server listening on port ${APP_PORT}`));
 });
