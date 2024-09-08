@@ -9,16 +9,16 @@ import LinuxImage from "./os_images/linux.png";
 import LogDialog from "@/pages/Apps/components/AppInstaller/components/LogDialog";
 import { ServerContext } from "@/common/contexts/ServerContext.jsx";
 
-export const AppInstaller = ({ serverId, app,setInstalling }) => {
+export const AppInstaller = ({ serverId, app, setInstalling }) => {
 
-    const {retrieveServerById} = useContext(ServerContext);
+    const { retrieveServerById } = useContext(ServerContext);
     const { sessionToken } = useContext(UserContext);
 
     const [logOpen, setLogOpen] = useState(false);
     const [logContent, setLogContent] = useState("");
 
-    const steps = ["Look up Linux distro", "Check permissions", "Install Docker Engine","Download base image",
-        "Run pre-install command",  "Start Docker container", "Run post-install command"];
+    const steps = ["Look up Linux distro", "Check permissions", "Install Docker Engine", "Download base image",
+        "Run pre-install command", "Start Docker container", "Run post-install command"];
 
     const [foundOS, setFoundOS] = useState(null);
     const [osImage, setOSImage] = useState(null);
@@ -33,7 +33,7 @@ export const AppInstaller = ({ serverId, app,setInstalling }) => {
         }
 
         setOSImage(LinuxImage);
-    }
+    };
 
     const installApp = () => {
         const protocol = location.protocol === "https:" ? "wss" : "ws";
@@ -63,7 +63,7 @@ export const AppInstaller = ({ serverId, app,setInstalling }) => {
 
                 setLogContent(logContent => logContent + "Step " + step + " completed\n");
 
-                setCurrentStep(step+1);
+                setCurrentStep(step + 1);
             } else if (type === "\x03") {
                 setCurrentStep(currentStep => {
                     setFailedStep(currentStep);
@@ -73,12 +73,12 @@ export const AppInstaller = ({ serverId, app,setInstalling }) => {
             } else if (type === "\x04") {
                 setCurrentProgress(parseInt(message));
             }
-        }
+        };
 
         ws.onclose = () => {
             setLogContent(logContent => logContent + "Installation finished\n");
             setInstalling(false);
-        }
+        };
     };
 
     const getTypeByIndex = (index) => {
@@ -95,7 +95,7 @@ export const AppInstaller = ({ serverId, app,setInstalling }) => {
         if (index === currentStep - 1) return "loading";
 
         return "soon";
-    }
+    };
 
     const isSkip = (index) => {
         if (index === 4 && !app.preInstallCommand) return true;
@@ -119,13 +119,13 @@ export const AppInstaller = ({ serverId, app,setInstalling }) => {
         return () => {
             clearTimeout(timer);
             setInstalling(false);
-        }
+        };
     }, [app]);
 
     const openApp = async () => {
         const server = await retrieveServerById(serverId);
         window.open(`http://${server.ip}:${app.port}`);
-    }
+    };
 
     return (
         <div className="app-installer">
@@ -144,7 +144,8 @@ export const AppInstaller = ({ serverId, app,setInstalling }) => {
             <div className="install-progress">
                 {steps.map((step, index) => {
                     return <InstallStep key={index} progressValue={currentProgress} imgContent={osImage}
-                                        type={getTypeByIndex(index)} text={index === 0 && foundOS ? `Detected ${foundOS}` : step} />
+                                        type={getTypeByIndex(index)}
+                                        text={index === 0 && foundOS ? `Detected ${foundOS}` : step} />;
                 })}
             </div>
 
