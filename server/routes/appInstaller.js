@@ -5,7 +5,7 @@ const Identity = require("../models/Identity");
 
 const prepareSSH = require("../utils/prepareSSH");
 const { getApp } = require("../controllers/appSource");
-const { finalizeInstallation } = require("../utils/apps/finalizeInstallation");
+const { startContainer } = require("../utils/apps/startContainer");
 const { runPostInstallCommand, runPreInstallCommand } = require("../utils/apps/runCommand");
 const { downloadBaseImage } = require("../utils/apps/pullImage");
 const { installDocker } = require("../utils/apps/installDocker");
@@ -13,6 +13,12 @@ const { checkPermissions } = require("../utils/apps/checkPermissions");
 const { checkDistro } = require("../utils/apps/checkDistro");
 
 const wait = () => new Promise(resolve => setTimeout(resolve, 500));
+
+const replaceCommandVariables = (command, appId) => {
+    return command
+        .replace(/{appPath}/g, `/opt/nexterm_apps/${appId.replace("/", "_")}`)
+        .replace(/{appId}/g, appId.replace("/", "_"));
+}
 
 module.exports = async (ws, req) => {
     const authHeader = req.query["sessionToken"];
@@ -84,19 +90,19 @@ module.exports = async (ws, req) => {
 
             if (app.preInstallCommand) {
                 await wait();
-                await runPreInstallCommand(ssh, ws, app.preInstallCommand);
+                await runPreInstallCommand(ssh, ws, replaceCommandVariables(app.preInstallCommand, app.id));
             }
 
             await wait();
             await downloadBaseImage(ssh, ws, app.id);
 
+            await wait();
+            await startContainer(ssh, ws, app.id);
+
             if (app.postInstallCommand) {
                 await wait();
-                await runPostInstallCommand(ssh, ws, app.postInstallCommand);
+                await runPostInstallCommand(ssh, ws, replaceCommandVariables(app.postInstallCommand, app.id));
             }
-
-            await wait();
-            await finalizeInstallation(ssh, ws);
 
             ssh.end();
         } catch (err) {
