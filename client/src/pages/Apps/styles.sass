@@ -1,0 +1,41 @@
+@import "@/common/styles/colors"
+
+.apps-page
+  display: grid
+  grid-template-columns: 18rem 1fr
+  user-select: none
+  height: 100vh
+
+  .app-grid
+    display: grid
+    grid-template-columns: 1fr 25rem
+
+  .app-list
+    height: calc(100vh - 12rem)
+    margin: 2.5rem 2rem
+    display: flex
+    align-content: flex-start
+    gap: 2rem
+    flex-wrap: wrap
+    overflow-y: scroll
+
+  .app-details
+    display: flex
+    justify-content: center
+    align-items: center
+    height: calc(100vh - 12rem)
+
+  .select-app
+    display: flex
+    flex-direction: column
+    gap: 1rem
+    margin-top: 10rem
+    align-items: center
+    svg
+      width: 8rem
+      height: 8rem
+
+    h3
+      text-align: center
+      margin: 0
+      max-width: 7rem
