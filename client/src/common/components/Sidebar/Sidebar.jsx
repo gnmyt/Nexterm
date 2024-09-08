@@ -1,6 +1,6 @@
 import "./styles.sass";
 import NextermLogo from "@/common/img/logo.png";
-import { mdiCog, mdiServerOutline } from "@mdi/js";
+import { mdiCog, mdiPackageVariant, mdiServerOutline } from "@mdi/js";
 import Icon from "@mdi/react";
 import { Link, useLocation } from "react-router-dom";
 
@@ -10,7 +10,8 @@ export const Sidebar = () => {
 
     const navigation = [
         { title: "Settings", path: "/settings", icon: mdiCog },
-        { title: "Servers", path: "/servers", icon: mdiServerOutline }
+        { title: "Servers", path: "/servers", icon: mdiServerOutline },
+        { title: "Apps", path: "/apps", icon: mdiPackageVariant },
     ];
 
     const isActive = (path) => {
