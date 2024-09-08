@@ -9,7 +9,7 @@ const { appObject } = require("../validations/appSource");
 let apps = [];
 let refreshTimer;
 
-const OFFICIAL_SOURCE = "https://github.com/gnmyt/Nexterm-AppStore/archive/refs/heads/main.zip";
+const OFFICIAL_SOURCE = "https://apps.nexterm.dev/official.zip";
 
 module.exports.createAppSource = async configuration => {
     const appSource = await AppSource.findOne({ where: { name: configuration.name } });
@@ -167,7 +167,7 @@ module.exports.getComposeFile = (id) => {
 };
 
 module.exports.getAppsByCategory = async (category) => {
-    return apps.filter(app => app.category === category);
+    return apps.filter(app => app.category.toLowerCase() === category.toLowerCase());
 };
 
 module.exports.searchApp = async (search) => {
