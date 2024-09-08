@@ -17,9 +17,11 @@ export const loadIcon = (icon) => {
     }
 };
 
-export const ServerObject = ({ id, name, nestedLevel, icon, connectToServer, isPVE, status }) => {
+export const ServerObject = ({ id, name, nestedLevel, icon, connectToServer, isPVE, status, sshOnly }) => {
 
     const { getServerById } = useContext(ServerContext);
+
+    const server = getServerById(id);
 
     const connect = () => {
         if (isPVE && status === "running") {
@@ -27,14 +29,16 @@ export const ServerObject = ({ id, name, nestedLevel, icon, connectToServer, isP
             return;
         }
 
-        const server = getServerById(id);
-
         connectToServer(server.id, server.identities[0]);
+    }
+
+    if (sshOnly && server.protocol !== "ssh") {
+        return null;
     }
 
     return (
         <div className={(isPVE ? "pve-entry " : "") + "server-object"} style={{ paddingLeft: `${15 + (nestedLevel * 15)}px` }} data-id={id}
-             onDoubleClick={connect}>
+             onDoubleClick={sshOnly ? null : connect} onClick={sshOnly ? connect : null}>
             <div className={"system-icon " + (isPVE ? (status !== "running" ? " pve-icon-offline" : " pve-icon")  : "")}>
                 <Icon path={isPVE ? icon : loadIcon(icon)} />
             </div>
