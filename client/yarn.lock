@@ -347,10 +347,10 @@
   resolved "https://registry.npmjs.org/@eslint/object-schema/-/object-schema-2.1.4.tgz"
   integrity sha512-BsWiH1yFGjXXS2yvrf5LyuoSIIbPrGUWob917o+BTKuZ7qJdxX8aJLRxs1fS9n6r7vESrq1OUqb68dANcFXuQQ==
 
-"@fontsource/plus-jakarta-sans@^5.0.21":
-  version "5.0.21"
-  resolved "https://registry.yarnpkg.com/@fontsource/plus-jakarta-sans/-/plus-jakarta-sans-5.0.21.tgz#ef0ce65adeba7565d72bf6519e692081a9f88b57"
-  integrity sha512-DFcGek9aPAlzQ7cPi+cEl3Xa9xUqcxU0+zhE5Dc76DCgRct9IpTEJab5K8MhBghAp1p45TWaxZlmxn4tmLSUFQ==
+"@fontsource/plus-jakarta-sans@^5.0.22":
+  version "5.0.22"
+  resolved "https://registry.yarnpkg.com/@fontsource/plus-jakarta-sans/-/plus-jakarta-sans-5.0.22.tgz#f55d67edffdce187ca27a4120aa96016785d3845"
+  integrity sha512-pOrZgF7+c3j/nMouXHKyX83s+4pbZwsha73pEUaT3IvtITkyvGr9Gj8Fz7rm3m1zFSYS51Vudn4jZcu76RavsA==
 
 "@humanwhocodes/module-importer@^1.0.1":
   version "1.0.1"
