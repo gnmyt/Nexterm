@@ -7,7 +7,8 @@ import WelcomeImage from "@/common/img/welcome.png";
 import { GITHUB_URL } from "@/App.jsx";
 import ServerDialog from "@/pages/Servers/components/ServerDialog";
 import ViewContainer from "@/pages/Servers/components/ViewContainer";
-import ProxmoxDialog from "@/pages/Servers/components/ProxmoxDialog/index.js";
+import ProxmoxDialog from "@/pages/Servers/components/ProxmoxDialog";
+import { mdiStar } from "@mdi/js";
 
 export const Servers = () => {
 
@@ -78,7 +79,7 @@ export const Servers = () => {
                 <div className="area-left">
                     <h1>Hi, <span>{user?.firstName || "User"} {user?.lastName || "name"}</span>!</h1>
                     <p>Welcome to Nexterm. The open-source server manager for SSH, VNC and RDP.</p>
-                    <Button text="Star on GitHub" onClick={() => window.open(GITHUB_URL, "_blank")} />
+                    <Button text="Star on GitHub" onClick={() => window.open(GITHUB_URL, "_blank")} icon={mdiStar} />
                 </div>
                 <img src={WelcomeImage} alt="Welcome" />
             </div>}

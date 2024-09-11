@@ -35,7 +35,7 @@ module.exports = async (ws, req) => {
         return;
     }
 
-    const server = await PVEServer.findByPk(serverId);
+    const server = await PVEServer.findOne({ where: { id: serverId, accountId: req.user.id } });
     if (server === null) return;
 
     console.log("Authorized connection to pve server " + server.ip + " with container " + containerId);

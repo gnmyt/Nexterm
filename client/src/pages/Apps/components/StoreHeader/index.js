@@ -1,0 +1,1 @@
+export {StoreHeader as default} from "./StoreHeader.jsx";

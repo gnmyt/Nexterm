@@ -2,7 +2,7 @@ import ServerObject from "@/pages/Servers/components/ServerList/components/Serve
 import CollapsibleFolder from "./CollapsibleFolder.jsx";
 import PVEObject from "@/pages/Servers/components/ServerList/components/PVEObject/index.js";
 
-const ServerEntries = ({ entries, nestedLevel, setRenameStateId, connectToServer, connectToPVEServer }) => {
+const ServerEntries = ({ entries, nestedLevel, setRenameStateId, connectToServer, connectToPVEServer, sshOnly = false }) => {
     return (
         <>
             {entries.map(entry => {
@@ -18,6 +18,7 @@ const ServerEntries = ({ entries, nestedLevel, setRenameStateId, connectToServer
                             nestedLevel={nestedLevel}
                             connectToServer={connectToServer}
                             connectToPVEServer={connectToPVEServer}
+                            sshOnly={sshOnly}
                         />
                     );
                 } else if (entry.type === "server") {
@@ -28,10 +29,11 @@ const ServerEntries = ({ entries, nestedLevel, setRenameStateId, connectToServer
                             name={entry.name}
                             nestedLevel={nestedLevel}
                             icon={entry.icon}
+                            sshOnly={sshOnly}
                             connectToServer={connectToServer}
                         />
                     );
-                } else if (entry.type === "pve-server") {
+                } else if (entry.type === "pve-server" && !sshOnly) {
                     return (
                         <PVEObject name={entry.name} nestedLevel={nestedLevel} key={"pve"+entry.id} online={entry.online}
                                    id={entry.id} entries={entry.entries} connectToPVEServer={connectToPVEServer} />

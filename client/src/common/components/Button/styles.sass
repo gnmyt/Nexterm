@@ -4,6 +4,7 @@
   display: flex
   align-items: center
   justify-content: center
+  gap: 0.5rem
   background-color: $primary-opacity
   border: 1px solid $gray
   color: $white
@@ -11,6 +12,10 @@
   padding: 0.8rem 1rem
   cursor: pointer
   transition: all 0.2s
+
+  svg
+    width: 1.1rem
+    height: 1.1rem
 
   h3
     margin: 0
@@ -23,3 +28,7 @@
 
   &:active
     transform: scale(0.97)
+
+  &:disabled
+    background-color: $gray
+    cursor: not-allowed

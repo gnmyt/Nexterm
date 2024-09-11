@@ -2,8 +2,7 @@ const Session = require("../models/Session");
 const Account = require("../models/Account");
 const Server = require("../models/Server");
 const Identity = require("../models/Identity");
-
-const sshd = require("ssh2");
+const prepareSSH = require("../utils/prepareSSH");
 
 module.exports = async (ws, req) => {
     const authHeader = req.query["sessionToken"];
@@ -40,7 +39,7 @@ module.exports = async (ws, req) => {
         return;
     }
 
-    const server = await Server.findByPk(serverId);
+    const server = await Server.findOne({ where: { id: serverId, accountId: req.user.id } });
     if (server === null) return;
 
     if (server.identities.length === 0 && identityId) return;
@@ -48,67 +47,7 @@ module.exports = async (ws, req) => {
     const identity = await Identity.findByPk(identityId || server.identities[0]);
     if (identity === null) return;
 
-    let options;
-    if (identity.type === "password") {
-        options = {
-            host: server.ip,
-            port: server.port,
-            username: identity.username,
-            password: identity.password,
-        };
-    } else if (identity.type === "ssh") {
-        options = {
-            host: server.ip,
-            port: server.port,
-            username: identity.username,
-            privateKey: identity.sshKey,
-            passphrase: identity.passphrase,
-            tryKeyboard: true,
-            debug: true
-        };
-    }
-
-    console.log("Authorized connection to server " + server.ip + " with identity " + identity.name);
-
-    let ssh = new sshd.Client();
-
-    ssh.on("error", (error) => {
-      if(error.level === "client-timeout") {
-         ws.close(4007, "Client Timeout reached");
-      } else {
-         ws.close(4005, error.message);
-      }
-    });
-
-    ssh.on("keyboard-interactive", (name, instructions, lang, prompts, finish) => {
-        ws.send(`\x02${prompts[0].prompt}`);
-
-        ws.on("message", (data) => {
-            if (data.startsWith("\x03")) {
-                const totpCode = data.substring(1);
-                finish([totpCode]);
-            }
-        });
-    });
-
-    try {
-        ssh.connect(options);
-    } catch (err) {
-        console.log(err)
-        ws.close(4004, err.message);
-    }
-
-    ssh.on("end", () => {
-        ws.close(4006, "Connection closed");
-    });
-
-    ssh.on("exit", () => {
-        ws.close(4006, "Connection exited");
-    });
-
-    ssh.on("close", () => {
-        ws.close(4007, "Connection closed");
-    });
+    const ssh = await prepareSSH(server, identity, ws);
 
     ssh.on("ready", () => {
         ssh.shell({ term: "xterm-256color" }, (err, stream) => {
@@ -119,9 +58,7 @@ module.exports = async (ws, req) => {
 
             stream.on("close", () => ws.close());
 
-            stream.on("data", (data) => {
-                ws.send(data.toString());
-            });
+            stream.on("data", (data) => ws.send(data.toString()));
 
             ws.on("message", (data) => {
                 if (data.startsWith("\x01")) {

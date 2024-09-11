@@ -21,6 +21,14 @@ export const ServerProvider = ({ children }) => {
         }
     }
 
+    const retrieveServerById = async (serverId) => {
+        try {
+            return await getRequest(`/servers/${serverId}`);
+        } catch (error) {
+            console.error("Failed to retrieve server", error.message);
+        }
+    }
+
     const getPVEServerById = (serverId, entries) => {
         if (!entries) entries = servers;
         for (const server of entries) {
@@ -77,7 +85,7 @@ export const ServerProvider = ({ children }) => {
     }, [user]);
 
     return (
-        <ServerContext.Provider value={{servers, loadServers, getServerById, getPVEServerById, getPVEContainerById}}>
+        <ServerContext.Provider value={{servers, loadServers, getServerById, getPVEServerById, getPVEContainerById, retrieveServerById}}>
             {children}
         </ServerContext.Provider>
     )

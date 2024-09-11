@@ -8,8 +8,9 @@ const { authenticate } = require("./middlewares/auth");
 const expressWs = require("express-ws");
 const { startPVEUpdater } = require("./utils/pveUpdater");
 const { startGuacamole } = require("./utils/guacamoleStarter");
+const { refreshAppSources, startAppUpdater, insertOfficialSource } = require("./controllers/appSource");
 
-require("./utils/folder");  // Create needed data folders
+require("./utils/folder");
 
 process.on("uncaughtException", err => require("./utils/errorHandling")(err));
 
@@ -36,6 +37,9 @@ app.use("/api/servers", authenticate, require("./routes/server"));
 app.use("/api/pve-servers", authenticate, require("./routes/pveServer"));
 app.use("/api/identities", authenticate, require("./routes/identity"));
 
+app.ws("/api/apps/installer", require("./routes/appInstaller"));
+app.use("/api/apps", authenticate, require("./routes/apps"));
+
 if (process.env.NODE_ENV === "production") {
     app.use(express.static(path.join(__dirname, "../dist")));
 
@@ -55,6 +59,12 @@ db.authenticate().catch(err => {
     await db.sync({ alter: true, force: false });
 
     startPVEUpdater();
+
+    startAppUpdater();
+
+    await insertOfficialSource();
+
+    await refreshAppSources();
 
     app.listen(APP_PORT, () => console.log(`Server listening on port ${APP_PORT}`));
 });
