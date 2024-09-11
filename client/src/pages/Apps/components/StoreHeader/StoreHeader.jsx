@@ -3,7 +3,7 @@ import { mdiBook, mdiPackageVariant } from "@mdi/js";
 import Button from "@/common/components/Button";
 import "./styles.sass";
 
-export const StoreHeader = () => {
+export const StoreHeader = ({onSourceClick}) => {
     return (
         <div className="store-header">
             <div className="store-title">
@@ -14,7 +14,7 @@ export const StoreHeader = () => {
                 </div>
             </div>
 
-            <Button text="Manage sources" icon={mdiBook}/>
+            <Button text="Manage sources" icon={mdiBook} onClick={onSourceClick} />
         </div>
     )
 }
