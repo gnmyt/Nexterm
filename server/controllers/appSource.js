@@ -36,7 +36,6 @@ module.exports.updateAppUrl = async (name, url) => {
     if (appSource === null)
         return { code: 102, message: "This app source does not exist" };
 
-
     await AppSource.update({ url }, { where: { name } });
 };
 
