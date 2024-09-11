@@ -43,9 +43,10 @@ export const SourceDialog = ({ open, onClose, refreshApps }) => {
 
                 <div className="source-list">
                     {sources.map((source) => (
-                        <SourceItem key={source.name} {...source} />
+                        <SourceItem key={source.name} fetchSources={fetchSources} setCreateNew={setCreateNew}
+                                    {...source} />
                     ))}
-                    {createNew && <SourceItem isNew />}
+                    {createNew && <SourceItem isNew fetchSources={fetchSources} setCreateNew={setCreateNew}/>}
                 </div>
 
                 <div className="btn-actions">
