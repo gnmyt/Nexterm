@@ -1,0 +1,46 @@
+@import "@/common/styles/colors"
+
+.source-item
+  display: flex
+  flex-direction: column
+  justify-content: center
+  gap: 2rem
+  background-color: $dark-gray
+  border: 1px solid $gray
+  padding: 1rem
+  border-radius: 0.5rem
+  width: 22rem
+
+  .source-header
+    display: flex
+    justify-content: space-between
+    align-items: center
+    cursor: pointer
+
+  .header-official
+    cursor: default
+
+    svg
+      color: $primary
+
+  .source-info
+    display: flex
+    gap: 0.5rem
+    align-items: center
+
+    span
+      color: $subtext
+      font-weight: 600
+
+  .edit-row
+    width: 100%
+    display: flex
+    align-items: center
+    justify-content: space-between
+
+    .input-container
+      width: 15rem
+
+  svg
+    width: 2rem
+    height: 2rem
