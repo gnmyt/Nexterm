@@ -60,7 +60,30 @@ const XtermRenderer = ({ session, disconnectFromServer, pve }) => {
         };
 
         ws.onmessage = (event) => {
-            term.write(event.data);
+            const data = event.data;
+
+            if (data.startsWith("\x02")) {
+                const prompt = data.substring(1);
+                term.write(prompt);
+
+                let totpCode = "";
+                const onKey = term.onKey((key) => {
+                    if (key.domEvent.key === "Enter") {
+                        ws.send(`\x03${totpCode}`);
+                        term.write("\r\n");
+                        totpCode = "";
+                        onKey.dispose();
+                    } else if (key.domEvent.key === "Backspace" && totpCode.length > 0) {
+                        totpCode = totpCode.slice(0, -1);
+                        term.write("\b \b");
+                    } else {
+                        totpCode += key.key;
+                        term.write(key.key);
+                    }
+                });
+            } else {
+                term.write(data);
+            }
         };
 
         term.onData((data) => {
