@@ -19,7 +19,7 @@ module.exports.createAppSource = async configuration => {
 
     await AppSource.create(configuration);
 
-    await this.refreshAppSources();
+    this.refreshAppSources();
 };
 
 module.exports.getAppSources = async () => {
@@ -47,11 +47,12 @@ module.exports.deleteAppSource = async name => {
         return { code: 102, message: "This app source does not exist" };
     }
 
-    fs.rmSync(process.cwd() + "/data/sources/" + appSource.name, { recursive: true });
+    if (fs.existsSync(process.cwd() + "/data/sources/" + appSource.name))
+        fs.rmSync(process.cwd() + "/data/sources/" + appSource.name, { recursive: true });
 
     await AppSource.destroy({ where: { name } });
 
-    await this.refreshAppSources();
+    this.refreshAppSources();
 };
 
 const downloadAppSource = async (name, url) => {
@@ -137,7 +138,7 @@ module.exports.insertOfficialSource = async () => {
     if (officialSource !== null) return;
 
     await AppSource.create({ name: "official", url: OFFICIAL_SOURCE });
-}
+};
 
 module.exports.startAppUpdater = async () => {
     refreshTimer = setInterval(async () => {
