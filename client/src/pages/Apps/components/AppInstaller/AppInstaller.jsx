@@ -5,6 +5,7 @@ import "./styles.sass";
 import { useContext, useEffect, useState } from "react";
 import { UserContext } from "@/common/contexts/UserContext.jsx";
 import DebianImage from "./os_images/debian.png";
+import UbuntuImage from "./os_images/ubuntu.png";
 import LinuxImage from "./os_images/linux.png";
 import LogDialog from "@/pages/Apps/components/AppInstaller/components/LogDialog";
 import { ServerContext } from "@/common/contexts/ServerContext.jsx";
@@ -29,6 +30,11 @@ export const AppInstaller = ({ serverId, app, setInstalling }) => {
     const loadImage = (os) => {
         if (os === "debian") {
             setOSImage(DebianImage);
+            return;
+        }
+
+        if (os === "ubuntu") {
+            setOSImage(UbuntuImage);
             return;
         }
 
