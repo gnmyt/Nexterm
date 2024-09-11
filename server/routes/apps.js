@@ -1,9 +1,23 @@
 const { Router } = require("express");
-const { getAppsByCategory, getApps, searchApp, getAppSources, createAppSource, deleteAppSource, updateAppUrl } = require("../controllers/appSource");
+const {
+    getAppsByCategory,
+    getApps,
+    searchApp,
+    getAppSources,
+    createAppSource,
+    deleteAppSource,
+    updateAppUrl,
+    refreshAppSources,
+} = require("../controllers/appSource");
 const { validateSchema } = require("../utils/schema");
 const { createAppSourceValidation, updateAppUrlValidation } = require("../validations/appSource");
 
 const app = Router();
+
+app.post("/refresh", async (req, res) => {
+    await refreshAppSources();
+    res.json({ message: "Apps got successfully refreshed" });
+});
 
 app.get("/", async (req, res) => {
     if (req.query.category) {
