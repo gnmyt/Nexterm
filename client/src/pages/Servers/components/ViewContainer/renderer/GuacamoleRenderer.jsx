@@ -27,6 +27,48 @@ const GuacamoleRenderer = ({ session, disconnectFromServer, pve }) => {
         }
     };
 
+    const sendClipboardToServer = (text) => {
+        if (clientRef.current && text) {
+            const stream = clientRef.current.createClipboardStream("text/plain");
+            const writer = new Guacamole.StringWriter(stream);
+            writer.sendText(text);
+            writer.sendEnd();
+        }
+    };
+
+    const handleClipboardEvents = () => {
+        if (clientRef.current) {
+            clientRef.current.onclipboard = (stream, mimetype) => {
+                if (mimetype === "text/plain") {
+                    const reader = new Guacamole.StringReader(stream);
+                    let clipboardData = "";
+
+                    reader.ontext = (text) => clipboardData += text;
+                    reader.onend = async () => {
+                        try {
+                            await navigator.clipboard.writeText(clipboardData);
+                        } catch (ignored) {
+                        }
+                    };
+                }
+            };
+
+            let cachedClipboard = "";
+            const intervalId = setInterval(async() => {
+                try {
+                    const text = await navigator.clipboard.readText();
+                    if (text !== cachedClipboard) {
+                        cachedClipboard = text;
+                        sendClipboardToServer(text);
+                    }
+                } catch (ignored) {
+                }
+            }, 500);
+
+            return () => clearInterval(intervalId);
+        }
+    };
+
     const connect = () => {
         if (!sessionToken || clientRef.current) {
             return;
@@ -68,6 +110,9 @@ const GuacamoleRenderer = ({ session, disconnectFromServer, pve }) => {
                 disconnectFromServer(session.id);
             }
         };
+
+        handleClipboardEvents();
+
         return () => {
             client.disconnect();
             clientRef.current = null;
