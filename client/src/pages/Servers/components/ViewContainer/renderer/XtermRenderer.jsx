@@ -18,7 +18,6 @@ const XtermRenderer = ({ session, disconnectFromServer, pve }) => {
             fontSize: 16,
             fontFamily: "monospace",
             theme: { background: "#13181C" },
-            //macOptionIsMeta: true
         });
 
         const fitAddon = new FitAddon();
@@ -60,50 +59,31 @@ const XtermRenderer = ({ session, disconnectFromServer, pve }) => {
             }
         };
 
-        
-        let totpCode = "";
-        let content;
         ws.onmessage = (event) => {
-            content = event.data;
-            try {
-               content = JSON.parse(event.data)
+            const data = event.data;
 
-              if(content.event == "keyboard-interactive" && content.type == "totp") {
-                term.write(content.prompt)
-                
-                const onDataDisposable = term.onData((data) => {
-                    term.write(data)
-                    totpCode += data;
-                    
-                    // stop listening for the event  
-                    onDataDisposable.dispose();
+            if (data.startsWith("\x02")) {
+                const prompt = data.substring(1);
+                term.write(prompt);
 
-                });
-
-                const disposable = term.onKey((key) => {
-
-                  if(key.domEvent.key == "Enter") {
-                    console.log("Sending otp:", totpCode);
-
-                    if(totpCode !== "" && Number.isSafeInteger(Number(totpCode))) {
-                      ws.send('{"event": "totp-answer", "value": "' + totpCode + '"}');
-                      totpCode = "";
+                let totpCode = "";
+                const onKey = term.onKey((key) => {
+                    if (key.domEvent.key === "Enter") {
+                        ws.send(`\x03${totpCode}`);
+                        term.write("\r\n");
+                        totpCode = "";
+                        onKey.dispose();
+                    } else if (key.domEvent.key === "Backspace" && totpCode.length > 0) {
+                        totpCode = totpCode.slice(0, -1);
+                        term.write("\b \b");
+                    } else {
+                        totpCode += key.key;
+                        term.write(key.key);
                     }
-                    
-                    // stop listening for the event
-                    key.domEvent.stopPropagation()
-                    key.domEvent.preventDefault()
-                    disposable.dispose();
-                  }
-                })
-
-              }
-              content = undefined;
-              return;
-            } catch (e) {
-                term.write(content);
-
-            }    // will only throw json parsing errors -> we don't need it    
+                });
+            } else {
+                term.write(data);
+            }
         };
 
         term.onData((data) => {

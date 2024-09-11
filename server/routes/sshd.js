@@ -69,57 +69,28 @@ module.exports = async (ws, req) => {
     }
 
     console.log("Authorized connection to server " + server.ip + " with identity " + identity.name);
-    
 
     let ssh = new sshd.Client();
 
-    /*
-     * Events avaible in ssh2 package:
-     * - "tcp connection"
-     * - "unix connection"
-     * - "x11"
-     * - "timeout"
-     * - "hostkeys"
-     * - "change password"
-     * - "connect"
-     * - "banner"
-     * - "greeting"
-     * - "handshake"
-     */
-
-
     ssh.on("error", (error) => {
-      if(error.level == "client-timeout") {
+      if(error.level === "client-timeout") {
          ws.close(4007, "Client Timeout reached");
       } else {
-         console.log("error:", error)
          ws.close(4005, error.message);
       }
     });
 
-    let json;
     ssh.on("keyboard-interactive", (name, instructions, lang, prompts, finish) => {
+        ws.send(`\x02${prompts[0].prompt}`);
 
-      if(prompts[0]['prompt'].toString()?.startsWith("Verification code:")) {
-          ws.send('{"event": "keyboard-interactive", "type": "totp", "prompt":"Verification Code: "}')
-          //may be add here later a nice propt for the ui for the verifaction code like termius it is doing 
-
-          ws.onmessage = (event) => {
-
-            try {
-                json = JSON.parse(event.data);
-         
-                if(json.event == "totp-answer" && Number.isSafeInteger(Number(json.value))) {
-                    finish([json.value + ""])
-                }
-            } catch(error) {}   //ignore, because it will only print json parsing errors
-          }
-
-      } else {
-        finish([identity.password]);
-      }
-      
+        ws.on("message", (data) => {
+            if (data.startsWith("\x03")) {
+                const totpCode = data.substring(1);
+                finish([totpCode]);
+            }
+        });
     });
+
     try {
         ssh.connect(options);
     } catch (err) {
@@ -150,7 +121,7 @@ module.exports = async (ws, req) => {
 
             stream.on("close", () => ws.close());
 
-            stream.on("data", (data) => { 
+            stream.on("data", (data) => {
                 let isJSON = false;
                 try {
                     JSON.parse(data.toString())
