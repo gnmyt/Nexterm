@@ -9,10 +9,13 @@ import Icon from "@mdi/react";
 import AppInstaller from "@/pages/Apps/components/AppInstaller";
 import { useLocation, useNavigate } from "react-router-dom";
 import DeployServerDialog from "@/pages/Apps/components/DeployServerDialog";
+import SourceDialog from "@/pages/Apps/components/SourceDialog";
 
 export const Apps = () => {
     const location = useLocation();
     const navigate = useNavigate();
+
+    const [sourceDialogOpen, setSourceDialogOpen] = useState(false);
 
     const [serverDialogOpen, setServerDialogOpen] = useState(false);
     const [deployAppId, setDeployAppId] = useState(null);
@@ -79,10 +82,11 @@ export const Apps = () => {
     return (
         <div className="apps-page">
             <AppNavigation search={search} setSearch={setSearch} />
+            <SourceDialog open={sourceDialogOpen} onClose={() => setSourceDialogOpen(false)} refreshApps={reloadList}/>
             <DeployServerDialog open={serverDialogOpen} onClose={() => setServerDialogOpen(false)}
                                 onDeploy={(serverId) => startDeployment(serverId)} app={apps.find((app) => app.id === deployAppId)} />
             <div className="app-content">
-                <StoreHeader />
+                <StoreHeader onSourceClick={() => setSourceDialogOpen(true)} />
 
                 <div className="app-grid">
                     <div className="app-list">
