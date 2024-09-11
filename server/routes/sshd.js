@@ -98,15 +98,13 @@ module.exports = async (ws, req) => {
         ws.close(4004, err.message);
     }
 
-
     ssh.on("end", () => {
         ws.close(4006, "Connection closed");
     });
 
     ssh.on("exit", () => {
-        ws.close(4006, "Connection exitted");
+        ws.close(4006, "Connection exited");
     });
-
 
     ssh.on("close", () => {
         ws.close(4007, "Connection closed");
@@ -122,15 +120,7 @@ module.exports = async (ws, req) => {
             stream.on("close", () => ws.close());
 
             stream.on("data", (data) => {
-                let isJSON = false;
-                try {
-                    JSON.parse(data.toString())
-                    isJSON = true;
-                } catch(e) {}
-
-                if(!isJSON) {
-                    ws.send(data.toString())
-                }
+                ws.send(data.toString());
             });
 
             ws.on("message", (data) => {
