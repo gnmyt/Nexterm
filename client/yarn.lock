@@ -349,10 +349,10 @@
   dependencies:
     levn "^0.4.1"
 
-"@fontsource/plus-jakarta-sans@^5.0.22":
-  version "5.0.22"
-  resolved "https://registry.yarnpkg.com/@fontsource/plus-jakarta-sans/-/plus-jakarta-sans-5.0.22.tgz#f55d67edffdce187ca27a4120aa96016785d3845"
-  integrity sha512-pOrZgF7+c3j/nMouXHKyX83s+4pbZwsha73pEUaT3IvtITkyvGr9Gj8Fz7rm3m1zFSYS51Vudn4jZcu76RavsA==
+"@fontsource/plus-jakarta-sans@^5.1.0":
+  version "5.1.0"
+  resolved "https://registry.yarnpkg.com/@fontsource/plus-jakarta-sans/-/plus-jakarta-sans-5.1.0.tgz#bf4e15503d9dddcb28d808b8ba7593686f3f1f3f"
+  integrity sha512-o6qReKG0r7+YyNzMe0CbIC4u8nsLwUHRe3btQU+cYI/UH8+Cbvv278WICqEuj7zsBRu1eiuBgvBG17+cU+PJIw==
 
 "@humanwhocodes/module-importer@^1.0.1":
   version "1.0.1"
