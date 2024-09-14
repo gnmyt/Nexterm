@@ -13,7 +13,7 @@ app.get("/me", authenticate, async (req, res) => {
 
     res.json({
         id: req.user.id, username: req.user.username, totpEnabled: req.user.totpEnabled,
-        firstName: req.user.firstName, lastName: req.user.lastName,
+        firstName: req.user.firstName, lastName: req.user.lastName, role: req.user.role,
     });
 });
 
