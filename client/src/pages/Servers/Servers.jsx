@@ -24,7 +24,14 @@ export const Servers = () => {
 
     const connectToServer = (server, identity) => {
         const sessionId = "session-" + (Math.random().toString(36).substring(2, 15));
-        setActiveSessions(activeSessions => [...activeSessions, { server, identity, id: sessionId }]);
+        setActiveSessions(activeSessions => [...activeSessions, { server, identity, type: "ssh", id: sessionId }]);
+
+        setActiveSessionId(sessionId);
+    };
+
+    const openSFTP = (server, identity) => {
+        const sessionId = "session-" + (Math.random().toString(36).substring(2, 15));
+        setActiveSessions(activeSessions => [...activeSessions, { server, identity, type: "sftp", id: sessionId }]);
 
         setActiveSessionId(sessionId);
     };
@@ -74,7 +81,7 @@ export const Servers = () => {
                            editServerId={editServerId} />
             <ServerList setServerDialogOpen={() => setServerDialogOpen(true)} connectToServer={connectToServer}
                         connectToPVEServer={connectToPVEServer} setProxmoxDialogOpen={() => setProxmoxDialogOpen(true)}
-                        setCurrentFolderId={setCurrentFolderId} setEditServerId={setEditServerId} />
+                        setCurrentFolderId={setCurrentFolderId} setEditServerId={setEditServerId} openSFTP={openSFTP} />
             {activeSessions.length === 0 && <div className="welcome-area">
                 <div className="area-left">
                     <h1>Hi, <span>{user?.firstName || "User"} {user?.lastName || "name"}</span>!</h1>
