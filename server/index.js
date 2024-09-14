@@ -26,6 +26,7 @@ app.use("/api/accounts", require("./routes/account"));
 app.use("/api/auth", require("./routes/auth"));
 
 app.ws("/api/servers/sshd", require("./routes/sshd"));
+app.ws("/api/servers/sftp", require("./routes/sftp"));
 app.ws("/api/servers/pve-lxc", require("./routes/pveLXC"));
 app.ws("/api/servers/pve-qemu", require("./routes/pveQEMU"));
 
