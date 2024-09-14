@@ -78,10 +78,7 @@ export const Users = () => {
                         <Icon path={mdiLock} />
                         <h2>2FA {currentUser.totpEnabled ? "enabled" : "disabled"}</h2>
                     </div>
-                    <Icon path={mdiDotsVertical} className="menu" onClick={(e) => {
-                        if (currentUser.id === user.id) return;
-                        openContextMenu(e, currentUser.id);
-                    }} />
+                    <Icon path={mdiDotsVertical} className="menu" onClick={(e) => openContextMenu(e, currentUser.id)} />
                 </div>
             ))}
 
