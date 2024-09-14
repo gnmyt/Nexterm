@@ -5,30 +5,17 @@
   height: 100%
   display: flex
   flex-direction: column
-  align-items: center
   border-right: 2px solid $dark-gray
   user-select: none
 
-  .settings-item
-    box-sizing: border-box
-    width: 90%
-    margin-top: 1rem
-    padding: 0.75rem 1.5rem
+  p
+    margin: 0.5rem 0 0
+    padding: 0.5rem 1rem
+    font-size: 1rem
+    font-weight: 600
+    color: $subtext
+
+  .settings-group
     display: flex
-    gap: 0.8rem
-    border-radius: 1rem
-    border: 1px solid transparent
-    cursor: pointer
-
-    svg
-      width: 2rem
-      height: 2rem
-
-    h2
-      margin: 0
-
-    &:hover
-      border: 1px solid $gray
-  .settings-item-active
-    background-color: $dark-gray
-    border: 1px solid $gray
+    flex-direction: column
+    align-items: center

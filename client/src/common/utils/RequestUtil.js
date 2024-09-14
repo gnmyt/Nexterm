@@ -19,26 +19,30 @@ export const request = async (url, method, body, headers) => {
     return data;
 }
 
+const getToken = () => {
+    return localStorage.getItem("overrideToken") || localStorage.getItem("sessionToken");
+}
+
 export const sessionRequest = (url, method, token, body) => {
     return request(url, method, body, {"Authorization": `Bearer ${token}`});
 }
 
 export const getRequest = (url) => {
-    return sessionRequest(url, "GET", localStorage.getItem("sessionToken"));
+    return sessionRequest(url, "GET", getToken());
 }
 
 export const postRequest = (url, body) => {
-    return sessionRequest(url, "POST", localStorage.getItem("sessionToken"), body);
+    return sessionRequest(url, "POST", getToken(), body);
 }
 
 export const putRequest = (url, body) => {
-    return sessionRequest(url, "PUT", localStorage.getItem("sessionToken"), body);
+    return sessionRequest(url, "PUT", getToken(), body);
 }
 
 export const deleteRequest = (url) => {
-    return sessionRequest(url, "DELETE", localStorage.getItem("sessionToken"));
+    return sessionRequest(url, "DELETE", getToken());
 }
 
 export const patchRequest = (url, body) => {
-    return sessionRequest(url, "PATCH", localStorage.getItem("sessionToken"), body);
+    return sessionRequest(url, "PATCH", getToken(), body);
 }

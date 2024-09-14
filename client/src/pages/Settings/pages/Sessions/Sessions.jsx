@@ -9,7 +9,7 @@ import { mdiCellphone, mdiMonitor, mdiTablet } from "@mdi/js";
 export const Sessions = () => {
 
     const [sessions, setSessions] = useState([]);
-    const {login, user} = useContext(UserContext);
+    const {logout: logoutMyself, login, user} = useContext(UserContext);
 
     const parser = new UAParser();
 
@@ -65,7 +65,9 @@ export const Sessions = () => {
                         </div>
                     </div>
                     <div className="session-actions">
-                        <button className="btn btn-danger" onClick={() => logout(session.id)}>{session.current ? "Logout" : "Revoke"}</button>
+                        <button className="btn btn-danger" onClick={() => session.current ? logoutMyself() : logout(session.id)}>
+                            {session.current ? "Logout" : "Revoke"}
+                        </button>
                     </div>
                 </div>
             ))}
