@@ -23,6 +23,8 @@ RUN apk add --no-cache \
 
 RUN git clone --depth=1 https://github.com/apache/guacamole-server.git \
     && cd guacamole-server \
+    && git fetch --all --tags \
+    && git checkout 1.5.5 \
     && autoreconf -fi \
     && ./configure --with-init-dir=/etc/init.d --enable-rdp \
     && make \
