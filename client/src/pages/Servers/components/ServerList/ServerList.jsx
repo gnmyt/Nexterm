@@ -36,7 +36,7 @@ const applyRenameState = (folderId) => (entry) => {
 
 export const ServerList = ({
                                setServerDialogOpen, setCurrentFolderId, setProxmoxDialogOpen,
-                               setEditServerId, connectToServer, connectToPVEServer,
+                               setEditServerId, connectToServer, connectToPVEServer, openSFTP
                            }) => {
     const { servers } = useContext(ServerContext);
     const [search, setSearch] = useState("");
@@ -100,7 +100,7 @@ export const ServerList = ({
                     <ContextMenu position={contextMenuPosition} type={contextClickedType} id={contextClickedId}
                                  setRenameStateId={setRenameStateId} setServerDialogOpen={setServerDialogOpen}
                                  setCurrentFolderId={setCurrentFolderId} setEditServerId={setEditServerId}
-                                 setProxmoxDialogOpen={setProxmoxDialogOpen}
+                                 setProxmoxDialogOpen={setProxmoxDialogOpen} openSFTP={openSFTP}
                                  connectToServer={connectToServer} connectToPVEServer={connectToPVEServer} />
                 )}
             </div>
