@@ -33,7 +33,7 @@ export const PasswordChange = ({ open, onClose, accountId }) => {
     }
 
     const changePassword = () => {
-        if (password.length < 5) return;
+        if (password.length < 3) return;
         if (password !== confirmPassword) return;
 
         if (!accountId) {
@@ -51,7 +51,7 @@ export const PasswordChange = ({ open, onClose, accountId }) => {
 
     return (
         <DialogProvider open={open} onClose={onClose}>
-            <div className="password-change">
+            <div className="password-change" onKeyDown={e => e.key === "Enter" && changePassword()}>
                 <h2>Change password</h2>
                 <p>
                     A strong password contains special characters, numbers, and
