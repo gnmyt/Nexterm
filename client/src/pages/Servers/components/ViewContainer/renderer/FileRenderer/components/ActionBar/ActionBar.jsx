@@ -3,7 +3,7 @@ import Icon from "@mdi/react";
 import { mdiChevronLeft, mdiChevronRight, mdiChevronUp, mdiFileUpload, mdiFolderPlus } from "@mdi/js";
 import { Fragment } from "react";
 
-export const ActionBar = ({path, updatePath}) => {
+export const ActionBar = ({path, updatePath, createFolder, uploadFile}) => {
 
     const goUp = () => {
         const pathArray = path.split("/");
@@ -43,9 +43,9 @@ export const ActionBar = ({path, updatePath}) => {
                 ))}
             </div>
 
-            <div class="file-actions">
-                <Icon path={mdiFileUpload} />
-                <Icon path={mdiFolderPlus} />
+            <div className="file-actions">
+                <Icon path={mdiFileUpload} onClick={uploadFile} />
+                <Icon path={mdiFolderPlus} onClick={createFolder} />
             </div>
         </div>
     )
