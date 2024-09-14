@@ -11,7 +11,7 @@ import {
     mdiShieldAccount,
 } from "@mdi/js";
 import CreateUserDialog from "./components/CreateUserDialog";
-import ContextMenu from "@/pages/Settings/pages/Users/components/ContextMenu/index.js";
+import ContextMenu from "@/pages/Settings/pages/Users/components/ContextMenu";
 
 export const Users = () => {
     const [users, setUsers] = useState([]);
@@ -60,7 +60,8 @@ export const Users = () => {
 
     return (
         <div className="users-page">
-            <CreateUserDialog open={createUserDialogOpen} onClose={() => setCreateUserDialogOpen(false)} />
+            <CreateUserDialog open={createUserDialogOpen} onClose={() => setCreateUserDialogOpen(false)}
+                                loadUsers={loadUsers} />
 
             <div className="user-title">
                 <h2>{users.length} users</h2>
