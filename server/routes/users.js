@@ -44,13 +44,17 @@ app.patch("/:accountId/password", async (req, res) => {
 });
 
 app.patch("/:accountId/role", async (req, res) => {
-    if (req.user.id === req.params.accountId)
-        return res.json({ code: 107, message: "You cannot change your own role" });
+    try {
+        if (req.user.id === parseInt(req.params.accountId))
+            return res.json({ code: 107, message: "You cannot change your own role" });
 
-    const account = await updateRole(req.params.accountId, req.body.role);
-    if (account?.code) return res.json(account);
+        const account = await updateRole(req.params.accountId, req.body.role);
+        if (account?.code) return res.json(account);
 
-    res.json({ message: "Role got successfully updated" });
+        res.json({ message: "Role got successfully updated" });
+    } catch (error) {
+        res.json({ code: 109, message: "You need to provide a correct id"});
+    }
 });
 
 module.exports = app;
