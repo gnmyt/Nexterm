@@ -1,0 +1,25 @@
+@import "@/common/styles/colors"
+
+.settings-item
+  box-sizing: border-box
+  width: 90%
+  margin-top: 1rem
+  padding: 0.75rem 1.5rem
+  display: flex
+  gap: 0.8rem
+  border-radius: 1rem
+  border: 1px solid transparent
+  cursor: pointer
+
+  svg
+    width: 2rem
+    height: 2rem
+
+  h2
+    margin: 0
+
+  &:hover
+    border: 1px solid $gray
+.settings-item-active
+  background-color: $dark-gray
+  border: 1px solid $gray
