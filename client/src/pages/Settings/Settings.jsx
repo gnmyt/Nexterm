@@ -1,26 +1,31 @@
 import "./styles.sass";
 import Icon from "@mdi/react";
-import { mdiAccountCircleOutline, mdiClockStarFourPointsOutline } from "@mdi/js";
+import { mdiAccountCircleOutline, mdiAccountGroup, mdiClockStarFourPointsOutline } from "@mdi/js";
 import SettingsNavigation from "./components/SettingsNavigation";
 import { Navigate, useLocation } from "react-router-dom";
 import Account from "@/pages/Settings/pages/Account";
 import Sessions from "@/pages/Settings/pages/Sessions";
+import Users from "@/pages/Settings/pages/Users";
 
 export const Settings = () => {
     const location = useLocation();
 
-    const pages = [
+    const userPages = [
         { title: "Account", icon: mdiAccountCircleOutline, content: <Account /> },
         { title: "Sessions", icon: mdiClockStarFourPointsOutline, content: <Sessions /> }
     ];
 
-    const currentPage = pages.find(page => location.pathname.endsWith(page.title.toLowerCase()));
+    const adminPages = [
+        { title: "Users", icon: mdiAccountGroup, content: <Users /> }
+    ];
+
+    const currentPage = [...userPages, ...adminPages].find(page => location.pathname.endsWith(page.title.toLowerCase()));
 
     if (!currentPage) return <Navigate to="/settings/account" />;
     
     return (
         <div className="settings-page">
-            <SettingsNavigation pages={pages} />
+            <SettingsNavigation userPages={userPages} adminPages={adminPages} />
             <div className="settings-content">
                 <div className="settings-header">
                     <Icon path={currentPage.icon} />
