@@ -14,7 +14,7 @@ module.exports = async (ws, req) => {
         DELETE_ITEM: 0x6,
     };
 
-    let fileBuffers = {};
+    let uploadStream = null;
 
     ssh.on("ready", () => {
         ssh.sftp((err, sftp) => {
@@ -22,7 +22,12 @@ module.exports = async (ws, req) => {
 
             ws.on("message", (msg) => {
                 const operation = msg[0];
-                const payload = JSON.parse(msg.slice(1).toString());
+                let payload;
+
+                try {
+                    payload = JSON.parse(msg.slice(1).toString());
+                } catch (ignored) {
+                }
 
                 switch (operation) {
                     case OPERATIONS.LIST_FILES:
@@ -44,30 +49,36 @@ module.exports = async (ws, req) => {
                         break;
 
                     case OPERATIONS.UPLOAD_FILE_START:
-                        fileBuffers[payload.fileName] = [];
+                        if (uploadStream) {
+                            uploadStream.end();
+                        }
+
+                        uploadStream = sftp.createWriteStream(payload.path);
                         ws.send(Buffer.from([OPERATIONS.UPLOAD_FILE_START]));
                         break;
 
                     case OPERATIONS.UPLOAD_FILE_CHUNK:
-                        if (fileBuffers[payload.fileName]) {
-                            fileBuffers[payload.fileName].push(Buffer.from(payload.chunk, "base64"));
+                        try {
+                            uploadStream.write(Buffer.from(payload.chunk, "base64"));
+                        } catch (err) {
+                            console.log(err);
                         }
+
                         ws.send(Buffer.from([OPERATIONS.UPLOAD_FILE_CHUNK]));
                         break;
 
                     case OPERATIONS.UPLOAD_FILE_END:
-                        const finalFile = Buffer.concat(fileBuffers[payload.fileName]);
-                        const writeStream = sftp.createWriteStream(payload.path);
-
-                        writeStream.end(finalFile, () => {
-                            delete fileBuffers[payload.fileName];
+                        uploadStream.end(() => {
+                            uploadStream = null;
                             ws.send(Buffer.from([OPERATIONS.UPLOAD_FILE_END]));
                         });
                         break;
 
                     case OPERATIONS.CREATE_FOLDER:
                         sftp.mkdir(payload.path, (err) => {
-                            if (err) throw err;
+                            if (err) {
+                                return;
+                            }
                             ws.send(Buffer.from([OPERATIONS.CREATE_FOLDER]));
                         });
                         break;
