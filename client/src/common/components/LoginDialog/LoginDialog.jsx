@@ -27,11 +27,6 @@ export const LoginDialog = ({ open }) => {
 
             return true;
         } catch (error) {
-            if (error.message.toString().includes("^(?=.*[0-9])")) {
-                setError("Password must contain at least one number and one special character");
-                return false;
-            }
-
             setError(error.message || "An error occurred");
             return false;
         }
