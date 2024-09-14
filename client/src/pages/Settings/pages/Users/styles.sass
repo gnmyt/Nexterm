@@ -1,0 +1,54 @@
+@import "@/common/styles/colors"
+
+.users-page
+  display: flex
+  flex-direction: column
+  gap: 1rem
+
+  .user-title
+    display: flex
+    justify-content: space-between
+    align-items: center
+
+  .user-item
+    display: grid
+    grid-template-columns: 2fr 1fr 1fr 1fr
+    align-items: center
+    background-color: $dark-gray
+    border: 1px solid $gray
+    padding: 0.8rem 1rem
+    border-radius: 1rem
+    position: relative
+
+    .user-name
+      display: flex
+      align-items: center
+      gap: 0.5rem
+
+      svg
+        height: 2.5rem
+
+    .totp
+      display: flex
+      align-items: center
+      gap: 0.5rem
+      color: $error
+
+      svg
+        width: 2rem
+        height: 2rem
+
+    .totp-enabled
+      color: $success
+
+    .menu
+      width: 2.5rem
+      height: 2.5rem
+      cursor: pointer
+
+    h2
+      margin: 0
+      font-weight: 600
+
+  *:last-child
+    grid-column: 5 / 5
