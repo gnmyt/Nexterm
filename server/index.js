@@ -9,7 +9,7 @@ const expressWs = require("express-ws");
 const { startPVEUpdater } = require("./utils/pveUpdater");
 const { startGuacamole } = require("./utils/guacamoleStarter");
 const { refreshAppSources, startAppUpdater, insertOfficialSource } = require("./controllers/appSource");
-
+const { isAdmin } = require("./middlewares/permission");
 require("./utils/folder");
 
 process.on("uncaughtException", err => require("./utils/errorHandling")(err));
@@ -31,6 +31,7 @@ app.ws("/api/servers/pve-qemu", require("./routes/pveQEMU"));
 
 app.use("/api/servers/guacd", require("./middlewares/guacamole"));
 
+app.use("/api/users", authenticate, isAdmin, require("./routes/users"));
 app.use("/api/sessions", authenticate, require("./routes/session"));
 app.use("/api/folders", authenticate, require("./routes/folder"));
 app.use("/api/servers", authenticate, require("./routes/server"));
