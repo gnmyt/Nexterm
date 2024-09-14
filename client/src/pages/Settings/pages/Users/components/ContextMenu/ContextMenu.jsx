@@ -7,9 +7,9 @@ import PasswordChange from "@/pages/Settings/pages/Account/dialogs/PasswordChang
 import { UserContext } from "@/common/contexts/UserContext.jsx";
 import { useNavigate } from "react-router-dom";
 
-export const ContextMenu = ({users, closeContextMenu, loadUsers, contextUserId, contextMenu}) => {
+export const ContextMenu = ({ users, closeContextMenu, loadUsers, contextUserId, contextMenu }) => {
 
-    const {overrideToken} = useContext(UserContext);
+    const { user, overrideToken } = useContext(UserContext);
 
     const navigate = useNavigate();
 
@@ -21,28 +21,28 @@ export const ContextMenu = ({users, closeContextMenu, loadUsers, contextUserId, 
     const openPromotionDialog = () => {
         closeContextMenu();
         setPromoteDialogOpen(true);
-    }
+    };
 
     const openDemotionDialog = () => {
         closeContextMenu();
         setDemoteDialogOpen(true);
-    }
+    };
 
     const openDeletionDialog = () => {
         closeContextMenu();
         setConfirmDeleteDialogOpen(true);
-    }
+    };
 
     const openPasswordChangeDialog = () => {
         closeContextMenu();
         setPasswordChangeDialogOpen(true);
-    }
+    };
 
     const deleteUser = (userId) => {
         deleteRequest(`users/${userId}`).then(() => {
             loadUsers();
         });
-    }
+    };
 
     const updateRole = (userId, role) => {
         patchRequest(`users/${userId}/role`, { role: role }).then(() => {
@@ -50,14 +50,14 @@ export const ContextMenu = ({users, closeContextMenu, loadUsers, contextUserId, 
         });
 
         closeContextMenu();
-    }
+    };
 
     const loginAsUser = (userId) => {
         postRequest(`users/${userId}/login`).then(response => {
             overrideToken(response.token);
             navigate("/servers");
         });
-    }
+    };
 
     return (
         <>
@@ -65,11 +65,11 @@ export const ContextMenu = ({users, closeContextMenu, loadUsers, contextUserId, 
                                  onConfirm={() => deleteUser(contextUserId)}
                                  text="This will permanently delete the user and all associated data." />
             <ActionConfirmDialog open={promoteDialogOpen} setOpen={setPromoteDialogOpen}
-                                    onConfirm={() => updateRole(contextUserId, "admin")}
-                                    text="This will promote the user to an admin." />
+                                 onConfirm={() => updateRole(contextUserId, "admin")}
+                                 text="This will promote the user to an admin." />
             <ActionConfirmDialog open={demoteDialogOpen} setOpen={setDemoteDialogOpen}
-                                    onConfirm={() => updateRole(contextUserId, "user")}
-                                    text="This will demote the user to a regular user." />
+                                 onConfirm={() => updateRole(contextUserId, "user")}
+                                 text="This will demote the user to a regular user." />
 
             <PasswordChange open={passwordChangeDialogOpen} onClose={() => setPasswordChangeDialogOpen(false)}
                             accountId={contextUserId} />
@@ -83,29 +83,29 @@ export const ContextMenu = ({users, closeContextMenu, loadUsers, contextUserId, 
                     <p>Change password</p>
                 </div>
 
-                {users.find(u => u.id === contextUserId).role === "user" && (
+                {users.find(u => u.id === contextUserId).role === "user" && user.id !== contextUserId && (
                     <div className="context-item" onClick={() => openPromotionDialog()}>
                         <Icon path={mdiSecurity} />
                         <p>Promote to admin</p>
                     </div>
                 )}
 
-                {users.find(u => u.id === contextUserId).role === "admin" && (
+                {users.find(u => u.id === contextUserId).role === "admin" && user.id !== contextUserId && (
                     <div className="context-item" onClick={() => openDemotionDialog()}>
                         <Icon path={mdiAccount} />
                         <p>Demote to user</p>
                     </div>
                 )}
 
-                <div className="context-item" onClick={() => openDeletionDialog()}>
+                {user.id !== contextUserId && <div className="context-item" onClick={() => openDeletionDialog()}>
                     <Icon path={mdiAccountRemove} />
                     <p>Delete user</p>
-                </div>
-                <div className="context-item" onClick={() => loginAsUser(contextUserId)}>
+                </div>}
+                {user.id !== contextUserId && <div className="context-item" onClick={() => loginAsUser(contextUserId)}>
                     <Icon path={mdiLogin} />
                     <p>Login as user</p>
-                </div>
-            </div>}
-        </>
-    );
-}
+                </div>}
+                    </div>}
+            </>
+                );
+            }
