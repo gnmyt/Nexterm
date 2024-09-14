@@ -1,0 +1,1 @@
+export {FileRenderer as default} from "./FileRenderer.jsx";
