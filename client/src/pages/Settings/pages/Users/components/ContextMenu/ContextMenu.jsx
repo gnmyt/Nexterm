@@ -1,11 +1,18 @@
 import Icon from "@mdi/react";
 import { mdiAccount, mdiAccountRemove, mdiKey, mdiLogin, mdiSecurity } from "@mdi/js";
-import { deleteRequest, patchRequest } from "@/common/utils/RequestUtil.js";
-import { useState } from "react";
+import { deleteRequest, patchRequest, postRequest } from "@/common/utils/RequestUtil.js";
+import { useContext, useState } from "react";
 import { ActionConfirmDialog } from "@/common/components/ActionConfirmDialog/ActionConfirmDialog.jsx";
 import PasswordChange from "@/pages/Settings/pages/Account/dialogs/PasswordChange";
+import { UserContext } from "@/common/contexts/UserContext.jsx";
+import { useNavigate } from "react-router-dom";
 
 export const ContextMenu = ({users, closeContextMenu, loadUsers, contextUserId, contextMenu}) => {
+
+    const {overrideToken} = useContext(UserContext);
+
+    const navigate = useNavigate();
+
     const [passwordChangeDialogOpen, setPasswordChangeDialogOpen] = useState(false);
     const [promoteDialogOpen, setPromoteDialogOpen] = useState(false);
     const [demoteDialogOpen, setDemoteDialogOpen] = useState(false);
@@ -43,6 +50,13 @@ export const ContextMenu = ({users, closeContextMenu, loadUsers, contextUserId, 
         });
 
         closeContextMenu();
+    }
+
+    const loginAsUser = (userId) => {
+        postRequest(`users/${userId}/login`).then(response => {
+            overrideToken(response.token);
+            navigate("/servers");
+        });
     }
 
     return (
@@ -87,8 +101,7 @@ export const ContextMenu = ({users, closeContextMenu, loadUsers, contextUserId, 
                     <Icon path={mdiAccountRemove} />
                     <p>Delete user</p>
                 </div>
-                <div className="context-item" onClick={() => {
-                }}>
+                <div className="context-item" onClick={() => loginAsUser(contextUserId)}>
                     <Icon path={mdiLogin} />
                     <p>Login as user</p>
                 </div>
