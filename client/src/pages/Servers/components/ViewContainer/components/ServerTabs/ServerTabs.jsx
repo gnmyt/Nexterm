@@ -21,7 +21,7 @@ export const ServerTabs = ({activeSessions, setActiveSessionId, activeSessionId,
                         <div key={session.id} className={"server-tab" + (session.id === activeSessionId ? " server-tab-active" : "")}
                                 onClick={() => setActiveSessionId(session.id)}>
                             <Icon path={server?.icon ? loadIcon(server.icon) : getIconByType(server?.type)} />
-                            <h2>{server?.name}</h2>
+                            <h2>{server?.name} {session.type === "sftp" ? " (SFTP)" : ""}</h2>
                             <Icon path={mdiClose} onClick={(e) => {
                                 e.stopPropagation();
                                 disconnectFromServer(session.id);
