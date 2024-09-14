@@ -7,9 +7,15 @@
   height: 100%
   display: flex
   flex-direction: column
+  justify-content: space-between
   align-items: center
   border-right: 2px solid $dark-gray
   overflow: hidden
+
+  .sidebar-top
+    display: flex
+    flex-direction: column
+    align-items: center
 
   img
     margin-top: 0.5rem
@@ -18,7 +24,7 @@
 
   hr
     background-color: $dark-gray
-    width: 40%
+    width: 50%
     margin: 1rem 0
     border: none
     height: 2px
@@ -44,7 +50,28 @@
         width: 2.5rem
         height: 2.5rem
 
+      &:hover
+        color: $primary
+
     .nav-item-active
       background-color: $dark-gray
       border: 1px solid $gray
       color: $primary
+
+
+  .log-out-btn
+    border-top: 2px solid $dark-gray
+    width: 100%
+    height: 3rem
+    display: flex
+    justify-content: center
+    align-items: center
+    padding: 0.5rem
+    cursor: pointer
+
+    svg
+      width: 2rem
+      height: 2rem
+
+    &:hover
+      color: $error
