@@ -80,6 +80,7 @@ export const FileRenderer = ({ session, disconnectFromServer }) => {
             case 0x4:
             case 0x6:
             case 0x7:
+            case 0x8:
                 listFiles();
                 break;
             case 0x2:
