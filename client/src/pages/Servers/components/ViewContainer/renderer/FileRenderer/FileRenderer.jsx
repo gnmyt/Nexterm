@@ -78,6 +78,8 @@ export const FileRenderer = ({ session, disconnectFromServer }) => {
             case 0x0:
             case 0x5:
             case 0x4:
+            case 0x6:
+            case 0x7:
                 listFiles();
                 break;
             case 0x2:
@@ -150,12 +152,13 @@ export const FileRenderer = ({ session, disconnectFromServer }) => {
 
     return (
         <div className="file-renderer">
-            <div class="file-manager">
+            <div className="file-manager">
                 <CreateFolderDialog open={folderDialogOpen} onclose={() => setFolderDialogOpen(false)}
                                     createFolder={createFolder} />
                 <ActionBar path={directory} updatePath={changeDirectory} createFolder={() => setFolderDialogOpen(true)}
                            uploadFile={uploadFile} goBack={goBack} goForward={goForward} historyIndex={historyIndex} historyLength={history.length} />
-                <FileList items={items} path={directory} updatePath={changeDirectory} />
+                <FileList items={items} path={directory} updatePath={changeDirectory} sendOperation={sendOperation}
+                            serverId={session.server} identityId={session.identity} />
             </div>
             {uploadProgress > 0 && <div className="upload-progress" style={{ width: `${uploadProgress}%` }} />}
         </div>
