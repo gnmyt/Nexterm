@@ -1,7 +1,7 @@
 import "./styles.sass";
 import Icon from "@mdi/react";
 import {
-    mdiConnection,
+    mdiConnection, mdiFolderOpen,
     mdiFolderPlus,
     mdiFolderRemove,
     mdiFormTextbox,
@@ -16,7 +16,7 @@ import ProxmoxLogo from "./assets/proxmox.png";
 
 export const ContextMenu = ({
                                 position, id, type, setRenameStateId, setServerDialogOpen, setCurrentFolderId,
-                                setEditServerId, connectToServer, connectToPVEServer, setProxmoxDialogOpen,
+                                setEditServerId, connectToServer, connectToPVEServer, setProxmoxDialogOpen, openSFTP
                             }) => {
 
     const { loadServers, getServerById, getPVEServerById, getPVEContainerById } = useContext(ServerContext);
@@ -55,6 +55,10 @@ export const ContextMenu = ({
 
         connectToServer(server?.id, server?.identities[0]);
     };
+
+    const connectSFTP = () => {
+        openSFTP(server?.id, server?.identities[0]);
+    }
 
     const editServer = () => {
         setEditServerId(id);
@@ -106,6 +110,14 @@ export const ContextMenu = ({
                     <Icon path={mdiConnection} />
                     <p>Connect</p>
                 </div>}
+
+                {server?.identities?.length !== 0 && server?.protocol === "ssh" &&
+                    <div className="context-item" onClick={connectSFTP}>
+                        <Icon path={mdiFolderOpen} />
+                        <p>Open SFTP</p>
+                    </div>
+                }
+
                 <div className="context-item" onClick={editServer}>
                     <Icon path={mdiPencil} />
                     <p>Edit Server</p>

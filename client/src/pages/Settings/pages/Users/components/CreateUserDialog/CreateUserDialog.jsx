@@ -87,7 +87,7 @@ export const CreateUserDialog = ({open, onClose, loadUsers}) => {
                            value={password} setValue={setPassword} />
                 </div>
 
-                <div class="btn-area">
+                <div className="btn-area">
                     <Button text="Create" onClick={submit} />
                 </div>
             </div>

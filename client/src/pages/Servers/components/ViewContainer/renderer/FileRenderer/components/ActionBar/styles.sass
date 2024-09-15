@@ -1,0 +1,49 @@
+@import "@/common/styles/colors"
+
+.action-bar
+  display: flex
+  margin: 0 2rem
+  padding-top: 1.5rem
+  align-items: center
+
+  svg
+    width: 2rem
+    height: 2rem
+    cursor: pointer
+    transition: color 0.2s
+
+    &:hover
+      color: $primary
+
+  .nav-disabled
+    color: $gray
+    cursor: not-allowed
+
+    &:hover
+      color: $gray
+
+  .address-bar
+    user-select: none
+    padding: 0.5rem 1rem
+    background-color: $dark-gray
+    border: 1px solid $gray
+    border-radius: 0.5rem
+    display: flex
+    gap: 0.5rem
+    width: 100%
+    margin: 0 1rem
+
+    .path-part-divider
+      color: $subtext
+      cursor: pointer
+
+    .path-part
+      cursor: pointer
+
+    *:hover
+      text-decoration: underline
+
+  .file-actions
+    display: flex
+    gap: 1rem
+    margin-right: 1rem

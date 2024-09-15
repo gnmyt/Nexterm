@@ -19,6 +19,21 @@ export const request = async (url, method, body, headers) => {
     return data;
 }
 
+export const downloadRequest = async (url) => {
+    const response = await fetch(url, {
+        method: "GET",
+        headers: {"Content-Type": "application/json"},
+    });
+
+    if (response.status === 401) throw new Error("Unauthorized");
+
+    const blob = await response.blob();
+
+    if (!response.ok) throw blob;
+
+    return blob;
+}
+
 const getToken = () => {
     return localStorage.getItem("overrideToken") || localStorage.getItem("sessionToken");
 }

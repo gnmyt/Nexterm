@@ -4,6 +4,7 @@ import { useContext } from "react";
 import { ServerContext } from "@/common/contexts/ServerContext.jsx";
 import GuacamoleRenderer from "@/pages/Servers/components/ViewContainer/renderer/GuacamoleRenderer.jsx";
 import XtermRenderer from "@/pages/Servers/components/ViewContainer/renderer/XtermRenderer.jsx";
+import FileRenderer from "@/pages/Servers/components/ViewContainer/renderer/FileRenderer/index.js";
 
 export const ViewContainer = ({activeSessions, activeSessionId, setActiveSessionId, disconnectFromServer}) => {
 
@@ -24,7 +25,11 @@ export const ViewContainer = ({activeSessions, activeSessionId, setActiveSession
                         <div key={session.id} className={"view" + (session.id === activeSessionId ? " view-active" : "")}>
                             {(server.protocol === "vnc" || server.protocol === "rdp") &&
                                 <GuacamoleRenderer session={session} disconnectFromServer={disconnectFromServer} />}
-                            {server.protocol === "ssh" && <XtermRenderer session={session} disconnectFromServer={disconnectFromServer} />}
+                            {server.protocol === "ssh" && session.type === "ssh"
+                                && <XtermRenderer session={session} disconnectFromServer={disconnectFromServer} />}
+
+                            {server.protocol === "ssh" && session.type === "sftp"
+                                && <FileRenderer session={session} disconnectFromServer={disconnectFromServer} />}
 
                             {isPVE && server.type === "pve-qemu" &&
                                 <GuacamoleRenderer session={session} disconnectFromServer={disconnectFromServer} pve />}

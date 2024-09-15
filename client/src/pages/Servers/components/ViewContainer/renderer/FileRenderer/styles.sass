@@ -1,0 +1,48 @@
+@import "@/common/styles/colors"
+
+.file-renderer
+  height: 100%
+  width: 100%
+
+  .drag-overlay
+    position: absolute
+    width: calc(100vw - 23rem)
+    height: calc(100% - 3.5rem)
+    display: flex
+    justify-content: center
+    align-items: center
+    background-color: rgba(0, 0, 0, 0.5)
+    backdrop-filter: blur(0.3rem)
+    color: $white
+    font-size: 1.5rem
+    z-index: 1
+
+    .drag-item
+      padding: 4rem 2rem
+      width: 20rem
+      border: 0.2rem dashed $white
+      border-radius: 0.5rem
+      display: flex
+      flex-direction: column
+      align-items: center
+      gap: 2rem
+
+      h2
+        margin: 0
+        font-weight: 600
+        text-align: center
+
+      svg
+        width: 8rem
+
+
+  .file-manager
+    height: calc(100% - 0.5rem)
+    display: flex
+    flex-direction: column
+
+  .upload-progress
+    height: 0.5rem
+    border-top-left-radius: 0.1rem
+    border-top-right-radius: 0.1rem
+    background-color: $primary
