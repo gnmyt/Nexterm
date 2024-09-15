@@ -5,7 +5,7 @@ import IconInput from "@/common/components/IconInput";
 import { mdiFolder } from "@mdi/js";
 import "./styles.sass";
 
-export const CreateFolderDialog = ({ open, onclose, createFolder }) => {
+export const CreateFolderDialog = ({ open, onClose, createFolder }) => {
 
     const [folderName, setFolderName] = useState("");
 
@@ -14,7 +14,7 @@ export const CreateFolderDialog = ({ open, onclose, createFolder }) => {
         if (folderName.includes("/")) return;
 
         createFolder(folderName);
-        onclose();
+        onClose();
     }
 
     useEffect(() => {
@@ -22,7 +22,7 @@ export const CreateFolderDialog = ({ open, onclose, createFolder }) => {
     }, [open]);
 
     return (
-        <DialogProvider open={open} onClose={onclose}>
+        <DialogProvider open={open} onClose={onClose}>
             <div className="folder-dialog">
                 <h2>Create Folder</h2>
                 <IconInput icon={mdiFolder} placeholder="Folder Name" value={folderName} setValue={setFolderName} />
