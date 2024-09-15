@@ -6,11 +6,15 @@ import FileList from "@/pages/Servers/components/ViewContainer/renderer/FileRend
 import "./styles.sass";
 import CreateFolderDialog from "./components/CreateFolderDialog";
 import FileEditor from "@/pages/Servers/components/ViewContainer/renderer/FileRenderer/components/FileEditor/index.js";
+import Icon from "@mdi/react";
+import { mdiCloudUpload } from "@mdi/js";
 
 const CHUNK_SIZE = 128 * 1024;
 
 export const FileRenderer = ({ session, disconnectFromServer }) => {
     const { sessionToken } = useContext(UserContext);
+
+    const [dragging, setDragging] = useState(false);
 
     const [folderDialogOpen, setFolderDialogOpen] = useState(false);
 
@@ -157,12 +161,38 @@ export const FileRenderer = ({ session, disconnectFromServer }) => {
         }
     };
 
+    const handleDrag = async (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+
+        if (e.type === "dragover") setDragging(true);
+
+        if (e.type === "dragleave") setDragging(false);
+
+        if (e.type === "drop") {
+            setDragging(false);
+
+            const files = e.dataTransfer.files;
+            for (let i = 0; i < files.length; i++) await uploadFileChunks(files[i]);
+
+            setUploadProgress(0);
+
+            return false;
+        }
+    }
+
     useEffect(() => {
         listFiles();
     }, [directory]);
 
     return (
-        <div className="file-renderer">
+        <div className="file-renderer" onDragOver={handleDrag} onDragLeave={handleDrag} onDrop={handleDrag}>
+            <div className="drag-overlay" style={{ display: dragging && currentFile === null ? "flex" : "none" }}>
+                <div class="drag-item">
+                    <Icon path={mdiCloudUpload} />
+                    <h2>Drop files to upload</h2>
+                </div>
+            </div>
             {currentFile === null && <div className="file-manager">
                 <CreateFolderDialog open={folderDialogOpen} onclose={() => setFolderDialogOpen(false)}
                                     createFolder={createFolder} />
