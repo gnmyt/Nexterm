@@ -38,7 +38,6 @@ export const FileList = ({ items, updatePath, path, sendOperation, serverId, ide
 
     const closeContextMenu = () => {
         setMenuPosition({ x: 0, y: 0 });
-        setSelectedItem(null);
     };
 
     useEffect(() => {
@@ -65,11 +64,9 @@ export const FileList = ({ items, updatePath, path, sendOperation, serverId, ide
                     </div>
                 ))}
 
-            {selectedItem && (
-                <ContextMenu menuPosition={menuPosition} selectedItem={selectedItem} sendOperation={sendOperation}
-                             path={path} updatePath={updatePath} closeContextMenu={closeContextMenu}
-                             serverId={serverId} identityId={identityId} />
-            )}
+            <ContextMenu menuPosition={menuPosition} selectedItem={selectedItem} sendOperation={sendOperation}
+                         path={path} updatePath={updatePath} closeContextMenu={closeContextMenu}
+                         serverId={serverId} identityId={identityId} />
         </div>
     );
 };
