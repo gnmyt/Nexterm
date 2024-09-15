@@ -11,6 +11,7 @@ import Settings from "@/pages/Settings";
 import Apps from "@/pages/Apps";
 
 export const GITHUB_URL = "https://github.com/gnmyt/Nexterm";
+export const DISCORD_URL = "https://dc.gnmyt.dev/";
 
 const App = () => {
     const router = createBrowserRouter([
