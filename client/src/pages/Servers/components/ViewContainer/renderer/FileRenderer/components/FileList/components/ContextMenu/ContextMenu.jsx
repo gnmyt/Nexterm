@@ -1,14 +1,11 @@
-import React, { useContext, useState } from "react";
+import React, { useState } from "react";
 import Icon from "@mdi/react";
 import { mdiFileDownload, mdiFormTextbox, mdiTrashCan } from "@mdi/js";
-import { UserContext } from "@/common/contexts/UserContext.jsx";
 import RenameItemDialog from "../RenameItemDialog";
 
-export const ContextMenu = ({ menuPosition, selectedItem, closeContextMenu, sendOperation, path, serverId, identityId }) => {
+export const ContextMenu = ({ menuPosition, selectedItem, closeContextMenu, sendOperation, path, downloadFile }) => {
 
     const [renameDialogOpen, setRenameDialogOpen] = useState(false);
-
-    const {sessionToken} = useContext(UserContext);
 
     const handleDelete = () => {
         sendOperation(selectedItem.type === "folder" ? 0x7 : 0x6, { path: path + "/" + selectedItem.name });
@@ -17,13 +14,7 @@ export const ContextMenu = ({ menuPosition, selectedItem, closeContextMenu, send
     };
 
     const handleDownload = () => {
-        const url = `/api/servers/sftp-download?serverId=${serverId}&identityId=${identityId}&path=${path}/${selectedItem.name}&sessionToken=${sessionToken}`;
-
-        const link = document.createElement("a");
-        link.href = url;
-        link.download = selectedItem.name;
-        document.body.appendChild(link);
-        link.click();
+        downloadFile(path + "/" + selectedItem.name);
 
         closeContextMenu();
     }
