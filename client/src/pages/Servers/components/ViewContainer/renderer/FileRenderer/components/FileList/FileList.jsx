@@ -1,12 +1,32 @@
 import React, { useEffect, useState } from "react";
 import "./styles.sass";
 import Icon from "@mdi/react";
-import { mdiDotsVertical, mdiFile, mdiFolder } from "@mdi/js";
+import {
+    mdiArchive,
+    mdiDotsVertical,
+    mdiFile,
+    mdiFileDocument,
+    mdiFolder,
+    mdiImage,
+    mdiMovie,
+    mdiMusicNote,
+} from "@mdi/js";
 import ContextMenu from "./components/ContextMenu";
 
-export const FileList = ({ items, updatePath, path, sendOperation, serverId, identityId }) => {
+export const FileList = ({ items, updatePath, path, sendOperation, downloadFile, setCurrentFile }) => {
     const [menuPosition, setMenuPosition] = useState({ x: 0, y: 0 });
     const [selectedItem, setSelectedItem] = useState(null);
+
+    const getIconByFileEnding = (ending) => {
+        const icons = {
+            jpg: mdiImage, jpeg: mdiImage, png: mdiImage, gif: mdiImage, bmp: mdiImage,
+            mp3: mdiMusicNote, wav: mdiMusicNote, flac: mdiMusicNote, ogg: mdiMusicNote,
+            mp4: mdiMovie, avi: mdiMovie, mov: mdiMovie, mkv: mdiMovie,
+            txt: mdiFileDocument, log: mdiFileDocument,
+            zip: mdiArchive, rar: mdiArchive, '7z': mdiArchive,
+        };
+        return icons[ending] || mdiFile;
+    };
 
     const convertUnits = (bytes) => {
         const sizes = ["Bytes", "KB", "MB", "GB", "TB"];
@@ -19,6 +39,10 @@ export const FileList = ({ items, updatePath, path, sendOperation, serverId, ide
         if (item.type === "folder") {
             const pathArray = (path.endsWith("/") ? path : path + "/") + item.name;
             updatePath(pathArray);
+        } else if (item.type === "file" && item.size < 1024 * 1024) {
+            setCurrentFile((path.endsWith("/") ? path : path + "/") + item.name);
+        } else {
+            downloadFile((path.endsWith("/") ? path : path + "/") + item.name);
         }
     };
 
@@ -52,11 +76,11 @@ export const FileList = ({ items, updatePath, path, sendOperation, serverId, ide
 
                 .map((item, index) => (
                     <div key={index} className="file-item"
-                         style={{ cursor: item.type === "folder" ? "pointer" : "default" }}
                          onClick={() => handleClick(item)} onContextMenu={(e) => handleContextMenu(e, item)}>
                         <div className="file-name">
-                            <Icon path={item.type === "folder" ? mdiFolder : mdiFile} />
-                            <h2>{item.name}</h2>
+                            <Icon
+                                path={item.type === "folder" ? mdiFolder : getIconByFileEnding(item.name.split(".").pop())} />
+                            <h2 title={item.name}>{item.name.length > 25 ? item.name.substring(0, 25) + "..." : item.name}</h2>
                         </div>
                         <p>{item.type === "file" && convertUnits(item.size)}</p>
                         <p>{new Date(item.last_modified * 1000).toLocaleString()}</p>
@@ -66,7 +90,7 @@ export const FileList = ({ items, updatePath, path, sendOperation, serverId, ide
 
             <ContextMenu menuPosition={menuPosition} selectedItem={selectedItem} sendOperation={sendOperation}
                          path={path} updatePath={updatePath} closeContextMenu={closeContextMenu}
-                         serverId={serverId} identityId={identityId} />
+                         downloadFile={downloadFile} />
         </div>
     );
 };
