@@ -18,6 +18,9 @@ export const FileRenderer = ({ session, disconnectFromServer }) => {
     const [directory, setDirectory] = useState("/");
     const [items, setItems] = useState([]);
 
+    const [history, setHistory] = useState(["/"]);
+    const [historyIndex, setHistoryIndex] = useState(0);
+
     const protocol = location.protocol === "https:" ? "wss" : "ws";
     const path = process.env.NODE_ENV === "production" ? `${window.location.host}/api/servers/sftp` : "localhost:6989/api/servers/sftp";
     const url = `${protocol}://${path}?sessionToken=${sessionToken}&serverId=${session.server}&identityId=${session.identity}`;
@@ -57,7 +60,6 @@ export const FileRenderer = ({ session, disconnectFromServer }) => {
             const file = fileInput.files[0];
             await uploadFileChunks(file);
             setUploadProgress(0);
-
         };
         fileInput.click();
     };
@@ -80,9 +82,6 @@ export const FileRenderer = ({ session, disconnectFromServer }) => {
                 break;
             case 0x2:
                 console.log("Upload started");
-                break;
-            case 0x3:
-                console.log("Chunk received");
                 break;
             case 0x1:
                 setItems(payload.files);
@@ -116,18 +115,49 @@ export const FileRenderer = ({ session, disconnectFromServer }) => {
         sendOperation(0x1, { path: directory });
     };
 
+    const changeDirectory = (newDirectory) => {
+        if (newDirectory === directory) return;
+
+        if (historyIndex === history.length - 1) {
+            setHistory([...history, newDirectory]);
+        } else {
+            setHistory(history.slice(0, historyIndex + 1).concat(newDirectory));
+        }
+
+        setHistoryIndex(historyIndex + 1);
+        setDirectory(newDirectory);
+    };
+
+    const goBack = () => {
+        if (historyIndex > 0) {
+            const newIndex = historyIndex - 1;
+            setHistoryIndex(newIndex);
+            setDirectory(history[newIndex]);
+        }
+    };
+
+    const goForward = () => {
+        if (historyIndex < history.length - 1) {
+            const newIndex = historyIndex + 1;
+            setHistoryIndex(newIndex);
+            setDirectory(history[newIndex]);
+        }
+    };
+
     useEffect(() => {
         listFiles();
     }, [directory]);
 
     return (
         <div className="file-renderer">
-            {uploadProgress > 0 && <progress value={uploadProgress} max="100" />}
-            <CreateFolderDialog open={folderDialogOpen} onclose={() => setFolderDialogOpen(false)}
-                                createFolder={createFolder} />
-            <ActionBar path={directory} updatePath={setDirectory} createFolder={() => setFolderDialogOpen(true)}
-                       sendMessage={sendOperation} uploadFile={uploadFile} />
-            <FileList items={items} path={directory} updatePath={setDirectory} />
+            <div class="file-manager">
+                <CreateFolderDialog open={folderDialogOpen} onclose={() => setFolderDialogOpen(false)}
+                                    createFolder={createFolder} />
+                <ActionBar path={directory} updatePath={changeDirectory} createFolder={() => setFolderDialogOpen(true)}
+                           uploadFile={uploadFile} goBack={goBack} goForward={goForward} historyIndex={historyIndex} historyLength={history.length} />
+                <FileList items={items} path={directory} updatePath={changeDirectory} />
+            </div>
+            {uploadProgress > 0 && <div className="upload-progress" style={{ width: `${uploadProgress}%` }} />}
         </div>
     );
 };
