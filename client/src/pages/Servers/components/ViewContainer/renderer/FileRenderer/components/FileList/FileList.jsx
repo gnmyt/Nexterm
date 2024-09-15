@@ -90,7 +90,7 @@ export const FileList = ({ items, updatePath, path, sendOperation, downloadFile,
 
             <ContextMenu menuPosition={menuPosition} selectedItem={selectedItem} sendOperation={sendOperation}
                          path={path} updatePath={updatePath} closeContextMenu={closeContextMenu}
-                         downloadFile={downloadFile} />
+                         downloadFile={downloadFile} setCurrentFile={setCurrentFile} />
         </div>
     );
 };
