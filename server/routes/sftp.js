@@ -100,8 +100,6 @@ module.exports = async (ws, req) => {
                         } catch (err) {
                             console.log(err);
                         }
-
-                        ws.send(Buffer.from([OPERATIONS.UPLOAD_FILE_CHUNK]));
                         break;
 
                     case OPERATIONS.UPLOAD_FILE_END:
