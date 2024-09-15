@@ -89,7 +89,7 @@ export const Servers = () => {
                     <p>Welcome to Nexterm. The open-source server manager for SSH, VNC and RDP.</p>
                     <div class="button-area">
                         <Button text="Star on GitHub" onClick={() => window.open(GITHUB_URL, "_blank")} icon={mdiStar} />
-                        <Button text="Join the discord" onClick={() => window.open(DISCORD_URL, "_blank")} icon={siDiscord.path} />
+                        <Button text="Join Discord" onClick={() => window.open(DISCORD_URL, "_blank")} icon={siDiscord.path} />
                     </div>
                 </div>
                 <img src={WelcomeImage} alt="Welcome" />
