@@ -1,5 +1,35 @@
 const prepareSSH = require("../utils/sshPreCheck");
 
+const deleteFolderRecursive = (sftp, folderPath, callback) => {
+    sftp.readdir(folderPath, (err, list) => {
+        if (err) return callback(err);
+
+        if (list.length === 0) return sftp.rmdir(folderPath, callback);
+
+        let itemsToDelete = list.length;
+
+        list.forEach(file => {
+            const fullPath = `${folderPath}/${file.filename}`;
+
+            if (file.longname.startsWith("d")) {
+                deleteFolderRecursive(sftp, fullPath, (err) => {
+                    if (err) return callback(err);
+
+                    itemsToDelete -= 1;
+                    if (itemsToDelete === 0) sftp.rmdir(folderPath, callback);
+                });
+            } else {
+                sftp.unlink(fullPath, (err) => {
+                    if (err) return callback(err);
+
+                    itemsToDelete -= 1;
+                    if (itemsToDelete === 0) sftp.rmdir(folderPath, callback);
+                });
+            }
+        });
+    });
+};
+
 module.exports = async (ws, req) => {
     const ssh = await prepareSSH(ws, req);
     if (!ssh) return;
@@ -11,13 +41,20 @@ module.exports = async (ws, req) => {
         UPLOAD_FILE_CHUNK: 0x3,
         UPLOAD_FILE_END: 0x4,
         CREATE_FOLDER: 0x5,
-        DELETE_ITEM: 0x6,
+        DELETE_FILE: 0x6,
+        DELETE_FOLDER: 0x7,
+        RENAME_FILE: 0x8,
     };
 
     let uploadStream = null;
 
     ssh.on("ready", () => {
         ssh.sftp((err, sftp) => {
+            if (err) {
+                console.log(err);
+                return;
+            }
+
             ws.send(Buffer.from([OPERATIONS.READY]));
 
             ws.on("message", (msg) => {
@@ -83,12 +120,37 @@ module.exports = async (ws, req) => {
                         });
                         break;
 
-                    case OPERATIONS.DELETE_ITEM:
-                        sftp.rm(payload.path, (err) => {
-                            if (err) throw err;
-                            ws.send(Buffer.from([OPERATIONS.DELETE_ITEM]));
+                    case OPERATIONS.DELETE_FILE:
+                        sftp.unlink(payload.path, (err) => {
+                            if (err) {
+                                console.log(err);
+                                return;
+                            }
+                            ws.send(Buffer.from([OPERATIONS.DELETE_FILE]));
                         });
                         break;
+
+                    case OPERATIONS.DELETE_FOLDER:
+                        deleteFolderRecursive(sftp, payload.path, (err) => {
+                            if (err) {
+                                console.log(err);
+                                return;
+                            }
+                            ws.send(Buffer.from([OPERATIONS.DELETE_FOLDER]));
+                        });
+                        break;
+                    case OPERATIONS.RENAME_FILE:
+                        sftp.rename(payload.path, payload.newPath, (err) => {
+                            if (err) {
+                                console.log(err);
+                                return;
+                            }
+                            ws.send(Buffer.from([OPERATIONS.RENAME_FILE]));
+                        });
+                        break;
+
+                    default:
+                        console.log(`Unknown operation: ${operation}`);
                 }
             });
         });
