@@ -4,11 +4,12 @@ import { UserContext } from "@/common/contexts/UserContext.jsx";
 import { useContext, useState } from "react";
 import Button from "@/common/components/Button";
 import WelcomeImage from "@/common/img/welcome.png";
-import { GITHUB_URL } from "@/App.jsx";
+import { DISCORD_URL, GITHUB_URL } from "@/App.jsx";
 import ServerDialog from "@/pages/Servers/components/ServerDialog";
 import ViewContainer from "@/pages/Servers/components/ViewContainer";
 import ProxmoxDialog from "@/pages/Servers/components/ProxmoxDialog";
 import { mdiStar } from "@mdi/js";
+import { siDiscord } from "simple-icons";
 
 export const Servers = () => {
 
@@ -86,7 +87,10 @@ export const Servers = () => {
                 <div className="area-left">
                     <h1>Hi, <span>{user?.firstName || "User"} {user?.lastName || "name"}</span>!</h1>
                     <p>Welcome to Nexterm. The open-source server manager for SSH, VNC and RDP.</p>
-                    <Button text="Star on GitHub" onClick={() => window.open(GITHUB_URL, "_blank")} icon={mdiStar} />
+                    <div class="button-area">
+                        <Button text="Star on GitHub" onClick={() => window.open(GITHUB_URL, "_blank")} icon={mdiStar} />
+                        <Button text="Join the discord" onClick={() => window.open(DISCORD_URL, "_blank")} icon={siDiscord.path} />
+                    </div>
                 </div>
                 <img src={WelcomeImage} alt="Welcome" />
             </div>}
