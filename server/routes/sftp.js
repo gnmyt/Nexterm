@@ -97,6 +97,10 @@ module.exports = async (ws, req) => {
                         }
 
                         uploadStream = sftp.createWriteStream(payload.path);
+                        uploadStream.on("error", () => {
+                            uploadStream = null;
+                        });
+
                         ws.send(Buffer.from([OPERATIONS.UPLOAD_FILE_START]));
                         break;
 
@@ -137,7 +141,6 @@ module.exports = async (ws, req) => {
                     case OPERATIONS.DELETE_FOLDER:
                         deleteFolderRecursive(sftp, payload.path, (err) => {
                             if (err) {
-                                console.log(err);
                                 return;
                             }
                             ws.send(Buffer.from([OPERATIONS.DELETE_FOLDER]));
@@ -146,7 +149,6 @@ module.exports = async (ws, req) => {
                     case OPERATIONS.RENAME_FILE:
                         sftp.rename(payload.path, payload.newPath, (err) => {
                             if (err) {
-                                console.log(err);
                                 return;
                             }
                             ws.send(Buffer.from([OPERATIONS.RENAME_FILE]));
