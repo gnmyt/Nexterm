@@ -99,7 +99,7 @@ const XtermRenderer = ({ session, disconnectFromServer, pve }) => {
     }, [sessionToken]);
 
     return (
-        <div ref={ref} style={{ width: "100%", height: "100%" }} />
+        <div ref={ref} style={{ width: "100%", height: "98%" }} />
     );
 };
 
