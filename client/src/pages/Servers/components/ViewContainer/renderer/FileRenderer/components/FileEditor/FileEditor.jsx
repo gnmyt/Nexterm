@@ -12,6 +12,11 @@ export const FileEditor = ({ currentFile, serverId, identityId, setCurrentFile, 
     const [fileContent, setFileContent] = useState("");
     const [fileContentChanged, setFileContentChanged] = useState(false);
 
+    const toBase64 = (bytes) => {
+        const binString = String.fromCodePoint(...bytes);
+        return btoa(binString);
+    }
+
     const [unsavedChangesDialog, setUnsavedChangesDialog] = useState(false);
 
     const { sessionToken } = useContext(UserContext);
@@ -37,16 +42,12 @@ export const FileEditor = ({ currentFile, serverId, identityId, setCurrentFile, 
         sendOperation(0x2, { path: currentFile });
 
         const chunks = [];
-        let chunkIndex = 0;
-        const chunkSize = 1024;
-
-        while (chunkIndex < fileContent.length) {
-            chunks.push(fileContent.slice(chunkIndex, chunkIndex + chunkSize));
-            chunkIndex += chunkSize;
+        for (let i = 0; i < fileContent.length; i += 1024) {
+            chunks.push(toBase64(new TextEncoder().encode(fileContent.substring(i, i + 1024))));
         }
 
         for (let i = 0; i < chunks.length; i++) {
-            sendOperation(0x3, { chunk: btoa(chunks[i]) });
+            sendOperation(0x3, { chunk: chunks[i] });
         }
 
         sendOperation(0x4);
