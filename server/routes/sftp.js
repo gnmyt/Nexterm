@@ -48,6 +48,10 @@ module.exports = async (ws, req) => {
 
     let uploadStream = null;
 
+    ssh.on("error", () => {
+        ws.close();
+    });
+
     ssh.on("ready", () => {
         ssh.sftp((err, sftp) => {
             if (err) {
@@ -56,6 +60,8 @@ module.exports = async (ws, req) => {
             }
 
             ws.send(Buffer.from([OPERATIONS.READY]));
+
+            sftp.on("error", () => {});
 
             ws.on("message", (msg) => {
                 const operation = msg[0];
