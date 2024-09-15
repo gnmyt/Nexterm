@@ -4,7 +4,7 @@ import { useContext } from "react";
 import { ServerContext } from "@/common/contexts/ServerContext.jsx";
 import GuacamoleRenderer from "@/pages/Servers/components/ViewContainer/renderer/GuacamoleRenderer.jsx";
 import XtermRenderer from "@/pages/Servers/components/ViewContainer/renderer/XtermRenderer.jsx";
-import FileRenderer from "@/pages/Servers/components/ViewContainer/renderer/FileRenderer/index.js";
+import FileRenderer from "@/pages/Servers/components/ViewContainer/renderer/FileRenderer";
 
 export const ViewContainer = ({activeSessions, activeSessionId, setActiveSessionId, disconnectFromServer}) => {
 

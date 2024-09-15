@@ -5,7 +5,7 @@ import ActionBar from "@/pages/Servers/components/ViewContainer/renderer/FileRen
 import FileList from "@/pages/Servers/components/ViewContainer/renderer/FileRenderer/components/FileList";
 import "./styles.sass";
 import CreateFolderDialog from "./components/CreateFolderDialog";
-import FileEditor from "@/pages/Servers/components/ViewContainer/renderer/FileRenderer/components/FileEditor/index.js";
+import FileEditor from "@/pages/Servers/components/ViewContainer/renderer/FileRenderer/components/FileEditor";
 import Icon from "@mdi/react";
 import { mdiCloudUpload } from "@mdi/js";
 

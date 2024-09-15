@@ -2,7 +2,7 @@ import "./styles.sass";
 import { useContext, useEffect, useState } from "react";
 import { UserContext } from "@/common/contexts/UserContext.jsx";
 import { getRequest } from "@/common/utils/RequestUtil.js";
-import Button from "@/common/components/Button/index.js";
+import Button from "@/common/components/Button";
 import Icon from "@mdi/react";
 import {
     mdiAccount,

@@ -1,6 +1,6 @@
 import "./styles.sass";
 import { DialogProvider } from "@/common/components/Dialog";
-import Button from "@/common/components/Button/index.js";
+import Button from "@/common/components/Button";
 
 export const ActionConfirmDialog = ({open, setOpen, onConfirm, onCancel, text}) => {
 

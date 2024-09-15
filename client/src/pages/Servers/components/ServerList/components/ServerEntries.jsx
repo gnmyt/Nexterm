@@ -1,6 +1,6 @@
 import ServerObject from "@/pages/Servers/components/ServerList/components/ServerObject";
 import CollapsibleFolder from "./CollapsibleFolder.jsx";
-import PVEObject from "@/pages/Servers/components/ServerList/components/PVEObject/index.js";
+import PVEObject from "@/pages/Servers/components/ServerList/components/PVEObject";
 
 const ServerEntries = ({ entries, nestedLevel, setRenameStateId, connectToServer, connectToPVEServer, sshOnly = false }) => {
     return (

@@ -5,7 +5,7 @@ import { ServerContext } from "@/common/contexts/ServerContext.jsx";
 import IconInput from "@/common/components/IconInput";
 import { mdiAccountCircleOutline, mdiFormTextbox, mdiIp, mdiLockOutline } from "@mdi/js";
 import Button from "@/common/components/Button";
-import Input from "@/common/components/IconInput/index.js";
+import Input from "@/common/components/IconInput";
 import { getRequest, patchRequest, postRequest, putRequest } from "@/common/utils/RequestUtil.js";
 
 export const ProxmoxDialog = ({ open, onClose, currentFolderId, editServerId }) => {

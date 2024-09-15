@@ -1,9 +1,9 @@
 import "./styles.sass";
 import { DialogProvider } from "@/common/components/Dialog";
-import Input from "@/common/components/IconInput/index.js";
+import Input from "@/common/components/IconInput";
 import { mdiAccountCircleOutline, mdiKeyOutline } from "@mdi/js";
 import { useEffect, useState } from "react";
-import Button from "@/common/components/Button/index.js";
+import Button from "@/common/components/Button";
 import { putRequest } from "@/common/utils/RequestUtil.js";
 
 export const CreateUserDialog = ({open, onClose, loadUsers}) => {
