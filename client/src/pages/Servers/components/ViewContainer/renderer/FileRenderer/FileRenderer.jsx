@@ -1,4 +1,4 @@
-import { useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useState, useRef } from "react";
 import { UserContext } from "@/common/contexts/UserContext.jsx";
 import useWebSocket from "react-use-websocket";
 import ActionBar from "@/pages/Servers/components/ViewContainer/renderer/FileRenderer/components/ActionBar";
@@ -15,18 +15,15 @@ export const FileRenderer = ({ session, disconnectFromServer }) => {
     const { sessionToken } = useContext(UserContext);
 
     const [dragging, setDragging] = useState(false);
-
     const [folderDialogOpen, setFolderDialogOpen] = useState(false);
-
     const [currentFile, setCurrentFile] = useState(null);
-
     const [uploadProgress, setUploadProgress] = useState(0);
-
     const [directory, setDirectory] = useState("/");
     const [items, setItems] = useState([]);
-
     const [history, setHistory] = useState(["/"]);
     const [historyIndex, setHistoryIndex] = useState(0);
+
+    const dropZoneRef = useRef(null);
 
     const protocol = location.protocol === "https:" ? "wss" : "ws";
     const path = process.env.NODE_ENV === "production" ? `${window.location.host}/api/servers/sftp` : "localhost:6989/api/servers/sftp";
@@ -34,7 +31,6 @@ export const FileRenderer = ({ session, disconnectFromServer }) => {
 
     const downloadFile = (path) => {
         const url = `/api/servers/sftp-download?serverId=${session.server}&identityId=${session.identity}&path=${path}&sessionToken=${sessionToken}`;
-
         const link = document.createElement("a");
         link.href = url;
         link.download = path.split("/").pop();
@@ -63,7 +59,6 @@ export const FileRenderer = ({ session, disconnectFromServer }) => {
             const chunk = await readFileChunk(file, start, end);
 
             setUploadProgress((i + 1) / totalChunks * 100);
-
             sendOperation(0x3, { chunk });
         }
 
@@ -88,8 +83,7 @@ export const FileRenderer = ({ session, disconnectFromServer }) => {
         let payload;
         try {
             payload = JSON.parse(data.slice(1));
-        } catch (ignored) {
-        }
+        } catch (ignored) {}
 
         switch (operation) {
             case 0x0:
@@ -165,44 +159,55 @@ export const FileRenderer = ({ session, disconnectFromServer }) => {
         e.preventDefault();
         e.stopPropagation();
 
-        if (e.type === "dragover") setDragging(true);
+        const { type } = e;
 
-        if (e.type === "dragleave") setDragging(false);
+        if (type === "dragover") {
+            setDragging(true);
+        }
 
-        if (e.type === "drop") {
+        if (type === "dragleave" && !dropZoneRef.current.contains(e.relatedTarget)) {
+            setDragging(false);
+        }
+
+        if (type === "drop") {
             setDragging(false);
 
             const files = e.dataTransfer.files;
-            for (let i = 0; i < files.length; i++) await uploadFileChunks(files[i]);
+            for (let i = 0; i < files.length; i++) {
+                await uploadFileChunks(files[i]);
+            }
 
             setUploadProgress(0);
-
-            return false;
         }
-    }
+    };
 
     useEffect(() => {
         listFiles();
     }, [directory]);
 
     return (
-        <div className="file-renderer" onDragOver={handleDrag} onDragLeave={handleDrag} onDrop={handleDrag}>
+        <div className="file-renderer" ref={dropZoneRef} onDragOver={handleDrag} onDragLeave={handleDrag}
+             onDrop={handleDrag}>
             <div className="drag-overlay" style={{ display: dragging && currentFile === null ? "flex" : "none" }}>
-                <div class="drag-item">
+                <div className="drag-item">
                     <Icon path={mdiCloudUpload} />
                     <h2>Drop files to upload</h2>
                 </div>
             </div>
-            {currentFile === null && <div className="file-manager">
-                <CreateFolderDialog open={folderDialogOpen} onclose={() => setFolderDialogOpen(false)}
-                                    createFolder={createFolder} />
-                <ActionBar path={directory} updatePath={changeDirectory} createFolder={() => setFolderDialogOpen(true)}
-                           uploadFile={uploadFile} goBack={goBack} goForward={goForward} historyIndex={historyIndex} historyLength={history.length} />
-                <FileList items={items} path={directory} updatePath={changeDirectory} sendOperation={sendOperation}
-                          downloadFile={downloadFile} setCurrentFile={setCurrentFile} />
-            </div>}
-            {currentFile !== null && <FileEditor currentFile={currentFile} serverId={session.server} identityId={session.identity}
-                                                setCurrentFile={setCurrentFile} sendOperation={sendOperation} />}
+            {currentFile === null && (
+                <div className="file-manager">
+                    <CreateFolderDialog open={folderDialogOpen} onClose={() => setFolderDialogOpen(false)} createFolder={createFolder} />
+                    <ActionBar path={directory} updatePath={changeDirectory} createFolder={() => setFolderDialogOpen(true)}
+                        uploadFile={uploadFile} goBack={goBack} goForward={goForward} historyIndex={historyIndex}
+                        historyLength={history.length} />
+                    <FileList items={items} path={directory} updatePath={changeDirectory} sendOperation={sendOperation}
+                              downloadFile={downloadFile} setCurrentFile={setCurrentFile} />
+                </div>
+            )}
+            {currentFile !== null && (
+                <FileEditor currentFile={currentFile} serverId={session.server} identityId={session.identity}
+                    setCurrentFile={setCurrentFile} sendOperation={sendOperation} />
+            )}
             {uploadProgress > 0 && <div className="upload-progress" style={{ width: `${uploadProgress}%` }} />}
         </div>
     );
