@@ -51,7 +51,7 @@ export default defineConfig({
 
         socialLinks: [
             { icon: "github", link: "https://github.com/gnmyt/Nexterm" },
-            { icon: "discord", link: "https://discord.com/users/386242172632170496" },
+            { icon: "discord", link: "https://dc.gnmyt.dev" },
         ],
     },
 });
