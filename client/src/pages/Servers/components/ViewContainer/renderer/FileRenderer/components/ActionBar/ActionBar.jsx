@@ -3,7 +3,7 @@ import Icon from "@mdi/react";
 import { mdiChevronLeft, mdiChevronRight, mdiChevronUp, mdiFileUpload, mdiFolderPlus } from "@mdi/js";
 import { Fragment } from "react";
 
-export const ActionBar = ({path, updatePath, createFolder, uploadFile}) => {
+export const ActionBar = ({ path, updatePath, createFolder, uploadFile, goBack, goForward, historyIndex, historyLength }) => {
 
     const goUp = () => {
         const pathArray = path.split("/");
@@ -14,22 +14,22 @@ export const ActionBar = ({path, updatePath, createFolder, uploadFile}) => {
         }
 
         updatePath(pathArray.length === 0 ? "/" : pathArray.join("/"));
-    }
+    };
 
     const navigate = (part) => {
         const pathArray = getPathArray();
         updatePath("/" + pathArray.slice(0, part + 1).join("/"));
-    }
+    };
 
     const getPathArray = () => {
         return path.split("/").filter(part => part !== "");
-    }
+    };
 
     return (
         <div className="action-bar">
-            <Icon path={mdiChevronLeft} />
-            <Icon path={mdiChevronRight} />
-            <Icon path={mdiChevronUp} onClick={goUp} />
+            <Icon path={mdiChevronLeft} onClick={goBack} className={historyIndex === 0 ? " nav-disabled" : ""} />
+            <Icon path={mdiChevronRight} onClick={goForward} className={historyIndex === historyLength - 1 ? " nav-disabled" : ""} />
+            <Icon path={mdiChevronUp} onClick={goUp} className={path === "/" ? " nav-disabled" : ""} />
 
             <div className="address-bar">
                 <div className="path-part-divider" onClick={() => updatePath("/")}>/</div>
@@ -48,5 +48,5 @@ export const ActionBar = ({path, updatePath, createFolder, uploadFile}) => {
                 <Icon path={mdiFolderPlus} onClick={createFolder} />
             </div>
         </div>
-    )
-}
+    );
+};

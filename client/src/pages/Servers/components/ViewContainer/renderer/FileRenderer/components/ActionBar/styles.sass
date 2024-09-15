@@ -10,6 +10,17 @@
     width: 2rem
     height: 2rem
     cursor: pointer
+    transition: color 0.2s
+
+    &:hover
+      color: $primary
+
+  .nav-disabled
+    color: $gray
+    cursor: not-allowed
+
+    &:hover
+      color: $gray
 
   .address-bar
     user-select: none
