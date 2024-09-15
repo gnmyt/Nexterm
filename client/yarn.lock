@@ -2296,6 +2296,11 @@ side-channel@^1.0.4, side-channel@^1.0.6:
     get-intrinsic "^1.2.4"
     object-inspect "^1.13.1"
 
+simple-icons@^13.10.0:
+  version "13.10.0"
+  resolved "https://registry.yarnpkg.com/simple-icons/-/simple-icons-13.10.0.tgz#08a33594a165cb04d50a6661b39a30e620adf9e5"
+  integrity sha512-akHZxjNvq4nLlLsKxDot7A+ZYXgjhAP4GwvWEItHeKiquuWXoI8xGGfP+hzGLbTmbmi2teYmHMS45PIOFy6EFA==
+
 "source-map-js@>=0.6.2 <2.0.0", source-map-js@^1.2.0:
   version "1.2.0"
   resolved "https://registry.npmjs.org/source-map-js/-/source-map-js-1.2.0.tgz"
