@@ -5,6 +5,7 @@ import ActionBar from "@/pages/Servers/components/ViewContainer/renderer/FileRen
 import FileList from "@/pages/Servers/components/ViewContainer/renderer/FileRenderer/components/FileList";
 import "./styles.sass";
 import CreateFolderDialog from "./components/CreateFolderDialog";
+import FileEditor from "@/pages/Servers/components/ViewContainer/renderer/FileRenderer/components/FileEditor/index.js";
 
 const CHUNK_SIZE = 128 * 1024;
 
@@ -12,6 +13,8 @@ export const FileRenderer = ({ session, disconnectFromServer }) => {
     const { sessionToken } = useContext(UserContext);
 
     const [folderDialogOpen, setFolderDialogOpen] = useState(false);
+
+    const [currentFile, setCurrentFile] = useState(null);
 
     const [uploadProgress, setUploadProgress] = useState(0);
 
@@ -24,6 +27,16 @@ export const FileRenderer = ({ session, disconnectFromServer }) => {
     const protocol = location.protocol === "https:" ? "wss" : "ws";
     const path = process.env.NODE_ENV === "production" ? `${window.location.host}/api/servers/sftp` : "localhost:6989/api/servers/sftp";
     const url = `${protocol}://${path}?sessionToken=${sessionToken}&serverId=${session.server}&identityId=${session.identity}`;
+
+    const downloadFile = (path) => {
+        const url = `/api/servers/sftp-download?serverId=${session.server}&identityId=${session.identity}&path=${path}&sessionToken=${sessionToken}`;
+
+        const link = document.createElement("a");
+        link.href = url;
+        link.download = path.split("/").pop();
+        document.body.appendChild(link);
+        link.click();
+    }
 
     const readFileChunk = (file, start, end) => {
         return new Promise((resolve, reject) => {
@@ -82,9 +95,6 @@ export const FileRenderer = ({ session, disconnectFromServer }) => {
             case 0x7:
             case 0x8:
                 listFiles();
-                break;
-            case 0x2:
-                console.log("Upload started");
                 break;
             case 0x1:
                 setItems(payload.files);
@@ -153,14 +163,16 @@ export const FileRenderer = ({ session, disconnectFromServer }) => {
 
     return (
         <div className="file-renderer">
-            <div className="file-manager">
+            {currentFile === null && <div className="file-manager">
                 <CreateFolderDialog open={folderDialogOpen} onclose={() => setFolderDialogOpen(false)}
                                     createFolder={createFolder} />
                 <ActionBar path={directory} updatePath={changeDirectory} createFolder={() => setFolderDialogOpen(true)}
                            uploadFile={uploadFile} goBack={goBack} goForward={goForward} historyIndex={historyIndex} historyLength={history.length} />
                 <FileList items={items} path={directory} updatePath={changeDirectory} sendOperation={sendOperation}
-                            serverId={session.server} identityId={session.identity} />
-            </div>
+                          downloadFile={downloadFile} setCurrentFile={setCurrentFile} />
+            </div>}
+            {currentFile !== null && <FileEditor currentFile={currentFile} serverId={session.server} identityId={session.identity}
+                                                setCurrentFile={setCurrentFile} sendOperation={sendOperation} />}
             {uploadProgress > 0 && <div className="upload-progress" style={{ width: `${uploadProgress}%` }} />}
         </div>
     );
