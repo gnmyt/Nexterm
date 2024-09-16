@@ -7,7 +7,7 @@
 ### 🐳 Docker
 
 ```sh
-docker run -d -p 6989:6989 --name nexterm --restart always -v nexterm:/app/data germannewsmaker/nexterm:1.0.1-OPEN-PREVIEW
+docker run -d -p 6989:6989 --name nexterm --restart always -v nexterm:/app/data germannewsmaker/nexterm:1.0.2-OPEN-PREVIEW
 ```
 
 ### 📦 Docker Compose
@@ -20,7 +20,7 @@ services:
     restart: always
     volumes:
       - nexterm:/app/data
-    image: germannewsmaker/nexterm:1.0.1-OPEN-PREVIEW
+    image: germannewsmaker/nexterm:1.0.2-OPEN-PREVIEW
 volumes:
   nexterm:
 ```
