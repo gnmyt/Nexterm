@@ -22,7 +22,7 @@
     "react-use-websocket": "^4.8.1",
     "sass": "^1.78.0",
     "simple-icons": "^13.10.0",
-    "ua-parser-js": "^1.0.38",
+    "ua-parser-js": "^1.0.39",
     "xterm": "^5.3.0",
     "xterm-addon-fit": "^0.8.0"
   },
