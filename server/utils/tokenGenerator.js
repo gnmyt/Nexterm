@@ -19,9 +19,12 @@ module.exports.createVNCToken = (hostname, port, username, password) => {
 };
 
 module.exports.createRDPToken = (hostname, port, username, password) => {
+    let domain = "";
+    if (username.includes("\\")) [domain, username] = username.split("\\");
+
     return encryptToken({
         connection: {
-            type: "rdp", settings: { hostname, username, port, password, "ignore-cert": true,
+            type: "rdp", settings: { hostname, username, port, password, "ignore-cert": true, domain,
                 "resize-method": "display-update", "enable-wallpaper": true, "enable-theming": true }
         },
     });
