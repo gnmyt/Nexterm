@@ -2133,10 +2133,10 @@ node-gyp@8.x:
     tar "^6.1.2"
     which "^2.0.2"
 
-nodemon@^3.1.5:
-  version "3.1.5"
-  resolved "https://registry.yarnpkg.com/nodemon/-/nodemon-3.1.5.tgz#43d2a07d88a3778a3ba35b0dbdf505dcc5b3b5ad"
-  integrity sha512-V5UtfYc7hjFD4SI3EzD5TR8ChAHEZ+Ns7Z5fBk8fAbTVAj+q3G+w7sHJrHxXBkVn6ApLVTljau8wfHwqmGUjMw==
+nodemon@^3.1.6:
+  version "3.1.6"
+  resolved "https://registry.yarnpkg.com/nodemon/-/nodemon-3.1.6.tgz#15bd79dca6849aa27b2689d1dbe02dc28bcc1a1c"
+  integrity sha512-C8ymJbXpTTinxjWuMfMxw0rZhTn/r7ypSGldQyqPEgDEaVwAthqC0aodsMwontnAInN9TuPwRLeBoyhmfv+iSA==
   dependencies:
     chokidar "^3.5.2"
     debug "^4"
