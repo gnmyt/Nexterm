@@ -14,7 +14,7 @@
     "guacamole-lite": "^0.7.2",
     "joi": "^17.13.3",
     "js-yaml": "^4.1.0",
-    "sequelize": "^6.37.3",
+    "sequelize": "^6.37.4",
     "speakeasy": "^2.0.0",
     "sqlite3": "^5.1.7",
     "ssh2": "^1.16.0",
