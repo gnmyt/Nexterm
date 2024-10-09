@@ -9,7 +9,7 @@
     "axios": "^1.7.7",
     "bcrypt": "^5.1.1",
     "decompress": "^4.2.1",
-    "express": "^4.21.0",
+    "express": "^4.21.1",
     "express-ws": "^5.0.2",
     "guacamole-lite": "^0.7.2",
     "joi": "^17.13.3",
