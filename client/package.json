@@ -20,7 +20,7 @@
     "react-dom": "^18.3.1",
     "react-router-dom": "^6.27.0",
     "react-use-websocket": "^4.9.0",
-    "sass": "^1.80.2",
+    "sass": "^1.80.3",
     "simple-icons": "^13.14.0",
     "ua-parser-js": "^1.0.39",
     "xterm": "^5.3.0",
