@@ -1,4 +1,4 @@
-@import "@/common/styles/colors"
+@use "@/common/styles/colors"
 
 .select-box
   position: relative
@@ -8,9 +8,9 @@
 
   &__selected
     padding: 0.8rem
-    border: 1px solid $gray
-    background-color: $dark-gray
-    color: $light-gray
+    border: 1px solid colors.$gray
+    background-color: colors.$dark-gray
+    color: colors.$light-gray
     box-sizing: border-box
     border-radius: 0.7rem
     font-size: 14pt
@@ -37,8 +37,8 @@
     top: calc(100% + 5px)
     left: 0
     width: 100%
-    border: 1px solid $gray
-    background-color: $gray-full
+    border: 1px solid colors.$gray
+    background-color: colors.$gray-full
     backdrop-filter: blur(1rem)
     border-radius: 0.7rem
     z-index: 1000
@@ -54,4 +54,4 @@
       border-bottom: none
 
     &:hover, &.selected
-      background-color: $gray
+      background-color: colors.$gray

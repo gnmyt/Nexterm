@@ -1,4 +1,4 @@
-@import "@/common/styles/colors"
+@use "@/common/styles/colors"
 
 .input-container
   position: relative
@@ -11,13 +11,13 @@
   width: 2rem
   height: 2rem
   transform: translateY(-50%)
-  color: $light-gray
+  color: colors.$light-gray
 
 .input
   padding: 0.8rem 2rem 0.8rem 3.5rem
-  border: 1px solid $gray
-  background-color: $dark-gray
-  color: $light-gray
+  border: 1px solid colors.$gray
+  background-color: colors.$dark-gray
+  color: colors.$light-gray
   box-sizing: border-box
   border-radius: 0.7rem
   font-size: 14pt
@@ -25,5 +25,5 @@
   outline: none
 
   &:focus
-    border: 1px solid $primary
-    background-color: $gray
+    border: 1px solid colors.$primary
+    background-color: colors.$gray

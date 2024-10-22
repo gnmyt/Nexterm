@@ -1,4 +1,4 @@
-@import "@/common/styles/colors"
+@use "@/common/styles/colors"
 
 .login-dialog
   display: flex
@@ -15,9 +15,9 @@
     justify-content: center
     width: 18rem
     padding: 0.5rem 1rem
-    background-color: $error-opacity
-    border: 1px solid $error
-    color: $error
+    background-color: colors.$error-opacity
+    border: 1px solid colors.$gray
+    color: colors.$error
     border-radius: 0.5rem
     font-size: 0.9rem
     margin: 0
@@ -53,5 +53,5 @@
     gap: 0.3rem
 
     label
-      color: $subtext
+      color: colors.$subtext
       font-weight: 600
