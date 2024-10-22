@@ -1,4 +1,4 @@
-@import "@/common/styles/colors"
+@use "@/common/styles/colors"
 
 .two-factor-dialog
   display: flex
@@ -20,11 +20,11 @@
 
     .totp-code
       user-select: text
-      color: $primary
+      color: colors.$primary
 
 
   .setup-error
-    border: 1px solid $error
+    border: 1px solid colors.$gray
 
   .action-row
     display: flex

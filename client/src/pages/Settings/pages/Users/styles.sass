@@ -1,4 +1,4 @@
-@import "@/common/styles/colors"
+@use "@/common/styles/colors"
 
 .users-page
   display: flex
@@ -14,8 +14,8 @@
     display: grid
     grid-template-columns: 2fr 1fr 1fr 1fr
     align-items: center
-    background-color: $dark-gray
-    border: 1px solid $gray
+    background-color: colors.$dark-gray
+    border: 1px solid colors.$gray
     padding: 0.8rem 1rem
     border-radius: 1rem
     position: relative
@@ -32,14 +32,14 @@
       display: flex
       align-items: center
       gap: 0.5rem
-      color: $error
+      color: colors.$error
 
       svg
         width: 2rem
         height: 2rem
 
     .totp-enabled
-      color: $success
+      color: colors.$success
 
     .menu
       width: 2.5rem

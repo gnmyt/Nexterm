@@ -1,4 +1,4 @@
-@import "@/common/styles/colors"
+@use "@/common/styles/colors"
 
 .settings-item
   box-sizing: border-box
@@ -19,7 +19,7 @@
     margin: 0
 
   &:hover
-    border: 1px solid $gray
+    border: 1px solid colors.$gray
 .settings-item-active
-  background-color: $dark-gray
-  border: 1px solid $gray
+  background-color: colors.$dark-gray
+  border: 1px solid colors.$gray

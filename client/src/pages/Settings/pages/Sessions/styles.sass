@@ -1,4 +1,4 @@
-@import "@/common/styles/colors"
+@use "@/common/styles/colors"
 
 .sessions-page
   display: flex
@@ -8,7 +8,7 @@
 
 
   .session
-    border: 2px solid $gray
+    border: 2px solid colors.$gray
     padding: 1rem 1.5rem
     border-radius: 1rem
     display: flex
@@ -30,15 +30,15 @@
 
       p
         font-weight: 600
-        color: $subtext
+        color: colors.$subtext
 
     .icon-container
       display: flex
       align-items: center
       justify-content: center
       padding: 0.7rem
-      color: $primary
-      background-color: $primary-opacity
+      color: colors.$primary
+      background-color: colors.$primary-opacity
       border-radius: 1rem
 
       svg
@@ -46,5 +46,5 @@
         height: 2rem
 
     .icon-current
-      color: $success
-      background-color: $success-opacity
+      color: colors.$success
+      background-color: colors.$success-opacity

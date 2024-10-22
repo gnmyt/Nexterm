@@ -1,4 +1,4 @@
-@import "@/common/styles/colors"
+@use "@/common/styles/colors"
 
 .proxmox-dialog
   display: flex
@@ -14,7 +14,7 @@
     font-size: 0.9rem
 
   .error
-    border: 1px solid $error
+    border: 1px solid colors.$gray
 
   .form-group
     display: flex
@@ -22,7 +22,7 @@
     gap: 0.3rem
 
     label
-      color: $subtext
+      color: colors.$subtext
       font-weight: 600
 
   .ip-row
@@ -31,14 +31,14 @@
 
   .small-input
     padding: 0.8rem
-    border: 1px solid $gray
+    border: 1px solid colors.$gray
     width: 3rem
-    background-color: $dark-gray
-    color: $light-gray
+    background-color: colors.$dark-gray
+    color: colors.$light-gray
     border-radius: 0.5rem
     font-size: 14pt
     outline: none
 
     &:focus
-      border: 1px solid $primary
-      background-color: $gray
+      border: 1px solid colors.$primary
+      background-color: colors.$gray

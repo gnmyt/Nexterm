@@ -1,10 +1,10 @@
-@import "@/common/styles/colors"
+@use "@/common/styles/colors"
 
 .app-item
   display: flex
   flex-direction: column
-  background-color: $dark-gray
-  border: 1px solid $gray
+  background-color: colors.$dark-gray
+  border: 1px solid colors.$gray
   padding: 1rem 1.3rem
   border-radius: 1rem
   width: 15rem
@@ -20,8 +20,8 @@
     gap: 1rem
 
     .app-img
-      background-color: $dark-gray
-      border: 1px solid $gray
+      background-color: colors.$dark-gray
+      border: 1px solid colors.$gray
       border-radius: 1rem
       padding: 0.5rem
       display: flex
@@ -39,7 +39,7 @@
     p
       margin: 0
       font-weight: 600
-      color: $subtext
+      color: colors.$subtext
 
   .action-area
     display: flex

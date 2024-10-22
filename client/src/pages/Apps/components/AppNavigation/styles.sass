@@ -1,14 +1,14 @@
-@import "@/common/styles/colors"
+@use "@/common/styles/colors"
 
 .app-navigation
   height: 100%
   padding: 1rem 0.5rem
-  background-color: $lighter-background
+  background-color: colors.$lighter-background
   display: flex
   box-sizing: border-box
   flex-direction: column
   align-items: center
-  border-right: 2px solid $dark-gray
+  border-right: 2px solid colors.$dark-gray
   user-select: none
 
   .settings-item
@@ -30,7 +30,7 @@
       margin: 0
 
     &:hover
-      border: 1px solid $gray
+      border: 1px solid colors.$gray
   .settings-item-active
-    background-color: $dark-gray
-    border: 1px solid $gray
+    background-color: colors.$dark-gray
+    border: 1px solid colors.$gray

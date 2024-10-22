@@ -1,4 +1,4 @@
-@import "@/common/styles/colors"
+@use "@/common/styles/colors"
 
 .server-dialog
   display: flex
@@ -41,22 +41,22 @@
     gap: 0.3rem
 
     label
-      color: $subtext
+      color: colors.$subtext
       font-weight: 600
 
     .small-input
       padding: 0.8rem
       width: 3rem
-      border: 1px solid $gray
-      background-color: $dark-gray
-      color: $light-gray
+      border: 1px solid colors.$gray
+      background-color: colors.$dark-gray
+      color: colors.$light-gray
       border-radius: 0.5rem
       font-size: 14pt
       outline: none
 
       &:focus
-        border: 1px solid $primary
-        background-color: $gray
+        border: 1px solid colors.$primary
+        background-color: colors.$gray
 
   .server-dialog-title
     h2
@@ -79,15 +79,15 @@
       font-weight: 600
 
     &:hover
-      background-color: $darker-gray
+      background-color: colors.$darker-gray
 
   .tabs-item-active
-    background-color: $gray
-    border-bottom: 2px solid $primary
+    background-color: colors.$gray
+    border-bottom: 2px solid colors.$primary
     border-radius: 0.5rem 0.5rem 0 0
 
     &:hover
-      background-color: $gray
+      background-color: colors.$gray
 
   .identities
     display: flex
@@ -96,8 +96,8 @@
 
   .identity
     display: flex
-    background-color: $dark-gray
-    border: 1px solid $gray
+    background-color: colors.$dark-gray
+    border: 1px solid colors.$gray
     padding: 1rem
     border-radius: 0.5rem
     flex-direction: column

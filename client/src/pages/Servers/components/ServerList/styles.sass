@@ -1,13 +1,13 @@
-@import "@/common/styles/colors"
+@use "@/common/styles/colors"
 
 .server-list
   width: 18rem
-  background-color: $lighter-background
+  background-color: colors.$lighter-background
   height: 100%
   display: flex
   flex-direction: column
   align-items: center
-  border-right: 2px solid $dark-gray
+  border-right: 2px solid colors.$dark-gray
 
   .server-list-inner
     margin-top: 1rem
@@ -31,7 +31,7 @@
       flex-direction: column
       justify-content: center
       align-items: center
-      color: $subtext
+      color: colors.$subtext
 
       svg
         width: 5rem
