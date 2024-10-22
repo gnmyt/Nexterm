@@ -1,36 +1,17 @@
-const WebSocket = require("ws");
-const { getGuacamolePort } = require("../utils/guacamoleStarter");
+const ClientConnection = require('../lib/ClientConnection.js');
 
-module.exports = async (ws, token) => {
+module.exports = async (ws, settings) => {
     try {
-        const guacdUrl = `ws://localhost:${getGuacamolePort()}/?token=${token}`;
-        const guacdSocket = new WebSocket(guacdUrl);
+        this.clientOptions = {
+            maxInactivityTime: 10000,
 
-        ws.on("message", (message) => {
-            guacdSocket.send(message);
-        });
+            connectionDefaultSettings: {
+                rdp: { 'args': 'connect', 'port': '3389', 'width': 1024, 'height': 768, 'dpi': 96, },
+                vnc: { 'args': 'connect', 'port': '5900', 'width': 1024, 'height': 768, 'dpi': 96, },
+            }
+        };
 
-        guacdSocket.on("message", (message) => {
-            ws.send(message, { binary: false });
-        });
-
-        guacdSocket.on("close", () => {
-            ws.close();
-        });
-
-        guacdSocket.on("error", (error) => {
-            console.error("Error in Guacamole WebSocket:", error);
-            ws.close(1011, "Internal server error");
-        });
-
-        ws.on("close", () => {
-            guacdSocket.close();
-        });
-
-        ws.on("error", (error) => {
-            console.error("Error in client WebSocket:", error);
-            guacdSocket.close();
-        });
+        new ClientConnection(ws, this.clientOptions, settings);
     } catch (error) {
         console.error("Error in guacamoleProxy:", error);
         ws.close(1011, "Internal server error");
