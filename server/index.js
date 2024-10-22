@@ -1,13 +1,9 @@
-const crypto = require("crypto");
-module.exports.GUACD_TOKEN = crypto.randomBytes(16).toString("hex");
-
 const express = require("express");
 const path = require("path");
 const db = require("./utils/database");
 const { authenticate } = require("./middlewares/auth");
 const expressWs = require("express-ws");
 const { startPVEUpdater } = require("./utils/pveUpdater");
-const { startGuacamole } = require("./utils/guacamoleStarter");
 const { refreshAppSources, startAppUpdater, insertOfficialSource } = require("./controllers/appSource");
 const { isAdmin } = require("./middlewares/permission");
 require("./utils/folder");
@@ -56,8 +52,6 @@ db.authenticate().catch(err => {
     process.exit(111);
 }).then(async () => {
     console.log("Successfully connected to the database " + (process.env.DB_TYPE === "mysql" ? "server" : "file"));
-
-    await startGuacamole();
 
     await db.sync({ alter: true, force: false });
 
