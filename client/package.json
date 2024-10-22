@@ -15,7 +15,7 @@
     "@uiw/codemirror-theme-github": "^4.23.5",
     "@uiw/react-codemirror": "^4.23.5",
     "guacamole-common-js": "^1.5.0",
-    "qrcode.react": "^4.0.1",
+    "qrcode.react": "^4.1.0",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "react-router-dom": "^6.27.0",
