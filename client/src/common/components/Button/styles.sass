@@ -1,13 +1,13 @@
-@import "@/common/styles/colors"
+@use "@/common/styles/colors"
 
 .btn
   display: flex
   align-items: center
   justify-content: center
   gap: 0.5rem
-  background-color: $primary-opacity
-  border: 1px solid $gray
-  color: $white
+  background-color: colors.$primary-opacity
+  border: 1px solid colors.$gray
+  color: colors.$white
   border-radius: 0.5rem
   padding: 0.8rem 1rem
   cursor: pointer
@@ -21,7 +21,7 @@
     margin: 0
     font-size: 1rem
     font-weight: 500
-    color: $white
+    color: colors.$white
 
   &:hover
     filter: brightness(0.8)
@@ -30,8 +30,8 @@
     transform: scale(0.97)
 
   &:disabled
-    background-color: $gray
+    background-color: colors.$gray
     cursor: not-allowed
 
 .type-secondary
-  background-color: $gray
+  background-color: colors.$gray

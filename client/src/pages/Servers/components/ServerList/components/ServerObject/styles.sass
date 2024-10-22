@@ -1,10 +1,10 @@
-@import "@/common/styles/colors"
+@use "@/common/styles/colors"
 
 .server-object
   display: flex
   align-items: center
   gap: 0.5rem
-  color: $light-gray
+  color: colors.$light-gray
   border: 1px solid transparent
   padding: 0.4rem
   cursor: pointer
@@ -17,22 +17,22 @@
     border-radius: 0.2rem
     justify-content: center
     align-items: center
-    background-color: $primary
+    background-color: colors.$primary
     svg
       width: 1rem
 
   .pve-icon
-    background-color: $warning
+    background-color: colors.$warning
 
   .pve-icon-offline
-    background-color: $gray
+    background-color: colors.$gray
 
   p
     margin: 0
     flex: 1
 
   &:hover
-    color: $white
-    background-color: $dark-gray
-    border: 1px solid $gray
+    color: colors.$white
+    background-color: colors.$dark-gray
+    border: 1px solid colors.$gray
     border-radius: 0.3rem

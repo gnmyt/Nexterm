@@ -1,4 +1,4 @@
-@import "@/common/styles/colors"
+@use "@/common/styles/colors"
 
 .account-page
   display: flex
@@ -11,7 +11,7 @@
     margin: 0
 
   p
-    color: $subtext
+    color: colors.$subtext
 
   .tfa-title
     display: flex
@@ -24,12 +24,12 @@
       border-radius: 0.5rem
 
     .active
-      background-color: $success-opacity
-      color: $success
+      background-color: colors.$success-opacity
+      color: colors.$success
 
     .inactive
-      background-color: $error-opacity
-      color: $error
+      background-color: colors.$error-opacity
+      color: colors.$error
 
   .section-inner
     margin-top: 1rem
@@ -45,8 +45,8 @@
       gap: 0.3rem
 
       label
-        color: $subtext
+        color: colors.$subtext
         font-weight: 600
 
       .fd-updated
-        border: 1px solid $success
+        border: 1px solid colors.$success

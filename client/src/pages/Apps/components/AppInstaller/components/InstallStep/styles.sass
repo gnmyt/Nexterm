@@ -1,4 +1,4 @@
-@import "@/common/styles/colors"
+@use "@/common/styles/colors"
 
 .install-step
   display: flex
@@ -15,13 +15,13 @@
     border-radius: 40%
 
   .progress-indicator
-    background-color: $primary-opacity
+    background-color: colors.$primary-opacity
     svg
       width: 30px
       height: 30px
 
     .progress-circle
-      stroke: $primary
+      stroke: colors.$primary
       stroke-width: 3
       stroke-linecap: round
       transform: rotate(-90deg)
@@ -29,26 +29,26 @@
       transition: stroke-dashoffset 0.35s ease
 
   .skip-indicator
-    background-color: $gray
-    color: $light-gray
+    background-color: colors.$gray
+    color: colors.$light-gray
 
   .image-indicator img
     height: 1.4rem
 
   .soon-indicator
-    outline: 2px solid $gray
+    outline: 2px solid colors.$gray
 
   .success-indicator
-    background-color: $success-opacity
-    color: $success
+    background-color: colors.$success-opacity
+    color: colors.$success
 
   .error-indicator
-    background-color: $error-opacity
-    color: $error
+    background-color: colors.$error-opacity
+    color: colors.$error
 
   .loading-indicator
-    background-color: $primary-opacity
-    color: $primary
+    background-color: colors.$primary-opacity
+    color: colors.$primary
 
   h2
     font-size: 1.3rem

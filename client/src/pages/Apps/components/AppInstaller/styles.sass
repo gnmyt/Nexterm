@@ -1,10 +1,10 @@
-@import "@/common/styles/colors"
+@use "@/common/styles/colors"
 
 .app-installer
   display: flex
   flex-direction: column
-  background-color: $dark-gray
-  border: 1px solid $gray
+  background-color: colors.$dark-gray
+  border: 1px solid colors.$gray
   padding: 1rem 1.3rem
   border-radius: 1rem
   gap: 2rem
@@ -32,8 +32,8 @@
     gap: 1rem
 
     .app-img
-      background-color: $dark-gray
-      border: 1px solid $gray
+      background-color: colors.$dark-gray
+      border: 1px solid colors.$gray
       border-radius: 1rem
       display: flex
       padding: 0.5rem
@@ -51,4 +51,4 @@
     p
       margin: 0
       font-weight: 600
-      color: $subtext
+      color: colors.$subtext

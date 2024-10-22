@@ -1,11 +1,11 @@
-@import "@/common/styles/colors"
+@use "@/common/styles/colors"
 
 .settings-navigation
-  background-color: $lighter-background
+  background-color: colors.$lighter-background
   height: 100%
   display: flex
   flex-direction: column
-  border-right: 2px solid $dark-gray
+  border-right: 2px solid colors.$dark-gray
   user-select: none
 
   p
@@ -13,7 +13,7 @@
     padding: 0.5rem 1rem
     font-size: 1rem
     font-weight: 600
-    color: $subtext
+    color: colors.$subtext
 
   .settings-group
     display: flex

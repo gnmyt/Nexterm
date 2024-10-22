@@ -1,4 +1,4 @@
-@import "@/common/styles/colors"
+@use "@/common/styles/colors"
 
 .server-search
   position: relative
@@ -11,7 +11,7 @@
   width: 2rem
   height: 2rem
   transform: translateY(-50%)
-  color: $subtext
+  color: colors.$subtext
 
 .info-container
   position: absolute
@@ -20,21 +20,21 @@
   transform: translateY(-50%)
   user-select: none
   cursor: pointer
-  color: $subtext
+  color: colors.$subtext
 
   p
     margin: 0
     padding: 0.2rem 0.5rem
     border-radius: 0.5rem
     font-size: 10pt
-    border: 1px solid $gray
+    border: 1px solid colors.$gray
 
 .search-input
   user-select: none
   padding: 0.8rem 6rem 0.8rem 3.5rem
-  border: 1px solid $gray
-  background-color: $dark-gray
-  color: $light-gray
+  border: 1px solid colors.$gray
+  background-color: colors.$dark-gray
+  color: colors.$light-gray
   box-sizing: border-box
   border-radius: 0.7rem
   font-size: 14pt
@@ -42,5 +42,5 @@
   outline: none
 
   &:focus
-    border: 1px solid $primary
-    background-color: $gray
+    border: 1px solid colors.$primary
+    background-color: colors.$gray

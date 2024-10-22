@@ -1,4 +1,4 @@
-@import "@/common/styles/colors"
+@use "@/common/styles/colors"
 
 .server-tabs
   display: flex
@@ -29,8 +29,8 @@
       white-space: nowrap
 
       &:hover
-        background-color: $gray
-        border-bottom: 2px solid $primary-opacity
+        background-color: colors.$gray
+        border-bottom: 2px solid colors.$primary-opacity
 
       svg
         width: 1.5rem
@@ -41,9 +41,9 @@
         font-size: 1.3rem
 
     .server-tab-active
-      background-color: $gray
-      border-bottom: 2px solid $primary
+      background-color: colors.$gray
+      border-bottom: 2px solid colors.$primary
 
       &:hover
-        background-color: $gray
-        border-bottom: 2px solid $primary
+        background-color: colors.$gray
+        border-bottom: 2px solid colors.$primary

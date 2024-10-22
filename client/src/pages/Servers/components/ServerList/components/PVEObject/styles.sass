@@ -1,9 +1,9 @@
-@import "@/common/styles/colors"
+@use "@/common/styles/colors"
 
 .pve-object
   display: flex
   gap: 0.5rem
-  color: $light-gray
+  color: colors.$light-gray
   border: 1px solid transparent
   padding: 0.4rem
   font-weight: 600
@@ -16,16 +16,16 @@
     margin: 0
 
   &:hover
-    color: $white
-    background-color: $dark-gray
-    border: 1px solid $gray
+    color: colors.$white
+    background-color: colors.$dark-gray
+    border: 1px solid colors.$gray
     border-radius: 0.3rem
 
   input
     padding: 0.4rem 0.6rem
-    border: 1px solid $gray
+    border: 1px solid colors.$gray
     background-color: transparent
-    color: $light-gray
+    color: colors.$light-gray
     box-sizing: border-box
     border-radius: 0.7rem
     font-size: 12pt

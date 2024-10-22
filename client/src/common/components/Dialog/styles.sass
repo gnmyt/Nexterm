@@ -1,4 +1,4 @@
-@import "@/common/styles/colors"
+@use "@/common/styles/colors"
 
 .dialog-area
   position: fixed
@@ -23,9 +23,9 @@
 
 .dialog
   padding: 15px
-  background-color: $darker-gray
-  border: 1px solid $dark-gray
-  color: $white
+  background-color: colors.$darker-gray
+  border: 1px solid colors.$dark-gray
+  color: colors.$white
   backdrop-filter: blur(1rem)
   border-radius: 15px
   transition: all 0.2s

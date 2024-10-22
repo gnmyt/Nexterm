@@ -1,4 +1,4 @@
-@import "@/common/styles/colors"
+@use "@/common/styles/colors"
 
 .action-bar
   display: flex
@@ -13,20 +13,20 @@
     transition: color 0.2s
 
     &:hover
-      color: $primary
+      color: colors.$primary
 
   .nav-disabled
-    color: $gray
+    color: colors.$gray
     cursor: not-allowed
 
     &:hover
-      color: $gray
+      color: colors.$gray
 
   .address-bar
     user-select: none
     padding: 0.5rem 1rem
-    background-color: $dark-gray
-    border: 1px solid $gray
+    background-color: colors.$dark-gray
+    border: 1px solid colors.$gray
     border-radius: 0.5rem
     display: flex
     gap: 0.5rem
@@ -34,7 +34,7 @@
     margin: 0 1rem
 
     .path-part-divider
-      color: $subtext
+      color: colors.$subtext
       cursor: pointer
 
     .path-part

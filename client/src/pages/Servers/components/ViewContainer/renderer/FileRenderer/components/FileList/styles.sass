@@ -1,4 +1,4 @@
-@import "@/common/styles/colors"
+@use "@/common/styles/colors"
 
 .file-list
   display: flex
@@ -16,7 +16,7 @@
     grid-template-columns: 1fr 1fr 1fr
     align-items: center
     padding: 0.5rem 1rem
-    background-color: $dark-gray
+    background-color: colors.$dark-gray
     cursor: pointer
 
     .file-name

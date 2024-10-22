@@ -1,16 +1,16 @@
-@import "@/common/styles/colors"
+@use "@/common/styles/colors"
 
 .context-menu
-  background-color: $darker-gray
+  background-color: colors.$darker-gray
   backdrop-filter: blur(1rem)
-  border: 2px solid $dark-gray
+  border: 2px solid colors.$dark-gray
   border-radius: 0.5rem
   padding: 0.5rem
   position: absolute
   z-index: 1000
 
   .context-item
-    color: $white
+    color: colors.$white
     padding: 0.5rem 1rem
     cursor: pointer
     transition: background-color 0.2s
@@ -33,4 +33,4 @@
       margin: 0
 
     &:hover
-      background-color: $dark-gray
+      background-color: colors.$dark-gray
