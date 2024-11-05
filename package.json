@@ -22,7 +22,7 @@
   "devDependencies": {
     "concurrently": "^9.1.0",
     "nodemon": "^3.1.7",
-    "vitepress": "^1.4.5"
+    "vitepress": "^1.5.0"
   },
   "scripts": {
     "dev:server": "nodemon server/index.js",
