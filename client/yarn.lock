@@ -2354,10 +2354,10 @@ side-channel@^1.0.4, side-channel@^1.0.6:
     get-intrinsic "^1.2.4"
     object-inspect "^1.13.1"
 
-simple-icons@^13.16.0:
-  version "13.16.0"
-  resolved "https://registry.yarnpkg.com/simple-icons/-/simple-icons-13.16.0.tgz#1f51d5be98e1cb943c175fc6e617fb555c19787c"
-  integrity sha512-aMg1efZ0IvYPKdvqUW0woVGSJwb199y9z7j1+6D5zPMn95eMQN0xzKAHefsqQW2K/5LwfgtFK3Gxn9n1eafX0A==
+simple-icons@^13.17.0:
+  version "13.17.0"
+  resolved "https://registry.yarnpkg.com/simple-icons/-/simple-icons-13.17.0.tgz#9e392e6bdd8114fdcf49bb740f0867e4ffbca6e7"
+  integrity sha512-pn37igWUYFeTBLckTGjFpwvEYbZuIXc9AB2lza+bzxc/h/sxlNn323dxGlXKglxqMNgLkbnpX75hT6kgsgb5CQ==
 
 source-map-js@^1.2.0:
   version "1.2.0"
