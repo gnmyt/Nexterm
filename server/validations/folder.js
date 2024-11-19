@@ -5,6 +5,7 @@ module.exports.folderCreationValidation = Joi.object({
     parentId: Joi.number().integer()
 });
 
-module.exports.folderRenameValidation = Joi.object({
-    name: Joi.string().min(3).max(15).required()
-});
+module.exports.folderEditValidation = Joi.object({
+    name: Joi.string().min(3).max(15),
+    parentId: Joi.number().integer()
+}).min(1);

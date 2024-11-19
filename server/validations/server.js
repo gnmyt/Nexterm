@@ -17,5 +17,6 @@ module.exports.updateServerValidation = Joi.object({
     protocol: Joi.string().valid('ssh', 'rdp', 'vnc').optional(),
     ip: Joi.string().optional(),
     port: Joi.number().optional(),
+    position: Joi.number().optional(),
     identities: Joi.array().items(Joi.number()).optional(),
 });
