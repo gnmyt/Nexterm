@@ -2,7 +2,7 @@ import ServerObject from "@/pages/Servers/components/ServerList/components/Serve
 import CollapsibleFolder from "./CollapsibleFolder.jsx";
 import PVEObject from "@/pages/Servers/components/ServerList/components/PVEObject";
 
-const ServerEntries = ({ entries, nestedLevel, setRenameStateId, connectToServer, connectToPVEServer, sshOnly = false }) => {
+const ServerEntries = ({ entries, nestedLevel, setRenameStateId, connectToServer, connectToPVEServer, sshOnly = false, folderId }) => {
     return (
         <>
             {entries.map(entry => {
@@ -26,6 +26,8 @@ const ServerEntries = ({ entries, nestedLevel, setRenameStateId, connectToServer
                         <ServerObject
                             id={entry.id}
                             key={"s"+entry.id}
+                            position={entry.position}
+                            folderId={folderId}
                             name={entry.name}
                             nestedLevel={nestedLevel}
                             icon={entry.icon}
