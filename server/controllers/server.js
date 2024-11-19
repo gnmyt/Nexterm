@@ -80,7 +80,12 @@ module.exports.getServer = async (accountId, serverId) => {
 module.exports.listServers = async (accountId) => {
     const folders = await listFolders(accountId, true);
 
-    const servers = await Server.findAll({ where: { accountId } });
+    const servers = await Server.findAll({ where: { accountId },
+        order: [
+            ["folderId", "ASC"],
+            ["position", "ASC"],
+        ],
+    });
 
     const folderMap = new Map();
     const flattenFolders = (folders) => {
@@ -96,7 +101,7 @@ module.exports.listServers = async (accountId) => {
         const folder = folderMap.get(server.folderId);
         if (folder) {
             folder.entries.push({ type: "server", id: server.id, icon: server.icon, name: server.name,
-                identities: JSON.parse(server.identities), protocol: server.protocol });
+                position: server.position, identities: JSON.parse(server.identities), protocol: server.protocol });
         }
     });
 
