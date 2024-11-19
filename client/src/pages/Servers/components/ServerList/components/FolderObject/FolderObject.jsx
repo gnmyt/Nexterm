@@ -23,13 +23,18 @@ export const FolderObject = ({ id, name, nestedLevel, position, onClick, isOpen,
     const [{ isOver }, dropRef] = useDrop({
         accept: ["server", "folder"],
         drop: async (item) => {
-            if (item.type === "server") {
-                await patchRequest("servers/" + item.id, { folderId: id });
-                loadServers();
-                return { id };
-            }
+            if (item.id === id) return;
+            try {
+                if (item.type === "server") {
+                    await patchRequest("servers/" + item.id, { folderId: id });
+                    loadServers();
+                    return { id };
+                }
 
-            await patchRequest(`folders/${item.id}`, { parentId: item.id !== id ? id : undefined });
+                await patchRequest(`folders/${item.id}`, { parentId: item.id !== id ? id : undefined });
+            } catch (error) {
+                console.error("Failed to drop item", error.message);
+            }
 
             loadServers();
 
