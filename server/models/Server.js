@@ -10,6 +10,11 @@ module.exports = db.define("servers", {
         type: Sequelize.INTEGER,
         allowNull: false,
     },
+    position: {
+        type: Sequelize.INTEGER,
+        defaultValue: 0,
+        allowNull: false,
+    },
     folderId: {
         type: Sequelize.INTEGER,
         allowNull: false,
