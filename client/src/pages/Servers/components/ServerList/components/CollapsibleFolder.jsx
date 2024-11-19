@@ -11,7 +11,7 @@ const CollapsibleFolder = ({ id, name, entries, nestedLevel, renameState, setRen
             <FolderObject id={id} name={name} nestedLevel={nestedLevel} onClick={toggleFolder}
                 isOpen={isOpen} renameState={renameState} setRenameStateId={setRenameStateId} />
             {isOpen && (
-                <ServerEntries entries={entries} nestedLevel={nestedLevel + 1} setRenameStateId={setRenameStateId}
+                <ServerEntries entries={entries} nestedLevel={nestedLevel + 1} setRenameStateId={setRenameStateId} folderId={id}
                     connectToServer={connectToServer} connectToPVEServer={connectToPVEServer} sshOnly={sshOnly} />
             )}
         </>
