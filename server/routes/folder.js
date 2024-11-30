@@ -1,6 +1,6 @@
 const { Router } = require("express");
-const { folderCreationValidation, folderRenameValidation } = require("../validations/folder");
-const { createFolder, deleteFolder, renameFolder, listFolders } = require("../controllers/folder");
+const { folderCreationValidation, folderEditValidation } = require("../validations/folder");
+const { createFolder, deleteFolder, listFolders, editFolder } = require("../controllers/folder");
 const { validateSchema } = require("../utils/schema");
 
 const app = Router();
@@ -18,13 +18,13 @@ app.put("/", async (req, res) => {
     res.json({ message: "Folder has been successfully created", id: folder.id });
 });
 
-app.patch("/:folderId/rename", async (req, res) => {
-    if (validateSchema(res, folderRenameValidation, req.body)) return;
+app.patch("/:folderId", async (req, res) => {
+    if (validateSchema(res, folderEditValidation, req.body)) return;
 
-    const response = await renameFolder(req.user.id, req.params.folderId, req.body.name);
+    const response = await editFolder(req.user.id, req.params.folderId, req.body);
     if (response) return res.json(response);
 
-    res.json({ message: "Folder has been successfully renamed" });
+    res.json({ message: "Folder has been successfully edited" });
 });
 
 app.delete("/:folderId", async (req, res) => {

@@ -34,14 +34,28 @@ module.exports.deleteFolder = async (accountId, folderId) => {
     await Folder.destroy({ where: { id: folderId } });
 };
 
-module.exports.renameFolder = async (accountId, folderId, name) => {
+module.exports.editFolder = async (accountId, folderId, configuration) => {
     const folder = await Folder.findOne({ where: { accountId: accountId, id: folderId } });
 
     if (folder === null) {
         return { code: 301, message: "Folder does not exist" };
     }
 
-    await Folder.update({ name: name }, { where: { id: folderId } });
+    if (configuration.parentId) {
+        let folder = await Folder.findOne({ where: { id: configuration.parentId, accountId: accountId } });
+        while (folder) {
+            if (folder.id === parseInt(folderId)) {
+                return { code: 303, message: "Cannot move folder to its own subfolder" };
+            }
+            if (folder.parentId === null) {
+                break;
+            }
+            folder = await Folder.findOne({ where: { id: folder.parentId, accountId: accountId } });
+        }
+    }
+
+
+    await Folder.update(configuration, { where: { id: folderId } });
 };
 
 module.exports.listFolders = async (accountId, showFolderType = false) => {
@@ -49,6 +63,10 @@ module.exports.listFolders = async (accountId, showFolderType = false) => {
         where: {
             accountId: accountId,
         },
+        order: [
+            ["parentId", "ASC"],
+            ["position", "ASC"],
+        ],
     });
 
     const folderMap = new Map();
@@ -59,6 +77,7 @@ module.exports.listFolders = async (accountId, showFolderType = false) => {
             id: folder.id,
             name: folder.name,
             type: showFolderType ? "folder" : undefined,
+            position: folder.position,
             entries: [],
         });
     });
