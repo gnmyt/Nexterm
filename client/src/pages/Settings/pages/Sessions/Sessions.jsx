@@ -2,7 +2,7 @@ import "./styles.sass";
 import { useContext, useEffect, useState } from "react";
 import { UserContext } from "@/common/contexts/UserContext.jsx";
 import { deleteRequest, getRequest } from "@/common/utils/RequestUtil.js";
-import UAParser from "ua-parser-js";
+import { UAParser } from "ua-parser-js";
 import Icon from "@mdi/react";
 import { mdiCellphone, mdiMonitor, mdiTablet } from "@mdi/js";
 
