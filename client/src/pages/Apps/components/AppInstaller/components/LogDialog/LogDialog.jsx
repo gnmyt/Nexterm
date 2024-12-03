@@ -1,10 +1,24 @@
-import { DialogProvider } from "@/common/components/Dialog";
 import "./styles.sass";
-import { useEffect, useRef } from "react";
+import { DialogProvider } from "@/common/components/Dialog";
+import { useEffect, useRef, useState } from "react";
+import { mdiCheck, mdiContentCopy } from "@mdi/js";
+import Button from "@/common/components/Button";
 
 export const LogDialog = ({open, onClose, content}) => {
 
+    const [isCopied, toggleCopyState] = useState(false)
+
     const logRef = useRef();
+
+    const handleCopyLogs = () => {
+        toggleCopyState(true)
+
+        navigator.clipboard.writeText(content)
+
+        setTimeout(() => {
+            toggleCopyState(false)
+        }, 1500);
+    }
 
     useEffect(() => {
         if (logRef.current) {
@@ -25,6 +39,13 @@ export const LogDialog = ({open, onClose, content}) => {
                         {content}
                     </pre>
                 </div>
+
+                <Button 
+                    text={isCopied ? "Copied" : "Copy logs"}
+                    icon={isCopied ? mdiCheck : mdiContentCopy}
+                    onClick={handleCopyLogs}
+                    disabled={isCopied}
+                />
             </div>
         </DialogProvider>
     );
