@@ -20,7 +20,7 @@
     "react-dnd": "^16.0.1",
     "react-dnd-html5-backend": "^16.0.1",
     "react-dom": "^18.3.1",
-    "react-router-dom": "^7.0.1",
+    "react-router-dom": "^7.0.2",
     "react-use-websocket": "^4.11.1",
     "simple-icons": "^13.19.0",
     "ua-parser-js": "^2.0.0",
