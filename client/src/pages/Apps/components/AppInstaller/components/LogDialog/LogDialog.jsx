@@ -34,11 +34,7 @@ export const LogDialog = ({open, onClose, content}) => {
                     <h2>Installation Log</h2>
                 </div>
 
-                <div className="log-dialog-content" ref={logRef}>
-                    <pre>
-                        {content}
-                    </pre>
-                </div>
+                <textarea className="log-dialog-content" ref={logRef} value={content} readOnly />
 
                 <Button 
                     text={isCopied ? "Copied" : "Copy logs"}
