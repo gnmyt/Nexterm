@@ -432,10 +432,10 @@
   dependencies:
     levn "^0.4.1"
 
-"@fontsource/plus-jakarta-sans@^5.1.0":
-  version "5.1.0"
-  resolved "https://registry.yarnpkg.com/@fontsource/plus-jakarta-sans/-/plus-jakarta-sans-5.1.0.tgz#bf4e15503d9dddcb28d808b8ba7593686f3f1f3f"
-  integrity sha512-o6qReKG0r7+YyNzMe0CbIC4u8nsLwUHRe3btQU+cYI/UH8+Cbvv278WICqEuj7zsBRu1eiuBgvBG17+cU+PJIw==
+"@fontsource/plus-jakarta-sans@^5.1.1":
+  version "5.1.1"
+  resolved "https://registry.yarnpkg.com/@fontsource/plus-jakarta-sans/-/plus-jakarta-sans-5.1.1.tgz#c9e78a6d0e7da16ae8b40edee279c8dcd9dec12a"
+  integrity sha512-czlD7FGbJqZ+5YVJ1LK3mVh2GIbGQZDQTtsv2leNgJC5lxNQ3dnqPURCNeW+nfPrcMHO94Er4qpklmJM++UHPw==
 
 "@humanfs/core@^0.19.1":
   version "0.19.1"
