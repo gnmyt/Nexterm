@@ -2,32 +2,32 @@
 # yarn lockfile v1
 
 
-"@algolia/autocomplete-core@1.17.7":
-  version "1.17.7"
-  resolved "https://registry.yarnpkg.com/@algolia/autocomplete-core/-/autocomplete-core-1.17.7.tgz#2c410baa94a47c5c5f56ed712bb4a00ebe24088b"
-  integrity sha512-BjiPOW6ks90UKl7TwMv7oNQMnzU+t/wk9mgIDi6b1tXpUek7MW0lbNOUHpvam9pe3lVCf4xPFT+lK7s+e+fs7Q==
+"@algolia/autocomplete-core@1.17.9":
+  version "1.17.9"
+  resolved "https://registry.yarnpkg.com/@algolia/autocomplete-core/-/autocomplete-core-1.17.9.tgz#83374c47dc72482aa45d6b953e89377047f0dcdc"
+  integrity sha512-O7BxrpLDPJWWHv/DLA9DRFWs+iY1uOJZkqUwjS5HSZAGcl0hIVCQ97LTLewiZmZ402JYUrun+8NqFP+hCknlbQ==
   dependencies:
-    "@algolia/autocomplete-plugin-algolia-insights" "1.17.7"
-    "@algolia/autocomplete-shared" "1.17.7"
+    "@algolia/autocomplete-plugin-algolia-insights" "1.17.9"
+    "@algolia/autocomplete-shared" "1.17.9"
 
-"@algolia/autocomplete-plugin-algolia-insights@1.17.7":
-  version "1.17.7"
-  resolved "https://registry.yarnpkg.com/@algolia/autocomplete-plugin-algolia-insights/-/autocomplete-plugin-algolia-insights-1.17.7.tgz#7d2b105f84e7dd8f0370aa4c4ab3b704e6760d82"
-  integrity sha512-Jca5Ude6yUOuyzjnz57og7Et3aXjbwCSDf/8onLHSQgw1qW3ALl9mrMWaXb5FmPVkV3EtkD2F/+NkT6VHyPu9A==
+"@algolia/autocomplete-plugin-algolia-insights@1.17.9":
+  version "1.17.9"
+  resolved "https://registry.yarnpkg.com/@algolia/autocomplete-plugin-algolia-insights/-/autocomplete-plugin-algolia-insights-1.17.9.tgz#74c86024d09d09e8bfa3dd90b844b77d9f9947b6"
+  integrity sha512-u1fEHkCbWF92DBeB/KHeMacsjsoI0wFhjZtlCq2ddZbAehshbZST6Hs0Avkc0s+4UyBGbMDnSuXHLuvRWK5iDQ==
   dependencies:
-    "@algolia/autocomplete-shared" "1.17.7"
+    "@algolia/autocomplete-shared" "1.17.9"
 
-"@algolia/autocomplete-preset-algolia@1.17.7":
-  version "1.17.7"
-  resolved "https://registry.yarnpkg.com/@algolia/autocomplete-preset-algolia/-/autocomplete-preset-algolia-1.17.7.tgz#c9badc0d73d62db5bf565d839d94ec0034680ae9"
-  integrity sha512-ggOQ950+nwbWROq2MOCIL71RE0DdQZsceqrg32UqnhDz8FlO9rL8ONHNsI2R1MH0tkgVIDKI/D0sMiUchsFdWA==
+"@algolia/autocomplete-preset-algolia@1.17.9":
+  version "1.17.9"
+  resolved "https://registry.yarnpkg.com/@algolia/autocomplete-preset-algolia/-/autocomplete-preset-algolia-1.17.9.tgz#911f3250544eb8ea4096fcfb268f156b085321b5"
+  integrity sha512-Na1OuceSJeg8j7ZWn5ssMu/Ax3amtOwk76u4h5J4eK2Nx2KB5qt0Z4cOapCsxot9VcEN11ADV5aUSlQF4RhGjQ==
   dependencies:
-    "@algolia/autocomplete-shared" "1.17.7"
+    "@algolia/autocomplete-shared" "1.17.9"
 
-"@algolia/autocomplete-shared@1.17.7":
-  version "1.17.7"
-  resolved "https://registry.yarnpkg.com/@algolia/autocomplete-shared/-/autocomplete-shared-1.17.7.tgz#105e84ad9d1a31d3fb86ba20dc890eefe1a313a0"
-  integrity sha512-o/1Vurr42U/qskRSuhBH+VKxMvkkUVTLU6WZQr+L5lGZZLYWyhdzWjW0iGXY7EkwRTjBqvN2EsR81yCTGV/kmg==
+"@algolia/autocomplete-shared@1.17.9":
+  version "1.17.9"
+  resolved "https://registry.yarnpkg.com/@algolia/autocomplete-shared/-/autocomplete-shared-1.17.9.tgz#5f38868f7cb1d54b014b17a10fc4f7e79d427fa8"
+  integrity sha512-iDf05JDQ7I0b7JEA/9IektxN/80a2MZ1ToohfmNS3rfeuQnIKI3IJlIafD0xu4StbtQTghx9T3Maa97ytkXenQ==
 
 "@algolia/client-abtesting@5.19.0":
   version "5.19.0"
@@ -171,27 +171,27 @@
     "@babel/helper-validator-identifier" "^7.25.7"
     to-fast-properties "^2.0.0"
 
-"@docsearch/css@3.8.2", "@docsearch/css@^3.8.2":
-  version "3.8.2"
-  resolved "https://registry.yarnpkg.com/@docsearch/css/-/css-3.8.2.tgz#7973ceb6892c30f154ba254cd05c562257a44977"
-  integrity sha512-y05ayQFyUmCXze79+56v/4HpycYF3uFqB78pLPrSV5ZKAlDuIAAJNhaRi8tTdRNXh05yxX/TyNnzD6LwSM89vQ==
+"@docsearch/css@3.8.3", "@docsearch/css@^3.8.3":
+  version "3.8.3"
+  resolved "https://registry.yarnpkg.com/@docsearch/css/-/css-3.8.3.tgz#12f377cf8c14b687042273f920efdfdb794e9fcf"
+  integrity sha512-1nELpMV40JDLJ6rpVVFX48R1jsBFIQ6RnEQDsLFGmzOjPWTOMlZqUcXcvRx8VmYV/TqnS1l784Ofz+ZEb+wEOQ==
 
-"@docsearch/js@^3.8.2":
-  version "3.8.2"
-  resolved "https://registry.yarnpkg.com/@docsearch/js/-/js-3.8.2.tgz#bdcfc9837700eb38453b88e211ab5cc5a3813cc6"
-  integrity sha512-Q5wY66qHn0SwA7Taa0aDbHiJvaFJLOJyHmooQ7y8hlwwQLQ/5WwCcoX0g7ii04Qi2DJlHsd0XXzJ8Ypw9+9YmQ==
+"@docsearch/js@^3.8.3":
+  version "3.8.3"
+  resolved "https://registry.yarnpkg.com/@docsearch/js/-/js-3.8.3.tgz#5dfab919fe91dbb37bc3f5e2dbcb4e5e4a88eaa3"
+  integrity sha512-CQsX1zeoPJIWxN3IGoDSWOqzRc0JsOE9Bclegf9llwjYN2rzzJF93zagGcT3uI3tF31oCqTuUOVGW/mVFb7arw==
   dependencies:
-    "@docsearch/react" "3.8.2"
+    "@docsearch/react" "3.8.3"
     preact "^10.0.0"
 
-"@docsearch/react@3.8.2":
-  version "3.8.2"
-  resolved "https://registry.yarnpkg.com/@docsearch/react/-/react-3.8.2.tgz#7b11d39b61c976c0aa9fbde66e6b73b30f3acd42"
-  integrity sha512-xCRrJQlTt8N9GU0DG4ptwHRkfnSnD/YpdeaXe02iKfqs97TkZJv60yE+1eq/tjPcVnTW8dP5qLP7itifFVV5eg==
+"@docsearch/react@3.8.3":
+  version "3.8.3"
+  resolved "https://registry.yarnpkg.com/@docsearch/react/-/react-3.8.3.tgz#72f6bcbbda6cd07f23398af641e483c27d16e00a"
+  integrity sha512-6UNrg88K7lJWmuS6zFPL/xgL+n326qXqZ7Ybyy4E8P/6Rcblk3GE8RXxeol4Pd5pFpKMhOhBhzABKKwHtbJCIg==
   dependencies:
-    "@algolia/autocomplete-core" "1.17.7"
-    "@algolia/autocomplete-preset-algolia" "1.17.7"
-    "@docsearch/css" "3.8.2"
+    "@algolia/autocomplete-core" "1.17.9"
+    "@algolia/autocomplete-preset-algolia" "1.17.9"
+    "@docsearch/css" "3.8.3"
     algoliasearch "^5.14.2"
 
 "@esbuild/aix-ppc64@0.21.5":
@@ -326,7 +326,7 @@
   dependencies:
     "@hapi/hoek" "^9.0.0"
 
-"@iconify-json/simple-icons@^1.2.20":
+"@iconify-json/simple-icons@^1.2.21":
   version "1.2.21"
   resolved "https://registry.yarnpkg.com/@iconify-json/simple-icons/-/simple-icons-1.2.21.tgz#89980b3901de08d1d38dcf1f3e87957e31551245"
   integrity sha512-aqbIuVshMZ2fNEhm25//9DoKudboXF3CpoEQJJlHl9gVSVNOTr4cgaCIZvgSEYmys2HHEfmhcpoZIhoEFZS8SQ==
@@ -454,61 +454,61 @@
   resolved "https://registry.yarnpkg.com/@rollup/rollup-win32-x64-msvc/-/rollup-win32-x64-msvc-4.21.2.tgz#e4291e3c1bc637083f87936c333cdbcad22af63b"
   integrity sha512-6UUxd0+SKomjdzuAcp+HAmxw1FlGBnl1v2yEPSabtx4lBfdXHDVsW7+lQkgz9cNFJGY3AWR7+V8P5BqkD9L9nA==
 
-"@shikijs/core@2.0.3", "@shikijs/core@^2.0.0":
-  version "2.0.3"
-  resolved "https://registry.yarnpkg.com/@shikijs/core/-/core-2.0.3.tgz#25c86368b9491e9d98d5cb4d7f61b2e8450b474d"
-  integrity sha512-dhbLagx1As0BmaNGUTxJ/qshb4MPyKYIvjCcd7y1utDToebUS4BZI3FH+WVCJF3/VwWWKOhuzX4lgjOb7qtSjQ==
+"@shikijs/core@2.1.0", "@shikijs/core@^2.1.0":
+  version "2.1.0"
+  resolved "https://registry.yarnpkg.com/@shikijs/core/-/core-2.1.0.tgz#e767dddf2034ae4504e36210bbd881a94525f321"
+  integrity sha512-v795KDmvs+4oV0XD05YLzfDMe9ISBgNjtFxP4PAEv5DqyeghO1/TwDqs9ca5/E6fuO95IcAcWqR6cCX9TnqLZA==
   dependencies:
-    "@shikijs/engine-javascript" "2.0.3"
-    "@shikijs/engine-oniguruma" "2.0.3"
-    "@shikijs/types" "2.0.3"
+    "@shikijs/engine-javascript" "2.1.0"
+    "@shikijs/engine-oniguruma" "2.1.0"
+    "@shikijs/types" "2.1.0"
     "@shikijs/vscode-textmate" "^10.0.1"
     "@types/hast" "^3.0.4"
     hast-util-to-html "^9.0.4"
 
-"@shikijs/engine-javascript@2.0.3":
-  version "2.0.3"
-  resolved "https://registry.yarnpkg.com/@shikijs/engine-javascript/-/engine-javascript-2.0.3.tgz#fd7bf6fbbdb086611b28b3c14db34e97fdca0c8a"
-  integrity sha512-GMmfP8xEmUl0H7RXo4VTFYqAWzAADtlghA9perlm6mzuo0n/Ih+owh57ZLWBMMe/N1TUMis4SGJRvx31HtK3jg==
+"@shikijs/engine-javascript@2.1.0":
+  version "2.1.0"
+  resolved "https://registry.yarnpkg.com/@shikijs/engine-javascript/-/engine-javascript-2.1.0.tgz#5645a04629cd85c433354b76d601ce7127eb502b"
+  integrity sha512-cgIUdAliOsoaa0rJz/z+jvhrpRd+fVAoixVFEVxUq5FA+tHgBZAIfVJSgJNVRj2hs/wZ1+4hMe82eKAThVh0nQ==
   dependencies:
-    "@shikijs/types" "2.0.3"
+    "@shikijs/types" "2.1.0"
     "@shikijs/vscode-textmate" "^10.0.1"
-    oniguruma-to-es "^2.2.0"
+    oniguruma-to-es "^2.3.0"
 
-"@shikijs/engine-oniguruma@2.0.3":
-  version "2.0.3"
-  resolved "https://registry.yarnpkg.com/@shikijs/engine-oniguruma/-/engine-oniguruma-2.0.3.tgz#f718ef6c97af94b3c523037f2f334eb0f77c5ba7"
-  integrity sha512-MicRzo0aNaS18yXBnXjYFLnzi5Sh3NUHtm/WXzavtpGiWd75gRdZsZDMceeFyTL9MMy9iGifK2JePXY5dlZHIA==
+"@shikijs/engine-oniguruma@2.1.0":
+  version "2.1.0"
+  resolved "https://registry.yarnpkg.com/@shikijs/engine-oniguruma/-/engine-oniguruma-2.1.0.tgz#0990713d9ce4796172db47321a9b32fa9036003c"
+  integrity sha512-Ujik33wEDqgqY2WpjRDUBECGcKPv3eGGkoXPujIXvokLaRmGky8NisSk8lHUGeSFxo/Cz5sgFej9sJmA9yeepg==
   dependencies:
-    "@shikijs/types" "2.0.3"
+    "@shikijs/types" "2.1.0"
     "@shikijs/vscode-textmate" "^10.0.1"
 
-"@shikijs/langs@2.0.3":
-  version "2.0.3"
-  resolved "https://registry.yarnpkg.com/@shikijs/langs/-/langs-2.0.3.tgz#b5729faa259999ccf8c8cf10dd9c4a6a3fe3ec43"
-  integrity sha512-L+QcwH6tjVY21xDxe3etR+C+33mAbkyQVvUIsszwnQrRVI54r7VPNTMVWR4EbZfPFwWmwLCoO83V5YiBWusvVg==
+"@shikijs/langs@2.1.0":
+  version "2.1.0"
+  resolved "https://registry.yarnpkg.com/@shikijs/langs/-/langs-2.1.0.tgz#fdc88584b3f174b3d8aec24a3a706eb897edf4ed"
+  integrity sha512-Jn0gS4rPgerMDPj1ydjgFzZr5fAIoMYz4k7ZT3LJxWWBWA6lokK0pumUwVtb+MzXtlpjxOaQejLprmLbvMZyww==
   dependencies:
-    "@shikijs/types" "2.0.3"
+    "@shikijs/types" "2.1.0"
 
-"@shikijs/themes@2.0.3":
-  version "2.0.3"
-  resolved "https://registry.yarnpkg.com/@shikijs/themes/-/themes-2.0.3.tgz#0ba26e4bed2a893036e7628cb6efda0cffc5c844"
-  integrity sha512-NFnArltjzmYAssn1SLIFlKX9HJEL9K12z0uBB0tg579hW6UHIXwfd+AhsaB/+cXYLix2YuN5uEPJpqtRN2zi0A==
+"@shikijs/themes@2.1.0":
+  version "2.1.0"
+  resolved "https://registry.yarnpkg.com/@shikijs/themes/-/themes-2.1.0.tgz#b482694577c4689746fabee8bac439a6a1d087a1"
+  integrity sha512-oS2mU6+bz+8TKutsjBxBA7Z3vrQk21RCmADLpnu8cy3tZD6Rw0FKqDyXNtwX52BuIDKHxZNmRlTdG3vtcYv3NQ==
   dependencies:
-    "@shikijs/types" "2.0.3"
+    "@shikijs/types" "2.1.0"
 
-"@shikijs/transformers@^2.0.0":
-  version "2.0.3"
-  resolved "https://registry.yarnpkg.com/@shikijs/transformers/-/transformers-2.0.3.tgz#59df482e5dc5d5e1aef0dea624d6a6c3d831e3bf"
-  integrity sha512-Y5qmHA2LyoXccq6IPP5AeGqialn54ZORPBxbyNH+NEbCaw1nTCCy+Tfm3idRkqYLZOw0yq+0MUSDWbGezHksow==
+"@shikijs/transformers@^2.1.0":
+  version "2.1.0"
+  resolved "https://registry.yarnpkg.com/@shikijs/transformers/-/transformers-2.1.0.tgz#cb381806a2f6ff0249225b6f10bf14ba20631425"
+  integrity sha512-3sfvh6OKUVkT5wZFU1xxiq1qqNIuCwUY3yOb9ZGm19y80UZ/eoroLE2orGNzfivyTxR93GfXXZC/ghPR0/SBow==
   dependencies:
-    "@shikijs/core" "2.0.3"
-    "@shikijs/types" "2.0.3"
+    "@shikijs/core" "2.1.0"
+    "@shikijs/types" "2.1.0"
 
-"@shikijs/types@2.0.3", "@shikijs/types@^2.0.0":
-  version "2.0.3"
-  resolved "https://registry.yarnpkg.com/@shikijs/types/-/types-2.0.3.tgz#527e404d25e8370379db5c3c44f0393d15e2a234"
-  integrity sha512-jyP6NMdWkbBpEn3WqqH8TCfkzE52/hS7msKGJAvxcwyQQah7+hU8x7ejFhCVoxrBaW001v+ID4zl3wspcDSaaw==
+"@shikijs/types@2.1.0", "@shikijs/types@^2.1.0":
+  version "2.1.0"
+  resolved "https://registry.yarnpkg.com/@shikijs/types/-/types-2.1.0.tgz#38e3c241263de1b5c30cbd9b9d03eb34cebd842e"
+  integrity sha512-OFOdHA6VEVbiQvepJ8yqicC6VmBrKxFFhM2EsHHrZESqLVAXOSeRDiuSYV185lIgp15TVic5vYBYNhTsk1xHLg==
   dependencies:
     "@shikijs/vscode-textmate" "^10.0.1"
     "@types/hast" "^3.0.4"
@@ -2381,10 +2381,10 @@ once@^1.3.0, once@^1.3.1, once@^1.4.0:
   dependencies:
     wrappy "1"
 
-oniguruma-to-es@^2.2.0:
-  version "2.2.0"
-  resolved "https://registry.yarnpkg.com/oniguruma-to-es/-/oniguruma-to-es-2.2.0.tgz#7134ab4f05595cadc52fbc697af5c96788dca493"
-  integrity sha512-EEsso27ri0sf+t4uRFEj5C5gvXQj0d0w1Y2qq06b+hDLBnvzO1rWTwEW4C7ytan6nhg4WPwE26eLoiPhHUbvKg==
+oniguruma-to-es@^2.3.0:
+  version "2.3.0"
+  resolved "https://registry.yarnpkg.com/oniguruma-to-es/-/oniguruma-to-es-2.3.0.tgz#35ea9104649b7c05f3963c6b3b474d964625028b"
+  integrity sha512-bwALDxriqfKGfUufKGGepCzu9x7nJQuoRoAFp4AnwehhC2crqrDIAP/uN2qdlsAvSMpeRC3+Yzhqc7hLmle5+g==
   dependencies:
     emoji-regex-xs "^1.0.0"
     regex "^5.1.1"
@@ -2809,17 +2809,17 @@ shell-quote@^1.8.1:
   resolved "https://registry.yarnpkg.com/shell-quote/-/shell-quote-1.8.1.tgz#6dbf4db75515ad5bac63b4f1894c3a154c766680"
   integrity sha512-6j1W9l1iAs/4xYBI1SYOVZyFcCis9b4KCLQ8fgAGG07QvzaRLVVRQvAy85yNmmZSjYjg4MWh4gNvlPujU/5LpA==
 
-shiki@^2.0.0:
-  version "2.0.3"
-  resolved "https://registry.yarnpkg.com/shiki/-/shiki-2.0.3.tgz#bc996feaad3d18575c1dbb2d20987cff4506a7b2"
-  integrity sha512-njF3iF97mxWcEFxxB591EeVFgf5VPpXJKFIB3RCFSkcgINetMIb+9CfNInmzkz8BlPWlEEY1nSGd0F1807YhCg==
+shiki@^2.1.0:
+  version "2.1.0"
+  resolved "https://registry.yarnpkg.com/shiki/-/shiki-2.1.0.tgz#49b9d612e613342ec2db8f18a44a246db4c5e323"
+  integrity sha512-yvKPdNGLXZv7WC4bl7JBbU3CEcUxnBanvMez8MG3gZXKpClGL4bHqFyLhTx+2zUvbjClUANs/S22HXb7aeOgmA==
   dependencies:
-    "@shikijs/core" "2.0.3"
-    "@shikijs/engine-javascript" "2.0.3"
-    "@shikijs/engine-oniguruma" "2.0.3"
-    "@shikijs/langs" "2.0.3"
-    "@shikijs/themes" "2.0.3"
-    "@shikijs/types" "2.0.3"
+    "@shikijs/core" "2.1.0"
+    "@shikijs/engine-javascript" "2.1.0"
+    "@shikijs/engine-oniguruma" "2.1.0"
+    "@shikijs/langs" "2.1.0"
+    "@shikijs/themes" "2.1.0"
+    "@shikijs/types" "2.1.0"
     "@shikijs/vscode-textmate" "^10.0.1"
     "@types/hast" "^3.0.4"
 
@@ -3270,10 +3270,10 @@ vfile@^6.0.0:
     "@types/unist" "^3.0.0"
     vfile-message "^4.0.0"
 
-vite@^5.4.12:
-  version "5.4.13"
-  resolved "https://registry.yarnpkg.com/vite/-/vite-5.4.13.tgz#59994ccf14783e40e2763b950db432cc299cd9fc"
-  integrity sha512-7zp3N4YSjXOSAFfdBe9pPD3FrO398QlJ/5QpFGm3L8xDP1IxDn1XRxArPw4ZKk5394MM8rcTVPY4y1Hvo62bog==
+vite@^5.4.14:
+  version "5.4.14"
+  resolved "https://registry.yarnpkg.com/vite/-/vite-5.4.14.tgz#ff8255edb02134df180dcfca1916c37a6abe8408"
+  integrity sha512-EK5cY7Q1D8JNhSaPKVK4pwBFvaTmZxEnoKXLG/U9gmdDcihQGNzFlgIvaxezFR4glP1LsuiedwMBqCXH3wZccA==
   dependencies:
     esbuild "^0.21.3"
     postcss "^8.4.43"
@@ -3281,17 +3281,17 @@ vite@^5.4.12:
   optionalDependencies:
     fsevents "~2.3.3"
 
-vitepress@^1.6.1:
-  version "1.6.1"
-  resolved "https://registry.yarnpkg.com/vitepress/-/vitepress-1.6.1.tgz#e63b3261908d1cfddb577b59e56285aa6709ba58"
-  integrity sha512-n41KBL08aonxaWMnk5V+TkpZ29rZF4sgYjvIqU2k0foteNhgms5BmbVWw9xTqD5hps12H1W+EZUwc7NlHh1s3g==
+vitepress@^1.6.2:
+  version "1.6.2"
+  resolved "https://registry.yarnpkg.com/vitepress/-/vitepress-1.6.2.tgz#d6a9523a3b1e1e71fe03ddb03608ea804eb63bdb"
+  integrity sha512-pKAgner8wqetwyL6VyjhJnrw/Kwc8hNlwaS/efUlEBhQsRiCvjIsKqjWyjyUMa6u39ktMle16nYAUOcZ6MhV6Q==
   dependencies:
-    "@docsearch/css" "^3.8.2"
-    "@docsearch/js" "^3.8.2"
-    "@iconify-json/simple-icons" "^1.2.20"
-    "@shikijs/core" "^2.0.0"
-    "@shikijs/transformers" "^2.0.0"
-    "@shikijs/types" "^2.0.0"
+    "@docsearch/css" "^3.8.3"
+    "@docsearch/js" "^3.8.3"
+    "@iconify-json/simple-icons" "^1.2.21"
+    "@shikijs/core" "^2.1.0"
+    "@shikijs/transformers" "^2.1.0"
+    "@shikijs/types" "^2.1.0"
     "@types/markdown-it" "^14.1.2"
     "@vitejs/plugin-vue" "^5.2.1"
     "@vue/devtools-api" "^7.7.0"
@@ -3301,8 +3301,8 @@ vitepress@^1.6.1:
     focus-trap "^7.6.4"
     mark.js "8.11.1"
     minisearch "^7.1.1"
-    shiki "^2.0.0"
-    vite "^5.4.12"
+    shiki "^2.1.0"
+    vite "^5.4.14"
     vue "^3.5.13"
 
 vue@^3.5.13:
