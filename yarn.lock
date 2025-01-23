@@ -2,32 +2,32 @@
 # yarn lockfile v1
 
 
-"@algolia/autocomplete-core@1.17.9":
-  version "1.17.9"
-  resolved "https://registry.yarnpkg.com/@algolia/autocomplete-core/-/autocomplete-core-1.17.9.tgz#83374c47dc72482aa45d6b953e89377047f0dcdc"
-  integrity sha512-O7BxrpLDPJWWHv/DLA9DRFWs+iY1uOJZkqUwjS5HSZAGcl0hIVCQ97LTLewiZmZ402JYUrun+8NqFP+hCknlbQ==
+"@algolia/autocomplete-core@1.17.7":
+  version "1.17.7"
+  resolved "https://registry.yarnpkg.com/@algolia/autocomplete-core/-/autocomplete-core-1.17.7.tgz#2c410baa94a47c5c5f56ed712bb4a00ebe24088b"
+  integrity sha512-BjiPOW6ks90UKl7TwMv7oNQMnzU+t/wk9mgIDi6b1tXpUek7MW0lbNOUHpvam9pe3lVCf4xPFT+lK7s+e+fs7Q==
   dependencies:
-    "@algolia/autocomplete-plugin-algolia-insights" "1.17.9"
-    "@algolia/autocomplete-shared" "1.17.9"
+    "@algolia/autocomplete-plugin-algolia-insights" "1.17.7"
+    "@algolia/autocomplete-shared" "1.17.7"
 
-"@algolia/autocomplete-plugin-algolia-insights@1.17.9":
-  version "1.17.9"
-  resolved "https://registry.yarnpkg.com/@algolia/autocomplete-plugin-algolia-insights/-/autocomplete-plugin-algolia-insights-1.17.9.tgz#74c86024d09d09e8bfa3dd90b844b77d9f9947b6"
-  integrity sha512-u1fEHkCbWF92DBeB/KHeMacsjsoI0wFhjZtlCq2ddZbAehshbZST6Hs0Avkc0s+4UyBGbMDnSuXHLuvRWK5iDQ==
+"@algolia/autocomplete-plugin-algolia-insights@1.17.7":
+  version "1.17.7"
+  resolved "https://registry.yarnpkg.com/@algolia/autocomplete-plugin-algolia-insights/-/autocomplete-plugin-algolia-insights-1.17.7.tgz#7d2b105f84e7dd8f0370aa4c4ab3b704e6760d82"
+  integrity sha512-Jca5Ude6yUOuyzjnz57og7Et3aXjbwCSDf/8onLHSQgw1qW3ALl9mrMWaXb5FmPVkV3EtkD2F/+NkT6VHyPu9A==
   dependencies:
-    "@algolia/autocomplete-shared" "1.17.9"
+    "@algolia/autocomplete-shared" "1.17.7"
 
-"@algolia/autocomplete-preset-algolia@1.17.9":
-  version "1.17.9"
-  resolved "https://registry.yarnpkg.com/@algolia/autocomplete-preset-algolia/-/autocomplete-preset-algolia-1.17.9.tgz#911f3250544eb8ea4096fcfb268f156b085321b5"
-  integrity sha512-Na1OuceSJeg8j7ZWn5ssMu/Ax3amtOwk76u4h5J4eK2Nx2KB5qt0Z4cOapCsxot9VcEN11ADV5aUSlQF4RhGjQ==
+"@algolia/autocomplete-preset-algolia@1.17.7":
+  version "1.17.7"
+  resolved "https://registry.yarnpkg.com/@algolia/autocomplete-preset-algolia/-/autocomplete-preset-algolia-1.17.7.tgz#c9badc0d73d62db5bf565d839d94ec0034680ae9"
+  integrity sha512-ggOQ950+nwbWROq2MOCIL71RE0DdQZsceqrg32UqnhDz8FlO9rL8ONHNsI2R1MH0tkgVIDKI/D0sMiUchsFdWA==
   dependencies:
-    "@algolia/autocomplete-shared" "1.17.9"
+    "@algolia/autocomplete-shared" "1.17.7"
 
-"@algolia/autocomplete-shared@1.17.9":
-  version "1.17.9"
-  resolved "https://registry.yarnpkg.com/@algolia/autocomplete-shared/-/autocomplete-shared-1.17.9.tgz#5f38868f7cb1d54b014b17a10fc4f7e79d427fa8"
-  integrity sha512-iDf05JDQ7I0b7JEA/9IektxN/80a2MZ1ToohfmNS3rfeuQnIKI3IJlIafD0xu4StbtQTghx9T3Maa97ytkXenQ==
+"@algolia/autocomplete-shared@1.17.7":
+  version "1.17.7"
+  resolved "https://registry.yarnpkg.com/@algolia/autocomplete-shared/-/autocomplete-shared-1.17.7.tgz#105e84ad9d1a31d3fb86ba20dc890eefe1a313a0"
+  integrity sha512-o/1Vurr42U/qskRSuhBH+VKxMvkkUVTLU6WZQr+L5lGZZLYWyhdzWjW0iGXY7EkwRTjBqvN2EsR81yCTGV/kmg==
 
 "@algolia/client-abtesting@5.19.0":
   version "5.19.0"
@@ -171,27 +171,27 @@
     "@babel/helper-validator-identifier" "^7.25.7"
     to-fast-properties "^2.0.0"
 
-"@docsearch/css@3.8.3", "@docsearch/css@^3.8.3":
-  version "3.8.3"
-  resolved "https://registry.yarnpkg.com/@docsearch/css/-/css-3.8.3.tgz#12f377cf8c14b687042273f920efdfdb794e9fcf"
-  integrity sha512-1nELpMV40JDLJ6rpVVFX48R1jsBFIQ6RnEQDsLFGmzOjPWTOMlZqUcXcvRx8VmYV/TqnS1l784Ofz+ZEb+wEOQ==
+"@docsearch/css@3.8.2":
+  version "3.8.2"
+  resolved "https://registry.yarnpkg.com/@docsearch/css/-/css-3.8.2.tgz#7973ceb6892c30f154ba254cd05c562257a44977"
+  integrity sha512-y05ayQFyUmCXze79+56v/4HpycYF3uFqB78pLPrSV5ZKAlDuIAAJNhaRi8tTdRNXh05yxX/TyNnzD6LwSM89vQ==
 
-"@docsearch/js@^3.8.3":
-  version "3.8.3"
-  resolved "https://registry.yarnpkg.com/@docsearch/js/-/js-3.8.3.tgz#5dfab919fe91dbb37bc3f5e2dbcb4e5e4a88eaa3"
-  integrity sha512-CQsX1zeoPJIWxN3IGoDSWOqzRc0JsOE9Bclegf9llwjYN2rzzJF93zagGcT3uI3tF31oCqTuUOVGW/mVFb7arw==
+"@docsearch/js@3.8.2":
+  version "3.8.2"
+  resolved "https://registry.yarnpkg.com/@docsearch/js/-/js-3.8.2.tgz#bdcfc9837700eb38453b88e211ab5cc5a3813cc6"
+  integrity sha512-Q5wY66qHn0SwA7Taa0aDbHiJvaFJLOJyHmooQ7y8hlwwQLQ/5WwCcoX0g7ii04Qi2DJlHsd0XXzJ8Ypw9+9YmQ==
   dependencies:
-    "@docsearch/react" "3.8.3"
+    "@docsearch/react" "3.8.2"
     preact "^10.0.0"
 
-"@docsearch/react@3.8.3":
-  version "3.8.3"
-  resolved "https://registry.yarnpkg.com/@docsearch/react/-/react-3.8.3.tgz#72f6bcbbda6cd07f23398af641e483c27d16e00a"
-  integrity sha512-6UNrg88K7lJWmuS6zFPL/xgL+n326qXqZ7Ybyy4E8P/6Rcblk3GE8RXxeol4Pd5pFpKMhOhBhzABKKwHtbJCIg==
+"@docsearch/react@3.8.2":
+  version "3.8.2"
+  resolved "https://registry.yarnpkg.com/@docsearch/react/-/react-3.8.2.tgz#7b11d39b61c976c0aa9fbde66e6b73b30f3acd42"
+  integrity sha512-xCRrJQlTt8N9GU0DG4ptwHRkfnSnD/YpdeaXe02iKfqs97TkZJv60yE+1eq/tjPcVnTW8dP5qLP7itifFVV5eg==
   dependencies:
-    "@algolia/autocomplete-core" "1.17.9"
-    "@algolia/autocomplete-preset-algolia" "1.17.9"
-    "@docsearch/css" "3.8.3"
+    "@algolia/autocomplete-core" "1.17.7"
+    "@algolia/autocomplete-preset-algolia" "1.17.7"
+    "@docsearch/css" "3.8.2"
     algoliasearch "^5.14.2"
 
 "@esbuild/aix-ppc64@0.21.5":
@@ -3281,13 +3281,13 @@ vite@^5.4.14:
   optionalDependencies:
     fsevents "~2.3.3"
 
-vitepress@^1.6.2:
-  version "1.6.2"
-  resolved "https://registry.yarnpkg.com/vitepress/-/vitepress-1.6.2.tgz#d6a9523a3b1e1e71fe03ddb03608ea804eb63bdb"
-  integrity sha512-pKAgner8wqetwyL6VyjhJnrw/Kwc8hNlwaS/efUlEBhQsRiCvjIsKqjWyjyUMa6u39ktMle16nYAUOcZ6MhV6Q==
+vitepress@^1.6.3:
+  version "1.6.3"
+  resolved "https://registry.yarnpkg.com/vitepress/-/vitepress-1.6.3.tgz#4e4662ce2ad55ef64604ecf4f96231a8da2fe9ba"
+  integrity sha512-fCkfdOk8yRZT8GD9BFqusW3+GggWYZ/rYncOfmgcDtP3ualNHCAg+Robxp2/6xfH1WwPHtGpPwv7mbA3qomtBw==
   dependencies:
-    "@docsearch/css" "^3.8.3"
-    "@docsearch/js" "^3.8.3"
+    "@docsearch/css" "3.8.2"
+    "@docsearch/js" "3.8.2"
     "@iconify-json/simple-icons" "^1.2.21"
     "@shikijs/core" "^2.1.0"
     "@shikijs/transformers" "^2.1.0"
