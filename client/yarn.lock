@@ -2393,10 +2393,10 @@ react-router@7.1.4:
     set-cookie-parser "^2.6.0"
     turbo-stream "2.4.0"
 
-react-use-websocket@^4.11.1:
-  version "4.11.1"
-  resolved "https://registry.yarnpkg.com/react-use-websocket/-/react-use-websocket-4.11.1.tgz#6c6546c4921c057e8a6ee418fd01705bffa80d8e"
-  integrity sha512-39e8mK2a2A1h8uY3ePF45b2q0vwMOmaEy7J5qEhQg4n7vYa5oDLmqutG36kZQgAQ/3KCZS0brlGRbbZJ0+zfKQ==
+react-use-websocket@^4.12.0:
+  version "4.12.0"
+  resolved "https://registry.yarnpkg.com/react-use-websocket/-/react-use-websocket-4.12.0.tgz#2bee0fcc09dbde13ac587205c717d5f9fcf1fed5"
+  integrity sha512-aPsZiIkGdULzG+CNqh2wFQpIdWiaKStRBofBUc0j/TURV3CrOw5YuJMHHre+CyB1LUoJeQbUnz7Bj05J68+xng==
 
 react@^19.0.0:
   version "19.0.0"
