@@ -34,7 +34,7 @@ yarn dev
 ```
 
 This will start the server and the client in development mode. You can access the development server
-at [http://localhost:5173](http://localhost:5173).
+at [http://127.0.0.1:5173](http://127.0.0.1:5173).
 
 ## 🤝 Contributing
 
