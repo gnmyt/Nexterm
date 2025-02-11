@@ -1,14 +1,19 @@
+require("dotenv").config();
 const express = require("express");
 const path = require("path");
 const db = require("./utils/database");
 const { authenticate } = require("./middlewares/auth");
 const expressWs = require("express-ws");
 const { startPVEUpdater } = require("./utils/pveUpdater");
-const { refreshAppSources, startAppUpdater, insertOfficialSource } = require("./controllers/appSource");
+const {
+    refreshAppSources,
+    startAppUpdater,
+    insertOfficialSource,
+} = require("./controllers/appSource");
 const { isAdmin } = require("./middlewares/permission");
 require("./utils/folder");
 
-process.on("uncaughtException", err => require("./utils/errorHandling")(err));
+process.on("uncaughtException", (err) => require("./utils/errorHandling")(err));
 
 const APP_PORT = process.env.SERVER_PORT || 6989;
 
@@ -42,29 +47,43 @@ app.use("/api/apps", authenticate, require("./routes/apps"));
 if (process.env.NODE_ENV === "production") {
     app.use(express.static(path.join(__dirname, "../dist")));
 
-    app.get("*", (req, res) => res.sendFile(path.join(__dirname, "../dist", "index.html")));
+    app.get("*", (req, res) =>
+        res.sendFile(path.join(__dirname, "../dist", "index.html"))
+    );
 } else {
-    app.get("*", (req, res) => res.status(500).sendFile(path.join(__dirname, "templates", "env.html")));
+    app.get("*", (req, res) =>
+        res.status(500).sendFile(path.join(__dirname, "templates", "env.html"))
+    );
 }
 
-db.authenticate().catch(err => {
-    console.error("Could not open the database file. Maybe it is damaged?: " + err.message);
-    process.exit(111);
-}).then(async () => {
-    console.log("Successfully connected to the database " + (process.env.DB_TYPE === "mysql" ? "server" : "file"));
+db.authenticate()
+    .catch((err) => {
+        console.error(
+            "Could not open the database file. Maybe it is damaged?: " +
+                err.message
+        );
+        process.exit(111);
+    })
+    .then(async () => {
+        console.log(
+            "Successfully connected to the database " +
+                (process.env.DB_TYPE === "mysql" ? "server" : "file")
+        );
 
-    await db.sync({ alter: true, force: false });
+        await db.sync({ alter: true, force: false });
 
-    startPVEUpdater();
+        startPVEUpdater();
 
-    startAppUpdater();
+        startAppUpdater();
 
-    await insertOfficialSource();
+        await insertOfficialSource();
 
-    await refreshAppSources();
+        await refreshAppSources();
 
-    app.listen(APP_PORT, () => console.log(`Server listening on port ${APP_PORT}`));
-});
+        app.listen(APP_PORT, () =>
+            console.log(`Server listening on port ${APP_PORT}`)
+        );
+    });
 
 process.on("SIGINT", async () => {
     console.log("Shutting down the server...");
