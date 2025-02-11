@@ -45,6 +45,7 @@ export default defineConfig({
                 items: [
                     { text: "Home", link: "/" },
                     { text: "Preview", link: "/preview" },
+                    { text: "Contributing", link: "/contributing" },
                 ],
             },
         ],
