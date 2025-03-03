@@ -435,10 +435,10 @@
     "@eslint/core" "^0.12.0"
     levn "^0.4.1"
 
-"@fontsource/plus-jakarta-sans@^5.1.1":
-  version "5.1.1"
-  resolved "https://registry.yarnpkg.com/@fontsource/plus-jakarta-sans/-/plus-jakarta-sans-5.1.1.tgz#c9e78a6d0e7da16ae8b40edee279c8dcd9dec12a"
-  integrity sha512-czlD7FGbJqZ+5YVJ1LK3mVh2GIbGQZDQTtsv2leNgJC5lxNQ3dnqPURCNeW+nfPrcMHO94Er4qpklmJM++UHPw==
+"@fontsource/plus-jakarta-sans@^5.2.5":
+  version "5.2.5"
+  resolved "https://registry.yarnpkg.com/@fontsource/plus-jakarta-sans/-/plus-jakarta-sans-5.2.5.tgz#f60ae8e3383cd0f6fdd07eb3f75c2fc0389773fe"
+  integrity sha512-2QBEymhsrpomwXrDygLwolOPOjRGDLDT+Pezo+SsnapcQ1z0n4qXzhC+EVmTZ0yxrQvqdc0kcb9EUd0eWmj9Jw==
 
 "@humanfs/core@^0.19.1":
   version "0.19.1"
