@@ -7,6 +7,7 @@ import { getRequest, patchRequest, putRequest } from "@/common/utils/RequestUtil
 import { ServerContext } from "@/common/contexts/ServerContext.jsx";
 import IdentityPage from "@/pages/Servers/components/ServerDialog/pages/IdentityPage.jsx";
 import { IdentityContext } from "@/common/contexts/IdentityContext.jsx";
+import { useToast } from "@/common/contexts/ToastContext.jsx";
 
 const tabs = ["Details", "Identities", "Settings"];
 
@@ -14,6 +15,7 @@ export const ServerDialog = ({ open, onClose, currentFolderId, editServerId }) =
 
     const { loadServers } = useContext(ServerContext);
     const { loadIdentities } = useContext(IdentityContext);
+    const { sendToast } = useToast();
 
     const [name, setName] = useState("");
     const [icon, setIcon] = useState(null);
@@ -44,6 +46,7 @@ export const ServerDialog = ({ open, onClose, currentFolderId, editServerId }) =
 
             return result;
         } catch (error) {
+            sendToast("Error", error.message || "Failed to create identity");
             console.error(error);
         }
     };
@@ -63,6 +66,7 @@ export const ServerDialog = ({ open, onClose, currentFolderId, editServerId }) =
             setIdentityUpdates({});
             refreshIdentities();
         } catch (error) {
+            sendToast("Error", error.message || "Failed to update identity");
             console.error(error);
         }
     };
@@ -82,9 +86,7 @@ export const ServerDialog = ({ open, onClose, currentFolderId, editServerId }) =
             let identity = null;
             if (Object.keys(identityUpdates).length > 0) {
                 identity = await updateIdentities();
-
                 if (!identity) return;
-
                 loadIdentities();
             }
 
@@ -94,8 +96,12 @@ export const ServerDialog = ({ open, onClose, currentFolderId, editServerId }) =
             });
 
             loadServers();
-            if (result.id) onClose();
+            if (result.id) {
+                sendToast("Success", "Server created successfully");
+                onClose();
+            }
         } catch (error) {
+            sendToast("Error", error.message || "Failed to create server");
             console.error(error);
         }
     };
@@ -108,8 +114,10 @@ export const ServerDialog = ({ open, onClose, currentFolderId, editServerId }) =
                 identities: identity?.id ? [identity?.id] : undefined });
 
             loadServers();
+            sendToast("Success", "Server updated successfully");
             onClose();
         } catch (error) {
+            sendToast("Error", error.message || "Failed to update server");
             console.error(error);
         }
     };
