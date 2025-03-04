@@ -729,17 +729,17 @@
     "@codemirror/state" "^6.0.0"
     "@codemirror/view" "^6.0.0"
 
-"@uiw/codemirror-theme-github@^4.23.9":
-  version "4.23.9"
-  resolved "https://registry.yarnpkg.com/@uiw/codemirror-theme-github/-/codemirror-theme-github-4.23.9.tgz#4ee89ea0c029d7cd8b234f178445a5d27a6b71f0"
-  integrity sha512-QwZLG5emItul2e9yrnLUayTvT1ISrBTOICpME598ysM5JmhiL+dMmsHwfWUGo0C61G+rTGhDv9AeRdR9z8qXJw==
+"@uiw/codemirror-theme-github@^4.23.10":
+  version "4.23.10"
+  resolved "https://registry.yarnpkg.com/@uiw/codemirror-theme-github/-/codemirror-theme-github-4.23.10.tgz#0ef8a0cb0a2cf51eae1e1928ef9b75ffa2a824e4"
+  integrity sha512-jTg2sHAcU1d+8x0O+EBDI71rtJ8PWKIW8gzy+SW4wShQTAdsqGHk5y1ynt3KIeoaUkqngLqAK4SkhPaUKlqZqg==
   dependencies:
-    "@uiw/codemirror-themes" "4.23.9"
+    "@uiw/codemirror-themes" "4.23.10"
 
-"@uiw/codemirror-themes@4.23.9":
-  version "4.23.9"
-  resolved "https://registry.yarnpkg.com/@uiw/codemirror-themes/-/codemirror-themes-4.23.9.tgz#1d986d04bb5a3df5c1634f6bf4612e335ee30650"
-  integrity sha512-cYVZPVxMCyxUUOsdzdMH5d9N3AfWLxPg519GtEKwJ0FA6YXJSX0JG1KH6oXQ1JID105pc66+AXTBHLrCEDsyLA==
+"@uiw/codemirror-themes@4.23.10":
+  version "4.23.10"
+  resolved "https://registry.yarnpkg.com/@uiw/codemirror-themes/-/codemirror-themes-4.23.10.tgz#380ef1f8b0538474340d5e56c19aa994392c4a11"
+  integrity sha512-dU0UgEEgEXCAYpxuVDQ6fovE82XsqgHZckTJOH6Bs8xCi3Z7dwBKO4pXuiA8qGDwTOXOMjSzfi+pRViDm7OfWw==
   dependencies:
     "@codemirror/language" "^6.0.0"
     "@codemirror/state" "^6.0.0"
