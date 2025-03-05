@@ -10,18 +10,19 @@ import { HTML5Backend } from "react-dnd-html5-backend";
 export default () => {
     return (
         <DndProvider backend={HTML5Backend}>
-            <UserProvider>
-                <ServerProvider>
-                    <IdentityProvider>
-                        <ToastProvider>
+            <ToastProvider>
+                <UserProvider>
+                    <ServerProvider>
+                        <IdentityProvider>
+
                             <div className="content-wrapper">
                                 <Sidebar />
                                 <Outlet />
                             </div>
-                        </ToastProvider>
-                    </IdentityProvider>
-                </ServerProvider>
-            </UserProvider>
+                        </IdentityProvider>
+                    </ServerProvider>
+                </UserProvider>
+            </ToastProvider>
         </DndProvider>
     );
 }
