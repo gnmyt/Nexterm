@@ -13,6 +13,7 @@
     "express-ws": "^5.0.2",
     "joi": "^17.13.3",
     "js-yaml": "^4.1.0",
+    "openid-client": "^6.3.3",
     "sequelize": "^6.37.5",
     "speakeasy": "^2.0.0",
     "sqlite3": "^5.1.7",
