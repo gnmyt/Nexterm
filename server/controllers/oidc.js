@@ -82,14 +82,14 @@ module.exports.initiateOIDCLogin = async (providerId) => {
     }
 };
 
-module.exports.handleOIDCCallback = async (url, code, state, userInfo) => {
+module.exports.handleOIDCCallback = async (query, userInfo) => {
     try {
-        const storedData = stateStore.get(state);
+        const storedData = stateStore.get(query.state);
         if (!storedData) {
             return { code: 400, message: "Invalid or expired state" };
         }
 
-        stateStore.delete(state);
+        stateStore.delete(query.state);
 
         const { providerId, nonce } = storedData;
         const provider = await OIDCProvider.findByPk(providerId);
@@ -100,8 +100,12 @@ module.exports.handleOIDCCallback = async (url, code, state, userInfo) => {
 
         const configuration = await client.discovery(new URL(provider.issuer), provider.clientId, provider.clientSecret);
 
+        const url = new URL(provider.redirectUri + "?" + new URLSearchParams(query).toString());
+
+        console.log(url);
+
         const tokens = await client.authorizationCodeGrant(configuration, url, {
-            expectedState: state,
+            expectedState: query.state,
             expectedNonce: nonce,
         });
 
@@ -118,9 +122,7 @@ module.exports.handleOIDCCallback = async (url, code, state, userInfo) => {
         const firstName = userinfo[provider.firstNameAttribute] || "";
         const lastName = userinfo[provider.lastNameAttribute] || "";
 
-        let account = await Account.findOne({
-            where: { username: String(username) },
-        });
+        let account = await Account.findOne({ where: { username: String(username) } });
 
         if (!account) {
             const randomPassword = crypto.randomBytes(16).toString("hex");
@@ -136,7 +138,7 @@ module.exports.handleOIDCCallback = async (url, code, state, userInfo) => {
                 role: "user",
             });
         } else {
-            account = await Account.update({
+            await Account.update({
                 firstName: String(firstName),
                 lastName: String(lastName),
                 email: String(email),
@@ -160,6 +162,7 @@ module.exports.handleOIDCCallback = async (url, code, state, userInfo) => {
             },
         };
     } catch (error) {
+        console.log(error);
         return { code: 500, message: "Failed to process OIDC login: " + error.message };
     }
 };
