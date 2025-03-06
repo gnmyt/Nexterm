@@ -9,19 +9,6 @@
   user-select: none
   margin: 1rem 1.5rem
 
-  .error
-    display: flex
-    align-items: center
-    justify-content: center
-    width: 18rem
-    padding: 0.5rem 1rem
-    background-color: colors.$error-opacity
-    border: 1px solid colors.$gray
-    color: colors.$error
-    border-radius: 0.5rem
-    font-size: 0.9rem
-    margin: 0
-
 .login-logo
   display: flex
   align-items: center
@@ -55,3 +42,30 @@
     label
       color: colors.$subtext
       font-weight: 600
+
+  .sso-options
+    display: flex
+    flex-direction: column
+    gap: 1rem
+    width: 100%
+
+    .divider
+      display: flex
+      align-items: center
+      text-align: center
+      color: colors.$subtext
+      font-size: 0.9rem
+      margin: 1rem 0
+
+      &::before,
+      &::after
+        content: ""
+        flex: 1
+        border-bottom: 1px solid colors.$subtext
+        margin: 0 10px
+
+    .sso-buttons
+      display: flex
+      flex-direction: column
+      gap: 0.5rem
+      width: 100%
