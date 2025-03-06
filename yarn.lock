@@ -1975,6 +1975,11 @@ joi@^17.13.3:
     "@sideway/formula" "^3.0.1"
     "@sideway/pinpoint" "^2.0.0"
 
+jose@^6.0.6:
+  version "6.0.8"
+  resolved "https://registry.yarnpkg.com/jose/-/jose-6.0.8.tgz#210f1692e34be4958fe174a9bc2d3c87e93fde30"
+  integrity sha512-EyUPtOKyTYq+iMOszO42eobQllaIjJnwkZ2U93aJzNyPibCy7CEvT9UQnaCVB51IAd49gbNdCew1c0LcLTCB2g==
+
 js-yaml@^4.1.0:
   version "4.1.0"
   resolved "https://registry.yarnpkg.com/js-yaml/-/js-yaml-4.1.0.tgz#c1fb65f8f5017901cdd2c951864ba18458a10602"
@@ -2362,6 +2367,11 @@ npmlog@^6.0.0:
     gauge "^4.0.3"
     set-blocking "^2.0.0"
 
+oauth4webapi@^3.3.0:
+  version "3.3.0"
+  resolved "https://registry.yarnpkg.com/oauth4webapi/-/oauth4webapi-3.3.0.tgz#44d64422dff63e195e34babaa64c2b8459b52059"
+  integrity sha512-ZlozhPlFfobzh3hB72gnBFLjXpugl/dljz1fJSRdqaV2r3D5dmi5lg2QWI0LmUYuazmE+b5exsloEv6toUtw9g==
+
 object-assign@^4.0.1, object-assign@^4.1.1:
   version "4.1.1"
   resolved "https://registry.yarnpkg.com/object-assign/-/object-assign-4.1.1.tgz#2109adc7965887cfc05cbbd442cac8bfbb360863"
@@ -2394,6 +2404,14 @@ oniguruma-to-es@^2.3.0:
     emoji-regex-xs "^1.0.0"
     regex "^5.1.1"
     regex-recursion "^5.1.1"
+
+openid-client@^6.3.3:
+  version "6.3.3"
+  resolved "https://registry.yarnpkg.com/openid-client/-/openid-client-6.3.3.tgz#3f185a4308e1f57076a92340292c9fc94c1eeec8"
+  integrity sha512-lTK8AV8SjqCM4qznLX0asVESAwzV39XTVdfMAM185ekuaZCnkWdPzcxMTXNlsm9tsUAMa1Q30MBmKAykdT1LWw==
+  dependencies:
+    jose "^6.0.6"
+    oauth4webapi "^3.3.0"
 
 p-map@^4.0.0:
   version "4.0.0"
