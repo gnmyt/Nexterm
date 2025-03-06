@@ -25,6 +25,7 @@ app.use(express.json());
 app.use("/api/service", require("./routes/service"));
 app.use("/api/accounts", require("./routes/account"));
 app.use("/api/auth", require("./routes/auth"));
+app.use("/api/oidc", require("./routes/oidc"));
 
 app.ws("/api/servers/sshd", require("./routes/sshd"));
 app.ws("/api/servers/sftp", require("./routes/sftp"));
