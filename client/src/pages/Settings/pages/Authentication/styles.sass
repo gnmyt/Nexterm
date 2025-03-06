@@ -1,0 +1,97 @@
+@use "@/common/styles/colors" as *
+
+.authentication-page
+  display: flex
+  flex-direction: column
+  gap: 1rem
+
+  .provider-title
+    display: flex
+    align-items: center
+    gap: 1rem
+    justify-content: space-between
+
+  .provider-item
+    display: flex
+    align-items: center
+    justify-content: space-between
+    padding: 1rem
+    background-color: $dark-gray
+    border: 1px solid $gray
+    border-radius: 8px
+    gap: 1rem
+
+    .left-area
+      display: flex
+      align-items: center
+      gap: 1rem
+
+    .provider-info
+      display: flex
+      flex-direction: column
+      gap: 0.3rem
+
+      h2
+        margin: 0
+        font-size: 1.2rem
+
+      p
+        margin: 0
+        font-size: 0.9rem
+        opacity: 0.7
+
+    .provider-actions
+      display: flex
+      align-items: center
+      gap: 1rem
+
+      .menu
+        cursor: pointer
+        opacity: 0.7
+        transition: opacity 0.2s
+        width: 24px
+
+        &:hover
+          opacity: 1
+
+      .delete-menu:hover
+        color: $error
+
+    .switch
+      position: relative
+      display: inline-block
+      width: 40px
+      height: 20px
+
+      input
+        opacity: 0
+        width: 0
+        height: 0
+
+        &:checked + .slider
+          background-color: $primary
+
+          &:before
+            transform: translateX(20px)
+
+      .slider
+        position: absolute
+        cursor: pointer
+        top: 0
+        left: 0
+        right: 0
+        bottom: 0
+        background-color: $subtext
+        transition: .4s
+        border-radius: 34px
+
+        &:before
+          position: absolute
+          content: ""
+          height: 16px
+          width: 16px
+          left: 2px
+          bottom: 2px
+          background-color: $white
+          transition: .4s
+          border-radius: 50%
