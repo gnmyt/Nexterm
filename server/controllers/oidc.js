@@ -44,7 +44,7 @@ module.exports.deleteProvider = async (providerId) => {
     if (!provider) {
         return { code: 404, message: "Provider not found" };
     }
-    await OIDCProvider.destroy(providerId);
+    await OIDCProvider.destroy({ where: { id: providerId } });
     return { message: "Provider deleted successfully" };
 };
 
@@ -101,8 +101,6 @@ module.exports.handleOIDCCallback = async (query, userInfo) => {
         const configuration = await client.discovery(new URL(provider.issuer), provider.clientId, provider.clientSecret);
 
         const url = new URL(provider.redirectUri + "?" + new URLSearchParams(query).toString());
-
-        console.log(url);
 
         const tokens = await client.authorizationCodeGrant(configuration, url, {
             expectedState: query.state,
@@ -162,7 +160,6 @@ module.exports.handleOIDCCallback = async (query, userInfo) => {
             },
         };
     } catch (error) {
-        console.log(error);
         return { code: 500, message: "Failed to process OIDC login: " + error.message };
     }
 };
