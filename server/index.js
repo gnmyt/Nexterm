@@ -41,6 +41,7 @@ app.use("/api/folders", authenticate, require("./routes/folder"));
 app.use("/api/servers", authenticate, require("./routes/server"));
 app.use("/api/pve-servers", authenticate, require("./routes/pveServer"));
 app.use("/api/identities", authenticate, require("./routes/identity"));
+app.use("/api/snippets", authenticate, require("./routes/snippet"));
 
 app.ws("/api/apps/installer", require("./routes/appInstaller"));
 app.use("/api/apps", authenticate, require("./routes/apps"));
