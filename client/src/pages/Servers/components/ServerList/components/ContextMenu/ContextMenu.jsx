@@ -19,7 +19,7 @@ import {
 } from "@mdi/js";
 import Icon from "@mdi/react";
 import { useContext } from "react";
-import ProxmoxLogo from "./assets/proxmox.png";
+import ProxmoxLogo from "./assets/proxmox.jsx";
 import "./styles.sass";
 
 export const ContextMenu = ({
@@ -176,7 +176,7 @@ export const ContextMenu = ({
                         <p>Create Server</p>
                     </div>
                     <div className="context-item" onClick={createPVEServer}>
-                        <img src={ProxmoxLogo} alt="Proxmox" />
+                        <ProxmoxLogo />
                         <p>Import PVE</p>
                     </div>
                 </>

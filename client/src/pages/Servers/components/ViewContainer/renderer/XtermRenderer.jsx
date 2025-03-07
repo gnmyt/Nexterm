@@ -1,14 +1,17 @@
 import { useEffect, useRef, useContext } from "react";
 import { UserContext } from "@/common/contexts/UserContext.jsx";
 import { Terminal as Xterm } from "xterm";
-import { FitAddon } from "xterm-addon-fit/src/FitAddon";
+import { useTheme } from "@/common/contexts/ThemeContext.jsx";
 
+import { FitAddon } from "xterm-addon-fit/src/FitAddon";
 import "xterm/css/xterm.css";
 import "./styles/xterm.sass";
 
 const XtermRenderer = ({ session, disconnectFromServer, pve }) => {
     const ref = useRef(null);
     const { sessionToken } = useContext(UserContext);
+
+    const { theme } = useTheme();
 
     useEffect(() => {
         if (!sessionToken) return;
@@ -17,7 +20,12 @@ const XtermRenderer = ({ session, disconnectFromServer, pve }) => {
             cursorBlink: true,
             fontSize: 16,
             fontFamily: "monospace",
-            theme: { background: "#13181C" },
+            theme: {
+                background: theme === "light" ? "#F3F3F3" : "#13181C",
+                foreground: theme === "light" ? "#000000" : "#F5F5F5",
+                brightWhite: theme === "light" ? "#464545" : "#FFFFFF",
+                cursor: theme === "light" ? "#000000" : "#F5F5F5"
+            },
         });
 
         const fitAddon = new FitAddon();
