@@ -36,6 +36,15 @@ const GuacamoleRenderer = ({ session, disconnectFromServer, pve }) => {
         }
     };
 
+    const checkClipboardPermission = async () => {
+        try {
+            const result = await navigator.permissions.query({ name: "clipboard-read" });
+            return result.state === "granted";
+        } catch (e) {
+            return false;
+        }
+    };
+
     const handleClipboardEvents = () => {
         if (clientRef.current) {
             clientRef.current.onclipboard = (stream, mimetype) => {
@@ -53,19 +62,35 @@ const GuacamoleRenderer = ({ session, disconnectFromServer, pve }) => {
                 }
             };
 
-            let cachedClipboard = "";
-            const intervalId = setInterval(async() => {
-                try {
-                    const text = await navigator.clipboard.readText();
-                    if (text !== cachedClipboard) {
-                        cachedClipboard = text;
-                        sendClipboardToServer(text);
-                    }
-                } catch (ignored) {
-                }
-            }, 500);
+            checkClipboardPermission().then(hasPermission => {
+                if (hasPermission) {
+                    let cachedClipboard = "";
+                    const intervalId = setInterval(async () => {
+                        try {
+                            const text = await navigator.clipboard.readText();
+                            if (text !== cachedClipboard) {
+                                cachedClipboard = text;
+                                sendClipboardToServer(text);
+                            }
+                        } catch (ignored) {
+                        }
+                    }, 500);
 
-            return () => clearInterval(intervalId);
+                    return () => clearInterval(intervalId);
+                }
+            });
+
+            const handlePaste = (e) => {
+                const text = e.clipboardData?.getData("text");
+                if (text) {
+                    sendClipboardToServer(text);
+                }
+            };
+
+            ref.current.addEventListener("paste", handlePaste);
+            return () => {
+                ref.current.removeEventListener("paste", handlePaste);
+            };
         }
     };
 
