@@ -1,6 +1,6 @@
 const Sequelize = require("sequelize");
 const db = require("../utils/database");
-const { encrypt, decrypt } = require("../utils/encryption");
+const { decrypt } = require("../utils/encryption");
 
 module.exports = db.define(
     "identities",
@@ -63,54 +63,10 @@ module.exports = db.define(
         createdAt: false,
         updatedAt: false,
         hooks: {
-            beforeCreate: (identity) => {
-                if (identity.password) {
-                    const encrypted = encrypt(identity.password);
-                    identity.password = encrypted.encrypted;
-                    identity.passwordIV = encrypted.iv;
-                    identity.passwordAuthTag = encrypted.authTag;
-                }
-                if (identity.sshKey) {
-                    const encrypted = encrypt(identity.sshKey);
-                    identity.sshKey = encrypted.encrypted;
-                    identity.sshKeyIV = encrypted.iv;
-                    identity.sshKeyAuthTag = encrypted.authTag;
-                }
-                if (identity.passphrase) {
-                    const encrypted = encrypt(identity.passphrase);
-                    identity.passphrase = encrypted.encrypted;
-                    identity.passphraseIV = encrypted.iv;
-                    identity.passphraseAuthTag = encrypted.authTag;
-                }
-            },
-            beforeUpdate: (identity) => {
-                if (identity.password && identity.password !== "********") {
-                    const encrypted = encrypt(identity.password);
-                    identity.password = encrypted.encrypted;
-                    identity.passwordIV = encrypted.iv;
-                    identity.passwordAuthTag = encrypted.authTag;
-                }
-                if (identity.sshKey) {
-                    const encrypted = encrypt(identity.sshKey);
-                    identity.sshKey = encrypted.encrypted;
-                    identity.sshKeyIV = encrypted.iv;
-                    identity.sshKeyAuthTag = encrypted.authTag;
-                }
-                if (identity.passphrase && identity.passphrase !== "********") {
-                    const encrypted = encrypt(identity.passphrase);
-                    identity.passphrase = encrypted.encrypted;
-                    identity.passphraseIV = encrypted.iv;
-                    identity.passphraseAuthTag = encrypted.authTag;
-                }
-            },
             afterFind: (identities) => {
                 const decryptField = (obj, field) => {
                     if (obj[field]) {
-                        obj[field] = decrypt(
-                            obj[field],
-                            obj[`${field}IV`],
-                            obj[`${field}AuthTag`]
-                        );
+                        obj[field] = decrypt(obj[field], obj[`${field}IV`], obj[`${field}AuthTag`]);
                     }
                 };
 
