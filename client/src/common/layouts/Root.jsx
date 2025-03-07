@@ -8,6 +8,7 @@ import { ThemeProvider } from "@/common/contexts/ThemeContext.jsx";
 import { DndProvider } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
 import { SessionProvider } from "@/common/contexts/SessionContext.jsx";
+import { SnippetProvider } from "@/common/contexts/SnippetContext.jsx";
 
 export default () => {
     return (
@@ -17,12 +18,14 @@ export default () => {
                     <UserProvider>
                         <ServerProvider>
                             <IdentityProvider>
-                                <SessionProvider>
-                                    <div className="content-wrapper">
-                                        <Sidebar />
-                                        <Outlet />
-                                    </div>
-                                </SessionProvider>
+                                <SnippetProvider>
+                                    <SessionProvider>
+                                        <div className="content-wrapper">
+                                            <Sidebar />
+                                            <Outlet />
+                                        </div>
+                                    </SessionProvider>
+                                </SnippetProvider>
                             </IdentityProvider>
                         </ServerProvider>
                     </UserProvider>
