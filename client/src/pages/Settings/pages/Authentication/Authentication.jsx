@@ -55,7 +55,7 @@ export const Authentication = () => {
 
             {providers.map(provider => (
                 <div key={provider.id} className="provider-item">
-                    <div class="left-area">
+                    <div className="left-area">
                         <Icon path={mdiShieldAccountOutline} className="menu" size={1.5} />
                         <div className="provider-info">
                             <h2>{provider.name}</h2>
