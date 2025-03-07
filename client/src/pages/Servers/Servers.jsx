@@ -1,7 +1,7 @@
 import "./styles.sass";
 import ServerList from "@/pages/Servers/components/ServerList";
 import { UserContext } from "@/common/contexts/UserContext.jsx";
-import { useContext, useState } from "react";
+import { useContext } from "react";
 import Button from "@/common/components/Button";
 import WelcomeImage from "@/common/img/welcome.png";
 import { DISCORD_URL, GITHUB_URL } from "@/App.jsx";
@@ -10,6 +10,8 @@ import ViewContainer from "@/pages/Servers/components/ViewContainer";
 import ProxmoxDialog from "@/pages/Servers/components/ProxmoxDialog";
 import { mdiStar } from "@mdi/js";
 import { siDiscord } from "simple-icons";
+import { useState } from "react";
+import { useActiveSessions } from "@/common/contexts/SessionContext.jsx";
 
 export const Servers = () => {
 
@@ -20,20 +22,17 @@ export const Servers = () => {
     const [editServerId, setEditServerId] = useState(null);
     const { user } = useContext(UserContext);
 
-    const [activeSessions, setActiveSessions] = useState([]);
-    const [activeSessionId, setActiveSessionId] = useState(null);
+    const { activeSessions, setActiveSessions, activeSessionId, setActiveSessionId } = useActiveSessions();
 
     const connectToServer = (server, identity) => {
         const sessionId = "session-" + (Math.random().toString(36).substring(2, 15));
-        setActiveSessions(activeSessions => [...activeSessions, { server, identity, type: "ssh", id: sessionId }]);
-
+        setActiveSessions(prevSessions => [...prevSessions, { server, identity, type: "ssh", id: sessionId }]);
         setActiveSessionId(sessionId);
     };
 
     const openSFTP = (server, identity) => {
         const sessionId = "session-" + (Math.random().toString(36).substring(2, 15));
-        setActiveSessions(activeSessions => [...activeSessions, { server, identity, type: "sftp", id: sessionId }]);
-
+        setActiveSessions(prevSessions => [...prevSessions, { server, identity, type: "sftp", id: sessionId }]);
         setActiveSessionId(sessionId);
     };
 
@@ -41,7 +40,8 @@ export const Servers = () => {
         const sessionId = "session-" + (Math.random().toString(36).substring(2, 15));
         setActiveSessions(activeSessions => [...activeSessions, {
             server: serverId.toString().replace("pve-", ""),
-            containerId: containerId.toString().split("-")[containerId.toString().split("-").length - 1], id: sessionId,
+            containerId: containerId.toString().split("-")[containerId.toString().split("-").length - 1],
+            id: sessionId
         }]);
 
         setActiveSessionId(sessionId);
