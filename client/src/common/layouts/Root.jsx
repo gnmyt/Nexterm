@@ -7,6 +7,7 @@ import { ToastProvider } from "@/common/contexts/ToastContext.jsx";
 import { ThemeProvider } from "@/common/contexts/ThemeContext.jsx";
 import { DndProvider } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
+import { SessionProvider } from "@/common/contexts/SessionContext.jsx";
 
 export default () => {
     return (
@@ -16,10 +17,12 @@ export default () => {
                     <UserProvider>
                         <ServerProvider>
                             <IdentityProvider>
-                                <div className="content-wrapper">
-                                    <Sidebar />
-                                    <Outlet />
-                                </div>
+                                <SessionProvider>
+                                    <div className="content-wrapper">
+                                        <Sidebar />
+                                        <Outlet />
+                                    </div>
+                                </SessionProvider>
                             </IdentityProvider>
                         </ServerProvider>
                     </UserProvider>
