@@ -1,0 +1,46 @@
+@use "@/common/styles/colors"
+
+.snippet-dialog
+  .dialog-content
+    margin-bottom: 1rem
+
+  .snippet-dialog-title h2
+    margin: 0 0 1rem
+
+  .form-group
+    margin-bottom: 1.25rem
+
+    label
+      display: block
+      margin-bottom: 0.5rem
+      color: colors.$light-gray
+      font-size: 0.9rem
+
+  .textarea-container
+    position: relative
+    width: 100%
+
+    .custom-textarea
+      width: 100%
+      padding: 0.75rem
+      border-radius: 4px
+      border: 1px solid colors.$gray
+      background-color: colors.$darker-gray
+      color: colors.$white
+      font-family: monospace
+      font-size: 0.9rem
+      resize: vertical
+      box-sizing: border-box
+      min-height: 120px
+
+      &:focus
+        border-color: colors.$primary
+        outline: none
+
+  .dialog-actions
+    display: flex
+    justify-content: flex-end
+    gap: 0.75rem
+    margin-top: 1rem
+    padding-top: 1rem
+    border-top: 1px solid colors.$gray

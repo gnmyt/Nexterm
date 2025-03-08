@@ -1,0 +1,1 @@
+export { SnippetsMenu as default } from "./SnippetsMenu.jsx";
