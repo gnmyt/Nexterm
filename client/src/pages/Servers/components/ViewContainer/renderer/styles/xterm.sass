@@ -1,2 +1,41 @@
+@use "@/common/styles/colors"
+
+.xterm-container
+  position: relative
+  width: 100%
+  height: 100%
+
+  .xterm-wrapper
+    width: 100%
+    height: 98%
+
+  .snippets-button
+    position: absolute
+    top: 10px
+    right: 10px
+    width: 36px
+    height: 36px
+    border-radius: 4px
+    background-color: colors.$dark-gray
+    border: 1px solid colors.$gray
+    display: flex
+    align-items: center
+    justify-content: center
+    cursor: pointer
+    z-index: 100
+    transition: background-color 0.2s ease, opacity 0.2s ease
+
+    svg
+      width: 20px
+      height: 20px
+      color: colors.$white
+
+    &:hover
+      background-color: colors.$primary
+
+    &.hidden
+      opacity: 0
+      pointer-events: none
+
 .xterm-screen
   padding: 0.5rem
