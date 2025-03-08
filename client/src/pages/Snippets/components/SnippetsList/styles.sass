@@ -1,0 +1,81 @@
+@use "@/common/styles/colors"
+
+.snippets-list
+  width: 100%
+
+  .snippet-grid
+    display: grid
+    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr))
+    gap: 1rem
+    
+  .snippet-item
+    background-color: colors.$dark-gray
+    border-radius: 0.5rem
+    padding: 1rem
+    position: relative
+    border: 1px solid colors.$gray
+
+    .snippet-info
+      h3
+        margin: 0
+        color: colors.$white
+        font-size: 1.1rem
+      
+      p
+        margin: 0.5rem 0
+        color: colors.$light-gray
+        font-size: 0.9rem
+      
+      .snippet-command
+        margin: 0.8rem 0 0
+        padding: 0.8rem
+        background-color: colors.$darker-gray
+        border-radius: 0.25rem
+        color: colors.$white
+        font-family: monospace
+        font-size: 0.9rem
+        white-space: pre-wrap
+        word-break: break-all
+        max-height: 150px
+        overflow-y: auto
+    
+    .snippet-actions
+      display: flex
+      gap: 0.5rem
+      position: absolute
+      top: 0.75rem
+      right: 0.75rem
+
+      .action-button
+        width: 32px
+        height: 32px
+        border-radius: 4px
+        background-color: transparent
+        border: none
+        display: flex
+        justify-content: center
+        align-items: center
+        cursor: pointer
+        color: colors.$light-gray
+        transition: background-color 0.2s ease
+
+        svg
+          width: 18px
+          height: 18px
+        
+        &:hover
+          background-color: colors.$gray
+        
+        &.delete:hover
+          color: colors.$error
+
+.empty-snippets
+  display: flex
+  justify-content: center
+  align-items: center
+  height: 200px
+  width: 100%
+  
+  p
+    color: colors.$light-gray
+    font-size: 1rem
