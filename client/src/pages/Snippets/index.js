@@ -1,0 +1,1 @@
+export { Snippets as default } from "./Snippets.jsx";
