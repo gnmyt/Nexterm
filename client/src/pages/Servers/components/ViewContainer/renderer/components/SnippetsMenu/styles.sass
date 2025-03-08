@@ -1,0 +1,133 @@
+@use "@/common/styles/colors"
+
+.snippets-menu
+  position: absolute
+  top: 10px
+  right: 10px
+  width: 400px
+  max-width: 90vw
+  max-height: 80vh
+  background-color: colors.$gray-full
+  border: 1px solid colors.$gray
+  border-radius: 4px
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3)
+  z-index: 1000
+  display: flex
+  flex-direction: column
+  overflow: hidden
+
+  .snippets-menu-header
+    padding: 12px
+    background-color: colors.$dark-gray
+    border-bottom: 1px solid colors.$gray
+    display: flex
+    align-items: center
+    justify-content: space-between
+
+    .search-wrapper
+      display: flex
+      align-items: center
+      flex: 1
+      margin-right: 10px
+
+      svg
+        width: 18px
+        height: 18px
+        color: colors.$light-gray
+        margin-right: 8px
+
+      input
+        flex: 1
+        background: transparent
+        border: none
+        color: colors.$white
+        font-size: 14px
+        padding: 5px 0
+        outline: none
+
+        &::placeholder
+          color: colors.$light-gray
+
+    .close-button
+      background: transparent
+      border: none
+      cursor: pointer
+      padding: 6px
+      border-radius: 4px
+      display: flex
+      align-items: center
+      justify-content: center
+      color: colors.$light-gray
+
+      svg
+        width: 18px
+        height: 18px
+      
+      &:hover
+        background-color: colors.$gray
+        color: colors.$white
+
+  .snippets-menu-content
+    display: flex
+    flex-direction: column
+    max-height: calc(80vh - 50px)
+    overflow-y: auto
+    overflow-x: hidden
+
+    .snippets-list
+      padding: 12px
+      box-sizing: border-box
+      width: 100%
+
+      .snippet-item
+        padding: 12px
+        background-color: colors.$darker-gray
+        border: 1px solid colors.$gray
+        border-radius: 4px
+        margin-bottom: 10px
+        cursor: pointer
+        width: 100%
+        box-sizing: border-box
+        
+        &:last-child
+          margin-bottom: 0
+
+        h4
+          margin: 0 0 5px 0
+          color: colors.$white
+          font-size: 14px
+          word-break: break-word
+
+        .snippet-description
+          margin: 5px 0
+          color: colors.$light-gray
+          font-size: 12px
+          word-break: break-word
+
+        .snippet-command
+          margin: 8px 0 0
+          padding: 8px
+          background-color: colors.$dark-gray
+          border: 1px solid colors.$gray
+          border-radius: 4px
+          color: colors.$white
+          font-family: monospace
+          font-size: 12px
+          white-space: pre-wrap
+          word-break: break-all
+          max-height: 100px
+          overflow-y: auto
+          overflow-x: hidden
+          width: 100%
+          box-sizing: border-box
+
+    .no-snippets
+      display: flex
+      justify-content: center
+      align-items: center
+      padding: 30px 15px
+      
+      p
+        color: colors.$light-gray
+        text-align: center
+        font-size: 14px
