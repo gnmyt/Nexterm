@@ -1,6 +1,6 @@
 import { DialogProvider } from "@/common/components/Dialog";
 import "./styles.sass";
-import { useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useState, useCallback } from "react";
 import DetailsPage from "@/pages/Servers/components/ServerDialog/pages/DetailsPage.jsx";
 import Button from "@/common/components/Button";
 import { getRequest, patchRequest, putRequest } from "@/common/utils/RequestUtil.js";
@@ -122,6 +122,14 @@ export const ServerDialog = ({ open, onClose, currentFolderId, editServerId }) =
         }
     };
 
+    const handleSubmit = useCallback(() => {
+        if (!name || !ip || !port || !protocol) {
+            sendToast("Error", "Please fill in all required fields");
+            return;
+        }
+        editServerId ? patchServer() : createServer();
+    }, [name, ip, port, protocol, editServerId, identityUpdates, currentFolderId]);
+
     useEffect(() => {
         if (!open) return;
 
@@ -145,10 +153,14 @@ export const ServerDialog = ({ open, onClose, currentFolderId, editServerId }) =
 
         setIdentityUpdates({});
         setActiveTab(0);
+    }, [open, editServerId]);
+
+    useEffect(() => {
+        if (!open) return;
 
         const submitOnEnter = (event) => {
             if (event.key === "Enter") {
-                editServerId ? patchServer() : createServer();
+                handleSubmit();
             }
         };
 
@@ -157,7 +169,7 @@ export const ServerDialog = ({ open, onClose, currentFolderId, editServerId }) =
         return () => {
             document.removeEventListener("keydown", submitOnEnter);
         };
-    }, [open]);
+    }, [open, handleSubmit]);
 
     const refreshIdentities = () => {
         if (!editServerId) return;
@@ -174,7 +186,7 @@ export const ServerDialog = ({ open, onClose, currentFolderId, editServerId }) =
         if (protocol === "ssh" && (port === "3389" || port === "5900" || port === "")) setPort("22");
         if (protocol === "rdp" && (port === "22" || port === "5900" || port === "")) setPort("3389");
         if (protocol === "vnc" && (port === "22" || port === "3389" || port === "")) setPort("5900");
-    }, [protocol]);
+    }, [protocol, open, port]);
 
     return (
         <DialogProvider open={open} onClose={onClose}>
@@ -203,7 +215,7 @@ export const ServerDialog = ({ open, onClose, currentFolderId, editServerId }) =
                     {activeTab === 2 && <p style={{textAlign: "center"}}>Not yet implemented</p>}
                 </div>
 
-                <Button className="server-dialog-button" onClick={editServerId ? patchServer : createServer}
+                <Button className="server-dialog-button" onClick={handleSubmit}
                         text={editServerId ? "Save" : "Create"} />
             </div>
 
