@@ -74,7 +74,7 @@ export const FolderObject = ({ id, name, nestedLevel, position, onClick, isOpen,
              ref={(node) => dragRef(dropRef(node))} onClick={renameState ? (e) => e.stopPropagation() : onClick}
              style={{ paddingLeft: `${10 + (nestedLevel * 15)}px`, opacity }}>
             <Icon path={isOpen ? mdiFolderOpenOutline : mdiFolderOutline} />
-            {!renameState && <p>{nameState}</p>}
+            {!renameState && <p className="truncate-text">{nameState}</p>}
             {renameState && <input type="text" ref={inputRef} value={nameState} onBlur={changeName}
                                    onChange={(e) => setNameState(e.target.value)} />}
         </div>
