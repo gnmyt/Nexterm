@@ -9,9 +9,24 @@ body, html
   font-weight: 700
 
 .content-wrapper
-  display: grid
-  grid-template-columns: calc(5rem + 2px) 1fr
+  display: flex
   height: 100vh
+  width: 100vw
+
+  > *
+    min-width: 0
+    flex-shrink: 0
+
+.sidebar
+  width: calc(5rem + 2px)
+  flex-shrink: 0
+
+.main-content
+  flex: 1
+  height: 100%
+  overflow-y: auto
+  > *
+    height: 100%
 
 ::-webkit-scrollbar
   width: 13px

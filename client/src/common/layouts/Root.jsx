@@ -22,7 +22,9 @@ export default () => {
                                     <SessionProvider>
                                         <div className="content-wrapper">
                                             <Sidebar />
-                                            <Outlet />
+                                            <div className="main-content">
+                                                <Outlet />
+                                            </div>
                                         </div>
                                     </SessionProvider>
                                 </SnippetProvider>
