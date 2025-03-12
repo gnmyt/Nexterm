@@ -1,13 +1,20 @@
 @use "@/common/styles/colors"
 
 .server-list
-  width: 18rem
   background-color: colors.$lighter-background
   height: 100%
   display: flex
   flex-direction: column
   align-items: center
+  position: relative
   border-right: 2px solid colors.$dark-gray
+  overflow: hidden
+  
+  &.collapsed
+    width: 6px
+    padding: 0
+    border-right-width: 2px
+    cursor: e-resize
 
   .server-list-inner
     margin-top: 1rem
@@ -36,3 +43,16 @@
       svg
         width: 5rem
         height: 5rem
+
+  .resizer
+    position: absolute
+    right: -4px
+    top: 0
+    height: 100%
+    width: 8px
+    background-color: transparent
+    cursor: col-resize
+    z-index: 10
+
+    &:hover
+      background-color: colors.$primary
