@@ -1,6 +1,6 @@
 import "./styles.sass";
 import NextermLogo from "@/common/img/logo.png";
-import { mdiCog, mdiLogout, mdiPackageVariant, mdiServerOutline, mdiConsole, mdiCodeBrackets } from "@mdi/js";
+import { mdiCog, mdiLogout, mdiPackageVariant, mdiServerOutline, mdiCodeBrackets, mdiChevronLeft } from "@mdi/js";
 import Icon from "@mdi/react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useContext, useState } from "react";
@@ -15,6 +15,7 @@ export const Sidebar = () => {
     const [logoutDialogOpen, setLogoutDialogOpen] = useState(false);
     const [navigationDialogOpen, setNavigationDialogOpen] = useState(false);
     const [pendingNavigation, setPendingNavigation] = useState(null);
+    const [isCollapsed, setIsCollapsed] = useState(false);
 
     const { logout, user } = useContext(UserContext);
     const { activeSessions, setActiveSessions } = useActiveSessions();
@@ -53,37 +54,40 @@ export const Sidebar = () => {
     }
 
     return (
-        <div className="sidebar">
-            <ActionConfirmDialog
-                open={navigationDialogOpen}
-                setOpen={setNavigationDialogOpen}
-                text="You have active sessions. Navigating away will disconnect you from all servers. Are you sure?"
-                onConfirm={confirmNavigation}
-            />
-            <ActionConfirmDialog open={logoutDialogOpen} setOpen={setLogoutDialogOpen}
-                                 text={`This will log you out of the ${user?.username} account. Are you sure?`}
-                                 onConfirm={logout} />
-            <div className="sidebar-top">
-                <img src={NextermLogo} alt="Nexterm Logo" />
-                <hr />
+        <>
+            <div className={`sidebar ${isCollapsed ? 'collapsed' : ''}`}>
+                <ActionConfirmDialog
+                    open={navigationDialogOpen}
+                    setOpen={setNavigationDialogOpen}
+                    text="You have active sessions. Navigating away will disconnect you from all servers. Are you sure?"
+                    onConfirm={confirmNavigation}
+                />
+                <ActionConfirmDialog open={logoutDialogOpen} setOpen={setLogoutDialogOpen}
+                                     text={`This will log you out of the ${user?.username} account. Are you sure?`}
+                                     onConfirm={logout} />
+                <div className="sidebar-top">
+                    <img src={NextermLogo} alt="Nexterm Logo" onClick={() => setIsCollapsed(!isCollapsed)}
+                         title="Collapse Sidebar" />
+                    <hr />
 
-                <nav>
-                    {navigation.map((item, index) => {
-                        const isDisabled = hasActiveSessions() && !location.pathname.startsWith(item.path);
+                    <nav>
+                        {navigation.map((item, index) => {
+                            const isDisabled = hasActiveSessions() && !location.pathname.startsWith(item.path);
 
-                        return (
-                            <div key={index} onClick={() => handleNavigation(item.path)}
-                                 className={"nav-item" + (isActive(item.path) ? " nav-item-active" : "") + (isDisabled ? " nav-item-disabled" : "")}>
-                                <Icon path={item.icon} />
-                            </div>
-                        );
-                    })}
-                </nav>
+                            return (
+                                <div key={index} onClick={() => handleNavigation(item.path)}
+                                     className={"nav-item" + (isActive(item.path) ? " nav-item-active" : "") + (isDisabled ? " nav-item-disabled" : "")}>
+                                    <Icon path={item.icon} />
+                                </div>
+                            );
+                        })}
+                    </nav>
+                </div>
+
+                <div className="log-out-btn" onClick={() => setLogoutDialogOpen(true)}>
+                    <Icon path={mdiLogout} />
+                </div>
             </div>
-
-            <div className="log-out-btn" onClick={() => setLogoutDialogOpen(true)}>
-                <Icon path={mdiLogout} />
-            </div>
-        </div>
+        </>
     );
 };
