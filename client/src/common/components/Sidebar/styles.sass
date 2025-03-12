@@ -11,6 +11,18 @@
   align-items: center
   border-right: 2px solid colors.$dark-gray
   overflow: hidden
+  transition: all 0.2s
+  left: 0
+  top: 0
+  z-index: 10
+
+  &.collapsed
+    margin-left: -5rem
+    position: absolute
+
+    &:hover
+      margin-left: 0
+      box-shadow: 2px 0 10px rgba(0, 0, 0, 0.2)
 
   .sidebar-top
     display: flex
@@ -21,6 +33,7 @@
     margin-top: 0.5rem
     width: 3.5rem
     height: 3.5rem
+    cursor: pointer
 
   hr
     background-color: colors.$dark-gray
