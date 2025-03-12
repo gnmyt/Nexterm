@@ -9,7 +9,7 @@
   position: relative
   border-right: 2px solid colors.$dark-gray
   overflow: hidden
-  
+
   &.collapsed
     width: 6px
     padding: 0
@@ -29,7 +29,25 @@
       flex-direction: column
       gap: 0.2rem
       user-select: none
-      height: 100%
+      height: calc(100% - 3rem)
+      overflow-y: auto
+
+      &::-webkit-scrollbar
+        width: 4px
+        height: 4px
+
+      &::-webkit-scrollbar-track
+        background: transparent
+
+      &::-webkit-scrollbar-thumb
+        background: colors.$gray
+        border-radius: 10px
+
+      &::-webkit-scrollbar-thumb:hover
+        background: colors.$subtext
+
+      scrollbar-width: thin
+      scrollbar-color: colors.$gray transparent
 
     .no-servers
       display: flex
