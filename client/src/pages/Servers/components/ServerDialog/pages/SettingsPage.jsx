@@ -2,16 +2,23 @@ import { useEffect, useState } from "react";
 import SelectBox from "@/common/components/SelectBox";
 
 const KEYBOARD_LAYOUTS = [
-    { label: "US English (en-us-qwerty)", value: "en-us-qwerty" },
-    { label: "English (UK) (en-gb-qwerty)", value: "en-gb-qwerty" },
-    { label: "French (fr-fr-azerty)", value: "fr-fr-azerty" },
-    { label: "German (de-de-qwertz)", value: "de-de-qwertz" },
-    { label: "Italian (it-it-qwerty)", value: "it-it-qwerty" },
-    { label: "Japanese (ja-jp-qwerty)", value: "ja-jp-qwerty" },
-    { label: "Spanish (es-es-qwerty)", value: "es-es-qwerty" },
-    { label: "Portuguese (Brazilian) (pt-br-qwerty)", value: "pt-br-qwerty" },
-    { label: "Swiss French (fr-ch-qwertz)", value: "fr-ch-qwertz" },
-    { label: "Swiss German (de-ch-qwertz)", value: "de-ch-qwertz" },
+    { label: "Dänisch (Qwerty)", value: "da-dk-qwerty" },
+    { label: "Swiss German (Qwertz)", value: "de-ch-qwertz" },
+    { label: "Deutsch (Qwertz)", value: "de-de-qwertz" },
+    { label: "Englisch (GB) (Qwerty)", value: "en-gb-qwerty" },
+    { label: "Englisch (US) (Qwerty)", value: "en-us-qwerty" },
+    { label: "Spanisch (Qwerty)", value: "es-es-qwerty" },
+    { label: "Latin American (Qwerty)", value: "es-latam-qwerty" },
+    { label: "Unicode", value: "failsafe" },
+    { label: "Belgian French (Azerty)", value: "fr-be-azerty" },
+    { label: "Schweiz/Französisch (Qwertz)", value: "fr-ch-qwertz" },
+    { label: "Französisch (Azerty)", value: "fr-fr-azerty" },
+    { label: "Hungarian (Qwertz)", value: "hu-hu-qwertz" },
+    { label: "Italienisch (Qwerty)", value: "it-it-qwerty" },
+    { label: "Japanisch (Qwerty)", value: "ja-jp-qwerty" },
+    { label: "Portugiesisch (BR) (Qwerty)", value: "pt-br-qwerty" },
+    { label: "Schwedisch (Qwerty)", value: "sv-se-qwerty" },
+    { label: "Türkisch (Qwerty)", value: "tr-tr-qwerty" }
 ];
 
 const SettingsPage = ({ protocol, config, setConfig }) => {
