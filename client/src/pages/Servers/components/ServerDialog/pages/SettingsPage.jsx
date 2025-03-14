@@ -42,12 +42,12 @@ const SettingsPage = ({ protocol, config, setConfig }) => {
                     <label>Keyboard Layout</label>
                     <SelectBox options={KEYBOARD_LAYOUTS} selected={keyboardLayout}
                                setSelected={handleKeyboardLayoutChange} />
-                    <p>Select the keyboard layout to use for this connection.</p>
+                    <p className="text-center">Select the keyboard layout to use for this connection.</p>
                 </div>
             )}
 
             {protocol !== "vnc" && protocol !== "rdp" && (
-                <p>No additional settings available for this protocol.</p>
+                <p className="text-center">No additional settings available for this protocol.</p>
             )}
         </>
     );
