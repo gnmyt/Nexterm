@@ -34,23 +34,4 @@ app.patch("/:identityId", async (req, res) => {
     res.json({ message: "Identity got successfully edited" });
 });
 
-app.post("/:identityId/duplicate", async (req, res) => {
-    try {
-        const result = await duplicateIdentity(
-            req.user.id,
-            req.params.identityId
-        );
-
-        if (result.code) {
-            res.status(result.code).json({ message: result.message });
-            return;
-        }
-
-        res.json(result);
-    } catch (error) {
-        console.error("Failed to duplicate identity:", error);
-        res.status(500).json({ message: "Internal server error" });
-    }
-});
-
 module.exports = app;

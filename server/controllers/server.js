@@ -23,12 +23,7 @@ module.exports.createServer = async (accountId, configuration) => {
         }
     }
 
-    const server = await Server.create({
-        ...configuration,
-        accountId,
-    });
-
-    return server;
+    return await Server.create({ ...configuration, accountId });
 };
 
 module.exports.deleteServer = async (accountId, serverId) => {
@@ -80,7 +75,8 @@ module.exports.getServer = async (accountId, serverId) => {
 module.exports.listServers = async (accountId) => {
     const folders = await listFolders(accountId, true);
 
-    const servers = await Server.findAll({ where: { accountId },
+    const servers = await Server.findAll({
+        where: { accountId },
         order: [
             ["folderId", "ASC"],
             ["position", "ASC"],
@@ -100,8 +96,10 @@ module.exports.listServers = async (accountId) => {
     servers.forEach(server => {
         const folder = folderMap.get(server.folderId);
         if (folder) {
-            folder.entries.push({ type: "server", id: server.id, icon: server.icon, name: server.name,
-                position: server.position, identities: JSON.parse(server.identities), protocol: server.protocol });
+            folder.entries.push({
+                type: "server", id: server.id, icon: server.icon, name: server.name,
+                position: server.position, identities: JSON.parse(server.identities), protocol: server.protocol,
+            });
         }
     });
 
@@ -110,10 +108,27 @@ module.exports.listServers = async (accountId) => {
     pveServers.forEach(server => {
         const folder = folderMap.get(server.folderId);
         if (folder) {
-            folder.entries.push({ type: "pve-server", id: server.id, name: server.name, online: server.online === 1,
-                entries: JSON.parse(server.resources) });
+            folder.entries.push({
+                type: "pve-server", id: server.id, name: server.name, online: server.online === 1,
+                entries: JSON.parse(server.resources),
+            });
         }
     });
 
     return folders;
+};
+
+module.exports.duplicateServer = async (accountId, serverId) => {
+    const server = await Server.findOne({ where: { accountId: accountId, id: serverId } });
+
+    if (server === null) {
+        return { code: 401, message: "Server does not exist" };
+    }
+
+    return await Server.create({
+        ...server,
+        id: undefined,
+        name: server.name + " (Copy)",
+        identities: JSON.parse(server.identities),
+    });
 };

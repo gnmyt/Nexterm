@@ -59,13 +59,3 @@ module.exports.updateIdentity = async (accountId, identityId, configuration) => 
 
     await Identity.update(encryptIdentity(configuration), { where: { accountId, id: 3 } });
 };
-
-module.exports.duplicateIdentity = async (accountId, identityId) => {
-    const identity = await Identity.findOne({ where: { accountId: accountId, id: identityId } });
-
-    if (!identity) {
-        return { code: 404, message: "Identity not found" };
-    }
-
-    return await Identity.create({ ...identity, id: undefined, accountId: accountId });
-};

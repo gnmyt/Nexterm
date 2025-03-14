@@ -66,7 +66,11 @@ module.exports = db.define(
             afterFind: (identities) => {
                 const decryptField = (obj, field) => {
                     if (obj[field]) {
-                        obj[field] = decrypt(obj[field], obj[`${field}IV`], obj[`${field}AuthTag`]);
+                        try {
+                            obj[field] = decrypt(obj[field], obj[`${field}IV`], obj[`${field}AuthTag`]);
+                        } catch (err) {
+                            console.error(`Failed to decrypt ${field} for identity ${obj.id}`);
+                        }
                     }
                 };
 

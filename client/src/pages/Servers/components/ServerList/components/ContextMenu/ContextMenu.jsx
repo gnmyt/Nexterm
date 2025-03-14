@@ -99,16 +99,8 @@ export const ContextMenu = ({
 
     const postPVEAction = (type) => {
         const serverType = server?.type === "pve-qemu" ? "qemu" : "lxc";
-        postRequest(
-            "pve-servers/" +
-                serverType +
-                "/" +
-                id.split("-")[1] +
-                "/" +
-                server?.id +
-                "/" +
-                type
-        ).then(loadServers);
+        postRequest("pve-servers/" + serverType + "/" + id.split("-")[1] + "/" + server?.id + "/" + type)
+            .then(loadServers);
     };
 
     const deletePVEServer = () => {
@@ -120,26 +112,8 @@ export const ContextMenu = ({
         if (!server) return;
 
         try {
-            const identityPromises = server.identities.map(async (identityId) => {
-                const response = await postRequest(`identities/${identityId}/duplicate`);
-                return response.id;
-            });
-            
-            const newIdentityIds = await Promise.all(identityPromises);
-
-            const serverCopy = {
-                name: `${server.name} (copy)`,
-                icon: server.icon,
-                ip: server.ip,
-                port: server.port,
-                protocol: server.protocol,
-                folderId: server.folderId,
-                identities: newIdentityIds,
-            };
-
-            await putRequest("servers", serverCopy);
+            await postRequest(`servers/${server.id}/duplicate`);
             await loadServers();
-        
         } catch (error) {
             console.error("Failed to duplicate server:", error);
         }

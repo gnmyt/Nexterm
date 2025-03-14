@@ -95,19 +95,27 @@ module.exports = db.define("oidc_provider", {
                 if (Array.isArray(providers)) {
                     providers.forEach(provider => {
                         if (provider.clientSecret) {
-                            provider.clientSecret = decrypt(
-                                provider.clientSecret,
-                                provider.clientSecretIV,
-                                provider.clientSecretAuthTag,
-                            );
+                            try {
+                                provider.clientSecret = decrypt(
+                                    provider.clientSecret,
+                                    provider.clientSecretIV,
+                                    provider.clientSecretAuthTag,
+                                );
+                            } catch (error) {
+                                console.error(`Failed to decrypt client secret for provider ${provider.id}`);
+                            }
                         }
                     });
                 } else if (providers.clientSecret) {
-                    providers.clientSecret = decrypt(
-                        providers.clientSecret,
-                        providers.clientSecretIV,
-                        providers.clientSecretAuthTag,
-                    );
+                    try {
+                        providers.clientSecret = decrypt(
+                            providers.clientSecret,
+                            providers.clientSecretIV,
+                            providers.clientSecretAuthTag,
+                        );
+                    } catch (error) {
+                        console.error(`Failed to decrypt client secret for provider ${providers.id}`);
+                    }
                 }
 
                 return providers;
