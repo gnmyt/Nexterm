@@ -205,7 +205,7 @@ const GuacamoleRenderer = ({ session, disconnectFromServer, pve }) => {
     }, []);
 
     return (
-        <div className="guac-container" ref={ref} tabIndex="0"
+        <div className="guac-container" ref={ref} tabIndex="0" onClick={() => ref.current.focus()}
              style={{
                  position: "relative", width: "100%", height: "100%", outline: "none",
                  overflow: "hidden", backgroundColor: "#000", cursor: "none",
