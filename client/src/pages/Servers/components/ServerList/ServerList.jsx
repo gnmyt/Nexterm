@@ -146,7 +146,7 @@ export const ServerList = ({
                     )}
                 </div>
             )}
-            <div className="resizer" onMouseDown={startResizing} />
+            <div className={`resizer${isResizing ? " is-resizing" : ""}`} onMouseDown={startResizing} />
         </div>
     );
 };
