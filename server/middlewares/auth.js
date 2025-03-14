@@ -58,12 +58,23 @@ module.exports.authorizeGuacamole = async (req) => {
 
     console.log("Authorized connection to server " + server.ip + " with identity " + identity.name);
 
+    let config = {};
+    if (server.config) {
+        try {
+            config = JSON.parse(server.config);
+        } catch (e) {
+            console.error("Error parsing server config:", e);
+        }
+    }
+
     switch (server.protocol) {
         case "rdp":
-            return createRDPToken(server.ip, server.port, identity.username, identity.password);
+            return createRDPToken(server.ip, server.port, identity.username, identity.password,
+                config.keyboardLayout || "en-us-qwerty");
         case "vnc":
-            return createVNCToken(server.ip, server.port, identity.username, identity.password);
-            default:
+            return createVNCToken(server.ip, server.port, identity.username, identity.password,
+                config.keyboardLayout || "en-us-qwerty");
+        default:
             return;
     }
 };
