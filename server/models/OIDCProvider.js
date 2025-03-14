@@ -2,7 +2,7 @@ const Sequelize = require("sequelize");
 const db = require("../utils/database");
 const { encrypt, decrypt } = require("../utils/encryption");
 
-module.exports = db.define("oidc_provider", {
+module.exports = db.define("oidc_providers", {
         id: {
             type: Sequelize.INTEGER,
             autoIncrement: true,
