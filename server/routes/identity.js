@@ -1,6 +1,6 @@
 const { Router } = require("express");
 const { validateSchema } = require("../utils/schema");
-const { listIdentities, createIdentity, deleteIdentity, updateIdentity, duplicateIdentity } = require("../controllers/identity");
+const { listIdentities, createIdentity, deleteIdentity, updateIdentity } = require("../controllers/identity");
 const { createIdentityValidation, updateIdentityValidation } = require("../validations/identity");
 
 const app = Router();

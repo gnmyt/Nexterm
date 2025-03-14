@@ -6,6 +6,7 @@ import Button from "@/common/components/Button";
 import { getRequest, patchRequest, putRequest } from "@/common/utils/RequestUtil.js";
 import { ServerContext } from "@/common/contexts/ServerContext.jsx";
 import IdentityPage from "@/pages/Servers/components/ServerDialog/pages/IdentityPage.jsx";
+import SettingsPage from "@/pages/Servers/components/ServerDialog/pages/SettingsPage.jsx";
 import { IdentityContext } from "@/common/contexts/IdentityContext.jsx";
 import { useToast } from "@/common/contexts/ToastContext.jsx";
 
@@ -23,6 +24,7 @@ export const ServerDialog = ({ open, onClose, currentFolderId, editServerId }) =
     const [port, setPort] = useState("");
     const [protocol, setProtocol] = useState(null);
     const [identities, setIdentities] = useState([]);
+    const [config, setConfig] = useState({});
 
     const [identityUpdates, setIdentityUpdates] = useState({});
 
@@ -91,7 +93,7 @@ export const ServerDialog = ({ open, onClose, currentFolderId, editServerId }) =
             }
 
             const result = await putRequest("servers", {
-                name, icon: icon, ip, port, protocol: protocol,
+                name, icon: icon, ip, port, protocol: protocol, config,
                 folderId: currentFolderId, identities: identity?.id ? [identity?.id] : [],
             });
 
@@ -110,8 +112,9 @@ export const ServerDialog = ({ open, onClose, currentFolderId, editServerId }) =
         try {
             const identity = await updateIdentities();
 
-            await patchRequest("servers/" + editServerId, { name, icon: icon, ip, port, protocol: protocol,
-                identities: identity?.id ? [identity?.id] : undefined });
+            await patchRequest("servers/" + editServerId, { 
+                name, icon: icon, ip, port, protocol: protocol, config,
+                identities: identity?.id ? [identity?.id] : undefined});
 
             loadServers();
             sendToast("Success", "Server updated successfully");
@@ -128,7 +131,7 @@ export const ServerDialog = ({ open, onClose, currentFolderId, editServerId }) =
             return;
         }
         editServerId ? patchServer() : createServer();
-    }, [name, ip, port, protocol, editServerId, identityUpdates, currentFolderId]);
+    }, [name, ip, port, protocol, editServerId, identityUpdates, currentFolderId, config]);
 
     useEffect(() => {
         if (!open) return;
@@ -141,6 +144,17 @@ export const ServerDialog = ({ open, onClose, currentFolderId, editServerId }) =
                 setPort(server.port);
                 setProtocol(server.protocol);
                 setIdentities(server.identities);
+
+                try {
+                    if (server.config) {
+                        setConfig(JSON.parse(server.config));
+                    } else {
+                        setConfig({});
+                    }
+                } catch (error) {
+                    console.error("Failed to parse server config:", error);
+                    setConfig({});
+                }
             });
         } else {
             setName("");
@@ -149,6 +163,7 @@ export const ServerDialog = ({ open, onClose, currentFolderId, editServerId }) =
             setPort("");
             setProtocol(null);
             setIdentities([]);
+            setConfig({});
         }
 
         setIdentityUpdates({});
@@ -212,7 +227,7 @@ export const ServerDialog = ({ open, onClose, currentFolderId, editServerId }) =
                     {activeTab === 1 &&
                         <IdentityPage serverIdentities={identities} setIdentityUpdates={setIdentityUpdates}
                                       refreshIdentities={refreshIdentities} identityUpdates={identityUpdates} />}
-                    {activeTab === 2 && <p style={{textAlign: "center"}}>Not yet implemented</p>}
+                    {activeTab === 2 && <SettingsPage protocol={protocol} config={config} setConfig={setConfig} />}
                 </div>
 
                 <Button className="server-dialog-button" onClick={handleSubmit}
