@@ -39,4 +39,8 @@ module.exports = db.define("servers", {
         type: Sequelize.JSON,
         defaultValue: [],
     },
+    config: {
+        type: Sequelize.JSON,
+        allowNull: true,
+    },
 }, { freezeTableName: true, createdAt: false, updatedAt: false });
