@@ -10,9 +10,10 @@ import ContextMenu from "./components/ContextMenu";
 const filterEntries = (entries, searchTerm) => {
     return entries
         .map(entry => {
-            if (entry.type === "folder") {
+            if (entry.type === "folder" || entry.type === "organization") {
                 const filteredEntries = filterEntries(entry.entries, searchTerm);
-                if (filteredEntries.length > 0) {
+                if (filteredEntries.length > 0 || 
+                    entry.name.toLowerCase().includes(searchTerm.toLowerCase())) {
                     return { ...entry, entries: filteredEntries };
                 }
             } else if (entry.type === "server") {
@@ -28,7 +29,7 @@ const filterEntries = (entries, searchTerm) => {
 const applyRenameState = (folderId) => (entry) => {
     if (entry.type === "folder" && entry.id === parseInt(folderId)) {
         return { ...entry, renameState: true };
-    } else if (entry.type === "folder" && entry.entries) {
+    } else if ((entry.type === "folder" || entry.type === "organization") && entry.entries) {
         return { ...entry, entries: entry.entries.map(applyRenameState(folderId)) };
     }
     return entry;
