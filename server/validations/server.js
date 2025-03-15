@@ -12,6 +12,7 @@ module.exports.createServerValidation = Joi.object({
     ip: Joi.string().required(),
     port: Joi.number().required(),
     identities: Joi.array().items(Joi.number()).optional(),
+    organizationId: Joi.number().optional(),
     config: configValidation
 });
 
