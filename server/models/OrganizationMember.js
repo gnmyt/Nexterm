@@ -1,9 +1,10 @@
 const Sequelize = require("sequelize");
 const db = require("../utils/database");
 
-module.exports = db.define("organizationMembers", {
+module.exports = db.define("organization_members", {
     organizationId: {
         type: Sequelize.INTEGER,
+        primaryKey: true,
         allowNull: false,
     },
     accountId: {
@@ -24,12 +25,4 @@ module.exports = db.define("organizationMembers", {
         type: Sequelize.INTEGER,
         allowNull: false,
     },
-}, {
-    freezeTableName: true,
-    indexes: [
-        {
-            unique: true,
-            fields: ["organizationId", "accountId"],
-        },
-    ],
-});
+}, { freezeTableName: true });
