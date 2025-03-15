@@ -1,4 +1,3 @@
-require("dotenv").config();
 const express = require("express");
 const path = require("path");
 const db = require("./utils/database");
@@ -54,6 +53,7 @@ if (process.env.NODE_ENV === "production") {
         res.sendFile(path.join(__dirname, "../dist", "index.html"))
     );
 } else {
+    require("dotenv").config();
     app.get("*", (req, res) =>
         res.status(500).sendFile(path.join(__dirname, "templates", "env.html"))
     );
