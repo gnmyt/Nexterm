@@ -8,7 +8,11 @@ module.exports = db.define("servers", {
     },
     accountId: {
         type: Sequelize.INTEGER,
-        allowNull: false,
+        allowNull: true,
+    },
+    organizationId: {
+        type: Sequelize.INTEGER,
+        allowNull: true,
     },
     position: {
         type: Sequelize.INTEGER,
