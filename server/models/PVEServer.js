@@ -8,7 +8,7 @@ module.exports = db.define("pve_servers", {
     },
     accountId: {
         type: Sequelize.INTEGER,
-        allowNull: false,
+        allowNull: true,
     },
     organizationId: {
         type: Sequelize.INTEGER,
