@@ -196,3 +196,5 @@ module.exports.duplicateServer = async (accountId, serverId) => {
         identities: Array.isArray(server.identities) ? server.identities : JSON.parse(server.identities || "[]"),
     });
 };
+
+module.exports.validateServerAccess = validateServerAccess;
