@@ -1,0 +1,1 @@
+export { Organizations as default } from "./Organizations.jsx";

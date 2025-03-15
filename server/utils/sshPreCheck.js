@@ -3,6 +3,7 @@ const Account = require("../models/Account");
 const Server = require("../models/Server");
 const Identity = require("../models/Identity");
 const prepareSSH = require("./prepareSSH");
+const { validateServerAccess } = require("../controllers/server");
 
 module.exports = async (ws, req) => {
     const authHeader = req.query["sessionToken"];
@@ -39,8 +40,13 @@ module.exports = async (ws, req) => {
         return;
     }
 
-    const server = await Server.findOne({ where: { id: serverId, accountId: req.user.id } });
+    const server = await Server.findByPk(serverId);
     if (server === null) return;
+
+    if (!((await validateServerAccess(req.user.id, server)).valid)) {
+        ws.close(4005, "You don't have access to this server");
+        return;
+    }
 
     if (server.identities.length === 0 && identityId) return;
 
