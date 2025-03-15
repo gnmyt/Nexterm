@@ -1,7 +1,7 @@
 import "./styles.sass";
 import ServerList from "@/pages/Servers/components/ServerList";
 import { UserContext } from "@/common/contexts/UserContext.jsx";
-import { useContext } from "react";
+import { useContext, useEffect, useState } from "react";
 import Button from "@/common/components/Button";
 import WelcomeImage from "@/common/img/welcome.png";
 import { DISCORD_URL, GITHUB_URL } from "@/App.jsx";
@@ -10,8 +10,9 @@ import ViewContainer from "@/pages/Servers/components/ViewContainer";
 import ProxmoxDialog from "@/pages/Servers/components/ProxmoxDialog";
 import { mdiStar } from "@mdi/js";
 import { siDiscord } from "simple-icons";
-import { useState } from "react";
 import { useActiveSessions } from "@/common/contexts/SessionContext.jsx";
+import { useLocation, useNavigate } from "react-router-dom";
+import { ServerContext } from "@/common/contexts/ServerContext.jsx";
 
 export const Servers = () => {
 
@@ -21,8 +22,10 @@ export const Servers = () => {
     const [currentFolderId, setCurrentFolderId] = useState(null);
     const [editServerId, setEditServerId] = useState(null);
     const { user } = useContext(UserContext);
-
     const { activeSessions, setActiveSessions, activeSessionId, setActiveSessionId } = useActiveSessions();
+    const { getServerById, getPVEServerById, getPVEContainerById, servers } = useContext(ServerContext);
+    const location = useLocation();
+    const navigate = useNavigate();
 
     const connectToServer = (server, identity) => {
         const sessionId = "session-" + (Math.random().toString(36).substring(2, 15));
@@ -72,6 +75,35 @@ export const Servers = () => {
         setCurrentFolderId(null);
         setEditServerId(null);
     }
+
+    useEffect(() => {
+        if (!servers) return;
+        
+        const params = new URLSearchParams(location.search);
+        const connectId = params.get('connectId');
+        
+        if (connectId) {
+            navigate('/servers', { replace: true });
+            const server = getServerById(connectId);
+            
+            if (server && server.identities && server.identities.length > 0) {
+                connectToServer(server.id, server.identities[0]);
+            } else {
+                const isPveServer = connectId.includes("-");
+                
+                if (isPveServer) {
+                    const [pveId, containerId] = connectId.split("-");
+                    const pveServer = getPVEServerById(pveId);
+                    const container = pveServer && containerId ? 
+                        getPVEContainerById(pveId, containerId) : null;
+                    
+                    if (pveServer && container && container.status === "running") {
+                        connectToPVEServer(pveId, containerId);
+                    }
+                }
+            }
+        }
+    }, [servers, location.search]);
 
     return (
         <div className="server-page">
