@@ -10,7 +10,7 @@ const OrganizationFolder = ({ id, name, entries, nestedLevel, connectToServer, c
 
     return (
         <>
-            <div className="folder-object" onClick={toggleFolder}
+            <div className="folder-object" onClick={toggleFolder} data-id={id}
                  style={{ paddingLeft: `${10 + (nestedLevel * 15)}px` }}>
                 <Icon path={isOpen ? mdiDomain : mdiDomainOff} />
                 <p className="truncate-text">{name}</p>
