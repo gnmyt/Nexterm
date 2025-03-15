@@ -1,0 +1,1 @@
+export {ActionConfirmDialog as default} from "./ActionConfirmDialog";
