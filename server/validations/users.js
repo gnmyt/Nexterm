@@ -7,3 +7,7 @@ module.exports.createUserValidation = Joi.object({
     lastName: Joi.string().min(2).max(50).required(),
     role: Joi.string().valid("user", "admin").optional(),
 });
+
+module.exports.updateRoleValidation = Joi.object({
+    role: Joi.string().valid("user", "admin").required()
+});
