@@ -1,0 +1,140 @@
+@use "@/common/styles/colors"
+
+.organizations-page
+  width: 100%
+
+  .page-header
+    display: flex
+    align-items: center
+    justify-content: space-between
+    margin-bottom: 2rem
+
+    h2
+      margin: 0
+      font-size: 1.5rem
+
+  .no-organizations
+    text-align: center
+    color: colors.$subtext
+    padding: 3rem
+    background-color: colors.$dark-gray
+    border-radius: 8px
+
+    p
+      margin: 0.5rem 0
+      font-size: 0.95rem
+
+      &:first-child
+        font-weight: 500
+
+  .vertical-list
+    display: flex
+    flex-direction: column
+    gap: 0.75rem
+
+  .item
+    display: flex
+    align-items: center
+    justify-content: space-between
+    background-color: colors.$dark-gray
+    border: 1px solid colors.$gray
+    border-radius: 8px
+    padding: 1rem
+    transition: background-color 0.2s ease
+
+    &:hover
+      background-color: colors.$gray
+
+    &.clickable
+      cursor: pointer
+
+    &.expanded
+      border-bottom-left-radius: 0
+      border-bottom-right-radius: 0
+
+    .left-section
+      display: flex
+      align-items: center
+      gap: 1rem
+
+      .icon
+        display: flex
+        align-items: center
+        justify-content: center
+        width: 2.5rem
+        height: 2.5rem
+        border-radius: 8px
+
+        svg
+          width: 1.5rem
+          height: 1.5rem
+
+        &.primary
+          background-color: colors.$primary-opacity
+          svg
+            color: colors.$primary
+
+        &.warning
+          background-color: colors.$warning-opacity
+          svg
+            color: colors.$warning
+
+      .details
+        h3
+          margin: 0
+          font-size: 1.1rem
+
+        p
+          margin: 0.25rem 0 0
+          color: colors.$subtext
+          font-size: 0.9rem
+
+    .right-section
+      display: flex
+      align-items: center
+      gap: 0.75rem
+
+      svg
+        cursor: pointer
+        width: 1.5rem
+        height: 1.5rem
+        transition: color 0.2s ease
+
+        &.accept-icon
+          color: colors.$success
+
+        &.decline-icon
+          color: colors.$error
+
+  .organization-members
+    background-color: colors.$darker-gray
+    margin-top: -1px
+    border-bottom-left-radius: 8px
+    border-bottom-right-radius: 8px
+    padding: 1rem
+    animation: slideDown 0.2s ease-out
+
+    .organization-danger-zone
+      margin-top: 2rem
+      padding-top: 1.5rem
+      border-top: 1px solid colors.$gray
+
+      h3
+        color: colors.$error
+        margin: 0 0 1rem
+        font-size: 1.1rem
+
+  @keyframes slideDown
+    from
+      opacity: 0
+      transform: translateY(-10px)
+    to
+      opacity: 1
+      transform: translateY(0)
+
+  .pending-invitations
+    margin-top: 2rem
+
+    h2
+      margin: 0 0 1rem
+      font-size: 1.25rem
