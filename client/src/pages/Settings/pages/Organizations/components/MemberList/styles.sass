@@ -1,0 +1,50 @@
+@use "@/common/styles/colors"
+
+.member-list
+  display: flex
+  flex-direction: column
+  gap: 0.5rem
+  margin-top: 0.5rem
+
+  .member-item
+    display: flex
+    align-items: center
+    justify-content: space-between
+    background-color: colors.$dark-gray
+    border-radius: 6px
+    padding: 0.75rem 1rem
+    transition: background-color 0.2s ease
+    margin-bottom: 0.5rem
+
+    &:hover
+      background-color: colors.$gray
+
+    .member-info
+      display: flex
+      align-items: center
+      gap: 1rem
+
+      svg
+        width: 1.5rem
+        height: 1.5rem
+        color: colors.$primary
+
+      .member-details
+        h3
+          margin: 0
+          font-size: 1rem
+          font-weight: 500
+
+        p
+          margin: 0.25rem 0 0
+          color: colors.$subtext
+          font-size: 0.9rem
+
+      .member-role
+        margin-left: 1rem
+        font-size: 0.8rem
+        color: colors.$primary
+        background-color: colors.$primary-opacity
+        padding: 0.25rem 0.5rem
+        border-radius: 4px
+        text-transform: capitalize
