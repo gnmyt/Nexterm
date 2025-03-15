@@ -14,10 +14,6 @@ module.exports.inviteUserSchema = Joi.object({
     username: Joi.string().required(),
 });
 
-module.exports.updateMemberRoleSchema = Joi.object({
-    role: Joi.string().valid("admin", "member").required(),
-});
-
 module.exports.respondToInvitationSchema = Joi.object({
     accept: Joi.boolean().required(),
 });

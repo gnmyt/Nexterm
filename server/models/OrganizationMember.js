@@ -12,7 +12,7 @@ module.exports = db.define("organization_members", {
         allowNull: false,
     },
     role: {
-        type: Sequelize.ENUM("owner", "admin", "member"),
+        type: Sequelize.ENUM("owner", "member"),
         defaultValue: "member",
         allowNull: false,
     },

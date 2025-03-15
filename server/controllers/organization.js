@@ -35,7 +35,7 @@ module.exports.deleteOrganization = async (accountId, organizationId) => {
 
 module.exports.updateOrganization = async (accountId, organizationId, updates) => {
     const membership = await OrganizationMember.findOne({
-        where: { organizationId, accountId, status: "active", role: { [Op.in]: ["owner", "admin"] } },
+        where: { organizationId, accountId, status: "active", role: "owner" },
     });
 
     if (!membership) {
@@ -97,7 +97,7 @@ module.exports.listPendingInvitations = async (accountId) => {
 
 module.exports.inviteUser = async (accountId, organizationId, username) => {
     const membership = await OrganizationMember.findOne({
-        where: { organizationId, accountId, status: "active", role: { [Op.in]: ["owner", "admin"] } },
+        where: { organizationId, accountId, status: "active", role: "owner" },
     });
 
     if (!membership) return { code: 403, message: "You don't have permission to invite users to this organization" };
@@ -125,23 +125,23 @@ module.exports.inviteUser = async (accountId, organizationId, username) => {
     return { success: true, message: "Invitation sent successfully" };
 };
 
-module.exports.respondToInvitation = async (accountId, invitationId, accept) => {
-    const invitation = await OrganizationMember.findOne({ where: { id: invitationId, accountId, status: "pending" } });
+module.exports.respondToInvitation = async (accountId, organizationId, accept) => {
+    const invitation = await OrganizationMember.findOne({ where: { organizationId, accountId, status: "pending" } });
 
     if (!invitation) return { code: 404, message: "Invitation not found" };
 
     if (accept) {
-        await OrganizationMember.update({ status: "active" }, { where: { id: invitationId } });
+        await OrganizationMember.update({ status: "active" }, { where: { organizationId } });
         return { success: true, message: "Invitation accepted" };
     } else {
-        await OrganizationMember.destroy({ where: { id: invitationId } });
+        await OrganizationMember.destroy({ where: { organizationId } });
         return { success: true, message: "Invitation declined" };
     }
 };
 
 module.exports.removeMember = async (accountId, organizationId, memberAccountId) => {
     const membership = await OrganizationMember.findOne({
-        where: { organizationId, accountId, status: "active", role: { [Op.in]: ["owner", "admin"] } },
+        where: { organizationId, accountId, status: "active", role: "owner" },
     });
 
     if (!membership) {
@@ -158,37 +158,10 @@ module.exports.removeMember = async (accountId, organizationId, memberAccountId)
         return { code: 403, message: "Cannot remove the organization owner" };
     }
 
-    if (membership.role === "admin" && memberToRemove.role === "admin") {
-        return { code: 403, message: "Admins cannot remove other admins" };
-    }
 
     await OrganizationMember.destroy({ where: { organizationId, accountId: memberAccountId } });
 
     return { success: true, message: "Member removed successfully" };
-};
-
-module.exports.updateMemberRole = async (accountId, organizationId, memberAccountId, newRole) => {
-    const membership = await OrganizationMember.findOne({
-        where: { organizationId, accountId, status: "active", role: "owner" },
-    });
-
-    if (!membership) return { code: 403, message: "Only the organization owner can change member roles" };
-
-    const memberToUpdate = await OrganizationMember.findOne({
-        where: { organizationId, accountId: memberAccountId, status: "active" },
-    });
-
-    if (!memberToUpdate) {
-        return { code: 404, message: "Active member not found in this organization" };
-    }
-
-    if (memberToUpdate.role === "owner") {
-        return { code: 403, message: "Cannot change the owner's role" };
-    }
-
-    await OrganizationMember.update({ role: newRole }, { where: { organizationId, accountId: memberAccountId } });
-
-    return { success: true, message: `Role updated to ${newRole}` };
 };
 
 module.exports.listMembers = async (accountId, organizationId) => {

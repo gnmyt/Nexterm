@@ -7,11 +7,10 @@ const {
     createOrganizationSchema,
     updateOrganizationSchema,
     inviteUserSchema,
-    updateMemberRoleSchema,
     respondToInvitationSchema,
 } = require("../validations/organization");
 
-app.post("/", authenticate, async (req, res) => {
+app.put("/", authenticate, async (req, res) => {
     try {
         if (validateSchema(res, createOrganizationSchema, req.body)) return;
 
@@ -28,7 +27,7 @@ app.post("/", authenticate, async (req, res) => {
     }
 });
 
-app.put("/:id", authenticate, async (req, res) => {
+app.patch("/:id", authenticate, async (req, res) => {
     try {
         if (validateSchema(res, updateOrganizationSchema, req.body)) return;
 
@@ -129,24 +128,6 @@ app.delete("/:id/members/:accountId", authenticate, async (req, res) => {
     } catch (error) {
         console.error("Error removing member from organization:", error);
         res.status(500).json({ message: "An error occurred while removing the member" });
-    }
-});
-
-app.put("/:id/members/:accountId", authenticate, async (req, res) => {
-    try {
-        if (validateSchema(res, updateMemberRoleSchema, req.body)) return;
-
-        const result = await organizationController.updateMemberRole(req.user.id, req.params.id,
-            req.params.accountId, req.body.role);
-
-        if (result.code) {
-            return res.status(result.code).json({ message: result.message });
-        }
-
-        res.json(result);
-    } catch (error) {
-        console.error("Error updating member role:", error);
-        res.status(500).json({ message: "An error occurred while updating the member role" });
     }
 });
 
