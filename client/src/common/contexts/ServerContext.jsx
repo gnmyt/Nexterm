@@ -34,7 +34,7 @@ export const ServerProvider = ({ children }) => {
         for (const server of entries) {
             if (server.id === parseInt(serverId) && server.type === "pve-server") {
                 return server;
-            } else if (server.type === "folder") {
+            } else if (server.type === "folder" || server.type === "organization") {
                 const result = getPVEServerById(serverId, server.entries);
                 if (result) {
                     return result;
@@ -75,7 +75,7 @@ export const ServerProvider = ({ children }) => {
         for (const entry of entries) {
             if (entry.id === parseInt(folderId) && entry.type === "folder") {
                 return entry.entries;
-            } else if (entry.type === "folder") {
+            } else if (entry.type === "folder" || entry.type === "organization") {
                 const result = getServerListInFolder(folderId, entry.entries);
                 if (result) {
                     return result;
