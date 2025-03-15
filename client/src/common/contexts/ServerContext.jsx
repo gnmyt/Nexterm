@@ -60,7 +60,7 @@ export const ServerProvider = ({ children }) => {
         for (const server of entries) {
             if (server.id === parseInt(serverId) && server.type === "server") {
                 return server;
-            } else if (server.type === "folder") {
+            } else if (server.type === "folder" || server.type === "organization") {
                 const result = getServerById(serverId, server.entries);
                 if (result) {
                     return result;

@@ -11,7 +11,11 @@ module.exports = db.define(
         },
         accountId: {
             type: Sequelize.INTEGER,
-            allowNull: false,
+            allowNull: true,
+        },
+        organizationId: {
+            type: Sequelize.INTEGER,
+            allowNull: true
         },
         username: {
             type: Sequelize.STRING,

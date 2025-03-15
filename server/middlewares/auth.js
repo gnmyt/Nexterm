@@ -3,6 +3,7 @@ const Session = require("../models/Session");
 const Server = require("../models/Server");
 const Identity = require("../models/Identity");
 const { createRDPToken, createVNCToken } = require("../utils/tokenGenerator");
+const { validateServerAccess } = require("../controllers/server");
 
 module.exports.authenticate = async (req, res, next) => {
     const authHeader = req.header("authorization");
@@ -47,9 +48,10 @@ module.exports.authorizeGuacamole = async (req) => {
 
     if (!query.serverId) return;
 
-    const server = await Server.findOne({ where: { id: query.serverId, accountId: req.user.id } });
+    const server = await Server.findByPk(query.serverId);
     if (server === null) return;
 
+    if (!((await validateServerAccess(req.user.id, server)).valid)) return;
 
     if (server.identities.length === 0 && query.identity) return;
 

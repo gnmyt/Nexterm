@@ -8,7 +8,11 @@ module.exports = db.define("folders", {
     },
     accountId: {
         type: Sequelize.INTEGER,
-        allowNull: false,
+        allowNull: true,
+    },
+    organizationId: {
+        type: Sequelize.INTEGER,
+        allowNull: true,
     },
     parentId: {
         type: Sequelize.INTEGER,
