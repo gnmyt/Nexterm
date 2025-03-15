@@ -51,9 +51,13 @@ export const ContextMenu = ({
         : null;
 
     const createFolder = () => {
+        const isOrgFolder = id && id.toString().startsWith("org-");
+        const organizationId = isOrgFolder ? id.toString().split("-")[1] : undefined;
+        
         putRequest("folders", {
             name: "New Folder",
-            parentId: id === null ? undefined : id,
+            parentId: isOrgFolder ? undefined : (id === null ? undefined : id),
+            organizationId: organizationId,
         }).then(async (result) => {
             await loadServers();
             if (result.id) setRenameStateId(result.id);
