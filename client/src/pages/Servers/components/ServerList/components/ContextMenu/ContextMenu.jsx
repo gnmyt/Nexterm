@@ -50,8 +50,9 @@ export const ContextMenu = ({
             : getPVEContainerById(id.split("-")[1], id.split("-")[2])
         : null;
 
+    const isOrgFolder = id && id.toString().startsWith("org-");
+
     const createFolder = () => {
-        const isOrgFolder = id && id.toString().startsWith("org-");
         const organizationId = isOrgFolder ? id.toString().split("-")[1] : undefined;
         
         putRequest("folders", {
@@ -136,7 +137,7 @@ export const ContextMenu = ({
                         <p>Create Folder</p>
                     </div>
                 )}
-            {type === "folder-object" && (
+            {type === "folder-object" && !isOrgFolder && (
                 <>
                     <div className="context-item" onClick={deleteFolder}>
                         <Icon path={mdiFolderRemove} />
