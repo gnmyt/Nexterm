@@ -10,6 +10,10 @@ module.exports = db.define("pve_servers", {
         type: Sequelize.INTEGER,
         allowNull: false,
     },
+    organizationId: {
+        type: Sequelize.INTEGER,
+        allowNull: true,
+    },
     folderId: {
         type: Sequelize.INTEGER,
         allowNull: false,
