@@ -21,6 +21,7 @@
     flex-direction: column
     width: 95%
     height: 100%
+    overflow: hidden
 
     .servers
       margin-top: 1rem
@@ -28,7 +29,8 @@
       flex-direction: column
       gap: 0.2rem
       user-select: none
-      height: calc(100% - 3rem)
+      flex: 1
+      overflow-x: hidden
       overflow-y: auto
 
       &::-webkit-scrollbar

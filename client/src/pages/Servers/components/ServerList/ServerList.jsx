@@ -63,7 +63,34 @@ export const ServerList = ({
             setContextClickedId(null);
             setContextClickedType(null);
         }
-        setContextMenuPosition({ x: e.pageX, y: e.pageY });
+
+        const position = calculateContextMenuPosition(e.clientX, e.clientY);
+        setContextMenuPosition(position);
+    };
+
+    const calculateContextMenuPosition = (x, y) => {
+        requestAnimationFrame(() => {
+            if (!contextMenuPosition) return;
+
+            const menu = document.querySelector('.context-menu');
+            if (!menu) return;
+
+            const menuRect = menu.getBoundingClientRect();
+            const viewportWidth = window.innerWidth;
+            const viewportHeight = window.innerHeight;
+
+            let adjustedX = x;
+            let adjustedY = y;
+
+            if (x + menuRect.width > viewportWidth) adjustedX = viewportWidth - menuRect.width - 10;
+            if (y + menuRect.height > viewportHeight) adjustedY = viewportHeight - menuRect.height - 10;
+
+            if (adjustedX !== contextMenuPosition.x || adjustedY !== contextMenuPosition.y) {
+                setContextMenuPosition({ x: adjustedX, y: adjustedY });
+            }
+        });
+
+        return { x, y };
     };
 
     const handleClick = () => {
