@@ -22,10 +22,20 @@ features:
     details: Nexterm is currently in development and is open for preview. 
   - icon: 🔒
     title: Secure
-    details: Nexterm offers two-factor authentication and session management.
+    details: Two-factor authentication, session management and encryption built-in.
   - icon: 📁
     title: Structured
-    details:  Nexterm is structured into folders and tabs for easy navigation.
+    details: Nexterm is structured into folders and tabs for easy navigation.
+  - icon: 🏢
+    title: Organizations
+    details: Seamlessly share server access with your team members.
+  - icon: ✂️
+    title: Snippets
+    details: Create and manage snippets for quick access to commands.
+  - icon: 📦
+    title: Apps
+    details: Automate app installations and configurations with apps.
+
 ---
 
 <style>
