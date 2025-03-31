@@ -14,7 +14,7 @@
     "joi": "^17.13.3",
     "js-yaml": "^4.1.0",
     "openid-client": "^6.3.4",
-    "sequelize": "^6.37.6",
+    "sequelize": "^6.37.7",
     "speakeasy": "^2.0.0",
     "sqlite3": "^5.1.7",
     "ssh2": "^1.16.0",
