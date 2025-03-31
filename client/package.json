@@ -16,7 +16,7 @@
     "@uiw/react-codemirror": "^4.23.10",
     "guacamole-common-js": "^1.5.0",
     "qrcode.react": "^4.2.0",
-    "react": "^19.0.0",
+    "react": "^19.1.0",
     "react-dnd": "^16.0.1",
     "react-dnd-html5-backend": "^16.0.1",
     "react-dom": "^19.0.0",
