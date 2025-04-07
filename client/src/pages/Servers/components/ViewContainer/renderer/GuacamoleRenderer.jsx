@@ -6,24 +6,43 @@ const GuacamoleRenderer = ({ session, disconnectFromServer, pve }) => {
     const ref = useRef(null);
     const { sessionToken } = useContext(UserContext);
     const clientRef = useRef(null);
+    const scaleRef = useRef(1);
+    const offsetRef = useRef({ x: 0, y: 0 });
+
+    const applyDisplayStyles = (displayElement, offsetX, offsetY, scale) => {
+        Object.assign(displayElement.style, {
+            position: "absolute",
+            width: displayElement.clientWidth + "px",
+            height: displayElement.clientHeight + "px",
+            transform: `translate(${offsetX}px, ${offsetY}px) scale(${scale})`,
+            transformOrigin: "0 0",
+            imageRendering: "crisp-edges",
+            backfaceVisibility: "hidden",
+            willChange: "transform",
+        });
+    };
 
     const resizeHandler = () => {
         if (clientRef.current && ref.current) {
             const displayElement = clientRef.current.getDisplay().getElement();
-            const width = ref.current.clientWidth;
-            const height = ref.current.clientHeight;
+            const containerWidth = ref.current.clientWidth;
+            const containerHeight = ref.current.clientHeight;
 
-            if (displayElement.clientWidth !== width || displayElement.clientHeight !== height)
-                clientRef.current.sendSize(width, height);
+            clientRef.current.sendSize(containerWidth, containerHeight);
 
-            const scale = Math.min(width / displayElement.clientWidth, height / displayElement.clientHeight);
+            const scaleX = containerWidth / displayElement.clientWidth;
+            const scaleY = containerHeight / displayElement.clientHeight;
+            const scale = Math.min(scaleX, scaleY);
+            scaleRef.current = scale;
 
-            displayElement.style.transform = `scale(${scale})`;
-            displayElement.style.transformOrigin = "top left";
+            const scaledWidth = displayElement.clientWidth * scale;
+            const scaledHeight = displayElement.clientHeight * scale;
 
-            displayElement.style.position = "absolute";
-            displayElement.style.left = `${(width - displayElement.clientWidth * scale) / 2}px`;
-            displayElement.style.top = `${(height - displayElement.clientHeight * scale) / 2}px`;
+            const offsetX = (containerWidth - scaledWidth) / 2;
+            const offsetY = (containerHeight - scaledHeight) / 2;
+            offsetRef.current = { x: offsetX, y: offsetY };
+
+            applyDisplayStyles(displayElement, offsetX, offsetY, scale);
         }
     };
 
@@ -33,6 +52,15 @@ const GuacamoleRenderer = ({ session, disconnectFromServer, pve }) => {
             const writer = new Guacamole.StringWriter(stream);
             writer.sendText(text);
             writer.sendEnd();
+        }
+    };
+
+    const checkClipboardPermission = async () => {
+        try {
+            const result = await navigator.permissions.query({ name: "clipboard-read" });
+            return result.state === "granted";
+        } catch (e) {
+            return false;
         }
     };
 
@@ -53,19 +81,35 @@ const GuacamoleRenderer = ({ session, disconnectFromServer, pve }) => {
                 }
             };
 
-            let cachedClipboard = "";
-            const intervalId = setInterval(async() => {
-                try {
-                    const text = await navigator.clipboard.readText();
-                    if (text !== cachedClipboard) {
-                        cachedClipboard = text;
-                        sendClipboardToServer(text);
-                    }
-                } catch (ignored) {
-                }
-            }, 500);
+            checkClipboardPermission().then(hasPermission => {
+                if (hasPermission) {
+                    let cachedClipboard = "";
+                    const intervalId = setInterval(async () => {
+                        try {
+                            const text = await navigator.clipboard.readText();
+                            if (text !== cachedClipboard) {
+                                cachedClipboard = text;
+                                sendClipboardToServer(text);
+                            }
+                        } catch (ignored) {
+                        }
+                    }, 500);
 
-            return () => clearInterval(intervalId);
+                    return () => clearInterval(intervalId);
+                }
+            });
+
+            const handlePaste = (e) => {
+                const text = e.clipboardData?.getData("text");
+                if (text) {
+                    sendClipboardToServer(text);
+                }
+            };
+
+            ref.current.addEventListener("paste", handlePaste);
+            return () => {
+                ref.current.removeEventListener("paste", handlePaste);
+            };
         }
     };
 
@@ -77,12 +121,17 @@ const GuacamoleRenderer = ({ session, disconnectFromServer, pve }) => {
         const urlSuffix = pve ? "pve-qemu" : "guacd";
 
         const tunnel = new Guacamole.WebSocketTunnel((process.env.NODE_ENV === "production" ? "/api/servers/"
-                : "ws://localhost:6989/api/servers/") + urlSuffix);
+            : "ws://localhost:6989/api/servers/") + urlSuffix);
         const client = new Guacamole.Client(tunnel);
+
+        client.getDisplay().onresize = resizeHandler;
 
         clientRef.current = client;
 
         const displayElement = client.getDisplay().getElement();
+
+        displayElement.style.position = "absolute";
+        displayElement.style.imageRendering = "crisp-edges";
         ref.current.appendChild(displayElement);
 
         if (pve) {
@@ -93,7 +142,15 @@ const GuacamoleRenderer = ({ session, disconnectFromServer, pve }) => {
 
         const mouse = new Guacamole.Mouse(displayElement);
         mouse.onmousedown = mouse.onmouseup = mouse.onmousemove = (mouseState) => {
-            client.sendMouseState(mouseState);
+            if (scaleRef.current && offsetRef.current) {
+                const adjustedX = (mouseState.x - offsetRef.current.x) / scaleRef.current;
+                const adjustedY = (mouseState.y - offsetRef.current.y) / scaleRef.current;
+
+                const adjustedState = new Guacamole.Mouse.State(
+                    Math.round(adjustedX), Math.round(adjustedY), mouseState.left, mouseState.middle,
+                    mouseState.right, mouseState.up, mouseState.down);
+                client.sendMouseState(adjustedState);
+            }
         };
 
         ref.current.focus();
@@ -124,24 +181,34 @@ const GuacamoleRenderer = ({ session, disconnectFromServer, pve }) => {
     }, [sessionToken, session]);
 
     useEffect(() => {
+        let resizeObserver;
         window.addEventListener("resize", resizeHandler);
 
-        const interval = setInterval(() => {
-            if (clientRef.current) resizeHandler();
+        if (ref.current) {
+            resizeObserver = new ResizeObserver(() => {
+                resizeHandler();
+            });
+            resizeObserver.observe(ref.current);
+        }
+
+        resizeHandler();
+
+        const resizeInterval = setInterval(() => {
+            if (clientRef.current && ref.current) resizeHandler();
         }, 500);
 
         return () => {
             window.removeEventListener("resize", resizeHandler);
-            clearInterval(interval);
+            if (resizeObserver) resizeObserver.disconnect();
+            clearInterval(resizeInterval);
         };
     }, []);
 
     return (
         <div className="guac-container" ref={ref} tabIndex="0" onClick={() => ref.current.focus()}
              style={{
-                 position: "relative", zIndex: 1, outline: "none", display: "flex", justifyContent: "center",
-                 alignItems: "center", width: "100%", height: "100%", overflow: "hidden", backgroundColor: "#000000",
-                 cursor: "none",
+                 position: "relative", width: "100%", height: "100%", outline: "none",
+                 overflow: "hidden", backgroundColor: "#000", cursor: "none",
              }}
         />
     );

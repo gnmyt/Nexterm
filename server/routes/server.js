@@ -1,5 +1,5 @@
 const { Router } = require("express");
-const { createServer, deleteServer, editServer, getServer, listServers } = require("../controllers/server");
+const { createServer, deleteServer, editServer, getServer, listServers, duplicateServer } = require("../controllers/server");
 const { createServerValidation, updateServerValidation } = require("../validations/server");
 const { validateSchema } = require("../utils/schema");
 
@@ -39,6 +39,13 @@ app.patch("/:serverId", async (req, res) => {
     if (server?.code) return res.json(server);
 
     res.json({ message: "Server got successfully edited" });
+});
+
+app.post("/:serverId/duplicate", async (req, res) => {
+    const server = await duplicateServer(req.user.id, req.params.serverId);
+    if (server?.code) return res.json(server);
+
+    res.json({ message: "Server got successfully duplicated" });
 });
 
 module.exports = app;

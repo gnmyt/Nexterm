@@ -1,5 +1,5 @@
 import CodeMirror from "@uiw/react-codemirror";
-import { githubDark } from "@uiw/codemirror-theme-github";
+import { githubDark, githubLight } from "@uiw/codemirror-theme-github";
 import { useContext, useEffect, useState } from "react";
 import "./styles.sass";
 import { UserContext } from "@/common/contexts/UserContext.jsx";
@@ -7,10 +7,12 @@ import { downloadRequest } from "@/common/utils/RequestUtil.js";
 import Icon from "@mdi/react";
 import { mdiClose, mdiContentSave, mdiTextBox } from "@mdi/js";
 import { ActionConfirmDialog } from "@/common/components/ActionConfirmDialog/ActionConfirmDialog.jsx";
+import { useTheme } from "@/common/contexts/ThemeContext.jsx";
 
 export const FileEditor = ({ currentFile, serverId, identityId, setCurrentFile, sendOperation }) => {
     const [fileContent, setFileContent] = useState("");
     const [fileContentChanged, setFileContentChanged] = useState(false);
+    const { theme } = useTheme();
 
     const toBase64 = (bytes) => {
         const binString = String.fromCodePoint(...bytes);
@@ -84,7 +86,7 @@ export const FileEditor = ({ currentFile, serverId, identityId, setCurrentFile, 
                 </div>
             </div>
             <CodeMirror value={fileContent === null ? "Loading..." : fileContent} onChange={updateContent}
-                        theme={githubDark} />
+                        theme={theme === 'dark' ? githubDark : githubLight} />
         </div>
     );
 };

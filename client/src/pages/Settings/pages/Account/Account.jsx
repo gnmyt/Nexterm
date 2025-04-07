@@ -1,8 +1,9 @@
 import IconInput from "@/common/components/IconInput";
 import "./styles.sass";
-import { mdiAccountCircleOutline } from "@mdi/js";
+import { mdiAccountCircleOutline, mdiWhiteBalanceSunny } from "@mdi/js";
 import { useContext, useEffect, useState } from "react";
 import { UserContext } from "@/common/contexts/UserContext.jsx";
+import { useTheme } from "@/common/contexts/ThemeContext.jsx";
 import Button from "@/common/components/Button";
 import { patchRequest, postRequest } from "@/common/utils/RequestUtil.js";
 import TwoFactorAuthentication from "@/pages/Settings/pages/Account/dialogs/TwoFactorAuthentication";
@@ -14,6 +15,7 @@ export const Account = () => {
     const [passwordChangeOpen, setPasswordChangeOpen] = useState(false);
 
     const { user, login } = useContext(UserContext);
+    const { theme, toggleTheme } = useTheme();
 
     const [updatedField, setUpdatedField] = useState(null);
 
@@ -34,12 +36,12 @@ export const Account = () => {
                 }, 1500);
             })
             .catch(err => console.error(err));
-    }
+    };
 
     const disable2FA = () => {
         postRequest("accounts/totp/disable").then(() => {
-                login();
-            }).catch(err => console.error(err));
+            login();
+        }).catch(err => console.error(err));
     }
 
     useEffect(() => {
@@ -59,18 +61,27 @@ export const Account = () => {
                     <div className="form-group">
                         <label htmlFor="firstName">First name</label>
                         <IconInput icon={mdiAccountCircleOutline} placeholder="First name"
-                                      id="firstName" customClass={updatedField === "firstName" ? " fd-updated" : ""}
+                                   id="firstName" customClass={updatedField === "firstName" ? " fd-updated" : ""}
                                    value={firstName} setValue={setFirstName}
-                                   onBlur={(event) => updateName({ firstName: event.target.value })}   />
+                                   onBlur={(event) => updateName({ firstName: event.target.value })} />
                     </div>
 
                     <div className="form-group">
                         <label htmlFor="lastName">Last name</label>
                         <IconInput icon={mdiAccountCircleOutline} placeholder="Last name" id="lastName"
-                                      value={lastName} setValue={setLastName}
-                                        customClass={updatedField === "lastName" ? " fd-updated" : ""}
+                                   value={lastName} setValue={setLastName}
+                                   customClass={updatedField === "lastName" ? " fd-updated" : ""}
                                    onBlur={(event) => updateName({ lastName: event.target.value })} />
                     </div>
+                </div>
+            </div>
+
+            <div className="account-section">
+                <h2>Appearance</h2>
+                <div className="section-inner">
+                    <p style={{ maxWidth: "25rem" }}>Choose between light and dark theme for your interface.</p>
+                    <Button text={theme === "dark" ? "Switch to Light Mode" : "Switch to Dark Mode"}
+                            icon={mdiWhiteBalanceSunny} onClick={toggleTheme} />
                 </div>
             </div>
 

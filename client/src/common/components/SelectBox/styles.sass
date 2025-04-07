@@ -5,7 +5,6 @@
   user-select: none
   cursor: pointer
 
-
   &__selected
     padding: 0.8rem
     border: 1px solid colors.$gray
@@ -24,7 +23,6 @@
       width: 1.5rem
       height: 1.5rem
 
-
   &__arrow
     margin-left: 10px
     transition: transform 0.3s ease
@@ -33,15 +31,30 @@
       transform: rotate(180deg)
 
   &__options
-    position: absolute
-    top: calc(100% + 5px)
-    left: 0
-    width: 100%
+    position: fixed
     border: 1px solid colors.$gray
     background-color: colors.$gray-full
     backdrop-filter: blur(1rem)
     border-radius: 0.7rem
-    z-index: 1000
+    z-index: 9999
+
+  &__options-scroll
+    max-height: 250px
+    overflow-y: auto
+    overflow-x: hidden
+    scrollbar-width: thin
+    scrollbar-color: colors.$gray colors.$dark-gray
+
+    &::-webkit-scrollbar
+      width: 8px
+
+    &::-webkit-scrollbar-track
+      background: colors.$dark-gray
+      border-radius: 0 0.7rem 0.7rem 0
+
+    &::-webkit-scrollbar-thumb
+      background-color: colors.$gray
+      border-radius: 10px
 
   &__option
     padding: 10px
@@ -49,6 +62,7 @@
     border-radius: 0.7rem
     display: flex
     justify-content: center
+    cursor: pointer
 
     &:last-child
       border-bottom: none

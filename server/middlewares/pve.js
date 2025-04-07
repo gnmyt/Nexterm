@@ -1,6 +1,7 @@
 const Session = require("../models/Session");
 const Account = require("../models/Account");
 const PVEServer = require("../models/PVEServer");
+const { validateServerAccess } = require("../controllers/server");
 
 module.exports = async (ws, req) => {
     const authHeader = req.query["sessionToken"];
@@ -35,8 +36,13 @@ module.exports = async (ws, req) => {
         return;
     }
 
-    const server = await PVEServer.findOne({ where: { id: serverId, accountId: req.user.id } });
+    const server = await PVEServer.findByPk(serverId);
     if (server === null) return;
+
+    if (!((await validateServerAccess(req.user.id, server)).valid)) {
+        ws.close(4005, "You don't have access to this server");
+        return;
+    }
 
     console.log("Authorized connection to pve server " + server.ip + " with container " + containerId);
 

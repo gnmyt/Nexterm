@@ -1,26 +1,63 @@
-$background: #000A12
-$terminal: #13181C
-$lighter-background: #0D161E
-$gray-full: #202429
+:root[data-theme="dark"]
+  --background: #000A12
+  --terminal: #13181C
+  --lighter-background: #0D161E
+  --dialog-background: rgba(0, 0, 0, 0.25)
+  --gray-full: #202429
+  --darker-gray: rgba(34, 36, 42, 0.6)
+  --dark-gray: rgba(255, 255, 255, 0.05)
+  --gray: rgba(255, 255, 255, 0.1)
+  --light-gray: #F6F6F6
+  --primary: #314BD3
+  --primary-opacity: rgba(49, 75, 211, 0.25)
+  --error: #a44747
+  --error-opacity: rgba(164, 71, 71, 0.25)
+  --success: #29C16A
+  --success-opacity: rgba(41, 193, 106, 0.25)
+  --warning: #DC5600
+  --warning-opacity: rgba(220, 86, 0, 0.25)
+  --white: #FFFFFF
+  --subtext: #B7B7B7
+  --text: #FFFFFF
 
-$darker-gray: rgba(34, 36, 42, 0.6)
-$dark-gray: rgba(255, 255, 255, 5%)
-$gray: rgba(255, 255, 255, 10%)
+:root[data-theme="light"]
+  --background: #FFFFFF
+  --terminal: #F5F5F5
+  --lighter-background: #F0F0F0
+  --dialog-background: rgba(245, 245, 245, 0.31)
+  --gray-full: #E5E5E5
+  --darker-gray: rgba(241, 239, 239, 0.92)
+  --dark-gray: rgba(0, 0, 0, 0.05)
+  --gray: rgba(0, 0, 0, 0.1)
+  --light-gray: #333333
+  --primary: #314BD3
+  --primary-opacity: rgba(49, 75, 211, 0.15)
+  --error: #d85959
+  --error-opacity: rgba(216, 89, 89, 0.15)
+  --success: #29C16A
+  --success-opacity: rgba(41, 193, 106, 0.15)
+  --warning: #DC5600
+  --warning-opacity: rgba(220, 86, 0, 0.15)
+  --white: #000000
+  --subtext: #666666
+  --text: #000000
 
-$light-gray: #F6F6F6
-
-$primary: #314BD3
-$primary-opacity: rgba(49, 75, 211, 0.25)
-
-$error: #a44747
-$error-opacity: rgba(164, 71, 71, 0.25)
-
-$success: #29C16A
-$success-opacity: rgba(41, 193, 106, 0.25)
-
-$warning: #DC5600
-$warning-opacity: rgba(220, 86, 0, 0.25)
-
-$white: #FFFFFF
-
-$subtext: #B7B7B7
+$background: var(--background)
+$dialog-background: var(--dialog-background)
+$terminal: var(--terminal)
+$lighter-background: var(--lighter-background)
+$gray-full: var(--gray-full)
+$darker-gray: var(--darker-gray)
+$dark-gray: var(--dark-gray)
+$gray: var(--gray)
+$light-gray: var(--light-gray)
+$primary: var(--primary)
+$primary-opacity: var(--primary-opacity)
+$error: var(--error)
+$error-opacity: var(--error-opacity)
+$success: var(--success)
+$success-opacity: var(--success-opacity)
+$warning: var(--warning)
+$warning-opacity: var(--warning-opacity)
+$white: var(--white)
+$subtext: var(--subtext)

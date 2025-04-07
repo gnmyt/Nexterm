@@ -8,7 +8,11 @@ module.exports = db.define("servers", {
     },
     accountId: {
         type: Sequelize.INTEGER,
-        allowNull: false,
+        allowNull: true,
+    },
+    organizationId: {
+        type: Sequelize.INTEGER,
+        allowNull: true,
     },
     position: {
         type: Sequelize.INTEGER,
@@ -38,5 +42,9 @@ module.exports = db.define("servers", {
     identities: {
         type: Sequelize.JSON,
         defaultValue: [],
+    },
+    config: {
+        type: Sequelize.JSON,
+        allowNull: true,
     },
 }, { freezeTableName: true, createdAt: false, updatedAt: false });

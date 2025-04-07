@@ -16,7 +16,10 @@ export const DialogProvider = ({ disableClosing, open, children, onClose }) => {
 
     useEffect(() => {
         const handleClick = (event) => {
-            if (!ref.current?.contains(event.target)) {
+            const isInsideDialog = ref.current?.contains(event.target);
+            const isInsidePortal = !!document.getElementById('select-box-portal')?.contains(event.target);
+            
+            if (!isInsideDialog && !isInsidePortal) {
                 if (!disableClosing) closeInner();
             }
         };

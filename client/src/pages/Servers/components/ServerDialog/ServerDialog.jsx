@@ -1,12 +1,14 @@
 import { DialogProvider } from "@/common/components/Dialog";
 import "./styles.sass";
-import { useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useState, useCallback } from "react";
 import DetailsPage from "@/pages/Servers/components/ServerDialog/pages/DetailsPage.jsx";
 import Button from "@/common/components/Button";
 import { getRequest, patchRequest, putRequest } from "@/common/utils/RequestUtil.js";
 import { ServerContext } from "@/common/contexts/ServerContext.jsx";
 import IdentityPage from "@/pages/Servers/components/ServerDialog/pages/IdentityPage.jsx";
+import SettingsPage from "@/pages/Servers/components/ServerDialog/pages/SettingsPage.jsx";
 import { IdentityContext } from "@/common/contexts/IdentityContext.jsx";
+import { useToast } from "@/common/contexts/ToastContext.jsx";
 
 const tabs = ["Details", "Identities", "Settings"];
 
@@ -14,6 +16,7 @@ export const ServerDialog = ({ open, onClose, currentFolderId, editServerId }) =
 
     const { loadServers } = useContext(ServerContext);
     const { loadIdentities } = useContext(IdentityContext);
+    const { sendToast } = useToast();
 
     const [name, setName] = useState("");
     const [icon, setIcon] = useState(null);
@@ -21,6 +24,7 @@ export const ServerDialog = ({ open, onClose, currentFolderId, editServerId }) =
     const [port, setPort] = useState("");
     const [protocol, setProtocol] = useState(null);
     const [identities, setIdentities] = useState([]);
+    const [config, setConfig] = useState({});
 
     const [identityUpdates, setIdentityUpdates] = useState({});
 
@@ -44,6 +48,7 @@ export const ServerDialog = ({ open, onClose, currentFolderId, editServerId }) =
 
             return result;
         } catch (error) {
+            sendToast("Error", error.message || "Failed to create identity");
             console.error(error);
         }
     };
@@ -63,6 +68,7 @@ export const ServerDialog = ({ open, onClose, currentFolderId, editServerId }) =
             setIdentityUpdates({});
             refreshIdentities();
         } catch (error) {
+            sendToast("Error", error.message || "Failed to update identity");
             console.error(error);
         }
     };
@@ -82,20 +88,22 @@ export const ServerDialog = ({ open, onClose, currentFolderId, editServerId }) =
             let identity = null;
             if (Object.keys(identityUpdates).length > 0) {
                 identity = await updateIdentities();
-
                 if (!identity) return;
-
                 loadIdentities();
             }
 
             const result = await putRequest("servers", {
-                name, icon: icon, ip, port, protocol: protocol,
+                name, icon: icon, ip, port, protocol: protocol, config,
                 folderId: currentFolderId, identities: identity?.id ? [identity?.id] : [],
             });
 
             loadServers();
-            if (result.id) onClose();
+            if (result.id) {
+                sendToast("Success", "Server created successfully");
+                onClose();
+            }
         } catch (error) {
+            sendToast("Error", error.message || "Failed to create server");
             console.error(error);
         }
     };
@@ -104,15 +112,26 @@ export const ServerDialog = ({ open, onClose, currentFolderId, editServerId }) =
         try {
             const identity = await updateIdentities();
 
-            await patchRequest("servers/" + editServerId, { name, icon: icon, ip, port, protocol: protocol,
-                identities: identity?.id ? [identity?.id] : undefined });
+            await patchRequest("servers/" + editServerId, { 
+                name, icon: icon, ip, port, protocol: protocol, config,
+                identities: identity?.id ? [identity?.id] : undefined});
 
             loadServers();
+            sendToast("Success", "Server updated successfully");
             onClose();
         } catch (error) {
+            sendToast("Error", error.message || "Failed to update server");
             console.error(error);
         }
     };
+
+    const handleSubmit = useCallback(() => {
+        if (!name || !ip || !port || !protocol) {
+            sendToast("Error", "Please fill in all required fields");
+            return;
+        }
+        editServerId ? patchServer() : createServer();
+    }, [name, ip, port, protocol, editServerId, identityUpdates, currentFolderId, config]);
 
     useEffect(() => {
         if (!open) return;
@@ -125,6 +144,17 @@ export const ServerDialog = ({ open, onClose, currentFolderId, editServerId }) =
                 setPort(server.port);
                 setProtocol(server.protocol);
                 setIdentities(server.identities);
+
+                try {
+                    if (server.config) {
+                        setConfig(JSON.parse(server.config));
+                    } else {
+                        setConfig({});
+                    }
+                } catch (error) {
+                    console.error("Failed to parse server config:", error);
+                    setConfig({});
+                }
             });
         } else {
             setName("");
@@ -133,14 +163,19 @@ export const ServerDialog = ({ open, onClose, currentFolderId, editServerId }) =
             setPort("");
             setProtocol(null);
             setIdentities([]);
+            setConfig({});
         }
 
         setIdentityUpdates({});
         setActiveTab(0);
+    }, [open, editServerId]);
+
+    useEffect(() => {
+        if (!open) return;
 
         const submitOnEnter = (event) => {
             if (event.key === "Enter") {
-                editServerId ? patchServer() : createServer();
+                handleSubmit();
             }
         };
 
@@ -149,7 +184,7 @@ export const ServerDialog = ({ open, onClose, currentFolderId, editServerId }) =
         return () => {
             document.removeEventListener("keydown", submitOnEnter);
         };
-    }, [open]);
+    }, [open, handleSubmit]);
 
     const refreshIdentities = () => {
         if (!editServerId) return;
@@ -166,7 +201,7 @@ export const ServerDialog = ({ open, onClose, currentFolderId, editServerId }) =
         if (protocol === "ssh" && (port === "3389" || port === "5900" || port === "")) setPort("22");
         if (protocol === "rdp" && (port === "22" || port === "5900" || port === "")) setPort("3389");
         if (protocol === "vnc" && (port === "22" || port === "3389" || port === "")) setPort("5900");
-    }, [protocol]);
+    }, [protocol, open, port]);
 
     return (
         <DialogProvider open={open} onClose={onClose}>
@@ -192,10 +227,10 @@ export const ServerDialog = ({ open, onClose, currentFolderId, editServerId }) =
                     {activeTab === 1 &&
                         <IdentityPage serverIdentities={identities} setIdentityUpdates={setIdentityUpdates}
                                       refreshIdentities={refreshIdentities} identityUpdates={identityUpdates} />}
-                    {activeTab === 2 && <p style={{textAlign: "center"}}>Not yet implemented</p>}
+                    {activeTab === 2 && <SettingsPage protocol={protocol} config={config} setConfig={setConfig} />}
                 </div>
 
-                <Button className="server-dialog-button" onClick={editServerId ? patchServer : createServer}
+                <Button className="server-dialog-button" onClick={handleSubmit}
                         text={editServerId ? "Save" : "Create"} />
             </div>
 

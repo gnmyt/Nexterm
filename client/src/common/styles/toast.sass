@@ -1,0 +1,121 @@
+@use "colors" as *
+
+.toast-container
+  position: fixed
+  bottom: 32px
+  right: 48px
+  display: flex
+  flex-direction: column-reverse
+  gap: 12px
+  z-index: 9999
+  pointer-events: none
+  max-width: 380px
+  width: calc(100% - 96px)
+
+.toast
+  display: flex
+  align-items: flex-start
+  background: rgba($lighter-background, 0.95)
+  border-left: 4px solid $primary
+  border-radius: 12px
+  padding: 16px
+  width: 100%
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2), 0 2px 8px rgba(0, 0, 0, 0.1), 0 0 1px rgba(255, 255, 255, 0.1)
+  pointer-events: all
+  animation: toast-enter 0.35s cubic-bezier(0.21, 1.02, 0.73, 1)
+  overflow: hidden
+  backdrop-filter: blur(10px)
+  
+  &.toast-exit
+    animation: toast-exit 0.2s cubic-bezier(0.06, 0.71, 0.55, 1) forwards
+
+  &[data-type="Success"]
+    border-left-color: $success
+    .toast-icon
+      color: $success
+
+  &[data-type="Error"]
+    border-left-color: $error
+    .toast-icon
+      color: $error
+
+  &[data-type="Warning"]
+    border-left-color: $warning
+    .toast-icon
+      color: $warning
+
+.toast-icon
+  margin-right: 14px
+  color: $primary
+  flex-shrink: 0
+  opacity: 0.9
+  transform: translateY(2px)
+
+.toast-content
+  flex: 1
+  min-width: 0
+  margin-right: 8px
+
+.toast-title
+  font-weight: 600
+  color: $white
+  margin-bottom: 4px
+  font-size: 0.95rem
+  letter-spacing: 0.2px
+
+.toast-description
+  color: $subtext
+  font-size: 0.9rem
+  line-height: 1.5
+  word-wrap: break-word
+  opacity: 0.9
+
+.toast-close
+  background: none
+  border: none
+  color: $subtext
+  cursor: pointer
+  font-size: 18px
+  height: 24px
+  width: 24px
+  display: flex
+  align-items: center
+  justify-content: center
+  align-self: flex-start
+  outline: none
+  border-radius: 6px
+  opacity: 0.6
+  transition: all 0.2s ease
+  margin: -4px -4px 0 0
+  
+  &:hover
+    opacity: 1
+    color: $white
+    background: rgba($white, 0.1)
+
+@keyframes toast-enter
+  0%
+    transform: translateX(20px)
+    opacity: 0
+  100%
+    transform: translateX(0)
+    opacity: 1
+
+@keyframes toast-exit
+  0%
+    transform: translateX(0)
+    opacity: 1
+  100%
+    transform: translateX(20px)
+    opacity: 0
+
+@media (max-width: 480px)
+  .toast-container
+    bottom: 20px
+    right: 20px
+    left: 20px
+    width: auto
+    max-width: none
+    
+  .toast
+    padding: 14px

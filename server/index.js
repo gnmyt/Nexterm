@@ -4,11 +4,15 @@ const db = require("./utils/database");
 const { authenticate } = require("./middlewares/auth");
 const expressWs = require("express-ws");
 const { startPVEUpdater } = require("./utils/pveUpdater");
-const { refreshAppSources, startAppUpdater, insertOfficialSource } = require("./controllers/appSource");
+const {
+    refreshAppSources,
+    startAppUpdater,
+    insertOfficialSource,
+} = require("./controllers/appSource");
 const { isAdmin } = require("./middlewares/permission");
 require("./utils/folder");
 
-process.on("uncaughtException", err => require("./utils/errorHandling")(err));
+process.on("uncaughtException", (err) => require("./utils/errorHandling")(err));
 
 const APP_PORT = process.env.SERVER_PORT || 6989;
 
@@ -20,6 +24,7 @@ app.use(express.json());
 app.use("/api/service", require("./routes/service"));
 app.use("/api/accounts", require("./routes/account"));
 app.use("/api/auth", require("./routes/auth"));
+app.use("/api/oidc", require("./routes/oidc"));
 
 app.ws("/api/servers/sshd", require("./routes/sshd"));
 app.ws("/api/servers/sftp", require("./routes/sftp"));
@@ -35,6 +40,8 @@ app.use("/api/folders", authenticate, require("./routes/folder"));
 app.use("/api/servers", authenticate, require("./routes/server"));
 app.use("/api/pve-servers", authenticate, require("./routes/pveServer"));
 app.use("/api/identities", authenticate, require("./routes/identity"));
+app.use("/api/snippets", authenticate, require("./routes/snippet"));
+app.use("/api/organizations", authenticate, require("./routes/organization"));
 
 app.ws("/api/apps/installer", require("./routes/appInstaller"));
 app.use("/api/apps", authenticate, require("./routes/apps"));
@@ -42,29 +49,44 @@ app.use("/api/apps", authenticate, require("./routes/apps"));
 if (process.env.NODE_ENV === "production") {
     app.use(express.static(path.join(__dirname, "../dist")));
 
-    app.get("*", (req, res) => res.sendFile(path.join(__dirname, "../dist", "index.html")));
+    app.get("*", (req, res) =>
+        res.sendFile(path.join(__dirname, "../dist", "index.html"))
+    );
 } else {
-    app.get("*", (req, res) => res.status(500).sendFile(path.join(__dirname, "templates", "env.html")));
+    require("dotenv").config();
+    app.get("*", (req, res) =>
+        res.status(500).sendFile(path.join(__dirname, "templates", "env.html"))
+    );
 }
 
-db.authenticate().catch(err => {
-    console.error("Could not open the database file. Maybe it is damaged?: " + err.message);
-    process.exit(111);
-}).then(async () => {
-    console.log("Successfully connected to the database " + (process.env.DB_TYPE === "mysql" ? "server" : "file"));
+db.authenticate()
+    .catch((err) => {
+        console.error(
+            "Could not open the database file. Maybe it is damaged?: " +
+                err.message
+        );
+        process.exit(111);
+    })
+    .then(async () => {
+        console.log(
+            "Successfully connected to the database " +
+                (process.env.DB_TYPE === "mysql" ? "server" : "file")
+        );
 
-    await db.sync({ alter: true, force: false });
+        await db.sync({ alter: true, force: false });
 
-    startPVEUpdater();
+        startPVEUpdater();
 
-    startAppUpdater();
+        startAppUpdater();
 
-    await insertOfficialSource();
+        await insertOfficialSource();
 
-    await refreshAppSources();
+        await refreshAppSources();
 
-    app.listen(APP_PORT, () => console.log(`Server listening on port ${APP_PORT}`));
-});
+        app.listen(APP_PORT, () =>
+            console.log(`Server listening on port ${APP_PORT}`)
+        );
+    });
 
 process.on("SIGINT", async () => {
     console.log("Shutting down the server...");

@@ -84,7 +84,7 @@ export const ServerObject = ({ id, name, position, folderId, nestedLevel, icon, 
             <div className={"system-icon " + (isPVE ? (status !== "running" ? " pve-icon-offline" : " pve-icon") : "")}>
                 <Icon path={isPVE ? icon : loadIcon(icon)} />
             </div>
-            <p>{name}</p>
+            <p className="truncate-text">{name}</p>
         </div>
     );
 };

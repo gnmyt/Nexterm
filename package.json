@@ -1,26 +1,28 @@
 {
   "name": "nexterm",
-  "version": "1.0.2-OPEN-PREVIEW",
+  "version": "1.0.3-OPEN-PREVIEW",
   "main": "server/index.js",
   "repository": "https://github.com/gnmyt/Nexterm.git",
   "author": "Mathias Wagner",
   "license": "MIT",
   "dependencies": {
-    "axios": "^1.7.9",
+    "axios": "^1.8.4",
     "bcrypt": "^5.1.1",
     "decompress": "^4.2.1",
-    "express": "^4.21.2",
+    "express": "^5.1.0",
     "express-ws": "^5.0.2",
     "joi": "^17.13.3",
     "js-yaml": "^4.1.0",
-    "sequelize": "^6.37.5",
+    "openid-client": "^6.4.1",
+    "sequelize": "^6.37.7",
     "speakeasy": "^2.0.0",
     "sqlite3": "^5.1.7",
     "ssh2": "^1.16.0",
-    "ws": "^8.18.0"
+    "ws": "^8.18.1"
   },
   "devDependencies": {
     "concurrently": "^9.1.2",
+    "dotenv": "^16.4.7",
     "nodemon": "^3.1.9",
     "vitepress": "^1.6.3"
   },

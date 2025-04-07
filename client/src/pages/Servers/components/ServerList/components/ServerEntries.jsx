@@ -1,12 +1,27 @@
 import ServerObject from "@/pages/Servers/components/ServerList/components/ServerObject";
 import CollapsibleFolder from "./CollapsibleFolder.jsx";
 import PVEObject from "@/pages/Servers/components/ServerList/components/PVEObject";
+import OrganizationFolder from "./OrganizationFolder";
 
 const ServerEntries = ({ entries, nestedLevel, setRenameStateId, connectToServer, connectToPVEServer, sshOnly = false, folderId }) => {
     return (
         <>
             {entries.map(entry => {
-                if (entry.type === "folder") {
+                if (entry.type === "organization") {
+                    return (
+                        <OrganizationFolder
+                            id={entry.id}
+                            key={"org-"+entry.id}
+                            name={entry.name}
+                            entries={entry.entries}
+                            nestedLevel={nestedLevel}
+                            connectToServer={connectToServer}
+                            connectToPVEServer={connectToPVEServer}
+                            setRenameStateId={setRenameStateId}
+                            sshOnly={sshOnly}
+                        />
+                    );
+                } else if (entry.type === "folder") {
                     return (
                         <CollapsibleFolder
                             id={entry.id}

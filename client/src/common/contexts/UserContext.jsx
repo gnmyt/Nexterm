@@ -1,20 +1,24 @@
 import { createContext, useEffect, useState } from "react";
 import LoginDialog from "@/common/components/LoginDialog";
 import { getRequest, postRequest } from "@/common/utils/RequestUtil.js";
+import { useLocation, useNavigate } from "react-router-dom";
+import { useToast } from "@/common/contexts/ToastContext.jsx";
 
 export const UserContext = createContext({});
 
 export const UserProvider = ({ children }) => {
+    const location = useLocation();
+    const navigate = useNavigate();
 
     const [sessionToken, setSessionToken] = useState(localStorage.getItem("overrideToken")
         || localStorage.getItem("sessionToken"));
     const [firstTimeSetup, setFirstTimeSetup] = useState(false);
     const [user, setUser] = useState(null);
+    const {sendToast} = useToast();
 
     const updateSessionToken = (sessionToken) => {
         setSessionToken(sessionToken);
         localStorage.setItem("sessionToken", sessionToken);
-
         login();
     };
 
@@ -55,6 +59,19 @@ export const UserProvider = ({ children }) => {
         setSessionToken(token);
         login();
     };
+
+    useEffect(() => {
+        const searchParams = new URLSearchParams(location.search);
+        const tokenFromUrl = searchParams.get('token');
+        const error = searchParams.get('error');
+        
+        if (tokenFromUrl) {
+            updateSessionToken(tokenFromUrl);
+            navigate('/servers', { replace: true });
+        } else if (error) {
+            sendToast("Error", error);
+        }
+    }, [location]);
 
     useEffect(() => {
         sessionToken ? login() : checkFirstTimeSetup();
