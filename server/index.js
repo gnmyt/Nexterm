@@ -49,12 +49,12 @@ app.use("/api/apps", authenticate, require("./routes/apps"));
 if (process.env.NODE_ENV === "production") {
     app.use(express.static(path.join(__dirname, "../dist")));
 
-    app.get("*", (req, res) =>
+    app.get("*name", (req, res) =>
         res.sendFile(path.join(__dirname, "../dist", "index.html"))
     );
 } else {
     require("dotenv").config();
-    app.get("*", (req, res) =>
+    app.get("*name", (req, res) =>
         res.status(500).sendFile(path.join(__dirname, "templates", "env.html"))
     );
 }
