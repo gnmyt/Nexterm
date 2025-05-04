@@ -6,7 +6,7 @@
   "author": "Mathias Wagner",
   "license": "MIT",
   "dependencies": {
-    "axios": "^1.8.4",
+    "axios": "^1.9.0",
     "bcrypt": "^5.1.1",
     "decompress": "^4.2.1",
     "express": "^5.1.0",
