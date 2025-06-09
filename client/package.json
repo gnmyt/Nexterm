@@ -9,7 +9,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@fontsource/plus-jakarta-sans": "^5.2.5",
+    "@fontsource/plus-jakarta-sans": "^5.2.6",
     "@mdi/js": "^7.4.47",
     "@mdi/react": "^1.6.1",
     "@uiw/codemirror-theme-github": "^4.23.12",
