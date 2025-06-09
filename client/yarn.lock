@@ -488,10 +488,10 @@
     "@eslint/core" "^0.14.0"
     levn "^0.4.1"
 
-"@fontsource/plus-jakarta-sans@^5.2.5":
-  version "5.2.5"
-  resolved "https://registry.yarnpkg.com/@fontsource/plus-jakarta-sans/-/plus-jakarta-sans-5.2.5.tgz#f60ae8e3383cd0f6fdd07eb3f75c2fc0389773fe"
-  integrity sha512-2QBEymhsrpomwXrDygLwolOPOjRGDLDT+Pezo+SsnapcQ1z0n4qXzhC+EVmTZ0yxrQvqdc0kcb9EUd0eWmj9Jw==
+"@fontsource/plus-jakarta-sans@^5.2.6":
+  version "5.2.6"
+  resolved "https://registry.yarnpkg.com/@fontsource/plus-jakarta-sans/-/plus-jakarta-sans-5.2.6.tgz#8296308ae7f55b97b01eb7eef4f0f0e7851e532a"
+  integrity sha512-mvUiz1ta3bCVhP/DPmAOmuzhHQi6ddOo1GgaW58rpojr510Rx9BkqXqcnMhGEOMZZB3+84frvfFmw/jKCctHLw==
 
 "@humanfs/core@^0.19.1":
   version "0.19.1"
