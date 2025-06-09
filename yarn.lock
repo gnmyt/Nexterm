@@ -1914,10 +1914,10 @@ joi@^17.13.3:
     "@sideway/formula" "^3.0.1"
     "@sideway/pinpoint" "^2.0.0"
 
-jose@^6.0.10:
-  version "6.0.10"
-  resolved "https://registry.yarnpkg.com/jose/-/jose-6.0.10.tgz#52d96e1a671b4c02e13b71e0d35abea2e774712b"
-  integrity sha512-skIAxZqcMkOrSwjJvplIPYrlXGpxTPnro2/QWTDCxAdWQrSTV5/KqspMWmi5WAx5+ULswASJiZ0a+1B/Lxt9cw==
+jose@^6.0.11:
+  version "6.0.11"
+  resolved "https://registry.yarnpkg.com/jose/-/jose-6.0.11.tgz#0b7ea8b3b21a1bda5e00255a044c3a0e43270882"
+  integrity sha512-QxG7EaliDARm1O1S8BGakqncGT9s25bKL1WSf6/oa17Tkqwi8D2ZNglqCF+DsYF88/rV66Q/Q2mFAy697E1DUg==
 
 js-yaml@^4.1.0:
   version "4.1.0"
@@ -2289,10 +2289,10 @@ npmlog@^6.0.0:
     gauge "^4.0.3"
     set-blocking "^2.0.0"
 
-oauth4webapi@^3.5.1:
-  version "3.5.1"
-  resolved "https://registry.yarnpkg.com/oauth4webapi/-/oauth4webapi-3.5.1.tgz#93154323df5c2e09bf8884c26693596eaaafc17a"
-  integrity sha512-txg/jZQwcbaF7PMJgY7aoxc9QuCxHVFMiEkDIJ60DwDz3PbtXPQnrzo+3X4IRYGChIwWLabRBRpf1k9hO9+xrQ==
+oauth4webapi@^3.5.2:
+  version "3.5.2"
+  resolved "https://registry.yarnpkg.com/oauth4webapi/-/oauth4webapi-3.5.2.tgz#4ac9f73f324069e5367bf23578d2924461fba000"
+  integrity sha512-VYz5BaP3izIrUc1GAVzIoz4JnljiW0YAUFObMBwsqDnfHxz2sjLu3W7/8vE8Ms9IbMewN9+1kcvhY3tMscAeGQ==
 
 object-assign@^4.0.1:
   version "4.1.1"
@@ -2327,13 +2327,13 @@ oniguruma-to-es@^2.3.0:
     regex "^5.1.1"
     regex-recursion "^5.1.1"
 
-openid-client@^6.5.0:
-  version "6.5.0"
-  resolved "https://registry.yarnpkg.com/openid-client/-/openid-client-6.5.0.tgz#434bdc1a98cf2f1e54536f897c702cac78c2ec70"
-  integrity sha512-fAfYaTnOYE2kQCqEJGX9KDObW2aw7IQy4jWpU/+3D3WoCFLbix5Hg6qIPQ6Js9r7f8jDUmsnnguRNCSw4wU/IQ==
+openid-client@^6.5.1:
+  version "6.5.1"
+  resolved "https://registry.yarnpkg.com/openid-client/-/openid-client-6.5.1.tgz#adcef1b0c2d6f1128aa010d4c2406f9e91d18270"
+  integrity sha512-DNq7s+Tm9wfMUTltl+kUJzwi+bsbeiZycDm1gJQbX6MTHwo1+Q0I3F+ccsxi1T3mYMaHATCSnWDridkZ3hnu1g==
   dependencies:
-    jose "^6.0.10"
-    oauth4webapi "^3.5.1"
+    jose "^6.0.11"
+    oauth4webapi "^3.5.2"
 
 p-map@^4.0.0:
   version "4.0.0"
