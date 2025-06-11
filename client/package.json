@@ -13,7 +13,7 @@
     "@mdi/js": "^7.4.47",
     "@mdi/react": "^1.6.1",
     "@uiw/codemirror-theme-github": "^4.23.12",
-    "@uiw/react-codemirror": "^4.23.12",
+    "@uiw/react-codemirror": "^4.23.13",
     "guacamole-common-js": "^1.5.0",
     "qrcode.react": "^4.2.0",
     "react": "^19.1.0",
