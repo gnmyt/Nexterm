@@ -9,6 +9,7 @@ module.exports = db.define("organization_members", {
     },
     accountId: {
         type: Sequelize.INTEGER,
+        primaryKey: true,
         allowNull: false,
     },
     role: {
