@@ -2327,10 +2327,10 @@ oniguruma-to-es@^2.3.0:
     regex "^5.1.1"
     regex-recursion "^5.1.1"
 
-openid-client@^6.5.3:
-  version "6.5.3"
-  resolved "https://registry.yarnpkg.com/openid-client/-/openid-client-6.5.3.tgz#532694a5c419d2a5273e37ca45196a493e3b78c1"
-  integrity sha512-PII6MybD2VwZyWFlSwhQDflSsDt0PEX/o715shdXcORqaFze6/31RqztxjlJNursDABgwd41GnOqKcttYQRcUw==
+openid-client@^6.6.1:
+  version "6.6.1"
+  resolved "https://registry.yarnpkg.com/openid-client/-/openid-client-6.6.1.tgz#a16abcfa2bb63dc6a8ff3734cc25bef500db7605"
+  integrity sha512-GmqoICGMI3IyFFjhvXxad8of4QWk2D0tm4vdJkldGm9nw7J3p1f7LPLWgGeFuKuw8HjDVe8Dd8QLGBe0NFvSSg==
   dependencies:
     jose "^6.0.11"
     oauth4webapi "^3.5.3"
