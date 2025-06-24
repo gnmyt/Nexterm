@@ -23,7 +23,7 @@
     "react-router-dom": "^7.6.2",
     "react-use-websocket": "^4.13.0",
     "simple-icons": "^15.3.0",
-    "ua-parser-js": "^2.0.3",
+    "ua-parser-js": "^2.0.4",
     "xterm": "^5.3.0",
     "xterm-addon-fit": "^0.8.0"
   },
