@@ -22,7 +22,7 @@
   },
   "devDependencies": {
     "concurrently": "^9.2.0",
-    "dotenv": "^16.5.0",
+    "dotenv": "^16.6.0",
     "nodemon": "^3.1.10",
     "vitepress": "^1.6.3"
   },
