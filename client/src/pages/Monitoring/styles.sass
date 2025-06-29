@@ -1,0 +1,268 @@
+@use "@/common/styles/colors"
+
+.monitoring-page
+  display: flex
+  flex-direction: column
+  height: 100%
+  background-color: colors.$background
+
+.monitoring-header
+  background-color: colors.$lighter-background
+  padding: 1rem 2rem
+  display: flex
+  align-items: center
+  justify-content: space-between
+  border-bottom: 2px solid colors.$dark-gray
+  user-select: none
+
+  .header-title, .header-back
+    display: flex
+    align-items: center
+    gap: 1rem
+
+    svg
+      width: 2.5rem
+      height: 2.5rem
+      color: colors.$primary
+
+    div
+      h1
+        margin: 0
+        color: colors.$white
+        font-size: 1.5rem
+
+      p
+        margin: 0.25rem 0 0 0
+        color: colors.$subtext
+        font-size: 0.9rem
+
+  .header-back
+    cursor: pointer
+    padding: 0.5rem
+    border-radius: 0.5rem
+    transition: background-color 0.2s
+
+    &:hover
+      background-color: colors.$dark-gray
+
+  .header-actions
+    display: flex
+    gap: 1rem
+    align-items: center
+
+.monitoring-content
+  flex: 1
+  display: flex
+  flex-direction: column
+  overflow-y: auto
+
+.monitoring-grid
+  padding: 2rem
+  display: grid
+  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr))
+  gap: 1.5rem
+  min-height: fit-content
+
+  &.loading, &.empty
+    display: flex
+    justify-content: center
+    align-items: center
+    height: calc(100vh - 200px)
+    grid-template-columns: none
+
+.server-card
+  background-color: colors.$lighter-background
+  border: 2px solid colors.$dark-gray
+  border-radius: 0.75rem
+  padding: 1.5rem
+  cursor: pointer
+  transition: all 0.2s ease
+  position: relative
+
+  &:hover
+    border-color: colors.$gray
+    transform: translateY(-2px)
+
+  .server-header
+    display: flex
+    align-items: center
+    gap: 1rem
+    margin-bottom: 1rem
+
+    .server-icon
+      display: flex
+      align-items: center
+      justify-content: center
+      width: 3rem
+      height: 3rem
+      background-color: colors.$dark-gray
+      border-radius: 0.5rem
+
+      svg
+        width: 2rem
+        height: 2rem
+
+    .server-info
+      flex: 1
+
+      h3
+        margin: 0 0 0.25rem 0
+        color: colors.$white
+        font-size: 1.2rem
+
+      p
+        margin: 0
+        color: colors.$subtext
+        font-size: 0.9rem
+
+  .status-indicator
+    position: absolute
+    top: 1rem
+    right: 1rem
+    width: 12px
+    height: 12px
+    border-radius: 50%
+
+    &.online
+      background-color: colors.$success
+
+    &.offline
+      background-color: colors.$error
+
+    &.error
+      background-color: colors.$warning
+
+    &.unknown
+      background-color: colors.$gray
+
+  .metrics
+    display: grid
+    grid-template-columns: 1fr 1fr
+    gap: 1rem
+    margin-bottom: 1rem
+
+    .metric
+      display: flex
+      flex-direction: column
+      align-items: center
+      padding: 0.75rem
+      background-color: colors.$dark-gray
+      border-radius: 0.5rem
+
+      .metric-label
+        font-size: 0.75rem
+        color: colors.$subtext
+        margin-bottom: 0.25rem
+
+      .metric-value
+        font-size: 1.25rem
+        font-weight: 600
+        color: colors.$white
+
+      .metric-unit
+        font-size: 0.8rem
+        color: colors.$subtext
+
+  .uptime-info
+    text-align: center
+    padding: 0.5rem
+    background-color: colors.$dark-gray
+    border-radius: 0.5rem
+    font-size: 0.85rem
+    color: colors.$subtext
+
+  .error-message
+    color: colors.$error
+    font-size: 0.85rem
+    text-align: center
+    margin-top: 1rem
+    padding: 0.5rem
+    background-color: rgba(255, 59, 48, 0.1)
+    border-radius: 0.5rem
+
+  .offline-state
+    display: flex
+    align-items: center
+    gap: 1rem
+    margin-top: 1rem
+    padding: 1rem
+    background-color: rgba(255, 59, 48, 0.05)
+    border: 1px solid rgba(255, 59, 48, 0.2)
+    border-radius: 0.5rem
+
+    .offline-icon
+      display: flex
+      align-items: center
+      justify-content: center
+      width: 3rem
+      height: 3rem
+      background-color: rgba(255, 59, 48, 0.1)
+      border-radius: 50%
+      flex-shrink: 0
+
+      svg
+        width: 1.5rem
+        height: 1.5rem
+        color: colors.$error
+
+    .offline-info
+      flex: 1
+
+      h4
+        margin: 0 0 0.5rem 0
+        color: colors.$error
+        font-size: 1rem
+        font-weight: 600
+
+      p
+        margin: 0 0 0.75rem 0
+        color: colors.$subtext
+        font-size: 0.85rem
+        line-height: 1.4
+
+      .offline-actions
+        .last-seen
+          font-size: 0.75rem
+          color: colors.$subtext
+          opacity: 0.8
+
+.no-servers
+  display: flex
+  flex-direction: column
+  align-items: center
+  justify-content: center
+  height: 100%
+  color: colors.$subtext
+
+  svg
+    width: 4rem
+    height: 4rem
+    margin-bottom: 1rem
+
+  h2
+    margin: 0 0 0.5rem 0
+    color: colors.$white
+
+  p
+    margin: 0
+    text-align: center
+
+.loading-spinner
+  display: flex
+  align-items: center
+  justify-content: center
+  height: 100%
+
+  .spinner
+    width: 3rem
+    height: 3rem
+    border: 3px solid colors.$gray
+    border-top: 3px solid colors.$primary
+    border-radius: 50%
+    animation: spin 1s linear infinite
+
+@keyframes spin
+  0%
+    transform: rotate(0deg)
+  100%
+    transform: rotate(360deg)
