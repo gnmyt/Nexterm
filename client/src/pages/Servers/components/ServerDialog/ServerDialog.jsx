@@ -115,7 +115,7 @@ export const ServerDialog = ({ open, onClose, currentFolderId, editServerId }) =
             const identity = await updateIdentities();
 
             await patchRequest("servers/" + editServerId, { 
-                name, icon: icon, ip, port, protocol: protocol, config,
+                name, icon, ip, port, protocol: protocol, config,
                 identities: identity?.id ? [identity?.id] : undefined,
                 monitoringEnabled
             });
@@ -135,7 +135,7 @@ export const ServerDialog = ({ open, onClose, currentFolderId, editServerId }) =
             return;
         }
         editServerId ? patchServer() : createServer();
-    }, [name, ip, port, protocol, editServerId, identityUpdates, currentFolderId, config, monitoringEnabled]);
+    }, [name, icon, ip, port, protocol, editServerId, identityUpdates, currentFolderId, config, monitoringEnabled]);
 
     useEffect(() => {
         if (!open) return;
@@ -143,7 +143,7 @@ export const ServerDialog = ({ open, onClose, currentFolderId, editServerId }) =
         if (editServerId) {
             getRequest("servers/" + editServerId).then((server) => {
                 setName(server.name);
-                setIcon(server.icon);
+                setIcon(server.icon || "server");
                 setIp(server.ip);
                 setPort(server.port);
                 setProtocol(server.protocol);

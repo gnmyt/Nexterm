@@ -1,4 +1,22 @@
-import { mdiDebian, mdiFormTextbox, mdiIp, mdiLinux, mdiMicrosoftWindows, mdiServerOutline } from "@mdi/js";
+import { 
+    mdiDebian, 
+    mdiFormTextbox, 
+    mdiIp, 
+    mdiLinux, 
+    mdiMicrosoftWindows, 
+    mdiServerOutline,
+    mdiUbuntu,
+    mdiApple,
+    mdiDocker,
+    mdiKubernetes,
+    mdiDatabase,
+    mdiCloud,
+    mdiRaspberryPi,
+    mdiConsole,
+    mdiMonitor,
+    mdiCube,
+    mdiFreebsd
+} from "@mdi/js";
 import Input from "@/common/components/IconInput";
 import Icon from "@mdi/react";
 import SelectBox from "@/common/components/SelectBox";
@@ -21,6 +39,18 @@ const DetailsPage = ({name, setName, icon, setIcon, ip, setIp, port, setPort, pr
                         { label: <Icon path={mdiMicrosoftWindows} size={1} />, value: "windows" },
                         { label: <Icon path={mdiLinux} size={1} />, value: "linux" },
                         { label: <Icon path={mdiDebian} size={1} />, value: "debian" },
+                        { label: <Icon path={mdiUbuntu} size={1} />, value: "ubuntu" },
+                        { label: <Icon path={mdiLinux} size={1} />, value: "arch" },
+                        { label: <Icon path={mdiFreebsd} size={1} />, value: "freebsd" },
+                        { label: <Icon path={mdiApple} size={1} />, value: "macos" },
+                        { label: <Icon path={mdiDocker} size={1} />, value: "docker" },
+                        { label: <Icon path={mdiKubernetes} size={1} />, value: "kubernetes" },
+                        { label: <Icon path={mdiDatabase} size={1} />, value: "database" },
+                        { label: <Icon path={mdiCloud} size={1} />, value: "cloud" },
+                        { label: <Icon path={mdiRaspberryPi} size={1} />, value: "raspberry" },
+                        { label: <Icon path={mdiConsole} size={1} />, value: "terminal" },
+                        { label: <Icon path={mdiMonitor} size={1} />, value: "desktop" },
+                        { label: <Icon path={mdiCube} size={1} />, value: "vm" },
                     ]} selected={icon} setSelected={setIcon} />
                 </div>
 

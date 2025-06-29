@@ -1,5 +1,21 @@
 import Icon from "@mdi/react";
-import { mdiDebian, mdiLinux, mdiMicrosoftWindows, mdiServerOutline } from "@mdi/js";
+import { 
+    mdiDebian, 
+    mdiLinux, 
+    mdiMicrosoftWindows, 
+    mdiServerOutline,
+    mdiUbuntu,
+    mdiApple,
+    mdiDocker,
+    mdiKubernetes,
+    mdiDatabase,
+    mdiCloud,
+    mdiRaspberryPi,
+    mdiConsole,
+    mdiMonitor,
+    mdiCube,
+    mdiFreebsd
+} from "@mdi/js";
 import "./styles.sass";
 import { ServerContext } from "@/common/contexts/ServerContext.jsx";
 import { useContext } from "react";
@@ -14,6 +30,30 @@ export const loadIcon = (icon) => {
             return mdiLinux;
         case "debian":
             return mdiDebian;
+        case "ubuntu":
+            return mdiUbuntu;
+        case "arch":
+            return mdiLinux;
+        case "freebsd":
+            return mdiFreebsd;
+        case "macos":
+            return mdiApple;
+        case "docker":
+            return mdiDocker;
+        case "kubernetes":
+            return mdiKubernetes;
+        case "database":
+            return mdiDatabase;
+        case "cloud":
+            return mdiCloud;
+        case "raspberry":
+            return mdiRaspberryPi;
+        case "terminal":
+            return mdiConsole;
+        case "desktop":
+            return mdiMonitor;
+        case "vm":
+            return mdiCube;
         default:
             return mdiServerOutline;
     }
