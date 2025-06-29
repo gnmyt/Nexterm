@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import SelectBox from "@/common/components/SelectBox";
+import ToggleSwitch from "@/common/components/ToggleSwitch";
 
 const KEYBOARD_LAYOUTS = [
     { label: "Dänisch (Qwerty)", value: "da-dk-qwerty" },
@@ -21,7 +22,7 @@ const KEYBOARD_LAYOUTS = [
     { label: "Türkisch (Qwerty)", value: "tr-tr-qwerty" }
 ];
 
-const SettingsPage = ({ protocol, config, setConfig }) => {
+const SettingsPage = ({ protocol, config, setConfig, monitoringEnabled, setMonitoringEnabled }) => {
     const [keyboardLayout, setKeyboardLayout] = useState(() => {
         return config?.keyboardLayout || "en-us-qwerty";
     });
@@ -37,6 +38,18 @@ const SettingsPage = ({ protocol, config, setConfig }) => {
 
     return (
         <>
+            {protocol === "ssh" && (
+                <div className="monitoring-toggle-container">
+                    <div className="monitoring-toggle-info">
+                        <span className="monitoring-label">Enable Performance Monitoring</span>
+                        <span className="monitoring-description">
+                                Collect CPU, memory, disk, and network metrics for this server
+                            </span>
+                    </div>
+                    <ToggleSwitch checked={monitoringEnabled} onChange={setMonitoringEnabled} id="monitoring-toggle" />
+                </div>
+            )}
+
             {(protocol === "vnc" || protocol === "rdp") && (
                 <div className="form-group keyboard-layout-group">
                     <label>Keyboard Layout</label>
@@ -46,7 +59,7 @@ const SettingsPage = ({ protocol, config, setConfig }) => {
                 </div>
             )}
 
-            {protocol !== "vnc" && protocol !== "rdp" && (
+            {protocol !== "vnc" && protocol !== "rdp" && protocol !== "ssh" && (
                 <p className="text-center">No additional settings available for this protocol.</p>
             )}
         </>
