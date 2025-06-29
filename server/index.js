@@ -4,6 +4,7 @@ const db = require("./utils/database");
 const { authenticate } = require("./middlewares/auth");
 const expressWs = require("express-ws");
 const { startPVEUpdater } = require("./utils/pveUpdater");
+const monitoringService = require("./utils/monitoringService");
 const {
     refreshAppSources,
     startAppUpdater,
@@ -38,6 +39,7 @@ app.use("/api/users", authenticate, isAdmin, require("./routes/users"));
 app.use("/api/sessions", authenticate, require("./routes/session"));
 app.use("/api/folders", authenticate, require("./routes/folder"));
 app.use("/api/servers", authenticate, require("./routes/server"));
+app.use("/api/monitoring", authenticate, require("./routes/monitoring"));
 app.use("/api/pve-servers", authenticate, require("./routes/pveServer"));
 app.use("/api/identities", authenticate, require("./routes/identity"));
 app.use("/api/snippets", authenticate, require("./routes/snippet"));
@@ -83,6 +85,8 @@ db.authenticate()
 
         await refreshAppSources();
 
+        monitoringService.start();
+
         app.listen(APP_PORT, () =>
             console.log(`Server listening on port ${APP_PORT}`)
         );
@@ -90,6 +94,8 @@ db.authenticate()
 
 process.on("SIGINT", async () => {
     console.log("Shutting down the server...");
+
+    monitoringService.stop();
 
     await db.close();
 
