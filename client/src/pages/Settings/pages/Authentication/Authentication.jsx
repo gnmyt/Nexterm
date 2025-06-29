@@ -2,6 +2,7 @@ import "./styles.sass";
 import { useEffect, useState } from "react";
 import { deleteRequest, getRequest, patchRequest } from "@/common/utils/RequestUtil.js";
 import Button from "@/common/components/Button";
+import ToggleSwitch from "@/common/components/ToggleSwitch";
 import Icon from "@mdi/react";
 import { mdiPencil, mdiPlus, mdiShieldAccountOutline, mdiTrashCan } from "@mdi/js";
 import ProviderDialog from "./components/ProviderDialog";
@@ -64,11 +65,11 @@ export const Authentication = () => {
                     </div>
 
                     <div className="provider-actions">
-                        <label className="switch">
-                            <input type="checkbox" checked={provider.enabled}
-                                   onChange={() => toggleProvider(provider.id, !provider.enabled)} />
-                            <span className="slider" />
-                        </label>
+                        <ToggleSwitch 
+                            checked={provider.enabled}
+                            onChange={(checked) => toggleProvider(provider.id, checked)}
+                            id={`provider-toggle-${provider.id}`}
+                        />
 
                         <Icon path={mdiPencil} className="menu"
                             onClick={() => {
