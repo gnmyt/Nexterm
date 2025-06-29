@@ -1,0 +1,248 @@
+@use "@/common/styles/colors"
+
+.server-details
+  padding: 2rem
+  height: 100%
+  overflow-y: auto
+
+  &.loading
+    display: flex
+    justify-content: center
+    align-items: center
+
+.details-header
+  display: flex
+  justify-content: space-between
+  align-items: center
+  margin-bottom: 2rem
+
+  .time-range-selector
+    display: flex
+    gap: 0.5rem
+
+    button
+      padding: 0.5rem 1rem
+      font-size: 0.9rem
+
+.details-tabs
+  .tab-headers
+    display: flex
+    gap: 0.5rem
+    margin-bottom: 2rem
+
+    .tab-header
+      display: flex
+      align-items: center
+      gap: 0.5rem
+      padding: 0.75rem 1.25rem
+      cursor: pointer
+      border-radius: 0.75rem
+      border: 1px solid transparent
+      transition: all 0.2s
+      color: colors.$subtext
+      background-color: transparent
+
+      svg
+        width: 1.25rem
+        height: 1.25rem
+
+      span
+        font-weight: 600
+        font-size: 0.9rem
+
+      &:hover
+        color: colors.$white
+        background-color: colors.$dark-gray
+        border-color: colors.$gray
+
+      &.active
+        color: colors.$primary
+        background-color: colors.$dark-gray
+        border-color: colors.$gray
+
+  .tab-content
+    .overview-tab, .charts-tab, .storage-tab, .network-tab
+      display: flex
+      flex-direction: column
+      gap: 1.5rem
+
+.stats-grid
+  display: grid
+  grid-template-columns: 1fr 1fr
+  gap: 1.5rem
+
+  @media (max-width: 1200px)
+    grid-template-columns: 1fr
+
+.stat-card
+  background-color: colors.$lighter-background
+  border: 2px solid colors.$dark-gray
+  border-radius: 0.75rem
+  padding: 1.5rem
+
+  &.full-width
+    grid-column: 1 / -1
+
+  h3
+    margin: 0 0 1rem 0
+    color: colors.$white
+    font-size: 1.2rem
+
+  .info-list
+    display: flex
+    flex-direction: column
+    gap: 0.75rem
+
+    .info-item
+      display: flex
+      justify-content: space-between
+      align-items: center
+      padding: 0.5rem 0
+      border-bottom: 1px solid colors.$dark-gray
+
+      &:last-child
+        border-bottom: none
+
+      .label
+        color: colors.$subtext
+        font-weight: 500
+
+      .value
+        color: colors.$white
+        font-weight: 600
+
+  .metrics-grid
+    display: grid
+    grid-template-columns: 1fr 1fr
+    gap: 1rem
+
+    @media (max-width: 768px)
+      grid-template-columns: 1fr
+
+  .metric
+    display: flex
+    flex-direction: column
+    align-items: center
+    padding: 1rem
+    background-color: colors.$dark-gray
+    border-radius: 0.5rem
+
+    .metric-label
+      font-size: 0.85rem
+      color: colors.$subtext
+      margin-bottom: 0.5rem
+
+    .metric-value
+      font-size: 1.5rem
+      font-weight: 600
+      color: colors.$white
+      margin-bottom: 0.25rem
+
+    .metric-avg, .metric-total, .metric-detail
+      font-size: 0.75rem
+      color: colors.$subtext
+
+.disk-list, .network-list
+  display: flex
+  flex-direction: column
+  gap: 1rem
+
+.disk-item
+  padding: 1rem
+  background-color: colors.$dark-gray
+  border-radius: 0.5rem
+
+  .disk-header
+    display: flex
+    justify-content: space-between
+    align-items: center
+    margin-bottom: 0.5rem
+
+    .disk-name
+      font-weight: 600
+      color: colors.$white
+
+    .disk-mount
+      color: colors.$subtext
+      font-size: 0.9rem
+
+    .disk-usage
+      color: colors.$primary
+      font-weight: 600
+
+  .disk-bar
+    width: 100%
+    height: 8px
+    background-color: colors.$gray
+    border-radius: 4px
+    margin-bottom: 0.5rem
+    overflow: hidden
+
+    .disk-fill
+      height: 100%
+      background-color: colors.$primary
+      transition: width 0.3s ease
+
+  .disk-details
+    display: flex
+    justify-content: space-between
+    font-size: 0.85rem
+    color: colors.$subtext
+
+    @media (max-width: 768px)
+      flex-direction: column
+      gap: 0.25rem
+
+.network-item
+  padding: 1rem
+  background-color: colors.$dark-gray
+  border-radius: 0.5rem
+
+  .network-header
+    margin-bottom: 0.75rem
+
+    .network-name
+      font-weight: 600
+      color: colors.$white
+      font-size: 1.1rem
+
+  .network-stats
+    display: grid
+    grid-template-columns: 1fr 1fr
+    gap: 1rem
+
+    .network-stat
+      display: flex
+      justify-content: space-between
+
+      .label
+        color: colors.$subtext
+
+      .value
+        color: colors.$white
+        font-weight: 600
+
+.no-data
+  text-align: center
+  color: colors.$subtext
+  font-style: italic
+  padding: 2rem
+
+@keyframes spin
+  0%
+    transform: rotate(0deg)
+  100%
+    transform: rotate(360deg)
+
+.monitoring-disabled-message
+  text-align: center
+  padding: 3rem 2rem
+  color: colors.$subtext
+
+  h3
+    color: colors.$white
+    margin-bottom: 1rem
+
+  p
+    margin: 0.5rem 0
+    line-height: 1.5

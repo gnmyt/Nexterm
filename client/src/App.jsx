@@ -10,6 +10,7 @@ import "@/common/styles/main.sass";
 import Settings from "@/pages/Settings";
 import Apps from "@/pages/Apps";
 import Snippets from "@/pages/Snippets";
+import Monitoring from "@/pages/Monitoring";
 
 export const GITHUB_URL = "https://github.com/gnmyt/Nexterm";
 export const DISCORD_URL = "https://dc.gnmyt.dev/";
@@ -22,6 +23,7 @@ const App = () => {
             children: [
                 { path: "/", element: <Navigate to="/servers" /> },
                 { path: "/servers", element: <Servers /> },
+                { path: "/monitoring", element: <Monitoring /> },
                 { path: "/settings/*", element: <Settings/> },
                 { path: "/apps/*", element: <Apps /> },
                 { path: "/snippets", element: <Snippets /> }

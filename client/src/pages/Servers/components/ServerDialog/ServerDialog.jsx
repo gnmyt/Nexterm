@@ -25,6 +25,7 @@ export const ServerDialog = ({ open, onClose, currentFolderId, editServerId }) =
     const [protocol, setProtocol] = useState(null);
     const [identities, setIdentities] = useState([]);
     const [config, setConfig] = useState({});
+    const [monitoringEnabled, setMonitoringEnabled] = useState(true);
 
     const [identityUpdates, setIdentityUpdates] = useState({});
 
@@ -95,6 +96,7 @@ export const ServerDialog = ({ open, onClose, currentFolderId, editServerId }) =
             const result = await putRequest("servers", {
                 name, icon: icon, ip, port, protocol: protocol, config,
                 folderId: currentFolderId, identities: identity?.id ? [identity?.id] : [],
+                monitoringEnabled
             });
 
             loadServers();
@@ -114,7 +116,9 @@ export const ServerDialog = ({ open, onClose, currentFolderId, editServerId }) =
 
             await patchRequest("servers/" + editServerId, { 
                 name, icon: icon, ip, port, protocol: protocol, config,
-                identities: identity?.id ? [identity?.id] : undefined});
+                identities: identity?.id ? [identity?.id] : undefined,
+                monitoringEnabled
+            });
 
             loadServers();
             sendToast("Success", "Server updated successfully");
@@ -131,7 +135,7 @@ export const ServerDialog = ({ open, onClose, currentFolderId, editServerId }) =
             return;
         }
         editServerId ? patchServer() : createServer();
-    }, [name, ip, port, protocol, editServerId, identityUpdates, currentFolderId, config]);
+    }, [name, ip, port, protocol, editServerId, identityUpdates, currentFolderId, config, monitoringEnabled]);
 
     useEffect(() => {
         if (!open) return;
@@ -144,6 +148,7 @@ export const ServerDialog = ({ open, onClose, currentFolderId, editServerId }) =
                 setPort(server.port);
                 setProtocol(server.protocol);
                 setIdentities(server.identities);
+                setMonitoringEnabled(Boolean(server.monitoringEnabled ?? true));
 
                 try {
                     if (server.config) {
@@ -164,6 +169,7 @@ export const ServerDialog = ({ open, onClose, currentFolderId, editServerId }) =
             setProtocol(null);
             setIdentities([]);
             setConfig({});
+            setMonitoringEnabled(true);
         }
 
         setIdentityUpdates({});
@@ -227,7 +233,8 @@ export const ServerDialog = ({ open, onClose, currentFolderId, editServerId }) =
                     {activeTab === 1 &&
                         <IdentityPage serverIdentities={identities} setIdentityUpdates={setIdentityUpdates}
                                       refreshIdentities={refreshIdentities} identityUpdates={identityUpdates} />}
-                    {activeTab === 2 && <SettingsPage protocol={protocol} config={config} setConfig={setConfig} />}
+                    {activeTab === 2 && <SettingsPage protocol={protocol} config={config} setConfig={setConfig} 
+                                                       monitoringEnabled={monitoringEnabled} setMonitoringEnabled={setMonitoringEnabled} />}
                 </div>
 
                 <Button className="server-dialog-button" onClick={handleSubmit}

@@ -12,7 +12,8 @@ module.exports.createServerValidation = Joi.object({
     ip: Joi.string().required(),
     port: Joi.number().required(),
     identities: Joi.array().items(Joi.number()).optional(),
-    config: configValidation
+    config: configValidation,
+    monitoringEnabled: Joi.boolean().optional()
 });
 
 module.exports.updateServerValidation = Joi.object({
@@ -24,5 +25,6 @@ module.exports.updateServerValidation = Joi.object({
     port: Joi.number().optional(),
     position: Joi.number().optional(),
     identities: Joi.array().items(Joi.number()).optional(),
-    config: configValidation
+    config: configValidation,
+    monitoringEnabled: Joi.boolean().optional()
 });
