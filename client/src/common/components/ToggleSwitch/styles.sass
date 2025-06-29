@@ -1,0 +1,55 @@
+@use "@/common/styles/colors"
+
+.toggle-switch
+  position: relative
+  width: 60px
+  height: 30px
+
+  input
+    opacity: 0
+    width: 0
+    height: 0
+    position: absolute
+
+  .toggle-slider
+    position: absolute
+    cursor: pointer
+    top: 0
+    left: 0
+    right: 0
+    bottom: 0
+    background-color: colors.$gray
+    border-radius: 30px
+    transition: 0.3s
+    display: block
+
+    &:before
+      position: absolute
+      content: ""
+      height: 22px
+      width: 22px
+      left: 4px
+      bottom: 4px
+      background-color: colors.$white
+      border-radius: 50%
+      transition: 0.3s
+
+  input:checked + .toggle-slider
+    background-color: colors.$primary
+
+    &:before
+      transform: translateX(30px)
+
+  &.enabled .toggle-slider
+    background-color: colors.$primary
+
+    &:before
+      transform: translateX(30px)
+
+  input:disabled + .toggle-slider
+    opacity: 0.5
+    cursor: not-allowed
+
+  &.disabled .toggle-slider
+    opacity: 0.5
+    cursor: not-allowed
