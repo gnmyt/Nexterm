@@ -31,7 +31,7 @@ export const Snippets = () => {
         <div className="snippets-page">
             <div className="snippets-header">
                 <div className="snippets-title">
-                    <Icon path={mdiCodeBrackets} size={2} />
+                    <Icon path={mdiCodeBrackets} />
                     <div className="header-left">
                         <h1>Snippets</h1>
                         <p>Manage your command snippets for quick access in terminals</p>
@@ -41,9 +41,7 @@ export const Snippets = () => {
                 <Button text="Add Snippet" icon={mdiPlus} onClick={openCreateDialog} />
             </div>
 
-            <div className="snippets-content">
-                <SnippetsList snippets={snippets} onEdit={openEditDialog} />
-            </div>
+            <SnippetsList snippets={snippets} onEdit={openEditDialog} />
 
             <SnippetDialog open={dialogOpen} onClose={closeDialog} editSnippetId={editSnippetId} />
         </div>
