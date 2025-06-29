@@ -7,7 +7,6 @@
   height: 100%
   display: flex
   flex-direction: column
-  justify-content: space-between
   align-items: center
   border-right: 2px solid colors.$dark-gray
   overflow: hidden
@@ -28,6 +27,8 @@
     display: flex
     flex-direction: column
     align-items: center
+    flex: 1
+    overflow: hidden
 
   img
     margin-top: 0.5rem
@@ -47,10 +48,20 @@
     display: flex
     flex-direction: column
     gap: 1rem
+    overflow-y: auto
+    flex: 1
+    align-items: center
+    width: 100%
+    scrollbar-width: none
+    -ms-overflow-style: none
+    
+    &::-webkit-scrollbar
+      display: none
 
     .nav-item
       width: 3.75rem
       height: 3.75rem
+      flex-shrink: 0
       display: flex
       justify-content: center
       align-items: center
@@ -85,6 +96,7 @@
     align-items: center
     padding: 0.5rem
     cursor: pointer
+    flex-shrink: 0
 
     svg
       width: 2rem
