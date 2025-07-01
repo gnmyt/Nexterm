@@ -66,7 +66,8 @@ The server listens on port 6989 by default. You can modify this behavior using e
 
 -   `SERVER_PORT`: Server listening port (default: 6989)
 -   `NODE_ENV`: Runtime environment (development/production)
--   `ENCRYPTION_KEY`: Encryption key for passwords, SSH keys and passphrases (default: Randomly generated key) 
+-   `ENCRYPTION_KEY`: Encryption key for passwords, SSH keys and passphrases (default: Randomly generated key)
+-   `AI_SYSTEM_PROMPT`: System prompt for AI features (example: You are a Linux command generator assistant.)
 
 ## 🛡️ Security
 
