@@ -1,0 +1,132 @@
+@use "@/common/styles/colors"
+
+.ai-command-popover-overlay
+  position: fixed
+  top: 0
+  left: 0
+  right: 0
+  bottom: 0
+  background: transparent
+  z-index: 100
+  pointer-events: none
+
+.ai-command-popover
+  position: absolute
+  background-color: colors.$gray-full
+  border: 1px solid colors.$gray
+  border-radius: 4px
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3)
+  width: 350px
+  max-width: 90vw
+  z-index: 101
+  pointer-events: all
+
+  .popover-header
+    padding: 12px
+    background-color: colors.$dark-gray
+    border-bottom: 1px solid colors.$gray
+    display: flex
+    align-items: center
+    justify-content: space-between
+
+    .popover-title
+      display: flex
+      align-items: center
+      gap: 8px
+      font-weight: 500
+      color: colors.$white
+      font-size: 14px
+
+      svg
+        width: 18px
+        height: 18px
+        color: colors.$primary
+
+    .close-button
+      background: transparent
+      border: none
+      cursor: pointer
+      padding: 6px
+      border-radius: 4px
+      display: flex
+      align-items: center
+      justify-content: center
+      color: colors.$light-gray
+
+      svg
+        width: 16px
+        height: 16px
+
+      &:hover
+        background-color: colors.$gray
+        color: colors.$white
+
+  .popover-form
+    padding: 12px
+
+    .input-container
+      display: flex
+      gap: 8px
+      align-items: center
+
+      .prompt-input
+        flex: 1
+        padding: 8px 12px
+        background: colors.$darker-gray
+        border: 1px solid colors.$gray
+        border-radius: 4px
+        color: colors.$white
+        font-size: 14px
+        outline: none
+        transition: border-color 0.2s
+
+        &:focus
+          border-color: colors.$primary
+
+        &:disabled
+          opacity: 0.6
+          cursor: not-allowed
+
+        &::placeholder
+          color: colors.$subtext
+
+      .submit-button
+        padding: 8px 12px
+        background: colors.$primary
+        border: none
+        border-radius: 4px
+        color: colors.$white
+        cursor: pointer
+        transition: background-color 0.2s
+        display: flex
+        align-items: center
+        justify-content: center
+        min-width: 40px
+
+        &:hover:not(:disabled)
+          background: colors.$primary-opacity
+          filter: brightness(1.1)
+
+        &:disabled
+          opacity: 0.6
+          cursor: not-allowed
+
+        svg
+          width: 16px
+          height: 16px
+
+  .popover-hint
+    padding: 0 12px 12px
+    font-size: 12px
+    color: colors.$subtext
+    text-align: center
+
+    kbd
+      background: colors.$dark-gray
+      border: 1px solid colors.$gray
+      border-radius: 0.25rem
+      padding: 0.125rem 0.375rem
+      font-size: 0.75rem
+      font-family: monospace
+      color: colors.$white
+      margin: 0 0.125rem
