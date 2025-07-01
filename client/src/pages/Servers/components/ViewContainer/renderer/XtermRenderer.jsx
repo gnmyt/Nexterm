@@ -1,9 +1,11 @@
 import { useEffect, useRef, useState, useContext } from "react";
 import { UserContext } from "@/common/contexts/UserContext.jsx";
+import { useAI } from "@/common/contexts/AIContext.jsx";
 import { Terminal as Xterm } from "xterm";
 import { useTheme } from "@/common/contexts/ThemeContext.jsx";
 import { FitAddon } from "xterm-addon-fit/src/FitAddon";
 import SnippetsMenu from "./components/SnippetsMenu";
+import AICommandPopover from "./components/AICommandPopover";
 import { mdiCodeArray } from "@mdi/js";
 import Icon from "@mdi/react";
 import "xterm/css/xterm.css";
@@ -15,13 +17,43 @@ const XtermRenderer = ({ session, disconnectFromServer, pve }) => {
     const wsRef = useRef(null);
     const { sessionToken } = useContext(UserContext);
     const { theme } = useTheme();
+    const { isAIAvailable } = useAI();
     const [showSnippetsMenu, setShowSnippetsMenu] = useState(false);
+    const [showAIPopover, setShowAIPopover] = useState(false);
+    const [aiPopoverPosition, setAIPopoverPosition] = useState(null);
 
-    const toggleSnippetsMenu = () => {
-        setShowSnippetsMenu(!showSnippetsMenu);
+    const toggleSnippetsMenu = () => setShowSnippetsMenu(!showSnippetsMenu);
+
+    const toggleAIPopover = () => {
+        if (!showAIPopover && termRef.current) {
+            const term = termRef.current;
+            const terminalElement = ref.current;
+
+            if (terminalElement) {
+                const rect = terminalElement.getBoundingClientRect();
+                const buffer = term.buffer.active;
+
+                const charWidth = rect.width / term.cols;
+                const charHeight = rect.height / term.rows;
+
+                const cursorX = rect.left + (buffer.cursorX * charWidth);
+                const cursorY = rect.top + (buffer.cursorY * charHeight);
+
+                setAIPopoverPosition({ x: cursorX, y: cursorY });
+            }
+        }
+        setShowAIPopover(!showAIPopover);
     };
 
     const handleSnippetSelected = (command) => {
+        if (termRef.current && wsRef.current) {
+            const commandWithNewline = command.endsWith("\n") ? command : command + "\n";+
+            wsRef.current.send(commandWithNewline);
+            termRef.current.focus();
+        }
+    };
+
+    const handleAICommandGenerated = (command) => {
         if (termRef.current && wsRef.current) {
             wsRef.current.send(command);
         }
@@ -116,6 +148,15 @@ const XtermRenderer = ({ session, disconnectFromServer, pve }) => {
             ws.send(data);
         });
 
+        term.attachCustomKeyEventHandler((event) => {
+            if (event.ctrlKey && event.key === "k" && event.type === "keydown" && isAIAvailable()) {
+                event.preventDefault();
+                toggleAIPopover();
+                return false;
+            }
+            return true;
+        });
+
         return () => {
             window.removeEventListener("resize", handleResize);
             ws.close();
@@ -141,6 +182,11 @@ const XtermRenderer = ({ session, disconnectFromServer, pve }) => {
                 onClose={() => setShowSnippetsMenu(false)}
                 onSelect={handleSnippetSelected}
             />
+            {isAIAvailable() && (
+                <AICommandPopover visible={showAIPopover} onClose={() => setShowAIPopover(false)}
+                                  onCommandGenerated={handleAICommandGenerated} position={aiPopoverPosition}
+                                  focusTerminal={() => termRef.current?.focus()} />
+            )}
         </div>
     );
 };
