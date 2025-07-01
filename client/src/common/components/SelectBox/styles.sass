@@ -5,6 +5,13 @@
   user-select: none
   cursor: pointer
 
+  &.disabled
+    cursor: not-allowed
+    opacity: 0.6
+
+    .select-box__selected
+      cursor: not-allowed
+
   &__selected
     padding: 0.8rem
     border: 1px solid colors.$gray
