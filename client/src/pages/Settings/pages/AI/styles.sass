@@ -1,0 +1,107 @@
+@use "@/common/styles/colors"
+
+.ai-settings
+  display: flex
+  flex-direction: column
+  margin-top: 1rem
+  gap: 2rem
+
+  .ai-settings-loading
+    padding: 2rem
+    text-align: center
+    color: colors.$subtext
+
+  .settings-section
+    h2
+      margin: 0 0 1rem 0
+      color: colors.$white
+      font-size: 1.5rem
+
+    p
+      margin: 0 0 1.5rem 0
+      color: colors.$subtext
+      font-size: 0.9rem
+
+    .setting-item
+      display: flex
+      align-items: flex-start
+      justify-content: space-between
+      padding: 1rem 0
+      border-bottom: 1px solid colors.$gray
+
+      &:last-child
+        border-bottom: none
+
+      .setting-label
+        flex: 1
+        margin-right: 2rem
+
+        h4
+          margin: 0 0 0.25rem 0
+          color: colors.$white
+          font-size: 1rem
+          font-weight: 600
+
+        p
+          margin: 0
+          color: colors.$subtext
+          font-size: 0.85rem
+          line-height: 1.4
+
+      .setting-input
+        min-width: 250px
+
+        &.api-key-input
+          min-width: 300px
+
+        &.number-input
+          min-width: 120px
+
+          input
+            width: 100%
+            padding: 0.8rem
+            background: colors.$dark-gray
+            border: 1px solid colors.$gray
+            border-radius: 0.7rem
+            color: colors.$white
+            font-size: 14pt
+            outline: none
+
+            &:focus
+              border-color: colors.$primary
+
+  .advanced-settings
+    margin-top: 2rem
+    padding: 1.5rem
+    background: colors.$dark-gray
+    border-radius: 0.7rem
+    border: 1px solid colors.$gray
+
+    h4
+      margin: 0 0 1.5rem 0
+      color: colors.$white
+      font-size: 1rem
+      font-weight: 600
+
+    .setting-row
+      display: grid
+      grid-template-columns: 1fr 1fr
+      gap: 2rem
+
+      .setting-item
+        padding: 0
+        border-bottom: none
+
+        .setting-label
+          margin-right: 1rem
+
+  .settings-actions
+    display: flex
+    justify-content: flex-end
+    gap: 1rem
+    margin-top: 2rem
+    padding-top: 2rem
+    border-top: 1px solid colors.$gray
+
+    button
+      min-width: 150px
