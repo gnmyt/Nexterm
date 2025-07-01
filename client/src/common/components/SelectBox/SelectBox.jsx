@@ -26,6 +26,10 @@ export const SelectBox = ({ options, selected, setSelected, id, disabled = false
     };
 
     useEffect(() => {
+        if (options.length > 0 && !selected) setSelected(options[0].value);
+    }, [selected]);
+
+    useEffect(() => {
         const handleOutsideClick = (event) => {
             if (selectBoxRef.current && !selectBoxRef.current.contains(event.target) && 
                 !document.getElementById('select-box-portal')?.contains(event.target)) {
