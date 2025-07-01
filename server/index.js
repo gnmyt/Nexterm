@@ -36,6 +36,7 @@ app.use("/api/servers/guacd", require("./middlewares/guacamole"));
 app.use("/api/servers/sftp-download", require("./routes/sftpDownload"));
 
 app.use("/api/users", authenticate, isAdmin, require("./routes/users"));
+app.use("/api/ai", authenticate, require("./routes/ai"));
 app.use("/api/sessions", authenticate, require("./routes/session"));
 app.use("/api/folders", authenticate, require("./routes/folder"));
 app.use("/api/servers", authenticate, require("./routes/server"));

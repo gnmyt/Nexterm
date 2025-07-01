@@ -4,7 +4,7 @@ import "./styles.sass";
 import Icon from "@mdi/react";
 import { mdiChevronDown } from "@mdi/js";
 
-export const SelectBox = ({ options, selected, setSelected, id }) => {
+export const SelectBox = ({ options, selected, setSelected, id, disabled = false }) => {
     const [isOpen, setIsOpen] = useState(false);
     const [position, setPosition] = useState({ top: 0, left: 0, width: 0 });
     const selectBoxRef = useRef(null);
@@ -26,9 +26,7 @@ export const SelectBox = ({ options, selected, setSelected, id }) => {
     };
 
     useEffect(() => {
-        if (!selected) {
-            setSelected(options[0].value);
-        }
+        if (options.length > 0 && !selected) setSelected(options[0].value);
     }, [selected]);
 
     useEffect(() => {
@@ -63,9 +61,12 @@ export const SelectBox = ({ options, selected, setSelected, id }) => {
     const handleDropdownClick = (event) => event.stopPropagation();
 
     return (
-        <div className="select-box" ref={selectBoxRef}>
-            <div className="select-box__selected" onClick={() => setIsOpen(!isOpen)}>
-                {selected && findSelected(selected) !== -1 && options[findSelected(selected)].label}
+        <div className={`select-box ${disabled ? 'disabled' : ''}`} ref={selectBoxRef}>
+            <div className="select-box__selected" onClick={() => !disabled && setIsOpen(!isOpen)}>
+                {selected && findSelected(selected) !== -1 ? 
+                    options[findSelected(selected)].label : 
+                    (options.length > 0 ? options[0].label : "Select an option...")
+                }
                 <Icon className={`select-box__arrow ${isOpen ? "open" : ""}`} path={mdiChevronDown} />
             </div>
             {isOpen && createPortal(

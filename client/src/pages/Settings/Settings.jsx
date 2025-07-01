@@ -1,6 +1,6 @@
 import "./styles.sass";
 import Icon from "@mdi/react";
-import { mdiAccountCircleOutline, mdiAccountGroup, mdiClockStarFourPointsOutline, mdiShieldAccountOutline, mdiDomain } from "@mdi/js";
+import { mdiAccountCircleOutline, mdiAccountGroup, mdiClockStarFourPointsOutline, mdiShieldAccountOutline, mdiDomain, mdiCreationOutline } from "@mdi/js";
 import SettingsNavigation from "./components/SettingsNavigation";
 import { Navigate, useLocation } from "react-router-dom";
 import Account from "@/pages/Settings/pages/Account";
@@ -8,6 +8,7 @@ import Sessions from "@/pages/Settings/pages/Sessions";
 import Users from "@/pages/Settings/pages/Users";
 import Authentication from "@/pages/Settings/pages/Authentication";
 import Organizations from "@/pages/Settings/pages/Organizations";
+import AI from "@/pages/Settings/pages/AI";
 
 export const Settings = () => {
     const location = useLocation();
@@ -20,7 +21,8 @@ export const Settings = () => {
 
     const adminPages = [
         { title: "Users", icon: mdiAccountGroup, content: <Users /> },
-        { title: "Authentication", icon: mdiShieldAccountOutline, content: <Authentication /> }
+        { title: "Authentication", icon: mdiShieldAccountOutline, content: <Authentication /> },
+        { title: "AI", icon: mdiCreationOutline, content: <AI /> }
     ];
 
     const currentPage = [...userPages, ...adminPages].find(page => location.pathname.endsWith(page.title.toLowerCase()));
