@@ -1,4 +1,5 @@
 import { ServerContext } from "@/common/contexts/ServerContext.jsx";
+import { IdentityContext } from "@/common/contexts/IdentityContext.jsx";
 import {
     deleteRequest,
     postRequest,
@@ -16,9 +17,11 @@ import {
     mdiServerMinus,
     mdiServerPlus,
     mdiStop,
+    mdiChevronRight,
+    mdiAccountCircle,
 } from "@mdi/js";
 import Icon from "@mdi/react";
-import { useContext } from "react";
+import { useContext, useState } from "react";
 import ProxmoxLogo from "./assets/proxmox.jsx";
 import "./styles.sass";
 
@@ -42,19 +45,24 @@ export const ContextMenu = ({
         getPVEContainerById,
     } = useContext(ServerContext);
 
+    const { identities } = useContext(IdentityContext);
+
+    const [showIdentitySubmenu, setShowIdentitySubmenu] = useState(false);
+    const [showSftpSubmenu, setShowSftpSubmenu] = useState(false);
+
     const server = id
         ? type === "server-object"
             ? getServerById(id)
             : type === "pve-object"
-            ? getPVEServerById(id.split("-")[1])
-            : getPVEContainerById(id.split("-")[1], id.split("-")[2])
+                ? getPVEServerById(id.split("-")[1])
+                : getPVEContainerById(id.split("-")[1], id.split("-")[2])
         : null;
 
     const isOrgFolder = id && id.toString().startsWith("org-");
 
     const createFolder = () => {
         const organizationId = isOrgFolder ? id.toString().split("-")[1] : undefined;
-        
+
         putRequest("folders", {
             name: "New Folder",
             parentId: isOrgFolder ? undefined : (id === null ? undefined : id),
@@ -79,17 +87,26 @@ export const ContextMenu = ({
         setProxmoxDialogOpen();
     };
 
-    const connect = () => {
+    const connect = (identityId = null) => {
         if (type === "pve-entry") {
             connectToPVEServer(id.split("-")[1], id.split("-")[2]);
             return;
         }
 
-        connectToServer(server?.id, server?.identities[0]);
+        const targetIdentityId = identityId || server?.identities[0];
+        connectToServer(server?.id, targetIdentityId);
+        setShowIdentitySubmenu(false);
     };
 
-    const connectSFTP = () => {
-        openSFTP(server?.id, server?.identities[0]);
+    const connectSFTP = (identityId = null) => {
+        const targetIdentityId = identityId || server?.identities[0];
+        openSFTP(server?.id, targetIdentityId);
+        setShowSftpSubmenu(false);
+    };
+
+    const getIdentityName = (identityId) => {
+        const identity = identities?.find(id => id.id === identityId);
+        return identity ? `${identity.name}` : `Identity ${identityId}`;
     };
 
     const editServer = () => {
@@ -162,20 +179,71 @@ export const ContextMenu = ({
             )}
             {type === "server-object" && (
                 <>
-                    {server?.identities?.length !== 0 && (
-                        <div className="context-item" onClick={connect}>
-                            <Icon path={mdiConnection} />
-                            <p>Connect</p>
-                        </div>
+                    {server?.identities?.length > 0 && (
+                        <>
+                            {server.identities.length === 1 ? (
+                                <div className="context-item" onClick={() => connect()}>
+                                    <Icon path={mdiConnection} />
+                                    <p>Connect</p>
+                                </div>
+                            ) : (
+                                <div className="context-item submenu-parent"
+                                     onMouseEnter={() => setShowIdentitySubmenu(true)}
+                                     onMouseLeave={() => setShowIdentitySubmenu(false)}>
+                                    <Icon path={mdiConnection} />
+                                    <p>Connect</p>
+                                    <Icon path={mdiChevronRight} className="submenu-arrow" />
+
+                                    {showIdentitySubmenu && (
+                                        <div className="submenu">
+                                            {server.identities.map((identityId) => (
+                                                <div
+                                                    key={identityId}
+                                                    className="context-item"
+                                                    onClick={() => connect(identityId)}>
+                                                    <Icon path={mdiAccountCircle} />
+                                                    <p>{getIdentityName(identityId)}</p>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    )}
+                                </div>
+                            )}
+                        </>
                     )}
 
-                    {server?.identities?.length !== 0 &&
-                        server?.protocol === "ssh" && (
-                            <div className="context-item" onClick={connectSFTP}>
-                                <Icon path={mdiFolderOpen} />
-                                <p>Open SFTP</p>
-                            </div>
-                        )}
+                    {server?.identities?.length > 0 && server?.protocol === "ssh" && (
+                        <>
+                            {server.identities.length === 1 ? (
+                                <div className="context-item" onClick={() => connectSFTP()}>
+                                    <Icon path={mdiFolderOpen} />
+                                    <p>Open SFTP</p>
+                                </div>
+                            ) : (
+                                <div className="context-item submenu-parent"
+                                     onMouseEnter={() => setShowSftpSubmenu(true)}
+                                     onMouseLeave={() => setShowSftpSubmenu(false)}>
+                                    <Icon path={mdiFolderOpen} />
+                                    <p>Open SFTP</p>
+                                    <Icon path={mdiChevronRight} className="submenu-arrow" />
+
+                                    {showSftpSubmenu && (
+                                        <div className="submenu">
+                                            {server.identities.map((identityId) => (
+                                                <div
+                                                    key={identityId}
+                                                    className="context-item"
+                                                    onClick={() => connectSFTP(identityId)}>
+                                                    <Icon path={mdiAccountCircle} />
+                                                    <p>{getIdentityName(identityId)}</p>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    )}
+                                </div>
+                            )}
+                        </>
+                    )}
 
                     <div className="context-item" onClick={editServer}>
                         <Icon path={mdiPencil} />
