@@ -3,6 +3,7 @@ import { UserContext } from "@/common/contexts/UserContext.jsx";
 import { useAI } from "@/common/contexts/AIContext.jsx";
 import { Terminal as Xterm } from "xterm";
 import { useTheme } from "@/common/contexts/ThemeContext.jsx";
+import { useTerminalSettings } from "@/common/contexts/TerminalSettingsContext.jsx";
 import { FitAddon } from "xterm-addon-fit/src/FitAddon";
 import SnippetsMenu from "./components/SnippetsMenu";
 import AICommandPopover from "./components/AICommandPopover";
@@ -17,6 +18,7 @@ const XtermRenderer = ({ session, disconnectFromServer, pve }) => {
     const wsRef = useRef(null);
     const { sessionToken } = useContext(UserContext);
     const { theme } = useTheme();
+    const { getCurrentTheme, selectedFont, fontSize, cursorStyle, cursorBlink, selectedTheme } = useTerminalSettings();
     const { isAIAvailable } = useAI();
     const [showSnippetsMenu, setShowSnippetsMenu] = useState(false);
     const [showAIPopover, setShowAIPopover] = useState(false);
@@ -62,15 +64,34 @@ const XtermRenderer = ({ session, disconnectFromServer, pve }) => {
     useEffect(() => {
         if (!sessionToken) return;
 
+        const terminalTheme = getCurrentTheme();
+        const isLightTerminalTheme = selectedTheme === "light";
+        
         const term = new Xterm({
-            cursorBlink: true,
-            fontSize: 16,
-            fontFamily: "monospace",
+            cursorBlink: cursorBlink,
+            cursorStyle: cursorStyle,
+            fontSize: fontSize,
+            fontFamily: selectedFont,
             theme: {
-                background: theme === "light" ? "#F3F3F3" : "#13181C",
-                foreground: theme === "light" ? "#000000" : "#F5F5F5",
-                brightWhite: theme === "light" ? "#464545" : "#FFFFFF",
-                cursor: theme === "light" ? "#000000" : "#F5F5F5"
+                background: (theme === "light" && isLightTerminalTheme) ? "#F3F3F3" : terminalTheme.background,
+                foreground: (theme === "light" && isLightTerminalTheme) ? "#000000" : terminalTheme.foreground,
+                black: terminalTheme.black,
+                red: terminalTheme.red,
+                green: terminalTheme.green,
+                yellow: terminalTheme.yellow,
+                blue: terminalTheme.blue,
+                magenta: terminalTheme.magenta,
+                cyan: terminalTheme.cyan,
+                white: terminalTheme.white,
+                brightBlack: terminalTheme.brightBlack,
+                brightRed: terminalTheme.brightRed,
+                brightGreen: terminalTheme.brightGreen,
+                brightYellow: terminalTheme.brightYellow,
+                brightBlue: terminalTheme.brightBlue,
+                brightMagenta: terminalTheme.brightMagenta,
+                brightCyan: terminalTheme.brightCyan,
+                brightWhite: (theme === "light" && isLightTerminalTheme) ? "#464545" : terminalTheme.brightWhite,
+                cursor: (theme === "light" && isLightTerminalTheme) ? "#000000" : terminalTheme.cursor
             },
         });
 
@@ -165,7 +186,7 @@ const XtermRenderer = ({ session, disconnectFromServer, pve }) => {
             termRef.current = null;
             wsRef.current = null;
         };
-    }, [sessionToken]);
+    }, [sessionToken, selectedFont, fontSize, cursorStyle, cursorBlink, selectedTheme]);
 
     return (
         <div className="xterm-container">
