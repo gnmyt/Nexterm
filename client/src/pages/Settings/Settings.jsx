@@ -1,6 +1,6 @@
 import "./styles.sass";
 import Icon from "@mdi/react";
-import { mdiAccountCircleOutline, mdiAccountGroup, mdiClockStarFourPointsOutline, mdiShieldAccountOutline, mdiDomain, mdiCreationOutline } from "@mdi/js";
+import { mdiAccountCircleOutline, mdiAccountGroup, mdiClockStarFourPointsOutline, mdiShieldAccountOutline, mdiDomain, mdiCreationOutline, mdiKeyVariant } from "@mdi/js";
 import SettingsNavigation from "./components/SettingsNavigation";
 import { Navigate, useLocation } from "react-router-dom";
 import Account from "@/pages/Settings/pages/Account";
@@ -9,12 +9,14 @@ import Users from "@/pages/Settings/pages/Users";
 import Authentication from "@/pages/Settings/pages/Authentication";
 import Organizations from "@/pages/Settings/pages/Organizations";
 import AI from "@/pages/Settings/pages/AI";
+import Identities from "@/pages/Settings/pages/Identities";
 
 export const Settings = () => {
     const location = useLocation();
 
     const userPages = [
         { title: "Account", icon: mdiAccountCircleOutline, content: <Account /> },
+        { title: "Identities", icon: mdiKeyVariant, content: <Identities /> },
         { title: "Sessions", icon: mdiClockStarFourPointsOutline, content: <Sessions /> },
         { title: "Organizations", icon: mdiDomain, content: <Organizations /> }
     ];
