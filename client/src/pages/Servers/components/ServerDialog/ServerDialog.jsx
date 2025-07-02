@@ -31,71 +31,59 @@ export const ServerDialog = ({ open, onClose, currentFolderId, editServerId }) =
 
     const [activeTab, setActiveTab] = useState(0);
 
-    const postIdentity = async (identity) => {
-        try {
-            if (identity.username === "") identity.username = undefined;
-            if (identity.passphrase === "") identity.passphrase = undefined;
-            if (identity.password === "") identity.password = undefined;
-            if (identity.sshKey === null) identity.sshKey = undefined;
-
-            const result = await putRequest("identities", {
-                name: identity.name, username: identity.username, type: identity.authType,
-                password: identity.password, sshKey: identity.sshKey, passphrase: identity.passphrase,
-            });
-
-            if (result.id) setIdentityUpdates({});
-
-            refreshIdentities();
-
-            return result;
-        } catch (error) {
-            sendToast("Error", error.message || "Failed to create identity");
-            console.error(error);
-        }
+    const normalizeIdentity = (identity) => {
+        const normalized = { ...identity };
+        if (normalized.username === "") normalized.username = undefined;
+        if (normalized.passphrase === "") normalized.passphrase = undefined;
+        if (normalized.password === "") normalized.password = undefined;
+        if (normalized.sshKey === null) normalized.sshKey = undefined;
+        return normalized;
     };
 
-    const patchIdentity = async (identity) => {
-        try {
-            if (identity.username === "") identity.username = undefined;
-            if (identity.passphrase === "") identity.passphrase = undefined;
-            if (identity.password === "") identity.password = undefined;
-            if (identity.sshKey === null) identity.sshKey = undefined;
-
-            await patchRequest("identities/" + identity.id, {
-                name: identity.name, username: identity.username, type: identity.authType,
-                password: identity.password, sshKey: identity.sshKey, passphrase: identity.passphrase,
-            });
-
-            setIdentityUpdates({});
-            refreshIdentities();
-        } catch (error) {
-            sendToast("Error", error.message || "Failed to update identity");
-            console.error(error);
-        }
-    };
+    const buildIdentityPayload = (identity) => ({
+        name: identity.name,
+        username: identity.username,
+        type: identity.authType,
+        password: identity.password,
+        sshKey: identity.sshKey,
+        passphrase: identity.passphrase,
+    });
 
     const updateIdentities = async () => {
+        const createdIdentities = [];
+
         for (const identityId of Object.keys(identityUpdates)) {
-            if (identityId === "new") {
-                return await postIdentity(identityUpdates[identityId]);
-            } else {
-                await patchIdentity({ ...identityUpdates[identityId], id: identityId });
+            const identity = normalizeIdentity(identityUpdates[identityId]);
+            const payload = buildIdentityPayload(identity);
+
+            try {
+                if (identityId.startsWith("new-")) {
+                    const result = await putRequest("identities", payload);
+                    if (result.id) createdIdentities.push(result.id);
+                } else {
+                    await patchRequest("identities/" + identityId, payload);
+                }
+            } catch (error) {
+                const action = identityId.startsWith("new-") ? "create" : "update";
+                sendToast("Error", error.message || `Failed to ${action} identity`);
+                console.error(error);
+                return null;
             }
         }
+
+        return [...identities, ...createdIdentities];
     };
 
     const createServer = async () => {
         try {
-            let identity = null;
-            if (Object.keys(identityUpdates).length > 0) {
-                identity = await updateIdentities();
-                if (!identity) return;
-                loadIdentities();
-            }
+            const serverIdentityIds = await updateIdentities();
+            if (serverIdentityIds === null) return;
+
+            loadIdentities();
 
             const result = await putRequest("servers", {
                 name, icon: icon, ip, port, protocol: protocol, config,
-                folderId: currentFolderId, identities: identity?.id ? [identity?.id] : [],
+                folderId: currentFolderId, identities: serverIdentityIds,
                 monitoringEnabled
             });
 
@@ -112,11 +100,12 @@ export const ServerDialog = ({ open, onClose, currentFolderId, editServerId }) =
 
     const patchServer = async () => {
         try {
-            const identity = await updateIdentities();
+            const serverIdentityIds = await updateIdentities();
+            if (serverIdentityIds === null) return;
 
             await patchRequest("servers/" + editServerId, { 
                 name, icon, ip, port, protocol: protocol, config,
-                identities: identity?.id ? [identity?.id] : undefined,
+                identities: serverIdentityIds,
                 monitoringEnabled
             });
 
@@ -232,7 +221,8 @@ export const ServerDialog = ({ open, onClose, currentFolderId, editServerId }) =
                                                      protocol={protocol} setProtocol={setProtocol} />}
                     {activeTab === 1 &&
                         <IdentityPage serverIdentities={identities} setIdentityUpdates={setIdentityUpdates}
-                                      refreshIdentities={refreshIdentities} identityUpdates={identityUpdates} />}
+                                      refreshIdentities={refreshIdentities} identityUpdates={identityUpdates}
+                                      setIdentities={setIdentities} />}
                     {activeTab === 2 && <SettingsPage protocol={protocol} config={config} setConfig={setConfig} 
                                                        monitoringEnabled={monitoringEnabled} setMonitoringEnabled={setMonitoringEnabled} />}
                 </div>

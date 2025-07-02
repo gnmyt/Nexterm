@@ -97,17 +97,102 @@
     flex-direction: column
     gap: 1rem
 
+    .identities-header
+      display: flex
+      justify-content: space-between
+      align-items: center
+      margin-bottom: 0.5rem
+
+      h3
+        margin: 0
+        color: colors.$white
+
+      .identity-actions
+        .add-identity-btn
+          padding: 0.5rem 1rem
+          font-size: 0.9rem
+
+    .link-identity-section
+      background-color: colors.$darker-gray
+      border: 1px solid colors.$gray
+      border-radius: 0.5rem
+      padding: 1rem
+      margin-bottom: 1rem
+
+      .link-identity-row
+        display: flex
+        gap: 1rem
+        align-items: end
+
+        .form-group
+          flex: 1
+
+        .link-identity-btn
+          padding: 0.75rem 1.5rem
+          font-size: 0.9rem
+
+          &:disabled
+            opacity: 0.5
+            cursor: not-allowed
+
+    .no-identities
+      text-align: center
+      padding: 2rem
+      color: colors.$subtext
+      border: 2px dashed colors.$gray
+      border-radius: 0.5rem
+
   .identity
-    display: flex
     background-color: colors.$dark-gray
     border: 1px solid colors.$gray
     padding: 1rem
     border-radius: 0.5rem
+    display: flex
     flex-direction: column
-    gap: 0.5rem
+    gap: 1rem
 
-    .identity-header h3
-      margin: 0
+    .identity-header
+      display: flex
+      justify-content: space-between
+      align-items: center
+      gap: 1rem
+
+      .unlink-identity-btn
+        background: none
+        border: 1px solid colors.$gray
+        border-radius: 0.375rem
+        padding: 0.5rem
+        cursor: pointer
+        color: colors.$light-gray
+        transition: all 0.2s
+        display: flex
+        align-items: center
+        justify-content: center
+        min-width: 2rem
+        height: 2rem
+
+        &:hover
+          background-color: colors.$error
+          border-color: colors.$error
+          color: colors.$white
+
+        svg
+          width: 0.8rem
+          height: 0.8rem
+
+    .keyfile-status
+      display: flex
+      align-items: center
+      gap: 0.5rem
+      margin-top: 0.5rem
+      color: colors.$success
+
+      svg
+        width: 1rem
+        height: 1rem
+
+      span
+        font-size: 0.9rem
 
   .monitoring-toggle-container
     display: flex
