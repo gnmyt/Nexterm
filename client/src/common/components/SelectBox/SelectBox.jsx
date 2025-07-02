@@ -80,7 +80,7 @@ export const SelectBox = ({ options, selected, setSelected, id, disabled = false
                     <div className="select-box__options-scroll">
                         {options.map((option, index) => (
                             <div key={index} className={`select-box__option ${
-                                  selected && options[findSelected(selected)].value === option.value ? "selected" : ""}`}
+                                  selected && findSelected(selected) !== -1 && options[findSelected(selected)].value === option.value ? "selected" : ""}`}
                                 onClick={(e) => handleOptionClick(option.value, e)}
                             >{option.label}</div>
                         ))}
