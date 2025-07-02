@@ -1,0 +1,62 @@
+@use "@/common/styles/colors"
+
+.identity-dialog
+  display: flex
+  flex-direction: column
+  gap: 1.5rem
+  width: 28rem
+  user-select: none
+
+  .dialog-title
+    display: flex
+    align-items: center
+    gap: 1rem
+
+    svg
+      width: 2rem
+      height: 2rem
+      color: colors.$primary
+
+    h2
+      margin: 0
+      font-size: 1.3rem
+
+  .dialog-content
+    display: flex
+    flex-direction: column
+    gap: 1rem
+
+    .form-group
+      display: flex
+      flex-direction: column
+      gap: 0.5rem
+
+      label
+        color: colors.$subtext
+        font-weight: 600
+        font-size: 0.9rem
+
+    .form-row
+      display: grid
+      grid-template-columns: 1fr 1fr
+      gap: 1rem
+
+    .keyfile-status
+      display: flex
+      align-items: center
+      gap: 0.5rem
+      margin-top: 0.5rem
+      color: colors.$success
+      font-size: 0.9rem
+
+      svg
+        width: 1rem
+        height: 1rem
+
+  .dialog-actions
+    display: flex
+    justify-content: flex-end
+    gap: 1rem
+    margin-top: 1rem
+    padding-top: 1rem
+    border-top: 1px solid colors.$gray
