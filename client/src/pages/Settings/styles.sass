@@ -3,33 +3,46 @@
 .settings-page
   display: grid
   grid-template-columns: 18rem 1fr
+  height: 100%
+  overflow: hidden
   user-select: none
 
   .settings-content
-    padding: 1rem 2rem
+    display: flex
+    flex-direction: column
+    height: 100%
+    overflow: hidden
+
+    .settings-header
+      flex-shrink: 0
+      padding: 1rem 2rem 0.5rem
+      display: flex
+      align-items: center
+      gap: 1rem
+
+      svg
+        width: 2.5rem
+        height: 2.5rem
+
+      h1
+        margin: 0
+        font-size: 24pt
 
     hr
+      flex-shrink: 0
       background-color: colors.$gray
-      width: 100%
+      width: calc(100% - 4rem)
+      margin: 0 2rem
       height: 3px
       border: none
       border-radius: 5px
 
     .settings-content-inner
-      width: 80%
+      flex: 1
+      overflow-y: auto
       overflow-x: hidden
-      overflow-y: scroll
-
-  .settings-header
-    display: flex
-    align-items: center
-    padding-bottom: 0.5rem
-    gap: 1rem
-
-    svg
-      width: 2.5rem
-      height: 2.5rem
-
-    h1
-      margin: 0
-      font-size: 24pt
+      padding: 1rem 2rem 2rem
+      
+      > *
+        width: 80%
+        max-width: 80%

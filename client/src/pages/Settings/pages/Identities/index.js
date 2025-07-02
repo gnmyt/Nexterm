@@ -1,0 +1,1 @@
+export { IdentitiesPage as default } from "./IdentitiesPage.jsx";

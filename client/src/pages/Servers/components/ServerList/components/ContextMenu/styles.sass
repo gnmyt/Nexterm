@@ -34,3 +34,34 @@
 
     &:hover
       background-color: colors.$dark-gray
+
+  .submenu-parent
+    position: relative
+
+    .submenu-arrow
+      margin-left: auto
+
+  .submenu
+    position: absolute
+    left: 100%
+    top: 0
+    background-color: colors.$darker-gray
+    backdrop-filter: blur(1rem)
+    border: 2px solid colors.$dark-gray
+    border-radius: 0.5rem
+    padding: 0.5rem
+    min-width: 200px
+    z-index: 10001
+
+    .context-item
+      white-space: nowrap
+
+      svg
+        width: 1rem
+        height: 1rem
+        margin-right: 0.5rem
+
+      p
+        margin: 0
+        overflow: hidden
+        text-overflow: ellipsis

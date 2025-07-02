@@ -1,4 +1,5 @@
 const Identity = require("../models/Identity");
+const Server = require("../models/Server");
 const { encrypt } = require("../utils/encryption");
 const { hasOrganizationAccess } = require("../utils/permission");
 const OrganizationMember = require("../models/OrganizationMember");
@@ -91,6 +92,27 @@ module.exports.deleteIdentity = async (accountId, identityId) => {
     const accessCheck = await validateIdentityAccess(accountId, identity);
 
     if (!accessCheck.valid) return accessCheck.error;
+
+    const servers = await Server.findAll({ where: { [Op.or]: [{ accountId }, { organizationId: identity.organizationId }] } });
+
+    for (const server of servers) {
+        let serverIdentities = [];
+
+        if (typeof server.identities === "string") {
+            try {
+                serverIdentities = JSON.parse(server.identities);
+            } catch (e) {
+                serverIdentities = [];
+            }
+        } else if (Array.isArray(server.identities)) {
+            serverIdentities = server.identities;
+        }
+
+        const updatedIdentities = serverIdentities.filter(id => id !== identityId);
+        if (updatedIdentities.length !== serverIdentities.length) {
+            await Server.update({ identities: updatedIdentities }, { where: { id: server.id } });
+        }
+    }
 
     if (identity.organizationId) {
         await Identity.destroy({ where: { id: identityId, organizationId: identity.organizationId } });
