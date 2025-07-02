@@ -1,0 +1,116 @@
+@use "@/common/styles/colors"
+
+.terminal-settings-page
+  display: flex
+  flex-direction: column
+  margin-top: 1rem
+  gap: 2rem
+
+.terminal-section
+  h2
+    margin: 0
+
+  p
+    color: colors.$subtext
+    margin: 0 0 1rem 0
+
+  .section-inner
+    margin-top: 1rem
+
+.theme-cards
+  display: grid
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr))
+  gap: 1rem
+
+.theme-card
+  border: 2px solid colors.$gray
+  border-radius: 0.8rem
+  padding: 1rem
+  cursor: pointer
+  transition: all 0.2s ease
+  background-color: colors.$gray-full
+
+  &:hover
+    border-color: colors.$primary-opacity
+    transform: translateY(-2px)
+
+  &.selected
+    border-color: colors.$primary
+    box-shadow: 0 0 0 1px colors.$primary-opacity
+
+  .theme-header
+    display: flex
+    justify-content: space-between
+    align-items: center
+    margin-bottom: 0.8rem
+
+    h4
+      margin: 0
+      font-size: 1.1rem
+
+    .selected-indicator
+      width: 12px
+      height: 12px
+      border-radius: 50%
+      background-color: colors.$primary
+
+.terminal-preview
+  border-radius: 0.5rem
+  overflow: hidden
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3)
+  min-height: 80px
+
+  .terminal-content
+    padding: 0.8rem
+    position: relative
+    min-height: 60px
+
+    .terminal-line
+      line-height: 1.4
+      white-space: pre
+
+      &:empty
+        height: 1.4em
+
+    .terminal-cursor
+      display: inline-block
+      margin-left: 2px
+
+      &.cursor-block
+        width: 8px
+        height: 1.2em
+
+      &.cursor-underline
+        width: 8px
+        height: 2px
+        border-bottom: 2px solid
+
+      &.cursor-bar
+        width: 2px
+        height: 1.2em
+        border-left: 2px solid
+
+      &.blinking
+        animation: blink 1s infinite
+
+@keyframes blink
+  0%, 50%
+    opacity: 1
+  51%, 100%
+    opacity: 0
+
+.font-settings, .cursor-settings
+  display: flex
+  gap: 2rem
+  margin-bottom: 2rem
+  flex-wrap: wrap
+
+  .font-option
+    display: flex
+    flex-direction: column
+    gap: 0.5rem
+    min-width: 200px
+
+    label
+      color: colors.$subtext
+      font-weight: 600
