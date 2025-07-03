@@ -2,10 +2,16 @@ import Icon from "@mdi/react";
 import { mdiDomain, mdiDomainOff } from "@mdi/js";
 import ServerEntries from "../ServerEntries.jsx";
 import { useState } from "react";
+import { getFolderState, setFolderState } from "@/common/utils/folderState";
 
 const OrganizationFolder = ({ id, name, entries, nestedLevel, connectToServer, connectToPVEServer, setRenameStateId, sshOnly }) => {
-    const [isOpen, setIsOpen] = useState(true);
-    const toggleFolder = () => setIsOpen(!isOpen);
+    const [isOpen, setIsOpen] = useState(() => getFolderState(id, true));
+    
+    const toggleFolder = () => {
+        const newState = !isOpen;
+        setIsOpen(newState);
+        setFolderState(id, newState);
+    };
     const orgId = id.split('-')[1];
 
     return (
