@@ -10,13 +10,9 @@ RUN npm run build
 
 FROM node:22-alpine
 
-# This is required as the newest version (1.6.0) breaks compatibility with the Proxmox integration.
-# Related issue: https://issues.apache.org/jira/browse/GUACAMOLE-1877
-ARG GUACD_COMMIT=daffc29a958e8d07af32def00d2d98d930df317a
-
 RUN apk add --no-cache \
     cairo-dev jpeg-dev libpng-dev ossp-uuid-dev ffmpeg-dev \
-    pango-dev libvncserver-dev libwebp-dev openssl-dev freerdp-dev \
+    pango-dev libvncserver-dev libwebp-dev openssl-dev freerdp2-dev freerdp2 \
     autoconf automake libtool libpulse libogg libc-dev \
     python3 py3-pip py3-setuptools make gcc g++ \
     && python3 -m venv /opt/venv \
@@ -25,11 +21,12 @@ RUN apk add --no-cache \
     && deactivate \
     && apk add --no-cache --virtual .build-deps build-base git
 
-RUN git clone https://github.com/apache/guacamole-server.git \
+RUN git clone --depth=1 https://github.com/apache/guacamole-server.git \
     && cd guacamole-server \
-    && git checkout $GUACD_COMMIT \
+    && git fetch --all --tags \
+    && git checkout 1.6.0 \
     && autoreconf -fi \
-    && ./configure --with-init-dir=/etc/init.d \
+    && ./configure --with-init-dir=/etc/init.d --enable-rdp \
     && make -j$(nproc) \
     && make install \
     && cd .. \
