@@ -8,17 +8,105 @@
   flex: 1
   overflow: hidden
 
-.view
-  display: none
-  background-color: colors.$terminal
-  height: 100%
-  width: 100%
-
 .view-layouter
-  display: flex
-  flex-direction: column
+  position: relative
   height: calc(100vh - 3.5rem)
   width: 100%
+  overflow: hidden
 
-.view-active
-  display: block
+  &.single
+    .session-renderer
+      &.visible
+        opacity: 1
+        pointer-events: auto
+
+      &.hidden
+        opacity: 0
+        pointer-events: none
+
+  &[class*="grid-"]
+    display: grid
+    gap: 2px
+    background-color: colors.$darker-gray
+
+  &.resizing
+    .session-renderer
+      pointer-events: none
+
+  &.grid-2x1
+    grid-template-columns: 1fr 1fr
+    grid-template-rows: 1fr
+
+  &.grid-2x2
+    grid-template-columns: 1fr 1fr
+    grid-template-rows: 1fr 1fr
+
+  &.grid-3
+    grid-template-columns: 1fr 1fr
+    grid-template-rows: 1fr 1fr
+
+  &.grid-5
+    grid-template-columns: 1fr 1fr
+    grid-template-rows: 1fr 1fr 1fr
+
+  &.grid-3x2
+    grid-template-columns: 1fr 1fr
+    grid-template-rows: 1fr 1fr 1fr
+
+  &.grid-2x3
+    grid-template-columns: 1fr 1fr 1fr
+    grid-template-rows: 1fr 1fr
+
+  &.grid-3x3
+    grid-template-columns: 1fr 1fr 1fr
+    grid-template-rows: 1fr 1fr 1fr
+
+  &.grid-4x2
+    grid-template-columns: 1fr 1fr
+    grid-template-rows: 1fr 1fr 1fr 1fr
+
+.session-renderer
+  background-color: colors.$terminal
+  overflow: hidden
+
+  &.visible
+    opacity: 1
+    pointer-events: auto
+
+  &.hidden
+    opacity: 0
+    pointer-events: none
+
+.grid-resizer
+  background: transparent
+  transition: background-color 0.2s ease
+  user-select: none
+
+  &:hover
+    background-color: colors.$primary !important
+
+  &:active, .view-layouter.resizing &
+    background-color: colors.$primary !important
+
+  &.vertical
+    cursor: col-resize
+
+  &.horizontal
+    cursor: row-resize
+
+.view-layouter.resizing
+  *
+    user-select: none !important
+    pointer-events: none !important
+
+  &.resizing-vertical
+    cursor: col-resize !important
+
+    *
+      cursor: col-resize !important
+
+  &.resizing-horizontal
+    cursor: row-resize !important
+
+    *
+      cursor: row-resize !important
