@@ -12,10 +12,39 @@
     width: 2rem
     height: 2rem
 
+  .layout-controls
+    display: flex
+    gap: 0.5rem
+    align-items: center
+    margin-right: 1rem
+    padding-right: 1rem
+    border-right: 1px solid colors.$gray
+
+    .layout-btn
+      cursor: pointer
+      padding: 0.5rem
+      border-radius: 4px
+      transition: all 0.2s ease
+      color: colors.$subtext
+
+      &:hover
+        background-color: colors.$gray
+        color: colors.$white
+
+      &.active
+        background-color: colors.$primary
+        color: colors.$white
+
   .tabs
     display: flex
     gap: 0.5rem
+    flex: 1
+    overflow-x: auto
+    overflow-y: hidden
+    scrollbar-width: none
 
+    &::-webkit-scrollbar
+      display: none
 
     .server-tab
       display: flex
@@ -27,6 +56,7 @@
       cursor: pointer
       overflow: hidden
       white-space: nowrap
+      flex-shrink: 0
 
       &:hover
         background-color: colors.$gray
