@@ -5,6 +5,7 @@ const { listFolders } = require("./folder");
 const { hasOrganizationAccess, validateFolderAccess } = require("../utils/permission");
 const { Op } = require("sequelize");
 const OrganizationMember = require("../models/OrganizationMember");
+const { listIdentities } = require("./identity");
 
 const validateServerAccess = async (accountId, server, errorMessage = "You don't have permission to access this server") => {
     if (!server) return { code: 401, message: "Server does not exist" };
@@ -23,26 +24,23 @@ const validateServerAccess = async (accountId, server, errorMessage = "You don't
 const validateIdentities = async (accountId, identities, organizationId) => {
     if (!identities || identities.length === 0) return { valid: true };
 
+    const allAccessibleIdentities = await listIdentities(accountId);
+    const accessibleIdentityIds = allAccessibleIdentities.map(identity => identity.id);
+
+    const invalidIdentities = identities.filter(id => !accessibleIdentityIds.includes(id));
+
+    if (invalidIdentities.length > 0) {
+        return {
+            valid: false,
+            error: { code: 501, message: "One or more identities do not exist or you don't have access to them" },
+        };
+    }
+
     if (organizationId) {
         const hasAccess = await hasOrganizationAccess(accountId, organizationId);
         if (!hasAccess) {
             return { valid: false, error: { code: 403, message: "You don't have access to this organization" } };
         }
-    }
-
-    const identityQuery = { id: identities };
-    if (organizationId) {
-        identityQuery.organizationId = organizationId;
-    } else {
-        identityQuery.accountId = accountId;
-    }
-
-    const foundIdentities = await Identity.findAll({ where: identityQuery });
-    if (foundIdentities.length !== identities.length) {
-        return {
-            valid: false,
-            error: { code: 501, message: "One or more identities do not exist or you don't have access to them" },
-        };
     }
 
     return { valid: true };
