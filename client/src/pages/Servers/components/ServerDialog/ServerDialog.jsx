@@ -25,7 +25,7 @@ export const ServerDialog = ({ open, onClose, currentFolderId, editServerId }) =
     const [protocol, setProtocol] = useState(null);
     const [identities, setIdentities] = useState([]);
     const [config, setConfig] = useState({});
-    const [monitoringEnabled, setMonitoringEnabled] = useState(true);
+    const [monitoringEnabled, setMonitoringEnabled] = useState(false);
 
     const [identityUpdates, setIdentityUpdates] = useState({});
 
