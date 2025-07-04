@@ -2,11 +2,24 @@ FROM node:22-alpine AS client-builder
 
 WORKDIR /app/client
 
-COPY client/package.json ./
-RUN npm install
+COPY client/package.json client/yarn.lock ./
+RUN yarn install --frozen-lockfile
 
 COPY client/ .
-RUN npm run build
+RUN yarn build
+
+FROM node:22-alpine AS server-builder
+
+WORKDIR /app
+
+RUN apk add --no-cache \
+    python3 py3-pip py3-setuptools \
+    make g++ gcc build-base
+
+COPY package.json yarn.lock ./
+RUN yarn install --production --frozen-lockfile
+
+COPY server/ server/
 
 FROM node:22-alpine
 
@@ -17,15 +30,10 @@ ARG GUACD_COMMIT=daffc29a958e8d07af32def00d2d98d930df317a
 RUN apk add --no-cache \
     cairo-dev jpeg-dev libpng-dev ossp-uuid-dev ffmpeg-dev \
     pango-dev libvncserver-dev libwebp-dev openssl-dev freerdp2-dev \
-    autoconf automake libtool libpulse libogg libc-dev \
-    python3 py3-pip py3-setuptools make gcc g++ \
-    && python3 -m venv /opt/venv \
-    && . /opt/venv/bin/activate \
-    && pip install --upgrade pip setuptools \
-    && deactivate \
-    && apk add --no-cache --virtual .build-deps build-base git
-
-RUN git clone https://github.com/apache/guacamole-server.git \
+    libpulse libogg libc-dev \
+    && apk add --no-cache --virtual .build-deps \
+    build-base git autoconf automake libtool \
+    && git clone https://github.com/apache/guacamole-server.git \
     && cd guacamole-server \
     && git checkout $GUACD_COMMIT \
     && autoreconf -fi \
@@ -33,9 +41,8 @@ RUN git clone https://github.com/apache/guacamole-server.git \
     && make -j$(nproc) \
     && make install \
     && cd .. \
-    && rm -rf guacamole-server
-
-RUN apk del .build-deps \
+    && rm -rf guacamole-server \
+    && apk del .build-deps \
     && rm -rf /var/cache/apk/*
 
 ENV NODE_ENV=production
@@ -44,10 +51,11 @@ WORKDIR /app
 
 COPY --from=client-builder /app/client/dist ./dist
 
-COPY package.json ./
-RUN npm install --omit=dev && npm cache clean --force
+COPY --from=server-builder /app/server ./server
+COPY --from=server-builder /app/node_modules ./node_modules
+COPY --from=server-builder /app/package.json ./
+COPY --from=server-builder /app/yarn.lock ./
 
-COPY server/ server/
 COPY docker-start.sh .
 
 RUN chmod +x docker-start.sh
