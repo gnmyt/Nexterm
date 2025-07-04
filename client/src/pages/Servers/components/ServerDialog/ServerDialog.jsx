@@ -158,7 +158,7 @@ export const ServerDialog = ({ open, onClose, currentFolderId, editServerId }) =
             setProtocol(null);
             setIdentities([]);
             setConfig({});
-            setMonitoringEnabled(true);
+            setMonitoringEnabled(false);
         }
 
         setIdentityUpdates({});
