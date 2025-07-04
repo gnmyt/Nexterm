@@ -53,14 +53,24 @@
       align-items: center
       border-radius: 0.5rem 0.5rem 0 0
       border-bottom: 2px solid transparent
-      cursor: pointer
+      cursor: grab
       overflow: hidden
       white-space: nowrap
       flex-shrink: 0
+      transition: all 0.2s ease
 
       &:hover
         background-color: colors.$gray
         border-bottom: 2px solid colors.$primary-opacity
+
+      &.dragging
+        cursor: grabbing
+        transform: rotate(2deg)
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2)
+
+      &.drop-target
+        border-left: 3px solid colors.$primary
+        background-color: colors.$primary-opacity
 
       svg
         width: 1.5rem
