@@ -93,16 +93,19 @@ module.exports.deleteIdentity = async (accountId, identityId) => {
 
     if (!accessCheck.valid) return accessCheck.error;
 
-    let serverQuery;
-    if (identity.organizationId) {
-        serverQuery = { organizationId: identity.organizationId };
-    } else {
-        serverQuery = { accountId };
-    }
+    const personalServers = await Server.findAll({ where: { accountId } });
+    
+    const memberships = await OrganizationMember.findAll({ where: { accountId, status: "active" } });
+    const organizationIds = memberships.map(m => m.organizationId);
+    
+    let organizationServers = [];
+    if (organizationIds.length > 0) organizationServers = await Server.findAll({ where: { organizationId: { [Op.in]: organizationIds } } });
 
-    const servers = await Server.findAll({ where: serverQuery });
+    const allServers = [...personalServers, ...organizationServers];
 
-    for (const server of servers) {
+    const identityIdNum = parseInt(identityId);
+    
+    for (const server of allServers) {
         let serverIdentities = [];
 
         if (typeof server.identities === "string") {
@@ -114,13 +117,8 @@ module.exports.deleteIdentity = async (accountId, identityId) => {
         } else if (Array.isArray(server.identities)) {
             serverIdentities = server.identities;
         }
+        const updatedIdentities = serverIdentities.filter(id => parseInt(id) !== identityIdNum);
 
-        const identityIdNum = parseInt(identityId);
-        const updatedIdentities = serverIdentities.filter(id => {
-            const serverId = parseInt(id);
-            return serverId !== identityIdNum;
-        });
-        
         if (updatedIdentities.length !== serverIdentities.length) {
             await Server.update({ identities: updatedIdentities }, { where: { id: server.id } });
         }
