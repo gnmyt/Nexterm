@@ -18,8 +18,11 @@ module.exports.createOrganization = async (accountId, configuration) => {
 };
 
 module.exports.deleteOrganization = async (accountId, organizationId) => {
+    const orgId = parseInt(organizationId, 10);
+    if (isNaN(orgId) || orgId <= 0) return { code: 400, message: "Invalid organization ID" };
+
     const organization = await Organization.findOne({
-        where: { id: organizationId, ownerId: accountId },
+        where: { id: orgId, ownerId: accountId },
     });
 
     if (!organization) {
@@ -34,27 +37,35 @@ module.exports.deleteOrganization = async (accountId, organizationId) => {
 };
 
 module.exports.updateOrganization = async (accountId, organizationId, updates) => {
+    const orgId = parseInt(organizationId, 10);
+    if (isNaN(orgId) || orgId <= 0) {
+        return { code: 400, message: "Invalid organization ID" };
+    }
+
     const membership = await OrganizationMember.findOne({
-        where: { organizationId, accountId, status: "active", role: "owner" },
+        where: { organizationId: orgId, accountId, status: "active", role: "owner" },
     });
 
     if (!membership) {
         return { code: 403, message: "You don't have permission to update this organization" };
     }
 
-    await Organization.update(updates, { where: { id: organizationId } });
+    await Organization.update(updates, { where: { id: orgId } });
 
-    return await Organization.findByPk(organizationId);
+    return await Organization.findByPk(orgId);
 };
 
 module.exports.getOrganization = async (accountId, organizationId) => {
-    const membership = await OrganizationMember.findOne({ where: { organizationId, accountId, status: "active" } });
+    const orgId = parseInt(organizationId, 10);
+    if (isNaN(orgId) || orgId <= 0) return { code: 400, message: "Invalid organization ID" };
+
+    const membership = await OrganizationMember.findOne({ where: { organizationId: orgId, accountId, status: "active" } });
 
     if (!membership) {
         return { code: 403, message: "You don't have access to this organization" };
     }
 
-    return await Organization.findByPk(organizationId);
+    return await Organization.findByPk(orgId);
 };
 
 module.exports.listOrganizations = async (accountId) => {
@@ -96,17 +107,20 @@ module.exports.listPendingInvitations = async (accountId) => {
 };
 
 module.exports.inviteUser = async (accountId, organizationId, username) => {
+    const orgId = parseInt(organizationId, 10);
+    if (isNaN(orgId) || orgId <= 0) return { code: 400, message: "Invalid organization ID" };
+
     const membership = await OrganizationMember.findOne({
-        where: { organizationId, accountId, status: "active", role: "owner" },
+        where: { organizationId: orgId, accountId, status: "active", role: "owner" },
     });
 
     if (!membership) return { code: 403, message: "You don't have permission to invite users to this organization" };
-    const invitedUser = await Account.findOne({ where: { username } });
+    const invitedUser = await Account.findOne({ where: { username: username } });
 
     if (!invitedUser) return { code: 404, message: "User not found" };
 
     const existingMembership = await OrganizationMember.findOne({
-        where: { organizationId, accountId: invitedUser.id },
+        where: { organizationId: orgId, accountId: invitedUser.id },
     });
 
     if (existingMembership) {
@@ -118,7 +132,7 @@ module.exports.inviteUser = async (accountId, organizationId, username) => {
     }
 
     await OrganizationMember.create({
-        organizationId, accountId: invitedUser.id, role: "member",
+        organizationId: orgId, accountId: invitedUser.id, role: "member",
         status: "pending", invitedBy: accountId,
     });
 
@@ -126,29 +140,38 @@ module.exports.inviteUser = async (accountId, organizationId, username) => {
 };
 
 module.exports.respondToInvitation = async (accountId, organizationId, accept) => {
-    const invitation = await OrganizationMember.findOne({ where: { organizationId, accountId, status: "pending" } });
+    const orgId = parseInt(organizationId, 10);
+    if (isNaN(orgId) || orgId <= 0) return { code: 400, message: "Invalid organization ID" };
+
+    const invitation = await OrganizationMember.findOne({ where: { organizationId: orgId, accountId, status: "pending" } });
 
     if (!invitation) return { code: 404, message: "Invitation not found" };
 
     if (accept) {
-        await OrganizationMember.update({ status: "active" }, { where: { organizationId } });
+        await OrganizationMember.update({ status: "active" }, { where: { organizationId: orgId, accountId } });
         return { success: true, message: "Invitation accepted" };
     } else {
-        await OrganizationMember.destroy({ where: { organizationId } });
+        await OrganizationMember.destroy({ where: { organizationId: orgId, accountId } });
         return { success: true, message: "Invitation declined" };
     }
 };
 
 module.exports.removeMember = async (accountId, organizationId, memberAccountId) => {
+    const orgId = parseInt(organizationId, 10);
+    const memberId = parseInt(memberAccountId, 10);
+
+    if (isNaN(orgId) || orgId <= 0) return { code: 400, message: "Invalid organization ID" };
+    if (isNaN(memberId) || memberId <= 0) return { code: 400, message: "Invalid member account ID" };
+
     const membership = await OrganizationMember.findOne({
-        where: { organizationId, accountId, status: "active", role: "owner" },
+        where: { organizationId: orgId, accountId, status: "active", role: "owner" },
     });
 
     if (!membership) {
         return { code: 403, message: "You don't have permission to remove members from this organization" };
     }
 
-    const memberToRemove = await OrganizationMember.findOne({ where: { organizationId, accountId: memberAccountId } });
+    const memberToRemove = await OrganizationMember.findOne({ where: { organizationId: orgId, accountId: memberId } });
 
     if (!memberToRemove) {
         return { code: 404, message: "Member not found in this organization" };
@@ -159,19 +182,21 @@ module.exports.removeMember = async (accountId, organizationId, memberAccountId)
     }
 
 
-    await OrganizationMember.destroy({ where: { organizationId, accountId: memberAccountId } });
+    await OrganizationMember.destroy({ where: { organizationId: orgId, accountId: memberId } });
 
     return { success: true, message: "Member removed successfully" };
 };
 
 module.exports.listMembers = async (accountId, organizationId) => {
-    const membership = await OrganizationMember.findOne({ where: { organizationId, accountId, status: "active" } });
+    const orgId = parseInt(organizationId, 10);
+    if (isNaN(orgId) || orgId <= 0) return { code: 400, message: "Invalid organization ID" };
+    const membership = await OrganizationMember.findOne({ where: { organizationId: orgId, accountId, status: "active" } });
 
     if (!membership) {
         return { code: 403, message: "You don't have access to this organization" };
     }
 
-    const members = await OrganizationMember.findAll({ where: { organizationId } });
+    const members = await OrganizationMember.findAll({ where: { organizationId: orgId } });
 
     const memberAccountIds = members.map(m => m.accountId);
     const accounts = await Account.findAll({
@@ -190,7 +215,10 @@ module.exports.listMembers = async (accountId, organizationId) => {
 };
 
 module.exports.leaveOrganization = async (accountId, organizationId) => {
-    const membership = await OrganizationMember.findOne({ where: { organizationId, accountId, status: "active" } });
+    const orgId = parseInt(organizationId, 10);
+    if (isNaN(orgId) || orgId <= 0) return { code: 400, message: "Invalid organization ID" };
+
+    const membership = await OrganizationMember.findOne({ where: { organizationId: orgId, accountId, status: "active" } });
 
     if (!membership) {
         return { code: 404, message: "You are not a member of this organization" };
@@ -200,7 +228,7 @@ module.exports.leaveOrganization = async (accountId, organizationId) => {
         return { code: 403, message: "As the owner, you cannot leave the organization. You must delete it instead" };
     }
 
-    await OrganizationMember.destroy({ where: { organizationId, accountId } });
+    await OrganizationMember.destroy({ where: { organizationId: orgId, accountId } });
 
     return { success: true, message: "You have left the organization" };
 };
