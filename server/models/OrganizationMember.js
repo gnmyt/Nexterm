@@ -2,17 +2,14 @@ const Sequelize = require("sequelize");
 const db = require("../utils/database");
 
 module.exports = db.define("organization_members", {
-    id: {
-        type: Sequelize.INTEGER,
-        primaryKey: true,
-        autoIncrement: true,
-    },
     organizationId: {
         type: Sequelize.INTEGER,
+        primaryKey: true,
         allowNull: false,
     },
     accountId: {
         type: Sequelize.INTEGER,
+        primaryKey: true,
         allowNull: false,
     },
     role: {
