@@ -71,8 +71,8 @@ export const OrganizationDialog = ({ open, onClose, refreshOrganizations }) => {
                     </div>
 
                     <div className="dialog-actions">
-                        <Button text="Cancel" onClick={onClose} type="secondary" />
-                        <Button text="Create" type="primary" onClick={handleSubmit} />
+                        <Button text="Cancel" onClick={onClose} type="secondary" buttonType="button" />
+                        <Button text="Create" type="primary" buttonType="submit" />
                     </div>
                 </form>
             </div>
