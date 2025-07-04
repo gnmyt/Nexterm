@@ -93,7 +93,14 @@ module.exports.deleteIdentity = async (accountId, identityId) => {
 
     if (!accessCheck.valid) return accessCheck.error;
 
-    const servers = await Server.findAll({ where: { [Op.or]: [{ accountId }, { organizationId: identity.organizationId }] } });
+    let serverQuery;
+    if (identity.organizationId) {
+        serverQuery = { organizationId: identity.organizationId };
+    } else {
+        serverQuery = { accountId };
+    }
+
+    const servers = await Server.findAll({ where: serverQuery });
 
     for (const server of servers) {
         let serverIdentities = [];
@@ -108,7 +115,12 @@ module.exports.deleteIdentity = async (accountId, identityId) => {
             serverIdentities = server.identities;
         }
 
-        const updatedIdentities = serverIdentities.filter(id => id !== identityId);
+        const identityIdNum = parseInt(identityId);
+        const updatedIdentities = serverIdentities.filter(id => {
+            const serverId = parseInt(id);
+            return serverId !== identityIdNum;
+        });
+        
         if (updatedIdentities.length !== serverIdentities.length) {
             await Server.update({ identities: updatedIdentities }, { where: { id: server.id } });
         }
