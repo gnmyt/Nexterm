@@ -9,9 +9,5 @@ module.exports = db.define("organizations", {
     description: {
         type: Sequelize.STRING,
         allowNull: true,
-    },
-    ownerId: {
-        type: Sequelize.INTEGER,
-        allowNull: false
     }
 }, { freezeTableName: true });

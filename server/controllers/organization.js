@@ -6,7 +6,6 @@ const { Op } = require("sequelize");
 module.exports.createOrganization = async (accountId, configuration) => {
     const organization = await Organization.create({
         name: configuration.name, description: configuration.description,
-        ownerId: accountId,
     });
 
     const existingMembership = await OrganizationMember.findOne({
@@ -27,11 +26,11 @@ module.exports.deleteOrganization = async (accountId, organizationId) => {
     const orgId = parseInt(organizationId, 10);
     if (isNaN(orgId) || orgId <= 0) return { code: 400, message: "Invalid organization ID" };
 
-    const organization = await Organization.findOne({
-        where: { id: orgId, ownerId: accountId },
+    const membership = await OrganizationMember.findOne({
+        where: { organizationId: orgId, accountId, status: "active", role: "owner" },
     });
 
-    if (!organization) {
+    if (!membership) {
         return { code: 403, message: "You don't have permission to delete this organization or it doesn't exist" };
     }
 
@@ -79,7 +78,11 @@ module.exports.listOrganizations = async (accountId) => {
 
     const organizationIds = memberships.map(m => m.organizationId);
 
-    return await Organization.findAll({ where: { id: { [Op.in]: organizationIds } } });
+    const organizations = await Organization.findAll({ where: { id: { [Op.in]: organizationIds } } });
+    return organizations.map(org => {
+        const membership = memberships.find(m => m.organizationId === org.id);
+        return { ...org, isOwner: membership.role === "owner" };
+    });
 };
 
 module.exports.listPendingInvitations = async (accountId) => {

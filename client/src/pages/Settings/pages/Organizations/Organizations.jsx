@@ -93,7 +93,7 @@ export const Organizations = () => {
     };
 
     const isOrgOwner = (org) => {
-        return org.ownerId === user.id;
+        return org.isOwner;
     };
 
     const showConfirmDialog = (action, text) => {
