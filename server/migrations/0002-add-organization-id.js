@@ -7,21 +7,23 @@ module.exports = {
             console.log("Migration already applied: organizationId column exists.");
             return;
         }
-        queryInterface.addColumn("identities", "organizationId", {
+        
+        await queryInterface.addColumn("identities", "organizationId", {
             type: DataTypes.INTEGER,
             allowNull: true,
         });
 
-        queryInterface.addColumn("servers", "organizationId", {
+        await queryInterface.addColumn("servers", "organizationId", {
             type: DataTypes.INTEGER,
             allowNull: true,
         });
 
-        queryInterface.addColumn("folders", "organizationId", {
+        await queryInterface.addColumn("folders", "organizationId", {
             type: DataTypes.INTEGER,
             allowNull: true,
         });
-        queryInterface.addColumn("pve_servers", "organizationId", {
+        
+        await queryInterface.addColumn("pve_servers", "organizationId", {
             type: DataTypes.INTEGER,
             allowNull: true,
         });
