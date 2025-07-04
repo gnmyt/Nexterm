@@ -40,13 +40,25 @@ module.exports = {
                 type: DataTypes.INTEGER,
                 allowNull: false,
             },
+            createdAt: {
+                type: DataTypes.DATE,
+                allowNull: false,
+                defaultValue: DataTypes.NOW,
+            },
+            updatedAt: {
+                type: DataTypes.DATE,
+                allowNull: false,
+                defaultValue: DataTypes.NOW,
+            },
         }, {
             freezeTableName: true,
         });
 
         await queryInterface.sequelize.query(`
-            INSERT INTO organization_members(organizationId, accountId, role, status, invitedBy)
-            SELECT DISTINCT organizationId, accountId, role, status, invitedBy
+            INSERT INTO organization_members(organizationId, accountId, role, status, invitedBy, createdAt, updatedAt)
+            SELECT DISTINCT organizationId, accountId, role, status, invitedBy, 
+                   COALESCE(createdAt, datetime('now')) as createdAt,
+                   COALESCE(updatedAt, datetime('now')) as updatedAt
             FROM organization_members_backup
             GROUP BY organizationId, accountId
             HAVING MIN(rowid)
