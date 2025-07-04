@@ -1,6 +1,7 @@
 const express = require("express");
 const path = require("path");
 const db = require("./utils/database");
+const MigrationRunner = require("./utils/migrationRunner");
 const { authenticate } = require("./middlewares/auth");
 const expressWs = require("express-ws");
 const { startPVEUpdater } = require("./utils/pveUpdater");
@@ -76,7 +77,8 @@ db.authenticate()
                 (process.env.DB_TYPE === "mysql" ? "server" : "file")
         );
 
-        await db.sync({ alter: true, force: false });
+        const migrationRunner = new MigrationRunner();
+        await migrationRunner.runMigrations();
 
         startPVEUpdater();
 
