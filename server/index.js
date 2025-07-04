@@ -63,6 +63,8 @@ if (process.env.NODE_ENV === "production") {
     );
 }
 
+if (!process.env.ENCRYPTION_KEY) throw new Error("ENCRYPTION_KEY environment variable is not set. Please set it to a random hex string.");
+
 db.authenticate()
     .catch((err) => {
         console.error(
