@@ -12,6 +12,7 @@ export const ViewContainer = ({ activeSessions, activeSessionId, setActiveSessio
     const [layoutMode, setLayoutMode] = useState("single");
     const [gridSessions, setGridSessions] = useState([]);
     const sessionRefs = useRef({});
+    const tabOrderRef = useRef([]);
 
     const [columnSizes, setColumnSizes] = useState([]);
     const [rowSizes, setRowSizes] = useState([]);
@@ -19,6 +20,14 @@ export const ViewContainer = ({ activeSessions, activeSessionId, setActiveSessio
     const [resizingDirection, setResizingDirection] = useState(null);
     const resizeRef = useRef(null);
     const layoutRef = useRef(null);
+
+    const onTabOrderChange = useCallback((newOrder) => {
+        tabOrderRef.current = newOrder;
+        if (layoutMode !== "single") {
+            const filteredOrder = newOrder.filter(id => activeSessions.some(session => session.id === id));
+            if (filteredOrder.length > 0) setGridSessions(filteredOrder);
+        }
+    }, [layoutMode, activeSessions]);
 
     const focusSession = useCallback((sessionId) => {
         setActiveSessionId(sessionId);
@@ -166,8 +175,9 @@ export const ViewContainer = ({ activeSessions, activeSessionId, setActiveSessio
             const newMode = getOptimalLayout(activeSessions.length);
             setLayoutMode(newMode);
 
-            const newGridSessions = activeSessions.map(s => s.id);
-            setGridSessions(newGridSessions);
+            const orderedSessionIds = tabOrderRef.current && tabOrderRef.current.length > 0 ? tabOrderRef.current
+                : activeSessions.map(s => s.id);
+            setGridSessions(orderedSessionIds);
 
             const layout = getDynamicLayout(activeSessions.length);
             initializeGridSizes(layout);
@@ -185,8 +195,9 @@ export const ViewContainer = ({ activeSessions, activeSessionId, setActiveSessio
 
             if (newMode !== layoutMode) setLayoutMode(newMode);
 
-            const newGridSessions = activeSessions.map(s => s.id);
-            setGridSessions(newGridSessions);
+            const orderedSessionIds = tabOrderRef.current && tabOrderRef.current.length > 0 ? tabOrderRef.current
+                : activeSessions.map(s => s.id);
+            setGridSessions(orderedSessionIds);
 
             const layout = getDynamicLayout(activeSessions.length);
             initializeGridSizes(layout);
@@ -256,7 +267,7 @@ export const ViewContainer = ({ activeSessions, activeSessionId, setActiveSessio
                     width: layoutMode === "single" ? "100%" : "auto",
                     height: layoutMode === "single" ? "100%" : "auto",
                     zIndex: visible ? 1 : -1,
-                    ...(layout && { "--grid-rows": layout.rows, "--grid-cols": layout.cols, }),
+                    ...(layout && { "--grid-rows": layout.rows, "--grid-cols": layout.cols }),
                 }}
             >
                 {(server.protocol === "vnc" || server.protocol === "rdp") &&
@@ -279,7 +290,8 @@ export const ViewContainer = ({ activeSessions, activeSessionId, setActiveSessio
         <div className="view-container">
             <ServerTabs activeSessions={activeSessions} setActiveSessionId={focusSession}
                         activeSessionId={activeSessionId} disconnectFromServer={disconnectFromServer}
-                        layoutMode={layoutMode} onToggleSplit={toggleSplitMode} />
+                        layoutMode={layoutMode} onToggleSplit={toggleSplitMode} orderRef={tabOrderRef}
+                        onTabOrderChange={onTabOrderChange} />
 
             <div ref={layoutRef}
                  className={`view-layouter ${layoutMode} ${isResizing ? "resizing" : ""} ${isResizing && resizingDirection ? `resizing-${resizingDirection}` : ""}`}
