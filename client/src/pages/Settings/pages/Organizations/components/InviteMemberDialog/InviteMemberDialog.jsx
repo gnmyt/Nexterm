@@ -7,7 +7,7 @@ import Button from "@/common/components/Button";
 import { postRequest } from "@/common/utils/RequestUtil.js";
 import "./styles.sass";
 
-export const InviteMemberDialog = ({ open, onClose, organization }) => {
+export const InviteMemberDialog = ({ open, onClose, organization, refreshMembers }) => {
     const { sendToast } = useToast();
     const [username, setUsername] = useState("");
 
@@ -25,6 +25,8 @@ export const InviteMemberDialog = ({ open, onClose, organization }) => {
             });
 
             sendToast("Success", "Invitation sent successfully");
+            refreshMembers();
+
             onClose();
         } catch (error) {
             sendToast("Error", error.message || "Failed to send invitation");
