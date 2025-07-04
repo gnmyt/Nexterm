@@ -6,7 +6,7 @@
  
 ## 📦 Installation
 
-Since 1.0.3-OPEN-PREVIEW, you are required to set an encryption key. You can generate one with `openssl rand -hex 32`.
+Since 1.0.3-OPEN-PREVIEW, you are required to set an encryption key in **hexadecimal format** (64 characters using only 0-9 and a-f). **Do not use arbitrary text or alphanumeric strings.** You can generate one with `openssl rand -hex 32`.
 
 ### 🐳 Docker
 
