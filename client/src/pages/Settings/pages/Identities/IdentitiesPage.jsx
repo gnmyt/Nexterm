@@ -42,7 +42,7 @@ export const IdentitiesPage = () => {
 
     useEffect(() => {
         loadIdentities();
-    }, [loadIdentities]);
+    }, []);
 
     const handleCreateNew = () => {
         setEditingIdentity(null);
