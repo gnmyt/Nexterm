@@ -79,6 +79,23 @@
       h2
         margin: 0
         font-size: 1.3rem
+        flex: 1
+
+      .tab-actions
+        display: flex
+        align-items: center
+        gap: 0.25rem
+        cursor: pointer
+
+        .close-btn
+          opacity: 0.6
+          transition: all 0.2s ease
+          padding: 0.25rem
+          border-radius: 0.25rem
+
+          &:hover
+            opacity: 1
+            background-color: colors.$error-opacity
 
     .server-tab-active
       background-color: colors.$gray

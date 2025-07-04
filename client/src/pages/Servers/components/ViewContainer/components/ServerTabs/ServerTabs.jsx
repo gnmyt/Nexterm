@@ -36,10 +36,12 @@ const DraggableTab = ({
              style={{ opacity: isDragging ? 0.5 : 1 }}>
             <Icon path={server?.icon ? loadIcon(server.icon) : getIconByType(server?.type)} />
             <h2>{server?.name} {session.type === "sftp" ? " (SFTP)" : ""}</h2>
-            <Icon path={mdiClose} onClick={(e) => {
-                e.stopPropagation();
-                disconnectFromServer(session.id);
-            }} />
+            <div className="tab-actions">
+                <Icon path={mdiClose} className="close-btn" title="Close Session" onClick={(e) => {
+                    e.stopPropagation();
+                    disconnectFromServer(session.id);
+                }} />
+            </div>
         </div>
     );
 };
