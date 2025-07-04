@@ -1,15 +1,15 @@
 import { useEffect, useRef, useState, useContext } from "react";
 import { UserContext } from "@/common/contexts/UserContext.jsx";
 import { useAI } from "@/common/contexts/AIContext.jsx";
-import { Terminal as Xterm } from "xterm";
+import { Terminal as Xterm } from "@xterm/xterm";
 import { useTheme } from "@/common/contexts/ThemeContext.jsx";
 import { useTerminalSettings } from "@/common/contexts/TerminalSettingsContext.jsx";
-import { FitAddon } from "xterm-addon-fit/src/FitAddon";
+import { FitAddon } from "@xterm/addon-fit";
 import SnippetsMenu from "./components/SnippetsMenu";
 import AICommandPopover from "./components/AICommandPopover";
 import { mdiCodeArray } from "@mdi/js";
 import Icon from "@mdi/react";
-import "xterm/css/xterm.css";
+import "@xterm/xterm/css/xterm.css";
 import "./styles/xterm.sass";
 
 const XtermRenderer = ({ session, disconnectFromServer, pve }) => {
