@@ -9,10 +9,16 @@ module.exports.createOrganization = async (accountId, configuration) => {
         ownerId: accountId,
     });
 
-    await OrganizationMember.create({
-        organizationId: organization.id, accountId: accountId, role: "owner",
-        status: "active", invitedBy: accountId,
+    const existingMembership = await OrganizationMember.findOne({
+        where: { organizationId: organization.id, accountId: accountId },
     });
+
+    if (!existingMembership) {
+        await OrganizationMember.create({
+            organizationId: organization.id, accountId: accountId, role: "owner",
+            status: "active", invitedBy: accountId,
+        });
+    }
 
     return organization;
 };
