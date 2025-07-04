@@ -51,8 +51,8 @@ export const InviteMemberDialog = ({ open, onClose, organization }) => {
                     </div>
 
                     <div className="dialog-actions">
-                        <Button text="Cancel" onClick={onClose} type="secondary" />
-                        <Button text="Send Invitation" type="primary" onClick={handleInvite} />
+                        <Button text="Cancel" onClick={onClose} type="secondary" buttonType="button" />
+                        <Button text="Send Invitation" type="primary" buttonType="submit" />
                     </div>
                 </form>
             </div>
