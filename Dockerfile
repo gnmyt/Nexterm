@@ -3,7 +3,7 @@ FROM node:22-alpine AS client-builder
 WORKDIR /app/client
 
 COPY client/package.json client/yarn.lock ./
-RUN yarn install --frozen-lockfile
+RUN yarn install --frozen-lockfile --network-timeout 100000
 
 COPY client/ .
 RUN yarn build
@@ -17,7 +17,7 @@ RUN apk add --no-cache \
     make g++ gcc build-base
 
 COPY package.json yarn.lock ./
-RUN yarn install --production --frozen-lockfile
+RUN yarn install --production --frozen-lockfile --network-timeout 100000
 
 COPY server/ server/
 
