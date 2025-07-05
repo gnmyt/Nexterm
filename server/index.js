@@ -1,6 +1,7 @@
 const express = require("express");
 const path = require("path");
 const db = require("./utils/database");
+const packageJson = require("../package.json");
 const MigrationRunner = require("./utils/migrationRunner");
 const { authenticate } = require("./middlewares/auth");
 const expressWs = require("express-ws");
@@ -64,6 +65,9 @@ if (process.env.NODE_ENV === "production") {
 }
 
 if (!process.env.ENCRYPTION_KEY) throw new Error("ENCRYPTION_KEY environment variable is not set. Please set it to a random hex string.");
+
+console.log(`Starting Nexterm version ${packageJson.version} in ${process.env.NODE_ENV || 'development'} mode...`);
+console.log(`🛈 Running on Node.js ${process.version}\n`);
 
 db.authenticate()
     .catch((err) => {
