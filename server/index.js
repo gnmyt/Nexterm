@@ -6,6 +6,7 @@ const MigrationRunner = require("./utils/migrationRunner");
 const { authenticate } = require("./middlewares/auth");
 const expressWs = require("express-ws");
 const { startPVEUpdater } = require("./utils/pveUpdater");
+const { ensureInternalProvider } = require("./controllers/oidc");
 const monitoringService = require("./utils/monitoringService");
 const {
     refreshAppSources,
@@ -85,6 +86,8 @@ db.authenticate()
 
         const migrationRunner = new MigrationRunner();
         await migrationRunner.runMigrations();
+
+        await ensureInternalProvider();
 
         startPVEUpdater();
 
