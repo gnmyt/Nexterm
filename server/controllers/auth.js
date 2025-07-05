@@ -2,8 +2,12 @@ const Account = require("../models/Account");
 const Session = require("../models/Session");
 const speakeasy = require("speakeasy");
 const { compare } = require("bcrypt");
+const OIDCProvider = require("../models/OIDCProvider");
 
 module.exports.login = async (configuration, user) => {
+    const internalProvider = await OIDCProvider.findOne({ where: { isInternal: true, enabled: true } });
+    if (!internalProvider) return { code: 403, message: "Internal authentication is disabled" };
+
     const account = await Account.findOne({ where: { username: configuration.username } });
 
     // Check if account exists
