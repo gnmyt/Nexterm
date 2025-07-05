@@ -67,6 +67,11 @@ module.exports = db.define("oidc_providers", {
             allowNull: true,
             defaultValue: "preferred_username",
         },
+        isInternal: {
+            type: Sequelize.BOOLEAN,
+            allowNull: false,
+            defaultValue: false,
+        },
     },
     {
         freezeTableName: true,
