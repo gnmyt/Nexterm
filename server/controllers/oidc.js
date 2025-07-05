@@ -4,6 +4,7 @@ const Account = require("../models/Account");
 const Session = require("../models/Session");
 const { genSalt, hash } = require("bcrypt");
 const crypto = require("crypto");
+const { Op } = require("sequelize");
 
 const stateStore = new Map();
 
@@ -16,7 +17,7 @@ module.exports.listProviders = async (includeSecret = false) => {
             clientId: provider.clientId, redirectUri: provider.redirectUri, scope: provider.scope,
             enabled: provider.enabled, emailAttribute: provider.emailAttribute,
             usernameAttribute: provider.usernameAttribute, firstNameAttribute: provider.firstNameAttribute,
-            lastNameAttribute: provider.lastNameAttribute,
+            lastNameAttribute: provider.lastNameAttribute, isInternal: provider.isInternal,
         }));
     }
 
@@ -35,6 +36,19 @@ module.exports.updateProvider = async (providerId, data) => {
     const provider = await OIDCProvider.findByPk(providerId);
     if (!provider) return { code: 404, message: "Provider not found" };
 
+    if (provider.isInternal) {
+        if (Object.keys(data).length !== 1 || !data.hasOwnProperty("enabled")) {
+            return { code: 400, message: "Internal authentication provider can only be enabled or disabled" };
+        }
+    }
+
+    if (data.enabled === false) {
+        const hasOtherEnabled = await this.validateAtLeastOneEnabled(providerId);
+        if (!hasOtherEnabled) {
+            return { code: 400, message: "At least one authentication provider must remain enabled" };
+        }
+    }
+
     await OIDCProvider.update(data, { where: { id: providerId } });
     return provider;
 };
@@ -44,6 +58,11 @@ module.exports.deleteProvider = async (providerId) => {
     if (!provider) {
         return { code: 404, message: "Provider not found" };
     }
+
+    if (provider.isInternal) {
+        return { code: 400, message: "Cannot delete internal authentication provider" };
+    }
+
     await OIDCProvider.destroy({ where: { id: providerId } });
     return { message: "Provider deleted successfully" };
 };
@@ -163,3 +182,31 @@ module.exports.handleOIDCCallback = async (query, userInfo) => {
         return { code: 500, message: "Failed to process OIDC login: " + error.message };
     }
 };
+
+module.exports.ensureInternalProvider = async () => {
+    const internalProvider = await OIDCProvider.findOne({ where: { isInternal: true } });
+
+    if (!internalProvider) {
+        await OIDCProvider.create({
+            name: "Internal Authentication",
+            issuer: "internal",
+            clientId: "internal",
+            clientSecret: null,
+            redirectUri: "internal",
+            scope: "internal",
+            enabled: true,
+            isInternal: true,
+            emailAttribute: "email",
+            usernameAttribute: "username",
+            firstNameAttribute: "firstName",
+            lastNameAttribute: "lastName",
+        });
+    }
+};
+
+module.exports.validateAtLeastOneEnabled = async (excludeProviderId = null) => {
+    const enabledProviders = await OIDCProvider.findAll({ where: { enabled: true, ...(excludeProviderId && { id: { [Op.ne]: excludeProviderId } }) } });
+
+    return enabledProviders.length > 0;
+};
+
