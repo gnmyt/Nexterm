@@ -30,6 +30,53 @@ const deleteFolderRecursive = (sftp, folderPath, callback) => {
     });
 };
 
+const searchDirectories = (sftp, searchPath, callback, maxResults = 20) => {
+    const results = [];
+    const searchQuery = searchPath.toLowerCase();
+
+    const isSearchingInside = searchPath.endsWith('/');
+    let basePath, searchTerm;
+
+    if (isSearchingInside) {
+        basePath = searchPath === '/' ? '/' : searchPath.slice(0, -1);
+        searchTerm = '';
+    } else {
+        const lastSlashIndex = searchPath.lastIndexOf('/');
+        basePath = lastSlashIndex === 0 ? '/' : searchPath.substring(0, lastSlashIndex);
+        searchTerm = searchPath.substring(lastSlashIndex + 1).toLowerCase();
+    }
+
+    const searchRecursive = (currentPath, depth = 0) => {
+        if (depth > 3 || results.length >= maxResults) return;
+
+        sftp.readdir(currentPath, (err, list) => {
+            if (err || !list) return;
+
+            list.forEach(file => {
+                if (!file.longname.startsWith('d')) return;
+
+                const fullPath = currentPath === '/' ? `/${file.filename}` : `${currentPath}/${file.filename}`;
+                const fileName = file.filename.toLowerCase();
+
+                if (isSearchingInside) {
+                    if (currentPath === basePath) results.push(fullPath);
+                } else {
+                    if (fileName.startsWith(searchTerm) || fullPath.toLowerCase().includes(searchQuery)) results.push(fullPath);
+                }
+
+                if (results.length < maxResults && depth < 3) searchRecursive(fullPath, depth + 1);
+            });
+
+            if (depth === 0) {
+                const uniqueResults = [...new Set(results)].sort();
+                callback(null, uniqueResults.slice(0, maxResults));
+            }
+        });
+    };
+
+    searchRecursive(basePath || '/');
+};
+
 module.exports = async (ws, req) => {
     const ssh = await prepareSSH(ws, req);
     if (!ssh) return;
@@ -44,6 +91,8 @@ module.exports = async (ws, req) => {
         DELETE_FILE: 0x6,
         DELETE_FOLDER: 0x7,
         RENAME_FILE: 0x8,
+        ERROR: 0x9,
+        SEARCH_DIRECTORIES: 0xA,
     };
 
     let uploadStream = null;
@@ -76,6 +125,17 @@ module.exports = async (ws, req) => {
                     case OPERATIONS.LIST_FILES:
                         sftp.readdir(payload.path, (err, list) => {
                             if (err) {
+                                let errorMessage = "Failed to access directory";
+                                if (err.code === 2) {
+                                    errorMessage = "Directory does not exist";
+                                } else if (err.code === 3) {
+                                    errorMessage = "Permission denied - you don't have access to this directory";
+                                }
+
+                                ws.send(Buffer.concat([
+                                    Buffer.from([OPERATIONS.ERROR]),
+                                    Buffer.from(JSON.stringify({ message: errorMessage })),
+                                ]));
                                 return;
                             }
                             const files = list.map(file => ({
@@ -122,6 +182,17 @@ module.exports = async (ws, req) => {
                     case OPERATIONS.CREATE_FOLDER:
                         sftp.mkdir(payload.path, (err) => {
                             if (err) {
+                                let errorMessage = "Failed to create folder";
+                                if (err.code === 3) {
+                                    errorMessage = "Permission denied - you don't have permission to create folders here";
+                                } else if (err.code === 4) {
+                                    errorMessage = "Folder already exists";
+                                }
+
+                                ws.send(Buffer.concat([
+                                    Buffer.from([OPERATIONS.ERROR]),
+                                    Buffer.from(JSON.stringify({ message: errorMessage })),
+                                ]));
                                 return;
                             }
                             ws.send(Buffer.from([OPERATIONS.CREATE_FOLDER]));
@@ -152,6 +223,23 @@ module.exports = async (ws, req) => {
                                 return;
                             }
                             ws.send(Buffer.from([OPERATIONS.RENAME_FILE]));
+                        });
+                        break;
+
+                    case OPERATIONS.SEARCH_DIRECTORIES:
+                        searchDirectories(sftp, payload.searchPath, (err, directories) => {
+                            if (err) {
+                                ws.send(Buffer.concat([
+                                    Buffer.from([OPERATIONS.ERROR]),
+                                    Buffer.from(JSON.stringify({ message: "Failed to search directories" })),
+                                ]));
+                                return;
+                            }
+
+                            ws.send(Buffer.concat([
+                                Buffer.from([OPERATIONS.SEARCH_DIRECTORIES]),
+                                Buffer.from(JSON.stringify({ directories })),
+                            ]));
                         });
                         break;
 

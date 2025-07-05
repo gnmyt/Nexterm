@@ -6,34 +6,40 @@
 
   .drag-overlay
     position: absolute
-    width: calc(100vw - 23rem)
-    height: calc(100% - 3.5rem)
+    width: 100%
+    height: 100%
     display: flex
     justify-content: center
     align-items: center
-    background-color: rgba(0, 0, 0, 0.5)
-    backdrop-filter: blur(0.3rem)
+    background-color: rgba(0, 0, 0, 0.8)
+    backdrop-filter: blur(0.5rem)
     color: colors.$white
     font-size: 1.5rem
-    z-index: 1
+    z-index: 10
 
     .drag-item
       padding: 4rem 2rem
       width: 20rem
-      border: 0.2rem dashed colors.$white
-      border-radius: 0.5rem
+      border: 0.2rem dashed colors.$primary
+      border-radius: 1rem
       display: flex
       flex-direction: column
       align-items: center
       gap: 2rem
+      background-color: rgba(49, 75, 211, 0.1)
+      backdrop-filter: blur(0.2rem)
+      animation: bounceIn 0.3s ease
 
       h2
         margin: 0
         font-weight: 600
         text-align: center
+        color: colors.$primary
 
       svg
         width: 8rem
+        color: colors.$primary
+        animation: pulse 2s infinite
 
 
   .file-manager

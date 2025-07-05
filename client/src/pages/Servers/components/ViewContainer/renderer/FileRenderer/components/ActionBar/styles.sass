@@ -3,17 +3,23 @@
 .action-bar
   display: flex
   margin: 0 2rem
-  padding-top: 1.5rem
+  padding: 1.5rem 0 1rem 0
   align-items: center
+  border-bottom: 1px solid colors.$dark-gray
 
   svg
     width: 2rem
     height: 2rem
     cursor: pointer
-    transition: color 0.2s
+    transition: all 0.2s ease
+    padding: 0.5rem
+    border-radius: 0.5rem
+    flex-shrink: 0
 
     &:hover
       color: colors.$primary
+      background-color: colors.$dark-gray
+      transform: scale(1.05)
 
   .nav-disabled
     color: colors.$gray
@@ -21,18 +27,43 @@
 
     &:hover
       color: colors.$gray
+      background-color: transparent
+      transform: none
 
   .address-bar
     user-select: none
-    padding: 0.5rem 1rem
+    padding: 0.75rem 1rem
     background-color: colors.$dark-gray
     border: 1px solid colors.$gray
     border-radius: 0.5rem
     display: flex
     gap: 0.5rem
-    width: 100%
+    flex: 1
     margin: 0 1rem
     cursor: text
+    transition: all 0.2s ease
+    min-height: 1.2rem
+    position: relative
+    min-width: 0
+
+    &:hover
+      border-color: colors.$primary-opacity
+      background-color: colors.$gray
+
+    &:focus-within
+      border-color: colors.$primary
+      box-shadow: 0 0 0 2px colors.$primary-opacity
+
+    .path-input-container
+      width: 100%
+      position: relative
+
+    .breadcrumb-container
+      display: flex
+      gap: 0.5rem
+      overflow: hidden
+      flex: 1
+      min-width: 0
 
     .path-input
       background: transparent
@@ -43,18 +74,91 @@
       font-size: inherit
       width: 100%
       padding: 0
+      
+      &::placeholder
+        color: colors.$subtext
+        opacity: 0.7
+
+    .suggestions-dropdown
+      position: absolute
+      top: 100%
+      left: -1rem
+      right: -1rem
+      background-color: colors.$gray-full
+      backdrop-filter: blur(1rem)
+      border: 1px solid colors.$gray
+      border-top: none
+      border-radius: 0 0 0.5rem 0.5rem
+      max-height: 200px
+      overflow-y: auto
+      z-index: 1000
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2)
+      
+      &::-webkit-scrollbar
+        width: 6px
+
+      &::-webkit-scrollbar-track
+        background: transparent
+
+      &::-webkit-scrollbar-thumb
+        background-color: colors.$gray
+        border-radius: 6px
+
+      .suggestion-item
+        padding: 0.5rem 1rem
+        cursor: pointer
+        transition: all 0.2s ease
+        font-size: 0.9rem
+        color: colors.$light-gray
+        user-select: none
+        overflow: hidden
+        text-overflow: ellipsis
+        white-space: nowrap
+
+        &:hover
+          background-color: colors.$primary-opacity
+          color: colors.$white
+
+        &.selected
+          background-color: colors.$primary
+          color: colors.$white
 
     .path-part-divider
       color: colors.$subtext
       cursor: pointer
+      transition: color 0.2s ease
+
+      &:hover
+        color: colors.$primary
 
     .path-part
       cursor: pointer
+      transition: all 0.2s ease
+      padding: 0.2rem 0.4rem
+      border-radius: 0.3rem
+      white-space: nowrap
+      overflow: hidden
+      text-overflow: ellipsis
+      max-width: 150px
+      flex-shrink: 1
 
-    *:hover
-      text-decoration: underline
+      &:hover
+        color: colors.$primary
+        background-color: colors.$primary-opacity
+
+      &.ellipsis
+        cursor: default
+        color: colors.$subtext
+        font-weight: bold
+        max-width: none
+        flex-shrink: 0
+        padding: 0.2rem 0.6rem
+
+        &:hover
+          color: colors.$subtext
+          background-color: transparent
 
   .file-actions
     display: flex
-    gap: 1rem
-    margin-right: 1rem
+    gap: 0.5rem
+    flex-shrink: 0
