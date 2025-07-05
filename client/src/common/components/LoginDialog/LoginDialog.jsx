@@ -16,6 +16,7 @@ export const LoginDialog = ({ open }) => {
     const [lastName, setLastName] = useState("");
     const [code, setCode] = useState("");
     const [providers, setProviders] = useState([]);
+    const [internalAuthEnabled, setInternalAuthEnabled] = useState(true);
 
     const { sendToast } = useToast();
 
@@ -23,12 +24,29 @@ export const LoginDialog = ({ open }) => {
 
     const { updateSessionToken, firstTimeSetup } = useContext(UserContext);
 
+    const isInternalAuthEnabled = () => {
+        if (firstTimeSetup) return true;
+        return internalAuthEnabled;
+    };
+
     const loadProviders = async () => {
         try {
-            const response = await getRequest("oidc/providers");
-            setProviders(response);
+            const providers = await getRequest("oidc/providers");
+
+            const internalProvider = providers.find(p => p.isInternal);
+            const externalProviders = providers.filter(p => !p.isInternal && p.enabled);
+            
+            const internalAuthEnabled = internalProvider ? internalProvider.enabled : false;
+            setInternalAuthEnabled(internalAuthEnabled);
+            setProviders(externalProviders);
+
+            if (!firstTimeSetup && externalProviders.length === 1 && !internalAuthEnabled) {
+                setTimeout(() => {
+                    handleOIDCLogin(null, externalProviders[0].id);
+                }, 300);
+            }
         } catch (error) {
-            sendToast("Error", "Error loading OIDC providers:" + error);
+            sendToast("Error", "Error loading authentication providers: " + error);
         }
     };
 
@@ -51,6 +69,11 @@ export const LoginDialog = ({ open }) => {
     const submit = async (event) => {
         event.preventDefault();
 
+        if (!isInternalAuthEnabled()) {
+            sendToast("Error", "Internal authentication is disabled");
+            return;
+        }
+
         if (firstTimeSetup && !await createAccountFirst()) return;
 
         let resultObj;
@@ -68,14 +91,17 @@ export const LoginDialog = ({ open }) => {
         if (resultObj.code === 201) sendToast("Error", "Invalid username or password");
         if (resultObj.code === 202) setTotpRequired(true);
         if (resultObj.code === 203) sendToast("Error", "Invalid two-factor code");
+        if (resultObj.code === 403) sendToast("Error", "Internal authentication is disabled");
         if (resultObj.token) {
             updateSessionToken(resultObj.token);
         }
     };
 
     const handleOIDCLogin = async (event, providerId) => {
-        event.preventDefault();
-        event.stopPropagation();
+        if (event) {
+            event.preventDefault();
+            event.stopPropagation();
+        }
 
         try {
             const response = await request("oidc/login/" + providerId, "POST");
@@ -95,7 +121,7 @@ export const LoginDialog = ({ open }) => {
                     <h1>{firstTimeSetup ? "Registration" : "Nexterm"}</h1>
                 </div>
                 <form className="login-form" onSubmit={submit}>
-                    {firstTimeSetup &&
+                    {firstTimeSetup ? (
                         <div className="register-name-row">
                             <div className="form-group">
                                 <label htmlFor="firstName">First Name</label>
@@ -110,36 +136,40 @@ export const LoginDialog = ({ open }) => {
                                        value={lastName} setValue={setLastName} />
                             </div>
                         </div>
-                    }
+                    ) : null}
 
-                    {!totpRequired && <>
-                        <div className="form-group">
-                            <label htmlFor="username">Username</label>
-                            <Input type="text" id="username" required icon={mdiAccountCircleOutline}
-                                   placeholder="Username" autoComplete="username"
-                                   value={username} setValue={setUsername} />
-                        </div>
+                    {(!totpRequired && isInternalAuthEnabled()) ? (
+                        <>
+                            <div className="form-group">
+                                <label htmlFor="username">Username</label>
+                                <Input type="text" id="username" required icon={mdiAccountCircleOutline}
+                                       placeholder="Username" autoComplete="username"
+                                       value={username} setValue={setUsername} />
+                            </div>
 
-                        <div className="form-group">
-                            <label htmlFor="password">Password</label>
-                            <Input type="password" id="password" required icon={mdiKeyOutline}
-                                   placeholder="Password" autoComplete="current-password"
-                                   value={password} setValue={setPassword} />
-                        </div>
-                    </>}
+                            <div className="form-group">
+                                <label htmlFor="password">Password</label>
+                                <Input type="password" id="password" required icon={mdiKeyOutline}
+                                       placeholder="Password" autoComplete="current-password"
+                                       value={password} setValue={setPassword} />
+                            </div>
+                        </>
+                    ) : null}
 
-                    {totpRequired && <>
-                        <div className="form-group">
-                            <label htmlFor="code">2FA Code</label>
-                            <Input type="number" id="code" required icon={mdiKeyOutline}
-                                   placeholder="Code" autoComplete="one-time-code"
-                                   value={code} setValue={setCode} />
-                        </div>
-                    </>}
+                    {totpRequired ? (
+                        <>
+                            <div className="form-group">
+                                <label htmlFor="code">2FA Code</label>
+                                <Input type="number" id="code" required icon={mdiKeyOutline}
+                                       placeholder="Code" autoComplete="one-time-code"
+                                       value={code} setValue={setCode} />
+                            </div>
+                        </>
+                    ) : null}
 
-                    <Button text={firstTimeSetup ? "Register" : "Login"} />
+                    {isInternalAuthEnabled() ? <Button text={firstTimeSetup ? "Register" : "Login"} /> : null}
 
-                    {!firstTimeSetup && !totpRequired && providers.length > 0 && (
+                    {(!firstTimeSetup && !totpRequired && providers.length > 0 && isInternalAuthEnabled()) ? (
                         <div className="sso-options">
                             <div className="divider">
                                 <span>or continue with</span>
@@ -155,7 +185,24 @@ export const LoginDialog = ({ open }) => {
                                 ))}
                             </div>
                         </div>
-                    )}
+                    ) : null}
+
+                    {(!firstTimeSetup && !totpRequired && providers.length > 0 && !isInternalAuthEnabled()) ? (
+                        <div className="sso-options">
+                            <div className="divider">
+                                <span>sign in with</span>
+                            </div>
+                            <div className="sso-buttons">
+                                {providers.map(provider => (
+                                    <Button key={provider.id} type="secondary" text={provider.name} onClick={(e) => handleOIDCLogin(e, provider.id)} />
+                                ))}
+                            </div>
+                        </div>
+                    ) : null}
+
+                    {(!firstTimeSetup && !isInternalAuthEnabled() && providers.length === 0) ? (
+                        <p>No authentication methods available.</p>
+                    ) : null}
                 </form>
             </div>
         </DialogProvider>

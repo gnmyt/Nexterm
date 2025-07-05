@@ -18,7 +18,7 @@ const app = Router();
 app.get("/providers", async (req, res) => {
     try {
         const providers = await listProviders(false);
-        res.json(providers.filter(p => p.enabled));
+        res.json(providers);
     } catch (error) {
         res.status(500).json({ message: "Internal server error" });
     }
