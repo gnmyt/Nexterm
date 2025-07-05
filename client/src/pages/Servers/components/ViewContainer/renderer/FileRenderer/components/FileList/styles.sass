@@ -3,33 +3,317 @@
 .file-list
   display: flex
   flex-direction: column
-  gap: 1rem
+  gap: 0.4rem
   overflow-y: scroll
   height: 100%
   margin-top: 1rem
+  padding: 0 0.8rem
+
+  .file-list-header
+    display: grid
+    grid-template-columns: minmax(180px, 2fr) minmax(70px, auto) minmax(110px, auto) auto
+    align-items: center
+    padding: 0.4rem 0.8rem
+    border-bottom: 1px solid colors.$gray
+    margin-bottom: 0.4rem
+    position: sticky
+    top: 0
+    z-index: 1
+    gap: 0.8rem
+
+    .header-name,
+    .header-size,
+    .header-date,
+    .header-actions
+      font-size: 0.85rem
+      font-weight: 600
+      color: colors.$subtext
+      text-transform: uppercase
+      letter-spacing: 0.5px
+
+    .header-size,
+    .header-date
+      text-align: right
+
+    .header-size
+      min-width: 50px
+
+    .header-date
+      min-width: 90px
+
+    .header-actions
+      width: 1.6rem
+      text-align: center
+
+  .loading-state,
+  .error-state,
+  .empty-state
+    display: flex
+    flex-direction: column
+    align-items: center
+    justify-content: center
+    height: 200px
+    text-align: center
+    padding: 2rem
+    position: absolute
+    top: 50%
+    left: 50%
+    transform: translate(-50%, -50%)
+    width: auto
+
+    p
+      margin: 0
+      font-size: 0.9rem
+
+  .loading-state
+    color: colors.$subtext
+
+    .loading-spinner
+      width: 3rem
+      height: 3rem
+      border: 0.3rem solid colors.$gray
+      border-top: 0.3rem solid colors.$primary
+      border-radius: 50%
+      animation: spin 1s linear infinite
+      margin-bottom: 1rem
+
+    p
+      opacity: 0.7
+
+  .error-state
+    color: colors.$error
+
+    svg
+      width: 4rem
+      height: 4rem
+      margin-bottom: 1rem
+      color: colors.$error
+
+    h3
+      margin: 0 0 0.5rem
+      font-size: 1.2rem
+      font-weight: 600
+      color: colors.$error
+
+    p
+      color: colors.$subtext
+      opacity: 0.8
+      max-width: 400px
+      line-height: 1.4
+
+  .empty-state
+    color: colors.$subtext
+
+    svg
+      width: 4rem
+      height: 4rem
+      margin-bottom: 1rem
+      opacity: 0.5
+
+    h3
+      margin: 0 0 0.5rem
+      font-size: 1.2rem
+      font-weight: 600
+
+    p
+      opacity: 0.7
 
   .file-item
     user-select: none
-    margin: 0 2rem
     display: grid
-    border-radius: 0.7rem
-    grid-template-columns: 1fr 1fr 1fr
+    border-radius: 0.4rem
+    grid-template-columns: minmax(180px, 2fr) minmax(70px, auto) minmax(110px, auto) auto
     align-items: center
-    padding: 0.5rem 1rem
+    padding: 0.5rem 0.8rem
     background-color: colors.$dark-gray
     cursor: pointer
+    transition: all 0.2s ease
+    border: 1px solid transparent
+    position: relative
+    overflow: hidden
+    gap: 0.8rem
+    min-height: 2.2rem
+
+    &:hover
+      background-color: colors.$gray
+      border-color: colors.$primary-opacity
+      transform: translateY(-1px)
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15)
+
+      .file-name svg
+        transform: scale(1.1)
+
+      .file-name h2
+        color: colors.$white
+
+      .dots-menu
+        opacity: 1
+
+    &:active
+      transform: translateY(0)
+      background-color: colors.$primary-opacity
+
+    &.focused,
+    &:focus
+      outline: none
+      border-color: colors.$primary
+      background-color: colors.$gray
+
+      .file-name svg
+        color: colors.$primary
+
+    &:focus-visible
+      box-shadow: 0 0 0 2px colors.$primary-opacity
 
     .file-name
       display: flex
-      gap: 1rem
+      gap: 0.7rem
       align-items: center
+      min-width: 0
 
-    h2, p
+      svg
+        width: 1.6rem
+        height: 1.6rem
+        transition: all 0.2s ease
+        flex-shrink: 0
+
+      h2
+        margin: 0
+        font-size: 0.85rem
+        font-weight: 500
+        color: colors.$white
+        transition: color 0.2s ease
+        white-space: nowrap
+        overflow: hidden
+        text-overflow: ellipsis
+
+    .file-size,
+    .file-date
       margin: 0
+      font-size: 0.75rem
+      color: colors.$subtext
+      text-align: right
+      white-space: nowrap
 
-    svg
-      width: 2rem
-      height: 2rem
+    .file-size
+      min-width: 50px
 
-  *:last-child
-    grid-column: 5 / 5
+    .file-date
+      min-width: 90px
+
+    .dots-menu
+      width: 1.6rem
+      height: 1.6rem
+      opacity: 0
+      transition: all 0.2s ease
+      color: colors.$subtext
+      flex-shrink: 0
+      justify-self: center
+
+      &:hover
+        color: colors.$primary
+        transform: scale(1.1)
+
+  &.grid
+    display: grid
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr))
+    grid-auto-rows: max-content
+    gap: 1rem
+    padding: 1rem
+    align-content: start
+    overflow-y: auto
+
+    .file-item
+      display: flex
+      flex-direction: column
+      align-items: center
+      text-align: center
+      padding: 1rem 0.5rem
+      min-height: auto
+      border-radius: 0.5rem
+
+      .file-name
+        flex-direction: column
+        gap: 0.5rem
+        text-align: center
+        width: 100%
+
+        svg
+          width: 2.5rem
+          height: 2.5rem
+
+        h2
+          font-size: 0.8rem
+          line-height: 1.2
+          white-space: normal
+          overflow: hidden
+          text-overflow: ellipsis
+          display: -webkit-box
+          -webkit-line-clamp: 2
+          -webkit-box-orient: vertical
+          max-height: 2.4rem
+
+      .dots-menu
+        position: absolute
+        top: 0.5rem
+        right: 0.5rem
+        opacity: 0
+
+      &:hover .dots-menu
+        opacity: 1
+
+@media (max-width: 768px)
+  .file-list
+    padding: 0 1rem
+    gap: 0.5rem
+
+    &.grid
+      grid-template-columns: repeat(auto-fill, minmax(120px, 1fr))
+      gap: 0.8rem
+      padding: 0.8rem 0.8rem 0
+
+    .file-list-header
+      grid-template-columns: 2fr auto auto auto
+      padding: 0.5rem 1rem
+      gap: 1rem
+
+      .header-size,
+      .header-date
+        font-size: 0.8rem
+
+    .file-item
+      grid-template-columns: minmax(150px, 2fr) minmax(60px, auto) minmax(80px, auto) auto
+      gap: 1rem
+      padding: 0.75rem 1rem
+      min-height: 3rem
+
+      &.grid
+        padding: 0.8rem 0.4rem
+
+        .file-name svg
+          width: 2rem
+          height: 2rem
+
+      .file-name
+        gap: 1rem
+
+        svg
+          width: 2rem
+          height: 2rem
+
+        h2
+          font-size: 0.9rem
+
+      .file-size,
+      .file-date
+        font-size: 0.8rem
+
+      .dots-menu
+        width: 2rem
+        height: 2rem
+
+@keyframes spin
+  0%
+    transform: rotate(0deg)
+  100%
+    transform: rotate(360deg)
