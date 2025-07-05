@@ -11,7 +11,8 @@ module.exports.oidcProviderValidation = Joi.object({
     emailAttribute: Joi.string().default('email'),
     firstNameAttribute: Joi.string().default('given_name'),
     lastNameAttribute: Joi.string().default('family_name'),
-    usernameAttribute: Joi.string().default('preferred_username')
+    usernameAttribute: Joi.string().default('preferred_username'),
+    isInternal: Joi.boolean().default(false)
 });
 
 module.exports.oidcProviderUpdateValidation = Joi.object({
@@ -25,5 +26,6 @@ module.exports.oidcProviderUpdateValidation = Joi.object({
     emailAttribute: Joi.string(),
     firstNameAttribute: Joi.string(),
     lastNameAttribute: Joi.string(),
-    usernameAttribute: Joi.string()
+    usernameAttribute: Joi.string(),
+    isInternal: Joi.boolean()
 });
