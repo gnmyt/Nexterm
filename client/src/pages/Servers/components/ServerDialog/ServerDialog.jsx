@@ -50,28 +50,39 @@ export const ServerDialog = ({ open, onClose, currentFolderId, editServerId }) =
     });
 
     const updateIdentities = async () => {
-        const createdIdentities = [];
+        const allIdentityIds = new Set();
+
+        identities.forEach(id => allIdentityIds.add(id));
 
         for (const identityId of Object.keys(identityUpdates)) {
             const identity = normalizeIdentity(identityUpdates[identityId]);
-            const payload = buildIdentityPayload(identity);
 
-            try {
-                if (identityId.startsWith("new-")) {
+            if (identityId.startsWith("new-")) {
+                const payload = buildIdentityPayload(identity);
+                try {
                     const result = await putRequest("identities", payload);
-                    if (result.id) createdIdentities.push(result.id);
-                } else {
-                    await patchRequest("identities/" + identityId, payload);
+                    if (result.id) allIdentityIds.add(result.id);
+                } catch (error) {
+                    sendToast("Error", error.message || "Failed to create identity");
+                    console.error(error);
+                    return null;
                 }
-            } catch (error) {
-                const action = identityId.startsWith("new-") ? "create" : "update";
-                sendToast("Error", error.message || `Failed to ${action} identity`);
-                console.error(error);
-                return null;
+            } else if (identity.linked) {
+                allIdentityIds.add(parseInt(identityId));
+            } else {
+                const payload = buildIdentityPayload(identity);
+                try {
+                    await patchRequest("identities/" + identityId, payload);
+                    allIdentityIds.add(parseInt(identityId));
+                } catch (error) {
+                    sendToast("Error", error.message || "Failed to update identity");
+                    console.error(error);
+                    return null;
+                }
             }
         }
 
-        return [...identities, ...createdIdentities];
+        return Array.from(allIdentityIds);
     };
 
     const createServer = async () => {
@@ -103,7 +114,7 @@ export const ServerDialog = ({ open, onClose, currentFolderId, editServerId }) =
             const serverIdentityIds = await updateIdentities();
             if (serverIdentityIds === null) return;
 
-            await patchRequest("servers/" + editServerId, { 
+            await patchRequest("servers/" + editServerId, {
                 name, icon, ip, port, protocol: protocol, config,
                 identities: serverIdentityIds,
                 monitoringEnabled
@@ -221,8 +232,7 @@ export const ServerDialog = ({ open, onClose, currentFolderId, editServerId }) =
                                                      protocol={protocol} setProtocol={setProtocol} />}
                     {activeTab === 1 &&
                         <IdentityPage serverIdentities={identities} setIdentityUpdates={setIdentityUpdates}
-                                      refreshIdentities={refreshIdentities} identityUpdates={identityUpdates}
-                                      setIdentities={setIdentities} />}
+                                      identityUpdates={identityUpdates} setIdentities={setIdentities} />}
                     {activeTab === 2 && <SettingsPage protocol={protocol} config={config} setConfig={setConfig} 
                                                        monitoringEnabled={monitoringEnabled} setMonitoringEnabled={setMonitoringEnabled} />}
                 </div>

@@ -1,4 +1,12 @@
-import { mdiAccountCircleOutline, mdiFileUploadOutline, mdiLockOutline, mdiPlus, mdiTrashCan, mdiCheck, mdiLinkOff } from "@mdi/js";
+import {
+    mdiAccountCircleOutline,
+    mdiFileUploadOutline,
+    mdiLockOutline,
+    mdiPlus,
+    mdiTrashCan,
+    mdiCheck,
+    mdiLinkOff,
+} from "@mdi/js";
 import Input from "@/common/components/IconInput";
 import SelectBox from "@/common/components/SelectBox";
 import { useContext, useEffect, useState } from "react";
@@ -6,16 +14,17 @@ import { IdentityContext } from "@/common/contexts/IdentityContext.jsx";
 import Icon from "@mdi/react";
 import Button from "@/common/components/Button";
 
-const Identity = ({ identity, isNew = false, onUpdate, onDelete, identityUpdates = {} }) => {
-    const [identityName, setIdentityName] = useState(
-        identityUpdates.name || identity?.name || (isNew ? "New Identity" : ""));
-    const [identityUsername, setIdentityUsername] = useState(identityUpdates.username || identity?.username || "");
-    const [authType, setAuthType] = useState(identityUpdates.authType || identity?.type || "password");
+const Identity = ({ identity, onUpdate, onDelete }) => {
+    const isNew = !identity.id || (typeof identity.id === "string" && identity.id.startsWith("new-"));
+
+    const [identityName, setIdentityName] = useState(identity.name || (isNew ? "New Identity" : ""));
+    const [identityUsername, setIdentityUsername] = useState(identity.username || "");
+    const [authType, setAuthType] = useState(identity.authType || identity.type || "password");
     const [identityPassword, setIdentityPassword] = useState(
-        isNew ? "" : (identityUpdates.password !== undefined ? identityUpdates.password : "********"));
-    const [identityKeyfile, setIdentityKeyfile] = useState(identityUpdates.sshKey || identity?.sshKey || null);
+        isNew ? "" : (identity.password !== undefined ? identity.password : "********"));
+    const [identityKeyfile, setIdentityKeyfile] = useState(identity.sshKey || null);
     const [identityPassphrase, setIdentityPassphrase] = useState(
-        isNew ? "" : (identityUpdates.passphrase !== undefined ? identityUpdates.passphrase : "********"));
+        isNew ? "" : (identity.passphrase !== undefined ? identity.passphrase : "********"));
 
     const readFile = (event) => {
         const file = event.target.files[0];
@@ -28,25 +37,27 @@ const Identity = ({ identity, isNew = false, onUpdate, onDelete, identityUpdates
 
     useEffect(() => {
         const updatedIdentity = {
+            id: identity.id,
             name: identityName,
             username: identityUsername,
             authType,
             ...(authType === "password"
-                ? { password: identityPassword === "********" ? undefined : identityPassword }
-                : {
-                    sshKey: identityKeyfile,
-                    passphrase: identityPassphrase === "********" ? undefined : identityPassphrase
-                }
-            )
+                    ? { password: identityPassword === "********" ? undefined : identityPassword }
+                    : {
+                        sshKey: identityKeyfile,
+                        passphrase: identityPassphrase === "********" ? undefined : identityPassphrase,
+                    }
+            ),
         };
         onUpdate(updatedIdentity);
-    }, [identityName, identityUsername, authType, identityPassword, identityKeyfile, identityPassphrase]);
+    }, [identityName, identityUsername, authType, identityPassword, identityKeyfile, identityPassphrase, identity.id]);
 
     return (
         <div className="identity">
             <div className="identity-header">
-                <Input icon={mdiAccountCircleOutline} value={identityName} setValue={setIdentityName} placeholder="Identity Name" />
-                <button className="unlink-identity-btn" onClick={() => onDelete(isNew ? null : identity.id)}
+                <Input icon={mdiAccountCircleOutline} value={identityName} setValue={setIdentityName}
+                       placeholder="Identity Name" />
+                <button className="unlink-identity-btn" onClick={() => onDelete(identity.id)}
                         title={isNew ? "Remove identity" : "Unlink identity"} type="button">
                     <Icon path={isNew ? mdiTrashCan : mdiLinkOff} size={0.8} />
                 </button>
@@ -102,49 +113,54 @@ const Identity = ({ identity, isNew = false, onUpdate, onDelete, identityUpdates
 
 const IdentityPage = ({ serverIdentities, setIdentityUpdates, identityUpdates, setIdentities }) => {
     const { identities } = useContext(IdentityContext);
-    const [newIdentities, setNewIdentities] = useState([]);
     const [selectedIdentityToLink, setSelectedIdentityToLink] = useState("");
 
-    const mappedIdentities = serverIdentities.map((identityId) => identities?.find((identity) => identity.id === identityId))
-        .filter(Boolean);
+    const workingIdentities = [
+        ...serverIdentities.map(identityId => {
+            const baseIdentity = identities?.find(identity => identity.id === identityId) || { id: identityId };
+            const updates = identityUpdates[identityId] || {};
+            return { ...baseIdentity, ...updates };
+        }),
+        ...Object.keys(identityUpdates).filter(key => key.startsWith("new-")).map(key => ({ id: key, ...identityUpdates[key] })),
+    ];
 
     const availableIdentities = identities?.filter(identity => !serverIdentities.includes(identity.id)) || [];
 
-    const handleIdentityUpdate = (identityId, updatedIdentity) => {
-        setIdentityUpdates(updates => ({ ...updates, [identityId]: updatedIdentity }));
-    };
-
-    const handleNewIdentityUpdate = (index, updatedIdentity) => {
-        setIdentityUpdates(updates => ({ ...updates, [`new-${index}`]: updatedIdentity }));
+    const handleIdentityUpdate = (updatedIdentity) => {
+        setIdentityUpdates(updates => ({ ...updates, [updatedIdentity.id]: updatedIdentity }));
     };
 
     const addNewIdentity = () => {
-        setNewIdentities(prev => [...prev, {}]);
+        const newId = `new-${Date.now()}`;
+        setIdentityUpdates(updates => ({
+            ...updates,
+            [newId]: { name: "New Identity", username: "", authType: "password", password: "" },
+        }));
     };
 
-    const deleteNewIdentity = (index) => {
-        setNewIdentities(prev => prev.filter((_, i) => i !== index));
-        setIdentityUpdates(updates => {
-            const newUpdates = { ...updates };
-            delete newUpdates[`new-${index}`];
-            return newUpdates;
-        });
+    const deleteIdentity = (identityId) => {
+        if (typeof identityId === "string" && identityId.startsWith("new-")) {
+            setIdentityUpdates(updates => {
+                const newUpdates = { ...updates };
+                delete newUpdates[identityId];
+                return newUpdates;
+            });
+        } else {
+            setIdentities(prev => prev.filter(id => id !== identityId));
+            setIdentityUpdates(updates => {
+                const newUpdates = { ...updates };
+                delete newUpdates[identityId];
+                return newUpdates;
+            });
+        }
     };
 
     const linkExistingIdentity = () => {
         if (selectedIdentityToLink) {
-            setIdentities(prev => [...prev, parseInt(selectedIdentityToLink)]);
+            const identityId = parseInt(selectedIdentityToLink);
+            setIdentities(prev => [...prev, identityId]);
             setSelectedIdentityToLink("");
         }
-    };
-
-    const unlinkIdentity = (identityId) => {
-        setIdentities(prev => prev.filter(id => id !== identityId));
-        setIdentityUpdates(updates => {
-            const newUpdates = { ...updates };
-            delete newUpdates[identityId];
-            return newUpdates;
-        });
     };
 
     return (
@@ -152,7 +168,8 @@ const IdentityPage = ({ serverIdentities, setIdentityUpdates, identityUpdates, s
             <div className="identities-header">
                 <h3>Server Identities</h3>
                 <div className="identity-actions">
-                    <Button text="Add New Identity" icon={mdiPlus} onClick={addNewIdentity} className="add-identity-btn" />
+                    <Button text="Add New Identity" icon={mdiPlus} onClick={addNewIdentity}
+                            className="add-identity-btn" />
                 </div>
             </div>
 
@@ -162,34 +179,27 @@ const IdentityPage = ({ serverIdentities, setIdentityUpdates, identityUpdates, s
                         <div className="form-group">
                             <label>Link Existing Identity</label>
                             <SelectBox selected={selectedIdentityToLink} setSelected={setSelectedIdentityToLink}
-                                options={[
-                                    { label: "Select an identity...", value: "" },
-                                    ...availableIdentities.map(identity => ({
-                                        label: `${identity.name} (${identity.username || 'No username'})`,
-                                        value: identity.id.toString()
-                                    }))
-                                ]}
-
+                                       options={[
+                                           { label: "Select an identity...", value: "" },
+                                           ...availableIdentities.map(identity => ({
+                                               label: `${identity.name} (${identity.username || "No username"})`,
+                                               value: identity.id.toString(),
+                                           })),
+                                       ]}
                             />
                         </div>
-                        <Button text="Link" onClick={linkExistingIdentity} disabled={!selectedIdentityToLink} className="link-identity-btn" />
+                        <Button text="Link" onClick={linkExistingIdentity} disabled={!selectedIdentityToLink}
+                                className="link-identity-btn" />
                     </div>
                 </div>
             )}
 
-            {mappedIdentities.map((identity) => (
-                <Identity key={identity.id} identity={identity} identityUpdates={identityUpdates[identity.id] || {}}
-                          onUpdate={(updatedIdentity) => handleIdentityUpdate(identity.id, updatedIdentity)}
-                          onDelete={unlinkIdentity} />
+            {workingIdentities.map((identity) => (
+                <Identity key={identity.id} identity={identity} onUpdate={handleIdentityUpdate}
+                          onDelete={deleteIdentity} />
             ))}
 
-            {newIdentities.map((_, index) => (
-                <Identity key={`new-${index}`} identity={{}} isNew={true} identityUpdates={identityUpdates[`new-${index}`] || {}}
-                          onUpdate={(updatedIdentity) => handleNewIdentityUpdate(index, updatedIdentity)}
-                          onDelete={() => deleteNewIdentity(index)} />
-            ))}
-
-            {mappedIdentities.length === 0 && newIdentities.length === 0 && (
+            {workingIdentities.length === 0 && (
                 <div className="no-identities">
                     <p>No identities configured. Add a new identity or link an existing one.</p>
                 </div>
