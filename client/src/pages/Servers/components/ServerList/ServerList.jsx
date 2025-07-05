@@ -22,6 +22,16 @@ const filterEntries = (entries, searchTerm) => {
                 if (nameMatch || ipMatch) {
                     return entry;
                 }
+            } else if (entry.type === "pve-server") {
+                const nameMatch = entry.name.toLowerCase().includes(searchTerm.toLowerCase());
+                const ipMatch = entry.ip && entry.ip.toLowerCase().includes(searchTerm.toLowerCase());
+
+                const filteredPVEEntries = entry.entries ? entry.entries.filter(pveEntry =>
+                    pveEntry.name?.toLowerCase().includes(searchTerm.toLowerCase())) : [];
+
+                if (nameMatch || ipMatch || filteredPVEEntries.length > 0) {
+                    return { ...entry, entries: filteredPVEEntries };
+                }
             }
             return null;
         })
