@@ -12,6 +12,7 @@
   .file-list-header
     display: grid
     grid-template-columns: minmax(180px, 2fr) minmax(70px, auto) minmax(110px, auto) auto
+    background-color: colors.$terminal
     align-items: center
     padding: 0.4rem 0.8rem
     border-bottom: 1px solid colors.$gray
@@ -261,56 +262,6 @@
 
       &:hover .dots-menu
         opacity: 1
-
-@media (max-width: 768px)
-  .file-list
-    padding: 0 1rem
-    gap: 0.5rem
-
-    &.grid
-      grid-template-columns: repeat(auto-fill, minmax(120px, 1fr))
-      gap: 0.8rem
-      padding: 0.8rem 0.8rem 0
-
-    .file-list-header
-      grid-template-columns: 2fr auto auto auto
-      padding: 0.5rem 1rem
-      gap: 1rem
-
-      .header-size,
-      .header-date
-        font-size: 0.8rem
-
-    .file-item
-      grid-template-columns: minmax(150px, 2fr) minmax(60px, auto) minmax(80px, auto) auto
-      gap: 1rem
-      padding: 0.75rem 1rem
-      min-height: 3rem
-
-      &.grid
-        padding: 0.8rem 0.4rem
-
-        .file-name svg
-          width: 2rem
-          height: 2rem
-
-      .file-name
-        gap: 1rem
-
-        svg
-          width: 2rem
-          height: 2rem
-
-        h2
-          font-size: 0.9rem
-
-      .file-size,
-      .file-date
-        font-size: 0.8rem
-
-      .dots-menu
-        width: 2rem
-        height: 2rem
 
 @keyframes spin
   0%
