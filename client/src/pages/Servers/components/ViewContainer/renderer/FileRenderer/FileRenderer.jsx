@@ -20,8 +20,12 @@ export const FileRenderer = ({ session, disconnectFromServer }) => {
     const [uploadProgress, setUploadProgress] = useState(0);
     const [directory, setDirectory] = useState("/");
     const [items, setItems] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
     const [history, setHistory] = useState(["/"]);
     const [historyIndex, setHistoryIndex] = useState(0);
+    const [viewMode, setViewMode] = useState("list");
+    const [directorySuggestions, setDirectorySuggestions] = useState([]);
 
     const dropZoneRef = useRef(null);
 
@@ -95,7 +99,25 @@ export const FileRenderer = ({ session, disconnectFromServer }) => {
                 listFiles();
                 break;
             case 0x1:
-                setItems(payload.files);
+                if (payload.error) {
+                    setError(payload.error);
+                    setItems([]);
+                } else if (payload.files) {
+                    setItems(payload.files);
+                    setError(null);
+                } else {
+                    setError("Failed to load directory contents");
+                    setItems([]);
+                }
+                setLoading(false);
+                break;
+            case 0x9:
+                setError(payload.message || "An error occurred");
+                setItems([]);
+                setLoading(false);
+                break;
+            case 0xA:
+                if (payload.directories) setDirectorySuggestions(payload.directories);
                 break;
         }
     };
@@ -123,6 +145,8 @@ export const FileRenderer = ({ session, disconnectFromServer }) => {
     };
 
     const listFiles = () => {
+        setLoading(true);
+        setError(null);
         sendOperation(0x1, { path: directory });
     };
 
@@ -181,6 +205,8 @@ export const FileRenderer = ({ session, disconnectFromServer }) => {
         }
     };
 
+    const searchDirectories = (searchPath) => sendOperation(0xA, { searchPath });
+
     useEffect(() => {
         listFiles();
     }, [directory]);
@@ -199,9 +225,11 @@ export const FileRenderer = ({ session, disconnectFromServer }) => {
                     <CreateFolderDialog open={folderDialogOpen} onClose={() => setFolderDialogOpen(false)} createFolder={createFolder} />
                     <ActionBar path={directory} updatePath={changeDirectory} createFolder={() => setFolderDialogOpen(true)}
                         uploadFile={uploadFile} goBack={goBack} goForward={goForward} historyIndex={historyIndex}
-                        historyLength={history.length} />
+                        historyLength={history.length} viewMode={viewMode} setViewMode={setViewMode} 
+                        searchDirectories={searchDirectories} directorySuggestions={directorySuggestions} 
+                        setDirectorySuggestions={setDirectorySuggestions} />
                     <FileList items={items} path={directory} updatePath={changeDirectory} sendOperation={sendOperation}
-                              downloadFile={downloadFile} setCurrentFile={setCurrentFile} />
+                              downloadFile={downloadFile} setCurrentFile={setCurrentFile} loading={loading} viewMode={viewMode} error={error} />
                 </div>
             )}
             {currentFile !== null && (
