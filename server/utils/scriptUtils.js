@@ -95,8 +95,8 @@ module.exports.transformScript = (scriptContent) => {
     );
 
     transformedContent = transformedContent.replace(
-        /^(\s*)@NEXTERM:PROGRESS\s+(\$?\w+|\d+|"[^"]*")\s+"([^"]+)"/gm,
-        "$1echo \"NEXTERM_PROGRESS:$2:$3\"",
+        /^(\s*)@NEXTERM:PROGRESS\s+(\$?\w+|\d+)\s+"[^"]*"/gm,
+        "$1echo \"NEXTERM_PROGRESS:$2\"",
     );
 
     transformedContent = transformedContent.replace(
@@ -159,9 +159,8 @@ module.exports.processNextermLine = (line) => {
     }
 
     if (line.startsWith("NEXTERM_PROGRESS:")) {
-        const parts = line.substring(17).split(":");
-        const [percentage, message] = parts;
-        return { type: "progress", percentage: parseInt(percentage) || 0, message: message || "" };
+        const [percentage] = line.substring(17).split(":");
+        return { type: "progress", percentage: parseInt(percentage) || 0 };
     }
 
     if (line.startsWith("NEXTERM_SUCCESS:")) {

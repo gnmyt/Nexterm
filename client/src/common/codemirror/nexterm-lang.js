@@ -118,7 +118,7 @@ const nextermCompletions = [
         type: "keyword",
         info: "Display progress information with percentage",
         detail: "Progress indicator",
-        apply: "@NEXTERM:PROGRESS 50 \"Installing packages...\"",
+        apply: "@NEXTERM:PROGRESS 50",
     },
     {
         label: "@NEXTERM:SUMMARY",
