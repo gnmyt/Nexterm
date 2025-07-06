@@ -9,6 +9,9 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@codemirror/autocomplete": "^6.18.6",
+    "@codemirror/language": "^6.11.2",
+    "@codemirror/legacy-modes": "^6.5.1",
     "@fontsource/fira-code": "^5.2.6",
     "@fontsource/inconsolata": "^5.2.6",
     "@fontsource/jetbrains-mono": "^5.2.6",
@@ -16,6 +19,7 @@
     "@fontsource/roboto-mono": "^5.2.6",
     "@fontsource/source-code-pro": "^5.2.6",
     "@fontsource/ubuntu-mono": "^5.2.6",
+    "@lezer/highlight": "^1.2.1",
     "@mdi/js": "^7.4.47",
     "@mdi/react": "^1.6.1",
     "@uiw/codemirror-theme-github": "^4.23.14",

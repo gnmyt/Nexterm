@@ -50,7 +50,9 @@ app.use("/api/snippets", authenticate, require("./routes/snippet"));
 app.use("/api/organizations", authenticate, require("./routes/organization"));
 
 app.ws("/api/apps/installer", require("./routes/appInstaller"));
+app.ws("/api/scripts/executor", require("./routes/scriptExecutor"));
 app.use("/api/apps", authenticate, require("./routes/apps"));
+app.use("/api/scripts", authenticate, require("./routes/scripts"));
 
 if (process.env.NODE_ENV === "production") {
     app.use(express.static(path.join(__dirname, "../dist")));

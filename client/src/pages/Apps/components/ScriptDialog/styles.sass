@@ -1,0 +1,117 @@
+@use "@/common/styles/colors"
+
+.create-script-dialog
+  display: flex
+  flex-direction: column
+  width: 90vw
+  max-width: 1200px
+  max-height: 90vh
+  overflow: hidden
+  user-select: none
+  
+  .dialog-header
+    padding-bottom: 0.5rem
+    margin-bottom: 1.5rem
+    border-bottom: 1px solid colors.$gray
+    
+    h2
+      margin: 0 0 0.25rem 0
+      font-size: 1.3rem
+      font-weight: 600
+      color: colors.$white
+    
+    p
+      margin: 0
+      color: colors.$subtext
+      font-size: 0.9rem
+      line-height: 1.4
+
+  .dialog-body
+    display: flex
+    flex-direction: column
+    gap: 1.5rem
+    overflow-y: auto
+    flex: 1
+
+  .form-section
+    display: flex
+    flex-direction: column
+    gap: 1rem
+
+    h3
+      margin: 0 0 1rem 0
+      font-size: 1.1rem
+      font-weight: 600
+      color: colors.$white
+      display: flex
+      align-items: center
+      gap: 0.5rem
+
+      svg
+        width: 1.2rem
+        height: 1.2rem
+        color: colors.$primary
+
+      .help-tip
+        margin-left: auto
+        display: flex
+        align-items: center
+        gap: 0.4rem
+        font-size: 0.85rem
+        color: colors.$subtext
+        font-weight: 400
+
+        svg
+          width: 1rem
+          height: 1rem
+
+  .form-row
+    display: grid
+    grid-template-columns: 1fr 1fr
+    gap: 1rem
+
+  .form-group
+    display: flex
+    flex-direction: column
+    gap: 0.5rem
+
+    label
+      font-size: 0.9rem
+      font-weight: 600
+      color: colors.$subtext
+
+  .code-editor-container
+    border: 1px solid colors.$gray
+    border-radius: 0.5rem
+    overflow: hidden
+    background: colors.$dark-gray
+
+  .dialog-actions
+    display: flex
+    justify-content: flex-end
+    gap: 1rem
+    margin-top: 1.5rem
+    padding-top: 1.5rem
+    border-top: 1px solid colors.$gray
+
+@media (max-width: 1024px)
+  .create-script-dialog
+    .form-row
+      grid-template-columns: 1fr
+
+@media (max-width: 768px)
+  .create-script-dialog
+    width: 95vw
+    max-height: 95vh
+
+    .dialog-header
+      h2
+        font-size: 1.2rem
+
+    .form-section
+      h3
+        .help-tip
+          display: none
+
+    .dialog-actions
+      flex-direction: column

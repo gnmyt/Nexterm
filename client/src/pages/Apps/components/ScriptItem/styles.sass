@@ -1,0 +1,143 @@
+@use "@/common/styles/colors"
+
+.script-item
+  display: flex
+  flex-direction: column
+  background-color: colors.$dark-gray
+  border: 1px solid colors.$gray
+  margin: 0.2rem 0.5rem
+  padding: 1rem 1.3rem
+  border-radius: 1rem
+  width: 15rem
+  transition: all 0.2s ease
+  
+  &:hover
+    border-color: colors.$primary
+
+  &.easter-egg
+    border: 2px solid colors.$warning-opacity
+
+  .script-header
+    display: flex
+    align-items: center
+    gap: 1rem
+    margin-bottom: 1rem
+
+    .script-icon
+      display: flex
+      align-items: center
+      justify-content: center
+      width: 3rem
+      height: 3rem
+      background-color: colors.$dark-gray
+      border: 1px solid colors.$gray
+      border-radius: 1rem
+      flex-shrink: 0
+
+      svg
+        width: 1.6rem
+        height: 1.6rem
+        color: colors.$primary
+
+    .easter-egg-icon
+      border-color: colors.$warning !important
+
+      svg
+        color: colors.$warning !important
+
+    .script-info
+      flex: 1
+      min-width: 0
+
+      .script-title-row
+        display: flex
+        align-items: center
+        gap: 0.8rem
+        margin-bottom: 0.25rem
+
+        h2
+          margin: 0
+          font-size: 1.1rem
+          color: colors.$white
+          white-space: nowrap
+          overflow: hidden
+          text-overflow: ellipsis
+          flex: 1
+
+        .custom-badge
+          background-color: colors.$primary-opacity
+          color: colors.$primary
+          font-size: 0.7rem
+          padding: 0.2rem 0.6rem
+          border-radius: 0.4rem
+
+        .easter-egg-badge
+          background: linear-gradient(135deg, #ff8c00, #ffa500)
+          color: white
+          font-size: 0.7rem
+          padding: 0.2rem 0.6rem
+          border-radius: 0.4rem
+          box-shadow: 0 2px 8px rgba(255, 140, 0, 0.3)
+
+      .script-version
+        margin: 0
+        font-weight: 600
+        color: colors.$subtext
+        font-size: 0.9rem
+
+  .script-description
+    margin: 0 0 1rem 0
+    color: colors.$subtext
+    font-size: 1rem
+    font-weight: 500
+    line-height: 1.4
+    display: -webkit-box
+    -webkit-line-clamp: 3
+    -webkit-box-orient: vertical
+    overflow: hidden
+    flex: 1
+
+  .action-area
+    display: flex
+    flex-direction: column
+    gap: 0.5rem
+    margin-top: auto
+
+    .top-buttons
+      display: flex
+      gap: 0.4rem
+      
+      .btn
+        padding: 0.5rem 0.7rem
+        font-size: 0.8rem
+        flex: 1
+        min-width: 0
+        text-align: center
+
+        h3
+          font-size: 0.8rem
+          margin: 0
+          white-space: nowrap
+          overflow: hidden
+          text-overflow: ellipsis
+
+        svg
+          width: 0.9rem
+          height: 0.9rem
+
+    > .btn
+      padding: 0.5rem 0.7rem
+      font-size: 0.8rem
+      width: 100%
+      text-align: center
+
+      h3
+        font-size: 0.8rem
+        margin: 0
+        white-space: nowrap
+        overflow: hidden
+        text-overflow: ellipsis
+
+      svg
+        width: 0.9rem
+        height: 0.9rem
