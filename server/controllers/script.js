@@ -8,21 +8,43 @@ const parseScriptFile = (filePath) => {
     const lines = content.split("\n");
 
     const metadata = { name: "Unknown Script", description: "No description provided" };
+    let contentStartIndex = 0;
 
-    for (const line of lines) {
+    for (let i = 0; i < lines.length; i++) {
+        const line = lines[i];
         const trimmed = line.trim();
-        if (!trimmed.startsWith("#")) break;
 
-        const metaMatch = trimmed.match(/^#\s*@(\w+):\s*(.+)$/);
-        if (metaMatch) {
-            const [, key, value] = metaMatch;
-            if (key in metadata) {
-                metadata[key] = value.trim();
+        if (i === 0 && trimmed.startsWith("#!")) {
+            contentStartIndex = i + 1;
+            continue;
+        }
+
+        if (trimmed.startsWith("#")) {
+            const metaMatch = trimmed.match(/^#\s*@(\w+):\s*(.+)$/);
+            if (metaMatch) {
+                const [, key, value] = metaMatch;
+                if (key in metadata) {
+                    metadata[key] = value.trim();
+                }
+                contentStartIndex = i + 1;
+                continue;
             }
+
+            if (Object.values(metadata).some(val => val !== "Unknown Script" && val !== "No description provided")) {
+                break;
+            }
+        } else if (trimmed !== "") {
+            break;
+        }
+
+        if (trimmed === "") {
+            contentStartIndex = i + 1;
         }
     }
 
-    return { ...metadata, content, type: "script" };
+    const scriptContent = lines.slice(contentStartIndex).join("\n").trim();
+
+    return { ...metadata, content: scriptContent, type: "script" };
 };
 
 const parseCustomScripts = (accountId) => {
