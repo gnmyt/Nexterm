@@ -2,11 +2,16 @@ import { DialogProvider } from "@/common/components/Dialog";
 import { useContext } from "react";
 import { ServerContext } from "@/common/contexts/ServerContext.jsx";
 import ServerEntries from "@/pages/Servers/components/ServerList/components/ServerEntries.jsx";
+import Icon from "@mdi/react";
+import { mdiScript } from "@mdi/js";
 import "./styles.sass";
 
-export const DeployServerDialog = ({app, open, onClose, onDeploy}) => {
+export const DeployServerDialog = ({app, script, open, onClose, onDeploy}) => {
 
     const {servers} = useContext(ServerContext);
+
+    const item = app || script;
+    const isScript = !!script;
 
     const deployServer = (id) => {
         onClose();
@@ -17,8 +22,12 @@ export const DeployServerDialog = ({app, open, onClose, onDeploy}) => {
         <DialogProvider open={open} onClose={onClose}>
             <div className="deploy-dialog">
                 <div className="deploy-header">
-                    <img src={app?.icon} alt={app?.name} />
-                    <h2>Deploy {app?.name}</h2>
+                    {item?.icon ? (
+                        <img src={item.icon} alt={item.name} />
+                    ) : isScript ? (
+                        <Icon path={mdiScript} />
+                    ) : null}
+                    <h2>{isScript ? "Run" : "Deploy"} {item?.name}</h2>
                 </div>
                 <div className="deploy-entries">
                     {servers?.length > 0 && <ServerEntries entries={servers} nestedLevel={0} sshOnly connectToServer={deployServer} />}
