@@ -5,6 +5,7 @@ const decompress = require("decompress");
 const path = require("path");
 const yaml = require("js-yaml");
 const { appObject } = require("../validations/appSource");
+const { refreshScripts } = require("./script");
 
 let apps = [];
 let refreshTimer;
@@ -63,7 +64,7 @@ const downloadAppSource = async (name, url) => {
 
 const extractNextermFiles = async (zipFilePath, outputDir) => {
     await decompress(zipFilePath, outputDir, {
-        filter: file => file.path.endsWith(".nexterm.yml"),
+        filter: file => file.path.endsWith(".nexterm.yml") || file.path.endsWith(".nexterm.sh"),
         map: file => {
             file.path = path.basename(file.path);
             return file;
@@ -129,6 +130,8 @@ module.exports.refreshAppSources = async () => {
     }
 
     console.log("Refreshed app sources");
+
+    refreshScripts();
 };
 
 module.exports.insertOfficialSource = async () => {
