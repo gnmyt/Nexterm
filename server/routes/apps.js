@@ -11,6 +11,7 @@ const {
 } = require("../controllers/appSource");
 const { validateSchema } = require("../utils/schema");
 const { createAppSourceValidation, updateAppUrlValidation } = require("../validations/appSource");
+const { isAdmin } = require("../middlewares/permission");
 
 const app = Router();
 
@@ -29,11 +30,11 @@ app.get("/", async (req, res) => {
     }
 });
 
-app.get("/sources", async (req, res) => {
+app.get("/sources", isAdmin, async (req, res) => {
     res.json(await getAppSources());
 });
 
-app.put("/sources", async (req, res) => {
+app.put("/sources", isAdmin, async (req, res) => {
     if (validateSchema(res, createAppSourceValidation, req.body)) return;
 
     const appSource = await createAppSource(req.body);
@@ -42,7 +43,7 @@ app.put("/sources", async (req, res) => {
     res.json({ message: "App source got successfully created" });
 });
 
-app.delete("/sources/:appSource", async (req, res) => {
+app.delete("/sources/:appSource", isAdmin, async (req, res) => {
     if (req.params.appSource === "official")
         return res.json({ code: 103, message: "You can't delete the default app source" });
 
@@ -52,7 +53,7 @@ app.delete("/sources/:appSource", async (req, res) => {
     res.json({ message: "App source got successfully deleted" });
 });
 
-app.patch("/sources/:appSource", async (req, res) => {
+app.patch("/sources/:appSource", isAdmin, async (req, res) => {
     if (req.params.appSource === "official")
         return res.json({ code: 103, message: "You can't edit the default app source" });
 
