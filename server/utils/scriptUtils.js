@@ -104,6 +104,14 @@ module.exports.transformScript = (scriptContent) => {
         "$1echo \"NEXTERM_SUCCESS:$2\"",
     );
 
+    transformedContent = transformedContent.replace(
+        /^(\s*)@NEXTERM:SUMMARY\s+"([^"]+)"\s+(.+)/gm,
+        (match, indent, title, data) => {
+            const escapedData = data.replace(/"/g, "\\\"");
+            return `${indent}echo "NEXTERM_SUMMARY:${title}:${escapedData}"`;
+        },
+    );
+
     return `#!/bin/bash
 set -e
 ${transformedContent}
@@ -159,6 +167,14 @@ module.exports.processNextermLine = (line) => {
     if (line.startsWith("NEXTERM_SUCCESS:")) {
         const message = line.substring(16);
         return { type: "success", message: message };
+    }
+
+    if (line.startsWith("NEXTERM_SUMMARY:")) {
+        const parts = line.substring(16).split(":");
+        const title = parts[0];
+        const dataStr = parts.slice(1).join(":");
+        const data = module.exports.parseOptions(dataStr);
+        return { type: "summary", title: title, data: data };
     }
 
     return null;

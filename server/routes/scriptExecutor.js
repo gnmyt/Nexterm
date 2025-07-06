@@ -90,6 +90,13 @@ const executeScript = async (ssh, ws, scriptContent) => {
                                 message: nextermCommand.message,
                             })}`);
                             break;
+                        case "summary":
+                            ws.send(`\x0B${JSON.stringify({
+                                type: "summary",
+                                title: nextermCommand.title,
+                                data: nextermCommand.data,
+                            })}`);
+                            break;
                     }
                 } else if (line.trim()) {
                     sendOutput(line + "\n");
