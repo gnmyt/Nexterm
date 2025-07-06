@@ -124,7 +124,7 @@ module.exports.processNextermLine = (line) => {
         const varName = parts[0];
         const prompt = parts[1];
         const optionsStr = parts.slice(2).join(":");
-        const options = parseOptions(optionsStr);
+        const options = module.exports.parseOptions(optionsStr);
 
         return { type: "select", variable: varName, prompt: prompt, options: options, default: options[0] || "" };
     }
