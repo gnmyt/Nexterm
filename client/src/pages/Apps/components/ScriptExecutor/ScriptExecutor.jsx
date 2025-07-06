@@ -8,6 +8,7 @@ import LinuxImage from "../AppInstaller/os_images/linux.png";
 import LogDialog from "@/pages/Apps/components/AppInstaller/components/LogDialog";
 import Icon from "@mdi/react";
 import InputDialog from "./components/InputDialog";
+import SummaryDialog from "./components/SummaryDialog";
 import { useToast } from "@/common/contexts/ToastContext.jsx";
 
 export const ScriptExecutor = ({ serverId, script, setRunning }) => {
@@ -26,6 +27,9 @@ export const ScriptExecutor = ({ serverId, script, setRunning }) => {
     const [inputDialogOpen, setInputDialogOpen] = useState(false);
     const [inputPrompt, setInputPrompt] = useState(null);
     const [ws, setWs] = useState(null);
+
+    const [summaryDialogOpen, setSummaryDialogOpen] = useState(false);
+    const [summaryData, setSummaryData] = useState(null);
 
     const executeScript = () => {
         const protocol = location.protocol === "https:" ? "wss" : "ws";
@@ -103,6 +107,14 @@ export const ScriptExecutor = ({ serverId, script, setRunning }) => {
                 } catch (e) {
                     console.error("Error parsing progress data:", e);
                 }
+            } else if (type === "\x0B") {
+                try {
+                    const summaryData = JSON.parse(message);
+                    setSummaryData(summaryData);
+                    setSummaryDialogOpen(true);
+                } catch (e) {
+                    console.error("Error parsing summary data:", e);
+                }
             }
         };
 
@@ -165,6 +177,9 @@ export const ScriptExecutor = ({ serverId, script, setRunning }) => {
         setInputPrompt(null);
         setCurrentProgress(null);
 
+        setSummaryDialogOpen(false);
+        setSummaryData(null);
+
         setRunning(true);
 
         let timer = setTimeout(() => {
@@ -185,6 +200,8 @@ export const ScriptExecutor = ({ serverId, script, setRunning }) => {
         <div className="script-executor">
             <LogDialog open={logOpen} onClose={() => setLogOpen(false)} content={logContent} />
             <InputDialog open={inputDialogOpen} onSubmit={sendInput} prompt={inputPrompt} />
+            <SummaryDialog open={summaryDialogOpen} onClose={() => setSummaryDialogOpen(false)}
+                           summaryData={summaryData} />
 
             <div className="script-header">
                 <div className="script-img">

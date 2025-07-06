@@ -18,7 +18,7 @@ const nextermShellMode = {
             state.nextermType = null;
         }
 
-        if (stream.match(/@NEXTERM:(STEP|INPUT|SELECT|WARN|INFO|SUCCESS|CONFIRM|PROGRESS)/)) {
+        if (stream.match(/@NEXTERM:(STEP|INPUT|SELECT|WARN|INFO|SUCCESS|CONFIRM|PROGRESS|SUMMARY)/)) {
             state.inNextermCommand = true;
             state.nextermType = stream.current().split(":")[1];
             return "keyword";
@@ -119,6 +119,13 @@ const nextermCompletions = [
         info: "Display progress information with percentage",
         detail: "Progress indicator",
         apply: "@NEXTERM:PROGRESS 50 \"Installing packages...\"",
+    },
+    {
+        label: "@NEXTERM:SUMMARY",
+        type: "keyword",
+        info: "Display a summary dialog with key-value data",
+        detail: "Summary dialog",
+        apply: "@NEXTERM:SUMMARY \"System Information\" \"OS\" \"Ubuntu 22.04\" \"CPU\" \"4 cores\" \"Memory\" \"8GB\"",
     },
 ];
 
