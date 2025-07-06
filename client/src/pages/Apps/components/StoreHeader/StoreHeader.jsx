@@ -1,13 +1,23 @@
 import Icon from "@mdi/react";
 import { mdiBook, mdiPackageVariant, mdiScript, mdiPlus } from "@mdi/js";
 import Button from "@/common/components/Button";
+import SelectBox from "@/common/components/SelectBox";
 import { useContext } from "react";
 import { UserContext } from "@/common/contexts/UserContext.jsx";
 import "./styles.sass";
 
-export const StoreHeader = ({onSourceClick, isScriptsCategory, onCreateScript}) => {
+export const StoreHeader = ({
+                                onSourceClick,
+                                isScriptsCategory,
+                                onCreateScript,
+                                sources = [],
+                                selectedSource,
+                                setSelectedSource,
+                            }) => {
     const { user } = useContext(UserContext);
     const isAdmin = user?.role === "admin";
+
+    const sourceOptions = sources.map(source => ({ label: source, value: source }));
 
     return (
         <div className="store-header">
@@ -20,6 +30,12 @@ export const StoreHeader = ({onSourceClick, isScriptsCategory, onCreateScript}) 
             </div>
 
             <div className="store-actions">
+                {isScriptsCategory && sources.length > 0 && (
+                    <div className="source-filter">
+                        <label>Source:</label>
+                        <SelectBox options={sourceOptions} selected={selectedSource} setSelected={setSelectedSource} />
+                    </div>
+                )}
                 {isAdmin && (
                     <Button text="Manage sources" icon={mdiBook} onClick={onSourceClick} type="secondary" />
                 )}
@@ -28,5 +44,5 @@ export const StoreHeader = ({onSourceClick, isScriptsCategory, onCreateScript}) 
                 )}
             </div>
         </div>
-    )
-}
+    );
+};

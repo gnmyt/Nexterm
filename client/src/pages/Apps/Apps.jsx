@@ -39,6 +39,9 @@ export const Apps = () => {
     const [selectedScript, setSelectedScript] = useState(null);
     const [apps, setApps] = useState([]);
     const [scripts, setScripts] = useState([]);
+    const [allScripts, setAllScripts] = useState([]);
+    const [sources, setSources] = useState([]);
+    const [selectedSource, setSelectedSource] = useState("All");
 
     const [search, setSearch] = useState("");
 
@@ -51,13 +54,34 @@ export const Apps = () => {
 
     const isScriptsCategory = () => getCategory() === "scripts";
 
+    const getUniqueSources = (scriptsData) => {
+        const uniqueSources = [...new Set(scriptsData.map(script => script.source))];
+        const sourceOptions = ["All", ...uniqueSources.filter(source => source !== "custom"), "Custom"];
+        setSources(sourceOptions);
+    };
+
+    const filterScriptsBySource = (scriptsData) => {
+        if (selectedSource === "All") {
+            return scriptsData;
+        } else if (selectedSource === "Custom") {
+            return scriptsData.filter(script => script.source === "custom");
+        } else {
+            return scriptsData.filter(script => script.source === selectedSource);
+        }
+    };
+
+    const applySourceFilter = () => {
+        const filteredScripts = filterScriptsBySource(allScripts);
+        setScripts(filteredScripts);
+    };
+
     const updateSelectedApp = (id) => {
         setSelectedApp(apps.find((app) => app.id === id));
         setSelectedScript(null);
     };
 
     const updateSelectedScript = (id) => {
-        setSelectedScript(scripts.find((script) => script.id === id));
+        setSelectedScript(allScripts.find((script) => script.id === id) || scripts.find((script) => script.id === id));
         setSelectedApp(null);
     };
 
@@ -65,7 +89,10 @@ export const Apps = () => {
         if (search) {
             if (isScriptsCategory()) {
                 getRequest("/scripts?search=" + search).then((response) => {
-                    setScripts(response);
+                    setAllScripts(response);
+                    getUniqueSources(response);
+                    const filteredScripts = filterScriptsBySource(response);
+                    setScripts(filteredScripts);
                 });
             } else {
                 getRequest("/apps?search=" + search).then((response) => {
@@ -79,7 +106,10 @@ export const Apps = () => {
 
         if (category === "scripts") {
             getRequest("/scripts").then((response) => {
-                setScripts(response);
+                setAllScripts(response);
+                getUniqueSources(response);
+                const filteredScripts = filterScriptsBySource(response);
+                setScripts(filteredScripts);
             });
             return;
         } else if (category) {
@@ -99,8 +129,15 @@ export const Apps = () => {
             navigate("/apps/");
             return;
         }
+
+        if (!isScriptsCategory() && selectedSource !== "All") setSelectedSource("All");
+        
         reloadList();
     }, [search, location]);
+
+    useEffect(() => {
+        if (isScriptsCategory()) applySourceFilter();
+    }, [selectedSource]);
 
     const deployApp = (id) => {
         setDeployAppId(id);
@@ -113,19 +150,19 @@ export const Apps = () => {
     };
 
     const viewScript = (id) => {
-        const script = scripts.find((script) => script.id === id);
+        const script = allScripts.find((script) => script.id === id) || scripts.find((script) => script.id === id);
         setViewingScript(script);
         setScriptDialogOpen(true);
     };
 
     const editScript = (id) => {
-        const script = scripts.find((script) => script.id === id);
+        const script = allScripts.find((script) => script.id === id) || scripts.find((script) => script.id === id);
         setEditingScript(script);
         setScriptDialogOpen(true);
     };
 
     const deleteScript = async (id) => {
-        const script = scripts.find((script) => script.id === id);
+        const script = allScripts.find((script) => script.id === id) || scripts.find((script) => script.id === id);
         if (!script || script.source !== "custom") {
             sendToast("Error", "Only custom scripts can be deleted");
             return;
@@ -141,7 +178,12 @@ export const Apps = () => {
         try {
             await deleteRequest(`scripts/${encodeURIComponent(scriptToDelete.id)}`);
             sendToast("Success", "Script deleted successfully");
-            setScripts(prevScripts => prevScripts.filter(s => s.id !== scriptToDelete.id));
+            
+            const updatedAllScripts = allScripts.filter(s => s.id !== scriptToDelete.id);
+            setAllScripts(updatedAllScripts);
+            getUniqueSources(updatedAllScripts);
+            const filteredScripts = filterScriptsBySource(updatedAllScripts);
+            setScripts(filteredScripts);
 
             if (selectedScript && selectedScript.id === scriptToDelete.id) {
                 setSelectedScript(null);
@@ -166,15 +208,21 @@ export const Apps = () => {
     };
 
     const onScriptCreated = (script) => {
-        setScripts(prevScripts => [...prevScripts, script]);
+        const updatedAllScripts = [...allScripts, script];
+        setAllScripts(updatedAllScripts);
+        getUniqueSources(updatedAllScripts);
+        const filteredScripts = filterScriptsBySource(updatedAllScripts);
+        setScripts(filteredScripts);
     };
 
     const onScriptUpdated = (updatedScript) => {
-        setScripts(prevScripts =>
-            prevScripts.map(script =>
-                script.id === updatedScript.id ? updatedScript : script,
-            ),
+        const updatedAllScripts = allScripts.map(script =>
+            script.id === updatedScript.id ? updatedScript : script
         );
+        setAllScripts(updatedAllScripts);
+        getUniqueSources(updatedAllScripts);
+        const filteredScripts = filterScriptsBySource(updatedAllScripts);
+        setScripts(filteredScripts);
     };
 
     return (
@@ -204,7 +252,7 @@ export const Apps = () => {
                     }
                 }}
                 app={apps.find((app) => app.id === deployAppId)}
-                script={scripts.find((script) => script.id === runScriptId)}
+                script={allScripts.find((script) => script.id === runScriptId) || scripts.find((script) => script.id === runScriptId)}
             />
             <ActionConfirmDialog open={deleteDialogOpen} setOpen={setDeleteDialogOpen} onConfirm={confirmDeleteScript}
                                  text={scriptToDelete ? `Are you sure you want to delete the script "${scriptToDelete.name}"? This action cannot be undone.` : ""} />
@@ -214,6 +262,9 @@ export const Apps = () => {
                         onSourceClick={() => setSourceDialogOpen(true)}
                         isScriptsCategory={isScriptsCategory()}
                         onCreateScript={() => setScriptDialogOpen(true)}
+                        sources={sources}
+                        selectedSource={selectedSource}
+                        setSelectedSource={setSelectedSource}
                     />
                 </div>
 
