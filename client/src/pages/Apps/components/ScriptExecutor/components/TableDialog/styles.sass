@@ -1,0 +1,142 @@
+@use "@/common/styles/colors" as colors
+
+.table-dialog
+  .dialog-title
+    display: flex
+    align-items: center
+    gap: 0.75rem
+    margin-bottom: 1.5rem
+    padding-bottom: 1rem
+    border-bottom: 1px solid colors.$gray
+
+    svg
+      color: colors.$primary
+      width: 24px
+      height: 24px
+
+    h2
+      margin: 0
+      font-size: 1.25rem
+      font-weight: 600
+      color: colors.$white
+
+  .table-content
+    margin-bottom: 1.5rem
+    max-height: 60vh
+    overflow: auto
+
+    .table-container
+      border: 1px solid colors.$gray
+      border-radius: 8px
+      overflow: hidden
+      background: colors.$background
+      box-shadow: 0 2px 8px colors.$dark-gray
+
+      .nexterm-table
+        width: 100%
+        border-collapse: collapse
+        font-size: 0.875rem
+        background: colors.$background
+
+        thead
+          background: colors.$gray-full
+          border-bottom: 2px solid colors.$gray
+
+          th
+            padding: 0.875rem 1rem
+            text-align: left
+            font-weight: 700
+            color: colors.$white
+            white-space: nowrap
+            border-right: 1px solid colors.$gray
+            background: colors.$lighter-background
+            font-size: 0.8rem
+            text-transform: uppercase
+            letter-spacing: 0.5px
+
+            &:last-child
+              border-right: none
+
+            &:first-child
+              border-left: none
+
+        tbody
+          tr
+            border-bottom: 1px solid colors.$dark-gray
+            transition: all 0.2s ease
+            background: colors.$background
+
+            &:hover
+              background: colors.$darker-gray
+              box-shadow: 0 2px 4px colors.$dark-gray
+
+            &:last-child
+              border-bottom: none
+
+            &:nth-child(even)
+              background: colors.$dark-gray
+
+              &:hover
+                background: colors.$darker-gray
+
+            td
+              padding: 0.875rem 1rem
+              color: colors.$white
+              border-right: 1px solid colors.$dark-gray
+              word-break: break-word
+              font-size: 0.875rem
+              line-height: 1.4
+              vertical-align: middle
+
+              &:last-child
+                border-right: none
+
+              &:first-child
+                font-weight: 500
+                color: colors.$white
+
+    .no-data
+      text-align: center
+      padding: 3rem 2rem
+      color: colors.$subtext
+      font-style: italic
+      background: colors.$dark-gray
+      border-radius: 8px
+      border: 1px solid colors.$gray
+
+      p
+        margin: 0
+        font-size: 1rem
+
+  .dialog-actions
+    display: flex
+    gap: 0.75rem
+    justify-content: flex-end
+    padding-top: 1rem
+    border-top: 1px solid colors.$gray
+
+    button
+      flex-shrink: 0
+
+@media (max-width: 768px)
+  .table-dialog
+    .table-content
+      max-height: 50vh
+
+      .table-container
+        .nexterm-table
+          font-size: 0.75rem
+
+          th
+            padding: 0.5rem 0.75rem
+            font-size: 0.7rem
+
+          td
+            padding: 0.5rem 0.75rem
+            font-size: 0.75rem
+
+    .dialog-actions
+      flex-direction: column
+
+      button
+        width: 100%
