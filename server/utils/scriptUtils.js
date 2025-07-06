@@ -90,8 +90,8 @@ module.exports.transformScript = (scriptContent) => {
     );
 
     transformedContent = transformedContent.replace(
-        /^(\s*)@NEXTERM:CONFIRM\s+"([^"]+)"(?:\s+"([^"]*)")?/gm,
-        "$1echo \"NEXTERM_CONFIRM:$2:$3\" && read -r NEXTERM_CONFIRM_RESULT",
+        /^(\s*)@NEXTERM:CONFIRM\s+"([^"]+)"/gm,
+        "$1echo \"NEXTERM_CONFIRM:$2\" && read -r NEXTERM_CONFIRM_RESULT",
     );
 
     transformedContent = transformedContent.replace(
@@ -166,9 +166,8 @@ module.exports.processNextermLine = (line) => {
     }
 
     if (line.startsWith("NEXTERM_CONFIRM:")) {
-        const parts = line.substring(16).split(":");
-        const [message, defaultAction] = parts;
-        return { type: "confirm", message: message, default: defaultAction || "No" };
+        const message = line.substring(16);
+        return { type: "confirm", message: message };
     }
 
     if (line.startsWith("NEXTERM_PROGRESS:")) {

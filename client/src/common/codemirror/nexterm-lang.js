@@ -111,7 +111,7 @@ const nextermCompletions = [
         type: "keyword",
         info: "Ask user for Yes/No confirmation",
         detail: "Confirmation prompt",
-        apply: "@NEXTERM:CONFIRM \"Are you sure you want to proceed?\" \"No\"",
+        apply: "@NEXTERM:CONFIRM \"Are you sure you want to proceed?\"",
     },
     {
         label: "@NEXTERM:PROGRESS",
