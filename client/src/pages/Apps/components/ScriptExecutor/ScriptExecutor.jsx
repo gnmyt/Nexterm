@@ -2,7 +2,7 @@ import Button from "@/common/components/Button";
 import { mdiConsoleLine, mdiScript, mdiStop } from "@mdi/js";
 import InstallStep from "@/pages/Apps/components/AppInstaller/components/InstallStep";
 import "./styles.sass";
-import { useContext, useEffect, useState, useImperativeHandle, forwardRef } from "react";
+import { useContext, useEffect, useState, useImperativeHandle, forwardRef, useRef } from "react";
 import { UserContext } from "@/common/contexts/UserContext.jsx";
 import LinuxImage from "../AppInstaller/os_images/linux.png";
 import LogDialog from "@/pages/Apps/components/AppInstaller/components/LogDialog";
@@ -32,6 +32,8 @@ export const ScriptExecutor = forwardRef(({ serverId, script, setRunning }, ref)
     const [summaryData, setSummaryData] = useState(null);
     const [tableData, setTableData] = useState(null);
     const [executionKey, setExecutionKey] = useState(0);
+    const timeoutRef = useRef(null);
+    const wsRef = useRef(null);
 
     const executeScript = () => {
         const protocol = location.protocol === "https:" ? "wss" : "ws";
@@ -39,6 +41,7 @@ export const ScriptExecutor = forwardRef(({ serverId, script, setRunning }, ref)
 
         const websocket = new WebSocket(`${protocol}://${url}?sessionToken=${sessionToken}&serverId=${serverId}&scriptId=${script?.id}`);
         setWs(websocket);
+        wsRef.current = websocket;
 
         websocket.onmessage = (event) => {
             const data = event.data.toString();
@@ -132,6 +135,7 @@ export const ScriptExecutor = forwardRef(({ serverId, script, setRunning }, ref)
             setRunning(false);
             setInputDialogOpen(false);
             setWs(null);
+            wsRef.current = null;
         };
 
         websocket.onerror = (error) => {
@@ -140,6 +144,7 @@ export const ScriptExecutor = forwardRef(({ serverId, script, setRunning }, ref)
             setRunning(false);
             setInputDialogOpen(false);
             setWs(null);
+            wsRef.current = null;
         };
     };
 
@@ -177,13 +182,20 @@ export const ScriptExecutor = forwardRef(({ serverId, script, setRunning }, ref)
             setInputPrompt(null);
             setLogContent(logContent => logContent + "Script execution cancelled by user\n");
         }
+        wsRef.current = null;
     };
 
     const resetAndExecute = () => {
-        if (ws) {
-            ws.close();
-            setWs(null);
+        if (timeoutRef.current) {
+            clearTimeout(timeoutRef.current);
+            timeoutRef.current = null;
         }
+
+        if (wsRef.current) {
+            wsRef.current.close();
+            wsRef.current = null;
+        }
+        setWs(null);
 
         setCurrentStep(1);
         setFailedStep(null);
@@ -197,8 +209,9 @@ export const ScriptExecutor = forwardRef(({ serverId, script, setRunning }, ref)
         setTableData(null);
         setRunning(true);
 
-        setTimeout(() => {
+        timeoutRef.current = setTimeout(() => {
             executeScript();
+            timeoutRef.current = null;
         }, 1000);
     };
 
@@ -221,14 +234,17 @@ export const ScriptExecutor = forwardRef(({ serverId, script, setRunning }, ref)
 
         return () => {
             setRunning(false);
-            if (ws) {
-                ws.close();
-                setWs(null);
+            if (timeoutRef.current) {
+                clearTimeout(timeoutRef.current);
+                timeoutRef.current = null;
             }
+            if (wsRef.current) {
+                wsRef.current.close();
+                wsRef.current = null;
+            }
+            setWs(null);
         };
-    }, [script, executionKey]);
-
-    useImperativeHandle(ref, () => ({ reExecute: () => setExecutionKey(prev => prev + 1) }));
+    }, [script, serverId, executionKey]);
 
     return (
         <div className="script-executor">

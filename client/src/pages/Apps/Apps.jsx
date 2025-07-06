@@ -204,10 +204,9 @@ export const Apps = () => {
     };
 
     const startScriptExecution = (serverId) => {
-        if (selectedScript && selectedScript.id === runScriptId && scriptExecutorRef.current) {
-            scriptExecutorRef.current.reExecute();
-        } else {
-            setServerId(serverId);
+        setServerId(serverId);
+        
+        if (selectedScript?.id !== runScriptId) {
             updateSelectedScript(runScriptId);
         }
 
