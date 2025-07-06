@@ -4,7 +4,7 @@ import StoreHeader from "@/pages/Apps/components/StoreHeader";
 import AppItem from "@/pages/Apps/components/AppItem";
 import ScriptItem from "@/pages/Apps/components/ScriptItem";
 import { useEffect, useState } from "react";
-import { getRequest } from "@/common/utils/RequestUtil.js";
+import { getRequest, deleteRequest } from "@/common/utils/RequestUtil.js";
 import { mdiPackageVariant, mdiSignCaution, mdiScript } from "@mdi/js";
 import Icon from "@mdi/react";
 import AppInstaller from "@/pages/Apps/components/AppInstaller";
@@ -13,13 +13,18 @@ import { useLocation, useNavigate } from "react-router-dom";
 import DeployServerDialog from "@/pages/Apps/components/DeployServerDialog";
 import SourceDialog from "@/pages/Apps/components/SourceDialog";
 import ScriptDialog from "@/pages/Apps/components/ScriptDialog";
+import { ActionConfirmDialog } from "@/common/components/ActionConfirmDialog/ActionConfirmDialog.jsx";
+import { useToast } from "@/common/contexts/ToastContext.jsx";
 
 export const Apps = () => {
     const location = useLocation();
     const navigate = useNavigate();
+    const { sendToast } = useToast();
 
     const [sourceDialogOpen, setSourceDialogOpen] = useState(false);
     const [scriptDialogOpen, setScriptDialogOpen] = useState(false);
+    const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+    const [scriptToDelete, setScriptToDelete] = useState(null);
     const [editingScript, setEditingScript] = useState(null);
     const [viewingScript, setViewingScript] = useState(null);
 
@@ -119,6 +124,35 @@ export const Apps = () => {
         setScriptDialogOpen(true);
     };
 
+    const deleteScript = async (id) => {
+        const script = scripts.find((script) => script.id === id);
+        if (!script || script.source !== "custom") {
+            sendToast("Error", "Only custom scripts can be deleted");
+            return;
+        }
+
+        setScriptToDelete(script);
+        setDeleteDialogOpen(true);
+    };
+
+    const confirmDeleteScript = async () => {
+        if (!scriptToDelete) return;
+
+        try {
+            await deleteRequest(`scripts/${encodeURIComponent(scriptToDelete.id)}`);
+            sendToast("Success", "Script deleted successfully");
+            setScripts(prevScripts => prevScripts.filter(s => s.id !== scriptToDelete.id));
+
+            if (selectedScript && selectedScript.id === scriptToDelete.id) {
+                setSelectedScript(null);
+            }
+        } catch (error) {
+            sendToast("Error", error.message || "Failed to delete script");
+        } finally {
+            setScriptToDelete(null);
+        }
+    };
+
     const startDeployment = (serverId) => {
         setServerId(serverId);
         updateSelectedApp(deployAppId);
@@ -136,10 +170,10 @@ export const Apps = () => {
     };
 
     const onScriptUpdated = (updatedScript) => {
-        setScripts(prevScripts => 
-            prevScripts.map(script => 
-                script.id === updatedScript.id ? updatedScript : script
-            )
+        setScripts(prevScripts =>
+            prevScripts.map(script =>
+                script.id === updatedScript.id ? updatedScript : script,
+            ),
         );
     };
 
@@ -172,10 +206,12 @@ export const Apps = () => {
                 app={apps.find((app) => app.id === deployAppId)}
                 script={scripts.find((script) => script.id === runScriptId)}
             />
+            <ActionConfirmDialog open={deleteDialogOpen} setOpen={setDeleteDialogOpen} onConfirm={confirmDeleteScript}
+                                 text={scriptToDelete ? `Are you sure you want to delete the script "${scriptToDelete.name}"? This action cannot be undone.` : ""} />
             <div className="app-content">
                 <div className="store-header-wrapper">
                     <StoreHeader
-                        onSourceClick={() => setSourceDialogOpen(true)} 
+                        onSourceClick={() => setSourceDialogOpen(true)}
                         isScriptsCategory={isScriptsCategory()}
                         onCreateScript={() => setScriptDialogOpen(true)}
                     />
@@ -195,6 +231,7 @@ export const Apps = () => {
                                     onClick={() => runScript(script.id)}
                                     onView={() => viewScript(script.id)}
                                     onEdit={() => editScript(script.id)}
+                                    onDelete={() => deleteScript(script.id)}
                                 />;
                             })
                         ) : (

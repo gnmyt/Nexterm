@@ -1,9 +1,25 @@
 import "./styles.sass";
 import Button from "@/common/components/Button";
-import { mdiPlay, mdiScript, mdiEye, mdiPencil } from "@mdi/js";
+import { mdiPlay, mdiScript, mdiEye, mdiPencil, mdiTrashCan } from "@mdi/js";
 import Icon from "@mdi/react";
 
-export const ScriptItem = ({ onClick, onView, onEdit, icon, title, description, running, isCustom }) => {
+export const ScriptItem = ({ onClick, onView, onEdit, onDelete, icon, title, description, running, isCustom }) => {
+
+    const handleViewEdit = () => {
+        if (isCustom && onEdit) {
+            onEdit();
+        } else if (!isCustom && onView) {
+            onView();
+        }
+    }
+
+    const handleDelete = (e) => {
+        e.stopPropagation();
+        if (onDelete) {
+            onDelete();
+        }
+    }
+
     return (
         <div className="script-item">
             <div className="script-header">
@@ -23,15 +39,13 @@ export const ScriptItem = ({ onClick, onView, onEdit, icon, title, description, 
             <p className="script-description">{description}</p>
 
             <div className="action-area">
-                <Button text={isCustom ? "Edit" : "View"} icon={isCustom ? mdiPencil : mdiEye} type="secondary"
-                        onClick={(e) => {
-                            e.stopPropagation();
-                            if (isCustom && onEdit) {
-                                onEdit();
-                            } else if (!isCustom && onView) {
-                                onView();
-                            }
-                        }} />
+                <div className="top-buttons">
+                    <Button text={isCustom ? "Edit" : "View"} icon={isCustom ? mdiPencil : mdiEye} type="secondary"
+                            onClick={handleViewEdit} />
+                    {isCustom && (
+                        <Button text="Delete" icon={mdiTrashCan} type="danger" onClick={handleDelete} />
+                    )}
+                </div>
                 <Button text={running ? "Running..." : "Run"} icon={running ? null : mdiPlay} disabled={running}
                         onClick={(e) => {
                             e.stopPropagation();

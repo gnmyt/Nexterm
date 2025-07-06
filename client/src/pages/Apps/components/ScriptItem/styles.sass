@@ -80,24 +80,45 @@
 
   .action-area
     display: flex
-    align-items: center
+    flex-direction: column
     gap: 0.5rem
-    justify-content: flex-end
     margin-top: auto
 
-    .btn
-      padding: 0.6rem 1rem
-      font-size: 0.9rem
-      min-width: auto
-      flex: 1
+    .top-buttons
+      display: flex
+      gap: 0.4rem
+      
+      .btn
+        padding: 0.5rem 0.7rem
+        font-size: 0.8rem
+        flex: 1
+        min-width: 0
+        text-align: center
 
-      &:first-child
-        flex: 0.8
+        h3
+          font-size: 0.8rem
+          margin: 0
+          white-space: nowrap
+          overflow: hidden
+          text-overflow: ellipsis
+
+        svg
+          width: 0.9rem
+          height: 0.9rem
+
+    > .btn
+      padding: 0.5rem 0.7rem
+      font-size: 0.8rem
+      width: 100%
+      text-align: center
 
       h3
-        font-size: 0.9rem
+        font-size: 0.8rem
         margin: 0
+        white-space: nowrap
+        overflow: hidden
+        text-overflow: ellipsis
 
       svg
-        width: 1rem
-        height: 1rem
+        width: 0.9rem
+        height: 0.9rem
