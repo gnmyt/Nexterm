@@ -9,6 +9,7 @@ import LogDialog from "@/pages/Apps/components/AppInstaller/components/LogDialog
 import Icon from "@mdi/react";
 import InputDialog from "./components/InputDialog";
 import SummaryDialog from "./components/SummaryDialog";
+import TableDialog from "./components/TableDialog";
 import { useToast } from "@/common/contexts/ToastContext.jsx";
 
 export const ScriptExecutor = forwardRef(({ serverId, script, setRunning }, ref) => {
@@ -29,6 +30,7 @@ export const ScriptExecutor = forwardRef(({ serverId, script, setRunning }, ref)
     const [ws, setWs] = useState(null);
 
     const [summaryData, setSummaryData] = useState(null);
+    const [tableData, setTableData] = useState(null);
     const [executionKey, setExecutionKey] = useState(0);
 
     const executeScript = () => {
@@ -114,6 +116,13 @@ export const ScriptExecutor = forwardRef(({ serverId, script, setRunning }, ref)
                 } catch (e) {
                     console.error("Error parsing summary data:", e);
                 }
+            } else if (type === "\x0C") {
+                try {
+                    const tableData = JSON.parse(message);
+                    setTableData(tableData);
+                } catch (e) {
+                    console.error("Error parsing table data:", e);
+                }
             }
         };
 
@@ -151,6 +160,14 @@ export const ScriptExecutor = forwardRef(({ serverId, script, setRunning }, ref)
         }
     };
 
+    const sendTableResponse = () => {
+        if (ws) {
+            const response = { type: "input_response", variable: "NEXTERM_TABLE_RESULT", value: "closed" };
+            ws.send(JSON.stringify(response));
+            setTableData(null);
+        }
+    };
+
     const cancelScript = () => {
         if (ws) {
             ws.send(JSON.stringify({ type: "input_cancelled" }));
@@ -177,6 +194,7 @@ export const ScriptExecutor = forwardRef(({ serverId, script, setRunning }, ref)
         setInputPrompt(null);
         setCurrentProgress(null);
         setSummaryData(null);
+        setTableData(null);
         setRunning(true);
 
         setTimeout(() => {
@@ -210,7 +228,7 @@ export const ScriptExecutor = forwardRef(({ serverId, script, setRunning }, ref)
         };
     }, [script, executionKey]);
 
-    useImperativeHandle(ref, () => ({ reExecute: setExecutionKey(prev => prev + 1) }));
+    useImperativeHandle(ref, () => ({ reExecute: () => setExecutionKey(prev => prev + 1) }));
 
     return (
         <div className="script-executor">
@@ -218,6 +236,8 @@ export const ScriptExecutor = forwardRef(({ serverId, script, setRunning }, ref)
             <InputDialog open={inputDialogOpen} onSubmit={sendInput} prompt={inputPrompt} />
             <SummaryDialog open={!!summaryData} onClose={sendSummaryResponse}
                            summaryData={summaryData} />
+            <TableDialog open={!!tableData} onClose={sendTableResponse}
+                         tableData={tableData} />
 
             <div className="script-header">
                 <div className="script-img">

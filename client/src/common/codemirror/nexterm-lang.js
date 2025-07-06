@@ -18,7 +18,7 @@ const nextermShellMode = {
             state.nextermType = null;
         }
 
-        if (stream.match(/@NEXTERM:(STEP|INPUT|SELECT|WARN|INFO|SUCCESS|CONFIRM|PROGRESS|SUMMARY)/)) {
+        if (stream.match(/@NEXTERM:(STEP|INPUT|SELECT|WARN|INFO|SUCCESS|CONFIRM|PROGRESS|SUMMARY|TABLE)/)) {
             state.inNextermCommand = true;
             state.nextermType = stream.current().split(":")[1];
             return "keyword";
@@ -126,6 +126,13 @@ const nextermCompletions = [
         info: "Display a summary dialog with key-value data",
         detail: "Summary dialog",
         apply: "@NEXTERM:SUMMARY \"System Information\" \"OS\" \"Ubuntu 22.04\" \"CPU\" \"4 cores\" \"Memory\" \"8GB\"",
+    },
+    {
+        label: "@NEXTERM:TABLE",
+        type: "keyword",
+        info: "Display a table dialog with structured data",
+        detail: "Table dialog",
+        apply: "@NEXTERM:TABLE \"Process List\" \"PID,Name,CPU%,Memory\" \"1234,nginx,2.5%,45MB\" \"5678,apache,1.8%,32MB\"",
     },
 ];
 
