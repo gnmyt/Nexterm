@@ -69,7 +69,6 @@ export const Apps = () => {
         let filtered = scriptsData;
 
         if (!showEasterEgg) {
-            console.log(filtered);
             filtered = filtered.filter(script => !(script.source === "official" && script.id === "official/000easteregg"));
         }
 
