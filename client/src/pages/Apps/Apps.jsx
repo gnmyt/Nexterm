@@ -47,6 +47,9 @@ export const Apps = () => {
 
     const [search, setSearch] = useState("");
 
+    const [showEasterEgg, setShowEasterEgg] = useState(false);
+    const [konamiSequence, setKonamiSequence] = useState([]);
+
     const getCategory = () => {
         const endPath = location.pathname.split("/").pop();
         if (endPath === "apps") return null;
@@ -63,12 +66,32 @@ export const Apps = () => {
     };
 
     const filterScriptsBySource = (scriptsData) => {
+        let filtered = scriptsData;
+
+        if (!showEasterEgg) {
+            console.log(filtered);
+            filtered = filtered.filter(script => !(script.source === "official" && script.id === "official/000easteregg"));
+        }
+
         if (selectedSource === "All") {
-            return scriptsData;
+            return filtered;
         } else if (selectedSource === "Custom") {
-            return scriptsData.filter(script => script.source === "custom");
+            return filtered.filter(script => script.source === "custom");
         } else {
-            return scriptsData.filter(script => script.source === selectedSource);
+            return filtered.filter(script => script.source === selectedSource);
+        }
+    };
+
+    const konamiCode = ["ArrowUp", "ArrowUp", "ArrowDown", "ArrowDown", "ArrowLeft", "ArrowRight", "ArrowLeft", "ArrowRight", "KeyB", "KeyA"]; // ↑ ↑ ↓ ↓ ← → ← → B A
+
+    const handleKonamiCode = (event) => {
+        const newSequence = [...konamiSequence, event.code].slice(-konamiCode.length);
+        setKonamiSequence(newSequence);
+
+        if (newSequence.length === konamiCode.length &&
+            newSequence.every((key, index) => key === konamiCode[index])) {
+            setShowEasterEgg(true);
+            setKonamiSequence([]);
         }
     };
 
@@ -76,6 +99,10 @@ export const Apps = () => {
         const filteredScripts = filterScriptsBySource(allScripts);
         setScripts(filteredScripts);
     };
+
+    useEffect(() => {
+        if (isScriptsCategory()) applySourceFilter();
+    }, [showEasterEgg]);
 
     const updateSelectedApp = (id) => {
         setSelectedApp(apps.find((app) => app.id === id));
@@ -133,13 +160,20 @@ export const Apps = () => {
         }
 
         if (!isScriptsCategory() && selectedSource !== "All") setSelectedSource("All");
-        
+
         reloadList();
     }, [search, location]);
 
     useEffect(() => {
         if (isScriptsCategory()) applySourceFilter();
-    }, [selectedSource]);
+    }, [selectedSource, showEasterEgg]);
+
+    useEffect(() => {
+        document.addEventListener("keydown", handleKonamiCode);
+        return () => {
+            document.removeEventListener("keydown", handleKonamiCode);
+        };
+    }, [konamiSequence]);
 
     const deployApp = (id) => {
         setDeployAppId(id);
@@ -180,7 +214,7 @@ export const Apps = () => {
         try {
             await deleteRequest(`scripts/${encodeURIComponent(scriptToDelete.id)}`);
             sendToast("Success", "Script deleted successfully");
-            
+
             const updatedAllScripts = allScripts.filter(s => s.id !== scriptToDelete.id);
             setAllScripts(updatedAllScripts);
             getUniqueSources(updatedAllScripts);
@@ -205,7 +239,7 @@ export const Apps = () => {
 
     const startScriptExecution = (serverId) => {
         setServerId(serverId);
-        
+
         if (selectedScript?.id !== runScriptId) {
             updateSelectedScript(runScriptId);
         }
@@ -223,7 +257,7 @@ export const Apps = () => {
 
     const onScriptUpdated = (updatedScript) => {
         const updatedAllScripts = allScripts.map(script =>
-            script.id === updatedScript.id ? updatedScript : script
+            script.id === updatedScript.id ? updatedScript : script,
         );
         setAllScripts(updatedAllScripts);
         getUniqueSources(updatedAllScripts);
@@ -278,13 +312,14 @@ export const Apps = () => {
                     <div className={`app-list ${isScriptsCategory() ? "script-list" : ""}`}>
                         {isScriptsCategory() ? (
                             scripts.map((script) => {
+                                const isEasterEgg = script.source === "official" && script.id === "official/000easteregg";
                                 return <ScriptItem
                                     key={script.id}
-                                    icon={script.icon}
                                     title={script.name}
                                     description={script.description}
                                     running={running}
                                     isCustom={script.source === "custom"}
+                                    isEasterEgg={isEasterEgg}
                                     onClick={() => runScript(script.id)}
                                     onView={() => viewScript(script.id)}
                                     onEdit={() => editScript(script.id)}
@@ -317,7 +352,8 @@ export const Apps = () => {
                         {selectedApp !== null &&
                             <AppInstaller serverId={serverId} app={selectedApp} setInstalling={setInstalling} />}
                         {selectedScript !== null &&
-                            <ScriptExecutor ref={scriptExecutorRef} serverId={serverId} script={selectedScript} setRunning={setRunning} />}
+                            <ScriptExecutor ref={scriptExecutorRef} serverId={serverId} script={selectedScript}
+                                            setRunning={setRunning} />}
                         {selectedApp === null && selectedScript === null && (
                             <div className="select-app">
                                 <Icon path={isScriptsCategory() ? mdiScript : mdiPackageVariant} />

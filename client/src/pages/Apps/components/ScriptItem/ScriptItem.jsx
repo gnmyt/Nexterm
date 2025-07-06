@@ -3,7 +3,7 @@ import Button from "@/common/components/Button";
 import { mdiPlay, mdiScript, mdiEye, mdiPencil, mdiTrashCan } from "@mdi/js";
 import Icon from "@mdi/react";
 
-export const ScriptItem = ({ onClick, onView, onEdit, onDelete, icon, title, description, running, isCustom }) => {
+export const ScriptItem = ({ onClick, onView, onEdit, onDelete, title, description, running, isCustom, isEasterEgg }) => {
 
     const handleViewEdit = () => {
         if (isCustom && onEdit) {
@@ -21,9 +21,9 @@ export const ScriptItem = ({ onClick, onView, onEdit, onDelete, icon, title, des
     }
 
     return (
-        <div className="script-item">
+        <div className={`script-item ${isEasterEgg ? 'easter-egg' : ''}`}>
             <div className="script-header">
-                <div className="script-icon">
+                <div className={`script-icon ${isEasterEgg ? 'easter-egg-icon' : ''}`}>
                     <Icon path={mdiScript} />
                 </div>
 
