@@ -37,7 +37,9 @@ if [ "$INSTALL_TYPE" = "development version" ]; then
 else
     @NEXTERM:STEP "Standard installation process"
     echo "Installing stable version of $APP_NAME..."
-fi`;
+fi
+
+@NEXTERM:SUMMARY "System Information" "OS" "$(lsb_release -d | cut -f2)" "User" "$(whoami)" "Memory" "$(free -h | grep '^Mem:' | awk '{print $2}')"`;
     };
 
     useEffect(() => {
