@@ -91,6 +91,12 @@ const executeScript = async (ssh, ws, scriptContent) => {
                             })}`);
                             break;
                         case "summary":
+                            pendingInput = {
+                                ...nextermCommand,
+                                variable: "NEXTERM_SUMMARY_RESULT",
+                                prompt: "Summary displayed",
+                                type: "summary",
+                            };
                             ws.send(`\x0B${JSON.stringify({
                                 type: "summary",
                                 title: nextermCommand.title,

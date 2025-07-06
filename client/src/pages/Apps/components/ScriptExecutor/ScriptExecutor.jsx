@@ -28,7 +28,6 @@ export const ScriptExecutor = ({ serverId, script, setRunning }) => {
     const [inputPrompt, setInputPrompt] = useState(null);
     const [ws, setWs] = useState(null);
 
-    const [summaryDialogOpen, setSummaryDialogOpen] = useState(false);
     const [summaryData, setSummaryData] = useState(null);
 
     const executeScript = () => {
@@ -111,7 +110,6 @@ export const ScriptExecutor = ({ serverId, script, setRunning }) => {
                 try {
                     const summaryData = JSON.parse(message);
                     setSummaryData(summaryData);
-                    setSummaryDialogOpen(true);
                 } catch (e) {
                     console.error("Error parsing summary data:", e);
                 }
@@ -141,6 +139,14 @@ export const ScriptExecutor = ({ serverId, script, setRunning }) => {
             ws.send(JSON.stringify(response));
             setInputDialogOpen(false);
             setInputPrompt(null);
+        }
+    };
+
+    const sendSummaryResponse = () => {
+        if (ws) {
+            const response = { type: "input_response", variable: "NEXTERM_SUMMARY_RESULT", value: "closed" };
+            ws.send(JSON.stringify(response));
+            setSummaryData(null);
         }
     };
 
@@ -177,7 +183,6 @@ export const ScriptExecutor = ({ serverId, script, setRunning }) => {
         setInputPrompt(null);
         setCurrentProgress(null);
 
-        setSummaryDialogOpen(false);
         setSummaryData(null);
 
         setRunning(true);
@@ -200,7 +205,7 @@ export const ScriptExecutor = ({ serverId, script, setRunning }) => {
         <div className="script-executor">
             <LogDialog open={logOpen} onClose={() => setLogOpen(false)} content={logContent} />
             <InputDialog open={inputDialogOpen} onSubmit={sendInput} prompt={inputPrompt} />
-            <SummaryDialog open={summaryDialogOpen} onClose={() => setSummaryDialogOpen(false)}
+            <SummaryDialog open={!!summaryData} onClose={sendSummaryResponse}
                            summaryData={summaryData} />
 
             <div className="script-header">

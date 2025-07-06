@@ -108,7 +108,7 @@ module.exports.transformScript = (scriptContent) => {
         /^(\s*)@NEXTERM:SUMMARY\s+"([^"]+)"\s+(.+)/gm,
         (match, indent, title, data) => {
             const escapedData = data.replace(/"/g, "\\\"");
-            return `${indent}echo "NEXTERM_SUMMARY:${title}:${escapedData}"`;
+            return `${indent}echo "NEXTERM_SUMMARY:${title}:${escapedData}" && read -r NEXTERM_SUMMARY_RESULT`;
         },
     );
 
