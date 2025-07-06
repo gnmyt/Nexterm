@@ -95,7 +95,7 @@ module.exports.transformScript = (scriptContent) => {
     );
 
     transformedContent = transformedContent.replace(
-        /^(\s*)@NEXTERM:PROGRESS\s+(\$?\w+|\d+)\s+"[^"]*"/gm,
+        /^(\s*)@NEXTERM:PROGRESS\s+(\$?\w+|\d+)/gm,
         "$1echo \"NEXTERM_PROGRESS:$2\"",
     );
 

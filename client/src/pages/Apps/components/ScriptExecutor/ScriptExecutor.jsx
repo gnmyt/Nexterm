@@ -161,11 +161,11 @@ export const ScriptExecutor = forwardRef(({ serverId, script, setRunning }, ref)
     };
 
     const sendTableResponse = () => {
-        if (ws) {
+        if (ws && ws.readyState === WebSocket.OPEN) {
             const response = { type: "input_response", variable: "NEXTERM_TABLE_RESULT", value: "closed" };
             ws.send(JSON.stringify(response));
-            setTableData(null);
         }
+        setTableData(null);
     };
 
     const cancelScript = () => {
