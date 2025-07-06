@@ -116,6 +116,19 @@ const executeScript = async (ssh, ws, scriptContent) => {
                                 data: nextermCommand.data,
                             })}`);
                             break;
+                        case "msgbox":
+                            pendingInput = {
+                                ...nextermCommand,
+                                variable: "NEXTERM_MSGBOX_RESULT",
+                                prompt: "Message box displayed",
+                                type: "msgbox",
+                            };
+                            ws.send(`\x0D${JSON.stringify({
+                                type: "msgbox",
+                                title: nextermCommand.title,
+                                message: nextermCommand.message,
+                            })}`);
+                            break;
                     }
                 } else if (line.trim()) {
                     sendOutput(line + "\n");
@@ -150,7 +163,7 @@ const executeScript = async (ssh, ws, scriptContent) => {
                 const processedOutput = handleOutput(data);
                 if (!processedOutput) return;
 
-                if (!["NEXTERM_INPUT", "NEXTERM_SELECT", "NEXTERM_STEP", "NEXTERM_TABLE"].some(cmd => processedOutput.includes(cmd))) {
+                if (!["NEXTERM_INPUT", "NEXTERM_SELECT", "NEXTERM_STEP", "NEXTERM_TABLE", "NEXTERM_MSGBOX"].some(cmd => processedOutput.includes(cmd))) {
                     sendOutput(processedOutput);
                 }
             });

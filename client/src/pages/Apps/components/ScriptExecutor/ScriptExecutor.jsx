@@ -10,6 +10,7 @@ import Icon from "@mdi/react";
 import InputDialog from "./components/InputDialog";
 import SummaryDialog from "./components/SummaryDialog";
 import TableDialog from "./components/TableDialog";
+import MessageBoxDialog from "./components/MessageBoxDialog";
 import { useToast } from "@/common/contexts/ToastContext.jsx";
 
 export const ScriptExecutor = forwardRef(({ serverId, script, setRunning }, ref) => {
@@ -31,7 +32,7 @@ export const ScriptExecutor = forwardRef(({ serverId, script, setRunning }, ref)
 
     const [summaryData, setSummaryData] = useState(null);
     const [tableData, setTableData] = useState(null);
-    const [executionKey, setExecutionKey] = useState(0);
+    const [messageBoxData, setMessageBoxData] = useState(null);
     const timeoutRef = useRef(null);
     const wsRef = useRef(null);
 
@@ -126,6 +127,13 @@ export const ScriptExecutor = forwardRef(({ serverId, script, setRunning }, ref)
                 } catch (e) {
                     console.error("Error parsing table data:", e);
                 }
+            } else if (type === "\x0D") {
+                try {
+                    const messageBoxData = JSON.parse(message);
+                    setMessageBoxData(messageBoxData);
+                } catch (e) {
+                    console.error("Error parsing message box data:", e);
+                }
             }
         };
 
@@ -173,6 +181,14 @@ export const ScriptExecutor = forwardRef(({ serverId, script, setRunning }, ref)
         setTableData(null);
     };
 
+    const sendMessageBoxResponse = () => {
+        if (ws && ws.readyState === WebSocket.OPEN) {
+            const response = { type: "input_response", variable: "NEXTERM_MSGBOX_RESULT", value: "closed" };
+            ws.send(JSON.stringify(response));
+        }
+        setMessageBoxData(null);
+    };
+
     const cancelScript = () => {
         if (ws) {
             ws.send(JSON.stringify({ type: "input_cancelled" }));
@@ -207,6 +223,7 @@ export const ScriptExecutor = forwardRef(({ serverId, script, setRunning }, ref)
         setCurrentProgress(null);
         setSummaryData(null);
         setTableData(null);
+        setMessageBoxData(null);
         setRunning(true);
 
         timeoutRef.current = setTimeout(() => {
@@ -244,7 +261,7 @@ export const ScriptExecutor = forwardRef(({ serverId, script, setRunning }, ref)
             }
             setWs(null);
         };
-    }, [script, serverId, executionKey]);
+    }, [script, serverId]);
 
     return (
         <div className="script-executor">
@@ -254,6 +271,8 @@ export const ScriptExecutor = forwardRef(({ serverId, script, setRunning }, ref)
                            summaryData={summaryData} />
             <TableDialog open={!!tableData} onClose={sendTableResponse}
                          tableData={tableData} />
+            <MessageBoxDialog open={!!messageBoxData} onClose={sendMessageBoxResponse}
+                             messageData={messageBoxData} />
 
             <div className="script-header">
                 <div className="script-img">

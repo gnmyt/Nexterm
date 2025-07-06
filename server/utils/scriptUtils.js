@@ -120,6 +120,11 @@ module.exports.transformScript = (scriptContent) => {
         },
     );
 
+    transformedContent = transformedContent.replace(
+        /^(\s*)@NEXTERM:MSGBOX\s+"([^"]+)"\s+"([^"]+)"/gm,
+        "$1echo \"NEXTERM_MSGBOX:$2:$3\" && read -r NEXTERM_MSGBOX_RESULT",
+    );
+
     return `#!/bin/bash
 set -e
 ${transformedContent}
@@ -190,6 +195,13 @@ module.exports.processNextermLine = (line) => {
         const dataStr = parts.slice(1).join(":");
         const data = module.exports.parseOptions(dataStr);
         return { type: "table", title: title, data: data };
+    }
+
+    if (line.startsWith("NEXTERM_MSGBOX:")) {
+        const parts = line.substring(15).split(":");
+        const title = parts[0];
+        const message = parts.slice(1).join(":");
+        return { type: "msgbox", title: title, message: message };
     }
 
     return null;

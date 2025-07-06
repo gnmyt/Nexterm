@@ -18,7 +18,7 @@ const nextermShellMode = {
             state.nextermType = null;
         }
 
-        if (stream.match(/@NEXTERM:(STEP|INPUT|SELECT|WARN|INFO|SUCCESS|CONFIRM|PROGRESS|SUMMARY|TABLE)/)) {
+        if (stream.match(/@NEXTERM:(STEP|INPUT|SELECT|WARN|INFO|SUCCESS|CONFIRM|PROGRESS|SUMMARY|TABLE|MSGBOX)/)) {
             state.inNextermCommand = true;
             state.nextermType = stream.current().split(":")[1];
             return "keyword";
@@ -133,6 +133,13 @@ const nextermCompletions = [
         info: "Display a table dialog with structured data",
         detail: "Table dialog",
         apply: "@NEXTERM:TABLE \"Process List\" \"PID,Name,CPU%,Memory\" \"1234,nginx,2.5%,45MB\" \"5678,apache,1.8%,32MB\"",
+    },
+    {
+        label: "@NEXTERM:MSGBOX",
+        type: "keyword",
+        info: "Display a message box dialog that halts execution until closed",
+        detail: "Message box dialog",
+        apply: "@NEXTERM:MSGBOX \"Information\" \"This is an important message that requires acknowledgment.\"",
     },
 ];
 
