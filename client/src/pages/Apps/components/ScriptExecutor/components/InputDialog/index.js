@@ -1,0 +1,1 @@
+export { InputDialog as default } from "./InputDialog.jsx";
