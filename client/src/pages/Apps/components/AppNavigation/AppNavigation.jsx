@@ -8,6 +8,7 @@ import {
     mdiLan,
     mdiMagnify,
     mdiPackageVariant,
+    mdiScript,
     mdiWrench,
 } from "@mdi/js";
 import ServerSearch from "@/pages/Servers/components/ServerList/components/ServerSearch";
@@ -15,6 +16,7 @@ import ServerSearch from "@/pages/Servers/components/ServerList/components/Serve
 export const AppNavigation = ({ search, setSearch }) => {
 
     const categories = [
+        { title: "Scripts", icon: mdiScript },
         { title: "Networking", icon: mdiLan },
         { title: "Media", icon: mdiFolderMultipleImage },
         { title: "Cloud", icon: mdiCloud },
