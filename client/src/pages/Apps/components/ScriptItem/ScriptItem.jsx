@@ -5,7 +5,7 @@ import Icon from "@mdi/react";
 
 export const ScriptItem = ({ onClick, onView, onEdit, icon, title, description, running, isCustom }) => {
     return (
-        <div className="script-item" onClick={onClick}>
+        <div className="script-item">
             <div className="script-header">
                 <div className="script-icon">
                     <Icon path={mdiScript} />
