@@ -112,6 +112,14 @@ module.exports.transformScript = (scriptContent) => {
         },
     );
 
+    transformedContent = transformedContent.replace(
+        /^(\s*)@NEXTERM:TABLE\s+"([^"]+)"\s+(.+)/gm,
+        (match, indent, title, data) => {
+            const escapedData = data.replace(/"/g, "\\\"");
+            return `${indent}echo "NEXTERM_TABLE:${title}:${escapedData}" && read -r NEXTERM_TABLE_RESULT`;
+        },
+    );
+
     return `#!/bin/bash
 set -e
 ${transformedContent}
@@ -174,6 +182,14 @@ module.exports.processNextermLine = (line) => {
         const dataStr = parts.slice(1).join(":");
         const data = module.exports.parseOptions(dataStr);
         return { type: "summary", title: title, data: data };
+    }
+
+    if (line.startsWith("NEXTERM_TABLE:")) {
+        const parts = line.substring(14).split(":");
+        const title = parts[0];
+        const dataStr = parts.slice(1).join(":");
+        const data = module.exports.parseOptions(dataStr);
+        return { type: "table", title: title, data: data };
     }
 
     return null;

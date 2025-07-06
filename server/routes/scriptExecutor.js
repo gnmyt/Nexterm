@@ -103,6 +103,19 @@ const executeScript = async (ssh, ws, scriptContent) => {
                                 data: nextermCommand.data,
                             })}`);
                             break;
+                        case "table":
+                            pendingInput = {
+                                ...nextermCommand,
+                                variable: "NEXTERM_TABLE_RESULT",
+                                prompt: "Table displayed",
+                                type: "table",
+                            };
+                            ws.send(`\x0C${JSON.stringify({
+                                type: "table",
+                                title: nextermCommand.title,
+                                data: nextermCommand.data,
+                            })}`);
+                            break;
                     }
                 } else if (line.trim()) {
                     sendOutput(line + "\n");
@@ -137,7 +150,7 @@ const executeScript = async (ssh, ws, scriptContent) => {
                 const processedOutput = handleOutput(data);
                 if (!processedOutput) return;
 
-                if (!["NEXTERM_INPUT", "NEXTERM_SELECT", "NEXTERM_STEP"].some(cmd => processedOutput.includes(cmd))) {
+                if (!["NEXTERM_INPUT", "NEXTERM_SELECT", "NEXTERM_STEP", "NEXTERM_TABLE"].some(cmd => processedOutput.includes(cmd))) {
                     sendOutput(processedOutput);
                 }
             });
