@@ -3,7 +3,7 @@ import { AppNavigation } from "@/pages/Apps/components/AppNavigation";
 import StoreHeader from "@/pages/Apps/components/StoreHeader";
 import AppItem from "@/pages/Apps/components/AppItem";
 import ScriptItem from "@/pages/Apps/components/ScriptItem";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { getRequest, deleteRequest } from "@/common/utils/RequestUtil.js";
 import { mdiPackageVariant, mdiSignCaution, mdiScript } from "@mdi/js";
 import Icon from "@mdi/react";
@@ -37,6 +37,8 @@ export const Apps = () => {
     const [running, setRunning] = useState(false);
     const [selectedApp, setSelectedApp] = useState(null);
     const [selectedScript, setSelectedScript] = useState(null);
+
+    const scriptExecutorRef = useRef(null);
     const [apps, setApps] = useState([]);
     const [scripts, setScripts] = useState([]);
     const [allScripts, setAllScripts] = useState([]);
@@ -202,8 +204,13 @@ export const Apps = () => {
     };
 
     const startScriptExecution = (serverId) => {
-        setServerId(serverId);
-        updateSelectedScript(runScriptId);
+        if (selectedScript && selectedScript.id === runScriptId && scriptExecutorRef.current) {
+            scriptExecutorRef.current.reExecute();
+        } else {
+            setServerId(serverId);
+            updateSelectedScript(runScriptId);
+        }
+
         setRunScriptId(null);
     };
 
@@ -311,7 +318,7 @@ export const Apps = () => {
                         {selectedApp !== null &&
                             <AppInstaller serverId={serverId} app={selectedApp} setInstalling={setInstalling} />}
                         {selectedScript !== null &&
-                            <ScriptExecutor serverId={serverId} script={selectedScript} setRunning={setRunning} />}
+                            <ScriptExecutor ref={scriptExecutorRef} serverId={serverId} script={selectedScript} setRunning={setRunning} />}
                         {selectedApp === null && selectedScript === null && (
                             <div className="select-app">
                                 <Icon path={isScriptsCategory() ? mdiScript : mdiPackageVariant} />

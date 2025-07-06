@@ -2,7 +2,7 @@ import Button from "@/common/components/Button";
 import { mdiConsoleLine, mdiScript, mdiStop } from "@mdi/js";
 import InstallStep from "@/pages/Apps/components/AppInstaller/components/InstallStep";
 import "./styles.sass";
-import { useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useState, useImperativeHandle, forwardRef } from "react";
 import { UserContext } from "@/common/contexts/UserContext.jsx";
 import LinuxImage from "../AppInstaller/os_images/linux.png";
 import LogDialog from "@/pages/Apps/components/AppInstaller/components/LogDialog";
@@ -11,7 +11,7 @@ import InputDialog from "./components/InputDialog";
 import SummaryDialog from "./components/SummaryDialog";
 import { useToast } from "@/common/contexts/ToastContext.jsx";
 
-export const ScriptExecutor = ({ serverId, script, setRunning }) => {
+export const ScriptExecutor = forwardRef(({ serverId, script, setRunning }, ref) => {
     const { sessionToken } = useContext(UserContext);
     const { sendToast } = useToast();
 
@@ -29,6 +29,7 @@ export const ScriptExecutor = ({ serverId, script, setRunning }) => {
     const [ws, setWs] = useState(null);
 
     const [summaryData, setSummaryData] = useState(null);
+    const [executionKey, setExecutionKey] = useState(0);
 
     const executeScript = () => {
         const protocol = location.protocol === "https:" ? "wss" : "ws";
@@ -161,6 +162,28 @@ export const ScriptExecutor = ({ serverId, script, setRunning }) => {
         }
     };
 
+    const resetAndExecute = () => {
+        if (ws) {
+            ws.close();
+            setWs(null);
+        }
+
+        setCurrentStep(1);
+        setFailedStep(null);
+        setIsCompleted(false);
+        setLogContent("");
+        setSteps(["Initializing script execution"]);
+        setInputDialogOpen(false);
+        setInputPrompt(null);
+        setCurrentProgress(null);
+        setSummaryData(null);
+        setRunning(true);
+
+        setTimeout(() => {
+            executeScript();
+        }, 1000);
+    };
+
     const getTypeByIndex = (index) => {
         if (index === failedStep - 1) return "error";
         if (failedStep !== null && index > failedStep - 1) return "skip";
@@ -174,32 +197,20 @@ export const ScriptExecutor = ({ serverId, script, setRunning }) => {
     };
 
     useEffect(() => {
-        setCurrentStep(1);
-        setFailedStep(null);
-        setIsCompleted(false);
-        setLogContent("");
-        setSteps(["Initializing script execution"]);
-        setInputDialogOpen(false);
-        setInputPrompt(null);
-        setCurrentProgress(null);
+        if (!script) return;
 
-        setSummaryData(null);
-
-        setRunning(true);
-
-        let timer = setTimeout(() => {
-            executeScript();
-        }, 1000);
+        resetAndExecute();
 
         return () => {
-            clearTimeout(timer);
             setRunning(false);
             if (ws) {
                 ws.close();
                 setWs(null);
             }
         };
-    }, [script]);
+    }, [script, executionKey]);
+
+    useImperativeHandle(ref, () => ({ reExecute: setExecutionKey(prev => prev + 1) }));
 
     return (
         <div className="script-executor">
@@ -230,4 +241,4 @@ export const ScriptExecutor = ({ serverId, script, setRunning }) => {
             </div>
         </div>
     );
-};
+});
