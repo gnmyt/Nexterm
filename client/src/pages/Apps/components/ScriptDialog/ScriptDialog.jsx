@@ -32,7 +32,7 @@ if [ "$INSTALL_TYPE" = "development version" ]; then
     @NEXTERM:CONFIRM "Are you sure you want to continue with development version?"
     
     if [ "$NEXTERM_CONFIRM_RESULT" = "Yes" ]; then
-         @NEXTERM:INFO "Switching to stable version"
+         @NEXTERM:INFO "Setting up development environment"
     fi
 else
     @NEXTERM:STEP "Standard installation process"
