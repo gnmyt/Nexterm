@@ -64,11 +64,11 @@ module.exports.transformScript = (scriptContent) => {
         "$1sudo -S$2");
 
     transformedContent = transformedContent.replace(
-        /^(\s*)@NEXTERM:STEP\s+"([^"]+)"/gm,
+        /^(\s*)@NEXTERM:STEP\s+"((?:\\.|[^"\\])*)"/gm,
         "$1echo \"NEXTERM_STEP:$2\"");
 
     transformedContent = transformedContent.replace(
-        /^(\s*)@NEXTERM:INPUT\s+(\S+)\s+"([^"]+)"(?:\s+"([^"]*)")?/gm,
+        /^(\s*)@NEXTERM:INPUT\s+(\S+)\s+"((?:\\.|[^"\\])*)"(?:\s+"((?:\\.|[^"\\]*)*)")?/gm,
         (match, indent, varName, prompt, defaultValue) => {
             const escapedPrompt = prompt.replace(/:/g, "\\x3A");
             const escapedDefault = defaultValue ? defaultValue.replace(/:/g, "\\x3A") : "";
@@ -77,7 +77,7 @@ module.exports.transformScript = (scriptContent) => {
     );
 
     transformedContent = transformedContent.replace(
-        /^(\s*)@NEXTERM:SELECT\s+"([^"]+)"\s+"([^"]+)"\s+(.+)/gm,
+        /^(\s*)@NEXTERM:SELECT\s+"((?:\\.|[^"\\])*)"\s+"((?:\\.|[^"\\])*)"\s+(.+)/gm,
         (match, indent, varName, prompt, options) => {
             const escapedPrompt = prompt.replace(/:/g, "\\x3A");
             const escapedOptions = options.replace(/:/g, "\\x3A").replace(/"/g, "\\\"");
@@ -86,7 +86,7 @@ module.exports.transformScript = (scriptContent) => {
     );
 
     transformedContent = transformedContent.replace(
-        /^(\s*)@NEXTERM:SELECT\s+(\S+)\s+"([^"]+)"\s+(.+)/gm,
+        /^(\s*)@NEXTERM:SELECT\s+(\S+)\s+"((?:\\.|[^"\\])*)"\s+(.+)/gm,
         (match, indent, varName, prompt, options) => {
             const escapedPrompt = prompt.replace(/:/g, "\\x3A");
             const escapedOptions = options.replace(/:/g, "\\x3A").replace(/"/g, "\\\"");
@@ -95,7 +95,7 @@ module.exports.transformScript = (scriptContent) => {
     );
 
     transformedContent = transformedContent.replace(
-        /^(\s*)@NEXTERM:WARN\s+"([^"]+)"/gm,
+        /^(\s*)@NEXTERM:WARN\s+"((?:\\.|[^"\\])*)"/gm,
         (match, indent, message) => {
             const escapedMessage = message.replace(/:/g, "\\x3A");
             return `${indent}echo "NEXTERM_WARN:${escapedMessage}"`;
@@ -103,7 +103,7 @@ module.exports.transformScript = (scriptContent) => {
     );
 
     transformedContent = transformedContent.replace(
-        /^(\s*)@NEXTERM:INFO\s+"([^"]+)"/gm,
+        /^(\s*)@NEXTERM:INFO\s+"((?:\\.|[^"\\])*)"/gm,
         (match, indent, message) => {
             const escapedMessage = message.replace(/:/g, "\\x3A");
             return `${indent}echo "NEXTERM_INFO:${escapedMessage}"`;
@@ -111,7 +111,7 @@ module.exports.transformScript = (scriptContent) => {
     );
 
     transformedContent = transformedContent.replace(
-        /^(\s*)@NEXTERM:CONFIRM\s+"([^"]+)"/gm,
+        /^(\s*)@NEXTERM:CONFIRM\s+"((?:\\.|[^"\\])*)"/gm,
         (match, indent, message) => {
             const escapedMessage = message.replace(/:/g, "\\x3A");
             return `${indent}echo "NEXTERM_CONFIRM:${escapedMessage}" && read -r NEXTERM_CONFIRM_RESULT`;
@@ -124,7 +124,7 @@ module.exports.transformScript = (scriptContent) => {
     );
 
     transformedContent = transformedContent.replace(
-        /^(\s*)@NEXTERM:SUCCESS\s+"([^"]+)"/gm,
+        /^(\s*)@NEXTERM:SUCCESS\s+"((?:\\.|[^"\\])*)"/gm,
         (match, indent, message) => {
             const escapedMessage = message.replace(/:/g, "\\x3A");
             return `${indent}echo "NEXTERM_SUCCESS:${escapedMessage}"`;
@@ -132,7 +132,7 @@ module.exports.transformScript = (scriptContent) => {
     );
 
     transformedContent = transformedContent.replace(
-        /^(\s*)@NEXTERM:SUMMARY\s+"([^"]+)"\s+(.+)/gm,
+        /^(\s*)@NEXTERM:SUMMARY\s+"((?:\\.|[^"\\])*)"\s+(.+)/gm,
         (match, indent, title, data) => {
             const escapedTitle = title.replace(/:/g, "\\x3A").replace(/"/g, "\\\"");
             const escapedData = data.replace(/:/g, "\\x3A").replace(/"/g, "\\\"");
@@ -141,7 +141,7 @@ module.exports.transformScript = (scriptContent) => {
     );
 
     transformedContent = transformedContent.replace(
-        /^(\s*)@NEXTERM:TABLE\s+"([^"]+)"\s+(.+)/gm,
+        /^(\s*)@NEXTERM:TABLE\s+"((?:\\.|[^"\\])*)"\s+(.+)/gm,
         (match, indent, title, data) => {
             const escapedTitle = title.replace(/:/g, "\\x3A").replace(/"/g, "\\\"");
             const escapedData = data.replace(/:/g, "\\x3A").replace(/"/g, "\\\"");
@@ -150,7 +150,7 @@ module.exports.transformScript = (scriptContent) => {
     );
 
     transformedContent = transformedContent.replace(
-        /^(\s*)@NEXTERM:MSGBOX\s+"([^"]+)"\s+"([^"]+)"/gm,
+        /^(\s*)@NEXTERM:MSGBOX\s+"((?:\\.|[^"\\])*)"\s+"((?:\\.|[^"\\])*)"/gm,
         (match, indent, title, message) => {
             const escapedTitle = title.replace(/:/g, "\\x3A");
             const escapedMessage = message.replace(/:/g, "\\x3A");
