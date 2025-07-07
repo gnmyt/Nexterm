@@ -90,8 +90,8 @@ export const IdentityDialog = ({ open, onClose, identity }) => {
                 ...(authType === "password"
                         ? { password: password === "********" ? undefined : password }
                         : {
-                            sshKey: sshKey,
-                            passphrase: passphrase === "********" ? undefined : passphrase,
+                            sshKey: sshKey || undefined,
+                            ...(passphrase && passphrase !== "********" ? { passphrase } : {}),
                         }
                 ),
             };
