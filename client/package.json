@@ -37,7 +37,7 @@
     "react-dom": "^19.1.0",
     "react-router-dom": "^7.6.2",
     "react-use-websocket": "^4.13.0",
-    "simple-icons": "^15.3.0",
+    "simple-icons": "^15.5.0",
     "ua-parser-js": "^2.0.4"
   },
   "devDependencies": {
