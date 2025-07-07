@@ -22,7 +22,7 @@
     "@lezer/highlight": "^1.2.1",
     "@mdi/js": "^7.4.47",
     "@mdi/react": "^1.6.1",
-    "@uiw/codemirror-theme-github": "^4.23.14",
+    "@uiw/codemirror-theme-github": "^4.24.0",
     "@uiw/react-codemirror": "^4.23.14",
     "@xterm/addon-fit": "^0.10.0",
     "@xterm/xterm": "^5.5.0",
