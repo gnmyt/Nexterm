@@ -1,3 +1,11 @@
+module.exports.escapeColons = (text) => {
+    return text.replace(/:/g, "\\x3A");
+};
+
+module.exports.unescapeColons = (text) => {
+    return text.replace(/\\x3A/g, ":");
+};
+
 module.exports.parseOptions = (optionsStr) => {
     const unescapedOptions = optionsStr.replace(/\\"/g, "\"");
 
@@ -61,37 +69,53 @@ module.exports.transformScript = (scriptContent) => {
 
     transformedContent = transformedContent.replace(
         /^(\s*)@NEXTERM:INPUT\s+(\S+)\s+"([^"]+)"(?:\s+"([^"]*)")?/gm,
-        "$1echo \"NEXTERM_INPUT:$2:$3:$4\" && read -r $2");
+        (match, indent, varName, prompt, defaultValue) => {
+            const escapedPrompt = prompt.replace(/:/g, "\\x3A");
+            const escapedDefault = defaultValue ? defaultValue.replace(/:/g, "\\x3A") : "";
+            return `${indent}echo "NEXTERM_INPUT:${varName}:${escapedPrompt}:${escapedDefault}" && read -r ${varName}`;
+        },
+    );
 
     transformedContent = transformedContent.replace(
         /^(\s*)@NEXTERM:SELECT\s+"([^"]+)"\s+"([^"]+)"\s+(.+)/gm,
         (match, indent, varName, prompt, options) => {
-            const escapedOptions = options.replace(/"/g, "\\\"");
-            return `${indent}echo "NEXTERM_SELECT:${varName}:${prompt}:${escapedOptions}" && read -r ${varName}`;
+            const escapedPrompt = prompt.replace(/:/g, "\\x3A");
+            const escapedOptions = options.replace(/:/g, "\\x3A").replace(/"/g, "\\\"");
+            return `${indent}echo "NEXTERM_SELECT:${varName}:${escapedPrompt}:${escapedOptions}" && read -r ${varName}`;
         },
     );
 
     transformedContent = transformedContent.replace(
         /^(\s*)@NEXTERM:SELECT\s+(\S+)\s+"([^"]+)"\s+(.+)/gm,
         (match, indent, varName, prompt, options) => {
-            const escapedOptions = options.replace(/"/g, "\\\"");
-            return `${indent}echo "NEXTERM_SELECT:${varName}:${prompt}:${escapedOptions}" && read -r ${varName}`;
+            const escapedPrompt = prompt.replace(/:/g, "\\x3A");
+            const escapedOptions = options.replace(/:/g, "\\x3A").replace(/"/g, "\\\"");
+            return `${indent}echo "NEXTERM_SELECT:${varName}:${escapedPrompt}:${escapedOptions}" && read -r ${varName}`;
         },
     );
 
     transformedContent = transformedContent.replace(
         /^(\s*)@NEXTERM:WARN\s+"([^"]+)"/gm,
-        "$1echo \"NEXTERM_WARN:$2\"",
+        (match, indent, message) => {
+            const escapedMessage = message.replace(/:/g, "\\x3A");
+            return `${indent}echo "NEXTERM_WARN:${escapedMessage}"`;
+        },
     );
 
     transformedContent = transformedContent.replace(
         /^(\s*)@NEXTERM:INFO\s+"([^"]+)"/gm,
-        "$1echo \"NEXTERM_INFO:$2\"",
+        (match, indent, message) => {
+            const escapedMessage = message.replace(/:/g, "\\x3A");
+            return `${indent}echo "NEXTERM_INFO:${escapedMessage}"`;
+        },
     );
 
     transformedContent = transformedContent.replace(
         /^(\s*)@NEXTERM:CONFIRM\s+"([^"]+)"/gm,
-        "$1echo \"NEXTERM_CONFIRM:$2\" && read -r NEXTERM_CONFIRM_RESULT",
+        (match, indent, message) => {
+            const escapedMessage = message.replace(/:/g, "\\x3A");
+            return `${indent}echo "NEXTERM_CONFIRM:${escapedMessage}" && read -r NEXTERM_CONFIRM_RESULT`;
+        },
     );
 
     transformedContent = transformedContent.replace(
@@ -101,28 +125,37 @@ module.exports.transformScript = (scriptContent) => {
 
     transformedContent = transformedContent.replace(
         /^(\s*)@NEXTERM:SUCCESS\s+"([^"]+)"/gm,
-        "$1echo \"NEXTERM_SUCCESS:$2\"",
+        (match, indent, message) => {
+            const escapedMessage = message.replace(/:/g, "\\x3A");
+            return `${indent}echo "NEXTERM_SUCCESS:${escapedMessage}"`;
+        },
     );
 
     transformedContent = transformedContent.replace(
         /^(\s*)@NEXTERM:SUMMARY\s+"([^"]+)"\s+(.+)/gm,
         (match, indent, title, data) => {
-            const escapedData = data.replace(/"/g, "\\\"");
-            return `${indent}echo "NEXTERM_SUMMARY:${title}:${escapedData}" && read -r NEXTERM_SUMMARY_RESULT`;
+            const escapedTitle = title.replace(/:/g, "\\x3A").replace(/"/g, "\\\"");
+            const escapedData = data.replace(/:/g, "\\x3A").replace(/"/g, "\\\"");
+            return `${indent}echo "NEXTERM_SUMMARY:${escapedTitle}:${escapedData}" && read -r NEXTERM_SUMMARY_RESULT`;
         },
     );
 
     transformedContent = transformedContent.replace(
         /^(\s*)@NEXTERM:TABLE\s+"([^"]+)"\s+(.+)/gm,
         (match, indent, title, data) => {
-            const escapedData = data.replace(/"/g, "\\\"");
-            return `${indent}echo "NEXTERM_TABLE:${title}:${escapedData}" && read -r NEXTERM_TABLE_RESULT`;
+            const escapedTitle = title.replace(/:/g, "\\x3A").replace(/"/g, "\\\"");
+            const escapedData = data.replace(/:/g, "\\x3A").replace(/"/g, "\\\"");
+            return `${indent}echo "NEXTERM_TABLE:${escapedTitle}:${escapedData}" && read -r NEXTERM_TABLE_RESULT`;
         },
     );
 
     transformedContent = transformedContent.replace(
         /^(\s*)@NEXTERM:MSGBOX\s+"([^"]+)"\s+"([^"]+)"/gm,
-        "$1echo \"NEXTERM_MSGBOX:$2:$3\" && read -r NEXTERM_MSGBOX_RESULT",
+        (match, indent, title, message) => {
+            const escapedTitle = title.replace(/:/g, "\\x3A");
+            const escapedMessage = message.replace(/:/g, "\\x3A");
+            return `${indent}echo "NEXTERM_MSGBOX:${escapedTitle}:${escapedMessage}" && read -r NEXTERM_MSGBOX_RESULT`;
+        },
     );
 
     return `#!/bin/bash
@@ -135,7 +168,9 @@ exit 0
 module.exports.processNextermLine = (line) => {
     if (line.startsWith("NEXTERM_INPUT:")) {
         const parts = line.substring(14).split(":");
-        const [varName, prompt, defaultValue] = parts;
+        const varName = parts[0];
+        const prompt = module.exports.unescapeColons(parts[1]);
+        const defaultValue = parts[2] ? module.exports.unescapeColons(parts[2]) : "";
 
         return { type: "input", variable: varName, prompt: prompt, default: defaultValue || "" };
     }
@@ -143,9 +178,10 @@ module.exports.processNextermLine = (line) => {
     if (line.startsWith("NEXTERM_SELECT:")) {
         const parts = line.substring(15).split(":");
         const varName = parts[0];
-        const prompt = parts[1];
+        const prompt = module.exports.unescapeColons(parts[1]);
         const optionsStr = parts.slice(2).join(":");
-        const options = module.exports.parseOptions(optionsStr);
+        const unescapedOptionsStr = module.exports.unescapeColons(optionsStr);
+        const options = module.exports.parseOptions(unescapedOptionsStr);
 
         return { type: "select", variable: varName, prompt: prompt, options: options, default: options[0] || "" };
     }
@@ -156,17 +192,17 @@ module.exports.processNextermLine = (line) => {
     }
 
     if (line.startsWith("NEXTERM_WARN:")) {
-        const message = line.substring(13);
+        const message = module.exports.unescapeColons(line.substring(13));
         return { type: "warning", message: message };
     }
 
     if (line.startsWith("NEXTERM_INFO:")) {
-        const message = line.substring(13);
+        const message = module.exports.unescapeColons(line.substring(13));
         return { type: "info", message: message };
     }
 
     if (line.startsWith("NEXTERM_CONFIRM:")) {
-        const message = line.substring(16);
+        const message = module.exports.unescapeColons(line.substring(16));
         return { type: "confirm", message: message };
     }
 
@@ -176,30 +212,32 @@ module.exports.processNextermLine = (line) => {
     }
 
     if (line.startsWith("NEXTERM_SUCCESS:")) {
-        const message = line.substring(16);
+        const message = module.exports.unescapeColons(line.substring(16));
         return { type: "success", message: message };
     }
 
     if (line.startsWith("NEXTERM_SUMMARY:")) {
         const parts = line.substring(16).split(":");
-        const title = parts[0];
+        const title = module.exports.unescapeColons(parts[0]);
         const dataStr = parts.slice(1).join(":");
-        const data = module.exports.parseOptions(dataStr);
+        const unescapedDataStr = module.exports.unescapeColons(dataStr);
+        const data = module.exports.parseOptions(unescapedDataStr);
         return { type: "summary", title: title, data: data };
     }
 
     if (line.startsWith("NEXTERM_TABLE:")) {
         const parts = line.substring(14).split(":");
-        const title = parts[0];
+        const title = module.exports.unescapeColons(parts[0]);
         const dataStr = parts.slice(1).join(":");
-        const data = module.exports.parseOptions(dataStr);
+        const unescapedDataStr = module.exports.unescapeColons(dataStr);
+        const data = module.exports.parseOptions(unescapedDataStr);
         return { type: "table", title: title, data: data };
     }
 
     if (line.startsWith("NEXTERM_MSGBOX:")) {
         const parts = line.substring(15).split(":");
-        const title = parts[0];
-        const message = parts.slice(1).join(":");
+        const title = module.exports.unescapeColons(parts[0]);
+        const message = module.exports.unescapeColons(parts.slice(1).join(":"));
         return { type: "msgbox", title: title, message: message };
     }
 
