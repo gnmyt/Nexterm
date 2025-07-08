@@ -14,7 +14,7 @@ module.exports.createTicket = async (server = { ip: "", port: 0 }, username, pas
     return data.data.data;
 };
 
-module.exports.getPrimaryNode = async (server = { ip: "", port: 0 }, ticket) => {
+module.exports.getAllNodes = async (server = { ip: "", port: 0 }, ticket) => {
     const response = await axios.get(`https://${server.ip}:${server.port}/api2/json/nodes`, {
         httpsAgent: new https.Agent({ rejectUnauthorized: false }),
         headers: {
@@ -22,7 +22,7 @@ module.exports.getPrimaryNode = async (server = { ip: "", port: 0 }, ticket) => 
         },
     });
 
-    return response.data.data[0];
+    return response.data.data;
 };
 
 module.exports.openLXCConsole = async (server = { ip: "", port: 0 }, node, containerId, ticket) => {
@@ -51,11 +51,22 @@ module.exports.openVNCConsole = async (server = { ip: "", port: 0 }, node, vmId,
     return response.data.data;
 };
 
+module.exports.getNodeForServer = async (server, ticket) => {
+    if (server.nodeName) {
+        return server.nodeName;
+    }
+    const nodes = await this.getAllNodes(server, ticket);
+    if (nodes.length === 0) {
+        throw new Error("No nodes found for the specified Proxmox server.");
+    }
+    return nodes[0].node;
+};
+
 module.exports.startPVEServer = async (server = { ip: "", port: 0, username: "", password: "" }, vmId, type) => {
     const ticket = await this.createTicket(server, server.username, server.password);
-    const node = await this.getPrimaryNode(server, ticket);
+    const node = await this.getNodeForServer(server, ticket);
 
-    const response = await axios.post(`https://${server.ip}:${server.port}/api2/json/nodes/${node.node}/${type}/${vmId}/status/start`, {}, {
+    const response = await axios.post(`https://${server.ip}:${server.port}/api2/json/nodes/${node}/${type}/${vmId}/status/start`, {}, {
         httpsAgent: new https.Agent({ rejectUnauthorized: false }),
         headers: {
             Cookie: `PVEAuthCookie=${ticket.ticket}`,
@@ -68,9 +79,9 @@ module.exports.startPVEServer = async (server = { ip: "", port: 0, username: "",
 
 module.exports.stopPVEServer = async (server = { ip: "", port: 0, username: "", password: "" },  vmId, type) => {
     const ticket = await this.createTicket(server, server.username, server.password);
-    const node = await this.getPrimaryNode(server, ticket);
+    const node = await this.getNodeForServer(server, ticket);
 
-    const response = await axios.post(`https://${server.ip}:${server.port}/api2/json/nodes/${node.node}/${type}/${vmId}/status/stop`, {}, {
+    const response = await axios.post(`https://${server.ip}:${server.port}/api2/json/nodes/${node}/${type}/${vmId}/status/stop`, {}, {
         httpsAgent: new https.Agent({ rejectUnauthorized: false }),
         headers: {
             Cookie: `PVEAuthCookie=${ticket.ticket}`,
@@ -83,9 +94,9 @@ module.exports.stopPVEServer = async (server = { ip: "", port: 0, username: "", 
 
 module.exports.shutdownPVEServer = async (server = { ip: "", port: 0, username: "", password: "" },  vmId, type) => {
     const ticket = await this.createTicket(server, server.username, server.password);
-    const node = await this.getPrimaryNode(server, ticket);
+    const node = await this.getNodeForServer(server, ticket);
 
-    const response = await axios.post(`https://${server.ip}:${server.port}/api2/json/nodes/${node.node}/${type}/${vmId}/status/shutdown`, {}, {
+    const response = await axios.post(`https://${server.ip}:${server.port}/api2/json/nodes/${node}/${type}/${vmId}/status/shutdown`, {}, {
         httpsAgent: new https.Agent({ rejectUnauthorized: false }),
         headers: {
             Cookie: `PVEAuthCookie=${ticket.ticket}`,

@@ -3,7 +3,7 @@ import "./styles.sass";
 import { useContext, useEffect, useState } from "react";
 import { ServerContext } from "@/common/contexts/ServerContext.jsx";
 import IconInput from "@/common/components/IconInput";
-import { mdiAccountCircleOutline, mdiFormTextbox, mdiIp, mdiLockOutline } from "@mdi/js";
+import { mdiAccountCircleOutline, mdiFormTextbox, mdiIp, mdiLockOutline, mdiServerNetwork } from "@mdi/js";
 import Button from "@/common/components/Button";
 import Input from "@/common/components/IconInput";
 import { getRequest, patchRequest, postRequest, putRequest } from "@/common/utils/RequestUtil.js";
@@ -15,6 +15,7 @@ export const ProxmoxDialog = ({ open, onClose, currentFolderId, editServerId }) 
     const [port, setPort] = useState("8006");
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
+    const [nodeName, setNodeName] = useState("");
 
     const create = () => {
         putRequest("pve-servers", {
@@ -29,6 +30,7 @@ export const ProxmoxDialog = ({ open, onClose, currentFolderId, editServerId }) 
     const edit = () => {
         patchRequest(`pve-servers/${editServerId.split("-")[1]}`, {
             name, ip, port, username, password: password === "********" ? undefined : password,
+            nodeName: nodeName || null,
         }).then(async () => {
             onClose();
             await postRequest("pve-servers/refresh");
@@ -44,6 +46,7 @@ export const ProxmoxDialog = ({ open, onClose, currentFolderId, editServerId }) 
                 setPort(server.port);
                 setUsername(server.username);
                 setPassword("********");
+                setNodeName(server.nodeName || "");
             }).catch(err => console.error(err));
         } else {
             setName("");
@@ -51,6 +54,7 @@ export const ProxmoxDialog = ({ open, onClose, currentFolderId, editServerId }) 
             setPort("8006");
             setUsername("");
             setPassword("");
+            setNodeName("");
         }
     }, [editServerId, open]);
 
@@ -92,6 +96,14 @@ export const ProxmoxDialog = ({ open, onClose, currentFolderId, editServerId }) 
                     <IconInput icon={mdiLockOutline} value={password} setValue={setPassword} placeholder="Password"
                                type="password" id="password" />
                 </div>
+
+                {editServerId && (
+                    <div className="form-group">
+                        <label htmlFor="nodeName">Node Name (Optional)</label>
+                        <IconInput icon={mdiServerNetwork} value={nodeName} setValue={setNodeName} 
+                                   placeholder="Specific node name" id="nodeName" />
+                    </div>
+                )}
 
                 <Button onClick={editServerId ? edit : create} text={editServerId ? "Edit" : "Import"} />
 
