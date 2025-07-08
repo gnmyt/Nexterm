@@ -1,7 +1,7 @@
 import { useEffect, useRef, useContext, useState } from "react";
 import Guacamole from "guacamole-common-js";
 import { UserContext } from "@/common/contexts/UserContext.jsx";
-import "./GuacamoleRenderer.sass";
+import "./styles/GuacamoleRenderer.sass";
 import Icon from "@mdi/react";
 import { mdiChevronDown, mdiChevronRight } from "@mdi/js";
 
