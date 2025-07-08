@@ -42,4 +42,8 @@ module.exports = db.define("pve_servers", {
         type: Sequelize.JSON,
         defaultValue: [],
     },
+    nodeName: {
+        type: Sequelize.STRING,
+        allowNull: true,
+    },
 }, { freezeTableName: true, createdAt: false, updatedAt: false });
