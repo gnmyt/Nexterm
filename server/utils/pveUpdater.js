@@ -6,7 +6,6 @@ const { createTicket, getAllNodes } = require("../controllers/pve");
 let timer = null;
 
 
-
 module.exports.updatePVEServerResources = async (accountId, serverId) => {
     const server = await PVEServer.findOne({ where: { accountId: accountId, id: serverId } });
 
@@ -24,7 +23,7 @@ module.exports.updatePVEServerResources = async (accountId, serverId) => {
                 httpsAgent: new Agent({ rejectUnauthorized: false }),
                 headers: {
                     Cookie: `PVEAuthCookie=${ticket.ticket}`,
-                }
+                },
             });
 
             const lxcUrl = `https://${server.ip}:${server.port}/api2/json/nodes/${server.nodeName}/lxc`;
@@ -33,12 +32,12 @@ module.exports.updatePVEServerResources = async (accountId, serverId) => {
                 httpsAgent: new Agent({ rejectUnauthorized: false }),
                 headers: {
                     Cookie: `PVEAuthCookie=${ticket.ticket}`,
-                }
+                },
             });
 
             resourcesData = [
-                ...qemuResponse.data.data.map(vm => ({ ...vm, type: 'qemu' })),
-                ...lxcResponse.data.data.map(ct => ({ ...ct, type: 'lxc' }))
+                ...qemuResponse.data.data.map(vm => ({ ...vm, type: "qemu" })),
+                ...lxcResponse.data.data.map(ct => ({ ...ct, type: "lxc" })),
             ];
         }
         const resources = resourcesData.sort((a, b) => a.vmid - b.vmid).map(resource => ({
@@ -48,7 +47,7 @@ module.exports.updatePVEServerResources = async (accountId, serverId) => {
             status: resource.status,
         }));
 
-        resources.unshift({ id: 0, type: "pve-shell", name: server.nodeName ? `${server.nodeName} Shell` : "Proxmox VE Shell", status: "running" });
+        resources.unshift({ id: 0, type: "pve-shell", name: server.nodeName ? `${server.nodeName} Shell` : "Proxmox VE Shell", status: "running", });
 
         await PVEServer.update({ resources: resources, online: true }, { where: { id: serverId } });
         return true;
@@ -106,9 +105,13 @@ const expandClusterNodes = async (serverId) => {
         const nodes = await getAllNodes({ ip: server.ip, port: server.port }, ticket);
 
         if (nodes.length <= 1) {
-            await PVEServer.update({ nodeName: nodes[0].node }, { where: { id: serverId } });
+            await PVEServer.update({ nodeName: nodes[0].node }, { where: { id: serverId, nodeName: null } });
+
             return false;
         }
+
+        const deleteResult = await PVEServer.destroy({ where: { id: serverId, nodeName: null } });
+        if (deleteResult === 0) return false;
 
         const nodeServers = [];
         for (const node of nodes) {
@@ -120,12 +123,11 @@ const expandClusterNodes = async (serverId) => {
                 resources: [],
                 online: false,
                 createdAt: undefined,
-                updatedAt: undefined
+                updatedAt: undefined,
             };
             nodeServers.push(nodeServer);
         }
 
-        await PVEServer.destroy({ where: { id: serverId } });
         await PVEServer.bulkCreate(nodeServers);
 
         console.log(`Expanded cluster server ${server.name} into ${nodes.length} node entries`);
