@@ -156,27 +156,61 @@ module.exports = async (ws, req) => {
                             uploadStream.end();
                         }
 
-                        uploadStream = sftp.createWriteStream(payload.path);
-                        uploadStream.on("error", () => {
-                            uploadStream = null;
-                        });
+                        try {
+                            uploadStream = sftp.createWriteStream(payload.path);
+                            uploadStream.on("error", () => {
+                                uploadStream = null;
+                                ws.send(Buffer.concat([
+                                    Buffer.from([OPERATIONS.ERROR]),
+                                    Buffer.from(JSON.stringify({ message: "Permission denied - unable to upload file to this location" })),
+                                ]));
+                            });
 
-                        ws.send(Buffer.from([OPERATIONS.UPLOAD_FILE_START]));
+                            ws.send(Buffer.from([OPERATIONS.UPLOAD_FILE_START]));
+                        } catch (err) {
+                            uploadStream = null;
+                            ws.send(Buffer.concat([
+                                Buffer.from([OPERATIONS.ERROR]),
+                                Buffer.from(JSON.stringify({ message: "Failed to start file upload" })),
+                            ]));
+                        }
                         break;
 
                     case OPERATIONS.UPLOAD_FILE_CHUNK:
                         try {
-                            uploadStream.write(Buffer.from(payload.chunk, "base64"));
+                            if (uploadStream && !uploadStream.destroyed) {
+                                uploadStream.write(Buffer.from(payload.chunk, "base64"));
+                            }
                         } catch (err) {
-                            console.log(err);
+                            uploadStream = null;
+                            ws.send(Buffer.concat([
+                                Buffer.from([OPERATIONS.ERROR]),
+                                Buffer.from(JSON.stringify({ message: "Failed to write file chunk" })),
+                            ]));
                         }
                         break;
 
                     case OPERATIONS.UPLOAD_FILE_END:
-                        uploadStream.end(() => {
+                        try {
+                            if (uploadStream && !uploadStream.destroyed) {
+                                uploadStream.end(() => {
+                                    uploadStream = null;
+                                    ws.send(Buffer.from([OPERATIONS.UPLOAD_FILE_END]));
+                                });
+                            } else {
+                                uploadStream = null;
+                                ws.send(Buffer.concat([
+                                    Buffer.from([OPERATIONS.ERROR]),
+                                    Buffer.from(JSON.stringify({ message: "Upload stream is not available" })),
+                                ]));
+                            }
+                        } catch (err) {
                             uploadStream = null;
-                            ws.send(Buffer.from([OPERATIONS.UPLOAD_FILE_END]));
-                        });
+                            ws.send(Buffer.concat([
+                                Buffer.from([OPERATIONS.ERROR]),
+                                Buffer.from(JSON.stringify({ message: "Failed to complete file upload" })),
+                            ]));
+                        }
                         break;
 
                     case OPERATIONS.CREATE_FOLDER:
