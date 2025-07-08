@@ -1,6 +1,6 @@
 {
   "name": "nexterm",
-  "version": "1.0.4-OPEN-PREVIEW",
+  "version": "1.0.5-OPEN-PREVIEW",
   "main": "server/index.js",
   "repository": "https://github.com/gnmyt/Nexterm.git",
   "author": "Mathias Wagner",
