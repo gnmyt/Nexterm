@@ -1,6 +1,9 @@
-import { useEffect, useRef, useContext } from "react";
+import { useEffect, useRef, useContext, useState } from "react";
 import Guacamole from "guacamole-common-js";
 import { UserContext } from "@/common/contexts/UserContext.jsx";
+import "./GuacamoleRenderer.sass";
+import Icon from "@mdi/react";
+import { mdiChevronDown, mdiChevronRight } from "@mdi/js";
 
 const GuacamoleRenderer = ({ session, disconnectFromServer, pve }) => {
     const ref = useRef(null);
@@ -8,6 +11,95 @@ const GuacamoleRenderer = ({ session, disconnectFromServer, pve }) => {
     const clientRef = useRef(null);
     const scaleRef = useRef(1);
     const offsetRef = useRef({ x: 0, y: 0 });
+
+    const [menuVisible, setMenuVisible] = useState(false);
+    const [menuPosition, setMenuPosition] = useState({ y: 20 });
+    const [isDragging, setIsDragging] = useState(false);
+    const dragStartRef = useRef({ y: 0, menuY: 0 });
+
+    const quickCommands = [
+        { label: "Ctrl+Alt+Del", keys: [0xffe3, 0xffe9, 0xffff] },
+        { label: "Alt+Tab", keys: [0xffe9, 0xff09] },
+        { label: "Windows Key", keys: [0xffeb] },
+        { label: "Ctrl+Shift+Esc", keys: [0xffe3, 0xffe1, 0xff1b] },
+        { label: "Alt+F4", keys: [0xffe9, 0xffc1] },
+        { label: "Win+L", keys: [0xffeb, 0x6c] },
+        { label: "Win+R", keys: [0xffeb, 0x72] },
+        { label: "Ctrl+Alt+F1", keys: [0xffe3, 0xffe9, 0xffbe] },
+        { label: "Ctrl+Alt+F2", keys: [0xffe3, 0xffe9, 0xffbf] },
+        { label: "Ctrl+Alt+Backspace", keys: [0xffe3, 0xffe9, 0xff08] },
+    ];
+
+    const sendKeySequence = (keys) => {
+        if (!clientRef.current) {
+            console.warn("GuacamoleRenderer: Cannot send key sequence - client not connected");
+            return;
+        }
+
+        setTimeout(() => {
+            keys.forEach(key => clientRef.current.sendKeyEvent(1, key));
+
+            setTimeout(() => [...keys].reverse().forEach(key => clientRef.current.sendKeyEvent(0, key)), 50);
+        }, 100);
+
+        setMenuVisible(false);
+    };
+
+    const handleChevronClick = (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+
+        if (!isDragging) setMenuVisible(prev => !prev);
+    };
+
+    const handleChevronMouseDown = (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+
+        if (e.button !== 0 && !e.shiftKey) return;
+
+
+        const startPos = { x: e.clientX, y: e.clientY };
+        let hasStartedDragging = false;
+        let dragThreshold = 10;
+
+        const handleMouseMove = (moveEvent) => {
+            const distance = Math.sqrt(Math.pow(moveEvent.clientX - startPos.x, 2) + Math.pow(moveEvent.clientY - startPos.y, 2));
+
+            if (distance > dragThreshold && !hasStartedDragging) {
+                hasStartedDragging = true;
+                setIsDragging(true);
+                dragStartRef.current = { y: startPos.y, menuY: menuPosition.y };
+            }
+
+            if (hasStartedDragging) {
+                moveEvent.preventDefault();
+                moveEvent.stopPropagation();
+
+                const deltaY = moveEvent.clientY - dragStartRef.current.y;
+                const containerHeight = ref.current?.clientHeight || window.innerHeight;
+                const menuHeight = 35;
+                const maxY = containerHeight - menuHeight - 10;
+                const newY = Math.max(10, Math.min(maxY, dragStartRef.current.menuY + deltaY));
+                setMenuPosition({ y: newY });
+            }
+        };
+
+        const handleMouseUp = (upEvent) => {
+            document.removeEventListener("mousemove", handleMouseMove, true);
+            document.removeEventListener("mouseup", handleMouseUp, true);
+
+            if (hasStartedDragging) {
+                upEvent.preventDefault();
+                upEvent.stopPropagation();
+
+                setTimeout(() => setIsDragging(false), 50);
+            }
+        };
+
+        document.addEventListener("mousemove", handleMouseMove, true);
+        document.addEventListener("mouseup", handleMouseUp, true);
+    };
 
     const applyDisplayStyles = (displayElement, offsetX, offsetY, scale) => {
         Object.assign(displayElement.style, {
@@ -205,12 +297,34 @@ const GuacamoleRenderer = ({ session, disconnectFromServer, pve }) => {
     }, []);
 
     return (
-        <div className="guac-container" ref={ref} tabIndex="0" onClick={() => ref.current.focus()}
+        <div className="guac-container" ref={ref} tabIndex="0"
+             onClick={() => {
+                 ref.current.focus();
+                 setMenuVisible(false);
+             }}
              style={{
                  position: "relative", width: "100%", height: "100%", outline: "none",
                  overflow: "hidden", backgroundColor: "#000", cursor: "none",
-             }}
-        />
+             }}>
+            <div className={`quick-commands-chevron ${isDragging ? "dragging" : ""}`} onClick={handleChevronClick}
+                 style={{ top: `${menuPosition.y}px` }} onMouseDown={handleChevronMouseDown}>
+                <span className={`chevron-icon ${menuVisible ? "open" : ""}`}>
+                    <Icon path={menuVisible ? mdiChevronDown : mdiChevronRight} size={1} />
+                </span>
+            </div>
+
+            {menuVisible && (
+                <div className="quick-commands-menu" style={{ top: `${menuPosition.y}px` }}
+                     onClick={(e) => e.stopPropagation()}>
+                    {quickCommands.map((command, index) => (
+                        <div key={index} className="quick-command-item"
+                             onClick={() => sendKeySequence([...command.keys])}>
+                            {command.label}
+                        </div>
+                    ))}
+                </div>
+            )}
+        </div>
     );
 };
 

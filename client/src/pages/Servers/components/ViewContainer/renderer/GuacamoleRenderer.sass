@@ -1,0 +1,57 @@
+@import "@/common/styles/colors"
+
+.quick-commands-chevron
+  position: absolute
+  left: 0
+  width: 20px
+  height: 35px
+  background: $darker-gray
+  border-radius: 0 8px 8px 0
+  cursor: pointer
+  display: flex
+  align-items: center
+  justify-content: center
+  z-index: 2000
+  backdrop-filter: blur(5px)
+  border: 1px solid $gray
+  border-left: none
+  pointer-events: auto !important
+
+  &:hover
+    background: $gray-full
+    width: 22px
+    
+  &.dragging
+    background: $gray-full
+    cursor: grabbing
+    transform: scale(1.05)
+    z-index: 2001
+    
+  .chevron-icon
+    color: $white
+
+.quick-commands-menu
+  position: absolute
+  left: 20px
+  background: $darker-gray
+  border-radius: 8px
+  padding: 8px 0
+  min-width: 140px
+  backdrop-filter: blur(10px)
+  border: 1px solid $gray
+  z-index: 999
+
+.quick-command-item
+  padding: 8px 12px
+  color: $white
+  cursor: pointer
+  font-size: 12px
+  user-select: none
+  
+  &:hover
+    background: $primary-opacity
+    
+  &:active
+    background: $primary
+
+
