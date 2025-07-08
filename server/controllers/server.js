@@ -200,6 +200,7 @@ module.exports.duplicateServer = async (accountId, serverId) => {
         id: undefined,
         name: server.name + " (Copy)",
         identities: Array.isArray(server.identities) ? server.identities : JSON.parse(server.identities || "[]"),
+        config: server.config ? JSON.parse(server.config) : {},
     });
 };
 
