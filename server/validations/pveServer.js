@@ -16,4 +16,5 @@ module.exports.updatePVEServerValidation = Joi.object({
     port: Joi.number().optional(),
     username: Joi.string().optional(),
     password: Joi.string().optional(),
+    nodeName: Joi.string().optional().allow(null),
 });
