@@ -9,18 +9,30 @@
   padding: 0.4rem
   font-weight: 600
   cursor: pointer
+  position: relative
 
   img
     width: 1.5rem
 
   p
     margin: 0
+    flex: 1
+
+  .pve-chevron
+    width: 0.875rem
+    height: 0.875rem
+    margin-left: auto
+    opacity: 0.7
+    transition: opacity 0.2s ease
 
   &:hover
     color: colors.$white
     background-color: colors.$dark-gray
     border: 1px solid colors.$gray
     border-radius: 0.3rem
+
+    .pve-chevron
+      opacity: 1
 
   input
     padding: 0.4rem 0.6rem
