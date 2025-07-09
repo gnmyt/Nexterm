@@ -38,6 +38,10 @@ const ruleProcessors = {
 const convertJoiFieldToOpenApi = (joiField, fieldName) => {
     const property = { type: getPropertyType(joiField.type) };
 
+    if (joiField.flags?.default !== undefined) {
+        property.default = joiField.flags.default;
+    }
+
     if (joiField.rules && ruleProcessors[joiField.type]) {
         const processor = ruleProcessors[joiField.type];
         joiField.rules.forEach(rule => {
@@ -84,6 +88,11 @@ const generateFieldDescription = (fieldName, property) => {
 
     const constraints = buildConstraintsList(property);
     delete property._alphanum;
+
+    if (property.default !== undefined) {
+        const defaultValueText = `default: ${JSON.stringify(property.default)}`;
+        constraints.push(defaultValueText);
+    }
 
     return constraints.length > 0 ? `${description} (${constraints.join(", ")})` : description;
 };
