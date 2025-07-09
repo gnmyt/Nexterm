@@ -10,6 +10,7 @@
     "bcrypt": "^6.0.0",
     "decompress": "^4.2.1",
     "express": "^5.1.0",
+    "express-jsdoc-swagger": "^1.8.0",
     "express-ws": "^5.0.2",
     "joi": "^17.13.3",
     "js-yaml": "^4.1.0",
@@ -24,10 +25,11 @@
     "concurrently": "^9.2.0",
     "dotenv": "^17.1.0",
     "nodemon": "^3.1.10",
-    "vitepress": "^1.6.3"
+    "vitepress": "^1.6.3",
+    "vitepress-openapi": "^0.1.1"
   },
   "scripts": {
-    "dev:server": "nodemon server/index.js",
+    "dev:server": "nodemon --ignore docs server/index.js",
     "dev:client": "cd client && yarn run dev",
     "dev": "concurrently --kill-others-on-fail \"yarn dev:server\" \"yarn dev:client\"",
     "docs:dev": "vitepress dev docs",
