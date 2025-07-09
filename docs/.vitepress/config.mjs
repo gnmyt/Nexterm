@@ -1,5 +1,10 @@
 import { defineConfig } from "vitepress";
 
+import { useSidebar } from "vitepress-openapi";
+import spec from "../public/openapi.json";
+
+const sidebar = useSidebar({ spec, linkPrefix: "/operations/" });
+
 export default defineConfig({
     title: "Nexterm",
     description: "The open source server management software for SSH, VNC & RDP",
@@ -46,6 +51,12 @@ export default defineConfig({
                     { text: "Home", link: "/" },
                     { text: "Preview", link: "/preview" },
                     { text: "Contributing", link: "/contributing" },
+                    {
+                        text: "API Reference",
+                        collapsed: true,
+                        link: "/api-reference",
+                        items: [...sidebar.generateSidebarGroups()],
+                    },
                 ],
             },
         ],
