@@ -58,8 +58,8 @@ module.exports.generateOpenAPISpec = (app) => {
             BearerAuth: {
                 type: "http",
                 scheme: "bearer",
-                bearerFormat: "JWT",
-                description: "Enter your JWT token to authenticate API requests",
+                bearerFormat: "session",
+                description: "Enter your session token to authenticate API requests",
             },
         },
     };
