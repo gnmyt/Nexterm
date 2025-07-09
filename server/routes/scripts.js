@@ -13,6 +13,15 @@ const { scriptValidation } = require("../validations/script");
 
 const app = Router();
 
+/**
+ * POST /scripts/refresh
+ * @summary Refresh Scripts
+ * @description Refreshes the scripts catalog by reloading all available scripts from configured sources and updating the user's script library.
+ * @tags Scripts
+ * @produces application/json
+ * @security BearerAuth
+ * @return {object} 200 - Scripts successfully refreshed
+ */
 app.post("/refresh", async (req, res) => {
     try {
         refreshScripts(req.user.id);
@@ -22,6 +31,16 @@ app.post("/refresh", async (req, res) => {
     }
 });
 
+/**
+ * GET /scripts
+ * @summary Get Scripts
+ * @description Retrieves available scripts for the authenticated user. Supports searching by name or description when search parameter is provided.
+ * @tags Scripts
+ * @produces application/json
+ * @security BearerAuth
+ * @param {string} search.query - Search term to filter scripts by name or description
+ * @return {array} 200 - List of scripts available to the user
+ */
 app.get("/", async (req, res) => {
     try {
         if (req.query.search) {
@@ -34,6 +53,17 @@ app.get("/", async (req, res) => {
     }
 });
 
+/**
+ * GET /scripts/{scriptId}
+ * @summary Get Script Details
+ * @description Retrieves detailed information about a specific script including its content, parameters, and metadata.
+ * @tags Scripts
+ * @produces application/json
+ * @security BearerAuth
+ * @param {string} scriptId.path.required - The unique identifier of the script (URL encoded)
+ * @return {object} 200 - Script details
+ * @return {object} 404 - Script not found
+ */
 app.get("/:scriptId", async (req, res) => {
     try {
         const decodedScriptId = decodeURIComponent(req.params.scriptId);
@@ -47,6 +77,17 @@ app.get("/:scriptId", async (req, res) => {
     }
 });
 
+/**
+ * POST /scripts
+ * @summary Create Custom Script
+ * @description Creates a new custom script that can be executed on servers. Users can define their own automation scripts with custom parameters.
+ * @tags Scripts
+ * @produces application/json
+ * @security BearerAuth
+ * @param {Script} request.body.required - Script configuration including name, content, description, and parameters
+ * @return {object} 201 - Script successfully created
+ * @return {object} 409 - Script with this name already exists
+ */
 app.post("/", async (req, res) => {
     if (validateSchema(res, scriptValidation, req.body)) return;
 
@@ -61,6 +102,18 @@ app.post("/", async (req, res) => {
     }
 });
 
+/**
+ * PUT /scripts/{scriptId}
+ * @summary Update Custom Script
+ * @description Updates an existing custom script's content, parameters, or other properties. Only the script creator can modify custom scripts.
+ * @tags Scripts
+ * @produces application/json
+ * @security BearerAuth
+ * @param {string} scriptId.path.required - The unique identifier of the script to update (URL encoded)
+ * @param {Script} request.body.required - Updated script configuration
+ * @return {object} 200 - Script successfully updated
+ * @return {object} 404 - Script not found or unauthorized
+ */
 app.put("/:scriptId", async (req, res) => {
     if (validateSchema(res, scriptValidation, req.body)) return;
 
@@ -76,6 +129,17 @@ app.put("/:scriptId", async (req, res) => {
     }
 });
 
+/**
+ * DELETE /scripts/{scriptId}
+ * @summary Delete Custom Script
+ * @description Permanently removes a custom script from the user's library. Only the script creator can delete custom scripts.
+ * @tags Scripts
+ * @produces application/json
+ * @security BearerAuth
+ * @param {string} scriptId.path.required - The unique identifier of the script to delete (URL encoded)
+ * @return {object} 200 - Script successfully deleted
+ * @return {object} 404 - Script not found or unauthorized
+ */
 app.delete("/:scriptId", async (req, res) => {
     try {
         const decodedScriptId = decodeURIComponent(req.params.scriptId);
