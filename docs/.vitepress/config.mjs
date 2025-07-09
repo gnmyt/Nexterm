@@ -1,11 +1,31 @@
 import { defineConfig } from "vitepress";
 
+import { useSidebar } from "vitepress-openapi";
+import { exec } from "child_process";
+import { promisify } from "util";
+import spec from "../public/openapi.json";
+
+const execAsync = promisify(exec);
+
+const sidebar = useSidebar({ spec, linkPrefix: "/operations/" });
+
 export default defineConfig({
     title: "Nexterm",
     description: "The open source server management software for SSH, VNC & RDP",
     lastUpdated: true,
     cleanUrls: true,
     metaChunk: true,
+
+    buildEnd: async () => {
+        try {
+            console.log("Regenerating OpenAPI specification...");
+            await execAsync("node scripts/generate-openapi.js", { cwd: "./" });
+            console.log("OpenAPI specification updated successfully!");
+        } catch (error) {
+            console.warn("Warning: Could not regenerate OpenAPI spec:", error.message);
+        }
+    },
+
     head: [
         ["link", { rel: "icon", type: "image/png", href: "/logo.png" }],
         ["meta", { name: "theme-color", content: "#1C2232" }],
@@ -46,6 +66,12 @@ export default defineConfig({
                     { text: "Home", link: "/" },
                     { text: "Preview", link: "/preview" },
                     { text: "Contributing", link: "/contributing" },
+                    {
+                        text: "API Reference",
+                        collapsed: true,
+                        link: "/api-reference",
+                        items: [...sidebar.generateSidebarGroups()],
+                    },
                 ],
             },
         ],

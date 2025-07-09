@@ -8,6 +8,7 @@ const expressWs = require("express-ws");
 const { startPVEUpdater } = require("./utils/pveUpdater");
 const { ensureInternalProvider } = require("./controllers/oidc");
 const monitoringService = require("./utils/monitoringService");
+const { generateOpenAPISpec } = require("./openapi");
 const {
     refreshAppSources,
     startAppUpdater,
@@ -21,6 +22,8 @@ process.on("uncaughtException", (err) => require("./utils/errorHandling")(err));
 const APP_PORT = process.env.SERVER_PORT || 6989;
 
 const app = expressWs(express()).app;
+
+generateOpenAPISpec(app);
 
 app.disable("x-powered-by");
 app.use(express.json());
