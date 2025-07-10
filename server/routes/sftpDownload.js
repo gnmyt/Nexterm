@@ -4,6 +4,7 @@ const Server = require("../models/Server");
 const Identity = require("../models/Identity");
 const Session = require("../models/Session");
 const Account = require("../models/Account");
+const { validateServerAccess } = require("../controllers/server");
 
 const app = Router();
 
@@ -48,8 +49,17 @@ app.get("/", async (req, res) => {
         return;
     }
 
-    const server = await Server.findOne({ where: { id: serverId, accountId: req.user.id } });
-    if (server === null) return;
+    const server = await Server.findByPk(serverId);
+    if (server === null) {
+        res.status(404).send("The server does not exist");
+        return;
+    }
+
+    const accessCheck = await validateServerAccess(req.user.id, server);
+    if (!accessCheck.valid) {
+        res.status(403).send("You don't have access to this server");
+        return;
+    }
 
     if (server.identities.length === 0 && identityId) return;
 
