@@ -118,7 +118,13 @@ const XtermRenderer = ({ session, disconnectFromServer, pve }) => {
             ws = new WebSocket(`${protocol}://${url}?sessionToken=${sessionToken}&serverId=${session.server}&containerId=${session.containerId}`);
         } else {
             url = process.env.NODE_ENV === "production" ? `${window.location.host}/api/servers/sshd` : "localhost:6989/api/servers/sshd";
-            ws = new WebSocket(`${protocol}://${url}?sessionToken=${sessionToken}&serverId=${session.server}&identityId=${session.identity}`);
+
+            let wsUrl = `${protocol}://${url}?sessionToken=${sessionToken}&serverId=${session.server}&identityId=${session.identity}`;
+            if (session.connectionReason) {
+                wsUrl += `&connectionReason=${encodeURIComponent(session.connectionReason)}`;
+            }
+            
+            ws = new WebSocket(wsUrl);
         }
 
         wsRef.current = ws;

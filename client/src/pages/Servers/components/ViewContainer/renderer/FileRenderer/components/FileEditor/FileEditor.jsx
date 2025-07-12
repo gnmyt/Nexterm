@@ -9,7 +9,7 @@ import { mdiClose, mdiContentSave, mdiTextBox } from "@mdi/js";
 import { ActionConfirmDialog } from "@/common/components/ActionConfirmDialog/ActionConfirmDialog.jsx";
 import { useTheme } from "@/common/contexts/ThemeContext.jsx";
 
-export const FileEditor = ({ currentFile, serverId, identityId, setCurrentFile, sendOperation }) => {
+export const FileEditor = ({ currentFile, session, setCurrentFile, sendOperation }) => {
     const [fileContent, setFileContent] = useState("");
     const [fileContentChanged, setFileContentChanged] = useState(false);
     const { theme } = useTheme();
@@ -25,7 +25,11 @@ export const FileEditor = ({ currentFile, serverId, identityId, setCurrentFile, 
 
     useEffect(() => {
         if (currentFile === null) return setFileContent(null);
-        const url = `/api/servers/sftp-download?serverId=${serverId}&identityId=${identityId}&path=${currentFile}&sessionToken=${sessionToken}`;
+        
+        let url = `/api/servers/sftp-download?serverId=${session.server}&identityId=${session.identity}&path=${currentFile}&sessionToken=${sessionToken}`;
+        if (session.connectionReason) {
+            url += `&connectionReason=${encodeURIComponent(session.connectionReason)}`;
+        }
 
         downloadRequest(url).then((res) => {
             const reader = new FileReader();

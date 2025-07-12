@@ -227,9 +227,17 @@ const GuacamoleRenderer = ({ session, disconnectFromServer, pve }) => {
         ref.current.appendChild(displayElement);
 
         if (pve) {
-            client.connect(`sessionToken=${sessionToken}&serverId=${session.server}&containerId=${session.containerId}`);
+            const connectionParams = `sessionToken=${sessionToken}&serverId=${session.server}&containerId=${session.containerId}`;
+            const connectionString = session.connectionReason 
+                ? `${connectionParams}&connectionReason=${encodeURIComponent(session.connectionReason)}`
+                : connectionParams;
+            client.connect(connectionString);
         } else {
-            client.connect(`sessionToken=${sessionToken}&serverId=${session.server}&identity=${session.identity}`);
+            const connectionParams = `sessionToken=${sessionToken}&serverId=${session.server}&identity=${session.identity}`;
+            const connectionString = session.connectionReason 
+                ? `${connectionParams}&connectionReason=${encodeURIComponent(session.connectionReason)}`
+                : connectionParams;
+            client.connect(connectionString);
         }
 
         const mouse = new Guacamole.Mouse(displayElement);

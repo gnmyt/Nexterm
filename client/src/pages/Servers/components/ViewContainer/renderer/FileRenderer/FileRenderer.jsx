@@ -31,10 +31,18 @@ export const FileRenderer = ({ session, disconnectFromServer }) => {
 
     const protocol = location.protocol === "https:" ? "wss" : "ws";
     const path = process.env.NODE_ENV === "production" ? `${window.location.host}/api/servers/sftp` : "localhost:6989/api/servers/sftp";
-    const url = `${protocol}://${path}?sessionToken=${sessionToken}&serverId=${session.server}&identityId=${session.identity}`;
+
+    let url = `${protocol}://${path}?sessionToken=${sessionToken}&serverId=${session.server}&identityId=${session.identity}`;
+    if (session.connectionReason) {
+        url += `&connectionReason=${encodeURIComponent(session.connectionReason)}`;
+    }
 
     const downloadFile = (path) => {
-        const url = `/api/servers/sftp-download?serverId=${session.server}&identityId=${session.identity}&path=${path}&sessionToken=${sessionToken}`;
+        let url = `/api/servers/sftp-download?serverId=${session.server}&identityId=${session.identity}&path=${path}&sessionToken=${sessionToken}`;
+        if (session.connectionReason) {
+            url += `&connectionReason=${encodeURIComponent(session.connectionReason)}`;
+        }
+        
         const link = document.createElement("a");
         link.href = url;
         link.download = path.split("/").pop();
@@ -233,7 +241,7 @@ export const FileRenderer = ({ session, disconnectFromServer }) => {
                 </div>
             )}
             {currentFile !== null && (
-                <FileEditor currentFile={currentFile} serverId={session.server} identityId={session.identity}
+                <FileEditor currentFile={currentFile} session={session}
                     setCurrentFile={setCurrentFile} sendOperation={sendOperation} />
             )}
             {uploadProgress > 0 && <div className="upload-progress" style={{ width: `${uploadProgress}%` }} />}
