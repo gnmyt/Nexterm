@@ -20,7 +20,6 @@ const app = Router();
  * @produces application/json
  * @security BearerAuth
  * @return {object} 200 - AI configuration settings
- * @return {object} 403 - Admin access required
  */
 app.get("/", async (req, res) => {
     try {
