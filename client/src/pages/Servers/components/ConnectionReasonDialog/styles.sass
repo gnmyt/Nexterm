@@ -1,0 +1,57 @@
+@use "@/common/styles/colors"
+
+.connection-reason-dialog
+  width: 100%
+  max-width: 480px
+
+  h2
+    margin: 0 0 20px 0
+    font-size: 1.3rem
+    color: colors.$white
+
+  .form-group
+    margin-bottom: 20px
+
+    label
+      display: block
+      margin-bottom: 8px
+      color: colors.$subtext
+      font-size: 0.95rem
+      line-height: 1.4
+
+      strong
+        color: colors.$white
+
+    .reason-input
+      width: 100%
+      min-height: 70px
+      max-height: 100px
+      padding: 10px
+      border: 1px solid colors.$gray
+      border-radius: 6px
+      background-color: colors.$darker-gray
+      color: colors.$white
+      font-family: inherit
+      font-size: 0.9rem
+      resize: vertical
+      transition: border-color 0.2s ease
+      box-sizing: border-box
+
+      &:focus
+        outline: none
+        border-color: colors.$primary
+
+      &::placeholder
+        color: colors.$subtext
+
+    .character-count
+      text-align: right
+      margin-top: 6px
+      font-size: 0.8rem
+      color: colors.$subtext
+
+  .dialog-actions
+    display: flex
+    gap: 10px
+    margin-top: 20px
+    justify-content: flex-end
