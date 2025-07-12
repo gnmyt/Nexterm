@@ -9,5 +9,20 @@ module.exports = db.define("organizations", {
     description: {
         type: Sequelize.STRING,
         allowNull: true,
+    },
+    auditSettings: {
+        type: Sequelize.JSON,
+        allowNull: true,
+        defaultValue: {
+            requireConnectionReason: false,
+            enableFileOperationAudit: true,
+            enableServerConnectionAudit: true,
+            enableIdentityManagementAudit: true,
+            enableServerManagementAudit: true,
+            enableFolderManagementAudit: true,
+            enableSessionRecording: false,
+            enableScriptExecutionAudit: true,
+            enableAppInstallationAudit: true,
+        },
     }
 }, { freezeTableName: true });
