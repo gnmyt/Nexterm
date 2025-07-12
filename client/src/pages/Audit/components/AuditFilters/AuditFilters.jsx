@@ -5,7 +5,7 @@ import SelectBox from "@/common/components/SelectBox/index.js";
 import Button from "@/common/components/Button/index.js";
 import "./styles.sass";
 
-const AuditFilters = ({ filters, metadata, organizations, onChange }) => {
+export const AuditFilters = ({ filters, metadata, organizations, onChange }) => {
     const [expanded, setExpanded] = useState(false);
 
     const handleFilterChange = useCallback((key, value) => {
@@ -121,5 +121,3 @@ const AuditFilters = ({ filters, metadata, organizations, onChange }) => {
         </div>
     );
 };
-
-export default AuditFilters;

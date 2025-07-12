@@ -1,1 +1,1 @@
-export { default } from "./AuditFilters.jsx";
+export { AuditFilters as default } from "./AuditFilters.jsx";
