@@ -12,7 +12,7 @@ Since 1.0.3-OPEN-PREVIEW, you are required to set an encryption key in **hexadec
 
 ```shell
 docker run -d \
-  -e ENCRYPTION_KEY="aba3aa8e29b9904d5d8d705230b664c053415c54be20ad13be99af0057dfa23a" \
+  -e ENCRYPTION_KEY=aba3aa8e29b9904d5d8d705230b664c053415c54be20ad13be99af0057dfa23a \
   -p 6989:6989 \
   --name nexterm \
   --restart always \
