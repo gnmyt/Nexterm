@@ -15,7 +15,8 @@
  *
  * Modified by Mathias Wagner, 2024
  */
-const GuacdClient = require('./GuacdClient.js');
+const GuacdClient = require("./GuacdClient.js");
+const { updateAuditLogWithSessionDuration } = require("../controllers/audit");
 
 class ClientConnection {
 
@@ -29,13 +30,14 @@ class ClientConnection {
         this.webSocket = webSocket;
         this.lastActivity = Date.now();
         this.activityCheckInterval = null;
+        this.connectionStartTime = Date.now();
 
         try {
             this.connectionSettings = settings;
 
             this.connectionType = this.connectionSettings.connection.type;
 
-            this.connectionSettings['connection'] = this.mergeConnectionOptions();
+            this.connectionSettings["connection"] = this.mergeConnectionOptions();
         } catch (error) {
             this.close(error);
             return;
@@ -45,8 +47,8 @@ class ClientConnection {
 
         this.guacdClient = new GuacdClient(this);
 
-        webSocket.on('close', this.close.bind(this));
-        webSocket.on('message', this.processReceivedMessage.bind(this));
+        webSocket.on("close", this.close.bind(this));
+        webSocket.on("message", this.processReceivedMessage.bind(this));
 
         if (clientOptions.maxInactivityTime > 0) {
             this.activityCheckInterval = setInterval(this.checkActivity.bind(this), 1000);
@@ -59,6 +61,8 @@ class ClientConnection {
             return;
         }
 
+        this.updateAuditLogWithDuration();
+
         if (this.activityCheckInterval !== undefined && this.activityCheckInterval !== null) {
             clearInterval(this.activityCheckInterval);
         }
@@ -67,10 +71,17 @@ class ClientConnection {
             this.guacdClient.close();
         }
 
-        this.webSocket.removeAllListeners('close');
+        this.webSocket.removeAllListeners("close");
         this.webSocket.close();
 
         this.state = this.STATE_CLOSED;
+    }
+
+    async updateAuditLogWithDuration() {
+        const settings = this.connectionSettings;
+        if (settings.auditLogId) {
+            await updateAuditLogWithSessionDuration(settings.auditLogId, this.connectionStartTime);
+        }
     }
 
     error(error) {
@@ -87,7 +98,7 @@ class ClientConnection {
             return;
         }
 
-        this.webSocket.send(message, {binary: false, mask: false}, (error) => {
+        this.webSocket.send(message, { binary: false, mask: false }, (error) => {
             if (error) {
                 this.close(error);
             }
@@ -100,7 +111,7 @@ class ClientConnection {
         Object.assign(
             compiledSettings,
             this.clientOptions.connectionDefaultSettings[this.connectionType],
-            this.connectionSettings.connection.settings
+            this.connectionSettings.connection.settings,
         );
 
         return compiledSettings;
@@ -108,7 +119,7 @@ class ClientConnection {
 
     checkActivity() {
         if (Date.now() > (this.lastActivity + this.clientOptions.maxInactivityTime)) {
-            this.close(new Error('WS was inactive for too long'));
+            this.close(new Error("WS was inactive for too long"));
         }
     }
 }
