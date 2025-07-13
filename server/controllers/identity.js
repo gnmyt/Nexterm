@@ -93,6 +93,14 @@ module.exports.deleteIdentity = async (accountId, identityId) => {
 
     if (!accessCheck.valid) return accessCheck.error;
 
+    const identityInfo = {
+        id: identity.id,
+        name: identity.name,
+        type: identity.type,
+        organizationId: identity.organizationId,
+        accountId: identity.accountId,
+    };
+
     const personalServers = await Server.findAll({ where: { accountId } });
     
     const memberships = await OrganizationMember.findAll({ where: { accountId, status: "active" } });
@@ -130,7 +138,7 @@ module.exports.deleteIdentity = async (accountId, identityId) => {
         await Identity.destroy({ where: { id: identityId, accountId } });
     }
 
-    return { success: true };
+    return { success: true, identity: identityInfo };
 };
 
 module.exports.updateIdentity = async (accountId, identityId, configuration) => {
@@ -138,6 +146,14 @@ module.exports.updateIdentity = async (accountId, identityId, configuration) => 
     const accessCheck = await validateIdentityAccess(accountId, identity);
 
     if (!accessCheck.valid) return accessCheck.error;
+
+    const identityInfo = {
+        id: identity.id,
+        name: identity.name,
+        type: identity.type,
+        organizationId: identity.organizationId,
+        accountId: identity.accountId,
+    };
 
     delete configuration.accountId;
     delete configuration.organizationId;
@@ -150,7 +166,7 @@ module.exports.updateIdentity = async (accountId, identityId, configuration) => 
         await Identity.update(encryptIdentity(configuration), { where: { id: identityId, accountId } });
     }
 
-    return { success: true };
+    return { success: true, identity: identityInfo };
 };
 
 module.exports.getIdentity = async (accountId, identityId) => {

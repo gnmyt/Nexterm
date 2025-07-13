@@ -1,6 +1,7 @@
 const { authenticateWS } = require("../utils/wsAuth");
 const { getScript } = require("../controllers/script");
 const { transformScript, processNextermLine, checkSudoPrompt } = require("../utils/scriptUtils");
+const { createAuditLog, AUDIT_ACTIONS, RESOURCE_TYPES } = require("../controllers/audit");
 
 const executeScript = async (ssh, ws, scriptContent) => {
     let currentStep = 1;
@@ -193,7 +194,7 @@ module.exports = async (ws, req) => {
 
     if (!authResult) return;
 
-    const { user, ssh } = authResult;
+    const { user, server, ssh } = authResult;
 
     const script = getScript(req.query.scriptId, user.id);
     if (!script) {
@@ -203,6 +204,21 @@ module.exports = async (ws, req) => {
 
     ssh.on("ready", async () => {
         try {
+            await createAuditLog({
+                accountId: user.id,
+                organizationId: server?.organizationId || null,
+                action: AUDIT_ACTIONS.SCRIPT_EXECUTE,
+                resource: RESOURCE_TYPES.SCRIPT,
+                resourceId: req.query.scriptId,
+                details: {
+                    scriptName: script.name,
+                    scriptSource: script.source,
+                    serverId: server?.id,
+                },
+                ipAddress: req.ip || req.socket?.remoteAddress,
+                userAgent: req.headers?.["user-agent"],
+            });
+
             ws.send(`\x01Starting script execution: ${script.name}\n`);
             await executeScript(ssh, ws, script.content);
             ssh.end();

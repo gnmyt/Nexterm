@@ -61,5 +61,7 @@ module.exports = async (ws, req) => {
         connectionReason: connectionReason || null
     };
 
+    req.server = server;
+
     return await prepareSSH(server, identity, ws, null, userInfo);
 }

@@ -117,6 +117,19 @@ module.exports = async (ws, req) => {
     });
 
     ssh.on("ready", () => {
+        createAuditLog({
+            accountId: req.user?.id,
+            organizationId: req.server?.organizationId,
+            action: AUDIT_ACTIONS.SFTP_CONNECT,
+            resource: RESOURCE_TYPES.SERVER,
+            resourceId: req.server?.id,
+            details: {
+                connectionReason: req.query?.connectionReason,
+            },
+            ipAddress: req.ip,
+            userAgent: req.headers?.["user-agent"],
+        });
+
         ssh.sftp((err, sftp) => {
             if (err) {
                 console.log(err);

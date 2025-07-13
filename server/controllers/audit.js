@@ -19,7 +19,6 @@ const AUDIT_ACTIONS = {
 
     FOLDER_CREATE: "folder.create",
     FOLDER_DELETE: "folder.delete",
-    FOLDER_RENAME: "folder.rename",
 
     SERVER_CREATE: "server.create",
     SERVER_UPDATE: "server.update",
