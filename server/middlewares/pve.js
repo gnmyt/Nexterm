@@ -2,10 +2,12 @@ const Session = require("../models/Session");
 const Account = require("../models/Account");
 const PVEServer = require("../models/PVEServer");
 const { validateServerAccess } = require("../controllers/server");
+const { createAuditLog, AUDIT_ACTIONS, RESOURCE_TYPES } = require("../controllers/audit");
 
 module.exports = async (ws, req) => {
     const authHeader = req.query["sessionToken"];
     const serverId = req.query["serverId"];
+    const connectionReason = req.query["connectionReason"];
     let containerId = req.query["containerId"];
 
     if (!authHeader) {
@@ -46,5 +48,23 @@ module.exports = async (ws, req) => {
 
     console.log("Authorized connection to pve server " + server.ip + " with container " + containerId);
 
-    return { server, containerId };
+    let auditLogId = null;
+    if (req.user.id) {
+        auditLogId = await createAuditLog({
+            accountId: req.user.id,
+            organizationId: server.organizationId,
+            action: AUDIT_ACTIONS.PVE_CONNECT,
+            resource: RESOURCE_TYPES.SERVER,
+            resourceId: server.id,
+            details: {
+                containerId: containerId,
+                containerType: 'lxc',
+                connectionReason: connectionReason,
+            },
+            ipAddress: req.ip || req.socket?.remoteAddress || 'unknown',
+            userAgent: req.headers['user-agent'] || 'unknown',
+        });
+    }
+
+    return { server, containerId, auditLogId };
 }
