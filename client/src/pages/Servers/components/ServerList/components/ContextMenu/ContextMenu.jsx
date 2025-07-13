@@ -19,6 +19,8 @@ import {
     mdiStop,
     mdiChevronRight,
     mdiAccountCircle,
+    mdiImport,
+    mdiFileDocumentOutline,
 } from "@mdi/js";
 import Icon from "@mdi/react";
 import { useContext, useState } from "react";
@@ -36,6 +38,7 @@ export const ContextMenu = ({
     connectToServer,
     connectToPVEServer,
     setProxmoxDialogOpen,
+    setSSHConfigImportDialogOpen,
     openSFTP,
 }) => {
     const {
@@ -49,6 +52,7 @@ export const ContextMenu = ({
 
     const [showIdentitySubmenu, setShowIdentitySubmenu] = useState(false);
     const [showSftpSubmenu, setShowSftpSubmenu] = useState(false);
+    const [showImportSubmenu, setShowImportSubmenu] = useState(false);
 
     const server = id
         ? type === "server-object"
@@ -85,6 +89,11 @@ export const ContextMenu = ({
     const createPVEServer = () => {
         setCurrentFolderId(id);
         setProxmoxDialogOpen();
+    };
+
+    const openSSHConfigImport = () => {
+        setCurrentFolderId(id);
+        setSSHConfigImportDialogOpen();
     };
 
     const connect = (identityId = null) => {
@@ -171,9 +180,25 @@ export const ContextMenu = ({
                         <Icon path={mdiServerPlus} />
                         <p>Create Server</p>
                     </div>
-                    <div className="context-item" onClick={createPVEServer}>
-                        <ProxmoxLogo />
-                        <p>Import PVE</p>
+                    <div className="context-item submenu-parent"
+                         onMouseEnter={() => setShowImportSubmenu(true)}
+                         onMouseLeave={() => setShowImportSubmenu(false)}>
+                        <Icon path={mdiImport} />
+                        <p>Import</p>
+                        <Icon path={mdiChevronRight} className="submenu-arrow" />
+
+                        {showImportSubmenu && (
+                            <div className="submenu">
+                                <div className="context-item" onClick={createPVEServer}>
+                                    <ProxmoxLogo />
+                                    <p>PVE</p>
+                                </div>
+                                <div className="context-item" onClick={openSSHConfigImport}>
+                                    <Icon path={mdiFileDocumentOutline} />
+                                    <p>SSH-Config</p>
+                                </div>
+                            </div>
+                        )}
                     </div>
                 </>
             )}
