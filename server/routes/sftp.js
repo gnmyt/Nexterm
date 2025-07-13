@@ -108,16 +108,18 @@ module.exports = async (ws, req) => {
 
     ssh.on("error", async () => {
         await updateAuditLogWithSessionDuration(ssh.auditLogId, ssh.connectionStartTime);
+        await updateAuditLogWithSessionDuration(ssh.sftpAuditLogId, ssh.connectionStartTime);
         ws.close();
     });
 
     ws.on("close", async () => {
         await updateAuditLogWithSessionDuration(ssh.auditLogId, ssh.connectionStartTime);
+        await updateAuditLogWithSessionDuration(ssh.sftpAuditLogId, ssh.connectionStartTime);
         ssh.end();
     });
 
-    ssh.on("ready", () => {
-        createAuditLog({
+    ssh.on("ready", async () => {
+        const sftpAuditLogId = await createAuditLog({
             accountId: req.user?.id,
             organizationId: req.server?.organizationId,
             action: AUDIT_ACTIONS.SFTP_CONNECT,
@@ -129,6 +131,8 @@ module.exports = async (ws, req) => {
             ipAddress: req.ip,
             userAgent: req.headers?.["user-agent"],
         });
+
+        ssh.sftpAuditLogId = sftpAuditLogId;
 
         ssh.sftp((err, sftp) => {
             if (err) {
