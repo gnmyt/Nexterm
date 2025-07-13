@@ -9,7 +9,6 @@ import "./styles.sass";
 export const OrganizationAuditSettings = ({ organizationId, isOwner, onClose }) => {
     const { sendToast } = useToast();
     const [settings, setSettings] = useState(null);
-    const [saving, setSaving] = useState(false);
 
     useEffect(() => {
         if (organizationId) {
@@ -30,7 +29,6 @@ export const OrganizationAuditSettings = ({ organizationId, isOwner, onClose }) 
     };
 
     const saveSettings = async () => {
-        setSaving(true);
         try {
             await patchRequest(`audit/organizations/${organizationId}/settings`, settings);
             sendToast("Success", "Audit settings updated successfully");
@@ -152,7 +150,7 @@ export const OrganizationAuditSettings = ({ organizationId, isOwner, onClose }) 
 
             {isOwner && (
                 <div className="settings-actions"><Button text="Save Settings" icon={mdiContentSave}
-                                                          onClick={saveSettings} disabled={saving} loading={saving} />
+                                                          onClick={saveSettings} />
                 </div>
             )}
         </div>
