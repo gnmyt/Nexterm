@@ -35,10 +35,10 @@ export const Servers = () => {
             if (entry.type === "server" && entry.id === serverIdNum) {
                 return currentOrg;
             } else if (entry.type === "organization") {
-                const found = findOrganizationForServer(entry.entries, entry);
+                const found = findOrganizationForServer(serverIdNum, entry.entries, entry);
                 if (found) return found;
             } else if (entry.type === "folder" && entry.entries) {
-                const found = findOrganizationForServer(entry.entries, currentOrg);
+                const found = findOrganizationForServer(serverIdNum, entry.entries, currentOrg);
                 if (found) return found;
             }
         }
