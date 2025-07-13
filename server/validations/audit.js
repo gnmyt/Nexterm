@@ -1,7 +1,10 @@
 const Joi = require("joi");
 
 module.exports.getAuditLogsValidation = Joi.object({
-    organizationId: Joi.number().integer().positive().optional(),
+    organizationId: Joi.alternatives().try(
+        Joi.number().integer().positive(),
+        Joi.string().valid('personal')
+    ).optional(),
     action: Joi.string().max(100).optional(),
     resource: Joi.string().max(50).optional(),
     startDate: Joi.date().iso().optional(),

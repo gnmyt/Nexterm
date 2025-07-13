@@ -80,7 +80,7 @@ export const AuditFilters = ({ filters, metadata, organizations, onChange }) => 
                             <label>Organization</label>
                             <SelectBox options={organizationOptions}
                                        selected={filters.organizationId || ""}
-                                       setSelected={(value) => handleFilterChange("organizationId", value === "personal" ? null : value || null)}
+                                       setSelected={(value) => handleFilterChange("organizationId", value || null)}
                             />
                         </div>
 

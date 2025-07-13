@@ -107,7 +107,10 @@ const getAuditLogsInternal = async (accountId, filters = {}) => {
 
     const whereClause = {};
 
-    if (organizationId) {
+    if (organizationId === "personal") {
+        whereClause.accountId = accountId;
+        whereClause.organizationId = null;
+    } else if (organizationId) {
         const membership = await OrganizationMember.findOne({
             where: { organizationId, accountId, status: "active" },
         });
@@ -179,7 +182,7 @@ const updateAuditLogWithSessionDuration = async (auditLogId, connectionStartTime
 module.exports.getAuditLogs = async (accountId, filters = {}) => {
     try {
         const { organizationId } = filters;
-        if (organizationId && !(await hasOrganizationAccess(accountId, organizationId))) {
+        if (organizationId && organizationId !== "personal" && !(await hasOrganizationAccess(accountId, organizationId))) {
             return { code: 403, message: "You don't have access to this organization's audit logs" };
         }
 

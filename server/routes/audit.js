@@ -27,7 +27,7 @@ app.get("/logs", async (req, res) => {
         if (validateSchema(res, getAuditLogsValidation, req.query)) return;
 
         const filters = {
-            organizationId: req.query.organizationId ? parseInt(req.query.organizationId) : null,
+            organizationId: req.query.organizationId === 'personal' ? 'personal' : (req.query.organizationId ? parseInt(req.query.organizationId) : null),
             action: req.query.action,
             resource: req.query.resource,
             startDate: req.query.startDate,
