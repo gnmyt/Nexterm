@@ -1,0 +1,1 @@
+export { AuditTable as default } from "./AuditTable.jsx";

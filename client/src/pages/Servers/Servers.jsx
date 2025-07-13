@@ -8,6 +8,7 @@ import { DISCORD_URL, GITHUB_URL } from "@/App.jsx";
 import ServerDialog from "@/pages/Servers/components/ServerDialog";
 import ViewContainer from "@/pages/Servers/components/ViewContainer";
 import ProxmoxDialog from "@/pages/Servers/components/ProxmoxDialog";
+import ConnectionReasonDialog from "@/pages/Servers/components/ConnectionReasonDialog";
 import { mdiStar } from "@mdi/js";
 import { siDiscord } from "simple-icons";
 import { useActiveSessions } from "@/common/contexts/SessionContext.jsx";
@@ -18,6 +19,8 @@ export const Servers = () => {
 
     const [serverDialogOpen, setServerDialogOpen] = useState(false);
     const [proxmoxDialogOpen, setProxmoxDialogOpen] = useState(false);
+    const [connectionReasonDialogOpen, setConnectionReasonDialogOpen] = useState(false);
+    const [pendingConnection, setPendingConnection] = useState(null);
 
     const [currentFolderId, setCurrentFolderId] = useState(null);
     const [editServerId, setEditServerId] = useState(null);
@@ -27,26 +30,100 @@ export const Servers = () => {
     const location = useLocation();
     const navigate = useNavigate();
 
-    const connectToServer = (server, identity) => {
+    const findOrganizationForServer = (serverIdNum, entries, currentOrg = null) => {
+        for (const entry of entries) {
+            if ((entry.type === "server" || entry.type === "pve-server") && entry.id === serverIdNum) {
+                return currentOrg;
+            } else if (entry.type === "organization") {
+                const found = findOrganizationForServer(serverIdNum, entry.entries, entry);
+                if (found) return found;
+            } else if (entry.type === "folder" && entry.entries) {
+                const found = findOrganizationForServer(serverIdNum, entry.entries, currentOrg);
+                if (found) return found;
+            }
+        }
+        return null;
+    };
+
+    const checkConnectionReasonRequired = (serverId, servers) => {
+        if (!servers || !serverId) return false;
+
+        return findOrganizationForServer(parseInt(serverId), servers)?.requireConnectionReason || false;
+    };
+
+    const connectToServer = async (server, identity) => {
+        const requiresReason = checkConnectionReasonRequired(server, servers);
+        if (requiresReason) {
+            setPendingConnection({ type: "ssh", server, identity });
+            setConnectionReasonDialogOpen(true);
+            return;
+        }
+
+        performConnection("ssh", server, identity);
+    };
+
+    const openSFTP = async (server, identity) => {
+        const requiresReason = checkConnectionReasonRequired(server, servers);
+        if (requiresReason) {
+            setPendingConnection({ type: "sftp", server, identity });
+            setConnectionReasonDialogOpen(true);
+            return;
+        }
+
+        performConnection("sftp", server, identity);
+    };
+
+    const performConnection = (type, server, identity, connectionReason = null) => {
         const sessionId = "session-" + (Math.random().toString(36).substring(2, 15));
-        setActiveSessions(prevSessions => [...prevSessions, { server, identity, type: "ssh", id: sessionId }]);
+        const sessionData = { server, identity, type, id: sessionId, connectionReason };
+
+        setActiveSessions(prevSessions => [...prevSessions, sessionData]);
         setActiveSessionId(sessionId);
     };
 
-    const openSFTP = (server, identity) => {
-        const sessionId = "session-" + (Math.random().toString(36).substring(2, 15));
-        setActiveSessions(prevSessions => [...prevSessions, { server, identity, type: "sftp", id: sessionId }]);
-        setActiveSessionId(sessionId);
+    const handleConnectionReasonProvided = (reason) => {
+        if (pendingConnection) {
+            if (pendingConnection.type === "pve") {
+                performPVEConnection(pendingConnection.serverId, pendingConnection.containerId, reason);
+            } else {
+                performConnection(pendingConnection.type, pendingConnection.server, pendingConnection.identity, reason);
+            }
+            setPendingConnection(null);
+        }
+        setConnectionReasonDialogOpen(false);
     };
 
-    const connectToPVEServer = (serverId, containerId) => {
+    const handleConnectionReasonCanceled = () => {
+        setPendingConnection(null);
+        setConnectionReasonDialogOpen(false);
+    };
+
+    const connectToPVEServer = async (serverId, containerId) => {
+        try {
+            const pveServerId = serverId.toString().replace("pve-", "");
+            const requiresReason = checkConnectionReasonRequired(pveServerId, servers);
+            if (requiresReason) {
+                setPendingConnection({ type: "pve", serverId, containerId });
+                setConnectionReasonDialogOpen(true);
+                return;
+            }
+
+            performPVEConnection(serverId, containerId);
+        } catch (error) {
+            performPVEConnection(serverId, containerId);
+        }
+    };
+
+    const performPVEConnection = (serverId, containerId, connectionReason = null) => {
         const sessionId = "session-" + (Math.random().toString(36).substring(2, 15));
-        setActiveSessions(activeSessions => [...activeSessions, {
+        const sessionData = {
             server: serverId.toString().replace("pve-", ""),
             containerId: containerId.toString().split("-")[containerId.toString().split("-").length - 1],
-            id: sessionId
-        }]);
+            id: sessionId,
+            connectionReason,
+        };
 
+        setActiveSessions(activeSessions => [...activeSessions, sessionData]);
         setActiveSessionId(sessionId);
     };
 
@@ -74,34 +151,59 @@ export const Servers = () => {
         setProxmoxDialogOpen(false);
         setCurrentFolderId(null);
         setEditServerId(null);
-    }
+    };
 
     useEffect(() => {
         if (!servers) return;
-        
+
         const params = new URLSearchParams(location.search);
-        const connectId = params.get('connectId');
-        
+        const connectId = params.get("connectId");
+
         if (connectId) {
-            navigate('/servers', { replace: true });
-            const server = getServerById(connectId);
-            
-            if (server && server.identities && server.identities.length > 0) {
-                connectToServer(server.id, server.identities[0]);
-            } else {
-                const isPveServer = connectId.includes("-");
-                
-                if (isPveServer) {
-                    const [pveId, containerId] = connectId.split("-");
-                    const pveServer = getPVEServerById(pveId);
-                    const container = pveServer && containerId ? 
-                        getPVEContainerById(pveId, containerId) : null;
-                    
-                    if (pveServer && container && container.status === "running") {
-                        connectToPVEServer(pveId, containerId);
+            navigate("/servers", { replace: true });
+
+            const handleAutoConnect = async () => {
+                const server = getServerById(connectId);
+
+                if (server && server.identities && server.identities.length > 0) {
+                    try {
+                        const requiresReason = checkConnectionReasonRequired(connectId, servers);
+                        if (requiresReason) {
+                            setPendingConnection({ type: "ssh", server: connectId, identity: server.identities[0] });
+                            setConnectionReasonDialogOpen(true);
+                        } else {
+                            performConnection("ssh", connectId, server.identities[0]);
+                        }
+                    } catch (error) {
+                        performConnection("ssh", connectId, server.identities[0]);
+                    }
+                } else {
+                    const isPveServer = connectId.includes("-");
+
+                    if (isPveServer) {
+                        const [pveId, containerId] = connectId.split("-");
+                        const pveServer = getPVEServerById(pveId);
+                        const container = pveServer && containerId ?
+                            getPVEContainerById(pveId, containerId) : null;
+
+                        if (pveServer && container && container.status === "running") {
+                            try {
+                                const requiresReason = checkConnectionReasonRequired(pveId, servers);
+                                if (requiresReason) {
+                                    setPendingConnection({ type: "pve", serverId: pveId, containerId });
+                                    setConnectionReasonDialogOpen(true);
+                                } else {
+                                    performPVEConnection(pveId, containerId);
+                                }
+                            } catch (error) {
+                                performPVEConnection(pveId, containerId);
+                            }
+                        }
                     }
                 }
-            }
+            };
+
+            handleAutoConnect();
         }
     }, [servers, location.search]);
 
@@ -112,6 +214,16 @@ export const Servers = () => {
             <ProxmoxDialog open={proxmoxDialogOpen} onClose={closePVEDialog}
                            currentFolderId={currentFolderId}
                            editServerId={editServerId} />
+            <ConnectionReasonDialog
+                isOpen={connectionReasonDialogOpen}
+                onClose={handleConnectionReasonCanceled}
+                onConnect={handleConnectionReasonProvided}
+                serverName={pendingConnection ? (
+                    pendingConnection.type === "pve"
+                        ? getPVEServerById(pendingConnection.serverId.toString().replace("pve-", ""))?.name || "Unknown Server"
+                        : getServerById(pendingConnection.server)?.name || "Unknown Server"
+                ) : ""}
+            />
             <ServerList setServerDialogOpen={() => setServerDialogOpen(true)} connectToServer={connectToServer}
                         connectToPVEServer={connectToPVEServer} setProxmoxDialogOpen={() => setProxmoxDialogOpen(true)}
                         setCurrentFolderId={setCurrentFolderId} setEditServerId={setEditServerId} openSFTP={openSFTP} />

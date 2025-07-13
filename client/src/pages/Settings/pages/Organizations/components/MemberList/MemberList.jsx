@@ -3,7 +3,7 @@ import { mdiAccount, mdiShieldAccount } from "@mdi/js";
 import { deleteRequest } from "@/common/utils/RequestUtil.js";
 import { useToast } from "@/common/contexts/ToastContext.jsx";
 import "./styles.sass";
-import Button from "@/common/components/Button/index.js";
+import Button from "@/common/components/Button";
 
 export const MemberList = ({ members, organizationId, isOwner, refreshMembers }) => {
     const { sendToast } = useToast();

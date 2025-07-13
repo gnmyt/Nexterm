@@ -6,6 +6,7 @@ const { hasOrganizationAccess, validateFolderAccess } = require("../utils/permis
 const { Op } = require("sequelize");
 const OrganizationMember = require("../models/OrganizationMember");
 const { listIdentities } = require("./identity");
+const { createAuditLog, AUDIT_ACTIONS, RESOURCE_TYPES } = require("./audit");
 
 const validateServerAccess = async (accountId, server, errorMessage = "You don't have permission to access this server") => {
     if (!server) return { code: 401, message: "Server does not exist" };
@@ -63,11 +64,28 @@ module.exports.createServer = async (accountId, configuration) => {
         if (!validationResult.valid) return validationResult.error;
     }
 
-    return await Server.create({
+    const server = await Server.create({
         ...configuration,
         accountId: folder?.folder?.organizationId ? null : accountId,
         organizationId: folder?.folder?.organizationId || null,
     });
+
+    await createAuditLog({
+        action: AUDIT_ACTIONS.SERVER_CREATE,
+        accountId,
+        organizationId: folder?.folder?.organizationId || null,
+        resource: RESOURCE_TYPES.SERVER,
+        resourceId: server.id,
+        details: {
+            name: server.name,
+            folderId: server.folderId,
+            identities: server.identities,
+            protocol: server.protocol,
+            ip: server.ip,
+        }
+    });
+
+    return server;
 };
 
 module.exports.deleteServer = async (accountId, serverId) => {
@@ -81,6 +99,16 @@ module.exports.deleteServer = async (accountId, serverId) => {
     }
 
     await Server.destroy({ where: { id: serverId } });
+
+    await createAuditLog({
+        action: AUDIT_ACTIONS.SERVER_DELETE,
+        accountId,
+        organizationId: server.organizationId,
+        resource: RESOURCE_TYPES.SERVER,
+        resourceId: serverId,
+        details: { name: server.name, folderId: server.folderId }
+    });
+
     return { success: true };
 };
 
@@ -105,6 +133,16 @@ module.exports.editServer = async (accountId, serverId, configuration) => {
     delete configuration.organizationId;
 
     await Server.update(configuration, { where: { id: serverId } });
+
+    await createAuditLog({
+        action: AUDIT_ACTIONS.SERVER_UPDATE,
+        accountId,
+        organizationId: server.organizationId,
+        resource: RESOURCE_TYPES.SERVER,
+        resourceId: serverId,
+        details: configuration
+    });
+
     return { success: true };
 };
 
@@ -191,9 +229,20 @@ module.exports.listServers = async (accountId) => {
 
 module.exports.duplicateServer = async (accountId, serverId) => {
     const server = await Server.findByPk(serverId);
+    if (!server) return { code: 404, message: "Server not found" };
+
     const accessCheck = await validateServerAccess(accountId, server);
 
     if (!accessCheck.valid) return accessCheck;
+
+    await createAuditLog({
+        action: AUDIT_ACTIONS.SERVER_CREATE,
+        accountId,
+        organizationId: server.organizationId,
+        resource: RESOURCE_TYPES.SERVER,
+        resourceId: serverId,
+        details: { name: server.name, folderId: server.folderId }
+    });
 
     return await Server.create({
         ...server,

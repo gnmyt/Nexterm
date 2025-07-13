@@ -2,6 +2,7 @@ const { Client } = require("ssh2");
 const Server = require("../models/Server");
 const ServerMonitoring = require("../models/ServerMonitoring");
 const Identity = require("../models/Identity");
+const { Op } = require("sequelize");
 
 let monitoringInterval = null;
 let isRunning = false;
@@ -266,7 +267,7 @@ const getProcessCount = async (conn) => {
 const getOSInfo = async (conn) => {
     try {
         const [osRelease, kernel, arch] = await Promise.all([
-            executeCommand(conn, "cat /etc/os-release | head -2").catch(() => ""),
+            executeCommand(conn, "cat /etc/os-release").catch(() => ""),
             executeCommand(conn, "uname -r").catch(() => ""),
             executeCommand(conn, "uname -m").catch(() => ""),
         ]);
@@ -340,7 +341,7 @@ const cleanupOldData = async () => {
         await ServerMonitoring.destroy({
             where: {
                 timestamp: {
-                    [require("sequelize").Op.lt]: cutoffDate,
+                    [Op.lt]: cutoffDate,
                 },
             },
         });

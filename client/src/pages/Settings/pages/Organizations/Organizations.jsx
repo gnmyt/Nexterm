@@ -1,18 +1,17 @@
-import { useContext, useEffect, useState } from "react";
-import { UserContext } from "@/common/contexts/UserContext.jsx";
+import { useEffect, useState } from "react";
 import { useToast } from "@/common/contexts/ToastContext.jsx";
 import { getRequest, postRequest, deleteRequest } from "@/common/utils/RequestUtil.js";
 import Icon from "@mdi/react";
-import { mdiCheckCircleOutline, mdiCloseCircleOutline, mdiDomain, mdiPlus } from "@mdi/js";
+import { mdiCheckCircleOutline, mdiCloseCircleOutline, mdiDomain, mdiPlus, mdiShieldCheckOutline } from "@mdi/js";
 import Button from "@/common/components/Button";
 import OrganizationDialog from "./components/OrganizationDialog";
 import InviteMemberDialog from "./components/InviteMemberDialog";
 import MemberList from "./components/MemberList";
+import OrganizationAuditSettings from "./components/OrganizationAuditSettings";
 import ActionConfirmDialog from "@/common/components/ActionConfirmDialog";
 import "./styles.sass";
 
 export const Organizations = () => {
-    const { user } = useContext(UserContext);
     const { sendToast } = useToast();
 
     const [organizations, setOrganizations] = useState([]);
@@ -25,13 +24,14 @@ export const Organizations = () => {
     const [confirmDialogOpen, setConfirmDialogOpen] = useState(false);
     const [confirmAction, setConfirmAction] = useState(null);
     const [confirmText, setConfirmText] = useState("");
+    const [activeTab, setActiveTab] = useState({});
 
     const fetchOrganizations = async () => {
         try {
             const orgs = await getRequest("organizations");
             setOrganizations(orgs);
         } catch (error) {
-            sendToast("Error", "Failed to load organizations");
+            setOrganizations([]);
         }
     };
 
@@ -40,7 +40,7 @@ export const Organizations = () => {
             const invites = await getRequest("organizations/invitations/pending");
             setPendingInvitations(invites);
         } catch (error) {
-            sendToast("Error", "Failed to load pending invitations");
+            setPendingInvitations([]);
         }
     };
 
@@ -50,7 +50,6 @@ export const Organizations = () => {
             setMembersByOrgId(prev => ({ ...prev, [orgId]: response }));
             return response;
         } catch (error) {
-            sendToast("Error", "Failed to load organization members");
             return [];
         }
     };
@@ -78,8 +77,10 @@ export const Organizations = () => {
     const handleOrgClick = async (org) => {
         if (expandedOrgId === org.id) {
             setExpandedOrgId(null);
+            setActiveTab(prev => ({ ...prev, [org.id]: "members" }));
         } else {
             setExpandedOrgId(org.id);
+            setActiveTab(prev => ({ ...prev, [org.id]: prev[org.id] || "members" }));
             if (!membersByOrgId[org.id]) {
                 await fetchMembers(org.id);
             }
@@ -138,7 +139,7 @@ export const Organizations = () => {
 
     return (
         <div className="organizations-page">
-            <div className="page-header">
+            <div className="org-header">
                 <h2>Your Organizations</h2>
                 <Button text="Create Organization" icon={mdiPlus} onClick={() => setCreateDialogOpen(true)} />
             </div>
@@ -177,11 +178,37 @@ export const Organizations = () => {
                                     )}
                                 </div>
                             </div>
-                            {expandedOrgId === org.id && membersByOrgId[org.id] && (
+                            {expandedOrgId === org.id && (
                                 <div className="organization-members">
-                                    <MemberList members={membersByOrgId[org.id]} organizationId={org.id}
-                                                isOwner={isOrgOwner(org)} refreshMembers={() => fetchMembers(org.id)}
-                                    />
+                                    <div className="tab-headers">
+                                        <div
+                                            className={`tab-header ${(activeTab[org.id] || "members") === "members" ? "active" : ""}`}
+                                            onClick={() => setActiveTab(prev => ({ ...prev, [org.id]: "members" }))}>
+                                            <Icon path={mdiDomain} />
+                                            <span>Members</span>
+                                        </div>
+                                        {isOrgOwner(org) && (
+                                            <div
+                                                className={`tab-header ${activeTab[org.id] === "audit" ? "active" : ""}`}
+                                                onClick={() => setActiveTab(prev => ({ ...prev, [org.id]: "audit" }))}>
+                                                <Icon path={mdiShieldCheckOutline} />
+                                                <span>Audit Settings</span>
+                                            </div>
+                                        )}
+                                    </div>
+
+                                    <div className="tab-content">
+                                        {(activeTab[org.id] || "members") === "members" && membersByOrgId[org.id] && (
+                                            <MemberList members={membersByOrgId[org.id]} organizationId={org.id}
+                                                        isOwner={isOrgOwner(org)}
+                                                        refreshMembers={() => fetchMembers(org.id)} />
+                                        )}
+
+                                        {activeTab[org.id] === "audit" && isOrgOwner(org) && (
+                                            <OrganizationAuditSettings organizationId={org.id}
+                                                                       isOwner={isOrgOwner(org)} />
+                                        )}
+                                    </div>
                                 </div>
                             )}
                         </div>
@@ -221,7 +248,7 @@ export const Organizations = () => {
 
             {selectedOrganization && (
                 <InviteMemberDialog open={inviteDialogOpen} onClose={() => setInviteDialogOpen(false)}
-                                    organization={selectedOrganization} 
+                                    organization={selectedOrganization}
                                     refreshMembers={() => fetchMembers(selectedOrganization.id)} />
             )}
 

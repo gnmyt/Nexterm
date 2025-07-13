@@ -4,6 +4,7 @@ const Organization = require("../models/Organization");
 const OrganizationMember = require("../models/OrganizationMember");
 const { Op } = require("sequelize");
 const { hasOrganizationAccess } = require("../utils/permission");
+const { createAuditLog, AUDIT_ACTIONS, RESOURCE_TYPES } = require("./audit");
 
 module.exports.createFolder = async (accountId, configuration) => {
     if (configuration.parentId && !configuration.organizationId) {
@@ -37,12 +38,23 @@ module.exports.createFolder = async (accountId, configuration) => {
         }
     }
 
-    return await Folder.create({
+    const folder = await Folder.create({
         name: configuration.name,
         accountId: configuration.organizationId ? null : accountId,
         organizationId: configuration.organizationId || null,
         parentId: configuration.parentId,
     });
+
+    await createAuditLog({
+        action: AUDIT_ACTIONS.FOLDER_CREATE_MGMT,
+        accountId,
+        organizationId: configuration.organizationId || null,
+        resource: RESOURCE_TYPES.FOLDER,
+        resourceId: folder.id,
+        details: { folderName: configuration.name },
+    });
+
+    return folder;
 };
 
 module.exports.deleteFolder = async (accountId, folderId) => {
@@ -69,6 +81,16 @@ module.exports.deleteFolder = async (accountId, folderId) => {
     await Server.destroy({ where: { folderId: folderId } });
 
     await Folder.destroy({ where: { id: folderId } });
+
+    await createAuditLog({
+        action: AUDIT_ACTIONS.FOLDER_DELETE_MGMT,
+        accountId,
+        organizationId: folder.organizationId,
+        resource: RESOURCE_TYPES.FOLDER,
+        resourceId: folderId,
+        details: { folderName: folder.name },
+    });
+
     return { success: true };
 };
 
@@ -126,6 +148,15 @@ module.exports.editFolder = async (accountId, folderId, configuration) => {
     delete configuration.organizationId;
 
     await Folder.update(configuration, { where: { id: folderId } });
+
+    await createAuditLog({
+        action: AUDIT_ACTIONS.FOLDER_UPDATE_MGMT,
+        accountId,
+        organizationId: folder.organizationId,
+        resource: RESOURCE_TYPES.FOLDER,
+        resourceId: folderId,
+        details: configuration,
+    });
 
     return { success: true };
 };
@@ -197,10 +228,17 @@ module.exports.listFolders = async (accountId) => {
         });
 
         organizations.forEach(org => {
+            let requireConnectionReason = false;
+            if (org.auditSettings) {
+                const settings = typeof org.auditSettings === "string" ? JSON.parse(org.auditSettings) : org.auditSettings;
+                requireConnectionReason = settings.requireConnectionReason || false;
+            }
+
             result.push({
                 id: `org-${org.id}`,
                 name: org.name,
                 type: "organization",
+                requireConnectionReason,
                 entries: orgFoldersByOrg[org.id] || [],
             });
         });

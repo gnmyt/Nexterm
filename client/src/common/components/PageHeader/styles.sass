@@ -1,0 +1,46 @@
+@use "@/common/styles/colors"
+
+.page-header
+  background-color: colors.$lighter-background
+  padding: 1rem 2rem
+  display: flex
+  align-items: center
+  justify-content: space-between
+  border-bottom: 2px solid colors.$dark-gray
+  user-select: none
+  margin-bottom: 2rem
+
+  .header-title, .header-back
+    display: flex
+    align-items: center
+    gap: 1rem
+
+    svg
+      width: 2.5rem
+      height: 2.5rem
+      color: colors.$primary
+
+    div
+      h1
+        margin: 0
+        color: colors.$white
+        font-size: 1.5rem
+
+      p
+        margin: 0.25rem 0 0 0
+        color: colors.$subtext
+        font-size: 0.9rem
+
+  .header-back
+    cursor: pointer
+    padding: 0.5rem
+    border-radius: 0.5rem
+    transition: background-color 0.2s
+
+    &:hover
+      background-color: colors.$dark-gray
+
+  .header-actions
+    display: flex
+    gap: 1rem
+    align-items: center

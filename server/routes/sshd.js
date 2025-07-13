@@ -1,4 +1,5 @@
 const prepareSSH = require("../utils/sshPreCheck");
+const { updateAuditLogWithSessionDuration } = require("../controllers/audit");
 
 module.exports = async (ws, req) => {
     const ssh = await prepareSSH(ws, req);
@@ -24,7 +25,8 @@ module.exports = async (ws, req) => {
                 }
             });
 
-            ws.on("close", () => {
+            ws.on("close", async () => {
+                await updateAuditLogWithSessionDuration(ssh.auditLogId, ssh.connectionStartTime);
                 stream.end();
                 ssh.end();
             });

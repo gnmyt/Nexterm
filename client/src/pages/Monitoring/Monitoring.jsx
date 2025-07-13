@@ -4,7 +4,7 @@ import { getRequest } from "@/common/utils/RequestUtil.js";
 import MonitoringGrid from "./components/MonitoringGrid";
 import ServerDetails from "./components/ServerDetails";
 import { useToast } from "@/common/contexts/ToastContext.jsx";
-import Icon from "@mdi/react";
+import PageHeader from "@/common/components/PageHeader";
 import { mdiArrowLeft, mdiChartBoxOutline, mdiMagnify } from "@mdi/js";
 import IconInput from "@/common/components/IconInput";
 
@@ -60,29 +60,17 @@ export const Monitoring = () => {
 
     return (
         <div className="monitoring-page">
-            <div className="monitoring-header">
-                {selectedServer ? (
-                    <div className="header-back" onClick={handleBackToGrid}>
-                        <Icon path={mdiArrowLeft} />
-                        <div className="header-title">
-                            <h1>{selectedServer.name}</h1>
-                        </div>
-                    </div>
-                ) : (
-                    <div className="header-title">
-                        <Icon path={mdiChartBoxOutline} />
-                        <div>
-                            <h1>Server Monitoring</h1>
-                            <p>Real-time server statistics and health monitoring</p>
-                        </div>
-                    </div>
+            <PageHeader
+                icon={selectedServer ? undefined : mdiChartBoxOutline}
+                title={selectedServer ? selectedServer.name : "Server Monitoring"}
+                subtitle={selectedServer ? undefined : "Real-time server statistics and health monitoring"}
+                onBackClick={selectedServer ? handleBackToGrid : undefined}
+                backIcon={mdiArrowLeft}>
+                {!selectedServer && (
+                    <IconInput type="text" icon={mdiMagnify} placeholder="Search servers..." value={searchQuery}
+                               setValue={handleSearchChange} />
                 )}
-
-                <div className="header-actions">
-                    {!selectedServer && <IconInput type="text" icon={mdiMagnify} placeholder="Search servers..."
-                                                   value={searchQuery} setValue={handleSearchChange} />}
-                </div>
-            </div>
+            </PageHeader>
 
             <div className="monitoring-content">
                 {selectedServer ? <ServerDetails server={selectedServer} /> :

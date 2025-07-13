@@ -44,7 +44,7 @@ export const PVEObject = ({ nestedLevel, name, id, online, entries, connectToPVE
                                                           nestedLevel={nestedLevel + 1}
                                                           icon={getIconByType(entry.type)}
                                                           status={entry.status}
-                                                          connectToServer={(containerId) => connectToPVEServer(id, containerId)}
+                                                          connectToServer={() => connectToPVEServer(id, "pve-" + id + "-" + entry.id)}
                                                           isPVE />)}
         </>
 

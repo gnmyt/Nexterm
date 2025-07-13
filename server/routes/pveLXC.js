@@ -1,12 +1,14 @@
 const { openLXCConsole, getNodeForServer, createTicket } = require("../controllers/pve");
 const { WebSocket } = require("ws");
 const preparePVE = require("../middlewares/pve");
+const { updateAuditLogWithSessionDuration } = require("../controllers/audit");
 
 module.exports = async (ws, req) => {
     const pveObj = await preparePVE(ws, req);
     if (!pveObj) return;
 
-    const { server, containerId } = pveObj;
+    const { server, containerId, auditLogId } = pveObj;
+    const connectionStartTime = Date.now();
 
     let keepAliveTimer;
 
@@ -26,7 +28,8 @@ module.exports = async (ws, req) => {
             },
         });
 
-        lxcSocket.on("close", () => {
+        lxcSocket.on("close", async () => {
+            await updateAuditLogWithSessionDuration(auditLogId, connectionStartTime);
             if (keepAliveTimer) clearInterval(keepAliveTimer);
             if (ws.readyState === ws.OPEN) {
                 ws.close();
@@ -51,8 +54,9 @@ module.exports = async (ws, req) => {
             }
         });
 
-        lxcSocket.on("error", (error) => {
+        lxcSocket.on("error", async (error) => {
             console.error("LXC socket error:", error.message);
+            await updateAuditLogWithSessionDuration(auditLogId, connectionStartTime);
             if (keepAliveTimer) clearInterval(keepAliveTimer);
             if (lxcSocket.readyState === lxcSocket.OPEN) {
                 lxcSocket.close();
@@ -62,7 +66,8 @@ module.exports = async (ws, req) => {
             }
         });
 
-        ws.on("close", () => {
+        ws.on("close", async () => {
+            await updateAuditLogWithSessionDuration(auditLogId, connectionStartTime);
             if (keepAliveTimer) clearInterval(keepAliveTimer);
             if (lxcSocket.readyState === lxcSocket.OPEN) {
                 lxcSocket.close();

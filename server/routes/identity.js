@@ -2,6 +2,7 @@ const { Router } = require("express");
 const { validateSchema } = require("../utils/schema");
 const { listIdentities, createIdentity, deleteIdentity, updateIdentity } = require("../controllers/identity");
 const { createIdentityValidation, updateIdentityValidation } = require("../validations/identity");
+const { createAuditLog, AUDIT_ACTIONS, RESOURCE_TYPES } = require("../controllers/audit");
 
 const app = Router();
 
@@ -35,6 +36,20 @@ app.put("/", async (req, res) => {
     const identity = await createIdentity(req.user.id, req.body);
     if (identity?.code) return res.json(identity);
 
+    await createAuditLog({
+        accountId: req.user.id,
+        organizationId: req.body.organizationId || null,
+        action: AUDIT_ACTIONS.IDENTITY_CREATE,
+        resource: RESOURCE_TYPES.IDENTITY,
+        resourceId: identity.id,
+        details: {
+            identityName: req.body.name,
+            identityType: req.body.type,
+        },
+        ipAddress: req.ip,
+        userAgent: req.headers?.["user-agent"],
+    });
+
     res.json({ message: "Identity got successfully created", id: identity.id });
 });
 
@@ -50,8 +65,22 @@ app.put("/", async (req, res) => {
  * @return {object} 404 - Identity not found
  */
 app.delete("/:identityId", async (req, res) => {
-    const identity = await deleteIdentity(req.user.id, req.params.identityId);
-    if (identity?.code) return res.json(identity);
+    const result = await deleteIdentity(req.user.id, req.params.identityId);
+    if (result?.code) return res.json(result);
+
+    await createAuditLog({
+        accountId: req.user.id,
+        organizationId: result.identity?.organizationId || null,
+        action: AUDIT_ACTIONS.IDENTITY_DELETE,
+        resource: RESOURCE_TYPES.IDENTITY,
+        resourceId: req.params.identityId,
+        details: {
+            identityName: result.identity?.name,
+            identityType: result.identity?.type,
+        },
+        ipAddress: req.ip,
+        userAgent: req.headers?.["user-agent"],
+    });
 
     res.json({ message: "Identity got successfully deleted" });
 });
@@ -71,8 +100,23 @@ app.delete("/:identityId", async (req, res) => {
 app.patch("/:identityId", async (req, res) => {
     if (validateSchema(res, updateIdentityValidation, req.body)) return;
 
-    const identity = await updateIdentity(req.user.id, req.params.identityId, req.body);
-    if (identity?.code) return res.json(identity);
+    const result = await updateIdentity(req.user.id, req.params.identityId, req.body);
+    if (result?.code) return res.json(result);
+
+    await createAuditLog({
+        accountId: req.user.id,
+        organizationId: result.identity?.organizationId || null,
+        action: AUDIT_ACTIONS.IDENTITY_UPDATE,
+        resource: RESOURCE_TYPES.IDENTITY,
+        resourceId: req.params.identityId,
+        details: {
+            identityName: result.identity?.name,
+            identityType: result.identity?.type,
+            updatedFields: Object.keys(req.body).filter(key => !['password', 'sshKey', 'passphrase'].includes(key)),
+        },
+        ipAddress: req.ip,
+        userAgent: req.headers?.["user-agent"],
+    });
 
     res.json({ message: "Identity got successfully edited" });
 });

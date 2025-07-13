@@ -1,0 +1,422 @@
+@use "@/common/styles/colors"
+
+.audit-table-container
+  background-color: colors.$dark-gray
+  border: 1px solid colors.$gray
+  border-radius: 12px
+  overflow: hidden
+  min-height: 600px
+  display: flex
+  flex-direction: column
+  position: relative
+
+  @media (max-width: 768px)
+    min-height: 500px
+
+  @media (max-width: 480px)
+    min-height: 400px
+    border-radius: 8px
+
+  .loading-overlay
+    position: absolute
+    inset: 0
+    background-color: rgba(0, 0, 0, 0.5)
+    display: flex
+    flex-direction: column
+    align-items: center
+    justify-content: center
+    gap: 1rem
+    color: colors.$white
+    z-index: 10
+
+    svg
+      width: 2rem
+      height: 2rem
+
+  .no-logs
+    display: flex
+    flex-direction: column
+    align-items: center
+    justify-content: center
+    padding: 3rem
+    color: colors.$subtext
+    text-align: center
+
+    svg
+      width: 3rem
+      height: 3rem
+      margin-bottom: 1rem
+      opacity: 0.5
+
+    h3
+      margin: 0 0 0.5rem 0
+      font-size: 1.1rem
+
+    p
+      margin: 0
+      font-size: 0.9rem
+
+.audit-table
+  flex: 1
+  overflow: hidden
+  display: flex
+  flex-direction: column
+  width: 100%
+
+  .table-header
+    display: grid
+    grid-template-columns: 2fr 1.8fr 1.5fr 1.2fr 1.2fr 60px
+    gap: 1rem
+    padding: 1rem 1.5rem
+    background-color: colors.$darker-gray
+    border-bottom: 1px solid colors.$gray
+    font-weight: 600
+    font-size: 0.9rem
+    color: colors.$subtext
+
+    @media (max-width: 1024px)
+      grid-template-columns: 2fr 1.5fr 1fr 60px
+      gap: 0.75rem
+      padding: 0.75rem 1rem
+      font-size: 0.8rem
+
+      .header-cell:nth-child(4),
+      .header-cell:nth-child(5)
+        display: none
+
+    @media (max-width: 768px)
+      grid-template-columns: 2fr 1fr 60px
+      gap: 0.5rem
+
+      .header-cell:nth-child(3)
+        display: none
+
+    @media (max-width: 480px)
+      display: none
+
+    .header-cell
+      display: flex
+      align-items: center
+      gap: 0.5rem
+
+      svg
+        width: 1rem
+        height: 1rem
+
+  .table-body
+    flex: 1
+    overflow-y: auto
+
+    .table-row
+      border-bottom: 1px solid colors.$gray
+
+      @media (max-width: 480px)
+        &:active .row-main
+          background-color: colors.$gray
+
+      .row-main
+        display: grid
+        grid-template-columns: 2fr 1.8fr 1.5fr 1.2fr 1.2fr 60px
+        gap: 1rem
+        padding: 1rem 1.5rem
+        cursor: pointer
+        transition: background-color 0.2s ease
+
+        @media (max-width: 1024px)
+          grid-template-columns: 2fr 1.5fr 1fr 60px
+          gap: 0.75rem
+          padding: 0.75rem 1rem
+
+          .cell:nth-child(4),
+          .cell:nth-child(5)
+            display: none
+
+        @media (max-width: 768px)
+          grid-template-columns: 2fr 1fr 60px
+          gap: 0.5rem
+          padding: 0.75rem
+
+          .cell:nth-child(3)
+            display: none
+
+        @media (max-width: 480px)
+          display: flex
+          flex-direction: column
+          gap: 0.75rem
+          padding: 1rem 0.75rem
+
+          .cell
+            width: 100%
+
+        &:hover
+          background-color: colors.$gray
+
+        .cell
+          display: flex
+          align-items: center
+          font-size: 0.9rem
+
+          @media (max-width: 768px)
+            font-size: 0.85rem
+
+          @media (max-width: 480px)
+            flex-direction: column
+            align-items: flex-start
+            gap: 0.25rem
+
+            &::before
+              content: attr(data-label)
+              font-size: 0.75rem
+              color: colors.$subtext
+              text-transform: uppercase
+              font-weight: 600
+
+          &.timestamp
+            .timestamp-content
+              display: flex
+              flex-direction: column
+              gap: 0.25rem
+
+              .date
+                color: colors.$white
+                font-weight: 500
+
+              .time
+                color: colors.$subtext
+                font-size: 0.8rem
+                font-family: monospace
+
+          &.action
+            .action-content
+              display: flex
+              align-items: center
+              gap: 0.5rem
+
+              @media (max-width: 480px)
+                flex-direction: column
+                align-items: flex-start
+                gap: 0.25rem
+
+              svg
+                width: 1rem
+                height: 1rem
+                color: colors.$subtext
+
+              .action-badge
+                padding: 0.25rem 0.75rem
+                border-radius: 12px
+                font-size: 0.8rem
+                font-weight: 500
+                text-transform: uppercase
+
+                @media (max-width: 480px)
+                  font-size: 0.75rem
+                  padding: 0.2rem 0.6rem
+
+                &.green
+                  background-color: rgba(34, 197, 94, 0.2)
+                  color: #22c55e
+
+                &.blue
+                  background-color: rgba(59, 130, 246, 0.2)
+                  color: #3b82f6
+
+                &.orange
+                  background-color: rgba(249, 115, 22, 0.2)
+                  color: #f97316
+
+                &.red
+                  background-color: rgba(239, 68, 68, 0.2)
+                  color: #ef4444
+
+                &.purple
+                  background-color: rgba(168, 85, 247, 0.2)
+                  color: #a855f7
+
+                &.cyan
+                  background-color: rgba(6, 182, 212, 0.2)
+                  color: #06b6d4
+
+                &.gray
+                  background-color: colors.$gray
+                  color: colors.$subtext
+
+          &.actor
+            .actor-info
+              display: flex
+              flex-direction: column
+              gap: 0.25rem
+
+              .actor-name
+                color: colors.$white
+                font-weight: 500
+
+              .actor-ip
+                color: colors.$subtext
+                font-size: 0.8rem
+                font-family: monospace
+
+          &.resource
+            .resource-badge
+              padding: 0.25rem 0.5rem
+              background-color: colors.$gray
+              color: colors.$subtext
+              border-radius: 4px
+              font-size: 0.8rem
+
+              @media (max-width: 480px)
+                font-size: 0.75rem
+                padding: 0.2rem 0.4rem
+
+          &.organization
+            .org-badge
+              padding: 0.25rem 0.5rem
+              background-color: rgba(59, 130, 246, 0.2)
+              color: #3b82f6
+              border-radius: 4px
+              font-size: 0.8rem
+
+              @media (max-width: 480px)
+                font-size: 0.75rem
+                padding: 0.2rem 0.4rem
+
+            .personal-badge
+              padding: 0.25rem 0.5rem
+              background-color: colors.$gray
+              color: colors.$subtext
+              border-radius: 4px
+              font-size: 0.8rem
+
+              @media (max-width: 480px)
+                font-size: 0.75rem
+                padding: 0.2rem 0.4rem
+
+          &.details
+            justify-content: center
+
+            @media (max-width: 480px)
+              justify-content: flex-start
+
+            .expand-icon
+              width: 1rem
+              height: 1rem
+              color: colors.$subtext
+              transition: all 0.2s ease
+
+              &.expanded
+                transform: rotate(90deg)
+                color: colors.$primary
+
+      .row-expanded
+        background-color: colors.$darker-gray
+        border-top: 1px solid colors.$gray
+
+        .expanded-content
+          padding: 1.5rem
+          display: flex
+          flex-direction: column
+          gap: 1.5rem
+
+          @media (max-width: 768px)
+            padding: 1rem
+            gap: 1rem
+
+          @media (max-width: 480px)
+            padding: 0.75rem
+            gap: 0.75rem
+
+          .reason-section,
+          .user-agent-section,
+          .details-section
+            h4
+              margin: 0 0 0.5rem 0
+              font-size: 0.9rem
+              color: colors.$primary
+              text-transform: uppercase
+              font-weight: 600
+
+            p
+              margin: 0
+              color: colors.$white
+              line-height: 1.4
+
+              svg
+                width: 1rem
+                height: 1rem
+                margin-right: 0.5rem
+                vertical-align: middle
+
+          .audit-details
+            display: grid
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr))
+            gap: 1rem
+
+            @media (max-width: 768px)
+              grid-template-columns: repeat(auto-fit, minmax(150px, 1fr))
+              gap: 0.75rem
+
+            @media (max-width: 480px)
+              grid-template-columns: 1fr
+              gap: 0.5rem
+
+            .detail-item
+              display: flex
+              flex-direction: column
+              gap: 0.25rem
+
+              .detail-key
+                font-size: 0.8rem
+                color: colors.$subtext
+                text-transform: capitalize
+
+              .detail-value
+                color: colors.$white
+                font-family: monospace
+                font-size: 0.9rem
+                word-break: break-word
+
+.pagination
+  display: flex
+  align-items: center
+  justify-content: space-between
+  padding: 1rem 1.5rem
+  border-top: 1px solid colors.$gray
+  background-color: colors.$darker-gray
+
+  @media (max-width: 768px)
+    padding: 0.75rem 1rem
+    flex-direction: column
+    gap: 0.75rem
+
+  @media (max-width: 480px)
+    padding: 0.75rem
+
+  .pagination-info
+    color: colors.$subtext
+    font-size: 0.9rem
+
+    @media (max-width: 768px)
+      font-size: 0.8rem
+
+  .pagination-controls
+      display: flex
+      align-items: center
+      gap: 1rem
+
+      @media (max-width: 768px)
+        gap: 0.75rem
+
+      @media (max-width: 480px)
+        gap: 0.5rem
+        flex-wrap: wrap
+        justify-content: center
+
+      .page-info
+        color: colors.$white
+        font-weight: 500
+
+        @media (max-width: 768px)
+          font-size: 0.9rem
+
+        @media (max-width: 480px)
+          font-size: 0.8rem

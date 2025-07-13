@@ -9,6 +9,7 @@ module.exports = async (ws, req) => {
     const authHeader = req.query["sessionToken"];
     const serverId = req.query["serverId"];
     const identityId = req.query["identityId"];
+    const connectionReason = req.query["connectionReason"];
 
     if (!authHeader) {
         ws.close(4001, "You need to provide the token in the 'sessionToken' parameter");
@@ -53,5 +54,14 @@ module.exports = async (ws, req) => {
     const identity = await Identity.findByPk(identityId || server.identities[0]);
     if (identity === null) return;
 
-    return prepareSSH(server, identity, ws);
+    const userInfo = {
+        accountId: req.user.id,
+        ip: req.ip || req.socket?.remoteAddress || 'unknown',
+        userAgent: req.headers['user-agent'] || 'unknown',
+        connectionReason: connectionReason || null
+    };
+
+    req.server = server;
+
+    return await prepareSSH(server, identity, ws, null, userInfo);
 }

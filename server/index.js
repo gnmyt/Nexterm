@@ -48,6 +48,7 @@ app.use("/api/folders", authenticate, require("./routes/folder"));
 app.use("/api/servers", authenticate, require("./routes/server"));
 app.use("/api/monitoring", authenticate, require("./routes/monitoring"));
 app.use("/api/pve-servers", authenticate, require("./routes/pveServer"));
+app.use("/api/audit", authenticate, require("./routes/audit"));
 app.use("/api/identities", authenticate, require("./routes/identity"));
 app.use("/api/snippets", authenticate, require("./routes/snippet"));
 app.use("/api/organizations", authenticate, require("./routes/organization"));
