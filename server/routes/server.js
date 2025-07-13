@@ -1,5 +1,5 @@
 const { Router } = require("express");
-const { createServer, deleteServer, editServer, getServer, listServers, duplicateServer } = require("../controllers/server");
+const { createServer, deleteServer, editServer, getServer, listServers, duplicateServer, importSSHConfig } = require("../controllers/server");
 const { createServerValidation, updateServerValidation } = require("../validations/server");
 const { validateSchema } = require("../utils/schema");
 
@@ -111,6 +111,23 @@ app.post("/:serverId/duplicate", async (req, res) => {
     if (server?.code) return res.json(server);
 
     res.json({ message: "Server got successfully duplicated" });
+});
+
+/**
+ * POST /server/import/ssh-config
+ * @summary Import SSH Config
+ * @description Imports pre-processed server configurations with specific identities already assigned.
+ * @tags Server
+ * @produces application/json
+ * @security BearerAuth
+ * @param {object} request.body.required - Server configurations with identities
+ * @return {object} 200 - Servers successfully imported with statistics
+ */
+app.post("/import/ssh-config", async (req, res) => {
+    const result = await importSSHConfig(req.user.id, req.body);
+    if (result?.code) return res.json(result);
+
+    res.json(result);
 });
 
 module.exports = app;
