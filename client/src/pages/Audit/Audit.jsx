@@ -9,9 +9,9 @@ import {
     mdiFileDocumentOutline,
     mdiKeyVariant,
 } from "@mdi/js";
-import PageHeader from "@/common/components/PageHeader/index.js";
-import AuditTable from "./components/AuditTable/index.js";
-import AuditFilters from "./components/AuditFilters/index.js";
+import PageHeader from "@/common/components/PageHeader";
+import AuditTable from "./components/AuditTable";
+import AuditFilters from "./components/AuditFilters";
 import "./styles.sass";
 
 export const Audit = () => {

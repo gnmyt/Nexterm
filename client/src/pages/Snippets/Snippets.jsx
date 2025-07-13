@@ -4,7 +4,7 @@ import { useSnippets } from "@/common/contexts/SnippetContext.jsx";
 import SnippetsList from "@/pages/Snippets/components/SnippetsList";
 import SnippetDialog from "@/pages/Snippets/components/SnippetDialog";
 import Button from "@/common/components/Button";
-import PageHeader from "@/common/components/PageHeader/index.js";
+import PageHeader from "@/common/components/PageHeader";
 import { mdiCodeBrackets, mdiPlus } from "@mdi/js";
 
 export const Snippets = () => {

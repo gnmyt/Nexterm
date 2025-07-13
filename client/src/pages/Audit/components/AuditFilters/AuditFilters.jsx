@@ -1,8 +1,8 @@
 import { useState, useMemo, useCallback } from "react";
 import Icon from "@mdi/react";
 import { mdiFilterVariantPlus, mdiFilterVariantMinus } from "@mdi/js";
-import SelectBox from "@/common/components/SelectBox/index.js";
-import Button from "@/common/components/Button/index.js";
+import SelectBox from "@/common/components/SelectBox";
+import Button from "@/common/components/Button";
 import "./styles.sass";
 
 export const AuditFilters = ({ filters, metadata, organizations, onChange }) => {

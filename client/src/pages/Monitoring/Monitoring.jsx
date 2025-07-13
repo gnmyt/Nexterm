@@ -4,7 +4,7 @@ import { getRequest } from "@/common/utils/RequestUtil.js";
 import MonitoringGrid from "./components/MonitoringGrid";
 import ServerDetails from "./components/ServerDetails";
 import { useToast } from "@/common/contexts/ToastContext.jsx";
-import PageHeader from "@/common/components/PageHeader/index.js";
+import PageHeader from "@/common/components/PageHeader";
 import { mdiArrowLeft, mdiChartBoxOutline, mdiMagnify } from "@mdi/js";
 import IconInput from "@/common/components/IconInput";
 
