@@ -253,4 +253,48 @@ module.exports.duplicateServer = async (accountId, serverId) => {
     });
 };
 
-module.exports.validateServerAccess = validateServerAccess;
+module.exports.importSSHConfig = async (accountId, configuration) => {
+    const { servers, folderId } = configuration;
+    const folderCheck = await validateFolderAccess(accountId, folderId);
+    if (!folderCheck.valid) return folderCheck.error;
+
+    const results = { imported: 0, skipped: 0, errors: 0, details: [] };
+    const orgId = folderCheck.folder?.organizationId;
+
+    for (const serverData of servers) {
+        try {
+            const existingServer = await Server.findOne({
+                where: { name: serverData.name, folderId, accountId: orgId ? null : accountId, organizationId: orgId || null }
+            });
+
+            if (existingServer) {
+                results.skipped++;
+                results.details.push({ host: serverData.name, status: 'skipped', reason: 'Server exists' });
+                continue;
+            }
+
+            const server = await Server.create({
+                name: serverData.name, folderId, icon: "server", protocol: "ssh",
+                ip: serverData.ip, port: serverData.port, config: serverData.config, monitoringEnabled: false,
+                identities: serverData.identities, accountId: orgId ? null : accountId, organizationId: orgId || null
+            });
+
+            await createAuditLog({
+                action: AUDIT_ACTIONS.SERVER_CREATE, accountId, organizationId: orgId || null,
+                resource: RESOURCE_TYPES.SERVER, resourceId: server.id,
+                details: { name: server.name, folderId: server.folderId, importSource: 'ssh-config' }
+            });
+
+            results.imported++;
+            results.details.push({ host: serverData.name, status: 'imported', serverId: server.id });
+        } catch (error) {
+            results.errors++;
+            results.details.push({ host: serverData.name, status: 'error', reason: error.message });
+        }
+    }
+
+    return {
+        message: `SSH config import: ${results.imported} imported, ${results.skipped} skipped, ${results.errors} errors`,
+        ...results
+    };
+};
