@@ -298,3 +298,5 @@ module.exports.importSSHConfig = async (accountId, configuration) => {
         ...results
     };
 };
+
+module.exports.validateServerAccess = validateServerAccess;
