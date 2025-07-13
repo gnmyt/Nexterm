@@ -150,7 +150,7 @@ const getAuditLogsInternal = async (accountId, filters = {}) => {
     result.rows = result.rows.map(log => ({
         id: log.id, accountId: log.accountId, organizationId: log.organizationId, action: log.action,
         resource: log.resource, resourceId: log.resourceId, ipAddress: log.ipAddress, userAgent: log.userAgent,
-        reason: log.reason, timestamp: log.timestamp,
+        timestamp: log.timestamp,
         details: typeof log.details === "string" ? JSON.parse(log.details) : log.details,
         actorFirstName: accountMap[log.accountId]?.firstName || null,
         actorLastName: accountMap[log.accountId]?.lastName || null,
