@@ -32,7 +32,7 @@ export const Servers = () => {
 
     const findOrganizationForServer = (serverIdNum, entries, currentOrg = null) => {
         for (const entry of entries) {
-            if (entry.type === "server" && entry.id === serverIdNum) {
+            if ((entry.type === "server" || entry.type === "pve-server") && entry.id === serverIdNum) {
                 return currentOrg;
             } else if (entry.type === "organization") {
                 const found = findOrganizationForServer(serverIdNum, entry.entries, entry);

@@ -14,6 +14,7 @@ app.get("/", async (req, res) => {
     const serverId = req.query["serverId"];
     const identityId = req.query["identityId"];
     const path = req.query["path"];
+    const connectionReason = req.query["connectionReason"];
 
     if (!sessionToken) {
         res.status(400).send("You need to provide the token in the 'sessionToken' parameter");
@@ -71,6 +72,7 @@ app.get("/", async (req, res) => {
         accountId: req.user.id,
         ip: req.ip || req.socket?.remoteAddress || 'unknown',
         userAgent: req.headers['user-agent'] || 'unknown',
+        connectionReason: connectionReason || null
     };
 
     const ssh = await prepareSSH(server, identity, null, res, userInfo);
@@ -101,6 +103,7 @@ app.get("/", async (req, res) => {
                     details: {
                         filePath: path,
                         fileSize: stats.size,
+                        connectionReason: connectionReason || null,
                     },
                     ipAddress: req.ip,
                     userAgent: req.headers['user-agent'],

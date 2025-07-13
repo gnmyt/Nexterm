@@ -115,7 +115,13 @@ const XtermRenderer = ({ session, disconnectFromServer, pve }) => {
 
         if (pve) {
             url = process.env.NODE_ENV === "production" ? `${window.location.host}/api/servers/pve-lxc` : "localhost:6989/api/servers/pve-lxc";
-            ws = new WebSocket(`${protocol}://${url}?sessionToken=${sessionToken}&serverId=${session.server}&containerId=${session.containerId}`);
+            
+            let wsUrl = `${protocol}://${url}?sessionToken=${sessionToken}&serverId=${session.server}&containerId=${session.containerId}`;
+            if (session.connectionReason) {
+                wsUrl += `&connectionReason=${encodeURIComponent(session.connectionReason)}`;
+            }
+            
+            ws = new WebSocket(wsUrl);
         } else {
             url = process.env.NODE_ENV === "production" ? `${window.location.host}/api/servers/sshd` : "localhost:6989/api/servers/sshd";
 

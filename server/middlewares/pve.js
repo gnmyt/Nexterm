@@ -2,7 +2,7 @@ const Session = require("../models/Session");
 const Account = require("../models/Account");
 const PVEServer = require("../models/PVEServer");
 const { validateServerAccess } = require("../controllers/server");
-const { createAuditLog, AUDIT_ACTIONS, RESOURCE_TYPES } = require("../controllers/audit");
+const { createAuditLog, AUDIT_ACTIONS, RESOURCE_TYPES, getOrganizationAuditSettingsInternal } = require("../controllers/audit");
 
 module.exports = async (ws, req) => {
     const authHeader = req.query["sessionToken"];
@@ -44,6 +44,14 @@ module.exports = async (ws, req) => {
     if (!((await validateServerAccess(req.user.id, server)).valid)) {
         ws.close(4005, "You don't have access to this server");
         return;
+    }
+
+    if (server.organizationId && req.user.id) {
+        const auditSettings = await getOrganizationAuditSettingsInternal(server.organizationId);
+        if (auditSettings?.requireConnectionReason && !connectionReason) {
+            ws.close(4008, "Connection reason required");
+            return;
+        }
     }
 
     console.log("Authorized connection to pve server " + server.ip + " with container " + containerId);
