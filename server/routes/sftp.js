@@ -1,4 +1,10 @@
 const prepareSSH = require("../utils/sshPreCheck");
+const {
+    createAuditLog,
+    AUDIT_ACTIONS,
+    RESOURCE_TYPES,
+    updateAuditLogWithSessionDuration,
+} = require("../controllers/audit");
 
 const deleteFolderRecursive = (sftp, folderPath, callback) => {
     sftp.readdir(folderPath, (err, list) => {
@@ -34,15 +40,15 @@ const searchDirectories = (sftp, searchPath, callback, maxResults = 20) => {
     const results = [];
     const searchQuery = searchPath.toLowerCase();
 
-    const isSearchingInside = searchPath.endsWith('/');
+    const isSearchingInside = searchPath.endsWith("/");
     let basePath, searchTerm;
 
     if (isSearchingInside) {
-        basePath = searchPath === '/' ? '/' : searchPath.slice(0, -1);
-        searchTerm = '';
+        basePath = searchPath === "/" ? "/" : searchPath.slice(0, -1);
+        searchTerm = "";
     } else {
-        const lastSlashIndex = searchPath.lastIndexOf('/');
-        basePath = lastSlashIndex === 0 ? '/' : searchPath.substring(0, lastSlashIndex);
+        const lastSlashIndex = searchPath.lastIndexOf("/");
+        basePath = lastSlashIndex === 0 ? "/" : searchPath.substring(0, lastSlashIndex);
         searchTerm = searchPath.substring(lastSlashIndex + 1).toLowerCase();
     }
 
@@ -53,9 +59,9 @@ const searchDirectories = (sftp, searchPath, callback, maxResults = 20) => {
             if (err || !list) return;
 
             list.forEach(file => {
-                if (!file.longname.startsWith('d')) return;
+                if (!file.longname.startsWith("d")) return;
 
-                const fullPath = currentPath === '/' ? `/${file.filename}` : `${currentPath}/${file.filename}`;
+                const fullPath = currentPath === "/" ? `/${file.filename}` : `${currentPath}/${file.filename}`;
                 const fileName = file.filename.toLowerCase();
 
                 if (isSearchingInside) {
@@ -74,12 +80,15 @@ const searchDirectories = (sftp, searchPath, callback, maxResults = 20) => {
         });
     };
 
-    searchRecursive(basePath || '/');
+    searchRecursive(basePath || "/");
 };
 
 module.exports = async (ws, req) => {
     const ssh = await prepareSSH(ws, req);
     if (!ssh) return;
+
+    req.user = req.user || {};
+    req.server = req.server || {};
 
     const OPERATIONS = {
         READY: 0x0,
@@ -97,8 +106,14 @@ module.exports = async (ws, req) => {
 
     let uploadStream = null;
 
-    ssh.on("error", () => {
+    ssh.on("error", async () => {
+        await updateAuditLogWithSessionDuration(ssh.auditLogId, ssh.connectionStartTime);
         ws.close();
+    });
+
+    ws.on("close", async () => {
+        await updateAuditLogWithSessionDuration(ssh.auditLogId, ssh.connectionStartTime);
+        ssh.end();
     });
 
     ssh.on("ready", () => {
@@ -196,6 +211,16 @@ module.exports = async (ws, req) => {
                                 uploadStream.end(() => {
                                     uploadStream = null;
                                     ws.send(Buffer.from([OPERATIONS.UPLOAD_FILE_END]));
+
+                                    createAuditLog({
+                                        accountId: req.user?.id,
+                                        organizationId: req.server?.organizationId,
+                                        action: AUDIT_ACTIONS.FILE_UPLOAD,
+                                        resource: RESOURCE_TYPES.FILE,
+                                        details: { filePath: payload.path },
+                                        ipAddress: req.ip,
+                                        userAgent: req.headers?.["user-agent"],
+                                    });
                                 });
                             } else {
                                 uploadStream = null;
@@ -230,6 +255,16 @@ module.exports = async (ws, req) => {
                                 return;
                             }
                             ws.send(Buffer.from([OPERATIONS.CREATE_FOLDER]));
+
+                            createAuditLog({
+                                accountId: req.user?.id,
+                                organizationId: req.server?.organizationId,
+                                action: AUDIT_ACTIONS.FOLDER_CREATE,
+                                resource: RESOURCE_TYPES.FOLDER,
+                                details: { folderPath: payload.path },
+                                ipAddress: req.ip,
+                                userAgent: req.headers?.["user-agent"],
+                            });
                         });
                         break;
 
@@ -240,6 +275,16 @@ module.exports = async (ws, req) => {
                                 return;
                             }
                             ws.send(Buffer.from([OPERATIONS.DELETE_FILE]));
+
+                            createAuditLog({
+                                accountId: req.user?.id,
+                                organizationId: req.server?.organizationId,
+                                action: AUDIT_ACTIONS.FILE_DELETE,
+                                resource: RESOURCE_TYPES.FILE,
+                                details: { filePath: payload.path },
+                                ipAddress: req.ip,
+                                userAgent: req.headers?.["user-agent"],
+                            });
                         });
                         break;
 
@@ -249,6 +294,16 @@ module.exports = async (ws, req) => {
                                 return;
                             }
                             ws.send(Buffer.from([OPERATIONS.DELETE_FOLDER]));
+
+                            createAuditLog({
+                                accountId: req.user?.id,
+                                organizationId: req.server?.organizationId,
+                                action: AUDIT_ACTIONS.FOLDER_DELETE,
+                                resource: RESOURCE_TYPES.FOLDER,
+                                details: { folderPath: payload.path },
+                                ipAddress: req.ip,
+                                userAgent: req.headers?.["user-agent"],
+                            });
                         });
                         break;
                     case OPERATIONS.RENAME_FILE:
@@ -257,6 +312,19 @@ module.exports = async (ws, req) => {
                                 return;
                             }
                             ws.send(Buffer.from([OPERATIONS.RENAME_FILE]));
+
+                            createAuditLog({
+                                accountId: req.user?.id,
+                                organizationId: req.server?.organizationId,
+                                action: AUDIT_ACTIONS.FILE_RENAME,
+                                resource: RESOURCE_TYPES.FILE,
+                                details: {
+                                    oldPath: payload.path,
+                                    newPath: payload.newPath,
+                                },
+                                ipAddress: req.ip,
+                                userAgent: req.headers?.["user-agent"],
+                            });
                         });
                         break;
 
