@@ -6,6 +6,7 @@ const { downloadBaseImage } = require("../utils/apps/pullImage");
 const { installDocker } = require("../utils/apps/installDocker");
 const { checkPermissions } = require("../utils/apps/checkPermissions");
 const { checkDistro } = require("../utils/apps/checkDistro");
+const { createAuditLog, AUDIT_ACTIONS, RESOURCE_TYPES } = require("../controllers/audit");
 
 const wait = () => new Promise(resolve => setTimeout(resolve, 500));
 
@@ -20,11 +21,30 @@ module.exports = async (ws, req) => {
     
     if (!authResult) return;
     
-    const { identity, ssh } = authResult;
+    const { identity, ssh, user, server } = authResult;
 
     const app = await getApp(req.query.appId);
     if (!app) {
         ws.close(4010, "The app does not exist");
+        return;
+    }
+
+    await createAuditLog({
+        accountId: user.id,
+        organizationId: server.organizationId,
+        action: AUDIT_ACTIONS.APP_INSTALL,
+        resource: RESOURCE_TYPES.APP,
+        resourceId: null,
+        details: {
+            appId: app.id,
+            appName: app.name,
+        },
+        ipAddress: req.ip || req.connection?.remoteAddress || 'unknown',
+        userAgent: req.headers['user-agent'] || 'unknown'
+    });
+
+    if (!ssh) {
+        ws.close(4009, "SSH connection failed");
         return;
     }
 
@@ -58,5 +78,10 @@ module.exports = async (ws, req) => {
             ws.send(`\x03${err.message}`);
             ssh.end();
         }
+    });
+
+    ssh.on("error", (error) => {
+        ws.send(`\x03SSH connection error: ${error.message}`);
+        ws.close(4005, "SSH connection failed");
     });
 };
