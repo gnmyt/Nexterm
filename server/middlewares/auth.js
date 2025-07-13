@@ -4,6 +4,7 @@ const Server = require("../models/Server");
 const Identity = require("../models/Identity");
 const { createRDPToken, createVNCToken } = require("../utils/tokenGenerator");
 const { validateServerAccess } = require("../controllers/server");
+const { getOrganizationAuditSettingsInternal } = require("../controllers/audit");
 
 module.exports.authenticate = async (req, res, next) => {
     const authHeader = req.header("authorization");
@@ -58,6 +59,11 @@ module.exports.authorizeGuacamole = async (req) => {
     const identity = await Identity.findByPk(query.identity || server.identities[0]);
     if (identity === null) return;
 
+    if (server.organizationId) {
+        const auditSettings = await getOrganizationAuditSettingsInternal(server.organizationId);
+        if (auditSettings?.requireConnectionReason && !query.connectionReason) return;
+    }
+
     console.log("Authorized connection to server " + server.ip + " with identity " + identity.name);
 
     let config = {};
@@ -69,14 +75,28 @@ module.exports.authorizeGuacamole = async (req) => {
         }
     }
 
+    let connectionConfig;
     switch (server.protocol) {
         case "rdp":
-            return createRDPToken(server.ip, server.port, identity.username, identity.password,
+            connectionConfig = createRDPToken(server.ip, server.port, identity.username, identity.password,
                 config.keyboardLayout || "en-us-qwerty");
+            break;
         case "vnc":
-            return createVNCToken(server.ip, server.port, identity.username, identity.password,
+            connectionConfig = createVNCToken(server.ip, server.port, identity.username, identity.password,
                 config.keyboardLayout || "en-us-qwerty");
+            break;
         default:
             return;
     }
+
+    if (connectionConfig) {
+        connectionConfig.user = req.user;
+        connectionConfig.server = server;
+        connectionConfig.identity = identity;
+        connectionConfig.ipAddress = req.ip || req.socket?.remoteAddress || 'unknown';
+        connectionConfig.userAgent = req.headers?.['user-agent'] || 'unknown';
+        connectionConfig.connectionReason = query.connectionReason || null;
+    }
+
+    return connectionConfig;
 };
