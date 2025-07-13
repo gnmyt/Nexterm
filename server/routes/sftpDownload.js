@@ -4,6 +4,7 @@ const Server = require("../models/Server");
 const Identity = require("../models/Identity");
 const Session = require("../models/Session");
 const Account = require("../models/Account");
+const { createAuditLog, AUDIT_ACTIONS, RESOURCE_TYPES } = require("../controllers/audit");
 const { validateServerAccess } = require("../controllers/server");
 
 const app = Router();
@@ -66,7 +67,13 @@ app.get("/", async (req, res) => {
     const identity = await Identity.findByPk(identityId || server.identities[0]);
     if (identity === null) return;
 
-    const ssh = await prepareSSH(server, identity, null, res);
+    const userInfo = {
+        accountId: req.user.id,
+        ip: req.ip || req.socket?.remoteAddress || 'unknown',
+        userAgent: req.headers['user-agent'] || 'unknown',
+    };
+
+    const ssh = await prepareSSH(server, identity, null, res, userInfo);
 
     if (!ssh) return;
 
@@ -85,6 +92,19 @@ app.get("/", async (req, res) => {
 
                 const readStream = sftp.createReadStream(path);
                 readStream.pipe(res);
+
+                createAuditLog({
+                    accountId: req.user.id,
+                    organizationId: server.organizationId,
+                    action: AUDIT_ACTIONS.FILE_DOWNLOAD,
+                    resource: RESOURCE_TYPES.FILE,
+                    details: {
+                        filePath: path,
+                        fileSize: stats.size,
+                    },
+                    ipAddress: req.ip,
+                    userAgent: req.headers['user-agent'],
+                });
             });
         });
     });
