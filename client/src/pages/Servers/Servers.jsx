@@ -8,6 +8,7 @@ import { DISCORD_URL, GITHUB_URL } from "@/App.jsx";
 import ServerDialog from "@/pages/Servers/components/ServerDialog";
 import ViewContainer from "@/pages/Servers/components/ViewContainer";
 import ProxmoxDialog from "@/pages/Servers/components/ProxmoxDialog";
+import SSHConfigImportDialog from "@/pages/Servers/components/SSHConfigImportDialog";
 import ConnectionReasonDialog from "@/pages/Servers/components/ConnectionReasonDialog";
 import { mdiStar } from "@mdi/js";
 import { siDiscord } from "simple-icons";
@@ -19,6 +20,7 @@ export const Servers = () => {
 
     const [serverDialogOpen, setServerDialogOpen] = useState(false);
     const [proxmoxDialogOpen, setProxmoxDialogOpen] = useState(false);
+    const [sshConfigImportDialogOpen, setSSHConfigImportDialogOpen] = useState(false);
     const [connectionReasonDialogOpen, setConnectionReasonDialogOpen] = useState(false);
     const [pendingConnection, setPendingConnection] = useState(null);
 
@@ -153,6 +155,11 @@ export const Servers = () => {
         setEditServerId(null);
     };
 
+    const closeSSHConfigImportDialog = () => {
+        setSSHConfigImportDialogOpen(false);
+        setCurrentFolderId(null);
+    };
+
     useEffect(() => {
         if (!servers) return;
 
@@ -214,6 +221,8 @@ export const Servers = () => {
             <ProxmoxDialog open={proxmoxDialogOpen} onClose={closePVEDialog}
                            currentFolderId={currentFolderId}
                            editServerId={editServerId} />
+            <SSHConfigImportDialog open={sshConfigImportDialogOpen} onClose={closeSSHConfigImportDialog}
+                                   currentFolderId={currentFolderId} />
             <ConnectionReasonDialog
                 isOpen={connectionReasonDialogOpen}
                 onClose={handleConnectionReasonCanceled}
@@ -226,6 +235,7 @@ export const Servers = () => {
             />
             <ServerList setServerDialogOpen={() => setServerDialogOpen(true)} connectToServer={connectToServer}
                         connectToPVEServer={connectToPVEServer} setProxmoxDialogOpen={() => setProxmoxDialogOpen(true)}
+                        setSSHConfigImportDialogOpen={() => setSSHConfigImportDialogOpen(true)}
                         setCurrentFolderId={setCurrentFolderId} setEditServerId={setEditServerId} openSFTP={openSFTP} />
             {activeSessions.length === 0 && <div className="welcome-area">
                 <div className="area-left">

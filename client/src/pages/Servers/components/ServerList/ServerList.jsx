@@ -48,7 +48,7 @@ const applyRenameState = (folderId) => (entry) => {
 };
 
 export const ServerList = ({
-                               setServerDialogOpen, setCurrentFolderId, setProxmoxDialogOpen,
+                               setServerDialogOpen, setCurrentFolderId, setProxmoxDialogOpen, setSSHConfigImportDialogOpen,
                                setEditServerId, connectToServer, connectToPVEServer, openSFTP,
                            }) => {
     const { servers } = useContext(ServerContext);
@@ -181,7 +181,8 @@ export const ServerList = ({
                         <ContextMenu position={contextMenuPosition} type={contextClickedType} id={contextClickedId}
                                      setRenameStateId={setRenameStateId} setServerDialogOpen={setServerDialogOpen}
                                      setCurrentFolderId={setCurrentFolderId} setEditServerId={setEditServerId}
-                                     setProxmoxDialogOpen={setProxmoxDialogOpen} openSFTP={openSFTP}
+                                     setProxmoxDialogOpen={setProxmoxDialogOpen} setSSHConfigImportDialogOpen={setSSHConfigImportDialogOpen}
+                                     openSFTP={openSFTP}
                                      connectToServer={connectToServer} connectToPVEServer={connectToPVEServer} />
                     )}
                 </div>
