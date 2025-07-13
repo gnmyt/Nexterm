@@ -44,10 +44,6 @@ module.exports = {
                     type: DataTypes.STRING,
                     allowNull: true,
                 },
-                reason: {
-                    type: DataTypes.TEXT,
-                    allowNull: true,
-                },
                 timestamp: {
                     type: DataTypes.TEXT,
                     allowNull: false,

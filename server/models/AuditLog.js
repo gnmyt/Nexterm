@@ -40,10 +40,6 @@ module.exports = db.define("audit_logs", {
         type: Sequelize.STRING,
         allowNull: true,
     },
-    reason: {
-        type: Sequelize.TEXT,
-        allowNull: true,
-    },
     timestamp: {
         type: Sequelize.TEXT,
         allowNull: false,
