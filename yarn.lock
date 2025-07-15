@@ -785,7 +785,7 @@
   resolved "https://registry.yarnpkg.com/@vue/shared/-/shared-3.5.13.tgz#87b309a6379c22b926e696893237826f64339b6f"
   integrity sha512-/hnE/qP5ZoGpol0a5mDi45bOd7t3tjYJBjsgCsivow7D48cJeV5l05RD82lPqi7gRiphZM37rnhW1l6ZoCNNnQ==
 
-"@vueuse/core@12.4.0", "@vueuse/core@^12.4.0":
+"@vueuse/core@12.4.0":
   version "12.4.0"
   resolved "https://registry.yarnpkg.com/@vueuse/core/-/core-12.4.0.tgz#7a17f12fe941a16fb2ca9dbd60106975290bb34d"
   integrity sha512-XnjQYcJwCsyXyIafyA6SvyN/OBtfPnjvJmbxNxQjCcyWD198urwm5TYvIUUyAxEAN0K7HJggOgT15cOlWFyLeA==
@@ -795,7 +795,7 @@
     "@vueuse/shared" "12.4.0"
     vue "^3.5.13"
 
-"@vueuse/core@^12.5.0":
+"@vueuse/core@^12.4.0", "@vueuse/core@^12.5.0":
   version "12.8.2"
   resolved "https://registry.yarnpkg.com/@vueuse/core/-/core-12.8.2.tgz#007c6dd29a7d1f6933e916e7a2f8ef3c3f968eaa"
   integrity sha512-HbvCmZdzAu3VGi/pWYm5Ut+Kd9mn1ZHnn4L5G8kOQTPs/IwIAmJoBrmYk2ckLArgMXZj0AW3n5CAejLUO+PhdQ==
@@ -2277,6 +2277,11 @@ mark.js@8.11.1:
   resolved "https://registry.yarnpkg.com/mark.js/-/mark.js-8.11.1.tgz#180f1f9ebef8b0e638e4166ad52db879beb2ffc5"
   integrity sha512-1I+1qpDt4idfgLQG+BNWmrqku+7/2bi5nLf4YwF8y8zXvmfiTBY3PV3ZibfrjBueCByROpuBjLLFCajqkgYoLQ==
 
+markdown-it-link-attributes@^4.0.1:
+  version "4.0.1"
+  resolved "https://registry.yarnpkg.com/markdown-it-link-attributes/-/markdown-it-link-attributes-4.0.1.tgz#25751f2cf74fd91f0a35ba7b3247fa45f2056d88"
+  integrity sha512-pg5OK0jPLg62H4k7M9mRJLT61gUp9nvG0XveKYHMOOluASo9OEF13WlXrpAp2aj35LbedAy3QOCgQCw0tkLKAQ==
+
 math-intrinsics@^1.1.0:
   version "1.1.0"
   resolved "https://registry.yarnpkg.com/math-intrinsics/-/math-intrinsics-1.1.0.tgz#a0dd74be81e2aa5c2f27e65ce283605ee4e2b7f9"
@@ -3666,15 +3671,16 @@ vite@^5.4.14:
   optionalDependencies:
     fsevents "~2.3.3"
 
-vitepress-openapi@^0.1.1:
-  version "0.1.1"
-  resolved "https://registry.yarnpkg.com/vitepress-openapi/-/vitepress-openapi-0.1.1.tgz#37603662d7b8a4ede7611a0a6e3ec6ff06fe0e54"
-  integrity sha512-GObk+wDJ6L4AQcZiCjohvtcU/0bDaLiYl3BPAHJaTG6LWHDsitm0is197tsBv4KVdIl5444mIK6jVwCSFALAfQ==
+vitepress-openapi@^0.1.2:
+  version "0.1.2"
+  resolved "https://registry.yarnpkg.com/vitepress-openapi/-/vitepress-openapi-0.1.2.tgz#b90f2a2b9adec906d826b172846a80a11e083390"
+  integrity sha512-xGMdpX2hjf5jKylUbluoitQP6XkAksvA6Q8NS74xCWJKXKgjMeDisIFT7hQYEZvyH57lu6JRc+cSIVK/yJPoxg==
   dependencies:
     "@vueuse/core" "^13.1.0"
     class-variance-authority "^0.7.1"
     clsx "^2.1.1"
     lucide-vue-next "^0.503.0"
+    markdown-it-link-attributes "^4.0.1"
     reka-ui "^2.2.0"
 
 vitepress@^1.6.3:
