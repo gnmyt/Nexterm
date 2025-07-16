@@ -1,5 +1,6 @@
 import "./styles.sass";
 import { useEffect, useState, useCallback, useMemo } from "react";
+import { useTranslation } from "react-i18next";
 import { getRequest, patchRequest, postRequest } from "@/common/utils/RequestUtil.js";
 import Button from "@/common/components/Button";
 import ToggleSwitch from "@/common/components/ToggleSwitch";
@@ -10,6 +11,7 @@ import { useAI } from "@/common/contexts/AIContext.jsx";
 import { mdiRobot, mdiTestTube, mdiEye, mdiEyeOff } from "@mdi/js";
 
 export const AI = () => {
+    const { t } = useTranslation();
     const [settings, setSettings] = useState({
         enabled: false,
         provider: "",
@@ -28,24 +30,24 @@ export const AI = () => {
     const { loadAISettings } = useAI();
 
     const providerOptions = [
-        { value: "", label: "Select a provider..." },
+        { value: "", label: t("settings.ai.selectProvider") },
         { value: "ollama", label: "Ollama" },
         { value: "openai", label: "OpenAI" },
     ];
 
     const modelOptions = useMemo(() => {
-        if (!settings.provider) return [{ value: "", label: "Select a model..." }];
-        if (loadingModels) return [{ value: "", label: "Loading models..." }];
+        if (!settings.provider) return [{ value: "", label: t("settings.ai.selectModel") }];
+        if (loadingModels) return [{ value: "", label: t("settings.ai.loadingModels") }];
 
         if (availableModels.length > 0) {
-            return [{ value: "", label: "Select a model..." }, ...availableModels.map(model => ({
+            return [{ value: "", label: t("settings.ai.selectModel") }, ...availableModels.map(model => ({
                 value: model,
                 label: model,
             }))];
         } else {
-            return [{ value: "", label: "No models available" }];
+            return [{ value: "", label: t("settings.ai.noModels") }];
         }
-    }, [settings.provider, loadingModels, availableModels]);
+    }, [settings.provider, loadingModels, availableModels, t]);
 
     const loadModels = useCallback(async () => {
         if (!settings.provider) return;
@@ -67,7 +69,7 @@ export const AI = () => {
             const response = await getRequest("ai");
             setSettings(prev => ({ ...prev, ...response }));
         } catch (error) {
-            sendToast("Error", "Failed to load AI settings");
+            sendToast(t("common.error"), t("settings.ai.errors.loadSettings"));
         } finally {
             setLoading(false);
         }
@@ -95,11 +97,11 @@ export const AI = () => {
             if (settings.provider) loadModels();
 
             setSettings(prev => ({ ...prev, ...response }));
-            sendToast("Success", "AI settings saved successfully");
+            sendToast(t("common.success"), t("settings.ai.saveSuccess"));
 
             loadAISettings();
         } catch (error) {
-            sendToast("Error", "Failed to save AI settings");
+            sendToast(t("common.error"), t("settings.ai.errors.saveSettings"));
         } finally {
             setSaving(false);
         }
@@ -109,9 +111,9 @@ export const AI = () => {
         try {
             setTesting(true);
             await postRequest("ai/test");
-            sendToast("Success", "AI connection test successful");
+            sendToast(t("common.success"), t("settings.ai.testSuccess"));
         } catch (error) {
-            sendToast("Error", error.message || "AI connection test failed");
+            sendToast(t("common.error"), error.message || t("settings.ai.errors.testConnection"));
         } finally {
             setTesting(false);
         }
@@ -150,18 +152,18 @@ export const AI = () => {
         }
     }, [settings.provider, loadModels]);
 
-    if (loading) return <div className="ai-settings-loading">Loading AI settings...</div>;
+    if (loading) return <div className="ai-settings-loading">{t("settings.ai.loading")}</div>;
 
     return (
         <div className="ai-settings">
             <div className="settings-section">
-                <h2>AI Assistant Configuration</h2>
-                <p>Configure AI-powered command generation for terminal sessions and snippet creation.</p>
+                <h2>{t("settings.ai.title")}</h2>
+                <p>{t("settings.ai.description")}</p>
 
                 <div className="setting-item">
                     <div className="setting-label">
-                        <h4>Enable AI Assistant</h4>
-                        <p>Allow users to generate commands using AI</p>
+                        <h4>{t("settings.ai.enable.title")}</h4>
+                        <p>{t("settings.ai.enable.description")}</p>
                     </div>
                     <ToggleSwitch onChange={(enabled) => handleInputChange("enabled", enabled)} id="ai-enabled"
                                   checked={settings.enabled} />
@@ -171,8 +173,8 @@ export const AI = () => {
                     <>
                         <div className="setting-item">
                             <div className="setting-label">
-                                <h4>AI Provider</h4>
-                                <p>Choose your AI service provider</p>
+                                <h4>{t("settings.ai.provider.title")}</h4>
+                                <p>{t("settings.ai.provider.description")}</p>
                             </div>
                             <div className="setting-input">
                                 <SelectBox options={providerOptions} selected={settings.provider}
@@ -184,8 +186,8 @@ export const AI = () => {
                             <>
                                 <div className="setting-item">
                                     <div className="setting-label">
-                                        <h4>Model</h4>
-                                        <p>Select the AI model to use for command generation</p>
+                                        <h4>{t("settings.ai.model.title")}</h4>
+                                        <p>{t("settings.ai.model.description")}</p>
                                     </div>
                                     <div className="setting-input">
                                         <SelectBox setSelected={(model) => handleInputChange("model", model)}
@@ -197,8 +199,8 @@ export const AI = () => {
                                 {settings.provider === "openai" && (
                                     <div className="setting-item">
                                         <div className="setting-label">
-                                            <h4>API Key</h4>
-                                            <p>Your OpenAI API key for authentication</p>
+                                            <h4>{t("settings.ai.apiKey.title")}</h4>
+                                            <p>{t("settings.ai.apiKey.description")}</p>
                                         </div>
                                         <div className="setting-input api-key-input">
                                             <IconInput
@@ -206,7 +208,7 @@ export const AI = () => {
                                                 type={showApiKey ? "text" : "password"}
                                                 value={settings.apiKey}
                                                 setValue={(value) => handleInputChange("apiKey", value)}
-                                                placeholder={settings.hasApiKey ? "API key is set (leave blank to keep current)" : "Enter your OpenAI API key"}
+                                                placeholder={settings.hasApiKey ? t("settings.ai.apiKey.setPlaceholder") : t("settings.ai.apiKey.placeholder")}
                                                 onIconClick={() => setShowApiKey(!showApiKey)}
                                             />
                                         </div>
@@ -216,13 +218,13 @@ export const AI = () => {
                                 {settings.provider === "ollama" && (
                                     <div className="setting-item">
                                         <div className="setting-label">
-                                            <h4>Ollama URL</h4>
-                                            <p>The URL where your Ollama instance is running</p>
+                                            <h4>{t("settings.ai.ollamaUrl.title")}</h4>
+                                            <p>{t("settings.ai.ollamaUrl.description")}</p>
                                         </div>
                                         <div className="setting-input">
                                             <IconInput icon={mdiRobot} value={settings.apiUrl}
                                                        setValue={(value) => handleInputChange("apiUrl", value)}
-                                                       placeholder="http://localhost:11434" />
+                                                       placeholder={t("settings.ai.ollamaUrl.placeholder")} />
                                         </div>
                                     </div>
                                 )}
@@ -233,10 +235,10 @@ export const AI = () => {
             </div>
 
             <div className="settings-actions">
-                <Button text="Save Settings" icon={mdiRobot} onClick={saveSettings} disabled={saving} type="primary" />
+                <Button text={t("settings.ai.saveSettings")} icon={mdiRobot} onClick={saveSettings} disabled={saving} type="primary" />
 
                 {isConfigurationValid() && (
-                    <Button text={testing ? "Testing..." : "Test Connection"} icon={mdiTestTube}
+                    <Button text={testing ? t("settings.ai.testing") : t("settings.ai.testConnection")} icon={mdiTestTube}
                             onClick={testConnection} disabled={testing} type="secondary" />
                 )}
             </div>

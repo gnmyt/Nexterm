@@ -2,15 +2,17 @@ import "./styles.sass";
 import { useTerminalSettings } from "@/common/contexts/TerminalSettingsContext.jsx";
 import SelectBox from "@/common/components/SelectBox";
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 
 export const Terminal = () => {
+    const { t } = useTranslation();
     const {
         selectedTheme, setSelectedTheme, selectedFont, setSelectedFont,
         fontSize, setFontSize, cursorStyle, setCursorStyle, cursorBlink, setCursorBlink,
         getAvailableThemes, getAvailableFonts, getTerminalTheme, getCursorStyles,
     } = useTerminalSettings();
 
-    const [previewText] = useState("$ echo 'Hi, Nexterm!'\nHi, Nexterm!\n$ ");
+    const [previewText] = useState(t("settings.terminal.preview.text"));
     const themes = getAvailableThemes();
     const fonts = getAvailableFonts();
     const cursorStyles = getCursorStyles();
@@ -21,7 +23,10 @@ export const Terminal = () => {
         .map(size => ({ label: `${size}px`, value: size }));
     const cursorStyleOptions = cursorStyles.map(style => ({ label: style.name, value: style.value }));
 
-    const cursorBlinkOptions = [{ label: "Enabled", value: "true" }, { label: "Disabled", value: "false" }];
+    const cursorBlinkOptions = [
+        { label: t("settings.terminal.cursor.enabled"), value: "true" }, 
+        { label: t("settings.terminal.cursor.disabled"), value: "false" }
+    ];
 
     const fontStyle = { fontFamily: selectedFont, fontSize: `${fontSize}px` };
 
@@ -70,21 +75,21 @@ export const Terminal = () => {
 
     return (
         <div className="terminal-settings-page">
-            {renderSection("Font", "Customize the font family and size for your terminal.", (
+            {renderSection(t("settings.terminal.font.title"), t("settings.terminal.font.description"), (
                 <div className="font-settings">
-                    {renderFontOption("Font Family", fontOptions, selectedFont, setSelectedFont)}
-                    {renderFontOption("Font Size", fontSizeOptions, fontSize, setFontSize)}
+                    {renderFontOption(t("settings.terminal.font.fontFamily"), fontOptions, selectedFont, setSelectedFont)}
+                    {renderFontOption(t("settings.terminal.font.fontSize"), fontSizeOptions, fontSize, setFontSize)}
                 </div>
             ))}
 
-            {renderSection("Cursor", "Customize the appearance and behavior of your terminal cursor.", (
+            {renderSection(t("settings.terminal.cursor.title"), t("settings.terminal.cursor.description"), (
                 <div className="cursor-settings">
-                    {renderFontOption("Cursor Style", cursorStyleOptions, cursorStyle, setCursorStyle)}
-                    {renderFontOption("Cursor Blinking", cursorBlinkOptions, cursorBlink.toString(), (value) => setCursorBlink(value === "true"))}
+                    {renderFontOption(t("settings.terminal.cursor.cursorStyle"), cursorStyleOptions, cursorStyle, setCursorStyle)}
+                    {renderFontOption(t("settings.terminal.cursor.cursorBlinking"), cursorBlinkOptions, cursorBlink.toString(), (value) => setCursorBlink(value === "true"))}
                 </div>
             ))}
 
-            {renderSection("Theme", "Choose a color theme for your terminal.", (
+            {renderSection(t("settings.terminal.theme.title"), t("settings.terminal.theme.description"), (
                 <div className="theme-cards">
                     {themes.map(theme => (
                         <div key={theme.key} className={`theme-card ${selectedTheme === theme.key ? "selected" : ""}`}

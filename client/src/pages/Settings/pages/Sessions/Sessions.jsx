@@ -5,9 +5,10 @@ import { deleteRequest, getRequest } from "@/common/utils/RequestUtil.js";
 import { UAParser } from "ua-parser-js";
 import Icon from "@mdi/react";
 import { mdiCellphone, mdiMonitor, mdiTablet } from "@mdi/js";
+import { useTranslation } from "react-i18next";
 
 export const Sessions = () => {
-
+    const { t } = useTranslation();
     const [sessions, setSessions] = useState([]);
     const {logout: logoutMyself, login, user} = useContext(UserContext);
 
@@ -57,16 +58,20 @@ export const Sessions = () => {
                         </div>
                         <div className="session-details">
                             <h2>
-                                {parser.setUA(session.userAgent).getBrowser().name} {parser.setUA(session.userAgent).getBrowser().version}
-                                &nbsp;on {parser.setUA(session.userAgent).getOS().name} {parser.setUA(session.userAgent).getOS().version}
+                                {t("settings.sessions.browserOn", {
+                                    browser: parser.setUA(session.userAgent).getBrowser().name,
+                                    version: parser.setUA(session.userAgent).getBrowser().version,
+                                    os: parser.setUA(session.userAgent).getOS().name,
+                                    osVersion: parser.setUA(session.userAgent).getOS().version
+                                })}
                             </h2>
-                            {!session.current && <p>Last activity: {new Date(session.lastActivity).toLocaleString()} from {session.ip}</p>}
-                            {session.current && <p>Current session</p>}
+                            {!session.current && <p>{t("settings.sessions.lastActivity", { date: new Date(session.lastActivity).toLocaleString(), ip: session.ip })}</p>}
+                            {session.current && <p>{t("settings.sessions.currentSession")}</p>}
                         </div>
                     </div>
                     <div className="session-actions">
                         <button className="btn btn-danger" onClick={() => session.current ? logoutMyself() : logout(session.id)}>
-                            {session.current ? "Logout" : "Revoke"}
+                            {session.current ? t("settings.sessions.logout") : t("settings.sessions.revoke")}
                         </button>
                     </div>
                 </div>

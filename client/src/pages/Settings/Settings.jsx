@@ -11,25 +11,27 @@ import Organizations from "@/pages/Settings/pages/Organizations";
 import AI from "@/pages/Settings/pages/AI";
 import Identities from "@/pages/Settings/pages/Identities";
 import Terminal from "@/pages/Settings/pages/Terminal";
+import { useTranslation } from "react-i18next";
 
 export const Settings = () => {
+    const { t } = useTranslation();
     const location = useLocation();
 
     const userPages = [
-        { title: "Account", icon: mdiAccountCircleOutline, content: <Account /> },
-        { title: "Terminal", icon: mdiConsole, content: <Terminal /> },
-        { title: "Identities", icon: mdiKeyVariant, content: <Identities /> },
-        { title: "Sessions", icon: mdiClockStarFourPointsOutline, content: <Sessions /> },
-        { title: "Organizations", icon: mdiDomain, content: <Organizations /> }
+        { title: t("settings.pages.account"), routeKey: "account", icon: mdiAccountCircleOutline, content: <Account /> },
+        { title: t("settings.pages.terminal"), routeKey: "terminal", icon: mdiConsole, content: <Terminal /> },
+        { title: t("settings.pages.identities"), routeKey: "identities", icon: mdiKeyVariant, content: <Identities /> },
+        { title: t("settings.pages.sessions"), routeKey: "sessions", icon: mdiClockStarFourPointsOutline, content: <Sessions /> },
+        { title: t("settings.pages.organizations"), routeKey: "organizations", icon: mdiDomain, content: <Organizations /> }
     ];
 
     const adminPages = [
-        { title: "Users", icon: mdiAccountGroup, content: <Users /> },
-        { title: "Authentication", icon: mdiShieldAccountOutline, content: <Authentication /> },
-        { title: "AI", icon: mdiCreationOutline, content: <AI /> }
+        { title: t("settings.pages.users"), routeKey: "users", icon: mdiAccountGroup, content: <Users /> },
+        { title: t("settings.pages.authentication"), routeKey: "authentication", icon: mdiShieldAccountOutline, content: <Authentication /> },
+        { title: t("settings.pages.ai"), routeKey: "ai", icon: mdiCreationOutline, content: <AI /> }
     ];
 
-    const currentPage = [...userPages, ...adminPages].find(page => location.pathname.endsWith(page.title.toLowerCase()));
+    const currentPage = [...userPages, ...adminPages].find(page => location.pathname.endsWith(page.routeKey));
 
     if (!currentPage) return <Navigate to="/settings/account" />;
     

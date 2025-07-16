@@ -9,9 +9,11 @@ import InviteMemberDialog from "./components/InviteMemberDialog";
 import MemberList from "./components/MemberList";
 import OrganizationAuditSettings from "./components/OrganizationAuditSettings";
 import ActionConfirmDialog from "@/common/components/ActionConfirmDialog";
+import { useTranslation } from "react-i18next";
 import "./styles.sass";
 
 export const Organizations = () => {
+    const { t } = useTranslation();
     const { sendToast } = useToast();
 
     const [organizations, setOrganizations] = useState([]);
@@ -64,13 +66,13 @@ export const Organizations = () => {
             await postRequest(`organizations/invitations/${organizationId}/respond`, { accept });
             fetchPendingInvitations();
             if (accept) {
-                sendToast("Success", "Invitation accepted");
+                sendToast("Success", t("common.messages.invitationAccepted"));
                 fetchOrganizations();
             } else {
-                sendToast("Success", "Invitation declined");
+                sendToast("Success", t("common.messages.invitationDeclined"));
             }
         } catch (error) {
-            sendToast("Error", "Failed to process invitation");
+            sendToast("Error", t("common.messages.invitationError"));
         }
     };
 
@@ -109,14 +111,14 @@ export const Organizations = () => {
             async () => {
                 try {
                     await deleteRequest(`organizations/${orgId}`);
-                    sendToast("Success", "Organization deleted successfully");
+                    sendToast("Success", t("common.messages.organizationDeleted"));
                     fetchOrganizations();
                     setExpandedOrgId(null);
                 } catch (error) {
-                    sendToast("Error", "Failed to delete organization");
+                    sendToast("Error", t("common.messages.organizationDeleteError"));
                 }
             },
-            "This will permanently delete the organization and remove all members. This action cannot be undone.",
+            t("settings.organizations.deleteConfirmation"),
         );
     };
 
@@ -126,28 +128,28 @@ export const Organizations = () => {
             async () => {
                 try {
                     await postRequest(`organizations/${orgId}/leave`);
-                    sendToast("Success", "You have left the organization");
+                    sendToast("Success", t("common.messages.leftOrganization"));
                     fetchOrganizations();
                     setExpandedOrgId(null);
                 } catch (error) {
-                    sendToast("Error", "Failed to leave organization");
+                    sendToast("Error", t("common.messages.leaveOrganizationError"));
                 }
             },
-            "Are you sure you want to leave this organization?",
+            t("settings.organizations.leaveConfirmation"),
         );
     };
 
     return (
         <div className="organizations-page">
             <div className="org-header">
-                <h2>Your Organizations</h2>
-                <Button text="Create Organization" icon={mdiPlus} onClick={() => setCreateDialogOpen(true)} />
+                <h2>{t("settings.organizations.title")}</h2>
+                <Button text={t("settings.organizations.createOrganization")} icon={mdiPlus} onClick={() => setCreateDialogOpen(true)} />
             </div>
 
             {organizations.length === 0 ? (
                 <div className="no-organizations">
-                    <p>You don't have any organizations yet.</p>
-                    <p>Create one to start collaborating with your team.</p>
+                    <p>{t("settings.organizations.noOrganizations")}</p>
+                    <p>{t("settings.organizations.noOrganizationsDescription")}</p>
                 </div>
             ) : (
                 <div className="vertical-list">
@@ -169,12 +171,12 @@ export const Organizations = () => {
                                 <div className="right-section">
                                     {isOrgOwner(org) ? (
                                         <>
-                                            <Button text="Invite" onClick={(e) => handleInviteMember(org, e)} />
-                                            <Button text="Delete" type="danger"
+                                            <Button text={t("settings.organizations.invite")} onClick={(e) => handleInviteMember(org, e)} />
+                                            <Button text={t("settings.organizations.delete")} type="danger"
                                                     onClick={(e) => handleDeleteOrg(org.id, e)} />
                                         </>
                                     ) : (
-                                        <Button text="Leave" type="danger" onClick={(e) => handleLeaveOrg(org.id, e)} />
+                                        <Button text={t("settings.organizations.leave")} type="danger" onClick={(e) => handleLeaveOrg(org.id, e)} />
                                     )}
                                 </div>
                             </div>
@@ -185,14 +187,14 @@ export const Organizations = () => {
                                             className={`tab-header ${(activeTab[org.id] || "members") === "members" ? "active" : ""}`}
                                             onClick={() => setActiveTab(prev => ({ ...prev, [org.id]: "members" }))}>
                                             <Icon path={mdiDomain} />
-                                            <span>Members</span>
+                                            <span>{t("settings.organizations.members")}</span>
                                         </div>
                                         {isOrgOwner(org) && (
                                             <div
                                                 className={`tab-header ${activeTab[org.id] === "audit" ? "active" : ""}`}
                                                 onClick={() => setActiveTab(prev => ({ ...prev, [org.id]: "audit" }))}>
                                                 <Icon path={mdiShieldCheckOutline} />
-                                                <span>Audit Settings</span>
+                                                <span>{t("settings.organizations.auditSettings")}</span>
                                             </div>
                                         )}
                                     </div>
@@ -218,7 +220,7 @@ export const Organizations = () => {
 
             {pendingInvitations.length > 0 && (
                 <div className="pending-invitations">
-                    <h2>Pending Invitations</h2>
+                    <h2>{t("settings.organizations.pendingInvitations")}</h2>
                     <div className="vertical-list">
                         {pendingInvitations.map((invite) => (
                             <div key={invite.id} className="item">
@@ -228,7 +230,7 @@ export const Organizations = () => {
                                     </div>
                                     <div className="details">
                                         <h3>{invite.organization.name}</h3>
-                                        <p>Invited by: {invite.invitedBy.name}</p>
+                                        <p>{t("settings.organizations.invitedBy", { name: invite.invitedBy.name })}</p>
                                     </div>
                                 </div>
                                 <div className="right-section">

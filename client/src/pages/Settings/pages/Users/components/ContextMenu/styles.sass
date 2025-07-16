@@ -1,0 +1,31 @@
+@use "@/common/styles/colors"
+
+.context-menu
+  background-color: colors.$darker-gray
+  backdrop-filter: blur(1rem)
+  border: 2px solid colors.$dark-gray
+  border-radius: 0.5rem
+  padding: 0.5rem
+  position: fixed
+  z-index: 10000
+
+  .context-item
+    color: colors.$white
+    padding: 0.5rem 1rem
+    cursor: pointer
+    transition: background-color 0.2s
+    border-radius: 0.5rem
+    user-select: none
+    display: flex
+    align-items: center
+
+    svg
+      width: 1rem
+      height: 1rem
+      margin-right: 0.5rem
+
+    p
+      margin: 0
+
+    &:hover
+      background-color: colors.$dark-gray

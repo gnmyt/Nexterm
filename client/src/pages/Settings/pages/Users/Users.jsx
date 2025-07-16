@@ -11,9 +11,11 @@ import {
     mdiShieldAccount,
 } from "@mdi/js";
 import CreateUserDialog from "./components/CreateUserDialog";
-import ContextMenu from "@/pages/Settings/pages/Users/components/ContextMenu";
+import ContextMenu from "./components/ContextMenu";
+import { useTranslation } from "react-i18next";
 
 export const Users = () => {
+    const { t } = useTranslation();
     const [users, setUsers] = useState([]);
     const { user } = useContext(UserContext);
 
@@ -64,8 +66,8 @@ export const Users = () => {
                                 loadUsers={loadUsers} />
 
             <div className="user-title">
-                <h2>{users.length} users</h2>
-                <Button onClick={() => setCreateUserDialogOpen(true)} text="Create new user" />
+                <h2>{t("settings.users.title", { count: users.length })}</h2>
+                <Button onClick={() => setCreateUserDialogOpen(true)} text={t("settings.users.createNewUser")} />
             </div>
             {users.map(currentUser => (
                 <div key={currentUser.id} className="user-item">
@@ -76,7 +78,7 @@ export const Users = () => {
                     <h2>{currentUser.username}</h2>
                     <div className={"totp" + (currentUser.totpEnabled ? " totp-enabled" : "")}>
                         <Icon path={mdiLock} />
-                        <h2>2FA {currentUser.totpEnabled ? "enabled" : "disabled"}</h2>
+                        <h2>{currentUser.totpEnabled ? t("settings.users.twoFactorEnabled") : t("settings.users.twoFactorDisabled")}</h2>
                     </div>
                     <Icon path={mdiDotsVertical} className="menu" onClick={(e) => openContextMenu(e, currentUser.id)} />
                 </div>
