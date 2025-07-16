@@ -12,9 +12,11 @@ import {
 import PageHeader from "@/common/components/PageHeader";
 import AuditTable from "./components/AuditTable";
 import AuditFilters from "./components/AuditFilters";
+import { useTranslation } from "react-i18next";
 import "./styles.sass";
 
 export const Audit = () => {
+    const { t } = useTranslation();
     const { sendToast } = useToast();
     const [auditLogs, setAuditLogs] = useState([]);
     const [loading, setLoading] = useState(false);
@@ -46,9 +48,9 @@ export const Audit = () => {
             setMetadata(metadataRes);
             setOrganizations(orgsRes);
         } catch (error) {
-            sendToast("Error", "Failed to load audit data");
+            sendToast("Error", t('audit.errors.failedToLoadData'));
         }
-    }, [sendToast]);
+    }, [sendToast, t]);
 
     const fetchAuditLogs = useCallback(async () => {
         setLoading(true);
@@ -62,12 +64,12 @@ export const Audit = () => {
             setAuditLogs(response.logs);
             setTotal(response.total);
         } catch (error) {
-            sendToast("Error", "Failed to load audit logs");
+            sendToast("Error", t('audit.errors.failedToLoadLogs'));
             setAuditLogs([]);
         } finally {
             setLoading(false);
         }
-    }, [filters, sendToast]);
+    }, [filters, sendToast, t]);
 
     useEffect(() => {
         fetchData();
@@ -96,8 +98,8 @@ export const Audit = () => {
 
     return (
         <div className="audit-page">
-            <PageHeader icon={mdiShieldCheckOutline} title="Audit Logs"
-                        subtitle="Track and monitor all activities across your infrastructure" />
+            <PageHeader icon={mdiShieldCheckOutline} title={t('audit.page.title')}
+                        subtitle={t('audit.page.subtitle')} />
             <div className="audit-content">
                 <AuditFilters filters={filters} metadata={metadata} organizations={organizations}
                               onChange={handleFilterChange} />
