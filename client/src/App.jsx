@@ -4,17 +4,19 @@ import "@fontsource/plus-jakarta-sans/600.css";
 import "@fontsource/plus-jakarta-sans/700.css";
 import "@fontsource/plus-jakarta-sans/800.css";
 import { createBrowserRouter, Navigate, RouterProvider } from "react-router-dom";
-import Root from "@/common/layouts/Root.jsx";
-import Servers from "@/pages/Servers";
 import "@/common/styles/main.sass";
-import Settings from "@/pages/Settings";
-import Apps from "@/pages/Apps";
-import Snippets from "@/pages/Snippets";
-import Monitoring from "@/pages/Monitoring";
-import Audit from "@/pages/Audit";
+import { lazy } from "react";
+import Root from "@/common/layouts/Root.jsx";
+
+const Servers = lazy(() => import("@/pages/Servers"));
+const Settings = lazy(() => import("@/pages/Settings"));
+const Apps = lazy(() => import("@/pages/Apps"));
+const Snippets = lazy(() => import("@/pages/Snippets"));
+const Monitoring = lazy(() => import("@/pages/Monitoring"));
+const Audit = lazy(() => import("@/pages/Audit"));
 
 export const GITHUB_URL = "https://github.com/gnmyt/Nexterm";
-export const DISCORD_URL = "https://dc.gnmyt.dev/";
+export const DISCORD_URL = "https://dc.gnm.dev/";
 
 const App = () => {
     const router = createBrowserRouter([

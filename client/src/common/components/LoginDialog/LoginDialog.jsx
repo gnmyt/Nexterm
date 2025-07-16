@@ -1,5 +1,5 @@
 import { DialogProvider } from "@/common/components/Dialog";
-import NextermLogo from "@/common/img/logo.png";
+import NextermLogo from "@/common/img/logo.avif";
 import "./styles.sass";
 import Button from "@/common/components/Button";
 import Input from "@/common/components/IconInput";

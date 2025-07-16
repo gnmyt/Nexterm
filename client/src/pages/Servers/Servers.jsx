@@ -3,7 +3,7 @@ import ServerList from "@/pages/Servers/components/ServerList";
 import { UserContext } from "@/common/contexts/UserContext.jsx";
 import { useContext, useEffect, useState } from "react";
 import Button from "@/common/components/Button";
-import WelcomeImage from "@/common/img/welcome.png";
+import WelcomeImage from "@/common/img/welcome.avif";
 import { DISCORD_URL, GITHUB_URL } from "@/App.jsx";
 import ServerDialog from "@/pages/Servers/components/ServerDialog";
 import ViewContainer from "@/pages/Servers/components/ViewContainer";

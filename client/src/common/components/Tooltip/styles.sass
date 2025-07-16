@@ -1,0 +1,34 @@
+@use "@/common/styles/colors"
+
+.tooltip
+  position: fixed
+  padding: 0
+  pointer-events: none
+  opacity: 0
+  animation: tooltipFadeIn 0.15s ease-out forwards
+  max-width: 200px
+  display: flex
+  align-items: center
+
+  .tooltip-content
+    background-color: colors.$lighter-background
+    color: colors.$white
+    padding: 10px 14px
+    border-radius: 8px
+    font-size: 0.875rem
+    font-weight: 500
+    line-height: 1.3
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4)
+    border: 1px solid colors.$gray
+    word-wrap: break-word
+    text-align: center
+    white-space: nowrap
+    backdrop-filter: blur(10px)
+
+@keyframes tooltipFadeIn
+  from
+    opacity: 0
+    transform: translateX(-3px) scale(0.95)
+  to
+    opacity: 1
+    transform: translateX(0) scale(1)

@@ -1,5 +1,5 @@
 import "./styles.sass";
-import NextermLogo from "@/common/img/logo.png";
+import NextermLogo from "@/common/img/logo.avif";
 import {
     mdiCog,
     mdiLogout,
@@ -15,6 +15,7 @@ import { useContext, useState } from "react";
 import { UserContext } from "@/common/contexts/UserContext.jsx";
 import { ActionConfirmDialog } from "@/common/components/ActionConfirmDialog/ActionConfirmDialog.jsx";
 import { useActiveSessions } from "@/common/contexts/SessionContext.jsx";
+import Tooltip from "@/common/components/Tooltip";
 
 export const Sidebar = () => {
     const location = useLocation();
@@ -31,7 +32,7 @@ export const Sidebar = () => {
     const navigation = [
         { title: "Settings", path: "/settings", icon: mdiCog },
         { title: "Servers", path: "/servers", icon: mdiServerOutline },
-        { title: "Monitoring", path: "/monitoring", icon: mdiChartBoxOutline},
+        { title: "Monitoring", path: "/monitoring", icon: mdiChartBoxOutline },
         { title: "Snippets", path: "/snippets", icon: mdiCodeBrackets },
         { title: "Audit", path: "/audit", icon: mdiShieldCheckOutline },
         { title: "Apps", path: "/apps", icon: mdiPackageVariant },
@@ -43,7 +44,7 @@ export const Sidebar = () => {
 
     const hasActiveSessions = () => {
         return location.pathname === "/servers" && activeSessions.length > 0;
-    }
+    };
 
     const handleNavigation = (path) => {
         if (hasActiveSessions() && !location.pathname.startsWith(path)) {
@@ -52,7 +53,7 @@ export const Sidebar = () => {
         } else {
             navigate(path);
         }
-    }
+    };
 
     const confirmNavigation = () => {
         setNavigationDialogOpen(false);
@@ -61,11 +62,11 @@ export const Sidebar = () => {
             navigate(pendingNavigation);
             setPendingNavigation(null);
         }
-    }
+    };
 
     return (
         <>
-            <div className={`sidebar ${isCollapsed ? 'collapsed' : ''}`}>
+            <div className={`sidebar ${isCollapsed ? "collapsed" : ""}`}>
                 <ActionConfirmDialog
                     open={navigationDialogOpen}
                     setOpen={setNavigationDialogOpen}
@@ -76,8 +77,10 @@ export const Sidebar = () => {
                                      text={`This will log you out of the ${user?.username} account. Are you sure?`}
                                      onConfirm={logout} />
                 <div className="sidebar-top">
-                    <img src={NextermLogo} alt="Nexterm Logo" onClick={() => setIsCollapsed(!isCollapsed)}
-                         title="Collapse Sidebar" />
+                    <Tooltip text="Collapse Sidebar" disabled={isCollapsed}>
+                        <img src={NextermLogo} alt="Nexterm Logo" onClick={() => setIsCollapsed(!isCollapsed)}
+                             title="Collapse Sidebar" />
+                    </Tooltip>
                     <hr />
 
                     <nav>
@@ -85,17 +88,23 @@ export const Sidebar = () => {
                             const isDisabled = hasActiveSessions() && !location.pathname.startsWith(item.path);
 
                             return (
-                                <div key={index} onClick={() => handleNavigation(item.path)}
-                                     className={"nav-item" + (isActive(item.path) ? " nav-item-active" : "") + (isDisabled ? " nav-item-disabled" : "")}>
-                                    <Icon path={item.icon} />
-                                </div>
+                                <Tooltip key={index} text={item.title} disabled={isDisabled}>
+                                    <div onClick={() => handleNavigation(item.path)}
+                                         className={"nav-item" + (isActive(item.path) ? " nav-item-active" : "") + (isDisabled ? " nav-item-disabled" : "")}>
+                                        <Icon path={item.icon} />
+                                    </div>
+                                </Tooltip>
                             );
                         })}
                     </nav>
                 </div>
 
-                <div className="log-out-btn" onClick={() => setLogoutDialogOpen(true)}>
-                    <Icon path={mdiLogout} />
+                <div className="log-out-area">
+                    <Tooltip text={"Log out"}>
+                        <div className="log-out-btn" onClick={() => setLogoutDialogOpen(true)}>
+                            <Icon path={mdiLogout} />
+                        </div>
+                    </Tooltip>
                 </div>
             </div>
         </>
