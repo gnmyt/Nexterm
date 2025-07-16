@@ -48,10 +48,9 @@ export const UserProvider = ({ children }) => {
 
         if (localStorage.getItem("overrideToken")) {
             localStorage.removeItem("overrideToken");
-            setSessionToken(localStorage.getItem("sessionToken"));
         }
 
-        login();
+        window.location.reload();
     };
 
     const overrideToken = (token) => {
