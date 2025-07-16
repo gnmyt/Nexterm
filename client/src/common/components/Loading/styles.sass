@@ -1,0 +1,149 @@
+@use "@/common/styles/colors"
+
+.loading-container
+  position: fixed
+  top: 0
+  left: 0
+  width: 100vw
+  height: 100vh
+  background: colors.$background
+  display: flex
+  justify-content: center
+  align-items: center
+  z-index: 9999
+
+.loading-content
+  display: flex
+  justify-content: center
+  align-items: center
+
+.loading-logo-wrapper
+  position: relative
+  display: flex
+  justify-content: center
+  align-items: center
+  width: 120px
+  height: 120px
+
+.loading-logo
+  width: 4rem
+  height: 4rem
+  z-index: 2
+  position: relative
+
+.loading-ring
+  position: absolute
+  border: 2px solid transparent
+  border-top: 2px solid colors.$primary
+  border-radius: 50%
+  animation: ringRotate 2s linear infinite
+
+  &.loading-ring-2
+    border-top-color: colors.$primary-opacity
+    animation-duration: 1.5s
+    animation-direction: reverse
+
+  &.loading-ring-3
+    border-top-color: colors.$primary-opacity
+    opacity: 0.5
+    animation-duration: 2.5s
+
+.loading-ring:nth-child(2)
+  width: 80px
+  height: 80px
+  top: 20px
+  left: 20px
+
+.loading-ring:nth-child(3)
+  width: 100px
+  height: 100px
+  top: 10px
+  left: 10px
+
+.loading-ring:nth-child(4)
+  width: 120px
+  height: 120px
+  top: 0
+  left: 0
+
+@keyframes ringRotate
+  0%
+    transform: rotate(0deg)
+  100%
+    transform: rotate(360deg)
+
+@media (max-width: 768px)
+  .loading-logo-wrapper
+    width: 100px
+    height: 100px
+    
+  .loading-logo
+    width: 3.5rem
+    height: 3.5rem
+    
+  .loading-ring:nth-child(2)
+    width: 70px
+    height: 70px
+    top: 15px
+    left: 15px
+
+  .loading-ring:nth-child(3)
+    width: 85px
+    height: 85px
+    top: 7.5px
+    left: 7.5px
+
+  .loading-ring:nth-child(4)
+    width: 100px
+    height: 100px
+    top: 0
+    left: 0
+
+@media (max-width: 480px)
+  .loading-logo-wrapper
+    width: 80px
+    height: 80px
+    
+  .loading-logo
+    width: 3rem
+    height: 3rem
+    
+  .loading-ring:nth-child(2)
+    width: 60px
+    height: 60px
+    top: 10px
+    left: 10px
+
+  .loading-ring:nth-child(3)
+    width: 70px
+    height: 70px
+    top: 5px
+    left: 5px
+
+  .loading-ring:nth-child(4)
+    width: 80px
+    height: 80px
+    top: 0
+    left: 0
+
+@media (max-width: 768px)
+  .loading-content
+    gap: 0.8rem
+    
+  .loading-logo
+    width: 3rem
+    height: 3rem
+    
+  .loading-title
+    font-size: 1.5rem
+
+@media (max-width: 480px)
+  .loading-content
+    gap: 0.6rem
+    
+  .loading-logo
+    width: 2.5rem
+    height: 2.5rem
+    
+  .loading-title
+    font-size: 1.2rem
