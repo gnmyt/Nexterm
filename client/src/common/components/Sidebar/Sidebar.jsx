@@ -1,5 +1,5 @@
 import "./styles.sass";
-import NextermLogo from "@/common/img/logo.png";
+import NextermLogo from "@/common/img/logo.avif";
 import {
     mdiCog,
     mdiLogout,
