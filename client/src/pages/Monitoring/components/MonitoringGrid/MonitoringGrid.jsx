@@ -1,21 +1,24 @@
 import Icon from "@mdi/react";
 import { mdiServerOutline, mdiServerOff, mdiAlertCircle, mdiClockOutline } from "@mdi/js";
 import { loadIcon } from "@/pages/Servers/components/ServerList/components/ServerObject/ServerObject.jsx";
+import { useTranslation } from "react-i18next";
 
 export const MonitoringGrid = ({ servers, loading, onServerSelect }) => {
+    const { t } = useTranslation();
+
     const formatUptime = (seconds) => {
-        if (!seconds) return "Unknown";
+        if (!seconds) return t('monitoring.grid.uptime.unknown');
         
         const days = Math.floor(seconds / 86400);
         const hours = Math.floor((seconds % 86400) / 3600);
         const minutes = Math.floor((seconds % 3600) / 60);
         
         if (days > 0) {
-            return `${days}d ${hours}h ${minutes}m`;
+            return t('monitoring.grid.uptime.format.days', { days, hours, minutes });
         } else if (hours > 0) {
-            return `${hours}h ${minutes}m`;
+            return t('monitoring.grid.uptime.format.hours', { hours, minutes });
         } else {
-            return `${minutes}m`;
+            return t('monitoring.grid.uptime.format.minutes', { minutes });
         }
     };
 
@@ -43,8 +46,8 @@ export const MonitoringGrid = ({ servers, loading, onServerSelect }) => {
             <div className="monitoring-grid empty">
                 <div className="no-servers">
                     <Icon path={mdiServerOff} />
-                    <h2>No Servers Found</h2>
-                    <p>No SSH servers available for monitoring.<br />Add some servers to start monitoring them.</p>
+                    <h2>{t('monitoring.grid.noServers.title')}</h2>
+                    <p>{t('monitoring.grid.noServers.subtitle')}</p>
                 </div>
             </div>
         );
@@ -74,7 +77,7 @@ export const MonitoringGrid = ({ servers, loading, onServerSelect }) => {
                         <>
                             <div className="metrics">
                                 <div className="metric">
-                                    <div className="metric-label">CPU Usage</div>
+                                    <div className="metric-label">{t('monitoring.grid.metrics.cpuUsage')}</div>
                                     <div className="metric-value">
                                         {server.monitoring.cpuUsage !== null ? 
                                             `${server.monitoring.cpuUsage}%` : 'N/A'
@@ -82,7 +85,7 @@ export const MonitoringGrid = ({ servers, loading, onServerSelect }) => {
                                     </div>
                                 </div>
                                 <div className="metric">
-                                    <div className="metric-label">Memory Usage</div>
+                                    <div className="metric-label">{t('monitoring.grid.metrics.memoryUsage')}</div>
                                     <div className="metric-value">
                                         {server.monitoring.memoryUsage !== null ? 
                                             `${server.monitoring.memoryUsage}%` : 'N/A'
@@ -90,7 +93,7 @@ export const MonitoringGrid = ({ servers, loading, onServerSelect }) => {
                                     </div>
                                 </div>
                                 <div className="metric">
-                                    <div className="metric-label">Load Average</div>
+                                    <div className="metric-label">{t('monitoring.grid.metrics.loadAverage')}</div>
                                     <div className="metric-value">
                                         {server.monitoring.loadAverage && 
                                          server.monitoring.loadAverage.length > 0 && 
@@ -100,7 +103,7 @@ export const MonitoringGrid = ({ servers, loading, onServerSelect }) => {
                                     </div>
                                 </div>
                                 <div className="metric">
-                                    <div className="metric-label">Processes</div>
+                                    <div className="metric-label">{t('monitoring.grid.metrics.processes')}</div>
                                     <div className="metric-value">
                                         {server.monitoring.processes || 'N/A'}
                                     </div>
@@ -109,7 +112,7 @@ export const MonitoringGrid = ({ servers, loading, onServerSelect }) => {
 
                             {server.monitoring.uptime && (
                                 <div className="uptime-info">
-                                    Uptime: {formatUptime(server.monitoring.uptime)}
+                                    {t('monitoring.grid.metrics.uptime')}: {formatUptime(server.monitoring.uptime)}
                                 </div>
                             )}
                         </>
@@ -124,22 +127,22 @@ export const MonitoringGrid = ({ servers, loading, onServerSelect }) => {
                             </div>
                             <div className="offline-info">
                                 <h4>
-                                    {server.monitoring.status === 'offline' ? 'Server Offline' :
-                                     server.monitoring.status === 'error' ? 'Connection Error' :
-                                     'Status Unknown'}
+                                    {server.monitoring.status === 'offline' ? t('monitoring.grid.status.serverOffline') :
+                                     server.monitoring.status === 'error' ? t('monitoring.grid.status.connectionError') :
+                                     t('monitoring.grid.status.statusUnknown')}
                                 </h4>
                                 <p>
                                     {server.monitoring.status === 'offline' ? 
-                                        'The server is currently not responding to monitoring requests.' :
+                                        t('monitoring.grid.status.offlineMessage') :
                                      server.monitoring.status === 'error' ? 
-                                        (server.monitoring.errorMessage || 'Unable to establish connection to the server.') :
-                                        'Server status could not be determined.'}
+                                        (server.monitoring.errorMessage || t('monitoring.grid.status.errorMessage')) :
+                                        t('monitoring.grid.status.unknownMessage')}
                                 </p>
                                 <div className="offline-actions">
                                     <span className="last-seen">
                                         {server.monitoring.lastSeen ? 
-                                            `Last seen: ${new Date(server.monitoring.lastSeen).toLocaleString()}` :
-                                            'No recent activity'
+                                            t('monitoring.grid.status.lastSeen', { time: new Date(server.monitoring.lastSeen).toLocaleString() }) :
+                                            t('monitoring.grid.status.noRecentActivity')
                                         }
                                     </span>
                                 </div>

@@ -5,8 +5,10 @@ import Icon from "@mdi/react";
 import { mdiChartLine, mdiInformation, mdiHarddisk, mdiNetwork } from "@mdi/js";
 import Button from "@/common/components/Button";
 import MonitoringChart from "./components/MonitoringChart";
+import { useTranslation } from "react-i18next";
 
 export const ServerDetails = ({ server }) => {
+    const { t } = useTranslation();
     const [detailData, setDetailData] = useState(null);
     const [timeRange, setTimeRange] = useState("1h");
     const [loading, setLoading] = useState(true);
@@ -33,18 +35,18 @@ export const ServerDetails = ({ server }) => {
     }, [server.id, timeRange]);
 
     const formatUptime = (seconds) => {
-        if (!seconds) return "Unknown";
+        if (!seconds) return t('monitoring.details.overview.systemInfo.unknown');
 
         const days = Math.floor(seconds / 86400);
         const hours = Math.floor((seconds % 86400) / 3600);
         const minutes = Math.floor((seconds % 3600) / 60);
 
         if (days > 0) {
-            return `${days} days, ${hours} hours, ${minutes} minutes`;
+            return t('monitoring.details.overview.uptime.format.full', { days, hours, minutes });
         } else if (hours > 0) {
-            return `${hours} hours, ${minutes} minutes`;
+            return t('monitoring.details.overview.uptime.format.hoursMinutes', { hours, minutes });
         } else {
-            return `${minutes} minutes`;
+            return t('monitoring.details.overview.uptime.format.minutes', { minutes });
         }
     };
 
@@ -79,7 +81,8 @@ export const ServerDetails = ({ server }) => {
             <div className="details-header">
                 <div className="time-range-selector">
                     {["1h", "6h", "24h"].map(range => (
-                        <Button key={range} text={range} type={timeRange === range ? "primary" : "secondary"}
+                        <Button key={range} text={t(`monitoring.details.timeRanges.${range}`)} 
+                                type={timeRange === range ? "primary" : "secondary"}
                                 onClick={() => setTimeRange(range)} />
                     ))}
                 </div>
@@ -90,22 +93,22 @@ export const ServerDetails = ({ server }) => {
                     <div className={`tab-header ${activeTab === "overview" ? "active" : ""}`}
                          onClick={() => setActiveTab("overview")}>
                         <Icon path={mdiInformation} />
-                        <span>Overview</span>
+                        <span>{t('monitoring.details.tabs.overview')}</span>
                     </div>
                     <div className={`tab-header ${activeTab === "charts" ? "active" : ""}`}
                          onClick={() => setActiveTab("charts")}>
                         <Icon path={mdiChartLine} />
-                        <span>Charts</span>
+                        <span>{t('monitoring.details.tabs.charts')}</span>
                     </div>
                     <div className={`tab-header ${activeTab === "storage" ? "active" : ""}`}
                          onClick={() => setActiveTab("storage")}>
                         <Icon path={mdiHarddisk} />
-                        <span>Storage</span>
+                        <span>{t('monitoring.details.tabs.storage')}</span>
                     </div>
                     <div className={`tab-header ${activeTab === "network" ? "active" : ""}`}
                          onClick={() => setActiveTab("network")}>
                         <Icon path={mdiNetwork} />
-                        <span>Network</span>
+                        <span>{t('monitoring.details.tabs.network')}</span>
                     </div>
                 </div>
 
@@ -114,57 +117,57 @@ export const ServerDetails = ({ server }) => {
                         <div className="overview-tab">
                             <div className="stats-grid">
                                 <div className="stat-card">
-                                    <h3>System Information</h3>
+                                    <h3>{t('monitoring.details.overview.systemInfo.title')}</h3>
                                     {latestData?.osInfo ? (
                                         <div className="info-list">
                                             <div className="info-item">
-                                                <span className="label">OS:</span>
-                                                <span className="value">{latestData.osInfo.name || "Unknown"}</span>
+                                                <span className="label">{t('monitoring.details.overview.systemInfo.os')}:</span>
+                                                <span className="value">{latestData.osInfo.name || t('monitoring.details.overview.systemInfo.unknown')}</span>
                                             </div>
                                             <div className="info-item">
-                                                <span className="label">Version:</span>
-                                                <span className="value">{latestData.osInfo.version || "Unknown"}</span>
+                                                <span className="label">{t('monitoring.details.overview.systemInfo.version')}:</span>
+                                                <span className="value">{latestData.osInfo.version || t('monitoring.details.overview.systemInfo.unknown')}</span>
                                             </div>
                                             <div className="info-item">
-                                                <span className="label">Kernel:</span>
-                                                <span className="value">{latestData.osInfo.kernel || "Unknown"}</span>
+                                                <span className="label">{t('monitoring.details.overview.systemInfo.kernel')}:</span>
+                                                <span className="value">{latestData.osInfo.kernel || t('monitoring.details.overview.systemInfo.unknown')}</span>
                                             </div>
                                             <div className="info-item">
-                                                <span className="label">Architecture:</span>
-                                                <span
-                                                    className="value">{latestData.osInfo.architecture || "Unknown"}</span>
+                                                <span className="label">{t('monitoring.details.overview.systemInfo.architecture')}:</span>
+                                                <span className="value">{latestData.osInfo.architecture || t('monitoring.details.overview.systemInfo.unknown')}</span>
                                             </div>
                                             <div className="info-item">
-                                                <span className="label">Uptime:</span>
+                                                <span className="label">{t('monitoring.details.overview.systemInfo.uptime')}:</span>
                                                 <span className="value">{formatUptime(latestData.uptime)}</span>
                                             </div>
                                         </div>
                                     ) : (
-                                        <p className="no-data">No system information available</p>
+                                        <p className="no-data">{t('monitoring.details.overview.systemInfo.noData')}</p>
                                     )}
                                 </div>
 
                                 <div className="stat-card">
-                                    <h3>Performance Metrics</h3>
+                                    <h3>{t('monitoring.details.overview.performance.title')}</h3>
                                     <div className="metrics-grid">
                                         <div className="metric">
-                                            <div className="metric-label">CPU Usage</div>
+                                            <div className="metric-label">{t('monitoring.details.overview.performance.cpuUsage')}</div>
                                             <div className="metric-value">
                                                 {latestData && latestData.cpuUsage !== null ? `${latestData.cpuUsage}%` : "N/A"}
                                             </div>
                                         </div>
                                         <div className="metric">
-                                            <div className="metric-label">Memory Usage</div>
+                                            <div className="metric-label">{t('monitoring.details.overview.performance.memoryUsage')}</div>
                                             <div className="metric-value">
                                                 {latestData && latestData.memoryUsage !== null ? `${latestData.memoryUsage}%` : "N/A"}
                                             </div>
                                             {latestData?.memoryTotal && (
-                                                <div
-                                                    className="metric-total">Total: {formatBytes(latestData.memoryTotal)}</div>
+                                                <div className="metric-total">
+                                                    {t('monitoring.details.overview.performance.total', { value: formatBytes(latestData.memoryTotal) })}
+                                                </div>
                                             )}
                                         </div>
                                         <div className="metric">
-                                            <div className="metric-label">Load Average</div>
+                                            <div className="metric-label">{t('monitoring.details.overview.performance.loadAverage')}</div>
                                             <div className="metric-value">
                                                 {latestData?.loadAverage &&
                                                 Array.isArray(latestData.loadAverage) &&
@@ -179,13 +182,15 @@ export const ServerDetails = ({ server }) => {
                                                 typeof latestData.loadAverage[1] === "number" &&
                                                 typeof latestData.loadAverage[2] === "number" && (
                                                     <div className="metric-detail">
-                                                        5m: {latestData.loadAverage[1].toFixed(2)},
-                                                        15m: {latestData.loadAverage[2].toFixed(2)}
+                                                        {t('monitoring.details.overview.performance.loadDetail', { 
+                                                            fiveMin: latestData.loadAverage[1].toFixed(2), 
+                                                            fifteenMin: latestData.loadAverage[2].toFixed(2) 
+                                                        })}
                                                     </div>
                                                 )}
                                         </div>
                                         <div className="metric">
-                                            <div className="metric-label">Active Processes</div>
+                                            <div className="metric-label">{t('monitoring.details.overview.performance.processes')}</div>
                                             <div className="metric-value">
                                                 {latestData?.processes || "N/A"}
                                             </div>
@@ -201,7 +206,7 @@ export const ServerDetails = ({ server }) => {
                             <div className="charts-grid">
                                 <MonitoringChart
                                     data={detailData?.data || []}
-                                    title="CPU Usage"
+                                    title={t('monitoring.details.charts.cpuUsage')}
                                     type="cpu"
                                     color="#314BD3"
                                     unit="%"
@@ -210,7 +215,7 @@ export const ServerDetails = ({ server }) => {
                                 />
                                 <MonitoringChart
                                     data={detailData?.data || []}
-                                    title="Memory Usage"
+                                    title={t('monitoring.details.charts.memoryUsage')}
                                     type="memory"
                                     color="#29C16A"
                                     unit="%"
@@ -219,7 +224,7 @@ export const ServerDetails = ({ server }) => {
                                 />
                                 <MonitoringChart
                                     data={detailData?.data || []}
-                                    title="Active Processes"
+                                    title={t('monitoring.details.charts.processes')}
                                     type="processes"
                                     color="#DC5600"
                                     unit=""
@@ -232,7 +237,7 @@ export const ServerDetails = ({ server }) => {
                     {activeTab === "storage" && (
                         <div className="storage-tab">
                             <div className="stat-card full-width">
-                                <h3>Disk Usage</h3>
+                                <h3>{t('monitoring.details.storage.title')}</h3>
                                 {latestData?.diskUsage && latestData.diskUsage.length > 0 ? (
                                     <div className="disk-list">
                                         {latestData.diskUsage.map((disk, index) => (
@@ -249,16 +254,16 @@ export const ServerDetails = ({ server }) => {
                                                     ></div>
                                                 </div>
                                                 <div className="disk-details">
-                                                    <span>Used: {disk.used}</span>
-                                                    <span>Available: {disk.available}</span>
-                                                    <span>Total: {disk.size}</span>
-                                                    <span>Type: {disk.type}</span>
+                                                    <span>{t('monitoring.details.storage.used', { value: disk.used })}</span>
+                                                    <span>{t('monitoring.details.storage.available', { value: disk.available })}</span>
+                                                    <span>{t('monitoring.details.storage.total', { value: disk.size })}</span>
+                                                    <span>{t('monitoring.details.storage.type', { value: disk.type })}</span>
                                                 </div>
                                             </div>
                                         ))}
                                     </div>
                                 ) : (
-                                    <p className="no-data">No disk usage data available</p>
+                                    <p className="no-data">{t('monitoring.details.storage.noData')}</p>
                                 )}
                             </div>
                         </div>
@@ -267,7 +272,7 @@ export const ServerDetails = ({ server }) => {
                     {activeTab === "network" && (
                         <div className="network-tab">
                             <div className="stat-card full-width">
-                                <h3>Network Interfaces</h3>
+                                <h3>{t('monitoring.details.network.title')}</h3>
                                 {latestData?.networkInterfaces && latestData.networkInterfaces.length > 0 ? (
                                     <div className="network-list">
                                         {latestData.networkInterfaces.map((iface, index) => (
@@ -277,11 +282,11 @@ export const ServerDetails = ({ server }) => {
                                                 </div>
                                                 <div className="network-stats">
                                                     <div className="network-stat">
-                                                        <span className="label">RX Bytes:</span>
+                                                        <span className="label">{t('monitoring.details.network.rxBytes')}:</span>
                                                         <span className="value">{formatBytes(iface.rxBytes)}</span>
                                                     </div>
                                                     <div className="network-stat">
-                                                        <span className="label">TX Bytes:</span>
+                                                        <span className="label">{t('monitoring.details.network.txBytes')}:</span>
                                                         <span className="value">{formatBytes(iface.txBytes)}</span>
                                                     </div>
                                                 </div>
@@ -289,7 +294,7 @@ export const ServerDetails = ({ server }) => {
                                         ))}
                                     </div>
                                 ) : (
-                                    <p className="no-data">No network interface data available</p>
+                                    <p className="no-data">{t('monitoring.details.network.noData')}</p>
                                 )}
                             </div>
                         </div>
