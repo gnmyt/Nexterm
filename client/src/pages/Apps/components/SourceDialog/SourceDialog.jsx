@@ -4,9 +4,10 @@ import { useEffect, useState } from "react";
 import { getRequest, postRequest } from "@/common/utils/RequestUtil.js";
 import SourceItem from "@/pages/Apps/components/SourceDialog/components/SourceItem";
 import Button from "@/common/components/Button";
+import { useTranslation } from "react-i18next";
 
 export const SourceDialog = ({ open, onClose, refreshApps }) => {
-
+    const { t } = useTranslation();
     const [createNew, setCreateNew] = useState(false);
 
     const [sources, setSources] = useState([]);
@@ -39,7 +40,7 @@ export const SourceDialog = ({ open, onClose, refreshApps }) => {
     return (
         <DialogProvider open={open} onClose={onClose}>
             <div className="source-dialog">
-                <h2>App sources</h2>
+                <h2>{t("apps.dialogs.source.title")}</h2>
 
                 <div className="source-list">
                     {sources.map((source) => (
@@ -50,8 +51,8 @@ export const SourceDialog = ({ open, onClose, refreshApps }) => {
                 </div>
 
                 <div className="btn-actions">
-                    <Button onClick={refreshSources} text="Refresh apps" />
-                    <Button onClick={() => setCreateNew(true)} text="Add new source" />
+                    <Button onClick={refreshSources} text={t("apps.dialogs.source.refreshApps")} />
+                    <Button onClick={() => setCreateNew(true)} text={t("apps.dialogs.source.addNewSource")} />
                 </div>
             </div>
         </DialogProvider>
