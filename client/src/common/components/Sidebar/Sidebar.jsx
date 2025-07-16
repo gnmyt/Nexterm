@@ -16,8 +16,10 @@ import { UserContext } from "@/common/contexts/UserContext.jsx";
 import { ActionConfirmDialog } from "@/common/components/ActionConfirmDialog/ActionConfirmDialog.jsx";
 import { useActiveSessions } from "@/common/contexts/SessionContext.jsx";
 import Tooltip from "@/common/components/Tooltip";
+import { useTranslation } from "react-i18next";
 
 export const Sidebar = () => {
+    const { t } = useTranslation();
     const location = useLocation();
     const navigate = useNavigate();
 
@@ -30,12 +32,12 @@ export const Sidebar = () => {
     const { activeSessions, setActiveSessions } = useActiveSessions();
 
     const navigation = [
-        { title: "Settings", path: "/settings", icon: mdiCog },
-        { title: "Servers", path: "/servers", icon: mdiServerOutline },
-        { title: "Monitoring", path: "/monitoring", icon: mdiChartBoxOutline },
-        { title: "Snippets", path: "/snippets", icon: mdiCodeBrackets },
-        { title: "Audit", path: "/audit", icon: mdiShieldCheckOutline },
-        { title: "Apps", path: "/apps", icon: mdiPackageVariant },
+        { title: t('common.sidebar.settings'), path: "/settings", icon: mdiCog },
+        { title: t('common.sidebar.servers'), path: "/servers", icon: mdiServerOutline },
+        { title: t('common.sidebar.monitoring'), path: "/monitoring", icon: mdiChartBoxOutline},
+        { title: t('common.sidebar.snippets'), path: "/snippets", icon: mdiCodeBrackets },
+        { title: t('common.sidebar.audit'), path: "/audit", icon: mdiShieldCheckOutline },
+        { title: t('common.sidebar.apps'), path: "/apps", icon: mdiPackageVariant },
     ];
 
     const isActive = (path) => {
@@ -70,16 +72,16 @@ export const Sidebar = () => {
                 <ActionConfirmDialog
                     open={navigationDialogOpen}
                     setOpen={setNavigationDialogOpen}
-                    text="You have active sessions. Navigating away will disconnect you from all servers. Are you sure?"
+                    text={t('common.sidebar.navigationConfirmText')}
                     onConfirm={confirmNavigation}
                 />
                 <ActionConfirmDialog open={logoutDialogOpen} setOpen={setLogoutDialogOpen}
-                                     text={`This will log you out of the ${user?.username} account. Are you sure?`}
+                                     text={t('common.sidebar.logoutConfirmText', { username: user?.username })}
                                      onConfirm={logout} />
                 <div className="sidebar-top">
-                    <Tooltip text="Collapse Sidebar" disabled={isCollapsed}>
+                    <Tooltip text={t('common.sidebar.collapseTitle')} disabled={isCollapsed}>
                         <img src={NextermLogo} alt="Nexterm Logo" onClick={() => setIsCollapsed(!isCollapsed)}
-                             title="Collapse Sidebar" />
+                             title={t('common.sidebar.collapseTitle')} />
                     </Tooltip>
                     <hr />
 

@@ -3,8 +3,10 @@ import { createPortal } from "react-dom";
 import "./styles.sass";
 import Icon from "@mdi/react";
 import { mdiChevronDown } from "@mdi/js";
+import { useTranslation } from "react-i18next";
 
 export const SelectBox = ({ options, selected, setSelected, id, disabled = false }) => {
+    const { t } = useTranslation();
     const [isOpen, setIsOpen] = useState(false);
     const [position, setPosition] = useState({ top: 0, left: 0, width: 0 });
     const selectBoxRef = useRef(null);
@@ -65,7 +67,7 @@ export const SelectBox = ({ options, selected, setSelected, id, disabled = false
             <div className="select-box__selected" onClick={() => !disabled && setIsOpen(!isOpen)}>
                 {selected && findSelected(selected) !== -1 ? 
                     options[findSelected(selected)].label : 
-                    (options.length > 0 ? options[0].label : "Select an option...")
+                    (options.length > 0 ? options[0].label : t('common.selectBox.defaultOption'))
                 }
                 <Icon className={`select-box__arrow ${isOpen ? "open" : ""}`} path={mdiChevronDown} />
             </div>
