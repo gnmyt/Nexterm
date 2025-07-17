@@ -1,11 +1,12 @@
 import React, { useState } from "react";
+import { useTranslation } from "react-i18next";
 import Icon from "@mdi/react";
 import { mdiFileDownload, mdiFormTextbox, mdiTextBoxEdit, mdiTrashCan } from "@mdi/js";
 import RenameItemDialog from "../RenameItemDialog";
 import { ActionConfirmDialog } from "@/common/components/ActionConfirmDialog/ActionConfirmDialog.jsx";
 
 export const ContextMenu = ({ menuPosition, selectedItem, closeContextMenu, sendOperation, path, downloadFile, setCurrentFile }) => {
-
+    const { t } = useTranslation();
     const [renameDialogOpen, setRenameDialogOpen] = useState(false);
     const [bigFileDialogOpen, setBigFileDialogOpen] = useState(false);
 
@@ -41,28 +42,28 @@ export const ContextMenu = ({ menuPosition, selectedItem, closeContextMenu, send
                                 item={selectedItem}/>
             <ActionConfirmDialog open={bigFileDialogOpen} setOpen={setBigFileDialogOpen}
                                  onConfirm={() => setCurrentFile(path + "/" + selectedItem?.name)}
-                                 text={`This file is ${Math.round(selectedItem?.size / 1024 / 1024)} MB large. Are you sure you want to edit it?`}/>
+                                 text={t('servers.fileManager.contextMenu.bigFileConfirm', { size: Math.round(selectedItem?.size / 1024 / 1024) })}/>
             {menuPosition.x !== 0 && menuPosition.y !== 0 &&
                 <div className="context-menu" style={{ top: `${menuPosition.y}px`, left: `${menuPosition.x}px` }}>
                     <div className="context-item" onClick={() => setRenameDialogOpen(true)}>
                         <Icon path={mdiFormTextbox} />
-                        <p>Rename</p>
+                        <p>{t('servers.fileManager.contextMenu.rename')}</p>
                     </div>
                     {selectedItem.type === "file" && (
                         <>
                             <div className="context-item" onClick={() => openFile()}>
                                 <Icon path={mdiTextBoxEdit} />
-                                <p>Edit</p>
+                                <p>{t('servers.fileManager.contextMenu.edit')}</p>
                             </div>
                             <div className="context-item" onClick={() => handleDownload()}>
                                 <Icon path={mdiFileDownload} />
-                                <p>Download</p>
+                                <p>{t('servers.fileManager.contextMenu.download')}</p>
                             </div>
                         </>
                     )}
                     <div className="context-item" onClick={() => handleDelete()}>
                         <Icon path={mdiTrashCan} />
-                        <p>Delete</p>
+                        <p>{t('servers.fileManager.contextMenu.delete')}</p>
                     </div>
                 </div>}
         </>

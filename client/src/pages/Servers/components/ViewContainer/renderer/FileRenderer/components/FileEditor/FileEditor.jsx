@@ -1,6 +1,7 @@
 import CodeMirror from "@uiw/react-codemirror";
 import { githubDark, githubLight } from "@uiw/codemirror-theme-github";
 import { useContext, useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import "./styles.sass";
 import { UserContext } from "@/common/contexts/UserContext.jsx";
 import { downloadRequest } from "@/common/utils/RequestUtil.js";
@@ -10,6 +11,7 @@ import { ActionConfirmDialog } from "@/common/components/ActionConfirmDialog/Act
 import { useTheme } from "@/common/contexts/ThemeContext.jsx";
 
 export const FileEditor = ({ currentFile, session, setCurrentFile, sendOperation }) => {
+    const { t } = useTranslation();
     const [fileContent, setFileContent] = useState("");
     const [fileContentChanged, setFileContentChanged] = useState(false);
     const { theme } = useTheme();
@@ -76,7 +78,7 @@ export const FileEditor = ({ currentFile, session, setCurrentFile, sendOperation
 
     return (
         <div className="file-editor">
-            <ActionConfirmDialog text="You have unsaved changes. Are you sure you want to close this file?"
+            <ActionConfirmDialog text={t('servers.fileManager.fileEditor.unsavedChanges')}
                                  onConfirm={() => setCurrentFile(null)}
                                  open={unsavedChangesDialog} setOpen={setUnsavedChangesDialog} />
             <div className="file-header">
@@ -89,7 +91,7 @@ export const FileEditor = ({ currentFile, session, setCurrentFile, sendOperation
                     <Icon path={mdiClose} onClick={() => closeFile()} />
                 </div>
             </div>
-            <CodeMirror value={fileContent === null ? "Loading..." : fileContent} onChange={updateContent}
+            <CodeMirror value={fileContent === null ? t('servers.fileManager.fileEditor.loading') : fileContent} onChange={updateContent}
                         theme={theme === 'dark' ? githubDark : githubLight} />
         </div>
     );

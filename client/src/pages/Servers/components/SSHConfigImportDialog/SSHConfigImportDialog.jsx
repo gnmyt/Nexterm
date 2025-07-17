@@ -1,6 +1,7 @@
 import { DialogProvider } from "@/common/components/Dialog";
 import "./styles.sass";
 import { useContext, useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { ServerContext } from "@/common/contexts/ServerContext.jsx";
 import { IdentityContext } from "@/common/contexts/IdentityContext.jsx";
 import { mdiFileDocumentOutline, mdiKey, mdiFileUploadOutline } from "@mdi/js";
@@ -10,6 +11,7 @@ import { useToast } from "@/common/contexts/ToastContext.jsx";
 import Icon from "@mdi/react";
 
 export const SSHConfigImportDialog = ({ open, onClose, currentFolderId }) => {
+    const { t } = useTranslation();
     const [configContent, setConfigContent] = useState("");
     const [isImporting, setIsImporting] = useState(false);
     const [keyFiles, setKeyFiles] = useState({});
@@ -106,10 +108,10 @@ export const SSHConfigImportDialog = ({ open, onClose, currentFolderId }) => {
                             [uniqueKey]: { ...prev[uniqueKey], identityId: result.id, uploaded: true }
                         }));
                         await loadIdentities();
-                        sendToast("Success", `Key ${keyInfo.name} uploaded successfully`);
+                        sendToast("Success", t('servers.sshConfigImport.messages.uploadSuccess', { name: keyInfo.name }));
                     }
                 } catch (error) {
-                    sendToast("Error", `Failed to upload key ${keyFiles[uniqueKey].name}`);
+                    sendToast("Error", t('servers.sshConfigImport.messages.uploadFailed', { name: keyFiles[uniqueKey].name }));
                 }
             };
             reader.readAsText(file);
@@ -118,8 +120,8 @@ export const SSHConfigImportDialog = ({ open, onClose, currentFolderId }) => {
     };
 
     const importConfig = async () => {
-        if (!configContent.trim()) return sendToast("Error", "Please provide SSH config content");
-        if (!currentFolderId) return sendToast("Error", "No folder selected");
+        if (!configContent.trim()) return sendToast("Error", t('servers.sshConfigImport.messages.noContent'));
+        if (!currentFolderId) return sendToast("Error", t('servers.sshConfigImport.messages.noFolder'));
 
         setIsImporting(true);
 
@@ -192,7 +194,7 @@ export const SSHConfigImportDialog = ({ open, onClose, currentFolderId }) => {
                 resetForm();
             }
         } catch (error) {
-            sendToast("Error", "Failed to import SSH config");
+            sendToast("Error", t('servers.sshConfigImport.messages.importFailed'));
         } finally {
             setIsImporting(false);
         }
@@ -209,13 +211,13 @@ export const SSHConfigImportDialog = ({ open, onClose, currentFolderId }) => {
     return (
         <DialogProvider open={open} onClose={onClose}>
             <div className="ssh-config-import-dialog">
-                <h2>Import SSH Config</h2>
+                <h2>{t('servers.sshConfigImport.title')}</h2>
                 
                 <div className="form-group">
-                    <label htmlFor="config-content">SSH Config Content</label>
+                    <label htmlFor="config-content">{t('servers.sshConfigImport.configContent.label')}</label>
                     <textarea
                         id="config-content"
-                        placeholder="Paste your SSH config content here..."
+                        placeholder={t('servers.sshConfigImport.configContent.placeholder')}
                         value={configContent}
                         onChange={(e) => {
                             setConfigContent(e.target.value);
@@ -227,7 +229,7 @@ export const SSHConfigImportDialog = ({ open, onClose, currentFolderId }) => {
 
                 {Object.keys(keyFiles).length > 0 && (
                     <div className="form-group">
-                        <label>SSH Key Files ({Object.keys(keyFiles).length} found)</label>
+                        <label>{t('servers.sshConfigImport.keyFiles.label', { count: Object.keys(keyFiles).length })}</label>
                         <div className="key-files-section">
                             {Object.entries(keyFiles).map(([uniqueKey, keyInfo]) => (
                                 <div key={uniqueKey} className="key-file-item">
@@ -237,16 +239,16 @@ export const SSHConfigImportDialog = ({ open, onClose, currentFolderId }) => {
                                             <span className="key-name">{keyInfo.name}</span>
                                             <span className="key-path">{keyInfo.path}</span>
                                             {keyInfo.username && (
-                                                <span className="key-username">User: {keyInfo.username}</span>
+                                                <span className="key-username">{t('servers.sshConfigImport.keyFiles.userLabel', { username: keyInfo.username })}</span>
                                             )}
                                         </div>
                                     </div>
                                     <div className="key-actions">
                                         {keyInfo.uploaded ? (
-                                            <span className="uploaded-indicator">✓ Uploaded</span>
+                                            <span className="uploaded-indicator">{t('servers.sshConfigImport.keyFiles.uploaded')}</span>
                                         ) : (
                                             <Button
-                                                text="Upload"
+                                                text={t('servers.sshConfigImport.keyFiles.uploadButton')}
                                                 icon={mdiFileUploadOutline}
                                                 onClick={() => handleKeyUpload(uniqueKey)}
                                                 variant="primary"
@@ -262,12 +264,12 @@ export const SSHConfigImportDialog = ({ open, onClose, currentFolderId }) => {
 
                 <div className="dialog-actions">
                     <Button 
-                        text="Cancel" 
+                        text={t('servers.sshConfigImport.actions.cancel')} 
                         onClick={onClose} 
                         variant="secondary" 
                     />
                     <Button 
-                        text={isImporting ? "Importing..." : "Import"} 
+                        text={isImporting ? t('servers.sshConfigImport.actions.importing') : t('servers.sshConfigImport.actions.import')} 
                         onClick={importConfig} 
                         icon={mdiFileDocumentOutline} 
                         disabled={isImporting || !configContent.trim()}

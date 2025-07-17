@@ -483,6 +483,155 @@
       "shutdown": "Shutdown",
       "stop": "Stop",
       "start": "Start"
+    },
+    "dialog": {
+      "addServer": "Add server",
+      "editServer": "Edit server",
+      "tabs": {
+        "details": "Details",
+        "identities": "Identities",
+        "settings": "Settings"
+      },
+      "actions": {
+        "save": "Save",
+        "create": "Create"
+      },
+      "fields": {
+        "name": "Name",
+        "icon": "Icon",
+        "serverIp": "Server-IP",
+        "port": "Port",
+        "protocol": "Protocol",
+        "username": "Username",
+        "password": "Password",
+        "host": "Host"
+      },
+      "placeholders": {
+        "serverName": "Server name",
+        "serverIp": "Server-IP",
+        "port": "Port",
+        "username": "Username",
+        "password": "Password",
+        "host": "Host"
+      }
+    },
+    "proxmoxDialog": {
+      "title": {
+        "import": "Import Proxmox VE",
+        "edit": "Edit Proxmox VE"
+      },
+      "fields": {
+        "name": "Name",
+        "serverIp": "Server-IP",
+        "port": "Port",
+        "username": "Username",
+        "password": "Password",
+        "nodeName": "Node Name (Optional)"
+      },
+      "placeholders": {
+        "name": "Name",
+        "serverIp": "Server-IP",
+        "port": "Port",
+        "username": "Username (e.g. root@pam)",
+        "password": "Password",
+        "specificNode": "Specific node name"
+      },
+      "actions": {
+        "import": "Import",
+        "edit": "Edit"
+      }
+    },
+    "connectionReasonDialog": {
+      "title": "Connection Reason Required",
+      "reasonLabel": "Please provide a reason for connecting to <strong>{{serverName}}</strong>:",
+      "placeholder": "Enter your reason for this connection...",
+      "characterCount": "{{count}}/500",
+      "actions": {
+        "cancel": "Cancel",
+        "connect": "Connect"
+      }
+    },
+    "sshConfigImport": {
+      "title": "Import SSH Config",
+      "configContent": {
+        "label": "SSH Config Content",
+        "placeholder": "Paste your SSH config content here..."
+      },
+      "keyFiles": {
+        "label": "SSH Key Files ({{count}} found)",
+        "userLabel": "User: {{username}}",
+        "uploaded": "✓ Uploaded",
+        "uploadButton": "Upload"
+      },
+      "actions": {
+        "cancel": "Cancel",
+        "import": "Import",
+        "importing": "Importing..."
+      },
+      "messages": {
+        "noContent": "Please provide SSH config content",
+        "noFolder": "No folder selected",
+        "uploadSuccess": "Key {{name}} uploaded successfully",
+        "uploadFailed": "Failed to upload key {{name}}",
+        "importFailed": "Failed to import SSH config"
+      }
+    },
+    "fileManager": {
+      "createFolder": {
+        "title": "Create Folder",
+        "placeholder": "Folder Name",
+        "button": "Create Folder"
+      },
+      "renameItem": {
+        "title": "Rename",
+        "placeholder": "New name",
+        "button": "Rename"
+      },
+      "fileEditor": {
+        "title": "File Editor",
+        "save": "Save",
+        "cancel": "Cancel",
+        "loading": "Loading...",
+        "saving": "Saving...",
+        "saveSuccess": "File saved successfully",
+        "saveFailed": "Failed to save file",
+        "loadFailed": "Failed to load file",
+        "unsavedChanges": "You have unsaved changes. Are you sure you want to close this file?"
+      },
+      "contextMenu": {
+        "open": "Open",
+        "download": "Download",
+        "rename": "Rename",
+        "delete": "Delete",
+        "copy": "Copy",
+        "cut": "Cut",
+        "paste": "Paste",
+        "createFolder": "Create Folder",
+        "upload": "Upload File",
+        "edit": "Edit",
+        "bigFileConfirm": "This file is {{size}} MB large. Are you sure you want to edit it?"
+      }
+    },
+    "aiAssistant": {
+      "title": "AI Assistant",
+      "placeholder": "Describe what you want to do...",
+      "hint": "Press Enter to generate • Esc to close",
+      "closeLabel": "Close AI Assistant"
+    },
+    "snippets": {
+      "title": "Snippets",
+      "noSnippets": "No snippets available",
+      "searchPlaceholder": "Search snippets...",
+      "createNew": "Create New Snippet"
+    },
+    "messages": {
+      "fillRequiredFields": "Please fill in all required fields",
+      "serverCreated": "Server created successfully",
+      "serverUpdated": "Server updated successfully",
+      "createFailed": "Failed to create server",
+      "updateFailed": "Failed to update server",
+      "createIdentityFailed": "Failed to create identity",
+      "updateIdentityFailed": "Failed to update identity"
     }
   },
   "apps": {

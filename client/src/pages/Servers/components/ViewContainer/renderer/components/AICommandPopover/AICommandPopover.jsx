@@ -1,10 +1,12 @@
 import { useState, useRef, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import { mdiRobot, mdiSend, mdiClose, mdiLoading } from "@mdi/js";
 import Icon from "@mdi/react";
 import "./styles.sass";
 import { postRequest } from "@/common/utils/RequestUtil.js";
 
 export const AICommandPopover = ({ visible, onClose, onCommandGenerated, position, focusTerminal }) => {
+    const { t } = useTranslation();
     const [prompt, setPrompt] = useState("");
     const [loading, setLoading] = useState(false);
     const inputRef = useRef(null);
@@ -66,9 +68,9 @@ export const AICommandPopover = ({ visible, onClose, onCommandGenerated, positio
                 <div className="popover-header">
                     <div className="popover-title">
                         <Icon path={mdiRobot} />
-                        <span>AI Assistant</span>
+                        <span>{t('servers.aiAssistant.title')}</span>
                     </div>
-                    <button className="close-button" onClick={handleClose} aria-label="Close AI Assistant">
+                    <button className="close-button" onClick={handleClose} aria-label={t('servers.aiAssistant.closeLabel')}>
                         <Icon path={mdiClose} />
                     </button>
                 </div>
@@ -76,7 +78,7 @@ export const AICommandPopover = ({ visible, onClose, onCommandGenerated, positio
                 <form onSubmit={handleSubmit} className="popover-form">
                     <div className="input-container">
                         <input ref={inputRef} type="text" value={prompt} onChange={(e) => setPrompt(e.target.value)}
-                               onKeyDown={handleKeyDown} placeholder="Describe what you want to do..."
+                               onKeyDown={handleKeyDown} placeholder={t('servers.aiAssistant.placeholder')}
                                disabled={loading} className="prompt-input" />
                         <button type="submit" disabled={!prompt.trim() || loading} className="submit-button">
                             {loading ? <Icon path={mdiLoading} spin /> : <Icon path={mdiSend} />}
@@ -85,7 +87,7 @@ export const AICommandPopover = ({ visible, onClose, onCommandGenerated, positio
                 </form>
 
                 <div className="popover-hint">
-                    Press <kbd>Enter</kbd> to generate • <kbd>Esc</kbd> to close
+                    {t('servers.aiAssistant.hint')}
                 </div>
             </div>
         </div>

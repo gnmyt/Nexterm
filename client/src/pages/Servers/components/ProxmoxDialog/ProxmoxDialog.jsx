@@ -7,8 +7,10 @@ import { mdiAccountCircleOutline, mdiFormTextbox, mdiIp, mdiLockOutline, mdiServ
 import Button from "@/common/components/Button";
 import Input from "@/common/components/IconInput";
 import { getRequest, patchRequest, postRequest, putRequest } from "@/common/utils/RequestUtil.js";
+import { useTranslation } from "react-i18next";
 
 export const ProxmoxDialog = ({ open, onClose, currentFolderId, editServerId }) => {
+    const { t } = useTranslation();
 
     const [name, setName] = useState("");
     const [ip, setIp] = useState("");
@@ -63,49 +65,49 @@ export const ProxmoxDialog = ({ open, onClose, currentFolderId, editServerId }) 
     return (
         <DialogProvider open={open} onClose={onClose}>
             <div className="proxmox-dialog">
-                <h2>{editServerId ? "Edit" : "Import"} Proxmox VE</h2>
+                <h2>{editServerId ? t("servers.proxmoxDialog.title.edit") : t("servers.proxmoxDialog.title.import")}</h2>
                 <div className="form-group">
-                    <label htmlFor="name">Name</label>
-                    <IconInput icon={mdiFormTextbox} value={name} setValue={setName} placeholder="Name" id="name" />
+                    <label htmlFor="name">{t("servers.proxmoxDialog.fields.name")}</label>
+                    <IconInput icon={mdiFormTextbox} value={name} setValue={setName} placeholder={t("servers.proxmoxDialog.placeholders.name")} id="name" />
                 </div>
 
                 <div className="ip-row">
 
                     <div className="form-group">
-                        <label htmlFor="ip">Server-IP</label>
-                        <Input icon={mdiIp} type="text" placeholder="Server-IP" id="ip"
+                        <label htmlFor="ip">{t("servers.proxmoxDialog.fields.serverIp")}</label>
+                        <Input icon={mdiIp} type="text" placeholder={t("servers.proxmoxDialog.placeholders.serverIp")} id="ip"
                                autoComplete="off" value={ip} setValue={setIp} />
                     </div>
 
                     <div className="form-group">
-                        <label htmlFor="port">Port</label>
-                        <input type="text" placeholder="Port" value={port}
+                        <label htmlFor="port">{t("servers.proxmoxDialog.fields.port")}</label>
+                        <input type="text" placeholder={t("servers.proxmoxDialog.placeholders.port")} value={port}
                                onChange={(event) => setPort(event.target.value)}
                                className="small-input" id="port" />
                     </div>
                 </div>
 
                 <div className="form-group">
-                    <label htmlFor="username">Username</label>
+                    <label htmlFor="username">{t("servers.proxmoxDialog.fields.username")}</label>
                     <IconInput icon={mdiAccountCircleOutline} value={username} setValue={setUsername}
-                               placeholder="Username (e.g. root@pam)" id="username" />
+                               placeholder={t("servers.proxmoxDialog.placeholders.username")} id="username" />
                 </div>
 
                 <div className="form-group">
-                    <label htmlFor="password">Password</label>
-                    <IconInput icon={mdiLockOutline} value={password} setValue={setPassword} placeholder="Password"
+                    <label htmlFor="password">{t("servers.proxmoxDialog.fields.password")}</label>
+                    <IconInput icon={mdiLockOutline} value={password} setValue={setPassword} placeholder={t("servers.proxmoxDialog.placeholders.password")}
                                type="password" id="password" />
                 </div>
 
                 {editServerId && (
                     <div className="form-group">
-                        <label htmlFor="nodeName">Node Name (Optional)</label>
+                        <label htmlFor="nodeName">{t("servers.proxmoxDialog.fields.nodeName")}</label>
                         <IconInput icon={mdiServerNetwork} value={nodeName} setValue={setNodeName} 
-                                   placeholder="Specific node name" id="nodeName" />
+                                   placeholder={t("servers.proxmoxDialog.placeholders.specificNode")} id="nodeName" />
                     </div>
                 )}
 
-                <Button onClick={editServerId ? edit : create} text={editServerId ? "Edit" : "Import"} />
+                <Button onClick={editServerId ? edit : create} text={editServerId ? t("servers.proxmoxDialog.actions.edit") : t("servers.proxmoxDialog.actions.import")} />
 
             </div>
         </DialogProvider>

@@ -9,10 +9,16 @@ import IdentityPage from "@/pages/Servers/components/ServerDialog/pages/Identity
 import SettingsPage from "@/pages/Servers/components/ServerDialog/pages/SettingsPage.jsx";
 import { IdentityContext } from "@/common/contexts/IdentityContext.jsx";
 import { useToast } from "@/common/contexts/ToastContext.jsx";
+import { useTranslation } from "react-i18next";
 
-const tabs = ["Details", "Identities", "Settings"];
+const tabs = [
+    { key: "details", label: "servers.dialog.tabs.details" },
+    { key: "identities", label: "servers.dialog.tabs.identities" },
+    { key: "settings", label: "servers.dialog.tabs.settings" }
+];
 
 export const ServerDialog = ({ open, onClose, currentFolderId, editServerId }) => {
+    const { t } = useTranslation();
 
     const { loadServers } = useContext(ServerContext);
     const { loadIdentities } = useContext(IdentityContext);
@@ -63,7 +69,7 @@ export const ServerDialog = ({ open, onClose, currentFolderId, editServerId }) =
                     const result = await putRequest("identities", payload);
                     if (result.id) allIdentityIds.add(result.id);
                 } catch (error) {
-                    sendToast("Error", error.message || "Failed to create identity");
+                    sendToast("Error", error.message || t("servers.messages.createIdentityFailed"));
                     console.error(error);
                     return null;
                 }
@@ -75,7 +81,7 @@ export const ServerDialog = ({ open, onClose, currentFolderId, editServerId }) =
                     await patchRequest("identities/" + identityId, payload);
                     allIdentityIds.add(parseInt(identityId));
                 } catch (error) {
-                    sendToast("Error", error.message || "Failed to update identity");
+                    sendToast("Error", error.message || t("servers.messages.updateIdentityFailed"));
                     console.error(error);
                     return null;
                 }
@@ -100,11 +106,11 @@ export const ServerDialog = ({ open, onClose, currentFolderId, editServerId }) =
 
             loadServers();
             if (result.id) {
-                sendToast("Success", "Server created successfully");
+                sendToast("Success", t("servers.messages.serverCreated"));
                 onClose();
             }
         } catch (error) {
-            sendToast("Error", error.message || "Failed to create server");
+            sendToast("Error", error.message || t("servers.messages.createFailed"));
             console.error(error);
         }
     };
@@ -121,21 +127,21 @@ export const ServerDialog = ({ open, onClose, currentFolderId, editServerId }) =
             });
 
             loadServers();
-            sendToast("Success", "Server updated successfully");
+            sendToast("Success", t("servers.messages.serverUpdated"));
             onClose();
         } catch (error) {
-            sendToast("Error", error.message || "Failed to update server");
+            sendToast("Error", error.message || t("servers.messages.updateFailed"));
             console.error(error);
         }
     };
 
     const handleSubmit = useCallback(() => {
         if (!name || !ip || !port || !protocol) {
-            sendToast("Error", "Please fill in all required fields");
+            sendToast("Error", t("servers.messages.fillRequiredFields"));
             return;
         }
         editServerId ? patchServer() : createServer();
-    }, [name, icon, ip, port, protocol, editServerId, identityUpdates, currentFolderId, config, monitoringEnabled]);
+    }, [name, icon, ip, port, protocol, editServerId, identityUpdates, currentFolderId, config, monitoringEnabled, t]);
 
     useEffect(() => {
         if (!open) return;
@@ -213,14 +219,14 @@ export const ServerDialog = ({ open, onClose, currentFolderId, editServerId }) =
         <DialogProvider open={open} onClose={onClose}>
             <div className="server-dialog">
                 <div className="server-dialog-title">
-                    <h2>{editServerId ? "Edit" : "Add"} server</h2>
+                    <h2>{editServerId ? t("servers.dialog.editServer") : t("servers.dialog.addServer")}</h2>
                 </div>
 
                 <div className="server-dialog-tabs">
                     {tabs.map((tab, index) => (
                         <div key={index} className={`tabs-item ${activeTab === index ? "tabs-item-active" : ""}`}
                              onClick={() => setActiveTab(index)}>
-                            <h3>{tab}</h3>
+                            <h3>{t(tab.label)}</h3>
                         </div>
                     ))}
                 </div>
@@ -238,7 +244,7 @@ export const ServerDialog = ({ open, onClose, currentFolderId, editServerId }) =
                 </div>
 
                 <Button className="server-dialog-button" onClick={handleSubmit}
-                        text={editServerId ? "Save" : "Create"} />
+                        text={editServerId ? t("servers.dialog.actions.save") : t("servers.dialog.actions.create")} />
             </div>
 
         </DialogProvider>

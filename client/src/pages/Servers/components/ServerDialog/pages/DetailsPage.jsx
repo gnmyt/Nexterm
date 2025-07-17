@@ -20,20 +20,23 @@ import {
 import Input from "@/common/components/IconInput";
 import Icon from "@mdi/react";
 import SelectBox from "@/common/components/SelectBox";
+import { useTranslation } from "react-i18next";
 
 const DetailsPage = ({name, setName, icon, setIcon, ip, setIp, port, setPort, protocol, setProtocol}) => {
+    const { t } = useTranslation();
+    
     return (
         <>
             <div className="name-row">
 
                 <div className="form-group">
-                    <label htmlFor="name">Name</label>
-                    <Input icon={mdiFormTextbox} type="text" placeholder="Server name" id="name"
+                    <label htmlFor="name">{t("servers.dialog.fields.name")}</label>
+                    <Input icon={mdiFormTextbox} type="text" placeholder={t("servers.dialog.placeholders.serverName")} id="name"
                            autoComplete="off" value={name} setValue={setName} />
                 </div>
 
                 <div className="form-group">
-                    <label>Icon</label>
+                    <label>{t("servers.dialog.fields.icon")}</label>
                     <SelectBox options={[
                         { label: <Icon path={mdiServerOutline} size={1} />, value: "server" },
                         { label: <Icon path={mdiMicrosoftWindows} size={1} />, value: "windows" },
@@ -57,18 +60,18 @@ const DetailsPage = ({name, setName, icon, setIcon, ip, setIp, port, setPort, pr
             </div>
             <div className="address-row">
                 <div className="form-group">
-                    <label htmlFor="ip">Server-IP</label>
-                    <Input icon={mdiIp} type="text" placeholder="Server-IP" id="ip"
+                    <label htmlFor="ip">{t("servers.dialog.fields.serverIp")}</label>
+                    <Input icon={mdiIp} type="text" placeholder={t("servers.dialog.placeholders.serverIp")} id="ip"
                            autoComplete="off" value={ip} setValue={setIp} />
                 </div>
                 <div className="form-group">
-                    <label htmlFor="port">Port</label>
-                    <input type="text" placeholder="Port" value={port} onChange={(event) => setPort(event.target.value)}
+                    <label htmlFor="port">{t("servers.dialog.fields.port")}</label>
+                    <input type="text" placeholder={t("servers.dialog.placeholders.port")} value={port} onChange={(event) => setPort(event.target.value)}
                             className="small-input" id="port" />
                 </div>
 
                 <div className="form-group">
-                    <label>Protocol</label>
+                    <label>{t("servers.dialog.fields.protocol")}</label>
                     <SelectBox options={[
                         { label: "SSH", value: "ssh" },
                         { label: "RDP", value: "rdp" },
