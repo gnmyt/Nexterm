@@ -307,7 +307,19 @@
       "disable2FA": "Disabilita la 2FA",
       "changePassword": "Cambia la password",
       "changePasswordDescription": "Scegli una nuova password sicura per il tuo account.",
-      "changePasswordButton": "Cambia la password"
+      "changePasswordButton": "Cambia la password",
+      "language": "Language",
+      "languageDescription": "Select your preferred language for the interface.",
+      "currentLanguage": "Current Language",
+      "twoFactorDialog": {
+        "title": "Enable 2FA",
+        "description": "Scan the code with your authenticator app or enter <span class=\"totp-code\">{{secret}}</span> manually.",
+        "codePlaceholder": "Enter 2FA code",
+        "enableButton": "Enable",
+        "messages": {
+          "setupFailed": "2FA setup failed. Please try again."
+        }
+      }
     },
     "passwordChange": {
       "title": "Cambia la password",
@@ -329,7 +341,25 @@
       "pendingInvitations": "Inviti in sospeso",
       "invitedBy": "Invitato da: {{name}}",
       "deleteConfirmation": "In questo modo l'organizzazione verrà eliminata in modo permanente e tutti i suoi membri verranno rimossi. Questa azione non può essere annullata.",
-      "leaveConfirmation": "Sei sicuro di voler lasciare questa organizzazione?"
+      "leaveConfirmation": "Sei sicuro di voler lasciare questa organizzazione?",
+      "dialog": {
+        "title": "Create Organization",
+        "fields": {
+          "name": "Name",
+          "namePlaceholder": "Organization name",
+          "description": "Description (optional)",
+          "descriptionPlaceholder": "Brief description of your organization"
+        },
+        "actions": {
+          "cancel": "Cancel",
+          "create": "Create"
+        },
+        "messages": {
+          "nameRequired": "Organization name is required",
+          "createSuccess": "Organization created successfully",
+          "createFailed": "Failed to create organization"
+        }
+      }
     },
     "users": {
       "title": "{{count}} utenti",
@@ -401,6 +431,44 @@
       "errors": {
         "deleteProvider": "Errore nell'eliminazione del provider",
         "toggleProvider": "Errore nella selezione del provider"
+      },
+      "providerDialog": {
+        "createTitle": "Add Authentication Provider",
+        "editTitle": "Edit Authentication Provider",
+        "fields": {
+          "displayName": "Display Name",
+          "displayNamePlaceholder": "e.g. Company SSO",
+          "issuerUrl": "Issuer URL",
+          "issuerUrlPlaceholder": "https://auth.company.com",
+          "clientId": "Client ID",
+          "clientIdPlaceholder": "Client ID",
+          "clientSecret": "Client Secret",
+          "clientSecretPlaceholder": "Client Secret",
+          "clientSecretPlaceholderEdit": "Leave blank to keep existing",
+          "redirectUri": "Redirect URI",
+          "redirectUriPlaceholder": "https://your-domain.com/api/oidc/callback",
+          "scope": "Scope",
+          "scopePlaceholder": "openid profile email",
+          "emailAttribute": "Email Attribute",
+          "emailAttributePlaceholder": "email",
+          "usernameAttribute": "Username Attribute",
+          "usernameAttributePlaceholder": "preferred_username",
+          "firstNameAttribute": "First Name Attribute",
+          "firstNameAttributePlaceholder": "given_name",
+          "lastNameAttribute": "Last Name Attribute",
+          "lastNameAttributePlaceholder": "family_name"
+        },
+        "advanced": {
+          "show": "Show Advanced Settings",
+          "hide": "Hide Advanced Settings"
+        },
+        "actions": {
+          "addProvider": "Add Provider",
+          "saveChanges": "Save Changes"
+        },
+        "messages": {
+          "saveFailed": "Failed to save provider"
+        }
       }
     },
     "ai": {
@@ -458,7 +526,214 @@
       "noIdentitiesDescription": "Crea la tua prima identità per iniziare le connessioni al server",
       "deleteConfirm": "Sei sicuro di voler eliminare \"{{name}}\"? Questa azione non può essere annullata e rimuoverà questa identità da tutti i server che la utilizzano.",
       "deleteSuccess": "Identità cancellata con successo",
-      "deleteError": "Cancellazione dell'identità fallita"
+      "deleteError": "Cancellazione dell'identità fallita",
+      "dialog": {
+        "createTitle": "Create New Identity",
+        "editTitle": "Edit Identity",
+        "fields": {
+          "name": "Identity Name",
+          "namePlaceholder": "Enter identity name",
+          "username": "Username",
+          "usernamePlaceholder": "Username (optional)",
+          "authType": "Authentication Type",
+          "password": "Password",
+          "passwordPlaceholder": "Enter password",
+          "passwordPlaceholderEdit": "Leave blank to keep current password",
+          "sshKey": "SSH Private Key",
+          "passphrase": "Passphrase (optional)",
+          "passphrasePlaceholder": "Enter passphrase (optional)",
+          "passphrasePlaceholderEdit": "Leave blank to keep current passphrase"
+        },
+        "authTypes": {
+          "password": "Password",
+          "ssh": "SSH Key"
+        },
+        "keyFileLoaded": "Key file loaded",
+        "actions": {
+          "cancel": "Cancel",
+          "create": "Create Identity",
+          "update": "Update Identity"
+        },
+        "messages": {
+          "nameRequired": "Identity name is required",
+          "passwordRequired": "Password is required",
+          "sshKeyRequired": "SSH key is required",
+          "createSuccess": "Identity created successfully",
+          "updateSuccess": "Identity updated successfully",
+          "createFailed": "Failed to create identity",
+          "updateFailed": "Failed to update identity"
+        }
+      }
+    }
+  },
+  "servers": {
+    "contextMenu": {
+      "createFolder": "Create Folder",
+      "deleteFolder": "Delete Folder",
+      "renameFolder": "Rename Folder",
+      "createServer": "Create Server",
+      "import": "Import",
+      "pve": "PVE",
+      "sshConfig": "SSH-Config",
+      "connect": "Connect",
+      "openSFTP": "Open SFTP",
+      "editServer": "Edit Server",
+      "duplicateServer": "Duplicate Server",
+      "deleteServer": "Delete Server",
+      "editPVE": "Edit PVE",
+      "deletePVE": "Delete PVE",
+      "shutdown": "Shutdown",
+      "stop": "Stop",
+      "start": "Start"
+    },
+    "dialog": {
+      "addServer": "Add server",
+      "editServer": "Edit server",
+      "tabs": {
+        "details": "Details",
+        "identities": "Identities",
+        "settings": "Settings"
+      },
+      "actions": {
+        "save": "Save",
+        "create": "Create"
+      },
+      "fields": {
+        "name": "Name",
+        "icon": "Icon",
+        "serverIp": "Server-IP",
+        "port": "Port",
+        "protocol": "Protocol",
+        "username": "Username",
+        "password": "Password",
+        "host": "Host"
+      },
+      "placeholders": {
+        "serverName": "Server name",
+        "serverIp": "Server-IP",
+        "port": "Port",
+        "username": "Username",
+        "password": "Password",
+        "host": "Host"
+      }
+    },
+    "proxmoxDialog": {
+      "title": {
+        "import": "Import Proxmox VE",
+        "edit": "Edit Proxmox VE"
+      },
+      "fields": {
+        "name": "Name",
+        "serverIp": "Server-IP",
+        "port": "Port",
+        "username": "Username",
+        "password": "Password",
+        "nodeName": "Node Name (Optional)"
+      },
+      "placeholders": {
+        "name": "Name",
+        "serverIp": "Server-IP",
+        "port": "Port",
+        "username": "Username (e.g. root@pam)",
+        "password": "Password",
+        "specificNode": "Specific node name"
+      },
+      "actions": {
+        "import": "Import",
+        "edit": "Edit"
+      }
+    },
+    "connectionReasonDialog": {
+      "title": "Connection Reason Required",
+      "reasonLabel": "Please provide a reason for connecting to <strong>{{serverName}}</strong>:",
+      "placeholder": "Enter your reason for this connection...",
+      "characterCount": "{{count}}/500",
+      "actions": {
+        "cancel": "Cancel",
+        "connect": "Connect"
+      }
+    },
+    "sshConfigImport": {
+      "title": "Import SSH Config",
+      "configContent": {
+        "label": "SSH Config Content",
+        "placeholder": "Paste your SSH config content here..."
+      },
+      "keyFiles": {
+        "label": "SSH Key Files ({{count}} found)",
+        "userLabel": "User: {{username}}",
+        "uploaded": "✓ Uploaded",
+        "uploadButton": "Upload"
+      },
+      "actions": {
+        "cancel": "Cancel",
+        "import": "Import",
+        "importing": "Importing..."
+      },
+      "messages": {
+        "noContent": "Please provide SSH config content",
+        "noFolder": "No folder selected",
+        "uploadSuccess": "Key {{name}} uploaded successfully",
+        "uploadFailed": "Failed to upload key {{name}}",
+        "importFailed": "Failed to import SSH config"
+      }
+    },
+    "fileManager": {
+      "createFolder": {
+        "title": "Create Folder",
+        "placeholder": "Folder Name",
+        "button": "Create Folder"
+      },
+      "renameItem": {
+        "title": "Rename",
+        "placeholder": "New name",
+        "button": "Rename"
+      },
+      "fileEditor": {
+        "title": "File Editor",
+        "save": "Save",
+        "cancel": "Cancel",
+        "loading": "Loading...",
+        "saving": "Saving...",
+        "saveSuccess": "File saved successfully",
+        "saveFailed": "Failed to save file",
+        "loadFailed": "Failed to load file",
+        "unsavedChanges": "You have unsaved changes. Are you sure you want to close this file?"
+      },
+      "contextMenu": {
+        "open": "Open",
+        "download": "Download",
+        "rename": "Rename",
+        "delete": "Delete",
+        "copy": "Copy",
+        "cut": "Cut",
+        "paste": "Paste",
+        "createFolder": "Create Folder",
+        "upload": "Upload File",
+        "edit": "Edit",
+        "bigFileConfirm": "This file is {{size}} MB large. Are you sure you want to edit it?"
+      }
+    },
+    "aiAssistant": {
+      "title": "AI Assistant",
+      "placeholder": "Describe what you want to do...",
+      "hint": "Press Enter to generate • Esc to close",
+      "closeLabel": "Close AI Assistant"
+    },
+    "snippets": {
+      "title": "Snippets",
+      "noSnippets": "No snippets available",
+      "searchPlaceholder": "Search snippets...",
+      "createNew": "Create New Snippet"
+    },
+    "messages": {
+      "fillRequiredFields": "Please fill in all required fields",
+      "serverCreated": "Server created successfully",
+      "serverUpdated": "Server updated successfully",
+      "createFailed": "Failed to create server",
+      "updateFailed": "Failed to update server",
+      "createIdentityFailed": "Failed to create identity",
+      "updateIdentityFailed": "Failed to update identity"
     }
   },
   "apps": {
