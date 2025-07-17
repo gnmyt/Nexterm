@@ -308,16 +308,16 @@
       "changePassword": "Cambiar contraseña",
       "changePasswordDescription": "Elige aquí una contraseña nueva y segura para tu cuenta.",
       "changePasswordButton": "Cambiar contraseña",
-      "language": "Language",
-      "languageDescription": "Select your preferred language for the interface.",
-      "currentLanguage": "Current Language",
+      "language": "Idioma",
+      "languageDescription": "Selecciona el idioma que prefieras para la interfaz.",
+      "currentLanguage": "Lengua actual",
       "twoFactorDialog": {
-        "title": "Enable 2FA",
-        "description": "Scan the code with your authenticator app or enter <span class=\"totp-code\">{{secret}}</span> manually.",
-        "codePlaceholder": "Enter 2FA code",
-        "enableButton": "Enable",
+        "title": "Activar 2FA",
+        "description": "Escanea el código con tu aplicación de autenticación o introdúcelo <span class=\"totp-code\">{{secret}}</span> manualmente.",
+        "codePlaceholder": "Introduce el código 2FA",
+        "enableButton": "Activa",
         "messages": {
-          "setupFailed": "2FA setup failed. Please try again."
+          "setupFailed": "Ha fallado la configuración 2FA. Inténtalo de nuevo."
         }
       }
     },
@@ -343,21 +343,21 @@
       "deleteConfirmation": "Esto borrará permanentemente la organización y eliminará a todos sus miembros. Esta acción no se puede deshacer.",
       "leaveConfirmation": "¿Estás seguro de que quieres dejar esta organización?",
       "dialog": {
-        "title": "Create Organization",
+        "title": "Crear organización",
         "fields": {
-          "name": "Name",
-          "namePlaceholder": "Organization name",
-          "description": "Description (optional)",
-          "descriptionPlaceholder": "Brief description of your organization"
+          "name": "Nombre",
+          "namePlaceholder": "Nombre de la organización",
+          "description": "Descripción (opcional)",
+          "descriptionPlaceholder": "Breve descripción de tu organización"
         },
         "actions": {
-          "cancel": "Cancel",
-          "create": "Create"
+          "cancel": "Cancela",
+          "create": "Crea"
         },
         "messages": {
-          "nameRequired": "Organization name is required",
-          "createSuccess": "Organization created successfully",
-          "createFailed": "Failed to create organization"
+          "nameRequired": "Se requiere el nombre de la organización",
+          "createSuccess": "Organización creada con éxito",
+          "createFailed": "No se ha podido crear la organización"
         }
       }
     },
@@ -433,41 +433,41 @@
         "toggleProvider": "Error al cambiar de proveedor"
       },
       "providerDialog": {
-        "createTitle": "Add Authentication Provider",
-        "editTitle": "Edit Authentication Provider",
+        "createTitle": "Añadir proveedor de autenticación",
+        "editTitle": "Editar proveedor de autenticación",
         "fields": {
-          "displayName": "Display Name",
-          "displayNamePlaceholder": "e.g. Company SSO",
-          "issuerUrl": "Issuer URL",
+          "displayName": "Mostrar nombre",
+          "displayNamePlaceholder": "Por ejemplo, SSO de empresa",
+          "issuerUrl": "URL del emisor",
           "issuerUrlPlaceholder": "https://auth.company.com",
-          "clientId": "Client ID",
-          "clientIdPlaceholder": "Client ID",
-          "clientSecret": "Client Secret",
-          "clientSecretPlaceholder": "Client Secret",
-          "clientSecretPlaceholderEdit": "Leave blank to keep existing",
-          "redirectUri": "Redirect URI",
+          "clientId": "ID de cliente",
+          "clientIdPlaceholder": "ID de cliente",
+          "clientSecret": "Secreto de cliente",
+          "clientSecretPlaceholder": "Secreto de cliente",
+          "clientSecretPlaceholderEdit": "Dejar en blanco para mantener el existente",
+          "redirectUri": "Redirigir URI",
           "redirectUriPlaceholder": "https://your-domain.com/api/oidc/callback",
-          "scope": "Scope",
-          "scopePlaceholder": "openid profile email",
-          "emailAttribute": "Email Attribute",
-          "emailAttributePlaceholder": "email",
-          "usernameAttribute": "Username Attribute",
-          "usernameAttributePlaceholder": "preferred_username",
-          "firstNameAttribute": "First Name Attribute",
-          "firstNameAttributePlaceholder": "given_name",
-          "lastNameAttribute": "Last Name Attribute",
-          "lastNameAttributePlaceholder": "family_name"
+          "scope": "Alcance",
+          "scopePlaceholder": "email del perfil openid",
+          "emailAttribute": "Atributo Email",
+          "emailAttributePlaceholder": "correo electrónico",
+          "usernameAttribute": "Atributo Nombre de usuario",
+          "usernameAttributePlaceholder": "nombre_usuario_preferido",
+          "firstNameAttribute": "Atributo del nombre",
+          "firstNameAttributePlaceholder": "nombre_de_usuario",
+          "lastNameAttribute": "Atributo Apellido",
+          "lastNameAttributePlaceholder": "nombre_de_la_familia"
         },
         "advanced": {
-          "show": "Show Advanced Settings",
-          "hide": "Hide Advanced Settings"
+          "show": "Mostrar ajustes avanzados",
+          "hide": "Ocultar ajustes avanzados"
         },
         "actions": {
-          "addProvider": "Add Provider",
-          "saveChanges": "Save Changes"
+          "addProvider": "Añadir proveedor",
+          "saveChanges": "Guardar cambios"
         },
         "messages": {
-          "saveFailed": "Failed to save provider"
+          "saveFailed": "No se ha podido guardar el proveedor"
         }
       }
     },
@@ -528,212 +528,212 @@
       "deleteSuccess": "Identidad eliminada correctamente",
       "deleteError": "Error al eliminar identidad",
       "dialog": {
-        "createTitle": "Create New Identity",
-        "editTitle": "Edit Identity",
+        "createTitle": "Crear una nueva identidad",
+        "editTitle": "Editar identidad",
         "fields": {
-          "name": "Identity Name",
-          "namePlaceholder": "Enter identity name",
-          "username": "Username",
-          "usernamePlaceholder": "Username (optional)",
-          "authType": "Authentication Type",
-          "password": "Password",
-          "passwordPlaceholder": "Enter password",
-          "passwordPlaceholderEdit": "Leave blank to keep current password",
-          "sshKey": "SSH Private Key",
-          "passphrase": "Passphrase (optional)",
-          "passphrasePlaceholder": "Enter passphrase (optional)",
-          "passphrasePlaceholderEdit": "Leave blank to keep current passphrase"
+          "name": "Nombre de identidad",
+          "namePlaceholder": "Introduce el nombre de la identidad",
+          "username": "Nombre de usuario",
+          "usernamePlaceholder": "Nombre de usuario (opcional)",
+          "authType": "Tipo de autenticación",
+          "password": "Contraseña",
+          "passwordPlaceholder": "Introduce la contraseña",
+          "passwordPlaceholderEdit": "Dejar en blanco para mantener la contraseña actual",
+          "sshKey": "Clave privada SSH",
+          "passphrase": "Frase de acceso (opcional)",
+          "passphrasePlaceholder": "Introduce la frase de contraseña (opcional)",
+          "passphrasePlaceholderEdit": "Déjalo en blanco para mantener la contraseña actual"
         },
         "authTypes": {
-          "password": "Password",
-          "ssh": "SSH Key"
+          "password": "Contraseña",
+          "ssh": "Clave SSH"
         },
-        "keyFileLoaded": "Key file loaded",
+        "keyFileLoaded": "Archivo de claves cargado",
         "actions": {
-          "cancel": "Cancel",
-          "create": "Create Identity",
-          "update": "Update Identity"
+          "cancel": "Cancela",
+          "create": "Crear identidad",
+          "update": "Actualizar identidad"
         },
         "messages": {
-          "nameRequired": "Identity name is required",
-          "passwordRequired": "Password is required",
-          "sshKeyRequired": "SSH key is required",
-          "createSuccess": "Identity created successfully",
-          "updateSuccess": "Identity updated successfully",
-          "createFailed": "Failed to create identity",
-          "updateFailed": "Failed to update identity"
+          "nameRequired": "Se requiere nombre de identidad",
+          "passwordRequired": "Se requiere contraseña",
+          "sshKeyRequired": "Se necesita clave SSH",
+          "createSuccess": "Identidad creada correctamente",
+          "updateSuccess": "Identidad actualizada correctamente",
+          "createFailed": "Error al crear identidad",
+          "updateFailed": "Error al actualizar la identidad"
         }
       }
     }
   },
   "servers": {
     "contextMenu": {
-      "createFolder": "Create Folder",
-      "deleteFolder": "Delete Folder",
-      "renameFolder": "Rename Folder",
-      "createServer": "Create Server",
-      "import": "Import",
+      "createFolder": "Crear carpeta",
+      "deleteFolder": "Eliminar carpeta",
+      "renameFolder": "Cambiar nombre de carpeta",
+      "createServer": "Crear servidor",
+      "import": "Importa",
       "pve": "PVE",
       "sshConfig": "SSH-Config",
-      "connect": "Connect",
-      "openSFTP": "Open SFTP",
-      "editServer": "Edit Server",
-      "duplicateServer": "Duplicate Server",
-      "deleteServer": "Delete Server",
-      "editPVE": "Edit PVE",
-      "deletePVE": "Delete PVE",
-      "shutdown": "Shutdown",
-      "stop": "Stop",
-      "start": "Start"
+      "connect": "Conecta",
+      "openSFTP": "Abrir SFTP",
+      "editServer": "Editar servidor",
+      "duplicateServer": "Servidor duplicado",
+      "deleteServer": "Borrar servidor",
+      "editPVE": "Editar PVE",
+      "deletePVE": "Borrar PVE",
+      "shutdown": "Apaga",
+      "stop": "Para",
+      "start": "Comienza"
     },
     "dialog": {
-      "addServer": "Add server",
-      "editServer": "Edit server",
+      "addServer": "Añadir servidor",
+      "editServer": "Editar servidor",
       "tabs": {
-        "details": "Details",
-        "identities": "Identities",
-        "settings": "Settings"
+        "details": "Detalles",
+        "identities": "Identidades",
+        "settings": "Ajustes"
       },
       "actions": {
-        "save": "Save",
-        "create": "Create"
+        "save": "Guarda",
+        "create": "Crea"
       },
       "fields": {
-        "name": "Name",
-        "icon": "Icon",
-        "serverIp": "Server-IP",
-        "port": "Port",
-        "protocol": "Protocol",
-        "username": "Username",
-        "password": "Password",
-        "host": "Host"
+        "name": "Nombre",
+        "icon": "Icono",
+        "serverIp": "Servidor-IP",
+        "port": "Puerto",
+        "protocol": "Protocolo",
+        "username": "Nombre de usuario",
+        "password": "Contraseña",
+        "host": "Anfitrión"
       },
       "placeholders": {
-        "serverName": "Server name",
-        "serverIp": "Server-IP",
-        "port": "Port",
-        "username": "Username",
-        "password": "Password",
-        "host": "Host"
+        "serverName": "Nombre del servidor",
+        "serverIp": "Servidor-IP",
+        "port": "Puerto",
+        "username": "Nombre de usuario",
+        "password": "Contraseña",
+        "host": "Anfitrión"
       }
     },
     "proxmoxDialog": {
       "title": {
-        "import": "Import Proxmox VE",
-        "edit": "Edit Proxmox VE"
+        "import": "Importar Proxmox VE",
+        "edit": "Editar Proxmox VE"
       },
       "fields": {
-        "name": "Name",
-        "serverIp": "Server-IP",
-        "port": "Port",
-        "username": "Username",
-        "password": "Password",
-        "nodeName": "Node Name (Optional)"
+        "name": "Nombre",
+        "serverIp": "Servidor-IP",
+        "port": "Puerto",
+        "username": "Nombre de usuario",
+        "password": "Contraseña",
+        "nodeName": "Nombre del nodo (opcional)"
       },
       "placeholders": {
-        "name": "Name",
-        "serverIp": "Server-IP",
-        "port": "Port",
-        "username": "Username (e.g. root@pam)",
-        "password": "Password",
-        "specificNode": "Specific node name"
+        "name": "Nombre",
+        "serverIp": "Servidor-IP",
+        "port": "Puerto",
+        "username": "Nombre de usuario (por ejemplo, root@pam)",
+        "password": "Contraseña",
+        "specificNode": "Nombre específico del nodo"
       },
       "actions": {
-        "import": "Import",
-        "edit": "Edit"
+        "import": "Importa",
+        "edit": "Edita"
       }
     },
     "connectionReasonDialog": {
-      "title": "Connection Reason Required",
-      "reasonLabel": "Please provide a reason for connecting to <strong>{{serverName}}</strong>:",
-      "placeholder": "Enter your reason for this connection...",
+      "title": "Razón de conexión requerida",
+      "reasonLabel": "Indica el motivo de la conexión a <strong>{{serverName}}</strong>:",
+      "placeholder": "Introduce el motivo de esta conexión...",
       "characterCount": "{{count}}/500",
       "actions": {
-        "cancel": "Cancel",
-        "connect": "Connect"
+        "cancel": "Cancela",
+        "connect": "Conecta"
       }
     },
     "sshConfigImport": {
-      "title": "Import SSH Config",
+      "title": "Importar configuración SSH",
       "configContent": {
-        "label": "SSH Config Content",
-        "placeholder": "Paste your SSH config content here..."
+        "label": "Contenido de la configuración SSH",
+        "placeholder": "Pega aquí el contenido de tu configuración SSH..."
       },
       "keyFiles": {
-        "label": "SSH Key Files ({{count}} found)",
-        "userLabel": "User: {{username}}",
-        "uploaded": "✓ Uploaded",
-        "uploadButton": "Upload"
+        "label": "Archivos de claves SSH ({{count}} encontrado)",
+        "userLabel": "Usuario: {{username}}",
+        "uploaded": "✓ Subido",
+        "uploadButton": "Sube"
       },
       "actions": {
-        "cancel": "Cancel",
-        "import": "Import",
-        "importing": "Importing..."
+        "cancel": "Cancela",
+        "import": "Importa",
+        "importing": "Importar..."
       },
       "messages": {
-        "noContent": "Please provide SSH config content",
-        "noFolder": "No folder selected",
-        "uploadSuccess": "Key {{name}} uploaded successfully",
-        "uploadFailed": "Failed to upload key {{name}}",
-        "importFailed": "Failed to import SSH config"
+        "noContent": "Proporciona el contenido de la configuración SSH",
+        "noFolder": "No hay carpeta seleccionada",
+        "uploadSuccess": "Clave {{name}} cargada correctamente",
+        "uploadFailed": "Error al cargar la clave {{name}}",
+        "importFailed": "Error al importar la configuración SSH"
       }
     },
     "fileManager": {
       "createFolder": {
-        "title": "Create Folder",
-        "placeholder": "Folder Name",
-        "button": "Create Folder"
+        "title": "Crear carpeta",
+        "placeholder": "Nombre de la carpeta",
+        "button": "Crear carpeta"
       },
       "renameItem": {
-        "title": "Rename",
-        "placeholder": "New name",
-        "button": "Rename"
+        "title": "Cambia el nombre de",
+        "placeholder": "Nuevo nombre",
+        "button": "Cambia el nombre de"
       },
       "fileEditor": {
-        "title": "File Editor",
-        "save": "Save",
-        "cancel": "Cancel",
-        "loading": "Loading...",
-        "saving": "Saving...",
-        "saveSuccess": "File saved successfully",
-        "saveFailed": "Failed to save file",
-        "loadFailed": "Failed to load file",
-        "unsavedChanges": "You have unsaved changes. Are you sure you want to close this file?"
+        "title": "Editor de archivos",
+        "save": "Guarda",
+        "cancel": "Cancela",
+        "loading": "Cargando...",
+        "saving": "Ahorrar...",
+        "saveSuccess": "Archivo guardado correctamente",
+        "saveFailed": "Error al guardar el archivo",
+        "loadFailed": "Error al cargar el archivo",
+        "unsavedChanges": "Tienes cambios sin guardar. ¿Estás seguro de que quieres cerrar este archivo?"
       },
       "contextMenu": {
-        "open": "Open",
-        "download": "Download",
-        "rename": "Rename",
-        "delete": "Delete",
-        "copy": "Copy",
-        "cut": "Cut",
-        "paste": "Paste",
-        "createFolder": "Create Folder",
-        "upload": "Upload File",
-        "edit": "Edit",
-        "bigFileConfirm": "This file is {{size}} MB large. Are you sure you want to edit it?"
+        "open": "Abre",
+        "download": "Descarga",
+        "rename": "Cambia el nombre de",
+        "delete": "Borra",
+        "copy": "Copia",
+        "cut": "Corta",
+        "paste": "Pega",
+        "createFolder": "Crear carpeta",
+        "upload": "Subir archivo",
+        "edit": "Edita",
+        "bigFileConfirm": "Este archivo tiene un tamaño de {{size}} MB. ¿Estás seguro de que quieres editarlo?"
       }
     },
     "aiAssistant": {
-      "title": "AI Assistant",
-      "placeholder": "Describe what you want to do...",
-      "hint": "Press Enter to generate • Esc to close",
-      "closeLabel": "Close AI Assistant"
+      "title": "Asistente de IA",
+      "placeholder": "Describe lo que quieres hacer...",
+      "hint": "Pulsa Intro para generar - Esc para cerrar",
+      "closeLabel": "Cerrar Asistente AI"
     },
     "snippets": {
-      "title": "Snippets",
-      "noSnippets": "No snippets available",
-      "searchPlaceholder": "Search snippets...",
-      "createNew": "Create New Snippet"
+      "title": "Fragmentos",
+      "noSnippets": "No hay fragmentos disponibles",
+      "searchPlaceholder": "Buscar fragmentos...",
+      "createNew": "Crear nuevo fragmento"
     },
     "messages": {
-      "fillRequiredFields": "Please fill in all required fields",
-      "serverCreated": "Server created successfully",
-      "serverUpdated": "Server updated successfully",
-      "createFailed": "Failed to create server",
-      "updateFailed": "Failed to update server",
-      "createIdentityFailed": "Failed to create identity",
-      "updateIdentityFailed": "Failed to update identity"
+      "fillRequiredFields": "Rellena todos los campos obligatorios",
+      "serverCreated": "Servidor creado correctamente",
+      "serverUpdated": "Servidor actualizado correctamente",
+      "createFailed": "Error al crear el servidor",
+      "updateFailed": "Error al actualizar el servidor",
+      "createIdentityFailed": "Error al crear identidad",
+      "updateIdentityFailed": "Error al actualizar la identidad"
     }
   },
   "apps": {
