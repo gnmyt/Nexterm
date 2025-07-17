@@ -81,7 +81,8 @@ export const Account = () => {
 
                     <div className="form-group">
                         <label htmlFor="lastName">{t("settings.account.lastName")}</label>
-                        <IconInput icon={mdiAccountCircleOutline} placeholder={t("settings.account.lastName")} id="lastName"
+                        <IconInput icon={mdiAccountCircleOutline} placeholder={t("settings.account.lastName")}
+                                   id="lastName"
                                    value={lastName} setValue={setLastName}
                                    customClass={updatedField === "lastName" ? " fd-updated" : ""}
                                    onBlur={(event) => updateName({ lastName: event.target.value })} />
@@ -93,27 +94,22 @@ export const Account = () => {
                 <h2>{t("settings.account.appearance")}</h2>
                 <div className="section-inner">
                     <p style={{ maxWidth: "25rem" }}>{t("settings.account.appearanceDescription")}</p>
-                    <Button text={theme === "dark" ? t("settings.account.switchToLight") : t("settings.account.switchToDark")}
-                            icon={mdiWhiteBalanceSunny} onClick={toggleTheme} />
-                </div>
-            </div>
-
-            <div className="account-section">
-                <h2>{t("settings.account.language")}</h2>
-                <div className="section-inner">
-                    <p style={{ maxWidth: "25rem" }}>{t("settings.account.languageDescription")}</p>
-                    <SelectBox options={languageOptions} selected={currentLanguage} setSelected={changeLanguage} />
+                    <Button
+                        text={theme === "dark" ? t("settings.account.switchToLight") : t("settings.account.switchToDark")}
+                        icon={mdiWhiteBalanceSunny} onClick={toggleTheme} />
                 </div>
             </div>
 
             <div className="account-section">
                 <div className="tfa-title">
                     <h2>{t("settings.account.twoFactor")}</h2>
-                    {user?.totpEnabled ? <p className="active">{t("settings.account.twoFactorActive")}</p> : <p className="inactive">{t("settings.account.twoFactorInactive")}</p>}
+                    {user?.totpEnabled ? <p className="active">{t("settings.account.twoFactorActive")}</p> :
+                        <p className="inactive">{t("settings.account.twoFactorInactive")}</p>}
                 </div>
                 <div className="section-inner">
                     <p style={{ maxWidth: "25rem" }}>{t("settings.account.twoFactorDescription")}</p>
-                    {!user?.totpEnabled && <Button text={t("settings.account.enable2FA")} onClick={() => setTwoFactorOpen(true)} />}
+                    {!user?.totpEnabled &&
+                        <Button text={t("settings.account.enable2FA")} onClick={() => setTwoFactorOpen(true)} />}
                     {user?.totpEnabled ? <Button text={t("settings.account.disable2FA")} onClick={disable2FA} /> : null}
                 </div>
             </div>
@@ -123,7 +119,16 @@ export const Account = () => {
                 <div className="section-inner">
                     <p style={{ maxWidth: "25rem" }}>{t("settings.account.changePasswordDescription")}</p>
 
-                    <Button text={t("settings.account.changePasswordButton")} onClick={() => setPasswordChangeOpen(true)} />
+                    <Button text={t("settings.account.changePasswordButton")}
+                            onClick={() => setPasswordChangeOpen(true)} />
+                </div>
+            </div>
+
+            <div className="account-section">
+                <h2>{t("settings.account.language")}</h2>
+                <div className="section-inner">
+                    <p style={{ maxWidth: "25rem" }}>{t("settings.account.languageDescription")}</p>
+                    <SelectBox options={languageOptions} selected={currentLanguage} setSelected={changeLanguage} />
                 </div>
             </div>
 
