@@ -26,6 +26,7 @@ import Icon from "@mdi/react";
 import { useContext, useState } from "react";
 import ProxmoxLogo from "./assets/proxmox.jsx";
 import "./styles.sass";
+import { useTranslation } from "react-i18next";
 
 export const ContextMenu = ({
     position,
@@ -41,6 +42,7 @@ export const ContextMenu = ({
     setSSHConfigImportDialogOpen,
     openSFTP,
 }) => {
+    const { t } = useTranslation();
     const {
         loadServers,
         getServerById,
@@ -160,42 +162,42 @@ export const ContextMenu = ({
                 type !== "pve-entry" && (
                     <div className="context-item" onClick={createFolder}>
                         <Icon path={mdiFolderPlus} />
-                        <p>Create Folder</p>
+                        <p>{t("servers.contextMenu.createFolder")}</p>
                     </div>
                 )}
             {type === "folder-object" && !isOrgFolder && (
                 <>
                     <div className="context-item" onClick={deleteFolder}>
                         <Icon path={mdiFolderRemove} />
-                        <p>Delete Folder</p>
+                        <p>{t("servers.contextMenu.deleteFolder")}</p>
                     </div>
                     <div
                         className="context-item"
                         onClick={() => setRenameStateId(id)}
                     >
                         <Icon path={mdiFormTextbox} />
-                        <p>Rename Folder</p>
+                        <p>{t("servers.contextMenu.renameFolder")}</p>
                     </div>
                     <div className="context-item" onClick={createServer}>
                         <Icon path={mdiServerPlus} />
-                        <p>Create Server</p>
+                        <p>{t("servers.contextMenu.createServer")}</p>
                     </div>
                     <div className="context-item submenu-parent"
                          onMouseEnter={() => setShowImportSubmenu(true)}
                          onMouseLeave={() => setShowImportSubmenu(false)}>
                         <Icon path={mdiImport} />
-                        <p>Import</p>
+                        <p>{t("servers.contextMenu.import")}</p>
                         <Icon path={mdiChevronRight} className="submenu-arrow" />
 
                         {showImportSubmenu && (
                             <div className="submenu">
                                 <div className="context-item" onClick={createPVEServer}>
                                     <ProxmoxLogo />
-                                    <p>PVE</p>
+                                    <p>{t("servers.contextMenu.pve")}</p>
                                 </div>
                                 <div className="context-item" onClick={openSSHConfigImport}>
                                     <Icon path={mdiFileDocumentOutline} />
-                                    <p>SSH-Config</p>
+                                    <p>{t("servers.contextMenu.sshConfig")}</p>
                                 </div>
                             </div>
                         )}
@@ -209,14 +211,14 @@ export const ContextMenu = ({
                             {server.identities.length === 1 ? (
                                 <div className="context-item" onClick={() => connect()}>
                                     <Icon path={mdiConnection} />
-                                    <p>Connect</p>
+                                    <p>{t("servers.contextMenu.connect")}</p>
                                 </div>
                             ) : (
                                 <div className="context-item submenu-parent"
                                      onMouseEnter={() => setShowIdentitySubmenu(true)}
                                      onMouseLeave={() => setShowIdentitySubmenu(false)}>
                                     <Icon path={mdiConnection} />
-                                    <p>Connect</p>
+                                    <p>{t("servers.contextMenu.connect")}</p>
                                     <Icon path={mdiChevronRight} className="submenu-arrow" />
 
                                     {showIdentitySubmenu && (
@@ -242,14 +244,14 @@ export const ContextMenu = ({
                             {server.identities.length === 1 ? (
                                 <div className="context-item" onClick={() => connectSFTP()}>
                                     <Icon path={mdiFolderOpen} />
-                                    <p>Open SFTP</p>
+                                    <p>{t("servers.contextMenu.openSFTP")}</p>
                                 </div>
                             ) : (
                                 <div className="context-item submenu-parent"
                                      onMouseEnter={() => setShowSftpSubmenu(true)}
                                      onMouseLeave={() => setShowSftpSubmenu(false)}>
                                     <Icon path={mdiFolderOpen} />
-                                    <p>Open SFTP</p>
+                                    <p>{t("servers.contextMenu.openSFTP")}</p>
                                     <Icon path={mdiChevronRight} className="submenu-arrow" />
 
                                     {showSftpSubmenu && (
@@ -272,17 +274,17 @@ export const ContextMenu = ({
 
                     <div className="context-item" onClick={editServer}>
                         <Icon path={mdiPencil} />
-                        <p>Edit Server</p>
+                        <p>{t("servers.contextMenu.editServer")}</p>
                     </div>
 
                     <div className="context-item" onClick={duplicateServer}>
                         <Icon path={mdiContentCopy} />
-                        <p>Duplicate Server</p>
+                        <p>{t("servers.contextMenu.duplicateServer")}</p>
                     </div>
 
                     <div className="context-item" onClick={deleteServer}>
                         <Icon path={mdiServerMinus} />
-                        <p>Delete Server</p>
+                        <p>{t("servers.contextMenu.deleteServer")}</p>
                     </div>
                 </>
             )}
@@ -291,11 +293,11 @@ export const ContextMenu = ({
                 <>
                     <div className="context-item" onClick={editPVEServer}>
                         <Icon path={mdiPencil} />
-                        <p>Edit PVE</p>
+                        <p>{t("servers.contextMenu.editPVE")}</p>
                     </div>
                     <div className="context-item" onClick={deletePVEServer}>
                         <Icon path={mdiServerMinus} />
-                        <p>Delete PVE</p>
+                        <p>{t("servers.contextMenu.deletePVE")}</p>
                     </div>
                 </>
             )}
@@ -304,7 +306,7 @@ export const ContextMenu = ({
                 <>
                     <div className="context-item" onClick={connect}>
                         <Icon path={mdiConnection} />
-                        <p>Connect</p>
+                        <p>{t("servers.contextMenu.connect")}</p>
                     </div>
                 </>
             )}
@@ -316,7 +318,7 @@ export const ContextMenu = ({
                         onClick={() => postPVEAction("shutdown")}
                     >
                         <Icon path={mdiPower} />
-                        <p>Shutdown</p>
+                        <p>{t("servers.contextMenu.shutdown")}</p>
                     </div>
 
                     <div
@@ -324,7 +326,7 @@ export const ContextMenu = ({
                         onClick={() => postPVEAction("stop")}
                     >
                         <Icon path={mdiStop} />
-                        <p>Stop</p>
+                        <p>{t("servers.contextMenu.stop")}</p>
                     </div>
                 </>
             )}
@@ -336,7 +338,7 @@ export const ContextMenu = ({
                         onClick={() => postPVEAction("start")}
                     >
                         <Icon path={mdiPower} />
-                        <p>Start</p>
+                        <p>{t("servers.contextMenu.start")}</p>
                     </div>
                 </>
             )}

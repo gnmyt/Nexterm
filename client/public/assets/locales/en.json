@@ -307,7 +307,10 @@
       "disable2FA": "Disable 2FA",
       "changePassword": "Change password",
       "changePasswordDescription": "Choose a new and secure password for your account here.",
-      "changePasswordButton": "Change password"
+      "changePasswordButton": "Change password",
+      "language": "Language",
+      "languageDescription": "Select your preferred language for the interface.",
+      "currentLanguage": "Current Language"
     },
     "passwordChange": {
       "title": "Change password",
@@ -459,6 +462,27 @@
       "deleteConfirm": "Are you sure you want to delete \"{{name}}\"? This action cannot be undone and will remove this identity from all servers that use it.",
       "deleteSuccess": "Identity deleted successfully",
       "deleteError": "Failed to delete identity"
+    }
+  },
+  "servers": {
+    "contextMenu": {
+      "createFolder": "Create Folder",
+      "deleteFolder": "Delete Folder",
+      "renameFolder": "Rename Folder",
+      "createServer": "Create Server",
+      "import": "Import",
+      "pve": "PVE",
+      "sshConfig": "SSH-Config",
+      "connect": "Connect",
+      "openSFTP": "Open SFTP",
+      "editServer": "Edit Server",
+      "duplicateServer": "Duplicate Server",
+      "deleteServer": "Delete Server",
+      "editPVE": "Edit PVE",
+      "deletePVE": "Delete PVE",
+      "shutdown": "Shutdown",
+      "stop": "Stop",
+      "start": "Start"
     }
   },
   "apps": {
