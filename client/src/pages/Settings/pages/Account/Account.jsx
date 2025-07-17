@@ -1,6 +1,6 @@
 import IconInput from "@/common/components/IconInput";
 import "./styles.sass";
-import { mdiAccountCircleOutline, mdiWhiteBalanceSunny } from "@mdi/js";
+import { mdiAccountCircleOutline, mdiWhiteBalanceSunny, mdiAccountEdit, mdiPalette, mdiShieldCheck, mdiLockReset, mdiTranslate } from "@mdi/js";
 import { useContext, useEffect, useState } from "react";
 import { UserContext } from "@/common/contexts/UserContext.jsx";
 import { useTheme } from "@/common/contexts/ThemeContext.jsx";
@@ -12,6 +12,7 @@ import { useTranslation } from "react-i18next";
 import SelectBox from "@/common/components/SelectBox";
 import { languages } from "@/i18n.js";
 import i18n from "@/i18n.js";
+import Icon from "@mdi/react";
 
 export const Account = () => {
     const { t } = useTranslation();
@@ -69,7 +70,7 @@ export const Account = () => {
             <TwoFactorAuthentication open={twoFactorOpen} onClose={() => setTwoFactorOpen(false)} />
             <PasswordChange open={passwordChangeOpen} onClose={() => setPasswordChangeOpen(false)} />
             <div className="account-section">
-                <h2>{t("settings.account.accountName")}</h2>
+                <h2><Icon path={mdiAccountEdit} size={0.8} style={{marginRight: '8px'}} />{t("settings.account.accountName")}</h2>
                 <div className="section-inner">
                     <div className="form-group">
                         <label htmlFor="firstName">{t("settings.account.firstName")}</label>
@@ -91,7 +92,7 @@ export const Account = () => {
             </div>
 
             <div className="account-section">
-                <h2>{t("settings.account.appearance")}</h2>
+                <h2><Icon path={mdiPalette} size={0.8} style={{marginRight: '8px'}} />{t("settings.account.appearance")}</h2>
                 <div className="section-inner">
                     <p style={{ maxWidth: "25rem" }}>{t("settings.account.appearanceDescription")}</p>
                     <Button
@@ -102,7 +103,7 @@ export const Account = () => {
 
             <div className="account-section">
                 <div className="tfa-title">
-                    <h2>{t("settings.account.twoFactor")}</h2>
+                    <h2><Icon path={mdiShieldCheck} size={0.8} style={{marginRight: '8px'}} />{t("settings.account.twoFactor")}</h2>
                     {user?.totpEnabled ? <p className="active">{t("settings.account.twoFactorActive")}</p> :
                         <p className="inactive">{t("settings.account.twoFactorInactive")}</p>}
                 </div>
@@ -115,7 +116,7 @@ export const Account = () => {
             </div>
 
             <div className="account-section">
-                <h2>{t("settings.account.changePassword")}</h2>
+                <h2><Icon path={mdiLockReset} size={0.8} style={{marginRight: '8px'}} />{t("settings.account.changePassword")}</h2>
                 <div className="section-inner">
                     <p style={{ maxWidth: "25rem" }}>{t("settings.account.changePasswordDescription")}</p>
 
@@ -125,7 +126,7 @@ export const Account = () => {
             </div>
 
             <div className="account-section">
-                <h2>{t("settings.account.language")}</h2>
+                <h2><Icon path={mdiTranslate} size={0.8} style={{marginRight: '8px'}} />{t("settings.account.language")}</h2>
                 <div className="section-inner">
                     <div className="language-help">
                         <p className="main-description">{t("settings.account.languageDescription")}</p>
