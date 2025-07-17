@@ -9,8 +9,10 @@ import UbuntuImage from "./os_images/ubuntu.png";
 import LinuxImage from "./os_images/linux.png";
 import LogDialog from "@/pages/Apps/components/AppInstaller/components/LogDialog";
 import { ServerContext } from "@/common/contexts/ServerContext.jsx";
+import { useTranslation } from "react-i18next";
 
 export const AppInstaller = ({ serverId, app, setInstalling }) => {
+    const { t } = useTranslation();
 
     const { retrieveServerById } = useContext(ServerContext);
     const { sessionToken } = useContext(UserContext);
@@ -18,8 +20,15 @@ export const AppInstaller = ({ serverId, app, setInstalling }) => {
     const [logOpen, setLogOpen] = useState(false);
     const [logContent, setLogContent] = useState("");
 
-    const steps = ["Look up Linux distro", "Check permissions", "Install Docker Engine", "Download base image",
-        "Run pre-install command", "Start Docker container", "Run post-install command"];
+    const steps = [
+        t("apps.installer.steps.lookupDistro"),
+        t("apps.installer.steps.checkPermissions"),
+        t("apps.installer.steps.installDocker"),
+        t("apps.installer.steps.downloadImage"),
+        t("apps.installer.steps.preInstall"),
+        t("apps.installer.steps.startContainer"),
+        t("apps.installer.steps.postInstall")
+    ];
 
     const [foundOS, setFoundOS] = useState(null);
     const [osImage, setOSImage] = useState(null);
@@ -142,8 +151,8 @@ export const AppInstaller = ({ serverId, app, setInstalling }) => {
                 </div>
                 <div className="install-info">
                     <h2>{app.name}</h2>
-                    <p>{failedStep ? "Deployment failed" :
-                        currentStep === steps.length ? "Deployment completed" : "Deploying..."}</p>
+                    <p>{failedStep ? t("apps.installer.deploymentFailed") :
+                        currentStep === steps.length + 1 ? t("apps.installer.deploymentCompleted") : t("apps.installer.deploying")}</p>
                 </div>
             </div>
 
@@ -151,13 +160,13 @@ export const AppInstaller = ({ serverId, app, setInstalling }) => {
                 {steps.map((step, index) => {
                     return <InstallStep key={index} progressValue={currentProgress} imgContent={osImage}
                                         type={getTypeByIndex(index)}
-                                        text={index === 0 && foundOS ? `Detected ${foundOS}` : step} />;
+                                        text={index === 0 && foundOS ? t("apps.installer.steps.detected", { os: foundOS }) : step} />;
                 })}
             </div>
 
             <div className="install-actions">
-                <Button text="Logs" icon={mdiConsoleLine} onClick={() => setLogOpen(true)} />
-                {currentStep === steps.length && <Button text="Open" icon={mdiOpenInNew} onClick={openApp} />}
+                <Button text={t("apps.actions.logs")} icon={mdiConsoleLine} onClick={() => setLogOpen(true)} />
+                {currentStep === steps.length + 1 && <Button text={t("apps.actions.open")} icon={mdiOpenInNew} onClick={openApp} />}
             </div>
         </div>
     );

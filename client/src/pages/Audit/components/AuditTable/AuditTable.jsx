@@ -11,9 +11,11 @@ import {
     mdiLoading,
 } from "@mdi/js";
 import Button from "@/common/components/Button";
+import { useTranslation } from "react-i18next";
 import "./styles.sass";
 
 export const AuditTable = ({ logs, loading, pagination, onPageChange, getIconForAction }) => {
+    const { t } = useTranslation();
     const [expandedRow, setExpandedRow] = useState(null);
 
     const formatTimestamp = useCallback((timestamp) => {
@@ -72,8 +74,8 @@ export const AuditTable = ({ logs, loading, pagination, onPageChange, getIconFor
             <div className="audit-table-container">
                 <div className="no-logs">
                     <Icon path={mdiInformationOutline} />
-                    <h3>No audit logs found</h3>
-                    <p>Try adjusting your filters or check back later.</p>
+                    <h3>{t('audit.table.noLogs.title')}</h3>
+                    <p>{t('audit.table.noLogs.subtitle')}</p>
                 </div>
             </div>
         );
@@ -84,7 +86,7 @@ export const AuditTable = ({ logs, loading, pagination, onPageChange, getIconFor
             {loading && (
                 <div className="loading-overlay">
                     <Icon path={mdiLoading} spin />
-                    <span>Loading audit logs...</span>
+                    <span>{t('audit.table.loading')}</span>
                 </div>
             )}
 
@@ -92,21 +94,21 @@ export const AuditTable = ({ logs, loading, pagination, onPageChange, getIconFor
                 <div className="table-header">
                     <div className="header-cell timestamp">
                         <Icon path={mdiCalendarClock} />
-                        <span>Timestamp</span>
+                        <span>{t('audit.table.headers.timestamp')}</span>
                     </div>
-                    <div className="header-cell action">Action</div>
+                    <div className="header-cell action">{t('audit.table.headers.action')}</div>
                     <div className="header-cell actor">
                         <Icon path={mdiAccountCircleOutline} />
-                        <span>Actor</span>
+                        <span>{t('audit.table.headers.actor')}</span>
                     </div>
-                    <div className="header-cell resource">Resource</div>
+                    <div className="header-cell resource">{t('audit.table.headers.resource')}</div>
                     <div className="header-cell organization">
                         <Icon path={mdiDomain} />
-                        <span>Organization</span>
+                        <span>{t('audit.table.headers.organization')}</span>
                     </div>
                     <div className="header-cell details">
                         <Icon path={mdiInformationOutline} />
-                        <span>Details</span>
+                        <span>{t('audit.table.headers.details')}</span>
                     </div>
                 </div>
 
@@ -139,7 +141,7 @@ export const AuditTable = ({ logs, loading, pagination, onPageChange, getIconFor
                                             <span className="actor-name">
                                                 {log.actorFirstName && log.actorLastName
                                                     ? `${log.actorFirstName} ${log.actorLastName}`
-                                                    : `User #${log.accountId}`
+                                                    : t('audit.table.badges.user', { id: log.accountId })
                                                 }
                                             </span>
                                             {log.ipAddress && (
@@ -160,10 +162,10 @@ export const AuditTable = ({ logs, loading, pagination, onPageChange, getIconFor
                                     <div className="cell organization" data-label="Organization">
                                         {log.organizationId ? (
                                             <span className="org-badge">
-                                                {log.organizationName || `Org #${log.organizationId}`}
+                                                {log.organizationName || t('audit.table.badges.organization', { id: log.organizationId })}
                                             </span>
                                         ) : (
-                                            <span className="personal-badge">Personal</span>
+                                            <span className="personal-badge">{t('audit.table.badges.personal')}</span>
                                         )}
                                     </div>
 
@@ -178,21 +180,21 @@ export const AuditTable = ({ logs, loading, pagination, onPageChange, getIconFor
                                         <div className="expanded-content">
                                             {log.reason && (
                                                 <div className="reason-section">
-                                                    <h4>Connection Reason</h4>
+                                                    <h4>{t('audit.table.expandedDetails.connectionReason')}</h4>
                                                     <p>{log.reason}</p>
                                                 </div>
                                             )}
 
                                             {log.userAgent && (
                                                 <div className="user-agent-section">
-                                                    <h4>User Agent</h4>
+                                                    <h4>{t('audit.table.expandedDetails.userAgent')}</h4>
                                                     <p><Icon path={mdiWeb} /> {log.userAgent}</p>
                                                 </div>
                                             )}
 
                                             {log.details && (
                                                 <div className="details-section">
-                                                    <h4>Additional Details</h4>
+                                                    <h4>{t('audit.table.expandedDetails.additionalDetails')}</h4>
                                                     {renderDetails(log.details)}
                                                 </div>
                                             )}
@@ -208,12 +210,16 @@ export const AuditTable = ({ logs, loading, pagination, onPageChange, getIconFor
             {logs.length > 0 && (
                 <div className="pagination">
                     <div className="pagination-info">
-                        Showing {((pagination.currentPage - 1) * pagination.itemsPerPage) + 1} to {Math.min(pagination.currentPage * pagination.itemsPerPage, pagination.total)} of {pagination.total} logs
+                        {t('audit.pagination.showing', {
+                            start: ((pagination.currentPage - 1) * pagination.itemsPerPage) + 1,
+                            end: Math.min(pagination.currentPage * pagination.itemsPerPage, pagination.total),
+                            total: pagination.total
+                        })}
                     </div>
 
                     <div className="pagination-controls">
                         <Button
-                            text="Previous"
+                            text={t('audit.pagination.previous')}
                             icon={mdiChevronLeft}
                             onClick={() => onPageChange(pagination.currentPage - 1)}
                             disabled={pagination.currentPage <= 1}
@@ -221,11 +227,14 @@ export const AuditTable = ({ logs, loading, pagination, onPageChange, getIconFor
                         />
 
                         <span className="page-info">
-                            Page {pagination.currentPage} of {totalPages}
+                            {t('audit.pagination.pageInfo', {
+                                current: pagination.currentPage,
+                                total: totalPages
+                            })}
                         </span>
 
                         <Button
-                            text="Next"
+                            text={t('audit.pagination.next')}
                             icon={mdiChevronRight}
                             onClick={() => onPageChange(pagination.currentPage + 1)}
                             disabled={pagination.currentPage >= totalPages}

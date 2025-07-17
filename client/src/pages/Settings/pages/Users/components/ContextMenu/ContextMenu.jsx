@@ -2,13 +2,16 @@ import Icon from "@mdi/react";
 import { mdiAccount, mdiAccountRemove, mdiKey, mdiLogin, mdiSecurity } from "@mdi/js";
 import { deleteRequest, patchRequest, postRequest } from "@/common/utils/RequestUtil.js";
 import { useContext, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { ActionConfirmDialog } from "@/common/components/ActionConfirmDialog/ActionConfirmDialog.jsx";
 import PasswordChange from "@/pages/Settings/pages/Account/dialogs/PasswordChange";
 import { UserContext } from "@/common/contexts/UserContext.jsx";
 import { useNavigate } from "react-router-dom";
+import "./styles.sass";
 
 export const ContextMenu = ({ users, closeContextMenu, loadUsers, contextUserId, contextMenu }) => {
 
+    const { t } = useTranslation();
     const { user, overrideToken } = useContext(UserContext);
 
     const navigate = useNavigate();
@@ -63,13 +66,13 @@ export const ContextMenu = ({ users, closeContextMenu, loadUsers, contextUserId,
         <>
             <ActionConfirmDialog open={confirmDeleteDialogOpen} setOpen={setConfirmDeleteDialogOpen}
                                  onConfirm={() => deleteUser(contextUserId)}
-                                 text="This will permanently delete the user and all associated data." />
+                                 text={t("settings.users.contextMenu.deleteConfirm")} />
             <ActionConfirmDialog open={promoteDialogOpen} setOpen={setPromoteDialogOpen}
                                  onConfirm={() => updateRole(contextUserId, "admin")}
-                                 text="This will promote the user to an admin." />
+                                 text={t("settings.users.contextMenu.promoteConfirm")} />
             <ActionConfirmDialog open={demoteDialogOpen} setOpen={setDemoteDialogOpen}
                                  onConfirm={() => updateRole(contextUserId, "user")}
-                                 text="This will demote the user to a regular user." />
+                                 text={t("settings.users.contextMenu.demoteConfirm")} />
 
             <PasswordChange open={passwordChangeDialogOpen} onClose={() => setPasswordChangeDialogOpen(false)}
                             accountId={contextUserId} />
@@ -80,30 +83,30 @@ export const ContextMenu = ({ users, closeContextMenu, loadUsers, contextUserId,
                 onClick={(e) => e.stopPropagation()}>
                 <div className="context-item" onClick={() => openPasswordChangeDialog()}>
                     <Icon path={mdiKey} />
-                    <p>Change password</p>
+                    <p>{t("settings.users.contextMenu.changePassword")}</p>
                 </div>
 
                 {users.find(u => u.id === contextUserId).role === "user" && user.id !== contextUserId && (
                     <div className="context-item" onClick={() => openPromotionDialog()}>
                         <Icon path={mdiSecurity} />
-                        <p>Promote to admin</p>
+                        <p>{t("settings.users.contextMenu.promoteToAdmin")}</p>
                     </div>
                 )}
 
                 {users.find(u => u.id === contextUserId).role === "admin" && user.id !== contextUserId && (
                     <div className="context-item" onClick={() => openDemotionDialog()}>
                         <Icon path={mdiAccount} />
-                        <p>Demote to user</p>
+                        <p>{t("settings.users.contextMenu.demoteToUser")}</p>
                     </div>
                 )}
 
                 {user.id !== contextUserId && <div className="context-item" onClick={() => openDeletionDialog()}>
                     <Icon path={mdiAccountRemove} />
-                    <p>Delete user</p>
+                    <p>{t("settings.users.contextMenu.deleteUser")}</p>
                 </div>}
                 {user.id !== contextUserId && <div className="context-item" onClick={() => loginAsUser(contextUserId)}>
                     <Icon path={mdiLogin} />
-                    <p>Login as user</p>
+                    <p>{t("settings.users.contextMenu.loginAsUser")}</p>
                 </div>}
                     </div>}
             </>

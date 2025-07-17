@@ -4,8 +4,10 @@ import Icon from "@mdi/react";
 import { useSnippets } from "@/common/contexts/SnippetContext.jsx";
 import { deleteRequest } from "@/common/utils/RequestUtil.js";
 import { useToast } from "@/common/contexts/ToastContext.jsx";
+import { useTranslation } from "react-i18next";
 
 export const SnippetsList = ({ snippets, onEdit }) => {
+    const { t } = useTranslation();
     const { loadSnippets } = useSnippets();
     const { sendToast } = useToast();
 
@@ -13,10 +15,10 @@ export const SnippetsList = ({ snippets, onEdit }) => {
         event.stopPropagation();
         try {
             await deleteRequest(`snippets/${id}`);
-            sendToast("Success", "Snippet deleted successfully");
+            sendToast("Success", t('snippets.messages.success.deleted'));
             loadSnippets();
         } catch (error) {
-            sendToast("Error", error.message || "Failed to delete snippet");
+            sendToast("Error", error.message || t('snippets.messages.errors.deleteFailed'));
         }
     };
 
@@ -28,7 +30,7 @@ export const SnippetsList = ({ snippets, onEdit }) => {
     if (!snippets || snippets.length === 0) {
         return (
             <div className="empty-snippets">
-                <p>You don't have any snippets yet. Create your first one!</p>
+                <p>{t('snippets.list.empty')}</p>
             </div>
         );
     }
@@ -45,11 +47,11 @@ export const SnippetsList = ({ snippets, onEdit }) => {
                         </div>
                         <div className="snippet-actions">
                             <button className="action-button" onClick={(e) => handleEditSnippet(snippet.id, e)}
-                                    title="Edit snippet">
+                                    title={t('snippets.list.actions.edit')}>
                                 <Icon path={mdiPencil} />
                             </button>
                             <button className="action-button delete" onClick={(e) => handleDeleteSnippet(snippet.id, e)}
-                                    title="Delete snippet">
+                                    title={t('snippets.list.actions.delete')}>
                                 <Icon path={mdiTrashCan} />
                             </button>
                         </div>

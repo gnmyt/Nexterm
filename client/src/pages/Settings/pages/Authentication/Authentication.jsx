@@ -1,5 +1,6 @@
 import "./styles.sass";
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { deleteRequest, getRequest, patchRequest } from "@/common/utils/RequestUtil.js";
 import Button from "@/common/components/Button";
 import ToggleSwitch from "@/common/components/ToggleSwitch";
@@ -10,6 +11,7 @@ import { ActionConfirmDialog } from "@/common/components/ActionConfirmDialog/Act
 import { useToast } from "@/common/contexts/ToastContext.jsx";
 
 export const Authentication = () => {
+    const { t } = useTranslation();
     const { sendToast } = useToast();
     const [providers, setProviders] = useState([]);
     const [createDialogOpen, setCreateDialogOpen] = useState(false);
@@ -32,7 +34,7 @@ export const Authentication = () => {
             await loadProviders();
             setDeleteDialogOpen(false);
         } catch (error) {
-            sendToast("Error", error.message || "Error deleting provider");
+            sendToast(t("common.error"), error.message || t("settings.authentication.errors.deleteProvider"));
         }
     };
 
@@ -41,7 +43,7 @@ export const Authentication = () => {
             await patchRequest(`oidc/admin/providers/${providerId}`, { enabled });
             await loadProviders();
         } catch (error) {
-            sendToast("Error", error.message || "Error toggling provider");
+            sendToast(t("common.error"), error.message || t("settings.authentication.errors.toggleProvider"));
         }
     };
 
@@ -52,8 +54,8 @@ export const Authentication = () => {
     return (
         <div className="authentication-page">
             <div className="provider-title">
-                <h2>{providers.length} Authentication Providers</h2>
-                <Button onClick={() => setCreateDialogOpen(true)} text="Add Provider" icon={mdiPlus} />
+                <h2>{t("settings.authentication.title", { count: providers.length })}</h2>
+                <Button onClick={() => setCreateDialogOpen(true)} text={t("settings.authentication.addProvider")} icon={mdiPlus} />
             </div>
 
             {providers.map(provider => (
@@ -63,9 +65,9 @@ export const Authentication = () => {
                         <div className="provider-info">
                             <h2>
                                 {provider.name}
-                                {provider.isInternal && <span className="internal-badge">System</span>}
+                                {provider.isInternal && <span className="internal-badge">{t("settings.authentication.system")}</span>}
                             </h2>
-                            <p>{provider.isInternal ? "Username and password authentication" : provider.issuer}</p>
+                            <p>{provider.isInternal ? t("settings.authentication.systemDescription") : provider.issuer}</p>
                         </div>
                     </div>
 
@@ -107,7 +109,7 @@ export const Authentication = () => {
             <ActionConfirmDialog
                 open={deleteDialogOpen}
                 setOpen={setDeleteDialogOpen}
-                text="This will permanently delete this authentication provider."
+                text={t("settings.authentication.deleteConfirm")}
                 onConfirm={handleDelete}
             />
         </div>

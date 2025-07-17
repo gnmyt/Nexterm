@@ -8,8 +8,10 @@ import { useContext, useEffect, useState } from "react";
 import { getRequest, request } from "@/common/utils/RequestUtil.js";
 import { UserContext } from "@/common/contexts/UserContext.jsx";
 import { useToast } from "@/common/contexts/ToastContext.jsx";
+import { useTranslation } from "react-i18next";
 
 export const LoginDialog = ({ open }) => {
+    const { t } = useTranslation();
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
     const [firstName, setFirstName] = useState("");
@@ -46,7 +48,7 @@ export const LoginDialog = ({ open }) => {
                 }, 300);
             }
         } catch (error) {
-            sendToast("Error", "Error loading authentication providers: " + error);
+            sendToast("Error", t('common.errors.loadingAuthProviders', { error: error }));
         }
     };
 
@@ -61,7 +63,7 @@ export const LoginDialog = ({ open }) => {
             await request("accounts/register", "POST", { username, password, firstName, lastName });
             return true;
         } catch (error) {
-            sendToast("Error", error.message || "An error occurred");
+            sendToast("Error", error.message || t('common.errors.generalError'));
             return false;
         }
     };
@@ -70,7 +72,7 @@ export const LoginDialog = ({ open }) => {
         event.preventDefault();
 
         if (!isInternalAuthEnabled()) {
-            sendToast("Error", "Internal authentication is disabled");
+            sendToast("Error", t('common.errors.internalAuthDisabled'));
             return;
         }
 
@@ -84,14 +86,14 @@ export const LoginDialog = ({ open }) => {
                 code: totpRequired ? code : undefined,
             });
         } catch (error) {
-            sendToast("Error", error.message || "An error occurred");
+            sendToast("Error", error.message || t('common.errors.generalError'));
             return;
         }
 
-        if (resultObj.code === 201) sendToast("Error", "Invalid username or password");
+        if (resultObj.code === 201) sendToast("Error", t('common.errors.invalidCredentials'));
         if (resultObj.code === 202) setTotpRequired(true);
-        if (resultObj.code === 203) sendToast("Error", "Invalid two-factor code");
-        if (resultObj.code === 403) sendToast("Error", "Internal authentication is disabled");
+        if (resultObj.code === 203) sendToast("Error", t('common.errors.invalidTwoFactor'));
+        if (resultObj.code === 403) sendToast("Error", t('common.errors.internalAuthDisabled'));
         if (resultObj.token) {
             updateSessionToken(resultObj.token);
         }
@@ -109,7 +111,7 @@ export const LoginDialog = ({ open }) => {
                 window.location.href = response.url;
             }
         } catch (error) {
-            sendToast("Error", error.message || "Failed to initiate SSO login");
+            sendToast("Error", error.message || t('common.errors.ssoLoginFailed'));
         }
     };
 
@@ -118,21 +120,21 @@ export const LoginDialog = ({ open }) => {
             <div className="login-dialog">
                 <div className="login-logo">
                     <img src={NextermLogo} alt="Nexterm" />
-                    <h1>{firstTimeSetup ? "Registration" : "Nexterm"}</h1>
+                    <h1>{firstTimeSetup ? t('common.loginDialog.registrationTitle') : t('common.loginDialog.title')}</h1>
                 </div>
                 <form className="login-form" onSubmit={submit}>
                     {firstTimeSetup ? (
                         <div className="register-name-row">
                             <div className="form-group">
-                                <label htmlFor="firstName">First Name</label>
+                                <label htmlFor="firstName">{t('common.labels.firstName')}</label>
                                 <Input type="text" id="firstName" required icon={mdiAccountCircleOutline}
-                                       placeholder="First name" autoComplete="given-name"
+                                       placeholder={t('common.placeholders.firstName')} autoComplete="given-name"
                                        value={firstName} setValue={setFirstName} />
                             </div>
                             <div className="form-group">
-                                <label htmlFor="lastName">Last Name</label>
+                                <label htmlFor="lastName">{t('common.labels.lastName')}</label>
                                 <Input type="text" id="lastName" required icon={mdiAccountCircleOutline}
-                                       placeholder="Last name" autoComplete="family-name"
+                                       placeholder={t('common.placeholders.lastName')} autoComplete="family-name"
                                        value={lastName} setValue={setLastName} />
                             </div>
                         </div>
@@ -141,16 +143,16 @@ export const LoginDialog = ({ open }) => {
                     {(!totpRequired && isInternalAuthEnabled()) ? (
                         <>
                             <div className="form-group">
-                                <label htmlFor="username">Username</label>
+                                <label htmlFor="username">{t('common.labels.username')}</label>
                                 <Input type="text" id="username" required icon={mdiAccountCircleOutline}
-                                       placeholder="Username" autoComplete="username"
+                                       placeholder={t('common.placeholders.username')} autoComplete="username"
                                        value={username} setValue={setUsername} />
                             </div>
 
                             <div className="form-group">
-                                <label htmlFor="password">Password</label>
+                                <label htmlFor="password">{t('common.labels.password')}</label>
                                 <Input type="password" id="password" required icon={mdiKeyOutline}
-                                       placeholder="Password" autoComplete="current-password"
+                                       placeholder={t('common.placeholders.password')} autoComplete="current-password"
                                        value={password} setValue={setPassword} />
                             </div>
                         </>
@@ -159,20 +161,20 @@ export const LoginDialog = ({ open }) => {
                     {totpRequired ? (
                         <>
                             <div className="form-group">
-                                <label htmlFor="code">2FA Code</label>
+                                <label htmlFor="code">{t('common.labels.twoFACode')}</label>
                                 <Input type="number" id="code" required icon={mdiKeyOutline}
-                                       placeholder="Code" autoComplete="one-time-code"
+                                       placeholder={t('common.placeholders.code')} autoComplete="one-time-code"
                                        value={code} setValue={setCode} />
                             </div>
                         </>
                     ) : null}
 
-                    {isInternalAuthEnabled() ? <Button text={firstTimeSetup ? "Register" : "Login"} /> : null}
+                    {isInternalAuthEnabled() ? <Button text={firstTimeSetup ? t('common.actions.register') : t('common.actions.login')} /> : null}
 
                     {(!firstTimeSetup && !totpRequired && providers.length > 0 && isInternalAuthEnabled()) ? (
                         <div className="sso-options">
                             <div className="divider">
-                                <span>or continue with</span>
+                                <span>{t('common.loginDialog.ssoOrContinueWith')}</span>
                             </div>
                             <div className="sso-buttons">
                                 {providers.map(provider => (
@@ -190,7 +192,7 @@ export const LoginDialog = ({ open }) => {
                     {(!firstTimeSetup && !totpRequired && providers.length > 0 && !isInternalAuthEnabled()) ? (
                         <div className="sso-options">
                             <div className="divider">
-                                <span>sign in with</span>
+                                <span>{t('common.loginDialog.ssoSignInWith')}</span>
                             </div>
                             <div className="sso-buttons">
                                 {providers.map(provider => (
@@ -201,7 +203,7 @@ export const LoginDialog = ({ open }) => {
                     ) : null}
 
                     {(!firstTimeSetup && !isInternalAuthEnabled() && providers.length === 0) ? (
-                        <p>No authentication methods available.</p>
+                        <p>{t('common.loginDialog.noAuthMethodsAvailable')}</p>
                     ) : null}
                 </form>
             </div>

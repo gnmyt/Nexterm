@@ -6,8 +6,10 @@ import SnippetDialog from "@/pages/Snippets/components/SnippetDialog";
 import Button from "@/common/components/Button";
 import PageHeader from "@/common/components/PageHeader";
 import { mdiCodeBrackets, mdiPlus } from "@mdi/js";
+import { useTranslation } from "react-i18next";
 
 export const Snippets = () => {
+    const { t } = useTranslation();
     const [dialogOpen, setDialogOpen] = useState(false);
     const [editSnippetId, setEditSnippetId] = useState(null);
     const { snippets } = useSnippets();
@@ -29,9 +31,9 @@ export const Snippets = () => {
 
     return (
         <div className="snippets-page">
-            <PageHeader icon={mdiCodeBrackets} title="Snippets"
-                        subtitle="Manage your command snippets for quick access in terminals">
-                <Button text="Add Snippet" icon={mdiPlus} onClick={openCreateDialog} />
+            <PageHeader icon={mdiCodeBrackets} title={t('snippets.page.title')}
+                        subtitle={t('snippets.page.subtitle')}>
+                <Button text={t('snippets.page.addSnippet')} icon={mdiPlus} onClick={openCreateDialog} />
             </PageHeader>
 
             <SnippetsList snippets={snippets} onEdit={openEditDialog} />

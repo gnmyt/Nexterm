@@ -2,7 +2,7 @@ import "./styles.sass";
 import Icon from "@mdi/react";
 import { useLocation, useNavigate } from "react-router-dom";
 
-export const SettingsItem = ({icon, title}) => {
+export const SettingsItem = ({icon, title, routeKey}) => {
 
     const location = useLocation();
     const navigate = useNavigate();
@@ -12,8 +12,8 @@ export const SettingsItem = ({icon, title}) => {
     }
 
     return (
-        <div className={"settings-item" + (endsWith(title.toLowerCase()) ? " settings-item-active" : "")}
-             onClick={() => navigate("/settings/" + title.toLowerCase())}>
+        <div className={"settings-item" + (endsWith(routeKey) ? " settings-item-active" : "")}
+             onClick={() => navigate("/settings/" + routeKey)}>
             <Icon path={icon} />
             <h2>{title}</h2>
         </div>

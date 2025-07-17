@@ -5,8 +5,10 @@ import Button from "@/common/components/Button";
 import "./styles.sass";
 import { patchRequest } from "@/common/utils/RequestUtil.js";
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 
 export const PasswordChange = ({ open, onClose, accountId }) => {
+    const { t } = useTranslation();
     const [passwordError, setPasswordError] = useState(false);
 
     const [password, setPassword] = useState("");
@@ -52,22 +54,21 @@ export const PasswordChange = ({ open, onClose, accountId }) => {
     return (
         <DialogProvider open={open} onClose={onClose}>
             <div className="password-change" onKeyDown={e => e.key === "Enter" && changePassword()}>
-                <h2>Change password</h2>
+                <h2>{t("settings.passwordChange.title")}</h2>
                 <p>
-                    A strong password contains special characters, numbers, and
-                    letters in both uppercase and lowercase.
+                    {t("settings.passwordChange.description")}
                 </p>
                 <div className="form-group">
-                    <IconInput icon={mdiAccountCircleOutline} type="password" placeholder="New password"
+                    <IconInput icon={mdiAccountCircleOutline} type="password" placeholder={t("settings.passwordChange.newPassword")}
                                autoComplete="new-password" customClass={passwordError ? "error" : ""}
                                value={password} setValue={setPassword} />
                 </div>
                 <div className="form-group">
-                    <IconInput icon={mdiAccountCircleOutline} type="password" placeholder="Confirm new password"
+                    <IconInput icon={mdiAccountCircleOutline} type="password" placeholder={t("settings.passwordChange.confirmPassword")}
                                autoComplete="new-password" customClass={passwordError ? "error" : ""}
                                value={confirmPassword} setValue={setConfirmPassword} />
                 </div>
-                <Button text="Change password" onClick={changePassword} />
+                <Button text={t("settings.passwordChange.changePasswordButton")} onClick={changePassword} />
             </div>
         </DialogProvider>
     );

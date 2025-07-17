@@ -7,8 +7,10 @@ import { useToast } from "@/common/contexts/ToastContext.jsx";
 import PageHeader from "@/common/components/PageHeader";
 import { mdiArrowLeft, mdiChartBoxOutline, mdiMagnify } from "@mdi/js";
 import IconInput from "@/common/components/IconInput";
+import { useTranslation } from "react-i18next";
 
 export const Monitoring = () => {
+    const { t } = useTranslation();
     const [servers, setServers] = useState([]);
     const [filteredServers, setFilteredServers] = useState([]);
     const [selectedServer, setSelectedServer] = useState(null);
@@ -62,13 +64,13 @@ export const Monitoring = () => {
         <div className="monitoring-page">
             <PageHeader
                 icon={selectedServer ? undefined : mdiChartBoxOutline}
-                title={selectedServer ? selectedServer.name : "Server Monitoring"}
-                subtitle={selectedServer ? undefined : "Real-time server statistics and health monitoring"}
+                title={selectedServer ? selectedServer.name : t('monitoring.page.title')}
+                subtitle={selectedServer ? undefined : t('monitoring.page.subtitle')}
                 onBackClick={selectedServer ? handleBackToGrid : undefined}
                 backIcon={mdiArrowLeft}>
                 {!selectedServer && (
-                    <IconInput type="text" icon={mdiMagnify} placeholder="Search servers..." value={searchQuery}
-                               setValue={handleSearchChange} />
+                    <IconInput type="text" icon={mdiMagnify} placeholder={t('monitoring.page.searchPlaceholder')} 
+                               value={searchQuery} setValue={handleSearchChange} />
                 )}
             </PageHeader>
 

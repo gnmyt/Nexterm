@@ -4,6 +4,7 @@ import Button from "@/common/components/Button";
 import SelectBox from "@/common/components/SelectBox";
 import { useContext } from "react";
 import { UserContext } from "@/common/contexts/UserContext.jsx";
+import { useTranslation } from "react-i18next";
 import "./styles.sass";
 
 export const StoreHeader = ({
@@ -14,6 +15,7 @@ export const StoreHeader = ({
                                 selectedSource,
                                 setSelectedSource,
                             }) => {
+    const { t } = useTranslation();
     const { user } = useContext(UserContext);
     const isAdmin = user?.role === "admin";
 
@@ -24,23 +26,23 @@ export const StoreHeader = ({
             <div className="store-title">
                 <Icon path={isScriptsCategory ? mdiScript : mdiPackageVariant} />
                 <div className="descriptor">
-                    <h1>{isScriptsCategory ? "Scripts" : "App Store"}</h1>
-                    <p>{isScriptsCategory ? "Automate your server tasks with custom scripts." : "Your favorite apps, deployed with a single click."}</p>
+                    <h1>{isScriptsCategory ? t("apps.store.scripts") : t("apps.store.appStore")}</h1>
+                    <p>{isScriptsCategory ? t("apps.store.scriptsDescription") : t("apps.store.appStoreDescription")}</p>
                 </div>
             </div>
 
             <div className="store-actions">
                 {isScriptsCategory && sources.length > 0 && (
                     <div className="source-filter">
-                        <label>Source:</label>
+                        <label>{t("apps.store.source")}</label>
                         <SelectBox options={sourceOptions} selected={selectedSource} setSelected={setSelectedSource} />
                     </div>
                 )}
                 {isAdmin && (
-                    <Button text="Manage sources" icon={mdiBook} onClick={onSourceClick} type="secondary" />
+                    <Button text={t("apps.store.manageSources")} icon={mdiBook} onClick={onSourceClick} type="secondary" />
                 )}
                 {isScriptsCategory && (
-                    <Button text="Create Script" icon={mdiPlus} onClick={onCreateScript} />
+                    <Button text={t("apps.store.createScript")} icon={mdiPlus} onClick={onCreateScript} />
                 )}
             </div>
         </div>

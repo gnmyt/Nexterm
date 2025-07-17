@@ -8,9 +8,10 @@ import Button from "@/common/components/Button";
 import { patchRequest, postRequest } from "@/common/utils/RequestUtil.js";
 import TwoFactorAuthentication from "@/pages/Settings/pages/Account/dialogs/TwoFactorAuthentication";
 import PasswordChange from "@/pages/Settings/pages/Account/dialogs/PasswordChange";
+import { useTranslation } from "react-i18next";
 
 export const Account = () => {
-
+    const { t } = useTranslation();
     const [twoFactorOpen, setTwoFactorOpen] = useState(false);
     const [passwordChangeOpen, setPasswordChangeOpen] = useState(false);
 
@@ -56,19 +57,19 @@ export const Account = () => {
             <TwoFactorAuthentication open={twoFactorOpen} onClose={() => setTwoFactorOpen(false)} />
             <PasswordChange open={passwordChangeOpen} onClose={() => setPasswordChangeOpen(false)} />
             <div className="account-section">
-                <h2>Account name</h2>
+                <h2>{t("settings.account.accountName")}</h2>
                 <div className="section-inner">
                     <div className="form-group">
-                        <label htmlFor="firstName">First name</label>
-                        <IconInput icon={mdiAccountCircleOutline} placeholder="First name"
+                        <label htmlFor="firstName">{t("settings.account.firstName")}</label>
+                        <IconInput icon={mdiAccountCircleOutline} placeholder={t("settings.account.firstName")}
                                    id="firstName" customClass={updatedField === "firstName" ? " fd-updated" : ""}
                                    value={firstName} setValue={setFirstName}
                                    onBlur={(event) => updateName({ firstName: event.target.value })} />
                     </div>
 
                     <div className="form-group">
-                        <label htmlFor="lastName">Last name</label>
-                        <IconInput icon={mdiAccountCircleOutline} placeholder="Last name" id="lastName"
+                        <label htmlFor="lastName">{t("settings.account.lastName")}</label>
+                        <IconInput icon={mdiAccountCircleOutline} placeholder={t("settings.account.lastName")} id="lastName"
                                    value={lastName} setValue={setLastName}
                                    customClass={updatedField === "lastName" ? " fd-updated" : ""}
                                    onBlur={(event) => updateName({ lastName: event.target.value })} />
@@ -77,33 +78,32 @@ export const Account = () => {
             </div>
 
             <div className="account-section">
-                <h2>Appearance</h2>
+                <h2>{t("settings.account.appearance")}</h2>
                 <div className="section-inner">
-                    <p style={{ maxWidth: "25rem" }}>Choose between light and dark theme for your interface.</p>
-                    <Button text={theme === "dark" ? "Switch to Light Mode" : "Switch to Dark Mode"}
+                    <p style={{ maxWidth: "25rem" }}>{t("settings.account.appearanceDescription")}</p>
+                    <Button text={theme === "dark" ? t("settings.account.switchToLight") : t("settings.account.switchToDark")}
                             icon={mdiWhiteBalanceSunny} onClick={toggleTheme} />
                 </div>
             </div>
 
             <div className="account-section">
                 <div className="tfa-title">
-                    <h2>Two-factor authentication</h2>
-                    {user?.totpEnabled ? <p className="active">Active</p> : <p className="inactive">Inactive</p>}
+                    <h2>{t("settings.account.twoFactor")}</h2>
+                    {user?.totpEnabled ? <p className="active">{t("settings.account.twoFactorActive")}</p> : <p className="inactive">{t("settings.account.twoFactorInactive")}</p>}
                 </div>
                 <div className="section-inner">
-                    <p style={{ maxWidth: "25rem" }}>Add an extra layer of security to your account by enabling
-                        two-factor authentication.</p>
-                    {!user?.totpEnabled && <Button text="Enable 2FA" onClick={() => setTwoFactorOpen(true)} />}
-                    {user?.totpEnabled ? <Button text="Disable 2FA" onClick={disable2FA} /> : null}
+                    <p style={{ maxWidth: "25rem" }}>{t("settings.account.twoFactorDescription")}</p>
+                    {!user?.totpEnabled && <Button text={t("settings.account.enable2FA")} onClick={() => setTwoFactorOpen(true)} />}
+                    {user?.totpEnabled ? <Button text={t("settings.account.disable2FA")} onClick={disable2FA} /> : null}
                 </div>
             </div>
 
             <div className="account-section">
-                <h2>Change password</h2>
+                <h2>{t("settings.account.changePassword")}</h2>
                 <div className="section-inner">
-                    <p style={{ maxWidth: "25rem" }}>Choose a new and secure password for your account here.</p>
+                    <p style={{ maxWidth: "25rem" }}>{t("settings.account.changePasswordDescription")}</p>
 
-                    <Button text="Change password" onClick={() => setPasswordChangeOpen(true)} />
+                    <Button text={t("settings.account.changePasswordButton")} onClick={() => setPasswordChangeOpen(true)} />
                 </div>
             </div>
 

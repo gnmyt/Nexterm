@@ -10,6 +10,7 @@ import CodeMirror from "@uiw/react-codemirror";
 import { githubDark } from "@uiw/codemirror-theme-github";
 import { nextermLanguage } from "@/common/codemirror/nexterm-lang.js";
 import { useToast } from "@/common/contexts/ToastContext.jsx";
+import { useTranslation } from "react-i18next";
 
 export const ScriptDialog = ({ open, onClose, onScriptCreated, onScriptUpdated, editingScript, viewingScript }) => {
     const [name, setName] = useState("");
@@ -17,6 +18,7 @@ export const ScriptDialog = ({ open, onClose, onScriptCreated, onScriptUpdated, 
     const [content, setContent] = useState("");
 
     const { sendToast } = useToast();
+    const { t } = useTranslation();
     const [creating, setCreating] = useState(false);
 
     const isEditing = !!editingScript;
@@ -58,17 +60,17 @@ fi
 
     const createScript = async () => {
         if (!name.trim()) {
-            sendToast("Error", "Script name is required");
+            sendToast("Error", t("apps.dialogs.script.errors.nameRequired"));
             return;
         }
 
         if (!description.trim()) {
-            sendToast("Error", "Script description is required");
+            sendToast("Error", t("apps.dialogs.script.errors.descriptionRequired"));
             return;
         }
 
         if (!content.trim()) {
-            sendToast("Error", "Script content cannot be empty");
+            sendToast("Error", t("apps.dialogs.script.errors.contentRequired"));
             return;
         }
 
@@ -80,18 +82,18 @@ fi
             let script;
             if (isEditing) {
                 script = await putRequest(`scripts/${editingScript.id.replace(/\//g, "%2F")}`, scriptData);
-                sendToast("Success", "Script updated successfully");
+                sendToast("Success", t("apps.dialogs.script.success.updated"));
                 onScriptUpdated && onScriptUpdated(script);
             } else {
                 script = await postRequest("scripts", scriptData);
-                sendToast("Success", "Script created successfully");
+                sendToast("Success", t("apps.dialogs.script.success.created"));
                 onScriptCreated && onScriptCreated(script);
             }
 
             onClose();
             resetForm();
         } catch (err) {
-            sendToast("Error", err.message || `Failed to ${isEditing ? "update" : "create"} script`);
+            sendToast("Error", err.message || t(`apps.dialogs.script.errors.${isEditing ? "updateFailed" : "createFailed"}`));
         } finally {
             setCreating(false);
         }
@@ -112,8 +114,8 @@ fi
         <DialogProvider open={open} onClose={handleClose}>
             <div className="create-script-dialog">
                 <div className="dialog-header">
-                    <h2>{isViewing ? "View Script" : (isEditing ? "Edit Script" : "Create Custom Script")}</h2>
-                    {isViewing && <p>Source: {viewingScript?.source}</p>}
+                    <h2>{isViewing ? t("apps.dialogs.script.viewTitle") : (isEditing ? t("apps.dialogs.script.editTitle") : t("apps.dialogs.script.createTitle"))}</h2>
+                    {isViewing && <p>{t("apps.dialogs.script.source", { source: viewingScript?.source })}</p>}
                 </div>
 
                 <div className="dialog-body">
@@ -121,20 +123,20 @@ fi
                         <div className="form-section">
                             <h3>
                                 <Icon path={mdiFormTextbox} />
-                                Script Details
+                                {t("apps.dialogs.script.scriptDetails")}
                             </h3>
 
                             <div className="form-row">
                                 <div className="form-group">
-                                    <label>Script Name *</label>
+                                    <label>{t("apps.dialogs.script.fields.name")}</label>
                                     <IconInput icon={mdiFormTextbox} value={name} setValue={setName}
-                                               placeholder="My Awesome Script" />
+                                               placeholder={t("apps.dialogs.script.fields.namePlaceholder")} />
                                 </div>
 
                                 <div className="form-group">
-                                    <label>Description *</label>
+                                    <label>{t("apps.dialogs.script.fields.description")}</label>
                                     <IconInput icon={mdiFileDocument} value={description} setValue={setDescription}
-                                               placeholder="What does this script do?" />
+                                               placeholder={t("apps.dialogs.script.fields.descriptionPlaceholder")} />
                                 </div>
                             </div>
                         </div>
@@ -143,11 +145,11 @@ fi
                     <div className="form-section">
                         <h3>
                             <Icon path={mdiCodeTags} />
-                            Script Content
+                            {t("apps.dialogs.script.scriptContent")}
                             {!isViewing && (
                                 <div className="help-tip">
                                     <Icon path={mdiLightbulb} />
-                                    <span>Use @NEXTERM: commands for interactive prompts</span>
+                                    <span>{t("apps.dialogs.script.helpTip")}</span>
                                 </div>
                             )}
                         </h3>
@@ -173,11 +175,11 @@ fi
                 </div>
 
                 <div className="dialog-actions">
-                    <Button onClick={handleClose} text={isViewing ? "Close" : "Cancel"} type="secondary" icon={mdiClose}
+                    <Button onClick={handleClose} text={isViewing ? t("apps.dialogs.script.actions.close") : t("apps.dialogs.script.actions.cancel")} type="secondary" icon={mdiClose}
                             disabled={creating} />
                     {!isViewing && (
                         <Button onClick={createScript}
-                                text={creating ? `${isEditing ? "Updating" : "Creating"}...` : `${isEditing ? "Update" : "Create"} Script`}
+                                text={creating ? t(`apps.dialogs.script.actions.${isEditing ? "updating" : "creating"}`) : t(`apps.dialogs.script.actions.${isEditing ? "update" : "create"}`)}
                                 icon={mdiCheck} disabled={creating} />
                     )}
                 </div>

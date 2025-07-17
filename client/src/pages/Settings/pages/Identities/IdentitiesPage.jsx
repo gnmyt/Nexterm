@@ -1,4 +1,5 @@
 import { useContext, useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { IdentityContext } from "@/common/contexts/IdentityContext.jsx";
 import { deleteRequest } from "@/common/utils/RequestUtil.js";
 import { useToast } from "@/common/contexts/ToastContext.jsx";
@@ -10,21 +11,23 @@ import IdentityDialog from "./components/IdentityDialog";
 import "./styles.sass";
 
 export const IdentityCard = ({ identity, onEdit, onDelete }) => {
+    const { t } = useTranslation();
+    
     return (
         <div className="identity-card">
             <div className="identity-info">
                 <Icon path={mdiKey} className="identity-icon" />
                 <div className="identity-details">
                     <h3>{identity.name}</h3>
-                    <p className="identity-username">{identity.username || "No username"}</p>
-                    <span className="identity-type">{identity.type === "ssh" ? "SSH Key" : "Password"}</span>
+                    <p className="identity-username">{identity.username || t("settings.identities.noUsername")}</p>
+                    <span className="identity-type">{identity.type === "ssh" ? t("settings.identities.sshKey") : t("settings.identities.password")}</span>
                 </div>
             </div>
             <div className="identity-actions">
-                <button className="action-btn edit-btn" onClick={() => onEdit(identity)} title="Edit identity">
+                <button className="action-btn edit-btn" onClick={() => onEdit(identity)} title={t("settings.identities.editIdentity")}>
                     <Icon path={mdiPencil} size={0.8} />
                 </button>
-                <button className="action-btn delete-btn" onClick={() => onDelete(identity)} title="Delete identity">
+                <button className="action-btn delete-btn" onClick={() => onDelete(identity)} title={t("settings.identities.deleteIdentity")}>
                     <Icon path={mdiTrashCan} size={0.8} />
                 </button>
             </div>
@@ -33,6 +36,7 @@ export const IdentityCard = ({ identity, onEdit, onDelete }) => {
 };
 
 export const IdentitiesPage = () => {
+    const { t } = useTranslation();
     const { identities, loadIdentities } = useContext(IdentityContext);
     const { sendToast } = useToast();
 
@@ -69,10 +73,10 @@ export const IdentitiesPage = () => {
 
         try {
             await deleteRequest(`identities/${identity.id}`);
-            sendToast("Success", "Identity deleted successfully");
+            sendToast(t("common.success"), t("settings.identities.deleteSuccess"));
             loadIdentities();
         } catch (error) {
-            sendToast("Error", error.message || "Failed to delete identity");
+            sendToast(t("common.error"), error.message || t("settings.identities.deleteError"));
         }
 
         setDeleteConfirmDialog({ open: false, identity: null });
@@ -83,10 +87,10 @@ export const IdentitiesPage = () => {
             <div className="identities-section">
                 <div className="section-header">
                     <div className="header-content">
-                        <h2>SSH Keys & Credentials</h2>
-                        <p>Manage your SSH keys and login credentials for server connections</p>
+                        <h2>{t("settings.identities.title")}</h2>
+                        <p>{t("settings.identities.description")}</p>
                     </div>
-                    <Button text="Create Identity" icon={mdiPlus} onClick={handleCreateNew} />
+                    <Button text={t("settings.identities.createIdentity")} icon={mdiPlus} onClick={handleCreateNew} />
                 </div>
 
                 <div className="identities-grid">
@@ -97,8 +101,8 @@ export const IdentitiesPage = () => {
                         ) :
                         <div className="no-identities">
                             <Icon path={mdiKey} />
-                            <h2>No Identities Found</h2>
-                            <p>Create your first identity to get started with server connections</p>
+                            <h2>{t("settings.identities.noIdentities")}</h2>
+                            <p>{t("settings.identities.noIdentitiesDescription")}</p>
                         </div>
                     }
                 </div>
@@ -109,7 +113,7 @@ export const IdentitiesPage = () => {
             <ActionConfirmDialog open={deleteConfirmDialog.open}
                                  setOpen={(open) => setDeleteConfirmDialog(prev => ({ ...prev, open }))}
                                  onConfirm={handleDeleteConfirm}
-                                 text={`Are you sure you want to delete "${deleteConfirmDialog.identity?.name}"? This action cannot be undone and will remove this identity from all servers that use it.`}
+                                 text={t("settings.identities.deleteConfirm", { name: deleteConfirmDialog.identity?.name })}
             />
         </div>
     );

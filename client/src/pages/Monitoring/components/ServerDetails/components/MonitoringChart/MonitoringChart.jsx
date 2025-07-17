@@ -10,6 +10,7 @@ import {
     Filler,
 } from "chart.js";
 import { Line } from "react-chartjs-2";
+import { useTranslation } from "react-i18next";
 import "./MonitoringChart.sass";
 
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend, Filler);
@@ -23,11 +24,13 @@ export const MonitoringChart = ({
                              height = "300px",
                              yAxisMax = null,
                          }) => {
+    const { t } = useTranslation();
+
     if (!data || data.length === 0) {
         return (
             <div className="monitoring-chart no-data">
                 <h4>{title}</h4>
-                <p>No data available for the selected time range</p>
+                <p>{t('monitoring.details.charts.noData')}</p>
             </div>
         );
     }
