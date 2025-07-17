@@ -307,7 +307,19 @@
       "disable2FA": "禁用 2FA",
       "changePassword": "更改密码",
       "changePasswordDescription": "在此为您的账户选择一个新的安全密码。",
-      "changePasswordButton": "更改密码"
+      "changePasswordButton": "更改密码",
+      "language": "语言",
+      "languageDescription": "选择您喜欢的界面语言。",
+      "currentLanguage": "当前语言",
+      "twoFactorDialog": {
+        "title": "启用 2FA",
+        "description": "使用身份验证程序扫描代码或手动输入 <span class=\"totp-code\">{{secret}}</span>手动输入。",
+        "codePlaceholder": "输入 2FA 代码",
+        "enableButton": "启用",
+        "messages": {
+          "setupFailed": "2FA 设置失败。请重试。"
+        }
+      }
     },
     "passwordChange": {
       "title": "更改密码",
@@ -329,7 +341,25 @@
       "pendingInvitations": "待发邀请",
       "invitedBy": "特邀嘉宾： {{name}}",
       "deleteConfirmation": "这将永久删除组织并删除所有成员。此操作无法撤销。",
-      "leaveConfirmation": "你确定要离开这个组织吗？"
+      "leaveConfirmation": "你确定要离开这个组织吗？",
+      "dialog": {
+        "title": "创建组织",
+        "fields": {
+          "name": "名称",
+          "namePlaceholder": "组织名称",
+          "description": "说明（可选）",
+          "descriptionPlaceholder": "贵组织简介"
+        },
+        "actions": {
+          "cancel": "取消",
+          "create": "创建"
+        },
+        "messages": {
+          "nameRequired": "组织名称为必填项",
+          "createSuccess": "成功创建组织",
+          "createFailed": "创建组织失败"
+        }
+      }
     },
     "users": {
       "title": "{{count}} 用户",
@@ -401,6 +431,44 @@
       "errors": {
         "deleteProvider": "删除提供程序出错",
         "toggleProvider": "切换提供程序时出错"
+      },
+      "providerDialog": {
+        "createTitle": "添加身份验证提供程序",
+        "editTitle": "编辑身份验证提供程序",
+        "fields": {
+          "displayName": "显示名称",
+          "displayNamePlaceholder": "例如，公司 SSO",
+          "issuerUrl": "发行人 URL",
+          "issuerUrlPlaceholder": "https://auth.company.com",
+          "clientId": "客户 ID",
+          "clientIdPlaceholder": "客户 ID",
+          "clientSecret": "客户秘密",
+          "clientSecretPlaceholder": "客户秘密",
+          "clientSecretPlaceholderEdit": "留空表示保留现有",
+          "redirectUri": "重定向 URI",
+          "redirectUriPlaceholder": "https://your-domain.com/api/oidc/callback",
+          "scope": "范围",
+          "scopePlaceholder": "openid 配置文件电子邮件",
+          "emailAttribute": "电子邮件属性",
+          "emailAttributePlaceholder": "电子邮件",
+          "usernameAttribute": "用户名属性",
+          "usernameAttributePlaceholder": "首选用户名",
+          "firstNameAttribute": "名字属性",
+          "firstNameAttributePlaceholder": "名字",
+          "lastNameAttribute": "姓氏属性",
+          "lastNameAttributePlaceholder": "家庭名"
+        },
+        "advanced": {
+          "show": "显示高级设置",
+          "hide": "隐藏高级设置"
+        },
+        "actions": {
+          "addProvider": "添加提供商",
+          "saveChanges": "保存更改"
+        },
+        "messages": {
+          "saveFailed": "未能保存提供商"
+        }
       }
     },
     "ai": {
@@ -458,7 +526,214 @@
       "noIdentitiesDescription": "创建第一个身份，开始连接服务器",
       "deleteConfirm": "您确定要删除 \"{{name}}\" 吗？此操作不可撤销，并将从所有使用该身份的服务器上删除该身份。",
       "deleteSuccess": "身份已成功删除",
-      "deleteError": "删除身份失败"
+      "deleteError": "删除身份失败",
+      "dialog": {
+        "createTitle": "创建新身份",
+        "editTitle": "编辑身份",
+        "fields": {
+          "name": "身份名称",
+          "namePlaceholder": "输入身份名称",
+          "username": "用户名",
+          "usernamePlaceholder": "用户名（可选）",
+          "authType": "认证类型",
+          "password": "密码",
+          "passwordPlaceholder": "输入密码",
+          "passwordPlaceholderEdit": "留空以保留当前密码",
+          "sshKey": "SSH 私钥",
+          "passphrase": "密码（可选）",
+          "passphrasePlaceholder": "输入密码（可选）",
+          "passphrasePlaceholderEdit": "留空以保留当前密码"
+        },
+        "authTypes": {
+          "password": "密码",
+          "ssh": "SSH 密钥"
+        },
+        "keyFileLoaded": "已加载密钥文件",
+        "actions": {
+          "cancel": "取消",
+          "create": "创建身份",
+          "update": "更新身份"
+        },
+        "messages": {
+          "nameRequired": "身份名称为必填项",
+          "passwordRequired": "需要密码",
+          "sshKeyRequired": "需要 SSH 密钥",
+          "createSuccess": "成功创建身份",
+          "updateSuccess": "身份已成功更新",
+          "createFailed": "创建身份失败",
+          "updateFailed": "更新身份失败"
+        }
+      }
+    }
+  },
+  "servers": {
+    "contextMenu": {
+      "createFolder": "创建文件夹",
+      "deleteFolder": "删除文件夹",
+      "renameFolder": "重命名文件夹",
+      "createServer": "创建服务器",
+      "import": "进口",
+      "pve": "PVE",
+      "sshConfig": "SSH 配置",
+      "connect": "连接",
+      "openSFTP": "打开 SFTP",
+      "editServer": "编辑服务器",
+      "duplicateServer": "复制服务器",
+      "deleteServer": "删除服务器",
+      "editPVE": "编辑 PVE",
+      "deletePVE": "删除 PVE",
+      "shutdown": "关闭",
+      "stop": "停止",
+      "start": "开始"
+    },
+    "dialog": {
+      "addServer": "添加服务器",
+      "editServer": "编辑服务器",
+      "tabs": {
+        "details": "详细信息",
+        "identities": "身份",
+        "settings": "设置"
+      },
+      "actions": {
+        "save": "节省",
+        "create": "创建"
+      },
+      "fields": {
+        "name": "名称",
+        "icon": "图标",
+        "serverIp": "服务器 IP",
+        "port": "港口",
+        "protocol": "规程",
+        "username": "用户名",
+        "password": "密码",
+        "host": "主持人"
+      },
+      "placeholders": {
+        "serverName": "服务器名称",
+        "serverIp": "服务器 IP",
+        "port": "港口",
+        "username": "用户名",
+        "password": "密码",
+        "host": "主持人"
+      }
+    },
+    "proxmoxDialog": {
+      "title": {
+        "import": "导入 Proxmox VE",
+        "edit": "编辑 Proxmox VE"
+      },
+      "fields": {
+        "name": "名称",
+        "serverIp": "服务器 IP",
+        "port": "港口",
+        "username": "用户名",
+        "password": "密码",
+        "nodeName": "节点名称（可选）"
+      },
+      "placeholders": {
+        "name": "名称",
+        "serverIp": "服务器 IP",
+        "port": "港口",
+        "username": "用户名（例如 root@pam）",
+        "password": "密码",
+        "specificNode": "特定节点名称"
+      },
+      "actions": {
+        "import": "进口",
+        "edit": "编辑"
+      }
+    },
+    "connectionReasonDialog": {
+      "title": "需要连接的原因",
+      "reasonLabel": "请说明连接到 <strong>{{serverName}}</strong>:",
+      "placeholder": "输入您连接的原因...",
+      "characterCount": "{{count}}/500",
+      "actions": {
+        "cancel": "取消",
+        "connect": "连接"
+      }
+    },
+    "sshConfigImport": {
+      "title": "导入 SSH 配置",
+      "configContent": {
+        "label": "SSH 配置内容",
+        "placeholder": "在此处粘贴 SSH 配置内容..."
+      },
+      "keyFiles": {
+        "label": "SSH 密钥文件 ({{count}} found)",
+        "userLabel": "用户： {{username}}",
+        "uploaded": "✓ 已上传",
+        "uploadButton": "上传"
+      },
+      "actions": {
+        "cancel": "取消",
+        "import": "进口",
+        "importing": "导入..."
+      },
+      "messages": {
+        "noContent": "请提供 SSH 配置内容",
+        "noFolder": "未选择文件夹",
+        "uploadSuccess": "关键 {{name}} 已成功上传",
+        "uploadFailed": "上传密钥失败 {{name}}",
+        "importFailed": "导入 SSH 配置失败"
+      }
+    },
+    "fileManager": {
+      "createFolder": {
+        "title": "创建文件夹",
+        "placeholder": "文件夹名称",
+        "button": "创建文件夹"
+      },
+      "renameItem": {
+        "title": "重新命名",
+        "placeholder": "新名称",
+        "button": "重新命名"
+      },
+      "fileEditor": {
+        "title": "文件编辑器",
+        "save": "节省",
+        "cancel": "取消",
+        "loading": "正在加载...",
+        "saving": "节约...",
+        "saveSuccess": "文件已成功保存",
+        "saveFailed": "保存文件失败",
+        "loadFailed": "加载文件失败",
+        "unsavedChanges": "您有未保存的更改。您确定要关闭此文件吗？"
+      },
+      "contextMenu": {
+        "open": "开放",
+        "download": "下载",
+        "rename": "重新命名",
+        "delete": "删除",
+        "copy": "复制",
+        "cut": "切割",
+        "paste": "粘贴",
+        "createFolder": "创建文件夹",
+        "upload": "上传文件",
+        "edit": "编辑",
+        "bigFileConfirm": "该文件大至 {{size}} MB。您确定要编辑它吗？"
+      }
+    },
+    "aiAssistant": {
+      "title": "人工智能助理",
+      "placeholder": "描述您想做的事情...",
+      "hint": "按 Enter 生成 - 按 Esc 关闭",
+      "closeLabel": "关闭人工智能助理"
+    },
+    "snippets": {
+      "title": "片段",
+      "noSnippets": "没有可用的片段",
+      "searchPlaceholder": "搜索片段...",
+      "createNew": "创建新片段"
+    },
+    "messages": {
+      "fillRequiredFields": "请填写所有必填项",
+      "serverCreated": "服务器创建成功",
+      "serverUpdated": "服务器更新成功",
+      "createFailed": "创建服务器失败",
+      "updateFailed": "更新服务器失败",
+      "createIdentityFailed": "创建身份失败",
+      "updateIdentityFailed": "更新身份失败"
     }
   },
   "apps": {
