@@ -25,13 +25,13 @@ export const Account = () => {
 
     const [firstName, setFirstName] = useState("");
     const [lastName, setLastName] = useState("");
-    const [currentLanguage, setCurrentLanguage] = useState(localStorage.getItem('language') || 'en');
+    const [currentLanguage, setCurrentLanguage] = useState(localStorage.getItem("language") || "en");
 
     const languageOptions = languages.map(lang => ({ label: lang.name, value: lang.code }));
 
     const changeLanguage = (languageCode) => {
         setCurrentLanguage(languageCode);
-        localStorage.setItem('language', languageCode);
+        localStorage.setItem("language", languageCode);
         i18n.changeLanguage(languageCode);
     };
 
@@ -127,7 +127,16 @@ export const Account = () => {
             <div className="account-section">
                 <h2>{t("settings.account.language")}</h2>
                 <div className="section-inner">
-                    <p style={{ maxWidth: "25rem" }}>{t("settings.account.languageDescription")}</p>
+                    <div className="language-help">
+                        <p className="main-description">{t("settings.account.languageDescription")}</p>
+                        <p className="translate-help">
+                            {t("settings.account.missingLanguage")}
+                            <a href="https://crowdin.com/project/nexterm" target="_blank" rel="noopener noreferrer"
+                               className="translate-link">
+                                {t("settings.account.helpTranslateLink")}
+                            </a>
+                        </p>
+                    </div>
                     <SelectBox options={languageOptions} selected={currentLanguage} setSelected={changeLanguage} />
                 </div>
             </div>

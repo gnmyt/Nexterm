@@ -311,6 +311,8 @@
       "language": "Language",
       "languageDescription": "Select your preferred language for the interface.",
       "currentLanguage": "Current Language",
+      "missingLanguage": "Missing your language?",
+      "helpTranslateLink": "Help translate Nexterm",
       "twoFactorDialog": {
         "title": "Enable 2FA",
         "description": "Scan the code with your authenticator app or enter <span class=\"totp-code\">{{secret}}</span> manually.",
