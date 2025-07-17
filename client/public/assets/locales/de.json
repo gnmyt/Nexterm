@@ -1,212 +1,212 @@
 {
   "common": {
     "actions": {
-      "cancel": "Cancel",
-      "confirm": "Confirm",
-      "login": "Login",
+      "cancel": "Abbrechen",
+      "confirm": "Bestätige",
+      "login": "Anmeldung",
       "register": "Register"
     },
     "labels": {
-      "username": "Username",
-      "password": "Password",
-      "firstName": "First Name",
-      "lastName": "Last Name",
+      "username": "Benutzername",
+      "password": "Passwort",
+      "firstName": "Vorname",
+      "lastName": "Nachname",
       "code": "Code",
       "twoFACode": "2FA Code"
     },
     "placeholders": {
-      "username": "Username",
-      "password": "Password",
-      "firstName": "First name",
-      "lastName": "Last name",
+      "username": "Benutzername",
+      "password": "Passwort",
+      "firstName": "Vorname",
+      "lastName": "Nachname",
       "code": "Code"
     },
     "confirmDialog": {
-      "title": "Are you sure?",
-      "defaultText": "This action cannot be undone."
+      "title": "Bist du sicher?",
+      "defaultText": "Diese Aktion kann nicht rückgängig gemacht werden."
     },
     "loginDialog": {
       "title": "Nexterm",
-      "registrationTitle": "Registration",
-      "ssoOrContinueWith": "or continue with",
-      "ssoSignInWith": "sign in with",
-      "noAuthMethodsAvailable": "No authentication methods available."
+      "registrationTitle": "Anmeldung",
+      "ssoOrContinueWith": "oder weiter mit",
+      "ssoSignInWith": "melde dich an mit",
+      "noAuthMethodsAvailable": "Keine Authentifizierungsmethoden verfügbar."
     },
     "selectBox": {
-      "defaultOption": "Select an option..."
+      "defaultOption": "Wähle eine Option aus..."
     },
     "sidebar": {
-      "settings": "Settings",
-      "servers": "Servers",
-      "monitoring": "Monitoring",
-      "snippets": "Snippets",
+      "settings": "Einstellungen",
+      "servers": "Server",
+      "monitoring": "Überwachung",
+      "snippets": "Schnipsel",
       "audit": "Audit",
       "apps": "Apps",
-      "logout": "Logout",
-      "collapseTitle": "Collapse Sidebar",
-      "logoutConfirmText": "This will log you out of the {{username}} account. Are you sure?",
-      "navigationConfirmText": "You have active sessions. Navigating away will disconnect you from all servers. Are you sure?"
+      "logout": "Abmelden",
+      "collapseTitle": "Seitenleiste einklappen",
+      "logoutConfirmText": "Dadurch wirst du aus dem {{username}} Konto ausgeloggt. Bist du sicher?",
+      "navigationConfirmText": "Du hast aktive Sitzungen. Wenn du wegnavigierst, wird deine Verbindung zu allen Servern getrennt. Bist du sicher?"
     },
     "errors": {
-      "loadingAuthProviders": "Error loading authentication providers: {{error}}",
-      "generalError": "An error occurred",
-      "invalidCredentials": "Invalid username or password",
-      "invalidTwoFactor": "Invalid two-factor code",
-      "internalAuthDisabled": "Internal authentication is disabled",
-      "ssoLoginFailed": "Failed to initiate SSO login"
+      "loadingAuthProviders": "Fehler beim Laden von Authentifizierungsanbietern: {{error}}",
+      "generalError": "Ein Fehler ist aufgetreten",
+      "invalidCredentials": "Ungültiger Benutzername oder Passwort",
+      "invalidTwoFactor": "Ungültiger Zwei-Faktor-Code",
+      "internalAuthDisabled": "Interne Authentifizierung ist deaktiviert",
+      "ssoLoginFailed": "SSO-Anmeldung konnte nicht initiiert werden"
     },
     "messages": {
-      "invitationAccepted": "Invitation accepted",
-      "invitationDeclined": "Invitation declined",
-      "invitationError": "Failed to process invitation",
-      "organizationDeleted": "Organization deleted successfully",
-      "organizationDeleteError": "Failed to delete organization",
-      "leftOrganization": "You have left the organization",
-      "leaveOrganizationError": "Failed to leave organization"
+      "invitationAccepted": "Einladung angenommen",
+      "invitationDeclined": "Einladung abgelehnt",
+      "invitationError": "Einladung konnte nicht bearbeitet werden",
+      "organizationDeleted": "Organisation erfolgreich gelöscht",
+      "organizationDeleteError": "Organisation kann nicht gelöscht werden",
+      "leftOrganization": "Du hast die Organisation verlassen",
+      "leaveOrganizationError": "Hat die Organisation nicht verlassen"
     }
   },
   "audit": {
     "page": {
-      "title": "Audit Logs",
-      "subtitle": "Track and monitor all activities across your infrastructure"
+      "title": "Audit-Logs",
+      "subtitle": "Verfolge und überwache alle Aktivitäten in deiner Infrastruktur"
     },
     "errors": {
-      "failedToLoadData": "Failed to load audit data",
-      "failedToLoadLogs": "Failed to load audit logs"
+      "failedToLoadData": "Audit-Daten konnten nicht geladen werden",
+      "failedToLoadLogs": "Audit-Logs konnten nicht geladen werden"
     },
     "filters": {
-      "title": "Filters",
-      "activeCount": "{{count}} active",
-      "organization": "Organization",
-      "action": "Action",
-      "resource": "Resource",
-      "startDate": "Start Date",
-      "endDate": "End Date",
-      "clearAll": "Clear All",
+      "title": "Filter",
+      "activeCount": "{{count}} aktiv",
+      "organization": "Organisation",
+      "action": "Aktion",
+      "resource": "Ressource",
+      "startDate": "Startdatum",
+      "endDate": "Enddatum",
+      "clearAll": "Alle löschen",
       "options": {
-        "allActions": "All Actions",
-        "allResources": "All Resources",
-        "allOrganizations": "All Organizations (Personal + Org)",
-        "personalOnly": "Personal Only",
-        "categoryAll": "{{category}} (All)"
+        "allActions": "Alle Aktionen",
+        "allResources": "Alle Ressourcen",
+        "allOrganizations": "Alle Organisationen (Personal + Org)",
+        "personalOnly": "Nur persönlich",
+        "categoryAll": "{{category}} (Alle)"
       }
     },
     "table": {
       "headers": {
-        "timestamp": "Timestamp",
-        "action": "Action",
-        "actor": "Actor",
-        "resource": "Resource",
-        "organization": "Organization",
+        "timestamp": "Zeitstempel",
+        "action": "Aktion",
+        "actor": "Schauspieler",
+        "resource": "Ressource",
+        "organization": "Organisation",
         "details": "Details"
       },
       "noLogs": {
-        "title": "No audit logs found",
-        "subtitle": "Try adjusting your filters or check back later."
+        "title": "Keine Audit-Protokolle gefunden",
+        "subtitle": "Versuche, deine Filter anzupassen oder schaue später wieder vorbei."
       },
-      "loading": "Loading audit logs...",
+      "loading": "Laden der Audit-Protokolle...",
       "expandedDetails": {
-        "connectionReason": "Connection Reason",
-        "userAgent": "User Agent",
-        "additionalDetails": "Additional Details"
+        "connectionReason": "Verbindung Grund",
+        "userAgent": "Benutzer-Agent",
+        "additionalDetails": "Zusätzliche Details"
       },
       "badges": {
-        "personal": "Personal",
-        "user": "User #{{id}}",
+        "personal": "Persönlich",
+        "user": "Benutzer #{{id}}",
         "organization": "Org #{{id}}"
       }
     },
     "pagination": {
-      "showing": "Showing {{start}} to {{end}} of {{total}} logs",
-      "previous": "Previous",
-      "next": "Next",
-      "pageInfo": "Page {{current}} of {{total}}"
+      "showing": "Zeigt {{start}} bis {{end}} von {{total}} Logs",
+      "previous": "Vorherige",
+      "next": "Nächste",
+      "pageInfo": "Seite {{current}} von {{total}}"
     }
   },
   "snippets": {
     "page": {
-      "title": "Snippets",
-      "subtitle": "Manage your command snippets for quick access in terminals",
-      "addSnippet": "Add Snippet"
+      "title": "Schnipsel",
+      "subtitle": "Verwalte deine Befehlsschnipsel für schnellen Zugriff in Terminals",
+      "addSnippet": "Snippet hinzufügen"
     },
     "list": {
-      "empty": "You don't have any snippets yet. Create your first one!",
+      "empty": "Du hast noch keine Snippets. Erstelle dein erstes!",
       "actions": {
-        "edit": "Edit snippet",
-        "delete": "Delete snippet"
+        "edit": "Snippet bearbeiten",
+        "delete": "Snippet löschen"
       }
     },
     "dialog": {
       "title": {
-        "create": "Create Snippet",
-        "edit": "Edit Snippet"
+        "create": "Snippet erstellen",
+        "edit": "Snippet bearbeiten"
       },
       "fields": {
         "name": "Name",
-        "description": "Description (optional)",
-        "command": "Command"
+        "description": "Beschreibung (optional)",
+        "command": "Befehl"
       },
       "placeholders": {
-        "name": "Snippet name",
-        "description": "What does this command?",
-        "command": "Enter your command"
+        "name": "Name des Schnipsels",
+        "description": "Was bedeutet dieser Befehl?",
+        "command": "Gib deinen Befehl ein"
       },
       "actions": {
-        "cancel": "Cancel",
-        "create": "Create",
-        "save": "Save",
-        "generateAI": "Generate with AI",
-        "generating": "Generating..."
+        "cancel": "Abbrechen",
+        "create": "erstellen",
+        "save": "Speichern",
+        "generateAI": "Generieren mit KI",
+        "generating": "Generieren..."
       }
     },
     "messages": {
       "success": {
-        "created": "Snippet created successfully",
-        "updated": "Snippet updated successfully",
-        "deleted": "Snippet deleted successfully"
+        "created": "Snippet erfolgreich erstellt",
+        "updated": "Snippet erfolgreich aktualisiert",
+        "deleted": "Snippet erfolgreich gelöscht"
       },
       "errors": {
-        "required": "Name and command are required",
-        "loadFailed": "Failed to load snippet data",
-        "saveFailed": "Failed to save snippet",
-        "deleteFailed": "Failed to delete snippet"
+        "required": "Name und Befehl sind erforderlich",
+        "loadFailed": "Snippet-Daten konnten nicht geladen werden",
+        "saveFailed": "Snippet konnte nicht gespeichert werden",
+        "deleteFailed": "Snippet kann nicht gelöscht werden"
       }
     }
   },
   "monitoring": {
     "page": {
-      "title": "Server Monitoring",
-      "subtitle": "Real-time server statistics and health monitoring",
-      "searchPlaceholder": "Search servers..."
+      "title": "Server Überwachung",
+      "subtitle": "Serverstatistiken und Zustandsüberwachung in Echtzeit",
+      "searchPlaceholder": "Server suchen..."
     },
     "errors": {
-      "loadFailed": "Failed to load monitoring data"
+      "loadFailed": "Überwachungsdaten konnten nicht geladen werden"
     },
     "grid": {
-      "loading": "Loading monitoring data...",
+      "loading": "Laden von Überwachungsdaten...",
       "noServers": {
-        "title": "No Servers Found",
-        "subtitle": "No SSH servers available for monitoring.\nAdd some servers to start monitoring them."
+        "title": "Keine Server gefunden",
+        "subtitle": "Es sind keine SSH-Server zur Überwachung verfügbar.\nFüge einige Server hinzu, um sie zu überwachen."
       },
       "metrics": {
-        "cpuUsage": "CPU Usage",
-        "memoryUsage": "Memory Usage",
-        "loadAverage": "Load Average",
-        "processes": "Processes",
-        "uptime": "Uptime"
+        "cpuUsage": "CPU-Nutzung",
+        "memoryUsage": "Speichernutzung",
+        "loadAverage": "Last Durchschnitt",
+        "processes": "Prozesse",
+        "uptime": "Betriebszeit"
       },
       "status": {
         "serverOffline": "Server Offline",
-        "connectionError": "Connection Error",
-        "statusUnknown": "Status Unknown",
-        "offlineMessage": "The server is currently not responding to monitoring requests.",
-        "errorMessage": "Unable to establish connection to the server.",
-        "unknownMessage": "Server status could not be determined.",
-        "lastSeen": "Last seen: {{time}}",
-        "noRecentActivity": "No recent activity"
+        "connectionError": "Verbindungsfehler",
+        "statusUnknown": "Status Unbekannt",
+        "offlineMessage": "Der Server antwortet derzeit nicht auf Überwachungsanfragen.",
+        "errorMessage": "Die Verbindung zum Server kann nicht hergestellt werden.",
+        "unknownMessage": "Der Serverstatus konnte nicht ermittelt werden.",
+        "lastSeen": "Zuletzt gesehen: {{time}}",
+        "noRecentActivity": "Keine aktuelle Aktivität"
       },
       "uptime": {
-        "unknown": "Unknown",
+        "unknown": "Unbekannt",
         "format": {
           "days": "{{days}}d {{hours}}h {{minutes}}m",
           "hours": "{{hours}}h {{minutes}}m",
@@ -221,371 +221,371 @@
         "24h": "24h"
       },
       "tabs": {
-        "overview": "Overview",
+        "overview": "Übersicht",
         "charts": "Charts",
-        "storage": "Storage",
-        "network": "Network"
+        "storage": "Lagerung",
+        "network": "Netzwerk"
       },
       "overview": {
         "systemInfo": {
-          "title": "System Information",
+          "title": "System Informationen",
           "os": "OS",
           "version": "Version",
           "kernel": "Kernel",
-          "architecture": "Architecture",
-          "uptime": "Uptime",
-          "unknown": "Unknown",
-          "noData": "No system information available"
+          "architecture": "Architektur",
+          "uptime": "Betriebszeit",
+          "unknown": "Unbekannt",
+          "noData": "Keine Systeminformationen verfügbar"
         },
         "performance": {
-          "title": "Performance Metrics",
-          "cpuUsage": "CPU Usage",
-          "memoryUsage": "Memory Usage",
-          "loadAverage": "Load Average",
-          "processes": "Active Processes",
-          "total": "Total: {{value}}",
+          "title": "Leistungsmetriken",
+          "cpuUsage": "CPU-Nutzung",
+          "memoryUsage": "Speichernutzung",
+          "loadAverage": "Last Durchschnitt",
+          "processes": "Aktive Prozesse",
+          "total": "Insgesamt: {{value}}",
           "loadDetail": "5m: {{fiveMin}}, 15m: {{fifteenMin}}"
         },
         "uptime": {
           "format": {
-            "full": "{{days}} days, {{hours}} hours, {{minutes}} minutes",
-            "hoursMinutes": "{{hours}} hours, {{minutes}} minutes",
-            "minutes": "{{minutes}} minutes"
+            "full": "{{days}} Tage, {{hours}} Stunden, {{minutes}} Minuten",
+            "hoursMinutes": "{{hours}} Stunden, {{minutes}} Minuten",
+            "minutes": "{{minutes}} Minuten"
           }
         }
       },
       "charts": {
-        "cpuUsage": "CPU Usage",
-        "memoryUsage": "Memory Usage",
-        "processes": "Active Processes",
-        "noData": "No data available for the selected time range"
+        "cpuUsage": "CPU-Nutzung",
+        "memoryUsage": "Speichernutzung",
+        "processes": "Aktive Prozesse",
+        "noData": "Keine Daten für den ausgewählten Zeitraum verfügbar"
       },
       "storage": {
-        "title": "Disk Usage",
-        "used": "Used: {{value}}",
-        "available": "Available: {{value}}",
-        "total": "Total: {{value}}",
-        "type": "Type: {{value}}",
-        "noData": "No disk usage data available"
+        "title": "Festplattenverwendung",
+        "used": "Gebraucht: {{value}}",
+        "available": "Verfügbar: {{value}}",
+        "total": "Insgesamt: {{value}}",
+        "type": "Typ: {{value}}",
+        "noData": "Keine Daten zur Festplattennutzung verfügbar"
       },
       "network": {
-        "title": "Network Interfaces",
-        "rxBytes": "RX Bytes",
-        "txBytes": "TX Bytes",
-        "noData": "No network interface data available"
+        "title": "Netzwerk-Schnittstellen",
+        "rxBytes": "RX-Bytes",
+        "txBytes": "Sende-Bytes",
+        "noData": "Keine Daten zur Netzwerkschnittstelle verfügbar"
       }
     }
   },
   "settings": {
-    "title": "Settings",
-    "userSettings": "USER SETTINGS",
-    "adminSettings": "ADMIN SETTINGS",
+    "title": "Einstellungen",
+    "userSettings": "BENUTZEREINSTELLUNGEN",
+    "adminSettings": "ADMIN-EINSTELLUNGEN",
     "pages": {
-      "account": "Account",
+      "account": "Konto",
       "terminal": "Terminal",
-      "identities": "Identities",
-      "sessions": "Sessions",
-      "organizations": "Organizations",
-      "users": "Users",
-      "authentication": "Authentication",
+      "identities": "Identitäten",
+      "sessions": "Sitzungen",
+      "organizations": "Organisationen",
+      "users": "Benutzer",
+      "authentication": "Authentifizierung",
       "ai": "AI"
     },
     "account": {
-      "title": "Account",
-      "accountName": "Account name",
-      "firstName": "First name",
-      "lastName": "Last name",
-      "appearance": "Appearance",
-      "appearanceDescription": "Choose between light and dark theme for your interface.",
-      "switchToLight": "Switch to Light Mode",
-      "switchToDark": "Switch to Dark Mode",
-      "twoFactor": "Two-factor authentication",
-      "twoFactorActive": "Active",
-      "twoFactorInactive": "Inactive",
-      "twoFactorDescription": "Add an extra layer of security to your account by enabling two-factor authentication.",
-      "enable2FA": "Enable 2FA",
-      "disable2FA": "Disable 2FA",
-      "changePassword": "Change password",
-      "changePasswordDescription": "Choose a new and secure password for your account here.",
-      "changePasswordButton": "Change password"
+      "title": "Konto",
+      "accountName": "Kontoname",
+      "firstName": "Vorname",
+      "lastName": "Nachname",
+      "appearance": "Erscheinungsbild",
+      "appearanceDescription": "Wähle zwischen einem hellen und einem dunklen Thema für deine Oberfläche.",
+      "switchToLight": "In den Lichtmodus wechseln",
+      "switchToDark": "In den dunklen Modus wechseln",
+      "twoFactor": "Zwei-Faktor-Authentifizierung",
+      "twoFactorActive": "Aktiv",
+      "twoFactorInactive": "Inaktiv",
+      "twoFactorDescription": "Füge eine zusätzliche Sicherheitsebene zu deinem Konto hinzu, indem du die Zwei-Faktor-Authentifizierung aktivierst.",
+      "enable2FA": "2FA aktivieren",
+      "disable2FA": "2FA deaktivieren",
+      "changePassword": "Passwort ändern",
+      "changePasswordDescription": "Wähle hier ein neues und sicheres Passwort für dein Konto.",
+      "changePasswordButton": "Passwort ändern"
     },
     "passwordChange": {
-      "title": "Change password",
-      "description": "A strong password contains special characters, numbers, and letters in both uppercase and lowercase.",
-      "newPassword": "New password",
-      "confirmPassword": "Confirm new password",
-      "changePasswordButton": "Change password"
+      "title": "Passwort ändern",
+      "description": "Ein sicheres Passwort enthält Sonderzeichen, Zahlen und Buchstaben in Groß- und Kleinbuchstaben.",
+      "newPassword": "Neues Passwort",
+      "confirmPassword": "Bestätige das neue Passwort",
+      "changePasswordButton": "Passwort ändern"
     },
     "organizations": {
-      "title": "Your Organizations",
-      "createOrganization": "Create Organization",
-      "noOrganizations": "You don't have any organizations yet.",
-      "noOrganizationsDescription": "Create one to start collaborating with your team.",
-      "invite": "Invite",
-      "delete": "Delete",
-      "leave": "Leave",
-      "members": "Members",
-      "auditSettings": "Audit Settings",
-      "pendingInvitations": "Pending Invitations",
-      "invitedBy": "Invited by: {{name}}",
-      "deleteConfirmation": "This will permanently delete the organization and remove all members. This action cannot be undone.",
-      "leaveConfirmation": "Are you sure you want to leave this organization?"
+      "title": "Deine Organisationen",
+      "createOrganization": "Organisation erstellen",
+      "noOrganizations": "Du hast noch keine Organisationen.",
+      "noOrganizationsDescription": "Erstelle eine, um die Zusammenarbeit mit deinem Team zu beginnen.",
+      "invite": "einladen",
+      "delete": "löschen",
+      "leave": "Lass",
+      "members": "Mitglieder",
+      "auditSettings": "Audit-Einstellungen",
+      "pendingInvitations": "Ausstehende Einladungen",
+      "invitedBy": "Eingeladen von: {{name}}",
+      "deleteConfirmation": "Dadurch wird die Organisation endgültig gelöscht und alle Mitglieder werden entfernt. Diese Aktion kann nicht rückgängig gemacht werden.",
+      "leaveConfirmation": "Bist du sicher, dass du diese Organisation verlassen willst?"
     },
     "users": {
-      "title": "{{count}} users",
-      "createNewUser": "Create new user",
-      "twoFactorEnabled": "2FA enabled",
-      "twoFactorDisabled": "2FA disabled",
+      "title": "{{count}} Benutzer",
+      "createNewUser": "Neuen Benutzer erstellen",
+      "twoFactorEnabled": "2FA aktiviert",
+      "twoFactorDisabled": "2FA deaktiviert",
       "contextMenu": {
-        "changePassword": "Change password",
-        "promoteToAdmin": "Promote to admin",
-        "demoteToUser": "Demote to user",
-        "deleteUser": "Delete user",
-        "loginAsUser": "Login as user",
-        "deleteConfirm": "This will permanently delete the user and all associated data.",
-        "promoteConfirm": "This will promote the user to an admin.",
-        "demoteConfirm": "This will demote the user to a regular user."
+        "changePassword": "Passwort ändern",
+        "promoteToAdmin": "Zum Admin befördern",
+        "demoteToUser": "Zum Benutzer zurückstufen",
+        "deleteUser": "Benutzer löschen",
+        "loginAsUser": "Anmeldung als Benutzer",
+        "deleteConfirm": "Dadurch werden der Benutzer und alle zugehörigen Daten endgültig gelöscht.",
+        "promoteConfirm": "Dadurch wird der Benutzer zum Administrator befördert.",
+        "demoteConfirm": "Dadurch wird der Benutzer zum normalen Benutzer degradiert."
       }
     },
     "userDialog": {
-      "title": "Create new user",
-      "firstName": "First Name",
-      "lastName": "Last Name",
-      "username": "Username",
-      "password": "Password",
-      "firstNamePlaceholder": "First name",
-      "lastNamePlaceholder": "Last name",
-      "usernamePlaceholder": "Username",
-      "passwordPlaceholder": "Password",
-      "create": "Create",
-      "errorOccurred": "An error occurred"
+      "title": "Neuen Benutzer erstellen",
+      "firstName": "Vorname",
+      "lastName": "Nachname",
+      "username": "Benutzername",
+      "password": "Passwort",
+      "firstNamePlaceholder": "Vorname",
+      "lastNamePlaceholder": "Nachname",
+      "usernamePlaceholder": "Benutzername",
+      "passwordPlaceholder": "Passwort",
+      "create": "erstellen",
+      "errorOccurred": "Ein Fehler ist aufgetreten"
     },
     "sessions": {
-      "title": "Sessions",
-      "lastActivity": "Last activity: {{date}} from {{ip}}",
-      "currentSession": "Current session",
-      "logout": "Logout",
-      "revoke": "Revoke",
-      "browserOn": "{{browser}} {{version}} on {{os}} {{osVersion}}"
+      "title": "Sitzungen",
+      "lastActivity": "Letzte Aktivität: {{date}} von {{ip}}",
+      "currentSession": "Aktuelle Sitzung",
+      "logout": "Abmelden",
+      "revoke": "Widerrufen",
+      "browserOn": "{{browser}} {{version}} auf {{os}} {{osVersion}}"
     },
     "terminal": {
       "title": "Terminal",
       "font": {
-        "title": "Font",
-        "description": "Customize the font family and size for your terminal.",
-        "fontFamily": "Font Family",
-        "fontSize": "Font Size"
+        "title": "Schriftart",
+        "description": "Passe die Schriftfamilie und -größe für dein Terminal an.",
+        "fontFamily": "Schriftfamilie",
+        "fontSize": "Schriftgröße"
       },
       "cursor": {
         "title": "Cursor",
-        "description": "Customize the appearance and behavior of your terminal cursor.",
-        "cursorStyle": "Cursor Style",
-        "cursorBlinking": "Cursor Blinking",
-        "enabled": "Enabled",
-        "disabled": "Disabled"
+        "description": "Passe das Aussehen und Verhalten deines Terminal-Cursors an.",
+        "cursorStyle": "Cursor-Stil",
+        "cursorBlinking": "Cursor blinkt",
+        "enabled": "Aktiviert",
+        "disabled": "Behinderte"
       },
       "theme": {
-        "title": "Theme",
-        "description": "Choose a color theme for your terminal."
+        "title": "Thema",
+        "description": "Wähle ein Farbthema für dein Terminal."
       },
       "preview": {
-        "text": "$ echo 'Hi, Nexterm!'\nHi, Nexterm!\n$ "
+        "text": "$ echo 'Hallo, Nexterm!'\nHallo, Nexterm!\n$ "
       }
     },
     "authentication": {
-      "title": "{{count}} Authentication Providers",
-      "addProvider": "Add Provider",
+      "title": "{{count}} Anbieter von Authentifizierung",
+      "addProvider": "Anbieter hinzufügen",
       "system": "System",
-      "systemDescription": "Username and password authentication",
-      "deleteConfirm": "This will permanently delete this authentication provider.",
+      "systemDescription": "Authentifizierung mit Benutzername und Passwort",
+      "deleteConfirm": "Dadurch wird dieser Authentifizierungsanbieter endgültig gelöscht.",
       "errors": {
-        "deleteProvider": "Error deleting provider",
-        "toggleProvider": "Error toggling provider"
+        "deleteProvider": "Fehler beim Löschen des Anbieters",
+        "toggleProvider": "Fehler beim Umschalten des Anbieters"
       }
     },
     "ai": {
-      "title": "AI Assistant Configuration",
-      "description": "Configure AI-powered command generation for terminal sessions and snippet creation.",
-      "loading": "Loading AI settings...",
+      "title": "KI-Assistent Konfiguration",
+      "description": "Konfiguriere die KI-gestützte Befehlsgenerierung für Terminalsitzungen und die Erstellung von Snippets.",
+      "loading": "AI-Einstellungen laden...",
       "enable": {
-        "title": "Enable AI Assistant",
-        "description": "Allow users to generate commands using AI"
+        "title": "KI-Assistent aktivieren",
+        "description": "Erlaube den Nutzern, Befehle mithilfe von KI zu generieren"
       },
       "provider": {
-        "title": "AI Provider",
-        "description": "Choose your AI service provider"
+        "title": "KI-Anbieter",
+        "description": "Wähle deinen KI-Dienstleister"
       },
       "model": {
-        "title": "Model",
-        "description": "Select the AI model to use for command generation"
+        "title": "Modell",
+        "description": "Wähle das KI-Modell aus, das für die Befehlsgenerierung verwendet werden soll"
       },
       "apiKey": {
-        "title": "API Key",
-        "description": "Your OpenAI API key for authentication",
-        "placeholder": "Enter your OpenAI API key",
-        "setPlaceholder": "API key is set (leave blank to keep current)"
+        "title": "API-Schlüssel",
+        "description": "Dein OpenAI API-Schlüssel für die Authentifizierung",
+        "placeholder": "Gib deinen OpenAI API Schlüssel ein",
+        "setPlaceholder": "API-Schlüssel ist gesetzt (leer lassen, um aktuell zu bleiben)"
       },
       "ollamaUrl": {
         "title": "Ollama URL",
-        "description": "The URL where your Ollama instance is running",
+        "description": "Die URL, unter der deine Ollama-Instanz läuft",
         "placeholder": "http://localhost:11434"
       },
-      "selectProvider": "Select a provider...",
-      "selectModel": "Select a model...",
-      "loadingModels": "Loading models...",
-      "noModels": "No models available",
-      "saveSettings": "Save Settings",
-      "testConnection": "Test Connection",
-      "testing": "Testing...",
-      "saveSuccess": "AI settings saved successfully",
-      "testSuccess": "AI connection test successful",
+      "selectProvider": "Wähle einen Anbieter...",
+      "selectModel": "Wähle ein Modell...",
+      "loadingModels": "Modelle laden...",
+      "noModels": "Keine Modelle verfügbar",
+      "saveSettings": "Einstellungen speichern",
+      "testConnection": "Test Verbindung",
+      "testing": "Testen...",
+      "saveSuccess": "AI-Einstellungen erfolgreich gespeichert",
+      "testSuccess": "AI-Verbindungstest erfolgreich",
       "errors": {
-        "loadSettings": "Failed to load AI settings",
-        "saveSettings": "Failed to save AI settings",
-        "testConnection": "AI connection test failed"
+        "loadSettings": "KI-Einstellungen konnten nicht geladen werden",
+        "saveSettings": "KI-Einstellungen konnten nicht gespeichert werden",
+        "testConnection": "AI-Verbindungstest fehlgeschlagen"
       }
     },
     "identities": {
-      "title": "SSH Keys & Credentials",
-      "description": "Manage your SSH keys and login credentials for server connections",
-      "createIdentity": "Create Identity",
-      "noUsername": "No username",
-      "sshKey": "SSH Key",
-      "password": "Password",
-      "editIdentity": "Edit identity",
-      "deleteIdentity": "Delete identity",
-      "noIdentities": "No Identities Found",
-      "noIdentitiesDescription": "Create your first identity to get started with server connections",
-      "deleteConfirm": "Are you sure you want to delete \"{{name}}\"? This action cannot be undone and will remove this identity from all servers that use it.",
-      "deleteSuccess": "Identity deleted successfully",
-      "deleteError": "Failed to delete identity"
+      "title": "SSH-Schlüssel und Anmeldeinformationen",
+      "description": "Verwalte deine SSH-Schlüssel und Anmeldedaten für Serververbindungen",
+      "createIdentity": "Identität schaffen",
+      "noUsername": "Kein Nutzername",
+      "sshKey": "SSH-Schlüssel",
+      "password": "Passwort",
+      "editIdentity": "Identität bearbeiten",
+      "deleteIdentity": "Identität löschen",
+      "noIdentities": "Keine Identitäten gefunden",
+      "noIdentitiesDescription": "Erstelle deine erste Identität, um mit Serververbindungen zu beginnen",
+      "deleteConfirm": "Bist du sicher, dass du \"{{name}}\" löschen willst? Diese Aktion kann nicht rückgängig gemacht werden und wird diese Identität von allen Servern entfernen, die sie verwenden.",
+      "deleteSuccess": "Identität erfolgreich gelöscht",
+      "deleteError": "Identität konnte nicht gelöscht werden"
     }
   },
   "apps": {
     "title": "Apps",
     "navigation": {
       "categories": {
-        "all": "All",
-        "results": "Results",
-        "scripts": "Scripts",
+        "all": "Alle",
+        "results": "Ergebnisse",
+        "scripts": "Skripte",
         "networking": "Networking",
-        "media": "Media",
-        "cloud": "Cloud",
-        "development": "Development",
-        "utilities": "Utilities"
+        "media": "Medien",
+        "cloud": "Wolke",
+        "development": "Entwicklung",
+        "utilities": "Versorgungsunternehmen"
       }
     },
     "store": {
       "appStore": "App Store",
-      "scripts": "Scripts",
-      "appStoreDescription": "Your favorite apps, deployed with a single click.",
-      "scriptsDescription": "Automate your server tasks with custom scripts.",
-      "manageSources": "Manage sources",
-      "createScript": "Create Script",
-      "source": "Source:",
+      "scripts": "Skripte",
+      "appStoreDescription": "Deine Lieblingsapps, die mit einem einzigen Klick bereitgestellt werden.",
+      "scriptsDescription": "Automatisiere deine Serveraufgaben mit benutzerdefinierten Skripten.",
+      "manageSources": "Quellen verwalten",
+      "createScript": "Skript erstellen",
+      "source": "Quelle:",
       "sourceFilter": {
-        "all": "All",
-        "custom": "Custom"
+        "all": "Alle",
+        "custom": "Benutzerdefiniert"
       }
     },
     "list": {
-      "noApps": "More apps coming soon",
-      "noScripts": "No scripts available",
-      "selectApp": "Select app to continue",
-      "selectScript": "Select script to continue"
+      "noApps": "Demnächst mehr Apps",
+      "noScripts": "Keine Skripte verfügbar",
+      "selectApp": "App auswählen, um fortzufahren",
+      "selectScript": "Skript auswählen, um fortzufahren"
     },
     "actions": {
-      "deploy": "Deploy",
-      "run": "Run",
-      "view": "View",
-      "edit": "Edit",
-      "delete": "Delete",
+      "deploy": "Bereitstellen",
+      "run": "Lauf",
+      "view": "Siehe",
+      "edit": "bearbeiten",
+      "delete": "löschen",
       "logs": "Logs",
-      "open": "Open",
-      "stop": "Stop Script",
+      "open": "Öffnen Sie",
+      "stop": "Skript anhalten",
       "version": "Version"
     },
     "items": {
-      "customBadge": "Custom",
-      "scriptType": "Script",
-      "running": "Running...",
-      "runScript": "Run"
+      "customBadge": "Benutzerdefiniert",
+      "scriptType": "Skript",
+      "running": "Laufen...",
+      "runScript": "Lauf"
     },
     "installer": {
-      "deploymentFailed": "Deployment failed",
-      "deploymentCompleted": "Deployment completed",
-      "deploying": "Deploying...",
-      "installationLog": "Installation Log",
+      "deploymentFailed": "Einsatz fehlgeschlagen",
+      "deploymentCompleted": "Einsatz abgeschlossen",
+      "deploying": "Der Einsatz...",
+      "installationLog": "Installationsprotokoll",
       "steps": {
-        "lookupDistro": "Look up Linux distro",
-        "checkPermissions": "Check permissions",
-        "installDocker": "Install Docker Engine",
-        "downloadImage": "Download base image",
-        "preInstall": "Run pre-install command",
-        "startContainer": "Start Docker container",
-        "postInstall": "Run post-install command",
-        "detected": "Detected {{os}}"
+        "lookupDistro": "Linux-Distributionen nachschlagen",
+        "checkPermissions": "Berechtigungen prüfen",
+        "installDocker": "Docker Engine installieren",
+        "downloadImage": "Basisbild herunterladen",
+        "preInstall": "Vorinstallationsbefehl ausführen",
+        "startContainer": "Docker Container starten",
+        "postInstall": "Post-Installationsbefehl ausführen",
+        "detected": "Erkannt {{os}}"
       }
     },
     "scriptExecutor": {
-      "executionFailed": "Script execution failed",
-      "executionCompleted": "Script execution completed",
-      "executing": "Executing script...",
-      "initializing": "Initializing script execution",
-      "finished": "Script execution finished",
-      "cancelled": "Script execution cancelled by user"
+      "executionFailed": "Skriptausführung fehlgeschlagen",
+      "executionCompleted": "Skriptausführung abgeschlossen",
+      "executing": "Ausführen des Skripts...",
+      "initializing": "Initialisierung der Skriptausführung",
+      "finished": "Skriptausführung beendet",
+      "cancelled": "Skriptausführung durch Benutzer abgebrochen"
     },
     "dialogs": {
       "deployServer": {
-        "deployTitle": "Deploy {{name}}",
-        "runTitle": "Run {{name}}",
-        "noServersAvailable": "No SSH servers available"
+        "deployTitle": "Bereitstellen {{name}}",
+        "runTitle": "Lauf {{name}}",
+        "noServersAvailable": "Keine SSH-Server verfügbar"
       },
       "source": {
-        "title": "App sources",
-        "refreshApps": "Refresh apps",
-        "addNewSource": "Add new source"
+        "title": "App-Quellen",
+        "refreshApps": "Apps aktualisieren",
+        "addNewSource": "Neue Quelle hinzufügen"
       },
       "script": {
-        "createTitle": "Create Custom Script",
-        "editTitle": "Edit Script",
-        "viewTitle": "View Script",
-        "source": "Source: {{source}}",
-        "scriptDetails": "Script Details",
-        "scriptContent": "Script Content",
-        "helpTip": "Use @NEXTERM: commands for interactive prompts",
+        "createTitle": "Benutzerdefiniertes Skript erstellen",
+        "editTitle": "Skript bearbeiten",
+        "viewTitle": "Skript ansehen",
+        "source": "Quelle: {{source}}",
+        "scriptDetails": "Skript Details",
+        "scriptContent": "Skript Inhalt",
+        "helpTip": "Verwende @NEXTERM: Befehle für interaktive Eingabeaufforderungen",
         "fields": {
           "name": "Script Name *",
-          "description": "Description *",
-          "namePlaceholder": "My Awesome Script",
-          "descriptionPlaceholder": "What does this script do?"
+          "description": "Beschreibung *",
+          "namePlaceholder": "Mein geniales Skript",
+          "descriptionPlaceholder": "Was macht dieses Skript?"
         },
         "actions": {
-          "close": "Close",
-          "cancel": "Cancel",
-          "create": "Create Script",
+          "close": "Schließen",
+          "cancel": "Abbrechen",
+          "create": "Skript erstellen",
           "update": "Update Script",
-          "creating": "Creating...",
-          "updating": "Updating..."
+          "creating": "Erstellen...",
+          "updating": "Aktualisieren..."
         },
         "errors": {
-          "nameRequired": "Script name is required",
-          "descriptionRequired": "Script description is required",
-          "contentRequired": "Script content cannot be empty",
-          "createFailed": "Failed to create script",
-          "updateFailed": "Failed to update script"
+          "nameRequired": "Skriptname ist erforderlich",
+          "descriptionRequired": "Skriptbeschreibung ist erforderlich",
+          "contentRequired": "Skriptinhalt kann nicht leer sein",
+          "createFailed": "Skript kann nicht erstellt werden",
+          "updateFailed": "Skript kann nicht aktualisiert werden"
         },
         "success": {
-          "created": "Script created successfully",
-          "updated": "Script updated successfully"
+          "created": "Skript erfolgreich erstellt",
+          "updated": "Skript erfolgreich aktualisiert"
         }
       }
     },
     "messages": {
-      "onlyCustomScriptsCanBeDeleted": "Only custom scripts can be deleted",
-      "scriptDeletedSuccessfully": "Script deleted successfully",
-      "failedToDeleteScript": "Failed to delete script",
-      "deleteScriptConfirmation": "Are you sure you want to delete the script \"{{name}}\"? This action cannot be undone."
+      "onlyCustomScriptsCanBeDeleted": "Nur benutzerdefinierte Skripte können gelöscht werden",
+      "scriptDeletedSuccessfully": "Skript erfolgreich gelöscht",
+      "failedToDeleteScript": "Skript kann nicht gelöscht werden",
+      "deleteScriptConfirmation": "Bist du sicher, dass du das Skript \"{{name}}\" löschen willst? Diese Aktion kann nicht rückgängig gemacht werden."
     }
   }
 }
