@@ -674,7 +674,7 @@
         "noContent": "Bitte gib den Inhalt der SSH-Konfiguration an",
         "noFolder": "Kein Ordner ausgewählt",
         "uploadSuccess": "Schlüssel {{name}} erfolgreich hochgeladen",
-        "uploadFailed": "Das Hochladen des Schlüssels {{name}}ist fehlgeschlagen.",
+        "uploadFailed": "Das Hochladen des Schlüssels {{name}} ist fehlgeschlagen",
         "importFailed": "SSH-Konfiguration kann nicht importiert werden"
       }
     },
