@@ -9,6 +9,9 @@ if (localStorage.getItem('language') === null)
 export const languages = [
     {name: 'English', code: 'en'},
     {name: 'Deutsch', code: 'de'},
+    {name: 'Español', code: 'es'},
+    {name: 'Français', code: 'fr'},
+    {name: 'Italiano', code: 'it'},
     {name: '中文', code: 'zh'},
 ]
 
