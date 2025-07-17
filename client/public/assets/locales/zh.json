@@ -311,6 +311,8 @@
       "language": "语言",
       "languageDescription": "选择您喜欢的界面语言。",
       "currentLanguage": "当前语言",
+      "missingLanguage": "Missing your language?",
+      "helpTranslateLink": "Help translate Nexterm",
       "twoFactorDialog": {
         "title": "启用 2FA",
         "description": "使用身份验证程序扫描代码或手动输入 <span class=\"totp-code\">{{secret}}</span>手动输入。",
