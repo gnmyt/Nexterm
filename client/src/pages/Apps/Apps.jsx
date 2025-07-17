@@ -15,11 +15,13 @@ import SourceDialog from "@/pages/Apps/components/SourceDialog";
 import ScriptDialog from "@/pages/Apps/components/ScriptDialog";
 import { ActionConfirmDialog } from "@/common/components/ActionConfirmDialog/ActionConfirmDialog.jsx";
 import { useToast } from "@/common/contexts/ToastContext.jsx";
+import { useTranslation } from "react-i18next";
 
 export const Apps = () => {
     const location = useLocation();
     const navigate = useNavigate();
     const { sendToast } = useToast();
+    const { t } = useTranslation();
 
     const [sourceDialogOpen, setSourceDialogOpen] = useState(false);
     const [scriptDialogOpen, setScriptDialogOpen] = useState(false);
@@ -199,7 +201,7 @@ export const Apps = () => {
     const deleteScript = async (id) => {
         const script = allScripts.find((script) => script.id === id) || scripts.find((script) => script.id === id);
         if (!script || script.source !== "custom") {
-            sendToast("Error", "Only custom scripts can be deleted");
+            sendToast("Error", t("apps.messages.onlyCustomScriptsCanBeDeleted"));
             return;
         }
 
@@ -212,7 +214,7 @@ export const Apps = () => {
 
         try {
             await deleteRequest(`scripts/${encodeURIComponent(scriptToDelete.id)}`);
-            sendToast("Success", "Script deleted successfully");
+            sendToast("Success", t("apps.messages.scriptDeletedSuccessfully"));
 
             const updatedAllScripts = allScripts.filter(s => s.id !== scriptToDelete.id);
             setAllScripts(updatedAllScripts);
@@ -224,7 +226,7 @@ export const Apps = () => {
                 setSelectedScript(null);
             }
         } catch (error) {
-            sendToast("Error", error.message || "Failed to delete script");
+            sendToast("Error", error.message || t("apps.messages.failedToDeleteScript"));
         } finally {
             setScriptToDelete(null);
         }
@@ -294,7 +296,7 @@ export const Apps = () => {
                 script={allScripts.find((script) => script.id === runScriptId) || scripts.find((script) => script.id === runScriptId)}
             />
             <ActionConfirmDialog open={deleteDialogOpen} setOpen={setDeleteDialogOpen} onConfirm={confirmDeleteScript}
-                                 text={scriptToDelete ? `Are you sure you want to delete the script "${scriptToDelete.name}"? This action cannot be undone.` : ""} />
+                                 text={scriptToDelete ? t("apps.messages.deleteScriptConfirmation", { name: scriptToDelete.name }) : ""} />
             <div className="app-content">
                 <div className="store-header-wrapper">
                     <StoreHeader
@@ -342,7 +344,7 @@ export const Apps = () => {
                         {((isScriptsCategory() && scripts.length === 0) || (!isScriptsCategory() && apps.length === 0)) && (
                             <div className="no-apps">
                                 <Icon path={isScriptsCategory() ? mdiScript : mdiSignCaution} />
-                                <h2>{isScriptsCategory() ? "No scripts available" : "More apps coming soon"}</h2>
+                                <h2>{isScriptsCategory() ? t("apps.list.noScripts") : t("apps.list.noApps")}</h2>
                             </div>
                         )}
                     </div>
@@ -356,7 +358,7 @@ export const Apps = () => {
                         {selectedApp === null && selectedScript === null && (
                             <div className="select-app">
                                 <Icon path={isScriptsCategory() ? mdiScript : mdiPackageVariant} />
-                                <h3>Select {isScriptsCategory() ? "script" : "app"} to continue</h3>
+                                <h3>{isScriptsCategory() ? t("apps.list.selectScript") : t("apps.list.selectApp")}</h3>
                             </div>
                         )}
                     </div>

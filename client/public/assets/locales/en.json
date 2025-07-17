@@ -545,6 +545,40 @@
         "title": "App sources",
         "refreshApps": "Refresh apps",
         "addNewSource": "Add new source"
+      },
+      "script": {
+        "createTitle": "Create Custom Script",
+        "editTitle": "Edit Script",
+        "viewTitle": "View Script",
+        "source": "Source: {{source}}",
+        "scriptDetails": "Script Details",
+        "scriptContent": "Script Content",
+        "helpTip": "Use @NEXTERM: commands for interactive prompts",
+        "fields": {
+          "name": "Script Name *",
+          "description": "Description *",
+          "namePlaceholder": "My Awesome Script",
+          "descriptionPlaceholder": "What does this script do?"
+        },
+        "actions": {
+          "close": "Close",
+          "cancel": "Cancel",
+          "create": "Create Script",
+          "update": "Update Script",
+          "creating": "Creating...",
+          "updating": "Updating..."
+        },
+        "errors": {
+          "nameRequired": "Script name is required",
+          "descriptionRequired": "Script description is required",
+          "contentRequired": "Script content cannot be empty",
+          "createFailed": "Failed to create script",
+          "updateFailed": "Failed to update script"
+        },
+        "success": {
+          "created": "Script created successfully",
+          "updated": "Script updated successfully"
+        }
       }
     },
     "messages": {

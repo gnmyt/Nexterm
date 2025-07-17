@@ -12,15 +12,17 @@ import SummaryDialog from "./components/SummaryDialog";
 import TableDialog from "./components/TableDialog";
 import MessageBoxDialog from "./components/MessageBoxDialog";
 import { useToast } from "@/common/contexts/ToastContext.jsx";
+import { useTranslation } from "react-i18next";
 
 export const ScriptExecutor = forwardRef(({ serverId, script, setRunning }, ref) => {
     const { sessionToken } = useContext(UserContext);
     const { sendToast } = useToast();
+    const { t } = useTranslation();
 
     const [logOpen, setLogOpen] = useState(false);
     const [logContent, setLogContent] = useState("");
 
-    const [steps, setSteps] = useState(["Initializing script execution"]);
+    const [steps, setSteps] = useState([t("apps.scriptExecutor.initializing")]);
     const [currentStep, setCurrentStep] = useState(1);
     const [failedStep, setFailedStep] = useState(null);
     const [isCompleted, setIsCompleted] = useState(false);
@@ -138,7 +140,7 @@ export const ScriptExecutor = forwardRef(({ serverId, script, setRunning }, ref)
         };
 
         websocket.onclose = () => {
-            setLogContent(logContent => logContent + "Script execution finished\n");
+            setLogContent(logContent => logContent + t("apps.scriptExecutor.finished") + "\n");
             setIsCompleted(true);
             setRunning(false);
             setInputDialogOpen(false);
@@ -196,7 +198,7 @@ export const ScriptExecutor = forwardRef(({ serverId, script, setRunning }, ref)
             setRunning(false);
             setInputDialogOpen(false);
             setInputPrompt(null);
-            setLogContent(logContent => logContent + "Script execution cancelled by user\n");
+            setLogContent(logContent => logContent + t("apps.scriptExecutor.cancelled") + "\n");
         }
         wsRef.current = null;
     };
@@ -217,7 +219,7 @@ export const ScriptExecutor = forwardRef(({ serverId, script, setRunning }, ref)
         setFailedStep(null);
         setIsCompleted(false);
         setLogContent("");
-        setSteps(["Initializing script execution"]);
+        setSteps([t("apps.scriptExecutor.initializing")]);
         setInputDialogOpen(false);
         setInputPrompt(null);
         setCurrentProgress(null);
@@ -280,7 +282,7 @@ export const ScriptExecutor = forwardRef(({ serverId, script, setRunning }, ref)
                 </div>
                 <div className="script-info">
                     <h2>{script.name}</h2>
-                    <p>{failedStep ? "Script execution failed" : isCompleted ? "Script execution completed" : "Executing script..."}</p>
+                    <p>{failedStep ? t("apps.scriptExecutor.executionFailed") : isCompleted ? t("apps.scriptExecutor.executionCompleted") : t("apps.scriptExecutor.executing")}</p>
                 </div>
             </div>
 
@@ -290,9 +292,9 @@ export const ScriptExecutor = forwardRef(({ serverId, script, setRunning }, ref)
             </div>
 
             <div className="script-actions">
-                <Button text="Logs" icon={mdiConsoleLine} onClick={() => setLogOpen(true)} />
+                <Button text={t("apps.actions.logs")} icon={mdiConsoleLine} onClick={() => setLogOpen(true)} />
                 {(!isCompleted && !failedStep) &&
-                    <Button text="Stop Script" icon={mdiStop} onClick={cancelScript} type="danger" />}
+                    <Button text={t("apps.actions.stop")} icon={mdiStop} onClick={cancelScript} type="danger" />}
             </div>
         </div>
     );
