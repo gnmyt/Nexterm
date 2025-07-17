@@ -1,212 +1,212 @@
 {
   "common": {
     "actions": {
-      "cancel": "Cancel",
-      "confirm": "Confirm",
-      "login": "Login",
-      "register": "Register"
+      "cancel": "取消",
+      "confirm": "确认",
+      "login": "登录",
+      "register": "注册"
     },
     "labels": {
-      "username": "Username",
-      "password": "Password",
-      "firstName": "First Name",
-      "lastName": "Last Name",
-      "code": "Code",
-      "twoFACode": "2FA Code"
+      "username": "用户名",
+      "password": "密码",
+      "firstName": "姓名",
+      "lastName": "姓氏",
+      "code": "代码",
+      "twoFACode": "2FA 代码"
     },
     "placeholders": {
-      "username": "Username",
-      "password": "Password",
-      "firstName": "First name",
-      "lastName": "Last name",
-      "code": "Code"
+      "username": "用户名",
+      "password": "密码",
+      "firstName": "姓名",
+      "lastName": "姓氏",
+      "code": "代码"
     },
     "confirmDialog": {
-      "title": "Are you sure?",
-      "defaultText": "This action cannot be undone."
+      "title": "你确定吗？",
+      "defaultText": "该操作无法撤销。"
     },
     "loginDialog": {
-      "title": "Nexterm",
-      "registrationTitle": "Registration",
-      "ssoOrContinueWith": "or continue with",
-      "ssoSignInWith": "sign in with",
-      "noAuthMethodsAvailable": "No authentication methods available."
+      "title": "下一页",
+      "registrationTitle": "注册",
+      "ssoOrContinueWith": "或继续",
+      "ssoSignInWith": "登录",
+      "noAuthMethodsAvailable": "没有可用的验证方法。"
     },
     "selectBox": {
-      "defaultOption": "Select an option..."
+      "defaultOption": "选择一个选项..."
     },
     "sidebar": {
-      "settings": "Settings",
-      "servers": "Servers",
-      "monitoring": "Monitoring",
-      "snippets": "Snippets",
-      "audit": "Audit",
-      "apps": "Apps",
-      "logout": "Logout",
-      "collapseTitle": "Collapse Sidebar",
-      "logoutConfirmText": "This will log you out of the {{username}} account. Are you sure?",
-      "navigationConfirmText": "You have active sessions. Navigating away will disconnect you from all servers. Are you sure?"
+      "settings": "设置",
+      "servers": "服务器",
+      "monitoring": "监测",
+      "snippets": "片段",
+      "audit": "审计",
+      "apps": "应用程序",
+      "logout": "注销",
+      "collapseTitle": "折叠侧边栏",
+      "logoutConfirmText": "这将注销您的 {{username}} 账户。你确定吗？",
+      "navigationConfirmText": "您有活动会话。导航离开会断开您与所有服务器的连接。你确定吗？"
     },
     "errors": {
-      "loadingAuthProviders": "Error loading authentication providers: {{error}}",
-      "generalError": "An error occurred",
-      "invalidCredentials": "Invalid username or password",
-      "invalidTwoFactor": "Invalid two-factor code",
-      "internalAuthDisabled": "Internal authentication is disabled",
-      "ssoLoginFailed": "Failed to initiate SSO login"
+      "loadingAuthProviders": "加载身份验证提供程序时出错： {{error}}",
+      "generalError": "发生错误",
+      "invalidCredentials": "用户名或密码无效",
+      "invalidTwoFactor": "双因素代码无效",
+      "internalAuthDisabled": "内部身份验证已禁用",
+      "ssoLoginFailed": "启动 SSO 登录失败"
     },
     "messages": {
-      "invitationAccepted": "Invitation accepted",
-      "invitationDeclined": "Invitation declined",
-      "invitationError": "Failed to process invitation",
-      "organizationDeleted": "Organization deleted successfully",
-      "organizationDeleteError": "Failed to delete organization",
-      "leftOrganization": "You have left the organization",
-      "leaveOrganizationError": "Failed to leave organization"
+      "invitationAccepted": "接受邀请",
+      "invitationDeclined": "拒绝邀请",
+      "invitationError": "处理邀请失败",
+      "organizationDeleted": "组织已成功删除",
+      "organizationDeleteError": "删除组织失败",
+      "leftOrganization": "您已离开组织",
+      "leaveOrganizationError": "未能离开组织"
     }
   },
   "audit": {
     "page": {
-      "title": "Audit Logs",
-      "subtitle": "Track and monitor all activities across your infrastructure"
+      "title": "审计日志",
+      "subtitle": "跟踪和监控基础设施的所有活动"
     },
     "errors": {
-      "failedToLoadData": "Failed to load audit data",
-      "failedToLoadLogs": "Failed to load audit logs"
+      "failedToLoadData": "加载审计数据失败",
+      "failedToLoadLogs": "加载审计日志失败"
     },
     "filters": {
-      "title": "Filters",
-      "activeCount": "{{count}} active",
-      "organization": "Organization",
-      "action": "Action",
-      "resource": "Resource",
-      "startDate": "Start Date",
-      "endDate": "End Date",
-      "clearAll": "Clear All",
+      "title": "过滤器",
+      "activeCount": "{{count}} 活动",
+      "organization": "组织结构",
+      "action": "行动",
+      "resource": "资源",
+      "startDate": "开始日期",
+      "endDate": "结束日期",
+      "clearAll": "全部清除",
       "options": {
-        "allActions": "All Actions",
-        "allResources": "All Resources",
-        "allOrganizations": "All Organizations (Personal + Org)",
-        "personalOnly": "Personal Only",
-        "categoryAll": "{{category}} (All)"
+        "allActions": "所有行动",
+        "allResources": "所有资源",
+        "allOrganizations": "所有组织（个人 + 组织）",
+        "personalOnly": "仅限个人",
+        "categoryAll": "{{category}} (全部)"
       }
     },
     "table": {
       "headers": {
-        "timestamp": "Timestamp",
-        "action": "Action",
-        "actor": "Actor",
-        "resource": "Resource",
-        "organization": "Organization",
-        "details": "Details"
+        "timestamp": "时间戳",
+        "action": "行动",
+        "actor": "演员",
+        "resource": "资源",
+        "organization": "组织结构",
+        "details": "详细信息"
       },
       "noLogs": {
-        "title": "No audit logs found",
-        "subtitle": "Try adjusting your filters or check back later."
+        "title": "未找到审计日志",
+        "subtitle": "请尝试调整过滤器或稍后再查看。"
       },
-      "loading": "Loading audit logs...",
+      "loading": "加载审计日志...",
       "expandedDetails": {
-        "connectionReason": "Connection Reason",
-        "userAgent": "User Agent",
-        "additionalDetails": "Additional Details"
+        "connectionReason": "连接原因",
+        "userAgent": "用户代理",
+        "additionalDetails": "其他详细信息"
       },
       "badges": {
-        "personal": "Personal",
-        "user": "User #{{id}}",
+        "personal": "个人",
+        "user": "用户编号{{id}}",
         "organization": "Org #{{id}}"
       }
     },
     "pagination": {
-      "showing": "Showing {{start}} to {{end}} of {{total}} logs",
-      "previous": "Previous",
-      "next": "Next",
-      "pageInfo": "Page {{current}} of {{total}}"
+      "showing": "显示 {{start}} 至 {{end}} 的 {{total}} 日志",
+      "previous": "上一页",
+      "next": "下一页",
+      "pageInfo": "{{current}} of {{total}}"
     }
   },
   "snippets": {
     "page": {
-      "title": "Snippets",
-      "subtitle": "Manage your command snippets for quick access in terminals",
-      "addSnippet": "Add Snippet"
+      "title": "片段",
+      "subtitle": "管理你的命令片段，以便在终端中快速访问",
+      "addSnippet": "添加片段"
     },
     "list": {
-      "empty": "You don't have any snippets yet. Create your first one!",
+      "empty": "您还没有任何片段。创建您的第一个片段！",
       "actions": {
-        "edit": "Edit snippet",
-        "delete": "Delete snippet"
+        "edit": "编辑片段",
+        "delete": "删除片段"
       }
     },
     "dialog": {
       "title": {
-        "create": "Create Snippet",
-        "edit": "Edit Snippet"
+        "create": "创建片段",
+        "edit": "编辑片段"
       },
       "fields": {
-        "name": "Name",
-        "description": "Description (optional)",
-        "command": "Command"
+        "name": "名称",
+        "description": "说明（可选）",
+        "command": "指挥"
       },
       "placeholders": {
-        "name": "Snippet name",
-        "description": "What does this command?",
-        "command": "Enter your command"
+        "name": "片段名称",
+        "description": "这是什么命令？",
+        "command": "输入您的命令"
       },
       "actions": {
-        "cancel": "Cancel",
-        "create": "Create",
-        "save": "Save",
-        "generateAI": "Generate with AI",
-        "generating": "Generating..."
+        "cancel": "取消",
+        "create": "创建",
+        "save": "节省",
+        "generateAI": "用人工智能生成",
+        "generating": "生成..."
       }
     },
     "messages": {
       "success": {
-        "created": "Snippet created successfully",
-        "updated": "Snippet updated successfully",
-        "deleted": "Snippet deleted successfully"
+        "created": "成功创建代码段",
+        "updated": "代码段更新成功",
+        "deleted": "成功删除片段"
       },
       "errors": {
-        "required": "Name and command are required",
-        "loadFailed": "Failed to load snippet data",
-        "saveFailed": "Failed to save snippet",
-        "deleteFailed": "Failed to delete snippet"
+        "required": "姓名和命令为必填项",
+        "loadFailed": "加载片段数据失败",
+        "saveFailed": "保存片段失败",
+        "deleteFailed": "删除片段失败"
       }
     }
   },
   "monitoring": {
     "page": {
-      "title": "Server Monitoring",
-      "subtitle": "Real-time server statistics and health monitoring",
-      "searchPlaceholder": "Search servers..."
+      "title": "服务器监控",
+      "subtitle": "实时服务器统计和健康监控",
+      "searchPlaceholder": "搜索服务器..."
     },
     "errors": {
-      "loadFailed": "Failed to load monitoring data"
+      "loadFailed": "加载监控数据失败"
     },
     "grid": {
-      "loading": "Loading monitoring data...",
+      "loading": "加载监测数据...",
       "noServers": {
-        "title": "No Servers Found",
-        "subtitle": "No SSH servers available for monitoring.\nAdd some servers to start monitoring them."
+        "title": "未找到服务器",
+        "subtitle": "没有可供监控的 SSH 服务器。\n添加一些服务器以开始监控。"
       },
       "metrics": {
-        "cpuUsage": "CPU Usage",
-        "memoryUsage": "Memory Usage",
-        "loadAverage": "Load Average",
-        "processes": "Processes",
-        "uptime": "Uptime"
+        "cpuUsage": "CPU 使用率",
+        "memoryUsage": "内存使用情况",
+        "loadAverage": "平均负载",
+        "processes": "流程",
+        "uptime": "正常运行时间"
       },
       "status": {
-        "serverOffline": "Server Offline",
-        "connectionError": "Connection Error",
-        "statusUnknown": "Status Unknown",
-        "offlineMessage": "The server is currently not responding to monitoring requests.",
-        "errorMessage": "Unable to establish connection to the server.",
-        "unknownMessage": "Server status could not be determined.",
-        "lastSeen": "Last seen: {{time}}",
-        "noRecentActivity": "No recent activity"
+        "serverOffline": "服务器离线",
+        "connectionError": "连接错误",
+        "statusUnknown": "状态不明",
+        "offlineMessage": "服务器目前未响应监控请求。",
+        "errorMessage": "无法与服务器建立连接。",
+        "unknownMessage": "无法确定服务器状态。",
+        "lastSeen": "最后显示： {{time}}",
+        "noRecentActivity": "近期无活动"
       },
       "uptime": {
-        "unknown": "Unknown",
+        "unknown": "未知",
         "format": {
           "days": "{{days}}d {{hours}}h {{minutes}}m",
           "hours": "{{hours}}h {{minutes}}m",
@@ -221,371 +221,371 @@
         "24h": "24h"
       },
       "tabs": {
-        "overview": "Overview",
-        "charts": "Charts",
-        "storage": "Storage",
-        "network": "Network"
+        "overview": "概述",
+        "charts": "图表",
+        "storage": "存储",
+        "network": "网络"
       },
       "overview": {
         "systemInfo": {
-          "title": "System Information",
-          "os": "OS",
-          "version": "Version",
-          "kernel": "Kernel",
-          "architecture": "Architecture",
-          "uptime": "Uptime",
-          "unknown": "Unknown",
-          "noData": "No system information available"
+          "title": "系统信息",
+          "os": "操作系统",
+          "version": "版本",
+          "kernel": "内核",
+          "architecture": "建筑学",
+          "uptime": "正常运行时间",
+          "unknown": "未知",
+          "noData": "无系统信息"
         },
         "performance": {
-          "title": "Performance Metrics",
-          "cpuUsage": "CPU Usage",
-          "memoryUsage": "Memory Usage",
-          "loadAverage": "Load Average",
-          "processes": "Active Processes",
-          "total": "Total: {{value}}",
+          "title": "性能指标",
+          "cpuUsage": "CPU 使用率",
+          "memoryUsage": "内存使用情况",
+          "loadAverage": "平均负载",
+          "processes": "主动流程",
+          "total": "共计： {{value}}",
           "loadDetail": "5m: {{fiveMin}}, 15m: {{fifteenMin}}"
         },
         "uptime": {
           "format": {
-            "full": "{{days}} days, {{hours}} hours, {{minutes}} minutes",
-            "hoursMinutes": "{{hours}} hours, {{minutes}} minutes",
-            "minutes": "{{minutes}} minutes"
+            "full": "{{days}} 天， {{hours}} 小时， {{minutes}} 分钟",
+            "hoursMinutes": "{{hours}} 小时， {{minutes}} 分钟",
+            "minutes": "{{minutes}} 分钟"
           }
         }
       },
       "charts": {
-        "cpuUsage": "CPU Usage",
-        "memoryUsage": "Memory Usage",
-        "processes": "Active Processes",
-        "noData": "No data available for the selected time range"
+        "cpuUsage": "CPU 使用率",
+        "memoryUsage": "内存使用情况",
+        "processes": "主动流程",
+        "noData": "所选时间范围内无数据"
       },
       "storage": {
-        "title": "Disk Usage",
-        "used": "Used: {{value}}",
-        "available": "Available: {{value}}",
-        "total": "Total: {{value}}",
-        "type": "Type: {{value}}",
-        "noData": "No disk usage data available"
+        "title": "磁盘使用量",
+        "used": "使用过： {{value}}",
+        "available": "网址： {{value}}",
+        "total": "共计： {{value}}",
+        "type": "类型 {{value}}",
+        "noData": "没有磁盘使用数据"
       },
       "network": {
-        "title": "Network Interfaces",
-        "rxBytes": "RX Bytes",
-        "txBytes": "TX Bytes",
-        "noData": "No network interface data available"
+        "title": "网络接口",
+        "rxBytes": "RX 字节",
+        "txBytes": "TX 字节",
+        "noData": "无网络接口数据"
       }
     }
   },
   "settings": {
-    "title": "Settings",
-    "userSettings": "USER SETTINGS",
-    "adminSettings": "ADMIN SETTINGS",
+    "title": "设置",
+    "userSettings": "用户设置",
+    "adminSettings": "管理设置",
     "pages": {
-      "account": "Account",
-      "terminal": "Terminal",
-      "identities": "Identities",
-      "sessions": "Sessions",
-      "organizations": "Organizations",
-      "users": "Users",
-      "authentication": "Authentication",
-      "ai": "AI"
+      "account": "账户",
+      "terminal": "终端",
+      "identities": "身份",
+      "sessions": "会议",
+      "organizations": "组织机构",
+      "users": "用户",
+      "authentication": "认证",
+      "ai": "人工智能"
     },
     "account": {
-      "title": "Account",
-      "accountName": "Account name",
-      "firstName": "First name",
-      "lastName": "Last name",
-      "appearance": "Appearance",
-      "appearanceDescription": "Choose between light and dark theme for your interface.",
-      "switchToLight": "Switch to Light Mode",
-      "switchToDark": "Switch to Dark Mode",
-      "twoFactor": "Two-factor authentication",
-      "twoFactorActive": "Active",
-      "twoFactorInactive": "Inactive",
-      "twoFactorDescription": "Add an extra layer of security to your account by enabling two-factor authentication.",
-      "enable2FA": "Enable 2FA",
-      "disable2FA": "Disable 2FA",
-      "changePassword": "Change password",
-      "changePasswordDescription": "Choose a new and secure password for your account here.",
-      "changePasswordButton": "Change password"
+      "title": "账户",
+      "accountName": "账户名称",
+      "firstName": "姓名",
+      "lastName": "姓氏",
+      "appearance": "外观",
+      "appearanceDescription": "可为界面选择浅色和深色主题。",
+      "switchToLight": "切换到灯光模式",
+      "switchToDark": "切换到黑暗模式",
+      "twoFactor": "双因素认证",
+      "twoFactorActive": "活跃",
+      "twoFactorInactive": "不活动",
+      "twoFactorDescription": "启用双因素身份验证，为您的账户增加一层安全保护。",
+      "enable2FA": "启用 2FA",
+      "disable2FA": "禁用 2FA",
+      "changePassword": "更改密码",
+      "changePasswordDescription": "在此为您的账户选择一个新的安全密码。",
+      "changePasswordButton": "更改密码"
     },
     "passwordChange": {
-      "title": "Change password",
-      "description": "A strong password contains special characters, numbers, and letters in both uppercase and lowercase.",
-      "newPassword": "New password",
-      "confirmPassword": "Confirm new password",
-      "changePasswordButton": "Change password"
+      "title": "更改密码",
+      "description": "强密码包含特殊字符、数字和大小写字母。",
+      "newPassword": "新密码",
+      "confirmPassword": "确认新密码",
+      "changePasswordButton": "更改密码"
     },
     "organizations": {
-      "title": "Your Organizations",
-      "createOrganization": "Create Organization",
-      "noOrganizations": "You don't have any organizations yet.",
-      "noOrganizationsDescription": "Create one to start collaborating with your team.",
-      "invite": "Invite",
-      "delete": "Delete",
-      "leave": "Leave",
-      "members": "Members",
-      "auditSettings": "Audit Settings",
-      "pendingInvitations": "Pending Invitations",
-      "invitedBy": "Invited by: {{name}}",
-      "deleteConfirmation": "This will permanently delete the organization and remove all members. This action cannot be undone.",
-      "leaveConfirmation": "Are you sure you want to leave this organization?"
+      "title": "您的组织",
+      "createOrganization": "创建组织",
+      "noOrganizations": "您还没有任何组织。",
+      "noOrganizationsDescription": "创建一个，开始与团队合作。",
+      "invite": "邀请",
+      "delete": "删除",
+      "leave": "离开",
+      "members": "成员",
+      "auditSettings": "审计设置",
+      "pendingInvitations": "待发邀请",
+      "invitedBy": "特邀嘉宾： {{name}}",
+      "deleteConfirmation": "这将永久删除组织并删除所有成员。此操作无法撤销。",
+      "leaveConfirmation": "你确定要离开这个组织吗？"
     },
     "users": {
-      "title": "{{count}} users",
-      "createNewUser": "Create new user",
-      "twoFactorEnabled": "2FA enabled",
-      "twoFactorDisabled": "2FA disabled",
+      "title": "{{count}} 用户",
+      "createNewUser": "创建新用户",
+      "twoFactorEnabled": "已启用 2FA",
+      "twoFactorDisabled": "禁用 2FA",
       "contextMenu": {
-        "changePassword": "Change password",
-        "promoteToAdmin": "Promote to admin",
-        "demoteToUser": "Demote to user",
-        "deleteUser": "Delete user",
-        "loginAsUser": "Login as user",
-        "deleteConfirm": "This will permanently delete the user and all associated data.",
-        "promoteConfirm": "This will promote the user to an admin.",
-        "demoteConfirm": "This will demote the user to a regular user."
+        "changePassword": "更改密码",
+        "promoteToAdmin": "晋升为管理员",
+        "demoteToUser": "降级为用户",
+        "deleteUser": "删除用户",
+        "loginAsUser": "以用户身份登录",
+        "deleteConfirm": "这将永久删除用户和所有相关数据。",
+        "promoteConfirm": "这将使用户晋升为管理员。",
+        "demoteConfirm": "这将使用户降级为普通用户。"
       }
     },
     "userDialog": {
-      "title": "Create new user",
-      "firstName": "First Name",
-      "lastName": "Last Name",
-      "username": "Username",
-      "password": "Password",
-      "firstNamePlaceholder": "First name",
-      "lastNamePlaceholder": "Last name",
-      "usernamePlaceholder": "Username",
-      "passwordPlaceholder": "Password",
-      "create": "Create",
-      "errorOccurred": "An error occurred"
+      "title": "创建新用户",
+      "firstName": "姓名",
+      "lastName": "姓氏",
+      "username": "用户名",
+      "password": "密码",
+      "firstNamePlaceholder": "姓名",
+      "lastNamePlaceholder": "姓氏",
+      "usernamePlaceholder": "用户名",
+      "passwordPlaceholder": "密码",
+      "create": "创建",
+      "errorOccurred": "发生错误"
     },
     "sessions": {
-      "title": "Sessions",
-      "lastActivity": "Last activity: {{date}} from {{ip}}",
-      "currentSession": "Current session",
-      "logout": "Logout",
-      "revoke": "Revoke",
-      "browserOn": "{{browser}} {{version}} on {{os}} {{osVersion}}"
+      "title": "会议",
+      "lastActivity": "最近活动： {{date}} 来自 {{ip}}",
+      "currentSession": "本届会议",
+      "logout": "注销",
+      "revoke": "撤销",
+      "browserOn": "{{browser}} {{version}} {{os}} {{osVersion}}"
     },
     "terminal": {
-      "title": "Terminal",
+      "title": "终端",
       "font": {
-        "title": "Font",
-        "description": "Customize the font family and size for your terminal.",
-        "fontFamily": "Font Family",
-        "fontSize": "Font Size"
+        "title": "字体",
+        "description": "自定义终端的字体系列和大小。",
+        "fontFamily": "字体家族",
+        "fontSize": "字体大小"
       },
       "cursor": {
-        "title": "Cursor",
-        "description": "Customize the appearance and behavior of your terminal cursor.",
-        "cursorStyle": "Cursor Style",
-        "cursorBlinking": "Cursor Blinking",
-        "enabled": "Enabled",
-        "disabled": "Disabled"
+        "title": "光标",
+        "description": "自定义终端光标的外观和行为。",
+        "cursorStyle": "光标样式",
+        "cursorBlinking": "光标闪烁",
+        "enabled": "已启用",
+        "disabled": "残疾"
       },
       "theme": {
-        "title": "Theme",
-        "description": "Choose a color theme for your terminal."
+        "title": "主题",
+        "description": "为终端选择一个颜色主题。"
       },
       "preview": {
-        "text": "$ echo 'Hi, Nexterm!'\nHi, Nexterm!\n$ "
+        "text": "$ echo 'Hi, Nexterm!\n嗨，Nexterm！\n$ "
       }
     },
     "authentication": {
-      "title": "{{count}} Authentication Providers",
-      "addProvider": "Add Provider",
-      "system": "System",
-      "systemDescription": "Username and password authentication",
-      "deleteConfirm": "This will permanently delete this authentication provider.",
+      "title": "{{count}} 认证提供商",
+      "addProvider": "添加提供商",
+      "system": "系统",
+      "systemDescription": "用户名和密码验证",
+      "deleteConfirm": "这将永久删除此身份验证提供程序。",
       "errors": {
-        "deleteProvider": "Error deleting provider",
-        "toggleProvider": "Error toggling provider"
+        "deleteProvider": "删除提供程序出错",
+        "toggleProvider": "切换提供程序时出错"
       }
     },
     "ai": {
-      "title": "AI Assistant Configuration",
-      "description": "Configure AI-powered command generation for terminal sessions and snippet creation.",
-      "loading": "Loading AI settings...",
+      "title": "人工智能助理配置",
+      "description": "为终端会话和片段创建配置人工智能驱动的命令生成。",
+      "loading": "加载人工智能设置...",
       "enable": {
-        "title": "Enable AI Assistant",
-        "description": "Allow users to generate commands using AI"
+        "title": "启用人工智能助理",
+        "description": "允许用户使用人工智能生成命令"
       },
       "provider": {
-        "title": "AI Provider",
-        "description": "Choose your AI service provider"
+        "title": "人工智能提供商",
+        "description": "选择人工智能服务提供商"
       },
       "model": {
-        "title": "Model",
-        "description": "Select the AI model to use for command generation"
+        "title": "模型",
+        "description": "选择用于生成指令的人工智能模型"
       },
       "apiKey": {
-        "title": "API Key",
-        "description": "Your OpenAI API key for authentication",
-        "placeholder": "Enter your OpenAI API key",
-        "setPlaceholder": "API key is set (leave blank to keep current)"
+        "title": "API 密钥",
+        "description": "您用于身份验证的 OpenAI API 密钥",
+        "placeholder": "输入您的 OpenAI API 密钥",
+        "setPlaceholder": "已设置 API 密钥（留空以保持最新状态）"
       },
       "ollamaUrl": {
-        "title": "Ollama URL",
-        "description": "The URL where your Ollama instance is running",
+        "title": "奥拉马网址",
+        "description": "运行 Ollama 实例的 URL",
         "placeholder": "http://localhost:11434"
       },
-      "selectProvider": "Select a provider...",
-      "selectModel": "Select a model...",
-      "loadingModels": "Loading models...",
-      "noModels": "No models available",
-      "saveSettings": "Save Settings",
-      "testConnection": "Test Connection",
-      "testing": "Testing...",
-      "saveSuccess": "AI settings saved successfully",
-      "testSuccess": "AI connection test successful",
+      "selectProvider": "选择提供商...",
+      "selectModel": "选择型号...",
+      "loadingModels": "正在加载模型...",
+      "noModels": "无型号",
+      "saveSettings": "保存设置",
+      "testConnection": "测试连接",
+      "testing": "测试...",
+      "saveSuccess": "成功保存 AI 设置",
+      "testSuccess": "人工智能连接测试成功",
       "errors": {
-        "loadSettings": "Failed to load AI settings",
-        "saveSettings": "Failed to save AI settings",
-        "testConnection": "AI connection test failed"
+        "loadSettings": "加载人工智能设置失败",
+        "saveSettings": "保存人工智能设置失败",
+        "testConnection": "人工智能连接测试失败"
       }
     },
     "identities": {
-      "title": "SSH Keys & Credentials",
-      "description": "Manage your SSH keys and login credentials for server connections",
-      "createIdentity": "Create Identity",
-      "noUsername": "No username",
-      "sshKey": "SSH Key",
-      "password": "Password",
-      "editIdentity": "Edit identity",
-      "deleteIdentity": "Delete identity",
-      "noIdentities": "No Identities Found",
-      "noIdentitiesDescription": "Create your first identity to get started with server connections",
-      "deleteConfirm": "Are you sure you want to delete \"{{name}}\"? This action cannot be undone and will remove this identity from all servers that use it.",
-      "deleteSuccess": "Identity deleted successfully",
-      "deleteError": "Failed to delete identity"
+      "title": "SSH 密钥和证书",
+      "description": "管理用于服务器连接的 SSH 密钥和登录凭证",
+      "createIdentity": "创建身份",
+      "noUsername": "无用户名",
+      "sshKey": "SSH 密钥",
+      "password": "密码",
+      "editIdentity": "编辑身份",
+      "deleteIdentity": "删除身份",
+      "noIdentities": "未找到身份信息",
+      "noIdentitiesDescription": "创建第一个身份，开始连接服务器",
+      "deleteConfirm": "您确定要删除 \"{{name}}\" 吗？此操作不可撤销，并将从所有使用该身份的服务器上删除该身份。",
+      "deleteSuccess": "身份已成功删除",
+      "deleteError": "删除身份失败"
     }
   },
   "apps": {
-    "title": "Apps",
+    "title": "应用程序",
     "navigation": {
       "categories": {
-        "all": "All",
-        "results": "Results",
-        "scripts": "Scripts",
-        "networking": "Networking",
-        "media": "Media",
-        "cloud": "Cloud",
-        "development": "Development",
-        "utilities": "Utilities"
+        "all": "全部",
+        "results": "成果",
+        "scripts": "脚本",
+        "networking": "联网",
+        "media": "媒体",
+        "cloud": "云",
+        "development": "发展",
+        "utilities": "公用设施"
       }
     },
     "store": {
-      "appStore": "App Store",
-      "scripts": "Scripts",
-      "appStoreDescription": "Your favorite apps, deployed with a single click.",
-      "scriptsDescription": "Automate your server tasks with custom scripts.",
-      "manageSources": "Manage sources",
-      "createScript": "Create Script",
-      "source": "Source:",
+      "appStore": "应用程序商店",
+      "scripts": "脚本",
+      "appStoreDescription": "您最喜爱的应用程序，只需点击一下即可部署。",
+      "scriptsDescription": "使用自定义脚本自动执行服务器任务。",
+      "manageSources": "管理资源",
+      "createScript": "创建脚本",
+      "source": "资料来源",
       "sourceFilter": {
-        "all": "All",
-        "custom": "Custom"
+        "all": "全部",
+        "custom": "定制"
       }
     },
     "list": {
-      "noApps": "More apps coming soon",
-      "noScripts": "No scripts available",
-      "selectApp": "Select app to continue",
-      "selectScript": "Select script to continue"
+      "noApps": "更多应用程序即将推出",
+      "noScripts": "没有脚本",
+      "selectApp": "选择应用程序继续",
+      "selectScript": "选择脚本继续"
     },
     "actions": {
-      "deploy": "Deploy",
-      "run": "Run",
-      "view": "View",
-      "edit": "Edit",
-      "delete": "Delete",
-      "logs": "Logs",
-      "open": "Open",
-      "stop": "Stop Script",
-      "version": "Version"
+      "deploy": "部署",
+      "run": "运行",
+      "view": "查看",
+      "edit": "编辑",
+      "delete": "删除",
+      "logs": "日志",
+      "open": "开放",
+      "stop": "停止脚本",
+      "version": "版本"
     },
     "items": {
-      "customBadge": "Custom",
-      "scriptType": "Script",
-      "running": "Running...",
-      "runScript": "Run"
+      "customBadge": "定制",
+      "scriptType": "脚本",
+      "running": "运行...",
+      "runScript": "运行"
     },
     "installer": {
-      "deploymentFailed": "Deployment failed",
-      "deploymentCompleted": "Deployment completed",
-      "deploying": "Deploying...",
-      "installationLog": "Installation Log",
+      "deploymentFailed": "部署失败",
+      "deploymentCompleted": "完成部署",
+      "deploying": "部署...",
+      "installationLog": "安装日志",
       "steps": {
-        "lookupDistro": "Look up Linux distro",
-        "checkPermissions": "Check permissions",
-        "installDocker": "Install Docker Engine",
-        "downloadImage": "Download base image",
-        "preInstall": "Run pre-install command",
-        "startContainer": "Start Docker container",
-        "postInstall": "Run post-install command",
-        "detected": "Detected {{os}}"
+        "lookupDistro": "查找 Linux 发行版",
+        "checkPermissions": "检查权限",
+        "installDocker": "安装 Docker 引擎",
+        "downloadImage": "下载基础图像",
+        "preInstall": "运行预安装命令",
+        "startContainer": "启动 Docker 容器",
+        "postInstall": "运行安装后命令",
+        "detected": "检测到 {{os}}"
       }
     },
     "scriptExecutor": {
-      "executionFailed": "Script execution failed",
-      "executionCompleted": "Script execution completed",
-      "executing": "Executing script...",
-      "initializing": "Initializing script execution",
-      "finished": "Script execution finished",
-      "cancelled": "Script execution cancelled by user"
+      "executionFailed": "脚本执行失败",
+      "executionCompleted": "脚本执行完毕",
+      "executing": "执行脚本...",
+      "initializing": "初始化脚本执行",
+      "finished": "脚本执行完毕",
+      "cancelled": "用户取消脚本执行"
     },
     "dialogs": {
       "deployServer": {
-        "deployTitle": "Deploy {{name}}",
-        "runTitle": "Run {{name}}",
-        "noServersAvailable": "No SSH servers available"
+        "deployTitle": "部署 {{name}}",
+        "runTitle": "运行 {{name}}",
+        "noServersAvailable": "没有可用的 SSH 服务器"
       },
       "source": {
-        "title": "App sources",
-        "refreshApps": "Refresh apps",
-        "addNewSource": "Add new source"
+        "title": "应用程序源",
+        "refreshApps": "刷新应用程序",
+        "addNewSource": "添加新源"
       },
       "script": {
-        "createTitle": "Create Custom Script",
-        "editTitle": "Edit Script",
-        "viewTitle": "View Script",
-        "source": "Source: {{source}}",
-        "scriptDetails": "Script Details",
-        "scriptContent": "Script Content",
-        "helpTip": "Use @NEXTERM: commands for interactive prompts",
+        "createTitle": "创建自定义脚本",
+        "editTitle": "编辑脚本",
+        "viewTitle": "查看脚本",
+        "source": "来源： {{source}}",
+        "scriptDetails": "脚本详细信息",
+        "scriptContent": "脚本内容",
+        "helpTip": "使用 @NEXTERM: 命令进行交互式提示",
         "fields": {
-          "name": "Script Name *",
-          "description": "Description *",
-          "namePlaceholder": "My Awesome Script",
-          "descriptionPlaceholder": "What does this script do?"
+          "name": "脚本名称 *",
+          "description": "说明 *",
+          "namePlaceholder": "我真棒的脚本",
+          "descriptionPlaceholder": "这个脚本有什么作用？"
         },
         "actions": {
-          "close": "Close",
-          "cancel": "Cancel",
-          "create": "Create Script",
-          "update": "Update Script",
-          "creating": "Creating...",
-          "updating": "Updating..."
+          "close": "关闭",
+          "cancel": "取消",
+          "create": "创建脚本",
+          "update": "更新脚本",
+          "creating": "创建...",
+          "updating": "更新..."
         },
         "errors": {
-          "nameRequired": "Script name is required",
-          "descriptionRequired": "Script description is required",
-          "contentRequired": "Script content cannot be empty",
-          "createFailed": "Failed to create script",
-          "updateFailed": "Failed to update script"
+          "nameRequired": "脚本名称为必填项",
+          "descriptionRequired": "需要脚本说明",
+          "contentRequired": "脚本内容不能为空",
+          "createFailed": "创建脚本失败",
+          "updateFailed": "更新脚本失败"
         },
         "success": {
-          "created": "Script created successfully",
-          "updated": "Script updated successfully"
+          "created": "脚本创建成功",
+          "updated": "脚本更新成功"
         }
       }
     },
     "messages": {
-      "onlyCustomScriptsCanBeDeleted": "Only custom scripts can be deleted",
-      "scriptDeletedSuccessfully": "Script deleted successfully",
-      "failedToDeleteScript": "Failed to delete script",
-      "deleteScriptConfirmation": "Are you sure you want to delete the script \"{{name}}\"? This action cannot be undone."
+      "onlyCustomScriptsCanBeDeleted": "只能删除自定义脚本",
+      "scriptDeletedSuccessfully": "脚本已成功删除",
+      "failedToDeleteScript": "删除脚本失败",
+      "deleteScriptConfirmation": "您确定要删除脚本 \"{{name}}\" 吗？此操作无法撤销。"
     }
   }
 }
