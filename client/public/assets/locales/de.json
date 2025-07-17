@@ -1,0 +1,591 @@
+{
+  "common": {
+    "actions": {
+      "cancel": "Abbrechen",
+      "confirm": "Bestätige",
+      "login": "Anmeldung",
+      "register": "Register"
+    },
+    "labels": {
+      "username": "Benutzername",
+      "password": "Passwort",
+      "firstName": "Vorname",
+      "lastName": "Nachname",
+      "code": "Code",
+      "twoFACode": "2FA Code"
+    },
+    "placeholders": {
+      "username": "Benutzername",
+      "password": "Passwort",
+      "firstName": "Vorname",
+      "lastName": "Nachname",
+      "code": "Code"
+    },
+    "confirmDialog": {
+      "title": "Bist du sicher?",
+      "defaultText": "Diese Aktion kann nicht rückgängig gemacht werden."
+    },
+    "loginDialog": {
+      "title": "Nexterm",
+      "registrationTitle": "Anmeldung",
+      "ssoOrContinueWith": "oder weiter mit",
+      "ssoSignInWith": "melde dich an mit",
+      "noAuthMethodsAvailable": "Keine Authentifizierungsmethoden verfügbar."
+    },
+    "selectBox": {
+      "defaultOption": "Wähle eine Option aus..."
+    },
+    "sidebar": {
+      "settings": "Einstellungen",
+      "servers": "Server",
+      "monitoring": "Überwachung",
+      "snippets": "Schnipsel",
+      "audit": "Audit",
+      "apps": "Apps",
+      "logout": "Abmelden",
+      "collapseTitle": "Seitenleiste einklappen",
+      "logoutConfirmText": "Dadurch wirst du aus dem {{username}} Konto ausgeloggt. Bist du sicher?",
+      "navigationConfirmText": "Du hast aktive Sitzungen. Wenn du wegnavigierst, wird deine Verbindung zu allen Servern getrennt. Bist du sicher?"
+    },
+    "errors": {
+      "loadingAuthProviders": "Fehler beim Laden von Authentifizierungsanbietern: {{error}}",
+      "generalError": "Ein Fehler ist aufgetreten",
+      "invalidCredentials": "Ungültiger Benutzername oder Passwort",
+      "invalidTwoFactor": "Ungültiger Zwei-Faktor-Code",
+      "internalAuthDisabled": "Interne Authentifizierung ist deaktiviert",
+      "ssoLoginFailed": "SSO-Anmeldung konnte nicht initiiert werden"
+    },
+    "messages": {
+      "invitationAccepted": "Einladung angenommen",
+      "invitationDeclined": "Einladung abgelehnt",
+      "invitationError": "Einladung konnte nicht bearbeitet werden",
+      "organizationDeleted": "Organisation erfolgreich gelöscht",
+      "organizationDeleteError": "Organisation kann nicht gelöscht werden",
+      "leftOrganization": "Du hast die Organisation verlassen",
+      "leaveOrganizationError": "Hat die Organisation nicht verlassen"
+    }
+  },
+  "audit": {
+    "page": {
+      "title": "Audit-Logs",
+      "subtitle": "Verfolge und überwache alle Aktivitäten in deiner Infrastruktur"
+    },
+    "errors": {
+      "failedToLoadData": "Audit-Daten konnten nicht geladen werden",
+      "failedToLoadLogs": "Audit-Logs konnten nicht geladen werden"
+    },
+    "filters": {
+      "title": "Filter",
+      "activeCount": "{{count}} aktiv",
+      "organization": "Organisation",
+      "action": "Aktion",
+      "resource": "Ressource",
+      "startDate": "Startdatum",
+      "endDate": "Enddatum",
+      "clearAll": "Alle löschen",
+      "options": {
+        "allActions": "Alle Aktionen",
+        "allResources": "Alle Ressourcen",
+        "allOrganizations": "Alle Organisationen (Personal + Org)",
+        "personalOnly": "Nur persönlich",
+        "categoryAll": "{{category}} (Alle)"
+      }
+    },
+    "table": {
+      "headers": {
+        "timestamp": "Zeitstempel",
+        "action": "Aktion",
+        "actor": "Schauspieler",
+        "resource": "Ressource",
+        "organization": "Organisation",
+        "details": "Details"
+      },
+      "noLogs": {
+        "title": "Keine Audit-Protokolle gefunden",
+        "subtitle": "Versuche, deine Filter anzupassen oder schaue später wieder vorbei."
+      },
+      "loading": "Laden der Audit-Protokolle...",
+      "expandedDetails": {
+        "connectionReason": "Verbindung Grund",
+        "userAgent": "Benutzer-Agent",
+        "additionalDetails": "Zusätzliche Details"
+      },
+      "badges": {
+        "personal": "Persönlich",
+        "user": "Benutzer #{{id}}",
+        "organization": "Org #{{id}}"
+      }
+    },
+    "pagination": {
+      "showing": "Zeigt {{start}} bis {{end}} von {{total}} Logs",
+      "previous": "Vorherige",
+      "next": "Nächste",
+      "pageInfo": "Seite {{current}} von {{total}}"
+    }
+  },
+  "snippets": {
+    "page": {
+      "title": "Schnipsel",
+      "subtitle": "Verwalte deine Befehlsschnipsel für schnellen Zugriff in Terminals",
+      "addSnippet": "Snippet hinzufügen"
+    },
+    "list": {
+      "empty": "Du hast noch keine Snippets. Erstelle dein erstes!",
+      "actions": {
+        "edit": "Snippet bearbeiten",
+        "delete": "Snippet löschen"
+      }
+    },
+    "dialog": {
+      "title": {
+        "create": "Snippet erstellen",
+        "edit": "Snippet bearbeiten"
+      },
+      "fields": {
+        "name": "Name",
+        "description": "Beschreibung (optional)",
+        "command": "Befehl"
+      },
+      "placeholders": {
+        "name": "Name des Schnipsels",
+        "description": "Was bedeutet dieser Befehl?",
+        "command": "Gib deinen Befehl ein"
+      },
+      "actions": {
+        "cancel": "Abbrechen",
+        "create": "erstellen",
+        "save": "Speichern",
+        "generateAI": "Generieren mit KI",
+        "generating": "Generieren..."
+      }
+    },
+    "messages": {
+      "success": {
+        "created": "Snippet erfolgreich erstellt",
+        "updated": "Snippet erfolgreich aktualisiert",
+        "deleted": "Snippet erfolgreich gelöscht"
+      },
+      "errors": {
+        "required": "Name und Befehl sind erforderlich",
+        "loadFailed": "Snippet-Daten konnten nicht geladen werden",
+        "saveFailed": "Snippet konnte nicht gespeichert werden",
+        "deleteFailed": "Snippet kann nicht gelöscht werden"
+      }
+    }
+  },
+  "monitoring": {
+    "page": {
+      "title": "Server Überwachung",
+      "subtitle": "Serverstatistiken und Zustandsüberwachung in Echtzeit",
+      "searchPlaceholder": "Server suchen..."
+    },
+    "errors": {
+      "loadFailed": "Überwachungsdaten konnten nicht geladen werden"
+    },
+    "grid": {
+      "loading": "Laden von Überwachungsdaten...",
+      "noServers": {
+        "title": "Keine Server gefunden",
+        "subtitle": "Es sind keine SSH-Server zur Überwachung verfügbar.\nFüge einige Server hinzu, um sie zu überwachen."
+      },
+      "metrics": {
+        "cpuUsage": "CPU-Nutzung",
+        "memoryUsage": "Speichernutzung",
+        "loadAverage": "Last Durchschnitt",
+        "processes": "Prozesse",
+        "uptime": "Betriebszeit"
+      },
+      "status": {
+        "serverOffline": "Server Offline",
+        "connectionError": "Verbindungsfehler",
+        "statusUnknown": "Status Unbekannt",
+        "offlineMessage": "Der Server antwortet derzeit nicht auf Überwachungsanfragen.",
+        "errorMessage": "Die Verbindung zum Server kann nicht hergestellt werden.",
+        "unknownMessage": "Der Serverstatus konnte nicht ermittelt werden.",
+        "lastSeen": "Zuletzt gesehen: {{time}}",
+        "noRecentActivity": "Keine aktuelle Aktivität"
+      },
+      "uptime": {
+        "unknown": "Unbekannt",
+        "format": {
+          "days": "{{days}}d {{hours}}h {{minutes}}m",
+          "hours": "{{hours}}h {{minutes}}m",
+          "minutes": "{{minutes}}m"
+        }
+      }
+    },
+    "details": {
+      "timeRanges": {
+        "1h": "1h",
+        "6h": "6h",
+        "24h": "24h"
+      },
+      "tabs": {
+        "overview": "Übersicht",
+        "charts": "Charts",
+        "storage": "Lagerung",
+        "network": "Netzwerk"
+      },
+      "overview": {
+        "systemInfo": {
+          "title": "System Informationen",
+          "os": "OS",
+          "version": "Version",
+          "kernel": "Kernel",
+          "architecture": "Architektur",
+          "uptime": "Betriebszeit",
+          "unknown": "Unbekannt",
+          "noData": "Keine Systeminformationen verfügbar"
+        },
+        "performance": {
+          "title": "Leistungsmetriken",
+          "cpuUsage": "CPU-Nutzung",
+          "memoryUsage": "Speichernutzung",
+          "loadAverage": "Last Durchschnitt",
+          "processes": "Aktive Prozesse",
+          "total": "Insgesamt: {{value}}",
+          "loadDetail": "5m: {{fiveMin}}, 15m: {{fifteenMin}}"
+        },
+        "uptime": {
+          "format": {
+            "full": "{{days}} Tage, {{hours}} Stunden, {{minutes}} Minuten",
+            "hoursMinutes": "{{hours}} Stunden, {{minutes}} Minuten",
+            "minutes": "{{minutes}} Minuten"
+          }
+        }
+      },
+      "charts": {
+        "cpuUsage": "CPU-Nutzung",
+        "memoryUsage": "Speichernutzung",
+        "processes": "Aktive Prozesse",
+        "noData": "Keine Daten für den ausgewählten Zeitraum verfügbar"
+      },
+      "storage": {
+        "title": "Festplattenverwendung",
+        "used": "Gebraucht: {{value}}",
+        "available": "Verfügbar: {{value}}",
+        "total": "Insgesamt: {{value}}",
+        "type": "Typ: {{value}}",
+        "noData": "Keine Daten zur Festplattennutzung verfügbar"
+      },
+      "network": {
+        "title": "Netzwerk-Schnittstellen",
+        "rxBytes": "RX-Bytes",
+        "txBytes": "Sende-Bytes",
+        "noData": "Keine Daten zur Netzwerkschnittstelle verfügbar"
+      }
+    }
+  },
+  "settings": {
+    "title": "Einstellungen",
+    "userSettings": "BENUTZEREINSTELLUNGEN",
+    "adminSettings": "ADMIN-EINSTELLUNGEN",
+    "pages": {
+      "account": "Konto",
+      "terminal": "Terminal",
+      "identities": "Identitäten",
+      "sessions": "Sitzungen",
+      "organizations": "Organisationen",
+      "users": "Benutzer",
+      "authentication": "Authentifizierung",
+      "ai": "AI"
+    },
+    "account": {
+      "title": "Konto",
+      "accountName": "Kontoname",
+      "firstName": "Vorname",
+      "lastName": "Nachname",
+      "appearance": "Erscheinungsbild",
+      "appearanceDescription": "Wähle zwischen einem hellen und einem dunklen Thema für deine Oberfläche.",
+      "switchToLight": "In den Lichtmodus wechseln",
+      "switchToDark": "In den dunklen Modus wechseln",
+      "twoFactor": "Zwei-Faktor-Authentifizierung",
+      "twoFactorActive": "Aktiv",
+      "twoFactorInactive": "Inaktiv",
+      "twoFactorDescription": "Füge eine zusätzliche Sicherheitsebene zu deinem Konto hinzu, indem du die Zwei-Faktor-Authentifizierung aktivierst.",
+      "enable2FA": "2FA aktivieren",
+      "disable2FA": "2FA deaktivieren",
+      "changePassword": "Passwort ändern",
+      "changePasswordDescription": "Wähle hier ein neues und sicheres Passwort für dein Konto.",
+      "changePasswordButton": "Passwort ändern"
+    },
+    "passwordChange": {
+      "title": "Passwort ändern",
+      "description": "Ein sicheres Passwort enthält Sonderzeichen, Zahlen und Buchstaben in Groß- und Kleinbuchstaben.",
+      "newPassword": "Neues Passwort",
+      "confirmPassword": "Bestätige das neue Passwort",
+      "changePasswordButton": "Passwort ändern"
+    },
+    "organizations": {
+      "title": "Deine Organisationen",
+      "createOrganization": "Organisation erstellen",
+      "noOrganizations": "Du hast noch keine Organisationen.",
+      "noOrganizationsDescription": "Erstelle eine, um die Zusammenarbeit mit deinem Team zu beginnen.",
+      "invite": "einladen",
+      "delete": "löschen",
+      "leave": "Lass",
+      "members": "Mitglieder",
+      "auditSettings": "Audit-Einstellungen",
+      "pendingInvitations": "Ausstehende Einladungen",
+      "invitedBy": "Eingeladen von: {{name}}",
+      "deleteConfirmation": "Dadurch wird die Organisation endgültig gelöscht und alle Mitglieder werden entfernt. Diese Aktion kann nicht rückgängig gemacht werden.",
+      "leaveConfirmation": "Bist du sicher, dass du diese Organisation verlassen willst?"
+    },
+    "users": {
+      "title": "{{count}} Benutzer",
+      "createNewUser": "Neuen Benutzer erstellen",
+      "twoFactorEnabled": "2FA aktiviert",
+      "twoFactorDisabled": "2FA deaktiviert",
+      "contextMenu": {
+        "changePassword": "Passwort ändern",
+        "promoteToAdmin": "Zum Admin befördern",
+        "demoteToUser": "Zum Benutzer zurückstufen",
+        "deleteUser": "Benutzer löschen",
+        "loginAsUser": "Anmeldung als Benutzer",
+        "deleteConfirm": "Dadurch werden der Benutzer und alle zugehörigen Daten endgültig gelöscht.",
+        "promoteConfirm": "Dadurch wird der Benutzer zum Administrator befördert.",
+        "demoteConfirm": "Dadurch wird der Benutzer zum normalen Benutzer degradiert."
+      }
+    },
+    "userDialog": {
+      "title": "Neuen Benutzer erstellen",
+      "firstName": "Vorname",
+      "lastName": "Nachname",
+      "username": "Benutzername",
+      "password": "Passwort",
+      "firstNamePlaceholder": "Vorname",
+      "lastNamePlaceholder": "Nachname",
+      "usernamePlaceholder": "Benutzername",
+      "passwordPlaceholder": "Passwort",
+      "create": "erstellen",
+      "errorOccurred": "Ein Fehler ist aufgetreten"
+    },
+    "sessions": {
+      "title": "Sitzungen",
+      "lastActivity": "Letzte Aktivität: {{date}} von {{ip}}",
+      "currentSession": "Aktuelle Sitzung",
+      "logout": "Abmelden",
+      "revoke": "Widerrufen",
+      "browserOn": "{{browser}} {{version}} auf {{os}} {{osVersion}}"
+    },
+    "terminal": {
+      "title": "Terminal",
+      "font": {
+        "title": "Schriftart",
+        "description": "Passe die Schriftfamilie und -größe für dein Terminal an.",
+        "fontFamily": "Schriftfamilie",
+        "fontSize": "Schriftgröße"
+      },
+      "cursor": {
+        "title": "Cursor",
+        "description": "Passe das Aussehen und Verhalten deines Terminal-Cursors an.",
+        "cursorStyle": "Cursor-Stil",
+        "cursorBlinking": "Cursor blinkt",
+        "enabled": "Aktiviert",
+        "disabled": "Behinderte"
+      },
+      "theme": {
+        "title": "Thema",
+        "description": "Wähle ein Farbthema für dein Terminal."
+      },
+      "preview": {
+        "text": "$ echo 'Hallo, Nexterm!'\nHallo, Nexterm!\n$ "
+      }
+    },
+    "authentication": {
+      "title": "{{count}} Anbieter von Authentifizierung",
+      "addProvider": "Anbieter hinzufügen",
+      "system": "System",
+      "systemDescription": "Authentifizierung mit Benutzername und Passwort",
+      "deleteConfirm": "Dadurch wird dieser Authentifizierungsanbieter endgültig gelöscht.",
+      "errors": {
+        "deleteProvider": "Fehler beim Löschen des Anbieters",
+        "toggleProvider": "Fehler beim Umschalten des Anbieters"
+      }
+    },
+    "ai": {
+      "title": "KI-Assistent Konfiguration",
+      "description": "Konfiguriere die KI-gestützte Befehlsgenerierung für Terminalsitzungen und die Erstellung von Snippets.",
+      "loading": "AI-Einstellungen laden...",
+      "enable": {
+        "title": "KI-Assistent aktivieren",
+        "description": "Erlaube den Nutzern, Befehle mithilfe von KI zu generieren"
+      },
+      "provider": {
+        "title": "KI-Anbieter",
+        "description": "Wähle deinen KI-Dienstleister"
+      },
+      "model": {
+        "title": "Modell",
+        "description": "Wähle das KI-Modell aus, das für die Befehlsgenerierung verwendet werden soll"
+      },
+      "apiKey": {
+        "title": "API-Schlüssel",
+        "description": "Dein OpenAI API-Schlüssel für die Authentifizierung",
+        "placeholder": "Gib deinen OpenAI API Schlüssel ein",
+        "setPlaceholder": "API-Schlüssel ist gesetzt (leer lassen, um aktuell zu bleiben)"
+      },
+      "ollamaUrl": {
+        "title": "Ollama URL",
+        "description": "Die URL, unter der deine Ollama-Instanz läuft",
+        "placeholder": "http://localhost:11434"
+      },
+      "selectProvider": "Wähle einen Anbieter...",
+      "selectModel": "Wähle ein Modell...",
+      "loadingModels": "Modelle laden...",
+      "noModels": "Keine Modelle verfügbar",
+      "saveSettings": "Einstellungen speichern",
+      "testConnection": "Test Verbindung",
+      "testing": "Testen...",
+      "saveSuccess": "AI-Einstellungen erfolgreich gespeichert",
+      "testSuccess": "AI-Verbindungstest erfolgreich",
+      "errors": {
+        "loadSettings": "KI-Einstellungen konnten nicht geladen werden",
+        "saveSettings": "KI-Einstellungen konnten nicht gespeichert werden",
+        "testConnection": "AI-Verbindungstest fehlgeschlagen"
+      }
+    },
+    "identities": {
+      "title": "SSH-Schlüssel und Anmeldeinformationen",
+      "description": "Verwalte deine SSH-Schlüssel und Anmeldedaten für Serververbindungen",
+      "createIdentity": "Identität schaffen",
+      "noUsername": "Kein Nutzername",
+      "sshKey": "SSH-Schlüssel",
+      "password": "Passwort",
+      "editIdentity": "Identität bearbeiten",
+      "deleteIdentity": "Identität löschen",
+      "noIdentities": "Keine Identitäten gefunden",
+      "noIdentitiesDescription": "Erstelle deine erste Identität, um mit Serververbindungen zu beginnen",
+      "deleteConfirm": "Bist du sicher, dass du \"{{name}}\" löschen willst? Diese Aktion kann nicht rückgängig gemacht werden und wird diese Identität von allen Servern entfernen, die sie verwenden.",
+      "deleteSuccess": "Identität erfolgreich gelöscht",
+      "deleteError": "Identität konnte nicht gelöscht werden"
+    }
+  },
+  "apps": {
+    "title": "Apps",
+    "navigation": {
+      "categories": {
+        "all": "Alle",
+        "results": "Ergebnisse",
+        "scripts": "Skripte",
+        "networking": "Networking",
+        "media": "Medien",
+        "cloud": "Wolke",
+        "development": "Entwicklung",
+        "utilities": "Versorgungsunternehmen"
+      }
+    },
+    "store": {
+      "appStore": "App Store",
+      "scripts": "Skripte",
+      "appStoreDescription": "Deine Lieblingsapps, die mit einem einzigen Klick bereitgestellt werden.",
+      "scriptsDescription": "Automatisiere deine Serveraufgaben mit benutzerdefinierten Skripten.",
+      "manageSources": "Quellen verwalten",
+      "createScript": "Skript erstellen",
+      "source": "Quelle:",
+      "sourceFilter": {
+        "all": "Alle",
+        "custom": "Benutzerdefiniert"
+      }
+    },
+    "list": {
+      "noApps": "Demnächst mehr Apps",
+      "noScripts": "Keine Skripte verfügbar",
+      "selectApp": "App auswählen, um fortzufahren",
+      "selectScript": "Skript auswählen, um fortzufahren"
+    },
+    "actions": {
+      "deploy": "Bereitstellen",
+      "run": "Lauf",
+      "view": "Siehe",
+      "edit": "bearbeiten",
+      "delete": "löschen",
+      "logs": "Logs",
+      "open": "Öffnen Sie",
+      "stop": "Skript anhalten",
+      "version": "Version"
+    },
+    "items": {
+      "customBadge": "Benutzerdefiniert",
+      "scriptType": "Skript",
+      "running": "Laufen...",
+      "runScript": "Lauf"
+    },
+    "installer": {
+      "deploymentFailed": "Einsatz fehlgeschlagen",
+      "deploymentCompleted": "Einsatz abgeschlossen",
+      "deploying": "Der Einsatz...",
+      "installationLog": "Installationsprotokoll",
+      "steps": {
+        "lookupDistro": "Linux-Distributionen nachschlagen",
+        "checkPermissions": "Berechtigungen prüfen",
+        "installDocker": "Docker Engine installieren",
+        "downloadImage": "Basisbild herunterladen",
+        "preInstall": "Vorinstallationsbefehl ausführen",
+        "startContainer": "Docker Container starten",
+        "postInstall": "Post-Installationsbefehl ausführen",
+        "detected": "Erkannt {{os}}"
+      }
+    },
+    "scriptExecutor": {
+      "executionFailed": "Skriptausführung fehlgeschlagen",
+      "executionCompleted": "Skriptausführung abgeschlossen",
+      "executing": "Ausführen des Skripts...",
+      "initializing": "Initialisierung der Skriptausführung",
+      "finished": "Skriptausführung beendet",
+      "cancelled": "Skriptausführung durch Benutzer abgebrochen"
+    },
+    "dialogs": {
+      "deployServer": {
+        "deployTitle": "Bereitstellen {{name}}",
+        "runTitle": "Lauf {{name}}",
+        "noServersAvailable": "Keine SSH-Server verfügbar"
+      },
+      "source": {
+        "title": "App-Quellen",
+        "refreshApps": "Apps aktualisieren",
+        "addNewSource": "Neue Quelle hinzufügen"
+      },
+      "script": {
+        "createTitle": "Benutzerdefiniertes Skript erstellen",
+        "editTitle": "Skript bearbeiten",
+        "viewTitle": "Skript ansehen",
+        "source": "Quelle: {{source}}",
+        "scriptDetails": "Skript Details",
+        "scriptContent": "Skript Inhalt",
+        "helpTip": "Verwende @NEXTERM: Befehle für interaktive Eingabeaufforderungen",
+        "fields": {
+          "name": "Script Name *",
+          "description": "Beschreibung *",
+          "namePlaceholder": "Mein geniales Skript",
+          "descriptionPlaceholder": "Was macht dieses Skript?"
+        },
+        "actions": {
+          "close": "Schließen",
+          "cancel": "Abbrechen",
+          "create": "Skript erstellen",
+          "update": "Update Script",
+          "creating": "Erstellen...",
+          "updating": "Aktualisieren..."
+        },
+        "errors": {
+          "nameRequired": "Skriptname ist erforderlich",
+          "descriptionRequired": "Skriptbeschreibung ist erforderlich",
+          "contentRequired": "Skriptinhalt kann nicht leer sein",
+          "createFailed": "Skript kann nicht erstellt werden",
+          "updateFailed": "Skript kann nicht aktualisiert werden"
+        },
+        "success": {
+          "created": "Skript erfolgreich erstellt",
+          "updated": "Skript erfolgreich aktualisiert"
+        }
+      }
+    },
+    "messages": {
+      "onlyCustomScriptsCanBeDeleted": "Nur benutzerdefinierte Skripte können gelöscht werden",
+      "scriptDeletedSuccessfully": "Skript erfolgreich gelöscht",
+      "failedToDeleteScript": "Skript kann nicht gelöscht werden",
+      "deleteScriptConfirmation": "Bist du sicher, dass du das Skript \"{{name}}\" löschen willst? Diese Aktion kann nicht rückgängig gemacht werden."
+    }
+  }
+}

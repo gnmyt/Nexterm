@@ -1,0 +1,591 @@
+{
+  "common": {
+    "actions": {
+      "cancel": "Cancela",
+      "confirm": "Confirma",
+      "login": "Iniciar sesión",
+      "register": "Regístrate en"
+    },
+    "labels": {
+      "username": "Nombre de usuario",
+      "password": "Contraseña",
+      "firstName": "Nombre",
+      "lastName": "Apellidos",
+      "code": "Código",
+      "twoFACode": "Código 2FA"
+    },
+    "placeholders": {
+      "username": "Nombre de usuario",
+      "password": "Contraseña",
+      "firstName": "Nombre",
+      "lastName": "Apellidos",
+      "code": "Código"
+    },
+    "confirmDialog": {
+      "title": "¿Estás seguro?",
+      "defaultText": "Esta acción no se puede deshacer."
+    },
+    "loginDialog": {
+      "title": "Nexterm",
+      "registrationTitle": "Inscripción",
+      "ssoOrContinueWith": "o continúa con",
+      "ssoSignInWith": "inicia sesión con",
+      "noAuthMethodsAvailable": "No hay métodos de autenticación disponibles."
+    },
+    "selectBox": {
+      "defaultOption": "Selecciona una opción..."
+    },
+    "sidebar": {
+      "settings": "Ajustes",
+      "servers": "Servidores",
+      "monitoring": "Supervisión",
+      "snippets": "Fragmentos",
+      "audit": "Auditoría",
+      "apps": "Aplicaciones",
+      "logout": "Cerrar sesión",
+      "collapseTitle": "Contraer la barra lateral",
+      "logoutConfirmText": "Esto te desconectará de la cuenta {{username}} . ¿Estás seguro?",
+      "navigationConfirmText": "Tienes sesiones activas. Si te alejas, te desconectarás de todos los servidores. ¿Estás seguro?"
+    },
+    "errors": {
+      "loadingAuthProviders": "Error al cargar los proveedores de autenticación: {{error}}",
+      "generalError": "Se ha producido un error",
+      "invalidCredentials": "Nombre de usuario o contraseña no válidos",
+      "invalidTwoFactor": "Código de dos factores no válido",
+      "internalAuthDisabled": "La autenticación interna está desactivada",
+      "ssoLoginFailed": "Error al iniciar sesión SSO"
+    },
+    "messages": {
+      "invitationAccepted": "Invitación aceptada",
+      "invitationDeclined": "Invitación rechazada",
+      "invitationError": "No se ha podido procesar la invitación",
+      "organizationDeleted": "Organización eliminada correctamente",
+      "organizationDeleteError": "No se ha podido eliminar la organización",
+      "leftOrganization": "Has dejado la organización",
+      "leaveOrganizationError": "No ha abandonado la organización"
+    }
+  },
+  "audit": {
+    "page": {
+      "title": "Registros de auditoría",
+      "subtitle": "Rastrea y controla todas las actividades de tu infraestructura"
+    },
+    "errors": {
+      "failedToLoadData": "Error al cargar datos de auditoría",
+      "failedToLoadLogs": "Error al cargar los registros de auditoría"
+    },
+    "filters": {
+      "title": "Filtros",
+      "activeCount": "{{count}} activo",
+      "organization": "Organización",
+      "action": "Acción",
+      "resource": "Recursos",
+      "startDate": "Fecha de inicio",
+      "endDate": "Fecha final",
+      "clearAll": "Borrar todo",
+      "options": {
+        "allActions": "Todas las acciones",
+        "allResources": "Todos los recursos",
+        "allOrganizations": "Todas las Organizaciones (Personal + Org)",
+        "personalOnly": "Sólo personal",
+        "categoryAll": "{{category}} (Todos)"
+      }
+    },
+    "table": {
+      "headers": {
+        "timestamp": "Marca de tiempo",
+        "action": "Acción",
+        "actor": "Actor",
+        "resource": "Recursos",
+        "organization": "Organización",
+        "details": "Detalles"
+      },
+      "noLogs": {
+        "title": "No se han encontrado registros de auditoría",
+        "subtitle": "Prueba a ajustar los filtros o vuelve a comprobarlo más tarde."
+      },
+      "loading": "Cargando registros de auditoría...",
+      "expandedDetails": {
+        "connectionReason": "Motivo de la conexión",
+        "userAgent": "Agente de usuario",
+        "additionalDetails": "Detalles adicionales"
+      },
+      "badges": {
+        "personal": "Personal",
+        "user": "Usuario #{{id}}",
+        "organization": "Org #{{id}}"
+      }
+    },
+    "pagination": {
+      "showing": "Mostrando {{start}} a {{end}} de {{total}} registros",
+      "previous": "Anterior",
+      "next": "Siguiente",
+      "pageInfo": "Página {{current}} de {{total}}"
+    }
+  },
+  "snippets": {
+    "page": {
+      "title": "Fragmentos",
+      "subtitle": "Gestiona tus fragmentos de comandos para acceder rápidamente a ellos en los terminales",
+      "addSnippet": "Añadir fragmento"
+    },
+    "list": {
+      "empty": "Aún no tienes ningún fragmento. ¡Crea el primero!",
+      "actions": {
+        "edit": "Editar fragmento",
+        "delete": "Eliminar fragmento"
+      }
+    },
+    "dialog": {
+      "title": {
+        "create": "Crear fragmento",
+        "edit": "Editar fragmento"
+      },
+      "fields": {
+        "name": "Nombre",
+        "description": "Descripción (opcional)",
+        "command": "Mando"
+      },
+      "placeholders": {
+        "name": "Nombre del fragmento",
+        "description": "¿Qué ordena esto?",
+        "command": "Introduce tu orden"
+      },
+      "actions": {
+        "cancel": "Cancelar",
+        "create": "Crea",
+        "save": "Guarda",
+        "generateAI": "Generar con IA",
+        "generating": "Generar..."
+      }
+    },
+    "messages": {
+      "success": {
+        "created": "Fragmento creado correctamente",
+        "updated": "Fragmento actualizado correctamente",
+        "deleted": "Fragmento eliminado correctamente"
+      },
+      "errors": {
+        "required": "El nombre y el mando son obligatorios",
+        "loadFailed": "Error al cargar los datos del fragmento",
+        "saveFailed": "No se ha podido guardar el fragmento",
+        "deleteFailed": "No se ha podido eliminar el fragmento"
+      }
+    }
+  },
+  "monitoring": {
+    "page": {
+      "title": "Monitorización de servidores",
+      "subtitle": "Estadísticas del servidor en tiempo real y supervisión de su estado",
+      "searchPlaceholder": "Buscar servidores..."
+    },
+    "errors": {
+      "loadFailed": "Error al cargar los datos de monitorización"
+    },
+    "grid": {
+      "loading": "Cargando datos de seguimiento...",
+      "noServers": {
+        "title": "No se han encontrado servidores",
+        "subtitle": "No hay servidores SSH disponibles para monitorizar.\nAñade algunos servidores para empezar a monitorizarlos."
+      },
+      "metrics": {
+        "cpuUsage": "Uso de la CPU",
+        "memoryUsage": "Uso de la memoria",
+        "loadAverage": "Carga Media",
+        "processes": "Procesos",
+        "uptime": "Tiempo de actividad"
+      },
+      "status": {
+        "serverOffline": "Servidor desconectado",
+        "connectionError": "Error de conexión",
+        "statusUnknown": "Estado desconocido",
+        "offlineMessage": "El servidor no responde actualmente a las peticiones de monitorización.",
+        "errorMessage": "No se ha podido establecer la conexión con el servidor.",
+        "unknownMessage": "No se ha podido determinar el estado del servidor.",
+        "lastSeen": "Visto por última vez: {{time}}",
+        "noRecentActivity": "Sin actividad reciente"
+      },
+      "uptime": {
+        "unknown": "Desconocido",
+        "format": {
+          "days": "{{days}}d {{hours}}h {{minutes}}m",
+          "hours": "{{hours}}h {{minutes}}m",
+          "minutes": "{{minutes}}m"
+        }
+      }
+    },
+    "details": {
+      "timeRanges": {
+        "1h": "1h",
+        "6h": "6h",
+        "24h": "24h"
+      },
+      "tabs": {
+        "overview": "Visión general",
+        "charts": "Gráficos",
+        "storage": "Almacenamiento",
+        "network": "Red"
+      },
+      "overview": {
+        "systemInfo": {
+          "title": "Información del sistema",
+          "os": "OS",
+          "version": "Versión",
+          "kernel": "Núcleo",
+          "architecture": "Arquitectura",
+          "uptime": "Tiempo de actividad",
+          "unknown": "Desconocido",
+          "noData": "No hay información disponible sobre el sistema"
+        },
+        "performance": {
+          "title": "Métricas de rendimiento",
+          "cpuUsage": "Uso de la CPU",
+          "memoryUsage": "Uso de la memoria",
+          "loadAverage": "Carga Media",
+          "processes": "Procesos activos",
+          "total": "Total: {{value}}",
+          "loadDetail": "5m: {{fiveMin}}, 15m: {{fifteenMin}}"
+        },
+        "uptime": {
+          "format": {
+            "full": "{{days}} días, {{hours}} horas, {{minutes}} minutos",
+            "hoursMinutes": "{{hours}} horas, {{minutes}} minutos",
+            "minutes": "{{minutes}} minutos"
+          }
+        }
+      },
+      "charts": {
+        "cpuUsage": "Uso de la CPU",
+        "memoryUsage": "Uso de la memoria",
+        "processes": "Procesos activos",
+        "noData": "No hay datos disponibles para el intervalo de tiempo seleccionado"
+      },
+      "storage": {
+        "title": "Uso del disco",
+        "used": "Usada: {{value}}",
+        "available": "Disponible: {{value}}",
+        "total": "Total: {{value}}",
+        "type": "Tipo: {{value}}",
+        "noData": "No hay datos de uso de disco disponibles"
+      },
+      "network": {
+        "title": "Interfaces de red",
+        "rxBytes": "Bytes RX",
+        "txBytes": "TX Bytes",
+        "noData": "No hay datos de interfaz de red disponibles"
+      }
+    }
+  },
+  "settings": {
+    "title": "Ajustes",
+    "userSettings": "CONFIGURACIÓN DEL USUARIO",
+    "adminSettings": "CONFIGURACIÓN ADMINISTRATIVA",
+    "pages": {
+      "account": "Cuenta",
+      "terminal": "Terminal",
+      "identities": "Identidades",
+      "sessions": "Sesiones",
+      "organizations": "Organizaciones",
+      "users": "Usuarios",
+      "authentication": "Autenticación",
+      "ai": "AI"
+    },
+    "account": {
+      "title": "Cuenta",
+      "accountName": "Nombre de la cuenta",
+      "firstName": "Nombre",
+      "lastName": "Apellidos",
+      "appearance": "Apariencia",
+      "appearanceDescription": "Elige entre un tema claro u oscuro para tu interfaz.",
+      "switchToLight": "Cambiar al modo Luz",
+      "switchToDark": "Cambiar al modo oscuro",
+      "twoFactor": "Autenticación de dos factores",
+      "twoFactorActive": "Activo",
+      "twoFactorInactive": "Inactivo",
+      "twoFactorDescription": "Añade una capa adicional de seguridad a tu cuenta activando la autenticación de dos factores.",
+      "enable2FA": "Activar 2FA",
+      "disable2FA": "Desactivar 2FA",
+      "changePassword": "Cambiar contraseña",
+      "changePasswordDescription": "Elige aquí una contraseña nueva y segura para tu cuenta.",
+      "changePasswordButton": "Cambiar contraseña"
+    },
+    "passwordChange": {
+      "title": "Cambiar contraseña",
+      "description": "Una contraseña segura contiene caracteres especiales, números y letras tanto en mayúsculas como en minúsculas.",
+      "newPassword": "Nueva contraseña",
+      "confirmPassword": "Confirmar nueva contraseña",
+      "changePasswordButton": "Cambiar contraseña"
+    },
+    "organizations": {
+      "title": "Tus organizaciones",
+      "createOrganization": "Crear organización",
+      "noOrganizations": "Aún no tienes ninguna organización.",
+      "noOrganizationsDescription": "Crea uno para empezar a colaborar con tu equipo.",
+      "invite": "Invita a",
+      "delete": "Borra",
+      "leave": "Deja",
+      "members": "Miembros",
+      "auditSettings": "Ajustes de auditoría",
+      "pendingInvitations": "Invitaciones pendientes",
+      "invitedBy": "Invitada por: {{name}}",
+      "deleteConfirmation": "Esto borrará permanentemente la organización y eliminará a todos sus miembros. Esta acción no se puede deshacer.",
+      "leaveConfirmation": "¿Estás seguro de que quieres dejar esta organización?"
+    },
+    "users": {
+      "title": "{{count}} usuarios",
+      "createNewUser": "Crear nuevo usuario",
+      "twoFactorEnabled": "2FA activado",
+      "twoFactorDisabled": "2FA desactivado",
+      "contextMenu": {
+        "changePassword": "Cambiar contraseña",
+        "promoteToAdmin": "Ascender a admin",
+        "demoteToUser": "Degradar a usuario",
+        "deleteUser": "Eliminar usuario",
+        "loginAsUser": "Iniciar sesión como usuario",
+        "deleteConfirm": "Esto eliminará permanentemente al usuario y todos los datos asociados.",
+        "promoteConfirm": "Esto ascenderá al usuario a administrador.",
+        "demoteConfirm": "Esto degradará al usuario a usuario normal."
+      }
+    },
+    "userDialog": {
+      "title": "Crear nuevo usuario",
+      "firstName": "Nombre",
+      "lastName": "Apellidos",
+      "username": "Nombre de usuario",
+      "password": "Contraseña",
+      "firstNamePlaceholder": "Nombre",
+      "lastNamePlaceholder": "Apellidos",
+      "usernamePlaceholder": "Nombre de usuario",
+      "passwordPlaceholder": "Contraseña",
+      "create": "Crea",
+      "errorOccurred": "Se ha producido un error"
+    },
+    "sessions": {
+      "title": "Sesiones",
+      "lastActivity": "Última actividad: {{date}} desde {{ip}}",
+      "currentSession": "Sesión actual",
+      "logout": "Cerrar sesión",
+      "revoke": "Revoca",
+      "browserOn": "{{browser}} {{version}} en {{os}} {{osVersion}}"
+    },
+    "terminal": {
+      "title": "Terminal",
+      "font": {
+        "title": "Fuente",
+        "description": "Personaliza la familia y el tamaño de la fuente para tu terminal.",
+        "fontFamily": "Familia tipográfica",
+        "fontSize": "Tamaño de letra"
+      },
+      "cursor": {
+        "title": "Cursor",
+        "description": "Personaliza la apariencia y el comportamiento del cursor de tu terminal.",
+        "cursorStyle": "Estilo del cursor",
+        "cursorBlinking": "Cursor parpadeante",
+        "enabled": "Activado",
+        "disabled": "Discapacitados"
+      },
+      "theme": {
+        "title": "Tema",
+        "description": "Elige un tema de color para tu terminal."
+      },
+      "preview": {
+        "text": "$ echo '¡Hola, Nexterm!\n¡Hola, Nexterm!\n$ "
+      }
+    },
+    "authentication": {
+      "title": "{{count}} Proveedores de autenticación",
+      "addProvider": "Añadir proveedor",
+      "system": "Sistema",
+      "systemDescription": "Autenticación por nombre de usuario y contraseña",
+      "deleteConfirm": "Esto eliminará permanentemente este proveedor de autenticación.",
+      "errors": {
+        "deleteProvider": "Error al borrar el proveedor",
+        "toggleProvider": "Error al cambiar de proveedor"
+      }
+    },
+    "ai": {
+      "title": "Configuración del Asistente AI",
+      "description": "Configura la generación de comandos asistida por IA para las sesiones de terminal y la creación de fragmentos.",
+      "loading": "Cargando ajustes de IA...",
+      "enable": {
+        "title": "Activar el Asistente de IA",
+        "description": "Permitir a los usuarios generar comandos utilizando IA"
+      },
+      "provider": {
+        "title": "Proveedor de IA",
+        "description": "Elige tu proveedor de servicios de IA"
+      },
+      "model": {
+        "title": "Modelo",
+        "description": "Selecciona el modelo de IA que se utilizará para la generación de órdenes"
+      },
+      "apiKey": {
+        "title": "Clave API",
+        "description": "Tu clave API de OpenAI para la autenticación",
+        "placeholder": "Introduce tu clave API de OpenAI",
+        "setPlaceholder": "La clave API está configurada (déjala en blanco para mantenerla actualizada)"
+      },
+      "ollamaUrl": {
+        "title": "URL de Ollama",
+        "description": "La URL donde se ejecuta tu instancia de Ollama",
+        "placeholder": "http://localhost:11434"
+      },
+      "selectProvider": "Selecciona un proveedor...",
+      "selectModel": "Selecciona un modelo...",
+      "loadingModels": "Cargando modelos...",
+      "noModels": "No hay modelos disponibles",
+      "saveSettings": "Guardar ajustes",
+      "testConnection": "Conexión de prueba",
+      "testing": "Probando...",
+      "saveSuccess": "Ajustes de IA guardados correctamente",
+      "testSuccess": "Prueba de conexión AI realizada con éxito",
+      "errors": {
+        "loadSettings": "Error al cargar la configuración de la IA",
+        "saveSettings": "No se ha podido guardar la configuración de la IA",
+        "testConnection": "Fallo en la prueba de conexión a la IA"
+      }
+    },
+    "identities": {
+      "title": "Claves y credenciales SSH",
+      "description": "Gestiona tus claves SSH y credenciales de acceso para las conexiones al servidor",
+      "createIdentity": "Crear identidad",
+      "noUsername": "Sin nombre de usuario",
+      "sshKey": "Clave SSH",
+      "password": "Contraseña",
+      "editIdentity": "Editar identidad",
+      "deleteIdentity": "Borrar identidad",
+      "noIdentities": "No se han encontrado identidades",
+      "noIdentitiesDescription": "Crea tu primera identidad para empezar con las conexiones al servidor",
+      "deleteConfirm": "¿Estás seguro de que quieres eliminar \"{{name}}\"? Esta acción no se puede deshacer y eliminará esta identidad de todos los servidores que la utilicen.",
+      "deleteSuccess": "Identidad eliminada correctamente",
+      "deleteError": "Error al eliminar identidad"
+    }
+  },
+  "apps": {
+    "title": "Aplicaciones",
+    "navigation": {
+      "categories": {
+        "all": "Todos",
+        "results": "Resultados",
+        "scripts": "Guiones",
+        "networking": "Red",
+        "media": "Medios de comunicación",
+        "cloud": "Nube",
+        "development": "Desarrollo",
+        "utilities": "Utilidades"
+      }
+    },
+    "store": {
+      "appStore": "App Store",
+      "scripts": "Guiones",
+      "appStoreDescription": "Tus aplicaciones favoritas, desplegadas con un solo clic.",
+      "scriptsDescription": "Automatiza las tareas de tu servidor con scripts personalizados.",
+      "manageSources": "Gestionar fuentes",
+      "createScript": "Crear guión",
+      "source": "Fuente:",
+      "sourceFilter": {
+        "all": "Todos",
+        "custom": "Personalizado"
+      }
+    },
+    "list": {
+      "noApps": "Pronto más aplicaciones",
+      "noScripts": "No hay guiones disponibles",
+      "selectApp": "Selecciona la app para continuar",
+      "selectScript": "Selecciona la secuencia de comandos para continuar"
+    },
+    "actions": {
+      "deploy": "Despliega",
+      "run": "Ejecuta",
+      "view": "Ver",
+      "edit": "Edita",
+      "delete": "Borra",
+      "logs": "Registros",
+      "open": "Abre",
+      "stop": "Detener Guión",
+      "version": "Versión"
+    },
+    "items": {
+      "customBadge": "Personalizado",
+      "scriptType": "Guión",
+      "running": "Corriendo...",
+      "runScript": "Ejecuta"
+    },
+    "installer": {
+      "deploymentFailed": "Error de implantación",
+      "deploymentCompleted": "Despliegue completado",
+      "deploying": "Desplegar...",
+      "installationLog": "Registro de instalación",
+      "steps": {
+        "lookupDistro": "Buscar distro Linux",
+        "checkPermissions": "Comprobar permisos",
+        "installDocker": "Instalar el motor Docker",
+        "downloadImage": "Descargar imagen base",
+        "preInstall": "Ejecuta el comando de preinstalación",
+        "startContainer": "Iniciar contenedor Docker",
+        "postInstall": "Ejecuta el comando post-instalación",
+        "detected": "Detectado {{os}}"
+      }
+    },
+    "scriptExecutor": {
+      "executionFailed": "Fallo en la ejecución del script",
+      "executionCompleted": "Ejecución del script completada",
+      "executing": "Ejecutando script...",
+      "initializing": "Inicializar la ejecución del script",
+      "finished": "Finalizada la ejecución del script",
+      "cancelled": "Ejecución del script cancelada por el usuario"
+    },
+    "dialogs": {
+      "deployServer": {
+        "deployTitle": "Despliega {{name}}",
+        "runTitle": "Ejecuta {{name}}",
+        "noServersAvailable": "No hay servidores SSH disponibles"
+      },
+      "source": {
+        "title": "Fuentes de la app",
+        "refreshApps": "Actualizar aplicaciones",
+        "addNewSource": "Añadir nueva fuente"
+      },
+      "script": {
+        "createTitle": "Crear script personalizado",
+        "editTitle": "Editar Guión",
+        "viewTitle": "Ver Guión",
+        "source": "Fuente: {{source}}",
+        "scriptDetails": "Detalles del guión",
+        "scriptContent": "Contenido del guión",
+        "helpTip": "Utiliza comandos @NEXTERM: para indicaciones interactivas",
+        "fields": {
+          "name": "Nombre del script *",
+          "description": "Descripción",
+          "namePlaceholder": "Mi impresionante guión",
+          "descriptionPlaceholder": "¿Qué hace este script?"
+        },
+        "actions": {
+          "close": "Cerrar",
+          "cancel": "Cancela",
+          "create": "Crear guión",
+          "update": "Guión de actualización",
+          "creating": "Crear...",
+          "updating": "Actualizando..."
+        },
+        "errors": {
+          "nameRequired": "El nombre del script es obligatorio",
+          "descriptionRequired": "Se requiere la descripción del guión",
+          "contentRequired": "El contenido del guión no puede estar vacío",
+          "createFailed": "Error al crear el script",
+          "updateFailed": "Error al actualizar el script"
+        },
+        "success": {
+          "created": "Script creado correctamente",
+          "updated": "Script actualizado correctamente"
+        }
+      }
+    },
+    "messages": {
+      "onlyCustomScriptsCanBeDeleted": "Sólo se pueden borrar los guiones personalizados",
+      "scriptDeletedSuccessfully": "Script eliminado correctamente",
+      "failedToDeleteScript": "Error al borrar el script",
+      "deleteScriptConfirmation": "¿Estás seguro de que quieres borrar el script \"{{name}}\"? Esta acción no se puede deshacer."
+    }
+  }
+}
