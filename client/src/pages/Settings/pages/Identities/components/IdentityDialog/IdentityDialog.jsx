@@ -1,5 +1,6 @@
 import { DialogProvider } from "@/common/components/Dialog";
 import { useState, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import { patchRequest, putRequest } from "@/common/utils/RequestUtil.js";
 import { useToast } from "@/common/contexts/ToastContext.jsx";
 import {
@@ -16,6 +17,7 @@ import SelectBox from "@/common/components/SelectBox";
 import "./styles.sass";
 
 export const IdentityDialog = ({ open, onClose, identity }) => {
+    const { t } = useTranslation();
     const { sendToast } = useToast();
     const isEditing = !!identity;
 
@@ -66,17 +68,17 @@ export const IdentityDialog = ({ open, onClose, identity }) => {
         e.preventDefault();
 
         if (!name.trim()) {
-            sendToast("Error", "Identity name is required");
+            sendToast("Error", t('settings.identities.dialog.messages.nameRequired'));
             return;
         }
 
         if (authType === "password" && !password && !isEditing) {
-            sendToast("Error", "Password is required");
+            sendToast("Error", t('settings.identities.dialog.messages.passwordRequired'));
             return;
         }
 
         if (authType === "ssh" && !sshKey && !isEditing) {
-            sendToast("Error", "SSH key is required");
+            sendToast("Error", t('settings.identities.dialog.messages.sshKeyRequired'));
             return;
         }
 
@@ -98,15 +100,15 @@ export const IdentityDialog = ({ open, onClose, identity }) => {
 
             if (isEditing) {
                 await patchRequest(`identities/${identity.id}`, identityData);
-                sendToast("Success", "Identity updated successfully");
+                sendToast("Success", t('settings.identities.dialog.messages.updateSuccess'));
             } else {
                 await putRequest("identities", identityData);
-                sendToast("Success", "Identity created successfully");
+                sendToast("Success", t('settings.identities.dialog.messages.createSuccess'));
             }
 
             onClose();
         } catch (error) {
-            sendToast("Error", error.message || `Failed to ${isEditing ? "update" : "create"} identity`);
+            sendToast("Error", error.message || t(`settings.identities.dialog.messages.${isEditing ? 'updateFailed' : 'createFailed'}`));
         } finally {
             setIsLoading(false);
         }
@@ -122,39 +124,39 @@ export const IdentityDialog = ({ open, onClose, identity }) => {
             <div className="identity-dialog">
                 <div className="dialog-title">
                     <Icon path={mdiKey} />
-                    <h2>{isEditing ? "Edit Identity" : "Create New Identity"}</h2>
+                    <h2>{isEditing ? t('settings.identities.dialog.editTitle') : t('settings.identities.dialog.createTitle')}</h2>
                 </div>
 
                 <form onSubmit={handleSubmit}>
                     <div className="dialog-content">
                         <div className="form-group">
-                            <label htmlFor="name">Identity Name</label>
+                            <label htmlFor="name">{t('settings.identities.dialog.fields.name')}</label>
                             <IconInput icon={mdiAccountCircleOutline} value={name} setValue={setName}
-                                       placeholder="Enter identity name" id="name" required />
+                                       placeholder={t('settings.identities.dialog.fields.namePlaceholder')} id="name" required />
                         </div>
 
                         <div className="form-row">
                             <div className="form-group">
-                                <label htmlFor="username">Username</label>
+                                <label htmlFor="username">{t('settings.identities.dialog.fields.username')}</label>
                                 <IconInput icon={mdiAccountCircleOutline} value={username} setValue={setUsername}
-                                           placeholder="Username (optional)" id="username" />
+                                           placeholder={t('settings.identities.dialog.fields.usernamePlaceholder')} id="username" />
                             </div>
 
                             <div className="form-group">
-                                <label htmlFor="authType">Authentication Type</label>
+                                <label htmlFor="authType">{t('settings.identities.dialog.fields.authType')}</label>
                                 <SelectBox selected={authType} setSelected={setAuthType}
                                            options={[
-                                               { label: "Password", value: "password" },
-                                               { label: "SSH Key", value: "ssh" },
+                                               { label: t('settings.identities.dialog.authTypes.password'), value: "password" },
+                                               { label: t('settings.identities.dialog.authTypes.ssh'), value: "ssh" },
                                            ]} />
                             </div>
                         </div>
 
                         {authType === "password" && (
                             <div className="form-group">
-                                <label htmlFor="password">Password</label>
+                                <label htmlFor="password">{t('settings.identities.dialog.fields.password')}</label>
                                 <IconInput icon={mdiLockOutline} type="password" value={password} setValue={setPassword}
-                                           placeholder={isEditing ? "Leave blank to keep current password" : "Enter password"}
+                                           placeholder={isEditing ? t('settings.identities.dialog.fields.passwordPlaceholderEdit') : t('settings.identities.dialog.fields.passwordPlaceholder')}
                                            id="password" required={!isEditing} />
                             </div>
                         )}
@@ -162,22 +164,22 @@ export const IdentityDialog = ({ open, onClose, identity }) => {
                         {authType === "ssh" && (
                             <>
                                 <div className="form-group">
-                                    <label htmlFor="sshKey">SSH Private Key</label>
+                                    <label htmlFor="sshKey">{t('settings.identities.dialog.fields.sshKey')}</label>
                                     <IconInput icon={mdiFileUploadOutline} type="file" onChange={readFile} id="sshKey"
                                                required={!isEditing} />
                                     {sshKey && (
                                         <div className="keyfile-status">
                                             <Icon path={mdiCheck} />
-                                            <span>Key file loaded</span>
+                                            <span>{t('settings.identities.dialog.keyFileLoaded')}</span>
                                         </div>
                                     )}
                                 </div>
 
                                 <div className="form-group">
-                                    <label htmlFor="passphrase">Passphrase (optional)</label>
+                                    <label htmlFor="passphrase">{t('settings.identities.dialog.fields.passphrase')}</label>
                                     <IconInput icon={mdiLockOutline} type="password" value={passphrase}
                                                setValue={setPassphrase}
-                                               placeholder={isEditing ? "Leave blank to keep current passphrase" : "Enter passphrase (optional)"}
+                                               placeholder={isEditing ? t('settings.identities.dialog.fields.passphrasePlaceholderEdit') : t('settings.identities.dialog.fields.passphrasePlaceholder')}
                                                id="passphrase" />
                                 </div>
                             </>
@@ -185,8 +187,8 @@ export const IdentityDialog = ({ open, onClose, identity }) => {
                     </div>
 
                     <div className="dialog-actions">
-                        <Button text="Cancel" onClick={handleClose} type="secondary" />
-                        <Button text={isEditing ? "Update Identity" : "Create Identity"} type="submit"
+                        <Button text={t('settings.identities.dialog.actions.cancel')} onClick={handleClose} type="secondary" />
+                        <Button text={isEditing ? t('settings.identities.dialog.actions.update') : t('settings.identities.dialog.actions.create')} type="submit"
                                 disabled={isLoading} />
                     </div>
                 </form>

@@ -1,6 +1,7 @@
 import { DialogProvider } from "@/common/components/Dialog";
 import "./styles.sass";
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import Input from "@/common/components/IconInput";
 import {
     mdiAccountMultiple,
@@ -17,6 +18,7 @@ import { patchRequest, putRequest } from "@/common/utils/RequestUtil.js";
 import { useToast } from "@/common/contexts/ToastContext.jsx";
 
 export const ProviderDialog = ({ open, onClose, provider, onSave }) => {
+    const { t } = useTranslation();
     const { sendToast } = useToast();
 
     const [name, setName] = useState("");
@@ -79,88 +81,88 @@ export const ProviderDialog = ({ open, onClose, provider, onSave }) => {
             onSave();
             onClose();
         } catch (error) {
-            sendToast("Error", error.message || "Failed to save provider");
+            sendToast("Error", error.message || t('settings.authentication.providerDialog.messages.saveFailed'));
         }
     };
 
     return (
         <DialogProvider open={open} onClose={onClose}>
             <div className="provider-dialog">
-                <h2>{provider ? "Edit" : "Add"} Authentication Provider</h2>
+                <h2>{provider ? t('settings.authentication.providerDialog.editTitle') : t('settings.authentication.providerDialog.createTitle')}</h2>
 
                 <div className="form-group">
-                    <label htmlFor="name">Display Name</label>
+                    <label htmlFor="name">{t('settings.authentication.providerDialog.fields.displayName')}</label>
                     <Input icon={mdiFormTextbox} type="text" id="name"
-                           placeholder="e.g. Company SSO" value={name} setValue={setName} />
+                           placeholder={t('settings.authentication.providerDialog.fields.displayNamePlaceholder')} value={name} setValue={setName} />
                 </div>
 
                 <div className="form-group">
-                    <label htmlFor="issuer">Issuer URL</label>
+                    <label htmlFor="issuer">{t('settings.authentication.providerDialog.fields.issuerUrl')}</label>
                     <Input icon={mdiDomain} type="url" id="issuer"
-                           placeholder="https://auth.company.com" value={issuer} setValue={setIssuer} />
+                           placeholder={t('settings.authentication.providerDialog.fields.issuerUrlPlaceholder')} value={issuer} setValue={setIssuer} />
                 </div>
 
                 <div className="form-group">
-                    <label htmlFor="clientId">Client ID</label>
+                    <label htmlFor="clientId">{t('settings.authentication.providerDialog.fields.clientId')}</label>
                     <Input icon={mdiKey} type="text" id="clientId"
-                           placeholder="Client ID" value={clientId} setValue={setClientId} />
+                           placeholder={t('settings.authentication.providerDialog.fields.clientIdPlaceholder')} value={clientId} setValue={setClientId} />
                 </div>
 
                 <div className="form-group">
-                    <label htmlFor="clientSecret">Client Secret</label>
+                    <label htmlFor="clientSecret">{t('settings.authentication.providerDialog.fields.clientSecret')}</label>
                     <Input icon={mdiKeyChain} type="password" id="clientSecret"
-                           placeholder={provider ? "Leave blank to keep existing" : "Client Secret"}
+                           placeholder={provider ? t('settings.authentication.providerDialog.fields.clientSecretPlaceholderEdit') : t('settings.authentication.providerDialog.fields.clientSecretPlaceholder')}
                            value={clientSecret} setValue={setClientSecret} />
                 </div>
 
                 <div className="form-group">
-                    <label htmlFor="redirectUri">Redirect URI</label>
+                    <label htmlFor="redirectUri">{t('settings.authentication.providerDialog.fields.redirectUri')}</label>
                     <Input icon={mdiLink} type="url" id="redirectUri"
-                           placeholder="https://your-domain.com/api/oidc/callback"
+                           placeholder={t('settings.authentication.providerDialog.fields.redirectUriPlaceholder')}
                            value={redirectUri} setValue={setRedirectUri} />
                 </div>
 
                 <div className="form-group">
-                    <label htmlFor="scope">Scope</label>
+                    <label htmlFor="scope">{t('settings.authentication.providerDialog.fields.scope')}</label>
                     <Input icon={mdiAccountMultiple} type="text" id="scope"
-                           placeholder="openid profile email" value={scope} setValue={setScope} />
+                           placeholder={t('settings.authentication.providerDialog.fields.scopePlaceholder')} value={scope} setValue={setScope} />
                 </div>
 
                 <div className="advanced-settings">
                     <Button type="secondary" icon={mdiCog} onClick={() => setShowAdvanced(!showAdvanced)}
-                            text={showAdvanced ? "Hide Advanced Settings" : "Show Advanced Settings"} />
+                            text={showAdvanced ? t('settings.authentication.providerDialog.advanced.hide') : t('settings.authentication.providerDialog.advanced.show')} />
 
                     {showAdvanced && (
                         <div className="advanced-form">
                             <div className="form-group">
-                                <label htmlFor="emailAttr">Email Attribute</label>
+                                <label htmlFor="emailAttr">{t('settings.authentication.providerDialog.fields.emailAttribute')}</label>
                                 <Input type="text" id="emailAttr" icon={mdiEmail}
-                                       placeholder="email" value={emailAttr} setValue={setEmailAttr} />
+                                       placeholder={t('settings.authentication.providerDialog.fields.emailAttributePlaceholder')} value={emailAttr} setValue={setEmailAttr} />
                             </div>
 
                             <div className="form-group">
-                                <label htmlFor="usernameAttr">Username Attribute</label>
+                                <label htmlFor="usernameAttr">{t('settings.authentication.providerDialog.fields.usernameAttribute')}</label>
                                 <Input type="text" id="usernameAttr" icon={mdiAccountMultiple}
-                                       placeholder="preferred_username" value={usernameAttr}
+                                       placeholder={t('settings.authentication.providerDialog.fields.usernameAttributePlaceholder')} value={usernameAttr}
                                        setValue={setUsernameAttr} />
                             </div>
 
                             <div className="form-group">
-                                <label htmlFor="firstNameAttr">First Name Attribute</label>
+                                <label htmlFor="firstNameAttr">{t('settings.authentication.providerDialog.fields.firstNameAttribute')}</label>
                                 <Input type="text" id="firstNameAttr" icon={mdiFormTextbox}
-                                       placeholder="given_name" value={firstNameAttr} setValue={setFirstNameAttr} />
+                                       placeholder={t('settings.authentication.providerDialog.fields.firstNameAttributePlaceholder')} value={firstNameAttr} setValue={setFirstNameAttr} />
                             </div>
 
                             <div className="form-group">
-                                <label htmlFor="lastNameAttr">Last Name Attribute</label>
+                                <label htmlFor="lastNameAttr">{t('settings.authentication.providerDialog.fields.lastNameAttribute')}</label>
                                 <Input type="text" id="lastNameAttr" icon={mdiFormTextbox}
-                                       placeholder="family_name" value={lastNameAttr} setValue={setLastNameAttr} />
+                                       placeholder={t('settings.authentication.providerDialog.fields.lastNameAttributePlaceholder')} value={lastNameAttr} setValue={setLastNameAttr} />
                             </div>
                         </div>
                     )}
                 </div>
 
-                <Button text={provider ? "Save Changes" : "Add Provider"} onClick={handleSubmit} />
+                <Button text={provider ? t('settings.authentication.providerDialog.actions.saveChanges') : t('settings.authentication.providerDialog.actions.addProvider')} onClick={handleSubmit} />
             </div>
         </DialogProvider>
     );

@@ -3,13 +3,14 @@ import IconInput from "@/common/components/IconInput";
 import { mdiKey } from "@mdi/js";
 import Button from "@/common/components/Button";
 import { useContext, useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { getRequest, postRequest } from "@/common/utils/RequestUtil.js";
 import { QRCodeCanvas } from "qrcode.react";
 import "./styles.sass";
 import { UserContext } from "@/common/contexts/UserContext.jsx";
 
 export const TwoFactorAuthentication = ({open, onClose}) => {
-
+    const { t } = useTranslation();
     const { login } = useContext(UserContext);
 
     const [code, setCode] = useState("");
@@ -40,15 +41,16 @@ export const TwoFactorAuthentication = ({open, onClose}) => {
         <DialogProvider open={open} onClose={onClose}>
             <div className="two-factor-dialog" onKeyDown={(event) => event.key === "Enter" && enableTotp()}>
                 <div className="info-area">
-                    <h1>Enable 2FA</h1>
-                    <p>Scan the code with your authenticator app
-                        or enter <span className="totp-code">{totpObj?.secret}</span> manually.</p>
+                    <h1>{t('settings.account.twoFactorDialog.title')}</h1>
+                    <p dangerouslySetInnerHTML={{
+                        __html: t('settings.account.twoFactorDialog.description', { secret: totpObj?.secret })
+                    }} />
 
                     <div className="action-row">
-                        <IconInput icon={mdiKey} placeholder="Enter 2FA code" value={code} setValue={setCode}
+                        <IconInput icon={mdiKey} placeholder={t('settings.account.twoFactorDialog.codePlaceholder')} value={code} setValue={setCode}
                                       customClass={setupFailed ? "setup-error" : ""} />
 
-                        <Button text="Enable" onClick={() => enableTotp()} />
+                        <Button text={t('settings.account.twoFactorDialog.enableButton')} onClick={() => enableTotp()} />
                     </div>
                 </div>
 

@@ -310,7 +310,16 @@
       "changePasswordButton": "Change password",
       "language": "Language",
       "languageDescription": "Select your preferred language for the interface.",
-      "currentLanguage": "Current Language"
+      "currentLanguage": "Current Language",
+      "twoFactorDialog": {
+        "title": "Enable 2FA",
+        "description": "Scan the code with your authenticator app or enter <span class=\"totp-code\">{{secret}}</span> manually.",
+        "codePlaceholder": "Enter 2FA code",
+        "enableButton": "Enable",
+        "messages": {
+          "setupFailed": "2FA setup failed. Please try again."
+        }
+      }
     },
     "passwordChange": {
       "title": "Change password",
@@ -332,7 +341,25 @@
       "pendingInvitations": "Pending Invitations",
       "invitedBy": "Invited by: {{name}}",
       "deleteConfirmation": "This will permanently delete the organization and remove all members. This action cannot be undone.",
-      "leaveConfirmation": "Are you sure you want to leave this organization?"
+      "leaveConfirmation": "Are you sure you want to leave this organization?",
+      "dialog": {
+        "title": "Create Organization",
+        "fields": {
+          "name": "Name",
+          "namePlaceholder": "Organization name",
+          "description": "Description (optional)",
+          "descriptionPlaceholder": "Brief description of your organization"
+        },
+        "actions": {
+          "cancel": "Cancel",
+          "create": "Create"
+        },
+        "messages": {
+          "nameRequired": "Organization name is required",
+          "createSuccess": "Organization created successfully",
+          "createFailed": "Failed to create organization"
+        }
+      }
     },
     "users": {
       "title": "{{count}} users",
@@ -404,6 +431,44 @@
       "errors": {
         "deleteProvider": "Error deleting provider",
         "toggleProvider": "Error toggling provider"
+      },
+      "providerDialog": {
+        "createTitle": "Add Authentication Provider",
+        "editTitle": "Edit Authentication Provider",
+        "fields": {
+          "displayName": "Display Name",
+          "displayNamePlaceholder": "e.g. Company SSO",
+          "issuerUrl": "Issuer URL",
+          "issuerUrlPlaceholder": "https://auth.company.com",
+          "clientId": "Client ID",
+          "clientIdPlaceholder": "Client ID",
+          "clientSecret": "Client Secret",
+          "clientSecretPlaceholder": "Client Secret",
+          "clientSecretPlaceholderEdit": "Leave blank to keep existing",
+          "redirectUri": "Redirect URI",
+          "redirectUriPlaceholder": "https://your-domain.com/api/oidc/callback",
+          "scope": "Scope",
+          "scopePlaceholder": "openid profile email",
+          "emailAttribute": "Email Attribute",
+          "emailAttributePlaceholder": "email",
+          "usernameAttribute": "Username Attribute",
+          "usernameAttributePlaceholder": "preferred_username",
+          "firstNameAttribute": "First Name Attribute",
+          "firstNameAttributePlaceholder": "given_name",
+          "lastNameAttribute": "Last Name Attribute",
+          "lastNameAttributePlaceholder": "family_name"
+        },
+        "advanced": {
+          "show": "Show Advanced Settings",
+          "hide": "Hide Advanced Settings"
+        },
+        "actions": {
+          "addProvider": "Add Provider",
+          "saveChanges": "Save Changes"
+        },
+        "messages": {
+          "saveFailed": "Failed to save provider"
+        }
       }
     },
     "ai": {
@@ -461,7 +526,44 @@
       "noIdentitiesDescription": "Create your first identity to get started with server connections",
       "deleteConfirm": "Are you sure you want to delete \"{{name}}\"? This action cannot be undone and will remove this identity from all servers that use it.",
       "deleteSuccess": "Identity deleted successfully",
-      "deleteError": "Failed to delete identity"
+      "deleteError": "Failed to delete identity",
+      "dialog": {
+        "createTitle": "Create New Identity",
+        "editTitle": "Edit Identity",
+        "fields": {
+          "name": "Identity Name",
+          "namePlaceholder": "Enter identity name",
+          "username": "Username",
+          "usernamePlaceholder": "Username (optional)",
+          "authType": "Authentication Type",
+          "password": "Password",
+          "passwordPlaceholder": "Enter password",
+          "passwordPlaceholderEdit": "Leave blank to keep current password",
+          "sshKey": "SSH Private Key",
+          "passphrase": "Passphrase (optional)",
+          "passphrasePlaceholder": "Enter passphrase (optional)",
+          "passphrasePlaceholderEdit": "Leave blank to keep current passphrase"
+        },
+        "authTypes": {
+          "password": "Password",
+          "ssh": "SSH Key"
+        },
+        "keyFileLoaded": "Key file loaded",
+        "actions": {
+          "cancel": "Cancel",
+          "create": "Create Identity",
+          "update": "Update Identity"
+        },
+        "messages": {
+          "nameRequired": "Identity name is required",
+          "passwordRequired": "Password is required",
+          "sshKeyRequired": "SSH key is required",
+          "createSuccess": "Identity created successfully",
+          "updateSuccess": "Identity updated successfully",
+          "createFailed": "Failed to create identity",
+          "updateFailed": "Failed to update identity"
+        }
+      }
     }
   },
   "servers": {

@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { DialogProvider } from "@/common/components/Dialog";
 import { useToast } from "@/common/contexts/ToastContext.jsx";
 import IconInput from "@/common/components/IconInput";
@@ -8,6 +9,7 @@ import { putRequest } from "@/common/utils/RequestUtil.js";
 import "./styles.sass";
 
 export const OrganizationDialog = ({ open, onClose, refreshOrganizations }) => {
+    const { t } = useTranslation();
     const { sendToast } = useToast();
     const [name, setName] = useState("");
     const [description, setDescription] = useState("");
@@ -23,7 +25,7 @@ export const OrganizationDialog = ({ open, onClose, refreshOrganizations }) => {
         e.preventDefault();
         
         if (!name.trim()) {
-            sendToast("Error", "Organization name is required");
+            sendToast("Error", t('settings.organizations.dialog.messages.nameRequired'));
             return;
         }
 
@@ -33,26 +35,26 @@ export const OrganizationDialog = ({ open, onClose, refreshOrganizations }) => {
                 description: description.trim() || undefined
             });
             
-            sendToast("Success", "Organization created successfully");
+            sendToast("Success", t('settings.organizations.dialog.messages.createSuccess'));
             refreshOrganizations();
             onClose();
         } catch (error) {
-            sendToast("Error", error.message || "Failed to create organization");
+            sendToast("Error", error.message || t('settings.organizations.dialog.messages.createFailed'));
         }
     };
 
     return (
         <DialogProvider open={open} onClose={onClose}>
             <div className="organization-dialog">
-                <h2>Create Organization</h2>
+                <h2>{t('settings.organizations.dialog.title')}</h2>
                 
                 <form onSubmit={handleSubmit}>
                     <div className="form-group">
-                        <label htmlFor="name">Name</label>
+                        <label htmlFor="name">{t('settings.organizations.dialog.fields.name')}</label>
                         <IconInput
                             icon={mdiDomain}
                             id="name"
-                            placeholder="Organization name"
+                            placeholder={t('settings.organizations.dialog.fields.namePlaceholder')}
                             value={name}
                             setValue={setName}
                             required
@@ -60,19 +62,19 @@ export const OrganizationDialog = ({ open, onClose, refreshOrganizations }) => {
                     </div>
 
                     <div className="form-group">
-                        <label htmlFor="description">Description (optional)</label>
+                        <label htmlFor="description">{t('settings.organizations.dialog.fields.description')}</label>
                         <IconInput
                             icon={mdiFormTextbox}
                             id="description"
-                            placeholder="Brief description of your organization"
+                            placeholder={t('settings.organizations.dialog.fields.descriptionPlaceholder')}
                             value={description}
                             setValue={setDescription}
                         />
                     </div>
 
                     <div className="dialog-actions">
-                        <Button text="Cancel" onClick={onClose} type="secondary" buttonType="button" />
-                        <Button text="Create" type="primary" buttonType="submit" />
+                        <Button text={t('settings.organizations.dialog.actions.cancel')} onClick={onClose} type="secondary" buttonType="button" />
+                        <Button text={t('settings.organizations.dialog.actions.create')} type="primary" buttonType="submit" />
                     </div>
                 </form>
             </div>
