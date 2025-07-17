@@ -9,6 +9,9 @@ import { patchRequest, postRequest } from "@/common/utils/RequestUtil.js";
 import TwoFactorAuthentication from "@/pages/Settings/pages/Account/dialogs/TwoFactorAuthentication";
 import PasswordChange from "@/pages/Settings/pages/Account/dialogs/PasswordChange";
 import { useTranslation } from "react-i18next";
+import SelectBox from "@/common/components/SelectBox";
+import { languages } from "@/i18n.js";
+import i18n from "@/i18n.js";
 
 export const Account = () => {
     const { t } = useTranslation();
@@ -22,6 +25,15 @@ export const Account = () => {
 
     const [firstName, setFirstName] = useState("");
     const [lastName, setLastName] = useState("");
+    const [currentLanguage, setCurrentLanguage] = useState(localStorage.getItem('language') || 'en');
+
+    const languageOptions = languages.map(lang => ({ label: lang.name, value: lang.code }));
+
+    const changeLanguage = (languageCode) => {
+        setCurrentLanguage(languageCode);
+        localStorage.setItem('language', languageCode);
+        i18n.changeLanguage(languageCode);
+    };
 
     const updateName = (config) => {
         if (config.firstName && config.firstName === user.firstName) return;
@@ -83,6 +95,14 @@ export const Account = () => {
                     <p style={{ maxWidth: "25rem" }}>{t("settings.account.appearanceDescription")}</p>
                     <Button text={theme === "dark" ? t("settings.account.switchToLight") : t("settings.account.switchToDark")}
                             icon={mdiWhiteBalanceSunny} onClick={toggleTheme} />
+                </div>
+            </div>
+
+            <div className="account-section">
+                <h2>{t("settings.account.language")}</h2>
+                <div className="section-inner">
+                    <p style={{ maxWidth: "25rem" }}>{t("settings.account.languageDescription")}</p>
+                    <SelectBox options={languageOptions} selected={currentLanguage} setSelected={changeLanguage} />
                 </div>
             </div>
 
