@@ -308,16 +308,16 @@
       "changePassword": "更改密码",
       "changePasswordDescription": "在此为您的账户选择一个新的安全密码。",
       "changePasswordButton": "更改密码",
-      "language": "Language",
-      "languageDescription": "Select your preferred language for the interface.",
-      "currentLanguage": "Current Language",
+      "language": "语言",
+      "languageDescription": "选择您喜欢的界面语言。",
+      "currentLanguage": "当前语言",
       "twoFactorDialog": {
-        "title": "Enable 2FA",
-        "description": "Scan the code with your authenticator app or enter <span class=\"totp-code\">{{secret}}</span> manually.",
-        "codePlaceholder": "Enter 2FA code",
-        "enableButton": "Enable",
+        "title": "启用 2FA",
+        "description": "使用身份验证程序扫描代码或手动输入 <span class=\"totp-code\">{{secret}}</span>手动输入。",
+        "codePlaceholder": "输入 2FA 代码",
+        "enableButton": "启用",
         "messages": {
-          "setupFailed": "2FA setup failed. Please try again."
+          "setupFailed": "2FA 设置失败。请重试。"
         }
       }
     },
@@ -343,21 +343,21 @@
       "deleteConfirmation": "这将永久删除组织并删除所有成员。此操作无法撤销。",
       "leaveConfirmation": "你确定要离开这个组织吗？",
       "dialog": {
-        "title": "Create Organization",
+        "title": "创建组织",
         "fields": {
-          "name": "Name",
-          "namePlaceholder": "Organization name",
-          "description": "Description (optional)",
-          "descriptionPlaceholder": "Brief description of your organization"
+          "name": "名称",
+          "namePlaceholder": "组织名称",
+          "description": "说明（可选）",
+          "descriptionPlaceholder": "贵组织简介"
         },
         "actions": {
-          "cancel": "Cancel",
-          "create": "Create"
+          "cancel": "取消",
+          "create": "创建"
         },
         "messages": {
-          "nameRequired": "Organization name is required",
-          "createSuccess": "Organization created successfully",
-          "createFailed": "Failed to create organization"
+          "nameRequired": "组织名称为必填项",
+          "createSuccess": "成功创建组织",
+          "createFailed": "创建组织失败"
         }
       }
     },
@@ -433,41 +433,41 @@
         "toggleProvider": "切换提供程序时出错"
       },
       "providerDialog": {
-        "createTitle": "Add Authentication Provider",
-        "editTitle": "Edit Authentication Provider",
+        "createTitle": "添加身份验证提供程序",
+        "editTitle": "编辑身份验证提供程序",
         "fields": {
-          "displayName": "Display Name",
-          "displayNamePlaceholder": "e.g. Company SSO",
-          "issuerUrl": "Issuer URL",
+          "displayName": "显示名称",
+          "displayNamePlaceholder": "例如，公司 SSO",
+          "issuerUrl": "发行人 URL",
           "issuerUrlPlaceholder": "https://auth.company.com",
-          "clientId": "Client ID",
-          "clientIdPlaceholder": "Client ID",
-          "clientSecret": "Client Secret",
-          "clientSecretPlaceholder": "Client Secret",
-          "clientSecretPlaceholderEdit": "Leave blank to keep existing",
-          "redirectUri": "Redirect URI",
+          "clientId": "客户 ID",
+          "clientIdPlaceholder": "客户 ID",
+          "clientSecret": "客户秘密",
+          "clientSecretPlaceholder": "客户秘密",
+          "clientSecretPlaceholderEdit": "留空表示保留现有",
+          "redirectUri": "重定向 URI",
           "redirectUriPlaceholder": "https://your-domain.com/api/oidc/callback",
-          "scope": "Scope",
-          "scopePlaceholder": "openid profile email",
-          "emailAttribute": "Email Attribute",
-          "emailAttributePlaceholder": "email",
-          "usernameAttribute": "Username Attribute",
-          "usernameAttributePlaceholder": "preferred_username",
-          "firstNameAttribute": "First Name Attribute",
-          "firstNameAttributePlaceholder": "given_name",
-          "lastNameAttribute": "Last Name Attribute",
-          "lastNameAttributePlaceholder": "family_name"
+          "scope": "范围",
+          "scopePlaceholder": "openid 配置文件电子邮件",
+          "emailAttribute": "电子邮件属性",
+          "emailAttributePlaceholder": "电子邮件",
+          "usernameAttribute": "用户名属性",
+          "usernameAttributePlaceholder": "首选用户名",
+          "firstNameAttribute": "名字属性",
+          "firstNameAttributePlaceholder": "名字",
+          "lastNameAttribute": "姓氏属性",
+          "lastNameAttributePlaceholder": "家庭名"
         },
         "advanced": {
-          "show": "Show Advanced Settings",
-          "hide": "Hide Advanced Settings"
+          "show": "显示高级设置",
+          "hide": "隐藏高级设置"
         },
         "actions": {
-          "addProvider": "Add Provider",
-          "saveChanges": "Save Changes"
+          "addProvider": "添加提供商",
+          "saveChanges": "保存更改"
         },
         "messages": {
-          "saveFailed": "Failed to save provider"
+          "saveFailed": "未能保存提供商"
         }
       }
     },
@@ -528,212 +528,212 @@
       "deleteSuccess": "身份已成功删除",
       "deleteError": "删除身份失败",
       "dialog": {
-        "createTitle": "Create New Identity",
-        "editTitle": "Edit Identity",
+        "createTitle": "创建新身份",
+        "editTitle": "编辑身份",
         "fields": {
-          "name": "Identity Name",
-          "namePlaceholder": "Enter identity name",
-          "username": "Username",
-          "usernamePlaceholder": "Username (optional)",
-          "authType": "Authentication Type",
-          "password": "Password",
-          "passwordPlaceholder": "Enter password",
-          "passwordPlaceholderEdit": "Leave blank to keep current password",
-          "sshKey": "SSH Private Key",
-          "passphrase": "Passphrase (optional)",
-          "passphrasePlaceholder": "Enter passphrase (optional)",
-          "passphrasePlaceholderEdit": "Leave blank to keep current passphrase"
+          "name": "身份名称",
+          "namePlaceholder": "输入身份名称",
+          "username": "用户名",
+          "usernamePlaceholder": "用户名（可选）",
+          "authType": "认证类型",
+          "password": "密码",
+          "passwordPlaceholder": "输入密码",
+          "passwordPlaceholderEdit": "留空以保留当前密码",
+          "sshKey": "SSH 私钥",
+          "passphrase": "密码（可选）",
+          "passphrasePlaceholder": "输入密码（可选）",
+          "passphrasePlaceholderEdit": "留空以保留当前密码"
         },
         "authTypes": {
-          "password": "Password",
-          "ssh": "SSH Key"
+          "password": "密码",
+          "ssh": "SSH 密钥"
         },
-        "keyFileLoaded": "Key file loaded",
+        "keyFileLoaded": "已加载密钥文件",
         "actions": {
-          "cancel": "Cancel",
-          "create": "Create Identity",
-          "update": "Update Identity"
+          "cancel": "取消",
+          "create": "创建身份",
+          "update": "更新身份"
         },
         "messages": {
-          "nameRequired": "Identity name is required",
-          "passwordRequired": "Password is required",
-          "sshKeyRequired": "SSH key is required",
-          "createSuccess": "Identity created successfully",
-          "updateSuccess": "Identity updated successfully",
-          "createFailed": "Failed to create identity",
-          "updateFailed": "Failed to update identity"
+          "nameRequired": "身份名称为必填项",
+          "passwordRequired": "需要密码",
+          "sshKeyRequired": "需要 SSH 密钥",
+          "createSuccess": "成功创建身份",
+          "updateSuccess": "身份已成功更新",
+          "createFailed": "创建身份失败",
+          "updateFailed": "更新身份失败"
         }
       }
     }
   },
   "servers": {
     "contextMenu": {
-      "createFolder": "Create Folder",
-      "deleteFolder": "Delete Folder",
-      "renameFolder": "Rename Folder",
-      "createServer": "Create Server",
-      "import": "Import",
+      "createFolder": "创建文件夹",
+      "deleteFolder": "删除文件夹",
+      "renameFolder": "重命名文件夹",
+      "createServer": "创建服务器",
+      "import": "进口",
       "pve": "PVE",
-      "sshConfig": "SSH-Config",
-      "connect": "Connect",
-      "openSFTP": "Open SFTP",
-      "editServer": "Edit Server",
-      "duplicateServer": "Duplicate Server",
-      "deleteServer": "Delete Server",
-      "editPVE": "Edit PVE",
-      "deletePVE": "Delete PVE",
-      "shutdown": "Shutdown",
-      "stop": "Stop",
-      "start": "Start"
+      "sshConfig": "SSH 配置",
+      "connect": "连接",
+      "openSFTP": "打开 SFTP",
+      "editServer": "编辑服务器",
+      "duplicateServer": "复制服务器",
+      "deleteServer": "删除服务器",
+      "editPVE": "编辑 PVE",
+      "deletePVE": "删除 PVE",
+      "shutdown": "关闭",
+      "stop": "停止",
+      "start": "开始"
     },
     "dialog": {
-      "addServer": "Add server",
-      "editServer": "Edit server",
+      "addServer": "添加服务器",
+      "editServer": "编辑服务器",
       "tabs": {
-        "details": "Details",
-        "identities": "Identities",
-        "settings": "Settings"
+        "details": "详细信息",
+        "identities": "身份",
+        "settings": "设置"
       },
       "actions": {
-        "save": "Save",
-        "create": "Create"
+        "save": "节省",
+        "create": "创建"
       },
       "fields": {
-        "name": "Name",
-        "icon": "Icon",
-        "serverIp": "Server-IP",
-        "port": "Port",
-        "protocol": "Protocol",
-        "username": "Username",
-        "password": "Password",
-        "host": "Host"
+        "name": "名称",
+        "icon": "图标",
+        "serverIp": "服务器 IP",
+        "port": "港口",
+        "protocol": "规程",
+        "username": "用户名",
+        "password": "密码",
+        "host": "主持人"
       },
       "placeholders": {
-        "serverName": "Server name",
-        "serverIp": "Server-IP",
-        "port": "Port",
-        "username": "Username",
-        "password": "Password",
-        "host": "Host"
+        "serverName": "服务器名称",
+        "serverIp": "服务器 IP",
+        "port": "港口",
+        "username": "用户名",
+        "password": "密码",
+        "host": "主持人"
       }
     },
     "proxmoxDialog": {
       "title": {
-        "import": "Import Proxmox VE",
-        "edit": "Edit Proxmox VE"
+        "import": "导入 Proxmox VE",
+        "edit": "编辑 Proxmox VE"
       },
       "fields": {
-        "name": "Name",
-        "serverIp": "Server-IP",
-        "port": "Port",
-        "username": "Username",
-        "password": "Password",
-        "nodeName": "Node Name (Optional)"
+        "name": "名称",
+        "serverIp": "服务器 IP",
+        "port": "港口",
+        "username": "用户名",
+        "password": "密码",
+        "nodeName": "节点名称（可选）"
       },
       "placeholders": {
-        "name": "Name",
-        "serverIp": "Server-IP",
-        "port": "Port",
-        "username": "Username (e.g. root@pam)",
-        "password": "Password",
-        "specificNode": "Specific node name"
+        "name": "名称",
+        "serverIp": "服务器 IP",
+        "port": "港口",
+        "username": "用户名（例如 root@pam）",
+        "password": "密码",
+        "specificNode": "特定节点名称"
       },
       "actions": {
-        "import": "Import",
-        "edit": "Edit"
+        "import": "进口",
+        "edit": "编辑"
       }
     },
     "connectionReasonDialog": {
-      "title": "Connection Reason Required",
-      "reasonLabel": "Please provide a reason for connecting to <strong>{{serverName}}</strong>:",
-      "placeholder": "Enter your reason for this connection...",
+      "title": "需要连接的原因",
+      "reasonLabel": "请说明连接到 <strong>{{serverName}}</strong>:",
+      "placeholder": "输入您连接的原因...",
       "characterCount": "{{count}}/500",
       "actions": {
-        "cancel": "Cancel",
-        "connect": "Connect"
+        "cancel": "取消",
+        "connect": "连接"
       }
     },
     "sshConfigImport": {
-      "title": "Import SSH Config",
+      "title": "导入 SSH 配置",
       "configContent": {
-        "label": "SSH Config Content",
-        "placeholder": "Paste your SSH config content here..."
+        "label": "SSH 配置内容",
+        "placeholder": "在此处粘贴 SSH 配置内容..."
       },
       "keyFiles": {
-        "label": "SSH Key Files ({{count}} found)",
-        "userLabel": "User: {{username}}",
-        "uploaded": "✓ Uploaded",
-        "uploadButton": "Upload"
+        "label": "SSH 密钥文件 ({{count}} found)",
+        "userLabel": "用户： {{username}}",
+        "uploaded": "✓ 已上传",
+        "uploadButton": "上传"
       },
       "actions": {
-        "cancel": "Cancel",
-        "import": "Import",
-        "importing": "Importing..."
+        "cancel": "取消",
+        "import": "进口",
+        "importing": "导入..."
       },
       "messages": {
-        "noContent": "Please provide SSH config content",
-        "noFolder": "No folder selected",
-        "uploadSuccess": "Key {{name}} uploaded successfully",
-        "uploadFailed": "Failed to upload key {{name}}",
-        "importFailed": "Failed to import SSH config"
+        "noContent": "请提供 SSH 配置内容",
+        "noFolder": "未选择文件夹",
+        "uploadSuccess": "关键 {{name}} 已成功上传",
+        "uploadFailed": "上传密钥失败 {{name}}",
+        "importFailed": "导入 SSH 配置失败"
       }
     },
     "fileManager": {
       "createFolder": {
-        "title": "Create Folder",
-        "placeholder": "Folder Name",
-        "button": "Create Folder"
+        "title": "创建文件夹",
+        "placeholder": "文件夹名称",
+        "button": "创建文件夹"
       },
       "renameItem": {
-        "title": "Rename",
-        "placeholder": "New name",
-        "button": "Rename"
+        "title": "重新命名",
+        "placeholder": "新名称",
+        "button": "重新命名"
       },
       "fileEditor": {
-        "title": "File Editor",
-        "save": "Save",
-        "cancel": "Cancel",
-        "loading": "Loading...",
-        "saving": "Saving...",
-        "saveSuccess": "File saved successfully",
-        "saveFailed": "Failed to save file",
-        "loadFailed": "Failed to load file",
-        "unsavedChanges": "You have unsaved changes. Are you sure you want to close this file?"
+        "title": "文件编辑器",
+        "save": "节省",
+        "cancel": "取消",
+        "loading": "正在加载...",
+        "saving": "节约...",
+        "saveSuccess": "文件已成功保存",
+        "saveFailed": "保存文件失败",
+        "loadFailed": "加载文件失败",
+        "unsavedChanges": "您有未保存的更改。您确定要关闭此文件吗？"
       },
       "contextMenu": {
-        "open": "Open",
-        "download": "Download",
-        "rename": "Rename",
-        "delete": "Delete",
-        "copy": "Copy",
-        "cut": "Cut",
-        "paste": "Paste",
-        "createFolder": "Create Folder",
-        "upload": "Upload File",
-        "edit": "Edit",
-        "bigFileConfirm": "This file is {{size}} MB large. Are you sure you want to edit it?"
+        "open": "开放",
+        "download": "下载",
+        "rename": "重新命名",
+        "delete": "删除",
+        "copy": "复制",
+        "cut": "切割",
+        "paste": "粘贴",
+        "createFolder": "创建文件夹",
+        "upload": "上传文件",
+        "edit": "编辑",
+        "bigFileConfirm": "该文件大至 {{size}} MB。您确定要编辑它吗？"
       }
     },
     "aiAssistant": {
-      "title": "AI Assistant",
-      "placeholder": "Describe what you want to do...",
-      "hint": "Press Enter to generate • Esc to close",
-      "closeLabel": "Close AI Assistant"
+      "title": "人工智能助理",
+      "placeholder": "描述您想做的事情...",
+      "hint": "按 Enter 生成 - 按 Esc 关闭",
+      "closeLabel": "关闭人工智能助理"
     },
     "snippets": {
-      "title": "Snippets",
-      "noSnippets": "No snippets available",
-      "searchPlaceholder": "Search snippets...",
-      "createNew": "Create New Snippet"
+      "title": "片段",
+      "noSnippets": "没有可用的片段",
+      "searchPlaceholder": "搜索片段...",
+      "createNew": "创建新片段"
     },
     "messages": {
-      "fillRequiredFields": "Please fill in all required fields",
-      "serverCreated": "Server created successfully",
-      "serverUpdated": "Server updated successfully",
-      "createFailed": "Failed to create server",
-      "updateFailed": "Failed to update server",
-      "createIdentityFailed": "Failed to create identity",
-      "updateIdentityFailed": "Failed to update identity"
+      "fillRequiredFields": "请填写所有必填项",
+      "serverCreated": "服务器创建成功",
+      "serverUpdated": "服务器更新成功",
+      "createFailed": "创建服务器失败",
+      "updateFailed": "更新服务器失败",
+      "createIdentityFailed": "创建身份失败",
+      "updateIdentityFailed": "更新身份失败"
     }
   },
   "apps": {
