@@ -2759,10 +2759,10 @@ side-channel@^1.1.0:
     side-channel-map "^1.0.1"
     side-channel-weakmap "^1.0.2"
 
-simple-icons@^15.7.0:
-  version "15.7.0"
-  resolved "https://registry.yarnpkg.com/simple-icons/-/simple-icons-15.7.0.tgz#d0058190692d7be0144d6e835dd46a8be6a39d28"
-  integrity sha512-buN9moq1lh6Tujgr2Nc3Vgi4naE0IOKon48G42aLWqSNxjWJlUx+YSqobKcefom4uv1xyAVFcjQOJIhBJvXjGw==
+simple-icons@^15.8.0:
+  version "15.8.0"
+  resolved "https://registry.yarnpkg.com/simple-icons/-/simple-icons-15.8.0.tgz#f482958efa158b94d922982119934991ebbf2dba"
+  integrity sha512-wErxeGj9E8bcS3sP/G1iqCcKAFW6s5rMIHT2ZeNrqAhF3p0zCkbP+LRJNPFnczGpKdTfS4fPQHCvag1QwsAQvg==
 
 source-map-js@^1.2.1:
   version "1.2.1"
