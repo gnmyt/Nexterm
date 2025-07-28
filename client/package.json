@@ -41,7 +41,7 @@
     "react-i18next": "^15.6.1",
     "react-router-dom": "^7.7.1",
     "react-use-websocket": "^4.13.0",
-    "simple-icons": "^15.7.0",
+    "simple-icons": "^15.8.0",
     "ua-parser-js": "^2.0.4"
   },
   "devDependencies": {
