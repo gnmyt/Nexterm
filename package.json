@@ -25,7 +25,7 @@
     "concurrently": "^9.2.0",
     "dotenv": "^17.2.1",
     "nodemon": "^3.1.10",
-    "vitepress": "^1.6.3",
+    "vitepress": "^1.6.4",
     "vitepress-openapi": "^0.1.6"
   },
   "scripts": {
