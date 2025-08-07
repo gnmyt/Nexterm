@@ -374,9 +374,9 @@
         "demoteToUser": "Zum Benutzer zurückstufen",
         "deleteUser": "Benutzer löschen",
         "loginAsUser": "Anmeldung als Benutzer",
-        "deleteConfirm": "Dadurch werden der Benutzer und alle zugehörigen Daten endgültig gelöscht.",
+        "deleteConfirm": "Dadurch wird der Benutzer und alle zugehörigen Daten endgültig gelöscht.",
         "promoteConfirm": "Dadurch wird der Benutzer zum Administrator befördert.",
-        "demoteConfirm": "Dadurch wird der Benutzer zum normalen Benutzer degradiert."
+        "demoteConfirm": "Dadurch wird der Benutzer zum normalen Benutzer herabgestuft."
       }
     },
     "userDialog": {
@@ -389,7 +389,7 @@
       "lastNamePlaceholder": "Nachname",
       "usernamePlaceholder": "Benutzername",
       "passwordPlaceholder": "Passwort",
-      "create": "erstellen",
+      "create": "Erstellen",
       "errorOccurred": "Ein Fehler ist aufgetreten"
     },
     "sessions": {
@@ -404,8 +404,8 @@
       "title": "Terminal",
       "font": {
         "title": "Schriftart",
-        "description": "Passe die Schriftfamilie und -größe für dein Terminal an.",
-        "fontFamily": "Schriftfamilie",
+        "description": "Passe die Schriftart und -größe für dein Terminal an.",
+        "fontFamily": "Schriftart",
         "fontSize": "Schriftgröße"
       },
       "cursor": {
@@ -414,7 +414,7 @@
         "cursorStyle": "Cursor-Stil",
         "cursorBlinking": "Cursor blinkt",
         "enabled": "Aktiviert",
-        "disabled": "Behinderte"
+        "disabled": "Deaktiviert"
       },
       "theme": {
         "title": "Thema",
@@ -502,11 +502,11 @@
       },
       "selectProvider": "Wähle einen Anbieter...",
       "selectModel": "Wähle ein Modell...",
-      "loadingModels": "Modelle laden...",
+      "loadingModels": "Modelle werden geladen...",
       "noModels": "Keine Modelle verfügbar",
       "saveSettings": "Einstellungen speichern",
-      "testConnection": "Test Verbindung",
-      "testing": "Testen...",
+      "testConnection": "Verbindung testen",
+      "testing": "Test läuft...",
       "saveSuccess": "AI-Einstellungen erfolgreich gespeichert",
       "testSuccess": "AI-Verbindungstest erfolgreich",
       "errors": {
@@ -518,26 +518,26 @@
     "identities": {
       "title": "SSH-Schlüssel und Anmeldeinformationen",
       "description": "Verwalte deine SSH-Schlüssel und Anmeldedaten für Serververbindungen",
-      "createIdentity": "Identität schaffen",
+      "createIdentity": "Identität erstellen",
       "noUsername": "Kein Nutzername",
       "sshKey": "SSH-Schlüssel",
       "password": "Passwort",
       "editIdentity": "Identität bearbeiten",
       "deleteIdentity": "Identität löschen",
       "noIdentities": "Keine Identitäten gefunden",
-      "noIdentitiesDescription": "Erstelle deine erste Identität, um mit Serververbindungen zu beginnen",
+      "noIdentitiesDescription": "Erstelle deine erste Identität, um dich mit einem Server verbinden zu können",
       "deleteConfirm": "Bist du sicher, dass du \"{{name}}\" löschen willst? Diese Aktion kann nicht rückgängig gemacht werden und wird diese Identität von allen Servern entfernen, die sie verwenden.",
       "deleteSuccess": "Identität erfolgreich gelöscht",
       "deleteError": "Identität konnte nicht gelöscht werden",
       "dialog": {
-        "createTitle": "Neue Identität schaffen",
+        "createTitle": "Neue Identität erstellen",
         "editTitle": "Identität bearbeiten",
         "fields": {
           "name": "Identität Name",
           "namePlaceholder": "Name der Identität eingeben",
           "username": "Benutzername",
           "usernamePlaceholder": "Benutzername (optional)",
-          "authType": "Authentifizierung Typ",
+          "authType": "Authentifizierungstyp",
           "password": "Passwort",
           "passwordPlaceholder": "Passwort eingeben",
           "passwordPlaceholderEdit": "Leer lassen, um das aktuelle Passwort zu behalten",
@@ -553,7 +553,7 @@
         "keyFileLoaded": "Schlüsseldatei geladen",
         "actions": {
           "cancel": "Abbrechen",
-          "create": "Identität schaffen",
+          "create": "Identität erstellen",
           "update": "Identität aktualisieren"
         },
         "messages": {
@@ -630,29 +630,29 @@
         "port": "Hafen",
         "username": "Benutzername",
         "password": "Passwort",
-        "nodeName": "Name des Knotens (optional)"
+        "nodeName": "Name der Node (optional)"
       },
       "placeholders": {
         "name": "Name",
         "serverIp": "Server-IP",
-        "port": "Hafen",
+        "port": "Port",
         "username": "Benutzername (z. B. root@pam)",
         "password": "Passwort",
-        "specificNode": "Spezifischer Knotenname"
+        "specificNode": "Spezifischer Node-Name"
       },
       "actions": {
         "import": "Importieren",
-        "edit": "bearbeiten"
+        "edit": "Bearbeiten"
       }
     },
     "connectionReasonDialog": {
-      "title": "Grund für die Verbindung erforderlich",
-      "reasonLabel": "Bitte geben Sie einen Grund für die Verbindung mit <strong>{{serverName}}</strong>:",
+      "title": "Grund für Verbindungsaufbau erforderlich",
+      "reasonLabel": "Bitte gebe einen Grund an, weswegen du dich mit dem Server <strong>{{serverName}}</strong> verbinden möchtest:",
       "placeholder": "Gib deinen Grund für diese Verbindung ein...",
       "characterCount": "{{count}}/500",
       "actions": {
         "cancel": "Abbrechen",
-        "connect": "Verbinde"
+        "connect": "Verbinden"
       }
     },
     "sshConfigImport": {
@@ -670,7 +670,7 @@
       "actions": {
         "cancel": "Abbrechen",
         "import": "Importieren",
-        "importing": "Importieren..."
+        "importing": "Wird importiert..."
       },
       "messages": {
         "noContent": "Bitte gib den Inhalt der SSH-Konfiguration an",
@@ -687,27 +687,27 @@
         "button": "Ordner erstellen"
       },
       "renameItem": {
-        "title": "umbenennen",
+        "title": "Umbenennen",
         "placeholder": "Neuer Name",
-        "button": "umbenennen"
+        "button": "Umbenennen"
       },
       "fileEditor": {
         "title": "Datei-Editor",
         "save": "Speichern",
         "cancel": "Abbrechen",
-        "loading": "Laden...",
-        "saving": "Sparen...",
+        "loading": "Lädt...",
+        "saving": "Wird gespeichert...",
         "saveSuccess": "Datei erfolgreich gespeichert",
         "saveFailed": "Datei kann nicht gespeichert werden",
         "loadFailed": "Datei konnte nicht geladen werden",
-        "unsavedChanges": "Du hast ungespeicherte Änderungen. Bist du sicher, dass du diese Datei schließen willst?"
+        "unsavedChanges": "Du hast ungespeicherte Änderungen. Bist du sicher, dass du diese Datei schließen möchtest?"
       },
       "contextMenu": {
-        "open": "Öffnen Sie",
+        "open": "Öffnen",
         "download": "Herunterladen",
-        "rename": "umbenennen",
-        "delete": "löschen",
-        "copy": "Kopiere",
+        "rename": "Umbenennen",
+        "delete": "Löschen",
+        "copy": "Kopieren",
         "cut": "Schnitt",
         "paste": "Kleister",
         "createFolder": "Ordner erstellen",
