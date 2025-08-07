@@ -22,14 +22,14 @@
       "code": "Code"
     },
     "confirmDialog": {
-      "title": "Bist du sicher?",
+      "title": "Bist du dir sicher?",
       "defaultText": "Diese Aktion kann nicht rückgängig gemacht werden."
     },
     "loginDialog": {
       "title": "Nexterm",
-      "registrationTitle": "Anmeldung",
+      "registrationTitle": "Registrieren",
       "ssoOrContinueWith": "oder weiter mit",
-      "ssoSignInWith": "melde dich an mit",
+      "ssoSignInWith": "Anmelden mit",
       "noAuthMethodsAvailable": "Keine Authentifizierungsmethoden verfügbar."
     },
     "selectBox": {
@@ -38,31 +38,31 @@
     "sidebar": {
       "settings": "Einstellungen",
       "servers": "Server",
-      "monitoring": "Überwachung",
-      "snippets": "Schnipsel",
+      "monitoring": "Monitoring",
+      "snippets": "Snippets",
       "audit": "Audit",
       "apps": "Apps",
       "logout": "Abmelden",
-      "collapseTitle": "Seitenleiste einklappen",
-      "logoutConfirmText": "Dadurch wirst du aus dem {{username}} Konto ausgeloggt. Bist du sicher?",
-      "navigationConfirmText": "Du hast aktive Sitzungen. Wenn du wegnavigierst, wird deine Verbindung zu allen Servern getrennt. Bist du sicher?"
+      "collapseTitle": "Seitenleiste ausblenden",
+      "logoutConfirmText": "Du wirst aus dem Account {{username}} ausgeloggt. Möchtest du fortfahren?",
+      "navigationConfirmText": "Du hast noch aktive Sitzungen laufen, die dann durch diese Aktion alle auf einmal getrennt werden. Ungespeicherte Änderungen können verloren gehen, möchtest du fortfahren?"
     },
     "errors": {
-      "loadingAuthProviders": "Fehler beim Laden von Authentifizierungsanbietern: {{error}}",
+      "loadingAuthProviders": "Es konnte keine Verbindung zum Provider aufgebaut werden: {{error}}",
       "generalError": "Ein Fehler ist aufgetreten",
-      "invalidCredentials": "Ungültiger Benutzername oder Passwort",
-      "invalidTwoFactor": "Ungültiger Zwei-Faktor-Code",
+      "invalidCredentials": "Benutzername oder Passwort ungültig",
+      "invalidTwoFactor": "Ungültiger 2FA-Code",
       "internalAuthDisabled": "Interne Authentifizierung ist deaktiviert",
       "ssoLoginFailed": "SSO-Anmeldung konnte nicht initiiert werden"
     },
     "messages": {
       "invitationAccepted": "Einladung angenommen",
       "invitationDeclined": "Einladung abgelehnt",
-      "invitationError": "Einladung konnte nicht bearbeitet werden",
-      "organizationDeleted": "Organisation erfolgreich gelöscht",
+      "invitationError": "Einladung konnte nicht verarbeitet werden",
+      "organizationDeleted": "Organisation wurde erfolgreich gelöscht",
       "organizationDeleteError": "Organisation kann nicht gelöscht werden",
       "leftOrganization": "Du hast die Organisation verlassen",
-      "leaveOrganizationError": "Hat die Organisation nicht verlassen"
+      "leaveOrganizationError": "Beim Verlassen der Organisation ist ein Fehler aufgetreten"
     }
   },
   "audit": {
@@ -86,7 +86,7 @@
       "options": {
         "allActions": "Alle Aktionen",
         "allResources": "Alle Ressourcen",
-        "allOrganizations": "Alle Organisationen (Personal + Org)",
+        "allOrganizations": "Alle Organisationen (Persönlich + Org)",
         "personalOnly": "Nur persönlich",
         "categoryAll": "{{category}} (Alle)"
       }
@@ -95,7 +95,7 @@
       "headers": {
         "timestamp": "Zeitstempel",
         "action": "Aktion",
-        "actor": "Schauspieler",
+        "actor": "Benutzer",
         "resource": "Ressource",
         "organization": "Organisation",
         "details": "Details"
@@ -106,8 +106,8 @@
       },
       "loading": "Laden der Audit-Protokolle...",
       "expandedDetails": {
-        "connectionReason": "Verbindung Grund",
-        "userAgent": "Benutzer-Agent",
+        "connectionReason": "Grund der Verbindung",
+        "userAgent": "User-Agent",
         "additionalDetails": "Zusätzliche Details"
       },
       "badges": {
@@ -203,7 +203,7 @@
         "errorMessage": "Die Verbindung zum Server kann nicht hergestellt werden.",
         "unknownMessage": "Der Serverstatus konnte nicht ermittelt werden.",
         "lastSeen": "Zuletzt gesehen: {{time}}",
-        "noRecentActivity": "Keine aktuelle Aktivität"
+        "noRecentActivity": "Keine Aktivitäten bekannt"
       },
       "uptime": {
         "unknown": "Unbekannt",
@@ -223,7 +223,7 @@
       "tabs": {
         "overview": "Übersicht",
         "charts": "Charts",
-        "storage": "Lagerung",
+        "storage": "Speicher",
         "network": "Netzwerk"
       },
       "overview": {
@@ -240,7 +240,7 @@
         "performance": {
           "title": "Leistungsmetriken",
           "cpuUsage": "CPU-Nutzung",
-          "memoryUsage": "Speichernutzung",
+          "memoryUsage": "RAM-Nutzung",
           "loadAverage": "Last Durchschnitt",
           "processes": "Aktive Prozesse",
           "total": "Insgesamt: {{value}}",
@@ -256,22 +256,22 @@
       },
       "charts": {
         "cpuUsage": "CPU-Nutzung",
-        "memoryUsage": "Speichernutzung",
+        "memoryUsage": "RAM-Nutzung",
         "processes": "Aktive Prozesse",
         "noData": "Keine Daten für den ausgewählten Zeitraum verfügbar"
       },
       "storage": {
-        "title": "Festplattenverwendung",
-        "used": "Gebraucht: {{value}}",
+        "title": "Speichernutzung",
+        "used": "Verwendet: {{value}}",
         "available": "Verfügbar: {{value}}",
         "total": "Insgesamt: {{value}}",
         "type": "Typ: {{value}}",
-        "noData": "Keine Daten zur Festplattennutzung verfügbar"
+        "noData": "Keine Daten zur Speichernutzung verfügbar"
       },
       "network": {
         "title": "Netzwerk-Schnittstellen",
         "rxBytes": "RX-Bytes",
-        "txBytes": "Sende-Bytes",
+        "txBytes": "TX-Bytes",
         "noData": "Keine Daten zur Netzwerkschnittstelle verfügbar"
       }
     }
@@ -354,12 +354,12 @@
         },
         "actions": {
           "cancel": "Abbrechen",
-          "create": "erstellen"
+          "create": "Erstellen"
         },
         "messages": {
-          "nameRequired": "Der Name der Organisation ist erforderlich",
+          "nameRequired": "Name der Organisation ist erforderlich",
           "createSuccess": "Organisation erfolgreich erstellt",
-          "createFailed": "Organisation kann nicht erstellt werden"
+          "createFailed": "Organisation konnte nicht erstellt werden"
         }
       }
     },
