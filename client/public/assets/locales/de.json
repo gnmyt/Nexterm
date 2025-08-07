@@ -2,9 +2,9 @@
   "common": {
     "actions": {
       "cancel": "Abbrechen",
-      "confirm": "Bestätige",
-      "login": "Anmeldung",
-      "register": "Register"
+      "confirm": "Bestätigen",
+      "login": "Einloggen",
+      "register": "Registrieren"
     },
     "labels": {
       "username": "Benutzername",
