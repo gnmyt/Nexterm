@@ -784,32 +784,32 @@
     },
     "items": {
       "customBadge": "Benutzerdefiniert",
-      "scriptType": "Skript",
-      "running": "Laufen...",
-      "runScript": "Lauf"
+      "scriptType": "Script",
+      "running": "Läuft gerade...",
+      "runScript": "Starten"
     },
     "installer": {
-      "deploymentFailed": "Einsatz fehlgeschlagen",
-      "deploymentCompleted": "Einsatz abgeschlossen",
-      "deploying": "Der Einsatz...",
+      "deploymentFailed": "Installation fehlgeschlagen",
+      "deploymentCompleted": "Installation abgeschlossen",
+      "deploying": "Wird installiert...",
       "installationLog": "Installationsprotokoll",
       "steps": {
         "lookupDistro": "Linux-Distributionen nachschlagen",
         "checkPermissions": "Berechtigungen prüfen",
         "installDocker": "Docker Engine installieren",
-        "downloadImage": "Basisbild herunterladen",
+        "downloadImage": "Base Image herunterladen",
         "preInstall": "Vorinstallationsbefehl ausführen",
         "startContainer": "Docker Container starten",
         "postInstall": "Post-Installationsbefehl ausführen",
-        "detected": "Erkannt {{os}}"
+        "detected": "{{os}} erkannt"
       }
     },
     "scriptExecutor": {
       "executionFailed": "Skriptausführung fehlgeschlagen",
       "executionCompleted": "Skriptausführung abgeschlossen",
-      "executing": "Ausführen des Skripts...",
+      "executing": "Script wird ausgeführt...",
       "initializing": "Initialisierung der Skriptausführung",
-      "finished": "Skriptausführung beendet",
+      "finished": "Skriptausführung abgeschlossen",
       "cancelled": "Skriptausführung durch Benutzer abgebrochen"
     },
     "dialogs": {
