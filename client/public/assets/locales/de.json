@@ -814,8 +814,8 @@
     },
     "dialogs": {
       "deployServer": {
-        "deployTitle": "Bereitstellen {{name}}",
-        "runTitle": "Lauf {{name}}",
+        "deployTitle": "{{name}} installieren",
+        "runTitle": "{{name}} ausführen",
         "noServersAvailable": "Keine SSH-Server verfügbar"
       },
       "source": {
@@ -824,31 +824,31 @@
         "addNewSource": "Neue Quelle hinzufügen"
       },
       "script": {
-        "createTitle": "Benutzerdefiniertes Skript erstellen",
-        "editTitle": "Skript bearbeiten",
-        "viewTitle": "Skript ansehen",
+        "createTitle": "Benutzerdefiniertes Script erstellen",
+        "editTitle": "Script bearbeiten",
+        "viewTitle": "Script ansehen",
         "source": "Quelle: {{source}}",
-        "scriptDetails": "Skript Details",
-        "scriptContent": "Skript Inhalt",
-        "helpTip": "Verwende @NEXTERM: Befehle für interaktive Eingabeaufforderungen",
+        "scriptDetails": "Script Details",
+        "scriptContent": "Script Inhalt",
+        "helpTip": "Verwende @NEXTERM: Befehle für interaktive Prompts",
         "fields": {
           "name": "Script Name *",
           "description": "Beschreibung *",
-          "namePlaceholder": "Mein geniales Skript",
-          "descriptionPlaceholder": "Was macht dieses Skript?"
+          "namePlaceholder": "Mein eigenes Skript",
+          "descriptionPlaceholder": "Was macht dieses Script?"
         },
         "actions": {
           "close": "Schließen",
           "cancel": "Abbrechen",
-          "create": "Skript erstellen",
-          "update": "Update Script",
-          "creating": "Erstellen...",
+          "create": "Script erstellen",
+          "update": "Änderungen speichern",
+          "creating": "Wird erstellt...",
           "updating": "Aktualisieren..."
         },
         "errors": {
-          "nameRequired": "Skriptname ist erforderlich",
-          "descriptionRequired": "Skriptbeschreibung ist erforderlich",
-          "contentRequired": "Skriptinhalt kann nicht leer sein",
+          "nameRequired": "Name für Script erforderlich",
+          "descriptionRequired": "Beschreibung für Script ist erforderlich",
+          "contentRequired": "Inhalt von Script darf nicht leer sein",
           "createFailed": "Skript kann nicht erstellt werden",
           "updateFailed": "Skript kann nicht aktualisiert werden"
         },
