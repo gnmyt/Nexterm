@@ -215,6 +215,31 @@ export const AI = () => {
                                     </div>
                                 )}
 
+                                {settings.provider === "openai_compatible" && (
+                                    <div className="setting-item">
+                                        <div className="setting-label">
+                                            <h4>{t("settings.ai.apiKey.title")}</h4>
+                                            <p>{t("settings.ai.apiKey.description")}</p>
+                                        </div>
+                                        <div className="setting-input">
+                                            <IconInput icon={mdiRobot} value={settings.apiUrl}
+                                                       setValue={(value) => handleInputChange("apiUrl", value)}
+                                                       placeholder={`${t("settings.ai.ollamaUrl.placeholder")}/compatible-mode/v1`} />
+                                        </div>
+                                        <div className="setting-input api-key-input">
+                                            <IconInput
+                                                icon={showApiKey ? mdiEyeOff : mdiEye}
+                                                type={showApiKey ? "text" : "password"}
+                                                value={settings.apiKey}
+                                                setValue={(value) => handleInputChange("apiKey", value)}
+                                                placeholder={settings.hasApiKey ? t("settings.ai.apiKey.setPlaceholder") : t("settings.ai.apiKey.placeholder")}
+                                                onIconClick={() => setShowApiKey(!showApiKey)}
+                                            />
+                                        </div>
+                                    </div>
+                                )}
+
+
                                 {settings.provider === "ollama" && (
                                     <div className="setting-item">
                                         <div className="setting-label">
