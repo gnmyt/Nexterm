@@ -117,6 +117,27 @@ module.exports.testAIConnection = async () => {
                 code: 400,
                 message: `Configured model "${settings.model}" not found in Ollama`,
             };
+        } else if (settings.provider === "openai_compatible") {
+
+		if (!settings.apiUrl) return { code: 400, message: "OpenAI Compatible API URL not configured" };
+        if (!settings.apiKey) return { code: 400, message: "OpenAI Compatible API key not configured" };
+
+            const response = await fetch(`${settings.apiUrl}/models`, {
+                headers: {
+                    "Authorization": `Bearer ${settings.apiKey}`,
+                    "Content-Type": "application/json",
+                },
+            });
+
+            if (!response.ok) return { code: 500, message: `OpenAI API error: ${response.status}` };
+
+            const data = await response.json();
+            const modelExists = data.data.some(model => model.id === settings.model);
+
+            if (!modelExists) return {
+                code: 400,
+                message: `Configured model "${settings.model}" not found in OpenAI Compatible API`,
+            };
         }
 
         return { success: true, message: "Connection test successful" };
@@ -185,6 +206,29 @@ module.exports.getAvailableModels = async () => {
             console.error("Error fetching OpenAI models:", error);
             return { models: [] };
         }
+    } else if (settings.provider === "openai_compatible") {
+		if (!settings.apiUrl) return { code: 400, message: "OpenAI Compatible API URL not configured" };
+        if (!settings.apiKey) return { code: 400, message: "OpenAI Compatible API key not configured" };
+
+        try {
+            const response = await fetch(settings.apiUrl, {
+                headers: {
+                    "Authorization": `Bearer ${settings.apiKey}`,
+                    "Content-Type": "application/json",
+                },
+            });
+
+            if (!response.ok) return { code: 500, message: "Failed to fetch models from OpenAI Compatible API" };
+
+            const data = await response.json();
+
+            const chatModels = data.models ? data.models.map(model => model.name).filter(name => name) : [];
+
+            return { models: chatModels || [] };
+        } catch (error) {
+            console.error("Error fetching OpenAI Compatible API models:", error);
+            return { models: [] };
+        }
     } else {
         return { code: 400, message: "Unsupported provider" };
     }
@@ -199,6 +243,8 @@ module.exports.generateCommand = async (prompt) => {
     let command;
     if (settings.provider === "openai") {
         command = await generateOpenAICommand(prompt, settings);
+    } else if (settings.provider === "openai_compatible") {
+        command = await generateOllamaCommand(prompt, settings);
     } else if (settings.provider === "ollama") {
         command = await generateOllamaCommand(prompt, settings);
     } else {
