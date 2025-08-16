@@ -147,16 +147,16 @@
         "command": "Befehl"
       },
       "placeholders": {
-        "name": "Name des Schnipsels",
-        "description": "Was bedeutet dieser Befehl?",
-        "command": "Gib deinen Befehl ein"
+        "name": "Name vom Snippet",
+        "description": "Was macht dieser Befehl?",
+        "command": "Gib einen Befehl ein"
       },
       "actions": {
         "cancel": "Abbrechen",
         "create": "erstellen",
         "save": "Speichern",
-        "generateAI": "Generieren mit KI",
-        "generating": "Generieren..."
+        "generateAI": "Mit KI generieren",
+        "generating": "Wird generiert..."
       }
     },
     "messages": {
@@ -175,31 +175,31 @@
   },
   "monitoring": {
     "page": {
-      "title": "Server Überwachung",
-      "subtitle": "Serverstatistiken und Zustandsüberwachung in Echtzeit",
+      "title": "Server Monitoring",
+      "subtitle": "Echtzeit-Serverstatistik und Zustandsüberwachung",
       "searchPlaceholder": "Server suchen..."
     },
     "errors": {
-      "loadFailed": "Überwachungsdaten konnten nicht geladen werden"
+      "loadFailed": "Monitor-Daten konnten nicht geladen werden"
     },
     "grid": {
-      "loading": "Laden von Überwachungsdaten...",
+      "loading": "Laden von Monitor-Daten...",
       "noServers": {
         "title": "Keine Server gefunden",
-        "subtitle": "Es sind keine SSH-Server zur Überwachung verfügbar.\nFüge einige Server hinzu, um sie zu überwachen."
+        "subtitle": "Es sind keine SSH-Server für Monitoring verfügbar.\nFüge einige Server hinzu, um sie zu überwachen."
       },
       "metrics": {
         "cpuUsage": "CPU-Nutzung",
-        "memoryUsage": "Speichernutzung",
-        "loadAverage": "Last Durchschnitt",
+        "memoryUsage": "RAM-Nutzung",
+        "loadAverage": "Durchschnittliche Last",
         "processes": "Prozesse",
         "uptime": "Betriebszeit"
       },
       "status": {
-        "serverOffline": "Server Offline",
+        "serverOffline": "Server offline",
         "connectionError": "Verbindungsfehler",
-        "statusUnknown": "Status Unbekannt",
-        "offlineMessage": "Der Server antwortet derzeit nicht auf Überwachungsanfragen.",
+        "statusUnknown": "Status unbekannt",
+        "offlineMessage": "Der Server reagiert momentan nicht auf Anfragen zum Monitoring.",
         "errorMessage": "Die Verbindung zum Server kann nicht hergestellt werden.",
         "unknownMessage": "Der Serverstatus konnte nicht ermittelt werden.",
         "lastSeen": "Zuletzt gesehen: {{time}}",
@@ -291,14 +291,14 @@
       "ai": "AI"
     },
     "account": {
-      "title": "Konto",
-      "accountName": "Kontoname",
+      "title": "Account",
+      "accountName": "Benutzername",
       "firstName": "Vorname",
       "lastName": "Nachname",
       "appearance": "Erscheinungsbild",
-      "appearanceDescription": "Wähle zwischen einem hellen und einem dunklen Thema für deine Oberfläche.",
-      "switchToLight": "In den Lichtmodus wechseln",
-      "switchToDark": "In den dunklen Modus wechseln",
+      "appearanceDescription": "Wähle zwischen einem hellen und einem dunklen Theme für deine Oberfläche.",
+      "switchToLight": "In den Light-Mode wechseln",
+      "switchToDark": "In den Dark-Mode wechseln",
       "twoFactor": "Zwei-Faktor-Authentifizierung",
       "twoFactorActive": "Aktiv",
       "twoFactorInactive": "Inaktiv",
@@ -306,18 +306,18 @@
       "enable2FA": "2FA aktivieren",
       "disable2FA": "2FA deaktivieren",
       "changePassword": "Passwort ändern",
-      "changePasswordDescription": "Wähle hier ein neues und sicheres Passwort für dein Konto.",
+      "changePasswordDescription": "Wähle hier ein neues und sicheres Passwort für dein Account.",
       "changePasswordButton": "Passwort ändern",
       "language": "Sprache",
       "languageDescription": "Wähle deine bevorzugte Sprache für die Benutzeroberfläche.",
       "currentLanguage": "Aktuelle Sprache",
-      "missingLanguage": "Vermisst du deine Sprache?",
+      "missingLanguage": "Findest du deine Sprache nicht?",
       "helpTranslateLink": "Hilf bei der Übersetzung von Nexterm",
       "twoFactorDialog": {
         "title": "2FA aktivieren",
-        "description": "Scanne den Code mit deiner Authenticator-App oder gib ihn <span class=\"totp-code\">{{secret}}</span> manuell ein.",
+        "description": "Scanne den Code mit deiner Authenticator-App oder gib den Code <span class=\"totp-code\">{{secret}}</span> manuell ein.",
         "codePlaceholder": "2FA-Code eingeben",
-        "enableButton": "Aktiviere",
+        "enableButton": "Aktivieren",
         "messages": {
           "setupFailed": "Die 2FA-Einrichtung ist fehlgeschlagen. Bitte versuche es erneut."
         }
@@ -325,7 +325,7 @@
     },
     "passwordChange": {
       "title": "Passwort ändern",
-      "description": "Ein sicheres Passwort enthält Sonderzeichen, Zahlen und Buchstaben in Groß- und Kleinbuchstaben.",
+      "description": "Ein sicheres Passwort enthält Sonderzeichen, Zahlen und große bzw. kleine Buchstaben.",
       "newPassword": "Neues Passwort",
       "confirmPassword": "Bestätige das neue Passwort",
       "changePasswordButton": "Passwort ändern"
@@ -335,9 +335,9 @@
       "createOrganization": "Organisation erstellen",
       "noOrganizations": "Du hast noch keine Organisationen.",
       "noOrganizationsDescription": "Erstelle eine, um die Zusammenarbeit mit deinem Team zu beginnen.",
-      "invite": "einladen",
-      "delete": "löschen",
-      "leave": "Lass",
+      "invite": "Einladen",
+      "delete": "Löschen",
+      "leave": "Verlassen",
       "members": "Mitglieder",
       "auditSettings": "Audit-Einstellungen",
       "pendingInvitations": "Ausstehende Einladungen",
@@ -417,15 +417,15 @@
         "disabled": "Deaktiviert"
       },
       "theme": {
-        "title": "Thema",
-        "description": "Wähle ein Farbthema für dein Terminal."
+        "title": "Theme",
+        "description": "Wähle ein Theme für dein Terminal."
       },
       "preview": {
-        "text": "$ echo 'Hallo, Nexterm!'\nHallo, Nexterm!\n$ "
+        "text": "$ echo 'Hi, Nexterm!'\nHi, Nexterm!\n$ "
       }
     },
     "authentication": {
-      "title": "{{count}} Anbieter von Authentifizierung",
+      "title": "{{count}} Anbieter verfügbar",
       "addProvider": "Anbieter hinzufügen",
       "system": "System",
       "systemDescription": "Authentifizierung mit Benutzername und Passwort",
@@ -440,25 +440,25 @@
         "fields": {
           "displayName": "Name anzeigen",
           "displayNamePlaceholder": "z.B. Unternehmen SSO",
-          "issuerUrl": "Emittenten-URL",
+          "issuerUrl": "Issuer URL",
           "issuerUrlPlaceholder": "https://auth.company.com",
-          "clientId": "Kunden-ID",
-          "clientIdPlaceholder": "Kunden-ID",
-          "clientSecret": "Kunde Geheimnis",
-          "clientSecretPlaceholder": "Kunde Geheimnis",
+          "clientId": "Client-ID",
+          "clientIdPlaceholder": "Client-ID",
+          "clientSecret": "Client Secret",
+          "clientSecretPlaceholder": "Client Secret",
           "clientSecretPlaceholderEdit": "Leer lassen, um das Vorhandene zu behalten",
-          "redirectUri": "URI umleiten",
+          "redirectUri": "URI weiterleiten",
           "redirectUriPlaceholder": "https://your-domain.com/api/oidc/callback",
-          "scope": "Umfang",
+          "scope": "Zugriffsart",
           "scopePlaceholder": "openid Profil E-Mail",
           "emailAttribute": "E-Mail-Attribut",
           "emailAttributePlaceholder": "E-Mail",
           "usernameAttribute": "Benutzername Attribut",
-          "usernameAttributePlaceholder": "bevorzugter_Benutzername",
+          "usernameAttributePlaceholder": "dein_benutzername",
           "firstNameAttribute": "Vorname Attribut",
-          "firstNameAttributePlaceholder": "vor_name",
+          "firstNameAttributePlaceholder": "given_name",
           "lastNameAttribute": "Nachname Attribut",
-          "lastNameAttributePlaceholder": "Familien_name"
+          "lastNameAttributePlaceholder": "familie_name"
         },
         "advanced": {
           "show": "Erweiterte Einstellungen anzeigen",
@@ -483,7 +483,7 @@
       },
       "provider": {
         "title": "KI-Anbieter",
-        "description": "Wähle deinen KI-Dienstleister"
+        "description": "Wähle deinen KI-Anbieter"
       },
       "model": {
         "title": "Modell",
@@ -577,15 +577,15 @@
       "import": "Importieren",
       "pve": "PVE",
       "sshConfig": "SSH-Konfiguration",
-      "connect": "Verbinde",
+      "connect": "Verbinden",
       "openSFTP": "SFTP öffnen",
       "editServer": "Server bearbeiten",
       "duplicateServer": "Server duplizieren",
       "deleteServer": "Server löschen",
       "editPVE": "PVE bearbeiten",
       "deletePVE": "PVE löschen",
-      "shutdown": "Abschaltung",
-      "stop": "Stopp",
+      "shutdown": "Herunterfahren",
+      "stop": "Stop",
       "start": "Start"
     },
     "dialog": {
@@ -598,25 +598,25 @@
       },
       "actions": {
         "save": "Speichern",
-        "create": "erstellen"
+        "create": "Erstellen"
       },
       "fields": {
         "name": "Name",
         "icon": "Icon",
         "serverIp": "Server-IP",
-        "port": "Hafen",
+        "port": "Port",
         "protocol": "Protokoll",
         "username": "Benutzername",
         "password": "Passwort",
-        "host": "Gastgeber"
+        "host": "Host"
       },
       "placeholders": {
         "serverName": "Server Name",
         "serverIp": "Server-IP",
-        "port": "Hafen",
+        "port": "Port",
         "username": "Benutzername",
         "password": "Passwort",
-        "host": "Gastgeber"
+        "host": "Host"
       }
     },
     "proxmoxDialog": {
@@ -627,7 +627,7 @@
       "fields": {
         "name": "Name",
         "serverIp": "Server-IP",
-        "port": "Hafen",
+        "port": "Port",
         "username": "Benutzername",
         "password": "Passwort",
         "nodeName": "Name der Node (optional)"
@@ -708,22 +708,22 @@
         "rename": "Umbenennen",
         "delete": "Löschen",
         "copy": "Kopieren",
-        "cut": "Schnitt",
-        "paste": "Kleister",
+        "cut": "Ausschneiden",
+        "paste": "Einfügen",
         "createFolder": "Ordner erstellen",
         "upload": "Datei hochladen",
-        "edit": "bearbeiten",
+        "edit": "Bearbeiten",
         "bigFileConfirm": "Diese Datei ist {{size}} MB groß. Bist du sicher, dass du sie bearbeiten willst?"
       }
     },
     "aiAssistant": {
       "title": "KI-Assistent",
-      "placeholder": "Beschreibe, was du tun willst...",
+      "placeholder": "Beschreibe, was du tun möchtest...",
       "hint": "Drücke Enter zum Erstellen - Esc zum Schließen",
       "closeLabel": "KI-Assistent schließen"
     },
     "snippets": {
-      "title": "Schnipsel",
+      "title": "Snippets",
       "noSnippets": "Keine Snippets verfügbar",
       "searchPlaceholder": "Snippets suchen...",
       "createNew": "Neuen Snippet erstellen"
@@ -745,11 +745,11 @@
         "all": "Alle",
         "results": "Ergebnisse",
         "scripts": "Skripte",
-        "networking": "Networking",
+        "networking": "Netzwerke",
         "media": "Medien",
-        "cloud": "Wolke",
+        "cloud": "Cloud",
         "development": "Entwicklung",
-        "utilities": "Versorgungsunternehmen"
+        "utilities": "Werkzeuge"
       }
     },
     "store": {
@@ -766,19 +766,19 @@
       }
     },
     "list": {
-      "noApps": "Demnächst mehr Apps",
+      "noApps": "Weitere Apps kommen bald",
       "noScripts": "Keine Skripte verfügbar",
       "selectApp": "App auswählen, um fortzufahren",
       "selectScript": "Skript auswählen, um fortzufahren"
     },
     "actions": {
-      "deploy": "Bereitstellen",
-      "run": "Lauf",
-      "view": "Siehe",
-      "edit": "bearbeiten",
-      "delete": "löschen",
+      "deploy": "Installieren",
+      "run": "Starten",
+      "view": "Anzeigen",
+      "edit": "Bearbeiten",
+      "delete": "Löschen",
       "logs": "Logs",
-      "open": "Öffnen Sie",
+      "open": "Öffnen",
       "stop": "Skript anhalten",
       "version": "Version"
     },
