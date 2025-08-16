@@ -118,15 +118,15 @@
     },
     "pagination": {
       "showing": "Zeigt {{start}} bis {{end}} von {{total}} Logs",
-      "previous": "Vorherige",
-      "next": "Nächste",
+      "previous": "Zurück",
+      "next": "Weiter",
       "pageInfo": "Seite {{current}} von {{total}}"
     }
   },
   "snippets": {
     "page": {
-      "title": "Schnipsel",
-      "subtitle": "Verwalte deine Befehlsschnipsel für schnellen Zugriff in Terminals",
+      "title": "Snippets",
+      "subtitle": "Verwalte deine Snippets für schnellen Zugriff in Terminals",
       "addSnippet": "Snippet hinzufügen"
     },
     "list": {
