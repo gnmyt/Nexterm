@@ -12,7 +12,7 @@
     "express": "^5.1.0",
     "express-jsdoc-swagger": "^1.8.0",
     "express-ws": "^5.0.2",
-    "joi": "^18.0.0",
+    "joi": "^18.0.1",
     "js-yaml": "^4.1.0",
     "openid-client": "^6.6.4",
     "sequelize": "^6.37.7",
