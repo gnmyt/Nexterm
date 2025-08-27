@@ -22,7 +22,7 @@
     "ws": "^8.18.3"
   },
   "devDependencies": {
-    "concurrently": "^9.2.0",
+    "concurrently": "^9.2.1",
     "dotenv": "^17.2.1",
     "nodemon": "^3.1.10",
     "vitepress": "^1.6.4",
