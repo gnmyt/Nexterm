@@ -916,10 +916,10 @@
   dependencies:
     undici-types "~7.8.0"
 
-"@types/react-dom@^19.1.7":
-  version "19.1.7"
-  resolved "https://registry.yarnpkg.com/@types/react-dom/-/react-dom-19.1.7.tgz#2863f2aa89e023592b981204ef92c5221b286410"
-  integrity sha512-i5ZzwYpqjmrKenzkoLM2Ibzt6mAsM7pxB6BCIouEVVmgiqaMj1TjaK7hnA36hbW5aZv20kx7Lw6hWzPWg0Rurw==
+"@types/react-dom@^19.1.8":
+  version "19.1.8"
+  resolved "https://registry.yarnpkg.com/@types/react-dom/-/react-dom-19.1.8.tgz#6cad88ec938beb2626df7c4cb97b15d9f66a05a9"
+  integrity sha512-xG7xaBMJCpcK0RpN8jDbAACQo54ycO6h4dSSmgv8+fu6ZIAdANkx/WsawASUjVXYfy+J9AbUpRMNNEsXCDfDBQ==
 
 "@types/react@^19.1.11":
   version "19.1.11"
