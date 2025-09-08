@@ -18,7 +18,7 @@
     "@fontsource/plus-jakarta-sans": "^5.2.6",
     "@fontsource/roboto-mono": "^5.2.6",
     "@fontsource/source-code-pro": "^5.2.6",
-    "@fontsource/ubuntu-mono": "^5.2.6",
+    "@fontsource/ubuntu-mono": "^5.2.7",
     "@lezer/highlight": "^1.2.1",
     "@mdi/js": "^7.4.47",
     "@mdi/react": "^1.6.1",
