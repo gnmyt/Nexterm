@@ -527,10 +527,10 @@
   resolved "https://registry.yarnpkg.com/@fontsource/source-code-pro/-/source-code-pro-5.2.6.tgz#52f0b798d31f9ca33ca354284d3b1719eafdd528"
   integrity sha512-eIlEPWRXqnYwpQO7nONj2IsUpzwME+UwP2oVAgNuwXX5oyLNJqw1Jh0D2FyZWS5Zd0ddsxbz+nhgyVT4K/OgGQ==
 
-"@fontsource/ubuntu-mono@^5.2.6":
-  version "5.2.6"
-  resolved "https://registry.yarnpkg.com/@fontsource/ubuntu-mono/-/ubuntu-mono-5.2.6.tgz#c40282d2d316a996ce539d11d93eb06b0bad2da7"
-  integrity sha512-9oJsnQbCl0du6Sy5DITlCY+OwxYYPd2z5R55KF8qZXmJSoWPoMSY6bGi81eBvKU4Jdx8/ETRfN9NJvoMQ9ch3g==
+"@fontsource/ubuntu-mono@^5.2.7":
+  version "5.2.7"
+  resolved "https://registry.yarnpkg.com/@fontsource/ubuntu-mono/-/ubuntu-mono-5.2.7.tgz#59b40bd5fbb83ab5ff36106eb6e386c5c889e046"
+  integrity sha512-efmA+SpnIiDDXG5xMu9SkEbLEt6gAMo+zulm6hD7TmJ7J6eeIgHonkfAhXHxb7p3OW5MW4C54RKRg84NPDM6qQ==
 
 "@humanfs/core@^0.19.1":
   version "0.19.1"
