@@ -502,10 +502,10 @@
   resolved "https://registry.yarnpkg.com/@fontsource/fira-code/-/fira-code-5.2.6.tgz#bbd724c902f081cf95177cfee8d6049fc854f535"
   integrity sha512-wCkIpPm0BqlkCPLYeY4Vui96ODmVUV0/GpEe3OfJ4v8EJn/BF2SlyxvarFsTs1CKiGjrO2cXlIZbBrKi9F+hUQ==
 
-"@fontsource/inconsolata@^5.2.6":
-  version "5.2.6"
-  resolved "https://registry.yarnpkg.com/@fontsource/inconsolata/-/inconsolata-5.2.6.tgz#441408df72dfe1a2408eb8bf676609043b869504"
-  integrity sha512-TRGh7bN+BN/oP8qD1IYe8REXM/0Uw3jbuERSncA/ZF6mqKFEOeTt6PR2T3xK7G+65N9pn2p0ablamdboee2nFQ==
+"@fontsource/inconsolata@^5.2.7":
+  version "5.2.7"
+  resolved "https://registry.yarnpkg.com/@fontsource/inconsolata/-/inconsolata-5.2.7.tgz#869a6ceb51b96f5d34711db77587c1aaad7c07a6"
+  integrity sha512-qmARxA7lS16PCoB404sehiXzh8mzcZzFio6n05/zpxIC97W+AxdJqgWQ0kfMzdj78ILy2PaaXZ1Js4kfxL1JMw==
 
 "@fontsource/jetbrains-mono@^5.2.6":
   version "5.2.6"
