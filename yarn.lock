@@ -2652,10 +2652,10 @@ npmlog@^6.0.0:
     gauge "^4.0.3"
     set-blocking "^2.0.0"
 
-oauth4webapi@^3.8.0:
-  version "3.8.0"
-  resolved "https://registry.yarnpkg.com/oauth4webapi/-/oauth4webapi-3.8.0.tgz#a29f98926ab8074789ddd71179efe2935b7faaa7"
-  integrity sha512-RSu64fjsBIs6D7s9g5LOCnOohOkI0nnPtlIp/4rrHj2Vb8jGepq+fujkv2Srw4tuw9qa02aETXQzyQUle8nfnQ==
+oauth4webapi@^3.8.1:
+  version "3.8.1"
+  resolved "https://registry.yarnpkg.com/oauth4webapi/-/oauth4webapi-3.8.1.tgz#a6e205570c09e33aa656982c85e78841a57a6fec"
+  integrity sha512-olkZDELNycOWQf9LrsELFq8n05LwJgV8UkrS0cburk6FOwf8GvLam+YB+Uj5Qvryee+vwWOfQVeI5Vm0MVg7SA==
 
 object-assign@^4.0.1:
   version "4.1.1"
@@ -2695,13 +2695,13 @@ oniguruma-to-es@^2.3.0:
     regex "^5.1.1"
     regex-recursion "^5.1.1"
 
-openid-client@^6.7.0:
-  version "6.7.0"
-  resolved "https://registry.yarnpkg.com/openid-client/-/openid-client-6.7.0.tgz#7903c17fe7bb988a344b49ec196bcda97cada38e"
-  integrity sha512-mA8Cex9wGK6Jaqq4vd1sPDK/a+cQ6G+lExVJ9IRjwInN4NcEEntYqLAZsBhZOyHwDx7V1nmPKOvnxOcdLtSpoA==
+openid-client@^6.8.0:
+  version "6.8.0"
+  resolved "https://registry.yarnpkg.com/openid-client/-/openid-client-6.8.0.tgz#ae60540fc1aaf595ee9100004ebda722e1d80e60"
+  integrity sha512-oG1d1nAVhIIE+JSjLS+7E9wY1QOJpZltkzlJdbZ7kEn7Hp3hqur2TEeQ8gLOHoHkhbRAGZJKoOnEQcLOQJuIyg==
   dependencies:
     jose "^6.1.0"
-    oauth4webapi "^3.8.0"
+    oauth4webapi "^3.8.1"
 
 p-map@^4.0.0:
   version "4.0.0"
