@@ -502,10 +502,10 @@
   resolved "https://registry.yarnpkg.com/@fontsource/inconsolata/-/inconsolata-5.2.7.tgz#869a6ceb51b96f5d34711db77587c1aaad7c07a6"
   integrity sha512-qmARxA7lS16PCoB404sehiXzh8mzcZzFio6n05/zpxIC97W+AxdJqgWQ0kfMzdj78ILy2PaaXZ1Js4kfxL1JMw==
 
-"@fontsource/jetbrains-mono@^5.2.6":
-  version "5.2.6"
-  resolved "https://registry.yarnpkg.com/@fontsource/jetbrains-mono/-/jetbrains-mono-5.2.6.tgz#1a78f8ef6fa206f619298cbefd769ab4ef1279f4"
-  integrity sha512-nz//dBr99hXZmHp10wgNI00qThWImkzRR5PQjvRM+rpmuHO5rYBJCqPPWufidCvmkkryXx/GOP/lgqsM3R3Org==
+"@fontsource/jetbrains-mono@^5.2.7":
+  version "5.2.7"
+  resolved "https://registry.yarnpkg.com/@fontsource/jetbrains-mono/-/jetbrains-mono-5.2.7.tgz#8195b78086ef3f7036a9e73c3ae71a0c2da6cd37"
+  integrity sha512-UW9sV4dO1x2heoc0iPZl/MuEdj16uhM/sq6pRfCJIuLvw69pNY1aR+XhJ4AW9AsVrVwRZQ96VvoaYiB8lkRXFQ==
 
 "@fontsource/plus-jakarta-sans@^5.2.6":
   version "5.2.6"
