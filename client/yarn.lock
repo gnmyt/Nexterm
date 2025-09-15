@@ -507,10 +507,10 @@
   resolved "https://registry.yarnpkg.com/@fontsource/jetbrains-mono/-/jetbrains-mono-5.2.7.tgz#8195b78086ef3f7036a9e73c3ae71a0c2da6cd37"
   integrity sha512-UW9sV4dO1x2heoc0iPZl/MuEdj16uhM/sq6pRfCJIuLvw69pNY1aR+XhJ4AW9AsVrVwRZQ96VvoaYiB8lkRXFQ==
 
-"@fontsource/plus-jakarta-sans@^5.2.6":
-  version "5.2.6"
-  resolved "https://registry.yarnpkg.com/@fontsource/plus-jakarta-sans/-/plus-jakarta-sans-5.2.6.tgz#8296308ae7f55b97b01eb7eef4f0f0e7851e532a"
-  integrity sha512-mvUiz1ta3bCVhP/DPmAOmuzhHQi6ddOo1GgaW58rpojr510Rx9BkqXqcnMhGEOMZZB3+84frvfFmw/jKCctHLw==
+"@fontsource/plus-jakarta-sans@^5.2.7":
+  version "5.2.7"
+  resolved "https://registry.yarnpkg.com/@fontsource/plus-jakarta-sans/-/plus-jakarta-sans-5.2.7.tgz#de562f7ac3b6a591e6ea3e46d454177d019ae430"
+  integrity sha512-DKLpZatMgF/d9aBTzPEF0SVfdT+5rLwPJAWjcfc7HqNn59VPHwsO0+OV8d9xV2hAt8ax9dlnPkq8EjRhQOEdQg==
 
 "@fontsource/roboto-mono@^5.2.7":
   version "5.2.7"
