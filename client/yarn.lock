@@ -517,10 +517,10 @@
   resolved "https://registry.yarnpkg.com/@fontsource/roboto-mono/-/roboto-mono-5.2.7.tgz#d83051731023a622e5da7949fa42f1b17a09c4f1"
   integrity sha512-7tyggtxzWFPKkDQsYD9hIAQCcz0CYWKrbvh6L28D2+AUCAC5irRU+9ZLYkZAzTeGCjC863Ct8jB1uMKa2aiAGw==
 
-"@fontsource/source-code-pro@^5.2.6":
-  version "5.2.6"
-  resolved "https://registry.yarnpkg.com/@fontsource/source-code-pro/-/source-code-pro-5.2.6.tgz#52f0b798d31f9ca33ca354284d3b1719eafdd528"
-  integrity sha512-eIlEPWRXqnYwpQO7nONj2IsUpzwME+UwP2oVAgNuwXX5oyLNJqw1Jh0D2FyZWS5Zd0ddsxbz+nhgyVT4K/OgGQ==
+"@fontsource/source-code-pro@^5.2.7":
+  version "5.2.7"
+  resolved "https://registry.yarnpkg.com/@fontsource/source-code-pro/-/source-code-pro-5.2.7.tgz#ab5cd5882e21cdc38076e12939ddf01424139f61"
+  integrity sha512-7papq9TH94KT+S5VSY8cU7tFmwuGkIe3qxXRMscuAXH6AjMU+KJI75f28FzgBVDrlMfA0jjlTV4/x5+H5o/5EQ==
 
 "@fontsource/ubuntu-mono@^5.2.7":
   version "5.2.7"
