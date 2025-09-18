@@ -13,7 +13,7 @@
     "@codemirror/language": "^6.11.3",
     "@codemirror/legacy-modes": "^6.5.1",
     "@fontsource/fira-code": "^5.2.6",
-    "@fontsource/inconsolata": "^5.2.7",
+    "@fontsource/inconsolata": "^5.2.8",
     "@fontsource/jetbrains-mono": "^5.2.7",
     "@fontsource/plus-jakarta-sans": "^5.2.7",
     "@fontsource/roboto-mono": "^5.2.7",
