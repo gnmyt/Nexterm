@@ -532,10 +532,10 @@
   resolved "https://registry.yarnpkg.com/@fontsource/plus-jakarta-sans/-/plus-jakarta-sans-5.2.7.tgz#de562f7ac3b6a591e6ea3e46d454177d019ae430"
   integrity sha512-DKLpZatMgF/d9aBTzPEF0SVfdT+5rLwPJAWjcfc7HqNn59VPHwsO0+OV8d9xV2hAt8ax9dlnPkq8EjRhQOEdQg==
 
-"@fontsource/roboto-mono@^5.2.7":
-  version "5.2.7"
-  resolved "https://registry.yarnpkg.com/@fontsource/roboto-mono/-/roboto-mono-5.2.7.tgz#d83051731023a622e5da7949fa42f1b17a09c4f1"
-  integrity sha512-7tyggtxzWFPKkDQsYD9hIAQCcz0CYWKrbvh6L28D2+AUCAC5irRU+9ZLYkZAzTeGCjC863Ct8jB1uMKa2aiAGw==
+"@fontsource/roboto-mono@^5.2.8":
+  version "5.2.8"
+  resolved "https://registry.yarnpkg.com/@fontsource/roboto-mono/-/roboto-mono-5.2.8.tgz#b77a6e3f6c0329ed2d762f0aa9c9ea4740bc4ff5"
+  integrity sha512-M0XPRcvkOKiTPooXwX7yJSNpuad3CPcQwsADBfnopz3apBs+VKI47pc42mlvAxJjNTRauu5rndSxHc8F52bR7Q==
 
 "@fontsource/source-code-pro@^5.2.7":
   version "5.2.7"
