@@ -512,10 +512,10 @@
     "@eslint/core" "^0.15.2"
     levn "^0.4.1"
 
-"@fontsource/fira-code@^5.2.6":
-  version "5.2.6"
-  resolved "https://registry.yarnpkg.com/@fontsource/fira-code/-/fira-code-5.2.6.tgz#bbd724c902f081cf95177cfee8d6049fc854f535"
-  integrity sha512-wCkIpPm0BqlkCPLYeY4Vui96ODmVUV0/GpEe3OfJ4v8EJn/BF2SlyxvarFsTs1CKiGjrO2cXlIZbBrKi9F+hUQ==
+"@fontsource/fira-code@^5.2.7":
+  version "5.2.7"
+  resolved "https://registry.yarnpkg.com/@fontsource/fira-code/-/fira-code-5.2.7.tgz#9ecbd909d53e7196a5d895b601747fe34491fc6a"
+  integrity sha512-tnB9NNund9TwIym8/7DMJe573nlPEQb+fKUV5GL8TBYXjIhDvL0D7mgmNVNQUPhXp+R7RylQeiBdkA4EbOHPGQ==
 
 "@fontsource/inconsolata@^5.2.8":
   version "5.2.8"
