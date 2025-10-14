@@ -26,7 +26,7 @@
     "@uiw/react-codemirror": "^4.25.2",
     "@xterm/addon-fit": "^0.10.0",
     "@xterm/xterm": "^5.5.0",
-    "chart.js": "^4.5.0",
+    "chart.js": "^4.5.1",
     "guacamole-common-js": "^1.5.0",
     "hack-font": "^3.3.0",
     "i18next": "^25.6.0",
