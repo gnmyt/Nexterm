@@ -19,7 +19,7 @@
     "@fontsource/roboto-mono": "^5.2.8",
     "@fontsource/source-code-pro": "^5.2.7",
     "@fontsource/ubuntu-mono": "^5.2.8",
-    "@lezer/highlight": "^1.2.1",
+    "@lezer/highlight": "^1.2.2",
     "@mdi/js": "^7.4.47",
     "@mdi/react": "^1.6.1",
     "@uiw/codemirror-theme-github": "^4.25.2",
