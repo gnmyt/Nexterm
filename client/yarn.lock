@@ -2512,10 +2512,10 @@ react-dom@^19.2.0:
   dependencies:
     scheduler "^0.27.0"
 
-react-i18next@^16.1.0:
-  version "16.1.0"
-  resolved "https://registry.yarnpkg.com/react-i18next/-/react-i18next-16.1.0.tgz#bd2ddbb456e077ed10831d11dc2c22534ae97551"
-  integrity sha512-10qpoODc0ntrWpZdko9CQnl2Xf4VJXUAS9sa7WOkTrQzbbfyoSSUZ3Rsnpgt8la6qCxeB61yzYjyW8U1g3hUUg==
+react-i18next@^16.1.3:
+  version "16.1.3"
+  resolved "https://registry.yarnpkg.com/react-i18next/-/react-i18next-16.1.3.tgz#e6ddce4ef2dbeb6425854163047a3a251698f959"
+  integrity sha512-LnHvU73n/GDMWSlK8WJQHEYtKSm5g3lpsrFoxyxp+sgJiI2SZg54U3lnt8zFfo9DOohaPbe5SsjquA0MuuvBqg==
   dependencies:
     "@babel/runtime" "^7.27.6"
     html-parse-stringify "^3.0.1"
