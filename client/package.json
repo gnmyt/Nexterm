@@ -23,7 +23,7 @@
     "@mdi/js": "^7.4.47",
     "@mdi/react": "^1.6.1",
     "@uiw/codemirror-theme-github": "^4.25.3",
-    "@uiw/react-codemirror": "^4.25.2",
+    "@uiw/react-codemirror": "^4.25.3",
     "@xterm/addon-fit": "^0.10.0",
     "@xterm/xterm": "^5.5.0",
     "chart.js": "^4.5.1",
