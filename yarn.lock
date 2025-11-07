@@ -991,10 +991,10 @@ asynckit@^0.4.0:
   resolved "https://registry.yarnpkg.com/asynckit/-/asynckit-0.4.0.tgz#c79ed97f7f34cb8f2ba1bc9790bcc366474b4b79"
   integrity sha512-Oei9OH4tRh0YqU3GxhX79dM/mwVgvbZJaSNaRk+bshkj0S5cfHcgYakreBjrHwatXKbz+IoIdYLxrKim2MjW0Q==
 
-axios@^1.13.1:
-  version "1.13.1"
-  resolved "https://registry.yarnpkg.com/axios/-/axios-1.13.1.tgz#45b62dc8fe04e0e92274e08b98e910ba3d7963a7"
-  integrity sha512-hU4EGxxt+j7TQijx1oYdAjw4xuIp1wRQSsbMFwSthCWeBQur1eF+qJ5iQ5sN3Tw8YRzQNKb8jszgBdMDVqwJcw==
+axios@^1.13.2:
+  version "1.13.2"
+  resolved "https://registry.yarnpkg.com/axios/-/axios-1.13.2.tgz#9ada120b7b5ab24509553ec3e40123521117f687"
+  integrity sha512-VPk9ebNqPcy5lRGuSlKx752IlDatOjT9paPlm8A7yOuW2Fbvp4X3JznJtT4f0GzGLLiWE9W8onz51SqLYwzGaA==
   dependencies:
     follow-redirects "^1.15.6"
     form-data "^4.0.4"
@@ -3706,10 +3706,10 @@ vite@^5.4.14:
   optionalDependencies:
     fsevents "~2.3.3"
 
-vitepress-openapi@^0.1.9:
-  version "0.1.9"
-  resolved "https://registry.yarnpkg.com/vitepress-openapi/-/vitepress-openapi-0.1.9.tgz#aba732636887a7d9fc2bf0bd20160dae2f2252cb"
-  integrity sha512-shkpveZWGHqZ4Wxrq0fTG+3N9cm3U+gmdxjT/uE6ok5QqqLwuhM1Y+V5z1e1EsxwXHYXpCoP9qEJp+hHqlMqug==
+vitepress-openapi@^0.1.10:
+  version "0.1.10"
+  resolved "https://registry.yarnpkg.com/vitepress-openapi/-/vitepress-openapi-0.1.10.tgz#d2594fe89f0858a8589af806c1288e542906d719"
+  integrity sha512-Pu7h2EFM0yvrjSgDsoBhWaRKTTl+5Z21lmkjh1aFtZk7f3CXD0pTXrUOh/3juBUmLv+zoS3t4vSGKtll2Cd6mw==
   dependencies:
     "@vueuse/core" "^13.1.0"
     class-variance-authority "^0.7.1"
