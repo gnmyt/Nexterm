@@ -34,4 +34,23 @@ module.exports = db.define("integrations", {
 }, { 
     freezeTableName: true,
     timestamps: true,
+    hooks: {
+        afterFind: (integrations) => {
+            const parseConfig = (integration) => {
+                if (integration && integration.config && typeof integration.config === 'string') {
+                    try {
+                        integration.config = JSON.parse(integration.config);
+                    } catch (e) {
+                        console.error('Failed to parse config:', e);
+                    }
+                }
+            };
+            
+            if (Array.isArray(integrations)) {
+                integrations.forEach(parseConfig);
+            } else if (integrations) {
+                parseConfig(integrations);
+            }
+        },
+    },
 });
