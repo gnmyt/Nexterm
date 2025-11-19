@@ -1,14 +1,12 @@
 import "./styles.sass";
 import ServerTabs from "./components/ServerTabs";
-import { useContext, useState, useRef, useCallback, useEffect } from "react";
-import { ServerContext } from "@/common/contexts/ServerContext.jsx";
+import { useState, useRef, useCallback, useEffect } from "react";
 import GuacamoleRenderer from "@/pages/Servers/components/ViewContainer/renderer/GuacamoleRenderer.jsx";
 import XtermRenderer from "@/pages/Servers/components/ViewContainer/renderer/XtermRenderer.jsx";
 import FileRenderer from "@/pages/Servers/components/ViewContainer/renderer/FileRenderer";
 
 export const ViewContainer = ({ activeSessions, activeSessionId, setActiveSessionId, disconnectFromServer }) => {
 
-    const { getServerById, getPVEContainerById } = useContext(ServerContext);
     const [layoutMode, setLayoutMode] = useState("single");
     const [gridSessions, setGridSessions] = useState([]);
     const sessionRefs = useRef({});
@@ -237,13 +235,23 @@ export const ViewContainer = ({ activeSessions, activeSessionId, setActiveSessio
         return `${row} / ${col} / ${row + 1} / ${col + 1}`;
     };
 
+    const renderRenderer = (session) => {
+        switch (session.server.renderer) {
+            case "guac":
+                return <GuacamoleRenderer session={session} disconnectFromServer={disconnectFromServer} />;
+            case "terminal":
+                return <XtermRenderer session={session} disconnectFromServer={disconnectFromServer} />;
+            case "sftp":
+                return <FileRenderer session={session} disconnectFromServer={disconnectFromServer} />;
+            default:
+                return <p>Unknown renderer: {session.server.renderer}</p>;
+        }
+    };
+
     const renderSession = (session) => {
         if (!session) return null;
 
-        const isPVE = session.containerId !== undefined;
-        const server = session.containerId !== undefined ? getPVEContainerById(session.server, session.containerId) : getServerById(session.server);
-
-        if (!server) return null;
+        if (!session.server) return null;
 
         const { visible, gridIndex } = getSessionPosition(session.id);
         const gridArea = layoutMode !== "single" ? getGridArea(gridIndex, layoutMode, gridSessions.length) : "auto";
@@ -270,19 +278,7 @@ export const ViewContainer = ({ activeSessions, activeSessionId, setActiveSessio
                     ...(layout && { "--grid-rows": layout.rows, "--grid-cols": layout.cols }),
                 }}
             >
-                {(server.protocol === "vnc" || server.protocol === "rdp") &&
-                    <GuacamoleRenderer session={session} disconnectFromServer={disconnectFromServer} />}
-                {server.protocol === "ssh" && session.type === "ssh"
-                    && <XtermRenderer session={session} disconnectFromServer={disconnectFromServer} />}
-
-                {server.protocol === "ssh" && session.type === "sftp"
-                    && <FileRenderer session={session} disconnectFromServer={disconnectFromServer} />}
-
-                {isPVE && server.type === "pve-qemu" &&
-                    <GuacamoleRenderer session={session} disconnectFromServer={disconnectFromServer} pve />}
-
-                {isPVE && (server.type === "pve-shell" || server.type === "pve-lxc") &&
-                    <XtermRenderer session={session} disconnectFromServer={disconnectFromServer} pve />}
+                {renderRenderer(session)}
             </div>
         );
     };

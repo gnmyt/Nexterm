@@ -59,7 +59,7 @@ export const loadIcon = (icon) => {
     }
 };
 
-export const ServerObject = ({ id, name, position, folderId, nestedLevel, icon, connectToServer, isPVE, status, sshOnly }) => {
+export const ServerObject = ({ id, name, position, folderId, nestedLevel, icon, connectToServer, status }) => {
     const { loadServers, getServerListInFolder } = useContext(ServerContext);
 
     const [{ opacity }, dragRef] = useDrag({
@@ -104,25 +104,16 @@ export const ServerObject = ({ id, name, position, folderId, nestedLevel, icon, 
     const server = getServerById(id);
 
     const connect = () => {
-        if (isPVE && status === "running") {
-            connectToServer(id);
-            return;
-        }
-
-        connectToServer(server.id, server.identities[0]);
+        connectToServer(server.id, server.identities?.[0]);
     };
 
-    if (sshOnly && server.protocol !== "ssh") {
-        return null;
-    }
-
     return (
-        <div className={(isPVE ? "pve-entry " : "") + "server-object" + (isOver ? " server-is-over" : "")}
+        <div className={"server-object" + (isOver ? " server-is-over" : "")}
              style={{ paddingLeft: `${15 + (nestedLevel * 15)}px`, opacity }} data-id={id}
-             ref={!isPVE ? (node) => dragRef(dropRef(node)) : () => {}}
-             onDoubleClick={sshOnly ? null : connect} onClick={sshOnly ? connect : null}>
-            <div className={"system-icon " + (isPVE ? (status !== "running" ? " pve-icon-offline" : " pve-icon") : "")}>
-                <Icon path={isPVE ? icon : loadIcon(icon)} />
+             ref={(node) => dragRef(dropRef(node))}
+             onDoubleClick={connect}>
+            <div className="system-icon">
+                <Icon path={loadIcon(icon)} />
             </div>
             <p className="truncate-text">{name}</p>
         </div>

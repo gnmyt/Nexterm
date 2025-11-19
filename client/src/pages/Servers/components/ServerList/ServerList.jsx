@@ -22,15 +22,12 @@ const filterEntries = (entries, searchTerm) => {
                 if (nameMatch || ipMatch) {
                     return entry;
                 }
-            } else if (entry.type === "pve-server") {
+            } else if (entry.type.startsWith("pve-")) {
                 const nameMatch = entry.name.toLowerCase().includes(searchTerm.toLowerCase());
                 const ipMatch = entry.ip && entry.ip.toLowerCase().includes(searchTerm.toLowerCase());
 
-                const filteredPVEEntries = entry.entries ? entry.entries.filter(pveEntry =>
-                    pveEntry.name?.toLowerCase().includes(searchTerm.toLowerCase())) : [];
-
-                if (nameMatch || ipMatch || filteredPVEEntries.length > 0) {
-                    return { ...entry, entries: filteredPVEEntries };
+                if (nameMatch || ipMatch) {
+                    return entry;
                 }
             }
             return null;
@@ -49,7 +46,7 @@ const applyRenameState = (folderId) => (entry) => {
 
 export const ServerList = ({
                                setServerDialogOpen, setCurrentFolderId, setProxmoxDialogOpen, setSSHConfigImportDialogOpen,
-                               setEditServerId, connectToServer, connectToPVEServer, openSFTP,
+                               setEditServerId, connectToServer, openSFTP,
                            }) => {
     const { servers } = useContext(ServerContext);
     const [search, setSearch] = useState("");
@@ -167,8 +164,7 @@ export const ServerList = ({
                     {servers && servers.length >= 1 && (
                         <div className="servers" onContextMenu={handleContextMenu}>
                             <ServerEntries entries={renameStateServers} setRenameStateId={setRenameStateId}
-                                           nestedLevel={0} connectToServer={connectToServer}
-                                           connectToPVEServer={connectToPVEServer} />
+                                           nestedLevel={0} connectToServer={connectToServer} />
                         </div>
                     )}
                     {servers && servers.length === 0 && (
@@ -183,7 +179,7 @@ export const ServerList = ({
                                      setCurrentFolderId={setCurrentFolderId} setEditServerId={setEditServerId}
                                      setProxmoxDialogOpen={setProxmoxDialogOpen} setSSHConfigImportDialogOpen={setSSHConfigImportDialogOpen}
                                      openSFTP={openSFTP}
-                                     connectToServer={connectToServer} connectToPVEServer={connectToPVEServer} />
+                                     connectToServer={connectToServer} />
                     )}
                 </div>
             )}

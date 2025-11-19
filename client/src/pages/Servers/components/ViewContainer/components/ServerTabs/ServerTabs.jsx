@@ -2,7 +2,6 @@ import { ServerContext } from "@/common/contexts/ServerContext.jsx";
 import { useContext, useRef, useState, useEffect } from "react";
 import Icon from "@mdi/react";
 import { loadIcon } from "@/pages/Servers/components/ServerList/components/ServerObject/ServerObject.jsx";
-import { getIconByType } from "@/pages/Servers/components/ServerList/components/PVEObject/PVEObject.jsx";
 import { mdiClose, mdiViewSplitVertical } from "@mdi/js";
 import { useDrag, useDrop } from "react-dnd";
 import "./styles.sass";
@@ -34,7 +33,7 @@ const DraggableTab = ({
         <div ref={(node) => drag(drop(node))} onClick={() => setActiveSessionId(session.id)}
              className={`server-tab ${session.id === activeSessionId ? "server-tab-active" : ""} ${isDragging ? "dragging" : ""} ${isOver ? "drop-target" : ""}`}
              style={{ opacity: isDragging ? 0.5 : 1 }}>
-            <Icon path={server?.icon ? loadIcon(server.icon) : getIconByType(server?.type)} />
+            <Icon path={loadIcon(server.icon)} />
             <h2>{server?.name} {session.type === "sftp" ? " (SFTP)" : ""}</h2>
             <div className="tab-actions">
                 <Icon path={mdiClose} className="close-btn" title="Close Session" onClick={(e) => {
@@ -122,10 +121,8 @@ export const ServerTabs = ({
             </div>
             <div className="tabs" ref={tabsRef} onWheel={handleWheel}>
                 {orderedSessions.map((session, index) => {
-                    let server = session.containerId === undefined ? getServerById(session.server) : getPVEContainerById(session.server, session.containerId);
-
                     return (
-                        <DraggableTab key={session.id} session={session} server={server} index={index} moveTab={moveTab}
+                        <DraggableTab key={session.id} session={session} server={session.server} index={index} moveTab={moveTab}
                                       activeSessionId={activeSessionId} setActiveSessionId={setActiveSessionId}
                                       disconnectFromServer={disconnectFromServer} />
                     );

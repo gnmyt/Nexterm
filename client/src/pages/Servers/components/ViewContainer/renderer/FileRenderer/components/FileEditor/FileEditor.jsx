@@ -28,7 +28,7 @@ export const FileEditor = ({ currentFile, session, setCurrentFile, sendOperation
     useEffect(() => {
         if (currentFile === null) return setFileContent(null);
         
-        let url = `/api/servers/sftp-download?serverId=${session.server}&identityId=${session.identity}&path=${currentFile}&sessionToken=${sessionToken}`;
+        let url = `/api/entries/sftp-download?entryId=${session.server}&identityId=${session.identity}&path=${currentFile}&sessionToken=${sessionToken}`;
         if (session.connectionReason) {
             url += `&connectionReason=${encodeURIComponent(session.connectionReason)}`;
         }

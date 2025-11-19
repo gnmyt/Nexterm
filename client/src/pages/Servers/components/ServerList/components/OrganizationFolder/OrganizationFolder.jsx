@@ -4,7 +4,7 @@ import ServerEntries from "../ServerEntries.jsx";
 import { useState } from "react";
 import { getFolderState, setFolderState } from "@/common/utils/folderState";
 
-const OrganizationFolder = ({ id, name, entries, nestedLevel, connectToServer, connectToPVEServer, setRenameStateId, sshOnly }) => {
+const OrganizationFolder = ({ id, name, entries, nestedLevel, connectToServer, connectToPVEServer, setRenameStateId }) => {
     const [isOpen, setIsOpen] = useState(() => getFolderState(id, true));
     
     const toggleFolder = () => {
@@ -29,7 +29,6 @@ const OrganizationFolder = ({ id, name, entries, nestedLevel, connectToServer, c
                     folderId={`org-${orgId}`}
                     connectToServer={connectToServer}
                     connectToPVEServer={connectToPVEServer}
-                    sshOnly={sshOnly}
                 />
             )}
         </>

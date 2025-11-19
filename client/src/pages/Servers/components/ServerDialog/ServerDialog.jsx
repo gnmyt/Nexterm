@@ -26,9 +26,6 @@ export const ServerDialog = ({ open, onClose, currentFolderId, editServerId }) =
 
     const [name, setName] = useState("");
     const [icon, setIcon] = useState(null);
-    const [ip, setIp] = useState("");
-    const [port, setPort] = useState("");
-    const [protocol, setProtocol] = useState(null);
     const [identities, setIdentities] = useState([]);
     const [config, setConfig] = useState({});
     const [monitoringEnabled, setMonitoringEnabled] = useState(false);
@@ -98,10 +95,12 @@ export const ServerDialog = ({ open, onClose, currentFolderId, editServerId }) =
 
             loadIdentities();
 
-            const result = await putRequest("servers", {
-                name, icon: icon, ip, port, protocol: protocol, config,
-                folderId: currentFolderId, identities: serverIdentityIds,
-                monitoringEnabled
+            const result = await putRequest("entries", {
+                name, icon: icon,
+                config: { ...config, monitoringEnabled },
+                folderId: currentFolderId,
+                identities: serverIdentityIds,
+                type: "server"
             });
 
             loadServers();
@@ -120,10 +119,10 @@ export const ServerDialog = ({ open, onClose, currentFolderId, editServerId }) =
             const serverIdentityIds = await updateIdentities();
             if (serverIdentityIds === null) return;
 
-            await patchRequest("servers/" + editServerId, {
-                name, icon, ip, port, protocol: protocol, config,
-                identities: serverIdentityIds,
-                monitoringEnabled
+            await patchRequest("entries/" + editServerId, {
+                name, icon,
+                config: { ...config, monitoringEnabled },
+                identities: serverIdentityIds
             });
 
             loadServers();
@@ -136,43 +135,40 @@ export const ServerDialog = ({ open, onClose, currentFolderId, editServerId }) =
     };
 
     const handleSubmit = useCallback(() => {
-        if (!name || !ip || !port || !protocol) {
+        if (!name || !config.ip || !config.port || !config.protocol) {
             sendToast("Error", t("servers.messages.fillRequiredFields"));
             return;
         }
         editServerId ? patchServer() : createServer();
-    }, [name, icon, ip, port, protocol, editServerId, identityUpdates, currentFolderId, config, monitoringEnabled, t]);
+    }, [name, icon, editServerId, identityUpdates, currentFolderId, config, monitoringEnabled, t]);
 
     useEffect(() => {
         if (!open) return;
 
         if (editServerId) {
-            getRequest("servers/" + editServerId).then((server) => {
+            getRequest("entries/" + editServerId).then((server) => {
                 setName(server.name);
                 setIcon(server.icon || "server");
-                setIp(server.ip);
-                setPort(server.port);
-                setProtocol(server.protocol);
                 setIdentities(server.identities);
-                setMonitoringEnabled(Boolean(server.monitoringEnabled ?? true));
 
                 try {
                     if (server.config) {
-                        setConfig(JSON.parse(server.config));
+                        const parsedConfig = typeof server.config === 'string' ? JSON.parse(server.config) : server.config;
+                        setConfig(parsedConfig);
+                        setMonitoringEnabled(Boolean(parsedConfig.monitoringEnabled ?? true));
                     } else {
                         setConfig({});
+                        setMonitoringEnabled(false);
                     }
                 } catch (error) {
                     console.error("Failed to parse server config:", error);
                     setConfig({});
+                    setMonitoringEnabled(false);
                 }
             });
         } else {
             setName("");
             setIcon(null);
-            setIp("");
-            setPort("");
-            setProtocol(null);
             setIdentities([]);
             setConfig({});
             setMonitoringEnabled(false);
@@ -210,10 +206,16 @@ export const ServerDialog = ({ open, onClose, currentFolderId, editServerId }) =
         if (!open) return;
 
         // Default port for each protocol
-        if (protocol === "ssh" && (port === "3389" || port === "5900" || port === "")) setPort("22");
-        if (protocol === "rdp" && (port === "22" || port === "5900" || port === "")) setPort("3389");
-        if (protocol === "vnc" && (port === "22" || port === "3389" || port === "")) setPort("5900");
-    }, [protocol, open, port]);
+        if (config.protocol === "ssh" && (config.port === "3389" || config.port === "5900" || config.port === "")) {
+            setConfig(prev => ({ ...prev, port: "22" }));
+        }
+        if (config.protocol === "rdp" && (config.port === "22" || config.port === "5900" || config.port === "")) {
+            setConfig(prev => ({ ...prev, port: "3389" }));
+        }
+        if (config.protocol === "vnc" && (config.port === "22" || config.port === "3389" || config.port === "")) {
+            setConfig(prev => ({ ...prev, port: "5900" }));
+        }
+    }, [config.protocol, open]);
 
     return (
         <DialogProvider open={open} onClose={onClose}>
@@ -233,13 +235,12 @@ export const ServerDialog = ({ open, onClose, currentFolderId, editServerId }) =
 
                 <div className="server-dialog-content">
                     {activeTab === 0 && <DetailsPage name={name} setName={setName}
-                                                     icon={icon} setIcon={setIcon} ip={ip} setIp={setIp}
-                                                     port={port} setPort={setPort}
-                                                     protocol={protocol} setProtocol={setProtocol} />}
+                                                     icon={icon} setIcon={setIcon}
+                                                     config={config} setConfig={setConfig} />}
                     {activeTab === 1 &&
                         <IdentityPage serverIdentities={identities} setIdentityUpdates={setIdentityUpdates}
                                       identityUpdates={identityUpdates} setIdentities={setIdentities} />}
-                    {activeTab === 2 && <SettingsPage protocol={protocol} config={config} setConfig={setConfig} 
+                    {activeTab === 2 && <SettingsPage protocol={config.protocol} config={config} setConfig={setConfig}
                                                        monitoringEnabled={monitoringEnabled} setMonitoringEnabled={setMonitoringEnabled} />}
                 </div>
 

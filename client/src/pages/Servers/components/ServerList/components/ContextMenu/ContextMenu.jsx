@@ -37,7 +37,6 @@ export const ContextMenu = ({
     setCurrentFolderId,
     setEditServerId,
     connectToServer,
-    connectToPVEServer,
     setProxmoxDialogOpen,
     setSSHConfigImportDialogOpen,
     openSFTP,
@@ -46,8 +45,6 @@ export const ContextMenu = ({
     const {
         loadServers,
         getServerById,
-        getPVEServerById,
-        getPVEContainerById,
     } = useContext(ServerContext);
 
     const { identities } = useContext(IdentityContext);
@@ -56,13 +53,7 @@ export const ContextMenu = ({
     const [showSftpSubmenu, setShowSftpSubmenu] = useState(false);
     const [showImportSubmenu, setShowImportSubmenu] = useState(false);
 
-    const server = id
-        ? type === "server-object"
-            ? getServerById(id)
-            : type === "pve-object"
-                ? getPVEServerById(id.split("-")[1])
-                : getPVEContainerById(id.split("-")[1], id.split("-")[2])
-        : null;
+    const server = id ? type === "server-object" ? getServerById(id) : null : null;
 
     const isOrgFolder = id && id.toString().startsWith("org-");
 
@@ -81,7 +72,7 @@ export const ContextMenu = ({
 
     const deleteFolder = () => deleteRequest("folders/" + id).then(loadServers);
 
-    const deleteServer = () => deleteRequest("servers/" + id).then(loadServers);
+    const deleteServer = () => deleteRequest("entries/" + id).then(loadServers);
 
     const createServer = () => {
         setCurrentFolderId(id);
@@ -99,11 +90,6 @@ export const ContextMenu = ({
     };
 
     const connect = (identityId = null) => {
-        if (type === "pve-entry") {
-            connectToPVEServer(id.split("-")[1], id.split("-")[2]);
-            return;
-        }
-
         const targetIdentityId = identityId || server?.identities[0];
         connectToServer(server?.id, targetIdentityId);
         setShowIdentitySubmenu(false);
@@ -132,12 +118,12 @@ export const ContextMenu = ({
 
     const postPVEAction = (type) => {
         const serverType = server?.type === "pve-qemu" ? "qemu" : "lxc";
-        postRequest("pve-servers/" + serverType + "/" + id.split("-")[1] + "/" + server?.id + "/" + type)
+        postRequest("integrations/" + serverType + "/" + id.split("-")[1] + "/" + server?.id + "/" + type)
             .then(loadServers);
     };
 
     const deletePVEServer = () => {
-        deleteRequest("pve-servers/" + id.split("-")[1]).then(loadServers);
+        deleteRequest("integrations/" + id.split("-")[1]).then(loadServers);
     };
 
     const duplicateServer = async () => {
@@ -289,7 +275,7 @@ export const ContextMenu = ({
                 </>
             )}
 
-            {type === "pve-object" && (
+            {type === "pve-qemu" && (
                 <>
                     <div className="context-item" onClick={editPVEServer}>
                         <Icon path={mdiPencil} />
