@@ -61,4 +61,23 @@ module.exports = db.define("entries", {
 }, { 
     freezeTableName: true,
     timestamps: true,
+    hooks: {
+        afterFind: (entries) => {
+            const parseConfig = (entry) => {
+                if (entry && entry.config && typeof entry.config === 'string') {
+                    try {
+                        entry.config = JSON.parse(entry.config);
+                    } catch (e) {
+                        console.error('Failed to parse config:', e);
+                    }
+                }
+            };
+            
+            if (Array.isArray(entries)) {
+                entries.forEach(parseConfig);
+            } else if (entries) {
+                parseConfig(entries);
+            }
+        },
+    },
 });
