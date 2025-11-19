@@ -1,10 +1,11 @@
 const sshd = require("ssh2");
 const { createAuditLog, AUDIT_ACTIONS, RESOURCE_TYPES, updateAuditLogWithSessionDuration } = require("../controllers/audit");
 const { getOrganizationAuditSettingsInternal } = require("../controllers/audit");
+const { getIdentityCredentials } = require("../controllers/identity");
 
-module.exports = async (server, identity, ws, res, userInfo = {}) => {
-    if (ws && server.organizationId && userInfo.accountId) {
-        const auditSettings = await getOrganizationAuditSettingsInternal(server.organizationId);
+module.exports = async (entry, identity, ws, res, userInfo = {}) => {
+    if (ws && entry.organizationId && userInfo.accountId) {
+        const auditSettings = await getOrganizationAuditSettingsInternal(entry.organizationId);
         if (auditSettings?.requireConnectionReason && !userInfo.connectionReason) {
             if (ws) {
                 ws.close(4008, "Connection reason required");
@@ -15,12 +16,14 @@ module.exports = async (server, identity, ws, res, userInfo = {}) => {
         }
     }
 
+    const credentials = await getIdentityCredentials( identity.id);
+
     const options = {
-        host: server.ip,
-        port: server.port,
+        host: entry.config.ip,
+        port: entry.config.port,
         username: identity.username,
         tryKeyboard: true,
-        ...(identity.type === "password" ? { password: identity.password } : { privateKey: identity.sshKey, passphrase: identity.passphrase })
+        ...(identity.type === "password" ? { password: credentials.password } : { privateKey: credentials["ssh-key"], passphrase: credentials.passphrase })
     };
 
     let ssh = new sshd.Client();
@@ -72,16 +75,16 @@ module.exports = async (server, identity, ws, res, userInfo = {}) => {
     }
 
     if (ws) {
-        console.log("Authorized connection to server " + server.ip + " with identity " + identity.name);
+        console.log("Authorized connection to entry " + entry.config.ip + " with identity " + identity.name);
 
         let auditLogId = null;
         if (userInfo.accountId) {
             auditLogId = await createAuditLog({
                 accountId: userInfo.accountId,
-                organizationId: server.organizationId,
+                organizationId: entry.organizationId,
                 action: AUDIT_ACTIONS.SSH_CONNECT,
-                resource: RESOURCE_TYPES.SERVER,
-                resourceId: server.id,
+                resource: RESOURCE_TYPES.ENTRY,
+                resourceId: entry.id,
                 details: {
                     connectionReason: userInfo.connectionReason,
                 },
@@ -91,9 +94,9 @@ module.exports = async (server, identity, ws, res, userInfo = {}) => {
         }
 
         ssh.auditLogId = auditLogId;
-        ssh.organizationId = server.organizationId;
+        ssh.organizationId = entry.organizationId;
     } else {
-        console.log("Authorized file download from server " + server.ip + " with identity " + identity.name);
+        console.log("Authorized file download from entry " + entry.config.ip + " with identity " + identity.name);
     }
 
     return ssh;

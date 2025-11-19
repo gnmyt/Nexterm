@@ -1,9 +1,10 @@
 const Session = require("../models/Session");
 const Account = require("../models/Account");
-const Server = require("../models/Server");
+const Entry = require("../models/Entry");
+const EntryIdentity = require("../models/EntryIdentity");
 const Identity = require("../models/Identity");
 const prepareSSH = require("./prepareSSH");
-const { validateServerAccess } = require("../controllers/server");
+const { validateEntryAccess } = require("../controllers/entry");
 
 module.exports = async (ws, req) => {
     const authHeader = req.query["sessionToken"];
@@ -41,17 +42,17 @@ module.exports = async (ws, req) => {
         return;
     }
 
-    const server = await Server.findByPk(serverId);
-    if (server === null) return;
+    const entry = await Entry.findByPk(serverId);
+    if (entry === null) return;
 
-    if (!((await validateServerAccess(req.user.id, server)).valid)) {
-        ws.close(4005, "You don't have access to this server");
+    if (!((await validateEntryAccess(req.user.id, entry)).valid)) {
+        ws.close(4005, "You don't have access to this entry");
         return;
     }
 
-    if (server.identities.length === 0 && identityId) return;
-
-    const identity = await Identity.findByPk(identityId || server.identities[0]);
+    const entryIdentities = await EntryIdentity.findAll({ where: { entryId: entry.id }, order: [['isDefault', 'DESC']] });
+    const defaultIdentityId = entryIdentities.length > 0 ? entryIdentities[0].identityId : null;
+    const identity = await Identity.findByPk(identityId || defaultIdentityId);
     if (identity === null) return;
 
     const userInfo = {
@@ -61,7 +62,7 @@ module.exports = async (ws, req) => {
         connectionReason: connectionReason || null
     };
 
-    req.server = server;
+    req.server = entry;
 
-    return await prepareSSH(server, identity, ws, null, userInfo);
+    return await prepareSSH(entry, identity, ws, null, userInfo);
 }
