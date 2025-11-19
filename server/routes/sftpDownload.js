@@ -1,17 +1,18 @@
 const { Router } = require("express");
 const prepareSSH = require("../utils/prepareSSH");
-const Server = require("../models/Server");
+const Entry = require("../models/Entry");
+const EntryIdentity = require("../models/EntryIdentity");
 const Identity = require("../models/Identity");
 const Session = require("../models/Session");
 const Account = require("../models/Account");
 const { createAuditLog, AUDIT_ACTIONS, RESOURCE_TYPES } = require("../controllers/audit");
-const { validateServerAccess } = require("../controllers/server");
+const { validateEntryAccess } = require("../controllers/entry");
 
 const app = Router();
 
 app.get("/", async (req, res) => {
     const sessionToken = req.query["sessionToken"];
-    const serverId = req.query["serverId"];
+    const entryId = req.query["entryId"];
     const identityId = req.query["identityId"];
     const path = req.query["path"];
     const connectionReason = req.query["connectionReason"];
@@ -21,8 +22,8 @@ app.get("/", async (req, res) => {
         return;
     }
 
-    if (!serverId) {
-        res.status(400).send("You need to provide the serverId in the 'serverId' parameter");
+    if (!entryId) {
+        res.status(400).send("You need to provide the entryId in the 'entryId' parameter");
         return;
     }
 
@@ -51,21 +52,23 @@ app.get("/", async (req, res) => {
         return;
     }
 
-    const server = await Server.findByPk(serverId);
-    if (server === null) {
-        res.status(404).send("The server does not exist");
+    const entry = await Entry.findByPk(entryId);
+    if (entry === null) {
+        res.status(404).send("The entry does not exist");
         return;
     }
 
-    const accessCheck = await validateServerAccess(req.user.id, server);
+    const accessCheck = await validateEntryAccess(req.user.id, entry);
     if (!accessCheck.valid) {
-        res.status(403).send("You don't have access to this server");
+        res.status(403).send("You don't have access to this entry");
         return;
     }
 
-    if (server.identities.length === 0 && identityId) return;
+    const entryIdentities = await EntryIdentity.findAll({ where: { entryId: entry.id }, order: [['isDefault', 'DESC']] });
 
-    const identity = await Identity.findByPk(identityId || server.identities[0]);
+    if (entryIdentities.length === 0 && identityId) return;
+
+    const identity = await Identity.findByPk(identityId || entryIdentities[0].identityId);
     if (identity === null) return;
 
     const userInfo = {
@@ -75,7 +78,7 @@ app.get("/", async (req, res) => {
         connectionReason: connectionReason || null
     };
 
-    const ssh = await prepareSSH(server, identity, null, res, userInfo);
+    const ssh = await prepareSSH(entry, identity, null, res, userInfo);
 
     if (!ssh) return;
 
@@ -97,7 +100,7 @@ app.get("/", async (req, res) => {
 
                 createAuditLog({
                     accountId: req.user.id,
-                    organizationId: server.organizationId,
+                    organizationId: entry.organizationId,
                     action: AUDIT_ACTIONS.FILE_DOWNLOAD,
                     resource: RESOURCE_TYPES.FILE,
                     details: {
