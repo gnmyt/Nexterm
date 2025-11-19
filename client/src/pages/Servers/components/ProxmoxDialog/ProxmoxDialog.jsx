@@ -20,29 +20,27 @@ export const ProxmoxDialog = ({ open, onClose, currentFolderId, editServerId }) 
     const [nodeName, setNodeName] = useState("");
 
     const create = () => {
-        putRequest("pve-servers", {
+        putRequest("integrations", {
             name, folderId: currentFolderId, ip, port, username, password,
         }).then(async () => {
             onClose();
             loadServers();
-            await postRequest("pve-servers/refresh");
         }).catch(err => console.error(err));
     };
 
     const edit = () => {
-        patchRequest(`pve-servers/${editServerId.split("-")[1]}`, {
+        patchRequest(`integrations/${editServerId.split("-")[1]}`, {
             name, ip, port, username, password: password === "********" ? undefined : password,
             nodeName: nodeName || null,
         }).then(async () => {
             onClose();
-            await postRequest("pve-servers/refresh");
             loadServers();
         }).catch(err => console.error(err));
     }
 
     useEffect(() => {
         if (editServerId && open) {
-            getRequest(`pve-servers/${editServerId.split("-")[1]}`).then(server => {
+            getRequest(`integrations/${editServerId.split("-")[1]}`).then(server => {
                 setName(server.name);
                 setIp(server.ip);
                 setPort(server.port);

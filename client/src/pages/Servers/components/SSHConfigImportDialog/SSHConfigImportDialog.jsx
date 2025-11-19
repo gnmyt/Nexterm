@@ -180,7 +180,7 @@ export const SSHConfigImportDialog = ({ open, onClose, currentFolderId }) => {
                 };
             });
 
-            const result = await postRequest("servers/import/ssh-config", {
+            const result = await postRequest("entries/import/ssh-config", {
                 servers: serverData,
                 folderId: currentFolderId
             });
