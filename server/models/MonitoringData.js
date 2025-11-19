@@ -1,18 +1,19 @@
 const Sequelize = require("sequelize");
 const db = require("../utils/database");
 
-module.exports = db.define("server_monitoring", {
-    serverId: {
+module.exports = db.define("monitoring_data", {
+    entryId: {
         type: Sequelize.INTEGER,
         allowNull: false,
+        references: {
+            model: "entries",
+            key: "id",
+        },
+        onDelete: "CASCADE",
     },
     timestamp: {
         type: Sequelize.DATE,
         defaultValue: Sequelize.NOW,
-        allowNull: false,
-    },
-    status: {
-        type: Sequelize.STRING,
         allowNull: false,
     },
     cpuUsage: {
@@ -27,7 +28,7 @@ module.exports = db.define("server_monitoring", {
         type: Sequelize.BIGINT,
         allowNull: true,
     },
-    diskUsage: {
+    disk: {
         type: Sequelize.JSON,
         allowNull: true,
     },
@@ -39,12 +40,12 @@ module.exports = db.define("server_monitoring", {
         type: Sequelize.JSON,
         allowNull: true,
     },
-    networkInterfaces: {
+    network: {
         type: Sequelize.JSON,
         allowNull: true,
     },
     processes: {
-        type: Sequelize.INTEGER,
+        type: Sequelize.JSON,
         allowNull: true,
     },
     osInfo: {
@@ -57,11 +58,10 @@ module.exports = db.define("server_monitoring", {
     },
 }, {
     freezeTableName: true,
-    createdAt: false,
-    updatedAt: false,
+    timestamps: false,
     indexes: [
         {
-            fields: ["serverId", "timestamp"],
+            fields: ["entryId", "timestamp"],
         },
     ],
 });
