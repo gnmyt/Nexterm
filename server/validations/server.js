@@ -1,30 +1,28 @@
 const Joi = require("joi");
 
 const configValidation = Joi.object({
-    keyboardLayout: Joi.string().optional()
+    protocol: Joi.string().valid("ssh", "rdp", "vnc").optional(),
+    ip: Joi.string().optional(),
+    port: Joi.alternatives().try(Joi.string(), Joi.number()).optional(),
+    keyboardLayout: Joi.string().optional(),
+    monitoringEnabled: Joi.boolean().optional()
 });
 
 module.exports.createServerValidation = Joi.object({
     name: Joi.string().required(),
     folderId: Joi.number().required(),
     icon: Joi.string().optional(),
-    protocol: Joi.string().valid("ssh", "rdp", "vnc").required(),
-    ip: Joi.string().required(),
-    port: Joi.number().required(),
+    type: Joi.string().optional().default("server"),
     identities: Joi.array().items(Joi.number()).optional(),
-    config: configValidation,
-    monitoringEnabled: Joi.boolean().optional()
+    config: configValidation.required()
 });
 
 module.exports.updateServerValidation = Joi.object({
     name: Joi.string().optional(),
     folderId: Joi.number().optional(),
     icon: Joi.string().optional(),
-    protocol: Joi.string().valid("ssh", "rdp", "vnc").optional(),
-    ip: Joi.string().optional(),
-    port: Joi.number().optional(),
+    type: Joi.string().optional(),
     position: Joi.number().optional(),
     identities: Joi.array().items(Joi.number()).optional(),
-    config: configValidation,
-    monitoringEnabled: Joi.boolean().optional()
+    config: configValidation
 });
