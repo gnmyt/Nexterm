@@ -10,7 +10,7 @@ module.exports = async (req, res) => {
 
     let auditLogId = null;
     if (settings.user && settings.server) {
-        const actionType = settings.server.protocol === "rdp" ? AUDIT_ACTIONS.RDP_CONNECT : AUDIT_ACTIONS.VNC_CONNECT;
+        const actionType = settings.server.config?.protocol === "rdp" ? AUDIT_ACTIONS.RDP_CONNECT : AUDIT_ACTIONS.VNC_CONNECT;
 
         auditLogId = await createAuditLog({
             accountId: settings.user.id,

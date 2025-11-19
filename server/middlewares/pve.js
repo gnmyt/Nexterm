@@ -1,7 +1,8 @@
 const Session = require("../models/Session");
 const Account = require("../models/Account");
-const PVEServer = require("../models/PVEServer");
-const { validateServerAccess } = require("../controllers/server");
+const Entry = require("../models/Entry");
+const Integration = require("../models/Integration");
+const { validateEntryAccess } = require("../controllers/entry");
 const { createAuditLog, AUDIT_ACTIONS, RESOURCE_TYPES, getOrganizationAuditSettingsInternal } = require("../controllers/audit");
 
 module.exports = async (ws, req) => {
@@ -38,32 +39,34 @@ module.exports = async (ws, req) => {
         return;
     }
 
-    const server = await PVEServer.findByPk(serverId);
-    if (server === null) return;
+    const entry = await Entry.findByPk(serverId);
+    if (entry === null) return;
 
-    if (!((await validateServerAccess(req.user.id, server)).valid)) {
+    if (!((await validateEntryAccess(req.user.id, entry)).valid)) {
         ws.close(4005, "You don't have access to this server");
         return;
     }
 
-    if (server.organizationId && req.user.id) {
-        const auditSettings = await getOrganizationAuditSettingsInternal(server.organizationId);
+    const integration = entry.integrationId ? await Integration.findByPk(entry.integrationId) : null;
+
+    if (entry.organizationId && req.user.id) {
+        const auditSettings = await getOrganizationAuditSettingsInternal(entry.organizationId);
         if (auditSettings?.requireConnectionReason && !connectionReason) {
             ws.close(4008, "Connection reason required");
             return;
         }
     }
 
-    console.log("Authorized connection to pve server " + server.ip + " with container " + containerId);
+    console.log("Authorized connection to pve server " + integration?.config?.ip + " with container " + containerId);
 
     let auditLogId = null;
     if (req.user.id) {
         auditLogId = await createAuditLog({
             accountId: req.user.id,
-            organizationId: server.organizationId,
+            organizationId: entry.organizationId,
             action: AUDIT_ACTIONS.PVE_CONNECT,
             resource: RESOURCE_TYPES.SERVER,
-            resourceId: server.id,
+            resourceId: entry.id,
             details: {
                 containerId: containerId,
                 containerType: 'lxc',
@@ -74,5 +77,5 @@ module.exports = async (ws, req) => {
         });
     }
 
-    return { server, containerId, auditLogId };
+    return { server: { ...integration, ...entry.config }, entry, integration, containerId, auditLogId };
 }
