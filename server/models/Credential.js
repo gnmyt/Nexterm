@@ -1,6 +1,6 @@
 const Sequelize = require("sequelize");
 const db = require("../utils/database");
-const { decrypt } = require("../utils/encryption");
+const { decrypt, encrypt } = require("../utils/encryption");
 
 module.exports = db.define("credentials", {
     identityId: {
@@ -50,6 +50,22 @@ module.exports = db.define("credentials", {
     freezeTableName: true,
     timestamps: true,
     hooks: {
+        beforeCreate: (credential) => {
+            if (credential.secret) {
+                const encrypted = encrypt(credential.secret);
+                credential.secretEncrypted = encrypted.encrypted;
+                credential.secretIV = encrypted.iv;
+                credential.secretAuthTag = encrypted.authTag;
+            }
+        },
+        beforeUpdate: (credential) => {
+            if (credential.secret && credential.changed('secret')) {
+                const encrypted = encrypt(credential.secret);
+                credential.secretEncrypted = encrypted.encrypted;
+                credential.secretIV = encrypted.iv;
+                credential.secretAuthTag = encrypted.authTag;
+            }
+        },
         afterFind: (credentials) => {
             const decryptField = (obj) => {
                 if (obj.secretEncrypted) {
