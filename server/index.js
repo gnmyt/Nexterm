@@ -39,15 +39,15 @@ app.ws("/api/servers/pve-lxc", require("./routes/pveLXC"));
 app.ws("/api/servers/pve-qemu", require("./routes/pveQEMU"));
 
 app.use("/api/servers/guacd", require("./middlewares/guacamole"));
-app.use("/api/servers/sftp-download", require("./routes/sftpDownload"));
+app.use("/api/entries/sftp-download", require("./routes/sftpDownload"));
 
 app.use("/api/users", authenticate, isAdmin, require("./routes/users"));
 app.use("/api/ai", authenticate, require("./routes/ai"));
 app.use("/api/sessions", authenticate, require("./routes/session"));
 app.use("/api/folders", authenticate, require("./routes/folder"));
-app.use("/api/servers", authenticate, require("./routes/server"));
+app.use("/api/entries", authenticate, require("./routes/entry"));
 app.use("/api/monitoring", authenticate, require("./routes/monitoring"));
-app.use("/api/pve-servers", authenticate, require("./routes/pveServer"));
+app.use("/api/integrations", authenticate, require("./routes/integration"));
 app.use("/api/audit", authenticate, require("./routes/audit"));
 app.use("/api/identities", authenticate, require("./routes/identity"));
 app.use("/api/snippets", authenticate, require("./routes/snippet"));
