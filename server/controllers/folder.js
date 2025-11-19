@@ -1,5 +1,5 @@
 const Folder = require("../models/Folder");
-const Server = require("../models/Server");
+const Entry = require("../models/Entry");
 const Organization = require("../models/Organization");
 const OrganizationMember = require("../models/OrganizationMember");
 const { Op } = require("sequelize");
@@ -78,7 +78,7 @@ module.exports.deleteFolder = async (accountId, folderId) => {
         await module.exports.deleteFolder(accountId, subfolder.id);
     }
 
-    await Server.destroy({ where: { folderId: folderId } });
+    await Entry.destroy({ where: { folderId: folderId } });
 
     await Folder.destroy({ where: { id: folderId } });
 

@@ -2,9 +2,7 @@ const { genSalt, hash } = require("bcrypt");
 const Account = require("../models/Account");
 const Folder = require("../models/Folder");
 const Identity = require("../models/Identity");
-const Server = require("../models/Server");
 const Session = require("../models/Session");
-const PVEServer = require("../models/PVEServer");
 
 module.exports.createAccount = async (configuration, firstTimeSetup = true) => {
     if (await Account.count() > 0 && firstTimeSetup)
@@ -32,12 +30,9 @@ module.exports.deleteAccount = async (id) => {
     if (await Account.count({ where: { role: "admin" } }) === 1 && account.role === "admin")
         return { code: 106, message: "You cannot delete the last admin account" };
 
-    // Delete all related data
     await Folder.destroy({ where: { accountId: id } });
     await Identity.destroy({ where: { accountId: id } });
-    await Server.destroy({ where: { accountId: id } });
     await Session.destroy({ where: { accountId: id } });
-    await PVEServer.destroy({ where: { accountId: id } });
 
     await Account.destroy({ where: { id } });
 }

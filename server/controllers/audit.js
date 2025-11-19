@@ -6,11 +6,11 @@ const { hasOrganizationAccess } = require("../utils/permission");
 const { Op } = require("sequelize");
 
 const AUDIT_ACTIONS = {
-    SSH_CONNECT: "server.ssh_connect",
-    SFTP_CONNECT: "server.sftp_connect",
-    PVE_CONNECT: "server.pve_connect",
-    RDP_CONNECT: "server.rdp_connect",
-    VNC_CONNECT: "server.vnc_connect",
+    SSH_CONNECT: "entry.ssh_connect",
+    SFTP_CONNECT: "entry.sftp_connect",
+    PVE_CONNECT: "entry.pve_connect",
+    RDP_CONNECT: "entry.rdp_connect",
+    VNC_CONNECT: "entry.vnc_connect",
 
     FILE_UPLOAD: "file.upload",
     FILE_DOWNLOAD: "file.download",
@@ -20,9 +20,9 @@ const AUDIT_ACTIONS = {
     FOLDER_CREATE: "folder.create",
     FOLDER_DELETE: "folder.delete",
 
-    SERVER_CREATE: "server.create",
-    SERVER_UPDATE: "server.update",
-    SERVER_DELETE: "server.delete",
+    ENTRY_CREATE: "entry.create",
+    ENTRY_UPDATE: "entry.update",
+    ENTRY_DELETE: "entry.delete",
 
     IDENTITY_CREATE: "identity.create",
     IDENTITY_UPDATE: "identity.update",
@@ -38,7 +38,7 @@ const AUDIT_ACTIONS = {
 };
 
 const RESOURCE_TYPES = {
-    USER: "user", SERVER: "server", IDENTITY: "identity", ORGANIZATION: "organization",
+    USER: "user", ENTRY: "entry", IDENTITY: "identity", ORGANIZATION: "organization",
     FOLDER: "folder", FILE: "file", SCRIPT: "script", APP: "app",
 };
 
@@ -47,8 +47,8 @@ const getOrgAuditSettings = async (organizationId) => {
 
     const org = await Organization.findByPk(organizationId);
     const defaults = {
-        requireConnectionReason: false, enableFileOperationAudit: true, enableServerConnectionAudit: true,
-        enableIdentityManagementAudit: true, enableServerManagementAudit: true, enableFolderManagementAudit: true,
+        requireConnectionReason: false, enableFileOperationAudit: true, enableEntryConnectionAudit: true,
+        enableIdentityManagementAudit: true, enableEntryManagementAudit: true, enableFolderManagementAudit: true,
         enableScriptExecutionAudit: true, enableAppInstallationAudit: true,
     };
 
@@ -61,9 +61,9 @@ const shouldAudit = (action, settings) => {
     if (!settings) return true;
     const checks = [
         [action.startsWith("file."), settings.enableFileOperationAudit],
-        [action.startsWith("server.") && !action.includes("create") && !action.includes("update") && !action.includes("delete"), settings.enableServerConnectionAudit],
+        [action.startsWith("entry.") && !action.includes("create") && !action.includes("update") && !action.includes("delete"), settings.enableEntryConnectionAudit],
         [action.startsWith("identity."), settings.enableIdentityManagementAudit],
-        [action.includes("server.create") || action.includes("server.update") || action.includes("server.delete"), settings.enableServerManagementAudit],
+        [action.includes("entry.create") || action.includes("entry.update") || action.includes("entry.delete"), settings.enableEntryManagementAudit],
         [action.startsWith("folder_mgmt."), settings.enableFolderManagementAudit],
         [action.startsWith("script."), settings.enableScriptExecutionAudit],
         [action.startsWith("app."), settings.enableAppInstallationAudit],
