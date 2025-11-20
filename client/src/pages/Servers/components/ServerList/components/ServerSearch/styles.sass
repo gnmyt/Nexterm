@@ -1,9 +1,13 @@
 @use "@/common/styles/colors"
 
 .server-search
-  margin-top: 1rem
   position: relative
-  width: 100%
+  flex: 1
+  min-width: 0
+  container-type: inline-size
+
+.search-icon
+  container-type: inline-size
 
 .search-icon
   position: absolute
@@ -13,6 +17,11 @@
   height: 2rem
   transform: translateY(-50%)
   color: colors.$subtext
+  transition: opacity 0.2s
+
+  @container (max-width: 180px)
+    opacity: 0
+    pointer-events: none
 
 .info-container
   position: absolute
@@ -22,6 +31,11 @@
   user-select: none
   cursor: pointer
   color: colors.$subtext
+  transition: opacity 0.2s
+
+  @container (max-width: 180px)
+    opacity: 0
+    pointer-events: none
 
   p
     margin: 0
@@ -41,6 +55,12 @@
   font-size: 14pt
   width: 100%
   outline: none
+
+  @container (max-width: 180px)
+    padding-right: 1rem
+
+  @container (max-width: 180px)
+    padding-left: 1rem
 
   &:focus
     border: 1px solid colors.$primary

@@ -46,6 +46,7 @@ const ServerEntries = ({ entries, nestedLevel, setRenameStateId, connectToServer
                             nestedLevel={nestedLevel}
                             icon={entry.icon}
                             status={entry.status}
+                            tags={entry.tags}
                             connectToServer={connectToServer}
                         />
                     );

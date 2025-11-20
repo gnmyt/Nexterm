@@ -21,10 +21,12 @@ import {
     mdiAccountCircle,
     mdiImport,
     mdiFileDocumentOutline,
+    mdiTag,
 } from "@mdi/js";
 import Icon from "@mdi/react";
 import { useContext, useState } from "react";
 import ProxmoxLogo from "./assets/proxmox.jsx";
+import TagsSubmenu from "./components/TagsSubmenu";
 import "./styles.sass";
 import { useTranslation } from "react-i18next";
 
@@ -53,8 +55,9 @@ export const ContextMenu = ({
     const [showIdentitySubmenu, setShowIdentitySubmenu] = useState(false);
     const [showSftpSubmenu, setShowSftpSubmenu] = useState(false);
     const [showImportSubmenu, setShowImportSubmenu] = useState(false);
+    const [showTagsSubmenu, setShowTagsSubmenu] = useState(false);
 
-    const server = id ? type === "server-object" ? getServerById(id) : null : null;
+    const server = id ? (type === "server-object" || type?.startsWith("pve-")) ? getServerById(id) : null : null;
 
     const isOrgFolder = id && id.toString().startsWith("org-");
 
@@ -293,6 +296,20 @@ export const ContextMenu = ({
                         <p>{t("servers.contextMenu.duplicateServer")}</p>
                     </div>
 
+                    <div className="context-item submenu-parent"
+                         onMouseEnter={() => setShowTagsSubmenu(true)}
+                         onMouseLeave={() => setShowTagsSubmenu(false)}>
+                        <Icon path={mdiTag} />
+                        <p>{t("servers.tags.title")}</p>
+                        <Icon path={mdiChevronRight} className="submenu-arrow" />
+
+                        {showTagsSubmenu && (
+                            <div className="submenu">
+                                <TagsSubmenu entryId={id} entryTags={server?.tags || []} />
+                            </div>
+                        )}
+                    </div>
+
                     <div className="context-item" onClick={deleteServer}>
                         <Icon path={mdiServerMinus} />
                         <p>{t("servers.contextMenu.deleteServer")}</p>
@@ -305,6 +322,19 @@ export const ContextMenu = ({
                     <div className="context-item" onClick={editPVEServer}>
                         <Icon path={mdiPencil} />
                         <p>{t("servers.contextMenu.editPVE")}</p>
+                    </div>
+                    <div className="context-item submenu-parent"
+                         onMouseEnter={() => setShowTagsSubmenu(true)}
+                         onMouseLeave={() => setShowTagsSubmenu(false)}>
+                        <Icon path={mdiTag} />
+                        <p>{t("servers.tags.title")}</p>
+                        <Icon path={mdiChevronRight} className="submenu-arrow" />
+
+                        {showTagsSubmenu && (
+                            <div className="submenu">
+                                <TagsSubmenu entryId={id} entryTags={server?.tags || []} />
+                            </div>
+                        )}
                     </div>
                     <div className="context-item" onClick={deletePVEServer}>
                         <Icon path={mdiServerMinus} />
