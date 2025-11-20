@@ -18,7 +18,9 @@
     gap: 10px
     position: relative
     justify-content: space-between
-    padding: 8px 12px !important
+    padding: 8px 12px
+    width: 100%
+    color: colors.$white
 
     .tag-clickable
       display: flex
@@ -26,6 +28,10 @@
       gap: 10px
       flex: 1
       cursor: pointer
+
+      p
+        margin: 0
+        font-size: 14px
 
     .tag-color
       width: 10px
@@ -57,12 +63,13 @@
       position: absolute
       right: 35px
       bottom: 0
-      background: colors.$gray-full
-      border: 1px solid colors.$gray
+      background: colors.$darker-gray
+      backdrop-filter: blur(1rem)
+      border: 2px solid colors.$dark-gray
       border-radius: 0.5rem
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3)
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3)
       overflow: hidden
-      z-index: 1000
+      z-index: 10002
       min-width: 150px
 
       .dropdown-item
@@ -79,10 +86,10 @@
           background: colors.$dark-gray
 
         &.delete
-          color: #ef4444
+          color: colors.$error
 
           &:hover
-            background: rgba(239, 68, 68, 0.1)
+            background: colors.$error-opacity
 
   .create-tag-form
     padding: 8px

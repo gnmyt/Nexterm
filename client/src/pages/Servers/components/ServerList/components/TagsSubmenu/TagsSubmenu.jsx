@@ -4,6 +4,7 @@ import Icon from "@mdi/react";
 import { useTranslation } from "react-i18next";
 import { getRequest, postRequest, deleteRequest, putRequest, patchRequest } from "@/common/utils/RequestUtil.js";
 import { ServerContext } from "@/common/contexts/ServerContext.jsx";
+import { ContextMenuItem } from "@/common/components/ContextMenu";
 import "./styles.sass";
 
 const TAG_COLORS = [
@@ -22,7 +23,7 @@ const TAG_COLORS = [
     "#ec4899", // pink
 ];
 
-export const TagsSubmenu = ({ entryId, entryTags = [] }) => {
+export const TagsSubmenu = ({ entryId, entryTags = [], onClose }) => {
     const { t } = useTranslation();
     const { loadServers } = useContext(ServerContext);
     const [allTags, setAllTags] = useState([]);
@@ -70,6 +71,7 @@ export const TagsSubmenu = ({ entryId, entryTags = [] }) => {
         try {
             await postRequest(`tags/${tagId}/assign/${entryId}`);
             await loadServers();
+            if (onClose) onClose();
         } catch (error) {
             if (error.message && error.message.includes("already tagged")) {
                 await removeTag(tagId);
@@ -83,6 +85,7 @@ export const TagsSubmenu = ({ entryId, entryTags = [] }) => {
         try {
             await deleteRequest(`tags/${tagId}/assign/${entryId}`);
             await loadServers();
+            if (onClose) onClose();
         } catch (error) {
             console.error("Failed to remove tag:", error);
         }
@@ -183,13 +186,14 @@ export const TagsSubmenu = ({ entryId, entryTags = [] }) => {
                 </div>
             ) : (
                 <>
-                    <div className="context-item" onClick={(e) => {
-                        e.stopPropagation();
-                        setShowCreateTag(true);
-                    }}>
-                        <Icon path={mdiPlus} />
-                        <p>{t("servers.tags.createNewTag")}</p>
-                    </div>
+                    <ContextMenuItem
+                        icon={mdiPlus}
+                        label={t("servers.tags.createNewTag")}
+                        onClick={(e) => {
+                            e?.stopPropagation();
+                            setShowCreateTag(true);
+                        }}
+                    />
                     {allTags.length > 0 && <div className="submenu-divider" />}
                     {allTags.map(tag => (
                         editingTagId === tag.id ? (
@@ -238,48 +242,50 @@ export const TagsSubmenu = ({ entryId, entryTags = [] }) => {
                                 </div>
                             </div>
                         ) : (
-                            <div
+                            <ContextMenuItem
                                 key={tag.id}
-                                className="context-item tag-item"
-                            >
-                                <div
-                                    className="tag-clickable"
-                                    onClick={(e) => {
-                                        e.stopPropagation();
-                                        isTagAssigned(tag.id) ? removeTag(tag.id) : assignTag(tag.id);
-                                    }}
-                                >
-                                    <div className="tag-color" style={{ backgroundColor: tag.color }} />
-                                    <p>{tag.name}</p>
-                                    {isTagAssigned(tag.id) && (
-                                        <Icon path={mdiCheck} className="check-icon" />
-                                    )}
-                                </div>
-                                <div
-                                    className="tag-menu-button"
-                                    onClick={(e) => {
-                                        e.stopPropagation();
-                                        setShowTagMenu(showTagMenu === tag.id ? null : tag.id);
-                                    }}
-                                >
-                                    <Icon path={mdiDotsVertical} size={0.7} />
-                                </div>
-                                {showTagMenu === tag.id && (
-                                    <div className="tag-dropdown-menu" onClick={(e) => e.stopPropagation()}>
-                                        <div className="dropdown-item" onClick={(e) => startEditTag(tag, e)}>
-                                            <Icon path={mdiPencil} size={0.7} />
-                                            <span>{t("servers.tags.editTag")}</span>
+                                customContent={
+                                    <div className="tag-item">
+                                        <div
+                                            className="tag-clickable"
+                                            onClick={(e) => {
+                                                e.stopPropagation();
+                                                isTagAssigned(tag.id) ? removeTag(tag.id) : assignTag(tag.id);
+                                            }}
+                                        >
+                                            <div className="tag-color" style={{ backgroundColor: tag.color }} />
+                                            <p>{tag.name}</p>
+                                            {isTagAssigned(tag.id) && (
+                                                <Icon path={mdiCheck} className="check-icon" />
+                                            )}
                                         </div>
-                                        <div className="dropdown-item delete" onClick={(e) => {
-                                            e.stopPropagation();
-                                            deleteTag(tag.id);
-                                        }}>
-                                            <Icon path={mdiDelete} size={0.7} />
-                                            <span>{t("servers.tags.deleteTag")}</span>
+                                        <div
+                                            className="tag-menu-button"
+                                            onClick={(e) => {
+                                                e.stopPropagation();
+                                                setShowTagMenu(showTagMenu === tag.id ? null : tag.id);
+                                            }}
+                                        >
+                                            <Icon path={mdiDotsVertical} size={0.7} />
                                         </div>
+                                        {showTagMenu === tag.id && (
+                                            <div className="tag-dropdown-menu" onClick={(e) => e.stopPropagation()}>
+                                                <div className="dropdown-item" onClick={(e) => startEditTag(tag, e)}>
+                                                    <Icon path={mdiPencil} size={0.7} />
+                                                    <span>{t("servers.tags.editTag")}</span>
+                                                </div>
+                                                <div className="dropdown-item delete" onClick={(e) => {
+                                                    e.stopPropagation();
+                                                    deleteTag(tag.id);
+                                                }}>
+                                                    <Icon path={mdiDelete} size={0.7} />
+                                                    <span>{t("servers.tags.deleteTag")}</span>
+                                                </div>
+                                            </div>
+                                        )}
                                     </div>
-                                )}
-                            </div>
+                                }
+                            />
                         )
                     ))}
                 </>
