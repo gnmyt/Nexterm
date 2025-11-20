@@ -35,6 +35,7 @@ export const ContextMenu = ({
     setRenameStateId,
     setServerDialogOpen,
     setCurrentFolderId,
+    setCurrentOrganizationId,
     setEditServerId,
     connectToServer,
     setProxmoxDialogOpen,
@@ -75,17 +76,38 @@ export const ContextMenu = ({
     const deleteServer = () => deleteRequest("entries/" + id).then(loadServers);
 
     const createServer = () => {
-        setCurrentFolderId(id);
+        if (isOrgFolder) {
+            const orgId = parseInt(id.toString().split("-")[1]);
+            setCurrentFolderId(null);
+            setCurrentOrganizationId(orgId);
+        } else {
+            setCurrentFolderId(id);
+            setCurrentOrganizationId(null);
+        }
         setServerDialogOpen();
     };
 
     const createPVEServer = () => {
-        setCurrentFolderId(id);
+        if (isOrgFolder) {
+            const orgId = parseInt(id.toString().split("-")[1]);
+            setCurrentFolderId(null);
+            setCurrentOrganizationId(orgId);
+        } else {
+            setCurrentFolderId(id);
+            setCurrentOrganizationId(null);
+        }
         setProxmoxDialogOpen();
     };
 
     const openSSHConfigImport = () => {
-        setCurrentFolderId(id);
+        if (isOrgFolder) {
+            const orgId = parseInt(id.toString().split("-")[1]);
+            setCurrentFolderId(null);
+            setCurrentOrganizationId(orgId);
+        } else {
+            setCurrentFolderId(id);
+            setCurrentOrganizationId(null);
+        }
         setSSHConfigImportDialogOpen();
     };
 
@@ -151,7 +173,7 @@ export const ContextMenu = ({
                             <Icon path={mdiFolderPlus} />
                             <p>{t("servers.contextMenu.createFolder")}</p>
                         </div>
-                        {(type === null || type === "folder-object") && (
+                        {(type === null || type === "folder-object" || isOrgFolder) && (
                             <div className="context-item" onClick={createServer}>
                                 <Icon path={mdiServerPlus} />
                                 <p>{t("servers.contextMenu.createServer")}</p>

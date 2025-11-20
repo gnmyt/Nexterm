@@ -48,7 +48,7 @@ const applyRenameState = (folderId) => (entry) => {
 
 export const ServerList = ({
                                setServerDialogOpen, setCurrentFolderId, setProxmoxDialogOpen, setSSHConfigImportDialogOpen,
-                               setEditServerId, connectToServer, openSFTP,
+                               setEditServerId, connectToServer, openSFTP, setCurrentOrganizationId,
                            }) => {
     const { servers, loadServers } = useContext(ServerContext);
     const [search, setSearch] = useState("");
@@ -210,6 +210,7 @@ export const ServerList = ({
                         <ContextMenu position={contextMenuPosition} type={contextClickedType} id={contextClickedId}
                                      setRenameStateId={setRenameStateId} setServerDialogOpen={setServerDialogOpen}
                                      setCurrentFolderId={setCurrentFolderId} setEditServerId={setEditServerId}
+                                     setCurrentOrganizationId={setCurrentOrganizationId}
                                      setProxmoxDialogOpen={setProxmoxDialogOpen} setSSHConfigImportDialogOpen={setSSHConfigImportDialogOpen}
                                      openSFTP={openSFTP}
                                      connectToServer={connectToServer} />

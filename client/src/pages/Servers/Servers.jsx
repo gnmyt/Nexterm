@@ -25,6 +25,7 @@ export const Servers = () => {
     const [pendingConnection, setPendingConnection] = useState(null);
 
     const [currentFolderId, setCurrentFolderId] = useState(null);
+    const [currentOrganizationId, setCurrentOrganizationId] = useState(null);
     const [editServerId, setEditServerId] = useState(null);
     const { user } = useContext(UserContext);
     const { activeSessions, setActiveSessions, activeSessionId, setActiveSessionId } = useActiveSessions();
@@ -155,12 +156,14 @@ export const Servers = () => {
     return (
         <div className="server-page">
             <ServerDialog open={serverDialogOpen} onClose={closeDialog} currentFolderId={currentFolderId}
-                          editServerId={editServerId} />
+                          currentOrganizationId={currentOrganizationId} editServerId={editServerId} />
             <ProxmoxDialog open={proxmoxDialogOpen} onClose={closePVEDialog}
                            currentFolderId={currentFolderId}
+                           currentOrganizationId={currentOrganizationId}
                            editServerId={editServerId} />
             <SSHConfigImportDialog open={sshConfigImportDialogOpen} onClose={closeSSHConfigImportDialog}
-                                   currentFolderId={currentFolderId} />
+                                   currentFolderId={currentFolderId}
+                                   currentOrganizationId={currentOrganizationId} />
             <ConnectionReasonDialog
                 isOpen={connectionReasonDialogOpen}
                 onClose={handleConnectionReasonCanceled}
@@ -170,7 +173,8 @@ export const Servers = () => {
             <ServerList setServerDialogOpen={() => setServerDialogOpen(true)} connectToServer={connectToServer}
                        setProxmoxDialogOpen={() => setProxmoxDialogOpen(true)}
                         setSSHConfigImportDialogOpen={() => setSSHConfigImportDialogOpen(true)}
-                        setCurrentFolderId={setCurrentFolderId} setEditServerId={setEditServerId} openSFTP={openSFTP} />
+                        setCurrentFolderId={setCurrentFolderId} setCurrentOrganizationId={setCurrentOrganizationId}
+                        setEditServerId={setEditServerId} openSFTP={openSFTP} />
             {activeSessions.length === 0 && <div className="welcome-area">
                 <div className="area-left">
                     <h1>Hi, <span>{user?.firstName || "User"} {user?.lastName || "name"}</span>!</h1>

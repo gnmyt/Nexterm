@@ -228,10 +228,17 @@ module.exports.listEntries = async (accountId) => {
     });
 
     const folderMap = new Map();
+    const organizationMap = new Map();
+    
     const rebuildFolderMap = (folders) => {
         folders.forEach(folder => {
-            folderMap.set(folder.id, folder);
-            if (folder.entries && folder.entries.length > 0) rebuildFolderMap(folder.entries);
+            if (folder.type === 'organization') {
+                organizationMap.set(parseInt(folder.id.split('-')[1]), folder);
+                if (folder.entries && folder.entries.length > 0) rebuildFolderMap(folder.entries);
+            } else {
+                folderMap.set(folder.id, folder);
+                if (folder.entries && folder.entries.length > 0) rebuildFolderMap(folder.entries);
+            }
         });
     };
     rebuildFolderMap(folders);
@@ -268,11 +275,18 @@ module.exports.listEntries = async (accountId) => {
         
         if (!entryObject) continue;
 
-        const folder = folderMap.get(entry.folderId);
-        const targetArray = folder ? folder.entries : (!entry.folderId ? folders : null);
-        
-        if (targetArray) {
-            targetArray.push(entryObject);
+        if (entry.folderId) {
+            const folder = folderMap.get(entry.folderId);
+            if (folder) {
+                folder.entries.push(entryObject);
+            }
+        } else if (entry.organizationId) {
+            const organization = organizationMap.get(entry.organizationId);
+            if (organization) {
+                organization.entries.push(entryObject);
+            }
+        } else {
+            folders.push(entryObject);
         }
     }
 
@@ -385,7 +399,7 @@ module.exports.importSSHConfig = async (accountId, configuration) => {
     };
 };
 
-module.exports.repositionEntry = async (accountId, entryId, { targetId, placement, folderId }) => {
+module.exports.repositionEntry = async (accountId, entryId, { targetId, placement, folderId, organizationId }) => {
     const entryIdNum = parseInt(entryId);
     
     const entry = await Entry.findByPk(entryIdNum);
@@ -398,13 +412,34 @@ module.exports.repositionEntry = async (accountId, entryId, { targetId, placemen
         if (!folderCheck.valid) return folderCheck.error;
     }
 
-    const targetFolderId = folderId !== undefined ? folderId : entry.folderId;
+    let targetFolderId = folderId !== undefined ? folderId : entry.folderId;
+    let targetOrganizationId = organizationId !== undefined ? organizationId : null;
+    let targetAccountId = accountId;
+
+    if (targetFolderId) {
+        const folder = await Folder.findByPk(targetFolderId);
+        if (folder) {
+            targetOrganizationId = folder.organizationId || null;
+            targetAccountId = folder.organizationId ? null : accountId;
+        }
+    } else {
+        if (targetOrganizationId) {
+            const hasAccess = await hasOrganizationAccess(accountId, targetOrganizationId);
+            if (!hasAccess) {
+                return { code: 403, message: "You don't have access to this organization" };
+            }
+            targetAccountId = null;
+        } else {
+            targetOrganizationId = null;
+            targetAccountId = accountId;
+        }
+    }
 
     const entries = await Entry.findAll({
         where: {
             folderId: targetFolderId,
-            organizationId: entry.organizationId || null,
-            accountId: entry.accountId || null,
+            organizationId: targetOrganizationId,
+            accountId: targetAccountId,
         },
         order: [["position", "ASC"]],
     });
@@ -426,10 +461,14 @@ module.exports.repositionEntry = async (accountId, entryId, { targetId, placemen
     normalizedEntries.splice(targetIndex, 0, entry);
 
     for (let i = 0; i < normalizedEntries.length; i++) {
-        await Entry.update(
-            { position: i, folderId: targetFolderId },
-            { where: { id: normalizedEntries[i].id } }
-        );
+        const updateData = { position: i, folderId: targetFolderId };
+        
+        if (normalizedEntries[i].id === entryIdNum) {
+            updateData.organizationId = targetOrganizationId;
+            updateData.accountId = targetAccountId;
+        }
+        
+        await Entry.update(updateData, { where: { id: normalizedEntries[i].id } });
     }
 
     await createAuditLog({

@@ -9,7 +9,7 @@ import Input from "@/common/components/IconInput";
 import { getRequest, patchRequest, postRequest, putRequest } from "@/common/utils/RequestUtil.js";
 import { useTranslation } from "react-i18next";
 
-export const ProxmoxDialog = ({ open, onClose, currentFolderId, editServerId }) => {
+export const ProxmoxDialog = ({ open, onClose, currentFolderId, currentOrganizationId, editServerId }) => {
     const { t } = useTranslation();
 
     const [name, setName] = useState("");
@@ -21,7 +21,7 @@ export const ProxmoxDialog = ({ open, onClose, currentFolderId, editServerId }) 
 
     const create = () => {
         putRequest("integrations", {
-            name, folderId: currentFolderId, ip, port, username, password,
+            name, folderId: currentFolderId, organizationId: currentOrganizationId, ip, port, username, password,
         }).then(async () => {
             onClose();
             loadServers();

@@ -6,7 +6,7 @@ import { patchRequest } from "@/common/utils/RequestUtil.js";
 import { ServerContext } from "@/common/contexts/ServerContext.jsx";
 import { useDrag, useDrop } from "react-dnd";
 
-export const FolderObject = ({ id, name, nestedLevel, position, onClick, isOpen, renameState, setRenameStateId }) => {
+export const FolderObject = ({ id, name, nestedLevel, position, onClick, isOpen, renameState, setRenameStateId, organizationId }) => {
     const inputRef = useRef();
 
     const { loadServers } = useContext(ServerContext);
@@ -29,7 +29,8 @@ export const FolderObject = ({ id, name, nestedLevel, position, onClick, isOpen,
                     await patchRequest(`entries/${item.id}/reposition`, { 
                         targetId: null,
                         placement: 'after',
-                        folderId: id 
+                        folderId: id,
+                        organizationId: organizationId
                     });
                     loadServers();
                     return { id };

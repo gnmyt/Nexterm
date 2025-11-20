@@ -60,7 +60,7 @@ export const loadIcon = (icon) => {
     }
 };
 
-export const ServerObject = ({ id, name, position, folderId, nestedLevel, icon, connectToServer, status }) => {
+export const ServerObject = ({ id, name, position, folderId, organizationId, nestedLevel, icon, connectToServer, status }) => {
     const { loadServers, getServerById } = useContext(ServerContext);
     const [dropPlacement, setDropPlacement] = useState(null);
     const elementRef = useRef(null);
@@ -94,6 +94,7 @@ export const ServerObject = ({ id, name, position, folderId, nestedLevel, icon, 
                     targetId: id,
                     placement: dropPlacement || 'after',
                     folderId: folderId,
+                    organizationId: organizationId,
                 });
                 
                 loadServers();

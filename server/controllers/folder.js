@@ -6,6 +6,23 @@ const { Op } = require("sequelize");
 const { hasOrganizationAccess } = require("../utils/permission");
 const { createAuditLog, AUDIT_ACTIONS, RESOURCE_TYPES } = require("./audit");
 
+const updateFolderContext = async (folderId, organizationId, accountId) => {
+    await Folder.update(
+        { organizationId, accountId },
+        { where: { id: folderId } }
+    );
+
+    await Entry.update(
+        { organizationId, accountId },
+        { where: { folderId } }
+    );
+
+    const subfolders = await Folder.findAll({ where: { parentId: folderId } });
+    for (const subfolder of subfolders) {
+        await updateFolderContext(subfolder.id, organizationId, accountId);
+    }
+};
+
 module.exports.createFolder = async (accountId, configuration) => {
     if (configuration.parentId && !configuration.organizationId) {
         const parentFolder = await Folder.findByPk(configuration.parentId);
@@ -110,37 +127,82 @@ module.exports.editFolder = async (accountId, folderId, configuration) => {
         }
     }
 
-    if (configuration.parentId) {
-        let targetFolder = await Folder.findByPk(configuration.parentId);
-        if (!targetFolder) {
-            return { code: 302, message: "Target parent folder does not exist" };
-        }
-
-        if (folder.organizationId && !targetFolder.organizationId) {
-            return { code: 403, message: "Cannot move organization folder to personal space" };
-        }
-
-        if (targetFolder.organizationId && !folder.organizationId) {
-            return { code: 403, message: "Cannot move personal folder to organization space" };
-        }
-
-        if (folder.organizationId && targetFolder.organizationId !== folder.organizationId) {
-            return { code: 403, message: "Parent folder must be in the same organization" };
-        } else if (!folder.organizationId && targetFolder.accountId !== accountId) {
-            return { code: 403, message: "You don't have access to the target parent folder" };
-        }
-
-        let currentFolder = targetFolder;
-        while (currentFolder) {
-            if (currentFolder.id === parseInt(folderId)) {
-                return { code: 303, message: "Cannot move folder to its own subfolder" };
+    if (configuration.parentId !== undefined) {
+        if (configuration.parentId === null) {
+            if (configuration.organizationId !== undefined) {
+                const targetOrgId = configuration.organizationId;
+                if (targetOrgId !== null) {
+                    const hasAccess = await hasOrganizationAccess(accountId, targetOrgId);
+                    if (!hasAccess) {
+                        return { code: 403, message: "You don't have access to the target organization" };
+                    }
+                }
+                
+                const newOrganizationId = targetOrgId;
+                const newAccountId = targetOrgId ? null : accountId;
+                
+                if (folder.organizationId !== newOrganizationId) {
+                    await updateFolderContext(parseInt(folderId), newOrganizationId, newAccountId);
+                }
+            } else {
+                const newOrganizationId = null;
+                const newAccountId = accountId;
+                
+                if (folder.organizationId !== newOrganizationId) {
+                    await updateFolderContext(parseInt(folderId), newOrganizationId, newAccountId);
+                }
+            }
+        } else {
+            let targetFolder = await Folder.findByPk(configuration.parentId);
+            if (!targetFolder) {
+                return { code: 302, message: "Target parent folder does not exist" };
             }
 
-            if (currentFolder.parentId === null) {
-                break;
+            if (folder.organizationId && !targetFolder.organizationId) {
+                const hasOrgAccess = await hasOrganizationAccess(accountId, folder.organizationId);
+                if (!hasOrgAccess) {
+                    return { code: 403, message: "You don't have access to this organization's folder" };
+                }
             }
 
-            currentFolder = await Folder.findByPk(currentFolder.parentId);
+            if (targetFolder.organizationId && !folder.organizationId) {
+                const hasOrgAccess = await hasOrganizationAccess(accountId, targetFolder.organizationId);
+                if (!hasOrgAccess) {
+                    return { code: 403, message: "You don't have access to the target organization" };
+                }
+            }
+
+            if (folder.organizationId && targetFolder.organizationId && targetFolder.organizationId !== folder.organizationId) {
+                const hasSourceAccess = await hasOrganizationAccess(accountId, folder.organizationId);
+                const hasTargetAccess = await hasOrganizationAccess(accountId, targetFolder.organizationId);
+                if (!hasSourceAccess || !hasTargetAccess) {
+                    return { code: 403, message: "You don't have access to one or both organizations" };
+                }
+            } else if (!folder.organizationId && !targetFolder.organizationId) {
+                if (targetFolder.accountId !== accountId) {
+                    return { code: 403, message: "You don't have access to the target parent folder" };
+                }
+            }
+
+            let currentFolder = targetFolder;
+            while (currentFolder) {
+                if (currentFolder.id === parseInt(folderId)) {
+                    return { code: 303, message: "Cannot move folder to its own subfolder" };
+                }
+
+                if (currentFolder.parentId === null) {
+                    break;
+                }
+
+                currentFolder = await Folder.findByPk(currentFolder.parentId);
+            }
+
+            const newOrganizationId = targetFolder.organizationId || null;
+            const newAccountId = targetFolder.organizationId ? null : accountId;
+            
+            if (folder.organizationId !== newOrganizationId) {
+                await updateFolderContext(parseInt(folderId), newOrganizationId, newAccountId);
+            }
         }
     }
 

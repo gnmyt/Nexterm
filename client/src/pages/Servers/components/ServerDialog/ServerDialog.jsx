@@ -17,7 +17,7 @@ const tabs = [
     { key: "settings", label: "servers.dialog.tabs.settings" }
 ];
 
-export const ServerDialog = ({ open, onClose, currentFolderId, editServerId }) => {
+export const ServerDialog = ({ open, onClose, currentFolderId, currentOrganizationId, editServerId }) => {
     const { t } = useTranslation();
 
     const { loadServers } = useContext(ServerContext);
@@ -99,6 +99,7 @@ export const ServerDialog = ({ open, onClose, currentFolderId, editServerId }) =
                 name, icon: icon,
                 config: { ...config, monitoringEnabled },
                 folderId: currentFolderId,
+                organizationId: currentOrganizationId,
                 identities: serverIdentityIds,
                 type: "server"
             });

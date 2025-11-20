@@ -11,6 +11,7 @@ const configValidation = Joi.object({
 module.exports.createServerValidation = Joi.object({
     name: Joi.string().required(),
     folderId: Joi.number().allow(null).optional(),
+    organizationId: Joi.number().allow(null).optional(),
     icon: Joi.string().optional(),
     type: Joi.string().optional().default("server"),
     identities: Joi.array().items(Joi.number()).optional(),
@@ -20,6 +21,7 @@ module.exports.createServerValidation = Joi.object({
 module.exports.updateServerValidation = Joi.object({
     name: Joi.string().optional(),
     folderId: Joi.number().allow(null).optional(),
+    organizationId: Joi.number().allow(null).optional(),
     icon: Joi.string().optional(),
     type: Joi.string().optional(),
     identities: Joi.array().items(Joi.number()).optional(),
@@ -29,5 +31,6 @@ module.exports.updateServerValidation = Joi.object({
 module.exports.repositionServerValidation = Joi.object({
     targetId: Joi.number().allow(null).optional(),
     placement: Joi.string().valid('before', 'after').required(),
-    folderId: Joi.number().allow(null).optional()
+    folderId: Joi.number().allow(null).optional(),
+    organizationId: Joi.number().allow(null).optional()
 });

@@ -2,7 +2,7 @@ import ServerObject from "@/pages/Servers/components/ServerList/components/Serve
 import CollapsibleFolder from "./CollapsibleFolder.jsx";
 import OrganizationFolder from "./OrganizationFolder";
 
-const ServerEntries = ({ entries, nestedLevel, setRenameStateId, connectToServer, folderId }) => {
+const ServerEntries = ({ entries, nestedLevel, setRenameStateId, connectToServer, folderId, organizationId }) => {
     return (
         <>
             {entries.map(entry => {
@@ -28,6 +28,7 @@ const ServerEntries = ({ entries, nestedLevel, setRenameStateId, connectToServer
                             renameState={entry.renameState}
                             setRenameStateId={setRenameStateId}
                             nestedLevel={nestedLevel}
+                            organizationId={organizationId}
                             connectToServer={connectToServer}
                         />
                     );
@@ -38,6 +39,7 @@ const ServerEntries = ({ entries, nestedLevel, setRenameStateId, connectToServer
                             key={"s"+entry.id}
                             position={entry.position}
                             folderId={folderId}
+                            organizationId={organizationId}
                             name={entry.name}
                             nestedLevel={nestedLevel}
                             icon={entry.icon}
