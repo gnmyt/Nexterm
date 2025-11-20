@@ -1,6 +1,6 @@
 import Icon from "@mdi/react";
 import { mdiFolderOpenOutline, mdiFolderOutline } from "@mdi/js";
-import ProxmoxIcon from "../ContextMenu/assets/proxmox.png";
+import ProxmoxIcon from "../../assets/proxmox.png";
 import "./styles.sass";
 import { useContext, useEffect, useRef, useState } from "react";
 import { patchRequest } from "@/common/utils/RequestUtil.js";
