@@ -128,7 +128,11 @@ export const ServerObject = ({ id, name, position, folderId, organizationId, nes
             onDoubleClick={connect}
             onMouseLeave={() => setDropPlacement(null)}>
             <DropIndicator show={isOver && dropPlacement === 'before'} placement="before" />
-            <div className={type && type.startsWith('pve-') ? "pve-icon" : "system-icon"}>
+            <div className={
+                type && type.startsWith('pve-') 
+                    ? (status === 'offline' || status === 'stopped' ? "pve-icon pve-icon-offline" : "pve-icon")
+                    : (status === 'offline' ? "system-icon system-icon-offline" : "system-icon")
+            }>
                 <Icon path={loadIcon(icon)} />
             </div>
             <p className="truncate-text">{name}</p>

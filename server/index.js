@@ -5,7 +5,7 @@ const packageJson = require("../package.json");
 const MigrationRunner = require("./utils/migrationRunner");
 const { authenticate } = require("./middlewares/auth");
 const expressWs = require("express-ws");
-const { startPVEUpdater } = require("./utils/pveUpdater");
+const { startStatusChecker, stopStatusChecker } = require("./utils/statusChecker");
 const { ensureInternalProvider } = require("./controllers/oidc");
 const monitoringService = require("./utils/monitoringService");
 const { generateOpenAPISpec } = require("./openapi");
@@ -95,7 +95,7 @@ db.authenticate()
 
         await ensureInternalProvider();
 
-        startPVEUpdater();
+        startStatusChecker();
 
         startAppUpdater();
 
@@ -114,6 +114,7 @@ process.on("SIGINT", async () => {
     console.log("Shutting down the server...");
 
     monitoringService.stop();
+    stopStatusChecker();
 
     await db.close();
 
