@@ -6,14 +6,16 @@ import { useTheme } from "@/common/contexts/ThemeContext.jsx";
 import { useTerminalSettings } from "@/common/contexts/TerminalSettingsContext.jsx";
 import { FitAddon } from "@xterm/addon-fit";
 import AICommandPopover from "./components/AICommandPopover";
+import { createProgressParser } from "../utils/progressParser";
 import "@xterm/xterm/css/xterm.css";
 import "./styles/xterm.sass";
 
-const XtermRenderer = ({ session, disconnectFromServer, pve, registerTerminalRef, broadcastMode, terminalRefs }) => {
+const XtermRenderer = ({ session, disconnectFromServer, registerTerminalRef, broadcastMode, terminalRefs, updateProgress }) => {
     const ref = useRef(null);
     const termRef = useRef(null);
     const wsRef = useRef(null);
     const broadcastModeRef = useRef(broadcastMode);
+    const progressParserRef = useRef(null);
     const { sessionToken } = useContext(UserContext);
     const { theme } = useTheme();
     const { getCurrentTheme, selectedFont, fontSize, cursorStyle, cursorBlink, selectedTheme } = useTerminalSettings();
@@ -24,6 +26,19 @@ const XtermRenderer = ({ session, disconnectFromServer, pve, registerTerminalRef
     useEffect(() => {
         broadcastModeRef.current = broadcastMode;
     }, [broadcastMode]);
+
+    useEffect(() => {
+        if (updateProgress) {
+            progressParserRef.current = createProgressParser();
+
+            return () => {
+                if (progressParserRef.current) {
+                    progressParserRef.current.destroy();
+                    updateProgress(session.id, 0);
+                }
+            };
+        }
+    }, [session.id, updateProgress]);
 
     const toggleAIPopover = () => {
         if (!showAIPopover && termRef.current) {
@@ -156,6 +171,18 @@ const XtermRenderer = ({ session, disconnectFromServer, pve, registerTerminalRef
                 });
             } else {
                 term.write(data);
+
+                if (progressParserRef.current && updateProgress) {
+                    const progress = progressParserRef.current.parseData(data);
+                    if (progress !== null) {
+                        updateProgress(session.id, progress);
+                    } else if (!progressParserRef.current.isTrackingProgress()) {
+                        const currentProgress = progressParserRef.current.getProgress();
+                        if (currentProgress === 0) {
+                            updateProgress(session.id, 0);
+                        }
+                    }
+                }
             }
         };
 
