@@ -5,26 +5,25 @@ import { Terminal as Xterm } from "@xterm/xterm";
 import { useTheme } from "@/common/contexts/ThemeContext.jsx";
 import { useTerminalSettings } from "@/common/contexts/TerminalSettingsContext.jsx";
 import { FitAddon } from "@xterm/addon-fit";
-import SnippetsMenu from "./components/SnippetsMenu";
 import AICommandPopover from "./components/AICommandPopover";
-import { mdiCodeArray } from "@mdi/js";
-import Icon from "@mdi/react";
 import "@xterm/xterm/css/xterm.css";
 import "./styles/xterm.sass";
 
-const XtermRenderer = ({ session, disconnectFromServer, pve }) => {
+const XtermRenderer = ({ session, disconnectFromServer, pve, registerTerminalRef, broadcastMode, terminalRefs }) => {
     const ref = useRef(null);
     const termRef = useRef(null);
     const wsRef = useRef(null);
+    const broadcastModeRef = useRef(broadcastMode);
     const { sessionToken } = useContext(UserContext);
     const { theme } = useTheme();
     const { getCurrentTheme, selectedFont, fontSize, cursorStyle, cursorBlink, selectedTheme } = useTerminalSettings();
     const { isAIAvailable } = useAI();
-    const [showSnippetsMenu, setShowSnippetsMenu] = useState(false);
     const [showAIPopover, setShowAIPopover] = useState(false);
     const [aiPopoverPosition, setAIPopoverPosition] = useState(null);
 
-    const toggleSnippetsMenu = () => setShowSnippetsMenu(!showSnippetsMenu);
+    useEffect(() => {
+        broadcastModeRef.current = broadcastMode;
+    }, [broadcastMode]);
 
     const toggleAIPopover = () => {
         if (!showAIPopover && termRef.current) {
@@ -45,14 +44,6 @@ const XtermRenderer = ({ session, disconnectFromServer, pve }) => {
             }
         }
         setShowAIPopover(!showAIPopover);
-    };
-
-    const handleSnippetSelected = (command) => {
-        if (termRef.current && wsRef.current) {
-            const commandWithNewline = command.endsWith("\n") ? command : command + "\n";+
-            wsRef.current.send(commandWithNewline);
-            termRef.current.focus();
-        }
     };
 
     const handleAICommandGenerated = (command) => {
@@ -122,6 +113,10 @@ const XtermRenderer = ({ session, disconnectFromServer, pve }) => {
         ws = new WebSocket(wsUrl);
         wsRef.current = ws;
 
+        if (registerTerminalRef) {
+            registerTerminalRef(session.id, { term, ws });
+        }
+
         let interval = setInterval(() => {
             if (ws.readyState === ws.OPEN) handleResize();
         }, 300);
@@ -166,6 +161,14 @@ const XtermRenderer = ({ session, disconnectFromServer, pve }) => {
 
         term.onData((data) => {
             ws.send(data);
+
+            if (broadcastModeRef.current && terminalRefs?.current) {
+                Object.entries(terminalRefs.current).forEach(([sessionId, refs]) => {
+                    if (sessionId !== session.id && refs.ws && refs.ws.readyState === WebSocket.OPEN) {
+                        refs.ws.send(data);
+                    }
+                });
+            }
         });
 
         term.attachCustomKeyEventHandler((event) => {
@@ -178,6 +181,9 @@ const XtermRenderer = ({ session, disconnectFromServer, pve }) => {
         });
 
         return () => {
+            if (registerTerminalRef) {
+                registerTerminalRef(session.id, null);
+            }
             window.removeEventListener("resize", handleResize);
             ws.close();
             term.dispose();
@@ -190,18 +196,6 @@ const XtermRenderer = ({ session, disconnectFromServer, pve }) => {
     return (
         <div className="xterm-container">
             <div ref={ref} className="xterm-wrapper" />
-            <button 
-                className={`snippets-button ${showSnippetsMenu ? 'hidden' : ''}`} 
-                onClick={toggleSnippetsMenu} 
-                title="Snippets"
-            >
-                <Icon path={mdiCodeArray} />
-            </button>
-            <SnippetsMenu 
-                visible={showSnippetsMenu} 
-                onClose={() => setShowSnippetsMenu(false)}
-                onSelect={handleSnippetSelected}
-            />
             {isAIAvailable() && (
                 <AICommandPopover visible={showAIPopover} onClose={() => setShowAIPopover(false)}
                                   onCommandGenerated={handleAICommandGenerated} position={aiPopoverPosition}

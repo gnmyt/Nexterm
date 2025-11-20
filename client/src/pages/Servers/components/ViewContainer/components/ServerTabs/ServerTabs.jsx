@@ -4,6 +4,7 @@ import Icon from "@mdi/react";
 import { loadIcon } from "@/pages/Servers/components/ServerList/components/ServerObject/ServerObject.jsx";
 import { mdiClose, mdiViewSplitVertical } from "@mdi/js";
 import { useDrag, useDrop } from "react-dnd";
+import TerminalActionsMenu from "../TerminalActionsMenu";
 import "./styles.sass";
 
 const DraggableTab = ({
@@ -54,9 +55,13 @@ export const ServerTabs = ({
                                onToggleSplit,
                                orderRef,
                                onTabOrderChange,
+                               onBroadcastToggle,
+                               onSnippetSelected,
+                               broadcastEnabled,
+                               onKeyboardShortcut,
+                               hasGuacamole,
                            }) => {
 
-    const { getServerById, getPVEContainerById } = useContext(ServerContext);
     const tabsRef = useRef(null);
 
     const [tabOrder, setTabOrder] = useState([]);
@@ -115,6 +120,14 @@ export const ServerTabs = ({
     return (
         <div className="server-tabs">
             <div className="layout-controls">
+                <TerminalActionsMenu 
+                    layoutMode={layoutMode}
+                    onBroadcastToggle={onBroadcastToggle}
+                    onSnippetSelected={onSnippetSelected}
+                    broadcastEnabled={broadcastEnabled}
+                    onKeyboardShortcut={onKeyboardShortcut}
+                    hasGuacamole={hasGuacamole}
+                />
                 <Icon path={mdiViewSplitVertical} className={`layout-btn ${layoutMode !== "single" ? "active" : ""}`}
                       title={layoutMode === "single" ? "Enable Split View" : "Disable Split View"}
                       onClick={onToggleSplit} />

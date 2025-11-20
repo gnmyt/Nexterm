@@ -10,7 +10,10 @@ export const ViewContainer = ({ activeSessions, activeSessionId, setActiveSessio
     const [layoutMode, setLayoutMode] = useState("single");
     const [gridSessions, setGridSessions] = useState([]);
     const sessionRefs = useRef({});
+    const terminalRefs = useRef({});
+    const guacamoleRefs = useRef({});
     const tabOrderRef = useRef([]);
+    const [broadcastMode, setBroadcastMode] = useState(false);
 
     const [columnSizes, setColumnSizes] = useState([]);
     const [rowSizes, setRowSizes] = useState([]);
@@ -18,6 +21,104 @@ export const ViewContainer = ({ activeSessions, activeSessionId, setActiveSessio
     const [resizingDirection, setResizingDirection] = useState(null);
     const resizeRef = useRef(null);
     const layoutRef = useRef(null);
+
+    const activeSession = activeSessions.find(session => session.id === activeSessionId);
+    const hasGuacamole = activeSession?.server?.renderer === "guac";
+
+    const registerTerminalRef = useCallback((sessionId, refs) => {
+        if (refs) {
+            terminalRefs.current[sessionId] = refs;
+        } else {
+            delete terminalRefs.current[sessionId];
+        }
+    }, []);
+
+    const registerGuacamoleRef = useCallback((sessionId, refs) => {
+        if (refs) {
+            guacamoleRefs.current[sessionId] = refs;
+        } else {
+            delete guacamoleRefs.current[sessionId];
+        }
+    }, []);
+
+    const toggleBroadcastMode = useCallback(() => {
+        setBroadcastMode(prev => !prev);
+    }, []);
+
+    const handleKeyboardShortcut = useCallback((keys) => {
+        const activeGuacamole = guacamoleRefs.current[activeSessionId];
+        if (activeGuacamole && activeGuacamole.client) {
+            keys.forEach(key => activeGuacamole.client.sendKeyEvent(1, key));
+            setTimeout(() => {
+                [...keys].reverse().forEach(key => activeGuacamole.client.sendKeyEvent(0, key));
+            }, 50);
+        }
+    }, [activeSessionId]);
+
+    const handleSnippetSelected = useCallback((command) => {
+        const commandWithNewline = command.endsWith("\n") ? command : command + "\n";
+        
+        if (broadcastMode && layoutMode !== "single") {
+            Object.entries(terminalRefs.current).forEach(([, { ws }]) => {
+                if (ws && ws.readyState === WebSocket.OPEN) {
+                    ws.send(commandWithNewline);
+                }
+            });
+
+            Object.entries(guacamoleRefs.current).forEach(([, { client }]) => {
+                if (client) {
+                    for (let i = 0; i < command.length; i++) {
+                        const char = command.charCodeAt(i);
+                        setTimeout(() => {
+                            client.sendKeyEvent(1, char);
+                            setTimeout(() => client.sendKeyEvent(0, char), 10);
+                        }, i * 20);
+                    }
+                    if (commandWithNewline.endsWith("\n")) {
+                        setTimeout(() => {
+                            client.sendKeyEvent(1, 0xff0d);
+                            setTimeout(() => client.sendKeyEvent(0, 0xff0d), 10);
+                        }, command.length * 20);
+                    }
+                }
+            });
+        } else {
+            const activeSession = activeSessions.find(s => s.id === activeSessionId);
+            
+            if (activeSession?.server.renderer === "terminal") {
+                const activeTerminal = terminalRefs.current[activeSessionId];
+                if (activeTerminal && activeTerminal.ws && activeTerminal.ws.readyState === WebSocket.OPEN) {
+                    activeTerminal.ws.send(commandWithNewline);
+                    if (activeTerminal.term) {
+                        activeTerminal.term.focus();
+                    }
+                }
+            } else if (activeSession?.server.renderer === "guac") {
+                const activeGuacamole = guacamoleRefs.current[activeSessionId];
+                if (activeGuacamole && activeGuacamole.client) {
+                    for (let i = 0; i < command.length; i++) {
+                        const char = command.charCodeAt(i);
+                        setTimeout(() => {
+                            activeGuacamole.client.sendKeyEvent(1, char);
+                            setTimeout(() => activeGuacamole.client.sendKeyEvent(0, char), 10);
+                        }, i * 20);
+                    }
+                    if (commandWithNewline.endsWith("\n")) {
+                        setTimeout(() => {
+                            activeGuacamole.client.sendKeyEvent(1, 0xff0d);
+                            setTimeout(() => activeGuacamole.client.sendKeyEvent(0, 0xff0d), 10);
+                        }, command.length * 20);
+                    }
+                }
+            }
+        }
+    }, [layoutMode, activeSessionId, broadcastMode, activeSessions]);
+
+    useEffect(() => {
+        if (layoutMode === "single") {
+            setBroadcastMode(false);
+        }
+    }, [layoutMode]);
 
     const onTabOrderChange = useCallback((newOrder) => {
         tabOrderRef.current = newOrder;
@@ -238,9 +339,12 @@ export const ViewContainer = ({ activeSessions, activeSessionId, setActiveSessio
     const renderRenderer = (session) => {
         switch (session.server.renderer) {
             case "guac":
-                return <GuacamoleRenderer session={session} disconnectFromServer={disconnectFromServer} />;
+                return <GuacamoleRenderer session={session} disconnectFromServer={disconnectFromServer} 
+                                         registerGuacamoleRef={registerGuacamoleRef} />;
             case "terminal":
-                return <XtermRenderer session={session} disconnectFromServer={disconnectFromServer} />;
+                return <XtermRenderer session={session} disconnectFromServer={disconnectFromServer} 
+                                      registerTerminalRef={registerTerminalRef} broadcastMode={broadcastMode}
+                                      terminalRefs={terminalRefs} />;
             case "sftp":
                 return <FileRenderer session={session} disconnectFromServer={disconnectFromServer} />;
             default:
@@ -287,7 +391,9 @@ export const ViewContainer = ({ activeSessions, activeSessionId, setActiveSessio
             <ServerTabs activeSessions={activeSessions} setActiveSessionId={focusSession}
                         activeSessionId={activeSessionId} disconnectFromServer={disconnectFromServer}
                         layoutMode={layoutMode} onToggleSplit={toggleSplitMode} orderRef={tabOrderRef}
-                        onTabOrderChange={onTabOrderChange} />
+                        onTabOrderChange={onTabOrderChange} onBroadcastToggle={toggleBroadcastMode}
+                        onSnippetSelected={handleSnippetSelected} broadcastEnabled={broadcastMode}
+                        onKeyboardShortcut={handleKeyboardShortcut} hasGuacamole={hasGuacamole} />
 
             <div ref={layoutRef}
                  className={`view-layouter ${layoutMode} ${isResizing ? "resizing" : ""} ${isResizing && resizingDirection ? `resizing-${resizingDirection}` : ""}`}
