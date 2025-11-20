@@ -21,18 +21,13 @@ module.exports = db.define("credentials", {
         },
         onDelete: "CASCADE",
     },
-    serverEntryId: {
-        type: Sequelize.INTEGER,
-        allowNull: true,
-        references: {
-            model: "entries",
-            key: "id",
-        },
-        onDelete: "CASCADE",
-    },
     type: {
         type: Sequelize.STRING,
         allowNull: false,
+    },
+    secret: {
+        type: Sequelize.VIRTUAL,
+        allowNull: true,
     },
     secretEncrypted: {
         type: Sequelize.BLOB,
@@ -50,20 +45,20 @@ module.exports = db.define("credentials", {
     freezeTableName: true,
     timestamps: true,
     hooks: {
-        beforeCreate: (credential) => {
-            if (credential.secret) {
+        beforeValidate: (credential) => {
+            if (credential.secret && !credential.secretEncrypted) {
                 const encrypted = encrypt(credential.secret);
-                credential.secretEncrypted = encrypted.encrypted;
-                credential.secretIV = encrypted.iv;
-                credential.secretAuthTag = encrypted.authTag;
+                credential.setDataValue('secretEncrypted', Buffer.from(encrypted.encrypted, 'hex'));
+                credential.setDataValue('secretIV', encrypted.iv);
+                credential.setDataValue('secretAuthTag', encrypted.authTag);
             }
         },
         beforeUpdate: (credential) => {
             if (credential.secret && credential.changed('secret')) {
                 const encrypted = encrypt(credential.secret);
-                credential.secretEncrypted = encrypted.encrypted;
-                credential.secretIV = encrypted.iv;
-                credential.secretAuthTag = encrypted.authTag;
+                credential.setDataValue('secretEncrypted', Buffer.from(encrypted.encrypted, 'hex'));
+                credential.setDataValue('secretIV', encrypted.iv);
+                credential.setDataValue('secretAuthTag', encrypted.authTag);
             }
         },
         afterFind: (credentials) => {

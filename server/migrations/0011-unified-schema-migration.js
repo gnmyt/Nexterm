@@ -95,12 +95,6 @@ module.exports = {
                     references: { model: "integrations", key: "id" },
                     onDelete: "CASCADE",
                 },
-                serverEntryId: {
-                    type: DataTypes.INTEGER,
-                    allowNull: true,
-                    references: { model: "entries", key: "id" },
-                    onDelete: "CASCADE",
-                },
                 type: { type: DataTypes.STRING, allowNull: false },
                 secretEncrypted: { type: DataTypes.BLOB, allowNull: false },
                 secretIV: { type: DataTypes.STRING, allowNull: true },
@@ -112,16 +106,17 @@ module.exports = {
 
         if (!tableNames.includes("entries_identities")) {
             await queryInterface.createTable("entries_identities", {
-                id: { type: DataTypes.INTEGER, autoIncrement: true, primaryKey: true, allowNull: false },
                 entryId: {
                     type: DataTypes.INTEGER,
                     allowNull: false,
+                    primaryKey: true,
                     references: { model: "entries", key: "id" },
                     onDelete: "CASCADE",
                 },
                 identityId: {
                     type: DataTypes.INTEGER,
                     allowNull: false,
+                    primaryKey: true,
                     references: { model: "identities", key: "id" },
                     onDelete: "CASCADE",
                 },
