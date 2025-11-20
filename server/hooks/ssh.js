@@ -17,8 +17,15 @@ module.exports = async (ws, context) => {
 
             ws.on("message", (data) => {
                 if (data.startsWith("\x01")) {
-                    const [width, height] = data.substring(1).split(",").map(Number);
-                    stream.setWindow(height, width);
+                    const resizeData = data.substring(1);
+                    if (resizeData.includes(",")) {
+                        const [width, height] = resizeData.split(",").map(Number);
+                        if (!isNaN(width) && !isNaN(height)) {
+                            stream.setWindow(height, width);
+                            return;
+                        }
+                    }
+                    stream.write(data);
                 } else {
                     stream.write(data);
                 }
