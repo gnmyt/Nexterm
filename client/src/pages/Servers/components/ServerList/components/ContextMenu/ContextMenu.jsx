@@ -35,9 +35,9 @@ export const ContextMenu = ({
     setRenameStateId,
     setServerDialogOpen,
     setCurrentFolderId,
+    setCurrentOrganizationId,
     setEditServerId,
     connectToServer,
-    connectToPVEServer,
     setProxmoxDialogOpen,
     setSSHConfigImportDialogOpen,
     openSFTP,
@@ -46,8 +46,6 @@ export const ContextMenu = ({
     const {
         loadServers,
         getServerById,
-        getPVEServerById,
-        getPVEContainerById,
     } = useContext(ServerContext);
 
     const { identities } = useContext(IdentityContext);
@@ -56,13 +54,7 @@ export const ContextMenu = ({
     const [showSftpSubmenu, setShowSftpSubmenu] = useState(false);
     const [showImportSubmenu, setShowImportSubmenu] = useState(false);
 
-    const server = id
-        ? type === "server-object"
-            ? getServerById(id)
-            : type === "pve-object"
-                ? getPVEServerById(id.split("-")[1])
-                : getPVEContainerById(id.split("-")[1], id.split("-")[2])
-        : null;
+    const server = id ? type === "server-object" ? getServerById(id) : null : null;
 
     const isOrgFolder = id && id.toString().startsWith("org-");
 
@@ -81,29 +73,45 @@ export const ContextMenu = ({
 
     const deleteFolder = () => deleteRequest("folders/" + id).then(loadServers);
 
-    const deleteServer = () => deleteRequest("servers/" + id).then(loadServers);
+    const deleteServer = () => deleteRequest("entries/" + id).then(loadServers);
 
     const createServer = () => {
-        setCurrentFolderId(id);
+        if (isOrgFolder) {
+            const orgId = parseInt(id.toString().split("-")[1]);
+            setCurrentFolderId(null);
+            setCurrentOrganizationId(orgId);
+        } else {
+            setCurrentFolderId(id);
+            setCurrentOrganizationId(null);
+        }
         setServerDialogOpen();
     };
 
     const createPVEServer = () => {
-        setCurrentFolderId(id);
+        if (isOrgFolder) {
+            const orgId = parseInt(id.toString().split("-")[1]);
+            setCurrentFolderId(null);
+            setCurrentOrganizationId(orgId);
+        } else {
+            setCurrentFolderId(id);
+            setCurrentOrganizationId(null);
+        }
         setProxmoxDialogOpen();
     };
 
     const openSSHConfigImport = () => {
-        setCurrentFolderId(id);
+        if (isOrgFolder) {
+            const orgId = parseInt(id.toString().split("-")[1]);
+            setCurrentFolderId(null);
+            setCurrentOrganizationId(orgId);
+        } else {
+            setCurrentFolderId(id);
+            setCurrentOrganizationId(null);
+        }
         setSSHConfigImportDialogOpen();
     };
 
     const connect = (identityId = null) => {
-        if (type === "pve-entry") {
-            connectToPVEServer(id.split("-")[1], id.split("-")[2]);
-            return;
-        }
-
         const targetIdentityId = identityId || server?.identities[0];
         connectToServer(server?.id, targetIdentityId);
         setShowIdentitySubmenu(false);
@@ -131,13 +139,12 @@ export const ContextMenu = ({
     };
 
     const postPVEAction = (type) => {
-        const serverType = server?.type === "pve-qemu" ? "qemu" : "lxc";
-        postRequest("pve-servers/" + serverType + "/" + id.split("-")[1] + "/" + server?.id + "/" + type)
+        postRequest(`integrations/entry/${id}/${type}`)
             .then(loadServers);
     };
 
     const deletePVEServer = () => {
-        deleteRequest("pve-servers/" + id.split("-")[1]).then(loadServers);
+        deleteRequest("integrations/" + id.split("-")[1]).then(loadServers);
     };
 
     const duplicateServer = async () => {
@@ -145,7 +152,7 @@ export const ContextMenu = ({
         if (!server) return;
 
         try {
-            await postRequest(`servers/${server.id}/duplicate`);
+            await postRequest(`entries/${server.id}/duplicate`);
             await loadServers();
         } catch (error) {
             console.error("Failed to duplicate server:", error);
@@ -160,10 +167,18 @@ export const ContextMenu = ({
             {type !== "server-object" &&
                 type !== "pve-object" &&
                 type !== "pve-entry" && (
-                    <div className="context-item" onClick={createFolder}>
-                        <Icon path={mdiFolderPlus} />
-                        <p>{t("servers.contextMenu.createFolder")}</p>
-                    </div>
+                    <>
+                        <div className="context-item" onClick={createFolder}>
+                            <Icon path={mdiFolderPlus} />
+                            <p>{t("servers.contextMenu.createFolder")}</p>
+                        </div>
+                        {(type === null || type === "folder-object" || isOrgFolder) && (
+                            <div className="context-item" onClick={createServer}>
+                                <Icon path={mdiServerPlus} />
+                                <p>{t("servers.contextMenu.createServer")}</p>
+                            </div>
+                        )}
+                    </>
                 )}
             {type === "folder-object" && !isOrgFolder && (
                 <>
@@ -177,10 +192,6 @@ export const ContextMenu = ({
                     >
                         <Icon path={mdiFormTextbox} />
                         <p>{t("servers.contextMenu.renameFolder")}</p>
-                    </div>
-                    <div className="context-item" onClick={createServer}>
-                        <Icon path={mdiServerPlus} />
-                        <p>{t("servers.contextMenu.createServer")}</p>
                     </div>
                     <div className="context-item submenu-parent"
                          onMouseEnter={() => setShowImportSubmenu(true)}
@@ -289,7 +300,7 @@ export const ContextMenu = ({
                 </>
             )}
 
-            {type === "pve-object" && (
+            {type === "pve-qemu" && (
                 <>
                     <div className="context-item" onClick={editPVEServer}>
                         <Icon path={mdiPencil} />

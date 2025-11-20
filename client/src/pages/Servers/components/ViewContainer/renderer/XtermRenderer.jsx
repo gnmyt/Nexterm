@@ -110,29 +110,16 @@ const XtermRenderer = ({ session, disconnectFromServer, pve }) => {
 
         const protocol = location.protocol === "https:" ? "wss" : "ws";
 
-        let url;
         let ws;
 
-        if (pve) {
-            url = process.env.NODE_ENV === "production" ? `${window.location.host}/api/servers/pve-lxc` : "localhost:6989/api/servers/pve-lxc";
-            
-            let wsUrl = `${protocol}://${url}?sessionToken=${sessionToken}&serverId=${session.server}&containerId=${session.containerId}`;
-            if (session.connectionReason) {
-                wsUrl += `&connectionReason=${encodeURIComponent(session.connectionReason)}`;
-            }
-            
-            ws = new WebSocket(wsUrl);
-        } else {
-            url = process.env.NODE_ENV === "production" ? `${window.location.host}/api/servers/sshd` : "localhost:6989/api/servers/sshd";
+        let url = process.env.NODE_ENV === "production" ? `${window.location.host}/api/ws/term` : "localhost:6989/api/ws/term";
 
-            let wsUrl = `${protocol}://${url}?sessionToken=${sessionToken}&serverId=${session.server}&identityId=${session.identity}`;
-            if (session.connectionReason) {
-                wsUrl += `&connectionReason=${encodeURIComponent(session.connectionReason)}`;
-            }
-            
-            ws = new WebSocket(wsUrl);
+        let wsUrl = `${protocol}://${url}?sessionToken=${sessionToken}&entryId=${session.server.id}&identityId=${session.identity}`;
+        if (session.connectionReason) {
+            wsUrl += `&connectionReason=${encodeURIComponent(session.connectionReason)}`;
         }
 
+        ws = new WebSocket(wsUrl);
         wsRef.current = ws;
 
         let interval = setInterval(() => {

@@ -1,12 +1,12 @@
-const ServerMonitoring = require("../models/ServerMonitoring");
-const Server = require("../models/Server");
+const MonitoringData = require("../models/MonitoringData");
+const Entry = require("../models/Entry");
 const { Op } = require("sequelize");
-const { validateServerAccess } = require("./server");
+const { validateEntryAccess } = require("./entry");
 
-module.exports.getServerMonitoring = async (accountId, serverId, timeRange = "1h") => {
+module.exports.getServerMonitoring = async (accountId, entryId, timeRange = "1h") => {
     try {
-        const server = await Server.findByPk(serverId);
-        const accessCheck = await validateServerAccess(accountId, server);
+        const entry = await Entry.findByPk(entryId);
+        const accessCheck = await validateEntryAccess(accountId, entry);
 
         if (!accessCheck.valid) return accessCheck;
 
@@ -25,15 +25,15 @@ module.exports.getServerMonitoring = async (accountId, serverId, timeRange = "1h
                 since = new Date(Date.now() - 60 * 60 * 1000);
         }
 
-        const allRecentData = await ServerMonitoring.findAll({
-            where: { serverId: serverId },
+        const allRecentData = await MonitoringData.findAll({
+            where: { entryId: entryId },
             order: [["timestamp", "DESC"]],
             limit: 5,
         });
 
-        const monitoringData = await ServerMonitoring.findAll({
+        const monitoringData = await MonitoringData.findAll({
             where: {
-                serverId: serverId,
+                entryId: entryId,
                 timestamp: {
                     [Op.gte]: since,
                 },
@@ -49,38 +49,18 @@ module.exports.getServerMonitoring = async (accountId, serverId, timeRange = "1h
             monitoringData.push(...allRecentData);
         }
 
-        const parsedMonitoringData = monitoringData.map(item => ({
-            ...item.dataValues || item,
-            diskUsage: JSON.parse(item.diskUsage) || [],
-            loadAverage: JSON.parse(item.loadAverage) || [],
-            osInfo: JSON.parse(item.osInfo) || {},
-            networkInterfaces: JSON.parse(item.networkInterfaces) || [],
-        }));
-
         return {
             server: {
-                id: server.id,
-                name: server.name,
-                ip: server.ip,
-                port: server.port,
-                monitoringEnabled: server.monitoringEnabled,
+                id: entry.id,
+                name: entry.name,
+                ip: entry.config?.ip,
+                port: entry.config?.port,
+                status: entry.status,
+                monitoringEnabled: entry.config?.monitoringEnabled,
             },
-            data: parsedMonitoringData,
+            data: monitoringData,
             timeRange: timeRange,
-            latest: latestData ? {
-                status: latestData.status,
-                timestamp: latestData.timestamp,
-                cpuUsage: latestData.cpuUsage,
-                memoryUsage: latestData.memoryUsage,
-                memoryTotal: latestData.memoryTotal,
-                diskUsage: JSON.parse(latestData.diskUsage) || [],
-                uptime: latestData.uptime,
-                loadAverage: JSON.parse(latestData.loadAverage) || [],
-                processes: latestData.processes,
-                osInfo: JSON.parse(latestData.osInfo) || {},
-                networkInterfaces: JSON.parse(latestData.networkInterfaces) || [],
-                errorMessage: latestData.errorMessage,
-            } : null,
+            latest: latestData || null,
         };
     } catch (error) {
         console.error("Error getting server monitoring:", error);
@@ -90,68 +70,55 @@ module.exports.getServerMonitoring = async (accountId, serverId, timeRange = "1h
 
 module.exports.getAllServersMonitoring = async (accountId) => {
     try {
-        const servers = await Server.findAll({
+        const entries = await Entry.findAll({
             where: {
-                [Op.or]: [{ accountId: accountId }, { organizationId: { [Op.not]: null } }],
-                protocol: "ssh",
-                monitoringEnabled: true,
+                type: "server",
             },
         });
 
-        const accessibleServers = [];
-        for (const server of servers) {
-            const accessCheck = await validateServerAccess(accountId, server);
-            if (accessCheck.valid) accessibleServers.push(server);
+        const accessibleEntries = [];
+        for (const entry of entries) {
+            const accessCheck = await validateEntryAccess(accountId, entry);
+            if (accessCheck.valid && entry.config?.monitoringEnabled && entry.config?.protocol === "ssh") {
+                accessibleEntries.push(entry);
+            }
         }
 
-        const serverIds = accessibleServers.map(s => s.id);
-        if (serverIds.length === 0) return [];
+        const entryIds = accessibleEntries.map(e => e.id);
+        if (entryIds.length === 0) return [];
 
-        const latestMonitoringPromises = serverIds.map(async (serverId) => {
-            return await ServerMonitoring.findOne({ where: { serverId }, order: [["timestamp", "DESC"]] });
+        const latestMonitoringPromises = entryIds.map(async (entryId) => {
+            return await MonitoringData.findOne({ where: { entryId }, order: [["timestamp", "DESC"]] });
         });
 
         const latestMonitoringData = await Promise.all(latestMonitoringPromises);
 
         const monitoringMap = {};
         latestMonitoringData.forEach((data, index) => {
-            if (data) monitoringMap[serverIds[index]] = data;
+            if (data) monitoringMap[entryIds[index]] = data;
         });
 
-        return accessibleServers.map(server => {
-            const monitoring = monitoringMap[server.id];
+        return accessibleEntries.map(entry => {
+            const monitoring = monitoringMap[entry.id];
             return {
-                id: server.id,
-                name: server.name,
-                ip: server.ip,
-                port: server.port,
-                icon: server.icon,
-                monitoringEnabled: server.monitoringEnabled,
-                monitoring: monitoring ? {
-                    status: monitoring.status,
-                    timestamp: monitoring.timestamp,
-                    cpuUsage: monitoring.cpuUsage,
-                    memoryUsage: monitoring.memoryUsage,
-                    memoryTotal: monitoring.memoryTotal,
-                    diskUsage: JSON.parse(monitoring.diskUsage) || [],
-                    uptime: monitoring.uptime,
-                    loadAverage: JSON.parse(monitoring.loadAverage) || [],
-                    processes: monitoring.processes,
-                    osInfo: JSON.parse(monitoring.osInfo) || {},
-                    networkInterfaces: JSON.parse(monitoring.networkInterfaces) || [],
-                    errorMessage: monitoring.errorMessage,
-                } : {
-                    status: "unknown",
+                id: entry.id,
+                name: entry.name,
+                ip: entry.config?.ip,
+                status: entry.status,
+                port: entry.config?.port,
+                icon: entry.icon,
+                monitoringEnabled: entry.config?.monitoringEnabled,
+                monitoring: monitoring || {
                     timestamp: null,
                     cpuUsage: null,
                     memoryUsage: null,
                     memoryTotal: null,
-                    diskUsage: [],
+                    disk: [],
                     uptime: null,
                     loadAverage: [],
                     processes: null,
                     osInfo: {},
-                    networkInterfaces: [],
+                    network: [],
                     errorMessage: "No monitoring data available",
                 },
             };

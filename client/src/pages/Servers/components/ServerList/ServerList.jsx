@@ -6,6 +6,8 @@ import ServerEntries from "./components/ServerEntries.jsx";
 import Icon from "@mdi/react";
 import { mdiCursorDefaultClick } from "@mdi/js";
 import ContextMenu from "./components/ContextMenu";
+import { useDrop, useDragLayer } from "react-dnd";
+import { patchRequest } from "@/common/utils/RequestUtil.js";
 
 const filterEntries = (entries, searchTerm) => {
     return entries
@@ -22,15 +24,12 @@ const filterEntries = (entries, searchTerm) => {
                 if (nameMatch || ipMatch) {
                     return entry;
                 }
-            } else if (entry.type === "pve-server") {
+            } else if (entry.type.startsWith("pve-")) {
                 const nameMatch = entry.name.toLowerCase().includes(searchTerm.toLowerCase());
                 const ipMatch = entry.ip && entry.ip.toLowerCase().includes(searchTerm.toLowerCase());
 
-                const filteredPVEEntries = entry.entries ? entry.entries.filter(pveEntry =>
-                    pveEntry.name?.toLowerCase().includes(searchTerm.toLowerCase())) : [];
-
-                if (nameMatch || ipMatch || filteredPVEEntries.length > 0) {
-                    return { ...entry, entries: filteredPVEEntries };
+                if (nameMatch || ipMatch) {
+                    return entry;
                 }
             }
             return null;
@@ -49,9 +48,9 @@ const applyRenameState = (folderId) => (entry) => {
 
 export const ServerList = ({
                                setServerDialogOpen, setCurrentFolderId, setProxmoxDialogOpen, setSSHConfigImportDialogOpen,
-                               setEditServerId, connectToServer, connectToPVEServer, openSFTP,
+                               setEditServerId, connectToServer, openSFTP, setCurrentOrganizationId,
                            }) => {
-    const { servers } = useContext(ServerContext);
+    const { servers, loadServers } = useContext(ServerContext);
     const [search, setSearch] = useState("");
     const [contextMenuPosition, setContextMenuPosition] = useState(null);
     const [contextClickedType, setContextClickedType] = useState(null);
@@ -61,6 +60,44 @@ export const ServerList = ({
     const [isResizing, setIsResizing] = useState(false);
     const [isCollapsed, setIsCollapsed] = useState(false);
     const serverListRef = useRef(null);
+    const serversContainerRef = useRef(null);
+    const scrollIntervalRef = useRef(null);
+
+    const { isDragging, clientOffset } = useDragLayer((monitor) => ({
+        isDragging: monitor.isDragging(),
+        clientOffset: monitor.getClientOffset(),
+    }));
+
+    const [{ isOver }, dropRef] = useDrop({
+        accept: ["server", "folder"],
+        drop: async (item, monitor) => {
+            const didDrop = monitor.didDrop();
+            if (didDrop) return;
+
+            try {
+                if (item.type === "server") {
+                    await patchRequest(`entries/${item.id}/reposition`, { 
+                        targetId: null,
+                        placement: 'after',
+                        folderId: null
+                    });
+                    loadServers();
+                    return {};
+                }
+
+                if (item.type === "folder") {
+                    await patchRequest(`folders/${item.id}`, { parentId: null });
+                    loadServers();
+                    return {};
+                }
+            } catch (error) {
+                console.error("Failed to drop item at root level", error.message);
+            }
+        },
+        collect: (monitor) => ({
+            isOver: monitor.isOver({ shallow: true }),
+        }),
+    });
 
     const filteredServers = search ? filterEntries(servers, search) : servers;
     const renameStateServers = renameStateId ? filteredServers.map(applyRenameState(renameStateId)) : filteredServers;
@@ -156,23 +193,68 @@ export const ServerList = ({
         };
     }, [isResizing]);
 
+    useEffect(() => {
+        if (!isDragging || !clientOffset || !serversContainerRef.current) {
+            if (scrollIntervalRef.current) {
+                clearInterval(scrollIntervalRef.current);
+                scrollIntervalRef.current = null;
+            }
+            return;
+        }
+
+        const container = serversContainerRef.current;
+        const rect = container.getBoundingClientRect();
+        const scrollThreshold = 50;
+        const scrollSpeed = 10;
+
+        const mouseY = clientOffset.y;
+        const distanceFromTop = mouseY - rect.top;
+        const distanceFromBottom = rect.bottom - mouseY;
+
+        if (scrollIntervalRef.current) {
+            clearInterval(scrollIntervalRef.current);
+            scrollIntervalRef.current = null;
+        }
+
+        if (distanceFromTop < scrollThreshold && distanceFromTop > 0) {
+            scrollIntervalRef.current = setInterval(() => {
+                container.scrollTop = Math.max(0, container.scrollTop - scrollSpeed);
+            }, 16);
+        } else if (distanceFromBottom < scrollThreshold && distanceFromBottom > 0) {
+            scrollIntervalRef.current = setInterval(() => {
+                container.scrollTop = Math.min(
+                    container.scrollHeight - container.clientHeight,
+                    container.scrollTop + scrollSpeed
+                );
+            }, 16);
+        }
+
+        return () => {
+            if (scrollIntervalRef.current) {
+                clearInterval(scrollIntervalRef.current);
+                scrollIntervalRef.current = null;
+            }
+        };
+    }, [isDragging, clientOffset]);
+
     return (
         <div
             className={`server-list ${isCollapsed ? "collapsed" : ""}`}
             style={{ width: isCollapsed ? "0px" : `${width}px` }} ref={serverListRef}
             onMouseDown={isCollapsed ? startResizing : undefined}>
             {!isCollapsed && (
-                <div className="server-list-inner">
+                <div className="server-list-inner" ref={dropRef}>
                     <ServerSearch search={search} setSearch={setSearch} />
                     {servers && servers.length >= 1 && (
-                        <div className="servers" onContextMenu={handleContextMenu}>
+                        <div className={`servers${isOver ? " drop-zone-active" : ""}`} 
+                             onContextMenu={handleContextMenu} 
+                             ref={serversContainerRef}>
                             <ServerEntries entries={renameStateServers} setRenameStateId={setRenameStateId}
-                                           nestedLevel={0} connectToServer={connectToServer}
-                                           connectToPVEServer={connectToPVEServer} />
+                                           nestedLevel={0} connectToServer={connectToServer} />
                         </div>
                     )}
                     {servers && servers.length === 0 && (
-                        <div className="no-servers" onContextMenu={handleContextMenu}>
+                        <div className={`no-servers${isOver ? " drop-zone-active" : ""}`} onContextMenu={handleContextMenu}>
                             <Icon path={mdiCursorDefaultClick} />
                             <p>Right-click to add a new server</p>
                         </div>
@@ -181,9 +263,10 @@ export const ServerList = ({
                         <ContextMenu position={contextMenuPosition} type={contextClickedType} id={contextClickedId}
                                      setRenameStateId={setRenameStateId} setServerDialogOpen={setServerDialogOpen}
                                      setCurrentFolderId={setCurrentFolderId} setEditServerId={setEditServerId}
+                                     setCurrentOrganizationId={setCurrentOrganizationId}
                                      setProxmoxDialogOpen={setProxmoxDialogOpen} setSSHConfigImportDialogOpen={setSSHConfigImportDialogOpen}
                                      openSFTP={openSFTP}
-                                     connectToServer={connectToServer} connectToPVEServer={connectToPVEServer} />
+                                     connectToServer={connectToServer} />
                     )}
                 </div>
             )}

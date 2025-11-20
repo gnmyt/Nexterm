@@ -5,7 +5,7 @@ const packageJson = require("../package.json");
 const MigrationRunner = require("./utils/migrationRunner");
 const { authenticate } = require("./middlewares/auth");
 const expressWs = require("express-ws");
-const { startPVEUpdater } = require("./utils/pveUpdater");
+const { startStatusChecker, stopStatusChecker } = require("./utils/statusChecker");
 const { ensureInternalProvider } = require("./controllers/oidc");
 const monitoringService = require("./utils/monitoringService");
 const { generateOpenAPISpec } = require("./openapi");
@@ -33,21 +33,21 @@ app.use("/api/accounts", require("./routes/account"));
 app.use("/api/auth", require("./routes/auth"));
 app.use("/api/oidc", require("./routes/oidc"));
 
-app.ws("/api/servers/sshd", require("./routes/sshd"));
-app.ws("/api/servers/sftp", require("./routes/sftp"));
-app.ws("/api/servers/pve-lxc", require("./routes/pveLXC"));
-app.ws("/api/servers/pve-qemu", require("./routes/pveQEMU"));
+// Unified WebSocket endpoints
+app.ws("/api/ws/term", require("./routes/term"));
+app.ws("/api/ws/guac", require("./routes/guac"));
+app.ws("/api/ws/sftp", require("./routes/sftpWS"));
 
-app.use("/api/servers/guacd", require("./middlewares/guacamole"));
-app.use("/api/servers/sftp-download", require("./routes/sftpDownload"));
+// SFTP download endpoint
+app.use("/api/entries/sftp-download", require("./routes/sftpDownload"));
 
 app.use("/api/users", authenticate, isAdmin, require("./routes/users"));
 app.use("/api/ai", authenticate, require("./routes/ai"));
 app.use("/api/sessions", authenticate, require("./routes/session"));
 app.use("/api/folders", authenticate, require("./routes/folder"));
-app.use("/api/servers", authenticate, require("./routes/server"));
+app.use("/api/entries", authenticate, require("./routes/entry"));
 app.use("/api/monitoring", authenticate, require("./routes/monitoring"));
-app.use("/api/pve-servers", authenticate, require("./routes/pveServer"));
+app.use("/api/integrations", authenticate, require("./routes/integration"));
 app.use("/api/audit", authenticate, require("./routes/audit"));
 app.use("/api/identities", authenticate, require("./routes/identity"));
 app.use("/api/snippets", authenticate, require("./routes/snippet"));
@@ -95,7 +95,7 @@ db.authenticate()
 
         await ensureInternalProvider();
 
-        startPVEUpdater();
+        startStatusChecker();
 
         startAppUpdater();
 
@@ -114,6 +114,7 @@ process.on("SIGINT", async () => {
     console.log("Shutting down the server...");
 
     monitoringService.stop();
+    stopStatusChecker();
 
     await db.close();
 

@@ -22,7 +22,7 @@ import Icon from "@mdi/react";
 import SelectBox from "@/common/components/SelectBox";
 import { useTranslation } from "react-i18next";
 
-const DetailsPage = ({name, setName, icon, setIcon, ip, setIp, port, setPort, protocol, setProtocol}) => {
+const DetailsPage = ({name, setName, icon, setIcon, config, setConfig}) => {
     const { t } = useTranslation();
     
     return (
@@ -62,12 +62,13 @@ const DetailsPage = ({name, setName, icon, setIcon, ip, setIp, port, setPort, pr
                 <div className="form-group">
                     <label htmlFor="ip">{t("servers.dialog.fields.serverIp")}</label>
                     <Input icon={mdiIp} type="text" placeholder={t("servers.dialog.placeholders.serverIp")} id="ip"
-                           autoComplete="off" value={ip} setValue={setIp} />
+                           autoComplete="off" value={config.ip || ""} setValue={(value) => setConfig(prev => ({ ...prev, ip: value }))} />
                 </div>
                 <div className="form-group">
                     <label htmlFor="port">{t("servers.dialog.fields.port")}</label>
-                    <input type="text" placeholder={t("servers.dialog.placeholders.port")} value={port} onChange={(event) => setPort(event.target.value)}
-                            className="small-input" id="port" />
+                    <input type="text" placeholder={t("servers.dialog.placeholders.port")} value={config.port || ""}
+                           onChange={(event) => setConfig(prev => ({ ...prev, port: event.target.value }))}
+                           className="small-input" id="port" />
                 </div>
 
                 <div className="form-group">
@@ -76,7 +77,7 @@ const DetailsPage = ({name, setName, icon, setIcon, ip, setIp, port, setPort, pr
                         { label: "SSH", value: "ssh" },
                         { label: "RDP", value: "rdp" },
                         { label: "VNC", value: "vnc" }
-                    ]} selected={protocol} setSelected={setProtocol} />
+                    ]} selected={config.protocol} setSelected={(value) => setConfig(prev => ({ ...prev, protocol: value }))} />
                 </div>
 
             </div>

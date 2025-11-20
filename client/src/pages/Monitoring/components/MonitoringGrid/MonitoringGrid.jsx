@@ -73,7 +73,7 @@ export const MonitoringGrid = ({ servers, loading, onServerSelect }) => {
                         </div>
                     </div>
 
-                    {server.monitoring.status === 'online' ? (
+                    {server.status === 'online' ? (
                         <>
                             <div className="metrics">
                                 <div className="metric">
@@ -120,21 +120,21 @@ export const MonitoringGrid = ({ servers, loading, onServerSelect }) => {
                         <div className="offline-state">
                             <div className="offline-icon">
                                 <Icon path={
-                                    server.monitoring.status === 'offline' ? mdiServerOff :
-                                    server.monitoring.status === 'error' ? mdiAlertCircle :
+                                    server.status === 'offline' ? mdiServerOff :
+                                    server.status === 'error' ? mdiAlertCircle :
                                     mdiClockOutline
                                 } />
                             </div>
                             <div className="offline-info">
                                 <h4>
-                                    {server.monitoring.status === 'offline' ? t('monitoring.grid.status.serverOffline') :
-                                     server.monitoring.status === 'error' ? t('monitoring.grid.status.connectionError') :
+                                    {server.status === 'offline' ? t('monitoring.grid.status.serverOffline') :
+                                     server.status === 'error' ? t('monitoring.grid.status.connectionError') :
                                      t('monitoring.grid.status.statusUnknown')}
                                 </h4>
                                 <p>
-                                    {server.monitoring.status === 'offline' ? 
+                                    {server.status === 'offline' ?
                                         t('monitoring.grid.status.offlineMessage') :
-                                     server.monitoring.status === 'error' ? 
+                                     server.status === 'error' ?
                                         (server.monitoring.errorMessage || t('monitoring.grid.status.errorMessage')) :
                                         t('monitoring.grid.status.unknownMessage')}
                                 </p>

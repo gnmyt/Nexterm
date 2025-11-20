@@ -1,9 +1,8 @@
 import ServerObject from "@/pages/Servers/components/ServerList/components/ServerObject";
 import CollapsibleFolder from "./CollapsibleFolder.jsx";
-import PVEObject from "@/pages/Servers/components/ServerList/components/PVEObject";
 import OrganizationFolder from "./OrganizationFolder";
 
-const ServerEntries = ({ entries, nestedLevel, setRenameStateId, connectToServer, connectToPVEServer, sshOnly = false, folderId }) => {
+const ServerEntries = ({ entries, nestedLevel, setRenameStateId, connectToServer, folderId, organizationId }) => {
     return (
         <>
             {entries.map(entry => {
@@ -16,9 +15,7 @@ const ServerEntries = ({ entries, nestedLevel, setRenameStateId, connectToServer
                             entries={entry.entries}
                             nestedLevel={nestedLevel}
                             connectToServer={connectToServer}
-                            connectToPVEServer={connectToPVEServer}
                             setRenameStateId={setRenameStateId}
-                            sshOnly={sshOnly}
                         />
                     );
                 } else if (entry.type === "folder") {
@@ -31,29 +28,26 @@ const ServerEntries = ({ entries, nestedLevel, setRenameStateId, connectToServer
                             renameState={entry.renameState}
                             setRenameStateId={setRenameStateId}
                             nestedLevel={nestedLevel}
+                            organizationId={organizationId}
+                            folderType={entry.folderType}
                             connectToServer={connectToServer}
-                            connectToPVEServer={connectToPVEServer}
-                            sshOnly={sshOnly}
                         />
                     );
-                } else if (entry.type === "server") {
+                } else if (entry.type === "server" || entry.type.startsWith("pve-")) {
                     return (
                         <ServerObject
                             id={entry.id}
                             key={"s"+entry.id}
                             position={entry.position}
                             folderId={folderId}
+                            organizationId={organizationId}
                             name={entry.name}
+                            type={entry.type}
                             nestedLevel={nestedLevel}
                             icon={entry.icon}
-                            sshOnly={sshOnly}
+                            status={entry.status}
                             connectToServer={connectToServer}
                         />
-                    );
-                } else if (entry.type === "pve-server" && !sshOnly) {
-                    return (
-                        <PVEObject name={entry.name} nestedLevel={nestedLevel} key={"pve"+entry.id} online={entry.online}
-                                   id={entry.id} entries={entry.entries} connectToPVEServer={connectToPVEServer} />
                     );
                 }
                 return null;

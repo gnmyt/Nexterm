@@ -210,10 +210,8 @@ const GuacamoleRenderer = ({ session, disconnectFromServer, pve }) => {
             return;
         }
 
-        const urlSuffix = pve ? "pve-qemu" : "guacd";
-
-        const tunnel = new Guacamole.WebSocketTunnel((process.env.NODE_ENV === "production" ? "/api/servers/"
-            : "ws://localhost:6989/api/servers/") + urlSuffix);
+        const tunnel = new Guacamole.WebSocketTunnel((process.env.NODE_ENV === "production" ? "/api/ws/guac/"
+            : "ws://localhost:6989/api/ws/guac"));
         const client = new Guacamole.Client(tunnel);
 
         client.getDisplay().onresize = resizeHandler;
@@ -226,19 +224,11 @@ const GuacamoleRenderer = ({ session, disconnectFromServer, pve }) => {
         displayElement.style.imageRendering = "crisp-edges";
         ref.current.appendChild(displayElement);
 
-        if (pve) {
-            const connectionParams = `sessionToken=${sessionToken}&serverId=${session.server}&containerId=${session.containerId}`;
-            const connectionString = session.connectionReason 
-                ? `${connectionParams}&connectionReason=${encodeURIComponent(session.connectionReason)}`
-                : connectionParams;
-            client.connect(connectionString);
-        } else {
-            const connectionParams = `sessionToken=${sessionToken}&serverId=${session.server}&identity=${session.identity}`;
-            const connectionString = session.connectionReason 
-                ? `${connectionParams}&connectionReason=${encodeURIComponent(session.connectionReason)}`
-                : connectionParams;
-            client.connect(connectionString);
-        }
+        const connectionParams = `sessionToken=${sessionToken}&entryId=${session.server.id}&identity=${session.identity}`;
+        const connectionString = session.connectionReason
+            ? `${connectionParams}&connectionReason=${encodeURIComponent(session.connectionReason)}`
+            : connectionParams;
+        client.connect(connectionString);
 
         const mouse = new Guacamole.Mouse(displayElement);
         mouse.onmousedown = mouse.onmouseup = mouse.onmousemove = (mouseState) => {

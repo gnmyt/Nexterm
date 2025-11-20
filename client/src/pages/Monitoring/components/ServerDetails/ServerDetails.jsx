@@ -238,9 +238,9 @@ export const ServerDetails = ({ server }) => {
                         <div className="storage-tab">
                             <div className="stat-card full-width">
                                 <h3>{t('monitoring.details.storage.title')}</h3>
-                                {latestData?.diskUsage && latestData.diskUsage.length > 0 ? (
+                                {latestData?.disk && latestData.disk.length > 0 ? (
                                     <div className="disk-list">
-                                        {latestData.diskUsage.map((disk, index) => (
+                                        {latestData.disk.map((disk, index) => (
                                             <div key={index} className="disk-item">
                                                 <div className="disk-header">
                                                     <span className="disk-name">{disk.filesystem}</span>
@@ -273,9 +273,9 @@ export const ServerDetails = ({ server }) => {
                         <div className="network-tab">
                             <div className="stat-card full-width">
                                 <h3>{t('monitoring.details.network.title')}</h3>
-                                {latestData?.networkInterfaces && latestData.networkInterfaces.length > 0 ? (
+                                {latestData?.network && latestData.network.length > 0 ? (
                                     <div className="network-list">
-                                        {latestData.networkInterfaces.map((iface, index) => (
+                                        {latestData.network.map((iface, index) => (
                                             <div key={index} className="network-item">
                                                 <div className="network-header">
                                                     <span className="network-name">{iface.name}</span>

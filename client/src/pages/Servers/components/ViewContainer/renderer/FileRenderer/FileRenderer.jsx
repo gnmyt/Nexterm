@@ -30,15 +30,15 @@ export const FileRenderer = ({ session, disconnectFromServer }) => {
     const dropZoneRef = useRef(null);
 
     const protocol = location.protocol === "https:" ? "wss" : "ws";
-    const path = process.env.NODE_ENV === "production" ? `${window.location.host}/api/servers/sftp` : "localhost:6989/api/servers/sftp";
+    const path = process.env.NODE_ENV === "production" ? `${window.location.host}/api/ws/sftp` : "localhost:6989/api/ws/sftp";
 
-    let url = `${protocol}://${path}?sessionToken=${sessionToken}&serverId=${session.server}&identityId=${session.identity}`;
+    let url = `${protocol}://${path}?sessionToken=${sessionToken}&entryId=${session.server.id}&identityId=${session.identity}`;
     if (session.connectionReason) {
         url += `&connectionReason=${encodeURIComponent(session.connectionReason)}`;
     }
 
     const downloadFile = (path) => {
-        let url = `/api/servers/sftp-download?serverId=${session.server}&identityId=${session.identity}&path=${path}&sessionToken=${sessionToken}`;
+        let url = `/api/entries/sftp-download?entryId=${session.server.id}&identityId=${session.identity}&path=${path}&sessionToken=${sessionToken}`;
         if (session.connectionReason) {
             url += `&connectionReason=${encodeURIComponent(session.connectionReason)}`;
         }

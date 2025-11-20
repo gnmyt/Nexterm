@@ -1,42 +1,9 @@
 const Identity = require("../models/Identity");
-const Server = require("../models/Server");
-const { encrypt } = require("../utils/encryption");
+const Credential = require("../models/Credential");
+const EntryIdentity = require("../models/EntryIdentity");
 const { hasOrganizationAccess } = require("../utils/permission");
 const OrganizationMember = require("../models/OrganizationMember");
 const { Op } = require("sequelize");
-
-module.exports.mapIdentitySecure = (identity) => {
-    return {
-        id: identity.id,
-        name: identity.name,
-        username: identity.username,
-        type: identity.type,
-        organizationId: identity.organizationId,
-    };
-};
-
-const encryptIdentity = (identity) => {
-    if (identity.password && identity.password !== "********") {
-        const encrypted = encrypt(identity.password);
-        identity.password = encrypted.encrypted;
-        identity.passwordIV = encrypted.iv;
-        identity.passwordAuthTag = encrypted.authTag;
-    }
-    if (identity.sshKey) {
-        const encrypted = encrypt(identity.sshKey);
-        identity.sshKey = encrypted.encrypted;
-        identity.sshKeyIV = encrypted.iv;
-        identity.sshKeyAuthTag = encrypted.authTag;
-    }
-    if (identity.passphrase && identity.passphrase !== "********") {
-        const encrypted = encrypt(identity.passphrase);
-        identity.passphrase = encrypted.encrypted;
-        identity.passphraseIV = encrypted.iv;
-        identity.passphraseAuthTag = encrypted.authTag;
-    }
-
-    return identity;
-};
 
 const validateIdentityAccess = async (accountId, identity) => {
     if (!identity) return { valid: false, error: { code: 501, message: "The identity does not exist" } };
@@ -55,6 +22,40 @@ const validateIdentityAccess = async (accountId, identity) => {
     return { valid: true, identity };
 };
 
+const upsertCredential = async (identityId, type, secret) => {
+    const existing = await Credential.findOne({ where: { identityId, type }, raw: false });
+    if (existing) {
+        existing.secret = secret;
+        await existing.save();
+    } else {
+        await Credential.create({ identityId, type, secret });
+    }
+};
+
+const syncCredentials = async (identityId, credentialType, password = null, sshKey = null, passphrase = null) => {
+    if (credentialType === "password" && password) {
+        await upsertCredential(identityId, "password", password);
+        await Credential.destroy({ where: { identityId, type: { [Op.in]: ["sshKey", "passphrase"] } } });
+    } else if (credentialType === "key" && sshKey) {
+        await upsertCredential(identityId, "sshKey", sshKey);
+        if (passphrase) {
+            await upsertCredential(identityId, "passphrase", passphrase);
+        } else {
+            await Credential.destroy({ where: { identityId, type: "passphrase" } });
+        }
+        await Credential.destroy({ where: { identityId, type: "password" } });
+    }
+};
+
+module.exports.getIdentityCredentials = async (identityId) => {
+    const credentials = await Credential.findAll({ where: { identityId } });
+    const result = {};
+    for (const cred of credentials) {
+        result[cred.type] = cred.secret;
+    }
+    return result;
+}
+
 module.exports.listIdentities = async (accountId) => {
     const personalIdentities = await Identity.findAll({ where: { accountId } });
 
@@ -67,8 +68,11 @@ module.exports.listIdentities = async (accountId) => {
         organizationIdentities = await Identity.findAll({ where: { organizationId: { [Op.in]: organizationIds } } });
     }
 
-    const allIdentities = [...personalIdentities, ...organizationIdentities];
-    return allIdentities.map(this.mapIdentitySecure);
+    return [...personalIdentities, ...organizationIdentities].map(identity => ({
+        ...identity,
+        createdAt: undefined,
+        updatedAt: undefined,
+    }));
 };
 
 module.exports.createIdentity = async (accountId, configuration) => {
@@ -77,14 +81,20 @@ module.exports.createIdentity = async (accountId, configuration) => {
         if (!hasAccess) {
             return { code: 403, message: "You don't have access to this organization" };
         }
-        return await Identity.create({
-            ...encryptIdentity(configuration),
-            accountId: null,
-            organizationId: configuration.organizationId,
-        });
     }
 
-    return await Identity.create({ ...encryptIdentity(configuration), accountId, organizationId: null });
+    const identity = await Identity.create({
+        ...configuration,
+        accountId: configuration.organizationId ? null : accountId,
+        organizationId: configuration.organizationId || null,
+        password: undefined,
+        sshKey: undefined,
+        passphrase: undefined,
+    });
+
+    await syncCredentials(identity.id, configuration.type, configuration.password, configuration.sshKey, configuration.passphrase);
+
+    return identity;
 };
 
 module.exports.deleteIdentity = async (accountId, identityId) => {
@@ -101,36 +111,8 @@ module.exports.deleteIdentity = async (accountId, identityId) => {
         accountId: identity.accountId,
     };
 
-    const personalServers = await Server.findAll({ where: { accountId } });
-    
-    const memberships = await OrganizationMember.findAll({ where: { accountId, status: "active" } });
-    const organizationIds = memberships.map(m => m.organizationId);
-    
-    let organizationServers = [];
-    if (organizationIds.length > 0) organizationServers = await Server.findAll({ where: { organizationId: { [Op.in]: organizationIds } } });
-
-    const allServers = [...personalServers, ...organizationServers];
-
-    const identityIdNum = parseInt(identityId);
-    
-    for (const server of allServers) {
-        let serverIdentities = [];
-
-        if (typeof server.identities === "string") {
-            try {
-                serverIdentities = JSON.parse(server.identities);
-            } catch (e) {
-                serverIdentities = [];
-            }
-        } else if (Array.isArray(server.identities)) {
-            serverIdentities = server.identities;
-        }
-        const updatedIdentities = serverIdentities.filter(id => parseInt(id) !== identityIdNum);
-
-        if (updatedIdentities.length !== serverIdentities.length) {
-            await Server.update({ identities: updatedIdentities }, { where: { id: server.id } });
-        }
-    }
+    await Credential.destroy({ where: { identityId } });
+    await EntryIdentity.destroy({ where: { identityId } });
 
     if (identity.organizationId) {
         await Identity.destroy({ where: { id: identityId, organizationId: identity.organizationId } });
@@ -157,14 +139,24 @@ module.exports.updateIdentity = async (accountId, identityId, configuration) => 
 
     delete configuration.accountId;
     delete configuration.organizationId;
+    
+    const password = configuration.password;
+    const sshKey = configuration.sshKey;
+    const passphrase = configuration.passphrase;
+    
+    delete configuration.password;
+    delete configuration.sshKey;
+    delete configuration.passphrase;
 
     if (identity.organizationId) {
-        await Identity.update(encryptIdentity(configuration), {
+        await Identity.update(configuration, {
             where: { id: identityId, organizationId: identity.organizationId },
         });
     } else {
-        await Identity.update(encryptIdentity(configuration), { where: { id: identityId, accountId } });
+        await Identity.update(configuration, { where: { id: identityId, accountId } });
     }
+
+    await syncCredentials(identityId, configuration.type, password, sshKey, passphrase);
 
     return { success: true, identity: identityInfo };
 };

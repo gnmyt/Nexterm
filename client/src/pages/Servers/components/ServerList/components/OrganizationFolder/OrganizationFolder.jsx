@@ -1,10 +1,14 @@
 import Icon from "@mdi/react";
 import { mdiDomain, mdiDomainOff } from "@mdi/js";
 import ServerEntries from "../ServerEntries.jsx";
-import { useState } from "react";
+import { useContext, useState } from "react";
 import { getFolderState, setFolderState } from "@/common/utils/folderState";
+import { useDrop } from "react-dnd";
+import { patchRequest } from "@/common/utils/RequestUtil.js";
+import { ServerContext } from "@/common/contexts/ServerContext.jsx";
 
-const OrganizationFolder = ({ id, name, entries, nestedLevel, connectToServer, connectToPVEServer, setRenameStateId, sshOnly }) => {
+const OrganizationFolder = ({ id, name, entries, nestedLevel, connectToServer, connectToPVEServer, setRenameStateId }) => {
+    const { loadServers } = useContext(ServerContext);
     const [isOpen, setIsOpen] = useState(() => getFolderState(id, true));
     
     const toggleFolder = () => {
@@ -14,10 +18,43 @@ const OrganizationFolder = ({ id, name, entries, nestedLevel, connectToServer, c
     };
     const orgId = id.split('-')[1];
 
+    const [{ isOver }, dropRef] = useDrop({
+        accept: ["server", "folder"],
+        drop: async (item) => {
+            try {
+                if (item.type === "server") {
+                    await patchRequest(`entries/${item.id}/reposition`, { 
+                        targetId: null,
+                        placement: 'after',
+                        folderId: null,
+                        organizationId: parseInt(orgId)
+                    });
+                    loadServers();
+                    return { id: orgId };
+                }
+
+                if (item.type === "folder") {
+                    await patchRequest(`folders/${item.id}`, { 
+                        parentId: null,
+                        organizationId: parseInt(orgId)
+                    });
+                    loadServers();
+                    return { id: orgId };
+                }
+            } catch (error) {
+                console.error("Failed to drop item into organization", error.message);
+            }
+        },
+        collect: (monitor) => ({
+            isOver: monitor.isOver(),
+        }),
+    });
+
     return (
         <>
-            <div className="folder-object" onClick={toggleFolder} data-id={id}
-                 style={{ paddingLeft: `${10 + (nestedLevel * 15)}px` }}>
+            <div className={"folder-object" + (isOver ? " folder-is-over" : "")} onClick={toggleFolder} data-id={id}
+                 style={{ paddingLeft: `${10 + (nestedLevel * 15)}px` }}
+                 ref={dropRef}>
                 <Icon path={isOpen ? mdiDomain : mdiDomainOff} />
                 <p className="truncate-text">{name}</p>
             </div>
@@ -26,10 +63,10 @@ const OrganizationFolder = ({ id, name, entries, nestedLevel, connectToServer, c
                     entries={entries}
                     nestedLevel={nestedLevel + 1}
                     setRenameStateId={setRenameStateId}
-                    folderId={`org-${orgId}`}
+                    folderId={null}
+                    organizationId={parseInt(orgId)}
                     connectToServer={connectToServer}
                     connectToPVEServer={connectToPVEServer}
-                    sshOnly={sshOnly}
                 />
             )}
         </>
