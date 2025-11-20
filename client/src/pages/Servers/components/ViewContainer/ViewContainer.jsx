@@ -4,6 +4,9 @@ import { useState, useRef, useCallback, useEffect } from "react";
 import GuacamoleRenderer from "@/pages/Servers/components/ViewContainer/renderer/GuacamoleRenderer.jsx";
 import XtermRenderer from "@/pages/Servers/components/ViewContainer/renderer/XtermRenderer.jsx";
 import FileRenderer from "@/pages/Servers/components/ViewContainer/renderer/FileRenderer";
+import Icon from "@mdi/react";
+import { mdiFullscreenExit } from "@mdi/js";
+import { useTranslation } from "react-i18next";
 
 export const ViewContainer = ({ activeSessions, activeSessionId, setActiveSessionId, disconnectFromServer }) => {
 
@@ -15,6 +18,8 @@ export const ViewContainer = ({ activeSessions, activeSessionId, setActiveSessio
     const tabOrderRef = useRef([]);
     const [broadcastMode, setBroadcastMode] = useState(false);
     const [sessionProgress, setSessionProgress] = useState({});
+    const [fullscreenMode, setFullscreenMode] = useState(false);
+    const { t } = useTranslation();
 
     const [columnSizes, setColumnSizes] = useState([]);
     const [rowSizes, setRowSizes] = useState([]);
@@ -51,6 +56,10 @@ export const ViewContainer = ({ activeSessions, activeSessionId, setActiveSessio
 
     const toggleBroadcastMode = useCallback(() => {
         setBroadcastMode(prev => !prev);
+    }, []);
+
+    const toggleFullscreenMode = useCallback(() => {
+        setFullscreenMode(prev => !prev);
     }, []);
 
     const handleKeyboardShortcut = useCallback((keys) => {
@@ -360,12 +369,14 @@ export const ViewContainer = ({ activeSessions, activeSessionId, setActiveSessio
         switch (session.server.renderer) {
             case "guac":
                 return <GuacamoleRenderer session={session} disconnectFromServer={disconnectFromServer} 
-                                         registerGuacamoleRef={registerGuacamoleRef} />;
+                                         registerGuacamoleRef={registerGuacamoleRef}
+                                         onFullscreenToggle={toggleFullscreenMode} />;
             case "terminal":
                 return <XtermRenderer session={session} disconnectFromServer={disconnectFromServer} 
                                       registerTerminalRef={registerTerminalRef} broadcastMode={broadcastMode}
                                       terminalRefs={terminalRefs} updateProgress={updateSessionProgress}
-                                      layoutMode={layoutMode} onBroadcastToggle={toggleBroadcastMode} />;
+                                      layoutMode={layoutMode} onBroadcastToggle={toggleBroadcastMode}
+                                      onFullscreenToggle={toggleFullscreenMode} />;
             case "sftp":
                 return <FileRenderer session={session} disconnectFromServer={disconnectFromServer} />;
             default:
@@ -408,14 +419,20 @@ export const ViewContainer = ({ activeSessions, activeSessionId, setActiveSessio
         );
     };
     return (
-        <div className="view-container">
-            <ServerTabs activeSessions={activeSessions} setActiveSessionId={focusSession}
+        <div className={`view-container ${fullscreenMode ? 'fullscreen' : ''}`}>
+            {fullscreenMode && (
+                <button className="exit-fullscreen-btn" onClick={toggleFullscreenMode} title={t('servers.terminalActions.exitFullScreen')}>
+                    <Icon path={mdiFullscreenExit} />
+                </button>
+            )}
+            {!fullscreenMode && <ServerTabs activeSessions={activeSessions} setActiveSessionId={focusSession}
                         activeSessionId={activeSessionId} disconnectFromServer={disconnectFromServer}
                         layoutMode={layoutMode} onToggleSplit={toggleSplitMode} orderRef={tabOrderRef}
                         onTabOrderChange={onTabOrderChange} onBroadcastToggle={toggleBroadcastMode}
                         onSnippetSelected={handleSnippetSelected} broadcastEnabled={broadcastMode}
                         onKeyboardShortcut={handleKeyboardShortcut} hasGuacamole={hasGuacamole}
-                        sessionProgress={sessionProgress} />
+                        sessionProgress={sessionProgress} fullscreenEnabled={fullscreenMode}
+                        onFullscreenToggle={toggleFullscreenMode} />}
 
             <div ref={layoutRef}
                  className={`view-layouter ${layoutMode} ${isResizing ? "resizing" : ""} ${isResizing && resizingDirection ? `resizing-${resizingDirection}` : ""}`}

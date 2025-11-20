@@ -1,17 +1,19 @@
 import { useState, useRef, useEffect } from "react";
 import Icon from "@mdi/react";
-import { mdiMenu, mdiBroadcast, mdiCodeArray, mdiKeyboard } from "@mdi/js";
+import { mdiMenu, mdiBroadcast, mdiCodeArray, mdiKeyboard, mdiFullscreen } from "@mdi/js";
 import SnippetsMenu from "../../renderer/components/SnippetsMenu";
 import KeyboardShortcutsMenu from "./components/KeyboardShortcutsMenu";
 import { useKeymaps, matchesKeybind } from "@/common/contexts/KeymapContext.jsx";
+import { useTranslation } from "react-i18next";
 import "./styles.sass";
 
-export const TerminalActionsMenu = ({ layoutMode, onBroadcastToggle, onSnippetSelected, broadcastEnabled, onKeyboardShortcut, hasGuacamole }) => {
+export const TerminalActionsMenu = ({ layoutMode, onBroadcastToggle, onSnippetSelected, broadcastEnabled, onKeyboardShortcut, hasGuacamole, fullscreenEnabled, onFullscreenToggle }) => {
     const [menuOpen, setMenuOpen] = useState(false);
     const [showSnippets, setShowSnippets] = useState(false);
     const [showKeyboardShortcuts, setShowKeyboardShortcuts] = useState(false);
     const menuRef = useRef(null);
     const { getParsedKeybind } = useKeymaps();
+    const { t } = useTranslation();
 
     useEffect(() => {
         const handleClickOutside = (event) => {
@@ -46,6 +48,13 @@ export const TerminalActionsMenu = ({ layoutMode, onBroadcastToggle, onSnippetSe
                     return;
                 }
             }
+
+            const fullscreenKeybind = getParsedKeybind("fullscreen");
+            if (fullscreenKeybind && matchesKeybind(event, fullscreenKeybind)) {
+                event.preventDefault();
+                onFullscreenToggle?.();
+                return;
+            }
         };
 
         const handleSnippetsShortcut = () => setShowSnippets(true);
@@ -64,13 +73,14 @@ export const TerminalActionsMenu = ({ layoutMode, onBroadcastToggle, onSnippetSe
             window.removeEventListener('terminal-snippets-shortcut', handleSnippetsShortcut);
             window.removeEventListener('terminal-keyboard-shortcuts-shortcut', handleKeyboardShortcutsShortcut);
         };
-    }, [getParsedKeybind, hasGuacamole]);
+    }, [getParsedKeybind, hasGuacamole, onFullscreenToggle]);
 
     const handleMenuItemClick = (action) => {
         setMenuOpen(false);
         if (action === "snippets") setShowSnippets(true);
         else if (action === "broadcast") onBroadcastToggle?.();
         else if (action === "keyboard") setShowKeyboardShortcuts(true);
+        else if (action === "fullscreen") onFullscreenToggle?.();
     };
 
     const handleSnippetSelect = (command) => {
@@ -83,7 +93,7 @@ export const TerminalActionsMenu = ({ layoutMode, onBroadcastToggle, onSnippetSe
             <Icon 
                 path={mdiMenu} 
                 className={`actions-menu-btn ${menuOpen ? 'active' : ''}`}
-                title="Terminal Actions" 
+                title={t('servers.terminalActions.menuTitle')}
                 onClick={(e) => {
                     e.stopPropagation();
                     setMenuOpen(!menuOpen);
@@ -94,21 +104,26 @@ export const TerminalActionsMenu = ({ layoutMode, onBroadcastToggle, onSnippetSe
                 <div className="actions-menu-dropdown">
                     <div className="menu-item" onClick={() => handleMenuItemClick("snippets")}>
                         <Icon path={mdiCodeArray} />
-                        <span>Snippets</span>
+                        <span>{t('servers.terminalActions.snippets')}</span>
                     </div>
                     {hasGuacamole && (
                         <div className="menu-item" onClick={() => handleMenuItemClick("keyboard")}>
                             <Icon path={mdiKeyboard} />
-                            <span>Keyboard Shortcuts</span>
+                            <span>{t('servers.terminalActions.keyboardShortcuts')}</span>
                         </div>
                     )}
                     {layoutMode !== "single" && (
                         <div className={`menu-item ${broadcastEnabled ? 'active' : ''}`} onClick={() => handleMenuItemClick("broadcast")}>
                             <Icon path={mdiBroadcast} />
-                            <span>Broadcasting</span>
-                            {broadcastEnabled && <span className="badge">ON</span>}
+                            <span>{t('servers.terminalActions.broadcasting')}</span>
+                            {broadcastEnabled && <span className="badge">{t('servers.terminalActions.badgeOn')}</span>}
                         </div>
                     )}
+                    <div className={`menu-item ${fullscreenEnabled ? 'active' : ''}`} onClick={() => handleMenuItemClick("fullscreen")}>
+                        <Icon path={mdiFullscreen} />
+                        <span>{t('servers.terminalActions.fullScreen')}</span>
+                        {fullscreenEnabled && <span className="badge">{t('servers.terminalActions.badgeOn')}</span>}
+                    </div>
                 </div>
             )}
 
