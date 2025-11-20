@@ -1,0 +1,171 @@
+@use "@/common/styles/colors"
+
+.tags-submenu
+  min-width: 200px
+  max-width: 250px
+  max-height: 400px
+  overflow-y: auto
+  overflow-x: hidden
+
+  .submenu-divider
+    height: 1px
+    background: colors.$dark-gray
+    margin: 4px 0
+
+  .tag-item
+    display: flex
+    align-items: center
+    gap: 10px
+    position: relative
+    justify-content: space-between
+    padding: 8px 12px !important
+
+    .tag-clickable
+      display: flex
+      align-items: center
+      gap: 10px
+      flex: 1
+      cursor: pointer
+
+    .tag-color
+      width: 10px
+      height: 10px
+      border-radius: 50%
+      flex-shrink: 0
+
+    .check-icon
+      width: 16px
+      height: 16px
+      opacity: 0.8
+      margin-left: auto
+
+    .tag-menu-button
+      display: flex
+      align-items: center
+      justify-content: center
+      width: 24px
+      height: 24px
+      border-radius: 4px
+      cursor: pointer
+      transition: background 0.2s
+      flex-shrink: 0
+
+      &:hover
+        background: colors.$dark-gray
+
+    .tag-dropdown-menu
+      position: absolute
+      right: 35px
+      bottom: 0
+      background: colors.$gray-full
+      border: 1px solid colors.$gray
+      border-radius: 0.5rem
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3)
+      overflow: hidden
+      z-index: 1000
+      min-width: 150px
+
+      .dropdown-item
+        display: flex
+        align-items: center
+        gap: 8px
+        padding: 8px 12px
+        cursor: pointer
+        transition: background 0.2s
+        font-size: 14px
+        color: colors.$white
+
+        &:hover
+          background: colors.$dark-gray
+
+        &.delete
+          color: #ef4444
+
+          &:hover
+            background: rgba(239, 68, 68, 0.1)
+
+  .create-tag-form
+    padding: 8px
+    display: flex
+    flex-direction: column
+    gap: 8px
+
+    input
+      padding: 8px
+      background: colors.$gray-full
+      border: 1px solid colors.$gray
+      border-radius: 0.5rem
+      color: colors.$white
+      font-size: 14px
+      outline: none
+      transition: all 0.2s
+      font-family: inherit
+
+      &:focus
+        border-color: colors.$primary
+        background: colors.$gray-full
+
+      &::placeholder
+        color: colors.$subtext
+
+    .color-picker
+      display: grid
+      grid-template-columns: repeat(6, 1fr)
+      gap: 6px
+      padding: 4px 0
+
+      .color-option
+        width: 24px
+        height: 24px
+        border-radius: 50%
+        cursor: pointer
+        border: 2px solid transparent
+        transition: all 0.2s
+
+        &:hover
+          transform: scale(1.15)
+          border-color: colors.$gray
+
+        &.selected
+          border-color: colors.$white
+          box-shadow: 0 0 0 1px colors.$dark-gray
+
+    .form-actions
+      display: flex
+      gap: 6px
+      margin-top: 4px
+
+      button
+        flex: 1
+        padding: 6px 12px
+        border: 1px solid colors.$gray
+        border-radius: 0.5rem
+        cursor: pointer
+        font-size: 13px
+        font-weight: 500
+        transition: all 0.2s
+        font-family: inherit
+
+        &:first-child
+          background: colors.$primary-opacity
+          color: colors.$white
+
+          &:hover
+            filter: brightness(0.8)
+
+          &:active
+            transform: scale(0.97)
+
+          &:disabled
+            opacity: 0.5
+            cursor: not-allowed
+
+        &:last-child
+          background: colors.$gray
+          color: colors.$white
+
+          &:hover
+            filter: brightness(0.8)
+
+          &:active
+            transform: scale(0.97)
