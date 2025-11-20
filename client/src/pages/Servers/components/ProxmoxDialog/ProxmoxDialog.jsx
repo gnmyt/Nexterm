@@ -8,9 +8,11 @@ import Button from "@/common/components/Button";
 import Input from "@/common/components/IconInput";
 import { getRequest, patchRequest, postRequest, putRequest } from "@/common/utils/RequestUtil.js";
 import { useTranslation } from "react-i18next";
+import { useToast } from "@/common/contexts/ToastContext.jsx";
 
 export const ProxmoxDialog = ({ open, onClose, currentFolderId, currentOrganizationId, editServerId }) => {
     const { t } = useTranslation();
+    const { sendToast } = useToast();
 
     const [name, setName] = useState("");
     const [ip, setIp] = useState("");
@@ -18,24 +20,49 @@ export const ProxmoxDialog = ({ open, onClose, currentFolderId, currentOrganizat
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
     const [nodeName, setNodeName] = useState("");
+    const [loading, setLoading] = useState(false);
 
     const create = () => {
+        setLoading(true);
         putRequest("integrations", {
             name, folderId: currentFolderId, organizationId: currentOrganizationId, ip, port, username, password,
-        }).then(async () => {
+        }).then(async (response) => {
+            if (response.code) {
+                sendToast("Error", response.message);
+                setLoading(false);
+                return;
+            }
+            sendToast("Success", t("servers.proxmoxDialog.messages.created"));
             onClose();
             loadServers();
-        }).catch(err => console.error(err));
+            setLoading(false);
+        }).catch(err => {
+            sendToast("Error", err.message || t("servers.proxmoxDialog.messages.createFailed"));
+            console.error(err);
+            setLoading(false);
+        });
     };
 
     const edit = () => {
+        setLoading(true);
         patchRequest(`integrations/${editServerId.split("-")[1]}`, {
             name, ip, port, username, password: password === "********" ? undefined : password,
             nodeName: nodeName || null,
-        }).then(async () => {
+        }).then(async (response) => {
+            if (response.code) {
+                sendToast("Error", response.message);
+                setLoading(false);
+                return;
+            }
+            sendToast("Success", t("servers.proxmoxDialog.messages.updated"));
             onClose();
             loadServers();
-        }).catch(err => console.error(err));
+            setLoading(false);
+        }).catch(err => {
+            sendToast("Error", err.message || t("servers.proxmoxDialog.messages.updateFailed"));
+            console.error(err);
+            setLoading(false);
+        });
     }
 
     useEffect(() => {
@@ -56,6 +83,7 @@ export const ProxmoxDialog = ({ open, onClose, currentFolderId, currentOrganizat
             setPassword("");
             setNodeName("");
         }
+        setLoading(false);
     }, [editServerId, open]);
 
     const { loadServers } = useContext(ServerContext);
@@ -105,7 +133,7 @@ export const ProxmoxDialog = ({ open, onClose, currentFolderId, currentOrganizat
                     </div>
                 )}
 
-                <Button onClick={editServerId ? edit : create} text={editServerId ? t("servers.proxmoxDialog.actions.edit") : t("servers.proxmoxDialog.actions.import")} />
+                <Button onClick={editServerId ? edit : create} text={editServerId ? t("servers.proxmoxDialog.actions.edit") : t("servers.proxmoxDialog.actions.import")} disabled={loading} />
 
             </div>
         </DialogProvider>

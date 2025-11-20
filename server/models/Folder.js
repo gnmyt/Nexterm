@@ -28,6 +28,15 @@ module.exports = db.define("folders", {
         },
         onDelete: "CASCADE",
     },
+    integrationId: {
+        type: Sequelize.INTEGER,
+        allowNull: true,
+        references: {
+            model: "integrations",
+            key: "id",
+        },
+        onDelete: "CASCADE",
+    },
     position: {
         type: Sequelize.INTEGER,
         defaultValue: 0,

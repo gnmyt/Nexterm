@@ -1,6 +1,6 @@
 const { Router } = require("express");
 const { validateSchema } = require("../utils/schema");
-const { getIntegration, createIntegration, deleteIntegration, editIntegration, getIntegrationUnsafe } = require("../controllers/integration");
+const { getIntegration, createIntegration, deleteIntegration, editIntegration, getIntegrationUnsafe, syncIntegration } = require("../controllers/integration");
 const { createPVEServerValidation, updatePVEServerValidation } = require("../validations/pveServer");
 const { startPVEServer, shutdownPVEServer, stopPVEServer } = require("../controllers/pve");
 const Entry = require("../models/Entry");
@@ -82,6 +82,26 @@ app.patch("/:integrationId", async (req, res) => {
     if (integration?.code) return res.json(integration);
 
     res.json({ message: "Integration got successfully edited" });
+});
+
+/**
+ * POST /integration/{integrationId}/sync
+ * @summary Sync Integration Resources
+ * @description Synchronizes the integration with the external system, refreshing all nodes and resources.
+ * @tags Integration
+ * @produces application/json
+ * @security BearerAuth
+ * @param {string} integrationId.path.required - The unique identifier of the integration to sync
+ * @return {object} 200 - Integration successfully synced
+ * @return {object} 400 - Invalid integration type or missing credentials
+ * @return {object} 404 - Integration not found
+ * @return {object} 500 - Failed to sync integration
+ */
+app.post("/:integrationId/sync", async (req, res) => {
+    const result = await syncIntegration(req.user.id, req.params.integrationId);
+    if (result?.code) return res.json(result);
+
+    res.json(result);
 });
 
 const handlePVEAction = async (req, res, action, actionName) => {

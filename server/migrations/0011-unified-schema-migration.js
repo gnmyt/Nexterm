@@ -14,10 +14,16 @@ module.exports = {
                 "PRAGMA table_info(folders);"
             );
             const hasTypeColumn = columns.some(col => col.name === 'type');
+            const hasIntegrationIdColumn = columns.some(col => col.name === 'integrationId');
             
             if (!hasTypeColumn) {
                 await queryInterface.sequelize.query(
                     "ALTER TABLE folders ADD COLUMN type TEXT DEFAULT NULL"
+                );
+            }
+            if (!hasIntegrationIdColumn) {
+                await queryInterface.sequelize.query(
+                    "ALTER TABLE folders ADD COLUMN integrationId INTEGER DEFAULT NULL REFERENCES integrations(id) ON DELETE CASCADE"
                 );
             }
         }
@@ -247,9 +253,9 @@ module.exports = {
                 );
 
                 await queryInterface.sequelize.query(
-                    `INSERT INTO folders (organizationId, accountId, parentId, name, position, type)
-                     VALUES (?, ?, ?, ?, ?, ?)`,
-                    { replacements: [pveServer.organizationId, pveServer.accountId || null, pveServer.folderId, pveServer.name, 0, 'pve-node'] },
+                    `INSERT INTO folders (organizationId, accountId, parentId, integrationId, name, position, type)
+                     VALUES (?, ?, ?, ?, ?, ?, ?)`,
+                    { replacements: [pveServer.organizationId, pveServer.accountId || null, pveServer.folderId, newIntegration.id, pveServer.name, 0, 'pve-node'] },
                 );
 
                 const [newFolder] = await queryInterface.sequelize.query("SELECT last_insert_rowid() as id",

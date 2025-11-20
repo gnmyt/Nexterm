@@ -35,7 +35,11 @@ const checkPVEStatus = async (entry) => {
             credential.secret
         );
 
-        const node = await getNodeForServer(config, ticket);
+        const nodeName = entry.config?.nodeName || config.nodeName;
+        const node = nodeName || await getNodeForServer(
+            { ip: config.ip, port: config.port, nodeName: config.nodeName }, 
+            ticket
+        );
 
         const { vmid } = entry.config || {};
 

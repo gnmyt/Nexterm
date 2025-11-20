@@ -106,3 +106,70 @@ module.exports.shutdownPVEServer = async (server = { ip: "", port: 0, username: 
 
     return response.data.data;
 }
+
+module.exports.getNodeResources = async (server = { ip: "", port: 0, username: "", password: "" }, nodeName, ticket) => {
+    const response = await axios.get(`https://${server.ip}:${server.port}/api2/json/nodes/${nodeName}/qemu`, {
+        httpsAgent: new https.Agent({ rejectUnauthorized: false }),
+        headers: {
+            Cookie: `PVEAuthCookie=${ticket.ticket}`,
+        },
+    });
+
+    const qemuVMs = response.data.data || [];
+
+    const lxcResponse = await axios.get(`https://${server.ip}:${server.port}/api2/json/nodes/${nodeName}/lxc`, {
+        httpsAgent: new https.Agent({ rejectUnauthorized: false }),
+        headers: {
+            Cookie: `PVEAuthCookie=${ticket.ticket}`,
+        },
+    });
+
+    const lxcContainers = lxcResponse.data.data || [];
+
+    return {
+        qemu: qemuVMs.map(vm => ({
+            type: 'pve-qemu',
+            id: vm.vmid,
+            name: vm.name,
+            status: vm.status,
+        })),
+        lxc: lxcContainers.map(lxc => ({
+            type: 'pve-lxc',
+            id: lxc.vmid,
+            name: lxc.name,
+            status: lxc.status,
+        })),
+        shell: {
+            type: 'pve-shell',
+            id: 0,
+            name: `${nodeName} Shell`,
+            status: 'running',
+        },
+    };
+}
+
+module.exports.getAllResources = async (server = { ip: "", port: 0, username: "", password: "" }) => {
+    const ticket = await this.createTicket(server, server.username, server.password);
+    const nodes = await this.getAllNodes(server, ticket);
+
+    const allResources = [];
+    for (const node of nodes) {
+        try {
+            const resources = await this.getNodeResources(server, node.node, ticket);
+            allResources.push({
+                node: node.node,
+                status: node.status || 'online',
+                resources: [...resources.qemu, ...resources.lxc, resources.shell],
+            });
+        } catch (error) {
+            console.error(`Failed to fetch resources for node ${node.node}:`, error.message);
+            allResources.push({
+                node: node.node,
+                status: 'offline',
+                resources: [],
+            });
+        }
+    }
+
+    return { nodes, resources: allResources };
+}
