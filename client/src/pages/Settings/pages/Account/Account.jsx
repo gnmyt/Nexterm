@@ -20,7 +20,7 @@ export const Account = () => {
     const [passwordChangeOpen, setPasswordChangeOpen] = useState(false);
 
     const { user, login } = useContext(UserContext);
-    const { theme, toggleTheme } = useTheme();
+    const { themeMode, setTheme } = useTheme();
 
     const [updatedField, setUpdatedField] = useState(null);
 
@@ -29,6 +29,12 @@ export const Account = () => {
     const [currentLanguage, setCurrentLanguage] = useState(localStorage.getItem("language") || "en");
 
     const languageOptions = languages.map(lang => ({ label: lang.name, value: lang.code }));
+    
+    const themeOptions = [
+        { label: t("settings.account.themeAuto"), value: "auto" },
+        { label: t("settings.account.themeLight"), value: "light" },
+        { label: t("settings.account.themeDark"), value: "dark" }
+    ];
 
     const changeLanguage = (languageCode) => {
         setCurrentLanguage(languageCode);
@@ -95,9 +101,7 @@ export const Account = () => {
                 <h2><Icon path={mdiPalette} size={0.8} style={{marginRight: '8px'}} />{t("settings.account.appearance")}</h2>
                 <div className="section-inner">
                     <p style={{ maxWidth: "25rem" }}>{t("settings.account.appearanceDescription")}</p>
-                    <Button
-                        text={theme === "dark" ? t("settings.account.switchToLight") : t("settings.account.switchToDark")}
-                        icon={mdiWhiteBalanceSunny} onClick={toggleTheme} />
+                    <SelectBox options={themeOptions} selected={themeMode} setSelected={setTheme} />
                 </div>
             </div>
 
