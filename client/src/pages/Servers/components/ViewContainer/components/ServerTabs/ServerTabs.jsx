@@ -15,6 +15,7 @@ const DraggableTab = ({
                           disconnectFromServer,
                           index,
                           moveTab,
+                          progress = 0,
                       }) => {
     const [{ isDragging }, drag] = useDrag({
         type: "TAB",
@@ -30,11 +31,44 @@ const DraggableTab = ({
         collect: (monitor) => ({ isOver: monitor.isOver() }),
     });
 
+    const radius = 10;
+    const circumference = 2 * Math.PI * radius;
+    const offset = circumference - (progress / 100) * circumference;
+    const showProgress = progress > 0 && progress < 100;
+
     return (
         <div ref={(node) => drag(drop(node))} onClick={() => setActiveSessionId(session.id)}
              className={`server-tab ${session.id === activeSessionId ? "server-tab-active" : ""} ${isDragging ? "dragging" : ""} ${isOver ? "drop-target" : ""}`}
              style={{ opacity: isDragging ? 0.5 : 1 }}>
-            <Icon path={loadIcon(server.icon)} />
+            <div className={`progress-circle ${!showProgress ? "no-progress" : ""}`}>
+                {showProgress && (
+                    <svg width="24" height="24" viewBox="0 0 24 24">
+                        <circle
+                            cx="12"
+                            cy="12"
+                            r={radius}
+                            fill="none"
+                            stroke="currentColor"
+                            strokeWidth="1.5"
+                            className="progress-bg"
+                        />
+                        <circle
+                            cx="12"
+                            cy="12"
+                            r={radius}
+                            fill="none"
+                            stroke="currentColor"
+                            strokeWidth="2"
+                            strokeDasharray={circumference}
+                            strokeDashoffset={offset}
+                            strokeLinecap="round"
+                            className="progress-bar"
+                            transform="rotate(-90 12 12)"
+                        />
+                    </svg>
+                )}
+                <Icon path={loadIcon(server.icon)} className="progress-icon" />
+            </div>
             <h2>{server?.name} {session.type === "sftp" ? " (SFTP)" : ""}</h2>
             <div className="tab-actions">
                 <Icon path={mdiClose} className="close-btn" title="Close Session" onClick={(e) => {
@@ -60,6 +94,7 @@ export const ServerTabs = ({
                                broadcastEnabled,
                                onKeyboardShortcut,
                                hasGuacamole,
+                               sessionProgress = {},
                            }) => {
 
     const tabsRef = useRef(null);
@@ -137,7 +172,7 @@ export const ServerTabs = ({
                     return (
                         <DraggableTab key={session.id} session={session} server={session.server} index={index} moveTab={moveTab}
                                       activeSessionId={activeSessionId} setActiveSessionId={setActiveSessionId}
-                                      disconnectFromServer={disconnectFromServer} />
+                                      disconnectFromServer={disconnectFromServer} progress={sessionProgress[session.id] || 0} />
                     );
                 })}
             </div>

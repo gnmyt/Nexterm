@@ -14,6 +14,7 @@ export const ViewContainer = ({ activeSessions, activeSessionId, setActiveSessio
     const guacamoleRefs = useRef({});
     const tabOrderRef = useRef([]);
     const [broadcastMode, setBroadcastMode] = useState(false);
+    const [sessionProgress, setSessionProgress] = useState({});
 
     const [columnSizes, setColumnSizes] = useState([]);
     const [rowSizes, setRowSizes] = useState([]);
@@ -39,6 +40,13 @@ export const ViewContainer = ({ activeSessions, activeSessionId, setActiveSessio
         } else {
             delete guacamoleRefs.current[sessionId];
         }
+    }, []);
+
+    const updateSessionProgress = useCallback((sessionId, progress) => {
+        setSessionProgress(prev => ({
+            ...prev,
+            [sessionId]: progress
+        }));
     }, []);
 
     const toggleBroadcastMode = useCallback(() => {
@@ -344,7 +352,7 @@ export const ViewContainer = ({ activeSessions, activeSessionId, setActiveSessio
             case "terminal":
                 return <XtermRenderer session={session} disconnectFromServer={disconnectFromServer} 
                                       registerTerminalRef={registerTerminalRef} broadcastMode={broadcastMode}
-                                      terminalRefs={terminalRefs} />;
+                                      terminalRefs={terminalRefs} updateProgress={updateSessionProgress} />;
             case "sftp":
                 return <FileRenderer session={session} disconnectFromServer={disconnectFromServer} />;
             default:
@@ -393,7 +401,8 @@ export const ViewContainer = ({ activeSessions, activeSessionId, setActiveSessio
                         layoutMode={layoutMode} onToggleSplit={toggleSplitMode} orderRef={tabOrderRef}
                         onTabOrderChange={onTabOrderChange} onBroadcastToggle={toggleBroadcastMode}
                         onSnippetSelected={handleSnippetSelected} broadcastEnabled={broadcastMode}
-                        onKeyboardShortcut={handleKeyboardShortcut} hasGuacamole={hasGuacamole} />
+                        onKeyboardShortcut={handleKeyboardShortcut} hasGuacamole={hasGuacamole}
+                        sessionProgress={sessionProgress} />
 
             <div ref={layoutRef}
                  className={`view-layouter ${layoutMode} ${isResizing ? "resizing" : ""} ${isResizing && resizingDirection ? `resizing-${resizingDirection}` : ""}`}
