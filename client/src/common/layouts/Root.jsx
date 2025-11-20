@@ -12,7 +12,6 @@ import { SessionProvider } from "@/common/contexts/SessionContext.jsx";
 import { SnippetProvider } from "@/common/contexts/SnippetContext.jsx";
 import { Suspense, lazy } from "react";
 import Loading from "@/common/components/Loading";
-import GlobalKeyboardHandler from "@/common/components/GlobalKeyboardHandler";
 
 const Sidebar = lazy(() => import("@/common/components/Sidebar"));
 
@@ -28,7 +27,6 @@ export default () => {
                                     <IdentityProvider>
                                         <SnippetProvider>
                                             <SessionProvider>
-                                                <GlobalKeyboardHandler />
                                                 <div className="content-wrapper">
                                                     <Suspense fallback={<Loading />}>
                                                         <Sidebar />
