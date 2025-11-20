@@ -212,6 +212,17 @@ const XtermRenderer = ({ session, disconnectFromServer, registerTerminalRef, bro
 
         term.attachCustomKeyEventHandler((event) => {
             if (event.type === "keydown") {
+                const copyKeybind = getParsedKeybind("copy");
+                if (copyKeybind && matchesKeybind(event, copyKeybind)) {
+                    const selection = term.getSelection();
+                    if (selection) {
+                        event.preventDefault();
+                        event.stopPropagation();
+                        navigator.clipboard.writeText(selection).catch(() => {});
+                        return false;
+                    }
+                }
+
                 const aiKeybind = getParsedKeybind("ai-menu");
                 if (aiKeybind && isAIAvailable() && matchesKeybind(event, aiKeybind)) {
                     event.preventDefault();

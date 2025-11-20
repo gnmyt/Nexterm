@@ -425,6 +425,10 @@
         "broadcast": {
           "title": "Broadcast Mode",
           "description": "Toggle broadcast mode when using split view"
+        },
+        "copy": {
+          "title": "Copy",
+          "description": "Copy selected text to clipboard"
         }
       },
       "recorder": {

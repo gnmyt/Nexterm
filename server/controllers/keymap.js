@@ -6,6 +6,7 @@ const DEFAULT_KEYMAPS = [
     { action: "snippets", key: "ctrl+shift+s" },
     { action: "keyboard-shortcuts", key: "ctrl+shift+k" },
     { action: "broadcast", key: "ctrl+b" },
+    { action: "copy", key: "ctrl+shift+c" },
 ];
 
 module.exports.getKeymaps = async (accountId) => {
