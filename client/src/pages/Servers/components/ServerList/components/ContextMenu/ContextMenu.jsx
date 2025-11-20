@@ -139,8 +139,7 @@ export const ContextMenu = ({
     };
 
     const postPVEAction = (type) => {
-        const serverType = server?.type === "pve-qemu" ? "qemu" : "lxc";
-        postRequest("integrations/" + serverType + "/" + id.split("-")[1] + "/" + server?.id + "/" + type)
+        postRequest(`integrations/entry/${id}/${type}`)
             .then(loadServers);
     };
 

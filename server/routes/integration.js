@@ -3,6 +3,7 @@ const { validateSchema } = require("../utils/schema");
 const { getIntegration, createIntegration, deleteIntegration, editIntegration, getIntegrationUnsafe } = require("../controllers/integration");
 const { createPVEServerValidation, updatePVEServerValidation } = require("../validations/pveServer");
 const { startPVEServer, shutdownPVEServer, stopPVEServer } = require("../controllers/pve");
+const Entry = require("../models/Entry");
 
 const app = Router();
 
@@ -83,97 +84,79 @@ app.patch("/:integrationId", async (req, res) => {
     res.json({ message: "Integration got successfully edited" });
 });
 
+const handlePVEAction = async (req, res, action, actionName) => {
+    const entry = await Entry.findByPk(req.params.entryId);
+    if (!entry) return res.json({ code: 404, message: "Entry not found" });
+
+    if (!entry.type.startsWith("pve-")) return res.json({ code: 400, message: "Invalid entry type" });
+
+    const integration = await getIntegrationUnsafe(req.user.id, entry.integrationId);
+    if (integration?.code) return res.json(integration);
+
+    const vmId = entry.config?.vmid;
+    if (!vmId) return res.json({ code: 400, message: "Entry missing vmid" });
+
+    const type = entry.type === "pve-qemu" ? "qemu" : "lxc";
+
+    try {
+        const status = await action(integration, vmId, type);
+        if (status?.code) return res.json(status);
+    } catch (e) {
+        return res.json({ code: 500, message: `Server could not get ${actionName}` });
+    }
+
+    res.json({ message: `Server got successfully ${actionName}` });
+};
+
 /**
- * POST /integration/{type}/{integrationId}/{vmId}/start
- * @summary Start VM/Container
- * @description Starts a virtual machine or LXC container on a Proxmox VE server.
+ * POST /integration/entry/{entryId}/start
+ * @summary Start VM/Container by Entry ID
+ * @description Starts a virtual machine or LXC container on a Proxmox VE server using the entry ID.
  * @tags Integration
  * @produces application/json
  * @security BearerAuth
- * @param {string} type.path.required - Type of virtualization (qemu for VM, lxc for container)
- * @param {string} integrationId.path.required - The unique identifier of the integration
- * @param {string} vmId.path.required - The VM or container ID to start
+ * @param {string} entryId.path.required - The unique identifier of the entry
  * @return {object} 200 - VM/container successfully started
- * @return {object} 400 - Invalid type or integration configuration
+ * @return {object} 400 - Invalid entry type
+ * @return {object} 404 - Entry not found
  * @return {object} 500 - Failed to start VM/container
  */
-app.post("/:type/:integrationId/:vmId/start", async (req, res) => {
-    const integration = await getIntegrationUnsafe(req.user.id, req.params.integrationId);
-    if (integration?.code) return res.json(integration);
-
-    if (req.params.type !== "qemu" && req.params.type !== "lxc")
-        return res.json({ code: 400, message: "Invalid type" });
-
-    try {
-        const status = await startPVEServer(integration, req.params.vmId, req.params.type);
-        if (status?.code) return res.json(status);
-    } catch (e) {
-        return res.json({ code: 500, message: "Server could not get started" });
-    }
-
-    res.json({ message: "Server got successfully started" });
-});
+app.post("/entry/:entryId/start", (req, res) => 
+    handlePVEAction(req, res, startPVEServer, "started")
+);
 
 /**
- * POST /integration/{type}/{integrationId}/{vmId}/stop
- * @summary Force Stop VM/Container
+ * POST /integration/entry/{entryId}/stop
+ * @summary Force Stop VM/Container by Entry ID
  * @description Forcefully stops a virtual machine or LXC container on a Proxmox VE server without graceful shutdown.
  * @tags Integration
  * @produces application/json
  * @security BearerAuth
- * @param {string} type.path.required - Type of virtualization (qemu for VM, lxc for container)
- * @param {string} integrationId.path.required - The unique identifier of the integration
- * @param {string} vmId.path.required - The VM or container ID to stop
+ * @param {string} entryId.path.required - The unique identifier of the entry
  * @return {object} 200 - VM/container successfully stopped
- * @return {object} 400 - Invalid type or integration configuration
+ * @return {object} 400 - Invalid entry type
+ * @return {object} 404 - Entry not found
  * @return {object} 500 - Failed to stop VM/container
  */
-app.post("/:type/:integrationId/:vmId/stop", async (req, res) => {
-    const integration = await getIntegrationUnsafe(req.user.id, req.params.integrationId);
-    if (integration?.code) return res.json(integration);
-
-    if (req.params.type !== "qemu" && req.params.type !== "lxc")
-        return res.json({ code: 400, message: "Invalid type" });
-
-    try {
-        const status = await stopPVEServer(integration, req.params.vmId, req.params.type);
-        if (status?.code) return res.json(status);
-    } catch (e) {
-        return res.json({ code: 500, message: "Server could not get stopped" });
-    }
-
-    res.json({ message: "Server got successfully stopped" });
-});
+app.post("/entry/:entryId/stop", (req, res) => 
+    handlePVEAction(req, res, stopPVEServer, "stopped")
+);
 
 /**
- * POST /integration/{type}/{integrationId}/{vmId}/shutdown
- * @summary Graceful Shutdown VM/Container
+ * POST /integration/entry/{entryId}/shutdown
+ * @summary Graceful Shutdown VM/Container by Entry ID
  * @description Gracefully shuts down a virtual machine or LXC container on a Proxmox VE server, allowing the OS to properly close applications.
  * @tags Integration
  * @produces application/json
  * @security BearerAuth
- * @param {string} type.path.required - Type of virtualization (qemu for VM, lxc for container)
- * @param {string} integrationId.path.required - The unique identifier of the integration
- * @param {string} vmId.path.required - The VM or container ID to shutdown
+ * @param {string} entryId.path.required - The unique identifier of the entry
  * @return {object} 200 - VM/container successfully shutdown
- * @return {object} 400 - Invalid type or integration configuration
+ * @return {object} 400 - Invalid entry type
+ * @return {object} 404 - Entry not found
  * @return {object} 500 - Failed to shutdown VM/container
  */
-app.post("/:type/:integrationId/:vmId/shutdown", async (req, res) => {
-    const integration = await getIntegrationUnsafe(req.user.id, req.params.integrationId);
-    if (integration?.code) return res.json(integration);
-
-    if (req.params.type !== "qemu" && req.params.type !== "lxc")
-        return res.json({ code: 400, message: "Invalid type" });
-
-    try {
-        const status = await shutdownPVEServer(integration, req.params.vmId, req.params.type);
-        if (status?.code) return res.json(status);
-    } catch (e) {
-        return res.json({ code: 500, message: "Server could not get shutdown" });
-    }
-
-    res.json({ message: "Server got successfully shutdown" });
-});
+app.post("/entry/:entryId/shutdown", (req, res) => 
+    handlePVEAction(req, res, shutdownPVEServer, "shutdown")
+);
 
 module.exports = app;

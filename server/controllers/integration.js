@@ -171,7 +171,7 @@ module.exports.getIntegrationUnsafe = async (accountId, integrationId) => {
         port: integration.config.port,
         username: integration.config.username,
         nodeName: integration.config.nodeName,
-        password: credential ? await credential.decrypt() : null,
+        password: credential ? credential.secret : null,
         online: integration.status === 'online',
     };
 };
