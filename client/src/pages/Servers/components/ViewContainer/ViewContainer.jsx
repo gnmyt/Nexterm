@@ -374,7 +374,8 @@ export const ViewContainer = ({ activeSessions, activeSessionId, setActiveSessio
                 return <XtermRenderer session={session} disconnectFromServer={disconnectFromServer} 
                                       registerTerminalRef={registerTerminalRef} broadcastMode={broadcastMode}
                                       terminalRefs={terminalRefs} updateProgress={updateSessionProgress}
-                                      layoutMode={layoutMode} onBroadcastToggle={toggleBroadcastMode} />;
+                                      layoutMode={layoutMode} onBroadcastToggle={toggleBroadcastMode}
+                                      onFullscreenToggle={toggleFullscreenMode} />;
             case "sftp":
                 return <FileRenderer session={session} disconnectFromServer={disconnectFromServer} />;
             default:

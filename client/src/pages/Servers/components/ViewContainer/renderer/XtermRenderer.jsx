@@ -11,7 +11,7 @@ import { createProgressParser } from "../utils/progressParser";
 import "@xterm/xterm/css/xterm.css";
 import "./styles/xterm.sass";
 
-const XtermRenderer = ({ session, disconnectFromServer, registerTerminalRef, broadcastMode, terminalRefs, updateProgress, layoutMode, onBroadcastToggle }) => {
+const XtermRenderer = ({ session, disconnectFromServer, registerTerminalRef, broadcastMode, terminalRefs, updateProgress, layoutMode, onBroadcastToggle, onFullscreenToggle }) => {
     const ref = useRef(null);
     const termRef = useRef(null);
     const wsRef = useRef(null);
@@ -19,6 +19,7 @@ const XtermRenderer = ({ session, disconnectFromServer, registerTerminalRef, bro
     const progressParserRef = useRef(null);
     const layoutModeRef = useRef(layoutMode);
     const onBroadcastToggleRef = useRef(onBroadcastToggle);
+    const onFullscreenToggleRef = useRef(onFullscreenToggle);
     
     const { sessionToken } = useContext(UserContext);
     const { theme } = useTheme();
@@ -39,6 +40,10 @@ const XtermRenderer = ({ session, disconnectFromServer, registerTerminalRef, bro
     useEffect(() => {
         onBroadcastToggleRef.current = onBroadcastToggle;
     }, [onBroadcastToggle]);
+
+    useEffect(() => {
+        onFullscreenToggleRef.current = onFullscreenToggle;
+    }, [onFullscreenToggle]);
 
     useEffect(() => {
         if (updateProgress) {
@@ -255,6 +260,17 @@ const XtermRenderer = ({ session, disconnectFromServer, registerTerminalRef, bro
                         event.preventDefault();
                         event.stopPropagation();
                         currentOnBroadcastToggle();
+                        return false;
+                    }
+                }
+
+                const currentOnFullscreenToggle = onFullscreenToggleRef.current;
+                if (currentOnFullscreenToggle) {
+                    const fullscreenKeybind = getParsedKeybind("fullscreen");
+                    if (fullscreenKeybind && matchesKeybind(event, fullscreenKeybind)) {
+                        event.preventDefault();
+                        event.stopPropagation();
+                        currentOnFullscreenToggle();
                         return false;
                     }
                 }
