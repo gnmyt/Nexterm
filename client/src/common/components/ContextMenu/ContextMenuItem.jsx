@@ -22,64 +22,38 @@ export const ContextMenuItem = ({
     useEffect(() => {
         if (!isSubmenuOpen || !itemRef.current || !submenuRef.current) return;
 
-        const itemRect = itemRef.current.getBoundingClientRect();
-        const submenuRect = submenuRef.current.getBoundingClientRect();
-        const { innerWidth, innerHeight } = window;
+        const updatePosition = () => {
+            if (!itemRef.current || !submenuRef.current) return;
+            const itemRect = itemRef.current.getBoundingClientRect();
+            const submenuRect = submenuRef.current.getBoundingClientRect();
+            const { innerWidth, innerHeight } = window;
 
-        const left = itemRect.right + submenuRect.width > innerWidth 
-            ? `-${submenuRect.width}px` 
-            : "100%";
-        const top = itemRect.top + submenuRect.height > innerHeight 
-            ? -(submenuRect.height - itemRect.height) 
-            : 0;
+            setSubmenuPosition({
+                left: itemRect.right + submenuRect.width > innerWidth ? `-${submenuRect.width}px` : "100%",
+                top: itemRect.top + submenuRect.height > innerHeight ? -(submenuRect.height - itemRect.height) : 0
+            });
+        };
 
-        setSubmenuPosition({ left, top });
+        requestAnimationFrame(() => requestAnimationFrame(updatePosition));
     }, [isSubmenuOpen]);
 
     const handleClick = (e) => {
         e.stopPropagation();
         if (disabled) return;
-        
-        if (hasSubmenu) {
-            setIsSubmenuOpen(!isSubmenuOpen);
-        } else {
-            onClick?.(e);
-            onClose?.();
-        }
+        hasSubmenu ? setIsSubmenuOpen(!isSubmenuOpen) : (onClick?.(e), onClose?.());
     };
 
     const handleKeyDown = (e) => {
         if (disabled) return;
-
         const actions = {
-            "Enter": () => { e.preventDefault(); handleClick(e); },
-            " ": () => { e.preventDefault(); handleClick(e); },
-            "ArrowRight": () => {
-                if (hasSubmenu) {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    setIsSubmenuOpen(true);
-                    setTimeout(() => submenuRef.current?.querySelector('.context-menu-item:not(.disabled)')?.focus(), 50);
-                }
-            },
-            "ArrowLeft": () => {
-                if (hasSubmenu && isSubmenuOpen) {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    setIsSubmenuOpen(false);
-                    itemRef.current?.focus();
-                }
-            },
-            "Escape": () => {
-                e.preventDefault();
-                e.stopPropagation();
-                if (isSubmenuOpen) {
-                    setIsSubmenuOpen(false);
-                    itemRef.current?.focus();
-                } else {
-                    onClose?.();
-                }
-            }
+            "Enter": () => (e.preventDefault(), handleClick(e)),
+            " ": () => (e.preventDefault(), handleClick(e)),
+            "ArrowRight": () => hasSubmenu && (e.preventDefault(), e.stopPropagation(), setIsSubmenuOpen(true), 
+                setTimeout(() => submenuRef.current?.querySelector('.context-menu-item:not(.disabled)')?.focus(), 50)),
+            "ArrowLeft": () => hasSubmenu && isSubmenuOpen && (e.preventDefault(), e.stopPropagation(), 
+                setIsSubmenuOpen(false), itemRef.current?.focus()),
+            "Escape": () => (e.preventDefault(), e.stopPropagation(), 
+                isSubmenuOpen ? (setIsSubmenuOpen(false), itemRef.current?.focus()) : onClose?.())
         };
         actions[e.key]?.();
     };
@@ -88,23 +62,13 @@ export const ContextMenuItem = ({
         const items = submenuRef.current?.querySelectorAll('.context-menu-item:not(.disabled)');
         if (!items?.length) return;
 
-        const navigate = (dir) => {
-            e.preventDefault();
-            e.stopPropagation();
-            const currentIndex = Array.from(items).indexOf(document.activeElement);
-            const nextIndex = (currentIndex + dir + items.length) % items.length;
-            items[nextIndex]?.focus();
-        };
+        const navigate = (dir) => (e.preventDefault(), e.stopPropagation(),
+            items[(Array.from(items).indexOf(document.activeElement) + dir + items.length) % items.length]?.focus());
 
         const actions = {
             "ArrowDown": () => navigate(1),
             "ArrowUp": () => navigate(-1),
-            "ArrowLeft": () => {
-                e.preventDefault();
-                e.stopPropagation();
-                setIsSubmenuOpen(false);
-                itemRef.current?.focus();
-            }
+            "ArrowLeft": () => (e.preventDefault(), e.stopPropagation(), setIsSubmenuOpen(false), itemRef.current?.focus())
         };
         actions[e.key]?.();
     };
@@ -112,28 +76,16 @@ export const ContextMenuItem = ({
     const handleMouseEnter = () => hasSubmenu && !disabled && setIsSubmenuOpen(true);
 
     const handleMouseLeave = (e) => {
-        if (!hasSubmenu) return;
-        const { relatedTarget } = e;
-        if (!submenuRef.current?.contains(relatedTarget) && !itemRef.current?.contains(relatedTarget)) {
-            setTimeout(() => {
-                if (!submenuRef.current?.matches(':hover') && !itemRef.current?.matches(':hover')) {
-                    setIsSubmenuOpen(false);
-                }
-            }, 100);
-        }
+        if (!hasSubmenu || submenuRef.current?.contains(e.relatedTarget) || itemRef.current?.contains(e.relatedTarget)) return;
+        setTimeout(() => !submenuRef.current?.matches(':hover') && !itemRef.current?.matches(':hover') && setIsSubmenuOpen(false), 100);
     };
 
     if (customContent) {
-        const handleCustomKeyDown = (e) => {
-            if (e.key === "Enter" || e.key === " ") {
-                e.preventDefault();
-                itemRef.current?.querySelector('.tag-clickable, button, [role="button"]')?.click();
-            }
-        };
+        const handleCustomKeyDown = (e) => (e.key === "Enter" || e.key === " ") && 
+            (e.preventDefault(), itemRef.current?.querySelector('.tag-clickable, button, [role="button"]')?.click());
 
         return (
-            <div ref={itemRef} className="context-menu-item custom" role="menuitem" 
-                 tabIndex={0} onKeyDown={handleCustomKeyDown}>
+            <div ref={itemRef} className="context-menu-item custom" role="menuitem" tabIndex={0} onKeyDown={handleCustomKeyDown}>
                 {React.isValidElement(customContent) && typeof customContent.type !== 'string' 
                     ? React.cloneElement(customContent, { onClose }) : customContent}
             </div>
@@ -154,13 +106,7 @@ export const ContextMenuItem = ({
             aria-haspopup={hasSubmenu ? "menu" : undefined}
             aria-expanded={hasSubmenu ? isSubmenuOpen : undefined}
         >
-            {icon && (
-                typeof icon === "string" ? (
-                    <Icon path={icon} className="menu-icon" />
-                ) : (
-                    <span className="menu-icon">{icon}</span>
-                )
-            )}
+            {icon && (typeof icon === "string" ? <Icon path={icon} className="menu-icon" /> : <span className="menu-icon">{icon}</span>)}
             <span className="menu-label">{label}</span>
             {hasSubmenu && (
                 <>
