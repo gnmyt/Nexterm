@@ -60,7 +60,7 @@ export const loadIcon = (icon) => {
     }
 };
 
-export const ServerObject = ({ id, name, position, folderId, organizationId, nestedLevel, icon, type, connectToServer, status }) => {
+export const ServerObject = ({ id, name, position, folderId, organizationId, nestedLevel, icon, type, connectToServer, status, tags = [] }) => {
     const { loadServers, getServerById } = useContext(ServerContext);
     const [dropPlacement, setDropPlacement] = useState(null);
     const elementRef = useRef(null);
@@ -136,6 +136,18 @@ export const ServerObject = ({ id, name, position, folderId, organizationId, nes
                 <Icon path={loadIcon(icon)} />
             </div>
             <p className="truncate-text">{name}</p>
+            {tags && tags.length > 0 && (
+                <div className="tag-circles">
+                    {tags.map(tag => (
+                        <div
+                            key={tag.id}
+                            className="tag-circle"
+                            style={{ backgroundColor: tag.color }}
+                            title={tag.name}
+                        />
+                    ))}
+                </div>
+            )}
             <DropIndicator show={isOver && dropPlacement === 'after'} placement="after" />
         </div>
     );

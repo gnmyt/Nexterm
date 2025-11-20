@@ -52,6 +52,7 @@ app.use("/api/audit", authenticate, require("./routes/audit"));
 app.use("/api/identities", authenticate, require("./routes/identity"));
 app.use("/api/snippets", authenticate, require("./routes/snippet"));
 app.use("/api/organizations", authenticate, require("./routes/organization"));
+app.use("/api/tags", authenticate, require("./routes/tag"));
 
 app.ws("/api/apps/installer", require("./routes/appInstaller"));
 app.ws("/api/scripts/executor", require("./routes/scriptExecutor"));

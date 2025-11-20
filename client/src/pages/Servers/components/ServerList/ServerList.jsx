@@ -1,36 +1,32 @@
 import "./styles.sass";
 import ServerSearch from "./components/ServerSearch";
 import { useContext, useEffect, useState, useRef } from "react";
+import { useTranslation } from "react-i18next";
 import { ServerContext } from "@/common/contexts/ServerContext.jsx";
 import ServerEntries from "./components/ServerEntries.jsx";
 import Icon from "@mdi/react";
-import { mdiCursorDefaultClick } from "@mdi/js";
+import { mdiCursorDefaultClick, mdiTag } from "@mdi/js";
 import ContextMenu from "./components/ContextMenu";
 import { useDrop, useDragLayer } from "react-dnd";
 import { patchRequest } from "@/common/utils/RequestUtil.js";
+import TagFilterMenu from "./components/ServerSearch/components/TagFilterMenu";
 
-const filterEntries = (entries, searchTerm) => {
+const filterEntries = (entries, searchTerm, selectedTags = []) => {
     return entries
         .map(entry => {
             if (entry.type === "folder" || entry.type === "organization") {
-                const filteredEntries = filterEntries(entry.entries, searchTerm);
-                if (filteredEntries.length > 0 ||
-                    entry.name.toLowerCase().includes(searchTerm.toLowerCase())) {
-                    return { ...entry, entries: filteredEntries };
-                }
-            } else if (entry.type === "server") {
-                const nameMatch = entry.name.toLowerCase().includes(searchTerm.toLowerCase());
-                const ipMatch = entry.ip && entry.ip.toLowerCase().includes(searchTerm.toLowerCase());
-                if (nameMatch || ipMatch) {
-                    return entry;
-                }
-            } else if (entry.type.startsWith("pve-")) {
-                const nameMatch = entry.name.toLowerCase().includes(searchTerm.toLowerCase());
-                const ipMatch = entry.ip && entry.ip.toLowerCase().includes(searchTerm.toLowerCase());
+                const filteredEntries = filterEntries(entry.entries, searchTerm, selectedTags);
+                if (filteredEntries.length > 0) return { ...entry, entries: filteredEntries };
+                if (searchTerm && entry.name.toLowerCase().includes(searchTerm.toLowerCase())) return { ...entry, entries: filteredEntries };
 
-                if (nameMatch || ipMatch) {
-                    return entry;
-                }
+            } else if (entry.type === "server" || entry.type.startsWith("pve-")) {
+                const nameMatch = !searchTerm || entry.name.toLowerCase().includes(searchTerm.toLowerCase());
+                const ipMatch = !searchTerm || (entry.ip && entry.ip.toLowerCase().includes(searchTerm.toLowerCase()));
+
+                const tagMatch = selectedTags.length === 0 || (entry.tags && entry.tags.some(tag => selectedTags.includes(tag.id)));
+                
+                if ((nameMatch || ipMatch) && tagMatch) return entry;
+
             }
             return null;
         })
@@ -50,8 +46,11 @@ export const ServerList = ({
                                setServerDialogOpen, setCurrentFolderId, setProxmoxDialogOpen, setSSHConfigImportDialogOpen,
                                setEditServerId, connectToServer, openSFTP, setCurrentOrganizationId,
                            }) => {
+    const { t } = useTranslation();
     const { servers, loadServers } = useContext(ServerContext);
     const [search, setSearch] = useState("");
+    const [selectedTags, setSelectedTags] = useState([]);
+    const [showTagFilter, setShowTagFilter] = useState(false);
     const [contextMenuPosition, setContextMenuPosition] = useState(null);
     const [contextClickedType, setContextClickedType] = useState(null);
     const [contextClickedId, setContextClickedId] = useState(null);
@@ -62,6 +61,7 @@ export const ServerList = ({
     const serverListRef = useRef(null);
     const serversContainerRef = useRef(null);
     const scrollIntervalRef = useRef(null);
+    const tagButtonRef = useRef(null);
 
     const { isDragging, clientOffset } = useDragLayer((monitor) => ({
         isDragging: monitor.isDragging(),
@@ -99,7 +99,9 @@ export const ServerList = ({
         }),
     });
 
-    const filteredServers = search ? filterEntries(servers, search) : servers;
+    const filteredServers = search || selectedTags.length > 0 
+        ? filterEntries(servers, search, selectedTags) 
+        : servers;
     const renameStateServers = renameStateId ? filteredServers.map(applyRenameState(renameStateId)) : filteredServers;
 
     const handleContextMenu = (e) => {
@@ -147,6 +149,20 @@ export const ServerList = ({
         setContextClickedType(null);
         setContextMenuPosition(null);
     };
+
+    useEffect(() => {
+        const handleClickOutside = (e) => {
+            if (showTagFilter && tagButtonRef.current && !tagButtonRef.current.contains(e.target)) {
+                const tagMenu = document.querySelector('.tag-filter-menu');
+                if (tagMenu && !tagMenu.contains(e.target)) {
+                    setShowTagFilter(false);
+                }
+            }
+        };
+
+        document.addEventListener("mousedown", handleClickOutside);
+        return () => document.removeEventListener("mousedown", handleClickOutside);
+    }, [showTagFilter]);
 
     const startResizing = (e) => {
         e.preventDefault();
@@ -244,7 +260,26 @@ export const ServerList = ({
             onMouseDown={isCollapsed ? startResizing : undefined}>
             {!isCollapsed && (
                 <div className="server-list-inner" ref={dropRef}>
-                    <ServerSearch search={search} setSearch={setSearch} />
+                    <div className="search-container">
+                        <ServerSearch search={search} setSearch={setSearch} />
+                        <div 
+                            ref={tagButtonRef}
+                            className={`tag-filter-button ${selectedTags.length > 0 ? "active" : ""}`}
+                            onClick={() => setShowTagFilter(!showTagFilter)}
+                            title={t("servers.tags.filterByTags")}>
+                            <Icon path={mdiTag} />
+                            {selectedTags.length > 0 && (
+                                <span className="tag-count">{selectedTags.length}</span>
+                            )}
+                        </div>
+                    </div>
+                    {showTagFilter && (
+                        <TagFilterMenu 
+                            selectedTags={selectedTags}
+                            setSelectedTags={setSelectedTags}
+                            onClose={() => setShowTagFilter(false)}
+                        />
+                    )}
                     {servers && servers.length >= 1 && (
                         <div className={`servers${isOver ? " drop-zone-active" : ""}`} 
                              onContextMenu={handleContextMenu} 

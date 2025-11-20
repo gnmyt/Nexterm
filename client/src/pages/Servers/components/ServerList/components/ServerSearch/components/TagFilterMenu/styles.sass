@@ -1,0 +1,90 @@
+@use "@/common/styles/colors"
+
+.tag-filter-menu
+  position: absolute
+  top: 3.5rem
+  right: 0
+  background-color: colors.$gray-full
+  border: 2px solid colors.$dark-gray
+  border-radius: 0.5rem
+  padding: 0.5rem
+  min-width: 200px
+  max-width: 250px
+  max-height: 300px
+  overflow-y: auto
+  z-index: 1000
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3)
+
+  .tag-filter-header
+    display: flex
+    justify-content: space-between
+    align-items: center
+    padding: 0.5rem
+    border-bottom: 1px solid colors.$dark-gray
+    margin-bottom: 0.5rem
+
+    h4
+      margin: 0
+      font-size: 13px
+      font-weight: 600
+      color: colors.$white
+
+    .clear-button
+      background: none
+      border: none
+      color: colors.$primary
+      cursor: pointer
+      font-size: 12px
+      font-weight: 500
+      padding: 0
+      transition: opacity 0.2s
+
+      &:hover
+        opacity: 0.8
+
+  .no-tags
+    padding: 1rem
+    text-align: center
+
+    p
+      margin: 0
+      color: colors.$subtext
+      font-size: 13px
+
+  .tag-list
+    display: flex
+    flex-direction: column
+    gap: 2px
+
+    .tag-filter-item
+      display: flex
+      align-items: center
+      gap: 10px
+      padding: 0.5rem
+      cursor: pointer
+      border-radius: 0.5rem
+      transition: background-color 0.2s
+      position: relative
+      color: colors.$white
+
+      .tag-color
+        width: 10px
+        height: 10px
+        border-radius: 50%
+        flex-shrink: 0
+
+      p
+        margin: 0
+        font-size: 13px
+        flex: 1
+
+      .check-icon
+        width: 16px
+        height: 16px
+        opacity: 0.8
+
+      &:hover
+        background-color: colors.$dark-gray
+
+      &.selected
+        background-color: colors.$dark-gray
