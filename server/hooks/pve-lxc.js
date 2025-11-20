@@ -79,8 +79,15 @@ module.exports = async (ws, context) => {
                 }
 
                 if (data.startsWith("\x01")) {
-                    const [width, height] = data.substring(1).split(",").map(Number);
-                    lxcSocket.send("1:" + width + ":" + height + ":");
+                    const resizeData = data.substring(1);
+                    if (resizeData.includes(",")) {
+                        const [width, height] = resizeData.split(",").map(Number);
+                        if (!isNaN(width) && !isNaN(height)) {
+                            lxcSocket.send("1:" + width + ":" + height + ":");
+                            return;
+                        }
+                    }
+                    lxcSocket.send("0:" + data.length + ":" + data);
                 } else {
                     lxcSocket.send("0:" + data.length + ":" + data);
                 }
