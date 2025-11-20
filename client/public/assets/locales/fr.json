@@ -297,9 +297,10 @@
       "firstName": "Prénom",
       "lastName": "Nom de famille",
       "appearance": "Apparence",
-      "appearanceDescription": "Choisis entre un thème clair et un thème foncé pour ton interface.",
-      "switchToLight": "Passe en mode lumière",
-      "switchToDark": "Passe en mode sombre",
+      "appearanceDescription": "Choose your preferred theme. Auto follows your system settings and adjusts based on time of day.",
+      "themeAuto": "Auto",
+      "themeLight": "Light",
+      "themeDark": "Dark",
       "twoFactor": "Authentification à deux facteurs",
       "twoFactorActive": "Actif",
       "twoFactorInactive": "Inactif",
@@ -429,6 +430,10 @@
         "copy": {
           "title": "Copy",
           "description": "Copy selected text to clipboard"
+        },
+        "fullscreen": {
+          "title": "Full-Screen",
+          "description": "Toggle full-screen mode"
         }
       },
       "recorder": {
@@ -784,6 +789,15 @@
       "noSnippets": "Pas de snippets disponibles",
       "searchPlaceholder": "Les extraits de recherche...",
       "createNew": "Créer un nouvel extrait"
+    },
+    "terminalActions": {
+      "menuTitle": "Terminal Actions",
+      "snippets": "Snippets",
+      "keyboardShortcuts": "Keyboard Shortcuts",
+      "broadcasting": "Broadcasting",
+      "fullScreen": "Full-Screen",
+      "exitFullScreen": "Exit Full-Screen Mode",
+      "badgeOn": "ON"
     },
     "messages": {
       "fillRequiredFields": "Remplis tous les champs obligatoires",
