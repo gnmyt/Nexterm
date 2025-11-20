@@ -786,6 +786,15 @@
       "searchPlaceholder": "Search snippets...",
       "createNew": "Create New Snippet"
     },
+    "terminalActions": {
+      "menuTitle": "Terminal Actions",
+      "snippets": "Snippets",
+      "keyboardShortcuts": "Keyboard Shortcuts",
+      "broadcasting": "Broadcasting",
+      "fullScreen": "Full-Screen",
+      "exitFullScreen": "Exit Full-Screen Mode",
+      "badgeOn": "ON"
+    },
     "messages": {
       "fillRequiredFields": "Please fill in all required fields",
       "serverCreated": "Server created successfully",

@@ -94,6 +94,8 @@ export const ServerTabs = ({
                                onKeyboardShortcut,
                                hasGuacamole,
                                sessionProgress = {},
+                               fullscreenEnabled,
+                               onFullscreenToggle,
                            }) => {
 
     const tabsRef = useRef(null);
@@ -195,6 +197,8 @@ export const ServerTabs = ({
                     broadcastEnabled={broadcastEnabled}
                     onKeyboardShortcut={onKeyboardShortcut}
                     hasGuacamole={hasGuacamole}
+                    fullscreenEnabled={fullscreenEnabled}
+                    onFullscreenToggle={onFullscreenToggle}
                 />
                 <Icon path={mdiViewSplitVertical} className={`layout-btn ${layoutMode !== "single" ? "active" : ""}`}
                       title={layoutMode === "single" ? "Enable Split View" : "Disable Split View"}
