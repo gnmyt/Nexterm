@@ -297,9 +297,10 @@
       "firstName": "姓名",
       "lastName": "姓氏",
       "appearance": "外观",
-      "appearanceDescription": "可为界面选择浅色和深色主题。",
-      "switchToLight": "切换到灯光模式",
-      "switchToDark": "切换到黑暗模式",
+      "appearanceDescription": "Choose your preferred theme. Auto follows your system settings and adjusts based on time of day.",
+      "themeAuto": "Auto",
+      "themeLight": "Light",
+      "themeDark": "Dark",
       "twoFactor": "双因素认证",
       "twoFactorActive": "活跃",
       "twoFactorInactive": "不活动",
@@ -429,6 +430,10 @@
         "copy": {
           "title": "Copy",
           "description": "Copy selected text to clipboard"
+        },
+        "fullscreen": {
+          "title": "Full-Screen",
+          "description": "Toggle full-screen mode"
         }
       },
       "recorder": {
@@ -784,6 +789,15 @@
       "noSnippets": "没有可用的片段",
       "searchPlaceholder": "搜索片段...",
       "createNew": "创建新片段"
+    },
+    "terminalActions": {
+      "menuTitle": "Terminal Actions",
+      "snippets": "Snippets",
+      "keyboardShortcuts": "Keyboard Shortcuts",
+      "broadcasting": "Broadcasting",
+      "fullScreen": "Full-Screen",
+      "exitFullScreen": "Exit Full-Screen Mode",
+      "badgeOn": "ON"
     },
     "messages": {
       "fillRequiredFields": "请填写所有必填项",
