@@ -569,6 +569,17 @@
     }
   },
   "servers": {
+    "tags": {
+      "title": "Tags",
+      "createNewTag": "Create new tag",
+      "tagName": "Tag name",
+      "create": "Create",
+      "filterByTags": "Filter by Tags",
+      "clearAll": "Clear all",
+      "noTagsCreated": "No tags created yet",
+      "editTag": "Edit tag",
+      "deleteTag": "Delete tag"
+    },
     "contextMenu": {
       "createFolder": "Crea cartella",
       "deleteFolder": "Elimina cartella",
