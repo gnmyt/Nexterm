@@ -207,13 +207,13 @@ export const ServerDialog = ({ open, onClose, currentFolderId, currentOrganizati
         if (!open) return;
 
         // Default port for each protocol
-        if (config.protocol === "ssh" && (config.port === "3389" || config.port === "5900" || config.port === "")) {
+        if (config.protocol === "ssh" && (!config.port || config.port === "3389" || config.port === "5900")) {
             setConfig(prev => ({ ...prev, port: "22" }));
         }
-        if (config.protocol === "rdp" && (config.port === "22" || config.port === "5900" || config.port === "")) {
+        if (config.protocol === "rdp" && (!config.port || config.port === "22" || config.port === "5900")) {
             setConfig(prev => ({ ...prev, port: "3389" }));
         }
-        if (config.protocol === "vnc" && (config.port === "22" || config.port === "3389" || config.port === "")) {
+        if (config.protocol === "vnc" && (!config.port || config.port === "22" || config.port === "3389")) {
             setConfig(prev => ({ ...prev, port: "5900" }));
         }
     }, [config.protocol, open]);
