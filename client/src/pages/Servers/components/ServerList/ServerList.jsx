@@ -6,6 +6,8 @@ import ServerEntries from "./components/ServerEntries.jsx";
 import Icon from "@mdi/react";
 import { mdiCursorDefaultClick } from "@mdi/js";
 import ContextMenu from "./components/ContextMenu";
+import { useDrop } from "react-dnd";
+import { patchRequest } from "@/common/utils/RequestUtil.js";
 
 const filterEntries = (entries, searchTerm) => {
     return entries
@@ -48,7 +50,7 @@ export const ServerList = ({
                                setServerDialogOpen, setCurrentFolderId, setProxmoxDialogOpen, setSSHConfigImportDialogOpen,
                                setEditServerId, connectToServer, openSFTP,
                            }) => {
-    const { servers } = useContext(ServerContext);
+    const { servers, loadServers } = useContext(ServerContext);
     const [search, setSearch] = useState("");
     const [contextMenuPosition, setContextMenuPosition] = useState(null);
     const [contextClickedType, setContextClickedType] = useState(null);
@@ -58,6 +60,30 @@ export const ServerList = ({
     const [isResizing, setIsResizing] = useState(false);
     const [isCollapsed, setIsCollapsed] = useState(false);
     const serverListRef = useRef(null);
+
+    const [{ isOver }, dropRef] = useDrop({
+        accept: ["server", "folder"],
+        drop: async (item) => {
+            try {
+                if (item.type === "server") {
+                    await patchRequest("entries/" + item.id, { folderId: null });
+                    loadServers();
+                    return {};
+                }
+
+                if (item.type === "folder") {
+                    await patchRequest(`folders/${item.id}`, { parentId: null });
+                    loadServers();
+                    return {};
+                }
+            } catch (error) {
+                console.error("Failed to drop item at root level", error.message);
+            }
+        },
+        collect: (monitor) => ({
+            isOver: monitor.isOver(),
+        }),
+    });
 
     const filteredServers = search ? filterEntries(servers, search) : servers;
     const renameStateServers = renameStateId ? filteredServers.map(applyRenameState(renameStateId)) : filteredServers;
@@ -159,16 +185,16 @@ export const ServerList = ({
             style={{ width: isCollapsed ? "0px" : `${width}px` }} ref={serverListRef}
             onMouseDown={isCollapsed ? startResizing : undefined}>
             {!isCollapsed && (
-                <div className="server-list-inner">
+                <div className="server-list-inner" ref={dropRef}>
                     <ServerSearch search={search} setSearch={setSearch} />
                     {servers && servers.length >= 1 && (
-                        <div className="servers" onContextMenu={handleContextMenu}>
+                        <div className={`servers${isOver ? " drop-zone-active" : ""}`} onContextMenu={handleContextMenu}>
                             <ServerEntries entries={renameStateServers} setRenameStateId={setRenameStateId}
                                            nestedLevel={0} connectToServer={connectToServer} />
                         </div>
                     )}
                     {servers && servers.length === 0 && (
-                        <div className="no-servers" onContextMenu={handleContextMenu}>
+                        <div className={`no-servers${isOver ? " drop-zone-active" : ""}`} onContextMenu={handleContextMenu}>
                             <Icon path={mdiCursorDefaultClick} />
                             <p>Right-click to add a new server</p>
                         </div>

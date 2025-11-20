@@ -31,6 +31,7 @@ module.exports = {
         if (!tableNames.includes("entries")) {
             await queryInterface.createTable("entries", {
                 id: { type: DataTypes.INTEGER, autoIncrement: true, primaryKey: true, allowNull: false },
+                accountId: { type: DataTypes.INTEGER, allowNull: true },
                 organizationId: {
                     type: DataTypes.INTEGER,
                     allowNull: true,
@@ -161,11 +162,12 @@ module.exports = {
                 };
 
                 await queryInterface.sequelize.query(
-                    `INSERT INTO entries (organizationId, folderId, type, renderer, name, icon, position, config,
+                    `INSERT INTO entries (accountId, organizationId, folderId, type, renderer, name, icon, position, config,
                                           createdAt, updatedAt)
-                     VALUES (?, ?, ?, ?, ?, ?, ?, ?, datetime('now'), datetime('now'))`,
+                     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, datetime('now'), datetime('now'))`,
                     {
-                        replacements: [server.organizationId || null, server.folderId || null, type, renderer,
+                        replacements: [server.organizationId ? null : (server.accountId || null), 
+                            server.organizationId || null, server.folderId || null, type, renderer,
                             server.name, server.icon || null, server.position || 0, JSON.stringify(config)],
                     },
                 );
@@ -259,11 +261,12 @@ module.exports = {
                         let renderer = resource.type === "pve-qemu" ? "guac" : "terminal";
 
                         await queryInterface.sequelize.query(
-                            `INSERT INTO entries (organizationId, folderId, integrationId, type, renderer, name, icon,
+                            `INSERT INTO entries (accountId, organizationId, folderId, integrationId, type, renderer, name, icon,
                                                   position, status, config, createdAt, updatedAt)
-                             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, datetime('now'), datetime('now'))`,
+                             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, datetime('now'), datetime('now'))`,
                             {
-                                replacements: [pveServer.organizationId, newFolder.id, newIntegration.id, resource.type,
+                                replacements: [pveServer.organizationId ? null : (pveServer.accountId || null),
+                                    pveServer.organizationId, newFolder.id, newIntegration.id, resource.type,
                                     renderer, resource.name, null, 0, resource.status || null, JSON.stringify(resourceConfig)],
                             },
                         );

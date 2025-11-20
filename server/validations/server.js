@@ -10,7 +10,7 @@ const configValidation = Joi.object({
 
 module.exports.createServerValidation = Joi.object({
     name: Joi.string().required(),
-    folderId: Joi.number().required(),
+    folderId: Joi.number().allow(null).optional(),
     icon: Joi.string().optional(),
     type: Joi.string().optional().default("server"),
     identities: Joi.array().items(Joi.number()).optional(),
@@ -19,7 +19,7 @@ module.exports.createServerValidation = Joi.object({
 
 module.exports.updateServerValidation = Joi.object({
     name: Joi.string().optional(),
-    folderId: Joi.number().optional(),
+    folderId: Joi.number().allow(null).optional(),
     icon: Joi.string().optional(),
     type: Joi.string().optional(),
     position: Joi.number().optional(),

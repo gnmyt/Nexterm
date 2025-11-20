@@ -13,8 +13,8 @@ export const FolderObject = ({ id, name, nestedLevel, position, onClick, isOpen,
     const [nameState, setNameState] = useState(name || "");
 
     const [{ opacity }, dragRef] = useDrag({
-        item: { type: "folder", id, position },
         type: "folder",
+        item: { type: "folder", id, position },
         collect: monitor => ({
             opacity: monitor.isDragging() ? 0.5 : 1,
         }),

@@ -131,7 +131,7 @@ export const ContextMenu = ({
         if (!server) return;
 
         try {
-            await postRequest(`servers/${server.id}/duplicate`);
+            await postRequest(`entries/${server.id}/duplicate`);
             await loadServers();
         } catch (error) {
             console.error("Failed to duplicate server:", error);
@@ -146,10 +146,18 @@ export const ContextMenu = ({
             {type !== "server-object" &&
                 type !== "pve-object" &&
                 type !== "pve-entry" && (
-                    <div className="context-item" onClick={createFolder}>
-                        <Icon path={mdiFolderPlus} />
-                        <p>{t("servers.contextMenu.createFolder")}</p>
-                    </div>
+                    <>
+                        <div className="context-item" onClick={createFolder}>
+                            <Icon path={mdiFolderPlus} />
+                            <p>{t("servers.contextMenu.createFolder")}</p>
+                        </div>
+                        {(type === null || type === "folder-object") && (
+                            <div className="context-item" onClick={createServer}>
+                                <Icon path={mdiServerPlus} />
+                                <p>{t("servers.contextMenu.createServer")}</p>
+                            </div>
+                        )}
+                    </>
                 )}
             {type === "folder-object" && !isOrgFolder && (
                 <>
@@ -163,10 +171,6 @@ export const ContextMenu = ({
                     >
                         <Icon path={mdiFormTextbox} />
                         <p>{t("servers.contextMenu.renameFolder")}</p>
-                    </div>
-                    <div className="context-item" onClick={createServer}>
-                        <Icon path={mdiServerPlus} />
-                        <p>{t("servers.contextMenu.createServer")}</p>
                     </div>
                     <div className="context-item submenu-parent"
                          onMouseEnter={() => setShowImportSubmenu(true)}

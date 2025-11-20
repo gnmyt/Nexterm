@@ -2,6 +2,10 @@ const Sequelize = require("sequelize");
 const db = require("../utils/database");
 
 module.exports = db.define("entries", {
+    accountId: {
+        type: Sequelize.INTEGER,
+        allowNull: true,
+    },
     organizationId: {
         type: Sequelize.INTEGER,
         allowNull: true,

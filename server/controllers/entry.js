@@ -1,6 +1,5 @@
 const Entry = require("../models/Entry");
 const EntryIdentity = require("../models/EntryIdentity");
-const Integration = require("../models/Integration");
 const Folder = require("../models/Folder");
 const { listFolders } = require("./folder");
 const { hasOrganizationAccess, validateFolderAccess } = require("../utils/permission");
@@ -74,10 +73,13 @@ module.exports.createEntry = async (accountId, configuration) => {
         if (!validationResult.valid) return validationResult.error;
     }
 
+    const organizationId = folder?.folder?.organizationId || configuration.organizationId || null;
+    
     const entry = await Entry.create({
         ...configuration,
-        accountId: folder?.folder?.organizationId ? null : accountId,
-        organizationId: folder?.folder?.organizationId || null,
+        accountId: organizationId ? null : accountId,
+        organizationId: organizationId,
+        folderId: configuration.folderId || null,
     });
 
     if (configuration.identities && configuration.identities.length > 0) {
@@ -133,7 +135,7 @@ module.exports.editEntry = async (accountId, entryId, configuration) => {
 
     if (!accessCheck.valid) return accessCheck;
 
-    if (configuration.folderId) {
+    if (configuration.folderId !== undefined && configuration.folderId !== null) {
         const folderCheck = await validateFolderAccess(accountId, configuration.folderId);
         if (!folderCheck.valid) return folderCheck.error;
     }
@@ -205,6 +207,7 @@ module.exports.listEntries = async (accountId) => {
             [Op.or]: [
                 { folderId: { [Op.in]: folderIds } },
                 { organizationId: { [Op.in]: organizationIds }, folderId: null },
+                { accountId: accountId, folderId: null },
             ],
         },
         order: [["folderId", "ASC"], ["position", "ASC"]],
@@ -224,21 +227,6 @@ module.exports.listEntries = async (accountId) => {
         identitiesMap.get(ei.entryId).push(ei.identityId);
     });
 
-    const integrationIds = [...new Set(entries.filter(e => e.integrationId).map(e => e.integrationId))];
-    const allIntegrations = await Integration.findAll({
-        where: { id: { [Op.in]: integrationIds } }
-    });
-    const integrationsMap = new Map(allIntegrations.map(i => [i.id, i]));
-
-    const folderIntegrations = await Integration.findAll({
-        where: {
-            [Op.or]: [
-                { organizationId: { [Op.in]: organizationIds } },
-                { organizationId: null },
-            ],
-        },
-    });
-
     const folderMap = new Map();
     const rebuildFolderMap = (folders) => {
         folders.forEach(folder => {
@@ -248,67 +236,43 @@ module.exports.listEntries = async (accountId) => {
     };
     rebuildFolderMap(folders);
 
+    const buildEntryObject = (entry, identities) => {
+        if (entry.type === 'server') {
+            return {
+                type: "server",
+                id: entry.id,
+                icon: entry.icon,
+                name: entry.name,
+                position: entry.position,
+                identities: identities,
+                renderer: entry.renderer,
+                protocol: entry.config?.protocol,
+                ip: entry.config?.ip,
+            };
+        } else if (entry.type.startsWith('pve-')) {
+            return {
+                type: entry.type,
+                id: entry.id,
+                name: entry.name,
+                status: entry.status,
+                position: entry.position,
+                renderer: entry.renderer,
+            };
+        }
+        return null;
+    };
+
     for (const entry of entries) {
         const identities = identitiesMap.get(entry.id) || [];
+        const entryObject = buildEntryObject(entry, identities);
+        
+        if (!entryObject) continue;
 
         const folder = folderMap.get(entry.folderId);
-        if (folder) {
-            if (entry.type === 'server') {
-                folder.entries.push({
-                    type: "server",
-                    id: entry.id,
-                    icon: entry.icon,
-                    name: entry.name,
-                    position: entry.position,
-                    identities: identities,
-                    renderer: entry.renderer,
-                    protocol: entry.config?.protocol,
-                    ip: entry.config?.ip,
-                });
-            } else if (entry.type.startsWith('pve-')) {
-                folder.entries.push({
-                    type: entry.type,
-                    id: entry.id,
-                    name: entry.name,
-                    status: entry.status,
-                    position: entry.position,
-                    renderer: entry.renderer,
-                });
-            }
-        }
-    }
-
-    for (const integration of folderIntegrations) {
-        const pveEntries = entries.filter(e => e.integrationId === integration.id && e.type.startsWith('pve-'));
-
-        if (pveEntries.length > 0) {
-            const firstEntry = pveEntries[0];
-            const folder = folderMap.get(firstEntry.folderId);
-
-            if (folder && folder.parentId) {
-                const parentFolder = folderMap.get(folder.parentId);
-                if (parentFolder) {
-                    const existingPveServer = parentFolder.entries.find(e =>
-                        e.type === 'pve-server' && e.id === integration.id
-                    );
-
-                    if (!existingPveServer) {
-                        parentFolder.entries.push({
-                            type: "pve-server",
-                            id: integration.id,
-                            name: folder.name,
-                            online: integration.status === 'online',
-                            entries: pveEntries.map(e => ({
-                                type: e.type,
-                                id: e.id,
-                                name: e.name,
-                                status: e.status,
-                            })),
-                            ip: integration.config?.ip,
-                        });
-                    }
-                }
-            }
+        const targetArray = folder ? folder.entries : (!entry.folderId ? folders : null);
+        
+        if (targetArray) {
+            targetArray.push(entryObject);
         }
     }
 
