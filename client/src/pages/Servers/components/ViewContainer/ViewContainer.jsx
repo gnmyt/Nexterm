@@ -369,7 +369,8 @@ export const ViewContainer = ({ activeSessions, activeSessionId, setActiveSessio
         switch (session.server.renderer) {
             case "guac":
                 return <GuacamoleRenderer session={session} disconnectFromServer={disconnectFromServer} 
-                                         registerGuacamoleRef={registerGuacamoleRef} />;
+                                         registerGuacamoleRef={registerGuacamoleRef}
+                                         onFullscreenToggle={toggleFullscreenMode} />;
             case "terminal":
                 return <XtermRenderer session={session} disconnectFromServer={disconnectFromServer} 
                                       registerTerminalRef={registerTerminalRef} broadcastMode={broadcastMode}

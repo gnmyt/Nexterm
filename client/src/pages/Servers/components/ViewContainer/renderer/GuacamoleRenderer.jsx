@@ -1,13 +1,20 @@
 import { useEffect, useRef, useContext } from "react";
 import Guacamole from "guacamole-common-js";
 import { UserContext } from "@/common/contexts/UserContext.jsx";
+import { useKeymaps, matchesKeybind } from "@/common/contexts/KeymapContext.jsx";
 
-const GuacamoleRenderer = ({ session, disconnectFromServer, registerGuacamoleRef }) => {
+const GuacamoleRenderer = ({ session, disconnectFromServer, registerGuacamoleRef, onFullscreenToggle }) => {
     const ref = useRef(null);
     const { sessionToken } = useContext(UserContext);
     const clientRef = useRef(null);
     const scaleRef = useRef(1);
     const offsetRef = useRef({ x: 0, y: 0 });
+    const { getParsedKeybind } = useKeymaps();
+    const onFullscreenToggleRef = useRef(onFullscreenToggle);
+
+    useEffect(() => {
+        onFullscreenToggleRef.current = onFullscreenToggle;
+    }, [onFullscreenToggle]);
 
     useEffect(() => {
         if (registerGuacamoleRef && clientRef.current) {
@@ -164,6 +171,18 @@ const GuacamoleRenderer = ({ session, disconnectFromServer, registerGuacamoleRef
 
         ref.current.focus();
 
+        const handleKeyDown = (event) => {
+            const fullscreenKeybind = getParsedKeybind("fullscreen");
+            if (fullscreenKeybind && matchesKeybind(event, fullscreenKeybind)) {
+                event.preventDefault();
+                event.stopPropagation();
+                onFullscreenToggleRef.current?.();
+                return false;
+            }
+        };
+
+        ref.current.addEventListener("keydown", handleKeyDown, true);
+
         const keyboard = new Guacamole.Keyboard(ref.current);
         keyboard.onkeydown = (keysym) => client.sendKeyEvent(1, keysym);
         keyboard.onkeyup = (keysym) => client.sendKeyEvent(0, keysym);
@@ -180,6 +199,9 @@ const GuacamoleRenderer = ({ session, disconnectFromServer, registerGuacamoleRef
         handleClipboardEvents();
 
         return () => {
+            if (ref.current) {
+                ref.current.removeEventListener("keydown", handleKeyDown, true);
+            }
             client.disconnect();
             clientRef.current = null;
         };

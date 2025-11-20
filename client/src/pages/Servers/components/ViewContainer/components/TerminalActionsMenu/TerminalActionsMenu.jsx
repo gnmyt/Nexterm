@@ -48,6 +48,13 @@ export const TerminalActionsMenu = ({ layoutMode, onBroadcastToggle, onSnippetSe
                     return;
                 }
             }
+
+            const fullscreenKeybind = getParsedKeybind("fullscreen");
+            if (fullscreenKeybind && matchesKeybind(event, fullscreenKeybind)) {
+                event.preventDefault();
+                onFullscreenToggle?.();
+                return;
+            }
         };
 
         const handleSnippetsShortcut = () => setShowSnippets(true);
@@ -66,7 +73,7 @@ export const TerminalActionsMenu = ({ layoutMode, onBroadcastToggle, onSnippetSe
             window.removeEventListener('terminal-snippets-shortcut', handleSnippetsShortcut);
             window.removeEventListener('terminal-keyboard-shortcuts-shortcut', handleKeyboardShortcutsShortcut);
         };
-    }, [getParsedKeybind, hasGuacamole]);
+    }, [getParsedKeybind, hasGuacamole, onFullscreenToggle]);
 
     const handleMenuItemClick = (action) => {
         setMenuOpen(false);
