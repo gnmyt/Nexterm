@@ -30,30 +30,64 @@ import { deleteRequest, patchRequest, postRequest, putRequest } from "@/common/u
 import TagFilterMenu from "./components/ServerSearch/components/TagFilterMenu";
 import ProxmoxLogo from "./assets/proxmox.jsx";
 import TagsSubmenu from "./components/TagsSubmenu";
+import Fuse from "fuse.js";
+
+const flattenEntries = (entries, path = []) => {
+    return entries.flatMap(entry => {
+        const item = { ...entry, _path: path };
+        const isContainer = entry.type === "folder" || entry.type === "organization";
+        return isContainer ? [item, ...flattenEntries(entry.entries, [...path, entry])] : [item];
+    });
+};
 
 const filterEntries = (entries, searchTerm, selectedTags = []) => {
-    return entries
-        .map(entry => {
-            if (entry.type === "folder" || entry.type === "organization") {
+    const tagFilter = entry => selectedTags.length === 0 || 
+        (entry.tags?.some(tag => selectedTags.includes(tag.id)));
+
+    if (!searchTerm) {
+        return entries.map(entry => {
+            const isContainer = entry.type === "folder" || entry.type === "organization";
+            if (isContainer) {
                 const filteredEntries = filterEntries(entry.entries, searchTerm, selectedTags);
-                if (filteredEntries.length > 0) return { ...entry, entries: filteredEntries };
-                if (searchTerm && entry.name.toLowerCase().includes(searchTerm.toLowerCase())) return {
-                    ...entry,
-                    entries: filteredEntries,
-                };
-
-            } else if (entry.type === "server" || entry.type.startsWith("pve-")) {
-                const nameMatch = !searchTerm || entry.name.toLowerCase().includes(searchTerm.toLowerCase());
-                const ipMatch = !searchTerm || (entry.ip && entry.ip.toLowerCase().includes(searchTerm.toLowerCase()));
-
-                const tagMatch = selectedTags.length === 0 || (entry.tags && entry.tags.some(tag => selectedTags.includes(tag.id)));
-
-                if ((nameMatch || ipMatch) && tagMatch) return entry;
-
+                return filteredEntries.length > 0 ? { ...entry, entries: filteredEntries } : null;
             }
-            return null;
-        })
-        .filter(entry => entry !== null);
+            return tagFilter(entry) ? entry : null;
+        }).filter(Boolean);
+    }
+
+    const flatEntries = flattenEntries(entries);
+    const fuseOptions = {
+        keys: [{ name: 'name', weight: 2 }, { name: 'ip', weight: 1 }],
+        threshold: 0.3,
+        ignoreLocation: true,
+        minMatchCharLength: 1,
+    };
+
+    let results = new Fuse(flatEntries, fuseOptions).search(searchTerm);
+
+    if (results.length < 3 && results.length > 0) {
+        const newResults = new Fuse(flatEntries, { ...fuseOptions, threshold: 0.5 }).search(searchTerm);
+        if (newResults.length > results.length) results = newResults;
+    } else if (results.length > 20) {
+        results = new Fuse(flatEntries, { ...fuseOptions, threshold: 0.2 }).search(searchTerm);
+    }
+
+    const matchedEntries = results.map(r => r.item).filter(entry => 
+        !(entry.type === "server" || entry.type.startsWith("pve-")) || tagFilter(entry)
+    );
+    const matchedIds = new Set(matchedEntries.map(item => item.id));
+
+    const rebuildTree = entries => entries.map(entry => {
+        const isContainer = entry.type === "folder" || entry.type === "organization";
+        if (isContainer) {
+            const filteredEntries = rebuildTree(entry.entries);
+            return filteredEntries.length > 0 || matchedIds.has(entry.id) 
+                ? { ...entry, entries: filteredEntries } : null;
+        }
+        return matchedIds.has(entry.id) ? entry : null;
+    }).filter(Boolean);
+
+    return rebuildTree(entries);
 };
 
 const applyRenameState = (folderId) => (entry) => {
