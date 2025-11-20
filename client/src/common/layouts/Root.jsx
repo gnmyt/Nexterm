@@ -5,6 +5,7 @@ import { IdentityProvider } from "@/common/contexts/IdentityContext.jsx";
 import { ToastProvider } from "@/common/contexts/ToastContext.jsx";
 import { TerminalSettingsProvider } from "@/common/contexts/TerminalSettingsContext.jsx";
 import { AIProvider } from "@/common/contexts/AIContext.jsx";
+import { KeymapProvider } from "@/common/contexts/KeymapContext.jsx";
 import { DndProvider } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
 import { SessionProvider } from "@/common/contexts/SessionContext.jsx";
@@ -20,26 +21,28 @@ export default () => {
             <ToastProvider>
                 <TerminalSettingsProvider>
                     <UserProvider>
-                        <AIProvider>
-                            <ServerProvider>
-                                <IdentityProvider>
-                                    <SnippetProvider>
-                                        <SessionProvider>
-                                            <div className="content-wrapper">
-                                                <Suspense fallback={<Loading />}>
-                                                    <Sidebar />
-                                                </Suspense>
-                                                <div className="main-content">
+                        <KeymapProvider>
+                            <AIProvider>
+                                <ServerProvider>
+                                    <IdentityProvider>
+                                        <SnippetProvider>
+                                            <SessionProvider>
+                                                <div className="content-wrapper">
                                                     <Suspense fallback={<Loading />}>
-                                                        <Outlet />
+                                                        <Sidebar />
                                                     </Suspense>
+                                                    <div className="main-content">
+                                                        <Suspense fallback={<Loading />}>
+                                                            <Outlet />
+                                                        </Suspense>
+                                                    </div>
                                                 </div>
-                                            </div>
-                                        </SessionProvider>
-                                    </SnippetProvider>
-                                </IdentityProvider>
-                            </ServerProvider>
-                        </AIProvider>
+                                            </SessionProvider>
+                                        </SnippetProvider>
+                                    </IdentityProvider>
+                                </ServerProvider>
+                            </AIProvider>
+                        </KeymapProvider>
                     </UserProvider>
                 </TerminalSettingsProvider>
             </ToastProvider>

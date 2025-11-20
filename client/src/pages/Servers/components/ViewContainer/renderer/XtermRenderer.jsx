@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState, useContext } from "react";
 import { UserContext } from "@/common/contexts/UserContext.jsx";
 import { useAI } from "@/common/contexts/AIContext.jsx";
+import { useKeymaps, matchesKeybind } from "@/common/contexts/KeymapContext.jsx";
 import { Terminal as Xterm } from "@xterm/xterm";
 import { useTheme } from "@/common/contexts/ThemeContext.jsx";
 import { useTerminalSettings } from "@/common/contexts/TerminalSettingsContext.jsx";
@@ -10,22 +11,34 @@ import { createProgressParser } from "../utils/progressParser";
 import "@xterm/xterm/css/xterm.css";
 import "./styles/xterm.sass";
 
-const XtermRenderer = ({ session, disconnectFromServer, registerTerminalRef, broadcastMode, terminalRefs, updateProgress }) => {
+const XtermRenderer = ({ session, disconnectFromServer, registerTerminalRef, broadcastMode, terminalRefs, updateProgress, layoutMode, onBroadcastToggle }) => {
     const ref = useRef(null);
     const termRef = useRef(null);
     const wsRef = useRef(null);
     const broadcastModeRef = useRef(broadcastMode);
     const progressParserRef = useRef(null);
+    const layoutModeRef = useRef(layoutMode);
+    const onBroadcastToggleRef = useRef(onBroadcastToggle);
+    
     const { sessionToken } = useContext(UserContext);
     const { theme } = useTheme();
     const { getCurrentTheme, selectedFont, fontSize, cursorStyle, cursorBlink, selectedTheme } = useTerminalSettings();
     const { isAIAvailable } = useAI();
+    const { getParsedKeybind } = useKeymaps();
     const [showAIPopover, setShowAIPopover] = useState(false);
     const [aiPopoverPosition, setAIPopoverPosition] = useState(null);
 
     useEffect(() => {
         broadcastModeRef.current = broadcastMode;
     }, [broadcastMode]);
+
+    useEffect(() => {
+        layoutModeRef.current = layoutMode;
+    }, [layoutMode]);
+
+    useEffect(() => {
+        onBroadcastToggleRef.current = onBroadcastToggle;
+    }, [onBroadcastToggle]);
 
     useEffect(() => {
         if (updateProgress) {
@@ -41,22 +54,21 @@ const XtermRenderer = ({ session, disconnectFromServer, registerTerminalRef, bro
     }, [session.id, updateProgress]);
 
     const toggleAIPopover = () => {
-        if (!showAIPopover && termRef.current) {
+        if (!showAIPopover) {
             const term = termRef.current;
             const terminalElement = ref.current;
-
-            if (terminalElement) {
+            if (term && terminalElement) {
                 const rect = terminalElement.getBoundingClientRect();
                 const buffer = term.buffer.active;
-
                 const charWidth = rect.width / term.cols;
                 const charHeight = rect.height / term.rows;
-
-                const cursorX = rect.left + (buffer.cursorX * charWidth);
-                const cursorY = rect.top + (buffer.cursorY * charHeight);
-
-                setAIPopoverPosition({ x: cursorX, y: cursorY });
+                setAIPopoverPosition({
+                    x: rect.left + (buffer.cursorX * charWidth),
+                    y: rect.top + (buffer.cursorY * charHeight)
+                });
             }
+        } else {
+            setTimeout(() => termRef.current?.focus(), 0);
         }
         setShowAIPopover(!showAIPopover);
     };
@@ -199,10 +211,53 @@ const XtermRenderer = ({ session, disconnectFromServer, registerTerminalRef, bro
         });
 
         term.attachCustomKeyEventHandler((event) => {
-            if (event.ctrlKey && event.key === "k" && event.type === "keydown" && isAIAvailable()) {
-                event.preventDefault();
-                toggleAIPopover();
-                return false;
+            if (event.type === "keydown") {
+                const copyKeybind = getParsedKeybind("copy");
+                if (copyKeybind && matchesKeybind(event, copyKeybind)) {
+                    const selection = term.getSelection();
+                    if (selection) {
+                        event.preventDefault();
+                        event.stopPropagation();
+                        navigator.clipboard.writeText(selection).catch(() => {});
+                        return false;
+                    }
+                }
+
+                const aiKeybind = getParsedKeybind("ai-menu");
+                if (aiKeybind && isAIAvailable() && matchesKeybind(event, aiKeybind)) {
+                    event.preventDefault();
+                    event.stopPropagation();
+                    toggleAIPopover();
+                    return false;
+                }
+
+                const snippetsKeybind = getParsedKeybind("snippets");
+                if (snippetsKeybind && matchesKeybind(event, snippetsKeybind)) {
+                    event.preventDefault();
+                    event.stopPropagation();
+                    window.dispatchEvent(new CustomEvent('terminal-snippets-shortcut'));
+                    return false;
+                }
+
+                const keyboardShortcutsKeybind = getParsedKeybind("keyboard-shortcuts");
+                if (keyboardShortcutsKeybind && matchesKeybind(event, keyboardShortcutsKeybind)) {
+                    event.preventDefault();
+                    event.stopPropagation();
+                    window.dispatchEvent(new CustomEvent('terminal-keyboard-shortcuts-shortcut'));
+                    return false;
+                }
+
+                const currentLayoutMode = layoutModeRef.current;
+                const currentOnBroadcastToggle = onBroadcastToggleRef.current;
+                if (currentLayoutMode !== "single" && currentOnBroadcastToggle) {
+                    const broadcastKeybind = getParsedKeybind("broadcast");
+                    if (broadcastKeybind && matchesKeybind(event, broadcastKeybind)) {
+                        event.preventDefault();
+                        event.stopPropagation();
+                        currentOnBroadcastToggle();
+                        return false;
+                    }
+                }
             }
             return true;
         });
