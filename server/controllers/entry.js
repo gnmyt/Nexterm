@@ -68,6 +68,14 @@ module.exports.createEntry = async (accountId, configuration) => {
         configuration.icon = "server";
     }
 
+    if (!configuration.renderer && configuration.config?.protocol) {
+        if (configuration.config.protocol === "ssh") {
+            configuration.renderer = "terminal";
+        } else if (configuration.config.protocol === "rdp" || configuration.config.protocol === "vnc") {
+            configuration.renderer = "guac";
+        }
+    }
+
     if (configuration.identities && configuration.identities.length > 0) {
         const validationResult = await validateIdentities(accountId, configuration.identities, configuration.organizationId);
         if (!validationResult.valid) return validationResult.error;
@@ -138,6 +146,14 @@ module.exports.editEntry = async (accountId, entryId, configuration) => {
     if (configuration.folderId !== undefined && configuration.folderId !== null) {
         const folderCheck = await validateFolderAccess(accountId, configuration.folderId);
         if (!folderCheck.valid) return folderCheck.error;
+    }
+
+    if (configuration.config?.protocol) {
+        if (configuration.config.protocol === "ssh") {
+            configuration.renderer = "terminal";
+        } else if (configuration.config.protocol === "rdp" || configuration.config.protocol === "vnc") {
+            configuration.renderer = "guac";
+        }
     }
 
     if (configuration.identities) {
