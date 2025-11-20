@@ -63,10 +63,17 @@ export const ServerList = ({
 
     const [{ isOver }, dropRef] = useDrop({
         accept: ["server", "folder"],
-        drop: async (item) => {
+        drop: async (item, monitor) => {
+            const didDrop = monitor.didDrop();
+            if (didDrop) return;
+
             try {
                 if (item.type === "server") {
-                    await patchRequest("entries/" + item.id, { folderId: null });
+                    await patchRequest(`entries/${item.id}/reposition`, { 
+                        targetId: null,
+                        placement: 'after',
+                        folderId: null
+                    });
                     loadServers();
                     return {};
                 }
@@ -81,7 +88,7 @@ export const ServerList = ({
             }
         },
         collect: (monitor) => ({
-            isOver: monitor.isOver(),
+            isOver: monitor.isOver({ shallow: true }),
         }),
     });
 

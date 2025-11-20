@@ -26,7 +26,11 @@ export const FolderObject = ({ id, name, nestedLevel, position, onClick, isOpen,
             if (item.id === id) return;
             try {
                 if (item.type === "server") {
-                    await patchRequest("entries/" + item.id, { folderId: id });
+                    await patchRequest(`entries/${item.id}/reposition`, { 
+                        targetId: null,
+                        placement: 'after',
+                        folderId: id 
+                    });
                     loadServers();
                     return { id };
                 }

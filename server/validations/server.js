@@ -22,7 +22,12 @@ module.exports.updateServerValidation = Joi.object({
     folderId: Joi.number().allow(null).optional(),
     icon: Joi.string().optional(),
     type: Joi.string().optional(),
-    position: Joi.number().optional(),
     identities: Joi.array().items(Joi.number()).optional(),
     config: configValidation
+});
+
+module.exports.repositionServerValidation = Joi.object({
+    targetId: Joi.number().allow(null).optional(),
+    placement: Joi.string().valid('before', 'after').required(),
+    folderId: Joi.number().allow(null).optional()
 });

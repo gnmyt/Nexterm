@@ -1,6 +1,6 @@
 const { Router } = require("express");
-const { createEntry, deleteEntry, editEntry, getEntry, listEntries, duplicateEntry, importSSHConfig } = require("../controllers/entry");
-const { createServerValidation, updateServerValidation } = require("../validations/server");
+const { createEntry, deleteEntry, editEntry, getEntry, listEntries, duplicateEntry, importSSHConfig, repositionEntry } = require("../controllers/entry");
+const { createServerValidation, updateServerValidation, repositionServerValidation } = require("../validations/server");
 const { validateSchema } = require("../utils/schema");
 
 const app = Router();
@@ -128,6 +128,27 @@ app.post("/import/ssh-config", async (req, res) => {
     if (result?.code) return res.json(result);
 
     res.json(result);
+});
+
+/**
+ * PATCH /entry/{entryId}/reposition
+ * @summary Reposition Entry
+ * @description Repositions an entry relative to another entry or at the end of a folder/root. Uses server-side position calculation to ensure consistent ordering.
+ * @tags Entry
+ * @produces application/json
+ * @security BearerAuth
+ * @param {string} entryId.path.required - The unique identifier of the entry to reposition
+ * @param {RepositionServer} request.body.required - Reposition parameters
+ * @return {object} 200 - Entry successfully repositioned
+ * @return {object} 404 - Entry or target not found
+ */
+app.patch("/:entryId/reposition", async (req, res) => {
+    if (validateSchema(res, repositionServerValidation, req.body)) return;
+
+    const result = await repositionEntry(req.user.id, req.params.entryId, req.body);
+    if (result?.code) return res.json(result);
+
+    res.json({ message: "Entry successfully repositioned" });
 });
 
 module.exports = app;

@@ -18,9 +18,10 @@ import {
 } from "@mdi/js";
 import "./styles.sass";
 import { ServerContext } from "@/common/contexts/ServerContext.jsx";
-import { useContext } from "react";
+import { useContext, useRef, useState } from "react";
 import { useDrag, useDrop } from "react-dnd";
 import { patchRequest } from "@/common/utils/RequestUtil.js";
+import { DropIndicator } from "../DropIndicator";
 
 export const loadIcon = (icon) => {
     switch (icon) {
@@ -60,7 +61,9 @@ export const loadIcon = (icon) => {
 };
 
 export const ServerObject = ({ id, name, position, folderId, nestedLevel, icon, connectToServer, status }) => {
-    const { loadServers, getServerListInFolder } = useContext(ServerContext);
+    const { loadServers, getServerById } = useContext(ServerContext);
+    const [dropPlacement, setDropPlacement] = useState(null);
+    const elementRef = useRef(null);
 
     const [{ opacity }, dragRef] = useDrag({
         item: { type: "server", id, folderId, position },
@@ -72,34 +75,39 @@ export const ServerObject = ({ id, name, position, folderId, nestedLevel, icon, 
 
     const [{ isOver }, dropRef] = useDrop({
         accept: "server",
+        hover: (item, monitor) => {
+            if (!elementRef.current || item.id === id) return;
+            
+            const hoverBoundingRect = elementRef.current.getBoundingClientRect();
+            const hoverMiddleY = (hoverBoundingRect.bottom - hoverBoundingRect.top) / 2;
+            const clientOffset = monitor.getClientOffset();
+            const hoverClientY = clientOffset.y - hoverBoundingRect.top;
+
+            const placement = hoverClientY < hoverMiddleY ? 'before' : 'after';
+            setDropPlacement(placement);
+        },
         drop: async (item) => {
-            const servers = getServerListInFolder(folderId);
-
-            const targetIndex = servers.findIndex(server => server.id === id);
-            const draggedIndex = servers.findIndex(server => server.id === item.id);
-
-            let newPosition;
-            if (targetIndex > draggedIndex) {
-                newPosition = (servers[targetIndex].position + (servers[targetIndex + 1]?.position || servers[targetIndex].position + 1)) / 2;
-            } else {
-                newPosition = (servers[targetIndex].position + (servers[targetIndex - 1]?.position || servers[targetIndex].position - 1)) / 2;
+            if (item.id === id) return;
+            
+            try {
+                await patchRequest(`entries/${item.id}/reposition`, {
+                    targetId: id,
+                    placement: dropPlacement || 'after',
+                    folderId: folderId,
+                });
+                
+                loadServers();
+            } catch (error) {
+                console.error("Failed to reposition entry", error);
             }
-
-            await patchRequest(`servers/${item.id}`, {
-                folderId: item.folderId !== folderId ? folderId : undefined,
-                position: Math.max(newPosition, 0),
-            });
-
-            loadServers();
-
+            
+            setDropPlacement(null);
             return { id };
         },
         collect: (monitor) => ({
             isOver: monitor.isOver(),
         }),
     });
-
-    const { getServerById } = useContext(ServerContext);
 
     const server = getServerById(id);
 
@@ -108,14 +116,22 @@ export const ServerObject = ({ id, name, position, folderId, nestedLevel, icon, 
     };
 
     return (
-        <div className={"server-object" + (isOver ? " server-is-over" : "")}
-             style={{ paddingLeft: `${15 + (nestedLevel * 15)}px`, opacity }} data-id={id}
-             ref={(node) => dragRef(dropRef(node))}
-             onDoubleClick={connect}>
+        <div 
+            className={"server-object"}
+            style={{ paddingLeft: `${15 + (nestedLevel * 15)}px`, opacity, position: 'relative' }} 
+            data-id={id}
+            ref={(node) => {
+                elementRef.current = node;
+                dragRef(dropRef(node));
+            }}
+            onDoubleClick={connect}
+            onMouseLeave={() => setDropPlacement(null)}>
+            <DropIndicator show={isOver && dropPlacement === 'before'} placement="before" />
             <div className="system-icon">
                 <Icon path={loadIcon(icon)} />
             </div>
             <p className="truncate-text">{name}</p>
+            <DropIndicator show={isOver && dropPlacement === 'after'} placement="after" />
         </div>
     );
 };

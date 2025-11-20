@@ -93,10 +93,10 @@ module.exports.createEntry = async (accountId, configuration) => {
     }
 
     await createAuditLog({
-        action: AUDIT_ACTIONS.SERVER_CREATE,
+        action: AUDIT_ACTIONS.ENTRY_CREATE,
         accountId,
         organizationId: folder?.folder?.organizationId || null,
-        resource: RESOURCE_TYPES.SERVER,
+        resource: RESOURCE_TYPES.ENTRY,
         resourceId: entry.id,
         details: {
             name: entry.name,
@@ -118,10 +118,10 @@ module.exports.deleteEntry = async (accountId, entryId) => {
     await Entry.destroy({ where: { id: entryId } });
 
     await createAuditLog({
-        action: AUDIT_ACTIONS.SERVER_DELETE,
+        action: AUDIT_ACTIONS.ENTRY_DELETE,
         accountId,
         organizationId: entry.organizationId,
-        resource: RESOURCE_TYPES.SERVER,
+        resource: RESOURCE_TYPES.ENTRY,
         resourceId: entryId,
         details: { name: entry.name, folderId: entry.folderId }
     });
@@ -163,10 +163,10 @@ module.exports.editEntry = async (accountId, entryId, configuration) => {
     await Entry.update(configuration, { where: { id: entryId } });
 
     await createAuditLog({
-        action: AUDIT_ACTIONS.SERVER_UPDATE,
+        action: AUDIT_ACTIONS.ENTRY_UPDATE,
         accountId,
         organizationId: entry.organizationId,
-        resource: RESOURCE_TYPES.SERVER,
+        resource: RESOURCE_TYPES.ENTRY,
         resourceId: entryId,
         details: configuration
     });
@@ -303,10 +303,10 @@ module.exports.duplicateEntry = async (accountId, entryId) => {
     }
 
     await createAuditLog({
-        action: AUDIT_ACTIONS.SERVER_CREATE,
+        action: AUDIT_ACTIONS.ENTRY_CREATE,
         accountId,
         organizationId: entry.organizationId,
-        resource: RESOURCE_TYPES.SERVER,
+        resource: RESOURCE_TYPES.ENTRY,
         resourceId: newEntry.id,
         details: { name: newEntry.name, folderId: newEntry.folderId }
     });
@@ -363,10 +363,10 @@ module.exports.importSSHConfig = async (accountId, configuration) => {
             }
 
             await createAuditLog({
-                action: AUDIT_ACTIONS.SERVER_CREATE,
+                action: AUDIT_ACTIONS.ENTRY_CREATE,
                 accountId,
                 organizationId: orgId || null,
-                resource: RESOURCE_TYPES.SERVER,
+                resource: RESOURCE_TYPES.ENTRY,
                 resourceId: entry.id,
                 details: { name: entry.name, folderId: entry.folderId, importSource: 'ssh-config' }
             });
@@ -383,6 +383,65 @@ module.exports.importSSHConfig = async (accountId, configuration) => {
         message: `SSH config import: ${results.imported} imported, ${results.skipped} skipped, ${results.errors} errors`,
         ...results
     };
+};
+
+module.exports.repositionEntry = async (accountId, entryId, { targetId, placement, folderId }) => {
+    const entryIdNum = parseInt(entryId);
+    
+    const entry = await Entry.findByPk(entryIdNum);
+    const accessCheck = await validateEntryAccess(accountId, entry, "You don't have permission to reposition this entry");
+
+    if (!accessCheck.valid) return accessCheck;
+
+    if (folderId !== undefined && folderId !== null) {
+        const folderCheck = await validateFolderAccess(accountId, folderId);
+        if (!folderCheck.valid) return folderCheck.error;
+    }
+
+    const targetFolderId = folderId !== undefined ? folderId : entry.folderId;
+
+    const entries = await Entry.findAll({
+        where: {
+            folderId: targetFolderId,
+            organizationId: entry.organizationId || null,
+            accountId: entry.accountId || null,
+        },
+        order: [["position", "ASC"]],
+    });
+
+    const normalizedEntries = entries.filter(e => e.id !== entryIdNum);
+    
+    let targetIndex;
+    if (targetId === null || targetId === undefined) {
+        targetIndex = normalizedEntries.length;
+    } else {
+        targetIndex = normalizedEntries.findIndex(e => e.id === parseInt(targetId));
+        if (targetIndex === -1) return { code: 404, message: "Target entry not found" };
+
+        if (placement === 'after') {
+            targetIndex += 1;
+        }
+    }
+
+    normalizedEntries.splice(targetIndex, 0, entry);
+
+    for (let i = 0; i < normalizedEntries.length; i++) {
+        await Entry.update(
+            { position: i, folderId: targetFolderId },
+            { where: { id: normalizedEntries[i].id } }
+        );
+    }
+
+    await createAuditLog({
+        action: AUDIT_ACTIONS.ENTRY_UPDATE,
+        accountId,
+        organizationId: entry.organizationId,
+        resource: RESOURCE_TYPES.ENTRY,
+        resourceId: entryIdNum,
+        details: { action: 'reposition', targetId, placement, folderId: targetFolderId }
+    });
+
+    return { success: true };
 };
 
 module.exports.validateEntryAccess = validateEntryAccess;
