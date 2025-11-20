@@ -3,6 +3,7 @@ import Icon from "@mdi/react";
 import { mdiMenu, mdiBroadcast, mdiCodeArray, mdiKeyboard } from "@mdi/js";
 import SnippetsMenu from "../../renderer/components/SnippetsMenu";
 import KeyboardShortcutsMenu from "./components/KeyboardShortcutsMenu";
+import { useKeymaps, matchesKeybind } from "@/common/contexts/KeymapContext.jsx";
 import "./styles.sass";
 
 export const TerminalActionsMenu = ({ layoutMode, onBroadcastToggle, onSnippetSelected, broadcastEnabled, onKeyboardShortcut, hasGuacamole }) => {
@@ -10,6 +11,7 @@ export const TerminalActionsMenu = ({ layoutMode, onBroadcastToggle, onSnippetSe
     const [showSnippets, setShowSnippets] = useState(false);
     const [showKeyboardShortcuts, setShowKeyboardShortcuts] = useState(false);
     const menuRef = useRef(null);
+    const { getParsedKeybind } = useKeymaps();
 
     useEffect(() => {
         const handleClickOutside = (event) => {
@@ -27,24 +29,53 @@ export const TerminalActionsMenu = ({ layoutMode, onBroadcastToggle, onSnippetSe
         };
     }, [menuOpen]);
 
+    useEffect(() => {
+        const handleKeyPress = (event) => {
+            const snippetsKeybind = getParsedKeybind("snippets");
+            if (snippetsKeybind && matchesKeybind(event, snippetsKeybind)) {
+                event.preventDefault();
+                setShowSnippets(true);
+                return;
+            }
+
+            if (hasGuacamole) {
+                const keyboardShortcutsKeybind = getParsedKeybind("keyboard-shortcuts");
+                if (keyboardShortcutsKeybind && matchesKeybind(event, keyboardShortcutsKeybind)) {
+                    event.preventDefault();
+                    setShowKeyboardShortcuts(true);
+                    return;
+                }
+            }
+        };
+
+        const handleSnippetsShortcut = () => setShowSnippets(true);
+        const handleKeyboardShortcutsShortcut = () => {
+            if (hasGuacamole) {
+                setShowKeyboardShortcuts(true);
+            }
+        };
+
+        document.addEventListener("keydown", handleKeyPress);
+        window.addEventListener('terminal-snippets-shortcut', handleSnippetsShortcut);
+        window.addEventListener('terminal-keyboard-shortcuts-shortcut', handleKeyboardShortcutsShortcut);
+        
+        return () => {
+            document.removeEventListener("keydown", handleKeyPress);
+            window.removeEventListener('terminal-snippets-shortcut', handleSnippetsShortcut);
+            window.removeEventListener('terminal-keyboard-shortcuts-shortcut', handleKeyboardShortcutsShortcut);
+        };
+    }, [getParsedKeybind, hasGuacamole]);
+
     const handleMenuItemClick = (action) => {
         setMenuOpen(false);
-        if (action === "snippets") {
-            setShowSnippets(true);
-        } else if (action === "broadcast") {
-            if (onBroadcastToggle) {
-                onBroadcastToggle();
-            }
-        } else if (action === "keyboard") {
-            setShowKeyboardShortcuts(true);
-        }
+        if (action === "snippets") setShowSnippets(true);
+        else if (action === "broadcast") onBroadcastToggle?.();
+        else if (action === "keyboard") setShowKeyboardShortcuts(true);
     };
 
     const handleSnippetSelect = (command) => {
         setShowSnippets(false);
-        if (onSnippetSelected) {
-            onSnippetSelected(command);
-        }
+        setTimeout(() => onSnippetSelected?.(command), 50);
     };
 
     return (
