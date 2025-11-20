@@ -20,7 +20,7 @@ export const ContextMenuItem = ({
     const hasSubmenu = children && React.Children.count(children) > 0;
 
     useEffect(() => {
-        if (!isSubmenuOpen || !itemRef.current || !submenuRef.current) return;
+        if (!isSubmenuOpen) return;
 
         const updatePosition = () => {
             if (!itemRef.current || !submenuRef.current) return;
@@ -34,7 +34,8 @@ export const ContextMenuItem = ({
             });
         };
 
-        requestAnimationFrame(() => requestAnimationFrame(updatePosition));
+        const timer = setTimeout(() => requestAnimationFrame(() => requestAnimationFrame(updatePosition)), 0);
+        return () => clearTimeout(timer);
     }, [isSubmenuOpen]);
 
     const handleClick = (e) => {
