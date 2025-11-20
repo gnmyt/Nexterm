@@ -297,9 +297,10 @@
       "firstName": "Nome",
       "lastName": "Cognome",
       "appearance": "Aspetto",
-      "appearanceDescription": "Scegli tra il tema chiaro e quello scuro per la tua interfaccia.",
-      "switchToLight": "Passa alla modalità Luce",
-      "switchToDark": "Passa alla modalità scura",
+      "appearanceDescription": "Choose your preferred theme. Auto follows your system settings and adjusts based on time of day.",
+      "themeAuto": "Auto",
+      "themeLight": "Light",
+      "themeDark": "Dark",
       "twoFactor": "Autenticazione a due fattori",
       "twoFactorActive": "Attivo",
       "twoFactorInactive": "Inattivo",
@@ -429,6 +430,10 @@
         "copy": {
           "title": "Copy",
           "description": "Copy selected text to clipboard"
+        },
+        "fullscreen": {
+          "title": "Full-Screen",
+          "description": "Toggle full-screen mode"
         }
       },
       "recorder": {
@@ -784,6 +789,15 @@
       "noSnippets": "Non ci sono snippet disponibili",
       "searchPlaceholder": "Snippet di ricerca...",
       "createNew": "Crea un nuovo snippet"
+    },
+    "terminalActions": {
+      "menuTitle": "Terminal Actions",
+      "snippets": "Snippets",
+      "keyboardShortcuts": "Keyboard Shortcuts",
+      "broadcasting": "Broadcasting",
+      "fullScreen": "Full-Screen",
+      "exitFullScreen": "Exit Full-Screen Mode",
+      "badgeOn": "ON"
     },
     "messages": {
       "fillRequiredFields": "Compila tutti i campi obbligatori",
