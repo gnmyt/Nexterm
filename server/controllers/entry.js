@@ -1,6 +1,8 @@
 const Entry = require("../models/Entry");
 const EntryIdentity = require("../models/EntryIdentity");
 const Folder = require("../models/Folder");
+const EntryTag = require("../models/EntryTag");
+const Tag = require("../models/Tag");
 const { listFolders } = require("./folder");
 const { hasOrganizationAccess, validateFolderAccess } = require("../utils/permission");
 const { Op } = require("sequelize");
@@ -235,12 +237,31 @@ module.exports.listEntries = async (accountId) => {
         order: [['isDefault', 'DESC']]
     });
 
+    const allEntryTags = await EntryTag.findAll({
+        where: { entryId: { [Op.in]: entryIds } }
+    });
+
+    const allTags = await Tag.findAll({
+        where: { accountId: accountId }
+    });
+
     const identitiesMap = new Map();
     allEntryIdentities.forEach(ei => {
         if (!identitiesMap.has(ei.entryId)) {
             identitiesMap.set(ei.entryId, []);
         }
         identitiesMap.get(ei.entryId).push(ei.identityId);
+    });
+
+    const tagsMap = new Map();
+    allEntryTags.forEach(et => {
+        if (!tagsMap.has(et.entryId)) {
+            tagsMap.set(et.entryId, []);
+        }
+        const tag = allTags.find(t => t.id === et.tagId);
+        if (tag) {
+            tagsMap.get(et.entryId).push({ id: tag.id, name: tag.name, color: tag.color });
+        }
     });
 
     const folderMap = new Map();
@@ -259,7 +280,7 @@ module.exports.listEntries = async (accountId) => {
     };
     rebuildFolderMap(folders);
 
-    const buildEntryObject = (entry, identities) => {
+    const buildEntryObject = (entry, identities, tags) => {
         const obj = {
             type: entry.type,
             id: entry.id,
@@ -268,6 +289,7 @@ module.exports.listEntries = async (accountId) => {
             status: entry.status,
             position: entry.position,
             renderer: entry.renderer,
+            tags: tags || [],
         };
 
         if (entry.type === 'server') {
@@ -284,7 +306,8 @@ module.exports.listEntries = async (accountId) => {
 
     for (const entry of entries) {
         const identities = identitiesMap.get(entry.id) || [];
-        const entryObject = buildEntryObject(entry, identities);
+        const tags = tagsMap.get(entry.id) || [];
+        const entryObject = buildEntryObject(entry, identities, tags);
         
         if (!entryObject) continue;
 
