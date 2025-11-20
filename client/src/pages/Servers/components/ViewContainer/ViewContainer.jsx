@@ -128,6 +128,18 @@ export const ViewContainer = ({ activeSessions, activeSessionId, setActiveSessio
         }
     }, [layoutMode]);
 
+    useEffect(() => {
+        const handleBeforeUnload = (e) => {
+            if (activeSessions.length > 0) {
+                e.preventDefault();
+                e.returnValue = '';
+            }
+        };
+
+        window.addEventListener('beforeunload', handleBeforeUnload);
+        return () => window.removeEventListener('beforeunload', handleBeforeUnload);
+    }, [activeSessions.length]);
+
     const onTabOrderChange = useCallback((newOrder) => {
         tabOrderRef.current = newOrder;
         if (layoutMode !== "single") {
