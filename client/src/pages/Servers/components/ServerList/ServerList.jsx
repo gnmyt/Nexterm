@@ -6,7 +6,7 @@ import ServerEntries from "./components/ServerEntries.jsx";
 import Icon from "@mdi/react";
 import { mdiCursorDefaultClick } from "@mdi/js";
 import ContextMenu from "./components/ContextMenu";
-import { useDrop } from "react-dnd";
+import { useDrop, useDragLayer } from "react-dnd";
 import { patchRequest } from "@/common/utils/RequestUtil.js";
 
 const filterEntries = (entries, searchTerm) => {
@@ -60,6 +60,13 @@ export const ServerList = ({
     const [isResizing, setIsResizing] = useState(false);
     const [isCollapsed, setIsCollapsed] = useState(false);
     const serverListRef = useRef(null);
+    const serversContainerRef = useRef(null);
+    const scrollIntervalRef = useRef(null);
+
+    const { isDragging, clientOffset } = useDragLayer((monitor) => ({
+        isDragging: monitor.isDragging(),
+        clientOffset: monitor.getClientOffset(),
+    }));
 
     const [{ isOver }, dropRef] = useDrop({
         accept: ["server", "folder"],
@@ -186,6 +193,50 @@ export const ServerList = ({
         };
     }, [isResizing]);
 
+    useEffect(() => {
+        if (!isDragging || !clientOffset || !serversContainerRef.current) {
+            if (scrollIntervalRef.current) {
+                clearInterval(scrollIntervalRef.current);
+                scrollIntervalRef.current = null;
+            }
+            return;
+        }
+
+        const container = serversContainerRef.current;
+        const rect = container.getBoundingClientRect();
+        const scrollThreshold = 50;
+        const scrollSpeed = 10;
+
+        const mouseY = clientOffset.y;
+        const distanceFromTop = mouseY - rect.top;
+        const distanceFromBottom = rect.bottom - mouseY;
+
+        if (scrollIntervalRef.current) {
+            clearInterval(scrollIntervalRef.current);
+            scrollIntervalRef.current = null;
+        }
+
+        if (distanceFromTop < scrollThreshold && distanceFromTop > 0) {
+            scrollIntervalRef.current = setInterval(() => {
+                container.scrollTop = Math.max(0, container.scrollTop - scrollSpeed);
+            }, 16);
+        } else if (distanceFromBottom < scrollThreshold && distanceFromBottom > 0) {
+            scrollIntervalRef.current = setInterval(() => {
+                container.scrollTop = Math.min(
+                    container.scrollHeight - container.clientHeight,
+                    container.scrollTop + scrollSpeed
+                );
+            }, 16);
+        }
+
+        return () => {
+            if (scrollIntervalRef.current) {
+                clearInterval(scrollIntervalRef.current);
+                scrollIntervalRef.current = null;
+            }
+        };
+    }, [isDragging, clientOffset]);
+
     return (
         <div
             className={`server-list ${isCollapsed ? "collapsed" : ""}`}
@@ -195,7 +246,9 @@ export const ServerList = ({
                 <div className="server-list-inner" ref={dropRef}>
                     <ServerSearch search={search} setSearch={setSearch} />
                     {servers && servers.length >= 1 && (
-                        <div className={`servers${isOver ? " drop-zone-active" : ""}`} onContextMenu={handleContextMenu}>
+                        <div className={`servers${isOver ? " drop-zone-active" : ""}`} 
+                             onContextMenu={handleContextMenu} 
+                             ref={serversContainerRef}>
                             <ServerEntries entries={renameStateServers} setRenameStateId={setRenameStateId}
                                            nestedLevel={0} connectToServer={connectToServer} />
                         </div>
