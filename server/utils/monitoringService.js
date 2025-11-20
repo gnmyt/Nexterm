@@ -4,6 +4,7 @@ const EntryIdentity = require("../models/EntryIdentity");
 const MonitoringData = require("../models/MonitoringData");
 const Identity = require("../models/Identity");
 const { Op } = require("sequelize");
+const { getIdentityCredentials } = require("../controllers/identity");
 
 let monitoringInterval = null;
 let isRunning = false;
@@ -63,7 +64,8 @@ const monitorEntry = async (entry) => {
         }
 
         const identity = identities[0];
-        const monitoringData = await collectServerData(entry, identity);
+        const credentials = await getIdentityCredentials(identity.id);
+        const monitoringData = await collectServerData(entry, identity, credentials);
         await saveMonitoringData(entry.id, monitoringData);
     } catch (error) {
         console.error(`Error monitoring entry ${entry.name}:`, error);
@@ -74,7 +76,7 @@ const monitorEntry = async (entry) => {
     }
 };
 
-const collectServerData = async (entry, identity) => {
+const collectServerData = async (entry, identity, credentials) => {
     return new Promise((resolve) => {
         const conn = new Client();
         let monitoringData = {
@@ -112,12 +114,12 @@ const collectServerData = async (entry, identity) => {
                     cpuUsage: cpuData,
                     memoryUsage: memoryData.usage,
                     memoryTotal: memoryData.total,
-                    diskUsage: diskData,
+                    disk: diskData,
                     uptime: uptimeData,
                     loadAverage: loadData,
                     processes: processData,
                     osInfo: osData,
-                    networkInterfaces: networkData,
+                    network: networkData,
                 };
 
             } catch (error) {
@@ -147,11 +149,11 @@ const collectServerData = async (entry, identity) => {
         };
 
         if (identity.type === "password") {
-            connectionOptions.password = identity.password;
+            connectionOptions.password = credentials.password;
         } else {
-            connectionOptions.privateKey = identity.sshKey;
-            if (identity.passphrase) {
-                connectionOptions.passphrase = identity.passphrase;
+            connectionOptions.privateKey = credentials.sshKey;
+            if (credentials.passphrase) {
+                connectionOptions.passphrase = credentials.passphrase;
             }
         }
 

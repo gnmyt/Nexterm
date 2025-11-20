@@ -64,4 +64,28 @@ module.exports = db.define("monitoring_data", {
             fields: ["entryId", "timestamp"],
         },
     ],
+    hooks: {
+        afterFind: (entries) => {
+            const parseJsonFields = (entry) => {
+                if (entry) {
+                    const jsonFields = ['disk', 'loadAverage', 'network', 'processes', 'osInfo'];
+                    jsonFields.forEach(field => {
+                        if (entry[field] && typeof entry[field] === 'string') {
+                            try {
+                                entry[field] = JSON.parse(entry[field]);
+                            } catch (e) {
+                                console.error(`Failed to parse ${field}:`, e);
+                            }
+                        }
+                    });
+                }
+            };
+
+            if (Array.isArray(entries)) {
+                entries.forEach(parseJsonFields);
+            } else if (entries) {
+                parseJsonFields(entries);
+            }
+        },
+    },
 });
