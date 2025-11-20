@@ -41,38 +41,42 @@ export const SnippetsMenu = ({ onSelect, onClose, visible }) => {
     const filtered = filteredSnippets();
 
     return (
-        <div className="snippets-menu">
-            <div className="snippets-menu-header">
-                <div className="search-wrapper">
-                    <Icon path={mdiMagnify} />
-                    <input type="text" placeholder="Search snippets..." value={search} onChange={handleSearch}
-                           ref={searchRef} />
-                </div>
-                <button className="close-button" onClick={onClose}>
-                    <Icon path={mdiClose} />
-                </button>
-            </div>
+        <div className="snippets-menu-overlay" onClick={onClose}>
+            <div onClick={(e) => e.stopPropagation()}>
+                <div className="snippets-menu snippets-menu-popover">
+                    <div className="snippets-menu-header">
+                        <div className="search-wrapper">
+                            <Icon path={mdiMagnify} />
+                            <input type="text" placeholder="Search snippets..." value={search} onChange={handleSearch}
+                                   ref={searchRef} />
+                        </div>
+                        <button className="close-button" onClick={onClose}>
+                            <Icon path={mdiClose} />
+                        </button>
+                    </div>
 
-            <div className="snippets-menu-content">
-                {filtered.length === 0 ? (
-                    <div className="no-snippets">
-                        {snippets?.length === 0 ? (
-                            <p>No snippets available. Create some in the Snippets section.</p>
+                    <div className="snippets-menu-content">
+                        {filtered.length === 0 ? (
+                            <div className="no-snippets">
+                                {snippets?.length === 0 ? (
+                                    <p>No snippets available. Create some in the Snippets section.</p>
+                                ) : (
+                                    <p>No snippets match your search.</p>
+                                )}
+                            </div>
                         ) : (
-                            <p>No snippets match your search.</p>
+                            <div className="snippets-list">
+                                {filtered.map(snippet => (
+                                    <div key={snippet.id} className="snippet-item" onClick={() => handleSnippetClick(snippet)}>
+                                        <h4>{snippet.name}</h4>
+                                        {snippet.description && <p className="snippet-description">{snippet.description}</p>}
+                                        <pre className="snippet-command">{snippet.command}</pre>
+                                    </div>
+                                ))}
+                            </div>
                         )}
                     </div>
-                ) : (
-                    <div className="snippets-list">
-                        {filtered.map(snippet => (
-                            <div key={snippet.id} className="snippet-item" onClick={() => handleSnippetClick(snippet)}>
-                                <h4>{snippet.name}</h4>
-                                {snippet.description && <p className="snippet-description">{snippet.description}</p>}
-                                <pre className="snippet-command">{snippet.command}</pre>
-                            </div>
-                        ))}
-                    </div>
-                )}
+                </div>
             </div>
         </div>
     );

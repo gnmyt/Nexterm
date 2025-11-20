@@ -1,6 +1,6 @@
 @use "@/common/styles/colors"
 
-.snippets-menu-overlay
+.keyboard-shortcuts-overlay
   position: fixed
   top: 0
   left: 0
@@ -13,33 +13,21 @@
   align-items: center
   justify-content: center
 
-.snippets-menu
-  position: absolute
-  top: 10px
-  right: 10px
-  width: 400px
-  max-width: 90%
-  max-height: 80%
+.keyboard-shortcuts-menu
+  position: relative
+  width: 500px
+  max-width: 90vw
+  max-height: 70vh
   background-color: colors.$gray-full
   border: 1px solid colors.$gray
   border-radius: 6px
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3)
-  z-index: 1000
+  z-index: 10000
   display: flex
   flex-direction: column
   overflow: hidden
 
-  &.snippets-menu-popover
-    position: relative
-    top: auto
-    right: auto
-    left: auto
-    width: 500px
-    max-width: 90vw
-    max-height: 70vh
-    z-index: 10000
-
-  .snippets-menu-header
+  .keyboard-shortcuts-header
     padding: 12px
     background-color: colors.$dark-gray
     border-bottom: 1px solid colors.$gray
@@ -90,19 +78,19 @@
         background-color: colors.$gray
         color: colors.$white
 
-  .snippets-menu-content
+  .keyboard-shortcuts-content
     display: flex
     flex-direction: column
-    max-height: calc(80% - 50px)
+    max-height: calc(70vh - 50px)
     overflow-y: auto
     overflow-x: hidden
 
-    .snippets-list
+    .shortcuts-list
       padding: 12px
       box-sizing: border-box
       width: 100%
 
-      .snippet-item
+      .shortcut-item
         padding: 12px
         background-color: colors.$darker-gray
         border: 1px solid colors.$gray
@@ -111,40 +99,35 @@
         cursor: pointer
         width: 100%
         box-sizing: border-box
+        transition: all 0.2s ease
         
         &:last-child
           margin-bottom: 0
 
-        h4
-          margin: 0 0 5px 0
-          color: colors.$white
-          font-size: 14px
-          word-break: break-word
-
-        .snippet-description
-          margin: 5px 0
-          color: colors.$light-gray
-          font-size: 12px
-          word-break: break-word
-
-        .snippet-command
-          margin: 8px 0 0
-          padding: 8px
+        &:hover
           background-color: colors.$dark-gray
-          border: 1px solid colors.$gray
-          border-radius: 4px
-          color: colors.$white
-          font-family: monospace
-          font-size: 12px
-          white-space: pre-wrap
-          word-break: break-all
-          max-height: 100px
-          overflow-y: hidden
-          overflow-x: hidden
-          width: 100%
-          box-sizing: border-box
+          border-color: colors.$primary
 
-    .no-snippets
+        .shortcut-info
+          display: flex
+          align-items: center
+          justify-content: space-between
+
+          h4
+            margin: 0
+            color: colors.$white
+            font-size: 14px
+            font-weight: 500
+
+          .shortcut-category
+            padding: 3px 10px
+            border-radius: 12px
+            background-color: colors.$dark-gray
+            color: colors.$light-gray
+            font-size: 11px
+            font-weight: 500
+
+    .no-shortcuts
       display: flex
       justify-content: center
       align-items: center
