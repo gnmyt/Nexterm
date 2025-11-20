@@ -1,32 +1,27 @@
-const { openLXCConsole, getNodeForServer, createTicket } = require("../controllers/pve");
 const { WebSocket } = require("ws");
-const preparePVE = require("../middlewares/pve");
 const { updateAuditLogWithSessionDuration } = require("../controllers/audit");
 
-module.exports = async (ws, req) => {
-    const pveObj = await preparePVE(ws, req);
-    if (!pveObj) return;
-
-    const { server, containerId, auditLogId } = pveObj;
+module.exports = async (ws, context) => {
+    const { integration, entry, containerId, ticket, node, vncTicket, auditLogId } = context;
     const connectionStartTime = Date.now();
 
     let keepAliveTimer;
 
     try {
-        const ticket = await createTicket({ ip: server.ip, port: server.port }, server.username, server.password);
+        const vmid = containerId ?? entry.config?.vmid ?? "0";
+        const containerPart = vmid === 0 || vmid === "0" ? "" : `lxc/${vmid}`;
+        const server = { ...integration.config, ...entry.config };
 
-        const node = await getNodeForServer(server, ticket);
-
-        const vncTicket = await openLXCConsole({ ip: server.ip, port: server.port }, node, containerId, ticket);
-
-        const containerPart = containerId === "0" ? "" : `lxc/${containerId}`;
-
-        const lxcSocket = new WebSocket(`wss://${server.ip}:${server.port}/api2/json/nodes/${node}/${containerPart}/vncwebsocket?port=${vncTicket.port}&vncticket=${encodeURIComponent(vncTicket.ticket)}`, undefined, {
-            rejectUnauthorized: false,
-            headers: {
-                "Cookie": `PVEAuthCookie=${ticket.ticket}`,
-            },
-        });
+        const lxcSocket = new WebSocket(
+            `wss://${server.ip}:${server.port}/api2/json/nodes/${node}/${containerPart}/vncwebsocket?port=${vncTicket.port}&vncticket=${encodeURIComponent(vncTicket.ticket)}`,
+            undefined,
+            {
+                rejectUnauthorized: false,
+                headers: {
+                    "Cookie": `PVEAuthCookie=${ticket.ticket}`,
+                },
+            }
+        );
 
         lxcSocket.on("close", async () => {
             await updateAuditLogWithSessionDuration(auditLogId, connectionStartTime);
@@ -107,6 +102,6 @@ module.exports = async (ws, req) => {
         });
     } catch (error) {
         if (keepAliveTimer) clearInterval(keepAliveTimer);
-        ws.close(4005, error.message);
+        throw error;
     }
 };

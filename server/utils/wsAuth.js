@@ -1,48 +1,13 @@
-const Session = require("../models/Session");
-const Account = require("../models/Account");
-const Entry = require("../models/Entry");
 const EntryIdentity = require("../models/EntryIdentity");
 const Identity = require("../models/Identity");
-const prepareSSH = require("./prepareSSH");
-const { validateEntryAccess } = require("../controllers/entry");
+const { authenticateWebSocket } = require("../middlewares/wsAuth");
+const { createSSH } = require("./createSSH");
 
-const authenticateWS = async (ws, req, options = {}) => {
-    const { requiredParams = ['sessionToken', 'serverId'] } = options;
+const authenticateWS = async (ws, req) => {
+    const baseAuth = await authenticateWebSocket(ws, req.query);
+    if (!baseAuth) return null;
 
-    for (const param of requiredParams) {
-        if (!req.query[param]) {
-            const errorCode = param === 'sessionToken' ? 4001 : 
-                            param === 'serverId' ? 4002 : 4009;
-            ws.close(errorCode, `You need to provide the ${param} in the '${param}' parameter`);
-            return null;
-        }
-    }
-
-    const session = await Session.findOne({ where: { token: req.query.sessionToken } });
-    if (!session) {
-        ws.close(4003, "The token is not valid");
-        return null;
-    }
-
-    await Session.update({ lastActivity: new Date() }, { where: { id: session.id } });
-
-    const user = await Account.findByPk(session.accountId);
-    if (!user) {
-        ws.close(4004, "The token is not valid");
-        return null;
-    }
-
-    const entry = await Entry.findByPk(req.query.serverId);
-    if (!entry) {
-        ws.close(4006, "The entry does not exist");
-        return null;
-    }
-
-    const accessCheck = await validateEntryAccess(user.id, entry);
-    if (!accessCheck.valid) {
-        ws.close(4005, "You don't have access to this entry");
-        return null;
-    }
+    const { user, entry } = baseAuth;
 
     const entryIdentities = await EntryIdentity.findAll({ where: { entryId: entry.id }, order: [['isDefault', 'DESC']] });
     if (entryIdentities.length === 0) {
@@ -56,7 +21,24 @@ const authenticateWS = async (ws, req, options = {}) => {
         return null;
     }
 
-    const ssh = await prepareSSH(entry, identity, ws);
+    const { ssh, sshOptions } = await createSSH(entry, identity, {
+        onKeyboardInteractive: (name, instructions, lang, prompts, finish) => {
+            ws.send(`\x02${prompts[0].prompt}`);
+            ws.on("message", (data) => {
+                if (data.toString().startsWith("\x03")) {
+                    const totpCode = data.substring(1);
+                    finish([totpCode]);
+                }
+            });
+        }
+    });
+
+    try {
+        ssh.connect(sshOptions);
+    } catch (err) {
+        ws.close(4004, err.message);
+        return null;
+    }
 
     return { user, server: entry, entry, identity, ssh };
 };

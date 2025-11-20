@@ -33,12 +33,12 @@ app.use("/api/accounts", require("./routes/account"));
 app.use("/api/auth", require("./routes/auth"));
 app.use("/api/oidc", require("./routes/oidc"));
 
-app.ws("/api/servers/sshd", require("./routes/sshd"));
-app.ws("/api/servers/sftp", require("./routes/sftp"));
-app.ws("/api/servers/pve-lxc", require("./routes/pveLXC"));
-app.ws("/api/servers/pve-qemu", require("./routes/pveQEMU"));
+// Unified WebSocket endpoints
+app.ws("/api/ws/term", require("./routes/term"));
+app.ws("/api/ws/guac", require("./routes/guac"));
+app.ws("/api/ws/sftp", require("./routes/sftpWS"));
 
-app.use("/api/servers/guacd", require("./middlewares/guacamole"));
+// SFTP download endpoint
 app.use("/api/entries/sftp-download", require("./routes/sftpDownload"));
 
 app.use("/api/users", authenticate, isAdmin, require("./routes/users"));

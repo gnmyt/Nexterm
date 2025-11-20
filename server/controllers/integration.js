@@ -150,6 +150,13 @@ module.exports.editIntegration = async (accountId, integrationId, configuration)
     return { success: true };
 };
 
+module.exports.getIntegrationCredentials = async (integrationId) => {
+    const credential = await Credential.findOne({ where: { integrationId, type: 'password' } });
+    return {
+        password: credential ? credential.secret : null
+    };
+};
+
 module.exports.getIntegrationUnsafe = async (accountId, integrationId) => {
     const integration = await Integration.findByPk(integrationId);
     const accessCheck = await validateIntegrationAccess(accountId, integration);

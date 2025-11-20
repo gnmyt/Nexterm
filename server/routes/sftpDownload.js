@@ -1,5 +1,4 @@
 const { Router } = require("express");
-const prepareSSH = require("../utils/prepareSSH");
 const Entry = require("../models/Entry");
 const EntryIdentity = require("../models/EntryIdentity");
 const Identity = require("../models/Identity");
@@ -7,6 +6,8 @@ const Session = require("../models/Session");
 const Account = require("../models/Account");
 const { createAuditLog, AUDIT_ACTIONS, RESOURCE_TYPES } = require("../controllers/audit");
 const { validateEntryAccess } = require("../controllers/entry");
+const { getOrganizationAuditSettingsInternal } = require("../controllers/audit");
+const { createSSH } = require("../utils/createSSH");
 
 const app = Router();
 
@@ -71,16 +72,28 @@ app.get("/", async (req, res) => {
     const identity = await Identity.findByPk(identityId || entryIdentities[0].identityId);
     if (identity === null) return;
 
-    const userInfo = {
-        accountId: req.user.id,
-        ip: req.ip || req.socket?.remoteAddress || 'unknown',
-        userAgent: req.headers['user-agent'] || 'unknown',
-        connectionReason: connectionReason || null
-    };
+    if (entry.organizationId) {
+        const auditSettings = await getOrganizationAuditSettingsInternal(entry.organizationId);
+        if (auditSettings?.requireConnectionReason && !connectionReason) {
+            res.status(400).json({ error: "Connection reason required", requireConnectionReason: true });
+            return;
+        }
+    }
 
-    const ssh = await prepareSSH(entry, identity, null, res, userInfo);
+    const { ssh, sshOptions } = await createSSH(entry, identity);
 
-    if (!ssh) return;
+    ssh.on("error", () => {
+        res.status(500).send("This file cannot be downloaded");
+    });
+
+    try {
+        ssh.connect(sshOptions);
+    } catch (err) {
+        res.status(500).send(err.message);
+        return;
+    }
+
+    console.log(`Authorized file download from ${entry.config.ip} with identity ${identity.name}`);
 
     ssh.on("ready", () => {
         ssh.sftp((err, sftp) => {
@@ -113,10 +126,6 @@ app.get("/", async (req, res) => {
                 });
             });
         });
-    });
-
-    ssh.on("error", () => {
-        res.status(500).send("This file cannot be downloaded");
     });
 });
 

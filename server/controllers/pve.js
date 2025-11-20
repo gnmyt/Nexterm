@@ -25,8 +25,8 @@ module.exports.getAllNodes = async (server = { ip: "", port: 0 }, ticket) => {
     return response.data.data;
 };
 
-module.exports.openLXCConsole = async (server = { ip: "", port: 0 }, node, containerId, ticket) => {
-    const containerPart = containerId === "0" ? "" : `lxc/${containerId}`;
+module.exports.openLXCConsole = async (server = { ip: "", port: 0 }, node, vmid, ticket) => {
+    const containerPart = vmid === 0 || vmid === "0" ? "" : `lxc/${vmid}`;
 
     const response = await axios.post(`https://${server.ip}:${server.port}/api2/json/nodes/${node}/${containerPart}/termproxy`, {}, {
         httpsAgent: new https.Agent({ rejectUnauthorized: false }),
