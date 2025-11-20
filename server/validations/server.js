@@ -13,7 +13,7 @@ module.exports.createServerValidation = Joi.object({
     folderId: Joi.number().allow(null).optional(),
     organizationId: Joi.number().allow(null).optional(),
     icon: Joi.string().optional(),
-    type: Joi.string().optional().default("server"),
+    type: Joi.string().valid("server").optional().default("server"),
     identities: Joi.array().items(Joi.number()).optional(),
     config: configValidation.required()
 });
@@ -23,7 +23,7 @@ module.exports.updateServerValidation = Joi.object({
     folderId: Joi.number().allow(null).optional(),
     organizationId: Joi.number().allow(null).optional(),
     icon: Joi.string().optional(),
-    type: Joi.string().optional(),
+    type: Joi.string().valid("server").optional(),
     identities: Joi.array().items(Joi.number()).optional(),
     config: configValidation
 });

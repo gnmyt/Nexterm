@@ -5,6 +5,7 @@ module.exports = db.define("entries_identities", {
     entryId: {
         type: Sequelize.INTEGER,
         allowNull: false,
+        primaryKey: true,
         references: {
             model: "entries",
             key: "id",
@@ -14,6 +15,7 @@ module.exports = db.define("entries_identities", {
     identityId: {
         type: Sequelize.INTEGER,
         allowNull: false,
+        primaryKey: true,
         references: {
             model: "identities",
             key: "id",
@@ -27,7 +29,7 @@ module.exports = db.define("entries_identities", {
     },
 }, { 
     freezeTableName: true,
-    timestamps: false,
+    timestamps: true,
     createdAt: true,
     updatedAt: false,
 });

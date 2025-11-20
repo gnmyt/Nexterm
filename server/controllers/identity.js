@@ -23,9 +23,10 @@ const validateIdentityAccess = async (accountId, identity) => {
 };
 
 const upsertCredential = async (identityId, type, secret) => {
-    const existing = await Credential.findOne({ where: { identityId, type } });
+    const existing = await Credential.findOne({ where: { identityId, type }, raw: false });
     if (existing) {
-        await Credential.update({ secret }, { where: { id: existing.id } });
+        existing.secret = secret;
+        await existing.save();
     } else {
         await Credential.create({ identityId, type, secret });
     }
