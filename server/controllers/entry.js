@@ -244,29 +244,26 @@ module.exports.listEntries = async (accountId) => {
     rebuildFolderMap(folders);
 
     const buildEntryObject = (entry, identities) => {
+        const obj = {
+            type: entry.type,
+            id: entry.id,
+            icon: entry.icon,
+            name: entry.name,
+            status: entry.status,
+            position: entry.position,
+            renderer: entry.renderer,
+        };
+
         if (entry.type === 'server') {
             return {
-                type: "server",
-                id: entry.id,
-                icon: entry.icon,
-                name: entry.name,
-                position: entry.position,
+                ...obj,
                 identities: identities,
-                renderer: entry.renderer,
                 protocol: entry.config?.protocol,
                 ip: entry.config?.ip,
             };
-        } else if (entry.type.startsWith('pve-')) {
-            return {
-                type: entry.type,
-                id: entry.id,
-                name: entry.name,
-                status: entry.status,
-                position: entry.position,
-                renderer: entry.renderer,
-            };
         }
-        return null;
+
+        return obj;
     };
 
     for (const entry of entries) {

@@ -250,6 +250,7 @@ module.exports.listFolders = async (accountId) => {
             id: folder.id,
             name: folder.name,
             type: "folder",
+            folderType: folder.type,
             position: folder.position,
             organizationId: folder.organizationId,
             entries: [],

@@ -9,6 +9,19 @@ module.exports = {
 
         const serverToEntryMap = {};
 
+        if (tableNames.includes("folders")) {
+            const [columns] = await queryInterface.sequelize.query(
+                "PRAGMA table_info(folders);"
+            );
+            const hasTypeColumn = columns.some(col => col.name === 'type');
+            
+            if (!hasTypeColumn) {
+                await queryInterface.sequelize.query(
+                    "ALTER TABLE folders ADD COLUMN type TEXT DEFAULT NULL"
+                );
+            }
+        }
+
         if (!tableNames.includes("integrations")) {
             await queryInterface.createTable("integrations", {
                 id: { type: DataTypes.INTEGER, autoIncrement: true, primaryKey: true, allowNull: false },
@@ -239,9 +252,9 @@ module.exports = {
                 );
 
                 await queryInterface.sequelize.query(
-                    `INSERT INTO folders (organizationId, accountId, parentId, name, position)
-                     VALUES (?, ?, ?, ?, ?)`,
-                    { replacements: [pveServer.organizationId, pveServer.accountId || null, pveServer.folderId, pveServer.name, 0] },
+                    `INSERT INTO folders (organizationId, accountId, parentId, name, position, type)
+                     VALUES (?, ?, ?, ?, ?, ?)`,
+                    { replacements: [pveServer.organizationId, pveServer.accountId || null, pveServer.folderId, pveServer.name, 0, 'pve-node'] },
                 );
 
                 const [newFolder] = await queryInterface.sequelize.query("SELECT last_insert_rowid() as id",
@@ -264,6 +277,15 @@ module.exports = {
                     if (resource && resource.type && resource.id !== undefined) {
                         const resourceConfig = { nodeName: pveServer.nodeName, vmid: resource.id };
                         let renderer = resource.type === "pve-qemu" ? "guac" : "terminal";
+                        let icon = null;
+
+                        if (resource.type === "pve-shell") {
+                            icon = "terminal";
+                        } else if (resource.type === "pve-lxc") {
+                            icon = "linux";
+                        } else {
+                            icon = "server";
+                        }
 
                         await queryInterface.sequelize.query(
                             `INSERT INTO entries (accountId, organizationId, folderId, integrationId, type, renderer, name, icon,
@@ -272,7 +294,7 @@ module.exports = {
                             {
                                 replacements: [pveServer.organizationId ? null : (pveServer.accountId || null),
                                     pveServer.organizationId, newFolder.id, newIntegration.id, resource.type,
-                                    renderer, resource.name, null, 0, resource.status || null, JSON.stringify(resourceConfig)],
+                                    renderer, resource.name, icon, 0, resource.status || null, JSON.stringify(resourceConfig)],
                             },
                         );
                     }

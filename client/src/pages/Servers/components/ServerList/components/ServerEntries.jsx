@@ -29,6 +29,7 @@ const ServerEntries = ({ entries, nestedLevel, setRenameStateId, connectToServer
                             setRenameStateId={setRenameStateId}
                             nestedLevel={nestedLevel}
                             organizationId={organizationId}
+                            folderType={entry.folderType}
                             connectToServer={connectToServer}
                         />
                     );
@@ -41,6 +42,7 @@ const ServerEntries = ({ entries, nestedLevel, setRenameStateId, connectToServer
                             folderId={folderId}
                             organizationId={organizationId}
                             name={entry.name}
+                            type={entry.type}
                             nestedLevel={nestedLevel}
                             icon={entry.icon}
                             connectToServer={connectToServer}

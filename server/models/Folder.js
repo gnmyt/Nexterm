@@ -32,5 +32,10 @@ module.exports = db.define("folders", {
         type: Sequelize.INTEGER,
         defaultValue: 0,
         allowNull: false,
+    },
+    type: {
+        type: Sequelize.STRING,
+        allowNull: true,
+        defaultValue: null,
     }
 }, { freezeTableName: true, createdAt: false, updatedAt: false });

@@ -60,7 +60,7 @@ export const loadIcon = (icon) => {
     }
 };
 
-export const ServerObject = ({ id, name, position, folderId, organizationId, nestedLevel, icon, connectToServer, status }) => {
+export const ServerObject = ({ id, name, position, folderId, organizationId, nestedLevel, icon, type, connectToServer, status }) => {
     const { loadServers, getServerById } = useContext(ServerContext);
     const [dropPlacement, setDropPlacement] = useState(null);
     const elementRef = useRef(null);
@@ -128,7 +128,7 @@ export const ServerObject = ({ id, name, position, folderId, organizationId, nes
             onDoubleClick={connect}
             onMouseLeave={() => setDropPlacement(null)}>
             <DropIndicator show={isOver && dropPlacement === 'before'} placement="before" />
-            <div className="system-icon">
+            <div className={type && type.startsWith('pve-') ? "pve-icon" : "system-icon"}>
                 <Icon path={loadIcon(icon)} />
             </div>
             <p className="truncate-text">{name}</p>
