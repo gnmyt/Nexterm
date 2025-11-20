@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import "./styles.sass";
 import Icon from "@mdi/react";
 import {
@@ -11,13 +11,24 @@ import {
     mdiMovie,
     mdiMusicNote,
     mdiAlertCircle,
+    mdiFormTextbox,
+    mdiTextBoxEdit,
+    mdiFileDownload,
+    mdiTrashCan,
 } from "@mdi/js";
-import ContextMenu from "./components/ContextMenu";
+import { ContextMenu, ContextMenuItem, useContextMenu } from "@/common/components/ContextMenu";
+import RenameItemDialog from "./components/RenameItemDialog";
+import { ActionConfirmDialog } from "@/common/components/ActionConfirmDialog/ActionConfirmDialog.jsx";
+import { useTranslation } from "react-i18next";
 
 export const FileList = ({ items, updatePath, path, sendOperation, downloadFile, setCurrentFile, loading, viewMode = "list", error }) => {
-    const [menuPosition, setMenuPosition] = useState({ x: 0, y: 0 });
+    const { t } = useTranslation();
     const [selectedItem, setSelectedItem] = useState(null);
     const [focusedIndex, setFocusedIndex] = useState(-1);
+    const [renameDialogOpen, setRenameDialogOpen] = useState(false);
+    const [bigFileDialogOpen, setBigFileDialogOpen] = useState(false);
+
+    const contextMenu = useContextMenu();
 
     const getIconByFileEnding = (ending) => {
         const icons = {
@@ -64,26 +75,35 @@ export const FileList = ({ items, updatePath, path, sendOperation, downloadFile,
 
     const handleContextMenu = (event, item, fromDots = false) => {
         event.preventDefault();
+        setSelectedItem(item);
 
         if (fromDots) {
             event.stopPropagation();
-            const dotsRect = event.currentTarget.getBoundingClientRect();
-            setMenuPosition({ x: dotsRect.x - 100, y: dotsRect.y + dotsRect.height });
+            contextMenu.open(event);
         } else {
-            setMenuPosition({ x: event.pageX, y: event.pageY });
+            contextMenu.open(event, { x: event.pageX, y: event.pageY });
         }
-
-        setSelectedItem(item);
     };
 
-    const closeContextMenu = () => {
-        setMenuPosition({ x: 0, y: 0 });
+    const handleDelete = () => {
+        sendOperation(selectedItem.type === "folder" ? 0x7 : 0x6, { path: path + "/" + selectedItem.name });
     };
 
-    useEffect(() => {
-        document.addEventListener("click", closeContextMenu);
-        return () => document.removeEventListener("click", closeContextMenu);
-    }, []);
+    const handleDownload = () => {
+        downloadFile(path + "/" + selectedItem.name);
+    };
+
+    const handleRename = (newName) => {
+        sendOperation(0x8, { path: path + "/" + selectedItem.name, newPath: path + "/" + newName });
+    };
+
+    const openFile = () => {
+        if (selectedItem.type === "file" && selectedItem.size >= 1024 * 1024) {
+            setBigFileDialogOpen(true);
+        } else {
+            setCurrentFile(path + "/" + selectedItem.name);
+        }
+    };
 
     return (
         <div className={`file-list ${viewMode}`}>
@@ -148,9 +168,52 @@ export const FileList = ({ items, updatePath, path, sendOperation, downloadFile,
                 ))
             )}
 
-            <ContextMenu menuPosition={menuPosition} selectedItem={selectedItem} sendOperation={sendOperation}
-                         path={path} updatePath={updatePath} closeContextMenu={closeContextMenu}
-                         downloadFile={downloadFile} setCurrentFile={setCurrentFile} />
+            <RenameItemDialog 
+                open={renameDialogOpen} 
+                closeDialog={() => setRenameDialogOpen(false)} 
+                renameItem={handleRename}
+                item={selectedItem}
+            />
+            
+            <ActionConfirmDialog 
+                open={bigFileDialogOpen} 
+                setOpen={setBigFileDialogOpen}
+                onConfirm={() => setCurrentFile(path + "/" + selectedItem?.name)}
+                text={t('servers.fileManager.contextMenu.bigFileConfirm', { size: Math.round(selectedItem?.size / 1024 / 1024) })}
+            />
+
+            <ContextMenu
+                isOpen={contextMenu.isOpen}
+                position={contextMenu.position}
+                onClose={contextMenu.close}
+                trigger={contextMenu.triggerRef}
+            >
+                <ContextMenuItem
+                    icon={mdiFormTextbox}
+                    label={t('servers.fileManager.contextMenu.rename')}
+                    onClick={() => setRenameDialogOpen(true)}
+                />
+                {selectedItem?.type === "file" && (
+                    <>
+                        <ContextMenuItem
+                            icon={mdiTextBoxEdit}
+                            label={t('servers.fileManager.contextMenu.edit')}
+                            onClick={openFile}
+                        />
+                        <ContextMenuItem
+                            icon={mdiFileDownload}
+                            label={t('servers.fileManager.contextMenu.download')}
+                            onClick={handleDownload}
+                        />
+                    </>
+                )}
+                <ContextMenuItem
+                    icon={mdiTrashCan}
+                    label={t('servers.fileManager.contextMenu.delete')}
+                    onClick={handleDelete}
+                    danger
+                />
+            </ContextMenu>
         </div>
     );
 };
