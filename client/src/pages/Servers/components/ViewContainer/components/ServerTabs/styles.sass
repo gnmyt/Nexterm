@@ -38,6 +38,46 @@
         background-color: colors.$primary
         color: colors.$white
 
+  .tabs-container
+    position: relative
+    flex: 1
+    display: flex
+    align-items: center
+    overflow: hidden
+
+    .scroll-indicator
+      position: absolute
+      top: 0
+      bottom: 0
+      width: 3rem
+      display: flex
+      align-items: center
+      justify-content: center
+      cursor: pointer
+      z-index: 10
+      transition: all 0.2s ease
+      pointer-events: all
+
+      &.left
+        left: 0
+        background: linear-gradient(to right, colors.$background 50%, transparent)
+
+      &.right
+        right: 0
+        background: linear-gradient(to left, colors.$background 50%, transparent)
+
+      svg
+        width: 2rem
+        height: 2rem
+        color: colors.$subtext
+        transition: all 0.2s ease
+        padding: 0.5rem
+        border-radius: 4px
+
+      &:hover svg
+        background-color: colors.$gray
+        color: colors.$white
+
   .tabs
     display: flex
     gap: 0.5rem

@@ -1,8 +1,7 @@
-import { ServerContext } from "@/common/contexts/ServerContext.jsx";
-import { useContext, useRef, useState, useEffect } from "react";
+import { useRef, useState, useEffect } from "react";
 import Icon from "@mdi/react";
 import { loadIcon } from "@/pages/Servers/components/ServerList/components/ServerObject/ServerObject.jsx";
-import { mdiClose, mdiViewSplitVertical } from "@mdi/js";
+import { mdiClose, mdiViewSplitVertical, mdiChevronLeft, mdiChevronRight } from "@mdi/js";
 import { useDrag, useDrop } from "react-dnd";
 import TerminalActionsMenu from "../TerminalActionsMenu";
 import "./styles.sass";
@@ -100,6 +99,8 @@ export const ServerTabs = ({
     const tabsRef = useRef(null);
 
     const [tabOrder, setTabOrder] = useState([]);
+    const [showLeftArrow, setShowLeftArrow] = useState(false);
+    const [showRightArrow, setShowRightArrow] = useState(false);
 
     useEffect(() => {
         const currentSessionIds = activeSessions.map(session => session.id);
@@ -130,10 +131,42 @@ export const ServerTabs = ({
         if (orderRef && tabOrder.length > 0) orderRef.current = tabOrder;
     }, [tabOrder, orderRef]);
 
+    const checkScrollPosition = () => {
+        if (!tabsRef.current) return;
+
+        const { scrollLeft, scrollWidth, clientWidth } = tabsRef.current;
+        setShowLeftArrow(scrollLeft > 0);
+        setShowRightArrow(scrollLeft < scrollWidth - clientWidth - 1);
+    };
+
+    useEffect(() => {
+        checkScrollPosition();
+        const handleResize = () => checkScrollPosition();
+        window.addEventListener('resize', handleResize);
+        return () => window.removeEventListener('resize', handleResize);
+    }, [activeSessions, tabOrder]);
+
     const handleWheel = (e) => {
         e.preventDefault();
 
-        if (tabsRef.current) tabsRef.current.scrollLeft += e.deltaY;
+        if (tabsRef.current) {
+            tabsRef.current.scrollLeft += e.deltaY;
+            checkScrollPosition();
+        }
+    };
+
+    const scrollTabs = (direction) => {
+        if (!tabsRef.current) return;
+
+        const scrollAmount = 200;
+        const targetScroll = tabsRef.current.scrollLeft + (direction === 'left' ? -scrollAmount : scrollAmount);
+
+        tabsRef.current.scrollTo({
+            left: targetScroll,
+            behavior: 'smooth'
+        });
+
+        setTimeout(checkScrollPosition, 300);
     };
 
     const moveTab = (fromIndex, toIndex) => {
@@ -167,14 +200,26 @@ export const ServerTabs = ({
                       title={layoutMode === "single" ? "Enable Split View" : "Disable Split View"}
                       onClick={onToggleSplit} />
             </div>
-            <div className="tabs" ref={tabsRef} onWheel={handleWheel}>
-                {orderedSessions.map((session, index) => {
-                    return (
-                        <DraggableTab key={session.id} session={session} server={session.server} index={index} moveTab={moveTab}
-                                      activeSessionId={activeSessionId} setActiveSessionId={setActiveSessionId}
-                                      disconnectFromServer={disconnectFromServer} progress={sessionProgress[session.id] || 0} />
-                    );
-                })}
+            <div className="tabs-container">
+                {showLeftArrow && (
+                    <div className="scroll-indicator left" onClick={() => scrollTabs('left')}>
+                        <Icon path={mdiChevronLeft} />
+                    </div>
+                )}
+                <div className="tabs" ref={tabsRef} onWheel={handleWheel} onScroll={checkScrollPosition}>
+                    {orderedSessions.map((session, index) => {
+                        return (
+                            <DraggableTab key={session.id} session={session} server={session.server} index={index} moveTab={moveTab}
+                                          activeSessionId={activeSessionId} setActiveSessionId={setActiveSessionId}
+                                          disconnectFromServer={disconnectFromServer} progress={sessionProgress[session.id] || 0} />
+                        );
+                    })}
+                </div>
+                {showRightArrow && (
+                    <div className="scroll-indicator right" onClick={() => scrollTabs('right')}>
+                        <Icon path={mdiChevronRight} />
+                    </div>
+                )}
             </div>
         </div>
     );
