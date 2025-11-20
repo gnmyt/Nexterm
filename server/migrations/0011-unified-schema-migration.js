@@ -31,7 +31,12 @@ module.exports = {
         if (!tableNames.includes("entries")) {
             await queryInterface.createTable("entries", {
                 id: { type: DataTypes.INTEGER, autoIncrement: true, primaryKey: true, allowNull: false },
-                accountId: { type: DataTypes.INTEGER, allowNull: true },
+                accountId: {
+                    type: DataTypes.INTEGER,
+                    allowNull: true,
+                    references: { model: "accounts", key: "id" },
+                    onDelete: "CASCADE",
+                },
                 organizationId: {
                     type: DataTypes.INTEGER,
                     allowNull: true,

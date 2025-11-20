@@ -5,6 +5,11 @@ module.exports = db.define("entries", {
     accountId: {
         type: Sequelize.INTEGER,
         allowNull: true,
+        references: {
+            model: "accounts",
+            key: "id",
+        },
+        onDelete: "CASCADE",
     },
     organizationId: {
         type: Sequelize.INTEGER,
