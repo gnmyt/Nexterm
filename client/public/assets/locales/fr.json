@@ -637,6 +637,7 @@
       "renameFolder": "Renommer un dossier",
       "new": "New",
       "sshServer": "SSH Server",
+      "telnetServer": "Telnet Server",
       "rdpServer": "RDP Server",
       "vncServer": "VNC Server",
       "createServer": "Créer un serveur",
