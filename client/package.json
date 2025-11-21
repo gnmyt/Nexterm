@@ -9,7 +9,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@codemirror/autocomplete": "^6.19.1",
+    "@codemirror/autocomplete": "^6.20.0",
     "@codemirror/language": "^6.11.3",
     "@codemirror/legacy-modes": "^6.5.2",
     "@fontsource/fira-code": "^5.2.7",
