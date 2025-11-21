@@ -20,7 +20,7 @@ export const ContextMenuItem = ({
     const hasSubmenu = children && React.Children.count(children) > 0;
 
     useEffect(() => {
-        if (!isSubmenuOpen) return;
+        if (!isSubmenuOpen || !submenuRef.current) return;
 
         const updatePosition = () => {
             if (!itemRef.current || !submenuRef.current) return;
@@ -35,7 +35,25 @@ export const ContextMenuItem = ({
         };
 
         const timer = setTimeout(() => requestAnimationFrame(() => requestAnimationFrame(updatePosition)), 0);
-        return () => clearTimeout(timer);
+
+        const observer = new MutationObserver(() => {
+            requestAnimationFrame(updatePosition);
+        });
+
+        observer.observe(submenuRef.current, {
+            childList: true,
+            subtree: true,
+            attributes: true,
+            characterData: true
+        });
+
+        window.addEventListener('resize', updatePosition);
+
+        return () => {
+            clearTimeout(timer);
+            observer.disconnect();
+            window.removeEventListener('resize', updatePosition);
+        };
     }, [isSubmenuOpen]);
 
     const handleClick = (e) => {

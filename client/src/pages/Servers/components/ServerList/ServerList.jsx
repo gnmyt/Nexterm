@@ -23,6 +23,11 @@ import {
     mdiAccountCircle,
     mdiImport,
     mdiFileDocumentOutline,
+    mdiPlusCircle,
+    mdiConsole,
+    mdiMonitor,
+    mdiDesktopClassic,
+    mdiCog,
 } from "@mdi/js";
 import { ContextMenu, ContextMenuItem, ContextMenuSeparator, useContextMenu } from "@/common/components/ContextMenu";
 import { useDrop, useDragLayer } from "react-dnd";
@@ -203,7 +208,7 @@ export const ServerList = ({
 
     const deleteServer = () => deleteRequest("entries/" + contextClickedId).then(loadServers);
 
-    const createServer = () => {
+    const createServer = (protocol) => {
         if (isOrgFolder) {
             const orgId = parseInt(contextClickedId.toString().split("-")[1]);
             setCurrentFolderId(null);
@@ -212,7 +217,7 @@ export const ServerList = ({
             setCurrentFolderId(contextClickedId);
             setCurrentOrganizationId(null);
         }
-        setServerDialogOpen();
+        setServerDialogOpen(protocol);
     };
 
     const createPVEServer = () => {
@@ -260,8 +265,11 @@ export const ServerList = ({
     };
 
     const editPVEServer = () => {
-        setEditServerId(contextClickedId);
-        setProxmoxDialogOpen();
+        const integrationId = server?.integrationId;
+        if (integrationId) {
+            setEditServerId(integrationId);
+            setProxmoxDialogOpen();
+        }
     };
 
     const postPVEAction = (type) => {
@@ -432,48 +440,63 @@ export const ServerList = ({
                         onClose={contextMenu.close}
                         trigger={contextMenu.triggerRef}
                     >
-                        {contextClickedType !== "server-object" &&
-                            contextClickedType !== "pve-object" &&
-                            contextClickedType !== "pve-entry" && (
+                        {contextClickedType !== "server-object" && (
                                 <>
-                                    <ContextMenuItem
-                                        icon={mdiFolderPlus}
-                                        label={t("servers.contextMenu.createFolder")}
-                                        onClick={createFolder}
-                                    />
                                     {(contextClickedType === null || contextClickedType === "folder-object" || isOrgFolder) && (
                                         <ContextMenuItem
-                                            icon={mdiServerPlus}
-                                            label={t("servers.contextMenu.createServer")}
-                                            onClick={createServer}
-                                        />
+                                            icon={mdiPlusCircle}
+                                            label={t("servers.contextMenu.new")}
+                                        >
+                                            <ContextMenuItem
+                                                icon={mdiConsole}
+                                                label={t("servers.contextMenu.sshServer")}
+                                                onClick={() => createServer("ssh")}
+                                            />
+                                            <ContextMenuItem
+                                                icon={mdiDesktopClassic}
+                                                label={t("servers.contextMenu.rdpServer")}
+                                                onClick={() => createServer("rdp")}
+                                            />
+                                            <ContextMenuItem
+                                                icon={mdiMonitor}
+                                                label={t("servers.contextMenu.vncServer")}
+                                                onClick={() => createServer("vnc")}
+                                            />
+                                        </ContextMenuItem>
+                                    )}
+                                    {contextClickedType === "folder-object" && !isOrgFolder && (
+                                        <ContextMenuItem
+                                            icon={mdiImport}
+                                            label={t("servers.contextMenu.import")}
+                                        >
+                                            <ContextMenuItem
+                                                icon={<ProxmoxLogo />}
+                                                label={t("servers.contextMenu.pve")}
+                                                onClick={createPVEServer}
+                                            />
+                                            <ContextMenuItem
+                                                icon={mdiFileDocumentOutline}
+                                                label={t("servers.contextMenu.sshConfig")}
+                                                onClick={openSSHConfigImport}
+                                            />
+                                        </ContextMenuItem>
                                     )}
                                 </>
                             )}
 
                         {contextClickedType === "folder-object" && !isOrgFolder && (
                             <>
+                                <ContextMenuItem
+                                    icon={mdiFolderPlus}
+                                    label={t("servers.contextMenu.createFolder")}
+                                    onClick={createFolder}
+                                />
                                 <ContextMenuSeparator />
                                 <ContextMenuItem
                                     icon={mdiFormTextbox}
                                     label={t("servers.contextMenu.renameFolder")}
                                     onClick={() => setRenameStateId(contextClickedId)}
                                 />
-                                <ContextMenuItem
-                                    icon={mdiImport}
-                                    label={t("servers.contextMenu.import")}
-                                >
-                                    <ContextMenuItem
-                                        icon={<ProxmoxLogo />}
-                                        label={t("servers.contextMenu.pve")}
-                                        onClick={createPVEServer}
-                                    />
-                                    <ContextMenuItem
-                                        icon={mdiFileDocumentOutline}
-                                        label={t("servers.contextMenu.sshConfig")}
-                                        onClick={openSSHConfigImport}
-                                    />
-                                </ContextMenuItem>
                                 <ContextMenuSeparator />
                                 <ContextMenuItem
                                     icon={mdiFolderRemove}
@@ -484,7 +507,15 @@ export const ServerList = ({
                             </>
                         )}
 
-                        {contextClickedType === "server-object" && (
+                        {(contextClickedType === null || isOrgFolder) && (
+                            <ContextMenuItem
+                                icon={mdiFolderPlus}
+                                label={t("servers.contextMenu.createFolder")}
+                                onClick={createFolder}
+                            />
+                        )}
+
+                        {contextClickedType === "server-object" && server?.type === "server" && (
                             <>
                                 {server?.identities?.length > 0 && (
                                     <>
@@ -568,11 +599,26 @@ export const ServerList = ({
                             </>
                         )}
 
-                        {contextClickedType === "pve-qemu" && (
+                        {contextClickedType === "server-object" && server?.type?.startsWith("pve-") && (
                             <>
+                                {(server?.status === "running" || server?.status === "online") && (
+                                    <>
+                                        <ContextMenuItem
+                                            icon={mdiConnection}
+                                            label={t("servers.contextMenu.connect")}
+                                            onClick={() => connectToServer(server.id)}
+                                        />
+                                        <ContextMenuSeparator />
+                                    </>
+                                )}
                                 <ContextMenuItem
                                     icon={mdiPencil}
-                                    label={t("servers.contextMenu.editPVE")}
+                                    label={t("servers.contextMenu.editServer")}
+                                    onClick={editServer}
+                                />
+                                <ContextMenuItem
+                                    icon={mdiCog}
+                                    label={t("servers.contextMenu.editIntegration")}
                                     onClick={editPVEServer}
                                 />
                                 <ContextMenuItem
@@ -581,48 +627,39 @@ export const ServerList = ({
                                 >
                                     <TagsSubmenu entryId={contextClickedId} entryTags={server?.tags || []} />
                                 </ContextMenuItem>
+                                {(server?.status === "running" || server?.status === "online") && server.type !== "pve-shell" && (
+                                    <>
+                                        <ContextMenuSeparator />
+                                        <ContextMenuItem
+                                            icon={mdiPower}
+                                            label={t("servers.contextMenu.shutdown")}
+                                            onClick={() => postPVEAction("shutdown")}
+                                        />
+                                        <ContextMenuItem
+                                            icon={mdiStop}
+                                            label={t("servers.contextMenu.stop")}
+                                            onClick={() => postPVEAction("stop")}
+                                        />
+                                    </>
+                                )}
+                                {server?.status === "stopped" && (
+                                    <>
+                                        <ContextMenuSeparator />
+                                        <ContextMenuItem
+                                            icon={mdiPower}
+                                            label={t("servers.contextMenu.start")}
+                                            onClick={() => postPVEAction("start")}
+                                        />
+                                    </>
+                                )}
                                 <ContextMenuSeparator />
                                 <ContextMenuItem
                                     icon={mdiServerMinus}
-                                    label={t("servers.contextMenu.deletePVE")}
-                                    onClick={deletePVEServer}
+                                    label={t("servers.contextMenu.deleteServer")}
+                                    onClick={deleteServer}
                                     danger
                                 />
                             </>
-                        )}
-
-                        {server?.status === "running" && (
-                            <>
-                                <ContextMenuItem
-                                    icon={mdiConnection}
-                                    label={t("servers.contextMenu.connect")}
-                                    onClick={() => connect()}
-                                />
-                                <ContextMenuSeparator />
-                            </>
-                        )}
-
-                        {server?.status === "running" && server.type !== "pve-shell" && (
-                            <>
-                                <ContextMenuItem
-                                    icon={mdiPower}
-                                    label={t("servers.contextMenu.shutdown")}
-                                    onClick={() => postPVEAction("shutdown")}
-                                />
-                                <ContextMenuItem
-                                    icon={mdiStop}
-                                    label={t("servers.contextMenu.stop")}
-                                    onClick={() => postPVEAction("stop")}
-                                />
-                            </>
-                        )}
-
-                        {server?.status === "stopped" && (
-                            <ContextMenuItem
-                                icon={mdiPower}
-                                label={t("servers.contextMenu.start")}
-                                onClick={() => postPVEAction("start")}
-                            />
                         )}
                     </ContextMenu>
                 </div>

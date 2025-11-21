@@ -1,6 +1,6 @@
 import Icon from "@mdi/react";
 import { mdiServerOutline, mdiServerOff, mdiAlertCircle, mdiClockOutline } from "@mdi/js";
-import { loadIcon } from "@/pages/Servers/components/ServerList/components/ServerObject/ServerObject.jsx";
+import { loadIcon } from "@/pages/Servers/utils/iconMapping.js";
 import { useTranslation } from "react-i18next";
 
 export const MonitoringGrid = ({ servers, loading, onServerSelect }) => {

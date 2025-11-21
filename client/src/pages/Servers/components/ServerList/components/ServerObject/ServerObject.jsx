@@ -1,64 +1,11 @@
 import Icon from "@mdi/react";
-import { 
-    mdiDebian, 
-    mdiLinux, 
-    mdiMicrosoftWindows, 
-    mdiServerOutline,
-    mdiUbuntu,
-    mdiApple,
-    mdiDocker,
-    mdiKubernetes,
-    mdiDatabase,
-    mdiCloud,
-    mdiRaspberryPi,
-    mdiConsole,
-    mdiMonitor,
-    mdiCube,
-    mdiFreebsd
-} from "@mdi/js";
 import "./styles.sass";
 import { ServerContext } from "@/common/contexts/ServerContext.jsx";
 import { useContext, useRef, useState } from "react";
 import { useDrag, useDrop } from "react-dnd";
 import { patchRequest } from "@/common/utils/RequestUtil.js";
 import { DropIndicator } from "../DropIndicator";
-
-export const loadIcon = (icon) => {
-    switch (icon) {
-        case "windows":
-            return mdiMicrosoftWindows;
-        case "linux":
-            return mdiLinux;
-        case "debian":
-            return mdiDebian;
-        case "ubuntu":
-            return mdiUbuntu;
-        case "arch":
-            return mdiLinux;
-        case "freebsd":
-            return mdiFreebsd;
-        case "macos":
-            return mdiApple;
-        case "docker":
-            return mdiDocker;
-        case "kubernetes":
-            return mdiKubernetes;
-        case "database":
-            return mdiDatabase;
-        case "cloud":
-            return mdiCloud;
-        case "raspberry":
-            return mdiRaspberryPi;
-        case "terminal":
-            return mdiConsole;
-        case "desktop":
-            return mdiMonitor;
-        case "vm":
-            return mdiCube;
-        default:
-            return mdiServerOutline;
-    }
-};
+import { loadIcon } from "@/pages/Servers/utils/iconMapping.js";
 
 export const ServerObject = ({ id, name, position, folderId, organizationId, nestedLevel, icon, type, connectToServer, status, tags = [] }) => {
     const { loadServers, getServerById } = useContext(ServerContext);

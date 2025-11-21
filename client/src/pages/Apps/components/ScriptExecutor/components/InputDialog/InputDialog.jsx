@@ -18,7 +18,7 @@ export const InputDialog = ({ open, onSubmit, prompt }) => {
         setInputValue("");
     };
 
-    const handleKeyPress = (e) => {
+    const handleKeyDown = (e) => {
         if (e.key === "Enter") handleSubmit();
     };
 
@@ -66,7 +66,7 @@ export const InputDialog = ({ open, onSubmit, prompt }) => {
                                 value={inputValue}
                                 setValue={setInputValue}
                                 placeholder={prompt.type === "password" ? "Enter password..." : (prompt.default || "Enter value...")}
-                                onKeyPress={handleKeyPress}
+                                onKeyDown={handleKeyDown}
                                 autoFocus
                             />
                         </div>

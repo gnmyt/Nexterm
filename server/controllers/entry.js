@@ -84,7 +84,7 @@ module.exports.createEntry = async (accountId, configuration) => {
     }
 
     const organizationId = folder?.folder?.organizationId || configuration.organizationId || null;
-    
+
     const entry = await Entry.create({
         ...configuration,
         accountId: organizationId ? null : accountId,
@@ -266,7 +266,7 @@ module.exports.listEntries = async (accountId) => {
 
     const folderMap = new Map();
     const organizationMap = new Map();
-    
+
     const rebuildFolderMap = (folders) => {
         folders.forEach(folder => {
             if (folder.type === 'organization') {
@@ -301,6 +301,10 @@ module.exports.listEntries = async (accountId) => {
             };
         }
 
+        if (entry.type?.startsWith('pve-')) {
+            return { ...obj, integrationId: entry.integrationId };
+        }
+
         return obj;
     };
 
@@ -308,7 +312,7 @@ module.exports.listEntries = async (accountId) => {
         const identities = identitiesMap.get(entry.id) || [];
         const tags = tagsMap.get(entry.id) || [];
         const entryObject = buildEntryObject(entry, identities, tags);
-        
+
         if (!entryObject) continue;
 
         if (entry.folderId) {
@@ -437,7 +441,7 @@ module.exports.importSSHConfig = async (accountId, configuration) => {
 
 module.exports.repositionEntry = async (accountId, entryId, { targetId, placement, folderId, organizationId }) => {
     const entryIdNum = parseInt(entryId);
-    
+
     const entry = await Entry.findByPk(entryIdNum);
     const accessCheck = await validateEntryAccess(accountId, entry, "You don't have permission to reposition this entry");
 
@@ -481,7 +485,7 @@ module.exports.repositionEntry = async (accountId, entryId, { targetId, placemen
     });
 
     const normalizedEntries = entries.filter(e => e.id !== entryIdNum);
-    
+
     let targetIndex;
     if (targetId === null || targetId === undefined) {
         targetIndex = normalizedEntries.length;
@@ -498,12 +502,12 @@ module.exports.repositionEntry = async (accountId, entryId, { targetId, placemen
 
     for (let i = 0; i < normalizedEntries.length; i++) {
         const updateData = { position: i, folderId: targetFolderId };
-        
+
         if (normalizedEntries[i].id === entryIdNum) {
             updateData.organizationId = targetOrganizationId;
             updateData.accountId = targetAccountId;
         }
-        
+
         await Entry.update(updateData, { where: { id: normalizedEntries[i].id } });
     }
 
