@@ -637,6 +637,7 @@
       "renameFolder": "重命名文件夹",
       "new": "New",
       "sshServer": "SSH Server",
+      "telnetServer": "Telnet Server",
       "rdpServer": "RDP Server",
       "vncServer": "VNC Server",
       "createServer": "创建服务器",
