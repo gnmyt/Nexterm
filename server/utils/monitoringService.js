@@ -4,6 +4,7 @@ const EntryIdentity = require("../models/EntryIdentity");
 const MonitoringData = require("../models/MonitoringData");
 const Identity = require("../models/Identity");
 const { Op } = require("sequelize");
+const { createSSH } = require("./createSSH");
 const { getIdentityCredentials } = require("../controllers/identity");
 
 let monitoringInterval = null;
@@ -86,10 +87,8 @@ const collectServerData = async (entry, identity, credentials) => {
 
         const timeout = setTimeout(() => {
             conn.end();
-            resolve({
-                ...monitoringData,
-                errorMessage: "Connection timeout",
-            });
+            if (conn._jumpConnections) conn._jumpConnections.forEach(c => c.ssh.end());
+            resolve({ ...monitoringData, errorMessage: "Connection timeout" });
         }, 30000);
 
         conn.on("ready", async () => {
@@ -121,43 +120,31 @@ const collectServerData = async (entry, identity, credentials) => {
                     osInfo: osData,
                     network: networkData,
                 };
-
             } catch (error) {
                 monitoringData.status = "error";
                 monitoringData.errorMessage = error.message;
             }
 
             conn.end();
+            if (conn._jumpConnections) conn._jumpConnections.forEach(c => c.ssh.end());
             resolve(monitoringData);
         });
 
         conn.on("error", (err) => {
             clearTimeout(timeout);
-            resolve({
-                ...monitoringData,
-                status: "offline",
-                errorMessage: err.message,
-            });
+            if (conn._jumpConnections) conn._jumpConnections.forEach(c => c.ssh.end());
+            resolve({ ...monitoringData, status: "offline", errorMessage: err.message });
         });
-
-        const connectionOptions = {
-            host: entry.config.ip,
-            port: entry.config.port,
-            username: identity.username,
-            connectTimeout: 15000,
-            readyTimeout: 15000,
-        };
-
-        if (identity.type === "password") {
-            connectionOptions.password = credentials.password;
-        } else {
-            connectionOptions.privateKey = credentials.sshKey;
-            if (credentials.passphrase) {
-                connectionOptions.passphrase = credentials.passphrase;
+        
+        createSSH(entry, identity).then(({ ssh, sshOptions }) => {
+            if (ssh._jumpConnections) {
+                conn._jumpConnections = ssh._jumpConnections;
             }
-        }
-
-        conn.connect(connectionOptions);
+            conn.connect(sshOptions);
+        }).catch((error) => {
+            clearTimeout(timeout);
+            resolve({ ...monitoringData, status: "error", errorMessage: error.message });
+        });
     });
 };
 

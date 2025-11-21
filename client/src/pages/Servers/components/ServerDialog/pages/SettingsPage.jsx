@@ -1,6 +1,10 @@
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import SelectBox from "@/common/components/SelectBox";
 import ToggleSwitch from "@/common/components/ToggleSwitch";
+import { ServerContext } from "@/common/contexts/ServerContext.jsx";
+import Icon from "@mdi/react";
+import { mdiServerNetwork, mdiClose, mdiPlus, mdiChartLine } from "@mdi/js";
+import { useTranslation } from "react-i18next";
 
 const KEYBOARD_LAYOUTS = [
     { label: "Dänisch (Qwerty)", value: "da-dk-qwerty" },
@@ -22,8 +26,12 @@ const KEYBOARD_LAYOUTS = [
     { label: "Türkisch (Qwerty)", value: "tr-tr-qwerty" }
 ];
 
-const SettingsPage = ({ config, setConfig, monitoringEnabled, setMonitoringEnabled, fieldConfig }) => {
+const SettingsPage = ({ config, setConfig, monitoringEnabled, setMonitoringEnabled, fieldConfig, editServerId }) => {
+    const { t } = useTranslation();
+    const { servers } = useContext(ServerContext);
     const [keyboardLayout, setKeyboardLayout] = useState(config?.keyboardLayout || "en-us-qwerty");
+    const [jumpHosts, setJumpHosts] = useState(config?.jumpHosts || []);
+    const [availableJumpHosts, setAvailableJumpHosts] = useState([]);
 
     const handleKeyboardLayoutChange = (newLayout) => {
         setKeyboardLayout(newLayout);
@@ -36,18 +44,136 @@ const SettingsPage = ({ config, setConfig, monitoringEnabled, setMonitoringEnabl
         }
     }, [config?.keyboardLayout]);
 
-    if (!fieldConfig.showMonitoring && !fieldConfig.showKeyboardLayout) {
-        return <p className="text-center">No additional settings available for this entry type.</p>;
+    useEffect(() => {
+        if (config?.jumpHosts && JSON.stringify(config.jumpHosts) !== JSON.stringify(jumpHosts)) {
+            setJumpHosts(config.jumpHosts);
+        }
+    }, [config?.jumpHosts]);
+
+    useEffect(() => {
+        if (!servers) return;
+
+        const sshServers = [];
+        const collectSSHServers = (entries) => {
+            entries.forEach(entry => {
+                if (entry.type === 'folder' || entry.type === 'organization') {
+                    collectSSHServers(entry.entries || []);
+                } else if (entry.type === 'server' && entry.protocol === 'ssh' && entry.id !== editServerId) {
+                    sshServers.push(entry);
+                }
+            });
+        };
+        
+        collectSSHServers(servers);
+        setAvailableJumpHosts(sshServers);
+    }, [servers, editServerId]);
+
+    const handleJumpHostsChange = (newJumpHosts) => {
+        setJumpHosts(newJumpHosts);
+        setConfig(prev => ({ ...prev, jumpHosts: newJumpHosts }));
+    };
+
+    const addJumpHost = () => {
+        if (availableJumpHosts.length === 0) return;
+        const newJumpHosts = [...jumpHosts, availableJumpHosts[0].id];
+        handleJumpHostsChange(newJumpHosts);
+    };
+
+    const removeJumpHost = (index) => {
+        const newJumpHosts = jumpHosts.filter((_, i) => i !== index);
+        handleJumpHostsChange(newJumpHosts);
+    };
+
+    const updateJumpHost = (index, serverId) => {
+        const newJumpHosts = [...jumpHosts];
+        newJumpHosts[index] = serverId;
+        handleJumpHostsChange(newJumpHosts);
+    };
+
+    const getAvailableServersForPosition = (currentIndex) => {
+        const selectedIds = jumpHosts.filter((_, i) => i !== currentIndex);
+        return availableJumpHosts.filter(server => !selectedIds.includes(server.id));
+    };
+
+    const showJumpHosts = config?.protocol === 'ssh';
+
+    if (!fieldConfig.showMonitoring && !fieldConfig.showKeyboardLayout && !showJumpHosts) {
+        return <p className="text-center">{t('servers.dialog.settings.noSettings')}</p>;
     }
 
     return (
         <>
+            {showJumpHosts && (
+                <div className="jump-hosts-section">
+                    <div className="jump-hosts-header">
+                        <div className="jump-hosts-info">
+                            <span className="jump-hosts-label">
+                                <Icon path={mdiServerNetwork} size={0.8} style={{ marginRight: '8px', verticalAlign: 'middle' }} />
+                                {t('servers.dialog.settings.jumpHosts.title')}
+                            </span>
+                            <span className="jump-hosts-description">
+                                {t('servers.dialog.settings.jumpHosts.description')}
+                            </span>
+                        </div>
+                    </div>
+                    
+                    {jumpHosts.length > 0 && (
+                        <div className="jump-hosts-list">
+                            {jumpHosts.map((jumpHostId, index) => {
+                                const availableServers = getAvailableServersForPosition(index);
+                                const serverOptions = availableServers.map(s => ({
+                                    label: `${s.name} (${s.ip})`,
+                                    value: s.id
+                                }));
+                                
+                                return (
+                                    <div key={index} className="jump-host-item">
+                                        <span className="jump-host-number">{index + 1}</span>
+                                        <div className="jump-host-select">
+                                            <SelectBox 
+                                                options={serverOptions}
+                                                selected={jumpHostId}
+                                                setSelected={(value) => updateJumpHost(index, value)}
+                                                searchable={serverOptions.length > 5}
+                                            />
+                                        </div>
+                                        <button 
+                                            className="jump-host-remove"
+                                            onClick={() => removeJumpHost(index)}
+                                            title={t('servers.dialog.settings.jumpHosts.removeTooltip')}
+                                        >
+                                            <Icon path={mdiClose} size={0.8} />
+                                        </button>
+                                    </div>
+                                );
+                            })}
+                        </div>
+                    )}
+                    
+                    {availableJumpHosts.length > jumpHosts.length && (
+                        <button className="add-jump-host-btn" onClick={addJumpHost}>
+                            <Icon path={mdiPlus} size={0.8} />
+                            {t('servers.dialog.settings.jumpHosts.addButton')}
+                        </button>
+                    )}
+                    
+                    {availableJumpHosts.length === 0 && (
+                        <p className="no-jump-hosts-message">
+                            {t('servers.dialog.settings.jumpHosts.noServersAvailable')}
+                        </p>
+                    )}
+                </div>
+            )}
+
             {fieldConfig.showMonitoring && (
                 <div className="monitoring-toggle-container">
                     <div className="monitoring-toggle-info">
-                        <span className="monitoring-label">Enable Performance Monitoring</span>
+                        <span className="monitoring-label">
+                            <Icon path={mdiChartLine} size={0.8} style={{ marginRight: '8px', verticalAlign: 'middle' }} />
+                            {t('servers.dialog.settings.monitoring.title')}
+                        </span>
                         <span className="monitoring-description">
-                            Collect CPU, memory, disk, and network metrics for this server
+                            {t('servers.dialog.settings.monitoring.description')}
                         </span>
                     </div>
                     <ToggleSwitch checked={monitoringEnabled} onChange={setMonitoringEnabled} id="monitoring-toggle" />
@@ -57,9 +183,9 @@ const SettingsPage = ({ config, setConfig, monitoringEnabled, setMonitoringEnabl
             {fieldConfig.showKeyboardLayout && (
                 <div className="keyboard-layout-card">
                     <div className="form-group">
-                        <label>Keyboard Layout</label>
+                        <label>{t('servers.dialog.settings.keyboardLayout.title')}</label>
                         <SelectBox options={KEYBOARD_LAYOUTS} selected={keyboardLayout} setSelected={handleKeyboardLayoutChange} />
-                        <p className="keyboard-layout-description">Select the keyboard layout to use for this connection.</p>
+                        <p className="keyboard-layout-description">{t('servers.dialog.settings.keyboardLayout.description')}</p>
                     </div>
                 </div>
             )}

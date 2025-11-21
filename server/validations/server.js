@@ -8,6 +8,7 @@ const configValidation = Joi.object({
     monitoringEnabled: Joi.boolean().optional(),
     nodeName: Joi.string().optional(),
     vmid: Joi.alternatives().try(Joi.string(), Joi.number()).optional(),
+    jumpHosts: Joi.array().items(Joi.number()).optional(),
 }).unknown(true);
 
 module.exports.createServerValidation = Joi.object({

@@ -33,7 +33,9 @@
       "noAuthMethodsAvailable": "No authentication methods available."
     },
     "selectBox": {
-      "defaultOption": "Select an option..."
+      "defaultOption": "Select an option...",
+      "search": "Search...",
+      "noResults": "No results found"
     },
     "sidebar": {
       "settings": "Settings",
@@ -690,6 +692,24 @@
         "host": "Host",
         "nodeName": "Node name",
         "vmid": "VM ID"
+      },
+      "settings": {
+        "jumpHosts": {
+          "title": "Jump Hosts",
+          "description": "Connect through intermediate servers to reach this target server",
+          "addButton": "Add Jump Host",
+          "removeTooltip": "Remove jump host",
+          "noServersAvailable": "No SSH servers available for jump hosts. Create SSH servers first."
+        },
+        "monitoring": {
+          "title": "Enable Performance Monitoring",
+          "description": "Collect CPU, memory, disk, and network metrics for this server"
+        },
+        "keyboardLayout": {
+          "title": "Keyboard Layout",
+          "description": "Select the keyboard layout to use for this connection."
+        },
+        "noSettings": "No additional settings available for this entry type."
       }
     },
     "proxmoxDialog": {

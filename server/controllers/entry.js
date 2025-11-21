@@ -59,6 +59,35 @@ const validateIdentities = async (accountId, identities, organizationId) => {
     return { valid: true };
 };
 
+const validateJumpHosts = async (accountId, jumpHosts) => {
+    if (!jumpHosts || jumpHosts.length === 0) return { valid: true };
+
+    for (const jumpHostId of jumpHosts) {
+        const jumpHostEntry = await Entry.findByPk(jumpHostId);
+        
+        if (!jumpHostEntry) {
+            return {
+                valid: false,
+                error: { code: 404, message: `Jump host with ID ${jumpHostId} does not exist` }
+            };
+        }
+
+        if (jumpHostEntry.config?.protocol !== 'ssh') {
+            return {
+                valid: false,
+                error: { code: 400, message: `Jump host ${jumpHostId} is not an SSH server` }
+            };
+        }
+
+        const accessCheck = await validateEntryAccess(accountId, jumpHostEntry, "You don't have permission to use this jump host");
+        if (!accessCheck.valid) {
+            return { valid: false, error: accessCheck };
+        }
+    }
+
+    return { valid: true };
+};
+
 module.exports.createEntry = async (accountId, configuration) => {
     let folder = null;
     if (configuration.folderId) {
@@ -80,6 +109,11 @@ module.exports.createEntry = async (accountId, configuration) => {
 
     if (configuration.identities && configuration.identities.length > 0) {
         const validationResult = await validateIdentities(accountId, configuration.identities, configuration.organizationId);
+        if (!validationResult.valid) return validationResult.error;
+    }
+
+    if (configuration.config?.jumpHosts && configuration.config.jumpHosts.length > 0) {
+        const validationResult = await validateJumpHosts(accountId, configuration.config.jumpHosts);
         if (!validationResult.valid) return validationResult.error;
     }
 
@@ -174,6 +208,11 @@ module.exports.editEntry = async (accountId, entryId, configuration) => {
             }
         }
         delete configuration.identities;
+    }
+
+    if (configuration.config?.jumpHosts !== undefined) {
+        const validationResult = await validateJumpHosts(accountId, configuration.config.jumpHosts || []);
+        if (!validationResult.valid) return validationResult.error;
     }
 
     delete configuration.organizationId;

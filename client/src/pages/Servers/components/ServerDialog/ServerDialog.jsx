@@ -227,16 +227,16 @@ export const ServerDialog = ({ open, onClose, currentFolderId, currentOrganizati
     };
 
     useEffect(() => {
-        if (!open || !fieldConfig.showIpPort) return;
+        if (!open || !fieldConfig.showIpPort || editServerId) return;
 
         const portMap = { ssh: "22", telnet: "23", rdp: "3389", vnc: "5900" };
         const currentPort = config.port;
         const expectedPort = portMap[config.protocol];
 
-        if (expectedPort && (!currentPort || Object.values(portMap).includes(currentPort))) {
+        if (expectedPort && !currentPort) {
             setConfig(prev => ({ ...prev, port: expectedPort }));
         }
-    }, [config.protocol, open, fieldConfig.showIpPort]);
+    }, [config.protocol, open, fieldConfig.showIpPort, editServerId]);
 
     return (
         <DialogProvider open={open} onClose={onClose}>
@@ -272,7 +272,7 @@ export const ServerDialog = ({ open, onClose, currentFolderId, currentOrganizati
                     {tabs.find((tab, idx) => idx === activeTab && tab.key === "settings") && 
                         <SettingsPage config={config} setConfig={setConfig}
                                       monitoringEnabled={monitoringEnabled} setMonitoringEnabled={setMonitoringEnabled}
-                                      fieldConfig={fieldConfig} />}
+                                      fieldConfig={fieldConfig} editServerId={editServerId} />}
                 </div>
 
                 <Button className="server-dialog-button" onClick={handleSubmit}

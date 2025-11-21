@@ -7,12 +7,11 @@ module.exports = async (ws, context) => {
     ssh.on("ready", () => {
         ssh.shell({ term: "xterm-256color" }, (err, stream) => {
             if (err) {
-                ws.close(4008, err.message);
+                ws.close(4008, `Shell error: ${err.message}`);
                 return;
             }
 
             stream.on("close", () => ws.close());
-
             stream.on("data", (data) => ws.send(data.toString()));
 
             ws.on("message", (data) => {
@@ -35,16 +34,14 @@ module.exports = async (ws, context) => {
                 await updateAuditLogWithSessionDuration(auditLogId, connectionStartTime);
                 stream.end();
                 ssh.end();
+                if (ssh._jumpConnections) ssh._jumpConnections.forEach(conn => conn.ssh.end());
             });
         });
     });
 
     ssh.on("error", (error) => {
-        if(error.level === "client-timeout") {
-            ws.close(4007, "Client Timeout reached");
-        } else {
-            ws.close(4005, error.message);
-        }
+        const errorMsg = error.level === "client-timeout" ? "Client Timeout reached" : `SSH Error: ${error.message}`;
+        ws.close(error.level === "client-timeout" ? 4007 : 4005, errorMsg);
     });
 
     ssh.on("end", async () => {
@@ -59,6 +56,7 @@ module.exports = async (ws, context) => {
 
     ssh.on("close", async () => {
         await updateAuditLogWithSessionDuration(auditLogId, connectionStartTime);
+        if (ssh._jumpConnections) ssh._jumpConnections.forEach(conn => conn.ssh.end());
         ws.close(4007, "Connection closed");
     });
 };
