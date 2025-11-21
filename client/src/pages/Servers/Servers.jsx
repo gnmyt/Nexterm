@@ -19,6 +19,7 @@ import { ServerContext } from "@/common/contexts/ServerContext.jsx";
 export const Servers = () => {
 
     const [serverDialogOpen, setServerDialogOpen] = useState(false);
+    const [serverDialogProtocol, setServerDialogProtocol] = useState(null);
     const [proxmoxDialogOpen, setProxmoxDialogOpen] = useState(false);
     const [sshConfigImportDialogOpen, setSSHConfigImportDialogOpen] = useState(false);
     const [connectionReasonDialogOpen, setConnectionReasonDialogOpen] = useState(false);
@@ -107,6 +108,7 @@ export const Servers = () => {
 
     const closeDialog = () => {
         setServerDialogOpen(false);
+        setServerDialogProtocol(null);
         setCurrentFolderId(null);
         setEditServerId(null);
     };
@@ -133,18 +135,21 @@ export const Servers = () => {
 
             const handleAutoConnect = async () => {
                 const server = getServerById(connectId);
+                const isPveEntry = server?.type?.startsWith('pve-');
+                const hasIdentities = server?.identities && server.identities.length > 0;
 
-                if (server && server.identities && server.identities.length > 0) {
+                if (server && (isPveEntry || hasIdentities)) {
+                    const identity = isPveEntry ? null : server.identities[0];
                     try {
                         const requiresReason = checkConnectionReasonRequired(connectId, servers);
                         if (requiresReason) {
-                            setPendingConnection({ server, identity: server.identities[0] });
+                            setPendingConnection({ server, identity });
                             setConnectionReasonDialogOpen(true);
                         } else {
-                            performConnection(server, server.identities[0]);
+                            performConnection(server, identity);
                         }
                     } catch (error) {
-                        performConnection(server, server.identities[0]);
+                        performConnection(server, identity);
                     }
                 }
             };
@@ -156,7 +161,8 @@ export const Servers = () => {
     return (
         <div className="server-page">
             <ServerDialog open={serverDialogOpen} onClose={closeDialog} currentFolderId={currentFolderId}
-                          currentOrganizationId={currentOrganizationId} editServerId={editServerId} />
+                          currentOrganizationId={currentOrganizationId} editServerId={editServerId} 
+                          initialProtocol={serverDialogProtocol} />
             <ProxmoxDialog open={proxmoxDialogOpen} onClose={closePVEDialog}
                            currentFolderId={currentFolderId}
                            currentOrganizationId={currentOrganizationId}
@@ -170,7 +176,11 @@ export const Servers = () => {
                 onConnect={handleConnectionReasonProvided}
                 serverName={pendingConnection ? (getServerById(pendingConnection.server)?.name || "Unknown Server") : ""}
             />
-            <ServerList setServerDialogOpen={() => setServerDialogOpen(true)} connectToServer={connectToServer}
+            <ServerList setServerDialogOpen={(protocol = null) => { 
+                            setServerDialogProtocol(protocol); 
+                            setServerDialogOpen(true); 
+                        }} 
+                        connectToServer={connectToServer}
                        setProxmoxDialogOpen={() => setProxmoxDialogOpen(true)}
                         setSSHConfigImportDialogOpen={() => setSSHConfigImportDialogOpen(true)}
                         setCurrentFolderId={setCurrentFolderId} setCurrentOrganizationId={setCurrentOrganizationId}
