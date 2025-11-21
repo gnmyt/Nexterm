@@ -193,7 +193,7 @@ export const ServerDialog = ({ open, onClose, currentFolderId, currentOrganizati
             
             if (initialProtocol) {
                 setConfig({ protocol: initialProtocol });
-                const iconMap = { ssh: "terminal", rdp: "windows", vnc: "desktop" };
+                const iconMap = { ssh: "terminal", telnet: "terminal", rdp: "windows", vnc: "desktop" };
                 setIcon(iconMap[initialProtocol] || null);
             } else {
                 setConfig({});
@@ -229,7 +229,7 @@ export const ServerDialog = ({ open, onClose, currentFolderId, currentOrganizati
     useEffect(() => {
         if (!open || !fieldConfig.showIpPort) return;
 
-        const portMap = { ssh: "22", rdp: "3389", vnc: "5900" };
+        const portMap = { ssh: "22", telnet: "23", rdp: "3389", vnc: "5900" };
         const currentPort = config.port;
         const expectedPort = portMap[config.protocol];
 
