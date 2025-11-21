@@ -635,6 +635,10 @@
       "createFolder": "创建文件夹",
       "deleteFolder": "删除文件夹",
       "renameFolder": "重命名文件夹",
+      "new": "New",
+      "sshServer": "SSH Server",
+      "rdpServer": "RDP Server",
+      "vncServer": "VNC Server",
       "createServer": "创建服务器",
       "import": "进口",
       "pve": "PVE",
@@ -642,6 +646,7 @@
       "connect": "连接",
       "openSFTP": "打开 SFTP",
       "editServer": "编辑服务器",
+      "editIntegration": "Edit Integration",
       "duplicateServer": "复制服务器",
       "deleteServer": "删除服务器",
       "editPVE": "编辑 PVE",
@@ -652,6 +657,7 @@
     },
     "dialog": {
       "addServer": "添加服务器",
+      "addProtocolServer": "Add {{protocol}} server",
       "editServer": "编辑服务器",
       "tabs": {
         "details": "详细信息",
@@ -670,7 +676,9 @@
         "protocol": "规程",
         "username": "用户名",
         "password": "密码",
-        "host": "主持人"
+        "host": "主持人",
+        "nodeName": "Node Name",
+        "vmid": "VM ID"
       },
       "placeholders": {
         "serverName": "服务器名称",
@@ -678,7 +686,9 @@
         "port": "港口",
         "username": "用户名",
         "password": "密码",
-        "host": "主持人"
+        "host": "主持人",
+        "nodeName": "Node name",
+        "vmid": "VM ID"
       }
     },
     "proxmoxDialog": {
