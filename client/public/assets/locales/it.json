@@ -635,6 +635,10 @@
       "createFolder": "Crea cartella",
       "deleteFolder": "Elimina cartella",
       "renameFolder": "Rinomina cartella",
+      "new": "New",
+      "sshServer": "SSH Server",
+      "rdpServer": "RDP Server",
+      "vncServer": "VNC Server",
       "createServer": "Crea un server",
       "import": "Importazione",
       "pve": "PVE",
@@ -642,6 +646,7 @@
       "connect": "Collegati",
       "openSFTP": "Aprire SFTP",
       "editServer": "Modifica il server",
+      "editIntegration": "Edit Integration",
       "duplicateServer": "Server duplicato",
       "deleteServer": "Elimina il server",
       "editPVE": "Modifica PVE",
@@ -652,6 +657,7 @@
     },
     "dialog": {
       "addServer": "Aggiungi un server",
+      "addProtocolServer": "Add {{protocol}} server",
       "editServer": "Modifica il server",
       "tabs": {
         "details": "Dettagli",
@@ -670,7 +676,9 @@
         "protocol": "Protocollo",
         "username": "Nome utente",
         "password": "Password",
-        "host": "Ospite"
+        "host": "Ospite",
+        "nodeName": "Node Name",
+        "vmid": "VM ID"
       },
       "placeholders": {
         "serverName": "Nome del server",
@@ -678,7 +686,9 @@
         "port": "Porto",
         "username": "Nome utente",
         "password": "Password",
-        "host": "Ospite"
+        "host": "Ospite",
+        "nodeName": "Node name",
+        "vmid": "VM ID"
       }
     },
     "proxmoxDialog": {
