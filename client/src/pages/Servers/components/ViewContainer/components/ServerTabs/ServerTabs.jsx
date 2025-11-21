@@ -1,6 +1,6 @@
 import { useRef, useState, useEffect } from "react";
 import Icon from "@mdi/react";
-import { loadIcon } from "@/pages/Servers/components/ServerList/components/ServerObject/ServerObject.jsx";
+import { loadIcon } from "@/pages/Servers/utils/iconMapping.js";
 import { mdiClose, mdiViewSplitVertical, mdiChevronLeft, mdiChevronRight } from "@mdi/js";
 import { useDrag, useDrop } from "react-dnd";
 import TerminalActionsMenu from "../TerminalActionsMenu";
