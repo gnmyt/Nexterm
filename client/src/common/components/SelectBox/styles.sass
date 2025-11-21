@@ -57,6 +57,37 @@
     border-radius: 0.7rem
     z-index: 9999
 
+  &__search
+    padding: 0.5rem
+    border-bottom: 1px solid colors.$gray
+    display: flex
+    align-items: center
+    gap: 0.5rem
+
+    svg
+      width: 1.2rem
+      height: 1.2rem
+      color: colors.$subtext
+      flex-shrink: 0
+
+    input
+      flex: 1
+      background: transparent
+      border: none
+      outline: none
+      color: colors.$light-gray
+      font-size: 14pt
+      padding: 0.3rem
+
+      &::placeholder
+        color: colors.$subtext
+
+  &__no-results
+    padding: 1rem
+    text-align: center
+    color: colors.$subtext
+    font-size: 0.9rem
+
   &__options-scroll
     max-height: 250px
     overflow-y: auto
