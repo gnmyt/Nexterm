@@ -83,12 +83,14 @@ app.get("/", async (req, res) => {
     const { ssh, sshOptions } = await createSSH(entry, identity);
 
     ssh.on("error", () => {
+        if (ssh._jumpConnections) ssh._jumpConnections.forEach(conn => conn.ssh.end());
         res.status(500).send("This file cannot be downloaded");
     });
 
     try {
         ssh.connect(sshOptions);
     } catch (err) {
+        if (ssh._jumpConnections) ssh._jumpConnections.forEach(conn => conn.ssh.end());
         res.status(500).send(err.message);
         return;
     }
@@ -102,6 +104,8 @@ app.get("/", async (req, res) => {
             sftp.stat(path, (err, stats) => {
                 if (err) {
                     res.status(404).send("The file does not exist");
+                    ssh.end();
+                    if (ssh._jumpConnections) ssh._jumpConnections.forEach(conn => conn.ssh.end());
                     return;
                 }
 
@@ -110,6 +114,11 @@ app.get("/", async (req, res) => {
 
                 const readStream = sftp.createReadStream(path);
                 readStream.pipe(res);
+
+                readStream.on('end', () => {
+                    ssh.end();
+                    if (ssh._jumpConnections) ssh._jumpConnections.forEach(conn => conn.ssh.end());
+                });
 
                 createAuditLog({
                     accountId: req.user.id,

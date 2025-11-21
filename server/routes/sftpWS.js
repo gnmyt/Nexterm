@@ -27,12 +27,14 @@ module.exports = async (ws, req) => {
 
         ssh.on("error", async () => {
             await updateAuditLogWithSessionDuration(sshAuditLogId, connectionStartTime);
+            if (ssh._jumpConnections) ssh._jumpConnections.forEach(conn => conn.ssh.end());
             ws.close();
         });
 
         ws.on("close", async () => {
             await updateAuditLogWithSessionDuration(sshAuditLogId, connectionStartTime);
             ssh.end();
+            if (ssh._jumpConnections) ssh._jumpConnections.forEach(conn => conn.ssh.end());
         });
 
         console.log(`Authorized SFTP connection to ${entry.config.ip} with identity ${identity.name}`);
