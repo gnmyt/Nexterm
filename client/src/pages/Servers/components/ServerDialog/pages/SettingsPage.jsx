@@ -22,45 +22,46 @@ const KEYBOARD_LAYOUTS = [
     { label: "Türkisch (Qwerty)", value: "tr-tr-qwerty" }
 ];
 
-const SettingsPage = ({ protocol, config, setConfig, monitoringEnabled, setMonitoringEnabled }) => {
-    const [keyboardLayout, setKeyboardLayout] = useState(() => {
-        return config?.keyboardLayout || "en-us-qwerty";
-    });
+const SettingsPage = ({ config, setConfig, monitoringEnabled, setMonitoringEnabled, fieldConfig }) => {
+    const [keyboardLayout, setKeyboardLayout] = useState(config?.keyboardLayout || "en-us-qwerty");
 
     const handleKeyboardLayoutChange = (newLayout) => {
         setKeyboardLayout(newLayout);
-        setConfig(prevConfig => ({ ...prevConfig, keyboardLayout: newLayout }));
+        setConfig(prev => ({ ...prev, keyboardLayout: newLayout }));
     };
 
     useEffect(() => {
-        if (config?.keyboardLayout && config.keyboardLayout !== keyboardLayout) setKeyboardLayout(config.keyboardLayout);
-    }, [config]);
+        if (config?.keyboardLayout && config.keyboardLayout !== keyboardLayout) {
+            setKeyboardLayout(config.keyboardLayout);
+        }
+    }, [config?.keyboardLayout]);
+
+    if (!fieldConfig.showMonitoring && !fieldConfig.showKeyboardLayout) {
+        return <p className="text-center">No additional settings available for this entry type.</p>;
+    }
 
     return (
         <>
-            {protocol === "ssh" && (
+            {fieldConfig.showMonitoring && (
                 <div className="monitoring-toggle-container">
                     <div className="monitoring-toggle-info">
                         <span className="monitoring-label">Enable Performance Monitoring</span>
                         <span className="monitoring-description">
-                                Collect CPU, memory, disk, and network metrics for this server
-                            </span>
+                            Collect CPU, memory, disk, and network metrics for this server
+                        </span>
                     </div>
                     <ToggleSwitch checked={monitoringEnabled} onChange={setMonitoringEnabled} id="monitoring-toggle" />
                 </div>
             )}
 
-            {(protocol === "vnc" || protocol === "rdp") && (
-                <div className="form-group keyboard-layout-group">
-                    <label>Keyboard Layout</label>
-                    <SelectBox options={KEYBOARD_LAYOUTS} selected={keyboardLayout}
-                               setSelected={handleKeyboardLayoutChange} />
-                    <p className="text-center">Select the keyboard layout to use for this connection.</p>
+            {fieldConfig.showKeyboardLayout && (
+                <div className="keyboard-layout-card">
+                    <div className="form-group">
+                        <label>Keyboard Layout</label>
+                        <SelectBox options={KEYBOARD_LAYOUTS} selected={keyboardLayout} setSelected={handleKeyboardLayoutChange} />
+                        <p className="keyboard-layout-description">Select the keyboard layout to use for this connection.</p>
+                    </div>
                 </div>
-            )}
-
-            {protocol !== "vnc" && protocol !== "rdp" && protocol !== "ssh" && (
-                <p className="text-center">No additional settings available for this protocol.</p>
             )}
         </>
     );

@@ -10,14 +10,9 @@ import SettingsPage from "@/pages/Servers/components/ServerDialog/pages/Settings
 import { IdentityContext } from "@/common/contexts/IdentityContext.jsx";
 import { useToast } from "@/common/contexts/ToastContext.jsx";
 import { useTranslation } from "react-i18next";
+import { getAvailableTabs, validateRequiredFields, getFieldConfig } from "./utils/fieldConfig.js";
 
-const tabs = [
-    { key: "details", label: "servers.dialog.tabs.details" },
-    { key: "identities", label: "servers.dialog.tabs.identities" },
-    { key: "settings", label: "servers.dialog.tabs.settings" }
-];
-
-export const ServerDialog = ({ open, onClose, currentFolderId, currentOrganizationId, editServerId }) => {
+export const ServerDialog = ({ open, onClose, currentFolderId, currentOrganizationId, editServerId, initialProtocol }) => {
     const { t } = useTranslation();
 
     const { loadServers } = useContext(ServerContext);
@@ -29,10 +24,14 @@ export const ServerDialog = ({ open, onClose, currentFolderId, currentOrganizati
     const [identities, setIdentities] = useState([]);
     const [config, setConfig] = useState({});
     const [monitoringEnabled, setMonitoringEnabled] = useState(false);
+    const [entryType, setEntryType] = useState("server");
 
     const [identityUpdates, setIdentityUpdates] = useState({});
 
     const [activeTab, setActiveTab] = useState(0);
+
+    const fieldConfig = getFieldConfig(entryType, config.protocol);
+    const tabs = getAvailableTabs(entryType, config.protocol);
 
     const normalizeIdentity = (identity) => {
         const normalized = { ...identity };
@@ -88,6 +87,28 @@ export const ServerDialog = ({ open, onClose, currentFolderId, currentOrganizati
         return Array.from(allIdentityIds);
     };
 
+    const buildConfig = () => {
+        const finalConfig = { ...config };
+        
+        if (fieldConfig.showMonitoring) {
+            finalConfig.monitoringEnabled = monitoringEnabled;
+        } else {
+            delete finalConfig.monitoringEnabled;
+        }
+        
+        if (!fieldConfig.showIpPort) {
+            delete finalConfig.ip;
+            delete finalConfig.port;
+            delete finalConfig.protocol;
+        }
+        
+        if (!fieldConfig.showKeyboardLayout) {
+            delete finalConfig.keyboardLayout;
+        }
+        
+        return finalConfig;
+    };
+
     const createServer = async () => {
         try {
             const serverIdentityIds = await updateIdentities();
@@ -96,8 +117,9 @@ export const ServerDialog = ({ open, onClose, currentFolderId, currentOrganizati
             loadIdentities();
 
             const result = await putRequest("entries", {
-                name, icon: icon,
-                config: { ...config, monitoringEnabled },
+                name,
+                icon,
+                config: buildConfig(),
                 folderId: currentFolderId,
                 organizationId: currentOrganizationId,
                 identities: serverIdentityIds,
@@ -122,7 +144,7 @@ export const ServerDialog = ({ open, onClose, currentFolderId, currentOrganizati
 
             await patchRequest("entries/" + editServerId, {
                 name, icon,
-                config: { ...config, monitoringEnabled },
+                config: buildConfig(),
                 identities: serverIdentityIds
             });
 
@@ -136,12 +158,12 @@ export const ServerDialog = ({ open, onClose, currentFolderId, currentOrganizati
     };
 
     const handleSubmit = useCallback(() => {
-        if (!name || !config.ip || !config.port || !config.protocol) {
+        if (!validateRequiredFields(entryType, config.protocol, name, config)) {
             sendToast("Error", t("servers.messages.fillRequiredFields"));
             return;
         }
         editServerId ? patchServer() : createServer();
-    }, [name, icon, editServerId, identityUpdates, currentFolderId, config, monitoringEnabled, t]);
+    }, [name, icon, editServerId, identityUpdates, currentFolderId, config, monitoringEnabled, entryType, t]);
 
     useEffect(() => {
         if (!open) return;
@@ -151,16 +173,12 @@ export const ServerDialog = ({ open, onClose, currentFolderId, currentOrganizati
                 setName(server.name);
                 setIcon(server.icon || "server");
                 setIdentities(server.identities);
+                setEntryType(server.type || "server");
 
                 try {
-                    if (server.config) {
-                        const parsedConfig = typeof server.config === 'string' ? JSON.parse(server.config) : server.config;
-                        setConfig(parsedConfig);
-                        setMonitoringEnabled(Boolean(parsedConfig.monitoringEnabled ?? true));
-                    } else {
-                        setConfig({});
-                        setMonitoringEnabled(false);
-                    }
+                    const parsedConfig = typeof server.config === 'string' ? JSON.parse(server.config) : server.config || {};
+                    setConfig(parsedConfig);
+                    setMonitoringEnabled(Boolean(parsedConfig.monitoringEnabled ?? true));
                 } catch (error) {
                     console.error("Failed to parse server config:", error);
                     setConfig({});
@@ -171,13 +189,21 @@ export const ServerDialog = ({ open, onClose, currentFolderId, currentOrganizati
             setName("");
             setIcon(null);
             setIdentities([]);
-            setConfig({});
+            setEntryType("server");
+            
+            if (initialProtocol) {
+                setConfig({ protocol: initialProtocol });
+                const iconMap = { ssh: "terminal", rdp: "windows", vnc: "desktop" };
+                setIcon(iconMap[initialProtocol] || null);
+            } else {
+                setConfig({});
+            }
             setMonitoringEnabled(false);
         }
 
         setIdentityUpdates({});
         setActiveTab(0);
-    }, [open, editServerId]);
+    }, [open, editServerId, initialProtocol]);
 
     useEffect(() => {
         if (!open) return;
@@ -197,32 +223,33 @@ export const ServerDialog = ({ open, onClose, currentFolderId, currentOrganizati
 
     const refreshIdentities = () => {
         if (!editServerId) return;
-
-        getRequest("servers/" + editServerId).then((server) => {
-            setIdentities(server.identities);
-        });
+        getRequest("servers/" + editServerId).then((server) => setIdentities(server.identities));
     };
 
     useEffect(() => {
-        if (!open) return;
+        if (!open || !fieldConfig.showIpPort) return;
 
-        // Default port for each protocol
-        if (config.protocol === "ssh" && (!config.port || config.port === "3389" || config.port === "5900")) {
-            setConfig(prev => ({ ...prev, port: "22" }));
+        const portMap = { ssh: "22", rdp: "3389", vnc: "5900" };
+        const currentPort = config.port;
+        const expectedPort = portMap[config.protocol];
+
+        if (expectedPort && (!currentPort || Object.values(portMap).includes(currentPort))) {
+            setConfig(prev => ({ ...prev, port: expectedPort }));
         }
-        if (config.protocol === "rdp" && (!config.port || config.port === "22" || config.port === "5900")) {
-            setConfig(prev => ({ ...prev, port: "3389" }));
-        }
-        if (config.protocol === "vnc" && (!config.port || config.port === "22" || config.port === "3389")) {
-            setConfig(prev => ({ ...prev, port: "5900" }));
-        }
-    }, [config.protocol, open]);
+    }, [config.protocol, open, fieldConfig.showIpPort]);
 
     return (
         <DialogProvider open={open} onClose={onClose}>
             <div className="server-dialog">
                 <div className="server-dialog-title">
-                    <h2>{editServerId ? t("servers.dialog.editServer") : t("servers.dialog.addServer")}</h2>
+                    <h2>
+                        {editServerId 
+                            ? t("servers.dialog.editServer") 
+                            : config.protocol 
+                                ? t("servers.dialog.addProtocolServer", { protocol: config.protocol.toUpperCase() })
+                                : t("servers.dialog.addServer")
+                        }
+                    </h2>
                 </div>
 
                 <div className="server-dialog-tabs">
@@ -237,12 +264,15 @@ export const ServerDialog = ({ open, onClose, currentFolderId, currentOrganizati
                 <div className="server-dialog-content">
                     {activeTab === 0 && <DetailsPage name={name} setName={setName}
                                                      icon={icon} setIcon={setIcon}
-                                                     config={config} setConfig={setConfig} />}
-                    {activeTab === 1 &&
+                                                     config={config} setConfig={setConfig}
+                                                     fieldConfig={fieldConfig} />}
+                    {activeTab === 1 && tabs[1]?.key === "identities" &&
                         <IdentityPage serverIdentities={identities} setIdentityUpdates={setIdentityUpdates}
                                       identityUpdates={identityUpdates} setIdentities={setIdentities} />}
-                    {activeTab === 2 && <SettingsPage protocol={config.protocol} config={config} setConfig={setConfig}
-                                                       monitoringEnabled={monitoringEnabled} setMonitoringEnabled={setMonitoringEnabled} />}
+                    {tabs.find((tab, idx) => idx === activeTab && tab.key === "settings") && 
+                        <SettingsPage config={config} setConfig={setConfig}
+                                      monitoringEnabled={monitoringEnabled} setMonitoringEnabled={setMonitoringEnabled}
+                                      fieldConfig={fieldConfig} />}
                 </div>
 
                 <Button className="server-dialog-button" onClick={handleSubmit}
