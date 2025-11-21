@@ -68,6 +68,7 @@ module.exports = async (ws, req) => {
 
     let identity = null;
     const isPveEntry = entry.type?.startsWith('pve-');
+    const isTelnet = entry.type === 'telnet' || (entry.type === 'server' && entry.config?.protocol === 'telnet');
     
     if (identityId) {
         identity = await Identity.findByPk(identityId);
@@ -81,7 +82,7 @@ module.exports = async (ws, req) => {
         }
     }
 
-    if (!identity && !isPveEntry) {
+    if (!identity && !isPveEntry && !isTelnet) {
         ws.close(4006, "Identity not found");
         return null;
     }

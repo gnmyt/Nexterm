@@ -71,7 +71,7 @@ module.exports.createEntry = async (accountId, configuration) => {
     }
 
     if (!configuration.renderer && configuration.config?.protocol) {
-        if (configuration.config.protocol === "ssh") {
+        if (configuration.config.protocol === "ssh" || configuration.config.protocol === "telnet") {
             configuration.renderer = "terminal";
         } else if (configuration.config.protocol === "rdp" || configuration.config.protocol === "vnc") {
             configuration.renderer = "guac";
@@ -151,7 +151,7 @@ module.exports.editEntry = async (accountId, entryId, configuration) => {
     }
 
     if (configuration.config?.protocol) {
-        if (configuration.config.protocol === "ssh") {
+        if (configuration.config.protocol === "ssh" || configuration.config.protocol === "telnet") {
             configuration.renderer = "terminal";
         } else if (configuration.config.protocol === "rdp" || configuration.config.protocol === "vnc") {
             configuration.renderer = "guac";

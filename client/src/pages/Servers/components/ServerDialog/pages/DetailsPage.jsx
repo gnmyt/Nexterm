@@ -12,6 +12,7 @@ const ICON_OPTIONS = Object.entries(ICON_MAP).map(([value, icon]) => ({
 
 const PROTOCOL_OPTIONS = [
     { label: "SSH", value: "ssh" },
+    { label: "Telnet", value: "telnet" },
     { label: "RDP", value: "rdp" },
     { label: "VNC", value: "vnc" }
 ];

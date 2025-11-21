@@ -10,6 +10,15 @@ export const getFieldConfig = (type, protocol) => {
                     showMonitoring: true,
                     showKeyboardLayout: false,
                 };
+            case "telnet":
+                return {
+                    showProtocol: false,
+                    showIpPort: true,
+                    showIdentities: false,
+                    showSettings: false,
+                    showMonitoring: false,
+                    showKeyboardLayout: false,
+                };
             case "rdp":
                 return {
                     showProtocol: false,

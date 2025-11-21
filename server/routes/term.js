@@ -1,6 +1,7 @@
 const wsAuth = require("../middlewares/wsAuth");
 const sshHook = require("../hooks/ssh");
 const pveLxcHook = require("../hooks/pve-lxc");
+const telnetHook = require("../hooks/telnet");
 const { createTicket, getNodeForServer, openLXCConsole } = require("../controllers/pve");
 const { createAuditLog, AUDIT_ACTIONS, RESOURCE_TYPES } = require("../controllers/audit");
 const { getIntegrationCredentials } = require("../controllers/integration");
@@ -17,6 +18,7 @@ module.exports = async (ws, req) => {
         let hookContext = null;
 
         const isSSH = entry.type === "ssh" || (entry.type === "server" && entry.config?.protocol === "ssh");
+        const isTelnet = entry.type === "telnet" || (entry.type === "server" && entry.config?.protocol === "telnet");
         const isPveLxc = entry.type === "pve-lxc" || entry.type === "pve-shell";
 
         if (isSSH) {
@@ -37,11 +39,25 @@ module.exports = async (ws, req) => {
 
             hookContext = { ssh, auditLogId };
             await sshHook(ws, hookContext);
+        } else if (isTelnet) {
+            auditLogId = await createAuditLog({
+                accountId: user.id,
+                organizationId: entry.organizationId,
+                action: AUDIT_ACTIONS.SSH_CONNECT,
+                resource: RESOURCE_TYPES.ENTRY,
+                resourceId: entry.id,
+                details: { connectionReason, protocol: 'telnet' },
+                ipAddress,
+                userAgent,
+            });
+
+            console.log(`Authorized Telnet connection to ${entry.config.ip}`);
+
+            hookContext = { entry, auditLogId };
+            await telnetHook(ws, hookContext);
         } else if (isPveLxc) {
-            // Get vmid from entry config or use containerId from query params (fallback)
             const vmid = entry.config?.vmid ?? containerId;
-            
-            // Create audit log
+
             auditLogId = await createAuditLog({
                 accountId: user.id,
                 organizationId: entry.organizationId,

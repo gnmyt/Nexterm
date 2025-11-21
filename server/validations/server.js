@@ -1,7 +1,7 @@
 const Joi = require("joi");
 
 const configValidation = Joi.object({
-    protocol: Joi.string().valid("ssh", "rdp", "vnc").optional(),
+    protocol: Joi.string().valid("ssh", "telnet", "rdp", "vnc").optional(),
     ip: Joi.string().optional(),
     port: Joi.alternatives().try(Joi.string(), Joi.number()).optional(),
     keyboardLayout: Joi.string().optional(),

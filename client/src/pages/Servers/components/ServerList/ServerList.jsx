@@ -453,6 +453,11 @@ export const ServerList = ({
                                                 onClick={() => createServer("ssh")}
                                             />
                                             <ContextMenuItem
+                                                icon={mdiConsole}
+                                                label={t("servers.contextMenu.telnetServer")}
+                                                onClick={() => createServer("telnet")}
+                                            />
+                                            <ContextMenuItem
                                                 icon={mdiDesktopClassic}
                                                 label={t("servers.contextMenu.rdpServer")}
                                                 onClick={() => createServer("rdp")}
@@ -517,9 +522,15 @@ export const ServerList = ({
 
                         {contextClickedType === "server-object" && server?.type === "server" && (
                             <>
-                                {server?.identities?.length > 0 && (
+                                {(server?.identities?.length > 0 || server?.protocol === "telnet") && (
                                     <>
-                                        {server.identities.length === 1 ? (
+                                        {server?.protocol === "telnet" ? (
+                                            <ContextMenuItem
+                                                icon={mdiConnection}
+                                                label={t("servers.contextMenu.connect")}
+                                                onClick={() => connectToServer(server?.id)}
+                                            />
+                                        ) : server.identities.length === 1 ? (
                                             <ContextMenuItem
                                                 icon={mdiConnection}
                                                 label={t("servers.contextMenu.connect")}
