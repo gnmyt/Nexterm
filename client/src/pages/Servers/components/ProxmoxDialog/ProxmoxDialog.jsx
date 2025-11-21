@@ -19,7 +19,6 @@ export const ProxmoxDialog = ({ open, onClose, currentFolderId, currentOrganizat
     const [port, setPort] = useState("8006");
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
-    const [nodeName, setNodeName] = useState("");
     const [loading, setLoading] = useState(false);
 
     const create = () => {
@@ -45,9 +44,8 @@ export const ProxmoxDialog = ({ open, onClose, currentFolderId, currentOrganizat
 
     const edit = () => {
         setLoading(true);
-        patchRequest(`integrations/${editServerId.split("-")[1]}`, {
+        patchRequest(`integrations/${editServerId}`, {
             name, ip, port, username, password: password === "********" ? undefined : password,
-            nodeName: nodeName || null,
         }).then(async (response) => {
             if (response.code) {
                 sendToast("Error", response.message);
@@ -67,13 +65,12 @@ export const ProxmoxDialog = ({ open, onClose, currentFolderId, currentOrganizat
 
     useEffect(() => {
         if (editServerId && open) {
-            getRequest(`integrations/${editServerId.split("-")[1]}`).then(server => {
+            getRequest(`integrations/${editServerId}`).then(server => {
                 setName(server.name);
                 setIp(server.ip);
                 setPort(server.port);
                 setUsername(server.username);
                 setPassword("********");
-                setNodeName(server.nodeName || "");
             }).catch(err => console.error(err));
         } else {
             setName("");
@@ -81,7 +78,6 @@ export const ProxmoxDialog = ({ open, onClose, currentFolderId, currentOrganizat
             setPort("8006");
             setUsername("");
             setPassword("");
-            setNodeName("");
         }
         setLoading(false);
     }, [editServerId, open]);
@@ -124,14 +120,6 @@ export const ProxmoxDialog = ({ open, onClose, currentFolderId, currentOrganizat
                     <IconInput icon={mdiLockOutline} value={password} setValue={setPassword} placeholder={t("servers.proxmoxDialog.placeholders.password")}
                                type="password" id="password" />
                 </div>
-
-                {editServerId && (
-                    <div className="form-group">
-                        <label htmlFor="nodeName">{t("servers.proxmoxDialog.fields.nodeName")}</label>
-                        <IconInput icon={mdiServerNetwork} value={nodeName} setValue={setNodeName} 
-                                   placeholder={t("servers.proxmoxDialog.placeholders.specificNode")} id="nodeName" />
-                    </div>
-                )}
 
                 <Button onClick={editServerId ? edit : create} text={editServerId ? t("servers.proxmoxDialog.actions.edit") : t("servers.proxmoxDialog.actions.import")} disabled={loading} />
 
