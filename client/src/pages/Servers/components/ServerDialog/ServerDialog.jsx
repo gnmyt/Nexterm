@@ -272,7 +272,7 @@ export const ServerDialog = ({ open, onClose, currentFolderId, currentOrganizati
                     {tabs.find((tab, idx) => idx === activeTab && tab.key === "settings") && 
                         <SettingsPage config={config} setConfig={setConfig}
                                       monitoringEnabled={monitoringEnabled} setMonitoringEnabled={setMonitoringEnabled}
-                                      fieldConfig={fieldConfig} />}
+                                      fieldConfig={fieldConfig} editServerId={editServerId} />}
                 </div>
 
                 <Button className="server-dialog-button" onClick={handleSubmit}
