@@ -20,7 +20,7 @@ const { updateAuditLogWithSessionDuration } = require("../controllers/audit");
 
 class ClientConnection {
 
-    constructor(webSocket, clientOptions, settings) {
+    constructor(webSocket, clientOptions, settings, forcedConnectionId = null) {
         this.STATE_OPEN = 1;
         this.STATE_CLOSED = 2;
 
@@ -45,7 +45,7 @@ class ClientConnection {
 
         this.connectionSettings = settings;
 
-        this.guacdClient = new GuacdClient(this);
+        this.guacdClient = new GuacdClient(this, forcedConnectionId);
 
         webSocket.on("close", this.close.bind(this));
         webSocket.on("message", this.processReceivedMessage.bind(this));
@@ -67,14 +67,16 @@ class ClientConnection {
             clearInterval(this.activityCheckInterval);
         }
 
-        if (this.guacdClient) {
-            this.guacdClient.close();
-        }
-
         this.webSocket.removeAllListeners("close");
         this.webSocket.close();
 
         this.state = this.STATE_CLOSED;
+    }
+
+    destroy() {
+        if (this.guacdClient) {
+            this.guacdClient.close();
+        }
     }
 
     async updateAuditLogWithDuration() {
