@@ -206,10 +206,16 @@ export const ServerList = ({
         const diffHours = Math.floor(diffMs / 3600000);
         const diffDays = Math.floor(diffMs / 86400000);
         
-        if (diffMins < 1) return 'Just now';
-        if (diffMins < 60) return `${diffMins} min${diffMins > 1 ? 's' : ''} ago`;
-        if (diffHours < 24) return `${diffHours} hour${diffHours > 1 ? 's' : ''} ago`;
-        if (diffDays < 7) return `${diffDays} day${diffDays > 1 ? 's' : ''} ago`;
+        if (diffMins < 1) return t('servers.time.justNow');
+        if (diffMins < 60) return diffMins === 1 
+            ? t('servers.time.minuteAgo', { count: diffMins })
+            : t('servers.time.minutesAgo', { count: diffMins });
+        if (diffHours < 24) return diffHours === 1 
+            ? t('servers.time.hourAgo', { count: diffHours })
+            : t('servers.time.hoursAgo', { count: diffHours });
+        if (diffDays < 7) return diffDays === 1 
+            ? t('servers.time.dayAgo', { count: diffDays })
+            : t('servers.time.daysAgo', { count: diffDays });
         return date.toLocaleDateString();
     };
 
