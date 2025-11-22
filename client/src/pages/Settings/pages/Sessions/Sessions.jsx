@@ -62,10 +62,11 @@ export const Sessions = () => {
                                     browser: parser.setUA(session.userAgent).getBrowser().name,
                                     version: parser.setUA(session.userAgent).getBrowser().version,
                                     os: parser.setUA(session.userAgent).getOS().name,
-                                    osVersion: parser.setUA(session.userAgent).getOS().version
+                                    osVersion: parser.setUA(session.userAgent).getOS().version,
+                                    interpolation: { escapeValue: false }
                                 })}
                             </h2>
-                            {!session.current && <p>{t("settings.sessions.lastActivity", { date: new Date(session.lastActivity).toLocaleString(), ip: session.ip })}</p>}
+                            {!session.current && <p>{t("settings.sessions.lastActivity", { date: new Date(session.lastActivity).toLocaleString(), ip: session.ip, interpolation: { escapeValue: false } })}</p>}
                             {session.current && <p>{t("settings.sessions.currentSession")}</p>}
                         </div>
                     </div>
