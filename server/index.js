@@ -15,6 +15,7 @@ const {
     insertOfficialSource,
 } = require("./controllers/appSource");
 const { isAdmin } = require("./middlewares/permission");
+const logger = require("./utils/logger");
 require("./utils/folder");
 
 process.on("uncaughtException", (err) => require("./utils/errorHandling")(err));
@@ -67,7 +68,7 @@ if (process.env.NODE_ENV === "production") {
         res.sendFile(path.join(__dirname, "../dist", "index.html"))
     );
 } else {
-    require("dotenv").config();
+    require("dotenv").config({ quiet: true });
     app.get("*name", (req, res) =>
         res.status(500).sendFile(path.join(__dirname, "templates", "env.html"))
     );
@@ -75,22 +76,16 @@ if (process.env.NODE_ENV === "production") {
 
 if (!process.env.ENCRYPTION_KEY) throw new Error("ENCRYPTION_KEY environment variable is not set. Please set it to a random hex string.");
 
-console.log(`Starting Nexterm version ${packageJson.version} in ${process.env.NODE_ENV || 'development'} mode...`);
-console.log(`🛈 Running on Node.js ${process.version}\n`);
+logger.system(`Starting Nexterm version ${packageJson.version} in ${process.env.NODE_ENV || 'development'} mode`);
+logger.system(`Running on Node.js ${process.version}`);
 
 db.authenticate()
     .catch((err) => {
-        console.error(
-            "Could not open the database file. Maybe it is damaged?: " +
-                err.message
-        );
+        logger.error("Could not connect to database", { error: err.message });
         process.exit(111);
     })
     .then(async () => {
-        console.log(
-            "Successfully connected to the database " +
-                (process.env.DB_TYPE === "mysql" ? "server" : "file")
-        );
+        logger.system(`Successfully connected to database ${process.env.DB_TYPE === "mysql" ? "server" : "file"}`);
 
         const migrationRunner = new MigrationRunner();
         await migrationRunner.runMigrations();
@@ -108,12 +103,12 @@ db.authenticate()
         monitoringService.start();
 
         app.listen(APP_PORT, () =>
-            console.log(`Server listening on port ${APP_PORT}`)
+            logger.system(`Server listening on port ${APP_PORT}`)
         );
     });
 
 process.on("SIGINT", async () => {
-    console.log("Shutting down the server...");
+    logger.system("Shutting down server");
 
     monitoringService.stop();
     stopStatusChecker();

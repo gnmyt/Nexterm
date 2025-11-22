@@ -1,4 +1,5 @@
 const path = require("path");
+const logger = require("./utils/logger");
 const fs = require("fs");
 const expressJSDocSwagger = require("express-jsdoc-swagger");
 const packageJson = require("../package.json");
@@ -20,11 +21,11 @@ const extractValidationSchemas = () => {
                 const extractedSchemas = extractSchemasFromValidation(validationModule);
                 Object.assign(schemas, extractedSchemas);
             } catch (err) {
-                console.warn(`Warning: Could not extract schemas from ${file}:`, err.message);
+                logger.warn("Could not extract schemas from file", { file, error: err.message });
             }
         });
     } catch (err) {
-        console.warn("Warning: Could not scan validation directory:", err.message);
+        logger.warn("Could not scan validation directory", { error: err.message });
     }
 
     return schemas;
