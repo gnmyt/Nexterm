@@ -93,4 +93,6 @@ const logger = {};
     logger[level] = (message, meta = {}) => baseLogger[level](message, { ...meta, caller: getCallerInfo() });
 });
 
+logger.baseLogger = baseLogger;
+
 module.exports = logger;
