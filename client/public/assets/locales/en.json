@@ -816,7 +816,11 @@
         "createFolder": "Create Folder",
         "upload": "Upload File",
         "edit": "Edit",
-        "bigFileConfirm": "This file is {{size}} MB large. Are you sure you want to edit it?"
+        "bigFileConfirm": "This file is {{size}} MB large. Are you sure you want to edit it?",
+        "selectAll": "Select All",
+        "insertSnippet": "Insert Snippet",
+        "sendCtrlC": "Send Ctrl+C",
+        "clearTerminal": "Clear Terminal"
       }
     },
     "aiAssistant": {

@@ -1,5 +1,6 @@
 import { useSnippets } from "@/common/contexts/SnippetContext.jsx";
 import { useState, useRef, useEffect } from "react";
+import { createPortal } from "react-dom";
 import "./styles.sass";
 import { mdiClose, mdiMagnify } from "@mdi/js";
 import Icon from "@mdi/react";
@@ -40,7 +41,7 @@ export const SnippetsMenu = ({ onSelect, onClose, visible }) => {
 
     const filtered = filteredSnippets();
 
-    return (
+    const menu = (
         <div className="snippets-menu-overlay" onClick={onClose}>
             <div onClick={(e) => e.stopPropagation()}>
                 <div className="snippets-menu snippets-menu-popover">
@@ -80,4 +81,6 @@ export const SnippetsMenu = ({ onSelect, onClose, visible }) => {
             </div>
         </div>
     );
+
+    return createPortal(menu, document.body);
 };
