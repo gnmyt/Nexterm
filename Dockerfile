@@ -46,6 +46,7 @@ RUN apk add --no-cache \
     && rm -rf /var/cache/apk/*
 
 ENV NODE_ENV=production
+ENV LOG_LEVEL=system
 
 WORKDIR /app
 
