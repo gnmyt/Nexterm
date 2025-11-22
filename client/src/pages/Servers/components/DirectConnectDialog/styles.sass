@@ -3,26 +3,26 @@
 .direct-connect-dialog
   display: flex
   flex-direction: column
-  gap: 20px
-  padding: 20px 24px 24px 24px
+  gap: 1rem
   width: 420px
   max-width: 90vw
 
   .direct-connect-header
     h2
       margin: 0
-      font-size: 1.5rem
+      font-size: 1.3rem
+      font-weight: 700
       color: colors.$white
 
   .direct-connect-content
     display: flex
     flex-direction: column
-    gap: 16px
+    gap: 0.5rem
 
     .identity-section
       display: flex
       flex-direction: column
-      gap: 16px
+      gap: 1rem
 
       .name-row
         display: grid
@@ -32,12 +32,12 @@
       .form-group
         display: flex
         flex-direction: column
-        gap: 6px
+        gap: 0.3rem
 
         label
           font-size: 0.85rem
-          font-weight: 500
-          color: colors.$white
+          font-weight: 600
+          color: colors.$subtext
 
         .keyfile-status
           display: flex
@@ -53,4 +53,3 @@
 
   .direct-connect-button
     width: 100%
-    margin-top: 8px
