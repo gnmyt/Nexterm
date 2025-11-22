@@ -1,4 +1,7 @@
+const logger = require("./logger");
+
 module.exports.createVNCToken = (hostname, port, username, password, keyboardLayout = "en-us-qwerty") => {
+    logger.verbose(`VNC token generated`, { hostname, port });
     return {
         connection: {
             type: "vnc",
@@ -17,6 +20,7 @@ module.exports.createVNCToken = (hostname, port, username, password, keyboardLay
 module.exports.createRDPToken = (hostname, port, username, password, keyboardLayout = "en-us-qwerty") => {
     let domain = "";
     if (username.includes("\\")) [domain, username] = username.split("\\");
+    logger.verbose(`RDP token generated`, { hostname, port, domain });
     return {
         connection: {
             type: "rdp",

@@ -1,6 +1,7 @@
 const Entry = require("../models/Entry");
 const { checkServerStatus } = require("../hooks/status/portHook");
 const { checkPVEStatus } = require("../hooks/status/pveHook");
+const logger = require("./logger");
 
 let statusCheckInterval = null;
 let isRunning = false;
@@ -55,7 +56,7 @@ const listAllServers = async () => {
 
         return entries;
     } catch (error) {
-        console.error("Error fetching entries for status check:", error.message);
+        logger.error(`Error fetching entries for status check`, { error: error.message });
         return [];
     }
 };
@@ -71,7 +72,7 @@ const updateStatuses = async (results) => {
         );
 
     } catch (error) {
-        console.error("Error updating entry statuses:", error.message);
+        logger.error(`Error updating entry statuses`, { error: error.message });
     }
 }
 
@@ -99,7 +100,7 @@ const runStatusCheck = async () => {
 
         await updateStatuses(allResults);
     } catch (error) {
-        console.error("Error in status check cycle:", error.message);
+        logger.error(`Error in status check cycle`, { error: error.message });
     } finally {
         isRunning = false;
     }

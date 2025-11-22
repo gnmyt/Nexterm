@@ -1,6 +1,7 @@
 const sshd = require("ssh2");
 const { getIdentityCredentials } = require("../controllers/identity");
 const { establishJumpHosts, buildSSHOptions, forwardToTarget } = require("./jumpHostHelper");
+const logger = require("./logger");
 
 const setupKeyboardInteractive = (ssh, ws) => {
     ssh.on("keyboard-interactive", (name, instructions, lang, prompts, finish) => {
@@ -31,6 +32,7 @@ const createSSHConnection = async (entry, identity, ws) => {
 
 const createSSHConnectionWithJumpHosts = async (targetEntry, targetIdentity, targetCredentials, jumpHostIds, ws) => {
     try {
+        logger.verbose(`Establishing SSH connection with jump hosts`, { entryId: targetEntry.id, jumpHostCount: jumpHostIds.length });
         const connections = await establishJumpHosts(jumpHostIds);
         const targetSsh = new sshd.Client();
         
@@ -41,8 +43,10 @@ const createSSHConnectionWithJumpHosts = async (targetEntry, targetIdentity, tar
 
         targetSsh._jumpConnections = connections;
         targetSsh.connect(targetOptions);
+        logger.verbose(`SSH connection established via jump hosts`, { entryId: targetEntry.id, jumpHostCount: connections.length });
         return targetSsh;
     } catch (error) {
+        logger.error(`Failed to establish SSH connection via jump hosts`, { entryId: targetEntry.id, error: error.message });
         throw error;
     }
 };
