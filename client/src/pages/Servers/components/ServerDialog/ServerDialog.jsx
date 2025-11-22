@@ -11,6 +11,8 @@ import { IdentityContext } from "@/common/contexts/IdentityContext.jsx";
 import { useToast } from "@/common/contexts/ToastContext.jsx";
 import { useTranslation } from "react-i18next";
 import { getAvailableTabs, validateRequiredFields, getFieldConfig } from "./utils/fieldConfig.js";
+import Icon from "@mdi/react";
+import { mdiServerNetwork, mdiConsole, mdiMonitor, mdiDesktopClassic, mdiServer } from "@mdi/js";
 
 export const ServerDialog = ({ open, onClose, currentFolderId, currentOrganizationId, editServerId, initialProtocol }) => {
     const { t } = useTranslation();
@@ -18,6 +20,18 @@ export const ServerDialog = ({ open, onClose, currentFolderId, currentOrganizati
     const { loadServers } = useContext(ServerContext);
     const { loadIdentities } = useContext(IdentityContext);
     const { sendToast } = useToast();
+
+    const getProtocolIcon = (protocol, type) => {
+        if (type?.startsWith('pve')) return mdiServerNetwork;
+        
+        const iconMap = {
+            ssh: mdiConsole,
+            telnet: mdiConsole,
+            rdp: mdiMonitor,
+            vnc: mdiDesktopClassic,
+        };
+        return iconMap[protocol] || mdiServerNetwork;
+    };
 
     const [name, setName] = useState("");
     const [icon, setIcon] = useState(null);
@@ -36,20 +50,34 @@ export const ServerDialog = ({ open, onClose, currentFolderId, currentOrganizati
     const normalizeIdentity = (identity) => {
         const normalized = { ...identity };
         if (normalized.username === "") normalized.username = undefined;
-        if (normalized.passphrase === "") normalized.passphrase = undefined;
-        if (normalized.password === "") normalized.password = undefined;
+
+        if (!identity.passwordTouched && normalized.password === "") normalized.password = undefined;
+        if (!identity.passphraseTouched && normalized.passphrase === "") normalized.passphrase = undefined;
+        
         if (normalized.sshKey === null) normalized.sshKey = undefined;
         return normalized;
     };
 
-    const buildIdentityPayload = (identity) => ({
-        name: identity.name,
-        username: identity.username,
-        type: identity.authType,
-        password: identity.password,
-        sshKey: identity.sshKey,
-        passphrase: identity.passphrase,
-    });
+    const buildIdentityPayload = (identity) => {
+        const payload = {
+            name: identity.name,
+            username: identity.username,
+            type: identity.authType,
+        };
+        
+        if (identity.authType === 'password') {
+            if (identity.passwordTouched || identity.password) {
+                payload.password = identity.password;
+            }
+        } else {
+            payload.sshKey = identity.sshKey;
+            if (identity.passphraseTouched || identity.passphrase) {
+                payload.passphrase = identity.passphrase;
+            }
+        }
+        
+        return payload;
+    };
 
     const updateIdentities = async () => {
         const allIdentityIds = new Set();
@@ -241,19 +269,34 @@ export const ServerDialog = ({ open, onClose, currentFolderId, currentOrganizati
     return (
         <DialogProvider open={open} onClose={onClose}>
             <div className="server-dialog">
-                <div className="server-dialog-title">
-                    <h2>
-                        {editServerId 
-                            ? t("servers.dialog.editServer") 
-                            : config.protocol 
-                                ? t("servers.dialog.addProtocolServer", { protocol: config.protocol.toUpperCase() })
-                                : t("servers.dialog.addServer")
-                        }
-                    </h2>
+                <div className="server-dialog-header">
+                    <div className="dialog-icon">
+                        <Icon path={getProtocolIcon(config.protocol, entryType)} size={1} />
+                    </div>
+                    <div className="server-dialog-title">
+                        <h2>
+                            {editServerId 
+                                ? t("servers.dialog.editServer") 
+                                : config.protocol 
+                                    ? t("servers.dialog.addProtocolServer", { protocol: config.protocol.toUpperCase() })
+                                    : t("servers.dialog.addServer")
+                            }
+                        </h2>
+                        {entryType === "server" && config.protocol && (
+                            <span className="protocol-badge">{config.protocol.toUpperCase()}</span>
+                        )}
+                        {entryType?.startsWith('pve') && (
+                            <span className="protocol-badge">
+                                {entryType === 'pve-shell' ? 'PVE SHELL' : 
+                                 entryType === 'pve-lxc' ? 'PVE LXC' : 
+                                 entryType === 'pve-qemu' ? 'PVE QEMU' : 'PVE'}
+                            </span>
+                        )}
+                    </div>
                 </div>
 
                 <div className="server-dialog-tabs">
-                    {tabs.map((tab, index) => (
+                    {tabs.length > 1 && tabs.map((tab, index) => (
                         <div key={index} className={`tabs-item ${activeTab === index ? "tabs-item-active" : ""}`}
                              onClick={() => setActiveTab(index)}>
                             <h3>{t(tab.label)}</h3>
