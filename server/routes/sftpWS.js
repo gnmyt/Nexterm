@@ -2,13 +2,16 @@ const wsAuth = require("../middlewares/wsAuth");
 const { createAuditLog, AUDIT_ACTIONS, RESOURCE_TYPES, updateAuditLogWithSessionDuration } = require("../controllers/audit");
 const { deleteFolderRecursive, searchDirectories, OPERATIONS } = require("../utils/sftpHelpers");
 const { createSSHConnection } = require("../utils/sshConnection");
+const SessionManager = require("../lib/SessionManager");
 const logger = require("../utils/logger");
 
 module.exports = async (ws, req) => {
     const context = await wsAuth(ws, req);
     if (!context) return;
 
-    const { entry, identity, user, connectionReason, ipAddress, userAgent } = context;
+    const { entry, identity, user, connectionReason, ipAddress, userAgent, serverSession } = context;
+
+    if (serverSession) SessionManager.resume(serverSession.sessionId);
 
     try {
         const connectionStartTime = Date.now();
@@ -36,6 +39,7 @@ module.exports = async (ws, req) => {
             await updateAuditLogWithSessionDuration(sshAuditLogId, connectionStartTime);
             ssh.end();
             if (ssh._jumpConnections) ssh._jumpConnections.forEach(conn => conn.ssh.end());
+            if (serverSession) SessionManager.remove(serverSession.sessionId);
         });
 
         logger.system(`Authorized SFTP connection to ${entry.config.ip} with identity ${identity.name}`, {
@@ -45,6 +49,8 @@ module.exports = async (ws, req) => {
         });
 
         ssh.on("ready", async () => {
+            if (serverSession) SessionManager.setConnection(serverSession.sessionId, { ssh, sshAuditLogId });
+
             const sftpAuditLogId = await createAuditLog({
                 accountId: user.id,
                 organizationId: entry.organizationId,

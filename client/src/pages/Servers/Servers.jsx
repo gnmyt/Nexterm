@@ -52,7 +52,8 @@ export const Servers = () => {
                     connectionReason: session.connectionReason,
                     isHibernated: session.isHibernated,
                     createdAt: session.createdAt,
-                    lastActivity: session.lastActivity
+                    lastActivity: session.lastActivity,
+                    type: session.configuration.type || undefined
                 };
             }).filter(s => s !== null);
 
@@ -119,22 +120,33 @@ export const Servers = () => {
     };
 
     const openSFTP = async (server, identity) => {
-        connectToServer(server, identity, "sftp")
+        const serverObj = getServerById(server);
+        const requiresReason = checkConnectionReasonRequired(server, servers);
+        
+        if (requiresReason) {
+            setPendingConnection({ server: serverObj, identity, type: "sftp" });
+            setConnectionReasonDialogOpen(true);
+            return;
+        }
+        
+        performConnection(serverObj, identity, null, "sftp");
     };
 
-    const performConnection = async (server, identity, connectionReason = null) => {
+    const performConnection = async (server, identity, connectionReason = null, type = null) => {
         try {
             const session = await postRequest("/connections", {
                 entryId: server.id,
                 identityId: identity?.id,
-                connectionReason
+                connectionReason,
+                type
             });
 
             const sessionData = {
                 server,
                 identity: identity?.id,
                 id: session.sessionId,
-                connectionReason
+                connectionReason,
+                type: type || undefined
             };
 
             setActiveSessions(prevSessions => [...prevSessions, sessionData]);
@@ -156,7 +168,8 @@ export const Servers = () => {
 
     const handleConnectionReasonProvided = (reason) => {
         if (pendingConnection) {
-            performConnection(pendingConnection.server, pendingConnection.identity, reason);
+            performConnection(pendingConnection.server, pendingConnection.identity,
+                reason, pendingConnection.type || null);
             setPendingConnection(null);
         }
         setConnectionReasonDialogOpen(false);
@@ -273,7 +286,7 @@ export const Servers = () => {
                 isOpen={connectionReasonDialogOpen}
                 onClose={handleConnectionReasonCanceled}
                 onConnect={handleConnectionReasonProvided}
-                serverName={pendingConnection ? (getServerById(pendingConnection.server)?.name || "Unknown Server") : ""}
+                serverName={pendingConnection?.server?.name || "Unknown Server"}
             />
             <ServerList setServerDialogOpen={(protocol = null) => {
                 setServerDialogProtocol(protocol);

@@ -366,7 +366,9 @@ export const ViewContainer = ({ activeSessions, activeSessionId, setActiveSessio
     };
 
     const renderRenderer = (session) => {
-        switch (session.server.renderer) {
+        const renderer = session.type || session.server.renderer;
+        
+        switch (renderer) {
             case "guac":
                 return <GuacamoleRenderer session={session} disconnectFromServer={disconnectFromServer}
                     registerGuacamoleRef={registerGuacamoleRef}
@@ -380,7 +382,7 @@ export const ViewContainer = ({ activeSessions, activeSessionId, setActiveSessio
             case "sftp":
                 return <FileRenderer session={session} disconnectFromServer={disconnectFromServer} />;
             default:
-                return <p>Unknown renderer: {session.server.renderer}</p>;
+                return <p>Unknown renderer: {renderer}</p>;
         }
     };
 
