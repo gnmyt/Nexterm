@@ -5,6 +5,8 @@ module.exports.createSessionValidation = Joi.object({
     identityId: Joi.number().allow(null).optional(),
     connectionReason: Joi.string().allow(null, '').optional(),
     type: Joi.string().allow(null).optional(),
+    tabId: Joi.string().allow(null).optional(),
+    browserId: Joi.string().allow(null).optional(),
     directIdentity: Joi.object({
         username: Joi.string().max(255).optional(),
         type: Joi.string().valid("password", "ssh").required(),
@@ -16,4 +18,9 @@ module.exports.createSessionValidation = Joi.object({
 
 module.exports.sessionIdValidation = Joi.object({
     id: Joi.string().uuid().required()
+});
+
+module.exports.resumeSessionValidation = Joi.object({
+    tabId: Joi.string().allow(null).optional(),
+    browserId: Joi.string().allow(null).optional()
 });

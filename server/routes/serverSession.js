@@ -1,6 +1,6 @@
 const { Router } = require("express");
 const { createSession, getSessions, hibernateSession, resumeSession, deleteSession } = require("../controllers/serverSession");
-const { createSessionValidation, sessionIdValidation } = require("../validations/serverSession");
+const { createSessionValidation, sessionIdValidation, resumeSessionValidation } = require("../validations/serverSession");
 const { validateSchema } = require("../utils/schema");
 
 const app = Router();
@@ -19,8 +19,8 @@ app.post("/", async (req, res) => {
     if (validateSchema(res, createSessionValidation, req.body)) return;
     
     try {
-        const { entryId, identityId, connectionReason, type, directIdentity } = req.body;
-        const result = await createSession(req.user.id, entryId, identityId, connectionReason, type, directIdentity);
+        const { entryId, identityId, connectionReason, type, directIdentity, tabId, browserId } = req.body;
+        const result = await createSession(req.user.id, entryId, identityId, connectionReason, type, directIdentity, tabId, browserId);
         
         if (result?.code) {
             return res.status(result.code).json({ error: result.message });
@@ -43,7 +43,8 @@ app.post("/", async (req, res) => {
  * @return {array} 200 - List of sessions
  */
 app.get("/", async (req, res) => {
-    res.json(await getSessions(req.user.id));
+    const { tabId, browserId } = req.query;
+    res.json(await getSessions(req.user.id, tabId, browserId));
 });
 
 /**
@@ -78,8 +79,10 @@ app.post("/:id/hibernate", async (req, res) => {
  */
 app.post("/:id/resume", async (req, res) => {
     if (validateSchema(res, sessionIdValidation, req.params)) return;
+    if (validateSchema(res, resumeSessionValidation, req.body)) return;
     
-    const result = await resumeSession(req.params.id);
+    const { tabId, browserId } = req.body;
+    const result = await resumeSession(req.params.id, tabId, browserId);
     if (result?.code) {
         return res.status(result.code).json({ error: result.message });
     }

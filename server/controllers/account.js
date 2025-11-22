@@ -97,6 +97,15 @@ module.exports.updateTOTP = async (id, status) => {
     await Account.update({ totpEnabled: status }, { where: { id } });
 };
 
+module.exports.updateSessionSync = async (id, sessionSync) => {
+    const account = await Account.findByPk(id);
+
+    if (account === null)
+        return { code: 102, message: "The provided account does not exist" };
+
+    await Account.update({ sessionSync }, { where: { id } });
+};
+
 module.exports.getFTSStatus = async () => {
     return await Account.count() === 0;
 }

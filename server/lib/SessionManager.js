@@ -10,7 +10,7 @@ class SessionManager {
         SessionManager.instance = this;
     }
 
-    create(accountId, entryId, configuration, connectionReason = null) {
+    create(accountId, entryId, configuration, connectionReason = null, tabId = null, browserId = null) {
         const sessionId = uuidv4();
         const session = {
             sessionId,
@@ -18,13 +18,15 @@ class SessionManager {
             entryId,
             configuration,
             connectionReason,
+            tabId,
+            browserId,
             isHibernated: false,
             createdAt: new Date(),
             lastActivity: new Date(),
             connection: null
         };
         this.sessions.push(session);
-        logger.info(`Session created`, { sessionId, accountId, entryId });
+        logger.info(`Session created`, { sessionId, accountId, entryId, tabId, browserId });
         return session;
     }
 
@@ -32,8 +34,25 @@ class SessionManager {
         return this.sessions.find(s => s.sessionId === sessionId);
     }
 
-    getAll(accountId) {
-        return this.sessions.filter(s => s.accountId === accountId);
+    getAll(accountId, tabId = undefined, browserId = undefined) {
+        const filtered = this.sessions.filter(s => {
+            if (s.accountId !== accountId) return false;
+            if (s.isHibernated) return true;
+            if (tabId !== undefined && s.tabId !== tabId) return false;
+            if (browserId !== undefined && s.browserId !== browserId) return false;
+            return true;
+        });
+        logger.info(`Getting sessions`, { 
+            accountId, 
+            tabId, 
+            browserId, 
+            totalSessions: this.sessions.length, 
+            accountSessions: this.sessions.filter(s => s.accountId === accountId).length,
+            filteredCount: filtered.length,
+            sessionTabIds: this.sessions.filter(s => s.accountId === accountId).map(s => s.tabId),
+            sessionBrowserIds: this.sessions.filter(s => s.accountId === accountId).map(s => s.browserId)
+        });
+        return filtered;
     }
 
     setConnection(sessionId, connection) {
@@ -59,12 +78,14 @@ class SessionManager {
         return false;
     }
 
-    resume(sessionId) {
+    resume(sessionId, tabId = null, browserId = null) {
         const session = this.get(sessionId);
         if (session) {
             session.isHibernated = false;
             session.lastActivity = new Date();
-            logger.info(`Session resumed`, { sessionId });
+            if (tabId !== null) session.tabId = tabId;
+            if (browserId !== null) session.browserId = browserId;
+            logger.info(`Session resumed`, { sessionId, tabId, browserId });
             return true;
         }
         return false;
@@ -95,6 +116,33 @@ class SessionManager {
             session.lastActivity = new Date();
         }
     }
+
+    cleanupOldSessions() {
+        const sixHoursAgo = new Date(Date.now() - 6 * 60 * 60 * 1000);
+        const sessionsToRemove = this.sessions.filter(
+            s => !s.isHibernated && new Date(s.lastActivity) < sixHoursAgo
+        );
+        sessionsToRemove.forEach(s => {
+            logger.info('Removing old session', { 
+                sessionId: s.sessionId, 
+                accountId: s.accountId, 
+                lastActivity: s.lastActivity 
+            });
+            this.remove(s.sessionId);
+        });
+        return sessionsToRemove.length;
+    }
+
+    startCleanupInterval() {
+        setInterval(() => {
+            const removed = this.cleanupOldSessions();
+            if (removed > 0) {
+                logger.info(`Cleaned up ${removed} old sessions`);
+            }
+        }, 30 * 60 * 1000);
+    }
 }
 
-module.exports = new SessionManager();
+const instance = new SessionManager();
+instance.startCleanupInterval();
+module.exports = instance;

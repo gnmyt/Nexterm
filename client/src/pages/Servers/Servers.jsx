@@ -41,9 +41,31 @@ export const Servers = () => {
 
     const [hibernatedSessions, setHibernatedSessions] = useState([]);
 
+    const getTabId = () => {
+        let tabId = sessionStorage.getItem("nexterm_tab_id");
+        if (!tabId) {
+            tabId = `tab_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+            sessionStorage.setItem("nexterm_tab_id", tabId);
+        }
+        return tabId;
+    };
+
+    const getBrowserId = () => {
+        let browserId = localStorage.getItem("nexterm_browser_id");
+        if (!browserId) {
+            browserId = `browser_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+            localStorage.setItem("nexterm_browser_id", browserId);
+        }
+        return browserId;
+    };
+
     const fetchSessions = async () => {
         try {
-            const sessions = await getRequest("/connections");
+            const params = new URLSearchParams({
+                tabId: getTabId(),
+                browserId: getBrowserId()
+            });
+            const sessions = await getRequest(`/connections?${params.toString()}`);
             const mappedSessions = sessions.map(session => {
                 const server = getServerById(session.entryId);
                 if (!server) return null;
@@ -141,7 +163,9 @@ export const Servers = () => {
                 entryId: server.id,
                 identityId: identity?.id,
                 connectionReason,
-                type
+                type,
+                tabId: getTabId(),
+                browserId: getBrowserId()
             };
 
             if (directIdentity) payload.directIdentity = directIdentity;
@@ -164,7 +188,10 @@ export const Servers = () => {
 
     const resumeConnection = async (sessionId) => {
         try {
-            await postRequest(`/connections/${sessionId}/resume`);
+            await postRequest(`/connections/${sessionId}/resume`, {
+                tabId: getTabId(),
+                browserId: getBrowserId()
+            });
             setActiveSessionId(sessionId);
             await fetchSessions();
         } catch (error) {

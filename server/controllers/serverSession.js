@@ -1,10 +1,11 @@
 const SessionManager = require("../lib/SessionManager");
 const Entry = require("../models/Entry");
+const Account = require("../models/Account");
 const { validateEntryAccess } = require("./entry");
 const { getOrganizationAuditSettingsInternal } = require("./audit");
 const { resolveIdentity } = require("../utils/identityResolver");
 
-const createSession = async (accountId, entryId, identityId, connectionReason, type = null, directIdentity = null) => {
+const createSession = async (accountId, entryId, identityId, connectionReason, type = null, directIdentity = null, tabId = null, browserId = null) => {
     const entry = await Entry.findByPk(entryId);
     if (!entry) {
         return { code: 404, message: "Entry not found" };
@@ -39,13 +40,32 @@ const createSession = async (accountId, entryId, identityId, connectionReason, t
         directIdentity: directIdentity || null,
     };
 
-    const session = SessionManager.create(accountId, entryId, configuration, connectionReason);
+    const session = SessionManager.create(accountId, entryId, configuration, connectionReason, tabId, browserId);
     const { connection, ...safeSession } = session;
     return safeSession;
 };
 
-const getSessions = (accountId) => {
-    const sessions = SessionManager.getAll(accountId);
+const getSessions = async (accountId, tabId = null, browserId = null) => {
+    const account = await Account.findByPk(accountId);
+    if (!account) {
+        return [];
+    }
+
+    const sessionSync = account.sessionSync || 'same_browser';
+    const logger = require('../utils/logger');
+    logger.info('Getting sessions', { accountId, tabId, browserId, sessionSync });
+    
+    let filterTabId = undefined;
+    let filterBrowserId = undefined;
+
+    if (sessionSync === 'same_tab') {
+        filterTabId = tabId;
+    } else if (sessionSync === 'same_browser') {
+        filterBrowserId = browserId;
+    }
+
+    const sessions = SessionManager.getAll(accountId, filterTabId, filterBrowserId);
+    logger.info('Sessions found', { count: sessions.length });
     return sessions.map(session => {
         const { connection, ...safeSession } = session;
         return safeSession;
@@ -60,8 +80,8 @@ const hibernateSession = (sessionId) => {
     return { code: 404, message: "Session not found" };
 };
 
-const resumeSession = (sessionId) => {
-    const success = SessionManager.resume(sessionId);
+const resumeSession = (sessionId, tabId = null, browserId = null) => {
+    const success = SessionManager.resume(sessionId, tabId, browserId);
     if (success) {
         return { message: "Session resumed" };
     }
