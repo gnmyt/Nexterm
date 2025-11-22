@@ -150,7 +150,7 @@ const GuacamoleRenderer = ({ session, disconnectFromServer, registerGuacamoleRef
         displayElement.style.imageRendering = "crisp-edges";
         ref.current.appendChild(displayElement);
 
-        const connectionParams = `sessionToken=${sessionToken}&entryId=${session.server.id}&identity=${session.identity}`;
+        const connectionParams = `sessionToken=${sessionToken}&entryId=${session.server.id}&identity=${session.identity}&sessionId=${session.id}`;
         const connectionString = session.connectionReason
             ? `${connectionParams}&connectionReason=${encodeURIComponent(session.connectionReason)}`
             : connectionParams;
@@ -202,6 +202,7 @@ const GuacamoleRenderer = ({ session, disconnectFromServer, registerGuacamoleRef
             if (ref.current) {
                 ref.current.removeEventListener("keydown", handleKeyDown, true);
             }
+            client.onstatechange = null;
             client.disconnect();
             clientRef.current = null;
         };
@@ -237,11 +238,11 @@ const GuacamoleRenderer = ({ session, disconnectFromServer, registerGuacamoleRef
 
     return (
         <div className="guac-container" ref={ref} tabIndex="0"
-             onClick={() => ref.current.focus()}
-             style={{
-                 position: "relative", width: "100%", height: "100%", outline: "none",
-                 overflow: "hidden", backgroundColor: "#000", cursor: "none",
-             }}>
+            onClick={() => ref.current.focus()}
+            style={{
+                position: "relative", width: "100%", height: "100%", outline: "none",
+                overflow: "hidden", backgroundColor: "#000", cursor: "none",
+            }}>
         </div>
     );
 };

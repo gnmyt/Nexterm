@@ -118,8 +118,10 @@ const handlePVEAction = async (req, res, action, actionName) => {
 
     const type = entry.type === "pve-qemu" ? "qemu" : "lxc";
 
+    const server = { ...integration.config, ...entry.config, password: integration.password };
+
     try {
-        const status = await action(integration, vmId, type);
+        const status = await action(server, vmId, type);
         if (status?.code) return res.json(status);
     } catch (e) {
         return res.json({ code: 500, message: `Server could not get ${actionName}` });

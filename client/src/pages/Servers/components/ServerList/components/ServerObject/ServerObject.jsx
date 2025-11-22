@@ -1,4 +1,5 @@
 import Icon from "@mdi/react";
+import { mdiSleep } from "@mdi/js";
 import "./styles.sass";
 import { ServerContext } from "@/common/contexts/ServerContext.jsx";
 import { useContext, useRef, useState } from "react";
@@ -7,7 +8,7 @@ import { patchRequest } from "@/common/utils/RequestUtil.js";
 import { DropIndicator } from "../DropIndicator";
 import { loadIcon } from "@/pages/Servers/utils/iconMapping.js";
 
-export const ServerObject = ({ id, name, position, folderId, organizationId, nestedLevel, icon, type, connectToServer, status, tags = [] }) => {
+export const ServerObject = ({ id, name, position, folderId, organizationId, nestedLevel, icon, type, connectToServer, status, tags = [], hibernatedSessionCount = 0 }) => {
     const { loadServers, getServerById } = useContext(ServerContext);
     const [dropPlacement, setDropPlacement] = useState(null);
     const elementRef = useRef(null);
@@ -83,6 +84,12 @@ export const ServerObject = ({ id, name, position, folderId, organizationId, nes
                 <Icon path={loadIcon(icon)} />
             </div>
             <p className="truncate-text">{name}</p>
+            {hibernatedSessionCount > 0 && (
+                <div className="hibernation-indicator" title={`${hibernatedSessionCount} hibernated session${hibernatedSessionCount > 1 ? 's' : ''}`}>
+                    <Icon path={mdiSleep} />
+                    <span>{hibernatedSessionCount}</span>
+                </div>
+            )}
             {tags && tags.length > 0 && (
                 <div className="tag-circles">
                     {tags.map(tag => (

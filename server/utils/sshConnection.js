@@ -15,7 +15,13 @@ const setupKeyboardInteractive = (ssh, ws) => {
 };
 
 const createSSHConnection = async (entry, identity, ws) => {
-    const credentials = await getIdentityCredentials(identity.id);
+    let credentials;
+    if (identity.isDirect && identity.directCredentials) {
+        credentials = identity.directCredentials;
+    } else {
+        credentials = await getIdentityCredentials(identity.id);
+    }
+    
     const jumpHostIds = entry.config?.jumpHosts || [];
     
     if (jumpHostIds.length > 0) {

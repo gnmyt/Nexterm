@@ -3,7 +3,7 @@ import ServerEntries from "./ServerEntries.jsx";
 import { useState } from "react";
 import { getFolderState, setFolderState } from "@/common/utils/folderState";
 
-const CollapsibleFolder = ({ id, name, entries, nestedLevel, renameState, setRenameStateId, connectToServer, organizationId, folderType }) => {
+const CollapsibleFolder = ({ id, name, entries, nestedLevel, renameState, setRenameStateId, connectToServer, organizationId, folderType, hibernatedSessions = [] }) => {
     const [isOpen, setIsOpen] = useState(() => getFolderState(id, true));
     
     const toggleFolder = () => {
@@ -18,7 +18,7 @@ const CollapsibleFolder = ({ id, name, entries, nestedLevel, renameState, setRen
                 isOpen={isOpen} renameState={renameState} setRenameStateId={setRenameStateId} organizationId={organizationId} folderType={folderType} />
             {isOpen && (
                 <ServerEntries entries={entries} nestedLevel={nestedLevel + 1} setRenameStateId={setRenameStateId} folderId={id}
-                    organizationId={organizationId} connectToServer={connectToServer} />
+                    organizationId={organizationId} connectToServer={connectToServer} hibernatedSessions={hibernatedSessions} />
             )}
         </>
     );

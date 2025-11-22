@@ -12,7 +12,12 @@ module.exports = async (ws, req) => {
     const context = await wsAuth(ws, req);
     if (!context) return;
 
-    const { entry, integration, identity, user, containerId, connectionReason, ipAddress, userAgent } = context;
+    const { entry, integration, identity, user, containerId, connectionReason, ipAddress, userAgent, serverSession } = context;
+
+    if (serverSession) {
+        const SessionManager = require("../lib/SessionManager");
+        SessionManager.resume(serverSession.sessionId);
+    }
 
     try {
         let auditLogId = null;
@@ -33,14 +38,14 @@ module.exports = async (ws, req) => {
             });
 
             auditLogId = await createAuditLog({
-                    accountId: user.id,
-                    organizationId: entry.organizationId,
-                    action: AUDIT_ACTIONS.SSH_CONNECT,
-                    resource: RESOURCE_TYPES.ENTRY,
-                    resourceId: entry.id,
-                    details: { connectionReason },
-                    ipAddress,
-                    userAgent,
+                accountId: user.id,
+                organizationId: entry.organizationId,
+                action: AUDIT_ACTIONS.SSH_CONNECT,
+                resource: RESOURCE_TYPES.ENTRY,
+                resourceId: entry.id,
+                details: { connectionReason },
+                ipAddress,
+                userAgent,
             });
 
             logger.verbose(`Creating SSH connection`, {
@@ -65,7 +70,7 @@ module.exports = async (ws, req) => {
                 reason: connectionReason || 'none'
             });
 
-            hookContext = { ssh, auditLogId };
+            hookContext = { ssh, auditLogId, serverSession };
             await sshHook(ws, hookContext);
         } else if (isTelnet) {
             logger.verbose(`Initiating Telnet connection`, {
@@ -104,7 +109,7 @@ module.exports = async (ws, req) => {
                 reason: connectionReason || 'none'
             });
 
-            hookContext = { entry, auditLogId };
+            hookContext = { entry, auditLogId, serverSession };
             await telnetHook(ws, hookContext);
         } else if (isPveLxc) {
             const vmid = entry.config?.vmid ?? containerId;
@@ -139,7 +144,7 @@ module.exports = async (ws, req) => {
 
             const integrationCreds = await getIntegrationCredentials(integration.id);
             const server = { ...integration.config, ...entry.config, password: integrationCreds.password };
-            
+
             logger.verbose(`Creating PVE ticket`, {
                 server: server.ip,
                 port: server.port,
@@ -147,26 +152,26 @@ module.exports = async (ws, req) => {
             });
 
             const ticket = await createTicket(
-                { ip: server.ip, port: server.port }, 
-                server.username, 
+                { ip: server.ip, port: server.port },
+                server.username,
                 server.password
             );
-            
+
             logger.verbose(`Getting PVE node`, {
                 server: server.ip
             });
 
             const node = await getNodeForServer(server, ticket);
-            
+
             logger.verbose(`Opening LXC console`, {
                 node: node,
                 vmid: vmid
             });
 
             const vncTicket = await openLXCConsole(
-                { ip: server.ip, port: server.port }, 
-                node, 
-                vmid, 
+                { ip: server.ip, port: server.port },
+                node,
+                vmid,
                 ticket
             );
 
@@ -188,7 +193,7 @@ module.exports = async (ws, req) => {
                 reason: connectionReason || 'none'
             });
 
-            hookContext = { integration, entry, containerId: vmid, ticket, node, vncTicket, auditLogId };
+            hookContext = { integration, entry, containerId: vmid, ticket, node, vncTicket, auditLogId, serverSession };
             await pveLxcHook(ws, hookContext);
         } else {
             ws.close(4009, `Unsupported entry type for terminal: ${entry.type}`);

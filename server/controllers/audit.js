@@ -48,13 +48,26 @@ const getOrgAuditSettings = async (organizationId) => {
 
     const org = await Organization.findByPk(organizationId);
     const defaults = {
-        requireConnectionReason: false, enableFileOperationAudit: true, enableEntryConnectionAudit: true,
-        enableIdentityManagementAudit: true, enableEntryManagementAudit: true, enableFolderManagementAudit: true,
-        enableScriptExecutionAudit: true, enableAppInstallationAudit: true,
+        requireConnectionReason: false, 
+        enableFileOperationAudit: true, 
+        enableServerConnectionAudit: true,
+        enableIdentityManagementAudit: true, 
+        enableServerManagementAudit: true, 
+        enableFolderManagementAudit: true,
+        enableScriptExecutionAudit: true, 
+        enableAppInstallationAudit: true,
     };
 
     if (!org?.auditSettings) return defaults;
-    const settings = typeof org.auditSettings === "string" ? JSON.parse(org.auditSettings) : org.auditSettings;
+    
+    let settings;
+    try {
+        settings = typeof org.auditSettings === "string" ? JSON.parse(org.auditSettings) : org.auditSettings;
+    } catch (e) {
+        logger.error("Failed to parse audit settings", { organizationId, error: e.message });
+        return defaults;
+    }
+    
     return { ...defaults, ...settings };
 };
 
@@ -62,9 +75,9 @@ const shouldAudit = (action, settings) => {
     if (!settings) return true;
     const checks = [
         [action.startsWith("file."), settings.enableFileOperationAudit],
-        [action.startsWith("entry.") && !action.includes("create") && !action.includes("update") && !action.includes("delete"), settings.enableEntryConnectionAudit],
+        [action.startsWith("entry.") && !action.includes("create") && !action.includes("update") && !action.includes("delete"), settings.enableServerConnectionAudit],
         [action.startsWith("identity."), settings.enableIdentityManagementAudit],
-        [action.includes("entry.create") || action.includes("entry.update") || action.includes("entry.delete"), settings.enableEntryManagementAudit],
+        [action.includes("entry.create") || action.includes("entry.update") || action.includes("entry.delete"), settings.enableServerManagementAudit],
         [action.startsWith("folder_mgmt."), settings.enableFolderManagementAudit],
         [action.startsWith("script."), settings.enableScriptExecutionAudit],
         [action.startsWith("app."), settings.enableAppInstallationAudit],

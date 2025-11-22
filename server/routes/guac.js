@@ -6,12 +6,14 @@ const { getIdentityCredentials } = require("../controllers/identity");
 const { getIntegrationCredentials } = require("../controllers/integration");
 const { createVNCToken, createRDPToken } = require("../utils/tokenGenerator");
 const logger = require("../utils/logger");
+const SessionManager = require("../lib/SessionManager");
 
 module.exports = async (ws, req) => {
     const context = await wsAuth(ws, req);
     if (!context) return;
 
-    const { entry, integration, identity, user, connectionReason, ipAddress, userAgent } = context;
+    const { entry, integration, identity, user, connectionReason, ipAddress, userAgent, serverSession } = context;
+    if (serverSession) SessionManager.resume(serverSession.sessionId);
 
     try {
         let connectionConfig = null;
@@ -31,7 +33,12 @@ module.exports = async (ws, req) => {
                 user: user.username,
             });
 
-            const credentials = await getIdentityCredentials(identity.id);
+            let credentials;
+            if (identity.isDirect && identity.directCredentials) {
+                credentials = identity.directCredentials;
+            } else {
+                credentials = await getIdentityCredentials(identity.id);
+            }
 
             logger.verbose(`Retrieved identity credentials`, {
                 identityId: identity.id,
@@ -176,6 +183,7 @@ module.exports = async (ws, req) => {
             connectionConfig.ipAddress = ipAddress;
             connectionConfig.userAgent = userAgent;
             connectionConfig.connectionReason = connectionReason;
+            connectionConfig.serverSession = serverSession;
         }
 
         await guacamoleHook(ws, { connectionConfig });

@@ -2,21 +2,16 @@ const Session = require("../models/Session");
 const Account = require("../models/Account");
 const Entry = require("../models/Entry");
 const Integration = require("../models/Integration");
-const EntryIdentity = require("../models/EntryIdentity");
-const Identity = require("../models/Identity");
+const SessionManager = require("../lib/SessionManager");
 const { validateEntryAccess } = require("../controllers/entry");
 const { getOrganizationAuditSettingsInternal } = require("../controllers/audit");
+const { resolveIdentity } = require("../utils/identityResolver");
 
 const authenticateWebSocket = async (ws, query) => {
-    const { sessionToken, entryId } = query;
+    const { sessionToken, entryId, sessionId } = query;
 
     if (!sessionToken) {
         ws.close(4001, "You need to provide the token in the 'sessionToken' parameter");
-        return null;
-    }
-
-    if (!entryId) {
-        ws.close(4002, "You need to provide the entryId in the 'entryId' parameter");
         return null;
     }
 
@@ -34,7 +29,29 @@ const authenticateWebSocket = async (ws, query) => {
         return null;
     }
 
-    const entry = await Entry.findByPk(entryId);
+    let targetEntryId = entryId;
+    let serverSession = null;
+
+    if (sessionId) {
+        serverSession = SessionManager.get(sessionId);
+        if (!serverSession) {
+            ws.close(4007, "Invalid session ID");
+            return null;
+        }
+        if (serverSession.accountId !== user.id) {
+            ws.close(4003, "Unauthorized session access");
+            return null;
+        }
+        targetEntryId = serverSession.entryId;
+        SessionManager.updateActivity(sessionId);
+    }
+
+    if (!targetEntryId) {
+        ws.close(4002, "You need to provide the entryId or sessionId");
+        return null;
+    }
+
+    const entry = await Entry.findByPk(targetEntryId);
     if (!entry) {
         ws.close(4005, "Entry not found");
         return null;
@@ -46,15 +63,22 @@ const authenticateWebSocket = async (ws, query) => {
         return null;
     }
 
-    return { user, entry, session };
+    return { user, entry, session, serverSession };
 }
 
 module.exports = async (ws, req) => {
     const baseAuth = await authenticateWebSocket(ws, req.query);
     if (!baseAuth) return null;
 
-    const { user, entry, session } = baseAuth;
-    const { identityId, connectionReason, containerId } = req.query;
+    const { user, entry, session, serverSession } = baseAuth;
+    let { identityId, connectionReason, containerId } = req.query;
+    let directIdentity = null;
+
+    if (serverSession) {
+        if (serverSession.configuration?.identityId) identityId = serverSession.configuration.identityId;
+        if (serverSession.configuration?.directIdentity) directIdentity = serverSession.configuration.directIdentity;
+        if (serverSession.connectionReason) connectionReason = serverSession.connectionReason;
+    }
 
     const integration = entry.integrationId ? await Integration.findByPk(entry.integrationId) : null;
 
@@ -66,23 +90,10 @@ module.exports = async (ws, req) => {
         }
     }
 
-    let identity = null;
-    const isPveEntry = entry.type?.startsWith('pve-');
-    const isTelnet = entry.type === 'telnet' || (entry.type === 'server' && entry.config?.protocol === 'telnet');
-    
-    if (identityId) {
-        identity = await Identity.findByPk(identityId);
-    } else {
-        const entryIdentities = await EntryIdentity.findAll({ 
-            where: { entryId: entry.id }, 
-            order: [['isDefault', 'DESC']] 
-        });
-        if (entryIdentities.length > 0) {
-            identity = await Identity.findByPk(entryIdentities[0].identityId);
-        }
-    }
+    const result = await resolveIdentity(entry, identityId, directIdentity);
+    const identity = result?.identity !== undefined ? result.identity : result;
 
-    if (!identity && !isPveEntry && !isTelnet) {
+    if (result.requiresIdentity && !identity) {
         ws.close(4006, "Identity not found");
         return null;
     }
@@ -93,6 +104,7 @@ module.exports = async (ws, req) => {
         identity,
         user,
         session,
+        serverSession,
         containerId: containerId || "0",
         connectionReason: connectionReason || null,
         ipAddress: req.ip || req.socket?.remoteAddress || 'unknown',

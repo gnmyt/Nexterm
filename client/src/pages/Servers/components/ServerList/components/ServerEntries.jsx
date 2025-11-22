@@ -2,7 +2,7 @@ import ServerObject from "@/pages/Servers/components/ServerList/components/Serve
 import CollapsibleFolder from "./CollapsibleFolder.jsx";
 import OrganizationFolder from "./OrganizationFolder";
 
-const ServerEntries = ({ entries, nestedLevel, setRenameStateId, connectToServer, folderId, organizationId }) => {
+const ServerEntries = ({ entries, nestedLevel, setRenameStateId, connectToServer, folderId, organizationId, hibernatedSessions = [] }) => {
     return (
         <>
             {entries.map(entry => {
@@ -16,6 +16,7 @@ const ServerEntries = ({ entries, nestedLevel, setRenameStateId, connectToServer
                             nestedLevel={nestedLevel}
                             connectToServer={connectToServer}
                             setRenameStateId={setRenameStateId}
+                            hibernatedSessions={hibernatedSessions}
                         />
                     );
                 } else if (entry.type === "folder") {
@@ -31,9 +32,11 @@ const ServerEntries = ({ entries, nestedLevel, setRenameStateId, connectToServer
                             organizationId={organizationId}
                             folderType={entry.folderType}
                             connectToServer={connectToServer}
+                            hibernatedSessions={hibernatedSessions}
                         />
                     );
                 } else if (entry.type === "server" || entry.type.startsWith("pve-")) {
+                    const hibernatedCount = hibernatedSessions.filter(s => s.server.id === entry.id).length;
                     return (
                         <ServerObject
                             id={entry.id}
@@ -48,6 +51,7 @@ const ServerEntries = ({ entries, nestedLevel, setRenameStateId, connectToServer
                             status={entry.status}
                             tags={entry.tags}
                             connectToServer={connectToServer}
+                            hibernatedSessionCount={hibernatedCount}
                         />
                     );
                 }
