@@ -1,4 +1,5 @@
 const { isConnectionReasonRequired } = require("../controllers/audit");
+const logger = require("../utils/logger");
 const Entry = require("../models/Entry");
 
 const checkConnectionReason = async (ws, req, next) => {
@@ -21,7 +22,7 @@ const checkConnectionReason = async (ws, req, next) => {
 
         next();
     } catch (error) {
-        console.error("Error checking connection reason requirement:", error);
+        logger.error("Error checking connection reason requirement", { serverId: req.query.serverId, error: error.message });
         next();
     }
 };
