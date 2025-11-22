@@ -6,10 +6,10 @@ const { validateSchema } = require("../utils/schema");
 const app = Router();
 
 /**
- * POST /server-sessions
- * @summary Create Server Session
- * @description Creates a new server session.
- * @tags Server Session
+ * POST /connections
+ * @summary Create Connection
+ * @description Creates a new server connection.
+ * @tags Connection
  * @produces application/json
  * @security BearerAuth
  * @param {object} request.body.required - Session creation details
@@ -34,10 +34,10 @@ app.post("/", async (req, res) => {
 });
 
 /**
- * GET /server-sessions
- * @summary Get Server Sessions
- * @description Retrieves all active server sessions for the user.
- * @tags Server Session
+ * GET /connections
+ * @summary Get Connections
+ * @description Retrieves all active server connections for the user.
+ * @tags Connection
  * @produces application/json
  * @security BearerAuth
  * @return {array} 200 - List of sessions
@@ -47,10 +47,10 @@ app.get("/", async (req, res) => {
 });
 
 /**
- * POST /server-sessions/{id}/hibernate
- * @summary Hibernate Session
- * @description Hibernates a server session.
- * @tags Server Session
+ * POST /connections/{id}/hibernate
+ * @summary Hibernate Connection
+ * @description Hibernates a server connection.
+ * @tags Connection
  * @produces application/json
  * @security BearerAuth
  * @param {string} id.path.required - Session ID
@@ -67,10 +67,10 @@ app.post("/:id/hibernate", async (req, res) => {
 });
 
 /**
- * POST /server-sessions/{id}/resume
- * @summary Resume Session
- * @description Resumes a hibernated server session.
- * @tags Server Session
+ * POST /connections/{id}/resume
+ * @summary Resume Connection
+ * @description Resumes a hibernated server connection.
+ * @tags Connection
  * @produces application/json
  * @security BearerAuth
  * @param {string} id.path.required - Session ID
@@ -87,10 +87,10 @@ app.post("/:id/resume", async (req, res) => {
 });
 
 /**
- * DELETE /server-sessions/{id}
- * @summary Delete Session
- * @description Deletes a server session.
- * @tags Server Session
+ * DELETE /connections/{id}
+ * @summary Delete Connection
+ * @description Deletes a server connection.
+ * @tags Connection
  * @produces application/json
  * @security BearerAuth
  * @param {string} id.path.required - Session ID

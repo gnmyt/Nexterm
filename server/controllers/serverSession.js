@@ -23,7 +23,7 @@ const createSession = async (accountId, entryId, identityId, connectionReason) =
     }
 
     const result = await resolveIdentity(entry, identityId);
-    const identity = result.identity || result;
+    const identity = result?.identity !== undefined ? result.identity : result;
 
     if (result.requiresIdentity && !identity) {
         return { code: 400, message: "Identity not found" };

@@ -45,6 +45,7 @@ app.use("/api/entries/sftp-download", require("./routes/sftpDownload"));
 app.use("/api/users", authenticate, isAdmin, require("./routes/users"));
 app.use("/api/ai", authenticate, require("./routes/ai"));
 app.use("/api/sessions", authenticate, require("./routes/session"));
+app.use("/api/connections", authenticate, require("./routes/serverSession"));
 app.use("/api/folders", authenticate, require("./routes/folder"));
 app.use("/api/entries", authenticate, require("./routes/entry"));
 app.use("/api/monitoring", authenticate, require("./routes/monitoring"));
