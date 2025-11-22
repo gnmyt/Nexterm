@@ -7,7 +7,7 @@ import { useDrop } from "react-dnd";
 import { patchRequest } from "@/common/utils/RequestUtil.js";
 import { ServerContext } from "@/common/contexts/ServerContext.jsx";
 
-const OrganizationFolder = ({ id, name, entries, nestedLevel, connectToServer, connectToPVEServer, setRenameStateId }) => {
+const OrganizationFolder = ({ id, name, entries, nestedLevel, connectToServer, connectToPVEServer, setRenameStateId, hibernatedSessions = [] }) => {
     const { loadServers } = useContext(ServerContext);
     const [isOpen, setIsOpen] = useState(() => getFolderState(id, true));
     
@@ -67,6 +67,7 @@ const OrganizationFolder = ({ id, name, entries, nestedLevel, connectToServer, c
                     organizationId={parseInt(orgId)}
                     connectToServer={connectToServer}
                     connectToPVEServer={connectToPVEServer}
+                    hibernatedSessions={hibernatedSessions}
                 />
             )}
         </>

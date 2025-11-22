@@ -28,6 +28,7 @@ import {
     mdiMonitor,
     mdiDesktopClassic,
     mdiCog,
+    mdiPlay,
 } from "@mdi/js";
 import { ContextMenu, ContextMenuItem, ContextMenuSeparator, useContextMenu } from "@/common/components/ContextMenu";
 import { useDrop, useDragLayer } from "react-dnd";
@@ -46,7 +47,7 @@ const flattenEntries = (entries, path = []) => {
 };
 
 const filterEntries = (entries, searchTerm, selectedTags = []) => {
-    const tagFilter = entry => selectedTags.length === 0 || 
+    const tagFilter = entry => selectedTags.length === 0 ||
         (entry.tags?.some(tag => selectedTags.includes(tag.id)));
 
     if (!searchTerm) {
@@ -77,7 +78,7 @@ const filterEntries = (entries, searchTerm, selectedTags = []) => {
         results = new Fuse(flatEntries, { ...fuseOptions, threshold: 0.2 }).search(searchTerm);
     }
 
-    const matchedEntries = results.map(r => r.item).filter(entry => 
+    const matchedEntries = results.map(r => r.item).filter(entry =>
         !(entry.type === "server" || entry.type.startsWith("pve-")) || tagFilter(entry)
     );
     const matchedIds = new Set(matchedEntries.map(item => item.id));
@@ -86,7 +87,7 @@ const filterEntries = (entries, searchTerm, selectedTags = []) => {
         const isContainer = entry.type === "folder" || entry.type === "organization";
         if (isContainer) {
             const filteredEntries = rebuildTree(entry.entries);
-            return filteredEntries.length > 0 || matchedIds.has(entry.id) 
+            return filteredEntries.length > 0 || matchedIds.has(entry.id)
                 ? { ...entry, entries: filteredEntries } : null;
         }
         return matchedIds.has(entry.id) ? entry : null;
@@ -105,15 +106,17 @@ const applyRenameState = (folderId) => (entry) => {
 };
 
 export const ServerList = ({
-                               setServerDialogOpen,
-                               setCurrentFolderId,
-                               setProxmoxDialogOpen,
-                               setSSHConfigImportDialogOpen,
-                               setEditServerId,
-                               connectToServer,
-                               openSFTP,
-                               setCurrentOrganizationId,
-                           }) => {
+    setServerDialogOpen,
+    setCurrentFolderId,
+    setProxmoxDialogOpen,
+    setSSHConfigImportDialogOpen,
+    setEditServerId,
+    connectToServer,
+    openSFTP,
+    setCurrentOrganizationId,
+    hibernatedSessions = [],
+    resumeSession
+}) => {
     const { t } = useTranslation();
     const { servers, loadServers, getServerById } = useContext(ServerContext);
     const { identities } = useContext(IdentityContext);
@@ -190,6 +193,24 @@ export const ServerList = ({
 
     const server = contextClickedId ? (contextClickedType === "server-object" || contextClickedType?.startsWith("pve-")) ? getServerById(contextClickedId) : null : null;
     const isOrgFolder = contextClickedId && contextClickedId.toString().startsWith("org-");
+
+    const hibernatedSessionsForServer = server ? hibernatedSessions.filter(s => s.server.id == server.id) : [];
+    
+    const formatSessionDate = (session) => {
+        if (!session || !session.createdAt) return '';
+        const date = new Date(session.createdAt);
+        const now = new Date();
+        const diffMs = now - date;
+        const diffMins = Math.floor(diffMs / 60000);
+        const diffHours = Math.floor(diffMs / 3600000);
+        const diffDays = Math.floor(diffMs / 86400000);
+        
+        if (diffMins < 1) return 'Just now';
+        if (diffMins < 60) return `${diffMins} min${diffMins > 1 ? 's' : ''} ago`;
+        if (diffHours < 24) return `${diffHours} hour${diffHours > 1 ? 's' : ''} ago`;
+        if (diffDays < 7) return `${diffDays} day${diffDays > 1 ? 's' : ''} ago`;
+        return date.toLocaleDateString();
+    };
 
     const createFolder = () => {
         const organizationId = isOrgFolder ? contextClickedId.toString().split("-")[1] : undefined;
@@ -420,15 +441,15 @@ export const ServerList = ({
                     )}
                     {servers && servers.length >= 1 && (
                         <div className={`servers${isOver ? " drop-zone-active" : ""}`}
-                             onContextMenu={handleContextMenu}
-                             ref={serversContainerRef}>
+                            onContextMenu={handleContextMenu}
+                            ref={serversContainerRef}>
                             <ServerEntries entries={renameStateServers} setRenameStateId={setRenameStateId}
-                                           nestedLevel={0} connectToServer={connectToServer} />
+                                nestedLevel={0} connectToServer={connectToServer} hibernatedSessions={hibernatedSessions} />
                         </div>
                     )}
                     {servers && servers.length === 0 && (
                         <div className={`no-servers${isOver ? " drop-zone-active" : ""}`}
-                             onContextMenu={handleContextMenu}>
+                            onContextMenu={handleContextMenu}>
                             <Icon path={mdiCursorDefaultClick} />
                             <p>Right-click to add a new server</p>
                         </div>
@@ -441,53 +462,53 @@ export const ServerList = ({
                         trigger={contextMenu.triggerRef}
                     >
                         {contextClickedType !== "server-object" && (
-                                <>
-                                    {(contextClickedType === null || contextClickedType === "folder-object" || isOrgFolder) && (
+                            <>
+                                {(contextClickedType === null || contextClickedType === "folder-object" || isOrgFolder) && (
+                                    <ContextMenuItem
+                                        icon={mdiPlusCircle}
+                                        label={t("servers.contextMenu.new")}
+                                    >
                                         <ContextMenuItem
-                                            icon={mdiPlusCircle}
-                                            label={t("servers.contextMenu.new")}
-                                        >
-                                            <ContextMenuItem
-                                                icon={mdiConsole}
-                                                label={t("servers.contextMenu.sshServer")}
-                                                onClick={() => createServer("ssh")}
-                                            />
-                                            <ContextMenuItem
-                                                icon={mdiConsole}
-                                                label={t("servers.contextMenu.telnetServer")}
-                                                onClick={() => createServer("telnet")}
-                                            />
-                                            <ContextMenuItem
-                                                icon={mdiDesktopClassic}
-                                                label={t("servers.contextMenu.rdpServer")}
-                                                onClick={() => createServer("rdp")}
-                                            />
-                                            <ContextMenuItem
-                                                icon={mdiMonitor}
-                                                label={t("servers.contextMenu.vncServer")}
-                                                onClick={() => createServer("vnc")}
-                                            />
-                                        </ContextMenuItem>
-                                    )}
-                                    {contextClickedType === "folder-object" && !isOrgFolder && (
+                                            icon={mdiConsole}
+                                            label={t("servers.contextMenu.sshServer")}
+                                            onClick={() => createServer("ssh")}
+                                        />
                                         <ContextMenuItem
-                                            icon={mdiImport}
-                                            label={t("servers.contextMenu.import")}
-                                        >
-                                            <ContextMenuItem
-                                                icon={<ProxmoxLogo />}
-                                                label={t("servers.contextMenu.pve")}
-                                                onClick={createPVEServer}
-                                            />
-                                            <ContextMenuItem
-                                                icon={mdiFileDocumentOutline}
-                                                label={t("servers.contextMenu.sshConfig")}
-                                                onClick={openSSHConfigImport}
-                                            />
-                                        </ContextMenuItem>
-                                    )}
-                                </>
-                            )}
+                                            icon={mdiConsole}
+                                            label={t("servers.contextMenu.telnetServer")}
+                                            onClick={() => createServer("telnet")}
+                                        />
+                                        <ContextMenuItem
+                                            icon={mdiDesktopClassic}
+                                            label={t("servers.contextMenu.rdpServer")}
+                                            onClick={() => createServer("rdp")}
+                                        />
+                                        <ContextMenuItem
+                                            icon={mdiMonitor}
+                                            label={t("servers.contextMenu.vncServer")}
+                                            onClick={() => createServer("vnc")}
+                                        />
+                                    </ContextMenuItem>
+                                )}
+                                {contextClickedType === "folder-object" && !isOrgFolder && (
+                                    <ContextMenuItem
+                                        icon={mdiImport}
+                                        label={t("servers.contextMenu.import")}
+                                    >
+                                        <ContextMenuItem
+                                            icon={<ProxmoxLogo />}
+                                            label={t("servers.contextMenu.pve")}
+                                            onClick={createPVEServer}
+                                        />
+                                        <ContextMenuItem
+                                            icon={mdiFileDocumentOutline}
+                                            label={t("servers.contextMenu.sshConfig")}
+                                            onClick={openSSHConfigImport}
+                                        />
+                                    </ContextMenuItem>
+                                )}
+                            </>
+                        )}
 
                         {contextClickedType === "folder-object" && !isOrgFolder && (
                             <>
@@ -522,6 +543,32 @@ export const ServerList = ({
 
                         {contextClickedType === "server-object" && server?.type === "server" && (
                             <>
+                                {hibernatedSessionsForServer.length > 0 && (
+                                    <>
+                                        {hibernatedSessionsForServer.length === 1 ? (
+                                            <ContextMenuItem
+                                                icon={mdiPlay}
+                                                label="Resume session"
+                                                onClick={() => resumeSession(hibernatedSessionsForServer[0].id)}
+                                            />
+                                        ) : (
+                                            <ContextMenuItem
+                                                icon={mdiPlay}
+                                                label="Resume session"
+                                            >
+                                                {hibernatedSessionsForServer.sort((a, b) => new Date(b.lastActivity) - new Date(a.lastActivity)).map((session) => (
+                                                    <ContextMenuItem
+                                                        key={session.id}
+                                                        icon={mdiPlay}
+                                                        label={formatSessionDate(session)}
+                                                        onClick={() => resumeSession(session.id)}
+                                                    />
+                                                ))}
+                                            </ContextMenuItem>
+                                        )}
+                                        <ContextMenuSeparator />
+                                    </>
+                                )}
                                 {(server?.identities?.length > 0 || server?.protocol === "telnet") && (
                                     <>
                                         {server?.protocol === "telnet" ? (
@@ -612,6 +659,32 @@ export const ServerList = ({
 
                         {contextClickedType === "server-object" && server?.type?.startsWith("pve-") && (
                             <>
+                                {hibernatedSessionsForServer.length > 0 && (
+                                    <>
+                                        {hibernatedSessionsForServer.length === 1 ? (
+                                            <ContextMenuItem
+                                                icon={mdiPlay}
+                                                label="Resume session"
+                                                onClick={() => resumeSession(hibernatedSessionsForServer[0].id)}
+                                            />
+                                        ) : (
+                                            <ContextMenuItem
+                                                icon={mdiPlay}
+                                                label="Resume session"
+                                            >
+                                                {hibernatedSessionsForServer.sort((a, b) => new Date(b.lastActivity) - new Date(a.lastActivity)).map((session) => (
+                                                    <ContextMenuItem
+                                                        key={session.id}
+                                                        icon={mdiPlay}
+                                                        label={formatSessionDate(session)}
+                                                        onClick={() => resumeSession(session.id)}
+                                                    />
+                                                ))}
+                                            </ContextMenuItem>
+                                        )}
+                                        <ContextMenuSeparator />
+                                    </>
+                                )}
                                 {(server?.status === "running" || server?.status === "online") && (
                                     <>
                                         <ContextMenuItem

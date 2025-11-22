@@ -8,7 +8,7 @@ import Icon from "@mdi/react";
 import { mdiFullscreenExit } from "@mdi/js";
 import { useTranslation } from "react-i18next";
 
-export const ViewContainer = ({ activeSessions, activeSessionId, setActiveSessionId, disconnectFromServer }) => {
+export const ViewContainer = ({ activeSessions, activeSessionId, setActiveSessionId, disconnectFromServer, hibernateSession }) => {
 
     const [layoutMode, setLayoutMode] = useState("single");
     const [gridSessions, setGridSessions] = useState([]);
@@ -74,7 +74,7 @@ export const ViewContainer = ({ activeSessions, activeSessionId, setActiveSessio
 
     const handleSnippetSelected = useCallback((command) => {
         const commandWithNewline = command.endsWith("\n") ? command : command + "\n";
-        
+
         if (broadcastMode && layoutMode !== "single") {
             Object.entries(terminalRefs.current).forEach(([, { ws }]) => {
                 if (ws && ws.readyState === WebSocket.OPEN) {
@@ -101,7 +101,7 @@ export const ViewContainer = ({ activeSessions, activeSessionId, setActiveSessio
             });
         } else {
             const activeSession = activeSessions.find(s => s.id === activeSessionId);
-            
+
             if (activeSession?.server.renderer === "terminal") {
                 const activeTerminal = terminalRefs.current[activeSessionId];
                 if (activeTerminal && activeTerminal.ws && activeTerminal.ws.readyState === WebSocket.OPEN) {
@@ -261,11 +261,11 @@ export const ViewContainer = ({ activeSessions, activeSessionId, setActiveSessio
         for (let col = 0; col < cols - 1; col++) {
             resizers.push(
                 <div key={`v-resizer-${col}`} className="grid-resizer vertical"
-                     style={{
-                         gridColumn: `${col + 2} / ${col + 2}`, gridRow: `1 / ${rows + 1}`, width: "6px",
-                         cursor: "col-resize", zIndex: 10, position: "relative", marginLeft: "-3px",
-                     }}
-                     onMouseDown={(e) => handleResizerMouseDown(e, "vertical", col)}
+                    style={{
+                        gridColumn: `${col + 2} / ${col + 2}`, gridRow: `1 / ${rows + 1}`, width: "6px",
+                        cursor: "col-resize", zIndex: 10, position: "relative", marginLeft: "-3px",
+                    }}
+                    onMouseDown={(e) => handleResizerMouseDown(e, "vertical", col)}
                 />,
             );
         }
@@ -273,11 +273,11 @@ export const ViewContainer = ({ activeSessions, activeSessionId, setActiveSessio
         for (let row = 0; row < rows - 1; row++) {
             resizers.push(
                 <div key={`h-resizer-${row}`} className="grid-resizer horizontal"
-                     style={{
-                         gridColumn: `1 / ${cols + 1}`, gridRow: `${row + 2} / ${row + 2}`, height: "6px",
-                         cursor: "row-resize", zIndex: 10, position: "relative", marginTop: "-3px",
-                     }}
-                     onMouseDown={(e) => handleResizerMouseDown(e, "horizontal", row)} />,
+                    style={{
+                        gridColumn: `1 / ${cols + 1}`, gridRow: `${row + 2} / ${row + 2}`, height: "6px",
+                        cursor: "row-resize", zIndex: 10, position: "relative", marginTop: "-3px",
+                    }}
+                    onMouseDown={(e) => handleResizerMouseDown(e, "horizontal", row)} />,
             );
         }
 
@@ -368,15 +368,15 @@ export const ViewContainer = ({ activeSessions, activeSessionId, setActiveSessio
     const renderRenderer = (session) => {
         switch (session.server.renderer) {
             case "guac":
-                return <GuacamoleRenderer session={session} disconnectFromServer={disconnectFromServer} 
-                                         registerGuacamoleRef={registerGuacamoleRef}
-                                         onFullscreenToggle={toggleFullscreenMode} />;
+                return <GuacamoleRenderer session={session} disconnectFromServer={disconnectFromServer}
+                    registerGuacamoleRef={registerGuacamoleRef}
+                    onFullscreenToggle={toggleFullscreenMode} />;
             case "terminal":
-                return <XtermRenderer session={session} disconnectFromServer={disconnectFromServer} 
-                                      registerTerminalRef={registerTerminalRef} broadcastMode={broadcastMode}
-                                      terminalRefs={terminalRefs} updateProgress={updateSessionProgress}
-                                      layoutMode={layoutMode} onBroadcastToggle={toggleBroadcastMode}
-                                      onFullscreenToggle={toggleFullscreenMode} />;
+                return <XtermRenderer session={session} disconnectFromServer={disconnectFromServer}
+                    registerTerminalRef={registerTerminalRef} broadcastMode={broadcastMode}
+                    terminalRefs={terminalRefs} updateProgress={updateSessionProgress}
+                    layoutMode={layoutMode} onBroadcastToggle={toggleBroadcastMode}
+                    onFullscreenToggle={toggleFullscreenMode} />;
             case "sftp":
                 return <FileRenderer session={session} disconnectFromServer={disconnectFromServer} />;
             default:
@@ -426,26 +426,26 @@ export const ViewContainer = ({ activeSessions, activeSessionId, setActiveSessio
                 </button>
             )}
             {!fullscreenMode && <ServerTabs activeSessions={activeSessions} setActiveSessionId={focusSession}
-                        activeSessionId={activeSessionId} disconnectFromServer={disconnectFromServer}
-                        layoutMode={layoutMode} onToggleSplit={toggleSplitMode} orderRef={tabOrderRef}
-                        onTabOrderChange={onTabOrderChange} onBroadcastToggle={toggleBroadcastMode}
-                        onSnippetSelected={handleSnippetSelected} broadcastEnabled={broadcastMode}
-                        onKeyboardShortcut={handleKeyboardShortcut} hasGuacamole={hasGuacamole}
-                        sessionProgress={sessionProgress} fullscreenEnabled={fullscreenMode}
-                        onFullscreenToggle={toggleFullscreenMode} />}
+                activeSessionId={activeSessionId} disconnectFromServer={disconnectFromServer}
+                layoutMode={layoutMode} onToggleSplit={toggleSplitMode} orderRef={tabOrderRef}
+                onTabOrderChange={onTabOrderChange} onBroadcastToggle={toggleBroadcastMode}
+                onSnippetSelected={handleSnippetSelected} broadcastEnabled={broadcastMode}
+                onKeyboardShortcut={handleKeyboardShortcut} hasGuacamole={hasGuacamole}
+                sessionProgress={sessionProgress} fullscreenEnabled={fullscreenMode}
+                onFullscreenToggle={toggleFullscreenMode} hibernateSession={hibernateSession} />}
 
             <div ref={layoutRef}
-                 className={`view-layouter ${layoutMode} ${isResizing ? "resizing" : ""} ${isResizing && resizingDirection ? `resizing-${resizingDirection}` : ""}`}
-                 style={layoutMode !== "single" ? {
-                     "--grid-rows": getDynamicLayout(gridSessions.length).rows,
-                     "--grid-cols": getDynamicLayout(gridSessions.length).cols,
-                     gridTemplateColumns: columnSizes.length > 0 ?
-                         columnSizes.map(size => `${size}fr`).join(" ") :
-                         `repeat(${getDynamicLayout(gridSessions.length).cols}, 1fr)`,
-                     gridTemplateRows: rowSizes.length > 0 ?
-                         rowSizes.map(size => `${size}fr`).join(" ") :
-                         `repeat(${getDynamicLayout(gridSessions.length).rows}, 1fr)`,
-                 } : {}}>
+                className={`view-layouter ${layoutMode} ${isResizing ? "resizing" : ""} ${isResizing && resizingDirection ? `resizing-${resizingDirection}` : ""}`}
+                style={layoutMode !== "single" ? {
+                    "--grid-rows": getDynamicLayout(gridSessions.length).rows,
+                    "--grid-cols": getDynamicLayout(gridSessions.length).cols,
+                    gridTemplateColumns: columnSizes.length > 0 ?
+                        columnSizes.map(size => `${size}fr`).join(" ") :
+                        `repeat(${getDynamicLayout(gridSessions.length).cols}, 1fr)`,
+                    gridTemplateRows: rowSizes.length > 0 ?
+                        rowSizes.map(size => `${size}fr`).join(" ") :
+                        `repeat(${getDynamicLayout(gridSessions.length).rows}, 1fr)`,
+                } : {}}>
                 {activeSessions.map(session => renderSession(session))}
 
                 {layoutMode !== "single" && gridSessions.length > 1 &&

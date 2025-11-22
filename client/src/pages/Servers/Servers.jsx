@@ -16,6 +16,8 @@ import { useActiveSessions } from "@/common/contexts/SessionContext.jsx";
 import { useLocation, useNavigate } from "react-router-dom";
 import { ServerContext } from "@/common/contexts/ServerContext.jsx";
 
+import { getRequest, postRequest, deleteRequest } from "@/common/utils/RequestUtil";
+
 export const Servers = () => {
 
     const [serverDialogOpen, setServerDialogOpen] = useState(false);
@@ -33,6 +35,48 @@ export const Servers = () => {
     const { getServerById, servers } = useContext(ServerContext);
     const location = useLocation();
     const navigate = useNavigate();
+
+    const [hibernatedSessions, setHibernatedSessions] = useState([]);
+
+    const fetchSessions = async () => {
+        try {
+            const sessions = await getRequest("/connections");
+            const mappedSessions = sessions.map(session => {
+                const server = getServerById(session.entryId);
+                if (!server) return null;
+
+                return {
+                    id: session.sessionId,
+                    server: server,
+                    identity: session.configuration.identityId,
+                    connectionReason: session.connectionReason,
+                    isHibernated: session.isHibernated,
+                    createdAt: session.createdAt,
+                    lastActivity: session.lastActivity
+                };
+            }).filter(s => s !== null);
+
+            const activeMapped = mappedSessions.filter(s => !s.isHibernated);
+            const hibernatedMapped = mappedSessions.filter(s => s.isHibernated);
+            
+            setActiveSessions(activeMapped);
+            setHibernatedSessions(hibernatedMapped);
+
+            if (activeMapped.length > 0) {
+                if (!activeSessionId || !activeMapped.find(s => s.id === activeSessionId)) {
+                    setActiveSessionId(activeMapped[activeMapped.length - 1].id);
+                }
+            }
+        } catch (error) {
+            console.error("Failed to fetch sessions", error);
+        }
+    };
+
+    useEffect(() => {
+        if (servers) {
+            fetchSessions();
+        }
+    }, [servers]);
 
     const findOrganizationForServer = (serverIdNum, entries, currentOrg = null) => {
         for (const entry of entries) {
@@ -57,31 +101,62 @@ export const Servers = () => {
 
     const connectToServer = async (serverId, identity, overrideRenderer) => {
         const server = getServerById(serverId);
+
+        const hibernated = hibernatedSessions.find(s => s.server.id === serverId && s.identity === identity?.id);
+        if (hibernated) {
+            resumeConnection(hibernated.id);
+            return;
+        }
+
         const requiresReason = checkConnectionReasonRequired(serverId, servers);
         if (requiresReason) {
-            setPendingConnection({ server: {...server, renderer: overrideRenderer || server.renderer}, identity });
+            setPendingConnection({ server: { ...server, renderer: overrideRenderer || server.renderer }, identity });
             setConnectionReasonDialogOpen(true);
             return;
         }
 
-        performConnection({...server, renderer: overrideRenderer || server.renderer}, identity);
+        performConnection({ ...server, renderer: overrideRenderer || server.renderer }, identity);
     };
 
     const openSFTP = async (server, identity) => {
         connectToServer(server, identity, "sftp")
     };
 
-    const performConnection = (server, identity, connectionReason = null) => {
-        const sessionId = "session-" + (Math.random().toString(36).substring(2, 15));
-        const sessionData = { server, identity, id: sessionId, connectionReason };
+    const performConnection = async (server, identity, connectionReason = null) => {
+        try {
+            const session = await postRequest("/connections", {
+                entryId: server.id,
+                identityId: identity?.id,
+                connectionReason
+            });
 
-        setActiveSessions(prevSessions => [...prevSessions, sessionData]);
-        setActiveSessionId(sessionId);
+            const sessionData = {
+                server,
+                identity: identity?.id,
+                id: session.sessionId,
+                connectionReason
+            };
+
+            setActiveSessions(prevSessions => [...prevSessions, sessionData]);
+            setActiveSessionId(session.sessionId);
+        } catch (error) {
+            console.error("Failed to create session", error);
+        }
+    };
+
+    const resumeConnection = async (sessionId) => {
+        try {
+            await postRequest(`/connections/${sessionId}/resume`);
+            setActiveSessionId(sessionId);
+            await fetchSessions();
+        } catch (error) {
+            console.error("Failed to resume session", error);
+        }
     };
 
     const handleConnectionReasonProvided = (reason) => {
         if (pendingConnection) {
-            performConnection(pendingConnection.server, pendingConnection.identity, pendingConnection.type, reason);
+            performConnection(pendingConnection.server, pendingConnection.identity, reason);
             setPendingConnection(null);
         }
         setConnectionReasonDialogOpen(false);
@@ -92,18 +167,42 @@ export const Servers = () => {
         setConnectionReasonDialogOpen(false);
     };
 
-    const disconnectFromServer = (sessionId) => {
-        setActiveSessions(activeSessions => {
-            const newSessions = activeSessions.filter(session => session.id !== sessionId);
+    const disconnectFromServer = async (sessionId) => {
+        try {
+            await deleteRequest(`/connections/${sessionId}`);
+            setActiveSessions(activeSessions => {
+                const newSessions = activeSessions.filter(session => session.id !== sessionId);
 
-            if (newSessions.length === 0) {
-                setActiveSessionId(null);
-            } else if (sessionId === activeSessionId) {
-                setActiveSessionId(newSessions[newSessions.length - 1].id);
+                if (newSessions.length === 0) {
+                    setActiveSessionId(null);
+                } else if (sessionId === activeSessionId) {
+                    setActiveSessionId(newSessions[newSessions.length - 1].id);
+                }
+
+                return newSessions;
+            });
+        } catch (error) {
+            console.error("Failed to delete session", error);
+        }
+    };
+
+    const hibernateSession = async (sessionId) => {
+        try {
+            await postRequest(`/connections/${sessionId}/hibernate`);
+            
+            if (sessionId === activeSessionId) {
+                const otherSessions = activeSessions.filter(s => s.id !== sessionId);
+                if (otherSessions.length > 0) {
+                    setActiveSessionId(otherSessions[otherSessions.length - 1].id);
+                } else {
+                    setActiveSessionId(null);
+                }
             }
-
-            return newSessions;
-        });
+            
+            await fetchSessions();
+        } catch (error) {
+            console.error("Failed to hibernate session", error);
+        }
     };
 
     const closeDialog = () => {
@@ -161,46 +260,48 @@ export const Servers = () => {
     return (
         <div className="server-page">
             <ServerDialog open={serverDialogOpen} onClose={closeDialog} currentFolderId={currentFolderId}
-                          currentOrganizationId={currentOrganizationId} editServerId={editServerId} 
-                          initialProtocol={serverDialogProtocol} />
+                currentOrganizationId={currentOrganizationId} editServerId={editServerId}
+                initialProtocol={serverDialogProtocol} />
             <ProxmoxDialog open={proxmoxDialogOpen} onClose={closePVEDialog}
-                           currentFolderId={currentFolderId}
-                           currentOrganizationId={currentOrganizationId}
-                           editServerId={editServerId} />
+                currentFolderId={currentFolderId}
+                currentOrganizationId={currentOrganizationId}
+                editServerId={editServerId} />
             <SSHConfigImportDialog open={sshConfigImportDialogOpen} onClose={closeSSHConfigImportDialog}
-                                   currentFolderId={currentFolderId}
-                                   currentOrganizationId={currentOrganizationId} />
+                currentFolderId={currentFolderId}
+                currentOrganizationId={currentOrganizationId} />
             <ConnectionReasonDialog
                 isOpen={connectionReasonDialogOpen}
                 onClose={handleConnectionReasonCanceled}
                 onConnect={handleConnectionReasonProvided}
                 serverName={pendingConnection ? (getServerById(pendingConnection.server)?.name || "Unknown Server") : ""}
             />
-            <ServerList setServerDialogOpen={(protocol = null) => { 
-                            setServerDialogProtocol(protocol); 
-                            setServerDialogOpen(true); 
-                        }} 
-                        connectToServer={connectToServer}
-                       setProxmoxDialogOpen={() => setProxmoxDialogOpen(true)}
-                        setSSHConfigImportDialogOpen={() => setSSHConfigImportDialogOpen(true)}
-                        setCurrentFolderId={setCurrentFolderId} setCurrentOrganizationId={setCurrentOrganizationId}
-                        setEditServerId={setEditServerId} openSFTP={openSFTP} />
+            <ServerList setServerDialogOpen={(protocol = null) => {
+                setServerDialogProtocol(protocol);
+                setServerDialogOpen(true);
+            }}
+                connectToServer={connectToServer}
+                setProxmoxDialogOpen={() => setProxmoxDialogOpen(true)}
+                setSSHConfigImportDialogOpen={() => setSSHConfigImportDialogOpen(true)}
+                setCurrentFolderId={setCurrentFolderId} setCurrentOrganizationId={setCurrentOrganizationId}
+                setEditServerId={setEditServerId} openSFTP={openSFTP}
+                hibernatedSessions={hibernatedSessions} resumeSession={resumeConnection} />
             {activeSessions.length === 0 && <div className="welcome-area">
                 <div className="area-left">
                     <h1>Hi, <span>{user?.firstName || "User"} {user?.lastName || "name"}</span>!</h1>
                     <p>Welcome to Nexterm. The open-source server manager for SSH, VNC and RDP.</p>
                     <div className="button-area">
                         <Button text="Star on GitHub" onClick={() => window.open(GITHUB_URL, "_blank")}
-                                icon={mdiStar} />
+                            icon={mdiStar} />
                         <Button text="Join Discord" onClick={() => window.open(DISCORD_URL, "_blank")}
-                                icon={siDiscord.path} />
+                            icon={siDiscord.path} />
                     </div>
                 </div>
                 <img src={WelcomeImage} alt="Welcome" />
             </div>}
             {activeSessions.length > 0 &&
                 <ViewContainer activeSessions={activeSessions} disconnectFromServer={disconnectFromServer}
-                               activeSessionId={activeSessionId} setActiveSessionId={setActiveSessionId} />}
+                    activeSessionId={activeSessionId} setActiveSessionId={setActiveSessionId}
+                    hibernateSession={hibernateSession} />}
         </div>
     );
 };

@@ -89,7 +89,7 @@ const XtermRenderer = ({ session, disconnectFromServer, registerTerminalRef, bro
 
         const terminalTheme = getCurrentTheme();
         const isLightTerminalTheme = selectedTheme === "light";
-        
+
         const term = new Xterm({
             cursorBlink: cursorBlink,
             cursorStyle: cursorStyle,
@@ -137,7 +137,7 @@ const XtermRenderer = ({ session, disconnectFromServer, registerTerminalRef, bro
 
         let url = process.env.NODE_ENV === "production" ? `${window.location.host}/api/ws/term` : "localhost:6989/api/ws/term";
 
-        let wsUrl = `${protocol}://${url}?sessionToken=${sessionToken}&entryId=${session.server.id}&identityId=${session.identity}`;
+        let wsUrl = `${protocol}://${url}?sessionToken=${sessionToken}&entryId=${session.server.id}&identityId=${session.identity}&sessionId=${session.id}`;
         if (session.connectionReason) {
             wsUrl += `&connectionReason=${encodeURIComponent(session.connectionReason)}`;
         }
@@ -223,7 +223,7 @@ const XtermRenderer = ({ session, disconnectFromServer, registerTerminalRef, bro
                     if (selection) {
                         event.preventDefault();
                         event.stopPropagation();
-                        navigator.clipboard.writeText(selection).catch(() => {});
+                        navigator.clipboard.writeText(selection).catch(() => { });
                         return false;
                     }
                 }
@@ -283,7 +283,10 @@ const XtermRenderer = ({ session, disconnectFromServer, registerTerminalRef, bro
                 registerTerminalRef(session.id, null);
             }
             window.removeEventListener("resize", handleResize);
-            ws.close();
+            if (ws) {
+                ws.onclose = null;
+                ws.close();
+            }
             term.dispose();
             clearInterval(interval);
             termRef.current = null;
@@ -296,8 +299,8 @@ const XtermRenderer = ({ session, disconnectFromServer, registerTerminalRef, bro
             <div ref={ref} className="xterm-wrapper" />
             {isAIAvailable() && (
                 <AICommandPopover visible={showAIPopover} onClose={() => setShowAIPopover(false)}
-                                  onCommandGenerated={handleAICommandGenerated} position={aiPopoverPosition}
-                                  focusTerminal={() => termRef.current?.focus()} />
+                    onCommandGenerated={handleAICommandGenerated} position={aiPopoverPosition}
+                    focusTerminal={() => termRef.current?.focus()} />
             )}
         </div>
     );

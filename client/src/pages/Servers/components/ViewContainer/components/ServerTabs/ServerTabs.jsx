@@ -1,21 +1,25 @@
 import { useRef, useState, useEffect } from "react";
 import Icon from "@mdi/react";
 import { loadIcon } from "@/pages/Servers/utils/iconMapping.js";
-import { mdiClose, mdiViewSplitVertical, mdiChevronLeft, mdiChevronRight } from "@mdi/js";
+import { mdiClose, mdiViewSplitVertical, mdiChevronLeft, mdiChevronRight, mdiSleep } from "@mdi/js";
 import { useDrag, useDrop } from "react-dnd";
 import TerminalActionsMenu from "../TerminalActionsMenu";
+import { ContextMenu, ContextMenuItem, useContextMenu } from "@/common/components/ContextMenu";
 import "./styles.sass";
 
 const DraggableTab = ({
-                          session,
-                          server,
-                          activeSessionId,
-                          setActiveSessionId,
-                          disconnectFromServer,
-                          index,
-                          moveTab,
-                          progress = 0,
-                      }) => {
+    session,
+    server,
+    activeSessionId,
+    setActiveSessionId,
+    disconnectFromServer,
+    hibernateSession,
+    index,
+    moveTab,
+    progress = 0,
+}) => {
+    const contextMenu = useContextMenu();
+    
     const [{ isDragging }, drag] = useDrag({
         type: "TAB",
         item: { index, sessionId: session.id },
@@ -34,69 +38,97 @@ const DraggableTab = ({
     const circumference = 2 * Math.PI * radius;
     const offset = circumference - (progress / 100) * circumference;
     const showProgress = progress > 0 && progress < 100;
+    
+    const handleContextMenu = (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        contextMenu.open(e, { x: e.clientX, y: e.clientY });
+    };
 
     return (
-        <div ref={(node) => drag(drop(node))} onClick={() => setActiveSessionId(session.id)}
-             className={`server-tab ${session.id === activeSessionId ? "server-tab-active" : ""} ${isDragging ? "dragging" : ""} ${isOver ? "drop-target" : ""}`}
-             style={{ opacity: isDragging ? 0.5 : 1 }}>
-            <div className={`progress-circle ${!showProgress ? "no-progress" : ""}`}>
-                {showProgress && (
-                    <svg width="24" height="24" viewBox="0 0 24 24">
-                        <circle
-                            cx="12"
-                            cy="12"
-                            r={radius}
-                            fill="none"
-                            stroke="currentColor"
-                            strokeWidth="1.5"
-                            className="progress-bg"
-                        />
-                        <circle
-                            cx="12"
-                            cy="12"
-                            r={radius}
-                            fill="none"
-                            stroke="currentColor"
-                            strokeWidth="2"
-                            strokeDasharray={circumference}
-                            strokeDashoffset={offset}
-                            strokeLinecap="round"
-                            className="progress-bar"
-                            transform="rotate(-90 12 12)"
-                        />
-                    </svg>
-                )}
-                <Icon path={loadIcon(server.icon)} className="progress-icon" />
+        <>
+            <div ref={(node) => drag(drop(node))} onClick={() => setActiveSessionId(session.id)}
+                onContextMenu={handleContextMenu}
+                className={`server-tab ${session.id === activeSessionId ? "server-tab-active" : ""} ${isDragging ? "dragging" : ""} ${isOver ? "drop-target" : ""}`}
+                style={{ opacity: isDragging ? 0.5 : 1 }}>
+                <div className={`progress-circle ${!showProgress ? "no-progress" : ""}`}>
+                    {showProgress && (
+                        <svg width="24" height="24" viewBox="0 0 24 24">
+                            <circle
+                                cx="12"
+                                cy="12"
+                                r={radius}
+                                fill="none"
+                                stroke="currentColor"
+                                strokeWidth="1.5"
+                                className="progress-bg"
+                            />
+                            <circle
+                                cx="12"
+                                cy="12"
+                                r={radius}
+                                fill="none"
+                                stroke="currentColor"
+                                strokeWidth="2"
+                                strokeDasharray={circumference}
+                                strokeDashoffset={offset}
+                                strokeLinecap="round"
+                                className="progress-bar"
+                                transform="rotate(-90 12 12)"
+                            />
+                        </svg>
+                    )}
+                    <Icon path={loadIcon(server.icon)} className="progress-icon" />
+                </div>
+                <h2>{server?.name} {session.type === "sftp" ? " (SFTP)" : ""}</h2>
+                <div className="tab-actions">
+                    <Icon path={mdiClose} className="close-btn" title="Close Session" onClick={(e) => {
+                        e.stopPropagation();
+                        disconnectFromServer(session.id);
+                    }} />
+                </div>
             </div>
-            <h2>{server?.name} {session.type === "sftp" ? " (SFTP)" : ""}</h2>
-            <div className="tab-actions">
-                <Icon path={mdiClose} className="close-btn" title="Close Session" onClick={(e) => {
-                    e.stopPropagation();
-                    disconnectFromServer(session.id);
-                }} />
-            </div>
-        </div>
+            <ContextMenu
+                isOpen={contextMenu.isOpen}
+                position={contextMenu.position}
+                onClose={contextMenu.close}
+                trigger={contextMenu.triggerRef}
+            >
+                <ContextMenuItem
+                    icon={mdiSleep}
+                    label="Hibernate Session"
+                    onClick={() => hibernateSession(session.id)}
+                />
+                <ContextMenuItem
+                    icon={mdiClose}
+                    label="Close Session"
+                    onClick={() => disconnectFromServer(session.id)}
+                    danger
+                />
+            </ContextMenu>
+        </>
     );
 };
 
 export const ServerTabs = ({
-                               activeSessions,
-                               setActiveSessionId,
-                               activeSessionId,
-                               disconnectFromServer,
-                               layoutMode,
-                               onToggleSplit,
-                               orderRef,
-                               onTabOrderChange,
-                               onBroadcastToggle,
-                               onSnippetSelected,
-                               broadcastEnabled,
-                               onKeyboardShortcut,
-                               hasGuacamole,
-                               sessionProgress = {},
-                               fullscreenEnabled,
-                               onFullscreenToggle,
-                           }) => {
+    activeSessions,
+    setActiveSessionId,
+    activeSessionId,
+    disconnectFromServer,
+    hibernateSession,
+    layoutMode,
+    onToggleSplit,
+    orderRef,
+    onTabOrderChange,
+    onBroadcastToggle,
+    onSnippetSelected,
+    broadcastEnabled,
+    onKeyboardShortcut,
+    hasGuacamole,
+    sessionProgress = {},
+    fullscreenEnabled,
+    onFullscreenToggle,
+}) => {
 
     const tabsRef = useRef(null);
 
@@ -190,7 +222,7 @@ export const ServerTabs = ({
     return (
         <div className="server-tabs">
             <div className="layout-controls">
-                <TerminalActionsMenu 
+                <TerminalActionsMenu
                     layoutMode={layoutMode}
                     onBroadcastToggle={onBroadcastToggle}
                     onSnippetSelected={onSnippetSelected}
@@ -201,8 +233,8 @@ export const ServerTabs = ({
                     onFullscreenToggle={onFullscreenToggle}
                 />
                 <Icon path={mdiViewSplitVertical} className={`layout-btn ${layoutMode !== "single" ? "active" : ""}`}
-                      title={layoutMode === "single" ? "Enable Split View" : "Disable Split View"}
-                      onClick={onToggleSplit} />
+                    title={layoutMode === "single" ? "Enable Split View" : "Disable Split View"}
+                    onClick={onToggleSplit} />
             </div>
             <div className="tabs-container">
                 {showLeftArrow && (
@@ -214,8 +246,9 @@ export const ServerTabs = ({
                     {orderedSessions.map((session, index) => {
                         return (
                             <DraggableTab key={session.id} session={session} server={session.server} index={index} moveTab={moveTab}
-                                          activeSessionId={activeSessionId} setActiveSessionId={setActiveSessionId}
-                                          disconnectFromServer={disconnectFromServer} progress={sessionProgress[session.id] || 0} />
+                                activeSessionId={activeSessionId} setActiveSessionId={setActiveSessionId}
+                                disconnectFromServer={disconnectFromServer} hibernateSession={hibernateSession}
+                                progress={sessionProgress[session.id] || 0} />
                         );
                     })}
                 </div>
