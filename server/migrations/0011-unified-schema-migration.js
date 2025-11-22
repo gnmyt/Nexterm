@@ -1,4 +1,5 @@
 const { DataTypes } = require("sequelize");
+const logger = require('../utils/logger');
 const { encrypt } = require("../utils/encryption");
 
 module.exports = {
@@ -168,7 +169,7 @@ module.exports = {
                         try {
                             oldConfig = JSON.parse(server.config);
                         } catch (e) {
-                            console.error(`Failed to parse config for server ${server.id}:`, e);
+                            logger.error('Failed to parse config during migration', { serverId: server.id, error: e.message });
                         }
                     } else if (typeof server.config === "object" && !Array.isArray(server.config)) {
                         oldConfig = server.config;
@@ -201,7 +202,7 @@ module.exports = {
                         try {
                             identities = JSON.parse(server.identities);
                         } catch (e) {
-                            console.error(`Failed to parse identities for server ${server.id}:`, e);
+                            logger.error('Failed to parse identities during migration', { serverId: server.id, error: e.message });
                         }
                     } else if (Array.isArray(server.identities)) {
                         identities = server.identities;
@@ -267,7 +268,7 @@ module.exports = {
                         try {
                             resources = JSON.parse(pveServer.resources);
                         } catch (e) {
-                            console.error(`Failed to parse resources for PVE server ${pveServer.id}:`, e);
+                            logger.error('Failed to parse resources during migration', { pveServerId: pveServer.id, error: e.message });
                         }
                     } else if (Array.isArray(pveServer.resources)) {
                         resources = pveServer.resources;
