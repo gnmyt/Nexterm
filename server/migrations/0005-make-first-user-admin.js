@@ -1,4 +1,5 @@
 const Account = require("../models/Account");
+const logger = require('../utils/logger');
 const { DataTypes } = require("sequelize");
 
 module.exports = {
@@ -9,9 +10,9 @@ module.exports = {
                 { role: "admin" },
                 { where: { id: firstUser.id } },
             );
-            console.log(`First user ${firstUser.id} made admin`);
+            logger.info(`First user ${firstUser.id} made admin`);
         } else {
-            console.log("No users found, skipping admin assignment");
+            logger.info("No users found, skipping admin assignment");
         }
     },
 };

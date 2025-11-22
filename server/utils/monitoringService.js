@@ -1,4 +1,5 @@
 const { Client } = require("ssh2");
+const logger = require("./logger");
 const Entry = require("../models/Entry");
 const EntryIdentity = require("../models/EntryIdentity");
 const MonitoringData = require("../models/MonitoringData");
@@ -38,7 +39,7 @@ const runMonitoring = async () => {
         const monitoringPromises = monitoringEntries.map(entry => monitorEntry(entry));
         await Promise.allSettled(monitoringPromises);
     } catch (error) {
-        console.error("Error running monitoring:", error);
+        logger.error("Error running monitoring", { error: error.message });
     }
 };
 
@@ -69,7 +70,7 @@ const monitorEntry = async (entry) => {
         const monitoringData = await collectServerData(entry, identity, credentials);
         await saveMonitoringData(entry.id, monitoringData);
     } catch (error) {
-        console.error(`Error monitoring entry ${entry.name}:`, error);
+        logger.error("Error monitoring entry", { entryId: entry.id, entryName: entry.name, error: error.message });
         await saveMonitoringData(entry.id, {
             status: "error",
             errorMessage: error.message,
@@ -314,7 +315,7 @@ const saveMonitoringData = async (entryId, data) => {
     try {
         await MonitoringData.create({ entryId: entryId, ...data });
     } catch (error) {
-        console.error(`Error saving monitoring data for entry ${entryId}:`, error);
+        logger.error("Error saving monitoring data", { entryId, error: error.message });
     }
 };
 
@@ -329,7 +330,7 @@ const cleanupOldData = async () => {
             },
         });
     } catch (error) {
-        console.error("Error cleaning up old monitoring data:", error);
+        logger.error("Error cleaning up old monitoring data", { error: error.message });
     }
 };
 

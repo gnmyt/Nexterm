@@ -19,6 +19,7 @@
     "speakeasy": "^2.0.0",
     "sqlite3": "^5.1.7",
     "ssh2": "^1.17.0",
+    "winston": "^3.18.3",
     "ws": "^8.18.3"
   },
   "devDependencies": {

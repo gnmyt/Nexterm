@@ -1,4 +1,5 @@
 const { encrypt } = require("../utils/encryption");
+const logger = require('../utils/logger');
 const { DataTypes } = require("sequelize");
 
 module.exports = {
@@ -13,7 +14,7 @@ module.exports = {
         const authTagExists = await queryInterface.describeTable("identities").then((table) => table.passwordAuthTag !== undefined);
 
         if (authTagExists) {
-            console.log("Migration already applied: passwordAuthTag column exists.");
+            logger.info("Migration already applied: passwordAuthTag column exists.");
             return;
         }
 
@@ -68,7 +69,7 @@ module.exports = {
                     `UPDATE identities SET ${updates.join(", ")} WHERE id = ?`,
                     { replacements: values }
                 );
-                console.log(`Encrypted identity ${identity.id}`);
+                logger.info(`Encrypted identity ${identity.id}`);
             }
         }
     },

@@ -7,6 +7,7 @@ const { createRDPToken, createVNCToken } = require("../utils/tokenGenerator");
 const { validateEntryAccess } = require("../controllers/entry");
 const { getOrganizationAuditSettingsInternal } = require("../controllers/audit");
 const { getIdentityCredentials } = require("../controllers/identity");
+const logger = require("../utils/logger");
 
 module.exports.authenticate = async (req, res, next) => {
     const authHeader = req.header("authorization");
@@ -71,7 +72,11 @@ module.exports.authorizeGuacamole = async (req) => {
         if (auditSettings?.requireConnectionReason && !query.connectionReason) return;
     }
 
-    console.log("Authorized connection to server " + entry.config?.ip + " with identity " + identity.name);
+    logger.system(`Authorized connection to ${entry.config?.ip} with identity ${identity.name}`, { 
+        entryId: entry.id, 
+        identityId: identity.id, 
+        username: req.user.username 
+    });
 
     let connectionConfig;
     switch (entry.config?.protocol) {

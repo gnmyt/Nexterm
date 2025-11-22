@@ -1,5 +1,6 @@
 const Sequelize = require("sequelize");
 const db = require("../utils/database");
+const logger = require("../utils/logger");
 
 module.exports = db.define("monitoring_data", {
     entryId: {
@@ -74,7 +75,7 @@ module.exports = db.define("monitoring_data", {
                             try {
                                 entry[field] = JSON.parse(entry[field]);
                             } catch (e) {
-                                console.error(`Failed to parse ${field}:`, e);
+                                logger.error(`Failed to parse monitoring field`, { field, error: e.message });
                             }
                         }
                     });

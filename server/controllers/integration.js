@@ -1,4 +1,5 @@
 const Integration = require("../models/Integration");
+const logger = require("../utils/logger");
 const Folder = require("../models/Folder");
 const Credential = require("../models/Credential");
 const Entry = require("../models/Entry");
@@ -65,7 +66,7 @@ module.exports.createIntegration = async (accountId, configuration) => {
             
             await getAllNodes({ ip: serverConfig.ip, port: serverConfig.port }, ticket);
         } catch (error) {
-            console.error('Failed to connect to Proxmox cluster:', error.message);
+            logger.error('Failed to connect to Proxmox cluster', { ip: configuration.ip, port: configuration.port, error: error.message });
             
             if (error.response?.status === 401 || error.message.includes('401')) {
                 return { code: 401, message: "Invalid credentials for Proxmox server" };
@@ -91,6 +92,8 @@ module.exports.createIntegration = async (accountId, configuration) => {
         status: 'online',
     });
 
+    logger.info(`Integration created`, { integrationId: integration.id, name: integration.name, type: integration.type });
+
     if (configuration.password) {
         await Credential.create({
             integrationId: integration.id,
@@ -103,7 +106,7 @@ module.exports.createIntegration = async (accountId, configuration) => {
         try {
             await this.syncIntegration(accountId, integration.id);
         } catch (error) {
-            console.error('Error during integration sync on creation:', error.message);
+            logger.error('Error during integration sync on creation', { integrationId: integration.id, error: error.message });
         }
     }
 
@@ -122,6 +125,8 @@ module.exports.deleteIntegration = async (accountId, integrationId) => {
     }
 
     await Integration.destroy({ where: { id: integrationId } });
+
+    logger.info(`Integration deleted`, { integrationId, name: integration.name });
 
     return { success: true };
 };
@@ -179,6 +184,8 @@ module.exports.editIntegration = async (accountId, integrationId, configuration)
         config: integrationConfig,
         status: configuration.online !== undefined ? (configuration.online ? 'online' : 'offline') : integration.status,
     }, { where: { id: integrationId } });
+
+    logger.info(`Integration updated`, { integrationId, name: integration.name });
 
     return { success: true };
 };
@@ -238,6 +245,7 @@ module.exports.syncIntegration = async (accountId, integrationId) => {
     };
 
     try {
+        logger.info(`Starting integration sync`, { integrationId, name: integration.name });
         const { resources } = await getAllResources(serverConfig);
 
         const existingFolders = await Folder.findAll({
@@ -311,12 +319,14 @@ module.exports.syncIntegration = async (accountId, integrationId) => {
             { where: { id: integrationId } }
         );
 
+        logger.info(`Integration synced successfully`, { integrationId, nodes: syncedNodes, resources: totalResources });
+
         return { 
             success: true, 
             message: `Integration synced successfully: ${syncedNodes} nodes, ${totalResources} resources` 
         };
     } catch (error) {
-        console.error('Error syncing integration:', error);
+        logger.error('Error syncing integration', { integrationId, error: error.message, stack: error.stack });
         
         await Integration.update(
             { status: 'offline' },

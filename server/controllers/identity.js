@@ -4,6 +4,7 @@ const EntryIdentity = require("../models/EntryIdentity");
 const { hasOrganizationAccess } = require("../utils/permission");
 const OrganizationMember = require("../models/OrganizationMember");
 const { Op } = require("sequelize");
+const logger = require("../utils/logger");
 
 const validateIdentityAccess = async (accountId, identity) => {
     if (!identity) return { valid: false, error: { code: 501, message: "The identity does not exist" } };
@@ -94,6 +95,8 @@ module.exports.createIdentity = async (accountId, configuration) => {
 
     await syncCredentials(identity.id, configuration.type, configuration.password, configuration.sshKey, configuration.passphrase);
 
+    logger.info(`Identity created`, { identityId: identity.id, name: identity.name, type: identity.type });
+
     return identity;
 };
 
@@ -119,6 +122,8 @@ module.exports.deleteIdentity = async (accountId, identityId) => {
     } else {
         await Identity.destroy({ where: { id: identityId, accountId } });
     }
+
+    logger.info(`Identity deleted`, { identityId, name: identityInfo.name });
 
     return { success: true, identity: identityInfo };
 };
@@ -157,6 +162,8 @@ module.exports.updateIdentity = async (accountId, identityId, configuration) => 
     }
 
     await syncCredentials(identityId, configuration.type, password, sshKey, passphrase);
+
+    logger.info(`Identity updated`, { identityId, name: identityInfo.name });
 
     return { success: true, identity: identityInfo };
 };

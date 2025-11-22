@@ -1,4 +1,5 @@
 const Sequelize = require("sequelize");
+const logger = require("../utils/logger");
 const db = require("../utils/database");
 
 module.exports = db.define("entries", {
@@ -77,7 +78,7 @@ module.exports = db.define("entries", {
                     try {
                         entry.config = JSON.parse(entry.config);
                     } catch (e) {
-                        console.error('Failed to parse config:', e);
+                        logger.error('Failed to parse Entry config', { entryId: entry.id, error: e.message });
                     }
                 }
             };

@@ -4,6 +4,7 @@ const OrganizationMember = require("../models/OrganizationMember");
 const Account = require("../models/Account");
 const { hasOrganizationAccess } = require("../utils/permission");
 const { Op } = require("sequelize");
+const logger = require("../utils/logger");
 
 const AUDIT_ACTIONS = {
     SSH_CONNECT: "entry.ssh_connect",
@@ -81,7 +82,7 @@ const createAuditLog = async ({
                               }) => {
     try {
         if (!accountId || !action || typeof action !== "string") {
-            console.error("Invalid audit log parameters:", { accountId, action });
+            logger.error("Invalid audit log parameters", { accountId, action });
             return;
         }
 
@@ -97,7 +98,7 @@ const createAuditLog = async ({
 
         return auditLog.id;
     } catch (error) {
-        console.error("Failed to create audit log:", error);
+        logger.error("Failed to create audit log", { error: error.message, stack: error.stack });
     }
 };
 
@@ -174,7 +175,7 @@ const updateAuditLogWithSessionDuration = async (auditLogId, connectionStartTime
 
         await AuditLog.update({ details: currentDetails }, { where: { id: auditLogId } });
     } catch (error) {
-        console.error("Error updating audit log with session duration:", error);
+        logger.error("Error updating audit log with session duration", { error: error.message, auditLogId });
     }
 };
 
@@ -188,7 +189,7 @@ module.exports.getAuditLogs = async (accountId, filters = {}) => {
         const result = await getAuditLogsInternal(accountId, filters);
         return { logs: result.rows, total: result.count, filters };
     } catch (error) {
-        console.error("Error getting audit logs:", error);
+        logger.error("Error getting audit logs", { error: error.message, accountId });
         return { code: 500, message: "Failed to retrieve audit logs" };
     }
 };
@@ -202,7 +203,7 @@ module.exports.getOrganizationAuditSettings = async (accountId, organizationId) 
 
         return await getOrgAuditSettings(organizationId);
     } catch (error) {
-        console.error("Error getting organization audit settings:", error);
+        logger.error("Error getting organization audit settings", { error: error.message, organizationId });
         return { code: 500, message: "Failed to retrieve audit settings" };
     }
 };
@@ -220,7 +221,7 @@ module.exports.updateOrganizationAuditSettings = async (accountId, organizationI
         await Organization.update({ auditSettings: updatedSettings }, { where: { id: organizationId } });
         return updatedSettings;
     } catch (error) {
-        console.error("Error updating organization audit settings:", error);
+        logger.error("Error updating organization audit settings", { error: error.message, organizationId });
         return { code: 500, message: "Failed to update audit settings" };
     }
 };
@@ -247,7 +248,7 @@ module.exports.getOrganizationAuditSettingsInternal = async (organizationId) => 
         const organization = await Organization.findByPk(organizationId);
         return organization?.auditSettings ? JSON.parse(organization.auditSettings) : null;
     } catch (error) {
-        console.error("Error getting organization audit settings internally:", error);
+        logger.error("Error getting organization audit settings internally", { error: error.message, organizationId });
         return null;
     }
 };

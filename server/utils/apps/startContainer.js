@@ -1,3 +1,5 @@
+const logger = require("../logger");
+
 module.exports.startContainer = startContainer = (ssh, ws, appId, resolve, reject, useStandalone = true, cmdPrefix) => {
     if (!resolve || !reject) {
         return new Promise((resolve, reject) => {
@@ -9,7 +11,7 @@ module.exports.startContainer = startContainer = (ssh, ws, appId, resolve, rejec
 
     ssh.exec(command, (err, stream) => {
         if (err) {
-            console.log(err)
+            logger.verbose("Failed to execute container start command", { appId, error: err.message });
             return reject(new Error("Failed to start container"));
         }
         stream.on("data", (data) => {

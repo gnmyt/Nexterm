@@ -3,13 +3,14 @@ const { Agent } = require("https");
 const { createTicket, getNodeForServer } = require("../../controllers/pve");
 const Integration = require("../../models/Integration");
 const Credential = require("../../models/Credential");
+const logger = require("../../utils/logger");
 
 const checkPVEStatus = async (entry) => {
     try {
         const { integrationId } = entry;
         
         if (!integrationId) {
-            console.warn(`Entry ${entry.id} (${entry.name}) missing integration ID`);
+            logger.warn(`Entry missing integration ID`, { entryId: entry.id, name: entry.name });
             return "offline";
         }
 
@@ -57,7 +58,7 @@ const checkPVEStatus = async (entry) => {
         }
         
         if (!vmid) {
-            console.warn(`Entry ${entry.id} (${entry.name}) missing VMID`);
+            logger.warn(`Entry missing VMID`, { entryId: entry.id, name: entry.name });
             return "offline";
         }
 
@@ -67,7 +68,7 @@ const checkPVEStatus = async (entry) => {
         } else if (entry.type === "pve-lxc" || entry.type === "pve-shell") {
             resourceType = "lxc";
         } else {
-            console.warn(`Unknown PVE entry type: ${entry.type}`);
+            logger.warn(`Unknown PVE entry type`, { entryId: entry.id, type: entry.type });
             return "offline";
         }
 
@@ -89,7 +90,7 @@ const checkPVEStatus = async (entry) => {
             return "offline";
         }
         
-        console.error(`Error checking PVE status for entry ${entry.id}:`, error.message);
+        logger.error(`Error checking PVE status`, { entryId: entry.id, error: error.message });
         return "offline";
     }
 }

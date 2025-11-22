@@ -1,4 +1,5 @@
 const { Router } = require("express");
+const logger = require("../utils/logger");
 const auditController = require("../controllers/audit");
 const { getAuditLogsValidation, updateOrganizationAuditSettingsValidation } = require("../validations/audit");
 const { validateSchema } = require("../utils/schema");
@@ -41,7 +42,7 @@ app.get("/logs", async (req, res) => {
 
         res.json(result);
     } catch (error) {
-        console.error("Error in audit logs route:", error);
+        logger.error("Error in audit logs route", { error: error.message, stack: error.stack });
         res.status(500).json({ message: "An error occurred while retrieving audit logs" });
     }
 });
@@ -60,7 +61,7 @@ app.get("/metadata", async (req, res) => {
     try {
         res.json(await auditController.getAuditMetadata());
     } catch (error) {
-        console.error("Error in audit metadata route:", error);
+        logger.error("Error in audit metadata route", { error: error.message });
         res.status(500).json({ message: "An error occurred while retrieving audit metadata" });
     }
 });
@@ -87,7 +88,7 @@ app.get("/organizations/:id/settings", async (req, res) => {
 
         res.json(result);
     } catch (error) {
-        console.error("Error getting organization audit settings:", error);
+        logger.error("Error getting organization audit settings", { organizationId: req.params.id, error: error.message });
         res.status(500).json({ message: "An error occurred while retrieving audit settings" });
     }
 });
@@ -118,7 +119,7 @@ app.patch("/organizations/:id/settings", async (req, res) => {
 
         res.json(result);
     } catch (error) {
-        console.error("Error updating organization audit settings:", error);
+        logger.error("Error updating organization audit settings", { organizationId: req.params.id, error: error.message });
         res.status(500).json({ message: "An error occurred while updating audit settings" });
     }
 });

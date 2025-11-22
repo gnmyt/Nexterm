@@ -1,6 +1,7 @@
 const Entry = require("../models/Entry");
 const { checkServerStatus } = require("../hooks/status/portHook");
 const { checkPVEStatus } = require("../hooks/status/pveHook");
+const logger = require("./logger");
 
 let statusCheckInterval = null;
 let isRunning = false;
@@ -37,11 +38,19 @@ const checkEntryWithTimeout = async (entry, timeout) => {
 
 
 const processBatch = async (entries) => {
+    logger.verbose(`Processing status check batch`, { batchSize: entries.length });
     const checks = entries.map(entry => checkEntryWithTimeout(entry, BATCH_TIMEOUT));
 
     const results = await Promise.all(checks);
 
-    return results.filter(result => result.status !== null);
+    const validResults = results.filter(result => result.status !== null);
+    logger.verbose(`Batch processing complete`, { 
+        total: results.length, 
+        valid: validResults.length, 
+        timeout: results.length - validResults.length 
+    });
+
+    return validResults;
 };
 
 const listAllServers = async () => {
@@ -55,7 +64,7 @@ const listAllServers = async () => {
 
         return entries;
     } catch (error) {
-        console.error("Error fetching entries for status check:", error.message);
+        logger.error(`Error fetching entries for status check`, { error: error.message });
         return [];
     }
 };
@@ -64,42 +73,63 @@ const updateStatuses = async (results) => {
     if (results.length === 0) return;
 
     try {
+        logger.verbose(`Updating entry statuses`, { count: results.length });
         await Promise.all(
             results.map(({ id, status }) =>
                 Entry.update({ status }, { where: { id } }),
             ),
         );
+        logger.debug(`Status updates completed`, { 
+            entries: results.map(r => ({ id: r.id, status: r.status })) 
+        });
 
     } catch (error) {
-        console.error("Error updating entry statuses:", error.message);
+        logger.error(`Error updating entry statuses`, { error: error.message });
     }
 }
 
 const runStatusCheck = async () => {
-    if (isRunning) return;
+    if (isRunning) {
+        logger.debug(`Status check already running, skipping cycle`);
+        return;
+    }
 
     isRunning = true;
+    logger.verbose(`Starting status check cycle`);
 
     try {
         const entries = await listAllServers();
 
         if (entries.length === 0) {
+            logger.verbose(`No entries to check`);
             isRunning = false;
             return;
         }
+
+        logger.info(`Checking status for ${entries.length} entries`, { 
+            batchSize: BATCH_SIZE, 
+            batches: Math.ceil(entries.length / BATCH_SIZE) 
+        });
 
         const allResults = [];
 
         for (let i = 0; i < entries.length; i += BATCH_SIZE) {
             const batch = entries.slice(i, i + BATCH_SIZE);
+            logger.verbose(`Processing batch ${Math.floor(i / BATCH_SIZE) + 1}`, { 
+                entries: batch.map(e => ({ id: e.id, type: e.type, name: e.name })) 
+            });
 
             const batchResults = await processBatch(batch);
             allResults.push(...batchResults);
         }
 
         await updateStatuses(allResults);
+        logger.info(`Status check cycle completed`, { 
+            totalChecked: entries.length, 
+            updated: allResults.length 
+        });
     } catch (error) {
-        console.error("Error in status check cycle:", error.message);
+        logger.error(`Error in status check cycle`, { error: error.message });
     } finally {
         isRunning = false;
     }
@@ -107,8 +137,11 @@ const runStatusCheck = async () => {
 
 const startStatusChecker = (interval = CHECK_INTERVAL) => {
     if (statusCheckInterval !== null) {
+        logger.warn(`Status checker already running`);
         return;
     }
+
+    logger.system(`Starting status checker`, { interval: interval, batchSize: BATCH_SIZE });
 
     runStatusCheck();
 
@@ -117,6 +150,7 @@ const startStatusChecker = (interval = CHECK_INTERVAL) => {
 
 const stopStatusChecker = () => {
     if (statusCheckInterval !== null) {
+        logger.system(`Stopping status checker`);
         clearInterval(statusCheckInterval);
         statusCheckInterval = null;
     }
