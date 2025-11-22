@@ -37,9 +37,16 @@ module.exports = async (ws, req) => {
 
         ws.on("close", async () => {
             await updateAuditLogWithSessionDuration(sshAuditLogId, connectionStartTime);
+            
+            if (serverSession) {
+                const session = SessionManager.get(serverSession.sessionId);
+                if (session && session.isHibernated) return;
+
+                SessionManager.remove(serverSession.sessionId);
+            }
+            
             ssh.end();
             if (ssh._jumpConnections) ssh._jumpConnections.forEach(conn => conn.ssh.end());
-            if (serverSession) SessionManager.remove(serverSession.sessionId);
         });
 
         logger.system(`Authorized SFTP connection to ${entry.config.ip} with identity ${identity.name}`, {
@@ -49,8 +56,6 @@ module.exports = async (ws, req) => {
         });
 
         ssh.on("ready", async () => {
-            if (serverSession) SessionManager.setConnection(serverSession.sessionId, { ssh, sshAuditLogId });
-
             const sftpAuditLogId = await createAuditLog({
                 accountId: user.id,
                 organizationId: entry.organizationId,
@@ -67,6 +72,8 @@ module.exports = async (ws, req) => {
                     logger.error("SFTP error", { error: err.message, entryId: entry.id });
                     return;
                 }
+
+                if (serverSession) SessionManager.setConnection(serverSession.sessionId, { ssh, sftp, sshAuditLogId, sftpAuditLogId });
 
                 ws.send(Buffer.from([OPERATIONS.READY]));
 
