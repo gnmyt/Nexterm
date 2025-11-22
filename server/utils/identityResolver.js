@@ -6,7 +6,9 @@ const resolveIdentity = async (entry, identityId) => {
     const isTelnet = entry.type === 'telnet' || (entry.type === 'server' && entry.config?.protocol === 'telnet');
 
     if (identityId) {
-        return await Identity.findByPk(identityId);
+        const identity = await Identity.findByPk(identityId);
+        if (identity) return identity;
+        return { identity: null, requiresIdentity: !isPveEntry && !isTelnet };
     }
 
     const entryIdentities = await EntryIdentity.findAll({
@@ -15,7 +17,8 @@ const resolveIdentity = async (entry, identityId) => {
     });
 
     if (entryIdentities.length > 0) {
-        return await Identity.findByPk(entryIdentities[0].identityId);
+        const identity = await Identity.findByPk(entryIdentities[0].identityId);
+        if (identity) return identity;
     }
 
     return { identity: null, requiresIdentity: !isPveEntry && !isTelnet };
