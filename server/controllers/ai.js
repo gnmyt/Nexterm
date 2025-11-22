@@ -1,4 +1,5 @@
 const AISettings = require("../models/AISettings");
+const logger = require("../utils/logger");
 
 const SYSTEM_PROMPT = process.env.AI_SYSTEM_PROMPT || `You are a Linux command generator assistant. Your job is to generate appropriate Linux/Unix shell commands based on user requests.
 
@@ -121,7 +122,7 @@ module.exports.testAIConnection = async () => {
 
         return { success: true, message: "Connection test successful" };
     } catch (error) {
-        console.error("AI connection test failed:", error);
+        logger.error("AI connection test failed", { error: error.message, stack: error.stack });
         return { code: 500, message: `Connection test failed: ${error.message}` };
     }
 };
@@ -182,7 +183,7 @@ module.exports.getAvailableModels = async () => {
 
             return { models: chatModels || [] };
         } catch (error) {
-            console.error("Error fetching OpenAI models:", error);
+            logger.error("Error fetching OpenAI models", { error: error.message });
             return { models: [] };
         }
     } else {

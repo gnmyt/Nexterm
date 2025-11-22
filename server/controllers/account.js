@@ -3,6 +3,7 @@ const Account = require("../models/Account");
 const Folder = require("../models/Folder");
 const Identity = require("../models/Identity");
 const Session = require("../models/Session");
+const logger = require("../utils/logger");
 
 module.exports.createAccount = async (configuration, firstTimeSetup = true) => {
     if (await Account.count() > 0 && firstTimeSetup)
@@ -18,7 +19,9 @@ module.exports.createAccount = async (configuration, firstTimeSetup = true) => {
     const password = await hash(configuration.password, salt);
 
     // Create the account
-    await Account.create({ ...configuration, password, role: firstTimeSetup ? "admin" : "user" });
+    const newAccount = await Account.create({ ...configuration, password, role: firstTimeSetup ? "admin" : "user" });
+
+    logger.system(`Account created`, { accountId: newAccount.id, username: newAccount.username, role: newAccount.role, firstTimeSetup });
 };
 
 module.exports.deleteAccount = async (id) => {
@@ -35,6 +38,8 @@ module.exports.deleteAccount = async (id) => {
     await Session.destroy({ where: { accountId: id } });
 
     await Account.destroy({ where: { id } });
+
+    logger.system(`Account deleted`, { accountId: id, username: account.username });
 }
 
 module.exports.updateName = async (id, configuration) => {
@@ -76,6 +81,8 @@ module.exports.updateRole = async (id, role) => {
         return { code: 108, message: "The provided role is invalid" };
 
     await Account.update({ role }, { where: { id } });
+
+    logger.system(`Account role updated`, { accountId: id, username: account.username, oldRole: account.role, newRole: role });
 }
 
 module.exports.updateTOTP = async (id, status) => {

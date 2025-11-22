@@ -1,4 +1,5 @@
 const MonitoringData = require("../models/MonitoringData");
+const logger = require("../utils/logger");
 const Entry = require("../models/Entry");
 const { Op } = require("sequelize");
 const { validateEntryAccess } = require("./entry");
@@ -63,7 +64,7 @@ module.exports.getServerMonitoring = async (accountId, entryId, timeRange = "1h"
             latest: latestData || null,
         };
     } catch (error) {
-        console.error("Error getting server monitoring:", error);
+        logger.error("Error getting server monitoring", { entryId, error: error.message });
         return { code: 500, message: "Internal server error" };
     }
 };
@@ -124,7 +125,7 @@ module.exports.getAllServersMonitoring = async (accountId) => {
             };
         });
     } catch (error) {
-        console.error("Error getting all servers monitoring:", error);
+        logger.error("Error getting all servers monitoring", { error: error.message });
         return { code: 500, message: "Internal server error" };
     }
 };

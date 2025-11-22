@@ -1,4 +1,5 @@
 const ClientConnection = require('../lib/ClientConnection.js');
+const logger = require('../utils/logger');
 
 module.exports = async (ws, settings) => {
     try {
@@ -13,7 +14,7 @@ module.exports = async (ws, settings) => {
 
         new ClientConnection(ws, this.clientOptions, settings);
     } catch (error) {
-        console.error("Error in guacamoleProxy:", error);
+        logger.error("Error in guacamoleProxy", { error: error.message, stack: error.stack });
         ws.close(1011, "Internal server error");
     }
 }

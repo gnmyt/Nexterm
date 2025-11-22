@@ -9,6 +9,7 @@ const { Op } = require("sequelize");
 const OrganizationMember = require("../models/OrganizationMember");
 const { listIdentities } = require("./identity");
 const { createAuditLog, AUDIT_ACTIONS, RESOURCE_TYPES } = require("./audit");
+const logger = require("../utils/logger");
 
 const validateEntryAccess = async (accountId, entry, errorMessage = "You don't have permission to access this entry") => {
     if (!entry) return { code: 401, message: "Entry does not exist" };
@@ -150,6 +151,8 @@ module.exports.createEntry = async (accountId, configuration) => {
         }
     });
 
+    logger.info(`Entry created`, { entryId: entry.id, name: entry.name, type: entry.type });
+
     return entry;
 };
 
@@ -169,6 +172,8 @@ module.exports.deleteEntry = async (accountId, entryId) => {
         resourceId: entryId,
         details: { name: entry.name, folderId: entry.folderId }
     });
+
+    logger.info(`Entry deleted`, { entryId, name: entry.name });
 
     return { success: true };
 };
@@ -404,6 +409,8 @@ module.exports.duplicateEntry = async (accountId, entryId) => {
         details: { name: newEntry.name, folderId: newEntry.folderId }
     });
 
+    logger.info(`Entry duplicated`, { originalEntryId: entryId, newEntryId: newEntry.id, name: newEntry.name });
+
     return newEntry;
 };
 
@@ -471,6 +478,8 @@ module.exports.importSSHConfig = async (accountId, configuration) => {
             results.details.push({ host: serverData.name, status: 'error', reason: error.message });
         }
     }
+
+    logger.info(`SSH config import completed`, { imported: results.imported, skipped: results.skipped, errors: results.errors });
 
     return {
         message: `SSH config import: ${results.imported} imported, ${results.skipped} skipped, ${results.errors} errors`,

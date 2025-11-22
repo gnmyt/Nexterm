@@ -1,3 +1,4 @@
+const logger = require("../utils/logger");
 const axios = require("axios");
 const https = require("https");
 const { Agent } = require("https");
@@ -162,7 +163,7 @@ module.exports.getAllResources = async (server = { ip: "", port: 0, username: ""
                 resources: [...resources.qemu, ...resources.lxc, resources.shell],
             });
         } catch (error) {
-            console.error(`Failed to fetch resources for node ${node.node}:`, error.message);
+            logger.error("Failed to fetch resources for node", { node: node.node, error: error.message });
             allResources.push({
                 node: node.node,
                 status: 'offline',

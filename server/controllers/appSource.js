@@ -1,4 +1,5 @@
 const AppSource = require("../models/AppSource");
+const logger = require("../utils/logger");
 const fs = require("fs");
 const axios = require("axios");
 const decompress = require("decompress");
@@ -93,7 +94,7 @@ const parseAppSource = async (name, sourceDir) => {
 
             if (error) {
                 const message = error?.details[0].message || "No message provided";
-                console.error("Skipping app source due to validation error:", message);
+                logger.error("Skipping app source due to validation error", { message, file });
 
                 continue;
             }
@@ -121,15 +122,15 @@ module.exports.refreshAppSources = async () => {
             await extractNextermFiles(path, process.cwd() + "/data/sources/" + appSource.name);
 
             await fs.promises.unlink(path)
-                .catch(err => console.error("Error deleting downloaded file:", err));
+                .catch(err => logger.error("Error deleting downloaded file", { error: err.message }));
 
             await parseAppSource(appSource.name, process.cwd() + "/data/sources/" + appSource.name);
         } catch (err) {
-            console.error(`Error refreshing app source ${appSource.name}:`, err.message);
+            logger.error("Error refreshing app source", { appSource: appSource.name, error: err.message });
         }
     }
 
-    console.log("Refreshed app sources");
+    logger.info("Refreshed app sources");
 
     refreshScripts();
 };
