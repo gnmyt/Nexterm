@@ -1,0 +1,56 @@
+@use "@/common/styles/colors"
+
+.direct-connect-dialog
+  display: flex
+  flex-direction: column
+  gap: 20px
+  padding: 20px 24px 24px 24px
+  width: 420px
+  max-width: 90vw
+
+  .direct-connect-header
+    h2
+      margin: 0
+      font-size: 1.5rem
+      color: colors.$white
+
+  .direct-connect-content
+    display: flex
+    flex-direction: column
+    gap: 16px
+
+    .identity-section
+      display: flex
+      flex-direction: column
+      gap: 16px
+
+      .name-row
+        display: grid
+        grid-template-columns: 4fr 1fr
+        gap: 1rem
+
+      .form-group
+        display: flex
+        flex-direction: column
+        gap: 6px
+
+        label
+          font-size: 0.85rem
+          font-weight: 500
+          color: colors.$white
+
+        .keyfile-status
+          display: flex
+          align-items: center
+          gap: 6px
+          margin-top: 6px
+          color: colors.$success
+          font-size: 0.85rem
+
+          svg
+            width: 16px
+            height: 16px
+
+  .direct-connect-button
+    width: 100%
+    margin-top: 8px

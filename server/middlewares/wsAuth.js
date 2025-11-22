@@ -72,9 +72,11 @@ module.exports = async (ws, req) => {
 
     const { user, entry, session, serverSession } = baseAuth;
     let { identityId, connectionReason, containerId } = req.query;
+    let directIdentity = null;
 
     if (serverSession) {
         if (serverSession.configuration?.identityId) identityId = serverSession.configuration.identityId;
+        if (serverSession.configuration?.directIdentity) directIdentity = serverSession.configuration.directIdentity;
         if (serverSession.connectionReason) connectionReason = serverSession.connectionReason;
     }
 
@@ -88,7 +90,7 @@ module.exports = async (ws, req) => {
         }
     }
 
-    const result = await resolveIdentity(entry, identityId);
+    const result = await resolveIdentity(entry, identityId, directIdentity);
     const identity = result?.identity !== undefined ? result.identity : result;
 
     if (result.requiresIdentity && !identity) {

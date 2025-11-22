@@ -10,6 +10,7 @@ import ViewContainer from "@/pages/Servers/components/ViewContainer";
 import ProxmoxDialog from "@/pages/Servers/components/ProxmoxDialog";
 import SSHConfigImportDialog from "@/pages/Servers/components/SSHConfigImportDialog";
 import ConnectionReasonDialog from "@/pages/Servers/components/ConnectionReasonDialog";
+import DirectConnectDialog from "@/pages/Servers/components/DirectConnectDialog";
 import { mdiStar } from "@mdi/js";
 import { siDiscord } from "simple-icons";
 import { useActiveSessions } from "@/common/contexts/SessionContext.jsx";
@@ -25,6 +26,8 @@ export const Servers = () => {
     const [proxmoxDialogOpen, setProxmoxDialogOpen] = useState(false);
     const [sshConfigImportDialogOpen, setSSHConfigImportDialogOpen] = useState(false);
     const [connectionReasonDialogOpen, setConnectionReasonDialogOpen] = useState(false);
+    const [directConnectDialogOpen, setDirectConnectDialogOpen] = useState(false);
+    const [directConnectServer, setDirectConnectServer] = useState(null);
     const [pendingConnection, setPendingConnection] = useState(null);
 
     const [currentFolderId, setCurrentFolderId] = useState(null);
@@ -132,14 +135,17 @@ export const Servers = () => {
         performConnection(serverObj, identity, null, "sftp");
     };
 
-    const performConnection = async (server, identity, connectionReason = null, type = null) => {
+    const performConnection = async (server, identity, connectionReason = null, type = null, directIdentity = null) => {
         try {
-            const session = await postRequest("/connections", {
+            const payload = {
                 entryId: server.id,
                 identityId: identity?.id,
                 connectionReason,
                 type
-            });
+            };
+
+            if (directIdentity) payload.directIdentity = directIdentity;
+            const session = await postRequest("/connections", payload);
 
             const sessionData = {
                 server,
@@ -168,8 +174,13 @@ export const Servers = () => {
 
     const handleConnectionReasonProvided = (reason) => {
         if (pendingConnection) {
-            performConnection(pendingConnection.server, pendingConnection.identity,
-                reason, pendingConnection.type || null);
+            performConnection(
+                pendingConnection.server, 
+                pendingConnection.identity,
+                reason, 
+                pendingConnection.type || null,
+                pendingConnection.directIdentity || null
+            );
             setPendingConnection(null);
         }
         setConnectionReasonDialogOpen(false);
@@ -236,6 +247,32 @@ export const Servers = () => {
         setCurrentFolderId(null);
     };
 
+    const openDirectConnect = (server) => {
+        setDirectConnectServer(server);
+        setDirectConnectDialogOpen(true);
+    };
+
+    const closeDirectConnectDialog = () => {
+        setDirectConnectDialogOpen(false);
+        setDirectConnectServer(null);
+    };
+
+    const handleDirectConnect = (directIdentity) => {
+        if (!directConnectServer) return;
+
+        const requiresReason = checkConnectionReasonRequired(directConnectServer.id, servers);
+        if (requiresReason) {
+            setPendingConnection({ 
+                server: directConnectServer, 
+                identity: null, 
+                directIdentity 
+            });
+            setConnectionReasonDialogOpen(true);
+        } else {
+            performConnection(directConnectServer, null, null, null, directIdentity);
+        }
+    };
+
     useEffect(() => {
         if (!servers) return;
 
@@ -282,6 +319,12 @@ export const Servers = () => {
             <SSHConfigImportDialog open={sshConfigImportDialogOpen} onClose={closeSSHConfigImportDialog}
                 currentFolderId={currentFolderId}
                 currentOrganizationId={currentOrganizationId} />
+            <DirectConnectDialog 
+                open={directConnectDialogOpen} 
+                onClose={closeDirectConnectDialog}
+                server={directConnectServer}
+                onConnect={handleDirectConnect}
+            />
             <ConnectionReasonDialog
                 isOpen={connectionReasonDialogOpen}
                 onClose={handleConnectionReasonCanceled}
@@ -297,7 +340,8 @@ export const Servers = () => {
                 setSSHConfigImportDialogOpen={() => setSSHConfigImportDialogOpen(true)}
                 setCurrentFolderId={setCurrentFolderId} setCurrentOrganizationId={setCurrentOrganizationId}
                 setEditServerId={setEditServerId} openSFTP={openSFTP}
-                hibernatedSessions={hibernatedSessions} resumeSession={resumeConnection} />
+                hibernatedSessions={hibernatedSessions} resumeSession={resumeConnection}
+                openDirectConnect={openDirectConnect} />
             {activeSessions.length === 0 && <div className="welcome-area">
                 <div className="area-left">
                     <h1>Hi, <span>{user?.firstName || "User"} {user?.lastName || "name"}</span>!</h1>

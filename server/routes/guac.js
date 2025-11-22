@@ -33,7 +33,12 @@ module.exports = async (ws, req) => {
                 user: user.username,
             });
 
-            const credentials = await getIdentityCredentials(identity.id);
+            let credentials;
+            if (identity.isDirect && identity.directCredentials) {
+                credentials = identity.directCredentials;
+            } else {
+                credentials = await getIdentityCredentials(identity.id);
+            }
 
             logger.verbose(`Retrieved identity credentials`, {
                 identityId: identity.id,

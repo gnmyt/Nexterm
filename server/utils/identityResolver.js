@@ -1,9 +1,24 @@
 const Identity = require('../models/Identity');
 const EntryIdentity = require('../models/EntryIdentity');
 
-const resolveIdentity = async (entry, identityId) => {
+const resolveIdentity = async (entry, identityId, directIdentity = null) => {
     const isPveEntry = entry.type?.startsWith('pve-');
     const isTelnet = entry.type === 'telnet' || (entry.type === 'server' && entry.config?.protocol === 'telnet');
+
+    if (directIdentity) {
+        return {
+            id: null,
+            name: 'Direct Connection',
+            username: directIdentity.username,
+            type: directIdentity.type,
+            isDirect: true,
+            directCredentials: {
+                password: directIdentity.password,
+                sshKey: directIdentity.sshKey,
+                passphrase: directIdentity.passphrase
+            }
+        };
+    }
 
     if (identityId) {
         const identity = await Identity.findByPk(identityId);

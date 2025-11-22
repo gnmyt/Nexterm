@@ -115,7 +115,8 @@ export const ServerList = ({
     openSFTP,
     setCurrentOrganizationId,
     hibernatedSessions = [],
-    resumeSession
+    resumeSession,
+    openDirectConnect
 }) => {
     const { t } = useTranslation();
     const { servers, loadServers, getServerById } = useContext(ServerContext);
@@ -627,7 +628,16 @@ export const ServerList = ({
                                     </>
                                 )}
 
+                                {server?.type === "server" && (server?.protocol === "ssh" || server?.protocol === "telnet" || server?.protocol === "rdp" || server?.protocol === "vnc") && (
+                                    <ContextMenuItem
+                                        icon={mdiCursorDefaultClick}
+                                        label={t("servers.contextMenu.quickConnect")}
+                                        onClick={() => openDirectConnect(server)}
+                                    />
+                                )}
+
                                 <ContextMenuSeparator />
+
                                 <ContextMenuItem
                                     icon={mdiPencil}
                                     label={t("servers.contextMenu.editServer")}

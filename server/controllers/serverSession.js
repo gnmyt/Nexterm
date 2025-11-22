@@ -4,7 +4,7 @@ const { validateEntryAccess } = require("./entry");
 const { getOrganizationAuditSettingsInternal } = require("./audit");
 const { resolveIdentity } = require("../utils/identityResolver");
 
-const createSession = async (accountId, entryId, identityId, connectionReason, type = null) => {
+const createSession = async (accountId, entryId, identityId, connectionReason, type = null, directIdentity = null) => {
     const entry = await Entry.findByPk(entryId);
     if (!entry) {
         return { code: 404, message: "Entry not found" };
@@ -15,6 +15,10 @@ const createSession = async (accountId, entryId, identityId, connectionReason, t
         return { code: 403, message: "Access denied" };
     }
 
+    if (directIdentity && entry.type?.startsWith('pve-')) {
+        return { code: 400, message: "Direct connections are not supported for Proxmox entries" };
+    }
+
     if (entry.organizationId) {
         const auditSettings = await getOrganizationAuditSettingsInternal(entry.organizationId);
         if (auditSettings?.requireConnectionReason && !connectionReason) {
@@ -22,7 +26,7 @@ const createSession = async (accountId, entryId, identityId, connectionReason, t
         }
     }
 
-    const result = await resolveIdentity(entry, identityId);
+    const result = await resolveIdentity(entry, identityId, directIdentity);
     const identity = result?.identity !== undefined ? result.identity : result;
 
     if (result.requiresIdentity && !identity) {
@@ -32,6 +36,7 @@ const createSession = async (accountId, entryId, identityId, connectionReason, t
     const configuration = {
         identityId: identity ? identity.id : null,
         type: type || null,
+        directIdentity: directIdentity || null,
     };
 
     const session = SessionManager.create(accountId, entryId, configuration, connectionReason);

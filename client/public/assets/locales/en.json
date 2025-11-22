@@ -647,6 +647,7 @@
       "pve": "PVE",
       "sshConfig": "SSH-Config",
       "connect": "Connect",
+      "quickConnect": "Quick Connect",
       "openSFTP": "Open SFTP",
       "editServer": "Edit Server",
       "editIntegration": "Edit Integration",
