@@ -1,4 +1,6 @@
 import React, { createContext, useEffect, useRef, useState } from "react";
+import Icon from "@mdi/react";
+import { mdiClose } from "@mdi/js";
 import "./styles.sass";
 
 export const DialogContext = createContext({});
@@ -51,6 +53,11 @@ export const DialogProvider = ({ disableClosing, open, children, onClose }) => {
                 <div className={`dialog-area ${isClosing ? "dialog-area-hidden" : ""}`} ref={areaRef}>
                     <div className={`dialog ${isClosing ? "dialog-hidden" : ""}`} ref={ref}
                         onAnimationEnd={handleAnimationEnd}>
+                        {!disableClosing && (
+                            <button className="dialog-close-btn" onClick={closeInner} aria-label="Close dialog">
+                                <Icon path={mdiClose} size={0.9} />
+                            </button>
+                        )}
                         {children}
                     </div>
                 </div>
