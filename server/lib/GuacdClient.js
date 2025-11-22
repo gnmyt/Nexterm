@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Modified by Mathias Wagner, 2024
+ * Modified by Mathias Wagner, 2025
  */
 
 const Net = require('net');
@@ -173,6 +173,17 @@ class GuacdClient {
 
         if (bufferPartToSend) {
             this.receivedBuffer = this.receivedBuffer.substring(delimiterPos + 1, this.receivedBuffer.length);
+
+            if (!this.guacdConnectionId && bufferPartToSend.includes('5.ready')) {
+                const parts = bufferPartToSend.split(',');
+                if (parts.length >= 2) {
+                    const match = bufferPartToSend.match(/5\.ready,(\d+)\.([^;]+);/);
+                    if (match && match[2]) {
+                        this.guacdConnectionId = match[2];
+                    }
+                }
+            }
+
             this.clientConnection.send(bufferPartToSend);
         }
     }
