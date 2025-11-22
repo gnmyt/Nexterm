@@ -1,4 +1,5 @@
 const Sequelize = require("sequelize");
+const logger = require("../utils/logger");
 const db = require("../utils/database");
 
 module.exports = db.define("integrations", {
@@ -41,7 +42,7 @@ module.exports = db.define("integrations", {
                     try {
                         integration.config = JSON.parse(integration.config);
                     } catch (e) {
-                        console.error('Failed to parse config:', e);
+                        logger.error('Failed to parse Integration config', { integrationId: integration.id, error: e.message });
                     }
                 }
             };

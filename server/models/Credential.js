@@ -1,4 +1,5 @@
 const Sequelize = require("sequelize");
+const logger = require("../utils/logger");
 const db = require("../utils/database");
 const { decrypt, encrypt } = require("../utils/encryption");
 
@@ -67,7 +68,7 @@ module.exports = db.define("credentials", {
                     try {
                         obj.secret = decrypt(obj.secretEncrypted, obj.secretIV, obj.secretAuthTag);
                     } catch (err) {
-                        console.error(`Failed to decrypt secret for credential ${obj.id}`);
+                        logger.error("Failed to decrypt secret for credential", { credentialId: obj.id, error: err.message });
                     }
                 }
             };
