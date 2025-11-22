@@ -1,5 +1,6 @@
 const { WebSocket } = require("ws");
 const { updateAuditLogWithSessionDuration } = require("../controllers/audit");
+const logger = require("../utils/logger");
 
 module.exports = async (ws, context) => {
     const { integration, entry, containerId, ticket, node, vncTicket, auditLogId } = context;
@@ -40,7 +41,7 @@ module.exports = async (ws, context) => {
                     }
                 }, 30000);
             } catch (error) {
-                console.error("Error during LXC socket open:", error.message);
+                logger.error(`Error during LXC socket open`, { error: error.message, vmid });
                 if (keepAliveTimer) clearInterval(keepAliveTimer);
                 lxcSocket.close();
                 if (ws.readyState === ws.OPEN) {
@@ -50,7 +51,7 @@ module.exports = async (ws, context) => {
         });
 
         lxcSocket.on("error", async (error) => {
-            console.error("LXC socket error:", error.message);
+            logger.error(`LXC socket error`, { error: error.message, vmid });
             await updateAuditLogWithSessionDuration(auditLogId, connectionStartTime);
             if (keepAliveTimer) clearInterval(keepAliveTimer);
             if (lxcSocket.readyState === lxcSocket.OPEN) {
@@ -74,7 +75,7 @@ module.exports = async (ws, context) => {
                 data = data.toString();
 
                 if (lxcSocket.readyState !== lxcSocket.OPEN) {
-                    console.warn("Attempted to send data to closed LXC socket");
+                    logger.warn(`Attempted to send data to closed LXC socket`, { vmid });
                     return;
                 }
 
@@ -92,7 +93,7 @@ module.exports = async (ws, context) => {
                     lxcSocket.send("0:" + data.length + ":" + data);
                 }
             } catch (error) {
-                console.error("Error sending message to LXC socket:", error.message);
+                logger.error(`Error sending message to LXC socket`, { error: error.message, vmid });
             }
         });
 
@@ -104,7 +105,7 @@ module.exports = async (ws, context) => {
                     ws.send(message);
                 }
             } catch (error) {
-                console.error("Error handling LXC socket message:", error.message);
+                logger.error(`Error handling LXC socket message`, { error: error.message, vmid });
             }
         });
     } catch (error) {

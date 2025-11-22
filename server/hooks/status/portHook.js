@@ -1,4 +1,5 @@
 const net = require("net");
+const logger = require("../../utils/logger");
 
 const isRemotePortOpen = (host, port, timeout = 1500) => {
     return new Promise((resolve) => {
@@ -25,14 +26,14 @@ const checkServerStatus = async (entry) => {
         const { ip, port } = entry.config || {};
         
         if (!ip || !port) {
-            console.warn(`Entry ${entry.id} (${entry.name}) missing IP or port configuration`);
+            logger.warn(`Entry missing IP or port configuration`, { entryId: entry.id, name: entry.name });
             return "offline";
         }
 
         const isOpen = await isRemotePortOpen(ip, port, 2000);
         return isOpen ? "online" : "offline";
     } catch (error) {
-        console.error(`Error checking server status for entry ${entry.id}:`, error.message);
+        logger.error(`Error checking server status`, { entryId: entry.id, error: error.message });
         return "offline";
     }
 }

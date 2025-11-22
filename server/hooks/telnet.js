@@ -1,5 +1,6 @@
 const net = require("net");
 const { updateAuditLogWithSessionDuration } = require("../controllers/audit");
+const logger = require("../utils/logger");
 
 module.exports = async (ws, context) => {
     const { entry, auditLogId } = context;
@@ -10,7 +11,7 @@ module.exports = async (ws, context) => {
 
     socket.connect(entry.config.port || 23, entry.config.ip, () => {
         connectionEstablished = true;
-        console.log(`Telnet connection established to ${entry.config.ip}:${entry.config.port || 23}`);
+        logger.info(`Telnet connection established`, { ip: entry.config.ip, port: entry.config.port || 23, entryId: entry.id });
     });
 
     socket.on("data", (data) => {
@@ -27,7 +28,7 @@ module.exports = async (ws, context) => {
     });
 
     socket.on("error", async (error) => {
-        console.error("Telnet error:", error.message);
+        logger.error(`Telnet connection error`, { error: error.message, ip: entry.config.ip, port: entry.config.port || 23 });
         await updateAuditLogWithSessionDuration(auditLogId, connectionStartTime);
         if (ws.readyState === ws.OPEN) {
             ws.close(1011, error.message);
@@ -60,7 +61,7 @@ module.exports = async (ws, context) => {
                 socket.write(data);
             }
         } catch (error) {
-            console.error("Error sending message to telnet:", error.message);
+            logger.error(`Error sending message to telnet`, { error: error.message });
         }
     });
 
