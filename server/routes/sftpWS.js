@@ -2,6 +2,7 @@ const wsAuth = require("../middlewares/wsAuth");
 const { createAuditLog, AUDIT_ACTIONS, RESOURCE_TYPES, updateAuditLogWithSessionDuration } = require("../controllers/audit");
 const { deleteFolderRecursive, searchDirectories, OPERATIONS } = require("../utils/sftpHelpers");
 const { createSSHConnection } = require("../utils/sshConnection");
+const logger = require("../utils/logger");
 
 module.exports = async (ws, req) => {
     const context = await wsAuth(ws, req);
@@ -37,7 +38,11 @@ module.exports = async (ws, req) => {
             if (ssh._jumpConnections) ssh._jumpConnections.forEach(conn => conn.ssh.end());
         });
 
-        console.log(`Authorized SFTP connection to ${entry.config.ip} with identity ${identity.name}`);
+        logger.system(`Authorized SFTP connection to ${entry.config.ip} with identity ${identity.name}`, {
+            entryId: entry.id,
+            identityId: identity.id,
+            username: user.username
+        });
 
         ssh.on("ready", async () => {
             const sftpAuditLogId = await createAuditLog({
@@ -53,7 +58,7 @@ module.exports = async (ws, req) => {
 
             ssh.sftp((err, sftp) => {
                 if (err) {
-                    console.error("SFTP error:", err);
+                    logger.error("SFTP error", { error: err.message, entryId: entry.id });
                     return;
                 }
 
@@ -206,7 +211,7 @@ module.exports = async (ws, req) => {
                         case OPERATIONS.DELETE_FILE:
                             sftp.unlink(payload.path, (err) => {
                                 if (err) {
-                                    console.error("Delete file error:", err);
+                                    logger.warn("Delete file error", { error: err.message, path: payload.path });
                                     return;
                                 }
                                 ws.send(Buffer.from([OPERATIONS.DELETE_FILE]));
@@ -226,7 +231,7 @@ module.exports = async (ws, req) => {
                         case OPERATIONS.DELETE_FOLDER:
                             deleteFolderRecursive(sftp, payload.path, (err) => {
                                 if (err) {
-                                    console.error("Delete folder error:", err);
+                                    logger.warn("Delete folder error", { error: err.message, path: payload.path });
                                     return;
                                 }
                                 ws.send(Buffer.from([OPERATIONS.DELETE_FOLDER]));
@@ -246,7 +251,7 @@ module.exports = async (ws, req) => {
                         case OPERATIONS.RENAME_FILE:
                             sftp.rename(payload.path, payload.newPath, (err) => {
                                 if (err) {
-                                    console.error("Rename file error:", err);
+                                    logger.warn("Rename file error", { error: err.message, path: payload.path, newPath: payload.newPath });
                                     return;
                                 }
                                 ws.send(Buffer.from([OPERATIONS.RENAME_FILE]));
@@ -284,7 +289,7 @@ module.exports = async (ws, req) => {
                             break;
 
                         default:
-                            console.log(`Unknown SFTP operation: ${operation}`);
+                            logger.warn(`Unknown SFTP operation`, { operation });
                     }
                 });
 
@@ -294,7 +299,7 @@ module.exports = async (ws, req) => {
             });
         });
     } catch (error) {
-        console.error("SFTP connection error:", error.message);
+        logger.error("SFTP connection error", { error: error.message, stack: error.stack });
         ws.close(4005, error.message);
     }
 };

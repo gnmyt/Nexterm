@@ -8,6 +8,7 @@ const { createAuditLog, AUDIT_ACTIONS, RESOURCE_TYPES } = require("../controller
 const { validateEntryAccess } = require("../controllers/entry");
 const { getOrganizationAuditSettingsInternal } = require("../controllers/audit");
 const { createSSH } = require("../utils/createSSH");
+const logger = require("../utils/logger");
 
 const app = Router();
 
@@ -95,7 +96,12 @@ app.get("/", async (req, res) => {
         return;
     }
 
-    console.log(`Authorized file download from ${entry.config.ip} with identity ${identity.name}`);
+    logger.system(`Authorized file download from ${entry.config.ip} with identity ${identity.name}`, {
+        entryId: entry.id,
+        identityId: identity.id,
+        username: req.user.username,
+        path
+    });
 
     ssh.on("ready", () => {
         ssh.sftp((err, sftp) => {
