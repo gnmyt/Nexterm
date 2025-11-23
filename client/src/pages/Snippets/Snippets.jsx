@@ -111,8 +111,6 @@ export const Snippets = () => {
                 />
             </PageHeader>
 
-            <hr className="snippets-header-divider" />
-
             <div className="snippets-content-wrapper">
                 <div className="snippets-controls">
                     <div className="snippets-tabs">
