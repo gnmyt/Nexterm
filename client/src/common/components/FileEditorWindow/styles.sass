@@ -1,0 +1,146 @@
+@use "@/common/styles/colors"
+
+.file-editor-window
+  position: fixed
+  display: flex
+  flex-direction: column
+  background-color: colors.$lighter-background
+  border: 1px solid colors.$gray
+  border-radius: 0.75rem
+  box-shadow: 0 12px 48px rgba(0, 0, 0, 0.5), 0 4px 16px rgba(0, 0, 0, 0.3)
+  overflow: hidden
+  animation: slideUp 0.2s cubic-bezier(0.4, 0, 0.2, 1)
+  transition: box-shadow 0.2s ease
+
+  &.dragging
+    cursor: move
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6), 0 8px 24px rgba(0, 0, 0, 0.4)
+
+  &.maximized
+    border-radius: 0
+    animation: none
+
+.file-editor-header
+  display: flex
+  align-items: center
+  justify-content: space-between
+  padding: 1rem 1.5rem
+  background-color: colors.$terminal
+  border-bottom: 1px solid colors.$gray
+  flex-shrink: 0
+  cursor: move
+  user-select: none
+
+  .file-editor-title
+    display: flex
+    align-items: center
+    gap: 0.75rem
+    min-width: 0
+    flex: 1
+
+    svg
+      width: 1.25rem
+      height: 1.25rem
+      color: colors.$primary
+      flex-shrink: 0
+
+    h2
+      margin: 0
+      font-size: 0.95rem
+      font-weight: 600
+      color: colors.$white
+      overflow: hidden
+      text-overflow: ellipsis
+      white-space: nowrap
+      letter-spacing: -0.01em
+
+    .modified-indicator
+      color: colors.$primary
+      font-size: 1.5rem
+      line-height: 0
+      margin-left: -0.5rem
+
+  .file-editor-actions
+    display: flex
+    gap: 0.5rem
+    flex-shrink: 0
+
+    .action-btn
+      display: flex
+      align-items: center
+      justify-content: center
+      width: 2rem
+      height: 2rem
+      background: transparent
+      border: none
+      border-radius: 0.5rem
+      cursor: pointer
+      transition: all 0.1s ease
+      color: colors.$white
+      opacity: 0.9
+      padding: 0
+
+      svg
+        width: 1.125rem
+        height: 1.125rem
+
+      &:hover:not(:disabled)
+        background-color: colors.$gray
+        color: colors.$primary
+
+      &:active:not(:disabled)
+        transform: scale(0.95)
+
+      &:disabled
+        opacity: 0.3
+        cursor: not-allowed
+
+      &.close-btn:hover
+        background-color: colors.$error-opacity
+        color: colors.$error
+
+.file-editor-content
+  flex: 1
+  min-height: 0
+  overflow: hidden
+  position: relative
+
+  > div
+    height: 100%
+    width: 100%
+
+.resize-handle
+  position: absolute
+  bottom: 0
+  right: 0
+  width: 2rem
+  height: 2rem
+  display: flex
+  align-items: center
+  justify-content: center
+  cursor: nwse-resize
+  color: colors.$subtext
+  opacity: 0.5
+  transition: opacity 0.2s ease
+
+  svg
+    width: 1rem
+    height: 1rem
+    transform: rotate(45deg)
+
+  &:hover
+    opacity: 1
+
+@keyframes fadeIn
+  from
+    opacity: 0
+  to
+    opacity: 1
+
+@keyframes slideUp
+  from
+    opacity: 0
+    transform: translateY(20px) scale(0.95)
+  to
+    opacity: 1
+    transform: translateY(0) scale(1)
