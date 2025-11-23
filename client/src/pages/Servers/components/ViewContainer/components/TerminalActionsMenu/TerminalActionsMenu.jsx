@@ -7,7 +7,7 @@ import { useKeymaps, matchesKeybind } from "@/common/contexts/KeymapContext.jsx"
 import { useTranslation } from "react-i18next";
 import "./styles.sass";
 
-export const TerminalActionsMenu = ({ layoutMode, onBroadcastToggle, onSnippetSelected, broadcastEnabled, onKeyboardShortcut, hasGuacamole, fullscreenEnabled, onFullscreenToggle }) => {
+export const TerminalActionsMenu = ({ layoutMode, onBroadcastToggle, onSnippetSelected, broadcastEnabled, onKeyboardShortcut, hasGuacamole, fullscreenEnabled, onFullscreenToggle, activeSession }) => {
     const [menuOpen, setMenuOpen] = useState(false);
     const [showSnippets, setShowSnippets] = useState(false);
     const [showKeyboardShortcuts, setShowKeyboardShortcuts] = useState(false);
@@ -131,6 +131,7 @@ export const TerminalActionsMenu = ({ layoutMode, onBroadcastToggle, onSnippetSe
                 visible={showSnippets}
                 onClose={() => setShowSnippets(false)}
                 onSelect={handleSnippetSelect}
+                activeSession={activeSession}
             />
 
             <KeyboardShortcutsMenu

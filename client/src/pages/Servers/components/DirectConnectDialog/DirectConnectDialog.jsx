@@ -8,11 +8,9 @@ import {
     mdiAccountCircleOutline,
     mdiFileUploadOutline,
     mdiLockOutline,
-    mdiCheck,
 } from "@mdi/js";
 import Input from "@/common/components/IconInput";
 import SelectBox from "@/common/components/SelectBox";
-import Icon from "@mdi/react";
 
 export const DirectConnectDialog = ({ open, onClose, onConnect }) => {
     const { t } = useTranslation();

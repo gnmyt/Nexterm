@@ -136,6 +136,8 @@ export const ServerTabs = ({
     const [showLeftArrow, setShowLeftArrow] = useState(false);
     const [showRightArrow, setShowRightArrow] = useState(false);
 
+    const activeSession = activeSessions.find(session => session.id === activeSessionId);
+
     useEffect(() => {
         const currentSessionIds = activeSessions.map(session => session.id);
         const orderSessionIds = tabOrder.map(id => id);
@@ -231,6 +233,7 @@ export const ServerTabs = ({
                     hasGuacamole={hasGuacamole}
                     fullscreenEnabled={fullscreenEnabled}
                     onFullscreenToggle={onFullscreenToggle}
+                    activeSession={activeSession}
                 />
                 <Icon path={mdiViewSplitVertical} className={`layout-btn ${layoutMode !== "single" ? "active" : ""}`}
                     title={layoutMode === "single" ? "Enable Split View" : "Disable Split View"}
