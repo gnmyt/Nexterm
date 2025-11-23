@@ -155,12 +155,6 @@ export const DirectConnectDialog = ({ open, onClose, onConnect }) => {
                                         autoComplete="off"
                                         onChange={readFile}
                                     />
-                                    {sshKey && (
-                                        <div className="keyfile-status">
-                                            <Icon path={mdiCheck} />
-                                            <span>Key file loaded</span>
-                                        </div>
-                                    )}
                                 </div>
 
                                 <div className="form-group">
