@@ -1,28 +1,28 @@
 import "./styles.sass";
 import { mdiPencil, mdiTrashCan, mdiChevronLeft, mdiChevronRight } from "@mdi/js";
 import Icon from "@mdi/react";
-import { useSnippets } from "@/common/contexts/SnippetContext.jsx";
+import { useScripts } from "@/common/contexts/ScriptContext.jsx";
 import { deleteRequest } from "@/common/utils/RequestUtil.js";
 import { useToast } from "@/common/contexts/ToastContext.jsx";
 import { useTranslation } from "react-i18next";
 import { useState, useMemo } from "react";
 import Button from "@/common/components/Button";
 
-export const SnippetsList = ({ snippets, onEdit, selectedOrganization }) => {
+export const ScriptsList = ({ scripts, onEdit, selectedOrganization }) => {
     const { t } = useTranslation();
-    const { loadSnippets, loadAllSnippets } = useSnippets();
+    const { loadScripts, loadAllScripts } = useScripts();
     const { sendToast } = useToast();
     const [currentPage, setCurrentPage] = useState(1);
     const itemsPerPage = 12;
 
-    const totalPages = useMemo(() => Math.ceil((snippets?.length || 0) / itemsPerPage), [snippets, itemsPerPage]);
+    const totalPages = useMemo(() => Math.ceil((scripts?.length || 0) / itemsPerPage), [scripts, itemsPerPage]);
 
-    const paginatedSnippets = useMemo(() => {
-        if (!snippets) return [];
+    const paginatedScripts = useMemo(() => {
+        if (!scripts) return [];
         const startIndex = (currentPage - 1) * itemsPerPage;
         const endIndex = startIndex + itemsPerPage;
-        return snippets.slice(startIndex, endIndex);
-    }, [snippets, currentPage, itemsPerPage]);
+        return scripts.slice(startIndex, endIndex);
+    }, [scripts, currentPage, itemsPerPage]);
 
     const handlePageChange = (newPage) => {
         if (newPage >= 1 && newPage <= totalPages) {
@@ -30,55 +30,57 @@ export const SnippetsList = ({ snippets, onEdit, selectedOrganization }) => {
         }
     };
 
-    const handleDeleteSnippet = async (id, event) => {
+    const handleDeleteScript = async (id, event) => {
         event.stopPropagation();
         try {
             const queryParams = selectedOrganization ? `?organizationId=${selectedOrganization}` : '';
-            await deleteRequest(`snippets/${id}${queryParams}`);
-            sendToast("Success", t('snippets.messages.success.deleted'));
+            await deleteRequest(`scripts/${id}${queryParams}`);
+            sendToast("Success", t('scripts.messages.success.deleted'));
             if (selectedOrganization) {
-                await loadSnippets(selectedOrganization);
+                await loadScripts(selectedOrganization);
             } else {
-                await loadSnippets();
+                await loadScripts();
             }
-            await loadAllSnippets();
+            await loadAllScripts();
         } catch (error) {
-            sendToast("Error", error.message || t('snippets.messages.errors.deleteFailed'));
+            sendToast("Error", error.message || t('scripts.messages.errors.deleteFailed'));
         }
     };
 
-    const handleEditSnippet = (id, event) => {
+    const handleEditScript = (id, event) => {
         event.stopPropagation();
         onEdit(id);
     };
 
-    if (!snippets || snippets.length === 0) {
+    if (!scripts || scripts.length === 0) {
         return (
-            <div className="snippets-list-container">
-                <div className="empty-snippets">
-                    <p>{t('snippets.list.empty')}</p>
+            <div className="scripts-list-container">
+                <div className="empty-scripts">
+                    <p>{t('scripts.list.empty')}</p>
                 </div>
             </div>
         );
     }
 
     return (
-        <div className="snippets-list-container">
-            <div className="snippet-grid">
-                {paginatedSnippets.map(snippet => (
-                    <div className="snippet-item" key={snippet.id}>
-                        <div className="snippet-info">
-                            <h3>{snippet.name}</h3>
-                            {snippet.description && <p>{snippet.description}</p>}
-                            <pre className="snippet-command">{snippet.command}</pre>
+        <div className="scripts-list-container">
+            <div className="script-grid">
+                {paginatedScripts.map(script => (
+                    <div className="script-item" key={script.id}>
+                        <div className="script-info">
+                            <h3>{script.name}</h3>
+                            {script.description && <p>{script.description}</p>}
+                            <div className="script-preview">
+                                <pre>{script.content?.substring(0, 150)}{script.content?.length > 150 ? '...' : ''}</pre>
+                            </div>
                         </div>
-                        <div className="snippet-actions">
-                            <button className="action-button" onClick={(e) => handleEditSnippet(snippet.id, e)}
-                                    title={t('snippets.list.actions.edit')}>
+                        <div className="script-actions">
+                            <button className="action-button" onClick={(e) => handleEditScript(script.id, e)}
+                                    title={t('scripts.list.actions.edit')}>
                                 <Icon path={mdiPencil} />
                             </button>
-                            <button className="action-button delete" onClick={(e) => handleDeleteSnippet(snippet.id, e)}
-                                    title={t('snippets.list.actions.delete')}>
+                            <button className="action-button delete" onClick={(e) => handleDeleteScript(script.id, e)}
+                                    title={t('scripts.list.actions.delete')}>
                                 <Icon path={mdiTrashCan} />
                             </button>
                         </div>
@@ -86,13 +88,13 @@ export const SnippetsList = ({ snippets, onEdit, selectedOrganization }) => {
                 ))}
             </div>
 
-            {snippets.length > itemsPerPage && (
+            {scripts.length > itemsPerPage && (
                 <div className="pagination">
                     <div className="pagination-info">
                         {t('audit.pagination.showing', {
                             start: ((currentPage - 1) * itemsPerPage) + 1,
-                            end: Math.min(currentPage * itemsPerPage, snippets.length),
-                            total: snippets.length
+                            end: Math.min(currentPage * itemsPerPage, scripts.length),
+                            total: scripts.length
                         })}
                     </div>
 

@@ -7,17 +7,18 @@ import { useToast } from "@/common/contexts/ToastContext.jsx";
 import { useSnippets } from "@/common/contexts/SnippetContext.jsx";
 import { useAI } from "@/common/contexts/AIContext.jsx";
 import IconInput from "@/common/components/IconInput";
-import { mdiFormTextbox, mdiTextBox, mdiRobot } from "@mdi/js";
+import { mdiFormTextbox, mdiTextBox, mdiRobot, mdiCodeBrackets } from "@mdi/js";
+import Icon from "@mdi/react";
 import { useTranslation } from "react-i18next";
 
-export const SnippetDialog = ({ open, onClose, editSnippetId }) => {
+export const SnippetDialog = ({ open, onClose, editSnippetId, selectedOrganization }) => {
     const { t } = useTranslation();
     const [name, setName] = useState("");
     const [command, setCommand] = useState("");
     const [description, setDescription] = useState("");
     const [isGeneratingAI, setIsGeneratingAI] = useState(false);
     const { sendToast } = useToast();
-    const { loadSnippets } = useSnippets();
+    const { loadSnippets, loadAllSnippets } = useSnippets();
     const { isAIAvailable } = useAI();
 
     useEffect(() => {
@@ -32,7 +33,8 @@ export const SnippetDialog = ({ open, onClose, editSnippetId }) => {
 
     const loadSnippetData = async () => {
         try {
-            const snippet = await getRequest(`snippets/${editSnippetId}`);
+            const queryParams = selectedOrganization ? `?organizationId=${selectedOrganization}` : '';
+            const snippet = await getRequest(`snippets/${editSnippetId}${queryParams}`);
             setName(snippet.name);
             setCommand(snippet.command);
             setDescription(snippet.description || "");
@@ -58,16 +60,31 @@ export const SnippetDialog = ({ open, onClose, editSnippetId }) => {
 
         try {
             if (editSnippetId) {
-                await patchRequest(`snippets/${editSnippetId}`, {
-                    name, command,
+                const snippetData = {
+                    name,
+                    command,
                     description: description || undefined,
-                });
+                };
+                const queryParams = selectedOrganization ? `?organizationId=${selectedOrganization}` : '';
+                await patchRequest(`snippets/${editSnippetId}${queryParams}`, snippetData);
                 sendToast("Success", t('snippets.messages.success.updated'));
             } else {
-                await putRequest("snippets", { name, command, description: description || undefined });
+                const snippetData = {
+                    name,
+                    command,
+                    description: description || undefined,
+                    organizationId: selectedOrganization || undefined,
+                };
+                await putRequest("snippets", snippetData);
                 sendToast("Success", t('snippets.messages.success.created'));
             }
-            loadSnippets();
+            
+            if (selectedOrganization) {
+                await loadSnippets(selectedOrganization);
+            } else {
+                await loadSnippets();
+            }
+            await loadAllSnippets();
             onClose();
         } catch (error) {
             sendToast("Error", error.message || t('snippets.messages.errors.saveFailed'));
@@ -98,7 +115,10 @@ export const SnippetDialog = ({ open, onClose, editSnippetId }) => {
         <DialogProvider open={open} onClose={onClose}>
             <div className="snippet-dialog">
                 <div className="snippet-dialog-title">
-                    <h2>{editSnippetId ? t('snippets.dialog.title.edit') : t('snippets.dialog.title.create')}</h2>
+                    <h2>
+                        <Icon path={mdiCodeBrackets} />
+                        {editSnippetId ? t('snippets.dialog.title.edit') : t('snippets.dialog.title.create')}
+                    </h2>
                 </div>
 
                 <form onSubmit={handleSubmit}>

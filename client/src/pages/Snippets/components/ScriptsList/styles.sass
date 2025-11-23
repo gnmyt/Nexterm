@@ -1,11 +1,11 @@
 @use "@/common/styles/colors"
 
-.snippets-list-container
+.scripts-list-container
   display: flex
   flex-direction: column
   gap: 1rem
 
-.snippet-grid
+.script-grid
   display: grid
   grid-template-columns: repeat(auto-fill, minmax(350px, 1fr))
   gap: 1rem
@@ -20,7 +20,7 @@
     grid-template-columns: 1fr
     gap: 0.75rem
     
-.snippet-item
+.script-item
   background-color: colors.$lighter-background
   border-radius: 0.75rem
   padding: 1.25rem
@@ -37,7 +37,7 @@
   &:hover
     border-color: rgba(255, 255, 255, 0.3)
 
-  .snippet-info
+  .script-info
     flex: 1
 
     h3
@@ -57,17 +57,12 @@
       line-height: 1.5
       padding-right: 4.5rem
     
-    .snippet-command
+    .script-preview
       margin: 0.875rem 0 0
       padding: 0.75rem
       background-color: rgba(0, 0, 0, 0.2)
       border: 1px solid colors.$gray
       border-radius: 0.5rem
-      color: colors.$white
-      font-family: 'Consolas', 'Monaco', 'Courier New', monospace
-      font-size: 0.8rem
-      white-space: pre-wrap
-      word-break: break-word
       max-height: 120px
       overflow-y: auto
       scrollbar-width: thin
@@ -83,8 +78,16 @@
       &::-webkit-scrollbar-thumb
         background-color: colors.$gray
         border-radius: 10px
+
+      pre
+        margin: 0
+        color: colors.$white
+        font-family: 'Consolas', 'Monaco', 'Courier New', monospace
+        font-size: 0.8rem
+        white-space: pre-wrap
+        word-break: break-word
   
-  .snippet-actions
+  .script-actions
     display: flex
     gap: 0.375rem
     position: absolute
@@ -182,7 +185,7 @@
         padding: 0.4rem 0.625rem
         min-width: 60px
 
-.empty-snippets
+.empty-scripts
   display: flex
   flex-direction: column
   align-items: center

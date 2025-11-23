@@ -1,0 +1,1 @@
+export { ScriptsList as default } from "./ScriptsList.jsx";
