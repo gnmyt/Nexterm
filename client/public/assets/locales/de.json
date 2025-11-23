@@ -33,7 +33,9 @@
       "noAuthMethodsAvailable": "Keine Authentifizierungsmethoden verfügbar."
     },
     "selectBox": {
-      "defaultOption": "Wähle eine Option aus..."
+      "defaultOption": "Wähle eine Option aus...",
+      "search": "Search...",
+      "noResults": "No results found"
     },
     "sidebar": {
       "settings": "Einstellungen",
@@ -297,9 +299,10 @@
       "firstName": "Vorname",
       "lastName": "Nachname",
       "appearance": "Erscheinungsbild",
-      "appearanceDescription": "Wähle zwischen einem hellen und einem dunklen Theme für deine Oberfläche.",
-      "switchToLight": "In den Light-Mode wechseln",
-      "switchToDark": "In den Dark-Mode wechseln",
+      "appearanceDescription": "Choose your preferred theme. Auto follows your system settings and adjusts based on time of day.",
+      "themeAuto": "Auto",
+      "themeLight": "Light",
+      "themeDark": "Dark",
       "twoFactor": "Zwei-Faktor-Authentifizierung",
       "twoFactorActive": "Aktiv",
       "twoFactorInactive": "Inaktiv",
@@ -314,6 +317,14 @@
       "currentLanguage": "Aktuelle Sprache",
       "missingLanguage": "Findest du deine Sprache nicht?",
       "helpTranslateLink": "Hilf bei der Übersetzung von Nexterm",
+      "sessionSynchronization": "Session Synchronization",
+      "sessionSyncDescription": "Control how your server sessions are stored and synchronized across devices and browser tabs.",
+      "sessionSyncAcrossDevices": "Across devices",
+      "sessionSyncSameBrowser": "Same browser",
+      "sessionSyncSameTab": "Same tab",
+      "sessionSyncAcrossDevicesDesc": "Sessions will be available across devices and synced",
+      "sessionSyncSameBrowserDesc": "Sessions will synchronize for the current user session",
+      "sessionSyncSameTabDesc": "Sessions will synchronize inside your browser tab",
       "twoFactorDialog": {
         "title": "2FA aktivieren",
         "description": "Scanne den Code mit deiner Authenticator-App oder gib den Code <span class=\"totp-code\">{{secret}}</span> manuell ein.",
@@ -429,6 +440,10 @@
         "copy": {
           "title": "Copy",
           "description": "Copy selected text to clipboard"
+        },
+        "fullscreen": {
+          "title": "Full-Screen",
+          "description": "Toggle full-screen mode"
         }
       },
       "recorder": {
@@ -615,6 +630,15 @@
     }
   },
   "servers": {
+    "time": {
+      "justNow": "Just now",
+      "minuteAgo": "{{count}} min ago",
+      "minutesAgo": "{{count}} mins ago",
+      "hourAgo": "{{count}} hour ago",
+      "hoursAgo": "{{count}} hours ago",
+      "dayAgo": "{{count}} day ago",
+      "daysAgo": "{{count}} days ago"
+    },
     "tags": {
       "title": "Tags",
       "createNewTag": "Create new tag",
@@ -630,13 +654,20 @@
       "createFolder": "Ordner erstellen",
       "deleteFolder": "Ordner löschen",
       "renameFolder": "Ordner umbenennen",
+      "new": "New",
+      "sshServer": "SSH Server",
+      "telnetServer": "Telnet Server",
+      "rdpServer": "RDP Server",
+      "vncServer": "VNC Server",
       "createServer": "Server erstellen",
       "import": "Importieren",
       "pve": "PVE",
       "sshConfig": "SSH-Konfiguration",
       "connect": "Verbinden",
+      "quickConnect": "Quick Connect",
       "openSFTP": "SFTP öffnen",
       "editServer": "Server bearbeiten",
+      "editIntegration": "Edit Integration",
       "duplicateServer": "Server duplizieren",
       "deleteServer": "Server löschen",
       "editPVE": "PVE bearbeiten",
@@ -647,6 +678,7 @@
     },
     "dialog": {
       "addServer": "Server hinzufügen",
+      "addProtocolServer": "Add {{protocol}} server",
       "editServer": "Server bearbeiten",
       "tabs": {
         "details": "Details",
@@ -665,7 +697,9 @@
         "protocol": "Protokoll",
         "username": "Benutzername",
         "password": "Passwort",
-        "host": "Host"
+        "host": "Host",
+        "nodeName": "Node Name",
+        "vmid": "VM ID"
       },
       "placeholders": {
         "serverName": "Server Name",
@@ -673,7 +707,27 @@
         "port": "Port",
         "username": "Benutzername",
         "password": "Passwort",
-        "host": "Host"
+        "host": "Host",
+        "nodeName": "Node name",
+        "vmid": "VM ID"
+      },
+      "settings": {
+        "jumpHosts": {
+          "title": "Jump Hosts",
+          "description": "Connect through intermediate servers to reach this target server",
+          "addButton": "Add Jump Host",
+          "removeTooltip": "Remove jump host",
+          "noServersAvailable": "No SSH servers available for jump hosts. Create SSH servers first."
+        },
+        "monitoring": {
+          "title": "Enable Performance Monitoring",
+          "description": "Collect CPU, memory, disk, and network metrics for this server"
+        },
+        "keyboardLayout": {
+          "title": "Keyboard Layout",
+          "description": "Select the keyboard layout to use for this connection."
+        },
+        "noSettings": "No additional settings available for this entry type."
       }
     },
     "proxmoxDialog": {
@@ -770,7 +824,11 @@
         "createFolder": "Ordner erstellen",
         "upload": "Datei hochladen",
         "edit": "Bearbeiten",
-        "bigFileConfirm": "Diese Datei ist {{size}} MB groß. Bist du sicher, dass du sie bearbeiten willst?"
+        "bigFileConfirm": "Diese Datei ist {{size}} MB groß. Bist du sicher, dass du sie bearbeiten willst?",
+        "selectAll": "Select All",
+        "insertSnippet": "Insert Snippet",
+        "sendCtrlC": "Send Ctrl+C",
+        "clearTerminal": "Clear Terminal"
       }
     },
     "aiAssistant": {
@@ -784,6 +842,15 @@
       "noSnippets": "Keine Snippets verfügbar",
       "searchPlaceholder": "Snippets suchen...",
       "createNew": "Neuen Snippet erstellen"
+    },
+    "terminalActions": {
+      "menuTitle": "Terminal Actions",
+      "snippets": "Snippets",
+      "keyboardShortcuts": "Keyboard Shortcuts",
+      "broadcasting": "Broadcasting",
+      "fullScreen": "Full-Screen",
+      "exitFullScreen": "Exit Full-Screen Mode",
+      "badgeOn": "ON"
     },
     "messages": {
       "fillRequiredFields": "Bitte fülle alle erforderlichen Felder aus",

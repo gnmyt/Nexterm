@@ -33,7 +33,9 @@
       "noAuthMethodsAvailable": "没有可用的验证方法。"
     },
     "selectBox": {
-      "defaultOption": "选择一个选项..."
+      "defaultOption": "选择一个选项...",
+      "search": "Search...",
+      "noResults": "No results found"
     },
     "sidebar": {
       "settings": "设置",
@@ -297,9 +299,10 @@
       "firstName": "姓名",
       "lastName": "姓氏",
       "appearance": "外观",
-      "appearanceDescription": "可为界面选择浅色和深色主题。",
-      "switchToLight": "切换到灯光模式",
-      "switchToDark": "切换到黑暗模式",
+      "appearanceDescription": "Choose your preferred theme. Auto follows your system settings and adjusts based on time of day.",
+      "themeAuto": "Auto",
+      "themeLight": "Light",
+      "themeDark": "Dark",
       "twoFactor": "双因素认证",
       "twoFactorActive": "活跃",
       "twoFactorInactive": "不活动",
@@ -314,6 +317,14 @@
       "currentLanguage": "当前语言",
       "missingLanguage": "想念您的语言？",
       "helpTranslateLink": "帮助翻译 Nexterm",
+      "sessionSynchronization": "Session Synchronization",
+      "sessionSyncDescription": "Control how your server sessions are stored and synchronized across devices and browser tabs.",
+      "sessionSyncAcrossDevices": "Across devices",
+      "sessionSyncSameBrowser": "Same browser",
+      "sessionSyncSameTab": "Same tab",
+      "sessionSyncAcrossDevicesDesc": "Sessions will be available across devices and synced",
+      "sessionSyncSameBrowserDesc": "Sessions will synchronize for the current user session",
+      "sessionSyncSameTabDesc": "Sessions will synchronize inside your browser tab",
       "twoFactorDialog": {
         "title": "启用 2FA",
         "description": "使用身份验证程序扫描代码或手动输入 <span class=\"totp-code\">{{secret}}</span>手动输入。",
@@ -429,6 +440,10 @@
         "copy": {
           "title": "Copy",
           "description": "Copy selected text to clipboard"
+        },
+        "fullscreen": {
+          "title": "Full-Screen",
+          "description": "Toggle full-screen mode"
         }
       },
       "recorder": {
@@ -615,6 +630,15 @@
     }
   },
   "servers": {
+    "time": {
+      "justNow": "Just now",
+      "minuteAgo": "{{count}} min ago",
+      "minutesAgo": "{{count}} mins ago",
+      "hourAgo": "{{count}} hour ago",
+      "hoursAgo": "{{count}} hours ago",
+      "dayAgo": "{{count}} day ago",
+      "daysAgo": "{{count}} days ago"
+    },
     "tags": {
       "title": "Tags",
       "createNewTag": "Create new tag",
@@ -630,13 +654,20 @@
       "createFolder": "创建文件夹",
       "deleteFolder": "删除文件夹",
       "renameFolder": "重命名文件夹",
+      "new": "New",
+      "sshServer": "SSH Server",
+      "telnetServer": "Telnet Server",
+      "rdpServer": "RDP Server",
+      "vncServer": "VNC Server",
       "createServer": "创建服务器",
       "import": "进口",
       "pve": "PVE",
       "sshConfig": "SSH 配置",
       "connect": "连接",
+      "quickConnect": "Quick Connect",
       "openSFTP": "打开 SFTP",
       "editServer": "编辑服务器",
+      "editIntegration": "Edit Integration",
       "duplicateServer": "复制服务器",
       "deleteServer": "删除服务器",
       "editPVE": "编辑 PVE",
@@ -647,6 +678,7 @@
     },
     "dialog": {
       "addServer": "添加服务器",
+      "addProtocolServer": "Add {{protocol}} server",
       "editServer": "编辑服务器",
       "tabs": {
         "details": "详细信息",
@@ -665,7 +697,9 @@
         "protocol": "规程",
         "username": "用户名",
         "password": "密码",
-        "host": "主持人"
+        "host": "主持人",
+        "nodeName": "Node Name",
+        "vmid": "VM ID"
       },
       "placeholders": {
         "serverName": "服务器名称",
@@ -673,7 +707,27 @@
         "port": "港口",
         "username": "用户名",
         "password": "密码",
-        "host": "主持人"
+        "host": "主持人",
+        "nodeName": "Node name",
+        "vmid": "VM ID"
+      },
+      "settings": {
+        "jumpHosts": {
+          "title": "Jump Hosts",
+          "description": "Connect through intermediate servers to reach this target server",
+          "addButton": "Add Jump Host",
+          "removeTooltip": "Remove jump host",
+          "noServersAvailable": "No SSH servers available for jump hosts. Create SSH servers first."
+        },
+        "monitoring": {
+          "title": "Enable Performance Monitoring",
+          "description": "Collect CPU, memory, disk, and network metrics for this server"
+        },
+        "keyboardLayout": {
+          "title": "Keyboard Layout",
+          "description": "Select the keyboard layout to use for this connection."
+        },
+        "noSettings": "No additional settings available for this entry type."
       }
     },
     "proxmoxDialog": {
@@ -770,7 +824,11 @@
         "createFolder": "创建文件夹",
         "upload": "上传文件",
         "edit": "编辑",
-        "bigFileConfirm": "该文件大至 {{size}} MB。您确定要编辑它吗？"
+        "bigFileConfirm": "该文件大至 {{size}} MB。您确定要编辑它吗？",
+        "selectAll": "Select All",
+        "insertSnippet": "Insert Snippet",
+        "sendCtrlC": "Send Ctrl+C",
+        "clearTerminal": "Clear Terminal"
       }
     },
     "aiAssistant": {
@@ -784,6 +842,15 @@
       "noSnippets": "没有可用的片段",
       "searchPlaceholder": "搜索片段...",
       "createNew": "创建新片段"
+    },
+    "terminalActions": {
+      "menuTitle": "Terminal Actions",
+      "snippets": "Snippets",
+      "keyboardShortcuts": "Keyboard Shortcuts",
+      "broadcasting": "Broadcasting",
+      "fullScreen": "Full-Screen",
+      "exitFullScreen": "Exit Full-Screen Mode",
+      "badgeOn": "ON"
     },
     "messages": {
       "fillRequiredFields": "请填写所有必填项",
