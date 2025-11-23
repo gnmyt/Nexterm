@@ -317,6 +317,14 @@
       "currentLanguage": "Lingua corrente",
       "missingLanguage": "Ti manca la tua lingua?",
       "helpTranslateLink": "Aiuta a tradurre Nexterm",
+      "sessionSynchronization": "Session Synchronization",
+      "sessionSyncDescription": "Control how your server sessions are stored and synchronized across devices and browser tabs.",
+      "sessionSyncAcrossDevices": "Across devices",
+      "sessionSyncSameBrowser": "Same browser",
+      "sessionSyncSameTab": "Same tab",
+      "sessionSyncAcrossDevicesDesc": "Sessions will be available across devices and synced",
+      "sessionSyncSameBrowserDesc": "Sessions will synchronize for the current user session",
+      "sessionSyncSameTabDesc": "Sessions will synchronize inside your browser tab",
       "twoFactorDialog": {
         "title": "Abilita la 2FA",
         "description": "Scansiona il codice con la tua app Autenticatore o inseriscilo <span class=\"totp-code\">{{secret}}</span> manualmente.",
@@ -622,6 +630,15 @@
     }
   },
   "servers": {
+    "time": {
+      "justNow": "Just now",
+      "minuteAgo": "{{count}} min ago",
+      "minutesAgo": "{{count}} mins ago",
+      "hourAgo": "{{count}} hour ago",
+      "hoursAgo": "{{count}} hours ago",
+      "dayAgo": "{{count}} day ago",
+      "daysAgo": "{{count}} days ago"
+    },
     "tags": {
       "title": "Tags",
       "createNewTag": "Create new tag",
@@ -647,6 +664,7 @@
       "pve": "PVE",
       "sshConfig": "SSH-Config",
       "connect": "Collegati",
+      "quickConnect": "Quick Connect",
       "openSFTP": "Aprire SFTP",
       "editServer": "Modifica il server",
       "editIntegration": "Edit Integration",
@@ -806,7 +824,11 @@
         "createFolder": "Crea cartella",
         "upload": "Carica il file",
         "edit": "Modifica",
-        "bigFileConfirm": "Questo file ha una dimensione di {{size}} MB. Sei sicuro di volerlo modificare?"
+        "bigFileConfirm": "Questo file ha una dimensione di {{size}} MB. Sei sicuro di volerlo modificare?",
+        "selectAll": "Select All",
+        "insertSnippet": "Insert Snippet",
+        "sendCtrlC": "Send Ctrl+C",
+        "clearTerminal": "Clear Terminal"
       }
     },
     "aiAssistant": {
