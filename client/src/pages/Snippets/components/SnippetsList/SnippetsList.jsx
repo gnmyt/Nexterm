@@ -10,7 +10,7 @@ import Button from "@/common/components/Button";
 
 export const SnippetsList = ({ snippets, onEdit, selectedOrganization }) => {
     const { t } = useTranslation();
-    const { loadSnippets, loadAllSnippets } = useSnippets();
+    const { loadAllSnippets } = useSnippets();
     const { sendToast } = useToast();
     const [currentPage, setCurrentPage] = useState(1);
     const itemsPerPage = 12;
@@ -36,11 +36,7 @@ export const SnippetsList = ({ snippets, onEdit, selectedOrganization }) => {
             const queryParams = selectedOrganization ? `?organizationId=${selectedOrganization}` : '';
             await deleteRequest(`snippets/${id}${queryParams}`);
             sendToast("Success", t('snippets.messages.success.deleted'));
-            if (selectedOrganization) {
-                await loadSnippets(selectedOrganization);
-            } else {
-                await loadSnippets();
-            }
+
             await loadAllSnippets();
         } catch (error) {
             sendToast("Error", error.message || t('snippets.messages.errors.deleteFailed'));

@@ -18,7 +18,7 @@ export const SnippetDialog = ({ open, onClose, editSnippetId, selectedOrganizati
     const [description, setDescription] = useState("");
     const [isGeneratingAI, setIsGeneratingAI] = useState(false);
     const { sendToast } = useToast();
-    const { loadSnippets, loadAllSnippets } = useSnippets();
+    const { loadAllSnippets } = useSnippets();
     const { isAIAvailable } = useAI();
 
     useEffect(() => {
@@ -79,11 +79,6 @@ export const SnippetDialog = ({ open, onClose, editSnippetId, selectedOrganizati
                 sendToast("Success", t('snippets.messages.success.created'));
             }
             
-            if (selectedOrganization) {
-                await loadSnippets(selectedOrganization);
-            } else {
-                await loadSnippets();
-            }
             await loadAllSnippets();
             onClose();
         } catch (error) {

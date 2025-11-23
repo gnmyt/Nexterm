@@ -8,7 +8,7 @@ import Icon from "@mdi/react";
 import { mdiFullscreenExit } from "@mdi/js";
 import { useTranslation } from "react-i18next";
 
-export const ViewContainer = ({ activeSessions, activeSessionId, setActiveSessionId, disconnectFromServer, hibernateSession }) => {
+export const ViewContainer = ({ activeSessions, activeSessionId, setActiveSessionId, disconnectFromServer, hibernateSession, setOpenFileEditors }) => {
 
     const [layoutMode, setLayoutMode] = useState("single");
     const [gridSessions, setGridSessions] = useState([]);
@@ -368,7 +368,7 @@ export const ViewContainer = ({ activeSessions, activeSessionId, setActiveSessio
                     layoutMode={layoutMode} onBroadcastToggle={toggleBroadcastMode}
                     onFullscreenToggle={toggleFullscreenMode} />;
             case "sftp":
-                return <FileRenderer session={session} disconnectFromServer={disconnectFromServer} />;
+                return <FileRenderer session={session} disconnectFromServer={disconnectFromServer} setOpenFileEditors={setOpenFileEditors} />;
             default:
                 return <p>Unknown renderer: {renderer}</p>;
         }

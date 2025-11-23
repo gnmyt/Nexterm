@@ -1,12 +1,12 @@
 import { useSnippets } from "@/common/contexts/SnippetContext.jsx";
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useMemo } from "react";
 import { createPortal } from "react-dom";
 import "./styles.sass";
 import { mdiMagnify } from "@mdi/js";
 import Icon from "@mdi/react";
 
-export const SnippetsMenu = ({ onSelect, onClose, visible }) => {
-    const { snippets } = useSnippets();
+export const SnippetsMenu = ({ onSelect, onClose, visible, activeSession }) => {
+    const { allSnippets } = useSnippets();
     const [search, setSearch] = useState("");
     const [highlightedIndex, setHighlightedIndex] = useState(-1);
     const [isPositioned, setIsPositioned] = useState(false);
@@ -15,12 +15,23 @@ export const SnippetsMenu = ({ onSelect, onClose, visible }) => {
     const menuRef = useRef(null);
     const snippetRefs = useRef([]);
 
+    const availableSnippets = useMemo(() => {
+        if (!allSnippets || allSnippets.length === 0) return [];
+        
+        const sessionOrgId = activeSession?.organizationId || null;
+
+        return allSnippets.filter(snippet => 
+            snippet.organizationId === null || 
+            (sessionOrgId && snippet.organizationId === sessionOrgId)
+        );
+    }, [allSnippets, activeSession?.organizationId]);
+
     const filteredSnippets = () => {
-        if (!snippets || snippets.length === 0) return [];
-        if (!search) return snippets;
+        if (!availableSnippets || availableSnippets.length === 0) return [];
+        if (!search) return availableSnippets;
 
         const searchLower = search.toLowerCase();
-        return snippets.filter(snippet =>
+        return availableSnippets.filter(snippet =>
             snippet.name.toLowerCase().includes(searchLower) ||
             snippet.command.toLowerCase().includes(searchLower) ||
             (snippet.description && snippet.description.toLowerCase().includes(searchLower)),
@@ -143,7 +154,7 @@ export const SnippetsMenu = ({ onSelect, onClose, visible }) => {
                 <div className="snippets-menu__content">
                     {filtered.length === 0 ? (
                         <div className="snippets-menu__no-results">
-                            {snippets?.length === 0 ? (
+                            {availableSnippets?.length === 0 ? (
                                 <p>No snippets available. Create some in the Snippets section.</p>
                             ) : (
                                 <p>No snippets match your search.</p>

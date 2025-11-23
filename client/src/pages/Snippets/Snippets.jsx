@@ -1,5 +1,5 @@
 import "./styles.sass";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useSnippets } from "@/common/contexts/SnippetContext.jsx";
 import { useScripts } from "@/common/contexts/ScriptContext.jsx";
 import SnippetsList from "@/pages/Snippets/components/SnippetsList";
@@ -22,8 +22,18 @@ export const Snippets = () => {
     const [editScriptId, setEditScriptId] = useState(null);
     const [organizations, setOrganizations] = useState([]);
     const [selectedOrganization, setSelectedOrganization] = useState(null);
-    const { snippets, loadSnippets } = useSnippets();
+    const { allSnippets } = useSnippets();
     const { scripts, loadScripts } = useScripts();
+
+    const snippets = useMemo(() => {
+        if (!allSnippets || allSnippets.length === 0) return [];
+        
+        if (selectedOrganization === null) {
+            return allSnippets.filter(snippet => snippet.organizationId === null);
+        }
+        
+        return allSnippets.filter(snippet => snippet.organizationId === selectedOrganization);
+    }, [allSnippets, selectedOrganization]);
 
     useEffect(() => {
         const fetchOrganizations = async () => {
@@ -39,10 +49,8 @@ export const Snippets = () => {
 
     useEffect(() => {
         if (selectedOrganization) {
-            loadSnippets(selectedOrganization);
             loadScripts(selectedOrganization);
         } else {
-            loadSnippets();
             loadScripts();
         }
     }, [selectedOrganization]);

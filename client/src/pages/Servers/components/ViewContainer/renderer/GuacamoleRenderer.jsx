@@ -136,6 +136,8 @@ const GuacamoleRenderer = ({ session, disconnectFromServer, registerGuacamoleRef
             return;
         }
 
+        let isCleaningUp = false;
+
         const tunnel = new Guacamole.WebSocketTunnel((process.env.NODE_ENV === "production" ? "/api/ws/guac/"
             : "ws://localhost:6989/api/ws/guac"));
         const client = new Guacamole.Client(tunnel);
@@ -188,10 +190,28 @@ const GuacamoleRenderer = ({ session, disconnectFromServer, registerGuacamoleRef
         keyboard.onkeyup = (keysym) => client.sendKeyEvent(0, keysym);
 
         client.onstatechange = (state) => {
-            if (state === Guacamole.Client.State.DISCONNECTED) disconnectFromServer(session.id);
+            if (!isCleaningUp) {
+                if (state === Guacamole.Client.State.DISCONNECTED) {
+                    disconnectFromServer(session.id);
+                }
 
-            if (state === Guacamole.Client.State.ERROR) {
-                console.error("Guacamole error");
+                if (state === Guacamole.Client.State.ERROR) {
+                    console.error("Guacamole error");
+                    disconnectFromServer(session.id);
+                }
+            }
+        };
+
+        tunnel.onstatechange = (state) => {
+            if (!isCleaningUp && state === Guacamole.Tunnel.State.CLOSED) {
+                console.log("Guacamole tunnel closed");
+                disconnectFromServer(session.id);
+            }
+        };
+
+        tunnel.onerror = (status) => {
+            if (!isCleaningUp) {
+                console.error("Guacamole tunnel error:", status);
                 disconnectFromServer(session.id);
             }
         };
@@ -199,10 +219,13 @@ const GuacamoleRenderer = ({ session, disconnectFromServer, registerGuacamoleRef
         handleClipboardEvents();
 
         return () => {
+            isCleaningUp = true;
             if (ref.current) {
                 ref.current.removeEventListener("keydown", handleKeyDown, true);
             }
             client.onstatechange = null;
+            tunnel.onstatechange = null;
+            tunnel.onerror = null;
             client.disconnect();
             clientRef.current = null;
         };
@@ -238,11 +261,11 @@ const GuacamoleRenderer = ({ session, disconnectFromServer, registerGuacamoleRef
 
     return (
         <div className="guac-container" ref={ref} tabIndex="0"
-            onClick={() => ref.current.focus()}
-            style={{
-                position: "relative", width: "100%", height: "100%", outline: "none",
-                overflow: "hidden", backgroundColor: "#000", cursor: "none",
-            }}>
+             onClick={() => ref.current.focus()}
+             style={{
+                 position: "relative", width: "100%", height: "100%", outline: "none",
+                 overflow: "hidden", backgroundColor: "#000", cursor: "none",
+             }}>
         </div>
     );
 };

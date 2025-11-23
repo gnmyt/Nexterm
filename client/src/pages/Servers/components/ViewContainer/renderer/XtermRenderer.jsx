@@ -150,6 +150,8 @@ const XtermRenderer = ({ session, disconnectFromServer, registerTerminalRef, bro
     useEffect(() => {
         if (!sessionToken) return;
 
+        let isCleaningUp = false;
+
         const terminalTheme = getCurrentTheme();
         const isLightTerminalTheme = selectedTheme === "light";
 
@@ -189,7 +191,9 @@ const XtermRenderer = ({ session, disconnectFromServer, registerTerminalRef, bro
 
         const handleResize = () => {
             fitAddon.fit();
-            wsRef.current.send(`\x01${term.cols},${term.rows}`);
+            if (wsRef.current && wsRef.current.readyState === WebSocket.OPEN) {
+                wsRef.current.send(`\x01${term.cols},${term.rows}`);
+            }
         };
 
         window.addEventListener("resize", handleResize);
@@ -220,9 +224,16 @@ const XtermRenderer = ({ session, disconnectFromServer, registerTerminalRef, bro
             ws.send(`\x01${term.cols},${term.rows}`);
         }
 
-        ws.onclose = (event) => {
-            if (event.wasClean) {
-                clearInterval(interval);
+        ws.onclose = () => {
+            clearInterval(interval);
+            if (!isCleaningUp) {
+                disconnectFromServer(session.id);
+            }
+        };
+
+        ws.onerror = (error) => {
+            console.error('WebSocket error:', error);
+            if (!isCleaningUp) {
                 disconnectFromServer(session.id);
             }
         };
@@ -342,12 +353,14 @@ const XtermRenderer = ({ session, disconnectFromServer, registerTerminalRef, bro
         });
 
         return () => {
+            isCleaningUp = true;
             if (registerTerminalRef) {
                 registerTerminalRef(session.id, null);
             }
             window.removeEventListener("resize", handleResize);
             if (ws) {
                 ws.onclose = null;
+                ws.onerror = null;
                 ws.close();
             }
             term.dispose();
@@ -409,6 +422,7 @@ const XtermRenderer = ({ session, disconnectFromServer, registerTerminalRef, bro
                 visible={showSnippetsMenu}
                 onSelect={handleSnippetSelect}
                 onClose={() => setShowSnippetsMenu(false)}
+                activeSession={session}
             />
         </div>
     );
