@@ -1,207 +1,82 @@
-const logger = require("../utils/logger");
-const fs = require("fs");
-const path = require("path");
+const Script = require("../models/Script");
+const { Op } = require("sequelize");
 
-let scripts = [];
-
-const parseScriptFile = (filePath) => {
-    const content = fs.readFileSync(filePath, "utf8");
-    const lines = content.split("\n");
-
-    const metadata = { name: "Unknown Script", description: "No description provided" };
-    let contentStartIndex = 0;
-
-    for (let i = 0; i < lines.length; i++) {
-        const line = lines[i];
-        const trimmed = line.trim();
-
-        if (i === 0 && trimmed.startsWith("#!")) {
-            contentStartIndex = i + 1;
-            continue;
-        }
-
-        if (trimmed.startsWith("#")) {
-            const metaMatch = trimmed.match(/^#\s*@(\w+):\s*(.+)$/);
-            if (metaMatch) {
-                const [, key, value] = metaMatch;
-                if (key in metadata) {
-                    metadata[key] = value.trim();
-                }
-                contentStartIndex = i + 1;
-                continue;
-            }
-
-            if (Object.values(metadata).some(val => val !== "Unknown Script" && val !== "No description provided")) {
-                break;
-            }
-        } else if (trimmed !== "") {
-            break;
-        }
-
-        if (trimmed === "") {
-            contentStartIndex = i + 1;
-        }
-    }
-
-    const scriptContent = lines.slice(contentStartIndex).join("\n").trim();
-
-    return { ...metadata, content: scriptContent, type: "script" };
+module.exports.createScript = async (accountId, configuration) => {
+    return await Script.create({ ...configuration, accountId });
 };
 
-const parseCustomScripts = (accountId) => {
-    const customDir = path.join(process.cwd(), "data/sources/custom", accountId.toString());
-    if (!fs.existsSync(customDir)) {
-        return [];
+module.exports.deleteScript = async (accountId, scriptId, organizationId = null) => {
+    const whereClause = organizationId
+        ? { id: scriptId, organizationId }
+        : { id: scriptId, accountId, organizationId: null };
+
+    const script = await Script.findOne({ where: whereClause });
+
+    if (script === null) {
+        return { code: 404, message: "Script does not exist" };
     }
 
-    const files = fs.readdirSync(customDir);
-    const customScripts = [];
+    await Script.destroy({ where: { id: scriptId } });
+};
 
-    for (const file of files) {
-        if (file.endsWith(".nexterm.sh")) {
-            try {
-                const scriptData = parseScriptFile(path.join(customDir, file));
-                customScripts.push({
-                    ...scriptData,
-                    id: `custom/${accountId}/${file.replace(".nexterm.sh", "")}`,
-                    source: "custom",
-                });
-            } catch (err) {
-                logger.error("Error parsing custom script", { file, error: err.message });
-            }
-        }
+module.exports.editScript = async (accountId, scriptId, configuration, organizationId = null) => {
+    const whereClause = organizationId
+        ? { id: scriptId, organizationId }
+        : { id: scriptId, accountId, organizationId: null };
+
+    const script = await Script.findOne({ where: whereClause });
+
+    if (script === null) {
+        return { code: 404, message: "Script does not exist" };
     }
 
-    return customScripts;
+    const { organizationId: _, accountId: __, ...updateData } = configuration;
+    await Script.update(updateData, { where: { id: scriptId } });
 };
 
-const parseScriptsFromSources = () => {
-    const sourceScripts = [];
-    const sourcesDir = path.join(process.cwd(), "data/sources");
+module.exports.getScript = async (accountId, scriptId, organizationId = null) => {
+    const whereClause = organizationId
+        ? { id: scriptId, organizationId }
+        : { id: scriptId, accountId, organizationId: null };
 
-    if (!fs.existsSync(sourcesDir)) return sourceScripts;
+    const script = await Script.findOne({ where: whereClause });
 
-    const sources = fs.readdirSync(sourcesDir);
-
-    for (const source of sources) {
-        if (source === "custom") continue;
-
-        const sourceDir = path.join(sourcesDir, source);
-        if (!fs.statSync(sourceDir).isDirectory()) continue;
-
-        const files = fs.readdirSync(sourceDir);
-
-        for (const file of files) {
-            if (file.endsWith(".nexterm.sh")) {
-                try {
-                    const scriptData = parseScriptFile(path.join(sourceDir, file));
-                    sourceScripts.push({ ...scriptData, id: `${source}/${file.replace(".nexterm.sh", "")}`, source });
-                } catch (err) {
-                    logger.error("Error parsing script from source", { file, source, error: err.message });
-                }
-            }
-        }
+    if (script === null) {
+        return { code: 404, message: "Script does not exist" };
     }
 
-    return sourceScripts;
+    return script;
 };
 
-module.exports.refreshScripts = (accountId = null) => {
-    const sourceScripts = parseScriptsFromSources();
-
-    if (accountId) {
-        const customScripts = parseCustomScripts(accountId);
-        scripts = [...sourceScripts, ...customScripts];
-    } else {
-        scripts = sourceScripts;
+module.exports.listScripts = async (accountId, organizationId = null) => {
+    if (organizationId) {
+        return await Script.findAll({ where: { organizationId } });
     }
-
-    logger.info("Refreshed scripts", { count: scripts.length });
+    return await Script.findAll({ where: { accountId, organizationId: null } });
 };
 
-module.exports.getScripts = (accountId = null) => {
-    if (accountId) {
-        const sourceScripts = scripts.filter(s => s.source !== "custom");
-        const customScripts = parseCustomScripts(accountId);
-        return [...sourceScripts, ...customScripts];
-    }
-    return scripts.filter(s => s.source !== "custom");
+module.exports.searchScripts = async (accountId, search, organizationId = null) => {
+    const whereClause = organizationId
+        ? { organizationId }
+        : { accountId, organizationId: null };
+
+    return await Script.findAll({
+        where: {
+            ...whereClause,
+            [Op.or]: [
+                { name: { [Op.like]: `%${search}%` } },
+                { description: { [Op.like]: `%${search}%` } },
+            ],
+        },
+    });
 };
 
-module.exports.getScript = (id, accountId = null) => {
-    if (id.startsWith("custom/") && accountId) return parseCustomScripts(accountId).find(script => script.id === id);
-    return scripts.find(script => script.id === id);
-};
-
-module.exports.searchScripts = (search, accountId = null) => {
-    const allScripts = module.exports.getScripts(accountId);
-    return allScripts.filter(script => script.name.toLowerCase().includes(search.toLowerCase())
-        || script.description.toLowerCase().includes(search.toLowerCase()));
-};
-
-module.exports.createCustomScript = (accountId, scriptData) => {
-    const customDir = path.join(process.cwd(), "data/sources/custom", accountId.toString());
-
-    if (!fs.existsSync(customDir)) {
-        fs.mkdirSync(customDir, { recursive: true });
-    }
-
-    const fileName = `${scriptData.name.replace(/[^a-zA-Z0-9]/g, "_").toLowerCase()}.nexterm.sh`;
-    const filePath = path.join(customDir, fileName);
-
-    if (fs.existsSync(filePath)) throw new Error("A script with this name already exists");
-
-    const scriptContent = `#!/bin/bash
-# @name: ${scriptData.name}
-# @description: ${scriptData.description}
-
-${scriptData.content}
-`;
-
-    fs.writeFileSync(filePath, scriptContent);
-
-    return {
-        id: `custom/${accountId}/${fileName.replace(".nexterm.sh", "")}`, ...scriptData,
-        type: "script",
-        source: "custom",
+module.exports.listAllAccessibleScripts = async (accountId, organizationIds = []) => {
+    const whereClause = {
+        [Op.or]: [
+            { accountId, organizationId: null },
+            ...(organizationIds.length > 0 ? [{ organizationId: { [Op.in]: organizationIds } }] : []),
+        ],
     };
-};
-
-module.exports.updateCustomScript = (accountId, scriptId, scriptData) => {
-    const scriptIdParts = scriptId.split("/");
-    if (scriptIdParts[0] !== "custom" || scriptIdParts[1] !== accountId.toString()) {
-        throw new Error("Unauthorized to edit this script");
-    }
-
-    const fileName = `${scriptIdParts[2]}.nexterm.sh`;
-    const filePath = path.join(process.cwd(), "data/sources/custom", accountId.toString(), fileName);
-
-    if (!fs.existsSync(filePath)) {
-        throw new Error("Script not found");
-    }
-
-    const scriptContent = `#!/bin/bash
-# @name: ${scriptData.name}
-# @description: ${scriptData.description}
-
-${scriptData.content}
-`;
-
-    fs.writeFileSync(filePath, scriptContent);
-
-    return { id: scriptId, ...scriptData, type: "script", source: "custom" };
-};
-
-module.exports.deleteCustomScript = (accountId, scriptId) => {
-    const scriptIdParts = scriptId.split("/");
-    if (scriptIdParts[0] !== "custom" || scriptIdParts[1] !== accountId.toString()) {
-        throw new Error("Unauthorized to delete this script");
-    }
-
-    const fileName = `${scriptIdParts[2]}.nexterm.sh`;
-    const filePath = path.join(process.cwd(), "data/sources/custom", accountId.toString(), fileName);
-
-    if (!fs.existsSync(filePath)) throw new Error("Script not found");
-
-    fs.unlinkSync(filePath);
+    return await Script.findAll({ where: whereClause });
 };

@@ -196,9 +196,14 @@ module.exports = async (ws, req) => {
 
     const { user, server, ssh } = authResult;
 
-    const script = getScript(req.query.scriptId, user.id);
+    const script = await getScript(user.id, req.query.scriptId);
     if (!script) {
         ws.close(4010, "The script does not exist");
+        return;
+    }
+
+    if (script.code) {
+        ws.close(4010, script.message || "Script not found");
         return;
     }
 
@@ -212,7 +217,6 @@ module.exports = async (ws, req) => {
                 resourceId: req.query.scriptId,
                 details: {
                     scriptName: script.name,
-                    scriptSource: script.source,
                     serverId: server?.id,
                 },
                 ipAddress: req.ip || req.socket?.remoteAddress,
