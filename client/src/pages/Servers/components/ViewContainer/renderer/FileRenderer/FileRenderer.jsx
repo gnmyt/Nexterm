@@ -3,7 +3,6 @@ import { UserContext } from "@/common/contexts/UserContext.jsx";
 import useWebSocket from "react-use-websocket";
 import ActionBar from "@/pages/Servers/components/ViewContainer/renderer/FileRenderer/components/ActionBar";
 import FileList from "@/pages/Servers/components/ViewContainer/renderer/FileRenderer/components/FileList";
-import { FilePreview } from "@/pages/Servers/components/ViewContainer/renderer/FileRenderer/components/FilePreview";
 import "./styles.sass";
 import CreateFolderDialog from "./components/CreateFolderDialog";
 import Icon from "@mdi/react";
