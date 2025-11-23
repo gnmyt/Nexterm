@@ -3,7 +3,6 @@ import NextermLogo from "@/common/img/logo.avif";
 import {
     mdiCog,
     mdiLogout,
-    mdiPackageVariant,
     mdiServerOutline,
     mdiCodeBrackets,
     mdiChartBoxOutline,
@@ -33,7 +32,6 @@ export const Sidebar = () => {
         { title: t('common.sidebar.monitoring'), path: "/monitoring", icon: mdiChartBoxOutline},
         { title: t('common.sidebar.snippets'), path: "/snippets", icon: mdiCodeBrackets },
         { title: t('common.sidebar.audit'), path: "/audit", icon: mdiShieldCheckOutline },
-        { title: t('common.sidebar.apps'), path: "/apps", icon: mdiPackageVariant },
     ];
 
     const isActive = (path) => {

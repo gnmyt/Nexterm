@@ -9,11 +9,6 @@ const { startStatusChecker, stopStatusChecker } = require("./utils/statusChecker
 const { ensureInternalProvider } = require("./controllers/oidc");
 const monitoringService = require("./utils/monitoringService");
 const { generateOpenAPISpec } = require("./openapi");
-const {
-    refreshAppSources,
-    startAppUpdater,
-    insertOfficialSource,
-} = require("./controllers/appSource");
 const { isAdmin } = require("./middlewares/permission");
 const logger = require("./utils/logger");
 require("./utils/folder");
@@ -57,9 +52,7 @@ app.use("/api/organizations", authenticate, require("./routes/organization"));
 app.use("/api/tags", authenticate, require("./routes/tag"));
 app.use("/api/keymaps", authenticate, require("./routes/keymap"));
 
-app.ws("/api/apps/installer", require("./routes/appInstaller"));
 app.ws("/api/scripts/executor", require("./routes/scriptExecutor"));
-app.use("/api/apps", authenticate, require("./routes/apps"));
 app.use("/api/scripts", authenticate, require("./routes/scripts"));
 
 if (process.env.NODE_ENV === "production") {
@@ -94,12 +87,6 @@ db.authenticate()
         await ensureInternalProvider();
 
         startStatusChecker();
-
-        startAppUpdater();
-
-        await insertOfficialSource();
-
-        await refreshAppSources();
 
         monitoringService.start();
 

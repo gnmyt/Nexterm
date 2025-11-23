@@ -1,1 +1,0 @@
-export { ScriptDialog as default } from "./ScriptDialog.jsx";

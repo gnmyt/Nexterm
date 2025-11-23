@@ -12,7 +12,6 @@ import Loading from "@/common/components/Loading";
 
 const Servers = lazy(() => import("@/pages/Servers"));
 const Settings = lazy(() => import("@/pages/Settings"));
-const Apps = lazy(() => import("@/pages/Apps"));
 const Snippets = lazy(() => import("@/pages/Snippets"));
 const Monitoring = lazy(() => import("@/pages/Monitoring"));
 const Audit = lazy(() => import("@/pages/Audit"));
@@ -39,7 +38,6 @@ const App = () => {
                 { path: "/monitoring", element: <Monitoring /> },
                 { path: "/audit", element: <Audit /> },
                 { path: "/settings/*", element: <Settings/> },
-                { path: "/apps/*", element: <Apps /> },
                 { path: "/snippets", element: <Snippets /> }
             ],
         },
