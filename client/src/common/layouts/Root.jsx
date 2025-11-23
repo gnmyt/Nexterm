@@ -10,6 +10,7 @@ import { DndProvider } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
 import { SessionProvider } from "@/common/contexts/SessionContext.jsx";
 import { SnippetProvider } from "@/common/contexts/SnippetContext.jsx";
+import { ScriptProvider } from "@/common/contexts/ScriptContext.jsx";
 import { Suspense, lazy } from "react";
 import Loading from "@/common/components/Loading";
 
@@ -26,18 +27,20 @@ export default () => {
                                 <ServerProvider>
                                     <IdentityProvider>
                                         <SnippetProvider>
-                                            <SessionProvider>
-                                                <div className="content-wrapper">
-                                                    <Suspense fallback={<Loading />}>
-                                                        <Sidebar />
-                                                    </Suspense>
-                                                    <div className="main-content">
+                                            <ScriptProvider>
+                                                <SessionProvider>
+                                                    <div className="content-wrapper">
                                                         <Suspense fallback={<Loading />}>
-                                                            <Outlet />
+                                                            <Sidebar />
                                                         </Suspense>
+                                                        <div className="main-content">
+                                                            <Suspense fallback={<Loading />}>
+                                                                <Outlet />
+                                                            </Suspense>
+                                                        </div>
                                                     </div>
-                                                </div>
-                                            </SessionProvider>
+                                                </SessionProvider>
+                                            </ScriptProvider>
                                         </SnippetProvider>
                                     </IdentityProvider>
                                 </ServerProvider>
