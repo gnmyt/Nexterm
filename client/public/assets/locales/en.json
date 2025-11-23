@@ -4,7 +4,12 @@
       "cancel": "Cancel",
       "confirm": "Confirm",
       "login": "Login",
-      "register": "Register"
+      "register": "Register",
+      "save": "Save",
+      "download": "Download",
+      "close": "Close",
+      "maximize": "Maximize",
+      "restore": "Restore"
     },
     "labels": {
       "username": "Username",
@@ -43,7 +48,6 @@
       "monitoring": "Monitoring",
       "snippets": "Snippets",
       "audit": "Audit",
-      "apps": "Apps",
       "logout": "Logout",
       "collapseTitle": "Collapse Sidebar",
       "logoutConfirmText": "This will log you out of the {{username}} account. Are you sure?",
@@ -129,7 +133,13 @@
     "page": {
       "title": "Snippets",
       "subtitle": "Manage your command snippets for quick access in terminals",
-      "addSnippet": "Add Snippet"
+      "addSnippet": "Add Snippet",
+      "personal": "Personal",
+      "selectOrganization": "Select Organization",
+      "tabs": {
+        "snippets": "Snippets",
+        "scripts": "Scripts"
+      }
     },
     "list": {
       "empty": "You don't have any snippets yet. Create your first one!",
@@ -172,6 +182,68 @@
         "loadFailed": "Failed to load snippet data",
         "saveFailed": "Failed to save snippet",
         "deleteFailed": "Failed to delete snippet"
+      }
+    }
+  },
+  "scripts": {
+    "page": {
+      "title": "Scripts",
+      "subtitle": "Interactive bash scripts with user prompts and dialogs",
+      "addScript": "Add Script",
+      "personal": "Personal",
+      "selectOrganization": "Select Organization",
+      "tabs": {
+        "snippets": "Snippets",
+        "scripts": "Scripts"
+      }
+    },
+    "list": {
+      "empty": "You don't have any scripts yet. Create your first one!",
+      "actions": {
+        "edit": "Edit script",
+        "delete": "Delete script"
+      }
+    },
+    "dialog": {
+      "title": {
+        "create": "Create Script",
+        "edit": "Edit Script"
+      },
+      "scriptDetails": "Script Details",
+      "scriptContent": "Script Content",
+      "helpTip": "Use @NEXTERM: directives for interactive features",
+      "fields": {
+        "name": "Name",
+        "description": "Description"
+      },
+      "placeholders": {
+        "name": "Script name",
+        "description": "What does this script do?"
+      },
+      "actions": {
+        "cancel": "Cancel",
+        "create": "Create",
+        "update": "Update",
+        "creating": "Creating...",
+        "updating": "Updating..."
+      },
+      "errors": {
+        "nameRequired": "Script name is required",
+        "descriptionRequired": "Script description is required",
+        "contentRequired": "Script content is required",
+        "createFailed": "Failed to create script",
+        "updateFailed": "Failed to update script"
+      }
+    },
+    "messages": {
+      "success": {
+        "created": "Script created successfully",
+        "updated": "Script updated successfully",
+        "deleted": "Script deleted successfully"
+      },
+      "errors": {
+        "loadFailed": "Failed to load script data",
+        "deleteFailed": "Failed to delete script"
       }
     }
   },
@@ -824,11 +896,22 @@
         "createFolder": "Create Folder",
         "upload": "Upload File",
         "edit": "Edit",
+        "preview": "Preview",
         "bigFileConfirm": "This file is {{size}} MB large. Are you sure you want to edit it?",
         "selectAll": "Select All",
         "insertSnippet": "Insert Snippet",
         "sendCtrlC": "Send Ctrl+C",
         "clearTerminal": "Clear Terminal"
+      },
+      "filePreview": {
+        "title": "File Preview",
+        "loading": "Loading...",
+        "cannotPreview": "Cannot Preview File",
+        "unsupportedFileType": "This file type is not supported for preview",
+        "videoNotSupported": "Your browser does not support video playback",
+        "audioNotSupported": "Your browser does not support audio playback",
+        "download": "Download",
+        "close": "Close"
       }
     },
     "aiAssistant": {
@@ -860,133 +943,6 @@
       "updateFailed": "Failed to update server",
       "createIdentityFailed": "Failed to create identity",
       "updateIdentityFailed": "Failed to update identity"
-    }
-  },
-  "apps": {
-    "title": "Apps",
-    "navigation": {
-      "categories": {
-        "all": "All",
-        "results": "Results",
-        "scripts": "Scripts",
-        "networking": "Networking",
-        "media": "Media",
-        "cloud": "Cloud",
-        "development": "Development",
-        "utilities": "Utilities"
-      }
-    },
-    "store": {
-      "appStore": "App Store",
-      "scripts": "Scripts",
-      "appStoreDescription": "Your favorite apps, deployed with a single click.",
-      "scriptsDescription": "Automate your server tasks with custom scripts.",
-      "manageSources": "Manage sources",
-      "createScript": "Create Script",
-      "source": "Source:",
-      "sourceFilter": {
-        "all": "All",
-        "custom": "Custom"
-      }
-    },
-    "list": {
-      "noApps": "More apps coming soon",
-      "noScripts": "No scripts available",
-      "selectApp": "Select app to continue",
-      "selectScript": "Select script to continue"
-    },
-    "actions": {
-      "deploy": "Deploy",
-      "run": "Run",
-      "view": "View",
-      "edit": "Edit",
-      "delete": "Delete",
-      "logs": "Logs",
-      "open": "Open",
-      "stop": "Stop Script",
-      "version": "Version"
-    },
-    "items": {
-      "customBadge": "Custom",
-      "scriptType": "Script",
-      "running": "Running...",
-      "runScript": "Run"
-    },
-    "installer": {
-      "deploymentFailed": "Deployment failed",
-      "deploymentCompleted": "Deployment completed",
-      "deploying": "Deploying...",
-      "installationLog": "Installation Log",
-      "steps": {
-        "lookupDistro": "Look up Linux distro",
-        "checkPermissions": "Check permissions",
-        "installDocker": "Install Docker Engine",
-        "downloadImage": "Download base image",
-        "preInstall": "Run pre-install command",
-        "startContainer": "Start Docker container",
-        "postInstall": "Run post-install command",
-        "detected": "Detected {{os}}"
-      }
-    },
-    "scriptExecutor": {
-      "executionFailed": "Script execution failed",
-      "executionCompleted": "Script execution completed",
-      "executing": "Executing script...",
-      "initializing": "Initializing script execution",
-      "finished": "Script execution finished",
-      "cancelled": "Script execution cancelled by user"
-    },
-    "dialogs": {
-      "deployServer": {
-        "deployTitle": "Deploy {{name}}",
-        "runTitle": "Run {{name}}",
-        "noServersAvailable": "No SSH servers available"
-      },
-      "source": {
-        "title": "App sources",
-        "refreshApps": "Refresh apps",
-        "addNewSource": "Add new source"
-      },
-      "script": {
-        "createTitle": "Create Custom Script",
-        "editTitle": "Edit Script",
-        "viewTitle": "View Script",
-        "source": "Source: {{source}}",
-        "scriptDetails": "Script Details",
-        "scriptContent": "Script Content",
-        "helpTip": "Use @NEXTERM: commands for interactive prompts",
-        "fields": {
-          "name": "Script Name *",
-          "description": "Description *",
-          "namePlaceholder": "My Awesome Script",
-          "descriptionPlaceholder": "What does this script do?"
-        },
-        "actions": {
-          "close": "Close",
-          "cancel": "Cancel",
-          "create": "Create Script",
-          "update": "Update Script",
-          "creating": "Creating...",
-          "updating": "Updating..."
-        },
-        "errors": {
-          "nameRequired": "Script name is required",
-          "descriptionRequired": "Script description is required",
-          "contentRequired": "Script content cannot be empty",
-          "createFailed": "Failed to create script",
-          "updateFailed": "Failed to update script"
-        },
-        "success": {
-          "created": "Script created successfully",
-          "updated": "Script updated successfully"
-        }
-      }
-    },
-    "messages": {
-      "onlyCustomScriptsCanBeDeleted": "Only custom scripts can be deleted",
-      "scriptDeletedSuccessfully": "Script deleted successfully",
-      "failedToDeleteScript": "Failed to delete script",
-      "deleteScriptConfirmation": "Are you sure you want to delete the script \"{{name}}\"? This action cannot be undone."
     }
   }
 }
