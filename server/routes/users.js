@@ -111,14 +111,13 @@ app.patch("/:accountId/password", async (req, res) => {
  * @param {string} accountId.path.required - The unique identifier of the user account
  * @param {UpdateRole} request.body.required - New role for the user account
  * @return {object} 200 - Role successfully updated
- * @return {object} 107 - Cannot change your own role
- * @return {object} 109 - Invalid account ID provided
+ * @return {object} 400 - Cannot change your own role or invalid account ID
  * @return {object} 403 - Admin access required
  */
 app.patch("/:accountId/role", async (req, res) => {
     try {
         if (req.user.id === parseInt(req.params.accountId))
-            return res.json({ code: 107, message: "You cannot change your own role" });
+            return res.status(400).json({ code: 107, message: "You cannot change your own role" });
 
         if (validateSchema(res, updateRoleValidation, req.body)) return;
 
@@ -127,7 +126,7 @@ app.patch("/:accountId/role", async (req, res) => {
 
         res.json({ message: "Role got successfully updated" });
     } catch (error) {
-        res.json({ code: 109, message: "You need to provide a correct id"});
+        res.status(400).json({ code: 109, message: "You need to provide a correct id"});
     }
 });
 

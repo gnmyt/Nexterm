@@ -33,4 +33,8 @@ module.exports = db.define("accounts", {
             return speakeasy.generateSecret({ name: "Nexterm" }).base32;
         },
     },
+    sessionSync: {
+        type: Sequelize.STRING,
+        defaultValue: "same_browser",
+    },
 }, { freezeTableName: true, createdAt: false, updatedAt: false });

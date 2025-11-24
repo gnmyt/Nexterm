@@ -1,6 +1,6 @@
 import "./styles.sass";
 import Icon from "@mdi/react";
-import { mdiAccountCircleOutline, mdiAccountGroup, mdiClockStarFourPointsOutline, mdiShieldAccountOutline, mdiDomain, mdiCreationOutline, mdiKeyVariant, mdiConsole } from "@mdi/js";
+import { mdiAccountCircleOutline, mdiAccountGroup, mdiClockStarFourPointsOutline, mdiShieldAccountOutline, mdiDomain, mdiCreationOutline, mdiKeyVariant, mdiConsole, mdiKeyboardOutline } from "@mdi/js";
 import SettingsNavigation from "./components/SettingsNavigation";
 import { Navigate, useLocation } from "react-router-dom";
 import Account from "@/pages/Settings/pages/Account";
@@ -11,6 +11,7 @@ import Organizations from "@/pages/Settings/pages/Organizations";
 import AI from "@/pages/Settings/pages/AI";
 import Identities from "@/pages/Settings/pages/Identities";
 import Terminal from "@/pages/Settings/pages/Terminal";
+import Keymaps from "@/pages/Settings/pages/Keymaps";
 import { useTranslation } from "react-i18next";
 
 export const Settings = () => {
@@ -20,6 +21,7 @@ export const Settings = () => {
     const userPages = [
         { title: t("settings.pages.account"), routeKey: "account", icon: mdiAccountCircleOutline, content: <Account /> },
         { title: t("settings.pages.terminal"), routeKey: "terminal", icon: mdiConsole, content: <Terminal /> },
+        { title: t("settings.pages.keymaps"), routeKey: "keymaps", icon: mdiKeyboardOutline, content: <Keymaps /> },
         { title: t("settings.pages.identities"), routeKey: "identities", icon: mdiKeyVariant, content: <Identities /> },
         { title: t("settings.pages.sessions"), routeKey: "sessions", icon: mdiClockStarFourPointsOutline, content: <Sessions /> },
         { title: t("settings.pages.organizations"), routeKey: "organizations", icon: mdiDomain, content: <Organizations /> }

@@ -13,14 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Modified by Mathias Wagner, 2024
+ * Modified by Mathias Wagner, 2025
  */
 
 const Net = require('net');
 
 class GuacdClient {
 
-    constructor(clientConnection) {
+    constructor(clientConnection, forcedConnectionId = null) {
         this.STATE_OPENING = 0;
         this.STATE_OPEN = 1;
         this.STATE_CLOSED = 2;
@@ -28,6 +28,8 @@ class GuacdClient {
         this.state = this.STATE_OPENING;
 
         this.clientConnection = clientConnection;
+        this.forcedConnectionId = forcedConnectionId;
+        this.guacdConnectionId = null;
         this.handshakeReplySent = false;
         this.receivedBuffer = '';
         this.lastActivity = Date.now();
@@ -71,16 +73,24 @@ class GuacdClient {
     }
 
     processConnectionOpen() {
-        this.sendOpCode(['select', this.clientConnection.connectionType]);
+        if (this.forcedConnectionId) {
+            this.sendOpCode(['select', this.forcedConnectionId]);
+        } else {
+            this.sendOpCode(['select', this.clientConnection.connectionType]);
+        }
     }
 
-    sendHandshakeReply() {
+    sendSize() {
         this.sendOpCode([
             'size',
             this.clientConnection.connectionSettings.connection.width,
             this.clientConnection.connectionSettings.connection.height,
             this.clientConnection.connectionSettings.connection.dpi
         ]);
+    }
+
+    sendHandshakeReply() {
+        this.sendSize();
         this.sendOpCode(['audio'].concat(this.clientConnection.GUAC_AUDIO || []));
         this.sendOpCode(['video'].concat(this.clientConnection.GUAC_VIDEO || []));
         this.sendOpCode(['image']);
@@ -163,6 +173,17 @@ class GuacdClient {
 
         if (bufferPartToSend) {
             this.receivedBuffer = this.receivedBuffer.substring(delimiterPos + 1, this.receivedBuffer.length);
+
+            if (!this.guacdConnectionId && bufferPartToSend.includes('5.ready')) {
+                const parts = bufferPartToSend.split(',');
+                if (parts.length >= 2) {
+                    const match = bufferPartToSend.match(/5\.ready,(\d+)\.([^;]+);/);
+                    if (match && match[2]) {
+                        this.guacdConnectionId = match[2];
+                    }
+                }
+            }
+
             this.clientConnection.send(bufferPartToSend);
         }
     }

@@ -1,3 +1,4 @@
+const logger = require("../utils/logger");
 const fs = require("fs");
 const path = require("path");
 
@@ -66,7 +67,7 @@ const parseCustomScripts = (accountId) => {
                     source: "custom",
                 });
             } catch (err) {
-                console.error(`Error parsing custom script ${file}:`, err.message);
+                logger.error("Error parsing custom script", { file, error: err.message });
             }
         }
     }
@@ -96,7 +97,7 @@ const parseScriptsFromSources = () => {
                     const scriptData = parseScriptFile(path.join(sourceDir, file));
                     sourceScripts.push({ ...scriptData, id: `${source}/${file.replace(".nexterm.sh", "")}`, source });
                 } catch (err) {
-                    console.error(`Error parsing script ${file} from source ${source}:`, err.message);
+                    logger.error("Error parsing script from source", { file, source, error: err.message });
                 }
             }
         }
@@ -115,7 +116,7 @@ module.exports.refreshScripts = (accountId = null) => {
         scripts = sourceScripts;
     }
 
-    console.log(`Refreshed ${scripts.length} scripts`);
+    logger.info("Refreshed scripts", { count: scripts.length });
 };
 
 module.exports.getScripts = (accountId = null) => {

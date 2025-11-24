@@ -8,47 +8,69 @@ import Button from "@/common/components/Button";
 import Input from "@/common/components/IconInput";
 import { getRequest, patchRequest, postRequest, putRequest } from "@/common/utils/RequestUtil.js";
 import { useTranslation } from "react-i18next";
+import { useToast } from "@/common/contexts/ToastContext.jsx";
 
-export const ProxmoxDialog = ({ open, onClose, currentFolderId, editServerId }) => {
+export const ProxmoxDialog = ({ open, onClose, currentFolderId, currentOrganizationId, editServerId }) => {
     const { t } = useTranslation();
+    const { sendToast } = useToast();
 
     const [name, setName] = useState("");
     const [ip, setIp] = useState("");
     const [port, setPort] = useState("8006");
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
-    const [nodeName, setNodeName] = useState("");
+    const [loading, setLoading] = useState(false);
 
     const create = () => {
-        putRequest("pve-servers", {
-            name, folderId: currentFolderId, ip, port, username, password,
-        }).then(async () => {
+        setLoading(true);
+        putRequest("integrations", {
+            name, folderId: currentFolderId, organizationId: currentOrganizationId, ip, port, username, password,
+        }).then(async (response) => {
+            if (response.code) {
+                sendToast("Error", response.message);
+                setLoading(false);
+                return;
+            }
+            sendToast("Success", t("servers.proxmoxDialog.messages.created"));
             onClose();
             loadServers();
-            await postRequest("pve-servers/refresh");
-        }).catch(err => console.error(err));
+            setLoading(false);
+        }).catch(err => {
+            sendToast("Error", err.message || t("servers.proxmoxDialog.messages.createFailed"));
+            console.error(err);
+            setLoading(false);
+        });
     };
 
     const edit = () => {
-        patchRequest(`pve-servers/${editServerId.split("-")[1]}`, {
+        setLoading(true);
+        patchRequest(`integrations/${editServerId}`, {
             name, ip, port, username, password: password === "********" ? undefined : password,
-            nodeName: nodeName || null,
-        }).then(async () => {
+        }).then(async (response) => {
+            if (response.code) {
+                sendToast("Error", response.message);
+                setLoading(false);
+                return;
+            }
+            sendToast("Success", t("servers.proxmoxDialog.messages.updated"));
             onClose();
-            await postRequest("pve-servers/refresh");
             loadServers();
-        }).catch(err => console.error(err));
+            setLoading(false);
+        }).catch(err => {
+            sendToast("Error", err.message || t("servers.proxmoxDialog.messages.updateFailed"));
+            console.error(err);
+            setLoading(false);
+        });
     }
 
     useEffect(() => {
         if (editServerId && open) {
-            getRequest(`pve-servers/${editServerId.split("-")[1]}`).then(server => {
+            getRequest(`integrations/${editServerId}`).then(server => {
                 setName(server.name);
                 setIp(server.ip);
                 setPort(server.port);
                 setUsername(server.username);
                 setPassword("********");
-                setNodeName(server.nodeName || "");
             }).catch(err => console.error(err));
         } else {
             setName("");
@@ -56,8 +78,8 @@ export const ProxmoxDialog = ({ open, onClose, currentFolderId, editServerId }) 
             setPort("8006");
             setUsername("");
             setPassword("");
-            setNodeName("");
         }
+        setLoading(false);
     }, [editServerId, open]);
 
     const { loadServers } = useContext(ServerContext);
@@ -99,15 +121,7 @@ export const ProxmoxDialog = ({ open, onClose, currentFolderId, editServerId }) 
                                type="password" id="password" />
                 </div>
 
-                {editServerId && (
-                    <div className="form-group">
-                        <label htmlFor="nodeName">{t("servers.proxmoxDialog.fields.nodeName")}</label>
-                        <IconInput icon={mdiServerNetwork} value={nodeName} setValue={setNodeName} 
-                                   placeholder={t("servers.proxmoxDialog.placeholders.specificNode")} id="nodeName" />
-                    </div>
-                )}
-
-                <Button onClick={editServerId ? edit : create} text={editServerId ? t("servers.proxmoxDialog.actions.edit") : t("servers.proxmoxDialog.actions.import")} />
+                <Button onClick={editServerId ? edit : create} text={editServerId ? t("servers.proxmoxDialog.actions.edit") : t("servers.proxmoxDialog.actions.import")} disabled={loading} />
 
             </div>
         </DialogProvider>

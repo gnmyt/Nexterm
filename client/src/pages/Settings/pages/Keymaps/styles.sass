@@ -1,0 +1,93 @@
+@use "@/common/styles/colors"
+
+.keymaps-page
+    display: flex
+    flex-direction: column
+    gap: 2rem
+
+    &.loading
+        justify-content: center
+        align-items: center
+        min-height: 200px
+        color: colors.$subtext
+
+    .keymaps-title
+        display: flex
+        justify-content: space-between
+        align-items: center
+
+        p
+            margin: 0
+            color: colors.$subtext
+            font-weight: 600
+
+    .keymap-item
+        border: 2px solid colors.$gray
+        padding: 1rem 1.5rem
+        border-radius: 1rem
+        display: flex
+        justify-content: space-between
+        align-items: center
+
+        .keymap-info
+            display: flex
+            gap: 1.5rem
+            align-items: center
+
+            .icon-container
+                display: flex
+                align-items: center
+                justify-content: center
+                padding: 0.7rem
+                color: colors.$primary
+                background-color: colors.$primary-opacity
+                border-radius: 1rem
+
+                svg
+                    width: 2rem
+                    height: 2rem
+
+            .keymap-details
+                display: flex
+                flex-direction: column
+                gap: 0.5rem
+
+                h2
+                    margin: 0
+                    font-weight: 600
+
+                p
+                    margin: 0
+                    font-weight: 600
+                    color: colors.$subtext
+
+        .keybind-recorder
+            display: flex
+            align-items: center
+            gap: 1rem
+
+            .keybind-display
+                min-width: 140px
+                padding: 0.7rem 1rem
+                background: colors.$gray-full
+                border: 2px solid colors.$gray
+                border-radius: 0.5rem
+                text-align: center
+                cursor: pointer
+                transition: all 0.2s
+
+                &:hover
+                    border-color: colors.$primary
+
+                .current-key,
+                .recording-text
+                    font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace
+                    font-size: 0.875rem
+                    font-weight: 700
+
+                .recording-text
+                    color: colors.$subtext
+
+            .keybind-actions
+                display: flex
+                gap: 0.5rem

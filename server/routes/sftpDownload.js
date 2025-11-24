@@ -1,33 +1,25 @@
 const { Router } = require("express");
-const prepareSSH = require("../utils/prepareSSH");
-const Server = require("../models/Server");
-const Identity = require("../models/Identity");
 const Session = require("../models/Session");
 const Account = require("../models/Account");
+const SessionManager = require("../lib/SessionManager");
 const { createAuditLog, AUDIT_ACTIONS, RESOURCE_TYPES } = require("../controllers/audit");
-const { validateServerAccess } = require("../controllers/server");
+const { createSSH } = require("../utils/createSSH");
+const logger = require("../utils/logger");
 
 const app = Router();
 
 app.get("/", async (req, res) => {
     const sessionToken = req.query["sessionToken"];
-    const serverId = req.query["serverId"];
-    const identityId = req.query["identityId"];
+    const sessionId = req.query["sessionId"];
     const path = req.query["path"];
-    const connectionReason = req.query["connectionReason"];
 
     if (!sessionToken) {
         res.status(400).send("You need to provide the token in the 'sessionToken' parameter");
         return;
     }
 
-    if (!serverId) {
-        res.status(400).send("You need to provide the serverId in the 'serverId' parameter");
-        return;
-    }
-
-    if (!identityId) {
-        res.status(400).send("You need to provide the identity in the 'identityId' parameter");
+    if (!sessionId) {
+        res.status(400).send("You need to provide the sessionId in the 'sessionId' parameter");
         return;
     }
 
@@ -51,33 +43,52 @@ app.get("/", async (req, res) => {
         return;
     }
 
-    const server = await Server.findByPk(serverId);
-    if (server === null) {
-        res.status(404).send("The server does not exist");
+    const serverSession = SessionManager.get(sessionId);
+    if (!serverSession) {
+        res.status(404).send("Session not found");
         return;
     }
 
-    const accessCheck = await validateServerAccess(req.user.id, server);
-    if (!accessCheck.valid) {
-        res.status(403).send("You don't have access to this server");
+    if (serverSession.accountId !== req.user.id) {
+        res.status(403).send("Unauthorized session access");
         return;
     }
 
-    if (server.identities.length === 0 && identityId) return;
+    const Entry = require("../models/Entry");
+    const Identity = require("../models/Identity");
 
-    const identity = await Identity.findByPk(identityId || server.identities[0]);
-    if (identity === null) return;
+    const entry = await Entry.findByPk(serverSession.entryId);
+    if (!entry) {
+        res.status(404).send("Entry not found");
+        return;
+    }
 
-    const userInfo = {
-        accountId: req.user.id,
-        ip: req.ip || req.socket?.remoteAddress || 'unknown',
-        userAgent: req.headers['user-agent'] || 'unknown',
-        connectionReason: connectionReason || null
-    };
+    let identity = null;
+    if (serverSession.configuration?.identityId) {
+        identity = await Identity.findByPk(serverSession.configuration.identityId);
+    }
 
-    const ssh = await prepareSSH(server, identity, null, res, userInfo);
+    const { ssh, sshOptions } = await createSSH(entry, identity);
 
-    if (!ssh) return;
+    ssh.on("error", () => {
+        if (ssh._jumpConnections) ssh._jumpConnections.forEach(conn => conn.ssh.end());
+        res.status(500).send("This file cannot be downloaded");
+    });
+
+    try {
+        ssh.connect(sshOptions);
+    } catch (err) {
+        if (ssh._jumpConnections) ssh._jumpConnections.forEach(conn => conn.ssh.end());
+        res.status(500).send(err.message);
+        return;
+    }
+
+    logger.system(`Authorized file download from ${entry.config.ip}${identity ? ` with identity ${identity.name}` : ''}`, {
+        entryId: entry.id,
+        identityId: identity?.id,
+        username: req.user.username,
+        path
+    });
 
     ssh.on("ready", () => {
         ssh.sftp((err, sftp) => {
@@ -86,6 +97,8 @@ app.get("/", async (req, res) => {
             sftp.stat(path, (err, stats) => {
                 if (err) {
                     res.status(404).send("The file does not exist");
+                    ssh.end();
+                    if (ssh._jumpConnections) ssh._jumpConnections.forEach(conn => conn.ssh.end());
                     return;
                 }
 
@@ -95,25 +108,26 @@ app.get("/", async (req, res) => {
                 const readStream = sftp.createReadStream(path);
                 readStream.pipe(res);
 
+                readStream.on('end', () => {
+                    ssh.end();
+                    if (ssh._jumpConnections) ssh._jumpConnections.forEach(conn => conn.ssh.end());
+                });
+
                 createAuditLog({
                     accountId: req.user.id,
-                    organizationId: server.organizationId,
+                    organizationId: entry.organizationId,
                     action: AUDIT_ACTIONS.FILE_DOWNLOAD,
                     resource: RESOURCE_TYPES.FILE,
                     details: {
                         filePath: path,
                         fileSize: stats.size,
-                        connectionReason: connectionReason || null,
+                        connectionReason: serverSession.connectionReason || null,
                     },
                     ipAddress: req.ip,
                     userAgent: req.headers['user-agent'],
                 });
             });
         });
-    });
-
-    ssh.on("error", () => {
-        res.status(500).send("This file cannot be downloaded");
     });
 });
 

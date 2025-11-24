@@ -6,7 +6,8 @@
   gap: 1rem
   align-items: center
   user-select: none
-  overflow: hidden
+  overflow: visible
+  position: relative
 
   svg
     width: 2rem
@@ -14,7 +15,7 @@
 
   .layout-controls
     display: flex
-    gap: 0.5rem
+    gap: 0.3rem
     align-items: center
     margin-right: 1rem
     padding-right: 1rem
@@ -26,6 +27,8 @@
       border-radius: 4px
       transition: all 0.2s ease
       color: colors.$subtext
+      width: 1.8rem
+      height: 1.8rem
 
       &:hover
         background-color: colors.$gray
@@ -33,6 +36,46 @@
 
       &.active
         background-color: colors.$primary
+        color: colors.$white
+
+  .tabs-container
+    position: relative
+    flex: 1
+    display: flex
+    align-items: center
+    overflow: hidden
+
+    .scroll-indicator
+      position: absolute
+      top: 0
+      bottom: 0
+      width: 3rem
+      display: flex
+      align-items: center
+      justify-content: center
+      cursor: pointer
+      z-index: 10
+      transition: all 0.2s ease
+      pointer-events: all
+
+      &.left
+        left: 0
+        background: linear-gradient(to right, colors.$background 50%, transparent)
+
+      &.right
+        right: 0
+        background: linear-gradient(to left, colors.$background 50%, transparent)
+
+      svg
+        width: 2rem
+        height: 2rem
+        color: colors.$subtext
+        transition: all 0.2s ease
+        padding: 0.5rem
+        border-radius: 4px
+
+      &:hover svg
+        background-color: colors.$gray
         color: colors.$white
 
   .tabs
@@ -73,8 +116,45 @@
         background-color: colors.$primary-opacity
 
       svg
-        width: 1.5rem
-        height: 1.5rem
+        width: 1.2rem
+        height: 1.2rem
+        flex-shrink: 0
+
+      .progress-circle
+        position: relative
+        width: 36px
+        height: 36px
+        flex-shrink: 0
+        display: flex
+        align-items: center
+        justify-content: center
+
+        &.no-progress
+          .progress-icon
+            width: 1.5rem
+            height: 1.5rem
+
+        svg
+          width: 36px
+          height: 36px
+          position: absolute
+          top: 0
+          left: 0
+
+          .progress-bg
+            opacity: 0.15
+            color: colors.$subtext
+
+          .progress-bar
+            color: colors.$success
+            transition: stroke-dashoffset 0.1s linear
+
+        .progress-icon
+          width: 1rem
+          height: 1rem
+          position: relative
+          z-index: 1
+          transition: all 0.2s ease
 
       h2
         margin: 0

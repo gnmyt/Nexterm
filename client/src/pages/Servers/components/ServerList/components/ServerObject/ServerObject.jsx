@@ -1,66 +1,17 @@
 import Icon from "@mdi/react";
-import { 
-    mdiDebian, 
-    mdiLinux, 
-    mdiMicrosoftWindows, 
-    mdiServerOutline,
-    mdiUbuntu,
-    mdiApple,
-    mdiDocker,
-    mdiKubernetes,
-    mdiDatabase,
-    mdiCloud,
-    mdiRaspberryPi,
-    mdiConsole,
-    mdiMonitor,
-    mdiCube,
-    mdiFreebsd
-} from "@mdi/js";
+import { mdiSleep } from "@mdi/js";
 import "./styles.sass";
 import { ServerContext } from "@/common/contexts/ServerContext.jsx";
-import { useContext } from "react";
+import { useContext, useRef, useState } from "react";
 import { useDrag, useDrop } from "react-dnd";
 import { patchRequest } from "@/common/utils/RequestUtil.js";
+import { DropIndicator } from "../DropIndicator";
+import { loadIcon } from "@/pages/Servers/utils/iconMapping.js";
 
-export const loadIcon = (icon) => {
-    switch (icon) {
-        case "windows":
-            return mdiMicrosoftWindows;
-        case "linux":
-            return mdiLinux;
-        case "debian":
-            return mdiDebian;
-        case "ubuntu":
-            return mdiUbuntu;
-        case "arch":
-            return mdiLinux;
-        case "freebsd":
-            return mdiFreebsd;
-        case "macos":
-            return mdiApple;
-        case "docker":
-            return mdiDocker;
-        case "kubernetes":
-            return mdiKubernetes;
-        case "database":
-            return mdiDatabase;
-        case "cloud":
-            return mdiCloud;
-        case "raspberry":
-            return mdiRaspberryPi;
-        case "terminal":
-            return mdiConsole;
-        case "desktop":
-            return mdiMonitor;
-        case "vm":
-            return mdiCube;
-        default:
-            return mdiServerOutline;
-    }
-};
-
-export const ServerObject = ({ id, name, position, folderId, nestedLevel, icon, connectToServer, isPVE, status, sshOnly }) => {
-    const { loadServers, getServerListInFolder } = useContext(ServerContext);
+export const ServerObject = ({ id, name, position, folderId, organizationId, nestedLevel, icon, type, connectToServer, status, tags = [], hibernatedSessionCount = 0 }) => {
+    const { loadServers, getServerById } = useContext(ServerContext);
+    const [dropPlacement, setDropPlacement] = useState(null);
+    const elementRef = useRef(null);
 
     const [{ opacity }, dragRef] = useDrag({
         item: { type: "server", id, folderId, position },
@@ -72,26 +23,34 @@ export const ServerObject = ({ id, name, position, folderId, nestedLevel, icon, 
 
     const [{ isOver }, dropRef] = useDrop({
         accept: "server",
+        hover: (item, monitor) => {
+            if (!elementRef.current || item.id === id) return;
+            
+            const hoverBoundingRect = elementRef.current.getBoundingClientRect();
+            const hoverMiddleY = (hoverBoundingRect.bottom - hoverBoundingRect.top) / 2;
+            const clientOffset = monitor.getClientOffset();
+            const hoverClientY = clientOffset.y - hoverBoundingRect.top;
+
+            const placement = hoverClientY < hoverMiddleY ? 'before' : 'after';
+            setDropPlacement(placement);
+        },
         drop: async (item) => {
-            const servers = getServerListInFolder(folderId);
-
-            const targetIndex = servers.findIndex(server => server.id === id);
-            const draggedIndex = servers.findIndex(server => server.id === item.id);
-
-            let newPosition;
-            if (targetIndex > draggedIndex) {
-                newPosition = (servers[targetIndex].position + (servers[targetIndex + 1]?.position || servers[targetIndex].position + 1)) / 2;
-            } else {
-                newPosition = (servers[targetIndex].position + (servers[targetIndex - 1]?.position || servers[targetIndex].position - 1)) / 2;
+            if (item.id === id) return;
+            
+            try {
+                await patchRequest(`entries/${item.id}/reposition`, {
+                    targetId: id,
+                    placement: dropPlacement || 'after',
+                    folderId: folderId,
+                    organizationId: organizationId,
+                });
+                
+                loadServers();
+            } catch (error) {
+                console.error("Failed to reposition entry", error);
             }
-
-            await patchRequest(`servers/${item.id}`, {
-                folderId: item.folderId !== folderId ? folderId : undefined,
-                position: Math.max(newPosition, 0),
-            });
-
-            loadServers();
-
+            
+            setDropPlacement(null);
             return { id };
         },
         collect: (monitor) => ({
@@ -99,32 +58,51 @@ export const ServerObject = ({ id, name, position, folderId, nestedLevel, icon, 
         }),
     });
 
-    const { getServerById } = useContext(ServerContext);
-
     const server = getServerById(id);
 
     const connect = () => {
-        if (isPVE && status === "running") {
-            connectToServer(id);
-            return;
-        }
-
-        connectToServer(server.id, server.identities[0]);
+        connectToServer(server.id, server.identities?.[0]);
     };
 
-    if (sshOnly && server.protocol !== "ssh") {
-        return null;
-    }
-
     return (
-        <div className={(isPVE ? "pve-entry " : "") + "server-object" + (isOver ? " server-is-over" : "")}
-             style={{ paddingLeft: `${15 + (nestedLevel * 15)}px`, opacity }} data-id={id}
-             ref={!isPVE ? (node) => dragRef(dropRef(node)) : () => {}}
-             onDoubleClick={sshOnly ? null : connect} onClick={sshOnly ? connect : null}>
-            <div className={"system-icon " + (isPVE ? (status !== "running" ? " pve-icon-offline" : " pve-icon") : "")}>
-                <Icon path={isPVE ? icon : loadIcon(icon)} />
+        <div 
+            className={"server-object"}
+            style={{ paddingLeft: `${15 + (nestedLevel * 15)}px`, opacity, position: 'relative' }} 
+            data-id={id}
+            ref={(node) => {
+                elementRef.current = node;
+                dragRef(dropRef(node));
+            }}
+            onDoubleClick={connect}
+            onMouseLeave={() => setDropPlacement(null)}>
+            <DropIndicator show={isOver && dropPlacement === 'before'} placement="before" />
+            <div className={
+                type && type.startsWith('pve-') 
+                    ? (status === 'offline' || status === 'stopped' ? "pve-icon pve-icon-offline" : "pve-icon")
+                    : (status === 'offline' ? "system-icon system-icon-offline" : "system-icon")
+            }>
+                <Icon path={loadIcon(icon)} />
             </div>
             <p className="truncate-text">{name}</p>
+            {hibernatedSessionCount > 0 && (
+                <div className="hibernation-indicator" title={`${hibernatedSessionCount} hibernated session${hibernatedSessionCount > 1 ? 's' : ''}`}>
+                    <Icon path={mdiSleep} />
+                    <span>{hibernatedSessionCount}</span>
+                </div>
+            )}
+            {tags && tags.length > 0 && (
+                <div className="tag-circles">
+                    {tags.map(tag => (
+                        <div
+                            key={tag.id}
+                            className="tag-circle"
+                            style={{ backgroundColor: tag.color }}
+                            title={tag.name}
+                        />
+                    ))}
+                </div>
+            )}
+            <DropIndicator show={isOver && dropPlacement === 'after'} placement="after" />
         </div>
     );
 };

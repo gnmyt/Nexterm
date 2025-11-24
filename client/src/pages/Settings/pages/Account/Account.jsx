@@ -1,6 +1,6 @@
 import IconInput from "@/common/components/IconInput";
 import "./styles.sass";
-import { mdiAccountCircleOutline, mdiWhiteBalanceSunny, mdiAccountEdit, mdiPalette, mdiShieldCheck, mdiLockReset, mdiTranslate } from "@mdi/js";
+import { mdiAccountCircleOutline, mdiWhiteBalanceSunny, mdiAccountEdit, mdiPalette, mdiShieldCheck, mdiLockReset, mdiTranslate, mdiSync, mdiCloudSync, mdiWeb, mdiTabUnselected, mdiThemeLightDark, mdiWeatherNight, mdiMagicStaff } from "@mdi/js";
 import { useContext, useEffect, useState } from "react";
 import { UserContext } from "@/common/contexts/UserContext.jsx";
 import { useTheme } from "@/common/contexts/ThemeContext.jsx";
@@ -20,20 +20,42 @@ export const Account = () => {
     const [passwordChangeOpen, setPasswordChangeOpen] = useState(false);
 
     const { user, login } = useContext(UserContext);
-    const { theme, toggleTheme } = useTheme();
+    const { themeMode, setTheme } = useTheme();
 
     const [updatedField, setUpdatedField] = useState(null);
 
     const [firstName, setFirstName] = useState("");
     const [lastName, setLastName] = useState("");
     const [currentLanguage, setCurrentLanguage] = useState(localStorage.getItem("language") || "en");
+    const [sessionSync, setSessionSync] = useState("same_browser");
 
     const languageOptions = languages.map(lang => ({ label: lang.name, value: lang.code }));
+    
+    const themeOptions = [
+        { label: t("settings.account.themeAuto"), value: "auto", icon: mdiMagicStaff },
+        { label: t("settings.account.themeLight"), value: "light", icon: mdiWhiteBalanceSunny },
+        { label: t("settings.account.themeDark"), value: "dark", icon: mdiWeatherNight }
+    ];
+
+    const sessionSyncOptions = [
+        { label: t("settings.account.sessionSyncAcrossDevices"), value: "across_devices", icon: mdiCloudSync },
+        { label: t("settings.account.sessionSyncSameBrowser"), value: "same_browser", icon: mdiWeb },
+        { label: t("settings.account.sessionSyncSameTab"), value: "same_tab", icon: mdiTabUnselected }
+    ];
 
     const changeLanguage = (languageCode) => {
         setCurrentLanguage(languageCode);
         localStorage.setItem("language", languageCode);
         i18n.changeLanguage(languageCode);
+    };
+
+    const changeSessionSync = (mode) => {
+        setSessionSync(mode);
+        patchRequest("accounts/session-sync", { sessionSync: mode })
+            .then(() => {
+                login();
+            })
+            .catch(err => console.error(err));
     };
 
     const updateName = (config) => {
@@ -62,6 +84,7 @@ export const Account = () => {
         if (user) {
             setFirstName(user.firstName);
             setLastName(user.lastName);
+            setSessionSync(user.sessionSync || "same_browser");
         }
     }, [user]);
 
@@ -95,9 +118,7 @@ export const Account = () => {
                 <h2><Icon path={mdiPalette} size={0.8} style={{marginRight: '8px'}} />{t("settings.account.appearance")}</h2>
                 <div className="section-inner">
                     <p style={{ maxWidth: "25rem" }}>{t("settings.account.appearanceDescription")}</p>
-                    <Button
-                        text={theme === "dark" ? t("settings.account.switchToLight") : t("settings.account.switchToDark")}
-                        icon={mdiWhiteBalanceSunny} onClick={toggleTheme} />
+                    <SelectBox options={themeOptions} selected={themeMode} setSelected={setTheme} />
                 </div>
             </div>
 
@@ -139,6 +160,18 @@ export const Account = () => {
                         </p>
                     </div>
                     <SelectBox options={languageOptions} selected={currentLanguage} setSelected={changeLanguage} />
+                </div>
+            </div>
+
+            <div className="account-section">
+                <h2><Icon path={mdiSync} size={0.8} style={{marginRight: '8px'}} />{t("settings.account.sessionSynchronization")}</h2>
+                <div className="section-inner">
+                    <p style={{ maxWidth: "25rem" }}>
+                        {sessionSync === "across_devices" && t("settings.account.sessionSyncAcrossDevicesDesc")}
+                        {sessionSync === "same_browser" && t("settings.account.sessionSyncSameBrowserDesc")}
+                        {sessionSync === "same_tab" && t("settings.account.sessionSyncSameTabDesc")}
+                    </p>
+                    <SelectBox options={sessionSyncOptions} selected={sessionSync} setSelected={changeSessionSync} />
                 </div>
             </div>
 

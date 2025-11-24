@@ -9,7 +9,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@codemirror/autocomplete": "^6.19.1",
+    "@codemirror/autocomplete": "^6.20.0",
     "@codemirror/language": "^6.11.3",
     "@codemirror/legacy-modes": "^6.5.2",
     "@fontsource/fira-code": "^5.2.7",
@@ -27,9 +27,10 @@
     "@xterm/addon-fit": "^0.10.0",
     "@xterm/xterm": "^5.5.0",
     "chart.js": "^4.5.1",
+    "fuse.js": "^7.1.0",
     "guacamole-common-js": "^1.5.0",
     "hack-font": "^3.3.0",
-    "i18next": "^25.6.1",
+    "i18next": "^25.6.3",
     "i18next-browser-languagedetector": "^8.2.0",
     "i18next-http-backend": "^3.0.2",
     "qrcode.react": "^4.2.0",
@@ -38,23 +39,23 @@
     "react-dnd": "^16.0.1",
     "react-dnd-html5-backend": "^16.0.1",
     "react-dom": "^19.2.0",
-    "react-i18next": "^16.2.4",
-    "react-router-dom": "^7.9.5",
+    "react-i18next": "^16.3.5",
+    "react-router-dom": "^7.9.6",
     "react-use-websocket": "^4.13.0",
-    "simple-icons": "^15.19.0",
+    "simple-icons": "^15.22.0",
     "ua-parser-js": "^2.0.6"
   },
   "devDependencies": {
     "@eslint/js": "^9.39.1",
-    "@types/react": "^19.2.2",
-    "@types/react-dom": "^19.2.2",
-    "@vitejs/plugin-react": "^5.1.0",
+    "@types/react": "^19.2.6",
+    "@types/react-dom": "^19.2.3",
+    "@vitejs/plugin-react": "^5.1.1",
     "eslint": "^9.39.1",
     "eslint-plugin-react": "^7.37.5",
     "eslint-plugin-react-hooks": "^7.0.1",
     "eslint-plugin-react-refresh": "^0.4.24",
     "globals": "^16.5.0",
     "sass-embedded": "^1.93.3",
-    "vite": "^7.2.2"
+    "vite": "^7.2.4"
   }
 }

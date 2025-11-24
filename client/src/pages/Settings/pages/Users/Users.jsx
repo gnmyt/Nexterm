@@ -1,7 +1,7 @@
 import "./styles.sass";
 import { useContext, useEffect, useState } from "react";
 import { UserContext } from "@/common/contexts/UserContext.jsx";
-import { getRequest } from "@/common/utils/RequestUtil.js";
+import { getRequest, deleteRequest, patchRequest, postRequest } from "@/common/utils/RequestUtil.js";
 import Button from "@/common/components/Button";
 import Icon from "@mdi/react";
 import {
@@ -9,19 +9,32 @@ import {
     mdiDotsVertical,
     mdiLock,
     mdiShieldAccount,
+    mdiKey,
+    mdiSecurity,
+    mdiAccountRemove,
+    mdiLogin,
 } from "@mdi/js";
 import CreateUserDialog from "./components/CreateUserDialog";
-import ContextMenu from "./components/ContextMenu";
+import { ContextMenu, ContextMenuItem, useContextMenu } from "@/common/components/ContextMenu";
+import { ActionConfirmDialog } from "@/common/components/ActionConfirmDialog/ActionConfirmDialog.jsx";
+import PasswordChange from "@/pages/Settings/pages/Account/dialogs/PasswordChange";
+import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 
 export const Users = () => {
     const { t } = useTranslation();
     const [users, setUsers] = useState([]);
-    const { user } = useContext(UserContext);
+    const { user, overrideToken } = useContext(UserContext);
+    const navigate = useNavigate();
 
     const [createUserDialogOpen, setCreateUserDialogOpen] = useState(false);
-    const [contextMenu, setContextMenu] = useState({ visible: false, x: 0, y: 0 });
     const [contextUserId, setContextUserId] = useState(null);
+    const [passwordChangeDialogOpen, setPasswordChangeDialogOpen] = useState(false);
+    const [promoteDialogOpen, setPromoteDialogOpen] = useState(false);
+    const [demoteDialogOpen, setDemoteDialogOpen] = useState(false);
+    const [confirmDeleteDialogOpen, setConfirmDeleteDialogOpen] = useState(false);
+
+    const contextMenu = useContextMenu();
 
     const loadUsers = () => {
         getRequest("users/list").then(response => {
@@ -31,30 +44,28 @@ export const Users = () => {
 
     const openContextMenu = (e, userId) => {
         e.stopPropagation();
-        const buttonRect = e.currentTarget.getBoundingClientRect();
-        setContextMenu(contextMenu => {
-            if (contextMenu.visible && contextUserId === userId) {
-                return { visible: false, x: 0, y: 0};
-            }
+        setContextUserId(userId);
+        contextMenu.open(e);
+    };
 
-            setContextUserId(userId);
-
-            return { visible: true, x: buttonRect.x - 160, y: buttonRect.y + buttonRect.height };
+    const deleteUser = (userId) => {
+        deleteRequest(`users/${userId}`).then(() => {
+            loadUsers();
         });
     };
 
-    const closeContextMenu = () => {
-        setContextMenu({ visible: false, x: 0, y: 0 });
+    const updateRole = (userId, role) => {
+        patchRequest(`users/${userId}/role`, { role: role }).then(() => {
+            loadUsers();
+        });
     };
 
-    useEffect(() => {
-        const handleClickOutside = () => closeContextMenu();
-        window.addEventListener("click", handleClickOutside);
-
-        return () => {
-            window.removeEventListener("click", handleClickOutside);
-        };
-    }, []);
+    const loginAsUser = (userId) => {
+        postRequest(`users/${userId}/login`).then(response => {
+            overrideToken(response.token);
+            navigate("/servers");
+        });
+    };
 
     useEffect(() => {
         loadUsers();
@@ -63,7 +74,20 @@ export const Users = () => {
     return (
         <div className="users-page">
             <CreateUserDialog open={createUserDialogOpen} onClose={() => setCreateUserDialogOpen(false)}
-                                loadUsers={loadUsers} />
+                              loadUsers={loadUsers} />
+
+            <ActionConfirmDialog open={confirmDeleteDialogOpen} setOpen={setConfirmDeleteDialogOpen}
+                                 onConfirm={() => deleteUser(contextUserId)}
+                                 text={t("settings.users.contextMenu.deleteConfirm")} />
+            <ActionConfirmDialog open={promoteDialogOpen} setOpen={setPromoteDialogOpen}
+                                 onConfirm={() => updateRole(contextUserId, "admin")}
+                                 text={t("settings.users.contextMenu.promoteConfirm")} />
+            <ActionConfirmDialog open={demoteDialogOpen} setOpen={setDemoteDialogOpen}
+                                 onConfirm={() => updateRole(contextUserId, "user")}
+                                 text={t("settings.users.contextMenu.demoteConfirm")} />
+
+            <PasswordChange open={passwordChangeDialogOpen} onClose={() => setPasswordChangeDialogOpen(false)}
+                            accountId={contextUserId} />
 
             <div className="user-title">
                 <h2>{t("settings.users.title", { count: users.length })}</h2>
@@ -84,9 +108,50 @@ export const Users = () => {
                 </div>
             ))}
 
-            <ContextMenu closeContextMenu={closeContextMenu} loadUsers={loadUsers}
-                                                 contextUserId={contextUserId} users={users} contextMenu={contextMenu} />
+            <ContextMenu
+                isOpen={contextMenu.isOpen}
+                position={contextMenu.position}
+                onClose={contextMenu.close}
+                trigger={contextMenu.triggerRef}
+            >
+                <ContextMenuItem
+                    icon={mdiKey}
+                    label={t("settings.users.contextMenu.changePassword")}
+                    onClick={() => setPasswordChangeDialogOpen(true)}
+                />
 
+                {users.find(u => u.id === contextUserId)?.role === "user" && user.id !== contextUserId && (
+                    <ContextMenuItem
+                        icon={mdiSecurity}
+                        label={t("settings.users.contextMenu.promoteToAdmin")}
+                        onClick={() => setPromoteDialogOpen(true)}
+                    />
+                )}
+
+                {users.find(u => u.id === contextUserId)?.role === "admin" && user.id !== contextUserId && (
+                    <ContextMenuItem
+                        icon={mdiAccount}
+                        label={t("settings.users.contextMenu.demoteToUser")}
+                        onClick={() => setDemoteDialogOpen(true)}
+                    />
+                )}
+
+                {user.id !== contextUserId && (
+                    <>
+                        <ContextMenuItem
+                            icon={mdiAccountRemove}
+                            label={t("settings.users.contextMenu.deleteUser")}
+                            onClick={() => setConfirmDeleteDialogOpen(true)}
+                            danger
+                        />
+                        <ContextMenuItem
+                            icon={mdiLogin}
+                            label={t("settings.users.contextMenu.loginAsUser")}
+                            onClick={() => loginAsUser(contextUserId)}
+                        />
+                    </>
+                )}
+            </ContextMenu>
         </div>
     );
 };

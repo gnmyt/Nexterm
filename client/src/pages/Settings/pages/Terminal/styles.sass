@@ -20,48 +20,58 @@
 .theme-cards
   display: grid
   grid-template-columns: repeat(auto-fit, minmax(280px, 1fr))
-  gap: 1rem
+  gap: 0.75rem
 
 .theme-card
-  border: 2px solid colors.$gray
-  border-radius: 0.8rem
-  padding: 1rem
+  border: 1px solid colors.$dark-gray
+  border-radius: 0.75rem
+  padding: 0.75rem
   cursor: pointer
-  transition: all 0.2s ease
-  background-color: colors.$gray-full
+  transition: background-color 0.1s ease, border-color 0.1s ease, box-shadow 0.12s cubic-bezier(0.4, 0, 0.2, 1)
+  background-color: colors.$lighter-background
+  user-select: none
+  outline: none
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2)
 
   &:hover
-    border-color: colors.$primary-opacity
-    transform: translateY(-2px)
+    background-color: colors.$gray
+    border-color: colors.$primary
+
+  &:focus-visible
+    outline: 2px solid colors.$primary
+    outline-offset: -2px
 
   &.selected
     border-color: colors.$primary
-    box-shadow: 0 0 0 1px colors.$primary-opacity
+    background-color: colors.$gray
+    box-shadow: 0 12px 48px rgba(0, 0, 0, 0.5), 0 4px 16px rgba(0, 0, 0, 0.3)
 
   .theme-header
     display: flex
     justify-content: space-between
     align-items: center
-    margin-bottom: 0.8rem
+    margin-bottom: 0.75rem
 
     h4
       margin: 0
-      font-size: 1.1rem
+      font-size: 0.9rem
+      font-weight: 600
+      color: colors.$white
 
     .selected-indicator
-      width: 12px
-      height: 12px
+      width: 10px
+      height: 10px
       border-radius: 50%
       background-color: colors.$primary
 
 .terminal-preview
   border-radius: 0.5rem
   overflow: hidden
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3)
+  border: 1px solid rgba(0, 0, 0, 0.2)
   min-height: 80px
 
   .terminal-content
-    padding: 0.8rem
+    padding: 0.625rem 0.75rem
     position: relative
     min-height: 60px
 

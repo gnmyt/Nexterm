@@ -1,4 +1,5 @@
 const { DataTypes } = require("sequelize");
+const logger = require('../utils/logger');
 
 module.exports = {
     async up(queryInterface) {
@@ -41,7 +42,7 @@ module.exports = {
                     allowNull: true,
                 },
             });
-            console.log("Created accounts table");
+            logger.info("Created accounts table");
         }
 
         if (!tableNames.includes("organizations")) {
@@ -75,7 +76,7 @@ module.exports = {
                     defaultValue: DataTypes.NOW,
                 },
             });
-            console.log("Created organizations table");
+            logger.info("Created organizations table");
         }
 
         if (!tableNames.includes("organization_members")) {
@@ -114,7 +115,7 @@ module.exports = {
                     defaultValue: DataTypes.NOW,
                 },
             });
-            console.log("Created organization_members table");
+            logger.info("Created organization_members table");
         }
 
         if (!tableNames.includes("folders")) {
@@ -138,7 +139,7 @@ module.exports = {
                     allowNull: true,
                 },
             });
-            console.log("Created folders table");
+            logger.info("Created folders table");
         }
 
         if (!tableNames.includes("identities")) {
@@ -178,7 +179,7 @@ module.exports = {
                     allowNull: true,
                 },
             });
-            console.log("Created identities table");
+            logger.info("Created identities table");
         }
 
         if (!tableNames.includes("servers")) {
@@ -222,7 +223,7 @@ module.exports = {
                     defaultValue: [],
                 },
             });
-            console.log("Created servers table");
+            logger.info("Created servers table");
         }
 
         if (!tableNames.includes("pve_servers")) {
@@ -270,7 +271,7 @@ module.exports = {
                     defaultValue: [],
                 },
             });
-            console.log("Created pve_servers table");
+            logger.info("Created pve_servers table");
         }
 
         if (!tableNames.includes("sessions")) {
@@ -302,7 +303,7 @@ module.exports = {
                     defaultValue: DataTypes.NOW,
                 },
             });
-            console.log("Created sessions table");
+            logger.info("Created sessions table");
         }
 
         if (!tableNames.includes("snippets")) {
@@ -330,7 +331,7 @@ module.exports = {
                     allowNull: true,
                 },
             });
-            console.log("Created snippets table");
+            logger.info("Created snippets table");
         }
 
         if (!tableNames.includes("app_sources")) {
@@ -345,7 +346,7 @@ module.exports = {
                     allowNull: false,
                 },
             });
-            console.log("Created app_sources table");
+            logger.info("Created app_sources table");
         }
 
         if (!tableNames.includes("ai_settings")) {
@@ -385,7 +386,7 @@ module.exports = {
                     defaultValue: DataTypes.NOW,
                 },
             });
-            console.log("Created ai_settings table");
+            logger.info("Created ai_settings table");
         }
 
         if (!tableNames.includes("server_monitoring")) {
@@ -452,7 +453,7 @@ module.exports = {
             });
 
             await queryInterface.addIndex("server_monitoring", ["serverId", "timestamp"]);
-            console.log("Created server_monitoring table with indexes");
+            logger.info("Created server_monitoring table with indexes");
         }
 
         if (!tableNames.includes("oidc_providers")) {
@@ -522,7 +523,7 @@ module.exports = {
                     defaultValue: "preferred_username",
                 },
             });
-            console.log("Created oidc_providers table");
+            logger.info("Created oidc_providers table");
         }
     },
 };

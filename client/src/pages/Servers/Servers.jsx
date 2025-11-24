@@ -10,27 +10,99 @@ import ViewContainer from "@/pages/Servers/components/ViewContainer";
 import ProxmoxDialog from "@/pages/Servers/components/ProxmoxDialog";
 import SSHConfigImportDialog from "@/pages/Servers/components/SSHConfigImportDialog";
 import ConnectionReasonDialog from "@/pages/Servers/components/ConnectionReasonDialog";
+import DirectConnectDialog from "@/pages/Servers/components/DirectConnectDialog";
 import { mdiStar } from "@mdi/js";
 import { siDiscord } from "simple-icons";
 import { useActiveSessions } from "@/common/contexts/SessionContext.jsx";
 import { useLocation, useNavigate } from "react-router-dom";
 import { ServerContext } from "@/common/contexts/ServerContext.jsx";
 
+import { getRequest, postRequest, deleteRequest } from "@/common/utils/RequestUtil";
+
 export const Servers = () => {
 
     const [serverDialogOpen, setServerDialogOpen] = useState(false);
+    const [serverDialogProtocol, setServerDialogProtocol] = useState(null);
     const [proxmoxDialogOpen, setProxmoxDialogOpen] = useState(false);
     const [sshConfigImportDialogOpen, setSSHConfigImportDialogOpen] = useState(false);
     const [connectionReasonDialogOpen, setConnectionReasonDialogOpen] = useState(false);
+    const [directConnectDialogOpen, setDirectConnectDialogOpen] = useState(false);
+    const [directConnectServer, setDirectConnectServer] = useState(null);
     const [pendingConnection, setPendingConnection] = useState(null);
 
     const [currentFolderId, setCurrentFolderId] = useState(null);
+    const [currentOrganizationId, setCurrentOrganizationId] = useState(null);
     const [editServerId, setEditServerId] = useState(null);
     const { user } = useContext(UserContext);
     const { activeSessions, setActiveSessions, activeSessionId, setActiveSessionId } = useActiveSessions();
-    const { getServerById, getPVEServerById, getPVEContainerById, servers } = useContext(ServerContext);
+    const { getServerById, servers } = useContext(ServerContext);
     const location = useLocation();
     const navigate = useNavigate();
+
+    const [hibernatedSessions, setHibernatedSessions] = useState([]);
+
+    const getTabId = () => {
+        let tabId = sessionStorage.getItem("nexterm_tab_id");
+        if (!tabId) {
+            tabId = `tab_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+            sessionStorage.setItem("nexterm_tab_id", tabId);
+        }
+        return tabId;
+    };
+
+    const getBrowserId = () => {
+        let browserId = localStorage.getItem("nexterm_browser_id");
+        if (!browserId) {
+            browserId = `browser_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+            localStorage.setItem("nexterm_browser_id", browserId);
+        }
+        return browserId;
+    };
+
+    const fetchSessions = async () => {
+        try {
+            const params = new URLSearchParams({
+                tabId: getTabId(),
+                browserId: getBrowserId()
+            });
+            const sessions = await getRequest(`/connections?${params.toString()}`);
+            const mappedSessions = sessions.map(session => {
+                const server = getServerById(session.entryId);
+                if (!server) return null;
+
+                return {
+                    id: session.sessionId,
+                    server: server,
+                    identity: session.configuration.identityId,
+                    connectionReason: session.connectionReason,
+                    isHibernated: session.isHibernated,
+                    createdAt: session.createdAt,
+                    lastActivity: session.lastActivity,
+                    type: session.configuration.type || undefined
+                };
+            }).filter(s => s !== null);
+
+            const activeMapped = mappedSessions.filter(s => !s.isHibernated);
+            const hibernatedMapped = mappedSessions.filter(s => s.isHibernated);
+            
+            setActiveSessions(activeMapped);
+            setHibernatedSessions(hibernatedMapped);
+
+            if (activeMapped.length > 0) {
+                if (!activeSessionId || !activeMapped.find(s => s.id === activeSessionId)) {
+                    setActiveSessionId(activeMapped[activeMapped.length - 1].id);
+                }
+            }
+        } catch (error) {
+            console.error("Failed to fetch sessions", error);
+        }
+    };
+
+    useEffect(() => {
+        if (servers) {
+            fetchSessions();
+        }
+    }, [servers]);
 
     const findOrganizationForServer = (serverIdNum, entries, currentOrg = null) => {
         for (const entry of entries) {
@@ -53,43 +125,89 @@ export const Servers = () => {
         return findOrganizationForServer(parseInt(serverId), servers)?.requireConnectionReason || false;
     };
 
-    const connectToServer = async (server, identity) => {
-        const requiresReason = checkConnectionReasonRequired(server, servers);
+    const connectToServer = async (serverId, identity, overrideRenderer) => {
+        const server = getServerById(serverId);
+
+        const hibernated = hibernatedSessions.find(s => s.server.id === serverId && s.identity === identity?.id);
+        if (hibernated) {
+            resumeConnection(hibernated.id);
+            return;
+        }
+
+        const requiresReason = checkConnectionReasonRequired(serverId, servers);
         if (requiresReason) {
-            setPendingConnection({ type: "ssh", server, identity });
+            setPendingConnection({ server: { ...server, renderer: overrideRenderer || server.renderer }, identity });
             setConnectionReasonDialogOpen(true);
             return;
         }
 
-        performConnection("ssh", server, identity);
+        performConnection({ ...server, renderer: overrideRenderer || server.renderer }, identity);
     };
 
     const openSFTP = async (server, identity) => {
+        const serverObj = getServerById(server);
         const requiresReason = checkConnectionReasonRequired(server, servers);
+        
         if (requiresReason) {
-            setPendingConnection({ type: "sftp", server, identity });
+            setPendingConnection({ server: serverObj, identity, type: "sftp" });
             setConnectionReasonDialogOpen(true);
             return;
         }
-
-        performConnection("sftp", server, identity);
+        
+        performConnection(serverObj, identity, null, "sftp");
     };
 
-    const performConnection = (type, server, identity, connectionReason = null) => {
-        const sessionId = "session-" + (Math.random().toString(36).substring(2, 15));
-        const sessionData = { server, identity, type, id: sessionId, connectionReason };
+    const performConnection = async (server, identity, connectionReason = null, type = null, directIdentity = null) => {
+        try {
+            const payload = {
+                entryId: server.id,
+                identityId: identity?.id,
+                connectionReason,
+                type,
+                tabId: getTabId(),
+                browserId: getBrowserId()
+            };
 
-        setActiveSessions(prevSessions => [...prevSessions, sessionData]);
-        setActiveSessionId(sessionId);
+            if (directIdentity) payload.directIdentity = directIdentity;
+            const session = await postRequest("/connections", payload);
+
+            const sessionData = {
+                server,
+                identity: identity?.id,
+                id: session.sessionId,
+                connectionReason,
+                type: type || undefined
+            };
+
+            setActiveSessions(prevSessions => [...prevSessions, sessionData]);
+            setActiveSessionId(session.sessionId);
+        } catch (error) {
+            console.error("Failed to create session", error);
+        }
+    };
+
+    const resumeConnection = async (sessionId) => {
+        try {
+            await postRequest(`/connections/${sessionId}/resume`, {
+                tabId: getTabId(),
+                browserId: getBrowserId()
+            });
+            setActiveSessionId(sessionId);
+            await fetchSessions();
+        } catch (error) {
+            console.error("Failed to resume session", error);
+        }
     };
 
     const handleConnectionReasonProvided = (reason) => {
         if (pendingConnection) {
-            if (pendingConnection.type === "pve") {
-                performPVEConnection(pendingConnection.serverId, pendingConnection.containerId, reason);
-            } else {
-                performConnection(pendingConnection.type, pendingConnection.server, pendingConnection.identity, reason);
-            }
+            performConnection(
+                pendingConnection.server, 
+                pendingConnection.identity,
+                reason, 
+                pendingConnection.type || null,
+                pendingConnection.directIdentity || null
+            );
             setPendingConnection(null);
         }
         setConnectionReasonDialogOpen(false);
@@ -100,51 +218,47 @@ export const Servers = () => {
         setConnectionReasonDialogOpen(false);
     };
 
-    const connectToPVEServer = async (serverId, containerId) => {
+    const disconnectFromServer = async (sessionId) => {
         try {
-            const pveServerId = serverId.toString().replace("pve-", "");
-            const requiresReason = checkConnectionReasonRequired(pveServerId, servers);
-            if (requiresReason) {
-                setPendingConnection({ type: "pve", serverId, containerId });
-                setConnectionReasonDialogOpen(true);
-                return;
-            }
+            await deleteRequest(`/connections/${sessionId}`);
+            setActiveSessions(activeSessions => {
+                const newSessions = activeSessions.filter(session => session.id !== sessionId);
 
-            performPVEConnection(serverId, containerId);
+                if (newSessions.length === 0) {
+                    setActiveSessionId(null);
+                } else if (sessionId === activeSessionId) {
+                    setActiveSessionId(newSessions[newSessions.length - 1].id);
+                }
+
+                return newSessions;
+            });
         } catch (error) {
-            performPVEConnection(serverId, containerId);
+            console.error("Failed to delete session", error);
         }
     };
 
-    const performPVEConnection = (serverId, containerId, connectionReason = null) => {
-        const sessionId = "session-" + (Math.random().toString(36).substring(2, 15));
-        const sessionData = {
-            server: serverId.toString().replace("pve-", ""),
-            containerId: containerId.toString().split("-")[containerId.toString().split("-").length - 1],
-            id: sessionId,
-            connectionReason,
-        };
-
-        setActiveSessions(activeSessions => [...activeSessions, sessionData]);
-        setActiveSessionId(sessionId);
-    };
-
-    const disconnectFromServer = (sessionId) => {
-        setActiveSessions(activeSessions => {
-            const newSessions = activeSessions.filter(session => session.id !== sessionId);
-
-            if (newSessions.length === 0) {
-                setActiveSessionId(null);
-            } else if (sessionId === activeSessionId) {
-                setActiveSessionId(newSessions[newSessions.length - 1].id);
+    const hibernateSession = async (sessionId) => {
+        try {
+            await postRequest(`/connections/${sessionId}/hibernate`);
+            
+            if (sessionId === activeSessionId) {
+                const otherSessions = activeSessions.filter(s => s.id !== sessionId);
+                if (otherSessions.length > 0) {
+                    setActiveSessionId(otherSessions[otherSessions.length - 1].id);
+                } else {
+                    setActiveSessionId(null);
+                }
             }
-
-            return newSessions;
-        });
+            
+            await fetchSessions();
+        } catch (error) {
+            console.error("Failed to hibernate session", error);
+        }
     };
 
     const closeDialog = () => {
         setServerDialogOpen(false);
+        setServerDialogProtocol(null);
         setCurrentFolderId(null);
         setEditServerId(null);
     };
@@ -160,6 +274,32 @@ export const Servers = () => {
         setCurrentFolderId(null);
     };
 
+    const openDirectConnect = (server) => {
+        setDirectConnectServer(server);
+        setDirectConnectDialogOpen(true);
+    };
+
+    const closeDirectConnectDialog = () => {
+        setDirectConnectDialogOpen(false);
+        setDirectConnectServer(null);
+    };
+
+    const handleDirectConnect = (directIdentity) => {
+        if (!directConnectServer) return;
+
+        const requiresReason = checkConnectionReasonRequired(directConnectServer.id, servers);
+        if (requiresReason) {
+            setPendingConnection({ 
+                server: directConnectServer, 
+                identity: null, 
+                directIdentity 
+            });
+            setConnectionReasonDialogOpen(true);
+        } else {
+            performConnection(directConnectServer, null, null, null, directIdentity);
+        }
+    };
+
     useEffect(() => {
         if (!servers) return;
 
@@ -171,41 +311,21 @@ export const Servers = () => {
 
             const handleAutoConnect = async () => {
                 const server = getServerById(connectId);
+                const isPveEntry = server?.type?.startsWith('pve-');
+                const hasIdentities = server?.identities && server.identities.length > 0;
 
-                if (server && server.identities && server.identities.length > 0) {
+                if (server && (isPveEntry || hasIdentities)) {
+                    const identity = isPveEntry ? null : server.identities[0];
                     try {
                         const requiresReason = checkConnectionReasonRequired(connectId, servers);
                         if (requiresReason) {
-                            setPendingConnection({ type: "ssh", server: connectId, identity: server.identities[0] });
+                            setPendingConnection({ server, identity });
                             setConnectionReasonDialogOpen(true);
                         } else {
-                            performConnection("ssh", connectId, server.identities[0]);
+                            performConnection(server, identity);
                         }
                     } catch (error) {
-                        performConnection("ssh", connectId, server.identities[0]);
-                    }
-                } else {
-                    const isPveServer = connectId.includes("-");
-
-                    if (isPveServer) {
-                        const [pveId, containerId] = connectId.split("-");
-                        const pveServer = getPVEServerById(pveId);
-                        const container = pveServer && containerId ?
-                            getPVEContainerById(pveId, containerId) : null;
-
-                        if (pveServer && container && container.status === "running") {
-                            try {
-                                const requiresReason = checkConnectionReasonRequired(pveId, servers);
-                                if (requiresReason) {
-                                    setPendingConnection({ type: "pve", serverId: pveId, containerId });
-                                    setConnectionReasonDialogOpen(true);
-                                } else {
-                                    performPVEConnection(pveId, containerId);
-                                }
-                            } catch (error) {
-                                performPVEConnection(pveId, containerId);
-                            }
-                        }
+                        performConnection(server, identity);
                     }
                 }
             };
@@ -217,40 +337,55 @@ export const Servers = () => {
     return (
         <div className="server-page">
             <ServerDialog open={serverDialogOpen} onClose={closeDialog} currentFolderId={currentFolderId}
-                          editServerId={editServerId} />
+                currentOrganizationId={currentOrganizationId} editServerId={editServerId}
+                initialProtocol={serverDialogProtocol} />
             <ProxmoxDialog open={proxmoxDialogOpen} onClose={closePVEDialog}
-                           currentFolderId={currentFolderId}
-                           editServerId={editServerId} />
+                currentFolderId={currentFolderId}
+                currentOrganizationId={currentOrganizationId}
+                editServerId={editServerId} />
             <SSHConfigImportDialog open={sshConfigImportDialogOpen} onClose={closeSSHConfigImportDialog}
-                                   currentFolderId={currentFolderId} />
+                currentFolderId={currentFolderId}
+                currentOrganizationId={currentOrganizationId} />
+            <DirectConnectDialog 
+                open={directConnectDialogOpen} 
+                onClose={closeDirectConnectDialog}
+                server={directConnectServer}
+                onConnect={handleDirectConnect}
+            />
             <ConnectionReasonDialog
                 isOpen={connectionReasonDialogOpen}
                 onClose={handleConnectionReasonCanceled}
                 onConnect={handleConnectionReasonProvided}
-                serverName={pendingConnection ? (
-                    pendingConnection.type === "pve"
-                        ? getPVEServerById(pendingConnection.serverId.toString().replace("pve-", ""))?.name || "Unknown Server"
-                        : getServerById(pendingConnection.server)?.name || "Unknown Server"
-                ) : ""}
+                serverName={pendingConnection?.server?.name || "Unknown Server"}
             />
-            <ServerList setServerDialogOpen={() => setServerDialogOpen(true)} connectToServer={connectToServer}
-                        connectToPVEServer={connectToPVEServer} setProxmoxDialogOpen={() => setProxmoxDialogOpen(true)}
-                        setSSHConfigImportDialogOpen={() => setSSHConfigImportDialogOpen(true)}
-                        setCurrentFolderId={setCurrentFolderId} setEditServerId={setEditServerId} openSFTP={openSFTP} />
+            <ServerList setServerDialogOpen={(protocol = null) => {
+                setServerDialogProtocol(protocol);
+                setServerDialogOpen(true);
+            }}
+                connectToServer={connectToServer}
+                setProxmoxDialogOpen={() => setProxmoxDialogOpen(true)}
+                setSSHConfigImportDialogOpen={() => setSSHConfigImportDialogOpen(true)}
+                setCurrentFolderId={setCurrentFolderId} setCurrentOrganizationId={setCurrentOrganizationId}
+                setEditServerId={setEditServerId} openSFTP={openSFTP}
+                hibernatedSessions={hibernatedSessions} resumeSession={resumeConnection}
+                openDirectConnect={openDirectConnect} />
             {activeSessions.length === 0 && <div className="welcome-area">
                 <div className="area-left">
                     <h1>Hi, <span>{user?.firstName || "User"} {user?.lastName || "name"}</span>!</h1>
                     <p>Welcome to Nexterm. The open-source server manager for SSH, VNC and RDP.</p>
                     <div className="button-area">
-                        <Button text="Star on GitHub" onClick={() => window.open(GITHUB_URL, "_blank")} icon={mdiStar} />
-                        <Button text="Join Discord" onClick={() => window.open(DISCORD_URL, "_blank")} icon={siDiscord.path} />
+                        <Button text="Star on GitHub" onClick={() => window.open(GITHUB_URL, "_blank")}
+                            icon={mdiStar} />
+                        <Button text="Join Discord" onClick={() => window.open(DISCORD_URL, "_blank")}
+                            icon={siDiscord.path} />
                     </div>
                 </div>
                 <img src={WelcomeImage} alt="Welcome" />
             </div>}
             {activeSessions.length > 0 &&
                 <ViewContainer activeSessions={activeSessions} disconnectFromServer={disconnectFromServer}
-                               activeSessionId={activeSessionId} setActiveSessionId={setActiveSessionId} />}
+                    activeSessionId={activeSessionId} setActiveSessionId={setActiveSessionId}
+                    hibernateSession={hibernateSession} />}
         </div>
     );
 };

@@ -33,7 +33,9 @@
       "noAuthMethodsAvailable": "No authentication methods available."
     },
     "selectBox": {
-      "defaultOption": "Select an option..."
+      "defaultOption": "Select an option...",
+      "search": "Search...",
+      "noResults": "No results found"
     },
     "sidebar": {
       "settings": "Settings",
@@ -283,6 +285,7 @@
     "pages": {
       "account": "Account",
       "terminal": "Terminal",
+      "keymaps": "Keymaps",
       "identities": "Identities",
       "sessions": "Sessions",
       "organizations": "Organizations",
@@ -296,9 +299,10 @@
       "firstName": "First name",
       "lastName": "Last name",
       "appearance": "Appearance",
-      "appearanceDescription": "Choose between light and dark theme for your interface.",
-      "switchToLight": "Switch to Light Mode",
-      "switchToDark": "Switch to Dark Mode",
+      "appearanceDescription": "Choose your preferred theme. Auto follows your system settings and adjusts based on time of day.",
+      "themeAuto": "Auto",
+      "themeLight": "Light",
+      "themeDark": "Dark",
       "twoFactor": "Two-factor authentication",
       "twoFactorActive": "Active",
       "twoFactorInactive": "Inactive",
@@ -313,6 +317,14 @@
       "currentLanguage": "Current Language",
       "missingLanguage": "Missing your language?",
       "helpTranslateLink": "Help translate Nexterm",
+      "sessionSynchronization": "Session Synchronization",
+      "sessionSyncDescription": "Control how your server sessions are stored and synchronized across devices and browser tabs.",
+      "sessionSyncAcrossDevices": "Across devices",
+      "sessionSyncSameBrowser": "Same browser",
+      "sessionSyncSameTab": "Same tab",
+      "sessionSyncAcrossDevicesDesc": "Sessions will be available across devices and synced",
+      "sessionSyncSameBrowserDesc": "Sessions will synchronize for the current user session",
+      "sessionSyncSameTabDesc": "Sessions will synchronize inside your browser tab",
       "twoFactorDialog": {
         "title": "Enable 2FA",
         "description": "Scan the code with your authenticator app or enter <span class=\"totp-code\">{{secret}}</span> manually.",
@@ -399,6 +411,55 @@
       "logout": "Logout",
       "revoke": "Revoke",
       "browserOn": "{{browser}} {{version}} on {{os}} {{osVersion}}"
+    },
+    "keymaps": {
+      "title": "Keymaps",
+      "description": "Customize keyboard shortcuts to match your workflow.",
+      "resetAll": "Reset All",
+      "actions": {
+        "search": {
+          "title": "Search",
+          "description": "Open the search input"
+        },
+        "aimenu": {
+          "title": "AI Menu",
+          "description": "Open the AI command menu"
+        },
+        "snippets": {
+          "title": "Snippets",
+          "description": "Open the snippets dialog"
+        },
+        "keyboardshortcuts": {
+          "title": "Keyboard Shortcuts",
+          "description": "Open the keyboard shortcuts menu"
+        },
+        "broadcast": {
+          "title": "Broadcast Mode",
+          "description": "Toggle broadcast mode when using split view"
+        },
+        "copy": {
+          "title": "Copy",
+          "description": "Copy selected text to clipboard"
+        },
+        "fullscreen": {
+          "title": "Full-Screen",
+          "description": "Toggle full-screen mode"
+        }
+      },
+      "recorder": {
+        "pressKeys": "Press keys...",
+        "save": "Save",
+        "cancel": "Cancel",
+        "reset": "Reset"
+      },
+      "messages": {
+        "updateSuccess": "Keybind updated successfully",
+        "updateFailed": "Failed to update keybind",
+        "resetSuccess": "Keybind reset to default",
+        "resetFailed": "Failed to reset keybind",
+        "resetAllSuccess": "All keybinds reset to defaults",
+        "resetAllFailed": "Failed to reset keybinds"
+      }
     },
     "terminal": {
       "title": "Terminal",
@@ -569,17 +630,44 @@
     }
   },
   "servers": {
+    "time": {
+      "justNow": "Just now",
+      "minuteAgo": "{{count}} min ago",
+      "minutesAgo": "{{count}} mins ago",
+      "hourAgo": "{{count}} hour ago",
+      "hoursAgo": "{{count}} hours ago",
+      "dayAgo": "{{count}} day ago",
+      "daysAgo": "{{count}} days ago"
+    },
+    "tags": {
+      "title": "Tags",
+      "createNewTag": "Create new tag",
+      "tagName": "Tag name",
+      "create": "Create",
+      "filterByTags": "Filter by Tags",
+      "clearAll": "Clear all",
+      "noTagsCreated": "No tags created yet",
+      "editTag": "Edit tag",
+      "deleteTag": "Delete tag"
+    },
     "contextMenu": {
       "createFolder": "Create Folder",
       "deleteFolder": "Delete Folder",
       "renameFolder": "Rename Folder",
+      "new": "New",
+      "sshServer": "SSH Server",
+      "telnetServer": "Telnet Server",
+      "rdpServer": "RDP Server",
+      "vncServer": "VNC Server",
       "createServer": "Create Server",
       "import": "Import",
       "pve": "PVE",
       "sshConfig": "SSH-Config",
       "connect": "Connect",
+      "quickConnect": "Quick Connect",
       "openSFTP": "Open SFTP",
       "editServer": "Edit Server",
+      "editIntegration": "Edit Integration",
       "duplicateServer": "Duplicate Server",
       "deleteServer": "Delete Server",
       "editPVE": "Edit PVE",
@@ -590,6 +678,7 @@
     },
     "dialog": {
       "addServer": "Add server",
+      "addProtocolServer": "Add {{protocol}} server",
       "editServer": "Edit server",
       "tabs": {
         "details": "Details",
@@ -608,7 +697,9 @@
         "protocol": "Protocol",
         "username": "Username",
         "password": "Password",
-        "host": "Host"
+        "host": "Host",
+        "nodeName": "Node Name",
+        "vmid": "VM ID"
       },
       "placeholders": {
         "serverName": "Server name",
@@ -616,7 +707,27 @@
         "port": "Port",
         "username": "Username",
         "password": "Password",
-        "host": "Host"
+        "host": "Host",
+        "nodeName": "Node name",
+        "vmid": "VM ID"
+      },
+      "settings": {
+        "jumpHosts": {
+          "title": "Jump Hosts",
+          "description": "Connect through intermediate servers to reach this target server",
+          "addButton": "Add Jump Host",
+          "removeTooltip": "Remove jump host",
+          "noServersAvailable": "No SSH servers available for jump hosts. Create SSH servers first."
+        },
+        "monitoring": {
+          "title": "Enable Performance Monitoring",
+          "description": "Collect CPU, memory, disk, and network metrics for this server"
+        },
+        "keyboardLayout": {
+          "title": "Keyboard Layout",
+          "description": "Select the keyboard layout to use for this connection."
+        },
+        "noSettings": "No additional settings available for this entry type."
       }
     },
     "proxmoxDialog": {
@@ -713,7 +824,11 @@
         "createFolder": "Create Folder",
         "upload": "Upload File",
         "edit": "Edit",
-        "bigFileConfirm": "This file is {{size}} MB large. Are you sure you want to edit it?"
+        "bigFileConfirm": "This file is {{size}} MB large. Are you sure you want to edit it?",
+        "selectAll": "Select All",
+        "insertSnippet": "Insert Snippet",
+        "sendCtrlC": "Send Ctrl+C",
+        "clearTerminal": "Clear Terminal"
       }
     },
     "aiAssistant": {
@@ -727,6 +842,15 @@
       "noSnippets": "No snippets available",
       "searchPlaceholder": "Search snippets...",
       "createNew": "Create New Snippet"
+    },
+    "terminalActions": {
+      "menuTitle": "Terminal Actions",
+      "snippets": "Snippets",
+      "keyboardShortcuts": "Keyboard Shortcuts",
+      "broadcasting": "Broadcasting",
+      "fullScreen": "Full-Screen",
+      "exitFullScreen": "Exit Full-Screen Mode",
+      "badgeOn": "ON"
     },
     "messages": {
       "fillRequiredFields": "Please fill in all required fields",

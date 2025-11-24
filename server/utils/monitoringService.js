@@ -1,8 +1,12 @@
 const { Client } = require("ssh2");
-const Server = require("../models/Server");
-const ServerMonitoring = require("../models/ServerMonitoring");
+const logger = require("./logger");
+const Entry = require("../models/Entry");
+const EntryIdentity = require("../models/EntryIdentity");
+const MonitoringData = require("../models/MonitoringData");
 const Identity = require("../models/Identity");
 const { Op } = require("sequelize");
+const { createSSH } = require("./createSSH");
+const { getIdentityCredentials } = require("../controllers/identity");
 
 let monitoringInterval = null;
 let isRunning = false;
@@ -27,41 +31,34 @@ const stop = () => {
 
 const runMonitoring = async () => {
     try {
-        const servers = await Server.findAll({ where: { protocol: "ssh", monitoringEnabled: true } });
-        if (servers.length === 0) return;
+        const entries = await Entry.findAll({ where: { type: "server" } });
+        const monitoringEntries = entries.filter(e => e.config?.protocol === "ssh" && e.config?.monitoringEnabled);
+        
+        if (monitoringEntries.length === 0) return;
 
-        const monitoringPromises = servers.map(server => monitorServer(server));
+        const monitoringPromises = monitoringEntries.map(entry => monitorEntry(entry));
         await Promise.allSettled(monitoringPromises);
     } catch (error) {
-        console.error("Error running monitoring:", error);
+        logger.error("Error running monitoring", { error: error.message });
     }
 };
 
-const monitorServer = async (server) => {
+const monitorEntry = async (entry) => {
     try {
-        let serverIdentities;
-        if (typeof server.identities === "string") {
-            try {
-                serverIdentities = JSON.parse(server.identities);
-            } catch (e) {
-                serverIdentities = [];
-            }
-        } else {
-            serverIdentities = server.identities || [];
-        }
+        const entryIdentities = await EntryIdentity.findAll({ where: { entryId: entry.id }, order: [['isDefault', 'DESC']] });
 
-        if (!serverIdentities || serverIdentities.length === 0) {
-            await saveMonitoringData(server.id, {
+        if (!entryIdentities || entryIdentities.length === 0) {
+            await saveMonitoringData(entry.id, {
                 status: "error",
                 errorMessage: "No identities configured",
             });
             return;
         }
 
-        const identities = await Identity.findAll({ where: { id: serverIdentities } });
+        const identities = await Identity.findAll({ where: { id: entryIdentities.map(ei => ei.identityId) } });
 
         if (!identities || identities.length === 0) {
-            await saveMonitoringData(server.id, {
+            await saveMonitoringData(entry.id, {
                 status: "error",
                 errorMessage: "No valid identities found",
             });
@@ -69,18 +66,19 @@ const monitorServer = async (server) => {
         }
 
         const identity = identities[0];
-        const monitoringData = await collectServerData(server, identity);
-        await saveMonitoringData(server.id, monitoringData);
+        const credentials = await getIdentityCredentials(identity.id);
+        const monitoringData = await collectServerData(entry, identity, credentials);
+        await saveMonitoringData(entry.id, monitoringData);
     } catch (error) {
-        console.error(`Error monitoring server ${server.name}:`, error);
-        await saveMonitoringData(server.id, {
+        logger.error("Error monitoring entry", { entryId: entry.id, entryName: entry.name, error: error.message });
+        await saveMonitoringData(entry.id, {
             status: "error",
             errorMessage: error.message,
         });
     }
 };
 
-const collectServerData = async (server, identity) => {
+const collectServerData = async (entry, identity, credentials) => {
     return new Promise((resolve) => {
         const conn = new Client();
         let monitoringData = {
@@ -90,10 +88,8 @@ const collectServerData = async (server, identity) => {
 
         const timeout = setTimeout(() => {
             conn.end();
-            resolve({
-                ...monitoringData,
-                errorMessage: "Connection timeout",
-            });
+            if (conn._jumpConnections) conn._jumpConnections.forEach(c => c.ssh.end());
+            resolve({ ...monitoringData, errorMessage: "Connection timeout" });
         }, 30000);
 
         conn.on("ready", async () => {
@@ -118,50 +114,38 @@ const collectServerData = async (server, identity) => {
                     cpuUsage: cpuData,
                     memoryUsage: memoryData.usage,
                     memoryTotal: memoryData.total,
-                    diskUsage: diskData,
+                    disk: diskData,
                     uptime: uptimeData,
                     loadAverage: loadData,
                     processes: processData,
                     osInfo: osData,
-                    networkInterfaces: networkData,
+                    network: networkData,
                 };
-
             } catch (error) {
                 monitoringData.status = "error";
                 monitoringData.errorMessage = error.message;
             }
 
             conn.end();
+            if (conn._jumpConnections) conn._jumpConnections.forEach(c => c.ssh.end());
             resolve(monitoringData);
         });
 
         conn.on("error", (err) => {
             clearTimeout(timeout);
-            resolve({
-                ...monitoringData,
-                status: "offline",
-                errorMessage: err.message,
-            });
+            if (conn._jumpConnections) conn._jumpConnections.forEach(c => c.ssh.end());
+            resolve({ ...monitoringData, status: "offline", errorMessage: err.message });
         });
-
-        const connectionOptions = {
-            host: server.ip,
-            port: server.port,
-            username: identity.username,
-            connectTimeout: 15000,
-            readyTimeout: 15000,
-        };
-
-        if (identity.type === "password") {
-            connectionOptions.password = identity.password;
-        } else {
-            connectionOptions.privateKey = identity.sshKey;
-            if (identity.passphrase) {
-                connectionOptions.passphrase = identity.passphrase;
+        
+        createSSH(entry, identity).then(({ ssh, sshOptions }) => {
+            if (ssh._jumpConnections) {
+                conn._jumpConnections = ssh._jumpConnections;
             }
-        }
-
-        conn.connect(connectionOptions);
+            conn.connect(sshOptions);
+        }).catch((error) => {
+            clearTimeout(timeout);
+            resolve({ ...monitoringData, status: "error", errorMessage: error.message });
+        });
     });
 };
 
@@ -327,18 +311,18 @@ const getNetworkInterfaces = async (conn) => {
     }
 };
 
-const saveMonitoringData = async (serverId, data) => {
+const saveMonitoringData = async (entryId, data) => {
     try {
-        await ServerMonitoring.create({ serverId: serverId, ...data });
+        await MonitoringData.create({ entryId: entryId, ...data });
     } catch (error) {
-        console.error(`Error saving monitoring data for server ${serverId}:`, error);
+        logger.error("Error saving monitoring data", { entryId, error: error.message });
     }
 };
 
 const cleanupOldData = async () => {
     try {
         const cutoffDate = new Date(Date.now() - 24 * 60 * 60 * 1000);
-        await ServerMonitoring.destroy({
+        await MonitoringData.destroy({
             where: {
                 timestamp: {
                     [Op.lt]: cutoffDate,
@@ -346,7 +330,7 @@ const cleanupOldData = async () => {
             },
         });
     } catch (error) {
-        console.error("Error cleaning up old monitoring data:", error);
+        logger.error("Error cleaning up old monitoring data", { error: error.message });
     }
 };
 
@@ -355,7 +339,7 @@ setInterval(() => {
 }, 60 * 60 * 1000);
 
 module.exports = {
-    start, stop, runMonitoring, monitorServer, collectServerData, executeCommand, getCPUUsage,
+    start, stop, runMonitoring, monitorEntry, collectServerData, executeCommand, getCPUUsage,
     getMemoryUsage, getDiskUsage, getUptime, getLoadAverage, getProcessCount, getOSInfo, getNetworkInterfaces,
     saveMonitoringData, cleanupOldData,
 };

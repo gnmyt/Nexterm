@@ -93,12 +93,12 @@ app.put("/sources", isAdmin, async (req, res) => {
  * @security BearerAuth
  * @param {string} appSource.path.required - The identifier of the app source to delete
  * @return {object} 200 - App source successfully deleted
- * @return {object} 103 - Cannot delete the official app source
+ * @return {object} 400 - Cannot delete the official app source
  * @return {object} 403 - Admin access required
  */
 app.delete("/sources/:appSource", isAdmin, async (req, res) => {
     if (req.params.appSource === "official")
-        return res.json({ code: 103, message: "You can't delete the default app source" });
+        return res.status(400).json({ code: 103, message: "You can't delete the default app source" });
 
     const appSource = await deleteAppSource(req.params.appSource);
     if (appSource?.code) return res.json(appSource);
@@ -116,12 +116,12 @@ app.delete("/sources/:appSource", isAdmin, async (req, res) => {
  * @param {string} appSource.path.required - The identifier of the app source to update
  * @param {UpdateAppUrl} request.body.required - Updated URL for the app source
  * @return {object} 200 - App source successfully updated
- * @return {object} 103 - Cannot edit the official app source
+ * @return {object} 400 - Cannot edit the official app source
  * @return {object} 403 - Admin access required
  */
 app.patch("/sources/:appSource", isAdmin, async (req, res) => {
     if (req.params.appSource === "official")
-        return res.json({ code: 103, message: "You can't edit the default app source" });
+        return res.status(400).json({ code: 103, message: "You can't edit the default app source" });
 
     if (validateSchema(res, updateAppUrlValidation, req.body)) return;
 

@@ -1,85 +1,85 @@
-import { 
-    mdiDebian, 
-    mdiFormTextbox, 
-    mdiIp, 
-    mdiLinux, 
-    mdiMicrosoftWindows, 
-    mdiServerOutline,
-    mdiUbuntu,
-    mdiApple,
-    mdiDocker,
-    mdiKubernetes,
-    mdiDatabase,
-    mdiCloud,
-    mdiRaspberryPi,
-    mdiConsole,
-    mdiMonitor,
-    mdiCube,
-    mdiFreebsd
-} from "@mdi/js";
+import { mdiFormTextbox, mdiIp } from "@mdi/js";
 import Input from "@/common/components/IconInput";
 import Icon from "@mdi/react";
 import SelectBox from "@/common/components/SelectBox";
 import { useTranslation } from "react-i18next";
+import { ICON_MAP } from "@/pages/Servers/utils/iconMapping.js";
 
-const DetailsPage = ({name, setName, icon, setIcon, ip, setIp, port, setPort, protocol, setProtocol}) => {
+const ICON_OPTIONS = Object.entries(ICON_MAP).map(([value, icon]) => ({
+    label: <Icon path={icon} size={1} />,
+    value
+}));
+
+const PROTOCOL_OPTIONS = [
+    { label: "SSH", value: "ssh" },
+    { label: "Telnet", value: "telnet" },
+    { label: "RDP", value: "rdp" },
+    { label: "VNC", value: "vnc" }
+];
+
+const DetailsPage = ({name, setName, icon, setIcon, config, setConfig, fieldConfig}) => {
     const { t } = useTranslation();
     
     return (
         <>
             <div className="name-row">
-
                 <div className="form-group">
                     <label htmlFor="name">{t("servers.dialog.fields.name")}</label>
-                    <Input icon={mdiFormTextbox} type="text" placeholder={t("servers.dialog.placeholders.serverName")} id="name"
-                           autoComplete="off" value={name} setValue={setName} />
+                    <Input icon={mdiFormTextbox} type="text" placeholder={t("servers.dialog.placeholders.serverName")} 
+                           id="name" autoComplete="off" value={name} setValue={setName} />
                 </div>
-
                 <div className="form-group">
                     <label>{t("servers.dialog.fields.icon")}</label>
-                    <SelectBox options={[
-                        { label: <Icon path={mdiServerOutline} size={1} />, value: "server" },
-                        { label: <Icon path={mdiMicrosoftWindows} size={1} />, value: "windows" },
-                        { label: <Icon path={mdiLinux} size={1} />, value: "linux" },
-                        { label: <Icon path={mdiDebian} size={1} />, value: "debian" },
-                        { label: <Icon path={mdiUbuntu} size={1} />, value: "ubuntu" },
-                        { label: <Icon path={mdiLinux} size={1} />, value: "arch" },
-                        { label: <Icon path={mdiFreebsd} size={1} />, value: "freebsd" },
-                        { label: <Icon path={mdiApple} size={1} />, value: "macos" },
-                        { label: <Icon path={mdiDocker} size={1} />, value: "docker" },
-                        { label: <Icon path={mdiKubernetes} size={1} />, value: "kubernetes" },
-                        { label: <Icon path={mdiDatabase} size={1} />, value: "database" },
-                        { label: <Icon path={mdiCloud} size={1} />, value: "cloud" },
-                        { label: <Icon path={mdiRaspberryPi} size={1} />, value: "raspberry" },
-                        { label: <Icon path={mdiConsole} size={1} />, value: "terminal" },
-                        { label: <Icon path={mdiMonitor} size={1} />, value: "desktop" },
-                        { label: <Icon path={mdiCube} size={1} />, value: "vm" },
-                    ]} selected={icon} setSelected={setIcon} />
+                    <SelectBox options={ICON_OPTIONS} selected={icon} setSelected={setIcon} />
                 </div>
-
             </div>
-            <div className="address-row">
-                <div className="form-group">
-                    <label htmlFor="ip">{t("servers.dialog.fields.serverIp")}</label>
-                    <Input icon={mdiIp} type="text" placeholder={t("servers.dialog.placeholders.serverIp")} id="ip"
-                           autoComplete="off" value={ip} setValue={setIp} />
-                </div>
-                <div className="form-group">
-                    <label htmlFor="port">{t("servers.dialog.fields.port")}</label>
-                    <input type="text" placeholder={t("servers.dialog.placeholders.port")} value={port} onChange={(event) => setPort(event.target.value)}
-                            className="small-input" id="port" />
-                </div>
+            
+            {fieldConfig.showIpPort && (
+                <>
+                    <div className="address-row">
+                        <div className="form-group">
+                            <label htmlFor="ip">{t("servers.dialog.fields.serverIp")}</label>
+                            <Input icon={mdiIp} type="text" placeholder={t("servers.dialog.placeholders.serverIp")} 
+                                   id="ip" autoComplete="off" value={config.ip || ""} 
+                                   setValue={(value) => setConfig(prev => ({ ...prev, ip: value }))} />
+                        </div>
+                        <div className="form-group">
+                            <label htmlFor="port">{t("servers.dialog.fields.port")}</label>
+                            <input type="text" placeholder={t("servers.dialog.placeholders.port")} 
+                                   value={config.port || ""} className="small-input" id="port"
+                                   onChange={(e) => setConfig(prev => ({ ...prev, port: e.target.value }))} />
+                        </div>
+                    </div>
+                    {fieldConfig.showProtocol && (
+                        <div className="form-group">
+                            <label>{t("servers.dialog.fields.protocol")}</label>
+                            <SelectBox options={PROTOCOL_OPTIONS} selected={config.protocol} 
+                                       setSelected={(value) => setConfig(prev => ({ ...prev, protocol: value }))} />
+                        </div>
+                    )}
+                </>
+            )}
 
-                <div className="form-group">
-                    <label>{t("servers.dialog.fields.protocol")}</label>
-                    <SelectBox options={[
-                        { label: "SSH", value: "ssh" },
-                        { label: "RDP", value: "rdp" },
-                        { label: "VNC", value: "vnc" }
-                    ]} selected={protocol} setSelected={setProtocol} />
+            {fieldConfig.showPveConfig && fieldConfig.pveFields && (
+                <div className="pve-config-row">
+                    {fieldConfig.pveFields.includes("nodeName") && (
+                        <div className="form-group">
+                            <label htmlFor="nodeName">{t("servers.dialog.fields.nodeName")}</label>
+                            <Input icon={mdiIp} type="text" placeholder={t("servers.dialog.placeholders.nodeName")} 
+                                   id="nodeName" autoComplete="off" value={config.nodeName || ""} 
+                                   setValue={(value) => setConfig(prev => ({ ...prev, nodeName: value }))} />
+                        </div>
+                    )}
+                    {fieldConfig.pveFields.includes("vmid") && (
+                        <div className="form-group">
+                            <label htmlFor="vmid">{t("servers.dialog.fields.vmid")}</label>
+                            <input type="text" placeholder={t("servers.dialog.placeholders.vmid")} 
+                                   value={config.vmid || ""} className="small-input" id="vmid"
+                                   onChange={(e) => setConfig(prev => ({ ...prev, vmid: e.target.value }))} />
+                        </div>
+                    )}
                 </div>
-
-            </div>
+            )}
         </>
     );
 }

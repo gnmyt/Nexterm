@@ -13,7 +13,7 @@
   align-items: center
   z-index: 1000
   justify-content: center
-  backdrop-filter: blur(0.5rem)
+  backdrop-filter: blur(0.3rem)
   transition: all 0.2s
   animation: opacity 0.3s
 
@@ -22,17 +22,53 @@
   animation: opacity 0.3s reverse
 
 .dialog
-  padding: 15px
-  background-color: colors.$darker-gray
+  padding: 1.5rem
+  background-color: colors.$lighter-background
   border: 1px solid colors.$dark-gray
   color: colors.$white
-  backdrop-filter: blur(1rem)
-  border-radius: 15px
-  max-width: 90%
+  border-radius: 0.75rem
+  max-width: 80%
   max-height: 90vh
   overflow-y: auto
+  box-shadow: 0 12px 48px rgba(0, 0, 0, 0.5), 0 4px 16px rgba(0, 0, 0, 0.3)
   transition: all 0.2s
   animation: fadeIn 0.3s
+  scrollbar-width: thin
+  scrollbar-color: colors.$gray colors.$lighter-background
+  position: relative
+
+  &::-webkit-scrollbar
+    width: 6px
+
+  &::-webkit-scrollbar-track
+    background: transparent
+    border-radius: 0 0.75rem 0.75rem 0
+
+  &::-webkit-scrollbar-thumb
+    background-color: colors.$gray
+    border-radius: 10px
+
+.dialog-close-btn
+  position: absolute
+  top: 1rem
+  right: 1rem
+  background: none
+  border: 1px solid colors.$gray
+  border-radius: 0.5rem
+  width: 2rem
+  height: 2rem
+  display: flex
+  align-items: center
+  justify-content: center
+  cursor: pointer
+  color: colors.$subtext
+  transition: background-color 0.1s ease, border-color 0.1s ease, color 0.1s ease
+  z-index: 10
+
+  &:hover
+    background-color: colors.$gray
+    border-color: colors.$error
+    color: colors.$error
 
 .dialog-hidden
   visibility: hidden

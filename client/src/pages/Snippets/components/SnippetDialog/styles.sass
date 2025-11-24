@@ -32,18 +32,20 @@
     .custom-textarea
       width: 100%
       padding: 0.75rem
-      border-radius: 4px
+      border-radius: 0.5rem
       border: 1px solid colors.$gray
-      background-color: colors.$darker-gray
+      background-color: colors.$lighter-background
       color: colors.$white
       font-family: monospace
       font-size: 0.9rem
       resize: vertical
       box-sizing: border-box
       min-height: 120px
+      transition: border-color 0.1s ease, background-color 0.1s ease
 
       &:focus
         border-color: colors.$primary
+        background-color: colors.$dark-gray
         outline: none
 
   .dialog-actions

@@ -10,50 +10,74 @@ import SettingsPage from "@/pages/Servers/components/ServerDialog/pages/Settings
 import { IdentityContext } from "@/common/contexts/IdentityContext.jsx";
 import { useToast } from "@/common/contexts/ToastContext.jsx";
 import { useTranslation } from "react-i18next";
+import { getAvailableTabs, validateRequiredFields, getFieldConfig } from "./utils/fieldConfig.js";
+import Icon from "@mdi/react";
+import { mdiServerNetwork, mdiConsole, mdiMonitor, mdiDesktopClassic, mdiServer } from "@mdi/js";
 
-const tabs = [
-    { key: "details", label: "servers.dialog.tabs.details" },
-    { key: "identities", label: "servers.dialog.tabs.identities" },
-    { key: "settings", label: "servers.dialog.tabs.settings" }
-];
-
-export const ServerDialog = ({ open, onClose, currentFolderId, editServerId }) => {
+export const ServerDialog = ({ open, onClose, currentFolderId, currentOrganizationId, editServerId, initialProtocol }) => {
     const { t } = useTranslation();
 
     const { loadServers } = useContext(ServerContext);
     const { loadIdentities } = useContext(IdentityContext);
     const { sendToast } = useToast();
 
+    const getProtocolIcon = (protocol, type) => {
+        if (type?.startsWith('pve')) return mdiServerNetwork;
+        
+        const iconMap = {
+            ssh: mdiConsole,
+            telnet: mdiConsole,
+            rdp: mdiMonitor,
+            vnc: mdiDesktopClassic,
+        };
+        return iconMap[protocol] || mdiServerNetwork;
+    };
+
     const [name, setName] = useState("");
     const [icon, setIcon] = useState(null);
-    const [ip, setIp] = useState("");
-    const [port, setPort] = useState("");
-    const [protocol, setProtocol] = useState(null);
     const [identities, setIdentities] = useState([]);
     const [config, setConfig] = useState({});
     const [monitoringEnabled, setMonitoringEnabled] = useState(false);
+    const [entryType, setEntryType] = useState("server");
 
     const [identityUpdates, setIdentityUpdates] = useState({});
 
     const [activeTab, setActiveTab] = useState(0);
 
+    const fieldConfig = getFieldConfig(entryType, config.protocol);
+    const tabs = getAvailableTabs(entryType, config.protocol);
+
     const normalizeIdentity = (identity) => {
         const normalized = { ...identity };
         if (normalized.username === "") normalized.username = undefined;
-        if (normalized.passphrase === "") normalized.passphrase = undefined;
-        if (normalized.password === "") normalized.password = undefined;
+
+        if (!identity.passwordTouched && normalized.password === "") normalized.password = undefined;
+        if (!identity.passphraseTouched && normalized.passphrase === "") normalized.passphrase = undefined;
+        
         if (normalized.sshKey === null) normalized.sshKey = undefined;
         return normalized;
     };
 
-    const buildIdentityPayload = (identity) => ({
-        name: identity.name,
-        username: identity.username,
-        type: identity.authType,
-        password: identity.password,
-        sshKey: identity.sshKey,
-        passphrase: identity.passphrase,
-    });
+    const buildIdentityPayload = (identity) => {
+        const payload = {
+            name: identity.name,
+            username: identity.username,
+            type: identity.authType,
+        };
+        
+        if (identity.authType === 'password') {
+            if (identity.passwordTouched || identity.password) {
+                payload.password = identity.password;
+            }
+        } else {
+            payload.sshKey = identity.sshKey;
+            if (identity.passphraseTouched || identity.passphrase) {
+                payload.passphrase = identity.passphrase;
+            }
+        }
+        
+        return payload;
+    };
 
     const updateIdentities = async () => {
         const allIdentityIds = new Set();
@@ -91,6 +115,28 @@ export const ServerDialog = ({ open, onClose, currentFolderId, editServerId }) =
         return Array.from(allIdentityIds);
     };
 
+    const buildConfig = () => {
+        const finalConfig = { ...config };
+        
+        if (fieldConfig.showMonitoring) {
+            finalConfig.monitoringEnabled = monitoringEnabled;
+        } else {
+            delete finalConfig.monitoringEnabled;
+        }
+        
+        if (!fieldConfig.showIpPort) {
+            delete finalConfig.ip;
+            delete finalConfig.port;
+            delete finalConfig.protocol;
+        }
+        
+        if (!fieldConfig.showKeyboardLayout) {
+            delete finalConfig.keyboardLayout;
+        }
+        
+        return finalConfig;
+    };
+
     const createServer = async () => {
         try {
             const serverIdentityIds = await updateIdentities();
@@ -98,10 +144,14 @@ export const ServerDialog = ({ open, onClose, currentFolderId, editServerId }) =
 
             loadIdentities();
 
-            const result = await putRequest("servers", {
-                name, icon: icon, ip, port, protocol: protocol, config,
-                folderId: currentFolderId, identities: serverIdentityIds,
-                monitoringEnabled
+            const result = await putRequest("entries", {
+                name,
+                icon,
+                config: buildConfig(),
+                folderId: currentFolderId,
+                organizationId: currentOrganizationId,
+                identities: serverIdentityIds,
+                type: "server"
             });
 
             loadServers();
@@ -120,10 +170,10 @@ export const ServerDialog = ({ open, onClose, currentFolderId, editServerId }) =
             const serverIdentityIds = await updateIdentities();
             if (serverIdentityIds === null) return;
 
-            await patchRequest("servers/" + editServerId, {
-                name, icon, ip, port, protocol: protocol, config,
-                identities: serverIdentityIds,
-                monitoringEnabled
+            await patchRequest("entries/" + editServerId, {
+                name, icon,
+                config: buildConfig(),
+                identities: serverIdentityIds
             });
 
             loadServers();
@@ -136,51 +186,52 @@ export const ServerDialog = ({ open, onClose, currentFolderId, editServerId }) =
     };
 
     const handleSubmit = useCallback(() => {
-        if (!name || !ip || !port || !protocol) {
+        if (!validateRequiredFields(entryType, config.protocol, name, config)) {
             sendToast("Error", t("servers.messages.fillRequiredFields"));
             return;
         }
         editServerId ? patchServer() : createServer();
-    }, [name, icon, ip, port, protocol, editServerId, identityUpdates, currentFolderId, config, monitoringEnabled, t]);
+    }, [name, icon, editServerId, identityUpdates, currentFolderId, config, monitoringEnabled, entryType, t]);
 
     useEffect(() => {
         if (!open) return;
 
         if (editServerId) {
-            getRequest("servers/" + editServerId).then((server) => {
+            getRequest("entries/" + editServerId).then((server) => {
                 setName(server.name);
                 setIcon(server.icon || "server");
-                setIp(server.ip);
-                setPort(server.port);
-                setProtocol(server.protocol);
                 setIdentities(server.identities);
-                setMonitoringEnabled(Boolean(server.monitoringEnabled ?? true));
+                setEntryType(server.type || "server");
 
                 try {
-                    if (server.config) {
-                        setConfig(JSON.parse(server.config));
-                    } else {
-                        setConfig({});
-                    }
+                    const parsedConfig = typeof server.config === 'string' ? JSON.parse(server.config) : server.config || {};
+                    setConfig(parsedConfig);
+                    setMonitoringEnabled(Boolean(parsedConfig.monitoringEnabled ?? true));
                 } catch (error) {
                     console.error("Failed to parse server config:", error);
                     setConfig({});
+                    setMonitoringEnabled(false);
                 }
             });
         } else {
             setName("");
             setIcon(null);
-            setIp("");
-            setPort("");
-            setProtocol(null);
             setIdentities([]);
-            setConfig({});
+            setEntryType("server");
+            
+            if (initialProtocol) {
+                setConfig({ protocol: initialProtocol });
+                const iconMap = { ssh: "terminal", telnet: "terminal", rdp: "windows", vnc: "desktop" };
+                setIcon(iconMap[initialProtocol] || null);
+            } else {
+                setConfig({});
+            }
             setMonitoringEnabled(false);
         }
 
         setIdentityUpdates({});
         setActiveTab(0);
-    }, [open, editServerId]);
+    }, [open, editServerId, initialProtocol]);
 
     useEffect(() => {
         if (!open) return;
@@ -200,30 +251,52 @@ export const ServerDialog = ({ open, onClose, currentFolderId, editServerId }) =
 
     const refreshIdentities = () => {
         if (!editServerId) return;
-
-        getRequest("servers/" + editServerId).then((server) => {
-            setIdentities(server.identities);
-        });
+        getRequest("servers/" + editServerId).then((server) => setIdentities(server.identities));
     };
 
     useEffect(() => {
-        if (!open) return;
+        if (!open || !fieldConfig.showIpPort || editServerId) return;
 
-        // Default port for each protocol
-        if (protocol === "ssh" && (port === "3389" || port === "5900" || port === "")) setPort("22");
-        if (protocol === "rdp" && (port === "22" || port === "5900" || port === "")) setPort("3389");
-        if (protocol === "vnc" && (port === "22" || port === "3389" || port === "")) setPort("5900");
-    }, [protocol, open, port]);
+        const portMap = { ssh: "22", telnet: "23", rdp: "3389", vnc: "5900" };
+        const currentPort = config.port;
+        const expectedPort = portMap[config.protocol];
+
+        if (expectedPort && !currentPort) {
+            setConfig(prev => ({ ...prev, port: expectedPort }));
+        }
+    }, [config.protocol, open, fieldConfig.showIpPort, editServerId]);
 
     return (
         <DialogProvider open={open} onClose={onClose}>
             <div className="server-dialog">
-                <div className="server-dialog-title">
-                    <h2>{editServerId ? t("servers.dialog.editServer") : t("servers.dialog.addServer")}</h2>
+                <div className="server-dialog-header">
+                    <div className="dialog-icon">
+                        <Icon path={getProtocolIcon(config.protocol, entryType)} size={1} />
+                    </div>
+                    <div className="server-dialog-title">
+                        <h2>
+                            {editServerId 
+                                ? t("servers.dialog.editServer") 
+                                : config.protocol 
+                                    ? t("servers.dialog.addProtocolServer", { protocol: config.protocol.toUpperCase() })
+                                    : t("servers.dialog.addServer")
+                            }
+                        </h2>
+                        {entryType === "server" && config.protocol && (
+                            <span className="protocol-badge">{config.protocol.toUpperCase()}</span>
+                        )}
+                        {entryType?.startsWith('pve') && (
+                            <span className="protocol-badge">
+                                {entryType === 'pve-shell' ? 'PVE SHELL' : 
+                                 entryType === 'pve-lxc' ? 'PVE LXC' : 
+                                 entryType === 'pve-qemu' ? 'PVE QEMU' : 'PVE'}
+                            </span>
+                        )}
+                    </div>
                 </div>
 
                 <div className="server-dialog-tabs">
-                    {tabs.map((tab, index) => (
+                    {tabs.length > 1 && tabs.map((tab, index) => (
                         <div key={index} className={`tabs-item ${activeTab === index ? "tabs-item-active" : ""}`}
                              onClick={() => setActiveTab(index)}>
                             <h3>{t(tab.label)}</h3>
@@ -233,14 +306,16 @@ export const ServerDialog = ({ open, onClose, currentFolderId, editServerId }) =
 
                 <div className="server-dialog-content">
                     {activeTab === 0 && <DetailsPage name={name} setName={setName}
-                                                     icon={icon} setIcon={setIcon} ip={ip} setIp={setIp}
-                                                     port={port} setPort={setPort}
-                                                     protocol={protocol} setProtocol={setProtocol} />}
-                    {activeTab === 1 &&
+                                                     icon={icon} setIcon={setIcon}
+                                                     config={config} setConfig={setConfig}
+                                                     fieldConfig={fieldConfig} />}
+                    {activeTab === 1 && tabs[1]?.key === "identities" &&
                         <IdentityPage serverIdentities={identities} setIdentityUpdates={setIdentityUpdates}
                                       identityUpdates={identityUpdates} setIdentities={setIdentities} />}
-                    {activeTab === 2 && <SettingsPage protocol={protocol} config={config} setConfig={setConfig} 
-                                                       monitoringEnabled={monitoringEnabled} setMonitoringEnabled={setMonitoringEnabled} />}
+                    {tabs.find((tab, idx) => idx === activeTab && tab.key === "settings") && 
+                        <SettingsPage config={config} setConfig={setConfig}
+                                      monitoringEnabled={monitoringEnabled} setMonitoringEnabled={setMonitoringEnabled}
+                                      fieldConfig={fieldConfig} editServerId={editServerId} />}
                 </div>
 
                 <Button className="server-dialog-button" onClick={handleSubmit}

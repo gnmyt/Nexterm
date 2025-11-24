@@ -1,9 +1,11 @@
 @use "@/common/styles/colors"
 
 .audit-table-container
-  background-color: colors.$dark-gray
-  border: 1px solid colors.$gray
-  border-radius: 12px
+  background-color: colors.$lighter-background
+  border: 1px solid colors.$dark-gray
+  border-radius: 0.75rem
+  padding: 0.375rem
+  box-shadow: 0 12px 48px rgba(0, 0, 0, 0.5), 0 4px 16px rgba(0, 0, 0, 0.3)
   overflow: hidden
   min-height: 600px
   display: flex
@@ -15,7 +17,6 @@
 
   @media (max-width: 480px)
     min-height: 400px
-    border-radius: 8px
 
   .loading-overlay
     position: absolute
@@ -46,15 +47,16 @@
       width: 3rem
       height: 3rem
       margin-bottom: 1rem
-      opacity: 0.5
+      opacity: 0.7
 
     h3
       margin: 0 0 0.5rem 0
-      font-size: 1.1rem
+      font-size: 0.95rem
+      font-weight: 500
 
     p
       margin: 0
-      font-size: 0.9rem
+      font-size: 0.85rem
 
 .audit-table
   flex: 1
@@ -67,17 +69,18 @@
     display: grid
     grid-template-columns: 2fr 1.8fr 1.5fr 1.2fr 1.2fr 60px
     gap: 1rem
-    padding: 1rem 1.5rem
-    background-color: colors.$darker-gray
-    border-bottom: 1px solid colors.$gray
-    font-weight: 600
-    font-size: 0.9rem
+    padding: 0.625rem 0.75rem
+    background-color: colors.$dark-gray
+    border-bottom: 1px solid colors.$dark-gray
+    border-radius: 0.5rem 0.5rem 0 0
+    font-weight: 500
+    font-size: 0.85rem
     color: colors.$subtext
 
     @media (max-width: 1024px)
       grid-template-columns: 2fr 1.5fr 1fr 60px
       gap: 0.75rem
-      padding: 0.75rem 1rem
+      padding: 0.5rem 0.625rem
       font-size: 0.8rem
 
       .header-cell:nth-child(4),
@@ -100,15 +103,30 @@
       gap: 0.5rem
 
       svg
-        width: 1rem
-        height: 1rem
+        width: 1.125rem
+        height: 1.125rem
+        opacity: 0.9
 
   .table-body
     flex: 1
     overflow-y: auto
+    overflow-x: hidden
+    scrollbar-width: thin
+    scrollbar-color: colors.$gray colors.$lighter-background
+
+    &::-webkit-scrollbar
+      width: 6px
+
+    &::-webkit-scrollbar-track
+      background: transparent
+
+    &::-webkit-scrollbar-thumb
+      background-color: colors.$gray
+      border-radius: 10px
 
     .table-row
-      border-bottom: 1px solid colors.$gray
+      border-bottom: 1px solid colors.$dark-gray
+      margin-bottom: 0.25rem
 
       @media (max-width: 480px)
         &:active .row-main
@@ -118,14 +136,16 @@
         display: grid
         grid-template-columns: 2fr 1.8fr 1.5fr 1.2fr 1.2fr 60px
         gap: 1rem
-        padding: 1rem 1.5rem
+        padding: 0.625rem 0.75rem
         cursor: pointer
-        transition: background-color 0.2s ease
+        transition: background-color 0.1s ease
+        border-radius: 0.5rem
+        user-select: none
 
         @media (max-width: 1024px)
           grid-template-columns: 2fr 1.5fr 1fr 60px
           gap: 0.75rem
-          padding: 0.75rem 1rem
+          padding: 0.5rem 0.625rem
 
           .cell:nth-child(4),
           .cell:nth-child(5)
@@ -134,7 +154,7 @@
         @media (max-width: 768px)
           grid-template-columns: 2fr 1fr 60px
           gap: 0.5rem
-          padding: 0.75rem
+          padding: 0.5rem
 
           .cell:nth-child(3)
             display: none
@@ -142,14 +162,18 @@
         @media (max-width: 480px)
           display: flex
           flex-direction: column
-          gap: 0.75rem
-          padding: 1rem 0.75rem
+          gap: 0.5rem
+          padding: 0.625rem 0.5rem
 
           .cell
             width: 100%
 
         &:hover
           background-color: colors.$gray
+
+        &:focus-visible
+          outline: 2px solid colors.$primary
+          outline-offset: -2px
 
         .cell
           display: flex
@@ -198,20 +222,22 @@
                 gap: 0.25rem
 
               svg
-                width: 1rem
-                height: 1rem
+                width: 1.125rem
+                height: 1.125rem
                 color: colors.$subtext
+                opacity: 0.9
+                flex-shrink: 0
 
               .action-badge
-                padding: 0.25rem 0.75rem
-                border-radius: 12px
-                font-size: 0.8rem
+                padding: 0.25rem 0.625rem
+                border-radius: 0.5rem
+                font-size: 0.75rem
                 font-weight: 500
                 text-transform: uppercase
 
                 @media (max-width: 480px)
-                  font-size: 0.75rem
-                  padding: 0.2rem 0.6rem
+                  font-size: 0.7rem
+                  padding: 0.2rem 0.5rem
 
                 &.green
                   background-color: rgba(34, 197, 94, 0.2)
@@ -258,38 +284,40 @@
 
           &.resource
             .resource-badge
-              padding: 0.25rem 0.5rem
-              background-color: colors.$gray
-              color: colors.$subtext
-              border-radius: 4px
-              font-size: 0.8rem
+              padding: 0.25rem 0.625rem
+              background-color: colors.$dark-gray
+              color: colors.$white
+              border-radius: 0.5rem
+              font-size: 0.75rem
+              border: 1px solid colors.$gray
 
               @media (max-width: 480px)
-                font-size: 0.75rem
-                padding: 0.2rem 0.4rem
+                font-size: 0.7rem
+                padding: 0.2rem 0.5rem
 
           &.organization
             .org-badge
-              padding: 0.25rem 0.5rem
+              padding: 0.25rem 0.625rem
               background-color: rgba(59, 130, 246, 0.2)
               color: #3b82f6
-              border-radius: 4px
-              font-size: 0.8rem
+              border-radius: 0.5rem
+              font-size: 0.75rem
 
               @media (max-width: 480px)
-                font-size: 0.75rem
-                padding: 0.2rem 0.4rem
+                font-size: 0.7rem
+                padding: 0.2rem 0.5rem
 
             .personal-badge
-              padding: 0.25rem 0.5rem
-              background-color: colors.$gray
+              padding: 0.25rem 0.625rem
+              background-color: colors.$dark-gray
               color: colors.$subtext
-              border-radius: 4px
-              font-size: 0.8rem
+              border-radius: 0.5rem
+              font-size: 0.75rem
+              border: 1px solid colors.$gray
 
               @media (max-width: 480px)
-                font-size: 0.75rem
-                padding: 0.2rem 0.4rem
+                font-size: 0.7rem
+                padding: 0.2rem 0.5rem
 
           &.details
             justify-content: center
@@ -298,62 +326,67 @@
               justify-content: flex-start
 
             .expand-icon
-              width: 1rem
-              height: 1rem
+              width: 1.125rem
+              height: 1.125rem
               color: colors.$subtext
-              transition: all 0.2s ease
+              opacity: 0.9
+              transition: transform 0.12s cubic-bezier(0.4, 0, 0.2, 1), color 0.1s ease
 
               &.expanded
                 transform: rotate(90deg)
                 color: colors.$primary
+                opacity: 1
 
       .row-expanded
-        background-color: colors.$darker-gray
-        border-top: 1px solid colors.$gray
+        background-color: colors.$dark-gray
+        border-top: 1px solid colors.$dark-gray
+        border-radius: 0 0 0.5rem 0.5rem
+        margin-top: 0.25rem
 
         .expanded-content
-          padding: 1.5rem
+          padding: 0.75rem
           display: flex
           flex-direction: column
-          gap: 1.5rem
+          gap: 0.75rem
 
           @media (max-width: 768px)
-            padding: 1rem
-            gap: 1rem
+            padding: 0.625rem
+            gap: 0.625rem
 
           @media (max-width: 480px)
-            padding: 0.75rem
-            gap: 0.75rem
+            padding: 0.5rem
+            gap: 0.5rem
 
           .reason-section,
           .user-agent-section,
           .details-section
             h4
               margin: 0 0 0.5rem 0
-              font-size: 0.9rem
-              color: colors.$primary
-              text-transform: uppercase
-              font-weight: 600
+              font-size: 0.8rem
+              color: colors.$subtext
+              font-weight: 500
 
             p
               margin: 0
               color: colors.$white
               line-height: 1.4
+              font-size: 0.9rem
 
               svg
-                width: 1rem
-                height: 1rem
+                width: 1.125rem
+                height: 1.125rem
                 margin-right: 0.5rem
                 vertical-align: middle
+                opacity: 0.9
 
           .audit-details
             display: grid
             grid-template-columns: repeat(auto-fit, minmax(200px, 1fr))
-            gap: 1rem
+            gap: 0.75rem
 
             @media (max-width: 768px)
               grid-template-columns: repeat(auto-fit, minmax(150px, 1fr))
-              gap: 0.75rem
+              gap: 0.625rem
 
             @media (max-width: 480px)
               grid-template-columns: 1fr
@@ -363,37 +396,42 @@
               display: flex
               flex-direction: column
               gap: 0.25rem
+              padding: 0.5rem
+              background-color: colors.$darker-gray
+              border-radius: 0.4rem
+              border: 1px solid colors.$gray
 
               .detail-key
-                font-size: 0.8rem
+                font-size: 0.75rem
                 color: colors.$subtext
                 text-transform: capitalize
 
               .detail-value
                 color: colors.$white
                 font-family: monospace
-                font-size: 0.9rem
+                font-size: 0.85rem
                 word-break: break-word
 
 .pagination
   display: flex
   align-items: center
   justify-content: space-between
-  padding: 1rem 1.5rem
-  border-top: 1px solid colors.$gray
-  background-color: colors.$darker-gray
+  padding: 0.625rem 0.75rem
+  border-top: 1px solid colors.$dark-gray
+  background-color: colors.$dark-gray
+  border-radius: 0 0 0.5rem 0.5rem
 
   @media (max-width: 768px)
-    padding: 0.75rem 1rem
+    padding: 0.5rem 0.625rem
     flex-direction: column
-    gap: 0.75rem
+    gap: 0.5rem
 
   @media (max-width: 480px)
-    padding: 0.75rem
+    padding: 0.5rem
 
   .pagination-info
     color: colors.$subtext
-    font-size: 0.9rem
+    font-size: 0.85rem
 
     @media (max-width: 768px)
       font-size: 0.8rem
@@ -401,10 +439,10 @@
   .pagination-controls
       display: flex
       align-items: center
-      gap: 1rem
+      gap: 0.75rem
 
       @media (max-width: 768px)
-        gap: 0.75rem
+        gap: 0.625rem
 
       @media (max-width: 480px)
         gap: 0.5rem
@@ -414,9 +452,10 @@
       .page-info
         color: colors.$white
         font-weight: 500
+        font-size: 0.9rem
 
         @media (max-width: 768px)
-          font-size: 0.9rem
+          font-size: 0.85rem
 
         @media (max-width: 480px)
           font-size: 0.8rem
