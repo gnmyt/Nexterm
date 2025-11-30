@@ -11,18 +11,17 @@
   background-color: colors.$dialog-background
   display: flex
   align-items: center
-  z-index: 1000
+  z-index: 10000
   justify-content: center
   backdrop-filter: blur(0.3rem)
   transition: all 0.2s
-  animation: fadeIn 0.3s
+  isolation: isolate
 
 .dialog-area-hidden
   opacity: 0
-  animation: fadeIn 0.3s reverse
 
 .dialog
-  padding: 1.5rem
+  padding: 1.25rem
   background-color: colors.$lighter-background
   border: 1px solid colors.$dark-gray
   color: colors.$white
