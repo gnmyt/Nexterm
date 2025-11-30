@@ -84,13 +84,27 @@ export const Servers = () => {
                     type: session.configuration.type || undefined,
                     organizationId: session.organizationId,
                     organizationName: session.organizationName,
+                    scriptId: session.configuration.scriptId || undefined,
                 };
             }).filter(s => s !== null);
 
             const activeMapped = mappedSessions.filter(s => !s.isHibernated);
             const hibernatedMapped = mappedSessions.filter(s => s.isHibernated);
 
-            setActiveSessions(activeMapped);
+            setActiveSessions(prevSessions => {
+                const prevSessionMap = new Map(prevSessions.map(s => [s.id, s]));
+                return activeMapped.map(newSession => {
+                    const existingSession = prevSessionMap.get(newSession.id);
+                    if (existingSession) {
+                        return {
+                            ...newSession,
+                            scriptId: existingSession.scriptId || newSession.scriptId,
+                            scriptName: existingSession.scriptName || newSession.scriptName,
+                        };
+                    }
+                    return newSession;
+                });
+            });
             setHibernatedSessions(hibernatedMapped);
 
             if (activeMapped.length > 0) {
@@ -162,7 +176,7 @@ export const Servers = () => {
         performConnection(serverObj, identity, null, "sftp");
     };
 
-    const performConnection = async (server, identity, connectionReason = null, type = null, directIdentity = null) => {
+    const performConnection = async (server, identity, connectionReason = null, type = null, directIdentity = null, scriptId = null, scriptName = null) => {
         try {
             const payload = {
                 entryId: server.id,
@@ -174,6 +188,7 @@ export const Servers = () => {
             };
 
             if (directIdentity) payload.directIdentity = directIdentity;
+            if (scriptId) payload.scriptId = scriptId;
             const session = await postRequest("/connections", payload);
 
             const organization = findOrganizationForServer(server.id, servers);
@@ -187,6 +202,8 @@ export const Servers = () => {
                 type: type || undefined,
                 organizationId: organizationId,
                 organizationName: organization?.name || null,
+                scriptId: scriptId || undefined,
+                scriptName: scriptName || undefined,
             };
 
             setActiveSessions(prevSessions => [...prevSessions, sessionData]);
@@ -194,6 +211,25 @@ export const Servers = () => {
         } catch (error) {
             console.error("Failed to create session", error);
         }
+    };
+
+    const runScript = async (serverId, identityId, scriptId) => {
+        const server = getServerById(serverId);
+        if (!server) {
+            console.error("Server not found");
+            return;
+        }
+
+        const identity = { id: identityId };
+        
+        const requiresReason = checkConnectionReasonRequired(serverId, servers);
+        if (requiresReason) {
+            setPendingConnection({ server, identity, scriptId });
+            setConnectionReasonDialogOpen(true);
+            return;
+        }
+
+        performConnection(server, identity, null, null, null, scriptId);
     };
 
     const resumeConnection = async (sessionId) => {
@@ -217,6 +253,7 @@ export const Servers = () => {
                 reason,
                 pendingConnection.type || null,
                 pendingConnection.directIdentity || null,
+                pendingConnection.scriptId || null,
             );
             setPendingConnection(null);
         }
@@ -377,7 +414,7 @@ export const Servers = () => {
                         setCurrentFolderId={setCurrentFolderId} setCurrentOrganizationId={setCurrentOrganizationId}
                         setEditServerId={setEditServerId} openSFTP={openSFTP}
                         hibernatedSessions={hibernatedSessions} resumeSession={resumeConnection}
-                        openDirectConnect={openDirectConnect} />
+                        openDirectConnect={openDirectConnect} runScript={runScript} />
             {activeSessions.length === 0 && <div className="welcome-area">
                 <div className="area-left">
                     <h1>Hi, <span>{user?.firstName || "User"} {user?.lastName || "name"}</span>!</h1>
