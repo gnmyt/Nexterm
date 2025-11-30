@@ -4,7 +4,12 @@
       "cancel": "Cancela",
       "confirm": "Confirma",
       "login": "Iniciar sesión",
-      "register": "Regístrate en"
+      "register": "Regístrate en",
+      "save": "Save",
+      "download": "Download",
+      "close": "Close",
+      "maximize": "Maximize",
+      "restore": "Restore"
     },
     "labels": {
       "username": "Nombre de usuario",
@@ -43,7 +48,6 @@
       "monitoring": "Supervisión",
       "snippets": "Fragmentos",
       "audit": "Auditoría",
-      "apps": "Aplicaciones",
       "logout": "Cerrar sesión",
       "collapseTitle": "Contraer la barra lateral",
       "logoutConfirmText": "Esto te desconectará de la cuenta {{username}} . ¿Estás seguro?",
@@ -129,7 +133,13 @@
     "page": {
       "title": "Fragmentos",
       "subtitle": "Gestiona tus fragmentos de comandos para acceder rápidamente a ellos en los terminales",
-      "addSnippet": "Añadir fragmento"
+      "addSnippet": "Añadir fragmento",
+      "personal": "Personal",
+      "selectOrganization": "Select Organization",
+      "tabs": {
+        "snippets": "Snippets",
+        "scripts": "Scripts"
+      }
     },
     "list": {
       "empty": "Aún no tienes ningún fragmento. ¡Crea el primero!",
@@ -173,6 +183,102 @@
         "saveFailed": "No se ha podido guardar el fragmento",
         "deleteFailed": "No se ha podido eliminar el fragmento"
       }
+    }
+  },
+  "scripts": {
+    "page": {
+      "title": "Scripts",
+      "subtitle": "Manage your automation scripts for server tasks",
+      "addScript": "Add Script",
+      "personal": "Personal",
+      "selectOrganization": "Select Organization",
+      "tabs": {
+        "snippets": "Snippets",
+        "scripts": "Scripts"
+      }
+    },
+    "execution": {
+      "progressPanel": {
+        "title": "Script Execution",
+        "noSteps": "No steps yet",
+        "noStepsDescription": "Steps will appear here as the script executes",
+        "steps": "Steps"
+      },
+      "dialogs": {
+        "enterValue": "Enter value",
+        "selectOption": "Select an option",
+        "confirm": "Confirm",
+        "submit": "Submit",
+        "cancel": "Cancel",
+        "ok": "OK",
+        "yes": "Yes",
+        "no": "No",
+        "copyCell": "Copy Cell",
+        "copyRow": "Copy Row",
+        "copyTable": "Copy Table",
+        "close": "Close"
+      },
+      "status": {
+        "running": "Running",
+        "completed": "Completed",
+        "error": "Error",
+        "pending": "Pending"
+      }
+    },
+    "list": {
+      "empty": "You don't have any scripts yet. Create your first one!",
+      "actions": {
+        "edit": "Edit script",
+        "delete": "Delete script"
+      }
+    },
+    "dialog": {
+      "title": {
+        "create": "Create Script",
+        "edit": "Edit Script"
+      },
+      "scriptDetails": "Script Details",
+      "scriptContent": "Script Content",
+      "helpTip": "Use @NEXTERM: directives for interactive features",
+      "fields": {
+        "name": "Name",
+        "description": "Description"
+      },
+      "placeholders": {
+        "name": "Script name",
+        "description": "What does this script do?"
+      },
+      "actions": {
+        "cancel": "Cancel",
+        "create": "Create",
+        "update": "Update",
+        "creating": "Creating...",
+        "updating": "Updating..."
+      },
+      "errors": {
+        "nameRequired": "Script name is required",
+        "descriptionRequired": "Script description is required",
+        "contentRequired": "Script content is required",
+        "createFailed": "Failed to create script",
+        "updateFailed": "Failed to update script"
+      }
+    },
+    "messages": {
+      "success": {
+        "created": "Script created successfully",
+        "updated": "Script updated successfully",
+        "deleted": "Script deleted successfully"
+      },
+      "errors": {
+        "loadFailed": "Failed to load script data",
+        "deleteFailed": "Failed to delete script"
+      }
+    },
+    "menu": {
+      "searchPlaceholder": "Search scripts...",
+      "noScripts": "No scripts available. Create some in the Scripts section.",
+      "noMatch": "No scripts match your search.",
+      "selectIdentity": "Select Identity"
     }
   },
   "monitoring": {
@@ -291,6 +397,7 @@
       "organizations": "Organizaciones",
       "users": "Usuarios",
       "authentication": "Autenticación",
+      "sources": "Sources",
       "ai": "AI"
     },
     "account": {
@@ -627,6 +734,54 @@
           "updateFailed": "Error al actualizar la identidad"
         }
       }
+    },
+    "sources": {
+      "title": "Script & Snippet Sources",
+      "description": "Configure external sources to automatically sync scripts and snippets.",
+      "loading": "Loading sources...",
+      "noSources": "No Sources Configured",
+      "noSourcesDescription": "Add external sources to automatically sync scripts and snippets.",
+      "addSource": "Add Source",
+      "snippets": "snippets",
+      "scripts": "scripts",
+      "neverSynced": "Never synced",
+      "sync": "Sync now",
+      "edit": "Edit",
+      "delete": "Delete",
+      "deleteConfirm": "Are you sure you want to delete the source \"{{name}}\"? All synced scripts and snippets from this source will also be deleted.",
+      "status": {
+        "success": "Synced",
+        "error": "Error",
+        "pending": "Pending",
+        "disabled": "Disabled"
+      },
+      "dialog": {
+        "createTitle": "Add Source",
+        "editTitle": "Edit Source",
+        "name": "Name",
+        "namePlaceholder": "e.g. Company Scripts",
+        "url": "Source URL",
+        "urlPlaceholder": "https://scripts.example.com",
+        "enabled": "Enabled",
+        "enabledDescription": "When disabled, this source will not be synced",
+        "validating": "Validating URL...",
+        "validationSuccess": "Valid source found: {{snippets}} snippets, {{scripts}} scripts",
+        "create": "Create"
+      },
+      "messages": {
+        "created": "Source created successfully",
+        "updated": "Source updated successfully",
+        "deleted": "Source deleted successfully",
+        "synced": "Source synced successfully"
+      },
+      "errors": {
+        "loadFailed": "Failed to load sources",
+        "saveFailed": "Failed to save source",
+        "deleteFailed": "Failed to delete source",
+        "syncFailed": "Failed to sync source",
+        "validationFailed": "Failed to validate URL",
+        "requiredFields": "Name and URL are required"
+      }
     }
   },
   "servers": {
@@ -666,6 +821,7 @@
       "connect": "Conecta",
       "quickConnect": "Quick Connect",
       "openSFTP": "Abrir SFTP",
+      "runScript": "Run Script",
       "editServer": "Editar servidor",
       "editIntegration": "Edit Integration",
       "duplicateServer": "Servidor duplicado",
@@ -824,11 +980,22 @@
         "createFolder": "Crear carpeta",
         "upload": "Subir archivo",
         "edit": "Edita",
+        "preview": "Preview",
         "bigFileConfirm": "Este archivo tiene un tamaño de {{size}} MB. ¿Estás seguro de que quieres editarlo?",
         "selectAll": "Select All",
         "insertSnippet": "Insert Snippet",
         "sendCtrlC": "Send Ctrl+C",
         "clearTerminal": "Clear Terminal"
+      },
+      "filePreview": {
+        "title": "File Preview",
+        "loading": "Loading...",
+        "cannotPreview": "Cannot Preview File",
+        "unsupportedFileType": "This file type is not supported for preview",
+        "videoNotSupported": "Your browser does not support video playback",
+        "audioNotSupported": "Your browser does not support audio playback",
+        "download": "Download",
+        "close": "Close"
       }
     },
     "aiAssistant": {
@@ -860,133 +1027,6 @@
       "updateFailed": "Error al actualizar el servidor",
       "createIdentityFailed": "Error al crear identidad",
       "updateIdentityFailed": "Error al actualizar la identidad"
-    }
-  },
-  "apps": {
-    "title": "Aplicaciones",
-    "navigation": {
-      "categories": {
-        "all": "Todos",
-        "results": "Resultados",
-        "scripts": "Guiones",
-        "networking": "Red",
-        "media": "Medios de comunicación",
-        "cloud": "Nube",
-        "development": "Desarrollo",
-        "utilities": "Utilidades"
-      }
-    },
-    "store": {
-      "appStore": "App Store",
-      "scripts": "Guiones",
-      "appStoreDescription": "Tus aplicaciones favoritas, desplegadas con un solo clic.",
-      "scriptsDescription": "Automatiza las tareas de tu servidor con scripts personalizados.",
-      "manageSources": "Gestionar fuentes",
-      "createScript": "Crear guión",
-      "source": "Fuente:",
-      "sourceFilter": {
-        "all": "Todos",
-        "custom": "Personalizado"
-      }
-    },
-    "list": {
-      "noApps": "Pronto más aplicaciones",
-      "noScripts": "No hay guiones disponibles",
-      "selectApp": "Selecciona la app para continuar",
-      "selectScript": "Selecciona la secuencia de comandos para continuar"
-    },
-    "actions": {
-      "deploy": "Despliega",
-      "run": "Ejecuta",
-      "view": "Ver",
-      "edit": "Edita",
-      "delete": "Borra",
-      "logs": "Registros",
-      "open": "Abre",
-      "stop": "Detener Guión",
-      "version": "Versión"
-    },
-    "items": {
-      "customBadge": "Personalizado",
-      "scriptType": "Guión",
-      "running": "Corriendo...",
-      "runScript": "Ejecuta"
-    },
-    "installer": {
-      "deploymentFailed": "Error de implantación",
-      "deploymentCompleted": "Despliegue completado",
-      "deploying": "Desplegar...",
-      "installationLog": "Registro de instalación",
-      "steps": {
-        "lookupDistro": "Buscar distro Linux",
-        "checkPermissions": "Comprobar permisos",
-        "installDocker": "Instalar el motor Docker",
-        "downloadImage": "Descargar imagen base",
-        "preInstall": "Ejecuta el comando de preinstalación",
-        "startContainer": "Iniciar contenedor Docker",
-        "postInstall": "Ejecuta el comando post-instalación",
-        "detected": "Detectado {{os}}"
-      }
-    },
-    "scriptExecutor": {
-      "executionFailed": "Fallo en la ejecución del script",
-      "executionCompleted": "Ejecución del script completada",
-      "executing": "Ejecutando script...",
-      "initializing": "Inicializar la ejecución del script",
-      "finished": "Finalizada la ejecución del script",
-      "cancelled": "Ejecución del script cancelada por el usuario"
-    },
-    "dialogs": {
-      "deployServer": {
-        "deployTitle": "Despliega {{name}}",
-        "runTitle": "Ejecuta {{name}}",
-        "noServersAvailable": "No hay servidores SSH disponibles"
-      },
-      "source": {
-        "title": "Fuentes de la app",
-        "refreshApps": "Actualizar aplicaciones",
-        "addNewSource": "Añadir nueva fuente"
-      },
-      "script": {
-        "createTitle": "Crear script personalizado",
-        "editTitle": "Editar Guión",
-        "viewTitle": "Ver Guión",
-        "source": "Fuente: {{source}}",
-        "scriptDetails": "Detalles del guión",
-        "scriptContent": "Contenido del guión",
-        "helpTip": "Utiliza comandos @NEXTERM: para indicaciones interactivas",
-        "fields": {
-          "name": "Nombre del script *",
-          "description": "Descripción",
-          "namePlaceholder": "Mi impresionante guión",
-          "descriptionPlaceholder": "¿Qué hace este script?"
-        },
-        "actions": {
-          "close": "Cerrar",
-          "cancel": "Cancela",
-          "create": "Crear guión",
-          "update": "Guión de actualización",
-          "creating": "Crear...",
-          "updating": "Actualizando..."
-        },
-        "errors": {
-          "nameRequired": "El nombre del script es obligatorio",
-          "descriptionRequired": "Se requiere la descripción del guión",
-          "contentRequired": "El contenido del guión no puede estar vacío",
-          "createFailed": "Error al crear el script",
-          "updateFailed": "Error al actualizar el script"
-        },
-        "success": {
-          "created": "Script creado correctamente",
-          "updated": "Script actualizado correctamente"
-        }
-      }
-    },
-    "messages": {
-      "onlyCustomScriptsCanBeDeleted": "Sólo se pueden borrar los guiones personalizados",
-      "scriptDeletedSuccessfully": "Script eliminado correctamente",
-      "failedToDeleteScript": "Error al borrar el script",
-      "deleteScriptConfirmation": "¿Estás seguro de que quieres borrar el script \"{{name}}\"? Esta acción no se puede deshacer."
     }
   }
 }
