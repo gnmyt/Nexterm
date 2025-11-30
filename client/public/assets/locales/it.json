@@ -1,5 +1,7 @@
 {
   "common": {
+    "error": "Error",
+    "loading": "Loading...",
     "actions": {
       "cancel": "Annullamento",
       "confirm": "Confermare",
