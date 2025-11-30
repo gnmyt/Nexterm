@@ -138,6 +138,7 @@ export const ServerList = ({
     const scrollIntervalRef = useRef(null);
     const tagButtonRef = useRef(null);
     const [scripts, setScripts] = useState([]);
+    const [sourceScripts, setSourceScripts] = useState([]);
     const [scriptsMenuOpen, setScriptsMenuOpen] = useState(false);
     const [scriptsMenuServer, setScriptsMenuServer] = useState(null);
 
@@ -173,6 +174,7 @@ export const ServerList = ({
     useEffect(() => {
         if (contextMenu.isOpen && contextClickedType === "server-object" && server?.protocol === "ssh") {
             getRequest("scripts/all").then(setScripts).catch(() => setScripts([]));
+            getRequest("scripts/sources").then(setSourceScripts).catch(() => setSourceScripts([]));
         }
     }, [contextMenu.isOpen, contextClickedType, server?.protocol]);
 
@@ -687,7 +689,7 @@ export const ServerList = ({
                                     </>
                                 )}
 
-                                {server?.identities?.length > 0 && server?.protocol === "ssh" && scripts.length > 0 && (
+                                {server?.identities?.length > 0 && server?.protocol === "ssh" && (scripts.length > 0 || sourceScripts.length > 0) && (
                                     <ContextMenuItem
                                         icon={mdiScript}
                                         label={t("servers.contextMenu.runScript")}
