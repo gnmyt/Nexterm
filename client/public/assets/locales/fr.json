@@ -687,6 +687,7 @@
       "title": "Clés et justificatifs SSH",
       "description": "Gère tes clés SSH et tes identifiants de connexion au serveur.",
       "createIdentity": "Créer une identité",
+      "personal": "Personal",
       "noUsername": "Pas de nom d'utilisateur",
       "sshKey": "Clé SSH",
       "password": "Mot de passe",
@@ -884,6 +885,28 @@
           "description": "Select the keyboard layout to use for this connection."
         },
         "noSettings": "No additional settings available for this entry type."
+      },
+      "identities": {
+        "organizationIdentities": "Organization Identities",
+        "personalIdentities": "Personal Identities",
+        "orgDescription": "Shared with all organization members. Everyone can use these identities.",
+        "personalDescription": "Only visible to you. Other organization members cannot see these.",
+        "identityName": "Identity Name",
+        "username": "Username",
+        "authentication": "Authentication",
+        "password": "Password",
+        "sshKey": "SSH Key",
+        "sshPrivateKey": "SSH Private Key",
+        "passphrase": "Passphrase (optional)",
+        "new": "New",
+        "removeIdentity": "Remove identity",
+        "unlinkIdentity": "Unlink identity",
+        "moveToOrg": "Move to organization",
+        "selectOrganization": "Select Organization",
+        "availableToLink": "Available to Link",
+        "noUsername": "No username",
+        "noOrgIdentities": "No organization identities. Create one to share with all members.",
+        "noPersonalIdentities": "No personal identities. Create one for your private use."
       }
     },
     "proxmoxDialog": {
