@@ -1,5 +1,6 @@
 const { updateAuditLogWithSessionDuration } = require("../controllers/audit");
 const SessionManager = require("../lib/SessionManager");
+const { parseResizeMessage, setupSSHEventHandlers } = require("../utils/sshEventHandlers");
 
 const setupStreamHandlers = (ws, stream) => {
     const onData = (data) => {
@@ -10,16 +11,9 @@ const setupStreamHandlers = (ws, stream) => {
     stream.on("data", onData);
 
     ws.on("message", (data) => {
-        if (data.startsWith("\x01")) {
-            const resizeData = data.substring(1);
-            if (resizeData.includes(",")) {
-                const [width, height] = resizeData.split(",").map(Number);
-                if (!isNaN(width) && !isNaN(height)) {
-                    stream.setWindow(height, width);
-                    return;
-                }
-            }
-            stream.write(data);
+        const resize = parseResizeMessage(data);
+        if (resize) {
+            stream.setWindow(resize.height, resize.width);
         } else {
             stream.write(data);
         }
@@ -74,28 +68,5 @@ module.exports = async (ws, context) => {
         });
     });
 
-    ssh.on("error", (error) => {
-        const errorMsg = error.level === "client-timeout" ? "Client Timeout reached" : `SSH Error: ${error.message}`;
-        ws.close(error.level === "client-timeout" ? 4007 : 4005, errorMsg);
-        if (serverSession) SessionManager.remove(serverSession.sessionId);
-    });
-
-    ssh.on("end", async () => {
-        await updateAuditLogWithSessionDuration(auditLogId, connectionStartTime);
-        ws.close(4006, "Connection closed");
-        if (serverSession) SessionManager.remove(serverSession.sessionId);
-    });
-
-    ssh.on("exit", async () => {
-        await updateAuditLogWithSessionDuration(auditLogId, connectionStartTime);
-        ws.close(4006, "Connection exited");
-        if (serverSession) SessionManager.remove(serverSession.sessionId);
-    });
-
-    ssh.on("close", async () => {
-        await updateAuditLogWithSessionDuration(auditLogId, connectionStartTime);
-        if (ssh._jumpConnections) ssh._jumpConnections.forEach(conn => conn.ssh.end());
-        ws.close(4007, "Connection closed");
-        if (serverSession) SessionManager.remove(serverSession.sessionId);
-    });
+    setupSSHEventHandlers(ssh, ws, { auditLogId, serverSession, connectionStartTime });
 };

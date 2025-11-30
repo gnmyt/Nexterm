@@ -1,16 +1,18 @@
-const Account = require("../models/Account");
-const logger = require('../utils/logger');
-const { DataTypes } = require("sequelize");
+const logger = require("../utils/logger");
 
 module.exports = {
     async up(queryInterface) {
-        const firstUser = await Account.findOne({ order: [["id", "ASC"]] });
-        if (firstUser) {
-            await Account.update(
-                { role: "admin" },
-                { where: { id: firstUser.id } },
+        const [results] = await queryInterface.sequelize.query(
+            "SELECT id FROM accounts ORDER BY id ASC LIMIT 1",
+        );
+
+        if (results && results.length > 0) {
+            const firstUserId = results[0].id;
+            await queryInterface.sequelize.query(
+                "UPDATE accounts SET role = ? WHERE id = ?",
+                { replacements: ["admin", firstUserId] },
             );
-            logger.info(`First user ${firstUser.id} made admin`);
+            logger.info(`First user ${firstUserId} made admin`);
         } else {
             logger.info("No users found, skipping admin assignment");
         }

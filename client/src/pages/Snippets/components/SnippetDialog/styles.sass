@@ -1,29 +1,48 @@
 @use "@/common/styles/colors"
 
 .snippet-dialog
-  .dialog-content
-    margin-bottom: 1rem
+  width: min(85vw, 35rem)
+  max-height: 85vh
+  display: flex
+  flex-direction: column
+  gap: 1rem
 
-  .snippet-dialog-title h2
-    margin: 0 0 1rem
+  .snippet-dialog-title
+    padding-bottom: 0.75rem
+    border-bottom: 1px solid colors.$gray
+
+    h2
+      margin: 0
+      font-size: 1.125rem
+      font-weight: 700
+      color: colors.$white
+      letter-spacing: -0.01em
+      display: flex
+      align-items: center
+      gap: 0.625rem
+
+      svg
+        width: 1.25rem
+        height: 1.25rem
+        color: colors.$primary
+        opacity: 0.95
 
   .form-group
-    margin-bottom: 1.25rem
+    display: flex
+    flex-direction: column
+    gap: 0.625rem
 
     label
-      display: block
-      margin-bottom: 0.5rem
-      color: colors.$light-gray
-      font-size: 0.9rem
+      color: colors.$subtext
+      font-weight: 600
+      font-size: 0.875rem
+      letter-spacing: 0.01em
 
     .command-label-with-ai
       display: flex
       justify-content: space-between
       align-items: center
-      margin-bottom: 0.5rem
-
-      label
-        margin-bottom: 0
+      margin-bottom: 0
 
   .textarea-container
     position: relative
@@ -31,27 +50,30 @@
 
     .custom-textarea
       width: 100%
-      padding: 0.75rem
-      border-radius: 0.5rem
+      padding: 0.8rem
+      border-radius: 0.7rem
       border: 1px solid colors.$gray
       background-color: colors.$lighter-background
       color: colors.$white
-      font-family: monospace
+      font-family: 'Consolas', 'Monaco', 'Courier New', monospace
       font-size: 0.9rem
       resize: vertical
       box-sizing: border-box
-      min-height: 120px
+      min-height: 150px
       transition: border-color 0.1s ease, background-color 0.1s ease
+      line-height: 1.5
 
       &:focus
         border-color: colors.$primary
         background-color: colors.$dark-gray
         outline: none
 
+      &::placeholder
+        color: colors.$subtext
+        opacity: 0.7
+
   .dialog-actions
     display: flex
     justify-content: flex-end
     gap: 0.75rem
-    margin-top: 1rem
-    padding-top: 1rem
-    border-top: 1px solid colors.$gray
+    padding-top: 0.5rem

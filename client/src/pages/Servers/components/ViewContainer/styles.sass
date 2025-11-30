@@ -68,46 +68,20 @@
         opacity: 0
         pointer-events: none
 
-  &[class*="grid-"]
-    display: grid
-    gap: 2px
+  &:not(.single)
+    display: flex
+    flex-direction: column
+    gap: 0
     background-color: colors.$darker-gray
 
   &.resizing
     .session-renderer
       pointer-events: none
 
-  &.grid-2x1
-    grid-template-columns: 1fr 1fr
-    grid-template-rows: 1fr
-
-  &.grid-2x2
-    grid-template-columns: 1fr 1fr
-    grid-template-rows: 1fr 1fr
-
-  &.grid-3
-    grid-template-columns: 1fr 1fr
-    grid-template-rows: 1fr 1fr
-
-  &.grid-5
-    grid-template-columns: 1fr 1fr
-    grid-template-rows: 1fr 1fr 1fr
-
-  &.grid-3x2
-    grid-template-columns: 1fr 1fr
-    grid-template-rows: 1fr 1fr 1fr
-
-  &.grid-2x3
-    grid-template-columns: 1fr 1fr 1fr
-    grid-template-rows: 1fr 1fr
-
-  &.grid-3x3
-    grid-template-columns: 1fr 1fr 1fr
-    grid-template-rows: 1fr 1fr 1fr
-
-  &.grid-4x2
-    grid-template-columns: 1fr 1fr
-    grid-template-rows: 1fr 1fr 1fr 1fr
+.grid-row
+  display: flex
+  gap: 0
+  overflow: hidden
 
 .session-renderer
   background-color: colors.$terminal
@@ -125,6 +99,7 @@
   background: transparent
   transition: background-color 0.2s ease
   user-select: none
+  flex-shrink: 0
 
   &:hover
     background-color: colors.$primary !important
@@ -141,7 +116,9 @@
 .view-layouter.resizing
   *
     user-select: none !important
-    pointer-events: none !important
+
+  .grid-resizer
+    pointer-events: auto !important
 
   &.resizing-vertical
     cursor: col-resize !important

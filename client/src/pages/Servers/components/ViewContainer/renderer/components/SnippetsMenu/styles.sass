@@ -126,6 +126,18 @@
       display: flex
       align-items: center
       justify-content: space-between
+      gap: 0.5rem
+
+      .organization-badge
+        font-size: 0.65rem
+        padding: 0.15rem 0.4rem
+        background-color: colors.$primary
+        color: colors.$white
+        border-radius: 0.2rem
+        font-weight: 600
+        text-transform: uppercase
+        letter-spacing: 0.5px
+        flex-shrink: 0
 
     &-name
       margin: 0
@@ -154,3 +166,10 @@
       word-break: break-all
       max-height: 120px
       overflow: hidden
+
+  &__source-badge
+    width: 0.9rem
+    height: 0.9rem
+    color: colors.$primary
+    flex-shrink: 0
+    margin-left: auto

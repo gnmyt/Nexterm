@@ -102,7 +102,8 @@ app.get("/", async (req, res) => {
                     return;
                 }
 
-                res.header("Content-Disposition", `attachment; filename="${path.split("/").pop()}"`);
+                const disposition = req.query.preview === 'true' ? 'inline' : 'attachment';
+                res.header("Content-Disposition", `${disposition}; filename="${path.split("/").pop()}"`);
                 res.header("Content-Length", stats.size);
 
                 const readStream = sftp.createReadStream(path);

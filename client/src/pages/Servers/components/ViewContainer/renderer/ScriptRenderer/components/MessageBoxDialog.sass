@@ -1,0 +1,60 @@
+@use "@/common/styles/colors"
+
+.msgbox-dialog
+  display: flex
+  flex-direction: column
+  gap: 0.75rem
+  min-width: 320px
+  max-width: 460px
+
+  .dialog-title
+    display: flex
+    align-items: center
+    gap: 0.5rem
+    padding-bottom: 0.625rem
+    border-bottom: 1px solid colors.$dark-gray
+
+    svg
+      width: 1.125rem
+      height: 1.125rem
+      color: colors.$primary
+
+    h2
+      margin: 0
+      font-size: 0.95rem
+      font-weight: 600
+      color: colors.$white
+
+  .msgbox-content
+    max-width: 100%
+    max-height: 300px
+    overflow-y: auto
+    scrollbar-width: thin
+    scrollbar-color: colors.$gray transparent
+
+    &::-webkit-scrollbar
+      width: 4px
+
+    &::-webkit-scrollbar-track
+      background: transparent
+
+    &::-webkit-scrollbar-thumb
+      background-color: colors.$gray
+      border-radius: 4px
+
+    .message-text
+      color: colors.$subtext
+      line-height: 1.5
+      font-size: 0.85rem
+      padding: 0.625rem 0.75rem
+      background: colors.$dark-gray
+      border-radius: 0.5rem
+      white-space: pre-wrap
+      word-wrap: break-word
+
+  .dialog-actions
+    display: flex
+    justify-content: flex-end
+    gap: 0.5rem
+    padding-top: 0.5rem
+    border-top: 1px solid colors.$dark-gray

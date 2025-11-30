@@ -3,9 +3,8 @@ import NextermLogo from "@/common/img/logo.avif";
 import {
     mdiCog,
     mdiLogout,
-    mdiPackageVariant,
     mdiServerOutline,
-    mdiCodeBrackets,
+    mdiCodeBraces,
     mdiChartBoxOutline,
     mdiShieldCheckOutline,
 } from "@mdi/js";
@@ -31,9 +30,8 @@ export const Sidebar = () => {
         { title: t('common.sidebar.settings'), path: "/settings", icon: mdiCog },
         { title: t('common.sidebar.servers'), path: "/servers", icon: mdiServerOutline },
         { title: t('common.sidebar.monitoring'), path: "/monitoring", icon: mdiChartBoxOutline},
-        { title: t('common.sidebar.snippets'), path: "/snippets", icon: mdiCodeBrackets },
+        { title: t('common.sidebar.snippets'), path: "/snippets", icon: mdiCodeBraces },
         { title: t('common.sidebar.audit'), path: "/audit", icon: mdiShieldCheckOutline },
-        { title: t('common.sidebar.apps'), path: "/apps", icon: mdiPackageVariant },
     ];
 
     const isActive = (path) => {

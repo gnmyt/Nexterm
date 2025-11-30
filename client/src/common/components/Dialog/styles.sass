@@ -11,42 +11,28 @@
   background-color: colors.$dialog-background
   display: flex
   align-items: center
-  z-index: 1000
+  z-index: 10000
   justify-content: center
   backdrop-filter: blur(0.3rem)
   transition: all 0.2s
-  animation: opacity 0.3s
+  isolation: isolate
 
 .dialog-area-hidden
   opacity: 0
-  animation: opacity 0.3s reverse
 
 .dialog
-  padding: 1.5rem
+  padding: 1.25rem
   background-color: colors.$lighter-background
   border: 1px solid colors.$dark-gray
   color: colors.$white
   border-radius: 0.75rem
   max-width: 80%
   max-height: 90vh
-  overflow-y: auto
+  overflow: hidden
   box-shadow: 0 12px 48px rgba(0, 0, 0, 0.5), 0 4px 16px rgba(0, 0, 0, 0.3)
   transition: all 0.2s
   animation: fadeIn 0.3s
-  scrollbar-width: thin
-  scrollbar-color: colors.$gray colors.$lighter-background
   position: relative
-
-  &::-webkit-scrollbar
-    width: 6px
-
-  &::-webkit-scrollbar-track
-    background: transparent
-    border-radius: 0 0.75rem 0.75rem 0
-
-  &::-webkit-scrollbar-thumb
-    background-color: colors.$gray
-    border-radius: 10px
 
 .dialog-close-btn
   position: absolute

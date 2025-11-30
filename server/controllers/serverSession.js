@@ -4,8 +4,9 @@ const Account = require("../models/Account");
 const { validateEntryAccess } = require("./entry");
 const { getOrganizationAuditSettingsInternal } = require("./audit");
 const { resolveIdentity } = require("../utils/identityResolver");
+const Organization = require('../models/Organization');
 
-const createSession = async (accountId, entryId, identityId, connectionReason, type = null, directIdentity = null, tabId = null, browserId = null) => {
+const createSession = async (accountId, entryId, identityId, connectionReason, type = null, directIdentity = null, tabId = null, browserId = null, scriptId = null) => {
     const entry = await Entry.findByPk(entryId);
     if (!entry) {
         return { code: 404, message: "Entry not found" };
@@ -38,6 +39,7 @@ const createSession = async (accountId, entryId, identityId, connectionReason, t
         identityId: identity ? identity.id : null,
         type: type || null,
         directIdentity: directIdentity || null,
+        scriptId: scriptId || null,
     };
 
     const session = SessionManager.create(accountId, entryId, configuration, connectionReason, tabId, browserId);
@@ -66,10 +68,28 @@ const getSessions = async (accountId, tabId = null, browserId = null) => {
 
     const sessions = SessionManager.getAll(accountId, filterTabId, filterBrowserId);
     logger.info('Sessions found', { count: sessions.length });
-    return sessions.map(session => {
+    
+
+    return await Promise.all(sessions.map(async (session) => {
+        const entry = await Entry.findByPk(session.entryId, {
+            attributes: ['id', 'organizationId']
+        });
+
+        let organizationName = null;
+        if (entry?.organizationId) {
+            const org = await Organization.findByPk(entry.organizationId, {
+                attributes: ['name']
+            });
+            organizationName = org?.name || null;
+        }
+
         const { connection, ...safeSession } = session;
-        return safeSession;
-    });
+        return {
+            ...safeSession,
+            organizationId: entry?.organizationId || null,
+            organizationName
+        };
+    }));
 };
 
 const hibernateSession = (sessionId) => {

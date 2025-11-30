@@ -32,9 +32,9 @@ features:
   - icon: ✂️
     title: Snippets
     details: Create and manage snippets for quick access to commands.
-  - icon: 📦
-    title: Apps
-    details: Automate app installations and configurations with apps.
+  - icon: 📜
+    title: Scripts
+    details: Automate repetitive tasks with customizable scripts.
 
 ---
 

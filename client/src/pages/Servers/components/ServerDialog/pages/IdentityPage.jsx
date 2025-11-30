@@ -101,12 +101,6 @@ const Identity = ({ identity, onUpdate, onDelete }) => {
                             <label>SSH Private Key</label>
                             <Input icon={mdiFileUploadOutline} type="file"
                                    autoComplete="off" onChange={readFile} />
-                            {identityKeyfile && (
-                                <div className="keyfile-status">
-                                    <Icon path={mdiCheck} />
-                                    <span>Key file loaded</span>
-                                </div>
-                            )}
                         </div>
                         <div className="form-group">
                             <label>Passphrase (optional)</label>

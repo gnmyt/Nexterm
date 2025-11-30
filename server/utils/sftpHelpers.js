@@ -87,6 +87,9 @@ const OPERATIONS = {
     RENAME_FILE: 0x8,
     ERROR: 0x9,
     SEARCH_DIRECTORIES: 0xA,
+    RESOLVE_SYMLINK: 0xB,
+    READ_FILE: 0xC,
+    WRITE_FILE: 0xD,
 };
 
 module.exports = {

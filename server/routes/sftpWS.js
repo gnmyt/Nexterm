@@ -80,6 +80,7 @@ module.exports = async (ws, req) => {
                 sftp.on("error", () => {});
 
                 let uploadStream = null;
+                let uploadFilePath = null;
 
                 ws.on("message", (msg) => {
                     const operation = msg[0];
@@ -106,12 +107,17 @@ module.exports = async (ws, req) => {
                                     ]));
                                     return;
                                 }
-                                const files = list.map(file => ({
-                                    name: file.filename,
-                                    type: file.longname.startsWith("d") ? "folder" : "file",
-                                    last_modified: file.attrs.mtime,
-                                    size: file.attrs.size,
-                                }));
+                                const files = list.map(file => {
+                                    const isSymlink = file.longname.startsWith("l");
+                                    const isDirectory = file.longname.startsWith("d");
+                                    return {
+                                        name: file.filename,
+                                        type: isDirectory ? "folder" : "file",
+                                        isSymlink,
+                                        last_modified: file.attrs.mtime,
+                                        size: file.attrs.size,
+                                    };
+                                });
                                 ws.send(Buffer.concat([
                                     Buffer.from([OPERATIONS.LIST_FILES]),
                                     Buffer.from(JSON.stringify({ files })),
@@ -125,9 +131,11 @@ module.exports = async (ws, req) => {
                             }
 
                             try {
+                                uploadFilePath = payload.path;
                                 uploadStream = sftp.createWriteStream(payload.path);
                                 uploadStream.on("error", () => {
                                     uploadStream = null;
+                                    uploadFilePath = null;
                                     ws.send(Buffer.concat([
                                         Buffer.from([OPERATIONS.ERROR]),
                                         Buffer.from(JSON.stringify({ message: "Permission denied - unable to upload file to this location" })),
@@ -137,6 +145,7 @@ module.exports = async (ws, req) => {
                                 ws.send(Buffer.from([OPERATIONS.UPLOAD_FILE_START]));
                             } catch (err) {
                                 uploadStream = null;
+                                uploadFilePath = null;
                                 ws.send(Buffer.concat([
                                     Buffer.from([OPERATIONS.ERROR]),
                                     Buffer.from(JSON.stringify({ message: "Failed to start file upload" })),
@@ -161,22 +170,27 @@ module.exports = async (ws, req) => {
                         case OPERATIONS.UPLOAD_FILE_END:
                             try {
                                 if (uploadStream && !uploadStream.destroyed) {
+                                    const filePath = uploadFilePath;
                                     uploadStream.end(() => {
                                         uploadStream = null;
+                                        uploadFilePath = null;
                                         ws.send(Buffer.from([OPERATIONS.UPLOAD_FILE_END]));
 
-                                        createAuditLog({
-                                            accountId: user.id,
-                                            organizationId: entry.organizationId,
-                                            action: AUDIT_ACTIONS.FILE_UPLOAD,
-                                            resource: RESOURCE_TYPES.FILE,
-                                            details: { filePath: payload.path },
-                                            ipAddress,
-                                            userAgent,
-                                        });
+                                        if (filePath) {
+                                            createAuditLog({
+                                                accountId: user.id,
+                                                organizationId: entry.organizationId,
+                                                action: AUDIT_ACTIONS.FILE_UPLOAD,
+                                                resource: RESOURCE_TYPES.FILE,
+                                                details: { filePath },
+                                                ipAddress,
+                                                userAgent,
+                                            });
+                                        }
                                     });
                                 } else {
                                     uploadStream = null;
+                                    uploadFilePath = null;
                                     ws.send(Buffer.concat([
                                         Buffer.from([OPERATIONS.ERROR]),
                                         Buffer.from(JSON.stringify({ message: "Upload stream is not available" })),
@@ -184,6 +198,7 @@ module.exports = async (ws, req) => {
                                 }
                             } catch (err) {
                                 uploadStream = null;
+                                uploadFilePath = null;
                                 ws.send(Buffer.concat([
                                     Buffer.from([OPERATIONS.ERROR]),
                                     Buffer.from(JSON.stringify({ message: "Failed to complete file upload" })),
@@ -298,6 +313,34 @@ module.exports = async (ws, req) => {
                                     Buffer.from([OPERATIONS.SEARCH_DIRECTORIES]),
                                     Buffer.from(JSON.stringify({ directories })),
                                 ]));
+                            });
+                            break;
+
+                        case OPERATIONS.RESOLVE_SYMLINK:
+                            sftp.realpath(payload.path, (err, realPath) => {
+                                if (err) {
+                                    ws.send(Buffer.concat([
+                                        Buffer.from([OPERATIONS.ERROR]),
+                                        Buffer.from(JSON.stringify({ message: "Failed to resolve symbolic link" })),
+                                    ]));
+                                    return;
+                                }
+                                sftp.stat(realPath, (err, stats) => {
+                                    if (err) {
+                                        ws.send(Buffer.concat([
+                                            Buffer.from([OPERATIONS.ERROR]),
+                                            Buffer.from(JSON.stringify({ message: "Failed to access symbolic link target" })),
+                                        ]));
+                                        return;
+                                    }
+                                    ws.send(Buffer.concat([
+                                        Buffer.from([OPERATIONS.RESOLVE_SYMLINK]),
+                                        Buffer.from(JSON.stringify({ 
+                                            path: realPath,
+                                            isDirectory: stats.isDirectory()
+                                        })),
+                                    ]));
+                                });
                             });
                             break;
 

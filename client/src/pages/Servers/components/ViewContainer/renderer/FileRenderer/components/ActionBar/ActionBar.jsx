@@ -41,13 +41,12 @@ export const ActionBar = ({
     const goUp = () => {
         const pathArray = getPathArray();
         pathArray.pop();
-        updatePath(pathArray.length ? "/" + pathArray.join("/") : "/");
+        updatePath(pathArray.length ? `/${pathArray.join("/")}` : "/");
     };
 
     const navigate = (displayIndex, isTruncated = false, originalIndex = null) => {
         const pathArray = getPathArray();
-        const finalIndex = isTruncated ? originalIndex : displayIndex;
-        updatePath("/" + pathArray.slice(0, finalIndex + 1).join("/"));
+        updatePath(`/${pathArray.slice(0, (isTruncated ? originalIndex : displayIndex) + 1).join("/")}`);
     };
 
     const getTruncatedPathArray = () => {
@@ -150,7 +149,8 @@ export const ActionBar = ({
                 e.preventDefault();
                 const tabSuggestion = directorySuggestions[selectedSuggestion];
                 if (tabSuggestion) {
-                    setEditPath(tabSuggestion);
+                    const pathWithSlash = tabSuggestion.endsWith('/') ? tabSuggestion : tabSuggestion + '/';
+                    setEditPath(pathWithSlash);
                     setShowSuggestions(false);
                     setDirectorySuggestions?.([]);
                 }

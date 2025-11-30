@@ -19,8 +19,8 @@ app.post("/", async (req, res) => {
     if (validateSchema(res, createSessionValidation, req.body)) return;
     
     try {
-        const { entryId, identityId, connectionReason, type, directIdentity, tabId, browserId } = req.body;
-        const result = await createSession(req.user.id, entryId, identityId, connectionReason, type, directIdentity, tabId, browserId);
+        const { entryId, identityId, connectionReason, type, directIdentity, tabId, browserId, scriptId } = req.body;
+        const result = await createSession(req.user.id, entryId, identityId, connectionReason, type, directIdentity, tabId, browserId, scriptId);
         
         if (result?.code) {
             return res.status(result.code).json({ error: result.message });
