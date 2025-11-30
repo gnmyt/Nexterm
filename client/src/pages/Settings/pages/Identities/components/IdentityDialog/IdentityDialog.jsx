@@ -16,7 +16,7 @@ import IconInput from "@/common/components/IconInput";
 import SelectBox from "@/common/components/SelectBox";
 import "./styles.sass";
 
-export const IdentityDialog = ({ open, onClose, identity }) => {
+export const IdentityDialog = ({ open, onClose, identity, organizationId }) => {
     const { t } = useTranslation();
     const { sendToast } = useToast();
     const isEditing = !!identity;
@@ -102,6 +102,9 @@ export const IdentityDialog = ({ open, onClose, identity }) => {
                 await patchRequest(`identities/${identity.id}`, identityData);
                 sendToast("Success", t('settings.identities.dialog.messages.updateSuccess'));
             } else {
+                if (organizationId) {
+                    identityData.organizationId = organizationId;
+                }
                 await putRequest("identities", identityData);
                 sendToast("Success", t('settings.identities.dialog.messages.createSuccess'));
             }
@@ -157,7 +160,7 @@ export const IdentityDialog = ({ open, onClose, identity }) => {
                                 <label htmlFor="password">{t('settings.identities.dialog.fields.password')}</label>
                                 <IconInput icon={mdiLockOutline} type="password" value={password} setValue={setPassword}
                                            placeholder={isEditing ? t('settings.identities.dialog.fields.passwordPlaceholderEdit') : t('settings.identities.dialog.fields.passwordPlaceholder')}
-                                           id="password" required={!isEditing} />
+                                           id="password" required={!isEditing} autoComplete="new-password" />
                             </div>
                         )}
 
@@ -180,7 +183,7 @@ export const IdentityDialog = ({ open, onClose, identity }) => {
                                     <IconInput icon={mdiLockOutline} type="password" value={passphrase}
                                                setValue={setPassphrase}
                                                placeholder={isEditing ? t('settings.identities.dialog.fields.passphrasePlaceholderEdit') : t('settings.identities.dialog.fields.passphrasePlaceholder')}
-                                               id="passphrase" />
+                                               id="passphrase" autoComplete="new-password" />
                                 </div>
                             </>
                         )}

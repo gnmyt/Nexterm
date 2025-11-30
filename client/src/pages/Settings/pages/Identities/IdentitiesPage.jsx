@@ -1,11 +1,12 @@
-import { useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useState, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { IdentityContext } from "@/common/contexts/IdentityContext.jsx";
-import { deleteRequest } from "@/common/utils/RequestUtil.js";
+import { deleteRequest, getRequest } from "@/common/utils/RequestUtil.js";
 import { useToast } from "@/common/contexts/ToastContext.jsx";
-import { mdiPlus, mdiTrashCan, mdiPencil, mdiKey } from "@mdi/js";
+import { mdiPlus, mdiTrashCan, mdiPencil, mdiKey, mdiAccount, mdiDomain } from "@mdi/js";
 import Icon from "@mdi/react";
 import Button from "@/common/components/Button";
+import SelectBox from "@/common/components/SelectBox";
 import { ActionConfirmDialog } from "@/common/components/ActionConfirmDialog/ActionConfirmDialog.jsx";
 import IdentityDialog from "./components/IdentityDialog";
 import "./styles.sass";
@@ -43,10 +44,39 @@ export const IdentitiesPage = () => {
     const [dialogOpen, setDialogOpen] = useState(false);
     const [editingIdentity, setEditingIdentity] = useState(null);
     const [deleteConfirmDialog, setDeleteConfirmDialog] = useState({ open: false, identity: null });
+    const [organizations, setOrganizations] = useState([]);
+    const [selectedScope, setSelectedScope] = useState(null);
 
     useEffect(() => {
         loadIdentities();
+        const fetchOrganizations = async () => {
+            try {
+                const orgs = await getRequest("organizations");
+                setOrganizations(orgs || []);
+            } catch (error) {
+                console.error("Failed to load organizations", error);
+            }
+        };
+        fetchOrganizations();
     }, []);
+
+    const scopeOptions = useMemo(() => {
+        const options = [
+            { value: null, label: t("settings.identities.personal"), icon: mdiAccount },
+        ];
+        organizations.forEach(org => {
+            options.push({ value: org.id, label: org.name, icon: mdiDomain });
+        });
+        return options;
+    }, [organizations, t]);
+
+    const filteredIdentities = useMemo(() => {
+        if (!identities) return [];
+        if (selectedScope === null) {
+            return identities.filter(i => i.scope === 'personal');
+        }
+        return identities.filter(i => i.scope === 'organization' && i.organizationId === selectedScope);
+    }, [identities, selectedScope]);
 
     const handleCreateNew = () => {
         setEditingIdentity(null);
@@ -90,12 +120,21 @@ export const IdentitiesPage = () => {
                         <h2>{t("settings.identities.title")}</h2>
                         <p>{t("settings.identities.description")}</p>
                     </div>
-                    <Button text={t("settings.identities.createIdentity")} icon={mdiPlus} onClick={handleCreateNew} />
+                    <div className="header-actions">
+                        {scopeOptions.length > 1 && (
+                            <SelectBox
+                                options={scopeOptions}
+                                selected={selectedScope}
+                                setSelected={setSelectedScope}
+                            />
+                        )}
+                        <Button text={t("settings.identities.createIdentity")} icon={mdiPlus} onClick={handleCreateNew} />
+                    </div>
                 </div>
 
                 <div className="identities-grid">
-                    {identities && identities.length > 0 ? (
-                            identities.map((identity) => <IdentityCard key={identity.id} identity={identity}
+                    {filteredIdentities.length > 0 ? (
+                            filteredIdentities.map((identity) => <IdentityCard key={identity.id} identity={identity}
                                                                        onEdit={handleEdit}
                                                                        onDelete={handleDeleteRequest} />)
                         ) :
@@ -108,7 +147,12 @@ export const IdentitiesPage = () => {
                 </div>
             </div>
 
-            <IdentityDialog open={dialogOpen} onClose={handleDialogClose} identity={editingIdentity} />
+            <IdentityDialog 
+                open={dialogOpen} 
+                onClose={handleDialogClose} 
+                identity={editingIdentity}
+                organizationId={selectedScope}
+            />
 
             <ActionConfirmDialog open={deleteConfirmDialog.open}
                                  setOpen={(open) => setDeleteConfirmDialog(prev => ({ ...prev, open }))}

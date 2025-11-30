@@ -64,6 +64,10 @@ export const ServerDialog = ({ open, onClose, currentFolderId, currentOrganizati
             username: identity.username,
             type: identity.authType,
         };
+
+        if (identity.organizationId) {
+            payload.organizationId = identity.organizationId;
+        }
         
         if (identity.authType === 'password') {
             if (identity.passwordTouched || identity.password) {
@@ -311,7 +315,8 @@ export const ServerDialog = ({ open, onClose, currentFolderId, currentOrganizati
                                                      fieldConfig={fieldConfig} />}
                     {activeTab === 1 && tabs[1]?.key === "identities" &&
                         <IdentityPage serverIdentities={identities} setIdentityUpdates={setIdentityUpdates}
-                                      identityUpdates={identityUpdates} setIdentities={setIdentities} />}
+                                      identityUpdates={identityUpdates} setIdentities={setIdentities}
+                                      currentOrganizationId={currentOrganizationId} />}
                     {tabs.find((tab, idx) => idx === activeTab && tab.key === "settings") && 
                         <SettingsPage config={config} setConfig={setConfig}
                                       monitoringEnabled={monitoringEnabled} setMonitoringEnabled={setMonitoringEnabled}

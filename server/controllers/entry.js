@@ -201,14 +201,24 @@ module.exports.editEntry = async (accountId, entryId, configuration) => {
         const validationResult = await validateIdentities(accountId, configuration.identities, entry.organizationId);
         if (!validationResult.valid) return validationResult.error;
 
-        await EntryIdentity.destroy({ where: { entryId } });
+        const accessibleIdentities = await listIdentities(accountId);
+        const accessibleIdentityIds = new Set(accessibleIdentities.map(i => i.id));
+
+        const existingEntryIdentities = await EntryIdentity.findAll({ where: { entryId } });
+        const toDelete = existingEntryIdentities.filter(ei => accessibleIdentityIds.has(ei.identityId)).map(ei => ei.identityId);
+        if (toDelete.length > 0) {
+            await EntryIdentity.destroy({ where: { entryId, identityId: { [Op.in]: toDelete } } });
+        }
 
         if (configuration.identities.length > 0) {
+            const remainingIdentities = await EntryIdentity.findAll({ where: { entryId } });
+            const hasDefault = remainingIdentities.some(ei => ei.isDefault);
+            
             for (let i = 0; i < configuration.identities.length; i++) {
                 await EntryIdentity.create({
                     entryId,
                     identityId: configuration.identities[i],
-                    isDefault: i === 0,
+                    isDefault: !hasDefault && i === 0,
                 });
             }
         }
@@ -244,9 +254,15 @@ module.exports.getEntry = async (accountId, entryId) => {
 
     const identities = await EntryIdentity.findAll({ where: { entryId }, order: [['isDefault', 'DESC']] });
 
+    const accessibleIdentities = await listIdentities(accountId);
+    const accessibleIdentityIds = new Set(accessibleIdentities.map(i => i.id));
+    const filteredIdentityIds = identities
+        .map(ei => ei.identityId)
+        .filter(id => accessibleIdentityIds.has(id));
+
     return {
         ...entry,
-        identities: identities.map(ei => ei.identityId)
+        identities: filteredIdentityIds
     };
 };
 
@@ -289,8 +305,13 @@ module.exports.listEntries = async (accountId) => {
         where: { accountId: accountId }
     });
 
+    const accessibleIdentities = await listIdentities(accountId);
+    const accessibleIdentityIds = new Set(accessibleIdentities.map(i => i.id));
+
     const identitiesMap = new Map();
     allEntryIdentities.forEach(ei => {
+        if (!accessibleIdentityIds.has(ei.identityId)) return;
+        
         if (!identitiesMap.has(ei.entryId)) {
             identitiesMap.set(ei.entryId, []);
         }

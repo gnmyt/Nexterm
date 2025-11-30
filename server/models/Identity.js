@@ -15,7 +15,7 @@ module.exports = db.define(
         },
         accountId: {
             type: Sequelize.INTEGER,
-            allowNull: false,
+            allowNull: true,
             references: {
                 model: "accounts",
                 key: "id",

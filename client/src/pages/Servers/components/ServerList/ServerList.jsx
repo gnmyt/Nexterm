@@ -323,12 +323,14 @@ export const ServerList = ({
 
     const connect = (identityId = null) => {
         const targetIdentityId = identityId || server?.identities[0];
-        connectToServer(server?.id, targetIdentityId);
+        const identity = identities?.find(id => id.id === targetIdentityId);
+        connectToServer(server?.id, identity);
     };
 
     const connectSFTP = (identityId = null) => {
         const targetIdentityId = identityId || server?.identities[0];
-        openSFTP(server?.id, targetIdentityId);
+        const identity = identities?.find(id => id.id === targetIdentityId);
+        openSFTP(server?.id, identity);
     };
 
     const getIdentityName = (identityId) => {
@@ -337,6 +339,8 @@ export const ServerList = ({
     };
 
     const editServer = () => {
+        const orgId = getServerOrganizationId(contextClickedId);
+        setCurrentOrganizationId(orgId);
         setEditServerId(contextClickedId);
         setServerDialogOpen();
     };
