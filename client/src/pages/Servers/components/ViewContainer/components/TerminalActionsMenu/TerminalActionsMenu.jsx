@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from "react";
 import Icon from "@mdi/react";
-import { mdiMenu, mdiBroadcast, mdiCodeArray, mdiKeyboard, mdiFullscreen } from "@mdi/js";
+import { mdiMenu, mdiBroadcast, mdiKeyboard, mdiFullscreen, mdiCodeBraces } from "@mdi/js";
 import SnippetsMenu from "../../renderer/components/SnippetsMenu";
 import KeyboardShortcutsMenu from "./components/KeyboardShortcutsMenu";
 import { useKeymaps, matchesKeybind } from "@/common/contexts/KeymapContext.jsx";
@@ -103,7 +103,7 @@ export const TerminalActionsMenu = ({ layoutMode, onBroadcastToggle, onSnippetSe
             {menuOpen && (
                 <div className="actions-menu-dropdown">
                     <div className="menu-item" onClick={() => handleMenuItemClick("snippets")}>
-                        <Icon path={mdiCodeArray} />
+                        <Icon path={mdiCodeBraces} />
                         <span>{t('servers.terminalActions.snippets')}</span>
                     </div>
                     {hasGuacamole && (
