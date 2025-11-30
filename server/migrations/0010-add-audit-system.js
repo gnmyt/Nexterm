@@ -64,7 +64,6 @@ module.exports = {
                     enableIdentityManagementAudit: true,
                     enableServerManagementAudit: true,
                     enableFolderManagementAudit: true,
-                    enableSessionRecording: false,
                 }),
             });
         }

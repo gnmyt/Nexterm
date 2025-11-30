@@ -160,21 +160,6 @@ export const OrganizationAuditSettings = ({ organizationId, isOwner, onClose }) 
                             disabled={!isOwner}
                         />
                     </div>
-
-                    <div className="setting-item">
-                        <div className="setting-info">
-                            <span className="setting-label">App Installation</span>
-                            <span className="setting-description">
-                                Log installation and deployment of applications
-                            </span>
-                        </div>
-                        <ToggleSwitch
-                            id="enableAppInstallationAudit"
-                            checked={settings.enableAppInstallationAudit}
-                            onChange={(value) => handleSettingChange("enableAppInstallationAudit", value)}
-                            disabled={!isOwner}
-                        />
-                    </div>
                 </div>
             </div>
 

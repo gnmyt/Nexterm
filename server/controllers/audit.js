@@ -34,8 +34,6 @@ const AUDIT_ACTIONS = {
     FOLDER_DELETE_MGMT: "folder_mgmt.delete",
 
     SCRIPT_EXECUTE: "script.execute",
-
-    APP_INSTALL: "app.install",
 };
 
 const RESOURCE_TYPES = {
@@ -54,8 +52,7 @@ const getOrgAuditSettings = async (organizationId) => {
         enableIdentityManagementAudit: true, 
         enableServerManagementAudit: true, 
         enableFolderManagementAudit: true,
-        enableScriptExecutionAudit: true, 
-        enableAppInstallationAudit: true,
+        enableScriptExecutionAudit: true,
     };
 
     if (!org?.auditSettings) return defaults;
@@ -80,7 +77,6 @@ const shouldAudit = (action, settings) => {
         [action.includes("entry.create") || action.includes("entry.update") || action.includes("entry.delete"), settings.enableServerManagementAudit],
         [action.startsWith("folder_mgmt."), settings.enableFolderManagementAudit],
         [action.startsWith("script."), settings.enableScriptExecutionAudit],
-        [action.startsWith("app."), settings.enableAppInstallationAudit],
     ];
 
     for (const [condition, enabled] of checks) {
