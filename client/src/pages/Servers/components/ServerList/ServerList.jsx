@@ -29,13 +29,15 @@ import {
     mdiDesktopClassic,
     mdiCog,
     mdiPlay,
+    mdiScript,
 } from "@mdi/js";
 import { ContextMenu, ContextMenuItem, ContextMenuSeparator, useContextMenu } from "@/common/components/ContextMenu";
 import { useDrop, useDragLayer } from "react-dnd";
-import { deleteRequest, patchRequest, postRequest, putRequest } from "@/common/utils/RequestUtil.js";
+import { deleteRequest, getRequest, patchRequest, postRequest, putRequest } from "@/common/utils/RequestUtil.js";
 import TagFilterMenu from "./components/ServerSearch/components/TagFilterMenu";
 import ProxmoxLogo from "./assets/proxmox.jsx";
 import TagsSubmenu from "./components/TagsSubmenu";
+import ScriptsMenu from "./components/ScriptsMenu";
 import Fuse from "fuse.js";
 
 const flattenEntries = (entries, path = []) => {
@@ -116,7 +118,8 @@ export const ServerList = ({
     setCurrentOrganizationId,
     hibernatedSessions = [],
     resumeSession,
-    openDirectConnect
+    openDirectConnect,
+    runScript
 }) => {
     const { t } = useTranslation();
     const { servers, loadServers, getServerById } = useContext(ServerContext);
@@ -134,8 +137,57 @@ export const ServerList = ({
     const serversContainerRef = useRef(null);
     const scrollIntervalRef = useRef(null);
     const tagButtonRef = useRef(null);
+    const [scripts, setScripts] = useState([]);
+    const [scriptsMenuOpen, setScriptsMenuOpen] = useState(false);
+    const [scriptsMenuServer, setScriptsMenuServer] = useState(null);
 
     const contextMenu = useContextMenu();
+
+    const server = contextClickedId ? (contextClickedType === "server-object" || contextClickedType?.startsWith("pve-")) ? getServerById(contextClickedId) : null : null;
+    const isOrgFolder = contextClickedId && contextClickedId.toString().startsWith("org-");
+
+    const findOrganizationForServer = (serverIdNum, entries, currentOrg = null) => {
+        for (const entry of entries) {
+            if ((entry.type === "server" || entry.type?.startsWith("pve-")) && entry.id === serverIdNum) {
+                return currentOrg;
+            } else if (entry.type === "organization") {
+                const found = findOrganizationForServer(serverIdNum, entry.entries || [], entry);
+                if (found) return found;
+            } else if (entry.type === "folder" && entry.entries) {
+                const found = findOrganizationForServer(serverIdNum, entry.entries, currentOrg);
+                if (found) return found;
+            }
+        }
+        return null;
+    };
+
+    const getServerOrganizationId = (serverId) => {
+        if (!servers || !serverId) return null;
+        const org = findOrganizationForServer(parseInt(serverId), servers);
+        if (org && org.id) {
+            return parseInt(org.id.toString().split("-")[1]);
+        }
+        return null;
+    };
+
+    useEffect(() => {
+        if (contextMenu.isOpen && contextClickedType === "server-object" && server?.protocol === "ssh") {
+            getRequest("scripts/all").then(setScripts).catch(() => setScripts([]));
+        }
+    }, [contextMenu.isOpen, contextClickedType, server?.protocol]);
+
+    const openScriptsMenu = () => {
+        if (server) {
+            setScriptsMenuServer(server);
+            setScriptsMenuOpen(true);
+            contextMenu.close();
+        }
+    };
+
+    const closeScriptsMenu = () => {
+        setScriptsMenuOpen(false);
+        setScriptsMenuServer(null);
+    };
 
     const { isDragging, clientOffset } = useDragLayer((monitor) => ({
         isDragging: monitor.isDragging(),
@@ -191,9 +243,6 @@ export const ServerList = ({
 
         contextMenu.open(e, { x: e.clientX, y: e.clientY });
     };
-
-    const server = contextClickedId ? (contextClickedType === "server-object" || contextClickedType?.startsWith("pve-")) ? getServerById(contextClickedId) : null : null;
-    const isOrgFolder = contextClickedId && contextClickedId.toString().startsWith("org-");
 
     const hibernatedSessionsForServer = server ? hibernatedSessions.filter(s => s.server.id == server.id) : [];
     
@@ -634,6 +683,14 @@ export const ServerList = ({
                                     </>
                                 )}
 
+                                {server?.identities?.length > 0 && server?.protocol === "ssh" && scripts.length > 0 && (
+                                    <ContextMenuItem
+                                        icon={mdiScript}
+                                        label={t("servers.contextMenu.runScript")}
+                                        onClick={openScriptsMenu}
+                                    />
+                                )}
+
                                 {server?.type === "server" && (server?.protocol === "ssh" || server?.protocol === "telnet" || server?.protocol === "rdp" || server?.protocol === "vnc") && (
                                     <ContextMenuItem
                                         icon={mdiCursorDefaultClick}
@@ -762,6 +819,15 @@ export const ServerList = ({
                             </>
                         )}
                     </ContextMenu>
+                    <ScriptsMenu
+                        visible={scriptsMenuOpen}
+                        onClose={closeScriptsMenu}
+                        scripts={scripts}
+                        server={scriptsMenuServer}
+                        serverOrganizationId={scriptsMenuServer ? getServerOrganizationId(scriptsMenuServer.id) : null}
+                        onRunScript={runScript}
+                        getIdentityName={getIdentityName}
+                    />
                 </div>
             )}
             <div className={`resizer${isResizing ? " is-resizing" : ""}`} onMouseDown={startResizing} />
