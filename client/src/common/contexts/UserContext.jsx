@@ -39,6 +39,7 @@ export const UserProvider = ({ children }) => {
             if (error.message === "Unauthorized") {
                 setSessionToken(null);
                 localStorage.removeItem("sessionToken");
+                checkFirstTimeSetup();
             }
         }
     };
