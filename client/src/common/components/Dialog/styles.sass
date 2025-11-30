@@ -30,8 +30,7 @@
   max-height: 90vh
   overflow: hidden
   box-shadow: 0 12px 48px rgba(0, 0, 0, 0.5), 0 4px 16px rgba(0, 0, 0, 0.3)
-  transition: all 0.2s
-  animation: fadeIn 0.3s
+  animation: dialogFadeIn 0.3s
   position: relative
 
 .dialog-close-btn
@@ -59,9 +58,9 @@
 .dialog-hidden
   visibility: hidden
   opacity: 0
-  animation: fadeOut 0.3s
+  animation: dialogFadeOut 0.3s
 
-@keyframes fadeIn
+@keyframes dialogFadeIn
   0%
     opacity: 0
     transform: scale(0.4)
@@ -69,7 +68,7 @@
   100%
     opacity: 1
 
-@keyframes fadeOut
+@keyframes dialogFadeOut
   0%
     opacity: 1
   100%
