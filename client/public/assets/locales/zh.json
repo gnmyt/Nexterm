@@ -687,6 +687,7 @@
       "title": "SSH 密钥和证书",
       "description": "管理用于服务器连接的 SSH 密钥和登录凭证",
       "createIdentity": "创建身份",
+      "personal": "Personal",
       "noUsername": "无用户名",
       "sshKey": "SSH 密钥",
       "password": "密码",
@@ -884,6 +885,28 @@
           "description": "Select the keyboard layout to use for this connection."
         },
         "noSettings": "No additional settings available for this entry type."
+      },
+      "identities": {
+        "organizationIdentities": "Organization Identities",
+        "personalIdentities": "Personal Identities",
+        "orgDescription": "Shared with all organization members. Everyone can use these identities.",
+        "personalDescription": "Only visible to you. Other organization members cannot see these.",
+        "identityName": "Identity Name",
+        "username": "Username",
+        "authentication": "Authentication",
+        "password": "Password",
+        "sshKey": "SSH Key",
+        "sshPrivateKey": "SSH Private Key",
+        "passphrase": "Passphrase (optional)",
+        "new": "New",
+        "removeIdentity": "Remove identity",
+        "unlinkIdentity": "Unlink identity",
+        "moveToOrg": "Move to organization",
+        "selectOrganization": "Select Organization",
+        "availableToLink": "Available to Link",
+        "noUsername": "No username",
+        "noOrgIdentities": "No organization identities. Create one to share with all members.",
+        "noPersonalIdentities": "No personal identities. Create one for your private use."
       }
     },
     "proxmoxDialog": {
