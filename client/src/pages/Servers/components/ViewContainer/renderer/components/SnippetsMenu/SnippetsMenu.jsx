@@ -2,8 +2,9 @@ import { useSnippets } from "@/common/contexts/SnippetContext.jsx";
 import { useState, useRef, useEffect, useMemo } from "react";
 import { createPortal } from "react-dom";
 import "./styles.sass";
-import { mdiMagnify } from "@mdi/js";
+import { mdiMagnify, mdiCloudDownloadOutline } from "@mdi/js";
 import Icon from "@mdi/react";
+import { getRequest } from "@/common/utils/RequestUtil.js";
 
 export const SnippetsMenu = ({ onSelect, onClose, visible, activeSession }) => {
     const { allSnippets } = useSnippets();
@@ -11,20 +12,34 @@ export const SnippetsMenu = ({ onSelect, onClose, visible, activeSession }) => {
     const [highlightedIndex, setHighlightedIndex] = useState(-1);
     const [isPositioned, setIsPositioned] = useState(false);
     const [isVisible, setIsVisible] = useState(false);
+    const [sourceSnippets, setSourceSnippets] = useState([]);
     const searchRef = useRef(null);
     const menuRef = useRef(null);
     const snippetRefs = useRef([]);
 
+    useEffect(() => {
+        const fetchSourceSnippets = async () => {
+            try {
+                const data = await getRequest("snippets/sources");
+                setSourceSnippets(data || []);
+            } catch (error) {
+                console.debug("Source snippets not available", error);
+            }
+        };
+        fetchSourceSnippets();
+    }, []);
+
     const availableSnippets = useMemo(() => {
-        if (!allSnippets || allSnippets.length === 0) return [];
-        
+        const userSnippets = allSnippets || [];
         const sessionOrgId = activeSession?.organizationId || null;
 
-        return allSnippets.filter(snippet => 
-            snippet.organizationId === null || 
-            (sessionOrgId && snippet.organizationId === sessionOrgId)
+        const filteredUserSnippets = userSnippets.filter(snippet =>
+            snippet.organizationId === null ||
+            (sessionOrgId && snippet.organizationId === sessionOrgId),
         );
-    }, [allSnippets, activeSession?.organizationId]);
+
+        return [...filteredUserSnippets, ...sourceSnippets];
+    }, [allSnippets, activeSession?.organizationId, sourceSnippets]);
 
     const filteredSnippets = () => {
         if (!availableSnippets || availableSnippets.length === 0) return [];
@@ -131,9 +146,9 @@ export const SnippetsMenu = ({ onSelect, onClose, visible, activeSession }) => {
 
     const menu = (
         <div className="snippets-menu-overlay" onClick={onClose}>
-            <div 
+            <div
                 ref={menuRef}
-                className={`snippets-menu ${visible && isPositioned ? 'open' : 'closed'}`}
+                className={`snippets-menu ${visible && isPositioned ? "open" : "closed"}`}
                 onClick={(e) => e.stopPropagation()}
                 onTransitionEnd={handleAnimationEnd}
                 role="menu"
@@ -141,11 +156,11 @@ export const SnippetsMenu = ({ onSelect, onClose, visible, activeSession }) => {
             >
                 <div className="snippets-menu__search">
                     <Icon path={mdiMagnify} />
-                    <input 
+                    <input
                         ref={searchRef}
-                        type="text" 
-                        placeholder="Search snippets..." 
-                        value={search} 
+                        type="text"
+                        placeholder="Search snippets..."
+                        value={search}
                         onChange={handleSearch}
                         onClick={(e) => e.stopPropagation()}
                     />
@@ -163,8 +178,8 @@ export const SnippetsMenu = ({ onSelect, onClose, visible, activeSession }) => {
                     ) : (
                         <div className="snippets-menu__list">
                             {filtered.map((snippet, index) => (
-                                <div 
-                                    key={snippet.id} 
+                                <div
+                                    key={`${snippet.sourceId ? "source" : "user"}-${snippet.id}`}
                                     ref={(el) => (snippetRefs.current[index] = el)}
                                     className={`snippets-menu__item ${
                                         highlightedIndex === index ? "highlighted" : ""
@@ -176,6 +191,10 @@ export const SnippetsMenu = ({ onSelect, onClose, visible, activeSession }) => {
                                 >
                                     <div className="snippets-menu__item-header">
                                         <h4 className="snippets-menu__item-name">{snippet.name}</h4>
+                                        {snippet.sourceId && (
+                                            <Icon path={mdiCloudDownloadOutline} size={0.65}
+                                                  className="snippets-menu__source-badge" />
+                                        )}
                                     </div>
                                     {snippet.description && (
                                         <p className="snippets-menu__item-description">{snippet.description}</p>
