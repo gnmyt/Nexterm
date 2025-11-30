@@ -60,7 +60,7 @@ module.exports = async (ws, req) => {
                 accountId: user.id,
                 organizationId: entry.organizationId,
                 action: AUDIT_ACTIONS.SFTP_CONNECT,
-                resource: RESOURCE_TYPES.SERVER,
+                resource: RESOURCE_TYPES.ENTRY,
                 resourceId: entry.id,
                 details: { connectionReason },
                 ipAddress,

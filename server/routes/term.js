@@ -154,7 +154,7 @@ module.exports = async (ws, req) => {
                 accountId: user.id,
                 organizationId: entry.organizationId,
                 action: AUDIT_ACTIONS.PVE_CONNECT,
-                resource: RESOURCE_TYPES.SERVER,
+                resource: RESOURCE_TYPES.ENTRY,
                 resourceId: entry.id,
                 details: {
                     containerId: vmid,
