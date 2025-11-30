@@ -1,5 +1,5 @@
 import "./styles.sass";
-import { mdiPencil, mdiTrashCan, mdiChevronLeft, mdiChevronRight } from "@mdi/js";
+import { mdiPencil, mdiTrashCan, mdiChevronLeft, mdiChevronRight, mdiCloudDownloadOutline } from "@mdi/js";
 import Icon from "@mdi/react";
 import { useScripts } from "@/common/contexts/ScriptContext.jsx";
 import { deleteRequest } from "@/common/utils/RequestUtil.js";
@@ -8,7 +8,7 @@ import { useTranslation } from "react-i18next";
 import { useState, useMemo } from "react";
 import Button from "@/common/components/Button";
 
-export const ScriptsList = ({ scripts, onEdit, selectedOrganization }) => {
+export const ScriptsList = ({ scripts, onEdit, selectedOrganization, isReadOnly = false }) => {
     const { t } = useTranslation();
     const { loadScripts, loadAllScripts } = useScripts();
     const { sendToast } = useToast();
@@ -66,24 +66,31 @@ export const ScriptsList = ({ scripts, onEdit, selectedOrganization }) => {
         <div className="scripts-list-container">
             <div className="script-grid">
                 {paginatedScripts.map(script => (
-                    <div className="script-item" key={script.id}>
+                    <div className={`script-item ${isReadOnly ? 'read-only' : ''}`} key={script.id}>
                         <div className="script-info">
-                            <h3>{script.name}</h3>
+                            <div className="script-header">
+                                <h3>{script.name}</h3>
+                                {script.sourceId && (
+                                    <Icon path={mdiCloudDownloadOutline} size={0.65} className="source-badge" title="From external source" />
+                                )}
+                            </div>
                             {script.description && <p>{script.description}</p>}
                             <div className="script-preview">
                                 <pre>{script.content?.substring(0, 150)}{script.content?.length > 150 ? '...' : ''}</pre>
                             </div>
                         </div>
-                        <div className="script-actions">
-                            <button className="action-button" onClick={(e) => handleEditScript(script.id, e)}
-                                    title={t('scripts.list.actions.edit')}>
-                                <Icon path={mdiPencil} />
-                            </button>
-                            <button className="action-button delete" onClick={(e) => handleDeleteScript(script.id, e)}
-                                    title={t('scripts.list.actions.delete')}>
-                                <Icon path={mdiTrashCan} />
-                            </button>
-                        </div>
+                        {!isReadOnly && (
+                            <div className="script-actions">
+                                <button className="action-button" onClick={(e) => handleEditScript(script.id, e)}
+                                        title={t('scripts.list.actions.edit')}>
+                                    <Icon path={mdiPencil} />
+                                </button>
+                                <button className="action-button delete" onClick={(e) => handleDeleteScript(script.id, e)}
+                                        title={t('scripts.list.actions.delete')}>
+                                    <Icon path={mdiTrashCan} />
+                                </button>
+                            </div>
+                        )}
                     </div>
                 ))}
             </div>

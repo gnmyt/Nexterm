@@ -1,5 +1,5 @@
 import "./styles.sass";
-import { mdiPencil, mdiTrashCan, mdiChevronLeft, mdiChevronRight } from "@mdi/js";
+import { mdiPencil, mdiTrashCan, mdiChevronLeft, mdiChevronRight, mdiCloudDownloadOutline } from "@mdi/js";
 import Icon from "@mdi/react";
 import { useSnippets } from "@/common/contexts/SnippetContext.jsx";
 import { deleteRequest } from "@/common/utils/RequestUtil.js";
@@ -8,7 +8,7 @@ import { useTranslation } from "react-i18next";
 import { useState, useMemo } from "react";
 import Button from "@/common/components/Button";
 
-export const SnippetsList = ({ snippets, onEdit, selectedOrganization }) => {
+export const SnippetsList = ({ snippets, onEdit, selectedOrganization, isReadOnly = false }) => {
     const { t } = useTranslation();
     const { loadAllSnippets } = useSnippets();
     const { sendToast } = useToast();
@@ -62,22 +62,29 @@ export const SnippetsList = ({ snippets, onEdit, selectedOrganization }) => {
         <div className="snippets-list-container">
             <div className="snippet-grid">
                 {paginatedSnippets.map(snippet => (
-                    <div className="snippet-item" key={snippet.id}>
+                    <div className={`snippet-item ${isReadOnly ? 'read-only' : ''}`} key={snippet.id}>
                         <div className="snippet-info">
-                            <h3>{snippet.name}</h3>
+                            <div className="snippet-header">
+                                <h3>{snippet.name}</h3>
+                                {snippet.sourceId && (
+                                    <Icon path={mdiCloudDownloadOutline} size={0.65} className="source-badge" title="From external source" />
+                                )}
+                            </div>
                             {snippet.description && <p>{snippet.description}</p>}
                             <pre className="snippet-command">{snippet.command}</pre>
                         </div>
-                        <div className="snippet-actions">
-                            <button className="action-button" onClick={(e) => handleEditSnippet(snippet.id, e)}
-                                    title={t('snippets.list.actions.edit')}>
-                                <Icon path={mdiPencil} />
-                            </button>
-                            <button className="action-button delete" onClick={(e) => handleDeleteSnippet(snippet.id, e)}
-                                    title={t('snippets.list.actions.delete')}>
-                                <Icon path={mdiTrashCan} />
-                            </button>
-                        </div>
+                        {!isReadOnly && (
+                            <div className="snippet-actions">
+                                <button className="action-button" onClick={(e) => handleEditSnippet(snippet.id, e)}
+                                        title={t('snippets.list.actions.edit')}>
+                                    <Icon path={mdiPencil} />
+                                </button>
+                                <button className="action-button delete" onClick={(e) => handleDeleteSnippet(snippet.id, e)}
+                                        title={t('snippets.list.actions.delete')}>
+                                    <Icon path={mdiTrashCan} />
+                                </button>
+                            </div>
+                        )}
                     </div>
                 ))}
             </div>

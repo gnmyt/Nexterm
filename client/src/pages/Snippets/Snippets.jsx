@@ -9,7 +9,7 @@ import ScriptDialog from "@/pages/Snippets/components/ScriptDialog";
 import Button from "@/common/components/Button";
 import PageHeader from "@/common/components/PageHeader";
 import SelectBox from "@/common/components/SelectBox";
-import { mdiCodeBraces, mdiPlus, mdiScriptText } from "@mdi/js";
+import { mdiCodeBraces, mdiPlus, mdiScriptText, mdiCloudDownloadOutline, mdiAccount, mdiDomain } from "@mdi/js";
 import { useTranslation } from "react-i18next";
 import { getRequest } from "@/common/utils/RequestUtil.js";
 
@@ -21,19 +21,34 @@ export const Snippets = () => {
     const [editSnippetId, setEditSnippetId] = useState(null);
     const [editScriptId, setEditScriptId] = useState(null);
     const [organizations, setOrganizations] = useState([]);
+    const [sources, setSources] = useState([]);
     const [selectedOrganization, setSelectedOrganization] = useState(null);
+    const [selectedSource, setSelectedSource] = useState(null);
+    const [sourceSnippets, setSourceSnippets] = useState([]);
+    const [sourceScripts, setSourceScripts] = useState([]);
     const { allSnippets } = useSnippets();
     const { scripts, loadScripts } = useScripts();
 
     const snippets = useMemo(() => {
+        if (selectedSource !== null) {
+            return sourceSnippets.filter(s => s.sourceId === selectedSource);
+        }
+
         if (!allSnippets || allSnippets.length === 0) return [];
-        
+
         if (selectedOrganization === null) {
             return allSnippets.filter(snippet => snippet.organizationId === null);
         }
-        
+
         return allSnippets.filter(snippet => snippet.organizationId === selectedOrganization);
-    }, [allSnippets, selectedOrganization]);
+    }, [allSnippets, selectedOrganization, selectedSource, sourceSnippets]);
+
+    const displayScripts = useMemo(() => {
+        if (selectedSource !== null) {
+            return sourceScripts.filter(s => s.sourceId === selectedSource);
+        }
+        return scripts;
+    }, [scripts, selectedSource, sourceScripts]);
 
     useEffect(() => {
         const fetchOrganizations = async () => {
@@ -48,17 +63,82 @@ export const Snippets = () => {
     }, []);
 
     useEffect(() => {
+        const fetchSources = async () => {
+            try {
+                const sourcesData = await getRequest("sources");
+                setSources(sourcesData.filter(s => s.enabled && (s.snippetCount > 0 || s.scriptCount > 0)));
+            } catch (error) {
+                console.debug("Sources not available", error);
+            }
+        };
+        fetchSources();
+    }, []);
+
+    useEffect(() => {
+        const fetchSourceContent = async () => {
+            try {
+                const [snippetsData, scriptsData] = await Promise.all([
+                    getRequest("snippets/sources"),
+                    getRequest("scripts/sources"),
+                ]);
+                setSourceSnippets(snippetsData || []);
+                setSourceScripts(scriptsData || []);
+            } catch (error) {
+                console.debug("Source content not available", error);
+            }
+        };
+        fetchSourceContent();
+    }, []);
+
+    useEffect(() => {
+        if (selectedSource !== null) return;
         if (selectedOrganization) {
             loadScripts(selectedOrganization);
         } else {
             loadScripts();
         }
-    }, [selectedOrganization]);
+    }, [selectedOrganization, selectedSource]);
 
-    const organizationOptions = [
-        { value: null, label: t('snippets.page.personal'), icon: null },
-        ...organizations.map(org => ({ value: org.id, label: org.name, icon: null }))
-    ];
+    const organizationOptions = useMemo(() => {
+        const options = [
+            { value: null, label: t("snippets.page.personal"), icon: mdiAccount },
+        ];
+
+        // Add organizations
+        organizations.forEach(org => {
+            options.push({ value: org.id, label: org.name, icon: mdiDomain });
+        });
+
+        sources.forEach(source => {
+            options.push({
+                value: `source_${source.id}`,
+                label: source.name,
+                icon: mdiCloudDownloadOutline,
+            });
+        });
+
+        return options;
+    }, [organizations, sources, t]);
+
+    const handleSelectionChange = (value) => {
+        if (typeof value === "string" && value.startsWith("source_")) {
+            const sourceId = parseInt(value.replace("source_", ""));
+            setSelectedSource(sourceId);
+            setSelectedOrganization(null);
+        } else {
+            setSelectedSource(null);
+            setSelectedOrganization(value);
+        }
+    };
+
+    const currentSelection = useMemo(() => {
+        if (selectedSource !== null) {
+            return `source_${selectedSource}`;
+        }
+        return selectedOrganization;
+    }, [selectedSource, selectedOrganization]);
+
+    const isSourceSelected = selectedSource !== null;
 
     const openCreateSnippetDialog = () => {
         setEditSnippetId(null);
@@ -102,49 +182,57 @@ export const Snippets = () => {
         <div className="snippets-page">
             <PageHeader
                 icon={activeTab === 0 ? mdiCodeBraces : mdiScriptText}
-                title={activeTab === 0 ? t('snippets.page.title') : t('scripts.page.title')}
-                subtitle={activeTab === 0 ? t('snippets.page.subtitle') : t('scripts.page.subtitle')}>
-                <Button 
-                    text={activeTab === 0 ? t('snippets.page.addSnippet') : t('scripts.page.addScript')} 
-                    icon={mdiPlus} 
-                    onClick={handleCreateClick} 
-                />
+                title={activeTab === 0 ? t("snippets.page.title") : t("scripts.page.title")}
+                subtitle={activeTab === 0 ? t("snippets.page.subtitle") : t("scripts.page.subtitle")}>
+                {!isSourceSelected && (
+                    <Button
+                        text={activeTab === 0 ? t("snippets.page.addSnippet") : t("scripts.page.addScript")}
+                        icon={mdiPlus}
+                        onClick={handleCreateClick}
+                    />
+                )}
             </PageHeader>
 
             <div className="snippets-content-wrapper">
                 <div className="snippets-controls">
                     <div className="snippets-tabs">
-                        <div 
+                        <div
                             className={`tabs-item ${activeTab === 0 ? "tabs-item-active" : ""}`}
                             onClick={() => setActiveTab(0)}
                         >
-                            <h3>{t('snippets.page.tabs.snippets')}</h3>
+                            <h3>{t("snippets.page.tabs.snippets")}</h3>
                         </div>
-                        <div 
+                        <div
                             className={`tabs-item ${activeTab === 1 ? "tabs-item-active" : ""}`}
                             onClick={() => setActiveTab(1)}
                         >
-                            <h3>{t('scripts.page.tabs.scripts')}</h3>
+                            <h3>{t("scripts.page.tabs.scripts")}</h3>
                         </div>
                     </div>
 
                     <div className="organization-selector">
                         <SelectBox
                             options={organizationOptions}
-                            selected={selectedOrganization}
-                            setSelected={setSelectedOrganization}
+                            selected={currentSelection}
+                            setSelected={handleSelectionChange}
                         />
                     </div>
                 </div>
 
                 <div className="snippets-content">
-                    {activeTab === 0 && <SnippetsList snippets={snippets} onEdit={openEditSnippetDialog} selectedOrganization={selectedOrganization} />}
-                    {activeTab === 1 && <ScriptsList scripts={scripts} onEdit={openEditScriptDialog} selectedOrganization={selectedOrganization} />}
+                    {activeTab === 0 && <SnippetsList snippets={snippets} onEdit={openEditSnippetDialog}
+                                                      selectedOrganization={selectedOrganization}
+                                                      isReadOnly={isSourceSelected} />}
+                    {activeTab === 1 && <ScriptsList scripts={displayScripts} onEdit={openEditScriptDialog}
+                                                     selectedOrganization={selectedOrganization}
+                                                     isReadOnly={isSourceSelected} />}
                 </div>
             </div>
 
-            <SnippetDialog open={snippetDialogOpen} onClose={closeSnippetDialog} editSnippetId={editSnippetId} selectedOrganization={selectedOrganization} />
-            <ScriptDialog open={scriptDialogOpen} onClose={closeScriptDialog} editScriptId={editScriptId} selectedOrganization={selectedOrganization} />
+            <SnippetDialog open={snippetDialogOpen} onClose={closeSnippetDialog} editSnippetId={editSnippetId}
+                           selectedOrganization={selectedOrganization} />
+            <ScriptDialog open={scriptDialogOpen} onClose={closeScriptDialog} editScriptId={editScriptId}
+                          selectedOrganization={selectedOrganization} />
         </div>
     );
 };
