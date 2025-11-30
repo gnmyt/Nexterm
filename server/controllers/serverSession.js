@@ -6,7 +6,7 @@ const { getOrganizationAuditSettingsInternal } = require("./audit");
 const { resolveIdentity } = require("../utils/identityResolver");
 const Organization = require('../models/Organization');
 
-const createSession = async (accountId, entryId, identityId, connectionReason, type = null, directIdentity = null, tabId = null, browserId = null) => {
+const createSession = async (accountId, entryId, identityId, connectionReason, type = null, directIdentity = null, tabId = null, browserId = null, scriptId = null) => {
     const entry = await Entry.findByPk(entryId);
     if (!entry) {
         return { code: 404, message: "Entry not found" };
@@ -39,6 +39,7 @@ const createSession = async (accountId, entryId, identityId, connectionReason, t
         identityId: identity ? identity.id : null,
         type: type || null,
         directIdentity: directIdentity || null,
+        scriptId: scriptId || null,
     };
 
     const session = SessionManager.create(accountId, entryId, configuration, connectionReason, tabId, browserId);

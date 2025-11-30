@@ -1,6 +1,6 @@
 const { Router } = require("express");
 const { validateSchema } = require("../utils/schema");
-const { createSnippet, deleteSnippet, editSnippet, getSnippet, listAllAccessibleSnippets } = require("../controllers/snippet");
+const { createSnippet, deleteSnippet, editSnippet, getSnippet, listAllAccessibleSnippets, listAllSourceSnippets } = require("../controllers/snippet");
 const { snippetCreationValidation, snippetEditValidation } = require("../validations/snippet");
 const OrganizationMember = require("../models/OrganizationMember");
 
@@ -21,6 +21,19 @@ app.get("/all", async (req, res) => {
     const organizationIds = memberships.map(m => m.organizationId);
     
     res.json(await listAllAccessibleSnippets(req.user.id, organizationIds));
+});
+
+/**
+ * GET /snippet/sources
+ * @summary List All Source Snippets
+ * @description Retrieves all snippets from external sources
+ * @tags Snippet
+ * @produces application/json
+ * @security BearerAuth
+ * @return {array} 200 - List of all source snippets
+ */
+app.get("/sources", async (req, res) => {
+    res.json(await listAllSourceSnippets());
 });
 
 /**

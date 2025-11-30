@@ -16,6 +16,12 @@ module.exports = db.define("snippets", {
         references: { model: "organizations", key: "id" },
         onDelete: "CASCADE",
     },
+    sourceId: {
+        type: Sequelize.INTEGER,
+        allowNull: true,
+        references: { model: "sources", key: "id" },
+        onDelete: "CASCADE",
+    },
     command: {
         type: Sequelize.TEXT,
         allowNull: false,

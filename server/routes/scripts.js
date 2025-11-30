@@ -7,6 +7,7 @@ const {
     editScript,
     deleteScript,
     listAllAccessibleScripts,
+    listAllSourceScripts,
 } = require("../controllers/script");
 const { validateSchema } = require("../utils/schema");
 const { scriptCreationValidation, scriptEditValidation } = require("../validations/script");
@@ -64,6 +65,23 @@ app.get("/all", async (req, res) => {
         const organizationIds = memberships.map(m => m.organizationId);
         
         res.json(await listAllAccessibleScripts(req.user.id, organizationIds));
+    } catch (error) {
+        res.status(500).json({ code: 500, message: error.message });
+    }
+});
+
+/**
+ * GET /scripts/sources
+ * @summary List All Source Scripts
+ * @description Retrieves all scripts from external sources
+ * @tags Scripts
+ * @produces application/json
+ * @security BearerAuth
+ * @return {array} 200 - List of all source scripts
+ */
+app.get("/sources", async (req, res) => {
+    try {
+        res.json(await listAllSourceScripts());
     } catch (error) {
         res.status(500).json({ code: 500, message: error.message });
     }

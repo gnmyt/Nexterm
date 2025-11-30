@@ -18,6 +18,12 @@ module.exports = db.define("scripts", {
         references: { model: "organizations", key: "id" },
         onDelete: "CASCADE",
     },
+    sourceId: {
+        type: Sequelize.INTEGER,
+        allowNull: true,
+        references: { model: "sources", key: "id" },
+        onDelete: "CASCADE",
+    },
     description: {
         type: Sequelize.TEXT,
         allowNull: true,

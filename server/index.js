@@ -11,6 +11,7 @@ const monitoringService = require("./utils/monitoringService");
 const { generateOpenAPISpec } = require("./openapi");
 const { isAdmin } = require("./middlewares/permission");
 const logger = require("./utils/logger");
+const { startSourceSyncService, stopSourceSyncService } = require("./utils/sourceSyncService");
 require("./utils/folder");
 
 process.on("uncaughtException", (err) => require("./utils/errorHandling")(err));
@@ -38,6 +39,7 @@ app.ws("/api/ws/sftp", require("./routes/sftpWS"));
 app.use("/api/entries/sftp-download", require("./routes/sftpDownload"));
 
 app.use("/api/users", authenticate, isAdmin, require("./routes/users"));
+app.use("/api/sources", authenticate, isAdmin, require("./routes/source"));
 app.use("/api/ai", authenticate, require("./routes/ai"));
 app.use("/api/sessions", authenticate, require("./routes/session"));
 app.use("/api/connections", authenticate, require("./routes/serverSession"));
@@ -52,7 +54,6 @@ app.use("/api/organizations", authenticate, require("./routes/organization"));
 app.use("/api/tags", authenticate, require("./routes/tag"));
 app.use("/api/keymaps", authenticate, require("./routes/keymap"));
 
-app.ws("/api/scripts/executor", require("./routes/scriptExecutor"));
 app.use("/api/scripts", authenticate, require("./routes/scripts"));
 
 if (process.env.NODE_ENV === "production") {
@@ -90,6 +91,8 @@ db.authenticate()
 
         monitoringService.start();
 
+        startSourceSyncService();
+
         app.listen(APP_PORT, () =>
             logger.system(`Server listening on port ${APP_PORT}`)
         );
@@ -100,6 +103,7 @@ process.on("SIGINT", async () => {
 
     monitoringService.stop();
     stopStatusChecker();
+    stopSourceSyncService();
 
     await db.close();
 

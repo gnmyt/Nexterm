@@ -1,12 +1,15 @@
 const wsAuth = require("../middlewares/wsAuth");
 const sshHook = require("../hooks/ssh");
+const scriptHook = require("../hooks/script");
 const pveLxcHook = require("../hooks/pve-lxc");
 const telnetHook = require("../hooks/telnet");
 const { createTicket, getNodeForServer, openLXCConsole } = require("../controllers/pve");
 const { createAuditLog, AUDIT_ACTIONS, RESOURCE_TYPES } = require("../controllers/audit");
 const { getIntegrationCredentials } = require("../controllers/integration");
+const { getScript } = require("../controllers/script");
 const { createSSHConnection } = require("../utils/sshConnection");
 const logger = require("../utils/logger");
+const OrganizationMember = require("../models/OrganizationMember");
 
 module.exports = async (ws, req) => {
     const context = await wsAuth(ws, req);
@@ -28,22 +31,40 @@ module.exports = async (ws, req) => {
         const isPveLxc = entry.type === "pve-lxc" || entry.type === "pve-shell";
 
         if (isSSH) {
+            const scriptId = req.query.scriptId || (serverSession?.configuration?.scriptId);
+            let script = null;
+            
+            if (scriptId) {
+                const memberships = await OrganizationMember.findAll({ where: { accountId: user.id } });
+                const organizationIds = memberships.map(m => m.organizationId);
+                
+                script = await getScript(user.id, scriptId, null, organizationIds);
+                if (!script || script.code) {
+                    ws.close(4010, script?.message || "Script not found");
+                    return;
+                }
+            }
+
             logger.verbose(`Initiating SSH connection`, {
                 entryId: entry.id,
                 entryName: entry.name,
                 target: entry.config.ip,
                 port: entry.config.port || 22,
                 identity: identity.name,
-                user: user.username
+                user: user.username,
+                scriptMode: !!scriptId
             });
 
             auditLogId = await createAuditLog({
                 accountId: user.id,
                 organizationId: entry.organizationId,
-                action: AUDIT_ACTIONS.SSH_CONNECT,
-                resource: RESOURCE_TYPES.ENTRY,
-                resourceId: entry.id,
-                details: { connectionReason },
+                action: scriptId ? AUDIT_ACTIONS.SCRIPT_EXECUTE : AUDIT_ACTIONS.SSH_CONNECT,
+                resource: scriptId ? RESOURCE_TYPES.SCRIPT : RESOURCE_TYPES.ENTRY,
+                resourceId: scriptId || entry.id,
+                details: { 
+                    connectionReason,
+                    ...(scriptId && { scriptName: script?.name, serverId: entry.id })
+                },
                 ipAddress,
                 userAgent,
             });
@@ -67,11 +88,17 @@ module.exports = async (ws, req) => {
                 userId: user.id,
                 sourceIp: ipAddress,
                 jumpHosts: entry.config?.jumpHosts?.length || 0,
-                reason: connectionReason || 'none'
+                reason: connectionReason || 'none',
+                scriptMode: !!scriptId
             });
 
-            hookContext = { ssh, auditLogId, serverSession };
-            await sshHook(ws, hookContext);
+            hookContext = { ssh, auditLogId, serverSession, script, user };
+            
+            if (script) {
+                await scriptHook(ws, hookContext);
+            } else {
+                await sshHook(ws, hookContext);
+            }
         } else if (isTelnet) {
             logger.verbose(`Initiating Telnet connection`, {
                 entryId: entry.id,
