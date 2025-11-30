@@ -1,10 +1,12 @@
-import { useState, useRef, useEffect, useMemo } from "react";
+import { useState, useRef, useEffect, useMemo, useCallback } from "react";
 import { createPortal } from "react-dom";
 import "./styles.sass";
-import { mdiMagnify, mdiScript, mdiAccountCircle, mdiCloudDownloadOutline } from "@mdi/js";
+import { mdiMagnify, mdiScript, mdiAccountCircle, mdiCloudDownloadOutline, mdiEgg } from "@mdi/js";
 import Icon from "@mdi/react";
 import { useTranslation } from "react-i18next";
 import { getRequest } from "@/common/utils/RequestUtil.js";
+
+const KONAMI_CODE = ["ArrowUp", "ArrowUp", "ArrowDown", "ArrowDown", "ArrowLeft", "ArrowRight", "ArrowLeft", "ArrowRight", "b", "a"];
 
 export const ScriptsMenu = ({
                                 visible,
@@ -22,6 +24,8 @@ export const ScriptsMenu = ({
     const [isPositioned, setIsPositioned] = useState(false);
     const [isVisible, setIsVisible] = useState(false);
     const [sourceScripts, setSourceScripts] = useState([]);
+    const [showSecrets, setShowSecrets] = useState(false);
+    const [konamiIndex, setKonamiIndex] = useState(0);
     const searchRef = useRef(null);
     const menuRef = useRef(null);
     const scriptRefs = useRef([]);
@@ -46,8 +50,15 @@ export const ScriptsMenu = ({
             (serverOrganizationId && script.organizationId === serverOrganizationId),
         );
 
-        return [...filteredUserScripts, ...sourceScripts];
-    }, [scripts, serverOrganizationId, sourceScripts]);
+        const allScripts = [...filteredUserScripts, ...sourceScripts].map(script => ({
+            ...script,
+            isSecret: script.name === "???" && script.description === "What happened?",
+        }));
+        
+        if (showSecrets) return allScripts;
+
+        return allScripts.filter(script => !script.isSecret);
+    }, [scripts, serverOrganizationId, sourceScripts, showSecrets]);
 
     const filteredScripts = useMemo(() => {
         if (!availableScripts || availableScripts.length === 0) return [];
@@ -66,6 +77,8 @@ export const ScriptsMenu = ({
             setSearch("");
             setHighlightedIndex(-1);
             setSelectedScript(null);
+            setShowSecrets(false);
+            setKonamiIndex(0);
             requestAnimationFrame(() => {
                 requestAnimationFrame(() => {
                     setIsPositioned(true);
@@ -78,6 +91,21 @@ export const ScriptsMenu = ({
             setIsPositioned(false);
         }
     }, [visible]);
+
+    const handleKonamiCode = useCallback((e) => {
+        const key = e.key;
+        if (key === KONAMI_CODE[konamiIndex]) {
+            const newIndex = konamiIndex + 1;
+            if (newIndex === KONAMI_CODE.length) {
+                setShowSecrets(true);
+                setKonamiIndex(0);
+            } else {
+                setKonamiIndex(newIndex);
+            }
+        } else {
+            setKonamiIndex(key === KONAMI_CODE[0] ? 1 : 0);
+        }
+    }, [konamiIndex]);
 
     const handleAnimationEnd = (e) => {
         if (e.target === menuRef.current && !visible) {
@@ -124,6 +152,8 @@ export const ScriptsMenu = ({
         };
 
         const handleKeyDown = (e) => {
+            handleKonamiCode(e);
+            
             if (e.key === "Escape") {
                 e.preventDefault();
                 if (selectedScript) {
@@ -178,7 +208,7 @@ export const ScriptsMenu = ({
             document.removeEventListener("mousedown", handleClickOutside);
             document.removeEventListener("keydown", handleKeyDown);
         };
-    }, [visible, filteredScripts, highlightedIndex, onClose, selectedScript, server?.identities]);
+    }, [visible, filteredScripts, highlightedIndex, onClose, selectedScript, server?.identities, handleKonamiCode]);
 
     if (!isVisible) return null;
 
@@ -232,7 +262,7 @@ export const ScriptsMenu = ({
                                             ref={(el) => (scriptRefs.current[index] = el)}
                                             className={`scripts-menu__item ${
                                                 highlightedIndex === index ? "highlighted" : ""
-                                            }`}
+                                            } ${script.isSecret ? "scripts-menu__item--secret" : ""}`}
                                             onClick={() => handleScriptClick(script)}
                                             onMouseEnter={() => setHighlightedIndex(index)}
                                             role="menuitem"
@@ -240,7 +270,10 @@ export const ScriptsMenu = ({
                                         >
                                             <div className="scripts-menu__item-header">
                                                 <h4 className="scripts-menu__item-name">{script.name}</h4>
-                                                {script.sourceId && (
+                                                {script.isSecret ? (
+                                                    <Icon path={mdiEgg} size={0.65}
+                                                          className="scripts-menu__source-badge scripts-menu__source-badge--secret" />
+                                                ) : script.sourceId && (
                                                     <Icon path={mdiCloudDownloadOutline} size={0.65}
                                                           className="scripts-menu__source-badge" />
                                                 )}

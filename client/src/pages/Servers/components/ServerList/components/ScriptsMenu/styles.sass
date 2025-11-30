@@ -173,6 +173,22 @@
       outline: 2px solid colors.$primary
       outline-offset: -2px
 
+    &--secret
+      border: 2px solid colors.$warning
+      background: colors.$warning-opacity
+      box-shadow: 0 0 12px colors.$warning-opacity
+      
+      &:hover, &.highlighted
+        background: colors.$warning-opacity
+        filter: brightness(1.2)
+      
+      &.highlighted
+        outline: 2px solid colors.$warning
+        outline-offset: -2px
+
+      .scripts-menu__item-name
+        color: colors.$warning
+
     &--identity
       flex-direction: row
       align-items: center
@@ -223,3 +239,6 @@
     color: colors.$primary
     flex-shrink: 0
     margin-left: auto
+
+    &--secret
+      color: colors.$warning
