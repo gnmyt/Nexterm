@@ -89,7 +89,7 @@ const Identity = ({ identity, onUpdate, onDelete, onMoveToOrg, isOrgContext, org
 };
 
 const IdentitySection = ({ title, icon, description, identities, available, onUpdate, onDelete, onMoveToOrg, onLink, onAdd, isOrgContext, orgId, emptyText, t }) => (
-    <div className={`identities-section ${icon === mdiAccountGroup ? 'organization-section' : 'personal-section'}`}>
+    <div className="identities-section">
         <div className="identities-header">
             <div className="section-title"><Icon path={icon} size={0.9} /><h3>{title}</h3></div>
             <Button text={t("servers.dialog.identities.new")} icon={mdiPlus} onClick={onAdd} />
