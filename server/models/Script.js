@@ -8,7 +8,7 @@ module.exports = db.define("scripts", {
     },
     accountId: {
         type: Sequelize.INTEGER,
-        allowNull: false,
+        allowNull: true,
         references: { model: "accounts", key: "id" },
         onDelete: "CASCADE",
     },

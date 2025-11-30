@@ -8,7 +8,9 @@ module.exports = db.define("snippets", {
     },
     accountId: {
         type: Sequelize.INTEGER,
-        allowNull: false,
+        allowNull: true,
+        references: { model: "accounts", key: "id" },
+        onDelete: "CASCADE",
     },
     organizationId: {
         type: Sequelize.INTEGER,

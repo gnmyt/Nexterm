@@ -240,7 +240,7 @@ module.exports.syncSource = async (sourceId) => {
                     name: parsed.name,
                     command: parsed.command,
                     description: parsed.description,
-                    accountId: 0,
+                    accountId: null,
                     organizationId: null,
                     sourceId,
                 });
@@ -287,7 +287,7 @@ module.exports.syncSource = async (sourceId) => {
                     name: parsed.name,
                     content: parsed.content,
                     description: parsed.description,
-                    accountId: 0,
+                    accountId: null,
                     organizationId: null,
                     sourceId,
                 });
