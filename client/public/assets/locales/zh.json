@@ -1,10 +1,18 @@
 {
   "common": {
+    "error": "Error",
+    "success": "Success",
+    "loading": "Loading...",
     "actions": {
       "cancel": "取消",
       "confirm": "确认",
       "login": "登录",
-      "register": "注册"
+      "register": "注册",
+      "save": "Save",
+      "download": "Download",
+      "close": "Close",
+      "maximize": "Maximize",
+      "restore": "Restore"
     },
     "labels": {
       "username": "用户名",
@@ -33,7 +41,9 @@
       "noAuthMethodsAvailable": "没有可用的验证方法。"
     },
     "selectBox": {
-      "defaultOption": "选择一个选项..."
+      "defaultOption": "选择一个选项...",
+      "search": "Search...",
+      "noResults": "No results found"
     },
     "sidebar": {
       "settings": "设置",
@@ -41,7 +51,6 @@
       "monitoring": "监测",
       "snippets": "片段",
       "audit": "审计",
-      "apps": "应用程序",
       "logout": "注销",
       "collapseTitle": "折叠侧边栏",
       "logoutConfirmText": "这将注销您的 {{username}} 账户。你确定吗？",
@@ -127,7 +136,13 @@
     "page": {
       "title": "片段",
       "subtitle": "管理你的命令片段，以便在终端中快速访问",
-      "addSnippet": "添加片段"
+      "addSnippet": "添加片段",
+      "personal": "Personal",
+      "selectOrganization": "Select Organization",
+      "tabs": {
+        "snippets": "Snippets",
+        "scripts": "Scripts"
+      }
     },
     "list": {
       "empty": "您还没有任何片段。创建您的第一个片段！",
@@ -171,6 +186,102 @@
         "saveFailed": "保存片段失败",
         "deleteFailed": "删除片段失败"
       }
+    }
+  },
+  "scripts": {
+    "page": {
+      "title": "Scripts",
+      "subtitle": "Manage your automation scripts for server tasks",
+      "addScript": "Add Script",
+      "personal": "Personal",
+      "selectOrganization": "Select Organization",
+      "tabs": {
+        "snippets": "Snippets",
+        "scripts": "Scripts"
+      }
+    },
+    "execution": {
+      "progressPanel": {
+        "title": "Script Execution",
+        "noSteps": "No steps yet",
+        "noStepsDescription": "Steps will appear here as the script executes",
+        "steps": "Steps"
+      },
+      "dialogs": {
+        "enterValue": "Enter value",
+        "selectOption": "Select an option",
+        "confirm": "Confirm",
+        "submit": "Submit",
+        "cancel": "Cancel",
+        "ok": "OK",
+        "yes": "Yes",
+        "no": "No",
+        "copyCell": "Copy Cell",
+        "copyRow": "Copy Row",
+        "copyTable": "Copy Table",
+        "close": "Close"
+      },
+      "status": {
+        "running": "Running",
+        "completed": "Completed",
+        "error": "Error",
+        "pending": "Pending"
+      }
+    },
+    "list": {
+      "empty": "You don't have any scripts yet. Create your first one!",
+      "actions": {
+        "edit": "Edit script",
+        "delete": "Delete script"
+      }
+    },
+    "dialog": {
+      "title": {
+        "create": "Create Script",
+        "edit": "Edit Script"
+      },
+      "scriptDetails": "Script Details",
+      "scriptContent": "Script Content",
+      "helpTip": "Use @NEXTERM: directives for interactive features",
+      "fields": {
+        "name": "Name",
+        "description": "Description"
+      },
+      "placeholders": {
+        "name": "Script name",
+        "description": "What does this script do?"
+      },
+      "actions": {
+        "cancel": "Cancel",
+        "create": "Create",
+        "update": "Update",
+        "creating": "Creating...",
+        "updating": "Updating..."
+      },
+      "errors": {
+        "nameRequired": "Script name is required",
+        "descriptionRequired": "Script description is required",
+        "contentRequired": "Script content is required",
+        "createFailed": "Failed to create script",
+        "updateFailed": "Failed to update script"
+      }
+    },
+    "messages": {
+      "success": {
+        "created": "Script created successfully",
+        "updated": "Script updated successfully",
+        "deleted": "Script deleted successfully"
+      },
+      "errors": {
+        "loadFailed": "Failed to load script data",
+        "deleteFailed": "Failed to delete script"
+      }
+    },
+    "menu": {
+      "searchPlaceholder": "Search scripts...",
+      "noScripts": "No scripts available. Create some in the Scripts section.",
+      "noMatch": "No scripts match your search.",
+      "selectIdentity": "Select Identity"
     }
   },
   "monitoring": {
@@ -289,6 +400,7 @@
       "organizations": "组织机构",
       "users": "用户",
       "authentication": "认证",
+      "sources": "Sources",
       "ai": "人工智能"
     },
     "account": {
@@ -297,9 +409,10 @@
       "firstName": "姓名",
       "lastName": "姓氏",
       "appearance": "外观",
-      "appearanceDescription": "可为界面选择浅色和深色主题。",
-      "switchToLight": "切换到灯光模式",
-      "switchToDark": "切换到黑暗模式",
+      "appearanceDescription": "Choose your preferred theme. Auto follows your system settings and adjusts based on time of day.",
+      "themeAuto": "Auto",
+      "themeLight": "Light",
+      "themeDark": "Dark",
       "twoFactor": "双因素认证",
       "twoFactorActive": "活跃",
       "twoFactorInactive": "不活动",
@@ -314,6 +427,14 @@
       "currentLanguage": "当前语言",
       "missingLanguage": "想念您的语言？",
       "helpTranslateLink": "帮助翻译 Nexterm",
+      "sessionSynchronization": "Session Synchronization",
+      "sessionSyncDescription": "Control how your server sessions are stored and synchronized across devices and browser tabs.",
+      "sessionSyncAcrossDevices": "Across devices",
+      "sessionSyncSameBrowser": "Same browser",
+      "sessionSyncSameTab": "Same tab",
+      "sessionSyncAcrossDevicesDesc": "Sessions will be available across devices and synced",
+      "sessionSyncSameBrowserDesc": "Sessions will synchronize for the current user session",
+      "sessionSyncSameTabDesc": "Sessions will synchronize inside your browser tab",
       "twoFactorDialog": {
         "title": "启用 2FA",
         "description": "使用身份验证程序扫描代码或手动输入 <span class=\"totp-code\">{{secret}}</span>手动输入。",
@@ -429,6 +550,10 @@
         "copy": {
           "title": "Copy",
           "description": "Copy selected text to clipboard"
+        },
+        "fullscreen": {
+          "title": "Full-Screen",
+          "description": "Toggle full-screen mode"
         }
       },
       "recorder": {
@@ -565,6 +690,7 @@
       "title": "SSH 密钥和证书",
       "description": "管理用于服务器连接的 SSH 密钥和登录凭证",
       "createIdentity": "创建身份",
+      "personal": "Personal",
       "noUsername": "无用户名",
       "sshKey": "SSH 密钥",
       "password": "密码",
@@ -612,9 +738,66 @@
           "updateFailed": "更新身份失败"
         }
       }
+    },
+    "sources": {
+      "title": "Script & Snippet Sources",
+      "description": "Configure external sources to automatically sync scripts and snippets.",
+      "loading": "Loading sources...",
+      "noSources": "No Sources Configured",
+      "noSourcesDescription": "Add external sources to automatically sync scripts and snippets.",
+      "addSource": "Add Source",
+      "snippets": "snippets",
+      "scripts": "scripts",
+      "neverSynced": "Never synced",
+      "sync": "Sync now",
+      "edit": "Edit",
+      "delete": "Delete",
+      "deleteConfirm": "Are you sure you want to delete the source \"{{name}}\"? All synced scripts and snippets from this source will also be deleted.",
+      "status": {
+        "success": "Synced",
+        "error": "Error",
+        "pending": "Pending",
+        "disabled": "Disabled"
+      },
+      "dialog": {
+        "createTitle": "Add Source",
+        "editTitle": "Edit Source",
+        "name": "Name",
+        "namePlaceholder": "e.g. Company Scripts",
+        "url": "Source URL",
+        "urlPlaceholder": "https://scripts.example.com",
+        "enabled": "Enabled",
+        "enabledDescription": "When disabled, this source will not be synced",
+        "validating": "Validating URL...",
+        "validationSuccess": "Valid source found: {{snippets}} snippets, {{scripts}} scripts",
+        "create": "Create"
+      },
+      "messages": {
+        "created": "Source created successfully",
+        "updated": "Source updated successfully",
+        "deleted": "Source deleted successfully",
+        "synced": "Source synced successfully"
+      },
+      "errors": {
+        "loadFailed": "Failed to load sources",
+        "saveFailed": "Failed to save source",
+        "deleteFailed": "Failed to delete source",
+        "syncFailed": "Failed to sync source",
+        "validationFailed": "Failed to validate URL",
+        "requiredFields": "Name and URL are required"
+      }
     }
   },
   "servers": {
+    "time": {
+      "justNow": "Just now",
+      "minuteAgo": "{{count}} min ago",
+      "minutesAgo": "{{count}} mins ago",
+      "hourAgo": "{{count}} hour ago",
+      "hoursAgo": "{{count}} hours ago",
+      "dayAgo": "{{count}} day ago",
+      "daysAgo": "{{count}} days ago"
+    },
     "tags": {
       "title": "Tags",
       "createNewTag": "Create new tag",
@@ -630,13 +813,21 @@
       "createFolder": "创建文件夹",
       "deleteFolder": "删除文件夹",
       "renameFolder": "重命名文件夹",
+      "new": "New",
+      "sshServer": "SSH Server",
+      "telnetServer": "Telnet Server",
+      "rdpServer": "RDP Server",
+      "vncServer": "VNC Server",
       "createServer": "创建服务器",
       "import": "进口",
       "pve": "PVE",
       "sshConfig": "SSH 配置",
       "connect": "连接",
+      "quickConnect": "Quick Connect",
       "openSFTP": "打开 SFTP",
+      "runScript": "Run Script",
       "editServer": "编辑服务器",
+      "editIntegration": "Edit Integration",
       "duplicateServer": "复制服务器",
       "deleteServer": "删除服务器",
       "editPVE": "编辑 PVE",
@@ -647,6 +838,7 @@
     },
     "dialog": {
       "addServer": "添加服务器",
+      "addProtocolServer": "Add {{protocol}} server",
       "editServer": "编辑服务器",
       "tabs": {
         "details": "详细信息",
@@ -665,7 +857,9 @@
         "protocol": "规程",
         "username": "用户名",
         "password": "密码",
-        "host": "主持人"
+        "host": "主持人",
+        "nodeName": "Node Name",
+        "vmid": "VM ID"
       },
       "placeholders": {
         "serverName": "服务器名称",
@@ -673,7 +867,49 @@
         "port": "港口",
         "username": "用户名",
         "password": "密码",
-        "host": "主持人"
+        "host": "主持人",
+        "nodeName": "Node name",
+        "vmid": "VM ID"
+      },
+      "settings": {
+        "jumpHosts": {
+          "title": "Jump Hosts",
+          "description": "Connect through intermediate servers to reach this target server",
+          "addButton": "Add Jump Host",
+          "removeTooltip": "Remove jump host",
+          "noServersAvailable": "No SSH servers available for jump hosts. Create SSH servers first."
+        },
+        "monitoring": {
+          "title": "Enable Performance Monitoring",
+          "description": "Collect CPU, memory, disk, and network metrics for this server"
+        },
+        "keyboardLayout": {
+          "title": "Keyboard Layout",
+          "description": "Select the keyboard layout to use for this connection."
+        },
+        "noSettings": "No additional settings available for this entry type."
+      },
+      "identities": {
+        "organizationIdentities": "Organization Identities",
+        "personalIdentities": "Personal Identities",
+        "orgDescription": "Shared with all organization members. Everyone can use these identities.",
+        "personalDescription": "Only visible to you. Other organization members cannot see these.",
+        "identityName": "Identity Name",
+        "username": "Username",
+        "authentication": "Authentication",
+        "password": "Password",
+        "sshKey": "SSH Key",
+        "sshPrivateKey": "SSH Private Key",
+        "passphrase": "Passphrase (optional)",
+        "new": "New",
+        "removeIdentity": "Remove identity",
+        "unlinkIdentity": "Unlink identity",
+        "moveToOrg": "Move to organization",
+        "selectOrganization": "Select Organization",
+        "availableToLink": "Available to Link",
+        "noUsername": "No username",
+        "noOrgIdentities": "No organization identities. Create one to share with all members.",
+        "noPersonalIdentities": "No personal identities. Create one for your private use."
       }
     },
     "proxmoxDialog": {
@@ -770,7 +1006,22 @@
         "createFolder": "创建文件夹",
         "upload": "上传文件",
         "edit": "编辑",
-        "bigFileConfirm": "该文件大至 {{size}} MB。您确定要编辑它吗？"
+        "preview": "Preview",
+        "bigFileConfirm": "该文件大至 {{size}} MB。您确定要编辑它吗？",
+        "selectAll": "Select All",
+        "insertSnippet": "Insert Snippet",
+        "sendCtrlC": "Send Ctrl+C",
+        "clearTerminal": "Clear Terminal"
+      },
+      "filePreview": {
+        "title": "File Preview",
+        "loading": "Loading...",
+        "cannotPreview": "Cannot Preview File",
+        "unsupportedFileType": "This file type is not supported for preview",
+        "videoNotSupported": "Your browser does not support video playback",
+        "audioNotSupported": "Your browser does not support audio playback",
+        "download": "Download",
+        "close": "Close"
       }
     },
     "aiAssistant": {
@@ -785,6 +1036,15 @@
       "searchPlaceholder": "搜索片段...",
       "createNew": "创建新片段"
     },
+    "terminalActions": {
+      "menuTitle": "Terminal Actions",
+      "snippets": "Snippets",
+      "keyboardShortcuts": "Keyboard Shortcuts",
+      "broadcasting": "Broadcasting",
+      "fullScreen": "Full-Screen",
+      "exitFullScreen": "Exit Full-Screen Mode",
+      "badgeOn": "ON"
+    },
     "messages": {
       "fillRequiredFields": "请填写所有必填项",
       "serverCreated": "服务器创建成功",
@@ -793,133 +1053,6 @@
       "updateFailed": "更新服务器失败",
       "createIdentityFailed": "创建身份失败",
       "updateIdentityFailed": "更新身份失败"
-    }
-  },
-  "apps": {
-    "title": "应用程序",
-    "navigation": {
-      "categories": {
-        "all": "全部",
-        "results": "成果",
-        "scripts": "脚本",
-        "networking": "联网",
-        "media": "媒体",
-        "cloud": "云",
-        "development": "发展",
-        "utilities": "公用设施"
-      }
-    },
-    "store": {
-      "appStore": "应用程序商店",
-      "scripts": "脚本",
-      "appStoreDescription": "您最喜爱的应用程序，只需点击一下即可部署。",
-      "scriptsDescription": "使用自定义脚本自动执行服务器任务。",
-      "manageSources": "管理资源",
-      "createScript": "创建脚本",
-      "source": "资料来源",
-      "sourceFilter": {
-        "all": "全部",
-        "custom": "定制"
-      }
-    },
-    "list": {
-      "noApps": "更多应用程序即将推出",
-      "noScripts": "没有脚本",
-      "selectApp": "选择应用程序继续",
-      "selectScript": "选择脚本继续"
-    },
-    "actions": {
-      "deploy": "部署",
-      "run": "运行",
-      "view": "查看",
-      "edit": "编辑",
-      "delete": "删除",
-      "logs": "日志",
-      "open": "开放",
-      "stop": "停止脚本",
-      "version": "版本"
-    },
-    "items": {
-      "customBadge": "定制",
-      "scriptType": "脚本",
-      "running": "运行...",
-      "runScript": "运行"
-    },
-    "installer": {
-      "deploymentFailed": "部署失败",
-      "deploymentCompleted": "完成部署",
-      "deploying": "部署...",
-      "installationLog": "安装日志",
-      "steps": {
-        "lookupDistro": "查找 Linux 发行版",
-        "checkPermissions": "检查权限",
-        "installDocker": "安装 Docker 引擎",
-        "downloadImage": "下载基础图像",
-        "preInstall": "运行预安装命令",
-        "startContainer": "启动 Docker 容器",
-        "postInstall": "运行安装后命令",
-        "detected": "检测到 {{os}}"
-      }
-    },
-    "scriptExecutor": {
-      "executionFailed": "脚本执行失败",
-      "executionCompleted": "脚本执行完毕",
-      "executing": "执行脚本...",
-      "initializing": "初始化脚本执行",
-      "finished": "脚本执行完毕",
-      "cancelled": "用户取消脚本执行"
-    },
-    "dialogs": {
-      "deployServer": {
-        "deployTitle": "部署 {{name}}",
-        "runTitle": "运行 {{name}}",
-        "noServersAvailable": "没有可用的 SSH 服务器"
-      },
-      "source": {
-        "title": "应用程序源",
-        "refreshApps": "刷新应用程序",
-        "addNewSource": "添加新源"
-      },
-      "script": {
-        "createTitle": "创建自定义脚本",
-        "editTitle": "编辑脚本",
-        "viewTitle": "查看脚本",
-        "source": "来源： {{source}}",
-        "scriptDetails": "脚本详细信息",
-        "scriptContent": "脚本内容",
-        "helpTip": "使用 @NEXTERM: 命令进行交互式提示",
-        "fields": {
-          "name": "脚本名称 *",
-          "description": "说明 *",
-          "namePlaceholder": "我真棒的脚本",
-          "descriptionPlaceholder": "这个脚本有什么作用？"
-        },
-        "actions": {
-          "close": "关闭",
-          "cancel": "取消",
-          "create": "创建脚本",
-          "update": "更新脚本",
-          "creating": "创建...",
-          "updating": "更新..."
-        },
-        "errors": {
-          "nameRequired": "脚本名称为必填项",
-          "descriptionRequired": "需要脚本说明",
-          "contentRequired": "脚本内容不能为空",
-          "createFailed": "创建脚本失败",
-          "updateFailed": "更新脚本失败"
-        },
-        "success": {
-          "created": "脚本创建成功",
-          "updated": "脚本更新成功"
-        }
-      }
-    },
-    "messages": {
-      "onlyCustomScriptsCanBeDeleted": "只能删除自定义脚本",
-      "scriptDeletedSuccessfully": "脚本已成功删除",
-      "failedToDeleteScript": "删除脚本失败",
-      "deleteScriptConfirmation": "您确定要删除脚本 \"{{name}}\" 吗？此操作无法撤销。"
     }
   }
 }
