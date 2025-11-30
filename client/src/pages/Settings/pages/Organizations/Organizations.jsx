@@ -95,10 +95,6 @@ export const Organizations = () => {
         setInviteDialogOpen(true);
     };
 
-    const isOrgOwner = (org) => {
-        return org.isOwner;
-    };
-
     const showConfirmDialog = (action, text) => {
         setConfirmAction(() => action);
         setConfirmText(text);
@@ -146,30 +142,30 @@ export const Organizations = () => {
                 <Button text={t("settings.organizations.createOrganization")} icon={mdiPlus} onClick={() => setCreateDialogOpen(true)} />
             </div>
 
-            {organizations.length === 0 ? (
-                <div className="no-organizations">
-                    <p>{t("settings.organizations.noOrganizations")}</p>
-                    <p>{t("settings.organizations.noOrganizationsDescription")}</p>
-                </div>
-            ) : (
-                <div className="vertical-list">
-                    {organizations.map((org) => (
-                        <div key={org.id}>
-                            <div
-                                className={`item clickable ${expandedOrgId === org.id ? "expanded" : ""}`}
-                                onClick={() => handleOrgClick(org)}
-                            >
-                                <div className="left-section">
-                                    <div className="icon primary">
-                                        <Icon path={mdiDomain} />
-                                    </div>
-                                    <div className="details">
-                                        <h3>{org.name}</h3>
-                                        {org.description && <p>{org.description}</p>}
-                                    </div>
+            <div className="vertical-list">
+                {organizations.length === 0 ? (
+                    <div className="no-organizations">
+                        <Icon path={mdiDomain} />
+                        <h2>{t("settings.organizations.noOrganizations")}</h2>
+                        <p>{t("settings.organizations.noOrganizationsDescription")}</p>
+                    </div>
+                ) : organizations.map((org) => (
+                    <div key={org.id}>
+                        <div
+                            className={`item clickable ${expandedOrgId === org.id ? "expanded" : ""}`}
+                            onClick={() => handleOrgClick(org)}
+                        >
+                            <div className="left-section">
+                                <div className="icon primary">
+                                    <Icon path={mdiDomain} />
                                 </div>
+                                <div className="details">
+                                    <h3>{org.name}</h3>
+                                    {org.description && <p>{org.description}</p>}
+                                </div>
+                            </div>
                                 <div className="right-section">
-                                    {isOrgOwner(org) ? (
+                                    {org.isOwner ? (
                                         <>
                                             <Button text={t("settings.organizations.invite")} onClick={(e) => handleInviteMember(org, e)} />
                                             <Button text={t("settings.organizations.delete")} type="danger"
@@ -189,7 +185,7 @@ export const Organizations = () => {
                                             <Icon path={mdiDomain} />
                                             <span>{t("settings.organizations.members")}</span>
                                         </div>
-                                        {isOrgOwner(org) && (
+                                        {org.isOwner && (
                                             <div
                                                 className={`tab-header ${activeTab[org.id] === "audit" ? "active" : ""}`}
                                                 onClick={() => setActiveTab(prev => ({ ...prev, [org.id]: "audit" }))}>
@@ -202,21 +198,21 @@ export const Organizations = () => {
                                     <div className="tab-content">
                                         {(activeTab[org.id] || "members") === "members" && membersByOrgId[org.id] && (
                                             <MemberList members={membersByOrgId[org.id]} organizationId={org.id}
-                                                        isOwner={isOrgOwner(org)}
+                                                        isOwner={org.isOwner}
                                                         refreshMembers={() => fetchMembers(org.id)} />
                                         )}
 
-                                        {activeTab[org.id] === "audit" && isOrgOwner(org) && (
+                                        {activeTab[org.id] === "audit" && org.isOwner && (
                                             <OrganizationAuditSettings organizationId={org.id}
-                                                                       isOwner={isOrgOwner(org)} />
+                                                                       isOwner={org.isOwner} />
                                         )}
                                     </div>
                                 </div>
                             )}
                         </div>
-                    ))}
+                    ))
+                }
                 </div>
-            )}
 
             {pendingInvitations.length > 0 && (
                 <div className="pending-invitations">

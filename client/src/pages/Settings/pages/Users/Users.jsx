@@ -13,6 +13,7 @@ import {
     mdiSecurity,
     mdiAccountRemove,
     mdiLogin,
+    mdiPlus,
 } from "@mdi/js";
 import CreateUserDialog from "./components/CreateUserDialog";
 import { ContextMenu, ContextMenuItem, useContextMenu } from "@/common/components/ContextMenu";
@@ -71,6 +72,8 @@ export const Users = () => {
         loadUsers();
     }, [user]);
 
+    const contextUser = users.find(u => u.id === contextUserId);
+
     return (
         <div className="users-page">
             <CreateUserDialog open={createUserDialogOpen} onClose={() => setCreateUserDialogOpen(false)}
@@ -89,24 +92,45 @@ export const Users = () => {
             <PasswordChange open={passwordChangeDialogOpen} onClose={() => setPasswordChangeDialogOpen(false)}
                             accountId={contextUserId} />
 
-            <div className="user-title">
+            <div className="users-header">
                 <h2>{t("settings.users.title", { count: users.length })}</h2>
-                <Button onClick={() => setCreateUserDialogOpen(true)} text={t("settings.users.createNewUser")} />
+                <Button onClick={() => setCreateUserDialogOpen(true)} text={t("settings.users.createNewUser")} icon={mdiPlus} />
             </div>
-            {users.map(currentUser => (
-                <div key={currentUser.id} className="user-item">
-                    <div className="user-name">
-                        <Icon path={currentUser.role === "admin" ? mdiShieldAccount : mdiAccount} />
-                        <h2>{currentUser.firstName} {currentUser.lastName}</h2>
-                    </div>
-                    <h2>{currentUser.username}</h2>
-                    <div className={"totp" + (currentUser.totpEnabled ? " totp-enabled" : "")}>
-                        <Icon path={mdiLock} />
-                        <h2>{currentUser.totpEnabled ? t("settings.users.twoFactorEnabled") : t("settings.users.twoFactorDisabled")}</h2>
-                    </div>
-                    <Icon path={mdiDotsVertical} className="menu" onClick={(e) => openContextMenu(e, currentUser.id)} />
+
+            {users.length === 0 ? (
+                <div className="no-users">
+                    <Icon path={mdiAccount} />
+                    <h2>{t("settings.users.noUsers")}</h2>
+                    <p>{t("settings.users.noUsersDescription")}</p>
                 </div>
-            ))}
+            ) : (
+                <div className="vertical-list">
+                    {users.map(currentUser => (
+                        <div key={currentUser.id} className="item">
+                            <div className="left-section">
+                                <div className={`icon ${currentUser.role === "admin" ? "primary" : "default"}`}>
+                                    <Icon path={currentUser.role === "admin" ? mdiShieldAccount : mdiAccount} />
+                                </div>
+                                <div className="details">
+                                    <h3>{currentUser.firstName} {currentUser.lastName}</h3>
+                                    <p>@{currentUser.username}</p>
+                                </div>
+                            </div>
+                            <div className="right-section">
+                                <div className={`totp-badge ${currentUser.totpEnabled ? "enabled" : "disabled"}`}>
+                                    <Icon path={mdiLock} />
+                                    <span>{currentUser.totpEnabled ? t("settings.users.twoFactorEnabled") : t("settings.users.twoFactorDisabled")}</span>
+                                </div>
+                                <Icon 
+                                    path={mdiDotsVertical} 
+                                    className="menu-trigger" 
+                                    onClick={(e) => openContextMenu(e, currentUser.id)} 
+                                />
+                            </div>
+                        </div>
+                    ))}
+                </div>
+            )}
 
             <ContextMenu
                 isOpen={contextMenu.isOpen}
@@ -120,7 +144,7 @@ export const Users = () => {
                     onClick={() => setPasswordChangeDialogOpen(true)}
                 />
 
-                {users.find(u => u.id === contextUserId)?.role === "user" && user.id !== contextUserId && (
+                {contextUser?.role === "user" && user.id !== contextUserId && (
                     <ContextMenuItem
                         icon={mdiSecurity}
                         label={t("settings.users.contextMenu.promoteToAdmin")}
@@ -128,7 +152,7 @@ export const Users = () => {
                     />
                 )}
 
-                {users.find(u => u.id === contextUserId)?.role === "admin" && user.id !== contextUserId && (
+                {contextUser?.role === "admin" && user.id !== contextUserId && (
                     <ContextMenuItem
                         icon={mdiAccount}
                         label={t("settings.users.contextMenu.demoteToUser")}
@@ -139,15 +163,15 @@ export const Users = () => {
                 {user.id !== contextUserId && (
                     <>
                         <ContextMenuItem
+                            icon={mdiLogin}
+                            label={t("settings.users.contextMenu.loginAsUser")}
+                            onClick={() => loginAsUser(contextUserId)}
+                        />
+                        <ContextMenuItem
                             icon={mdiAccountRemove}
                             label={t("settings.users.contextMenu.deleteUser")}
                             onClick={() => setConfirmDeleteDialogOpen(true)}
                             danger
-                        />
-                        <ContextMenuItem
-                            icon={mdiLogin}
-                            label={t("settings.users.contextMenu.loginAsUser")}
-                            onClick={() => loginAsUser(contextUserId)}
                         />
                     </>
                 )}

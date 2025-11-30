@@ -125,39 +125,46 @@ export const Keymaps = () => {
     };
 
     if (loading) {
-        return <div className="keymaps-page loading">Loading...</div>;
+        return <div className="keymaps-page loading">{t("common.loading")}</div>;
     }
 
     return (
         <div className="keymaps-page">
-            <div className="keymaps-title">
-                <p>{t("settings.keymaps.description")}</p>
+            <div className="keymaps-header">
+                <div className="header-text">
+                    <h2>{t("settings.keymaps.title")}</h2>
+                    <p>{t("settings.keymaps.description")}</p>
+                </div>
                 <Button text={t("settings.keymaps.resetAll")} icon={mdiRestore} onClick={handleResetAll} />
             </div>
 
-            {keymaps.map((keymap) => {
-                const actionKey = keymap.action.replace(/-/g, "");
-                const icon = KEYMAP_ICONS[keymap.action] || mdiKeyboard;
-                return (
-                    <div key={keymap.action} className="keymap-item">
-                        <div className="keymap-info">
-                            <div className="icon-container">
-                                <Icon path={icon} />
+            <div className="vertical-list">
+                {keymaps.map((keymap) => {
+                    const actionKey = keymap.action.replace(/-/g, "");
+                    const icon = KEYMAP_ICONS[keymap.action] || mdiKeyboard;
+                    return (
+                        <div key={keymap.action} className="item">
+                            <div className="left-section">
+                                <div className="icon primary">
+                                    <Icon path={icon} />
+                                </div>
+                                <div className="details">
+                                    <h3>{t(`settings.keymaps.actions.${actionKey}.title`)}</h3>
+                                    <p>{t(`settings.keymaps.actions.${actionKey}.description`)}</p>
+                                </div>
                             </div>
-                            <div className="keymap-details">
-                                <h2>{t(`settings.keymaps.actions.${actionKey}.title`)}</h2>
-                                <p>{t(`settings.keymaps.actions.${actionKey}.description`)}</p>
+                            <div className="right-section">
+                                <KeybindRecorder
+                                    action={keymap.action}
+                                    currentKey={keymap.key}
+                                    onUpdate={handleUpdate}
+                                    onReset={handleReset}
+                                />
                             </div>
                         </div>
-                        <KeybindRecorder
-                            action={keymap.action}
-                            currentKey={keymap.key}
-                            onUpdate={handleUpdate}
-                            onReset={handleReset}
-                        />
-                    </div>
-                );
-            })}
+                    );
+                })}
+            </div>
         </div>
     );
 };

@@ -14,19 +14,29 @@
       font-size: 1.3rem
 
   .no-organizations
-    text-align: center
-    color: colors.$subtext
+    display: flex
+    flex-direction: column
+    align-items: center
+    justify-content: center
     padding: 3rem 2rem
-    background-color: colors.$lighter-background
-    border: 1px solid colors.$dark-gray
-    border-radius: 0.75rem
+    color: colors.$subtext
+
+    svg
+      width: 3rem
+      height: 3rem
+      margin-bottom: 1rem
+      opacity: 0.9
+
+    h2
+      margin: 0 0 0.5rem 0
+      color: colors.$white
+      font-size: 1.1rem
 
     p
-      margin: 0.5rem 0
+      margin: 0
+      text-align: center
+      max-width: 24rem
       font-size: 0.9rem
-
-      &:first-child
-        font-weight: 500
 
   .vertical-list
     display: flex
