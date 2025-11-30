@@ -144,7 +144,7 @@ export const Users = () => {
                     onClick={() => setPasswordChangeDialogOpen(true)}
                 />
 
-                {contextUser?.role === "user" && user.id !== contextUserId && (
+                {contextUser?.role === "user" && user?.id !== contextUserId && (
                     <ContextMenuItem
                         icon={mdiSecurity}
                         label={t("settings.users.contextMenu.promoteToAdmin")}
@@ -152,7 +152,7 @@ export const Users = () => {
                     />
                 )}
 
-                {contextUser?.role === "admin" && user.id !== contextUserId && (
+                {contextUser?.role === "admin" && user?.id !== contextUserId && (
                     <ContextMenuItem
                         icon={mdiAccount}
                         label={t("settings.users.contextMenu.demoteToUser")}
@@ -160,7 +160,7 @@ export const Users = () => {
                     />
                 )}
 
-                {user.id !== contextUserId && (
+                {user?.id !== contextUserId && (
                     <>
                         <ContextMenuItem
                             icon={mdiLogin}
