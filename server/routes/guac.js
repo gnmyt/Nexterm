@@ -1,7 +1,6 @@
 const wsAuth = require("../middlewares/wsAuth");
 const guacamoleHook = require("../hooks/guacamole");
 const { createTicket, getNodeForServer, openVNCConsole } = require("../controllers/pve");
-const { createAuditLog, AUDIT_ACTIONS, RESOURCE_TYPES } = require("../controllers/audit");
 const { getIdentityCredentials } = require("../controllers/identity");
 const { getIntegrationCredentials } = require("../controllers/integration");
 const { createVNCToken, createRDPToken } = require("../utils/tokenGenerator");
@@ -17,7 +16,7 @@ module.exports = async (ws, req) => {
 
     try {
         let connectionConfig = null;
-        let auditLogId = null;
+        const auditLogId = serverSession?.auditLogId || null;
 
         const protocol = entry.type === "server" ? entry.config?.protocol : entry.type;
         const isRdpVnc = protocol === "rdp" || protocol === "vnc";
@@ -39,26 +38,6 @@ module.exports = async (ws, req) => {
             } else {
                 credentials = await getIdentityCredentials(identity.id);
             }
-
-            logger.verbose(`Retrieved identity credentials`, {
-                identityId: identity.id,
-                identityName: identity.name,
-            });
-
-            const actionType = protocol === "rdp"
-                ? AUDIT_ACTIONS.RDP_CONNECT
-                : AUDIT_ACTIONS.VNC_CONNECT;
-
-            auditLogId = await createAuditLog({
-                accountId: user.id,
-                organizationId: entry.organizationId,
-                action: actionType,
-                resource: RESOURCE_TYPES.SERVER,
-                resourceId: entry.id,
-                details: { connectionReason },
-                ipAddress,
-                userAgent,
-            });
 
             logger.verbose(`Creating ${protocol.toUpperCase()} token`, {
                 target: entry.config.ip,
@@ -101,23 +80,6 @@ module.exports = async (ws, req) => {
                 vmid: vmid,
                 user: user.username,
             });
-
-            auditLogId = await createAuditLog({
-                accountId: user.id,
-                organizationId: entry.organizationId,
-                action: AUDIT_ACTIONS.PVE_CONNECT,
-                resource: RESOURCE_TYPES.ENTRY,
-                resourceId: entry.id,
-                details: {
-                    containerId: vmid,
-                    containerType: "qemu",
-                    connectionReason,
-                },
-                ipAddress,
-                userAgent,
-            });
-
-            logger.verbose(`Retrieving PVE credentials`, { integrationId: integration.id });
 
             const integrationCreds = await getIntegrationCredentials(integration.id);
             const server = { ...integration.config, ...entry.config, password: integrationCreds.password };

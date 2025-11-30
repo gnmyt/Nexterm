@@ -15,28 +15,18 @@ module.exports = async (ws, req) => {
 
     try {
         const connectionStartTime = Date.now();
-
-        const sshAuditLogId = await createAuditLog({
-            accountId: user.id,
-            organizationId: entry.organizationId,
-            action: AUDIT_ACTIONS.SSH_CONNECT,
-            resource: RESOURCE_TYPES.ENTRY,
-            resourceId: entry.id,
-            details: { connectionReason },
-            ipAddress,
-            userAgent,
-        });
+        const auditLogId = serverSession?.auditLogId || null;
 
         const ssh = await createSSHConnection(entry, identity, ws);
 
         ssh.on("error", async () => {
-            await updateAuditLogWithSessionDuration(sshAuditLogId, connectionStartTime);
+            await updateAuditLogWithSessionDuration(auditLogId, connectionStartTime);
             if (ssh._jumpConnections) ssh._jumpConnections.forEach(conn => conn.ssh.end());
             ws.close();
         });
 
         ws.on("close", async () => {
-            await updateAuditLogWithSessionDuration(sshAuditLogId, connectionStartTime);
+            await updateAuditLogWithSessionDuration(auditLogId, connectionStartTime);
             
             if (serverSession) {
                 const session = SessionManager.get(serverSession.sessionId);
@@ -56,24 +46,13 @@ module.exports = async (ws, req) => {
         });
 
         ssh.on("ready", async () => {
-            const sftpAuditLogId = await createAuditLog({
-                accountId: user.id,
-                organizationId: entry.organizationId,
-                action: AUDIT_ACTIONS.SFTP_CONNECT,
-                resource: RESOURCE_TYPES.ENTRY,
-                resourceId: entry.id,
-                details: { connectionReason },
-                ipAddress,
-                userAgent,
-            });
-
             ssh.sftp((err, sftp) => {
                 if (err) {
                     logger.error("SFTP error", { error: err.message, entryId: entry.id });
                     return;
                 }
 
-                if (serverSession) SessionManager.setConnection(serverSession.sessionId, { ssh, sftp, sshAuditLogId, sftpAuditLogId });
+                if (serverSession) SessionManager.setConnection(serverSession.sessionId, { ssh, sftp, auditLogId });
 
                 ws.send(Buffer.from([OPERATIONS.READY]));
 
@@ -350,7 +329,7 @@ module.exports = async (ws, req) => {
                 });
 
                 ws.on("close", async () => {
-                    await updateAuditLogWithSessionDuration(sftpAuditLogId, connectionStartTime);
+                    await updateAuditLogWithSessionDuration(auditLogId, connectionStartTime);
                 });
             });
         });

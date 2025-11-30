@@ -2,11 +2,27 @@ const SessionManager = require("../lib/SessionManager");
 const Entry = require("../models/Entry");
 const Account = require("../models/Account");
 const { validateEntryAccess } = require("./entry");
-const { getOrganizationAuditSettingsInternal } = require("./audit");
+const { getOrganizationAuditSettingsInternal, createAuditLog, AUDIT_ACTIONS, RESOURCE_TYPES } = require("./audit");
 const { resolveIdentity } = require("../utils/identityResolver");
 const Organization = require('../models/Organization');
 
-const createSession = async (accountId, entryId, identityId, connectionReason, type = null, directIdentity = null, tabId = null, browserId = null, scriptId = null) => {
+const ENTRY_TYPE_TO_AUDIT_ACTION = {
+    'ssh': AUDIT_ACTIONS.SSH_CONNECT,
+    'telnet': AUDIT_ACTIONS.SSH_CONNECT,
+    'rdp': AUDIT_ACTIONS.RDP_CONNECT,
+    'vnc': AUDIT_ACTIONS.VNC_CONNECT,
+    'pve-lxc': AUDIT_ACTIONS.PVE_CONNECT,
+    'pve-shell': AUDIT_ACTIONS.PVE_CONNECT,
+    'pve-qemu': AUDIT_ACTIONS.PVE_CONNECT,
+};
+
+const getAuditAction = (entry, scriptId) => {
+    if (scriptId) return AUDIT_ACTIONS.SCRIPT_EXECUTE;
+    const type = entry.type === 'server' ? entry.config?.protocol : entry.type;
+    return ENTRY_TYPE_TO_AUDIT_ACTION[type] || AUDIT_ACTIONS.SSH_CONNECT;
+};
+
+const createSession = async (accountId, entryId, identityId, connectionReason, type = null, directIdentity = null, tabId = null, browserId = null, scriptId = null, ipAddress = null, userAgent = null) => {
     const entry = await Entry.findByPk(entryId);
     if (!entry) {
         return { code: 404, message: "Entry not found" };
@@ -35,6 +51,17 @@ const createSession = async (accountId, entryId, identityId, connectionReason, t
         return { code: 400, message: "Identity not found" };
     }
 
+    const auditLogId = await createAuditLog({
+        accountId,
+        organizationId: entry.organizationId,
+        action: getAuditAction(entry, scriptId),
+        resource: scriptId ? RESOURCE_TYPES.SCRIPT : RESOURCE_TYPES.ENTRY,
+        resourceId: scriptId || entry.id,
+        details: { connectionReason, ...(scriptId && { serverId: entry.id }) },
+        ipAddress,
+        userAgent,
+    });
+
     const configuration = {
         identityId: identity ? identity.id : null,
         type: type || null,
@@ -42,7 +69,7 @@ const createSession = async (accountId, entryId, identityId, connectionReason, t
         scriptId: scriptId || null,
     };
 
-    const session = SessionManager.create(accountId, entryId, configuration, connectionReason, tabId, browserId);
+    const session = SessionManager.create(accountId, entryId, configuration, connectionReason, tabId, browserId, auditLogId);
     const { connection, ...safeSession } = session;
     return safeSession;
 };

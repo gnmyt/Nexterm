@@ -10,7 +10,7 @@ class SessionManager {
         SessionManager.instance = this;
     }
 
-    create(accountId, entryId, configuration, connectionReason = null, tabId = null, browserId = null) {
+    create(accountId, entryId, configuration, connectionReason = null, tabId = null, browserId = null, auditLogId = null) {
         const sessionId = uuidv4();
         const session = {
             sessionId,
@@ -20,13 +20,14 @@ class SessionManager {
             connectionReason,
             tabId,
             browserId,
+            auditLogId,
             isHibernated: false,
             createdAt: new Date(),
             lastActivity: new Date(),
             connection: null
         };
         this.sessions.push(session);
-        logger.info(`Session created`, { sessionId, accountId, entryId, tabId, browserId });
+        logger.info(`Session created`, { sessionId, accountId, entryId, tabId, browserId, auditLogId });
         return session;
     }
 

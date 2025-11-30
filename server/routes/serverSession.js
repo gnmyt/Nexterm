@@ -20,7 +20,9 @@ app.post("/", async (req, res) => {
     
     try {
         const { entryId, identityId, connectionReason, type, directIdentity, tabId, browserId, scriptId } = req.body;
-        const result = await createSession(req.user.id, entryId, identityId, connectionReason, type, directIdentity, tabId, browserId, scriptId);
+        const ipAddress = req.ip || req.socket?.remoteAddress || 'unknown';
+        const userAgent = req.headers['user-agent'] || 'unknown';
+        const result = await createSession(req.user.id, entryId, identityId, connectionReason, type, directIdentity, tabId, browserId, scriptId, ipAddress, userAgent);
         
         if (result?.code) {
             return res.status(result.code).json({ error: result.message });

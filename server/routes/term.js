@@ -4,7 +4,6 @@ const scriptHook = require("../hooks/script");
 const pveLxcHook = require("../hooks/pve-lxc");
 const telnetHook = require("../hooks/telnet");
 const { createTicket, getNodeForServer, openLXCConsole } = require("../controllers/pve");
-const { createAuditLog, AUDIT_ACTIONS, RESOURCE_TYPES } = require("../controllers/audit");
 const { getIntegrationCredentials } = require("../controllers/integration");
 const { getScript } = require("../controllers/script");
 const { createSSHConnection } = require("../utils/sshConnection");
@@ -23,7 +22,7 @@ module.exports = async (ws, req) => {
     }
 
     try {
-        let auditLogId = null;
+        let auditLogId = serverSession?.auditLogId || null;
         let hookContext = null;
 
         const isSSH = entry.type === "ssh" || (entry.type === "server" && entry.config?.protocol === "ssh");
@@ -55,19 +54,21 @@ module.exports = async (ws, req) => {
                 scriptMode: !!scriptId
             });
 
-            auditLogId = await createAuditLog({
-                accountId: user.id,
-                organizationId: entry.organizationId,
-                action: scriptId ? AUDIT_ACTIONS.SCRIPT_EXECUTE : AUDIT_ACTIONS.SSH_CONNECT,
-                resource: scriptId ? RESOURCE_TYPES.SCRIPT : RESOURCE_TYPES.ENTRY,
-                resourceId: scriptId || entry.id,
-                details: { 
-                    connectionReason,
-                    ...(scriptId && { scriptName: script?.name, serverId: entry.id })
-                },
-                ipAddress,
-                userAgent,
-            });
+            if (!auditLogId) {
+                auditLogId = await createAuditLog({
+                    accountId: user.id,
+                    organizationId: entry.organizationId,
+                    action: scriptId ? AUDIT_ACTIONS.SCRIPT_EXECUTE : AUDIT_ACTIONS.SSH_CONNECT,
+                    resource: scriptId ? RESOURCE_TYPES.SCRIPT : RESOURCE_TYPES.ENTRY,
+                    resourceId: scriptId || entry.id,
+                    details: { 
+                        connectionReason,
+                        ...(scriptId && { scriptName: script?.name, serverId: entry.id })
+                    },
+                    ipAddress,
+                    userAgent,
+                });
+            }
 
             logger.verbose(`Creating SSH connection`, {
                 entryId: entry.id,
@@ -108,22 +109,6 @@ module.exports = async (ws, req) => {
                 user: user.username
             });
 
-            auditLogId = await createAuditLog({
-                accountId: user.id,
-                organizationId: entry.organizationId,
-                action: AUDIT_ACTIONS.SSH_CONNECT,
-                resource: RESOURCE_TYPES.ENTRY,
-                resourceId: entry.id,
-                details: { connectionReason, protocol: 'telnet' },
-                ipAddress,
-                userAgent,
-            });
-
-            logger.verbose(`Telnet audit log created`, {
-                entryId: entry.id,
-                auditLogId: auditLogId
-            });
-
             logger.system(`Telnet connection established`, {
                 protocol: 'telnet',
                 target: entry.config.ip,
@@ -148,21 +133,6 @@ module.exports = async (ws, req) => {
                 integrationName: integration.name,
                 vmid: vmid,
                 user: user.username
-            });
-
-            auditLogId = await createAuditLog({
-                accountId: user.id,
-                organizationId: entry.organizationId,
-                action: AUDIT_ACTIONS.PVE_CONNECT,
-                resource: RESOURCE_TYPES.ENTRY,
-                resourceId: entry.id,
-                details: {
-                    containerId: vmid,
-                    containerType: 'lxc',
-                    connectionReason,
-                },
-                ipAddress,
-                userAgent,
             });
 
             logger.verbose(`Retrieving PVE credentials`, {
