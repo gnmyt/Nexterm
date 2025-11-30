@@ -8,15 +8,7 @@ import { getRequest } from "@/common/utils/RequestUtil.js";
 
 const KONAMI_CODE = ["ArrowUp", "ArrowUp", "ArrowDown", "ArrowDown", "ArrowLeft", "ArrowRight", "ArrowLeft", "ArrowRight", "b", "a"];
 
-export const ScriptsMenu = ({
-                                visible,
-                                onClose,
-                                scripts = [],
-                                server,
-                                serverOrganizationId = null,
-                                onRunScript,
-                                getIdentityName,
-                            }) => {
+export const ScriptsMenu = ({ visible, onClose, scripts = [], server, serverOrganizationId = null, onRunScript, getIdentityName }) => {
     const { t } = useTranslation();
     const [search, setSearch] = useState("");
     const [highlightedIndex, setHighlightedIndex] = useState(-1);
@@ -25,49 +17,31 @@ export const ScriptsMenu = ({
     const [isVisible, setIsVisible] = useState(false);
     const [sourceScripts, setSourceScripts] = useState([]);
     const [showSecrets, setShowSecrets] = useState(false);
-    const [konamiIndex, setKonamiIndex] = useState(0);
+    const konamiIndexRef = useRef(0);
     const searchRef = useRef(null);
     const menuRef = useRef(null);
     const scriptRefs = useRef([]);
 
     useEffect(() => {
-        const fetchSourceScripts = async () => {
-            try {
-                const data = await getRequest("scripts/sources");
-                setSourceScripts(data || []);
-            } catch (error) {
-                console.debug("Source scripts not available", error);
-            }
-        };
-        fetchSourceScripts();
+        getRequest("scripts/sources").then(setSourceScripts).catch(() => {});
     }, []);
 
     const availableScripts = useMemo(() => {
-        const userScripts = scripts || [];
-
-        const filteredUserScripts = userScripts.filter(script =>
-            script.organizationId === null ||
-            (serverOrganizationId && script.organizationId === serverOrganizationId),
+        const filtered = (scripts || []).filter(s => 
+            !s.organizationId || s.organizationId === serverOrganizationId
         );
-
-        const allScripts = [...filteredUserScripts, ...sourceScripts].map(script => ({
-            ...script,
-            isSecret: script.name === "???" && script.description === "What happened?",
+        const all = [...filtered, ...sourceScripts].map(s => ({
+            ...s,
+            isSecret: s.name === "???" && s.description === "What happened?",
         }));
-        
-        if (showSecrets) return allScripts;
-
-        return allScripts.filter(script => !script.isSecret);
+        return showSecrets ? all : all.filter(s => !s.isSecret);
     }, [scripts, serverOrganizationId, sourceScripts, showSecrets]);
 
     const filteredScripts = useMemo(() => {
-        if (!availableScripts || availableScripts.length === 0) return [];
         if (!search) return availableScripts;
-
-        const searchLower = search.toLowerCase();
-        return availableScripts.filter(script =>
-            script.name.toLowerCase().includes(searchLower) ||
-            (script.description && script.description.toLowerCase().includes(searchLower)),
+        const q = search.toLowerCase();
+        return availableScripts.filter(s => 
+            s.name.toLowerCase().includes(q) || s.description?.toLowerCase().includes(q)
         );
     }, [availableScripts, search]);
 
@@ -78,149 +52,106 @@ export const ScriptsMenu = ({
             setHighlightedIndex(-1);
             setSelectedScript(null);
             setShowSecrets(false);
-            setKonamiIndex(0);
-            requestAnimationFrame(() => {
-                requestAnimationFrame(() => {
-                    setIsPositioned(true);
-                    if (searchRef.current) {
-                        searchRef.current.focus();
-                    }
-                });
-            });
+            konamiIndexRef.current = 0;
+            requestAnimationFrame(() => requestAnimationFrame(() => {
+                setIsPositioned(true);
+                searchRef.current?.focus();
+            }));
         } else {
             setIsPositioned(false);
         }
     }, [visible]);
 
-    const handleKonamiCode = useCallback((e) => {
-        const key = e.key;
-        if (key === KONAMI_CODE[konamiIndex]) {
-            const newIndex = konamiIndex + 1;
-            if (newIndex === KONAMI_CODE.length) {
-                setShowSecrets(true);
-                setKonamiIndex(0);
-            } else {
-                setKonamiIndex(newIndex);
-            }
-        } else {
-            setKonamiIndex(key === KONAMI_CODE[0] ? 1 : 0);
-        }
-    }, [konamiIndex]);
+    const handleBack = useCallback(() => {
+        setSelectedScript(null);
+        setHighlightedIndex(-1);
+        searchRef.current?.focus();
+    }, []);
 
-    const handleAnimationEnd = (e) => {
-        if (e.target === menuRef.current && !visible) {
-            setIsVisible(false);
-        }
-    };
-
-    const handleScriptClick = (script) => {
+    const handleScriptClick = useCallback((script) => {
         if (server?.identities?.length === 1) {
             onRunScript(server.id, server.identities[0], script.id);
             onClose();
         } else if (server?.identities?.length > 1) {
             setSelectedScript(script);
         }
-    };
+    }, [server, onRunScript, onClose]);
 
-    const handleIdentityClick = (identityId) => {
+    const handleIdentityClick = useCallback((identityId) => {
         if (selectedScript) {
             onRunScript(server.id, identityId, selectedScript.id);
             onClose();
         }
-    };
-
-    const handleBack = () => {
-        setSelectedScript(null);
-        setHighlightedIndex(-1);
-        if (searchRef.current) {
-            searchRef.current.focus();
-        }
-    };
-
-    const handleSearch = (e) => {
-        setSearch(e.target.value);
-        setHighlightedIndex(-1);
-    };
+    }, [selectedScript, server, onRunScript, onClose]);
 
     useEffect(() => {
         if (!visible) return;
 
-        const handleClickOutside = (e) => {
-            if (menuRef.current && !menuRef.current.contains(e.target)) {
-                onClose();
-            }
-        };
-
         const handleKeyDown = (e) => {
-            handleKonamiCode(e);
-            
+            if (e.key === KONAMI_CODE[konamiIndexRef.current]) {
+                konamiIndexRef.current++;
+                if (konamiIndexRef.current === KONAMI_CODE.length) {
+                    setShowSecrets(true);
+                    konamiIndexRef.current = 0;
+                }
+            } else {
+                konamiIndexRef.current = e.key === KONAMI_CODE[0] ? 1 : 0;
+            }
+
             if (e.key === "Escape") {
                 e.preventDefault();
-                if (selectedScript) {
-                    handleBack();
-                } else {
-                    onClose();
-                }
+                selectedScript ? handleBack() : onClose();
                 return;
             }
 
             const items = selectedScript ? server?.identities || [] : filteredScripts;
 
-            if (searchRef.current === document.activeElement && !selectedScript) {
-                if (e.key === "ArrowDown" && items.length > 0) {
-                    e.preventDefault();
-                    searchRef.current.blur();
-                    setHighlightedIndex(0);
-                    scriptRefs.current[0]?.focus();
-                }
+            if (searchRef.current === document.activeElement && !selectedScript && e.key === "ArrowDown" && items.length) {
+                e.preventDefault();
+                searchRef.current.blur();
+                setHighlightedIndex(0);
+                scriptRefs.current[0]?.focus();
                 return;
             }
 
-            if (e.key === "ArrowDown") {
+            if (e.key === "ArrowDown" || e.key === "ArrowUp") {
                 e.preventDefault();
-                const newIndex = highlightedIndex < items.length - 1 ? highlightedIndex + 1 : 0;
-                setHighlightedIndex(newIndex);
-                scriptRefs.current[newIndex]?.focus();
-                scriptRefs.current[newIndex]?.scrollIntoView({ block: "nearest", behavior: "smooth" });
-            } else if (e.key === "ArrowUp") {
-                e.preventDefault();
-                const newIndex = highlightedIndex > 0 ? highlightedIndex - 1 : items.length - 1;
+                const delta = e.key === "ArrowDown" ? 1 : -1;
+                const newIndex = (highlightedIndex + delta + items.length) % items.length;
                 setHighlightedIndex(newIndex);
                 scriptRefs.current[newIndex]?.focus();
                 scriptRefs.current[newIndex]?.scrollIntoView({ block: "nearest", behavior: "smooth" });
             } else if (e.key === "Enter" && highlightedIndex >= 0 && highlightedIndex < items.length) {
                 e.preventDefault();
-                if (selectedScript) {
-                    handleIdentityClick(items[highlightedIndex]);
-                } else {
-                    handleScriptClick(items[highlightedIndex]);
-                }
+                selectedScript ? handleIdentityClick(items[highlightedIndex]) : handleScriptClick(items[highlightedIndex]);
             } else if (e.key === "Backspace" && selectedScript && !search) {
                 e.preventDefault();
                 handleBack();
             }
         };
 
+        const handleClickOutside = (e) => {
+            if (menuRef.current && !menuRef.current.contains(e.target)) onClose();
+        };
+
         document.addEventListener("mousedown", handleClickOutside);
         document.addEventListener("keydown", handleKeyDown);
-
         return () => {
             document.removeEventListener("mousedown", handleClickOutside);
             document.removeEventListener("keydown", handleKeyDown);
         };
-    }, [visible, filteredScripts, highlightedIndex, onClose, selectedScript, server?.identities, handleKonamiCode]);
+    }, [visible, filteredScripts, highlightedIndex, onClose, selectedScript, server?.identities, handleBack, handleScriptClick, handleIdentityClick, search]);
 
     if (!isVisible) return null;
 
-    const menu = (
+    return createPortal(
         <div className="scripts-menu-overlay" onClick={onClose}>
             <div
                 ref={menuRef}
                 className={`scripts-menu ${visible && isPositioned ? "open" : "closed"}`}
                 onClick={(e) => e.stopPropagation()}
-                onTransitionEnd={handleAnimationEnd}
+                onTransitionEnd={(e) => e.target === menuRef.current && !visible && setIsVisible(false)}
                 role="menu"
-                aria-orientation="vertical"
             >
                 {!selectedScript ? (
                     <>
@@ -229,9 +160,7 @@ export const ScriptsMenu = ({
                                 <Icon path={mdiScript} />
                                 <span>{t("servers.contextMenu.runScript")}</span>
                             </div>
-                            <div className="scripts-menu__server-info">
-                                {server?.name}
-                            </div>
+                            <div className="scripts-menu__server-info">{server?.name}</div>
                         </div>
                         <div className="scripts-menu__search">
                             <Icon path={mdiMagnify} />
@@ -240,19 +169,16 @@ export const ScriptsMenu = ({
                                 type="text"
                                 placeholder={t("scripts.menu.searchPlaceholder", "Search scripts...")}
                                 value={search}
-                                onChange={handleSearch}
+                                onChange={(e) => { setSearch(e.target.value); setHighlightedIndex(-1); }}
                                 onClick={(e) => e.stopPropagation()}
                             />
                         </div>
-
                         <div className="scripts-menu__content">
                             {filteredScripts.length === 0 ? (
                                 <div className="scripts-menu__no-results">
-                                    {availableScripts.length === 0 ? (
-                                        <p>{t("scripts.menu.noScripts", "No scripts available. Create some in the Scripts section.")}</p>
-                                    ) : (
-                                        <p>{t("scripts.menu.noMatch", "No scripts match your search.")}</p>
-                                    )}
+                                    <p>{availableScripts.length === 0 
+                                        ? t("scripts.menu.noScripts", "No scripts available. Create some in the Scripts section.")
+                                        : t("scripts.menu.noMatch", "No scripts match your search.")}</p>
                                 </div>
                             ) : (
                                 <div className="scripts-menu__list">
@@ -260,9 +186,7 @@ export const ScriptsMenu = ({
                                         <div
                                             key={`${script.sourceId ? "source" : "user"}-${script.id}`}
                                             ref={(el) => (scriptRefs.current[index] = el)}
-                                            className={`scripts-menu__item ${
-                                                highlightedIndex === index ? "highlighted" : ""
-                                            } ${script.isSecret ? "scripts-menu__item--secret" : ""}`}
+                                            className={`scripts-menu__item ${highlightedIndex === index ? "highlighted" : ""} ${script.isSecret ? "scripts-menu__item--secret" : ""}`}
                                             onClick={() => handleScriptClick(script)}
                                             onMouseEnter={() => setHighlightedIndex(index)}
                                             role="menuitem"
@@ -271,16 +195,12 @@ export const ScriptsMenu = ({
                                             <div className="scripts-menu__item-header">
                                                 <h4 className="scripts-menu__item-name">{script.name}</h4>
                                                 {script.isSecret ? (
-                                                    <Icon path={mdiEgg} size={0.65}
-                                                          className="scripts-menu__source-badge scripts-menu__source-badge--secret" />
+                                                    <Icon path={mdiEgg} size={0.65} className="scripts-menu__source-badge scripts-menu__source-badge--secret" />
                                                 ) : script.sourceId && (
-                                                    <Icon path={mdiCloudDownloadOutline} size={0.65}
-                                                          className="scripts-menu__source-badge" />
+                                                    <Icon path={mdiCloudDownloadOutline} size={0.65} className="scripts-menu__source-badge" />
                                                 )}
                                             </div>
-                                            {script.description && (
-                                                <p className="scripts-menu__item-description">{script.description}</p>
-                                            )}
+                                            {script.description && <p className="scripts-menu__item-description">{script.description}</p>}
                                         </div>
                                     ))}
                                 </div>
@@ -295,22 +215,17 @@ export const ScriptsMenu = ({
                                 <span>{t("scripts.menu.selectIdentity", "Select Identity")}</span>
                             </div>
                             <div className="scripts-menu__script-info">
-                                <button className="scripts-menu__back" onClick={handleBack}>
-                                    ← {t("common.actions.back", "Back")}
-                                </button>
+                                <button className="scripts-menu__back" onClick={handleBack}>← {t("common.actions.back", "Back")}</button>
                                 <span className="scripts-menu__script-name">{selectedScript.name}</span>
                             </div>
                         </div>
-
                         <div className="scripts-menu__content">
                             <div className="scripts-menu__list">
                                 {server?.identities?.map((identityId, index) => (
                                     <div
                                         key={identityId}
                                         ref={(el) => (scriptRefs.current[index] = el)}
-                                        className={`scripts-menu__item scripts-menu__item--identity ${
-                                            highlightedIndex === index ? "highlighted" : ""
-                                        }`}
+                                        className={`scripts-menu__item scripts-menu__item--identity ${highlightedIndex === index ? "highlighted" : ""}`}
                                         onClick={() => handleIdentityClick(identityId)}
                                         onMouseEnter={() => setHighlightedIndex(index)}
                                         role="menuitem"
@@ -325,8 +240,7 @@ export const ScriptsMenu = ({
                     </>
                 )}
             </div>
-        </div>
+        </div>,
+        document.body
     );
-
-    return createPortal(menu, document.body);
 };

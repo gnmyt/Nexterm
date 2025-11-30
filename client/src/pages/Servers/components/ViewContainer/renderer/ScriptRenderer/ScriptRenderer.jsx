@@ -9,202 +9,208 @@ import { useToast } from "@/common/contexts/ToastContext.jsx";
 import "@xterm/xterm/css/xterm.css";
 import "./styles.sass";
 
+const MESSAGE_TYPES = {
+    OUTPUT: "\x01",
+    STEP: "\x02",
+    ERROR: "\x03",
+    PROMPT: "\x05",
+    WARNING: "\x06",
+    INFO: "\x07",
+    SUCCESS: "\x08",
+    PROGRESS: "\x09",
+    SCRIPT_NAME: "\x0A",
+    SUMMARY: "\x0B",
+    TABLE: "\x0C",
+    MSGBOX: "\x0D",
+};
+
+const DIALOG_TYPES = { input: "input", summary: "summary", table: "table", msgbox: "msgbox" };
+
 export const ScriptRenderer = ({ session, updateProgress, savedState, saveState }) => {
     const containerRef = useRef(null);
-
-    const [steps, setSteps] = useState(savedState?.steps || ["Initializing..."]);
-    const [currentStep, setCurrentStep] = useState(savedState?.currentStep || 1);
-    const [failedStep, setFailedStep] = useState(savedState?.failedStep || null);
-    const [isCompleted, setIsCompleted] = useState(savedState?.isCompleted || false);
-    const [currentProgress, setCurrentProgress] = useState(savedState?.currentProgress || null);
-    const [scriptName, setScriptName] = useState(savedState?.scriptName || "");
-    const [terminalContent, setTerminalContent] = useState(savedState?.terminalContent || []);
-
-    const [inputDialogOpen, setInputDialogOpen] = useState(false);
-    const [inputPrompt, setInputPrompt] = useState(null);
-    const [summaryData, setSummaryData] = useState(null);
-    const [tableData, setTableData] = useState(null);
-    const [messageBoxData, setMessageBoxData] = useState(null);
+    const isAnyDialogOpenRef = useRef(false);
     const { sendToast } = useToast();
 
+    const [state, setState] = useState({
+        steps: savedState?.steps || ["Initializing..."],
+        currentStep: savedState?.currentStep || 1,
+        failedStep: savedState?.failedStep || null,
+        isCompleted: savedState?.isCompleted || false,
+        currentProgress: savedState?.currentProgress || null,
+        scriptName: savedState?.scriptName || "",
+        terminalContent: savedState?.terminalContent || [],
+    });
+
+    const [dialogs, setDialogs] = useState({
+        inputOpen: false,
+        inputPrompt: null,
+        summaryData: null,
+        tableData: null,
+        messageBoxData: null,
+    });
+    const [promptQueue, setPromptQueue] = useState([]);
+
+    const isAnyDialogOpen = dialogs.inputOpen || !!dialogs.summaryData || !!dialogs.tableData || !!dialogs.messageBoxData;
+    isAnyDialogOpenRef.current = isAnyDialogOpen;
+
     useEffect(() => {
-        if (saveState) {
-            saveState({
-                steps, currentStep, failedStep, isCompleted,
-                currentProgress, scriptName, terminalContent,
-            });
+        saveState?.({ ...state });
+    }, [state, saveState]);
+
+    const showDialog = useCallback((dialogType, data) => {
+        setDialogs(prev => {
+            switch (dialogType) {
+                case DIALOG_TYPES.input: return { ...prev, inputPrompt: data, inputOpen: true };
+                case DIALOG_TYPES.summary: return { ...prev, summaryData: data };
+                case DIALOG_TYPES.table: return { ...prev, tableData: data };
+                case DIALOG_TYPES.msgbox: return { ...prev, messageBoxData: data };
+                default: return prev;
+            }
+        });
+    }, []);
+
+    useEffect(() => {
+        if (!isAnyDialogOpen && promptQueue.length > 0) {
+            const [next, ...rest] = promptQueue;
+            setPromptQueue(rest);
+            showDialog(next.dialogType, next.data);
         }
-    }, [steps, currentStep, failedStep, isCompleted, currentProgress, scriptName, terminalContent, saveState]);
+    }, [isAnyDialogOpen, promptQueue, showDialog]);
+
+    const queueOrShowPrompt = useCallback((dialogType, data) => {
+        if (isAnyDialogOpenRef.current) {
+            setPromptQueue(prev => [...prev, { dialogType, data }]);
+        } else {
+            showDialog(dialogType, data);
+        }
+    }, [showDialog]);
+
+    const appendTerminalContent = useCallback((content) => {
+        setState(prev => ({
+            ...prev,
+            terminalContent: [...prev.terminalContent.slice(-999), content],
+        }));
+    }, []);
 
     const handleMessage = useCallback((event, term) => {
         const data = event.data.toString();
-        const type = data.substring(0, 1);
-        const message = data.substring(1);
+        const type = data[0];
+        const message = data.slice(1);
 
-        if (type === "\x01") {
-            term.write(message);
-            setTerminalContent(prev => {
-                const newContent = [...prev, message];
-                return newContent.length > 1000 ? newContent.slice(-1000) : newContent;
-            });
-        } else if (type === "\x02") {
-            const step = parseInt(message.split(",")[0]);
-            const stepDescription = message.split(",")[1];
+        const parseJSON = (msg, onSuccess) => {
+            try { onSuccess(JSON.parse(msg)); } 
+            catch { /* ignore parse errors */ }
+        };
 
-            setSteps(currentSteps => {
-                const newSteps = [...currentSteps];
-                if (newSteps.length <= step) newSteps[step] = stepDescription;
-                const progressPercent = Math.round((step / Math.max(newSteps.length, step + 1)) * 100);
-                if (updateProgress) updateProgress(session.id, progressPercent);
-                return newSteps;
-            });
+        switch (type) {
+            case MESSAGE_TYPES.OUTPUT:
+                term.write(message);
+                appendTerminalContent(message);
+                break;
 
-            if (stepDescription === "Script execution completed") {
-                setIsCompleted(true);
-                setCurrentStep(step + 1);
-                if (updateProgress) updateProgress(session.id, 100);
-            } else {
-                setCurrentStep(step + 1);
+            case MESSAGE_TYPES.STEP: {
+                const [stepStr, stepDescription] = message.split(",");
+                const step = parseInt(stepStr);
+                setState(prev => {
+                    const newSteps = [...prev.steps];
+                    if (newSteps.length <= step) newSteps[step] = stepDescription;
+                    updateProgress?.(session.id, Math.round((step / Math.max(newSteps.length, step + 1)) * 100));
+                    
+                    if (stepDescription === "Script execution completed") {
+                        updateProgress?.(session.id, 100);
+                        return { ...prev, steps: newSteps, currentStep: step + 1, isCompleted: true, currentProgress: null };
+                    }
+                    return { ...prev, steps: newSteps, currentStep: step + 1, currentProgress: null };
+                });
+                break;
             }
-            setCurrentProgress(null);
-        } else if (type === "\x03") {
-            setCurrentStep(curr => {
-                setFailedStep(curr);
-                return curr;
-            });
-        } else if (type === "\x05") {
-            try {
-                const promptData = JSON.parse(message);
-                setInputPrompt(promptData);
-                setInputDialogOpen(true);
-            } catch (e) {
-                console.error("Error parsing prompt data:", e);
-            }
-        } else if (type === "\x06") {
-            try {
-                const warningData = JSON.parse(message);
-                sendToast("Warning", warningData.message);
-            } catch (e) {
-                console.error("Error parsing warning data:", e);
-            }
-        } else if (type === "\x07") {
-            try {
-                const infoData = JSON.parse(message);
-                sendToast("Info", infoData.message);
-            } catch (e) {
-                console.error("Error parsing info data:", e);
-            }
-        } else if (type === "\x08") {
-            try {
-                const successData = JSON.parse(message);
-                sendToast("Success", successData.message);
-            } catch (e) {
-                console.error("Error parsing success data:", e);
-            }
-        } else if (type === "\x09") {
-            try {
-                const progressData = JSON.parse(message);
-                setCurrentProgress(progressData.percentage);
-                if (updateProgress) updateProgress(session.id, progressData.percentage);
-            } catch (e) {
-                console.error("Error parsing progress data:", e);
-            }
-        } else if (type === "\x0A") {
-            setScriptName(message);
-        } else if (type === "\x0B") {
-            try {
-                setSummaryData(JSON.parse(message));
-            } catch (e) {
-                console.error("Error parsing summary data:", e);
-            }
-        } else if (type === "\x0C") {
-            try {
-                setTableData(JSON.parse(message));
-            } catch (e) {
-                console.error("Error parsing table data:", e);
-            }
-        } else if (type === "\x0D") {
-            try {
-                setMessageBoxData(JSON.parse(message));
-            } catch (e) {
-                console.error("Error parsing message box data:", e);
-            }
-        } else {
-            term.write(data);
-            setTerminalContent(prev => {
-                const newContent = [...prev, data];
-                return newContent.length > 1000 ? newContent.slice(-1000) : newContent;
-            });
+
+            case MESSAGE_TYPES.ERROR:
+                setState(prev => ({ ...prev, failedStep: prev.currentStep }));
+                break;
+
+            case MESSAGE_TYPES.PROMPT:
+                parseJSON(message, data => queueOrShowPrompt(DIALOG_TYPES.input, data));
+                break;
+
+            case MESSAGE_TYPES.WARNING:
+                parseJSON(message, data => sendToast("Warning", data.message));
+                break;
+
+            case MESSAGE_TYPES.INFO:
+                parseJSON(message, data => sendToast("Info", data.message));
+                break;
+
+            case MESSAGE_TYPES.SUCCESS:
+                parseJSON(message, data => sendToast("Success", data.message));
+                break;
+
+            case MESSAGE_TYPES.PROGRESS:
+                parseJSON(message, data => {
+                    setState(prev => ({ ...prev, currentProgress: data.percentage }));
+                    updateProgress?.(session.id, data.percentage);
+                });
+                break;
+
+            case MESSAGE_TYPES.SCRIPT_NAME:
+                setState(prev => ({ ...prev, scriptName: message }));
+                break;
+
+            case MESSAGE_TYPES.SUMMARY:
+                parseJSON(message, data => queueOrShowPrompt(DIALOG_TYPES.summary, data));
+                break;
+
+            case MESSAGE_TYPES.TABLE:
+                parseJSON(message, data => queueOrShowPrompt(DIALOG_TYPES.table, data));
+                break;
+
+            case MESSAGE_TYPES.MSGBOX:
+                parseJSON(message, data => queueOrShowPrompt(DIALOG_TYPES.msgbox, data));
+                break;
+
+            default:
+                term.write(data);
+                appendTerminalContent(data);
         }
-    }, [sendToast, updateProgress, session.id]);
+    }, [sendToast, updateProgress, session.id, queueOrShowPrompt, appendTerminalContent]);
 
     const { wsRef } = useTerminal(containerRef, session, {
         onMessage: handleMessage,
-        onClose: () => setIsCompleted(true),
-        onError: () => setFailedStep(currentStep),
+        onClose: () => setState(prev => ({ ...prev, isCompleted: true })),
+        onError: () => setState(prev => ({ ...prev, failedStep: prev.currentStep })),
         restoreContent: savedState?.terminalContent,
     });
 
+    const sendResponse = useCallback((variable, value, clearFn) => {
+        if (wsRef.current?.readyState === WebSocket.OPEN) {
+            wsRef.current.send(JSON.stringify({ type: "input_response", variable, value }));
+        }
+        clearFn();
+    }, [wsRef]);
+
     const sendInput = useCallback((value) => {
-        if (wsRef.current && inputPrompt) {
-            wsRef.current.send(JSON.stringify({ 
-                type: "input_response", 
-                variable: inputPrompt.variable, 
-                value 
-            }));
-            setInputDialogOpen(false);
-            setInputPrompt(null);
+        if (dialogs.inputPrompt) {
+            sendResponse(dialogs.inputPrompt.variable, value, () => 
+                setDialogs(prev => ({ ...prev, inputOpen: false, inputPrompt: null }))
+            );
         }
-    }, [inputPrompt, wsRef]);
+    }, [dialogs.inputPrompt, sendResponse]);
 
-    const sendSummaryResponse = useCallback(() => {
-        if (wsRef.current?.readyState === WebSocket.OPEN) {
-            wsRef.current.send(JSON.stringify({ 
-                type: "input_response", 
-                variable: "NEXTERM_SUMMARY_RESULT", 
-                value: "closed" 
-            }));
-        }
-        setSummaryData(null);
-    }, [wsRef]);
+    const closeDialog = useCallback((variable, field) => () => {
+        sendResponse(variable, "closed", () => setDialogs(prev => ({ ...prev, [field]: null })));
+    }, [sendResponse]);
 
-    const sendTableResponse = useCallback(() => {
-        if (wsRef.current?.readyState === WebSocket.OPEN) {
-            wsRef.current.send(JSON.stringify({ 
-                type: "input_response", 
-                variable: "NEXTERM_TABLE_RESULT", 
-                value: "closed" 
-            }));
-        }
-        setTableData(null);
-    }, [wsRef]);
-
-    const sendMessageBoxResponse = useCallback(() => {
-        if (wsRef.current?.readyState === WebSocket.OPEN) {
-            wsRef.current.send(JSON.stringify({ 
-                type: "input_response", 
-                variable: "NEXTERM_MSGBOX_RESULT", 
-                value: "closed" 
-            }));
-        }
-        setMessageBoxData(null);
-    }, [wsRef]);
-
-    const cancelScript = useCallback(() => {
-        wsRef.current?.send(JSON.stringify({ type: "input_cancelled" }));
-    }, [wsRef]);
-
-    const getTypeByIndex = (index) => {
+    const getTypeByIndex = useCallback((index) => {
+        const { failedStep, currentStep, isCompleted, currentProgress, steps } = state;
         if (index === failedStep - 1) return "error";
         if (failedStep !== null && index > failedStep - 1) return "skip";
         if (index < currentStep - 1) return "success";
         if (index === currentStep - 1) {
             if (isCompleted && index === steps.length - 1) return "success";
-            if (currentProgress !== null) return "progress";
-            return "loading";
+            return currentProgress !== null ? "progress" : "loading";
         }
         return "soon";
-    };
+    }, [state]);
 
     return (
         <div className="script-renderer">
@@ -212,34 +218,18 @@ export const ScriptRenderer = ({ session, updateProgress, savedState, saveState 
                 <div ref={containerRef} className="script-terminal-wrapper" />
             </div>
             <ScriptProgressPanel
-                scriptName={scriptName || session.scriptName || "Script"}
-                steps={steps}
-                failedStep={failedStep}
-                isCompleted={isCompleted}
-                currentProgress={currentProgress}
+                scriptName={state.scriptName || session.scriptName || "Script"}
+                steps={state.steps}
+                failedStep={state.failedStep}
+                isCompleted={state.isCompleted}
+                currentProgress={state.currentProgress}
                 getTypeByIndex={getTypeByIndex}
-                onCancel={cancelScript}
+                onCancel={() => wsRef.current?.send(JSON.stringify({ type: "input_cancelled" }))}
             />
-            <InputDialog
-                open={inputDialogOpen}
-                onSubmit={sendInput}
-                prompt={inputPrompt}
-            />
-            <SummaryDialog
-                open={!!summaryData}
-                onClose={sendSummaryResponse}
-                summaryData={summaryData}
-            />
-            <TableDialog
-                open={!!tableData}
-                onClose={sendTableResponse}
-                tableData={tableData}
-            />
-            <MessageBoxDialog
-                open={!!messageBoxData}
-                onClose={sendMessageBoxResponse}
-                messageData={messageBoxData}
-            />
+            <InputDialog open={dialogs.inputOpen} onSubmit={sendInput} prompt={dialogs.inputPrompt} />
+            <SummaryDialog open={!!dialogs.summaryData} onClose={closeDialog("NEXTERM_SUMMARY_RESULT", "summaryData")} summaryData={dialogs.summaryData} />
+            <TableDialog open={!!dialogs.tableData} onClose={closeDialog("NEXTERM_TABLE_RESULT", "tableData")} tableData={dialogs.tableData} />
+            <MessageBoxDialog open={!!dialogs.messageBoxData} onClose={closeDialog("NEXTERM_MSGBOX_RESULT", "messageBoxData")} messageData={dialogs.messageBoxData} />
         </div>
     );
 };
