@@ -4,17 +4,26 @@ import { useState, useRef, useCallback, useEffect } from "react";
 import GuacamoleRenderer from "@/pages/Servers/components/ViewContainer/renderer/GuacamoleRenderer.jsx";
 import XtermRenderer from "@/pages/Servers/components/ViewContainer/renderer/XtermRenderer.jsx";
 import FileRenderer from "@/pages/Servers/components/ViewContainer/renderer/FileRenderer";
+import ScriptRenderer from "@/pages/Servers/components/ViewContainer/renderer/ScriptRenderer";
 import Icon from "@mdi/react";
 import { mdiFullscreenExit } from "@mdi/js";
 import { useTranslation } from "react-i18next";
 
-export const ViewContainer = ({ activeSessions, activeSessionId, setActiveSessionId, disconnectFromServer, hibernateSession, setOpenFileEditors }) => {
+export const ViewContainer = ({
+                                  activeSessions,
+                                  activeSessionId,
+                                  setActiveSessionId,
+                                  disconnectFromServer,
+                                  hibernateSession,
+                                  setOpenFileEditors,
+                              }) => {
 
     const [layoutMode, setLayoutMode] = useState("single");
     const [gridSessions, setGridSessions] = useState([]);
     const sessionRefs = useRef({});
     const terminalRefs = useRef({});
     const guacamoleRefs = useRef({});
+    const scriptStateRefs = useRef({});
     const tabOrderRef = useRef([]);
     const [broadcastMode, setBroadcastMode] = useState(false);
     const [sessionProgress, setSessionProgress] = useState({});
@@ -23,6 +32,7 @@ export const ViewContainer = ({ activeSessions, activeSessionId, setActiveSessio
 
     const [columnSizes, setColumnSizes] = useState([]);
     const [rowSizes, setRowSizes] = useState([]);
+    const [cellSizes, setCellSizes] = useState([]);
     const [isResizing, setIsResizing] = useState(false);
     const [resizingDirection, setResizingDirection] = useState(null);
     const resizeRef = useRef(null);
@@ -50,8 +60,19 @@ export const ViewContainer = ({ activeSessions, activeSessionId, setActiveSessio
     const updateSessionProgress = useCallback((sessionId, progress) => {
         setSessionProgress(prev => ({
             ...prev,
-            [sessionId]: progress
+            [sessionId]: progress,
         }));
+    }, []);
+
+    const updateScriptState = useCallback((sessionId, state) => {
+        scriptStateRefs.current[sessionId] = {
+            ...scriptStateRefs.current[sessionId],
+            ...state,
+        };
+    }, []);
+
+    const getScriptState = useCallback((sessionId) => {
+        return scriptStateRefs.current[sessionId] || null;
     }, []);
 
     const toggleBroadcastMode = useCallback(() => {
@@ -168,12 +189,22 @@ export const ViewContainer = ({ activeSessions, activeSessionId, setActiveSessio
         const newColumnSizes = Array(cols).fill(1);
         const newRowSizes = Array(rows).fill(1);
 
+        const newCellSizes = [];
+        for (let r = 0; r < rows; r++) {
+            newCellSizes[r] = [];
+            for (let c = 0; c < cols; c++) {
+                newCellSizes[r][c] = { width: 1, height: 1 };
+            }
+        }
+
         setColumnSizes(newColumnSizes);
         setRowSizes(newRowSizes);
+        setCellSizes(newCellSizes);
     }, []);
 
-    const handleResizerMouseDown = useCallback((e, type, index) => {
+    const handleResizerMouseDown = useCallback((e, type, index, rowIndex = null) => {
         e.preventDefault();
+        e.stopPropagation();
         setIsResizing(true);
         setResizingDirection(type);
 
@@ -184,43 +215,41 @@ export const ViewContainer = ({ activeSessions, activeSessionId, setActiveSessio
         const totalSize = type === "vertical" ? layoutRect.width : layoutRect.height;
         const layoutStart = type === "vertical" ? layoutRect.left : layoutRect.top;
 
-        const initialSizes = type === "vertical" ? [...columnSizes] : [...rowSizes];
-        const totalInitialSize = initialSizes.reduce((sum, size) => sum + size, 0);
+        const isSegmentResize = rowIndex !== null && type === "vertical";
+        const initialCellSizes = cellSizes.map(row => row.map(cell => ({ ...cell })));
+        const initialRowSizes = [...rowSizes];
+        const totalRowSize = initialRowSizes.reduce((sum, size) => sum + size, 0) || 1;
 
         const handleMouseMove = (moveEvent) => {
             const currentPos = type === "vertical" ? moveEvent.clientX : moveEvent.clientY;
             const relativePos = Math.max(0, Math.min(totalSize, currentPos - layoutStart));
             const mouseRatio = relativePos / totalSize;
 
-            if (type === "vertical") {
-                setColumnSizes(prev => {
-                    const newSizes = [...prev];
-                    if (index < newSizes.length - 1) {
-                        const sizesBeforeResizer = initialSizes.slice(0, index);
-                        const totalBefore = sizesBeforeResizer.reduce((sum, size) => sum + size, 0);
+            if (type === "vertical" && isSegmentResize && initialCellSizes[rowIndex]) {
+                setCellSizes(prev => {
+                    const newSizes = prev.map(row => row.map(cell => ({ ...cell })));
+                    if (newSizes[rowIndex] && index < newSizes[rowIndex].length - 1) {
+                        const rowCells = initialCellSizes[rowIndex];
+                        const totalRowWidth = rowCells.reduce((sum, cell) => sum + cell.width, 0);
+                        const widthsBefore = rowCells.slice(0, index).reduce((sum, cell) => sum + cell.width, 0);
+                        const twoCellWidth = rowCells[index].width + rowCells[index + 1].width;
 
-                        const twoColumnTotal = initialSizes[index] + initialSizes[index + 1];
+                        const targetWidth = (mouseRatio * totalRowWidth) - widthsBefore;
+                        const clampedWidth = Math.max(0.15, Math.min(twoCellWidth - 0.15, targetWidth));
 
-                        const targetFirstColumn = (mouseRatio * totalInitialSize) - totalBefore;
-                        const clampedFirstColumn = Math.max(0.1, Math.min(twoColumnTotal - 0.1, targetFirstColumn));
-
-                        newSizes[index] = clampedFirstColumn;
-                        newSizes[index + 1] = twoColumnTotal - clampedFirstColumn;
+                        newSizes[rowIndex][index].width = clampedWidth;
+                        newSizes[rowIndex][index + 1].width = twoCellWidth - clampedWidth;
                     }
                     return newSizes;
                 });
-            } else {
+            } else if (type === "horizontal") {
                 setRowSizes(prev => {
                     const newSizes = [...prev];
                     if (index < newSizes.length - 1) {
-                        const sizesBeforeResizer = initialSizes.slice(0, index);
-                        const totalBefore = sizesBeforeResizer.reduce((sum, size) => sum + size, 0);
-
-                        const twoRowTotal = initialSizes[index] + initialSizes[index + 1];
-
-                        const targetFirstRow = (mouseRatio * totalInitialSize) - totalBefore;
-                        const clampedFirstRow = Math.max(0.1, Math.min(twoRowTotal - 0.1, targetFirstRow));
-
+                        const heightsBefore = initialRowSizes.slice(0, index).reduce((sum, size) => sum + size, 0);
+                        const twoRowTotal = initialRowSizes[index] + initialRowSizes[index + 1];
+                        const targetFirstRow = (mouseRatio * totalRowSize) - heightsBefore;
+                        const clampedFirstRow = Math.max(0.15, Math.min(twoRowTotal - 0.15, targetFirstRow));
                         newSizes[index] = clampedFirstRow;
                         newSizes[index + 1] = twoRowTotal - clampedFirstRow;
                     }
@@ -240,37 +269,7 @@ export const ViewContainer = ({ activeSessions, activeSessionId, setActiveSessio
         document.addEventListener("mouseup", handleMouseUp);
 
         resizeRef.current = { type, index, handleMouseMove, handleMouseUp };
-    }, [columnSizes, rowSizes]);
-
-    const createResizers = useCallback((layout) => {
-        const { rows, cols } = layout;
-        const resizers = [];
-
-        for (let col = 0; col < cols - 1; col++) {
-            resizers.push(
-                <div key={`v-resizer-${col}`} className="grid-resizer vertical"
-                    style={{
-                        gridColumn: `${col + 2} / ${col + 2}`, gridRow: `1 / ${rows + 1}`, width: "6px",
-                        cursor: "col-resize", zIndex: 10, position: "relative", marginLeft: "-3px",
-                    }}
-                    onMouseDown={(e) => handleResizerMouseDown(e, "vertical", col)}
-                />,
-            );
-        }
-
-        for (let row = 0; row < rows - 1; row++) {
-            resizers.push(
-                <div key={`h-resizer-${row}`} className="grid-resizer horizontal"
-                    style={{
-                        gridColumn: `1 / ${cols + 1}`, gridRow: `${row + 2} / ${row + 2}`, height: "6px",
-                        cursor: "row-resize", zIndex: 10, position: "relative", marginTop: "-3px",
-                    }}
-                    onMouseDown={(e) => handleResizerMouseDown(e, "horizontal", row)} />,
-            );
-        }
-
-        return resizers;
-    }, [handleResizerMouseDown]);
+    }, [cellSizes, rowSizes]);
 
     const getDynamicLayout = (sessionCount) => {
         if (sessionCount <= 1) return { mode: "single", rows: 1, cols: 1 };
@@ -302,8 +301,11 @@ export const ViewContainer = ({ activeSessions, activeSessionId, setActiveSessio
             setGridSessions([]);
             setColumnSizes([]);
             setRowSizes([]);
+            setCellSizes([]);
         }
     };
+
+    const prevSessionCountRef = useRef(activeSessions.length);
 
     useEffect(() => {
         if (layoutMode !== "single") {
@@ -315,8 +317,11 @@ export const ViewContainer = ({ activeSessions, activeSessionId, setActiveSessio
                 : activeSessions.map(s => s.id);
             setGridSessions(orderedSessionIds);
 
-            const layout = getDynamicLayout(activeSessions.length);
-            initializeGridSizes(layout);
+            if (prevSessionCountRef.current !== activeSessions.length) {
+                const layout = getDynamicLayout(activeSessions.length);
+                initializeGridSizes(layout);
+                prevSessionCountRef.current = activeSessions.length;
+            }
         }
     }, [activeSessions, layoutMode, initializeGridSizes]);
 
@@ -354,24 +359,140 @@ export const ViewContainer = ({ activeSessions, activeSessionId, setActiveSessio
     };
 
     const renderRenderer = (session) => {
+        if (session.scriptId) {
+            return <ScriptRenderer
+                session={session}
+                disconnectFromServer={disconnectFromServer}
+                updateProgress={updateSessionProgress}
+                savedState={getScriptState(session.id)}
+                saveState={(state) => updateScriptState(session.id, state)} />;
+        }
+
         const renderer = session.type || session.server.renderer;
-        
+
         switch (renderer) {
             case "guac":
                 return <GuacamoleRenderer session={session} disconnectFromServer={disconnectFromServer}
-                    registerGuacamoleRef={registerGuacamoleRef}
-                    onFullscreenToggle={toggleFullscreenMode} />;
+                                          registerGuacamoleRef={registerGuacamoleRef}
+                                          onFullscreenToggle={toggleFullscreenMode} />;
             case "terminal":
                 return <XtermRenderer session={session} disconnectFromServer={disconnectFromServer}
-                    registerTerminalRef={registerTerminalRef} broadcastMode={broadcastMode}
-                    terminalRefs={terminalRefs} updateProgress={updateSessionProgress}
-                    layoutMode={layoutMode} onBroadcastToggle={toggleBroadcastMode}
-                    onFullscreenToggle={toggleFullscreenMode} />;
+                                      registerTerminalRef={registerTerminalRef} broadcastMode={broadcastMode}
+                                      terminalRefs={terminalRefs} updateProgress={updateSessionProgress}
+                                      layoutMode={layoutMode} onBroadcastToggle={toggleBroadcastMode}
+                                      onFullscreenToggle={toggleFullscreenMode} />;
             case "sftp":
-                return <FileRenderer session={session} disconnectFromServer={disconnectFromServer} setOpenFileEditors={setOpenFileEditors} />;
+                return <FileRenderer session={session} disconnectFromServer={disconnectFromServer}
+                                     setOpenFileEditors={setOpenFileEditors} />;
             default:
                 return <p>Unknown renderer: {renderer}</p>;
         }
+    };
+
+    const getSessionByGridIndex = (index) => {
+        const sessionId = gridSessions[index];
+        return activeSessions.find(s => s.id === sessionId);
+    };
+
+    const renderFlexLayout = () => {
+        const layout = getDynamicLayout(gridSessions.length);
+        const { rows, cols } = layout;
+
+        const rowElements = [];
+
+        for (let rowIdx = 0; rowIdx < rows; rowIdx++) {
+            const rowHeight = rowSizes[rowIdx] || 1;
+            const totalRowHeight = rowSizes.reduce((sum, s) => sum + s, 0) || rows;
+            const rowHeightPercent = (rowHeight / totalRowHeight) * 100;
+
+            const colElements = [];
+
+            for (let colIdx = 0; colIdx < cols; colIdx++) {
+                const gridIndex = rowIdx * cols + colIdx;
+                if (gridIndex >= gridSessions.length) continue;
+
+                const session = getSessionByGridIndex(gridIndex);
+                if (!session) continue;
+
+                const cellWidth = cellSizes[rowIdx]?.[colIdx]?.width ?? columnSizes[colIdx] ?? 1;
+                const rowCellWidths = cellSizes[rowIdx]
+                    ? cellSizes[rowIdx].slice(0, Math.min(cols, gridSessions.length - rowIdx * cols)).map(c => c?.width ?? 1)
+                    : columnSizes.slice(0, Math.min(cols, gridSessions.length - rowIdx * cols));
+                const totalRowWidth = rowCellWidths.reduce((sum, w) => sum + w, 0) || cols;
+                const cellWidthPercent = (cellWidth / totalRowWidth) * 100;
+
+                const handleSessionClick = () => {
+                    if (session.id !== activeSessionId) focusSession(session.id);
+                };
+
+                colElements.push(
+                    <div
+                        key={session.id}
+                        ref={el => sessionRefs.current[session.id] = el}
+                        className="session-renderer visible"
+                        onClick={handleSessionClick}
+                        style={{
+                            flex: `0 0 ${cellWidthPercent}%`,
+                            height: "100%",
+                            position: "relative",
+                            overflow: "hidden",
+                        }}
+                    >
+                        {renderRenderer(session)}
+                    </div>,
+                );
+
+                if (colIdx < cols - 1 && gridIndex + 1 < gridSessions.length) {
+                    colElements.push(
+                        <div
+                            key={`v-resizer-${rowIdx}-${colIdx}`}
+                            className="grid-resizer vertical"
+                            style={{
+                                width: "6px",
+                                cursor: "col-resize",
+                                zIndex: 10,
+                                flexShrink: 0,
+                            }}
+                            onMouseDown={(e) => handleResizerMouseDown(e, "vertical", colIdx, rowIdx)}
+                        />,
+                    );
+                }
+            }
+
+            rowElements.push(
+                <div
+                    key={`row-${rowIdx}`}
+                    className="grid-row"
+                    style={{
+                        display: "flex",
+                        flex: `0 0 ${rowHeightPercent}%`,
+                        width: "100%",
+                        overflow: "hidden",
+                    }}
+                >
+                    {colElements}
+                </div>,
+            );
+
+            if (rowIdx < rows - 1) {
+                rowElements.push(
+                    <div
+                        key={`h-resizer-row-${rowIdx}`}
+                        className="grid-resizer horizontal"
+                        style={{
+                            height: "6px",
+                            width: "100%",
+                            cursor: "row-resize",
+                            zIndex: 10,
+                            flexShrink: 0,
+                        }}
+                        onMouseDown={(e) => handleResizerMouseDown(e, "horizontal", rowIdx, null)}
+                    />,
+                );
+            }
+        }
+
+        return rowElements;
     };
 
     const renderSession = (session) => {
@@ -409,37 +530,37 @@ export const ViewContainer = ({ activeSessions, activeSessionId, setActiveSessio
         );
     };
     return (
-        <div className={`view-container ${fullscreenMode ? 'fullscreen' : ''}`}>
+        <div className={`view-container ${fullscreenMode ? "fullscreen" : ""}`}>
             {fullscreenMode && (
-                <button className="exit-fullscreen-btn" onClick={toggleFullscreenMode} title={t('servers.terminalActions.exitFullScreen')}>
+                <button className="exit-fullscreen-btn" onClick={toggleFullscreenMode}
+                        title={t("servers.terminalActions.exitFullScreen")}>
                     <Icon path={mdiFullscreenExit} />
                 </button>
             )}
             {!fullscreenMode && <ServerTabs activeSessions={activeSessions} setActiveSessionId={focusSession}
-                activeSessionId={activeSessionId} disconnectFromServer={disconnectFromServer}
-                layoutMode={layoutMode} onToggleSplit={toggleSplitMode} orderRef={tabOrderRef}
-                onTabOrderChange={onTabOrderChange} onBroadcastToggle={toggleBroadcastMode}
-                onSnippetSelected={handleSnippetSelected} broadcastEnabled={broadcastMode}
-                onKeyboardShortcut={handleKeyboardShortcut} hasGuacamole={hasGuacamole}
-                sessionProgress={sessionProgress} fullscreenEnabled={fullscreenMode}
-                onFullscreenToggle={toggleFullscreenMode} hibernateSession={hibernateSession} />}
+                                            activeSessionId={activeSessionId}
+                                            disconnectFromServer={disconnectFromServer}
+                                            layoutMode={layoutMode} onToggleSplit={toggleSplitMode}
+                                            orderRef={tabOrderRef}
+                                            onTabOrderChange={onTabOrderChange} onBroadcastToggle={toggleBroadcastMode}
+                                            onSnippetSelected={handleSnippetSelected} broadcastEnabled={broadcastMode}
+                                            onKeyboardShortcut={handleKeyboardShortcut} hasGuacamole={hasGuacamole}
+                                            sessionProgress={sessionProgress} fullscreenEnabled={fullscreenMode}
+                                            onFullscreenToggle={toggleFullscreenMode}
+                                            hibernateSession={hibernateSession} />}
 
             <div ref={layoutRef}
-                className={`view-layouter ${layoutMode} ${isResizing ? "resizing" : ""} ${isResizing && resizingDirection ? `resizing-${resizingDirection}` : ""}`}
-                style={layoutMode !== "single" ? {
-                    "--grid-rows": getDynamicLayout(gridSessions.length).rows,
-                    "--grid-cols": getDynamicLayout(gridSessions.length).cols,
-                    gridTemplateColumns: columnSizes.length > 0 ?
-                        columnSizes.map(size => `${size}fr`).join(" ") :
-                        `repeat(${getDynamicLayout(gridSessions.length).cols}, 1fr)`,
-                    gridTemplateRows: rowSizes.length > 0 ?
-                        rowSizes.map(size => `${size}fr`).join(" ") :
-                        `repeat(${getDynamicLayout(gridSessions.length).rows}, 1fr)`,
-                } : {}}>
-                {activeSessions.map(session => renderSession(session))}
-
-                {layoutMode !== "single" && gridSessions.length > 1 &&
-                    createResizers(getDynamicLayout(gridSessions.length))}
+                 className={`view-layouter ${layoutMode} ${isResizing ? "resizing" : ""} ${isResizing && resizingDirection ? `resizing-${resizingDirection}` : ""}`}
+                 style={layoutMode !== "single" ? {
+                     display: "flex",
+                     flexDirection: "column",
+                     width: "100%",
+                     height: "100%",
+                 } : {}}>
+                {layoutMode === "single"
+                    ? activeSessions.map(session => renderSession(session))
+                    : renderFlexLayout()
+                }
             </div>
         </div>
     );
