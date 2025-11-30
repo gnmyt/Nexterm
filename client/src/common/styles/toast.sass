@@ -7,7 +7,7 @@
   display: flex
   flex-direction: column-reverse
   gap: 12px
-  z-index: 9999
+  z-index: 10002
   pointer-events: none
   max-width: 380px
   width: calc(100% - 96px)
@@ -15,99 +15,123 @@
 .toast
   display: flex
   align-items: flex-start
-  background: rgba($lighter-background, 0.95)
-  border-left: 4px solid $primary
-  border-radius: 12px
-  padding: 16px
+  background-color: $lighter-background
+  border: 1px solid $dark-gray
+  border-radius: 0.75rem
+  padding: 1rem
   width: 100%
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2), 0 2px 8px rgba(0, 0, 0, 0.1), 0 0 1px rgba(255, 255, 255, 0.1)
+  box-shadow: 0 12px 48px rgba(0, 0, 0, 0.5), 0 4px 16px rgba(0, 0, 0, 0.3)
   pointer-events: all
-  animation: toast-enter 0.35s cubic-bezier(0.21, 1.02, 0.73, 1)
+  animation: toast-enter 0.25s cubic-bezier(0.4, 0, 0.2, 1)
   overflow: hidden
-  backdrop-filter: blur(10px)
+
+  &.no-description
+    align-items: center
+
+    .toast-title
+      margin-bottom: 0
   
   &.toast-exit
-    animation: toast-exit 0.2s cubic-bezier(0.06, 0.71, 0.55, 1) forwards
+    animation: toast-exit 0.15s cubic-bezier(0.4, 0, 0.2, 1) forwards
 
   &[data-type="Success"]
-    border-left-color: $success
     .toast-icon
+      background-color: $success-opacity
+      border-color: $success
       color: $success
 
   &[data-type="Error"]
-    border-left-color: $error
     .toast-icon
+      background-color: $error-opacity
+      border-color: $error
       color: $error
 
   &[data-type="Warning"]
-    border-left-color: $warning
     .toast-icon
+      background-color: $warning-opacity
+      border-color: $warning
       color: $warning
 
+  &[data-type="Info"]
+    .toast-icon
+      background-color: $primary-opacity
+      border-color: $primary
+      color: $primary
+
 .toast-icon
-  margin-right: 14px
-  color: $primary
+  width: 2rem
+  height: 2rem
+  border-radius: 0.5rem
+  display: flex
+  align-items: center
+  justify-content: center
   flex-shrink: 0
-  opacity: 0.9
-  transform: translateY(2px)
+  margin-right: 0.875rem
+  background-color: $primary-opacity
+  border: 1px solid $primary
+  color: $primary
+  
+  svg
+    width: 1.125rem
+    height: 1.125rem
 
 .toast-content
   flex: 1
   min-width: 0
-  margin-right: 8px
+  margin-right: 0.5rem
 
 .toast-title
   font-weight: 600
   color: $white
-  margin-bottom: 4px
-  font-size: 0.95rem
-  letter-spacing: 0.2px
+  margin-bottom: 0.25rem
+  font-size: 0.9rem
 
 .toast-description
   color: $subtext
-  font-size: 0.9rem
+  font-size: 0.85rem
   line-height: 1.5
   word-wrap: break-word
-  opacity: 0.9
 
 .toast-close
   background: none
-  border: none
+  border: 1px solid $gray
   color: $subtext
   cursor: pointer
-  font-size: 18px
-  height: 24px
-  width: 24px
+  height: 1.75rem
+  width: 1.75rem
   display: flex
   align-items: center
   justify-content: center
   align-self: flex-start
   outline: none
-  border-radius: 6px
-  opacity: 0.6
-  transition: all 0.2s ease
-  margin: -4px -4px 0 0
+  border-radius: 0.375rem
+  transition: all 0.1s ease
+  flex-shrink: 0
+  
+  svg
+    width: 1rem
+    height: 1rem
   
   &:hover
-    opacity: 1
     color: $white
-    background: rgba($white, 0.1)
+    background-color: $gray
+    border-color: $error
 
 @keyframes toast-enter
   0%
-    transform: translateX(20px)
     opacity: 0
+    transform: translateX(16px) scale(0.95)
   100%
-    transform: translateX(0)
     opacity: 1
+    transform: translateX(0) scale(1)
 
 @keyframes toast-exit
   0%
-    transform: translateX(0)
     opacity: 1
+    transform: translateX(0) scale(1)
   100%
-    transform: translateX(20px)
     opacity: 0
+    transform: translateX(16px) scale(0.95)
 
 @media (max-width: 480px)
   .toast-container
@@ -118,4 +142,4 @@
     max-width: none
     
   .toast
-    padding: 14px
+    padding: 0.875rem
