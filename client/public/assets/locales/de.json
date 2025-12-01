@@ -1,18 +1,18 @@
 {
   "common": {
-    "error": "Error",
-    "success": "Success",
-    "loading": "Loading...",
+    "error": "Fehler",
+    "success": "Erfolg",
+    "loading": "Laden...",
     "actions": {
       "cancel": "Abbrechen",
       "confirm": "Bestätigen",
       "login": "Einloggen",
       "register": "Registrieren",
-      "save": "Save",
-      "download": "Download",
-      "close": "Close",
-      "maximize": "Maximize",
-      "restore": "Restore"
+      "save": "Speichern",
+      "download": "Herunterladen",
+      "close": "Schließen",
+      "maximize": "Maximiere",
+      "restore": "Wiederherstellen"
     },
     "labels": {
       "username": "Benutzername",
@@ -42,8 +42,8 @@
     },
     "selectBox": {
       "defaultOption": "Wähle eine Option aus...",
-      "search": "Search...",
-      "noResults": "No results found"
+      "search": "Suche...",
+      "noResults": "Keine Ergebnisse gefunden"
     },
     "sidebar": {
       "settings": "Einstellungen",
@@ -137,11 +137,11 @@
       "title": "Snippets",
       "subtitle": "Verwalte deine Snippets für schnellen Zugriff in Terminals",
       "addSnippet": "Snippet hinzufügen",
-      "personal": "Personal",
-      "selectOrganization": "Select Organization",
+      "personal": "Persönlich",
+      "selectOrganization": "Organisation auswählen",
       "tabs": {
-        "snippets": "Snippets",
-        "scripts": "Scripts"
+        "snippets": "Schnipsel",
+        "scripts": "Skripte"
       }
     },
     "list": {
@@ -190,98 +190,98 @@
   },
   "scripts": {
     "page": {
-      "title": "Scripts",
-      "subtitle": "Manage your automation scripts for server tasks",
-      "addScript": "Add Script",
-      "personal": "Personal",
-      "selectOrganization": "Select Organization",
+      "title": "Skripte",
+      "subtitle": "Verwalte deine Automatisierungsskripte für Serveraufgaben",
+      "addScript": "Skript hinzufügen",
+      "personal": "Persönlich",
+      "selectOrganization": "Organisation auswählen",
       "tabs": {
-        "snippets": "Snippets",
-        "scripts": "Scripts"
+        "snippets": "Schnipsel",
+        "scripts": "Skripte"
       }
     },
     "execution": {
       "progressPanel": {
-        "title": "Script Execution",
-        "noSteps": "No steps yet",
-        "noStepsDescription": "Steps will appear here as the script executes",
+        "title": "Skript-Ausführung",
+        "noSteps": "Noch keine Schritte",
+        "noStepsDescription": "Die Schritte werden hier angezeigt, wenn das Skript ausgeführt wird",
         "steps": "Steps"
       },
       "dialogs": {
-        "enterValue": "Enter value",
-        "selectOption": "Select an option",
-        "confirm": "Confirm",
-        "submit": "Submit",
-        "cancel": "Cancel",
+        "enterValue": "Wert eingeben",
+        "selectOption": "Wähle eine Option",
+        "confirm": "Bestätige",
+        "submit": "einreichen",
+        "cancel": "Abbrechen",
         "ok": "OK",
-        "yes": "Yes",
-        "no": "No",
-        "copyCell": "Copy Cell",
-        "copyRow": "Copy Row",
-        "copyTable": "Copy Table",
-        "close": "Close"
+        "yes": "Ja",
+        "no": "Nein",
+        "copyCell": "Zelle kopieren",
+        "copyRow": "Zeile kopieren",
+        "copyTable": "Tabelle kopieren",
+        "close": "Schließen"
       },
       "status": {
-        "running": "Running",
-        "completed": "Completed",
-        "error": "Error",
-        "pending": "Pending"
+        "running": "Laufen",
+        "completed": "Abgeschlossen",
+        "error": "Fehler",
+        "pending": "Anhängig"
       }
     },
     "list": {
-      "empty": "You don't have any scripts yet. Create your first one!",
+      "empty": "Du hast noch keine Skripte. Erstelle dein erstes!",
       "actions": {
-        "edit": "Edit script",
-        "delete": "Delete script"
+        "edit": "Skript bearbeiten",
+        "delete": "Skript löschen"
       }
     },
     "dialog": {
       "title": {
-        "create": "Create Script",
-        "edit": "Edit Script"
+        "create": "Skript erstellen",
+        "edit": "Skript bearbeiten"
       },
-      "scriptDetails": "Script Details",
-      "scriptContent": "Script Content",
-      "helpTip": "Use @NEXTERM: directives for interactive features",
+      "scriptDetails": "Skript Details",
+      "scriptContent": "Skript Inhalt",
+      "helpTip": "Verwende @NEXTERM: Direktiven für interaktive Funktionen",
       "fields": {
         "name": "Name",
-        "description": "Description"
+        "description": "Beschreibung"
       },
       "placeholders": {
-        "name": "Script name",
-        "description": "What does this script do?"
+        "name": "Skriptname",
+        "description": "Was macht dieses Skript?"
       },
       "actions": {
-        "cancel": "Cancel",
-        "create": "Create",
+        "cancel": "Abbrechen",
+        "create": "erstellen",
         "update": "Update",
-        "creating": "Creating...",
-        "updating": "Updating..."
+        "creating": "Erstellen...",
+        "updating": "Aktualisieren..."
       },
       "errors": {
-        "nameRequired": "Script name is required",
-        "descriptionRequired": "Script description is required",
-        "contentRequired": "Script content is required",
-        "createFailed": "Failed to create script",
-        "updateFailed": "Failed to update script"
+        "nameRequired": "Skriptname ist erforderlich",
+        "descriptionRequired": "Skriptbeschreibung ist erforderlich",
+        "contentRequired": "Skriptinhalt ist erforderlich",
+        "createFailed": "Skript kann nicht erstellt werden",
+        "updateFailed": "Skript kann nicht aktualisiert werden"
       }
     },
     "messages": {
       "success": {
-        "created": "Script created successfully",
-        "updated": "Script updated successfully",
-        "deleted": "Script deleted successfully"
+        "created": "Skript erfolgreich erstellt",
+        "updated": "Skript erfolgreich aktualisiert",
+        "deleted": "Skript erfolgreich gelöscht"
       },
       "errors": {
-        "loadFailed": "Failed to load script data",
-        "deleteFailed": "Failed to delete script"
+        "loadFailed": "Skriptdaten konnten nicht geladen werden",
+        "deleteFailed": "Skript kann nicht gelöscht werden"
       }
     },
     "menu": {
-      "searchPlaceholder": "Search scripts...",
-      "noScripts": "No scripts available. Create some in the Scripts section.",
-      "noMatch": "No scripts match your search.",
-      "selectIdentity": "Select Identity"
+      "searchPlaceholder": "Skripte suchen...",
+      "noScripts": "Keine Skripte verfügbar. Erstelle welche im Abschnitt Skripte.",
+      "noMatch": "Keine Skripte entsprechen deiner Suche.",
+      "selectIdentity": "Identität wählen"
     }
   },
   "monitoring": {
@@ -400,7 +400,7 @@
       "organizations": "Organisationen",
       "users": "Benutzer",
       "authentication": "Authentifizierung",
-      "sources": "Sources",
+      "sources": "Quellen",
       "ai": "AI"
     },
     "account": {
@@ -409,10 +409,10 @@
       "firstName": "Vorname",
       "lastName": "Nachname",
       "appearance": "Erscheinungsbild",
-      "appearanceDescription": "Choose your preferred theme. Auto follows your system settings and adjusts based on time of day.",
+      "appearanceDescription": "Wähle dein bevorzugtes Thema. Folgt automatisch deinen Systemeinstellungen und passt sich je nach Tageszeit an.",
       "themeAuto": "Auto",
-      "themeLight": "Light",
-      "themeDark": "Dark",
+      "themeLight": "Licht",
+      "themeDark": "Dunkel",
       "twoFactor": "Zwei-Faktor-Authentifizierung",
       "twoFactorActive": "Aktiv",
       "twoFactorInactive": "Inaktiv",
@@ -427,14 +427,14 @@
       "currentLanguage": "Aktuelle Sprache",
       "missingLanguage": "Findest du deine Sprache nicht?",
       "helpTranslateLink": "Hilf bei der Übersetzung von Nexterm",
-      "sessionSynchronization": "Session Synchronization",
-      "sessionSyncDescription": "Control how your server sessions are stored and synchronized across devices and browser tabs.",
-      "sessionSyncAcrossDevices": "Across devices",
-      "sessionSyncSameBrowser": "Same browser",
-      "sessionSyncSameTab": "Same tab",
-      "sessionSyncAcrossDevicesDesc": "Sessions will be available across devices and synced",
-      "sessionSyncSameBrowserDesc": "Sessions will synchronize for the current user session",
-      "sessionSyncSameTabDesc": "Sessions will synchronize inside your browser tab",
+      "sessionSynchronization": "Synchronisierung der Sitzungen",
+      "sessionSyncDescription": "Kontrolliere, wie deine Serversitzungen gespeichert und über Geräte und Browser-Tabs hinweg synchronisiert werden.",
+      "sessionSyncAcrossDevices": "Über Geräte hinweg",
+      "sessionSyncSameBrowser": "Gleicher Browser",
+      "sessionSyncSameTab": "Gleiche Registerkarte",
+      "sessionSyncAcrossDevicesDesc": "Die Sitzungen werden auf allen Geräten verfügbar sein und synchronisiert",
+      "sessionSyncSameBrowserDesc": "Die Sitzungen werden für die aktuelle Benutzersitzung synchronisiert",
+      "sessionSyncSameTabDesc": "Die Sitzungen werden innerhalb deines Browser-Tabs synchronisiert",
       "twoFactorDialog": {
         "title": "2FA aktivieren",
         "description": "Scanne den Code mit deiner Authenticator-App oder gib den Code <span class=\"totp-code\">{{secret}}</span> manuell ein.",
@@ -524,51 +524,51 @@
     },
     "keymaps": {
       "title": "Keymaps",
-      "description": "Customize keyboard shortcuts to match your workflow.",
-      "resetAll": "Reset All",
+      "description": "Passe die Tastaturkürzel an deinen Arbeitsablauf an.",
+      "resetAll": "Alle zurücksetzen",
       "actions": {
         "search": {
-          "title": "Search",
-          "description": "Open the search input"
+          "title": "Suche",
+          "description": "Öffne die Sucheingabe"
         },
         "aimenu": {
-          "title": "AI Menu",
-          "description": "Open the AI command menu"
+          "title": "AI-Menü",
+          "description": "Öffne das AI-Befehlsmenü"
         },
         "snippets": {
-          "title": "Snippets",
-          "description": "Open the snippets dialog"
+          "title": "Schnipsel",
+          "description": "Öffne den Schnipsel-Dialog"
         },
         "keyboardshortcuts": {
-          "title": "Keyboard Shortcuts",
-          "description": "Open the keyboard shortcuts menu"
+          "title": "Tastaturkürzel",
+          "description": "Öffne das Menü der Tastaturkürzel"
         },
         "broadcast": {
-          "title": "Broadcast Mode",
-          "description": "Toggle broadcast mode when using split view"
+          "title": "Broadcast-Modus",
+          "description": "Umschalten des Sendemodus bei Verwendung der geteilten Ansicht"
         },
         "copy": {
-          "title": "Copy",
-          "description": "Copy selected text to clipboard"
+          "title": "Kopiere",
+          "description": "Ausgewählten Text in die Zwischenablage kopieren"
         },
         "fullscreen": {
-          "title": "Full-Screen",
-          "description": "Toggle full-screen mode"
+          "title": "Vollbild",
+          "description": "Umschalten des Vollbildmodus"
         }
       },
       "recorder": {
-        "pressKeys": "Press keys...",
-        "save": "Save",
-        "cancel": "Cancel",
-        "reset": "Reset"
+        "pressKeys": "Tasten drücken...",
+        "save": "Speichern",
+        "cancel": "Abbrechen",
+        "reset": "Zurücksetzen"
       },
       "messages": {
-        "updateSuccess": "Keybind updated successfully",
-        "updateFailed": "Failed to update keybind",
-        "resetSuccess": "Keybind reset to default",
-        "resetFailed": "Failed to reset keybind",
-        "resetAllSuccess": "All keybinds reset to defaults",
-        "resetAllFailed": "Failed to reset keybinds"
+        "updateSuccess": "Keybind erfolgreich aktualisiert",
+        "updateFailed": "Aktualisierung der Schlüsselbindung fehlgeschlagen",
+        "resetSuccess": "Keybind auf Standard zurücksetzen",
+        "resetFailed": "Keybind zurücksetzen fehlgeschlagen",
+        "resetAllSuccess": "Alle Tastenkombinationen werden auf die Standardwerte zurückgesetzt",
+        "resetAllFailed": "Zurücksetzen der Tastaturbelegung fehlgeschlagen"
       }
     },
     "terminal": {
@@ -690,7 +690,7 @@
       "title": "SSH-Schlüssel und Anmeldeinformationen",
       "description": "Verwalte deine SSH-Schlüssel und Anmeldedaten für Serververbindungen",
       "createIdentity": "Identität erstellen",
-      "personal": "Personal",
+      "personal": "Persönlich",
       "noUsername": "Kein Nutzername",
       "sshKey": "SSH-Schlüssel",
       "password": "Passwort",
@@ -740,94 +740,94 @@
       }
     },
     "sources": {
-      "title": "Script & Snippet Sources",
-      "description": "Configure external sources to automatically sync scripts and snippets.",
-      "loading": "Loading sources...",
-      "noSources": "No Sources Configured",
-      "noSourcesDescription": "Add external sources to automatically sync scripts and snippets.",
-      "addSource": "Add Source",
-      "snippets": "snippets",
-      "scripts": "scripts",
-      "neverSynced": "Never synced",
-      "sync": "Sync now",
-      "edit": "Edit",
-      "delete": "Delete",
-      "deleteConfirm": "Are you sure you want to delete the source \"{{name}}\"? All synced scripts and snippets from this source will also be deleted.",
+      "title": "Quellen für Skripte und Snippets",
+      "description": "Konfiguriere externe Quellen, um Skripte und Snippets automatisch zu synchronisieren.",
+      "loading": "Quellen laden...",
+      "noSources": "Keine Quellen konfiguriert",
+      "noSourcesDescription": "Füge externe Quellen hinzu, um Skripte und Snippets automatisch zu synchronisieren.",
+      "addSource": "Quelle hinzufügen",
+      "snippets": "Schnipsel",
+      "scripts": "Skripte",
+      "neverSynced": "Nie synchronisiert",
+      "sync": "Jetzt synchronisieren",
+      "edit": "bearbeiten",
+      "delete": "löschen",
+      "deleteConfirm": "Bist du sicher, dass du die Quelle \"{{name}}\" löschen möchtest? Alle synchronisierten Skripte und Snippets aus dieser Quelle werden ebenfalls gelöscht.",
       "status": {
-        "success": "Synced",
-        "error": "Error",
-        "pending": "Pending",
-        "disabled": "Disabled"
+        "success": "Synchronisiert",
+        "error": "Fehler",
+        "pending": "Anhängig",
+        "disabled": "Behinderte"
       },
       "dialog": {
-        "createTitle": "Add Source",
-        "editTitle": "Edit Source",
+        "createTitle": "Quelle hinzufügen",
+        "editTitle": "Quelle bearbeiten",
         "name": "Name",
-        "namePlaceholder": "e.g. Company Scripts",
-        "url": "Source URL",
+        "namePlaceholder": "z.B. Unternehmensskripte",
+        "url": "Quelle URL",
         "urlPlaceholder": "https://scripts.example.com",
-        "enabled": "Enabled",
-        "enabledDescription": "When disabled, this source will not be synced",
-        "validating": "Validating URL...",
-        "validationSuccess": "Valid source found: {{snippets}} snippets, {{scripts}} scripts",
-        "create": "Create"
+        "enabled": "Aktiviert",
+        "enabledDescription": "Wenn deaktiviert, wird diese Quelle nicht synchronisiert",
+        "validating": "Validierung der URL...",
+        "validationSuccess": "Gültige Quelle gefunden: {{snippets}} snippets, {{scripts}} scripts",
+        "create": "erstellen"
       },
       "messages": {
-        "created": "Source created successfully",
-        "updated": "Source updated successfully",
-        "deleted": "Source deleted successfully",
-        "synced": "Source synced successfully"
+        "created": "Quelle erfolgreich erstellt",
+        "updated": "Quelle erfolgreich aktualisiert",
+        "deleted": "Quelle erfolgreich gelöscht",
+        "synced": "Quelle erfolgreich synchronisiert"
       },
       "errors": {
-        "loadFailed": "Failed to load sources",
-        "saveFailed": "Failed to save source",
-        "deleteFailed": "Failed to delete source",
-        "syncFailed": "Failed to sync source",
-        "validationFailed": "Failed to validate URL",
-        "requiredFields": "Name and URL are required"
+        "loadFailed": "Quellen können nicht geladen werden",
+        "saveFailed": "Quelle konnte nicht gespeichert werden",
+        "deleteFailed": "Quelle kann nicht gelöscht werden",
+        "syncFailed": "Quelle konnte nicht synchronisiert werden",
+        "validationFailed": "URL konnte nicht validiert werden",
+        "requiredFields": "Name und URL sind erforderlich"
       }
     }
   },
   "servers": {
     "time": {
-      "justNow": "Just now",
-      "minuteAgo": "{{count}} min ago",
-      "minutesAgo": "{{count}} mins ago",
-      "hourAgo": "{{count}} hour ago",
-      "hoursAgo": "{{count}} hours ago",
-      "dayAgo": "{{count}} day ago",
-      "daysAgo": "{{count}} days ago"
+      "justNow": "Gerade jetzt",
+      "minuteAgo": "{{count}} min vor",
+      "minutesAgo": "{{count}} vor wenigen Minuten",
+      "hourAgo": "{{count}} vor einer Stunde",
+      "hoursAgo": "{{count}} vor Stunden",
+      "dayAgo": "{{count}} vor einem Tag",
+      "daysAgo": "{{count}} vor Tagen"
     },
     "tags": {
       "title": "Tags",
-      "createNewTag": "Create new tag",
+      "createNewTag": "Neuen Tag erstellen",
       "tagName": "Tag name",
-      "create": "Create",
-      "filterByTags": "Filter by Tags",
-      "clearAll": "Clear all",
-      "noTagsCreated": "No tags created yet",
-      "editTag": "Edit tag",
-      "deleteTag": "Delete tag"
+      "create": "erstellen",
+      "filterByTags": "Nach Tags filtern",
+      "clearAll": "Alle löschen",
+      "noTagsCreated": "Noch keine Tags erstellt",
+      "editTag": "Tag bearbeiten",
+      "deleteTag": "Tag löschen"
     },
     "contextMenu": {
       "createFolder": "Ordner erstellen",
       "deleteFolder": "Ordner löschen",
       "renameFolder": "Ordner umbenennen",
-      "new": "New",
-      "sshServer": "SSH Server",
-      "telnetServer": "Telnet Server",
-      "rdpServer": "RDP Server",
-      "vncServer": "VNC Server",
+      "new": "Neu",
+      "sshServer": "SSH-Server",
+      "telnetServer": "Telnet-Server",
+      "rdpServer": "RDP-Server",
+      "vncServer": "VNC-Server",
       "createServer": "Server erstellen",
       "import": "Importieren",
       "pve": "PVE",
       "sshConfig": "SSH-Konfiguration",
       "connect": "Verbinden",
-      "quickConnect": "Quick Connect",
+      "quickConnect": "Schnellverbindung",
       "openSFTP": "SFTP öffnen",
-      "runScript": "Run Script",
+      "runScript": "Skript ausführen",
       "editServer": "Server bearbeiten",
-      "editIntegration": "Edit Integration",
+      "editIntegration": "Integration bearbeiten",
       "duplicateServer": "Server duplizieren",
       "deleteServer": "Server löschen",
       "editPVE": "PVE bearbeiten",
@@ -838,7 +838,7 @@
     },
     "dialog": {
       "addServer": "Server hinzufügen",
-      "addProtocolServer": "Add {{protocol}} server",
+      "addProtocolServer": "{{protocol}} Server hinzufügen",
       "editServer": "Server bearbeiten",
       "tabs": {
         "details": "Details",
@@ -858,8 +858,8 @@
         "username": "Benutzername",
         "password": "Passwort",
         "host": "Host",
-        "nodeName": "Node Name",
-        "vmid": "VM ID"
+        "nodeName": "Knotenpunkt Name",
+        "vmid": "VM-ID"
       },
       "placeholders": {
         "serverName": "Server Name",
@@ -868,48 +868,48 @@
         "username": "Benutzername",
         "password": "Passwort",
         "host": "Host",
-        "nodeName": "Node name",
-        "vmid": "VM ID"
+        "nodeName": "Name des Knotens",
+        "vmid": "VM-ID"
       },
       "settings": {
         "jumpHosts": {
-          "title": "Jump Hosts",
-          "description": "Connect through intermediate servers to reach this target server",
-          "addButton": "Add Jump Host",
-          "removeTooltip": "Remove jump host",
-          "noServersAvailable": "No SSH servers available for jump hosts. Create SSH servers first."
+          "title": "Springen Hosts",
+          "description": "Verbindung über Zwischenserver, um diesen Zielserver zu erreichen",
+          "addButton": "Jump Host hinzufügen",
+          "removeTooltip": "Jump Host entfernen",
+          "noServersAvailable": "Keine SSH-Server für Jump Hosts verfügbar. Erstelle zunächst SSH-Server."
         },
         "monitoring": {
-          "title": "Enable Performance Monitoring",
-          "description": "Collect CPU, memory, disk, and network metrics for this server"
+          "title": "Leistungsüberwachung einschalten",
+          "description": "Erfasse CPU-, Speicher-, Festplatten- und Netzwerkmetriken für diesen Server"
         },
         "keyboardLayout": {
-          "title": "Keyboard Layout",
-          "description": "Select the keyboard layout to use for this connection."
+          "title": "Tastaturlayout",
+          "description": "Wähle das Tastaturlayout aus, das für diese Verbindung verwendet werden soll."
         },
-        "noSettings": "No additional settings available for this entry type."
+        "noSettings": "Für diesen Eintragstyp sind keine weiteren Einstellungen verfügbar."
       },
       "identities": {
-        "organizationIdentities": "Organization Identities",
-        "personalIdentities": "Personal Identities",
-        "orgDescription": "Shared with all organization members. Everyone can use these identities.",
-        "personalDescription": "Only visible to you. Other organization members cannot see these.",
-        "identityName": "Identity Name",
-        "username": "Username",
-        "authentication": "Authentication",
-        "password": "Password",
-        "sshKey": "SSH Key",
-        "sshPrivateKey": "SSH Private Key",
+        "organizationIdentities": "Organisation Identitäten",
+        "personalIdentities": "Persönliche Identitäten",
+        "orgDescription": "Wird mit allen Mitgliedern der Organisation geteilt. Jeder kann diese Identitäten nutzen.",
+        "personalDescription": "Nur für dich sichtbar. Andere Mitglieder der Organisation können sie nicht sehen.",
+        "identityName": "Identität Name",
+        "username": "Benutzername",
+        "authentication": "Authentifizierung",
+        "password": "Passwort",
+        "sshKey": "SSH-Schlüssel",
+        "sshPrivateKey": "Privater SSH-Schlüssel",
         "passphrase": "Passphrase (optional)",
-        "new": "New",
-        "removeIdentity": "Remove identity",
-        "unlinkIdentity": "Unlink identity",
-        "moveToOrg": "Move to organization",
-        "selectOrganization": "Select Organization",
-        "availableToLink": "Available to Link",
-        "noUsername": "No username",
-        "noOrgIdentities": "No organization identities. Create one to share with all members.",
-        "noPersonalIdentities": "No personal identities. Create one for your private use."
+        "new": "Neu",
+        "removeIdentity": "Identität entfernen",
+        "unlinkIdentity": "Identität entkoppeln",
+        "moveToOrg": "Zur Organisation wechseln",
+        "selectOrganization": "Organisation auswählen",
+        "availableToLink": "Verfügbar für Link",
+        "noUsername": "Kein Nutzername",
+        "noOrgIdentities": "Keine Organisationsidentitäten. Erstelle eine, um sie mit allen Mitgliedern zu teilen.",
+        "noPersonalIdentities": "Keine persönlichen Identitäten. Erstelle eine für deinen privaten Gebrauch."
       }
     },
     "proxmoxDialog": {
@@ -1006,22 +1006,22 @@
         "createFolder": "Ordner erstellen",
         "upload": "Datei hochladen",
         "edit": "Bearbeiten",
-        "preview": "Preview",
+        "preview": "Vorschau",
         "bigFileConfirm": "Diese Datei ist {{size}} MB groß. Bist du sicher, dass du sie bearbeiten willst?",
-        "selectAll": "Select All",
-        "insertSnippet": "Insert Snippet",
-        "sendCtrlC": "Send Ctrl+C",
-        "clearTerminal": "Clear Terminal"
+        "selectAll": "Alle auswählen",
+        "insertSnippet": "Snippet einfügen",
+        "sendCtrlC": "Strg+C senden",
+        "clearTerminal": "Terminal löschen"
       },
       "filePreview": {
-        "title": "File Preview",
-        "loading": "Loading...",
-        "cannotPreview": "Cannot Preview File",
-        "unsupportedFileType": "This file type is not supported for preview",
-        "videoNotSupported": "Your browser does not support video playback",
-        "audioNotSupported": "Your browser does not support audio playback",
-        "download": "Download",
-        "close": "Close"
+        "title": "Dateivorschau",
+        "loading": "Laden...",
+        "cannotPreview": "Vorschau der Datei nicht möglich",
+        "unsupportedFileType": "Dieser Dateityp wird für die Vorschau nicht unterstützt",
+        "videoNotSupported": "Dein Browser unterstützt keine Videowiedergabe",
+        "audioNotSupported": "Dein Browser unterstützt keine Audiowiedergabe",
+        "download": "Herunterladen",
+        "close": "Schließen"
       }
     },
     "aiAssistant": {
@@ -1037,12 +1037,12 @@
       "createNew": "Neuen Snippet erstellen"
     },
     "terminalActions": {
-      "menuTitle": "Terminal Actions",
-      "snippets": "Snippets",
-      "keyboardShortcuts": "Keyboard Shortcuts",
-      "broadcasting": "Broadcasting",
-      "fullScreen": "Full-Screen",
-      "exitFullScreen": "Exit Full-Screen Mode",
+      "menuTitle": "Terminal-Aktionen",
+      "snippets": "Schnipsel",
+      "keyboardShortcuts": "Tastaturkürzel",
+      "broadcasting": "Sendung",
+      "fullScreen": "Vollbild",
+      "exitFullScreen": "Beenden des Vollbildmodus",
       "badgeOn": "ON"
     },
     "messages": {
