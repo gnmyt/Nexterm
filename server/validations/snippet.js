@@ -12,3 +12,7 @@ module.exports.snippetEditValidation = Joi.object({
     command: Joi.string().min(1),
     description: Joi.string().allow(null, "")
 });
+
+module.exports.snippetRepositionValidation = Joi.object({
+    targetId: Joi.number().integer().required(),
+});

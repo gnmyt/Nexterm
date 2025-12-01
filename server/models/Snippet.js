@@ -31,5 +31,10 @@ module.exports = db.define("snippets", {
     description: {
         type: Sequelize.TEXT,
         allowNull: true,
+    },
+    sortOrder: {
+        type: Sequelize.INTEGER,
+        allowNull: false,
+        defaultValue: 0,
     }
 }, { freezeTableName: true, createdAt: false, updatedAt: false });
