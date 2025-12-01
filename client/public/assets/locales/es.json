@@ -2,17 +2,17 @@
   "common": {
     "error": "Error",
     "success": "Success",
-    "loading": "Loading...",
+    "loading": "Cargando...",
     "actions": {
       "cancel": "Cancela",
       "confirm": "Confirma",
       "login": "Iniciar sesión",
       "register": "Regístrate en",
-      "save": "Save",
+      "save": "Guardar",
       "download": "Download",
-      "close": "Close",
-      "maximize": "Maximize",
-      "restore": "Restore"
+      "close": "Cerrar",
+      "maximize": "Maximizar",
+      "restore": "Restaurar"
     },
     "labels": {
       "username": "Nombre de usuario",
@@ -42,7 +42,7 @@
     },
     "selectBox": {
       "defaultOption": "Selecciona una opción...",
-      "search": "Search...",
+      "search": "Buscar...",
       "noResults": "No results found"
     },
     "sidebar": {
@@ -210,11 +210,11 @@
       "dialogs": {
         "enterValue": "Enter value",
         "selectOption": "Select an option",
-        "confirm": "Confirm",
-        "submit": "Submit",
-        "cancel": "Cancel",
+        "confirm": "Confirmar",
+        "submit": "Enviar",
+        "cancel": "Cancelar",
         "ok": "OK",
-        "yes": "Yes",
+        "yes": "Sí",
         "no": "No",
         "copyCell": "Copy Cell",
         "copyRow": "Copy Row",
