@@ -315,7 +315,7 @@
       "helpTranslateLink": "مساعدة في ترجمة نيكسترِم",
       "twoFactorDialog": {
         "title": "تمكين 2FA",
-        "description": "امسح الرمز بتطبيق مصادقتك أو أدخل <span class="totp-code">{{secret}}</span> يدويًا.",
+        "description": "امسح الرمز ... <span class=\"totp-code\">{{secret}}</span> ...",
         "codePlaceholder": "أدخل رمز 2FA",
         "enableButton": "تمكين",
         "messages": {
@@ -862,7 +862,7 @@
       "onlyCustomScriptsCanBeDeleted": "يمكن حذف السكريبتات المخصصة فقط",
       "scriptDeletedSuccessfully": "تم حذف السكريبت بنجاح",
       "failedToDeleteScript": "فشل في حذف السكريبت",
-      "deleteScriptConfirmation": "هل أنت متأكد من رغبتك في حذف السكريبت "{{name}}"؟ لا يمكن التراجع عن هذا الإجراء."
+      "deleteScriptConfirmation": "هل أنت متأكد من رغبتك في حذف السكريبت \"{{name}}\"؟ لا يمكن التراجع عن هذا الإجراء."
     }
   }
 }
