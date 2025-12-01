@@ -1,18 +1,18 @@
 {
   "common": {
-    "error": "Error",
-    "success": "Success",
-    "loading": "Loading...",
+    "error": "خطأ",
+    "success": "النجاح",
+    "loading": "جاري التحميل...",
     "actions": {
       "cancel": "إلغاء",
       "confirm": "تأكيد",
       "login": "تسجيل الدخول",
       "register": "تسجيل",
-      "save": "Save",
-      "download": "Download",
-      "close": "Close",
-      "maximize": "Maximize",
-      "restore": "Restore"
+      "save": "الحفظ",
+      "download": "تنزيل",
+      "close": "إغلاق",
+      "maximize": "تعظيم",
+      "restore": "الاستعادة"
     },
     "labels": {
       "username": "اسم المستخدم",
@@ -42,8 +42,8 @@
     },
     "selectBox": {
       "defaultOption": "اختر خيارًا...",
-      "search": "Search...",
-      "noResults": "No results found"
+      "search": "بحث...",
+      "noResults": "لم يتم العثور على نتائج"
     },
     "sidebar": {
       "settings": "الإعدادات",
@@ -137,11 +137,11 @@
       "title": "القصاصات",
       "subtitle": "إدارة قصاصات الأوامر الخاصة بك للوصول السريع في الطرفيات",
       "addSnippet": "إضافة قصاصة",
-      "personal": "Personal",
-      "selectOrganization": "Select Organization",
+      "personal": "شخصي",
+      "selectOrganization": "اختر المنظمة",
       "tabs": {
-        "snippets": "Snippets",
-        "scripts": "Scripts"
+        "snippets": "مقتطفات",
+        "scripts": "النصوص"
       }
     },
     "list": {
@@ -190,98 +190,98 @@
   },
   "scripts": {
     "page": {
-      "title": "Scripts",
-      "subtitle": "Manage your automation scripts for server tasks",
-      "addScript": "Add Script",
-      "personal": "Personal",
-      "selectOrganization": "Select Organization",
+      "title": "النصوص",
+      "subtitle": "إدارة البرامج النصية للتشغيل التلقائي لمهام الخادم",
+      "addScript": "إضافة نص",
+      "personal": "شخصي",
+      "selectOrganization": "اختر المنظمة",
       "tabs": {
-        "snippets": "Snippets",
-        "scripts": "Scripts"
+        "snippets": "مقتطفات",
+        "scripts": "النصوص"
       }
     },
     "execution": {
       "progressPanel": {
-        "title": "Script Execution",
-        "noSteps": "No steps yet",
-        "noStepsDescription": "Steps will appear here as the script executes",
-        "steps": "Steps"
+        "title": "تنفيذ البرنامج النصي",
+        "noSteps": "لا توجد خطوات بعد",
+        "noStepsDescription": "ستظهر الخطوات هنا أثناء تنفيذ البرنامج النصي",
+        "steps": "الخطوات"
       },
       "dialogs": {
-        "enterValue": "Enter value",
-        "selectOption": "Select an option",
-        "confirm": "Confirm",
-        "submit": "Submit",
-        "cancel": "Cancel",
-        "ok": "OK",
-        "yes": "Yes",
-        "no": "No",
-        "copyCell": "Copy Cell",
-        "copyRow": "Copy Row",
-        "copyTable": "Copy Table",
-        "close": "Close"
+        "enterValue": "أدخل القيمة",
+        "selectOption": "حدد خياراً",
+        "confirm": "تأكيد",
+        "submit": "إرسال",
+        "cancel": "إلغاء",
+        "ok": "حسناً",
+        "yes": "نعم",
+        "no": "لا يوجد",
+        "copyCell": "نسخ الخلية",
+        "copyRow": "صف النسخ",
+        "copyTable": "جدول النسخ",
+        "close": "إغلاق"
       },
       "status": {
-        "running": "Running",
-        "completed": "Completed",
-        "error": "Error",
-        "pending": "Pending"
+        "running": "الجري",
+        "completed": "مكتمل",
+        "error": "خطأ",
+        "pending": "قيد الانتظار"
       }
     },
     "list": {
-      "empty": "You don't have any scripts yet. Create your first one!",
+      "empty": "ليس لديك أي نصوص برمجية حتى الآن. قم بإنشاء أول برنامج نصي لك!",
       "actions": {
-        "edit": "Edit script",
-        "delete": "Delete script"
+        "edit": "تحرير النص البرمجي",
+        "delete": "حذف البرنامج النصي"
       }
     },
     "dialog": {
       "title": {
-        "create": "Create Script",
-        "edit": "Edit Script"
+        "create": "إنشاء البرنامج النصي",
+        "edit": "تحرير النص البرمجي"
       },
-      "scriptDetails": "Script Details",
-      "scriptContent": "Script Content",
-      "helpTip": "Use @NEXTERM: directives for interactive features",
+      "scriptDetails": "تفاصيل النص",
+      "scriptContent": "محتوى النص",
+      "helpTip": "استخدام @NEXTERM: توجيهات للميزات التفاعلية",
       "fields": {
-        "name": "Name",
-        "description": "Description"
+        "name": "الاسم",
+        "description": "الوصف"
       },
       "placeholders": {
-        "name": "Script name",
-        "description": "What does this script do?"
+        "name": "اسم النص",
+        "description": "ماذا يفعل هذا البرنامج النصي؟"
       },
       "actions": {
-        "cancel": "Cancel",
-        "create": "Create",
-        "update": "Update",
-        "creating": "Creating...",
-        "updating": "Updating..."
+        "cancel": "إلغاء",
+        "create": "إنشاء",
+        "update": "تحديث",
+        "creating": "إنشاء...",
+        "updating": "تحديث..."
       },
       "errors": {
-        "nameRequired": "Script name is required",
-        "descriptionRequired": "Script description is required",
-        "contentRequired": "Script content is required",
-        "createFailed": "Failed to create script",
-        "updateFailed": "Failed to update script"
+        "nameRequired": "اسم البرنامج النصي مطلوب",
+        "descriptionRequired": "وصف البرنامج النصي مطلوب",
+        "contentRequired": "محتوى البرنامج النصي مطلوب",
+        "createFailed": "فشل في إنشاء برنامج نصي",
+        "updateFailed": "فشل تحديث البرنامج النصي"
       }
     },
     "messages": {
       "success": {
-        "created": "Script created successfully",
-        "updated": "Script updated successfully",
-        "deleted": "Script deleted successfully"
+        "created": "تم إنشاء البرنامج النصي بنجاح",
+        "updated": "تم تحديث البرنامج النصي بنجاح",
+        "deleted": "تم حذف البرنامج النصي بنجاح"
       },
       "errors": {
-        "loadFailed": "Failed to load script data",
-        "deleteFailed": "Failed to delete script"
+        "loadFailed": "فشل تحميل بيانات البرنامج النصي",
+        "deleteFailed": "فشل حذف البرنامج النصي"
       }
     },
     "menu": {
-      "searchPlaceholder": "Search scripts...",
-      "noScripts": "No scripts available. Create some in the Scripts section.",
-      "noMatch": "No scripts match your search.",
-      "selectIdentity": "Select Identity"
+      "searchPlaceholder": "ابحث عن البرامج النصية...",
+      "noScripts": "لا توجد نصوص برمجية متاحة. قم بإنشاء بعضها في قسم البرامج النصية.",
+      "noMatch": "لا توجد نصوص برمجية تتطابق مع بحثك.",
+      "selectIdentity": "تحديد الهوية"
     }
   },
   "monitoring": {
@@ -394,13 +394,13 @@
     "pages": {
       "account": "الحساب",
       "terminal": "الطرفية",
-      "keymaps": "Keymaps",
+      "keymaps": "خرائط المفاتيح",
       "identities": "الهويات",
       "sessions": "الجلسات",
       "organizations": "المؤسسات",
       "users": "المستخدمون",
       "authentication": "المصادقة",
-      "sources": "Sources",
+      "sources": "المصادر",
       "ai": "الذكاء الاصطناعي"
     },
     "account": {
@@ -410,9 +410,9 @@
       "lastName": "اسم العائلة",
       "appearance": "المظهر",
       "appearanceDescription": "اختر بين الوضع الفاتح والداكن للواجهة الخاصة بك.",
-      "themeAuto": "Auto",
-      "themeLight": "Light",
-      "themeDark": "Dark",
+      "themeAuto": "السيارات",
+      "themeLight": "خفيف",
+      "themeDark": "داكن",
       "twoFactor": "المصادقة الثنائية",
       "twoFactorActive": "نشط",
       "twoFactorInactive": "غير نشط",
@@ -427,14 +427,14 @@
       "currentLanguage": "اللغة الحالية",
       "missingLanguage": "هل تفتقد لغتك؟",
       "helpTranslateLink": "مساعدة في ترجمة نيكسترِم",
-      "sessionSynchronization": "Session Synchronization",
-      "sessionSyncDescription": "Control how your server sessions are stored and synchronized across devices and browser tabs.",
-      "sessionSyncAcrossDevices": "Across devices",
-      "sessionSyncSameBrowser": "Same browser",
-      "sessionSyncSameTab": "Same tab",
-      "sessionSyncAcrossDevicesDesc": "Sessions will be available across devices and synced",
-      "sessionSyncSameBrowserDesc": "Sessions will synchronize for the current user session",
-      "sessionSyncSameTabDesc": "Sessions will synchronize inside your browser tab",
+      "sessionSynchronization": "مزامنة الجلسة",
+      "sessionSyncDescription": "تحكم في كيفية تخزين جلسات الخادم ومزامنتها عبر الأجهزة وعلامات تبويب المتصفح.",
+      "sessionSyncAcrossDevices": "عبر الأجهزة",
+      "sessionSyncSameBrowser": "نفس المتصفح",
+      "sessionSyncSameTab": "نفس علامة التبويب",
+      "sessionSyncAcrossDevicesDesc": "ستكون الجلسات متاحة عبر الأجهزة ومزامنتها",
+      "sessionSyncSameBrowserDesc": "ستتم مزامنة الجلسات لجلسة المستخدم الحالية",
+      "sessionSyncSameTabDesc": "ستتم مزامنة الجلسات داخل علامة تبويب المتصفح الخاص بك",
       "twoFactorDialog": {
         "title": "تمكين 2FA",
         "description": "امسح الرمز ... <span class=\"totp-code\">{{secret}}</span> ...",
@@ -523,52 +523,52 @@
       "browserOn": "{{browser}} {{version}} على {{os}} {{osVersion}}"
     },
     "keymaps": {
-      "title": "Keymaps",
-      "description": "Customize keyboard shortcuts to match your workflow.",
-      "resetAll": "Reset All",
+      "title": "خرائط المفاتيح",
+      "description": "تخصيص اختصارات لوحة المفاتيح لتتناسب مع سير عملك.",
+      "resetAll": "إعادة تعيين الكل",
       "actions": {
         "search": {
-          "title": "Search",
-          "description": "Open the search input"
+          "title": "بحث",
+          "description": "افتح مدخل البحث"
         },
         "aimenu": {
-          "title": "AI Menu",
-          "description": "Open the AI command menu"
+          "title": "قائمة الذكاء الاصطناعي",
+          "description": "افتح قائمة أوامر الذكاء الاصطناعي"
         },
         "snippets": {
-          "title": "Snippets",
-          "description": "Open the snippets dialog"
+          "title": "مقتطفات",
+          "description": "افتح مربع حوار المقتطفات"
         },
         "keyboardshortcuts": {
-          "title": "Keyboard Shortcuts",
-          "description": "Open the keyboard shortcuts menu"
+          "title": "اختصارات لوحة المفاتيح",
+          "description": "افتح قائمة اختصارات لوحة المفاتيح"
         },
         "broadcast": {
-          "title": "Broadcast Mode",
-          "description": "Toggle broadcast mode when using split view"
+          "title": "وضع البث",
+          "description": "تبديل وضع البث عند استخدام طريقة العرض المقسم"
         },
         "copy": {
-          "title": "Copy",
-          "description": "Copy selected text to clipboard"
+          "title": "نسخ",
+          "description": "نسخ النص المحدد إلى الحافظة"
         },
         "fullscreen": {
-          "title": "Full-Screen",
-          "description": "Toggle full-screen mode"
+          "title": "ملء الشاشة الكاملة",
+          "description": "تبديل وضع ملء الشاشة"
         }
       },
       "recorder": {
-        "pressKeys": "Press keys...",
-        "save": "Save",
-        "cancel": "Cancel",
-        "reset": "Reset"
+        "pressKeys": "اضغط على المفاتيح...",
+        "save": "الحفظ",
+        "cancel": "إلغاء",
+        "reset": "إعادة تعيين"
       },
       "messages": {
-        "updateSuccess": "Keybind updated successfully",
-        "updateFailed": "Failed to update keybind",
-        "resetSuccess": "Keybind reset to default",
-        "resetFailed": "Failed to reset keybind",
-        "resetAllSuccess": "All keybinds reset to defaults",
-        "resetAllFailed": "Failed to reset keybinds"
+        "updateSuccess": "تم تحديث رابط المفاتيح بنجاح",
+        "updateFailed": "فشل في تحديث رابط المفاتيح",
+        "resetSuccess": "إعادة تعيين ربط المفاتيح إلى الوضع الافتراضي",
+        "resetFailed": "فشل في إعادة تعيين رابط المفاتيح",
+        "resetAllSuccess": "إعادة تعيين جميع روابط المفاتيح إلى الإعدادات الافتراضية",
+        "resetAllFailed": "فشل في إعادة تعيين روابط المفاتيح"
       }
     },
     "terminal": {
@@ -621,15 +621,15 @@
           "redirectUri": "رابط إعادة التوجيه",
           "redirectUriPlaceholder": "https://your-domain.com/api/oidc/callback",
           "scope": "النطاق",
-          "scopePlaceholder": "openid profile email",
+          "scopePlaceholder": "البريد الإلكتروني لملف التعريف المفتوح",
           "emailAttribute": "سمة البريد الإلكتروني",
-          "emailAttributePlaceholder": "email",
+          "emailAttributePlaceholder": "البريد الإلكتروني",
           "usernameAttribute": "سمة اسم المستخدم",
-          "usernameAttributePlaceholder": "preferred_username",
+          "usernameAttributePlaceholder": "اسم المستخدم المفضل",
           "firstNameAttribute": "سمة الاسم الأول",
-          "firstNameAttributePlaceholder": "given_name",
+          "firstNameAttributePlaceholder": "الاسم_المعطى",
           "lastNameAttribute": "سمة اسم العائلة",
-          "lastNameAttributePlaceholder": "family_name"
+          "lastNameAttributePlaceholder": "اسم_العائلة"
         },
         "advanced": {
           "show": "عرض الإعدادات المتقدمة",
@@ -690,7 +690,7 @@
       "title": "مفاتيح SSH والبيانات الاعتمادية",
       "description": "إدارة مفاتيح SSH وبيانات الدخول الخاصة بك لاتصالات الخادم",
       "createIdentity": "إنشاء هوية",
-      "personal": "Personal",
+      "personal": "شخصي",
       "noUsername": "لا يوجد اسم مستخدم",
       "sshKey": "مفتاح SSH",
       "password": "كلمة المرور",
@@ -740,94 +740,94 @@
       }
     },
     "sources": {
-      "title": "Script & Snippet Sources",
-      "description": "Configure external sources to automatically sync scripts and snippets.",
-      "loading": "Loading sources...",
-      "noSources": "No Sources Configured",
-      "noSourcesDescription": "Add external sources to automatically sync scripts and snippets.",
-      "addSource": "Add Source",
-      "snippets": "snippets",
-      "scripts": "scripts",
-      "neverSynced": "Never synced",
-      "sync": "Sync now",
-      "edit": "Edit",
-      "delete": "Delete",
-      "deleteConfirm": "Are you sure you want to delete the source \"{{name}}\"? All synced scripts and snippets from this source will also be deleted.",
+      "title": "مصادر النصوص والمقتطفات",
+      "description": "تكوين مصادر خارجية لمزامنة البرامج النصية والمقتطفات تلقائياً.",
+      "loading": "تحميل المصادر...",
+      "noSources": "لم يتم تكوين أي مصادر",
+      "noSourcesDescription": "إضافة مصادر خارجية لمزامنة البرامج النصية والمقتطفات تلقائياً.",
+      "addSource": "إضافة مصدر",
+      "snippets": "مقتطفات",
+      "scripts": "النصوص",
+      "neverSynced": "لم تتم مزامنته مطلقاً",
+      "sync": "المزامنة الآن",
+      "edit": "تحرير",
+      "delete": "حذف",
+      "deleteConfirm": "هل أنت متأكد أنك تريد حذف المصدر \"{{name}}\"؟ سيتم أيضاً حذف جميع النصوص والمقتطفات التي تمت مزامنتها من هذا المصدر.",
       "status": {
-        "success": "Synced",
-        "error": "Error",
-        "pending": "Pending",
-        "disabled": "Disabled"
+        "success": "مزامنة",
+        "error": "خطأ",
+        "pending": "قيد الانتظار",
+        "disabled": "معاق"
       },
       "dialog": {
-        "createTitle": "Add Source",
-        "editTitle": "Edit Source",
-        "name": "Name",
-        "namePlaceholder": "e.g. Company Scripts",
-        "url": "Source URL",
+        "createTitle": "إضافة مصدر",
+        "editTitle": "تحرير المصدر",
+        "name": "الاسم",
+        "namePlaceholder": "على سبيل المثال نصوص الشركة",
+        "url": "عنوان URL المصدر",
         "urlPlaceholder": "https://scripts.example.com",
-        "enabled": "Enabled",
-        "enabledDescription": "When disabled, this source will not be synced",
-        "validating": "Validating URL...",
-        "validationSuccess": "Valid source found: {{snippets}} snippets, {{scripts}} scripts",
-        "create": "Create"
+        "enabled": "ممكّنة",
+        "enabledDescription": "عند تعطيلها، لن تتم مزامنة هذا المصدر",
+        "validating": "التحقق من صحة عنوان URL...",
+        "validationSuccess": "تم العثور على مصدر صالح: {{snippets}} مقتطفات، {{scripts}} البرامج النصية",
+        "create": "إنشاء"
       },
       "messages": {
-        "created": "Source created successfully",
-        "updated": "Source updated successfully",
-        "deleted": "Source deleted successfully",
-        "synced": "Source synced successfully"
+        "created": "تم إنشاء المصدر بنجاح",
+        "updated": "تم تحديث المصدر بنجاح",
+        "deleted": "تم حذف المصدر بنجاح",
+        "synced": "تمت مزامنة المصدر بنجاح"
       },
       "errors": {
-        "loadFailed": "Failed to load sources",
-        "saveFailed": "Failed to save source",
-        "deleteFailed": "Failed to delete source",
-        "syncFailed": "Failed to sync source",
-        "validationFailed": "Failed to validate URL",
-        "requiredFields": "Name and URL are required"
+        "loadFailed": "فشل تحميل المصادر",
+        "saveFailed": "فشل في حفظ المصدر",
+        "deleteFailed": "فشل في حذف المصدر",
+        "syncFailed": "فشل في مزامنة المصدر",
+        "validationFailed": "فشل التحقق من صحة عنوان URL",
+        "requiredFields": "الاسم وعنوان URL مطلوبان"
       }
     }
   },
   "servers": {
     "time": {
-      "justNow": "Just now",
-      "minuteAgo": "{{count}} min ago",
-      "minutesAgo": "{{count}} mins ago",
-      "hourAgo": "{{count}} hour ago",
-      "hoursAgo": "{{count}} hours ago",
-      "dayAgo": "{{count}} day ago",
-      "daysAgo": "{{count}} days ago"
+      "justNow": "الآن فقط",
+      "minuteAgo": "{{count}} منذ دقيقة",
+      "minutesAgo": "{{count}} منذ دقائق",
+      "hourAgo": "{{count}} منذ ساعة",
+      "hoursAgo": "{{count}} منذ ساعات",
+      "dayAgo": "{{count}} منذ يوم واحد",
+      "daysAgo": "{{count}} منذ أيام"
     },
     "tags": {
-      "title": "Tags",
-      "createNewTag": "Create new tag",
-      "tagName": "Tag name",
-      "create": "Create",
-      "filterByTags": "Filter by Tags",
-      "clearAll": "Clear all",
-      "noTagsCreated": "No tags created yet",
-      "editTag": "Edit tag",
-      "deleteTag": "Delete tag"
+      "title": "الوسوم",
+      "createNewTag": "إنشاء علامة جديدة",
+      "tagName": "اسم العلامة",
+      "create": "إنشاء",
+      "filterByTags": "تصفية حسب الوسوم",
+      "clearAll": "مسح الكل",
+      "noTagsCreated": "لم يتم إنشاء أي علامات حتى الآن",
+      "editTag": "تحرير العلامة",
+      "deleteTag": "حذف العلامة"
     },
     "contextMenu": {
       "createFolder": "إنشاء مجلد",
       "deleteFolder": "حذف المجلد",
       "renameFolder": "إعادة تسمية المجلد",
-      "new": "New",
-      "sshServer": "SSH Server",
-      "telnetServer": "Telnet Server",
-      "rdpServer": "RDP Server",
-      "vncServer": "VNC Server",
+      "new": "جديد",
+      "sshServer": "خادم SSH",
+      "telnetServer": "خادم Telnet",
+      "rdpServer": "خادم RDP",
+      "vncServer": "خادم VNC",
       "createServer": "إنشاء خادم",
       "import": "استيراد",
-      "pve": "PVE",
-      "sshConfig": "SSH-Config",
+      "pve": "منع التطرف العنيف",
+      "sshConfig": "SSH-كونفيج",
       "connect": "الاتصال",
-      "quickConnect": "Quick Connect",
+      "quickConnect": "التوصيل السريع",
       "openSFTP": "فتح SFTP",
-      "runScript": "Run Script",
+      "runScript": "تشغيل البرنامج النصي",
       "editServer": "تحرير الخادم",
-      "editIntegration": "Edit Integration",
+      "editIntegration": "تحرير التكامل",
       "duplicateServer": "تكرار الخادم",
       "deleteServer": "حذف الخادم",
       "editPVE": "تحرير PVE",
@@ -838,7 +838,7 @@
     },
     "dialog": {
       "addServer": "إضافة خادم",
-      "addProtocolServer": "Add {{protocol}} server",
+      "addProtocolServer": "إضافة {{protocol}} خادم",
       "editServer": "تحرير الخادم",
       "tabs": {
         "details": "التفاصيل",
@@ -858,8 +858,8 @@
         "username": "اسم المستخدم",
         "password": "كلمة المرور",
         "host": "المضيف",
-        "nodeName": "Node Name",
-        "vmid": "VM ID"
+        "nodeName": "اسم العقدة",
+        "vmid": "معرف الجهاز الافتراضي"
       },
       "placeholders": {
         "serverName": "اسم الخادم",
@@ -868,48 +868,48 @@
         "username": "اسم المستخدم",
         "password": "كلمة المرور",
         "host": "المضيف",
-        "nodeName": "Node name",
-        "vmid": "VM ID"
+        "nodeName": "اسم العقدة",
+        "vmid": "معرف الجهاز الافتراضي"
       },
       "settings": {
         "jumpHosts": {
-          "title": "Jump Hosts",
-          "description": "Connect through intermediate servers to reach this target server",
-          "addButton": "Add Jump Host",
-          "removeTooltip": "Remove jump host",
-          "noServersAvailable": "No SSH servers available for jump hosts. Create SSH servers first."
+          "title": "مضيفو القفزات",
+          "description": "الاتصال من خلال خوادم وسيطة للوصول إلى هذا الخادم الهدف",
+          "addButton": "إضافة مضيف الانتقال السريع",
+          "removeTooltip": "إزالة مضيف القفز القفزة",
+          "noServersAvailable": "لا توجد خوادم SSH متاحة لمضيفي القفز. قم بإنشاء خوادم SSH أولاً."
         },
         "monitoring": {
-          "title": "Enable Performance Monitoring",
-          "description": "Collect CPU, memory, disk, and network metrics for this server"
+          "title": "تمكين مراقبة الأداء",
+          "description": "جمع مقاييس وحدة المعالجة المركزية والذاكرة والقرص والشبكة لهذا الخادم"
         },
         "keyboardLayout": {
-          "title": "Keyboard Layout",
-          "description": "Select the keyboard layout to use for this connection."
+          "title": "تخطيط لوحة المفاتيح",
+          "description": "حدد تخطيط لوحة المفاتيح المراد استخدامه لهذا الاتصال."
         },
-        "noSettings": "No additional settings available for this entry type."
+        "noSettings": "لا تتوفر إعدادات إضافية لهذا النوع من الإدخال."
       },
       "identities": {
-        "organizationIdentities": "Organization Identities",
-        "personalIdentities": "Personal Identities",
-        "orgDescription": "Shared with all organization members. Everyone can use these identities.",
-        "personalDescription": "Only visible to you. Other organization members cannot see these.",
-        "identityName": "Identity Name",
-        "username": "Username",
-        "authentication": "Authentication",
-        "password": "Password",
-        "sshKey": "SSH Key",
-        "sshPrivateKey": "SSH Private Key",
-        "passphrase": "Passphrase (optional)",
-        "new": "New",
-        "removeIdentity": "Remove identity",
-        "unlinkIdentity": "Unlink identity",
-        "moveToOrg": "Move to organization",
-        "selectOrganization": "Select Organization",
-        "availableToLink": "Available to Link",
-        "noUsername": "No username",
-        "noOrgIdentities": "No organization identities. Create one to share with all members.",
-        "noPersonalIdentities": "No personal identities. Create one for your private use."
+        "organizationIdentities": "هويات المنظمة",
+        "personalIdentities": "الهويات الشخصية",
+        "orgDescription": "مشتركة مع جميع أعضاء المؤسسة. يمكن للجميع استخدام هذه الهويات.",
+        "personalDescription": "مرئية لك فقط. لا يمكن لأعضاء المؤسسة الآخرين رؤيتها.",
+        "identityName": "اسم الهوية",
+        "username": "اسم المستخدم",
+        "authentication": "المصادقة",
+        "password": "كلمة المرور",
+        "sshKey": "مفتاح SSH",
+        "sshPrivateKey": "مفتاح SSH الخاص",
+        "passphrase": "عبارة المرور (اختياري)",
+        "new": "جديد",
+        "removeIdentity": "إزالة الهوية",
+        "unlinkIdentity": "إلغاء ربط الهوية",
+        "moveToOrg": "الانتقال إلى المنظمة",
+        "selectOrganization": "اختر المنظمة",
+        "availableToLink": "متاح للربط",
+        "noUsername": "لا يوجد اسم مستخدم",
+        "noOrgIdentities": "لا توجد هويات للمؤسسة. أنشئ واحدة لمشاركتها مع جميع الأعضاء.",
+        "noPersonalIdentities": "لا توجد هويات شخصية. أنشئ واحدة لاستخدامك الخاص."
       }
     },
     "proxmoxDialog": {
@@ -1006,22 +1006,22 @@
         "createFolder": "إنشاء مجلد",
         "upload": "رفع ملف",
         "edit": "تحرير",
-        "preview": "Preview",
+        "preview": "معاينة",
         "bigFileConfirm": "هذا الملف بحجم {{size}} ميغابايت. هل أنت متأكد من رغبتك في تحريره؟",
-        "selectAll": "Select All",
-        "insertSnippet": "Insert Snippet",
-        "sendCtrlC": "Send Ctrl+C",
-        "clearTerminal": "Clear Terminal"
+        "selectAll": "اختر الكل",
+        "insertSnippet": "إدراج مقتطف",
+        "sendCtrlC": "إرسال Ctrl+C",
+        "clearTerminal": "مسح المحطة الطرفية"
       },
       "filePreview": {
-        "title": "File Preview",
-        "loading": "Loading...",
-        "cannotPreview": "Cannot Preview File",
-        "unsupportedFileType": "This file type is not supported for preview",
-        "videoNotSupported": "Your browser does not support video playback",
-        "audioNotSupported": "Your browser does not support audio playback",
-        "download": "Download",
-        "close": "Close"
+        "title": "معاينة الملف",
+        "loading": "جاري التحميل...",
+        "cannotPreview": "لا يمكن معاينة الملف",
+        "unsupportedFileType": "هذا النوع من الملفات غير مدعوم للمعاينة",
+        "videoNotSupported": "متصفحك لا يدعم تشغيل الفيديو",
+        "audioNotSupported": "متصفحك لا يدعم تشغيل الصوت",
+        "download": "تنزيل",
+        "close": "إغلاق"
       }
     },
     "aiAssistant": {
@@ -1037,13 +1037,13 @@
       "createNew": "إنشاء قصاصة جديدة"
     },
     "terminalActions": {
-      "menuTitle": "Terminal Actions",
-      "snippets": "Snippets",
-      "keyboardShortcuts": "Keyboard Shortcuts",
-      "broadcasting": "Broadcasting",
-      "fullScreen": "Full-Screen",
-      "exitFullScreen": "Exit Full-Screen Mode",
-      "badgeOn": "ON"
+      "menuTitle": "الإجراءات النهائية",
+      "snippets": "مقتطفات",
+      "keyboardShortcuts": "اختصارات لوحة المفاتيح",
+      "broadcasting": "البث الإذاعي",
+      "fullScreen": "ملء الشاشة الكاملة",
+      "exitFullScreen": "الخروج من وضع ملء الشاشة الكاملة",
+      "badgeOn": "تشغيل"
     },
     "messages": {
       "fillRequiredFields": "يرجى ملء جميع الحقول المطلوبة",
