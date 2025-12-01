@@ -184,7 +184,8 @@
         "required": "Name und Befehl sind erforderlich",
         "loadFailed": "Snippet-Daten konnten nicht geladen werden",
         "saveFailed": "Snippet konnte nicht gespeichert werden",
-        "deleteFailed": "Snippet kann nicht gelöscht werden"
+        "deleteFailed": "Snippet kann nicht gelöscht werden",
+        "reorderFailed": "Failed to reorder snippet"
       }
     }
   },
@@ -270,11 +271,13 @@
       "success": {
         "created": "Skript erfolgreich erstellt",
         "updated": "Skript erfolgreich aktualisiert",
-        "deleted": "Skript erfolgreich gelöscht"
+        "deleted": "Skript erfolgreich gelöscht",
+        "reordered": "Script reordered successfully"
       },
       "errors": {
         "loadFailed": "Skriptdaten konnten nicht geladen werden",
-        "deleteFailed": "Skript kann nicht gelöscht werden"
+        "deleteFailed": "Skript kann nicht gelöscht werden",
+        "reorderFailed": "Failed to reorder script"
       }
     },
     "menu": {
