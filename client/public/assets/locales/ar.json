@@ -184,7 +184,8 @@
         "required": "الاسم والأمر مطلوبان",
         "loadFailed": "فشل في تحميل بيانات القصاصة",
         "saveFailed": "فشل في حفظ القصاصة",
-        "deleteFailed": "فشل في حذف القصاصة"
+        "deleteFailed": "فشل في حذف القصاصة",
+        "reorderFailed": "Failed to reorder snippet"
       }
     }
   },
@@ -270,11 +271,13 @@
       "success": {
         "created": "تم إنشاء البرنامج النصي بنجاح",
         "updated": "تم تحديث البرنامج النصي بنجاح",
-        "deleted": "تم حذف البرنامج النصي بنجاح"
+        "deleted": "تم حذف البرنامج النصي بنجاح",
+        "reordered": "Script reordered successfully"
       },
       "errors": {
         "loadFailed": "فشل تحميل بيانات البرنامج النصي",
-        "deleteFailed": "فشل حذف البرنامج النصي"
+        "deleteFailed": "فشل حذف البرنامج النصي",
+        "reorderFailed": "Failed to reorder script"
       }
     },
     "menu": {
