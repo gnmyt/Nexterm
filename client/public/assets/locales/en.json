@@ -184,7 +184,8 @@
         "required": "Name and command are required",
         "loadFailed": "Failed to load snippet data",
         "saveFailed": "Failed to save snippet",
-        "deleteFailed": "Failed to delete snippet"
+        "deleteFailed": "Failed to delete snippet",
+        "reorderFailed": "Failed to reorder snippet"
       }
     }
   },
@@ -270,11 +271,13 @@
       "success": {
         "created": "Script created successfully",
         "updated": "Script updated successfully",
-        "deleted": "Script deleted successfully"
+        "deleted": "Script deleted successfully",
+        "reordered": "Script reordered successfully"
       },
       "errors": {
         "loadFailed": "Failed to load script data",
-        "deleteFailed": "Failed to delete script"
+        "deleteFailed": "Failed to delete script",
+        "reorderFailed": "Failed to reorder script"
       }
     },
     "menu": {

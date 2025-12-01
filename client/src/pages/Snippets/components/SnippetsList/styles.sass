@@ -26,16 +26,30 @@
   padding: 1.25rem
   position: relative
   border: 1px solid colors.$dark-gray
-  transition: border-color 0.15s ease
+  transition: border-color 0.15s ease, opacity 0.15s ease, transform 0.15s ease
   display: flex
   flex-direction: column
   height: fit-content
+  cursor: grab
+
+  &:active
+    cursor: grabbing
 
   @media (max-width: 768px)
     padding: 1rem
 
   &:hover
     border-color: rgba(255, 255, 255, 0.3)
+
+  &.read-only
+    cursor: default
+
+  &.dragging
+    opacity: 0.5
+
+  &.drop-target
+    border-color: colors.$primary
+    transform: scale(1.02)
 
   .snippet-info
     flex: 1
@@ -45,11 +59,16 @@
       align-items: center
       gap: 0.5rem
       margin-bottom: 0.5rem
-      padding-right: 4.5rem
+      padding-right: 5rem
 
       h3
         margin: 0
         padding-right: 0
+        color: colors.$white
+        font-size: 1rem
+        font-weight: 700
+        line-height: 1.3
+        letter-spacing: -0.01em
 
       .source-badge
         width: 1rem
@@ -64,14 +83,14 @@
       font-weight: 700
       line-height: 1.3
       letter-spacing: -0.01em
-      padding-right: 4.5rem
+      padding-right: 5rem
     
     p
       margin: 0 0 0.75rem 0
       color: colors.$subtext
       font-size: 0.85rem
       line-height: 1.5
-      padding-right: 4.5rem
+      padding-right: 5rem
     
     .snippet-command
       margin: 0.875rem 0 0
