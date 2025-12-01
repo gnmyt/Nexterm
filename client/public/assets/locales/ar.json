@@ -1,10 +1,18 @@
 {
   "common": {
+    "error": "Error",
+    "success": "Success",
+    "loading": "Loading...",
     "actions": {
       "cancel": "إلغاء",
       "confirm": "تأكيد",
       "login": "تسجيل الدخول",
-      "register": "تسجيل"
+      "register": "تسجيل",
+      "save": "Save",
+      "download": "Download",
+      "close": "Close",
+      "maximize": "Maximize",
+      "restore": "Restore"
     },
     "labels": {
       "username": "اسم المستخدم",
@@ -33,7 +41,9 @@
       "noAuthMethodsAvailable": "لا توجد طرق مصادقة متاحة."
     },
     "selectBox": {
-      "defaultOption": "اختر خيارًا..."
+      "defaultOption": "اختر خيارًا...",
+      "search": "Search...",
+      "noResults": "No results found"
     },
     "sidebar": {
       "settings": "الإعدادات",
@@ -41,7 +51,6 @@
       "monitoring": "المراقبة",
       "snippets": "القصاصات",
       "audit": "التدقيق",
-      "apps": "التطبيقات",
       "logout": "تسجيل الخروج",
       "collapseTitle": "طي الشريط الجانبي",
       "logoutConfirmText": "سيتم تسجيل الخروج من حساب {{username}}. هل أنت متأكد؟",
@@ -127,7 +136,13 @@
     "page": {
       "title": "القصاصات",
       "subtitle": "إدارة قصاصات الأوامر الخاصة بك للوصول السريع في الطرفيات",
-      "addSnippet": "إضافة قصاصة"
+      "addSnippet": "إضافة قصاصة",
+      "personal": "Personal",
+      "selectOrganization": "Select Organization",
+      "tabs": {
+        "snippets": "Snippets",
+        "scripts": "Scripts"
+      }
     },
     "list": {
       "empty": "ليس لديك أي قصاصات بعد. أنشئ الأولى الخاصة بك!",
@@ -171,6 +186,102 @@
         "saveFailed": "فشل في حفظ القصاصة",
         "deleteFailed": "فشل في حذف القصاصة"
       }
+    }
+  },
+  "scripts": {
+    "page": {
+      "title": "Scripts",
+      "subtitle": "Manage your automation scripts for server tasks",
+      "addScript": "Add Script",
+      "personal": "Personal",
+      "selectOrganization": "Select Organization",
+      "tabs": {
+        "snippets": "Snippets",
+        "scripts": "Scripts"
+      }
+    },
+    "execution": {
+      "progressPanel": {
+        "title": "Script Execution",
+        "noSteps": "No steps yet",
+        "noStepsDescription": "Steps will appear here as the script executes",
+        "steps": "Steps"
+      },
+      "dialogs": {
+        "enterValue": "Enter value",
+        "selectOption": "Select an option",
+        "confirm": "Confirm",
+        "submit": "Submit",
+        "cancel": "Cancel",
+        "ok": "OK",
+        "yes": "Yes",
+        "no": "No",
+        "copyCell": "Copy Cell",
+        "copyRow": "Copy Row",
+        "copyTable": "Copy Table",
+        "close": "Close"
+      },
+      "status": {
+        "running": "Running",
+        "completed": "Completed",
+        "error": "Error",
+        "pending": "Pending"
+      }
+    },
+    "list": {
+      "empty": "You don't have any scripts yet. Create your first one!",
+      "actions": {
+        "edit": "Edit script",
+        "delete": "Delete script"
+      }
+    },
+    "dialog": {
+      "title": {
+        "create": "Create Script",
+        "edit": "Edit Script"
+      },
+      "scriptDetails": "Script Details",
+      "scriptContent": "Script Content",
+      "helpTip": "Use @NEXTERM: directives for interactive features",
+      "fields": {
+        "name": "Name",
+        "description": "Description"
+      },
+      "placeholders": {
+        "name": "Script name",
+        "description": "What does this script do?"
+      },
+      "actions": {
+        "cancel": "Cancel",
+        "create": "Create",
+        "update": "Update",
+        "creating": "Creating...",
+        "updating": "Updating..."
+      },
+      "errors": {
+        "nameRequired": "Script name is required",
+        "descriptionRequired": "Script description is required",
+        "contentRequired": "Script content is required",
+        "createFailed": "Failed to create script",
+        "updateFailed": "Failed to update script"
+      }
+    },
+    "messages": {
+      "success": {
+        "created": "Script created successfully",
+        "updated": "Script updated successfully",
+        "deleted": "Script deleted successfully"
+      },
+      "errors": {
+        "loadFailed": "Failed to load script data",
+        "deleteFailed": "Failed to delete script"
+      }
+    },
+    "menu": {
+      "searchPlaceholder": "Search scripts...",
+      "noScripts": "No scripts available. Create some in the Scripts section.",
+      "noMatch": "No scripts match your search.",
+      "selectIdentity": "Select Identity"
     }
   },
   "monitoring": {
@@ -283,11 +394,13 @@
     "pages": {
       "account": "الحساب",
       "terminal": "الطرفية",
+      "keymaps": "Keymaps",
       "identities": "الهويات",
       "sessions": "الجلسات",
       "organizations": "المؤسسات",
       "users": "المستخدمون",
       "authentication": "المصادقة",
+      "sources": "Sources",
       "ai": "الذكاء الاصطناعي"
     },
     "account": {
@@ -297,8 +410,9 @@
       "lastName": "اسم العائلة",
       "appearance": "المظهر",
       "appearanceDescription": "اختر بين الوضع الفاتح والداكن للواجهة الخاصة بك.",
-      "switchToLight": "التبديل إلى الوضع الفاتح",
-      "switchToDark": "التبديل إلى الوضع الداكن",
+      "themeAuto": "Auto",
+      "themeLight": "Light",
+      "themeDark": "Dark",
       "twoFactor": "المصادقة الثنائية",
       "twoFactorActive": "نشط",
       "twoFactorInactive": "غير نشط",
@@ -313,6 +427,14 @@
       "currentLanguage": "اللغة الحالية",
       "missingLanguage": "هل تفتقد لغتك؟",
       "helpTranslateLink": "مساعدة في ترجمة نيكسترِم",
+      "sessionSynchronization": "Session Synchronization",
+      "sessionSyncDescription": "Control how your server sessions are stored and synchronized across devices and browser tabs.",
+      "sessionSyncAcrossDevices": "Across devices",
+      "sessionSyncSameBrowser": "Same browser",
+      "sessionSyncSameTab": "Same tab",
+      "sessionSyncAcrossDevicesDesc": "Sessions will be available across devices and synced",
+      "sessionSyncSameBrowserDesc": "Sessions will synchronize for the current user session",
+      "sessionSyncSameTabDesc": "Sessions will synchronize inside your browser tab",
       "twoFactorDialog": {
         "title": "تمكين 2FA",
         "description": "امسح الرمز ... <span class=\"totp-code\">{{secret}}</span> ...",
@@ -399,6 +521,55 @@
       "logout": "تسجيل الخروج",
       "revoke": "إلغاء",
       "browserOn": "{{browser}} {{version}} على {{os}} {{osVersion}}"
+    },
+    "keymaps": {
+      "title": "Keymaps",
+      "description": "Customize keyboard shortcuts to match your workflow.",
+      "resetAll": "Reset All",
+      "actions": {
+        "search": {
+          "title": "Search",
+          "description": "Open the search input"
+        },
+        "aimenu": {
+          "title": "AI Menu",
+          "description": "Open the AI command menu"
+        },
+        "snippets": {
+          "title": "Snippets",
+          "description": "Open the snippets dialog"
+        },
+        "keyboardshortcuts": {
+          "title": "Keyboard Shortcuts",
+          "description": "Open the keyboard shortcuts menu"
+        },
+        "broadcast": {
+          "title": "Broadcast Mode",
+          "description": "Toggle broadcast mode when using split view"
+        },
+        "copy": {
+          "title": "Copy",
+          "description": "Copy selected text to clipboard"
+        },
+        "fullscreen": {
+          "title": "Full-Screen",
+          "description": "Toggle full-screen mode"
+        }
+      },
+      "recorder": {
+        "pressKeys": "Press keys...",
+        "save": "Save",
+        "cancel": "Cancel",
+        "reset": "Reset"
+      },
+      "messages": {
+        "updateSuccess": "Keybind updated successfully",
+        "updateFailed": "Failed to update keybind",
+        "resetSuccess": "Keybind reset to default",
+        "resetFailed": "Failed to reset keybind",
+        "resetAllSuccess": "All keybinds reset to defaults",
+        "resetAllFailed": "Failed to reset keybinds"
+      }
     },
     "terminal": {
       "title": "الطرفية",
@@ -519,6 +690,7 @@
       "title": "مفاتيح SSH والبيانات الاعتمادية",
       "description": "إدارة مفاتيح SSH وبيانات الدخول الخاصة بك لاتصالات الخادم",
       "createIdentity": "إنشاء هوية",
+      "personal": "Personal",
       "noUsername": "لا يوجد اسم مستخدم",
       "sshKey": "مفتاح SSH",
       "password": "كلمة المرور",
@@ -566,20 +738,96 @@
           "updateFailed": "فشل في تحديث الهوية"
         }
       }
+    },
+    "sources": {
+      "title": "Script & Snippet Sources",
+      "description": "Configure external sources to automatically sync scripts and snippets.",
+      "loading": "Loading sources...",
+      "noSources": "No Sources Configured",
+      "noSourcesDescription": "Add external sources to automatically sync scripts and snippets.",
+      "addSource": "Add Source",
+      "snippets": "snippets",
+      "scripts": "scripts",
+      "neverSynced": "Never synced",
+      "sync": "Sync now",
+      "edit": "Edit",
+      "delete": "Delete",
+      "deleteConfirm": "Are you sure you want to delete the source \"{{name}}\"? All synced scripts and snippets from this source will also be deleted.",
+      "status": {
+        "success": "Synced",
+        "error": "Error",
+        "pending": "Pending",
+        "disabled": "Disabled"
+      },
+      "dialog": {
+        "createTitle": "Add Source",
+        "editTitle": "Edit Source",
+        "name": "Name",
+        "namePlaceholder": "e.g. Company Scripts",
+        "url": "Source URL",
+        "urlPlaceholder": "https://scripts.example.com",
+        "enabled": "Enabled",
+        "enabledDescription": "When disabled, this source will not be synced",
+        "validating": "Validating URL...",
+        "validationSuccess": "Valid source found: {{snippets}} snippets, {{scripts}} scripts",
+        "create": "Create"
+      },
+      "messages": {
+        "created": "Source created successfully",
+        "updated": "Source updated successfully",
+        "deleted": "Source deleted successfully",
+        "synced": "Source synced successfully"
+      },
+      "errors": {
+        "loadFailed": "Failed to load sources",
+        "saveFailed": "Failed to save source",
+        "deleteFailed": "Failed to delete source",
+        "syncFailed": "Failed to sync source",
+        "validationFailed": "Failed to validate URL",
+        "requiredFields": "Name and URL are required"
+      }
     }
   },
   "servers": {
+    "time": {
+      "justNow": "Just now",
+      "minuteAgo": "{{count}} min ago",
+      "minutesAgo": "{{count}} mins ago",
+      "hourAgo": "{{count}} hour ago",
+      "hoursAgo": "{{count}} hours ago",
+      "dayAgo": "{{count}} day ago",
+      "daysAgo": "{{count}} days ago"
+    },
+    "tags": {
+      "title": "Tags",
+      "createNewTag": "Create new tag",
+      "tagName": "Tag name",
+      "create": "Create",
+      "filterByTags": "Filter by Tags",
+      "clearAll": "Clear all",
+      "noTagsCreated": "No tags created yet",
+      "editTag": "Edit tag",
+      "deleteTag": "Delete tag"
+    },
     "contextMenu": {
       "createFolder": "إنشاء مجلد",
       "deleteFolder": "حذف المجلد",
       "renameFolder": "إعادة تسمية المجلد",
+      "new": "New",
+      "sshServer": "SSH Server",
+      "telnetServer": "Telnet Server",
+      "rdpServer": "RDP Server",
+      "vncServer": "VNC Server",
       "createServer": "إنشاء خادم",
       "import": "استيراد",
       "pve": "PVE",
       "sshConfig": "SSH-Config",
       "connect": "الاتصال",
+      "quickConnect": "Quick Connect",
       "openSFTP": "فتح SFTP",
+      "runScript": "Run Script",
       "editServer": "تحرير الخادم",
+      "editIntegration": "Edit Integration",
       "duplicateServer": "تكرار الخادم",
       "deleteServer": "حذف الخادم",
       "editPVE": "تحرير PVE",
@@ -590,6 +838,7 @@
     },
     "dialog": {
       "addServer": "إضافة خادم",
+      "addProtocolServer": "Add {{protocol}} server",
       "editServer": "تحرير الخادم",
       "tabs": {
         "details": "التفاصيل",
@@ -608,7 +857,9 @@
         "protocol": "البروتوكول",
         "username": "اسم المستخدم",
         "password": "كلمة المرور",
-        "host": "المضيف"
+        "host": "المضيف",
+        "nodeName": "Node Name",
+        "vmid": "VM ID"
       },
       "placeholders": {
         "serverName": "اسم الخادم",
@@ -616,7 +867,49 @@
         "port": "المنفذ",
         "username": "اسم المستخدم",
         "password": "كلمة المرور",
-        "host": "المضيف"
+        "host": "المضيف",
+        "nodeName": "Node name",
+        "vmid": "VM ID"
+      },
+      "settings": {
+        "jumpHosts": {
+          "title": "Jump Hosts",
+          "description": "Connect through intermediate servers to reach this target server",
+          "addButton": "Add Jump Host",
+          "removeTooltip": "Remove jump host",
+          "noServersAvailable": "No SSH servers available for jump hosts. Create SSH servers first."
+        },
+        "monitoring": {
+          "title": "Enable Performance Monitoring",
+          "description": "Collect CPU, memory, disk, and network metrics for this server"
+        },
+        "keyboardLayout": {
+          "title": "Keyboard Layout",
+          "description": "Select the keyboard layout to use for this connection."
+        },
+        "noSettings": "No additional settings available for this entry type."
+      },
+      "identities": {
+        "organizationIdentities": "Organization Identities",
+        "personalIdentities": "Personal Identities",
+        "orgDescription": "Shared with all organization members. Everyone can use these identities.",
+        "personalDescription": "Only visible to you. Other organization members cannot see these.",
+        "identityName": "Identity Name",
+        "username": "Username",
+        "authentication": "Authentication",
+        "password": "Password",
+        "sshKey": "SSH Key",
+        "sshPrivateKey": "SSH Private Key",
+        "passphrase": "Passphrase (optional)",
+        "new": "New",
+        "removeIdentity": "Remove identity",
+        "unlinkIdentity": "Unlink identity",
+        "moveToOrg": "Move to organization",
+        "selectOrganization": "Select Organization",
+        "availableToLink": "Available to Link",
+        "noUsername": "No username",
+        "noOrgIdentities": "No organization identities. Create one to share with all members.",
+        "noPersonalIdentities": "No personal identities. Create one for your private use."
       }
     },
     "proxmoxDialog": {
@@ -713,7 +1006,22 @@
         "createFolder": "إنشاء مجلد",
         "upload": "رفع ملف",
         "edit": "تحرير",
-        "bigFileConfirm": "هذا الملف بحجم {{size}} ميغابايت. هل أنت متأكد من رغبتك في تحريره؟"
+        "preview": "Preview",
+        "bigFileConfirm": "هذا الملف بحجم {{size}} ميغابايت. هل أنت متأكد من رغبتك في تحريره؟",
+        "selectAll": "Select All",
+        "insertSnippet": "Insert Snippet",
+        "sendCtrlC": "Send Ctrl+C",
+        "clearTerminal": "Clear Terminal"
+      },
+      "filePreview": {
+        "title": "File Preview",
+        "loading": "Loading...",
+        "cannotPreview": "Cannot Preview File",
+        "unsupportedFileType": "This file type is not supported for preview",
+        "videoNotSupported": "Your browser does not support video playback",
+        "audioNotSupported": "Your browser does not support audio playback",
+        "download": "Download",
+        "close": "Close"
       }
     },
     "aiAssistant": {
@@ -728,6 +1036,15 @@
       "searchPlaceholder": "البحث في القصاصات...",
       "createNew": "إنشاء قصاصة جديدة"
     },
+    "terminalActions": {
+      "menuTitle": "Terminal Actions",
+      "snippets": "Snippets",
+      "keyboardShortcuts": "Keyboard Shortcuts",
+      "broadcasting": "Broadcasting",
+      "fullScreen": "Full-Screen",
+      "exitFullScreen": "Exit Full-Screen Mode",
+      "badgeOn": "ON"
+    },
     "messages": {
       "fillRequiredFields": "يرجى ملء جميع الحقول المطلوبة",
       "serverCreated": "تم إنشاء الخادم بنجاح",
@@ -736,133 +1053,6 @@
       "updateFailed": "فشل في تحديث الخادم",
       "createIdentityFailed": "فشل في إنشاء الهوية",
       "updateIdentityFailed": "فشل في تحديث الهوية"
-    }
-  },
-  "apps": {
-    "title": "التطبيقات",
-    "navigation": {
-      "categories": {
-        "all": "الكل",
-        "results": "النتائج",
-        "scripts": "السكريبتات",
-        "networking": "الشبكات",
-        "media": "الوسائط",
-        "cloud": "السحابة",
-        "development": "التطوير",
-        "utilities": "الأدوات"
-      }
-    },
-    "store": {
-      "appStore": "متجر التطبيقات",
-      "scripts": "السكريبتات",
-      "appStoreDescription": "تطبيقاتك المفضلة، مُنشرة بنقرة واحدة.",
-      "scriptsDescription": "أتمتة مهام الخادم الخاصة بك باستخدام سكريبتات مخصصة.",
-      "manageSources": "إدارة المصادر",
-      "createScript": "إنشاء سكريبت",
-      "source": "المصدر:",
-      "sourceFilter": {
-        "all": "الكل",
-        "custom": "مخصص"
-      }
-    },
-    "list": {
-      "noApps": "مزيد من التطبيقات قريبًا",
-      "noScripts": "لا توجد سكريبتات متاحة",
-      "selectApp": "حدد تطبيقًا للمتابعة",
-      "selectScript": "حدد سكريبتًا للمتابعة"
-    },
-    "actions": {
-      "deploy": "نشر",
-      "run": "تشغيل",
-      "view": "عرض",
-      "edit": "تحرير",
-      "delete": "حذف",
-      "logs": "السجلات",
-      "open": "فتح",
-      "stop": "إيقاف السكريبت",
-      "version": "الإصدار"
-    },
-    "items": {
-      "customBadge": "مخصص",
-      "scriptType": "سكريبت",
-      "running": "جارٍ التشغيل...",
-      "runScript": "تشغيل"
-    },
-    "installer": {
-      "deploymentFailed": "فشل في النشر",
-      "deploymentCompleted": "تم الانتهاء من النشر",
-      "deploying": "جارٍ النشر...",
-      "installationLog": "سجل التثبيت",
-      "steps": {
-        "lookupDistro": "البحث عن توزيعة لينكس",
-        "checkPermissions": "فحص الصلاحيات",
-        "installDocker": "تثبيت محرك Docker",
-        "downloadImage": "تنزيل الصورة الأساسية",
-        "preInstall": "تشغيل أمر ما قبل التثبيت",
-        "startContainer": "بدء حاوية Docker",
-        "postInstall": "تشغيل أمر ما بعد التثبيت",
-        "detected": "تم اكتشاف {{os}}"
-      }
-    },
-    "scriptExecutor": {
-      "executionFailed": "فشل في تنفيذ السكريبت",
-      "executionCompleted": "تم الانتهاء من تنفيذ السكريبت",
-      "executing": "جارٍ تنفيذ السكريبت...",
-      "initializing": "جارٍ تهيئة تنفيذ السكريبت",
-      "finished": "انتهى تنفيذ السكريبت",
-      "cancelled": "تم إلغاء تنفيذ السكريبت من قبل المستخدم"
-    },
-    "dialogs": {
-      "deployServer": {
-        "deployTitle": "نشر {{name}}",
-        "runTitle": "تشغيل {{name}}",
-        "noServersAvailable": "لا توجد خوادم SSH متاحة"
-      },
-      "source": {
-        "title": "مصادر التطبيقات",
-        "refreshApps": "تحديث التطبيقات",
-        "addNewSource": "إضافة مصدر جديد"
-      },
-      "script": {
-        "createTitle": "إنشاء سكريبت مخصص",
-        "editTitle": "تحرير السكريبت",
-        "viewTitle": "عرض السكريبت",
-        "source": "المصدر: {{source}}",
-        "scriptDetails": "تفاصيل السكريبت",
-        "scriptContent": "محتوى السكريبت",
-        "helpTip": "استخدم أوامر @NEXTERM: للحصول على تلميحات تفاعلية",
-        "fields": {
-          "name": "اسم السكريبت *",
-          "description": "الوصف *",
-          "namePlaceholder": "سكريبتي الرائع",
-          "descriptionPlaceholder": "ما الذي يفعله هذا السكريبت؟"
-        },
-        "actions": {
-          "close": "إغلاق",
-          "cancel": "إلغاء",
-          "create": "إنشاء سكريبت",
-          "update": "تحديث السكريبت",
-          "creating": "جارٍ الإنشاء...",
-          "updating": "جارٍ التحديث..."
-        },
-        "errors": {
-          "nameRequired": "اسم السكريبت مطلوب",
-          "descriptionRequired": "الوصف مطلوب",
-          "contentRequired": "محتوى السكريبت لا يمكن أن يكون فارغًا",
-          "createFailed": "فشل في إنشاء السكريبت",
-          "updateFailed": "فشل في تحديث السكريبت"
-        },
-        "success": {
-          "created": "تم إنشاء السكريبت بنجاح",
-          "updated": "تم تحديث السكريبت بنجاح"
-        }
-      }
-    },
-    "messages": {
-      "onlyCustomScriptsCanBeDeleted": "يمكن حذف السكريبتات المخصصة فقط",
-      "scriptDeletedSuccessfully": "تم حذف السكريبت بنجاح",
-      "failedToDeleteScript": "فشل في حذف السكريبت",
-      "deleteScriptConfirmation": "هل أنت متأكد من رغبتك في حذف السكريبت \"{{name}}\"؟ لا يمكن التراجع عن هذا الإجراء."
     }
   }
 }
