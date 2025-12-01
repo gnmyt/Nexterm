@@ -184,7 +184,8 @@
         "required": "El nombre y el mando son obligatorios",
         "loadFailed": "Error al cargar los datos del fragmento",
         "saveFailed": "No se ha podido guardar el fragmento",
-        "deleteFailed": "No se ha podido eliminar el fragmento"
+        "deleteFailed": "No se ha podido eliminar el fragmento",
+        "reorderFailed": "Failed to reorder snippet"
       }
     }
   },
@@ -270,11 +271,13 @@
       "success": {
         "created": "Script creado correctamente",
         "updated": "Script actualizado correctamente",
-        "deleted": "Script eliminado correctamente"
+        "deleted": "Script eliminado correctamente",
+        "reordered": "Script reordered successfully"
       },
       "errors": {
         "loadFailed": "Error al cargar los datos del script",
-        "deleteFailed": "Error al borrar el script"
+        "deleteFailed": "Error al borrar el script",
+        "reorderFailed": "Failed to reorder script"
       }
     },
     "menu": {
