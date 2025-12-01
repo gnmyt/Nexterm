@@ -82,9 +82,10 @@ class _TerminalScreenState extends State<TerminalScreen> {
       }
 
       final isPve = widget.server.isPve;
+      final isTelnet = widget.server.protocol == 'telnet';
       final identityId = widget.server.identities?.isNotEmpty == true ? widget.server.identities!.first : null;
 
-      if (!isPve && identityId == null) {
+      if (!isPve && !isTelnet && identityId == null) {
         if (mounted) setState(() => _errorMessage = 'No identity configured for this server');
         terminal.write('Error: No identity configured\r\n');
         return;

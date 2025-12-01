@@ -5,7 +5,7 @@ class ServerFolder {
   final String name;
   final String type;
   final double? position;
-  final String? organizationId;
+  final dynamic organizationId;
   final bool? requireConnectionReason;
   final List<dynamic> entries;
   bool isExpanded;
@@ -24,7 +24,7 @@ class ServerFolder {
     name: json['name'] as String,
     type: json['type'] as String? ?? 'folder',
     position: (json['position'] as num?)?.toDouble(),
-    organizationId: json['organizationId'] as String?,
+    organizationId: json['organizationId'],
     requireConnectionReason: json['requireConnectionReason'] as bool?,
     entries: json['entries'] as List<dynamic>? ?? [],
     ip: json['ip'] as String?,
