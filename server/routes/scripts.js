@@ -8,10 +8,12 @@ const {
     deleteScript,
     listAllAccessibleScripts,
     listAllSourceScripts,
+    repositionScript,
 } = require("../controllers/script");
 const { validateSchema } = require("../utils/schema");
-const { scriptCreationValidation, scriptEditValidation } = require("../validations/script");
+const { scriptCreationValidation, scriptEditValidation, scriptRepositionValidation } = require("../validations/script");
 const OrganizationMember = require("../models/OrganizationMember");
+const { hasOrganizationAccess } = require("../utils/permission");
 
 const app = Router();
 
@@ -30,14 +32,8 @@ app.get("/", async (req, res) => {
     try {
         const organizationId = req.query.organizationId ? parseInt(req.query.organizationId) : null;
         
-        if (organizationId) {
-            const membership = await OrganizationMember.findOne({ 
-                where: { accountId: req.user.id, organizationId } 
-            });
-            
-            if (!membership) {
-                return res.status(403).json({ code: 403, message: "Access denied to this organization" });
-            }
+        if (organizationId && !(await hasOrganizationAccess(req.user.id, organizationId))) {
+            return res.status(403).json({ code: 403, message: "Access denied to this organization" });
         }
         
         if (req.query.search) {
@@ -103,14 +99,8 @@ app.get("/:scriptId", async (req, res) => {
     try {
         const organizationId = req.query.organizationId ? parseInt(req.query.organizationId) : null;
         
-        if (organizationId) {
-            const membership = await OrganizationMember.findOne({ 
-                where: { accountId: req.user.id, organizationId } 
-            });
-            
-            if (!membership) {
-                return res.status(403).json({ code: 403, message: "Access denied to this organization" });
-            }
+        if (organizationId && !(await hasOrganizationAccess(req.user.id, organizationId))) {
+            return res.status(403).json({ code: 403, message: "Access denied to this organization" });
         }
         
         const script = await getScript(req.user.id, req.params.scriptId, organizationId);
@@ -141,14 +131,8 @@ app.post("/", async (req, res) => {
     if (validateSchema(res, scriptCreationValidation, req.body)) return;
 
     try {
-        if (req.body.organizationId) {
-            const membership = await OrganizationMember.findOne({ 
-                where: { accountId: req.user.id, organizationId: req.body.organizationId } 
-            });
-            
-            if (!membership) {
-                return res.status(403).json({ code: 403, message: "Access denied to this organization" });
-            }
+        if (req.body.organizationId && !(await hasOrganizationAccess(req.user.id, req.body.organizationId))) {
+            return res.status(403).json({ code: 403, message: "Access denied to this organization" });
         }
 
         const script = await createScript(req.user.id, req.body);
@@ -177,14 +161,8 @@ app.put("/:scriptId", async (req, res) => {
     try {
         const organizationId = req.query.organizationId ? parseInt(req.query.organizationId) : null;
         
-        if (organizationId) {
-            const membership = await OrganizationMember.findOne({ 
-                where: { accountId: req.user.id, organizationId } 
-            });
-            
-            if (!membership) {
-                return res.status(403).json({ code: 403, message: "Access denied to this organization" });
-            }
+        if (organizationId && !(await hasOrganizationAccess(req.user.id, organizationId))) {
+            return res.status(403).json({ code: 403, message: "Access denied to this organization" });
         }
 
         const result = await editScript(req.user.id, req.params.scriptId, req.body, organizationId);
@@ -213,14 +191,8 @@ app.delete("/:scriptId", async (req, res) => {
     try {
         const organizationId = req.query.organizationId ? parseInt(req.query.organizationId) : null;
         
-        if (organizationId) {
-            const membership = await OrganizationMember.findOne({ 
-                where: { accountId: req.user.id, organizationId } 
-            });
-            
-            if (!membership) {
-                return res.status(403).json({ code: 403, message: "Access denied to this organization" });
-            }
+        if (organizationId && !(await hasOrganizationAccess(req.user.id, organizationId))) {
+            return res.status(403).json({ code: 403, message: "Access denied to this organization" });
         }
 
         const result = await deleteScript(req.user.id, req.params.scriptId, organizationId);
@@ -228,6 +200,40 @@ app.delete("/:scriptId", async (req, res) => {
             return res.status(result.code).json(result);
         }
         res.json({ message: "Script deleted successfully" });
+    } catch (error) {
+        res.status(500).json({ code: 500, message: error.message });
+    }
+});
+
+/**
+ * PATCH /scripts/{scriptId}/reposition
+ * @summary Reposition Script
+ * @description Moves a script to a new position relative to another script.
+ * @tags Scripts
+ * @produces application/json
+ * @security BearerAuth
+ * @param {string} scriptId.path.required - The unique identifier of the script to reposition
+ * @param {string} organizationId.query - Optional: Organization ID if repositioning organization script
+ * @param {object} request.body.required - Reposition parameters (targetId, placement)
+ * @return {object} 200 - Script successfully repositioned
+ * @return {object} 400 - Cannot move script in that direction
+ * @return {object} 404 - Script not found
+ */
+app.patch("/:scriptId/reposition", async (req, res) => {
+    if (validateSchema(res, scriptRepositionValidation, req.body)) return;
+
+    try {
+        const organizationId = req.query.organizationId ? parseInt(req.query.organizationId) : null;
+        
+        if (organizationId && !(await hasOrganizationAccess(req.user.id, organizationId))) {
+            return res.status(403).json({ code: 403, message: "Access denied to this organization" });
+        }
+
+        const result = await repositionScript(req.user.id, req.params.scriptId, req.body, organizationId);
+        if (result?.code) {
+            return res.status(result.code).json(result);
+        }
+        res.json({ message: "Script repositioned successfully" });
     } catch (error) {
         res.status(500).json({ code: 500, message: error.message });
     }

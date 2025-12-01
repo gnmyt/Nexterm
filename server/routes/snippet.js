@@ -1,8 +1,9 @@
 const { Router } = require("express");
 const { validateSchema } = require("../utils/schema");
-const { createSnippet, deleteSnippet, editSnippet, getSnippet, listAllAccessibleSnippets, listAllSourceSnippets } = require("../controllers/snippet");
-const { snippetCreationValidation, snippetEditValidation } = require("../validations/snippet");
+const { createSnippet, deleteSnippet, editSnippet, getSnippet, listAllAccessibleSnippets, listAllSourceSnippets, repositionSnippet } = require("../controllers/snippet");
+const { snippetCreationValidation, snippetEditValidation, snippetRepositionValidation } = require("../validations/snippet");
 const OrganizationMember = require("../models/OrganizationMember");
+const { hasOrganizationAccess } = require("../utils/permission");
 
 const app = Router();
 
@@ -51,14 +52,8 @@ app.get("/sources", async (req, res) => {
 app.get("/:snippetId", async (req, res) => {
     const organizationId = req.query.organizationId ? parseInt(req.query.organizationId) : null;
     
-    if (organizationId) {
-        const membership = await OrganizationMember.findOne({ 
-            where: { accountId: req.user.id, organizationId } 
-        });
-        
-        if (!membership) {
-            return res.status(403).json({ code: 403, message: "Access denied to this organization" });
-        }
+    if (organizationId && !(await hasOrganizationAccess(req.user.id, organizationId))) {
+        return res.status(403).json({ code: 403, message: "Access denied to this organization" });
     }
     
     const snippet = await getSnippet(req.user.id, req.params.snippetId, organizationId);
@@ -81,14 +76,8 @@ app.get("/:snippetId", async (req, res) => {
 app.put("/", async (req, res) => {
     if (validateSchema(res, snippetCreationValidation, req.body)) return;
 
-    if (req.body.organizationId) {
-        const membership = await OrganizationMember.findOne({ 
-            where: { accountId: req.user.id, organizationId: req.body.organizationId } 
-        });
-        
-        if (!membership) {
-            return res.status(403).json({ code: 403, message: "Access denied to this organization" });
-        }
+    if (req.body.organizationId && !(await hasOrganizationAccess(req.user.id, req.body.organizationId))) {
+        return res.status(403).json({ code: 403, message: "Access denied to this organization" });
     }
 
     const snippet = await createSnippet(req.user.id, req.body);
@@ -115,14 +104,8 @@ app.patch("/:snippetId", async (req, res) => {
 
     const organizationId = req.query.organizationId ? parseInt(req.query.organizationId) : null;
     
-    if (organizationId) {
-        const membership = await OrganizationMember.findOne({ 
-            where: { accountId: req.user.id, organizationId } 
-        });
-        
-        if (!membership) {
-            return res.status(403).json({ code: 403, message: "Access denied to this organization" });
-        }
+    if (organizationId && !(await hasOrganizationAccess(req.user.id, organizationId))) {
+        return res.status(403).json({ code: 403, message: "Access denied to this organization" });
     }
 
     const snippet = await editSnippet(req.user.id, req.params.snippetId, req.body, organizationId);
@@ -146,20 +129,43 @@ app.patch("/:snippetId", async (req, res) => {
 app.delete("/:snippetId", async (req, res) => {
     const organizationId = req.query.organizationId ? parseInt(req.query.organizationId) : null;
     
-    if (organizationId) {
-        const membership = await OrganizationMember.findOne({ 
-            where: { accountId: req.user.id, organizationId } 
-        });
-        
-        if (!membership) {
-            return res.status(403).json({ code: 403, message: "Access denied to this organization" });
-        }
+    if (organizationId && !(await hasOrganizationAccess(req.user.id, organizationId))) {
+        return res.status(403).json({ code: 403, message: "Access denied to this organization" });
     }
 
     const snippet = await deleteSnippet(req.user.id, req.params.snippetId, organizationId);
     if (snippet?.code) return res.status(snippet.code).json(snippet);
 
     res.json({ message: "Snippet deleted successfully" });
+});
+
+/**
+ * PATCH /snippet/{snippetId}/reposition
+ * @summary Reposition Snippet
+ * @description Moves a snippet to a new position relative to another snippet.
+ * @tags Snippet
+ * @produces application/json
+ * @security BearerAuth
+ * @param {string} snippetId.path.required - The unique identifier of the snippet to reposition
+ * @param {string} organizationId.query - Optional: Organization ID if repositioning organization snippet
+ * @param {object} request.body.required - Reposition parameters (targetId, placement)
+ * @return {object} 200 - Snippet successfully repositioned
+ * @return {object} 400 - Cannot move snippet in that direction
+ * @return {object} 404 - Snippet not found
+ */
+app.patch("/:snippetId/reposition", async (req, res) => {
+    if (validateSchema(res, snippetRepositionValidation, req.body)) return;
+
+    const organizationId = req.query.organizationId ? parseInt(req.query.organizationId) : null;
+    
+    if (organizationId && !(await hasOrganizationAccess(req.user.id, organizationId))) {
+        return res.status(403).json({ code: 403, message: "Access denied to this organization" });
+    }
+
+    const result = await repositionSnippet(req.user.id, req.params.snippetId, req.body, organizationId);
+    if (result?.code) return res.status(result.code).json(result);
+
+    res.json({ message: "Snippet repositioned successfully" });
 });
 
 module.exports = app;

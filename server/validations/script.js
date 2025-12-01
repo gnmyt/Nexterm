@@ -12,3 +12,7 @@ module.exports.scriptEditValidation = Joi.object({
     content: Joi.string().min(1),
     description: Joi.string().allow(null, "")
 });
+
+module.exports.scriptRepositionValidation = Joi.object({
+    targetId: Joi.number().integer().required(),
+});

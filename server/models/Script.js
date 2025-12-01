@@ -32,4 +32,9 @@ module.exports = db.define("scripts", {
         type: Sequelize.TEXT,
         allowNull: false,
     },
+    sortOrder: {
+        type: Sequelize.INTEGER,
+        allowNull: false,
+        defaultValue: 0,
+    },
 }, { freezeTableName: true, createdAt: true, updatedAt: true });
