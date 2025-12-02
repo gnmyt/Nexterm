@@ -1,0 +1,25 @@
+{
+
+    "guacamoleVersion" : "1.6.0",
+
+    "name"      : "Duo TFA Authentication Backend",
+    "namespace" : "duo",
+
+    "authProviders" : [
+        "org.apache.guacamole.auth.duo.DuoAuthenticationProvider"
+    ],
+
+    "translations" : [
+        "translations/ca.json",
+        "translations/de.json",
+        "translations/en.json",
+        "translations/fr.json",
+        "translations/ja.json",
+        "translations/ko.json",
+        "translations/pl.json",
+        "translations/pt.json",
+        "translations/ru.json",
+        "translations/zh.json"
+    ]
+
+}

@@ -1,0 +1,994 @@
+{
+
+    "NAME" : "한국어",
+
+    "APP" : {
+
+        "ACTION_ACKNOWLEDGE"        : "확인",
+        "ACTION_CANCEL"             : "취소",
+        "ACTION_CLONE"              : "복제",
+        "ACTION_CONTINUE"           : "계속",
+        "ACTION_DELETE"             : "삭제",
+        "ACTION_DELETE_SESSIONS"    : "세션 종료",
+        "ACTION_DOWNLOAD"           : "다운로드",
+        "ACTION_LOGIN"              : "로그인",
+        "ACTION_LOGOUT"             : "로그아웃",
+        "ACTION_MANAGE_CONNECTIONS" : "연결",
+        "ACTION_MANAGE_PREFERENCES" : "기본 설정",
+        "ACTION_MANAGE_SETTINGS"    : "세팅",
+        "ACTION_MANAGE_SESSIONS"    : "활성화된 세션",
+        "ACTION_MANAGE_USERS"       : "사용자",
+        "ACTION_MANAGE_USER_GROUPS" : "그룹",
+        "ACTION_NAVIGATE_BACK"      : "뒤로가기",
+        "ACTION_NAVIGATE_HOME"      : "홈",
+        "ACTION_SAVE"               : "저장",
+        "ACTION_SEARCH"             : "검색",
+        "ACTION_SHARE"              : "공유",
+        "ACTION_UPDATE_PASSWORD"    : "패스워드 업데이트",
+        "ACTION_VIEW_HISTORY"       : "히스토리",
+
+        "DIALOG_HEADER_ERROR" : "에러",
+
+        "ERROR_PAGE_UNAVAILABLE"  : "에러가 발생해 동작이 완료될 수 없습니다. 문제가 계속되면, 시스템 관리자에게 문의하거나 시스템 로그를 확인하십시오.",
+        "ERROR_PASSWORD_BLANK"    : "패스워드는 공백이 될 수 없습니다.",
+        "ERROR_PASSWORD_MISMATCH" : "패스워드가 일치하지 않습니다.",
+
+        "FIELD_HEADER_PASSWORD"       : "패스워드:",
+        "FIELD_HEADER_PASSWORD_AGAIN" : "패스워드 재입력:",
+
+        "FIELD_PLACEHOLDER_FILTER" : "필터",
+
+        "FORMAT_DATE_TIME_PRECISE" : "yyyy-MM-dd HH:mm:ss",
+
+        "INFO_ACTIVE_USER_COUNT" : "현재 {USERS} 사용자에 의해 사용중입니다.}.",
+
+        "TEXT_ANONYMOUS_USER"   : "익명",
+        "TEXT_HISTORY_DURATION" : "{VALUE} {UNIT, select, second{초} minute{분} hour{시} day{일} other{}}",
+        "TEXT_UNTRANSLATED" : "{MESSAGE}"
+
+    },
+
+    "CLIENT" : {
+
+        "ACTION_ACKNOWLEDGE"               : "@:APP.ACTION_ACKNOWLEDGE",
+        "ACTION_CANCEL"                    : "@:APP.ACTION_CANCEL",
+        "ACTION_CLEAR_COMPLETED_TRANSFERS" : "지우기",
+        "ACTION_CONTINUE"                  : "@:APP.ACTION_CONTINUE",
+        "ACTION_DISCONNECT"                : "연결 해제",
+        "ACTION_LOGOUT"                    : "@:APP.ACTION_LOGOUT",
+        "ACTION_NAVIGATE_BACK"             : "@:APP.ACTION_NAVIGATE_BACK",
+        "ACTION_NAVIGATE_HOME"             : "@:APP.ACTION_NAVIGATE_HOME",
+        "ACTION_RECONNECT"                 : "다시 연결",
+        "ACTION_SAVE_FILE"                 : "@:APP.ACTION_SAVE",
+        "ACTION_SHARE"                     : "@:APP.ACTION_SHARE",
+        "ACTION_UPLOAD_FILES"              : "파일 업로드",
+
+        "DIALOG_HEADER_CONNECTING"       : "연결 중",
+        "DIALOG_HEADER_CONNECTION_ERROR" : "연결 오류",
+        "DIALOG_HEADER_DISCONNECTED"     : "연결 끊김",
+
+        "ERROR_CLIENT_201"     : "서버 사용량이 많아 연결이 종료되었습니다. 몇 분 후에 다시 시도하십시요.",
+        "ERROR_CLIENT_202"     : "원격 데스크톱이 응답하는데 너무 오래걸려서 Guacamole 서버가 연결을 닫았습니다. 다시 시도하거나 시스템 관리자에게 문의하십시오.",
+        "ERROR_CLIENT_203"     : "원격 데스크톱 서버에 오류가 발생해서 연결을 닫았습니다. 다시 시도하거나 시스템 관리자에게 문의하십시오.",
+        "ERROR_CLIENT_207"     : "원격 데스크톱 서버에 현재 연결할 수 없습니다. 문제가 지속되면, 시스템 관리자에게 문의하거나 시스템 로그를 확인하십시오.",
+        "ERROR_CLIENT_208"     : "원격 데스크톱 서버를 현재 사용 할 수 없습니다. 문제가 지속되면, 시스템 관리자에게 문의하거나 시스템 로그를 확인하십시오.",
+        "ERROR_CLIENT_209"     : "다른 연결과 충돌해서 원격 데스크톱 서버가 연결을 닫았습니다. 나중에 다시 시도하십시오.",
+        "ERROR_CLIENT_20A"     : "원격 데스크톱이 비활성화 상태로 보이기 때문에 서버 연결을 닫았습니다. 원치 않거나 예기치 않은 경우, 시스템 관리자에게 문의하거나 시스템 세팅을 확인하십시오.",
+        "ERROR_CLIENT_20B"     : "원격 데스크톱 서버가 강제로 연결을 끊었습니다. 원치 않거나 예기치 않은 경우, 시스템 관리자에게 문의하거나 시스템 로그를 확인하십시오.",
+        "ERROR_CLIENT_301"     : "로그인이 실패했습니다. 다시 연결한 다음 다시 시도하십시오",
+        "ERROR_CLIENT_303"     : "원격 데스크톱 서버가 이 연결에 대한 액세스를 거부했습니다. 액세스 권한이 필요하면, 시스템 관리자에게 계정 액세스 권한을 부여하도록 요청하거나 시스템 설정을 확인하십시오.",
+        "ERROR_CLIENT_308"     : "브라우저에서 연결이 끊긴 것처럼 보일 정도로 오랫동안 응답이 없었기 때문에 Guacamole 서버가 연결을 닫았습니다. 이는 보통 불안정한 무선 신호나 단지 네트워크의 느린 속도같은 네트워크 문제로 일어납니다. 네트워크 상태를 확인 후에 다시 시도 하십시오.", 
+        "ERROR_CLIENT_31D"     : "개별 사용자의 동시 연결 사용 제한을 초과했기 때문에 Guacamole 서버가 이 연결에 대한 액세스를 거부했습니다. 하나 이상의 연결을 닫고 다시 시도 하십시오.",
+        "ERROR_CLIENT_DEFAULT" : "Guacamole 서버 내에서 내부 오류가 발생해서 연결이 종료되었습니다. 문제가 지속되면, 시스템 관리자에게 문의하거나 시스템 로그를 확인하십시오.",
+
+        "ERROR_TUNNEL_201"     : "활성 연결이 너무 많기 때문에 Guacamole 서버에서 이 연결 시도를 거부했습니다. 잠시 후에 다시 시도하십시오",
+        "ERROR_TUNNEL_202"     : "서버 응답시간이 너무 길어 연결을 닫았습니다. 이것은 보통 불안정한 무선 신호나, 네트워크의 느린 속도같은 네트워크의 문제입니다. 네트워크 연결을 확인해 주시거나 시스템 관리자에게 문의하십시오.",
+        "ERROR_TUNNEL_203"     : "서버에 오류가 발생해서 연결을 닫았습니다. 다시 시도하거나 시스템 관리자에게 문의하십시오.",
+        "ERROR_TUNNEL_204"     : "요청한 연결이 존재하지 않습니다. 연결 이름을 확인하고 다시 시도하십시오",
+        "ERROR_TUNNEL_205"     : "이 연결은 현재 사용 중이며 이 연결에 대한 동시 액세스가 허용되지 않습니다. 나중에 다시 시도하십시오.",
+        "ERROR_TUNNEL_207"     : "Guacamole 서버에 현재 접근할 수 없습니다. 네트워크 상태를 확인 후에 다시 시도하십시오.",
+        "ERROR_TUNNEL_208"     : "Guacamole 서버가 연결을 허용하지 않습니다. 네트워크 상태를 확인 후에 다시 시도하십시오.",
+        "ERROR_TUNNEL_301"     : "로그인하지 않았기 때문에, 이 연결에 접근할 수 있는 권한이 없습니다. 로그인 후에 다시 시도하십시오.",
+        "ERROR_TUNNEL_303"     : "이 연결에 접근할 수 있는 권한이 없습니다. 접근 권한이 필요하다면, 허가 사용자 목록에 당신을 추가하도록 시스템 관리자에게 요청하거나 시스템 설정을 확인하십시오.",
+        "ERROR_TUNNEL_308"     : "브라우저에서 연결이 끊긴 것처럼 보일 정도로 오랫동안 응답이 없었기 때문에 Guacamole server가 연결을 닫았습니다. 이는 보통 불안정한 무선 신호나 단지 네트워크의 느린 속도같은 네트워크 문제로 일어납니다. 네트워크 상태를 확인 후에 다시 시도 하십시오",
+        "ERROR_TUNNEL_31D"     : "개별 사용자의 동시 연결 사용 제한을 초과했기 때문에 Guacamole server가 이 연결에 대한 액세스를 거부하고 있습니다. 하나 이상의 연결을 닫고 다시 시도하십시오.",
+        "ERROR_TUNNEL_DEFAULT" : "Guacamole 서버 내에서 내부 오류가 발생해서 연결이 종료되었습니다. 문제가 지속되면, 시스템 관리자에게 문의하거나 시스템 로그를 확인하십시오.",
+
+        "FIELD_PLACEHOLDER_FILTER" : "@:APP.FIELD_PLACEHOLDER_FILTER",
+
+        "ERROR_UPLOAD_100"     : "파일 전송이 지원되지 않거나 활성화되지 않았습니다. 시스템 관리자에게 문의하거나 시스템 로그를 확인하십시오.",
+        "ERROR_UPLOAD_201"     : "현재 너무 많은 파일이 전송되고 있습니다. 기존 전송이 완료될 때까지 기다린 후 다시 시도하십시오.",
+        "ERROR_UPLOAD_202"     : "원격 데스크톱 서버가 응답하는 데 너무 오래 걸리기 때문에 파일을 전송할 수 없습니다. 다시 시도하거나 시스템 관리자에게 문의하십시오.",
+        "ERROR_UPLOAD_203"     : "전송하는 동안 원격 데스크톱 서버에 오류가 발생했습니다. 다시 시도하거나 시스템 관리자에게 문의하십시오.",
+        "ERROR_UPLOAD_204"     : "파일 전송 대상이 없습니다. 대상이 있는지 확인하고 다시 시도하십시오.",
+        "ERROR_UPLOAD_205"     : "파일 전송 대상이 현재 잠겨 있습니다. 진행 중인 작업이 완료될 때까지 기다린 후 다시 시도하십시오.",
+        "ERROR_UPLOAD_301"     : "로그인하지 않았기 때문에 이 파일을 업로드할 권한이 없습니다. 로그인 한 후 다시 시도하십시오.",
+        "ERROR_UPLOAD_303"     : "이 파일을 업로드 할 권한이 없습니다. 액세스가 필요한 경우 시스템 설정을 확인하거나 시스템 관리자에게 확인하십시오.",
+        "ERROR_UPLOAD_308"     : "파일 전송이 중단되었습니다. 이는 일반적으로 무선 신호가 불안정하거나 네트워크 속도가 매우 느린 것과 같은 네트워크 문제로 인해 발생합니다. 네트워크를 확인하고 다시 시도하십시오.",
+        "ERROR_UPLOAD_31D"     : "현재 너무 많은 파일이 전송되고 있습니다. 기존 전송이 완료될 때까지 기다린 후 다시 시도하십시오.",
+        "ERROR_UPLOAD_DEFAULT" : "Guacamole 서버 내에서 내부 오류가 발생해서 연결이 종료되었습니다. 문제가 지속되면, 시스템 관리자에게 문의하거나 시스템 로그를 확인하십시오.",
+
+
+        "HELP_CLIPBOARD"           : "Guacamole에서 복사하거나 잘라낸 텍스트가 여기에 표시됩니다. 텍스트 변경 사항은 원격 클립보드에 직접 적용됩니다.",
+        "HELP_INPUT_METHOD_NONE"   : "사용중인 입력 방법이 없습니다. 키보드 입력은 연결된 물리적 키보드에서 받아들여집니다.",
+        "HELP_INPUT_METHOD_OSK"    : "내장된 Guacamole 화상 키보드의 입력을 표시하고 허용합니다. 화상 키보드는 다른 방법으로는 불가능할 수 있는 키 조합을 입력할 수 있습니다. (Ctrl-Alt-Del 등)",
+        "HELP_INPUT_METHOD_TEXT"   : "텍스트 입력을 허용하고, 입력된 텍스트를 바탕으로 키보드 이벤트를 에뮬레이트 합니다. 이것은 물리적 키보드가 없는 휴대폰과 같은 장치에 필요합니다.",
+        "HELP_MOUSE_MODE"          : "터치와 관련하여 원격 마우스가 어떻게 동작하는지 결정합니다.",
+        "HELP_MOUSE_MODE_ABSOLUTE" : "탭하여 클릭합니다. 클릭은 터치 위치에서 발생합니다.",
+        "HELP_MOUSE_MODE_RELATIVE" : "드래그하여 마우스 포인터를 움직이고 탭하여 클릭합니다. 클릭은 마우스 포인터 위치에서 발생합니다.",
+        "HELP_SHARE_LINK"          : "현재 연결이 공유되고 있으며, 다음 링크를 가진 사람이라면 누구나 접근할 수 있습니다:",
+        "INFO_CONNECTION_SHARED" : "이 연결은 이제 공유됩니다.",
+        "INFO_NO_FILE_TRANSFERS" : "파일 전송이 없습니다.",
+
+        "NAME_INPUT_METHOD_NONE"   : "없음",
+        "NAME_INPUT_METHOD_OSK"    : "화상 키보드",
+        "NAME_INPUT_METHOD_TEXT"   : "텍스트 입력",
+        "NAME_KEY_CTRL"            : "Ctrl",
+        "NAME_KEY_ALT"             : "Alt",
+        "NAME_KEY_ESC"             : "Esc",
+        "NAME_KEY_TAB"             : "Tab",
+        "NAME_MOUSE_MODE_ABSOLUTE" : "터치 스크린",
+        "NAME_MOUSE_MODE_RELATIVE" : "터치 패드",
+
+        "SECTION_HEADER_CLIPBOARD"      : "클립보드",
+        "SECTION_HEADER_DEVICES"        : "장치",
+        "SECTION_HEADER_DISPLAY"        : "디스플레이",
+        "SECTION_HEADER_FILE_TRANSFERS" : "파일 전송",
+        "SECTION_HEADER_INPUT_METHOD"   : "입력 방법",
+        "SECTION_HEADER_MOUSE_MODE"     : "마우스 에뮬레이션 모드",
+
+        "TEXT_ZOOM_AUTO_FIT"              : "브라우저 창에 자동으로 맞춤",
+        "TEXT_CLIENT_STATUS_IDLE"         : "유휴 상태.",
+        "TEXT_CLIENT_STATUS_CONNECTING"   : "Guacamole에 연결 중...",
+        "TEXT_CLIENT_STATUS_DISCONNECTED" : "연결이 끊어졌습니다.",
+        "TEXT_CLIENT_STATUS_UNSTABLE"     : "Guacamole 서버에 대한 네트워크 연결이 불안정합니다.",
+        "TEXT_CLIENT_STATUS_WAITING"      : "Guacamole에 연결됐습니다. 응답을 기다리는 중...",
+        "TEXT_RECONNECT_COUNTDOWN"        : "다시 연결하는 중 {REMAINING}초...",
+        "TEXT_FILE_TRANSFER_PROGRESS"     : "{PROGRESS} {UNIT, select, b{B} kb{KB} mb{MB} gb{GB} other{}}"
+    },
+
+    "COLOR_SCHEME" : {
+
+        "ACTION_CANCEL"       : "@:APP.ACTION_CANCEL",
+        "ACTION_HIDE_DETAILS" : "숨기기",
+        "ACTION_SAVE"         : "@:APP.ACTION_SAVE",
+        "ACTION_SHOW_DETAILS" : "표시",
+
+        "FIELD_HEADER_BACKGROUND" : "배경색",
+        "FIELD_HEADER_FOREGROUND" : "전경색",
+
+        "FIELD_OPTION_CUSTOM" : "사용자 지정...",
+
+        "SECTION_HEADER_DETAILS" : "세부 정보:"
+
+    },
+
+    "DATA_SOURCE_DEFAULT" : {
+        "NAME" : "기본 (XML)"
+    },
+
+    "FORM" : {
+
+        "FIELD_PLACEHOLDER_DATE" : "YYYY-MM-DD",
+        "FIELD_PLACEHOLDER_TIME" : "HH:MM:SS",
+
+        "HELP_SHOW_PASSWORD" : "클릭하여 패스워드 표시",
+        "HELP_HIDE_PASSWORD" : "클릭하여 패스워드 숨기기"
+
+    },
+
+    "HOME" : {
+
+        "FIELD_PLACEHOLDER_FILTER" : "@:APP.FIELD_PLACEHOLDER_FILTER",
+
+        "INFO_ACTIVE_USER_COUNT" : "@:APP.INFO_ACTIVE_USER_COUNT",
+
+        "INFO_NO_RECENT_CONNECTIONS" : "최근 연결이 없습니다.",
+
+        "PASSWORD_CHANGED" : "패스워드가 변경되었습니다.",
+
+        "SECTION_HEADER_ALL_CONNECTIONS"    : "모든 연결",
+        "SECTION_HEADER_RECENT_CONNECTIONS" : "최근 연결"
+
+    },
+
+    "LIST" : {
+
+        "TEXT_ANONYMOUS_USER" : "익명"
+
+    },
+
+    "LOGIN": {
+
+        "ACTION_ACKNOWLEDGE" : "@:APP.ACTION_ACKNOWLEDGE",
+        "ACTION_CONTINUE"    : "@:APP.ACTION_CONTINUE",
+        "ACTION_LOGIN"       : "@:APP.ACTION_LOGIN",
+
+        "DIALOG_HEADER_ERROR" : "@:APP.DIALOG_HEADER_ERROR",
+
+        "ERROR_INVALID_LOGIN" : "잘못된 로그인",
+
+        "FIELD_HEADER_USERNAME" : "사용자 이름",
+        "FIELD_HEADER_PASSWORD" : "패스워드"
+
+    },
+
+    "MANAGE_CONNECTION" : {
+
+        "ACTION_ACKNOWLEDGE"          : "@:APP.ACTION_ACKNOWLEDGE",
+        "ACTION_CANCEL"               : "@:APP.ACTION_CANCEL",
+        "ACTION_CLONE"                : "@:APP.ACTION_CLONE",
+        "ACTION_DELETE"               : "@:APP.ACTION_DELETE",
+        "ACTION_SAVE"                 : "@:APP.ACTION_SAVE",
+
+        "DIALOG_HEADER_CONFIRM_DELETE" : "연결 삭제",
+        "DIALOG_HEADER_ERROR"          : "@:APP.DIALOG_HEADER_ERROR",
+
+        "FIELD_HEADER_LOCATION" : "위치:",
+        "FIELD_HEADER_NAME"     : "이름:",
+        "FIELD_HEADER_PROTOCOL" : "프로토콜:",
+
+        "FORMAT_HISTORY_START" : "@:APP.FORMAT_DATE_TIME_PRECISE",
+
+        "INFO_CONNECTION_DURATION_UNKNOWN" : "--",
+        "INFO_CONNECTION_ACTIVE_NOW"       : "현재 활성화",
+        "INFO_CONNECTION_NOT_USED"         : "이 연결은 아직 사용되지 않았습니다.",
+
+        "SECTION_HEADER_EDIT_CONNECTION" : "연결 편집",
+        "SECTION_HEADER_HISTORY"         : "사용 기록",
+        "SECTION_HEADER_PARAMETERS"      : "매개변수",
+        "TABLE_HEADER_HISTORY_USERNAME"   : "사용자 이름",
+        "TABLE_HEADER_HISTORY_START"      : "시작 시간",
+        "TABLE_HEADER_HISTORY_DURATION"   : "기간",
+        "TABLE_HEADER_HISTORY_REMOTEHOST" : "원격 호스트",
+
+        "TEXT_CONFIRM_DELETE"   : "연결을 삭제한 후에는 복원할 수 없습니다. 이 연결을 삭제하겠습니까?",
+        "TEXT_HISTORY_DURATION" : "@:APP.TEXT_HISTORY_DURATION"
+
+    },
+
+    "MANAGE_CONNECTION_GROUP" : {
+
+        "ACTION_ACKNOWLEDGE"   : "@:APP.ACTION_ACKNOWLEDGE",
+        "ACTION_CANCEL"        : "@:APP.ACTION_CANCEL",
+        "ACTION_CLONE"         : "@:APP.ACTION_CLONE",
+        "ACTION_DELETE"        : "@:APP.ACTION_DELETE",
+        "ACTION_SAVE"          : "@:APP.ACTION_SAVE",
+
+        "DIALOG_HEADER_CONFIRM_DELETE" : "연결 그룹 삭제",
+        "DIALOG_HEADER_ERROR"          : "@:APP.DIALOG_HEADER_ERROR",
+
+        "FIELD_HEADER_LOCATION" : "위치:",
+        "FIELD_HEADER_NAME"     : "이름:",
+        "FIELD_HEADER_TYPE"     : "타입:",
+
+        "NAME_TYPE_BALANCING"       : "부하 분산",
+        "NAME_TYPE_ORGANIZATIONAL"  : "조직",
+
+        "SECTION_HEADER_EDIT_CONNECTION_GROUP" : "연결 그룹 편집",
+
+        "TEXT_CONFIRM_DELETE" : "연결 그룹을 삭제한 후에는 복원할 수 없습니다. 이 연결 그룹을 삭제하겠습니까?"
+
+    },
+
+    "MANAGE_SHARING_PROFILE" : {
+
+        "ACTION_ACKNOWLEDGE" : "@:APP.ACTION_ACKNOWLEDGE",
+        "ACTION_CANCEL"      : "@:APP.ACTION_CANCEL",
+        "ACTION_CLONE"       : "@:APP.ACTION_CLONE",
+        "ACTION_DELETE"      : "@:APP.ACTION_DELETE",
+        "ACTION_SAVE"        : "@:APP.ACTION_SAVE",
+
+        "DIALOG_HEADER_CONFIRM_DELETE" : "공유 프로필 삭제",
+        "DIALOG_HEADER_ERROR"          : "@:APP.DIALOG_HEADER_ERROR",
+
+        "FIELD_HEADER_NAME"               : "이름:",
+        "FIELD_HEADER_PRIMARY_CONNECTION" : "기본 연결:",
+
+        "SECTION_HEADER_EDIT_SHARING_PROFILE" : "공유 프로필 편집",
+        "SECTION_HEADER_PARAMETERS"           : "매개 변수",
+
+        "TEXT_CONFIRM_DELETE" : "공유 프로필을 삭제한 후에는 복원할 수 없습니다. 이 공유 프로필을 삭제하겠습니까?"
+
+    },
+
+    "MANAGE_USER" : {
+
+        "ACTION_ACKNOWLEDGE"   : "@:APP.ACTION_ACKNOWLEDGE",
+        "ACTION_CANCEL"        : "@:APP.ACTION_CANCEL",
+        "ACTION_CLONE"         : "@:APP.ACTION_CLONE",
+        "ACTION_DELETE"        : "@:APP.ACTION_DELETE",
+        "ACTION_SAVE"          : "@:APP.ACTION_SAVE",
+
+        "DIALOG_HEADER_CONFIRM_DELETE" : "사용자 삭제",
+        "DIALOG_HEADER_ERROR"          : "@:APP.DIALOG_HEADER_ERROR",
+
+        "ERROR_PASSWORD_MISMATCH" : "@:APP.ERROR_PASSWORD_MISMATCH",
+
+        "FIELD_HEADER_ADMINISTER_SYSTEM"             : "관리자 시스템",
+        "FIELD_HEADER_CHANGE_OWN_PASSWORD"           : "자신의 패스워드 변경:",
+        "FIELD_HEADER_CREATE_NEW_USERS"              : "새로운 사용자 생성:",
+        "FIELD_HEADER_CREATE_NEW_USER_GROUPS"        : "새로운 사용자 그룹 생성:",
+        "FIELD_HEADER_CREATE_NEW_CONNECTIONS"        : "새로운 연결 생성",
+        "FIELD_HEADER_CREATE_NEW_CONNECTION_GROUPS"  : "새로운 연결 그룹 생성:",
+        "FIELD_HEADER_CREATE_NEW_SHARING_PROFILES"   : "새로운 공유 프로파일 생성",
+        "FIELD_HEADER_PASSWORD"                      : "@:APP.FIELD_HEADER_PASSWORD",
+        "FIELD_HEADER_PASSWORD_AGAIN"                : "@:APP.FIELD_HEADER_PASSWORD_AGAIN",
+        "FIELD_HEADER_USER_DISABLED"                 : "로그인 비활성화:",
+        "FIELD_HEADER_USERNAME"                      : "사용자 이름:",
+
+        "FIELD_PLACEHOLDER_FILTER" : "@:APP.FIELD_PLACEHOLDER_FILTER",
+
+        "HELP_NO_USER_GROUPS" : "이 사용자는 현재 어떤 그룹에도 속하지 않습니다. 그룹을 추가하려면이 섹션을 확장하십시오.",
+
+        "INFO_READ_ONLY"                : "죄송합니다.이 사용자 계정은 수정할 수 없습니다.",
+        "INFO_NO_USER_GROUPS_AVAILABLE" : "사용 가능한 그룹이 없습니다.",
+
+        "SECTION_HEADER_ALL_CONNECTIONS"     : "모든 연결",
+        "SECTION_HEADER_CONNECTIONS"         : "연결",
+        "SECTION_HEADER_CURRENT_CONNECTIONS" : "현재 연결",
+        "SECTION_HEADER_EDIT_USER"           : "사용자 편집",
+        "SECTION_HEADER_PERMISSIONS"         : "권한",
+        "SECTION_HEADER_USER_GROUPS"         : "그룹",
+
+        "TEXT_CONFIRM_DELETE" : "사용자를 삭제한 후에는 복원 할 수 없습니다. 이 사용자를 삭제 하시겠습니까?"
+
+    },
+
+    "MANAGE_USER_GROUP" : {
+
+        "ACTION_ACKNOWLEDGE"   : "@:APP.ACTION_ACKNOWLEDGE",
+        "ACTION_CANCEL"        : "@:APP.ACTION_CANCEL",
+        "ACTION_CLONE"         : "@:APP.ACTION_CLONE",
+        "ACTION_DELETE"        : "@:APP.ACTION_DELETE",
+        "ACTION_SAVE"          : "@:APP.ACTION_SAVE",
+    
+        "DIALOG_HEADER_CONFIRM_DELETE" : "그룹 삭제",
+        "DIALOG_HEADER_ERROR"          : "@:APP.DIALOG_HEADER_ERROR",
+
+        "FIELD_HEADER_ADMINISTER_SYSTEM"             : "@:MANAGE_USER.FIELD_HEADER_ADMINISTER_SYSTEM",
+        "FIELD_HEADER_CHANGE_OWN_PASSWORD"           : "@:MANAGE_USER.FIELD_HEADER_CHANGE_OWN_PASSWORD",
+        "FIELD_HEADER_CREATE_NEW_USERS"              : "@:MANAGE_USER.FIELD_HEADER_CREATE_NEW_USERS",
+        "FIELD_HEADER_CREATE_NEW_USER_GROUPS"        : "@:MANAGE_USER.FIELD_HEADER_CREATE_NEW_USER_GROUPS",
+        "FIELD_HEADER_CREATE_NEW_CONNECTIONS"        : "@:MANAGE_USER.FIELD_HEADER_CREATE_NEW_CONNECTIONS",
+        "FIELD_HEADER_CREATE_NEW_CONNECTION_GROUPS"  : "@:MANAGE_USER.FIELD_HEADER_CREATE_NEW_CONNECTION_GROUPS",
+        "FIELD_HEADER_USER_GROUP_DISABLED"           : "비활성화:",
+        "FIELD_HEADER_USER_GROUP_NAME"               : "그룹 이름:",
+
+        "FIELD_PLACEHOLDER_FILTER" : "@:APP.FIELD_PLACEHOLDER_FILTER",
+
+        "HELP_NO_USER_GROUPS"        : "이 그룹은 현재 어떤 그룹에도 소속되지 않았습니다. 이 섹션을 확장하여 그룹을 추가하십시오.",
+        "HELP_NO_MEMBER_USER_GROUPS" : "이 그룹은 현재 어떤 그룹도 포함하고 있지 않습니다. 이 섹션을 확장하여 그룹을 추가하십시오.",
+        "HELP_NO_MEMBER_USERS"       : "이 그룹은 어떤 사용자도 포함 하고 있지 않습니다. 이 섹션을 확장하여 사용자를 추가하십시오. ",
+
+        "INFO_READ_ONLY"                : "이 그룹은 편집할 수 없습니다.",
+        "INFO_NO_USER_GROUPS_AVAILABLE" : "@:MANAGE_USER.INFO_NO_USER_GROUPS_AVAILABLE",
+        "INFO_NO_USERS_AVAILABLE"       : "사용가능한 사용자가 없습니다.",
+
+
+        "SECTION_HEADER_ALL_CONNECTIONS"     : "@:MANAGE_USER.SECTION_HEADER_ALL_CONNECTIONS",
+        "SECTION_HEADER_CONNECTIONS"         : "@:MANAGE_USER.SECTION_HEADER_CONNECTIONS",
+        "SECTION_HEADER_CURRENT_CONNECTIONS" : "@:MANAGE_USER.SECTION_HEADER_CURRENT_CONNECTIONS",
+        "SECTION_HEADER_EDIT_USER_GROUP"     : "그룹 편집",
+        "SECTION_HEADER_MEMBER_USERS"        : "맴버 사용자",
+        "SECTION_HEADER_MEMBER_USER_GROUPS"  : "맴버 그룹",
+        "SECTION_HEADER_PERMISSIONS"         : "@:MANAGE_USER.SECTION_HEADER_PERMISSIONS",
+        "SECTION_HEADER_USER_GROUPS"         : "상위 그룹",
+
+        "TEXT_CONFIRM_DELETE" : "그룹을 삭제한 후에는 복원 할 수 없습니다. 이 그룹을 삭제 하시겠습니까?"
+
+    },
+
+    "PROTOCOL_KUBERNETES" : {
+
+        "FIELD_HEADER_BACKSPACE"       : "Backspace 키 전송:",
+        "FIELD_HEADER_CA_CERT"         : "인증 기관 인증서:",
+        "FIELD_HEADER_CLIENT_CERT"     : "클라이언트 인증서:",
+        "FIELD_HEADER_CLIENT_KEY"      : "클라이언트 키:",
+        "FIELD_HEADER_COLOR_SCHEME"    : "색상 구성표:",
+        "FIELD_HEADER_CONTAINER"       : "컨테이너 이름 :",
+        "FIELD_HEADER_CREATE_RECORDING_PATH"  : "자동으로 레코드 경로 생성 :",
+        "FIELD_HEADER_CREATE_TYPESCRIPT_PATH" : "자동으로 typescript 경로 생성 :",
+        "FIELD_HEADER_EXEC_COMMAND"    : "명령어 (exec):",
+        "FIELD_HEADER_FONT_NAME"       : "글꼴 이름 :",
+        "FIELD_HEADER_FONT_SIZE"       : "글꼴 크기 :",
+        "FIELD_HEADER_HOSTNAME"        : "호스트 이름 :",
+        "FIELD_HEADER_IGNORE_CERT"     : "서버 인증서 무시 :",
+        "FIELD_HEADER_NAMESPACE"       : "네임 스페이스 :",
+        "FIELD_HEADER_POD"             : "파드 (Pod) 이름:",
+        "FIELD_HEADER_PORT"            : "포트:",
+        "FIELD_HEADER_READ_ONLY"       : "읽기 전용:",
+        "FIELD_HEADER_RECORDING_EXCLUDE_MOUSE"  : "마우스 제외:",
+        "FIELD_HEADER_RECORDING_EXCLUDE_OUTPUT" : "그래픽/스트림 제외:",
+        "FIELD_HEADER_RECORDING_INCLUDE_KEYS"   : "키 이벤트 포함:",
+        "FIELD_HEADER_RECORDING_NAME"  : "레코드 이름:",
+        "FIELD_HEADER_RECORDING_PATH"  : "레코드 경로:",
+        "FIELD_HEADER_SCROLLBACK"      : "스크롤 백 (scrollback) 최대 크기:",
+        "FIELD_HEADER_TYPESCRIPT_NAME" : "Typescript 이름:",
+        "FIELD_HEADER_TYPESCRIPT_PATH" : "Typescript 경로:",
+        "FIELD_HEADER_USE_SSL"         : "SSL/TLS 사용",
+
+        "FIELD_OPTION_BACKSPACE_8"     : "Backspace (Ctrl-H)",
+        "FIELD_OPTION_BACKSPACE_127"   : "Delete (Ctrl-?)",
+
+        "FIELD_OPTION_COLOR_SCHEME_BLACK_WHITE" : "흰색 바탕에 검정색",
+        "FIELD_OPTION_COLOR_SCHEME_GRAY_BLACK"  : "검은색 바탕에 회색",
+        "FIELD_OPTION_COLOR_SCHEME_GREEN_BLACK" : "검은색 바탕에 녹색",
+        "FIELD_OPTION_COLOR_SCHEME_WHITE_BLACK" : "검은색 바탕에 흰색",
+
+        "FIELD_OPTION_FONT_SIZE_8"     : "8",
+        "FIELD_OPTION_FONT_SIZE_9"     : "9",
+        "FIELD_OPTION_FONT_SIZE_10"    : "10",
+        "FIELD_OPTION_FONT_SIZE_11"    : "11",
+        "FIELD_OPTION_FONT_SIZE_12"    : "12",
+        "FIELD_OPTION_FONT_SIZE_14"    : "14",
+        "FIELD_OPTION_FONT_SIZE_18"    : "18",
+        "FIELD_OPTION_FONT_SIZE_24"    : "24",
+        "FIELD_OPTION_FONT_SIZE_30"    : "30",
+        "FIELD_OPTION_FONT_SIZE_36"    : "36",
+        "FIELD_OPTION_FONT_SIZE_48"    : "48",
+        "FIELD_OPTION_FONT_SIZE_60"    : "60",
+        "FIELD_OPTION_FONT_SIZE_72"    : "72",
+        "FIELD_OPTION_FONT_SIZE_96"    : "96",
+
+        "NAME" : "Kubernetes",
+        "SECTION_HEADER_AUTHENTICATION" : "인증",
+        "SECTION_HEADER_BEHAVIOR"       : "터미널 동작",
+        "SECTION_HEADER_CONTAINER"      : "컨테이너",
+        "SECTION_HEADER_DISPLAY"        : "디스플레이",
+        "SECTION_HEADER_RECORDING"      : "스크린 레코드",
+        "SECTION_HEADER_TYPESCRIPT"     : "Typescript (텍스트 세션 레코드)",
+        "SECTION_HEADER_NETWORK"        : "네트워크"
+
+    },
+
+    "PROTOCOL_RDP" : {
+
+        "FIELD_HEADER_CLIENT_NAME"     : "클라이언트 이름:",
+        "FIELD_HEADER_COLOR_DEPTH"     : "색심도:",
+        "FIELD_HEADER_CONSOLE"         : "관리자 콘솔:",
+        "FIELD_HEADER_CONSOLE_AUDIO"   : "콘솔 내 오디오 지원:",
+        "FIELD_HEADER_CREATE_DRIVE_PATH" : "드라이브 자동 생성:",
+        "FIELD_HEADER_CREATE_RECORDING_PATH" : "레코드 경로 자동 생성:",
+        "FIELD_HEADER_DISABLE_AUDIO"   : "오디오 비활성화:",
+        "FIELD_HEADER_DISABLE_AUTH"    : "인증 비활성화:",
+        "FIELD_HEADER_DISABLE_COPY"    : "원격 데스크톱으로 부터의 복사 비활성화:",
+        "FIELD_HEADER_DISABLE_DOWNLOAD" : "파일 다운로드 비활성화:",
+        "FIELD_HEADER_DISABLE_PASTE"   : "클라이언트로 부터의 붙여넣기 비활성화:",
+        "FIELD_HEADER_DISABLE_UPLOAD"   : "파일 업로드 비활성화:",
+        "FIELD_HEADER_DOMAIN"          : "도메인:",
+        "FIELD_HEADER_DPI"             : "해상도 (DPI):",
+        "FIELD_HEADER_DRIVE_NAME"       : "드라이브 이름:",
+        "FIELD_HEADER_DRIVE_PATH"       : "드라이브 주소:",
+        "FIELD_HEADER_ENABLE_AUDIO_INPUT"         : "오디오 입력 활성화 (마이크):",
+        "FIELD_HEADER_ENABLE_DESKTOP_COMPOSITION" : "바탕화면 구성 활성화 (Aero):",
+        "FIELD_HEADER_ENABLE_DRIVE"               : "드라이브 활성화:",
+        "FIELD_HEADER_ENABLE_FONT_SMOOTHING"      : "글꼴 다듬기 활성화 (ClearType):",
+        "FIELD_HEADER_ENABLE_FULL_WINDOW_DRAG"    : "전체 창 끌기 활성화:",
+        "FIELD_HEADER_ENABLE_MENU_ANIMATIONS"     : "메뉴 에니메이션 활성화:",
+        "FIELD_HEADER_DISABLE_BITMAP_CACHING"     : "비트맵 캐싱 비활성화:",
+        "FIELD_HEADER_DISABLE_OFFSCREEN_CACHING"  : "화면 밖 캐싱 비활성화:",
+        "FIELD_HEADER_DISABLE_GLYPH_CACHING"      : "문자 모양 캐싱 비활성화:",
+        "FIELD_HEADER_ENABLE_PRINTING"            : "프린팅 활성화:",
+        "FIELD_HEADER_ENABLE_SFTP"     : "SFTP 활성화:",
+        "FIELD_HEADER_ENABLE_THEMING"             : "테마 활성화:",
+        "FIELD_HEADER_ENABLE_TOUCH"               : "멀티 터치 활성화:",
+        "FIELD_HEADER_ENABLE_WALLPAPER"           : "바탕화면 활성화:",
+        "FIELD_HEADER_FORCE_LOSSLESS"             : "무손실 압축 강제:",
+        "FIELD_HEADER_GATEWAY_DOMAIN"   : "도메인:",
+        "FIELD_HEADER_GATEWAY_HOSTNAME" : "호스트 이름:",
+        "FIELD_HEADER_GATEWAY_PASSWORD" : "패스워드:",
+        "FIELD_HEADER_GATEWAY_PORT"     : "포트:",
+        "FIELD_HEADER_GATEWAY_USERNAME" : "사용자 이름:",
+        "FIELD_HEADER_HEIGHT"          : "높이:",
+        "FIELD_HEADER_HOSTNAME"        : "호스트 이름:",
+        "FIELD_HEADER_IGNORE_CERT"     : "서버 인증서 무시:",
+        "FIELD_HEADER_INITIAL_PROGRAM" : "시작 프로그램:",
+        "FIELD_HEADER_LOAD_BALANCE_INFO" : "부하분산 정보/쿠키:",
+        "FIELD_HEADER_PASSWORD"        : "패스워드:",
+        "FIELD_HEADER_PORT"            : "포트:",
+        "FIELD_HEADER_PRINTER_NAME"    : "리디렉션 프린터 문서:",
+        "FIELD_HEADER_PRECONNECTION_BLOB" : "Preconnection BLOB (VM ID):",
+        "FIELD_HEADER_PRECONNECTION_ID"   : "RDP 소스 ID:",
+        "FIELD_HEADER_READ_ONLY"      : "읽기 전용:",
+        "FIELD_HEADER_RECORDING_EXCLUDE_MOUSE"  : "마우스 제외:",
+        "FIELD_HEADER_RECORDING_EXCLUDE_OUTPUT" : "그래픽/스트림 제외:",
+        "FIELD_HEADER_RECORDING_INCLUDE_KEYS"   : "키 이벤트 포함:",
+        "FIELD_HEADER_RECORDING_NAME" : "레코드 이름:",
+        "FIELD_HEADER_RECORDING_PATH" : "레코드 경로:",
+        "FIELD_HEADER_RESIZE_METHOD" : "Resize 메서드:",
+        "FIELD_HEADER_REMOTE_APP_ARGS" : "매개 변수:",
+        "FIELD_HEADER_REMOTE_APP_DIR"  : "작업 디렉터리:",
+        "FIELD_HEADER_REMOTE_APP"      : "프로그램:",
+        "FIELD_HEADER_SECURITY"        : "안전 모드:",
+        "FIELD_HEADER_SERVER_LAYOUT"   : "자판 배열:",
+        "FIELD_HEADER_SFTP_DIRECTORY"             : "기본 업로드 디렉토리:",
+        "FIELD_HEADER_SFTP_DISABLE_DOWNLOAD"      : "파일 다운로드 비활성화:",
+        "FIELD_HEADER_SFTP_HOST_KEY"              : "호스트 공개 키 (Base64):",
+        "FIELD_HEADER_SFTP_HOSTNAME"              : "호스트 이름:",
+        "FIELD_HEADER_SFTP_SERVER_ALIVE_INTERVAL" : "SFTP keepalive 간격:",
+        "FIELD_HEADER_SFTP_PASSPHRASE"            : "암호 (Passphrase):",
+        "FIELD_HEADER_SFTP_PASSWORD"              : "암호 (Password):",
+        "FIELD_HEADER_SFTP_PORT"                  : "포트:",
+        "FIELD_HEADER_SFTP_PRIVATE_KEY"           : "개인 키:",
+        "FIELD_HEADER_SFTP_ROOT_DIRECTORY"        : "루트 디렉토리 파일 브라우저:",
+        "FIELD_HEADER_SFTP_DISABLE_UPLOAD"        : "파일 업로드 비활성화:",
+        "FIELD_HEADER_SFTP_USERNAME"              : "사용자 이름:",
+        "FIELD_HEADER_STATIC_CHANNELS" : "스태틱 채널 이름:",
+        "FIELD_HEADER_TIMEZONE"        : "시간대:",
+        "FIELD_HEADER_USERNAME"        : "사용자 이름:",
+        "FIELD_HEADER_WIDTH"           : "너비:",
+        "FIELD_HEADER_WOL_BROADCAST_ADDR" : "WoL 패킷의 브로드케스트 주소:",
+        "FIELD_HEADER_WOL_MAC_ADDR"       : "원격 호스트 MAC 어드레스",
+        "FIELD_HEADER_WOL_SEND_PACKET"    : "WoL 패킷 전송:",
+        "FIELD_HEADER_WOL_WAIT_TIME"      : "호스트 부트 대기 시간:",
+
+
+        "FIELD_OPTION_COLOR_DEPTH_16"    : "로우 컬러 (16-bit)",
+        "FIELD_OPTION_COLOR_DEPTH_24"    : "트루 컬러 (24-bit)",
+        "FIELD_OPTION_COLOR_DEPTH_32"    : "트루 컬러 (32-bit)",
+        "FIELD_OPTION_COLOR_DEPTH_8"     : "256 color",
+
+        "FIELD_OPTION_RESIZE_METHOD_DISPLAY_UPDATE" : "\"디스플레이 업데이트\" 가상 채널 (RDP 8.1+)",
+        "FIELD_OPTION_RESIZE_METHOD_RECONNECT"      : "다시 연결",
+
+        "FIELD_OPTION_SECURITY_ANY"   : "Any",
+        "FIELD_OPTION_SECURITY_NLA"   : "NLA (네트워크 수준 인증)",
+        "FIELD_OPTION_SECURITY_RDP"   : "RDP 암호화",
+        "FIELD_OPTION_SECURITY_TLS"   : "TLS 암호화",
+        "FIELD_OPTION_SECURITY_VMCONNECT" : "Hyper-V / VMConnect",
+
+        "FIELD_OPTION_SERVER_LAYOUT_CS_CZ_QWERTZ" : "Czech (Qwertz)",
+        "FIELD_OPTION_SERVER_LAYOUT_DA_DK_QWERTY" : "Danish (Qwerty)",
+        "FIELD_OPTION_SERVER_LAYOUT_DE_CH_QWERTZ" : "Swiss German (Qwertz)",
+        "FIELD_OPTION_SERVER_LAYOUT_DE_DE_QWERTZ" : "German (Qwertz)",
+        "FIELD_OPTION_SERVER_LAYOUT_EN_GB_QWERTY" : "UK English (Qwerty)",
+        "FIELD_OPTION_SERVER_LAYOUT_EN_US_QWERTY" : "US English (Qwerty)",
+        "FIELD_OPTION_SERVER_LAYOUT_ES_ES_QWERTY" : "Spanish (Qwerty)",
+        "FIELD_OPTION_SERVER_LAYOUT_ES_LATAM_QWERTY" : "Latin American (Qwerty)",
+        "FIELD_OPTION_SERVER_LAYOUT_FAILSAFE"     : "Unicode",
+        "FIELD_OPTION_SERVER_LAYOUT_FR_BE_AZERTY" : "Belgian French (Azerty)",
+        "FIELD_OPTION_SERVER_LAYOUT_FR_CH_QWERTZ" : "Swiss French (Qwertz)",
+        "FIELD_OPTION_SERVER_LAYOUT_FR_FR_AZERTY" : "French (Azerty)",
+        "FIELD_OPTION_SERVER_LAYOUT_HU_HU_QWERTZ" : "Hungarian (Qwertz)",
+        "FIELD_OPTION_SERVER_LAYOUT_IT_IT_QWERTY" : "Italian (Qwerty)",
+        "FIELD_OPTION_SERVER_LAYOUT_JA_JP_QWERTY" : "Japanese (Qwerty)",
+        "FIELD_OPTION_SERVER_LAYOUT_PL_PL_QWERTY" : "Polish (Qwerty)",
+        "FIELD_OPTION_SERVER_LAYOUT_PT_BR_QWERTY" : "Portuguese Brazilian (Qwerty)",
+        "FIELD_OPTION_SERVER_LAYOUT_PT_PT_QWERTY" : "Portuguese (Qwerty)",
+        "FIELD_OPTION_SERVER_LAYOUT_SV_SE_QWERTY" : "Swedish (Qwerty)",
+        "FIELD_OPTION_SERVER_LAYOUT_TR_TR_QWERTY" : "Turkish-Q (Qwerty)",
+
+        "NAME" : "RDP",
+
+        "SECTION_HEADER_AUTHENTICATION"     : "인증",
+        "SECTION_HEADER_BASIC_PARAMETERS"   : "기본 설정",
+        "SECTION_HEADER_CLIPBOARD"          : "클립보드",
+        "SECTION_HEADER_DEVICE_REDIRECTION" : "디바이스 리디렉션",
+        "SECTION_HEADER_DISPLAY"            : "디스플레이",
+        "SECTION_HEADER_GATEWAY"            : "원격 데스크톱 게이트웨이",
+        "SECTION_HEADER_LOAD_BALANCING"     : "부하 분산 (Load Balancing)",
+        "SECTION_HEADER_NETWORK"            : "네트워크",
+        "SECTION_HEADER_PERFORMANCE"        : "성능",
+        "SECTION_HEADER_PRECONNECTION_PDU"  : "Preconnection PDU / Hyper-V",
+        "SECTION_HEADER_RECORDING"          : "스크린 레코드",
+        "SECTION_HEADER_REMOTEAPP"          : "리모트 앱",
+        "SECTION_HEADER_SFTP"               : "SFTP",
+        "SECTION_HEADER_WOL"                : "Wake-on-LAN (WoL)"
+
+    },
+
+    "PROTOCOL_SSH" : {
+
+        "FIELD_HEADER_BACKSPACE"    : "<Backspace> 키가 보내는 문자:",
+        "FIELD_HEADER_COLOR_SCHEME" : "색상 구성표:",
+        "FIELD_HEADER_COMMAND"      : "명령 실행:",
+        "FIELD_HEADER_CREATE_RECORDING_PATH" : "레코드 경로 자동 생성:",
+        "FIELD_HEADER_CREATE_TYPESCRIPT_PATH" : "Typescript 경로 자동 생성:",
+        "FIELD_HEADER_DISABLE_COPY"  : "터미널에서 복사 비활성화:",
+        "FIELD_HEADER_DISABLE_PASTE" : "클라이언트에서 붙여넣기 비활성화:",
+        "FIELD_HEADER_FONT_NAME"     : "글꼴 이름:",
+        "FIELD_HEADER_FONT_SIZE"     : "글꼴 크기:",
+        "FIELD_HEADER_ENABLE_SFTP"   : "SFTP 활성화:",
+        "FIELD_HEADER_HOST_KEY"      : "공개 호스트 키 (Base64):",
+        "FIELD_HEADER_HOSTNAME"      : "호스트 이름:",
+        "FIELD_HEADER_LOCALE"        : "언어/지역 ($LANG):",
+        "FIELD_HEADER_USERNAME"      : "사용자 이름:",
+        "FIELD_HEADER_PASSWORD"      : "암호 (Password):",
+        "FIELD_HEADER_PASSPHRASE"    : "암호 (Passphrase):",
+        "FIELD_HEADER_PORT"          : "포트:",
+        "FIELD_HEADER_PRIVATE_KEY"   : "개인 키 (Private Key):",
+        "FIELD_HEADER_SCROLLBACK"    : "최대 스크롤 백 사이즈:",
+        "FIELD_HEADER_READ_ONLY"     : "읽기 전용:",
+        "FIELD_HEADER_RECORDING_EXCLUDE_MOUSE"  : "마우스 제외:",
+        "FIELD_HEADER_RECORDING_EXCLUDE_OUTPUT" : "그래픽/스트림 제외:",
+        "FIELD_HEADER_RECORDING_INCLUDE_KEYS"   : "키 이벤트 포함:",
+        "FIELD_HEADER_RECORDING_NAME" : "레코드 이름:",
+        "FIELD_HEADER_RECORDING_PATH" : "레코드 경로:",
+        "FIELD_HEADER_SERVER_ALIVE_INTERVAL" : "서버 keepalive 간격:",
+        "FIELD_HEADER_SFTP_DISABLE_DOWNLOAD" : "파일 다운로드 비활성화:",
+        "FIELD_HEADER_SFTP_ROOT_DIRECTORY"   : "루트 디렉토리 파일 브라우저:",
+        "FIELD_HEADER_SFTP_DISABLE_UPLOAD"   : "파일 업로드 비활성화:",
+        "FIELD_HEADER_TERMINAL_TYPE"   : "터미널 타입:",
+        "FIELD_HEADER_TIMEZONE"        : "시간대 ($TZ):",
+        "FIELD_HEADER_TYPESCRIPT_NAME" : "Typescript 이름:",
+        "FIELD_HEADER_TYPESCRIPT_PATH" : "Typescript 경로:",
+        "FIELD_HEADER_WOL_BROADCAST_ADDR" : "WoL 패킷의 브로드케스트 주소:",
+        "FIELD_HEADER_WOL_MAC_ADDR"       : "원격 호스트 MAC 어드레스:",
+        "FIELD_HEADER_WOL_SEND_PACKET"    : "WoL 패킷 전송:",
+        "FIELD_HEADER_WOL_WAIT_TIME"      : "호스트 부트 대기 시간:",
+
+        "FIELD_OPTION_BACKSPACE_8"     : "Backspace (Ctrl-H)",
+        "FIELD_OPTION_BACKSPACE_127"   : "Delete (Ctrl-?)",
+
+        "FIELD_OPTION_COLOR_SCHEME_BLACK_WHITE" : "흰색 바탕에 검정색",
+        "FIELD_OPTION_COLOR_SCHEME_GRAY_BLACK"  : "검은색 바탕에 회색",
+        "FIELD_OPTION_COLOR_SCHEME_GREEN_BLACK" : "검은색 바탕에 녹색",
+        "FIELD_OPTION_COLOR_SCHEME_WHITE_BLACK" : "검은색 바탕에 흰색",
+
+        "FIELD_OPTION_FONT_SIZE_8"     : "8",
+        "FIELD_OPTION_FONT_SIZE_9"     : "9",
+        "FIELD_OPTION_FONT_SIZE_10"    : "10",
+        "FIELD_OPTION_FONT_SIZE_11"    : "11",
+        "FIELD_OPTION_FONT_SIZE_12"    : "12",
+        "FIELD_OPTION_FONT_SIZE_14"    : "14",
+        "FIELD_OPTION_FONT_SIZE_18"    : "18",
+        "FIELD_OPTION_FONT_SIZE_24"    : "24",
+        "FIELD_OPTION_FONT_SIZE_30"    : "30",
+        "FIELD_OPTION_FONT_SIZE_36"    : "36",
+        "FIELD_OPTION_FONT_SIZE_48"    : "48",
+        "FIELD_OPTION_FONT_SIZE_60"    : "60",
+        "FIELD_OPTION_FONT_SIZE_72"    : "72",
+        "FIELD_OPTION_FONT_SIZE_96"    : "96",
+
+        "FIELD_OPTION_TERMINAL_TYPE_ANSI"           : "ansi",
+        "FIELD_OPTION_TERMINAL_TYPE_LINUX"          : "linux",
+        "FIELD_OPTION_TERMINAL_TYPE_VT100"          : "vt100",
+        "FIELD_OPTION_TERMINAL_TYPE_VT220"          : "vt220",
+        "FIELD_OPTION_TERMINAL_TYPE_XTERM"          : "xterm",
+        "FIELD_OPTION_TERMINAL_TYPE_XTERM_256COLOR" : "xterm-256color",
+
+        "NAME" : "SSH",
+
+        "SECTION_HEADER_AUTHENTICATION" : "인증",
+        "SECTION_HEADER_BEHAVIOR"       : "터미널 동작",
+        "SECTION_HEADER_CLIPBOARD"      : "클립보드",
+        "SECTION_HEADER_DISPLAY"        : "디스플레이",
+        "SECTION_HEADER_NETWORK"        : "네트워크",
+        "SECTION_HEADER_RECORDING"      : "스크린 레코드",
+        "SECTION_HEADER_SESSION"        : "세션 / 환경",
+        "SECTION_HEADER_TYPESCRIPT"     : "Typescript (텍스트 세션 레코드)",
+        "SECTION_HEADER_SFTP"           : "SFTP",
+        "SECTION_HEADER_WOL"            : "Wake-on-LAN (WoL)"
+
+    },
+
+    "PROTOCOL_TELNET" : {
+        "FIELD_HEADER_BACKSPACE"      : "Backspace 키 전송:",
+        "FIELD_HEADER_COLOR_SCHEME"   : "색상 구성표:",
+        "FIELD_HEADER_CREATE_RECORDING_PATH" : "레코드 경로 자동 생성:",
+        "FIELD_HEADER_CREATE_TYPESCRIPT_PATH" : "Typescript 경로 자동 생성:",
+        "FIELD_HEADER_DISABLE_COPY"   : "터미널에서 복사 비활성화:",
+        "FIELD_HEADER_DISABLE_PASTE"  : "클라이언트에서 붙여넣기 비활성화:",
+        "FIELD_HEADER_FONT_NAME"      : "글꼴 이름:",
+        "FIELD_HEADER_FONT_SIZE"      : "글꼴 크기:",
+        "FIELD_HEADER_HOSTNAME"       : "호스트 이름:",
+        "FIELD_HEADER_LOGIN_FAILURE_REGEX" : "로그인 실패 정규식:",
+        "FIELD_HEADER_LOGIN_SUCCESS_REGEX" : "로그인 성공 정규식:",
+        "FIELD_HEADER_USERNAME"       : "사용자 이름:",
+        "FIELD_HEADER_USERNAME_REGEX" : "사용자 이름 정규식:",
+        "FIELD_HEADER_PASSWORD"       : "패스워드:",
+        "FIELD_HEADER_PASSWORD_REGEX" : "패스워드 정규식:",
+        "FIELD_HEADER_PORT"           : "포트:",
+        "FIELD_HEADER_READ_ONLY"      : "읽기 전용:",
+        "FIELD_HEADER_RECORDING_EXCLUDE_MOUSE"  : "마우스 제외:",
+        "FIELD_HEADER_RECORDING_EXCLUDE_OUTPUT" : "그래픽/스트림 제외:",
+        "FIELD_HEADER_RECORDING_INCLUDE_KEYS"   : "키 이벤트 포함:",
+        "FIELD_HEADER_RECORDING_NAME" : "레코드 이름:",
+        "FIELD_HEADER_RECORDING_PATH" : "레코드 경로:",
+        "FIELD_HEADER_SCROLLBACK"     : "스크롤 백 (scrollback) 최대 크기:",
+        "FIELD_HEADER_TERMINAL_TYPE"   : "터미널 타입:",
+        "FIELD_HEADER_TYPESCRIPT_NAME" : "Typescript 이름:",
+        "FIELD_HEADER_TYPESCRIPT_PATH" : "Typescript 경로:",
+        "FIELD_HEADER_WOL_BROADCAST_ADDR" : "WoL 패킷의 브로드캐스트 주소:",
+        "FIELD_HEADER_WOL_MAC_ADDR"       : "원격 호스트 MAC 주소:",
+        "FIELD_HEADER_WOL_SEND_PACKET"    : "WoL 패킷 전송:",
+        "FIELD_HEADER_WOL_WAIT_TIME"      : "호스트 부트 대기 시간:",
+
+        "FIELD_OPTION_BACKSPACE_8"     : "Backspace (Ctrl-H)",
+        "FIELD_OPTION_BACKSPACE_127"   : "Delete (Ctrl-?)",
+
+        "FIELD_OPTION_COLOR_SCHEME_BLACK_WHITE" : "흰색 바탕에 검정색",
+        "FIELD_OPTION_COLOR_SCHEME_GRAY_BLACK"  : "검은색 바탕에 회색",
+        "FIELD_OPTION_COLOR_SCHEME_GREEN_BLACK" : "검은색 바탕에 녹색",
+        "FIELD_OPTION_COLOR_SCHEME_WHITE_BLACK" : "검은색 바탕에 흰색",
+
+        "FIELD_OPTION_FONT_SIZE_8"     : "8",
+        "FIELD_OPTION_FONT_SIZE_9"     : "9",
+        "FIELD_OPTION_FONT_SIZE_10"    : "10",
+        "FIELD_OPTION_FONT_SIZE_11"    : "11",
+        "FIELD_OPTION_FONT_SIZE_12"    : "12",
+        "FIELD_OPTION_FONT_SIZE_14"    : "14",
+        "FIELD_OPTION_FONT_SIZE_18"    : "18",
+        "FIELD_OPTION_FONT_SIZE_24"    : "24",
+        "FIELD_OPTION_FONT_SIZE_30"    : "30",
+        "FIELD_OPTION_FONT_SIZE_36"    : "36",
+        "FIELD_OPTION_FONT_SIZE_48"    : "48",
+        "FIELD_OPTION_FONT_SIZE_60"    : "60",
+        "FIELD_OPTION_FONT_SIZE_72"    : "72",
+        "FIELD_OPTION_FONT_SIZE_96"    : "96",
+
+        "FIELD_OPTION_TERMINAL_TYPE_ANSI"           : "ansi",
+        "FIELD_OPTION_TERMINAL_TYPE_LINUX"          : "linux",
+        "FIELD_OPTION_TERMINAL_TYPE_VT100"          : "vt100",
+        "FIELD_OPTION_TERMINAL_TYPE_VT220"          : "vt220",
+        "FIELD_OPTION_TERMINAL_TYPE_XTERM"          : "xterm",
+        "FIELD_OPTION_TERMINAL_TYPE_XTERM_256COLOR" : "xterm-256color",
+
+        "NAME" : "Telnet",
+
+        "SECTION_HEADER_AUTHENTICATION" : "인증",
+        "SECTION_HEADER_BEHAVIOR"       : "터미널 동작",
+        "SECTION_HEADER_CLIPBOARD"      : "클립보드",
+        "SECTION_HEADER_DISPLAY"        : "디스플레이",
+        "SECTION_HEADER_RECORDING"      : "스크린 레코드",
+        "SECTION_HEADER_TYPESCRIPT"     : "Typescript (텍스트 세션 레코드)",
+        "SECTION_HEADER_NETWORK"        : "네트워크",
+        "SECTION_HEADER_WOL"            : "Wake-on-LAN (WoL)"
+
+    },
+
+    "PROTOCOL_VNC" : {
+        "FIELD_HEADER_AUDIO_SERVERNAME" : "오디오 서버 이름:",
+        "FIELD_HEADER_CLIPBOARD_ENCODING" : "인코딩:",
+        "FIELD_HEADER_COLOR_DEPTH"      : "색심도:",
+        "FIELD_HEADER_CREATE_RECORDING_PATH" : "레코드 경로 자동 생성:",
+        "FIELD_HEADER_CURSOR"           : "커서:",
+        "FIELD_HEADER_DEST_HOST"        : "대상 호스트:",
+        "FIELD_HEADER_DEST_PORT"        : "대상 포트:",
+        "FIELD_HEADER_DISABLE_COPY"     : "데스크톱에서 복사 비활성화:",
+        "FIELD_HEADER_DISABLE_PASTE"    : "클라이언트에서 붙여넣기 비활성화:",
+        "FIELD_HEADER_ENABLE_AUDIO"     : "오디오 활성화:",
+        "FIELD_HEADER_ENABLE_SFTP"      : "SFTP 활성화:",
+        "FIELD_HEADER_FORCE_LOSSLESS"   : "무손실 압축 강제:",
+        "FIELD_HEADER_HOSTNAME"         : "호스트 이름:",
+        "FIELD_HEADER_USERNAME"         : "사용자 이름:",
+        "FIELD_HEADER_PASSWORD"         : "패스워드:",
+        "FIELD_HEADER_PORT"             : "포트:",
+        "FIELD_HEADER_READ_ONLY"        : "읽기 전용:",
+        "FIELD_HEADER_RECORDING_EXCLUDE_MOUSE"  : "마우스 제외:",
+        "FIELD_HEADER_RECORDING_EXCLUDE_OUTPUT" : "그래픽/스트림 제외:",
+        "FIELD_HEADER_RECORDING_INCLUDE_KEYS"   : "키 이벤트 포함:",
+        "FIELD_HEADER_RECORDING_NAME" : "레코드 이름:",
+        "FIELD_HEADER_RECORDING_PATH" : "레코드 경로:",
+        "FIELD_HEADER_SFTP_DIRECTORY"             : "기본 업로드 디렉터리:",
+        "FIELD_HEADER_SFTP_DISABLE_DOWNLOAD"      : "파일 다운로드 비활성화:",
+        "FIELD_HEADER_SFTP_HOST_KEY"              : "공개 호스트 키 (Base64):",
+        "FIELD_HEADER_SFTP_HOSTNAME"              : "호스트 이름:",
+        "FIELD_HEADER_SFTP_SERVER_ALIVE_INTERVAL" : "SFTP 유지 간격:",
+        "FIELD_HEADER_SFTP_PASSPHRASE"            : "암호 (Passphrase):",
+        "FIELD_HEADER_SFTP_PASSWORD"              : "암호 (Password):",
+        "FIELD_HEADER_SFTP_PORT"                  : "포트:",
+        "FIELD_HEADER_SFTP_PRIVATE_KEY"           : "개인 키:",
+        "FIELD_HEADER_SFTP_ROOT_DIRECTORY"        : "파일 브라우저 루트 디렉터리:",
+        "FIELD_HEADER_SFTP_DISABLE_UPLOAD"        : "파일 업로드 비활성화:",
+        "FIELD_HEADER_SFTP_USERNAME"              : "사용자 이름:",
+        "FIELD_HEADER_SWAP_RED_BLUE"    : "red/blue 컴포넌트 스왑:",
+        "FIELD_HEADER_WOL_BROADCAST_ADDR" : "WoL 패킷 브로드캐스트 주소:",
+        "FIELD_HEADER_WOL_MAC_ADDR"       : "원격 호스트 MAC 주소:",
+        "FIELD_HEADER_WOL_SEND_PACKET"    : "WoL 패킷 전송:",
+        "FIELD_HEADER_WOL_WAIT_TIME"      : "호스트 부트 대기 시간:",
+
+        "FIELD_OPTION_COLOR_DEPTH_8"     : "256 color",
+        "FIELD_OPTION_COLOR_DEPTH_16"    : "로우 컬러 (16-bit)",
+        "FIELD_OPTION_COLOR_DEPTH_24"    : "트루 컬러 (24-bit)",
+        "FIELD_OPTION_COLOR_DEPTH_32"    : "트루 컬러 (32-bit)",
+
+        "FIELD_OPTION_CURSOR_LOCAL"  : "로컬",
+        "FIELD_OPTION_CURSOR_REMOTE" : "원격",
+
+        "FIELD_OPTION_CLIPBOARD_ENCODING_CP1252"    : "CP1252",
+        "FIELD_OPTION_CLIPBOARD_ENCODING_ISO8859_1" : "ISO 8859-1",
+        "FIELD_OPTION_CLIPBOARD_ENCODING_UTF_8"     : "UTF-8",
+        "FIELD_OPTION_CLIPBOARD_ENCODING_UTF_16"    : "UTF-16",
+
+        "NAME" : "VNC",
+
+        "SECTION_HEADER_AUDIO"          : "오디오",
+        "SECTION_HEADER_AUTHENTICATION" : "인증",
+        "SECTION_HEADER_CLIPBOARD"      : "클립보드",
+        "SECTION_HEADER_DISPLAY"        : "디스플레이",
+        "SECTION_HEADER_NETWORK"        : "네트워크",
+        "SECTION_HEADER_RECORDING"      : "스크린 레코드",
+        "SECTION_HEADER_REPEATER"       : "VNC 리피터",
+        "SECTION_HEADER_SFTP"           : "SFTP",
+        "SECTION_HEADER_WOL"            : "Wake-on-LAN (WoL)"
+
+    },
+
+    "SETTINGS" : {
+
+        "SECTION_HEADER_SETTINGS" : "설정"
+
+    },
+
+    "SETTINGS_CONNECTION_HISTORY" : {
+
+        "ACTION_DOWNLOAD" : "@:APP.ACTION_DOWNLOAD",
+        "ACTION_SEARCH"   : "@:APP.ACTION_SEARCH",
+
+        "FIELD_PLACEHOLDER_FILTER" : "@:APP.FIELD_PLACEHOLDER_FILTER",
+
+        "FILENAME_HISTORY_CSV" : "history.csv",
+
+        "FORMAT_DATE" : "@:APP.FORMAT_DATE_TIME_PRECISE",
+
+        "HELP_CONNECTION_HISTORY" : "과거 연결 기록은 여기에 나열되며 열 헤더 (column header)를 클릭하여 정렬할 수 있습니다. 특정 기록을 검색하려면, 필터 문자열을 입력하고 \"검색\"을 클릭하십시오. 제공된 필터 문자열과 일치하는 기록만 나열됩니다.",
+
+        "INFO_CONNECTION_DURATION_UNKNOWN" : "--",
+        "INFO_NO_HISTORY"                  : "일치하는 기록 없음",
+
+        "TABLE_HEADER_SESSION_CONNECTION_NAME" : "연결 이름",
+        "TABLE_HEADER_SESSION_DURATION"        : "기간",
+        "TABLE_HEADER_SESSION_REMOTEHOST"      : "원격 호스트",
+        "TABLE_HEADER_SESSION_STARTDATE"       : "시작 시간",
+        "TABLE_HEADER_SESSION_USERNAME"        : "사용자 이름",
+
+        "TEXT_HISTORY_DURATION" : "@:APP.TEXT_HISTORY_DURATION"
+
+    },
+
+    "SETTINGS_CONNECTIONS" : {
+
+        "ACTION_ACKNOWLEDGE"          : "@:APP.ACTION_ACKNOWLEDGE",
+        "ACTION_NEW_CONNECTION"       : "새 연결",
+        "ACTION_NEW_CONNECTION_GROUP" : "새 그룹",
+        "ACTION_NEW_SHARING_PROFILE"  : "새 공유 프로필",
+
+        "DIALOG_HEADER_ERROR" : "@:APP.DIALOG_HEADER_ERROR",
+
+        "FIELD_PLACEHOLDER_FILTER" : "@:APP.FIELD_PLACEHOLDER_FILTER",
+
+		"HELP_CONNECTIONS"   : "아래 연결을 클릭하거나 탭하여 해당 연결을 관리합니다. 엑세스 레벨에 따라 연결을 추가하고 삭제할 수 있으며, 속성 (프로토콜, 호스트 이름, 포트 등)을 변경할 수 있습니다.",
+
+        "INFO_ACTIVE_USER_COUNT" : "@:APP.INFO_ACTIVE_USER_COUNT",
+
+        "SECTION_HEADER_CONNECTIONS"     : "연결"
+
+    },
+
+    "SETTINGS_PREFERENCES" : {
+
+        "ACTION_ACKNOWLEDGE"        : "@:APP.ACTION_ACKNOWLEDGE",
+        "ACTION_CANCEL"             : "@:APP.ACTION_CANCEL",
+        "ACTION_UPDATE_PASSWORD"    : "@:APP.ACTION_UPDATE_PASSWORD",
+
+        "DIALOG_HEADER_ERROR"    : "@:APP.DIALOG_HEADER_ERROR",
+
+        "ERROR_PASSWORD_BLANK"    : "@:APP.ERROR_PASSWORD_BLANK",
+        "ERROR_PASSWORD_MISMATCH" : "@:APP.ERROR_PASSWORD_MISMATCH",
+
+        "FIELD_HEADER_LANGUAGE"           : "표시 언어:",
+        "FIELD_HEADER_PASSWORD"           : "패스워드:",
+        "FIELD_HEADER_PASSWORD_OLD"       : "현재 패스워드:",
+        "FIELD_HEADER_PASSWORD_NEW"       : "새 패스워드:",
+        "FIELD_HEADER_PASSWORD_NEW_AGAIN" : "새 패스워드 확인:",
+        "FIELD_HEADER_TIMEZONE"           : "시간대:",
+        "FIELD_HEADER_USERNAME"           : "사용자 이름:",
+
+        "HELP_DEFAULT_INPUT_METHOD" : "기본 입력 방법은 키보드 이벤트가 Guacamole에 의해 수신되는 방법을 결정합니다. 모바일 장치를 사용하거나 IME를 통해 입력할 때 이 설정을 변경해야 할 수도 있습니다. 이 세팅은 Guacamole 메뉴 내에서 연결마다 재정의할 수 있습니다.",
+        "HELP_DEFAULT_MOUSE_MODE"   : "기본 마우스 에뮬레이션 방법은 원격 마우스가 터치와 관련해서 새 연결에서 어떻게 작동할지 결정합니다. 이 세팅은 Guacamole 메뉴 내에서 연결마다 재정의할 수 있습니다.",
+        "HELP_INPUT_METHOD_NONE"    : "@:CLIENT.HELP_INPUT_METHOD_NONE",
+        "HELP_INPUT_METHOD_OSK"     : "@:CLIENT.HELP_INPUT_METHOD_OSK",
+        "HELP_INPUT_METHOD_TEXT"    : "@:CLIENT.HELP_INPUT_METHOD_TEXT",
+        "HELP_LOCALE"               : "아래의 옵션은 사용자의 지역과 관련이 있으며 인터페이스의 여러 부분이 표시되는 방법에 영향을 줄 것입니다.",
+        "HELP_MOUSE_MODE_ABSOLUTE"  : "@:CLIENT.HELP_MOUSE_MODE_ABSOLUTE",
+        "HELP_MOUSE_MODE_RELATIVE"  : "@:CLIENT.HELP_MOUSE_MODE_RELATIVE",
+        "HELP_UPDATE_PASSWORD"      : "패스워드를 변경하려면 현재 패스워드와 새 패스워드를 아래에 입력하고, \"패스워드 변경\"을 클릭하십시오. 변경사항은 즉시 적용될 것입니다.",
+
+        "INFO_PASSWORD_CHANGED" : "패스워드가 변경되었습니다.",
+
+        "NAME_INPUT_METHOD_NONE" : "@:CLIENT.NAME_INPUT_METHOD_NONE",
+        "NAME_INPUT_METHOD_OSK"  : "@:CLIENT.NAME_INPUT_METHOD_OSK",
+        "NAME_INPUT_METHOD_TEXT" : "@:CLIENT.NAME_INPUT_METHOD_TEXT",
+
+        "SECTION_HEADER_DEFAULT_INPUT_METHOD" : "기본 입력 방법",
+        "SECTION_HEADER_DEFAULT_MOUSE_MODE"   : "기본 마우스 에뮬레이션 방법",
+        "SECTION_HEADER_UPDATE_PASSWORD"      : "패스워드 변경"
+
+    },
+
+    "SETTINGS_USERS" : {
+
+
+        "ACTION_ACKNOWLEDGE"   : "@:APP.ACTION_ACKNOWLEDGE",
+        "ACTION_NEW_USER"      : "새 사용자",
+
+        "DIALOG_HEADER_ERROR" : "@:APP.DIALOG_HEADER_ERROR",
+
+        "FIELD_PLACEHOLDER_FILTER" : "@:APP.FIELD_PLACEHOLDER_FILTER",
+
+        "FORMAT_DATE" : "@:APP.FORMAT_DATE_TIME_PRECISE",
+
+        "HELP_USERS" : "아래 사용자를 클릭하거나 탭하여 해당 사용자를 관리합니다. 엑세스 레벨에 따라 사용자를 추가하고 삭제할 수 있으며, 패스워드를 변경할 수 있습니다.",
+
+        "SECTION_HEADER_USERS"       : "사용자",
+
+        "TABLE_HEADER_FULL_NAME"   : "전체 이름",
+        "TABLE_HEADER_LAST_ACTIVE" : "마지막 활성",
+        "TABLE_HEADER_ORGANIZATION" : "조직",
+        "TABLE_HEADER_USERNAME"    : "사용자 이름"
+
+    },
+
+    "SETTINGS_USER_GROUPS" : {
+
+        "ACTION_ACKNOWLEDGE"    : "@:APP.ACTION_ACKNOWLEDGE",
+        "ACTION_NEW_USER_GROUP" : "새 그룹",
+
+        "DIALOG_HEADER_ERROR" : "@:APP.DIALOG_HEADER_ERROR",
+
+        "FIELD_PLACEHOLDER_FILTER" : "@:APP.FIELD_PLACEHOLDER_FILTER",
+
+        "FORMAT_DATE" : "@:APP.FORMAT_DATE_TIME_PRECISE",
+
+        "HELP_USER_GROUPS" : "아래 그룹을 클릭하거나 탭하여 해당 그룹을 관리합니다. 엑세스 레벨에 따라 그룹을 추가하고 삭제할 수 있으며, 구성원 사용자들과 그룹을 변경할 수 있습니다.",
+
+        "SECTION_HEADER_USER_GROUPS" : "그룹",
+
+        "TABLE_HEADER_USER_GROUP_NAME" : "그룹 이름"
+
+    },
+
+    "SETTINGS_SESSIONS" : {
+
+        "ACTION_ACKNOWLEDGE" : "@:APP.ACTION_ACKNOWLEDGE",
+        "ACTION_CANCEL"      : "@:APP.ACTION_CANCEL",
+        "ACTION_DELETE"      : "세션 종료",
+
+        "DIALOG_HEADER_CONFIRM_DELETE" : "세션 종료",
+        "DIALOG_HEADER_ERROR"          : "@:APP.DIALOG_HEADER_ERROR",
+
+        "FIELD_PLACEHOLDER_FILTER" : "@:APP.FIELD_PLACEHOLDER_FILTER",
+
+        "FORMAT_STARTDATE" : "@:APP.FORMAT_DATE_TIME_PRECISE",
+
+		"HELP_SESSIONS" : "이 페이지는 현재 활성화된 연결로 이루어져 있습니다. 세션을 하나 이상 종료하려면, 해당 세션 옆의 체크 박스를 선택하고 \"세션 종료\"를 클릭하십시오. 세션을 종료하면 관련된 사용자의 연결이 즉시 끊어질 것입니다.",
+
+        "INFO_NO_SESSIONS" : "활성 세션 없음",
+
+        "SECTION_HEADER_SESSIONS" : "활성 세션",
+
+        "TABLE_HEADER_SESSION_CONNECTION_NAME" : "연결 이름",
+        "TABLE_HEADER_SESSION_REMOTEHOST"      : "원격 호스트",
+        "TABLE_HEADER_SESSION_STARTDATE"       : "활성화된 시간",
+        "TABLE_HEADER_SESSION_USERNAME"        : "사용자 이름",
+
+        "TEXT_CONFIRM_DELETE" : "선택한 세션을 모두 종료하시겠습니까? 이 세션을 사용 중인 사용자의 연결이 즉시 끊어질 것입니다."
+
+    },
+
+    "USER_ATTRIBUTES" : {
+
+        "FIELD_HEADER_GUAC_EMAIL_ADDRESS"       : "이메일 주소:",
+        "FIELD_HEADER_GUAC_FULL_NAME"           : "전체 이름:",
+        "FIELD_HEADER_GUAC_ORGANIZATION"        : "조직:",
+        "FIELD_HEADER_GUAC_ORGANIZATIONAL_ROLE" : "역할:"
+
+    },
+
+    "USER_MENU" : {
+
+        "ACTION_LOGOUT"             : "@:APP.ACTION_LOGOUT",
+        "ACTION_MANAGE_CONNECTIONS" : "@:APP.ACTION_MANAGE_CONNECTIONS",
+        "ACTION_MANAGE_PREFERENCES" : "@:APP.ACTION_MANAGE_PREFERENCES",
+        "ACTION_MANAGE_SESSIONS"    : "@:APP.ACTION_MANAGE_SESSIONS",
+        "ACTION_MANAGE_SETTINGS"    : "@:APP.ACTION_MANAGE_SETTINGS",
+        "ACTION_MANAGE_USERS"       : "@:APP.ACTION_MANAGE_USERS",
+        "ACTION_MANAGE_USER_GROUPS" : "@:APP.ACTION_MANAGE_USER_GROUPS",
+        "ACTION_NAVIGATE_HOME"      : "@:APP.ACTION_NAVIGATE_HOME",
+        "ACTION_VIEW_HISTORY"       : "@:APP.ACTION_VIEW_HISTORY"
+
+    }
+
+}

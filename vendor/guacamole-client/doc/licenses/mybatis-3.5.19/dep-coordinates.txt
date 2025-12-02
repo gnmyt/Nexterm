@@ -1,0 +1,1 @@
+org.mybatis:mybatis:jar:3.5.19

@@ -1,0 +1,12 @@
+{
+
+    "DATA_SOURCE_DUO" : {
+        "NAME" : "Бэкенд Duo TFA"
+    },
+
+    "LOGIN" : {
+        "INFO_DUO_VALIDATION_CODE_INCORRECT" : "Неверный код валидации Duo.",
+        "INFO_DUO_AUTH_REQUIRED"             : "Пожалуйста, аутентифицируйтесь в Duo для продолжения."
+    }
+
+}

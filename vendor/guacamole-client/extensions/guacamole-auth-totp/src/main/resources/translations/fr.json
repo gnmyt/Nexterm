@@ -1,0 +1,52 @@
+{
+
+    "DATA_SOURCE_TOTP" : {
+        "NAME" : "TOTP TFA Backend"
+    },
+
+    "LOGIN" : {
+        "FIELD_HEADER_GUAC_TOTP" : ""
+    },
+
+    "TOTP" : {
+
+        "ACTION_HIDE_DETAILS" : "Masquer",
+        "ACTION_SHOW_DETAILS" : "Montrer",
+
+        "FIELD_HEADER_ALGORITHM"  : "Algorithme:",
+        "FIELD_HEADER_DIGITS"     : "Chiffres:",
+        "FIELD_HEADER_INTERVAL"   : "Intervalle:",
+        "FIELD_HEADER_SECRET_KEY" : "Clé secrète:",
+
+        "FIELD_PLACEHOLDER_CODE" : "Code d'authentification",
+
+        "INFO_CODE_REQUIRED"       : "Veuillez entrer le code d'authentification pour vérifier votre identité.",
+        "INFO_ENROLL_REQUIRED"     : "L'authentification multi-facteurs a été activée pour votre compte.",
+        "INFO_VERIFICATION_FAILED" : "La vérification a échoué. Veuillez réessayer.",
+
+        "HELP_ENROLL_BARCODE" : "Pour terminer votre processus d'inscription, scannez le code-barre ci-dessous avec l'application deux-facteurs sur votre téléphone ou votre appareil",
+        "HELP_ENROLL_VERIFY"  : "Après avoir scanné le code-barre, saisissez les {DIGITS} chiffres du code d'authentification affichés pour terminer votre inscription.",
+
+        "SECTION_HEADER_DETAILS" : "Détails:"
+
+    },
+
+    "USER_ATTRIBUTES" : {
+        
+        "FIELD_HEADER_GUAC_TOTP_DISABLED"      : "Désactiver TOTP:",
+        "FIELD_HEADER_GUAC_TOTP_KEY_GENERATED" : "Clé secrète générée:",
+        "FIELD_HEADER_GUAC_TOTP_KEY_CONFIRMED" : "Appareil d'authentification confirmé:",
+        
+        "SECTION_HEADER_TOTP_ENROLLMENT_STATUS" : "Statut d'inscription TOTP"
+        
+    },
+
+    "USER_GROUP_ATTRIBUTES" : {
+        
+        "FIELD_HEADER_GUAC_TOTP_DISABLED" : "Désactiver TOTP:",
+        
+        "SECTION_HEADER_TOTP_USER_GROUP_CONFIG" : "Configuration TOTP"
+        
+    }
+
+}

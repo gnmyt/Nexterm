@@ -1,0 +1,70 @@
+<div class="settings section connectionHistory">
+
+    <!-- Connection history -->
+    <p>{{'SETTINGS_CONNECTION_HISTORY.HELP_CONNECTION_HISTORY' | translate}}</p>
+
+    <!-- Search controls -->
+    <form class="filter" ng-submit="search()">
+        <input class="search-string" type="text" placeholder="{{'SETTINGS_CONNECTION_HISTORY.FIELD_PLACEHOLDER_FILTER' | translate}}" ng-model="searchString">
+        <input class="search-button" type="submit" value="{{'SETTINGS_CONNECTION_HISTORY.ACTION_SEARCH' | translate}}">
+        <button type="button" ng-click="downloadCSV()">{{'SETTINGS_CONNECTION_HISTORY.ACTION_DOWNLOAD' | translate}}</button>
+    </form>
+
+    <!-- Search results -->
+    <div class="results">
+
+        <!-- List of matching history records -->
+        <table class="sorted history-list">
+            <thead>
+                <tr>
+                    <th guac-sort-order="order" guac-sort-property="'entry.username'">
+                        {{'SETTINGS_CONNECTION_HISTORY.TABLE_HEADER_SESSION_USERNAME' | translate}}
+                    </th>
+                    <th guac-sort-order="order" guac-sort-property="'entry.startDate'">
+                        {{'SETTINGS_CONNECTION_HISTORY.TABLE_HEADER_SESSION_STARTDATE' | translate}}
+                    </th>
+                    <th guac-sort-order="order" guac-sort-property="'duration'">
+                        {{'SETTINGS_CONNECTION_HISTORY.TABLE_HEADER_SESSION_DURATION' | translate}}
+                    </th>
+                    <th guac-sort-order="order" guac-sort-property="'entry.connectionName'">
+                        {{'SETTINGS_CONNECTION_HISTORY.TABLE_HEADER_SESSION_CONNECTION_NAME' | translate}}
+                    </th>
+                    <th guac-sort-order="order" guac-sort-property="'entry.remoteHost'">
+                        {{'SETTINGS_CONNECTION_HISTORY.TABLE_HEADER_SESSION_REMOTEHOST' | translate}}
+                    </th>
+                    <th>
+                        {{'SETTINGS_CONNECTION_HISTORY.TABLE_HEADER_SESSION_LOGS' | translate}}
+                    </th>
+                </tr>
+            </thead>
+            <tbody ng-class="{loading: !isLoaded()}">
+                <tr ng-repeat="historyEntryWrapper in historyEntryWrapperPage" class="history">
+                    <td><guac-user-item username="historyEntryWrapper.entry.username"></guac-user-item></td>
+                    <td>{{historyEntryWrapper.entry.startDate | date : dateFormat}}</td>
+                    <td translate="{{historyEntryWrapper.readableDurationText}}"
+                        translate-values="{VALUE: historyEntryWrapper.readableDuration.value, UNIT: historyEntryWrapper.readableDuration.unit}"></td>
+                    <td>{{historyEntryWrapper.entry.connectionName}}</td>
+                    <td>{{historyEntryWrapper.entry.remoteHost}}</td>
+                    <td>
+                        <a class="history-session-recording"
+                           ng-show="historyEntryWrapper.sessionRecording"
+                           ng-href="{{ historyEntryWrapper.sessionRecording.url }}"
+                           ng-attr-title="{{ historyEntryWrapper.sessionRecording.description | resolve }}">
+                            <span class="history-action-description">{{'SETTINGS_CONNECTION_HISTORY.ACTION_VIEW_RECORDING' | translate}}</span>
+                        </a>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+
+        <!-- Text displayed if no history exists -->
+        <p class="placeholder" ng-show="isHistoryEmpty()">
+            {{'SETTINGS_CONNECTION_HISTORY.INFO_NO_HISTORY' | translate}}
+        </p>
+
+        <!-- Pager for history list -->
+        <guac-pager page="historyEntryWrapperPage" page-size="25"
+                    items="historyEntryWrappers | orderBy : order.predicate"></guac-pager>
+    </div>
+
+</div>

@@ -1,0 +1,1014 @@
+{
+    
+    "NAME" : "Português",
+    
+    "APP" : {
+
+        "ACTION_ACKNOWLEDGE"        : "OK",
+        "ACTION_CANCEL"             : "Cancelar",
+        "ACTION_CLONE"              : "Clonar",
+        "ACTION_CONTINUE"           : "Continuar",
+        "ACTION_DELETE"             : "Apagar",
+        "ACTION_DELETE_SESSIONS"    : "Fechar sessões",
+        "ACTION_DOWNLOAD"           : "Download",
+        "ACTION_LOGIN"              : "Entrar",
+        "ACTION_LOGOUT"             : "Sair",
+        "ACTION_MANAGE_CONNECTIONS" : "Conexões",
+        "ACTION_MANAGE_PREFERENCES" : "Preferências",
+        "ACTION_MANAGE_SETTINGS"    : "Configurações",
+        "ACTION_MANAGE_SESSIONS"    : "Sessões Ativas",
+        "ACTION_MANAGE_USERS"       : "Usuários",
+        "ACTION_MANAGE_USER_GROUPS" : "Grupos",
+        "ACTION_NAVIGATE_BACK"      : "Voltar",
+        "ACTION_NAVIGATE_HOME"      : "Principal",
+        "ACTION_SAVE"               : "Salvar",
+        "ACTION_SEARCH"             : "Procurar",
+        "ACTION_SHARE"              : "Compartilhar",
+        "ACTION_UPDATE_PASSWORD"    : "Alterar senha",
+        "ACTION_VIEW_HISTORY"       : "Histórico",
+
+        "DIALOG_HEADER_ERROR" : "Erro",
+
+        "ERROR_PAGE_UNAVAILABLE"  : "Um erro ocorreu e esta ação não pode ser completada. Se o problema persistir, por favor contacte o administrador do sistema ou verifique os logs do sistema.",
+        "ERROR_PASSWORD_BLANK"    : "Sua senha não pode ficar em branco.",
+        "ERROR_PASSWORD_MISMATCH" : "As senhas são diferentes.",
+        
+        "FIELD_HEADER_PASSWORD"       : "Senha:",
+        "FIELD_HEADER_PASSWORD_AGAIN" : "Repita a senha:",
+
+        "FIELD_PLACEHOLDER_FILTER" : "Filtro",
+
+        "FORMAT_DATE_TIME_PRECISE" : "dd/MM/yyyy HH:mm:ss",
+
+        "INFO_ACTIVE_USER_COUNT" : "Atualmente em uso por {USERS} {USERS, plural, one{usuário} other{usuários}}.",
+
+        "TEXT_ANONYMOUS_USER"   : "Anônimo",
+        "TEXT_HISTORY_DURATION" : "{VALUE} {UNIT, select, second{{VALUE, plural, one{segundo} other{segundos}}} minute{{VALUE, plural, one{minuto} other{minutos}}} hour{{VALUE, plural, one{hora} other{horas}}} day{{VALUE, plural, one{dia} other{dias}}} other{}}",
+        "TEXT_UNTRANSLATED" : "{MESSAGE}"
+
+    },
+
+    "CLIENT" : {
+
+        "ACTION_ACKNOWLEDGE"               : "@:APP.ACTION_ACKNOWLEDGE",
+        "ACTION_CANCEL"                    : "@:APP.ACTION_CANCEL",
+        "ACTION_CLEAR_COMPLETED_TRANSFERS" : "Limpar",
+        "ACTION_CONTINUE"                  : "@:APP.ACTION_CONTINUE",
+        "ACTION_DISCONNECT"                : "Desconectar",
+        "ACTION_LOGOUT"                    : "@:APP.ACTION_LOGOUT",
+        "ACTION_NAVIGATE_BACK"             : "@:APP.ACTION_NAVIGATE_BACK",
+        "ACTION_NAVIGATE_HOME"             : "@:APP.ACTION_NAVIGATE_HOME",
+        "ACTION_RECONNECT"                 : "Reconectar",
+        "ACTION_SAVE_FILE"                 : "@:APP.ACTION_SAVE",
+        "ACTION_SHARE"                     : "@:APP.ACTION_SHARE",
+        "ACTION_UPLOAD_FILES"              : "Enviar Arquivos",
+
+        "DIALOG_HEADER_CONNECTING"       : "Conectando",
+        "DIALOG_HEADER_CONNECTION_ERROR" : "Erro na conexão",
+        "DIALOG_HEADER_DISCONNECTED"     : "Desconectado",
+
+        "ERROR_CLIENT_201"     : "Essa conexão foi fechada porque o servidor está ocupado. Por favor aguarde alguns minutos e tente novamente.",
+        "ERROR_CLIENT_202"     : "O Servidor Guacamole fechou a sessão porque a estação remota estava levando muito tempo para responder. Por favor tente novamente ou contate o administrador do sistema.",
+        "ERROR_CLIENT_203"     : "A estação remota encontrou um erro e fechou a conexão. Por favor, tente novamente mais tarde ou contate o administrador do sistema.",
+        "ERROR_CLIENT_207"     : "A estação remota não pode ser encontrada. Caso o problema persista, por favor notifique o administrador do sistema, ou verifique os logs do sistema.",
+        "ERROR_CLIENT_208"     : "A estação remota não está disponível no momento. Caso o problema persista, por favor notifique o administrador do sistema, ou verifique os logs do sistema.",
+        "ERROR_CLIENT_209"     : "A estação remota encerrou a conexão devido a conflitos com outra conexão. Por favor tente novamente mais tarde.",
+        "ERROR_CLIENT_20A"     : "A estação remota encerrou a conexão pois a mesma parecia estar inativa. Caso isto seja inexperado ou indesejável, por favor notifique o administrador do sistema, ou verifique os logs do sistema.",
+        "ERROR_CLIENT_20B"     : "A estação remota encerrou a conexão forçadamente. Caso isto seja inexperado ou indesejável, por favor notifique o administrador do sistema, ou verifique os logs do sistema.",
+        "ERROR_CLIENT_301"     : "Erro de autenticação. Por favor reconecte e tente novamente.",
+        "ERROR_CLIENT_303"     : "A estação remota negou o acesso a esta conexão. Se você precisa deste acesso, por favor peça ao administrador do sistema, ou verifique as configurações do sistema.",
+        "ERROR_CLIENT_308"     : "O servidor do Guacamole encerrou a conexão porque não houve resposta do seu navegador por tempo suficiente para parecer desconectado. Normalmente isso ocorre por problemas na rede, como sinal de wifi irregular, ou simplesmente velocidades de rede muito lentas. Por favor verifique sua rede e tente novamente.",
+        "ERROR_CLIENT_31D"     : "O servidor do Guacamole está negando acesso a esta conexão porque você esgotou o limite de uso de conexões simultâneas para um único usuário. Por favor, feche uma ou mais conexões e tente novamente.",
+        "ERROR_CLIENT_DEFAULT" : "Um erro interno ocorreu no servidor do Guacamole e a conexão foi finalizada. Se o problema persistir, por favor informe o administrador do sistema, ou verifique os logs do sistema.",
+
+        "ERROR_TUNNEL_201"     : "O servidor de Guacamole rejeitou essa tentativa de conexão porque há muitas conexões ativas. Por favor, aguarde alguns minutos e tente novamente.",
+        "ERROR_TUNNEL_202"     : "A conexão foi encerrada porque o servidor está demorando muito par responder. Normalmente isso ocorre por problemas na rede, como sinal de wifi irregular, ou simplesmente velocidades de rede muito lentas. Por favor verifique sua rede e tente novamente ou contate o administrador do sistema.",
+        "ERROR_TUNNEL_203"     : "O servidor encontrou um erro e encerrou a conexão. Por favor, tente novamente ou informe o administrador do sistema.",
+        "ERROR_TUNNEL_204"     : "A conexão solicitada não existe. Por favor, verifique o nome da conexão e tente novamente.",
+        "ERROR_TUNNEL_205"     : "Essa conexão está atualmente em uso e o acesso concorrente a ela não é permitido. Por favor, tente mais tarde.",
+        "ERROR_TUNNEL_207"     : "O servidor de Guacamole não está acessível neste momento. Por favor, verifique a sua rede e tente novamente.",
+        "ERROR_TUNNEL_208"     : "O servidor de Guacamole não está aceitando conexões. Por favor, verifique a sua rede e tente novamente.",
+        "ERROR_TUNNEL_301"     : "Você não tem permissão para acessar essa conexão porque você não está logado. Por favor, logue-se e tente novamente.",
+        "ERROR_TUNNEL_303"     : "Você não tem permissão para acessar essa conexão. Se você precisa do acesso, por favor solicite ao administrador do sistema a inclusão do seu usuário da lista de usuários permitidos, ou verifique as configurações do sistema.",
+        "ERROR_TUNNEL_308"     : "O servidor do Guacamole encerrou a conexão porque não houve resposta do seu navegador por tempo suficiente para parecer desconectado. Normalmente isso ocorre por problemas na rede, como sinal de wifi irregular, ou simplesmente velocidades de rede muito lentas. Por favor verifique sua rede e tente novamente.",
+        "ERROR_TUNNEL_31D"     : "O servidor do Guacamole está negando acesso a esta conexão porque você esgotou o limite de uso de conexões simultâneas para um único usuário. Por favor feche uma ou mais conexões e tente novamente.",
+        "ERROR_TUNNEL_DEFAULT" : "Um erro interno ocorreu no servidor do Guacamole e a conexão foi finalizada. Se o problema persistir, por favor informe o administrador do sistema, ou verifique os logs do sistema.",
+
+        "ERROR_UPLOAD_100"     : "A transferência de arquivos não é suportada ou não foi habilitada. Por favor contate o administrador do sistema ou verifique os logs do sistema",
+        "ERROR_UPLOAD_201"     : "Muitos arquivos estão sendo transferidos ao mesmo tempo. Por favor aguarde que as transferências atuais terminem e tente novamente.",
+        "ERROR_UPLOAD_202"     : "O arquivo não pode ser transferido porque o servidor remoto está levando muito tempo para responder. Por favor tente mais tarde ou contate administrador do sistema.",
+        "ERROR_UPLOAD_203"     : "A estação remota encontrou erro durante a transferência. Por favort tente novamente ou contate administrador do sistema.",
+        "ERROR_UPLOAD_204"     : "O destino da transferência de arquivo não existe. Por favor verifique se o destino existe e tente novamente.",
+        "ERROR_UPLOAD_205"     : "O destino da transferência de arquivo está bloqueado. Por favor aguarde as tarefas em curso terminarem e tente noavmente.",
+        "ERROR_UPLOAD_301"     : "Você não tem permissão para enviar este arquivo porque não está logado. Por favor logue-se e tente novamente.",
+        "ERROR_UPLOAD_303"     : "Você não tem permissão para enviar este arquivo. Se já solicitou esta permisssão verifique as configurações de sistema, ou contate o administrador do sistema.",
+        "ERROR_UPLOAD_308"     : "A transferência do arquivo está parada. Normalmente isso ocorre por problemas na rede, como sinal de wifi irregular, ou simplesmente velocidades de rede muito lentas. Por favor verifique sua rede e tente novamente.",
+        "ERROR_UPLOAD_31D"     : "Muitos arquivos estão sendo transferidos ao mesmo tempo. Por favor aguarde que as transferências atuais terminem e tente novamente.",
+        "ERROR_UPLOAD_DEFAULT" : "Um erro interno ocorreu no servidor do Guacamole e a conexão foi finalizada. Se o problema persistir, por favor informe o administrador do sistema, ou verifique os logs do sistema.",
+
+        "FIELD_PLACEHOLDER_FILTER" : "@:APP.FIELD_PLACEHOLDER_FILTER",
+
+        "HELP_CLIPBOARD"           : "Texto copiado/cortado dentro do Guacamole será mostrado aqui. Mudanças no text abaixo afetarão a área de transferência remota.",
+        "HELP_INPUT_METHOD_NONE"   : "Nenhum método de entrada está sendo usado. A entrada do teclado é aceita a partir de um teclado físico conectado.",
+        "HELP_INPUT_METHOD_OSK"    : "Mostrar e aceitar entrada de dados a partir do teclado virtual integrado do Guacamole. O teclado virtual possibilita digitar combinações de teclas que, de outra forma, seriam impossíveis (como Ctrl-Alt-Del).",
+        "HELP_INPUT_METHOD_TEXT"   : "Permite digitação do texto e emulaçao dos eventos de teclado baseado no texto digitado. Isto é necessário para dispositivos como telefones celulares que não possuem teclado físico.",
+        "HELP_MOUSE_MODE"          : "Determina como o mouse remoto se comportará em ralção aos toques.",
+        "HELP_MOUSE_MODE_ABSOLUTE" : "Toque para clicar. O clique ocorre no local do toque.",
+        "HELP_MOUSE_MODE_RELATIVE" : "Arraste para mover o ponteiro do mouse e toque para clicar. O clique ocorre no local em que o mouse aponta.",
+        "HELP_SHARE_LINK"          : "A conexão atual está sendo compartilhada e pode ser acessado com qualquer um que possuir o seguinte {LINKS, plural, one{link} other{links}}:",
+
+        "INFO_CONNECTION_SHARED" : "Está conexão agora está compartilhada.",
+        "INFO_NO_FILE_TRANSFERS" : "Nenhuma transferência de arquivo.",
+
+        "NAME_INPUT_METHOD_NONE"   : "Nenhum",
+        "NAME_INPUT_METHOD_OSK"    : "Teclado virtual",
+        "NAME_INPUT_METHOD_TEXT"   : "Entrada de texto",
+        "NAME_KEY_CTRL"            : "Ctrl",
+        "NAME_KEY_ALT"             : "Alt",
+        "NAME_KEY_ESC"             : "Esc",
+        "NAME_KEY_TAB"             : "Tab",
+        "NAME_MOUSE_MODE_ABSOLUTE" : "Tela de toque",
+        "NAME_MOUSE_MODE_RELATIVE" : "Touchpad",
+
+        "SECTION_HEADER_CLIPBOARD"      : "Área de transferência",
+        "SECTION_HEADER_DEVICES"        : "Aparelhos",
+        "SECTION_HEADER_DISPLAY"        : "Tela",
+        "SECTION_HEADER_FILE_TRANSFERS" : "Transferências de Arquivos",
+        "SECTION_HEADER_INPUT_METHOD"   : "Método de entrada",
+        "SECTION_HEADER_MOUSE_MODE"     : "Modo de emulação do mouse",
+
+        "TEXT_ZOOM_AUTO_FIT"              : "Ajustar automaticamente à janela do navegador",
+        "TEXT_CLIENT_STATUS_IDLE"         : "Ocioso.",
+        "TEXT_CLIENT_STATUS_CONNECTING"   : "Conectando ao Guacamole...",
+        "TEXT_CLIENT_STATUS_DISCONNECTED" : "Você foi desconectado.",
+        "TEXT_CLIENT_STATUS_UNSTABLE"     : "A conexão de rede ao servidor do Guacamole parece instável.",
+        "TEXT_CLIENT_STATUS_WAITING"      : "Conectado ao Guacamole. Aguardando resposta...",
+        "TEXT_RECONNECT_COUNTDOWN"        : "Reconectando em {REMAINING} {REMAINING, plural, one{second} other{seconds}}...",
+        "TEXT_FILE_TRANSFER_PROGRESS"     : "{PROGRESS} {UNIT, select, b{B} kb{KB} mb{MB} gb{GB} other{}}",
+
+        "URL_OSK_LAYOUT" : "layouts/en-us-qwerty.json"
+
+    },
+
+    "COLOR_SCHEME" : {
+
+        "ACTION_CANCEL"       : "@:APP.ACTION_CANCEL",
+        "ACTION_HIDE_DETAILS" : "Ocultar",
+        "ACTION_SAVE"         : "@:APP.ACTION_SAVE",
+        "ACTION_SHOW_DETAILS" : "Mostrar",
+
+        "FIELD_HEADER_BACKGROUND" : "Fundo",
+        "FIELD_HEADER_FOREGROUND" : "Primeiro plano",
+
+        "FIELD_OPTION_CUSTOM" : "Customizar...",
+
+        "SECTION_HEADER_DETAILS" : "Detalhes:"
+
+    },
+
+    "DATA_SOURCE_DEFAULT" : {
+        "NAME" : "Default (XML)"
+    },
+
+    "FORM" : {
+
+        "FIELD_PLACEHOLDER_DATE" : "DD/MM/YYYY",
+        "FIELD_PLACEHOLDER_TIME" : "HH:MM:SS",
+
+        "HELP_SHOW_PASSWORD" : "Clique para mostrar a senha",
+        "HELP_HIDE_PASSWORD" : "Clique para ocultar a senha"
+
+    },
+
+    "HOME" : {
+
+        "FIELD_PLACEHOLDER_FILTER" : "@:APP.FIELD_PLACEHOLDER_FILTER",
+
+        "INFO_ACTIVE_USER_COUNT" : "@:APP.INFO_ACTIVE_USER_COUNT",
+
+        "INFO_NO_RECENT_CONNECTIONS" : "Nenhuma conexão recente.",
+        
+        "PASSWORD_CHANGED" : "Senha alterada.",
+
+        "SECTION_HEADER_ALL_CONNECTIONS"    : "Todas as Conexões",
+        "SECTION_HEADER_RECENT_CONNECTIONS" : "Conexões Recentes"
+
+    },
+
+    "LIST" : {
+
+        "TEXT_ANONYMOUS_USER" : "Anônimo"
+
+    },
+
+    "LOGIN": {
+
+        "ACTION_ACKNOWLEDGE" : "@:APP.ACTION_ACKNOWLEDGE",
+        "ACTION_CONTINUE"    : "@:APP.ACTION_CONTINUE",
+        "ACTION_LOGIN"       : "@:APP.ACTION_LOGIN",
+
+        "DIALOG_HEADER_ERROR" : "@:APP.DIALOG_HEADER_ERROR",
+
+        "ERROR_INVALID_LOGIN" : "Autenticação Inválida",
+
+        "FIELD_HEADER_USERNAME" : "Usuário",
+        "FIELD_HEADER_PASSWORD" : "Senha"
+
+    },
+
+    "MANAGE_CONNECTION" : {
+
+        "ACTION_ACKNOWLEDGE"          : "@:APP.ACTION_ACKNOWLEDGE",
+        "ACTION_CANCEL"               : "@:APP.ACTION_CANCEL",
+        "ACTION_CLONE"                : "@:APP.ACTION_CLONE",
+        "ACTION_DELETE"               : "@:APP.ACTION_DELETE",
+        "ACTION_SAVE"                 : "@:APP.ACTION_SAVE",
+
+        "DIALOG_HEADER_CONFIRM_DELETE" : "Remover conexão",
+        "DIALOG_HEADER_ERROR"          : "@:APP.DIALOG_HEADER_ERROR",
+
+        "FIELD_HEADER_LOCATION" : "Localização:",
+        "FIELD_HEADER_NAME"     : "Nome:",
+        "FIELD_HEADER_PROTOCOL" : "Protocolo:",
+
+        "FORMAT_HISTORY_START" : "@:APP.FORMAT_DATE_TIME_PRECISE",
+
+        "INFO_CONNECTION_DURATION_UNKNOWN" : "--",
+        "INFO_CONNECTION_ACTIVE_NOW"       : "Ativa agora",
+        "INFO_CONNECTION_NOT_USED"         : "Essa conexão ainda não foi utilizada.",
+
+        "SECTION_HEADER_EDIT_CONNECTION" : "Editar Conexão",
+        "SECTION_HEADER_HISTORY"         : "Histórico de Uso",
+        "SECTION_HEADER_PARAMETERS"      : "Parâmetros",
+
+        "TABLE_HEADER_HISTORY_USERNAME"   : "Usuário",
+        "TABLE_HEADER_HISTORY_START"      : "Hora de Início",
+        "TABLE_HEADER_HISTORY_DURATION"   : "Duração",
+        "TABLE_HEADER_HISTORY_REMOTEHOST" : "Estação Remota",
+
+        "TEXT_CONFIRM_DELETE"   : "Conexões não podem ser restauradas depois de removidas. Tem certeza que deseja remover esta conexão?",
+        "TEXT_HISTORY_DURATION" : "@:APP.TEXT_HISTORY_DURATION"
+
+    },
+
+    "MANAGE_CONNECTION_GROUP" : {
+
+        "ACTION_ACKNOWLEDGE"   : "@:APP.ACTION_ACKNOWLEDGE",
+        "ACTION_CANCEL"        : "@:APP.ACTION_CANCEL",
+        "ACTION_CLONE"         : "@:APP.ACTION_CLONE",
+        "ACTION_DELETE"        : "@:APP.ACTION_DELETE",
+        "ACTION_SAVE"          : "@:APP.ACTION_SAVE",
+
+        "DIALOG_HEADER_CONFIRM_DELETE" : "Delete Connection Group",
+        "DIALOG_HEADER_ERROR"          : "@:APP.DIALOG_HEADER_ERROR",
+
+        "FIELD_HEADER_LOCATION" : "Localização:",
+        "FIELD_HEADER_NAME"     : "Nome:",
+        "FIELD_HEADER_TYPE"     : "Tipo:",
+
+        "NAME_TYPE_BALANCING"       : "Balanceamento",
+        "NAME_TYPE_ORGANIZATIONAL"  : "Organização",
+
+        "SECTION_HEADER_EDIT_CONNECTION_GROUP" : "Editar Grupo de Conexão",
+
+        "TEXT_CONFIRM_DELETE" : "Grupos de conexão não podem ser restaurados depois de removidos. Tem certeza que deseja remover este grupo de conexão?"
+
+    },
+
+    "MANAGE_SHARING_PROFILE" : {
+
+        "ACTION_ACKNOWLEDGE" : "@:APP.ACTION_ACKNOWLEDGE",
+        "ACTION_CANCEL"      : "@:APP.ACTION_CANCEL",
+        "ACTION_CLONE"       : "@:APP.ACTION_CLONE",
+        "ACTION_DELETE"      : "@:APP.ACTION_DELETE",
+        "ACTION_SAVE"        : "@:APP.ACTION_SAVE",
+
+        "DIALOG_HEADER_CONFIRM_DELETE" : "Remover Perfil de Compartilhamento",
+        "DIALOG_HEADER_ERROR"          : "@:APP.DIALOG_HEADER_ERROR",
+
+        "FIELD_HEADER_NAME"               : "Nome:",
+        "FIELD_HEADER_PRIMARY_CONNECTION" : "Conexão Primária:",
+
+        "SECTION_HEADER_EDIT_SHARING_PROFILE" : "Editar Perfil de Compartilhamento",
+        "SECTION_HEADER_PARAMETERS"           : "Parâmetros",
+
+        "TEXT_CONFIRM_DELETE" : "Perfis de compartilhamento não podem ser restaurados depois de removidos. Tem certeza que deseja remover este perfil de compartilhamento?"
+
+    },
+
+    "MANAGE_USER" : {
+
+        "ACTION_ACKNOWLEDGE"   : "@:APP.ACTION_ACKNOWLEDGE",
+        "ACTION_CANCEL"        : "@:APP.ACTION_CANCEL",
+        "ACTION_CLONE"         : "@:APP.ACTION_CLONE",
+        "ACTION_DELETE"        : "@:APP.ACTION_DELETE",
+        "ACTION_SAVE"          : "@:APP.ACTION_SAVE",
+
+        "DIALOG_HEADER_CONFIRM_DELETE" : "Remover Usuário",
+        "DIALOG_HEADER_ERROR"          : "@:APP.DIALOG_HEADER_ERROR",
+
+        "ERROR_PASSWORD_MISMATCH" : "@:APP.ERROR_PASSWORD_MISMATCH",
+
+        "FIELD_HEADER_ADMINISTER_SYSTEM"             : "Administrar o sistema:",
+        "FIELD_HEADER_CHANGE_OWN_PASSWORD"           : "Alterar a própria senha:",
+        "FIELD_HEADER_CREATE_NEW_USERS"              : "Criar novos usuários:",
+        "FIELD_HEADER_CREATE_NEW_USER_GROUPS"        : "Criar novos grupos de usuário:",
+        "FIELD_HEADER_CREATE_NEW_CONNECTIONS"        : "Criar novas conexões:",
+        "FIELD_HEADER_CREATE_NEW_CONNECTION_GROUPS"  : "Criar novos grupos de conexão:",
+        "FIELD_HEADER_CREATE_NEW_SHARING_PROFILES"   : "Criar novos perfis de compartilhamento:",
+        "FIELD_HEADER_PASSWORD"                      : "@:APP.FIELD_HEADER_PASSWORD",
+        "FIELD_HEADER_PASSWORD_AGAIN"                : "@:APP.FIELD_HEADER_PASSWORD_AGAIN",
+        "FIELD_HEADER_USER_DISABLED"                 : "Login desativado:",
+        "FIELD_HEADER_USERNAME"                      : "Usuário:",
+
+        "FIELD_PLACEHOLDER_FILTER" : "@:APP.FIELD_PLACEHOLDER_FILTER",
+
+        "HELP_NO_USER_GROUPS" : "Este usuário não pertence a nenhum grupo no momento. Expanda esta seção para adicionar grupos.",
+
+        "INFO_READ_ONLY"                : "Desculpe, mas esta conta de usuário não pode ser editada.",
+        "INFO_NO_USER_GROUPS_AVAILABLE" : "Nenhum grupo disponível.",
+
+        "SECTION_HEADER_ALL_CONNECTIONS"     : "Todas as Conexões",
+        "SECTION_HEADER_CONNECTIONS"         : "Conexões",
+        "SECTION_HEADER_CURRENT_CONNECTIONS" : "Conexões Atuais",
+        "SECTION_HEADER_EDIT_USER"           : "Editar Usuário",
+        "SECTION_HEADER_PERMISSIONS"         : "Permissões",
+        "SECTION_HEADER_USER_GROUPS"         : "Grupos",
+
+        "TEXT_CONFIRM_DELETE" : "Usuários não podem ser restaurados depois de removidos. Tem certeza que deseja remover este usuário?"
+
+    },
+
+    "MANAGE_USER_GROUP" : {
+
+        "ACTION_ACKNOWLEDGE"   : "@:APP.ACTION_ACKNOWLEDGE",
+        "ACTION_CANCEL"        : "@:APP.ACTION_CANCEL",
+        "ACTION_CLONE"         : "@:APP.ACTION_CLONE",
+        "ACTION_DELETE"        : "@:APP.ACTION_DELETE",
+        "ACTION_SAVE"          : "@:APP.ACTION_SAVE",
+
+        "DIALOG_HEADER_CONFIRM_DELETE" : "Remover Grupo",
+        "DIALOG_HEADER_ERROR"          : "@:APP.DIALOG_HEADER_ERROR",
+
+        "FIELD_HEADER_ADMINISTER_SYSTEM"             : "@:MANAGE_USER.FIELD_HEADER_ADMINISTER_SYSTEM",
+        "FIELD_HEADER_CHANGE_OWN_PASSWORD"           : "@:MANAGE_USER.FIELD_HEADER_CHANGE_OWN_PASSWORD",
+        "FIELD_HEADER_CREATE_NEW_USERS"              : "@:MANAGE_USER.FIELD_HEADER_CREATE_NEW_USERS",
+        "FIELD_HEADER_CREATE_NEW_USER_GROUPS"        : "@:MANAGE_USER.FIELD_HEADER_CREATE_NEW_USER_GROUPS",
+        "FIELD_HEADER_CREATE_NEW_CONNECTIONS"        : "@:MANAGE_USER.FIELD_HEADER_CREATE_NEW_CONNECTIONS",
+        "FIELD_HEADER_CREATE_NEW_CONNECTION_GROUPS"  : "@:MANAGE_USER.FIELD_HEADER_CREATE_NEW_CONNECTION_GROUPS",
+        "FIELD_HEADER_CREATE_NEW_SHARING_PROFILES"   : "@:MANAGE_USER.FIELD_HEADER_CREATE_NEW_SHARING_PROFILES",
+        "FIELD_HEADER_USER_GROUP_DISABLED"           : "Desativado:",
+        "FIELD_HEADER_USER_GROUP_NAME"               : "Nome do grupo:",
+
+        "FIELD_PLACEHOLDER_FILTER" : "@:APP.FIELD_PLACEHOLDER_FILTER",
+
+        "HELP_NO_USER_GROUPS"        : "Este grupo não pertence a nenhum outro grupo atualmente. Expanda esta seção para adicionar grupos.",
+        "HELP_NO_MEMBER_USER_GROUPS" : "Este grupo não contém nenhum outro grupo atualmente. Expanda esta seção para adicionar grupos.",
+        "HELP_NO_MEMBER_USERS"       : "Este grupo não contém nenhum usuário atualmente. Expanda esta seção para adicionar usuários.",
+
+        "INFO_READ_ONLY"                : "Desculpe, mas este grupo não pode ser editado.",
+        "INFO_NO_USER_GROUPS_AVAILABLE" : "@:MANAGE_USER.INFO_NO_USER_GROUPS_AVAILABLE",
+        "INFO_NO_USERS_AVAILABLE"       : "Nenhum usuário disponível.",
+
+        "SECTION_HEADER_ALL_CONNECTIONS"     : "@:MANAGE_USER.SECTION_HEADER_ALL_CONNECTIONS",
+        "SECTION_HEADER_CONNECTIONS"         : "@:MANAGE_USER.SECTION_HEADER_CONNECTIONS",
+        "SECTION_HEADER_CURRENT_CONNECTIONS" : "@:MANAGE_USER.SECTION_HEADER_CURRENT_CONNECTIONS",
+        "SECTION_HEADER_EDIT_USER_GROUP"     : "Editar Grupo",
+        "SECTION_HEADER_MEMBER_USERS"        : "Usuários Membros",
+        "SECTION_HEADER_MEMBER_USER_GROUPS"  : "Grupos Membros",
+        "SECTION_HEADER_PERMISSIONS"         : "@:MANAGE_USER.SECTION_HEADER_PERMISSIONS",
+        "SECTION_HEADER_USER_GROUPS"         : "Grupos Pai",
+
+        "TEXT_CONFIRM_DELETE" : "Grupos não podem ser restaurados depois de removidos. Tem certeza que deseja remover este grupos?"
+
+    },
+
+    "PROTOCOL_KUBERNETES" : {
+
+        "FIELD_HEADER_BACKSPACE"       : "Tecla de Backspace envia:",
+        "FIELD_HEADER_CA_CERT"         : "Certificar autoridade certificadora:",
+        "FIELD_HEADER_CLIENT_CERT"     : "Certificado do client:",
+        "FIELD_HEADER_CLIENT_KEY"      : "Chave do cliente:",
+        "FIELD_HEADER_COLOR_SCHEME"    : "Esquema de cor:",
+        "FIELD_HEADER_CONTAINER"       : "Nome do container:",
+        "FIELD_HEADER_CREATE_RECORDING_PATH"  : "Criar caminho de gravação automaticamente:",
+        "FIELD_HEADER_CREATE_TYPESCRIPT_PATH" : "Criar caminho de transcrição automaticamente:",
+        "FIELD_HEADER_FONT_NAME"       : "Nome da fonte:",
+        "FIELD_HEADER_FONT_SIZE"       : "Tamanho da fonte:",
+        "FIELD_HEADER_HOSTNAME"        : "Nome do host:",
+        "FIELD_HEADER_IGNORE_CERT"     : "Ignorar certificado do servidor:",
+        "FIELD_HEADER_NAMESPACE"       : "Namespace:",
+        "FIELD_HEADER_POD"             : "Nome do pod:",
+        "FIELD_HEADER_PORT"            : "Porta:",
+        "FIELD_HEADER_READ_ONLY"       : "Apenas-leitura:",
+        "FIELD_HEADER_RECORDING_EXCLUDE_MOUSE"  : "Excluir mouse:",
+        "FIELD_HEADER_RECORDING_EXCLUDE_OUTPUT" : "Excluir gráficos/streams:",
+        "FIELD_HEADER_RECORDING_INCLUDE_KEYS"   : "Incluir eventos chave:",
+        "FIELD_HEADER_RECORDING_NAME"  : "Nome da gravação:",
+        "FIELD_HEADER_RECORDING_PATH"  : "Caminho da gravação:",
+        "FIELD_HEADER_SCROLLBACK"      : "Tamanho máximo de retrocesso:",
+        "FIELD_HEADER_TYPESCRIPT_NAME" : "Nome da transcrição:",
+        "FIELD_HEADER_TYPESCRIPT_PATH" : "Caminho da transcrição:",
+        "FIELD_HEADER_USE_SSL"         : "Usar SSL/TLS",
+
+        "FIELD_OPTION_BACKSPACE_EMPTY" : "",
+        "FIELD_OPTION_BACKSPACE_8"     : "Backspace (Ctrl-H)",
+        "FIELD_OPTION_BACKSPACE_127"   : "Delete (Ctrl-?)",
+
+        "FIELD_OPTION_COLOR_SCHEME_BLACK_WHITE" : "Preto sobre branco",
+        "FIELD_OPTION_COLOR_SCHEME_EMPTY"       : "",
+        "FIELD_OPTION_COLOR_SCHEME_GRAY_BLACK"  : "Cinza sobre preto",
+        "FIELD_OPTION_COLOR_SCHEME_GREEN_BLACK" : "Verde sobre preto",
+        "FIELD_OPTION_COLOR_SCHEME_WHITE_BLACK" : "Branco sobre preto",
+
+        "FIELD_OPTION_FONT_SIZE_8"     : "8",
+        "FIELD_OPTION_FONT_SIZE_9"     : "9",
+        "FIELD_OPTION_FONT_SIZE_10"    : "10",
+        "FIELD_OPTION_FONT_SIZE_11"    : "11",
+        "FIELD_OPTION_FONT_SIZE_12"    : "12",
+        "FIELD_OPTION_FONT_SIZE_14"    : "14",
+        "FIELD_OPTION_FONT_SIZE_18"    : "18",
+        "FIELD_OPTION_FONT_SIZE_24"    : "24",
+        "FIELD_OPTION_FONT_SIZE_30"    : "30",
+        "FIELD_OPTION_FONT_SIZE_36"    : "36",
+        "FIELD_OPTION_FONT_SIZE_48"    : "48",
+        "FIELD_OPTION_FONT_SIZE_60"    : "60",
+        "FIELD_OPTION_FONT_SIZE_72"    : "72",
+        "FIELD_OPTION_FONT_SIZE_96"    : "96",
+        "FIELD_OPTION_FONT_SIZE_EMPTY" : "",
+
+        "NAME" : "Kubernetes",
+
+        "SECTION_HEADER_AUTHENTICATION" : "Autenticação",
+        "SECTION_HEADER_BEHAVIOR"       : "Comportamento do terminal",
+        "SECTION_HEADER_CONTAINER"      : "Container",
+        "SECTION_HEADER_DISPLAY"        : "Tela",
+        "SECTION_HEADER_RECORDING"      : "Gravação da Tela",
+        "SECTION_HEADER_TYPESCRIPT"     : "Transcrição (Gravação do Texto da Sessão)",
+        "SECTION_HEADER_NETWORK"        : "Rede"
+
+    },
+
+    "PROTOCOL_RDP" : {
+
+        "FIELD_HEADER_CLIENT_NAME"     : "Nome do cliente:",
+        "FIELD_HEADER_COLOR_DEPTH"     : "Profundidade de cores:",
+        "FIELD_HEADER_CONSOLE"         : "Console de administração:",
+        "FIELD_HEADER_CONSOLE_AUDIO"   : "Suportar audio no console:",
+        "FIELD_HEADER_CREATE_DRIVE_PATH" : "Criar unidade automaticamente:",
+        "FIELD_HEADER_CREATE_RECORDING_PATH" : "Criar caminho de gravação automaticamente:",
+        "FIELD_HEADER_DISABLE_AUDIO"   : "Desabilitar áudio:",
+        "FIELD_HEADER_DISABLE_AUTH"    : "Desabilitar autenticação:",
+        "FIELD_HEADER_DISABLE_COPY"    : "Desabilitar copiar da estação remota:",
+        "FIELD_HEADER_DISABLE_DOWNLOAD" : "Desabilitar recebimento de arquivos:",
+        "FIELD_HEADER_DISABLE_PASTE"   : "Desabilitar colar do cliente:",
+        "FIELD_HEADER_DISABLE_UPLOAD"   : "Desabilitar envio de arquivos:",
+        "FIELD_HEADER_DOMAIN"          : "Domínio:",
+        "FIELD_HEADER_DPI"             : "Resolução (DPI):",
+        "FIELD_HEADER_DRIVE_NAME"       : "Nome da unidade:",
+        "FIELD_HEADER_DRIVE_PATH"       : "Caminho da unidade:",
+        "FIELD_HEADER_ENABLE_AUDIO_INPUT"         : "Habilitar entrada de áudio (microfone):",
+        "FIELD_HEADER_ENABLE_DESKTOP_COMPOSITION" : "Habilitar composição do desktop (Aero):",
+        "FIELD_HEADER_ENABLE_DRIVE"               : "Habilitar unidade:",
+        "FIELD_HEADER_ENABLE_FONT_SMOOTHING"      : "Habilitar suavização de fonte (ClearType):",
+        "FIELD_HEADER_ENABLE_FULL_WINDOW_DRAG"    : "Habilitar arrastar a janela inteira:",
+        "FIELD_HEADER_ENABLE_MENU_ANIMATIONS"     : "Habilitar animação de menus:",
+        "FIELD_HEADER_DISABLE_BITMAP_CACHING"     : "Desabilitar cache de bitmap:",
+        "FIELD_HEADER_DISABLE_OFFSCREEN_CACHING"  : "Desabilitar cache off-screen:",
+        "FIELD_HEADER_DISABLE_GLYPH_CACHING"      : "Desabilitar cache de glyph:",
+        "FIELD_HEADER_ENABLE_PRINTING"            : "Habilitar impressão:",
+        "FIELD_HEADER_ENABLE_SFTP"     : "Habilitar SFTP:",
+        "FIELD_HEADER_ENABLE_THEMING"             : "Habilitar tema:",
+        "FIELD_HEADER_ENABLE_WALLPAPER"           : "Habilitar papel de parede:",
+        "FIELD_HEADER_GATEWAY_DOMAIN"   : "Domínio:",
+        "FIELD_HEADER_GATEWAY_HOSTNAME" : "Nome do host:",
+        "FIELD_HEADER_GATEWAY_PASSWORD" : "Senha:",
+        "FIELD_HEADER_GATEWAY_PORT"     : "Porta:",
+        "FIELD_HEADER_GATEWAY_USERNAME" : "Usuário:",
+        "FIELD_HEADER_HEIGHT"          : "Altura:",
+        "FIELD_HEADER_HOSTNAME"        : "Nome do host:",
+        "FIELD_HEADER_IGNORE_CERT"     : "Ignorar certificado do servidor:",
+        "FIELD_HEADER_INITIAL_PROGRAM" : "Programa inicial:",
+        "FIELD_HEADER_LOAD_BALANCE_INFO" : "Info/cookie de balanceamento de carga:",
+        "FIELD_HEADER_PASSWORD"        : "Senha:",
+        "FIELD_HEADER_PORT"            : "Porta:",
+        "FIELD_HEADER_PRINTER_NAME"    : "Nome da impressora redirecionada:",
+        "FIELD_HEADER_PRECONNECTION_BLOB" : "BLOB (VM ID) de pré-conexão:",
+        "FIELD_HEADER_PRECONNECTION_ID"   : "ID de origem do RDP:",
+        "FIELD_HEADER_READ_ONLY"      : "Apenas-leitura:",
+        "FIELD_HEADER_RECORDING_EXCLUDE_MOUSE"  : "Excluir mouse:",
+        "FIELD_HEADER_RECORDING_EXCLUDE_OUTPUT" : "Excluir gráficos/streams:",
+        "FIELD_HEADER_RECORDING_INCLUDE_KEYS"   : "Incluir eventos chave:",
+        "FIELD_HEADER_RECORDING_NAME" : "Nome da gravação:",
+        "FIELD_HEADER_RECORDING_PATH" : "Caminho da gravação:",
+        "FIELD_HEADER_RESIZE_METHOD" : "Método de redimensionamento:",
+        "FIELD_HEADER_REMOTE_APP_ARGS" : "Parâmetros:",
+        "FIELD_HEADER_REMOTE_APP_DIR"  : "Diretório de trabalho:",
+        "FIELD_HEADER_REMOTE_APP"      : "Programa:",
+        "FIELD_HEADER_SECURITY"        : "Modo de segurança:",
+        "FIELD_HEADER_SERVER_LAYOUT"   : "Layout do teclado:",
+        "FIELD_HEADER_SFTP_DIRECTORY"             : "Diretório padrão de envios:",
+        "FIELD_HEADER_SFTP_DISABLE_DOWNLOAD"      : "Desabilitar recebimento de arquivos:",
+        "FIELD_HEADER_SFTP_HOST_KEY"              : "Chave pública (Base64):",
+        "FIELD_HEADER_SFTP_HOSTNAME"              : "Nome do host:",
+        "FIELD_HEADER_SFTP_SERVER_ALIVE_INTERVAL" : "Intervalo de keepalive do SFTP:",
+        "FIELD_HEADER_SFTP_PASSPHRASE"            : "Frase-senha:",
+        "FIELD_HEADER_SFTP_PASSWORD"              : "Senha:",
+        "FIELD_HEADER_SFTP_PORT"                  : "Porta:",
+        "FIELD_HEADER_SFTP_PRIVATE_KEY"           : "Chave privada:",
+        "FIELD_HEADER_SFTP_ROOT_DIRECTORY"        : "Diretório raíz da escolha de arquivos:",
+        "FIELD_HEADER_SFTP_DISABLE_UPLOAD"        : "Desabilitar envio de arquivos:",
+        "FIELD_HEADER_SFTP_USERNAME"              : "Usuário:",
+        "FIELD_HEADER_STATIC_CHANNELS" : "Nomes dos canais estáticoss:",
+        "FIELD_HEADER_TIMEZONE"        : "Fuso Horário:",
+        "FIELD_HEADER_USERNAME"        : "Usuário:",
+        "FIELD_HEADER_WIDTH"           : "Largura:",
+        "FIELD_HEADER_WOL_BROADCAST_ADDR" : "Endereço de broadcast para pacotes WoL:",
+        "FIELD_HEADER_WOL_MAC_ADDR"       : "Endereço MAC do host remoto:",
+        "FIELD_HEADER_WOL_SEND_PACKET"    : "Enviar pacote WoL:",
+        "FIELD_HEADER_WOL_WAIT_TIME"      : "Tempo de espera da inicialização do host:",
+        
+
+        "FIELD_OPTION_COLOR_DEPTH_16"    : "Low color (16-bit)",
+        "FIELD_OPTION_COLOR_DEPTH_24"    : "True color (24-bit)",
+        "FIELD_OPTION_COLOR_DEPTH_32"    : "True color (32-bit)",
+        "FIELD_OPTION_COLOR_DEPTH_8"     : "256 color",
+        "FIELD_OPTION_COLOR_DEPTH_EMPTY" : "",
+
+        "FIELD_OPTION_RESIZE_METHOD_DISPLAY_UPDATE" : "\"Atualização de Tela\" canal virtual (RDP 8.1+)",
+        "FIELD_OPTION_RESIZE_METHOD_EMPTY"          : "",
+        "FIELD_OPTION_RESIZE_METHOD_RECONNECT"      : "Reconectar",
+
+        "FIELD_OPTION_SECURITY_ANY"   : "Qualquer Um",
+        "FIELD_OPTION_SECURITY_EMPTY" : "",
+        "FIELD_OPTION_SECURITY_NLA"   : "NLA (Autenticação a Nível de Rede)",
+        "FIELD_OPTION_SECURITY_RDP"   : "Encriptação RDP",
+        "FIELD_OPTION_SECURITY_TLS"   : "Encriptação TLS",
+        "FIELD_OPTION_SECURITY_VMCONNECT" : "Hyper-V / VMConnect",
+
+        "FIELD_OPTION_SERVER_LAYOUT_CS_CZ_QWERTZ" : "Tcheco (Qwertz)",
+        "FIELD_OPTION_SERVER_LAYOUT_DA_DK_QWERTY" : "Dinamarquês (Qwerty)",
+        "FIELD_OPTION_SERVER_LAYOUT_DE_CH_QWERTZ" : "Alemão-Suiço (Qwertz)",
+        "FIELD_OPTION_SERVER_LAYOUT_DE_DE_QWERTZ" : "Alemão (Qwertz)",
+        "FIELD_OPTION_SERVER_LAYOUT_EMPTY"        : "",
+        "FIELD_OPTION_SERVER_LAYOUT_EN_GB_QWERTY" : "Inglês UK (Qwerty)",
+        "FIELD_OPTION_SERVER_LAYOUT_EN_US_QWERTY" : "Inglês US (Qwerty)",
+        "FIELD_OPTION_SERVER_LAYOUT_ES_ES_QWERTY" : "Espanhol (Qwerty)",
+        "FIELD_OPTION_SERVER_LAYOUT_ES_LATAM_QWERTY" : "América Latina (Qwerty)",
+        "FIELD_OPTION_SERVER_LAYOUT_FAILSAFE"     : "Unicode",
+        "FIELD_OPTION_SERVER_LAYOUT_FR_BE_AZERTY" : "Francês Belga (Azerty)",
+        "FIELD_OPTION_SERVER_LAYOUT_FR_CH_QWERTZ" : "Francês Suiço (Qwertz)",
+        "FIELD_OPTION_SERVER_LAYOUT_FR_FR_AZERTY" : "Francês (Azerty)",
+        "FIELD_OPTION_SERVER_LAYOUT_HU_HU_QWERTZ" : "Húngaro (Qwertz)",
+        "FIELD_OPTION_SERVER_LAYOUT_IT_IT_QWERTY" : "Italiano (Qwerty)",
+        "FIELD_OPTION_SERVER_LAYOUT_JA_JP_QWERTY" : "Japonês (Qwerty)",
+        "FIELD_OPTION_SERVER_LAYOUT_PL_PL_QWERTY" : "Polonês (Qwerty)",
+        "FIELD_OPTION_SERVER_LAYOUT_PT_BR_QWERTY" : "Português Brasileiro (Qwerty)",
+        "FIELD_OPTION_SERVER_LAYOUT_PT_PT_QWERTY" : "Português (Qwerty)",
+        "FIELD_OPTION_SERVER_LAYOUT_SV_SE_QWERTY" : "Sueco (Qwerty)",
+        "FIELD_OPTION_SERVER_LAYOUT_TR_TR_QWERTY" : "Turco-Q (Qwerty)",
+
+        "NAME" : "RDP",
+
+        "SECTION_HEADER_AUTHENTICATION"     : "Autenticação",
+        "SECTION_HEADER_BASIC_PARAMETERS"   : "Configuração básica",
+        "SECTION_HEADER_CLIPBOARD"          : "Área de Transferência",
+        "SECTION_HEADER_DEVICE_REDIRECTION" : "Redirecionamento de dispositivo",
+        "SECTION_HEADER_DISPLAY"            : "Tela",
+        "SECTION_HEADER_GATEWAY"            : "Gateway de Desktop Remoto",
+        "SECTION_HEADER_LOAD_BALANCING"     : "Balanceamento de Carga",
+        "SECTION_HEADER_NETWORK"            : "Rede",
+        "SECTION_HEADER_PERFORMANCE"        : "Performance",
+        "SECTION_HEADER_PRECONNECTION_PDU"  : "Pré-conexão PDU / Hyper-V",
+        "SECTION_HEADER_RECORDING"          : "Gravação de Tela",
+        "SECTION_HEADER_REMOTEAPP"          : "App Remoto",
+        "SECTION_HEADER_SFTP"               : "SFTP",
+        "SECTION_HEADER_WOL"                : "Wake-on-LAN (WoL)"
+
+    },
+
+    "PROTOCOL_SSH" : {
+
+        "FIELD_HEADER_BACKSPACE"    : "Tecla de Backspace envia:",
+        "FIELD_HEADER_COLOR_SCHEME" : "Esquema de cor:",
+        "FIELD_HEADER_COMMAND"      : "Executar comando:",
+        "FIELD_HEADER_CREATE_RECORDING_PATH" : "Criar caminho de gravação automaticamente:",
+        "FIELD_HEADER_CREATE_TYPESCRIPT_PATH" : "Criar caminho de transcrição automaticamente:",
+        "FIELD_HEADER_DISABLE_COPY"  : "Desabilitar copiar do terminal:",
+        "FIELD_HEADER_DISABLE_PASTE" : "Desabilitar colar do cliente:",
+        "FIELD_HEADER_FONT_NAME"     : "Nome da fonte:",
+        "FIELD_HEADER_FONT_SIZE"     : "Tamanho da fonte:",
+        "FIELD_HEADER_ENABLE_SFTP"   : "Habilitar SFTP:",
+        "FIELD_HEADER_HOST_KEY"      : "Chave pública (Base64):",
+        "FIELD_HEADER_HOSTNAME"      : "Nome do host:",
+        "FIELD_HEADER_LOCALE"        : "Idioma/Locale ($LANG):",
+        "FIELD_HEADER_USERNAME"      : "Usuário:",
+        "FIELD_HEADER_PASSWORD"      : "Senha:",
+        "FIELD_HEADER_PASSPHRASE"    : "Frase-senha:",
+        "FIELD_HEADER_PORT"          : "Porta:",
+        "FIELD_HEADER_PRIVATE_KEY"   : "Chave privada:",
+        "FIELD_HEADER_SCROLLBACK"    : "Tamanho máximo de retrocesso:",
+        "FIELD_HEADER_READ_ONLY"     : "Apenas-leitura:",
+        "FIELD_HEADER_RECORDING_EXCLUDE_MOUSE"  : "Excluir mouse:",
+        "FIELD_HEADER_RECORDING_EXCLUDE_OUTPUT" : "Excluir gráficos/streams:",
+        "FIELD_HEADER_RECORDING_INCLUDE_KEYS"   : "Incluir eventos chave:",
+        "FIELD_HEADER_RECORDING_NAME" : "Nome da gravação:",
+        "FIELD_HEADER_RECORDING_PATH" : "Caminho da gravação:",
+        "FIELD_HEADER_SERVER_ALIVE_INTERVAL" : "Intervalo de keepalive do servidor:",
+        "FIELD_HEADER_SFTP_DISABLE_DOWNLOAD" : "Desabilitar recebimento de arquivos:",
+        "FIELD_HEADER_SFTP_ROOT_DIRECTORY"   : "Diretório raíz de escolha de arquivo:",
+        "FIELD_HEADER_SFTP_DISABLE_UPLOAD"   : "Desabilitar envio de arquivos:",
+        "FIELD_HEADER_TERMINAL_TYPE"   : "Tipo de terminal:",
+        "FIELD_HEADER_TIMEZONE"        : "Fuso Horário ($TZ):",
+        "FIELD_HEADER_TYPESCRIPT_NAME" : "Nome da Transcrição:",
+        "FIELD_HEADER_TYPESCRIPT_PATH" : "Caminho da Transcrição:",
+        "FIELD_HEADER_WOL_BROADCAST_ADDR" : "Endereço de broadcast para pacotes WoL:",
+        "FIELD_HEADER_WOL_MAC_ADDR"       : "Endereço MAC do host remoto:",
+        "FIELD_HEADER_WOL_SEND_PACKET"    : "Enviar pacote WoL:",
+        "FIELD_HEADER_WOL_WAIT_TIME"      : "Tempo de espera de inicialização do host:",
+
+        "FIELD_OPTION_BACKSPACE_EMPTY" : "",
+        "FIELD_OPTION_BACKSPACE_8"     : "Backspace (Ctrl-H)",
+        "FIELD_OPTION_BACKSPACE_127"   : "Delete (Ctrl-?)",
+
+        "FIELD_OPTION_COLOR_SCHEME_BLACK_WHITE" : "Preto sobre branco",
+        "FIELD_OPTION_COLOR_SCHEME_EMPTY"       : "",
+        "FIELD_OPTION_COLOR_SCHEME_GRAY_BLACK"  : "Cinza sobre preto",
+        "FIELD_OPTION_COLOR_SCHEME_GREEN_BLACK" : "Verde sobre preto",
+        "FIELD_OPTION_COLOR_SCHEME_WHITE_BLACK" : "Branco sobre preto",
+
+        "FIELD_OPTION_FONT_SIZE_8"     : "8",
+        "FIELD_OPTION_FONT_SIZE_9"     : "9",
+        "FIELD_OPTION_FONT_SIZE_10"    : "10",
+        "FIELD_OPTION_FONT_SIZE_11"    : "11",
+        "FIELD_OPTION_FONT_SIZE_12"    : "12",
+        "FIELD_OPTION_FONT_SIZE_14"    : "14",
+        "FIELD_OPTION_FONT_SIZE_18"    : "18",
+        "FIELD_OPTION_FONT_SIZE_24"    : "24",
+        "FIELD_OPTION_FONT_SIZE_30"    : "30",
+        "FIELD_OPTION_FONT_SIZE_36"    : "36",
+        "FIELD_OPTION_FONT_SIZE_48"    : "48",
+        "FIELD_OPTION_FONT_SIZE_60"    : "60",
+        "FIELD_OPTION_FONT_SIZE_72"    : "72",
+        "FIELD_OPTION_FONT_SIZE_96"    : "96",
+        "FIELD_OPTION_FONT_SIZE_EMPTY" : "",
+
+        "FIELD_OPTION_TERMINAL_TYPE_ANSI"           : "ansi",
+        "FIELD_OPTION_TERMINAL_TYPE_EMPTY"          : "",
+        "FIELD_OPTION_TERMINAL_TYPE_LINUX"          : "linux",
+        "FIELD_OPTION_TERMINAL_TYPE_VT100"          : "vt100",
+        "FIELD_OPTION_TERMINAL_TYPE_VT220"          : "vt220",
+        "FIELD_OPTION_TERMINAL_TYPE_XTERM"          : "xterm",
+        "FIELD_OPTION_TERMINAL_TYPE_XTERM_256COLOR" : "xterm-256color",
+
+        "NAME" : "SSH",
+
+        "SECTION_HEADER_AUTHENTICATION" : "Autenticação",
+        "SECTION_HEADER_BEHAVIOR"       : "Comportamento do terminal",
+        "SECTION_HEADER_CLIPBOARD"      : "Área de Transferência",
+        "SECTION_HEADER_DISPLAY"        : "Tela",
+        "SECTION_HEADER_NETWORK"        : "Rede",
+        "SECTION_HEADER_RECORDING"      : "Gravação de Tela",
+        "SECTION_HEADER_SESSION"        : "Sessão / Ambiente",
+        "SECTION_HEADER_TYPESCRIPT"     : "Transcrição (Gravação do Texto da Sessão)",
+        "SECTION_HEADER_SFTP"           : "SFTP",
+        "SECTION_HEADER_WOL"            : "Wake-on-LAN (WoL)"
+
+    },
+
+    "PROTOCOL_TELNET" : {
+
+        "FIELD_HEADER_BACKSPACE"      : "Tecla de Backspace envia:",
+        "FIELD_HEADER_COLOR_SCHEME"   : "Esquema de cor:",
+        "FIELD_HEADER_CREATE_RECORDING_PATH" : "Criar caminho de gravação automaticamente:",
+        "FIELD_HEADER_CREATE_TYPESCRIPT_PATH" : "Criar caminho de transcrição automaticamente:",
+        "FIELD_HEADER_DISABLE_COPY"   : "Desabilitar copiar do terminal:",
+        "FIELD_HEADER_DISABLE_PASTE"  : "Desabilitar colar do cliente:",
+        "FIELD_HEADER_FONT_NAME"      : "Nome da fonte:",
+        "FIELD_HEADER_FONT_SIZE"      : "Tamanho da fonte:",
+        "FIELD_HEADER_HOSTNAME"       : "Nome do host:",
+        "FIELD_HEADER_LOGIN_FAILURE_REGEX" : "Expressão regular para falha de login:",
+        "FIELD_HEADER_LOGIN_SUCCESS_REGEX" : "Expressão regular para login realizado com sucesso:",
+        "FIELD_HEADER_USERNAME"       : "Usuário:",
+        "FIELD_HEADER_USERNAME_REGEX" : "Expressão regular de usuário:",
+        "FIELD_HEADER_PASSWORD"       : "Senha:",
+        "FIELD_HEADER_PASSWORD_REGEX" : "Expressão regular de senha:",
+        "FIELD_HEADER_PORT"           : "Porta:",
+        "FIELD_HEADER_READ_ONLY"      : "Apenas-leitura:",
+        "FIELD_HEADER_RECORDING_EXCLUDE_MOUSE"  : "Excluir mouse:",
+        "FIELD_HEADER_RECORDING_EXCLUDE_OUTPUT" : "Excluir gráficos/streams:",
+        "FIELD_HEADER_RECORDING_INCLUDE_KEYS"   : "Incluir eventos chave:",
+        "FIELD_HEADER_RECORDING_NAME" : "Nome da gravação:",
+        "FIELD_HEADER_RECORDING_PATH" : "Caminho da gravação:",
+        "FIELD_HEADER_SCROLLBACK"     : "Tamanho máximo de retrocesso:",
+        "FIELD_HEADER_TERMINAL_TYPE"   : "Tipo de terminal: ",
+        "FIELD_HEADER_TYPESCRIPT_NAME" : "Nome da transcrição:",
+        "FIELD_HEADER_TYPESCRIPT_PATH" : "Caminho da transcrição:",
+        "FIELD_HEADER_WOL_BROADCAST_ADDR" : "Endereço de broadcast para pacotes WoL:",
+        "FIELD_HEADER_WOL_MAC_ADDR"       : "Endereço MAC do host remoto:",
+        "FIELD_HEADER_WOL_SEND_PACKET"    : "Enviar pacote WoL:",
+        "FIELD_HEADER_WOL_WAIT_TIME"      : "Tempo de espera de inicialização do host:",
+
+        "FIELD_OPTION_BACKSPACE_EMPTY" : "",
+        "FIELD_OPTION_BACKSPACE_8"     : "Backspace (Ctrl-H)",
+        "FIELD_OPTION_BACKSPACE_127"   : "Delete (Ctrl-?)",
+
+        "FIELD_OPTION_COLOR_SCHEME_BLACK_WHITE" : "Preto sobre branco",
+        "FIELD_OPTION_COLOR_SCHEME_EMPTY"       : "",
+        "FIELD_OPTION_COLOR_SCHEME_GRAY_BLACK"  : "Cinza sobre preto",
+        "FIELD_OPTION_COLOR_SCHEME_GREEN_BLACK" : "Verde sobre preto",
+        "FIELD_OPTION_COLOR_SCHEME_WHITE_BLACK" : "Branco sobre preto",
+
+        "FIELD_OPTION_FONT_SIZE_8"     : "8",
+        "FIELD_OPTION_FONT_SIZE_9"     : "9",
+        "FIELD_OPTION_FONT_SIZE_10"    : "10",
+        "FIELD_OPTION_FONT_SIZE_11"    : "11",
+        "FIELD_OPTION_FONT_SIZE_12"    : "12",
+        "FIELD_OPTION_FONT_SIZE_14"    : "14",
+        "FIELD_OPTION_FONT_SIZE_18"    : "18",
+        "FIELD_OPTION_FONT_SIZE_24"    : "24",
+        "FIELD_OPTION_FONT_SIZE_30"    : "30",
+        "FIELD_OPTION_FONT_SIZE_36"    : "36",
+        "FIELD_OPTION_FONT_SIZE_48"    : "48",
+        "FIELD_OPTION_FONT_SIZE_60"    : "60",
+        "FIELD_OPTION_FONT_SIZE_72"    : "72",
+        "FIELD_OPTION_FONT_SIZE_96"    : "96",
+        "FIELD_OPTION_FONT_SIZE_EMPTY" : "",
+
+        "FIELD_OPTION_TERMINAL_TYPE_ANSI"           : "ansi",
+        "FIELD_OPTION_TERMINAL_TYPE_EMPTY"          : "",
+        "FIELD_OPTION_TERMINAL_TYPE_LINUX"          : "linux",
+        "FIELD_OPTION_TERMINAL_TYPE_VT100"          : "vt100",
+        "FIELD_OPTION_TERMINAL_TYPE_VT220"          : "vt220",
+        "FIELD_OPTION_TERMINAL_TYPE_XTERM"          : "xterm",
+        "FIELD_OPTION_TERMINAL_TYPE_XTERM_256COLOR" : "xterm-256color",
+
+        "NAME" : "Telnet",
+
+        "SECTION_HEADER_AUTHENTICATION" : "Autenticação",
+        "SECTION_HEADER_BEHAVIOR"       : "Comportamento do terminal",
+        "SECTION_HEADER_CLIPBOARD"      : "Área de Transferência",
+        "SECTION_HEADER_DISPLAY"        : "Tela",
+        "SECTION_HEADER_RECORDING"      : "Gravação de Tela",
+        "SECTION_HEADER_TYPESCRIPT"     : "Transcrição (Gravação do Texto da Sessão)",
+        "SECTION_HEADER_NETWORK"        : "Rede",
+        "SECTION_HEADER_WOL"            : "Wake-on-LAN (WoL)"
+
+    },
+
+    "PROTOCOL_VNC" : {
+
+        "FIELD_HEADER_AUDIO_SERVERNAME" : "Nome do servidor de áudio:",
+        "FIELD_HEADER_CLIPBOARD_ENCODING" : "Codificação:",
+        "FIELD_HEADER_COLOR_DEPTH"      : "Profundidade de cores:",
+        "FIELD_HEADER_CREATE_RECORDING_PATH" : "Criar caminho de gravação automaticamente:",
+        "FIELD_HEADER_CURSOR"           : "Cursor:",
+        "FIELD_HEADER_DEST_HOST"        : "Host de destino:",
+        "FIELD_HEADER_DEST_PORT"        : "Porta de destino:",
+        "FIELD_HEADER_DISABLE_COPY"     : "Desabilitar copiar da estação remota:",
+        "FIELD_HEADER_DISABLE_PASTE"    : "Desabilitar colar do cliente:",
+        "FIELD_HEADER_ENABLE_AUDIO"     : "Habilitar áudio:",
+        "FIELD_HEADER_ENABLE_SFTP"      : "Habilitar SFTP:",
+        "FIELD_HEADER_HOSTNAME"         : "Nome do host:",
+        "FIELD_HEADER_USERNAME"         : "Usuário:",
+        "FIELD_HEADER_PASSWORD"         : "Senha:",
+        "FIELD_HEADER_PORT"             : "Porta:",
+        "FIELD_HEADER_READ_ONLY"        : "Apenas-leitura:",
+        "FIELD_HEADER_RECORDING_EXCLUDE_MOUSE"  : "Excluir mouse:",
+        "FIELD_HEADER_RECORDING_EXCLUDE_OUTPUT" : "Excluir gráficos/streams:",
+        "FIELD_HEADER_RECORDING_INCLUDE_KEYS"   : "Excluir eventos chave:",
+        "FIELD_HEADER_RECORDING_NAME" : "Nome da gravação:",
+        "FIELD_HEADER_RECORDING_PATH" : "Caminho da gravação:",
+        "FIELD_HEADER_SFTP_DIRECTORY"             : "Diretório padrão de envio:",
+        "FIELD_HEADER_SFTP_DISABLE_DOWNLOAD"      : "Desabilitar recebimento de arquivos:",
+        "FIELD_HEADER_SFTP_HOST_KEY"              : "Chave pública (Base64):",
+        "FIELD_HEADER_SFTP_HOSTNAME"              : "Nome do host:",
+        "FIELD_HEADER_SFTP_SERVER_ALIVE_INTERVAL" : "Intervalo de keepalive do SFTP:",
+        "FIELD_HEADER_SFTP_PASSPHRASE"            : "Frase-senha:",
+        "FIELD_HEADER_SFTP_PASSWORD"              : "Senha:",
+        "FIELD_HEADER_SFTP_PORT"                  : "Porta:",
+        "FIELD_HEADER_SFTP_PRIVATE_KEY"           : "Chave privada:",
+        "FIELD_HEADER_SFTP_ROOT_DIRECTORY"        : "Diretório raíz da escolha de arquivos:",
+        "FIELD_HEADER_SFTP_DISABLE_UPLOAD"        : "Desabilitar envio de arquivos:",
+        "FIELD_HEADER_SFTP_USERNAME"              : "Usuário:",
+        "FIELD_HEADER_SWAP_RED_BLUE"    : "Trocar componentes vermelho/azul:",
+        "FIELD_HEADER_WOL_BROADCAST_ADDR" : "Endereço de broadcast para pacotes WoL:",
+        "FIELD_HEADER_WOL_MAC_ADDR"       : "Endereço MAC do host remoto:",
+        "FIELD_HEADER_WOL_SEND_PACKET"    : "Enviar pacote WoL:",
+        "FIELD_HEADER_WOL_WAIT_TIME"      : "Tempo de espera de inicialização do host:",
+
+        "FIELD_OPTION_COLOR_DEPTH_8"     : "256 color",
+        "FIELD_OPTION_COLOR_DEPTH_16"    : "Low color (16-bit)",
+        "FIELD_OPTION_COLOR_DEPTH_24"    : "True color (24-bit)",
+        "FIELD_OPTION_COLOR_DEPTH_32"    : "True color (32-bit)",
+        "FIELD_OPTION_COLOR_DEPTH_EMPTY" : "",
+
+        "FIELD_OPTION_CURSOR_EMPTY"  : "",
+        "FIELD_OPTION_CURSOR_LOCAL"  : "Local",
+        "FIELD_OPTION_CURSOR_REMOTE" : "Remoto",
+
+        "FIELD_OPTION_CLIPBOARD_ENCODING_CP1252"    : "CP1252",
+        "FIELD_OPTION_CLIPBOARD_ENCODING_EMPTY"     : "",
+        "FIELD_OPTION_CLIPBOARD_ENCODING_ISO8859_1" : "ISO 8859-1",
+        "FIELD_OPTION_CLIPBOARD_ENCODING_UTF_8"     : "UTF-8",
+        "FIELD_OPTION_CLIPBOARD_ENCODING_UTF_16"    : "UTF-16",
+
+        "NAME" : "VNC",
+
+        "SECTION_HEADER_AUDIO"          : "Áudio",
+        "SECTION_HEADER_AUTHENTICATION" : "Autenticação",
+        "SECTION_HEADER_CLIPBOARD"      : "Área de Transferência",
+        "SECTION_HEADER_DISPLAY"        : "Tela",
+        "SECTION_HEADER_NETWORK"        : "Rede",
+        "SECTION_HEADER_RECORDING"      : "Gravação de Tela",
+        "SECTION_HEADER_REPEATER"       : "Repetidor VNC",
+        "SECTION_HEADER_SFTP"           : "SFTP",
+        "SECTION_HEADER_WOL"            : "Wake-on-LAN (WoL)"
+
+    },
+
+    "SETTINGS" : {
+
+        "SECTION_HEADER_SETTINGS" : "Configurações"
+
+    },
+
+    "SETTINGS_CONNECTION_HISTORY" : {
+
+        "ACTION_DOWNLOAD" : "@:APP.ACTION_DOWNLOAD",
+        "ACTION_SEARCH"   : "@:APP.ACTION_SEARCH",
+
+        "FIELD_PLACEHOLDER_FILTER" : "@:APP.FIELD_PLACEHOLDER_FILTER",
+
+        "FILENAME_HISTORY_CSV" : "history.csv",
+
+        "FORMAT_DATE" : "@:APP.FORMAT_DATE_TIME_PRECISE",
+
+        "HELP_CONNECTION_HISTORY" : "Os registros históricos das conexões são mostrados aqui e podem ser reordenadas clicando nos títulos das colunas. Para buscar por registros específicos, digite algo e clique em \"Procurar\". Apenas registros que correspondem ao filtro fornecido serão listados.",
+
+        "INFO_CONNECTION_DURATION_UNKNOWN" : "--",
+        "INFO_NO_HISTORY"                  : "Nenhum registro correspondente",
+
+        "TABLE_HEADER_SESSION_CONNECTION_NAME" : "Nome da conexão",
+        "TABLE_HEADER_SESSION_DURATION"        : "Duração",
+        "TABLE_HEADER_SESSION_REMOTEHOST"      : "Host remoto",
+        "TABLE_HEADER_SESSION_STARTDATE"       : "Horário de início",
+        "TABLE_HEADER_SESSION_USERNAME"        : "Usuário",
+
+        "TEXT_HISTORY_DURATION" : "@:APP.TEXT_HISTORY_DURATION"
+
+    },
+
+    "SETTINGS_CONNECTIONS" : {
+
+        "ACTION_ACKNOWLEDGE"          : "@:APP.ACTION_ACKNOWLEDGE",
+        "ACTION_NEW_CONNECTION"       : "Nova conexão",
+        "ACTION_NEW_CONNECTION_GROUP" : "Novo grupo",
+        "ACTION_NEW_SHARING_PROFILE"  : "Novo Perfil Compartilhado",
+
+        "DIALOG_HEADER_ERROR" : "@:APP.DIALOG_HEADER_ERROR",
+
+        "FIELD_PLACEHOLDER_FILTER" : "@:APP.FIELD_PLACEHOLDER_FILTER",
+
+        "HELP_CONNECTIONS"   : "Clique na conexão abaixo para gerenciar a conexão. Dependendo do seu nível de acesso, conexões podem ser adicionadas e removidas, bem como suas propriedades (protocolo, nome do host, porta, etc) podem ser alteradas.",
+        
+        "INFO_ACTIVE_USER_COUNT" : "@:APP.INFO_ACTIVE_USER_COUNT",
+
+        "SECTION_HEADER_CONNECTIONS"     : "Conexões"
+
+    },
+
+    "SETTINGS_PREFERENCES" : {
+
+        "ACTION_ACKNOWLEDGE"        : "@:APP.ACTION_ACKNOWLEDGE",
+        "ACTION_CANCEL"             : "@:APP.ACTION_CANCEL",
+        "ACTION_UPDATE_PASSWORD"    : "@:APP.ACTION_UPDATE_PASSWORD",
+
+        "DIALOG_HEADER_ERROR"    : "@:APP.DIALOG_HEADER_ERROR",
+
+        "ERROR_PASSWORD_BLANK"    : "@:APP.ERROR_PASSWORD_BLANK",
+        "ERROR_PASSWORD_MISMATCH" : "@:APP.ERROR_PASSWORD_MISMATCH",
+
+        "FIELD_HEADER_LANGUAGE"           : "Idioma:",
+        "FIELD_HEADER_PASSWORD"           : "Senha:",
+        "FIELD_HEADER_PASSWORD_OLD"       : "Senha Atual:",
+        "FIELD_HEADER_PASSWORD_NEW"       : "Nova Senha:",
+        "FIELD_HEADER_PASSWORD_NEW_AGAIN" : "Confirme a Nova Senha:",
+        "FIELD_HEADER_TIMEZONE"           : "Fuso Horário:",
+        "FIELD_HEADER_USERNAME"           : "Usuário:",
+        
+        "HELP_DEFAULT_INPUT_METHOD" : "O método de entrada padrão determina como os eventos do teclado serão recebidos pelo Guacamole. Mudar este parâmetro pode ser necessário para utilização de um dispositivo móvel, ou ao digitar através de um IME (método de entrada). Esta configuração pode ser substituída em cada conexão através do menu do Guacamole.",
+        "HELP_DEFAULT_MOUSE_MODE"   : "O modo de emulação padrão do mouse determina como o mouse remoto vai se comportar em novas conexões em relação aos toques. Esta configuração pode ser substituída em cada conexão através do menu do Guacamole.",
+        "HELP_INPUT_METHOD_NONE"    : "@:CLIENT.HELP_INPUT_METHOD_NONE",
+        "HELP_INPUT_METHOD_OSK"     : "@:CLIENT.HELP_INPUT_METHOD_OSK",
+        "HELP_INPUT_METHOD_TEXT"    : "@:CLIENT.HELP_INPUT_METHOD_TEXT",
+        "HELP_LOCALE"               : "As opções abaixo estão relacionadas ao idioma e localização do usuário e terão impacto sobre como várias partes da interface são exibidas",
+        "HELP_MOUSE_MODE_ABSOLUTE"  : "@:CLIENT.HELP_MOUSE_MODE_ABSOLUTE",
+        "HELP_MOUSE_MODE_RELATIVE"  : "@:CLIENT.HELP_MOUSE_MODE_RELATIVE",
+        "HELP_UPDATE_PASSWORD"      : "Se você deseja alterar a sua senha, informe a senha atual e a nova senha abaixo, e clique em \"Alterar Senha\". A mudança terá efeito imediato.",
+
+        "INFO_PASSWORD_CHANGED" : "Senha alterada.",
+
+        "NAME_INPUT_METHOD_NONE" : "@:CLIENT.NAME_INPUT_METHOD_NONE",
+        "NAME_INPUT_METHOD_OSK"  : "@:CLIENT.NAME_INPUT_METHOD_OSK",
+        "NAME_INPUT_METHOD_TEXT" : "@:CLIENT.NAME_INPUT_METHOD_TEXT",
+
+        "SECTION_HEADER_DEFAULT_INPUT_METHOD" : "Método de Entrada Padrão",
+        "SECTION_HEADER_DEFAULT_MOUSE_MODE"   : "Modo de Emulação de Mouse Padrão",
+        "SECTION_HEADER_UPDATE_PASSWORD"      : "Alterar Senha"
+
+    },
+
+    "SETTINGS_USERS" : {
+
+        "ACTION_ACKNOWLEDGE"   : "@:APP.ACTION_ACKNOWLEDGE",
+        "ACTION_NEW_USER"      : "Novo Usuário",
+
+        "DIALOG_HEADER_ERROR" : "@:APP.DIALOG_HEADER_ERROR",
+
+        "FIELD_PLACEHOLDER_FILTER" : "@:APP.FIELD_PLACEHOLDER_FILTER",
+
+        "FORMAT_DATE" : "@:APP.FORMAT_DATE_TIME_PRECISE",
+
+        "HELP_USERS" : "Clique em um usuário abaixo para gerenciá-lo. Dependendo do seu nível de acesso, usuários podem ser adicionados e removidos, e suas senhas podem ser alteradas.",
+
+        "SECTION_HEADER_USERS"       : "Usuários",
+
+        "TABLE_HEADER_FULL_NAME"   : "Nome completo",
+        "TABLE_HEADER_LAST_ACTIVE" : "Última atividade",
+        "TABLE_HEADER_ORGANIZATION" : "Organização",
+        "TABLE_HEADER_USERNAME"    : "Usuário"
+
+    },
+
+    "SETTINGS_USER_GROUPS" : {
+
+        "ACTION_ACKNOWLEDGE"    : "@:APP.ACTION_ACKNOWLEDGE",
+        "ACTION_NEW_USER_GROUP" : "Novo Grupo",
+
+        "DIALOG_HEADER_ERROR" : "@:APP.DIALOG_HEADER_ERROR",
+
+        "FIELD_PLACEHOLDER_FILTER" : "@:APP.FIELD_PLACEHOLDER_FILTER",
+
+        "FORMAT_DATE" : "@:APP.FORMAT_DATE_TIME_PRECISE",
+
+        "HELP_USER_GROUPS" : "Clique em um grupo abaixo para gerenciá-lo. Dependendo do seu nível de acesso, grupos podem ser adicionados ou removidos, e seus usuários e grupos membros podem ser modificados.",
+
+        "SECTION_HEADER_USER_GROUPS" : "Grupos",
+
+        "TABLE_HEADER_USER_GROUP_NAME" : "Nome do Grupo"
+
+    },
+
+    "SETTINGS_SESSIONS" : {
+        
+        "ACTION_ACKNOWLEDGE" : "@:APP.ACTION_ACKNOWLEDGE",
+        "ACTION_CANCEL"      : "@:APP.ACTION_CANCEL",
+        "ACTION_DELETE"      : "Encerrar Sessões",
+        
+        "DIALOG_HEADER_CONFIRM_DELETE" : "Encerrar Sessões",
+        "DIALOG_HEADER_ERROR"          : "@:APP.DIALOG_HEADER_ERROR",
+        
+        "FIELD_PLACEHOLDER_FILTER" : "@:APP.FIELD_PLACEHOLDER_FILTER",
+        
+        "FORMAT_STARTDATE" : "@:APP.FORMAT_DATE_TIME_PRECISE",
+
+        "HELP_SESSIONS" : "Esta página será preenchida com conexões ativas no momento. As conexões listadas e a capacidade de encerrar estas conexões dependem do seu nível de acesso. Se você deseja encerrar uma ou mais sessões, marque a caixa ao lado destas sessões e clique em \"Encerrar Sessões\". Encerrar uma sessão desconectará imediatamente o usuário da conexão associada.",
+        
+        "INFO_NO_SESSIONS" : "Nenhuma sessão ativa",
+
+        "SECTION_HEADER_SESSIONS" : "Sessões Ativas",
+        
+        "TABLE_HEADER_SESSION_CONNECTION_NAME" : "Nome da conexão",
+        "TABLE_HEADER_SESSION_REMOTEHOST"      : "Host remoto",
+        "TABLE_HEADER_SESSION_STARTDATE"       : "Ativo desde",
+        "TABLE_HEADER_SESSION_USERNAME"        : "Usuário",
+        
+        "TEXT_CONFIRM_DELETE" : "Você tem certeza que quer encerrar as sessões selecionadas? Usuários que estão utilizando estas sessões serão imediatamente desconectados."
+
+    },
+
+    "USER_ATTRIBUTES" : {
+
+        "FIELD_HEADER_GUAC_EMAIL_ADDRESS"       : "Endereço de E-mail:",
+        "FIELD_HEADER_GUAC_FULL_NAME"           : "Nome completo:",
+        "FIELD_HEADER_GUAC_ORGANIZATION"        : "Organização:",
+        "FIELD_HEADER_GUAC_ORGANIZATIONAL_ROLE" : "Função:"
+
+    },
+
+    "USER_MENU" : {
+
+        "ACTION_LOGOUT"             : "@:APP.ACTION_LOGOUT",
+        "ACTION_MANAGE_CONNECTIONS" : "@:APP.ACTION_MANAGE_CONNECTIONS",
+        "ACTION_MANAGE_PREFERENCES" : "@:APP.ACTION_MANAGE_PREFERENCES",
+        "ACTION_MANAGE_SESSIONS"    : "@:APP.ACTION_MANAGE_SESSIONS",
+        "ACTION_MANAGE_SETTINGS"    : "@:APP.ACTION_MANAGE_SETTINGS",
+        "ACTION_MANAGE_USERS"       : "@:APP.ACTION_MANAGE_USERS",
+        "ACTION_MANAGE_USER_GROUPS" : "@:APP.ACTION_MANAGE_USER_GROUPS",
+        "ACTION_NAVIGATE_HOME"      : "@:APP.ACTION_NAVIGATE_HOME",
+        "ACTION_VIEW_HISTORY"       : "@:APP.ACTION_VIEW_HISTORY"
+
+    }
+
+}

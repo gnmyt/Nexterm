@@ -1,0 +1,18 @@
+{
+
+    "guacamoleVersion" : "1.6.0",
+
+    "name"      : "LDAP Authentication",
+    "namespace" : "ldap",
+
+    "authProviders" : [
+        "org.apache.guacamole.auth.ldap.LDAPAuthenticationProvider"
+    ],
+
+    "translations" : [
+        "translations/de.json",
+        "translations/en.json",
+        "translations/zh.json"
+    ]
+
+}

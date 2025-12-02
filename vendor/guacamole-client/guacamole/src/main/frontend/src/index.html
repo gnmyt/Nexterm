@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<!--
+    Licensed to the Apache Software Foundation (ASF) under one
+    or more contributor license agreements.  See the NOTICE file
+    distributed with this work for additional information
+    regarding copyright ownership.  The ASF licenses this file
+    to you under the Apache License, Version 2.0 (the
+    "License"); you may not use this file except in compliance
+    with the License.  You may obtain a copy of the License at
+
+      http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing,
+    software distributed under the License is distributed on an
+    "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+    KIND, either express or implied.  See the License for the
+    specific language governing permissions and limitations
+    under the License.
+-->
+<html ng-app="index" ng-controller="indexController">
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <meta http-equiv="x-ua-compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no, target-densitydpi=medium-dpi">
+        <meta name="mobile-web-app-capable" content="yes">
+        <meta name="apple-mobile-web-app-capable" content="yes">
+        <meta name="build" content="${guacamole.build.identifier}">
+        <link rel="icon" type="image/png" href="images/logo-64.png">
+        <link rel="icon" type="image/png" sizes="144x144" href="images/logo-144.png">
+        <link rel="apple-touch-icon" type="image/png" href="images/logo-144.png">
+
+        <!-- Web application CSS (bundled by Webpack) -->
+        <% for (var index in htmlWebpackPlugin.files.css) { %>
+        <link rel="stylesheet" type="text/css" href="<%= htmlWebpackPlugin.files.css[index] %>">
+        <% } %>
+
+        <!-- Extension CSS (must be able to override webapp CSS) -->
+        <link rel="stylesheet" type="text/css" href="app.css?b=${guacamole.build.identifier}">
+
+        <title ng-bind="page.title | translate"></title>
+    </head>
+    <body ng-cloak translate-cloak ng-class="page.bodyClassName" ng-switch="applicationState">
+
+        <!-- Manually logged-out -->
+        <div class="logged-out-modal" ng-switch-when="loggedOut">
+            <guac-modal>
+                <div class="notification">
+                    <p translate="APP.INFO_LOGGED_OUT"></p>
+                    <p>
+                        <button translate="APP.ACTION_LOGIN_AGAIN" ng-disabled="reAuthenticating"
+                                ng-click="reAuthenticate()"></button>
+                    </p>
+                </div>
+            </guac-modal>
+        </div>
+
+        <!-- Absolute fatal error -->
+        <div class="fatal-page-error-modal" ng-switch-when="fatalError">
+            <guac-modal>
+                <div class="fatal-page-error">
+                    <h1 translate="APP.DIALOG_HEADER_ERROR"></h1>
+                    <p translate="APP.ERROR_PAGE_UNAVAILABLE"></p>
+                </div>
+            </guac-modal>
+        </div>
+
+        <!-- Authentication error without a corresponding login form -->
+        <div class="automatic-login-rejected-modal" ng-switch-when="automaticLoginRejected">
+            <guac-modal>
+                <div class="notification">
+                    <p translate="{{ fatalError.translatableMessage.key }}"
+                       translate-values="{{ fatalError.translatableMessage.variables }}"></p>
+                    <p>
+                        <button translate="APP.ACTION_LOGIN_AGAIN" ng-disabled="reAuthenticating"
+                                ng-click="reAuthenticate()"></button>
+                    </p>
+                </div>
+            </guac-modal>
+        </div>
+
+        <!-- Login screen for logged-out users -->
+        <guac-login ng-switch-when="awaitingCredentials"
+                    help-text="loginHelpText"
+                    form="expectedCredentials"
+                    values="acceptedCredentials"></guac-login>
+
+        <!-- Content for logged-in users -->
+        <div ng-switch-when="ready">
+
+            <!-- Global status/error dialog -->
+            <guac-modal class="global-status-modal" ng-if="guacNotification.getStatus()">
+                <guac-notification notification="guacNotification.getStatus()"></guac-notification>
+            </guac-modal>
+
+            <div id="content" ng-view>
+            </div>
+
+            <!-- All active connections -->
+            <div id="other-connections">
+                <guac-client-panel client-groups="getManagedClientGroups()"></guac-client-panel>
+            </div>
+
+        </div>
+
+        <!-- Polyfills -->
+        <script type="text/javascript" src="Blob.js"></script>
+        <script type="text/javascript" src="datalist-polyfill.min.js"></script>
+
+        <!-- Core libraries that MUST be available at the global level (for use
+        by extensions) -->
+        <script type="text/javascript" src="guacamole-common-js/all.min.js"></script>
+        <script type="text/javascript" src="jquery.min.js"></script>
+        <script type="text/javascript" src="lodash.min.js"></script>
+        <script type="text/javascript" src="angular.min.js"></script>
+
+        <!-- Web application (bundled by Webpack) -->
+        <% for (var index in htmlWebpackPlugin.files.js) { %>
+        <script type="text/javascript" src="<%= htmlWebpackPlugin.files.js[index] %>"></script>
+        <% } %>
+        <script type="text/javascript" src="templates.js"></script>
+
+        <!-- Extension JavaScript -->
+        <script type="text/javascript" src="app.js?b=${guacamole.build.identifier}"></script>
+
+    </body>
+</html>

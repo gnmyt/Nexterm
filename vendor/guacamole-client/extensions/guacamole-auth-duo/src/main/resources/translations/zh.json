@@ -1,0 +1,13 @@
+{
+
+    "DATA_SOURCE_DUO" : {
+        "NAME" : "Duo TFA后端"
+    },
+
+    "LOGIN" : {
+        "FIELD_HEADER_GUAC_DUO_SIGNED_RESPONSE" : "",
+        "INFO_DUO_VALIDATION_CODE_INCORRECT"    : "Duo验证码不正确。",
+        "INFO_DUO_AUTH_REQUIRED"                : "请先使用Duo进行身份验证。"
+    }
+
+}

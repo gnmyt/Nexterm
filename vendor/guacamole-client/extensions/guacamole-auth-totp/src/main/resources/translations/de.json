@@ -1,0 +1,52 @@
+{
+
+    "DATA_SOURCE_TOTP" : {
+        "NAME" : "TOTP TFA Backend"
+    },
+
+    "LOGIN" : {
+        "FIELD_HEADER_GUAC_TOTP" : ""
+    },
+
+    "TOTP" : {
+
+        "ACTION_HIDE_DETAILS" : "Details ausblenden",
+        "ACTION_SHOW_DETAILS" : "Details anzeigen",
+
+        "FIELD_HEADER_ALGORITHM"  : "Algorithmus:",
+        "FIELD_HEADER_DIGITS"     : "Anzahl Zeichen:",
+        "FIELD_HEADER_INTERVAL"   : "Intervall:",
+        "FIELD_HEADER_SECRET_KEY" : "Privater Schlüssel:",
+
+        "FIELD_PLACEHOLDER_CODE" : "Authentifizierungs-Code",
+
+        "INFO_CODE_REQUIRED"       : "Bitte geben Sie Ihren Authentifizierungs-Code ein, um Ihre Identität zu bestätigen.",
+        "INFO_ENROLL_REQUIRED"     : "Die Zweifaktor-Authentifizierung wurde für Ihren Account aktiviert.",
+        "INFO_VERIFICATION_FAILED" : "Verifikation fehlgeschlagen. Bitte nochmals versuchen.",
+
+        "HELP_ENROLL_BARCODE" : "Bitte scannen Sie den Barcode mittels einer Zweifaktor-Authentifizierungs-App auf Ihrem Smartphone oder einem anderen Gerät, um den Prozess fortzusetzen.",
+        "HELP_ENROLL_VERIFY"  : "Nach dem Scannen des Barcodes wird Ihnen ein {DIGITS}-stelliger Authentifizierungscode angezeigt. Bitte geben Sie diesen Code ein um die Aktivierung des Zweifaktor-Verfahrens abzuschliessen.",
+
+        "SECTION_HEADER_DETAILS" : "Details:"
+
+    },
+    
+    "USER_ATTRIBUTES" : {
+        
+        "FIELD_HEADER_GUAC_TOTP_DISABLED"      : "TOTP deaktivieren:",
+        "FIELD_HEADER_GUAC_TOTP_KEY_GENERATED" : "Geheimer Schlüssel erstellt:",
+        "FIELD_HEADER_GUAC_TOTP_KEY_CONFIRMED" : "Authentifizierungs-Gerät bestätigt:",
+        
+        "SECTION_HEADER_TOTP_ENROLLMENT_STATUS" : "TOTP Ausroll-Status"
+        
+    },
+
+    "USER_GROUP_ATTRIBUTES" : {
+        
+        "FIELD_HEADER_GUAC_TOTP_DISABLED" : "TOTP deaktivieren:",
+        
+        "SECTION_HEADER_TOTP_USER_GROUP_CONFIG" : "TOTP Konfiguration"
+        
+    }
+
+}

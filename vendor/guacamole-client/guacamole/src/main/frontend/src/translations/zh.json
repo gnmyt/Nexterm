@@ -1,0 +1,1136 @@
+{
+    
+    "NAME" : "简体中文",
+    
+    "APP" : {
+
+        "NAME"    : "Apache Guacamole",
+
+        "ACTION_ACKNOWLEDGE"        : "确定",
+        "ACTION_CANCEL"             : "取消",
+        "ACTION_CLEAR"              : "清除",
+        "ACTION_CLONE"              : "克隆",
+        "ACTION_CONTINUE"           : "继续",
+        "ACTION_DELETE"             : "删除",
+        "ACTION_DELETE_SESSIONS"    : "删除会话",
+        "ACTION_DOWNLOAD"           : "下载",
+        "ACTION_IMPORT"             : "导入",
+        "ACTION_LOGIN"              : "登录",
+        "ACTION_LOGIN_AGAIN"        : "重新登录",
+        "ACTION_LOGOUT"             : "登出",
+        "ACTION_MANAGE_CONNECTIONS" : "连接",
+        "ACTION_MANAGE_PREFERENCES" : "偏好",
+        "ACTION_MANAGE_SETTINGS"    : "设置",
+        "ACTION_MANAGE_SESSIONS"    : "活动会话",
+        "ACTION_MANAGE_USERS"       : "用户",
+        "ACTION_MANAGE_USER_GROUPS" : "用户组",
+        "ACTION_NAVIGATE_BACK"      : "返回",
+        "ACTION_NAVIGATE_HOME"      : "首页",
+        "ACTION_PAUSE"              : "暂停",
+        "ACTION_PLAY"               : "播放",
+        "ACTION_SAVE"               : "保存",
+        "ACTION_SEARCH"             : "搜索",
+        "ACTION_SHARE"              : "共享",
+        "ACTION_UPDATE_PASSWORD"    : "更新密码",
+        "ACTION_VIEW_HISTORY"       : "历史",
+        "ACTION_VIEW_RECORDING"     : "查看",
+
+        "DIALOG_HEADER_ERROR" : "错误",
+
+        "ERROR_PAGE_UNAVAILABLE"  : "发生错误，此操作无法完成。 如果问题仍然存在，请通知系统管理员或检查系统日志。",
+        "ERROR_PASSWORD_BLANK"    : "密码不能为空。",
+        "ERROR_PASSWORD_MISMATCH" : "输入的密码不匹配。",
+        "ERROR_SINGLE_FILE_ONLY"  : "请一次只上传一个文件",
+
+        "FIELD_HEADER_PASSWORD"       : "密码：",
+        "FIELD_HEADER_PASSWORD_AGAIN" : "重输密码：",
+
+        "FIELD_PLACEHOLDER_FILTER" : "过滤",
+
+        "FORMAT_DATE_TIME_PRECISE" : "yyyy-MM-dd HH:mm:ss",
+
+        "INFO_ACTIVE_USER_COUNT" : "正在被 {USERS} 个用户使用。",
+        "INFO_LOGGED_OUT"        : "您已登出。",
+
+        "TEXT_ANONYMOUS_USER"   : "匿名用户",
+        "TEXT_HISTORY_DURATION" : "{VALUE} {UNIT, select, second{秒} minute{分} hour{小时} day{天} other{}}",
+        "TEXT_UNTRANSLATED" : "{MESSAGE}"
+
+    },
+
+    "CLIENT" : {
+
+        "ACTION_ACKNOWLEDGE"               : "@:APP.ACTION_ACKNOWLEDGE",
+        "ACTION_CANCEL"                    : "@:APP.ACTION_CANCEL",
+        "ACTION_CLEAR_CLIENT_MESSAGES"     : "@:APP.ACTION_CLEAR",
+        "ACTION_CLEAR_COMPLETED_TRANSFERS" : "@:APP.ACTION_CLEAR",
+        "ACTION_CONTINUE"                  : "@:APP.ACTION_CONTINUE",
+        "ACTION_DISCONNECT"                : "断开连接",
+        "ACTION_LOGOUT"                    : "@:APP.ACTION_LOGOUT",
+        "ACTION_NAVIGATE_BACK"             : "@:APP.ACTION_NAVIGATE_BACK",
+        "ACTION_NAVIGATE_HOME"             : "@:APP.ACTION_NAVIGATE_HOME",
+        "ACTION_RECONNECT"                 : "重新连接",
+        "ACTION_SAVE_FILE"                 : "@:APP.ACTION_SAVE",
+        "ACTION_SHARE"                     : "@:APP.ACTION_SHARE",
+        "ACTION_SHOW_CLIPBOARD"            : "点击以查看剪贴板内容。",
+        "ACTION_UPLOAD_FILES"              : "上传文件",
+
+        "DIALOG_HEADER_CONNECTING"       : "正在连接",
+        "DIALOG_HEADER_CONNECTION_ERROR" : "连接出错",
+        "DIALOG_HEADER_DISCONNECTED"     : "已断开连接",
+
+        "ERROR_CLIENT_201"     : "因服务器繁忙，本连接已被关闭。请稍等几分钟后再尝试。",
+        "ERROR_CLIENT_202"     : "因远程桌面太久没有应答，Guacamole 服务器关闭了本连接。请重试或联系您的系统管理员。",
+        "ERROR_CLIENT_203"     : "远程桌面服务器因为发生错误而关闭了本连接。请重试或联系您的系统管理员。",
+        "ERROR_CLIENT_207"     : "联系不上远程桌面服务器。如果问题持续，请通知您的系统管理员，或检查您的系统日志。",
+        "ERROR_CLIENT_208"     : "远程桌面服务器不在线。如果问题持续，请通知您的系统管理员，或检查您的系统日志。",
+        "ERROR_CLIENT_209"     : "因与另一个连接冲突，远程桌面服务器关闭了本连接。请稍后重试。",
+        "ERROR_CLIENT_20A"     : "因长时间没有活动，远程桌面服务器关闭了本连接。如果这不是期望的设置，请通知您的系统管理员，或检查您的系统设置。",
+        "ERROR_CLIENT_20B"     : "远程桌面服务器强制关闭了本连接。如果这不是预期的情况，请通知您的系统管理员，或检查您的系统日志。",
+        "ERROR_CLIENT_301"     : "登录失败。请重新连接后再重试。",
+        "ERROR_CLIENT_303"     : "远程桌面服务器拒绝了本连接。如果需要使用本连接，请联系您的系统管理员开放权限，或者检查您的系统设置。",
+        "ERROR_CLIENT_308"     : "因为您的浏览器长时间没有应答，Guacamole 服务器关闭了本连接。这通常是因为网络问题（如不稳定的无线连接或网速太慢等）而导致的。请先检查您的网络连接再重试。",
+        "ERROR_CLIENT_31D"     : "因为您已超出了单一用户可同时使用的连接数量，Guacamole 服务器拒绝了本连接。请先关闭至少一个连接再重试。",
+        "ERROR_CLIENT_DEFAULT" : "本连接因为 Guacamole 服务器出现了内部错误而被终止。如果问题持续，请通知您的系统管理员，或检查您的系统日志。",
+
+        "ERROR_TUNNEL_201"     : "因为正在使用的活动连接太多，Guacamole 服务器拒绝了本连接。请稍后再重试。",
+        "ERROR_TUNNEL_202"     : "因服务器太久没有应答，本连接已被关闭。这通常是因为网络问题（如不稳定的无线连接或网速太慢等）而导致的。请先检查您的网络连接再重试，或者联系您的系统管理员。",
+        "ERROR_TUNNEL_203"     : "服务器出错并关闭了本连接。请重试，或联系您的系统管理员。",
+        "ERROR_TUNNEL_204"     : "请求的连接不存在。请先检查连接的名字再重试。",
+        "ERROR_TUNNEL_205"     : "本连接正在使用中，并且不允许共享连接。请稍后重试。",
+        "ERROR_TUNNEL_207"     : "联系不上 Guacamole 服务器。请先检查您的网络连接再重试。",
+        "ERROR_TUNNEL_208"     : "Guacamole 服务器不接受连接请求。请先检查您的网络连接再重试。",
+        "ERROR_TUNNEL_301"     : "您还未登录，所以没有使用此连接的权限。请先登录再重试。",
+        "ERROR_TUNNEL_303"     : "您没有使用此连接的权限。如果您的确需要使用此连接，请联系您的系统管理员开通权限，或检查您的系统设置。",
+        "ERROR_TUNNEL_308"     : "因为您的浏览器长时间没有应答，Guacamole 服务器关闭了本连接。这通常是因为网络问题（如不稳定的无线连接或网速太慢等）而导致的。请先检查您的网络连接再重试。",
+        "ERROR_TUNNEL_31D"     : "因为您已超出了单一用户可同时使用的连接数量，Guacamole 服务器拒绝了本连接。请先关闭至少一个连接再重试。",
+        "ERROR_TUNNEL_DEFAULT" : "本连接因为 Guacamole 服务器出现了内部错误而被终止。如果问题持续，请通知您的系统管理员，或检查您的系统日志。",
+
+        "ERROR_UPLOAD_100"     : "不支持或不允许使用文件传输。请联系您的系统管理员，或检查您的系统日志。",
+        "ERROR_UPLOAD_201"     : "正在同时传输太多文件。请等待当前的文件传输任务完成后，再重试。",
+        "ERROR_UPLOAD_202"     : "因远程桌面服务器太久没有应答，文件不能传输。请重试或联系您的系统管理员。",
+        "ERROR_UPLOAD_203"     : "远程桌面服务器在文件传输时出错。请重试或联系您的系统管理员。",
+        "ERROR_UPLOAD_204"     : "文件传输的接收目录不存在。请先检查接收目录再重试。",
+        "ERROR_UPLOAD_205"     : "文件传输的接收目录正被锁定。请等待正在进行的操作完成后，再重试。",
+        "ERROR_UPLOAD_301"     : "您还未登录，所以没有上传此文件的权限。请先登录再重试。",
+        "ERROR_UPLOAD_303"     : "您没有上传此文件的权限。如果您需要权限，请检查您的系统设置，或联系您的系统管理员。",
+        "ERROR_UPLOAD_308"     : "文件传输已停止。这通常是因为网络问题（如不稳定的无线连接或网速太慢等）而导致的。请先检查您的网络连接再重试。",
+        "ERROR_UPLOAD_31D"     : "正在同时传输太多文件。请等待当前的传输任务完成后，再重试。",
+        "ERROR_UPLOAD_DEFAULT" : "本连接因为 Guacamole 服务器出现了内部错误而被终止。如果问题持续，请通知您的系统管理员，或检查您的系统日志。",
+
+        "FIELD_PLACEHOLDER_FILTER" : "@:APP.FIELD_PLACEHOLDER_FILTER",
+
+        "HELP_CLIPBOARD"           : "复制/剪切的文本将出现在这里。对下面文本内容所作的修改将会影响远程电脑上的剪贴板。",
+        "HELP_INPUT_METHOD_NONE"   : "没有选择任何输入方式。将从连接的物理键盘接受键盘输入。",
+        "HELP_INPUT_METHOD_OSK"    : "显示并从内建的 Guacamole 屏幕键盘接受输入。屏幕键盘可以输入平常无法输入的按键组合（如 Ctrl-Alt-Del 等）。",
+        "HELP_INPUT_METHOD_TEXT"   : "允许输入文本，并根据所输入的文本模拟键盘事件。可用于没有物理键盘的设备，如手机等。",
+        "HELP_MOUSE_MODE"          : "设置远程电脑上的鼠标对触控行为的反应。",
+        "HELP_MOUSE_MODE_ABSOLUTE" : "点击时立即触发按键。在点击的位置触发鼠标按键事件。",
+        "HELP_MOUSE_MODE_RELATIVE" : "拖拽时移动鼠标，再点击时触发按键。在鼠标当前所在的位置触发按键事件。",
+        "HELP_SHARE_LINK"          : "正在共享当前连接，并可被使用以下链接的任何人使用：",
+
+        "INFO_ANONYMOUS_USER_COUNT" : "匿名用户{COUNT, plural, one{} other{ (#)}}",
+        "INFO_CONNECTION_SHARED"    : "此连接已被共享。",
+        "INFO_NO_FILE_TRANSFERS"    : "无文件传输任务。",
+        "INFO_USER_COUNT"           : "{USERNAME}{COUNT, plural, one{} other{ (#)}}",
+
+        "NAME_INPUT_METHOD_NONE"   : "无",
+        "NAME_INPUT_METHOD_OSK"    : "屏幕键盘",
+        "NAME_INPUT_METHOD_TEXT"   : "文本输入",
+        "NAME_KEY_CTRL"            : "Ctrl",
+        "NAME_KEY_ALT"             : "Alt",
+        "NAME_KEY_ESC"             : "Esc",
+        "NAME_KEY_TAB"             : "Tab",
+        "NAME_MOUSE_MODE_ABSOLUTE" : "触摸屏",
+        "NAME_MOUSE_MODE_RELATIVE" : "触控板",
+
+        "SECTION_HEADER_CLIENT_MESSAGES" : "消息",
+        "SECTION_HEADER_CLIPBOARD"       : "剪贴板",
+        "SECTION_HEADER_DEVICES"         : "设备",
+        "SECTION_HEADER_DISPLAY"         : "显示",
+        "SECTION_HEADER_FILE_TRANSFERS"  : "文件传输",
+        "SECTION_HEADER_INPUT_METHOD"    : "输入方式",
+
+        "SECTION_HEADER_MOUSE_MODE"     : "模拟鼠标模式",
+
+        "TEXT_ANONYMOUS_USER_JOINED"      : "有一名匿名用户已加入连接。",
+        "TEXT_ANONYMOUS_USER_LEFT"        : "有一名匿名用户断开了连接。",
+        "TEXT_ZOOM_AUTO_FIT"              : "自适应浏览器窗口大小",
+        "TEXT_CLIENT_STATUS_IDLE"         : "空闲。",
+        "TEXT_CLIENT_STATUS_CONNECTING"   : "正在连接 Guacamole...",
+        "TEXT_CLIENT_STATUS_DISCONNECTED" : "您的连接已断开。",
+        "TEXT_CLIENT_STATUS_UNSTABLE"     : "到 Guacamole 服务器的网络连接似乎不太稳定。",
+        "TEXT_CLIENT_STATUS_WAITING"      : "已连接到 Guacamole。正在等待应答...",
+        "TEXT_USER_JOINED"                : "用户 {USERNAME} 已加入连接。",
+        "TEXT_USER_LEFT"                  : "用户 {USERNAME} 断开了连接。",
+        "TEXT_RECONNECT_COUNTDOWN"        : "在 {REMAINING} 秒后重连...",
+        "TEXT_FILE_TRANSFER_PROGRESS"     : "{PROGRESS} {UNIT, select, b{B} kb{KB} mb{MB} gb{GB} other{}}",
+
+        "URL_OSK_LAYOUT" : "layouts/en-us-qwerty.json"
+
+    },
+
+    "COLOR_SCHEME" : {
+
+        "ACTION_CANCEL"       : "@:APP.ACTION_CANCEL",
+        "ACTION_HIDE_DETAILS" : "隐藏",
+        "ACTION_SAVE"         : "@:APP.ACTION_SAVE",
+        "ACTION_SHOW_DETAILS" : "显示",
+
+        "FIELD_HEADER_BACKGROUND" : "背景色",
+        "FIELD_HEADER_FOREGROUND" : "前景色",
+
+        "FIELD_OPTION_CUSTOM" : "自定义...",
+
+        "SECTION_HEADER_DETAILS" : "详情："
+
+    },
+
+    "IMPORT": {
+
+        "ACTION_ACKNOWLEDGE"        : "@:APP.ACTION_ACKNOWLEDGE",
+        "ACTION_BROWSE"             : "浏览文件",
+        "ACTION_CANCEL"             : "@:APP.ACTION_CANCEL",
+        "ACTION_CLEAR"              : "@:APP.ACTION_CLEAR",
+        "ACTION_VIEW_FORMAT_HELP"   : "查看帮助",
+        "ACTION_IMPORT"             : "@:APP.ACTION_IMPORT",
+        "ACTION_IMPORT_CONNECTIONS" : "导入连接",
+
+        "DIALOG_HEADER_ERROR"   : "@:APP.DIALOG_HEADER_ERROR",
+        "DIALOG_HEADER_SUCCESS" : "成功",
+
+        "ERROR_AMBIGUOUS_CSV_HEADER"         : "存在冲突的 CSV 列名： \"{HEADER}\" ，可能是一个连接属性或者参数",
+        "ERROR_AMBIGUOUS_PARENT_GROUP"       : "连接组以其父连接组不能同时设置",
+        "ERROR_ARRAY_REQUIRED"               : "上传的文件必须包含有效的连接数据",
+        "ERROR_DETECTED_INVALID_TYPE"        : "不支持的文件类型。请确认您上传的文件是合法的 CSV，JSON 或者 YAML 文件。",
+        "ERROR_DUPLICATE_CONNECTION_IN_FILE" : "在导入的文件中发现了重复的连接： \"{NAME}\" 位于 \"{PATH}\"",
+        "ERROR_DUPLICATE_CSV_HEADER"         : "重复的 CSV 列名： {HEADER}",
+        "ERROR_EMPTY_FILE"                   : "上传的文件内容为空",
+        "ERROR_INVALID_CSV_HEADER"           : "非法的 CSV 列名： \"{HEADER}\" 不是一个可识别的属性或者参数。",
+        "ERROR_INVALID_MIME_TYPE"            : "不支持的文件类型： \"{TYPE}\"",
+        "ERROR_INVALID_GROUP"                : "未找到名称为： \"{GROUP}\" 的连接组",
+        "ERROR_INVALID_GROUP_IDENTIFIER"     : "未找到能识别为： \"{IDENTIFIER}\" 的连接组",
+        "ERROR_NO_FILE_SUPPLIED"             : "请选择一个文件",
+        "ERROR_PARSE_FAILURE_CSV"            : "请确保您上传的是合法的 CSV 文件。解析错误： \"{ERROR}\" 。",
+        "ERROR_PARSE_FAILURE_JSON"           : "请确保您上传的是合法的 JSON 文件。解析错误： \"{ERROR}\" 。",
+        "ERROR_PARSE_FAILURE_YAML"           : "请确保您上传的是合法的 YAML 文件。解析错误： \"{ERROR}\" 。",
+        "ERROR_REJECT_UPDATE_CONNECTION"     : "连接 \"{NAME}\" 已存在于 \"{PATH}\"",
+        "ERROR_REQUIRED_NAME"                : "在提供的文件中未找到连接名称",
+        "ERROR_REQUIRED_PROTOCOL"            : "在提供的文件中未找到协议",
+
+        "FIELD_PLACEHOLDER_FILTER" : "@:APP.FIELD_PLACEHOLDER_FILTER",
+
+        "FIELD_HEADER_EXISTING_CONNECTION_MODE" : "替换/更新已存在的连接",
+        "FIELD_HEADER_EXISTING_PERMISSION_MODE" : "重置权限",
+
+        "HELP_CSV_DESCRIPTION"              : "当导入的文件格式为 CSV 时，一行记录为一条连接数据。每列为一个配置条目。每条记录至少需要提供连接名称以及协议。",
+        "HELP_CSV_EXAMPLE"                  : "name,protocol,hostname,group,users,groups,guacd-encryption (attribute)\nconn1,vnc,conn1.web.com,ROOT,guac user 1;guac user 2,Connection 1 Users,none\nconn2,rdp,conn2.web.com,ROOT/Parent Group,guac user 1,,ssl\nconn3,ssh,conn3.web.com,ROOT/Parent Group/Child Group,guac user 2;guac user 3,,\nconn4,kubernetes,,,,,",
+        "HELP_CSV_MORE_DETAILS"             : "CSV 列名与连接中的属性一一对应。需要导入的连接组信息可以通过 \"parentIdentifier\" 属性直接设定，或者通过 \"group\" 属性进行指定。在大多数场合下，属性之间不应当存在冲突。但如过这种情况发生时，在列名后加入 \" (attribute)\" 或者 \" (parameter)\" 即可避免混淆。用户或者用户组必须使用分号进行分隔。¹",
+        "HELP_FILE_TYPE_DESCRIPTION"        : "目前系统支持三种文件格式：CSV，JSON 或者 YAML。文件格式之间支持的属性相同，即至少需要连接名称以及协议。当然，连接组，哪些用户或者用户组有权限使用，连接参数等属性均可以被指定。不存在的用户或者用户组会被自动创建。注意，任何已存在的连接权限并不会根据导入的数据被清除，除非您勾选了“重置权限”选框。",
+        "HELP_FILE_TYPE_HEADER"             : "文件格式",
+        "HELP_JSON_DESCRIPTION"             : "当导入的文件格式为 JSON 时，每条记录至少需要提供连接名称以及协议。",
+        "HELP_JSON_EXAMPLE"                 : "[\n  \\{\n    \"name\": \"conn1\",\n    \"protocol\": \"vnc\",\n    \"parameters\": \\{ \"hostname\": \"conn1.web.com\" \\},\n    \"parentIdentifier\": \"ROOT\",\n    \"users\": [ \"guac user 1\", \"guac user 2\" ],\n    \"groups\": [ \"Connection 1 Users\" ],\n    \"attributes\": \\{ \"guacd-encryption\": \"none\" \\}\n  \\},\n  \\{\n    \"name\": \"conn2\",\n    \"protocol\": \"rdp\",\n    \"parameters\": \\{ \"hostname\": \"conn2.web.com\" \\},\n    \"group\": \"ROOT/Parent Group\",\n    \"users\": [ \"guac user 1\" ],\n    \"attributes\": \\{ \"guacd-encryption\": \"none\" \\}\n  \\},\n  \\{\n    \"name\": \"conn3\",\n    \"protocol\": \"ssh\",\n    \"parameters\": \\{ \"hostname\": \"conn3.web.com\" \\},\n    \"group\": \"ROOT/Parent Group/Child Group\",\n    \"users\": [ \"guac user 2\", \"guac user 3\" ]\n  \\},\n  \\{\n    \"name\": \"conn4\",\n    \"protocol\": \"kubernetes\"\n  \\}\n]",
+        "HELP_JSON_MORE_DETAILS"            : "需要被导入的连接组信息可以通过 \"parentIdentifier\" 属性直接指定，或者通过 \"group\" 属性进行指定。每条连接信息均可单独设置用户以及用户组的访问权限",
+        "HELP_EXISTING_CONNECTION_MODE"     : "如果提供文件中的信息匹配，将完全替换/更新已存在的连接信息。如果未勾选，尝试导入已存在的连接将会导致导入时发生错误。",
+        "HELP_EXISTING_PERMISSION_MODE"     : "根据提供文件中的设定完全重置权限。如果没有权限设定信息，所有已设定的连接权限将会被撤销。如果未勾选，已存在的权限会被保留，任何新权限设定会被自动添加。",
+        "HELP_SEMICOLON_FOOTNOTE"           : "如果需要，您可以通过反斜杠来转义分号，比如： \"first\\\\;last\"",
+        "HELP_UPLOAD_DROP_TITLE"            : "拖拽文件",
+        "HELP_UPLOAD_FILE_TYPES"            : "CSV，JSON 或者 YAML",
+        "HELP_YAML_DESCRIPTION"             : "当导入的文件格式为 YAML 时，其数据结构必须与使用 JSON 格式时保持一致。",
+        "HELP_YAML_EXAMPLE"                 : "---\n  - name: conn1\n    protocol: vnc\n    parameters:\n      hostname: conn1.web.com\n    group: ROOT\n    users:\n    - guac user 1\n    - guac user 2\n    groups:\n    - Connection 1 Users\n    attributes:\n      guacd-encryption: none\n  - name: conn2\n    protocol: rdp\n    parameters:\n      hostname: conn2.web.com\n    group: ROOT/Parent Group\n    users:\n    - guac user 1\n    attributes:\n      guacd-encryption: none\n  - name: conn3\n    protocol: ssh\n    parameters:\n      hostname: conn3.web.com\n    group: ROOT/Parent Group/Child Group\n    users:\n    - guac user 2\n    - guac user 3\n  - name: conn4\n    protocol: kubernetes",
+
+        "INFO_CONNECTIONS_IMPORTED_SUCCESS" : "{NUMBER} 条连接已成功导入。",
+        
+        "SECTION_HEADER_CONNECTION_IMPORT"           : "导入连接",
+        "SECTION_HEADER_HELP_CONNECTION_IMPORT_FILE" : "导入连接文件格式",
+        "SECTION_HEADER_CSV"                         : "CSV 格式",
+        "SECTION_HEADER_JSON"                        : "JSON 格式",
+        "SECTION_HEADER_YAML"                        : "YAML 格式",
+
+        "TABLE_HEADER_ERRORS"     : "错误",
+        "TABLE_HEADER_GROUP"      : "分组",
+        "TABLE_HEADER_NAME"       : "名称",
+        "TABLE_HEADER_PROTOCOL"   : "协议",
+        "TABLE_HEADER_ROW_NUMBER" : "行 #"
+    },
+
+    "DATA_SOURCE_DEFAULT" : {
+        "NAME" : "默认（XML）"
+    },
+
+    "FORM" : {
+
+        "FIELD_PLACEHOLDER_DATE" : "YYYY-MM-DD",
+        "FIELD_PLACEHOLDER_TIME" : "HH:MM:SS",
+
+        "HELP_SHOW_PASSWORD" : "点击显示密码",
+        "HELP_HIDE_PASSWORD" : "点击隐藏密码"
+
+    },
+
+    "HOME" : {
+
+        "FIELD_PLACEHOLDER_FILTER" : "@:APP.FIELD_PLACEHOLDER_FILTER",
+
+        "INFO_ACTIVE_USER_COUNT" : "@:APP.INFO_ACTIVE_USER_COUNT",
+
+        "INFO_NO_RECENT_CONNECTIONS" : "无最近使用过的连接。",
+        
+        "PASSWORD_CHANGED" : "密码已修改。",
+
+        "SECTION_HEADER_ALL_CONNECTIONS"    : "全部连接",
+        "SECTION_HEADER_RECENT_CONNECTIONS" : "最近使用过的连接"
+
+    },
+
+    "LIST" : {
+
+        "TEXT_ANONYMOUS_USER" : "匿名用户"
+
+    },
+
+    "LOGIN": {
+
+        "ACTION_ACKNOWLEDGE" : "@:APP.ACTION_ACKNOWLEDGE",
+        "ACTION_CONTINUE"    : "@:APP.ACTION_CONTINUE",
+        "ACTION_LOGIN"       : "@:APP.ACTION_LOGIN",
+
+        "DIALOG_HEADER_ERROR" : "@:APP.DIALOG_HEADER_ERROR",
+
+        "ERROR_INVALID_LOGIN" : "非法登录",
+
+        "FIELD_HEADER_USERNAME" : "用户名",
+        "FIELD_HEADER_PASSWORD" : "密码"
+
+    },
+
+    "MANAGE_CONNECTION" : {
+
+        "ACTION_ACKNOWLEDGE"          : "@:APP.ACTION_ACKNOWLEDGE",
+        "ACTION_CANCEL"               : "@:APP.ACTION_CANCEL",
+        "ACTION_CLONE"                : "@:APP.ACTION_CLONE",
+        "ACTION_DELETE"               : "@:APP.ACTION_DELETE",
+        "ACTION_SAVE"                 : "@:APP.ACTION_SAVE",
+
+        "DIALOG_HEADER_CONFIRM_DELETE" : "删除连接",
+        "DIALOG_HEADER_ERROR"          : "@:APP.DIALOG_HEADER_ERROR",
+
+        "FIELD_HEADER_LOCATION" : "位置：",
+        "FIELD_HEADER_NAME"     : "名称：",
+        "FIELD_HEADER_PROTOCOL" : "协议：",
+
+        "FORMAT_HISTORY_START" : "@:APP.FORMAT_DATE_TIME_PRECISE",
+
+        "INFO_CONNECTION_DURATION_UNKNOWN" : "--",
+        "INFO_CONNECTION_ACTIVE_NOW"       : "活动中",
+        "INFO_CONNECTION_NOT_USED"         : "此连接未被使用过。",
+
+        "SECTION_HEADER_EDIT_CONNECTION" : "编辑连接",
+        "SECTION_HEADER_HISTORY"         : "使用历史",
+        "SECTION_HEADER_PARAMETERS"      : "参数",
+
+        "TABLE_HEADER_HISTORY_USERNAME"   : "用户名",
+        "TABLE_HEADER_HISTORY_START"      : "开始时间",
+        "TABLE_HEADER_HISTORY_DURATION"   : "持续时间",
+        "TABLE_HEADER_HISTORY_REMOTEHOST" : "远程主机",
+
+        "TEXT_CONFIRM_DELETE"   : "连接被删除后将无法恢复。确定要删除这个连接吗？",
+        "TEXT_HISTORY_DURATION" : "@:APP.TEXT_HISTORY_DURATION"
+
+    },
+
+    "MANAGE_CONNECTION_GROUP" : {
+
+        "ACTION_ACKNOWLEDGE"   : "@:APP.ACTION_ACKNOWLEDGE",
+        "ACTION_CANCEL"        : "@:APP.ACTION_CANCEL",
+        "ACTION_CLONE"         : "@:APP.ACTION_CLONE",
+        "ACTION_DELETE"        : "@:APP.ACTION_DELETE",
+        "ACTION_SAVE"          : "@:APP.ACTION_SAVE",
+
+        "DIALOG_HEADER_CONFIRM_DELETE" : "删除连接组",
+        "DIALOG_HEADER_ERROR"          : "@:APP.DIALOG_HEADER_ERROR",
+
+        "FIELD_HEADER_LOCATION" : "位置：",
+        "FIELD_HEADER_NAME"     : "名字：",
+        "FIELD_HEADER_TYPE"     : "类型：",
+
+        "NAME_TYPE_BALANCING"       : "负载平衡",
+        "NAME_TYPE_ORGANIZATIONAL"  : "组织架构",
+
+        "SECTION_HEADER_EDIT_CONNECTION_GROUP" : "编辑连接组",
+
+        "TEXT_CONFIRM_DELETE" : "将不能恢复已被删除的连接组。确定要删除这个连接组吗？"
+
+    },
+
+    "MANAGE_SHARING_PROFILE" : {
+
+        "ACTION_ACKNOWLEDGE" : "@:APP.ACTION_ACKNOWLEDGE",
+        "ACTION_CANCEL"      : "@:APP.ACTION_CANCEL",
+        "ACTION_CLONE"       : "@:APP.ACTION_CLONE",
+        "ACTION_DELETE"      : "@:APP.ACTION_DELETE",
+        "ACTION_SAVE"        : "@:APP.ACTION_SAVE",
+
+        "DIALOG_HEADER_CONFIRM_DELETE" : "删除共享设定",
+        "DIALOG_HEADER_ERROR"          : "@:APP.DIALOG_HEADER_ERROR",
+
+        "FIELD_HEADER_NAME"               : "名字：",
+        "FIELD_HEADER_PRIMARY_CONNECTION" : "主连接：",
+
+        "SECTION_HEADER_EDIT_SHARING_PROFILE" : "编辑共享设定",
+        "SECTION_HEADER_PARAMETERS"           : "参数",
+
+        "TEXT_CONFIRM_DELETE" : "将不能恢复已被删除的共享设定。确定要删除这个共享设定吗？"
+
+    },
+
+    "MANAGE_USER" : {
+
+        "ACTION_ACKNOWLEDGE"   : "@:APP.ACTION_ACKNOWLEDGE",
+        "ACTION_CANCEL"        : "@:APP.ACTION_CANCEL",
+        "ACTION_CLONE"         : "@:APP.ACTION_CLONE",
+        "ACTION_DELETE"        : "@:APP.ACTION_DELETE",
+        "ACTION_SAVE"          : "@:APP.ACTION_SAVE",
+
+        "DIALOG_HEADER_CONFIRM_DELETE" : "删除用户",
+        "DIALOG_HEADER_ERROR"          : "@:APP.DIALOG_HEADER_ERROR",
+
+        "ERROR_PASSWORD_MISMATCH" : "@:APP.ERROR_PASSWORD_MISMATCH",
+
+        "FIELD_HEADER_ADMINISTER_SYSTEM"             : "授权管理系统：",
+        "FIELD_HEADER_CHANGE_OWN_PASSWORD"           : "修改自己的密码：",
+        "FIELD_HEADER_CREATE_NEW_USERS"              : "新建用户：",
+        "FIELD_HEADER_CREATE_NEW_USER_GROUPS"        : "新建用户组：",
+        "FIELD_HEADER_CREATE_NEW_CONNECTIONS"        : "新建连接：",
+        "FIELD_HEADER_CREATE_NEW_CONNECTION_GROUPS"  : "新建连接组：",
+        "FIELD_HEADER_CREATE_NEW_SHARING_PROFILES"   : "新建共享设定：",
+        "FIELD_HEADER_PASSWORD"                      : "@:APP.FIELD_HEADER_PASSWORD",
+        "FIELD_HEADER_PASSWORD_AGAIN"                : "@:APP.FIELD_HEADER_PASSWORD_AGAIN",
+        "FIELD_HEADER_USER_DISABLED"                 : "已禁用登录:",
+        "FIELD_HEADER_USERNAME"                      : "用户名：",
+
+        "FIELD_PLACEHOLDER_FILTER" : "@:APP.FIELD_PLACEHOLDER_FILTER",
+
+        "HELP_NO_USER_GROUPS" : "该用户当前不属于任何组。 展开此部分以添加组。",
+	
+        "INFO_READ_ONLY"                : "对不起，不能编辑此用户的账户。",
+        "INFO_NO_USER_GROUPS_AVAILABLE" : "没用可用的用户组.",
+
+        "SECTION_HEADER_ALL_CONNECTIONS"     : "全部连接",
+        "SECTION_HEADER_CONNECTIONS" : "连接",
+        "SECTION_HEADER_CURRENT_CONNECTIONS" : "当前连接",
+        "SECTION_HEADER_EDIT_USER"   : "编辑用户",
+        "SECTION_HEADER_PERMISSIONS" : "使用权限",
+        "SECTION_HEADER_USER_GROUPS"         : "用户组",
+	
+        "TEXT_CONFIRM_DELETE" : "将不能恢复已被删除的用户。确定要删除这个用户吗？"
+
+    },
+    
+    "MANAGE_USER_GROUP" : {
+
+        "ACTION_ACKNOWLEDGE"   : "@:APP.ACTION_ACKNOWLEDGE",
+        "ACTION_CANCEL"        : "@:APP.ACTION_CANCEL",
+        "ACTION_CLONE"         : "@:APP.ACTION_CLONE",
+        "ACTION_DELETE"        : "@:APP.ACTION_DELETE",
+        "ACTION_SAVE"          : "@:APP.ACTION_SAVE",
+
+        "DIALOG_HEADER_CONFIRM_DELETE" : "删除用户组",
+        "DIALOG_HEADER_ERROR"          : "@:APP.DIALOG_HEADER_ERROR",
+
+        "FIELD_HEADER_ADMINISTER_SYSTEM"             : "@:MANAGE_USER.FIELD_HEADER_ADMINISTER_SYSTEM",
+        "FIELD_HEADER_CHANGE_OWN_PASSWORD"           : "@:MANAGE_USER.FIELD_HEADER_CHANGE_OWN_PASSWORD",
+        "FIELD_HEADER_CREATE_NEW_USERS"              : "@:MANAGE_USER.FIELD_HEADER_CREATE_NEW_USERS",
+        "FIELD_HEADER_CREATE_NEW_USER_GROUPS"        : "@:MANAGE_USER.FIELD_HEADER_CREATE_NEW_USER_GROUPS",
+        "FIELD_HEADER_CREATE_NEW_CONNECTIONS"        : "@:MANAGE_USER.FIELD_HEADER_CREATE_NEW_CONNECTIONS",
+        "FIELD_HEADER_CREATE_NEW_CONNECTION_GROUPS"  : "@:MANAGE_USER.FIELD_HEADER_CREATE_NEW_CONNECTION_GROUPS",
+        "FIELD_HEADER_CREATE_NEW_SHARING_PROFILES"   : "@:MANAGE_USER.FIELD_HEADER_CREATE_NEW_SHARING_PROFILES",
+        "FIELD_HEADER_USER_GROUP_DISABLED"           : "禁用:",
+        "FIELD_HEADER_USER_GROUP_NAME"               : "用户组名称:",
+
+        "FIELD_PLACEHOLDER_FILTER" : "@:APP.FIELD_PLACEHOLDER_FILTER",
+
+        "HELP_NO_USER_GROUPS"        : "该组当前不属于任何组。展开此部分以添加组。",
+        "HELP_NO_MEMBER_USER_GROUPS" : "该组当前不包含任何组。展开此部分以添加组。",
+        "HELP_NO_MEMBER_USERS"       : "该组当前不包含任何用户。展开此部分以添加用户。",
+
+        "INFO_READ_ONLY"                : "抱歉，无法编辑此用户组。",
+        "INFO_NO_USER_GROUPS_AVAILABLE" : "@:MANAGE_USER.INFO_NO_USER_GROUPS_AVAILABLE",
+        "INFO_NO_USERS_AVAILABLE"       : "没有可用的用户。",
+
+        "SECTION_HEADER_ALL_CONNECTIONS"     : "@:MANAGE_USER.SECTION_HEADER_ALL_CONNECTIONS",
+        "SECTION_HEADER_CONNECTIONS"         : "@:MANAGE_USER.SECTION_HEADER_CONNECTIONS",
+        "SECTION_HEADER_CURRENT_CONNECTIONS" : "@:MANAGE_USER.SECTION_HEADER_CURRENT_CONNECTIONS",
+        "SECTION_HEADER_EDIT_USER_GROUP"     : "编辑用户组",
+        "SECTION_HEADER_MEMBER_USERS"        : "成员用户",
+        "SECTION_HEADER_MEMBER_USER_GROUPS"  : "成员用户组",
+        "SECTION_HEADER_PERMISSIONS"         : "@:MANAGE_USER.SECTION_HEADER_PERMISSIONS",
+        "SECTION_HEADER_USER_GROUPS"         : "父用户组",
+
+        "TEXT_CONFIRM_DELETE" : "删除用户组后将无法还原。确定要删除该用户组吗？"
+
+    },
+
+    "PLAYER" : {
+
+        "ACTION_CANCEL" : "@:APP.ACTION_CANCEL",
+        "ACTION_PAUSE"  : "@:APP.ACTION_PAUSE",
+        "ACTION_PLAY"   : "@:APP.ACTION_PLAY",
+
+        "INFO_LOADING_RECORDING" : "录像已载入。请稍候...",
+        "INFO_SEEK_IN_PROGRESS"  : "正在跳转到指定位置。请稍候..."
+
+    },
+    
+    "PROTOCOL_KUBERNETES" : {
+
+        "FIELD_HEADER_BACKSPACE"      : "发送退格键：",
+        "FIELD_HEADER_CA_CERT"         : "证书颁发机构证书：",
+        "FIELD_HEADER_CLIENT_CERT"     : "客户证书：",
+        "FIELD_HEADER_CLIENT_KEY"      : "客户端密钥：",
+        "FIELD_HEADER_COLOR_SCHEME"   : "配色方案：",
+        "FIELD_HEADER_CONTAINER"       : "容器名称：",
+        "FIELD_HEADER_CREATE_RECORDING_PATH" : "自动建立录像目录：",
+        "FIELD_HEADER_CREATE_TYPESCRIPT_PATH" : "自动建立 Typescript 目录：",
+        "FIELD_HEADER_EXEC_COMMAND"    : "命令（exec）：",
+        "FIELD_HEADER_FONT_NAME"      : "字体名：",
+        "FIELD_HEADER_FONT_SIZE"      : "字体大小：",
+        "FIELD_HEADER_HOSTNAME"       : "主机名：",
+        "FIELD_HEADER_IGNORE_CERT"     : "忽略服务器证书：",
+        "FIELD_HEADER_NAMESPACE"       : "命名空间：",
+        "FIELD_HEADER_POD"             : "Pod 名称：",
+        "FIELD_HEADER_PORT"           : "端口：",
+        "FIELD_HEADER_READ_ONLY"      : "只读：",
+        "FIELD_HEADER_RECORDING_EXCLUDE_MOUSE"  : "排除鼠标：",
+        "FIELD_HEADER_RECORDING_EXCLUDE_OUTPUT" : "排除图像/数据流：",
+        "FIELD_HEADER_RECORDING_INCLUDE_KEYS"   : "包含按键事件：",
+        "FIELD_HEADER_RECORDING_NAME" : "录像名：",
+        "FIELD_HEADER_RECORDING_PATH" : "录像路径：",
+        "FIELD_HEADER_SCROLLBACK"      : "最大回滚尺寸：",
+        "FIELD_HEADER_TYPESCRIPT_NAME" : "Typescript 名称：",
+        "FIELD_HEADER_TYPESCRIPT_PATH" : "Typescript 路径：",
+        "FIELD_HEADER_USE_SSL"         : "使用 SSL/TLS",
+
+        "FIELD_OPTION_BACKSPACE_EMPTY" : "",
+        "FIELD_OPTION_BACKSPACE_8"     : "退格键（Ctrl-H）",
+        "FIELD_OPTION_BACKSPACE_127"   : "删除键（Ctrl-?）",
+
+        "FIELD_OPTION_COLOR_SCHEME_BLACK_WHITE" : "白底黑字",
+        "FIELD_OPTION_COLOR_SCHEME_EMPTY"       : "",
+        "FIELD_OPTION_COLOR_SCHEME_GRAY_BLACK"  : "黑底灰字",
+        "FIELD_OPTION_COLOR_SCHEME_GREEN_BLACK" : "黑底绿字",
+        "FIELD_OPTION_COLOR_SCHEME_WHITE_BLACK" : "黑底白字",
+
+        "FIELD_OPTION_FONT_SIZE_8"     : "8",
+        "FIELD_OPTION_FONT_SIZE_9"     : "9",
+        "FIELD_OPTION_FONT_SIZE_10"    : "10",
+        "FIELD_OPTION_FONT_SIZE_11"    : "11",
+        "FIELD_OPTION_FONT_SIZE_12"    : "12",
+        "FIELD_OPTION_FONT_SIZE_14"    : "14",
+        "FIELD_OPTION_FONT_SIZE_18"    : "18",
+        "FIELD_OPTION_FONT_SIZE_24"    : "24",
+        "FIELD_OPTION_FONT_SIZE_30"    : "30",
+        "FIELD_OPTION_FONT_SIZE_36"    : "36",
+        "FIELD_OPTION_FONT_SIZE_48"    : "48",
+        "FIELD_OPTION_FONT_SIZE_60"    : "60",
+        "FIELD_OPTION_FONT_SIZE_72"    : "72",
+        "FIELD_OPTION_FONT_SIZE_96"    : "96",
+        "FIELD_OPTION_FONT_SIZE_EMPTY" : "",
+
+        "NAME" : "Kubernetes",
+
+        "SECTION_HEADER_AUTHENTICATION" : "认证方式",
+        "SECTION_HEADER_BEHAVIOR"       : "终端行为",
+        "SECTION_HEADER_CONTAINER"      : "容器",
+        "SECTION_HEADER_DISPLAY"        : "显示",
+        "SECTION_HEADER_RECORDING"      : "屏幕录制",
+        "SECTION_HEADER_TYPESCRIPT"     : "Typescript（文本会话录制）",
+        "SECTION_HEADER_NETWORK"        : "网络"
+
+    },
+    
+    "PROTOCOL_RDP" : {
+
+        "FIELD_HEADER_CLIENT_NAME"     : "客户端：",
+        "FIELD_HEADER_COLOR_DEPTH"     : "色彩深度：",
+        "FIELD_HEADER_CONSOLE"         : "管理员控制台：",
+        "FIELD_HEADER_CONSOLE_AUDIO"   : "在控制台内支持音频：",
+        "FIELD_HEADER_CREATE_DRIVE_PATH" : "自动建立虚拟盘：",
+        "FIELD_HEADER_CREATE_RECORDING_PATH" : "自动建立录像目录：",
+        "FIELD_HEADER_DISABLE_AUDIO"   : "禁用音频：",
+        "FIELD_HEADER_DISABLE_AUTH"    : "禁用认证：",
+        "FIELD_HEADER_DISABLE_COPY"    : "禁用从远程桌面复制：",
+        "FIELD_HEADER_DISABLE_DOWNLOAD" : "禁用文件下载：",
+        "FIELD_HEADER_DISABLE_PASTE"   : "禁用从客户端粘贴：",
+        "FIELD_HEADER_DISABLE_UPLOAD"   : "禁用文件上传：",
+        "FIELD_HEADER_DOMAIN"          : "域：",
+        "FIELD_HEADER_DPI"             : "分辨率（DPI）：",
+        "FIELD_HEADER_DRIVE_NAME"      : "驱动器名称：",
+        "FIELD_HEADER_DRIVE_PATH"      : "虚拟盘路径：",
+        "FIELD_HEADER_ENABLE_AUDIO_INPUT"         : "启用音频输入（话筒）：",
+        "FIELD_HEADER_ENABLE_DESKTOP_COMPOSITION" : "启用桌面合成效果（Aero）：",
+        "FIELD_HEADER_ENABLE_DRIVE"               : "启用虚拟驱动器：",
+        "FIELD_HEADER_ENABLE_FONT_SMOOTHING"      : "启用字体平滑（ClearType）：",
+        "FIELD_HEADER_ENABLE_FULL_WINDOW_DRAG"    : "启用全窗口拖拽：",
+        "FIELD_HEADER_ENABLE_MENU_ANIMATIONS"     : "启用菜单动画：",
+        "FIELD_HEADER_DISABLE_BITMAP_CACHING"     : "禁用位图缓存：",
+        "FIELD_HEADER_DISABLE_OFFSCREEN_CACHING"  : "禁用离屏缓存：",
+        "FIELD_HEADER_DISABLE_GLYPH_CACHING"      : "禁用字形缓存：",
+        "FIELD_HEADER_DISABLE_GFX"                : "禁用图形管线拓展：",
+        "FIELD_HEADER_ENABLE_PRINTING"            : "启用打印功能：",
+        "FIELD_HEADER_ENABLE_SFTP"     : "启用SFTP：",
+        "FIELD_HEADER_ENABLE_THEMING"             : "启用桌面主题：",
+        "FIELD_HEADER_ENABLE_TOUCH"               : "启用多点触控：",
+        "FIELD_HEADER_ENABLE_WALLPAPER"           : "启用桌面墙纸：",
+        "FIELD_HEADER_FORCE_LOSSLESS"             : "强制无损压缩：",
+        "FIELD_HEADER_GATEWAY_DOMAIN"   : "域：",
+        "FIELD_HEADER_GATEWAY_HOSTNAME" : "主机名：",
+        "FIELD_HEADER_GATEWAY_PASSWORD" : "密码：",
+        "FIELD_HEADER_GATEWAY_PORT"     : "端口：",
+        "FIELD_HEADER_GATEWAY_USERNAME" : "用户名：",
+        "FIELD_HEADER_HEIGHT"          : "高度：",
+        "FIELD_HEADER_HOSTNAME"        : "主机名：",
+        "FIELD_HEADER_IGNORE_CERT"     : "忽略服务器证书：",
+        "FIELD_HEADER_INITIAL_PROGRAM" : "初始程序：",
+        "FIELD_HEADER_LOAD_BALANCE_INFO" : "负载平衡信息/Cookie：",
+        "FIELD_HEADER_NORMALIZE_CLIPBOARD" : "换行符：",
+        "FIELD_HEADER_PASSWORD"        : "密码：",
+        "FIELD_HEADER_PORT"            : "端口：",
+        "FIELD_HEADER_PRINTER_NAME"    : "重定向的打印机名称：",
+        "FIELD_HEADER_PRECONNECTION_BLOB" : "预连接 BLOB（VM 标识）：",
+        "FIELD_HEADER_PRECONNECTION_ID"   : "RDP 源标识：",
+        "FIELD_HEADER_READ_ONLY"      : "只读：",
+        "FIELD_HEADER_RECORDING_EXCLUDE_MOUSE"  : "排除鼠标：",
+        "FIELD_HEADER_RECORDING_EXCLUDE_OUTPUT" : "排除图像/数据流：",
+        "FIELD_HEADER_RECORDING_EXCLUDE_TOUCH"  : "排除触摸事件：",
+        "FIELD_HEADER_RECORDING_INCLUDE_KEYS"   : "包含按键事件：",
+        "FIELD_HEADER_RECORDING_NAME" : "录像名：",
+        "FIELD_HEADER_RECORDING_PATH" : "录像路径：",
+        "FIELD_HEADER_RESIZE_METHOD" : "缩放方法：",
+        "FIELD_HEADER_REMOTE_APP_ARGS" : "参数：",
+        "FIELD_HEADER_REMOTE_APP_DIR"  : "工作目录：",
+        "FIELD_HEADER_REMOTE_APP"      : "程序：",
+        "FIELD_HEADER_SECURITY"        : "安全模式：",
+        "FIELD_HEADER_SERVER_LAYOUT"   : "键盘布局：",
+        "FIELD_HEADER_SFTP_DIRECTORY"             : "缺省文件上传目录：",
+        "FIELD_HEADER_SFTP_DISABLE_DOWNLOAD"      : "禁用文件下载：",
+        "FIELD_HEADER_SFTP_HOST_KEY"              : "公钥（Base64）：",
+        "FIELD_HEADER_SFTP_HOSTNAME"              : "主机名：",
+        "FIELD_HEADER_SFTP_SERVER_ALIVE_INTERVAL" : "SFTP keepalive 时间间隔：",
+        "FIELD_HEADER_SFTP_PASSPHRASE"            : "口令：",
+        "FIELD_HEADER_SFTP_PASSWORD"              : "密码：",
+        "FIELD_HEADER_SFTP_PORT"                  : "端口：",
+        "FIELD_HEADER_SFTP_PRIVATE_KEY"           : "私钥：",
+        "FIELD_HEADER_SFTP_ROOT_DIRECTORY"        : "文件浏览器根目录：",
+        "FIELD_HEADER_SFTP_DISABLE_UPLOAD"        : "禁用文件上传：",
+        "FIELD_HEADER_SFTP_USERNAME"              : "用户名：",
+        "FIELD_HEADER_STATIC_CHANNELS" : "静态通道名：",
+        "FIELD_HEADER_TIMEZONE"        : "时区：",
+        "FIELD_HEADER_USERNAME"        : "用户名：",
+        "FIELD_HEADER_WIDTH"           : "宽度：",
+        "FIELD_HEADER_WOL_BROADCAST_ADDR" : "WoL 数据包广播地址：",
+        "FIELD_HEADER_WOL_MAC_ADDR"       : "远程主机 MAC 地址：",
+        "FIELD_HEADER_WOL_SEND_PACKET"    : "发送 WoL 数据包：",
+        "FIELD_HEADER_WOL_UDP_PORT"       : "WoL 数据包 UDP 端口: ",
+        "FIELD_HEADER_WOL_WAIT_TIME"      : "主机启动等待时间：",
+
+        "FIELD_OPTION_NORMALIZE_CLIPBOARD_EMPTY"    : "",
+        "FIELD_OPTION_NORMALIZE_CLIPBOARD_PRESERVE" : "保持原样",
+        "FIELD_OPTION_NORMALIZE_CLIPBOARD_UNIX"     : "Linux/Mac/Unix (LF)",
+        "FIELD_OPTION_NORMALIZE_CLIPBOARD_WINDOWS"  : "Windows (CRLF)",   
+
+        "FIELD_OPTION_COLOR_DEPTH_16"    : "低彩色（16 位）",
+        "FIELD_OPTION_COLOR_DEPTH_24"    : "真彩色（24 位）",
+        "FIELD_OPTION_COLOR_DEPTH_32"    : "真彩色（32 位）",
+        "FIELD_OPTION_COLOR_DEPTH_8"     : "256 色",
+        "FIELD_OPTION_COLOR_DEPTH_EMPTY" : "",
+
+        "FIELD_OPTION_RESIZE_METHOD_DISPLAY_UPDATE" : "“显示更新”虚拟通道（RDP 8.1+）",
+        "FIELD_OPTION_RESIZE_METHOD_EMPTY"          : "",
+        "FIELD_OPTION_RESIZE_METHOD_RECONNECT"      : "重新连接",
+
+        "FIELD_OPTION_SECURITY_ANY"   : "任意",
+        "FIELD_OPTION_SECURITY_EMPTY" : "",
+        "FIELD_OPTION_SECURITY_NLA"   : "NLA（网络级别认证）",
+        "FIELD_OPTION_SECURITY_RDP"   : "RDP 加密",
+        "FIELD_OPTION_SECURITY_TLS"   : "TLS 加密",
+        "FIELD_OPTION_SECURITY_VMCONNECT" : "Hyper-V / VMConnect",
+
+        "FIELD_OPTION_SERVER_LAYOUT_CS_CZ_QWERTZ" : "Czech (Qwertz)",
+        "FIELD_OPTION_SERVER_LAYOUT_DA_DK_QWERTY" : "Danish (Qwerty)",
+        "FIELD_OPTION_SERVER_LAYOUT_DE_CH_QWERTZ" : "Swiss German (Qwertz)",
+        "FIELD_OPTION_SERVER_LAYOUT_DE_DE_QWERTZ" : "German (Qwertz)",
+        "FIELD_OPTION_SERVER_LAYOUT_EMPTY"        : "",
+        "FIELD_OPTION_SERVER_LAYOUT_EN_GB_QWERTY" : "UK English (Qwerty)",
+        "FIELD_OPTION_SERVER_LAYOUT_EN_US_QWERTY" : "US English (Qwerty)",
+        "FIELD_OPTION_SERVER_LAYOUT_ES_ES_QWERTY" : "Spanish (Qwerty)",
+        "FIELD_OPTION_SERVER_LAYOUT_ES_LATAM_QWERTY" : "Latin American (Qwerty)",
+        "FIELD_OPTION_SERVER_LAYOUT_FAILSAFE"     : "Unicode",
+        "FIELD_OPTION_SERVER_LAYOUT_FR_BE_AZERTY" : "Belgian French (Azerty)",
+        "FIELD_OPTION_SERVER_LAYOUT_FR_CA_QWERTY" : "Canadian French (Qwerty)",
+        "FIELD_OPTION_SERVER_LAYOUT_FR_CH_QWERTZ" : "Swiss French (Qwertz)",
+        "FIELD_OPTION_SERVER_LAYOUT_FR_FR_AZERTY" : "French (Azerty)",
+        "FIELD_OPTION_SERVER_LAYOUT_HU_HU_QWERTZ" : "Hungarian (Qwertz)",
+        "FIELD_OPTION_SERVER_LAYOUT_IT_IT_QWERTY" : "Italian (Qwerty)",
+        "FIELD_OPTION_SERVER_LAYOUT_JA_JP_QWERTY" : "Japanese (Qwerty)",
+        "FIELD_OPTION_SERVER_LAYOUT_NO_NO_QWERTY" : "Norwegian (Qwerty)",
+        "FIELD_OPTION_SERVER_LAYOUT_PL_PL_QWERTY" : "Polish (Qwerty)",
+        "FIELD_OPTION_SERVER_LAYOUT_PT_BR_QWERTY" : "Portuguese Brazilian (Qwerty)",
+        "FIELD_OPTION_SERVER_LAYOUT_PT_PT_QWERTY" : "Portuguese (Qwerty)",
+        "FIELD_OPTION_SERVER_LAYOUT_RO_RO_QWERTY" : "Romanian (Qwerty)",
+        "FIELD_OPTION_SERVER_LAYOUT_SV_SE_QWERTY" : "Swedish (Qwerty)",
+        "FIELD_OPTION_SERVER_LAYOUT_TR_TR_QWERTY" : "Turkish-Q (Qwerty)",
+
+        "NAME" : "RDP",
+
+        "SECTION_HEADER_AUTHENTICATION"     : "认证",
+        "SECTION_HEADER_BASIC_PARAMETERS"   : "基础设置",
+        "SECTION_HEADER_CLIPBOARD"          : "剪贴板",
+        "SECTION_HEADER_DEVICE_REDIRECTION" : "设备重定向",
+        "SECTION_HEADER_DISPLAY"            : "显示",
+        "SECTION_HEADER_GATEWAY"            : "远程桌面网关",
+        "SECTION_HEADER_LOAD_BALANCING"     : "负载平衡",
+        "SECTION_HEADER_NETWORK"            : "网络",
+        "SECTION_HEADER_PERFORMANCE"        : "性能",
+        "SECTION_HEADER_PRECONNECTION_PDU"  : "预连接 PDU / Hyper-V",
+        "SECTION_HEADER_RECORDING"          : "屏幕录像",
+        "SECTION_HEADER_REMOTEAPP"          : "RemoteApp",
+        "SECTION_HEADER_SFTP"               : "SFTP",
+        "SECTION_HEADER_WOL"                : "网络唤醒（WoL）"
+
+    },
+
+    "PROTOCOL_SSH" : {
+
+        "FIELD_HEADER_BACKSPACE"    : "退格键发送：",
+        "FIELD_HEADER_COLOR_SCHEME" : "配色方案：",
+        "FIELD_HEADER_COMMAND"      : "运行命令：",
+        "FIELD_HEADER_CREATE_RECORDING_PATH" : "自动建立录像目录：",
+        "FIELD_HEADER_CREATE_TYPESCRIPT_PATH" : "自动建立 Typescript 目录：",
+        "FIELD_HEADER_DISABLE_COPY"  : "禁用从终端复制：",
+        "FIELD_HEADER_DISABLE_PASTE" : "禁用从客户端粘贴：",
+        "FIELD_HEADER_FONT_NAME"   : "字体名：",
+        "FIELD_HEADER_FONT_SIZE"   : "字体大小：",
+        "FIELD_HEADER_ENABLE_SFTP" : "启用SFTP：",
+        "FIELD_HEADER_HOST_KEY"      : "公钥（Base64）：",
+        "FIELD_HEADER_HOSTNAME"    : "主机名：",
+        "FIELD_HEADER_LOCALE"        : "语言/地区（$LANG）：",
+        "FIELD_HEADER_USERNAME"    : "用户名：",
+        "FIELD_HEADER_PASSWORD"    : "密码：",
+        "FIELD_HEADER_PASSPHRASE"  : "口令：",
+        "FIELD_HEADER_PORT"        : "端口：",
+        "FIELD_HEADER_PRIVATE_KEY" : "私钥：",
+        "FIELD_HEADER_SCROLLBACK"    : "最大回滚尺寸：",
+        "FIELD_HEADER_READ_ONLY"   : "只读：",
+        "FIELD_HEADER_RECORDING_EXCLUDE_MOUSE"  : "排除鼠标：",
+        "FIELD_HEADER_RECORDING_EXCLUDE_OUTPUT" : "排除图像/数据流：",
+        "FIELD_HEADER_RECORDING_INCLUDE_KEYS"   : "包含按键事件：",
+        "FIELD_HEADER_RECORDING_NAME" : "录像名：",
+        "FIELD_HEADER_RECORDING_PATH" : "录像路径：",
+        "FIELD_HEADER_SERVER_ALIVE_INTERVAL" : "服务器 keepalive 时间间隔：",
+        "FIELD_HEADER_SFTP_DISABLE_DOWNLOAD" : "禁用文件下载：",
+        "FIELD_HEADER_SFTP_ROOT_DIRECTORY"   : "文件浏览器根目录：",
+        "FIELD_HEADER_SFTP_DISABLE_UPLOAD"   : "禁用文件上传：",
+        "FIELD_HEADER_TERMINAL_TYPE"   : "终端类型：",
+        "FIELD_HEADER_TIMEZONE"        : "时区（$TZ）：",
+        "FIELD_HEADER_TYPESCRIPT_NAME" : "Typescript 名称：",
+        "FIELD_HEADER_TYPESCRIPT_PATH" : "Typescript 路径：",
+        "FIELD_HEADER_WOL_BROADCAST_ADDR" : "WoL 数据包广播地址：",
+        "FIELD_HEADER_WOL_MAC_ADDR"       : "远程主机 MAC 地址：",
+        "FIELD_HEADER_WOL_SEND_PACKET"    : "发送 WoL 数据包：",
+        "FIELD_HEADER_WOL_UDP_PORT"       : "WoL 数据包 UDP 端口: ",
+        "FIELD_HEADER_WOL_WAIT_TIME"      : "主机启动等待时间：",
+
+        "FIELD_OPTION_BACKSPACE_EMPTY" : "",
+        "FIELD_OPTION_BACKSPACE_8"     : "退格键（Ctrl-H）",
+        "FIELD_OPTION_BACKSPACE_127"   : "删除键（Ctrl-?）",
+	
+        "FIELD_OPTION_COLOR_SCHEME_BLACK_WHITE" : "白底黑字",
+        "FIELD_OPTION_COLOR_SCHEME_EMPTY"       : "",
+        "FIELD_OPTION_COLOR_SCHEME_GRAY_BLACK"  : "黑底灰字",
+        "FIELD_OPTION_COLOR_SCHEME_GREEN_BLACK" : "黑底绿字",
+        "FIELD_OPTION_COLOR_SCHEME_WHITE_BLACK" : "黑底白字",
+
+        "FIELD_OPTION_FONT_SIZE_8"     : "8",
+        "FIELD_OPTION_FONT_SIZE_9"     : "9",
+        "FIELD_OPTION_FONT_SIZE_10"    : "10",
+        "FIELD_OPTION_FONT_SIZE_11"    : "11",
+        "FIELD_OPTION_FONT_SIZE_12"    : "12",
+        "FIELD_OPTION_FONT_SIZE_14"    : "14",
+        "FIELD_OPTION_FONT_SIZE_18"    : "18",
+        "FIELD_OPTION_FONT_SIZE_24"    : "24",
+        "FIELD_OPTION_FONT_SIZE_30"    : "30",
+        "FIELD_OPTION_FONT_SIZE_36"    : "36",
+        "FIELD_OPTION_FONT_SIZE_48"    : "48",
+        "FIELD_OPTION_FONT_SIZE_60"    : "60",
+        "FIELD_OPTION_FONT_SIZE_72"    : "72",
+        "FIELD_OPTION_FONT_SIZE_96"    : "96",
+        "FIELD_OPTION_FONT_SIZE_EMPTY" : "",
+	
+        "FIELD_OPTION_TERMINAL_TYPE_ANSI"           : "ansi",
+        "FIELD_OPTION_TERMINAL_TYPE_EMPTY"          : "",
+        "FIELD_OPTION_TERMINAL_TYPE_LINUX"          : "linux",
+        "FIELD_OPTION_TERMINAL_TYPE_VT100"          : "vt100",
+        "FIELD_OPTION_TERMINAL_TYPE_VT220"          : "vt220",
+        "FIELD_OPTION_TERMINAL_TYPE_XTERM"          : "xterm",
+        "FIELD_OPTION_TERMINAL_TYPE_XTERM_256COLOR" : "xterm-256color",
+	
+        "NAME" : "SSH",
+
+        "SECTION_HEADER_AUTHENTICATION" : "认证",
+        "SECTION_HEADER_BEHAVIOR"       : "终端行为",
+        "SECTION_HEADER_CLIPBOARD"      : "剪贴板",
+        "SECTION_HEADER_DISPLAY"        : "显示",
+        "SECTION_HEADER_NETWORK"        : "网络",
+        "SECTION_HEADER_RECORDING"      : "屏幕录像",
+        "SECTION_HEADER_SESSION"        : "会话 / 环境",
+        "SECTION_HEADER_TYPESCRIPT"     : "Typescript（文本会话录像）",
+        "SECTION_HEADER_SFTP"           : "SFTP",
+        "SECTION_HEADER_WOL"            : "网络唤醒（WoL）"
+
+    },
+
+    "PROTOCOL_TELNET" : {
+
+        "FIELD_HEADER_BACKSPACE"      : "发送退格键：",
+        "FIELD_HEADER_COLOR_SCHEME"   : "配色方案：",
+        "FIELD_HEADER_CREATE_RECORDING_PATH" : "自动创建记录路径：",
+        "FIELD_HEADER_CREATE_TYPESCRIPT_PATH" : "自动创建 Typescript 路径：",
+        "FIELD_HEADER_DISABLE_COPY"   : "禁止从终端复制：",
+        "FIELD_HEADER_DISABLE_PASTE"  : "禁用从客户端粘贴：",
+        "FIELD_HEADER_FONT_NAME"      : "字体名称：",
+        "FIELD_HEADER_FONT_SIZE"      : "字体大小：",
+        "FIELD_HEADER_HOSTNAME"       : "主机名：",
+        "FIELD_HEADER_LOGIN_FAILURE_REGEX" : "登录失败的正则表达式：",
+        "FIELD_HEADER_LOGIN_SUCCESS_REGEX" : "登录成功的正则表达式：",
+        "FIELD_HEADER_USERNAME"       : "用户名：",
+        "FIELD_HEADER_USERNAME_REGEX" : "用户名正则表达式：",
+        "FIELD_HEADER_PASSWORD"       : "密码：",
+        "FIELD_HEADER_PASSWORD_REGEX" : "密码正则表达式：",
+        "FIELD_HEADER_PORT"           : "端口：",
+        "FIELD_HEADER_READ_ONLY"      : "只读：",
+        "FIELD_HEADER_RECORDING_EXCLUDE_MOUSE"  : "排除鼠标：",
+        "FIELD_HEADER_RECORDING_EXCLUDE_OUTPUT" : "排除图形/流：",
+        "FIELD_HEADER_RECORDING_INCLUDE_KEYS"   : "包含关键事件：",
+        "FIELD_HEADER_RECORDING_NAME" : "记录名称：",
+        "FIELD_HEADER_RECORDING_PATH" : "记录路径：",
+        "FIELD_HEADER_SCROLLBACK"     : "最大回滚尺寸：",
+        "FIELD_HEADER_TERMINAL_TYPE"   : "终端类型：",
+        "FIELD_HEADER_TYPESCRIPT_NAME" : "Typescript 名称：",
+        "FIELD_HEADER_TYPESCRIPT_PATH" : "Typescript 路径：",
+        "FIELD_HEADER_WOL_BROADCAST_ADDR" : "WoL 数据包广播地址：",
+        "FIELD_HEADER_WOL_MAC_ADDR"       : "远程主机 MAC 地址：",
+        "FIELD_HEADER_WOL_SEND_PACKET"    : "发送 WoL 数据包：",
+        "FIELD_HEADER_WOL_UDP_PORT"       : "WoL 数据包 UDP 端口：",
+        "FIELD_HEADER_WOL_WAIT_TIME"      : "主机启动等待时间：",
+
+        "FIELD_OPTION_BACKSPACE_EMPTY" : "",
+        "FIELD_OPTION_BACKSPACE_8"     : "退格键(Ctrl-H)",
+        "FIELD_OPTION_BACKSPACE_127"   : "删除键(Ctrl-?)",
+
+        "FIELD_OPTION_COLOR_SCHEME_BLACK_WHITE" : "白底黑字",
+        "FIELD_OPTION_COLOR_SCHEME_EMPTY"       : "",
+        "FIELD_OPTION_COLOR_SCHEME_GRAY_BLACK"  : "黑底灰字",
+        "FIELD_OPTION_COLOR_SCHEME_GREEN_BLACK" : "黑底绿字",
+        "FIELD_OPTION_COLOR_SCHEME_WHITE_BLACK" : "黑底白字",
+
+        "FIELD_OPTION_FONT_SIZE_8"     : "8",
+        "FIELD_OPTION_FONT_SIZE_9"     : "9",
+        "FIELD_OPTION_FONT_SIZE_10"    : "10",
+        "FIELD_OPTION_FONT_SIZE_11"    : "11",
+        "FIELD_OPTION_FONT_SIZE_12"    : "12",
+        "FIELD_OPTION_FONT_SIZE_14"    : "14",
+        "FIELD_OPTION_FONT_SIZE_18"    : "18",
+        "FIELD_OPTION_FONT_SIZE_24"    : "24",
+        "FIELD_OPTION_FONT_SIZE_30"    : "30",
+        "FIELD_OPTION_FONT_SIZE_36"    : "36",
+        "FIELD_OPTION_FONT_SIZE_48"    : "48",
+        "FIELD_OPTION_FONT_SIZE_60"    : "60",
+        "FIELD_OPTION_FONT_SIZE_72"    : "72",
+        "FIELD_OPTION_FONT_SIZE_96"    : "96",
+        "FIELD_OPTION_FONT_SIZE_EMPTY" : "",
+
+        "FIELD_OPTION_TERMINAL_TYPE_ANSI"           : "ansi",
+        "FIELD_OPTION_TERMINAL_TYPE_EMPTY"          : "",
+        "FIELD_OPTION_TERMINAL_TYPE_LINUX"          : "linux",
+        "FIELD_OPTION_TERMINAL_TYPE_VT100"          : "vt100",
+        "FIELD_OPTION_TERMINAL_TYPE_VT220"          : "vt220",
+        "FIELD_OPTION_TERMINAL_TYPE_XTERM"          : "xterm",
+        "FIELD_OPTION_TERMINAL_TYPE_XTERM_256COLOR" : "xterm-256color",
+	
+        "NAME" : "Telnet",
+
+        "SECTION_HEADER_AUTHENTICATION" : "认证",
+        "SECTION_HEADER_BEHAVIOR"       : "终端行为",
+        "SECTION_HEADER_CLIPBOARD"      : "剪贴板",
+        "SECTION_HEADER_DISPLAY"        : "显示",
+        "SECTION_HEADER_RECORDING"      : "屏幕录像",
+        "SECTION_HEADER_TYPESCRIPT"     : "Typescript（文本会话录像）",
+        "SECTION_HEADER_NETWORK"        : "网络",
+        "SECTION_HEADER_WOL"            : "网络唤醒（WoL）"
+
+    },
+
+    "PROTOCOL_VNC" : {
+
+        "FIELD_HEADER_AUDIO_SERVERNAME" : "音频服务器名：",
+        "FIELD_HEADER_CLIPBOARD_ENCODING" : "编码：",
+        "FIELD_HEADER_COLOR_DEPTH"      : "色彩深度：",
+        "FIELD_HEADER_CREATE_RECORDING_PATH" : "自动建立录像目录：",
+        "FIELD_HEADER_CURSOR"           : "光标：",
+        "FIELD_HEADER_DEST_HOST"        : "目标主机：",
+        "FIELD_HEADER_DEST_PORT"        : "目标端口：",
+        "FIELD_HEADER_DISABLE_COPY"     : "禁用从远程桌面复制：",
+        "FIELD_HEADER_DISABLE_PASTE"    : "禁用从客户端粘贴：",
+        "FIELD_HEADER_ENABLE_AUDIO"     : "启用音频：",
+        "FIELD_HEADER_ENABLE_SFTP"      : "启用 SFTP：",
+        "FIELD_HEADER_FORCE_LOSSLESS"   : "强制无损压缩：",
+        "FIELD_HEADER_HOSTNAME"         : "主机名：",
+        "FIELD_HEADER_USERNAME"         : "用户名：",
+        "FIELD_HEADER_PASSWORD"         : "密码：",
+        "FIELD_HEADER_PORT"             : "端口：",
+        "FIELD_HEADER_READ_ONLY"        : "只读：",
+        "FIELD_HEADER_RECORDING_EXCLUDE_MOUSE"  : "排除鼠标：",
+        "FIELD_HEADER_RECORDING_EXCLUDE_OUTPUT" : "排除图像/数据流：",
+        "FIELD_HEADER_RECORDING_INCLUDE_KEYS"   : "包含按键事件：",
+        "FIELD_HEADER_RECORDING_NAME" : "录像名：",
+        "FIELD_HEADER_RECORDING_PATH" : "录像路径：",
+        "FIELD_HEADER_SFTP_DIRECTORY"             : "缺省文件上传目录：",
+        "FIELD_HEADER_SFTP_DISABLE_DOWNLOAD"      : "禁用文件下载：",
+        "FIELD_HEADER_SFTP_HOST_KEY"              : "公钥（Base64）：",
+        "FIELD_HEADER_SFTP_HOSTNAME"              : "主机名：",
+        "FIELD_HEADER_SFTP_SERVER_ALIVE_INTERVAL" : "SFTP keepalive 时间间隔：",
+        "FIELD_HEADER_SFTP_PASSPHRASE"            : "口令：",
+        "FIELD_HEADER_SFTP_PASSWORD"              : "密码：",
+        "FIELD_HEADER_SFTP_PORT"                  : "端口：",
+        "FIELD_HEADER_SFTP_PRIVATE_KEY"           : "私钥：",
+        "FIELD_HEADER_SFTP_ROOT_DIRECTORY"        : "文件浏览器根目录：",
+        "FIELD_HEADER_SFTP_DISABLE_UPLOAD"        : "禁用文件上传：",
+        "FIELD_HEADER_SFTP_USERNAME"              : "用户名：",
+        "FIELD_HEADER_SWAP_RED_BLUE"    : "交换红/蓝成分：",
+        "FIELD_HEADER_WOL_BROADCAST_ADDR" : "WoL 数据包广播地址：",
+        "FIELD_HEADER_WOL_MAC_ADDR"       : "远程主机 MAC 地址：",
+        "FIELD_HEADER_WOL_SEND_PACKET"    : "发送 WoL 数据包：",
+        "FIELD_HEADER_WOL_UDP_PORT"       : "WoL 数据包 UDP 端口: ",
+        "FIELD_HEADER_WOL_WAIT_TIME"      : "主机启动等待时间：",
+
+        "FIELD_OPTION_COLOR_DEPTH_8"     : "256 色",
+        "FIELD_OPTION_COLOR_DEPTH_16"    : "低彩色（16 位）",
+        "FIELD_OPTION_COLOR_DEPTH_24"    : "真彩色（24 位）",
+        "FIELD_OPTION_COLOR_DEPTH_32"    : "真彩色（32 位）",
+        "FIELD_OPTION_COLOR_DEPTH_EMPTY" : "",
+
+        "FIELD_OPTION_CURSOR_EMPTY"  : "",
+        "FIELD_OPTION_CURSOR_LOCAL"  : "本地",
+        "FIELD_OPTION_CURSOR_REMOTE" : "远程",
+
+        "FIELD_OPTION_CLIPBOARD_ENCODING_CP1252"    : "CP1252",
+        "FIELD_OPTION_CLIPBOARD_ENCODING_EMPTY"     : "",
+        "FIELD_OPTION_CLIPBOARD_ENCODING_ISO8859_1" : "ISO 8859-1",
+        "FIELD_OPTION_CLIPBOARD_ENCODING_UTF_8"     : "UTF-8",
+        "FIELD_OPTION_CLIPBOARD_ENCODING_UTF_16"    : "UTF-16",
+
+        "NAME" : "VNC",
+
+        "SECTION_HEADER_AUDIO"          : "音频",
+        "SECTION_HEADER_AUTHENTICATION" : "认证",
+        "SECTION_HEADER_CLIPBOARD"      : "剪贴板",
+        "SECTION_HEADER_DISPLAY"        : "显示",
+        "SECTION_HEADER_NETWORK"        : "网络",
+        "SECTION_HEADER_RECORDING"      : "屏幕录像",
+        "SECTION_HEADER_REPEATER"       : "VNC 中继",
+        "SECTION_HEADER_SFTP"           : "SFTP",
+        "SECTION_HEADER_WOL"            : "网络唤醒（WoL）"
+
+    },
+
+    "SETTINGS" : {
+
+        "SECTION_HEADER_SETTINGS" : "设置"
+
+    },
+
+    "SETTINGS_CONNECTION_HISTORY" : {
+
+        "ACTION_DOWNLOAD" : "@:APP.ACTION_DOWNLOAD",
+        "ACTION_SEARCH"   : "@:APP.ACTION_SEARCH",
+        "ACTION_VIEW_RECORDING" : "@:APP.ACTION_VIEW_RECORDING",
+
+        "FIELD_PLACEHOLDER_FILTER" : "@:APP.FIELD_PLACEHOLDER_FILTER",
+
+        "FILENAME_HISTORY_CSV" : "连接历史.csv",
+
+        "FORMAT_DATE" : "@:APP.FORMAT_DATE_TIME_PRECISE",
+
+        "HELP_CONNECTION_HISTORY" : "下表中是过往的连接历史，可以点击列头来进行排序。如需搜索特定的记录，输入一个过滤字符串并点击“搜索”。列表中将只显示符合过滤条件的记录。",
+
+        "INFO_CONNECTION_DURATION_UNKNOWN" : "--",
+        "INFO_NO_HISTORY"                  : "无符合条件的记录",
+
+        "TABLE_HEADER_SESSION_CONNECTION_NAME" : "连接名",
+        "TABLE_HEADER_SESSION_DURATION"        : "持续时间",
+        "TABLE_HEADER_SESSION_LOGS"            : "日志",
+        "TABLE_HEADER_SESSION_REMOTEHOST"      : "远程主机",
+        "TABLE_HEADER_SESSION_STARTDATE"       : "起始时间",
+        "TABLE_HEADER_SESSION_USERNAME"        : "用户名",
+
+        "TEXT_HISTORY_DURATION" : "@:APP.TEXT_HISTORY_DURATION"
+
+    },
+
+    "SETTINGS_CONNECTIONS" : {
+
+        "ACTION_ACKNOWLEDGE"          : "@:APP.ACTION_ACKNOWLEDGE",
+        "ACTION_IMPORT"               : "@:APP.ACTION_IMPORT",
+        "ACTION_NEW_CONNECTION"       : "新建连接",
+        "ACTION_NEW_CONNECTION_GROUP" : "新建连接组",
+        "ACTION_NEW_SHARING_PROFILE"  : "新建共享设定",
+
+        "DIALOG_HEADER_ERROR" : "@:APP.DIALOG_HEADER_ERROR",
+
+        "FIELD_PLACEHOLDER_FILTER" : "@:APP.FIELD_PLACEHOLDER_FILTER",
+
+        "HELP_CONNECTIONS"   : "点击下列连接，以管理该连接。基于您的权限，可以新建和删除连接，或修改连接的属性（如协议、主机名、端口等）。",
+        
+        "INFO_ACTIVE_USER_COUNT" : "@:APP.INFO_ACTIVE_USER_COUNT",
+
+        "SECTION_HEADER_CONNECTIONS"     : "连接"
+
+    },
+
+    "SETTINGS_PREFERENCES" : {
+
+        "ACTION_ACKNOWLEDGE"        : "@:APP.ACTION_ACKNOWLEDGE",
+        "ACTION_CANCEL"             : "@:APP.ACTION_CANCEL",
+        "ACTION_SAVE"               : "@:APP.ACTION_SAVE",
+        "ACTION_UPDATE_PASSWORD"    : "@:APP.ACTION_UPDATE_PASSWORD",
+
+        "DIALOG_HEADER_ERROR"    : "@:APP.DIALOG_HEADER_ERROR",
+
+        "ERROR_PASSWORD_BLANK"    : "@:APP.ERROR_PASSWORD_BLANK",
+        "ERROR_PASSWORD_MISMATCH" : "@:APP.ERROR_PASSWORD_MISMATCH",
+
+        "FIELD_HEADER_LANGUAGE"           : "界面语言：",
+        "FIELD_HEADER_PASSWORD"           : "密码：",
+        "FIELD_HEADER_PASSWORD_OLD"       : "当前密码：",
+        "FIELD_HEADER_PASSWORD_NEW"       : "新密码：",
+        "FIELD_HEADER_PASSWORD_NEW_AGAIN" : "确认新密码：",
+        "FIELD_HEADER_TIMEZONE"           : "时区：",
+        "FIELD_HEADER_USERNAME"           : "用户名：",
+        
+        "HELP_DEFAULT_INPUT_METHOD" : "默认输入法决定了 Guacamole 如何接收键盘事件。当使用移动设备或使用 IME 输入时，有可能需要更改设置。本设置可在 Guacamole 菜单内被单个连接的设定覆盖。",
+        "HELP_DEFAULT_MOUSE_MODE"   : "默认鼠标模拟方式决定了新连接内的远程鼠标如何响应屏幕触控。本设置可在 Guacamole 菜单内被单个连接的设定覆盖。",
+        "HELP_INPUT_METHOD_NONE"    : "@:CLIENT.HELP_INPUT_METHOD_NONE",
+        "HELP_INPUT_METHOD_OSK"     : "@:CLIENT.HELP_INPUT_METHOD_OSK",
+        "HELP_INPUT_METHOD_TEXT"    : "@:CLIENT.HELP_INPUT_METHOD_TEXT",
+        "HELP_LOCALE"               : "以下选项与用户的语言环境有关，并将影响界面各部分的显示方式。",
+        "HELP_MOUSE_MODE_ABSOLUTE"  : "@:CLIENT.HELP_MOUSE_MODE_ABSOLUTE",
+        "HELP_MOUSE_MODE_RELATIVE"  : "@:CLIENT.HELP_MOUSE_MODE_RELATIVE",
+        "HELP_UPDATE_PASSWORD"      : "如需改变密码，请在下面输入您的当前密码与希望使用的新密码，并点击“更新密码” 。密码的改动会立即生效。",
+
+        "INFO_PASSWORD_CHANGED" : "密码已更改。",
+        "INFO_PREFERENCE_ATTRIBUTES_CHANGED" : "用户设定已保存。",
+
+        "NAME_INPUT_METHOD_NONE" : "@:CLIENT.NAME_INPUT_METHOD_NONE",
+        "NAME_INPUT_METHOD_OSK"  : "@:CLIENT.NAME_INPUT_METHOD_OSK",
+        "NAME_INPUT_METHOD_TEXT" : "@:CLIENT.NAME_INPUT_METHOD_TEXT",
+
+        "SECTION_HEADER_DEFAULT_INPUT_METHOD" : "缺省输入法",
+        "SECTION_HEADER_DEFAULT_MOUSE_MODE"   : "缺省鼠标模拟方式",
+        "SECTION_HEADER_UPDATE_PASSWORD"      : "更改密码"
+
+    },
+
+    "SETTINGS_USERS" : {
+
+        "ACTION_ACKNOWLEDGE"   : "@:APP.ACTION_ACKNOWLEDGE",
+        "ACTION_NEW_USER"      : "新用户",
+
+        "DIALOG_HEADER_ERROR" : "@:APP.DIALOG_HEADER_ERROR",
+
+        "FIELD_PLACEHOLDER_FILTER" : "@:APP.FIELD_PLACEHOLDER_FILTER",
+
+        "FORMAT_DATE" : "@:APP.FORMAT_DATE_TIME_PRECISE",
+
+        "HELP_USERS" : "点击下面的用户以管理该用户。基于您的权限，可以新增和删除用户，也可以更改他们的密码。",
+
+        "SECTION_HEADER_USERS"       : "用户",
+
+        "TABLE_HEADER_FULL_NAME"   : "全名",
+        "TABLE_HEADER_LAST_ACTIVE" : "最近活动",
+        "TABLE_HEADER_ORGANIZATION" : "组织",
+        "TABLE_HEADER_USERNAME"    : "用户名"
+
+    },
+    
+    "SETTINGS_USER_GROUPS" : {
+
+        "ACTION_ACKNOWLEDGE"    : "@:APP.ACTION_ACKNOWLEDGE",
+        "ACTION_NEW_USER_GROUP" : "新建用户组",
+
+        "DIALOG_HEADER_ERROR" : "@:APP.DIALOG_HEADER_ERROR",
+
+        "FIELD_PLACEHOLDER_FILTER" : "@:APP.FIELD_PLACEHOLDER_FILTER",
+
+        "FORMAT_DATE" : "@:APP.FORMAT_DATE_TIME_PRECISE",
+
+        "HELP_USER_GROUPS" : "单击或触摸下面的组以管理该组。 根据您的访问级别，可以添加和删除组，还可以更改其成员用户和用户组。",
+
+        "SECTION_HEADER_USER_GROUPS" : "用户组",
+
+        "TABLE_HEADER_USER_GROUP_NAME" : "用户组名称"
+
+    },
+    
+    "SETTINGS_SESSIONS" : {
+        
+        "ACTION_ACKNOWLEDGE" : "@:APP.ACTION_ACKNOWLEDGE",
+        "ACTION_CANCEL"      : "@:APP.ACTION_CANCEL",
+        "ACTION_DELETE"      : "终止会话",
+        
+        "DIALOG_HEADER_CONFIRM_DELETE" : "终止会话",
+        "DIALOG_HEADER_ERROR"          : "@:APP.DIALOG_HEADER_ERROR",
+        
+        "FIELD_PLACEHOLDER_FILTER" : "@:APP.FIELD_PLACEHOLDER_FILTER",
+        
+        "FORMAT_STARTDATE" : "@:APP.FORMAT_DATE_TIME_PRECISE",
+
+        "HELP_SESSIONS" : "该页面将填充当前活动的连接。 列出的连接和终止连接的能力取决于您的访问级别。如需终止一个或多个会话，勾选目标会话并点击“终止会话”。终止会话会立即断开对应用户的连接。",
+        
+        "INFO_NO_SESSIONS" : "无活动会话",
+
+        "SECTION_HEADER_SESSIONS" : "活动会话",
+        
+        "TABLE_HEADER_SESSION_CONNECTION_NAME" : "连接名",
+        "TABLE_HEADER_SESSION_REMOTEHOST"      : "远程主机",
+        "TABLE_HEADER_SESSION_STARTDATE"       : "开始时间",
+        "TABLE_HEADER_SESSION_USERNAME"        : "用户名",
+        
+        "TEXT_CONFIRM_DELETE" : "确定要终止所选定的会话？对应的用户会被立即断开连接。"
+
+    },
+
+    "USER_ATTRIBUTES" : {
+
+        "FIELD_HEADER_GUAC_EMAIL_ADDRESS"       : "电邮地址：",
+        "FIELD_HEADER_GUAC_FULL_NAME"           : "全名：",
+        "FIELD_HEADER_GUAC_ORGANIZATION"        : "组织：",
+        "FIELD_HEADER_GUAC_ORGANIZATIONAL_ROLE" : "职位："
+
+    },
+
+    "USER_MENU" : {
+
+        "ACTION_LOGOUT"             : "@:APP.ACTION_LOGOUT",
+        "ACTION_MANAGE_CONNECTIONS" : "@:APP.ACTION_MANAGE_CONNECTIONS",
+        "ACTION_MANAGE_PREFERENCES" : "@:APP.ACTION_MANAGE_PREFERENCES",
+        "ACTION_MANAGE_SESSIONS"    : "@:APP.ACTION_MANAGE_SESSIONS",
+        "ACTION_MANAGE_SETTINGS"    : "@:APP.ACTION_MANAGE_SETTINGS",
+        "ACTION_MANAGE_USERS"       : "@:APP.ACTION_MANAGE_USERS",
+        "ACTION_MANAGE_USER_GROUPS" : "@:APP.ACTION_MANAGE_USER_GROUPS",
+        "ACTION_NAVIGATE_HOME"      : "@:APP.ACTION_NAVIGATE_HOME",
+        "ACTION_VIEW_HISTORY"       : "@:APP.ACTION_VIEW_HISTORY"
+
+    }
+
+}
