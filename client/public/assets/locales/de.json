@@ -876,7 +876,7 @@
       },
       "settings": {
         "jumpHosts": {
-          "title": "Springen Hosts",
+          "title": "Jump-Hosts",
           "description": "Verbindung über Zwischenserver, um diesen Zielserver zu erreichen",
           "addButton": "Jump Host hinzufügen",
           "removeTooltip": "Jump Host entfernen",
