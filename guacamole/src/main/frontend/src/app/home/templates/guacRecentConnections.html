@@ -1,0 +1,25 @@
+<div class="recent-connections">
+
+    <!-- Text displayed if no recent connections exist -->
+    <p class="placeholder" ng-hide="hasRecentConnections()">{{'HOME.INFO_NO_RECENT_CONNECTIONS' | translate}}</p>
+
+    <!-- All recent connections -->
+    <div ng-repeat="recentConnection in recentConnections" class="connection">
+        <a href="#/client/{{recentConnection.entry.id}}">
+
+            <!-- Connection thumbnail -->
+            <div class="thumbnail">
+                <img alt="{{recentConnection.name}}" ng-src="{{recentConnection.entry.thumbnail}}"/>
+            </div>
+
+            <!-- Connection name -->
+            <div class="caption">
+                <span class="name">{{recentConnection.name}}</span>
+            </div>
+
+        </a>
+        <!-- Remove thumbnail -->
+        <div class="remove-recent" ng-click="removeRecentConnection(recentConnection)" />
+    </div>
+
+</div>

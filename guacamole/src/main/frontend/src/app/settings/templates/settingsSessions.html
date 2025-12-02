@@ -1,0 +1,58 @@
+<div class="settings section sessions" ng-class="{loading: !isLoaded()}">
+
+    <!-- User Session management -->
+    <p>{{'SETTINGS_SESSIONS.HELP_SESSIONS' | translate}}</p>
+
+    <!-- Form action buttons -->
+    <div class="action-buttons">
+        <button class="delete-sessions danger" ng-disabled="!canDeleteSessions()" ng-click="deleteSessions()">{{'SETTINGS_SESSIONS.ACTION_DELETE' | translate}}</button>
+    </div>
+
+    <!-- Session filter -->
+    <guac-filter filtered-items="filteredWrappers" items="wrappers"
+                 placeholder="'SETTINGS_SESSIONS.FIELD_PLACEHOLDER_FILTER' | translate"
+                 properties="filteredWrapperProperties"></guac-filter>
+
+    <!-- List of current user sessions -->
+    <table class="sorted session-list">
+        <thead>
+            <tr>
+                <th class="select-session"></th>
+                <th guac-sort-order="wrapperOrder" guac-sort-property="'activeConnection.username'">
+                    {{'SETTINGS_SESSIONS.TABLE_HEADER_SESSION_USERNAME' | translate}}
+                </th>
+                <th guac-sort-order="wrapperOrder" guac-sort-property="'startDate'">
+                    {{'SETTINGS_SESSIONS.TABLE_HEADER_SESSION_STARTDATE' | translate}}
+                </th>
+                <th guac-sort-order="wrapperOrder" guac-sort-property="'activeConnection.remoteHost'">
+                    {{'SETTINGS_SESSIONS.TABLE_HEADER_SESSION_REMOTEHOST' | translate}}
+                </th>
+                <th guac-sort-order="wrapperOrder" guac-sort-property="'name'">
+                    {{'SETTINGS_SESSIONS.TABLE_HEADER_SESSION_CONNECTION_NAME' | translate}}
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr ng-repeat="wrapper in wrapperPage" class="session">
+                <td class="select-session">
+                    <input ng-change="wrapperSelectionChange(wrapper)" type="checkbox" ng-model="wrapper.checked">
+                </td>
+                <td><guac-user-item username="wrapper.activeConnection.username"></guac-user-item></td>
+                <td>{{wrapper.startDate}}</td>
+                <td>{{wrapper.activeConnection.remoteHost}}</td>
+                <td><a ng-href="{{
+                    getClientURL(wrapper.dataSource, wrapper.activeConnection)
+                }}">{{wrapper.name}}</a></td>
+            </tr>
+        </tbody>
+    </table>
+
+    <!-- Text displayed if no sessions exist -->
+    <p class="placeholder" ng-hide="wrapperPage.length">
+        {{'SETTINGS_SESSIONS.INFO_NO_SESSIONS' | translate}}
+    </p>
+
+    <!-- Pager for session list -->
+    <guac-pager page="wrapperPage" page-size="25"
+                items="filteredWrappers | orderBy : wrapperOrder.predicate"></guac-pager>
+</div>

@@ -1,0 +1,87 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ */
+
+.pager {
+    text-align: center;
+    margin: 1em;
+}
+
+.pager .page-numbers {
+    display: inline-block;
+    margin: 0;
+    padding: 0;
+}
+
+.pager .first-page,
+.pager .prev-page,
+.pager .set-page,
+.pager .next-page,
+.pager .last-page {
+    cursor: pointer;
+    vertical-align: middle;
+}
+
+.pager .first-page.disabled,
+.pager .prev-page.disabled,
+.pager .set-page.disabled,
+.pager .next-page.disabled,
+.pager .last-page.disabled {
+    cursor: auto;
+    opacity: 0.25;
+}
+
+.pager .set-page,
+.pager .more-pages {
+    display: inline-block;
+    padding: 0.25em;
+    text-align: center;
+    min-width: 1.25em;
+}
+
+.pager .set-page {
+    text-decoration: underline;
+}
+
+.pager .set-page.current {
+    cursor: auto;
+    text-decoration: none;
+    font-weight: bold;
+    background: rgba(0, 0, 0, 0.1);
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    -moz-border-radius: 0.2em;
+    -webkit-border-radius: 0.2em;
+    -khtml-border-radius: 0.2em;
+    border-radius: 0.2em;
+}
+
+.pager .icon.first-page {
+    background-image: url('images/action-icons/guac-first-page.svg');
+}
+
+.pager .icon.prev-page {
+    background-image: url('images/action-icons/guac-prev-page.svg');
+}
+
+.pager .icon.next-page {
+    background-image: url('images/action-icons/guac-next-page.svg');
+}
+
+.pager .icon.last-page {
+    background-image: url('images/action-icons/guac-last-page.svg');
+}

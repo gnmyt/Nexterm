@@ -1,0 +1,673 @@
+{
+    
+    "NAME" : "Norsk Bokmål",
+    
+    "APP" : {
+
+        "ACTION_ACKNOWLEDGE"        : "OK",
+        "ACTION_CANCEL"             : "Avbryt",
+        "ACTION_CLONE"              : "Klone",
+        "ACTION_CONTINUE"           : "Fortsett",
+        "ACTION_DELETE"             : "Slett",
+        "ACTION_DELETE_SESSIONS"    : "Avslutt Sesjoner",
+        "ACTION_LOGIN"              : "Logg inn",
+        "ACTION_LOGOUT"             : "Logg ut",
+        "ACTION_MANAGE_CONNECTIONS" : "Forbindelser",
+        "ACTION_MANAGE_PREFERENCES" : "Mine valg",
+        "ACTION_MANAGE_SETTINGS"    : "Innstillinger",
+        "ACTION_MANAGE_SESSIONS"    : "Aktive Sesjoner",
+        "ACTION_MANAGE_USERS"       : "Brukere",
+        "ACTION_NAVIGATE_BACK"      : "Tilbake",
+        "ACTION_NAVIGATE_HOME"      : "Hjem",
+        "ACTION_SAVE"               : "Lagre",
+        "ACTION_SEARCH"             : "Søk",
+        "ACTION_UPDATE_PASSWORD"    : "Oppdater Passord",
+        "ACTION_VIEW_HISTORY"       : "Historie",
+
+        "DIALOG_HEADER_ERROR" : "Feil",
+
+        "ERROR_PASSWORD_BLANK"    : "Passordet ditt kan ikke være blankt.",
+        "ERROR_PASSWORD_MISMATCH" : "Passordene er ikke like.",
+        
+        "FIELD_HEADER_PASSWORD"       : "Passord:",
+        "FIELD_HEADER_PASSWORD_AGAIN" : "Gjenta Passord:",
+
+        "FIELD_PLACEHOLDER_FILTER" : "Filter",
+
+        "FORMAT_DATE_TIME_PRECISE" : "ååå-mm-dd TT:mm:ss",
+
+        "INFO_ACTIVE_USER_COUNT" : "Blir brukt av {USERS} {USERS, plural, one{user} other{users}}.",
+
+        "NAME" : "Guacamole ${project.version}",
+
+        "TEXT_HISTORY_DURATION" : "{VALUE} {UNIT, select, second{{VALUE, plural, one{second} other{seconds}}} minute{{VALUE, plural, one{minute} other{minutes}}} hour{{VALUE, plural, one{hour} other{hours}}} day{{VALUE, plural, one{day} other{days}}} other{}}"
+
+    },
+
+    "CLIENT" : {
+
+        "ACTION_ACKNOWLEDGE"               : "@:APP.ACTION_ACKNOWLEDGE",
+        "ACTION_CLEAR_COMPLETED_TRANSFERS" : "Tøm",
+        "ACTION_DISCONNECT"                : "Koble fra",
+        "ACTION_LOGOUT"                    : "@:APP.ACTION_LOGOUT",
+        "ACTION_NAVIGATE_BACK"             : "@:APP.ACTION_NAVIGATE_BACK",
+        "ACTION_NAVIGATE_HOME"             : "@:APP.ACTION_NAVIGATE_HOME",
+        "ACTION_RECONNECT"                 : "Koble til på nytt",
+        "ACTION_SAVE_FILE"                 : "@:APP.ACTION_SAVE",
+        "ACTION_UPLOAD_FILES"              : "Last Opp Filer",
+
+        "DIALOG_HEADER_CONNECTING"       : "Kobler til",
+        "DIALOG_HEADER_CONNECTION_ERROR" : "Feil ved tilkobling",
+        "DIALOG_HEADER_DISCONNECTED"     : "Frakoblet",
+
+        "ERROR_CLIENT_201"     : "Denne tilkoblingen har blitt lukket fordi server er opptatt. Vent noen minutter og prøv igjen.",
+        "ERROR_CLIENT_202"     : "Guacamole har lukket forbindelsen fordi serveren bruker for lang tid på å svare. Prøv igjen eller kontakt systemansvarlig.",
+        "ERROR_CLIENT_203"     : "Det har oppstått en feil på terminalserveren og forbindelsen er lukket. Prøv igjen eller kontakt systemansvarlig.",
+        "ERROR_CLIENT_205"     : "Denne forbindelsen er lukket fordi den er i konflikt med en annen forbindelse. Prøv igjen senere.",
+        "ERROR_CLIENT_301"     : "Innlogging feilet. Koble til på nytt og prøv igjen.",
+        "ERROR_CLIENT_303"     : "Du har ikke tilgang til denne forbindelsen. Kontakt systemansvarlig eller sjekk dine systeminnstillinger dersom du trenger tilgang.",
+        "ERROR_CLIENT_308"     : "Guacamole har lukket forbindelsen fordi nettleseren din ikke har svart og virker frakoblet. Dette kommer ofte av nettverksproblemer som f.eks. ustabilt wifi-signal eller tregt nettverk. Sjekk tilkoblingen din og prøv igjen.",
+        "ERROR_CLIENT_31D"     : "Guacamole nekter tilgang til denne forbindelsen fordi du har brukt opp maks antall samtidige forbindelser for en bruker. Avslutt en eller flere forbindelser og prøv igjen.",
+        "ERROR_CLIENT_DEFAULT" : "Det har oppstått en intern feil i Guacamole og forbindelsen er terminert. Kontakt systemansvarlig dersom problemet fortsetter eller sjekk systemlogger.",
+
+        "ERROR_TUNNEL_201"     : "Guacamole har avvist oppkoblingen fordi det er for mange aktive forbindelser. Vent noen minutter og prøv igjen.",
+        "ERROR_TUNNEL_202"     : "Forbindelsen er lukket fordi server bruker for lang tid på å svare. Dette kommer ofte av nettverksproblemer som f.eks. ustabilt wifi-signal eller tregt nettverk. Sjekk tilkoblingen din og prøv igjen eller kontakt systemadministrator.",
+        "ERROR_TUNNEL_203"     : "Serveren støtte på en feil og har lukket forbindelsen. Prøv igjen eller kontakt systemadministrator.",
+        "ERROR_TUNNEL_204"     : "Den etterspurte tilkoblingen eksisterer ikke. Sjekk navnet på tilkoblingen og prøv igjen.",
+        "ERROR_TUNNEL_205"     : "Denne tilkoblingen er i bruk og flere forbindelser til denne tilkoblingen er ikke lov. Prøv igjen senere.",
+        "ERROR_TUNNEL_301"     : "Du har ikke tilgang til denne tilkoblingen fordi du er ikke pålogget. Logg inn og prøv igjen.",
+        "ERROR_TUNNEL_303"     : "Du har ikke tilgang til denne tilkoblingen. Be systemadministrator legge deg til i listen over godkjente brukere dersom du skal ha tilgang eller sjekk systeminstillingene dine.",
+        "ERROR_TUNNEL_308"     : "Guacamole har lukket forbindelsen fordi nettleseren din ikke svarer og virker frakoblet. Dette kommer ofte av nettverksproblemer som f.eks. ustabilt wifi-signal eller tregt nettverk. Sjekk tilkoblingen din og prøv igjen.",
+        "ERROR_TUNNEL_31D"     : "Guacamole nekter tilgang til denne forbindelsen fordi du har brukt opp maks antall samtidige forbindelser for en bruker. Avslutt en eller flere forbindelser og prøv igjen.",
+        "ERROR_TUNNEL_DEFAULT" : "En intern feil har oppstått i Guacamole og forbindelsen er terminert. Kontakt systemadministrator dersom problemet fortsetter eller sjekk systemloggene dine.",
+
+        "ERROR_UPLOAD_100"     : "Filoverføring er enten ikke støttet eller ikke aktivert. Kontakt systemadministrator eller sjekk systemlogger.",
+        "ERROR_UPLOAD_201"     : "For mange filer blir overført. Vent til aktive overføringer fullfører og prøv igjen.",
+        "ERROR_UPLOAD_202"     : "Filen kan ikke overføres fordi terminalserveren bruker for lang tid på å svare. Prøv igjen eller kontakt systemadministrator.",
+        "ERROR_UPLOAD_203"     : "Det oppstod en feil på terminalserveren under overføring. Prøv igjen eller kontakt systemansvarlig.",
+        "ERROR_UPLOAD_204"     : "Målmappen for filoverføringen eksisterer ikke. Sjekk målmappe og prøv igjen.",
+        "ERROR_UPLOAD_205"     : "Målet til filoverføringen er låst. Vent til aktive jobber fullfører og prøv igjen.",
+        "ERROR_UPLOAD_301"     : "Du har ikke tillatelse til å laste opp denne filen fordi du er ikke logget inn. Logg inn og prøv igjen.",
+        "ERROR_UPLOAD_303"     : "Du har ikke tillatelse til å laste opp denne filen. Sjekk systeminnstillingene dine eller kontakt systemadministrator dersom du skal ha tilgang.",
+        "ERROR_UPLOAD_308"     : "Filoverføringen har stoppet. Dette kommer ofte av nettverksproblemer som f.eks. ustabilt wifi-signal eller tregt nettverk. Sjekk tilkoblingen din og prøv igjen.",
+        "ERROR_UPLOAD_31D"     : "For mange filer blir overført. Vent til aktive overføringer fullfører og prøv igjen.",
+        "ERROR_UPLOAD_DEFAULT" : "En intern feil har oppstått i Guacamole og forbindelsen er terminert. Kontakt systemadministrator dersom problemet fortsetter eller sjekk systemloggene dine.",
+
+        "FIELD_PLACEHOLDER_FILTER" : "@:APP.FIELD_PLACEHOLDER_FILTER",
+
+        "HELP_CLIPBOARD"           : "Tekst som er kopiert eller klippet i Guacamole vises her. Endringer i teksten under vil påvirke den eksterne utklippstavlen.",
+        "HELP_INPUT_METHOD_NONE"   : "Ingen innenhet er brukt. Tastetrykk fra et fysisk tilkoblet tastatur blir akseptert.",
+        "HELP_INPUT_METHOD_OSK"    : "Vis og aksepter tastetrykk fra det innebygde skjermtastaturet i Guacamole. Skjermtastaturet tillater tasting av tastekombinasjoner som ellers kan være umulig (f.eks. Ctrl-Alt-Del).",
+        "HELP_INPUT_METHOD_TEXT"   : "Tillat tasting av tekst og emuler hendinger basert på tastet tekst. Dette er nødvendig for enheter som mobiltelefoner som mangler fysisk tastatur.",
+        "HELP_MOUSE_MODE"          : "Bestemmer hvordan den fjernstyrte musen reagerer på berøringer.",
+        "HELP_MOUSE_MODE_ABSOLUTE" : "Trykk for å klikke. Klikket oppstår der man berører.",
+        "HELP_MOUSE_MODE_RELATIVE" : "Dra for å flytte musemarkøren og trykk for å klikke. Klikket oppstår på plasseringen til musepekeren.",
+
+        "INFO_NO_FILE_TRANSFERS" : "Ingen filoverføringer.",
+
+        "NAME_INPUT_METHOD_NONE"   : "Ingen",
+        "NAME_INPUT_METHOD_OSK"    : "Skjermtastatur",
+        "NAME_INPUT_METHOD_TEXT"   : "Inntasting",
+        "NAME_KEY_CTRL"            : "Ctrl",
+        "NAME_KEY_ALT"             : "Alt",
+        "NAME_KEY_ESC"             : "Esc",
+        "NAME_KEY_TAB"             : "Tab",
+        "NAME_MOUSE_MODE_ABSOLUTE" : "Touch-skjerm",
+        "NAME_MOUSE_MODE_RELATIVE" : "Touchpad",
+
+        "SECTION_HEADER_CLIPBOARD"      : "Utklippstavle",
+        "SECTION_HEADER_DEVICES"        : "Enheter",
+        "SECTION_HEADER_DISPLAY"        : "Skjerm",
+        "SECTION_HEADER_FILE_TRANSFERS" : "Filoverføringer",
+        "SECTION_HEADER_INPUT_METHOD"   : "Standard Innenhet",
+        "SECTION_HEADER_MOUSE_MODE"     : "Metode for musemulering",
+
+        "TEXT_ZOOM_AUTO_FIT"              : "Skaler automatisk til nettleservindu.",
+        "TEXT_CLIENT_STATUS_IDLE"         : "Passiv.",
+        "TEXT_CLIENT_STATUS_CONNECTING"   : "Kobler til Guacamole...",
+        "TEXT_CLIENT_STATUS_DISCONNECTED" : "Du er frakoblet.",
+        "TEXT_CLIENT_STATUS_WAITING"      : "Tilkoblet Guacamole. Venter på svar...",
+        "TEXT_RECONNECT_COUNTDOWN"        : "Kobler til på nytt om {REMAINING} {REMAINING, plural, one{second} other{seconds}}...",
+        "TEXT_FILE_TRANSFER_PROGRESS"     : "{PROGRESS} {UNIT, select, b{B} kb{KB} mb{MB} gb{GB} other{}}"
+
+    },
+
+    "DATA_SOURCE_DEFAULT" : {
+        "NAME" : "Default (XML)"
+    },
+
+    "FORM" : {
+
+        "FIELD_PLACEHOLDER_DATE" : "YYYY-MM-DD",
+        "FIELD_PLACEHOLDER_TIME" : "HH:MM:SS",
+
+        "HELP_SHOW_PASSWORD" : "Klikk for å vise passord",
+        "HELP_HIDE_PASSWORD" : "Klikk for å skjule passord"
+
+    },
+
+    "HOME" : {
+
+        "FIELD_PLACEHOLDER_FILTER" : "@:APP.FIELD_PLACEHOLDER_FILTER",
+
+        "INFO_ACTIVE_USER_COUNT" : "@:APP.INFO_ACTIVE_USER_COUNT",
+
+        "INFO_NO_RECENT_CONNECTIONS" : "Ingen nylige tilkoblinger.",
+        
+        "PASSWORD_CHANGED" : "Passord endret.",
+
+        "SECTION_HEADER_ALL_CONNECTIONS"    : "Alle tilkoblinger",
+        "SECTION_HEADER_RECENT_CONNECTIONS" : "Nylige tilkoblinger"
+
+    },
+
+    "LOGIN": {
+
+        "ACTION_ACKNOWLEDGE" : "@:APP.ACTION_ACKNOWLEDGE",
+        "ACTION_CONTINUE"    : "@:APP.ACTION_CONTINUE",
+        "ACTION_LOGIN"       : "@:APP.ACTION_LOGIN",
+
+        "DIALOG_HEADER_ERROR" : "@:APP.DIALOG_HEADER_ERROR",
+
+        "ERROR_INVALID_LOGIN" : "Ugyldig Pålogging",
+
+        "FIELD_HEADER_USERNAME" : "Brukernavn",
+        "FIELD_HEADER_PASSWORD" : "Passord"
+
+    },
+
+    "MANAGE_CONNECTION" : {
+
+        "ACTION_ACKNOWLEDGE"          : "@:APP.ACTION_ACKNOWLEDGE",
+        "ACTION_CANCEL"               : "@:APP.ACTION_CANCEL",
+        "ACTION_CLONE"                : "@:APP.ACTION_CLONE",
+        "ACTION_DELETE"               : "@:APP.ACTION_DELETE",
+        "ACTION_SAVE"                 : "@:APP.ACTION_SAVE",
+
+        "DIALOG_HEADER_CONFIRM_DELETE" : "Slett tilkobling",
+        "DIALOG_HEADER_ERROR"          : "@:APP.DIALOG_HEADER_ERROR",
+
+        "FIELD_HEADER_LOCATION" : "Lokasjon:",
+        "FIELD_HEADER_NAME"     : "Navn:",
+        "FIELD_HEADER_PROTOCOL" : "Protokoll:",
+
+        "FORMAT_HISTORY_START" : "@:APP.FORMAT_DATE_TIME_PRECISE",
+
+        "INFO_CONNECTION_DURATION_UNKNOWN" : "--",
+        "INFO_CONNECTION_ACTIVE_NOW"       : "Aktiv Nå",
+        "INFO_CONNECTION_NOT_USED"         : "Denne tilkoblingen har ikke blitt brukt enda.",
+
+        "SECTION_HEADER_EDIT_CONNECTION" : "Rediger Tilkobling",
+        "SECTION_HEADER_HISTORY"         : "Brukslogg",
+        "SECTION_HEADER_PARAMETERS"      : "Parametre",
+
+        "TABLE_HEADER_HISTORY_USERNAME" : "Brukernavn",
+        "TABLE_HEADER_HISTORY_START"    : "Starttid",
+        "TABLE_HEADER_HISTORY_DURATION" : "Varighet",
+
+        "TEXT_CONFIRM_DELETE"   : "Tilkoblinger kan ikke gjennopprettes etter at de er slettet. Er du sikker på at du vil slette denne tilkoblingen?",
+        "TEXT_HISTORY_DURATION" : "@:APP.TEXT_HISTORY_DURATION"
+
+    },
+
+    "MANAGE_CONNECTION_GROUP" : {
+
+        "ACTION_ACKNOWLEDGE"   : "@:APP.ACTION_ACKNOWLEDGE",
+        "ACTION_CANCEL"        : "@:APP.ACTION_CANCEL",
+        "ACTION_DELETE"        : "@:APP.ACTION_DELETE",
+        "ACTION_SAVE"          : "@:APP.ACTION_SAVE",
+
+        "DIALOG_HEADER_CONFIRM_DELETE" : "Slett Tilkoblingsgruppe",
+        "DIALOG_HEADER_ERROR"          : "@:APP.DIALOG_HEADER_ERROR",
+
+        "FIELD_HEADER_LOCATION" : "Lokasjon:",
+        "FIELD_HEADER_NAME"     : "Navn:",
+        "FIELD_HEADER_TYPE"     : "Type:",
+
+        "NAME_TYPE_BALANCING"       : "Balansert",
+        "NAME_TYPE_ORGANIZATIONAL"  : "Organisasjon",
+
+        "SECTION_HEADER_EDIT_CONNECTION_GROUP" : "Rediger Tilkoblingsgruppe",
+
+        "TEXT_CONFIRM_DELETE" : "Tilkoblingsgrupper kan ikke gjennopprettes etter at de er slettet. Er du sikker på at du vil slette denne tilkoblingsgruppen?"
+
+    },
+
+    "MANAGE_USER" : {
+
+        "ACTION_ACKNOWLEDGE"   : "@:APP.ACTION_ACKNOWLEDGE",
+        "ACTION_CANCEL"        : "@:APP.ACTION_CANCEL",
+        "ACTION_CLONE"         : "@:APP.ACTION_CLONE",
+        "ACTION_DELETE"        : "@:APP.ACTION_DELETE",
+        "ACTION_SAVE"          : "@:APP.ACTION_SAVE",
+
+        "DIALOG_HEADER_CONFIRM_DELETE" : "Slett Bruker",
+        "DIALOG_HEADER_ERROR"          : "@:APP.DIALOG_HEADER_ERROR",
+
+        "ERROR_PASSWORD_MISMATCH" : "@:APP.ERROR_PASSWORD_MISMATCH",
+
+        "FIELD_HEADER_ADMINISTER_SYSTEM"             : "Administrer systemet:",
+        "FIELD_HEADER_CHANGE_OWN_PASSWORD"           : "Endre eget passord:",
+        "FIELD_HEADER_CREATE_NEW_USERS"              : "Opprett ny bruker:",
+        "FIELD_HEADER_CREATE_NEW_CONNECTIONS"        : "Opprett ny tilkobling:",
+        "FIELD_HEADER_CREATE_NEW_CONNECTION_GROUPS"  : "Opprett ny tilkoblingsgruppe:",
+        "FIELD_HEADER_PASSWORD"                      : "@:APP.FIELD_HEADER_PASSWORD",
+        "FIELD_HEADER_PASSWORD_AGAIN"                : "@:APP.FIELD_HEADER_PASSWORD_AGAIN",
+        "FIELD_HEADER_USERNAME"                      : "Brukernavn:",
+
+        "FIELD_PLACEHOLDER_FILTER" : "@:APP.FIELD_PLACEHOLDER_FILTER",
+
+        "INFO_READ_ONLY" : "Beklager, denne brukerkontoen kan ikke redigeres.",
+
+        "SECTION_HEADER_CONNECTIONS" : "Tilkoblinger",
+        "SECTION_HEADER_EDIT_USER"   : "Rediger Bruker",
+        "SECTION_HEADER_PERMISSIONS" : "Tillatelser",
+
+        "TEXT_CONFIRM_DELETE" : "Brukere kan ikke gjenopprettes etter at de er slettet. Er du sikker på du vil slette denne brukeren?"
+
+    },
+    
+    "PROTOCOL_RDP" : {
+
+        "FIELD_HEADER_CLIENT_NAME"     : "Klientnavn:",
+        "FIELD_HEADER_COLOR_DEPTH"     : "Fargedybde:",
+        "FIELD_HEADER_CONSOLE"         : "Administratorkonsoll:",
+        "FIELD_HEADER_CONSOLE_AUDIO"   : "Støtte for lyd i konsoll:",
+        "FIELD_HEADER_CREATE_DRIVE_PATH" : "Opprett disk automatisk:",
+        "FIELD_HEADER_CREATE_RECORDING_PATH" : "Opprett sti for opptak automatisk:",
+        "FIELD_HEADER_DISABLE_AUDIO"   : "Deaktiver lyd:",
+        "FIELD_HEADER_DISABLE_AUTH"    : "Deaktiver autentisering:",
+        "FIELD_HEADER_DOMAIN"          : "Domene:",
+        "FIELD_HEADER_DPI"             : "Oppløsning (DPI):",
+        "FIELD_HEADER_DRIVE_PATH"      : "Sti til disk:",
+        "FIELD_HEADER_ENABLE_DESKTOP_COMPOSITION" : "Aktiver skrivebordssammensetning (Aero):",
+        "FIELD_HEADER_ENABLE_DRIVE"               : "Aktiver disk:",
+        "FIELD_HEADER_ENABLE_FONT_SMOOTHING"      : "Aktiver fontutjevning (ClearType):",
+        "FIELD_HEADER_ENABLE_FULL_WINDOW_DRAG"    : "Vis innhold i vindu ved flytting:",
+        "FIELD_HEADER_ENABLE_MENU_ANIMATIONS"     : "Aktiver menyanimasjoner:",
+        "FIELD_HEADER_ENABLE_PRINTING"            : "Aktiver utskrift:",
+        "FIELD_HEADER_ENABLE_SFTP"     : "Aktiver SFTP:",
+        "FIELD_HEADER_ENABLE_THEMING"             : "Aktiver tema:",
+        "FIELD_HEADER_ENABLE_WALLPAPER"           : "Ativer bakgrunnsbilde:",
+        "FIELD_HEADER_GATEWAY_DOMAIN"   : "Domene:",
+        "FIELD_HEADER_GATEWAY_HOSTNAME" : "Vertsnavn:",
+        "FIELD_HEADER_GATEWAY_PASSWORD" : "Passord:",
+        "FIELD_HEADER_GATEWAY_PORT"     : "Port:",
+        "FIELD_HEADER_GATEWAY_USERNAME" : "Brukernavn:",
+        "FIELD_HEADER_HEIGHT"          : "Høyde:",
+        "FIELD_HEADER_HOSTNAME"        : "Vertsnavn:",
+        "FIELD_HEADER_IGNORE_CERT"     : "Ignorer serversertifikat:",
+        "FIELD_HEADER_INITIAL_PROGRAM" : "Oppstartsprogram:",
+        "FIELD_HEADER_PASSWORD"        : "Passord:",
+        "FIELD_HEADER_PORT"            : "Port:",
+        "FIELD_HEADER_PRECONNECTION_BLOB" : "Pre-tilkoblings BLOB (VM ID):",
+        "FIELD_HEADER_PRECONNECTION_ID"   : "RDP kilde-ID:",
+        "FIELD_HEADER_RECORDING_NAME" : "Navn på opptak:",
+        "FIELD_HEADER_RECORDING_PATH" : "Sti for opptak:",
+        "FIELD_HEADER_RESIZE_METHOD" : "Metode for reskalering:",
+        "FIELD_HEADER_REMOTE_APP_ARGS" : "Parameter:",
+        "FIELD_HEADER_REMOTE_APP_DIR"  : "Arbeidsmappe:",
+        "FIELD_HEADER_REMOTE_APP"      : "Program:",
+        "FIELD_HEADER_SECURITY"        : "Sikkerhetsmodus:",
+        "FIELD_HEADER_SERVER_LAYOUT"   : "Tastaturutforming:",
+        "FIELD_HEADER_SFTP_DIRECTORY"   : "Standard mappe for opplasting:",
+        "FIELD_HEADER_SFTP_HOSTNAME"    : "Vertsnavn:",
+        "FIELD_HEADER_SFTP_PASSPHRASE"  : "Passfrase:",
+        "FIELD_HEADER_SFTP_PASSWORD"    : "Passord:",
+        "FIELD_HEADER_SFTP_PORT"        : "Port:",
+        "FIELD_HEADER_SFTP_PRIVATE_KEY" : "Privat nøkkel:",
+        "FIELD_HEADER_SFTP_USERNAME"    : "Brukernavn:",
+        "FIELD_HEADER_STATIC_CHANNELS" : "Statiske kanalnavn:",
+        "FIELD_HEADER_USERNAME"        : "Brukernavn:",
+        "FIELD_HEADER_WIDTH"           : "Bredde:",
+
+        "FIELD_OPTION_COLOR_DEPTH_16"    : "Tusener av farger (16-bit)",
+        "FIELD_OPTION_COLOR_DEPTH_24"    : "Ekte farger (24-bit)",
+        "FIELD_OPTION_COLOR_DEPTH_32"    : "Ekte farger (32-bit)",
+        "FIELD_OPTION_COLOR_DEPTH_8"     : "256 farger",
+        "FIELD_OPTION_COLOR_DEPTH_EMPTY" : "",
+
+        "FIELD_OPTION_RESIZE_METHOD_DISPLAY_UPDATE" : "\"Display Update\" virtual channel (RDP 8.1+)",
+        "FIELD_OPTION_RESIZE_METHOD_EMPTY"          : "",
+        "FIELD_OPTION_RESIZE_METHOD_RECONNECT"      : "Koble til på nytt",
+
+        "FIELD_OPTION_SECURITY_ANY"   : "Alle",
+        "FIELD_OPTION_SECURITY_EMPTY" : "",
+        "FIELD_OPTION_SECURITY_NLA"   : "NLA (Network Level Authentication)",
+        "FIELD_OPTION_SECURITY_RDP"   : "RDP kryptering",
+        "FIELD_OPTION_SECURITY_TLS"   : "TLS kryptering",
+
+        "FIELD_OPTION_SERVER_LAYOUT_DE_DE_QWERTZ" : "Tysk (Qwertz)",
+        "FIELD_OPTION_SERVER_LAYOUT_EMPTY"        : "",
+        "FIELD_OPTION_SERVER_LAYOUT_EN_US_QWERTY" : "US Engelsk (Qwerty)",
+        "FIELD_OPTION_SERVER_LAYOUT_FAILSAFE"     : "Unicode",
+        "FIELD_OPTION_SERVER_LAYOUT_FR_FR_AZERTY" : "Fransk (Azerty)",
+        "FIELD_OPTION_SERVER_LAYOUT_IT_IT_QWERTY" : "Italiensk (Qwerty)",
+        "FIELD_OPTION_SERVER_LAYOUT_JA_JP_QWERTY" : "Japansk (Qwerty)",
+        "FIELD_OPTION_SERVER_LAYOUT_PL_PL_QWERTY" : "Polsk (Qwerty)",
+        "FIELD_OPTION_SERVER_LAYOUT_SV_SE_QWERTY" : "Svensk (Qwerty)",
+
+        "NAME" : "RDP",
+
+        "SECTION_HEADER_AUTHENTICATION"     : "Autentisering",
+        "SECTION_HEADER_BASIC_PARAMETERS"   : "Grunnleggende Innstillinger",
+        "SECTION_HEADER_CLIPBOARD"          : "Utklippstavle",
+        "SECTION_HEADER_DEVICE_REDIRECTION" : "Enhet omdirigering",
+        "SECTION_HEADER_DISPLAY"            : "Skjerm",
+        "SECTION_HEADER_NETWORK"            : "Nettverk",
+        "SECTION_HEADER_PERFORMANCE"        : "Ytelse",
+        "SECTION_HEADER_PRECONNECTION_PDU"  : "Pre-tilkobling PDU / Hyper-V",
+        "SECTION_HEADER_RECORDING"          : "Skjermopptak",
+        "SECTION_HEADER_REMOTEAPP"          : "Eksternt Program",
+        "SECTION_HEADER_SFTP"               : "SFTP"
+
+    },
+
+    "PROTOCOL_SSH" : {
+
+        "FIELD_HEADER_COLOR_SCHEME" : "Fargeskjema:",
+        "FIELD_HEADER_COMMAND"     : "Kjør kommando:",
+        "FIELD_HEADER_CREATE_RECORDING_PATH" : "Opprett sti for opptak automatisk:",
+        "FIELD_HEADER_CREATE_TYPESCRIPT_PATH" : "Opprett sti for typescript automatisk:",
+        "FIELD_HEADER_FONT_NAME"   : "Fontnavn:",
+        "FIELD_HEADER_FONT_SIZE"   : "Fontstørrelse:",
+        "FIELD_HEADER_ENABLE_SFTP" : "Aktiver SFTP:",
+        "FIELD_HEADER_HOSTNAME"    : "Servernavn:",
+        "FIELD_HEADER_USERNAME"    : "Brukernavn:",
+        "FIELD_HEADER_PASSWORD"    : "Passord:",
+        "FIELD_HEADER_PASSPHRASE"  : "Passfrase:",
+        "FIELD_HEADER_PORT"        : "Port:",
+        "FIELD_HEADER_PRIVATE_KEY" : "Privat nøkkel:",
+        "FIELD_HEADER_RECORDING_NAME" : "Navm på opptak:",
+        "FIELD_HEADER_RECORDING_PATH" : "Sti til opptak:",
+        "FIELD_HEADER_TYPESCRIPT_NAME" : "Typescript navn:",
+        "FIELD_HEADER_TYPESCRIPT_PATH" : "Typescript sti:",
+
+        "FIELD_OPTION_COLOR_SCHEME_BLACK_WHITE" : "Svart på hvit",
+        "FIELD_OPTION_COLOR_SCHEME_EMPTY"       : "",
+        "FIELD_OPTION_COLOR_SCHEME_GRAY_BLACK"  : "Grå på svart",
+        "FIELD_OPTION_COLOR_SCHEME_GREEN_BLACK" : "Grønn på svart",
+        "FIELD_OPTION_COLOR_SCHEME_WHITE_BLACK" : "Hvit på svart",
+
+        "FIELD_OPTION_FONT_SIZE_8"     : "8",
+        "FIELD_OPTION_FONT_SIZE_9"     : "9",
+        "FIELD_OPTION_FONT_SIZE_10"    : "10",
+        "FIELD_OPTION_FONT_SIZE_11"    : "11",
+        "FIELD_OPTION_FONT_SIZE_12"    : "12",
+        "FIELD_OPTION_FONT_SIZE_14"    : "14",
+        "FIELD_OPTION_FONT_SIZE_18"    : "18",
+        "FIELD_OPTION_FONT_SIZE_24"    : "24",
+        "FIELD_OPTION_FONT_SIZE_30"    : "30",
+        "FIELD_OPTION_FONT_SIZE_36"    : "36",
+        "FIELD_OPTION_FONT_SIZE_48"    : "48",
+        "FIELD_OPTION_FONT_SIZE_60"    : "60",
+        "FIELD_OPTION_FONT_SIZE_72"    : "72",
+        "FIELD_OPTION_FONT_SIZE_96"    : "96",
+        "FIELD_OPTION_FONT_SIZE_EMPTY" : "",
+
+        "NAME" : "SSH",
+
+        "SECTION_HEADER_AUTHENTICATION" : "Autentisering",
+        "SECTION_HEADER_CLIPBOARD"      : "Utklippstavle",
+        "SECTION_HEADER_DISPLAY"        : "Skjerm",
+        "SECTION_HEADER_NETWORK"        : "Nettverk",
+        "SECTION_HEADER_RECORDING"      : "Skjermopptak",
+        "SECTION_HEADER_SESSION"        : "Sesjon / Miljø",
+        "SECTION_HEADER_TYPESCRIPT"     : "Typescript (Opptak av tekstsesjon)",
+        "SECTION_HEADER_SFTP"           : "SFTP"
+
+    },
+
+    "PROTOCOL_TELNET" : {
+
+        "FIELD_HEADER_COLOR_SCHEME"   : "Fargeskjema:",
+        "FIELD_HEADER_CREATE_RECORDING_PATH" : "Opprett sti for opptak automatisk:",
+        "FIELD_HEADER_CREATE_TYPESCRIPT_PATH" : "Opprett sti for typescript automatisk:",
+        "FIELD_HEADER_FONT_NAME"      : "Fontnavn:",
+        "FIELD_HEADER_FONT_SIZE"      : "Fontstørrelse:",
+        "FIELD_HEADER_HOSTNAME"       : "Servernavn:",
+        "FIELD_HEADER_USERNAME"       : "Brukernavn:",
+        "FIELD_HEADER_PASSWORD"       : "Passord:",
+        "FIELD_HEADER_PASSWORD_REGEX" : "Passord regulært uttrykk:",
+        "FIELD_HEADER_PORT"           : "Port:",
+        "FIELD_HEADER_RECORDING_NAME" : "Navn på opptak:",
+        "FIELD_HEADER_RECORDING_PATH" : "Sti til opptak:",
+        "FIELD_HEADER_TYPESCRIPT_NAME" : "Typescript navn:",
+        "FIELD_HEADER_TYPESCRIPT_PATH" : "Typescript sti:",
+
+        "FIELD_OPTION_COLOR_SCHEME_BLACK_WHITE" : "Svart på hvit",
+        "FIELD_OPTION_COLOR_SCHEME_EMPTY"       : "",
+        "FIELD_OPTION_COLOR_SCHEME_GRAY_BLACK"  : "Grå på svart",
+        "FIELD_OPTION_COLOR_SCHEME_GREEN_BLACK" : "Grønn på svart",
+        "FIELD_OPTION_COLOR_SCHEME_WHITE_BLACK" : "Hvit på svart",
+
+        "FIELD_OPTION_FONT_SIZE_8"     : "8",
+        "FIELD_OPTION_FONT_SIZE_9"     : "9",
+        "FIELD_OPTION_FONT_SIZE_10"    : "10",
+        "FIELD_OPTION_FONT_SIZE_11"    : "11",
+        "FIELD_OPTION_FONT_SIZE_12"    : "12",
+        "FIELD_OPTION_FONT_SIZE_14"    : "14",
+        "FIELD_OPTION_FONT_SIZE_18"    : "18",
+        "FIELD_OPTION_FONT_SIZE_24"    : "24",
+        "FIELD_OPTION_FONT_SIZE_30"    : "30",
+        "FIELD_OPTION_FONT_SIZE_36"    : "36",
+        "FIELD_OPTION_FONT_SIZE_48"    : "48",
+        "FIELD_OPTION_FONT_SIZE_60"    : "60",
+        "FIELD_OPTION_FONT_SIZE_72"    : "72",
+        "FIELD_OPTION_FONT_SIZE_96"    : "96",
+        "FIELD_OPTION_FONT_SIZE_EMPTY" : "",
+
+        "NAME" : "Telnet",
+
+        "SECTION_HEADER_AUTHENTICATION" : "Autentisering",
+        "SECTION_HEADER_CLIPBOARD"      : "Utklippstavle",
+        "SECTION_HEADER_DISPLAY"        : "Skjerm",
+        "SECTION_HEADER_RECORDING"      : "Skjermopptak",
+        "SECTION_HEADER_TYPESCRIPT"     : "Typescript (Opptak av tekstsesjon)",
+        "SECTION_HEADER_NETWORK"        : "Nettverk"
+
+    },
+
+    "PROTOCOL_VNC" : {
+
+        "FIELD_HEADER_AUDIO_SERVERNAME" : "Lydserver:",
+        "FIELD_HEADER_CLIPBOARD_ENCODING" : "Koding:",
+        "FIELD_HEADER_COLOR_DEPTH"      : "Fargedybde:",
+        "FIELD_HEADER_CREATE_RECORDING_PATH" : "Opprett sti for opptak automatisk:",
+        "FIELD_HEADER_CURSOR"           : "Peker:",
+        "FIELD_HEADER_DEST_HOST"        : "Målserver:",
+        "FIELD_HEADER_DEST_PORT"        : "Målport:",
+        "FIELD_HEADER_ENABLE_AUDIO"     : "Aktiver lyd:",
+        "FIELD_HEADER_ENABLE_SFTP"      : "Aktiver SFTP:",
+        "FIELD_HEADER_HOSTNAME"         : "Servernavn:",
+        "FIELD_HEADER_USERNAME"         : "Brukernavn:",
+        "FIELD_HEADER_PASSWORD"         : "Passord:",
+        "FIELD_HEADER_PORT"             : "Port:",
+        "FIELD_HEADER_READ_ONLY"        : "Skrivebeskyttet:",
+        "FIELD_HEADER_RECORDING_NAME" : "Navn på opptak:",
+        "FIELD_HEADER_RECORDING_PATH" : "Sti til opptak:",
+        "FIELD_HEADER_SFTP_DIRECTORY"   : "Standard mappe for opplasting:",
+        "FIELD_HEADER_SFTP_HOSTNAME"    : "Servernavn:",
+        "FIELD_HEADER_SFTP_PASSPHRASE"  : "Passfrase:",
+        "FIELD_HEADER_SFTP_PASSWORD"    : "Passord:",
+        "FIELD_HEADER_SFTP_PORT"        : "Port:",
+        "FIELD_HEADER_SFTP_PRIVATE_KEY" : "Privat nøkkel:",
+        "FIELD_HEADER_SFTP_USERNAME"    : "Brukernavn:",
+        "FIELD_HEADER_SWAP_RED_BLUE"    : "Bytt røde/blå komponenter:",
+
+        "FIELD_OPTION_COLOR_DEPTH_8"     : "256 farger",
+        "FIELD_OPTION_COLOR_DEPTH_16"    : "Tusener av farger (16-bit)",
+        "FIELD_OPTION_COLOR_DEPTH_24"    : "Ekte farger (24-bit)",
+        "FIELD_OPTION_COLOR_DEPTH_32"    : "Ekte farger (32-bit)",
+        "FIELD_OPTION_COLOR_DEPTH_EMPTY" : "",
+
+        "FIELD_OPTION_CURSOR_EMPTY"  : "",
+        "FIELD_OPTION_CURSOR_LOCAL"  : "Lokal",
+        "FIELD_OPTION_CURSOR_REMOTE" : "Ekstern",
+
+        "FIELD_OPTION_CLIPBOARD_ENCODING_CP1252"    : "CP1252",
+        "FIELD_OPTION_CLIPBOARD_ENCODING_EMPTY"     : "",
+        "FIELD_OPTION_CLIPBOARD_ENCODING_ISO8859_1" : "ISO 8859-1",
+        "FIELD_OPTION_CLIPBOARD_ENCODING_UTF_8"     : "UTF-8",
+        "FIELD_OPTION_CLIPBOARD_ENCODING_UTF_16"    : "UTF-16",
+
+        "NAME" : "VNC",
+
+        "SECTION_HEADER_AUDIO"          : "Lyd",
+        "SECTION_HEADER_AUTHENTICATION" : "Autentisering",
+        "SECTION_HEADER_CLIPBOARD"      : "Utklippstavle",
+        "SECTION_HEADER_DISPLAY"        : "Skjerm",
+        "SECTION_HEADER_NETWORK"        : "Nettverk",
+        "SECTION_HEADER_RECORDING"      : "Skjermopptak",
+        "SECTION_HEADER_REPEATER"       : "VNC Repeater",
+        "SECTION_HEADER_SFTP"           : "SFTP"
+
+    },
+
+    "SETTINGS" : {
+
+        "SECTION_HEADER_SETTINGS" : "Innstillinger"
+
+    },
+
+    "SETTINGS_CONNECTION_HISTORY" : {
+
+        "ACTION_SEARCH" : "@:APP.ACTION_SEARCH",
+
+        "FIELD_PLACEHOLDER_FILTER" : "@:APP.FIELD_PLACEHOLDER_FILTER",
+
+        "FORMAT_DATE" : "@:APP.FORMAT_DATE_TIME_PRECISE",
+
+        "HELP_CONNECTION_HISTORY" : "Tidligere forbindelser er listet her historisk og kan sorteres ved å klikke kolonneoverskriftene. For å lete etter spesifikke poster kan du legge inn en filtreringstekst og klikke \"Søk\". Bare poster som passer filtreringsteksten vil bli listet opp.",
+
+        "INFO_CONNECTION_DURATION_UNKNOWN" : "--",
+        "INFO_NO_HISTORY"                  : "Ingen poster funnet",
+
+        "TABLE_HEADER_SESSION_CONNECTION_NAME" : "Navn på tilkobling",
+        "TABLE_HEADER_SESSION_DURATION"        : "Varighet",
+        "TABLE_HEADER_SESSION_STARTDATE"       : "Starttidspunkt",
+        "TABLE_HEADER_SESSION_USERNAME"        : "Brukernavn",
+
+        "TEXT_HISTORY_DURATION" : "@:APP.TEXT_HISTORY_DURATION"
+
+    },
+
+    "SETTINGS_CONNECTIONS" : {
+
+        "ACTION_ACKNOWLEDGE"          : "@:APP.ACTION_ACKNOWLEDGE",
+        "ACTION_NEW_CONNECTION"       : "Ny Forbindelse",
+        "ACTION_NEW_CONNECTION_GROUP" : "Ny Gruppe",
+
+        "DIALOG_HEADER_ERROR" : "@:APP.DIALOG_HEADER_ERROR",
+
+        "FIELD_PLACEHOLDER_FILTER" : "@:APP.FIELD_PLACEHOLDER_FILTER",
+
+        "HELP_CONNECTIONS"   : "Klikk eller berør en forbindelse under for å administrere forbindelsen. Avhengig av ditt tilgangsnivå kan forbindelser opprettes, slettes og egenskaper (protokoll, server, port, m.m.) kan endres.",
+        
+        "INFO_ACTIVE_USER_COUNT" : "@:APP.INFO_ACTIVE_USER_COUNT",
+
+        "SECTION_HEADER_CONNECTIONS"     : "Forbindelser"
+
+    },
+
+    "SETTINGS_PREFERENCES" : {
+
+        "ACTION_ACKNOWLEDGE"        : "@:APP.ACTION_ACKNOWLEDGE",
+        "ACTION_CANCEL"             : "@:APP.ACTION_CANCEL",
+        "ACTION_UPDATE_PASSWORD"    : "@:APP.ACTION_UPDATE_PASSWORD",
+
+        "DIALOG_HEADER_ERROR"    : "@:APP.DIALOG_HEADER_ERROR",
+
+        "ERROR_PASSWORD_BLANK"    : "@:APP.ERROR_PASSWORD_BLANK",
+        "ERROR_PASSWORD_MISMATCH" : "@:APP.ERROR_PASSWORD_MISMATCH",
+
+        "FIELD_HEADER_LANGUAGE"           : "Visningsspråk:",
+        "FIELD_HEADER_PASSWORD"           : "Passord:",
+        "FIELD_HEADER_PASSWORD_OLD"       : "Nåværende Passord:",
+        "FIELD_HEADER_PASSWORD_NEW"       : "Nytt Passord:",
+        "FIELD_HEADER_PASSWORD_NEW_AGAIN" : "Verifiser Nytt Passord:",
+        "FIELD_HEADER_USERNAME"           : "Brukernavn:",
+    
+        "HELP_DEFAULT_INPUT_METHOD" : "Standard inndatametode bestemmer hvordan tastetrykk mottas av Guacamole. Det kan være nødvendig å endre på dette når du bruker mobile enheter eller IME. Denne instillingen kan overstyres på hver forbindelse i Guacamolemenyen.",
+        "HELP_DEFAULT_MOUSE_MODE"   : "Standard musemulering bestemmer hvordan den eksterne musen vil oppføre seg med hensyn til berøringer. Denne instillingen kan overstyres på hver forbindelse i Guacamolemenyen.",
+        "HELP_INPUT_METHOD_NONE"    : "@:CLIENT.HELP_INPUT_METHOD_NONE",
+        "HELP_INPUT_METHOD_OSK"     : "@:CLIENT.HELP_INPUT_METHOD_OSK",
+        "HELP_INPUT_METHOD_TEXT"    : "@:CLIENT.HELP_INPUT_METHOD_TEXT",
+        "HELP_LANGUAGE"             : "Velg et språk under for å endre språket på all tekst i Guacamole. Tilgjengelige valg er avhengig av hvilke språk som er installert.",
+        "HELP_MOUSE_MODE_ABSOLUTE"  : "@:CLIENT.HELP_MOUSE_MODE_ABSOLUTE",
+        "HELP_MOUSE_MODE_RELATIVE"  : "@:CLIENT.HELP_MOUSE_MODE_RELATIVE",
+        "HELP_UPDATE_PASSWORD"      : "Skriv inn ditt gamle passord og det nye passordet under dersom du ønsker å endre passord. Klikk \"Oppdater Passord\". Endringen trer i kraft umiddelbart.",
+
+        "INFO_PASSWORD_CHANGED" : "Passord endret.",
+
+        "NAME_INPUT_METHOD_NONE" : "@:CLIENT.NAME_INPUT_METHOD_NONE",
+        "NAME_INPUT_METHOD_OSK"  : "@:CLIENT.NAME_INPUT_METHOD_OSK",
+        "NAME_INPUT_METHOD_TEXT" : "@:CLIENT.NAME_INPUT_METHOD_TEXT",
+
+        "SECTION_HEADER_DEFAULT_INPUT_METHOD" : "Standard Innenhet",
+        "SECTION_HEADER_DEFAULT_MOUSE_MODE"   : "Standard Metode For Musemulering",
+        "SECTION_HEADER_UPDATE_PASSWORD"      : "Endre Passord"
+
+    },
+
+    "SETTINGS_USERS" : {
+
+        "ACTION_ACKNOWLEDGE"   : "@:APP.ACTION_ACKNOWLEDGE",
+        "ACTION_NEW_USER"      : "Ny Bruker",
+
+        "DIALOG_HEADER_ERROR" : "@:APP.DIALOG_HEADER_ERROR",
+
+        "FIELD_PLACEHOLDER_FILTER" : "@:APP.FIELD_PLACEHOLDER_FILTER",
+
+        "FORMAT_DATE" : "@:APP.FORMAT_DATE_TIME_PRECISE",
+
+        "HELP_USERS" : "Klikk på en bruker under for å administrere den brukeren. Avhengig av din tilgang kan brukere legges til, slettes og passordet kan endres.",
+
+        "SECTION_HEADER_USERS"       : "Brukere",
+
+        "TABLE_HEADER_USERNAME" : "Brukernavn"
+
+    },
+    
+    "SETTINGS_SESSIONS" : {
+        
+        "ACTION_ACKNOWLEDGE" : "@:APP.ACTION_ACKNOWLEDGE",
+        "ACTION_CANCEL"      : "@:APP.ACTION_CANCEL",
+        "ACTION_DELETE"      : "Avbryt sesjoner",
+        
+        "DIALOG_HEADER_CONFIRM_DELETE" : "Avbryt Sesjoner",
+        "DIALOG_HEADER_ERROR"          : "@:APP.DIALOG_HEADER_ERROR",
+        
+        "FIELD_PLACEHOLDER_FILTER" : "@:APP.FIELD_PLACEHOLDER_FILTER",
+        
+        "FORMAT_STARTDATE" : "@:APP.FORMAT_DATE_TIME_PRECISE",
+
+        "HELP_SESSIONS" : "Denne siden vil bli fylt med nåværende aktive forbindelser. Tilkoblingene oppført og evnen til å drepe disse tilkoblingene er avhengig av tilgangsnivået ditt. Dersom du ønsker å avbryte en eller flere sesjoner haker du av boksen ved siden av sesjonen og klikker \"Avbryt sesjoner\". Avbrytes en sesjon vil brukeren umiddelbart kobles av den aktuelle sesjonen.",
+        
+        "INFO_NO_SESSIONS" : "Ingen aktive sesjoner",
+
+        "SECTION_HEADER_SESSIONS" : "Aktive Sesjoner",
+        
+        "TABLE_HEADER_SESSION_CONNECTION_NAME" : "Navn på forbindelse",
+        "TABLE_HEADER_SESSION_REMOTEHOST"      : "Server",
+        "TABLE_HEADER_SESSION_STARTDATE"       : "Aktiv siden",
+        "TABLE_HEADER_SESSION_USERNAME"        : "Brukernavn",
+        
+        "TEXT_CONFIRM_DELETE" : "Er du sikker på at du vil avslutte valgte sesjoner? Brukere av disse sesjonene vil bli frakoblet umiddelbart."
+
+    },
+
+    "USER_MENU" : {
+
+        "ACTION_LOGOUT"             : "@:APP.ACTION_LOGOUT",
+        "ACTION_MANAGE_CONNECTIONS" : "@:APP.ACTION_MANAGE_CONNECTIONS",
+        "ACTION_MANAGE_PREFERENCES" : "@:APP.ACTION_MANAGE_PREFERENCES",
+        "ACTION_MANAGE_SESSIONS"    : "@:APP.ACTION_MANAGE_SESSIONS",
+        "ACTION_MANAGE_SETTINGS"    : "@:APP.ACTION_MANAGE_SETTINGS",
+        "ACTION_MANAGE_USERS"       : "@:APP.ACTION_MANAGE_USERS",
+        "ACTION_NAVIGATE_HOME"      : "@:APP.ACTION_NAVIGATE_HOME",
+        "ACTION_VIEW_HISTORY"       : "@:APP.ACTION_VIEW_HISTORY"
+
+    }
+
+}

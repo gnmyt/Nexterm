@@ -1,0 +1,29 @@
+{
+
+    "guacamoleVersion" : "1.6.0",
+
+    "name"      : "RADIUS Authentication Backend",
+    "namespace" : "radius",
+
+    "authProviders" : [
+        "org.apache.guacamole.auth.radius.RadiusAuthenticationProvider"
+    ],
+
+    "translations" : [
+        "translations/ca.json",
+        "translations/de.json",
+        "translations/en.json",
+        "translations/ja.json",
+        "translations/ru.json",
+        "translations/zh.json"
+    ],
+
+    "js" : [
+        "radius.min.js"
+    ],
+
+    "resources" : {
+        "templates/radiusStateField.html"    : "text/html"
+    }
+
+}

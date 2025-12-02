@@ -1,0 +1,1 @@
+aopalliance:aopalliance:jar:1.0

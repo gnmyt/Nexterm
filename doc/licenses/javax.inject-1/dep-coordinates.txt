@@ -1,0 +1,1 @@
+javax.inject:javax.inject:jar:1

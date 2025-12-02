@@ -1,0 +1,843 @@
+{
+    
+    "NAME" : "日本語",
+    
+    "APP" : {
+
+        "ACTION_CANCEL"             : "キャンセル",
+        "ACTION_CLONE"              : "コピー",
+        "ACTION_CONTINUE"           : "次へ",
+        "ACTION_DELETE"             : "削除",
+        "ACTION_DELETE_SESSIONS"    : "セッションの切断",
+        "ACTION_DOWNLOAD"           : "ダウンロード",
+        "ACTION_LOGIN"              : "ログイン",
+        "ACTION_LOGOUT"             : "ログアウト",
+        "ACTION_MANAGE_CONNECTIONS" : "接続",
+        "ACTION_MANAGE_PREFERENCES" : "ユーザ設定",
+        "ACTION_MANAGE_SETTINGS"    : "設定",
+        "ACTION_MANAGE_SESSIONS"    : "アクティブなセッション",
+        "ACTION_MANAGE_USERS"       : "ユーザ",
+        "ACTION_MANAGE_USER_GROUPS" : "グループ",
+        "ACTION_NAVIGATE_BACK"      : "戻る",
+        "ACTION_NAVIGATE_HOME"      : "ホーム",
+        "ACTION_SAVE"               : "保存",
+        "ACTION_SEARCH"             : "検索",
+        "ACTION_SHARE"              : "シェア",
+        "ACTION_UPDATE_PASSWORD"    : "パスワードの更新",
+        "ACTION_VIEW_HISTORY"       : "履歴",
+
+        "DIALOG_HEADER_ERROR" : "エラー",
+
+        "ERROR_PAGE_UNAVAILABLE"  : "エラーが発生したため、この操作を完了できませんでした。問題が解決しない場合は、システム管理者に連絡するか、システムログを確認してください。",
+
+        "ERROR_PASSWORD_BLANK"    : "パスワードが入力されていません。",
+        "ERROR_PASSWORD_MISMATCH" : "パスワードが一致しません。",
+        
+        "FIELD_HEADER_PASSWORD"       : "パスワード:",
+        "FIELD_HEADER_PASSWORD_AGAIN" : "パスワード確認:",
+
+        "FIELD_PLACEHOLDER_FILTER" : "フィルタ",
+
+        "INFO_ACTIVE_USER_COUNT" : "現在以下のユーザが利用中です。 {USERS} {USERS, plural, one{user} other{users}}.",
+
+        "TEXT_ANONYMOUS_USER"   : "匿名ユーザ"
+
+    },
+
+    "CLIENT" : {
+
+        "ACTION_ACKNOWLEDGE"               : "@:APP.ACTION_ACKNOWLEDGE",
+        "ACTION_CLEAR_COMPLETED_TRANSFERS" : "クリア",
+        "ACTION_DISCONNECT"                : "切断",
+        "ACTION_LOGOUT"                    : "@:APP.ACTION_LOGOUT",
+        "ACTION_NAVIGATE_BACK"             : "@:APP.ACTION_NAVIGATE_BACK",
+        "ACTION_NAVIGATE_HOME"             : "@:APP.ACTION_NAVIGATE_HOME",
+        "ACTION_RECONNECT"                 : "再接続",
+        "ACTION_SAVE_FILE"                 : "@:APP.ACTION_SAVE",
+        "ACTION_SHARE"                     : "@:APP.ACTION_SHARE",
+        "ACTION_SHOW_CLIPBOARD"            : "クリックをしてコピー/カットされたテキストが表示されます。",
+        "ACTION_UPLOAD_FILES"              : "ファイルアップロード",
+
+        "DIALOG_HEADER_CONNECTING"       : "接続",
+        "DIALOG_HEADER_CONNECTION_ERROR" : "接続エラー",
+        "DIALOG_HEADER_DISCONNECTED"     : "切断",
+
+        "ERROR_CLIENT_201": "サーバーがビジー状態のため、この接続は切断されました。数分待ってからもう一度お試しください。",
+        "ERROR_CLIENT_202": "リモートデスクトップの応答に時間がかかりすぎるため、Guacamoleサーバが接続を切断しました。再試行するか、システム管理者に連絡してください。",
+        "ERROR_CLIENT_203": "リモートデスクトップサーバーでエラーが発生し、接続を切断しました。再試行するかシステム管理者に連絡してください。",
+        "ERROR_CLIENT_207": "現在リモートデスクトップサーバーにアクセスできません。問題が解決しない場合、システム管理者に連絡するか、システムログを確認してください。",
+        "ERROR_CLIENT_208": "リモートデスクトップサーバーは現在利用できません。問題が解決しない場合、システム管理者に連絡するか、システムログを確認してください。",
+        "ERROR_CLIENT_209": "リモートデスクトップサーバーが他の接続と競合しています。後でもう一度やり直してください。",
+        "ERROR_CLIENT_20A": "リモートデスクトップサーバーが停止しているため接続を閉じました。システム管理者に連絡するか、システム設定を確認してください。",
+        "ERROR_CLIENT_20B": "リモートデスクトップサーバーが強制的に接続を切断しました。システム管理者に連絡するか、システムログを確認してください。",
+        "ERROR_CLIENT_301": "ログインに失敗しました。再接続してからもう一度お試しください。",
+        "ERROR_CLIENT_303": "リモートデスクトップサーバーがこの接続へのアクセスを拒否しました。アクセスが必要な場合は、システム管理者にアカウントのアクセスを許可を依頼するか、システム設定を確認してください。",
+        "ERROR_CLIENT_308": "ブラウザからの応答が十分でないため、Guacamoleサーバーが接続を切断しました。これは一般的にネットワークの問題が原因です。ネットワークの状態を確認して、もう一度やり直してください。 ",
+        "ERROR_CLIENT_31D": "同時接続の使用制限に達したため、Guacamoleサーバーはこの接続へのアクセスを拒否しています。1つ以上の接続を閉じてからやり直してください。",
+        "ERROR_CLIENT_DEFAULT": "Guacamoleサーバ内で内部エラーが発生し、接続が終了しました。問題が解決しない場合、システム管理者に連絡するか、システムログを確認してください。",
+
+        "ERROR_TUNNEL_201": "アクティブな接続が多すぎるため、Guacamoleサーバーはこの接続を拒否しました。数分待ってからもう一度お試しください。",
+        "ERROR_TUNNEL_202": "サーバーの応答に時間がかかりすぎるため、接続が切断されました。通常はネットワーク問題によって引き起こされます。",
+        "ERROR_TUNNEL_203": "サーバーでエラーが発生し、接続を切断しました。再試行するかシステム管理者に連絡してください。",
+        "ERROR_TUNNEL_204": "指定された接続は存在しません。接続名を確認してもう一度やり直してください。",
+        "ERROR_TUNNEL_205": "この接続は現在使用中です。同時アクセスは許可されていません。後ほどやり直してください。",
+        "ERROR_TUNNEL_207": "現在Guacamoleサーバーにアクセスできません。ネットワークの状態を確認してもう一度やり直してください。",
+        "ERROR_TUNNEL_208": "Guacamoleサーバーは接続を受け付けていません。ネットワークの状態を確認してもう一度やり直してください。",
+        "ERROR_TUNNEL_301": "あなたはログインしていないため、この接続にアクセスする権限がありません。ログインしてからやり直してください。",
+        "ERROR_TUNNEL_303": "この接続にアクセスする権限がありません。アクセスが必要な場合は、システム管理者に許可を依頼するか、システム設定を確認してください。",
+        "ERROR_TUNNEL_308": "ブラウザからの応答がないため、Guacamoleサーバーが接続を切断しました。一般的にネットワークの問題が原因です。ネットワークの状態を確認して、もう一度やり直してください。 ",
+        "ERROR_TUNNEL_31D": "同時接続の使用制限に達したため、Guacamoleサーバーはこの接続へのアクセスを拒否しています。1つ以上の接続を閉じてからやり直してください。",
+        "ERROR_TUNNEL_DEFAULT": "Guacamoleサーバー内で内部エラーが発生し、接続が終了しました。問題が解決しない場合、システム管理者に連絡するか、システムログを確認してください。",
+
+        "ERROR_UPLOAD_100": "ファイル転送がサポートされていないか有効になっていません。システム管理者に連絡するか、システムログを確認してください。",
+        "ERROR_UPLOAD_201": "現在転送中のファイルが多すぎます。転送が完了するのを待ってからやり直してください。",
+        "ERROR_UPLOAD_202": "リモートデスクトップサーバーの応答に時間がかかりすぎるため、ファイルを転送できません。やりなおすかシステム管理者に連絡してください。",
+        "ERROR_UPLOAD_203": "転送中にリモートデスクトップサーバーでエラーが発生しました。もう一度やり直すか、システム管理者に連絡してください。",
+        "ERROR_UPLOAD_204": "ファイル転送先が存在しません。宛先が存在することを確認してやり直してください。",
+        "ERROR_UPLOAD_205": "ファイル転送先は現在ロックされています。進行中のタスクが完了するのを待ってからやり直してください。 ",
+        "ERROR_UPLOAD_301": "あなたはログインしていないため、このファイルをアップロードする権限がありません。ログインしてからやり直してください。",
+        "ERROR_UPLOAD_303": "このファイルをアップロードする権限がありません。アクセスが必要な場合は、システム設定を確認するか、システム管理者に確認してください。",
+        "ERROR_UPLOAD_308": "ファイル転送が停止しています。これは一般的にネットワーク速度が非常に遅いなどのネットワークの問題が原因で発生します。",
+        "ERROR_UPLOAD_31D": "現在転送中のファイルが多すぎます。転送が完了するのを待ってからやり直してください。",
+        "ERROR_UPLOAD_DEFAULT": "Guacamoleサーバ内で内部エラーが発生し、接続が終了しました。それでも問題が解決しない場合、システム管理者に連絡するか、システムログを確認してください。",
+
+        "HELP_CLIPBOARD": "Guacamole内でコピー/カットされたテキストがここに表示されます。以下のテキストを変更するとリモートクリップボードに影響します。 ",
+        "HELP_INPUT_METHOD_NONE": "入力方法は指定されていません。キーボード入力は接続された物理的なキーボードから受け付けられます。 ",
+        "HELP_INPUT_METHOD_OSK": "内蔵のGuacamoleオンスクリーンキーボードからの入力を表示し、受け入れます。オンスクリーンキーボードを使用すると、不可能な場合もあるキーの組み合わせを入力できます（Ctrl-Alt-Delなど）。",
+        "HELP_INPUT_METHOD_TEXT": "テキストの入力を許可し、入力されたテキストに基づいてキーボードイベントをエミュレートします。これはスマートフォンのような物理的なキーボードがない機器に必要です。 ",
+        "HELP_MOUSE_MODE": "タッチに対するリモートマウスの動作を決定します。 ",
+        "HELP_MOUSE_MODE_ABSOLUTE": "タッチによってクリックを行います。タッチの位置でクリックしたとみなされます。 ",
+        "HELP_MOUSE_MODE_RELATIVE": "マウスポインタをドラッグしてからクリックします。マウスポインタの位置でクリックしたとみなされます。 ",
+        "HELP_SHARE_LINK": "現在の接続は共有されており、次の{LINKS、multiple、one {link} other {links}}を持つ人なら誰でもアクセスできます:",
+
+        "INFO_CONNECTION_SHARED": "この接続は現在共有されています。",
+        "INFO_NO_FILE_TRANSFERS": "ファイル転送はありません。",
+
+
+        "NAME_INPUT_METHOD_NONE"   : "なし",
+        "NAME_INPUT_METHOD_OSK"    : "オンスクリーンキーボード",
+        "NAME_INPUT_METHOD_TEXT"   : "テキストインプット",
+        "NAME_MOUSE_MODE_ABSOLUTE" : "タッチスクリーン",
+        "NAME_MOUSE_MODE_RELATIVE" : "タッチパッド",
+
+        "SECTION_HEADER_CLIPBOARD"      : "クリップボード",
+        "SECTION_HEADER_DEVICES"        : "デバイス",
+        "SECTION_HEADER_DISPLAY"        : "ディスプレイ",
+        "SECTION_HEADER_FILE_TRANSFERS" : "ファイル転送",
+        "SECTION_HEADER_INPUT_METHOD"   : "インプットメソッド",
+        "SECTION_HEADER_MOUSE_MODE"     : "マウスエミュレートモード",
+
+        "TEXT_ZOOM_AUTO_FIT"              : "自動的にブラウザのサイズに合わせる",
+        "TEXT_CLIENT_STATUS_IDLE"         : "アイドル状態.",
+        "TEXT_CLIENT_STATUS_CONNECTING"   : "Guacamoleサーバに接続しています...",
+        "TEXT_CLIENT_STATUS_DISCONNECTED" : "切断されました。",
+        "TEXT_CLIENT_STATUS_UNSTABLE"     : "Guacamoleサーバへのネットワーク接続が不安定です。",
+        "TEXT_CLIENT_STATUS_WAITING"      : "Guacamoleサーバに接続しました。応答を待っています",
+        "TEXT_RECONNECT_COUNTDOWN"        : "再接続しています... {REMAINING} {REMAINING, plural, one{second} other{seconds}}..."
+
+    },
+
+    "FORM" : {
+
+        "HELP_SHOW_PASSWORD" : "パスワードを見る",
+        "HELP_HIDE_PASSWORD" : "パスワードを隠す"
+
+    },
+
+    "HOME" : {
+
+        "FIELD_PLACEHOLDER_FILTER" : "@:APP.FIELD_PLACEHOLDER_FILTER",
+
+        "INFO_ACTIVE_USER_COUNT" : "@:APP.INFO_ACTIVE_USER_COUNT",
+
+        "INFO_NO_RECENT_CONNECTIONS" : "最近の接続情報はありません。",
+        
+        "PASSWORD_CHANGED" : "パスワードが変更されました。",
+
+        "SECTION_HEADER_ALL_CONNECTIONS"    : "全ての接続情報",
+        "SECTION_HEADER_RECENT_CONNECTIONS" : "最近の接続情報"
+
+    },
+
+    "LIST" : {
+
+        "TEXT_ANONYMOUS_USER" : "匿名"
+
+    },
+
+    "LOGIN": {
+
+        "ACTION_ACKNOWLEDGE" : "@:APP.ACTION_ACKNOWLEDGE",
+        "ACTION_CONTINUE"    : "@:APP.ACTION_CONTINUE",
+        "ACTION_LOGIN"       : "@:APP.ACTION_LOGIN",
+
+        "DIALOG_HEADER_ERROR" : "@:APP.DIALOG_HEADER_ERROR",
+
+        "ERROR_INVALID_LOGIN" : "不正なログインです。",
+
+        "FIELD_HEADER_USERNAME" : "ユーザ名",
+        "FIELD_HEADER_PASSWORD" : "パスワード"
+
+    },
+
+    "MANAGE_CONNECTION" : {
+
+        "ACTION_ACKNOWLEDGE"          : "@:APP.ACTION_ACKNOWLEDGE",
+        "ACTION_CANCEL"               : "@:APP.ACTION_CANCEL",
+        "ACTION_CLONE"                : "@:APP.ACTION_CLONE",
+        "ACTION_DELETE"               : "@:APP.ACTION_DELETE",
+        "ACTION_SAVE"                 : "@:APP.ACTION_SAVE",
+
+        "DIALOG_HEADER_CONFIRM_DELETE" : "接続の削除",
+        "DIALOG_HEADER_ERROR"          : "@:APP.DIALOG_HEADER_ERROR",
+
+        "FIELD_HEADER_LOCATION" : "ロケーション:",
+        "FIELD_HEADER_NAME"     : "名前:",
+        "FIELD_HEADER_PROTOCOL" : "プロトコル:",
+
+        "FORMAT_HISTORY_START" : "@:APP.FORMAT_DATE_TIME_PRECISE",
+
+        "INFO_CONNECTION_DURATION_UNKNOWN" : "--",
+        "INFO_CONNECTION_ACTIVE_NOW"       : "アクティブにする",
+        "INFO_CONNECTION_NOT_USED"         : "この接続はまだ使用されていません。",
+
+        "SECTION_HEADER_EDIT_CONNECTION" : "接続の編集",
+        "SECTION_HEADER_HISTORY"         : "使用履歴",
+        "SECTION_HEADER_PARAMETERS"      : "パラメータ",
+
+        "TABLE_HEADER_HISTORY_USERNAME"   : "ユーザ名",
+        "TABLE_HEADER_HISTORY_START"      : "開始時間",
+        "TABLE_HEADER_HISTORY_DURATION"   : "期間",
+        "TABLE_HEADER_HISTORY_REMOTEHOST" : "接続元",
+
+        "TEXT_CONFIRM_DELETE"   : "削除した接続は元に戻せません。この接続を削除してもよろしいですか？",
+        "TEXT_HISTORY_DURATION" : "@:APP.TEXT_HISTORY_DURATION"
+
+    },
+
+    "MANAGE_CONNECTION_GROUP" : {
+
+        "ACTION_ACKNOWLEDGE"   : "@:APP.ACTION_ACKNOWLEDGE",
+        "ACTION_CANCEL"        : "@:APP.ACTION_CANCEL",
+        "ACTION_CLONE"         : "@:APP.ACTION_CLONE",
+        "ACTION_DELETE"        : "@:APP.ACTION_DELETE",
+        "ACTION_SAVE"          : "@:APP.ACTION_SAVE",
+
+        "DIALOG_HEADER_CONFIRM_DELETE" : "接続グループの削除",
+        "DIALOG_HEADER_ERROR"          : "@:APP.DIALOG_HEADER_ERROR",
+
+        "FIELD_HEADER_LOCATION" : "ロケーション:",
+        "FIELD_HEADER_NAME"     : "名前:",
+        "FIELD_HEADER_TYPE"     : "タイプ:",
+
+        "NAME_TYPE_BALANCING"       : "バランシング",
+        "NAME_TYPE_ORGANIZATIONAL"  : "組織",
+
+        "SECTION_HEADER_EDIT_CONNECTION_GROUP" : "接続グループの編集",
+
+        "TEXT_CONFIRM_DELETE" : "接続グループを削除した後に復元することはできません。この接続グループを削除してもよろしいですか？"
+
+    },
+
+    "MANAGE_SHARING_PROFILE" : {
+
+        "ACTION_ACKNOWLEDGE" : "@:APP.ACTION_ACKNOWLEDGE",
+        "ACTION_CANCEL"      : "@:APP.ACTION_CANCEL",
+        "ACTION_CLONE"       : "@:APP.ACTION_CLONE",
+        "ACTION_DELETE"      : "@:APP.ACTION_DELETE",
+        "ACTION_SAVE"        : "@:APP.ACTION_SAVE",
+
+        "DIALOG_HEADER_CONFIRM_DELETE" : "共有プロファイルの削除",
+        "DIALOG_HEADER_ERROR"          : "@:APP.DIALOG_HEADER_ERROR",
+
+        "FIELD_HEADER_NAME"               : "名前:",
+        "FIELD_HEADER_PRIMARY_CONNECTION" : "プライマリ接続:",
+
+        "SECTION_HEADER_EDIT_SHARING_PROFILE" : "共有プロファイルの編集",
+        "SECTION_HEADER_PARAMETERS"           : "パラメータ",
+
+        "TEXT_CONFIRM_DELETE" : "削除した共有プロファイルは復元できません。この共有プロファイルを削除してもよろしいですか？"
+
+    },
+
+    "MANAGE_USER" : {
+
+        "ACTION_ACKNOWLEDGE"   : "@:APP.ACTION_ACKNOWLEDGE",
+        "ACTION_CANCEL"        : "@:APP.ACTION_CANCEL",
+        "ACTION_CLONE"         : "@:APP.ACTION_CLONE",
+        "ACTION_DELETE"        : "@:APP.ACTION_DELETE",
+        "ACTION_SAVE"          : "@:APP.ACTION_SAVE",
+
+        "DIALOG_HEADER_CONFIRM_DELETE" : "ユーザ削除",
+        "DIALOG_HEADER_ERROR"          : "@:APP.DIALOG_HEADER_ERROR",
+
+        "ERROR_PASSWORD_MISMATCH" : "@:APP.ERROR_PASSWORD_MISMATCH",
+
+        "FIELD_HEADER_ADMINISTER_SYSTEM"             : "システム管理者:",
+        "FIELD_HEADER_CHANGE_OWN_PASSWORD"           : "自身のパスワードの変更:",
+        "FIELD_HEADER_CREATE_NEW_USERS"              : "ユーザの作成:",
+        "FIELD_HEADER_CREATE_NEW_USER_GROUPS"        : "ユーザグループの作成:",
+        "FIELD_HEADER_CREATE_NEW_CONNECTIONS"        : "接続の作成:",
+        "FIELD_HEADER_CREATE_NEW_CONNECTION_GROUPS"  : "接続グループの作成:",
+        "FIELD_HEADER_CREATE_NEW_SHARING_PROFILES"   : "共有プロファイルの作成:",
+        "FIELD_HEADER_PASSWORD"                      : "@:APP.FIELD_HEADER_PASSWORD",
+        "FIELD_HEADER_PASSWORD_AGAIN"                : "@:APP.FIELD_HEADER_PASSWORD_AGAIN",
+        "FIELD_HEADER_USER_DISABLED"                 : "ログインの無効化:",
+        "FIELD_HEADER_USERNAME"                      : "ユーザ名:",
+
+        "FIELD_PLACEHOLDER_FILTER" : "@:APP.FIELD_PLACEHOLDER_FILTER",
+
+        "HELP_NO_USER_GROUPS" : "このユーザーは現在どのグループにも属していません。このセクションを展開してグループを追加してください。",
+
+        "INFO_READ_ONLY"                : "このユーザは編集できません。",
+        "INFO_NO_USER_GROUPS_AVAILABLE" : "利用可能なグループがありません。",
+
+        "SECTION_HEADER_ALL_CONNECTIONS"     : "すべての接続",
+        "SECTION_HEADER_CONNECTIONS"         : "接続",
+        "SECTION_HEADER_CURRENT_CONNECTIONS" : "現在の接続",
+        "SECTION_HEADER_EDIT_USER"           : "ユーザの編集",
+        "SECTION_HEADER_PERMISSIONS"         : "権限",
+        "SECTION_HEADER_USER_GROUPS"         : "グループ",
+
+        "TEXT_CONFIRM_DELETE" : "削除したユーザーは元に戻せません。このユーザーを削除してもよろしいですか？"
+
+    },
+
+    "MANAGE_USER_GROUP" : {
+
+        "ACTION_ACKNOWLEDGE"   : "@:APP.ACTION_ACKNOWLEDGE",
+        "ACTION_CANCEL"        : "@:APP.ACTION_CANCEL",
+        "ACTION_CLONE"         : "@:APP.ACTION_CLONE",
+        "ACTION_DELETE"        : "@:APP.ACTION_DELETE",
+        "ACTION_SAVE"          : "@:APP.ACTION_SAVE",
+
+        "DIALOG_HEADER_CONFIRM_DELETE" : "グループの削除",
+        "DIALOG_HEADER_ERROR"          : "@:APP.DIALOG_HEADER_ERROR",
+
+        "FIELD_HEADER_ADMINISTER_SYSTEM"             : "@:MANAGE_USER.FIELD_HEADER_ADMINISTER_SYSTEM",
+        "FIELD_HEADER_CHANGE_OWN_PASSWORD"           : "@:MANAGE_USER.FIELD_HEADER_CHANGE_OWN_PASSWORD",
+        "FIELD_HEADER_CREATE_NEW_USERS"              : "@:MANAGE_USER.FIELD_HEADER_CREATE_NEW_USERS",
+        "FIELD_HEADER_CREATE_NEW_USER_GROUPS"        : "@:MANAGE_USER.FIELD_HEADER_CREATE_NEW_USER_GROUPS",
+        "FIELD_HEADER_CREATE_NEW_CONNECTIONS"        : "@:MANAGE_USER.FIELD_HEADER_CREATE_NEW_CONNECTIONS",
+        "FIELD_HEADER_CREATE_NEW_CONNECTION_GROUPS"  : "@:MANAGE_USER.FIELD_HEADER_CREATE_NEW_CONNECTION_GROUPS",
+        "FIELD_HEADER_CREATE_NEW_SHARING_PROFILES"   : "@:MANAGE_USER.FIELD_HEADER_CREATE_NEW_SHARING_PROFILES",
+        "FIELD_HEADER_USER_GROUP_DISABLED"           : "グループの無効化:",
+        "FIELD_HEADER_USER_GROUP_NAME"               : "グループ名:",
+
+        "FIELD_PLACEHOLDER_FILTER" : "@:APP.FIELD_PLACEHOLDER_FILTER",
+
+        "HELP_NO_USER_GROUPS"        : "このグループは現在どのグループにも属していません。グループを追加するにはこのセクションを展開してください。",
+        "HELP_NO_MEMBER_USER_GROUPS" : "このグループには現在グループが含まれていません。このセクションを展開してグループを追加してください。",
+        "HELP_NO_MEMBER_USERS"       : "このグループには現在ユーザーが含まれていません。ユーザーを追加するにはこのセクションを展開してください。",
+
+        "INFO_READ_ONLY"                : "このグループは編集できません",
+        "INFO_NO_USER_GROUPS_AVAILABLE" : "@:MANAGE_USER.INFO_NO_USER_GROUPS_AVAILABLE",
+        "INFO_NO_USERS_AVAILABLE"       : "利用可能なユーザがいません。",
+
+        "SECTION_HEADER_ALL_CONNECTIONS"     : "@:MANAGE_USER.SECTION_HEADER_ALL_CONNECTIONS",
+        "SECTION_HEADER_CONNECTIONS"         : "@:MANAGE_USER.SECTION_HEADER_CONNECTIONS",
+        "SECTION_HEADER_CURRENT_CONNECTIONS" : "@:MANAGE_USER.SECTION_HEADER_CURRENT_CONNECTIONS",
+        "SECTION_HEADER_EDIT_USER_GROUP"     : "グループ編集",
+        "SECTION_HEADER_MEMBER_USERS"        : "メンバーユーザ",
+        "SECTION_HEADER_MEMBER_USER_GROUPS"  : "メンバーグループ",
+        "SECTION_HEADER_PERMISSIONS"         : "@:MANAGE_USER.SECTION_HEADER_PERMISSIONS",
+        "SECTION_HEADER_USER_GROUPS"         : "親グループ",
+
+        "TEXT_CONFIRM_DELETE" : "削除したグループは復元できません。このグループを削除してもよろしいですか？"
+
+    },
+    
+    "PROTOCOL_KUBERNETES" : {
+
+        "FIELD_HEADER_BACKSPACE"       : "Backspaceキーの送信:",
+        "FIELD_HEADER_CA_CERT"         : "認証局証明書:",
+        "FIELD_HEADER_CLIENT_CERT"     : "クライアント証明書:",
+        "FIELD_HEADER_CLIENT_KEY"      : "クライアントの秘密鍵:",
+        "FIELD_HEADER_COLOR_SCHEME"    : "カラースキーマ:",
+        "FIELD_HEADER_CONTAINER"       : "コンテナ名:",
+        "FIELD_HEADER_CREATE_RECORDING_PATH"  : "ログの保存ディレクトリを自動的に作成する:",
+        "FIELD_HEADER_CREATE_TYPESCRIPT_PATH" : "タイプスクリプトの保存ディレクトリを自動的に作成する:",
+        "FIELD_HEADER_FONT_NAME"       : "フォント名:",
+        "FIELD_HEADER_FONT_SIZE"       : "フォントサイズ:",
+        "FIELD_HEADER_HOSTNAME"        : "ホスト名:",
+        "FIELD_HEADER_IGNORE_CERT"     : "サーバ証明書を無視:",
+        "FIELD_HEADER_NAMESPACE"       : "名前空間:",
+        "FIELD_HEADER_POD"             : "ポッド名:",
+        "FIELD_HEADER_PORT"            : "ポート:",
+        "FIELD_HEADER_READ_ONLY"       : "読み取り専用:",
+        "FIELD_HEADER_RECORDING_EXCLUDE_MOUSE"  : "マウス動作の除外:",
+        "FIELD_HEADER_RECORDING_EXCLUDE_OUTPUT" : "画像/ストリームの除外:",
+        "FIELD_HEADER_RECORDING_INCLUDE_KEYS"   : "キーイベントの取得:",
+        "FIELD_HEADER_RECORDING_NAME"  : "ログファイル名:",
+        "FIELD_HEADER_RECORDING_PATH"  : "ログ保存ディレクトリ:",
+        "FIELD_HEADER_SCROLLBACK"      : "スクロールバックサイズの最大値:",
+        "FIELD_HEADER_TYPESCRIPT_NAME" : "タイプスクリプト名:",
+        "FIELD_HEADER_TYPESCRIPT_PATH" : "タイプスクリプトの保存ディレクトリ:",
+        "FIELD_HEADER_USE_SSL"         : "SSL/TLS　の利用",
+
+        "FIELD_OPTION_FONT_SIZE_8"     : "8",
+        "FIELD_OPTION_FONT_SIZE_9"     : "9",
+        "FIELD_OPTION_FONT_SIZE_10"    : "10",
+        "FIELD_OPTION_FONT_SIZE_11"    : "11",
+        "FIELD_OPTION_FONT_SIZE_12"    : "12",
+        "FIELD_OPTION_FONT_SIZE_14"    : "14",
+        "FIELD_OPTION_FONT_SIZE_18"    : "18",
+        "FIELD_OPTION_FONT_SIZE_24"    : "24",
+        "FIELD_OPTION_FONT_SIZE_30"    : "30",
+        "FIELD_OPTION_FONT_SIZE_36"    : "36",
+        "FIELD_OPTION_FONT_SIZE_48"    : "48",
+        "FIELD_OPTION_FONT_SIZE_60"    : "60",
+        "FIELD_OPTION_FONT_SIZE_72"    : "72",
+        "FIELD_OPTION_FONT_SIZE_96"    : "96",
+        "FIELD_OPTION_FONT_SIZE_EMPTY" : "",
+
+        "NAME" : "Kubernetes",
+
+        "SECTION_HEADER_AUTHENTICATION" : "認証",
+        "SECTION_HEADER_BEHAVIOR"       : "ターミナルのふるまい",
+        "SECTION_HEADER_CONTAINER"      : "コンテナ",
+        "SECTION_HEADER_DISPLAY"        : "ディスプレイ",
+        "SECTION_HEADER_RECORDING"      : "スクリーンレコーディング",
+        "SECTION_HEADER_TYPESCRIPT"     : "タイプスクリプト (テキストの記録)",
+        "SECTION_HEADER_NETWORK"        : "ネットワーク"
+
+    },
+
+    "PROTOCOL_RDP" : {
+
+        "FIELD_HEADER_CLIENT_NAME"     : "クライアント名:",
+        "FIELD_HEADER_COLOR_DEPTH"     : "カラー深度:",
+        "FIELD_HEADER_CONSOLE"         : "管理者コンソール:",
+        "FIELD_HEADER_CONSOLE_AUDIO"   : "コンソールでの音声サポート:",
+        "FIELD_HEADER_CREATE_DRIVE_PATH" : "ドライブの自動作成:",
+        "FIELD_HEADER_CREATE_RECORDING_PATH" : "ログの保存ディレクトリを自動的に作成する:",
+        "FIELD_HEADER_DISABLE_AUDIO"   : "オーディオの無効化:",
+        "FIELD_HEADER_DISABLE_AUTH"    : "認証の無効化:",
+        "FIELD_HEADER_DISABLE_COPY"    : "リモートデスクトップからのコピーを無効化:",
+        "FIELD_HEADER_DISABLE_DOWNLOAD" : "ファイルのダウンロードを無効化:",
+        "FIELD_HEADER_DISABLE_PASTE"   : "クライアントからの貼り付けを無効化:",
+        "FIELD_HEADER_DISABLE_UPLOAD"   : "ファイルのアップロードを無効化:",
+        "FIELD_HEADER_DOMAIN"          : "ドメイン:",
+        "FIELD_HEADER_DPI"             : "解像度 (DPI):",
+        "FIELD_HEADER_DRIVE_NAME"      : "ドライブ名:",
+        "FIELD_HEADER_DRIVE_PATH"      : "ドライブパス:",
+        "FIELD_HEADER_ENABLE_AUDIO_INPUT"         : "入力オーディオ（マイク）の有効化:",
+        "FIELD_HEADER_ENABLE_DESKTOP_COMPOSITION" : "デスクトップコンポジション(Aero)の有効化:",
+        "FIELD_HEADER_ENABLE_DRIVE"               : "ドライブの有効化:",
+        "FIELD_HEADER_ENABLE_FONT_SMOOTHING"      : "クリアタイプフォントの有効化:",
+        "FIELD_HEADER_ENABLE_FULL_WINDOW_DRAG"    : "フルウィンドウドラッグの有効化:",
+        "FIELD_HEADER_ENABLE_MENU_ANIMATIONS"     : "メニューアニメーションの有効化:",
+        "FIELD_HEADER_DISABLE_BITMAP_CACHING"     : "ビットマップキャッシュの無効化:",
+        "FIELD_HEADER_DISABLE_OFFSCREEN_CACHING"  : "オフスクリーンキャッシュの無効化:",
+        "FIELD_HEADER_DISABLE_GLYPH_CACHING"      : "グリフキャッシュの無効化:",
+        "FIELD_HEADER_ENABLE_PRINTING"            : "印刷の有効化:",
+        "FIELD_HEADER_ENABLE_SFTP"     : "SFTPの有効化:",
+        "FIELD_HEADER_ENABLE_THEMING"             : "テーマの有効化:",
+        "FIELD_HEADER_ENABLE_WALLPAPER"           : "壁紙の有効化:",
+        "FIELD_HEADER_GATEWAY_DOMAIN"   : "ドメイン:",
+        "FIELD_HEADER_GATEWAY_HOSTNAME" : "ホスト名:",
+        "FIELD_HEADER_GATEWAY_PASSWORD" : "パスワード:",
+        "FIELD_HEADER_GATEWAY_PORT"     : "ポート:",
+        "FIELD_HEADER_GATEWAY_USERNAME" : "ユーザ名:",
+        "FIELD_HEADER_HEIGHT"          : "高さ:",
+        "FIELD_HEADER_HOSTNAME"        : "ホスト名:",
+        "FIELD_HEADER_IGNORE_CERT"     : "サーバ証明書を無視する:",
+        "FIELD_HEADER_INITIAL_PROGRAM" : "初期化プログラム:",
+        "FIELD_HEADER_LOAD_BALANCE_INFO" : "ロードバランス情報/クッキー:",
+        "FIELD_HEADER_PASSWORD"        : "パスワード:",
+        "FIELD_HEADER_PORT"            : "ポート:",
+        "FIELD_HEADER_PRINTER_NAME"    : "リダイレクトされたプリンタ名:",
+        "FIELD_HEADER_PRECONNECTION_BLOB" : "事前接続BLOB (VM ID):",
+        "FIELD_HEADER_PRECONNECTION_ID"   : "RDPソースID:",
+        "FIELD_HEADER_READ_ONLY"      : "読み取り専用:",
+        "FIELD_HEADER_RECORDING_EXCLUDE_MOUSE"  : "マウス動作の除外:",
+        "FIELD_HEADER_RECORDING_EXCLUDE_OUTPUT" : "画像/ストリームの除外:",
+        "FIELD_HEADER_RECORDING_INCLUDE_KEYS"   : "キーイベントの取得:",
+        "FIELD_HEADER_RECORDING_NAME" : "ログファイル名:",
+        "FIELD_HEADER_RECORDING_PATH" : "ログ保存ディレクトリ:",
+        "FIELD_HEADER_RESIZE_METHOD" : "サイズ変更方法:",
+        "FIELD_HEADER_REMOTE_APP_ARGS" : "パラメータ:",
+        "FIELD_HEADER_REMOTE_APP_DIR"  : "作業ディレクトリ:",
+        "FIELD_HEADER_REMOTE_APP"      : "プログラム:",
+        "FIELD_HEADER_SECURITY"        : "セキュリティモード:",
+        "FIELD_HEADER_SERVER_LAYOUT"   : "キーボードレイアウト:",
+        "FIELD_HEADER_SFTP_DIRECTORY"             : "デフォルトアップロードディレクトリ:",
+        "FIELD_HEADER_SFTP_DISABLE_DOWNLOAD" : "ファイルのダウンロードを無効化:",
+        "FIELD_HEADER_SFTP_DISABLE_UPLOAD"   : "ファイルのアップロードを無効化:",
+        "FIELD_HEADER_SFTP_HOST_KEY"              : "パブリックホストキー (Base64):",
+        "FIELD_HEADER_SFTP_HOSTNAME"              : "ホスト名:",
+        "FIELD_HEADER_SFTP_SERVER_ALIVE_INTERVAL" : "SFTPキープアライブ間隔:",
+        "FIELD_HEADER_SFTP_PASSPHRASE"            : "パスフレーズ:",
+        "FIELD_HEADER_SFTP_PASSWORD"              : "パスワード:",
+        "FIELD_HEADER_SFTP_PORT"                  : "ポート:",
+        "FIELD_HEADER_SFTP_PRIVATE_KEY"           : "秘密鍵:",
+        "FIELD_HEADER_SFTP_ROOT_DIRECTORY"        : "ファイルブラウザのルートディレクトリ:",
+        "FIELD_HEADER_SFTP_USERNAME"              : "ユーザ名:",
+        "FIELD_HEADER_STATIC_CHANNELS" : "静的チャンネル名:",
+        "FIELD_HEADER_TIMEZONE"        : "タイムゾーン:",
+        "FIELD_HEADER_USERNAME"        : "ユーザ名:",
+        "FIELD_HEADER_WIDTH"           : "幅:",
+
+        "FIELD_HEADER_WOL_BROADCAST_ADDR" : "WoLパケットを送信するブロードキャストアドレス:",
+        "FIELD_HEADER_WOL_MAC_ADDR"       : "WoLパケットで使用するMACアドレス:",
+        "FIELD_HEADER_WOL_SEND_PACKET"    : "WoLパケットの送信を有効化:",
+        "FIELD_HEADER_WOL_WAIT_TIME"      : "WoLパケット送信後の接続までの待機時間:",
+
+        "FIELD_OPTION_COLOR_DEPTH_16"    : "Lowカラー (16ビット)",
+        "FIELD_OPTION_COLOR_DEPTH_24"    : "Trueカラー (24ビット)",
+        "FIELD_OPTION_COLOR_DEPTH_32"    : "Trueカラー (32ビット)",
+        "FIELD_OPTION_COLOR_DEPTH_8"     : "256カラー",
+
+        "FIELD_OPTION_RESIZE_METHOD_DISPLAY_UPDATE" : "\"ディスプレイアップデート\" 仮想チャンネル (RDP 8.1+)",
+        "FIELD_OPTION_RESIZE_METHOD_RECONNECT"      : "再接続",
+
+        "SECTION_HEADER_AUTHENTICATION"     : "認証",
+        "SECTION_HEADER_BASIC_PARAMETERS"   : "基本設定",
+        "SECTION_HEADER_CLIPBOARD"          : "クリップボード",
+        "SECTION_HEADER_DEVICE_REDIRECTION" : "デバイスリダイレクト",
+        "SECTION_HEADER_DISPLAY"            : "ディスプレイ",
+        "SECTION_HEADER_GATEWAY"            : "リモートデスクトップゲートウェイ",
+        "SECTION_HEADER_LOAD_BALANCING"     : "ロードバラシング",
+        "SECTION_HEADER_NETWORK"            : "ネットワーク",
+        "SECTION_HEADER_PERFORMANCE"        : "パフォーマンス",
+        "SECTION_HEADER_PRECONNECTION_PDU"  : "事前接続 PDU / Hyper-V",
+        "SECTION_HEADER_RECORDING"          : "スクリーンレコーディング",
+        "SECTION_HEADER_REMOTEAPP"          : "リモートアプリケーション"
+
+    },
+
+    "PROTOCOL_SSH" : {
+
+        "FIELD_HEADER_BACKSPACE"    : "Backspaceキーの送信:",
+        "FIELD_HEADER_COLOR_SCHEME" : "カラースキーマ:",
+        "FIELD_HEADER_COMMAND"      : "コマンドの実行:",
+        "FIELD_HEADER_CREATE_RECORDING_PATH" : "ログの保存ディレクトリを自動的に作成する:",
+        "FIELD_HEADER_CREATE_TYPESCRIPT_PATH" : "タイプスクリプトの保存ディレクトリを自動的に作成する:",
+        "FIELD_HEADER_DISABLE_COPY"  : "端末からのコピーを無効化:",
+        "FIELD_HEADER_DISABLE_PASTE" : "クライアントからの貼り付けを無効化:",
+        "FIELD_HEADER_FONT_NAME"     : "フォント名:",
+        "FIELD_HEADER_FONT_SIZE"     : "フォントサイズ:",
+        "FIELD_HEADER_ENABLE_SFTP"   : "SFTPの有効化:",
+        "FIELD_HEADER_HOST_KEY"      : "公開鍵(Base64):",
+        "FIELD_HEADER_HOSTNAME"      : "ホスト名:",
+        "FIELD_HEADER_LOCALE"        : "言語/ロケール ($LANG):",
+        "FIELD_HEADER_USERNAME"      : "ユーザ名:",
+        "FIELD_HEADER_PASSWORD"      : "パスワード:",
+        "FIELD_HEADER_PASSPHRASE"    : "パスフレーズ:",
+        "FIELD_HEADER_PORT"          : "ポート:",
+        "FIELD_HEADER_PRIVATE_KEY"   : "秘密鍵:",
+        "FIELD_HEADER_SCROLLBACK"    : "スクロールバックサイズの最大値:",
+        "FIELD_HEADER_READ_ONLY"     : "読み取り専用:",
+        "FIELD_HEADER_RECORDING_EXCLUDE_MOUSE"  : "マウス動作の除外:",
+        "FIELD_HEADER_RECORDING_EXCLUDE_OUTPUT" : "画像/ストリームの除外:",
+        "FIELD_HEADER_RECORDING_INCLUDE_KEYS"   : "キーイベントの取得:",
+        "FIELD_HEADER_RECORDING_NAME" : "ログファイル名:",
+        "FIELD_HEADER_RECORDING_PATH" : "ログ保存ディレクトリ",
+        "FIELD_HEADER_SERVER_ALIVE_INTERVAL" : "キープアライブ間隔:",
+        "FIELD_HEADER_SFTP_DISABLE_DOWNLOAD" : "ファイルのダウンロードを無効化:",
+        "FIELD_HEADER_SFTP_DISABLE_UPLOAD"   : "ファイルのアップロードを無効化:",
+        "FIELD_HEADER_SFTP_ROOT_DIRECTORY"   : "ファイルブラウザのルートディレクトリ:",
+        "FIELD_HEADER_TERMINAL_TYPE"   : "ターミナルタイプ:",
+        "FIELD_HEADER_TIMEZONE"        : "タイムゾーン ($TZ):",
+        "FIELD_HEADER_TYPESCRIPT_NAME" : "タイプスクリプト名:",
+        "FIELD_HEADER_TYPESCRIPT_PATH" : "タイプスクリプトの保存ディレクトリ:",
+        "FIELD_HEADER_WOL_BROADCAST_ADDR" : "WoLパケットを送信するブロードキャストアドレス:",
+        "FIELD_HEADER_WOL_MAC_ADDR"       : "WoLパケットで使用するMACアドレス:",
+        "FIELD_HEADER_WOL_SEND_PACKET"    : "WoLパケットの送信を有効化:",
+        "FIELD_HEADER_WOL_WAIT_TIME"      : "WoLパケット送信後の接続までの待機時間:",
+
+        "SECTION_HEADER_AUTHENTICATION" : "認証",
+        "SECTION_HEADER_BEHAVIOR"       : "ターミナルのふるまい",
+        "SECTION_HEADER_CLIPBOARD"      : "クリップボード",
+        "SECTION_HEADER_DISPLAY"        : "ディスプレイ",
+        "SECTION_HEADER_NETWORK"        : "ネットワーク",
+        "SECTION_HEADER_RECORDING"      : "スクリーンレコーディング",
+        "SECTION_HEADER_SESSION"        : "セッション / 環境",
+        "SECTION_HEADER_TYPESCRIPT"     : "タイプスクリプト (テキストの記録)"
+
+    },
+
+    "PROTOCOL_TELNET" : {
+
+        "FIELD_HEADER_BACKSPACE"      : "Backspaceキーの送信:",
+        "FIELD_HEADER_COLOR_SCHEME"   : "カラースキーマ:",
+        "FIELD_HEADER_CREATE_RECORDING_PATH" : "ログの保存ディレクトリを自動的に作成する:",
+        "FIELD_HEADER_CREATE_TYPESCRIPT_PATH" : "タイプスクリプトの保存ディレクトリを自動的に作成する:",
+        "FIELD_HEADER_DISABLE_COPY"  : "端末からのコピーを無効化:",
+        "FIELD_HEADER_DISABLE_PASTE" : "クライアントからの貼り付けを無効化:",
+        "FIELD_HEADER_FONT_NAME"      : "フォント名:",
+        "FIELD_HEADER_FONT_SIZE"      : "フォントサイズ:",
+        "FIELD_HEADER_HOSTNAME"       : "ホスト名:",
+        "FIELD_HEADER_LOGIN_FAILURE_REGEX" : "ログイン失敗正規表現:",
+        "FIELD_HEADER_LOGIN_SUCCESS_REGEX" : "ログイン成功正規表現:",
+        "FIELD_HEADER_USERNAME"       : "ユーザ名:",
+        "FIELD_HEADER_USERNAME_REGEX" : "ユーザ名正規表現:",
+        "FIELD_HEADER_PASSWORD"       : "パスワード:",
+        "FIELD_HEADER_PASSWORD_REGEX" : "パスワード正規表現:",
+        "FIELD_HEADER_PORT"           : "ポート:",
+        "FIELD_HEADER_READ_ONLY"      : "読み取り専用:",
+        "FIELD_HEADER_RECORDING_EXCLUDE_MOUSE"  : "マウス動作の除外:",
+        "FIELD_HEADER_RECORDING_EXCLUDE_OUTPUT" : "画像/ストリームの除外:",
+        "FIELD_HEADER_RECORDING_INCLUDE_KEYS"   : "キーイベントの取得:",
+        "FIELD_HEADER_RECORDING_NAME" : "ログファイル名:",
+        "FIELD_HEADER_RECORDING_PATH" : "ログ保存ディレクトリ:",
+        "FIELD_HEADER_SCROLLBACK"      : "スクロールバックサイズの最大値:",
+        "FIELD_HEADER_TERMINAL_TYPE"   : "ターミナルタイプ:",
+        "FIELD_HEADER_TYPESCRIPT_NAME" : "タイプスクリプト名:",
+        "FIELD_HEADER_TYPESCRIPT_PATH" : "タイプスクリプト保存ディレクトリ:",
+        "FIELD_HEADER_WOL_BROADCAST_ADDR" : "WoLパケットを送信するブロードキャストアドレス:",
+        "FIELD_HEADER_WOL_MAC_ADDR"       : "WoLパケットで使用するMACアドレス:",
+        "FIELD_HEADER_WOL_SEND_PACKET"    : "WoLパケットの送信を有効化:",
+        "FIELD_HEADER_WOL_WAIT_TIME"      : "WoLパケット送信後の接続までの待機時間:",
+
+        "SECTION_HEADER_AUTHENTICATION" : "認証",
+        "SECTION_HEADER_BEHAVIOR"       : "ターミナルのふるまい",
+        "SECTION_HEADER_CLIPBOARD"      : "クリップボード",
+        "SECTION_HEADER_DISPLAY"        : "ディスプレイ",
+        "SECTION_HEADER_RECORDING"      : "スクリーンレコーディング",
+        "SECTION_HEADER_TYPESCRIPT"     : "タイプスクリプト (テキストの記録)",
+        "SECTION_HEADER_NETWORK"        : "ネットワーク"
+
+    },
+
+    "PROTOCOL_VNC" : {
+
+        "FIELD_HEADER_AUDIO_SERVERNAME" : "オーディオサーバ名:",
+        "FIELD_HEADER_CLIPBOARD_ENCODING" : "エンコード:",
+        "FIELD_HEADER_COLOR_DEPTH"      : "カラー深度:",
+        "FIELD_HEADER_CREATE_RECORDING_PATH" : "ログの保存ディレクトリを自動的に作成する::",
+        "FIELD_HEADER_CURSOR"           : "カーソル:",
+        "FIELD_HEADER_DEST_HOST"        : "宛先ホスト:",
+        "FIELD_HEADER_DEST_PORT"        : "宛先ポート:",
+        "FIELD_HEADER_DISABLE_COPY"    : "リモートデスクトップからのコピーを無効化:",
+        "FIELD_HEADER_DISABLE_PASTE"   : "クライアントからの貼り付けを無効化:",
+        "FIELD_HEADER_ENABLE_AUDIO"     : "オーディオの有効化:",
+        "FIELD_HEADER_ENABLE_SFTP"      : "SFTPの有効化:",
+        "FIELD_HEADER_HOSTNAME"         : "ホスト名:",
+        "FIELD_HEADER_USERNAME"         : "ユーザ名:",
+        "FIELD_HEADER_PASSWORD"         : "パスワード:",
+        "FIELD_HEADER_PORT"             : "ポート:",
+        "FIELD_HEADER_READ_ONLY"        : "読み取り専用:",
+        "FIELD_HEADER_RECORDING_EXCLUDE_MOUSE"  : "マウス動作の除外:",
+        "FIELD_HEADER_RECORDING_EXCLUDE_OUTPUT" : "画像/ストリームの除外:",
+        "FIELD_HEADER_RECORDING_INCLUDE_KEYS"   : "キーイベントの取得:",
+        "FIELD_HEADER_RECORDING_NAME" : "ログファイル名:",
+        "FIELD_HEADER_RECORDING_PATH" : "ログ保存ディレクトリ:",
+        "FIELD_HEADER_SFTP_DIRECTORY"             : "デフォルトアップロードディレクトリ:",
+        "FIELD_HEADER_SFTP_DISABLE_DOWNLOAD" : "ファイルのダウンロードを無効化:",
+        "FIELD_HEADER_SFTP_DISABLE_UPLOAD"   : "ファイルのアップロードを無効化:",
+        "FIELD_HEADER_SFTP_HOST_KEY"              : "公開鍵 (Base64):",
+        "FIELD_HEADER_SFTP_HOSTNAME"              : "ホスト名:",
+        "FIELD_HEADER_SFTP_SERVER_ALIVE_INTERVAL" : "SFTPキープアライブ間隔:",
+        "FIELD_HEADER_SFTP_PASSPHRASE"            : "パスフレーズ:",
+        "FIELD_HEADER_SFTP_PASSWORD"              : "パスワード:",
+        "FIELD_HEADER_SFTP_PORT"                  : "ポート:",
+        "FIELD_HEADER_SFTP_PRIVATE_KEY"           : "秘密鍵:",
+        "FIELD_HEADER_SFTP_ROOT_DIRECTORY"        : "ファイルブラウザのルートディレクトリ:",
+        "FIELD_HEADER_SFTP_USERNAME"              : "ユーザ名:",
+        "FIELD_HEADER_SWAP_RED_BLUE"    : "レッド・ブルー コンポーネントスワップ:",
+        "FIELD_HEADER_WOL_BROADCAST_ADDR" : "WoLパケットを送信するブロードキャストアドレス:",
+        "FIELD_HEADER_WOL_MAC_ADDR"       : "WoLパケットで使用するMACアドレス:",
+        "FIELD_HEADER_WOL_SEND_PACKET"    : "WoLパケットの送信を有効化:",
+        "FIELD_HEADER_WOL_WAIT_TIME"      : "WoLパケット送信後の接続までの待機時間:",
+
+        "FIELD_OPTION_COLOR_DEPTH_8"     : "256カラー",
+        "FIELD_OPTION_COLOR_DEPTH_16"    : "Lowカラー (16ビット)",
+        "FIELD_OPTION_COLOR_DEPTH_24"    : "Trueカラー (24ビット)",
+        "FIELD_OPTION_COLOR_DEPTH_32"    : "Trueカラー (32ビット)",
+
+        "FIELD_OPTION_CURSOR_LOCAL"  : "ローカル",
+        "FIELD_OPTION_CURSOR_REMOTE" : "リモート",
+
+        "SECTION_HEADER_AUDIO"          : "オーティオ",
+        "SECTION_HEADER_AUTHENTICATION" : "認証",
+        "SECTION_HEADER_CLIPBOARD"      : "クリップボード",
+        "SECTION_HEADER_DISPLAY"        : "ディスプレイ",
+        "SECTION_HEADER_NETWORK"        : "ネットワーク",
+        "SECTION_HEADER_RECORDING"      : "スクリーンレコーディング",
+        "SECTION_HEADER_REPEATER"       : "VNCリピーター"
+
+    },
+
+    "SETTINGS" : {
+
+        "SECTION_HEADER_SETTINGS" : "設定"
+
+    },
+
+    "SETTINGS_CONNECTION_HISTORY" : {
+
+        "ACTION_DOWNLOAD" : "@:APP.ACTION_DOWNLOAD",
+        "ACTION_SEARCH"   : "@:APP.ACTION_SEARCH",
+
+        "FIELD_PLACEHOLDER_FILTER" : "@:APP.FIELD_PLACEHOLDER_FILTER",
+
+        "FORMAT_DATE" : "@:APP.FORMAT_DATE_TIME_PRECISE",
+
+        "HELP_CONNECTION_HISTORY" : "過去の接続履歴はここに表示されています。列の見出しをクリックしてソートすることができます。特定のレコードを検索するにはフィルタに検索キーワードを入力して、検索ボタンをクリックしてください。",
+
+        "INFO_CONNECTION_DURATION_UNKNOWN" : "--",
+        "INFO_NO_HISTORY"                  : "一致するレコードがありません。",
+
+        "TABLE_HEADER_SESSION_CONNECTION_NAME" : "接続名",
+        "TABLE_HEADER_SESSION_DURATION"        : "期間",
+        "TABLE_HEADER_SESSION_REMOTEHOST"      : "接続元",
+        "TABLE_HEADER_SESSION_STARTDATE"       : "開始時間",
+        "TABLE_HEADER_SESSION_USERNAME"        : "ユーザ名",
+
+        "TEXT_HISTORY_DURATION" : "@:APP.TEXT_HISTORY_DURATION"
+
+    },
+
+    "SETTINGS_CONNECTIONS" : {
+
+        "ACTION_ACKNOWLEDGE"          : "@:APP.ACTION_ACKNOWLEDGE",
+        "ACTION_NEW_CONNECTION"       : "接続の追加",
+        "ACTION_NEW_CONNECTION_GROUP" : "グループの追加",
+        "ACTION_NEW_SHARING_PROFILE"  : "共有プロファイルの追加",
+
+        "DIALOG_HEADER_ERROR" : "@:APP.DIALOG_HEADER_ERROR",
+
+        "FIELD_PLACEHOLDER_FILTER" : "@:APP.FIELD_PLACEHOLDER_FILTER",
+
+        "HELP_CONNECTIONS"   : "接続をクリックまたはタップすることで、管理画面が表示されます。権限に応じて接続のプロパティが変更できます。",
+        
+        "INFO_ACTIVE_USER_COUNT" : "@:APP.INFO_ACTIVE_USER_COUNT",
+
+        "SECTION_HEADER_CONNECTIONS"     : "接続"
+
+    },
+
+    "SETTINGS_PREFERENCES" : {
+
+        "ACTION_ACKNOWLEDGE"        : "@:APP.ACTION_ACKNOWLEDGE",
+        "ACTION_CANCEL"             : "@:APP.ACTION_CANCEL",
+        "ACTION_UPDATE_PASSWORD"    : "@:APP.ACTION_UPDATE_PASSWORD",
+
+        "DIALOG_HEADER_ERROR"    : "@:APP.DIALOG_HEADER_ERROR",
+
+        "ERROR_PASSWORD_BLANK"    : "@:APP.ERROR_PASSWORD_BLANK",
+        "ERROR_PASSWORD_MISMATCH" : "@:APP.ERROR_PASSWORD_MISMATCH",
+
+        "FIELD_HEADER_LANGUAGE"           : "表示言語:",
+        "FIELD_HEADER_PASSWORD"           : "パスワード:",
+        "FIELD_HEADER_PASSWORD_OLD"       : "現在のパスワード:",
+        "FIELD_HEADER_PASSWORD_NEW"       : "新しいパスワード:",
+        "FIELD_HEADER_PASSWORD_NEW_AGAIN" : "新しいパスワード（確認）:",
+        "FIELD_HEADER_TIMEZONE"           : "タイムゾーン:",
+        "FIELD_HEADER_USERNAME"           : "ユーザ名:",
+        
+        "HELP_DEFAULT_INPUT_METHOD" : "デフォルトの入力メソッドは、Guacamoleがどのようにキーボード入力を受け取るかを設定します。この設定の変更は、モバイルデバイスまたはIMEを通して入力を行う際に必要です。",
+        "HELP_DEFAULT_MOUSE_MODE"   : "デフォルトのマウスエミュレーションモードは、タッチに関して新しい接続でリモートマウスがどのように動作するかを決定します。この設定は、Guacamoleメニュー内で接続ごとに上書きすることができます。",
+        "HELP_INPUT_METHOD_NONE"    : "@:CLIENT.HELP_INPUT_METHOD_NONE",
+        "HELP_INPUT_METHOD_OSK"     : "@:CLIENT.HELP_INPUT_METHOD_OSK",
+        "HELP_INPUT_METHOD_TEXT"    : "@:CLIENT.HELP_INPUT_METHOD_TEXT",
+        "HELP_LOCALE"             : "Guacamoleの言語を変更するには、下の言語を選択してください。選択可能な言語は、インストールされている言語によって異なります。",
+        "HELP_MOUSE_MODE_ABSOLUTE"  : "@:CLIENT.HELP_MOUSE_MODE_ABSOLUTE",
+        "HELP_MOUSE_MODE_RELATIVE"  : "@:CLIENT.HELP_MOUSE_MODE_RELATIVE",
+        "HELP_UPDATE_PASSWORD"      : "パスワードを変更する場合は、下に現在のパスワードと新しいパスワードを入力して、[パスワードの更新]をクリックしてください。変更はすぐに有効になります。",
+
+        "INFO_PASSWORD_CHANGED" : "パスワードが変更されました。",
+
+        "NAME_INPUT_METHOD_NONE" : "@:CLIENT.NAME_INPUT_METHOD_NONE",
+        "NAME_INPUT_METHOD_OSK"  : "@:CLIENT.NAME_INPUT_METHOD_OSK",
+        "NAME_INPUT_METHOD_TEXT" : "@:CLIENT.NAME_INPUT_METHOD_TEXT",
+
+        "SECTION_HEADER_DEFAULT_INPUT_METHOD" : "デフォルトの入力方法",
+        "SECTION_HEADER_DEFAULT_MOUSE_MODE"   : "デフォルトのマウスエミュレーションモード",
+        "SECTION_HEADER_UPDATE_PASSWORD"      : "パスワード変更"
+
+    },
+
+    "SETTINGS_USERS" : {
+
+        "ACTION_ACKNOWLEDGE"   : "@:APP.ACTION_ACKNOWLEDGE",
+        "ACTION_NEW_USER"      : "ユーザ追加",
+
+        "DIALOG_HEADER_ERROR" : "@:APP.DIALOG_HEADER_ERROR",
+
+        "FIELD_PLACEHOLDER_FILTER" : "@:APP.FIELD_PLACEHOLDER_FILTER",
+
+        "FORMAT_DATE" : "@:APP.FORMAT_DATE_TIME_PRECISE",
+
+        "HELP_USERS" : "ユーザをクリックまたはタップすることで、ユーザを管理できます。権限に応じてユーザ情報の変更を行うことができます。",
+
+        "SECTION_HEADER_USERS"       : "ユーザ",
+
+        "TABLE_HEADER_FULL_NAME"   : "フルネーム",
+        "TABLE_HEADER_LAST_ACTIVE" : "最後にアクティブになった時期",
+        "TABLE_HEADER_ORGANIZATION" : "組織",
+        "TABLE_HEADER_USERNAME"    : "ユーザ名"
+
+    },
+
+    "SETTINGS_USER_GROUPS" : {
+
+        "ACTION_ACKNOWLEDGE"    : "@:APP.ACTION_ACKNOWLEDGE",
+        "ACTION_NEW_USER_GROUP" : "グループ追加",
+
+        "DIALOG_HEADER_ERROR" : "@:APP.DIALOG_HEADER_ERROR",
+
+        "FIELD_PLACEHOLDER_FILTER" : "@:APP.FIELD_PLACEHOLDER_FILTER",
+
+        "FORMAT_DATE" : "@:APP.FORMAT_DATE_TIME_PRECISE",
+
+        "HELP_USER_GROUPS" : "グループをクリックまたはタップすることで、グループを管理できます。権限に応じてグループ情報の変更を行うことができます。",
+
+        "SECTION_HEADER_USER_GROUPS" : "グループ",
+
+        "TABLE_HEADER_USER_GROUP_NAME" : "グループ名"
+
+    },
+
+    "SETTINGS_SESSIONS" : {
+        
+        "ACTION_ACKNOWLEDGE" : "@:APP.ACTION_ACKNOWLEDGE",
+        "ACTION_CANCEL"      : "@:APP.ACTION_CANCEL",
+        "ACTION_DELETE"      : "強制切断",
+        
+        "DIALOG_HEADER_CONFIRM_DELETE" : "セッションの強制切断",
+        "DIALOG_HEADER_ERROR"          : "@:APP.DIALOG_HEADER_ERROR",
+        
+        "FIELD_PLACEHOLDER_FILTER" : "@:APP.FIELD_PLACEHOLDER_FILTER",
+        
+        "FORMAT_STARTDATE" : "@:APP.FORMAT_DATE_TIME_PRECISE",
+
+        "HELP_SESSIONS" : "Guacamoleのアクティブなセッションが全て表示されています。 もしセッションを強制切断したい場合、 チェックボックスにチェックを入れて、強制切断ボタンをクリックしてください。",
+        
+        "INFO_NO_SESSIONS" : "アクティブセッションはありません",
+
+        "SECTION_HEADER_SESSIONS" : "アクティブセッション",
+        
+        "TABLE_HEADER_SESSION_CONNECTION_NAME" : "接続名",
+        "TABLE_HEADER_SESSION_REMOTEHOST"      : "接続元",
+        "TABLE_HEADER_SESSION_USERNAME"        : "ユーザ名",
+        
+        "TEXT_CONFIRM_DELETE" : "選択したすべてのセッションを強制終了しますか？これらのセッションを使用しているユーザーは直ちに切断されます。"
+
+    },
+
+    "USER_ATTRIBUTES" : {
+
+        "FIELD_HEADER_GUAC_EMAIL_ADDRESS"       : "メールアドレス:",
+        "FIELD_HEADER_GUAC_FULL_NAME"           : "名前:",
+        "FIELD_HEADER_GUAC_ORGANIZATION"        : "組織:",
+        "FIELD_HEADER_GUAC_ORGANIZATIONAL_ROLE" : "役職/役割:"
+
+    },
+
+    "USER_MENU" : {
+
+        "ACTION_LOGOUT"             : "@:APP.ACTION_LOGOUT",
+        "ACTION_MANAGE_CONNECTIONS" : "@:APP.ACTION_MANAGE_CONNECTIONS",
+        "ACTION_MANAGE_PREFERENCES" : "@:APP.ACTION_MANAGE_PREFERENCES",
+        "ACTION_MANAGE_SESSIONS"    : "@:APP.ACTION_MANAGE_SESSIONS",
+        "ACTION_MANAGE_SETTINGS"    : "@:APP.ACTION_MANAGE_SETTINGS",
+        "ACTION_MANAGE_USERS"       : "@:APP.ACTION_MANAGE_USERS",
+        "ACTION_MANAGE_USER_GROUPS" : "@:APP.ACTION_MANAGE_USER_GROUPS",
+        "ACTION_NAVIGATE_HOME"      : "@:APP.ACTION_NAVIGATE_HOME",
+        "ACTION_VIEW_HISTORY"       : "@:APP.ACTION_VIEW_HISTORY"
+
+    }
+
+}

@@ -1,0 +1,109 @@
+{
+
+    "LOGIN" : {
+
+        "ERROR_PASSWORD_BLANK"    : "@:APP.ERROR_PASSWORD_BLANK",
+        "ERROR_PASSWORD_SAME"     : "새로운 비밀번호는 만료된 비밀번호와 달라야 합니다.",
+        "ERROR_PASSWORD_MISMATCH" : "@:APP.ERROR_PASSWORD_MISMATCH",
+        "ERROR_NOT_VALID"         : "이 사용자 계정은 현재 유효하지 않습니다.",
+        "ERROR_NOT_ACCESSIBLE"    : "현재 이 계정에 대한 액세스가 허용되지 않습니다. 나중에 다시 시도하십시오.",
+
+        "INFO_PASSWORD_EXPIRED" : "비밀번호가 만료되었으며 재설정해야 합니다. 계속하려면 새 비밀번호를 입력하십시오.",
+
+        "FIELD_HEADER_NEW_PASSWORD"         : "새 비밀번호",
+        "FIELD_HEADER_CONFIRM_NEW_PASSWORD" : "새 비밀번호 확인"
+
+    },
+
+    "CONNECTION_ATTRIBUTES" : {
+
+        "FIELD_HEADER_MAX_CONNECTIONS"          : "최대 연결 수:",
+        "FIELD_HEADER_MAX_CONNECTIONS_PER_USER" : "사용자당 최대 연결 수:",
+
+        "FIELD_HEADER_FAILOVER_ONLY"            : "장애 조치에만 사용:",
+        "FIELD_HEADER_WEIGHT"                   : "연결 가중치:",
+
+        "FIELD_HEADER_GUACD_HOSTNAME"   : "호스트 이름:",
+        "FIELD_HEADER_GUACD_ENCRYPTION" : "암호화:",
+        "FIELD_HEADER_GUACD_PORT"       : "포트:",
+
+        "FIELD_OPTION_GUACD_ENCRYPTION_NONE"  : "없음 (암호화되지 않음)",
+        "FIELD_OPTION_GUACD_ENCRYPTION_SSL"   : "SSL / TLS",
+
+        "SECTION_HEADER_CONCURRENCY"    : "동시성 제한",
+        "SECTION_HEADER_LOAD_BALANCING" : "부하 분산",
+        "SECTION_HEADER_GUACD"          : "Guacamole 프록시 매개 변수 (guacd)"
+
+    },
+
+    "CONNECTION_GROUP_ATTRIBUTES" : {
+
+        "FIELD_HEADER_ENABLE_SESSION_AFFINITY"  : "세션 선호도 사용:",
+        "FIELD_HEADER_MAX_CONNECTIONS"          : "최대 연결 수:",
+        "FIELD_HEADER_MAX_CONNECTIONS_PER_USER" : "사용자당 최대 연결 수:",
+
+        "SECTION_HEADER_CONCURRENCY" : "동시성 제한 (Balancing Groups)"
+
+    },
+
+    "DATA_SOURCE_MYSQL" : {
+        "NAME" : "MySQL"
+    },
+
+    "DATA_SOURCE_MYSQL_SHARED" : {
+        "NAME" : "공유된 연결 (MySQL)"
+    },
+
+    "DATA_SOURCE_POSTGRESQL" : {
+        "NAME" : "PostgreSQL"
+    },
+
+    "DATA_SOURCE_POSTGRESQL_SHARED" : {
+        "NAME" : "공유된 연결 (PostgreSQL)"
+    },
+
+    "DATA_SOURCE_SQLSERVER" : {
+        "NAME" : "SQL Server"
+    },
+
+    "DATA_SOURCE_SQLSERVER_SHARED" : {
+        "NAME" : "공유된 연결 (SQL Server)"
+    },
+
+    "HOME" : {
+        "INFO_SHARED_BY" : "공유자: {USERNAME}"
+    },
+
+    "PASSWORD_POLICY" : {
+
+        "ERROR_CONTAINS_USERNAME"      : "비밀번호에는 사용자 이름이 포함될 수 없습니다.",
+        "ERROR_REQUIRES_DIGIT"         : "비밀번호에는 적어도 하나의 숫자가 포함되어야 합니다.",
+        "ERROR_REQUIRES_MULTIPLE_CASE" : "비밀번호에는 대문자와 소문자가 모두 포함되어야 합니다.",
+        "ERROR_REQUIRES_NON_ALNUM"     : "비밀번호에는 하나 이상의 기호가 포함되어야 합니다.",
+        "ERROR_REUSED"                 : "이 비밀번호는 이미 사용되었습니다. 이전 {HISTORY_SIZE} 패스워드를 재사용하지 마십시오.",
+        "ERROR_TOO_SHORT"              : "비밀번호는 {LENGTH} 자 이상이어야 합니다.",
+        "ERROR_TOO_YOUNG"              : "이 계정의 비밀번호가 이미 재설정되었습니다. 비밀번호를 다시 변경하기 전에 {WAIT} 일 이상 기다리십시오."
+
+    },
+
+    "USER_ATTRIBUTES" : {
+
+        "FIELD_HEADER_EXPIRED"             : "비밀번호 만료됨:",
+        "FIELD_HEADER_ACCESS_WINDOW_END"   : "다음 이후에 액세스 허용 안함 :",
+        "FIELD_HEADER_ACCESS_WINDOW_START" : "다음 이후에 엑세스 허용:",
+        "FIELD_HEADER_TIMEZONE"            : "사용자 시간대:",
+        "FIELD_HEADER_VALID_FROM"          : "다음 이후 계정 활정화:",
+        "FIELD_HEADER_VALID_UNTIL"         : "다음 이후 계정 비활성화:",
+
+        "SECTION_HEADER_RESTRICTIONS" : "계정 제한",
+        "SECTION_HEADER_PROFILE"      : "프로필"
+
+    },
+
+    "USER_GROUP_ATTRIBUTES" : {
+
+        "SECTION_HEADER_RESTRICTIONS" : "그룹 제한"
+
+    }
+
+}

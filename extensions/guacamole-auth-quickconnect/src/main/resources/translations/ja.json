@@ -1,0 +1,14 @@
+{
+
+    "QUICKCONNECT" : {
+        "ACTION_CONNECT"        : "接続",
+        
+        "ERROR_INVALID_URI"      : "URIが無効です",
+        "ERROR_NO_HOST"          : "ホストが指定されていません",
+        "ERROR_NO_PROTOCOL"      : "プロトコルが指定されていません",
+        "ERROR_NOT_ABSOLUTE_URI" : "絶対URIで指定してください",
+        
+        "FIELD_PLACEHOLDER_URI" : "接続するURIを入力"
+    }
+
+}
