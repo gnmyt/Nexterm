@@ -28,7 +28,7 @@ COPY server/ server/
 FROM node:22-alpine AS guacd-builder
 
 RUN apk add --no-cache \
-    cairo-dev jpeg-dev libpng-dev ossp-uuid-dev ffmpeg-dev \
+    cairo-dev jpeg-dev libpng-dev ossp-uuid-dev \
     pango-dev libvncserver-dev libwebp-dev openssl-dev freerdp2-dev \
     libpulse libogg libc-dev libssh2-dev \
     build-base autoconf automake libtool
@@ -39,18 +39,24 @@ COPY vendor/guacamole-server/ ./guacamole-server/
 
 RUN cd guacamole-server \
     && autoreconf -fi \
-    && ./configure --with-init-dir=/etc/init.d --prefix=/usr/local \
+    && ./configure --with-init-dir=/etc/init.d --prefix=/usr/local --disable-guacenc --disable-guaclog \
     && make -j$(nproc) \
-    && make DESTDIR=/install install
+    && make DESTDIR=/install install \
+    && rm -rf /install/usr/local/include \
+    && rm -f /install/usr/local/lib/*.a \
+    && rm -f /install/usr/local/lib/*.la \
+    && rm -f /install/usr/local/*.md /install/usr/local/LICENSE \
+    && strip /install/usr/local/sbin/guacd /install/usr/local/lib/*.so.* 2>/dev/null || true
 
 FROM node:22-alpine
 
 RUN apk add --no-cache \
-    cairo jpeg libpng ossp-uuid ffmpeg-libs \
-    pango libvncserver libwebp openssl freerdp2 \
+    cairo jpeg libpng ossp-uuid \
+    pango libvncserver libwebp openssl freerdp2-libs \
     libpulse libogg libssh2 util-linux
 
-COPY --from=guacd-builder /install/usr/local/ /usr/local/
+COPY --from=guacd-builder /install/usr/local/sbin/ /usr/local/sbin/
+COPY --from=guacd-builder /install/usr/local/lib/ /usr/local/lib/
 
 RUN ldconfig /usr/local/lib 2>/dev/null || true
 
