@@ -1,0 +1,106 @@
+#
+# Licensed to the Apache Software Foundation (ASF) under one
+# or more contributor license agreements.  See the NOTICE file
+# distributed with this work for additional information
+# regarding copyright ownership.  The ASF licenses this file
+# to you under the Apache License, Version 2.0 (the
+# "License"); you may not use this file except in compliance
+# with the License.  You may obtain a copy of the License at
+#
+#   http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing,
+# software distributed under the License is distributed on an
+# "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+# KIND, either express or implied.  See the License for the
+# specific language governing permissions and limitations
+# under the License.
+#
+
+parent  "base_altgr"
+name    "hu-hu-qwertz"
+freerdp "KBD_HUNGARIAN"
+
+#
+# Basic keys
+#
+
+map -caps -altgr -shift 0x29 0x02..0x0D      ~ "0123456789öüó"
+map -caps -altgr -shift      0x10..0x1B      ~ "qwertzuiopőú"
+map -caps -altgr -shift      0x1E..0x28 0x2B ~ "asdfghjkléáű"
+map -caps -altgr -shift 0x56 0x2C..0x35      ~ "íyxcvbnm,.-"
+
+map -caps -altgr +shift 0x29 0x02..0x0D      ~ "§'"+!%/=()ÖÜÓ"
+map -caps -altgr +shift      0x10..0x1B      ~ "QWERTZUIOPŐÚ"
+map -caps -altgr +shift      0x1E..0x28 0x2B ~ "ASDFGHJKLÉÁŰ"
+map -caps -altgr +shift 0x56 0x2C..0x35      ~ "ÍYXCVBNM?:_"
+
+map +caps -altgr -shift 0x29 0x02..0x0D      ~ "0123456789ÖÜÓ"
+map +caps -altgr -shift      0x10..0x1B      ~ "QWERTZUIOPŐÚ"
+map +caps -altgr -shift      0x1E..0x28 0x2B ~ "ASDFGHJKLÉÁŰ"
+map +caps -altgr -shift 0x56 0x2C..0x35      ~ "ÍYXCVBNM,.-"
+
+map +caps -altgr +shift 0x29 0x02..0x0D      ~ "§'"+!%/=()öüó"
+map +caps -altgr +shift      0x10..0x1B      ~ "qwertzuiopőú"
+map +caps -altgr +shift      0x1E..0x28 0x2B ~ "asdfghjkléáű"
+map +caps -altgr +shift 0x56 0x2C..0x35      ~ "íyxcvbnm?:_"
+
+#
+# Keys requiring AltGr
+#
+
+map +altgr -shift 0x02 ~ "~"
+map +altgr -shift 0x08 ~ "`"
+
+map +altgr -shift 0x10 ~ "\"
+map +altgr -shift 0x11 ~ "|"
+map +altgr -shift 0x12 ~ "Ä"
+map +altgr -shift 0x16 ~ "€"
+map +altgr -shift 0x17 ~ "Í"
+map +altgr -shift 0x1A ~ "÷"
+map +altgr -shift 0x1B ~ "×"
+
+map +altgr -shift 0x1E ~ "ä"
+map +altgr -shift 0x1F ~ "đ"
+map +altgr -shift 0x20 ~ "Đ"
+map +altgr -shift 0x21 ~ "["
+map +altgr -shift 0x22 ~ "]"
+map +altgr -shift 0x24 ~ "í"
+map +altgr -shift 0x25 ~ "ł"
+map +altgr -shift 0x26 ~ "Ł"
+map +altgr -shift 0x27 ~ "$"
+map +altgr -shift 0x28 ~ "ß"
+map +altgr -shift 0x2B ~ "¤"
+
+map +altgr -shift 0x56 ~ "<"
+map +altgr -shift 0x2C ~ ">"
+map +altgr -shift 0x2D ~ "#"
+map +altgr -shift 0x2E ~ "&"
+map +altgr -shift 0x2F ~ "@"
+map +altgr -shift 0x30 ~ "{"
+map +altgr -shift 0x31 ~ "}"
+map +altgr -shift 0x32 ~ "<"
+map +altgr -shift 0x33 ~ ";"
+map +altgr -shift 0x34 ~ ">"
+map +altgr -shift 0x35 ~ "*"
+
+#
+# Keys requiring AltGr & Shift
+#
+
+#
+# Dead keys
+#
+
+map +altgr -shift 0x03 ~ 0xFE5A # Dead caron
+map +altgr -shift 0x04 ~ 0xFE52 # Dead circumflex
+map +altgr -shift 0x05 ~ 0xFE55 # Dead breve
+map +altgr -shift 0x06 ~ 0xFE58 # Dead abovering
+map +altgr -shift 0x07 ~ 0xFE5C # Dead ogonek
+map +altgr -shift 0x09 ~ 0xFE56 # Dead abovedot
+map +altgr -shift 0x0A ~ 0xFE51 # Dead acute
+map +altgr -shift 0x0B ~ 0xFE59 # Dead doubleacute
+map +altgr -shift 0x0C ~ 0xFE57 # Dead diaeresis
+map +altgr -shift 0x0D ~ 0xFE5B # Dead cedilla
+
+# END
