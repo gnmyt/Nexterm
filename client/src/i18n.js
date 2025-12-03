@@ -13,6 +13,7 @@ export const languages = [
     {name: 'Français', code: 'fr'},
     {name: 'Italiano', code: 'it'},
     {name: '中文', code: 'zh'},
+    {name: 'Русский', code: 'ru'},
 ]
 
 i18n.use(initReactI18next).use(LanguageDetector).use(HttpApi).init({
