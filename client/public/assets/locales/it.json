@@ -184,7 +184,8 @@
         "required": "Il nome e il comando sono obbligatori",
         "loadFailed": "Non è riuscito a caricare i dati dello snippet",
         "saveFailed": "Non è riuscito a salvare lo snippet",
-        "deleteFailed": "Cancellazione fallita dello snippet"
+        "deleteFailed": "Cancellazione fallita dello snippet",
+        "reorderFailed": "Failed to reorder snippet"
       }
     }
   },
@@ -270,11 +271,13 @@
       "success": {
         "created": "Lo script è stato creato con successo",
         "updated": "Lo script è stato aggiornato con successo",
-        "deleted": "Lo script è stato cancellato con successo"
+        "deleted": "Lo script è stato cancellato con successo",
+        "reordered": "Script reordered successfully"
       },
       "errors": {
         "loadFailed": "Non è riuscito a caricare i dati dello script",
-        "deleteFailed": "Cancellazione dello script fallita"
+        "deleteFailed": "Cancellazione dello script fallita",
+        "reorderFailed": "Failed to reorder script"
       }
     },
     "menu": {

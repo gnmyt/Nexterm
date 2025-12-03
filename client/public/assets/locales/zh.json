@@ -184,7 +184,8 @@
         "required": "姓名和命令为必填项",
         "loadFailed": "加载片段数据失败",
         "saveFailed": "保存片段失败",
-        "deleteFailed": "删除片段失败"
+        "deleteFailed": "删除片段失败",
+        "reorderFailed": "Failed to reorder snippet"
       }
     }
   },
@@ -270,11 +271,13 @@
       "success": {
         "created": "脚本创建成功",
         "updated": "脚本更新成功",
-        "deleted": "脚本已成功删除"
+        "deleted": "脚本已成功删除",
+        "reordered": "Script reordered successfully"
       },
       "errors": {
         "loadFailed": "加载脚本数据失败",
-        "deleteFailed": "删除脚本失败"
+        "deleteFailed": "删除脚本失败",
+        "reorderFailed": "Failed to reorder script"
       }
     },
     "menu": {
