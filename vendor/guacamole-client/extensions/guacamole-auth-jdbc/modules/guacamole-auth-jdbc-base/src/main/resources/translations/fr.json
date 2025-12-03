@@ -1,0 +1,114 @@
+{
+
+    "LOGIN" : {
+
+        "ERROR_PASSWORD_BLANK"    : "@:APP.ERROR_PASSWORD_BLANK",
+        "ERROR_PASSWORD_SAME"     : "le nouveau mot de passe doit être différent du mot de passe expiré.",
+        "ERROR_PASSWORD_MISMATCH" : "@:APP.ERROR_PASSWORD_MISMATCH",
+        "ERROR_NOT_VALID"         : "Ce compte utilisateur n'est pas valide pour le moment.",
+        "ERROR_NOT_ACCESSIBLE"    : "L'accès à ce compte n'est pas autorisé pour le moment. Veuillez réessayer plus tard.",
+
+        "INFO_PASSWORD_EXPIRED" : "Votre mot de passe a expiré et doit être changé. Veuillez entrer un nouveau mot de passe pour continuer.",
+
+        "FIELD_HEADER_NEW_PASSWORD"         : "Nouveau mot de passe",
+        "FIELD_HEADER_CONFIRM_NEW_PASSWORD" : "Confirmez le nouveau mot de passe"
+
+    },
+
+    "CONNECTION_ATTRIBUTES" : {
+
+        "FIELD_HEADER_MAX_CONNECTIONS"          : "Nombre maximum de connexions:",
+        "FIELD_HEADER_MAX_CONNECTIONS_PER_USER" : "Nombre maximum de connexions par utilisateur:",
+
+        "FIELD_HEADER_FAILOVER_ONLY"            : "Utilisé seulement en cas de bascule:",
+        "FIELD_HEADER_WEIGHT"                   : "Poids de la connexion:",
+
+        "FIELD_HEADER_GUACD_HOSTNAME"   : "Nom d'hôte:",
+        "FIELD_HEADER_GUACD_ENCRYPTION" : "Chiffrement:",
+        "FIELD_HEADER_GUACD_PORT"       : "Port:",
+
+        "FIELD_OPTION_GUACD_ENCRYPTION_EMPTY" : "",
+        "FIELD_OPTION_GUACD_ENCRYPTION_NONE"  : "Aucun (non-chiffré)",
+        "FIELD_OPTION_GUACD_ENCRYPTION_SSL"   : "SSL / TLS",
+
+        "SECTION_HEADER_CONCURRENCY"    : "Limites de concurrence",
+        "SECTION_HEADER_LOAD_BALANCING" : "Equilibrage de charge",
+        "SECTION_HEADER_GUACD"          : "Paramètres du proxy Guacamole (guacd)"
+
+    },
+
+    "CONNECTION_GROUP_ATTRIBUTES" : {
+
+        "FIELD_HEADER_ENABLE_SESSION_AFFINITY"  : "Activer l'affinité de session:",
+        "FIELD_HEADER_MAX_CONNECTIONS"          : "Nombre maximum de connexions:",
+        "FIELD_HEADER_MAX_CONNECTIONS_PER_USER" : "Nombre maximum de connexions par utilisateur:",
+
+        "SECTION_HEADER_CONCURRENCY" : "Limites de concurrence (Groupes de répartition)"
+
+    },
+
+    "DATA_SOURCE_MYSQL" : {
+        "NAME" : "MySQL"
+    },
+
+    "DATA_SOURCE_MYSQL_SHARED" : {
+        "NAME" : "Connexions partagées (MySQL)"
+    },
+
+    "DATA_SOURCE_POSTGRESQL" : {
+        "NAME" : "PostgreSQL"
+    },
+
+    "DATA_SOURCE_POSTGRESQL_SHARED" : {
+        "NAME" : "Connexions partagées (PostgreSQL)"
+    },
+
+    "DATA_SOURCE_SQLSERVER" : {
+        "NAME" : "SQL Server"
+    },
+
+    "DATA_SOURCE_SQLSERVER_SHARED" : {
+        "NAME" : "Connexions partagées (SQL Server)"
+    },
+
+    "HOME" : {
+        "INFO_SHARED_BY" : "Partagé par {USERNAME}"
+    },
+
+    "PASSWORD_POLICY" : {
+
+        "ERROR_CONTAINS_USERNAME"      : "Les mots de passe ne doivent pas contenir le nom d'utilisateur.",
+        "ERROR_REQUIRES_DIGIT"         : "Les mots de passe doivent contenir au moins un chiffre.",
+        "ERROR_REQUIRES_MULTIPLE_CASE" : "Les mots de passe doivent contenir des caractères minuscules et majuscules.",
+        "ERROR_REQUIRES_NON_ALNUM"     : "Les mots de passe doivent contenir au moins un symbole.",
+        "ERROR_REUSED"                 : "Ce mot de passe a déjà été utilisé. Veuillez ne pas réutiliser {HISTORY_SIZE} {HISTORY_SIZE, plural, one{le dernier mot de passe} other{un des derniers mots de passe}}.",
+        "ERROR_TOO_SHORT"              : "Les mots de passe doivent être composé d'au moins {LENGTH} {LENGTH, plural, one{caractère} other{caractères}}.",
+        "ERROR_TOO_YOUNG"              : "Le mot de passe pour ce compte a déjà été réinitialisé. Veuillez patienter au moins {WAIT} {WAIT, plural, one{jour} other{jours}} avant de changer à nouveau le mot de passe."
+
+    },
+
+    "USER_ATTRIBUTES" : {
+
+        "FIELD_HEADER_EXPIRED"             : "Mot de passe expiré:",
+        "FIELD_HEADER_ACCESS_WINDOW_END"   : "Ne pas autoriser l'accès après:",
+        "FIELD_HEADER_ACCESS_WINDOW_START" : "Autoriser l'accès après:",
+        "FIELD_HEADER_TIMEZONE"            : "Fuseau horaire utilisateur:",
+        "FIELD_HEADER_VALID_FROM"          : "Activer le compte après:",
+        "FIELD_HEADER_VALID_UNTIL"         : "Désactiver le compte après:",
+
+        "SECTION_HEADER_RESTRICTIONS" : "Restrictions de compte",
+        "SECTION_HEADER_PROFILE"      : "Profil"
+
+    },
+
+    "USER_GROUP_ATTRIBUTES" : {
+
+        "SECTION_HEADER_RESTRICTIONS" : "Restrictions de groupe"
+
+    },
+
+    "CONNECTION_PARAMETERS": {
+        "DATABASE_PARAMETER_VALUE_TOO_LONG": "La valeur fournie pour le paramètre de connexion {PARAMETER_NAME} dépasse la longueur maximale autorisée de {MAX_SIZE} {MAX_SIZE, plural, one{caractère} other{caractères}}."
+    }
+
+}

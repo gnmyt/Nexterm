@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+    Licensed to the Apache Software Foundation (ASF) under one
+    or more contributor license agreements.  See the NOTICE file
+    distributed with this work for additional information
+    regarding copyright ownership.  The ASF licenses this file
+    to you under the Apache License, Version 2.0 (the
+    "License"); you may not use this file except in compliance
+    with the License.  You may obtain a copy of the License at
+
+      http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing,
+    software distributed under the License is distributed on an
+    "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+    KIND, either express or implied.  See the License for the
+    specific language governing permissions and limitations
+    under the License.
+-->
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
+                        http://maven.apache.org/maven-v4_0_0.xsd">
+
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>org.apache.guacamole</groupId>
+    <artifactId>guacamole-auth-sso-saml</artifactId>
+    <packaging>jar</packaging>
+    <version>1.6.0</version>
+    <name>guacamole-auth-sso-saml</name>
+    <url>http://guacamole.apache.org/</url>
+
+    <parent>
+        <groupId>org.apache.guacamole</groupId>
+        <artifactId>guacamole-auth-sso</artifactId>
+        <version>1.6.0</version>
+        <relativePath>../../</relativePath>
+    </parent>
+
+    <dependencies>
+
+        <!-- Guacamole Extension API -->
+        <dependency>
+            <groupId>org.apache.guacamole</groupId>
+            <artifactId>guacamole-ext</artifactId>
+        </dependency>
+
+        <!-- Core SSO support -->
+        <dependency>
+            <groupId>org.apache.guacamole</groupId>
+            <artifactId>guacamole-auth-sso-base</artifactId>
+        </dependency>
+
+        <!-- Guice -->
+        <dependency>
+            <groupId>com.google.inject</groupId>
+            <artifactId>guice</artifactId>
+        </dependency>
+
+        <!-- Java servlet API -->
+        <dependency>
+            <groupId>javax.servlet</groupId>
+            <artifactId>servlet-api</artifactId>
+        </dependency>
+
+        <!-- JAX-RS Annotations -->
+        <dependency>
+            <groupId>javax.ws.rs</groupId>
+            <artifactId>jsr311-api</artifactId>
+        </dependency>
+
+        <!-- OneLogin SAML Library -->
+        <dependency>
+            <groupId>com.onelogin</groupId>
+            <artifactId>java-saml</artifactId>
+            <version>2.9.0</version>
+            <exclusions>
+
+                <!--
+                    Replace vulnerable version of Woodstox until upstream
+                    releases a version with fixed dependencies
+                -->
+                <exclusion>
+                    <groupId>com.fasterxml.woodstox</groupId>
+                    <artifactId>woodstox-core</artifactId>
+                </exclusion>
+
+                <!--
+                    Replace vulnerable version of xmlsec until upstream
+                    releases a version with fixed dependencies
+                -->
+                <exclusion>
+                    <groupId>org.apache.santuario</groupId>
+                    <artifactId>xmlsec</artifactId>
+                </exclusion>
+
+                <!--
+                    Replace slightly older commons-lang3 (3.12.0) with latest
+                    compatible version (3.17.0) so that we don't need two copies
+                    of the same license information.
+                -->
+                <exclusion>
+                    <groupId>org.apache.commons</groupId>
+                    <artifactId>commons-lang3</artifactId>
+                </exclusion>
+
+                <!--
+                    Replace slightly older commons-codec (1.15) with newer
+                    and identical version to that used by Apache Directory API
+                    for LDAP (1.16.0) so that we don't need two copies of the
+                    same license information.
+                -->
+                <exclusion>
+                    <groupId>commons-codec</groupId>
+                    <artifactId>commons-codec</artifactId>
+                </exclusion>
+
+            </exclusions>
+        </dependency>
+
+        <!-- Woodstox (see exclusions for java-saml) -->
+        <dependency>
+            <groupId>com.fasterxml.woodstox</groupId>
+            <artifactId>woodstox-core</artifactId>
+            <version>5.4.0</version>
+        </dependency>
+
+        <!-- Apache XML Security for Java (see exclusions for java-saml) -->
+        <dependency>
+            <groupId>org.apache.santuario</groupId>
+            <artifactId>xmlsec</artifactId>
+            <version>2.2.6</version>
+            <exclusions>
+
+                <!--
+                    Replace slightly older commons-codec (1.15) with newer
+                    and identical version to that used by Apache Directory API
+                    for LDAP (1.17.1) so that we don't need two copies of the
+                    same license information.
+                -->
+                <exclusion>
+                    <groupId>commons-codec</groupId>
+                    <artifactId>commons-codec</artifactId>
+                </exclusion>
+
+            </exclusions>
+        </dependency>
+
+        <!-- Apache Commons Lang (see exclusions for java-saml) -->
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-lang3</artifactId>
+            <version>3.17.0</version>
+        </dependency>
+
+        <!-- Apache Commons Codec (see exclusions for java-saml and xmlsec) -->
+        <dependency>
+            <groupId>commons-codec</groupId>
+            <artifactId>commons-codec</artifactId>
+            <version>1.17.1</version>
+        </dependency>
+
+    </dependencies>
+
+</project>

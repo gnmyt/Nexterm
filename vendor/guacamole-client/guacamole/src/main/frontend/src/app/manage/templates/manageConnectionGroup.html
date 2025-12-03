@@ -1,0 +1,56 @@
+
+<div class="manage-connection-group view" ng-class="{loading: !isLoaded()}">
+
+    <!-- Main property editor -->
+    <div class="header">
+        <h2>{{'MANAGE_CONNECTION_GROUP.SECTION_HEADER_EDIT_CONNECTION_GROUP' | translate}}</h2>
+        <guac-user-menu></guac-user-menu>
+    </div>
+    <div class="section">
+        <table class="properties">
+                        
+            <!-- Edit connection group name -->
+            <tr>
+                <th>{{'MANAGE_CONNECTION_GROUP.FIELD_HEADER_NAME' | translate}}</th>
+                          
+                <td><input type="text" ng-model="connectionGroup.name" autocorrect="off" autocapitalize="off"></td>
+            </tr>
+                        
+            <!-- Edit connection group location -->
+            <tr>
+                <th>{{'MANAGE_CONNECTION_GROUP.FIELD_HEADER_LOCATION' | translate}}</th>
+                          
+                <td>
+                    <location-chooser
+                        data-data-source="selectedDataSource" root-group="rootGroup"
+                        value="connectionGroup.parentIdentifier"></location-chooser>
+                </td>
+            </tr>
+                        
+                        
+            <!-- Edit connection group type -->
+            <tr>
+                <th>{{'MANAGE_CONNECTION_GROUP.FIELD_HEADER_TYPE' | translate}}</th>
+                <td>
+                    <select ng-model="connectionGroup.type" ng-options="type.value as type.label | translate for type in types | orderBy: name"></select>
+                </td>
+            </tr>
+        </table>
+    </div>
+
+    <!-- Connection group attributes section -->
+    <div class="attributes">
+        <guac-form namespace="'CONNECTION_GROUP_ATTRIBUTES'" content="attributes"
+                   model="connectionGroup.attributes" model-only="!managementPermissions.canChangeAllAttributes"></guac-form>
+    </div>
+
+    <!-- Form action buttons -->
+    <management-buttons namespace="MANAGE_CONNECTION_GROUP"
+          permissions="managementPermissions"
+          save="saveConnectionGroup()"
+          delete="deleteConnectionGroup()"
+          clone="cloneConnectionGroup()"
+          return="returnToConnectionList()">
+    </management-buttons>
+
+</div>

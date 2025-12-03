@@ -1,0 +1,283 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ */
+
+* {
+    -webkit-tap-highlight-color: rgba(0,0,0,0);
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+}
+
+body {
+    background: white;
+    font-family: Carlito, FreeSans, Helvetica, Arial, sans-serif;
+    padding: 0;
+    margin: 0;
+}
+
+img {
+    border: none;
+    vertical-align: middle;
+}
+
+div.section {
+    margin: 1em;
+    padding: 0;
+}
+
+/*
+ * List elements
+ */
+
+.list-item {
+
+    display: block;
+    text-align: left;
+    cursor: pointer;
+
+    position: relative;
+
+}
+
+.icon {
+    width: 24px;
+    height: 24px;
+    background-size: 16px 16px;
+    -moz-background-size: 16px 16px;
+    -webkit-background-size: 16px 16px;
+    -khtml-background-size: 16px 16px;
+    background-repeat: no-repeat;
+    background-position: center center;
+    display: inline-block;
+    vertical-align: middle;
+}
+
+.list-item * {
+    vertical-align: middle;
+}
+
+.list-item .caption {
+    padding: 0.1em;
+}
+
+.list-item .caption:after {
+    clear: right;
+    content: "";
+    display: block;
+}
+
+.list-item .name {
+    color: black;
+    font-weight: normal;
+    padding: 0.1em;
+    margin-left: 0.25em;
+}
+
+.list-item .usage {
+    float: right;
+    font-style: italic;
+    color: gray;
+}
+
+.list-item.in-use {
+    opacity: 0.5;
+}
+
+.choice .list-item.in-use {
+    opacity: 1;
+}
+
+/*
+ * List element styling
+ */
+
+.list-item.selected {
+    background: #DEB;
+}
+
+.caption.active * {
+    opacity: 0.5;
+}
+
+.caption .activeUserCount {
+    font-style: italic;
+    margin-right: 1em;
+    float: right;
+}
+
+.list-item:not(.selected) .caption:hover {
+    background: #CDA;
+}
+
+.choice .list-item {
+    display: inline-block;
+}
+
+.choice input[type='checkbox'] {
+    vertical-align: top;
+    height: 24px;
+    padding: 0;
+    margin: 0;
+}
+
+.disabled .list-item:not(.selected) {
+    opacity: 0.25;
+}
+
+.disabled .list-item:not(.selected):hover {
+    background: inherit;
+}
+
+/*
+ * List element icons
+ */
+
+.icon.user {
+    background-image: url('images/user-icons/guac-user.svg');
+}
+
+.icon.user.add {
+    background-image: url('images/action-icons/guac-user-add.svg');
+}
+
+.icon.user-group {
+    background-image: url('images/user-icons/guac-user-group.svg');
+}
+
+.icon.user-group.add {
+    background-image: url('images/action-icons/guac-user-group-add.svg');
+}
+
+.icon.connection {
+    background-image: url('images/protocol-icons/guac-plug.svg');
+}
+
+.icon.connection.add {
+    background-image: url('images/action-icons/guac-monitor-add.svg');
+}
+
+.connection .icon,
+.connection-group .icon,
+.sharing-profile .icon {
+    display: inline-block;
+    width: 24px;
+    height: 24px;
+    background-size: 16px 16px;
+    -moz-background-size: 16px 16px;
+    -webkit-background-size: 16px 16px;
+    -khtml-background-size: 16px 16px;
+    background-repeat: no-repeat;
+    background-position: center center;
+}
+
+.connection-group > .caption .icon {
+    background-image: url('images/folder-closed.svg');
+}
+
+.connection-group.expanded > .caption .icon {
+    background-image: url('images/folder-open.svg');
+}
+
+.connection .icon {
+    background-image: url('images/protocol-icons/guac-plug.svg');
+}
+
+.connection .icon.kubernetes,
+.connection .icon.ssh,
+.connection .icon.telnet {
+    background-image: url('images/protocol-icons/guac-text.svg');
+}
+
+.connection .icon.vnc,
+.connection .icon.rdp {
+    background-image: url('images/protocol-icons/guac-monitor.svg');
+}
+
+.sharing-profile .icon {
+    background-image: url('images/share.svg');
+}
+
+/*
+ * Groups
+ */
+
+.expandable > .children {
+    margin-left: 13px;
+    padding-left: 13px;
+}
+ 
+.connection-group.empty.balancer .icon {
+    background-image: url('images/protocol-icons/guac-monitor.svg');
+}
+
+.expandable.expanded > .children > .list-item {
+    position: relative;
+}
+
+.expandable.expanded > .children > .list-item:before,
+.expandable.expanded > .children > .list-item:after {
+    display: block;
+    content: ' ';
+    position: absolute;
+    z-index: -1;
+}
+
+.expandable.expanded > .children > .list-item:before {
+    border-left: 1px solid #BBB;
+    left: -13px;
+    top: -0.75em;
+    bottom: 0;
+}
+
+.expandable.expanded > .children > .list-item:last-child:before {
+    height: 1.5em;
+}
+
+.expandable.expanded > .children > .list-item:after {
+    display: block;
+    content: ' ';
+    border-bottom: 1px solid #BBB;
+    left: -13px;
+    width: 13px;
+    top: 0.75em;
+}
+
+.expandable > .caption .icon.expand {
+    background-image: url('images/group-icons/guac-closed.svg');
+}
+
+.expandable.expanded > .caption .icon.expand {
+    background-image: url('images/group-icons/guac-open.svg');
+}
+
+.expandable.empty > .caption .icon.expand {
+    opacity: 0.25;
+    background-image: url('images/group-icons/guac-open.svg');
+}
+
+.history th,
+.history td {
+    padding-left: 1em;
+    padding-right: 1em;
+}
+
+.buttons {
+    text-align: center;
+    margin: 1em;
+}

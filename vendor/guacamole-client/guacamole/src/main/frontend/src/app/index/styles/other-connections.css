@@ -1,0 +1,203 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ */
+
+#other-connections .client-panel {
+
+    display: none;
+    position: fixed;
+    right: 0;
+    bottom: 0;
+
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    background: rgba(0, 0, 0, 0.25);
+    max-width: 100%;
+    white-space: nowrap;
+    transition: max-width 0.125s, width 0.125s;
+
+    /* Render above modal status */
+    z-index: 20;
+
+}
+
+#other-connections .client-panel.has-clients {
+    display: block;
+}
+
+#other-connections .client-panel.hidden {
+    max-width: 16px;
+}
+
+#other-connections .client-panel-handle {
+
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    height: 100%;
+    width: 16px;
+    z-index: 1;
+
+    background-color: white;
+    background-repeat: no-repeat;
+    background-size: contain;
+    background-position: center center;
+    background-image: url(images/arrows/right.svg);
+    opacity: 0.5;
+
+}
+
+#other-connections .client-panel-handle:hover {
+    opacity: 0.75;
+}
+
+#other-connections .client-panel.hidden .client-panel-handle {
+    background-image: url(images/arrows/left.svg);
+}
+
+#other-connections .client-panel-connection-list {
+
+    text-align: right;
+
+    margin: 0;
+    padding: 0;
+    padding-left: 16px;
+
+    overflow-x: auto;
+    overflow-y: hidden;
+
+}
+
+#other-connections .client-panel-connection {
+
+    display: inline-block;
+    position: relative;
+
+    margin: 0.5em;
+    border: 1px solid white;
+    background: black;
+    box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.5);
+
+    animation: 0.1s linear 0s popin;
+    opacity: 0.5;
+    transition: opacity 0.25s;
+
+    max-height: 128px;
+    overflow: hidden;
+    vertical-align: middle;
+
+}
+
+#other-connections .client-panel-connection a[href]::before {
+
+    display: block;
+    content: ' ';
+
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 100%;
+    z-index: 1;
+
+    background: url('images/warning-white.svg');
+    background-size: 48px;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-color: black;
+
+    opacity: 0;
+    transition: opacity 0.25s;
+
+}
+
+#other-connections .client-panel-connection.needs-attention a[href]::before {
+    opacity: 0.75;
+}
+
+#other-connections button.close-other-connection {
+
+    position: absolute;
+    top: 0;
+    right: 0;
+    z-index: 2;
+
+    margin: 0;
+    padding: 4px;
+    min-width: 0;
+    border: none;
+    background: transparent;
+    box-shadow: none;
+    text-shadow: none;
+
+    opacity: 0.5;
+    line-height: 1;
+
+}
+
+#other-connections button.close-other-connection:hover {
+    opacity: 1;
+}
+
+#other-connections button.close-other-connection img {
+    background: #A43;
+    border-radius: 18px;
+    width: 100%;
+    max-width: 18px;
+    padding: 3px;
+}
+
+#other-connections button.close-other-connection:hover img {
+    background: #C54;
+}
+
+#other-connections .client-panel.hidden .client-panel-connection-list {
+    /* Hide scrollbar when panel is hidden (will be visible through panel
+     * show/hide button otherwise) */
+    overflow-x: hidden;
+}
+
+#other-connections .client-panel.hidden .client-panel-connection {
+    /* Hide thumbnails when panel is hidden (will be visible through panel
+     * show/hide button otherwise) */
+    visibility: hidden;
+}
+
+#other-connections .client-panel-connection .name {
+
+    position: absolute;
+    padding: 0.25em 0.5em;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 2;
+
+    text-align: left;
+    color: white;
+    background: rgba(0, 0, 0, 0.5);
+    font-size: 0.75em;
+    font-weight: bold;
+
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+
+}
+
+#other-connections .client-panel-connection:hover {
+    opacity: 1;
+}

@@ -1,0 +1,99 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ */
+
+.user-menu {
+
+    /* IE10 */
+    display: -ms-flexbox;
+    -ms-flex-align: stretch;
+    -ms-flex-direction: row;
+
+    /* Ancient Mozilla */
+    display: -moz-box;
+    -moz-box-align: stretch;
+    -moz-box-orient: horizontal;
+    
+    /* Ancient WebKit */
+    display: -webkit-box;
+    -webkit-box-align: stretch;
+    -webkit-box-orient: horizontal;
+
+    /* Old WebKit */
+    display: -webkit-flex;
+    -webkit-align-items: stretch;
+    -webkit-flex-direction: row;
+
+    /* W3C */
+    display: flex;
+    align-items: stretch;
+    flex-direction: row;
+
+}
+
+.user-menu .menu-dropdown .menu-title {
+
+    font-weight: bold;
+    padding-left: 2em;
+
+    background-repeat: no-repeat;
+    background-size: 1em;
+    background-position: 0.5em center;
+    background-image: url('images/user-icons/guac-user.svg');
+
+}
+
+.user-menu .menu-dropdown .menu-contents li a {
+
+    background-repeat: no-repeat;
+    background-size: 1em;
+    background-position: 0.75em center;
+    padding-left: 2.5em;
+    background-image: url('images/protocol-icons/guac-monitor.svg');
+
+}
+
+.user-menu .menu-dropdown .menu-contents li a[href="#/"] {
+    background-image: url('images/action-icons/guac-home-dark.svg');
+}
+
+.user-menu .menu-dropdown .menu-contents li a[href="#/settings/users"],
+.user-menu .menu-dropdown .menu-contents li a[href="#/settings/connections"],
+.user-menu .menu-dropdown .menu-contents li a[href="#/settings/sessions"],
+.user-menu .menu-dropdown .menu-contents li a[href="#/settings/preferences"] {
+    background-image: url('images/action-icons/guac-config-dark.svg');
+}
+
+.user-menu .menu-dropdown .menu-contents li a.logout {
+    background-image: url('images/action-icons/guac-logout-dark.svg');
+}
+
+.user-menu .menu-dropdown .menu-contents .profile {
+    margin: 1em;
+    padding-bottom: 1em;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.25);
+    width: 2in;
+}
+
+.user-menu .menu-dropdown .menu-contents .profile .full-name {
+    font-weight: bold;
+}
+.user-menu .menu-dropdown .menu-contents .profile .organization,
+.user-menu .menu-dropdown .menu-contents .profile .organizational-role {
+    font-size: 0.8em;
+}

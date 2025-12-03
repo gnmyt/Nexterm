@@ -1,0 +1,170 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ */
+
+#guac-menu .content {
+
+    padding: 0;
+    margin: 0;
+
+    /* IE10 */
+    display: -ms-flexbox;
+    -ms-flex-align: stretch;
+    -ms-flex-direction: column;
+
+    /* Ancient Mozilla */
+    display: -moz-box;
+    -moz-box-align: stretch;
+    -moz-box-orient: vertical;
+
+    /* Ancient WebKit */
+    display: -webkit-box;
+    -webkit-box-align: stretch;
+    -webkit-box-orient: vertical;
+
+    /* Old WebKit */
+    display: -webkit-flex;
+    -webkit-align-items: stretch;
+    -webkit-flex-direction: column;
+
+    /* W3C */
+    display: flex;
+    align-items: stretch;
+    flex-direction: column;
+
+}
+
+#guac-menu .content > * {
+
+    margin: 0;
+
+    -ms-flex: 0 0 auto;
+    -moz-box-flex: 0;
+    -webkit-box-flex: 0;
+    -webkit-flex: 0 0 auto;
+    flex: 0 0 auto;
+
+}
+
+#guac-menu .content > * + * {
+    margin-top: 1em;
+}
+
+#guac-menu .header h2 {
+    white-space: nowrap;
+    overflow: hidden;
+    width: 100%;
+    text-overflow: ellipsis;
+}
+
+#guac-menu #mouse-settings .choice {
+    text-align: center;
+}
+
+#guac-menu #mouse-settings .choice .figure {
+    display: inline-block;
+    vertical-align: middle;
+    width: 75%;
+    max-width: 320px;
+}
+
+#guac-menu #keyboard-settings .caption {
+    font-size: 0.9em;
+    margin-left: 2em;
+    margin-right: 2em;
+}
+
+#guac-menu #mouse-settings .figure .caption {
+    text-align: center;
+    font-size: 0.9em;
+}
+
+#guac-menu #mouse-settings .figure img {
+    display: block;
+    width: 100%;
+    max-width: 320px;
+    margin: 1em auto;
+}
+
+#guac-menu #keyboard-settings .figure {
+    float: right;
+    max-width: 30%;
+    margin: 1em;
+}
+
+#guac-menu #keyboard-settings .figure img {
+    width: 100%;
+}
+
+#guac-menu #zoom-settings {
+    text-align: center;
+}
+
+#guac-menu #devices .device {
+
+    padding: 1em;
+    border: 1px solid rgba(0, 0, 0, 0.125);
+    background: rgba(0, 0, 0, 0.04);
+
+    padding-left: 3.5em;
+    background-size:         1.5em 1.5em;
+    -moz-background-size:    1.5em 1.5em;
+    -webkit-background-size: 1.5em 1.5em;
+    -khtml-background-size:  1.5em 1.5em;
+
+    background-repeat: no-repeat;
+    background-position: 1em center;
+
+}
+
+#guac-menu #devices .device:hover {
+    cursor: pointer;
+    border-color: black;
+}
+
+#guac-menu #devices .device.filesystem {
+    background-image: url('images/drive.svg');
+}
+
+#guac-menu #share-links {
+
+    padding: 1em;
+    border: 1px solid rgba(0, 0, 0, 0.125);
+    background: rgba(0, 0, 0, 0.04);
+
+    font-size: 0.8em;
+
+}
+
+#guac-menu #share-links h3 {
+    padding-bottom: 0;
+}
+
+#guac-menu #share-links th {
+    white-space: nowrap;
+}
+
+#guac-menu #share-links a[href] {
+
+    display: block;
+    padding: 0 1em;
+
+    font-family: monospace;
+    font-weight: bold;
+
+}

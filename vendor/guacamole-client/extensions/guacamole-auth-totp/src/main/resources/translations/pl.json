@@ -1,0 +1,43 @@
+{
+
+    "DATA_SOURCE_TOTP" : {
+        "NAME" : "TOTP TFA Backend"
+    },
+
+    "LOGIN" : {
+        "FIELD_HEADER_GUAC_TOTP" : ""
+    },
+
+    "TOTP" : {
+
+        "ACTION_HIDE_DETAILS" : "Ukryj",
+        "ACTION_SHOW_DETAILS" : "Pokaż",
+
+        "FIELD_HEADER_ALGORITHM"  : "Algorytm:",
+        "FIELD_HEADER_DIGITS"     : "Cyfry:",
+        "FIELD_HEADER_INTERVAL"   : "Interwał:",
+        "FIELD_HEADER_SECRET_KEY" : "Sekretny klucz:",
+
+        "FIELD_PLACEHOLDER_CODE" : "Kod weryfikacyjny",
+
+        "INFO_CODE_REQUIRED"       : "Podaj kod weryfikacyjny, aby potwierdzić swoją tożsamość.",
+        "INFO_ENROLL_REQUIRED"     : "Uwierzytelnianie wieloskładnikowe zostało włączone na Twoim koncie.",
+        "INFO_VERIFICATION_FAILED" : "Weryfikacja nie powiodła się. Spróbuj ponownie.",
+
+        "HELP_ENROLL_BARCODE" : "Aby zakończyć proces rejestracji, zeskanuj poniższy kod kreskowy za pomocą aplikacji do uwierzytelniania dwuskładnikowego na swoim telefonie lub urządzeniu.",
+        "HELP_ENROLL_VERIFY"  : "Po zeskanowaniu kodu kreskowego, wprowadź {DIGITS}-cyfrowy kod weryfikacyjny aby potwierdzić, że proces rejestracji przebiegł pomyślnie.",
+
+        "SECTION_HEADER_DETAILS" : "Szczegóły:"
+
+    },
+    
+    "USER_ATTRIBUTES" : {
+        
+        "FIELD_HEADER_GUAC_TOTP_KEY_GENERATED" : "Wygenerowano klucz:",
+        "FIELD_HEADER_GUAC_TOTP_KEY_CONFIRMED" : "Potwierdzono urządzenie uwierzytelniające:",
+        
+        "SECTION_HEADER_TOTP_ENROLLMENT_STATUS" : "Status Rejestracji TOTP"
+        
+    }
+
+}

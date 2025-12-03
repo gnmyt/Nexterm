@@ -1,0 +1,21 @@
+<div class="form-group">
+    <div ng-repeat="form in forms" class="form"
+         ng-class="getFormClasses(form)"
+         ng-show="containsVisible(form.fields)">
+
+        <!-- Form name -->
+        <h3 class="form-header" ng-show="form.name">{{getSectionHeader(form) | translate}}</h3>
+
+        <!-- All fields in form -->
+        <div class="fields">
+            <guac-form-field ng-repeat="field in form.fields" namespace="namespace"
+                             ng-if="isVisible(field)"
+                             data-disabled="isDisabled(field)"
+                             focused="isFocused(field)"
+                             field="field"
+                             client="client"
+                             model="values[field.name]"></guac-form-field>
+        </div>
+
+    </div>
+</div>

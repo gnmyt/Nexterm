@@ -1,0 +1,15 @@
+{
+
+    "DATA_SOURCE_CAS" : {
+        "NAME" : "Backend d'inici de sessió unificat (SSO) CAS"
+    },
+
+    "DATA_SOURCE_SAML" : {
+        "NAME" : "Extensión de autenticación SAML"
+    },
+
+    "LOGIN" : {
+        "INFO_IDP_REDIRECT_PENDING" : "Espereu, redirigint al proveïdor d'identitat ..."
+    }
+
+}

@@ -1,0 +1,3 @@
+net.jradius:jradius-core:jar:1.1.5
+net.jradius:jradius-dictionary:jar:1.1.5
+net.jradius:jradius-extended:jar:1.1.5

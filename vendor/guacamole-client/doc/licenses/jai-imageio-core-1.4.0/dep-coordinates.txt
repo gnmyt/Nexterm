@@ -1,0 +1,1 @@
+com.github.jai-imageio:jai-imageio-core:jar:1.4.0

@@ -1,0 +1,28 @@
+{
+
+    "guacamoleVersion" : "1.6.0",
+
+    "name"      : "Display Statistic Toolbar",
+    "namespace" : "display-stats",
+
+    "translations" : [
+        "translations/en.json"
+    ],
+
+    "js" : [
+        "display-stats.min.js"
+    ],
+
+    "css" : [
+        "display-stats.min.css"
+    ],
+
+    "html" : [
+        "html/add-statistics.html"
+    ],
+
+    "resources" : {
+        "templates/guacClientStatistics.html" : "text/html"
+    }
+
+}

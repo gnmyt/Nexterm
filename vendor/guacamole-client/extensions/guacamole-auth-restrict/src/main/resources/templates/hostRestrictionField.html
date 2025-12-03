@@ -1,0 +1,23 @@
+<div class="hostField">
+    <table class="restrictionList" ng-show="restrictions !== null && restrictions.length > 0">
+        <tr>
+            <th>{{ 'RESTRICT.TABLE_HEADER_HOST' | translate }}</th>
+            <th>&nbsp;</th>
+        </tr>
+        <tr class="restrictionListItem" ng-repeat="entry in restrictions">
+            <td>
+                <input type="text" ng-model="entry.host" ng-model-options="modelOptions">
+            </td>
+            <td>
+                <img class="restrictionListItem"
+                     src="images/x-red.svg"
+                     alt="Remove entry"
+                     ng-click="removeEntry(entry)">
+            </td>
+        </tr>
+    </table>
+    <button ng-click="addEntry()"
+            class="restrictionListButton">
+        {{ 'RESTRICT.ACTION_ADD_ENTRY' | translate }}
+    </button>
+</div>

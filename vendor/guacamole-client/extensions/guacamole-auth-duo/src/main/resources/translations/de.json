@@ -1,0 +1,13 @@
+{
+
+    "DATA_SOURCE_DUO" : {
+        "NAME" : "Duo TFA Backend"
+    },
+
+    "LOGIN" : {
+        "FIELD_HEADER_GUAC_DUO_SIGNED_RESPONSE" : "",
+        "INFO_DUO_VALIDATION_CODE_INCORRECT"    : "Duo Validierungscode nicht korrekt.",
+        "INFO_DUO_AUTH_REQUIRED"                : "Bitte melden Sie sich mit Duo an, um fortzufahren."
+    }
+
+}

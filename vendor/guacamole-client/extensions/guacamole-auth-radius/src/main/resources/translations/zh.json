@@ -1,0 +1,12 @@
+{
+
+    "DATA_SOURCE_RADIUS" : {
+        "NAME" : "RADIUS后端"
+    },
+
+    "LOGIN" : {
+        "FIELD_HEADER_GUAC_RADIUS_STATE"              : "",
+        "FIELD_HEADER_RADIUSCHALLENGE"                : ""
+    }
+
+}

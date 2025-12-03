@@ -1,0 +1,132 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ */
+
+.transfer {
+    display: table-row;
+}
+
+.transfer .transfer-status {
+    display: table-cell;
+    padding: 0.25em;
+    position: relative;
+}
+
+.transfer .text {
+    display: table-cell;
+    text-align: right;
+    padding: 0.25em
+}
+
+.transfer .filename {
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    position: relative;
+    font-family: monospace;
+    font-weight: bold;
+    padding: 0.125em;
+}
+
+@keyframes transfer-progress {
+    from {background-position: 0px  0px;}
+    to   {background-position: 64px 0px;}
+}
+
+@-webkit-keyframes transfer-progress {
+    from {background-position: 0px  0px;}
+    to   {background-position: 64px 0px;}
+}
+
+.transfer .progress {
+
+    width: 100%;
+    padding: 0.25em;
+    
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    opacity: 0.25;
+    
+}
+
+.transfer.in-progress .progress {
+
+    background-color: #EEE;
+    background-image: url('images/progress.svg');
+
+    background-size: 16px 16px;
+    -moz-background-size: 16px 16px;
+    -webkit-background-size: 16px 16px;
+    -khtml-background-size: 16px 16px;
+
+    animation-name: transfer-progress;
+    animation-duration: 2s;
+    animation-timing-function: linear;
+    animation-iteration-count: infinite;
+
+    -webkit-animation-name: transfer-progress;
+    -webkit-animation-duration: 2s;
+    -webkit-animation-timing-function: linear;
+    -webkit-animation-iteration-count: infinite;
+
+}
+
+.transfer .progress .bar {
+    display: none;
+    background: #A3D655;
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 0;
+}
+
+.transfer.in-progress .progress .bar {
+    display: initial;
+}
+
+.transfer.savable {
+    cursor: pointer;
+}
+
+.transfer.savable .filename {
+    color: blue;
+    text-decoration: underline;
+}
+
+.transfer.error {
+    background: #FDD;
+}
+
+.transfer.error .text,
+.transfer.error .progress .bar {
+    display: none;
+}
+
+.transfer .error-text {
+    display: none;
+}
+
+.transfer.error .error-text {
+    display: block;
+    margin: 0;
+    margin-top: 0.5em;
+    width: 100%;
+}

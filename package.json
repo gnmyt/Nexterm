@@ -31,9 +31,10 @@
     "vitepress-openapi": "^0.1.12"
   },
   "scripts": {
-    "dev:server": "nodemon --ignore docs server/index.js",
+    "dev:server": "nodemon --ignore docs --ignore vendor --ignore client --ignore mobile --ignore data server/index.js",
     "dev:client": "cd client && yarn run dev",
-    "dev": "concurrently --kill-others-on-fail \"yarn dev:server\" \"yarn dev:client\"",
+    "dev:guacd": "./scripts/build-guacd.sh",
+    "dev": "concurrently --kill-others-on-fail \"yarn dev:server\" \"yarn dev:client\" \"yarn dev:guacd\"",
     "docs:openapi": "node scripts/generate-openapi.js",
     "docs:dev": "yarn docs:openapi && vitepress dev docs",
     "docs:build": "yarn docs:openapi && vitepress build docs",
