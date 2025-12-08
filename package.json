@@ -20,7 +20,7 @@
     "sqlite3": "^5.1.7",
     "ssh2": "^1.17.0",
     "uuid": "^13.0.0",
-    "winston": "^3.18.3",
+    "winston": "^3.19.0",
     "ws": "^8.18.3"
   },
   "devDependencies": {
