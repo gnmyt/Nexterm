@@ -161,6 +161,12 @@ typedef int guac_user_touch_handler(guac_user* user, int id, int x, int y,
 typedef int guac_user_key_handler(guac_user* user, int keysym, int pressed);
 
 /**
+ * Handler for key events with XT scancode for QEMU Extended Key Event support.
+ */
+typedef int guac_user_key_handler_ext(guac_user* user, int keysym, int pressed,
+        int scancode);
+
+/**
  * Handler for Guacamole audio streams received from a user. Each such audio
  * stream begins when the user sends an "audio" instruction. To handle received
  * data along this stream, implementations of this handler must assign blob and
