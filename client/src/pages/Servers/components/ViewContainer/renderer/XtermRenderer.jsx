@@ -10,9 +10,9 @@ import { ContextMenu, ContextMenuItem, ContextMenuSeparator, useContextMenu } fr
 import AICommandPopover from "./components/AICommandPopover";
 import SnippetsMenu from "./components/SnippetsMenu";
 import { createProgressParser } from "../utils/progressParser";
-import { mdiContentCopy, mdiContentPaste, mdiCodeBrackets, mdiSelectAll, mdiRefresh, mdiClose, mdiDelete, mdiKeyboard } from "@mdi/js";
+import { mdiContentCopy, mdiContentPaste, mdiCodeBrackets, mdiSelectAll, mdiDelete, mdiKeyboard } from "@mdi/js";
 import { useTranslation } from "react-i18next";
-import { ConnectionLoader } from "./components/ConnectionLoader";
+import ConnectionLoader from "./components/ConnectionLoader";
 import "@xterm/xterm/css/xterm.css";
 import "./styles/xterm.sass";
 

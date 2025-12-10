@@ -2,7 +2,7 @@ import { useEffect, useRef, useContext } from "react";
 import Guacamole from "guacamole-common-js";
 import { UserContext } from "@/common/contexts/UserContext.jsx";
 import { useKeymaps, matchesKeybind } from "@/common/contexts/KeymapContext.jsx";
-import { ConnectionLoader } from "./components/ConnectionLoader";
+import ConnectionLoader from "./components/ConnectionLoader";
 
 const GuacamoleRenderer = ({ session, disconnectFromServer, registerGuacamoleRef, onFullscreenToggle }) => {
     const ref = useRef(null);
