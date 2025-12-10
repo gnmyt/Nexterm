@@ -33,9 +33,9 @@ export const getFieldConfig = (type, protocol) => {
                     showProtocol: false,
                     showIpPort: true,
                     showIdentities: true,
-                    showSettings: true,
+                    showSettings: false,
                     showMonitoring: false,
-                    showKeyboardLayout: true,
+                    showKeyboardLayout: false,
                 };
             default:
                 return {
@@ -80,9 +80,9 @@ export const getFieldConfig = (type, protocol) => {
             showProtocol: false,
             showIpPort: false,
             showIdentities: false,
-            showSettings: true,
+            showSettings: false,
             showMonitoring: false,
-            showKeyboardLayout: true,
+            showKeyboardLayout: false,
             showPveConfig: true,
             pveFields: ["nodeName", "vmid"],
         };

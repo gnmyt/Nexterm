@@ -41,8 +41,7 @@ module.exports = async (ws, req) => {
 
             logger.verbose(`Creating ${protocol.toUpperCase()} token`, {
                 target: entry.config.ip,
-                port: entry.config.port,
-                keyboard: entry.config.keyboardLayout || "en-us-qwerty",
+                port: entry.config.port
             });
 
             if (protocol === "rdp") {
@@ -59,7 +58,6 @@ module.exports = async (ws, req) => {
                     entry.config.port,
                     identity.username,
                     credentials.password,
-                    entry.config.keyboardLayout || "en-us-qwerty",
                 );
             }
 

@@ -1,6 +1,6 @@
 const logger = require("./logger");
 
-module.exports.createVNCToken = (hostname, port, username, password, keyboardLayout = "en-us-qwerty") => {
+module.exports.createVNCToken = (hostname, port, username, password) => {
     logger.verbose(`VNC token generated`, { hostname, port });
     return {
         connection: {
@@ -11,7 +11,6 @@ module.exports.createVNCToken = (hostname, port, username, password, keyboardLay
                 password,
                 "ignore-cert": true,
                 "resize-method": "display-update",
-                "server-layout": keyboardLayout,
             },
         },
     };
