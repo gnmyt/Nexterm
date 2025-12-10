@@ -890,6 +890,28 @@
           "title": "Disposition du clavier",
           "description": "Sélectionne la disposition du clavier à utiliser pour cette connexion."
         },
+        "display": {
+          "title": "Display Settings",
+          "description": "Configure color depth and resize behavior for the remote display",
+          "colorDepth": "Color Depth",
+          "resizeMethod": "Resize Method"
+        },
+        "performance": {
+          "title": "Performance Settings",
+          "description": "Toggle visual effects that may impact performance over slower connections",
+          "enableWallpaper": "Enable Wallpaper",
+          "enableWallpaperDesc": "Show the desktop wallpaper on the remote system",
+          "enableTheming": "Enable Theming",
+          "enableThemingDesc": "Use themed windows and controls on the remote system",
+          "enableFontSmoothing": "Enable Font Smoothing",
+          "enableFontSmoothingDesc": "Render text with smooth edges for better readability",
+          "enableFullWindowDrag": "Enable Full Window Drag",
+          "enableFullWindowDragDesc": "Display window contents while dragging windows",
+          "enableDesktopComposition": "Enable Desktop Composition",
+          "enableDesktopCompositionDesc": "Enable transparent windows and visual effects",
+          "enableMenuAnimations": "Enable Menu Animations",
+          "enableMenuAnimationsDesc": "Enable menu open and close animations"
+        },
         "noSettings": "Aucun paramètre supplémentaire n'est disponible pour ce type d'entrée."
       },
       "identities": {
