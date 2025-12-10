@@ -713,6 +713,28 @@ then
 fi
 
 #
+# libVNCserver support for extended key events (SendExtendedKeyEvent).
+# This allows sending XT scancodes alongside keysyms for proper keyboard
+# layout support with QEMU.
+#
+
+if test "x${have_libvncserver}" = "xyes"
+then
+
+    have_vnc_extended_key_event=yes
+    AC_CHECK_DECL([SendExtendedKeyEvent],
+                  [], [have_vnc_extended_key_event=no],
+                  [[#include <rfb/rfbclient.h>]])
+
+    if test "x${have_vnc_extended_key_event}" = "xyes"
+    then
+        AC_DEFINE([LIBVNC_HAS_EXTENDED_KEY_EVENT],,
+                  [Whether libvncclient supports SendExtendedKeyEvent.])
+    fi
+
+fi
+
+#
 # FreeRDP (libfreerdpX, libfreerdp-clientX, and libwinprX)
 #
 

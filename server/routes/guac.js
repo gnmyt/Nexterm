@@ -41,9 +41,20 @@ module.exports = async (ws, req) => {
 
             logger.verbose(`Creating ${protocol.toUpperCase()} token`, {
                 target: entry.config.ip,
-                port: entry.config.port,
-                keyboard: entry.config.keyboardLayout || "en-us-qwerty",
+                port: entry.config.port
             });
+
+            const displayOptions = {
+                colorDepth: entry.config.colorDepth || "",
+                resizeMethod: entry.config.resizeMethod || "display-update",
+                keyboardLayout: entry.config.keyboardLayout || "en-us-qwerty",
+                enableWallpaper: entry.config.enableWallpaper !== false,
+                enableTheming: entry.config.enableTheming !== false,
+                enableFontSmoothing: entry.config.enableFontSmoothing !== false,
+                enableFullWindowDrag: entry.config.enableFullWindowDrag === true,
+                enableDesktopComposition: entry.config.enableDesktopComposition === true,
+                enableMenuAnimations: entry.config.enableMenuAnimations === true,
+            };
 
             if (protocol === "rdp") {
                 connectionConfig = createRDPToken(
@@ -51,7 +62,7 @@ module.exports = async (ws, req) => {
                     entry.config.port,
                     identity.username,
                     credentials.password,
-                    entry.config.keyboardLayout || "en-us-qwerty",
+                    displayOptions,
                 );
             } else {
                 connectionConfig = createVNCToken(
@@ -59,7 +70,7 @@ module.exports = async (ws, req) => {
                     entry.config.port,
                     identity.username,
                     credentials.password,
-                    entry.config.keyboardLayout || "en-us-qwerty",
+                    displayOptions,
                 );
             }
 
@@ -114,6 +125,10 @@ module.exports = async (ws, req) => {
                 vncTicket.port,
                 undefined,
                 vncTicket.ticket,
+                {
+                    colorDepth: entry.config.colorDepth || "",
+                    resizeMethod: entry.config.resizeMethod || "display-update",
+                },
             );
 
             logger.system(`PVE QEMU connection established`, {

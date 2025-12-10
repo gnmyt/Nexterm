@@ -19,6 +19,60 @@
 
 var Guacamole = Guacamole || {};
 
+/** XT scancodes for QEMU Extended Key Event. Extended keys use 0x80 high bit. */
+var XT_SCANCODES = {
+    /* Function keys */
+    'Escape': 0x01, 'F1': 0x3b, 'F2': 0x3c, 'F3': 0x3d, 'F4': 0x3e,
+    'F5': 0x3f, 'F6': 0x40, 'F7': 0x41, 'F8': 0x42, 'F9': 0x43,
+    'F10': 0x44, 'F11': 0x57, 'F12': 0x58,
+    /* Number row */
+    'Backquote': 0x29, 'Digit1': 0x02, 'Digit2': 0x03, 'Digit3': 0x04,
+    'Digit4': 0x05, 'Digit5': 0x06, 'Digit6': 0x07, 'Digit7': 0x08,
+    'Digit8': 0x09, 'Digit9': 0x0a, 'Digit0': 0x0b, 'Minus': 0x0c,
+    'Equal': 0x0d, 'Backspace': 0x0e,
+    /* QWERTY row */
+    'Tab': 0x0f, 'KeyQ': 0x10, 'KeyW': 0x11, 'KeyE': 0x12, 'KeyR': 0x13,
+    'KeyT': 0x14, 'KeyY': 0x15, 'KeyU': 0x16, 'KeyI': 0x17, 'KeyO': 0x18,
+    'KeyP': 0x19, 'BracketLeft': 0x1a, 'BracketRight': 0x1b, 'Backslash': 0x2b,
+    /* Home row */
+    'CapsLock': 0x3a, 'KeyA': 0x1e, 'KeyS': 0x1f, 'KeyD': 0x20, 'KeyF': 0x21,
+    'KeyG': 0x22, 'KeyH': 0x23, 'KeyJ': 0x24, 'KeyK': 0x25, 'KeyL': 0x26,
+    'Semicolon': 0x27, 'Quote': 0x28, 'Enter': 0x1c,
+    /* Bottom row */
+    'ShiftLeft': 0x2a, 'IntlBackslash': 0x56, 'KeyZ': 0x2c, 'KeyX': 0x2d,
+    'KeyC': 0x2e, 'KeyV': 0x2f, 'KeyB': 0x30, 'KeyN': 0x31, 'KeyM': 0x32,
+    'Comma': 0x33, 'Period': 0x34, 'Slash': 0x35, 'ShiftRight': 0x36,
+    /* Modifiers - extended keys use high bit (0x80) per QEMU Extended Key Event spec */
+    'ControlLeft': 0x1d, 'MetaLeft': 0xdb, 'AltLeft': 0x38, 'Space': 0x39,
+    'AltRight': 0xb8, 'MetaRight': 0xdc, 'ContextMenu': 0xdd,
+    'ControlRight': 0x9d,
+    /* Navigation - extended keys use high bit (0x80) */
+    'PrintScreen': 0x54, 'ScrollLock': 0x46, 'Pause': 0xc6,
+    'Insert': 0xd2, 'Home': 0xc7, 'PageUp': 0xc9, 'Delete': 0xd3,
+    'End': 0xcf, 'PageDown': 0xd1,
+    /* Arrows - extended keys use high bit (0x80) */
+    'ArrowUp': 0xc8, 'ArrowLeft': 0xcb, 'ArrowDown': 0xd0, 'ArrowRight': 0xcd,
+    /* Numpad - NumpadDivide and NumpadEnter are extended */
+    'NumLock': 0x45, 'NumpadDivide': 0xb5, 'NumpadMultiply': 0x37,
+    'NumpadSubtract': 0x4a, 'Numpad7': 0x47, 'Numpad8': 0x48, 'Numpad9': 0x49,
+    'NumpadAdd': 0x4e, 'Numpad4': 0x4b, 'Numpad5': 0x4c, 'Numpad6': 0x4d,
+    'Numpad1': 0x4f, 'Numpad2': 0x50, 'Numpad3': 0x51, 'NumpadEnter': 0x9c,
+    'Numpad0': 0x52, 'NumpadDecimal': 0x53,
+    /* International */
+    'IntlRo': 0x73, 'KanaMode': 0x70, 'IntlYen': 0x7d, 'Convert': 0x79,
+    'NonConvert': 0x7b, 'NumpadEqual': 0x59,
+    /* Media - extended keys use high bit (0x80) */
+    'MediaTrackPrevious': 0x90, 'MediaTrackNext': 0x99,
+    'AudioVolumeMute': 0xa0, 'LaunchApp2': 0xa1, 'MediaPlayPause': 0xa2,
+    'MediaStop': 0xa4, 'AudioVolumeDown': 0xae, 'AudioVolumeUp': 0xb0,
+    'BrowserHome': 0xb2, 'Power': 0xde, 'Sleep': 0xdf, 'WakeUp': 0xe3,
+    'BrowserSearch': 0xe5, 'BrowserFavorites': 0xe6, 'BrowserRefresh': 0xe7,
+    'BrowserStop': 0xe8, 'BrowserForward': 0xe9, 'BrowserBack': 0xea,
+    'LaunchApp1': 0xeb, 'LaunchMail': 0xec, 'MediaSelect': 0xed
+};
+
+var codeToScancode = function(code) { return code ? (XT_SCANCODES[code] || 0) : 0; };
+
 /**
  * Provides cross-browser and cross-keyboard keyboard for a specific element.
  * Browser and keyboard layout variation is abstracted away, providing events
@@ -59,28 +113,10 @@ Guacamole.Keyboard = function Keyboard(element) {
      */
     var EVENT_MARKER = '_GUAC_KEYBOARD_HANDLED_BY_' + guacKeyboardID;
 
-    /**
-     * Fired whenever the user presses a key with the element associated
-     * with this Guacamole.Keyboard in focus.
-     * 
-     * @event
-     * @param {!number} keysym
-     *     The keysym of the key being pressed.
-     *
-     * @return {!boolean}
-     *     true if the key event should be allowed through to the browser,
-     *     false otherwise.
-     */
+    /** Fired on keydown. Receives keysym and optional XT scancode. */
     this.onkeydown = null;
 
-    /**
-     * Fired whenever the user releases a key with the element associated
-     * with this Guacamole.Keyboard in focus.
-     * 
-     * @event
-     * @param {!number} keysym
-     *     The keysym of the key being released.
-     */
+    /** Fired on keyup. Receives keysym and optional XT scancode. */
     this.onkeyup = null;
 
     /**
@@ -198,6 +234,9 @@ Guacamole.Keyboard = function Keyboard(element) {
          * @type {!Guacamole.Keyboard.ModifierState}
          */
         this.modifiers = orig ? Guacamole.Keyboard.ModifierState.fromKeyboardEvent(orig) : new Guacamole.Keyboard.ModifierState();
+
+        /** Physical key code (KeyboardEvent.code) for scancode lookup. */
+        this.code = orig && orig.code;
 
         /**
          * An arbitrary timestamp in milliseconds, indicating this event's
@@ -606,6 +645,9 @@ Guacamole.Keyboard = function Keyboard(element) {
      */
     this.pressed = {};
 
+    /** Scancodes for pressed keys, indexed by keysym. */
+    var pressedScancode = {};
+
     /**
      * The state of every key, indexed by keysym, for strictly those keys whose
      * status has been indirectly determined thorugh observation of other key
@@ -802,80 +844,53 @@ Guacamole.Keyboard = function Keyboard(element) {
     };
 
     /**
-     * Marks a key as pressed, firing the keydown event if registered. Key
-     * repeat for the pressed key will start after a delay if that key is
-     * not a modifier. The return value of this function depends on the
-     * return value of the keydown event handler, if any.
-     * 
-     * @param {number} keysym
-     *     The keysym of the key to press.
-     *
-     * @return {boolean}
-     *     true if event should NOT be canceled, false otherwise.
+     * Marks a key as pressed, firing the keydown event if registered.
      */
-    this.press = function(keysym) {
-
-        // Don't bother with pressing the key if the key is unknown
+    this.press = function(keysym, scancode) {
         if (keysym === null) return;
+        if (guac_keyboard.pressed[keysym]) return last_keydown_result[keysym] || false;
 
-        // Only press if released
-        if (!guac_keyboard.pressed[keysym]) {
+        guac_keyboard.pressed[keysym] = true;
+        if (scancode) pressedScancode[keysym] = scancode;
 
-            // Mark key as pressed
-            guac_keyboard.pressed[keysym] = true;
+        if (guac_keyboard.onkeydown) {
+            var result = guac_keyboard.onkeydown(keysym, scancode);
+            last_keydown_result[keysym] = result;
 
-            // Send key event
-            if (guac_keyboard.onkeydown) {
-                var result = guac_keyboard.onkeydown(keysym);
-                last_keydown_result[keysym] = result;
+            window.clearTimeout(key_repeat_timeout);
+            window.clearInterval(key_repeat_interval);
 
-                // Stop any current repeat
-                window.clearTimeout(key_repeat_timeout);
-                window.clearInterval(key_repeat_interval);
+            if (!no_repeat[keysym])
+                key_repeat_timeout = window.setTimeout(function() {
+                    key_repeat_interval = window.setInterval(function() {
+                        guac_keyboard.onkeyup(keysym, scancode);
+                        guac_keyboard.onkeydown(keysym, scancode);
+                    }, 50);
+                }, 500);
 
-                // Repeat after a delay as long as pressed
-                if (!no_repeat[keysym])
-                    key_repeat_timeout = window.setTimeout(function() {
-                        key_repeat_interval = window.setInterval(function() {
-                            guac_keyboard.onkeyup(keysym);
-                            guac_keyboard.onkeydown(keysym);
-                        }, 50);
-                    }, 500);
-
-                return result;
-            }
+            return result;
         }
-
-        // Return the last keydown result by default, resort to false if unknown
+        return last_keydown_result[keysym] || false;
         return last_keydown_result[keysym] || false;
 
     };
 
     /**
      * Marks a key as released, firing the keyup event if registered.
-     * 
-     * @param {number} keysym
-     *     The keysym of the key to release.
      */
-    this.release = function(keysym) {
+    this.release = function(keysym, scancode) {
+        if (!guac_keyboard.pressed[keysym]) return;
 
-        // Only release if pressed
-        if (guac_keyboard.pressed[keysym]) {
-            
-            // Mark key as released
-            delete guac_keyboard.pressed[keysym];
-            delete implicitlyPressed[keysym];
+        var sc = scancode || pressedScancode[keysym] || 0;
+        delete guac_keyboard.pressed[keysym];
+        delete pressedScancode[keysym];
+        delete implicitlyPressed[keysym];
 
-            // Stop repeat
-            window.clearTimeout(key_repeat_timeout);
-            window.clearInterval(key_repeat_interval);
+        window.clearTimeout(key_repeat_timeout);
+        window.clearInterval(key_repeat_interval);
 
-            // Send key event
-            if (keysym !== null && guac_keyboard.onkeyup)
-                guac_keyboard.onkeyup(keysym);
-
-        }
-
+        if (keysym !== null && guac_keyboard.onkeyup)
+            guac_keyboard.onkeyup(keysym, sc);
     };
 
     /**
@@ -1190,15 +1205,18 @@ Guacamole.Keyboard = function Keyboard(element) {
 
                 if (keysym) {
 
-                    // Fire event
+                    // Convert physical key code to XT scancode
+                    var scancode = codeToScancode(first.code);
+
+                    // Fire event with scancode
                     release_simulated_altgr(keysym);
-                    var defaultPrevented = !guac_keyboard.press(keysym);
+                    var defaultPrevented = !guac_keyboard.press(keysym, scancode);
                     recentKeysym[first.keyCode] = keysym;
 
                     // Release the key now if we cannot rely on the associated
                     // keyup event
                     if (!first.keyupReliable)
-                        guac_keyboard.release(keysym);
+                        guac_keyboard.release(keysym, scancode);
 
                     // Record whether default was prevented
                     for (var i=0; i<accepted_events.length; i++)
@@ -1218,7 +1236,7 @@ Guacamole.Keyboard = function Keyboard(element) {
             // Release specific key if known
             var keysym = first.keysym;
             if (keysym) {
-                guac_keyboard.release(keysym);
+                guac_keyboard.release(keysym, codeToScancode(first.code));
                 delete recentKeysym[first.keyCode];
                 first.defaultPrevented = true;
             }

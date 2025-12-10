@@ -64,6 +64,21 @@ int guac_vnc_user_key_handler(guac_user* user, int keysym, int pressed) {
     return 0;
 }
 
+#ifdef LIBVNC_HAS_EXTENDED_KEY_EVENT
+int guac_vnc_user_key_handler_ext(guac_user* user, int keysym, int pressed, int scancode) {
+    guac_vnc_client* vnc_client = (guac_vnc_client*) user->client->data;
+    rfbClient* rfb_client = vnc_client->rfb_client;
+
+    if (vnc_client->recording != NULL)
+        guac_recording_report_key(vnc_client->recording, keysym, pressed);
+
+    if (rfb_client != NULL && !SendExtendedKeyEvent(rfb_client, keysym, scancode, pressed))
+        SendKeyEvent(rfb_client, keysym, pressed);
+
+    return 0;
+}
+#endif
+
 #ifdef LIBVNC_HAS_RESIZE_SUPPORT
 int guac_vnc_user_size_handler(guac_user* user, int width, int height) {
 

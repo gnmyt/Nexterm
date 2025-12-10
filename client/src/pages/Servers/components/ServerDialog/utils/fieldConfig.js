@@ -27,6 +27,8 @@ export const getFieldConfig = (type, protocol) => {
                     showSettings: true,
                     showMonitoring: false,
                     showKeyboardLayout: true,
+                    showDisplaySettings: true,
+                    showPerformanceSettings: true,
                 };
             case "vnc":
                 return {
@@ -35,7 +37,8 @@ export const getFieldConfig = (type, protocol) => {
                     showIdentities: true,
                     showSettings: true,
                     showMonitoring: false,
-                    showKeyboardLayout: true,
+                    showKeyboardLayout: false,
+                    showDisplaySettings: true,
                 };
             default:
                 return {
@@ -82,7 +85,8 @@ export const getFieldConfig = (type, protocol) => {
             showIdentities: false,
             showSettings: true,
             showMonitoring: false,
-            showKeyboardLayout: true,
+            showKeyboardLayout: false,
+            showDisplaySettings: true,
             showPveConfig: true,
             pveFields: ["nodeName", "vmid"],
         };
@@ -108,7 +112,7 @@ export const getAvailableTabs = (type, protocol) => {
         tabs.push({ key: "identities", label: "servers.dialog.tabs.identities" });
     }
 
-    if (config.showSettings && (config.showMonitoring || config.showKeyboardLayout)) {
+    if (config.showSettings && (config.showMonitoring || config.showKeyboardLayout || config.showDisplaySettings)) {
         tabs.push({ key: "settings", label: "servers.dialog.tabs.settings" });
     }
 

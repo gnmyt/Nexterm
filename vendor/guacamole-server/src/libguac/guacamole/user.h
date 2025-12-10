@@ -265,6 +265,11 @@ struct guac_user {
     guac_user_key_handler* key_handler;
 
     /**
+     * Extended key handler with XT scancode for QEMU Extended Key Event.
+     */
+    guac_user_key_handler_ext* key_handler_ext;
+
+    /**
      * Handler for clipboard events sent by the Guacamole web-client. This
      * handler will be called whenever the web-client sets the data of the
      * clipboard.

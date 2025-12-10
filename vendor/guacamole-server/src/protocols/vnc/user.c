@@ -78,6 +78,9 @@ int guac_vnc_user_join_handler(guac_user* user, int argc, char** argv) {
         /* General mouse/keyboard events */
         user->mouse_handler = guac_vnc_user_mouse_handler;
         user->key_handler = guac_vnc_user_key_handler;
+        #ifdef LIBVNC_HAS_EXTENDED_KEY_EVENT
+        user->key_handler_ext = guac_vnc_user_key_handler_ext;
+        #endif
 
         /* Inbound (client to server) clipboard transfer */
         if (!settings->disable_paste)

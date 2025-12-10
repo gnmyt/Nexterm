@@ -186,8 +186,8 @@ const GuacamoleRenderer = ({ session, disconnectFromServer, registerGuacamoleRef
         ref.current.addEventListener("keydown", handleKeyDown, true);
 
         const keyboard = new Guacamole.Keyboard(ref.current);
-        keyboard.onkeydown = (keysym) => client.sendKeyEvent(1, keysym);
-        keyboard.onkeyup = (keysym) => client.sendKeyEvent(0, keysym);
+        keyboard.onkeydown = (keysym, scancode) => client.sendKeyEvent(1, keysym, scancode);
+        keyboard.onkeyup = (keysym, scancode) => client.sendKeyEvent(0, keysym, scancode);
 
         client.onstatechange = (state) => {
             if (!isCleaningUp) {
