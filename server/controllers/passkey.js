@@ -8,21 +8,21 @@ const rpName = "Nexterm";
 const challengeStore = new Map();
 const CHALLENGE_TTL = 5 * 60 * 1000;
 
-const storeChallenge = (challenge) => {
-    challengeStore.set(challenge, Date.now());
-    for (const [key, timestamp] of challengeStore.entries()) {
-        if (Date.now() - timestamp > CHALLENGE_TTL) challengeStore.delete(key);
+const storeChallenge = (challenge, data = {}) => {
+    for (const [key, entry] of challengeStore.entries()) {
+        if (Date.now() - entry.timestamp > CHALLENGE_TTL) challengeStore.delete(key);
     }
+    challengeStore.set(challenge, { timestamp: Date.now(), ...data });
 };
 
 const consumeChallenge = (challenge) => {
-    const timestamp = challengeStore.get(challenge);
-    if (!timestamp || Date.now() - timestamp > CHALLENGE_TTL) {
+    const entry = challengeStore.get(challenge);
+    if (!entry || Date.now() - entry.timestamp > CHALLENGE_TTL) {
         challengeStore.delete(challenge);
-        return false;
+        return null;
     }
     challengeStore.delete(challenge);
-    return true;
+    return entry;
 };
 
 const toBase64url = (uint8Array) => Buffer.from(uint8Array).toString("base64url");
@@ -50,19 +50,25 @@ module.exports.generateRegistrationOptions = async (req, accountId, origin) => {
         authenticatorSelection: { residentKey: "preferred", userVerification: "preferred", authenticatorAttachment: "platform" },
     });
 
-    await Account.update({ currentChallenge: options.challenge }, { where: { id: accountId } });
+    storeChallenge(options.challenge, { type: "registration", accountId });
     return options;
 };
 
 module.exports.verifyRegistration = async (req, accountId, response, passkeyName, origin) => {
     const account = await Account.findByPk(accountId);
     if (!account) return { code: 102, message: "Account not found" };
-    if (!account.currentChallenge) return { code: 301, message: "No registration challenge found" };
+
+    const clientData = JSON.parse(Buffer.from(response.response.clientDataJSON, 'base64url').toString());
+    const challengeEntry = consumeChallenge(clientData.challenge);
+    
+    if (!challengeEntry || challengeEntry.type !== "registration" || challengeEntry.accountId !== accountId) {
+        return { code: 301, message: "No valid registration challenge found" };
+    }
 
     try {
         const verification = await verifyRegistrationResponse({
             response,
-            expectedChallenge: account.currentChallenge,
+            expectedChallenge: clientData.challenge,
             expectedOrigin: origin,
             expectedRPID: new URL(origin).hostname,
         });
@@ -84,7 +90,6 @@ module.exports.verifyRegistration = async (req, accountId, response, passkeyName
             name: passkeyName || "Passkey",
         });
 
-        await Account.update({ currentChallenge: null }, { where: { id: accountId } });
         logger.system(`Passkey registered for user ${account.username}`, { accountId });
         return { verified: true };
     } catch (error) {
@@ -119,11 +124,7 @@ module.exports.generateAuthenticationOptions = async (req, username, origin) => 
         userVerification: "preferred",
     });
 
-    if (accountId) {
-        await Account.update({ currentChallenge: options.challenge }, { where: { id: accountId } });
-    } else {
-        storeChallenge(options.challenge);
-    }
+    storeChallenge(options.challenge, { type: "authentication", accountId });
 
     return { options, accountId };
 };
@@ -137,13 +138,15 @@ module.exports.verifyAuthentication = async (req, response, user, origin) => {
         if (!account) return { code: 102, message: "Account not found" };
 
         const clientData = JSON.parse(Buffer.from(response.response.clientDataJSON, 'base64url').toString());
-        const expectedChallenge = account.currentChallenge || (consumeChallenge(clientData.challenge) ? clientData.challenge : null);
+        const challengeEntry = consumeChallenge(clientData.challenge);
         
-        if (!expectedChallenge) return { code: 301, message: "No authentication challenge found" };
+        if (!challengeEntry || challengeEntry.type !== "authentication") {
+            return { code: 301, message: "No valid authentication challenge found" };
+        }
 
         const verification = await verifyAuthenticationResponse({
             response,
-            expectedChallenge,
+            expectedChallenge: clientData.challenge,
             expectedOrigin: origin,
             expectedRPID: new URL(origin).hostname,
             credential: {
@@ -157,7 +160,6 @@ module.exports.verifyAuthentication = async (req, response, user, origin) => {
         if (!verification.verified) return { code: 306, message: "Authentication verification failed" };
 
         await Passkey.update({ counter: verification.authenticationInfo.newCounter }, { where: { id: passkey.id } });
-        await Account.update({ currentChallenge: null }, { where: { id: account.id } });
 
         const session = await Session.create({ accountId: account.id, ip: user.ip, userAgent: user.userAgent });
         logger.system(`User ${account.username} logged in via passkey`, { accountId: account.id, ip: user.ip });

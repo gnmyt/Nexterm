@@ -37,8 +37,4 @@ module.exports = db.define("accounts", {
         type: Sequelize.STRING,
         defaultValue: "same_browser",
     },
-    currentChallenge: {
-        type: Sequelize.STRING,
-        allowNull: true,
-    },
 }, { freezeTableName: true, createdAt: false, updatedAt: false });

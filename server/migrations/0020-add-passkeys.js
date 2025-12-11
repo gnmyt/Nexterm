@@ -65,11 +65,6 @@ module.exports = {
             name: "passkeys_credential_id_unique"
         });
 
-        await queryInterface.addColumn("accounts", "currentChallenge", {
-            type: DataTypes.STRING,
-            allowNull: true,
-        });
-
         await queryInterface.sequelize.query("PRAGMA foreign_keys = ON");
     },
 };
