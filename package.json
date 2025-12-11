@@ -10,7 +10,7 @@
     "axios": "^1.13.2",
     "bcrypt": "^6.0.0",
     "decompress": "^4.2.1",
-    "express": "^5.1.0",
+    "express": "^5.2.1",
     "express-jsdoc-swagger": "^1.8.0",
     "express-ws": "^5.0.2",
     "joi": "^18.0.2",
