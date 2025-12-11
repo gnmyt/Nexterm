@@ -76,24 +76,43 @@ const searchDirectories = (sftp, searchPath, callback, maxResults = 20) => {
 };
 
 const OPERATIONS = {
-    READY: 0x0,
-    LIST_FILES: 0x1,
-    UPLOAD_FILE_START: 0x2,
-    UPLOAD_FILE_CHUNK: 0x3,
-    UPLOAD_FILE_END: 0x4,
-    CREATE_FOLDER: 0x5,
-    DELETE_FILE: 0x6,
-    DELETE_FOLDER: 0x7,
-    RENAME_FILE: 0x8,
-    ERROR: 0x9,
-    SEARCH_DIRECTORIES: 0xA,
-    RESOLVE_SYMLINK: 0xB,
-    READ_FILE: 0xC,
-    WRITE_FILE: 0xD,
+    READY: 0x0, LIST_FILES: 0x1, UPLOAD_FILE_START: 0x2, UPLOAD_FILE_CHUNK: 0x3,
+    UPLOAD_FILE_END: 0x4, CREATE_FOLDER: 0x5, DELETE_FILE: 0x6, DELETE_FOLDER: 0x7,
+    RENAME_FILE: 0x8, ERROR: 0x9, SEARCH_DIRECTORIES: 0xA, RESOLVE_SYMLINK: 0xB,
+    READ_FILE: 0xC, WRITE_FILE: 0xD,
 };
 
-module.exports = {
-    deleteFolderRecursive,
-    searchDirectories,
-    OPERATIONS,
-};
+const addFolderToArchive = (sftp, folderPath, archive, basePath = "", activeStreams = []) => new Promise((resolve, reject) => {
+    sftp.readdir(folderPath, async (err, list) => {
+        if (err) return reject(err);
+        if (!list?.length) {
+            archive.append("", { name: basePath + "/" });
+            return resolve();
+        }
+
+        try {
+            for (const file of list) {
+                if (file.longname.startsWith("l")) continue;
+                const fullPath = folderPath === "/" ? `/${file.filename}` : `${folderPath}/${file.filename}`;
+                const archivePath = basePath ? `${basePath}/${file.filename}` : file.filename;
+
+                if (file.longname.startsWith("d")) {
+                    await addFolderToArchive(sftp, fullPath, archive, archivePath, activeStreams);
+                } else {
+                    await new Promise((res, rej) => {
+                        const stream = sftp.createReadStream(fullPath);
+                        activeStreams.push(stream);
+                        stream.on("error", rej);
+                        stream.on("end", res);
+                        archive.append(stream, { name: archivePath });
+                    });
+                }
+            }
+            resolve();
+        } catch (e) {
+            reject(e);
+        }
+    });
+});
+
+module.exports = { deleteFolderRecursive, searchDirectories, addFolderToArchive, OPERATIONS };
