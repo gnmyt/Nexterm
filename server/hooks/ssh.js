@@ -2,12 +2,19 @@ const { updateAuditLogWithSessionDuration } = require("../controllers/audit");
 const SessionManager = require("../lib/SessionManager");
 const { parseResizeMessage, setupSSHEventHandlers } = require("../utils/sshEventHandlers");
 
-const setupStreamHandlers = (ws, stream) => {
+const setupStreamHandlers = (ws, stream, sessionId = null) => {
     const onData = (data) => ws.readyState === ws.OPEN && ws.send(data.toString());
     stream.on("data", onData);
     ws.on("message", (data) => {
         const resize = parseResizeMessage(data);
-        resize ? stream.setWindow(resize.height, resize.width) : stream.write(data);
+        if (resize) {
+            if (!sessionId || SessionManager.isActiveWs(sessionId, ws)) {
+                stream.setWindow(resize.height, resize.width);
+            }
+        } else {
+            if (sessionId) SessionManager.setActiveWs(sessionId, ws);
+            stream.write(data);
+        }
     });
     return onData;
 };
@@ -21,7 +28,8 @@ module.exports = async (ws, context) => {
         const bufferedLogs = SessionManager.getLogBuffer(serverSession.sessionId);
         if (bufferedLogs && ws.readyState === ws.OPEN) ws.send(bufferedLogs);
         
-        const onData = setupStreamHandlers(ws, stream);
+        SessionManager.setActiveWs(serverSession.sessionId, ws);
+        const onData = setupStreamHandlers(ws, stream, serverSession.sessionId);
         const onFirstResize = (data) => {
             const resize = parseResizeMessage(data);
             if (resize) {
@@ -52,9 +60,10 @@ module.exports = async (ws, context) => {
             if (serverSession) {
                 stream.on("data", (data) => SessionManager.appendLog(serverSession.sessionId, data.toString()));
                 SessionManager.setConnection(serverSession.sessionId, { ssh, stream, auditLogId });
+                SessionManager.setActiveWs(serverSession.sessionId, ws);
                 resolve?.();
             }
-            const onData = setupStreamHandlers(ws, stream);
+            const onData = setupStreamHandlers(ws, stream, serverSession?.sessionId);
             ws.on("close", async () => {
                 stream.removeListener("data", onData);
                 await updateAuditLogWithSessionDuration(auditLogId, connectionStartTime);

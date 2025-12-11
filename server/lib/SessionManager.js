@@ -28,7 +28,8 @@ class SessionManager {
             lastActivity: new Date(),
             connection: null,
             connectingPromise: null,
-            logBuffer: ''
+            logBuffer: '',
+            activeWs: null
         };
         this.sessions.push(session);
         logger.info(`Session created`, { sessionId, accountId, entryId, tabId, browserId, auditLogId });
@@ -97,6 +98,16 @@ class SessionManager {
     getLogBuffer(sessionId) {
         const session = this.get(sessionId);
         return session ? session.logBuffer : '';
+    }
+
+    setActiveWs(sessionId, ws) {
+        const session = this.get(sessionId);
+        if (session) session.activeWs = ws;
+    }
+
+    isActiveWs(sessionId, ws) {
+        const session = this.get(sessionId);
+        return session && session.activeWs === ws;
     }
 
     hibernate(sessionId) {
