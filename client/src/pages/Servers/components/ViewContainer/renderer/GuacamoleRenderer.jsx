@@ -101,8 +101,8 @@ const GuacamoleRenderer = ({ session, disconnectFromServer, registerGuacamoleRef
         ref.current.appendChild(display);
 
         const s = sessionRef.current;
-        const params = `sessionToken=${sessionToken}&entryId=${s.server.id}&identity=${s.identity}&sessionId=${s.id}`;
-        client.connect(s.connectionReason ? `${params}&connectionReason=${encodeURIComponent(s.connectionReason)}` : params);
+        const params = `sessionToken=${sessionToken}&sessionId=${s.id}`;
+        client.connect(params);
 
         const mouse = new Guacamole.Mouse(display);
         mouse.onmousedown = mouse.onmouseup = mouse.onmousemove = (state) => {

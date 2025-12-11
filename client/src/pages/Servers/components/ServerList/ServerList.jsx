@@ -249,8 +249,8 @@ export const ServerList = ({
     const hibernatedSessionsForServer = server ? hibernatedSessions.filter(s => s.server.id == server.id) : [];
     
     const formatSessionDate = (session) => {
-        if (!session || !session.createdAt) return '';
-        const date = new Date(session.createdAt);
+        if (!session || !session.lastActivity) return '';
+        const date = new Date(session.lastActivity);
         const now = new Date();
         const diffMs = now - date;
         const diffMins = Math.floor(diffMs / 60000);

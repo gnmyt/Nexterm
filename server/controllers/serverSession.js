@@ -70,8 +70,7 @@ const createSession = async (accountId, entryId, identityId, connectionReason, t
     };
 
     const session = SessionManager.create(accountId, entryId, configuration, connectionReason, tabId, browserId, auditLogId);
-    const { connection, ...safeSession } = session;
-    return safeSession;
+    return { sessionId: session.sessionId };
 };
 
 const getSessions = async (accountId, tabId = null, browserId = null) => {
@@ -110,9 +109,12 @@ const getSessions = async (accountId, tabId = null, browserId = null) => {
             organizationName = org?.name || null;
         }
 
-        const { connection, ...safeSession } = session;
         return {
-            ...safeSession,
+            sessionId: session.sessionId,
+            entryId: session.entryId,
+            configuration: session.configuration,
+            isHibernated: session.isHibernated,
+            lastActivity: session.lastActivity,
             organizationId: entry?.organizationId || null,
             organizationName
         };

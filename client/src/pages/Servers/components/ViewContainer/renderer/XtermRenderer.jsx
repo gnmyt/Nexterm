@@ -206,10 +206,7 @@ const XtermRenderer = ({ session, disconnectFromServer, registerTerminalRef, bro
 
         let url = process.env.NODE_ENV === "production" ? `${window.location.host}/api/ws/term` : "localhost:6989/api/ws/term";
 
-        let wsUrl = `${protocol}://${url}?sessionToken=${sessionToken}&entryId=${session.server.id}&identityId=${session.identity}&sessionId=${session.id}`;
-        if (session.connectionReason) {
-            wsUrl += `&connectionReason=${encodeURIComponent(session.connectionReason)}`;
-        }
+        let wsUrl = `${protocol}://${url}?sessionToken=${sessionToken}&sessionId=${session.id}`;
 
         ws = new WebSocket(wsUrl);
         wsRef.current = ws;
