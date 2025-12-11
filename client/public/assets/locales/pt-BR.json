@@ -1,0 +1,1061 @@
+{
+  "common": {
+    "error": "Erro",
+    "success": "Sucesso",
+    "loading": "Carregando...",
+    "actions": {
+      "cancel": "Cancelar",
+      "confirm": "Confirmar",
+      "login": "Login",
+      "register": "Registrar",
+      "save": "Salvar",
+      "download": "Download",
+      "close": "Fechar",
+      "maximize": "Maximizar",
+      "restore": "Restaurar"
+    },
+    "labels": {
+      "username": "Nome de Usuário",
+      "password": "Senha",
+      "firstName": "Nome",
+      "lastName": "Sobrenome",
+      "code": "Código",
+      "twoFACode": "Código 2FA"
+    },
+    "placeholders": {
+      "username": "Nome de Usuário",
+      "password": "Senha",
+      "firstName": "Nome",
+      "lastName": "Sobrenome",
+      "code": "Código"
+    },
+    "confirmDialog": {
+      "title": "Você tem certeza?",
+      "defaultText": "Essa ação não pode ser desfeita."
+    },
+    "loginDialog": {
+      "title": "Nexterm",
+      "registrationTitle": "Registrar",
+      "ssoOrContinueWith": "ou continuar com",
+      "ssoSignInWith": "entrar com",
+      "noAuthMethodsAvailable": "Não há métodos de autenticação disponíveis."
+    },
+    "selectBox": {
+      "defaultOption": "Selecionar uma opção...",
+      "search": "Procurar...",
+      "noResults": "Nenhum resultado encontrado"
+    },
+    "sidebar": {
+      "settings": "Configurações",
+      "servers": "Servidores",
+      "monitoring": "Monitoramento",
+      "snippets": "Snippets",
+      "audit": "Auditoria",
+      "logout": "Logout",
+      "collapseTitle": "Alternar a Barra Lateral",
+      "logoutConfirmText": "Isso irá encerrar sua sessão na conta {{username}}. Tem certeza?",
+      "navigationConfirmText": "Você tem sessões ativas. Sair deste site irá desconectá-lo de todos os servidores. Você tem certeza?"
+    },
+    "errors": {
+      "loadingAuthProviders": "Erro ao carregar os provedores de autenticação: {{error}}",
+      "generalError": "Ocorreu um erro",
+      "invalidCredentials": "Nome de usuário ou senha inválidos",
+      "invalidTwoFactor": "Código de dois fatores inválido",
+      "internalAuthDisabled": "A autenticação interna está desativada",
+      "ssoLoginFailed": "Falha ao iniciar o login SSO"
+    },
+    "messages": {
+      "invitationAccepted": "Convite aceito",
+      "invitationDeclined": "Convite recusado",
+      "invitationError": "Falha ao processar o convite",
+      "organizationDeleted": "Organização excluída com sucesso",
+      "organizationDeleteError": "Falha ao excluir a organização",
+      "leftOrganization": "Você deixou a organização",
+      "leaveOrganizationError": "Falha ao deixar a organização"
+    }
+  },
+  "audit": {
+    "page": {
+      "title": "Logs de Auditoria",
+      "subtitle": "Acompanhe e monitore todas as atividades em sua infraestrutura"
+    },
+    "errors": {
+      "failedToLoadData": "Falha ao carregar dados de auditoria",
+      "failedToLoadLogs": "Falha ao carregar logs de auditoria"
+    },
+    "filters": {
+      "title": "Filtros",
+      "activeCount": "{{count}} ativo(s)",
+      "organization": "Organização",
+      "action": "Ação",
+      "resource": "Recurso",
+      "startDate": "Data de Início",
+      "endDate": "Data de Término",
+      "clearAll": "Apagar Tudo",
+      "options": {
+        "allActions": "Todas as Ações",
+        "allResources": "Todos os Recursos",
+        "allOrganizations": "Todas as Organizações (Pessoal + Org)",
+        "personalOnly": "Apenas Pessoal",
+        "categoryAll": "{{category}} (Todos)"
+      }
+    },
+    "table": {
+      "headers": {
+        "timestamp": "Data e Hora",
+        "action": "Ação",
+        "actor": "Ator",
+        "resource": "Recurso",
+        "organization": "Organização",
+        "details": "Detalhes"
+      },
+      "noLogs": {
+        "title": "Nenhum log de auditoria encontrado",
+        "subtitle": "Tente ajustar seus filtros ou volte a verificar mais tarde."
+      },
+      "loading": "Carregando logs de auditoria...",
+      "expandedDetails": {
+        "connectionReason": "Razão da Conexão",
+        "userAgent": "User Agent",
+        "additionalDetails": "Detalhes Adicionais"
+      },
+      "badges": {
+        "personal": "Pessoal",
+        "user": "Usuário #{{id}}",
+        "organization": "Organização #{{id}}"
+      }
+    },
+    "pagination": {
+      "showing": "Exibindo de {{start}} a {{end}} de {{total}} logs",
+      "previous": "Anterior",
+      "next": "Próximo",
+      "pageInfo": "Página {{current}} de {{total}}"
+    }
+  },
+  "snippets": {
+    "page": {
+      "title": "Snippets",
+      "subtitle": "Gerencie seus snippets de comandos para acesso rápido nos terminais",
+      "addSnippet": "Adicionar Snippet",
+      "personal": "Pessoal",
+      "selectOrganization": "Selecionar Organização",
+      "tabs": {
+        "snippets": "Snippets",
+        "scripts": "Scripts"
+      }
+    },
+    "list": {
+      "empty": "Você ainda não tem nenhum snippet. Crie seu primeiro!",
+      "actions": {
+        "edit": "Editar Snippet",
+        "delete": "Excluir Snippet"
+      }
+    },
+    "dialog": {
+      "title": {
+        "create": "Criar Snippet",
+        "edit": "Editar Snippet"
+      },
+      "fields": {
+        "name": "Nome",
+        "description": "Descrição (opcional)",
+        "command": "Comando"
+      },
+      "placeholders": {
+        "name": "Nome do snippet",
+        "description": "O que esse comando faz?",
+        "command": "Digite seu comando"
+      },
+      "actions": {
+        "cancel": "Cancelar",
+        "create": "Criar",
+        "save": "Salvar",
+        "generateAI": "Gerar com IA",
+        "generating": "Gerando..."
+      }
+    },
+    "messages": {
+      "success": {
+        "created": "Snippet criado com sucesso",
+        "updated": "Snippet atualizado com sucesso",
+        "deleted": "Snippet excluído com sucesso"
+      },
+      "errors": {
+        "required": "Nome e comando são obrigatórios",
+        "loadFailed": "Falhou ao carregar os dados do snippet",
+        "saveFailed": "Falha ao salvar o snippet",
+        "deleteFailed": "Falha ao excluir o snippet",
+        "reorderFailed": "Falha ao reordenar o snippet"
+      }
+    }
+  },
+  "scripts": {
+    "page": {
+      "title": "Scripts",
+      "subtitle": "Gerencie seus scripts de automação para tarefas do servidor",
+      "addScript": "Adicionar Script",
+      "personal": "Pessoal",
+      "selectOrganization": "Selecionar Organização",
+      "tabs": {
+        "snippets": "Snippets",
+        "scripts": "Scripts"
+      }
+    },
+    "execution": {
+      "progressPanel": {
+        "title": "Execução de Script",
+        "noSteps": "Nenhuma etapa ainda",
+        "noStepsDescription": "As etapas aparecerão aqui conforme o script for executado",
+        "steps": "Etapas"
+      },
+      "dialogs": {
+        "enterValue": "Insira o valor",
+        "selectOption": "Selecione uma opção",
+        "confirm": "Confirmar",
+        "submit": "Enviar",
+        "cancel": "Cancelar",
+        "ok": "OK",
+        "yes": "Sim",
+        "no": "Não",
+        "copyCell": "Copiar Célula",
+        "copyRow": "Copiar Linha",
+        "copyTable": "Copiar Tabela",
+        "close": "Fechar"
+      },
+      "status": {
+        "running": "Executando",
+        "completed": "Concluído",
+        "error": "Erro",
+        "pending": "Pendente"
+      }
+    },
+    "list": {
+      "empty": "Você ainda não tem nenhum script. Crie seu primeiro!",
+      "actions": {
+        "edit": "Editar script",
+        "delete": "Excluir script"
+      }
+    },
+    "dialog": {
+      "title": {
+        "create": "Criar Script",
+        "edit": "Editar Script"
+      },
+      "scriptDetails": "Detalhes do Script",
+      "scriptContent": "Conteúdo do Script",
+      "helpTip": "Use diretrizes @NEXTERM: para recursos interativos",
+      "fields": {
+        "name": "Nome",
+        "description": "Descrição"
+      },
+      "placeholders": {
+        "name": "Nome do script",
+        "description": "O que esse script faz?"
+      },
+      "actions": {
+        "cancel": "Cancelar",
+        "create": "Criar",
+        "update": "Atualizar",
+        "creating": "Criando...",
+        "updating": "Atualizando..."
+      },
+      "errors": {
+        "nameRequired": "Nome do script é obrigatório",
+        "descriptionRequired": "Descrição do script é obrigatória",
+        "contentRequired": "Conteúdo do script é obrigatório",
+        "createFailed": "Falha ao criar o script",
+        "updateFailed": "Falha ao atualizar o script"
+      }
+    },
+    "messages": {
+      "success": {
+        "created": "Script criado com sucesso",
+        "updated": "Script atualizado com sucesso",
+        "deleted": "Script excluído com sucesso",
+        "reordered": "Script reordenado com sucesso"
+      },
+      "errors": {
+        "loadFailed": "Falha ao carregar os dados do script",
+        "deleteFailed": "Falha ao excluir o script",
+        "reorderFailed": "Falha ao reordenar o script"
+      }
+    },
+    "menu": {
+      "searchPlaceholder": "Pesquisar scripts...",
+      "noScripts": "Nenhum script disponível. Crie alguns na seção de Scripts.",
+      "noMatch": "Nenhum script corresponde à sua busca.",
+      "selectIdentity": "Selecionar Identidade"
+    }
+  },
+  "monitoring": {
+    "page": {
+      "title": "Monitoramento de Servidor",
+      "subtitle": "Estatísticas de servidores em tempo real e monitoramento de saúde",
+      "searchPlaceholder": "Pesquisar servidores..."
+    },
+    "errors": {
+      "loadFailed": "Falha ao carregar os dados de monitoramento"
+    },
+    "grid": {
+      "loading": "Carregando dados de monitoramento...",
+      "noServers": {
+        "title": "Nenhum Servidor Encontrado",
+        "subtitle": "Não há servidores SSH disponíveis para monitoramento.\nAdicione alguns servidores para começar a monitorá-los."
+      },
+      "metrics": {
+        "cpuUsage": "Uso de CPU",
+        "memoryUsage": "Uso de Memória",
+        "loadAverage": "Média de Carga",
+        "processes": "Processos",
+        "uptime": "Uptime"
+      },
+      "status": {
+        "serverOffline": "Servidor Offline",
+        "connectionError": "Erro de Conexão",
+        "statusUnknown": "Status Desconhecido",
+        "offlineMessage": "O servidor atualmente não está respondendo aos pedidos de monitoramento.",
+        "errorMessage": "Não foi possível estabelecer conexão com o servidor.",
+        "unknownMessage": "O status do servidor não pôde ser determinado.",
+        "lastSeen": "Visto pela última vez: {{time}}",
+        "noRecentActivity": "Nenhuma atividade recente"
+      },
+      "uptime": {
+        "unknown": "Desconhecido",
+        "format": {
+          "days": "{{days}}d {{hours}}h {{minutes}}m",
+          "hours": "{{hours}}h {{minutes}}m",
+          "minutes": "{{minutes}}m"
+        }
+      }
+    },
+    "details": {
+      "timeRanges": {
+        "1h": "1h",
+        "6h": "6h",
+        "24h": "24h"
+      },
+      "tabs": {
+        "overview": "Visão Geral",
+        "charts": "Gráficos",
+        "storage": "Armazenamento",
+        "network": "Rede"
+      },
+      "overview": {
+        "systemInfo": {
+          "title": "Informações do Sistema",
+          "os": "OS",
+          "version": "Versão",
+          "kernel": "Kernel",
+          "architecture": "Arquitetura",
+          "uptime": "Uptime",
+          "unknown": "Desconhecido",
+          "noData": "Nenhuma informação do sistema disponível"
+        },
+        "performance": {
+          "title": "Métricas de Desempenho",
+          "cpuUsage": "Uso de CPU",
+          "memoryUsage": "Uso de Memória",
+          "loadAverage": "Média de Carga",
+          "processes": "Processos Ativos",
+          "total": "Total: {{value}}",
+          "loadDetail": "5m: {{fiveMin}}, 15m: {{fifteenMin}}"
+        },
+        "uptime": {
+          "format": {
+            "full": "{{days}} dias, {{hours}} horas, {{minutes}} minutos",
+            "hoursMinutes": "{{hours}} horas, {{minutes}} minutos",
+            "minutes": "{{minutes}} minutos"
+          }
+        }
+      },
+      "charts": {
+        "cpuUsage": "Uso de CPU",
+        "memoryUsage": "Uso de Memória",
+        "processes": "Processos Ativos",
+        "noData": "Não há dados disponíveis para o intervalo de tempo selecionado"
+      },
+      "storage": {
+        "title": "Uso de Disco",
+        "used": "Usado: {{value}}",
+        "available": "Disponível: {{value}}",
+        "total": "Total: {{value}}",
+        "type": "Tipo: {{value}}",
+        "noData": "Nenhum dado de uso de disco disponível"
+      },
+      "network": {
+        "title": "Interfaces de Rede",
+        "rxBytes": "RX Bytes",
+        "txBytes": "TX Bytes",
+        "noData": "Nenhum dado de interface de rede disponível"
+      }
+    }
+  },
+  "settings": {
+    "title": "Configurações",
+    "userSettings": "CONFIGURAÇÕES DE USUÁRIO",
+    "adminSettings": "CONFIGURAÇÕES DE ADMINISTRADOR",
+    "pages": {
+      "account": "Conta",
+      "terminal": "Terminal",
+      "keymaps": "Mapa de Teclas",
+      "identities": "Identidades",
+      "sessions": "Sessões",
+      "organizations": "Organizações",
+      "users": "Usuários",
+      "authentication": "Autenticação",
+      "sources": "Fontes",
+      "ai": "IA"
+    },
+    "account": {
+      "title": "Conta",
+      "accountName": "Nome da conta",
+      "firstName": "Nome",
+      "lastName": "Sobrenome",
+      "appearance": "Aparência",
+      "appearanceDescription": "Escolha o tema que você prefere. O sistema segue automaticamente as configurações do sistema e ajusta conforme o horário do dia.",
+      "themeAuto": "Automático",
+      "themeLight": "Claro",
+      "themeDark": "Escuro",
+      "twoFactor": "Autenticação de dois fatores",
+      "twoFactorActive": "Ativa",
+      "twoFactorInactive": "Inativa",
+      "twoFactorDescription": "Adicione uma camada extra de segurança à sua conta ativando a autenticação de dois fatores.",
+      "enable2FA": "Habilitar 2FA",
+      "disable2FA": "Desabilitar 2FA",
+      "changePassword": "Alterar a senha",
+      "changePasswordDescription": "Escolha uma senha nova e segura para sua conta aqui.",
+      "changePasswordButton": "Alterar a senha",
+      "language": "Idioma",
+      "languageDescription": "Selecione o idioma que você prefere para a interface.",
+      "currentLanguage": "Idioma Atual",
+      "missingLanguage": "Está sem seu idioma?",
+      "helpTranslateLink": "Ajude a traduzir o Nexterm",
+      "sessionSynchronization": "Sincronização de Sessão",
+      "sessionSyncDescription": "Controle como suas sessões de servidor são armazenadas e sincronizadas entre dispositivos e abas do navegador.",
+      "sessionSyncAcrossDevices": "Entre dispositivos",
+      "sessionSyncSameBrowser": "Mesmo navegador",
+      "sessionSyncSameTab": "Mesma aba",
+      "sessionSyncAcrossDevicesDesc": "As sessões estarão disponíveis em todos os dispositivos e serão sincronizadas.",
+      "sessionSyncSameBrowserDesc": "As sessões serão sincronizadas para a sessão do usuário atual.",
+      "sessionSyncSameTabDesc": "As sessões serão sincronizadas dentro da aba do seu navegador.",
+      "twoFactorDialog": {
+        "title": "Habilitar 2FA",
+        "description": "Escaneie o código com seu aplicativo autenticador ou insira <span class=\"totp-code\">{{secret}}</span> manualmente.",
+        "codePlaceholder": "Insira o código 2FA",
+        "enableButton": "Habilitar",
+        "messages": {
+          "setupFailed": "A configuração do 2FA falhou. Por favor, tente novamente."
+        }
+      }
+    },
+    "passwordChange": {
+      "title": "Alterar a senha",
+      "description": "Uma senha forte contém caracteres especiais, números e letras em maiúsculas e minúsculas.",
+      "newPassword": "Nova senha",
+      "confirmPassword": "Confirmar nova senha",
+      "changePasswordButton": "Alterar a senha"
+    },
+    "organizations": {
+      "title": "Suas Organizações",
+      "createOrganization": "Criar Organização",
+      "noOrganizations": "Você ainda não tem nenhuma organização.",
+      "noOrganizationsDescription": "Crie uma para começar a colaborar com sua equipe.",
+      "invite": "Convidar",
+      "delete": "Excluir",
+      "leave": "Sair",
+      "members": "Membros",
+      "auditSettings": "Auditar Configurações",
+      "pendingInvitations": "Convites Pendentes",
+      "invitedBy": "Convidado por: {{name}}",
+      "deleteConfirmation": "Isso excluirá permanentemente a organização e removerá todos os membros. Essa ação não pode ser desfeita.",
+      "leaveConfirmation": "Você tem certeza de que quer sair dessa organização?",
+      "dialog": {
+        "title": "Criar Organização",
+        "fields": {
+          "name": "Nome",
+          "namePlaceholder": "Nome da organização",
+          "description": "Descrição (opcional)",
+          "descriptionPlaceholder": "Breve descrição da sua organização"
+        },
+        "actions": {
+          "cancel": "Cancelar",
+          "create": "Criar"
+        },
+        "messages": {
+          "nameRequired": "O nome da organização é obrigatório",
+          "createSuccess": "Organização criada com sucesso",
+          "createFailed": "Não foi possível criar a organização"
+        }
+      }
+    },
+    "users": {
+      "title": "{{count}} usuário(s)",
+      "createNewUser": "Criar Usuário",
+      "twoFactorEnabled": "2FA habilitado",
+      "twoFactorDisabled": "2FA desabilitado",
+      "contextMenu": {
+        "changePassword": "Alterar a senha",
+        "promoteToAdmin": "Promover a administrador",
+        "demoteToUser": "Rebaixar para usuário",
+        "deleteUser": "Excluir usuário",
+        "loginAsUser": "Autenticar como usuário",
+        "deleteConfirm": "Isso excluirá permanentemente o usuário e todos os dados associados.",
+        "promoteConfirm": "Isso promove o usuário a administrador.",
+        "demoteConfirm": "Isso rebaixará o usuário para um usuário comum."
+      }
+    },
+    "userDialog": {
+      "title": "Criar novo usuário",
+      "firstName": "Nome",
+      "lastName": "Sobrenome",
+      "username": "Nome de Usuário",
+      "password": "Senha",
+      "firstNamePlaceholder": "Nome",
+      "lastNamePlaceholder": "Sobrenome",
+      "usernamePlaceholder": "Nome de Usuário",
+      "passwordPlaceholder": "Senha",
+      "create": "Criar",
+      "errorOccurred": "Ocorreu um erro"
+    },
+    "sessions": {
+      "title": "Sessões",
+      "lastActivity": "Última atividade: {{date}} de {{ip}}",
+      "currentSession": "Sessão atual",
+      "logout": "Logout",
+      "revoke": "Revogar",
+      "browserOn": "{{browser}} {{version}} em {{os}} {{osVersion}}"
+    },
+    "keymaps": {
+      "title": "Mapa de Teclas",
+      "description": "Personalize atalhos de teclado para se adequar ao seu fluxo de trabalho.",
+      "resetAll": "Redefinir Tudo",
+      "actions": {
+        "search": {
+          "title": "Pesquisar",
+          "description": "Abrir a caixa de pesquisa"
+        },
+        "aimenu": {
+          "title": "Menu de IA",
+          "description": "Abrir o menu de comandos de IA"
+        },
+        "snippets": {
+          "title": "Snippets",
+          "description": "Abrir a caixa de diálogo de snippets"
+        },
+        "keyboardshortcuts": {
+          "title": "Atalhos de Teclado",
+          "description": "Abrir o menu de atalhos de teclado"
+        },
+        "broadcast": {
+          "title": "Modo de Transmissão",
+          "description": "Alternar o modo de transmissão ao usar a visão dividida"
+        },
+        "copy": {
+          "title": "Copiar",
+          "description": "Copiar texto selecionado para a área de transferência"
+        },
+        "fullscreen": {
+          "title": "Tela Cheia",
+          "description": "Alternar modo de tela cheia"
+        }
+      },
+      "recorder": {
+        "pressKeys": "Pressione as teclas...",
+        "save": "Salvar",
+        "cancel": "Cancelar",
+        "reset": "Redefinir"
+      },
+      "messages": {
+        "updateSuccess": "Atalho de teclado atualizado com sucesso",
+        "updateFailed": "Falha ao atualizar o atalho de teclado",
+        "resetSuccess": "Atalho de teclado redefinido para o padrão",
+        "resetFailed": "Falha ao redefinir o atalho de teclado",
+        "resetAllSuccess": "Todos os atalhos de teclado redefinidos para o padrão",
+        "resetAllFailed": "Falha ao redefinir os atalhos de teclado"
+      }
+    },
+    "terminal": {
+      "title": "Terminal",
+      "font": {
+        "title": "Fonte",
+        "description": "Personalize a família e o tamanho da fonte do seu terminal.",
+        "fontFamily": "Fonte",
+        "fontSize": "Tamanho da Fonte"
+      },
+      "cursor": {
+        "title": "Cursor",
+        "description": "Personalize a aparência e o comportamento do cursor do seu terminal.",
+        "cursorStyle": "Estilo do Cursor",
+        "cursorBlinking": "Cursor Piscando",
+        "enabled": "Habilitado",
+        "disabled": "Desabilitado"
+      },
+      "theme": {
+        "title": "Tema",
+        "description": "Escolha um tema de cor para seu terminal."
+      },
+      "preview": {
+        "text": "$ echo 'Olá, Nexterm!'\nOlá, Nexterm!\n$ "
+      }
+    },
+    "authentication": {
+      "title": "{{count}} Provedor(es) de Autenticação",
+      "addProvider": "Adicionar Provedor",
+      "system": "Sistema",
+      "systemDescription": "Autenticação por nome de usuário e senha",
+      "deleteConfirm": "Isso excluirá permanentemente esse provedor de autenticação.",
+      "errors": {
+        "deleteProvider": "Erro ao excluir o provedor",
+        "toggleProvider": "Erro ao alternar o provedor"
+      },
+      "providerDialog": {
+        "createTitle": "Adicionar Provedor de Autenticação",
+        "editTitle": "Editar Provedor de Autenticação",
+        "fields": {
+          "displayName": "Nome de Exibição",
+          "displayNamePlaceholder": "ex. SSO da Empresa",
+          "issuerUrl": "URL do Emissor",
+          "issuerUrlPlaceholder": "https://auth.company.com",
+          "clientId": "ID do Cliente",
+          "clientIdPlaceholder": "ID do Cliente",
+          "clientSecret": "Segredo do Cliente",
+          "clientSecretPlaceholder": "Segredo do Cliente",
+          "clientSecretPlaceholderEdit": "Deixe em branco para manter o atual",
+          "redirectUri": "URI de Redirecionamento",
+          "redirectUriPlaceholder": "https://your-domain.com/api/oidc/callback",
+          "scope": "Escopo",
+          "scopePlaceholder": "openid profile email",
+          "emailAttribute": "Atributo de E-mail",
+          "emailAttributePlaceholder": "email",
+          "usernameAttribute": "Atributo de Nome de Usuário",
+          "usernameAttributePlaceholder": "preferred_username",
+          "firstNameAttribute": "Atributo de Nome",
+          "firstNameAttributePlaceholder": "given_name",
+          "lastNameAttribute": "Atributo de Sobrenome",
+          "lastNameAttributePlaceholder": "family_name"
+        },
+        "advanced": {
+          "show": "Mostrar Configurações Avançadas",
+          "hide": "Ocultar Configurações Avançadas"
+        },
+        "actions": {
+          "addProvider": "Adicionar Provedor",
+          "saveChanges": "Salvar Alterações"
+        },
+        "messages": {
+          "saveFailed": "Falha ao salvar o provedor"
+        }
+      }
+    },
+    "ai": {
+      "title": "Configuração de Assistente de IA",
+      "description": "Configure a geração de comandos com IA para sessões de terminal e criação de snippets.",
+      "loading": "Carregando configurações de IA...",
+      "enable": {
+        "title": "Ativar o Assistente de IA",
+        "description": "Permitir que os usuários gerem comandos usando IA"
+      },
+      "provider": {
+        "title": "Provedor de IA",
+        "description": "Escolha seu provedor de serviços de IA"
+      },
+      "model": {
+        "title": "Modelo",
+        "description": "Selecione o modelo de IA para usar na geração de comandos"
+      },
+      "apiKey": {
+        "title": "Chave de API",
+        "description": "Sua chave de API da OpenAI para autenticação",
+        "placeholder": "Insira sua chave da API da OpenAI",
+        "setPlaceholder": "A chave API está definida (deixe em branco para manter a atual)"
+      },
+      "ollamaUrl": {
+        "title": "URL do Ollama",
+        "description": "A URL onde sua instância do Ollama está rodando",
+        "placeholder": "http://localhost:11434"
+      },
+      "selectProvider": "Escolha um provedor...",
+      "selectModel": "Escolha um modelo...",
+      "loadingModels": "Carregando modelos...",
+      "noModels": "Nenhum modelo disponível",
+      "saveSettings": "Salvar Configurações",
+      "testConnection": "Testar Conexão",
+      "testing": "Testando...",
+      "saveSuccess": "Configurações de IA salvas com sucesso",
+      "testSuccess": "Teste de conexão com a IA bem-sucedido",
+      "errors": {
+        "loadSettings": "Falha ao carregar as configurações de IA",
+        "saveSettings": "Falha ao salvar as configurações de IA",
+        "testConnection": "Teste de conexão com a IA falhou"
+      }
+    },
+    "identities": {
+      "title": "Chaves e Credenciais SSH",
+      "description": "Gerencie suas chaves SSH e credenciais de login para conexões de servidor",
+      "createIdentity": "Criar Identidade",
+      "personal": "Pessoal",
+      "noUsername": "Sem nome de usuário",
+      "sshKey": "Chave SSH",
+      "password": "Senha",
+      "editIdentity": "Editar identidade",
+      "deleteIdentity": "Excluir identidade",
+      "noIdentities": "Nenhuma identidade encontrada",
+      "noIdentitiesDescription": "Crie sua primeira identidade para começar com conexões de servidor",
+      "deleteConfirm": "Você tem certeza de que quer excluir \"{{name}}\"? Essa ação não pode ser desfeita e removerá essa identidade de todos os servidores que a utilizam.",
+      "deleteSuccess": "Identidade excluída com sucesso",
+      "deleteError": "Falha ao excluir a identidade",
+      "dialog": {
+        "createTitle": "Criar uma Nova Identidade",
+        "editTitle": "Editar Identidade",
+        "fields": {
+          "name": "Nome da Identidade",
+          "namePlaceholder": "Digite o nome da identidade",
+          "username": "Nome de Usuário",
+          "usernamePlaceholder": "Nome de usuário (opcional)",
+          "authType": "Tipo de Autenticação",
+          "password": "Senha",
+          "passwordPlaceholder": "Digite a senha",
+          "passwordPlaceholderEdit": "Deixe em branco para manter a senha atual",
+          "sshKey": "Chave Privada SSH",
+          "passphrase": "Senha (opcional)",
+          "passphrasePlaceholder": "Digite a senha (opcional)",
+          "passphrasePlaceholderEdit": "Deixe em branco para manter a senha atual"
+        },
+        "authTypes": {
+          "password": "Senha",
+          "ssh": "Chave SSH"
+        },
+        "keyFileLoaded": "Arquivo de chave carregado",
+        "actions": {
+          "cancel": "Cancelar",
+          "create": "Criar Identidade",
+          "update": "Atualizar Identidade"
+        },
+        "messages": {
+          "nameRequired": "Nome de identidade é obrigatório",
+          "passwordRequired": "Senha é obrigatória",
+          "sshKeyRequired": "Chave SSH é obrigatória",
+          "createSuccess": "Identidade criada com sucesso",
+          "updateSuccess": "Identidade atualizada com sucesso",
+          "createFailed": "Falha ao criar a identidade",
+          "updateFailed": "Falha ao atualizar a identidade"
+        }
+      }
+    },
+    "sources": {
+      "title": "Fontes de Script & Snippet",
+      "description": "Configure fontes externas para sincronizar automaticamente scripts e snippets.",
+      "loading": "Carregando fontes...",
+      "noSources": "Nenhuma Fonte Configurada",
+      "noSourcesDescription": "Adicione fontes externas para sincronizar automaticamente scripts e snippets.",
+      "addSource": "Adicionar Fonte",
+      "snippets": "snippets",
+      "scripts": "scripts",
+      "neverSynced": "Nunca sincronizado",
+      "sync": "Sincronizar agora",
+      "edit": "Editar",
+      "delete": "Excluir",
+      "deleteConfirm": "Você tem certeza de que deseja excluir a fonte \"{{name}}\"? Todos os scripts e snippets de código sincronizados dessa fonte também serão excluídos.",
+      "status": {
+        "success": "Sincronizada",
+        "error": "Erro",
+        "pending": "Pendente",
+        "disabled": "Desabilitada"
+      },
+      "dialog": {
+        "createTitle": "Adicionar Fonte",
+        "editTitle": "Editar Fonte",
+        "name": "Nome",
+        "namePlaceholder": "ex. Scripts da Empresa",
+        "url": "URL de Origem",
+        "urlPlaceholder": "https://scripts.example.com",
+        "enabled": "Habilitada",
+        "enabledDescription": "Quando desativada, essa fonte não será sincronizada",
+        "validating": "Validando URL...",
+        "validationSuccess": "Fonte válida encontrada: {{snippets}} snippet(s), {{scripts}} script(s)",
+        "create": "Criar"
+      },
+      "messages": {
+        "created": "Fonte criada com sucesso",
+        "updated": "Fonte atualizada com sucesso",
+        "deleted": "Fonte excluída com sucesso",
+        "synced": "Fonte sincronizada com sucesso"
+      },
+      "errors": {
+        "loadFailed": "Falha ao carregar as fontes",
+        "saveFailed": "Falha ao salvar a fonte",
+        "deleteFailed": "Falha ao excluir a fonte",
+        "syncFailed": "Falha ao sincronizar a fonte",
+        "validationFailed": "Falha ao validar o URL",
+        "requiredFields": "Nome e URL são obrigatórios"
+      }
+    }
+  },
+  "servers": {
+    "time": {
+      "justNow": "Agora mesmo",
+      "minuteAgo": "há {{count}} minuto",
+      "minutesAgo": "há {{count}} minutos",
+      "hourAgo": "há {{count}} hora",
+      "hoursAgo": "há {{count}} horas",
+      "dayAgo": "há {{count}} dia",
+      "daysAgo": "há {{count}} dias"
+    },
+    "tags": {
+      "title": "Tags",
+      "createNewTag": "Criar nova tag",
+      "tagName": "Nome da tag",
+      "create": "Criar",
+      "filterByTags": "Filtrar por Tags",
+      "clearAll": "Limpar tudo",
+      "noTagsCreated": "Nenhuma tag criada ainda",
+      "editTag": "Editar tag",
+      "deleteTag": "Excluir tag"
+    },
+    "contextMenu": {
+      "createFolder": "Criar Pasta",
+      "deleteFolder": "Excluir Pasta",
+      "renameFolder": "Renomear Pasta",
+      "new": "Novo",
+      "sshServer": "Servidor SSH",
+      "telnetServer": "Servidor Telnet",
+      "rdpServer": "Servidor RDP",
+      "vncServer": "Servidor VNC",
+      "createServer": "Criar Servidor",
+      "import": "Importar",
+      "pve": "PVE",
+      "sshConfig": "Configuração de SSH",
+      "connect": "Conectar",
+      "quickConnect": "Conexão Rápida",
+      "openSFTP": "Abrir SFTP",
+      "runScript": "Executar Script",
+      "editServer": "Editar Servidor",
+      "editIntegration": "Editar Integração",
+      "duplicateServer": "Duplicar Servidor",
+      "deleteServer": "Excluir Servidor",
+      "editPVE": "Editar PVE",
+      "deletePVE": "Excluir PVE",
+      "shutdown": "Desligar",
+      "stop": "Parar",
+      "start": "Iniciar"
+    },
+    "dialog": {
+      "addServer": "Adicionar Servidor",
+      "addProtocolServer": "Adicionar Servidor {{protocol}}",
+      "editServer": "Editar Servidor",
+      "tabs": {
+        "details": "Detalhes",
+        "identities": "Identidades",
+        "settings": "Configurações"
+      },
+      "actions": {
+        "save": "Salvar",
+        "create": "Criar"
+      },
+      "fields": {
+        "name": "Nome",
+        "icon": "Ícone",
+        "serverIp": "IP do Servidor",
+        "port": "Porta",
+        "protocol": "Protocolo",
+        "username": "Nome de Usuário",
+        "password": "Senha",
+        "host": "Host",
+        "nodeName": "Nome do Node",
+        "vmid": "VM ID"
+      },
+      "placeholders": {
+        "serverName": "Nome do servidor",
+        "serverIp": "IP do Servidor",
+        "port": "Porta",
+        "username": "Nome de usuário",
+        "password": "Senha",
+        "host": "Host",
+        "nodeName": "Nome do node",
+        "vmid": "VM ID"
+      },
+      "settings": {
+        "jumpHosts": {
+          "title": "Jump Hosts",
+          "description": "Conecte-se por servidores intermediários para alcançar esse servidor alvo",
+          "addButton": "Adicionar Jump Host",
+          "removeTooltip": "Remover Jump Host",
+          "noServersAvailable": "Não há servidores SSH disponíveis para jump hosts. Crie servidores SSH primeiro."
+        },
+        "monitoring": {
+          "title": "Habilitar o Monitoramento de Desempenho",
+          "description": "Coletar métricas de CPU, memória, disco e rede para este servidor"
+        },
+        "keyboardLayout": {
+          "title": "Layout do Teclado",
+          "description": "Selecione o layout de teclado a ser usado para esta conexão."
+        },
+        "noSettings": "Não há configurações adicionais disponíveis para esse tipo de entrada."
+      },
+      "identities": {
+        "organizationIdentities": "Identidades Organizacionais",
+        "personalIdentities": "Identidades Pessoais",
+        "orgDescription": "Compartilhado com todos os membros da organização. Todos podem usar essas identidades.",
+        "personalDescription": "Só visível para você. Outros membros da organização não conseguem ver essas identidades.",
+        "identityName": "Nome da Identidade",
+        "username": "Nome de Usuário",
+        "authentication": "Autenticação",
+        "password": "Senha",
+        "sshKey": "Chave SSH",
+        "sshPrivateKey": "Chave Privada SSH",
+        "passphrase": "Senha (opcional)",
+        "new": "Nova",
+        "removeIdentity": "Remover identidade",
+        "unlinkIdentity": "Desvincular identidade",
+        "moveToOrg": "Mover para a organização",
+        "selectOrganization": "Selecionar Organização",
+        "availableToLink": "Disponível para Vinculação",
+        "noUsername": "Sem nome de usuário",
+        "noOrgIdentities": "Sem identidades organizacionais. Crie uma para compartilhar com todos os membros.",
+        "noPersonalIdentities": "Sem identidades pessoais. Crie uma para uso privado."
+      }
+    },
+    "proxmoxDialog": {
+      "title": {
+        "import": "Importar Proxmox VE",
+        "edit": "Editar Proxmox VE"
+      },
+      "fields": {
+        "name": "Nome",
+        "serverIp": "IP do Servidor",
+        "port": "Porta",
+        "username": "Nome de Usuário",
+        "password": "Senha",
+        "nodeName": "Nome do Node (Opcional)"
+      },
+      "placeholders": {
+        "name": "Nome",
+        "serverIp": "IP do Servidor",
+        "port": "Porta",
+        "username": "Nome de usuário (ex. root@pam)",
+        "password": "Senha",
+        "specificNode": "Nome específico do node"
+      },
+      "actions": {
+        "import": "Importar",
+        "edit": "Editar"
+      }
+    },
+    "connectionReasonDialog": {
+      "title": "Motivo da Conexão é obrigatório",
+      "reasonLabel": "Por favor, forneça um motivo para se conectar a <strong>{{serverName}}</strong>:",
+      "placeholder": "Informe o motivo dessa conexão...",
+      "characterCount": "{{count}}/500",
+      "actions": {
+        "cancel": "Cancelar",
+        "connect": "Conectar"
+      }
+    },
+    "sshConfigImport": {
+      "title": "Importar Configuração SSH",
+      "configContent": {
+        "label": "Conteúdo da Configuração SSH",
+        "placeholder": "Cole o conteúdo da configuração SSH aqui..."
+      },
+      "keyFiles": {
+        "label": "Arquivos de Chave SSH ({{count}} encontrados)",
+        "userLabel": "Usuário: {{username}}",
+        "uploaded": "✓ Carregado",
+        "uploadButton": "Carregar"
+      },
+      "actions": {
+        "cancel": "Cancelar",
+        "import": "Importar",
+        "importing": "Importando..."
+      },
+      "messages": {
+        "noContent": "Por favor, forneça o conteúdo de configuração SSH",
+        "noFolder": "Nenhuma pasta selecionada",
+        "uploadSuccess": "Chave {{name}} carregada com sucesso",
+        "uploadFailed": "Falha ao enviar a chave {{name}}",
+        "importFailed": "Falha ao importar a configuração SSH"
+      }
+    },
+    "fileManager": {
+      "createFolder": {
+        "title": "Criar Pasta",
+        "placeholder": "Nome da Pasta",
+        "button": "Criar Pasta"
+      },
+      "renameItem": {
+        "title": "Renomear",
+        "placeholder": "Novo nome",
+        "button": "Renomear"
+      },
+      "fileEditor": {
+        "title": "Editor de Arquivo",
+        "save": "Salvar",
+        "cancel": "Cancelar",
+        "loading": "Carregando...",
+        "saving": "Salvando...",
+        "saveSuccess": "Arquivo salvo com sucesso",
+        "saveFailed": "Falha ao salvar o arquivo",
+        "loadFailed": "Falha ao carregar o arquivo",
+        "unsavedChanges": "Você tem alterações não salvas. Você tem certeza de que quer fechar esse arquivo?"
+      },
+      "contextMenu": {
+        "open": "Abrir",
+        "download": "Download",
+        "rename": "Renomear",
+        "delete": "Excluir",
+        "copy": "Copiar",
+        "cut": "Recortar",
+        "paste": "Colar",
+        "createFolder": "Criar Pasta",
+        "upload": "Carregar Arquivo",
+        "edit": "Editar",
+        "preview": "Pré-visualizar",
+        "bigFileConfirm": "Este arquivo tem {{size}} MB. Você tem certeza de que deseja editá-lo?",
+        "selectAll": "Selecionar Todos",
+        "insertSnippet": "Inserir Snippet",
+        "sendCtrlC": "Enviar Ctrl+C",
+        "clearTerminal": "Limpar Terminal"
+      },
+      "filePreview": {
+        "title": "Pré-visualização do Arquivo",
+        "loading": "Carregando...",
+        "cannotPreview": "Não é Possível Pré-visualizar o Arquivo",
+        "unsupportedFileType": "Esse tipo de arquivo não é suportado para pré-visualização",
+        "videoNotSupported": "Seu navegador não suporta reprodução de vídeo",
+        "audioNotSupported": "Seu navegador não suporta reprodução de áudio",
+        "download": "Download",
+        "close": "Fechar"
+      }
+    },
+    "aiAssistant": {
+      "title": "Assistente de IA",
+      "placeholder": "Descreva o que você quer fazer...",
+      "hint": "Pressione Enter para gerar • Esc para fechar",
+      "closeLabel": "Fechar Assistente de IA"
+    },
+    "snippets": {
+      "title": "Snippets",
+      "noSnippets": "Nenhum snippet disponível",
+      "searchPlaceholder": "Pesquisar snippets...",
+      "createNew": "Criar Novo Snippet"
+    },
+    "terminalActions": {
+      "menuTitle": "Ações de Terminal",
+      "snippets": "Snippets",
+      "keyboardShortcuts": "Atalhos de Teclado",
+      "broadcasting": "Broadcasting",
+      "fullScreen": "Tela Cheia",
+      "exitFullScreen": "Sair do Modo de Tela Cheia",
+      "badgeOn": "ON"
+    },
+    "messages": {
+      "fillRequiredFields": "Por favor, preencha todos os campos obrigatórios",
+      "serverCreated": "Servidor criado com sucesso",
+      "serverUpdated": "Servidor atualizado com sucesso",
+      "createFailed": "Falha ao criar o servidor",
+      "updateFailed": "Falha ao atualizar o servidor",
+      "createIdentityFailed": "Falha ao criar a identidade",
+      "updateIdentityFailed": "Falha ao atualizar a identidade"
+    }
+  }
+}
