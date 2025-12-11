@@ -27,15 +27,14 @@ app.use(express.json());
 
 app.use("/api/service", require("./routes/service"));
 app.use("/api/accounts", require("./routes/account"));
+app.use("/api/accounts/passkeys", require("./routes/passkey"));
 app.use("/api/auth", require("./routes/auth"));
 app.use("/api/oidc", require("./routes/oidc"));
 
-// Unified WebSocket endpoints
 app.ws("/api/ws/term", require("./routes/term"));
 app.ws("/api/ws/guac", require("./routes/guac"));
 app.ws("/api/ws/sftp", require("./routes/sftpWS"));
 
-// SFTP download endpoint
 app.use("/api/entries/sftp-download", require("./routes/sftpDownload"));
 
 app.use("/api/users", authenticate, isAdmin, require("./routes/users"));
