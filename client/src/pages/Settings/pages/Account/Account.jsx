@@ -1,13 +1,17 @@
 import IconInput from "@/common/components/IconInput";
 import "./styles.sass";
-import { mdiAccountCircleOutline, mdiWhiteBalanceSunny, mdiAccountEdit, mdiPalette, mdiShieldCheck, mdiLockReset, mdiTranslate, mdiSync, mdiCloudSync, mdiWeb, mdiTabUnselected, mdiThemeLightDark, mdiWeatherNight, mdiMagicStaff } from "@mdi/js";
+import { mdiAccountCircleOutline, mdiWhiteBalanceSunny, mdiAccountEdit, mdiPalette, mdiShieldCheck, mdiLockReset, mdiTranslate, mdiSync, mdiCloudSync, mdiWeb, mdiTabUnselected, mdiThemeLightDark, mdiWeatherNight, mdiMagicStaff, mdiFingerprint, mdiKeyVariant, mdiPencil, mdiTrashCan, mdiPlus } from "@mdi/js";
 import { useContext, useEffect, useState } from "react";
 import { UserContext } from "@/common/contexts/UserContext.jsx";
 import { useTheme } from "@/common/contexts/ThemeContext.jsx";
 import Button from "@/common/components/Button";
-import { patchRequest, postRequest } from "@/common/utils/RequestUtil.js";
+import { patchRequest, postRequest, getRequest, deleteRequest } from "@/common/utils/RequestUtil.js";
 import TwoFactorAuthentication from "@/pages/Settings/pages/Account/dialogs/TwoFactorAuthentication";
 import PasswordChange from "@/pages/Settings/pages/Account/dialogs/PasswordChange";
+import AddPasskeyDialog from "@/pages/Settings/pages/Account/dialogs/AddPasskeyDialog";
+import ActionConfirmDialog from "@/common/components/ActionConfirmDialog";
+import { useToast } from "@/common/contexts/ToastContext.jsx";
+import { startRegistration } from "@simplewebauthn/browser";
 import { useTranslation } from "react-i18next";
 import SelectBox from "@/common/components/SelectBox";
 import { languages } from "@/i18n.js";
@@ -18,9 +22,16 @@ export const Account = () => {
     const { t } = useTranslation();
     const [twoFactorOpen, setTwoFactorOpen] = useState(false);
     const [passwordChangeOpen, setPasswordChangeOpen] = useState(false);
+    const [addPasskeyOpen, setAddPasskeyOpen] = useState(false);
+    const [deletePasskeyOpen, setDeletePasskeyOpen] = useState(false);
+    const [passkeyToDelete, setPasskeyToDelete] = useState(null);
+    const [passkeys, setPasskeys] = useState([]);
+    const [editingPasskeyId, setEditingPasskeyId] = useState(null);
+    const [editingPasskeyName, setEditingPasskeyName] = useState("");
 
     const { user, login } = useContext(UserContext);
     const { themeMode, setTheme } = useTheme();
+    const { sendToast } = useToast();
 
     const [updatedField, setUpdatedField] = useState(null);
 
@@ -80,11 +91,84 @@ export const Account = () => {
         }).catch(err => console.error(err));
     }
 
+    const loadPasskeys = async () => {
+        try {
+            const result = await getRequest("accounts/passkeys");
+            setPasskeys(result);
+        } catch (err) {
+            console.error("Failed to load passkeys:", err);
+        }
+    };
+
+    const addPasskey = async (name) => {
+        setAddPasskeyOpen(false);
+        try {
+            const origin = window.location.origin;
+            const optionsRes = await postRequest("accounts/passkeys/register/options", { origin });
+            
+            const attestationResponse = await startRegistration({ optionsJSON: optionsRes });
+            
+            await postRequest("accounts/passkeys/register/verify", {
+                response: attestationResponse,
+                name,
+                origin,
+            });
+            
+            loadPasskeys();
+        } catch (err) {
+            if (err.name === "NotAllowedError") {
+                return;
+            }
+            console.error("Failed to register passkey:", err);
+            sendToast("Error", t("settings.account.passkeys.registerError"));
+        }
+    };
+
+    const confirmDeletePasskey = (passkey) => {
+        setPasskeyToDelete(passkey);
+        setDeletePasskeyOpen(true);
+    };
+
+    const deletePasskey = async () => {
+        if (!passkeyToDelete) return;
+        
+        try {
+            await deleteRequest(`accounts/passkeys/${passkeyToDelete.id}`);
+            loadPasskeys();
+        } catch (err) {
+            console.error("Failed to delete passkey:", err);
+        }
+        setPasskeyToDelete(null);
+    };
+
+    const startEditPasskey = (passkey) => {
+        setEditingPasskeyId(passkey.id);
+        setEditingPasskeyName(passkey.name);
+    };
+
+    const savePasskeyName = async () => {
+        if (!editingPasskeyName.trim()) return;
+        
+        try {
+            await patchRequest(`accounts/passkeys/${editingPasskeyId}`, { name: editingPasskeyName });
+            setEditingPasskeyId(null);
+            loadPasskeys();
+        } catch (err) {
+            console.error("Failed to rename passkey:", err);
+        }
+    };
+
+    const cancelEditPasskey = () => {
+        setEditingPasskeyId(null);
+        setEditingPasskeyName("");
+    };
+
     useEffect(() => {
         if (user) {
             setFirstName(user.firstName);
             setLastName(user.lastName);
             setSessionSync(user.sessionSync || "same_browser");
+            loadPasskeys();
         }
     }, [user]);
 
@@ -92,6 +176,17 @@ export const Account = () => {
         <div className="account-page">
             <TwoFactorAuthentication open={twoFactorOpen} onClose={() => setTwoFactorOpen(false)} />
             <PasswordChange open={passwordChangeOpen} onClose={() => setPasswordChangeOpen(false)} />
+            <AddPasskeyDialog 
+                open={addPasskeyOpen} 
+                onClose={() => setAddPasskeyOpen(false)} 
+                onSubmit={addPasskey} 
+            />
+            <ActionConfirmDialog 
+                open={deletePasskeyOpen} 
+                setOpen={setDeletePasskeyOpen} 
+                onConfirm={deletePasskey}
+                text={t("settings.account.passkeys.confirmDelete")}
+            />
             <div className="account-section">
                 <h2><Icon path={mdiAccountEdit} size={0.8} style={{marginRight: '8px'}} />{t("settings.account.accountName")}</h2>
                 <div className="section-inner">
@@ -172,6 +267,63 @@ export const Account = () => {
                         {sessionSync === "same_tab" && t("settings.account.sessionSyncSameTabDesc")}
                     </p>
                     <SelectBox options={sessionSyncOptions} selected={sessionSync} setSelected={changeSessionSync} />
+                </div>
+            </div>
+
+            <div className="account-section">
+                <div className="section-header">
+                    <div className="header-content">
+                        <h2><Icon path={mdiFingerprint} size={0.8} style={{marginRight: '8px'}} />{t("settings.account.passkeys.sectionTitle")}</h2>
+                        <p>{t("settings.account.passkeys.sectionDescription")}</p>
+                    </div>
+                    <Button text={t("settings.account.passkeys.addButton")} icon={mdiPlus} onClick={() => setAddPasskeyOpen(true)} />
+                </div>
+                <div className="passkeys-list">
+                    {passkeys.length > 0 ? (
+                        passkeys.map(passkey => (
+                            <div className="passkey-item" key={passkey.id}>
+                                <div className="passkey-info">
+                                    <Icon path={mdiKeyVariant} className="passkey-icon" />
+                                    <div className="passkey-details">
+                                        {editingPasskeyId === passkey.id ? (
+                                            <input 
+                                                type="text" 
+                                                value={editingPasskeyName} 
+                                                onChange={(e) => setEditingPasskeyName(e.target.value)}
+                                                onKeyDown={(e) => {
+                                                    if (e.key === "Enter") savePasskeyName();
+                                                    if (e.key === "Escape") cancelEditPasskey();
+                                                }}
+                                                onBlur={savePasskeyName}
+                                                autoFocus
+                                                className="passkey-name-input"
+                                            />
+                                        ) : (
+                                            <h3>{passkey.name}</h3>
+                                        )}
+                                        <p className="passkey-date">
+                                            {t("settings.account.passkeys.createdAt", { 
+                                                date: new Date(passkey.createdAt).toLocaleDateString(),
+                                                interpolation: { escapeValue: false }
+                                            })}
+                                        </p>
+                                    </div>
+                                </div>
+                                <div className="passkey-actions">
+                                    <button className="action-btn edit-btn" onClick={() => startEditPasskey(passkey)} title={t("settings.account.passkeys.rename")}>
+                                        <Icon path={mdiPencil} size={0.8} />
+                                    </button>
+                                    <button className="action-btn delete-btn" onClick={() => confirmDeletePasskey(passkey)} title={t("settings.account.passkeys.delete")}>
+                                        <Icon path={mdiTrashCan} size={0.8} />
+                                    </button>
+                                </div>
+                            </div>
+                        ))
+                    ) : (
+                        <div className="no-passkeys">
+                            <p>{t("settings.account.passkeys.noPasskeys")}</p>
+                        </div>
+                    )}
                 </div>
             </div>
 

@@ -11,16 +11,7 @@ export const buildTerminalWebSocketUrl = (sessionToken, session) => {
         ? `${window.location.host}/api/ws/term` 
         : "localhost:6989/api/ws/term";
 
-    let wsUrl = `${protocol}://${host}?sessionToken=${sessionToken}&entryId=${session.server.id}&identityId=${session.identity}&sessionId=${session.id}`;
-    
-    if (session.connectionReason) {
-        wsUrl += `&connectionReason=${encodeURIComponent(session.connectionReason)}`;
-    }
-    if (session.scriptId) {
-        wsUrl += `&scriptId=${encodeURIComponent(session.scriptId)}`;
-    }
-    
-    return wsUrl;
+    return `${protocol}://${host}?sessionToken=${sessionToken}&sessionId=${session.id}`;
 };
 
 export const createTerminalTheme = (appTheme, terminalTheme, selectedTheme) => {

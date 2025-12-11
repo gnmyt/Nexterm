@@ -77,9 +77,7 @@ export const Servers = () => {
                     id: session.sessionId,
                     server: server,
                     identity: session.configuration.identityId,
-                    connectionReason: session.connectionReason,
                     isHibernated: session.isHibernated,
-                    createdAt: session.createdAt,
                     lastActivity: session.lastActivity,
                     type: session.configuration.type || undefined,
                     organizationId: session.organizationId,
@@ -198,7 +196,6 @@ export const Servers = () => {
                 server,
                 identity: identity?.id,
                 id: session.sessionId,
-                connectionReason,
                 type: type || undefined,
                 organizationId: organizationId,
                 organizationName: organization?.name || null,
@@ -277,10 +274,13 @@ export const Servers = () => {
 
             return newSessions;
         });
+    }
 
+    const closeSession = (sessionId) => {
         deleteRequest(`/connections/${sessionId}`).catch(error => {
-            console.debug("Session deletion request failed (session may already be closed):", error);
+            console.debug("Session deletion request failed:", error);
         });
+        disconnectFromServer(sessionId);
     };
 
     const hibernateSession = async (sessionId) => {
@@ -430,6 +430,7 @@ export const Servers = () => {
             </div>}
             {activeSessions.length > 0 &&
                 <ViewContainer activeSessions={activeSessions} disconnectFromServer={disconnectFromServer}
+                               closeSession={closeSession}
                                activeSessionId={activeSessionId} setActiveSessionId={setActiveSessionId}
                                hibernateSession={hibernateSession} setOpenFileEditors={setOpenFileEditors} />}
             {openFileEditors.map((editor, index) => (

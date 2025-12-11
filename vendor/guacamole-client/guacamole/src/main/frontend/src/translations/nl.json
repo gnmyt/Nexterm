@@ -1,0 +1,692 @@
+{
+
+    "NAME" : "Nederlands",
+
+    "APP" : {
+
+        "ACTION_ACKNOWLEDGE"        : "OK",
+        "ACTION_CANCEL"             : "Annuleer",
+        "ACTION_CLONE"              : "Kloon",
+        "ACTION_CONTINUE"           : "Verder",
+        "ACTION_DELETE"             : "Verwijder",
+        "ACTION_DELETE_SESSIONS"    : "Verwijder Sessies",
+        "ACTION_LOGIN"              : "Inloggen",
+        "ACTION_LOGOUT"             : "Uitloggen",
+        "ACTION_MANAGE_CONNECTIONS" : "Verbindingen",
+        "ACTION_MANAGE_PREFERENCES" : "Voorkeuren",
+        "ACTION_MANAGE_SETTINGS"    : "Instellingen",
+        "ACTION_MANAGE_SESSIONS"    : "Actieve Sessies",
+        "ACTION_MANAGE_USERS"       : "Gebruikers",
+        "ACTION_NAVIGATE_BACK"      : "Terug",
+        "ACTION_NAVIGATE_HOME"      : "Home",
+        "ACTION_SAVE"               : "Opslaan",
+        "ACTION_SEARCH"             : "Zoeken",
+        "ACTION_UPDATE_PASSWORD"    : "Wijzig Wachtwoord",
+        "ACTION_VIEW_HISTORY"       : "Gebruikgeschiedenis",
+
+        "DIALOG_HEADER_ERROR" : "Fout",
+
+        "ERROR_PASSWORD_BLANK"    : "Uw wachtwoord mag niet leeg zijn.",
+        "ERROR_PASSWORD_MISMATCH" : "De opgegeven wachtwoorden komen niet overeen.",
+
+        "FIELD_HEADER_PASSWORD"       : "Wachtwoord:",
+        "FIELD_HEADER_PASSWORD_AGAIN" : "Nogmaals uw wachtwoord:",
+
+        "FIELD_PLACEHOLDER_FILTER" : "Filter",
+
+        "FORMAT_DATE_TIME_PRECISE" : "yyyy-MM-dd HH:mm:ss",
+
+        "INFO_ACTIVE_USER_COUNT" : "Op dit moment in gebruik door {USERS} {USERS, plural, one{gebruiker} other{gebruikers}}.",
+
+        "TEXT_HISTORY_DURATION" : "{VALUE} {UNIT, select, second{{VALUE, plural, one{seconde} other{seconden}}} minute{{VALUE, plural, one{minuut} other{minuten}}} hour{{VALUE, plural, one{uur} other{uren}}} day{{VALUE, plural, one{dag} other{dagen}}} other{}}"
+
+    },
+
+    "CLIENT" : {
+
+        "ACTION_ACKNOWLEDGE"               : "@:APP.ACTION_ACKNOWLEDGE",
+        "ACTION_CLEAR_COMPLETED_TRANSFERS" : "Wis lijst",
+        "ACTION_DISCONNECT"                : "Verbreek Verbinding",
+        "ACTION_LOGOUT"                    : "@:APP.ACTION_LOGOUT",
+        "ACTION_NAVIGATE_BACK"             : "@:APP.ACTION_NAVIGATE_BACK",
+        "ACTION_NAVIGATE_HOME"             : "@:APP.ACTION_NAVIGATE_HOME",
+        "ACTION_RECONNECT"                 : "Verbind Opnieuw",
+        "ACTION_SAVE_FILE"                 : "@:APP.ACTION_SAVE",
+        "ACTION_UPLOAD_FILES"              : "Upload Bestanden",
+
+        "DIALOG_HEADER_CONNECTING"       : "Aan Het Verbinden",
+        "DIALOG_HEADER_CONNECTION_ERROR" : "Verbindingsfout",
+        "DIALOG_HEADER_DISCONNECTED"     : "Niet Verbonden",
+
+        "ERROR_CLIENT_201"     : "Deze verbinding is gesloten omdat de server druk is. Wacht een paar minuten en probeer het opnieuw.",
+        "ERROR_CLIENT_202"     : "De Guacamole server heeft de verbinding gesloten omdat het externe bureaublad te lang niet heeft gereageerd. Probeer het altublieft opnieuw of neem contact op met uw systeembeheerder.",
+        "ERROR_CLIENT_203"     : "Er is een fout opgetreden bij de externe bureaublad server en heeft de verbinding gesloten. Probeer het alstublieft opnieuw of neem contact op met uw systeembeheerder.",
+        "ERROR_CLIENT_205"     : "Deze verbinding is beeindigd omdat het conflicteerd met een andere verbinding. Probeer het alstublieft later nog eens.",
+        "ERROR_CLIENT_301"     : "Inloggen is mislukt. Verbind opnieuw en probeer het nog eens.",
+        "ERROR_CLIENT_303"     : "U heeft geen toestemming om deze verbinding tot stand te brengen. Heeft u toegang nodig, vraag dan aan uw systeembeheerder om u toe te voegen aan de lijst van geauthoriseerde gebruikers of controleer uw systeem instellingen.",
+        "ERROR_CLIENT_308"     : "De Guacamole server heeft de sessie gesloten omdat uw browser zo lang niet heeft gereageerd dat het er op leek dat uw verbinding verbroken was. Dit komt in de regel door netwerk problemen zoals een slecht draadloos signaal of een erg langzame netwerk snelheid. Controleer uw netwerk en probeer het opnieuw.",
+        "ERROR_CLIENT_31D"     : "De Guacamole server geeft geen toegang tot deze verbinding omdat u de limiet heeft bereikt van het aantal toegestane gelijktijdige verbindingen door een individuele gebruiker. Sluit u alstublieft een of meer verbindingen en probeer het opnieuw.",
+        "ERROR_CLIENT_DEFAULT" : "Een interne fout is opgetreden op de Guacamole server en de connectie is beeindigd. Als dit probleem zich voor blijft doen, neem dan contact op met uw systeembeheerder of controleer uw systeem logs.",
+
+        "ERROR_TUNNEL_201"     : "De Guacamole server heeft deze verbinding geweigerd omdat er al te veel actieve verbindingen zijn. Wacht u alstublieft een paar minuten en probeer het opnieuw.",
+        "ERROR_TUNNEL_202"     : "De verbinding is gesloten omdat de server niet op tijd reageerd. Dit komt in de regel door netwerk problemen zoals een slecht draadloos signaal of langzame netwerk snelheden. Controleer alstublieft uw netwerk verbinding en probeer het opnieuw of neem contact op met uw systeembeheerde.",
+        "ERROR_TUNNEL_203"     : "Er heeft een fout plaats gevonden op de server en deze heeft de verbinding gesloten. Probeert u het nog eens of neem contact op met uw systeembeheerder.",
+        "ERROR_TUNNEL_204"     : "De gevraagde verbinding bestaat niet. Controleert u altublieft de verbindingsnaam en probeer het nog eens.",
+        "ERROR_TUNNEL_205"     : "Deze verbinding is op dit moment in gebruik en gelijktijdige toegang is niet toegestaan. Probeert u het later nog eens.",
+        "ERROR_TUNNEL_301"     : "U heeft geen toestemming deze verbinding te gebruiken omdat u niet ingelogd bent. Log eerst in en probeer het nog eens.",
+        "ERROR_TUNNEL_303"     : "U heeft geen toestemming deze verbinding te gebruiken. Als u toegang nodig heeft, vraag dan aan de systeembeheerder om u toe te voegen aan de lijst van geauthoriseerde gebruikers of controleer uw systeem instellingen.",
+        "ERROR_TUNNEL_308"     : "De Guacamole server heeft de sessie gesloten omdat uw browser zo lang niet heeft gereageerd dat het er op leek dat uw verbinding verbroken was. Dit komt in de regel door netwerk problemen zoals een slecht draadloos signaal of een erg langzame netwerk snelheid. Controleer uw netwerk en probeer het opnieuw.",
+        "ERROR_TUNNEL_31D"     : "De Guacamole server geeft geen toegang tot deze verbinding omdat u de limiet heeft bereikt van het aantal toegestane gelijktijdige verbindingen door een individuele gebruiker. Sluit u alstublieft een of meer verbindingen en probeer het opnieuw.",
+        "ERROR_TUNNEL_DEFAULT" : "Een interne fout is opgetreden op de Guacamole server en de connectie is beeindigd. Als dit probleem zich voor blijft doen, neem dan contact op met uw systeembeheerder of controleer uw systeem logs.",
+
+        "ERROR_UPLOAD_100"     : "Bestandsoverdracht is ofwel niet ondersteund of niet ingeschakeld. Neem contact op met uw systeembeheerder of kijk in uw systeem logs.",
+        "ERROR_UPLOAD_201"     : "Er worden momenteel te veel bestanden overdragen. Gelieve te wachten tot de bestaande bestandsoverdracht is voltooid, en probeer het opnieuw.",
+        "ERROR_UPLOAD_202"     : "Het bestand kan niet worden overgedragen, omdat de extern bureaublad server te lang niet reageert. Probeer het opnieuw of neem contact op met uw systeembeheerder.",
+        "ERROR_UPLOAD_203"     : "Er is een fout opgetreden op de extern bureaublad server tijdens de overdracht. Probeer het opnieuw of neem contact op met uw systeembeheerder.",
+        "ERROR_UPLOAD_204"     : "De bestemming voor de overdracht van bestanden bestaat niet. Controleer of de bestemming bestaat en probeer het opnieuw.",
+        "ERROR_UPLOAD_205"     : "De bestemming voor de overdracht van bestanden is momenteel vergrendeld. Gelieve te wachten tot alle taken zijn voltooid en probeer het opnieuw.",
+        "ERROR_UPLOAD_301"     : "U heeft geen toestemming om dit bestand te uploaden, omdat u niet ingelogd bent. Gelieve in te loggen en probeer het opnieuw.",
+        "ERROR_UPLOAD_303"     : "U heeft geen toestemming om dit bestand te uploaden. Als u toegang nodig heeft, controleer dan uw systeeminstellingen of neem contact op met uw systeembeheerder.",
+        "ERROR_UPLOAD_308"     : "De bestandsoverdracht is vastgelopen. Dit wordt meestal veroorzaakt door netwerkproblemen, zoals een instabiel draadloos signaal of gewoon een erg trage netwerkverbinding. Controleer uw netwerk en probeer het opnieuw.",
+        "ERROR_UPLOAD_31D"     : "Er worden momenteel te veel bestanden overdragen. Gelieve te wachten tot de bestaande bestandsoverdracht is voltooid, en probeer het opnieuw.",
+        "ERROR_UPLOAD_DEFAULT" : "Er is een interne fout opgetreden op de Guacamole server, en de verbinding is beëindigd. Als het probleem aanhoudt, neem dan contact op met uw systeembeheerder of kijk in uw systeem logs.",
+
+        "FIELD_PLACEHOLDER_FILTER" : "@:APP.FIELD_PLACEHOLDER_FILTER",
+
+        "HELP_CLIPBOARD"           : "Tekst gekopieerd / geknipt binnen Guacamole zal hier verschijnen. Wijzigingen in onderstaande tekst zal externe klembord beïnvloeden.",
+        "HELP_INPUT_METHOD_NONE"   : "Geen invoer methode gebruiken. Toetsenbord invoer wordt geaccepteerd van een aangesloten, fysiek toetsenbord.",
+        "HELP_INPUT_METHOD_OSK"    : "Weergave en accepteren van invoer via het ingebouwde Guacamole on-screen toetsenbord. Dit toetsenbord op het scherm maakt toetscombinaties mogelijk die anders onmogelijk zijn (zoals Ctrl-Alt-Del).",
+        "HELP_INPUT_METHOD_TEXT"   : "Laat het typen van tekst en het emuleren toetsenbord gebeurtenissen toe gebaseerd op de getypte tekst. Dit is nodig voor apparaten zoals mobiele telefoons die geen fysiek toetsenbord hebben.",
+        "HELP_MOUSE_MODE"          : "Bepaalt hoe de muis met aanraak-klikken omgaat.",
+        "HELP_MOUSE_MODE_ABSOLUTE" : "Tik om te klikken. De klik vindt plaats op de locatie van de tik.",
+        "HELP_MOUSE_MODE_RELATIVE" : "Sleep om de aanwijzer te bewegen en tik om te klikken. De klik vindt plaats op de locatie van de aanwijzer.",
+
+        "INFO_NO_FILE_TRANSFERS" : "Geen bestandsoverdrachten.",
+
+        "NAME_INPUT_METHOD_NONE"   : "Geen",
+        "NAME_INPUT_METHOD_OSK"    : "Scherm toetsenbord",
+        "NAME_INPUT_METHOD_TEXT"   : "Text invoer",
+        "NAME_KEY_CTRL"            : "Ctrl",
+        "NAME_KEY_ALT"             : "Alt",
+        "NAME_KEY_ESC"             : "Esc",
+        "NAME_KEY_TAB"             : "Tab",
+        "NAME_MOUSE_MODE_ABSOLUTE" : "Aanraakscherm",
+        "NAME_MOUSE_MODE_RELATIVE" : "Touchpad",
+
+        "SECTION_HEADER_CLIPBOARD"      : "Klembord",
+        "SECTION_HEADER_DEVICES"        : "Apparaten",
+        "SECTION_HEADER_DISPLAY"        : "Scherm",
+        "SECTION_HEADER_FILE_TRANSFERS" : "Bestandsoverdrachten",
+        "SECTION_HEADER_INPUT_METHOD"   : "Invoer methode",
+        "SECTION_HEADER_MOUSE_MODE"     : "Muis emulatie modus",
+
+        "TEXT_ZOOM_AUTO_FIT"              : "Automatisch aan browser venster aanpassen",
+        "TEXT_CLIENT_STATUS_IDLE"         : "Inactief.",
+        "TEXT_CLIENT_STATUS_CONNECTING"   : "Verbinden met Guacamole...",
+        "TEXT_CLIENT_STATUS_DISCONNECTED" : "De verbinding is verbroken.",
+        "TEXT_CLIENT_STATUS_WAITING"      : "Verbonden met Guacamole. Aan het wachten op reactie...",
+        "TEXT_RECONNECT_COUNTDOWN"        : "Opnieuw verbinden over {REMAINING} {REMAINING, plural, one{seconde} other{seconden}}...",
+        "TEXT_FILE_TRANSFER_PROGRESS"     : "{PROGRESS} {UNIT, select, b{B} kb{KB} mb{MB} gb{GB} other{}}",
+
+        "URL_OSK_LAYOUT" : "layouts/nl-nl-qwerty.json"
+
+    },
+
+    "DATA_SOURCE_DEFAULT" : {
+        "NAME" : "Standaard (XML)"
+    },
+
+    "FORM" : {
+
+        "FIELD_PLACEHOLDER_DATE" : "YYYY-MM-DD",
+        "FIELD_PLACEHOLDER_TIME" : "HH:MM:SS",
+
+        "HELP_SHOW_PASSWORD" : "Klik om wachtwoord te tonen",
+        "HELP_HIDE_PASSWORD" : "Klik om wachtwoord te verbergen"
+
+    },
+
+    "HOME" : {
+
+        "FIELD_PLACEHOLDER_FILTER" : "@:APP.FIELD_PLACEHOLDER_FILTER",
+
+        "INFO_ACTIVE_USER_COUNT" : "@:APP.INFO_ACTIVE_USER_COUNT",
+
+        "INFO_NO_RECENT_CONNECTIONS" : "Geen recente verbindingen.",
+
+        "PASSWORD_CHANGED" : "Wachtwoord gewijzigd.",
+
+        "SECTION_HEADER_ALL_CONNECTIONS"    : "Alle Verbindingen",
+        "SECTION_HEADER_RECENT_CONNECTIONS" : "Recente Verbindingen"
+
+    },
+
+    "LOGIN": {
+
+        "ACTION_ACKNOWLEDGE" : "@:APP.ACTION_ACKNOWLEDGE",
+        "ACTION_CONTINUE"    : "@:APP.ACTION_CONTINUE",
+        "ACTION_LOGIN"       : "@:APP.ACTION_LOGIN",
+
+        "DIALOG_HEADER_ERROR" : "@:APP.DIALOG_HEADER_ERROR",
+
+        "ERROR_INVALID_LOGIN" : "Ongeldige Login",
+
+        "FIELD_HEADER_USERNAME" : "Gebruikersnaam",
+        "FIELD_HEADER_PASSWORD" : "Wachtwoord"
+
+    },
+
+    "MANAGE_CONNECTION" : {
+
+        "ACTION_ACKNOWLEDGE"          : "@:APP.ACTION_ACKNOWLEDGE",
+        "ACTION_CANCEL"               : "@:APP.ACTION_CANCEL",
+        "ACTION_CLONE"                : "@:APP.ACTION_CLONE",
+        "ACTION_DELETE"               : "@:APP.ACTION_DELETE",
+        "ACTION_SAVE"                 : "@:APP.ACTION_SAVE",
+
+        "DIALOG_HEADER_CONFIRM_DELETE" : "Verwijder Verbinding",
+        "DIALOG_HEADER_ERROR"          : "@:APP.DIALOG_HEADER_ERROR",
+
+        "FIELD_HEADER_LOCATION" : "Locatie:",
+        "FIELD_HEADER_NAME"     : "Naam:",
+        "FIELD_HEADER_PROTOCOL" : "Protocol:",
+
+        "FORMAT_HISTORY_START" : "@:APP.FORMAT_DATE_TIME_PRECISE",
+
+        "INFO_CONNECTION_DURATION_UNKNOWN" : "--",
+        "INFO_CONNECTION_ACTIVE_NOW"       : "Nu Actief",
+        "INFO_CONNECTION_NOT_USED"         : "Deze verbinding is nog niet gebruikt.",
+
+        "SECTION_HEADER_EDIT_CONNECTION" : "Bewerk Verbinding",
+        "SECTION_HEADER_HISTORY"         : "Gebruikgeschiedenis",
+        "SECTION_HEADER_PARAMETERS"      : "Parameters",
+
+        "TABLE_HEADER_HISTORY_USERNAME" : "Gebruikersnaam",
+        "TABLE_HEADER_HISTORY_START"    : "Starttijd",
+        "TABLE_HEADER_HISTORY_DURATION" : "Tijdsduur",
+
+        "TEXT_CONFIRM_DELETE"   : "Verbindingen kunnen niet worden hersteld nadat ze zijn verwijderd. Weet u zeker dat u deze verbinding wilt verwijderen?",
+        "TEXT_HISTORY_DURATION" : "@:APP.TEXT_HISTORY_DURATION"
+
+    },
+
+    "MANAGE_CONNECTION_GROUP" : {
+
+        "ACTION_ACKNOWLEDGE"   : "@:APP.ACTION_ACKNOWLEDGE",
+        "ACTION_CANCEL"        : "@:APP.ACTION_CANCEL",
+        "ACTION_DELETE"        : "@:APP.ACTION_DELETE",
+        "ACTION_SAVE"          : "@:APP.ACTION_SAVE",
+
+        "DIALOG_HEADER_CONFIRM_DELETE" : "Verwijder Verbindingsgroep",
+        "DIALOG_HEADER_ERROR"          : "@:APP.DIALOG_HEADER_ERROR",
+
+        "FIELD_HEADER_LOCATION" : "Locatie:",
+        "FIELD_HEADER_NAME"     : "Naam:",
+        "FIELD_HEADER_TYPE"     : "Soort:",
+
+        "NAME_TYPE_BALANCING"       : "Verdeling",
+        "NAME_TYPE_ORGANIZATIONAL"  : "Organizatorisch",
+
+        "SECTION_HEADER_EDIT_CONNECTION_GROUP" : "Bewerk Verbindingsgroep",
+
+        "TEXT_CONFIRM_DELETE" : "Verbindingsgroepen kunnen niet worden hersteld nadat ze zijn verwijderd. Weet u zeker dat u deze verbindingsgroep wilt verwijderen?"
+
+    },
+
+    "MANAGE_SHARING_PROFILE" : {
+
+        "ACTION_ACKNOWLEDGE" : "@:APP.ACTION_ACKNOWLEDGE",
+        "ACTION_CANCEL"      : "@:APP.ACTION_CANCEL",
+        "ACTION_CLONE"       : "@:APP.ACTION_CLONE",
+        "ACTION_DELETE"      : "@:APP.ACTION_DELETE",
+        "ACTION_SAVE"        : "@:APP.ACTION_SAVE",
+
+        "DIALOG_HEADER_ERROR" : "@:APP.DIALOG_HEADER_ERROR",
+
+        "FIELD_HEADER_NAME" : "Naam:",
+
+        "SECTION_HEADER_PARAMETERS" : "Parameters"
+
+    },
+
+    "MANAGE_USER" : {
+
+        "ACTION_ACKNOWLEDGE"   : "@:APP.ACTION_ACKNOWLEDGE",
+        "ACTION_CANCEL"        : "@:APP.ACTION_CANCEL",
+        "ACTION_CLONE"         : "@:APP.ACTION_CLONE",
+        "ACTION_DELETE"        : "@:APP.ACTION_DELETE",
+        "ACTION_SAVE"          : "@:APP.ACTION_SAVE",
+
+        "DIALOG_HEADER_CONFIRM_DELETE" : "Verwijder Gebruiker",
+        "DIALOG_HEADER_ERROR"          : "@:APP.DIALOG_HEADER_ERROR",
+
+        "ERROR_PASSWORD_MISMATCH" : "@:APP.ERROR_PASSWORD_MISMATCH",
+
+        "FIELD_HEADER_ADMINISTER_SYSTEM"             : "Systeem Beheer:",
+        "FIELD_HEADER_CHANGE_OWN_PASSWORD"           : "Wijzigen eigen wachtwoord:",
+        "FIELD_HEADER_CREATE_NEW_USERS"              : "Nieuwe gebruikers aanmaken:",
+        "FIELD_HEADER_CREATE_NEW_CONNECTIONS"        : "Nieuwe verbindingen aanmaken:",
+        "FIELD_HEADER_CREATE_NEW_CONNECTION_GROUPS"  : "Nieuwe verbindingsgroepen aanmaken:",
+        "FIELD_HEADER_PASSWORD"                      : "@:APP.FIELD_HEADER_PASSWORD",
+        "FIELD_HEADER_PASSWORD_AGAIN"                : "@:APP.FIELD_HEADER_PASSWORD_AGAIN",
+        "FIELD_HEADER_USERNAME"                      : "Gebruikersnaam:",
+
+        "FIELD_PLACEHOLDER_FILTER" : "@:APP.FIELD_PLACEHOLDER_FILTER",
+
+        "INFO_READ_ONLY" : "Sorry, maar dit gebruikers account kan niet gewijzigd worden",
+
+        "SECTION_HEADER_CONNECTIONS" : "Verbindingen",
+        "SECTION_HEADER_EDIT_USER"   : "Bewerk Gebruiker",
+        "SECTION_HEADER_PERMISSIONS" : "Rechten",
+
+        "TEXT_CONFIRM_DELETE" : "Gebruikers kunnen niet worden hersteld nadat ze zijn verwijderd. Weet u zeker dat u deze gebruiker wilt verwijderen?"
+
+    },
+
+    "PROTOCOL_RDP" : {
+
+        "FIELD_HEADER_CLIENT_NAME"     : "Client naam:",
+        "FIELD_HEADER_COLOR_DEPTH"     : "Kleurdiepte:",
+        "FIELD_HEADER_CONSOLE"         : "Administrator console:",
+        "FIELD_HEADER_CONSOLE_AUDIO"   : "Support audio in console:",
+        "FIELD_HEADER_CREATE_DRIVE_PATH" : "Automatisch genereren station:",
+        "FIELD_HEADER_CREATE_RECORDING_PATH" : "Automatisch genereren opname map:",
+        "FIELD_HEADER_DISABLE_AUDIO"   : "Uitschakelen geluid:",
+        "FIELD_HEADER_DISABLE_AUTH"    : "Uitschakelen authenticatie:",
+        "FIELD_HEADER_DOMAIN"          : "Domein:",
+        "FIELD_HEADER_DPI"             : "Resolutie (DPI):",
+        "FIELD_HEADER_DRIVE_PATH"      : "Station map:",
+        "FIELD_HEADER_ENABLE_DESKTOP_COMPOSITION" : "Inschakelen bureaublad compositie (Aero):",
+        "FIELD_HEADER_ENABLE_DRIVE"    : "Inschakelen station:",
+        "FIELD_HEADER_ENABLE_FONT_SMOOTHING"      : "Inschakelen font smoothing (ClearType):",
+        "FIELD_HEADER_ENABLE_FULL_WINDOW_DRAG"    : "Inschakelen verslepen compleet venster:",
+        "FIELD_HEADER_ENABLE_MENU_ANIMATIONS"     : "Inschakelen menu animaties:",
+        "FIELD_HEADER_ENABLE_PRINTING" : "Printen mogelijk maken:",
+        "FIELD_HEADER_ENABLE_SFTP"     : "Inschakelen SFTP:",
+        "FIELD_HEADER_ENABLE_THEMING"             : "Inschakelen thema's:",
+        "FIELD_HEADER_ENABLE_WALLPAPER"           : "Inschakelen achtergrond:",
+        "FIELD_HEADER_GATEWAY_DOMAIN"   : "Domein:",
+        "FIELD_HEADER_GATEWAY_HOSTNAME" : "Servernaam:",
+        "FIELD_HEADER_GATEWAY_PASSWORD" : "Password:",
+        "FIELD_HEADER_GATEWAY_PORT"     : "Poort:",
+        "FIELD_HEADER_GATEWAY_USERNAME" : "Gebruikersnaam:",
+        "FIELD_HEADER_HEIGHT"          : "Hoogte:",
+        "FIELD_HEADER_HOSTNAME"        : "Servernaam:",
+        "FIELD_HEADER_IGNORE_CERT"     : "Negeer server certificaat:",
+        "FIELD_HEADER_INITIAL_PROGRAM" : "Eerste programma:",
+        "FIELD_HEADER_PASSWORD"        : "Wachtwoord:",
+        "FIELD_HEADER_PORT"            : "Poort:",
+        "FIELD_HEADER_PRECONNECTION_BLOB" : "Voor te bereiden BLOB (VM ID):",
+        "FIELD_HEADER_PRECONNECTION_ID"   : "RDP bron ID:",
+        "FIELD_HEADER_READ_ONLY"      : "Alleen lezen:",
+        "FIELD_HEADER_RECORDING_NAME" : "Opname naam:",
+        "FIELD_HEADER_RECORDING_PATH" : "Opname map:",
+        "FIELD_HEADER_RESIZE_METHOD" : "Schaal methode:",
+        "FIELD_HEADER_REMOTE_APP_ARGS" : "Parameters:",
+        "FIELD_HEADER_REMOTE_APP_DIR"  : "Werk map:",
+        "FIELD_HEADER_REMOTE_APP"      : "Programma:",
+        "FIELD_HEADER_SECURITY"        : "Beveiligings modus:",
+        "FIELD_HEADER_SERVER_LAYOUT"   : "Toetsenbord lay-out:",
+        "FIELD_HEADER_SFTP_DIRECTORY"   : "Standaard upload map:",
+        "FIELD_HEADER_SFTP_HOSTNAME"    : "Servernaam:",
+        "FIELD_HEADER_SFTP_PASSPHRASE"  : "Wachtwoordzin:",
+        "FIELD_HEADER_SFTP_PASSWORD"    : "Wachtwoord:",
+        "FIELD_HEADER_SFTP_PORT"        : "Poort:",
+        "FIELD_HEADER_SFTP_PRIVATE_KEY" : "Persoonlijke sleutel:",
+        "FIELD_HEADER_SFTP_USERNAME"    : "Gebruikersnaam:",
+        "FIELD_HEADER_STATIC_CHANNELS" : "Vaste kanaalnamen:",
+        "FIELD_HEADER_USERNAME"        : "Gebruikersnaam:",
+        "FIELD_HEADER_WIDTH"           : "Breedte:",
+
+        "FIELD_OPTION_COLOR_DEPTH_16"    : "Minder Kleuren (16-bit)",
+        "FIELD_OPTION_COLOR_DEPTH_24"    : "Echte Kleuren (24-bit)",
+        "FIELD_OPTION_COLOR_DEPTH_32"    : "Echte Kleuren (32-bit)",
+        "FIELD_OPTION_COLOR_DEPTH_8"     : "256 kleuren",
+        "FIELD_OPTION_COLOR_DEPTH_EMPTY" : "",
+
+        "FIELD_OPTION_RESIZE_METHOD_DISPLAY_UPDATE" : "\"Ververs scherm\" virtueel kanaal (RDP 8.1+)",
+        "FIELD_OPTION_RESIZE_METHOD_EMPTY"          : "",
+        "FIELD_OPTION_RESIZE_METHOD_RECONNECT"      : "Verbind opnieuw",
+
+        "FIELD_OPTION_SECURITY_ANY"   : "Ieder",
+        "FIELD_OPTION_SECURITY_EMPTY" : "",
+        "FIELD_OPTION_SECURITY_NLA"   : "NLA (Network Level Authentication)",
+        "FIELD_OPTION_SECURITY_RDP"   : "RDP encryptie",
+        "FIELD_OPTION_SECURITY_TLS"   : "TLS encryptie",
+
+        "FIELD_OPTION_SERVER_LAYOUT_DE_DE_QWERTZ" : "Duits (Qwertz)",
+        "FIELD_OPTION_SERVER_LAYOUT_EMPTY"        : "",
+        "FIELD_OPTION_SERVER_LAYOUT_EN_US_QWERTY" : "Amerikaans Engels (Qwerty)",
+        "FIELD_OPTION_SERVER_LAYOUT_FAILSAFE"     : "Unicode",
+        "FIELD_OPTION_SERVER_LAYOUT_FR_FR_AZERTY" : "Frans (Azerty)",
+        "FIELD_OPTION_SERVER_LAYOUT_IT_IT_QWERTY" : "Italiaans (Qwerty)",
+        "FIELD_OPTION_SERVER_LAYOUT_JA_JP_QWERTY" : "Japans (Qwerty)",
+        "FIELD_OPTION_SERVER_LAYOUT_PL_PL_QWERTY" : "Poolse (Qwerty)",
+        "FIELD_OPTION_SERVER_LAYOUT_SV_SE_QWERTY" : "Zweeds (Qwerty)",
+
+        "NAME" : "RDP",
+
+        "SECTION_HEADER_AUTHENTICATION"     : "Authenticatie",
+        "SECTION_HEADER_BASIC_PARAMETERS"   : "Basis Instellingen",
+        "SECTION_HEADER_CLIPBOARD"          : "Klembord",
+        "SECTION_HEADER_DEVICE_REDIRECTION" : "Apparaat Verbindingen",
+        "SECTION_HEADER_DISPLAY"            : "Scherm",
+        "SECTION_HEADER_NETWORK"            : "Netwerk",
+        "SECTION_HEADER_PERFORMANCE"        : "Prestatie instellingen",
+        "SECTION_HEADER_PRECONNECTION_PDU"  : "Voor te bereiden PDU / Hyper-V",
+        "SECTION_HEADER_RECORDING"          : "Scherm Opname",
+        "SECTION_HEADER_REMOTEAPP"          : "ExterneApp",
+        "SECTION_HEADER_SFTP"               : "SFTP"
+
+    },
+
+    "PROTOCOL_SSH" : {
+
+        "FIELD_HEADER_COLOR_SCHEME" : "Kleuren combinatie:",
+        "FIELD_HEADER_COMMAND"     : "Uitvoeren opdracht:",
+        "FIELD_HEADER_CREATE_RECORDING_PATH" : "Automatisch genereren opname map:",
+        "FIELD_HEADER_CREATE_TYPESCRIPT_PATH" : "Automatisch genereren typescript map:",
+        "FIELD_HEADER_FONT_NAME"   : "Fontnaam:",
+        "FIELD_HEADER_FONT_SIZE"   : "Fontgrootte:",
+        "FIELD_HEADER_ENABLE_SFTP" : "SFTP mogelijk maken:",
+        "FIELD_HEADER_HOSTNAME"    : "Servernaam:",
+        "FIELD_HEADER_USERNAME"    : "Gebruikersnaam:",
+        "FIELD_HEADER_PASSWORD"    : "Wachtwoord:",
+        "FIELD_HEADER_PASSPHRASE"  : "Wachtwoordzin:",
+        "FIELD_HEADER_PORT"        : "Poort:",
+        "FIELD_HEADER_PRIVATE_KEY" : "Persoonlijke sleutel:",
+        "FIELD_HEADER_READ_ONLY"   : "Alleen lezen:",
+        "FIELD_HEADER_RECORDING_NAME" : "Opname naam:",
+        "FIELD_HEADER_RECORDING_PATH" : "Opname map:",
+        "FIELD_HEADER_TYPESCRIPT_NAME" : "Typescript naam:",
+        "FIELD_HEADER_TYPESCRIPT_PATH" : "Typescript map:",
+
+        "FIELD_OPTION_COLOR_SCHEME_BLACK_WHITE" : "Zwart op wit",
+        "FIELD_OPTION_COLOR_SCHEME_EMPTY"       : "",
+        "FIELD_OPTION_COLOR_SCHEME_GRAY_BLACK"  : "Grijs op zwart",
+        "FIELD_OPTION_COLOR_SCHEME_GREEN_BLACK" : "Groen op zwart",
+        "FIELD_OPTION_COLOR_SCHEME_WHITE_BLACK" : "Wit op zwart",
+
+        "FIELD_OPTION_FONT_SIZE_8"     : "8",
+        "FIELD_OPTION_FONT_SIZE_9"     : "9",
+        "FIELD_OPTION_FONT_SIZE_10"    : "10",
+        "FIELD_OPTION_FONT_SIZE_11"    : "11",
+        "FIELD_OPTION_FONT_SIZE_12"    : "12",
+        "FIELD_OPTION_FONT_SIZE_14"    : "14",
+        "FIELD_OPTION_FONT_SIZE_18"    : "18",
+        "FIELD_OPTION_FONT_SIZE_24"    : "24",
+        "FIELD_OPTION_FONT_SIZE_30"    : "30",
+        "FIELD_OPTION_FONT_SIZE_36"    : "36",
+        "FIELD_OPTION_FONT_SIZE_48"    : "48",
+        "FIELD_OPTION_FONT_SIZE_60"    : "60",
+        "FIELD_OPTION_FONT_SIZE_72"    : "72",
+        "FIELD_OPTION_FONT_SIZE_96"    : "96",
+        "FIELD_OPTION_FONT_SIZE_EMPTY" : "",
+
+        "NAME" : "SSH",
+
+        "SECTION_HEADER_AUTHENTICATION" : "Authenticatie",
+        "SECTION_HEADER_CLIPBOARD"      : "Klembord",
+        "SECTION_HEADER_DISPLAY"        : "Scherm",
+        "SECTION_HEADER_NETWORK"        : "Netwerk",
+        "SECTION_HEADER_RECORDING"      : "Scherm Opname",
+        "SECTION_HEADER_SESSION"        : "Sessie / Omgeving",
+        "SECTION_HEADER_TYPESCRIPT"     : "Typescript (Tekst sessie opname)",
+        "SECTION_HEADER_SFTP"           : "SFTP"
+
+    },
+
+    "PROTOCOL_TELNET" : {
+
+        "FIELD_HEADER_COLOR_SCHEME"   : "Kleuren combinatie:",
+        "FIELD_HEADER_CREATE_RECORDING_PATH" : "Automatisch genereren opname map:",
+        "FIELD_HEADER_CREATE_TYPESCRIPT_PATH" : "Automatisch genereren typescript map:",
+        "FIELD_HEADER_FONT_NAME"      : "Fontnaam:",
+        "FIELD_HEADER_FONT_SIZE"      : "Fontgrootte:",
+        "FIELD_HEADER_HOSTNAME"       : "Servernaam:",
+        "FIELD_HEADER_USERNAME"       : "Gebruikersnaam:",
+        "FIELD_HEADER_PASSWORD"       : "Wachtwoord:",
+        "FIELD_HEADER_PASSWORD_REGEX" : "Wachtwoord reguliere expressie:",
+        "FIELD_HEADER_PORT"           : "Poort:",
+        "FIELD_HEADER_READ_ONLY"      : "Alleen lezen:",
+        "FIELD_HEADER_RECORDING_NAME" : "Opname naam:",
+        "FIELD_HEADER_RECORDING_PATH" : "Opname map:",
+        "FIELD_HEADER_TYPESCRIPT_NAME" : "Typescript naam:",
+        "FIELD_HEADER_TYPESCRIPT_PATH" : "Typescript map:",
+
+        "FIELD_OPTION_COLOR_SCHEME_BLACK_WHITE" : "Zwart op wit",
+        "FIELD_OPTION_COLOR_SCHEME_EMPTY"       : "",
+        "FIELD_OPTION_COLOR_SCHEME_GRAY_BLACK"  : "Grijs op zwart",
+        "FIELD_OPTION_COLOR_SCHEME_GREEN_BLACK" : "Groen op zwart",
+        "FIELD_OPTION_COLOR_SCHEME_WHITE_BLACK" : "Wit op zwart",
+
+        "FIELD_OPTION_FONT_SIZE_8"     : "8",
+        "FIELD_OPTION_FONT_SIZE_9"     : "9",
+        "FIELD_OPTION_FONT_SIZE_10"    : "10",
+        "FIELD_OPTION_FONT_SIZE_11"    : "11",
+        "FIELD_OPTION_FONT_SIZE_12"    : "12",
+        "FIELD_OPTION_FONT_SIZE_14"    : "14",
+        "FIELD_OPTION_FONT_SIZE_18"    : "18",
+        "FIELD_OPTION_FONT_SIZE_24"    : "24",
+        "FIELD_OPTION_FONT_SIZE_30"    : "30",
+        "FIELD_OPTION_FONT_SIZE_36"    : "36",
+        "FIELD_OPTION_FONT_SIZE_48"    : "48",
+        "FIELD_OPTION_FONT_SIZE_60"    : "60",
+        "FIELD_OPTION_FONT_SIZE_72"    : "72",
+        "FIELD_OPTION_FONT_SIZE_96"    : "96",
+        "FIELD_OPTION_FONT_SIZE_EMPTY" : "",
+
+        "NAME" : "Telnet",
+
+        "SECTION_HEADER_AUTHENTICATION" : "Authenticatie",
+        "SECTION_HEADER_CLIPBOARD"      : "Klembord",
+        "SECTION_HEADER_DISPLAY"        : "Scherm",
+        "SECTION_HEADER_RECORDING"      : "Scherm Opname",
+        "SECTION_HEADER_TYPESCRIPT"     : "Typescript (Tekst Sessie Opname)",
+        "SECTION_HEADER_NETWORK"        : "Netwerk"
+
+    },
+
+    "PROTOCOL_VNC" : {
+
+        "FIELD_HEADER_AUDIO_SERVERNAME" : "Audio server naam:",
+        "FIELD_HEADER_CLIPBOARD_ENCODING" : "Encodering:",
+        "FIELD_HEADER_COLOR_DEPTH"      : "Kleurdiepte:",
+        "FIELD_HEADER_CREATE_RECORDING_PATH" : "Automatisch genereren opname map:",
+        "FIELD_HEADER_CURSOR"           : "Cursor:",
+        "FIELD_HEADER_DEST_HOST"        : "Externe server:",
+        "FIELD_HEADER_DEST_PORT"        : "Externe poort:",
+        "FIELD_HEADER_ENABLE_AUDIO"     : "Inschakelen geluid:",
+        "FIELD_HEADER_ENABLE_SFTP"      : "Inschakelen SFTP:",
+        "FIELD_HEADER_HOSTNAME"         : "Servernaam:",
+        "FIELD_HEADER_USERNAME"         : "Gebruikersnaam:",
+        "FIELD_HEADER_PASSWORD"         : "Wachtwoord:",
+        "FIELD_HEADER_PORT"             : "Poort:",
+        "FIELD_HEADER_READ_ONLY"        : "Alleen lezen:",
+        "FIELD_HEADER_RECORDING_NAME" : "Opname naam:",
+        "FIELD_HEADER_RECORDING_PATH" : "Opname map:",
+        "FIELD_HEADER_SFTP_DIRECTORY"   : "Standaard upload map:",
+        "FIELD_HEADER_SFTP_HOSTNAME"    : "Servernaam:",
+        "FIELD_HEADER_SFTP_PASSPHRASE"  : "Wachtwoordzin:",
+        "FIELD_HEADER_SFTP_PASSWORD"    : "Wachtwoord:",
+        "FIELD_HEADER_SFTP_PORT"        : "Poort:",
+        "FIELD_HEADER_SFTP_PRIVATE_KEY" : "Persoonlijke sleutel:",
+        "FIELD_HEADER_SFTP_USERNAME"    : "Gebruikersnaam:",
+        "FIELD_HEADER_SWAP_RED_BLUE"    : "Verwissel rood/blauw componenten:",
+
+        "FIELD_OPTION_COLOR_DEPTH_8"     : "256 kleuren",
+        "FIELD_OPTION_COLOR_DEPTH_16"    : "Minder kleuren (16-bit)",
+        "FIELD_OPTION_COLOR_DEPTH_24"    : "Echte kleuren (24-bit)",
+        "FIELD_OPTION_COLOR_DEPTH_32"    : "Echte kleuren (32-bit)",
+        "FIELD_OPTION_COLOR_DEPTH_EMPTY" : "",
+
+        "FIELD_OPTION_CURSOR_EMPTY"  : "",
+        "FIELD_OPTION_CURSOR_LOCAL"  : "Lokaal",
+        "FIELD_OPTION_CURSOR_REMOTE" : "Extern",
+
+        "FIELD_OPTION_CLIPBOARD_ENCODING_CP1252"    : "CP1252",
+        "FIELD_OPTION_CLIPBOARD_ENCODING_EMPTY"     : "",
+        "FIELD_OPTION_CLIPBOARD_ENCODING_ISO8859_1" : "ISO 8859-1",
+        "FIELD_OPTION_CLIPBOARD_ENCODING_UTF_8"     : "UTF-8",
+        "FIELD_OPTION_CLIPBOARD_ENCODING_UTF_16"    : "UTF-16",
+
+        "NAME" : "VNC",
+
+        "SECTION_HEADER_AUDIO"          : "Geluid",
+        "SECTION_HEADER_AUTHENTICATION" : "Authenticatie",
+        "SECTION_HEADER_CLIPBOARD"      : "Klembord",
+        "SECTION_HEADER_DISPLAY"        : "Scherm",
+        "SECTION_HEADER_NETWORK"        : "Netwerk",
+        "SECTION_HEADER_RECORDING"      : "Scherm Opname",
+        "SECTION_HEADER_REPEATER"       : "VNC Repeater",
+        "SECTION_HEADER_SFTP"           : "SFTP"
+
+    },
+
+    "SETTINGS" : {
+
+        "SECTION_HEADER_SETTINGS" : "Instellingen"
+
+    },
+
+    "SETTINGS_CONNECTION_HISTORY" : {
+
+        "ACTION_SEARCH" : "@:APP.ACTION_SEARCH",
+
+        "FIELD_PLACEHOLDER_FILTER" : "@:APP.FIELD_PLACEHOLDER_FILTER",
+
+        "FORMAT_DATE" : "@:APP.FORMAT_DATE_TIME_PRECISE",
+
+        "HELP_CONNECTION_HISTORY" : "De gebruikgeschiedenis van verbindingen wordt hier onder getoond en kan gesorteerd worden door op de titel van de kolom te klikken. Voer een zoekterm in en klik op \"Zoeken\", om op specifieke resultaten te zoeken. Alleen de resultaten die voldoen aan de zoekterm zullen dan getoond worden.",
+
+        "INFO_CONNECTION_DURATION_UNKNOWN" : "--",
+        "INFO_NO_HISTORY"                  : "Geen resultaten gevonden",
+
+        "TABLE_HEADER_SESSION_CONNECTION_NAME" : "Verbindingsnaam",
+        "TABLE_HEADER_SESSION_DURATION"        : "Tijdsduur",
+        "TABLE_HEADER_SESSION_STARTDATE"       : "Starttijd",
+        "TABLE_HEADER_SESSION_USERNAME"        : "Gebruikersnaam",
+
+        "TEXT_HISTORY_DURATION" : "@:APP.TEXT_HISTORY_DURATION"
+
+    },
+
+    "SETTINGS_CONNECTIONS" : {
+
+        "ACTION_ACKNOWLEDGE"          : "@:APP.ACTION_ACKNOWLEDGE",
+        "ACTION_NEW_CONNECTION"       : "Nieuwe Verbinding",
+        "ACTION_NEW_CONNECTION_GROUP" : "Nieuwe Verbindingsgroep",
+
+        "DIALOG_HEADER_ERROR" : "@:APP.DIALOG_HEADER_ERROR",
+
+        "FIELD_PLACEHOLDER_FILTER" : "@:APP.FIELD_PLACEHOLDER_FILTER",
+
+        "HELP_CONNECTIONS"   : "Klik of tik op een verbinding hieronder om die verbinding te beheren. Afhankelijk van uw toegangsniveau kunnen verbindingen worden toegevoegd en verwijderd en hun eigenschappen (protocol, hostname, port, etc.) worden gewijzigd. ",
+
+        "INFO_ACTIVE_USER_COUNT" : "@:APP.INFO_ACTIVE_USER_COUNT",
+
+        "SECTION_HEADER_CONNECTIONS"     : "Verbindingen"
+
+    },
+
+    "SETTINGS_PREFERENCES" : {
+
+        "ACTION_ACKNOWLEDGE"        : "@:APP.ACTION_ACKNOWLEDGE",
+        "ACTION_CANCEL"             : "@:APP.ACTION_CANCEL",
+        "ACTION_UPDATE_PASSWORD"    : "@:APP.ACTION_UPDATE_PASSWORD",
+
+        "DIALOG_HEADER_ERROR"    : "@:APP.DIALOG_HEADER_ERROR",
+
+        "ERROR_PASSWORD_BLANK"    : "@:APP.ERROR_PASSWORD_BLANK",
+        "ERROR_PASSWORD_MISMATCH" : "@:APP.ERROR_PASSWORD_MISMATCH",
+
+        "FIELD_HEADER_LANGUAGE"           : "Taal Keuze:",
+        "FIELD_HEADER_PASSWORD"           : "Wachtwoord:",
+        "FIELD_HEADER_PASSWORD_OLD"       : "Huidig Wachtwoord:",
+        "FIELD_HEADER_PASSWORD_NEW"       : "Nieuw Wachtwoord:",
+        "FIELD_HEADER_PASSWORD_NEW_AGAIN" : "Bevestig Nieuw Wachtwoord:",
+        "FIELD_HEADER_USERNAME"           : "Gebruikersnaam:",
+
+        "HELP_DEFAULT_INPUT_METHOD" : "De standaard invoer methode bepaalt hoe toetsenbord gebeurtenissen ontvangen worden door Guacamole. Het veranderen van deze instelling kan nodig zijn bij gebruik van een mobiel apparaat of wanneer er via een IME getypt wordt. Deze instelling kan per verbinding worden overschreven via het Guacamole menu.",
+        "HELP_DEFAULT_MOUSE_MODE"   : "De standaard muis emulatie modus bepaalt hoe de externe muis in nieuwe verbindingen omgaat met touch. Deze instelling kan per verbinding worden overschreven via het Guacamole menu.",
+        "HELP_INPUT_METHOD_NONE"    : "@:CLIENT.HELP_INPUT_METHOD_NONE",
+        "HELP_INPUT_METHOD_OSK"     : "@:CLIENT.HELP_INPUT_METHOD_OSK",
+        "HELP_INPUT_METHOD_TEXT"    : "@:CLIENT.HELP_INPUT_METHOD_TEXT",
+        "HELP_LANGUAGE"             : "Selecteer onderstaand een andere taal om alle text in Guacamole hieraan aan te passen. De beschikbare keuzes zijn afhankelijk van welke talen er geinstalleerd zijn.",
+        "HELP_MOUSE_MODE_ABSOLUTE"  : "@:CLIENT.HELP_MOUSE_MODE_ABSOLUTE",
+        "HELP_MOUSE_MODE_RELATIVE"  : "@:CLIENT.HELP_MOUSE_MODE_RELATIVE",
+        "HELP_UPDATE_PASSWORD"      : "Als u uw wachtwoord wilt wijzigen, voer dan uw huidige wachtwoord en uw nieuwe wachtwoord hieronder in en klik op \"Wijzig Wachtwoord\". Deze wijziging zal meteen actief zijn.",
+
+        "INFO_PASSWORD_CHANGED" : "Wachtwoord gewijzigd.",
+
+        "NAME_INPUT_METHOD_NONE" : "@:CLIENT.NAME_INPUT_METHOD_NONE",
+        "NAME_INPUT_METHOD_OSK"  : "@:CLIENT.NAME_INPUT_METHOD_OSK",
+        "NAME_INPUT_METHOD_TEXT" : "@:CLIENT.NAME_INPUT_METHOD_TEXT",
+
+        "SECTION_HEADER_DEFAULT_INPUT_METHOD" : "Standaard Invoer Methode",
+        "SECTION_HEADER_DEFAULT_MOUSE_MODE"   : "Standaard Muis Emulatie Modus",
+        "SECTION_HEADER_UPDATE_PASSWORD"      : "Wijzig Wachtwoord"
+
+    },
+
+    "SETTINGS_USERS" : {
+
+        "ACTION_ACKNOWLEDGE"   : "@:APP.ACTION_ACKNOWLEDGE",
+        "ACTION_NEW_USER"      : "Nieuwe Gebruiker",
+
+        "DIALOG_HEADER_ERROR" : "@:APP.DIALOG_HEADER_ERROR",
+
+        "FIELD_PLACEHOLDER_FILTER" : "@:APP.FIELD_PLACEHOLDER_FILTER",
+
+        "FORMAT_DATE" : "@:APP.FORMAT_DATE_TIME_PRECISE",
+
+        "HELP_USERS" : "Klik of tik op een van de onderstaande gebruikers om die te beheren. Afhankelijk van uw toegangsniveau kunnen gebruikers worden toegevoegd, verwijderd en hun wachtwoorden gewijzigd.",
+
+        "SECTION_HEADER_USERS"       : "Gebruikers",
+
+        "TABLE_HEADER_USERNAME" : "Gebruikersnaam"
+
+    },
+
+    "SETTINGS_SESSIONS" : {
+
+        "ACTION_ACKNOWLEDGE" : "@:APP.ACTION_ACKNOWLEDGE",
+        "ACTION_CANCEL"      : "@:APP.ACTION_CANCEL",
+        "ACTION_DELETE"      : "Beeindig Sessies",
+
+        "DIALOG_HEADER_CONFIRM_DELETE" : "Beeindig Sessie",
+        "DIALOG_HEADER_ERROR"          : "@:APP.DIALOG_HEADER_ERROR",
+
+        "FIELD_PLACEHOLDER_FILTER" : "@:APP.FIELD_PLACEHOLDER_FILTER",
+
+        "FORMAT_STARTDATE" : "@:APP.FORMAT_DATE_TIME_PRECISE",
+
+        "HELP_SESSIONS" : "Deze pagina wordt gevuld met momenteel actieve verbindingen. De vermelde verbindingen en de mogelijkheid om die verbindingen te doden, zijn afhankelijk van uw toegangsniveau. Als u een of meerdere sessies wilt beeindigen, vink die sessie(s) dan aan en klik op \"Beeindig Sessies\". Door het verbreken van een sessie verliest de gebruiker ogenblikkelijk het contact met die sessie(s).",
+
+        "INFO_NO_SESSIONS" : "Geen actieve sessies",
+
+        "SECTION_HEADER_SESSIONS" : "Actieve Sessies",
+
+        "TABLE_HEADER_SESSION_CONNECTION_NAME" : "Verbindingnaam",
+        "TABLE_HEADER_SESSION_REMOTEHOST"      : "Servernaam",
+        "TABLE_HEADER_SESSION_STARTDATE"       : "Actief sinds",
+        "TABLE_HEADER_SESSION_USERNAME"        : "Gebruikersnaam",
+
+        "TEXT_CONFIRM_DELETE" : "Weet u zeker dat u alle geselecteerde sessies wilt beeindigen? De gebruikers van deze sessies zullen ogenblikkelijk hun verbinding met deze sessies verliezen."
+
+    },
+
+    "USER_MENU" : {
+
+        "ACTION_LOGOUT"             : "@:APP.ACTION_LOGOUT",
+        "ACTION_MANAGE_CONNECTIONS" : "@:APP.ACTION_MANAGE_CONNECTIONS",
+        "ACTION_MANAGE_PREFERENCES" : "@:APP.ACTION_MANAGE_PREFERENCES",
+        "ACTION_MANAGE_SESSIONS"    : "@:APP.ACTION_MANAGE_SESSIONS",
+        "ACTION_MANAGE_SETTINGS"    : "@:APP.ACTION_MANAGE_SETTINGS",
+        "ACTION_MANAGE_USERS"       : "@:APP.ACTION_MANAGE_USERS",
+        "ACTION_NAVIGATE_HOME"      : "@:APP.ACTION_NAVIGATE_HOME",
+        "ACTION_VIEW_HISTORY"       : "@:APP.ACTION_VIEW_HISTORY"
+
+    }
+
+}

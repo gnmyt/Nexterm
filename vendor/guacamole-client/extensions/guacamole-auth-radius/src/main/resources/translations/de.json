@@ -1,0 +1,13 @@
+{
+
+    "DATA_SOURCE_RADIUS" : {
+        "NAME" : "RADIUS Backend"
+    },
+
+    "LOGIN" : {
+        "FIELD_HEADER_GUAC_RADIUS_CHALLENGE_RESPONSE" : "",
+        "FIELD_HEADER_GUAC_RADIUS_STATE"              : "",
+        "INFO_RADIUS_ADDL_REQUIRED"                   : "Bitte zusätzliche Logindaten eingeben."
+    }
+
+}

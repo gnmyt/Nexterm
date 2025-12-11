@@ -1,0 +1,82 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ */
+
+.related-objects .abbreviated-related-objects {
+    display: table;
+    margin: 1em 0;
+}
+
+.related-objects .abbreviated-related-objects ul {
+    display: table-cell;
+    vertical-align: top;
+}
+
+.related-objects .abbreviated-related-objects ul,
+.related-objects .all-related-objects ul {
+    padding: 0;
+    list-style: none;
+}
+
+.related-objects .abbreviated-related-objects ul li {
+
+    display: inline-block;
+    margin: 0.25em;
+    padding: 0.25em;
+
+    border: 1px solid silver;
+    background: #F5F5F5;
+    -moz-border-radius: 0.25em;
+    -webkit-border-radius: 0.25em;
+    -khtml-border-radius: 0.25em;
+    border-radius: 0.25em;
+
+}
+
+.related-objects .abbreviated-related-objects ul li img.remove {
+    max-height: 0.75em;
+    max-width: 0.75em;
+    margin: 0 0.25em;
+}
+
+.related-objects .abbreviated-related-objects ul li .identifier {
+    margin: 0 0.25em;
+}
+
+.related-objects .abbreviated-related-objects img.expand,
+.related-objects .abbreviated-related-objects img.collapse {
+    display: table-cell;
+    max-height: 1.5em;
+    max-width: 1.5em;
+    margin: 0.375em 0;
+}
+
+.related-objects .all-related-objects {
+    border-top: 1px solid silver;
+}
+
+.related-objects .abbreviated-related-objects p.no-related-objects,
+.related-objects .all-related-objects p.no-objects-available {
+    font-style: italic;
+    opacity: 0.5;
+}
+
+.related-objects .abbreviated-related-objects p.no-related-objects {
+    display: table-cell;
+    vertical-align: middle;
+}

@@ -1,0 +1,14 @@
+{
+
+    "DATA_SOURCE_RECORDING_STORAGE" : {
+        "NAME" : "Session Recording Storage"
+    },
+
+    "RECORDING_STORAGE" : {
+        "INFO_GUACAMOLE_SESSION_RECORDING" :  "Graficzne nagranie sesji zdalnego pulpitu",
+        "INFO_SERVER_LOG" :  "Serwer/system log",
+        "INFO_TYPESCRIPT" :  "Tesktowe nagranie sesji",
+        "INFO_TYPESCRIPT_TIMING" :  "Informacje o czasie dla tesktowego nagrania sesji"
+    }
+
+}

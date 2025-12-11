@@ -85,8 +85,7 @@ module.exports.authorizeGuacamole = async (req) => {
                 entry.config.keyboardLayout || "en-us-qwerty");
             break;
         case "vnc":
-            connectionConfig = createVNCToken(entry.config.ip, entry.config.port, identity.username, credentials.password,
-                entry.config.keyboardLayout || "en-us-qwerty");
+            connectionConfig = createVNCToken(entry.config.ip, entry.config.port, identity.username, credentials.password);
             break;
         default:
             return;

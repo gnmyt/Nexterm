@@ -17,6 +17,7 @@
  */
 
 const Net = require('net');
+const SessionManager = require('./SessionManager');
 
 class GuacdClient {
 
@@ -42,6 +43,18 @@ class GuacdClient {
         this.guacdConnection.on('error', this.clientConnection.error.bind(this.clientConnection));
 
         this.activityCheckInterval = setInterval(this.checkActivity.bind(this), 1000);
+
+        this.keepAliveInterval = setInterval(() => {
+            if (this.state === this.STATE_OPEN) {
+                const sessionId = this.clientConnection.sessionId;
+                if (sessionId) {
+                    const session = SessionManager.get(sessionId);
+                    if (session && session.connectedWs.size === 0) {
+                        this.sendOpCode(['nop']);
+                    }
+                }
+            }
+        }, 5000);
     }
 
     checkActivity() {
@@ -56,6 +69,7 @@ class GuacdClient {
         }
 
         clearInterval(this.activityCheckInterval);
+        clearInterval(this.keepAliveInterval);
 
         this.guacdConnection.removeAllListeners('close');
         this.guacdConnection.end();

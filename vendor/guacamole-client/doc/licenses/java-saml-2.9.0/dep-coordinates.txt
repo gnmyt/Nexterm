@@ -1,0 +1,2 @@
+com.onelogin:java-saml-core:jar:2.9.0
+com.onelogin:java-saml:jar:2.9.0

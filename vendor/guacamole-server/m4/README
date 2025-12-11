@@ -1,0 +1,12 @@
+This file exists such that the m4/ directory will be created when cloning the
+git repository.
+
+The m4/ directory is not directly used by this project, but libtoolize
+populates this directory with files, recommending that the directory be
+included in the macro search path for aclocal.
+
+Because autoreconf runs aclocal before libtoolize, this directory will not
+exist when autoreconf is run, triggering an error from aclocal.
+
+Creating this directory (and keeping this file in it as a placeholder)
+prevents this error.

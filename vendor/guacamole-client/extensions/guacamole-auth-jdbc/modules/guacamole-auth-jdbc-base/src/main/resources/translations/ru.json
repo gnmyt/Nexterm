@@ -1,0 +1,109 @@
+{
+
+    "LOGIN" : {
+
+        "ERROR_PASSWORD_BLANK"    : "@:APP.ERROR_PASSWORD_BLANK",
+        "ERROR_PASSWORD_SAME"     : "Новый пароль должен отличаться от текущего просроченного.",
+        "ERROR_PASSWORD_MISMATCH" : "@:APP.ERROR_PASSWORD_MISMATCH",
+        "ERROR_NOT_VALID"         : "Этот аккаунт на данный момент недействителен.",
+        "ERROR_NOT_ACCESSIBLE"    : "Доступ к этому аккаунту в данный момент запрещен. Попробуйте позже.",
+
+        "INFO_PASSWORD_EXPIRED" : "Ваш пароль просрочен и требует смены. Пожалуйста, введите новый пароль для продолжения.",
+
+        "FIELD_HEADER_NEW_PASSWORD"         : "Новый пароль",
+        "FIELD_HEADER_CONFIRM_NEW_PASSWORD" : "Подтвердите новый пароль"
+
+    },
+
+    "CONNECTION_ATTRIBUTES" : {
+
+        "FIELD_HEADER_MAX_CONNECTIONS"          : "Максимальное число соединений:",
+        "FIELD_HEADER_MAX_CONNECTIONS_PER_USER" : "Максимальное число соединений на пользователя:",
+
+        "FIELD_HEADER_FAILOVER_ONLY"            : "Использовать только для отказоустойчивости:",
+        "FIELD_HEADER_WEIGHT"                   : "«Вес» соединения:",
+
+        "FIELD_HEADER_GUACD_HOSTNAME"   : "Сервер:",
+        "FIELD_HEADER_GUACD_ENCRYPTION" : "Шифрование:",
+        "FIELD_HEADER_GUACD_PORT"       : "Порт:",
+
+        "FIELD_OPTION_GUACD_ENCRYPTION_NONE" : "Нет (не зашифровано)",
+        "FIELD_OPTION_GUACD_ENCRYPTION_SSL"  : "SSL/TLS",
+
+        "SECTION_HEADER_CONCURRENCY"    : "Совместное использование",
+        "SECTION_HEADER_LOAD_BALANCING" : "Балансировка нагрузки",
+        "SECTION_HEADER_GUACD"          : "Параметры сервера Guacamole (guacd)"
+
+    },
+
+    "CONNECTION_GROUP_ATTRIBUTES" : {
+
+        "FIELD_HEADER_ENABLE_SESSION_AFFINITY"  : "Включить закрепление сеансов:",
+        "FIELD_HEADER_MAX_CONNECTIONS"          : "Максимальное число соединений:",
+        "FIELD_HEADER_MAX_CONNECTIONS_PER_USER" : "Максимальное число соединений на пользователя:",
+
+        "SECTION_HEADER_CONCURRENCY" : "Совместное использование (для балансирующей группы)"
+
+    },
+
+    "DATA_SOURCE_MYSQL" : {
+        "NAME" : "MySQL"
+    },
+
+    "DATA_SOURCE_MYSQL_SHARED" : {
+        "NAME" : "Расшаренные подключения (MySQL)"
+    },
+
+    "DATA_SOURCE_POSTGRESQL" : {
+        "NAME" : "PostgreSQL"
+    },
+
+    "DATA_SOURCE_POSTGRESQL_SHARED" : {
+        "NAME" : "Расшаренные подключения (PostgreSQL)"
+    },
+
+    "DATA_SOURCE_SQLSERVER" : {
+        "NAME" : "SQL Server"
+    },
+
+    "DATA_SOURCE_SQLSERVER_SHARED" : {
+        "NAME" : "Расшаренные подключения (SQL Server)"
+    },
+
+    "HOME" : {
+        "INFO_SHARED_BY" : "Расшарил пользователь {USERNAME}"
+    },
+
+    "PASSWORD_POLICY" : {
+
+        "ERROR_CONTAINS_USERNAME"      : "Пароль не может содержать имя пользователя.",
+        "ERROR_REQUIRES_DIGIT"         : "Пароль должен содержать хотя бы одну цифру.",
+        "ERROR_REQUIRES_MULTIPLE_CASE" : "Пароль должен содержать заглавные и строчные символы.",
+        "ERROR_REQUIRES_NON_ALNUM"     : "Пароль должен содержать хотя бы один символ.",
+        "ERROR_REUSED"                 : "Этот парольуже был использован ранее. Пожалуйста, не используйте {HISTORY_SIZE} {HISTORY_SIZE, plural, one{предыдущий пароль} few{предыдущих пароля} many{предыдущих паролей} other{предыдущих пароля}}.",
+        "ERROR_TOO_SHORT"              : "Длина пароля должна быть не менее {LENGTH} {LENGTH, plural, one{символа} many{символов} other{символов}}.",
+        "ERROR_TOO_YOUNG"              : "Пароль для этого аккаунта недавно уже был сброшен. Пожалуйста, подождите как минимум {WAIT} {WAIT, plural, one{день} few{дня} many{дней} other{дня}} перед тем, как сменить пароль снова."
+
+    },
+
+    "USER_ATTRIBUTES" : {
+
+        "FIELD_HEADER_EXPIRED"             : "Пароль просрочен:",
+        "FIELD_HEADER_ACCESS_WINDOW_END"   : "Запретить доступ после:",
+        "FIELD_HEADER_ACCESS_WINDOW_START" : "Разрешить доступ после:",
+        "FIELD_HEADER_TIMEZONE"            : "Временная зона пользователя:",
+        "FIELD_HEADER_VALID_FROM"          : "Включить аккаунт после:",
+        "FIELD_HEADER_VALID_UNTIL"         : "Отключить аккаунт после:",
+
+        "SECTION_HEADER_RESTRICTIONS" : "Ограничения",
+        "SECTION_HEADER_PROFILE"      : "Профиль"
+
+    },
+
+    "USER_GROUP_ATTRIBUTES" : {
+
+        "SECTION_HEADER_RESTRICTIONS" : "Ограничения"
+
+    }
+
+}

@@ -1,0 +1,33 @@
+{
+
+    "guacamoleVersion" : "1.6.0",
+
+    "name"      : "CAS Authentication Extension",
+    "namespace" : "cas",
+
+    "authProviders" : [
+        "org.apache.guacamole.auth.cas.CASAuthenticationProvider"
+    ],
+
+    "css" : [
+        "styles/sso-providers.css"
+    ],
+
+    "html" : [
+        "html/sso-providers.html",
+        "html/sso-provider-cas.html"
+    ],
+
+    "translations" : [
+        "translations/ca.json",
+        "translations/de.json",
+        "translations/en.json",
+        "translations/fr.json",
+        "translations/ja.json",
+        "translations/ko.json",
+        "translations/pl.json",
+        "translations/pt.json",
+        "translations/ru.json",
+        "translations/zh.json"
+    ]
+}

@@ -1,0 +1,118 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ */
+
+/**
+ * Changes the font of the login dialog to prefer Raleway, with some fallbacks.
+ */
+.login-ui .login-dialog .login-fields input {
+    font-family: Raleway, FreeSans, Helvetica, Arial, sans-serif;
+}
+
+/**
+ * Set up the logo used at the top of the login dialog box, including sizing it
+ * appropriately and pulling in the custom image.
+ */
+.login-ui .login-dialog .logo {
+    width: 5em;
+    height: 3em;
+    background-size:         5em 3em;
+    -moz-background-size:    5em 3em;
+    -webkit-background-size: 5em 3em;
+    -khtml-background-size:  5em 3em;
+    background-image: url('app/ext/guacamole-branding-example/resources/images/saturn/saturn.png');
+}
+
+/*
+ * For our custom warning code, specify the font order, as well as the italic
+ * style, and size it down a little.
+ */
+.login-ui .login-dialog .warning {
+    font-family: Raleway, FreeSans, Arial;
+    font-style: italic;
+    font-size: 0.75em;
+}
+
+/*
+ * Sets up the custom coloring around the header elements.
+ */
+.header {
+    border-bottom: 1px solid rgba(0,0,0,1.0);
+    box-shadow: rgba(0,0,0,0.75);
+    background: rgba(0,0,0,1.0);
+    color: rgba(255,255,255,1.0);
+}
+
+/*
+ * Changes the default color and fonts of the submit buttons, along with font
+ * size and weight.
+ */
+input[type="submit"], button, a.button {
+    background-color: rgba(0,145,255,1.0);
+    border: 1px solid rgba(0,255,145,1.1);
+    font-size: 1em;
+    font-weight: bold;
+    font-family: Raleway, FreeSans, Helvetica, Arial, sans-serif;
+}
+
+/*
+ * Changes the coloring on the submit-styled buttons when you hover over them.
+ */
+input[type="submit"]:hover, button:hover, a.button:hover {
+    background-color: rgba(0,255,145,1.0);
+    border: 1px solid rgba(0,145,255,1.0);
+}
+
+/*
+ * Changes the coloring on the submit-styled buttons when you click on them.
+ */
+input[type="submit"]:active, button:active, a.button:active {
+    background-color: rgba(0,145,255,1.0);
+    border: 1px solid rgba(255,95,0,1.0);
+}
+
+/*
+ * Provide a custom color scheme for danger-styled buttons.
+ */
+button.danger, a.button.danger {
+    background: rgba(255,95,0,1.0);
+    border: 1px solid rgba(255,0,0,1.0);
+}
+
+/*
+ * Provide a cusotm color scheme for hovering over danger-styled buttons.
+ */
+button.danger:hover, a.button.danger:hover {
+    background: rgba(255,0,0,0.75);
+    border: 1px solid rgba(255,95,0,1.0);
+}
+
+/*
+ * Provide a custom color scheme for danger-styled buttons when clicked.
+ */
+button.danger:active, a.button.danger:active {
+    background: rgba(255,0,170,1.0);
+    border: 1px solid rgba(255,95,0,1.0);
+}
+
+/*
+ * Change the default font order of preference across the entire interface.
+ */
+body {
+    font-family: Raleway, FreeSans, Helvetica, Arial, sans-serif;
+}

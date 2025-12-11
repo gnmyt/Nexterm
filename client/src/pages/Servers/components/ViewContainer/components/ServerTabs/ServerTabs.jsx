@@ -12,7 +12,7 @@ const DraggableTab = ({
     server,
     activeSessionId,
     setActiveSessionId,
-    disconnectFromServer,
+    closeSession,
     hibernateSession,
     index,
     moveTab,
@@ -84,7 +84,7 @@ const DraggableTab = ({
                 <div className="tab-actions">
                     <Icon path={mdiClose} className="close-btn" title="Close Session" onClick={(e) => {
                         e.stopPropagation();
-                        disconnectFromServer(session.id);
+                        closeSession(session.id);
                     }} />
                 </div>
             </div>
@@ -102,7 +102,7 @@ const DraggableTab = ({
                 <ContextMenuItem
                     icon={mdiClose}
                     label="Close Session"
-                    onClick={() => disconnectFromServer(session.id)}
+                    onClick={() => closeSession(session.id)}
                     danger
                 />
             </ContextMenu>
@@ -114,7 +114,7 @@ export const ServerTabs = ({
     activeSessions,
     setActiveSessionId,
     activeSessionId,
-    disconnectFromServer,
+    closeSession,
     hibernateSession,
     layoutMode,
     onToggleSplit,
@@ -250,7 +250,7 @@ export const ServerTabs = ({
                         return (
                             <DraggableTab key={session.id} session={session} server={session.server} index={index} moveTab={moveTab}
                                 activeSessionId={activeSessionId} setActiveSessionId={setActiveSessionId}
-                                disconnectFromServer={disconnectFromServer} hibernateSession={hibernateSession}
+                                closeSession={closeSession} hibernateSession={hibernateSession}
                                 progress={sessionProgress[session.id] || 0} />
                         );
                     })}

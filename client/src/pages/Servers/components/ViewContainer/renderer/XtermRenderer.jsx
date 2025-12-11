@@ -10,8 +10,9 @@ import { ContextMenu, ContextMenuItem, ContextMenuSeparator, useContextMenu } fr
 import AICommandPopover from "./components/AICommandPopover";
 import SnippetsMenu from "./components/SnippetsMenu";
 import { createProgressParser } from "../utils/progressParser";
-import { mdiContentCopy, mdiContentPaste, mdiCodeBrackets, mdiSelectAll, mdiRefresh, mdiClose, mdiDelete, mdiKeyboard } from "@mdi/js";
+import { mdiContentCopy, mdiContentPaste, mdiCodeBrackets, mdiSelectAll, mdiDelete, mdiKeyboard } from "@mdi/js";
 import { useTranslation } from "react-i18next";
+import ConnectionLoader from "./components/ConnectionLoader";
 import "@xterm/xterm/css/xterm.css";
 import "./styles/xterm.sass";
 
@@ -24,6 +25,7 @@ const XtermRenderer = ({ session, disconnectFromServer, registerTerminalRef, bro
     const layoutModeRef = useRef(layoutMode);
     const onBroadcastToggleRef = useRef(onBroadcastToggle);
     const onFullscreenToggleRef = useRef(onFullscreenToggle);
+    const connectionLoaderRef = useRef(null);
     
     const { sessionToken } = useContext(UserContext);
     const { theme } = useTheme();
@@ -204,10 +206,7 @@ const XtermRenderer = ({ session, disconnectFromServer, registerTerminalRef, bro
 
         let url = process.env.NODE_ENV === "production" ? `${window.location.host}/api/ws/term` : "localhost:6989/api/ws/term";
 
-        let wsUrl = `${protocol}://${url}?sessionToken=${sessionToken}&entryId=${session.server.id}&identityId=${session.identity}&sessionId=${session.id}`;
-        if (session.connectionReason) {
-            wsUrl += `&connectionReason=${encodeURIComponent(session.connectionReason)}`;
-        }
+        let wsUrl = `${protocol}://${url}?sessionToken=${sessionToken}&sessionId=${session.id}`;
 
         ws = new WebSocket(wsUrl);
         wsRef.current = ws;
@@ -240,6 +239,8 @@ const XtermRenderer = ({ session, disconnectFromServer, registerTerminalRef, bro
 
         ws.onmessage = (event) => {
             const data = event.data;
+
+            connectionLoaderRef.current?.hide();
 
             if (data.startsWith("\x02")) {
                 const prompt = data.substring(1);
@@ -372,6 +373,7 @@ const XtermRenderer = ({ session, disconnectFromServer, registerTerminalRef, bro
 
     return (
         <div className="xterm-container" onContextMenu={handleContextMenu}>
+            <ConnectionLoader onReady={(loader) => { connectionLoaderRef.current = loader; }} />
             <div ref={ref} className="xterm-wrapper" />
             {isAIAvailable() && (
                 <AICommandPopover visible={showAIPopover} onClose={() => setShowAIPopover(false)}

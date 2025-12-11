@@ -1,0 +1,22 @@
+<div class="connection-permissions">
+    <div class="header tabbed">
+        <h2>{{'MANAGE_USER.SECTION_HEADER_CONNECTIONS' | translate}}</h2>
+        <guac-group-list-filter connection-groups="getRootGroups()"
+            filtered-connection-groups="filteredRootGroups"
+            placeholder="'MANAGE_USER.FIELD_PLACEHOLDER_FILTER' | translate"
+            connection-properties="filteredConnectionProperties"
+            connection-group-properties="filteredConnectionGroupProperties"></guac-group-list-filter>
+    </div>
+    <guac-section-tabs namespace="MANAGE_USER" current="currentTab" tabs="tabs"></guac-section-tabs>
+    <div class="section">
+        <guac-group-list
+            context="groupListContext"
+            connection-groups="filteredRootGroups"
+            templates="{
+                'connection'       : 'app/manage/templates/connectionPermission.html',
+                'sharing-profile'  : 'app/manage/templates/sharingProfilePermission.html',
+                'connection-group' : 'app/manage/templates/connectionGroupPermission.html'
+            }"
+            page-size="20"></guac-group-list>
+    </div>
+</div>

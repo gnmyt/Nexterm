@@ -1,0 +1,33 @@
+<div class="user-menu" ng-show="!isAnonymous()">
+    <guac-menu menu-title="username">
+           
+        <!-- User profile view -->
+        <div class="profile" ng-show="fullName">
+            <div class="full-name"><a ng-href="{{userURL}}">{{ fullName }}</a></div>
+            <div class="organizational-role" ng-show="role">{{ role }}</div>
+            <div class="organization" ng-show="organization">{{ organization }}</div>
+        </div>
+
+        <!-- Local actions -->
+        <ul class="action-list">
+            <li ng-repeat="action in localActions">
+                <a ng-class="action.className" ng-click="action.callback()">
+                    {{action.name | translate}}
+                </a>
+            </li>
+        </ul>
+
+        <!-- Navigation links -->
+        <guac-page-list pages="pages"></guac-page-list>
+
+        <!-- Actions -->
+        <ul class="action-list">
+            <li ng-repeat="action in actions">
+                <a ng-class="action.className" ng-click="action.callback()">
+                    {{action.name | translate}}
+                </a>
+            </li>
+        </ul>
+
+    </guac-menu>
+</div>

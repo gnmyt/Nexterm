@@ -1,0 +1,110 @@
+{
+
+    "LOGIN" : {
+
+        "ERROR_PASSWORD_BLANK"    : "@:APP.ERROR_PASSWORD_BLANK",
+        "ERROR_PASSWORD_SAME"     : "Nowe hasło musi być inne od tego, które wygasło.",
+        "ERROR_PASSWORD_MISMATCH" : "@:APP.ERROR_PASSWORD_MISMATCH",
+        "ERROR_NOT_VALID"         : "To konto użytkownika nie jest poprawne.",
+        "ERROR_NOT_ACCESSIBLE"    : "Dostęp do tego konta jest obecnie zablokowany. Spróbuj ponownie później.",
+
+        "INFO_PASSWORD_EXPIRED" : "Twoje hasło wygasło i należy je zresetować. Wprowadź nowe hasło, aby kontynuować.",
+
+        "FIELD_HEADER_NEW_PASSWORD"         : "Nowe hasło",
+        "FIELD_HEADER_CONFIRM_NEW_PASSWORD" : "Potwierdź nowe hasło"
+
+    },
+
+    "CONNECTION_ATTRIBUTES" : {
+
+        "FIELD_HEADER_MAX_CONNECTIONS"          : "Maksymalna liczba połączeń:",
+        "FIELD_HEADER_MAX_CONNECTIONS_PER_USER" : "Maksymalna liczba połączeń dla jednego użytkownika:",
+
+        "FIELD_HEADER_FAILOVER_ONLY"            : "Używaj tylko do przełączania awaryjnego:",
+        "FIELD_HEADER_WEIGHT"                   : "Waga połączenia:",
+
+        "FIELD_HEADER_GUACD_HOSTNAME"   : "Nazwa Hosta:",
+        "FIELD_HEADER_GUACD_ENCRYPTION" : "Szyfrowanie:",
+        "FIELD_HEADER_GUACD_PORT"       : "Port:",
+
+        "FIELD_OPTION_GUACD_ENCRYPTION_EMPTY" : "",
+        "FIELD_OPTION_GUACD_ENCRYPTION_NONE"  : "Brak (nieszyfrowane)",
+        "FIELD_OPTION_GUACD_ENCRYPTION_SSL"   : "SSL / TLS",
+
+        "SECTION_HEADER_CONCURRENCY"    : "Limity Jednoczesnych Połączeń",
+        "SECTION_HEADER_LOAD_BALANCING" : "Równoważenie Obciążenia",
+        "SECTION_HEADER_GUACD"          : "Parametry Guacamole Proxy (guacd)"
+
+    },
+
+    "CONNECTION_GROUP_ATTRIBUTES" : {
+
+        "FIELD_HEADER_ENABLE_SESSION_AFFINITY"  : "Włącz powiązanie sesji:",
+        "FIELD_HEADER_MAX_CONNECTIONS"          : "Maksymalna liczba połączeń:",
+        "FIELD_HEADER_MAX_CONNECTIONS_PER_USER" : "Maksymalna liczba połączeń dla jednego użytkownika:",
+
+        "SECTION_HEADER_CONCURRENCY" : "Limity Jednoczesnych Połączeń (Grupy Równoważenia Obciążenia)"
+
+    },
+
+    "DATA_SOURCE_MYSQL" : {
+        "NAME" : "MySQL"
+    },
+
+    "DATA_SOURCE_MYSQL_SHARED" : {
+        "NAME" : "Współdzielone połączenia (MySQL)"
+    },
+
+    "DATA_SOURCE_POSTGRESQL" : {
+        "NAME" : "PostgreSQL"
+    },
+
+    "DATA_SOURCE_POSTGRESQL_SHARED" : {
+        "NAME" : "Współdzielone połączenia (PostgreSQL)"
+    },
+
+    "DATA_SOURCE_SQLSERVER" : {
+        "NAME" : "SQL Server"
+    },
+
+    "DATA_SOURCE_SQLSERVER_SHARED" : {
+        "NAME" : "Współdzielone połączenia (SQL Server)"
+    },
+
+    "HOME" : {
+        "INFO_SHARED_BY" : "Współdzielone przez {USERNAME}"
+    },
+
+    "PASSWORD_POLICY" : {
+
+        "ERROR_CONTAINS_USERNAME"      : "Hasła nie mogą zawierać nazwy użytkownika.",
+        "ERROR_REQUIRES_DIGIT"         : "Hasła muszą zawierać przynajmniej jedną cyfrę.",
+        "ERROR_REQUIRES_MULTIPLE_CASE" : "Hasła muszą zawierać zarówno wielkie, jak i małe litery.",
+        "ERROR_REQUIRES_NON_ALNUM"     : "Hasła muszą zawierać co najmniej jeden znak specjalny.",
+        "ERROR_REUSED"                 : "To hasło zostało już użyte. Nie można ponownie użyć żadnego z poprzednich {HISTORY_SIZE} {HISTORY_SIZE, plural, one{hasła} other{haseł}}.",
+        "ERROR_TOO_SHORT"              : "Hasło musi mieć co najmniej {LENGTH} {LENGTH, plural, one{znak} other{znaków}} długości.",
+        "ERROR_TOO_YOUNG"              : "Hasło do tego konta zostało już zresetowane. Poczekać przynajmniej {WAIT} {WAIT, plural, one{dzień} other{dni}} dłużej przed ponowną zmianą hasła."
+
+    },
+
+    "USER_ATTRIBUTES" : {
+
+        "FIELD_HEADER_EXPIRED"             : "Hasło wygasło:",
+        "FIELD_HEADER_ACCESS_WINDOW_END"   : "Nie zezwalaj na dostęp po:",
+        "FIELD_HEADER_ACCESS_WINDOW_START" : "Zezwalaj na dostęp od:",
+        "FIELD_HEADER_TIMEZONE"            : "Strefa czasowa użytkownika:",
+        "FIELD_HEADER_VALID_FROM"          : "Włącz konto od:",
+        "FIELD_HEADER_VALID_UNTIL"         : "Wyłącz konto po:",
+
+        "SECTION_HEADER_RESTRICTIONS" : "Ograniczenia Konta",
+        "SECTION_HEADER_PROFILE"      : "Profil"
+
+    },
+
+    "USER_GROUP_ATTRIBUTES" : {
+
+        "SECTION_HEADER_RESTRICTIONS" : "Ograniczenia Grupy"
+
+    }
+
+}

@@ -21,10 +21,7 @@ module.exports = async (ws, settings) => {
             const connectionId = existingConnection.guacdClient.guacdConnectionId;
             new ClientConnection(ws, this.clientOptions, settings, connectionId);
         } else {
-            const clientConnection = new ClientConnection(ws, this.clientOptions, settings);
-            if (serverSession) {
-                SessionManager.setConnection(serverSession.sessionId, clientConnection);
-            }
+            new ClientConnection(ws, this.clientOptions, settings);
         }
 
     } catch (error) {

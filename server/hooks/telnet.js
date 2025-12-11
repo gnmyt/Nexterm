@@ -55,10 +55,12 @@ module.exports = async (ws, context) => {
         };
         socket.on("data", onData);
 
+        SessionManager.addWebSocket(serverSession.sessionId, ws);
         setupSocketMessageHandler(ws, socket);
 
         ws.on("close", () => {
             socket.removeListener("data", onData);
+            SessionManager.removeWebSocket(serverSession.sessionId, ws);
         });
 
         return;
@@ -71,7 +73,10 @@ module.exports = async (ws, context) => {
         connectionEstablished = true;
         logger.info(`Telnet connection established`, { ip: entry.config.ip, port: entry.config.port || 23, entryId: entry.id });
 
-        if (serverSession) SessionManager.setConnection(serverSession.sessionId, { socket, auditLogId });
+        if (serverSession) {
+            SessionManager.setConnection(serverSession.sessionId, { socket, auditLogId });
+            SessionManager.addWebSocket(serverSession.sessionId, ws);
+        }
     });
 
     socket.on("data", (data) => {
@@ -100,6 +105,7 @@ module.exports = async (ws, context) => {
     setupSocketMessageHandler(ws, socket);
 
     ws.on("close", async () => {
+        if (serverSession) SessionManager.removeWebSocket(serverSession.sessionId, ws);
         await updateAuditLogWithSessionDuration(auditLogId, connectionStartTime);
     });
 };

@@ -1,0 +1,60 @@
+<div class="settings section users" ng-class="{loading: !isLoaded()}">
+
+    <!-- User management -->
+    <p>{{'SETTINGS_USERS.HELP_USERS' | translate}}</p>
+
+
+    <!-- User management toolbar -->
+    <div class="toolbar">
+
+        <!-- Form action buttons -->
+        <div class="action-buttons">
+            <a class="add-user button" ng-show="canCreateUsers()"
+               href="#/manage/{{getDefaultDataSource() | escape}}/users/">{{'SETTINGS_USERS.ACTION_NEW_USER' | translate}}</a>
+        </div>
+
+        <!-- User filter -->
+        <guac-filter filtered-items="filteredManageableUsers" items="manageableUsers"
+                     placeholder="'SETTINGS_USERS.FIELD_PLACEHOLDER_FILTER' | translate"
+                     properties="filteredUserProperties"></guac-filter>
+
+    </div>
+
+    <!-- List of users this user has access to -->
+    <table class="sorted user-list">
+        <thead>
+            <tr>
+                <th guac-sort-order="order" guac-sort-property="'user.username'" class="username">
+                    {{'SETTINGS_USERS.TABLE_HEADER_USERNAME' | translate}}
+                </th>
+                <th guac-sort-order="order" guac-sort-property="'user.attributes[\'guac-organization\']'" class="organization">
+                    {{'SETTINGS_USERS.TABLE_HEADER_ORGANIZATION' | translate}}
+                </th>
+                <th guac-sort-order="order" guac-sort-property="'user.attributes[\'guac-full-name\']'" class="full-name">
+                    {{'SETTINGS_USERS.TABLE_HEADER_FULL_NAME' | translate}}
+                </th>
+                <th guac-sort-order="order" guac-sort-property="'user.lastActive'" class="last-active">
+                    {{'SETTINGS_USERS.TABLE_HEADER_LAST_ACTIVE' | translate}}
+                </th>
+            </tr>
+        </thead>
+        <tbody ng-class="{loading: !isLoaded()}">
+            <tr ng-repeat="manageableUser in manageableUserPage" class="user" ng-class="{disabled: manageableUser.user.disabled}">
+                <td class="username">
+                    <a ng-href="#/manage/{{manageableUser.dataSource | escape}}/users/{{manageableUser.user.username | escape}}">
+                        <div class="icon user"></div>
+                        <span class="name">{{manageableUser.user.username}}</span>
+                    </a>
+                </td>
+                <td class="organization">{{manageableUser.user.attributes['guac-organization']}}</td>
+                <td class="full-name">{{manageableUser.user.attributes['guac-full-name']}}</td>
+                <td class="last-active">{{manageableUser.user.lastActive | date : dateFormat}}</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <!-- Pager controls for user list -->
+    <guac-pager page="manageableUserPage" page-size="25"
+                items="filteredManageableUsers | orderBy : order.predicate"></guac-pager>
+
+</div>

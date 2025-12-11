@@ -1,0 +1,1 @@
+com.google.code.findbugs:jsr305:jar:3.0.2
