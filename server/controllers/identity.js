@@ -21,9 +21,9 @@ const upsertCredential = async (identityId, type, secret) => {
 const syncCredentials = async (identityId, type, password, sshKey, passphrase) => {
     if (type === "password" && password) {
         await upsertCredential(identityId, "password", password);
-        await Credential.destroy({ where: { identityId, type: { [Op.in]: ["sshKey", "passphrase"] } } });
-    } else if (type === "key" && sshKey) {
-        await upsertCredential(identityId, "sshKey", sshKey);
+        await Credential.destroy({ where: { identityId, type: { [Op.in]: ["ssh-key", "passphrase"] } } });
+    } else if (type === "ssh" && sshKey) {
+        await upsertCredential(identityId, "ssh-key", sshKey);
         passphrase ? await upsertCredential(identityId, "passphrase", passphrase) : await Credential.destroy({ where: { identityId, type: "passphrase" } });
         await Credential.destroy({ where: { identityId, type: "password" } });
     }
@@ -76,7 +76,9 @@ module.exports.updateIdentity = async (accountId, identityId, config) => {
 
     const { password, sshKey, passphrase, accountId: _, organizationId: __, ...updateConfig } = config;
     await Identity.update(updateConfig, { where: { id: identityId, ...(identity.organizationId ? { organizationId: identity.organizationId } : { accountId }) } });
-    await syncCredentials(identityId, config.type, password, sshKey, passphrase);
+
+    const effectiveType = config.type || identity.type;
+    await syncCredentials(identityId, effectiveType, password, sshKey, passphrase);
     logger.info("Identity updated", { identityId, name: identity.name });
     return { success: true, identity: { id: identity.id, name: identity.name, type: identity.type, organizationId: identity.organizationId, accountId: identity.accountId } };
 };

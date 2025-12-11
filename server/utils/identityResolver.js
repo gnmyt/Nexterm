@@ -14,7 +14,7 @@ const resolveIdentity = async (entry, identityId, directIdentity = null) => {
             isDirect: true,
             directCredentials: {
                 password: directIdentity.password,
-                sshKey: directIdentity.sshKey,
+                "ssh-key": directIdentity.sshKey,
                 passphrase: directIdentity.passphrase
             }
         };
