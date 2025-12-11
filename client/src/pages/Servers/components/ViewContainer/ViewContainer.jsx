@@ -14,6 +14,7 @@ export const ViewContainer = ({
                                   activeSessionId,
                                   setActiveSessionId,
                                   disconnectFromServer,
+                                  closeSession,
                                   hibernateSession,
                                   setOpenFileEditors,
                               }) => {
@@ -401,7 +402,7 @@ export const ViewContainer = ({
             )}
             {!fullscreenMode && <ServerTabs activeSessions={activeSessions} setActiveSessionId={focusSession}
                                             activeSessionId={activeSessionId}
-                                            disconnectFromServer={disconnectFromServer}
+                                            closeSession={closeSession}
                                             layoutMode={layoutMode} onToggleSplit={toggleSplitMode}
                                             orderRef={tabOrderRef}
                                             onTabOrderChange={onTabOrderChange} onBroadcastToggle={toggleBroadcastMode}

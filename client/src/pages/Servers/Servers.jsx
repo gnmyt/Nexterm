@@ -277,10 +277,13 @@ export const Servers = () => {
 
             return newSessions;
         });
+    }
 
+    const closeSession = (sessionId) => {
         deleteRequest(`/connections/${sessionId}`).catch(error => {
-            console.debug("Session deletion request failed (session may already be closed):", error);
+            console.debug("Session deletion request failed:", error);
         });
+        disconnectFromServer(sessionId);
     };
 
     const hibernateSession = async (sessionId) => {
@@ -430,6 +433,7 @@ export const Servers = () => {
             </div>}
             {activeSessions.length > 0 &&
                 <ViewContainer activeSessions={activeSessions} disconnectFromServer={disconnectFromServer}
+                               closeSession={closeSession}
                                activeSessionId={activeSessionId} setActiveSessionId={setActiveSessionId}
                                hibernateSession={hibernateSession} setOpenFileEditors={setOpenFileEditors} />}
             {openFileEditors.map((editor, index) => (
