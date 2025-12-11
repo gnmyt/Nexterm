@@ -23,44 +23,38 @@ const setupStreamHandlers = (ws, stream) => {
 };
 
 module.exports = async (ws, context) => {
-    const { auditLogId, serverSession } = context;
-    let { ssh } = context;
+    const { auditLogId, serverSession, ssh, reuseConnection } = context;
     const connectionStartTime = Date.now();
 
-    let existingConnection = null;
-    if (serverSession) existingConnection = SessionManager.getConnection(serverSession.sessionId);
-
-    if (existingConnection) {
-        ssh = existingConnection.ssh;
-        const stream = existingConnection.stream;
-
+    if (reuseConnection) {
+        const { stream } = SessionManager.getConnection(serverSession.sessionId);
         const onData = setupStreamHandlers(ws, stream);
-
-        ws.on("close", () => {
-            stream.removeListener("data", onData);
-        });
-
+        ws.on("close", () => stream.removeListener("data", onData));
         return;
+    }
+
+    let resolve, reject;
+    if (serverSession) {
+        SessionManager.setConnectingPromise(serverSession.sessionId, new Promise((res, rej) => { resolve = res; reject = rej; }));
     }
 
     ssh.on("ready", () => {
         ssh.shell({ term: "xterm-256color" }, (err, stream) => {
             if (err) {
-                ws.close(4008, `Shell error: ${err.message}`);
-                return;
+                reject?.(err);
+                return ws.close(4008, `Shell error: ${err.message}`);
             }
 
             if (serverSession) {
                 SessionManager.setConnection(serverSession.sessionId, { ssh, stream, auditLogId });
+                resolve?.();
             }
 
             const onData = setupStreamHandlers(ws, stream);
-
             ws.on("close", async () => {
                 stream.removeListener("data", onData);
                 await updateAuditLogWithSessionDuration(auditLogId, connectionStartTime);
             });
-
             stream.on("close", () => {
                 ws.close();
                 if (serverSession) SessionManager.remove(serverSession.sessionId);

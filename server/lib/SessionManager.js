@@ -24,7 +24,8 @@ class SessionManager {
             isHibernated: false,
             createdAt: new Date(),
             lastActivity: new Date(),
-            connection: null
+            connection: null,
+            connectingPromise: null
         };
         this.sessions.push(session);
         logger.info(`Session created`, { sessionId, accountId, entryId, tabId, browserId, auditLogId });
@@ -66,6 +67,18 @@ class SessionManager {
     getConnection(sessionId) {
         const session = this.get(sessionId);
         return session ? session.connection : null;
+    }
+
+    setConnectingPromise(sessionId, promise) {
+        const session = this.get(sessionId);
+        if (session) {
+            session.connectingPromise = promise;
+        }
+    }
+
+    getConnectingPromise(sessionId) {
+        const session = this.get(sessionId);
+        return session ? session.connectingPromise : null;
     }
 
     hibernate(sessionId) {

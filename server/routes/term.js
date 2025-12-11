@@ -9,6 +9,7 @@ const { getScript } = require("../controllers/script");
 const { createSSHConnection } = require("../utils/sshConnection");
 const logger = require("../utils/logger");
 const OrganizationMember = require("../models/OrganizationMember");
+const SessionManager = require("../lib/SessionManager");
 
 module.exports = async (ws, req) => {
     const context = await wsAuth(ws, req);
@@ -17,7 +18,6 @@ module.exports = async (ws, req) => {
     const { entry, integration, identity, user, containerId, connectionReason, ipAddress, userAgent, serverSession } = context;
 
     if (serverSession) {
-        const SessionManager = require("../lib/SessionManager");
         SessionManager.resume(serverSession.sessionId);
     }
 
@@ -74,6 +74,19 @@ module.exports = async (ws, req) => {
                 entryId: entry.id,
                 auditLogId: auditLogId
             });
+
+            if (serverSession) {
+                const pending = SessionManager.getConnectingPromise(serverSession.sessionId);
+                if (pending) {
+                    await pending.catch(() => {});
+                    const existing = SessionManager.getConnection(serverSession.sessionId);
+                    if (existing) {
+                        hookContext = { ssh: existing.ssh, auditLogId, serverSession, script, user, reuseConnection: true };
+                        await (script ? scriptHook(ws, hookContext) : sshHook(ws, hookContext));
+                        return;
+                    }
+                }
+            }
 
             const ssh = await createSSHConnection(entry, identity, ws);
 
