@@ -931,6 +931,10 @@
           "enableMenuAnimations": "Enable Menu Animations",
           "enableMenuAnimationsDesc": "Enable menu open and close animations"
         },
+        "audio": {
+          "enableAudio": "Enable Audio",
+          "enableAudioDesc": "Stream audio from the remote system to your browser"
+        },
         "noSettings": "Für diesen Eintragstyp sind keine weiteren Einstellungen verfügbar."
       },
       "identities": {
