@@ -1,10 +1,11 @@
 import { useRef, useState, useEffect } from "react";
 import Icon from "@mdi/react";
 import { loadIcon } from "@/pages/Servers/utils/iconMapping.js";
-import { mdiClose, mdiViewSplitVertical, mdiChevronLeft, mdiChevronRight, mdiSleep } from "@mdi/js";
+import { mdiClose, mdiViewSplitVertical, mdiChevronLeft, mdiChevronRight, mdiSleep, mdiOpenInNew } from "@mdi/js";
 import { useDrag, useDrop } from "react-dnd";
 import TerminalActionsMenu from "../TerminalActionsMenu";
-import { ContextMenu, ContextMenuItem, useContextMenu } from "@/common/components/ContextMenu";
+import { ContextMenu, ContextMenuItem, ContextMenuSeparator, useContextMenu } from "@/common/components/ContextMenu";
+import { useActiveSessions } from "@/common/contexts/SessionContext.jsx";
 import "./styles.sass";
 
 const DraggableTab = ({
@@ -19,6 +20,9 @@ const DraggableTab = ({
     progress = 0,
 }) => {
     const contextMenu = useContextMenu();
+    const { popOutSession } = useActiveSessions();
+    
+    const canPopOut = !session.scriptId && session.type !== "sftp";
     
     const [{ isDragging }, drag] = useDrag({
         type: "TAB",
@@ -94,6 +98,16 @@ const DraggableTab = ({
                 onClose={contextMenu.close}
                 trigger={contextMenu.triggerRef}
             >
+                {canPopOut && (
+                    <>
+                        <ContextMenuItem
+                            icon={mdiOpenInNew}
+                            label="Pop Out"
+                            onClick={() => popOutSession(session.id)}
+                        />
+                        <ContextMenuSeparator />
+                    </>
+                )}
                 <ContextMenuItem
                     icon={mdiSleep}
                     label="Hibernate Session"

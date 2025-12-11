@@ -37,12 +37,14 @@ export const Servers = () => {
     const [currentOrganizationId, setCurrentOrganizationId] = useState(null);
     const [editServerId, setEditServerId] = useState(null);
     const { user } = useContext(UserContext);
-    const { activeSessions, setActiveSessions, activeSessionId, setActiveSessionId } = useActiveSessions();
+    const { activeSessions, setActiveSessions, activeSessionId, setActiveSessionId, poppedOutSessions } = useActiveSessions();
     const { getServerById, servers } = useContext(ServerContext);
     const location = useLocation();
     const navigate = useNavigate();
 
     const [hibernatedSessions, setHibernatedSessions] = useState([]);
+
+    const visibleSessions = activeSessions.filter(s => !poppedOutSessions.includes(s.id));
 
     const getTabId = () => {
         let tabId = sessionStorage.getItem("nexterm_tab_id");
@@ -415,7 +417,7 @@ export const Servers = () => {
                         setEditServerId={setEditServerId} openSFTP={openSFTP}
                         hibernatedSessions={hibernatedSessions} resumeSession={resumeConnection}
                         openDirectConnect={openDirectConnect} runScript={runScript} />
-            {activeSessions.length === 0 && <div className="welcome-area">
+            {visibleSessions.length === 0 && <div className="welcome-area">
                 <div className="area-left">
                     <h1>Hi, <span>{user?.firstName || "User"} {user?.lastName || "name"}</span>!</h1>
                     <p>Welcome to Nexterm. The open-source server manager for SSH, VNC and RDP.</p>
@@ -428,8 +430,8 @@ export const Servers = () => {
                 </div>
                 <img src={WelcomeImage} alt="Welcome" />
             </div>}
-            {activeSessions.length > 0 &&
-                <ViewContainer activeSessions={activeSessions} disconnectFromServer={disconnectFromServer}
+            {visibleSessions.length > 0 &&
+                <ViewContainer activeSessions={visibleSessions} disconnectFromServer={disconnectFromServer}
                                closeSession={closeSession}
                                activeSessionId={activeSessionId} setActiveSessionId={setActiveSessionId}
                                hibernateSession={hibernateSession} setOpenFileEditors={setOpenFileEditors} />}
