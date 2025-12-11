@@ -37,8 +37,9 @@
       "title": "Nexterm",
       "registrationTitle": "Registration",
       "ssoOrContinueWith": "or continue with",
-      "ssoSignInWith": "sign in with",
-      "noAuthMethodsAvailable": "No authentication methods available."
+      "noAuthMethodsAvailable": "No authentication methods available.",
+      "signInWithPasskey": "Sign in with Passkey",
+      "authenticating": "Authenticating..."
     },
     "selectBox": {
       "defaultOption": "Select an option...",
@@ -62,7 +63,9 @@
       "invalidCredentials": "Invalid username or password",
       "invalidTwoFactor": "Invalid two-factor code",
       "internalAuthDisabled": "Internal authentication is disabled",
-      "ssoLoginFailed": "Failed to initiate SSO login"
+      "ssoLoginFailed": "Failed to initiate SSO login",
+      "passkeyLoginFailed": "Passkey authentication failed",
+      "passkeyCancelled": "Passkey authentication was cancelled"
     },
     "messages": {
       "invitationAccepted": "Invitation accepted",
@@ -446,6 +449,22 @@
         "messages": {
           "setupFailed": "2FA setup failed. Please try again."
         }
+      },
+      "passkeys": {
+        "sectionTitle": "Passkeys",
+        "sectionDescription": "Use passkeys for faster, more secure sign-in without passwords.",
+        "addButton": "Add Passkey",
+        "addDialogTitle": "Add Passkey",
+        "addDialogDescription": "Give your passkey a name to help you identify it later.",
+        "namePlaceholder": "Passkey name",
+        "enterName": "Enter a name for this passkey:",
+        "defaultName": "My Passkey",
+        "confirmDelete": "Are you sure you want to delete this passkey?",
+        "createdAt": "Created {{date}}",
+        "registerError": "Failed to register passkey. Please try again.",
+        "noPasskeys": "No passkeys registered yet",
+        "rename": "Rename",
+        "delete": "Delete"
       }
     },
     "passwordChange": {

@@ -3,12 +3,13 @@ import NextermLogo from "@/common/img/logo.avif";
 import "./styles.sass";
 import Button from "@/common/components/Button";
 import Input from "@/common/components/IconInput";
-import { mdiAccountCircleOutline, mdiKeyOutline } from "@mdi/js";
+import { mdiAccountCircleOutline, mdiKeyOutline, mdiFingerprint } from "@mdi/js";
 import { useContext, useEffect, useState } from "react";
 import { getRequest, request } from "@/common/utils/RequestUtil.js";
 import { UserContext } from "@/common/contexts/UserContext.jsx";
 import { useToast } from "@/common/contexts/ToastContext.jsx";
 import { useTranslation } from "react-i18next";
+import { startAuthentication } from "@simplewebauthn/browser";
 
 export const LoginDialog = ({ open }) => {
     const { t } = useTranslation();
@@ -19,6 +20,7 @@ export const LoginDialog = ({ open }) => {
     const [code, setCode] = useState("");
     const [providers, setProviders] = useState([]);
     const [internalAuthEnabled, setInternalAuthEnabled] = useState(true);
+    const [passkeyLoading, setPasskeyLoading] = useState(false);
 
     const { sendToast } = useToast();
 
@@ -115,6 +117,46 @@ export const LoginDialog = ({ open }) => {
         }
     };
 
+    const handlePasskeyLogin = async (event) => {
+        if (event) {
+            event.preventDefault();
+            event.stopPropagation();
+        }
+
+        setPasskeyLoading(true);
+
+        const origin = window.location.origin;
+
+        try {
+            const options = await request("auth/passkey/options", "POST", { origin });
+            
+            if (options.code) {
+                sendToast("Error", options.message || t('common.errors.passkeyLoginFailed'));
+                setPasskeyLoading(false);
+                return;
+            }
+
+            const credential = await startAuthentication({ optionsJSON: options });
+
+            const result = await request("auth/passkey/verify", "POST", { response: credential, origin });
+
+            if (result.code) {
+                sendToast("Error", result.message || t('common.errors.passkeyLoginFailed'));
+            } else if (result.token) {
+                updateSessionToken(result.token);
+            }
+        } catch (error) {
+            console.error("Passkey login failed:", error);
+            if (error.name === "NotAllowedError") {
+                sendToast("Error", t('common.errors.passkeyCancelled'));
+            } else {
+                sendToast("Error", error.message || t('common.errors.passkeyLoginFailed'));
+            }
+        } finally {
+            setPasskeyLoading(false);
+        }
+    };
+
     return (
         <DialogProvider disableClosing open={open}>
             <div className="login-dialog">
@@ -171,12 +213,20 @@ export const LoginDialog = ({ open }) => {
 
                     {isInternalAuthEnabled() ? <Button text={firstTimeSetup ? t('common.actions.register') : t('common.actions.login')} /> : null}
 
-                    {(!firstTimeSetup && !totpRequired && providers.length > 0 && isInternalAuthEnabled()) ? (
+                    {(!firstTimeSetup && !totpRequired) ? (
                         <div className="sso-options">
                             <div className="divider">
                                 <span>{t('common.loginDialog.ssoOrContinueWith')}</span>
                             </div>
                             <div className="sso-buttons">
+                                <Button
+                                    type="secondary"
+                                    icon={mdiFingerprint}
+                                    text={passkeyLoading ? t('common.loginDialog.authenticating') : t('common.loginDialog.signInWithPasskey')}
+                                    onClick={handlePasskeyLogin}
+                                    disabled={passkeyLoading}
+                                    buttonType="button"
+                                />
                                 {providers.map(provider => (
                                     <Button
                                         key={provider.id}
@@ -184,19 +234,6 @@ export const LoginDialog = ({ open }) => {
                                         text={provider.name}
                                         onClick={(e) => handleOIDCLogin(e, provider.id)}
                                     />
-                                ))}
-                            </div>
-                        </div>
-                    ) : null}
-
-                    {(!firstTimeSetup && !totpRequired && providers.length > 0 && !isInternalAuthEnabled()) ? (
-                        <div className="sso-options">
-                            <div className="divider">
-                                <span>{t('common.loginDialog.ssoSignInWith')}</span>
-                            </div>
-                            <div className="sso-buttons">
-                                {providers.map(provider => (
-                                    <Button key={provider.id} type="secondary" text={provider.name} onClick={(e) => handleOIDCLogin(e, provider.id)} />
                                 ))}
                             </div>
                         </div>

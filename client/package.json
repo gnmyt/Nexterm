@@ -19,6 +19,7 @@
     "@mdi/js": "^7.4.47",
     "@mdi/react": "^1.6.1",
     "@monaco-editor/react": "^4.7.0",
+    "@simplewebauthn/browser": "^13.2.2",
     "@xterm/addon-fit": "^0.10.0",
     "@xterm/xterm": "^5.5.0",
     "chart.js": "^4.5.1",
