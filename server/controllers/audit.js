@@ -20,6 +20,7 @@ const AUDIT_ACTIONS = {
 
     FOLDER_CREATE: "folder.create",
     FOLDER_DELETE: "folder.delete",
+    FOLDER_DOWNLOAD: "folder.download",
 
     ENTRY_CREATE: "entry.create",
     ENTRY_UPDATE: "entry.update",
@@ -71,7 +72,7 @@ const getOrgAuditSettings = async (organizationId) => {
 const shouldAudit = (action, settings) => {
     if (!settings) return true;
     const checks = [
-        [action.startsWith("file."), settings.enableFileOperationAudit],
+        [action.startsWith("file.") || action.startsWith("folder."), settings.enableFileOperationAudit],
         [action.startsWith("entry.") && !action.includes("create") && !action.includes("update") && !action.includes("delete"), settings.enableServerConnectionAudit],
         [action.startsWith("identity."), settings.enableIdentityManagementAudit],
         [action.includes("entry.create") || action.includes("entry.update") || action.includes("entry.delete"), settings.enableServerManagementAudit],
