@@ -64,6 +64,7 @@ module.exports = async (ws, context) => {
     if (existingConnection) {
         const lxcSocket = existingConnection.lxcSocket;
 
+        SessionManager.addWebSocket(serverSession.sessionId, ws);
         setupClientMessageHandler(ws, lxcSocket, containerId);
 
         const onMessage = (message) => {
@@ -82,6 +83,7 @@ module.exports = async (ws, context) => {
 
         ws.on("close", () => {
             lxcSocket.removeListener("message", onMessage);
+            SessionManager.removeWebSocket(serverSession.sessionId, ws);
         });
 
         return;
@@ -125,6 +127,7 @@ module.exports = async (ws, context) => {
 
                 if (serverSession) {
                     SessionManager.setConnection(serverSession.sessionId, { lxcSocket, keepAliveTimer, auditLogId });
+                    SessionManager.addWebSocket(serverSession.sessionId, ws);
                 }
             } catch (error) {
                 logger.error(`Error during LXC socket open`, { error: error.message, vmid });
@@ -150,6 +153,7 @@ module.exports = async (ws, context) => {
         });
 
         ws.on("close", async () => {
+            if (serverSession) SessionManager.removeWebSocket(serverSession.sessionId, ws);
             await updateAuditLogWithSessionDuration(auditLogId, connectionStartTime);
         });
 

@@ -10,6 +10,8 @@ class SessionManager {
         SessionManager.instance = this;
     }
 
+    static MAX_LOG_BUFFER_SIZE = 200 * 1024; // 200KB
+
     create(accountId, entryId, configuration, connectionReason = null, tabId = null, browserId = null, auditLogId = null) {
         const sessionId = uuidv4();
         const session = {
@@ -24,7 +26,11 @@ class SessionManager {
             isHibernated: false,
             createdAt: new Date(),
             lastActivity: new Date(),
-            connection: null
+            connection: null,
+            connectingPromise: null,
+            logBuffer: '',
+            activeWs: null,
+            connectedWs: new Set()
         };
         this.sessions.push(session);
         logger.info(`Session created`, { sessionId, accountId, entryId, tabId, browserId, auditLogId });
@@ -68,6 +74,71 @@ class SessionManager {
         return session ? session.connection : null;
     }
 
+    setConnectingPromise(sessionId, promise) {
+        const session = this.get(sessionId);
+        if (session) {
+            session.connectingPromise = promise;
+        }
+    }
+
+    getConnectingPromise(sessionId) {
+        const session = this.get(sessionId);
+        return session ? session.connectingPromise : null;
+    }
+
+    appendLog(sessionId, data) {
+        const session = this.get(sessionId);
+        if (session) {
+            session.logBuffer += data;
+            if (session.logBuffer.length > SessionManager.MAX_LOG_BUFFER_SIZE) {
+                session.logBuffer = session.logBuffer.slice(-SessionManager.MAX_LOG_BUFFER_SIZE);
+            }
+        }
+    }
+
+    getLogBuffer(sessionId) {
+        const session = this.get(sessionId);
+        return session ? session.logBuffer : '';
+    }
+
+    setActiveWs(sessionId, ws) {
+        const session = this.get(sessionId);
+        if (session) session.activeWs = ws;
+    }
+
+    isActiveWs(sessionId, ws) {
+        const session = this.get(sessionId);
+        return session && session.activeWs === ws;
+    }
+
+    addWebSocket(sessionId, ws) {
+        const session = this.get(sessionId);
+        if (session) session.connectedWs.add(ws);
+    }
+
+    removeWebSocket(sessionId, ws) {
+        const session = this.get(sessionId);
+        if (session) {
+            session.connectedWs.delete(ws);
+            if (session.activeWs === ws) session.activeWs = null;
+        }
+    }
+
+    closeAllWebSockets(sessionId) {
+        const session = this.get(sessionId);
+        if (session) {
+            for (const ws of session.connectedWs) {
+                try {
+                    if (ws.readyState === ws.OPEN || ws.readyState === ws.CONNECTING) {
+                        ws.close(1000, 'Session terminated');
+                    }
+                } catch (e) {}
+            }
+            session.connectedWs.clear();
+            session.activeWs = null;
+        }
+    }
+
     hibernate(sessionId) {
         const session = this.get(sessionId);
         if (session) {
@@ -94,11 +165,39 @@ class SessionManager {
 
     remove(sessionId) {
         const session = this.get(sessionId);
-        if (session && session.connection) {
-            if (typeof session.connection.end === 'function') {
-                session.connection.end();
-            } else if (typeof session.connection.close === 'function') {
-                session.connection.close();
+        if (session) {
+            this.closeAllWebSockets(sessionId);
+            
+            if (session.connection) {
+                const conn = session.connection;
+                if (conn.stream) {
+                    try { conn.stream.close(); } catch (e) {}
+                    try { conn.stream.destroy(); } catch (e) {}
+                }
+                if (conn.ssh) {
+                    try { conn.ssh.end(); } catch (e) {}
+                }
+                if (conn.socket) {
+                    try { conn.socket.end(); } catch (e) {}
+                    try { conn.socket.destroy(); } catch (e) {}
+                }
+                if (conn.lxcSocket) {
+                    try { conn.lxcSocket.close(); } catch (e) {}
+                }
+                if (conn.keepAliveTimer) {
+                    try { clearInterval(conn.keepAliveTimer); } catch (e) {}
+                }
+                if (conn.guacdClient) {
+                    try { conn.guacdClient.close(); } catch (e) {}
+                }
+                if (conn.clientConnection) {
+                    try { conn.clientConnection.destroy(); } catch (e) {}
+                }
+                if (typeof conn.end === 'function') {
+                    try { conn.end(); } catch (e) {}
+                } else if (typeof conn.close === 'function') {
+                    try { conn.close(); } catch (e) {}
+                }
             }
         }
 

@@ -17,6 +17,7 @@
  */
 const GuacdClient = require("./GuacdClient.js");
 const { updateAuditLogWithSessionDuration } = require("../controllers/audit");
+const SessionManager = require("./SessionManager");
 
 class ClientConnection {
 
@@ -31,6 +32,7 @@ class ClientConnection {
         this.lastActivity = Date.now();
         this.activityCheckInterval = null;
         this.connectionStartTime = Date.now();
+        this.sessionId = settings.serverSession?.sessionId || null;
 
         try {
             this.connectionSettings = settings;
@@ -46,6 +48,12 @@ class ClientConnection {
         this.connectionSettings = settings;
 
         this.guacdClient = new GuacdClient(this, forcedConnectionId);
+
+        if (this.sessionId) {
+            SessionManager.setConnection(this.sessionId, { guacdClient: this.guacdClient, clientConnection: this });
+            SessionManager.addWebSocket(this.sessionId, webSocket);
+            SessionManager.setActiveWs(this.sessionId, webSocket);
+        }
 
         webSocket.on("close", this.close.bind(this));
         webSocket.on("message", this.processReceivedMessage.bind(this));
@@ -65,6 +73,10 @@ class ClientConnection {
 
         if (this.activityCheckInterval !== undefined && this.activityCheckInterval !== null) {
             clearInterval(this.activityCheckInterval);
+        }
+
+        if (this.sessionId) {
+            SessionManager.removeWebSocket(this.sessionId, this.webSocket);
         }
 
         this.webSocket.removeAllListeners("close");
@@ -90,8 +102,33 @@ class ClientConnection {
         this.close(error);
     }
 
+    isInteractionMessage(message) {
+        const str = message.toString();
+        if (str.includes('.key,')) return true;
+        const mouseMatch = str.match(/\.mouse,\d+\.\d+,\d+\.\d+,(\d+)\.(\d+);/);
+        if (mouseMatch) {
+            const mask = parseInt(mouseMatch[2], 10);
+            return mask > 0;
+        }
+        return false;
+    }
+
+    isSizeMessage(message) {
+        return message.toString().includes('.size,');
+    }
+
     processReceivedMessage(message) {
         this.lastActivity = Date.now();
+        
+        if (this.sessionId) {
+            if (this.isInteractionMessage(message)) {
+                SessionManager.setActiveWs(this.sessionId, this.webSocket);
+            }
+            if (this.isSizeMessage(message) && !SessionManager.isActiveWs(this.sessionId, this.webSocket)) {
+                return;
+            }
+        }
+        
         this.guacdClient.send(message);
     }
 
