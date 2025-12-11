@@ -238,13 +238,13 @@ export const FileList = ({
                             label={t("servers.fileManager.contextMenu.edit")}
                             onClick={openFile}
                         />
-                        <ContextMenuItem
-                            icon={mdiFileDownload}
-                            label={t("servers.fileManager.contextMenu.download")}
-                            onClick={handleDownload}
-                        />
                     </>
                 )}
+                <ContextMenuItem
+                    icon={mdiFileDownload}
+                    label={t("servers.fileManager.contextMenu.download")}
+                    onClick={handleDownload}
+                />
                 <ContextMenuItem
                     icon={mdiTrashCan}
                     label={t("servers.fileManager.contextMenu.delete")}
