@@ -28,6 +28,7 @@ module.exports = async (ws, context) => {
         const bufferedLogs = SessionManager.getLogBuffer(serverSession.sessionId);
         if (bufferedLogs && ws.readyState === ws.OPEN) ws.send(bufferedLogs);
         
+        SessionManager.addWebSocket(serverSession.sessionId, ws);
         SessionManager.setActiveWs(serverSession.sessionId, ws);
         const onData = setupStreamHandlers(ws, stream, serverSession.sessionId);
         const onFirstResize = (data) => {
@@ -42,6 +43,7 @@ module.exports = async (ws, context) => {
         ws.on("close", () => {
             stream.removeListener("data", onData);
             ws.removeListener("message", onFirstResize);
+            SessionManager.removeWebSocket(serverSession.sessionId, ws);
         });
         return;
     }
@@ -60,12 +62,14 @@ module.exports = async (ws, context) => {
             if (serverSession) {
                 stream.on("data", (data) => SessionManager.appendLog(serverSession.sessionId, data.toString()));
                 SessionManager.setConnection(serverSession.sessionId, { ssh, stream, auditLogId });
+                SessionManager.addWebSocket(serverSession.sessionId, ws);
                 SessionManager.setActiveWs(serverSession.sessionId, ws);
                 resolve?.();
             }
             const onData = setupStreamHandlers(ws, stream, serverSession?.sessionId);
             ws.on("close", async () => {
                 stream.removeListener("data", onData);
+                if (serverSession) SessionManager.removeWebSocket(serverSession.sessionId, ws);
                 await updateAuditLogWithSessionDuration(auditLogId, connectionStartTime);
             });
             stream.on("close", () => {

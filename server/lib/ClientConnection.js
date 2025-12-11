@@ -50,6 +50,8 @@ class ClientConnection {
         this.guacdClient = new GuacdClient(this, forcedConnectionId);
 
         if (this.sessionId) {
+            SessionManager.setConnection(this.sessionId, { guacdClient: this.guacdClient, clientConnection: this });
+            SessionManager.addWebSocket(this.sessionId, webSocket);
             SessionManager.setActiveWs(this.sessionId, webSocket);
         }
 
@@ -71,6 +73,10 @@ class ClientConnection {
 
         if (this.activityCheckInterval !== undefined && this.activityCheckInterval !== null) {
             clearInterval(this.activityCheckInterval);
+        }
+
+        if (this.sessionId) {
+            SessionManager.removeWebSocket(this.sessionId, this.webSocket);
         }
 
         this.webSocket.removeAllListeners("close");

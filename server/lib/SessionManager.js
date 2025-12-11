@@ -29,7 +29,8 @@ class SessionManager {
             connection: null,
             connectingPromise: null,
             logBuffer: '',
-            activeWs: null
+            activeWs: null,
+            connectedWs: new Set()
         };
         this.sessions.push(session);
         logger.info(`Session created`, { sessionId, accountId, entryId, tabId, browserId, auditLogId });
@@ -110,6 +111,34 @@ class SessionManager {
         return session && session.activeWs === ws;
     }
 
+    addWebSocket(sessionId, ws) {
+        const session = this.get(sessionId);
+        if (session) session.connectedWs.add(ws);
+    }
+
+    removeWebSocket(sessionId, ws) {
+        const session = this.get(sessionId);
+        if (session) {
+            session.connectedWs.delete(ws);
+            if (session.activeWs === ws) session.activeWs = null;
+        }
+    }
+
+    closeAllWebSockets(sessionId) {
+        const session = this.get(sessionId);
+        if (session) {
+            for (const ws of session.connectedWs) {
+                try {
+                    if (ws.readyState === ws.OPEN || ws.readyState === ws.CONNECTING) {
+                        ws.close(1000, 'Session terminated');
+                    }
+                } catch (e) {}
+            }
+            session.connectedWs.clear();
+            session.activeWs = null;
+        }
+    }
+
     hibernate(sessionId) {
         const session = this.get(sessionId);
         if (session) {
@@ -136,11 +165,39 @@ class SessionManager {
 
     remove(sessionId) {
         const session = this.get(sessionId);
-        if (session && session.connection) {
-            if (typeof session.connection.end === 'function') {
-                session.connection.end();
-            } else if (typeof session.connection.close === 'function') {
-                session.connection.close();
+        if (session) {
+            this.closeAllWebSockets(sessionId);
+            
+            if (session.connection) {
+                const conn = session.connection;
+                if (conn.stream) {
+                    try { conn.stream.close(); } catch (e) {}
+                    try { conn.stream.destroy(); } catch (e) {}
+                }
+                if (conn.ssh) {
+                    try { conn.ssh.end(); } catch (e) {}
+                }
+                if (conn.socket) {
+                    try { conn.socket.end(); } catch (e) {}
+                    try { conn.socket.destroy(); } catch (e) {}
+                }
+                if (conn.lxcSocket) {
+                    try { conn.lxcSocket.close(); } catch (e) {}
+                }
+                if (conn.keepAliveTimer) {
+                    try { clearInterval(conn.keepAliveTimer); } catch (e) {}
+                }
+                if (conn.guacdClient) {
+                    try { conn.guacdClient.close(); } catch (e) {}
+                }
+                if (conn.clientConnection) {
+                    try { conn.clientConnection.destroy(); } catch (e) {}
+                }
+                if (typeof conn.end === 'function') {
+                    try { conn.end(); } catch (e) {}
+                } else if (typeof conn.close === 'function') {
+                    try { conn.close(); } catch (e) {}
+                }
             }
         }
 
