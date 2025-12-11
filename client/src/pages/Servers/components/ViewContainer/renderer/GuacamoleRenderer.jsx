@@ -4,6 +4,13 @@ import { UserContext } from "@/common/contexts/UserContext.jsx";
 import { useKeymaps, matchesKeybind } from "@/common/contexts/KeymapContext.jsx";
 import ConnectionLoader from "./components/ConnectionLoader";
 
+const resumeAudioContext = () => {
+    const context = Guacamole.AudioContextFactory.getAudioContext();
+    if (context && context.state === 'suspended') {
+        context.resume();
+    }
+};
+
 const GuacamoleRenderer = ({ session, disconnectFromServer, registerGuacamoleRef, onFullscreenToggle }) => {
     const ref = useRef(null);
     const { sessionToken } = useContext(UserContext);
@@ -14,6 +21,7 @@ const GuacamoleRenderer = ({ session, disconnectFromServer, registerGuacamoleRef
     const onFullscreenToggleRef = useRef(onFullscreenToggle);
     const sessionRef = useRef(session);
     const connectionLoaderRef = useRef(null);
+    const audioPlayersRef = useRef([]);
 
     useEffect(() => { sessionRef.current = session; }, [session]);
     useEffect(() => { onFullscreenToggleRef.current = onFullscreenToggle; }, [onFullscreenToggle]);
@@ -100,6 +108,15 @@ const GuacamoleRenderer = ({ session, disconnectFromServer, registerGuacamoleRef
         display.style.imageRendering = "crisp-edges";
         ref.current.appendChild(display);
 
+        client.onaudio = (stream, mimetype) => {
+            const audioPlayer = Guacamole.AudioPlayer.getInstance(stream, mimetype);
+            if (audioPlayer) {
+                audioPlayersRef.current.push(audioPlayer);
+                return audioPlayer;
+            }
+            return null;
+        };
+
         const s = sessionRef.current;
         const params = `sessionToken=${sessionToken}&sessionId=${s.id}`;
         client.connect(params);
@@ -107,6 +124,7 @@ const GuacamoleRenderer = ({ session, disconnectFromServer, registerGuacamoleRef
         const mouse = new Guacamole.Mouse(display);
         mouse.onmousedown = mouse.onmouseup = mouse.onmousemove = (state) => {
             if (!scaleRef.current || !offsetRef.current) return;
+            resumeAudioContext();
             client.sendMouseState(new Guacamole.Mouse.State(
                 Math.round((state.x - offsetRef.current.x) / scaleRef.current),
                 Math.round((state.y - offsetRef.current.y) / scaleRef.current),
@@ -122,7 +140,7 @@ const GuacamoleRenderer = ({ session, disconnectFromServer, registerGuacamoleRef
         ref.current.addEventListener("keydown", handleKeyDown, true);
 
         const keyboard = new Guacamole.Keyboard(ref.current);
-        keyboard.onkeydown = (k, sc) => client.sendKeyEvent(1, k, sc);
+        keyboard.onkeydown = (k, sc) => { resumeAudioContext(); client.sendKeyEvent(1, k, sc); };
         keyboard.onkeyup = (k, sc) => client.sendKeyEvent(0, k, sc);
 
         client.onstatechange = (st) => {
@@ -137,6 +155,7 @@ const GuacamoleRenderer = ({ session, disconnectFromServer, registerGuacamoleRef
             isCleaningUp = true;
             ref.current?.removeEventListener("keydown", handleKeyDown, true);
             client.onstatechange = tunnel.onstatechange = tunnel.onerror = null;
+            audioPlayersRef.current = [];
             client.disconnect();
             clientRef.current = null;
         };

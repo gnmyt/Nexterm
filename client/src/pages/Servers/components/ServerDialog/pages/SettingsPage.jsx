@@ -3,7 +3,7 @@ import SelectBox from "@/common/components/SelectBox";
 import ToggleSwitch from "@/common/components/ToggleSwitch";
 import { ServerContext } from "@/common/contexts/ServerContext.jsx";
 import Icon from "@mdi/react";
-import { mdiServerNetwork, mdiClose, mdiPlus, mdiChartLine, mdiMonitor, mdiPalette } from "@mdi/js";
+import { mdiServerNetwork, mdiClose, mdiPlus, mdiChartLine, mdiMonitor, mdiPalette, mdiVolumeHigh } from "@mdi/js";
 import { useTranslation } from "react-i18next";
 
 const COLOR_DEPTHS = [
@@ -49,6 +49,7 @@ const SettingsPage = ({ config, setConfig, monitoringEnabled, setMonitoringEnabl
 
     const [colorDepth, setColorDepth] = useState(config?.colorDepth || "");
     const [resizeMethod, setResizeMethod] = useState(config?.resizeMethod || "display-update");
+    const [enableAudio, setEnableAudio] = useState(config?.enableAudio !== false);
     const [enableWallpaper, setEnableWallpaper] = useState(config?.enableWallpaper !== false);
     const [enableTheming, setEnableTheming] = useState(config?.enableTheming !== false);
     const [enableFontSmoothing, setEnableFontSmoothing] = useState(config?.enableFontSmoothing !== false);
@@ -73,6 +74,7 @@ const SettingsPage = ({ config, setConfig, monitoringEnabled, setMonitoringEnabl
 
         if (config?.colorDepth !== undefined) setColorDepth(config.colorDepth);
         if (config?.resizeMethod !== undefined) setResizeMethod(config.resizeMethod);
+        if (config?.enableAudio !== undefined) setEnableAudio(config.enableAudio);
         if (config?.enableWallpaper !== undefined) setEnableWallpaper(config.enableWallpaper);
         if (config?.enableTheming !== undefined) setEnableTheming(config.enableTheming);
         if (config?.enableFontSmoothing !== undefined) setEnableFontSmoothing(config.enableFontSmoothing);
@@ -134,7 +136,7 @@ const SettingsPage = ({ config, setConfig, monitoringEnabled, setMonitoringEnabl
 
     const showJumpHosts = config?.protocol === 'ssh';
 
-    if (!fieldConfig.showMonitoring && !fieldConfig.showKeyboardLayout && !fieldConfig.showDisplaySettings && !showJumpHosts) {
+    if (!fieldConfig.showMonitoring && !fieldConfig.showKeyboardLayout && !fieldConfig.showDisplaySettings && !fieldConfig.showAudioSettings && !showJumpHosts) {
         return <p className="text-center">{t('servers.dialog.settings.noSettings')}</p>;
     }
 
@@ -203,13 +205,13 @@ const SettingsPage = ({ config, setConfig, monitoringEnabled, setMonitoringEnabl
             )}
 
             {fieldConfig.showMonitoring && (
-                <div className="monitoring-toggle-container">
-                    <div className="monitoring-toggle-info">
-                        <span className="monitoring-label">
+                <div className="settings-toggle">
+                    <div className="settings-toggle-info">
+                        <span className="settings-toggle-label">
                             <Icon path={mdiChartLine} size={0.8} style={{ marginRight: '8px', verticalAlign: 'middle' }} />
                             {t('servers.dialog.settings.monitoring.title')}
                         </span>
-                        <span className="monitoring-description">
+                        <span className="settings-toggle-description">
                             {t('servers.dialog.settings.monitoring.description')}
                         </span>
                     </div>
@@ -261,6 +263,19 @@ const SettingsPage = ({ config, setConfig, monitoringEnabled, setMonitoringEnabl
                 </div>
             )}
 
+            {fieldConfig.showAudioSettings && (
+                <div className="settings-toggle">
+                    <div className="settings-toggle-info">
+                        <span className="settings-toggle-label">
+                            <Icon path={mdiVolumeHigh} size={0.8} style={{ marginRight: '8px', verticalAlign: 'middle' }} />
+                            {t('servers.dialog.settings.audio.enableAudio')}
+                        </span>
+                        <span className="settings-toggle-description">{t('servers.dialog.settings.audio.enableAudioDesc')}</span>
+                    </div>
+                    <ToggleSwitch checked={enableAudio} onChange={(val) => handleDisplaySettingChange('enableAudio', val, setEnableAudio)} id="enable-audio" />
+                </div>
+            )}
+
             {fieldConfig.showPerformanceSettings && (
                 <div className="jump-hosts-section">
                     <div className="jump-hosts-header">
@@ -275,50 +290,50 @@ const SettingsPage = ({ config, setConfig, monitoringEnabled, setMonitoringEnabl
                         </div>
                     </div>
 
-                    <div className="monitoring-toggle-container">
-                        <div className="monitoring-toggle-info">
-                            <span className="monitoring-label">{t('servers.dialog.settings.performance.enableWallpaper')}</span>
-                            <span className="monitoring-description">{t('servers.dialog.settings.performance.enableWallpaperDesc')}</span>
+                    <div className="settings-toggle">
+                        <div className="settings-toggle-info">
+                            <span className="settings-toggle-label">{t('servers.dialog.settings.performance.enableWallpaper')}</span>
+                            <span className="settings-toggle-description">{t('servers.dialog.settings.performance.enableWallpaperDesc')}</span>
                         </div>
                         <ToggleSwitch checked={enableWallpaper} onChange={(val) => handleDisplaySettingChange('enableWallpaper', val, setEnableWallpaper)} id="enable-wallpaper" />
                     </div>
 
-                    <div className="monitoring-toggle-container">
-                        <div className="monitoring-toggle-info">
-                            <span className="monitoring-label">{t('servers.dialog.settings.performance.enableTheming')}</span>
-                            <span className="monitoring-description">{t('servers.dialog.settings.performance.enableThemingDesc')}</span>
+                    <div className="settings-toggle">
+                        <div className="settings-toggle-info">
+                            <span className="settings-toggle-label">{t('servers.dialog.settings.performance.enableTheming')}</span>
+                            <span className="settings-toggle-description">{t('servers.dialog.settings.performance.enableThemingDesc')}</span>
                         </div>
                         <ToggleSwitch checked={enableTheming} onChange={(val) => handleDisplaySettingChange('enableTheming', val, setEnableTheming)} id="enable-theming" />
                     </div>
 
-                    <div className="monitoring-toggle-container">
-                        <div className="monitoring-toggle-info">
-                            <span className="monitoring-label">{t('servers.dialog.settings.performance.enableFontSmoothing')}</span>
-                            <span className="monitoring-description">{t('servers.dialog.settings.performance.enableFontSmoothingDesc')}</span>
+                    <div className="settings-toggle">
+                        <div className="settings-toggle-info">
+                            <span className="settings-toggle-label">{t('servers.dialog.settings.performance.enableFontSmoothing')}</span>
+                            <span className="settings-toggle-description">{t('servers.dialog.settings.performance.enableFontSmoothingDesc')}</span>
                         </div>
                         <ToggleSwitch checked={enableFontSmoothing} onChange={(val) => handleDisplaySettingChange('enableFontSmoothing', val, setEnableFontSmoothing)} id="enable-font-smoothing" />
                     </div>
 
-                    <div className="monitoring-toggle-container">
-                        <div className="monitoring-toggle-info">
-                            <span className="monitoring-label">{t('servers.dialog.settings.performance.enableFullWindowDrag')}</span>
-                            <span className="monitoring-description">{t('servers.dialog.settings.performance.enableFullWindowDragDesc')}</span>
+                    <div className="settings-toggle">
+                        <div className="settings-toggle-info">
+                            <span className="settings-toggle-label">{t('servers.dialog.settings.performance.enableFullWindowDrag')}</span>
+                            <span className="settings-toggle-description">{t('servers.dialog.settings.performance.enableFullWindowDragDesc')}</span>
                         </div>
                         <ToggleSwitch checked={enableFullWindowDrag} onChange={(val) => handleDisplaySettingChange('enableFullWindowDrag', val, setEnableFullWindowDrag)} id="enable-full-window-drag" />
                     </div>
 
-                    <div className="monitoring-toggle-container">
-                        <div className="monitoring-toggle-info">
-                            <span className="monitoring-label">{t('servers.dialog.settings.performance.enableDesktopComposition')}</span>
-                            <span className="monitoring-description">{t('servers.dialog.settings.performance.enableDesktopCompositionDesc')}</span>
+                    <div className="settings-toggle">
+                        <div className="settings-toggle-info">
+                            <span className="settings-toggle-label">{t('servers.dialog.settings.performance.enableDesktopComposition')}</span>
+                            <span className="settings-toggle-description">{t('servers.dialog.settings.performance.enableDesktopCompositionDesc')}</span>
                         </div>
                         <ToggleSwitch checked={enableDesktopComposition} onChange={(val) => handleDisplaySettingChange('enableDesktopComposition', val, setEnableDesktopComposition)} id="enable-desktop-composition" />
                     </div>
 
-                    <div className="monitoring-toggle-container">
-                        <div className="monitoring-toggle-info">
-                            <span className="monitoring-label">{t('servers.dialog.settings.performance.enableMenuAnimations')}</span>
-                            <span className="monitoring-description">{t('servers.dialog.settings.performance.enableMenuAnimationsDesc')}</span>
+                    <div className="settings-toggle">
+                        <div className="settings-toggle-info">
+                            <span className="settings-toggle-label">{t('servers.dialog.settings.performance.enableMenuAnimations')}</span>
+                            <span className="settings-toggle-description">{t('servers.dialog.settings.performance.enableMenuAnimationsDesc')}</span>
                         </div>
                         <ToggleSwitch checked={enableMenuAnimations} onChange={(val) => handleDisplaySettingChange('enableMenuAnimations', val, setEnableMenuAnimations)} id="enable-menu-animations" />
                     </div>
