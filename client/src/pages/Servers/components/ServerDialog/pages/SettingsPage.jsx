@@ -3,7 +3,7 @@ import SelectBox from "@/common/components/SelectBox";
 import ToggleSwitch from "@/common/components/ToggleSwitch";
 import { ServerContext } from "@/common/contexts/ServerContext.jsx";
 import Icon from "@mdi/react";
-import { mdiServerNetwork, mdiClose, mdiPlus, mdiChartLine, mdiMonitor, mdiPalette } from "@mdi/js";
+import { mdiServerNetwork, mdiClose, mdiPlus, mdiChartLine, mdiMonitor, mdiPalette, mdiVolumeHigh } from "@mdi/js";
 import { useTranslation } from "react-i18next";
 
 const COLOR_DEPTHS = [
@@ -49,6 +49,7 @@ const SettingsPage = ({ config, setConfig, monitoringEnabled, setMonitoringEnabl
 
     const [colorDepth, setColorDepth] = useState(config?.colorDepth || "");
     const [resizeMethod, setResizeMethod] = useState(config?.resizeMethod || "display-update");
+    const [enableAudio, setEnableAudio] = useState(config?.enableAudio !== false);
     const [enableWallpaper, setEnableWallpaper] = useState(config?.enableWallpaper !== false);
     const [enableTheming, setEnableTheming] = useState(config?.enableTheming !== false);
     const [enableFontSmoothing, setEnableFontSmoothing] = useState(config?.enableFontSmoothing !== false);
@@ -73,6 +74,7 @@ const SettingsPage = ({ config, setConfig, monitoringEnabled, setMonitoringEnabl
 
         if (config?.colorDepth !== undefined) setColorDepth(config.colorDepth);
         if (config?.resizeMethod !== undefined) setResizeMethod(config.resizeMethod);
+        if (config?.enableAudio !== undefined) setEnableAudio(config.enableAudio);
         if (config?.enableWallpaper !== undefined) setEnableWallpaper(config.enableWallpaper);
         if (config?.enableTheming !== undefined) setEnableTheming(config.enableTheming);
         if (config?.enableFontSmoothing !== undefined) setEnableFontSmoothing(config.enableFontSmoothing);
@@ -134,7 +136,7 @@ const SettingsPage = ({ config, setConfig, monitoringEnabled, setMonitoringEnabl
 
     const showJumpHosts = config?.protocol === 'ssh';
 
-    if (!fieldConfig.showMonitoring && !fieldConfig.showKeyboardLayout && !fieldConfig.showDisplaySettings && !showJumpHosts) {
+    if (!fieldConfig.showMonitoring && !fieldConfig.showKeyboardLayout && !fieldConfig.showDisplaySettings && !fieldConfig.showAudioSettings && !showJumpHosts) {
         return <p className="text-center">{t('servers.dialog.settings.noSettings')}</p>;
     }
 
@@ -258,6 +260,19 @@ const SettingsPage = ({ config, setConfig, monitoringEnabled, setMonitoringEnabl
                             setSelected={(val) => handleDisplaySettingChange('resizeMethod', val, setResizeMethod)} 
                         />
                     </div>
+                </div>
+            )}
+
+            {fieldConfig.showAudioSettings && (
+                <div className="monitoring-toggle-container">
+                    <div className="monitoring-toggle-info">
+                        <span className="monitoring-label">
+                            <Icon path={mdiVolumeHigh} size={0.8} style={{ marginRight: '8px', verticalAlign: 'middle' }} />
+                            {t('servers.dialog.settings.audio.enableAudio')}
+                        </span>
+                        <span className="monitoring-description">{t('servers.dialog.settings.audio.enableAudioDesc')}</span>
+                    </div>
+                    <ToggleSwitch checked={enableAudio} onChange={(val) => handleDisplaySettingChange('enableAudio', val, setEnableAudio)} id="enable-audio" />
                 </div>
             )}
 
