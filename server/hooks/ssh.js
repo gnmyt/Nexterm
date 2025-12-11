@@ -3,22 +3,12 @@ const SessionManager = require("../lib/SessionManager");
 const { parseResizeMessage, setupSSHEventHandlers } = require("../utils/sshEventHandlers");
 
 const setupStreamHandlers = (ws, stream) => {
-    const onData = (data) => {
-        if (ws.readyState === ws.OPEN) {
-            ws.send(data.toString());
-        }
-    };
+    const onData = (data) => ws.readyState === ws.OPEN && ws.send(data.toString());
     stream.on("data", onData);
-
     ws.on("message", (data) => {
         const resize = parseResizeMessage(data);
-        if (resize) {
-            stream.setWindow(resize.height, resize.width);
-        } else {
-            stream.write(data);
-        }
+        resize ? stream.setWindow(resize.height, resize.width) : stream.write(data);
     });
-
     return onData;
 };
 
@@ -28,8 +18,23 @@ module.exports = async (ws, context) => {
 
     if (reuseConnection) {
         const { stream } = SessionManager.getConnection(serverSession.sessionId);
+        const bufferedLogs = SessionManager.getLogBuffer(serverSession.sessionId);
+        if (bufferedLogs && ws.readyState === ws.OPEN) ws.send(bufferedLogs);
+        
         const onData = setupStreamHandlers(ws, stream);
-        ws.on("close", () => stream.removeListener("data", onData));
+        const onFirstResize = (data) => {
+            const resize = parseResizeMessage(data);
+            if (resize) {
+                stream.setWindow(resize.height - 1, resize.width);
+                setTimeout(() => stream.setWindow(resize.height, resize.width), 50);
+                ws.removeListener("message", onFirstResize);
+            }
+        };
+        ws.on("message", onFirstResize);
+        ws.on("close", () => {
+            stream.removeListener("data", onData);
+            ws.removeListener("message", onFirstResize);
+        });
         return;
     }
 
@@ -44,12 +49,11 @@ module.exports = async (ws, context) => {
                 reject?.(err);
                 return ws.close(4008, `Shell error: ${err.message}`);
             }
-
             if (serverSession) {
+                stream.on("data", (data) => SessionManager.appendLog(serverSession.sessionId, data.toString()));
                 SessionManager.setConnection(serverSession.sessionId, { ssh, stream, auditLogId });
                 resolve?.();
             }
-
             const onData = setupStreamHandlers(ws, stream);
             ws.on("close", async () => {
                 stream.removeListener("data", onData);

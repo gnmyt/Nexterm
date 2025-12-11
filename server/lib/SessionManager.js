@@ -10,6 +10,8 @@ class SessionManager {
         SessionManager.instance = this;
     }
 
+    static MAX_LOG_BUFFER_SIZE = 200 * 1024; // 200KB
+
     create(accountId, entryId, configuration, connectionReason = null, tabId = null, browserId = null, auditLogId = null) {
         const sessionId = uuidv4();
         const session = {
@@ -25,7 +27,8 @@ class SessionManager {
             createdAt: new Date(),
             lastActivity: new Date(),
             connection: null,
-            connectingPromise: null
+            connectingPromise: null,
+            logBuffer: ''
         };
         this.sessions.push(session);
         logger.info(`Session created`, { sessionId, accountId, entryId, tabId, browserId, auditLogId });
@@ -79,6 +82,21 @@ class SessionManager {
     getConnectingPromise(sessionId) {
         const session = this.get(sessionId);
         return session ? session.connectingPromise : null;
+    }
+
+    appendLog(sessionId, data) {
+        const session = this.get(sessionId);
+        if (session) {
+            session.logBuffer += data;
+            if (session.logBuffer.length > SessionManager.MAX_LOG_BUFFER_SIZE) {
+                session.logBuffer = session.logBuffer.slice(-SessionManager.MAX_LOG_BUFFER_SIZE);
+            }
+        }
+    }
+
+    getLogBuffer(sessionId) {
+        const session = this.get(sessionId);
+        return session ? session.logBuffer : '';
     }
 
     hibernate(sessionId) {
