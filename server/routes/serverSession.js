@@ -1,5 +1,5 @@
 const { Router } = require("express");
-const { createSession, getSessions, hibernateSession, resumeSession, deleteSession } = require("../controllers/serverSession");
+const { createSession, getSessions, getSession, hibernateSession, resumeSession, deleteSession } = require("../controllers/serverSession");
 const { createSessionValidation, sessionIdValidation, resumeSessionValidation } = require("../validations/serverSession");
 const { validateSchema } = require("../utils/schema");
 
@@ -47,6 +47,26 @@ app.post("/", async (req, res) => {
 app.get("/", async (req, res) => {
     const { tabId, browserId } = req.query;
     res.json(await getSessions(req.user.id, tabId, browserId));
+});
+
+/**
+ * GET /connections/{id}
+ * @summary Get Connection
+ * @description Retrieves a specific server connection.
+ * @tags Connection
+ * @produces application/json
+ * @security BearerAuth
+ * @param {string} id.path.required - Session ID
+ * @return {object} 200 - Session details
+ */
+app.get("/:id", async (req, res) => {
+    if (validateSchema(res, sessionIdValidation, req.params)) return;
+    
+    const result = await getSession(req.user.id, req.params.id);
+    if (result?.code) {
+        return res.status(result.code).json({ error: result.message });
+    }
+    res.json(result);
 });
 
 /**

@@ -145,4 +145,51 @@ const deleteSession = (sessionId) => {
     return { code: 404, message: "Session not found" };
 };
 
-module.exports = { createSession, getSessions, hibernateSession, resumeSession, deleteSession };
+const getSession = async (accountId, sessionId) => {
+    const session = SessionManager.get(sessionId);
+    if (!session) {
+        return { code: 404, message: "Session not found" };
+    }
+
+    if (session.accountId !== accountId) {
+        return { code: 403, message: "Access denied" };
+    }
+
+    const entry = await Entry.findByPk(session.entryId);
+    if (!entry) {
+        return { code: 404, message: "Entry not found" };
+    }
+
+    let organizationName = null;
+    if (entry.organizationId) {
+        const org = await Organization.findByPk(entry.organizationId, {
+            attributes: ['name']
+        });
+        organizationName = org?.name || null;
+    }
+
+    const server = {
+        id: entry.id,
+        name: entry.name,
+        type: entry.type,
+        icon: entry.icon,
+        renderer: entry.config?.renderer || (entry.type === 'server' ? 
+            (entry.config?.protocol === 'ssh' || entry.config?.protocol === 'telnet' ? 'terminal' : 'guac') : 
+            'terminal'),
+        protocol: entry.config?.protocol,
+    };
+
+    return {
+        id: session.sessionId,
+        server,
+        identity: session.configuration.identityId,
+        isHibernated: session.isHibernated,
+        lastActivity: session.lastActivity,
+        type: session.configuration.type || undefined,
+        organizationId: entry.organizationId || null,
+        organizationName,
+        scriptId: session.configuration.scriptId || undefined,
+    };
+};
+
+module.exports = { createSession, getSessions, getSession, hibernateSession, resumeSession, deleteSession };
