@@ -54,6 +54,7 @@ module.exports = async (ws, req) => {
                 enableFullWindowDrag: entry.config.enableFullWindowDrag === true,
                 enableDesktopComposition: entry.config.enableDesktopComposition === true,
                 enableMenuAnimations: entry.config.enableMenuAnimations === true,
+                enableAudio: entry.config.enableAudio !== false,
             };
 
             if (protocol === "rdp") {
@@ -128,6 +129,7 @@ module.exports = async (ws, req) => {
                 {
                     colorDepth: entry.config.colorDepth || "",
                     resizeMethod: entry.config.resizeMethod || "display-update",
+                    enableAudio: entry.config.enableAudio !== false,
                 },
             );
 

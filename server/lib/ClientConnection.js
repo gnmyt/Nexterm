@@ -47,6 +47,13 @@ class ClientConnection {
 
         this.connectionSettings = settings;
 
+        if (settings.enableAudio !== false) {
+            this.GUAC_AUDIO = ['audio/L8', 'audio/L16'];
+        } else {
+            this.GUAC_AUDIO = [];
+        }
+        this.GUAC_VIDEO = [];
+
         this.guacdClient = new GuacdClient(this, forcedConnectionId);
 
         if (this.sessionId) {
