@@ -110,10 +110,12 @@ const getSessions = async (accountId, tabId = null, browserId = null) => {
             organizationName = org?.name || null;
         }
 
+        const { directIdentity, ...safeConfiguration } = session.configuration;
+
         return {
             sessionId: session.sessionId,
             entryId: session.entryId,
-            configuration: session.configuration,
+            configuration: safeConfiguration,
             isHibernated: session.isHibernated,
             lastActivity: session.lastActivity,
             organizationId: entry?.organizationId || null,
