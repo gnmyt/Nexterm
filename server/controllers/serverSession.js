@@ -67,6 +67,7 @@ const createSession = async (accountId, entryId, identityId, connectionReason, t
         type: type || null,
         directIdentity: directIdentity || null,
         scriptId: scriptId || null,
+        renderer: type === "sftp" ? "sftp" : entry.renderer,
     };
 
     const session = SessionManager.create(accountId, entryId, configuration, connectionReason, tabId, browserId, auditLogId);
@@ -116,7 +117,9 @@ const getSessions = async (accountId, tabId = null, browserId = null) => {
             isHibernated: session.isHibernated,
             lastActivity: session.lastActivity,
             organizationId: entry?.organizationId || null,
-            organizationName
+            organizationName,
+            shareId: session.shareId || null,
+            shareWritable: session.shareWritable || false,
         };
     }));
 };
@@ -173,9 +176,7 @@ const getSession = async (accountId, sessionId) => {
         name: entry.name,
         type: entry.type,
         icon: entry.icon,
-        renderer: entry.config?.renderer || (entry.type === 'server' ? 
-            (entry.config?.protocol === 'ssh' || entry.config?.protocol === 'telnet' ? 'terminal' : 'guac') : 
-            'terminal'),
+        renderer: entry.renderer,
         protocol: entry.config?.protocol,
     };
 
@@ -189,7 +190,37 @@ const getSession = async (accountId, sessionId) => {
         organizationId: entry.organizationId || null,
         organizationName,
         scriptId: session.configuration.scriptId || undefined,
+        shareId: session.shareId || null,
+        shareWritable: session.shareWritable || false,
     };
 };
 
-module.exports = { createSession, getSessions, getSession, hibernateSession, resumeSession, deleteSession };
+const validateSessionOwnership = (accountId, sessionId) => {
+    const session = SessionManager.get(sessionId);
+    if (!session) return { error: { code: 404, message: "Session not found" } };
+    if (session.accountId !== accountId) return { error: { code: 403, message: "Access denied" } };
+    return { session };
+};
+
+const startSharing = (accountId, sessionId, writable = false) => {
+    const { error } = validateSessionOwnership(accountId, sessionId);
+    if (error) return error;
+    return { shareId: SessionManager.startSharing(sessionId, writable), writable };
+};
+
+const stopSharing = (accountId, sessionId) => {
+    const { error } = validateSessionOwnership(accountId, sessionId);
+    if (error) return error;
+    SessionManager.stopSharing(sessionId);
+    return { message: "Sharing stopped" };
+};
+
+const updateSharePermissions = (accountId, sessionId, writable) => {
+    const { session, error } = validateSessionOwnership(accountId, sessionId);
+    if (error) return error;
+    if (!session.shareId) return { code: 400, message: "Session is not being shared" };
+    SessionManager.updateSharePermissions(sessionId, writable);
+    return { writable };
+};
+
+module.exports = { createSession, getSessions, getSession, hibernateSession, resumeSession, deleteSession, startSharing, stopSharing, updateSharePermissions };

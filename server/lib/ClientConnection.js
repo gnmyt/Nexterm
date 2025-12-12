@@ -21,7 +21,7 @@ const SessionManager = require("./SessionManager");
 
 class ClientConnection {
 
-    constructor(webSocket, clientOptions, settings, forcedConnectionId = null) {
+    constructor(webSocket, clientOptions, settings) {
         this.STATE_OPEN = 1;
         this.STATE_CLOSED = 2;
 
@@ -54,10 +54,15 @@ class ClientConnection {
         }
         this.GUAC_VIDEO = [];
 
-        this.guacdClient = new GuacdClient(this, forcedConnectionId);
+        const existingConn = this.sessionId ? SessionManager.getConnection(this.sessionId) : null;
+        const joinConnectionId = existingConn?.guacdClient?.guacdConnectionId || null;
+        
+        this.guacdClient = new GuacdClient(this, joinConnectionId);
 
         if (this.sessionId) {
-            SessionManager.setConnection(this.sessionId, { guacdClient: this.guacdClient, clientConnection: this });
+            if (!existingConn) {
+                SessionManager.setConnection(this.sessionId, { guacdClient: this.guacdClient, clientConnection: this });
+            }
             SessionManager.addWebSocket(this.sessionId, webSocket);
             SessionManager.setActiveWs(this.sessionId, webSocket);
         }
@@ -84,6 +89,10 @@ class ClientConnection {
 
         if (this.sessionId) {
             SessionManager.removeWebSocket(this.sessionId, this.webSocket);
+        }
+
+        if (this.guacdClient && !this.guacdClient.isPrimary) {
+            this.guacdClient.close();
         }
 
         this.webSocket.removeAllListeners("close");

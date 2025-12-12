@@ -21,7 +21,7 @@ const SessionManager = require('./SessionManager');
 
 class GuacdClient {
 
-    constructor(clientConnection, forcedConnectionId = null) {
+    constructor(clientConnection, joinConnectionId = null) {
         this.STATE_OPENING = 0;
         this.STATE_OPEN = 1;
         this.STATE_CLOSED = 2;
@@ -29,7 +29,8 @@ class GuacdClient {
         this.state = this.STATE_OPENING;
 
         this.clientConnection = clientConnection;
-        this.forcedConnectionId = forcedConnectionId;
+        this.joinConnectionId = joinConnectionId;
+        this.isPrimary = !joinConnectionId;
         this.guacdConnectionId = null;
         this.handshakeReplySent = false;
         this.receivedBuffer = '';
@@ -43,18 +44,26 @@ class GuacdClient {
         this.guacdConnection.on('error', this.clientConnection.error.bind(this.clientConnection));
 
         this.activityCheckInterval = setInterval(this.checkActivity.bind(this), 1000);
+        
+        this.sessionId = this.clientConnection.sessionId;
 
-        this.keepAliveInterval = setInterval(() => {
-            if (this.state === this.STATE_OPEN) {
-                const sessionId = this.clientConnection.sessionId;
-                if (sessionId) {
-                    const session = SessionManager.get(sessionId);
-                    if (session && session.connectedWs.size === 0) {
-                        this.sendOpCode(['nop']);
+        if (this.sessionId) {
+            SessionManager.addGuacdClient(this.sessionId, this);
+        }
+
+        if (!joinConnectionId) {
+            this.keepAliveInterval = setInterval(() => {
+                if (this.state === this.STATE_OPEN) {
+                    const sessionId = this.clientConnection.sessionId;
+                    if (sessionId) {
+                        const session = SessionManager.get(sessionId);
+                        if (session && session.connectedWs.size === 0 && session.sharedWs.size === 0) {
+                            this.sendOpCode(['nop']);
+                        }
                     }
                 }
-            }
-        }, 5000);
+            }, 5000);
+        }
     }
 
     checkActivity() {
@@ -69,7 +78,13 @@ class GuacdClient {
         }
 
         clearInterval(this.activityCheckInterval);
-        clearInterval(this.keepAliveInterval);
+        if (this.keepAliveInterval) {
+            clearInterval(this.keepAliveInterval);
+        }
+
+        if (this.sessionId) {
+            SessionManager.removeGuacdClient(this.sessionId, this);
+        }
 
         this.guacdConnection.removeAllListeners('close');
         this.guacdConnection.end();
@@ -87,19 +102,20 @@ class GuacdClient {
     }
 
     processConnectionOpen() {
-        if (this.forcedConnectionId) {
-            this.sendOpCode(['select', this.forcedConnectionId]);
+        if (this.joinConnectionId) {
+            this.sendOpCode(['select', this.joinConnectionId]);
         } else {
             this.sendOpCode(['select', this.clientConnection.connectionType]);
         }
     }
 
     sendSize() {
+        const conn = this.clientConnection.connectionSettings?.connection;
         this.sendOpCode([
             'size',
-            this.clientConnection.connectionSettings.connection.width,
-            this.clientConnection.connectionSettings.connection.height,
-            this.clientConnection.connectionSettings.connection.dpi
+            conn?.width || 1024,
+            conn?.height || 768,
+            conn?.dpi || 96
         ]);
     }
 
@@ -128,7 +144,8 @@ class GuacdClient {
     }
 
     getConnectionOption(optionName) {
-        return this.clientConnection.connectionSettings.connection[this.constructor.parseOpCodeAttribute(optionName)] || null
+        const conn = this.clientConnection.connectionSettings?.connection;
+        return conn?.[this.constructor.parseOpCodeAttribute(optionName)] || null;
     }
 
     getFirstOpCodeFromBuffer() {
@@ -189,12 +206,9 @@ class GuacdClient {
             this.receivedBuffer = this.receivedBuffer.substring(delimiterPos + 1, this.receivedBuffer.length);
 
             if (!this.guacdConnectionId && bufferPartToSend.includes('5.ready')) {
-                const parts = bufferPartToSend.split(',');
-                if (parts.length >= 2) {
-                    const match = bufferPartToSend.match(/5\.ready,(\d+)\.([^;]+);/);
-                    if (match && match[2]) {
-                        this.guacdConnectionId = match[2];
-                    }
+                const match = bufferPartToSend.match(/5\.ready,(\d+)\.([^;]+);/);
+                if (match && match[2]) {
+                    this.guacdConnectionId = match[2];
                 }
             }
 
