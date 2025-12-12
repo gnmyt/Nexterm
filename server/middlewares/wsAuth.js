@@ -7,6 +7,32 @@ const { validateEntryAccess } = require("../controllers/entry");
 const { getOrganizationAuditSettingsInternal } = require("../controllers/audit");
 const { resolveIdentity } = require("../utils/identityResolver");
 
+const authenticateSharedSession = async (ws, query) => {
+    const { shareId } = query;
+    if (!shareId) return null;
+
+    const session = SessionManager.getByShareId(shareId);
+    if (!session) return ws.close(4013, "Invalid share link"), null;
+
+    const entry = await Entry.findByPk(session.entryId, { attributes: ['id', 'type', 'config', 'integrationId'] });
+    if (!entry) return ws.close(4005, "Entry not found"), null;
+
+    return {
+        entry,
+        integration: null,
+        identity: null,
+        user: null,
+        session: null,
+        serverSession: session,
+        containerId: "0",
+        connectionReason: null,
+        ipAddress: query.ip || "unknown",
+        userAgent: query.userAgent || "unknown",
+        isShared: true,
+        shareWritable: session.shareWritable,
+    };
+};
+
 const authenticateWebSocket = async (ws, query) => {
     const { sessionToken, entryId, sessionId } = query;
 
@@ -67,6 +93,9 @@ const authenticateWebSocket = async (ws, query) => {
 }
 
 module.exports = async (ws, req) => {
+    const sharedAuth = await authenticateSharedSession(ws, req.query);
+    if (sharedAuth) return sharedAuth;
+
     const baseAuth = await authenticateWebSocket(ws, req.query);
     if (!baseAuth) return null;
 

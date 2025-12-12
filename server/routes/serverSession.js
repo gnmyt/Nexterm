@@ -1,5 +1,5 @@
 const { Router } = require("express");
-const { createSession, getSessions, hibernateSession, resumeSession, deleteSession } = require("../controllers/serverSession");
+const { createSession, getSessions, getSession, hibernateSession, resumeSession, deleteSession, startSharing, stopSharing, updateSharePermissions } = require("../controllers/serverSession");
 const { createSessionValidation, sessionIdValidation, resumeSessionValidation } = require("../validations/serverSession");
 const { validateSchema } = require("../utils/schema");
 
@@ -47,6 +47,26 @@ app.post("/", async (req, res) => {
 app.get("/", async (req, res) => {
     const { tabId, browserId } = req.query;
     res.json(await getSessions(req.user.id, tabId, browserId));
+});
+
+/**
+ * GET /connections/{id}
+ * @summary Get Connection
+ * @description Retrieves a specific server connection.
+ * @tags Connection
+ * @produces application/json
+ * @security BearerAuth
+ * @param {string} id.path.required - Session ID
+ * @return {object} 200 - Session details
+ */
+app.get("/:id", async (req, res) => {
+    if (validateSchema(res, sessionIdValidation, req.params)) return;
+    
+    const result = await getSession(req.user.id, req.params.id);
+    if (result?.code) {
+        return res.status(result.code).json({ error: result.message });
+    }
+    res.json(result);
 });
 
 /**
@@ -108,6 +128,57 @@ app.delete("/:id", async (req, res) => {
     if (result?.code) {
         return res.status(result.code).json({ error: result.message });
     }
+    res.json(result);
+});
+
+/**
+ * POST /connections/{id}/share
+ * @summary Start Sharing
+ * @description Starts sharing a session.
+ * @tags Connection
+ * @produces application/json
+ * @security BearerAuth
+ * @param {string} id.path.required - Session ID
+ * @return {object} 200 - Share details
+ */
+app.post("/:id/share", (req, res) => {
+    if (validateSchema(res, sessionIdValidation, req.params)) return;
+    const result = startSharing(req.user.id, req.params.id, req.body?.writable === true);
+    if (result?.code) return res.status(result.code).json({ error: result.message });
+    res.json(result);
+});
+
+/**
+ * DELETE /connections/{id}/share
+ * @summary Stop Sharing
+ * @description Stops sharing a session.
+ * @tags Connection
+ * @produces application/json
+ * @security BearerAuth
+ * @param {string} id.path.required - Session ID
+ * @return {object} 200 - Success message
+ */
+app.delete("/:id/share", (req, res) => {
+    if (validateSchema(res, sessionIdValidation, req.params)) return;
+    const result = stopSharing(req.user.id, req.params.id);
+    if (result?.code) return res.status(result.code).json({ error: result.message });
+    res.json(result);
+});
+
+/**
+ * PATCH /connections/{id}/share
+ * @summary Update Share Permissions
+ * @description Updates share permissions for a session.
+ * @tags Connection
+ * @produces application/json
+ * @security BearerAuth
+ * @param {string} id.path.required - Session ID
+ * @return {object} 200 - Updated permissions
+ */
+app.patch("/:id/share", (req, res) => {
+    if (validateSchema(res, sessionIdValidation, req.params)) return;
+    const result = updateSharePermissions(req.user.id, req.params.id, req.body?.writable === true);
+    if (result?.code) return res.status(result.code).json({ error: result.message });
     res.json(result);
 });
 

@@ -11,6 +11,8 @@ module.exports = async (ws, req) => {
     const context = await wsAuth(ws, req);
     if (!context) return;
 
+    if (context.isShared) return guacamoleHook(ws, context);
+
     const { entry, integration, identity, user, connectionReason, ipAddress, userAgent, serverSession } = context;
     if (serverSession) SessionManager.resume(serverSession.sessionId);
 

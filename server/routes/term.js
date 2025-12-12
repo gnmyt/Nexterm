@@ -15,6 +15,15 @@ module.exports = async (ws, req) => {
     const context = await wsAuth(ws, req);
     if (!context) return;
 
+    if (context.isShared) {
+        const isSSH = context.entry.type === "ssh" || (context.entry.type === "server" && context.entry.config?.protocol === "ssh");
+        const isPveLxc = context.entry.type === "pve-lxc" || context.entry.type === "pve-shell";
+        if (isSSH) return sshHook(ws, context);
+        if (isPveLxc) return pveLxcHook(ws, context);
+        ws.close(4015, "Sharing not supported for this session type");
+        return;
+    }
+
     const { entry, integration, identity, user, containerId, connectionReason, ipAddress, userAgent, serverSession } = context;
 
     if (serverSession) {

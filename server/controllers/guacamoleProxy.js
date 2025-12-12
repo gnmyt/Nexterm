@@ -1,6 +1,5 @@
 const ClientConnection = require('../lib/ClientConnection.js');
 const logger = require('../utils/logger');
-const SessionManager = require("../lib/SessionManager");
 
 module.exports = async (ws, settings) => {
     try {
@@ -13,16 +12,7 @@ module.exports = async (ws, settings) => {
             }
         };
 
-        const { serverSession } = settings;
-        let existingConnection = null;
-        if (serverSession) existingConnection = SessionManager.getConnection(serverSession.sessionId);
-
-        if (existingConnection && existingConnection.guacdClient && existingConnection.guacdClient.guacdConnectionId) {
-            const connectionId = existingConnection.guacdClient.guacdConnectionId;
-            new ClientConnection(ws, this.clientOptions, settings, connectionId);
-        } else {
-            new ClientConnection(ws, this.clientOptions, settings);
-        }
+        new ClientConnection(ws, this.clientOptions, settings);
 
     } catch (error) {
         logger.error("Error in guacamoleProxy", { error: error.message, stack: error.stack });

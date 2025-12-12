@@ -1,7 +1,7 @@
 import { createContext, useContext, useState, useEffect } from "react";
 import { getRequest } from "@/common/utils/RequestUtil.js";
 
-const AIContext = createContext({});
+export const AIContext = createContext({});
 
 export const useAI = () => {
     const context = useContext(AIContext);

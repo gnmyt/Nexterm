@@ -67,6 +67,7 @@ const createSession = async (accountId, entryId, identityId, connectionReason, t
         type: type || null,
         directIdentity: directIdentity || null,
         scriptId: scriptId || null,
+        renderer: type === "sftp" ? "sftp" : entry.renderer,
     };
 
     const session = SessionManager.create(accountId, entryId, configuration, connectionReason, tabId, browserId, auditLogId);
@@ -109,14 +110,18 @@ const getSessions = async (accountId, tabId = null, browserId = null) => {
             organizationName = org?.name || null;
         }
 
+        const { directIdentity, ...safeConfiguration } = session.configuration;
+
         return {
             sessionId: session.sessionId,
             entryId: session.entryId,
-            configuration: session.configuration,
+            configuration: safeConfiguration,
             isHibernated: session.isHibernated,
             lastActivity: session.lastActivity,
             organizationId: entry?.organizationId || null,
-            organizationName
+            organizationName,
+            shareId: session.shareId || null,
+            shareWritable: session.shareWritable || false,
         };
     }));
 };
@@ -145,4 +150,79 @@ const deleteSession = (sessionId) => {
     return { code: 404, message: "Session not found" };
 };
 
-module.exports = { createSession, getSessions, hibernateSession, resumeSession, deleteSession };
+const getSession = async (accountId, sessionId) => {
+    const session = SessionManager.get(sessionId);
+    if (!session) {
+        return { code: 404, message: "Session not found" };
+    }
+
+    if (session.accountId !== accountId) {
+        return { code: 403, message: "Access denied" };
+    }
+
+    const entry = await Entry.findByPk(session.entryId);
+    if (!entry) {
+        return { code: 404, message: "Entry not found" };
+    }
+
+    let organizationName = null;
+    if (entry.organizationId) {
+        const org = await Organization.findByPk(entry.organizationId, {
+            attributes: ['name']
+        });
+        organizationName = org?.name || null;
+    }
+
+    const server = {
+        id: entry.id,
+        name: entry.name,
+        type: entry.type,
+        icon: entry.icon,
+        renderer: entry.renderer,
+        protocol: entry.config?.protocol,
+    };
+
+    return {
+        id: session.sessionId,
+        server,
+        identity: session.configuration.identityId,
+        isHibernated: session.isHibernated,
+        lastActivity: session.lastActivity,
+        type: session.configuration.type || undefined,
+        organizationId: entry.organizationId || null,
+        organizationName,
+        scriptId: session.configuration.scriptId || undefined,
+        shareId: session.shareId || null,
+        shareWritable: session.shareWritable || false,
+    };
+};
+
+const validateSessionOwnership = (accountId, sessionId) => {
+    const session = SessionManager.get(sessionId);
+    if (!session) return { error: { code: 404, message: "Session not found" } };
+    if (session.accountId !== accountId) return { error: { code: 403, message: "Access denied" } };
+    return { session };
+};
+
+const startSharing = (accountId, sessionId, writable = false) => {
+    const { error } = validateSessionOwnership(accountId, sessionId);
+    if (error) return error;
+    return { shareId: SessionManager.startSharing(sessionId, writable), writable };
+};
+
+const stopSharing = (accountId, sessionId) => {
+    const { error } = validateSessionOwnership(accountId, sessionId);
+    if (error) return error;
+    SessionManager.stopSharing(sessionId);
+    return { message: "Sharing stopped" };
+};
+
+const updateSharePermissions = (accountId, sessionId, writable) => {
+    const { session, error } = validateSessionOwnership(accountId, sessionId);
+    if (error) return error;
+    if (!session.shareId) return { code: 400, message: "Session is not being shared" };
+    SessionManager.updateSharePermissions(sessionId, writable);
+    return { writable };
+};
+
+module.exports = { createSession, getSessions, getSession, hibernateSession, resumeSession, deleteSession, startSharing, stopSharing, updateSharePermissions };
