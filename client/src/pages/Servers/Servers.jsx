@@ -1,7 +1,7 @@
 import "./styles.sass";
 import ServerList from "@/pages/Servers/components/ServerList";
 import { UserContext } from "@/common/contexts/UserContext.jsx";
-import { useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useState, useCallback } from "react";
 import Button from "@/common/components/Button";
 import WelcomeImage from "@/common/img/welcome.avif";
 import { DISCORD_URL, GITHUB_URL } from "@/App.jsx";
@@ -85,6 +85,8 @@ export const Servers = () => {
                     organizationId: session.organizationId,
                     organizationName: session.organizationName,
                     scriptId: session.configuration.scriptId || undefined,
+                    shareId: session.shareId || null,
+                    shareWritable: session.shareWritable || false,
                 };
             }).filter(s => s !== null);
 
@@ -116,6 +118,15 @@ export const Servers = () => {
             console.error("Failed to fetch sessions", error);
         }
     };
+
+    const refreshSession = useCallback(async (sessionId) => {
+        try {
+            const sessionData = await getRequest(`/connections/${sessionId}`);
+            setActiveSessions(prev => prev.map(s => s.id === sessionId ? { ...s, shareId: sessionData.shareId, shareWritable: sessionData.shareWritable } : s));
+        } catch (error) {
+            console.error("Failed to refresh session", error);
+        }
+    }, [setActiveSessions]);
 
     useEffect(() => {
         if (servers) {
@@ -434,7 +445,8 @@ export const Servers = () => {
                 <ViewContainer activeSessions={visibleSessions} disconnectFromServer={disconnectFromServer}
                                closeSession={closeSession}
                                activeSessionId={activeSessionId} setActiveSessionId={setActiveSessionId}
-                               hibernateSession={hibernateSession} setOpenFileEditors={setOpenFileEditors} />}
+                               hibernateSession={hibernateSession} setOpenFileEditors={setOpenFileEditors}
+                               onShareUpdate={refreshSession} />}
             {openFileEditors.map((editor, index) => (
                 editor.type === "preview" ? (
                     <FilePreviewWindow

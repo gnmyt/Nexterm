@@ -8,6 +8,7 @@ import "@/common/styles/main.sass";
 import { useEffect, useState, lazy } from "react";
 import Root from "@/common/layouts/Root.jsx";
 import PopoutRoot from "@/common/layouts/PopoutRoot.jsx";
+import ShareRoot from "@/common/layouts/ShareRoot.jsx";
 import i18n from "./i18n.js";
 import Loading from "@/common/components/Loading";
 
@@ -17,6 +18,7 @@ const Snippets = lazy(() => import("@/pages/Snippets"));
 const Monitoring = lazy(() => import("@/pages/Monitoring"));
 const Audit = lazy(() => import("@/pages/Audit"));
 const Popout = lazy(() => import("@/pages/Popout"));
+const Share = lazy(() => import("@/pages/Share"));
 
 export const GITHUB_URL = "https://github.com/gnmyt/Nexterm";
 export const DISCORD_URL = "https://dc.gnm.dev/";
@@ -48,6 +50,13 @@ const App = () => {
             element: <PopoutRoot />,
             children: [
                 { path: "/popout/:sessionId", element: <Popout /> }
+            ],
+        },
+        {
+            path: "/share",
+            element: <ShareRoot />,
+            children: [
+                { path: "/share/:shareId", element: <Share /> }
             ],
         },
     ]);
