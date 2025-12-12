@@ -18,6 +18,7 @@
 
 const Net = require('net');
 const SessionManager = require('./SessionManager');
+const logger = require('../utils/logger');
 
 class GuacdClient {
 
@@ -210,6 +211,12 @@ class GuacdClient {
                 if (match && match[2]) {
                     this.guacdConnectionId = match[2];
                 }
+            }
+
+            if (this.isPrimary && this.sessionId &&
+                (bufferPartToSend.includes('5.error,') || bufferPartToSend.includes('10.disconnect;'))) {
+                logger.info('Guacd error/disconnect, removing session', { sessionId: this.sessionId });
+                SessionManager.remove(this.sessionId);
             }
 
             this.clientConnection.send(bufferPartToSend);
