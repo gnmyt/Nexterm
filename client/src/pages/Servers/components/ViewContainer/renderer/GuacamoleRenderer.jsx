@@ -203,7 +203,8 @@ const GuacamoleRenderer = ({
     };
 
     useEffect(() => {
-        connect();
+        const cleanup = connect();
+        return () => cleanup?.();
     }, [sessionToken, session.id, isShared]);
 
     useEffect(() => {
