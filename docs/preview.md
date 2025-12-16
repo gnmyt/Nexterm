@@ -40,3 +40,18 @@ volumes:
 ```sh
 docker-compose up -d
 ```
+
+### 🌐 IPv6 Support
+
+To connect to IPv6 servers from within the container, add the following to your existing `docker-compose.yml`:
+
+```diff
+services:
+  nexterm:
++   networks:
++     - nexterm-net
+
++networks:
++  nexterm-net:
++    enable_ipv6: true
+```
