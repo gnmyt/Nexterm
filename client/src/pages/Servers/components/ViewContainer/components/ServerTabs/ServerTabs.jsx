@@ -1,7 +1,7 @@
 import { useRef, useState, useEffect, useCallback } from "react";
 import Icon from "@mdi/react";
 import { loadIcon } from "@/pages/Servers/utils/iconMapping.js";
-import { mdiClose, mdiViewSplitVertical, mdiChevronLeft, mdiChevronRight, mdiSleep, mdiOpenInNew, mdiShareVariant, mdiLinkVariant, mdiPencil, mdiEye, mdiCloseCircle } from "@mdi/js";
+import { mdiClose, mdiViewSplitVertical, mdiChevronLeft, mdiChevronRight, mdiSleep, mdiOpenInNew, mdiShareVariant, mdiLinkVariant, mdiPencil, mdiEye, mdiCloseCircle, mdiContentDuplicate } from "@mdi/js";
 import { useDrag, useDrop } from "react-dnd";
 import TerminalActionsMenu from "../TerminalActionsMenu";
 import { ContextMenu, ContextMenuItem, ContextMenuSeparator, useContextMenu } from "@/common/components/ContextMenu";
@@ -16,6 +16,7 @@ const DraggableTab = ({
     setActiveSessionId,
     closeSession,
     hibernateSession,
+    duplicateSession,
     index,
     moveTab,
     progress = 0,
@@ -152,6 +153,11 @@ const DraggableTab = ({
                     </>
                 )}
                 <ContextMenuItem
+                    icon={mdiContentDuplicate}
+                    label="Duplicate"
+                    onClick={() => duplicateSession(session.id)}
+                />
+                <ContextMenuItem
                     icon={mdiSleep}
                     label="Hibernate Session"
                     onClick={() => hibernateSession(session.id)}
@@ -173,6 +179,7 @@ export const ServerTabs = ({
     activeSessionId,
     closeSession,
     hibernateSession,
+    duplicateSession,
     layoutMode,
     onToggleSplit,
     orderRef,
@@ -308,7 +315,7 @@ export const ServerTabs = ({
                         return (
                             <DraggableTab key={session.id} session={session} server={session.server} index={index} moveTab={moveTab}
                                 activeSessionId={activeSessionId} setActiveSessionId={setActiveSessionId}
-                                closeSession={closeSession} hibernateSession={hibernateSession}
+                                closeSession={closeSession} hibernateSession={hibernateSession} duplicateSession={duplicateSession}
                                 progress={sessionProgress[session.id] || 0} onShareUpdate={onShareUpdate} />
                         );
                     })}

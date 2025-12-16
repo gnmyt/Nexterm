@@ -225,4 +225,36 @@ const updateSharePermissions = (accountId, sessionId, writable) => {
     return { writable };
 };
 
-module.exports = { createSession, getSessions, getSession, hibernateSession, resumeSession, deleteSession, startSharing, stopSharing, updateSharePermissions };
+const duplicateSession = async (accountId, sessionId, tabId = null, browserId = null, ipAddress = null, userAgent = null) => {
+    const session = SessionManager.get(sessionId);
+    if (!session) {
+        return { code: 404, message: "Session not found" };
+    }
+
+    if (session.accountId !== accountId) {
+        return { code: 403, message: "Access denied" };
+    }
+
+    const entry = await Entry.findByPk(session.entryId);
+    if (!entry) {
+        return { code: 404, message: "Entry not found" };
+    }
+
+    const config = session.configuration || {};
+    
+    return await createSession(
+        accountId,
+        session.entryId,
+        config.identityId,
+        null,
+        config.type,
+        config.directIdentity,
+        tabId,
+        browserId,
+        config.scriptId,
+        ipAddress,
+        userAgent
+    );
+};
+
+module.exports = { createSession, getSessions, getSession, hibernateSession, resumeSession, deleteSession, startSharing, stopSharing, updateSharePermissions, duplicateSession };

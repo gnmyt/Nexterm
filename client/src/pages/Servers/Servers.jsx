@@ -315,6 +315,31 @@ export const Servers = () => {
         }
     };
 
+    const duplicateSession = async (sessionId) => {
+        try {
+            const result = await postRequest(`/connections/${sessionId}/duplicate`, {
+                tabId: getTabId(),
+                browserId: getBrowserId(),
+            });
+
+            if (result?.sessionId) {
+                const originalSession = activeSessions.find(s => s.id === sessionId);
+                if (originalSession) {
+                    const sessionData = {
+                        ...originalSession,
+                        id: result.sessionId,
+                        shareId: null,
+                        shareWritable: false,
+                    };
+                    setActiveSessions(prevSessions => [...prevSessions, sessionData]);
+                    setActiveSessionId(result.sessionId);
+                }
+            }
+        } catch (error) {
+            console.error("Failed to duplicate session", error);
+        }
+    };
+
     const closeDialog = () => {
         setServerDialogOpen(false);
         setServerDialogProtocol(null);
@@ -445,7 +470,8 @@ export const Servers = () => {
                 <ViewContainer activeSessions={visibleSessions} disconnectFromServer={disconnectFromServer}
                                closeSession={closeSession}
                                activeSessionId={activeSessionId} setActiveSessionId={setActiveSessionId}
-                               hibernateSession={hibernateSession} setOpenFileEditors={setOpenFileEditors}
+                               hibernateSession={hibernateSession} duplicateSession={duplicateSession}
+                               setOpenFileEditors={setOpenFileEditors}
                                onShareUpdate={refreshSession} />}
             {openFileEditors.map((editor, index) => (
                 editor.type === "preview" ? (
