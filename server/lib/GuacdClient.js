@@ -22,207 +22,203 @@ const logger = require('../utils/logger');
 
 class GuacdClient {
 
-    constructor(clientConnection, joinConnectionId = null) {
-        this.STATE_OPENING = 0;
-        this.STATE_OPEN = 1;
-        this.STATE_CLOSED = 2;
-
-        this.state = this.STATE_OPENING;
-
-        this.clientConnection = clientConnection;
-        this.joinConnectionId = joinConnectionId;
-        this.isPrimary = !joinConnectionId;
-        this.guacdConnectionId = null;
-        this.handshakeReplySent = false;
-        this.receivedBuffer = '';
-        this.lastActivity = Date.now();
-
-        this.guacdConnection = Net.connect(4822, '127.0.0.1');
-
-        this.guacdConnection.on('connect', this.processConnectionOpen.bind(this));
-        this.guacdConnection.on('data', this.processReceivedData.bind(this));
-        this.guacdConnection.on('close', this.clientConnection.close.bind(this.clientConnection));
-        this.guacdConnection.on('error', this.clientConnection.error.bind(this.clientConnection));
-
-        this.activityCheckInterval = setInterval(this.checkActivity.bind(this), 1000);
+    constructor(options) {
+        this.sessionId = options.sessionId;
+        this.connectionSettings = options.connectionSettings || {};
+        this.joinConnectionId = options.joinConnectionId || null;
+        this.isMaster = options.isMaster !== false;
+        this.onDataCallback = options.onData || null;
+        this.onReadyCallback = options.onReady || null;
+        this.onCloseCallback = options.onClose || null;
         
-        this.sessionId = this.clientConnection.sessionId;
+        this.guacdConnection = null;
+        this.guacdConnectionId = null;
+        this.connectionType = this.connectionSettings.connection?.type || 'vnc';
+        
+        this.state = 'connecting';
+        this.handshakeComplete = false;
+        this.receivedBuffer = '';
+        
+        this.GUAC_AUDIO = this.connectionSettings.enableAudio !== false ? ['audio/L8', 'audio/L16'] : [];
+        this.GUAC_VIDEO = [];
+        
+        this.keepAliveInterval = null;
+    }
 
-        if (this.sessionId) {
-            SessionManager.addGuacdClient(this.sessionId, this);
+    connect() {
+        this.guacdConnection = Net.connect(4822, '127.0.0.1');
+        
+        this.guacdConnection.on('connect', () => {
+            if (this.joinConnectionId) {
+                this.sendOpCode(['select', this.joinConnectionId]);
+            } else {
+                this.sendOpCode(['select', this.connectionType]);
+            }
+        });
+        
+        this.guacdConnection.on('data', (data) => {
+            this.receivedBuffer += data;
+            
+            if (!this.handshakeComplete) {
+                if (this.receivedBuffer.indexOf(';') !== -1) {
+                    this.completeHandshake();
+                }
+                return;
+            }
+            
+            this.processData();
+        });
+        
+        this.guacdConnection.on('close', () => {
+            this.handleClose('connection closed');
+        });
+        
+        this.guacdConnection.on('error', (error) => {
+            this.handleError(error);
+        });
+
+        this.keepAliveInterval = setInterval(() => {
+            if (this.state === 'open') {
+                this.sendOpCode(['nop']);
+            }
+        }, 5000);
+        
+        return this;
+    }
+
+    completeHandshake() {
+        const delimiterPos = this.receivedBuffer.indexOf(';');
+        const serverHandshake = this.receivedBuffer.substring(0, delimiterPos);
+        this.receivedBuffer = this.receivedBuffer.substring(delimiterPos + 1);
+
+        const attributes = serverHandshake.split(',');
+        const conn = this.connectionSettings.connection || {};
+
+        this.sendOpCode(['size', conn.width || 1024, conn.height || 768, conn.dpi || 96]);
+        this.sendOpCode(['audio'].concat(this.GUAC_AUDIO));
+        this.sendOpCode(['video'].concat(this.GUAC_VIDEO));
+        this.sendOpCode(['image']);
+
+        const connectionOptions = ['connect'];
+        if (this.joinConnectionId) {
+            for (let i = 1; i < attributes.length; i++) {
+                connectionOptions.push('');
+            }
+        } else {
+            for (let i = 1; i < attributes.length; i++) {
+                const attr = attributes[i];
+                const name = attr.substring(attr.indexOf('.') + 1);
+                connectionOptions.push(conn[name] !== undefined ? conn[name] : '');
+            }
+        }
+        this.sendOpCode(connectionOptions);
+        
+        this.handshakeComplete = true;
+        this.state = 'open';
+
+        this.processData();
+    }
+
+    processData() {
+        const delimiterPos = this.receivedBuffer.lastIndexOf(';');
+        if (delimiterPos === -1) return;
+        
+        const dataToSend = this.receivedBuffer.substring(0, delimiterPos + 1);
+        this.receivedBuffer = this.receivedBuffer.substring(delimiterPos + 1);
+        
+        if (!dataToSend) return;
+
+        if (dataToSend.includes('.error,')) {
+            const errorMatch = dataToSend.match(/\d+\.error,(\d+)\.([^,]+),/);
+            if (errorMatch) {
+                const errorMessage = errorMatch[2];
+                logger.error(`Guacd error received`, { sessionId: this.sessionId, error: errorMessage, isMaster: this.isMaster });
+                this.handleClose(`error: ${errorMessage}`);
+                return;
+            }
         }
 
-        if (!joinConnectionId) {
-            this.keepAliveInterval = setInterval(() => {
-                if (this.state === this.STATE_OPEN) {
-                    const sessionId = this.clientConnection.sessionId;
-                    if (sessionId) {
-                        const session = SessionManager.get(sessionId);
-                        if (session && session.connectedWs.size === 0 && session.sharedWs.size === 0) {
-                            this.sendOpCode(['nop']);
-                        }
-                    }
-                }
-            }, 5000);
+        if (this.isMaster && !this.guacdConnectionId && dataToSend.includes('5.ready')) {
+            const match = dataToSend.match(/5\.ready,(\d+)\.([^;]+);/);
+            if (match?.[2]) {
+                this.guacdConnectionId = match[2];
+                logger.info(`Guacd connection ready`, { sessionId: this.sessionId, connectionId: this.guacdConnectionId });
+                SessionManager.updateMasterConnectionId(this.sessionId, this.guacdConnectionId);
+                this.onReadyCallback?.(this.guacdConnectionId);
+            }
+        }
+
+        if (this.onDataCallback) {
+            this.onDataCallback(dataToSend);
         }
     }
 
-    checkActivity() {
-        if (Date.now() > (this.lastActivity + 10000)) {
-            this.clientConnection.close(new Error('guacd was inactive for too long'));
+    send(data) {
+        if (this.state === 'closed' || !this.guacdConnection) return;
+        try {
+            this.guacdConnection.write(data);
+        } catch (e) {
+            this.handleError(e);
+        }
+    }
+
+    sendOpCode(parts) {
+        const formatted = parts.map(p => {
+            const str = p === null ? '' : String(p);
+            return str.length + '.' + str;
+        }).join(',') + ';';
+        this.send(formatted);
+    }
+
+    handleClose(reason) {
+        if (this.state === 'closed') return;
+        this.state = 'closed';
+        
+        logger.info(`Guacd connection closed`, { sessionId: this.sessionId, reason, isMaster: this.isMaster });
+        
+        this.cleanup();
+        this.onCloseCallback?.(reason);
+
+        if (this.isMaster) {
+            SessionManager.onMasterConnectionClosed(this.sessionId, reason);
+        }
+    }
+
+    handleError(error) {
+        if (this.state === 'closed') return;
+        
+        logger.error(`Guacd connection error`, { sessionId: this.sessionId, error: error?.message });
+        
+        this.handleClose('error: ' + (error?.message || 'unknown'));
+    }
+
+    cleanup() {
+        if (this.keepAliveInterval) {
+            clearInterval(this.keepAliveInterval);
+            this.keepAliveInterval = null;
+        }
+        
+        if (this.guacdConnection) {
+            this.guacdConnection.removeAllListeners();
+            try { this.guacdConnection.end(); } catch (e) {}
+            try { this.guacdConnection.destroy(); } catch (e) {}
+            this.guacdConnection = null;
         }
     }
 
     close() {
-        if (this.state === this.STATE_CLOSED) {
-            return;
-        }
-
-        clearInterval(this.activityCheckInterval);
-        if (this.keepAliveInterval) {
-            clearInterval(this.keepAliveInterval);
-        }
-
-        if (this.sessionId) {
-            SessionManager.removeGuacdClient(this.sessionId, this);
-        }
-
-        this.guacdConnection.removeAllListeners('close');
-        this.guacdConnection.end();
-        this.guacdConnection.destroy();
-
-        this.state = this.STATE_CLOSED;
+        this.handleClose('manual close');
     }
 
-    send(data) {
-        if (this.state === this.STATE_CLOSED) {
-            return;
-        }
-
-        this.guacdConnection.write(data);
+    getConnectionInfo() {
+        return {
+            guacdConnection: this.guacdConnection,
+            guacdConnectionId: this.guacdConnectionId,
+            connectionType: this.connectionType,
+            keepAliveInterval: this.keepAliveInterval,
+            guacdClient: this,
+        };
     }
-
-    processConnectionOpen() {
-        if (this.joinConnectionId) {
-            this.sendOpCode(['select', this.joinConnectionId]);
-        } else {
-            this.sendOpCode(['select', this.clientConnection.connectionType]);
-        }
-    }
-
-    sendSize() {
-        const conn = this.clientConnection.connectionSettings?.connection;
-        this.sendOpCode([
-            'size',
-            conn?.width || 1024,
-            conn?.height || 768,
-            conn?.dpi || 96
-        ]);
-    }
-
-    sendHandshakeReply() {
-        this.sendSize();
-        this.sendOpCode(['audio'].concat(this.clientConnection.GUAC_AUDIO || []));
-        this.sendOpCode(['video'].concat(this.clientConnection.GUAC_VIDEO || []));
-        this.sendOpCode(['image']);
-
-        let serverHandshake = this.getFirstOpCodeFromBuffer();
-
-        serverHandshake = serverHandshake.split(',');
-        let connectionOptions = [];
-
-        serverHandshake.forEach((attribute) => {
-            connectionOptions.push(this.getConnectionOption(attribute));
-        });
-
-        this.sendOpCode(connectionOptions);
-
-        this.handshakeReplySent = true;
-
-        if (this.state !== this.STATE_OPEN) {
-            this.state = this.STATE_OPEN;
-        }
-    }
-
-    getConnectionOption(optionName) {
-        const conn = this.clientConnection.connectionSettings?.connection;
-        return conn?.[this.constructor.parseOpCodeAttribute(optionName)] || null;
-    }
-
-    getFirstOpCodeFromBuffer() {
-        let delimiterPos = this.receivedBuffer.indexOf(';');
-        let opCode = this.receivedBuffer.substring(0, delimiterPos);
-
-        this.receivedBuffer = this.receivedBuffer.substring(delimiterPos + 1, this.receivedBuffer.length);
-
-        return opCode;
-    }
-
-    sendOpCode(opCode) {
-        opCode = this.constructor.formatOpCode(opCode);
-        this.send(opCode);
-    }
-
-    static formatOpCode(opCodeParts) {
-        opCodeParts.forEach((part, index, opCodeParts) => {
-            part = this.stringifyOpCodePart(part);
-            opCodeParts[index] = part.length + '.' + part;
-        });
-
-        return opCodeParts.join(',') + ';';
-    }
-
-    static stringifyOpCodePart(part) {
-        if (part === null) {
-            part = '';
-        }
-
-        return String(part);
-    }
-
-    static parseOpCodeAttribute(opCodeAttribute) {
-        return opCodeAttribute.substring(opCodeAttribute.indexOf('.') + 1, opCodeAttribute.length);
-    }
-
-    processReceivedData(data) {
-        this.receivedBuffer += data;
-        this.lastActivity = Date.now();
-
-        if (!this.handshakeReplySent) {
-            if (this.receivedBuffer.indexOf(';') === -1) {
-                return; // incomplete handshake received from guacd. Will wait for the next part
-            } else {
-                this.sendHandshakeReply();
-            }
-        }
-
-        this.sendBufferToWebSocket();
-    }
-
-    sendBufferToWebSocket() {
-        const delimiterPos = this.receivedBuffer.lastIndexOf(';');
-        const bufferPartToSend = this.receivedBuffer.substring(0, delimiterPos + 1);
-
-        if (bufferPartToSend) {
-            this.receivedBuffer = this.receivedBuffer.substring(delimiterPos + 1, this.receivedBuffer.length);
-
-            if (!this.guacdConnectionId && bufferPartToSend.includes('5.ready')) {
-                const match = bufferPartToSend.match(/5\.ready,(\d+)\.([^;]+);/);
-                if (match && match[2]) {
-                    this.guacdConnectionId = match[2];
-                }
-            }
-
-            if (this.isPrimary && this.sessionId &&
-                (bufferPartToSend.includes('5.error,') || bufferPartToSend.includes('10.disconnect;'))) {
-                logger.info('Guacd error/disconnect, removing session', { sessionId: this.sessionId });
-                SessionManager.remove(this.sessionId);
-            }
-
-            this.clientConnection.send(bufferPartToSend);
-        }
-    }
-
 }
 
 module.exports = GuacdClient;
