@@ -810,6 +810,16 @@
       }
     }
   },
+  "share": {
+    "errors": {
+      "unableToConnect": "Unable to Connect",
+      "failedToJoin": "Failed to join session"
+    },
+    "sessionEnded": {
+      "title": "Session Ended",
+      "description": "The shared session has been closed"
+    }
+  },
   "servers": {
     "time": {
       "justNow": "Solo ora",
