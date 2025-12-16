@@ -1,10 +1,12 @@
-import { useRef, useState, useEffect } from "react";
+import { useRef, useState, useEffect, useCallback } from "react";
 import Icon from "@mdi/react";
 import { loadIcon } from "@/pages/Servers/utils/iconMapping.js";
-import { mdiClose, mdiViewSplitVertical, mdiChevronLeft, mdiChevronRight, mdiSleep } from "@mdi/js";
+import { mdiClose, mdiViewSplitVertical, mdiChevronLeft, mdiChevronRight, mdiSleep, mdiOpenInNew, mdiShareVariant, mdiLinkVariant, mdiPencil, mdiEye, mdiCloseCircle } from "@mdi/js";
 import { useDrag, useDrop } from "react-dnd";
 import TerminalActionsMenu from "../TerminalActionsMenu";
-import { ContextMenu, ContextMenuItem, useContextMenu } from "@/common/components/ContextMenu";
+import { ContextMenu, ContextMenuItem, ContextMenuSeparator, useContextMenu } from "@/common/components/ContextMenu";
+import { useActiveSessions } from "@/common/contexts/SessionContext.jsx";
+import { postRequest, deleteRequest, patchRequest } from "@/common/utils/RequestUtil";
 import "./styles.sass";
 
 const DraggableTab = ({
@@ -17,8 +19,36 @@ const DraggableTab = ({
     index,
     moveTab,
     progress = 0,
+    onShareUpdate,
 }) => {
     const contextMenu = useContextMenu();
+    const { popOutSession } = useActiveSessions();
+    
+    const canPopOut = !session.scriptId && session.type !== "sftp";
+    const canShare = canPopOut;
+    const isSharing = !!session.shareId;
+
+    const handleShare = useCallback(async (writable) => {
+        const result = await postRequest(`connections/${session.id}/share`, { writable });
+        if (result?.shareId) {
+            navigator.clipboard.writeText(`${window.location.origin}/share/${result.shareId}`);
+        }
+        onShareUpdate?.(session.id);
+    }, [session.id, onShareUpdate]);
+
+    const handleStopSharing = useCallback(async () => {
+        await deleteRequest(`connections/${session.id}/share`);
+        onShareUpdate?.(session.id);
+    }, [session.id, onShareUpdate]);
+
+    const handleCopyLink = useCallback(() => {
+        navigator.clipboard.writeText(`${window.location.origin}/share/${session.shareId}`);
+    }, [session.shareId]);
+
+    const handlePermissionChange = useCallback(async (writable) => {
+        await patchRequest(`connections/${session.id}/share`, { writable });
+        onShareUpdate?.(session.id);
+    }, [session.id, onShareUpdate]);
     
     const [{ isDragging }, drag] = useDrag({
         type: "TAB",
@@ -94,6 +124,33 @@ const DraggableTab = ({
                 onClose={contextMenu.close}
                 trigger={contextMenu.triggerRef}
             >
+                {canPopOut && (
+                    <>
+                        <ContextMenuItem
+                            icon={mdiOpenInNew}
+                            label="Pop Out"
+                            onClick={() => popOutSession(session.id)}
+                        />
+                        <ContextMenuSeparator />
+                    </>
+                )}
+                {canShare && !isSharing && (
+                    <ContextMenuItem icon={mdiShareVariant} label="Start Sharing">
+                        <ContextMenuItem icon={mdiEye} label="Read-only" onClick={() => handleShare(false)} />
+                        <ContextMenuItem icon={mdiPencil} label="Read & Write" onClick={() => handleShare(true)} />
+                    </ContextMenuItem>
+                )}
+                {canShare && isSharing && (
+                    <>
+                        <ContextMenuItem icon={mdiLinkVariant} label="Copy Share Link" onClick={handleCopyLink} />
+                        <ContextMenuItem icon={mdiShareVariant} label="Change Permissions">
+                            <ContextMenuItem icon={mdiEye} label="Read-only" onClick={() => handlePermissionChange(false)} disabled={!session.shareWritable} />
+                            <ContextMenuItem icon={mdiPencil} label="Read & Write" onClick={() => handlePermissionChange(true)} disabled={session.shareWritable} />
+                        </ContextMenuItem>
+                        <ContextMenuItem icon={mdiCloseCircle} label="Stop Sharing" onClick={handleStopSharing} danger />
+                        <ContextMenuSeparator />
+                    </>
+                )}
                 <ContextMenuItem
                     icon={mdiSleep}
                     label="Hibernate Session"
@@ -128,6 +185,7 @@ export const ServerTabs = ({
     sessionProgress = {},
     fullscreenEnabled,
     onFullscreenToggle,
+    onShareUpdate,
 }) => {
 
     const tabsRef = useRef(null);
@@ -251,7 +309,7 @@ export const ServerTabs = ({
                             <DraggableTab key={session.id} session={session} server={session.server} index={index} moveTab={moveTab}
                                 activeSessionId={activeSessionId} setActiveSessionId={setActiveSessionId}
                                 closeSession={closeSession} hibernateSession={hibernateSession}
-                                progress={sessionProgress[session.id] || 0} />
+                                progress={sessionProgress[session.id] || 0} onShareUpdate={onShareUpdate} />
                         );
                     })}
                 </div>

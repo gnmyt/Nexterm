@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState, useContext } from "react";
 import { UserContext } from "@/common/contexts/UserContext.jsx";
-import { useAI } from "@/common/contexts/AIContext.jsx";
+import { AIContext } from "@/common/contexts/AIContext.jsx";
 import { useKeymaps, matchesKeybind } from "@/common/contexts/KeymapContext.jsx";
 import { Terminal as Xterm } from "@xterm/xterm";
 import { useTheme } from "@/common/contexts/ThemeContext.jsx";
@@ -16,7 +16,7 @@ import ConnectionLoader from "./components/ConnectionLoader";
 import "@xterm/xterm/css/xterm.css";
 import "./styles/xterm.sass";
 
-const XtermRenderer = ({ session, disconnectFromServer, registerTerminalRef, broadcastMode, terminalRefs, updateProgress, layoutMode, onBroadcastToggle, onFullscreenToggle }) => {
+const XtermRenderer = ({ session, disconnectFromServer, registerTerminalRef, broadcastMode, terminalRefs, updateProgress, layoutMode, onBroadcastToggle, onFullscreenToggle, isShared = false }) => {
     const ref = useRef(null);
     const termRef = useRef(null);
     const wsRef = useRef(null);
@@ -27,10 +27,12 @@ const XtermRenderer = ({ session, disconnectFromServer, registerTerminalRef, bro
     const onFullscreenToggleRef = useRef(onFullscreenToggle);
     const connectionLoaderRef = useRef(null);
     
-    const { sessionToken } = useContext(UserContext);
+    const userContext = useContext(UserContext);
+    const sessionToken = userContext?.sessionToken;
     const { theme } = useTheme();
     const { getCurrentTheme, selectedFont, fontSize, cursorStyle, cursorBlink, selectedTheme } = useTerminalSettings();
-    const { isAIAvailable } = useAI();
+    const aiContext = useContext(AIContext);
+    const isAIAvailable = aiContext?.isAIAvailable || (() => false);
     const { getParsedKeybind } = useKeymaps();
     const { t } = useTranslation();
     const [showAIPopover, setShowAIPopover] = useState(false);
@@ -150,7 +152,7 @@ const XtermRenderer = ({ session, disconnectFromServer, registerTerminalRef, bro
     };
 
     useEffect(() => {
-        if (!sessionToken) return;
+        if (!sessionToken && !isShared) return;
 
         let isCleaningUp = false;
 
@@ -206,7 +208,9 @@ const XtermRenderer = ({ session, disconnectFromServer, registerTerminalRef, bro
 
         let url = process.env.NODE_ENV === "production" ? `${window.location.host}/api/ws/term` : "localhost:6989/api/ws/term";
 
-        let wsUrl = `${protocol}://${url}?sessionToken=${sessionToken}&sessionId=${session.id}`;
+        let wsUrl = isShared 
+            ? `${protocol}://${url}?shareId=${session.shareId || session.id.split('/').pop()}`
+            : `${protocol}://${url}?sessionToken=${sessionToken}&sessionId=${session.id}`;
 
         ws = new WebSocket(wsUrl);
         wsRef.current = ws;
@@ -369,63 +373,67 @@ const XtermRenderer = ({ session, disconnectFromServer, registerTerminalRef, bro
             termRef.current = null;
             wsRef.current = null;
         };
-    }, [sessionToken, selectedFont, fontSize, cursorStyle, cursorBlink, selectedTheme]);
+    }, [sessionToken, selectedFont, fontSize, cursorStyle, cursorBlink, selectedTheme, isShared]);
 
     return (
-        <div className="xterm-container" onContextMenu={handleContextMenu}>
+        <div className="xterm-container" onContextMenu={!isShared ? handleContextMenu : undefined}>
             <ConnectionLoader onReady={(loader) => { connectionLoaderRef.current = loader; }} />
             <div ref={ref} className="xterm-wrapper" />
-            {isAIAvailable() && (
+            {!isShared && isAIAvailable() && (
                 <AICommandPopover visible={showAIPopover} onClose={() => setShowAIPopover(false)}
                     onCommandGenerated={handleAICommandGenerated} position={aiPopoverPosition}
                     focusTerminal={() => termRef.current?.focus()} />
             )}
-            <ContextMenu
-                isOpen={contextMenu.isOpen}
-                position={contextMenu.position}
-                onClose={contextMenu.close}
-                trigger={contextMenu.triggerRef}
-            >
-                <ContextMenuItem
-                    icon={mdiContentCopy}
-                    label={t('servers.fileManager.contextMenu.copy')}
-                    onClick={handleCopy}
-                    disabled={!termRef.current?.getSelection()}
+            {!isShared && (
+                <ContextMenu
+                    isOpen={contextMenu.isOpen}
+                    position={contextMenu.position}
+                    onClose={contextMenu.close}
+                    trigger={contextMenu.triggerRef}
+                >
+                    <ContextMenuItem
+                        icon={mdiContentCopy}
+                        label={t('servers.fileManager.contextMenu.copy')}
+                        onClick={handleCopy}
+                        disabled={!termRef.current?.getSelection()}
+                    />
+                    <ContextMenuItem
+                        icon={mdiContentPaste}
+                        label={t('servers.fileManager.contextMenu.paste')}
+                        onClick={handlePaste}
+                    />
+                    <ContextMenuItem
+                        icon={mdiSelectAll}
+                        label={t('servers.fileManager.contextMenu.selectAll')}
+                        onClick={handleSelectAll}
+                    />
+                    <ContextMenuSeparator />
+                    <ContextMenuItem
+                        icon={mdiCodeBrackets}
+                        label={t('servers.fileManager.contextMenu.insertSnippet')}
+                        onClick={handleInsertSnippet}
+                    />
+                    <ContextMenuSeparator />
+                    <ContextMenuItem
+                        icon={mdiKeyboard}
+                        label={t('servers.fileManager.contextMenu.sendCtrlC')}
+                        onClick={handleSendCtrlC}
+                    />
+                    <ContextMenuItem
+                        icon={mdiDelete}
+                        label={t('servers.fileManager.contextMenu.clearTerminal')}
+                        onClick={handleClearTerminal}
+                    />
+                </ContextMenu>
+            )}
+            {!isShared && (
+                <SnippetsMenu
+                    visible={showSnippetsMenu}
+                    onSelect={handleSnippetSelect}
+                    onClose={() => setShowSnippetsMenu(false)}
+                    activeSession={session}
                 />
-                <ContextMenuItem
-                    icon={mdiContentPaste}
-                    label={t('servers.fileManager.contextMenu.paste')}
-                    onClick={handlePaste}
-                />
-                <ContextMenuItem
-                    icon={mdiSelectAll}
-                    label={t('servers.fileManager.contextMenu.selectAll')}
-                    onClick={handleSelectAll}
-                />
-                <ContextMenuSeparator />
-                <ContextMenuItem
-                    icon={mdiCodeBrackets}
-                    label={t('servers.fileManager.contextMenu.insertSnippet')}
-                    onClick={handleInsertSnippet}
-                />
-                <ContextMenuSeparator />
-                <ContextMenuItem
-                    icon={mdiKeyboard}
-                    label={t('servers.fileManager.contextMenu.sendCtrlC')}
-                    onClick={handleSendCtrlC}
-                />
-                <ContextMenuItem
-                    icon={mdiDelete}
-                    label={t('servers.fileManager.contextMenu.clearTerminal')}
-                    onClick={handleClearTerminal}
-                />
-            </ContextMenu>
-            <SnippetsMenu
-                visible={showSnippetsMenu}
-                onSelect={handleSnippetSelect}
-                onClose={() => setShowSnippetsMenu(false)}
-                activeSession={session}
-            />
+            )}
         </div>
     );
 };

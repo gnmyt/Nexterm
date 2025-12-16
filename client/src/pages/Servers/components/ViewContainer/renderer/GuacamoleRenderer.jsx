@@ -6,12 +6,18 @@ import ConnectionLoader from "./components/ConnectionLoader";
 
 const resumeAudioContext = () => {
     const context = Guacamole.AudioContextFactory.getAudioContext();
-    if (context && context.state === 'suspended') {
+    if (context && context.state === "suspended") {
         context.resume();
     }
 };
 
-const GuacamoleRenderer = ({ session, disconnectFromServer, registerGuacamoleRef, onFullscreenToggle }) => {
+const GuacamoleRenderer = ({
+                               session,
+                               disconnectFromServer,
+                               registerGuacamoleRef,
+                               onFullscreenToggle,
+                               isShared = false,
+                           }) => {
     const ref = useRef(null);
     const { sessionToken } = useContext(UserContext);
     const clientRef = useRef(null);
@@ -23,8 +29,12 @@ const GuacamoleRenderer = ({ session, disconnectFromServer, registerGuacamoleRef
     const connectionLoaderRef = useRef(null);
     const audioPlayersRef = useRef([]);
 
-    useEffect(() => { sessionRef.current = session; }, [session]);
-    useEffect(() => { onFullscreenToggleRef.current = onFullscreenToggle; }, [onFullscreenToggle]);
+    useEffect(() => {
+        sessionRef.current = session;
+    }, [session]);
+    useEffect(() => {
+        onFullscreenToggleRef.current = onFullscreenToggle;
+    }, [onFullscreenToggle]);
 
     useEffect(() => {
         if (registerGuacamoleRef && clientRef.current) registerGuacamoleRef(session.id, { client: clientRef.current });
@@ -58,8 +68,11 @@ const GuacamoleRenderer = ({ session, disconnectFromServer, registerGuacamoleRef
     };
 
     const checkClipboardPermission = async () => {
-        try { return (await navigator.permissions.query({ name: "clipboard-read" })).state === "granted"; }
-        catch { return false; }
+        try {
+            return (await navigator.permissions.query({ name: "clipboard-read" })).state === "granted";
+        } catch {
+            return false;
+        }
     };
 
     const handleClipboardEvents = () => {
@@ -69,13 +82,25 @@ const GuacamoleRenderer = ({ session, disconnectFromServer, registerGuacamoleRef
             const reader = new Guacamole.StringReader(stream);
             let data = "";
             reader.ontext = (t) => data += t;
-            reader.onend = async () => { try { await navigator.clipboard.writeText(data); } catch {} };
+            reader.onend = async () => {
+                try {
+                    await navigator.clipboard.writeText(data);
+                } catch {
+                }
+            };
         };
         checkClipboardPermission().then(ok => {
             if (!ok) return;
             let cached = "";
             setInterval(async () => {
-                try { const t = await navigator.clipboard.readText(); if (t !== cached) { cached = t; sendClipboardToServer(t); } } catch {}
+                try {
+                    const t = await navigator.clipboard.readText();
+                    if (t !== cached) {
+                        cached = t;
+                        sendClipboardToServer(t);
+                    }
+                } catch {
+                }
             }, 500);
         });
         const onPaste = (e) => sendClipboardToServer(e.clipboardData?.getData("text"));
@@ -84,7 +109,11 @@ const GuacamoleRenderer = ({ session, disconnectFromServer, registerGuacamoleRef
     };
 
     const connect = () => {
-        if (!sessionToken || clientRef.current) return;
+        if (isShared) {
+            if (!session.shareId || clientRef.current) return;
+        } else {
+            if (!sessionToken || clientRef.current) return;
+        }
         let isCleaningUp = false;
         const tunnel = new Guacamole.WebSocketTunnel(process.env.NODE_ENV === "production" ? "/api/ws/guac/" : "ws://localhost:6989/api/ws/guac");
         const client = new Guacamole.Client(tunnel);
@@ -101,7 +130,7 @@ const GuacamoleRenderer = ({ session, disconnectFromServer, registerGuacamoleRef
                 clientOnInstruction(opcode, args);
             }
         };
-        
+
         clientRef.current = client;
         const display = client.getDisplay().getElement();
         display.style.position = "absolute";
@@ -118,7 +147,7 @@ const GuacamoleRenderer = ({ session, disconnectFromServer, registerGuacamoleRef
         };
 
         const s = sessionRef.current;
-        const params = `sessionToken=${sessionToken}&sessionId=${s.id}`;
+        const params = isShared ? `shareId=${session.shareId}` : `sessionToken=${sessionToken}&sessionId=${s.id}`;
         client.connect(params);
 
         const mouse = new Guacamole.Mouse(display);
@@ -128,27 +157,39 @@ const GuacamoleRenderer = ({ session, disconnectFromServer, registerGuacamoleRef
             client.sendMouseState(new Guacamole.Mouse.State(
                 Math.round((state.x - offsetRef.current.x) / scaleRef.current),
                 Math.round((state.y - offsetRef.current.y) / scaleRef.current),
-                state.left, state.middle, state.right, state.up, state.down
+                state.left, state.middle, state.right, state.up, state.down,
             ));
         };
         ref.current.focus();
 
         const handleKeyDown = (e) => {
             const kb = getParsedKeybind("fullscreen");
-            if (kb && matchesKeybind(e, kb)) { e.preventDefault(); e.stopPropagation(); onFullscreenToggleRef.current?.(); return false; }
+            if (kb && matchesKeybind(e, kb)) {
+                e.preventDefault();
+                e.stopPropagation();
+                onFullscreenToggleRef.current?.();
+                return false;
+            }
         };
         ref.current.addEventListener("keydown", handleKeyDown, true);
 
         const keyboard = new Guacamole.Keyboard(ref.current);
-        keyboard.onkeydown = (k, sc) => { resumeAudioContext(); client.sendKeyEvent(1, k, sc); };
+        keyboard.onkeydown = (k, sc) => {
+            resumeAudioContext();
+            client.sendKeyEvent(1, k, sc);
+        };
         keyboard.onkeyup = (k, sc) => client.sendKeyEvent(0, k, sc);
 
         client.onstatechange = (st) => {
             if (isCleaningUp) return;
             if (st === Guacamole.Client.State.DISCONNECTED || st === Guacamole.Client.State.ERROR) disconnectFromServer(s.id);
         };
-        tunnel.onstatechange = (st) => { if (!isCleaningUp && st === Guacamole.Tunnel.State.CLOSED) disconnectFromServer(s.id); };
-        tunnel.onerror = () => { if (!isCleaningUp) disconnectFromServer(s.id); };
+        tunnel.onstatechange = (st) => {
+            if (!isCleaningUp && st === Guacamole.Tunnel.State.CLOSED) disconnectFromServer(s.id);
+        };
+        tunnel.onerror = () => {
+            if (!isCleaningUp) disconnectFromServer(s.id);
+        };
         handleClipboardEvents();
 
         return () => {
@@ -161,7 +202,10 @@ const GuacamoleRenderer = ({ session, disconnectFromServer, registerGuacamoleRef
         };
     };
 
-    useEffect(() => { connect(); }, [sessionToken, session.id]);
+    useEffect(() => {
+        const cleanup = connect();
+        return () => cleanup?.();
+    }, [sessionToken, session.id, isShared]);
 
     useEffect(() => {
         window.addEventListener("resize", resizeHandler);
@@ -169,13 +213,27 @@ const GuacamoleRenderer = ({ session, disconnectFromServer, registerGuacamoleRef
         observer?.observe(ref.current);
         resizeHandler();
         const interval = setInterval(() => clientRef.current && ref.current && resizeHandler(), 500);
-        return () => { window.removeEventListener("resize", resizeHandler); observer?.disconnect(); clearInterval(interval); };
+        return () => {
+            window.removeEventListener("resize", resizeHandler);
+            observer?.disconnect();
+            clearInterval(interval);
+        };
     }, []);
 
     return (
         <div className="guac-container" ref={ref} tabIndex="0" onClick={() => ref.current.focus()}
-             style={{ position: "relative", width: "100%", height: "100%", outline: "none", overflow: "hidden", backgroundColor: "#000", cursor: "none" }}>
-            <ConnectionLoader onReady={(loader) => { connectionLoaderRef.current = loader; }} />
+             style={{
+                 position: "relative",
+                 width: "100%",
+                 height: "100%",
+                 outline: "none",
+                 overflow: "hidden",
+                 backgroundColor: "#000",
+                 cursor: "none",
+             }}>
+            <ConnectionLoader onReady={(loader) => {
+                connectionLoaderRef.current = loader;
+            }} />
         </div>
     );
 };

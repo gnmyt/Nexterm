@@ -63,6 +63,7 @@ app.use("/api/tags", authenticate, require("./routes/tag"));
 app.use("/api/keymaps", authenticate, require("./routes/keymap"));
 
 app.use("/api/scripts", authenticate, require("./routes/scripts"));
+app.use("/api/share", require("./routes/share"));
 
 if (process.env.NODE_ENV === "production") {
     app.use(express.static(path.join(__dirname, "../dist")));

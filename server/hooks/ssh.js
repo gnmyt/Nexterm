@@ -19,7 +19,49 @@ const setupStreamHandlers = (ws, stream, sessionId = null) => {
     return onData;
 };
 
+const handleSharedConnection = (ws, context) => {
+    const { serverSession } = context;
+    const sessionId = serverSession.sessionId;
+    const connection = SessionManager.getConnection(sessionId);
+    if (!connection?.stream) {
+        ws.close(4014, "Session not connected");
+        return;
+    }
+    
+    const { stream } = connection;
+    const bufferedLogs = SessionManager.getLogBuffer(sessionId);
+    if (bufferedLogs && ws.readyState === ws.OPEN) ws.send(bufferedLogs);
+    
+    SessionManager.addWebSocket(sessionId, ws, true);
+    if (serverSession.shareWritable) SessionManager.setActiveWs(sessionId, ws);
+    
+    const onData = (data) => ws.readyState === ws.OPEN && ws.send(data.toString());
+    stream.on("data", onData);
+    
+    ws.on("message", (data) => {
+        const session = SessionManager.get(sessionId);
+        if (!session?.shareWritable) return;
+        
+        const resize = parseResizeMessage(data);
+        if (resize) {
+            if (SessionManager.isActiveWs(sessionId, ws)) {
+                stream.setWindow(resize.height, resize.width);
+            }
+        } else {
+            SessionManager.setActiveWs(sessionId, ws);
+            stream.write(data);
+        }
+    });
+    
+    ws.on("close", () => {
+        stream.removeListener("data", onData);
+        SessionManager.removeWebSocket(sessionId, ws, true);
+    });
+};
+
 module.exports = async (ws, context) => {
+    if (context.isShared) return handleSharedConnection(ws, context);
+
     const { auditLogId, serverSession, ssh, reuseConnection } = context;
     const connectionStartTime = Date.now();
 
