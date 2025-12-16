@@ -1,6 +1,6 @@
 const { Router } = require("express");
-const { createSession, getSessions, getSession, hibernateSession, resumeSession, deleteSession, startSharing, stopSharing, updateSharePermissions } = require("../controllers/serverSession");
-const { createSessionValidation, sessionIdValidation, resumeSessionValidation } = require("../validations/serverSession");
+const { createSession, getSessions, getSession, hibernateSession, resumeSession, deleteSession, startSharing, stopSharing, updateSharePermissions, duplicateSession } = require("../controllers/serverSession");
+const { createSessionValidation, sessionIdValidation, resumeSessionValidation, duplicateSessionValidation } = require("../validations/serverSession");
 const { validateSchema } = require("../utils/schema");
 
 const app = Router();
@@ -180,6 +180,31 @@ app.patch("/:id/share", (req, res) => {
     const result = updateSharePermissions(req.user.id, req.params.id, req.body?.writable === true);
     if (result?.code) return res.status(result.code).json({ error: result.message });
     res.json(result);
+});
+
+/**
+ * POST /connections/{id}/duplicate
+ * @summary Duplicate Connection
+ * @description Creates a new connection with the same configuration as an existing one.
+ * @tags Connection
+ * @produces application/json
+ * @security BearerAuth
+ * @param {string} id.path.required - Session ID
+ * @return {object} 201 - New session created
+ */
+app.post("/:id/duplicate", async (req, res) => {
+    if (validateSchema(res, sessionIdValidation, req.params)) return;
+    if (validateSchema(res, duplicateSessionValidation, req.body)) return;
+    
+    const { tabId, browserId } = req.body;
+    const ipAddress = req.ip || req.socket?.remoteAddress || 'unknown';
+    const userAgent = req.headers['user-agent'] || 'unknown';
+    
+    const result = await duplicateSession(req.user.id, req.params.id, tabId, browserId, ipAddress, userAgent);
+    if (result?.code) {
+        return res.status(result.code).json({ error: result.message });
+    }
+    res.status(201).json(result);
 });
 
 module.exports = app;

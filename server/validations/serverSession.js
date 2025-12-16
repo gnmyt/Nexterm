@@ -25,3 +25,8 @@ module.exports.resumeSessionValidation = Joi.object({
     tabId: Joi.string().allow(null).optional(),
     browserId: Joi.string().allow(null).optional()
 });
+
+module.exports.duplicateSessionValidation = Joi.object({
+    tabId: Joi.string().allow(null).optional(),
+    browserId: Joi.string().allow(null).optional()
+});

@@ -33,8 +33,6 @@ class SessionManager {
             activeWs: null,
             connectedWs: new Set(),
             sharedWs: new Set(),
-            
-            // Sharing
             shareId: null,
             shareWritable: false,
         };
@@ -141,21 +139,6 @@ class SessionManager {
         if (isShared) session.sharedWs.delete(ws);
         else session.connectedWs.delete(ws);
         if (session.activeWs === ws) session.activeWs = null;
-    }
-
-    broadcastToWebSockets(sessionId, data) {
-        const session = this.get(sessionId);
-        if (!session) return;
-        for (const ws of session.connectedWs) {
-            try {
-                if (ws.readyState === ws.OPEN) ws.send(data, { binary: false, mask: false });
-            } catch (e) {}
-        }
-        for (const ws of session.sharedWs) {
-            try {
-                if (ws.readyState === ws.OPEN) ws.send(data, { binary: false, mask: false });
-            } catch (e) {}
-        }
     }
 
     closeAllWebSockets(sessionId, code = 1000, reason = "Session terminated") {
