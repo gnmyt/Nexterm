@@ -1,5 +1,7 @@
 const express = require("express");
 const path = require("path");
+const fs = require("fs");
+const https = require("https");
 const db = require("./utils/database");
 const packageJson = require("../package.json");
 const MigrationRunner = require("./utils/migrationRunner");
@@ -17,6 +19,13 @@ require("./utils/folder");
 process.on("uncaughtException", (err) => require("./utils/errorHandling")(err));
 
 const APP_PORT = process.env.SERVER_PORT || 6989;
+const HTTPS_PORT = process.env.HTTPS_PORT || 5878;
+
+const CERTS_DIR = path.join(__dirname, "../data/certs");
+const CERT_PATH = path.join(CERTS_DIR, "cert.pem");
+const KEY_PATH = path.join(CERTS_DIR, "key.pem");
+
+const hasSSLCerts = () => fs.existsSync(CERT_PATH) && fs.existsSync(KEY_PATH);
 
 const app = expressWs(express()).app;
 
@@ -95,6 +104,24 @@ db.authenticate()
         app.listen(APP_PORT, () =>
             logger.system(`Server listening on port ${APP_PORT}`)
         );
+
+        if (hasSSLCerts()) {
+            try {
+                const sslOptions = {
+                    cert: fs.readFileSync(CERT_PATH),
+                    key: fs.readFileSync(KEY_PATH)
+                };
+
+                const httpsServer = https.createServer(sslOptions, app);
+                expressWs(app, httpsServer);
+
+                httpsServer.listen(HTTPS_PORT, () =>
+                    logger.system(`HTTPS server listening on port ${HTTPS_PORT}`)
+                );
+            } catch (err) {
+                logger.error("Failed to start HTTPS server", { error: err.message });
+            }
+        }
     });
 
 process.on("SIGINT", async () => {
