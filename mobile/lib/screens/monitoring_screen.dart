@@ -62,7 +62,7 @@ class _MonitoringScreenState extends State<MonitoringScreen> {
 
   Widget _listView() => _servers.isEmpty
       ? Center(child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
-          Icon(MdiIcons.monitorDashboard, size: 64, color: Theme.of(context).colorScheme.outline),
+          Icon(MdiIcons.chartBoxOutline, size: 64, color: Theme.of(context).colorScheme.outline),
           const SizedBox(height: 16), Text('No servers with monitoring enabled', style: TextStyle(color: Theme.of(context).colorScheme.outline)),
         ]))
       : RefreshIndicator(onRefresh: _load, child: ListView.builder(
