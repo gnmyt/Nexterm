@@ -219,6 +219,9 @@ module.exports = async (ws, req) => {
         }
     } catch (error) {
         logger.error("Terminal connection error", { error: error.message, stack: error.stack });
+        if (serverSession) {
+            SessionManager.remove(serverSession.sessionId);
+        }
         ws.close(4005, error.message);
     }
 };

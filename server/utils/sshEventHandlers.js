@@ -1,5 +1,6 @@
 const { updateAuditLogWithSessionDuration } = require("../controllers/audit");
 const SessionManager = require("../lib/SessionManager");
+const logger = require("./logger");
 
 const parseResizeMessage = (message) => {
     if (!message.startsWith?.("\x01")) return null;
@@ -17,6 +18,7 @@ const setupSSHEventHandlers = (ssh, ws, options) => {
     const { auditLogId, serverSession, connectionStartTime } = options;
 
     ssh.on("error", (error) => {
+        logger.error(`SSH error`, { message: error.message, level: error.level });
         const errorMsg = error.level === "client-timeout"
             ? "Client Timeout reached"
             : `SSH Error: ${error.message}`;

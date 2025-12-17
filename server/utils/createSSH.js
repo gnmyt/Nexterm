@@ -3,7 +3,12 @@ const { getIdentityCredentials } = require("../controllers/identity");
 const { establishJumpHosts, buildSSHOptions, forwardToTarget } = require("./jumpHostHelper");
 
 const createSSH = async (entry, identity, options = {}) => {
-    const credentials = await getIdentityCredentials(identity.id);
+    let credentials;
+    if (identity.isDirect && identity.directCredentials) {
+        credentials = identity.directCredentials;
+    } else {
+        credentials = await getIdentityCredentials(identity.id);
+    }
     const jumpHostIds = entry.config?.jumpHosts || [];
     
     if (jumpHostIds.length > 0) {
