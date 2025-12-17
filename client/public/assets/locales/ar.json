@@ -742,7 +742,9 @@
         },
         "authTypes": {
           "password": "كلمة المرور",
-          "ssh": "مفتاح SSH"
+          "password-only": "No Username",
+          "ssh": "مفتاح SSH",
+          "both": "Key+Pass"
         },
         "keyFileLoaded": "تم تحميل ملف المفتاح",
         "actions": {
@@ -868,6 +870,15 @@
       "stop": "إيقاف",
       "start": "بدء"
     },
+    "messages": {
+      "fillRequiredFields": "يرجى ملء جميع الحقول المطلوبة",
+      "serverCreated": "تم إنشاء الخادم بنجاح",
+      "serverUpdated": "تم تحديث الخادم بنجاح",
+      "createFailed": "فشل في إنشاء الخادم",
+      "updateFailed": "فشل في تحديث الخادم",
+      "createIdentityFailed": "فشل في إنشاء الهوية",
+      "updateIdentityFailed": "فشل في تحديث الهوية"
+    },
     "dialog": {
       "addServer": "إضافة خادم",
       "addProtocolServer": "إضافة {{protocol}} خادم",
@@ -955,8 +966,11 @@
         "identityName": "اسم الهوية",
         "username": "اسم المستخدم",
         "authentication": "المصادقة",
-        "password": "كلمة المرور",
+        "passwordField": "Password",
+        "userPassword": "Password",
+        "passwordOnly": "No Username",
         "sshKey": "مفتاح SSH",
+        "both": "Key+Pass",
         "sshPrivateKey": "مفتاح SSH الخاص",
         "passphrase": "عبارة المرور (اختياري)",
         "new": "جديد",
@@ -1102,15 +1116,6 @@
       "fullScreen": "ملء الشاشة الكاملة",
       "exitFullScreen": "الخروج من وضع ملء الشاشة الكاملة",
       "badgeOn": "تشغيل"
-    },
-    "messages": {
-      "fillRequiredFields": "يرجى ملء جميع الحقول المطلوبة",
-      "serverCreated": "تم إنشاء الخادم بنجاح",
-      "serverUpdated": "تم تحديث الخادم بنجاح",
-      "createFailed": "فشل في إنشاء الخادم",
-      "updateFailed": "فشل في تحديث الخادم",
-      "createIdentityFailed": "فشل في إنشاء الهوية",
-      "updateIdentityFailed": "فشل في تحديث الهوية"
     }
   }
 }
