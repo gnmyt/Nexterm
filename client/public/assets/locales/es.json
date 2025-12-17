@@ -742,7 +742,9 @@
         },
         "authTypes": {
           "password": "Contraseña",
-          "ssh": "Clave SSH"
+          "password-only": "No Username",
+          "ssh": "Clave SSH",
+          "both": "Key+Pass"
         },
         "keyFileLoaded": "Archivo de claves cargado",
         "actions": {
@@ -868,6 +870,15 @@
       "stop": "Para",
       "start": "Comienza"
     },
+    "messages": {
+      "fillRequiredFields": "Rellena todos los campos obligatorios",
+      "serverCreated": "Servidor creado correctamente",
+      "serverUpdated": "Servidor actualizado correctamente",
+      "createFailed": "Error al crear el servidor",
+      "updateFailed": "Error al actualizar el servidor",
+      "createIdentityFailed": "Error al crear identidad",
+      "updateIdentityFailed": "Error al actualizar la identidad"
+    },
     "dialog": {
       "addServer": "Añadir servidor",
       "addProtocolServer": "Añade el servidor {{protocol}}",
@@ -955,8 +966,11 @@
         "identityName": "Nombre de identidad",
         "username": "Nombre de usuario",
         "authentication": "Autenticación",
-        "password": "Contraseña",
+        "passwordField": "Password",
+        "userPassword": "Password",
+        "passwordOnly": "No Username",
         "sshKey": "Clave SSH",
+        "both": "Key+Pass",
         "sshPrivateKey": "Clave privada SSH",
         "passphrase": "Frase de acceso (opcional)",
         "new": "Nuevo",
@@ -1102,15 +1116,6 @@
       "fullScreen": "Pantalla completa",
       "exitFullScreen": "Salir del Modo Pantalla Completa",
       "badgeOn": "EN"
-    },
-    "messages": {
-      "fillRequiredFields": "Rellena todos los campos obligatorios",
-      "serverCreated": "Servidor creado correctamente",
-      "serverUpdated": "Servidor actualizado correctamente",
-      "createFailed": "Error al crear el servidor",
-      "updateFailed": "Error al actualizar el servidor",
-      "createIdentityFailed": "Error al crear identidad",
-      "updateIdentityFailed": "Error al actualizar la identidad"
     }
   }
 }
