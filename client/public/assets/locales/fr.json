@@ -742,7 +742,9 @@
         },
         "authTypes": {
           "password": "Mot de passe",
-          "ssh": "Clé SSH"
+          "password-only": "No Username",
+          "ssh": "Clé SSH",
+          "both": "Key+Pass"
         },
         "keyFileLoaded": "Fichier clé chargé",
         "actions": {
@@ -868,6 +870,15 @@
       "stop": "Arrêter",
       "start": "Démarrer"
     },
+    "messages": {
+      "fillRequiredFields": "Remplis tous les champs obligatoires",
+      "serverCreated": "Le serveur a été créé avec succès",
+      "serverUpdated": "Le serveur a été mis à jour avec succès",
+      "createFailed": "Échec de la création du serveur",
+      "updateFailed": "Échec de la mise à jour du serveur",
+      "createIdentityFailed": "Échec de la création de l'identité",
+      "updateIdentityFailed": "Échec de la mise à jour de l'identité"
+    },
     "dialog": {
       "addServer": "Ajouter un serveur",
       "addProtocolServer": "Ajoute le serveur {{protocol}}",
@@ -955,8 +966,11 @@
         "identityName": "Nom d'identité",
         "username": "Nom d'utilisateur",
         "authentication": "Authentification",
-        "password": "Mot de passe",
+        "passwordField": "Password",
+        "userPassword": "Password",
+        "passwordOnly": "No Username",
         "sshKey": "Clé SSH",
+        "both": "Key+Pass",
         "sshPrivateKey": "Clé privée SSH",
         "passphrase": "Phrase de passe (facultatif)",
         "new": "Nouveau",
@@ -1102,15 +1116,6 @@
       "fullScreen": "Plein écran",
       "exitFullScreen": "Quitter le mode plein écran",
       "badgeOn": "ON"
-    },
-    "messages": {
-      "fillRequiredFields": "Remplis tous les champs obligatoires",
-      "serverCreated": "Le serveur a été créé avec succès",
-      "serverUpdated": "Le serveur a été mis à jour avec succès",
-      "createFailed": "Échec de la création du serveur",
-      "updateFailed": "Échec de la mise à jour du serveur",
-      "createIdentityFailed": "Échec de la création de l'identité",
-      "updateIdentityFailed": "Échec de la mise à jour de l'identité"
     }
   }
 }
