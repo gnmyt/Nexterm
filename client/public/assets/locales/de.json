@@ -742,7 +742,9 @@
         },
         "authTypes": {
           "password": "Passwort",
-          "ssh": "SSH-Schlüssel"
+          "password-only": "No Username",
+          "ssh": "SSH-Schlüssel",
+          "both": "Key+Pass"
         },
         "keyFileLoaded": "Schlüsseldatei geladen",
         "actions": {
@@ -868,6 +870,15 @@
       "stop": "Stop",
       "start": "Start"
     },
+    "messages": {
+      "fillRequiredFields": "Bitte fülle alle erforderlichen Felder aus",
+      "serverCreated": "Server erfolgreich erstellt",
+      "serverUpdated": "Server erfolgreich aktualisiert",
+      "createFailed": "Server kann nicht erstellt werden",
+      "updateFailed": "Server kann nicht aktualisiert werden",
+      "createIdentityFailed": "Identität kann nicht erstellt werden",
+      "updateIdentityFailed": "Identität kann nicht aktualisiert werden"
+    },
     "dialog": {
       "addServer": "Server hinzufügen",
       "addProtocolServer": "{{protocol}} Server hinzufügen",
@@ -955,8 +966,11 @@
         "identityName": "Identität Name",
         "username": "Benutzername",
         "authentication": "Authentifizierung",
-        "password": "Passwort",
+        "passwordField": "Password",
+        "userPassword": "Password",
+        "passwordOnly": "No Username",
         "sshKey": "SSH-Schlüssel",
+        "both": "Key+Pass",
         "sshPrivateKey": "Privater SSH-Schlüssel",
         "passphrase": "Passphrase (optional)",
         "new": "Neu",
@@ -1102,15 +1116,6 @@
       "fullScreen": "Vollbild",
       "exitFullScreen": "Beenden des Vollbildmodus",
       "badgeOn": "ON"
-    },
-    "messages": {
-      "fillRequiredFields": "Bitte fülle alle erforderlichen Felder aus",
-      "serverCreated": "Server erfolgreich erstellt",
-      "serverUpdated": "Server erfolgreich aktualisiert",
-      "createFailed": "Server kann nicht erstellt werden",
-      "updateFailed": "Server kann nicht aktualisiert werden",
-      "createIdentityFailed": "Identität kann nicht erstellt werden",
-      "updateIdentityFailed": "Identität kann nicht aktualisiert werden"
     }
   }
 }
