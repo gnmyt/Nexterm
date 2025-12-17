@@ -310,7 +310,9 @@
         "memoryUsage": "استخدام الذاكرة",
         "loadAverage": "متوسط الحمل",
         "processes": "العمليات",
-        "uptime": "وقت التشغيل"
+        "uptime": "وقت التشغيل",
+        "nodes": "Nodes",
+        "vms": "VMs/Containers"
       },
       "status": {
         "serverOffline": "الخادم غير متصل",
@@ -341,11 +343,14 @@
         "overview": "نظرة عامة",
         "charts": "الرسوم البيانية",
         "storage": "التخزين",
-        "network": "الشبكة"
+        "network": "الشبكة",
+        "processes": "Processes",
+        "nodes": "Nodes"
       },
       "overview": {
         "systemInfo": {
           "title": "معلومات النظام",
+          "hostname": "Hostname",
           "os": "نظام التشغيل",
           "version": "الإصدار",
           "kernel": "النواة",
@@ -383,13 +388,45 @@
         "available": "المتاح: {{value}}",
         "total": "الإجمالي: {{value}}",
         "type": "النوع: {{value}}",
-        "noData": "لا توجد بيانات استخدام قرص متاحة"
+        "noData": "لا توجد بيانات استخدام قرص متاحة",
+        "noPartitions": "No mounted partitions"
       },
       "network": {
         "title": "واجهات الشبكة",
         "rxBytes": "بايتات RX",
         "txBytes": "بايتات TX",
+        "mac": "MAC Address",
+        "speed": "Speed",
         "noData": "لا توجد بيانات واجهة شبكة متاحة"
+      },
+      "processes": {
+        "title": "Running Processes",
+        "searchPlaceholder": "Search processes...",
+        "showing": "Showing {{count}} of {{total}} processes",
+        "noData": "No process data available. Process data will appear after the next monitoring cycle.",
+        "noResults": "No processes match your search criteria."
+      },
+      "pve": {
+        "clusterInfo": "Cluster Information",
+        "resources": "Resource Usage",
+        "virtualMachines": "Virtual Machines",
+        "totalNodes": "Total Nodes",
+        "onlineNodes": "Online Nodes",
+        "totalCPU": "Total CPU",
+        "totalMemory": "Total Memory",
+        "totalStorage": "Total Storage",
+        "storageUsage": "Storage Usage",
+        "cores": "Cores",
+        "uptime": "Uptime",
+        "qemuVMs": "QEMU VMs",
+        "lxcContainers": "LXC Containers",
+        "running": "{{count}} running",
+        "vmContainerCount": "VM/Container Count",
+        "cpu": "CPU",
+        "memory": "Memory",
+        "storage": "Storage",
+        "nodeOffline": "This node is currently offline",
+        "noNodes": "No nodes available"
       }
     }
   },
@@ -407,7 +444,8 @@
       "users": "المستخدمون",
       "authentication": "المصادقة",
       "sources": "المصادر",
-      "ai": "الذكاء الاصطناعي"
+      "ai": "الذكاء الاصطناعي",
+      "monitoring": "Monitoring"
     },
     "account": {
       "title": "الحساب",
@@ -708,6 +746,58 @@
         "testConnection": "فشل في اختبار اتصال الذكاء الاصطناعي"
       }
     },
+    "monitoring": {
+      "loading": "Loading monitoring settings...",
+      "saveSettings": "Save Settings",
+      "saveSuccess": "Monitoring settings saved successfully",
+      "seconds": "seconds",
+      "hours": "hours",
+      "servers": "servers",
+      "statusChecker": {
+        "title": "Status Checker",
+        "description": "Configure how Nexterm checks the online/offline status of your servers.",
+        "enable": {
+          "title": "Enable Status Checker",
+          "description": "Automatically check if servers are online or offline. When disabled, all servers will be marked as online."
+        },
+        "interval": {
+          "title": "Check Interval",
+          "description": "How often to check server status (10-300 seconds)"
+        }
+      },
+      "dataCollection": {
+        "title": "Data Collection",
+        "description": "Configure monitoring data collection for CPU, memory, disk, and network metrics.",
+        "enable": {
+          "title": "Enable Monitoring",
+          "description": "Collect detailed performance metrics from servers with monitoring enabled."
+        },
+        "interval": {
+          "title": "Collection Interval",
+          "description": "How often to collect monitoring data (30-600 seconds)"
+        },
+        "retention": {
+          "title": "Data Retention",
+          "description": "How long to keep monitoring data (1-24 hours)"
+        }
+      },
+      "advanced": {
+        "title": "Advanced Settings",
+        "description": "Fine-tune monitoring performance and resource usage.",
+        "timeout": {
+          "title": "Connection Timeout",
+          "description": "Maximum time to wait for a server response (5-120 seconds)"
+        },
+        "batchSize": {
+          "title": "Batch Size",
+          "description": "Number of servers to check simultaneously (1-50)"
+        }
+      },
+      "errors": {
+        "loadSettings": "Failed to load monitoring settings",
+        "saveSettings": "Failed to save monitoring settings"
+      }
+    },
     "identities": {
       "title": "مفاتيح SSH والبيانات الاعتمادية",
       "description": "إدارة مفاتيح SSH وبيانات الدخول الخاصة بك لاتصالات الخادم",
@@ -995,8 +1085,10 @@
         "port": "المنفذ",
         "username": "اسم المستخدم",
         "password": "كلمة المرور",
-        "nodeName": "اسم العقدة (اختياري)"
+        "nodeName": "اسم العقدة (اختياري)",
+        "monitoring": "Performance Monitoring"
       },
+      "monitoringDescription": "Collect cluster-wide CPU, memory, and storage metrics",
       "placeholders": {
         "name": "الاسم",
         "serverIp": "IP الخادم",
@@ -1008,6 +1100,12 @@
       "actions": {
         "import": "استيراد",
         "edit": "تحرير"
+      },
+      "messages": {
+        "created": "Proxmox integration created successfully",
+        "updated": "Proxmox integration updated successfully",
+        "createFailed": "Failed to create Proxmox integration",
+        "updateFailed": "Failed to update Proxmox integration"
       }
     },
     "connectionReasonDialog": {
