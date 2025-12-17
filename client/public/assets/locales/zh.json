@@ -310,7 +310,9 @@
         "memoryUsage": "内存使用率",
         "loadAverage": "平均负载",
         "processes": "进程数",
-        "uptime": "运行时间"
+        "uptime": "运行时间",
+        "nodes": "Nodes",
+        "vms": "VMs/Containers"
       },
       "status": {
         "serverOffline": "服务器离线",
@@ -341,11 +343,14 @@
         "overview": "概览",
         "charts": "图表",
         "storage": "存储",
-        "network": "网络"
+        "network": "网络",
+        "processes": "Processes",
+        "nodes": "Nodes"
       },
       "overview": {
         "systemInfo": {
           "title": "系统信息",
+          "hostname": "Hostname",
           "os": "操作系统",
           "version": "版本",
           "kernel": "内核",
@@ -383,13 +388,45 @@
         "available": "可用: {{value}}",
         "total": "总计: {{value}}",
         "type": "类型: {{value}}",
-        "noData": "无磁盘使用数据"
+        "noData": "无磁盘使用数据",
+        "noPartitions": "No mounted partitions"
       },
       "network": {
         "title": "网络接口",
         "rxBytes": "接收字节数",
         "txBytes": "发送字节数",
+        "mac": "MAC Address",
+        "speed": "Speed",
         "noData": "无网络接口数据"
+      },
+      "processes": {
+        "title": "Running Processes",
+        "searchPlaceholder": "Search processes...",
+        "showing": "Showing {{count}} of {{total}} processes",
+        "noData": "No process data available. Process data will appear after the next monitoring cycle.",
+        "noResults": "No processes match your search criteria."
+      },
+      "pve": {
+        "clusterInfo": "Cluster Information",
+        "resources": "Resource Usage",
+        "virtualMachines": "Virtual Machines",
+        "totalNodes": "Total Nodes",
+        "onlineNodes": "Online Nodes",
+        "totalCPU": "Total CPU",
+        "totalMemory": "Total Memory",
+        "totalStorage": "Total Storage",
+        "storageUsage": "Storage Usage",
+        "cores": "Cores",
+        "uptime": "Uptime",
+        "qemuVMs": "QEMU VMs",
+        "lxcContainers": "LXC Containers",
+        "running": "{{count}} running",
+        "vmContainerCount": "VM/Container Count",
+        "cpu": "CPU",
+        "memory": "Memory",
+        "storage": "Storage",
+        "nodeOffline": "This node is currently offline",
+        "noNodes": "No nodes available"
       }
     }
   },
@@ -407,7 +444,8 @@
       "users": "用户",
       "authentication": "身份验证",
       "sources": "来源",
-      "ai": "AI"
+      "ai": "AI",
+      "monitoring": "Monitoring"
     },
     "account": {
       "title": "账户",
@@ -708,6 +746,58 @@
         "testConnection": "AI 连接测试失败"
       }
     },
+    "monitoring": {
+      "loading": "Loading monitoring settings...",
+      "saveSettings": "Save Settings",
+      "saveSuccess": "Monitoring settings saved successfully",
+      "seconds": "seconds",
+      "hours": "hours",
+      "servers": "servers",
+      "statusChecker": {
+        "title": "Status Checker",
+        "description": "Configure how Nexterm checks the online/offline status of your servers.",
+        "enable": {
+          "title": "Enable Status Checker",
+          "description": "Automatically check if servers are online or offline. When disabled, all servers will be marked as online."
+        },
+        "interval": {
+          "title": "Check Interval",
+          "description": "How often to check server status (10-300 seconds)"
+        }
+      },
+      "dataCollection": {
+        "title": "Data Collection",
+        "description": "Configure monitoring data collection for CPU, memory, disk, and network metrics.",
+        "enable": {
+          "title": "Enable Monitoring",
+          "description": "Collect detailed performance metrics from servers with monitoring enabled."
+        },
+        "interval": {
+          "title": "Collection Interval",
+          "description": "How often to collect monitoring data (30-600 seconds)"
+        },
+        "retention": {
+          "title": "Data Retention",
+          "description": "How long to keep monitoring data (1-24 hours)"
+        }
+      },
+      "advanced": {
+        "title": "Advanced Settings",
+        "description": "Fine-tune monitoring performance and resource usage.",
+        "timeout": {
+          "title": "Connection Timeout",
+          "description": "Maximum time to wait for a server response (5-120 seconds)"
+        },
+        "batchSize": {
+          "title": "Batch Size",
+          "description": "Number of servers to check simultaneously (1-50)"
+        }
+      },
+      "errors": {
+        "loadSettings": "Failed to load monitoring settings",
+        "saveSettings": "Failed to save monitoring settings"
+      }
+    },
     "identities": {
       "title": "SSH 密钥与凭据",
       "description": "管理服务器连接的 SSH 密钥和登录凭据",
@@ -995,8 +1085,10 @@
         "port": "端口",
         "username": "用户名",
         "password": "密码",
-        "nodeName": "节点名称（可选）"
+        "nodeName": "节点名称（可选）",
+        "monitoring": "Performance Monitoring"
       },
+      "monitoringDescription": "Collect cluster-wide CPU, memory, and storage metrics",
       "placeholders": {
         "name": "名称",
         "serverIp": "服务器 IP",
@@ -1008,6 +1100,12 @@
       "actions": {
         "import": "导入",
         "edit": "编辑"
+      },
+      "messages": {
+        "created": "Proxmox integration created successfully",
+        "updated": "Proxmox integration updated successfully",
+        "createFailed": "Failed to create Proxmox integration",
+        "updateFailed": "Failed to update Proxmox integration"
       }
     },
     "connectionReasonDialog": {
