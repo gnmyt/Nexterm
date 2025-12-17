@@ -742,7 +742,9 @@
         },
         "authTypes": {
           "password": "密码",
-          "ssh": "SSH 密钥"
+          "password-only": "No Username",
+          "ssh": "SSH 密钥",
+          "both": "Key+Pass"
         },
         "keyFileLoaded": "密钥文件已加载",
         "actions": {
@@ -868,6 +870,15 @@
       "stop": "停止",
       "start": "启动"
     },
+    "messages": {
+      "fillRequiredFields": "请填写所有必填字段",
+      "serverCreated": "服务器创建成功",
+      "serverUpdated": "服务器更新成功",
+      "createFailed": "创建服务器失败",
+      "updateFailed": "更新服务器失败",
+      "createIdentityFailed": "创建身份标识失败",
+      "updateIdentityFailed": "更新身份标识失败"
+    },
     "dialog": {
       "addServer": "添加服务器",
       "addProtocolServer": "添加 {{protocol}} 服务器",
@@ -955,8 +966,11 @@
         "identityName": "身份标识名称",
         "username": "用户名",
         "authentication": "认证方式",
-        "password": "密码",
+        "passwordField": "Password",
+        "userPassword": "Password",
+        "passwordOnly": "No Username",
         "sshKey": "SSH 密钥",
+        "both": "Key+Pass",
         "sshPrivateKey": "SSH 私钥",
         "passphrase": "密码短语（可选）",
         "new": "新建",
@@ -1102,15 +1116,6 @@
       "fullScreen": "全屏",
       "exitFullScreen": "退出全屏模式",
       "badgeOn": "开启"
-    },
-    "messages": {
-      "fillRequiredFields": "请填写所有必填字段",
-      "serverCreated": "服务器创建成功",
-      "serverUpdated": "服务器更新成功",
-      "createFailed": "创建服务器失败",
-      "updateFailed": "更新服务器失败",
-      "createIdentityFailed": "创建身份标识失败",
-      "updateIdentityFailed": "更新身份标识失败"
     }
   }
 }
