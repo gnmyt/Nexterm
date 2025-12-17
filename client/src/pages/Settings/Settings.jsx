@@ -1,6 +1,6 @@
 import "./styles.sass";
 import Icon from "@mdi/react";
-import { mdiAccountCircleOutline, mdiAccountGroup, mdiClockStarFourPointsOutline, mdiShieldAccountOutline, mdiDomain, mdiCreationOutline, mdiKeyVariant, mdiConsole, mdiKeyboardOutline, mdiCloudDownloadOutline } from "@mdi/js";
+import { mdiAccountCircleOutline, mdiAccountGroup, mdiClockStarFourPointsOutline, mdiShieldAccountOutline, mdiDomain, mdiCreationOutline, mdiKeyVariant, mdiConsole, mdiKeyboardOutline, mdiCloudDownloadOutline, mdiChartLine } from "@mdi/js";
 import SettingsNavigation from "./components/SettingsNavigation";
 import { Navigate, useLocation } from "react-router-dom";
 import Account from "@/pages/Settings/pages/Account";
@@ -13,6 +13,7 @@ import Identities from "@/pages/Settings/pages/Identities";
 import Terminal from "@/pages/Settings/pages/Terminal";
 import Keymaps from "@/pages/Settings/pages/Keymaps";
 import Sources from "@/pages/Settings/pages/Sources";
+import Monitoring from "@/pages/Settings/pages/Monitoring";
 import { useTranslation } from "react-i18next";
 
 export const Settings = () => {
@@ -32,6 +33,7 @@ export const Settings = () => {
         { title: t("settings.pages.users"), routeKey: "users", icon: mdiAccountGroup, content: <Users /> },
         { title: t("settings.pages.authentication"), routeKey: "authentication", icon: mdiShieldAccountOutline, content: <Authentication /> },
         { title: t("settings.pages.sources"), routeKey: "sources", icon: mdiCloudDownloadOutline, content: <Sources /> },
+        { title: t("settings.pages.monitoring"), routeKey: "monitoring", icon: mdiChartLine, content: <Monitoring /> },
         { title: t("settings.pages.ai"), routeKey: "ai", icon: mdiCreationOutline, content: <AI /> }
     ];
 

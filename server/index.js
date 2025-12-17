@@ -10,6 +10,7 @@ const expressWs = require("express-ws");
 const { startStatusChecker, stopStatusChecker } = require("./utils/statusChecker");
 const { ensureInternalProvider } = require("./controllers/oidc");
 const monitoringService = require("./utils/monitoringService");
+const pveMonitoringService = require("./utils/pveMonitoringService");
 const { generateOpenAPISpec } = require("./openapi");
 const { isAdmin } = require("./middlewares/permission");
 const logger = require("./utils/logger");
@@ -100,6 +101,8 @@ db.authenticate()
 
         monitoringService.start();
 
+        pveMonitoringService.start();
+
         startSourceSyncService();
 
         app.listen(APP_PORT, () =>
@@ -129,6 +132,7 @@ process.on("SIGINT", async () => {
     logger.system("Shutting down server");
 
     monitoringService.stop();
+    pveMonitoringService.stop();
     stopStatusChecker();
     stopSourceSyncService();
 

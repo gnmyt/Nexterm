@@ -40,6 +40,8 @@ const App = () => {
                 { path: "/", element: <Navigate to="/servers" /> },
                 { path: "/servers", element: <Servers /> },
                 { path: "/monitoring", element: <Monitoring /> },
+                { path: "/monitoring/:serverId", element: <Monitoring /> },
+                { path: "/monitoring/:serverId/:tab", element: <Monitoring /> },
                 { path: "/audit", element: <Audit /> },
                 { path: "/settings/*", element: <Settings/> },
                 { path: "/snippets", element: <Snippets /> }

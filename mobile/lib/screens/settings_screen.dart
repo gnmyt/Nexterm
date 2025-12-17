@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import '../utils/theme_manager.dart';
 import '../utils/auth_manager.dart';
+import '../services/api_config.dart';
 import 'sessions_screen.dart';
 
 class SettingsScreen extends StatefulWidget {
@@ -77,7 +78,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
               child: ListTile(
                 leading: CircleAvatar(child: Icon(MdiIcons.account)),
                 title: Text(_fullName ?? _username!),
-                subtitle: Text(_fullName != null ? '@$_username' : 'Logged in'),
+                subtitle: Text('@${ApiConfig.baseUrl.replaceAll(RegExp(r'https?://'), '').replaceAll('/api', '')}'),
                 trailing: TextButton(
                   onPressed: _handleLogout,
                   child: const Text('Logout'),
