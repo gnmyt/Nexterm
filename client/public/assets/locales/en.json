@@ -742,7 +742,9 @@
         },
         "authTypes": {
           "password": "Password",
-          "ssh": "SSH Key"
+          "password-only": "No Username",
+          "ssh": "SSH Key",
+          "both": "Key+Pass"
         },
         "keyFileLoaded": "Key file loaded",
         "actions": {
@@ -868,6 +870,11 @@
       "stop": "Stop",
       "start": "Start"
     },
+    "messages": {
+      "usernameRequired": "Username is required",
+      "passwordRequired": "Password is required",
+      "sshKeyRequired": "SSH key is required"
+    },
     "dialog": {
       "addServer": "Add server",
       "addProtocolServer": "Add {{protocol}} server",
@@ -955,8 +962,11 @@
         "identityName": "Identity Name",
         "username": "Username",
         "authentication": "Authentication",
-        "password": "Password",
+        "passwordField": "Password",
+        "userPassword": "Password",
+        "passwordOnly": "No Username",
         "sshKey": "SSH Key",
+        "both": "Key+Pass",
         "sshPrivateKey": "SSH Private Key",
         "passphrase": "Passphrase (optional)",
         "new": "New",

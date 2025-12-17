@@ -22,6 +22,13 @@ const syncCredentials = async (identityId, type, password, sshKey, passphrase) =
     if (type === "password" && password) {
         await upsertCredential(identityId, "password", password);
         await Credential.destroy({ where: { identityId, type: { [Op.in]: ["ssh-key", "passphrase"] } } });
+    } else if (type === "password-only" && password) {
+        await upsertCredential(identityId, "password", password);
+        await Credential.destroy({ where: { identityId, type: { [Op.in]: ["ssh-key", "passphrase"] } } });
+    } else if (type === "both" && sshKey) {
+        await upsertCredential(identityId, "ssh-key", sshKey);
+        passphrase ? await upsertCredential(identityId, "passphrase", passphrase) : await Credential.destroy({ where: { identityId, type: "passphrase" } });
+        if (password) await upsertCredential(identityId, "password", password);
     } else if (type === "ssh" && sshKey) {
         await upsertCredential(identityId, "ssh-key", sshKey);
         passphrase ? await upsertCredential(identityId, "passphrase", passphrase) : await Credential.destroy({ where: { identityId, type: "passphrase" } });

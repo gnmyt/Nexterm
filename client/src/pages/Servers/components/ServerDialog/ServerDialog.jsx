@@ -61,7 +61,7 @@ export const ServerDialog = ({ open, onClose, currentFolderId, currentOrganizati
     const buildIdentityPayload = (identity) => {
         const payload = {
             name: identity.name,
-            username: identity.username,
+            username: identity.authType === 'password-only' ? undefined : identity.username,
             type: identity.authType,
         };
 
@@ -69,9 +69,17 @@ export const ServerDialog = ({ open, onClose, currentFolderId, currentOrganizati
             payload.organizationId = identity.organizationId;
         }
         
-        if (identity.authType === 'password') {
+        if (identity.authType === 'password' || identity.authType === 'password-only') {
             if (identity.passwordTouched || identity.password) {
                 payload.password = identity.password;
+            }
+        } else if (identity.authType === 'both') {
+            if (identity.passwordTouched || identity.password) {
+                payload.password = identity.password;
+            }
+            payload.sshKey = identity.sshKey;
+            if (identity.passphraseTouched || identity.passphrase) {
+                payload.passphrase = identity.passphrase;
             }
         } else {
             payload.sshKey = identity.sshKey;
@@ -316,7 +324,7 @@ export const ServerDialog = ({ open, onClose, currentFolderId, currentOrganizati
                     {activeTab === 1 && tabs[1]?.key === "identities" &&
                         <IdentityPage serverIdentities={identities} setIdentityUpdates={setIdentityUpdates}
                                       identityUpdates={identityUpdates} setIdentities={setIdentities}
-                                      currentOrganizationId={currentOrganizationId} />}
+                                      currentOrganizationId={currentOrganizationId} allowedAuthTypes={fieldConfig.allowedAuthTypes} />}
                     {tabs.find((tab, idx) => idx === activeTab && tab.key === "settings") && 
                         <SettingsPage config={config} setConfig={setConfig}
                                       monitoringEnabled={monitoringEnabled} setMonitoringEnabled={setMonitoringEnabled}

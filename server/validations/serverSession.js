@@ -10,11 +10,11 @@ module.exports.createSessionValidation = Joi.object({
     scriptId: Joi.number().allow(null).optional(),
     directIdentity: Joi.object({
         username: Joi.string().max(255).optional(),
-        type: Joi.string().valid("password", "ssh").required(),
+        type: Joi.string().valid("password", "ssh", "both", "password-only").required(),
         password: Joi.string().optional(),
         sshKey: Joi.string().optional(),
         passphrase: Joi.string().optional(),
-    }).optional().xor("password", "sshKey")
+    }).optional()
 });
 
 module.exports.sessionIdValidation = Joi.object({
