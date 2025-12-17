@@ -742,7 +742,9 @@
         },
         "authTypes": {
           "password": "Password",
-          "ssh": "Chiave SSH"
+          "password-only": "No Username",
+          "ssh": "Chiave SSH",
+          "both": "Key+Pass"
         },
         "keyFileLoaded": "File chiave caricato",
         "actions": {
@@ -868,6 +870,15 @@
       "stop": "Fermati",
       "start": "Iniziare"
     },
+    "messages": {
+      "fillRequiredFields": "Compila tutti i campi obbligatori",
+      "serverCreated": "Il server è stato creato con successo",
+      "serverUpdated": "Il server è stato aggiornato con successo",
+      "createFailed": "Impossibile creare un server",
+      "updateFailed": "Non è riuscito ad aggiornare il server",
+      "createIdentityFailed": "Impossibile creare un'identità",
+      "updateIdentityFailed": "Non è stato possibile aggiornare l'identità"
+    },
     "dialog": {
       "addServer": "Aggiungi un server",
       "addProtocolServer": "Aggiungi il server {{protocol}}",
@@ -955,8 +966,11 @@
         "identityName": "Nome dell'identità",
         "username": "Nome utente",
         "authentication": "Autenticazione",
-        "password": "Password",
+        "passwordField": "Password",
+        "userPassword": "Password",
+        "passwordOnly": "No Username",
         "sshKey": "Chiave SSH",
+        "both": "Key+Pass",
         "sshPrivateKey": "Chiave privata SSH",
         "passphrase": "Passphrase (opzionale)",
         "new": "Nuovo",
@@ -1102,15 +1116,6 @@
       "fullScreen": "Schermo intero",
       "exitFullScreen": "Esci dalla modalità a schermo intero",
       "badgeOn": "ON"
-    },
-    "messages": {
-      "fillRequiredFields": "Compila tutti i campi obbligatori",
-      "serverCreated": "Il server è stato creato con successo",
-      "serverUpdated": "Il server è stato aggiornato con successo",
-      "createFailed": "Impossibile creare un server",
-      "updateFailed": "Non è riuscito ad aggiornare il server",
-      "createIdentityFailed": "Impossibile creare un'identità",
-      "updateIdentityFailed": "Non è stato possibile aggiornare l'identità"
     }
   }
 }
