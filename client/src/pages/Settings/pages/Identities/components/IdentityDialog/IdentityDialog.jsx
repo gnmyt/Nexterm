@@ -72,12 +72,12 @@ export const IdentityDialog = ({ open, onClose, identity, organizationId }) => {
             return;
         }
 
-        if (authType === "password" && !password && !isEditing) {
+        if ((authType === "password" || authType === "password-only" || authType === "both") && !password && !isEditing) {
             sendToast("Error", t('settings.identities.dialog.messages.passwordRequired'));
             return;
         }
 
-        if (authType === "ssh" && !sshKey && !isEditing) {
+        if ((authType === "ssh" || authType === "both") && !sshKey && !isEditing) {
             sendToast("Error", t('settings.identities.dialog.messages.sshKeyRequired'));
             return;
         }
@@ -87,10 +87,16 @@ export const IdentityDialog = ({ open, onClose, identity, organizationId }) => {
         try {
             const identityData = {
                 name: name.trim(),
-                username: username.trim() || undefined,
+                username: authType === "password-only" ? undefined : (username.trim() || undefined),
                 type: authType,
-                ...(authType === "password"
+                ...(authType === "password" || authType === "password-only"
                         ? { password: password === "********" ? undefined : password }
+                        : authType === "both"
+                        ? {
+                            password: password === "********" ? undefined : password,
+                            sshKey: sshKey || undefined,
+                            ...(passphrase && passphrase !== "********" ? { passphrase } : {}),
+                        }
                         : {
                             sshKey: sshKey || undefined,
                             ...(passphrase && passphrase !== "********" ? { passphrase } : {}),
@@ -138,33 +144,37 @@ export const IdentityDialog = ({ open, onClose, identity, organizationId }) => {
                                        placeholder={t('settings.identities.dialog.fields.namePlaceholder')} id="name" required />
                         </div>
 
-                        <div className="form-row">
-                            <div className="form-group">
-                                <label htmlFor="username">{t('settings.identities.dialog.fields.username')}</label>
-                                <IconInput icon={mdiAccountCircleOutline} value={username} setValue={setUsername}
-                                           placeholder={t('settings.identities.dialog.fields.usernamePlaceholder')} id="username" />
-                            </div>
+                        <div className={`form-row ${authType === "password-only" ? 'single-column' : ''}`}>
+                            {authType !== "password-only" && (
+                                <div className="form-group">
+                                    <label htmlFor="username">{t('settings.identities.dialog.fields.username')}</label>
+                                    <IconInput icon={mdiAccountCircleOutline} value={username} setValue={setUsername}
+                                               placeholder={t('settings.identities.dialog.fields.usernamePlaceholder')} id="username" />
+                                </div>
+                            )}
 
                             <div className="form-group">
                                 <label htmlFor="authType">{t('settings.identities.dialog.fields.authType')}</label>
                                 <SelectBox selected={authType} setSelected={setAuthType}
                                            options={[
+                                               { label: t('settings.identities.dialog.authTypes.password-only'), value: "password-only" },
                                                { label: t('settings.identities.dialog.authTypes.password'), value: "password" },
                                                { label: t('settings.identities.dialog.authTypes.ssh'), value: "ssh" },
+                                               { label: t('settings.identities.dialog.authTypes.both'), value: "both" },
                                            ]} />
                             </div>
                         </div>
 
-                        {authType === "password" && (
+                        {(authType === "password" || authType === "password-only" || authType === "both") && (
                             <div className="form-group">
                                 <label htmlFor="password">{t('settings.identities.dialog.fields.password')}</label>
                                 <IconInput icon={mdiLockOutline} type="password" value={password} setValue={setPassword}
                                            placeholder={isEditing ? t('settings.identities.dialog.fields.passwordPlaceholderEdit') : t('settings.identities.dialog.fields.passwordPlaceholder')}
-                                           id="password" required={!isEditing} autoComplete="new-password" />
+                                           id="password" required={!isEditing && authType === "password"} autoComplete="new-password" />
                             </div>
                         )}
 
-                        {authType === "ssh" && (
+                        {(authType === "ssh" || authType === "both") && (
                             <>
                                 <div className="form-group">
                                     <label htmlFor="sshKey">{t('settings.identities.dialog.fields.sshKey')}</label>
