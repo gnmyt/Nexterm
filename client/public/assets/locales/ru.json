@@ -742,7 +742,9 @@
         },
         "authTypes": {
           "password": "Пароль",
-          "ssh": "SSH-ключ"
+          "password-only": "No Username",
+          "ssh": "SSH-ключ",
+          "both": "Key+Pass"
         },
         "keyFileLoaded": "Ключ загружен",
         "actions": {
@@ -868,6 +870,15 @@
       "stop": "Остановить",
       "start": "Запустить"
     },
+    "messages": {
+      "fillRequiredFields": "Пожалуйста, заполните все обязательные поля",
+      "serverCreated": "Сервер успешно создан",
+      "serverUpdated": "Сервер успешно обновлён",
+      "createFailed": "Не удалось создать сервер",
+      "updateFailed": "Не удалось обновить сервер",
+      "createIdentityFailed": "Не удалось создать учётные данные",
+      "updateIdentityFailed": "Не удалось обновить учётные данные"
+    },
     "dialog": {
       "addServer": "Добавить сервер",
       "addProtocolServer": "Добавить сервер {{protocol}}",
@@ -955,8 +966,11 @@
         "identityName": "Название учётных данных",
         "username": "Имя пользователя",
         "authentication": "Аутентификация",
-        "password": "Пароль",
+        "passwordField": "Password",
+        "userPassword": "Password",
+        "passwordOnly": "No Username",
         "sshKey": "SSH-ключ",
+        "both": "Key+Pass",
         "sshPrivateKey": "Приватный SSH-ключ",
         "passphrase": "Парольная фраза (необязательно)",
         "new": "Новые",
@@ -1102,15 +1116,6 @@
       "fullScreen": "Полный экран",
       "exitFullScreen": "Выйти из полноэкранного режима",
       "badgeOn": "ВКЛ"
-    },
-    "messages": {
-      "fillRequiredFields": "Пожалуйста, заполните все обязательные поля",
-      "serverCreated": "Сервер успешно создан",
-      "serverUpdated": "Сервер успешно обновлён",
-      "createFailed": "Не удалось создать сервер",
-      "updateFailed": "Не удалось обновить сервер",
-      "createIdentityFailed": "Не удалось создать учётные данные",
-      "updateIdentityFailed": "Не удалось обновить учётные данные"
     }
   }
 }
