@@ -742,7 +742,9 @@
         },
         "authTypes": {
           "password": "Senha",
-          "ssh": "Chave SSH"
+          "password-only": "No Username",
+          "ssh": "Chave SSH",
+          "both": "Key+Pass"
         },
         "keyFileLoaded": "Arquivo de chave carregado",
         "actions": {
@@ -868,6 +870,15 @@
       "stop": "Parar",
       "start": "Iniciar"
     },
+    "messages": {
+      "fillRequiredFields": "Por favor, preencha todos os campos obrigatórios",
+      "serverCreated": "Servidor criado com sucesso",
+      "serverUpdated": "Servidor atualizado com sucesso",
+      "createFailed": "Falha ao criar o servidor",
+      "updateFailed": "Falha ao atualizar o servidor",
+      "createIdentityFailed": "Falha ao criar a identidade",
+      "updateIdentityFailed": "Falha ao atualizar a identidade"
+    },
     "dialog": {
       "addServer": "Adicionar Servidor",
       "addProtocolServer": "Adicionar Servidor {{protocol}}",
@@ -955,8 +966,11 @@
         "identityName": "Nome da Identidade",
         "username": "Nome de Usuário",
         "authentication": "Autenticação",
-        "password": "Senha",
+        "passwordField": "Password",
+        "userPassword": "Password",
+        "passwordOnly": "No Username",
         "sshKey": "Chave SSH",
+        "both": "Key+Pass",
         "sshPrivateKey": "Chave Privada SSH",
         "passphrase": "Senha (opcional)",
         "new": "Nova",
@@ -1102,15 +1116,6 @@
       "fullScreen": "Tela Cheia",
       "exitFullScreen": "Sair do Modo de Tela Cheia",
       "badgeOn": "ON"
-    },
-    "messages": {
-      "fillRequiredFields": "Por favor, preencha todos os campos obrigatórios",
-      "serverCreated": "Servidor criado com sucesso",
-      "serverUpdated": "Servidor atualizado com sucesso",
-      "createFailed": "Falha ao criar o servidor",
-      "updateFailed": "Falha ao atualizar o servidor",
-      "createIdentityFailed": "Falha ao criar a identidade",
-      "updateIdentityFailed": "Falha ao atualizar a identidade"
     }
   }
 }
