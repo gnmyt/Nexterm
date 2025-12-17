@@ -1,5 +1,8 @@
 const { Router } = require("express");
-const { getServerMonitoring, getAllServersMonitoring, getIntegrationMonitoring } = require("../controllers/monitoring");
+const { getServerMonitoring, getAllServersMonitoring, getIntegrationMonitoring, getMonitoringSettings, updateMonitoringSettings } = require("../controllers/monitoring");
+const { isAdmin } = require("../middlewares/permission");
+const { validateSchema } = require("../utils/schema");
+const { updateMonitoringSettingsValidation } = require("../validations/monitoring");
 
 const app = Router();
 
@@ -18,6 +21,49 @@ app.get("/", async (req, res) => {
     if (result?.code) return res.status(result.code).json(result);
 
     res.json(result);
+});
+
+/**
+ * GET /monitoring/settings/global
+ * @summary Get Monitoring Settings
+ * @description Retrieves the global monitoring configuration settings. Admin access required.
+ * @tags Monitoring
+ * @produces application/json
+ * @security BearerAuth
+ * @return {object} 200 - Monitoring settings configuration
+ * @return {object} 403 - Admin access required
+ */
+app.get("/settings/global", isAdmin, async (req, res) => {
+    try {
+        const settings = await getMonitoringSettings();
+        if (settings?.code) return res.status(settings.code).json(settings);
+        res.json(settings);
+    } catch (error) {
+        res.status(500).json({ error: "Internal server error" });
+    }
+});
+
+/**
+ * PATCH /monitoring/settings/global
+ * @summary Update Monitoring Settings
+ * @description Updates global monitoring configuration settings. Admin access required.
+ * @tags Monitoring
+ * @produces application/json
+ * @security BearerAuth
+ * @param {UpdateMonitoringSettings} request.body.required - Updated monitoring settings
+ * @return {object} 200 - Updated monitoring settings
+ * @return {object} 403 - Admin access required
+ */
+app.patch("/settings/global", isAdmin, async (req, res) => {
+    try {
+        if (validateSchema(res, updateMonitoringSettingsValidation, req.body)) return;
+        
+        const updatedSettings = await updateMonitoringSettings(req.body);
+        if (updatedSettings?.code) return res.status(updatedSettings.code).json(updatedSettings);
+        res.json(updatedSettings);
+    } catch (error) {
+        res.status(500).json({ error: "Internal server error" });
+    }
 });
 
 /**

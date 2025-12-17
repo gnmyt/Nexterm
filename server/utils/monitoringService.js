@@ -8,15 +8,23 @@ const Identity = require("../models/Identity");
 const { Op } = require("sequelize");
 const { createSSH } = require("./createSSH");
 const { getIdentityCredentials } = require("../controllers/identity");
+const { getMonitoringSettingsInternal } = require("../controllers/monitoring");
 
 let monitoringInterval = null;
 let isRunning = false;
+let currentSettings = null;
 
-const start = () => {
+const start = async () => {
     if (isRunning) return;
     isRunning = true;
+
+    currentSettings = await getMonitoringSettingsInternal();
+    const interval = currentSettings?.monitoringInterval ? currentSettings.monitoringInterval * 1000 : 60000;
+    
+    logger.system(`Starting monitoring service`, { interval });
+    
     runMonitoring();
-    monitoringInterval = setInterval(runMonitoring, 60000);
+    monitoringInterval = setInterval(runMonitoring, interval);
 };
 
 const stop = () => {
@@ -27,6 +35,13 @@ const stop = () => {
 
 const runMonitoring = async () => {
     try {
+        currentSettings = await getMonitoringSettingsInternal();
+
+        if (!currentSettings || !currentSettings.monitoringEnabled) {
+            logger.verbose("Monitoring is disabled, skipping cycle");
+            return;
+        }
+        
         const entries = await Entry.findAll({ where: { type: "server" } });
         const toMonitor = entries.filter(e => e.config?.protocol === "ssh" && e.config?.monitoringEnabled);
         if (toMonitor.length) await Promise.allSettled(toMonitor.map(monitorEntry));
@@ -348,7 +363,12 @@ const saveMonitoringData = async (entryId, data) => {
 
 const cleanupOldData = async () => {
     try {
-        await MonitoringData.destroy({ where: { timestamp: { [Op.lt]: new Date(Date.now() - 24 * 60 * 60 * 1000) } } });
+        const settings = await getMonitoringSettingsInternal();
+        const retentionHours = settings?.dataRetentionHours || 24;
+        const retentionMs = retentionHours * 60 * 60 * 1000;
+        
+        await MonitoringData.destroy({ where: { timestamp: { [Op.lt]: new Date(Date.now() - retentionMs) } } });
+        logger.verbose("Cleaned up old monitoring data", { retentionHours });
     } catch (error) {
         logger.error("Error cleaning up monitoring data", { error: error.message });
     }

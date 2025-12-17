@@ -6,18 +6,24 @@ const MonitoringSnapshot = require("../models/MonitoringSnapshot");
 const { Op } = require("sequelize");
 const axios = require("axios");
 const https = require("https");
+const { getMonitoringSettingsInternal } = require("../controllers/monitoring");
 
 let monitoringInterval = null;
 let isRunning = false;
+let currentSettings = null;
 
 const httpsAgent = new https.Agent({ rejectUnauthorized: false });
 
-const start = () => {
+const start = async () => {
     if (isRunning) return;
     isRunning = true;
-    logger.system("Starting PVE monitoring service", { interval: 60000 });
+
+    currentSettings = await getMonitoringSettingsInternal();
+    const interval = currentSettings?.monitoringInterval ? currentSettings.monitoringInterval * 1000 : 60000;
+    
+    logger.system("Starting PVE monitoring service", { interval });
     runMonitoring();
-    monitoringInterval = setInterval(runMonitoring, 60000);
+    monitoringInterval = setInterval(runMonitoring, interval);
 };
 
 const stop = () => {
@@ -28,6 +34,13 @@ const stop = () => {
 
 const runMonitoring = async () => {
     try {
+        currentSettings = await getMonitoringSettingsInternal();
+
+        if (!currentSettings || !currentSettings.monitoringEnabled) {
+            logger.verbose("PVE monitoring is disabled, skipping cycle");
+            return;
+        }
+        
         const integrations = await Integration.findAll({ where: { type: "proxmox" } });
         const toMonitor = integrations.filter(i => i.config?.monitoringEnabled);
         if (toMonitor.length) await Promise.allSettled(toMonitor.map(monitorIntegration));

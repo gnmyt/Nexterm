@@ -1,5 +1,6 @@
 const MonitoringData = require("../models/MonitoringData");
 const MonitoringSnapshot = require("../models/MonitoringSnapshot");
+const MonitoringSettings = require("../models/MonitoringSettings");
 const logger = require("../utils/logger");
 const Entry = require("../models/Entry");
 const Integration = require("../models/Integration");
@@ -104,5 +105,79 @@ module.exports.getAllServersMonitoring = async (accountId) => {
     } catch (error) {
         logger.error("Error getting all servers monitoring", { error: error.message });
         return { code: 500, message: "Internal server error" };
+    }
+};
+
+module.exports.getMonitoringSettings = async () => {
+    try {
+        let settings = await MonitoringSettings.findOne();
+        
+        if (!settings) {
+            settings = await MonitoringSettings.create({});
+        }
+        
+        return settings.dataValues ? { ...settings.dataValues } : { ...settings };
+    } catch (error) {
+        logger.error("Error getting monitoring settings", { error: error.message });
+        return { code: 500, message: "Failed to retrieve monitoring settings" };
+    }
+};
+
+module.exports.updateMonitoringSettings = async (updateData) => {
+    try {
+        let settings = await MonitoringSettings.findOne();
+        
+        if (!settings) {
+            settings = await MonitoringSettings.create({});
+        }
+        
+        const updatePayload = {};
+        
+        if (updateData.statusCheckerEnabled !== undefined) {
+            updatePayload.statusCheckerEnabled = updateData.statusCheckerEnabled;
+        }
+        if (updateData.statusInterval !== undefined) {
+            updatePayload.statusInterval = Math.max(10, Math.min(300, updateData.statusInterval));
+        }
+        if (updateData.monitoringEnabled !== undefined) {
+            updatePayload.monitoringEnabled = updateData.monitoringEnabled;
+        }
+        if (updateData.monitoringInterval !== undefined) {
+            updatePayload.monitoringInterval = Math.max(30, Math.min(600, updateData.monitoringInterval));
+        }
+        if (updateData.dataRetentionHours !== undefined) {
+            updatePayload.dataRetentionHours = Math.max(1, Math.min(24, updateData.dataRetentionHours));
+        }
+        if (updateData.connectionTimeout !== undefined) {
+            updatePayload.connectionTimeout = Math.max(5, Math.min(120, updateData.connectionTimeout));
+        }
+        if (updateData.batchSize !== undefined) {
+            updatePayload.batchSize = Math.max(1, Math.min(50, updateData.batchSize));
+        }
+        
+        const settingsId = settings.dataValues ? settings.dataValues.id : settings.id;
+        await MonitoringSettings.update(updatePayload, { where: { id: settingsId } });
+        
+        const updatedSettings = await MonitoringSettings.findOne();
+        
+        return updatedSettings.dataValues ? { ...updatedSettings.dataValues } : { ...updatedSettings };
+    } catch (error) {
+        logger.error("Error updating monitoring settings", { error: error.message });
+        return { code: 500, message: "Failed to update monitoring settings" };
+    }
+};
+
+module.exports.getMonitoringSettingsInternal = async () => {
+    try {
+        let settings = await MonitoringSettings.findOne();
+        
+        if (!settings) {
+            settings = await MonitoringSettings.create({});
+        }
+        
+        return settings;
+    } catch (error) {
+        logger.error("Error getting monitoring settings internally", { error: error.message });
+        return null;
     }
 };
