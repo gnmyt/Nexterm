@@ -1,5 +1,5 @@
 import Icon from "@mdi/react";
-import { mdiServerOutline, mdiServerOff, mdiAlertCircle, mdiClockOutline } from "@mdi/js";
+import { mdiServerOutline, mdiServerOff, mdiAlertCircle, mdiClockOutline, mdiServerNetwork } from "@mdi/js";
 import { loadIcon } from "@/pages/Servers/utils/iconMapping.js";
 import { useTranslation } from "react-i18next";
 
@@ -30,14 +30,40 @@ export const MonitoringGrid = ({ servers, onServerSelect }) => {
         );
     }
 
+    const getServerIcon = (server) => {
+        if (server.type === "proxmox") return mdiServerNetwork;
+        if (server.icon) return loadIcon(server.icon);
+        return mdiServerOutline;
+    };
+
+    const getMetrics = (server) => {
+        const isPVE = server.type === "proxmox";
+        const pveInfo = server.monitoring?.osInfo;
+        
+        if (isPVE) {
+            return [
+                { key: "cpuUsage", val: server.monitoring?.cpuUsage, unit: "%" },
+                { key: "memoryUsage", val: server.monitoring?.memoryUsage, unit: "%" },
+                { key: "nodes", val: pveInfo?.onlineNodes != null ? `${pveInfo.onlineNodes}/${pveInfo.totalNodes}` : null, unit: "" },
+                { key: "vms", val: pveInfo ? `${pveInfo.runningVMs + pveInfo.runningLXC}/${pveInfo.vmCount + pveInfo.lxcCount}` : null, unit: "" },
+            ];
+        }
+        return [
+            { key: "cpuUsage", val: server.monitoring?.cpuUsage, unit: "%" },
+            { key: "memoryUsage", val: server.monitoring?.memoryUsage, unit: "%" },
+            { key: "loadAverage", val: server.monitoring?.loadAverage?.[0]?.toFixed(2), unit: "" },
+            { key: "processes", val: server.monitoring?.processes, unit: "" },
+        ];
+    };
+
     return (
         <div className="monitoring-grid">
             {servers.map(server => (
-                <div key={server.id} className="server-card" onClick={() => onServerSelect(server)}>
+                <div key={server.id} className={`server-card ${server.type === "proxmox" ? "pve" : ""}`} onClick={() => onServerSelect(server)}>
                     <div className={`status-indicator ${server.monitoring?.status || "unknown"}`}></div>
                     <div className="server-header">
                         <div className="server-icon">
-                            <Icon path={server.icon ? loadIcon(server.icon) : mdiServerOutline} />
+                            <Icon path={getServerIcon(server)} />
                         </div>
                         <div className="server-info">
                             <h3>{server.name}</h3>
@@ -47,19 +73,14 @@ export const MonitoringGrid = ({ servers, onServerSelect }) => {
                     {server.status === "online" ? (
                         <>
                             <div className="metrics">
-                                {[
-                                    { key: "cpuUsage", val: server.monitoring.cpuUsage, unit: "%" },
-                                    { key: "memoryUsage", val: server.monitoring.memoryUsage, unit: "%" },
-                                    { key: "loadAverage", val: server.monitoring.loadAverage?.[0]?.toFixed(2), unit: "" },
-                                    { key: "processes", val: server.monitoring.processes, unit: "" },
-                                ].map(m => (
+                                {getMetrics(server).map(m => (
                                     <div key={m.key} className="metric">
                                         <div className="metric-label">{t(`monitoring.grid.metrics.${m.key}`)}</div>
                                         <div className="metric-value">{m.val != null ? `${m.val}${m.unit}` : "N/A"}</div>
                                     </div>
                                 ))}
                             </div>
-                            {server.monitoring.uptime && (
+                            {server.monitoring?.uptime && (
                                 <div className="uptime-info">{t("monitoring.grid.metrics.uptime")}: {formatUptime(server.monitoring.uptime)}</div>
                             )}
                         </>
@@ -70,10 +91,10 @@ export const MonitoringGrid = ({ servers, onServerSelect }) => {
                             </div>
                             <div className="offline-info">
                                 <h4>{t(`monitoring.grid.status.${server.status === "offline" ? "serverOffline" : server.status === "error" ? "connectionError" : "statusUnknown"}`)}</h4>
-                                <p>{server.status === "error" ? (server.monitoring.errorMessage || t("monitoring.grid.status.errorMessage")) : t(`monitoring.grid.status.${server.status === "offline" ? "offlineMessage" : "unknownMessage"}`)}</p>
+                                <p>{server.status === "error" ? (server.monitoring?.errorMessage || t("monitoring.grid.status.errorMessage")) : t(`monitoring.grid.status.${server.status === "offline" ? "offlineMessage" : "unknownMessage"}`)}</p>
                                 <div className="offline-actions">
                                     <span className="last-seen">
-                                        {server.monitoring.lastSeen ? t("monitoring.grid.status.lastSeen", { time: new Date(server.monitoring.lastSeen).toLocaleString() }) : t("monitoring.grid.status.noRecentActivity")}
+                                        {server.monitoring?.lastSeen ? t("monitoring.grid.status.lastSeen", { time: new Date(server.monitoring.lastSeen).toLocaleString() }) : t("monitoring.grid.status.noRecentActivity")}
                                     </span>
                                 </div>
                             </div>

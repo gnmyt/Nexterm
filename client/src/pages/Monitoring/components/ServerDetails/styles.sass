@@ -57,7 +57,7 @@
         font-size: 0.85rem
 
   .tab-content
-    .overview-tab, .charts-tab, .storage-tab, .network-tab
+    .overview-tab, .charts-tab, .storage-tab, .network-tab, .nodes-tab
       display: flex
       flex-direction: column
       gap: 1.5rem
@@ -328,6 +328,97 @@
   color: colors.$subtext
   font-style: italic
   padding: 2rem
+
+.nodes-list
+  display: flex
+  flex-direction: column
+  gap: 1.5rem
+
+.node-card
+  .node-header
+    display: flex
+    justify-content: space-between
+    align-items: center
+    margin-bottom: 1rem
+    padding-bottom: 1rem
+    border-bottom: 1px solid colors.$gray
+
+    .node-name
+      font-weight: 600
+      color: colors.$white
+      font-size: 1.1rem
+
+    .node-status
+      font-size: 0.75rem
+      padding: 0.25rem 0.75rem
+      border-radius: 0.25rem
+      text-transform: uppercase
+      font-weight: 600
+
+      &.online
+        background-color: rgba(41, 193, 106, 0.2)
+        color: #29C16A
+
+      &.offline
+        background-color: rgba(220, 86, 0, 0.2)
+        color: #DC5600
+
+  .node-metrics
+    display: flex
+    flex-direction: column
+    gap: 0.75rem
+
+    .node-metric
+      display: flex
+      align-items: center
+      gap: 1rem
+
+      .metric-label
+        width: 80px
+        font-size: 0.85rem
+        color: colors.$subtext
+        font-weight: 500
+
+      .metric-bar
+        flex: 1
+        height: 8px
+        background-color: colors.$gray
+        border-radius: 4px
+        overflow: hidden
+
+        .metric-fill
+          height: 100%
+          transition: width 0.3s ease
+
+          &.cpu
+            background-color: #314BD3
+
+          &.memory
+            background-color: #29C16A
+
+          &.storage
+            background-color: #DC5600
+
+      .metric-value
+        min-width: 180px
+        font-size: 0.85rem
+        color: colors.$white
+        text-align: right
+
+  .node-details
+    display: flex
+    gap: 1.5rem
+    margin-top: 1rem
+    padding-top: 0.75rem
+    border-top: 1px solid colors.$dark-gray
+    font-size: 0.85rem
+    color: colors.$subtext
+
+  .node-offline
+    color: colors.$subtext
+    font-style: italic
+    text-align: center
+    padding: 1rem
 
 @keyframes spin
   0%

@@ -4,8 +4,14 @@ const db = require("../utils/database");
 module.exports = db.define("monitoring_data", {
     entryId: {
         type: Sequelize.INTEGER,
-        allowNull: false,
+        allowNull: true,
         references: { model: "entries", key: "id" },
+        onDelete: "CASCADE",
+    },
+    integrationId: {
+        type: Sequelize.INTEGER,
+        allowNull: true,
+        references: { model: "integrations", key: "id" },
         onDelete: "CASCADE",
     },
     timestamp: {
@@ -44,7 +50,10 @@ module.exports = db.define("monitoring_data", {
 }, {
     freezeTableName: true,
     timestamps: false,
-    indexes: [{ fields: ["entryId", "timestamp"] }],
+    indexes: [
+        { fields: ["entryId", "timestamp"] },
+        { fields: ["integrationId", "timestamp"] },
+    ],
     hooks: {
         afterFind: (records) => {
             const parse = (record) => {

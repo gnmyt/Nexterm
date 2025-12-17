@@ -3,12 +3,14 @@ import "./styles.sass";
 import { useContext, useEffect, useState } from "react";
 import { ServerContext } from "@/common/contexts/ServerContext.jsx";
 import IconInput from "@/common/components/IconInput";
-import { mdiAccountCircleOutline, mdiFormTextbox, mdiIp, mdiLockOutline, mdiServerNetwork } from "@mdi/js";
+import { mdiAccountCircleOutline, mdiChartLine, mdiFormTextbox, mdiIp, mdiLockOutline, mdiServerNetwork } from "@mdi/js";
 import Button from "@/common/components/Button";
 import Input from "@/common/components/IconInput";
-import { getRequest, patchRequest, postRequest, putRequest } from "@/common/utils/RequestUtil.js";
+import { getRequest, patchRequest, putRequest } from "@/common/utils/RequestUtil.js";
 import { useTranslation } from "react-i18next";
 import { useToast } from "@/common/contexts/ToastContext.jsx";
+import ToggleSwitch from "@/common/components/ToggleSwitch";
+import Icon from "@mdi/react";
 
 export const ProxmoxDialog = ({ open, onClose, currentFolderId, currentOrganizationId, editServerId }) => {
     const { t } = useTranslation();
@@ -19,12 +21,13 @@ export const ProxmoxDialog = ({ open, onClose, currentFolderId, currentOrganizat
     const [port, setPort] = useState("8006");
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
+    const [monitoringEnabled, setMonitoringEnabled] = useState(false);
     const [loading, setLoading] = useState(false);
 
     const create = () => {
         setLoading(true);
         putRequest("integrations", {
-            name, folderId: currentFolderId, organizationId: currentOrganizationId, ip, port, username, password,
+            name, folderId: currentFolderId, organizationId: currentOrganizationId, ip, port, username, password, monitoringEnabled,
         }).then(async (response) => {
             if (response.code) {
                 sendToast("Error", response.message);
@@ -45,7 +48,7 @@ export const ProxmoxDialog = ({ open, onClose, currentFolderId, currentOrganizat
     const edit = () => {
         setLoading(true);
         patchRequest(`integrations/${editServerId}`, {
-            name, ip, port, username, password: password === "********" ? undefined : password,
+            name, ip, port, username, password: password === "********" ? undefined : password, monitoringEnabled,
         }).then(async (response) => {
             if (response.code) {
                 sendToast("Error", response.message);
@@ -71,6 +74,7 @@ export const ProxmoxDialog = ({ open, onClose, currentFolderId, currentOrganizat
                 setPort(server.port);
                 setUsername(server.username);
                 setPassword("********");
+                setMonitoringEnabled(server.monitoringEnabled || false);
             }).catch(err => console.error(err));
         } else {
             setName("");
@@ -78,6 +82,7 @@ export const ProxmoxDialog = ({ open, onClose, currentFolderId, currentOrganizat
             setPort("8006");
             setUsername("");
             setPassword("");
+            setMonitoringEnabled(false);
         }
         setLoading(false);
     }, [editServerId, open]);
@@ -119,6 +124,19 @@ export const ProxmoxDialog = ({ open, onClose, currentFolderId, currentOrganizat
                     <label htmlFor="password">{t("servers.proxmoxDialog.fields.password")}</label>
                     <IconInput icon={mdiLockOutline} value={password} setValue={setPassword} placeholder={t("servers.proxmoxDialog.placeholders.password")}
                                type="password" id="password" />
+                </div>
+
+                <div className="settings-toggle">
+                    <div className="settings-toggle-info">
+                        <span className="settings-toggle-label">
+                            <Icon path={mdiChartLine} size={0.8} style={{ marginRight: '8px', verticalAlign: 'middle' }} />
+                            {t('servers.proxmoxDialog.fields.monitoring')}
+                        </span>
+                        <span className="settings-toggle-description">
+                            {t('servers.proxmoxDialog.monitoringDescription')}
+                        </span>
+                    </div>
+                    <ToggleSwitch checked={monitoringEnabled} onChange={setMonitoringEnabled} id="pve-monitoring-toggle" />
                 </div>
 
                 <Button onClick={editServerId ? edit : create} text={editServerId ? t("servers.proxmoxDialog.actions.edit") : t("servers.proxmoxDialog.actions.import")} disabled={loading} />

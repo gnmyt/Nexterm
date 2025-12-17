@@ -1,5 +1,5 @@
 const { Router } = require("express");
-const { getServerMonitoring, getAllServersMonitoring } = require("../controllers/monitoring");
+const { getServerMonitoring, getAllServersMonitoring, getIntegrationMonitoring } = require("../controllers/monitoring");
 
 const app = Router();
 
@@ -15,6 +15,26 @@ const app = Router();
  */
 app.get("/", async (req, res) => {
     const result = await getAllServersMonitoring(req.user.id);
+    if (result?.code) return res.status(result.code).json(result);
+
+    res.json(result);
+});
+
+/**
+ * GET /monitoring/integration/{integrationId}
+ * @summary Get Integration Monitoring
+ * @description Retrieves monitoring data for a Proxmox integration.
+ * @tags Monitoring
+ * @produces application/json
+ * @security BearerAuth
+ * @param {string} integrationId.path.required - The unique identifier of the integration
+ * @param {string} timeRange.query - Time range for monitoring data (1h, 6h, 24h) - defaults to 1h
+ * @return {object} 200 - Integration monitoring data
+ * @return {object} 404 - Integration not found
+ */
+app.get("/integration/:integrationId", async (req, res) => {
+    const timeRange = req.query.timeRange || "1h";
+    const result = await getIntegrationMonitoring(req.user.id, req.params.integrationId, timeRange);
     if (result?.code) return res.status(result.code).json(result);
 
     res.json(result);

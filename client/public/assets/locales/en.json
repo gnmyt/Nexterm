@@ -310,7 +310,9 @@
         "memoryUsage": "Memory Usage",
         "loadAverage": "Load Average",
         "processes": "Processes",
-        "uptime": "Uptime"
+        "uptime": "Uptime",
+        "nodes": "Nodes",
+        "vms": "VMs/Containers"
       },
       "status": {
         "serverOffline": "Server Offline",
@@ -342,7 +344,8 @@
         "charts": "Charts",
         "storage": "Storage",
         "network": "Network",
-        "processes": "Processes"
+        "processes": "Processes",
+        "nodes": "Nodes"
       },
       "overview": {
         "systemInfo": {
@@ -402,6 +405,28 @@
         "showing": "Showing {{count}} of {{total}} processes",
         "noData": "No process data available. Process data will appear after the next monitoring cycle.",
         "noResults": "No processes match your search criteria."
+      },
+      "pve": {
+        "clusterInfo": "Cluster Information",
+        "resources": "Resource Usage",
+        "virtualMachines": "Virtual Machines",
+        "totalNodes": "Total Nodes",
+        "onlineNodes": "Online Nodes",
+        "totalCPU": "Total CPU",
+        "totalMemory": "Total Memory",
+        "totalStorage": "Total Storage",
+        "storageUsage": "Storage Usage",
+        "cores": "Cores",
+        "uptime": "Uptime",
+        "qemuVMs": "QEMU VMs",
+        "lxcContainers": "LXC Containers",
+        "running": "{{count}} running",
+        "vmContainerCount": "VM/Container Count",
+        "cpu": "CPU",
+        "memory": "Memory",
+        "storage": "Storage",
+        "nodeOffline": "This node is currently offline",
+        "noNodes": "No nodes available"
       }
     }
   },
@@ -1003,8 +1028,10 @@
         "port": "Port",
         "username": "Username",
         "password": "Password",
-        "nodeName": "Node Name (Optional)"
+        "nodeName": "Node Name (Optional)",
+        "monitoring": "Performance Monitoring"
       },
+      "monitoringDescription": "Collect cluster-wide CPU, memory, and storage metrics",
       "placeholders": {
         "name": "Name",
         "serverIp": "Server-IP",
@@ -1016,6 +1043,12 @@
       "actions": {
         "import": "Import",
         "edit": "Edit"
+      },
+      "messages": {
+        "created": "Proxmox integration created successfully",
+        "updated": "Proxmox integration updated successfully",
+        "createFailed": "Failed to create Proxmox integration",
+        "updateFailed": "Failed to update Proxmox integration"
       }
     },
     "connectionReasonDialog": {

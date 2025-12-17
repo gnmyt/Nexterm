@@ -5,9 +5,16 @@ const logger = require("../utils/logger");
 module.exports = db.define("monitoring_snapshot", {
     entryId: {
         type: Sequelize.INTEGER,
-        allowNull: false,
+        allowNull: true,
         unique: true,
         references: { model: "entries", key: "id" },
+        onDelete: "CASCADE",
+    },
+    integrationId: {
+        type: Sequelize.INTEGER,
+        allowNull: true,
+        unique: true,
+        references: { model: "integrations", key: "id" },
         onDelete: "CASCADE",
     },
     updatedAt: {
