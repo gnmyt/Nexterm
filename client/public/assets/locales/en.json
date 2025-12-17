@@ -341,11 +341,13 @@
         "overview": "Overview",
         "charts": "Charts",
         "storage": "Storage",
-        "network": "Network"
+        "network": "Network",
+        "processes": "Processes"
       },
       "overview": {
         "systemInfo": {
           "title": "System Information",
+          "hostname": "Hostname",
           "os": "OS",
           "version": "Version",
           "kernel": "Kernel",
@@ -383,13 +385,23 @@
         "available": "Available: {{value}}",
         "total": "Total: {{value}}",
         "type": "Type: {{value}}",
-        "noData": "No disk usage data available"
+        "noData": "No disk usage data available",
+        "noPartitions": "No mounted partitions"
       },
       "network": {
         "title": "Network Interfaces",
         "rxBytes": "RX Bytes",
         "txBytes": "TX Bytes",
+        "mac": "MAC Address",
+        "speed": "Speed",
         "noData": "No network interface data available"
+      },
+      "processes": {
+        "title": "Running Processes",
+        "searchPlaceholder": "Search processes...",
+        "showing": "Showing {{count}} of {{total}} processes",
+        "noData": "No process data available. Process data will appear after the next monitoring cycle.",
+        "noResults": "No processes match your search criteria."
       }
     }
   },

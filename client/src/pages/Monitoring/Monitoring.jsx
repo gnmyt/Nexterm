@@ -1,5 +1,6 @@
 import "./styles.sass";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
+import { useParams, useNavigate } from "react-router-dom";
 import { getRequest } from "@/common/utils/RequestUtil.js";
 import MonitoringGrid from "./components/MonitoringGrid";
 import ServerDetails from "./components/ServerDetails";
@@ -11,72 +12,82 @@ import { useTranslation } from "react-i18next";
 
 export const Monitoring = () => {
     const { t } = useTranslation();
-    const [servers, setServers] = useState([]);
-    const [filteredServers, setFilteredServers] = useState([]);
-    const [selectedServer, setSelectedServer] = useState(null);
-    const [loading, setLoading] = useState(true);
-    const [searchQuery, setSearchQuery] = useState("");
+    const { serverId, tab } = useParams();
+    const navigate = useNavigate();
     const { sendToast } = useToast();
+    
+    const [servers, setServers] = useState([]);
+    const [selectedServer, setSelectedServer] = useState(null);
+    const [searchQuery, setSearchQuery] = useState("");
 
-    const loadMonitoringData = async () => {
+    const loadMonitoringData = useCallback(async () => {
         try {
             const response = await getRequest("monitoring");
             setServers(response);
-            setFilteredServers(response);
+            if (serverId && !selectedServer) {
+                const server = response.find(s => String(s.id) === serverId);
+                if (server) setSelectedServer(server);
+            }
         } catch (error) {
-            console.error("Error loading monitoring data:", error);
-            sendToast("Failed to load monitoring data", "error");
-        } finally {
-            setLoading(false);
+            sendToast(t("monitoring.errors.loadFailed"), "error");
         }
-    };
+    }, [serverId, selectedServer, sendToast, t]);
 
     useEffect(() => {
         loadMonitoringData();
-
-        const interval = setInterval(() => {
-            loadMonitoringData();
-        }, 15000);
-
-        return () => {
-            if (interval) clearInterval(interval);
-        };
+        const interval = setInterval(loadMonitoringData, 15000);
+        return () => clearInterval(interval);
     }, []);
 
     useEffect(() => {
-        if (!searchQuery.trim()) {
-            setFilteredServers(servers);
-        } else {
-            const filtered = servers.filter(server =>
-                server.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                server.hostname?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                server.status?.toLowerCase().includes(searchQuery.toLowerCase()),
-            );
-            setFilteredServers(filtered);
+        if (serverId && servers.length > 0 && !selectedServer) {
+            const server = servers.find(s => String(s.id) === serverId);
+            if (server) setSelectedServer(server);
+        } else if (!serverId && selectedServer) {
+            setSelectedServer(null);
         }
-    }, [servers, searchQuery]);
+    }, [serverId, servers]);
 
-    const handleServerSelect = (server) => setSelectedServer(server);
-    const handleBackToGrid = () => setSelectedServer(null);
-    const handleSearchChange = (value) => setSearchQuery(value);
+    const handleServerSelect = (server) => {
+        setSelectedServer(server);
+        navigate(`/monitoring/${server.id}/overview`);
+    };
+
+    const handleBackToGrid = () => {
+        setSelectedServer(null);
+        navigate("/monitoring");
+    };
+
+    const handleTabChange = (newTab) => {
+        if (selectedServer) navigate(`/monitoring/${selectedServer.id}/${newTab}`);
+    };
+
+    const filteredServers = searchQuery.trim()
+        ? servers.filter(s =>
+            s.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+            s.ip?.toLowerCase().includes(searchQuery.toLowerCase())
+        )
+        : servers;
 
     return (
         <div className="monitoring-page">
             <PageHeader
                 icon={selectedServer ? undefined : mdiChartBoxOutline}
-                title={selectedServer ? selectedServer.name : t('monitoring.page.title')}
-                subtitle={selectedServer ? undefined : t('monitoring.page.subtitle')}
+                title={selectedServer ? selectedServer.name : t("monitoring.page.title")}
+                subtitle={selectedServer ? undefined : t("monitoring.page.subtitle")}
                 onBackClick={selectedServer ? handleBackToGrid : undefined}
                 backIcon={mdiArrowLeft}>
                 {!selectedServer && (
-                    <IconInput type="text" icon={mdiMagnify} placeholder={t('monitoring.page.searchPlaceholder')} 
-                               value={searchQuery} setValue={handleSearchChange} />
+                    <IconInput type="text" icon={mdiMagnify} placeholder={t("monitoring.page.searchPlaceholder")}
+                        value={searchQuery} setValue={setSearchQuery} />
                 )}
             </PageHeader>
-
             <div className="monitoring-content">
-                {selectedServer ? <ServerDetails server={selectedServer} /> :
-                    <MonitoringGrid servers={filteredServers} loading={loading} onServerSelect={handleServerSelect} />}
+                {selectedServer ? (
+                    <ServerDetails server={selectedServer} activeTab={tab || "overview"} onTabChange={handleTabChange} />
+                ) : (
+                    <MonitoringGrid servers={filteredServers} onServerSelect={handleServerSelect} />
+                )}
             </div>
         </div>
     );
