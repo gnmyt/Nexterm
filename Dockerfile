@@ -54,8 +54,8 @@ FROM node:22-alpine
 RUN apk add --no-cache \
     cairo jpeg libpng ossp-uuid \
     pango libvncserver libwebp openssl freerdp2-libs \
-    pulseaudio-libs libvorbis libogg libssh2 \
-    ffmpeg-libs \
+    pulseaudio libvorbis libogg libssh2 \
+    ffmpeg-libavcodec ffmpeg-libavformat ffmpeg-libavutil ffmpeg-libswscale \
     util-linux
 
 COPY --from=guacd-builder /install/usr/local/sbin/ /usr/local/sbin/
