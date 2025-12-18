@@ -11,11 +11,64 @@ import { HTML5Backend } from "react-dnd-html5-backend";
 import { SessionProvider } from "@/common/contexts/SessionContext.jsx";
 import { SnippetProvider } from "@/common/contexts/SnippetContext.jsx";
 import { ScriptProvider } from "@/common/contexts/ScriptContext.jsx";
-import { Suspense, lazy } from "react";
+import { Suspense, lazy, useState, useEffect } from "react";
 import Loading from "@/common/components/Loading";
 import { ErrorBoundary } from "@/common/components/ErrorBoundary";
+import TitleBar from "@/common/components/TitleBar";
+import { waitForTauri } from "@/common/utils/TauriUtil.js";
 
 const Sidebar = lazy(() => import("@/common/components/Sidebar"));
+
+const AppContent = () => {
+    const [tauriReady, setTauriReady] = useState(false);
+
+    useEffect(() => {
+        waitForTauri().then(() => {
+            setTauriReady(true);
+        });
+    }, []);
+
+    if (!tauriReady) {
+        return (
+            <div className="app-wrapper">
+                <TitleBar />
+                <Loading />
+            </div>
+        );
+    }
+
+    return (
+        <UserProvider>
+            <KeymapProvider>
+                <AIProvider>
+                    <ServerProvider>
+                        <IdentityProvider>
+                            <SnippetProvider>
+                                <ScriptProvider>
+                                    <SessionProvider>
+                                        <div className="app-wrapper">
+                                            <TitleBar />
+                                            <div className="content-wrapper">
+                                                <Suspense fallback={<Loading />}>
+                                                    <Sidebar />
+                                                </Suspense>
+                                                <div className="main-content">
+                                                    <Suspense fallback={<Loading />}>
+                                                        <Outlet />
+                                                    </Suspense>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </SessionProvider>
+                                </ScriptProvider>
+                            </SnippetProvider>
+                        </IdentityProvider>
+                    </ServerProvider>
+                </AIProvider>
+            </KeymapProvider>
+        </UserProvider>
+    );
+};
 
 export default () => {
     return (
@@ -23,32 +76,7 @@ export default () => {
             <DndProvider backend={HTML5Backend}>
                 <ToastProvider>
                     <TerminalSettingsProvider>
-                        <UserProvider>
-                            <KeymapProvider>
-                                <AIProvider>
-                                    <ServerProvider>
-                                        <IdentityProvider>
-                                            <SnippetProvider>
-                                                <ScriptProvider>
-                                                    <SessionProvider>
-                                                        <div className="content-wrapper">
-                                                            <Suspense fallback={<Loading />}>
-                                                                <Sidebar />
-                                                            </Suspense>
-                                                            <div className="main-content">
-                                                                <Suspense fallback={<Loading />}>
-                                                                    <Outlet />
-                                                                </Suspense>
-                                                            </div>
-                                                        </div>
-                                                    </SessionProvider>
-                                                </ScriptProvider>
-                                            </SnippetProvider>
-                                        </IdentityProvider>
-                                    </ServerProvider>
-                                </AIProvider>
-                            </KeymapProvider>
-                        </UserProvider>
+                        <AppContent />
                     </TerminalSettingsProvider>
                 </ToastProvider>
             </DndProvider>
