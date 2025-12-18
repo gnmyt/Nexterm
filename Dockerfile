@@ -30,7 +30,8 @@ FROM node:22-alpine AS guacd-builder
 RUN apk add --no-cache \
     cairo-dev jpeg-dev libpng-dev ossp-uuid-dev \
     pango-dev libvncserver-dev libwebp-dev openssl-dev freerdp2-dev \
-    libpulse libogg libc-dev libssh2-dev \
+    pulseaudio-dev libvorbis-dev libogg-dev libssh2-dev \
+    ffmpeg-dev \
     build-base autoconf automake libtool
 
 WORKDIR /build
@@ -53,7 +54,9 @@ FROM node:22-alpine
 RUN apk add --no-cache \
     cairo jpeg libpng ossp-uuid \
     pango libvncserver libwebp openssl freerdp2-libs \
-    libpulse libogg libssh2 util-linux
+    pulseaudio-libs libvorbis libogg libssh2 \
+    ffmpeg-libs \
+    util-linux
 
 COPY --from=guacd-builder /install/usr/local/sbin/ /usr/local/sbin/
 COPY --from=guacd-builder /install/usr/local/lib/ /usr/local/lib/
