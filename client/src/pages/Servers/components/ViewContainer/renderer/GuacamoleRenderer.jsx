@@ -10,19 +10,13 @@ if (typeof document !== 'undefined') {
     const unlockOnGesture = () => {
         if (audioUnlocked) return;
         const context = Guacamole.AudioContextFactory.getAudioContext();
-        console.log('[Guac Audio] Attempting to unlock AudioContext, state:', context?.state);
         if (context) {
             context.resume().then(() => {
                 audioUnlocked = true;
-                console.log('[Guac Audio] AudioContext unlocked successfully, state:', context.state);
                 document.removeEventListener('click', unlockOnGesture);
                 document.removeEventListener('keydown', unlockOnGesture);
                 document.removeEventListener('touchstart', unlockOnGesture);
-            }).catch((err) => {
-                console.error('[Guac Audio] Failed to unlock AudioContext:', err);
-            });
-        } else {
-            console.warn('[Guac Audio] No AudioContext available');
+            }).catch(() => {});
         }
     };
     document.addEventListener('click', unlockOnGesture);
@@ -142,11 +136,6 @@ const GuacamoleRenderer = ({
         let loaderHidden = false;
         const clientOnInstruction = tunnel.oninstruction;
         tunnel.oninstruction = (opcode, args) => {
-            if (opcode === "audio" || opcode === "ack" || opcode === "blob" || opcode === "end") {
-                if (opcode === "audio") {
-                    console.log('[Guac Audio] Received audio instruction:', opcode, args);
-                }
-            }
             if (!loaderHidden && opcode === "blob") {
                 loaderHidden = true;
                 connectionLoaderRef.current?.hide();
@@ -163,24 +152,11 @@ const GuacamoleRenderer = ({
         ref.current.appendChild(display);
 
         client.onaudio = (stream, mimetype) => {
-            console.log('[Guac Audio] Audio stream received, mimetype:', mimetype);
-            const context = Guacamole.AudioContextFactory.getAudioContext();
-            console.log('[Guac Audio] AudioContext:', context);
-            console.log('[Guac Audio] AudioContext state:', context?.state);
-
-            const isSupported = Guacamole.RawAudioPlayer.isSupportedType(mimetype);
-            console.log('[Guac Audio] Mimetype supported:', isSupported);
-            console.log('[Guac Audio] Supported types:', Guacamole.RawAudioPlayer.getSupportedTypes());
-            
             const audioPlayer = Guacamole.AudioPlayer.getInstance(stream, mimetype);
-            console.log('[Guac Audio] AudioPlayer created:', !!audioPlayer, audioPlayer);
-            
             if (audioPlayer) {
                 audioPlayersRef.current.push(audioPlayer);
-                console.log('[Guac Audio] Total audio players:', audioPlayersRef.current.length);
                 return audioPlayer;
             }
-            console.warn('[Guac Audio] No AudioPlayer instance created for mimetype:', mimetype);
             return null;
         };
 
