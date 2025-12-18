@@ -1,7 +1,7 @@
 import IconInput from "@/common/components/IconInput";
 import "./styles.sass";
 import { mdiAccountCircleOutline, mdiWhiteBalanceSunny, mdiAccountEdit, mdiPalette, mdiShieldCheck, mdiLockReset, mdiTranslate, mdiSync, mdiCloudSync, mdiWeb, mdiTabUnselected, mdiWeatherNight, mdiFingerprint, mdiKeyVariant, mdiPencil, mdiTrashCan, mdiPlus, mdiCheck } from "@mdi/js";
-import { useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 import { UserContext } from "@/common/contexts/UserContext.jsx";
 import { useTheme } from "@/common/contexts/ThemeContext.jsx";
 import Button from "@/common/components/Button";
@@ -28,6 +28,8 @@ export const Account = () => {
     const [passkeys, setPasskeys] = useState([]);
     const [editingPasskeyId, setEditingPasskeyId] = useState(null);
     const [editingPasskeyName, setEditingPasskeyName] = useState("");
+    const [darkClickCount, setDarkClickCount] = useState(0);
+    const darkClickTimeout = useRef(null);
 
     const { user, login } = useContext(UserContext);
     const { themeMode, setTheme, accentColor, setAccentColor, accentColors } = useTheme();
@@ -221,13 +223,33 @@ export const Account = () => {
                                     <span className="theme-name">{t("settings.account.themeLight")}</span>
                                 </div>
                                 <div 
-                                    className={`theme-box ${themeMode === 'dark' ? 'active' : ''}`}
-                                    onClick={() => setTheme('dark')}
+                                    className={`theme-box ${themeMode === 'dark' ? 'active' : ''} ${themeMode === 'oled' ? 'active oled-active' : ''}`}
+                                    onClick={() => {
+                                        if (themeMode === 'oled') {
+                                            setTheme('dark');
+                                            setDarkClickCount(0);
+                                            sendToast(t("common.success"), t("settings.account.oledDisabled"));
+                                        } else if (themeMode === 'dark') {
+                                            clearTimeout(darkClickTimeout.current);
+                                            const newCount = darkClickCount + 1;
+                                            setDarkClickCount(newCount);
+                                            if (newCount >= 3) {
+                                                setTheme('oled');
+                                                setDarkClickCount(0);
+                                                sendToast(t("common.success"), t("settings.account.oledEnabled"));
+                                            } else {
+                                                darkClickTimeout.current = setTimeout(() => setDarkClickCount(0), 1000);
+                                            }
+                                        } else {
+                                            setTheme('dark');
+                                            setDarkClickCount(0);
+                                        }
+                                    }}
                                 >
                                     <div className="theme-icon">
                                         <Icon path={mdiWeatherNight} size={1} />
                                     </div>
-                                    <span className="theme-name">{t("settings.account.themeDark")}</span>
+                                    <span className="theme-name">{themeMode === 'oled' ? t("settings.account.themeOled") : t("settings.account.themeDark")}</span>
                                 </div>
                                 <div 
                                     className={`theme-box ${themeMode === 'auto' ? 'active' : ''}`}

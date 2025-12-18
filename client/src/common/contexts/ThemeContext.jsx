@@ -62,7 +62,7 @@ export const ThemeProvider = ({ children }) => {
             mediaQuery.addEventListener('change', handler);
             return () => mediaQuery.removeEventListener('change', handler);
         } else {
-            setActualTheme(themeMode);
+            setActualTheme(themeMode === "oled" ? "oled" : themeMode);
             document.documentElement.setAttribute("data-theme", themeMode);
         }
     }, [themeMode]);
