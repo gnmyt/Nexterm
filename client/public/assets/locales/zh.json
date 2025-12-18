@@ -909,6 +909,25 @@
       }
     }
   },
+  "tunnel": {
+    "title": "Port Forward",
+    "identity": "Identity",
+    "remoteHost": "Remote Host",
+    "remotePort": "Remote Port",
+    "localPort": "Local Port",
+    "start": "Start Tunnel",
+    "stop": "Stop Tunnel",
+    "status": {
+      "idle": "Not connected",
+      "starting": "Starting...",
+      "listening": "Listening on localhost:{{port}}",
+      "error": "Error",
+      "stopped": "Stopped"
+    },
+    "error": {
+      "fillAllFields": "Please fill in all fields"
+    }
+  },
   "share": {
     "errors": {
       "unableToConnect": "无法连接",
@@ -956,6 +975,7 @@
       "connect": "连接",
       "quickConnect": "快速连接",
       "openSFTP": "打开 SFTP",
+      "forwardPort": "Forward Port",
       "runScript": "运行脚本",
       "editServer": "编辑服务器",
       "editIntegration": "编辑集成",
