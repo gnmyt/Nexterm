@@ -6,6 +6,7 @@
     "actions": {
       "cancel": "Annullamento",
       "confirm": "Confermare",
+      "discard": "Discard",
       "login": "Accesso",
       "register": "Registro",
       "save": "Risparmia",
@@ -31,7 +32,9 @@
     },
     "confirmDialog": {
       "title": "Sei sicuro?",
-      "defaultText": "Questa azione non può essere annullata."
+      "defaultText": "Questa azione non può essere annullata.",
+      "unsavedChangesTitle": "Unsaved Changes",
+      "unsavedChangesText": "You have unsaved changes. Are you sure you want to close?"
     },
     "loginDialog": {
       "title": "Nexterm",
@@ -457,6 +460,11 @@
       "themeAuto": "Auto",
       "themeLight": "Luce",
       "themeDark": "Scuro",
+      "themeOled": "OLED",
+      "oledEnabled": "OLED mode enabled",
+      "oledDisabled": "OLED mode disabled",
+      "themeLabel": "Theme",
+      "accentColor": "Accent Color",
       "twoFactor": "Autenticazione a due fattori",
       "twoFactorActive": "Attivo",
       "twoFactorInactive": "Inattivo",
