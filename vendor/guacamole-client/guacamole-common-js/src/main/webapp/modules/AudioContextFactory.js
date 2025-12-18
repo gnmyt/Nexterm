@@ -59,8 +59,11 @@ Guacamole.AudioContextFactory = {
             try {
 
                 // Create new instance if none yet exists
-                if (!Guacamole.AudioContextFactory.singleton)
+                if (!Guacamole.AudioContextFactory.singleton) {
+                    console.log('[AudioContextFactory] Creating new AudioContext');
                     Guacamole.AudioContextFactory.singleton = new AudioContext();
+                    console.log('[AudioContextFactory] AudioContext created, state:', Guacamole.AudioContextFactory.singleton.state);
+                }
 
                 // Return singleton instance
                 return Guacamole.AudioContextFactory.singleton;
@@ -68,7 +71,11 @@ Guacamole.AudioContextFactory = {
             }
             catch (e) {
                 // Do not use Web Audio API if not allowed by browser
+                console.error('[AudioContextFactory] Failed to create AudioContext:', e.name, e.message);
             }
+        }
+        else {
+            console.warn('[AudioContextFactory] Web Audio API not supported (no AudioContext)');
         }
 
         // Web Audio API not supported

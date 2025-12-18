@@ -39,6 +39,8 @@ Guacamole.ArrayBufferReader = function(stream) {
     // Receive blobs as array buffers
     stream.onblob = function(data) {
 
+        console.log('[ArrayBufferReader] onblob called, base64 length:', data?.length);
+
         var arrayBuffer, bufferView;
 
         // Use native methods for directly decoding base64 to an array buffer
@@ -60,6 +62,8 @@ Guacamole.ArrayBufferReader = function(stream) {
                 bufferView[i] = binary.charCodeAt(i);
 
         }
+
+        console.log('[ArrayBufferReader] Decoded to ArrayBuffer, bytes:', arrayBuffer?.byteLength, 'has ondata:', !!guac_reader.ondata);
 
         // Call handler, if present
         if (guac_reader.ondata)
