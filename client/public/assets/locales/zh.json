@@ -754,7 +754,7 @@
       "hours": "hours",
       "servers": "servers",
       "statusChecker": {
-        "title": "Status Checker",
+        "title": "状态检测",
         "description": "Configure how Nexterm checks the online/offline status of your servers.",
         "enable": {
           "title": "Enable Status Checker",
@@ -767,7 +767,7 @@
       },
       "dataCollection": {
         "title": "Data Collection",
-        "description": "Configure monitoring data collection for CPU, memory, disk, and network metrics.",
+        "description": "",
         "enable": {
           "title": "Enable Monitoring",
           "description": "Collect detailed performance metrics from servers with monitoring enabled."
@@ -1036,7 +1036,7 @@
           "enableFontSmoothing": "Enable Font Smoothing",
           "enableFontSmoothingDesc": "Render text with smooth edges for better readability",
           "enableFullWindowDrag": "Enable Full Window Drag",
-          "enableFullWindowDragDesc": "Display window contents while dragging windows",
+          "enableFullWindowDragDesc": "拖动窗口时显示窗口内容",
           "enableDesktopComposition": "Enable Desktop Composition",
           "enableDesktopCompositionDesc": "Enable transparent windows and visual effects",
           "enableMenuAnimations": "Enable Menu Animations",
