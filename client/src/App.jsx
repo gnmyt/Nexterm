@@ -11,6 +11,7 @@ import PopoutRoot from "@/common/layouts/PopoutRoot.jsx";
 import ShareRoot from "@/common/layouts/ShareRoot.jsx";
 import i18n from "./i18n.js";
 import Loading from "@/common/components/Loading";
+import { RouteErrorPage } from "@/common/components/ErrorBoundary";
 
 const Servers = lazy(() => import("@/pages/Servers"));
 const Settings = lazy(() => import("@/pages/Settings"));
@@ -36,6 +37,7 @@ const App = () => {
         {
             path: "/",
             element: <Root />,
+            errorElement: <RouteErrorPage />,
             children: [
                 { path: "/", element: <Navigate to="/servers" /> },
                 { path: "/servers", element: <Servers /> },
@@ -50,6 +52,7 @@ const App = () => {
         {
             path: "/popout",
             element: <PopoutRoot />,
+            errorElement: <RouteErrorPage />,
             children: [
                 { path: "/popout/:sessionId", element: <Popout /> }
             ],
@@ -57,6 +60,7 @@ const App = () => {
         {
             path: "/share",
             element: <ShareRoot />,
+            errorElement: <RouteErrorPage />,
             children: [
                 { path: "/share/:shareId", element: <Share /> }
             ],

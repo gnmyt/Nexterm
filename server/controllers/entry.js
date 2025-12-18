@@ -3,6 +3,7 @@ const EntryIdentity = require("../models/EntryIdentity");
 const Folder = require("../models/Folder");
 const EntryTag = require("../models/EntryTag");
 const Tag = require("../models/Tag");
+const AuditLog = require("../models/AuditLog");
 const { listFolders } = require("./folder");
 const { hasOrganizationAccess, validateFolderAccess } = require("../utils/permission");
 const { Op } = require("sequelize");
@@ -593,3 +594,81 @@ module.exports.repositionEntry = async (accountId, entryId, { targetId, placemen
 };
 
 module.exports.validateEntryAccess = validateEntryAccess;
+
+module.exports.getRecentConnections = async (accountId, limit = 5) => {
+    try {
+        const memberships = await OrganizationMember.findAll({ 
+            where: { accountId, status: "active" } 
+        });
+        const organizationIds = memberships.map(m => m.organizationId);
+
+        const connectionActions = [
+            AUDIT_ACTIONS.SSH_CONNECT,
+            AUDIT_ACTIONS.SFTP_CONNECT,
+            AUDIT_ACTIONS.PVE_CONNECT,
+            AUDIT_ACTIONS.RDP_CONNECT,
+            AUDIT_ACTIONS.VNC_CONNECT,
+        ];
+
+        const logs = await AuditLog.findAll({
+            where: {
+                action: { [Op.in]: connectionActions },
+                resource: RESOURCE_TYPES.ENTRY,
+                [Op.or]: [
+                    { accountId, organizationId: null },
+                    { organizationId: { [Op.in]: organizationIds } },
+                ],
+            },
+            order: [["timestamp", "DESC"]],
+            limit: limit * 3,
+        });
+
+        const seenEntries = new Set();
+        const uniqueLogs = [];
+        for (const log of logs) {
+            if (!seenEntries.has(log.resourceId) && uniqueLogs.length < limit) {
+                seenEntries.add(log.resourceId);
+                uniqueLogs.push(log);
+            }
+        }
+
+        const entryIds = uniqueLogs.map(log => log.resourceId);
+        const entries = await Entry.findAll({
+            where: { id: { [Op.in]: entryIds } },
+        });
+        const entryMap = new Map(entries.map(e => [e.id, e]));
+
+        const allEntryIdentities = await EntryIdentity.findAll({
+            where: { entryId: { [Op.in]: entryIds } },
+            order: [['isDefault', 'DESC']]
+        });
+        const identitiesMap = new Map();
+        allEntryIdentities.forEach(ei => {
+            if (!identitiesMap.has(ei.entryId)) {
+                identitiesMap.set(ei.entryId, []);
+            }
+            identitiesMap.get(ei.entryId).push(ei.identityId);
+        });
+
+        return uniqueLogs
+            .map(log => {
+                const entry = entryMap.get(log.resourceId);
+                if (!entry) return null;
+
+                return {
+                    entryId: entry.id,
+                    name: entry.name,
+                    icon: entry.icon,
+                    type: entry.type,
+                    protocol: entry.config?.protocol || null,
+                    connectionType: log.action,
+                    timestamp: log.timestamp,
+                    identities: identitiesMap.get(entry.id) || [],
+                };
+            })
+            .filter(Boolean);
+    } catch (error) {
+        logger.error("Error getting recent connections", { error: error.message, accountId });
+        return [];
+    }
+};
