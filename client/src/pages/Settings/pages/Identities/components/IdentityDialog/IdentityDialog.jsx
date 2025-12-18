@@ -1,5 +1,5 @@
 import { DialogProvider } from "@/common/components/Dialog";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import { patchRequest, putRequest } from "@/common/utils/RequestUtil.js";
 import { useToast } from "@/common/contexts/ToastContext.jsx";
@@ -27,6 +27,8 @@ export const IdentityDialog = ({ open, onClose, identity, organizationId }) => {
     const [sshKey, setSshKey] = useState(null);
     const [passphrase, setPassphrase] = useState("");
     const [isLoading, setIsLoading] = useState(false);
+    
+    const initialValues = useRef({ name: '', username: '', authType: 'password', password: '', sshKey: null, passphrase: '' });
 
     useEffect(() => {
         if (open) {
@@ -37,6 +39,14 @@ export const IdentityDialog = ({ open, onClose, identity, organizationId }) => {
                 setPassword("********");
                 setSshKey(identity.sshKey || null);
                 setPassphrase("********");
+                initialValues.current = {
+                    name: identity.name || '',
+                    username: identity.username || '',
+                    authType: identity.type || 'password',
+                    password: '********',
+                    sshKey: identity.sshKey || null,
+                    passphrase: '********'
+                };
             } else {
                 resetForm();
             }
@@ -50,6 +60,7 @@ export const IdentityDialog = ({ open, onClose, identity, organizationId }) => {
         setPassword("");
         setSshKey(null);
         setPassphrase("");
+        initialValues.current = { name: '', username: '', authType: 'password', password: '', sshKey: null, passphrase: '' };
     };
 
     const readFile = (event) => {
@@ -127,8 +138,15 @@ export const IdentityDialog = ({ open, onClose, identity, organizationId }) => {
         onClose();
     };
 
+    const isDirty = name !== initialValues.current.name || 
+                     username !== initialValues.current.username || 
+                     authType !== initialValues.current.authType ||
+                     password !== initialValues.current.password || 
+                     sshKey !== initialValues.current.sshKey || 
+                     passphrase !== initialValues.current.passphrase;
+
     return (
-        <DialogProvider open={open} onClose={onClose}>
+        <DialogProvider open={open} onClose={onClose} isDirty={isDirty}>
             <div className="identity-dialog">
                 <div className="dialog-title">
                     <Icon path={mdiKey} />

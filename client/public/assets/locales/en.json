@@ -6,6 +6,7 @@
     "actions": {
       "cancel": "Cancel",
       "confirm": "Confirm",
+      "discard": "Discard",
       "login": "Login",
       "register": "Register",
       "save": "Save",
@@ -31,7 +32,9 @@
     },
     "confirmDialog": {
       "title": "Are you sure?",
-      "defaultText": "This action cannot be undone."
+      "defaultText": "This action cannot be undone.",
+      "unsavedChangesTitle": "Unsaved Changes",
+      "unsavedChangesText": "You have unsaved changes. Are you sure you want to close?"
     },
     "loginDialog": {
       "title": "Nexterm",

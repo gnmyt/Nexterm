@@ -1,9 +1,9 @@
 import { DialogProvider } from "@/common/components/Dialog";
 import "./styles.sass";
-import { useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useState, useRef } from "react";
 import { ServerContext } from "@/common/contexts/ServerContext.jsx";
 import IconInput from "@/common/components/IconInput";
-import { mdiAccountCircleOutline, mdiChartLine, mdiFormTextbox, mdiIp, mdiLockOutline, mdiServerNetwork } from "@mdi/js";
+import { mdiAccountCircleOutline, mdiChartLine, mdiFormTextbox, mdiIp, mdiLockOutline } from "@mdi/js";
 import Button from "@/common/components/Button";
 import Input from "@/common/components/IconInput";
 import { getRequest, patchRequest, putRequest } from "@/common/utils/RequestUtil.js";
@@ -23,6 +23,8 @@ export const ProxmoxDialog = ({ open, onClose, currentFolderId, currentOrganizat
     const [password, setPassword] = useState("");
     const [monitoringEnabled, setMonitoringEnabled] = useState(false);
     const [loading, setLoading] = useState(false);
+    
+    const initialValues = useRef({ name: '', ip: '', port: '8006', username: '', password: '', monitoringEnabled: false });
 
     const create = () => {
         setLoading(true);
@@ -75,6 +77,14 @@ export const ProxmoxDialog = ({ open, onClose, currentFolderId, currentOrganizat
                 setUsername(server.username);
                 setPassword("********");
                 setMonitoringEnabled(server.monitoringEnabled || false);
+                initialValues.current = {
+                    name: server.name,
+                    ip: server.ip,
+                    port: server.port,
+                    username: server.username,
+                    password: '********',
+                    monitoringEnabled: server.monitoringEnabled || false
+                };
             }).catch(err => console.error(err));
         } else {
             setName("");
@@ -83,14 +93,22 @@ export const ProxmoxDialog = ({ open, onClose, currentFolderId, currentOrganizat
             setUsername("");
             setPassword("");
             setMonitoringEnabled(false);
+            initialValues.current = { name: '', ip: '', port: '8006', username: '', password: '', monitoringEnabled: false };
         }
         setLoading(false);
     }, [editServerId, open]);
 
     const { loadServers } = useContext(ServerContext);
 
+    const isDirty = name !== initialValues.current.name || 
+                     ip !== initialValues.current.ip || 
+                     port !== initialValues.current.port ||
+                     username !== initialValues.current.username || 
+                     password !== initialValues.current.password ||
+                     monitoringEnabled !== initialValues.current.monitoringEnabled;
+
     return (
-        <DialogProvider open={open} onClose={onClose}>
+        <DialogProvider open={open} onClose={onClose} isDirty={isDirty}>
             <div className="proxmox-dialog">
                 <h2>{editServerId ? t("servers.proxmoxDialog.title.edit") : t("servers.proxmoxDialog.title.import")}</h2>
                 <div className="form-group">

@@ -20,6 +20,7 @@ export const ScriptDialog = ({ open, onClose, editScriptId, selectedOrganization
     const [description, setDescription] = useState("");
     const [content, setContent] = useState("");
     const editorRef = useRef(null);
+    const initialValues = useRef({ name: '', description: '', content: '' });
 
     const { sendToast } = useToast();
     const { t } = useTranslation();
@@ -65,6 +66,11 @@ fi
             setName(script.name || "");
             setDescription(script.description || "");
             setContent(script.content || getDefaultContent());
+            initialValues.current = { 
+                name: script.name || '', 
+                description: script.description || '', 
+                content: script.content || getDefaultContent() 
+            };
         } catch (error) {
             console.error("Failed to load script:", error);
             sendToast("Error", t("scripts.messages.errors.loadFailed"));
@@ -127,9 +133,11 @@ fi
     };
 
     const resetForm = () => {
+        const defaultContent = getDefaultContent();
         setName("");
         setDescription("");
-        setContent(getDefaultContent());
+        setContent(defaultContent);
+        initialValues.current = { name: '', description: '', content: defaultContent };
     };
 
     const handleClose = () => {
@@ -137,8 +145,12 @@ fi
         onClose();
     };
 
+    const isDirty = name !== initialValues.current.name || 
+                     description !== initialValues.current.description || 
+                     content !== initialValues.current.content;
+
     return (
-        <DialogProvider open={open} onClose={handleClose}>
+        <DialogProvider open={open} onClose={handleClose} isDirty={isDirty}>
             <div className="create-script-dialog">
                 <div className="dialog-header">
                     <h2>

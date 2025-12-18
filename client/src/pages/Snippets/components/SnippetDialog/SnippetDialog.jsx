@@ -1,6 +1,6 @@
 import "./styles.sass";
 import { DialogProvider } from "@/common/components/Dialog";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { getRequest, patchRequest, putRequest, postRequest } from "@/common/utils/RequestUtil.js";
 import Button from "@/common/components/Button";
 import { useToast } from "@/common/contexts/ToastContext.jsx";
@@ -20,6 +20,8 @@ export const SnippetDialog = ({ open, onClose, editSnippetId, selectedOrganizati
     const { sendToast } = useToast();
     const { loadAllSnippets } = useSnippets();
     const { isAIAvailable } = useAI();
+    
+    const initialValues = useRef({ name: '', command: '', description: '' });
 
     useEffect(() => {
         if (open) {
@@ -38,6 +40,7 @@ export const SnippetDialog = ({ open, onClose, editSnippetId, selectedOrganizati
             setName(snippet.name);
             setCommand(snippet.command);
             setDescription(snippet.description || "");
+            initialValues.current = { name: snippet.name, command: snippet.command, description: snippet.description || '' };
         } catch (error) {
             console.error("Failed to load snippet:", error);
             sendToast("Error", t('snippets.messages.errors.loadFailed'));
@@ -49,6 +52,7 @@ export const SnippetDialog = ({ open, onClose, editSnippetId, selectedOrganizati
         setName("");
         setCommand("");
         setDescription("");
+        initialValues.current = { name: '', command: '', description: '' };
     };
 
     const handleSubmit = async (e) => {
@@ -106,8 +110,12 @@ export const SnippetDialog = ({ open, onClose, editSnippetId, selectedOrganizati
         }
     };
 
+    const isDirty = name !== initialValues.current.name || 
+                     command !== initialValues.current.command || 
+                     description !== initialValues.current.description;
+
     return (
-        <DialogProvider open={open} onClose={onClose}>
+        <DialogProvider open={open} onClose={onClose} isDirty={isDirty}>
             <div className="snippet-dialog">
                 <div className="snippet-dialog-title">
                     <h2>

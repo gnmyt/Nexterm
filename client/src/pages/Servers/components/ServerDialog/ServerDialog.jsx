@@ -1,6 +1,6 @@
 import { DialogProvider } from "@/common/components/Dialog";
 import "./styles.sass";
-import { useContext, useEffect, useState, useCallback } from "react";
+import { useContext, useEffect, useState, useCallback, useRef } from "react";
 import DetailsPage from "@/pages/Servers/components/ServerDialog/pages/DetailsPage.jsx";
 import Button from "@/common/components/Button";
 import { getRequest, patchRequest, putRequest } from "@/common/utils/RequestUtil.js";
@@ -43,6 +43,8 @@ export const ServerDialog = ({ open, onClose, currentFolderId, currentOrganizati
     const [identityUpdates, setIdentityUpdates] = useState({});
 
     const [activeTab, setActiveTab] = useState(0);
+    
+    const initialValues = useRef({ name: '', icon: null, config: {}, monitoringEnabled: false });
 
     const fieldConfig = getFieldConfig(entryType, config.protocol);
     const tabs = getAvailableTabs(entryType, config.protocol);
@@ -219,10 +221,17 @@ export const ServerDialog = ({ open, onClose, currentFolderId, currentOrganizati
                     const parsedConfig = typeof server.config === 'string' ? JSON.parse(server.config) : server.config || {};
                     setConfig(parsedConfig);
                     setMonitoringEnabled(Boolean(parsedConfig.monitoringEnabled ?? true));
+                    initialValues.current = {
+                        name: server.name,
+                        icon: server.icon || 'server',
+                        config: JSON.stringify(parsedConfig),
+                        monitoringEnabled: Boolean(parsedConfig.monitoringEnabled ?? true)
+                    };
                 } catch (error) {
                     console.error("Failed to parse server config:", error);
                     setConfig({});
                     setMonitoringEnabled(false);
+                    initialValues.current = { name: server.name, icon: server.icon || 'server', config: '{}', monitoringEnabled: false };
                 }
             });
         } else {
@@ -235,8 +244,15 @@ export const ServerDialog = ({ open, onClose, currentFolderId, currentOrganizati
                 setConfig({ protocol: initialProtocol });
                 const iconMap = { ssh: "terminal", telnet: "terminal", rdp: "windows", vnc: "desktop" };
                 setIcon(iconMap[initialProtocol] || null);
+                initialValues.current = { 
+                    name: '', 
+                    icon: iconMap[initialProtocol] || null, 
+                    config: JSON.stringify({ protocol: initialProtocol }), 
+                    monitoringEnabled: false 
+                };
             } else {
                 setConfig({});
+                initialValues.current = { name: '', icon: null, config: '{}', monitoringEnabled: false };
             }
             setMonitoringEnabled(false);
         }
@@ -278,8 +294,14 @@ export const ServerDialog = ({ open, onClose, currentFolderId, currentOrganizati
         }
     }, [config.protocol, open, fieldConfig.showIpPort, editServerId]);
 
+    const isDirty = name !== initialValues.current.name || 
+                     icon !== initialValues.current.icon ||
+                     JSON.stringify(config) !== initialValues.current.config ||
+                     monitoringEnabled !== initialValues.current.monitoringEnabled ||
+                     Object.keys(identityUpdates).length > 0;
+
     return (
-        <DialogProvider open={open} onClose={onClose}>
+        <DialogProvider open={open} onClose={onClose} isDirty={isDirty}>
             <div className="server-dialog">
                 <div className="server-dialog-header">
                     <div className="dialog-icon">

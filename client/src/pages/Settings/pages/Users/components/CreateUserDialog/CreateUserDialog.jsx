@@ -54,8 +54,10 @@ export const CreateUserDialog = ({open, onClose, loadUsers}) => {
         }
     }, [firstName, lastName, username, password]);
 
+    const isDirty = firstName !== '' || lastName !== '' || username !== '' || password !== '';
+
     return (
-        <DialogProvider open={open} onClose={onClose}>
+        <DialogProvider open={open} onClose={onClose} isDirty={isDirty}>
             <div className="user-creation-dialog" onKeyDown={onEnter}>
                 <h2>{t("settings.userDialog.title")}</h2>
                 {error && <div className="error">{error}</div>}
