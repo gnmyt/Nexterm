@@ -1,5 +1,5 @@
 import { memo } from "react";
-import logo from "@/common/img/logo.avif";
+import NextermLogo from "@/common/components/NextermLogo";
 import "./styles.sass";
 
 export const Loading = memo(() => {
@@ -7,7 +7,7 @@ export const Loading = memo(() => {
         <div className="loading-container">
             <div className="loading-content">
                 <div className="loading-logo-wrapper">
-                    <img src={logo} alt="Nexterm" className="loading-logo" />
+                    <NextermLogo size={64} className="loading-logo" />
                     <div className="loading-ring"></div>
                     <div className="loading-ring loading-ring-2"></div>
                     <div className="loading-ring loading-ring-3"></div>

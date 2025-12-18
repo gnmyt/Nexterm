@@ -58,7 +58,7 @@ export const useTerminal = (containerRef, session, options = {}) => {
 
     const { sessionToken } = useContext(UserContext);
     const { theme } = useTheme();
-    const { getCurrentTheme, selectedFont, fontSize, cursorStyle, cursorBlink, selectedTheme } = useTerminalSettings();
+    const { getCurrentTheme, selectedFont, fontSize, cursorStyle, cursorBlink, selectedTheme, isOledMode } = useTerminalSettings();
 
     useEffect(() => {
         if (!sessionToken || !containerRef.current) return;
@@ -147,7 +147,7 @@ export const useTerminal = (containerRef, session, options = {}) => {
             wsRef.current = null;
             fitAddonRef.current = null;
         };
-    }, [sessionToken, selectedFont, fontSize, cursorStyle, cursorBlink, selectedTheme]);
+    }, [sessionToken, selectedFont, fontSize, cursorStyle, cursorBlink, selectedTheme, isOledMode]);
 
     return { termRef, wsRef, fitAddonRef };
 };
