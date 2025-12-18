@@ -5,7 +5,7 @@ import { useEffect, useState } from "react";
 import NextermLogo from "@/common/components/NextermLogo";
 import { isTauri } from "@/common/utils/TauriUtil.js";
 
-export const TitleBar = () => {
+export const TitleBar = ({ title = "Nexterm Connector" }) => {
     const [isMaximized, setIsMaximized] = useState(false);
     const [appWindow, setAppWindow] = useState(null);
 
@@ -33,7 +33,7 @@ export const TitleBar = () => {
         <div className="title-bar" data-tauri-drag-region>
             <div className="title-bar-left" data-tauri-drag-region>
                 <NextermLogo size={24} />
-                <span data-tauri-drag-region>Nexterm Connector</span>
+                <span data-tauri-drag-region>{title}</span>
             </div>
             <div className="title-bar-controls">
                 <button className="title-bar-btn" onClick={handleMinimize}>
