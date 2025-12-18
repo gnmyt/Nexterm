@@ -44,6 +44,7 @@ app.use("/api/oidc", require("./routes/oidc"));
 app.ws("/api/ws/term", require("./routes/term"));
 app.ws("/api/ws/guac", require("./routes/guac"));
 app.ws("/api/ws/sftp", require("./routes/sftpWS"));
+app.ws("/api/ws/tunnel", require("./routes/tunnel"));
 
 app.use("/api/entries/sftp-download", require("./routes/sftpDownload"));
 

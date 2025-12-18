@@ -4,13 +4,14 @@ const { establishJumpHosts, buildSSHOptions, forwardToTarget } = require("./jump
 const logger = require("./logger");
 
 const setupKeyboardInteractive = (ssh, ws) => {
+    if (!ws) return;
     ssh.on("keyboard-interactive", (name, instructions, lang, prompts, finish) => {
         ws.send(`\x02${prompts[0].prompt}`);
         ws.on("message", (data) => data.toString().startsWith("\x03") && finish([data.substring(1)]));
     });
 };
 
-const createSSHConnection = async (entry, identity, ws) => {
+const createSSHConnection = async (entry, identity, ws = null) => {
     const credentials = identity.isDirect && identity.directCredentials 
         ? identity.directCredentials 
         : await getIdentityCredentials(identity.id);
