@@ -7,7 +7,6 @@ import {
     mdiAccountCircleOutline,
     mdiFileUploadOutline,
     mdiLockOutline,
-    mdiCheck,
     mdiKey,
 } from "@mdi/js";
 import Icon from "@mdi/react";
@@ -180,12 +179,6 @@ export const IdentityDialog = ({ open, onClose, identity, organizationId }) => {
                                     <label htmlFor="sshKey">{t('settings.identities.dialog.fields.sshKey')}</label>
                                     <IconInput icon={mdiFileUploadOutline} type="file" onChange={readFile} id="sshKey"
                                                required={!isEditing} />
-                                    {sshKey && (
-                                        <div className="keyfile-status">
-                                            <Icon path={mdiCheck} />
-                                            <span>{t('settings.identities.dialog.keyFileLoaded')}</span>
-                                        </div>
-                                    )}
                                 </div>
 
                                 <div className="form-group">
