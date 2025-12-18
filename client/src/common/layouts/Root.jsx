@@ -13,42 +13,45 @@ import { SnippetProvider } from "@/common/contexts/SnippetContext.jsx";
 import { ScriptProvider } from "@/common/contexts/ScriptContext.jsx";
 import { Suspense, lazy } from "react";
 import Loading from "@/common/components/Loading";
+import { ErrorBoundary } from "@/common/components/ErrorBoundary";
 
 const Sidebar = lazy(() => import("@/common/components/Sidebar"));
 
 export default () => {
     return (
-        <DndProvider backend={HTML5Backend}>
-            <ToastProvider>
-                <TerminalSettingsProvider>
-                    <UserProvider>
-                        <KeymapProvider>
-                            <AIProvider>
-                                <ServerProvider>
-                                    <IdentityProvider>
-                                        <SnippetProvider>
-                                            <ScriptProvider>
-                                                <SessionProvider>
-                                                    <div className="content-wrapper">
-                                                        <Suspense fallback={<Loading />}>
-                                                            <Sidebar />
-                                                        </Suspense>
-                                                        <div className="main-content">
+        <ErrorBoundary>
+            <DndProvider backend={HTML5Backend}>
+                <ToastProvider>
+                    <TerminalSettingsProvider>
+                        <UserProvider>
+                            <KeymapProvider>
+                                <AIProvider>
+                                    <ServerProvider>
+                                        <IdentityProvider>
+                                            <SnippetProvider>
+                                                <ScriptProvider>
+                                                    <SessionProvider>
+                                                        <div className="content-wrapper">
                                                             <Suspense fallback={<Loading />}>
-                                                                <Outlet />
+                                                                <Sidebar />
                                                             </Suspense>
+                                                            <div className="main-content">
+                                                                <Suspense fallback={<Loading />}>
+                                                                    <Outlet />
+                                                                </Suspense>
+                                                            </div>
                                                         </div>
-                                                    </div>
-                                                </SessionProvider>
-                                            </ScriptProvider>
-                                        </SnippetProvider>
-                                    </IdentityProvider>
-                                </ServerProvider>
-                            </AIProvider>
-                        </KeymapProvider>
-                    </UserProvider>
-                </TerminalSettingsProvider>
-            </ToastProvider>
-        </DndProvider>
+                                                    </SessionProvider>
+                                                </ScriptProvider>
+                                            </SnippetProvider>
+                                        </IdentityProvider>
+                                    </ServerProvider>
+                                </AIProvider>
+                            </KeymapProvider>
+                        </UserProvider>
+                    </TerminalSettingsProvider>
+                </ToastProvider>
+            </DndProvider>
+        </ErrorBoundary>
     );
 }

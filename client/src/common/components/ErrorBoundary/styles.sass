@@ -1,0 +1,124 @@
+@use "@/common/styles/colors"
+
+.error-boundary
+    position: fixed
+    top: 0
+    left: 0
+    width: 100vw
+    height: 100vh
+    background: colors.$background
+    display: flex
+    justify-content: center
+    align-items: center
+    z-index: 9999
+    padding: 2rem
+    box-sizing: border-box
+
+.error-boundary-content
+    display: flex
+    flex-direction: column
+    align-items: center
+    text-align: center
+    max-width: 32rem
+    width: 100%
+
+.error-boundary-icon
+    margin-bottom: 1rem
+    
+    svg
+        width: 4rem
+        height: 4rem
+        color: colors.$error
+        opacity: 0.9
+
+.error-boundary h1
+    margin: 0 0 0.75rem
+    font-size: 1.5rem
+    font-weight: 700
+    color: colors.$white
+
+    @media (max-width: 480px)
+        font-size: 1.25rem
+
+.error-boundary-description
+    margin: 0 0 1.5rem
+    font-size: 0.95rem
+    font-weight: 400
+    color: colors.$subtext
+    line-height: 1.6
+
+    @media (max-width: 480px)
+        font-size: 0.875rem
+
+.error-boundary-details
+    width: 100%
+    margin-bottom: 1.5rem
+    padding: 1rem
+    background: colors.$lighter-background
+    border: 1px solid colors.$dark-gray
+    border-radius: 0.5rem
+
+.error-boundary-message
+    display: flex
+    align-items: flex-start
+    gap: 0.75rem
+    text-align: left
+    
+    svg
+        width: 1.25rem
+        height: 1.25rem
+        color: colors.$error
+        flex-shrink: 0
+        margin-top: 0.125rem
+    
+    span
+        font-size: 0.875rem
+        font-family: "Fira Code", monospace
+        color: colors.$subtext
+        word-break: break-word
+        line-height: 1.5
+
+.error-boundary-actions
+    display: flex
+    gap: 0.75rem
+    flex-wrap: wrap
+    justify-content: center
+
+    @media (max-width: 480px)
+        flex-direction: column
+        width: 100%
+
+.error-btn
+    display: flex
+    align-items: center
+    justify-content: center
+    gap: 0.5rem
+    padding: 0.75rem 1.25rem
+    border-radius: 0.5rem
+    border: 1px solid colors.$dark-gray
+    cursor: pointer
+    transition: all 0.2s ease
+    font-size: 0.9rem
+    font-weight: 500
+    font-family: inherit
+
+    svg
+        width: 1.1rem
+        height: 1.1rem
+
+    &:hover
+        filter: brightness(0.85)
+
+    &:active
+        transform: scale(0.97)
+
+    @media (max-width: 480px)
+        width: 100%
+
+.error-btn.primary
+    background: colors.$primary-opacity
+    color: colors.$white
+
+.error-btn.secondary
+    background: colors.$lighter-background
+    color: colors.$white

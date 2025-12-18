@@ -13,33 +13,36 @@ import { SnippetProvider } from "@/common/contexts/SnippetContext.jsx";
 import { ScriptProvider } from "@/common/contexts/ScriptContext.jsx";
 import { Suspense } from "react";
 import Loading from "@/common/components/Loading";
+import { ErrorBoundary } from "@/common/components/ErrorBoundary";
 
 export default () => {
     return (
-        <DndProvider backend={HTML5Backend}>
-            <ToastProvider>
-                <TerminalSettingsProvider>
-                    <UserProvider>
-                        <KeymapProvider>
-                            <AIProvider>
-                                <ServerProvider>
-                                    <IdentityProvider>
-                                        <SnippetProvider>
-                                            <ScriptProvider>
-                                                <SessionProvider>
-                                                    <Suspense fallback={<Loading />}>
-                                                        <Outlet />
-                                                    </Suspense>
-                                                </SessionProvider>
-                                            </ScriptProvider>
-                                        </SnippetProvider>
-                                    </IdentityProvider>
-                                </ServerProvider>
-                            </AIProvider>
-                        </KeymapProvider>
-                    </UserProvider>
-                </TerminalSettingsProvider>
-            </ToastProvider>
-        </DndProvider>
+        <ErrorBoundary>
+            <DndProvider backend={HTML5Backend}>
+                <ToastProvider>
+                    <TerminalSettingsProvider>
+                        <UserProvider>
+                            <KeymapProvider>
+                                <AIProvider>
+                                    <ServerProvider>
+                                        <IdentityProvider>
+                                            <SnippetProvider>
+                                                <ScriptProvider>
+                                                    <SessionProvider>
+                                                        <Suspense fallback={<Loading />}>
+                                                            <Outlet />
+                                                        </Suspense>
+                                                    </SessionProvider>
+                                                </ScriptProvider>
+                                            </SnippetProvider>
+                                        </IdentityProvider>
+                                    </ServerProvider>
+                                </AIProvider>
+                            </KeymapProvider>
+                        </UserProvider>
+                    </TerminalSettingsProvider>
+                </ToastProvider>
+            </DndProvider>
+        </ErrorBoundary>
     );
 }
