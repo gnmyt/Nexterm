@@ -909,6 +909,25 @@
       }
     }
   },
+  "tunnel": {
+    "title": "Port Forward",
+    "identity": "Identity",
+    "remoteHost": "Remote Host",
+    "remotePort": "Remote Port",
+    "localPort": "Local Port",
+    "start": "Start Tunnel",
+    "stop": "Stop Tunnel",
+    "status": {
+      "idle": "Not connected",
+      "starting": "Starting...",
+      "listening": "Listening on localhost:{{port}}",
+      "error": "Error",
+      "stopped": "Stopped"
+    },
+    "error": {
+      "fillAllFields": "Please fill in all fields"
+    }
+  },
   "share": {
     "errors": {
       "unableToConnect": "Unable to Connect",
@@ -956,6 +975,7 @@
       "connect": "Connect",
       "quickConnect": "Quick Connect",
       "openSFTP": "Open SFTP",
+      "forwardPort": "Forward Port",
       "runScript": "Run Script",
       "editServer": "Edit Server",
       "editIntegration": "Edit Integration",

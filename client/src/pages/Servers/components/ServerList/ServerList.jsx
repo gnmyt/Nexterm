@@ -30,6 +30,7 @@ import {
     mdiCog,
     mdiPlay,
     mdiScript,
+    mdiTunnel,
 } from "@mdi/js";
 import { ContextMenu, ContextMenuItem, ContextMenuSeparator, useContextMenu } from "@/common/components/ContextMenu";
 import { useDrop, useDragLayer } from "react-dnd";
@@ -119,7 +120,8 @@ export const ServerList = ({
     hibernatedSessions = [],
     resumeSession,
     openDirectConnect,
-    runScript
+    runScript,
+    openPortForward
 }) => {
     const { t } = useTranslation();
     const { servers, loadServers, getServerById } = useContext(ServerContext);
@@ -687,6 +689,14 @@ export const ServerList = ({
                                             </ContextMenuItem>
                                         )}
                                     </>
+                                )}
+
+                                {server?.identities?.length > 0 && server?.protocol === "ssh" && openPortForward && (
+                                    <ContextMenuItem
+                                        icon={mdiTunnel}
+                                        label={t("servers.contextMenu.forwardPort")}
+                                        onClick={() => openPortForward(server)}
+                                    />
                                 )}
 
                                 {server?.identities?.length > 0 && server?.protocol === "ssh" && (scripts.length > 0 || sourceScripts.length > 0) && (
