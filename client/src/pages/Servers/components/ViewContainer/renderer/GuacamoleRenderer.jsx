@@ -199,7 +199,7 @@ const GuacamoleRenderer = ({
             ref.current?.removeEventListener("keydown", handleKeyDown, true);
             client.onstatechange = tunnel.onstatechange = tunnel.onerror = null;
             audioPlayersRef.current = [];
-            client.disconnect();
+            tunnel.disconnect();
             clientRef.current = null;
         };
     };
