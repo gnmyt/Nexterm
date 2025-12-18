@@ -6,6 +6,7 @@
     "actions": {
       "cancel": "إلغاء",
       "confirm": "تأكيد",
+      "discard": "Discard",
       "login": "تسجيل الدخول",
       "register": "تسجيل",
       "save": "الحفظ",
@@ -31,7 +32,9 @@
     },
     "confirmDialog": {
       "title": "هل أنت متأكد؟",
-      "defaultText": "لا يمكن التراجع عن هذا الإجراء."
+      "defaultText": "لا يمكن التراجع عن هذا الإجراء.",
+      "unsavedChangesTitle": "Unsaved Changes",
+      "unsavedChangesText": "You have unsaved changes. Are you sure you want to close?"
     },
     "loginDialog": {
       "title": "نيكسترِم",
@@ -457,6 +460,11 @@
       "themeAuto": "السيارات",
       "themeLight": "خفيف",
       "themeDark": "داكن",
+      "themeOled": "OLED",
+      "oledEnabled": "OLED mode enabled",
+      "oledDisabled": "OLED mode disabled",
+      "themeLabel": "Theme",
+      "accentColor": "Accent Color",
       "twoFactor": "المصادقة الثنائية",
       "twoFactorActive": "نشط",
       "twoFactorInactive": "غير نشط",
