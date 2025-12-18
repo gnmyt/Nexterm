@@ -75,3 +75,65 @@
     opacity: 0
     transform: scale(0.4)
     filter: blur(5px)
+
+.dialog-confirm-overlay
+  position: absolute
+  top: 0
+  left: 0
+  right: 0
+  bottom: 0
+  background-color: rgba(0, 0, 0, 0.5)
+  display: flex
+  align-items: center
+  justify-content: center
+  z-index: 10001
+
+.dialog-confirm
+  background-color: colors.$lighter-background
+  border: 1px solid colors.$dark-gray
+  border-radius: 0.75rem
+  padding: 1.25rem
+  min-width: 20rem
+  max-width: 90%
+  box-shadow: 0 12px 48px rgba(0, 0, 0, 0.5)
+  animation: dialogFadeIn 0.15s
+
+  h3
+    margin: 0 0 0.5rem 0
+    color: colors.$white
+    font-size: 1.1rem
+
+  p
+    margin: 0 0 1.25rem 0
+    color: colors.$subtext
+    font-size: 0.9rem
+    line-height: 1.4
+
+.dialog-confirm-actions
+  display: flex
+  justify-content: flex-end
+  gap: 0.5rem
+
+.dialog-confirm-btn
+  padding: 0.5rem 1rem
+  border-radius: 0.5rem
+  font-size: 0.9rem
+  font-weight: 500
+  cursor: pointer
+  transition: background-color 0.15s ease, border-color 0.15s ease
+
+  &.secondary
+    background-color: transparent
+    border: 1px solid colors.$gray
+    color: colors.$white
+
+    &:hover
+      background-color: colors.$gray
+
+  &.primary
+    background-color: colors.$error
+    border: 1px solid colors.$error
+    color: colors.$white
+
+    &:hover
+      opacity: 0.85
