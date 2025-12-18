@@ -6,6 +6,7 @@
     "actions": {
       "cancel": "取消",
       "confirm": "确认",
+      "discard": "Discard",
       "login": "登录",
       "register": "注册",
       "save": "保存",
@@ -31,7 +32,9 @@
     },
     "confirmDialog": {
       "title": "确定吗？",
-      "defaultText": "此操作无法撤销。"
+      "defaultText": "此操作无法撤销。",
+      "unsavedChangesTitle": "Unsaved Changes",
+      "unsavedChangesText": "You have unsaved changes. Are you sure you want to close?"
     },
     "loginDialog": {
       "title": "Nexterm",
@@ -457,6 +460,11 @@
       "themeAuto": "自动",
       "themeLight": "浅色",
       "themeDark": "深色",
+      "themeOled": "OLED",
+      "oledEnabled": "OLED mode enabled",
+      "oledDisabled": "OLED mode disabled",
+      "themeLabel": "Theme",
+      "accentColor": "Accent Color",
       "twoFactor": "双因素认证",
       "twoFactorActive": "已启用",
       "twoFactorInactive": "未启用",
