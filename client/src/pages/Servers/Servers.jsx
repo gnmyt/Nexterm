@@ -1,10 +1,7 @@
 import "./styles.sass";
 import ServerList from "@/pages/Servers/components/ServerList";
-import { UserContext } from "@/common/contexts/UserContext.jsx";
 import { useContext, useEffect, useState, useCallback } from "react";
-import Button from "@/common/components/Button";
-import WelcomeImage from "@/common/img/welcome.avif";
-import { DISCORD_URL, GITHUB_URL } from "@/App.jsx";
+import WelcomePanel from "@/pages/Servers/components/WelcomePanel";
 import ServerDialog from "@/pages/Servers/components/ServerDialog";
 import ViewContainer from "@/pages/Servers/components/ViewContainer";
 import ProxmoxDialog from "@/pages/Servers/components/ProxmoxDialog";
@@ -13,8 +10,6 @@ import ConnectionReasonDialog from "@/pages/Servers/components/ConnectionReasonD
 import DirectConnectDialog from "@/pages/Servers/components/DirectConnectDialog";
 import FileEditorWindow from "@/common/components/FileEditorWindow";
 import FilePreviewWindow from "@/common/components/FilePreviewWindow";
-import { mdiStar } from "@mdi/js";
-import { siDiscord } from "simple-icons";
 import { useActiveSessions } from "@/common/contexts/SessionContext.jsx";
 import { useLocation, useNavigate } from "react-router-dom";
 import { ServerContext } from "@/common/contexts/ServerContext.jsx";
@@ -36,7 +31,6 @@ export const Servers = () => {
     const [currentFolderId, setCurrentFolderId] = useState(null);
     const [currentOrganizationId, setCurrentOrganizationId] = useState(null);
     const [editServerId, setEditServerId] = useState(null);
-    const { user } = useContext(UserContext);
     const { activeSessions, setActiveSessions, activeSessionId, setActiveSessionId, poppedOutSessions } = useActiveSessions();
     const { getServerById, servers } = useContext(ServerContext);
     const location = useLocation();
@@ -453,19 +447,15 @@ export const Servers = () => {
                         setEditServerId={setEditServerId} openSFTP={openSFTP}
                         hibernatedSessions={hibernatedSessions} resumeSession={resumeConnection}
                         openDirectConnect={openDirectConnect} runScript={runScript} />
-            {visibleSessions.length === 0 && <div className="welcome-area">
-                <div className="area-left">
-                    <h1>Hi, <span>{user?.firstName || "User"} {user?.lastName || "name"}</span>!</h1>
-                    <p>Welcome to Nexterm. The open-source server manager for SSH, VNC and RDP.</p>
-                    <div className="button-area">
-                        <Button text="Star on GitHub" onClick={() => window.open(GITHUB_URL, "_blank")}
-                                icon={mdiStar} />
-                        <Button text="Join Discord" onClick={() => window.open(DISCORD_URL, "_blank")}
-                                icon={siDiscord.path} />
-                    </div>
-                </div>
-                <img src={WelcomeImage} alt="Welcome" />
-            </div>}
+            {visibleSessions.length === 0 && 
+                <WelcomePanel 
+                    connectToServer={connectToServer} 
+                    hibernatedSessions={hibernatedSessions} 
+                    resumeSession={resumeConnection}
+                    openSFTP={openSFTP}
+                    openDirectConnect={openDirectConnect}
+                />
+            }
             {visibleSessions.length > 0 &&
                 <ViewContainer activeSessions={visibleSessions} disconnectFromServer={disconnectFromServer}
                                closeSession={closeSession}
