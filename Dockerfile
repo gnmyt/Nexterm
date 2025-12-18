@@ -60,6 +60,7 @@ RUN apk add --no-cache \
 
 COPY --from=guacd-builder /install/usr/local/sbin/ /usr/local/sbin/
 COPY --from=guacd-builder /install/usr/local/lib/ /usr/local/lib/
+COPY --from=guacd-builder /install/usr/lib/freerdp2/ /usr/lib/freerdp2/
 
 RUN ldconfig /usr/local/lib 2>/dev/null || true
 
