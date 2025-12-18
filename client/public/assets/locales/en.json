@@ -457,6 +457,8 @@
       "themeAuto": "Auto",
       "themeLight": "Light",
       "themeDark": "Dark",
+      "themeLabel": "Theme",
+      "accentColor": "Accent Color",
       "twoFactor": "Two-factor authentication",
       "twoFactorActive": "Active",
       "twoFactorInactive": "Inactive",

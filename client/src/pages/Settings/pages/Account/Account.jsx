@@ -1,6 +1,6 @@
 import IconInput from "@/common/components/IconInput";
 import "./styles.sass";
-import { mdiAccountCircleOutline, mdiWhiteBalanceSunny, mdiAccountEdit, mdiPalette, mdiShieldCheck, mdiLockReset, mdiTranslate, mdiSync, mdiCloudSync, mdiWeb, mdiTabUnselected, mdiThemeLightDark, mdiWeatherNight, mdiMagicStaff, mdiFingerprint, mdiKeyVariant, mdiPencil, mdiTrashCan, mdiPlus } from "@mdi/js";
+import { mdiAccountCircleOutline, mdiWhiteBalanceSunny, mdiAccountEdit, mdiPalette, mdiShieldCheck, mdiLockReset, mdiTranslate, mdiSync, mdiCloudSync, mdiWeb, mdiTabUnselected, mdiWeatherNight, mdiFingerprint, mdiKeyVariant, mdiPencil, mdiTrashCan, mdiPlus, mdiCheck } from "@mdi/js";
 import { useContext, useEffect, useState } from "react";
 import { UserContext } from "@/common/contexts/UserContext.jsx";
 import { useTheme } from "@/common/contexts/ThemeContext.jsx";
@@ -30,7 +30,7 @@ export const Account = () => {
     const [editingPasskeyName, setEditingPasskeyName] = useState("");
 
     const { user, login } = useContext(UserContext);
-    const { themeMode, setTheme } = useTheme();
+    const { themeMode, setTheme, accentColor, setAccentColor, accentColors } = useTheme();
     const { sendToast } = useToast();
 
     const [updatedField, setUpdatedField] = useState(null);
@@ -41,12 +41,6 @@ export const Account = () => {
     const [sessionSync, setSessionSync] = useState("same_browser");
 
     const languageOptions = languages.map(lang => ({ label: lang.name, value: lang.code }));
-    
-    const themeOptions = [
-        { label: t("settings.account.themeAuto"), value: "auto", icon: mdiMagicStaff },
-        { label: t("settings.account.themeLight"), value: "light", icon: mdiWhiteBalanceSunny },
-        { label: t("settings.account.themeDark"), value: "dark", icon: mdiWeatherNight }
-    ];
 
     const sessionSyncOptions = [
         { label: t("settings.account.sessionSyncAcrossDevices"), value: "across_devices", icon: mdiCloudSync },
@@ -211,9 +205,65 @@ export const Account = () => {
 
             <div className="account-section">
                 <h2><Icon path={mdiPalette} size={0.8} style={{marginRight: '8px'}} />{t("settings.account.appearance")}</h2>
-                <div className="section-inner">
+                <div className="section-inner appearance-section">
                     <p style={{ maxWidth: "25rem" }}>{t("settings.account.appearanceDescription")}</p>
-                    <SelectBox options={themeOptions} selected={themeMode} setSelected={setTheme} />
+                    <div className="appearance-content">
+                        <div className="theme-selector">
+                            <span className="theme-label">{t("settings.account.themeLabel")}</span>
+                            <div className="theme-boxes">
+                                <div 
+                                    className={`theme-box ${themeMode === 'light' ? 'active' : ''}`}
+                                    onClick={() => setTheme('light')}
+                                >
+                                    <div className="theme-icon">
+                                        <Icon path={mdiWhiteBalanceSunny} size={1} />
+                                    </div>
+                                    <span className="theme-name">{t("settings.account.themeLight")}</span>
+                                </div>
+                                <div 
+                                    className={`theme-box ${themeMode === 'dark' ? 'active' : ''}`}
+                                    onClick={() => setTheme('dark')}
+                                >
+                                    <div className="theme-icon">
+                                        <Icon path={mdiWeatherNight} size={1} />
+                                    </div>
+                                    <span className="theme-name">{t("settings.account.themeDark")}</span>
+                                </div>
+                                <div 
+                                    className={`theme-box ${themeMode === 'auto' ? 'active' : ''}`}
+                                    onClick={() => setTheme('auto')}
+                                >
+                                    <div className="theme-icon auto-icon">
+                                        <span className="light-half">
+                                            <Icon path={mdiWhiteBalanceSunny} size={0.4} />
+                                        </span>
+                                        <span className="dark-half">
+                                            <Icon path={mdiWeatherNight} size={0.4} />
+                                        </span>
+                                    </div>
+                                    <span className="theme-name">{t("settings.account.themeAuto")}</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div className="accent-selector">
+                            <span className="accent-label">{t("settings.account.accentColor")}</span>
+                            <div className="accent-colors">
+                                {accentColors.map((color) => (
+                                    <div
+                                        key={color.value}
+                                        className={`accent-color ${accentColor === color.value ? 'active' : ''}`}
+                                        style={{ backgroundColor: color.value }}
+                                        onClick={() => setAccentColor(color.value)}
+                                        title={color.name}
+                                    >
+                                        {accentColor === color.value && (
+                                            <Icon path={mdiCheck} size={0.6} className="check-icon" />
+                                        )}
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
 
