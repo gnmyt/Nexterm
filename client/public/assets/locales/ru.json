@@ -6,6 +6,7 @@
     "actions": {
       "cancel": "Отмена",
       "confirm": "Подтвердить",
+      "discard": "Discard",
       "login": "Войти",
       "register": "Регистрация",
       "save": "Сохранить",
@@ -31,7 +32,9 @@
     },
     "confirmDialog": {
       "title": "Вы уверены?",
-      "defaultText": "Это действие нельзя отменить."
+      "defaultText": "Это действие нельзя отменить.",
+      "unsavedChangesTitle": "Unsaved Changes",
+      "unsavedChangesText": "You have unsaved changes. Are you sure you want to close?"
     },
     "loginDialog": {
       "title": "Nexterm",
@@ -457,6 +460,11 @@
       "themeAuto": "Авто",
       "themeLight": "Светлая",
       "themeDark": "Тёмная",
+      "themeOled": "OLED",
+      "oledEnabled": "OLED mode enabled",
+      "oledDisabled": "OLED mode disabled",
+      "themeLabel": "Theme",
+      "accentColor": "Accent Color",
       "twoFactor": "Двухфакторная аутентификация",
       "twoFactorActive": "Активна",
       "twoFactorInactive": "Неактивна",
