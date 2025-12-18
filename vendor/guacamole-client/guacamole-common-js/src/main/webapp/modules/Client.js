@@ -1111,37 +1111,28 @@ Guacamole.Client = function(tunnel) {
             var stream_index = parseInt(parameters[0]);
             var mimetype = parameters[1];
 
-            console.log('[Guac Client] Audio instruction received, stream:', stream_index, 'mimetype:', mimetype);
-
             // Create stream 
             var stream = streams[stream_index] =
                     new Guacamole.InputStream(guac_client, stream_index);
 
             // Get player instance via callback
             var audioPlayer = null;
-            if (guac_client.onaudio) {
-                console.log('[Guac Client] Calling onaudio callback');
+            if (guac_client.onaudio)
                 audioPlayer = guac_client.onaudio(stream, mimetype);
-            }
 
             // If unsuccessful, try to use a default implementation
-            if (!audioPlayer) {
-                console.log('[Guac Client] onaudio returned null, trying default getInstance');
+            if (!audioPlayer)
                 audioPlayer = Guacamole.AudioPlayer.getInstance(stream, mimetype);
-            }
 
             // If we have successfully retrieved an audio player, send success response
             if (audioPlayer) {
-                console.log('[Guac Client] Audio player created successfully, sending OK');
                 audioPlayers[stream_index] = audioPlayer;
                 guac_client.sendAck(stream_index, "OK", 0x0000);
             }
 
             // Otherwise, mimetype must be unsupported
-            else {
-                console.log('[Guac Client] No audio player created, sending BAD TYPE');
+            else
                 guac_client.sendAck(stream_index, "BAD TYPE", 0x030F);
-            }
 
         },
 
@@ -1151,10 +1142,6 @@ Guacamole.Client = function(tunnel) {
             var stream_index = parseInt(parameters[0]);
             var data = parameters[1];
             var stream = streams[stream_index];
-
-            if (audioPlayers[stream_index]) {
-                console.log('[Guac Client] Audio blob received, stream:', stream_index, 'data length:', data?.length, 'has onblob:', !!stream?.onblob);
-            }
 
             // Write data
             if (stream && stream.onblob)

@@ -122,8 +122,6 @@ Guacamole.AudioPlayer.getInstance = function getInstance(stream, mimetype) {
  */
 Guacamole.RawAudioPlayer = function RawAudioPlayer(stream, mimetype) {
 
-    console.log('[RawAudioPlayer] Constructor called, mimetype:', mimetype, 'stream index:', stream?.index);
-
     /**
      * The format of audio this player will decode.
      *
@@ -131,8 +129,6 @@ Guacamole.RawAudioPlayer = function RawAudioPlayer(stream, mimetype) {
      * @type {Guacamole.RawAudioFormat}
      */
     var format = Guacamole.RawAudioFormat.parse(mimetype);
-
-    console.log('[RawAudioPlayer] Parsed format:', format ? { rate: format.rate, channels: format.channels, bytesPerSample: format.bytesPerSample } : null);
 
     /**
      * An instance of a Web Audio API AudioContext object, or null if the
@@ -142,8 +138,6 @@ Guacamole.RawAudioPlayer = function RawAudioPlayer(stream, mimetype) {
      * @type {AudioContext}
      */
     var context = Guacamole.AudioContextFactory.getAudioContext();
-
-    console.log('[RawAudioPlayer] AudioContext:', context ? { state: context.state, sampleRate: context.sampleRate } : null);
 
     /**
      * The earliest possible time that the next packet could play without
@@ -416,27 +410,14 @@ Guacamole.RawAudioPlayer = function RawAudioPlayer(stream, mimetype) {
     // Defer playback of received audio packets slightly
     reader.ondata = function playReceivedAudio(data) {
 
-        console.log('[RawAudioPlayer] Received audio data, bytes:', data.byteLength);
-
-        if (context.state === 'suspended') {
-            console.log('[RawAudioPlayer] AudioContext is suspended, attempting to resume...');
-            context.resume().then(function() {
-                console.log('[RawAudioPlayer] AudioContext resumed successfully, new state:', context.state);
-            }).catch(function(e) {
-                console.error('[RawAudioPlayer] Failed to resume AudioContext:', e.name, e.message);
-            });
-        }
-
         // Push received samples onto queue
         pushAudioPacket(new SampleArray(data));
 
         // Shift off an arbitrary packet of audio data from the queue (this may
         // be different in size from the packet just pushed)
         var packet = shiftAudioPacket();
-        if (!packet) {
-            console.log('[RawAudioPlayer] No packet to play yet (buffering)');
+        if (!packet)
             return;
-        }
 
         // Determine exactly when packet CAN play
         var packetTime = context.currentTime;
@@ -444,26 +425,19 @@ Guacamole.RawAudioPlayer = function RawAudioPlayer(stream, mimetype) {
             nextPacketTime = packetTime;
 
         // Set up buffer source
-        try {
-            var source = context.createBufferSource();
-            source.connect(context.destination);
+        var source = context.createBufferSource();
+        source.connect(context.destination);
 
-            console.log('[RawAudioPlayer] Playing packet, samples:', packet.length, 'scheduled at:', nextPacketTime, 'context state:', context.state);
+        // Use noteOn() instead of start() if necessary
+        if (!source.start)
+            source.start = source.noteOn;
 
-            // Use noteOn() instead of start() if necessary
-            if (!source.start)
-                source.start = source.noteOn;
+        // Schedule packet
+        source.buffer = toAudioBuffer(packet);
+        source.start(nextPacketTime);
 
-            // Schedule packet
-            source.buffer = toAudioBuffer(packet);
-            source.start(nextPacketTime);
-
-            // Update timeline by duration of scheduled packet
-            nextPacketTime += packet.length / format.channels / format.rate;
-        }
-        catch (e) {
-            console.error('[RawAudioPlayer] Error playing audio packet:', e.name, e.message, e);
-        }
+        // Update timeline by duration of scheduled packet
+        nextPacketTime += packet.length / format.channels / format.rate;
 
     };
 
