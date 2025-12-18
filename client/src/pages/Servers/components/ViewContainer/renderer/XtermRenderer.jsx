@@ -22,6 +22,7 @@ const XtermRenderer = ({ session, disconnectFromServer, registerTerminalRef, bro
     const wsRef = useRef(null);
     const broadcastModeRef = useRef(broadcastMode);
     const progressParserRef = useRef(null);
+    const terminalBufferRef = useRef([]);
     const layoutModeRef = useRef(layoutMode);
     const onBroadcastToggleRef = useRef(onBroadcastToggle);
     const onFullscreenToggleRef = useRef(onFullscreenToggle);
@@ -36,7 +37,6 @@ const XtermRenderer = ({ session, disconnectFromServer, registerTerminalRef, bro
     const { getParsedKeybind } = useKeymaps();
     const { t } = useTranslation();
     const [showAIPopover, setShowAIPopover] = useState(false);
-    const [aiPopoverPosition, setAIPopoverPosition] = useState(null);
     const contextMenu = useContextMenu();
     const [showSnippetsMenu, setShowSnippetsMenu] = useState(false);
 
@@ -70,20 +70,7 @@ const XtermRenderer = ({ session, disconnectFromServer, registerTerminalRef, bro
     }, [session.id, updateProgress]);
 
     const toggleAIPopover = () => {
-        if (!showAIPopover) {
-            const term = termRef.current;
-            const terminalElement = ref.current;
-            if (term && terminalElement) {
-                const rect = terminalElement.getBoundingClientRect();
-                const buffer = term.buffer.active;
-                const charWidth = rect.width / term.cols;
-                const charHeight = rect.height / term.rows;
-                setAIPopoverPosition({
-                    x: rect.left + (buffer.cursorX * charWidth),
-                    y: rect.top + (buffer.cursorY * charHeight)
-                });
-            }
-        } else {
+        if (showAIPopover) {
             setTimeout(() => termRef.current?.focus(), 0);
         }
         setShowAIPopover(!showAIPopover);
@@ -267,6 +254,8 @@ const XtermRenderer = ({ session, disconnectFromServer, registerTerminalRef, bro
                 });
             } else {
                 term.write(data);
+                terminalBufferRef.current.push(data);
+                if (terminalBufferRef.current.length > 50) terminalBufferRef.current.shift();
 
                 if (progressParserRef.current && updateProgress) {
                     const progress = progressParserRef.current.parseData(data);
@@ -381,8 +370,14 @@ const XtermRenderer = ({ session, disconnectFromServer, registerTerminalRef, bro
             <div ref={ref} className="xterm-wrapper" />
             {!isShared && isAIAvailable() && (
                 <AICommandPopover visible={showAIPopover} onClose={() => setShowAIPopover(false)}
-                    onCommandGenerated={handleAICommandGenerated} position={aiPopoverPosition}
-                    focusTerminal={() => termRef.current?.focus()} />
+                    onCommandGenerated={handleAICommandGenerated} focusTerminal={() => termRef.current?.focus()}
+                    entryId={session.server?.id}
+                    recentOutput={terminalBufferRef.current.join('')
+                        .replace(/\x1B\[[0-9;]*[a-zA-Z]/g, '')
+                        .replace(/[\x00-\x1F\x7F]/g, ' ')
+                        .replace(/\s+/g, ' ')
+                        .trim()
+                        .slice(-1500)} />
             )}
             {!isShared && (
                 <ContextMenu

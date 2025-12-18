@@ -836,7 +836,6 @@
           "ssh": "SSH Key",
           "both": "Key+Pass"
         },
-        "keyFileLoaded": "Key file loaded",
         "actions": {
           "cancel": "Cancel",
           "create": "Create Identity",
@@ -1194,7 +1193,15 @@
       "title": "AI Assistant",
       "placeholder": "Describe what you want to do...",
       "hint": "Press Enter to generate • Esc to close",
-      "closeLabel": "Close AI Assistant"
+      "hintUse": "Press Enter to use command • Esc to close",
+      "closeLabel": "Close AI Assistant",
+      "generate": "Generate command",
+      "generating": "Generating command...",
+      "generatedCommand": "Generated Command",
+      "useCommand": "Use Command",
+      "tryAgain": "Try Again",
+      "copy": "Copy to clipboard",
+      "error": "Failed to generate command. Please try again."
     },
     "snippets": {
       "title": "Snippets",
