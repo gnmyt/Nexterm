@@ -836,7 +836,6 @@
           "ssh": "مفتاح SSH",
           "both": "Key+Pass"
         },
-        "keyFileLoaded": "تم تحميل ملف المفتاح",
         "actions": {
           "cancel": "إلغاء",
           "create": "إنشاء هوية",
@@ -1198,7 +1197,15 @@
       "title": "مساعد الذكاء الاصطناعي",
       "placeholder": "صف ما تريد فعله...",
       "hint": "اضغط Enter للتوليد • Esc للإغلاق",
-      "closeLabel": "إغلاق مساعد الذكاء الاصطناعي"
+      "hintUse": "Press Enter to use command • Esc to close",
+      "closeLabel": "إغلاق مساعد الذكاء الاصطناعي",
+      "generate": "Generate command",
+      "generating": "Generating command...",
+      "generatedCommand": "Generated Command",
+      "useCommand": "Use Command",
+      "tryAgain": "Try Again",
+      "copy": "Copy to clipboard",
+      "error": "Failed to generate command. Please try again."
     },
     "snippets": {
       "title": "القصاصات",
