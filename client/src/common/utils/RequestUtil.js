@@ -1,10 +1,37 @@
+import { isTauri, getActiveServerUrl } from "@/common/utils/TauriUtil.js";
+
+const getBaseUrl = () => {
+    if (isTauri()) {
+        const activeServerUrl = getActiveServerUrl();
+        if (activeServerUrl) {
+            return activeServerUrl;
+        }
+    }
+    return "";
+};
+
+const tauriFetch = async (url, options) => {
+    if (isTauri()) {
+        try {
+            const { fetch: tFetch } = await import("@tauri-apps/plugin-http");
+            return tFetch(url, options);
+        } catch (e) {
+            console.warn("Tauri HTTP plugin not available, falling back to native fetch");
+        }
+    }
+    return fetch(url, options);
+};
+
 export const request = async (url, method, body, headers) => {
     url = url.startsWith("/") ? url.substring(1) : url;
+    
+    const baseUrl = getBaseUrl();
+    const fullUrl = baseUrl ? `${baseUrl}/api/${url}` : `/api/${url}`;
 
-    const response = await fetch(`/api/${url}`, {
+    const response = await tauriFetch(fullUrl, {
         method: method,
         headers: {...headers, "Content-Type": "application/json"},
-        body: JSON.stringify(body)
+        body: body ? JSON.stringify(body) : undefined
     });
 
     if (response.status === 401) throw new Error("Unauthorized");
@@ -20,7 +47,10 @@ export const request = async (url, method, body, headers) => {
 }
 
 export const downloadRequest = async (url) => {
-    const response = await fetch(url, {
+    const baseUrl = getBaseUrl();
+    const fullUrl = baseUrl ? `${baseUrl}${url}` : url;
+    
+    const response = await tauriFetch(fullUrl, {
         method: "GET",
         headers: {"Content-Type": "application/json"},
     });

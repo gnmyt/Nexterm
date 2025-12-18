@@ -12,6 +12,7 @@ import ShareRoot from "@/common/layouts/ShareRoot.jsx";
 import i18n from "./i18n.js";
 import Loading from "@/common/components/Loading";
 import { RouteErrorPage } from "@/common/components/ErrorBoundary";
+import TitleBar from "@/common/components/TitleBar";
 
 const Servers = lazy(() => import("@/pages/Servers"));
 const Settings = lazy(() => import("@/pages/Settings"));
@@ -28,6 +29,11 @@ const App = () => {
     const [translationsLoaded, setTranslationsLoaded] = useState(false);
 
     useEffect(() => {
+        if (i18n.isInitialized) {
+            setTranslationsLoaded(true);
+            return;
+        }
+        
         i18n.on("initialized", () => {
             setTranslationsLoaded(true);
         });
@@ -68,7 +74,12 @@ const App = () => {
     ]);
 
     if (!translationsLoaded) {
-        return <Loading />;
+        return (
+            <div className="app-wrapper">
+                <TitleBar />
+                <Loading />
+            </div>
+        );
     }
 
     return <RouterProvider router={router}/>;

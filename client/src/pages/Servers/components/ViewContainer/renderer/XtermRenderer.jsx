@@ -13,6 +13,7 @@ import { createProgressParser } from "../utils/progressParser";
 import { mdiContentCopy, mdiContentPaste, mdiCodeBrackets, mdiSelectAll, mdiDelete, mdiKeyboard } from "@mdi/js";
 import { useTranslation } from "react-i18next";
 import ConnectionLoader from "./components/ConnectionLoader";
+import { getWebSocketUrl } from "@/common/utils/ConnectionUtil.js";
 import "@xterm/xterm/css/xterm.css";
 import "./styles/xterm.sass";
 
@@ -189,15 +190,13 @@ const XtermRenderer = ({ session, disconnectFromServer, registerTerminalRef, bro
 
         window.addEventListener("resize", handleResize);
 
-        const protocol = location.protocol === "https:" ? "wss" : "ws";
-
         let ws;
 
-        let url = process.env.NODE_ENV === "production" ? `${window.location.host}/api/ws/term` : "localhost:6989/api/ws/term";
+        const wsParams = isShared 
+            ? { shareId: session.shareId || session.id.split('/').pop() }
+            : { sessionToken, sessionId: session.id };
 
-        let wsUrl = isShared 
-            ? `${protocol}://${url}?shareId=${session.shareId || session.id.split('/').pop()}`
-            : `${protocol}://${url}?sessionToken=${sessionToken}&sessionId=${session.id}`;
+        const wsUrl = getWebSocketUrl("/api/ws/term", wsParams);
 
         ws = new WebSocket(wsUrl);
         wsRef.current = ws;
