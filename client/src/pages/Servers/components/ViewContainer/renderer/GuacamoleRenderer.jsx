@@ -3,6 +3,7 @@ import Guacamole from "guacamole-common-js";
 import { UserContext } from "@/common/contexts/UserContext.jsx";
 import { useKeymaps, matchesKeybind } from "@/common/contexts/KeymapContext.jsx";
 import ConnectionLoader from "./components/ConnectionLoader";
+import { getWebSocketUrl } from "@/common/utils/ConnectionUtil.js";
 
 const resumeAudioContext = () => {
     const context = Guacamole.AudioContextFactory.getAudioContext();
@@ -115,7 +116,8 @@ const GuacamoleRenderer = ({
             if (!sessionToken || clientRef.current) return;
         }
         let isCleaningUp = false;
-        const tunnel = new Guacamole.WebSocketTunnel(process.env.NODE_ENV === "production" ? "/api/ws/guac/" : "ws://localhost:6989/api/ws/guac");
+        const tunnelUrl = getWebSocketUrl("/api/ws/guac/", {});
+        const tunnel = new Guacamole.WebSocketTunnel(tunnelUrl);
         const client = new Guacamole.Client(tunnel);
         client.getDisplay().onresize = resizeHandler;
 

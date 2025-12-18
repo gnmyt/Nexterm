@@ -4,14 +4,10 @@ import { useTheme } from "@/common/contexts/ThemeContext.jsx";
 import { useTerminalSettings } from "@/common/contexts/TerminalSettingsContext.jsx";
 import { Terminal as Xterm } from "@xterm/xterm";
 import { FitAddon } from "@xterm/addon-fit";
+import { getWebSocketUrl } from "@/common/utils/ConnectionUtil.js";
 
 export const buildTerminalWebSocketUrl = (sessionToken, session) => {
-    const protocol = location.protocol === "https:" ? "wss" : "ws";
-    const host = process.env.NODE_ENV === "production" 
-        ? `${window.location.host}/api/ws/term` 
-        : "localhost:6989/api/ws/term";
-
-    return `${protocol}://${host}?sessionToken=${sessionToken}&sessionId=${session.id}`;
+    return getWebSocketUrl("/api/ws/term", { sessionToken, sessionId: session.id });
 };
 
 export const createTerminalTheme = (appTheme, terminalTheme, selectedTheme) => {

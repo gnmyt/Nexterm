@@ -7,6 +7,7 @@ import "./styles.sass";
 import CreateFolderDialog from "./components/CreateFolderDialog";
 import Icon from "@mdi/react";
 import { mdiCloudUpload } from "@mdi/js";
+import { getWebSocketUrl, getBaseUrl } from "@/common/utils/ConnectionUtil.js";
 
 const CHUNK_SIZE = 128 * 1024;
 
@@ -28,11 +29,12 @@ export const FileRenderer = ({ session, disconnectFromServer, setOpenFileEditors
     const symlinkCallbacks = useRef([]);
     const dropZoneRef = useRef(null);
 
-    const wsUrl = `${location.protocol === "https:" ? "wss" : "ws"}://${process.env.NODE_ENV === "production" ? `${window.location.host}/api/ws/sftp` : "localhost:6989/api/ws/sftp"}?sessionToken=${sessionToken}&sessionId=${session.id}`;
+    const wsUrl = getWebSocketUrl("/api/ws/sftp", { sessionToken, sessionId: session.id });
 
     const downloadFile = (path) => {
+        const baseUrl = getBaseUrl();
         const link = document.createElement("a");
-        link.href = `/api/entries/sftp-download?sessionId=${session.id}&path=${path}&sessionToken=${sessionToken}`;
+        link.href = `${baseUrl}/api/entries/sftp-download?sessionId=${session.id}&path=${path}&sessionToken=${sessionToken}`;
         link.download = path.split("/").pop();
         document.body.appendChild(link);
         link.click();
