@@ -13,6 +13,7 @@ import FilePreviewWindow from "@/common/components/FilePreviewWindow";
 import { useActiveSessions } from "@/common/contexts/SessionContext.jsx";
 import { useLocation, useNavigate } from "react-router-dom";
 import { ServerContext } from "@/common/contexts/ServerContext.jsx";
+import { isTauri } from "@/common/utils/TauriUtil.js";
 
 import { getRequest, postRequest, deleteRequest } from "@/common/utils/RequestUtil";
 
@@ -357,6 +358,19 @@ export const Servers = () => {
         setDirectConnectDialogOpen(true);
     };
 
+    const openPortForward = async (server) => {
+        if (!isTauri()) return;
+        try {
+            const { invoke } = await import("@tauri-apps/api/core");
+            await invoke("open_tunnel_window", { 
+                entryId: server.id,
+                entryName: server.name 
+            });
+        } catch (error) {
+            console.error("Failed to open port forward window", error);
+        }
+    };
+
     const closeDirectConnectDialog = () => {
         setDirectConnectDialogOpen(false);
         setDirectConnectServer(null);
@@ -446,7 +460,8 @@ export const Servers = () => {
                         setCurrentFolderId={setCurrentFolderId} setCurrentOrganizationId={setCurrentOrganizationId}
                         setEditServerId={setEditServerId} openSFTP={openSFTP}
                         hibernatedSessions={hibernatedSessions} resumeSession={resumeConnection}
-                        openDirectConnect={openDirectConnect} runScript={runScript} />
+                        openDirectConnect={openDirectConnect} runScript={runScript}
+                        openPortForward={isTauri() ? openPortForward : undefined} />
             {visibleSessions.length === 0 && 
                 <WelcomePanel 
                     connectToServer={connectToServer} 

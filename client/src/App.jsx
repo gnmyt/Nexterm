@@ -9,6 +9,7 @@ import { useEffect, useState, lazy } from "react";
 import Root from "@/common/layouts/Root.jsx";
 import PopoutRoot from "@/common/layouts/PopoutRoot.jsx";
 import ShareRoot from "@/common/layouts/ShareRoot.jsx";
+import TunnelRoot from "@/common/layouts/TunnelRoot.jsx";
 import i18n from "./i18n.js";
 import Loading from "@/common/components/Loading";
 import { RouteErrorPage } from "@/common/components/ErrorBoundary";
@@ -21,6 +22,7 @@ const Monitoring = lazy(() => import("@/pages/Monitoring"));
 const Audit = lazy(() => import("@/pages/Audit"));
 const Popout = lazy(() => import("@/pages/Popout"));
 const Share = lazy(() => import("@/pages/Share"));
+const Tunnel = lazy(() => import("@/pages/Tunnel"));
 
 export const GITHUB_URL = "https://github.com/gnmyt/Nexterm";
 export const DISCORD_URL = "https://dc.gnm.dev/";
@@ -69,6 +71,14 @@ const App = () => {
             errorElement: <RouteErrorPage />,
             children: [
                 { path: "/share/:shareId", element: <Share /> }
+            ],
+        },
+        {
+            path: "/tunnel",
+            element: <TunnelRoot />,
+            errorElement: <RouteErrorPage />,
+            children: [
+                { path: "/tunnel/:entryId", element: <Tunnel /> }
             ],
         },
     ]);
