@@ -5,12 +5,24 @@ import { useKeymaps, matchesKeybind } from "@/common/contexts/KeymapContext.jsx"
 import ConnectionLoader from "./components/ConnectionLoader";
 import { getWebSocketUrl } from "@/common/utils/ConnectionUtil.js";
 
-const resumeAudioContext = () => {
-    const context = Guacamole.AudioContextFactory.getAudioContext();
-    if (context && context.state === "suspended") {
-        context.resume();
-    }
-};
+if (typeof document !== 'undefined') {
+    let audioUnlocked = false;
+    const unlockOnGesture = () => {
+        if (audioUnlocked) return;
+        const context = Guacamole.AudioContextFactory.getAudioContext();
+        if (context) {
+            context.resume().then(() => {
+                audioUnlocked = true;
+                document.removeEventListener('click', unlockOnGesture);
+                document.removeEventListener('keydown', unlockOnGesture);
+                document.removeEventListener('touchstart', unlockOnGesture);
+            }).catch(() => {});
+        }
+    };
+    document.addEventListener('click', unlockOnGesture);
+    document.addEventListener('keydown', unlockOnGesture);
+    document.addEventListener('touchstart', unlockOnGesture);
+}
 
 const GuacamoleRenderer = ({
                                session,
@@ -140,7 +152,6 @@ const GuacamoleRenderer = ({
         ref.current.appendChild(display);
 
         client.onaudio = (stream, mimetype) => {
-             resumeAudioContext();
             const audioPlayer = Guacamole.AudioPlayer.getInstance(stream, mimetype);
             if (audioPlayer) {
                 audioPlayersRef.current.push(audioPlayer);
@@ -156,7 +167,6 @@ const GuacamoleRenderer = ({
         const mouse = new Guacamole.Mouse(display);
         mouse.onmousedown = mouse.onmouseup = mouse.onmousemove = (state) => {
             if (!scaleRef.current || !offsetRef.current) return;
-            resumeAudioContext();
             client.sendMouseState(new Guacamole.Mouse.State(
                 Math.round((state.x - offsetRef.current.x) / scaleRef.current),
                 Math.round((state.y - offsetRef.current.y) / scaleRef.current),
@@ -177,10 +187,7 @@ const GuacamoleRenderer = ({
         ref.current.addEventListener("keydown", handleKeyDown, true);
 
         const keyboard = new Guacamole.Keyboard(ref.current);
-        keyboard.onkeydown = (k, sc) => {
-            resumeAudioContext();
-            client.sendKeyEvent(1, k, sc);
-        };
+        keyboard.onkeydown = (k, sc) => client.sendKeyEvent(1, k, sc);
         keyboard.onkeyup = (k, sc) => client.sendKeyEvent(0, k, sc);
 
         client.onstatechange = (st) => {
@@ -224,7 +231,7 @@ const GuacamoleRenderer = ({
     }, []);
 
     return (
-        <div className="guac-container" ref={ref} tabIndex="0" onClick={() => { resumeAudioContext(); ref.current.focus(); }}
+        <div className="guac-container" ref={ref} tabIndex="0" onClick={() => ref.current.focus()}
              style={{
                  position: "relative",
                  width: "100%",
