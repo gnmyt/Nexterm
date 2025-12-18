@@ -140,7 +140,6 @@ const GuacamoleRenderer = ({
         ref.current.appendChild(display);
 
         client.onaudio = (stream, mimetype) => {
-             resumeAudioContext();
             const audioPlayer = Guacamole.AudioPlayer.getInstance(stream, mimetype);
             if (audioPlayer) {
                 audioPlayersRef.current.push(audioPlayer);
@@ -224,7 +223,7 @@ const GuacamoleRenderer = ({
     }, []);
 
     return (
-        <div className="guac-container" ref={ref} tabIndex="0" onClick={() => { resumeAudioContext(); ref.current.focus(); }}
+        <div className="guac-container" ref={ref} tabIndex="0" onClick={() => ref.current.focus()}
              style={{
                  position: "relative",
                  width: "100%",
