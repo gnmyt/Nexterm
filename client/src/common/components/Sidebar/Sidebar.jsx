@@ -1,5 +1,5 @@
 import "./styles.sass";
-import NextermLogo from "@/common/img/logo.avif";
+import NextermLogo from "@/common/components/NextermLogo";
 import {
     mdiCog,
     mdiLogout,
@@ -46,8 +46,9 @@ export const Sidebar = () => {
                                      onConfirm={logout} />
                 <div className="sidebar-top">
                     <Tooltip text={t('common.sidebar.collapseTitle')} disabled={isCollapsed}>
-                        <img src={NextermLogo} alt="Nexterm Logo" onClick={() => setIsCollapsed(!isCollapsed)}
-                             title={t('common.sidebar.collapseTitle')} />
+                        <div className="sidebar-logo" onClick={() => setIsCollapsed(!isCollapsed)} title={t('common.sidebar.collapseTitle')}>
+                            <NextermLogo size={64} />
+                        </div>
                     </Tooltip>
                     <hr />
 
