@@ -836,7 +836,6 @@
           "ssh": "SSH-Schlüssel",
           "both": "Key+Pass"
         },
-        "keyFileLoaded": "Schlüsseldatei geladen",
         "actions": {
           "cancel": "Abbrechen",
           "create": "Identität erstellen",
@@ -1198,7 +1197,15 @@
       "title": "KI-Assistent",
       "placeholder": "Beschreibe, was du tun möchtest...",
       "hint": "Drücke Enter zum Erstellen - Esc zum Schließen",
-      "closeLabel": "KI-Assistent schließen"
+      "hintUse": "Press Enter to use command • Esc to close",
+      "closeLabel": "KI-Assistent schließen",
+      "generate": "Generate command",
+      "generating": "Generating command...",
+      "generatedCommand": "Generated Command",
+      "useCommand": "Use Command",
+      "tryAgain": "Try Again",
+      "copy": "Copy to clipboard",
+      "error": "Failed to generate command. Please try again."
     },
     "snippets": {
       "title": "Snippets",
