@@ -6,6 +6,7 @@
     "actions": {
       "cancel": "Cancela",
       "confirm": "Confirma",
+      "discard": "Discard",
       "login": "Iniciar sesión",
       "register": "Regístrate en",
       "save": "Guardar",
@@ -31,7 +32,9 @@
     },
     "confirmDialog": {
       "title": "¿Estás seguro?",
-      "defaultText": "Esta acción no se puede deshacer."
+      "defaultText": "Esta acción no se puede deshacer.",
+      "unsavedChangesTitle": "Unsaved Changes",
+      "unsavedChangesText": "You have unsaved changes. Are you sure you want to close?"
     },
     "loginDialog": {
       "title": "Nexterm",
@@ -457,6 +460,11 @@
       "themeAuto": "Auto",
       "themeLight": "Luz",
       "themeDark": "Oscuro",
+      "themeOled": "OLED",
+      "oledEnabled": "OLED mode enabled",
+      "oledDisabled": "OLED mode disabled",
+      "themeLabel": "Theme",
+      "accentColor": "Accent Color",
       "twoFactor": "Autenticación de dos factores",
       "twoFactorActive": "Activo",
       "twoFactorInactive": "Inactivo",
