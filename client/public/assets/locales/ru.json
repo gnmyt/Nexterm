@@ -836,7 +836,6 @@
           "ssh": "SSH-ключ",
           "both": "Key+Pass"
         },
-        "keyFileLoaded": "Ключ загружен",
         "actions": {
           "cancel": "Отмена",
           "create": "Создать учётные данные",
@@ -1198,7 +1197,15 @@
       "title": "ИИ-ассистент",
       "placeholder": "Опишите, что вы хотите сделать...",
       "hint": "Нажмите Enter для генерации • Esc для закрытия",
-      "closeLabel": "Закрыть ИИ-ассистент"
+      "hintUse": "Press Enter to use command • Esc to close",
+      "closeLabel": "Закрыть ИИ-ассистент",
+      "generate": "Generate command",
+      "generating": "Generating command...",
+      "generatedCommand": "Generated Command",
+      "useCommand": "Use Command",
+      "tryAgain": "Try Again",
+      "copy": "Copy to clipboard",
+      "error": "Failed to generate command. Please try again."
     },
     "snippets": {
       "title": "Сниппеты",
