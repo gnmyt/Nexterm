@@ -1,9 +1,24 @@
 const { Router } = require("express");
-const { createEntry, deleteEntry, editEntry, getEntry, listEntries, duplicateEntry, importSSHConfig, repositionEntry } = require("../controllers/entry");
+const { createEntry, deleteEntry, editEntry, getEntry, listEntries, duplicateEntry, importSSHConfig, repositionEntry, getRecentConnections } = require("../controllers/entry");
 const { createServerValidation, updateServerValidation, repositionServerValidation } = require("../validations/server");
 const { validateSchema } = require("../utils/schema");
 
 const app = Router();
+
+/**
+ * GET /entry/recent
+ * @summary Get Recent Connections
+ * @description Retrieves a list of recently connected entries for the authenticated user, useful for quick reconnection.
+ * @tags Entry
+ * @produces application/json
+ * @security BearerAuth
+ * @param {number} limit.query - Maximum number of recent connections to return (default: 5)
+ * @return {array} 200 - List of recent connections with entry details
+ */
+app.get("/recent", async (req, res) => {
+    const limit = parseInt(req.query.limit) || 5;
+    res.json(await getRecentConnections(req.user.id, limit));
+});
 
 /**
  * GET /entry/list
