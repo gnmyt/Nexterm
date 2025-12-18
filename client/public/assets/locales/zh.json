@@ -38,8 +38,8 @@
       "registrationTitle": "注册",
       "ssoOrContinueWith": "或继续使用",
       "noAuthMethodsAvailable": "无可用的身份验证方式。",
-      "signInWithPasskey": "Sign in with Passkey",
-      "authenticating": "Authenticating..."
+      "signInWithPasskey": "使用密码登录",
+      "authenticating": "正在验证…"
     },
     "selectBox": {
       "defaultOption": "选择选项...",
@@ -64,8 +64,8 @@
       "invalidTwoFactor": "双因素验证码无效",
       "internalAuthDisabled": "内部身份验证已禁用",
       "ssoLoginFailed": "发起SSO登录失败",
-      "passkeyLoginFailed": "Passkey authentication failed",
-      "passkeyCancelled": "Passkey authentication was cancelled"
+      "passkeyLoginFailed": "密码验证失败",
+      "passkeyCancelled": "密码验证已取消"
     },
     "messages": {
       "invitationAccepted": "邀请已接受",
@@ -311,8 +311,8 @@
         "loadAverage": "平均负载",
         "processes": "进程数",
         "uptime": "运行时间",
-        "nodes": "Nodes",
-        "vms": "VMs/Containers"
+        "nodes": "节点",
+        "vms": "虚拟机/容器"
       },
       "status": {
         "serverOffline": "服务器离线",
@@ -344,13 +344,13 @@
         "charts": "图表",
         "storage": "存储",
         "network": "网络",
-        "processes": "Processes",
-        "nodes": "Nodes"
+        "processes": "进程",
+        "nodes": "节点"
       },
       "overview": {
         "systemInfo": {
           "title": "系统信息",
-          "hostname": "Hostname",
+          "hostname": "主机名",
           "os": "操作系统",
           "version": "版本",
           "kernel": "内核",
@@ -389,44 +389,44 @@
         "total": "总计: {{value}}",
         "type": "类型: {{value}}",
         "noData": "无磁盘使用数据",
-        "noPartitions": "No mounted partitions"
+        "noPartitions": "未挂载分区"
       },
       "network": {
         "title": "网络接口",
         "rxBytes": "接收字节数",
         "txBytes": "发送字节数",
-        "mac": "MAC Address",
-        "speed": "Speed",
+        "mac": "MAC地址",
+        "speed": "速度",
         "noData": "无网络接口数据"
       },
       "processes": {
-        "title": "Running Processes",
-        "searchPlaceholder": "Search processes...",
-        "showing": "Showing {{count}} of {{total}} processes",
-        "noData": "No process data available. Process data will appear after the next monitoring cycle.",
-        "noResults": "No processes match your search criteria."
+        "title": "运行中进程",
+        "searchPlaceholder": "搜索进程...",
+        "showing": "显示 {{count}} of {{total}} 进程",
+        "noData": "没有可用的进程数据。进程数据将在下一个监测周期之后出现。",
+        "noResults": "没有符合搜索条件的进程。"
       },
       "pve": {
-        "clusterInfo": "Cluster Information",
-        "resources": "Resource Usage",
-        "virtualMachines": "Virtual Machines",
-        "totalNodes": "Total Nodes",
-        "onlineNodes": "Online Nodes",
-        "totalCPU": "Total CPU",
-        "totalMemory": "Total Memory",
-        "totalStorage": "Total Storage",
-        "storageUsage": "Storage Usage",
-        "cores": "Cores",
-        "uptime": "Uptime",
-        "qemuVMs": "QEMU VMs",
-        "lxcContainers": "LXC Containers",
-        "running": "{{count}} running",
-        "vmContainerCount": "VM/Container Count",
+        "clusterInfo": "集群信息",
+        "resources": "资源占用",
+        "virtualMachines": "虚拟机",
+        "totalNodes": "节点数",
+        "onlineNodes": "在线节点",
+        "totalCPU": "总CPU",
+        "totalMemory": "总内存",
+        "totalStorage": "总存储",
+        "storageUsage": "存储使用",
+        "cores": "核心",
+        "uptime": "开机时间",
+        "qemuVMs": "QEMU 虚拟机",
+        "lxcContainers": "LXC 容器",
+        "running": "{{count}} 运行",
+        "vmContainerCount": "虚拟机/容器数量",
         "cpu": "CPU",
-        "memory": "Memory",
-        "storage": "Storage",
-        "nodeOffline": "This node is currently offline",
-        "noNodes": "No nodes available"
+        "memory": "内存",
+        "storage": "存储",
+        "nodeOffline": "此节点目前处于离线状态",
+        "noNodes": "无可用节点"
       }
     }
   },
@@ -445,7 +445,7 @@
       "authentication": "身份验证",
       "sources": "来源",
       "ai": "AI",
-      "monitoring": "Monitoring"
+      "monitoring": "监控"
     },
     "account": {
       "title": "账户",
@@ -489,20 +489,20 @@
         }
       },
       "passkeys": {
-        "sectionTitle": "Passkeys",
-        "sectionDescription": "Use passkeys for faster, more secure sign-in without passwords.",
-        "addButton": "Add Passkey",
-        "addDialogTitle": "Add Passkey",
-        "addDialogDescription": "Give your passkey a name to help you identify it later.",
-        "namePlaceholder": "Passkey name",
-        "enterName": "Enter a name for this passkey:",
-        "defaultName": "My Passkey",
-        "confirmDelete": "Are you sure you want to delete this passkey?",
-        "createdAt": "Created {{date}}",
-        "registerError": "Failed to register passkey. Please try again.",
-        "noPasskeys": "No passkeys registered yet",
-        "rename": "Rename",
-        "delete": "Delete"
+        "sectionTitle": "密钥",
+        "sectionDescription": "使用密码匙，无需密码即可更快、更安全地登录。",
+        "addButton": "添加密钥",
+        "addDialogTitle": "添加密钥",
+        "addDialogDescription": "给您的密钥一个名称来帮助您以后识别它。",
+        "namePlaceholder": "密钥名称",
+        "enterName": "输入此密匙的名称：",
+        "defaultName": "我的密钥",
+        "confirmDelete": "您确定要删除此密钥吗？",
+        "createdAt": "创建时间：{{date}}",
+        "registerError": "注册密钥失败。请重试。",
+        "noPasskeys": "尚无密钥注册",
+        "rename": "重命名",
+        "delete": "删除"
       }
     },
     "passwordChange": {
@@ -747,55 +747,55 @@
       }
     },
     "monitoring": {
-      "loading": "Loading monitoring settings...",
-      "saveSettings": "Save Settings",
-      "saveSuccess": "Monitoring settings saved successfully",
-      "seconds": "seconds",
-      "hours": "hours",
-      "servers": "servers",
+      "loading": "加载监控数据中...",
+      "saveSettings": "保存设置",
+      "saveSuccess": "成功保存监控设置",
+      "seconds": "秒数",
+      "hours": "小时",
+      "servers": "服务器",
       "statusChecker": {
         "title": "状态检测",
-        "description": "Configure how Nexterm checks the online/offline status of your servers.",
+        "description": "配置如何检查服务器在线/离线状态。",
         "enable": {
-          "title": "Enable Status Checker",
-          "description": "Automatically check if servers are online or offline. When disabled, all servers will be marked as online."
+          "title": "启用状态检查",
+          "description": "自动检查服务器是否在线或离线。禁用时，所有服务器都将标记为在线。"
         },
         "interval": {
-          "title": "Check Interval",
-          "description": "How often to check server status (10-300 seconds)"
+          "title": "检查频率",
+          "description": "检查服务器状态的频率(10-300秒)"
         }
       },
       "dataCollection": {
-        "title": "Data Collection",
-        "description": "",
+        "title": "数据采集",
+        "description": "配置 CPU、内存、磁盘和网络指标的监控数据收集。",
         "enable": {
-          "title": "Enable Monitoring",
-          "description": "Collect detailed performance metrics from servers with monitoring enabled."
+          "title": "启用监控",
+          "description": "从启用监控功能的服务器收集详细的性能指标。"
         },
         "interval": {
-          "title": "Collection Interval",
-          "description": "How often to collect monitoring data (30-600 seconds)"
+          "title": "收集间隔",
+          "description": "收集监测数据的频率（30-600 秒）"
         },
         "retention": {
-          "title": "Data Retention",
-          "description": "How long to keep monitoring data (1-24 hours)"
+          "title": "数据保留",
+          "description": "保存数据的时间 (1-24小时)"
         }
       },
       "advanced": {
-        "title": "Advanced Settings",
-        "description": "Fine-tune monitoring performance and resource usage.",
+        "title": "高级设置",
+        "description": "微调监控性能和资源使用情况。",
         "timeout": {
-          "title": "Connection Timeout",
-          "description": "Maximum time to wait for a server response (5-120 seconds)"
+          "title": "连接超时",
+          "description": "等待服务器响应的最长时间（5-120 秒）"
         },
         "batchSize": {
-          "title": "Batch Size",
-          "description": "Number of servers to check simultaneously (1-50)"
+          "title": "批量大小",
+          "description": "同时检查的服务器数量（1-50）"
         }
       },
       "errors": {
-        "loadSettings": "Failed to load monitoring settings",
-        "saveSettings": "Failed to save monitoring settings"
+        "loadSettings": "加载监控设置失败",
+        "saveSettings": "保存监控设置失败"
       }
     },
     "identities": {
@@ -832,9 +832,9 @@
         },
         "authTypes": {
           "password": "密码",
-          "password-only": "No Username",
+          "password-only": "没有用户名",
           "ssh": "SSH 密钥",
-          "both": "Key+Pass"
+          "both": "键+密钥"
         },
         "keyFileLoaded": "密钥文件已加载",
         "actions": {
@@ -904,12 +904,12 @@
   },
   "share": {
     "errors": {
-      "unableToConnect": "Unable to Connect",
-      "failedToJoin": "Failed to join session"
+      "unableToConnect": "无法连接",
+      "failedToJoin": "无法加入会话"
     },
     "sessionEnded": {
-      "title": "Session Ended",
-      "description": "The shared session has been closed"
+      "title": "本次会话结束",
+      "description": "共享会话已关闭"
     }
   },
   "servers": {
@@ -1021,30 +1021,30 @@
           "description": "选择此连接使用的键盘布局。"
         },
         "display": {
-          "title": "Display Settings",
-          "description": "Configure color depth and resize behavior for the remote display",
-          "colorDepth": "Color Depth",
-          "resizeMethod": "Resize Method"
+          "title": "显示设置",
+          "description": "配置远程显示的颜色深度和缩放行为",
+          "colorDepth": "色彩深度",
+          "resizeMethod": "调整尺寸方法"
         },
         "performance": {
-          "title": "Performance Settings",
-          "description": "Toggle visual effects that may impact performance over slower connections",
-          "enableWallpaper": "Enable Wallpaper",
-          "enableWallpaperDesc": "Show the desktop wallpaper on the remote system",
-          "enableTheming": "Enable Theming",
-          "enableThemingDesc": "Use themed windows and controls on the remote system",
-          "enableFontSmoothing": "Enable Font Smoothing",
-          "enableFontSmoothingDesc": "Render text with smooth edges for better readability",
-          "enableFullWindowDrag": "Enable Full Window Drag",
+          "title": "性能设置",
+          "description": "切换可能影响较慢连接性能的视觉效果",
+          "enableWallpaper": "启用壁纸",
+          "enableWallpaperDesc": "在远程系统中显示桌面壁纸",
+          "enableTheming": "启用主题",
+          "enableThemingDesc": "在远程系统上使用主题窗口和控件",
+          "enableFontSmoothing": "启用字体平滑",
+          "enableFontSmoothingDesc": "渲染边缘平滑的文本，提高可读性",
+          "enableFullWindowDrag": "启用全窗口拖动",
           "enableFullWindowDragDesc": "拖动窗口时显示窗口内容",
-          "enableDesktopComposition": "Enable Desktop Composition",
-          "enableDesktopCompositionDesc": "Enable transparent windows and visual effects",
-          "enableMenuAnimations": "Enable Menu Animations",
-          "enableMenuAnimationsDesc": "Enable menu open and close animations"
+          "enableDesktopComposition": "启用桌面集成",
+          "enableDesktopCompositionDesc": "启用透明窗口和视觉效果",
+          "enableMenuAnimations": "启用菜单动画",
+          "enableMenuAnimationsDesc": "启用菜单打开和关闭动画"
         },
         "audio": {
-          "enableAudio": "Enable Audio",
-          "enableAudioDesc": "Stream audio from the remote system to your browser"
+          "enableAudio": "开启音频",
+          "enableAudioDesc": "将音频从远程系统串流到浏览器"
         },
         "noSettings": "此条目类型无可用附加设置。"
       },
@@ -1056,11 +1056,11 @@
         "identityName": "身份标识名称",
         "username": "用户名",
         "authentication": "认证方式",
-        "passwordField": "Password",
-        "userPassword": "Password",
-        "passwordOnly": "No Username",
+        "passwordField": "密码",
+        "userPassword": "密码",
+        "passwordOnly": "无用户名",
         "sshKey": "SSH 密钥",
-        "both": "Key+Pass",
+        "both": "键+密钥",
         "sshPrivateKey": "SSH 私钥",
         "passphrase": "密码短语（可选）",
         "new": "新建",
@@ -1086,9 +1086,9 @@
         "username": "用户名",
         "password": "密码",
         "nodeName": "节点名称（可选）",
-        "monitoring": "Performance Monitoring"
+        "monitoring": "性能监控"
       },
-      "monitoringDescription": "Collect cluster-wide CPU, memory, and storage metrics",
+      "monitoringDescription": "收集整个集群的 CPU、内存和存储指标",
       "placeholders": {
         "name": "名称",
         "serverIp": "服务器 IP",
@@ -1102,10 +1102,10 @@
         "edit": "编辑"
       },
       "messages": {
-        "created": "Proxmox integration created successfully",
-        "updated": "Proxmox integration updated successfully",
-        "createFailed": "Failed to create Proxmox integration",
-        "updateFailed": "Failed to update Proxmox integration"
+        "created": "成功创建 Proxmox 集成",
+        "updated": "Proxmox 集成更新成功",
+        "createFailed": "创建 Proxmox 集成失败",
+        "updateFailed": "更新 Proxmox 集成失败"
       }
     },
     "connectionReasonDialog": {
