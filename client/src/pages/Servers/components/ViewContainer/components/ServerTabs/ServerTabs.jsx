@@ -7,6 +7,7 @@ import TerminalActionsMenu from "../TerminalActionsMenu";
 import { ContextMenu, ContextMenuItem, ContextMenuSeparator, useContextMenu } from "@/common/components/ContextMenu";
 import { useActiveSessions } from "@/common/contexts/SessionContext.jsx";
 import { postRequest, deleteRequest, patchRequest } from "@/common/utils/RequestUtil";
+import { getBaseUrl } from "@/common/utils/ConnectionUtil.js";
 import "./styles.sass";
 
 const DraggableTab = ({
@@ -32,7 +33,8 @@ const DraggableTab = ({
     const handleShare = useCallback(async (writable) => {
         const result = await postRequest(`connections/${session.id}/share`, { writable });
         if (result?.shareId) {
-            navigator.clipboard.writeText(`${window.location.origin}/share/${result.shareId}`);
+            const baseUrl = getBaseUrl() || window.location.origin;
+            navigator.clipboard.writeText(`${baseUrl}/share/${result.shareId}`);
         }
         onShareUpdate?.(session.id);
     }, [session.id, onShareUpdate]);
@@ -43,7 +45,8 @@ const DraggableTab = ({
     }, [session.id, onShareUpdate]);
 
     const handleCopyLink = useCallback(() => {
-        navigator.clipboard.writeText(`${window.location.origin}/share/${session.shareId}`);
+        const baseUrl = getBaseUrl() || window.location.origin;
+        navigator.clipboard.writeText(`${baseUrl}/share/${session.shareId}`);
     }, [session.shareId]);
 
     const handlePermissionChange = useCallback(async (writable) => {

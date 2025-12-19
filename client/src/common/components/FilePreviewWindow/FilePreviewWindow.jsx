@@ -2,6 +2,7 @@ import { useContext, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { UserContext } from "@/common/contexts/UserContext.jsx";
 import { useWindowControls } from "@/common/hooks/useWindowControls.js";
+import { getBaseUrl } from "@/common/utils/ConnectionUtil.js";
 import Icon from "@mdi/react";
 import {
     mdiClose,
@@ -32,7 +33,8 @@ export const FilePreviewWindow = ({ file, session, onClose, zIndex = 9999 }) => 
         }
 
         const extension = file.split(".").pop()?.toLowerCase();
-        const url = `/api/entries/sftp-download?sessionId=${session.id}&path=${file}&sessionToken=${sessionToken}&preview=true`;
+        const baseUrl = getBaseUrl();
+        const url = `${baseUrl}/api/entries/sftp-download?sessionId=${session.id}&path=${file}&sessionToken=${sessionToken}&preview=true`;
 
         setFileUrl(url);
 
