@@ -37,5 +37,5 @@ jobs:
           push: true
           platforms: linux/amd64,linux/arm64,linux/arm/v7
           tags: |
-            gnmtest/nextest:latest
-            gnmtest/nextest:${{ inputs.version }}
+            germannewsmaker/nexterm:latest
+            germannewsmaker/nexterm:${{ inputs.version }}
