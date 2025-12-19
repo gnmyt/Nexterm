@@ -7,7 +7,7 @@ COPY vendor/guacamole-client/guacamole-common-js/ ./vendor/guacamole-client/guac
 WORKDIR /app/client
 
 COPY client/package.json client/yarn.lock ./
-RUN yarn install --frozen-lockfile --network-timeout 100000
+RUN yarn install --frozen-lockfile --network-timeout 500000
 
 COPY client/ .
 RUN yarn build
@@ -21,7 +21,7 @@ RUN apk add --no-cache \
     make g++ gcc build-base
 
 COPY package.json yarn.lock ./
-RUN yarn install --production --frozen-lockfile --network-timeout 100000
+RUN yarn install --production --frozen-lockfile --network-timeout 500000
 
 COPY server/ server/
 
