@@ -48,8 +48,8 @@ class _MainNavigationPageState extends State<MainNavigationPage> {
             setState(() => _selectedIndex = index),
         destinations: [
           NavigationDestination(
-            icon: Icon(MdiIcons.serverOutline),
-            selectedIcon: Icon(MdiIcons.server),
+            icon: Icon(Icons.dns_outlined),
+            selectedIcon: Icon(Icons.dns),
             label: 'Servers',
           ),
           NavigationDestination(
