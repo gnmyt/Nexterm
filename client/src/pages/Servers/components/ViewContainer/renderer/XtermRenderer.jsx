@@ -89,20 +89,28 @@ const XtermRenderer = ({ session, disconnectFromServer, registerTerminalRef, bro
         contextMenu.open(e, { x: e.clientX, y: e.clientY });
     };
 
+    const copyToClipboard = (text) => {
+        navigator.clipboard.writeText(text).catch(() => {
+            const textArea = document.createElement('textarea');
+            textArea.value = text;
+            textArea.style.cssText = 'position:fixed;left:-9999px;top:-9999px';
+            document.body.appendChild(textArea);
+            textArea.select();
+            document.execCommand('copy');
+            document.body.removeChild(textArea);
+        });
+    };
+
     const handleCopy = () => {
         const selection = termRef.current?.getSelection();
-        if (selection) {
-            navigator.clipboard.writeText(selection).catch(() => {});
-        }
+        if (selection) copyToClipboard(selection);
         contextMenu.close();
     };
 
     const handlePaste = async () => {
         try {
             const text = await navigator.clipboard.readText();
-            if (text && wsRef.current && wsRef.current.readyState === WebSocket.OPEN) {
-                wsRef.current.send(text);
-            }
+            if (text) termRef.current?.paste(text);
         } catch (err) {
             console.error('Failed to paste:', err);
         }
@@ -189,6 +197,15 @@ const XtermRenderer = ({ session, disconnectFromServer, registerTerminalRef, bro
         };
 
         window.addEventListener("resize", handleResize);
+
+        const handleNativePaste = (e) => {
+            const text = e.clipboardData?.getData('text');
+            if (text) {
+                e.preventDefault();
+                term.paste(text);
+            }
+        };
+        ref.current?.addEventListener('paste', handleNativePaste);
 
         let ws;
 
@@ -290,7 +307,7 @@ const XtermRenderer = ({ session, disconnectFromServer, registerTerminalRef, bro
                     if (selection) {
                         event.preventDefault();
                         event.stopPropagation();
-                        navigator.clipboard.writeText(selection).catch(() => { });
+                        copyToClipboard(selection);
                         return false;
                     }
                 }
@@ -351,6 +368,7 @@ const XtermRenderer = ({ session, disconnectFromServer, registerTerminalRef, bro
                 registerTerminalRef(session.id, null);
             }
             window.removeEventListener("resize", handleResize);
+            ref.current?.removeEventListener('paste', handleNativePaste);
             if (ws) {
                 ws.onclose = null;
                 ws.onerror = null;
