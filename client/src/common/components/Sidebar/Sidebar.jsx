@@ -27,12 +27,12 @@ export const Sidebar = () => {
     const { logout, user } = useContext(UserContext);
 
     const navigation = [
-        { title: t('common.sidebar.settings'), path: "/settings", icon: mdiCog },
         { title: t('common.sidebar.servers'), path: "/servers", icon: mdiServerOutline },
         { title: t('common.sidebar.monitoring'), path: "/monitoring", icon: mdiChartBoxOutline},
         { title: t('common.sidebar.snippets'), path: "/snippets", icon: mdiCodeBraces },
         { title: t('common.sidebar.audit'), path: "/audit", icon: mdiShieldCheckOutline },
     ];
+
 
     const isActive = (path) => {
         return location.pathname.startsWith(path);
@@ -67,12 +67,22 @@ export const Sidebar = () => {
                 </div>
 
                 <div className="log-out-area">
-                    <Tooltip text={"Log out"}>
+                    <Tooltip text={t('common.sidebar.logout')}>
                         <div className="log-out-btn" onClick={() => setLogoutDialogOpen(true)}>
                             <Icon path={mdiLogout} />
                         </div>
                     </Tooltip>
+
+                    <Tooltip text={t('common.sidebar.settings')}>
+                        <div
+                            className={"nav-item" + (isActive("/settings") ? " nav-item-active" : "")}
+                            onClick={() => navigate("/settings")}
+                        >
+                            <Icon path={mdiCog} />
+                        </div>
+                    </Tooltip>
                 </div>
+
             </div>
         </>
     );
