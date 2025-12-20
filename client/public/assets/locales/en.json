@@ -1008,7 +1008,7 @@
       "fields": {
         "name": "Name",
         "icon": "Icon",
-        "serverIp": "Server-IP",
+        "serverIp": "Host",
         "port": "Port",
         "protocol": "Protocol",
         "username": "Username",
@@ -1019,7 +1019,7 @@
       },
       "placeholders": {
         "serverName": "Server name",
-        "serverIp": "Server-IP",
+        "serverIp": "Hostname or IP",
         "port": "Port",
         "username": "Username",
         "password": "Password",
