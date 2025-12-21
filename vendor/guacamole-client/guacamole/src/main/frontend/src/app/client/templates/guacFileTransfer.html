@@ -1,0 +1,22 @@
+<div class="transfer" ng-class="{'in-progress': isInProgress(), 'savable': isSavable(), 'error': hasError()}" ng-click="save()">
+
+    <!-- Overall status of transfer -->
+    <div class="transfer-status">
+
+        <!-- Filename and progress bar -->
+        <div class="filename">
+            <div class="progress"><div ng-style="{'width': getPercentDone() + '%'}" class="bar"></div></div>
+            {{transfer.filename}}
+        </div>
+
+        <!-- Error text -->
+        <p class="error-text">{{translatedErrorMessage}}</p>
+
+    </div>
+
+    <!-- Progress/status text -->
+    <div class="text"
+         translate="CLIENT.TEXT_FILE_TRANSFER_PROGRESS"
+         translate-values="{PROGRESS: getProgressValue(), UNIT: getProgressUnit()}"></div>
+
+</div>

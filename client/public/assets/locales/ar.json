@@ -1,0 +1,1058 @@
+{
+  "common": {
+    "error": "خطأ",
+    "success": "النجاح",
+    "loading": "جاري التحميل...",
+    "actions": {
+      "cancel": "إلغاء",
+      "confirm": "تأكيد",
+      "login": "تسجيل الدخول",
+      "register": "تسجيل",
+      "save": "الحفظ",
+      "download": "تنزيل",
+      "close": "إغلاق",
+      "maximize": "تعظيم",
+      "restore": "الاستعادة"
+    },
+    "labels": {
+      "username": "اسم المستخدم",
+      "password": "كلمة المرور",
+      "firstName": "الاسم الأول",
+      "lastName": "اسم العائلة",
+      "code": "الرمز",
+      "twoFACode": "رمز التحقق الثنائي"
+    },
+    "placeholders": {
+      "username": "اسم المستخدم",
+      "password": "كلمة المرور",
+      "firstName": "الاسم الأول",
+      "lastName": "اسم العائلة",
+      "code": "الرمز"
+    },
+    "confirmDialog": {
+      "title": "هل أنت متأكد؟",
+      "defaultText": "لا يمكن التراجع عن هذا الإجراء."
+    },
+    "loginDialog": {
+      "title": "نيكسترِم",
+      "registrationTitle": "التسجيل",
+      "ssoOrContinueWith": "أو المتابعة بواسطة",
+      "ssoSignInWith": "تسجيل الدخول بواسطة",
+      "noAuthMethodsAvailable": "لا توجد طرق مصادقة متاحة."
+    },
+    "selectBox": {
+      "defaultOption": "اختر خيارًا...",
+      "search": "بحث...",
+      "noResults": "لم يتم العثور على نتائج"
+    },
+    "sidebar": {
+      "settings": "الإعدادات",
+      "servers": "الخوادم",
+      "monitoring": "المراقبة",
+      "snippets": "القصاصات",
+      "audit": "التدقيق",
+      "logout": "تسجيل الخروج",
+      "collapseTitle": "طي الشريط الجانبي",
+      "logoutConfirmText": "سيتم تسجيل الخروج من حساب {{username}}. هل أنت متأكد؟",
+      "navigationConfirmText": "لديك جلسات نشطة. سيؤدي الانتقال إلى مكان آخر إلى قطع الاتصال بجميع الخوادم. هل أنت متأكد؟"
+    },
+    "errors": {
+      "loadingAuthProviders": "حدث خطأ أثناء تحميل موفري المصادقة: {{error}}",
+      "generalError": "حدث خطأ",
+      "invalidCredentials": "اسم المستخدم أو كلمة المرور غير صحيحة",
+      "invalidTwoFactor": "رمز التحقق الثنائي غير صالح",
+      "internalAuthDisabled": "تم تعطيل المصادقة الداخلية",
+      "ssoLoginFailed": "فشل في بدء تسجيل الدخول الموحد (SSO)"
+    },
+    "messages": {
+      "invitationAccepted": "تم قبول الدعوة",
+      "invitationDeclined": "تم رفض الدعوة",
+      "invitationError": "فشل في معالجة الدعوة",
+      "organizationDeleted": "تم حذف المؤسسة بنجاح",
+      "organizationDeleteError": "فشل في حذف المؤسسة",
+      "leftOrganization": "لقد غادرت المؤسسة",
+      "leaveOrganizationError": "فشل في مغادرة المؤسسة"
+    }
+  },
+  "audit": {
+    "page": {
+      "title": "سجلات التدقيق",
+      "subtitle": "تتبع ومراقبة جميع الأنشطة عبر بنيتك التحتية"
+    },
+    "errors": {
+      "failedToLoadData": "فشل في تحميل بيانات التدقيق",
+      "failedToLoadLogs": "فشل في تحميل سجلات التدقيق"
+    },
+    "filters": {
+      "title": "عوامل التصنيف",
+      "activeCount": "{{count}} نشط",
+      "organization": "المؤسسة",
+      "action": "الإجراء",
+      "resource": "المورد",
+      "startDate": "تاريخ البدء",
+      "endDate": "تاريخ الانتهاء",
+      "clearAll": "مسح الكل",
+      "options": {
+        "allActions": "جميع الإجراءات",
+        "allResources": "جميع الموارد",
+        "allOrganizations": "جميع المؤسسات (شخصية + تنظيمية)",
+        "personalOnly": "شخصي فقط",
+        "categoryAll": "{{category}} (الكل)"
+      }
+    },
+    "table": {
+      "headers": {
+        "timestamp": "الطابع الزمني",
+        "action": "الإجراء",
+        "actor": "الفاعل",
+        "resource": "المورد",
+        "organization": "المؤسسة",
+        "details": "التفاصيل"
+      },
+      "noLogs": {
+        "title": "لم يتم العثور على سجلات تدقيق",
+        "subtitle": "جرّب تعديل عوامل التصفية أو تحقق لاحقًا."
+      },
+      "loading": "جارٍ تحميل سجلات التدقيق...",
+      "expandedDetails": {
+        "connectionReason": "سبب الاتصال",
+        "userAgent": "وكيل المستخدم",
+        "additionalDetails": "تفاصيل إضافية"
+      },
+      "badges": {
+        "personal": "شخصي",
+        "user": "المستخدم رقم {{id}}",
+        "organization": "المؤسسة رقم {{id}}"
+      }
+    },
+    "pagination": {
+      "showing": "عرض {{start}} إلى {{end}} من أصل {{total}} سجل",
+      "previous": "السابق",
+      "next": "التالي",
+      "pageInfo": "الصفحة {{current}} من {{total}}"
+    }
+  },
+  "snippets": {
+    "page": {
+      "title": "القصاصات",
+      "subtitle": "إدارة قصاصات الأوامر الخاصة بك للوصول السريع في الطرفيات",
+      "addSnippet": "إضافة قصاصة",
+      "personal": "شخصي",
+      "selectOrganization": "اختر المنظمة",
+      "tabs": {
+        "snippets": "مقتطفات",
+        "scripts": "النصوص"
+      }
+    },
+    "list": {
+      "empty": "ليس لديك أي قصاصات بعد. أنشئ الأولى الخاصة بك!",
+      "actions": {
+        "edit": "تحرير القصاصة",
+        "delete": "حذف القصاصة"
+      }
+    },
+    "dialog": {
+      "title": {
+        "create": "إنشاء قصاصة",
+        "edit": "تحرير القصاصة"
+      },
+      "fields": {
+        "name": "الاسم",
+        "description": "الوصف (اختياري)",
+        "command": "الأمر"
+      },
+      "placeholders": {
+        "name": "اسم القصاصة",
+        "description": "ما الذي يفعله هذا الأمر؟",
+        "command": "أدخل أمرك"
+      },
+      "actions": {
+        "cancel": "إلغاء",
+        "create": "إنشاء",
+        "save": "حفظ",
+        "generateAI": "توليد باستخدام الذكاء الاصطناعي",
+        "generating": "جارٍ التوليد..."
+      }
+    },
+    "messages": {
+      "success": {
+        "created": "تم إنشاء القصاصة بنجاح",
+        "updated": "تم تحديث القصاصة بنجاح",
+        "deleted": "تم حذف القصاصة بنجاح"
+      },
+      "errors": {
+        "required": "الاسم والأمر مطلوبان",
+        "loadFailed": "فشل في تحميل بيانات القصاصة",
+        "saveFailed": "فشل في حفظ القصاصة",
+        "deleteFailed": "فشل في حذف القصاصة"
+      }
+    }
+  },
+  "scripts": {
+    "page": {
+      "title": "النصوص",
+      "subtitle": "إدارة البرامج النصية للتشغيل التلقائي لمهام الخادم",
+      "addScript": "إضافة نص",
+      "personal": "شخصي",
+      "selectOrganization": "اختر المنظمة",
+      "tabs": {
+        "snippets": "مقتطفات",
+        "scripts": "النصوص"
+      }
+    },
+    "execution": {
+      "progressPanel": {
+        "title": "تنفيذ البرنامج النصي",
+        "noSteps": "لا توجد خطوات بعد",
+        "noStepsDescription": "ستظهر الخطوات هنا أثناء تنفيذ البرنامج النصي",
+        "steps": "الخطوات"
+      },
+      "dialogs": {
+        "enterValue": "أدخل القيمة",
+        "selectOption": "حدد خياراً",
+        "confirm": "تأكيد",
+        "submit": "إرسال",
+        "cancel": "إلغاء",
+        "ok": "حسناً",
+        "yes": "نعم",
+        "no": "لا يوجد",
+        "copyCell": "نسخ الخلية",
+        "copyRow": "صف النسخ",
+        "copyTable": "جدول النسخ",
+        "close": "إغلاق"
+      },
+      "status": {
+        "running": "الجري",
+        "completed": "مكتمل",
+        "error": "خطأ",
+        "pending": "قيد الانتظار"
+      }
+    },
+    "list": {
+      "empty": "ليس لديك أي نصوص برمجية حتى الآن. قم بإنشاء أول برنامج نصي لك!",
+      "actions": {
+        "edit": "تحرير النص البرمجي",
+        "delete": "حذف البرنامج النصي"
+      }
+    },
+    "dialog": {
+      "title": {
+        "create": "إنشاء البرنامج النصي",
+        "edit": "تحرير النص البرمجي"
+      },
+      "scriptDetails": "تفاصيل النص",
+      "scriptContent": "محتوى النص",
+      "helpTip": "استخدام @NEXTERM: توجيهات للميزات التفاعلية",
+      "fields": {
+        "name": "الاسم",
+        "description": "الوصف"
+      },
+      "placeholders": {
+        "name": "اسم النص",
+        "description": "ماذا يفعل هذا البرنامج النصي؟"
+      },
+      "actions": {
+        "cancel": "إلغاء",
+        "create": "إنشاء",
+        "update": "تحديث",
+        "creating": "إنشاء...",
+        "updating": "تحديث..."
+      },
+      "errors": {
+        "nameRequired": "اسم البرنامج النصي مطلوب",
+        "descriptionRequired": "وصف البرنامج النصي مطلوب",
+        "contentRequired": "محتوى البرنامج النصي مطلوب",
+        "createFailed": "فشل في إنشاء برنامج نصي",
+        "updateFailed": "فشل تحديث البرنامج النصي"
+      }
+    },
+    "messages": {
+      "success": {
+        "created": "تم إنشاء البرنامج النصي بنجاح",
+        "updated": "تم تحديث البرنامج النصي بنجاح",
+        "deleted": "تم حذف البرنامج النصي بنجاح"
+      },
+      "errors": {
+        "loadFailed": "فشل تحميل بيانات البرنامج النصي",
+        "deleteFailed": "فشل حذف البرنامج النصي"
+      }
+    },
+    "menu": {
+      "searchPlaceholder": "ابحث عن البرامج النصية...",
+      "noScripts": "لا توجد نصوص برمجية متاحة. قم بإنشاء بعضها في قسم البرامج النصية.",
+      "noMatch": "لا توجد نصوص برمجية تتطابق مع بحثك.",
+      "selectIdentity": "تحديد الهوية"
+    }
+  },
+  "monitoring": {
+    "page": {
+      "title": "مراقبة الخادم ",
+      "subtitle": "إحصاءات الخادم في الوقت الفعلي ومراقبة الصحة",
+      "searchPlaceholder": " البحث عن الخوادم..."
+    },
+    "errors": {
+      "loadFailed": "فشل في تحميل بيانات المراقبة"
+    },
+    "grid": {
+      "loading": "جارٍ تحميل بيانات المراقبة...",
+      "noServers": {
+        "title": "لم يتم العثور على خوادم",
+        "subtitle": "لا توجد خوادم SSH متاحة للمراقبة.\nأضف بعض الخوادم لبدء مراقبتها."
+      },
+      "metrics": {
+        "cpuUsage": "استخدام المعالج",
+        "memoryUsage": "استخدام الذاكرة",
+        "loadAverage": "متوسط الحمل",
+        "processes": "العمليات",
+        "uptime": "وقت التشغيل"
+      },
+      "status": {
+        "serverOffline": "الخادم غير متصل",
+        "connectionError": "خطأ في الاتصال",
+        "statusUnknown": "الحالة غير معروفة",
+        "offlineMessage": "الخادم غير مستجيب حاليًا لطلبات المراقبة.",
+        "errorMessage": "غير قادر على إقامة اتصال بالخادم.",
+        "unknownMessage": "لا يمكن تحديد حالة الخادم.",
+        "lastSeen": "آخر ظهور: {{time}}",
+        "noRecentActivity": "لا توجد نشاط حديث"
+      },
+      "uptime": {
+        "unknown": "غير معروف",
+        "format": {
+          "days": "{{days}}ي {{hours}}س {{minutes}}د",
+          "hours": "{{hours}}س {{minutes}}د",
+          "minutes": "{{minutes}}د"
+        }
+      }
+    },
+    "details": {
+      "timeRanges": {
+        "1h": "1س",
+        "6h": "6س",
+        "24h": "24س"
+      },
+      "tabs": {
+        "overview": "نظرة عامة",
+        "charts": "الرسوم البيانية",
+        "storage": "التخزين",
+        "network": "الشبكة"
+      },
+      "overview": {
+        "systemInfo": {
+          "title": "معلومات النظام",
+          "os": "نظام التشغيل",
+          "version": "الإصدار",
+          "kernel": "النواة",
+          "architecture": "الهيكل",
+          "uptime": "وقت التشغيل",
+          "unknown": "غير معروف",
+          "noData": "لا توجد معلومات نظام متاحة"
+        },
+        "performance": {
+          "title": "مقاييس الأداء",
+          "cpuUsage": "استخدام المعالج",
+          "memoryUsage": "استخدام الذاكرة",
+          "loadAverage": "متوسط الحمل",
+          "processes": "العمليات النشطة",
+          "total": "الإجمالي: {{value}}",
+          "loadDetail": "5د: {{fiveMin}}، 15د: {{fifteenMin}}"
+        },
+        "uptime": {
+          "format": {
+            "full": "{{days}} أيام، {{hours}} ساعات، {{minutes}} دقائق",
+            "hoursMinutes": "{{hours}} ساعات، {{minutes}} دقائق",
+            "minutes": "{{minutes}} دقائق"
+          }
+        }
+      },
+      "charts": {
+        "cpuUsage": "استخدام المعالج",
+        "memoryUsage": "استخدام الذاكرة",
+        "processes": "العمليات النشطة",
+        "noData": "لا توجد بيانات متاحة للنطاق الزمني المحدد"
+      },
+      "storage": {
+        "title": "استخدام القرص",
+        "used": "المستخدم: {{value}}",
+        "available": "المتاح: {{value}}",
+        "total": "الإجمالي: {{value}}",
+        "type": "النوع: {{value}}",
+        "noData": "لا توجد بيانات استخدام قرص متاحة"
+      },
+      "network": {
+        "title": "واجهات الشبكة",
+        "rxBytes": "بايتات RX",
+        "txBytes": "بايتات TX",
+        "noData": "لا توجد بيانات واجهة شبكة متاحة"
+      }
+    }
+  },
+  "settings": {
+    "title": "الإعدادات",
+    "userSettings": "إعدادات المستخدم",
+    "adminSettings": "إعدادات المدير",
+    "pages": {
+      "account": "الحساب",
+      "terminal": "الطرفية",
+      "keymaps": "خرائط المفاتيح",
+      "identities": "الهويات",
+      "sessions": "الجلسات",
+      "organizations": "المؤسسات",
+      "users": "المستخدمون",
+      "authentication": "المصادقة",
+      "sources": "المصادر",
+      "ai": "الذكاء الاصطناعي"
+    },
+    "account": {
+      "title": "الحساب",
+      "accountName": "اسم الحساب",
+      "firstName": "الاسم الأول",
+      "lastName": "اسم العائلة",
+      "appearance": "المظهر",
+      "appearanceDescription": "اختر بين الوضع الفاتح والداكن للواجهة الخاصة بك.",
+      "themeAuto": "السيارات",
+      "themeLight": "خفيف",
+      "themeDark": "داكن",
+      "twoFactor": "المصادقة الثنائية",
+      "twoFactorActive": "نشط",
+      "twoFactorInactive": "غير نشط",
+      "twoFactorDescription": "أضف طبقة إضافية من الأمان لحسابك بتمكين المصادقة الثنائية.",
+      "enable2FA": "تمكين 2FA",
+      "disable2FA": "تعطيل 2FA",
+      "changePassword": "تغيير كلمة المرور",
+      "changePasswordDescription": "اختر كلمة مرور جديدة وآمنة لحسابك هنا.",
+      "changePasswordButton": "تغيير كلمة المرور",
+      "language": "اللغة",
+      "languageDescription": "حدد لغتك المفضلة للواجهة.",
+      "currentLanguage": "اللغة الحالية",
+      "missingLanguage": "هل تفتقد لغتك؟",
+      "helpTranslateLink": "مساعدة في ترجمة نيكسترِم",
+      "sessionSynchronization": "مزامنة الجلسة",
+      "sessionSyncDescription": "تحكم في كيفية تخزين جلسات الخادم ومزامنتها عبر الأجهزة وعلامات تبويب المتصفح.",
+      "sessionSyncAcrossDevices": "عبر الأجهزة",
+      "sessionSyncSameBrowser": "نفس المتصفح",
+      "sessionSyncSameTab": "نفس علامة التبويب",
+      "sessionSyncAcrossDevicesDesc": "ستكون الجلسات متاحة عبر الأجهزة ومزامنتها",
+      "sessionSyncSameBrowserDesc": "ستتم مزامنة الجلسات لجلسة المستخدم الحالية",
+      "sessionSyncSameTabDesc": "ستتم مزامنة الجلسات داخل علامة تبويب المتصفح الخاص بك",
+      "twoFactorDialog": {
+        "title": "تمكين 2FA",
+        "description": "امسح الرمز ... <span class=\"totp-code\">{{secret}}</span> ...",
+        "codePlaceholder": "أدخل رمز 2FA",
+        "enableButton": "تمكين",
+        "messages": {
+          "setupFailed": "فشل في إعداد 2FA. يرجى المحاولة مرة أخرى."
+        }
+      }
+    },
+    "passwordChange": {
+      "title": "تغيير كلمة المرور",
+      "description": "كلمة مرور قوية تحتوي على رموز خاصة، أرقام، وحروف كبيرة وصغيرة.",
+      "newPassword": "كلمة المرور الجديدة",
+      "confirmPassword": "تأكيد كلمة المرور الجديدة",
+      "changePasswordButton": "تغيير كلمة المرور"
+    },
+    "organizations": {
+      "title": "مؤسساتك",
+      "createOrganization": "إنشاء مؤسسة",
+      "noOrganizations": "ليس لديك أي مؤسسات بعد.",
+      "noOrganizationsDescription": "أنشئ واحدة لبدء التعاون مع فريقك.",
+      "invite": "دعوة",
+      "delete": "حذف",
+      "leave": "مغادرة",
+      "members": "الأعضاء",
+      "auditSettings": "إعدادات التدقيق",
+      "pendingInvitations": "الدعوات المعلقة",
+      "invitedBy": "مدعو من قبل: {{name}}",
+      "deleteConfirmation": "سيؤدي هذا إلى حذف المؤسسة نهائيًا وإزالة جميع الأعضاء. لا يمكن التراجع عن هذا الإجراء.",
+      "leaveConfirmation": "هل أنت متأكد من رغبتك في مغادرة هذه المؤسسة؟",
+      "dialog": {
+        "title": "إنشاء مؤسسة",
+        "fields": {
+          "name": "الاسم",
+          "namePlaceholder": "اسم المؤسسة",
+          "description": "الوصف (اختياري)",
+          "descriptionPlaceholder": "وصف مختصر لمؤسستك"
+        },
+        "actions": {
+          "cancel": "إلغاء",
+          "create": "إنشاء"
+        },
+        "messages": {
+          "nameRequired": "اسم المؤسسة مطلوب",
+          "createSuccess": "تم إنشاء المؤسسة بنجاح",
+          "createFailed": "فشل في إنشاء المؤسسة"
+        }
+      }
+    },
+    "users": {
+      "title": "{{count}} مستخدمون",
+      "createNewUser": "إنشاء مستخدم جديد",
+      "twoFactorEnabled": "2FA مفعل",
+      "twoFactorDisabled": "2FA معطل",
+      "contextMenu": {
+        "changePassword": "تغيير كلمة المرور",
+        "promoteToAdmin": "ترقية إلى مدير",
+        "demoteToUser": "خفض إلى مستخدم عادي",
+        "deleteUser": "حذف المستخدم",
+        "loginAsUser": "تسجيل الدخول كمستخدم",
+        "deleteConfirm": "سيؤدي هذا إلى حذف المستخدم وبياناته المرتبطة نهائيًا.",
+        "promoteConfirm": "سيؤدي هذا إلى ترقية المستخدم إلى مدير.",
+        "demoteConfirm": "سيؤدي هذا إلى خفض المستخدم إلى مستخدم عادي."
+      }
+    },
+    "userDialog": {
+      "title": "إنشاء مستخدم جديد",
+      "firstName": "الاسم الأول",
+      "lastName": "اسم العائلة",
+      "username": "اسم المستخدم",
+      "password": "كلمة المرور",
+      "firstNamePlaceholder": "الاسم الأول",
+      "lastNamePlaceholder": "اسم العائلة",
+      "usernamePlaceholder": "اسم المستخدم",
+      "passwordPlaceholder": "كلمة المرور",
+      "create": "إنشاء",
+      "errorOccurred": "حدث خطأ"
+    },
+    "sessions": {
+      "title": "الجلسات",
+      "lastActivity": "آخر نشاط: {{date}} من {{ip}}",
+      "currentSession": "الجلسة الحالية",
+      "logout": "تسجيل الخروج",
+      "revoke": "إلغاء",
+      "browserOn": "{{browser}} {{version}} على {{os}} {{osVersion}}"
+    },
+    "keymaps": {
+      "title": "خرائط المفاتيح",
+      "description": "تخصيص اختصارات لوحة المفاتيح لتتناسب مع سير عملك.",
+      "resetAll": "إعادة تعيين الكل",
+      "actions": {
+        "search": {
+          "title": "بحث",
+          "description": "افتح مدخل البحث"
+        },
+        "aimenu": {
+          "title": "قائمة الذكاء الاصطناعي",
+          "description": "افتح قائمة أوامر الذكاء الاصطناعي"
+        },
+        "snippets": {
+          "title": "مقتطفات",
+          "description": "افتح مربع حوار المقتطفات"
+        },
+        "keyboardshortcuts": {
+          "title": "اختصارات لوحة المفاتيح",
+          "description": "افتح قائمة اختصارات لوحة المفاتيح"
+        },
+        "broadcast": {
+          "title": "وضع البث",
+          "description": "تبديل وضع البث عند استخدام طريقة العرض المقسم"
+        },
+        "copy": {
+          "title": "نسخ",
+          "description": "نسخ النص المحدد إلى الحافظة"
+        },
+        "fullscreen": {
+          "title": "ملء الشاشة الكاملة",
+          "description": "تبديل وضع ملء الشاشة"
+        }
+      },
+      "recorder": {
+        "pressKeys": "اضغط على المفاتيح...",
+        "save": "الحفظ",
+        "cancel": "إلغاء",
+        "reset": "إعادة تعيين"
+      },
+      "messages": {
+        "updateSuccess": "تم تحديث رابط المفاتيح بنجاح",
+        "updateFailed": "فشل في تحديث رابط المفاتيح",
+        "resetSuccess": "إعادة تعيين ربط المفاتيح إلى الوضع الافتراضي",
+        "resetFailed": "فشل في إعادة تعيين رابط المفاتيح",
+        "resetAllSuccess": "إعادة تعيين جميع روابط المفاتيح إلى الإعدادات الافتراضية",
+        "resetAllFailed": "فشل في إعادة تعيين روابط المفاتيح"
+      }
+    },
+    "terminal": {
+      "title": "الطرفية",
+      "font": {
+        "title": "الخط",
+        "description": "تخصيص عائلة الخط وحجم الخط للطرفية الخاصة بك.",
+        "fontFamily": "عائلة الخط",
+        "fontSize": "حجم الخط"
+      },
+      "cursor": {
+        "title": "المؤشر",
+        "description": "تخصيص مظهر وسلوك مؤشر الطرفية الخاص بك.",
+        "cursorStyle": "نمط المؤشر",
+        "cursorBlinking": "وميض المؤشر",
+        "enabled": "مفعل",
+        "disabled": "معطل"
+      },
+      "theme": {
+        "title": "السمة",
+        "description": "اختر سمة لونية للطرفية الخاصة بك."
+      },
+      "preview": {
+        "text": "$ echo 'مرحباً، نيكسترِم!'\nمرحباً، نيكسترِم!\n$ "
+      }
+    },
+    "authentication": {
+      "title": "{{count}} موفري مصادقة",
+      "addProvider": "إضافة موفر",
+      "system": "النظام",
+      "systemDescription": "مصادقة اسم المستخدم وكلمة المرور",
+      "deleteConfirm": "سيؤدي هذا إلى حذف موفر المصادقة هذا نهائيًا.",
+      "errors": {
+        "deleteProvider": "خطأ في حذف الموفر",
+        "toggleProvider": "خطأ في تبديل الموفر"
+      },
+      "providerDialog": {
+        "createTitle": "إضافة موفر مصادقة",
+        "editTitle": "تحرير موفر المصادقة",
+        "fields": {
+          "displayName": "اسم العرض ",
+          "displayNamePlaceholder": "مثال: SSO الشركة",
+          "issuerUrl": "رابط المصدر",
+          "issuerUrlPlaceholder": "https://auth.company.com",
+          "clientId": "معرف العميل",
+          "clientIdPlaceholder": "معرف العميل",
+          "clientSecret": "سر العميل",
+          "clientSecretPlaceholder": "سر العميل",
+          "clientSecretPlaceholderEdit": "اتركه فارغًا للحفاظ على الحالي",
+          "redirectUri": "رابط إعادة التوجيه",
+          "redirectUriPlaceholder": "https://your-domain.com/api/oidc/callback",
+          "scope": "النطاق",
+          "scopePlaceholder": "البريد الإلكتروني لملف التعريف المفتوح",
+          "emailAttribute": "سمة البريد الإلكتروني",
+          "emailAttributePlaceholder": "البريد الإلكتروني",
+          "usernameAttribute": "سمة اسم المستخدم",
+          "usernameAttributePlaceholder": "اسم المستخدم المفضل",
+          "firstNameAttribute": "سمة الاسم الأول",
+          "firstNameAttributePlaceholder": "الاسم_المعطى",
+          "lastNameAttribute": "سمة اسم العائلة",
+          "lastNameAttributePlaceholder": "اسم_العائلة"
+        },
+        "advanced": {
+          "show": "عرض الإعدادات المتقدمة",
+          "hide": "إخفاء الإعدادات المتقدمة"
+        },
+        "actions": {
+          "addProvider": "إضافة موفر",
+          "saveChanges": "حفظ التغييرات"
+        },
+        "messages": {
+          "saveFailed": "فشل في حفظ الموفر"
+        }
+      }
+    },
+    "ai": {
+      "title": "إعداد مساعد الذكاء الاصطناعي",
+      "description": "إعداد توليد الأوامر المدعومة بالذكاء الاصطناعي لجلسات الطرفية وإنشاء القصاصات.",
+      "loading": "جارٍ تحميل إعدادات الذكاء الاصطناعي...",
+      "enable": {
+        "title": "تمكين مساعد الذكاء الاصطناعي",
+        "description": "السماح للمستخدمين بتوليد الأوامر باستخدام الذكاء الاصطناعي"
+      },
+      "provider": {
+        "title": "موفر الذكاء الاصطناعي",
+        "description": "اختر موفر خدمة الذكاء الاصطناعي الخاص بك"
+      },
+      "model": {
+        "title": "النموذج",
+        "description": "حدد نموذج الذكاء الاصطناعي المستخدم لتوليد الأوامر"
+      },
+      "apiKey": {
+        "title": "مفتاح API",
+        "description": "مفتاح API الخاص بـ OpenAI للمصادقة",
+        "placeholder": "أدخل مفتاح API الخاص بـ OpenAI",
+        "setPlaceholder": "تم تعيين مفتاح API (اتركه فارغًا للحفاظ على الحالي)"
+      },
+      "ollamaUrl": {
+        "title": "رابط Ollama",
+        "description": "الرابط حيث يعمل مثيل Ollama الخاص بك",
+        "placeholder": "http://localhost:11434"
+      },
+      "selectProvider": "حدد موفرًا...",
+      "selectModel": "حدد نموذجًا...",
+      "loadingModels": "جارٍ تحميل النماذج...",
+      "noModels": "لا توجد نماذج متاحة",
+      "saveSettings": "حفظ الإعدادات",
+      "testConnection": "اختبار الاتصال",
+      "testing": "جارٍ الاختبار...",
+      "saveSuccess": "تم حفظ إعدادات الذكاء الاصطناعي بنجاح",
+      "testSuccess": "نجح اختبار اتصال الذكاء الاصطناعي",
+      "errors": {
+        "loadSettings": "فشل في تحميل إعدادات الذكاء الاصطناعي",
+        "saveSettings": "فشل في حفظ إعدادات الذكاء الاصطناعي",
+        "testConnection": "فشل في اختبار اتصال الذكاء الاصطناعي"
+      }
+    },
+    "identities": {
+      "title": "مفاتيح SSH والبيانات الاعتمادية",
+      "description": "إدارة مفاتيح SSH وبيانات الدخول الخاصة بك لاتصالات الخادم",
+      "createIdentity": "إنشاء هوية",
+      "personal": "شخصي",
+      "noUsername": "لا يوجد اسم مستخدم",
+      "sshKey": "مفتاح SSH",
+      "password": "كلمة المرور",
+      "editIdentity": "تحرير الهوية",
+      "deleteIdentity": "حذف الهوية",
+      "noIdentities": "لم يتم العثور على هويات",
+      "noIdentitiesDescription": "أنشئ هويتك الأولى لبدء اتصالات الخادم",
+      "deleteConfirm": "هل أنت متأكد من رغبتك في حذف \"{{name}}\"؟ لا يمكن التراجع عن هذا الإجراء وسيزيل هذه الهوية من جميع الخوادم التي تستخدمها.",
+      "deleteSuccess": "تم حذف الهوية بنجاح",
+      "deleteError": "فشل في حذف الهوية",
+      "dialog": {
+        "createTitle": "إنشاء هوية جديدة",
+        "editTitle": "تحرير الهوية",
+        "fields": {
+          "name": "اسم الهوية",
+          "namePlaceholder": "أدخل اسم الهوية",
+          "username": "اسم المستخدم",
+          "usernamePlaceholder": "اسم المستخدم (اختياري)",
+          "authType": "نوع المصادقة",
+          "password": "كلمة المرور",
+          "passwordPlaceholder": "أدخل كلمة المرور",
+          "passwordPlaceholderEdit": "اتركها فارغة للحفاظ على كلمة المرور الحالية",
+          "sshKey": "مفتاح SSH الخاص",
+          "passphrase": "عبارة السر (اختيارية)",
+          "passphrasePlaceholder": "أدخل عبارة السر (اختيارية)",
+          "passphrasePlaceholderEdit": "اتركها فارغة للحفاظ على عبارة السر الحالية"
+        },
+        "authTypes": {
+          "password": "كلمة المرور",
+          "ssh": "مفتاح SSH"
+        },
+        "keyFileLoaded": "تم تحميل ملف المفتاح",
+        "actions": {
+          "cancel": "إلغاء",
+          "create": "إنشاء هوية",
+          "update": "تحديث الهوية"
+        },
+        "messages": {
+          "nameRequired": "اسم الهوية مطلوب",
+          "passwordRequired": "كلمة المرور مطلوبة",
+          "sshKeyRequired": "مفتاح SSH مطلوب",
+          "createSuccess": "تم إنشاء الهوية بنجاح",
+          "updateSuccess": "تم تحديث الهوية بنجاح",
+          "createFailed": "فشل في إنشاء الهوية",
+          "updateFailed": "فشل في تحديث الهوية"
+        }
+      }
+    },
+    "sources": {
+      "title": "مصادر النصوص والمقتطفات",
+      "description": "تكوين مصادر خارجية لمزامنة البرامج النصية والمقتطفات تلقائياً.",
+      "loading": "تحميل المصادر...",
+      "noSources": "لم يتم تكوين أي مصادر",
+      "noSourcesDescription": "إضافة مصادر خارجية لمزامنة البرامج النصية والمقتطفات تلقائياً.",
+      "addSource": "إضافة مصدر",
+      "snippets": "مقتطفات",
+      "scripts": "النصوص",
+      "neverSynced": "لم تتم مزامنته مطلقاً",
+      "sync": "المزامنة الآن",
+      "edit": "تحرير",
+      "delete": "حذف",
+      "deleteConfirm": "هل أنت متأكد أنك تريد حذف المصدر \"{{name}}\"؟ سيتم أيضاً حذف جميع النصوص والمقتطفات التي تمت مزامنتها من هذا المصدر.",
+      "status": {
+        "success": "مزامنة",
+        "error": "خطأ",
+        "pending": "قيد الانتظار",
+        "disabled": "معاق"
+      },
+      "dialog": {
+        "createTitle": "إضافة مصدر",
+        "editTitle": "تحرير المصدر",
+        "name": "الاسم",
+        "namePlaceholder": "على سبيل المثال نصوص الشركة",
+        "url": "عنوان URL المصدر",
+        "urlPlaceholder": "https://scripts.example.com",
+        "enabled": "ممكّنة",
+        "enabledDescription": "عند تعطيلها، لن تتم مزامنة هذا المصدر",
+        "validating": "التحقق من صحة عنوان URL...",
+        "validationSuccess": "تم العثور على مصدر صالح: {{snippets}} مقتطفات، {{scripts}} البرامج النصية",
+        "create": "إنشاء"
+      },
+      "messages": {
+        "created": "تم إنشاء المصدر بنجاح",
+        "updated": "تم تحديث المصدر بنجاح",
+        "deleted": "تم حذف المصدر بنجاح",
+        "synced": "تمت مزامنة المصدر بنجاح"
+      },
+      "errors": {
+        "loadFailed": "فشل تحميل المصادر",
+        "saveFailed": "فشل في حفظ المصدر",
+        "deleteFailed": "فشل في حذف المصدر",
+        "syncFailed": "فشل في مزامنة المصدر",
+        "validationFailed": "فشل التحقق من صحة عنوان URL",
+        "requiredFields": "الاسم وعنوان URL مطلوبان"
+      }
+    }
+  },
+  "servers": {
+    "time": {
+      "justNow": "الآن فقط",
+      "minuteAgo": "{{count}} منذ دقيقة",
+      "minutesAgo": "{{count}} منذ دقائق",
+      "hourAgo": "{{count}} منذ ساعة",
+      "hoursAgo": "{{count}} منذ ساعات",
+      "dayAgo": "{{count}} منذ يوم واحد",
+      "daysAgo": "{{count}} منذ أيام"
+    },
+    "tags": {
+      "title": "الوسوم",
+      "createNewTag": "إنشاء علامة جديدة",
+      "tagName": "اسم العلامة",
+      "create": "إنشاء",
+      "filterByTags": "تصفية حسب الوسوم",
+      "clearAll": "مسح الكل",
+      "noTagsCreated": "لم يتم إنشاء أي علامات حتى الآن",
+      "editTag": "تحرير العلامة",
+      "deleteTag": "حذف العلامة"
+    },
+    "contextMenu": {
+      "createFolder": "إنشاء مجلد",
+      "deleteFolder": "حذف المجلد",
+      "renameFolder": "إعادة تسمية المجلد",
+      "new": "جديد",
+      "sshServer": "خادم SSH",
+      "telnetServer": "خادم Telnet",
+      "rdpServer": "خادم RDP",
+      "vncServer": "خادم VNC",
+      "createServer": "إنشاء خادم",
+      "import": "استيراد",
+      "pve": "منع التطرف العنيف",
+      "sshConfig": "SSH-كونفيج",
+      "connect": "الاتصال",
+      "quickConnect": "التوصيل السريع",
+      "openSFTP": "فتح SFTP",
+      "runScript": "تشغيل البرنامج النصي",
+      "editServer": "تحرير الخادم",
+      "editIntegration": "تحرير التكامل",
+      "duplicateServer": "تكرار الخادم",
+      "deleteServer": "حذف الخادم",
+      "editPVE": "تحرير PVE",
+      "deletePVE": "حذف PVE",
+      "shutdown": "إغلاق",
+      "stop": "إيقاف",
+      "start": "بدء"
+    },
+    "dialog": {
+      "addServer": "إضافة خادم",
+      "addProtocolServer": "إضافة {{protocol}} خادم",
+      "editServer": "تحرير الخادم",
+      "tabs": {
+        "details": "التفاصيل",
+        "identities": "الهويات",
+        "settings": "الإعدادات"
+      },
+      "actions": {
+        "save": "حفظ",
+        "create": "إنشاء"
+      },
+      "fields": {
+        "name": "الاسم",
+        "icon": "الأيقونة",
+        "serverIp": "IP الخادم",
+        "port": "المنفذ",
+        "protocol": "البروتوكول",
+        "username": "اسم المستخدم",
+        "password": "كلمة المرور",
+        "host": "المضيف",
+        "nodeName": "اسم العقدة",
+        "vmid": "معرف الجهاز الافتراضي"
+      },
+      "placeholders": {
+        "serverName": "اسم الخادم",
+        "serverIp": "IP الخادم",
+        "port": "المنفذ",
+        "username": "اسم المستخدم",
+        "password": "كلمة المرور",
+        "host": "المضيف",
+        "nodeName": "اسم العقدة",
+        "vmid": "معرف الجهاز الافتراضي"
+      },
+      "settings": {
+        "jumpHosts": {
+          "title": "مضيفو القفزات",
+          "description": "الاتصال من خلال خوادم وسيطة للوصول إلى هذا الخادم الهدف",
+          "addButton": "إضافة مضيف الانتقال السريع",
+          "removeTooltip": "إزالة مضيف القفز القفزة",
+          "noServersAvailable": "لا توجد خوادم SSH متاحة لمضيفي القفز. قم بإنشاء خوادم SSH أولاً."
+        },
+        "monitoring": {
+          "title": "تمكين مراقبة الأداء",
+          "description": "جمع مقاييس وحدة المعالجة المركزية والذاكرة والقرص والشبكة لهذا الخادم"
+        },
+        "keyboardLayout": {
+          "title": "تخطيط لوحة المفاتيح",
+          "description": "حدد تخطيط لوحة المفاتيح المراد استخدامه لهذا الاتصال."
+        },
+        "noSettings": "لا تتوفر إعدادات إضافية لهذا النوع من الإدخال."
+      },
+      "identities": {
+        "organizationIdentities": "هويات المنظمة",
+        "personalIdentities": "الهويات الشخصية",
+        "orgDescription": "مشتركة مع جميع أعضاء المؤسسة. يمكن للجميع استخدام هذه الهويات.",
+        "personalDescription": "مرئية لك فقط. لا يمكن لأعضاء المؤسسة الآخرين رؤيتها.",
+        "identityName": "اسم الهوية",
+        "username": "اسم المستخدم",
+        "authentication": "المصادقة",
+        "password": "كلمة المرور",
+        "sshKey": "مفتاح SSH",
+        "sshPrivateKey": "مفتاح SSH الخاص",
+        "passphrase": "عبارة المرور (اختياري)",
+        "new": "جديد",
+        "removeIdentity": "إزالة الهوية",
+        "unlinkIdentity": "إلغاء ربط الهوية",
+        "moveToOrg": "الانتقال إلى المنظمة",
+        "selectOrganization": "اختر المنظمة",
+        "availableToLink": "متاح للربط",
+        "noUsername": "لا يوجد اسم مستخدم",
+        "noOrgIdentities": "لا توجد هويات للمؤسسة. أنشئ واحدة لمشاركتها مع جميع الأعضاء.",
+        "noPersonalIdentities": "لا توجد هويات شخصية. أنشئ واحدة لاستخدامك الخاص."
+      }
+    },
+    "proxmoxDialog": {
+      "title": {
+        "import": "استيراد Proxmox VE",
+        "edit": "تحرير Proxmox VE"
+      },
+      "fields": {
+        "name": "الاسم",
+        "serverIp": "IP الخادم",
+        "port": "المنفذ",
+        "username": "اسم المستخدم",
+        "password": "كلمة المرور",
+        "nodeName": "اسم العقدة (اختياري)"
+      },
+      "placeholders": {
+        "name": "الاسم",
+        "serverIp": "IP الخادم",
+        "port": "المنفذ",
+        "username": "اسم المستخدم (مثال: root@pam)",
+        "password": "كلمة المرور",
+        "specificNode": "اسم عقدة محدد"
+      },
+      "actions": {
+        "import": "استيراد",
+        "edit": "تحرير"
+      }
+    },
+    "connectionReasonDialog": {
+      "title": "سبب الاتصال مطلوب",
+      "reasonLabel": "يرجى تقديم سبب للاتصال بـ <strong>{{serverName}}</strong>:",
+      "placeholder": "أدخل سببك لهذا الاتصال...",
+      "characterCount": "{{count}}/500",
+      "actions": {
+        "cancel": "إلغاء",
+        "connect": "الاتصال"
+      }
+    },
+    "sshConfigImport": {
+      "title": "استيراد إعدادات SSH",
+      "configContent": {
+        "label": "محتوى إعدادات SSH",
+        "placeholder": "الصق محتوى إعدادات SSH هنا..."
+      },
+      "keyFiles": {
+        "label": "ملفات مفاتيح SSH ({{count}} تم العثور عليها)",
+        "userLabel": "المستخدم: {{username}}",
+        "uploaded": "✓ تم الرفع",
+        "uploadButton": "رفع"
+      },
+      "actions": {
+        "cancel": "إلغاء",
+        "import": "استيراد",
+        "importing": "جارٍ الاستيراد..."
+      },
+      "messages": {
+        "noContent": "يرجى تقديم محتوى إعدادات SSH",
+        "noFolder": "لم يتم تحديد مجلد",
+        "uploadSuccess": "تم رفع المفتاح {{name}} بنجاح",
+        "uploadFailed": "فشل في رفع المفتاح {{name}}",
+        "importFailed": "فشل في استيراد إعدادات SSH"
+      }
+    },
+    "fileManager": {
+      "createFolder": {
+        "title": "إنشاء مجلد",
+        "placeholder": "اسم المجلد",
+        "button": "إنشاء مجلد"
+      },
+      "renameItem": {
+        "title": "إعادة التسمية",
+        "placeholder": "الاسم الجديد",
+        "button": "إعادة التسمية"
+      },
+      "fileEditor": {
+        "title": "محرر الملفات",
+        "save": "حفظ",
+        "cancel": "إلغاء",
+        "loading": "جارٍ التحميل...",
+        "saving": "جارٍ الحفظ...",
+        "saveSuccess": "تم حفظ الملف بنجاح",
+        "saveFailed": "فشل في حفظ الملف",
+        "loadFailed": "فشل في تحميل الملف",
+        "unsavedChanges": "لديك تغييرات غير محفوظة. هل أنت متأكد من إغلاق هذا الملف؟"
+      },
+      "contextMenu": {
+        "open": "فتح",
+        "download": "تنزيل",
+        "rename": "إعادة التسمية",
+        "delete": "حذف",
+        "copy": "نسخ",
+        "cut": "قص",
+        "paste": "لصق",
+        "createFolder": "إنشاء مجلد",
+        "upload": "رفع ملف",
+        "edit": "تحرير",
+        "preview": "معاينة",
+        "bigFileConfirm": "هذا الملف بحجم {{size}} ميغابايت. هل أنت متأكد من رغبتك في تحريره؟",
+        "selectAll": "اختر الكل",
+        "insertSnippet": "إدراج مقتطف",
+        "sendCtrlC": "إرسال Ctrl+C",
+        "clearTerminal": "مسح المحطة الطرفية"
+      },
+      "filePreview": {
+        "title": "معاينة الملف",
+        "loading": "جاري التحميل...",
+        "cannotPreview": "لا يمكن معاينة الملف",
+        "unsupportedFileType": "هذا النوع من الملفات غير مدعوم للمعاينة",
+        "videoNotSupported": "متصفحك لا يدعم تشغيل الفيديو",
+        "audioNotSupported": "متصفحك لا يدعم تشغيل الصوت",
+        "download": "تنزيل",
+        "close": "إغلاق"
+      }
+    },
+    "aiAssistant": {
+      "title": "مساعد الذكاء الاصطناعي",
+      "placeholder": "صف ما تريد فعله...",
+      "hint": "اضغط Enter للتوليد • Esc للإغلاق",
+      "closeLabel": "إغلاق مساعد الذكاء الاصطناعي"
+    },
+    "snippets": {
+      "title": "القصاصات",
+      "noSnippets": "لا توجد قصاصات متاحة",
+      "searchPlaceholder": "البحث في القصاصات...",
+      "createNew": "إنشاء قصاصة جديدة"
+    },
+    "terminalActions": {
+      "menuTitle": "الإجراءات النهائية",
+      "snippets": "مقتطفات",
+      "keyboardShortcuts": "اختصارات لوحة المفاتيح",
+      "broadcasting": "البث الإذاعي",
+      "fullScreen": "ملء الشاشة الكاملة",
+      "exitFullScreen": "الخروج من وضع ملء الشاشة الكاملة",
+      "badgeOn": "تشغيل"
+    },
+    "messages": {
+      "fillRequiredFields": "يرجى ملء جميع الحقول المطلوبة",
+      "serverCreated": "تم إنشاء الخادم بنجاح",
+      "serverUpdated": "تم تحديث الخادم بنجاح",
+      "createFailed": "فشل في إنشاء الخادم",
+      "updateFailed": "فشل في تحديث الخادم",
+      "createIdentityFailed": "فشل في إنشاء الهوية",
+      "updateIdentityFailed": "فشل في تحديث الهوية"
+    }
+  }
+}

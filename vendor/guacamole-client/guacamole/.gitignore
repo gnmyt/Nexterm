@@ -1,0 +1,6 @@
+src/main/webapp/META-INF/
+src/main/webapp/generated/
+nb-configuration.xml
+customs.json
+target/
+*~

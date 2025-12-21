@@ -3,16 +3,60 @@
 .view-container
   display: flex
   flex-direction: column
-  height: 100vh
+  height: 100%
   width: 100%
   flex: 1
   overflow: hidden
+  transition: all 0.3s ease
+
+  &.fullscreen
+    position: fixed
+    top: 0
+    left: 0
+    width: 100vw
+    height: 100vh
+    z-index: 1000
+
+.exit-fullscreen-btn
+  position: fixed
+  top: 1rem
+  right: 1rem
+  z-index: 1001
+  background-color: rgba(0, 0, 0, 0.7)
+  border: 1px solid colors.$darker-gray
+  border-radius: 8px
+  padding: 0.5rem
+  cursor: pointer
+  display: flex
+  align-items: center
+  justify-content: center
+  transition: all 0.2s ease
+  backdrop-filter: blur(10px)
+
+  svg
+    width: 1.5rem
+    height: 1.5rem
+    color: colors.$white
+
+  &:hover
+    background-color: rgba(0, 0, 0, 0.9)
+    border-color: colors.$primary
+    transform: scale(1.05)
+
+    svg
+      color: colors.$primary
+
+  &:active
+    transform: scale(0.95)
 
 .view-layouter
   position: relative
-  height: calc(100vh - 3.5rem)
+  height: calc(100% - 3.5rem)
   width: 100%
   overflow: hidden
+
+  .view-container.fullscreen &
+    height: 100vh
 
   &.single
     .session-renderer
@@ -24,46 +68,20 @@
         opacity: 0
         pointer-events: none
 
-  &[class*="grid-"]
-    display: grid
-    gap: 2px
+  &:not(.single)
+    display: flex
+    flex-direction: column
+    gap: 0
     background-color: colors.$darker-gray
 
   &.resizing
     .session-renderer
       pointer-events: none
 
-  &.grid-2x1
-    grid-template-columns: 1fr 1fr
-    grid-template-rows: 1fr
-
-  &.grid-2x2
-    grid-template-columns: 1fr 1fr
-    grid-template-rows: 1fr 1fr
-
-  &.grid-3
-    grid-template-columns: 1fr 1fr
-    grid-template-rows: 1fr 1fr
-
-  &.grid-5
-    grid-template-columns: 1fr 1fr
-    grid-template-rows: 1fr 1fr 1fr
-
-  &.grid-3x2
-    grid-template-columns: 1fr 1fr
-    grid-template-rows: 1fr 1fr 1fr
-
-  &.grid-2x3
-    grid-template-columns: 1fr 1fr 1fr
-    grid-template-rows: 1fr 1fr
-
-  &.grid-3x3
-    grid-template-columns: 1fr 1fr 1fr
-    grid-template-rows: 1fr 1fr 1fr
-
-  &.grid-4x2
-    grid-template-columns: 1fr 1fr
-    grid-template-rows: 1fr 1fr 1fr 1fr
+.grid-row
+  display: flex
+  gap: 0
+  overflow: hidden
 
 .session-renderer
   background-color: colors.$terminal
@@ -81,6 +99,7 @@
   background: transparent
   transition: background-color 0.2s ease
   user-select: none
+  flex-shrink: 0
 
   &:hover
     background-color: colors.$primary !important
@@ -97,7 +116,9 @@
 .view-layouter.resizing
   *
     user-select: none !important
-    pointer-events: none !important
+
+  .grid-resizer
+    pointer-events: auto !important
 
   &.resizing-vertical
     cursor: col-resize !important

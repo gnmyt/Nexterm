@@ -1,0 +1,15 @@
+{
+  "name": "nexterm-connector",
+  "version": "1.0.7",
+  "private": true,
+  "scripts": {
+    "dev": "cargo tauri dev",
+    "build": "cargo tauri build",
+    "client:dev": "cd ../client && yarn dev",
+    "client:build": "cd ../client && yarn build",
+    "tauri": "tauri"
+  },
+  "devDependencies": {
+    "@tauri-apps/cli": "^2"
+  }
+}

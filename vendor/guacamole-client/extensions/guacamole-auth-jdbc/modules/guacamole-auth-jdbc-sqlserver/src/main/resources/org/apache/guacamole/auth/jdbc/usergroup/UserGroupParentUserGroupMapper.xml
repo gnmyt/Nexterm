@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<!--
+    Licensed to the Apache Software Foundation (ASF) under one
+    or more contributor license agreements.  See the NOTICE file
+    distributed with this work for additional information
+    regarding copyright ownership.  The ASF licenses this file
+    to you under the Apache License, Version 2.0 (the
+    "License"); you may not use this file except in compliance
+    with the License.  You may obtain a copy of the License at
+
+      http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing,
+    software distributed under the License is distributed on an
+    "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+    KIND, either express or implied.  See the License for the
+    specific language governing permissions and limitations
+    under the License.
+-->
+
+<mapper namespace="org.apache.guacamole.auth.jdbc.usergroup.UserGroupParentUserGroupMapper" >
+
+    <!-- Select the names of all parent user groups -->
+    <select id="selectChildIdentifiers" resultType="string">
+        SELECT name
+        FROM [guacamole_user_group_member]
+        JOIN [guacamole_user_group] ON [guacamole_user_group_member].user_group_id = [guacamole_user_group].user_group_id
+        JOIN [guacamole_entity] ON [guacamole_entity].entity_id = [guacamole_user_group].entity_id
+        WHERE
+            [guacamole_user_group_member].member_entity_id = #{parent.entityID,jdbcType=INTEGER}
+            AND [guacamole_entity].type = 'USER_GROUP'
+    </select>
+
+    <!-- Select the names of all readable parent user groups -->
+    <select id="selectReadableChildIdentifiers" resultType="string">
+        SELECT [guacamole_entity].name
+        FROM [guacamole_user_group_member]
+        JOIN [guacamole_user_group] ON [guacamole_user_group_member].user_group_id = [guacamole_user_group].user_group_id
+        JOIN [guacamole_entity] ON [guacamole_entity].entity_id = [guacamole_user_group].entity_id
+        WHERE
+            [guacamole_user_group].user_group_id IN (
+                <include refid="org.apache.guacamole.auth.jdbc.usergroup.UserGroupMapper.getReadableIDs">
+                    <property name="entityID"        value="#{user.entityID,jdbcType=INTEGER}"/>
+                    <property name="groups"          value="effectiveGroups"/>
+                    <property name="caseSensitivity" value="${caseSensitivity}"/>
+                </include>
+            )
+            AND [guacamole_user_group_member].member_entity_id = #{parent.entityID,jdbcType=INTEGER}
+            AND [guacamole_entity].type = 'USER_GROUP'
+    </select>
+
+    <!-- Delete parent groups by name -->
+    <delete id="delete">
+        DELETE [guacamole_user_group_member]
+        FROM [guacamole_user_group_member]
+        JOIN [guacamole_user_group] ON [guacamole_user_group].user_group_id = [guacamole_user_group_member].user_group_id
+        JOIN [guacamole_entity] ON [guacamole_entity].entity_id = [guacamole_user_group].entity_id
+        WHERE
+            member_entity_id = #{parent.entityID,jdbcType=INTEGER}
+            AND [guacamole_entity].type = 'USER_GROUP'
+            AND 
+            <choose>
+                <when test="caseSensitivity.caseSensitiveGroupNames()">
+                    [guacamole_entity].name IN
+                    <foreach collection="children" item="identifier"
+                             open="(" separator="," close=")">
+                        #{identifier,jdbcType=VARCHAR}
+                    </foreach>
+                </when>
+                <otherwise>
+                    LOWER([guacamole_entity].name) IN
+                    <foreach collection="children" item="identifier"
+                             open="(" separator="," close=")">
+                        LOWER(#{identifier,jdbcType=VARCHAR})
+                    </foreach>
+                </otherwise>
+            </choose>
+                
+    </delete>
+
+    <!-- Insert parent groups by name -->
+    <insert id="insert">
+        INSERT INTO [guacamole_user_group_member] (
+            user_group_id,
+            member_entity_id
+        )
+        SELECT DISTINCT
+            [guacamole_user_group].user_group_id,
+            #{parent.entityID,jdbcType=INTEGER}
+        FROM [guacamole_user_group]
+        JOIN [guacamole_entity] ON [guacamole_user_group].entity_id = [guacamole_entity].entity_id
+        WHERE [guacamole_entity].type = 'USER_GROUP'
+            AND
+            <choose>
+                <when test="caseSensitivity.caseSensitiveGroupNames()">
+                    [guacamole_entity].name IN
+                    <foreach collection="children" item="identifier"
+                             open="(" separator="," close=")">
+                        #{identifier,jdbcType=VARCHAR}
+                    </foreach>
+                </when>
+                <otherwise>
+                    LOWER([guacamole_entity].name) IN
+                    <foreach collection="children" item="identifier"
+                             open="(" separator="," close=")">
+                        LOWER(#{identifier,jdbcType=VARCHAR})
+                    </foreach>
+                </otherwise>
+            </choose>
+            AND [guacamole_user_group].user_group_id NOT IN (
+                SELECT [guacamole_user_group_member].user_group_id
+                FROM [guacamole_user_group_member]
+                WHERE [guacamole_user_group_member].member_entity_id = #{parent.entityID,jdbcType=INTEGER}
+            )
+    </insert>
+
+</mapper>

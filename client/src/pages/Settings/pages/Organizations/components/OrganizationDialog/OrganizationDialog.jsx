@@ -43,8 +43,10 @@ export const OrganizationDialog = ({ open, onClose, refreshOrganizations }) => {
         }
     };
 
+    const isDirty = name !== '' || description !== '';
+
     return (
-        <DialogProvider open={open} onClose={onClose}>
+        <DialogProvider open={open} onClose={onClose} isDirty={isDirty}>
             <div className="organization-dialog">
                 <h2>{t('settings.organizations.dialog.title')}</h2>
                 

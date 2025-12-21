@@ -1,0 +1,39 @@
+{
+
+    "DATA_SOURCE_TOTP" : {
+        "NAME" : "TOTP TFA Backend"
+    },
+
+    "TOTP" : {
+
+        "ACTION_HIDE_DETAILS" : "Nascondere",
+        "ACTION_SHOW_DETAILS" : "Mostrare",
+
+        "FIELD_HEADER_ALGORITHM"  : "Algoritmo:",
+        "FIELD_HEADER_DIGITS"     : "Cifre:",
+        "FIELD_HEADER_INTERVAL"   : "Intervallo:",
+        "FIELD_HEADER_SECRET_KEY" : "Chiave segreta:",
+
+        "FIELD_PLACEHOLDER_CODE" : "Codice di Autenticazione",
+
+        "INFO_CODE_REQUIRED"       : "Inserisci il tuo codice di autenticazione per verificare la tua identità.",
+        "INFO_ENROLL_REQUIRED"     : "L'autenticazione a più fattori è stata abilitata sul tuo account.",
+        "INFO_VERIFICATION_FAILED" : "Verifica fallita. Per favore riprova.",
+
+        "HELP_ENROLL_BARCODE" : "Per completare il processo di registrazione, scansiona il codice a barre qui sotto con l'app di autenticazione a due fattori sul tuo telefono o dispositivo.",
+        "HELP_ENROLL_VERIFY"  : "Dopo aver scansionato il codice a barre, inserire il codice di autenticazione a {DIGITS}-cifre visualizzato per verificare che la registrazione sia andata a buon fine.",
+
+        "SECTION_HEADER_DETAILS" : "Dettagli:"
+
+    },
+    
+    "USER_ATTRIBUTES" : {
+        
+        "FIELD_HEADER_GUAC_TOTP_KEY_GENERATED" : "Chiave segreta generata:",
+        "FIELD_HEADER_GUAC_TOTP_KEY_CONFIRMED" : "Dispositivo di autenticazione confermato:",
+        
+        "SECTION_HEADER_TOTP_ENROLLMENT_STATUS" : "Stato di iscrizione TOTP"
+        
+    }
+
+}

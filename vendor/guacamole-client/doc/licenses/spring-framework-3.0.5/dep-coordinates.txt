@@ -1,0 +1,6 @@
+org.springframework:spring-aop:jar:3.0.5.RELEASE
+org.springframework:spring-asm:jar:3.0.5.RELEASE
+org.springframework:spring-beans:jar:3.0.5.RELEASE
+org.springframework:spring-context:jar:3.0.5.RELEASE
+org.springframework:spring-core:jar:3.0.5.RELEASE
+org.springframework:spring-expression:jar:3.0.5.RELEASE

@@ -1,41 +1,102 @@
 import "./styles.sass";
 import ServerSearch from "./components/ServerSearch";
 import { useContext, useEffect, useState, useRef } from "react";
+import { useTranslation } from "react-i18next";
 import { ServerContext } from "@/common/contexts/ServerContext.jsx";
+import { IdentityContext } from "@/common/contexts/IdentityContext.jsx";
 import ServerEntries from "./components/ServerEntries.jsx";
 import Icon from "@mdi/react";
-import { mdiCursorDefaultClick } from "@mdi/js";
-import ContextMenu from "./components/ContextMenu";
+import {
+    mdiCursorDefaultClick,
+    mdiTag,
+    mdiConnection,
+    mdiContentCopy,
+    mdiFolderOpen,
+    mdiFolderPlus,
+    mdiFolderRemove,
+    mdiFormTextbox,
+    mdiPencil,
+    mdiPower,
+    mdiServerMinus,
+    mdiServerPlus,
+    mdiStop,
+    mdiAccountCircle,
+    mdiImport,
+    mdiFileDocumentOutline,
+    mdiPlusCircle,
+    mdiConsole,
+    mdiMonitor,
+    mdiDesktopClassic,
+    mdiCog,
+    mdiPlay,
+    mdiScript,
+    mdiTunnel,
+} from "@mdi/js";
+import { ContextMenu, ContextMenuItem, ContextMenuSeparator, useContextMenu } from "@/common/components/ContextMenu";
+import { useDrop, useDragLayer } from "react-dnd";
+import { deleteRequest, getRequest, patchRequest, postRequest, putRequest } from "@/common/utils/RequestUtil.js";
+import TagFilterMenu from "./components/ServerSearch/components/TagFilterMenu";
+import ProxmoxLogo from "./assets/proxmox.jsx";
+import TagsSubmenu from "./components/TagsSubmenu";
+import ScriptsMenu from "./components/ScriptsMenu";
+import Fuse from "fuse.js";
 
-const filterEntries = (entries, searchTerm) => {
-    return entries
-        .map(entry => {
-            if (entry.type === "folder" || entry.type === "organization") {
-                const filteredEntries = filterEntries(entry.entries, searchTerm);
-                if (filteredEntries.length > 0 ||
-                    entry.name.toLowerCase().includes(searchTerm.toLowerCase())) {
-                    return { ...entry, entries: filteredEntries };
-                }
-            } else if (entry.type === "server") {
-                const nameMatch = entry.name.toLowerCase().includes(searchTerm.toLowerCase());
-                const ipMatch = entry.ip && entry.ip.toLowerCase().includes(searchTerm.toLowerCase());
-                if (nameMatch || ipMatch) {
-                    return entry;
-                }
-            } else if (entry.type === "pve-server") {
-                const nameMatch = entry.name.toLowerCase().includes(searchTerm.toLowerCase());
-                const ipMatch = entry.ip && entry.ip.toLowerCase().includes(searchTerm.toLowerCase());
+const flattenEntries = (entries, path = []) => {
+    return entries.flatMap(entry => {
+        const item = { ...entry, _path: path };
+        const isContainer = entry.type === "folder" || entry.type === "organization";
+        return isContainer ? [item, ...flattenEntries(entry.entries, [...path, entry])] : [item];
+    });
+};
 
-                const filteredPVEEntries = entry.entries ? entry.entries.filter(pveEntry =>
-                    pveEntry.name?.toLowerCase().includes(searchTerm.toLowerCase())) : [];
+const filterEntries = (entries, searchTerm, selectedTags = []) => {
+    const tagFilter = entry => selectedTags.length === 0 ||
+        (entry.tags?.some(tag => selectedTags.includes(tag.id)));
 
-                if (nameMatch || ipMatch || filteredPVEEntries.length > 0) {
-                    return { ...entry, entries: filteredPVEEntries };
-                }
+    if (!searchTerm) {
+        return entries.map(entry => {
+            const isContainer = entry.type === "folder" || entry.type === "organization";
+            if (isContainer) {
+                const filteredEntries = filterEntries(entry.entries, searchTerm, selectedTags);
+                return filteredEntries.length > 0 ? { ...entry, entries: filteredEntries } : null;
             }
-            return null;
-        })
-        .filter(entry => entry !== null);
+            return tagFilter(entry) ? entry : null;
+        }).filter(Boolean);
+    }
+
+    const flatEntries = flattenEntries(entries);
+    const fuseOptions = {
+        keys: [{ name: 'name', weight: 2 }, { name: 'ip', weight: 1 }],
+        threshold: 0.3,
+        ignoreLocation: true,
+        minMatchCharLength: 1,
+    };
+
+    let results = new Fuse(flatEntries, fuseOptions).search(searchTerm);
+
+    if (results.length < 3 && results.length > 0) {
+        const newResults = new Fuse(flatEntries, { ...fuseOptions, threshold: 0.5 }).search(searchTerm);
+        if (newResults.length > results.length) results = newResults;
+    } else if (results.length > 20) {
+        results = new Fuse(flatEntries, { ...fuseOptions, threshold: 0.2 }).search(searchTerm);
+    }
+
+    const matchedEntries = results.map(r => r.item).filter(entry =>
+        !(entry.type === "server" || entry.type.startsWith("pve-")) || tagFilter(entry)
+    );
+    const matchedIds = new Set(matchedEntries.map(item => item.id));
+
+    const rebuildTree = entries => entries.map(entry => {
+        const isContainer = entry.type === "folder" || entry.type === "organization";
+        if (isContainer) {
+            const filteredEntries = rebuildTree(entry.entries);
+            return filteredEntries.length > 0 || matchedIds.has(entry.id)
+                ? { ...entry, entries: filteredEntries } : null;
+        }
+        return matchedIds.has(entry.id) ? entry : null;
+    }).filter(Boolean);
+
+    return rebuildTree(entries);
 };
 
 const applyRenameState = (folderId) => (entry) => {
@@ -48,12 +109,26 @@ const applyRenameState = (folderId) => (entry) => {
 };
 
 export const ServerList = ({
-                               setServerDialogOpen, setCurrentFolderId, setProxmoxDialogOpen, setSSHConfigImportDialogOpen,
-                               setEditServerId, connectToServer, connectToPVEServer, openSFTP,
-                           }) => {
-    const { servers } = useContext(ServerContext);
+    setServerDialogOpen,
+    setCurrentFolderId,
+    setProxmoxDialogOpen,
+    setSSHConfigImportDialogOpen,
+    setEditServerId,
+    connectToServer,
+    openSFTP,
+    setCurrentOrganizationId,
+    hibernatedSessions = [],
+    resumeSession,
+    openDirectConnect,
+    runScript,
+    openPortForward
+}) => {
+    const { t } = useTranslation();
+    const { servers, loadServers, getServerById } = useContext(ServerContext);
+    const { identities } = useContext(IdentityContext);
     const [search, setSearch] = useState("");
-    const [contextMenuPosition, setContextMenuPosition] = useState(null);
+    const [selectedTags, setSelectedTags] = useState([]);
+    const [showTagFilter, setShowTagFilter] = useState(false);
     const [contextClickedType, setContextClickedType] = useState(null);
     const [contextClickedId, setContextClickedId] = useState(null);
     const [renameStateId, setRenameStateId] = useState(null);
@@ -61,8 +136,102 @@ export const ServerList = ({
     const [isResizing, setIsResizing] = useState(false);
     const [isCollapsed, setIsCollapsed] = useState(false);
     const serverListRef = useRef(null);
+    const serversContainerRef = useRef(null);
+    const scrollIntervalRef = useRef(null);
+    const tagButtonRef = useRef(null);
+    const [scripts, setScripts] = useState([]);
+    const [sourceScripts, setSourceScripts] = useState([]);
+    const [scriptsMenuOpen, setScriptsMenuOpen] = useState(false);
+    const [scriptsMenuServer, setScriptsMenuServer] = useState(null);
 
-    const filteredServers = search ? filterEntries(servers, search) : servers;
+    const contextMenu = useContextMenu();
+
+    const server = contextClickedId ? (contextClickedType === "server-object" || contextClickedType?.startsWith("pve-")) ? getServerById(contextClickedId) : null : null;
+    const isOrgFolder = contextClickedId && contextClickedId.toString().startsWith("org-");
+
+    const findOrganizationForServer = (serverIdNum, entries, currentOrg = null) => {
+        for (const entry of entries) {
+            if ((entry.type === "server" || entry.type?.startsWith("pve-")) && entry.id === serverIdNum) {
+                return currentOrg;
+            } else if (entry.type === "organization") {
+                const found = findOrganizationForServer(serverIdNum, entry.entries || [], entry);
+                if (found) return found;
+            } else if (entry.type === "folder" && entry.entries) {
+                const found = findOrganizationForServer(serverIdNum, entry.entries, currentOrg);
+                if (found) return found;
+            }
+        }
+        return null;
+    };
+
+    const getServerOrganizationId = (serverId) => {
+        if (!servers || !serverId) return null;
+        const org = findOrganizationForServer(parseInt(serverId), servers);
+        if (org && org.id) {
+            return parseInt(org.id.toString().split("-")[1]);
+        }
+        return null;
+    };
+
+    useEffect(() => {
+        if (contextMenu.isOpen && contextClickedType === "server-object" && server?.protocol === "ssh") {
+            getRequest("scripts/all").then(setScripts).catch(() => setScripts([]));
+            getRequest("scripts/sources").then(setSourceScripts).catch(() => setSourceScripts([]));
+        }
+    }, [contextMenu.isOpen, contextClickedType, server?.protocol]);
+
+    const openScriptsMenu = () => {
+        if (server) {
+            setScriptsMenuServer(server);
+            setScriptsMenuOpen(true);
+            contextMenu.close();
+        }
+    };
+
+    const closeScriptsMenu = () => {
+        setScriptsMenuOpen(false);
+        setScriptsMenuServer(null);
+    };
+
+    const { isDragging, clientOffset } = useDragLayer((monitor) => ({
+        isDragging: monitor.isDragging(),
+        clientOffset: monitor.getClientOffset(),
+    }));
+
+    const [{ isOver }, dropRef] = useDrop({
+        accept: ["server", "folder"],
+        drop: async (item, monitor) => {
+            const didDrop = monitor.didDrop();
+            if (didDrop) return;
+
+            try {
+                if (item.type === "server") {
+                    await patchRequest(`entries/${item.id}/reposition`, {
+                        targetId: null,
+                        placement: "after",
+                        folderId: null,
+                    });
+                    loadServers();
+                    return {};
+                }
+
+                if (item.type === "folder") {
+                    await patchRequest(`folders/${item.id}`, { parentId: null });
+                    loadServers();
+                    return {};
+                }
+            } catch (error) {
+                console.error("Failed to drop item at root level", error.message);
+            }
+        },
+        collect: (monitor) => ({
+            isOver: monitor.isOver({ shallow: true }),
+        }),
+    });
+
+    const filteredServers = search || selectedTags.length > 0
+        ? filterEntries(servers, search, selectedTags)
+        : servers;
     const renameStateServers = renameStateId ? filteredServers.map(applyRenameState(renameStateId)) : filteredServers;
 
     const handleContextMenu = (e) => {
@@ -76,40 +245,152 @@ export const ServerList = ({
             setContextClickedType(null);
         }
 
-        const position = calculateContextMenuPosition(e.clientX, e.clientY);
-        setContextMenuPosition(position);
+        contextMenu.open(e, { x: e.clientX, y: e.clientY });
     };
 
-    const calculateContextMenuPosition = (x, y) => {
-        requestAnimationFrame(() => {
-            if (!contextMenuPosition) return;
+    const hibernatedSessionsForServer = server ? hibernatedSessions.filter(s => s.server.id == server.id) : [];
+    
+    const formatSessionDate = (session) => {
+        if (!session || !session.lastActivity) return '';
+        const date = new Date(session.lastActivity);
+        const now = new Date();
+        const diffMs = now - date;
+        const diffMins = Math.floor(diffMs / 60000);
+        const diffHours = Math.floor(diffMs / 3600000);
+        const diffDays = Math.floor(diffMs / 86400000);
+        
+        if (diffMins < 1) return t('servers.time.justNow');
+        if (diffMins < 60) return diffMins === 1 
+            ? t('servers.time.minuteAgo', { count: diffMins })
+            : t('servers.time.minutesAgo', { count: diffMins });
+        if (diffHours < 24) return diffHours === 1 
+            ? t('servers.time.hourAgo', { count: diffHours })
+            : t('servers.time.hoursAgo', { count: diffHours });
+        if (diffDays < 7) return diffDays === 1 
+            ? t('servers.time.dayAgo', { count: diffDays })
+            : t('servers.time.daysAgo', { count: diffDays });
+        return date.toLocaleDateString();
+    };
 
-            const menu = document.querySelector('.context-menu');
-            if (!menu) return;
+    const createFolder = () => {
+        const organizationId = isOrgFolder ? contextClickedId.toString().split("-")[1] : undefined;
 
-            const menuRect = menu.getBoundingClientRect();
-            const viewportWidth = window.innerWidth;
-            const viewportHeight = window.innerHeight;
-
-            let adjustedX = x;
-            let adjustedY = y;
-
-            if (x + menuRect.width > viewportWidth) adjustedX = viewportWidth - menuRect.width - 10;
-            if (y + menuRect.height > viewportHeight) adjustedY = viewportHeight - menuRect.height - 10;
-
-            if (adjustedX !== contextMenuPosition.x || adjustedY !== contextMenuPosition.y) {
-                setContextMenuPosition({ x: adjustedX, y: adjustedY });
-            }
+        putRequest("folders", {
+            name: "New Folder",
+            parentId: isOrgFolder ? undefined : (contextClickedId === null ? undefined : contextClickedId),
+            organizationId: organizationId,
+        }).then(async (result) => {
+            await loadServers();
+            if (result.id) setRenameStateId(result.id);
         });
-
-        return { x, y };
     };
 
-    const handleClick = () => {
-        setContextClickedId(null);
-        setContextClickedType(null);
-        setContextMenuPosition(null);
+    const deleteFolder = () => deleteRequest("folders/" + contextClickedId).then(loadServers);
+
+    const deleteServer = () => deleteRequest("entries/" + contextClickedId).then(loadServers);
+
+    const createServer = (protocol) => {
+        if (isOrgFolder) {
+            const orgId = parseInt(contextClickedId.toString().split("-")[1]);
+            setCurrentFolderId(null);
+            setCurrentOrganizationId(orgId);
+        } else {
+            setCurrentFolderId(contextClickedId);
+            setCurrentOrganizationId(null);
+        }
+        setServerDialogOpen(protocol);
     };
+
+    const createPVEServer = () => {
+        if (isOrgFolder) {
+            const orgId = parseInt(contextClickedId.toString().split("-")[1]);
+            setCurrentFolderId(null);
+            setCurrentOrganizationId(orgId);
+        } else {
+            setCurrentFolderId(contextClickedId);
+            setCurrentOrganizationId(null);
+        }
+        setProxmoxDialogOpen();
+    };
+
+    const openSSHConfigImport = () => {
+        if (isOrgFolder) {
+            const orgId = parseInt(contextClickedId.toString().split("-")[1]);
+            setCurrentFolderId(null);
+            setCurrentOrganizationId(orgId);
+        } else {
+            setCurrentFolderId(contextClickedId);
+            setCurrentOrganizationId(null);
+        }
+        setSSHConfigImportDialogOpen();
+    };
+
+    const connect = (identityId = null) => {
+        const targetIdentityId = identityId || server?.identities[0];
+        const identity = identities?.find(id => id.id === targetIdentityId);
+        connectToServer(server?.id, identity);
+    };
+
+    const connectSFTP = (identityId = null) => {
+        const targetIdentityId = identityId || server?.identities[0];
+        const identity = identities?.find(id => id.id === targetIdentityId);
+        openSFTP(server?.id, identity);
+    };
+
+    const getIdentityName = (identityId) => {
+        const identity = identities?.find(id => id.id === identityId);
+        return identity ? `${identity.name}` : `Identity ${identityId}`;
+    };
+
+    const editServer = () => {
+        const orgId = getServerOrganizationId(contextClickedId);
+        setCurrentOrganizationId(orgId);
+        setEditServerId(contextClickedId);
+        setServerDialogOpen();
+    };
+
+    const editPVEServer = () => {
+        const integrationId = server?.integrationId;
+        if (integrationId) {
+            setEditServerId(integrationId);
+            setProxmoxDialogOpen();
+        }
+    };
+
+    const postPVEAction = (type) => {
+        postRequest(`integrations/entry/${contextClickedId}/${type}`)
+            .then(loadServers);
+    };
+
+    const deletePVEServer = () => {
+        deleteRequest("integrations/" + contextClickedId.split("-")[1]).then(loadServers);
+    };
+
+    const duplicateServer = async () => {
+        const serverToDuplicate = getServerById(contextClickedId);
+        if (!serverToDuplicate) return;
+
+        try {
+            await postRequest(`entries/${serverToDuplicate.id}/duplicate`);
+            await loadServers();
+        } catch (error) {
+            console.error("Failed to duplicate server:", error);
+        }
+    };
+
+    useEffect(() => {
+        const handleClickOutside = (e) => {
+            if (showTagFilter && tagButtonRef.current && !tagButtonRef.current.contains(e.target)) {
+                const tagMenu = document.querySelector(".tag-filter-menu");
+                if (tagMenu && !tagMenu.contains(e.target)) {
+                    setShowTagFilter(false);
+                }
+            }
+        };
+
+        document.addEventListener("mousedown", handleClickOutside);
+        return () => document.removeEventListener("mousedown", handleClickOutside);
+    }, [showTagFilter]);
 
     const startResizing = (e) => {
         e.preventDefault();
@@ -142,19 +423,58 @@ export const ServerList = ({
     };
 
     useEffect(() => {
-        document.addEventListener("click", handleClick);
-
-        if (isResizing) {
-            document.addEventListener("mousemove", resize);
-            document.addEventListener("mouseup", stopResizing);
-        }
+        document.addEventListener("mousemove", resize);
+        document.addEventListener("mouseup", stopResizing);
 
         return () => {
-            document.removeEventListener("click", handleClick);
             document.removeEventListener("mousemove", resize);
             document.removeEventListener("mouseup", stopResizing);
         };
     }, [isResizing]);
+
+    useEffect(() => {
+        if (!isDragging || !clientOffset || !serversContainerRef.current) {
+            if (scrollIntervalRef.current) {
+                clearInterval(scrollIntervalRef.current);
+                scrollIntervalRef.current = null;
+            }
+            return;
+        }
+
+        const container = serversContainerRef.current;
+        const rect = container.getBoundingClientRect();
+        const scrollThreshold = 50;
+        const scrollSpeed = 10;
+
+        const mouseY = clientOffset.y;
+        const distanceFromTop = mouseY - rect.top;
+        const distanceFromBottom = rect.bottom - mouseY;
+
+        if (scrollIntervalRef.current) {
+            clearInterval(scrollIntervalRef.current);
+            scrollIntervalRef.current = null;
+        }
+
+        if (distanceFromTop < scrollThreshold && distanceFromTop > 0) {
+            scrollIntervalRef.current = setInterval(() => {
+                container.scrollTop = Math.max(0, container.scrollTop - scrollSpeed);
+            }, 16);
+        } else if (distanceFromBottom < scrollThreshold && distanceFromBottom > 0) {
+            scrollIntervalRef.current = setInterval(() => {
+                container.scrollTop = Math.min(
+                    container.scrollHeight - container.clientHeight,
+                    container.scrollTop + scrollSpeed,
+                );
+            }, 16);
+        }
+
+        return () => {
+            if (scrollIntervalRef.current) {
+                clearInterval(scrollIntervalRef.current);
+                scrollIntervalRef.current = null;
+            }
+        };
+    }, [isDragging, clientOffset]);
 
     return (
         <div
@@ -162,29 +482,368 @@ export const ServerList = ({
             style={{ width: isCollapsed ? "0px" : `${width}px` }} ref={serverListRef}
             onMouseDown={isCollapsed ? startResizing : undefined}>
             {!isCollapsed && (
-                <div className="server-list-inner">
-                    <ServerSearch search={search} setSearch={setSearch} />
+                <div className="server-list-inner" ref={dropRef}>
+                    <div className="search-container">
+                        <ServerSearch search={search} setSearch={setSearch} />
+                        <div
+                            ref={tagButtonRef}
+                            className={`tag-filter-button ${selectedTags.length > 0 ? "active" : ""}`}
+                            onClick={() => setShowTagFilter(!showTagFilter)}
+                            title={t("servers.tags.filterByTags")}>
+                            <Icon path={mdiTag} />
+                            {selectedTags.length > 0 && (
+                                <span className="tag-count">{selectedTags.length}</span>
+                            )}
+                        </div>
+                    </div>
+                    {showTagFilter && (
+                        <TagFilterMenu
+                            selectedTags={selectedTags}
+                            setSelectedTags={setSelectedTags}
+                            onClose={() => setShowTagFilter(false)}
+                        />
+                    )}
                     {servers && servers.length >= 1 && (
-                        <div className="servers" onContextMenu={handleContextMenu}>
+                        <div className={`servers${isOver ? " drop-zone-active" : ""}`}
+                            onContextMenu={handleContextMenu}
+                            ref={serversContainerRef}>
                             <ServerEntries entries={renameStateServers} setRenameStateId={setRenameStateId}
-                                           nestedLevel={0} connectToServer={connectToServer}
-                                           connectToPVEServer={connectToPVEServer} />
+                                nestedLevel={0} connectToServer={connectToServer} hibernatedSessions={hibernatedSessions} />
                         </div>
                     )}
                     {servers && servers.length === 0 && (
-                        <div className="no-servers" onContextMenu={handleContextMenu}>
+                        <div className={`no-servers${isOver ? " drop-zone-active" : ""}`}
+                            onContextMenu={handleContextMenu}>
                             <Icon path={mdiCursorDefaultClick} />
                             <p>Right-click to add a new server</p>
                         </div>
                     )}
-                    {contextMenuPosition && (
-                        <ContextMenu position={contextMenuPosition} type={contextClickedType} id={contextClickedId}
-                                     setRenameStateId={setRenameStateId} setServerDialogOpen={setServerDialogOpen}
-                                     setCurrentFolderId={setCurrentFolderId} setEditServerId={setEditServerId}
-                                     setProxmoxDialogOpen={setProxmoxDialogOpen} setSSHConfigImportDialogOpen={setSSHConfigImportDialogOpen}
-                                     openSFTP={openSFTP}
-                                     connectToServer={connectToServer} connectToPVEServer={connectToPVEServer} />
-                    )}
+
+                    <ContextMenu
+                        isOpen={contextMenu.isOpen}
+                        position={contextMenu.position}
+                        onClose={contextMenu.close}
+                        trigger={contextMenu.triggerRef}
+                    >
+                        {contextClickedType !== "server-object" && (
+                            <>
+                                {(contextClickedType === null || contextClickedType === "folder-object" || isOrgFolder) && (
+                                    <ContextMenuItem
+                                        icon={mdiPlusCircle}
+                                        label={t("servers.contextMenu.new")}
+                                    >
+                                        <ContextMenuItem
+                                            icon={mdiConsole}
+                                            label={t("servers.contextMenu.sshServer")}
+                                            onClick={() => createServer("ssh")}
+                                        />
+                                        <ContextMenuItem
+                                            icon={mdiConsole}
+                                            label={t("servers.contextMenu.telnetServer")}
+                                            onClick={() => createServer("telnet")}
+                                        />
+                                        <ContextMenuItem
+                                            icon={mdiDesktopClassic}
+                                            label={t("servers.contextMenu.rdpServer")}
+                                            onClick={() => createServer("rdp")}
+                                        />
+                                        <ContextMenuItem
+                                            icon={mdiMonitor}
+                                            label={t("servers.contextMenu.vncServer")}
+                                            onClick={() => createServer("vnc")}
+                                        />
+                                    </ContextMenuItem>
+                                )}
+                                {contextClickedType === "folder-object" && !isOrgFolder && (
+                                    <ContextMenuItem
+                                        icon={mdiImport}
+                                        label={t("servers.contextMenu.import")}
+                                    >
+                                        <ContextMenuItem
+                                            icon={<ProxmoxLogo />}
+                                            label={t("servers.contextMenu.pve")}
+                                            onClick={createPVEServer}
+                                        />
+                                        <ContextMenuItem
+                                            icon={mdiFileDocumentOutline}
+                                            label={t("servers.contextMenu.sshConfig")}
+                                            onClick={openSSHConfigImport}
+                                        />
+                                    </ContextMenuItem>
+                                )}
+                            </>
+                        )}
+
+                        {contextClickedType === "folder-object" && !isOrgFolder && (
+                            <>
+                                <ContextMenuItem
+                                    icon={mdiFolderPlus}
+                                    label={t("servers.contextMenu.createFolder")}
+                                    onClick={createFolder}
+                                />
+                                <ContextMenuSeparator />
+                                <ContextMenuItem
+                                    icon={mdiFormTextbox}
+                                    label={t("servers.contextMenu.renameFolder")}
+                                    onClick={() => setRenameStateId(contextClickedId)}
+                                />
+                                <ContextMenuSeparator />
+                                <ContextMenuItem
+                                    icon={mdiFolderRemove}
+                                    label={t("servers.contextMenu.deleteFolder")}
+                                    onClick={deleteFolder}
+                                    danger
+                                />
+                            </>
+                        )}
+
+                        {(contextClickedType === null || isOrgFolder) && (
+                            <ContextMenuItem
+                                icon={mdiFolderPlus}
+                                label={t("servers.contextMenu.createFolder")}
+                                onClick={createFolder}
+                            />
+                        )}
+
+                        {contextClickedType === "server-object" && server?.type === "server" && (
+                            <>
+                                {hibernatedSessionsForServer.length > 0 && (
+                                    <>
+                                        {hibernatedSessionsForServer.length === 1 ? (
+                                            <ContextMenuItem
+                                                icon={mdiPlay}
+                                                label="Resume session"
+                                                onClick={() => resumeSession(hibernatedSessionsForServer[0].id)}
+                                            />
+                                        ) : (
+                                            <ContextMenuItem
+                                                icon={mdiPlay}
+                                                label="Resume session"
+                                            >
+                                                {hibernatedSessionsForServer.sort((a, b) => new Date(b.lastActivity) - new Date(a.lastActivity)).map((session) => (
+                                                    <ContextMenuItem
+                                                        key={session.id}
+                                                        icon={mdiPlay}
+                                                        label={formatSessionDate(session)}
+                                                        onClick={() => resumeSession(session.id)}
+                                                    />
+                                                ))}
+                                            </ContextMenuItem>
+                                        )}
+                                        <ContextMenuSeparator />
+                                    </>
+                                )}
+                                {(server?.identities?.length > 0 || server?.protocol === "telnet") && (
+                                    <>
+                                        {server?.protocol === "telnet" ? (
+                                            <ContextMenuItem
+                                                icon={mdiConnection}
+                                                label={t("servers.contextMenu.connect")}
+                                                onClick={() => connectToServer(server?.id)}
+                                            />
+                                        ) : server.identities.length === 1 ? (
+                                            <ContextMenuItem
+                                                icon={mdiConnection}
+                                                label={t("servers.contextMenu.connect")}
+                                                onClick={() => connect()}
+                                            />
+                                        ) : (
+                                            <ContextMenuItem
+                                                icon={mdiConnection}
+                                                label={t("servers.contextMenu.connect")}
+                                            >
+                                                {server.identities.map((identityId) => (
+                                                    <ContextMenuItem
+                                                        key={identityId}
+                                                        icon={mdiAccountCircle}
+                                                        label={getIdentityName(identityId)}
+                                                        onClick={() => connect(identityId)}
+                                                    />
+                                                ))}
+                                            </ContextMenuItem>
+                                        )}
+                                    </>
+                                )}
+
+                                {server?.identities?.length > 0 && server?.protocol === "ssh" && (
+                                    <>
+                                        {server.identities.length === 1 ? (
+                                            <ContextMenuItem
+                                                icon={mdiFolderOpen}
+                                                label={t("servers.contextMenu.openSFTP")}
+                                                onClick={() => connectSFTP()}
+                                            />
+                                        ) : (
+                                            <ContextMenuItem
+                                                icon={mdiFolderOpen}
+                                                label={t("servers.contextMenu.openSFTP")}
+                                            >
+                                                {server.identities.map((identityId) => (
+                                                    <ContextMenuItem
+                                                        key={identityId}
+                                                        icon={mdiAccountCircle}
+                                                        label={getIdentityName(identityId)}
+                                                        onClick={() => connectSFTP(identityId)}
+                                                    />
+                                                ))}
+                                            </ContextMenuItem>
+                                        )}
+                                    </>
+                                )}
+
+                                {server?.identities?.length > 0 && server?.protocol === "ssh" && openPortForward && (
+                                    <ContextMenuItem
+                                        icon={mdiTunnel}
+                                        label={t("servers.contextMenu.forwardPort")}
+                                        onClick={() => openPortForward(server)}
+                                    />
+                                )}
+
+                                {server?.identities?.length > 0 && server?.protocol === "ssh" && (scripts.length > 0 || sourceScripts.length > 0) && (
+                                    <ContextMenuItem
+                                        icon={mdiScript}
+                                        label={t("servers.contextMenu.runScript")}
+                                        onClick={openScriptsMenu}
+                                    />
+                                )}
+
+                                {server?.type === "server" && (server?.protocol === "ssh" || server?.protocol === "telnet" || server?.protocol === "rdp" || server?.protocol === "vnc") && (
+                                    <ContextMenuItem
+                                        icon={mdiCursorDefaultClick}
+                                        label={t("servers.contextMenu.quickConnect")}
+                                        onClick={() => openDirectConnect(server)}
+                                    />
+                                )}
+
+                                <ContextMenuSeparator />
+
+                                <ContextMenuItem
+                                    icon={mdiPencil}
+                                    label={t("servers.contextMenu.editServer")}
+                                    onClick={editServer}
+                                />
+
+                                <ContextMenuItem
+                                    icon={mdiContentCopy}
+                                    label={t("servers.contextMenu.duplicateServer")}
+                                    onClick={duplicateServer}
+                                />
+
+                                <ContextMenuItem
+                                    icon={mdiTag}
+                                    label={t("servers.tags.title")}
+                                >
+                                    <TagsSubmenu entryId={contextClickedId} entryTags={server?.tags || []} />
+                                </ContextMenuItem>
+
+                                <ContextMenuSeparator />
+                                <ContextMenuItem
+                                    icon={mdiServerMinus}
+                                    label={t("servers.contextMenu.deleteServer")}
+                                    onClick={deleteServer}
+                                    danger
+                                />
+                            </>
+                        )}
+
+                        {contextClickedType === "server-object" && server?.type?.startsWith("pve-") && (
+                            <>
+                                {hibernatedSessionsForServer.length > 0 && (
+                                    <>
+                                        {hibernatedSessionsForServer.length === 1 ? (
+                                            <ContextMenuItem
+                                                icon={mdiPlay}
+                                                label="Resume session"
+                                                onClick={() => resumeSession(hibernatedSessionsForServer[0].id)}
+                                            />
+                                        ) : (
+                                            <ContextMenuItem
+                                                icon={mdiPlay}
+                                                label="Resume session"
+                                            >
+                                                {hibernatedSessionsForServer.sort((a, b) => new Date(b.lastActivity) - new Date(a.lastActivity)).map((session) => (
+                                                    <ContextMenuItem
+                                                        key={session.id}
+                                                        icon={mdiPlay}
+                                                        label={formatSessionDate(session)}
+                                                        onClick={() => resumeSession(session.id)}
+                                                    />
+                                                ))}
+                                            </ContextMenuItem>
+                                        )}
+                                        <ContextMenuSeparator />
+                                    </>
+                                )}
+                                {(server?.status === "running" || server?.status === "online") && (
+                                    <>
+                                        <ContextMenuItem
+                                            icon={mdiConnection}
+                                            label={t("servers.contextMenu.connect")}
+                                            onClick={() => connectToServer(server.id)}
+                                        />
+                                        <ContextMenuSeparator />
+                                    </>
+                                )}
+                                <ContextMenuItem
+                                    icon={mdiPencil}
+                                    label={t("servers.contextMenu.editServer")}
+                                    onClick={editServer}
+                                />
+                                <ContextMenuItem
+                                    icon={mdiCog}
+                                    label={t("servers.contextMenu.editIntegration")}
+                                    onClick={editPVEServer}
+                                />
+                                <ContextMenuItem
+                                    icon={mdiTag}
+                                    label={t("servers.tags.title")}
+                                >
+                                    <TagsSubmenu entryId={contextClickedId} entryTags={server?.tags || []} />
+                                </ContextMenuItem>
+                                {(server?.status === "running" || server?.status === "online") && server.type !== "pve-shell" && (
+                                    <>
+                                        <ContextMenuSeparator />
+                                        <ContextMenuItem
+                                            icon={mdiPower}
+                                            label={t("servers.contextMenu.shutdown")}
+                                            onClick={() => postPVEAction("shutdown")}
+                                        />
+                                        <ContextMenuItem
+                                            icon={mdiStop}
+                                            label={t("servers.contextMenu.stop")}
+                                            onClick={() => postPVEAction("stop")}
+                                        />
+                                    </>
+                                )}
+                                {server?.status === "stopped" && (
+                                    <>
+                                        <ContextMenuSeparator />
+                                        <ContextMenuItem
+                                            icon={mdiPower}
+                                            label={t("servers.contextMenu.start")}
+                                            onClick={() => postPVEAction("start")}
+                                        />
+                                    </>
+                                )}
+                                <ContextMenuSeparator />
+                                <ContextMenuItem
+                                    icon={mdiServerMinus}
+                                    label={t("servers.contextMenu.deleteServer")}
+                                    onClick={deleteServer}
+                                    danger
+                                />
+                            </>
+                        )}
+                    </ContextMenu>
+                    <ScriptsMenu
+                        visible={scriptsMenuOpen}
+                        onClose={closeScriptsMenu}
+                        scripts={scripts}
+                        server={scriptsMenuServer}
+                        serverOrganizationId={scriptsMenuServer ? getServerOrganizationId(scriptsMenuServer.id) : null}
+                        onRunScript={runScript}
+                        getIdentityName={getIdentityName}
+                    />
                 </div>
             )}
             <div className={`resizer${isResizing ? " is-resizing" : ""}`} onMouseDown={startResizing} />

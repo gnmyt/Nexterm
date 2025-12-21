@@ -1,0 +1,34 @@
+{
+
+    "DATA_SOURCE_TOTP" : {
+        "NAME" : "TOTP TFA Backend"
+    },
+
+    "LOGIN" : {
+        "FIELD_HEADER_GUAC_TOTP" : ""
+    },
+
+    "TOTP" : {
+
+        "ACTION_HIDE_DETAILS" : "Amaga",
+        "ACTION_SHOW_DETAILS" : "Mostra",
+
+        "FIELD_HEADER_ALGORITHM"  : "Algoritme:",
+        "FIELD_HEADER_DIGITS"     : "Digits:",
+        "FIELD_HEADER_INTERVAL"   : "Interval:",
+        "FIELD_HEADER_SECRET_KEY" : "Clau secreta:",
+
+        "FIELD_PLACEHOLDER_CODE" : "Codi d'autenticació",
+
+        "INFO_CODE_REQUIRED"       : "Introduïu el vostre codi d'autenticació per verificar la vostra identitat.",
+        "INFO_ENROLL_REQUIRED"     : "S'ha activat l'autenticació multi-factor al vostre compte.",
+        "INFO_VERIFICATION_FAILED" : "Ha fallat la verificació. Torna-ho a provar.",
+
+        "HELP_ENROLL_BARCODE" : "Per completar el procés d'inscripció, busqueu el codi de barres següent amb l'aplicació d'autenticació de dos factors al vostre telèfon o dispositiu.",
+        "HELP_ENROLL_VERIFY"  : "Després d'escanejar el codi de barres, introduïu el codi d'autentificació de {DIGITS} que apareix per comprovar que la inscripció ha tingut èxit.",
+
+        "SECTION_HEADER_DETAILS" : "Detalls:"
+
+    }
+
+}

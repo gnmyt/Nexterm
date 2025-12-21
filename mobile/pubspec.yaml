@@ -1,0 +1,43 @@
+name: nexterm
+description: "The open source server management software for SSH, VNC & RDP"
+publish_to: 'none'
+version: 1.0.7+4
+
+environment:
+  sdk: ^3.9.2
+
+platforms:
+  android:
+  ios:
+
+dependencies:
+  flutter:
+    sdk: flutter
+  cupertino_icons: ^1.0.8
+  xterm: ^4.0.0
+  shared_preferences: ^2.3.4
+  http: ^1.2.0
+  web_socket_channel: ^3.0.1
+  google_fonts: ^6.2.1
+  material_design_icons_flutter: ^7.0.7296
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^5.0.0
+  flutter_launcher_icons: ^0.13.1
+
+flutter:
+  uses-material-design: true
+  assets:
+    - favicon.png
+
+flutter_launcher_icons:
+  android: true
+  ios: true
+  image_path: "favicon.png"
+  remove_alpha_ios: true
+  adaptive_icon_background: "#FFFFFF"
+  adaptive_icon_foreground: "favicon.png"
+  min_sdk_android: 21
+  adaptive_icon_padding: 10

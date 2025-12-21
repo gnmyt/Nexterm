@@ -1,0 +1,96 @@
+
+<div class="manage-connection view" ng-class="{loading: !isLoaded()}">
+
+    <!-- Main property editor -->
+    <div class="header">
+        <h2>{{'MANAGE_CONNECTION.SECTION_HEADER_EDIT_CONNECTION' | translate}}</h2>
+        <guac-user-menu></guac-user-menu>
+    </div>
+    <div class="section">
+        <table class="properties">
+            
+            <!-- Edit connection name -->
+            <tr>
+                <th>{{'MANAGE_CONNECTION.FIELD_HEADER_NAME' | translate}}</th>
+              
+                <td><input type="text" ng-model="connection.name" autocorrect="off" autocapitalize="off"></td>
+            </tr>
+            
+            <!-- Edit connection location -->
+            <tr>
+                <th>{{'MANAGE_CONNECTION.FIELD_HEADER_LOCATION' | translate}}</th>
+              
+                <td>
+                    <location-chooser
+                        data-data-source="selectedDataSource" root-group="rootGroup"
+                        value="connection.parentIdentifier"></location-chooser>
+                </td>
+            </tr>
+            
+            
+            <!-- Edit connection protocol -->
+            <tr>
+                <th>{{'MANAGE_CONNECTION.FIELD_HEADER_PROTOCOL' | translate}}</th>
+                <td>
+                    <select ng-model="connection.protocol" ng-options="protocol.value.name as getProtocolName(protocol.value.name) | translate for protocol in protocols | toArray | orderBy: value.name"></select>
+                </td>
+            </tr>
+        </table>
+    </div>
+
+    <!-- Connection attributes section -->
+    <div class="attributes">
+        <guac-form namespace="'CONNECTION_ATTRIBUTES'" content="attributes"
+                   model="connection.attributes" model-only="!managementPermissions.canChangeAllAttributes"></guac-form>
+    </div>
+
+    <!-- Connection parameters -->
+    <h2 class="header">{{'MANAGE_CONNECTION.SECTION_HEADER_PARAMETERS' | translate}}</h2>
+    <div class="section connection-parameters" ng-class="{loading: !parameters}">
+        <guac-form namespace="getNamespace(connection.protocol)"
+                   content="protocols[connection.protocol].connectionForms"
+                   model="parameters"></guac-form>
+    </div>
+
+    <!-- Form action buttons -->
+    <management-buttons namespace="MANAGE_CONNECTION"
+          permissions="managementPermissions"
+          save="saveConnection()"
+          delete="deleteConnection()"
+          clone="cloneConnection()"
+          return="returnToConnectionList()">
+    </management-buttons>
+
+    <!-- Connection history -->
+    <h2 class="header">{{'MANAGE_CONNECTION.SECTION_HEADER_HISTORY' | translate}}</h2>
+    <div class="history section" ng-class="{loading: !historyEntryWrappers}">
+        <p ng-hide="historyEntryWrappers.length">{{'MANAGE_CONNECTION.INFO_CONNECTION_NOT_USED' | translate}}</p>
+
+        <!-- History list -->
+        <table ng-show="historyEntryWrappers.length">
+            <thead>
+                <tr>
+                    <th>{{'MANAGE_CONNECTION.TABLE_HEADER_HISTORY_USERNAME' | translate}}</th>
+                    <th>{{'MANAGE_CONNECTION.TABLE_HEADER_HISTORY_START' | translate}}</th>
+                    <th>{{'MANAGE_CONNECTION.TABLE_HEADER_HISTORY_DURATION' | translate}}</th>
+                    <th>{{'MANAGE_CONNECTION.TABLE_HEADER_HISTORY_REMOTEHOST' | translate}}</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr ng-repeat="wrapper in wrapperPage">
+                    <td class="username"><guac-user-item username="wrapper.entry.username"></guac-user-item></td>
+                    <td class="start">{{wrapper.entry.startDate | date:historyDateFormat}}</td>
+                    <td class="duration"
+                        translate="{{wrapper.durationText}}"
+                        translate-values="{VALUE: wrapper.duration.value, UNIT: wrapper.duration.unit}"></td>
+                    <td class="remoteHost">{{wrapper.entry.remoteHost}}</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <!-- Pager controls for history list -->
+        <guac-pager page="wrapperPage" items="historyEntryWrappers"></guac-pager>
+
+    </div>
+
+</div>

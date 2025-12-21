@@ -2,9 +2,8 @@ const { genSalt, hash } = require("bcrypt");
 const Account = require("../models/Account");
 const Folder = require("../models/Folder");
 const Identity = require("../models/Identity");
-const Server = require("../models/Server");
 const Session = require("../models/Session");
-const PVEServer = require("../models/PVEServer");
+const logger = require("../utils/logger");
 
 module.exports.createAccount = async (configuration, firstTimeSetup = true) => {
     if (await Account.count() > 0 && firstTimeSetup)
@@ -20,7 +19,9 @@ module.exports.createAccount = async (configuration, firstTimeSetup = true) => {
     const password = await hash(configuration.password, salt);
 
     // Create the account
-    await Account.create({ ...configuration, password, role: firstTimeSetup ? "admin" : "user" });
+    const newAccount = await Account.create({ ...configuration, password, role: firstTimeSetup ? "admin" : "user" });
+
+    logger.system(`Account created`, { accountId: newAccount.id, username: newAccount.username, role: newAccount.role, firstTimeSetup });
 };
 
 module.exports.deleteAccount = async (id) => {
@@ -32,14 +33,13 @@ module.exports.deleteAccount = async (id) => {
     if (await Account.count({ where: { role: "admin" } }) === 1 && account.role === "admin")
         return { code: 106, message: "You cannot delete the last admin account" };
 
-    // Delete all related data
     await Folder.destroy({ where: { accountId: id } });
     await Identity.destroy({ where: { accountId: id } });
-    await Server.destroy({ where: { accountId: id } });
     await Session.destroy({ where: { accountId: id } });
-    await PVEServer.destroy({ where: { accountId: id } });
 
     await Account.destroy({ where: { id } });
+
+    logger.system(`Account deleted`, { accountId: id, username: account.username });
 }
 
 module.exports.updateName = async (id, configuration) => {
@@ -81,6 +81,8 @@ module.exports.updateRole = async (id, role) => {
         return { code: 108, message: "The provided role is invalid" };
 
     await Account.update({ role }, { where: { id } });
+
+    logger.system(`Account role updated`, { accountId: id, username: account.username, oldRole: account.role, newRole: role });
 }
 
 module.exports.updateTOTP = async (id, status) => {
@@ -93,6 +95,15 @@ module.exports.updateTOTP = async (id, status) => {
         return { code: 103, message: `TOTP is already ${status ? "enabled" : "disabled"} on your account` };
 
     await Account.update({ totpEnabled: status }, { where: { id } });
+};
+
+module.exports.updateSessionSync = async (id, sessionSync) => {
+    const account = await Account.findByPk(id);
+
+    if (account === null)
+        return { code: 102, message: "The provided account does not exist" };
+
+    await Account.update({ sessionSync }, { where: { id } });
 };
 
 module.exports.getFTSStatus = async () => {

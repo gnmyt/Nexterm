@@ -1,0 +1,112 @@
+{
+
+    "LOGIN" : {
+
+        "ERROR_PASSWORD_SAME"     : "La nuova password deve essere diversa dalla password scaduta.",
+        "ERROR_PASSWORD_MISMATCH" : "@:APP.ERROR_PASSWORD_MISMATCH",
+        "ERROR_NOT_VALID"         : "Questo account utente non è attualmente valido.",
+        "ERROR_NOT_ACCESSIBLE"    : "L'accesso a questo account non è attualmente consentito. Per favore riprova più tardi.",
+
+        "INFO_PASSWORD_EXPIRED" : "La tua password è scaduta e deve essere reimpostata. Inserisci una nuova password per continuare.",
+
+        "FIELD_HEADER_NEW_PASSWORD"         : "Nuova password",
+        "FIELD_HEADER_CONFIRM_NEW_PASSWORD" : "Conferma la nuova password"
+
+    },
+
+    "CONNECTION_ATTRIBUTES" : {
+
+        "FIELD_HEADER_MAX_CONNECTIONS"          : "Numero massimo di connessioni:",
+        "FIELD_HEADER_MAX_CONNECTIONS_PER_USER" : "Numero massimo di connessioni per utente:",
+
+        "FIELD_HEADER_FAILOVER_ONLY"            : "Utilizzare solo per il failover:",
+        "FIELD_HEADER_WEIGHT"                   : "Peso della connessione:",
+
+        "FIELD_HEADER_GUACD_HOSTNAME"   : "Nome host:",
+        "FIELD_HEADER_GUACD_ENCRYPTION" : "Crittografia:",
+        "FIELD_HEADER_GUACD_PORT"       : "Porta:",
+
+        "FIELD_OPTION_GUACD_ENCRYPTION_EMPTY" : "",
+        "FIELD_OPTION_GUACD_ENCRYPTION_NONE"  : "Nessuno (non crittografato)",
+        "FIELD_OPTION_GUACD_ENCRYPTION_SSL"   : "SSL / TLS",
+
+        "SECTION_HEADER_CONCURRENCY"    : "Limiti di concorrenza",
+        "SECTION_HEADER_LOAD_BALANCING" : "Load Balancing",
+        "SECTION_HEADER_GUACD"          : "Guacamole Proxy Parameters (guacd)"
+
+    },
+
+    "CONNECTION_GROUP_ATTRIBUTES" : {
+
+        "FIELD_HEADER_ENABLE_SESSION_AFFINITY"  : "Abilita affinità di sessione:",
+        "FIELD_HEADER_MAX_CONNECTIONS"          : "Numero massimo di connessioni:",
+        "FIELD_HEADER_MAX_CONNECTIONS_PER_USER" : "Numero massimo di connessioni per utente:",
+
+        "SECTION_HEADER_CONCURRENCY" : "Limiti di concorrenza (gruppi di bilanciamento)"
+
+    },
+
+    "DATA_SOURCE_MYSQL" : {
+        "NAME" : "MySQL"
+    },
+
+    "DATA_SOURCE_MYSQL_SHARED" : {
+        "NAME" : "Connessioni condivise (MySQL)"
+    },
+
+    "DATA_SOURCE_POSTGRESQL" : {
+        "NAME" : "PostgreSQL"
+    },
+
+    "DATA_SOURCE_POSTGRESQL_SHARED" : {
+        "NAME" : "Connessioni condivise (PostgreSQL)"
+    },
+
+    "DATA_SOURCE_SQLSERVER" : {
+        "NAME" : "SQL Server"
+    },
+
+    "DATA_SOURCE_SQLSERVER_SHARED" : {
+        "NAME" : "Connessioni condivise (SQL Server)"
+    },
+
+    "HOME" : {
+        "INFO_SHARED_BY" : "Condiviso da {USERNAME}"
+    },
+
+    "PASSWORD_POLICY" : {
+
+        "ERROR_CONTAINS_USERNAME"      : "Le password non devono contenere il nome utente",
+        "ERROR_REQUIRES_DIGIT"         : "Le password devono contenere almeno una cifra.",
+        "ERROR_REQUIRES_MULTIPLE_CASE" : "Le password devono contenere sia caratteri maiuscoli che minuscoli.",
+        "ERROR_REQUIRES_NON_ALNUM"     : "Le password devono contenere almeno un simbolo.",
+        "ERROR_REUSED"                 : "Questa password è già stata utilizzata. Si prega di non riutilizzare nessuna delle precedenti {HISTORY_SIZE} {HISTORY_SIZE, plural, one{password} other{passwords}}.",
+        "ERROR_TOO_SHORT"              : "Le password devono essere almeno {LENGTH} {LENGTH, plural, one{carattere} other{caratteri}} di lunghezza.",
+        "ERROR_TOO_YOUNG"              : "La password per questo account è già stata reimpostata. Per favore aspetta almeno {WAIT} altri {WAIT, plural, one{giorno} other{giorni}} prima di modificare nuovamente la password."
+
+    },
+
+    "USER_ATTRIBUTES" : {
+
+        "FIELD_HEADER_DISABLED"            : "Accesso disabilitato:",
+        "FIELD_HEADER_EXPIRED"             : "Password scaduta:",
+        "FIELD_HEADER_ACCESS_WINDOW_END"   : "Non consentire l'accesso dopo:",
+        "FIELD_HEADER_ACCESS_WINDOW_START" : "Consenti l'accesso dopo:",
+        "FIELD_HEADER_TIMEZONE"            : "Fuso orario utente:",
+        "FIELD_HEADER_VALID_FROM"          : "Abilita account dopo:",
+        "FIELD_HEADER_VALID_UNTIL"         : "Disattiva account dopo:",
+
+        "SECTION_HEADER_RESTRICTIONS" : "Restrizioni dell'account",
+        "SECTION_HEADER_PROFILE"      : "Profilo"
+
+    },
+
+    "USER_GROUP_ATTRIBUTES" : {
+
+        "FIELD_HEADER_DISABLED" : "Disabilitato:",
+
+        "SECTION_HEADER_RESTRICTIONS" : "Restrizioni di gruppo"
+
+    }
+
+}

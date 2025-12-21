@@ -1,0 +1,141 @@
+name: Build Mobile
+
+on:
+  workflow_call:
+    inputs:
+      version:
+        required: true
+        type: string
+      semver:
+        required: true
+        type: string
+      upload_url:
+        required: true
+        type: string
+
+jobs:
+  build-apk:
+    name: "APK (${{ matrix.abi }})"
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - abi: armeabi-v7a
+            flutter_target: android-arm
+          - abi: arm64-v8a
+            flutter_target: android-arm64
+          - abi: x86_64
+            flutter_target: android-x64
+
+    steps:
+      - name: Checkout project
+        uses: actions/checkout@v4
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: "temurin"
+          java-version: "17"
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: "3.32.2"
+          channel: "stable"
+
+      - name: Setup Android signing
+        run: |
+          echo "${{ secrets.ANDROID_KEYSTORE_BASE64 }}" | base64 -d > mobile/android/app/release.keystore
+          cat > mobile/android/key.properties << EOF
+          storePassword=${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          keyPassword=${{ secrets.ANDROID_KEY_PASSWORD }}
+          keyAlias=${{ secrets.ANDROID_KEY_ALIAS }}
+          storeFile=release.keystore
+          EOF
+
+      - name: Update pubspec.yaml version
+        run: |
+          sed -i "s/^version: .*/version: ${{ inputs.semver }}+${{ github.run_number }}/" mobile/pubspec.yaml
+          sed -i "s/sdk: \^3.9.2/sdk: ^3.8.0/" mobile/pubspec.yaml
+
+      - name: Install dependencies
+        working-directory: mobile
+        run: flutter pub get
+
+      - name: Build APK
+        working-directory: mobile
+        run: flutter build apk --release --target-platform ${{ matrix.flutter_target }} --split-per-abi
+
+      - name: Rename APK
+        run: |
+          mv mobile/build/app/outputs/flutter-apk/app-${{ matrix.abi }}-release.apk \
+             mobile/build/app/outputs/flutter-apk/nexterm-${{ inputs.version }}-${{ matrix.abi }}.apk
+
+      - name: Upload APK to Release
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ inputs.upload_url }}
+          asset_path: mobile/build/app/outputs/flutter-apk/nexterm-${{ inputs.version }}-${{ matrix.abi }}.apk
+          asset_name: nexterm-${{ inputs.version }}-${{ matrix.abi }}.apk
+          asset_content_type: application/vnd.android.package-archive
+
+  build-apk-universal:
+    name: "APK (Universal)"
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout project
+        uses: actions/checkout@v4
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: "temurin"
+          java-version: "17"
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: "3.32.2"
+          channel: "stable"
+
+      - name: Setup Android signing
+        run: |
+          echo "${{ secrets.ANDROID_KEYSTORE_BASE64 }}" | base64 -d > mobile/android/app/release.keystore
+          cat > mobile/android/key.properties << EOF
+          storePassword=${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          keyPassword=${{ secrets.ANDROID_KEY_PASSWORD }}
+          keyAlias=${{ secrets.ANDROID_KEY_ALIAS }}
+          storeFile=release.keystore
+          EOF
+
+      - name: Update pubspec.yaml version
+        run: |
+          sed -i "s/^version: .*/version: ${{ inputs.semver }}+${{ github.run_number }}/" mobile/pubspec.yaml
+          sed -i "s/sdk: \^3.9.2/sdk: ^3.8.0/" mobile/pubspec.yaml
+
+      - name: Install dependencies
+        working-directory: mobile
+        run: flutter pub get
+
+      - name: Build Universal APK
+        working-directory: mobile
+        run: flutter build apk --release
+
+      - name: Rename APK
+        run: |
+          mv mobile/build/app/outputs/flutter-apk/app-release.apk \
+             mobile/build/app/outputs/flutter-apk/nexterm-${{ inputs.version }}-universal.apk
+
+      - name: Upload Universal APK to Release
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ inputs.upload_url }}
+          asset_path: mobile/build/app/outputs/flutter-apk/nexterm-${{ inputs.version }}-universal.apk
+          asset_name: nexterm-${{ inputs.version }}-universal.apk
+          asset_content_type: application/vnd.android.package-archive

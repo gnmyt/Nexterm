@@ -9,5 +9,7 @@ module.exports.updateAISettingsValidation = Joi.object({
 });
 
 module.exports.generateCommandValidation = Joi.object({
-    prompt: Joi.string().required()
+    prompt: Joi.string().required(),
+    entryId: Joi.number().integer().optional(),
+    recentOutput: Joi.string().max(5000).allow(null, '').optional()
 });

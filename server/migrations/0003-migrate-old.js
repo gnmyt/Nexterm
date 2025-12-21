@@ -1,4 +1,5 @@
 const { DataTypes } = require("sequelize");
+const logger = require('../utils/logger');
 
 module.exports = {
     async up(queryInterface) {
@@ -9,7 +10,7 @@ module.exports = {
                 allowNull: false,
             });
         } catch (error) {
-            console.error("Server position column already exists, skipping migration.");
+            logger.error("Server position column already exists, skipping migration.");
         }
 
         try {
@@ -19,7 +20,7 @@ module.exports = {
                 allowNull: false,
             });
         } catch (error) {
-            console.error("Folder position column already exists, skipping migration.");
+            logger.error("Folder position column already exists, skipping migration.");
         }
 
         try {
@@ -29,7 +30,7 @@ module.exports = {
                 allowNull: false,
             });
         } catch (error) {
-            console.error("Server monitoringEnabled column already exists, skipping migration.");
+            logger.error("Server monitoringEnabled column already exists, skipping migration.");
         }
 
         try {
@@ -38,7 +39,7 @@ module.exports = {
                 allowNull: true,
             });
         } catch (error) {
-            console.error("Server config column already exists, skipping migration.");
+            logger.error("Server config column already exists, skipping migration.");
         }
     },
 

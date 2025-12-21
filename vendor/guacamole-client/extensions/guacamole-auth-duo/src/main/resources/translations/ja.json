@@ -1,0 +1,9 @@
+{
+
+    "LOGIN" : {
+        "INFO_DUO_VALIDATION_CODE_INCORRECT"    : "Duoの認証コードが間違っています。",
+        "INFO_DUO_AUTH_REQUIRED"                : "Duoで認証してください。",
+        "INFO_DUO_REDIRECT_PENDING"             : "Duoへリダイレクトしています。"
+    }
+
+}

@@ -1,0 +1,95 @@
+name: Finalize Release
+
+on:
+  workflow_call:
+    inputs:
+      version:
+        required: true
+        type: string
+      semver:
+        required: true
+        type: string
+      release_id:
+        required: true
+        type: string
+
+jobs:
+  finalize:
+    name: "Commit Versions & Publish"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Update version files
+        run: |
+          V="${{ inputs.version }}" S="${{ inputs.semver }}"
+          jq ".version = \"$V\"" package.json > tmp && mv tmp package.json
+          jq ".version = \"$S\"" connector/package.json > tmp && mv tmp connector/package.json
+          jq ".version = \"$S\"" connector/src-tauri/tauri.conf.json > tmp && mv tmp connector/src-tauri/tauri.conf.json
+          sed -i "s/^version = \".*\"/version = \"$S\"/" connector/src-tauri/Cargo.toml
+          sed -i "s/^version: .*/version: $S+${{ github.run_number }}/" mobile/pubspec.yaml
+
+      - name: Commit & push
+        run: |
+          git config user.name "GitHub Actions" && git config user.email "actions@github.com"
+          git add -A && git diff-index --quiet HEAD || (git commit -m "chore: bump version to ${{ inputs.version }}" && git push origin HEAD:main)
+
+      - name: Get previous tag
+        id: prev
+        run: |
+          CUR="v${{ inputs.version }}"
+          PREV=$(git tag --sort=-creatordate | grep -v "^$CUR$" | head -1)
+          echo "tag=$PREV" >> $GITHUB_OUTPUT
+
+      - name: Publish release notes
+        uses: actions/github-script@v7
+        env:
+          VERSION: ${{ inputs.version }}
+          PREV_TAG: ${{ steps.prev.outputs.tag }}
+          RELEASE_ID: ${{ inputs.release_id }}
+        with:
+          script: |
+            const { VERSION: v, PREV_TAG: prev, RELEASE_ID: rid } = process.env;
+            const releaseId = parseInt(rid, 10);
+            const repo = { owner: context.repo.owner, repo: context.repo.repo };
+            const repoUrl = `https://github.com/${repo.owner}/${repo.repo}`;
+            
+            let prs = [];
+            if (prev) {
+              try {
+                const { data: { commits } } = await github.rest.repos.compareCommits({ ...repo, base: prev, head: `v${v}` });
+                for (const c of commits) {
+                  const { data } = await github.rest.repos.listPullRequestsAssociatedWithCommit({ ...repo, commit_sha: c.sha });
+                  for (const pr of data.filter(p => p.merged_at && !prs.find(x => x.number === p.number))) {
+                    prs.push({ number: pr.number, title: pr.title, user: pr.user.login });
+                  }
+                }
+              } catch (e) { console.log('PR fetch error:', e.message); }
+            }
+            
+            const L = (label, file) => `[${label}](../../releases/download/v${v}/${file})`;
+            const apk = (arch) => L('APK', `nexterm-${v}-${arch}.apk`);
+            
+            let body = '';
+            if (v.toUpperCase().includes('PREVIEW')) body += '![Preview](https://i.imgur.com/Qu3wnvw.png)\n\n';
+            else if (v.toUpperCase().includes('BETA')) body += '![Beta](https://i.imgur.com/iQQ7qYx.png)\n\n';
+            
+            body += `## 📦 Downloads\n\n`;
+            body += `| Platform / Architecture | Windows | macOS | Linux | Android |\n`;
+            body += `| :-- | :-- | :-- | :-- | :-- |\n`;
+            body += `| **x86-64** | ${L('EXE', 'nexterm-connector-windows-x64.exe')} · ${L('MSI', 'nexterm-connector-windows-x64.msi')} | ${L('DMG', 'nexterm-connector-macos-x64.dmg')} | ${L('DEB', 'nexterm-connector-linux-x64.deb')} · ${L('RPM', 'nexterm-connector-linux-x64.rpm')} · ${L('AppImage', 'nexterm-connector-linux-x64.AppImage')} | ${apk('x86_64')} |\n`;
+            body += `| **ARM64** | ${L('EXE', 'nexterm-connector-windows-arm64.exe')} | ${L('DMG', 'nexterm-connector-macos-arm64.dmg')} | | ${apk('arm64-v8a')} |\n`;
+            body += `| **ARM32** | | | | ${apk('armeabi-v7a')} |\n`;
+            body += `| **Universal** | | | | ${apk('universal')} |\n`;
+            
+            if (prs.length) {
+              body += `\n---\n\n## What's Changed\n`;
+              body += prs.map(p => `* ${p.title} by @${p.user} in ${repoUrl}/pull/${p.number}`).join('\n');
+              body += `\n\n**Full Changelog**: ${repoUrl}/compare/${prev}...v${v}`;
+            }
+            
+            await github.rest.repos.updateRelease({ ...repo, release_id: releaseId, body, draft: false });
+            console.log('Published:', prs.length, 'PRs');

@@ -1,0 +1,3 @@
+jakarta.xml.bind:jakarta.xml.bind-api:jar:2.3.2
+org.glassfish.jaxb:jaxb-runtime:jar:2.3.2
+org.glassfish.jaxb:txw2:jar:2.3.2

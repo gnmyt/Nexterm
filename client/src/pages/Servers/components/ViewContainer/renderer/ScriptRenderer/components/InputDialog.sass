@@ -1,0 +1,74 @@
+@use "@/common/styles/colors"
+
+.input-dialog
+  display: flex
+  flex-direction: column
+  gap: 0.875rem
+  width: 22rem
+  user-select: none
+
+  .dialog-title
+    display: flex
+    align-items: center
+    gap: 0.625rem
+    padding-bottom: 0.625rem
+    border-bottom: 1px solid colors.$dark-gray
+
+    svg
+      width: 1.25rem
+      height: 1.25rem
+      color: colors.$primary
+
+    h2
+      margin: 0
+      font-size: 1rem
+      font-weight: 600
+      color: colors.$white
+
+  .dialog-content
+    display: flex
+    flex-direction: column
+    gap: 0.875rem
+
+    .prompt-description
+      color: colors.$subtext
+      font-size: 0.85rem
+      line-height: 1.5
+      padding: 0.625rem 0.75rem
+      background-color: colors.$dark-gray
+      border-radius: 0.5rem
+      border-left: 2px solid colors.$primary
+
+    .form-group
+      display: flex
+      flex-direction: column
+      gap: 0.5rem
+
+      label
+        color: colors.$subtext
+        font-weight: 500
+        font-size: 0.8rem
+        text-transform: uppercase
+        letter-spacing: 0.03em
+
+      .options-container
+        display: flex
+        flex-direction: column
+        gap: 0.375rem
+
+      .confirm-actions
+        display: flex
+        gap: 0.75rem
+
+        button:first-child
+          flex: 1
+
+        button:last-child
+          flex: 1
+
+  .dialog-actions
+    display: flex
+    justify-content: flex-end
+    gap: 0.5rem
+    padding-top: 0.625rem
+    border-top: 1px solid colors.$dark-gray

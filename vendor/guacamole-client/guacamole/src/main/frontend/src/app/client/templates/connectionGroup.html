@@ -1,0 +1,10 @@
+<div class="connection-select-menu-connection-group connection-group">
+    <input type="checkbox"
+           ng-show="item.balancing"
+           ng-model="context.attachedClients[item.getClientIdentifier()]"
+           ng-change="context.updateAttachedClients(item.getClientIdentifier())">
+    <a ng-href="{{ item.getClientURL() }}">
+        <div ng-show="item.balancing" class="icon type balancer"></div>
+        <span class="name">{{item.name}}</span>
+    </a>
+</div>

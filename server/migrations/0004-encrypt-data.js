@@ -1,5 +1,5 @@
 const { encrypt } = require("../utils/encryption");
-const Identity = require("../models/Identity");
+const logger = require('../utils/logger');
 const { DataTypes } = require("sequelize");
 
 module.exports = {
@@ -14,46 +14,48 @@ module.exports = {
         const authTagExists = await queryInterface.describeTable("identities").then((table) => table.passwordAuthTag !== undefined);
 
         if (authTagExists) {
-            console.log("Migration already applied: passwordAuthTag column exists.");
+            logger.info("Migration already applied: passwordAuthTag column exists.");
             return;
         }
 
-        queryInterface.addColumn("identities", "passwordIV", {
+        await queryInterface.addColumn("identities", "passwordIV", {
             type: DataTypes.STRING,
             allowNull: true,
         });
-        queryInterface.addColumn("identities", "passwordAuthTag", {
+        await queryInterface.addColumn("identities", "passwordAuthTag", {
             type: DataTypes.STRING,
             allowNull: true,
         });
-        queryInterface.addColumn("identities", "sshKeyIV", {
+        await queryInterface.addColumn("identities", "sshKeyIV", {
             type: DataTypes.STRING,
             allowNull: true,
         });
-        queryInterface.addColumn("identities", "sshKeyAuthTag", {
+        await queryInterface.addColumn("identities", "sshKeyAuthTag", {
             type: DataTypes.STRING,
             allowNull: true,
         });
-        queryInterface.addColumn("identities", "passphraseIV", {
+        await queryInterface.addColumn("identities", "passphraseIV", {
             type: DataTypes.STRING,
             allowNull: true,
         });
-        queryInterface.addColumn("identities", "passphraseAuthTag", {
+        await queryInterface.addColumn("identities", "passphraseAuthTag", {
             type: DataTypes.STRING,
             allowNull: true,
         });
 
-        const identities = await Identity.findAll({ hooks: false });
+        const [identities] = await queryInterface.sequelize.query(
+            "SELECT * FROM identities"
+        );
 
         for (const identity of identities) {
-            const updates = {};
+            const updates = [];
+            const values = [];
 
             const encryptField = (field) => {
                 if (identity[field] && !identity[`${field}IV`] && !identity[`${field}AuthTag`]) {
                     const encrypted = encrypt(identity[field]);
-                    updates[field] = encrypted.encrypted;
-                    updates[`${field}IV`] = encrypted.iv;
-                    updates[`${field}AuthTag`] = encrypted.authTag;
+                    updates.push(`${field} = ?`, `${field}IV = ?`, `${field}AuthTag = ?`);
+                    values.push(encrypted.encrypted, encrypted.iv, encrypted.authTag);
                 }
             };
 
@@ -61,9 +63,13 @@ module.exports = {
             encryptField("sshKey");
             encryptField("passphrase");
 
-            if (Object.keys(updates).length > 0) {
-                await Identity.update(updates, { where: { id: identity.id } });
-                console.log(`Encrypted identity ${identity.id}`);
+            if (updates.length > 0) {
+                values.push(identity.id);
+                await queryInterface.sequelize.query(
+                    `UPDATE identities SET ${updates.join(", ")} WHERE id = ?`,
+                    { replacements: values }
+                );
+                logger.info(`Encrypted identity ${identity.id}`);
             }
         }
     },

@@ -1,0 +1,228 @@
+
+<guac-viewport>
+
+    <!-- Client view -->
+    <div class="client-view">
+        <div class="client-view-content">
+
+            <!-- Central portion of view -->
+            <div class="client-body" guac-touch-drag="menuDrag">
+
+                <!-- All connections in current display -->
+                <guac-tiled-clients
+                    on-close="closeClientTile($client)"
+                    client-group="clientGroup"
+                    emulate-absolute-mouse="menu.emulateAbsoluteMouse">
+                </guac-tiled-clients>
+
+            </div>
+
+            <!-- Bottom portion of view -->
+            <div class="client-bottom">
+
+                <!-- Text input -->
+                <div class="text-input-container" ng-if="showTextInput">
+                    <guac-text-input></guac-text-input>
+                </div>
+
+                <!-- On-screen keyboard -->
+                <div class="keyboard-container" ng-if="showOSK">
+                    <guac-osk layout="'CLIENT.URL_OSK_LAYOUT' | translate"></guac-osk>
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+
+    <!-- File transfers -->
+    <div id="file-transfer-dialog" ng-show="hasTransfers()">
+        <guac-file-transfer-manager client-group="clientGroup"></guac-file-transfer-manager>
+    </div>
+
+    <!-- Connection stability warning -->
+    <div id="connection-warning" ng-show="isConnectionUnstable()">
+        {{'CLIENT.TEXT_CLIENT_STATUS_UNSTABLE' | translate}}
+    </div>
+    
+    <!-- Menu -->
+    <div class="menu" ng-class="{open: menu.shown}" id="guac-menu">
+        <div class="menu-content" ng-if="menu.shown" guac-touch-drag="menuDrag">
+
+            <!-- Stationary header -->
+            <div class="header">
+                <h2 ng-hide="rootConnectionGroups">{{ getName(clientGroup) }}</h2>
+                <h2 class="connection-select-menu" ng-show="rootConnectionGroups">
+                    <guac-menu menu-title="getName(clientGroup)" interactive="true">
+                        <div class="all-connections">
+                            <guac-group-list-filter connection-groups="rootConnectionGroups"
+                                filtered-connection-groups="filteredRootConnectionGroups"
+                                placeholder="'CLIENT.FIELD_PLACEHOLDER_FILTER' | translate"
+                                connection-properties="filteredConnectionProperties"
+                                connection-group-properties="filteredConnectionGroupProperties"></guac-group-list-filter>
+                            <guac-group-list
+                                connection-groups="filteredRootConnectionGroups"
+                                context="connectionListContext"
+                                templates="{
+                                    'connection'       : 'app/client/templates/connection.html',
+                                    'connection-group' : 'app/client/templates/connectionGroup.html'
+                                }"
+                                page-size="10"></guac-group-list>
+                        </div>
+                    </guac-menu>
+                </h2>
+                <div class="share-menu" ng-show="canShareConnection()">
+                    <guac-menu menu-title="'CLIENT.ACTION_SHARE' | translate">
+                        <ul ng-repeat="sharingProfile in sharingProfiles">
+                            <li><a ng-click="share(sharingProfile)">{{sharingProfile.name}}</a></li>
+                        </ul>
+                    </guac-menu>
+                </div>
+                <guac-user-menu local-actions="clientMenuActions"></guac-user-menu>
+            </div>
+
+            <!-- Scrollable body -->
+            <div class="menu-body" guac-touch-drag="visibleMenuDrag" guac-scroll="menu.scrollState">
+
+                <!-- Connection sharing -->
+                <div class="menu-section" id="share-links" ng-show="isShared()">
+                    <div class="content">
+                        <h3>{{'CLIENT.INFO_CONNECTION_SHARED' | translate}}</h3>
+                        <p class="description"
+                           translate="CLIENT.HELP_SHARE_LINK"
+                           translate-values="{LINKS : getShareLinkCount()}"></p>
+                        <table>
+                            <tr ng-repeat="link in focusedClient.shareLinks | toArray | orderBy: value.name">
+                                <th>{{link.value.name}}</th>
+                                <td><a href="{{link.value.href}}" target="_blank">{{link.value.href}}</a></td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Clipboard -->
+                <div class="menu-section" id="clipboard-settings">
+                    <h3>{{'CLIENT.SECTION_HEADER_CLIPBOARD' | translate}}</h3>
+                    <div class="content">
+                        <p class="description">{{'CLIENT.HELP_CLIPBOARD' | translate}}</p>
+                        <guac-clipboard></guac-clipboard>
+                    </div>
+                </div>
+
+                <!-- Devices -->
+                <div class="menu-section" id="devices" ng-if="focusedClient.filesystems.length">
+                    <h3>{{'CLIENT.SECTION_HEADER_DEVICES' | translate}}</h3>
+                    <div class="content">
+                        <div class="device filesystem" ng-repeat="filesystem in focusedClient.filesystems" ng-click="showFilesystemMenu(filesystem)">
+                            {{filesystem.name}}
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Connection parameters which may be modified while the connection is open -->
+                <div class="menu-section connection-parameters" id="connection-settings" ng-if="focusedClient.protocol">
+                    <guac-form namespace="getProtocolNamespace(focusedClient.protocol)"
+                               content="focusedClient.forms"
+                               model="menu.connectionParameters"
+                               client="focusedClient"
+                               model-only="true"></guac-form>
+                </div>
+
+                <!-- Input method -->
+                <div class="menu-section" id="keyboard-settings">
+                    <h3>{{'CLIENT.SECTION_HEADER_INPUT_METHOD' | translate}}</h3>
+                    <div class="content">
+
+                        <!-- No IME -->
+                        <div class="choice">
+                            <label><input id="ime-none" name="input-method" ng-change="closeMenu()" ng-model="menu.inputMethod" type="radio" value="none"> {{'CLIENT.NAME_INPUT_METHOD_NONE' | translate}}</label>
+                            <p class="caption"><label for="ime-none">{{'CLIENT.HELP_INPUT_METHOD_NONE' | translate}}</label></p>
+                        </div>
+
+                        <!-- Text input -->
+                        <div class="choice">
+                            <div class="figure"><label for="ime-text"><img src="images/settings/tablet-keys.svg" alt=""></label></div>
+                            <label><input id="ime-text" name="input-method" ng-change="closeMenu()" ng-model="menu.inputMethod" type="radio" value="text"> {{'CLIENT.NAME_INPUT_METHOD_TEXT' | translate}}</label>
+                            <p class="caption"><label for="ime-text">{{'CLIENT.HELP_INPUT_METHOD_TEXT' | translate}} </label></p>
+                        </div>
+
+                        <!-- Guac OSK -->
+                        <div class="choice">
+                            <label><input id="ime-osk" name="input-method" ng-change="closeMenu()" ng-model="menu.inputMethod" type="radio" value="osk"> {{'CLIENT.NAME_INPUT_METHOD_OSK' | translate}}</label>
+                            <p class="caption"><label for="ime-osk">{{'CLIENT.HELP_INPUT_METHOD_OSK' | translate}}</label></p>
+                        </div>
+
+                    </div>
+                </div>
+
+                <!-- Mouse mode -->
+                <div class="menu-section" id="mouse-settings">
+                    <h3>{{'CLIENT.SECTION_HEADER_MOUSE_MODE' | translate}}</h3>
+                    <div class="content">
+                        <p class="description">{{'CLIENT.HELP_MOUSE_MODE' | translate}}</p>
+
+                        <!-- Touchscreen -->
+                        <div class="choice">
+                            <input name="mouse-mode" ng-change="closeMenu()" ng-model="menu.emulateAbsoluteMouse" type="radio" ng-value="true" checked="checked" id="absolute">
+                            <div class="figure">
+                                <label for="absolute"><img src="images/settings/touchscreen.svg" alt="{{'CLIENT.NAME_MOUSE_MODE_ABSOLUTE' | translate}}"></label>
+                                <p class="caption"><label for="absolute">{{'CLIENT.HELP_MOUSE_MODE_ABSOLUTE' | translate}}</label></p>
+                            </div>
+                        </div>
+
+                        <!-- Touchpad -->
+                        <div class="choice">
+                            <input name="mouse-mode" ng-change="closeMenu()" ng-model="menu.emulateAbsoluteMouse" type="radio" ng-value="false" id="relative">
+                            <div class="figure">
+                                <label for="relative"><img src="images/settings/touchpad.svg" alt="{{'CLIENT.NAME_MOUSE_MODE_RELATIVE' | translate}}"></label>
+                                <p class="caption"><label for="relative">{{'CLIENT.HELP_MOUSE_MODE_RELATIVE' | translate}}</label></p>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+                <!-- Display options -->
+                <div class="menu-section" id="display-settings" ng-if="focusedClient">
+                    <h3>{{'CLIENT.SECTION_HEADER_DISPLAY' | translate}}</h3>
+                    <div class="content">
+                        <div id="zoom-settings">
+                            <guac-client-zoom client="focusedClient"></guac-client-zoom>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Filesystem menu -->
+    <div id="filesystem-menu" class="menu" ng-class="{open: isFilesystemMenuShown()}">
+        <div class="menu-content">
+
+            <!-- Stationary header -->
+            <div class="header">
+                <h2>{{filesystemMenuContents.name}}</h2>
+                <button class="upload button" guac-upload="uploadFiles">{{'CLIENT.ACTION_UPLOAD_FILES' | translate}}</button>
+                <button class="back" ng-click="hideFilesystemMenu()">{{'CLIENT.ACTION_NAVIGATE_BACK' | translate}}</button>
+            </div>
+
+            <!-- Breadcrumbs -->
+            <div class="header breadcrumbs"><div
+                    class="breadcrumb root"
+                    ng-click="changeDirectory(filesystemMenuContents, filesystemMenuContents.root)"></div><div
+                        class="breadcrumb"
+                        ng-repeat="file in getPath(filesystemMenuContents.currentDirectory)"
+                        ng-click="changeDirectory(filesystemMenuContents, file)">{{file.name}}</div>
+            </div>
+
+            <!-- Scrollable body -->
+            <div class="menu-body">
+                <guac-file-browser client="client" filesystem="filesystemMenuContents"></guac-file-browser>
+            </div>
+
+        </div>
+    </div>
+
+</guac-viewport>

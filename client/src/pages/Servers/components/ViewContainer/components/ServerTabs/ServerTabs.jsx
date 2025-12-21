@@ -1,21 +1,59 @@
-import { ServerContext } from "@/common/contexts/ServerContext.jsx";
-import { useContext, useRef, useState, useEffect } from "react";
+import { useRef, useState, useEffect, useCallback } from "react";
 import Icon from "@mdi/react";
-import { loadIcon } from "@/pages/Servers/components/ServerList/components/ServerObject/ServerObject.jsx";
-import { getIconByType } from "@/pages/Servers/components/ServerList/components/PVEObject/PVEObject.jsx";
-import { mdiClose, mdiViewSplitVertical } from "@mdi/js";
+import { loadIcon } from "@/pages/Servers/utils/iconMapping.js";
+import { mdiClose, mdiViewSplitVertical, mdiChevronLeft, mdiChevronRight, mdiSleep, mdiOpenInNew, mdiShareVariant, mdiLinkVariant, mdiPencil, mdiEye, mdiCloseCircle, mdiContentDuplicate } from "@mdi/js";
 import { useDrag, useDrop } from "react-dnd";
+import TerminalActionsMenu from "../TerminalActionsMenu";
+import { ContextMenu, ContextMenuItem, ContextMenuSeparator, useContextMenu } from "@/common/components/ContextMenu";
+import { useActiveSessions } from "@/common/contexts/SessionContext.jsx";
+import { postRequest, deleteRequest, patchRequest } from "@/common/utils/RequestUtil";
+import { getBaseUrl } from "@/common/utils/ConnectionUtil.js";
 import "./styles.sass";
 
 const DraggableTab = ({
-                          session,
-                          server,
-                          activeSessionId,
-                          setActiveSessionId,
-                          disconnectFromServer,
-                          index,
-                          moveTab,
-                      }) => {
+    session,
+    server,
+    activeSessionId,
+    setActiveSessionId,
+    closeSession,
+    hibernateSession,
+    duplicateSession,
+    index,
+    moveTab,
+    progress = 0,
+    onShareUpdate,
+}) => {
+    const contextMenu = useContextMenu();
+    const { popOutSession } = useActiveSessions();
+    
+    const canPopOut = !session.scriptId && session.type !== "sftp";
+    const canShare = canPopOut;
+    const isSharing = !!session.shareId;
+
+    const handleShare = useCallback(async (writable) => {
+        const result = await postRequest(`connections/${session.id}/share`, { writable });
+        if (result?.shareId) {
+            const baseUrl = getBaseUrl() || window.location.origin;
+            navigator.clipboard.writeText(`${baseUrl}/share/${result.shareId}`);
+        }
+        onShareUpdate?.(session.id);
+    }, [session.id, onShareUpdate]);
+
+    const handleStopSharing = useCallback(async () => {
+        await deleteRequest(`connections/${session.id}/share`);
+        onShareUpdate?.(session.id);
+    }, [session.id, onShareUpdate]);
+
+    const handleCopyLink = useCallback(() => {
+        const baseUrl = getBaseUrl() || window.location.origin;
+        navigator.clipboard.writeText(`${baseUrl}/share/${session.shareId}`);
+    }, [session.shareId]);
+
+    const handlePermissionChange = useCallback(async (writable) => {
+        await patchRequest(`connections/${session.id}/share`, { writable });
+        onShareUpdate?.(session.id);
+    }, [session.id, onShareUpdate]);
+    
     const [{ isDragging }, drag] = useDrag({
         type: "TAB",
         item: { index, sessionId: session.id },
@@ -30,37 +68,143 @@ const DraggableTab = ({
         collect: (monitor) => ({ isOver: monitor.isOver() }),
     });
 
+    const radius = 10;
+    const circumference = 2 * Math.PI * radius;
+    const offset = circumference - (progress / 100) * circumference;
+    const showProgress = progress > 0 && progress < 100;
+    
+    const handleContextMenu = (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        contextMenu.open(e, { x: e.clientX, y: e.clientY });
+    };
+
     return (
-        <div ref={(node) => drag(drop(node))} onClick={() => setActiveSessionId(session.id)}
-             className={`server-tab ${session.id === activeSessionId ? "server-tab-active" : ""} ${isDragging ? "dragging" : ""} ${isOver ? "drop-target" : ""}`}
-             style={{ opacity: isDragging ? 0.5 : 1 }}>
-            <Icon path={server?.icon ? loadIcon(server.icon) : getIconByType(server?.type)} />
-            <h2>{server?.name} {session.type === "sftp" ? " (SFTP)" : ""}</h2>
-            <div className="tab-actions">
-                <Icon path={mdiClose} className="close-btn" title="Close Session" onClick={(e) => {
-                    e.stopPropagation();
-                    disconnectFromServer(session.id);
-                }} />
+        <>
+            <div ref={(node) => drag(drop(node))} onClick={() => setActiveSessionId(session.id)}
+                onContextMenu={handleContextMenu}
+                className={`server-tab ${session.id === activeSessionId ? "server-tab-active" : ""} ${isDragging ? "dragging" : ""} ${isOver ? "drop-target" : ""}`}
+                style={{ opacity: isDragging ? 0.5 : 1 }}>
+                <div className={`progress-circle ${!showProgress ? "no-progress" : ""}`}>
+                    {showProgress && (
+                        <svg width="24" height="24" viewBox="0 0 24 24">
+                            <circle
+                                cx="12"
+                                cy="12"
+                                r={radius}
+                                fill="none"
+                                stroke="currentColor"
+                                strokeWidth="1.5"
+                                className="progress-bg"
+                            />
+                            <circle
+                                cx="12"
+                                cy="12"
+                                r={radius}
+                                fill="none"
+                                stroke="currentColor"
+                                strokeWidth="2"
+                                strokeDasharray={circumference}
+                                strokeDashoffset={offset}
+                                strokeLinecap="round"
+                                className="progress-bar"
+                                transform="rotate(-90 12 12)"
+                            />
+                        </svg>
+                    )}
+                    <Icon path={loadIcon(server.icon)} className="progress-icon" />
+                </div>
+                <h2>{server?.name} {session.type === "sftp" ? " (SFTP)" : ""}</h2>
+                <div className="tab-actions">
+                    <Icon path={mdiClose} className="close-btn" title="Close Session" onClick={(e) => {
+                        e.stopPropagation();
+                        closeSession(session.id);
+                    }} />
+                </div>
             </div>
-        </div>
+            <ContextMenu
+                isOpen={contextMenu.isOpen}
+                position={contextMenu.position}
+                onClose={contextMenu.close}
+                trigger={contextMenu.triggerRef}
+            >
+                {canPopOut && (
+                    <>
+                        <ContextMenuItem
+                            icon={mdiOpenInNew}
+                            label="Pop Out"
+                            onClick={() => popOutSession(session.id)}
+                        />
+                        <ContextMenuSeparator />
+                    </>
+                )}
+                {canShare && !isSharing && (
+                    <ContextMenuItem icon={mdiShareVariant} label="Start Sharing">
+                        <ContextMenuItem icon={mdiEye} label="Read-only" onClick={() => handleShare(false)} />
+                        <ContextMenuItem icon={mdiPencil} label="Read & Write" onClick={() => handleShare(true)} />
+                    </ContextMenuItem>
+                )}
+                {canShare && isSharing && (
+                    <>
+                        <ContextMenuItem icon={mdiLinkVariant} label="Copy Share Link" onClick={handleCopyLink} />
+                        <ContextMenuItem icon={mdiShareVariant} label="Change Permissions">
+                            <ContextMenuItem icon={mdiEye} label="Read-only" onClick={() => handlePermissionChange(false)} disabled={!session.shareWritable} />
+                            <ContextMenuItem icon={mdiPencil} label="Read & Write" onClick={() => handlePermissionChange(true)} disabled={session.shareWritable} />
+                        </ContextMenuItem>
+                        <ContextMenuItem icon={mdiCloseCircle} label="Stop Sharing" onClick={handleStopSharing} danger />
+                        <ContextMenuSeparator />
+                    </>
+                )}
+                <ContextMenuItem
+                    icon={mdiContentDuplicate}
+                    label="Duplicate"
+                    onClick={() => duplicateSession(session.id)}
+                />
+                <ContextMenuItem
+                    icon={mdiSleep}
+                    label="Hibernate Session"
+                    onClick={() => hibernateSession(session.id)}
+                />
+                <ContextMenuItem
+                    icon={mdiClose}
+                    label="Close Session"
+                    onClick={() => closeSession(session.id)}
+                    danger
+                />
+            </ContextMenu>
+        </>
     );
 };
 
 export const ServerTabs = ({
-                               activeSessions,
-                               setActiveSessionId,
-                               activeSessionId,
-                               disconnectFromServer,
-                               layoutMode,
-                               onToggleSplit,
-                               orderRef,
-                               onTabOrderChange,
-                           }) => {
+    activeSessions,
+    setActiveSessionId,
+    activeSessionId,
+    closeSession,
+    hibernateSession,
+    duplicateSession,
+    layoutMode,
+    onToggleSplit,
+    orderRef,
+    onTabOrderChange,
+    onBroadcastToggle,
+    onSnippetSelected,
+    broadcastEnabled,
+    onKeyboardShortcut,
+    hasGuacamole,
+    sessionProgress = {},
+    fullscreenEnabled,
+    onFullscreenToggle,
+    onShareUpdate,
+}) => {
 
-    const { getServerById, getPVEContainerById } = useContext(ServerContext);
     const tabsRef = useRef(null);
 
     const [tabOrder, setTabOrder] = useState([]);
+    const [showLeftArrow, setShowLeftArrow] = useState(false);
+    const [showRightArrow, setShowRightArrow] = useState(false);
+
+    const activeSession = activeSessions.find(session => session.id === activeSessionId);
 
     useEffect(() => {
         const currentSessionIds = activeSessions.map(session => session.id);
@@ -91,10 +235,42 @@ export const ServerTabs = ({
         if (orderRef && tabOrder.length > 0) orderRef.current = tabOrder;
     }, [tabOrder, orderRef]);
 
+    const checkScrollPosition = () => {
+        if (!tabsRef.current) return;
+
+        const { scrollLeft, scrollWidth, clientWidth } = tabsRef.current;
+        setShowLeftArrow(scrollLeft > 0);
+        setShowRightArrow(scrollLeft < scrollWidth - clientWidth - 1);
+    };
+
+    useEffect(() => {
+        checkScrollPosition();
+        const handleResize = () => checkScrollPosition();
+        window.addEventListener('resize', handleResize);
+        return () => window.removeEventListener('resize', handleResize);
+    }, [activeSessions, tabOrder]);
+
     const handleWheel = (e) => {
         e.preventDefault();
 
-        if (tabsRef.current) tabsRef.current.scrollLeft += e.deltaY;
+        if (tabsRef.current) {
+            tabsRef.current.scrollLeft += e.deltaY;
+            checkScrollPosition();
+        }
+    };
+
+    const scrollTabs = (direction) => {
+        if (!tabsRef.current) return;
+
+        const scrollAmount = 200;
+        const targetScroll = tabsRef.current.scrollLeft + (direction === 'left' ? -scrollAmount : scrollAmount);
+
+        tabsRef.current.scrollTo({
+            left: targetScroll,
+            behavior: 'smooth'
+        });
+
+        setTimeout(checkScrollPosition, 300);
     };
 
     const moveTab = (fromIndex, toIndex) => {
@@ -116,20 +292,42 @@ export const ServerTabs = ({
     return (
         <div className="server-tabs">
             <div className="layout-controls">
+                <TerminalActionsMenu
+                    layoutMode={layoutMode}
+                    onBroadcastToggle={onBroadcastToggle}
+                    onSnippetSelected={onSnippetSelected}
+                    broadcastEnabled={broadcastEnabled}
+                    onKeyboardShortcut={onKeyboardShortcut}
+                    hasGuacamole={hasGuacamole}
+                    fullscreenEnabled={fullscreenEnabled}
+                    onFullscreenToggle={onFullscreenToggle}
+                    activeSession={activeSession}
+                />
                 <Icon path={mdiViewSplitVertical} className={`layout-btn ${layoutMode !== "single" ? "active" : ""}`}
-                      title={layoutMode === "single" ? "Enable Split View" : "Disable Split View"}
-                      onClick={onToggleSplit} />
+                    title={layoutMode === "single" ? "Enable Split View" : "Disable Split View"}
+                    onClick={onToggleSplit} />
             </div>
-            <div className="tabs" ref={tabsRef} onWheel={handleWheel}>
-                {orderedSessions.map((session, index) => {
-                    let server = session.containerId === undefined ? getServerById(session.server) : getPVEContainerById(session.server, session.containerId);
-
-                    return (
-                        <DraggableTab key={session.id} session={session} server={server} index={index} moveTab={moveTab}
-                                      activeSessionId={activeSessionId} setActiveSessionId={setActiveSessionId}
-                                      disconnectFromServer={disconnectFromServer} />
-                    );
-                })}
+            <div className="tabs-container">
+                {showLeftArrow && (
+                    <div className="scroll-indicator left" onClick={() => scrollTabs('left')}>
+                        <Icon path={mdiChevronLeft} />
+                    </div>
+                )}
+                <div className="tabs" ref={tabsRef} onWheel={handleWheel} onScroll={checkScrollPosition}>
+                    {orderedSessions.map((session, index) => {
+                        return (
+                            <DraggableTab key={session.id} session={session} server={session.server} index={index} moveTab={moveTab}
+                                activeSessionId={activeSessionId} setActiveSessionId={setActiveSessionId}
+                                closeSession={closeSession} hibernateSession={hibernateSession} duplicateSession={duplicateSession}
+                                progress={sessionProgress[session.id] || 0} onShareUpdate={onShareUpdate} />
+                        );
+                    })}
+                </div>
+                {showRightArrow && (
+                    <div className="scroll-indicator right" onClick={() => scrollTabs('right')}>
+                        <Icon path={mdiChevronRight} />
+                    </div>
+                )}
             </div>
         </div>
     );

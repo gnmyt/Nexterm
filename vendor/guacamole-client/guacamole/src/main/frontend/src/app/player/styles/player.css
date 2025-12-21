@@ -1,0 +1,206 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ */
+
+/*
+ * NOTE: This session recording player implementation is based on the Session
+ * Recording Player for Glyptodon Enterprise which is available at
+ * https://github.com/glyptodon/glyptodon-enterprise-player under the
+ * following license:
+ *
+ * Copyright (C) 2019 Glyptodon, Inc.
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ * THE SOFTWARE.
+ */
+
+guac-player {
+    display: inline-block;
+    position: relative;
+}
+
+guac-player .guac-player-display {
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+}
+
+guac-player .guac-player-controls {
+
+    position: absolute;
+    padding-bottom: 0;
+    left: 0;
+    bottom: 0;
+    width: 100%;
+
+}
+
+.guac-player-controls .guac-player-seek {
+    display: block;
+    width: 100%;
+}
+
+.guac-player-controls .guac-player-play,
+.guac-player-controls .guac-player-pause {
+    color: white;
+    background: transparent;
+    border: none;
+    width: 2em;
+    height: 2em;
+    min-width: 0;
+    padding: 0;
+    margin: 0;
+}
+
+.guac-player-controls .guac-player-play:hover,
+.guac-player-controls .guac-player-pause:hover {
+    background: rgba(255, 255, 255, 0.5);
+}
+
+.guac-player-controls .pause-icon,
+.guac-player-controls .play-icon {
+    display: inline-block;
+    width: 2em;
+    height: 2em;
+    background-size: contain;
+    background-position: center;
+    background-repeat: no-repeat;
+    vertical-align: middle;
+}
+
+.guac-player-controls .play-icon {
+    background-image: url('images/action-icons/guac-play.svg');
+}
+
+.guac-player-controls .pause-icon {
+    background-image: url('images/action-icons/guac-pause.svg');
+}
+
+.guac-player-controls .guac-player-buttons {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+
+.guac-player-controls .guac-player-keys {
+    margin-left: auto;
+    padding-right: 0.5em;
+    cursor: pointer;
+}
+
+guac-player .guac-player-status {
+
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 1;
+
+    display: -webkit-box;
+    display: -webkit-flex;
+    display: -moz-box;
+    display: -ms-flexbox;
+    display: flex;
+
+    -webkit-box-align: center;
+    -webkit-align-items: center;
+    -moz-box-align: center;
+    -ms-flex-align: center;
+    align-items: center;
+
+    -webkit-box-pack: center;
+    -webkit-justify-content: center;
+    -moz-box-pack: center;
+    -ms-flex-pack: center;
+    justify-content: center;
+
+    -webkit-box-orient: vertical;
+    -webkit-box-direction: normal;
+    -webkit-flex-direction: column;
+    -moz-box-orient: vertical;
+    -moz-box-direction: normal;
+    -ms-flex-direction: column;
+    flex-direction: column;
+
+}
+
+.guac-player-container {
+
+    height: 100%;
+
+    display: -webkit-box;
+    display: -webkit-flex;
+    display: -moz-box;
+    display: -ms-flexbox;
+    display: flex;
+
+    -webkit-flex-direction: row;
+    -ms-flex-direction: row;
+    flex-direction: row;
+
+    -ms-flex-pack: space-between;
+    -webkit-box-pack: justify;
+    -webkit-justify-content: space-between;
+    justify-content: space-between;
+
+}
+
+guac-player-display {
+
+    flex-grow: 5;
+
+    /* Required for horizontal resizing to work */
+    min-width: 0;
+
+}
+
+guac-player-text-view {
+
+    min-width: 25em;
+    flex-basis: 0;
+
+    /* Make room for the control bar at the bottom */
+    height: calc(100% - 48px);
+
+}
+
+guac-player-text-view.fullscreen {
+
+    min-width: 100%;
+
+}
+

@@ -1,10 +1,18 @@
 {
   "common": {
+    "error": "错误",
+    "success": "成功",
+    "loading": "正在加载...",
     "actions": {
       "cancel": "取消",
       "confirm": "确认",
       "login": "登录",
-      "register": "注册"
+      "register": "注册",
+      "save": "节省",
+      "download": "下载",
+      "close": "关闭",
+      "maximize": "最大化",
+      "restore": "恢复"
     },
     "labels": {
       "username": "用户名",
@@ -33,7 +41,9 @@
       "noAuthMethodsAvailable": "没有可用的验证方法。"
     },
     "selectBox": {
-      "defaultOption": "选择一个选项..."
+      "defaultOption": "选择一个选项...",
+      "search": "搜索...",
+      "noResults": "未找到结果"
     },
     "sidebar": {
       "settings": "设置",
@@ -41,7 +51,6 @@
       "monitoring": "监测",
       "snippets": "片段",
       "audit": "审计",
-      "apps": "应用程序",
       "logout": "注销",
       "collapseTitle": "折叠侧边栏",
       "logoutConfirmText": "这将注销您的 {{username}} 账户。你确定吗？",
@@ -127,7 +136,13 @@
     "page": {
       "title": "片段",
       "subtitle": "管理你的命令片段，以便在终端中快速访问",
-      "addSnippet": "添加片段"
+      "addSnippet": "添加片段",
+      "personal": "个人",
+      "selectOrganization": "选择组织",
+      "tabs": {
+        "snippets": "片段",
+        "scripts": "脚本"
+      }
     },
     "list": {
       "empty": "您还没有任何片段。创建您的第一个片段！",
@@ -171,6 +186,102 @@
         "saveFailed": "保存片段失败",
         "deleteFailed": "删除片段失败"
       }
+    }
+  },
+  "scripts": {
+    "page": {
+      "title": "脚本",
+      "subtitle": "管理服务器任务的自动化脚本",
+      "addScript": "添加脚本",
+      "personal": "个人",
+      "selectOrganization": "选择组织",
+      "tabs": {
+        "snippets": "片段",
+        "scripts": "脚本"
+      }
+    },
+    "execution": {
+      "progressPanel": {
+        "title": "脚本执行",
+        "noSteps": "尚无步骤",
+        "noStepsDescription": "脚本执行时将在此处显示步骤",
+        "steps": "步骤"
+      },
+      "dialogs": {
+        "enterValue": "输入数值",
+        "selectOption": "选择一个选项",
+        "confirm": "确认",
+        "submit": "提交",
+        "cancel": "取消",
+        "ok": "好的",
+        "yes": "是",
+        "no": "没有",
+        "copyCell": "复制单元格",
+        "copyRow": "复制行",
+        "copyTable": "复制表",
+        "close": "关闭"
+      },
+      "status": {
+        "running": "跑步",
+        "completed": "已完成",
+        "error": "错误",
+        "pending": "待定"
+      }
+    },
+    "list": {
+      "empty": "您还没有任何脚本。创建您的第一个脚本！",
+      "actions": {
+        "edit": "编辑脚本",
+        "delete": "删除脚本"
+      }
+    },
+    "dialog": {
+      "title": {
+        "create": "创建脚本",
+        "edit": "编辑脚本"
+      },
+      "scriptDetails": "脚本详细信息",
+      "scriptContent": "脚本内容",
+      "helpTip": "使用 @NEXTERM: 指令实现交互功能",
+      "fields": {
+        "name": "名称",
+        "description": "说明"
+      },
+      "placeholders": {
+        "name": "脚本名称",
+        "description": "这个脚本有什么作用？"
+      },
+      "actions": {
+        "cancel": "取消",
+        "create": "创建",
+        "update": "更新",
+        "creating": "创建...",
+        "updating": "更新..."
+      },
+      "errors": {
+        "nameRequired": "脚本名称为必填项",
+        "descriptionRequired": "需要脚本说明",
+        "contentRequired": "需要脚本内容",
+        "createFailed": "创建脚本失败",
+        "updateFailed": "更新脚本失败"
+      }
+    },
+    "messages": {
+      "success": {
+        "created": "脚本创建成功",
+        "updated": "脚本更新成功",
+        "deleted": "脚本已成功删除"
+      },
+      "errors": {
+        "loadFailed": "加载脚本数据失败",
+        "deleteFailed": "删除脚本失败"
+      }
+    },
+    "menu": {
+      "searchPlaceholder": "搜索脚本...",
+      "noScripts": "没有可用的脚本。请在脚本部分创建一些脚本。",
+      "noMatch": "没有与您的搜索匹配的脚本。",
+      "selectIdentity": "选择身份"
     }
   },
   "monitoring": {
@@ -283,11 +394,13 @@
     "pages": {
       "account": "账户",
       "terminal": "终端",
+      "keymaps": "键图",
       "identities": "身份",
       "sessions": "会议",
       "organizations": "组织机构",
       "users": "用户",
       "authentication": "认证",
+      "sources": "资料来源",
       "ai": "人工智能"
     },
     "account": {
@@ -296,9 +409,10 @@
       "firstName": "姓名",
       "lastName": "姓氏",
       "appearance": "外观",
-      "appearanceDescription": "可为界面选择浅色和深色主题。",
-      "switchToLight": "切换到灯光模式",
-      "switchToDark": "切换到黑暗模式",
+      "appearanceDescription": "选择你喜欢的主题自动遵循系统设置，并根据时间进行调整。",
+      "themeAuto": "汽车",
+      "themeLight": "灯光",
+      "themeDark": "黑暗",
       "twoFactor": "双因素认证",
       "twoFactorActive": "活跃",
       "twoFactorInactive": "不活动",
@@ -313,6 +427,14 @@
       "currentLanguage": "当前语言",
       "missingLanguage": "想念您的语言？",
       "helpTranslateLink": "帮助翻译 Nexterm",
+      "sessionSynchronization": "会话同步",
+      "sessionSyncDescription": "控制服务器会话如何在设备和浏览器标签页之间存储和同步。",
+      "sessionSyncAcrossDevices": "跨设备",
+      "sessionSyncSameBrowser": "相同的浏览器",
+      "sessionSyncSameTab": "同一标签",
+      "sessionSyncAcrossDevicesDesc": "会话可跨设备使用并同步",
+      "sessionSyncSameBrowserDesc": "会话将同步当前用户会话",
+      "sessionSyncSameTabDesc": "会话将在浏览器标签页内同步",
       "twoFactorDialog": {
         "title": "启用 2FA",
         "description": "使用身份验证程序扫描代码或手动输入 <span class=\"totp-code\">{{secret}}</span>手动输入。",
@@ -399,6 +521,55 @@
       "logout": "注销",
       "revoke": "撤销",
       "browserOn": "{{browser}} {{version}} {{os}} {{osVersion}}"
+    },
+    "keymaps": {
+      "title": "键图",
+      "description": "自定义键盘快捷键，以配合你的工作流程。",
+      "resetAll": "全部重置",
+      "actions": {
+        "search": {
+          "title": "搜索",
+          "description": "打开搜索输入"
+        },
+        "aimenu": {
+          "title": "人工智能菜单",
+          "description": "打开人工智能命令菜单"
+        },
+        "snippets": {
+          "title": "片段",
+          "description": "打开片段对话框"
+        },
+        "keyboardshortcuts": {
+          "title": "键盘快捷键",
+          "description": "打开键盘快捷键菜单"
+        },
+        "broadcast": {
+          "title": "广播模式",
+          "description": "使用分割视图时切换广播模式"
+        },
+        "copy": {
+          "title": "复制",
+          "description": "将选定文本复制到剪贴板"
+        },
+        "fullscreen": {
+          "title": "全屏",
+          "description": "切换全屏模式"
+        }
+      },
+      "recorder": {
+        "pressKeys": "按键...",
+        "save": "节省",
+        "cancel": "取消",
+        "reset": "重置"
+      },
+      "messages": {
+        "updateSuccess": "键绑定更新成功",
+        "updateFailed": "更新键绑定失败",
+        "resetSuccess": "按键绑定重置为默认值",
+        "resetFailed": "重置键绑定失败",
+        "resetAllSuccess": "所有按键重置为默认值",
+        "resetAllFailed": "重置键绑定失败"
+      }
     },
     "terminal": {
       "title": "终端",
@@ -519,6 +690,7 @@
       "title": "SSH 密钥和证书",
       "description": "管理用于服务器连接的 SSH 密钥和登录凭证",
       "createIdentity": "创建身份",
+      "personal": "个人",
       "noUsername": "无用户名",
       "sshKey": "SSH 密钥",
       "password": "密码",
@@ -566,20 +738,96 @@
           "updateFailed": "更新身份失败"
         }
       }
+    },
+    "sources": {
+      "title": "脚本和片段来源",
+      "description": "配置外部资源，自动同步脚本和片段。",
+      "loading": "正在加载资源...",
+      "noSources": "未配置资源",
+      "noSourcesDescription": "添加外部资源，自动同步脚本和片段。",
+      "addSource": "添加来源",
+      "snippets": "片段",
+      "scripts": "脚本",
+      "neverSynced": "从未同步",
+      "sync": "立即同步",
+      "edit": "编辑",
+      "delete": "删除",
+      "deleteConfirm": "您确定要删除源 \"{{name}}\" 吗？来自此源码的所有同步脚本和片段也将被删除。",
+      "status": {
+        "success": "同步",
+        "error": "错误",
+        "pending": "待定",
+        "disabled": "残疾"
+      },
+      "dialog": {
+        "createTitle": "添加来源",
+        "editTitle": "编辑来源",
+        "name": "名称",
+        "namePlaceholder": "例如：公司脚本",
+        "url": "来源网址",
+        "urlPlaceholder": "https://scripts.example.com",
+        "enabled": "已启用",
+        "enabledDescription": "禁用时，将不同步该信号源",
+        "validating": "验证 URL...",
+        "validationSuccess": "找到有效来源： {{snippets}} 片段， {{scripts}} 脚本",
+        "create": "创建"
+      },
+      "messages": {
+        "created": "源成功创建",
+        "updated": "源成功更新",
+        "deleted": "源已成功删除",
+        "synced": "源成功同步"
+      },
+      "errors": {
+        "loadFailed": "加载源失败",
+        "saveFailed": "保存源失败",
+        "deleteFailed": "删除源失败",
+        "syncFailed": "同步源失败",
+        "validationFailed": "验证 URL 失败",
+        "requiredFields": "姓名和 URL 为必填项"
+      }
     }
   },
   "servers": {
+    "time": {
+      "justNow": "现在",
+      "minuteAgo": "{{count}} 分钟前",
+      "minutesAgo": "{{count}} 分钟前",
+      "hourAgo": "{{count}} 一小时前",
+      "hoursAgo": "{{count}} 小时前",
+      "dayAgo": "{{count}} 日前",
+      "daysAgo": "{{count}} 日前"
+    },
+    "tags": {
+      "title": "标签",
+      "createNewTag": "创建新标签",
+      "tagName": "标签名称",
+      "create": "创建",
+      "filterByTags": "按标签筛选",
+      "clearAll": "全部清除",
+      "noTagsCreated": "尚未创建标签",
+      "editTag": "编辑标签",
+      "deleteTag": "删除标签"
+    },
     "contextMenu": {
       "createFolder": "创建文件夹",
       "deleteFolder": "删除文件夹",
       "renameFolder": "重命名文件夹",
+      "new": "新",
+      "sshServer": "SSH 服务器",
+      "telnetServer": "Telnet 服务器",
+      "rdpServer": "RDP 服务器",
+      "vncServer": "VNC 服务器",
       "createServer": "创建服务器",
       "import": "进口",
       "pve": "PVE",
       "sshConfig": "SSH 配置",
       "connect": "连接",
+      "quickConnect": "快速连接",
       "openSFTP": "打开 SFTP",
+      "runScript": "运行脚本",
       "editServer": "编辑服务器",
+      "editIntegration": "编辑整合",
       "duplicateServer": "复制服务器",
       "deleteServer": "删除服务器",
       "editPVE": "编辑 PVE",
@@ -590,6 +838,7 @@
     },
     "dialog": {
       "addServer": "添加服务器",
+      "addProtocolServer": "添加 {{protocol}} 服务器",
       "editServer": "编辑服务器",
       "tabs": {
         "details": "详细信息",
@@ -608,7 +857,9 @@
         "protocol": "规程",
         "username": "用户名",
         "password": "密码",
-        "host": "主持人"
+        "host": "主持人",
+        "nodeName": "节点名称",
+        "vmid": "虚拟机 ID"
       },
       "placeholders": {
         "serverName": "服务器名称",
@@ -616,7 +867,49 @@
         "port": "港口",
         "username": "用户名",
         "password": "密码",
-        "host": "主持人"
+        "host": "主持人",
+        "nodeName": "节点名称",
+        "vmid": "虚拟机 ID"
+      },
+      "settings": {
+        "jumpHosts": {
+          "title": "跳转主机",
+          "description": "通过中间服务器连接到达该目标服务器",
+          "addButton": "添加跳转主机",
+          "removeTooltip": "移除跳转主机",
+          "noServersAvailable": "跳转主机没有可用的 SSH 服务器。请先创建 SSH 服务器。"
+        },
+        "monitoring": {
+          "title": "启用性能监控",
+          "description": "收集该服务器的 CPU、内存、磁盘和网络指标"
+        },
+        "keyboardLayout": {
+          "title": "键盘布局",
+          "description": "选择此连接要使用的键盘布局。"
+        },
+        "noSettings": "此条目类型无其他设置。"
+      },
+      "identities": {
+        "organizationIdentities": "组织身份",
+        "personalIdentities": "个人身份",
+        "orgDescription": "与所有组织成员共享。每个人都可以使用这些身份。",
+        "personalDescription": "仅对您可见。其他组织成员无法看到。",
+        "identityName": "身份名称",
+        "username": "用户名",
+        "authentication": "认证",
+        "password": "密码",
+        "sshKey": "SSH 密钥",
+        "sshPrivateKey": "SSH 私钥",
+        "passphrase": "密码（可选）",
+        "new": "新",
+        "removeIdentity": "删除身份",
+        "unlinkIdentity": "解除身份链接",
+        "moveToOrg": "移至组织",
+        "selectOrganization": "选择组织",
+        "availableToLink": "可链接",
+        "noUsername": "无用户名",
+        "noOrgIdentities": "没有组织身份。创建一个，与所有成员共享。",
+        "noPersonalIdentities": "没有个人身份。创建一个供您私人使用的身份。"
       }
     },
     "proxmoxDialog": {
@@ -713,7 +1006,22 @@
         "createFolder": "创建文件夹",
         "upload": "上传文件",
         "edit": "编辑",
-        "bigFileConfirm": "该文件大至 {{size}} MB。您确定要编辑它吗？"
+        "preview": "预览",
+        "bigFileConfirm": "该文件大至 {{size}} MB。您确定要编辑它吗？",
+        "selectAll": "全部选择",
+        "insertSnippet": "插入片段",
+        "sendCtrlC": "发送 Ctrl+C",
+        "clearTerminal": "清除终端"
+      },
+      "filePreview": {
+        "title": "文件预览",
+        "loading": "正在加载...",
+        "cannotPreview": "无法预览文件",
+        "unsupportedFileType": "该文件类型不支持预览",
+        "videoNotSupported": "您的浏览器不支持视频播放",
+        "audioNotSupported": "您的浏览器不支持音频播放",
+        "download": "下载",
+        "close": "关闭"
       }
     },
     "aiAssistant": {
@@ -728,6 +1036,15 @@
       "searchPlaceholder": "搜索片段...",
       "createNew": "创建新片段"
     },
+    "terminalActions": {
+      "menuTitle": "终端行动",
+      "snippets": "片段",
+      "keyboardShortcuts": "键盘快捷键",
+      "broadcasting": "广播",
+      "fullScreen": "全屏",
+      "exitFullScreen": "退出全屏模式",
+      "badgeOn": "关于"
+    },
     "messages": {
       "fillRequiredFields": "请填写所有必填项",
       "serverCreated": "服务器创建成功",
@@ -736,133 +1053,6 @@
       "updateFailed": "更新服务器失败",
       "createIdentityFailed": "创建身份失败",
       "updateIdentityFailed": "更新身份失败"
-    }
-  },
-  "apps": {
-    "title": "应用程序",
-    "navigation": {
-      "categories": {
-        "all": "全部",
-        "results": "成果",
-        "scripts": "脚本",
-        "networking": "联网",
-        "media": "媒体",
-        "cloud": "云",
-        "development": "发展",
-        "utilities": "公用设施"
-      }
-    },
-    "store": {
-      "appStore": "应用程序商店",
-      "scripts": "脚本",
-      "appStoreDescription": "您最喜爱的应用程序，只需点击一下即可部署。",
-      "scriptsDescription": "使用自定义脚本自动执行服务器任务。",
-      "manageSources": "管理资源",
-      "createScript": "创建脚本",
-      "source": "资料来源",
-      "sourceFilter": {
-        "all": "全部",
-        "custom": "定制"
-      }
-    },
-    "list": {
-      "noApps": "更多应用程序即将推出",
-      "noScripts": "没有脚本",
-      "selectApp": "选择应用程序继续",
-      "selectScript": "选择脚本继续"
-    },
-    "actions": {
-      "deploy": "部署",
-      "run": "运行",
-      "view": "查看",
-      "edit": "编辑",
-      "delete": "删除",
-      "logs": "日志",
-      "open": "开放",
-      "stop": "停止脚本",
-      "version": "版本"
-    },
-    "items": {
-      "customBadge": "定制",
-      "scriptType": "脚本",
-      "running": "运行...",
-      "runScript": "运行"
-    },
-    "installer": {
-      "deploymentFailed": "部署失败",
-      "deploymentCompleted": "完成部署",
-      "deploying": "部署...",
-      "installationLog": "安装日志",
-      "steps": {
-        "lookupDistro": "查找 Linux 发行版",
-        "checkPermissions": "检查权限",
-        "installDocker": "安装 Docker 引擎",
-        "downloadImage": "下载基础图像",
-        "preInstall": "运行预安装命令",
-        "startContainer": "启动 Docker 容器",
-        "postInstall": "运行安装后命令",
-        "detected": "检测到 {{os}}"
-      }
-    },
-    "scriptExecutor": {
-      "executionFailed": "脚本执行失败",
-      "executionCompleted": "脚本执行完毕",
-      "executing": "执行脚本...",
-      "initializing": "初始化脚本执行",
-      "finished": "脚本执行完毕",
-      "cancelled": "用户取消脚本执行"
-    },
-    "dialogs": {
-      "deployServer": {
-        "deployTitle": "部署 {{name}}",
-        "runTitle": "运行 {{name}}",
-        "noServersAvailable": "没有可用的 SSH 服务器"
-      },
-      "source": {
-        "title": "应用程序源",
-        "refreshApps": "刷新应用程序",
-        "addNewSource": "添加新源"
-      },
-      "script": {
-        "createTitle": "创建自定义脚本",
-        "editTitle": "编辑脚本",
-        "viewTitle": "查看脚本",
-        "source": "来源： {{source}}",
-        "scriptDetails": "脚本详细信息",
-        "scriptContent": "脚本内容",
-        "helpTip": "使用 @NEXTERM: 命令进行交互式提示",
-        "fields": {
-          "name": "脚本名称 *",
-          "description": "说明 *",
-          "namePlaceholder": "我真棒的脚本",
-          "descriptionPlaceholder": "这个脚本有什么作用？"
-        },
-        "actions": {
-          "close": "关闭",
-          "cancel": "取消",
-          "create": "创建脚本",
-          "update": "更新脚本",
-          "creating": "创建...",
-          "updating": "更新..."
-        },
-        "errors": {
-          "nameRequired": "脚本名称为必填项",
-          "descriptionRequired": "需要脚本说明",
-          "contentRequired": "脚本内容不能为空",
-          "createFailed": "创建脚本失败",
-          "updateFailed": "更新脚本失败"
-        },
-        "success": {
-          "created": "脚本创建成功",
-          "updated": "脚本更新成功"
-        }
-      }
-    },
-    "messages": {
-      "onlyCustomScriptsCanBeDeleted": "只能删除自定义脚本",
-      "scriptDeletedSuccessfully": "脚本已成功删除",
-      "failedToDeleteScript": "删除脚本失败",
-      "deleteScriptConfirmation": "您确定要删除脚本 \"{{name}}\" 吗？此操作无法撤销。"
     }
   }
 }

@@ -1,0 +1,1 @@
+commons-configuration:commons-configuration:jar:1.5

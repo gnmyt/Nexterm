@@ -4,13 +4,14 @@ const OrganizationMember = require("../models/OrganizationMember");
 const Account = require("../models/Account");
 const { hasOrganizationAccess } = require("../utils/permission");
 const { Op } = require("sequelize");
+const logger = require("../utils/logger");
 
 const AUDIT_ACTIONS = {
-    SSH_CONNECT: "server.ssh_connect",
-    SFTP_CONNECT: "server.sftp_connect",
-    PVE_CONNECT: "server.pve_connect",
-    RDP_CONNECT: "server.rdp_connect",
-    VNC_CONNECT: "server.vnc_connect",
+    SSH_CONNECT: "entry.ssh_connect",
+    SFTP_CONNECT: "entry.sftp_connect",
+    PVE_CONNECT: "entry.pve_connect",
+    RDP_CONNECT: "entry.rdp_connect",
+    VNC_CONNECT: "entry.vnc_connect",
 
     FILE_UPLOAD: "file.upload",
     FILE_DOWNLOAD: "file.download",
@@ -19,10 +20,11 @@ const AUDIT_ACTIONS = {
 
     FOLDER_CREATE: "folder.create",
     FOLDER_DELETE: "folder.delete",
+    FOLDER_DOWNLOAD: "folder.download",
 
-    SERVER_CREATE: "server.create",
-    SERVER_UPDATE: "server.update",
-    SERVER_DELETE: "server.delete",
+    ENTRY_CREATE: "entry.create",
+    ENTRY_UPDATE: "entry.update",
+    ENTRY_DELETE: "entry.delete",
 
     IDENTITY_CREATE: "identity.create",
     IDENTITY_UPDATE: "identity.update",
@@ -33,12 +35,10 @@ const AUDIT_ACTIONS = {
     FOLDER_DELETE_MGMT: "folder_mgmt.delete",
 
     SCRIPT_EXECUTE: "script.execute",
-
-    APP_INSTALL: "app.install",
 };
 
 const RESOURCE_TYPES = {
-    USER: "user", SERVER: "server", IDENTITY: "identity", ORGANIZATION: "organization",
+    USER: "user", ENTRY: "entry", IDENTITY: "identity", ORGANIZATION: "organization",
     FOLDER: "folder", FILE: "file", SCRIPT: "script", APP: "app",
 };
 
@@ -47,26 +47,37 @@ const getOrgAuditSettings = async (organizationId) => {
 
     const org = await Organization.findByPk(organizationId);
     const defaults = {
-        requireConnectionReason: false, enableFileOperationAudit: true, enableServerConnectionAudit: true,
-        enableIdentityManagementAudit: true, enableServerManagementAudit: true, enableFolderManagementAudit: true,
-        enableScriptExecutionAudit: true, enableAppInstallationAudit: true,
+        requireConnectionReason: false, 
+        enableFileOperationAudit: true, 
+        enableServerConnectionAudit: true,
+        enableIdentityManagementAudit: true, 
+        enableServerManagementAudit: true, 
+        enableFolderManagementAudit: true,
+        enableScriptExecutionAudit: true,
     };
 
     if (!org?.auditSettings) return defaults;
-    const settings = typeof org.auditSettings === "string" ? JSON.parse(org.auditSettings) : org.auditSettings;
+    
+    let settings;
+    try {
+        settings = typeof org.auditSettings === "string" ? JSON.parse(org.auditSettings) : org.auditSettings;
+    } catch (e) {
+        logger.error("Failed to parse audit settings", { organizationId, error: e.message });
+        return defaults;
+    }
+    
     return { ...defaults, ...settings };
 };
 
 const shouldAudit = (action, settings) => {
     if (!settings) return true;
     const checks = [
-        [action.startsWith("file."), settings.enableFileOperationAudit],
-        [action.startsWith("server.") && !action.includes("create") && !action.includes("update") && !action.includes("delete"), settings.enableServerConnectionAudit],
+        [action.startsWith("file.") || action.startsWith("folder."), settings.enableFileOperationAudit],
+        [action.startsWith("entry.") && !action.includes("create") && !action.includes("update") && !action.includes("delete"), settings.enableServerConnectionAudit],
         [action.startsWith("identity."), settings.enableIdentityManagementAudit],
-        [action.includes("server.create") || action.includes("server.update") || action.includes("server.delete"), settings.enableServerManagementAudit],
+        [action.includes("entry.create") || action.includes("entry.update") || action.includes("entry.delete"), settings.enableServerManagementAudit],
         [action.startsWith("folder_mgmt."), settings.enableFolderManagementAudit],
         [action.startsWith("script."), settings.enableScriptExecutionAudit],
-        [action.startsWith("app."), settings.enableAppInstallationAudit],
     ];
 
     for (const [condition, enabled] of checks) {
@@ -81,7 +92,7 @@ const createAuditLog = async ({
                               }) => {
     try {
         if (!accountId || !action || typeof action !== "string") {
-            console.error("Invalid audit log parameters:", { accountId, action });
+            logger.error("Invalid audit log parameters", { accountId, action });
             return;
         }
 
@@ -97,7 +108,7 @@ const createAuditLog = async ({
 
         return auditLog.id;
     } catch (error) {
-        console.error("Failed to create audit log:", error);
+        logger.error("Failed to create audit log", { error: error.message, stack: error.stack });
     }
 };
 
@@ -174,7 +185,7 @@ const updateAuditLogWithSessionDuration = async (auditLogId, connectionStartTime
 
         await AuditLog.update({ details: currentDetails }, { where: { id: auditLogId } });
     } catch (error) {
-        console.error("Error updating audit log with session duration:", error);
+        logger.error("Error updating audit log with session duration", { error: error.message, auditLogId });
     }
 };
 
@@ -188,7 +199,7 @@ module.exports.getAuditLogs = async (accountId, filters = {}) => {
         const result = await getAuditLogsInternal(accountId, filters);
         return { logs: result.rows, total: result.count, filters };
     } catch (error) {
-        console.error("Error getting audit logs:", error);
+        logger.error("Error getting audit logs", { error: error.message, accountId });
         return { code: 500, message: "Failed to retrieve audit logs" };
     }
 };
@@ -202,7 +213,7 @@ module.exports.getOrganizationAuditSettings = async (accountId, organizationId) 
 
         return await getOrgAuditSettings(organizationId);
     } catch (error) {
-        console.error("Error getting organization audit settings:", error);
+        logger.error("Error getting organization audit settings", { error: error.message, organizationId });
         return { code: 500, message: "Failed to retrieve audit settings" };
     }
 };
@@ -220,7 +231,7 @@ module.exports.updateOrganizationAuditSettings = async (accountId, organizationI
         await Organization.update({ auditSettings: updatedSettings }, { where: { id: organizationId } });
         return updatedSettings;
     } catch (error) {
-        console.error("Error updating organization audit settings:", error);
+        logger.error("Error updating organization audit settings", { error: error.message, organizationId });
         return { code: 500, message: "Failed to update audit settings" };
     }
 };
@@ -247,7 +258,7 @@ module.exports.getOrganizationAuditSettingsInternal = async (organizationId) => 
         const organization = await Organization.findByPk(organizationId);
         return organization?.auditSettings ? JSON.parse(organization.auditSettings) : null;
     } catch (error) {
-        console.error("Error getting organization audit settings internally:", error);
+        logger.error("Error getting organization audit settings internally", { error: error.message, organizationId });
         return null;
     }
 };

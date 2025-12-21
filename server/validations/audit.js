@@ -21,5 +21,4 @@ module.exports.updateOrganizationAuditSettingsValidation = Joi.object({
     enableServerManagementAudit: Joi.boolean().optional(),
     enableFolderManagementAudit: Joi.boolean().optional(),
     enableScriptExecutionAudit: Joi.boolean().optional(),
-    enableAppInstallationAudit: Joi.boolean().optional(),
 }).min(1);

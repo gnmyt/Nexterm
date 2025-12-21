@@ -3,5 +3,116 @@
 .snippets-page
   display: flex
   flex-direction: column
-  height: 100vh
+  height: 100%
   background-color: colors.$background
+
+  .snippets-content-wrapper
+    flex: 1
+    overflow-y: auto
+    overflow-x: hidden
+    display: flex
+    flex-direction: column
+
+    .snippets-controls
+      display: flex
+      align-items: center
+      justify-content: space-between
+      gap: 1.5rem
+      padding: 1rem 2rem
+      flex-shrink: 0
+
+      @media (max-width: 768px)
+        padding: 0.875rem 1.5rem
+        gap: 1rem
+
+      @media (max-width: 480px)
+        padding: 0.75rem 1rem
+        flex-direction: column
+        align-items: stretch
+        gap: 0.75rem
+
+      .snippets-tabs
+        display: flex
+        gap: 0.75rem
+
+        @media (max-width: 768px)
+          gap: 0.625rem
+
+        @media (max-width: 480px)
+          gap: 0.5rem
+          flex: 1
+
+        .tabs-item
+          padding: 0.625rem 1rem
+          cursor: pointer
+          border-radius: 0.5rem
+          transition: background-color 0.1s ease
+          user-select: none
+          border: 1px solid transparent
+
+          @media (max-width: 768px)
+            padding: 0.5rem 0.875rem
+
+          @media (max-width: 480px)
+            padding: 0.5rem 0.75rem
+            flex: 1
+            text-align: center
+
+          h3
+            margin: 0
+            font-size: 0.9rem
+            font-weight: 500
+            color: colors.$subtext
+            transition: color 0.1s ease
+
+            @media (max-width: 768px)
+              font-size: 0.85rem
+
+            @media (max-width: 480px)
+              font-size: 0.8rem
+
+          &:hover:not(.tabs-item-active)
+            background-color: colors.$dark-gray
+
+            h3
+              color: colors.$white
+
+          &.tabs-item-active
+            background-color: colors.$gray
+            border-color: colors.$gray
+
+            h3
+              color: colors.$white
+              font-weight: 600
+
+      .organization-selector
+        width: 250px
+
+        @media (max-width: 480px)
+          width: 100%
+
+    .snippets-content
+      flex: 1
+      padding: 0 2rem 2rem
+      display: flex
+      flex-direction: column
+      overflow-y: auto
+      min-height: 0
+      scrollbar-width: thin
+      scrollbar-color: colors.$gray transparent
+
+      &::-webkit-scrollbar
+        width: 6px
+
+      &::-webkit-scrollbar-track
+        background: transparent
+
+      &::-webkit-scrollbar-thumb
+        background-color: colors.$gray
+        border-radius: 10px
+
+      @media (max-width: 768px)
+        padding: 0 1.5rem 1.5rem
+
+      @media (max-width: 480px)
+        padding: 0 1rem 1rem

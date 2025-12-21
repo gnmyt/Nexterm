@@ -1,17 +1,42 @@
 @use "colors"
 
+$title-bar-height: 32px
+
 body, html
   margin: 0
-  overflow-x: hidden
+  overflow: hidden
   background-color: colors.$background
   color: colors.$white
   font-family: "Plus Jakarta Sans", sans-serif
   font-weight: 700
 
-.content-wrapper
+body.tauri-mode
+  -webkit-user-select: none
+  -moz-user-select: none
+  user-select: none
+  padding-top: $title-bar-height
+
+  input, textarea, [contenteditable="true"], .allow-select
+    -webkit-user-select: text
+    -moz-user-select: text
+    user-select: text
+
+.app-wrapper
   display: flex
+  flex-direction: column
   height: 100vh
   width: 100vw
+  overflow: hidden
+
+  body.tauri-mode &
+    height: calc(100vh - $title-bar-height)
+
+.content-wrapper
+  display: flex
+  flex: 1
+  width: 100vw
+  overflow: hidden
+  min-height: 0
 
   > *
     min-width: 0

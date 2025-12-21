@@ -91,9 +91,12 @@ export const Terminal = () => {
 
             {renderSection(t("settings.terminal.theme.title"), t("settings.terminal.theme.description"), (
                 <div className="theme-cards">
-                    {themes.map(theme => (
-                        <div key={theme.key} className={`theme-card ${selectedTheme === theme.key ? "selected" : ""}`}
-                             onClick={() => setSelectedTheme(theme.key)}>
+                    {themes.map((theme) => (
+                        <div 
+                            key={theme.key} 
+                            className={`theme-card ${selectedTheme === theme.key ? "selected" : ""}`}
+                            onClick={() => setSelectedTheme(theme.key)}
+                        >
                             <div className="theme-header">
                                 <h4>{theme.name}</h4>
                                 {selectedTheme === theme.key && <div className="selected-indicator" />}
