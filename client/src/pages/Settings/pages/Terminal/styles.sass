@@ -124,3 +124,14 @@
     label
       color: colors.$subtext
       font-weight: 600
+
+@media (max-width: 600px)
+  .theme-cards
+    grid-template-columns: 1fr
+
+  .font-settings, .cursor-settings
+    flex-direction: column
+    gap: 1rem
+
+    .font-option
+      min-width: 100%

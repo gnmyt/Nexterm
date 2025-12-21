@@ -142,3 +142,20 @@
           text-align: center
           max-width: 24rem
           font-size: 0.9rem
+
+  @media (max-width: 600px)
+    .identities-section
+      .section-header
+        flex-direction: column
+        gap: 0.75rem
+
+      .identities-grid
+        grid-template-columns: 1fr
+
+        .identity-card
+          .identity-info
+            gap: 0.75rem
+
+            .identity-icon
+              width: 1.5rem
+              height: 1.5rem
