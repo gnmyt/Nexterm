@@ -1012,7 +1012,7 @@
       "fields": {
         "name": "الاسم",
         "icon": "الأيقونة",
-        "serverIp": "IP الخادم",
+        "serverIp": "Host",
         "port": "المنفذ",
         "protocol": "البروتوكول",
         "username": "اسم المستخدم",
@@ -1023,7 +1023,7 @@
       },
       "placeholders": {
         "serverName": "اسم الخادم",
-        "serverIp": "IP الخادم",
+        "serverIp": "Hostname or IP",
         "port": "المنفذ",
         "username": "اسم المستخدم",
         "password": "كلمة المرور",
