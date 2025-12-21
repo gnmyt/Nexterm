@@ -1012,7 +1012,7 @@
       "fields": {
         "name": "Название",
         "icon": "Иконка",
-        "serverIp": "IP-адрес сервера",
+        "serverIp": "Host",
         "port": "Порт",
         "protocol": "Протокол",
         "username": "Имя пользователя",
@@ -1023,7 +1023,7 @@
       },
       "placeholders": {
         "serverName": "Название сервера",
-        "serverIp": "IP-адрес сервера",
+        "serverIp": "Hostname or IP",
         "port": "Порт",
         "username": "Имя пользователя",
         "password": "Пароль",
