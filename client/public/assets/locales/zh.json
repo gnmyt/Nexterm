@@ -8,7 +8,7 @@
       "confirm": "确认",
       "login": "登录",
       "register": "注册",
-      "save": "节省",
+      "save": "保存",
       "download": "下载",
       "close": "关闭",
       "maximize": "最大化",
@@ -17,24 +17,24 @@
     "labels": {
       "username": "用户名",
       "password": "密码",
-      "firstName": "姓名",
-      "lastName": "姓氏",
-      "code": "代码",
+      "firstName": "名字",
+      "lastName": "姓",
+      "code": "验证码",
       "twoFACode": "2FA 代码"
     },
     "placeholders": {
       "username": "用户名",
       "password": "密码",
-      "firstName": "姓名",
-      "lastName": "姓氏",
-      "code": "代码"
+      "firstName": "名字",
+      "lastName": "姓",
+      "code": "验证码"
     },
     "confirmDialog": {
       "title": "你确定吗？",
       "defaultText": "该操作无法撤销。"
     },
     "loginDialog": {
-      "title": "下一页",
+      "title": "登录",
       "registrationTitle": "注册",
       "ssoOrContinueWith": "或继续",
       "ssoSignInWith": "登录",
@@ -48,13 +48,13 @@
     "sidebar": {
       "settings": "设置",
       "servers": "服务器",
-      "monitoring": "监测",
+      "monitoring": "监控",
       "snippets": "片段",
       "audit": "审计",
       "logout": "注销",
       "collapseTitle": "折叠侧边栏",
       "logoutConfirmText": "这将注销您的 {{username}} 账户。你确定吗？",
-      "navigationConfirmText": "您有活动会话。导航离开会断开您与所有服务器的连接。你确定吗？"
+      "navigationConfirmText": "您有活动会话。离开此页面将断开您与所有服务器的连接。确定要继续吗？"
     },
     "errors": {
       "loadingAuthProviders": "加载身份验证提供程序时出错： {{error}}",
@@ -86,14 +86,14 @@
     "filters": {
       "title": "过滤器",
       "activeCount": "{{count}} 活动",
-      "organization": "组织结构",
-      "action": "行动",
+      "organization": "组织",
+      "action": "操作",
       "resource": "资源",
       "startDate": "开始日期",
       "endDate": "结束日期",
       "clearAll": "全部清除",
       "options": {
-        "allActions": "所有行动",
+        "allActions": "所有操作",
         "allResources": "所有资源",
         "allOrganizations": "所有组织（个人 + 组织）",
         "personalOnly": "仅限个人",
@@ -103,10 +103,10 @@
     "table": {
       "headers": {
         "timestamp": "时间戳",
-        "action": "行动",
-        "actor": "演员",
+        "action": "操作",
+        "actor": "操作者",
         "resource": "资源",
-        "organization": "组织结构",
+        "organization": "组织",
         "details": "详细信息"
       },
       "noLogs": {
@@ -122,11 +122,11 @@
       "badges": {
         "personal": "个人",
         "user": "用户编号{{id}}",
-        "organization": "Org #{{id}}"
+        "organization": "组织 #{{id}}"
       }
     },
     "pagination": {
-      "showing": "显示 {{start}} 至 {{end}} 的 {{total}} 日志",
+      "showing": "显示 {{total}} 条日志中的第 {{start}} - {{end}} 条",
       "previous": "上一页",
       "next": "下一页",
       "pageInfo": "{{current}} of {{total}}"
@@ -159,18 +159,18 @@
       "fields": {
         "name": "名称",
         "description": "说明（可选）",
-        "command": "指挥"
+        "command": "命令"
       },
       "placeholders": {
         "name": "片段名称",
         "description": "这是什么命令？",
-        "command": "输入您的命令"
+        "command": "输入命令"
       },
       "actions": {
         "cancel": "取消",
         "create": "创建",
-        "save": "节省",
-        "generateAI": "用人工智能生成",
+        "save": "保存",
+        "generateAI": "用 AI 生成",
         "generating": "生成..."
       }
     },
@@ -215,14 +215,14 @@
         "cancel": "取消",
         "ok": "好的",
         "yes": "是",
-        "no": "没有",
+        "no": "否",
         "copyCell": "复制单元格",
         "copyRow": "复制行",
         "copyTable": "复制表",
         "close": "关闭"
       },
       "status": {
-        "running": "跑步",
+        "running": "运行中",
         "completed": "已完成",
         "error": "错误",
         "pending": "待定"
@@ -294,7 +294,7 @@
       "loadFailed": "加载监控数据失败"
     },
     "grid": {
-      "loading": "加载监测数据...",
+      "loading": "加载监控数据...",
       "noServers": {
         "title": "未找到服务器",
         "subtitle": "没有可供监控的 SSH 服务器。\n添加一些服务器以开始监控。"
@@ -303,7 +303,7 @@
         "cpuUsage": "CPU 使用率",
         "memoryUsage": "内存使用情况",
         "loadAverage": "平均负载",
-        "processes": "流程",
+        "processes": "进程",
         "uptime": "正常运行时间"
       },
       "status": {
@@ -343,7 +343,7 @@
           "os": "操作系统",
           "version": "版本",
           "kernel": "内核",
-          "architecture": "建筑学",
+          "architecture": "架构",
           "uptime": "正常运行时间",
           "unknown": "未知",
           "noData": "无系统信息"
@@ -353,7 +353,7 @@
           "cpuUsage": "CPU 使用率",
           "memoryUsage": "内存使用情况",
           "loadAverage": "平均负载",
-          "processes": "主动流程",
+          "processes": "活动进程",
           "total": "共计： {{value}}",
           "loadDetail": "5m: {{fiveMin}}, 15m: {{fifteenMin}}"
         },
@@ -368,15 +368,15 @@
       "charts": {
         "cpuUsage": "CPU 使用率",
         "memoryUsage": "内存使用情况",
-        "processes": "主动流程",
+        "processes": "活动进程",
         "noData": "所选时间范围内无数据"
       },
       "storage": {
         "title": "磁盘使用量",
         "used": "使用过： {{value}}",
-        "available": "网址： {{value}}",
+        "available": "可用： {{value}}",
         "total": "共计： {{value}}",
-        "type": "类型 {{value}}",
+        "type": "类型： {{value}}",
         "noData": "没有磁盘使用数据"
       },
       "network": {
@@ -394,9 +394,9 @@
     "pages": {
       "account": "账户",
       "terminal": "终端",
-      "keymaps": "键图",
+      "keymaps": "快捷键",
       "identities": "身份",
-      "sessions": "会议",
+      "sessions": "会话",
       "organizations": "组织机构",
       "users": "用户",
       "authentication": "认证",
@@ -406,17 +406,17 @@
     "account": {
       "title": "账户",
       "accountName": "账户名称",
-      "firstName": "姓名",
-      "lastName": "姓氏",
+      "firstName": "名字",
+      "lastName": "姓",
       "appearance": "外观",
-      "appearanceDescription": "选择你喜欢的主题自动遵循系统设置，并根据时间进行调整。",
-      "themeAuto": "汽车",
-      "themeLight": "灯光",
-      "themeDark": "黑暗",
+      "appearanceDescription": "选择您喜欢的主题。自动模式会跟随系统设置并根据时间调整。",
+      "themeAuto": "自动",
+      "themeLight": "浅色",
+      "themeDark": "深色",
       "twoFactor": "双因素认证",
       "twoFactorActive": "活跃",
       "twoFactorInactive": "不活动",
-      "twoFactorDescription": "启用双因素身份验证，为您的账户增加一层安全保护。",
+      "twoFactorDescription": "启用双因素身份验证，为您的账户增加额外的安全保护。",
       "enable2FA": "启用 2FA",
       "disable2FA": "禁用 2FA",
       "changePassword": "更改密码",
@@ -427,17 +427,17 @@
       "currentLanguage": "当前语言",
       "missingLanguage": "想念您的语言？",
       "helpTranslateLink": "帮助翻译 Nexterm",
-      "sessionSynchronization": "会话同步",
-      "sessionSyncDescription": "控制服务器会话如何在设备和浏览器标签页之间存储和同步。",
-      "sessionSyncAcrossDevices": "跨设备",
-      "sessionSyncSameBrowser": "相同的浏览器",
-      "sessionSyncSameTab": "同一标签",
-      "sessionSyncAcrossDevicesDesc": "会话可跨设备使用并同步",
-      "sessionSyncSameBrowserDesc": "会话将同步当前用户会话",
-      "sessionSyncSameTabDesc": "会话将在浏览器标签页内同步",
+      "sessionSynchronization": "会话同步方式",
+      "sessionSyncDescription": "控制服务器会话在不同设备和浏览器标签页之间的存储和同步方式。",
+      "sessionSyncAcrossDevices": "跨设备同步",
+      "sessionSyncSameBrowser": "同一浏览器",
+      "sessionSyncSameTab": "仅当前标签页",
+      "sessionSyncAcrossDevicesDesc": "会话在所有设备间同步，可随时随地访问",
+      "sessionSyncSameBrowserDesc": "会话仅在当前浏览器的所有标签页间同步",
+      "sessionSyncSameTabDesc": "会话仅保存在当前标签页，关闭后不保留",
       "twoFactorDialog": {
         "title": "启用 2FA",
-        "description": "使用身份验证程序扫描代码或手动输入 <span class=\"totp-code\">{{secret}}</span>手动输入。",
+        "description": "使用身份验证应用扫描二维码，或手动输入密钥 <span class=\"totp-code\">{{secret}}</span>。",
         "codePlaceholder": "输入 2FA 代码",
         "enableButton": "启用",
         "messages": {
@@ -463,7 +463,7 @@
       "members": "成员",
       "auditSettings": "审计设置",
       "pendingInvitations": "待发邀请",
-      "invitedBy": "特邀嘉宾： {{name}}",
+      "invitedBy": "邀请人：{{name}}",
       "deleteConfirmation": "这将永久删除组织并删除所有成员。此操作无法撤销。",
       "leaveConfirmation": "你确定要离开这个组织吗？",
       "dialog": {
@@ -472,7 +472,7 @@
           "name": "名称",
           "namePlaceholder": "组织名称",
           "description": "说明（可选）",
-          "descriptionPlaceholder": "贵组织简介"
+          "descriptionPlaceholder": "组织简介"
         },
         "actions": {
           "cancel": "取消",
@@ -503,27 +503,27 @@
     },
     "userDialog": {
       "title": "创建新用户",
-      "firstName": "姓名",
-      "lastName": "姓氏",
+      "firstName": "名字",
+      "lastName": "姓",
       "username": "用户名",
       "password": "密码",
-      "firstNamePlaceholder": "姓名",
-      "lastNamePlaceholder": "姓氏",
+      "firstNamePlaceholder": "名字",
+      "lastNamePlaceholder": "姓",
       "usernamePlaceholder": "用户名",
       "passwordPlaceholder": "密码",
       "create": "创建",
       "errorOccurred": "发生错误"
     },
     "sessions": {
-      "title": "会议",
+      "title": "会话管理",
       "lastActivity": "最近活动： {{date}} 来自 {{ip}}",
-      "currentSession": "本届会议",
+      "currentSession": "当前会话",
       "logout": "注销",
       "revoke": "撤销",
       "browserOn": "{{browser}} {{version}} {{os}} {{osVersion}}"
     },
     "keymaps": {
-      "title": "键图",
+      "title": "快捷键设置",
       "description": "自定义键盘快捷键，以配合你的工作流程。",
       "resetAll": "全部重置",
       "actions": {
@@ -532,15 +532,15 @@
           "description": "打开搜索输入"
         },
         "aimenu": {
-          "title": "人工智能菜单",
-          "description": "打开人工智能命令菜单"
+          "title": "AI 菜单",
+          "description": "打开 AI 命令菜单"
         },
         "snippets": {
           "title": "片段",
           "description": "打开片段对话框"
         },
         "keyboardshortcuts": {
-          "title": "键盘快捷键",
+          "title": "快捷键列表",
           "description": "打开键盘快捷键菜单"
         },
         "broadcast": {
@@ -558,17 +558,17 @@
       },
       "recorder": {
         "pressKeys": "按键...",
-        "save": "节省",
+        "save": "保存",
         "cancel": "取消",
         "reset": "重置"
       },
       "messages": {
-        "updateSuccess": "键绑定更新成功",
-        "updateFailed": "更新键绑定失败",
-        "resetSuccess": "按键绑定重置为默认值",
-        "resetFailed": "重置键绑定失败",
-        "resetAllSuccess": "所有按键重置为默认值",
-        "resetAllFailed": "重置键绑定失败"
+        "updateSuccess": "快捷键更新成功",
+        "updateFailed": "更新快捷键失败",
+        "resetSuccess": "快捷键已重置为默认值",
+        "resetFailed": "重置快捷键失败",
+        "resetAllSuccess": "所有快捷键已重置为默认值",
+        "resetAllFailed": "重置快捷键失败"
       }
     },
     "terminal": {
@@ -585,7 +585,7 @@
         "cursorStyle": "光标样式",
         "cursorBlinking": "光标闪烁",
         "enabled": "已启用",
-        "disabled": "残疾"
+        "disabled": "已禁用"
       },
       "theme": {
         "title": "主题",
@@ -646,19 +646,19 @@
     },
     "ai": {
       "title": "人工智能助理配置",
-      "description": "为终端会话和片段创建配置人工智能驱动的命令生成。",
+      "description": "配置 AI 驱动的命令生成功能，用于终端会话和代码片段。",
       "loading": "加载人工智能设置...",
       "enable": {
-        "title": "启用人工智能助理",
-        "description": "允许用户使用人工智能生成命令"
+        "title": "启用 AI 助手",
+        "description": "允许用户使用 AI 生成命令"
       },
       "provider": {
-        "title": "人工智能提供商",
-        "description": "选择人工智能服务提供商"
+        "title": "AI 提供商",
+        "description": "选择 AI 服务提供商"
       },
       "model": {
-        "title": "模型",
-        "description": "选择用于生成指令的人工智能模型"
+        "title": "AI 模型",
+        "description": "选择用于生成命令的 AI 模型"
       },
       "apiKey": {
         "title": "API 密钥",
@@ -667,8 +667,8 @@
         "setPlaceholder": "已设置 API 密钥（留空以保持最新状态）"
       },
       "ollamaUrl": {
-        "title": "奥拉马网址",
-        "description": "运行 Ollama 实例的 URL",
+        "title": "Ollama 地址",
+        "description": "Ollama 实例的访问地址",
         "placeholder": "http://localhost:11434"
       },
       "selectProvider": "选择提供商...",
@@ -678,12 +678,12 @@
       "saveSettings": "保存设置",
       "testConnection": "测试连接",
       "testing": "测试...",
-      "saveSuccess": "成功保存 AI 设置",
-      "testSuccess": "人工智能连接测试成功",
+      "saveSuccess": "AI 设置保存成功",
+      "testSuccess": "AI 连接测试成功",
       "errors": {
-        "loadSettings": "加载人工智能设置失败",
-        "saveSettings": "保存人工智能设置失败",
-        "testConnection": "人工智能连接测试失败"
+        "loadSettings": "加载 AI 设置失败",
+        "saveSettings": "保存 AI 设置失败",
+        "testConnection": "AI 连接测试失败"
       }
     },
     "identities": {
@@ -757,7 +757,7 @@
         "success": "同步",
         "error": "错误",
         "pending": "待定",
-        "disabled": "残疾"
+        "disabled": "已禁用"
       },
       "dialog": {
         "createTitle": "添加来源",
@@ -819,7 +819,7 @@
       "rdpServer": "RDP 服务器",
       "vncServer": "VNC 服务器",
       "createServer": "创建服务器",
-      "import": "进口",
+      "import": "导入",
       "pve": "PVE",
       "sshConfig": "SSH 配置",
       "connect": "连接",
@@ -846,7 +846,7 @@
         "settings": "设置"
       },
       "actions": {
-        "save": "节省",
+        "save": "保存",
         "create": "创建"
       },
       "fields": {
@@ -864,10 +864,10 @@
       "placeholders": {
         "serverName": "服务器名称",
         "serverIp": "服务器 IP",
-        "port": "港口",
+        "port": "端口",
         "username": "用户名",
         "password": "密码",
-        "host": "主持人",
+        "host": "主机",
         "nodeName": "节点名称",
         "vmid": "虚拟机 ID"
       },
@@ -920,7 +920,7 @@
       "fields": {
         "name": "名称",
         "serverIp": "服务器 IP",
-        "port": "港口",
+        "port": "端口",
         "username": "用户名",
         "password": "密码",
         "nodeName": "节点名称（可选）"
@@ -928,13 +928,13 @@
       "placeholders": {
         "name": "名称",
         "serverIp": "服务器 IP",
-        "port": "港口",
+        "port": "端口",
         "username": "用户名（例如 root@pam）",
         "password": "密码",
         "specificNode": "特定节点名称"
       },
       "actions": {
-        "import": "进口",
+        "import": "导入",
         "edit": "编辑"
       }
     },
@@ -962,7 +962,7 @@
       },
       "actions": {
         "cancel": "取消",
-        "import": "进口",
+        "import": "导入",
         "importing": "导入..."
       },
       "messages": {
@@ -986,10 +986,10 @@
       },
       "fileEditor": {
         "title": "文件编辑器",
-        "save": "节省",
+        "save": "保存",
         "cancel": "取消",
         "loading": "正在加载...",
-        "saving": "节约...",
+        "saving": "保存中...",
         "saveSuccess": "文件已成功保存",
         "saveFailed": "保存文件失败",
         "loadFailed": "加载文件失败",
@@ -1001,7 +1001,7 @@
         "rename": "重新命名",
         "delete": "删除",
         "copy": "复制",
-        "cut": "切割",
+        "cut": "剪切",
         "paste": "粘贴",
         "createFolder": "创建文件夹",
         "upload": "上传文件",
@@ -1025,10 +1025,10 @@
       }
     },
     "aiAssistant": {
-      "title": "人工智能助理",
+      "title": "AI 助手",
       "placeholder": "描述您想做的事情...",
       "hint": "按 Enter 生成 - 按 Esc 关闭",
-      "closeLabel": "关闭人工智能助理"
+      "closeLabel": "关闭 AI 助手"
     },
     "snippets": {
       "title": "片段",
