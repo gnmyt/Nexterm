@@ -13,9 +13,13 @@
   align-items: center
   z-index: 10000
   justify-content: center
+  -webkit-backdrop-filter: blur(0.3rem)
   backdrop-filter: blur(0.3rem)
   transition: all 0.2s
   isolation: isolate
+
+  @supports not (backdrop-filter: blur(0.3rem))
+    background-color: rgba(0, 0, 0, 0.7)
 
 .dialog-area-hidden
   opacity: 0
