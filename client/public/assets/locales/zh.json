@@ -1012,7 +1012,7 @@
       "fields": {
         "name": "名称",
         "icon": "图标",
-        "serverIp": "服务器 IP",
+        "serverIp": "Host",
         "port": "端口",
         "protocol": "协议",
         "username": "用户名",
@@ -1023,7 +1023,7 @@
       },
       "placeholders": {
         "serverName": "服务器名称",
-        "serverIp": "服务器 IP",
+        "serverIp": "Hostname or IP",
         "port": "端口",
         "username": "用户名",
         "password": "密码",
