@@ -1012,7 +1012,7 @@
       "fields": {
         "name": "Nom",
         "icon": "Icône",
-        "serverIp": "Serveur-IP",
+        "serverIp": "Host",
         "port": "Port",
         "protocol": "Protocole",
         "username": "Nom d'utilisateur",
@@ -1023,7 +1023,7 @@
       },
       "placeholders": {
         "serverName": "Nom du serveur",
-        "serverIp": "Serveur-IP",
+        "serverIp": "Hostname or IP",
         "port": "Port",
         "username": "Nom d'utilisateur",
         "password": "Mot de passe",
