@@ -30,11 +30,11 @@ features:
     title: Organizations
     details: Seamlessly share server access with your team members.
   - icon: ✂️
-    title: Snippets
+    title: [Snippets](./scripts&snippets.md)
     details: Create and manage snippets for quick access to commands.
-  - icon: 📜
-    title: Scripts
-    details: Automate repetitive tasks with customizable scripts.
+  - icon: 📦
+    title: Apps
+    details: Automate app installations and configurations with apps.
 
 ---
 
