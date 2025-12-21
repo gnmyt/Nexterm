@@ -16,7 +16,6 @@ import { RouteErrorPage } from "@/common/components/ErrorBoundary";
 import TitleBar from "@/common/components/TitleBar";
 
 const Servers = lazy(() => import("@/pages/Servers"));
-const Settings = lazy(() => import("@/pages/Settings"));
 const Snippets = lazy(() => import("@/pages/Snippets"));
 const Monitoring = lazy(() => import("@/pages/Monitoring"));
 const Audit = lazy(() => import("@/pages/Audit"));
@@ -53,7 +52,6 @@ const App = () => {
                 { path: "/monitoring/:serverId", element: <Monitoring /> },
                 { path: "/monitoring/:serverId/:tab", element: <Monitoring /> },
                 { path: "/audit", element: <Audit /> },
-                { path: "/settings/*", element: <Settings/> },
                 { path: "/snippets", element: <Snippets /> }
             ],
         },
