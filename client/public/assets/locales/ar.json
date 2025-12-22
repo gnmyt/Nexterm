@@ -60,6 +60,21 @@
       "logoutConfirmText": "سيتم تسجيل الخروج من حساب {{username}}. هل أنت متأكد؟",
       "navigationConfirmText": "لديك جلسات نشطة. سيؤدي الانتقال إلى مكان آخر إلى قطع الاتصال بجميع الخوادم. هل أنت متأكد؟"
     },
+    "quickAction": {
+      "placeholder": "Search servers, snippets, or navigate...",
+      "noResults": "No results found",
+      "navigation": "Navigation",
+      "settings": "Settings",
+      "navigate": "Navigate",
+      "select": "Select",
+      "close": "Close",
+      "types": {
+        "server": "Server",
+        "snippet": "Snippet",
+        "navigation": "Go to",
+        "settings": "Settings"
+      }
+    },
     "errors": {
       "loadingAuthProviders": "حدث خطأ أثناء تحميل موفري المصادقة: {{error}}",
       "generalError": "حدث خطأ",
@@ -598,6 +613,10 @@
         "search": {
           "title": "بحث",
           "description": "افتح مدخل البحث"
+        },
+        "quickaction": {
+          "title": "Quick Action",
+          "description": "Open the quick action menu"
         },
         "aimenu": {
           "title": "قائمة الذكاء الاصطناعي",
