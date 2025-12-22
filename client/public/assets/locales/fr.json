@@ -1103,6 +1103,13 @@
           "enableAudio": "Activer l'audio",
           "enableAudioDesc": "Diffusez de l'audio depuis le système distant vers votre navigateur"
         },
+        "terminal": {
+          "title": "Terminal Compatibility",
+          "description": "Adjust key behavior for different terminal types",
+          "backspace": "Backspace",
+          "delete": "Delete",
+          "functionKeys": "Function Keys"
+        },
         "noSettings": "Aucun paramètre supplémentaire n'est disponible pour ce type d'entrée."
       },
       "identities": {
