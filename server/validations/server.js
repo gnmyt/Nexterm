@@ -9,6 +9,8 @@ const configValidation = Joi.object({
     nodeName: Joi.string().optional(),
     vmid: Joi.alternatives().try(Joi.string(), Joi.number()).optional(),
     jumpHosts: Joi.array().items(Joi.number()).optional(),
+    macAddress: Joi.string().pattern(/^([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2})$/).allow("").optional(),
+    wakeOnLanEnabled: Joi.boolean().optional(),
 }).unknown(true);
 
 module.exports.createServerValidation = Joi.object({

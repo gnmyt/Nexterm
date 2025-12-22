@@ -11,6 +11,7 @@ const OrganizationMember = require("../models/OrganizationMember");
 const { listIdentities } = require("./identity");
 const { createAuditLog, AUDIT_ACTIONS, RESOURCE_TYPES } = require("./audit");
 const logger = require("../utils/logger");
+const { sendWakeOnLan } = require("../utils/wol");
 
 const validateEntryAccess = async (accountId, entry, errorMessage = "You don't have permission to access this entry") => {
     if (!entry) return { code: 401, message: "Entry does not exist" };
@@ -364,6 +365,8 @@ module.exports.listEntries = async (accountId) => {
                 identities: identities,
                 protocol: entry.config?.protocol,
                 ip: entry.config?.ip,
+                macAddress: entry.config?.macAddress,
+                wakeOnLanEnabled: entry.config?.wakeOnLanEnabled,
             };
         }
 
@@ -591,6 +594,31 @@ module.exports.repositionEntry = async (accountId, entryId, { targetId, placemen
     });
 
     return { success: true };
+};
+
+module.exports.wakeEntry = async (accountId, entryId) => {
+    const entry = await Entry.findByPk(entryId);
+    const accessCheck = await validateEntryAccess(accountId, entry);
+    if (!accessCheck.valid) return accessCheck;
+
+    if (entry.type !== 'server') {
+        return { code: 400, message: "Wake-On-LAN is only supported for server entries" };
+    }
+
+    const config = entry.config || {};
+    const macAddress = config.macAddress;
+
+    if (!macAddress) {
+        return { code: 400, message: "No MAC address configured for this server" };
+    }
+
+    try {
+        await sendWakeOnLan(macAddress);
+        return { success: true };
+    } catch (error) {
+        logger.error(`Failed to send Wake-On-LAN packet to ${macAddress}: ${error.message}`);
+        return { code: 500, message: "Failed to send Wake-On-LAN packet" };
+    }
 };
 
 module.exports.validateEntryAccess = validateEntryAccess;
