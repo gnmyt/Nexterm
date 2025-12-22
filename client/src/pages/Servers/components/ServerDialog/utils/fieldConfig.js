@@ -10,6 +10,7 @@ export const getFieldConfig = (type, protocol) => {
                     showMonitoring: true,
                     showKeyboardLayout: false,
                     allowedAuthTypes: ["password", "ssh", "both"],
+                    showWakeOnLan: true,
                 };
             case "telnet":
                 return {
@@ -19,6 +20,7 @@ export const getFieldConfig = (type, protocol) => {
                     showSettings: true,
                     showMonitoring: false,
                     showKeyboardLayout: false,
+                    showWakeOnLan: true,
                 };
             case "rdp":
                 return {
@@ -32,6 +34,7 @@ export const getFieldConfig = (type, protocol) => {
                     showPerformanceSettings: true,
                     showAudioSettings: true,
                     allowedAuthTypes: ["password-only", "password"],
+                    showWakeOnLan: true,
                 };
             case "vnc":
                 return {
@@ -44,6 +47,7 @@ export const getFieldConfig = (type, protocol) => {
                     showDisplaySettings: true,
                     showAudioSettings: true,
                     allowedAuthTypes: ["password-only", "password"],
+                    showWakeOnLan: true,
                 };
             default:
                 return {
@@ -54,6 +58,7 @@ export const getFieldConfig = (type, protocol) => {
                     showMonitoring: true,
                     showKeyboardLayout: true,
                     allowedAuthTypes: ["password", "ssh", "both"],
+                    showWakeOnLan: true,
                 };
         }
     }
@@ -119,7 +124,7 @@ export const getAvailableTabs = (type, protocol) => {
         tabs.push({ key: "identities", label: "servers.dialog.tabs.identities" });
     }
 
-    if (config.showSettings && (config.showMonitoring || config.showKeyboardLayout || config.showDisplaySettings || config.showAudioSettings)) {
+    if (config.showSettings && (config.showMonitoring || config.showKeyboardLayout || config.showDisplaySettings || config.showAudioSettings || config.showWakeOnLan)) {
         tabs.push({ key: "settings", label: "servers.dialog.tabs.settings" });
     }
 

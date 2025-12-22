@@ -18,7 +18,7 @@ import {
     mdiPencil,
     mdiPower,
     mdiServerMinus,
-    mdiServerPlus,
+    mdiPowerPlug,
     mdiStop,
     mdiAccountCircle,
     mdiImport,
@@ -40,6 +40,7 @@ import ProxmoxLogo from "./assets/proxmox.jsx";
 import TagsSubmenu from "./components/TagsSubmenu";
 import ScriptsMenu from "./components/ScriptsMenu";
 import Fuse from "fuse.js";
+import { useToast } from "@/common/contexts/ToastContext.jsx";
 
 const flattenEntries = (entries, path = []) => entries.flatMap(entry =>
     entry.type === "folder" || entry.type === "organization"
@@ -95,6 +96,7 @@ export const ServerList = ({
     const { t } = useTranslation();
     const { servers, loadServers, getServerById } = useContext(ServerContext);
     const { identities } = useContext(IdentityContext);
+    const { sendToast } = useToast();
     const [search, setSearch] = useState("");
     const [selectedTags, setSelectedTags] = useState([]);
     const [showTagFilter, setShowTagFilter] = useState(false);
@@ -160,6 +162,17 @@ export const ServerList = ({
     const closeScriptsMenu = () => {
         setScriptsMenuOpen(false);
         setScriptsMenuServer(null);
+    };
+
+    const wakeServer = async () => {
+        if (!server) return;
+
+        try {
+            await postRequest(`entries/${server.id}/wake`);
+            sendToast("Success", t("servers.wol.successDescription", { name: server.name }));
+        } catch (error) {
+            sendToast("Error", t("servers.wol.errorDescription"));
+        }
     };
 
     const { isDragging, clientOffset } = useDragLayer((monitor) => ({
@@ -640,6 +653,14 @@ export const ServerList = ({
                                         icon={mdiCursorDefaultClick}
                                         label={t("servers.contextMenu.quickConnect")}
                                         onClick={() => openDirectConnect(server)}
+                                    />
+                                )}
+
+                                {server?.wakeOnLanEnabled && server?.macAddress && (
+                                    <ContextMenuItem
+                                        icon={mdiPowerPlug}
+                                        label={t("servers.contextMenu.wakeOnLan")}
+                                        onClick={wakeServer}
                                     />
                                 )}
 

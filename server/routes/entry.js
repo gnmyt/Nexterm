@@ -1,5 +1,5 @@
 const { Router } = require("express");
-const { createEntry, deleteEntry, editEntry, getEntry, listEntries, duplicateEntry, importSSHConfig, repositionEntry, getRecentConnections } = require("../controllers/entry");
+const { createEntry, deleteEntry, editEntry, getEntry, listEntries, duplicateEntry, importSSHConfig, repositionEntry, getRecentConnections, wakeEntry } = require("../controllers/entry");
 const { createServerValidation, updateServerValidation, repositionServerValidation } = require("../validations/server");
 const { validateSchema } = require("../utils/schema");
 
@@ -164,6 +164,25 @@ app.patch("/:entryId/reposition", async (req, res) => {
     if (result?.code) return res.json(result);
 
     res.json({ message: "Entry successfully repositioned" });
+});
+
+/**
+ * POST /entry/{entryId}/wake
+ * @summary Wake Entry Server
+ * @description Sends a Wake-On-LAN magic packet to wake up a server. Requires the server to have a MAC address configured.
+ * @tags Entry
+ * @produces application/json
+ * @security BearerAuth
+ * @param {string} entryId.path.required - The unique identifier of the entry to wake
+ * @return {object} 200 - Wake-On-LAN packet sent successfully
+ * @return {object} 400 - No MAC address configured or entry type not supported
+ * @return {object} 404 - Entry not found
+ */
+app.post("/:entryId/wake", async (req, res) => {
+    const result = await wakeEntry(req.user.id, req.params.entryId);
+    if (result?.code) return res.json(result);
+
+    res.json({ message: "Wake-On-LAN packet sent successfully" });
 });
 
 module.exports = app;
