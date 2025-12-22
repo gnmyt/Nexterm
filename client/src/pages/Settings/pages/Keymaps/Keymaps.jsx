@@ -2,13 +2,14 @@ import "./styles.sass";
 import { useKeymaps } from "@/common/contexts/KeymapContext.jsx";
 import { useEffect, useState } from "react";
 import Button from "@/common/components/Button";
-import { mdiRestore, mdiMagnify, mdiRobotOutline, mdiCodeArray, mdiKeyboard, mdiBroadcast, mdiContentCopy, mdiFullscreen } from "@mdi/js";
+import { mdiRestore, mdiMagnify, mdiRobotOutline, mdiCodeArray, mdiKeyboard, mdiBroadcast, mdiContentCopy, mdiFullscreen, mdiFlash } from "@mdi/js";
 import Icon from "@mdi/react";
 import { useTranslation } from "react-i18next";
 import { useToast } from "@/common/contexts/ToastContext.jsx";
 
 const KEYMAP_ICONS = {
     "search": mdiMagnify,
+    "quick-action": mdiFlash,
     "ai-menu": mdiRobotOutline,
     "snippets": mdiCodeArray,
     "keyboard-shortcuts": mdiKeyboard,
