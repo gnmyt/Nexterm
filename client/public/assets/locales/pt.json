@@ -1000,11 +1000,16 @@
       "editIntegration": "Editar Integração",
       "duplicateServer": "Duplicar Servidor",
       "deleteServer": "Excluir Servidor",
+      "wakeOnLan": "Wake-On-LAN",
       "editPVE": "Editar PVE",
       "deletePVE": "Excluir PVE",
       "shutdown": "Desligar",
       "stop": "Parar",
       "start": "Iniciar"
+    },
+    "wol": {
+      "successDescription": "Magic packet sent to {{name}}",
+      "errorDescription": "Failed to send magic packet"
     },
     "messages": {
       "fillRequiredFields": "Por favor, preencha todos os campos obrigatórios",
@@ -1038,7 +1043,8 @@
         "password": "Senha",
         "host": "Host",
         "nodeName": "Nome do Node",
-        "vmid": "VM ID"
+        "vmid": "VM ID",
+        "macAddress": "MAC Address"
       },
       "placeholders": {
         "serverName": "Nome do servidor",
@@ -1048,7 +1054,8 @@
         "password": "Senha",
         "host": "Host",
         "nodeName": "Nome do node",
-        "vmid": "VM ID"
+        "vmid": "VM ID",
+        "macAddress": "AA:BB:CC:DD:EE:FF"
       },
       "settings": {
         "jumpHosts": {
@@ -1061,6 +1068,10 @@
         "monitoring": {
           "title": "Habilitar o Monitoramento de Desempenho",
           "description": "Coletar métricas de CPU, memória, disco e rede para este servidor"
+        },
+        "wakeOnLan": {
+          "title": "Enable Wake-On-LAN",
+          "description": "Allow waking this server remotely using its MAC address"
         },
         "keyboardLayout": {
           "title": "Layout do Teclado",
