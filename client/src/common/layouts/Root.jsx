@@ -11,6 +11,7 @@ import { HTML5Backend } from "react-dnd-html5-backend";
 import { SessionProvider } from "@/common/contexts/SessionContext.jsx";
 import { SnippetProvider } from "@/common/contexts/SnippetContext.jsx";
 import { ScriptProvider } from "@/common/contexts/ScriptContext.jsx";
+import { QuickActionProvider } from "@/common/contexts/QuickActionContext.jsx";
 import { Suspense, lazy, useState, useEffect } from "react";
 import Loading from "@/common/components/Loading";
 import { ErrorBoundary } from "@/common/components/ErrorBoundary";
@@ -46,19 +47,21 @@ const AppContent = () => {
                             <SnippetProvider>
                                 <ScriptProvider>
                                     <SessionProvider>
-                                        <div className="app-wrapper">
-                                            <TitleBar />
-                                            <div className="content-wrapper">
-                                                <Suspense fallback={<Loading />}>
-                                                    <Sidebar />
-                                                </Suspense>
-                                                <div className="main-content">
+                                        <QuickActionProvider>
+                                            <div className="app-wrapper">
+                                                <TitleBar />
+                                                <div className="content-wrapper">
                                                     <Suspense fallback={<Loading />}>
-                                                        <Outlet />
+                                                        <Sidebar />
                                                     </Suspense>
+                                                    <div className="main-content">
+                                                        <Suspense fallback={<Loading />}>
+                                                            <Outlet />
+                                                        </Suspense>
+                                                    </div>
                                                 </div>
                                             </div>
-                                        </div>
+                                        </QuickActionProvider>
                                     </SessionProvider>
                                 </ScriptProvider>
                             </SnippetProvider>
