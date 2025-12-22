@@ -60,6 +60,21 @@
       "logoutConfirmText": "Du wirst aus dem Account {{username}} ausgeloggt. Möchtest du fortfahren?",
       "navigationConfirmText": "Du hast noch aktive Sitzungen laufen, die dann durch diese Aktion alle auf einmal getrennt werden. Ungespeicherte Änderungen können verloren gehen, möchtest du fortfahren?"
     },
+    "quickAction": {
+      "placeholder": "Search servers, snippets, or navigate...",
+      "noResults": "No results found",
+      "navigation": "Navigation",
+      "settings": "Settings",
+      "navigate": "Navigate",
+      "select": "Select",
+      "close": "Close",
+      "types": {
+        "server": "Server",
+        "snippet": "Snippet",
+        "navigation": "Go to",
+        "settings": "Settings"
+      }
+    },
     "errors": {
       "loadingAuthProviders": "Es konnte keine Verbindung zum Provider aufgebaut werden: {{error}}",
       "generalError": "Ein Fehler ist aufgetreten",
@@ -598,6 +613,10 @@
         "search": {
           "title": "Suche",
           "description": "Öffne die Sucheingabe"
+        },
+        "quickaction": {
+          "title": "Quick Action",
+          "description": "Open the quick action menu"
         },
         "aimenu": {
           "title": "AI-Menü",
