@@ -1103,6 +1103,13 @@
           "enableAudio": "开启音频",
           "enableAudioDesc": "将音频从远程系统串流到浏览器"
         },
+        "terminal": {
+          "title": "Terminal Compatibility",
+          "description": "Adjust key behavior for different terminal types",
+          "backspace": "Backspace",
+          "delete": "Delete",
+          "functionKeys": "Function Keys"
+        },
         "noSettings": "此条目类型无可用附加设置。"
       },
       "identities": {
