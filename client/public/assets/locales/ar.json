@@ -1000,11 +1000,16 @@
       "editIntegration": "تحرير التكامل",
       "duplicateServer": "تكرار الخادم",
       "deleteServer": "حذف الخادم",
+      "wakeOnLan": "Wake-On-LAN",
       "editPVE": "تحرير PVE",
       "deletePVE": "حذف PVE",
       "shutdown": "إغلاق",
       "stop": "إيقاف",
       "start": "بدء"
+    },
+    "wol": {
+      "successDescription": "Magic packet sent to {{name}}",
+      "errorDescription": "Failed to send magic packet"
     },
     "messages": {
       "fillRequiredFields": "يرجى ملء جميع الحقول المطلوبة",
@@ -1038,7 +1043,8 @@
         "password": "كلمة المرور",
         "host": "المضيف",
         "nodeName": "اسم العقدة",
-        "vmid": "معرف الجهاز الافتراضي"
+        "vmid": "معرف الجهاز الافتراضي",
+        "macAddress": "MAC Address"
       },
       "placeholders": {
         "serverName": "اسم الخادم",
@@ -1048,7 +1054,8 @@
         "password": "كلمة المرور",
         "host": "المضيف",
         "nodeName": "اسم العقدة",
-        "vmid": "معرف الجهاز الافتراضي"
+        "vmid": "معرف الجهاز الافتراضي",
+        "macAddress": "AA:BB:CC:DD:EE:FF"
       },
       "settings": {
         "jumpHosts": {
@@ -1061,6 +1068,10 @@
         "monitoring": {
           "title": "تمكين مراقبة الأداء",
           "description": "جمع مقاييس وحدة المعالجة المركزية والذاكرة والقرص والشبكة لهذا الخادم"
+        },
+        "wakeOnLan": {
+          "title": "Enable Wake-On-LAN",
+          "description": "Allow waking this server remotely using its MAC address"
         },
         "keyboardLayout": {
           "title": "تخطيط لوحة المفاتيح",
