@@ -353,7 +353,7 @@
       "overview": {
         "systemInfo": {
           "title": "Informations sur le système",
-          "hostname": "Hostname",
+          "hostname": "Affichage de {{count}} sur {{total}} processus",
           "os": "OS",
           "version": "Version",
           "kernel": "Noyau",
@@ -417,7 +417,7 @@
         "onlineNodes": "Nœuds en ligne",
         "totalCPU": "CPU Total",
         "totalMemory": "Mémoire Totale",
-        "totalStorage": "Total Storage",
+        "totalStorage": "Stockage total",
         "storageUsage": "Utilisation Stockage",
         "cores": "Coeurs",
         "uptime": "Durée de fonctionnement",
@@ -440,7 +440,7 @@
     "pages": {
       "account": "Compte",
       "terminal": "Terminal",
-      "keymaps": "Cartes clés",
+      "keymaps": "Raccourcis",
       "identities": "Identités",
       "sessions": "Sessions",
       "organizations": "Organisations",
@@ -591,7 +591,7 @@
       "browserOn": "{{browser}} {{version}} sur {{os}} {{osVersion}}"
     },
     "keymaps": {
-      "title": "Cartes clés",
+      "title": "Raccourcis",
       "description": "Personnalise les raccourcis clavier pour qu'ils correspondent à ton flux de travail.",
       "resetAll": "Réinitialiser tout",
       "actions": {
@@ -600,7 +600,7 @@
           "description": "Ouvre l'entrée de recherche"
         },
         "aimenu": {
-          "title": "Menu AI",
+          "title": "Menu IA",
           "description": "Ouvre le menu des commandes AI"
         },
         "snippets": {
@@ -708,13 +708,13 @@
           "saveChanges": "Sauvegarder les changements"
         },
         "messages": {
-          "saveFailed": "N'a pas réussi à sauvegarder le fournisseur"
+          "saveFailed": "Échec de l'enregistrement du fournisseur"
         }
       }
     },
     "ai": {
       "title": "Configuration de l'assistant AI",
-      "description": "Configure la génération de commandes alimentée par l'IA pour les sessions de terminal et la création de snippets.",
+      "description": "Configurer la génération de commandes par IA pour les sessions terminales et la création de snippet.",
       "loading": "Chargement des paramètres de l'IA...",
       "enable": {
         "title": "Activer l'assistant AI",
@@ -730,8 +730,8 @@
       },
       "apiKey": {
         "title": "Clé API",
-        "description": "Ta clé API OpenAI pour l'authentification",
-        "placeholder": "Saisis ta clé API OpenAI",
+        "description": "Votre clé API OpenAI pour l'authentification",
+        "placeholder": "Entrez votre clé API OpenAI",
         "setPlaceholder": "La clé API est définie (laisser vide pour rester à jour)"
       },
       "ollamaUrl": {
@@ -739,8 +739,8 @@
         "description": "L'URL où ton instance d'Ollama est en cours d'exécution",
         "placeholder": "http://localhost:11434"
       },
-      "selectProvider": "Choisis un fournisseur...",
-      "selectModel": "Choisis un modèle...",
+      "selectProvider": "Sélectionnez un fournisseur...",
+      "selectModel": "Sélectionnez un modèle...",
       "loadingModels": "Chargement des modèles...",
       "noModels": "Aucun modèle disponible",
       "saveSettings": "Sauvegarder les paramètres",
@@ -782,7 +782,7 @@
         },
         "interval": {
           "title": "Intervalle de collecte",
-          "description": "How often to collect monitoring data (30-600 seconds)"
+          "description": "Fréquence de collecte des données de surveillance (30-600 secondes)"
         },
         "retention": {
           "title": "Rétention de données",
@@ -794,10 +794,10 @@
         "description": "Améliorer la performance de la surveillance et l'utilisation des ressources.",
         "timeout": {
           "title": "Expiration de la connexion",
-          "description": "Maximum time to wait for a server response (5-120 seconds)"
+          "description": "Temps maximum d'attente d'une réponse du serveur (5-120 secondes)"
         },
         "batchSize": {
-          "title": "Batch Size",
+          "title": "Taille de chaque lot",
           "description": "Nombre de serveurs à vérifier simultanément (1-50)"
         }
       },
@@ -808,7 +808,7 @@
     },
     "identities": {
       "title": "Clés et justificatifs SSH",
-      "description": "Gère tes clés SSH et tes identifiants de connexion au serveur.",
+      "description": "Gérer vos clés SSH et vos identifiants de connexion pour les connexions au serveur",
       "createIdentity": "Créer une identité",
       "personal": "Personnel",
       "noUsername": "Pas de nom d'utilisateur",
@@ -817,8 +817,8 @@
       "editIdentity": "Modifier l'identité",
       "deleteIdentity": "Supprimer l'identité",
       "noIdentities": "Aucune identité trouvée",
-      "noIdentitiesDescription": "Crée ta première identité pour commencer à établir des connexions avec le serveur.",
-      "deleteConfirm": "Es-tu sûr de vouloir supprimer \"{{name}}\" ? Cette action ne peut pas être annulée et supprimera cette identité de tous les serveurs qui l'utilisent.",
+      "noIdentitiesDescription": "Créez votre première identité pour commencer avec les connexions de serveur",
+      "deleteConfirm": "Êtes-vous sûr de vouloir supprimer \"{{name}}\" ? Cette action ne peut pas être annulée et supprimera cette identité de tous les serveurs qui l'utilisent.",
       "deleteSuccess": "Identité supprimée avec succès",
       "deleteError": "Échec de la suppression de l'identité",
       "dialog": {
@@ -832,11 +832,11 @@
           "authType": "Type d'authentification",
           "password": "Mot de passe",
           "passwordPlaceholder": "Saisis le mot de passe",
-          "passwordPlaceholderEdit": "Laisse en blanc pour conserver le mot de passe actuel",
+          "passwordPlaceholderEdit": "Laissez vide pour conserver le mot de passe actuel",
           "sshKey": "Clé privée SSH",
           "passphrase": "Phrase de passe (facultatif)",
           "passphrasePlaceholder": "Saisir la phrase d'authentification (facultatif)",
-          "passphrasePlaceholderEdit": "Laisse en blanc pour conserver la phrase de passe actuelle"
+          "passphrasePlaceholderEdit": "Laisser vide pour conserver le mot de passe actuel"
         },
         "authTypes": {
           "password": "Mot de passe",
@@ -870,10 +870,10 @@
       "snippets": "extraits",
       "scripts": "scripts",
       "neverSynced": "Jamais synchronisé",
-      "sync": "Synchronise-toi maintenant",
+      "sync": "Synchroniser maintenant",
       "edit": "Éditer",
       "delete": "Supprimer",
-      "deleteConfirm": "Es-tu sûr de vouloir supprimer la source \"{{name}}\" ? Tous les scripts et snippets synchronisés de cette source seront également supprimés.",
+      "deleteConfirm": "Êtes-vous sûr de vouloir supprimer la source \"{{name}}\" ? Tous les scripts et extraits synchronisés de cette source seront également supprimés.",
       "status": {
         "success": "Synchronisé",
         "error": "Erreur",
@@ -1049,7 +1049,7 @@
         },
         "display": {
           "title": "Paramètres d'affichage",
-          "description": "Configure color depth and resize behavior for the remote display",
+          "description": "Configure la profondeur des couleurs et le comportement de redimensionnement pour l'affichage à distance",
           "colorDepth": "Profondeur couleur",
           "resizeMethod": "Méthode de redimensionnement"
         },
@@ -1059,7 +1059,7 @@
           "enableWallpaper": "Activer le fond d'écran",
           "enableWallpaperDesc": "Afficher le fond d'écran du bureau sur le système distant",
           "enableTheming": "Activer le thème",
-          "enableThemingDesc": "Use themed windows and controls on the remote system",
+          "enableThemingDesc": "Utilise un thème personnalisé pour les fenêtres et les commandes sur le système distant",
           "enableFontSmoothing": "Activer le lissage des polices",
           "enableFontSmoothingDesc": "Rendre le texte avec des bords lisses pour une meilleure lisibilité",
           "enableFullWindowDrag": "Activer le glissement de la fenêtre complète",
@@ -1231,9 +1231,9 @@
       "generating": "Génération de la commande...",
       "generatedCommand": "Commande générée",
       "useCommand": "Utiliser la commande",
-      "tryAgain": "Try Again",
-      "copy": "Copy to clipboard",
-      "error": "Failed to generate command. Please try again."
+      "tryAgain": "Réessayer",
+      "copy": "Copier dans le Presse-papier",
+      "error": "Impossible de générer la commande. Veuillez réessayer."
     },
     "snippets": {
       "title": "Bribes",
