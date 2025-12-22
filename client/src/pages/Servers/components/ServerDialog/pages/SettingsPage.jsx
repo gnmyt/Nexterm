@@ -56,6 +56,7 @@ const SettingsPage = ({ config, setConfig, monitoringEnabled, setMonitoringEnabl
     const [enableFullWindowDrag, setEnableFullWindowDrag] = useState(config?.enableFullWindowDrag === true);
     const [enableDesktopComposition, setEnableDesktopComposition] = useState(config?.enableDesktopComposition === true);
     const [enableMenuAnimations, setEnableMenuAnimations] = useState(config?.enableMenuAnimations === true);
+    const [wakeOnLanEnabled, setWakeOnLanEnabled] = useState(config?.wakeOnLanEnabled === true);
 
     const handleKeyboardLayoutChange = (newLayout) => {
         setKeyboardLayout(newLayout);
@@ -81,6 +82,7 @@ const SettingsPage = ({ config, setConfig, monitoringEnabled, setMonitoringEnabl
         if (config?.enableFullWindowDrag !== undefined) setEnableFullWindowDrag(config.enableFullWindowDrag);
         if (config?.enableDesktopComposition !== undefined) setEnableDesktopComposition(config.enableDesktopComposition);
         if (config?.enableMenuAnimations !== undefined) setEnableMenuAnimations(config.enableMenuAnimations);
+        if (config?.wakeOnLanEnabled !== undefined) setWakeOnLanEnabled(config.wakeOnLanEnabled);
     }, [config]);
 
     useEffect(() => {
@@ -136,7 +138,7 @@ const SettingsPage = ({ config, setConfig, monitoringEnabled, setMonitoringEnabl
 
     const showJumpHosts = config?.protocol === 'ssh';
 
-    if (!fieldConfig.showMonitoring && !fieldConfig.showKeyboardLayout && !fieldConfig.showDisplaySettings && !fieldConfig.showAudioSettings && !showJumpHosts) {
+    if (!fieldConfig.showMonitoring && !fieldConfig.showKeyboardLayout && !fieldConfig.showDisplaySettings && !fieldConfig.showAudioSettings && !fieldConfig.showWakeOnLan && !showJumpHosts) {
         return <p className="text-center">{t('servers.dialog.settings.noSettings')}</p>;
     }
 
@@ -216,6 +218,21 @@ const SettingsPage = ({ config, setConfig, monitoringEnabled, setMonitoringEnabl
                         </span>
                     </div>
                     <ToggleSwitch checked={monitoringEnabled} onChange={setMonitoringEnabled} id="monitoring-toggle" />
+                </div>
+            )}
+
+            {fieldConfig.showWakeOnLan && (
+                <div className="settings-toggle">
+                    <div className="settings-toggle-info">
+                        <span className="settings-toggle-label">
+                            <Icon path={mdiPowerPlug} size={0.8} style={{ marginRight: '8px', verticalAlign: 'middle' }} />
+                            {t('servers.dialog.settings.wakeOnLan.title')}
+                        </span>
+                        <span className="settings-toggle-description">
+                            {t('servers.dialog.settings.wakeOnLan.description')}
+                        </span>
+                    </div>
+                    <ToggleSwitch checked={wakeOnLanEnabled} onChange={(val) => handleDisplaySettingChange('wakeOnLanEnabled', val, setWakeOnLanEnabled)} id="wake-on-lan-toggle" />
                 </div>
             )}
 
