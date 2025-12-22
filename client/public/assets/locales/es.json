@@ -60,6 +60,21 @@
       "logoutConfirmText": "Esto te desconectará de la cuenta {{username}} . ¿Estás seguro?",
       "navigationConfirmText": "Tienes sesiones activas. Si te alejas, te desconectarás de todos los servidores. ¿Estás seguro?"
     },
+    "quickAction": {
+      "placeholder": "Search servers, snippets, or navigate...",
+      "noResults": "No results found",
+      "navigation": "Navigation",
+      "settings": "Settings",
+      "navigate": "Navigate",
+      "select": "Select",
+      "close": "Close",
+      "types": {
+        "server": "Server",
+        "snippet": "Snippet",
+        "navigation": "Go to",
+        "settings": "Settings"
+      }
+    },
     "errors": {
       "loadingAuthProviders": "Error al cargar los proveedores de autenticación: {{error}}",
       "generalError": "Se ha producido un error",
@@ -598,6 +613,10 @@
         "search": {
           "title": "Busca en",
           "description": "Abre la entrada de búsqueda"
+        },
+        "quickaction": {
+          "title": "Quick Action",
+          "description": "Open the quick action menu"
         },
         "aimenu": {
           "title": "Menú AI",
