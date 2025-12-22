@@ -60,6 +60,21 @@
       "logoutConfirmText": "Isso irá encerrar sua sessão na conta {{username}}. Tem certeza?",
       "navigationConfirmText": "Você tem sessões ativas. Sair deste site irá desconectá-lo de todos os servidores. Você tem certeza?"
     },
+    "quickAction": {
+      "placeholder": "Search servers, snippets, or navigate...",
+      "noResults": "No results found",
+      "navigation": "Navigation",
+      "settings": "Settings",
+      "navigate": "Navigate",
+      "select": "Select",
+      "close": "Close",
+      "types": {
+        "server": "Server",
+        "snippet": "Snippet",
+        "navigation": "Go to",
+        "settings": "Settings"
+      }
+    },
     "errors": {
       "loadingAuthProviders": "Erro ao carregar os provedores de autenticação: {{error}}",
       "generalError": "Ocorreu um erro",
@@ -598,6 +613,10 @@
         "search": {
           "title": "Pesquisar",
           "description": "Abrir a caixa de pesquisa"
+        },
+        "quickaction": {
+          "title": "Quick Action",
+          "description": "Open the quick action menu"
         },
         "aimenu": {
           "title": "Menu de IA",
