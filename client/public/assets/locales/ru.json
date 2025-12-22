@@ -60,6 +60,21 @@
       "logoutConfirmText": "Это приведёт к выходу из аккаунта {{username}}. Вы уверены?",
       "navigationConfirmText": "У вас есть активные сессии. Переход приведёт к отключению от всех серверов. Вы уверены?"
     },
+    "quickAction": {
+      "placeholder": "Search servers, snippets, or navigate...",
+      "noResults": "No results found",
+      "navigation": "Navigation",
+      "settings": "Settings",
+      "navigate": "Navigate",
+      "select": "Select",
+      "close": "Close",
+      "types": {
+        "server": "Server",
+        "snippet": "Snippet",
+        "navigation": "Go to",
+        "settings": "Settings"
+      }
+    },
     "errors": {
       "loadingAuthProviders": "Ошибка загрузки провайдеров аутентификации: {{error}}",
       "generalError": "Произошла ошибка",
@@ -598,6 +613,10 @@
         "search": {
           "title": "Поиск",
           "description": "Открыть поле поиска"
+        },
+        "quickaction": {
+          "title": "Quick Action",
+          "description": "Open the quick action menu"
         },
         "aimenu": {
           "title": "Меню ИИ",
