@@ -22,10 +22,10 @@ import Sources from "@/pages/Settings/pages/Sources";
 import Monitoring from "@/pages/Settings/pages/Monitoring";
 import "./styles.sass";
 
-export const SettingsDialog = ({ open, onClose }) => {
+export const SettingsDialog = ({ open, onClose, initialTab = "account" }) => {
     const { t } = useTranslation();
     const { user, logout } = useContext(UserContext);
-    const [activeTab, setActiveTab] = useState("account");
+    const [activeTab, setActiveTab] = useState(initialTab);
     const [isVisible, setIsVisible] = useState(false);
     const [isClosing, setIsClosing] = useState(false);
     const [logoutDialogOpen, setLogoutDialogOpen] = useState(false);
@@ -63,10 +63,11 @@ export const SettingsDialog = ({ open, onClose }) => {
 
     useEffect(() => {
         if (open) {
+            setActiveTab(initialTab);
             setIsVisible(true);
             setIsClosing(false);
         } else if (isVisible) setIsClosing(true);
-    }, [open]);
+    }, [open, initialTab]);
 
     useEffect(() => {
         if (!open) return;

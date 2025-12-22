@@ -60,6 +60,21 @@
       "logoutConfirmText": "This will log you out of the {{username}} account. Are you sure?",
       "navigationConfirmText": "You have active sessions. Navigating away will disconnect you from all servers. Are you sure?"
     },
+    "quickAction": {
+      "placeholder": "Search servers, snippets, or navigate...",
+      "noResults": "No results found",
+      "navigation": "Navigation",
+      "settings": "Settings",
+      "navigate": "Navigate",
+      "select": "Select",
+      "close": "Close",
+      "types": {
+        "server": "Server",
+        "snippet": "Snippet",
+        "navigation": "Go to",
+        "settings": "Settings"
+      }
+    },
     "errors": {
       "loadingAuthProviders": "Error loading authentication providers: {{error}}",
       "generalError": "An error occurred",
@@ -598,6 +613,10 @@
         "search": {
           "title": "Search",
           "description": "Open the search input"
+        },
+        "quickaction": {
+          "title": "Quick Action",
+          "description": "Open the quick action menu"
         },
         "aimenu": {
           "title": "AI Menu",
