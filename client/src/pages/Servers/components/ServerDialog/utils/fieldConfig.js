@@ -9,6 +9,7 @@ export const getFieldConfig = (type, protocol) => {
                     showSettings: true,
                     showMonitoring: true,
                     showKeyboardLayout: false,
+                    showTerminalSettings: true,
                     allowedAuthTypes: ["password", "ssh", "both"],
                     showWakeOnLan: true,
                 };
@@ -20,6 +21,7 @@ export const getFieldConfig = (type, protocol) => {
                     showSettings: true,
                     showMonitoring: false,
                     showKeyboardLayout: false,
+                    showTerminalSettings: true,
                     showWakeOnLan: true,
                 };
             case "rdp":
@@ -124,7 +126,7 @@ export const getAvailableTabs = (type, protocol) => {
         tabs.push({ key: "identities", label: "servers.dialog.tabs.identities" });
     }
 
-    if (config.showSettings && (config.showMonitoring || config.showKeyboardLayout || config.showDisplaySettings || config.showAudioSettings || config.showWakeOnLan)) {
+    if (config.showSettings && (config.showMonitoring || config.showKeyboardLayout || config.showDisplaySettings || config.showAudioSettings || config.showWakeOnLan || config.showTerminalSettings)) {
         tabs.push({ key: "settings", label: "servers.dialog.tabs.settings" });
     }
 
