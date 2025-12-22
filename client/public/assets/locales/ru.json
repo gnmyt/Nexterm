@@ -1000,11 +1000,16 @@
       "editIntegration": "Изменить интеграцию",
       "duplicateServer": "Дублировать сервер",
       "deleteServer": "Удалить сервер",
+      "wakeOnLan": "Wake-On-LAN",
       "editPVE": "Изменить PVE",
       "deletePVE": "Удалить PVE",
       "shutdown": "Выключить",
       "stop": "Остановить",
       "start": "Запустить"
+    },
+    "wol": {
+      "successDescription": "Magic packet sent to {{name}}",
+      "errorDescription": "Failed to send magic packet"
     },
     "messages": {
       "fillRequiredFields": "Пожалуйста, заполните все обязательные поля",
@@ -1038,7 +1043,8 @@
         "password": "Пароль",
         "host": "Хост",
         "nodeName": "Имя узла",
-        "vmid": "ID виртуальной машины"
+        "vmid": "ID виртуальной машины",
+        "macAddress": "MAC Address"
       },
       "placeholders": {
         "serverName": "Название сервера",
@@ -1048,7 +1054,8 @@
         "password": "Пароль",
         "host": "Хост",
         "nodeName": "Имя узла",
-        "vmid": "ID виртуальной машины"
+        "vmid": "ID виртуальной машины",
+        "macAddress": "AA:BB:CC:DD:EE:FF"
       },
       "settings": {
         "jumpHosts": {
@@ -1061,6 +1068,10 @@
         "monitoring": {
           "title": "Включить мониторинг производительности",
           "description": "Собирать метрики CPU, памяти, диска и сети для этого сервера"
+        },
+        "wakeOnLan": {
+          "title": "Enable Wake-On-LAN",
+          "description": "Allow waking this server remotely using its MAC address"
         },
         "keyboardLayout": {
           "title": "Раскладка клавиатуры",
