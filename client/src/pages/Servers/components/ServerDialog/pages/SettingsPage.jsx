@@ -3,7 +3,7 @@ import SelectBox from "@/common/components/SelectBox";
 import ToggleSwitch from "@/common/components/ToggleSwitch";
 import { ServerContext } from "@/common/contexts/ServerContext.jsx";
 import Icon from "@mdi/react";
-import { mdiServerNetwork, mdiClose, mdiPlus, mdiChartLine, mdiMonitor, mdiPalette, mdiVolumeHigh, mdiPowerPlug } from "@mdi/js";
+import { mdiServerNetwork, mdiClose, mdiPlus, mdiChartLine, mdiMonitor, mdiPalette, mdiVolumeHigh, mdiPowerPlug, mdiKeyboardOutline } from "@mdi/js";
 import { useTranslation } from "react-i18next";
 
 const COLOR_DEPTHS = [
@@ -18,6 +18,22 @@ const RESIZE_METHODS = [
     { label: "Display Update (recommended)", value: "display-update" },
     { label: "Reconnect", value: "reconnect" },
     { label: "None", value: "none" },
+];
+
+const BACKSPACE_MODES = [
+    { label: "DEL", value: "del" },
+    { label: "^H", value: "ctrl-h" },
+];
+
+const DELETE_MODES = [
+    { label: "VT", value: "vt" },
+    { label: "DEL", value: "del" },
+];
+
+const FUNCTION_KEY_MODES = [
+    { label: "Xterm", value: "xterm" },
+    { label: "VT", value: "vt" },
+    { label: "Linux", value: "linux" },
 ];
 
 const KEYBOARD_LAYOUTS = [
@@ -57,6 +73,9 @@ const SettingsPage = ({ config, setConfig, monitoringEnabled, setMonitoringEnabl
     const [enableDesktopComposition, setEnableDesktopComposition] = useState(config?.enableDesktopComposition === true);
     const [enableMenuAnimations, setEnableMenuAnimations] = useState(config?.enableMenuAnimations === true);
     const [wakeOnLanEnabled, setWakeOnLanEnabled] = useState(config?.wakeOnLanEnabled === true);
+    const [backspaceMode, setBackspaceMode] = useState(config?.backspaceMode || "del");
+    const [deleteMode, setDeleteMode] = useState(config?.deleteMode || "vt");
+    const [functionKeyMode, setFunctionKeyMode] = useState(config?.functionKeyMode || "xterm");
 
     const handleKeyboardLayoutChange = (newLayout) => {
         setKeyboardLayout(newLayout);
@@ -83,6 +102,9 @@ const SettingsPage = ({ config, setConfig, monitoringEnabled, setMonitoringEnabl
         if (config?.enableDesktopComposition !== undefined) setEnableDesktopComposition(config.enableDesktopComposition);
         if (config?.enableMenuAnimations !== undefined) setEnableMenuAnimations(config.enableMenuAnimations);
         if (config?.wakeOnLanEnabled !== undefined) setWakeOnLanEnabled(config.wakeOnLanEnabled);
+        if (config?.backspaceMode !== undefined) setBackspaceMode(config.backspaceMode);
+        if (config?.deleteMode !== undefined) setDeleteMode(config.deleteMode);
+        if (config?.functionKeyMode !== undefined) setFunctionKeyMode(config.functionKeyMode);
     }, [config]);
 
     useEffect(() => {
@@ -138,7 +160,7 @@ const SettingsPage = ({ config, setConfig, monitoringEnabled, setMonitoringEnabl
 
     const showJumpHosts = config?.protocol === 'ssh';
 
-    if (!fieldConfig.showMonitoring && !fieldConfig.showKeyboardLayout && !fieldConfig.showDisplaySettings && !fieldConfig.showAudioSettings && !fieldConfig.showWakeOnLan && !showJumpHosts) {
+    if (!fieldConfig.showMonitoring && !fieldConfig.showKeyboardLayout && !fieldConfig.showDisplaySettings && !fieldConfig.showAudioSettings && !fieldConfig.showWakeOnLan && !fieldConfig.showTerminalSettings && !showJumpHosts) {
         return <p className="text-center">{t('servers.dialog.settings.noSettings')}</p>;
     }
 
@@ -233,6 +255,49 @@ const SettingsPage = ({ config, setConfig, monitoringEnabled, setMonitoringEnabl
                         </span>
                     </div>
                     <ToggleSwitch checked={wakeOnLanEnabled} onChange={(val) => handleDisplaySettingChange('wakeOnLanEnabled', val, setWakeOnLanEnabled)} id="wake-on-lan-toggle" />
+                </div>
+            )}
+
+            {fieldConfig.showTerminalSettings && (
+                <div className="jump-hosts-section">
+                    <div className="jump-hosts-header">
+                        <div className="jump-hosts-info">
+                            <span className="jump-hosts-label">
+                                <Icon path={mdiKeyboardOutline} size={0.8} style={{ marginRight: '8px', verticalAlign: 'middle' }} />
+                                {t('servers.dialog.settings.terminal.title')}
+                            </span>
+                            <span className="jump-hosts-description">
+                                {t('servers.dialog.settings.terminal.description')}
+                            </span>
+                        </div>
+                    </div>
+
+                    <div className="terminal-settings-grid">
+                        <div className="form-group">
+                            <label>{t('servers.dialog.settings.terminal.backspace')}</label>
+                            <SelectBox 
+                                options={BACKSPACE_MODES} 
+                                selected={backspaceMode} 
+                                setSelected={(val) => handleDisplaySettingChange('backspaceMode', val, setBackspaceMode)} 
+                            />
+                        </div>
+                        <div className="form-group">
+                            <label>{t('servers.dialog.settings.terminal.delete')}</label>
+                            <SelectBox 
+                                options={DELETE_MODES} 
+                                selected={deleteMode} 
+                                setSelected={(val) => handleDisplaySettingChange('deleteMode', val, setDeleteMode)} 
+                            />
+                        </div>
+                        <div className="form-group">
+                            <label>{t('servers.dialog.settings.terminal.functionKeys')}</label>
+                            <SelectBox 
+                                options={FUNCTION_KEY_MODES} 
+                                selected={functionKeyMode} 
+                                setSelected={(val) => handleDisplaySettingChange('functionKeyMode', val, setFunctionKeyMode)} 
+                            />
+                        </div>
+                    </div>
                 </div>
             )}
 

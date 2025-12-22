@@ -514,6 +514,21 @@
     &:hover
       background-color: colors.$dark-gray
 
+    .terminal-settings-grid
+      display: grid
+      grid-template-columns: repeat(3, 1fr)
+      gap: 0.5rem
+
+      .form-group
+        display: flex
+        flex-direction: column
+        gap: 0.375rem
+
+        label
+          font-size: 0.75rem
+          color: colors.$subtext
+          font-weight: 600
+
     .settings-toggle
       border: none
       padding: 0.5rem 0

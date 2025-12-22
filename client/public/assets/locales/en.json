@@ -1099,6 +1099,13 @@
           "enableAudio": "Enable Audio",
           "enableAudioDesc": "Stream audio from the remote system to your browser"
         },
+        "terminal": {
+          "title": "Terminal Compatibility",
+          "description": "Adjust key behavior for different terminal types",
+          "backspace": "Backspace",
+          "delete": "Delete",
+          "functionKeys": "Function Keys"
+        },
         "noSettings": "No additional settings available for this entry type."
       },
       "identities": {
