@@ -2508,104 +2508,104 @@ safe-regex-test@^1.1.0:
     es-errors "^1.3.0"
     is-regex "^1.2.1"
 
-sass-embedded-all-unknown@1.97.0:
-  version "1.97.0"
-  resolved "https://registry.yarnpkg.com/sass-embedded-all-unknown/-/sass-embedded-all-unknown-1.97.0.tgz#3a55a58654ddabe5d93138ccdb740734207ed59a"
-  integrity sha512-9F6MyQcwp3YiuGMk5bC7g9jL+D1KkW/ONQgrkoTQ7ALcmoPKmsauZg5WgRhLYW9UhpnGTgANrWrZdiREAR1YkA==
+sass-embedded-all-unknown@1.97.1:
+  version "1.97.1"
+  resolved "https://registry.yarnpkg.com/sass-embedded-all-unknown/-/sass-embedded-all-unknown-1.97.1.tgz#52bea9b0552d13015160141a8a9d224d16873a2e"
+  integrity sha512-0au5gUNibfob7W/g+ycBx74O22CL8vwHiZdEDY6J0uzMkHPiSJk//h0iRf5AUnMArFHJjFd3urIiQIaoRKYa1Q==
   dependencies:
-    sass "1.97.0"
+    sass "1.97.1"
 
-sass-embedded-android-arm64@1.97.0:
-  version "1.97.0"
-  resolved "https://registry.yarnpkg.com/sass-embedded-android-arm64/-/sass-embedded-android-arm64-1.97.0.tgz#fb6ed14dfbe40fe257b38bf37f4e0fbe30479d86"
-  integrity sha512-uDG/0DS6A+KRiOYUV1UNHBq67DHvO+/54Ja+dg8S5fl5uvPwZGHpJFheemA9R6vvddwyjGmzVacvCQxdmECcfQ==
+sass-embedded-android-arm64@1.97.1:
+  version "1.97.1"
+  resolved "https://registry.yarnpkg.com/sass-embedded-android-arm64/-/sass-embedded-android-arm64-1.97.1.tgz#a825d123f0a462c11d323fdac9eecc108e454596"
+  integrity sha512-h62DmOiS2Jn87s8+8GhJcMerJnTKa1IsIa9iIKjLiqbAvBDKCGUs027RugZkM+Zx7I+vhPq86PUXBYZ9EkRxdw==
 
-sass-embedded-android-arm@1.97.0:
-  version "1.97.0"
-  resolved "https://registry.yarnpkg.com/sass-embedded-android-arm/-/sass-embedded-android-arm-1.97.0.tgz#b581d51a6351632f13da91072352a12e7ff9bc1c"
-  integrity sha512-VLxeVR5FMwSZoOliBY8Qy2trZCWYz3w4ILf0QZ68eep3mIQjtykY3BSKC2R/w9DkPQDNJXdgbgnxeOubC8k5xw==
+sass-embedded-android-arm@1.97.1:
+  version "1.97.1"
+  resolved "https://registry.yarnpkg.com/sass-embedded-android-arm/-/sass-embedded-android-arm-1.97.1.tgz#b247c5a4ba86ecce39e4e413ec6911ddf172df1e"
+  integrity sha512-B5dlv4utJ+yC8ZpBeWTHwSZPVKRlqA8pcaD0FAzeNm/DelIFgQUQtt0UwgYoAI6wDIiie5uSVpMK9l2DaCbiBQ==
 
-sass-embedded-android-riscv64@1.97.0:
-  version "1.97.0"
-  resolved "https://registry.yarnpkg.com/sass-embedded-android-riscv64/-/sass-embedded-android-riscv64-1.97.0.tgz#aacd521962ec538c4470c10c712aee85229f3753"
-  integrity sha512-yrwsyPR08CXW5Ggr0kI1jTUcKkBOtjODbDj11nRrBwyrXRqhf1obqfchQxTW0HlYT8VZmZGfnHvPNNDwOSdfZg==
+sass-embedded-android-riscv64@1.97.1:
+  version "1.97.1"
+  resolved "https://registry.yarnpkg.com/sass-embedded-android-riscv64/-/sass-embedded-android-riscv64-1.97.1.tgz#0e518c5a440a79f13df65ade5352c1e67b213eef"
+  integrity sha512-tGup88vgaXPnUHEgDMujrt5rfYadvkiVjRb/45FJTx2hQFoGVbmUXz5XqUFjIIbEjQ3kAJqp86A2jy11s43UiQ==
 
-sass-embedded-android-x64@1.97.0:
-  version "1.97.0"
-  resolved "https://registry.yarnpkg.com/sass-embedded-android-x64/-/sass-embedded-android-x64-1.97.0.tgz#b709612fc1c8d195f7f1afb38e86589f3576bd3f"
-  integrity sha512-a1QW1pFykLCtV8J3AZ+wtrwOx0ORZsW4orF6fOrBYL2sLhlzhB3iK+QzWezFvH5+FMgLQBC4xgYYk4NV9WCO9g==
+sass-embedded-android-x64@1.97.1:
+  version "1.97.1"
+  resolved "https://registry.yarnpkg.com/sass-embedded-android-x64/-/sass-embedded-android-x64-1.97.1.tgz#1ec1037ca7312b21f901b5cf198fd7471ae8d344"
+  integrity sha512-CAzKjjzu90LZduye2O9+UGX1oScMyF5/RVOa5CxACKALeIS+3XL3LVdV47kwKPoBv5B1aFUvGLscY0CR7jBAbg==
 
-sass-embedded-darwin-arm64@1.97.0:
-  version "1.97.0"
-  resolved "https://registry.yarnpkg.com/sass-embedded-darwin-arm64/-/sass-embedded-darwin-arm64-1.97.0.tgz#dad6e82460863258251c40f9b998fbd0975c13e6"
-  integrity sha512-5XV42FEqhQEGFQ/w8HUk///k0XMHLyBt1j2alxTr9ZI77HqiAIl6kVZp0kxJ++gt/y3E6hKoMLngHHC6zIBR5A==
+sass-embedded-darwin-arm64@1.97.1:
+  version "1.97.1"
+  resolved "https://registry.yarnpkg.com/sass-embedded-darwin-arm64/-/sass-embedded-darwin-arm64-1.97.1.tgz#b98e8239035a07eb1f393d492b074a917065dd14"
+  integrity sha512-tyDzspzh5PbqdAFGtVKUXuf0up6Lff3c1U8J7+4Y7jW6AWRBnq95vTzIIxfnNifGCTI2fW5e7GAZpYygKpNwcw==
 
-sass-embedded-darwin-x64@1.97.0:
-  version "1.97.0"
-  resolved "https://registry.yarnpkg.com/sass-embedded-darwin-x64/-/sass-embedded-darwin-x64-1.97.0.tgz#f1f642934ffb7d60e2c7206017169db5e1761283"
-  integrity sha512-Kc0aKFfKPd/kz8mSGtRKTEN7FKnqs30iZf6APb0ZHMuvMVfOfdD+fZ/85htT+j5k2F+UUSFBpbx04W0gZW020A==
+sass-embedded-darwin-x64@1.97.1:
+  version "1.97.1"
+  resolved "https://registry.yarnpkg.com/sass-embedded-darwin-x64/-/sass-embedded-darwin-x64-1.97.1.tgz#d7e83a18cce31ba483fea8bbb97fd864fc0b7565"
+  integrity sha512-FMrRuSPI2ICt2M2SYaLbiG4yxn86D6ae+XtrRdrrBMhWprAcB7Iyu67bgRzZkipMZNIKKeTR7EUvJHgZzi5ixQ==
 
-sass-embedded-linux-arm64@1.97.0:
-  version "1.97.0"
-  resolved "https://registry.yarnpkg.com/sass-embedded-linux-arm64/-/sass-embedded-linux-arm64-1.97.0.tgz#119f3c66d9d57264ad1ed166f181d02e391ea37c"
-  integrity sha512-ofm9esPA9P0sB6wJPcDhQYjSDfa7RoVKD0IHvFPMrK9OLTKg8lw80/afH49a9URYeYiE4wFP76Fr9t+s7A6E1Q==
+sass-embedded-linux-arm64@1.97.1:
+  version "1.97.1"
+  resolved "https://registry.yarnpkg.com/sass-embedded-linux-arm64/-/sass-embedded-linux-arm64-1.97.1.tgz#75958b44672b5e1703d9a7317064fc03aca2c259"
+  integrity sha512-im80gfDWRivw9Su3r3YaZmJaCATcJgu3CsCSLodPk1b1R2+X/E12zEQayvrl05EGT9PDwTtuiqKgS4ND4xjwVg==
 
-sass-embedded-linux-arm@1.97.0:
-  version "1.97.0"
-  resolved "https://registry.yarnpkg.com/sass-embedded-linux-arm/-/sass-embedded-linux-arm-1.97.0.tgz#5f29b9ed0445bbfbdefba457611b3fce428edbea"
-  integrity sha512-pwM5A1+w3l1T/FXwJNqZD0WukCENeRkgxPSpZmsO4/QNLdTpGCz16D5spYPQ7f7GZo9aNaHt1EaDLHCjlEA8LQ==
+sass-embedded-linux-arm@1.97.1:
+  version "1.97.1"
+  resolved "https://registry.yarnpkg.com/sass-embedded-linux-arm/-/sass-embedded-linux-arm-1.97.1.tgz#daf795bd1a73b71daece5558bcfb042f077ae803"
+  integrity sha512-48VxaTUApLyx1NXFdZhKqI/7FYLmz8Ju3Ki2V/p+mhn5raHgAiYeFgn8O1WGxTOh+hBb9y3FdSR5a8MNTbmKMQ==
 
-sass-embedded-linux-musl-arm64@1.97.0:
-  version "1.97.0"
-  resolved "https://registry.yarnpkg.com/sass-embedded-linux-musl-arm64/-/sass-embedded-linux-musl-arm64-1.97.0.tgz#d1133361bc3f9d89ae0514164f6a31516e66e421"
-  integrity sha512-8VF4nc7oUklhUGGAY0T6Ktd9T9ZFwoOsWje7ocOV57tjbocFp/eeAPqX1v2BpiZtMVURyYwaZsRSAL79DT7oRw==
+sass-embedded-linux-musl-arm64@1.97.1:
+  version "1.97.1"
+  resolved "https://registry.yarnpkg.com/sass-embedded-linux-musl-arm64/-/sass-embedded-linux-musl-arm64-1.97.1.tgz#871abaae1b541216d6c0b56987b1196767086b53"
+  integrity sha512-kD35WSD9o0279Ptwid3Jnbovo1FYnuG2mayYk9z4ZI4mweXEK6vTu+tlvCE/MdF/zFKSj11qaxaH+uzXe2cO5A==
 
-sass-embedded-linux-musl-arm@1.97.0:
-  version "1.97.0"
-  resolved "https://registry.yarnpkg.com/sass-embedded-linux-musl-arm/-/sass-embedded-linux-musl-arm-1.97.0.tgz#d9544637d3fc1c8851317b9714a25a26313aa6b5"
-  integrity sha512-+rsW0OreW4sPtdXDewDESxJLJdxW3B0EL7ICajkRFs3KbeNdgOVnP5DJQ39hquAoZH0AcEEGcd6236ZMMzEbwQ==
+sass-embedded-linux-musl-arm@1.97.1:
+  version "1.97.1"
+  resolved "https://registry.yarnpkg.com/sass-embedded-linux-musl-arm/-/sass-embedded-linux-musl-arm-1.97.1.tgz#38563c08803fd84c64f43f1ca9b278c6c472fc37"
+  integrity sha512-FUFs466t3PVViVOKY/60JgLLtl61Pf7OW+g5BeEfuqVcSvYUECVHeiYHtX1fT78PEVa0h9tHpM6XpWti+7WYFA==
 
-sass-embedded-linux-musl-riscv64@1.97.0:
-  version "1.97.0"
-  resolved "https://registry.yarnpkg.com/sass-embedded-linux-musl-riscv64/-/sass-embedded-linux-musl-riscv64-1.97.0.tgz#beff4f6899c83fcfd3754339278b6ec29a01d65d"
-  integrity sha512-nlaeeZ5P7tde/c/aMiIl5UduQZPA9ftEyWJxdmWcs3pASFSykslVJR5D4L161EUHzB5z+MxSnbbzcrck0F1slA==
+sass-embedded-linux-musl-riscv64@1.97.1:
+  version "1.97.1"
+  resolved "https://registry.yarnpkg.com/sass-embedded-linux-musl-riscv64/-/sass-embedded-linux-musl-riscv64-1.97.1.tgz#af2392a299e5f4ff29f3fe71f9088a8ad7cf370c"
+  integrity sha512-ZgpYps5YHuhA2+KiLkPukRbS5298QObgUhPll/gm5i0LOZleKCwrFELpVPcbhsSBuxqji2uaag5OL+n3JRBVVg==
 
-sass-embedded-linux-musl-x64@1.97.0:
-  version "1.97.0"
-  resolved "https://registry.yarnpkg.com/sass-embedded-linux-musl-x64/-/sass-embedded-linux-musl-x64-1.97.0.tgz#84b163870d48f79c8eeb2aa205300b9f15e757dc"
-  integrity sha512-QB6JLr2p1UuEXhiTXEYNypf+w2x/SCMY17vcnXKM47CeaJ88v2C9fJ9oVne6eZntlCylSow/vZCov0JMhklknA==
+sass-embedded-linux-musl-x64@1.97.1:
+  version "1.97.1"
+  resolved "https://registry.yarnpkg.com/sass-embedded-linux-musl-x64/-/sass-embedded-linux-musl-x64-1.97.1.tgz#49cd31f74f69c68a1c1890f5240385d48e68bd7f"
+  integrity sha512-wcAigOyyvZ6o1zVypWV7QLZqpOEVnlBqJr9MbpnRIm74qFTSbAEmShoh8yMXBymzuVSmEbThxAwW01/TLf62tA==
 
-sass-embedded-linux-riscv64@1.97.0:
-  version "1.97.0"
-  resolved "https://registry.yarnpkg.com/sass-embedded-linux-riscv64/-/sass-embedded-linux-riscv64-1.97.0.tgz#0e86ceae6e810d42534f23d1f88f3304369c0dd1"
-  integrity sha512-m7QaK4M+YhQ6FZWMI9O8g4tqmM4JrvzJl/YC/eEJXpfgwxMeXsDsPVQWFiBdWOuxqMSH8WhFksw/Bg0J+kK6VQ==
+sass-embedded-linux-riscv64@1.97.1:
+  version "1.97.1"
+  resolved "https://registry.yarnpkg.com/sass-embedded-linux-riscv64/-/sass-embedded-linux-riscv64-1.97.1.tgz#ab9e3e84b42ffdb24b5e64b773545ee1fdcf4098"
+  integrity sha512-9j1qE1ZrLMuGb+LUmBzw93Z4TNfqlRkkxjPVZy6u5vIggeSfvGbte7eRoYBNWX6SFew/yBCL90KXIirWFSGrlQ==
 
-sass-embedded-linux-x64@1.97.0:
-  version "1.97.0"
-  resolved "https://registry.yarnpkg.com/sass-embedded-linux-x64/-/sass-embedded-linux-x64-1.97.0.tgz#4749b4a8be69f5b7a84411fede4ba8f775a711b2"
-  integrity sha512-yc7yLWJrAtTBCjEAoNxvE040EGYdsgmaWMSyI9LSIOFlSwrOc4x+W/8IMhLWCygTAgorNPuNlRfPDgkQm1sJmw==
+sass-embedded-linux-x64@1.97.1:
+  version "1.97.1"
+  resolved "https://registry.yarnpkg.com/sass-embedded-linux-x64/-/sass-embedded-linux-x64-1.97.1.tgz#470014c3090d628c55b14df6892c0ceb80e62571"
+  integrity sha512-7nrLFYMH/UgvEgXR5JxQJ6y9N4IJmnFnYoDxN0nw0jUp+CQWQL4EJ4RqAKTGelneueRbccvt2sEyPK+X0KJ9Jg==
 
-sass-embedded-unknown-all@1.97.0:
-  version "1.97.0"
-  resolved "https://registry.yarnpkg.com/sass-embedded-unknown-all/-/sass-embedded-unknown-all-1.97.0.tgz#6980152bf10612d33c37c1246717a1c560227e1c"
-  integrity sha512-dDky3ETKeOo543myScL4sp3pj2cANLNKea5aR6v8ZCpDSCDTRxqv4Sj/goTmkVqnp/HOVF88qB3GHtQ8rFtULQ==
+sass-embedded-unknown-all@1.97.1:
+  version "1.97.1"
+  resolved "https://registry.yarnpkg.com/sass-embedded-unknown-all/-/sass-embedded-unknown-all-1.97.1.tgz#ffc63577da2efc980a023033048e7940458f339e"
+  integrity sha512-oPSeKc7vS2dx3ZJHiUhHKcyqNq0GWzAiR8zMVpPd/kVMl5ZfVyw+5HTCxxWDBGkX02lNpou27JkeBPCaneYGAQ==
   dependencies:
-    sass "1.97.0"
+    sass "1.97.1"
 
-sass-embedded-win32-arm64@1.97.0:
-  version "1.97.0"
-  resolved "https://registry.yarnpkg.com/sass-embedded-win32-arm64/-/sass-embedded-win32-arm64-1.97.0.tgz#8346645afb94c0616e5a5504e9a672b235b3cbc2"
-  integrity sha512-JMU2SKIgUJDw4oaKBcVbuobWRU6f2XmFuYqJdkxJhlITAGimwjZ860gttlzjNtZcVI4+p4ovT14HwpsEcIzfnw==
+sass-embedded-win32-arm64@1.97.1:
+  version "1.97.1"
+  resolved "https://registry.yarnpkg.com/sass-embedded-win32-arm64/-/sass-embedded-win32-arm64-1.97.1.tgz#bf3994f2e95f0ac97edda4f8d55ec8661b3534dc"
+  integrity sha512-L5j7J6CbZgHGwcfVedMVpM3z5MYeighcyZE8GF2DVmjWzZI3JtPKNY11wNTD/P9o1Uql10YPOKhGH0iWIXOT7Q==
 
-sass-embedded-win32-x64@1.97.0:
-  version "1.97.0"
-  resolved "https://registry.yarnpkg.com/sass-embedded-win32-x64/-/sass-embedded-win32-x64-1.97.0.tgz#8c9543e18e66a4bc09d1b8c8844e47043a0bf4aa"
-  integrity sha512-mKIJGXxEl6OoWEoT4ee5OsBOfExla2ilY5J8tupVwSCxf/i3aOJNLm7ZzRWG9er2K3bC8aovgMisMIVGlBM5hw==
+sass-embedded-win32-x64@1.97.1:
+  version "1.97.1"
+  resolved "https://registry.yarnpkg.com/sass-embedded-win32-x64/-/sass-embedded-win32-x64-1.97.1.tgz#d77e898d3947467a125844808448a49059e34442"
+  integrity sha512-rfaZAKXU8cW3E7gvdafyD6YtgbEcsDeT99OEiHXRT0UGFuXT8qCOjpAwIKaOA3XXr2d8S42xx6cXcaZ1a+1fgw==
 
-sass-embedded@^1.97.0:
-  version "1.97.0"
-  resolved "https://registry.yarnpkg.com/sass-embedded/-/sass-embedded-1.97.0.tgz#299bc23e189e6c6a706eb773039f3e582df16b14"
-  integrity sha512-Unwu0MtlAt9hQGHutB2NJhwhPcxiJX99AI7PSz7W4lkikQg9S/HYFtgxtIjpTB4DW7sOYX2xnxvtU/nep9HXTA==
+sass-embedded@^1.97.1:
+  version "1.97.1"
+  resolved "https://registry.yarnpkg.com/sass-embedded/-/sass-embedded-1.97.1.tgz#02b617f4ad9dc9590c522d3f10e2e8e03386064a"
+  integrity sha512-wH3CbOThHYGX0bUyqFf7laLKyhVWIFc2lHynitkqMIUCtX2ixH9mQh0bN7+hkUu5BFt/SXvEMjFbkEbBMpQiSQ==
   dependencies:
     "@bufbuild/protobuf" "^2.5.0"
     buffer-builder "^0.2.0"
@@ -2616,29 +2616,29 @@ sass-embedded@^1.97.0:
     sync-child-process "^1.0.2"
     varint "^6.0.0"
   optionalDependencies:
-    sass-embedded-all-unknown "1.97.0"
-    sass-embedded-android-arm "1.97.0"
-    sass-embedded-android-arm64 "1.97.0"
-    sass-embedded-android-riscv64 "1.97.0"
-    sass-embedded-android-x64 "1.97.0"
-    sass-embedded-darwin-arm64 "1.97.0"
-    sass-embedded-darwin-x64 "1.97.0"
-    sass-embedded-linux-arm "1.97.0"
-    sass-embedded-linux-arm64 "1.97.0"
-    sass-embedded-linux-musl-arm "1.97.0"
-    sass-embedded-linux-musl-arm64 "1.97.0"
-    sass-embedded-linux-musl-riscv64 "1.97.0"
-    sass-embedded-linux-musl-x64 "1.97.0"
-    sass-embedded-linux-riscv64 "1.97.0"
-    sass-embedded-linux-x64 "1.97.0"
-    sass-embedded-unknown-all "1.97.0"
-    sass-embedded-win32-arm64 "1.97.0"
-    sass-embedded-win32-x64 "1.97.0"
+    sass-embedded-all-unknown "1.97.1"
+    sass-embedded-android-arm "1.97.1"
+    sass-embedded-android-arm64 "1.97.1"
+    sass-embedded-android-riscv64 "1.97.1"
+    sass-embedded-android-x64 "1.97.1"
+    sass-embedded-darwin-arm64 "1.97.1"
+    sass-embedded-darwin-x64 "1.97.1"
+    sass-embedded-linux-arm "1.97.1"
+    sass-embedded-linux-arm64 "1.97.1"
+    sass-embedded-linux-musl-arm "1.97.1"
+    sass-embedded-linux-musl-arm64 "1.97.1"
+    sass-embedded-linux-musl-riscv64 "1.97.1"
+    sass-embedded-linux-musl-x64 "1.97.1"
+    sass-embedded-linux-riscv64 "1.97.1"
+    sass-embedded-linux-x64 "1.97.1"
+    sass-embedded-unknown-all "1.97.1"
+    sass-embedded-win32-arm64 "1.97.1"
+    sass-embedded-win32-x64 "1.97.1"
 
-sass@1.97.0:
-  version "1.97.0"
-  resolved "https://registry.yarnpkg.com/sass/-/sass-1.97.0.tgz#8ed65df5e2f73012d5ef0e98837ff63550657ab2"
-  integrity sha512-KR0igP1z4avUJetEuIeOdDlwaUDvkH8wSx7FdSjyYBS3dpyX3TzHfAMO0G1Q4/3cdjcmi3r7idh+KCmKqS+KeQ==
+sass@1.97.1:
+  version "1.97.1"
+  resolved "https://registry.yarnpkg.com/sass/-/sass-1.97.1.tgz#f36e492baf8ccdd08d591b58d3d8b53ea35ab905"
+  integrity sha512-uf6HoO8fy6ClsrShvMgaKUn14f2EHQLQRtpsZZLeU/Mv0Q1K5P0+x2uvH6Cub39TVVbWNSrraUhDAoFph6vh0A==
   dependencies:
     chokidar "^4.0.0"
     immutable "^5.0.2"
