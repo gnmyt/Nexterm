@@ -1000,11 +1000,16 @@
       "editIntegration": "编辑集成",
       "duplicateServer": "复制服务器",
       "deleteServer": "删除服务器",
+      "wakeOnLan": "Wake-On-LAN",
       "editPVE": "编辑 PVE",
       "deletePVE": "删除 PVE",
       "shutdown": "关机",
       "stop": "停止",
       "start": "启动"
+    },
+    "wol": {
+      "successDescription": "Magic packet sent to {{name}}",
+      "errorDescription": "Failed to send magic packet"
     },
     "messages": {
       "fillRequiredFields": "请填写所有必填字段",
@@ -1038,7 +1043,8 @@
         "password": "密码",
         "host": "主机",
         "nodeName": "节点名称",
-        "vmid": "虚拟机 ID"
+        "vmid": "虚拟机 ID",
+        "macAddress": "MAC Address"
       },
       "placeholders": {
         "serverName": "服务器名称",
@@ -1048,7 +1054,8 @@
         "password": "密码",
         "host": "主机",
         "nodeName": "节点名称",
-        "vmid": "虚拟机 ID"
+        "vmid": "虚拟机 ID",
+        "macAddress": "AA:BB:CC:DD:EE:FF"
       },
       "settings": {
         "jumpHosts": {
@@ -1061,6 +1068,10 @@
         "monitoring": {
           "title": "启用性能监控",
           "description": "收集此服务器的 CPU、内存、磁盘和网络指标"
+        },
+        "wakeOnLan": {
+          "title": "Enable Wake-On-LAN",
+          "description": "Allow waking this server remotely using its MAC address"
         },
         "keyboardLayout": {
           "title": "键盘布局",
