@@ -60,6 +60,21 @@
       "logoutConfirmText": "此操作将退出 {{username}} 账户。确定继续吗？",
       "navigationConfirmText": "您有活动会话。离开页面将断开所有服务器连接。确定继续吗？"
     },
+    "quickAction": {
+      "placeholder": "Search servers, snippets, or navigate...",
+      "noResults": "No results found",
+      "navigation": "Navigation",
+      "settings": "Settings",
+      "navigate": "Navigate",
+      "select": "Select",
+      "close": "Close",
+      "types": {
+        "server": "Server",
+        "snippet": "Snippet",
+        "navigation": "Go to",
+        "settings": "Settings"
+      }
+    },
     "errors": {
       "loadingAuthProviders": "加载身份验证提供程序时出错：{{error}}",
       "generalError": "发生错误",
@@ -598,6 +613,10 @@
         "search": {
           "title": "搜索",
           "description": "打开搜索输入框"
+        },
+        "quickaction": {
+          "title": "Quick Action",
+          "description": "Open the quick action menu"
         },
         "aimenu": {
           "title": "AI 菜单",
