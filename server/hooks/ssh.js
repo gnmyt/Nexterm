@@ -1,8 +1,9 @@
 const { updateAuditLogWithSessionDuration } = require("../controllers/audit");
 const SessionManager = require("../lib/SessionManager");
 const { parseResizeMessage, setupSSHEventHandlers } = require("../utils/sshEventHandlers");
+const { translateKeys } = require("../utils/keyTranslation");
 
-const setupStreamHandlers = (ws, stream, sessionId = null) => {
+const setupStreamHandlers = (ws, stream, sessionId = null, config = null) => {
     const onData = (data) => ws.readyState === ws.OPEN && ws.send(data.toString());
     stream.on("data", onData);
     ws.on("message", (data) => {
@@ -13,14 +14,15 @@ const setupStreamHandlers = (ws, stream, sessionId = null) => {
             }
         } else {
             if (sessionId) SessionManager.setActiveWs(sessionId, ws);
-            stream.write(data);
+            const translatedData = translateKeys(data, config);
+            stream.write(translatedData);
         }
     });
     return onData;
 };
 
 const handleSharedConnection = (ws, context) => {
-    const { serverSession } = context;
+    const { serverSession, entry } = context;
     const sessionId = serverSession.sessionId;
     const connection = SessionManager.getConnection(sessionId);
     if (!connection?.stream) {
@@ -29,6 +31,7 @@ const handleSharedConnection = (ws, context) => {
     }
     
     const { stream } = connection;
+    const config = entry?.config || null;
     const bufferedLogs = SessionManager.getLogBuffer(sessionId);
     if (bufferedLogs && ws.readyState === ws.OPEN) ws.send(bufferedLogs);
     
@@ -49,7 +52,8 @@ const handleSharedConnection = (ws, context) => {
             }
         } else {
             SessionManager.setActiveWs(sessionId, ws);
-            stream.write(data);
+            const translatedData = translateKeys(data, config);
+            stream.write(translatedData);
         }
     });
     
@@ -62,7 +66,8 @@ const handleSharedConnection = (ws, context) => {
 module.exports = async (ws, context) => {
     if (context.isShared) return handleSharedConnection(ws, context);
 
-    const { auditLogId, serverSession, ssh, reuseConnection } = context;
+    const { auditLogId, serverSession, ssh, reuseConnection, entry } = context;
+    const config = entry?.config || null;
     const connectionStartTime = Date.now();
 
     if (reuseConnection) {
@@ -72,7 +77,7 @@ module.exports = async (ws, context) => {
         
         SessionManager.addWebSocket(serverSession.sessionId, ws);
         SessionManager.setActiveWs(serverSession.sessionId, ws);
-        const onData = setupStreamHandlers(ws, stream, serverSession.sessionId);
+        const onData = setupStreamHandlers(ws, stream, serverSession.sessionId, config);
         const onFirstResize = (data) => {
             const resize = parseResizeMessage(data);
             if (resize) {
@@ -108,7 +113,7 @@ module.exports = async (ws, context) => {
                 SessionManager.setActiveWs(serverSession.sessionId, ws);
                 resolve?.();
             }
-            const onData = setupStreamHandlers(ws, stream, serverSession?.sessionId);
+            const onData = setupStreamHandlers(ws, stream, serverSession?.sessionId, config);
             ws.on("close", async () => {
                 stream.removeListener("data", onData);
                 if (serverSession) SessionManager.removeWebSocket(serverSession.sessionId, ws);

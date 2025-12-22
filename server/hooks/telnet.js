@@ -2,6 +2,7 @@ const net = require("net");
 const { updateAuditLogWithSessionDuration } = require("../controllers/audit");
 const SessionManager = require("../lib/SessionManager");
 const logger = require("../utils/logger");
+const { translateKeys } = require("../utils/keyTranslation");
 
 const createResizeBuffer = (width, height) => {
     return Buffer.from([
@@ -12,7 +13,7 @@ const createResizeBuffer = (width, height) => {
     ]);
 };
 
-const setupSocketMessageHandler = (ws, socket) => {
+const setupSocketMessageHandler = (ws, socket, config = null) => {
     ws.on("message", (data) => {
         try {
             data = data.toString();
@@ -27,10 +28,12 @@ const setupSocketMessageHandler = (ws, socket) => {
                     }
                 }
                 if (resizeData) {
-                    socket.write(resizeData);
+                    const translatedData = translateKeys(resizeData, config);
+                    socket.write(translatedData);
                 }
             } else {
-                socket.write(data);
+                const translatedData = translateKeys(data, config);
+                socket.write(translatedData);
             }
         } catch (error) {
             logger.error(`Error sending message to telnet`, { error: error.message });
@@ -56,7 +59,7 @@ module.exports = async (ws, context) => {
         socket.on("data", onData);
 
         SessionManager.addWebSocket(serverSession.sessionId, ws);
-        setupSocketMessageHandler(ws, socket);
+        setupSocketMessageHandler(ws, socket, entry.config);
 
         ws.on("close", () => {
             socket.removeListener("data", onData);
@@ -102,7 +105,7 @@ module.exports = async (ws, context) => {
         if (serverSession) SessionManager.remove(serverSession.sessionId);
     });
 
-    setupSocketMessageHandler(ws, socket);
+    setupSocketMessageHandler(ws, socket, entry.config);
 
     ws.on("close", async () => {
         if (serverSession) SessionManager.removeWebSocket(serverSession.sessionId, ws);

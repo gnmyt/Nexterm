@@ -90,7 +90,7 @@ module.exports = async (ws, req) => {
                     await pending.catch(() => {});
                     const existing = SessionManager.getConnection(serverSession.sessionId);
                     if (existing) {
-                        hookContext = { ssh: existing.ssh, auditLogId, serverSession, script, user, reuseConnection: true };
+                        hookContext = { ssh: existing.ssh, auditLogId, serverSession, script, user, reuseConnection: true, entry };
                         await (script ? scriptHook(ws, hookContext) : sshHook(ws, hookContext));
                         return;
                     }
@@ -115,7 +115,7 @@ module.exports = async (ws, req) => {
                 scriptMode: !!scriptId
             });
 
-            hookContext = { ssh, auditLogId, serverSession, script, user };
+            hookContext = { ssh, auditLogId, serverSession, script, user, entry };
             
             if (script) {
                 await scriptHook(ws, hookContext);
