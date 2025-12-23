@@ -6,11 +6,11 @@ Add your own scripts and snippets to Nexterm by connecting a Git repository. You
 
 1. Open **Settings** and go to **Sources**
 
-![Navigate to Sources](public/assets/image-1.png)
+![Navigate to Sources](/assets/image-1.png)
 
 2. Click **Add** and enter a name and the repository URL
 
-![Create Custom Source](public/assets/image-3.png)
+![Create Custom Source](/assets/image-3.png)
 
 The name is just for display purposes, so choose something descriptive.
 
@@ -18,11 +18,11 @@ The name is just for display purposes, so choose something descriptive.
 
 Once added, your scripts and snippets are available in the Snippets panel. Select your repository from the dropdown to see its contents.
 
-![Add Snippet Dropdown](public/assets/image-4.png)
+![Add Snippet Dropdown](/assets/image-4.png)
 
 Switch to the **Scripts** tab to access your scripts.
 
-![Scripts Tab View](public/assets/image-6.png)
+![Scripts Tab View](/assets/image-6.png)
 
 ## Syncing
 
