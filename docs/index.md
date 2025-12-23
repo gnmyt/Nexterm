@@ -32,11 +32,11 @@ features:
   - icon: ✂️
     title: Snippets
     details: Create and manage snippets for quick access to commands.
+  - icon: 📜
+    title: Scripts
+    details: Automate repetitive tasks with customizable scripts.
     link: /scripts&snippets
     linkText: Learn more
-  - icon: 📦
-    title: Apps
-    details: Automate app installations and configurations with apps.
 
 ---
 
