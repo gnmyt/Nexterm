@@ -10,6 +10,12 @@ import "@fontsource/ubuntu-mono";
 import "@fontsource/roboto-mono";
 import "hack-font/build/web/hack.css";
 
+document.addEventListener("contextmenu", (e) => {
+    const tag = e.target.tagName?.toLowerCase();
+    const isEditable = tag === "input" || tag === "textarea" || e.target.isContentEditable;
+    if (!isEditable) e.preventDefault();
+});
+
 createRoot(document.getElementById("root")).render(
     <StrictMode>
         <ThemeProvider>
