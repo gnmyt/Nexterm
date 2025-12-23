@@ -1,0 +1,55 @@
+@use "@/common/styles/colors"
+
+.mobile-nav
+  display: none
+  position: fixed
+  bottom: 0
+  left: 0
+  right: 0
+  height: var(--mobile-nav-height)
+  background: colors.$lighter-background
+  border-top: 1px solid colors.$dark-gray
+  z-index: 100
+  padding-bottom: env(safe-area-inset-bottom, 0)
+
+  @media (max-width: 768px)
+    display: flex
+
+  .mobile-nav-scroll
+    display: flex
+    flex: 1
+    overflow-x: auto
+    justify-content: space-evenly
+    scrollbar-width: none
+    &::-webkit-scrollbar
+      display: none
+
+  .mobile-nav-fixed
+    display: flex
+    border-left: 1px solid colors.$dark-gray
+
+  .mobile-nav-item
+    display: flex
+    flex-direction: column
+    align-items: center
+    gap: 0.15rem
+    padding: 0.5rem
+    min-width: 3rem
+    color: colors.$subtext
+    cursor: pointer
+    transition: all 0.2s
+
+    svg
+      width: 1.375rem
+      height: 1.375rem
+
+    span
+      font-size: 0.625rem
+      font-weight: 500
+
+    &:active
+      transform: scale(0.95)
+      background: colors.$dark-gray
+
+    &.active
+      color: colors.$primary
