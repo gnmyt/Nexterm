@@ -199,7 +199,8 @@ export const AI = () => {
                                     <div className="setting-input">
                                         <SelectBox setSelected={(model) => handleInputChange("model", model)}
                                                    disabled={loadingModels} options={modelOptions}
-                                                   selected={settings.model} />
+                                                   selected={settings.model}
+                                                   searchable={availableModels.length > 5} />
                                     </div>
                                 </div>
 
