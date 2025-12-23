@@ -1,6 +1,6 @@
 const { Router } = require("express");
 const { validateSchema } = require("../utils/schema");
-const { listIdentities, createIdentity, deleteIdentity, updateIdentity, moveIdentityToOrganization } = require("../controllers/identity");
+const { listIdentities, createIdentity, deleteIdentity, updateIdentity, moveIdentityToOrganization, getIdentity, getIdentityCredentials } = require("../controllers/identity");
 const { createIdentityValidation, updateIdentityValidation, moveIdentityValidation } = require("../validations/identity");
 const { createAuditLog, AUDIT_ACTIONS, RESOURCE_TYPES } = require("../controllers/audit");
 
@@ -159,3 +159,37 @@ app.post("/:identityId/move", async (req, res) => {
 });
 
 module.exports = app;
+
+/**
+ * GET /identity/{identityId}/credentials
+ * @summary Get identity credentials
+ * @description Retrieves stored credentials (password, ssh-key, passphrase) for a specific identity the user has access to.
+ * @tags Identity
+ * @produces application/json
+ * @security BearerAuth
+ */
+app.get("/:identityId/credentials", async (req, res) => {
+    const identity = await getIdentity(req.user.id, req.params.identityId);
+    if (identity?.code) return res.json(identity);
+
+    const creds = await getIdentityCredentials(req.params.identityId);
+
+    // Audit credential access (do not include secrets in audit details)
+    try {
+        await createAuditLog({
+            accountId: req.user.id,
+            organizationId: identity.organizationId || null,
+            action: AUDIT_ACTIONS.IDENTITY_CREDENTIALS_ACCESS,
+            resource: RESOURCE_TYPES.IDENTITY,
+            resourceId: identity.id,
+            details: { identityName: identity.name, identityType: identity.type },
+            ipAddress: req.ip,
+            userAgent: req.headers?.["user-agent"],
+        });
+    } catch (e) {
+        // swallow audit errors but log server-side
+        console.error('Failed to record credential access audit', e);
+    }
+
+    res.json(creds);
+});

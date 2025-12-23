@@ -29,6 +29,7 @@ const AUDIT_ACTIONS = {
     IDENTITY_CREATE: "identity.create",
     IDENTITY_UPDATE: "identity.update",
     IDENTITY_DELETE: "identity.delete",
+    IDENTITY_CREDENTIALS_ACCESS: "identity.credentials_access",
 
     FOLDER_CREATE_MGMT: "folder_mgmt.create",
     FOLDER_UPDATE_MGMT: "folder_mgmt.update",
@@ -51,6 +52,7 @@ const getOrgAuditSettings = async (organizationId) => {
         enableFileOperationAudit: true, 
         enableServerConnectionAudit: true,
         enableIdentityManagementAudit: true, 
+        enableIdentityCredentialsAccessAudit: true,
         enableServerManagementAudit: true, 
         enableFolderManagementAudit: true,
         enableScriptExecutionAudit: true,
@@ -71,6 +73,9 @@ const getOrgAuditSettings = async (organizationId) => {
 
 const shouldAudit = (action, settings) => {
     if (!settings) return true;
+    // Specific checks: credential access may be audited separately from general identity management
+    if (action === AUDIT_ACTIONS.IDENTITY_CREDENTIALS_ACCESS) return settings.enableIdentityCredentialsAccessAudit;
+
     const checks = [
         [action.startsWith("file.") || action.startsWith("folder."), settings.enableFileOperationAudit],
         [action.startsWith("entry.") && !action.includes("create") && !action.includes("update") && !action.includes("delete"), settings.enableServerConnectionAudit],

@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState, useContext } from "react";
 import { UserContext } from "@/common/contexts/UserContext.jsx";
+import { IdentityContext } from "@/common/contexts/IdentityContext.jsx";
 import { AIContext } from "@/common/contexts/AIContext.jsx";
 import { useKeymaps, matchesKeybind } from "@/common/contexts/KeymapContext.jsx";
 import { Terminal as Xterm } from "@xterm/xterm";
@@ -10,10 +11,11 @@ import { ContextMenu, ContextMenuItem, ContextMenuSeparator, useContextMenu } fr
 import AICommandPopover from "./components/AICommandPopover";
 import SnippetsMenu from "./components/SnippetsMenu";
 import { createProgressParser } from "../utils/progressParser";
-import { mdiContentCopy, mdiContentPaste, mdiCodeBrackets, mdiSelectAll, mdiDelete, mdiKeyboard } from "@mdi/js";
+import { mdiContentCopy, mdiContentPaste, mdiCodeBrackets, mdiSelectAll, mdiDelete, mdiKeyboard, mdiKey } from "@mdi/js";
 import { useTranslation } from "react-i18next";
 import ConnectionLoader from "./components/ConnectionLoader";
 import { getWebSocketUrl } from "@/common/utils/ConnectionUtil.js";
+import { getRequest } from "@/common/utils/RequestUtil.js";
 import "@xterm/xterm/css/xterm.css";
 import "./styles/xterm.sass";
 
@@ -39,6 +41,7 @@ const XtermRenderer = ({ session, disconnectFromServer, registerTerminalRef, bro
     const { t } = useTranslation();
     const [showAIPopover, setShowAIPopover] = useState(false);
     const contextMenu = useContextMenu();
+    const { identities } = useContext(IdentityContext);
     const [showSnippetsMenu, setShowSnippetsMenu] = useState(false);
 
     useEffect(() => {
@@ -116,6 +119,39 @@ const XtermRenderer = ({ session, disconnectFromServer, registerTerminalRef, bro
         }
         contextMenu.close();
     };
+
+    const handlePasteIdentity = async () => {
+        const id = session.identity;
+        if (!id) return contextMenu.close();
+        try {
+            const creds = await getRequest(`identities/${id}/credentials`);
+            const pwd = creds?.password;
+            if (pwd && termRef.current) termRef.current.paste(pwd);
+        } catch (err) {
+            console.error('Failed to paste identity password:', err);
+        }
+        contextMenu.close();
+    };
+
+    useEffect(() => {
+        const handler = async (e) => {
+            try {
+                const detail = e?.detail || {};
+                if (detail.sessionId && detail.sessionId !== session.id) return;
+                const id = detail.identityId || session.identity;
+                if (!id) return;
+                const creds = await getRequest(`identities/${id}/credentials`);
+                const pwd = creds?.password;
+                if (pwd && termRef.current) termRef.current.paste(pwd);
+            } catch (err) {
+                console.error('Failed to paste identity password (event):', err);
+            }
+            contextMenu.close();
+        };
+
+        window.addEventListener('paste-identity-password', handler);
+        return () => window.removeEventListener('paste-identity-password', handler);
+    }, [session.id, session.identity]);
 
     const handleSelectAll = () => {
         termRef.current?.selectAll();
@@ -425,6 +461,13 @@ const XtermRenderer = ({ session, disconnectFromServer, registerTerminalRef, bro
                         label={t('servers.fileManager.contextMenu.insertSnippet')}
                         onClick={handleInsertSnippet}
                     />
+                    {(identities && session.identity && identities.find(i => i.id === session.identity) && ['password','both','password-only'].includes(identities.find(i => i.id === session.identity).type)) && (
+                        <ContextMenuItem
+                            icon={mdiKey}
+                            label={t('servers.contextMenu.pasteIdentityPassword')}
+                            onClick={handlePasteIdentity}
+                        />
+                    )}
                     <ContextMenuSeparator />
                     <ContextMenuItem
                         icon={mdiKeyboard}

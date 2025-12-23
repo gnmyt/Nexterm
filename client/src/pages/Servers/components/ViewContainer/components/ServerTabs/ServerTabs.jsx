@@ -1,7 +1,9 @@
-import { useRef, useState, useEffect, useCallback } from "react";
+import { useRef, useState, useEffect, useCallback, useContext } from "react";
 import Icon from "@mdi/react";
 import { loadIcon } from "@/pages/Servers/utils/iconMapping.js";
-import { mdiClose, mdiViewSplitVertical, mdiChevronLeft, mdiChevronRight, mdiSleep, mdiOpenInNew, mdiShareVariant, mdiLinkVariant, mdiPencil, mdiEye, mdiCloseCircle, mdiContentDuplicate } from "@mdi/js";
+import { mdiClose, mdiViewSplitVertical, mdiChevronLeft, mdiChevronRight, mdiSleep, mdiOpenInNew, mdiShareVariant, mdiLinkVariant, mdiPencil, mdiEye, mdiCloseCircle, mdiContentDuplicate, mdiKey } from "@mdi/js";
+import { IdentityContext } from "@/common/contexts/IdentityContext.jsx";
+import { useTranslation } from "react-i18next";
 import { useDrag, useDrop } from "react-dnd";
 import TerminalActionsMenu from "../TerminalActionsMenu";
 import { ContextMenu, ContextMenuItem, ContextMenuSeparator, useContextMenu } from "@/common/components/ContextMenu";
@@ -24,6 +26,8 @@ const DraggableTab = ({
     onShareUpdate,
 }) => {
     const contextMenu = useContextMenu();
+    const { identities } = useContext(IdentityContext);
+    const { t } = useTranslation();
     const { popOutSession } = useActiveSessions();
     
     const canPopOut = !session.scriptId && session.type !== "sftp";
@@ -160,6 +164,13 @@ const DraggableTab = ({
                     label="Duplicate"
                     onClick={() => duplicateSession(session.id)}
                 />
+                {(identities && session.identity && identities.find(i => i.id === session.identity) && ['password','both','password-only'].includes(identities.find(i => i.id === session.identity).type)) && (
+                    <ContextMenuItem
+                        icon={mdiKey}
+                        label={t('servers.contextMenu.pasteIdentityPassword')}
+                        onClick={() => window.dispatchEvent(new CustomEvent('paste-identity-password', { detail: { sessionId: session.id, identityId: session.identity } }))}
+                    />
+                )}
                 <ContextMenuItem
                     icon={mdiSleep}
                     label="Hibernate Session"

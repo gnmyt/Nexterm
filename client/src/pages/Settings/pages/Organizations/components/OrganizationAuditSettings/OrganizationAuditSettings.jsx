@@ -121,6 +121,21 @@ export const OrganizationAuditSettings = ({ organizationId, isOwner, onClose }) 
 
                         <div className="setting-item">
                             <div className="setting-info">
+                                <span className="setting-label">Password Paste</span>
+                                <span className="setting-description">
+                                    Log usage of the password paste action
+                                </span>
+                            </div>
+                            <ToggleSwitch
+                                id="enableIdentityCredentialsAccessAudit"
+                                checked={settings.enableIdentityCredentialsAccessAudit}
+                                onChange={(value) => handleSettingChange("enableIdentityCredentialsAccessAudit", value)}
+                                disabled={!isOwner}
+                            />
+                        </div>
+
+                        <div className="setting-item">
+                            <div className="setting-info">
                                 <span className="setting-label">Server Management</span>
                                 <span className="setting-description">
                                     Log creation, modification, and deletion of server configurations
