@@ -11,43 +11,48 @@
 
   &.fullscreen
     position: fixed
-    top: 0
-    left: 0
-    width: 100vw
-    height: 100vh
+    inset: var(--title-bar-height) 0 0 0
     z-index: 1000
 
-.exit-fullscreen-btn
+.exit-fullscreen-btn-container
   position: fixed
-  top: 1rem
-  right: 1rem
   z-index: 1001
+  touch-action: none
+  user-select: none
+
+  &.dragging
+    cursor: grabbing
+
+    .exit-fullscreen-btn
+      cursor: grabbing
+      transform: scale(1.1)
+      background-color: rgba(0, 0, 0, 0.9)
+      border-color: colors.$primary
+
+.exit-fullscreen-btn
   background-color: rgba(0, 0, 0, 0.7)
   border: 1px solid colors.$darker-gray
   border-radius: 8px
   padding: 0.5rem
-  cursor: pointer
+  cursor: grab
   display: flex
   align-items: center
   justify-content: center
-  transition: all 0.2s ease
+  transition: background-color 0.2s ease, border-color 0.2s ease, transform 0.15s ease
   backdrop-filter: blur(10px)
 
   svg
     width: 1.5rem
     height: 1.5rem
     color: colors.$white
+    pointer-events: none
 
   &:hover
     background-color: rgba(0, 0, 0, 0.9)
     border-color: colors.$primary
-    transform: scale(1.05)
 
     svg
       color: colors.$primary
-
-  &:active
-    transform: scale(0.95)
 
 .view-layouter
   position: relative
@@ -56,8 +61,9 @@
   overflow: hidden
 
   .view-container.fullscreen &
-    height: 100vh
+    height: var(--content-height)
 
+.view-layouter
   &.single
     .session-renderer
       &.visible

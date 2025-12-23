@@ -8,6 +8,24 @@ import ScriptRenderer from "@/pages/Servers/components/ViewContainer/renderer/Sc
 import Icon from "@mdi/react";
 import { mdiFullscreenExit } from "@mdi/js";
 import { useTranslation } from "react-i18next";
+import { getTitleBarHeight } from "@/common/utils/TauriUtil.js";
+
+const BTN_SIZE = 44;
+const BTN_STORAGE_KEY = "fullscreen-btn-position";
+
+const getMinY = () => getTitleBarHeight() + 16;
+const clampPosition = (x, y) => ({
+    x: Math.max(0, Math.min(window.innerWidth - BTN_SIZE, x)),
+    y: Math.max(getMinY(), Math.min(window.innerHeight - BTN_SIZE, y))
+});
+
+const loadBtnPosition = () => {
+    try {
+        const saved = JSON.parse(localStorage.getItem(BTN_STORAGE_KEY));
+        if (saved) return clampPosition(saved.x, saved.y);
+    } catch {}
+    return { x: window.innerWidth - 60, y: getMinY() };
+};
 
 export const ViewContainer = ({
                                   activeSessions,
@@ -32,6 +50,10 @@ export const ViewContainer = ({
     const [sessionProgress, setSessionProgress] = useState({});
     const [fullscreenMode, setFullscreenMode] = useState(false);
     const { t } = useTranslation();
+
+    const [btnPosition, setBtnPosition] = useState(loadBtnPosition);
+    const [isDragging, setIsDragging] = useState(false);
+    const dragRef = useRef({ startX: 0, startY: 0, btnX: 0, btnY: 0 });
 
     const [columnSizes, setColumnSizes] = useState([]);
     const [rowSizes, setRowSizes] = useState([]);
@@ -77,6 +99,41 @@ export const ViewContainer = ({
     const toggleFullscreenMode = useCallback(() => {
         setFullscreenMode(prev => !prev);
     }, []);
+
+    const onBtnMouseDown = useCallback((e) => {
+        e.preventDefault();
+        dragRef.current = { startX: e.clientX, startY: e.clientY, btnX: btnPosition.x, btnY: btnPosition.y };
+        setIsDragging(true);
+    }, [btnPosition]);
+
+    useEffect(() => {
+        if (!isDragging) return;
+        const onMove = (e) => {
+            const { startX, startY, btnX, btnY } = dragRef.current;
+            setBtnPosition(clampPosition(btnX + e.clientX - startX, btnY + e.clientY - startY));
+        };
+        const onUp = () => {
+            setIsDragging(false);
+            try { localStorage.setItem(BTN_STORAGE_KEY, JSON.stringify(btnPosition)); } catch {}
+        };
+        document.addEventListener("mousemove", onMove);
+        document.addEventListener("mouseup", onUp);
+        return () => {
+            document.removeEventListener("mousemove", onMove);
+            document.removeEventListener("mouseup", onUp);
+        };
+    }, [isDragging, btnPosition]);
+
+    useEffect(() => {
+        const onResize = () => setBtnPosition(prev => clampPosition(prev.x, prev.y));
+        window.addEventListener("resize", onResize);
+        return () => window.removeEventListener("resize", onResize);
+    }, []);
+
+    const onBtnClick = useCallback((e) => {
+        const { startX, startY } = dragRef.current;
+        if (Math.abs(e.clientX - startX) < 5 && Math.abs(e.clientY - startY) < 5) toggleFullscreenMode();
+    }, [toggleFullscreenMode]);
 
     const handleKeyboardShortcut = useCallback((keys) => {
         const activeGuacamole = guacamoleRefs.current[activeSessionId];
@@ -397,10 +454,17 @@ export const ViewContainer = ({
     return (
         <div className={`view-container ${fullscreenMode ? "fullscreen" : ""}`}>
             {fullscreenMode && (
-                <button className="exit-fullscreen-btn" onClick={toggleFullscreenMode}
-                        title={t("servers.terminalActions.exitFullScreen")}>
-                    <Icon path={mdiFullscreenExit} />
-                </button>
+                <div 
+                    className={`exit-fullscreen-btn-container ${isDragging ? "dragging" : ""}`}
+                    style={{ left: btnPosition.x, top: btnPosition.y }}
+                    onMouseDown={onBtnMouseDown}
+                    onClick={onBtnClick}
+                    title={t("servers.terminalActions.exitFullScreen")}
+                >
+                    <button className="exit-fullscreen-btn">
+                        <Icon path={mdiFullscreenExit} />
+                    </button>
+                </div>
             )}
             {!fullscreenMode && <ServerTabs activeSessions={activeSessions} setActiveSessionId={focusSession}
                                             activeSessionId={activeSessionId}

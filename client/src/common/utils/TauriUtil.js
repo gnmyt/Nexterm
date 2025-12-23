@@ -33,6 +33,11 @@ export const waitForTauri = () => {
 
 export const isTauri = () => _isTauri ?? checkTauri();
 
+export const getTitleBarHeight = () => {
+    const value = getComputedStyle(document.documentElement).getPropertyValue("--title-bar-height");
+    return parseInt(value) || 0;
+};
+
 export const getActiveServerUrl = () => localStorage.getItem("nexterm_server_url");
 
 export const setActiveServerUrl = (url) => {

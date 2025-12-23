@@ -1,11 +1,10 @@
 @use "@/common/styles/colors"
 
 $mobile: 768px
-$title-bar-height: 32px
 
 .settings-dialog-overlay
   position: fixed
-  inset: 0
+  inset: var(--title-bar-height) 0 0 0
   background: colors.$dialog-background
   -webkit-backdrop-filter: blur(0.3rem)
   backdrop-filter: blur(0.3rem)
@@ -18,10 +17,6 @@ $title-bar-height: 32px
 
   @supports not (backdrop-filter: blur(0.3rem))
     background: rgba(0, 0, 0, 0.7)
-
-  body.tauri-mode &
-    top: $title-bar-height
-    bottom: 0
 
   &.closing
     animation: settingsDialogFadeOut 0.15s ease-in forwards
