@@ -55,6 +55,7 @@
       "monitoring": "المراقبة",
       "snippets": "القصاصات",
       "audit": "التدقيق",
+      "account": "Account",
       "logout": "تسجيل الخروج",
       "collapseTitle": "طي الشريط الجانبي",
       "logoutConfirmText": "سيتم تسجيل الخروج من حساب {{username}}. هل أنت متأكد؟",
