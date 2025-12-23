@@ -18,6 +18,7 @@ module.exports.updateOrganizationAuditSettingsValidation = Joi.object({
     enableFileOperationAudit: Joi.boolean().optional(),
     enableServerConnectionAudit: Joi.boolean().optional(),
     enableIdentityManagementAudit: Joi.boolean().optional(),
+    enableIdentityCredentialsAccessAudit: Joi.boolean().optional(),
     enableServerManagementAudit: Joi.boolean().optional(),
     enableFolderManagementAudit: Joi.boolean().optional(),
     enableScriptExecutionAudit: Joi.boolean().optional(),

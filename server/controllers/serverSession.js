@@ -2,6 +2,7 @@ const SessionManager = require("../lib/SessionManager");
 const Entry = require("../models/Entry");
 const Account = require("../models/Account");
 const { validateEntryAccess } = require("./entry");
+const { getIdentityCredentials, getIdentity } = require("./identity");
 const { getOrganizationAuditSettingsInternal, createAuditLog, AUDIT_ACTIONS, RESOURCE_TYPES } = require("./audit");
 const { resolveIdentity } = require("../utils/identityResolver");
 const Organization = require('../models/Organization');
@@ -257,4 +258,44 @@ const duplicateSession = async (accountId, sessionId, tabId = null, browserId = 
     );
 };
 
-module.exports = { createSession, getSessions, getSession, hibernateSession, resumeSession, deleteSession, startSharing, stopSharing, updateSharePermissions, duplicateSession };
+const pasteIdentityPassword = async (accountId, sessionId, ipAddress = null, userAgent = null) => {
+    const { session, error } = validateSessionOwnership(accountId, sessionId);
+    if (error) return error;
+
+    const identityId = session.configuration?.identityId;
+    if (!identityId) return { code: 400, message: 'No identity attached to session' };
+
+    const identity = await getIdentity(accountId, identityId);
+    if (identity?.code) return identity;
+
+    const creds = await getIdentityCredentials(identityId);
+    const password = creds?.password;
+    if (!password) return { code: 400, message: 'Identity does not contain a password' };
+
+    const connection = SessionManager.getConnection(sessionId);
+    if (!connection || !connection.stream) return { code: 400, message: 'Session stream not available' };
+
+    const entry = await Entry.findByPk(session.entryId);
+
+    try {
+        connection.stream.write(password);
+
+        await createAuditLog({
+            accountId,
+            organizationId: entry?.organizationId || null,
+            action: AUDIT_ACTIONS.IDENTITY_CREDENTIALS_ACCESS,
+            resource: RESOURCE_TYPES.IDENTITY,
+            resourceId: identity.id,
+            details: { identityName: identity.name, identityType: identity.type },
+            ipAddress,
+            userAgent,
+        });
+
+        return { message: 'Password pasted' };
+    } catch (e) {
+        console.error('Failed to paste identity password', e);
+        return { code: 500, message: 'Failed to paste password' };
+    }
+};
+
+module.exports = { createSession, getSessions, getSession, hibernateSession, resumeSession, deleteSession, startSharing, stopSharing, updateSharePermissions, duplicateSession, pasteIdentityPassword };
