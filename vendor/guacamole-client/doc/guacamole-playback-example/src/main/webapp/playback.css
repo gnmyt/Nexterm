@@ -1,0 +1,114 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ */
+
+#player {
+    width: 640px;
+}
+
+#display {
+    position: relative;
+}
+
+#player .notification-container {
+    position: absolute;
+    z-index: 1;
+    top: 0;
+    right: 0;
+    left: 0;
+    bottom: 0;
+}
+
+#player .seek-notification {
+
+    color: white;
+    background: rgba(0, 0, 0, 0.75);
+
+    display: none; /* Initially hidden */
+    width: 100%;
+    height: 100%;
+
+}
+
+#player.seeking .seek-notification {
+    display: table;
+}
+
+#player .seek-notification p {
+    display: table-cell;
+    text-align: center;
+    vertical-align: middle;
+    font-family: sans-serif;
+}
+
+#player .controls {
+
+    width: 100%;
+
+    /* IE10 */
+    display: -ms-flexbox;
+    -ms-flex-align: center;
+    -ms-flex-direction: row;
+
+    /* Ancient Mozilla */
+    display: -moz-box;
+    -moz-box-align: center;
+    -moz-box-orient: horizontal;
+
+    /* Ancient WebKit */
+    display: -webkit-box;
+    -webkit-box-align: center;
+    -webkit-box-orient: horizontal;
+
+    /* Old WebKit */
+    display: -webkit-flex;
+    -webkit-align-items: center;
+    -webkit-flex-direction: row;
+
+    /* W3C */
+    display: flex;
+    align-items: center;
+    flex-direction: row;
+
+}
+
+#player .controls > * {
+    margin: 0.25em;
+}
+
+#player .controls #position-slider {
+    -ms-flex: 1 1 auto;
+    -moz-box-flex: 1;
+    -webkit-box-flex: 1;
+    -webkit-flex: 1 1 auto;
+    flex: 1 1 auto;
+}
+
+#player .controls #play-pause {
+    margin-left: 0;
+    min-width: 5em;
+}
+
+#player .controls #position,
+#player .controls #duration {
+    font-family: monospace;
+}
+
+#player .controls #duration {
+    margin-right: 0;
+}

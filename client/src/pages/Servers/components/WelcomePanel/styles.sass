@@ -1,0 +1,242 @@
+@use "@/common/styles/colors"
+
+.welcome-panel
+  user-select: none
+  overflow-y: auto
+  flex: 1
+  display: flex
+  align-items: center
+  justify-content: space-around
+  padding: 2rem
+  gap: 2rem
+
+  .welcome-left
+    width: 30%
+    min-width: 280px
+
+    .button-area
+      display: flex
+      align-items: center
+      gap: 1rem
+      flex-wrap: wrap
+
+    span
+      color: colors.$primary
+
+    h1
+      margin: 0
+      font-size: 1.8rem
+
+    p
+      margin: 0.7rem 0 1.5rem 0
+      color: colors.$subtext
+      font-size: 1rem
+      font-weight: 600
+      line-height: 1.5
+
+  .welcome-right
+    width: 40%
+    max-width: 480px
+    min-width: 320px
+
+  .loading-state
+    display: flex
+    align-items: center
+    justify-content: center
+    padding: 3rem
+
+    .loading-spinner
+      width: 32px
+      height: 32px
+      border: 3px solid colors.$dark-gray
+      border-top-color: colors.$primary
+      border-radius: 50%
+      animation: spin 0.8s linear infinite
+
+  .recent-connections
+    max-width: 480px
+
+    .section-header
+      display: flex
+      align-items: center
+      gap: 0.5rem
+      margin-bottom: 1rem
+      color: colors.$subtext
+
+      svg
+        width: 1.25rem
+        height: 1.25rem
+
+      h3
+        margin: 0
+        font-size: 0.9rem
+        font-weight: 600
+        color: colors.$white
+
+    .recent-list
+      display: flex
+      flex-direction: column
+      gap: 0.5rem
+
+    .empty-hint
+      color: colors.$subtext
+      font-size: 0.85rem
+      text-align: center
+      margin: 1rem 0 0 0
+
+  .recent-item
+    display: flex
+    align-items: center
+    gap: 0.75rem
+    padding: 0.75rem
+    background-color: colors.$dark-gray
+    border: 1px solid transparent
+    border-radius: 0.5rem
+    cursor: pointer
+    transition: all 0.15s ease
+
+    &:hover
+      background-color: colors.$gray
+      border-color: colors.$gray
+
+      .play-icon
+        opacity: 1
+        transform: translateX(0)
+
+    &.hibernated
+      border-color: colors.$primary
+      background-color: colors.$primary-opacity
+
+      &:hover
+        background-color: color-mix(in srgb, colors.$primary 20%, transparent)
+
+    .item-icon
+      width: 2rem
+      height: 2rem
+      display: flex
+      align-items: center
+      justify-content: center
+      background-color: colors.$primary
+      border-radius: 0.3rem
+      flex-shrink: 0
+
+      svg
+        width: 1.1rem
+        height: 1.1rem
+        color: white
+
+    .item-info
+      flex: 1
+      min-width: 0
+      display: flex
+      flex-direction: column
+      gap: 0.15rem
+
+      .item-name
+        font-weight: 600
+        font-size: 0.9rem
+        color: colors.$white
+        white-space: nowrap
+        overflow: hidden
+        text-overflow: ellipsis
+
+      .item-meta
+        font-size: 0.75rem
+        color: colors.$subtext
+
+        .hibernated-badge
+          display: inline-flex
+          align-items: center
+          gap: 0.25rem
+          color: colors.$primary
+          font-weight: 600
+
+          svg
+            width: 0.7rem
+            height: 0.7rem
+
+    .item-action
+      display: flex
+      align-items: center
+      gap: 0.5rem
+
+      .protocol-badge
+        font-size: 0.7rem
+        font-weight: 600
+        padding: 0.2rem 0.5rem
+        background-color: colors.$gray
+        border-radius: 0.25rem
+        color: colors.$subtext
+
+      .play-icon
+        width: 1rem
+        height: 1rem
+        color: colors.$primary
+        opacity: 0
+        transform: translateX(-4px)
+        transition: all 0.15s ease
+
+  .empty-state
+    display: flex
+    flex-direction: column
+    align-items: center
+    justify-content: center
+    text-align: center
+    padding: 3rem 2rem
+    background-color: colors.$lighter-background
+    border: 1px solid colors.$dark-gray
+    border-radius: 0.75rem
+
+    svg
+      width: 3rem
+      height: 3rem
+      color: colors.$subtext
+      margin-bottom: 1rem
+
+    h3
+      margin: 0 0 0.5rem 0
+      font-size: 1rem
+      color: colors.$white
+
+    p
+      margin: 0
+      font-size: 0.85rem
+      color: colors.$subtext
+      max-width: 280px
+
+@keyframes spin
+  to
+    transform: rotate(360deg)
+
+@media (max-width: 1100px)
+  .welcome-panel
+    flex-direction: column
+    justify-content: flex-start
+    align-items: stretch
+    padding: 1.5rem
+
+    .welcome-left
+      width: 100%
+      min-width: 0
+      text-align: center
+
+      h1
+        font-size: 1.5rem
+
+      p
+        font-size: 0.9rem
+        margin: 0.5rem 0 1rem 0
+
+      .button-area
+        justify-content: center
+
+    .welcome-right
+      width: 100%
+      max-width: 100%
+      min-width: 0
+
+    .recent-connections
+      max-width: 100%
+
+    .empty-state
+      padding: 2rem 1rem

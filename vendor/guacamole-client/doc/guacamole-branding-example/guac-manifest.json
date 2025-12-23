@@ -1,0 +1,34 @@
+{
+    "guacamoleVersion" : "*",
+    "name"             : "Guacamole Branding Example",
+    "namespace"        : "guacamole-branding-example",
+    
+    "css" : [
+        "css/0-font-raleway.css",
+        "css/example.css"
+    ],
+    
+    "html" : [
+        "html/warning.html"
+    ],
+    
+    "resources" : {
+        "resources/fonts/raleway/Raleway-Bold.otf"  : "application/x-font-opentype",
+        "resources/fonts/raleway/Raleway-Bold.ttf"  : "application/x-font-TrueType",
+        "resources/fonts/raleway/Raleway-Bold.woff" : "application/font-woff",
+        "resources/fonts/raleway/Raleway-BoldItalic.otf"  : "application/x-font-opentype",
+        "resources/fonts/raleway/Raleway-BoldItalic.ttf"  : "application/x-font-TrueType",
+        "resources/fonts/raleway/Raleway-BoldItalic.woff" : "application/font-woff",
+        "resources/fonts/raleway/Raleway-Italic.otf"  : "application/x-font-opentype",
+        "resources/fonts/raleway/Raleway-Italic.ttf"  : "application/x-font-TrueType",
+        "resources/fonts/raleway/Raleway-Italic.woff" : "application/font-woff",
+        "resources/fonts/raleway/Raleway-Regular.otf"  : "application/x-font-opentype",
+        "resources/fonts/raleway/Raleway-Regular.ttf"  : "application/x-font-TrueType",
+        "resources/fonts/raleway/Raleway-Regular.woff" : "application/font-woff",
+        "resources/images/saturn/saturn.png" : "image/png"
+    },
+    
+    "translations" : [
+        "translations/en.json"
+    ]
+}

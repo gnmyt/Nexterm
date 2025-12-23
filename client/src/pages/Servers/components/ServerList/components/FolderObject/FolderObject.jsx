@@ -1,20 +1,21 @@
 import Icon from "@mdi/react";
 import { mdiFolderOpenOutline, mdiFolderOutline } from "@mdi/js";
+import ProxmoxIcon from "../../assets/proxmox.png";
 import "./styles.sass";
 import { useContext, useEffect, useRef, useState } from "react";
 import { patchRequest } from "@/common/utils/RequestUtil.js";
 import { ServerContext } from "@/common/contexts/ServerContext.jsx";
 import { useDrag, useDrop } from "react-dnd";
 
-export const FolderObject = ({ id, name, nestedLevel, position, onClick, isOpen, renameState, setRenameStateId }) => {
+export const FolderObject = ({ id, name, nestedLevel, position, onClick, isOpen, renameState, setRenameStateId, organizationId, folderType }) => {
     const inputRef = useRef();
 
     const { loadServers } = useContext(ServerContext);
     const [nameState, setNameState] = useState(name || "");
 
     const [{ opacity }, dragRef] = useDrag({
-        item: { type: "folder", id, position },
         type: "folder",
+        item: { type: "folder", id, position },
         collect: monitor => ({
             opacity: monitor.isDragging() ? 0.5 : 1,
         }),
@@ -26,7 +27,12 @@ export const FolderObject = ({ id, name, nestedLevel, position, onClick, isOpen,
             if (item.id === id) return;
             try {
                 if (item.type === "server") {
-                    await patchRequest("servers/" + item.id, { folderId: id });
+                    await patchRequest(`entries/${item.id}/reposition`, { 
+                        targetId: null,
+                        placement: 'after',
+                        folderId: id,
+                        organizationId: organizationId
+                    });
                     loadServers();
                     return { id };
                 }
@@ -73,7 +79,11 @@ export const FolderObject = ({ id, name, nestedLevel, position, onClick, isOpen,
         <div className={"folder-object" + (isOver ? " folder-is-over" : "")} data-id={id}
              ref={(node) => dragRef(dropRef(node))} onClick={renameState ? (e) => e.stopPropagation() : onClick}
              style={{ paddingLeft: `${10 + (nestedLevel * 15)}px`, opacity }}>
-            <Icon path={isOpen ? mdiFolderOpenOutline : mdiFolderOutline} />
+            {folderType === 'pve-node' ? (
+                <img src={ProxmoxIcon} alt="Proxmox" style={{ width: '1.5rem', height: '1.5rem' }} />
+            ) : (
+                <Icon path={isOpen ? mdiFolderOpenOutline : mdiFolderOutline} />
+            )}
             {!renameState && <p className="truncate-text">{nameState}</p>}
             {renameState && <input type="text" ref={inputRef} value={nameState} onBlur={changeName}
                                    onChange={(e) => setNameState(e.target.value)} />}

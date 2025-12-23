@@ -1,0 +1,259 @@
+name: Build Connector
+
+on:
+  workflow_call:
+    inputs:
+      version:
+        required: true
+        type: string
+      semver:
+        required: true
+        type: string
+      upload_url:
+        required: true
+        type: string
+
+jobs:
+  build-windows:
+    name: "Windows (${{ matrix.arch }} ${{ matrix.format }})"
+    runs-on: windows-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - arch: x64
+            target: x86_64-pc-windows-msvc
+            format: msi
+            artifact_path: connector/src-tauri/target/release/bundle/msi/*.msi
+            artifact_name: nexterm-connector-windows-x64.msi
+          - arch: x64
+            target: x86_64-pc-windows-msvc
+            format: exe
+            artifact_path: connector/src-tauri/target/release/bundle/nsis/*.exe
+            artifact_name: nexterm-connector-windows-x64.exe
+          - arch: arm64
+            target: aarch64-pc-windows-msvc
+            format: exe
+            artifact_path: connector/src-tauri/target/aarch64-pc-windows-msvc/release/bundle/nsis/*.exe
+            artifact_name: nexterm-connector-windows-arm64.exe
+
+    steps:
+      - name: Checkout project
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Install Rust
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: ${{ matrix.target }}
+
+      - name: Update connector versions
+        shell: bash
+        run: |
+          VERSION="${{ inputs.semver }}"
+          cd connector && npm pkg set version="$VERSION" && cd ..
+          cd connector/src-tauri
+          jq ".version = \"$VERSION\"" tauri.conf.json > tmp.json && mv tmp.json tauri.conf.json
+          sed -i "s/^version = \".*\"/version = \"$VERSION\"/" Cargo.toml
+
+      - name: Install client dependencies
+        working-directory: client
+        run: |
+          npm install -g yarn
+          yarn install
+
+      - name: Build client
+        working-directory: client
+        run: yarn build
+
+      - name: Install connector dependencies
+        working-directory: connector
+        run: |
+          npm install -g yarn
+          yarn install
+
+      - name: Build Connector
+        working-directory: connector
+        run: yarn tauri build ${{ matrix.arch == 'arm64' && format('--target {0}', matrix.target) || '' }}
+        env:
+          TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
+          TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY_PASSWORD }}
+
+      - name: Find artifact
+        id: find_artifact
+        shell: bash
+        run: |
+          ARTIFACT=$(ls ${{ matrix.artifact_path }} 2>/dev/null | head -1)
+          echo "artifact_file=$ARTIFACT" >> $GITHUB_OUTPUT
+
+      - name: Upload to Release
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ inputs.upload_url }}
+          asset_path: ${{ steps.find_artifact.outputs.artifact_file }}
+          asset_name: ${{ matrix.artifact_name }}
+          asset_content_type: application/octet-stream
+
+  build-macos:
+    name: "macOS (${{ matrix.arch }})"
+    runs-on: macos-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - arch: x64
+            target: x86_64-apple-darwin
+            artifact_path: connector/src-tauri/target/x86_64-apple-darwin/release/bundle/dmg/*.dmg
+            artifact_name: nexterm-connector-macos-x64.dmg
+          - arch: arm64
+            target: aarch64-apple-darwin
+            artifact_path: connector/src-tauri/target/aarch64-apple-darwin/release/bundle/dmg/*.dmg
+            artifact_name: nexterm-connector-macos-arm64.dmg
+
+    steps:
+      - name: Checkout project
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Install Rust
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: ${{ matrix.target }}
+
+      - name: Update connector versions
+        run: |
+          VERSION="${{ inputs.semver }}"
+          cd connector && npm pkg set version="$VERSION" && cd ..
+          cd connector/src-tauri
+          jq ".version = \"$VERSION\"" tauri.conf.json > tmp.json && mv tmp.json tauri.conf.json
+          sed -i '' "s/^version = \".*\"/version = \"$VERSION\"/" Cargo.toml
+
+      - name: Install client dependencies
+        working-directory: client
+        run: |
+          npm install -g yarn
+          yarn install
+
+      - name: Build client
+        working-directory: client
+        run: yarn build
+
+      - name: Install connector dependencies
+        working-directory: connector
+        run: |
+          npm install -g yarn
+          yarn install
+
+      - name: Build Connector
+        working-directory: connector
+        run: yarn tauri build --target ${{ matrix.target }}
+        env:
+          TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
+          TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY_PASSWORD }}
+
+      - name: Find artifact
+        id: find_artifact
+        run: |
+          ARTIFACT=$(ls ${{ matrix.artifact_path }} 2>/dev/null | head -1)
+          echo "artifact_file=$ARTIFACT" >> $GITHUB_OUTPUT
+
+      - name: Upload to Release
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ inputs.upload_url }}
+          asset_path: ${{ steps.find_artifact.outputs.artifact_file }}
+          asset_name: ${{ matrix.artifact_name }}
+          asset_content_type: application/octet-stream
+
+  build-linux:
+    name: "Linux (${{ matrix.format }})"
+    runs-on: ubuntu-22.04
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - format: deb
+            artifact_path: connector/src-tauri/target/release/bundle/deb/*.deb
+            artifact_name: nexterm-connector-linux-x64.deb
+          - format: rpm
+            artifact_path: connector/src-tauri/target/release/bundle/rpm/*.rpm
+            artifact_name: nexterm-connector-linux-x64.rpm
+          - format: AppImage
+            artifact_path: connector/src-tauri/target/release/bundle/appimage/*.AppImage
+            artifact_name: nexterm-connector-linux-x64.AppImage
+
+    steps:
+      - name: Checkout project
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Install Rust
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Install Linux dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libwebkit2gtk-4.1-dev libappindicator3-dev librsvg2-dev patchelf libssl-dev
+
+      - name: Update connector versions
+        run: |
+          VERSION="${{ inputs.semver }}"
+          cd connector && npm pkg set version="$VERSION" && cd ..
+          cd connector/src-tauri
+          jq ".version = \"$VERSION\"" tauri.conf.json > tmp.json && mv tmp.json tauri.conf.json
+          sed -i "s/^version = \".*\"/version = \"$VERSION\"/" Cargo.toml
+
+      - name: Install client dependencies
+        working-directory: client
+        run: |
+          npm install -g yarn
+          yarn install
+
+      - name: Build client
+        working-directory: client
+        run: yarn build
+
+      - name: Install connector dependencies
+        working-directory: connector
+        run: |
+          npm install -g yarn
+          yarn install
+
+      - name: Build Connector
+        working-directory: connector
+        run: yarn tauri build
+        env:
+          TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
+          TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY_PASSWORD }}
+
+      - name: Find artifact
+        id: find_artifact
+        run: |
+          ARTIFACT=$(ls ${{ matrix.artifact_path }} 2>/dev/null | head -1)
+          echo "artifact_file=$ARTIFACT" >> $GITHUB_OUTPUT
+
+      - name: Upload to Release
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ inputs.upload_url }}
+          asset_path: ${{ steps.find_artifact.outputs.artifact_file }}
+          asset_name: ${{ matrix.artifact_name }}
+          asset_content_type: application/octet-stream

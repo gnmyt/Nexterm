@@ -1,0 +1,29 @@
+name: Pull request CI build
+
+# Run build for all pull requests
+on:
+  pull_request:
+
+# Limit to only one build for a given PR source branch at a time,
+# cancelling any in-progress builds
+concurrency:
+  group: guacamole-server-pr-${{ github.head_ref }}
+  cancel-in-progress: true
+
+jobs:
+
+  docker_build:
+    name: Run docker build
+    runs-on: ubuntu-latest
+    steps:
+
+      - name: Check out code
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Build Docker container
+        shell: sh
+        run: |
+          docker build --pull --no-cache --force-rm .

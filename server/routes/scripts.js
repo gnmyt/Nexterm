@@ -1,35 +1,21 @@
 const { Router } = require("express");
 const {
-    getScripts,
+    listScripts,
     getScript,
     searchScripts,
-    createCustomScript,
-    updateCustomScript,
-    deleteCustomScript,
-    refreshScripts,
+    createScript,
+    editScript,
+    deleteScript,
+    listAllAccessibleScripts,
+    listAllSourceScripts,
+    repositionScript,
 } = require("../controllers/script");
 const { validateSchema } = require("../utils/schema");
-const { scriptValidation } = require("../validations/script");
+const { scriptCreationValidation, scriptEditValidation, scriptRepositionValidation } = require("../validations/script");
+const OrganizationMember = require("../models/OrganizationMember");
+const { hasOrganizationAccess } = require("../utils/permission");
 
 const app = Router();
-
-/**
- * POST /scripts/refresh
- * @summary Refresh Scripts
- * @description Refreshes the scripts catalog by reloading all available scripts from configured sources and updating the user's script library.
- * @tags Scripts
- * @produces application/json
- * @security BearerAuth
- * @return {object} 200 - Scripts successfully refreshed
- */
-app.post("/refresh", async (req, res) => {
-    try {
-        refreshScripts(req.user.id);
-        res.json({ message: "Scripts got successfully refreshed" });
-    } catch (error) {
-        res.status(500).json({ code: 500, message: error.message });
-    }
-});
 
 /**
  * GET /scripts
@@ -39,15 +25,59 @@ app.post("/refresh", async (req, res) => {
  * @produces application/json
  * @security BearerAuth
  * @param {string} search.query - Search term to filter scripts by name or description
+ * @param {string} organizationId.query - Optional: Filter scripts by organization ID
  * @return {array} 200 - List of scripts available to the user
  */
 app.get("/", async (req, res) => {
     try {
-        if (req.query.search) {
-            res.json(searchScripts(req.query.search, req.user.id));
-        } else {
-            res.json(getScripts(req.user.id));
+        const organizationId = req.query.organizationId ? parseInt(req.query.organizationId) : null;
+        
+        if (organizationId && !(await hasOrganizationAccess(req.user.id, organizationId))) {
+            return res.status(403).json({ code: 403, message: "Access denied to this organization" });
         }
+        
+        if (req.query.search) {
+            res.json(await searchScripts(req.user.id, req.query.search, organizationId));
+        } else {
+            res.json(await listScripts(req.user.id, organizationId));
+        }
+    } catch (error) {
+        res.status(500).json({ code: 500, message: error.message });
+    }
+});
+
+/**
+ * GET /scripts/all
+ * @summary List All Accessible Scripts
+ * @description Retrieves all scripts accessible to the user (personal + organization scripts)
+ * @tags Scripts
+ * @produces application/json
+ * @security BearerAuth
+ * @return {array} 200 - List of all accessible scripts
+ */
+app.get("/all", async (req, res) => {
+    try {
+        const memberships = await OrganizationMember.findAll({ where: { accountId: req.user.id } });
+        const organizationIds = memberships.map(m => m.organizationId);
+        
+        res.json(await listAllAccessibleScripts(req.user.id, organizationIds));
+    } catch (error) {
+        res.status(500).json({ code: 500, message: error.message });
+    }
+});
+
+/**
+ * GET /scripts/sources
+ * @summary List All Source Scripts
+ * @description Retrieves all scripts from external sources
+ * @tags Scripts
+ * @produces application/json
+ * @security BearerAuth
+ * @return {array} 200 - List of all source scripts
+ */
+app.get("/sources", async (req, res) => {
+    try {
+        res.json(await listAllSourceScripts());
     } catch (error) {
         res.status(500).json({ code: 500, message: error.message });
     }
@@ -60,16 +90,25 @@ app.get("/", async (req, res) => {
  * @tags Scripts
  * @produces application/json
  * @security BearerAuth
- * @param {string} scriptId.path.required - The unique identifier of the script (URL encoded)
+ * @param {string} scriptId.path.required - The unique identifier of the script
+ * @param {string} organizationId.query - Optional: Organization ID if accessing organization script
  * @return {object} 200 - Script details
  * @return {object} 404 - Script not found
  */
 app.get("/:scriptId", async (req, res) => {
     try {
-        const decodedScriptId = decodeURIComponent(req.params.scriptId);
-        const script = getScript(decodedScriptId, req.user.id);
+        const organizationId = req.query.organizationId ? parseInt(req.query.organizationId) : null;
+        
+        if (organizationId && !(await hasOrganizationAccess(req.user.id, organizationId))) {
+            return res.status(403).json({ code: 403, message: "Access denied to this organization" });
+        }
+        
+        const script = await getScript(req.user.id, req.params.scriptId, organizationId);
         if (!script) {
             return res.status(404).json({ code: 404, message: "Script not found" });
+        }
+        if (script.code) {
+            return res.status(script.code).json(script);
         }
         res.json(script);
     } catch (error) {
@@ -89,15 +128,16 @@ app.get("/:scriptId", async (req, res) => {
  * @return {object} 409 - Script with this name already exists
  */
 app.post("/", async (req, res) => {
-    if (validateSchema(res, scriptValidation, req.body)) return;
+    if (validateSchema(res, scriptCreationValidation, req.body)) return;
 
     try {
-        const script = createCustomScript(req.user.id, req.body);
-        res.status(201).json(script);
-    } catch (error) {
-        if (error.message === "A script with this name already exists") {
-            return res.status(409).json({ code: 409, message: error.message });
+        if (req.body.organizationId && !(await hasOrganizationAccess(req.user.id, req.body.organizationId))) {
+            return res.status(403).json({ code: 403, message: "Access denied to this organization" });
         }
+
+        const script = await createScript(req.user.id, req.body);
+        res.status(201).json({ message: "Script created successfully", id: script.id });
+    } catch (error) {
         res.status(500).json({ code: 500, message: error.message });
     }
 });
@@ -109,22 +149,28 @@ app.post("/", async (req, res) => {
  * @tags Scripts
  * @produces application/json
  * @security BearerAuth
- * @param {string} scriptId.path.required - The unique identifier of the script to update (URL encoded)
+ * @param {string} scriptId.path.required - The unique identifier of the script to update
+ * @param {string} organizationId.query - Optional: Organization ID if updating organization script
  * @param {Script} request.body.required - Updated script configuration
  * @return {object} 200 - Script successfully updated
  * @return {object} 404 - Script not found or unauthorized
  */
 app.put("/:scriptId", async (req, res) => {
-    if (validateSchema(res, scriptValidation, req.body)) return;
+    if (validateSchema(res, scriptEditValidation, req.body)) return;
 
     try {
-        const decodedScriptId = decodeURIComponent(req.params.scriptId);
-        const script = updateCustomScript(req.user.id, decodedScriptId, req.body);
-        res.json(script);
-    } catch (error) {
-        if (error.message === "Unauthorized to edit this script" || error.message === "Script not found") {
-            return res.status(404).json({ code: 404, message: error.message });
+        const organizationId = req.query.organizationId ? parseInt(req.query.organizationId) : null;
+        
+        if (organizationId && !(await hasOrganizationAccess(req.user.id, organizationId))) {
+            return res.status(403).json({ code: 403, message: "Access denied to this organization" });
         }
+
+        const result = await editScript(req.user.id, req.params.scriptId, req.body, organizationId);
+        if (result?.code) {
+            return res.status(result.code).json(result);
+        }
+        res.json({ message: "Script updated successfully" });
+    } catch (error) {
         res.status(500).json({ code: 500, message: error.message });
     }
 });
@@ -136,19 +182,59 @@ app.put("/:scriptId", async (req, res) => {
  * @tags Scripts
  * @produces application/json
  * @security BearerAuth
- * @param {string} scriptId.path.required - The unique identifier of the script to delete (URL encoded)
+ * @param {string} scriptId.path.required - The unique identifier of the script to delete
+ * @param {string} organizationId.query - Optional: Organization ID if deleting organization script
  * @return {object} 200 - Script successfully deleted
  * @return {object} 404 - Script not found or unauthorized
  */
 app.delete("/:scriptId", async (req, res) => {
     try {
-        const decodedScriptId = decodeURIComponent(req.params.scriptId);
-        deleteCustomScript(req.user.id, decodedScriptId);
+        const organizationId = req.query.organizationId ? parseInt(req.query.organizationId) : null;
+        
+        if (organizationId && !(await hasOrganizationAccess(req.user.id, organizationId))) {
+            return res.status(403).json({ code: 403, message: "Access denied to this organization" });
+        }
+
+        const result = await deleteScript(req.user.id, req.params.scriptId, organizationId);
+        if (result?.code) {
+            return res.status(result.code).json(result);
+        }
         res.json({ message: "Script deleted successfully" });
     } catch (error) {
-        if (error.message === "Unauthorized to delete this script" || error.message === "Script not found") {
-            return res.status(404).json({ code: 404, message: error.message });
+        res.status(500).json({ code: 500, message: error.message });
+    }
+});
+
+/**
+ * PATCH /scripts/{scriptId}/reposition
+ * @summary Reposition Script
+ * @description Moves a script to a new position relative to another script.
+ * @tags Scripts
+ * @produces application/json
+ * @security BearerAuth
+ * @param {string} scriptId.path.required - The unique identifier of the script to reposition
+ * @param {string} organizationId.query - Optional: Organization ID if repositioning organization script
+ * @param {object} request.body.required - Reposition parameters (targetId, placement)
+ * @return {object} 200 - Script successfully repositioned
+ * @return {object} 400 - Cannot move script in that direction
+ * @return {object} 404 - Script not found
+ */
+app.patch("/:scriptId/reposition", async (req, res) => {
+    if (validateSchema(res, scriptRepositionValidation, req.body)) return;
+
+    try {
+        const organizationId = req.query.organizationId ? parseInt(req.query.organizationId) : null;
+        
+        if (organizationId && !(await hasOrganizationAccess(req.user.id, organizationId))) {
+            return res.status(403).json({ code: 403, message: "Access denied to this organization" });
         }
+
+        const result = await repositionScript(req.user.id, req.params.scriptId, req.body, organizationId);
+        if (result?.code) {
+            return res.status(result.code).json(result);
+        }
+        res.json({ message: "Script repositioned successfully" });
+    } catch (error) {
         res.status(500).json({ code: 500, message: error.message });
     }
 });

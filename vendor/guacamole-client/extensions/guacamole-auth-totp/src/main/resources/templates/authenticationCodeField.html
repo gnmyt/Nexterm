@@ -1,0 +1,48 @@
+<div class="totp-code-field" ng-class="{ 'totp-details-visible' : detailsShown }">
+
+    <!-- Enroll user if necessary -->
+    <div class="totp-enroll" ng-show="field.qrCode">
+
+        <p translate="TOTP.HELP_ENROLL_BARCODE"></p>
+
+        <!-- Barcode and key details -->
+        <div class="totp-qr-code"><img ng-src="{{field.qrCode}}" ng-click="openKeyURI()"></div>
+        <h3 class="totp-details-header">
+            {{'TOTP.SECTION_HEADER_DETAILS' | translate}}
+            <a class="totp-show-details" ng-click="showDetails()">{{'TOTP.ACTION_SHOW_DETAILS' | translate}}</a>
+            <a class="totp-hide-details" ng-click="hideDetails()">{{'TOTP.ACTION_HIDE_DETAILS' | translate}}</a>
+        </h3>
+        <table class="totp-details">
+            <tr>
+                <th>{{'TOTP.FIELD_HEADER_SECRET_KEY' | translate}}</th>
+                <td><span ng-repeat="group in groupedSecret"
+                          class="totp-detail">{{ group }}</span></td>
+            </tr>
+            <tr>
+                <th>{{'TOTP.FIELD_HEADER_DIGITS' | translate}}</th>
+                <td><span class="totp-detail">{{ field.digits }}</span></td>
+            </tr>
+            <tr>
+                <th>{{'TOTP.FIELD_HEADER_ALGORITHM' | translate}}</th>
+                <td><span class="totp-detail">{{ field.mode }}</span></td>
+            </tr>
+            <tr>
+                <th>{{'TOTP.FIELD_HEADER_INTERVAL' | translate}}</th>
+                <td><span class="totp-detail">{{ field.period }}</span></td>
+            </tr>
+        </table>
+
+        <p translate="TOTP.HELP_ENROLL_VERIFY"
+           translate-values="{ DIGITS : field.digits }"></p>
+
+    </div>
+
+    <!-- Field for entry of the current TOTP code -->
+    <div class="totp-code">
+        <input type="text"
+               placeholder="{{'TOTP.FIELD_PLACEHOLDER_CODE' |translate}}"
+               ng-attr-name="{{ field.name }}"
+               ng-model="model" autocomplete="off" autocorrect="off" autocapitalize="off" autofocus>
+    </div>
+
+</div>

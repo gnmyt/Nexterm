@@ -1,0 +1,13 @@
+{
+
+    "QUICKCONNECT" : {
+        "ACTION_CONNECT"        : "연결",
+
+        "ERROR_INVALID_URI"      : "잘못된 URI 지정",
+        "ERROR_NO_HOST"          : "지정된 호스트 없음",
+        "ERROR_NO_PROTOCOL"      : "지정된 프로토콜 없음",
+        "ERROR_NOT_ABSOLUTE_URI" : "URL이 절대 경로가 아님",
+
+        "FIELD_PLACEHOLDER_URI" : "연결 URI 입력"
+    }
+}

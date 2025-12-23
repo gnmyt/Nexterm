@@ -1,0 +1,146 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ */
+
+.menu {
+    overflow: hidden;
+    position: absolute;
+    top: 0;
+    height: 100%;
+    max-width: 100%;
+    width: 480px;
+    background: #EEE;
+    box-shadow: inset -1px 0 2px white, 1px 0 2px black;
+    z-index: 100;
+    -webkit-transition: left 0.125s, opacity 0.125s;
+    -moz-transition: left 0.125s, opacity 0.125s;
+    -ms-transition: left 0.125s, opacity 0.125s;
+    -o-transition: left 0.125s, opacity 0.125s;
+    transition: left 0.125s, opacity 0.125s;
+}
+
+.menu-content {
+
+    /* IE10 */
+    display: -ms-flexbox;
+    -ms-flex-align: stretch;
+    -ms-flex-direction: column;
+
+    /* Ancient Mozilla */
+    display: -moz-box;
+    -moz-box-align: stretch;
+    -moz-box-orient: vertical;
+    
+    /* Ancient WebKit */
+    display: -webkit-box;
+    -webkit-box-align: stretch;
+    -webkit-box-orient: vertical;
+
+    /* Old WebKit */
+    display: -webkit-flex;
+    -webkit-align-items: stretch;
+    -webkit-flex-direction: column;
+
+    /* W3C */
+    display: flex;
+    align-items: stretch;
+    flex-direction: column;
+    
+    width: 100%;
+    height: 100%;
+
+}
+
+.menu-content .header {
+
+    -ms-flex: 0 0 auto;
+    -moz-box-flex: 0;
+    -webkit-box-flex: 0;
+    -webkit-flex: 0 0 auto;
+    flex: 0 0 auto;
+
+    margin-bottom: 0;
+    
+}
+
+.menu-body {
+
+    -ms-flex: 1 1 auto;
+    -moz-box-flex: 1;
+    -webkit-box-flex: 1;
+    -webkit-flex: 1 1 auto;
+    flex: 1 1 auto;
+
+    padding: 1em;
+    overflow: auto;
+
+    /* IE10 */
+    display: -ms-flexbox;
+    -ms-flex-align: stretch;
+    -ms-flex-direction: column;
+
+    /* Ancient Mozilla */
+    display: -moz-box;
+    -moz-box-align: stretch;
+    -moz-box-orient: vertical;
+    
+    /* Ancient WebKit */
+    display: -webkit-box;
+    -webkit-box-align: stretch;
+    -webkit-box-orient: vertical;
+
+    /* Old WebKit */
+    display: -webkit-flex;
+    -webkit-align-items: stretch;
+    -webkit-flex-direction: column;
+
+    /* W3C */
+    display: flex;
+    align-items: stretch;
+    flex-direction: column;
+
+}
+
+.menu-body > * {
+    -ms-flex: 0 0 auto;
+    -moz-box-flex: 0;
+    -webkit-box-flex: 0;
+    -webkit-flex: 0 0 auto;
+    flex: 0 0 auto;
+}
+
+.menu-section h3 {
+    margin: 0;
+    padding: 0;
+    padding-bottom: 1em;
+}
+
+.menu-section ~ .menu-section h3 {
+    padding-top: 1em;
+}
+
+.menu,
+.menu.closed {
+    left: -480px;
+    opacity: 0;
+}
+
+.menu.open {
+    left: 0px;
+    opacity: 1;
+}

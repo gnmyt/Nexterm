@@ -1,0 +1,580 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+    Licensed to the Apache Software Foundation (ASF) under one
+    or more contributor license agreements.  See the NOTICE file
+    distributed with this work for additional information
+    regarding copyright ownership.  The ASF licenses this file
+    to you under the Apache License, Version 2.0 (the
+    "License"); you may not use this file except in compliance
+    with the License.  You may obtain a copy of the License at
+
+      http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing,
+    software distributed under the License is distributed on an
+    "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+    KIND, either express or implied.  See the License for the
+    specific language governing permissions and limitations
+    under the License.
+-->
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
+                        http://maven.apache.org/maven-v4_0_0.xsd">
+
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>org.apache.guacamole</groupId>
+    <artifactId>guacamole-client</artifactId>
+    <packaging>pom</packaging>
+    <version>1.6.0</version>
+    <name>guacamole-client</name>
+    <url>http://guacamole.apache.org/</url>
+
+    <properties>
+
+        <!-- Core properties -->
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+
+        <!-- Dependency versions -->
+        <guava.version>32.1.3-jre</guava.version>
+        <guice.version>5.1.0</guice.version>
+        <hk2.version>2.6.1</hk2.version>
+        <ipaddress.version>5.5.1</ipaddress.version>
+        <jackson.version>2.19.0</jackson.version>
+        <jackson-databind.version>2.19.0</jackson-databind.version>
+        <jersey.version>2.46</jersey.version>
+        <junit.version>5.12.2</junit.version>
+        <junit4.version>4.13.2</junit4.version>
+        <logback.version>1.3.15</logback.version>
+        <slf4j.version>2.0.17</slf4j.version>
+
+        <!-- The directory that should receive all generated dependency lists
+            (for LICENSE generation) -->
+        <dependency.list.directory>${project.build.directory}/dependencies</dependency.list.directory>
+
+        <!-- Set to "true" to ignore errors that occur during automatic LICENSE
+            file generation (such as non-existent license documentation) as
+            well as errors that occur during the RAT check (such as incorrect
+            or missing license headers). -->
+        <ignoreLicenseErrors>false</ignoreLicenseErrors>
+
+        <!-- Set to "true" to perform automated checks for available dependency
+            updates, including whether the declared versions of any
+            dependencies have associated CVEs in NVD. Beware that both checks
+            may produce false positives and false negatives. Updates need to be
+            checked for compatibility and any changes in license information. -->
+        <checkDependencies>false</checkDependencies>
+
+    </properties>
+
+    <modules>
+
+        <!-- Guacamole web application -->
+        <module>guacamole</module>
+
+        <!-- Guacamole Java API -->
+        <module>guacamole-common</module>
+
+        <!-- Guacamole webapp extension API -->
+        <module>guacamole-ext</module>
+
+        <!-- Guacamole JavaScript API -->
+        <module>guacamole-common-js</module>
+
+        <!-- Authentication extensions -->
+        <module>extensions</module>
+
+        <!-- Example web applications using the Guacamole APIs -->
+        <module>doc/guacamole-example</module>
+        <module>doc/guacamole-playback-example</module>
+
+    </modules>
+
+    <build>
+        <plugins>
+
+            <!-- Verify format using Apache RAT -->
+            <plugin>
+                <groupId>org.apache.rat</groupId>
+                <artifactId>apache-rat-plugin</artifactId>
+                <version>0.13</version>
+                <executions>
+                    <execution>
+                        <id>validate-licenses</id>
+                        <phase>validate</phase>
+                        <goals>
+                            <goal>check</goal>
+                        </goals>
+                        <configuration>
+                            <excludesFile>${basedir}/.ratignore</excludesFile>
+                            <excludes>
+                                <exclude>.dockerignore</exclude>
+                                <exclude>.ratignore</exclude>
+                                <exclude>**/*.md</exclude>
+                                <exclude>**/*.json</exclude>
+                                <exclude>**/*.svg</exclude>
+                                <exclude>**/node_modules/**/*</exclude>
+                                <exclude>**/templates/*.html</exclude>
+                                <exclude>src/licenses/**/*</exclude>
+                                <exclude>target/**/*</exclude>
+                            </excludes>
+                            <skip>${ignoreLicenseErrors}</skip>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>build-helper-maven-plugin</artifactId>
+                <version>3.2.0</version>
+                <executions>
+
+                    <!-- Define a "rootlocation" property that can be used to
+                        reference the location of the main guacamole-client
+                        directory -->
+                    <execution>
+                        <id>define-project-root</id>
+                        <goals>
+                            <goal>rootlocation</goal>
+                        </goals>
+                    </execution>
+
+                    <!-- Define a "guacamole.build.identifier" property that
+                        can be used to uniquely identify the current build
+                        relative to previous builds -->
+                    <execution>
+                        <id>define-build-timestamp</id>
+                        <configuration>
+                            <name>guacamole.build.identifier</name>
+                            <timeSource>build</timeSource>
+                            <pattern>yyyyMMddHHmmss</pattern>
+                        </configuration>
+                        <goals>
+                            <goal>timestamp-property</goal>
+                        </goals>
+                    </execution>
+
+                </executions>
+            </plugin>
+
+            <!-- Automatically generate list of Maven runtime dependencies -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <version>3.1.2</version>
+                <executions>
+                    <execution>
+                        <id>list-maven-runtime-dependencies</id>
+                        <phase>generate-resources</phase>
+                        <configuration>
+                            <includeScope>runtime</includeScope>
+                            <excludeReactor>false</excludeReactor>
+                            <excludeGroupIds>org.apache.guacamole</excludeGroupIds>
+                            <outputFile>${dependency.list.directory}/maven-runtime-dependencies.txt</outputFile>
+                        </configuration>
+                        <goals>
+                            <goal>list</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <!-- Automatically verify build sanity -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-enforcer-plugin</artifactId>
+                <version>3.0.0-M3</version>
+                <executions>
+                    <execution>
+                        <id>enforce</id>
+                        <configuration>
+                            <rules>
+                                <dependencyConvergence/>
+                                <requireUpperBoundDeps/>
+                            </rules>
+                        </configuration>
+                        <goals>
+                            <goal>enforce</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
+        </plugins>
+
+        <pluginManagement>
+            <plugins>
+
+                <!-- Java code within guacamole-client is written to be
+                    compatible with Java 8 and should not produce ANY compiler
+                    warnings -->
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-compiler-plugin</artifactId>
+                    <version>3.8.1</version>
+                    <configuration>
+                        <source>1.8</source>
+                        <target>1.8</target>
+                        <compilerArgs>
+                            <arg>-Xlint:all</arg>
+                        </compilerArgs>
+                        <failOnWarning>true</failOnWarning>
+                        <fork>true</fork>
+                    </configuration>
+                </plugin>
+
+                <!-- Provide "generate-license-files" execution for automatic
+                    generation of LICENSE and NOTICE files -->
+                <plugin>
+                    <groupId>org.codehaus.mojo</groupId>
+                    <artifactId>exec-maven-plugin</artifactId>
+                    <version>3.0.0</version>
+                    <executions>
+                        <execution>
+                            <id>generate-license-files</id>
+                            <phase>none</phase>
+                            <configuration>
+                                <executable>${rootlocation}/doc/licenses/generate-license-files.sh</executable>
+                                <arguments>
+                                    <argument>${dependency.list.directory}</argument>
+                                    <argument>${project.build.directory}/licenses</argument>
+                                </arguments>
+                                <environmentVariables>
+                                    <IGNORE_LICENSE_ERRORS>${ignoreLicenseErrors}</IGNORE_LICENSE_ERRORS>
+                                </environmentVariables>
+                            </configuration>
+                            <goals>
+                                <goal>exec</goal>
+                            </goals>
+                        </execution>
+                    </executions>
+                </plugin>
+
+                <!-- Use latest version of JavaScript/CSS minification plugin -->
+                <plugin>
+                    <groupId>com.github.buckelieg</groupId>
+                    <artifactId>minify-maven-plugin</artifactId>
+                    <version>2.0.1</version>
+                    <dependencies>
+                        <dependency>
+                            <groupId>org.codehaus.plexus</groupId>
+                            <artifactId>plexus-utils</artifactId>
+                            <version>3.5.1</version>
+                        </dependency>
+                    </dependencies>
+                </plugin>
+
+                <!-- Explicitly use latest versions of core plugins -->
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-assembly-plugin</artifactId>
+                    <version>3.3.0</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-resources-plugin</artifactId>
+                    <version>3.2.0</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-surefire-plugin</artifactId>
+                    <version>3.0.0-M5</version>
+                </plugin>
+
+                <!-- Provide default configurations for attaching JavaDoc and source -->
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-javadoc-plugin</artifactId>
+                    <version>3.2.0</version>
+                    <configuration>
+                        <detectOfflineLinks>false</detectOfflineLinks>
+                        <source>8</source>
+                    </configuration>
+                    <executions>
+                        <execution>
+                            <id>attach-javadocs</id>
+                            <goals>
+                                <goal>jar</goal>
+                            </goals>
+                        </execution>
+                    </executions>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-source-plugin</artifactId>
+                    <version>3.2.1</version>
+                    <executions>
+                        <execution>
+                            <id>attach-sources</id>
+                            <goals>
+                                <goal>jar</goal>
+                            </goals>
+                        </execution>
+                    </executions>
+                </plugin>
+
+            </plugins>
+        </pluginManagement>
+
+    </build>
+
+    <dependencyManagement>
+        <dependencies>
+
+            <!-- Guava utility library -->
+            <dependency>
+                <groupId>com.google.guava</groupId>
+                <artifactId>guava</artifactId>
+                <version>${guava.version}</version>
+            </dependency>
+
+            <!-- Guice dependency injection -->
+            <dependency>
+                <groupId>com.google.inject</groupId>
+                <artifactId>guice</artifactId>
+                <version>${guice.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.google.inject.extensions</groupId>
+                <artifactId>guice-assistedinject</artifactId>
+                <version>${guice.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.google.inject.extensions</groupId>
+                <artifactId>guice-servlet</artifactId>
+                <version>${guice.version}</version>
+            </dependency>
+
+            <!-- IPAddress (IP address matching library) -->
+            <dependency>
+                <groupId>com.github.seancfoley</groupId>
+                <artifactId>ipaddress</artifactId>
+                <version>${ipaddress.version}</version>
+            </dependency>
+
+            <!-- Jersey JAX-RS implementation -->
+            <dependency>
+                <groupId>org.glassfish.jersey.containers</groupId>
+                <artifactId>jersey-container-servlet-core</artifactId>
+                <version>${jersey.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.glassfish.jersey.inject</groupId>
+                <artifactId>jersey-hk2</artifactId>
+                <version>${jersey.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.glassfish.hk2</groupId>
+                <artifactId>guice-bridge</artifactId>
+                <version>${hk2.version}</version>
+            </dependency>
+
+            <!-- Jackson JSON mapper -->
+            <dependency>
+                <groupId>org.glassfish.jersey.media</groupId>
+                <artifactId>jersey-media-json-jackson</artifactId>
+                <version>${jersey.version}</version>
+
+                <!-- Exclude StAX API, which is part of Java 6 -->
+                <exclusions>
+                    <exclusion>
+                        <groupId>javax.xml.stream</groupId>
+                        <artifactId>stax-api</artifactId>
+                    </exclusion>
+                </exclusions>
+
+            </dependency>
+            <dependency>
+                <groupId>com.fasterxml.jackson.core</groupId>
+                <artifactId>jackson-annotations</artifactId>
+                <version>${jackson.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.fasterxml.jackson.core</groupId>
+                <artifactId>jackson-core</artifactId>
+                <version>${jackson.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.fasterxml.jackson.core</groupId>
+                <artifactId>jackson-databind</artifactId>
+                <version>${jackson-databind.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.fasterxml.jackson.dataformat</groupId>
+                <artifactId>jackson-dataformat-yaml</artifactId>
+                <version>${jackson.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.fasterxml.jackson.module</groupId>
+                <artifactId>jackson-module-jaxb-annotations</artifactId>
+                <version>${jackson.version}</version>
+            </dependency>
+
+            <!-- Logging -->
+            <dependency>
+                <groupId>org.slf4j</groupId>
+                <artifactId>slf4j-api</artifactId>
+                <version>${slf4j.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.slf4j</groupId>
+                <artifactId>jul-to-slf4j</artifactId>
+                <version>${slf4j.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>ch.qos.logback</groupId>
+                <artifactId>logback-classic</artifactId>
+                <version>${logback.version}</version>
+            </dependency>
+
+            <!-- JUnit v5 -->
+            <dependency>
+                <groupId>org.junit.jupiter</groupId>
+                <artifactId>junit-jupiter-api</artifactId>
+                <version>${junit.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.junit.jupiter</groupId>
+                <artifactId>junit-jupiter-params</artifactId>
+                <version>${junit.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.junit.jupiter</groupId>
+                <artifactId>junit-jupiter-engine</artifactId>
+                <version>${junit.version}</version>
+            </dependency>
+
+            <!-- JUnit v4 -->
+            <dependency>
+                <groupId>junit</groupId>
+                <artifactId>junit</artifactId>
+                <version>${junit4.version}</version>
+                <scope>test</scope>
+            </dependency>
+
+        </dependencies>
+    </dependencyManagement>
+
+    <profiles>
+
+        <!-- Automatically build distribution archive if dist.xml assembly is present -->
+        <profile>
+            <id>build-dist-archive</id>
+            <activation>
+                <file><exists>src/main/assembly/dist.xml</exists></file>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <artifactId>maven-assembly-plugin</artifactId>
+                        <version>3.3.0</version>
+                        <executions>
+                            <execution>
+                                <id>make-dist-archive</id>
+                                <phase>package</phase>
+                                <configuration>
+                                    <appendAssemblyId>false</appendAssemblyId>
+                                    <tarLongFileMode>posix</tarLongFileMode>
+                                    <descriptors>
+                                        <descriptor>src/main/assembly/dist.xml</descriptor>
+                                    </descriptors>
+                                </configuration>
+                                <goals>
+                                    <goal>single</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+
+        <!-- Perform automated dependency checks if "checkDependencies" is set to "true" -->
+        <profile>
+            <id>check-dependencies</id>
+            <activation>
+                <property>
+                    <name>checkDependencies</name>
+                    <value>true</value>
+                </property>
+            </activation>
+            <build>
+                <plugins>
+
+                    <!-- Checks for availability of likely-compatibile updates to
+                        dependencies -->
+                    <plugin>
+                        <groupId>org.codehaus.mojo</groupId>
+                        <artifactId>versions-maven-plugin</artifactId>
+                        <version>2.16.0</version>
+                        <configuration>
+                            <allowMajorUpdates>false</allowMajorUpdates>
+                            <dependencyExcludes>*:*:*:*:*:provided,*:*:*:*:*:system</dependencyExcludes>
+                            <outputFile>${project.build.directory}/dependency-update-report.txt</outputFile>
+                            <ruleSet>
+                                <ignoreVersions>
+                                    <ignoreVersion>
+                                        <type>regex</type>
+                                        <version>(.+-SNAPSHOT|.+-(M|RC)\d+)</version>
+                                    </ignoreVersion>
+                                    <ignoreVersion>
+                                        <type>regex</type>
+                                        <version>.+-(alpha|Alpha|beta|Beta)[0-9]*\b.*?</version>
+                                    </ignoreVersion>
+                                </ignoreVersions>
+                                <rules>
+                                    <rule>
+                                        <groupId>ch.qos.logback</groupId>
+                                        <artifactId>logback-classic</artifactId>
+                                        <ignoreVersions>
+                                            <ignoreVersion>
+                                                <type>regex</type>
+                                                <version>1\.[45]\..+</version>
+                                            </ignoreVersion>
+                                        </ignoreVersions>
+                                    </rule>
+                                </rules>
+                            </ruleSet>
+                        </configuration>
+                        <executions>
+                            <execution>
+                                <id>check-dependency-updates</id>
+                                <phase>validate</phase>
+                                <goals>
+                                    <goal>display-dependency-updates</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+
+                    <!-- Checks for possible known CVEs against dependencies
+                        NOTE: This WILL produce false positives!!! -->
+                    <plugin>
+                        <groupId>org.owasp</groupId>
+                        <artifactId>dependency-check-maven</artifactId>
+                        <version>8.3.1</version>
+                        <configuration>
+                            <skipProvidedScope>true</skipProvidedScope>
+                            <skipSystemScope>true</skipSystemScope>
+                            <skipTestScope>true</skipTestScope>
+                            <nodeAuditAnalyzerUrl>/-/npm/v1/security/advisories/bulk</nodeAuditAnalyzerUrl>
+                        </configuration>
+                        <executions>
+                            <execution>
+                                <id>check-dependency-updates</id>
+                                <phase>validate</phase>
+                                <goals>
+                                    <goal>check</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+
+                </plugins>
+            </build>
+        </profile>
+
+    </profiles>
+
+</project>

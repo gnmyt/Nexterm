@@ -53,50 +53,61 @@ export const Authentication = () => {
 
     return (
         <div className="authentication-page">
-            <div className="provider-title">
+            <div className="auth-header">
                 <h2>{t("settings.authentication.title", { count: providers.length })}</h2>
                 <Button onClick={() => setCreateDialogOpen(true)} text={t("settings.authentication.addProvider")} icon={mdiPlus} />
             </div>
 
-            {providers.map(provider => (
-                <div key={provider.id} className="provider-item">
-                    <div className="left-area">
-                        <Icon path={provider.isInternal ? mdiLock : mdiShieldAccountOutline} className="menu" size={1.5} />
-                        <div className="provider-info">
-                            <h2>
-                                {provider.name}
-                                {provider.isInternal && <span className="internal-badge">{t("settings.authentication.system")}</span>}
-                            </h2>
-                            <p>{provider.isInternal ? t("settings.authentication.systemDescription") : provider.issuer}</p>
+            <div className="vertical-list">
+                {providers.map(provider => (
+                    <div key={provider.id} className="item">
+                        <div className="left-section">
+                            <div className={`icon ${provider.isInternal ? "warning" : "primary"}`}>
+                                <Icon path={provider.isInternal ? mdiLock : mdiShieldAccountOutline} />
+                            </div>
+                            <div className="details">
+                                <h3>
+                                    {provider.name}
+                                    {provider.isInternal && (
+                                        <span className="system-badge">{t("settings.authentication.system")}</span>
+                                    )}
+                                </h3>
+                                <p>{provider.isInternal ? t("settings.authentication.systemDescription") : provider.issuer}</p>
+                            </div>
+                        </div>
+
+                        <div className="right-section">
+                            <ToggleSwitch 
+                                checked={provider.enabled}
+                                onChange={(checked) => toggleProvider(provider.id, checked)}
+                                id={`provider-toggle-${provider.id}`}
+                                disabled={provider.isInternal}
+                            />
+
+                            {!provider.isInternal && (
+                                <>
+                                    <Icon 
+                                        path={mdiPencil} 
+                                        className="action-icon"
+                                        onClick={() => {
+                                            setEditProvider(provider);
+                                            setCreateDialogOpen(true);
+                                        }}
+                                    />
+                                    <Icon 
+                                        path={mdiTrashCan} 
+                                        className="action-icon danger"
+                                        onClick={() => {
+                                            setSelectedProviderId(provider.id);
+                                            setDeleteDialogOpen(true);
+                                        }}
+                                    />
+                                </>
+                            )}
                         </div>
                     </div>
-
-                    <div className="provider-actions">
-                        <ToggleSwitch 
-                            checked={provider.enabled}
-                            onChange={(checked) => toggleProvider(provider.id, checked)}
-                            id={`provider-toggle-${provider.id}`}
-                        />
-
-                        {!provider.isInternal && (
-                            <>
-                                <Icon path={mdiPencil} className="menu"
-                                    onClick={() => {
-                                        setEditProvider(provider);
-                                        setCreateDialogOpen(true);
-                                    }}
-                                />
-                                <Icon path={mdiTrashCan} className="menu delete-menu"
-                                    onClick={() => {
-                                        setSelectedProviderId(provider.id);
-                                        setDeleteDialogOpen(true);
-                                    }}
-                                />
-                            </>
-                        )}
-                    </div>
-                </div>
-            ))}
+                ))}
+            </div>
 
             <ProviderDialog open={createDialogOpen} provider={editProvider}
                 onClose={() => {

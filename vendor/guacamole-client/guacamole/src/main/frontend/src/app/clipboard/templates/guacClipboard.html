@@ -1,0 +1,12 @@
+<div class="clipboard-editor">
+    <textarea class="clipboard"
+        ng-class="{
+            'clipboard-contents-hidden' : !contentsShown
+        }"
+        ng-disabled="!contentsShown"></textarea>
+    <div class="clipboard-contents-hidden-hint"
+        ng-click="showContents()"
+        ng-show="!contentsShown">
+        <p class="clipboard-contents-hidden-hint-text">{{ 'CLIENT.ACTION_SHOW_CLIPBOARD' | translate }}</p>
+    </div>
+</div>

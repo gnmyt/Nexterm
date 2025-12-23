@@ -1,0 +1,6 @@
+org.glassfish.hk2.external:aopalliance-repackaged:jar:2.6.1
+org.glassfish.hk2.external:jakarta.inject:jar:2.6.1
+org.glassfish.hk2:guice-bridge:jar:2.6.1
+org.glassfish.hk2:hk2-api:jar:2.6.1
+org.glassfish.hk2:hk2-locator:jar:2.6.1
+org.glassfish.hk2:hk2-utils:jar:2.6.1

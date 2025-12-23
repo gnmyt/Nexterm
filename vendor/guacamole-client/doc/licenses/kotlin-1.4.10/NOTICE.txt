@@ -1,0 +1,2 @@
+Kotlin Compiler
+Copyright 2010-2023 JetBrains s.r.o and respective authors and developers

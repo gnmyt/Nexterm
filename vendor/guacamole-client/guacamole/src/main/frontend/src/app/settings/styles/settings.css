@@ -1,0 +1,71 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ */
+
+.settings table.properties th {
+    text-align: left;
+    font-weight: normal;
+    padding-right: 1em;
+}
+
+.settings .action-buttons {
+    text-align: center;
+    margin: 1em 0;
+}
+
+.settings .toolbar {
+
+    /* IE10 */
+    display: -ms-flexbox;
+    -ms-flex-align: center;
+    -ms-flex-direction: row;
+
+    /* Ancient Mozilla */
+    display: -moz-box;
+    -moz-box-align: center;
+    -moz-box-orient: horizontal;
+
+    /* Ancient WebKit */
+    display: -webkit-box;
+    -webkit-box-align: center;
+    -webkit-box-orient: horizontal;
+
+    /* Old WebKit */
+    display: -webkit-flex;
+    -webkit-align-items: center;
+    -webkit-flex-direction: row;
+
+    /* W3C */
+    display: flex;
+    align-items: center;
+    flex-direction: row;
+
+}
+
+.settings .toolbar .action-buttons {
+    margin-right: 0.25em;
+}
+
+.settings .toolbar .filter {
+    -ms-flex: 1 1 auto;
+    -moz-box-flex: 1;
+    -webkit-box-flex: 1;
+    -webkit-flex: 1 1 auto;
+    flex: 1 1 auto;
+}
+

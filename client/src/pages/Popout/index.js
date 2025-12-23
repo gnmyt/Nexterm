@@ -1,0 +1,1 @@
+export { Popout as default } from "./Popout.jsx";

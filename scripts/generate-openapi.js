@@ -24,6 +24,7 @@ const main = async () => {
         console.log(`Generated ${Object.keys(openApiSpec.paths || {}).length} API endpoints`);
         console.log(`Generated ${Object.keys(openApiSpec.components?.schemas || {}).length} schemas`);
 
+        process.exit(0);
     } catch (error) {
         console.error("Error generating OpenAPI specification:", error.message);
         console.error(error.stack);

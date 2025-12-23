@@ -1,0 +1,237 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+    Licensed to the Apache Software Foundation (ASF) under one
+    or more contributor license agreements.  See the NOTICE file
+    distributed with this work for additional information
+    regarding copyright ownership.  The ASF licenses this file
+    to you under the Apache License, Version 2.0 (the
+    "License"); you may not use this file except in compliance
+    with the License.  You may obtain a copy of the License at
+
+      http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing,
+    software distributed under the License is distributed on an
+    "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+    KIND, either express or implied.  See the License for the
+    specific language governing permissions and limitations
+    under the License.
+-->
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
+                        http://maven.apache.org/maven-v4_0_0.xsd">
+
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>org.apache.guacamole</groupId>
+    <artifactId>guacamole-common-js</artifactId>
+    <packaging>pom</packaging>
+    <version>1.6.0</version>
+    <name>guacamole-common-js</name>
+    <url>http://guacamole.apache.org/</url>
+
+    <parent>
+        <groupId>org.apache.guacamole</groupId>
+        <artifactId>guacamole-client</artifactId>
+        <version>1.6.0</version>
+        <relativePath>../</relativePath>
+    </parent>
+
+    <properties>
+
+        <!--
+        The location where temporary files should be stored for communicating
+        between karma and firefox. The default location, /tmp, does not work
+        if firefox is installed via snap.
+        -->
+        <firefox.temp.dir>${project.build.directory}/tmp</firefox.temp.dir>
+
+        <!--
+        Skip tests unless requested otherwise with -DskipTests=false.
+        Skipped by default because these tests require firefox to be installed.
+        -->
+        <skipTests>true</skipTests>
+        
+    </properties>
+
+    <description>
+        The base JavaScript API of the Guacamole project, providing JavaScript
+        support for the Guacamole stack, including a full client
+        implementation for the Guacamole protocol.
+    </description>
+
+    <!-- All applicable licenses -->
+    <licenses>
+        <license>
+            <name>Apache License, Version 2.0</name>
+            <url>https://www.apache.org/licenses/LICENSE-2.0.txt</url>
+            <distribution>repo</distribution>
+        </license>
+    </licenses>
+
+    <!-- Git repository -->
+    <scm>
+        <url>https://github.com/apache/guacamole-client</url>
+        <connection>scm:git:https://git.wip-us.apache.org/repos/asf/guacamole-client.git</connection>
+
+    </scm>
+
+    <build>
+        <plugins>
+
+            <!-- Assemble JS files into single .zip -->
+            <plugin>
+                <artifactId>maven-assembly-plugin</artifactId>
+                <configuration>
+                    <appendAssemblyId>false</appendAssemblyId>
+                    <descriptors>
+                        <descriptor>static.xml</descriptor>
+                    </descriptors>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>make-zip</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>single</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <!-- JS/CSS Minification Plugin -->
+            <plugin>
+                <groupId>com.github.buckelieg</groupId>
+                <artifactId>minify-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>default-minify</id>
+                        <configuration>
+
+                            <charset>UTF-8</charset>
+                            <jsEngine>CLOSURE</jsEngine>
+
+                            <jsSourceDir>/</jsSourceDir>
+                            <jsTargetDir>/</jsTargetDir>
+                            <jsFinalFile>all.js</jsFinalFile>
+
+                            <jsSourceFiles>
+                                <jsSourceFile>common/license.js</jsSourceFile> 
+                            </jsSourceFiles>
+
+                            <jsSourceIncludes>
+                                <jsSourceInclude>modules/**/*.js</jsSourceInclude>
+                            </jsSourceIncludes>
+
+                        </configuration>
+                        <goals>
+                            <goal>minify</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <!-- Skip tests if configured to do so -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>3.0.0</version>
+                <configuration>
+                    <skipTests>${skipTests}</skipTests>
+                </configuration>
+            </plugin>
+
+            <!-- Ensure the firefox temp directory exists -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-antrun-plugin</artifactId>
+                <version>3.1.0</version>
+                <executions>
+                    <execution>
+                        <id>createFirefoxTempdir</id>
+                        <phase>test</phase>
+                        <configuration>
+                            <target>
+                                <mkdir dir="${firefox.temp.dir}"/>
+                            </target>
+                        </configuration>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <!-- Unit test using Jasmin and Firefox -->
+            <plugin>
+                <groupId>com.github.eirslett</groupId>
+                <artifactId>frontend-maven-plugin</artifactId>
+                <version>1.12.1</version>
+                
+                <configuration>
+
+                    <!-- The version of node to use for running tests -->
+                    <nodeVersion>v16.19.1</nodeVersion>
+
+                    <!-- Install dependencies with "npm ci" for repeatability -->
+                    <arguments>ci</arguments>
+
+                    <!-- The location of the karma config file -->
+                    <karmaConfPath>karma-ci.conf.js</karmaConfPath>
+
+                    <!-- Tell karma to use the custom temp directory -->
+                    <environmentVariables>
+                        <TMPDIR>${firefox.temp.dir}</TMPDIR>
+                    </environmentVariables>
+                    
+                </configuration>
+
+                <executions>
+
+                    <!-- Install node.js and NPM before running tests or generating documentation -->
+                    <execution>
+                        <id>install-node-and-npm</id>
+                        <phase>process-sources</phase>
+                        <goals>
+                            <goal>install-node-and-npm</goal>
+                        </goals>
+                    </execution>
+
+                    <!-- Generate documentation using JSDoc -->
+                    <execution>
+                        <id>generate-docs</id>
+                        <goals>
+                            <goal>npx</goal>
+                        </goals>
+                        <phase>package</phase>
+                        <configuration>
+                            <arguments>jsdoc -c jsdoc-conf.json</arguments>
+                        </configuration>
+                    </execution>
+
+                    <!-- Install test and documentation dependencies -->
+                    <execution>
+                        <id>npm-install</id>
+                        <phase>test</phase>
+                        <goals>
+                            <goal>npm</goal>
+                        </goals>
+                    </execution>
+
+                    <!-- Run all tests non-interactively -->
+                    <execution>
+                        <id>run-tests</id>
+                        <phase>test</phase>
+                        <goals>
+                            <goal>karma</goal>
+                        </goals>
+                    </execution>
+
+                </executions>
+                
+            </plugin>
+
+        </plugins>
+    </build>
+
+</project>

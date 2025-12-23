@@ -5,28 +5,34 @@ import { getRequest } from "@/common/utils/RequestUtil.js";
 export const SnippetContext = createContext({});
 
 export const SnippetProvider = ({ children }) => {
-    const [snippets, setSnippets] = useState([]);
+    const [allSnippets, setAllSnippets] = useState([]);
     const { user, sessionToken } = useContext(UserContext);
 
-    const loadSnippets = async () => {
+    const loadAllSnippets = async () => {
         try {
-            const response = await getRequest("/snippets/list");
-            setSnippets(response);
+            const response = await getRequest("/snippets/all");
+            setAllSnippets(response);
         } catch (error) {
-            console.error("Failed to load snippets", error.message);
+            console.error("Failed to load all snippets", error.message);
         }
     };
 
     useEffect(() => {
         if (user) {
-            loadSnippets();
+            loadAllSnippets();
+
+            const interval = setInterval(() => {
+                loadAllSnippets();
+            }, 5000);
+
+            return () => clearInterval(interval);
         } else if (!sessionToken) {
-            setSnippets([]);
+            setAllSnippets([]);
         }
     }, [user]);
 
     return (
-        <SnippetContext.Provider value={{ snippets, loadSnippets }}>
+        <SnippetContext.Provider value={{ allSnippets, loadAllSnippets }}>
             {children}
         </SnippetContext.Provider>
     );

@@ -1,0 +1,22 @@
+<div class="transfer-manager">
+
+    <!-- File transfer manager header -->
+    <div class="header">
+        <h2>{{'CLIENT.SECTION_HEADER_FILE_TRANSFERS' | translate}}</h2>
+        <button ng-click="clearCompletedTransfers()">{{'CLIENT.ACTION_CLEAR_COMPLETED_TRANSFERS' | translate}}</button>
+    </div>
+
+    <!-- Sent/received files -->
+    <div class="transfer-manager-body">
+        <div class="transfer-manager-body-section" ng-repeat="client in clientGroup.clients" ng-show="hasTransfers(client)">
+            <h3 ng-show="hasMultipleClients(clientGroup)">{{ client.name }}</h3>
+            <div class="transfers">
+                <guac-file-transfer
+                    transfer="upload"
+                    ng-repeat="upload in client.uploads">
+                </guac-file-transfer>
+            </div>
+        </div>
+    </div>
+
+</div>

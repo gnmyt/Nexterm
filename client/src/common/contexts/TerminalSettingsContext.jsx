@@ -1,4 +1,5 @@
 import { createContext, useContext, useState, useEffect } from "react";
+import { useTheme } from "@/common/contexts/ThemeContext.jsx";
 
 const TerminalSettingsContext = createContext({});
 
@@ -26,28 +27,6 @@ const DEFAULT_TERMINAL_THEMES = {
         brightBlue: "#9D9DFF",
         brightMagenta: "#FF9DFF",
         brightCyan: "#9DFFFF",
-    },
-    light: {
-        name: "Light",
-        background: "#F3F3F3",
-        foreground: "#000000",
-        brightWhite: "#464545",
-        cursor: "#000000",
-        black: "#000000",
-        red: "#CC0000",
-        green: "#4E9A06",
-        yellow: "#C4A000",
-        blue: "#3465A4",
-        magenta: "#75507B",
-        cyan: "#06989A",
-        white: "#D3D7CF",
-        brightBlack: "#555753",
-        brightRed: "#EF2929",
-        brightGreen: "#8AE234",
-        brightYellow: "#FCE94F",
-        brightBlue: "#729FCF",
-        brightMagenta: "#AD7FA8",
-        brightCyan: "#34E2E2",
     },
     dracula: {
         name: "Dracula",
@@ -311,6 +290,8 @@ const CURSOR_STYLES = [
 ];
 
 export const TerminalSettingsProvider = ({ children }) => {
+    const { themeMode } = useTheme();
+    
     const [selectedTheme, setSelectedTheme] = useState(() => {
         const saved = localStorage.getItem("terminal-theme");
         return saved && DEFAULT_TERMINAL_THEMES[saved] ? saved : "default";
@@ -359,9 +340,21 @@ export const TerminalSettingsProvider = ({ children }) => {
         localStorage.setItem("terminal-cursor-blink", cursorBlink.toString());
     }, [cursorBlink]);
 
-    const getTerminalTheme = (theme) => DEFAULT_TERMINAL_THEMES[theme] || DEFAULT_TERMINAL_THEMES.default;
+    const getTerminalTheme = (theme) => {
+        const baseTheme = DEFAULT_TERMINAL_THEMES[theme] || DEFAULT_TERMINAL_THEMES.default;
+        if (themeMode === "oled" && theme === "default") {
+            return { ...baseTheme, background: "#000000" };
+        }
+        return baseTheme;
+    };
     const getCurrentTheme = () => getTerminalTheme(selectedTheme);
-    const getAvailableThemes = () => Object.keys(DEFAULT_TERMINAL_THEMES).map(key => ({ key, ...DEFAULT_TERMINAL_THEMES[key] }));
+    const getAvailableThemes = () => Object.keys(DEFAULT_TERMINAL_THEMES).map(key => {
+        const theme = DEFAULT_TERMINAL_THEMES[key];
+        if (themeMode === "oled" && key === "default") {
+            return { key, ...theme, background: "#000000" };
+        }
+        return { key, ...theme };
+    });
     const getAvailableFonts = () => DEFAULT_FONTS;
     const getCursorStyles = () => CURSOR_STYLES;
 
@@ -370,6 +363,7 @@ export const TerminalSettingsProvider = ({ children }) => {
             selectedTheme, setSelectedTheme, selectedFont, setSelectedFont,
             fontSize, setFontSize, cursorStyle, setCursorStyle, cursorBlink, setCursorBlink,
             getCurrentTheme, getTerminalTheme, getAvailableThemes, getAvailableFonts, getCursorStyles,
+            isOledMode: themeMode === "oled",
         }}>
             {children}
         </TerminalSettingsContext.Provider>

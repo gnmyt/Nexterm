@@ -1,0 +1,164 @@
+@use "@/common/styles/colors"
+
+.create-script-dialog
+  display: flex
+  flex-direction: column
+  width: min(90vw, 1200px)
+  max-width: 100%
+  max-height: 85vh
+  overflow: hidden
+  user-select: none
+  gap: 1rem
+  box-sizing: border-box
+  
+  .dialog-header
+    padding-bottom: 0.75rem
+    border-bottom: 1px solid colors.$gray
+    
+    h2
+      margin: 0 0 0.25rem 0
+      font-size: 1.125rem
+      font-weight: 700
+      color: colors.$white
+      letter-spacing: -0.01em
+      display: flex
+      align-items: center
+      gap: 0.625rem
+
+      svg
+        width: 1.25rem
+        height: 1.25rem
+        color: colors.$primary
+        opacity: 0.95
+    
+    p
+      margin: 0
+      color: colors.$subtext
+      font-size: 0.85rem
+      line-height: 1.4
+
+  .dialog-body
+    display: flex
+    flex-direction: column
+    gap: 1rem
+    overflow-y: auto
+    overflow-x: hidden
+    flex: 1
+    min-height: 0
+    min-width: 0
+    padding-right: 0.25rem
+    margin-right: -0.25rem
+    scrollbar-width: thin
+    scrollbar-color: colors.$gray transparent
+
+    &::-webkit-scrollbar
+      width: 4px
+
+    &::-webkit-scrollbar-track
+      background: transparent
+
+    &::-webkit-scrollbar-thumb
+      background-color: colors.$gray
+      border-radius: 10px
+
+  .form-section
+    display: flex
+    flex-direction: column
+    gap: 0.875rem
+    min-width: 0
+    background-color: colors.$dark-gray
+    border: 1px solid colors.$gray
+    border-radius: 0.75rem
+    padding: 1rem
+
+    h3
+      margin: 0
+      font-size: 0.9rem
+      font-weight: 600
+      color: colors.$white
+      display: flex
+      align-items: center
+      gap: 0.625rem
+      letter-spacing: -0.01em
+      padding-bottom: 0.75rem
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1)
+
+      svg
+        width: 1.125rem
+        height: 1.125rem
+        color: colors.$primary
+        opacity: 0.9
+
+      .help-tip
+        margin-left: auto
+        display: flex
+        align-items: center
+        gap: 0.4rem
+        font-size: 0.75rem
+        color: colors.$subtext
+        font-weight: 500
+
+        svg
+          width: 0.9rem
+          height: 0.9rem
+          opacity: 0.8
+
+  .form-row
+    display: grid
+    grid-template-columns: 1fr 1fr
+    gap: 1rem
+
+  .form-group
+    display: flex
+    flex-direction: column
+    gap: 0.5rem
+
+    label
+      color: colors.$white
+      font-weight: 600
+      font-size: 0.85rem
+      letter-spacing: 0.01em
+      opacity: 0.9
+
+  .code-editor-container
+    border: 1px solid rgba(255, 255, 255, 0.1)
+    border-radius: 0.5rem
+    overflow: hidden
+    background: rgba(0, 0, 0, 0.3)
+    max-width: 100%
+    min-width: 0
+    
+    .cm-editor
+      max-width: 100%
+      
+    .cm-scroller
+      overflow-x: auto !important
+
+  .dialog-actions
+    display: flex
+    justify-content: flex-end
+    gap: 0.75rem
+    padding-top: 0.75rem
+    border-top: 1px solid colors.$dark-gray
+
+@media (max-width: 1024px)
+  .create-script-dialog
+    .form-row
+      grid-template-columns: 1fr
+
+@media (max-width: 768px)
+  .create-script-dialog
+    width: 95vw
+    max-height: 95vh
+
+    .dialog-header
+      h2
+        font-size: 1.2rem
+
+    .form-section
+      h3
+        .help-tip
+          display: none
+
+    .dialog-actions
+      flex-direction: column

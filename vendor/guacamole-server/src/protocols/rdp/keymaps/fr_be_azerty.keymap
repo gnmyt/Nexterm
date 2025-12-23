@@ -1,0 +1,77 @@
+#
+# Licensed to the Apache Software Foundation (ASF) under one
+# or more contributor license agreements.  See the NOTICE file
+# distributed with this work for additional information
+# regarding copyright ownership.  The ASF licenses this file
+# to you under the Apache License, Version 2.0 (the
+# "License"); you may not use this file except in compliance
+# with the License.  You may obtain a copy of the License at
+#
+#   http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing,
+# software distributed under the License is distributed on an
+# "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+# KIND, either express or implied.  See the License for the
+# specific language governing permissions and limitations
+# under the License.
+#
+
+parent  "base_altgr"
+name    "fr-be-azerty"
+freerdp "KBD_BELGIAN_FRENCH"
+
+#
+# Basic keys
+#
+
+map -caps -altgr -shift 0x29 0x02..0x0D      ~ "²&é"'(§è!çà)-"
+map -caps -altgr -shift      0x10..0x19 0x1B ~ "azertyuiop$"
+map -caps -altgr -shift      0x1E..0x28 0x2B ~ "qsdfghjklmùµ"
+map -caps -altgr -shift 0x56 0x2C..0x35      ~ "<wxcvbn,;:="
+
+map -caps -altgr +shift 0x29 0x02..0x0D      ~ "³1234567890°_"
+map -caps -altgr +shift      0x10..0x19 0x1B ~ "AZERTYUIOP£"
+map -caps -altgr +shift      0x1E..0x28 0x2B ~ "QSDFGHJKLM%£"
+map -caps -altgr +shift 0x56 0x2C..0x35      ~ ">WXCVBN?./+"
+
+map +caps -altgr -shift 0x29 0x02..0x0D      ~ "²1234567890°_"
+map +caps -altgr -shift      0x10..0x19 0x1B ~ "AZERTYUIOP£"
+map +caps -altgr -shift      0x1E..0x28 0x2B ~ "QSDFGHJKLM%£"
+map +caps -altgr -shift 0x56 0x2C..0x35      ~ "<WXCVBN?./+"
+
+map +caps -altgr +shift 0x29 0x02..0x0D      ~ "³&é"'(§è!çà)-"
+map +caps -altgr +shift      0x10..0x19 0x1B ~ "azertyuiop$"
+map +caps -altgr +shift      0x1E..0x28 0x2B ~ "qsdfghjklmùµ"
+map +caps -altgr +shift 0x56 0x2C..0x35      ~ ">wxcvbn,;:="
+
+#
+# Keys requiring AltGr (unaffected by Caps Lock, but Shift must not be pressed)
+#
+
+map +altgr -shift 0x02..0x04 ~ "|@#"
+map +altgr -shift 0x0A..0x0B ~ "{}"
+map +altgr -shift 0x1A..0x1B ~ "[]"
+
+map +altgr -shift 0x12 ~ "€"
+map +altgr -shift 0x56 ~ "\"
+map +altgr -shift 0x07 ~ "^"
+
+#
+# Dead keys requiring AltGr (unaffected by Caps Lock or Shift)
+#
+
+map +altgr 0x35 ~ 0xFE53 # Dead tilde
+map +altgr 0x28 ~ 0xFE51 # Dead acute
+map +altgr 0x2B ~ 0xFE50 # Dead grave
+
+#
+# Dead keys (affected by Caps Lock and Shift)
+#
+
+map -caps -altgr -shift 0x1A ~ 0xFE52 # Dead circumflex
+map -caps -altgr +shift 0x1A ~ 0xFE57 # Dead umlaut
+
+map +caps -altgr -shift 0x1A ~ 0xFE57 # Dead umlaut
+map +caps -altgr +shift 0x1A ~ 0xFE52 # Dead circumflex
+

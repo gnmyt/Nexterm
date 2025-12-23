@@ -1,1 +1,0 @@
-export {PVEObject as default} from "./PVEObject.jsx";

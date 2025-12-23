@@ -1,0 +1,99 @@
+.\"
+.\" Licensed to the Apache Software Foundation (ASF) under one
+.\" or more contributor license agreements.  See the NOTICE file
+.\" distributed with this work for additional information
+.\" regarding copyright ownership.  The ASF licenses this file
+.\" to you under the Apache License, Version 2.0 (the
+.\" "License"); you may not use this file except in compliance
+.\" with the License.  You may obtain a copy of the License at
+.\"
+.\"   http://www.apache.org/licenses/LICENSE-2.0
+.\"
+.\" Unless required by applicable law or agreed to in writing,
+.\" software distributed under the License is distributed on an
+.\" "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+.\" KIND, either express or implied.  See the License for the
+.\" specific language governing permissions and limitations
+.\" under the License.
+.\"
+.TH guaclog 1 "26 Jan 2018" "version @PACKAGE_VERSION@" "Apache Guacamole"
+.
+.SH NAME
+guaclog \- Guacamole input log interpreter
+.
+.SH SYNOPSIS
+.B guaclog
+[\fB-f\fR]
+[\fIFILE\fR]...
+.
+.SH DESCRIPTION
+.B guaclog
+is an interpreter which accepts Guacamole protocol dumps, such as those saved
+when input logging is enabled for a Guacamole session recording, writing
+human-readable text logs as output.
+.B guaclog
+is essentially an implementation of a Guacamole client which accepts
+its input from files instead of a network connection, however unlike
+.B guacenc
+it only handles instructions related to user input.
+.P
+Each \fIFILE\fR specified will be translated into a new human-readable text
+file named \fIFILE\fR.txt. Existing files will not be overwritten; the
+interpreting process for any input file will be aborted if it would result in
+overwriting an existing file.
+.P
+Guacamole acquires a write lock on recordings as they are being written. By
+default,
+.B guaclog
+will check whether the each input file is locked and will refuse to read and
+interpret an input file if it appears to be an in-progress recording. This
+behavior can be overridden by specifying the \fB-f\fR option. Interpreting an
+in-progress recording will still work; the resulting human-readable text file
+will simply cover the user's session only up to the current point in time.
+.
+.SH OPTIONS
+.TP
+\fB-f\fR
+Overrides the default behavior of
+.B guaclog
+such that input files will be interpreted even if they appear to be recordings
+of in-progress Guacamole sessions.
+.
+.SH OUTPUT FORMAT
+The output format of
+.B guaclog
+is meant to match what the user would have typed within a typical text editor
+as closely as possible, while also representing non-printable characters and
+keyboard shortcuts in a human-readable way.
+.P
+All output is on one line, with new lines started only as a result of the user
+pressing enter/return. Keys which produce printable characters are translated
+into their corresponding Unicode codepoints and encoded as UTF-8, while
+non-printable characters are enclosed within angle brackets and represented
+with their human-readable names. Keyboard shortcuts which are made up of more
+than one key are enclosed within angle brackets, with each key within the
+shortcut separated by plus signs.
+.P
+Spaces and newlines are included as their Unicode character, except when
+represented within a keyboard shortcut, in which case their human-readable
+names are used instead. As the output of pressing tab can be easily mistaken
+for spaces, and as pressing tab frequently has special meaning within
+applications, tab is always represented by its human-readable name.
+.P
+Modifiers are output as part of keyboard shortcuts only. Simple pressing and
+releasing of a modifier will be ignored, as are presses of shift or AltGr while
+typing.
+.P
+For example, if the user typed "Hello WORLD!", selected everything by pressing
+Ctrl+a, copied the selected text by pressing Ctrl+c, switched to another
+application by pressing Alt+Shift+Tab, and then pasted the previously-copied
+text by pressing Ctrl+v, the resulting log from
+.B
+guaclog
+would look like:
+.PP
+.RS 0
+Hello WORLD!<Ctrl+a><Ctrl+c><Alt+Shift+Tab><Ctrl+v>
+.
+.SH SEE ALSO
+.BR guacenc (1)

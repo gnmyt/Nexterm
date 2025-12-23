@@ -1,0 +1,17 @@
+{
+
+    "guacamoleVersion" : "1.6.0",
+
+    "name"      : "Session Recording Storage",
+    "namespace" : "recording-storage",
+
+    "authProviders" : [
+        "org.apache.guacamole.history.HistoryAuthenticationProvider"
+    ],
+
+    "translations" : [
+        "translations/en.json",
+        "translations/pl.json"
+    ]
+
+}

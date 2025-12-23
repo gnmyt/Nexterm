@@ -1,50 +1,91 @@
 @use "@/common/styles/colors"
 
 .sessions-page
-  display: flex
-  flex-direction: column
-  margin-top: 1rem
-  gap: 2rem
+  width: 100%
 
-
-  .session
-    border: 2px solid colors.$gray
-    padding: 1rem 1.5rem
-    border-radius: 1rem
+  .sessions-header
     display: flex
-    justify-content: space-between
     align-items: center
+    justify-content: space-between
+    margin-bottom: 1.5rem
 
-    .session-info
+    h2
+      margin: 0
+      font-size: 1.3rem
+
+  .vertical-list
+    display: flex
+    flex-direction: column
+    gap: 0.75rem
+
+  .item
+    display: flex
+    align-items: center
+    justify-content: space-between
+    background-color: colors.$lighter-background
+    border: 1px solid colors.$dark-gray
+    border-radius: 0.5rem
+    padding: 0.875rem 1rem
+    transition: border-color 0.1s ease
+
+    &:hover
+      border-color: colors.$gray
+
+    .left-section
       display: flex
-      gap: 1.5rem
       align-items: center
+      gap: 0.75rem
 
-    .session-details
-      display: flex
-      flex-direction: column
-      gap: 0.5rem
-
-      h2, p
-        margin: 0
-
-      p
-        font-weight: 600
-        color: colors.$subtext
-
-    .icon-container
-      display: flex
-      align-items: center
-      justify-content: center
-      padding: 0.7rem
-      color: colors.$primary
-      background-color: colors.$primary-opacity
-      border-radius: 1rem
-
-      svg
+      .icon
+        display: flex
+        align-items: center
+        justify-content: center
         width: 2rem
         height: 2rem
+        border-radius: 0.375rem
+        flex-shrink: 0
 
-    .icon-current
-      color: colors.$success
-      background-color: colors.$success-opacity
+        svg
+          width: 1.125rem
+          height: 1.125rem
+
+        &.primary
+          background-color: colors.$primary-opacity
+          svg
+            color: colors.$primary
+
+        &.success
+          background-color: colors.$success-opacity
+          svg
+            color: colors.$success
+
+      .details
+        h3
+          margin: 0
+          font-size: 0.9rem
+          font-weight: 600
+
+        p
+          margin: 0.25rem 0 0
+          color: colors.$subtext
+          font-size: 0.8rem
+
+    .right-section
+      display: flex
+      align-items: center
+      gap: 0.75rem
+
+  @media (max-width: 600px)
+    .sessions-header
+      flex-direction: column
+      align-items: flex-start
+      gap: 0.75rem
+
+    .item
+      flex-direction: column
+      align-items: flex-start
+      gap: 0.75rem
+
+      .right-section
+        width: 100%
+        justify-content: flex-end

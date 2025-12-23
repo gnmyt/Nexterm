@@ -1,17 +1,43 @@
 @use "colors"
 
+:root
+  --title-bar-height: 0px
+  --content-height: 100vh
+
 body, html
   margin: 0
-  overflow-x: hidden
+  overflow: hidden
   background-color: colors.$background
   color: colors.$white
   font-family: "Plus Jakarta Sans", sans-serif
   font-weight: 700
 
+body.tauri-mode
+  --title-bar-height: 32px
+  --content-height: calc(100vh - 32px)
+  -webkit-user-select: none
+  -moz-user-select: none
+  user-select: none
+  padding-top: var(--title-bar-height)
+
+  input, textarea, [contenteditable="true"], .allow-select
+    -webkit-user-select: text
+    -moz-user-select: text
+    user-select: text
+
+.app-wrapper
+  display: flex
+  flex-direction: column
+  height: var(--content-height)
+  width: 100vw
+  overflow: hidden
+
 .content-wrapper
   display: flex
-  height: 100vh
+  flex: 1
   width: 100vw
+  overflow: hidden
+  min-height: 0
 
   > *
     min-width: 0

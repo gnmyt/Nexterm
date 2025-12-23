@@ -23,7 +23,8 @@ Nexterm is an open-source server management software that allows you to:
 -   Manage files through SFTP
 -   Deploy applications via Docker
 -   Manage Proxmox LXC and QEMU containers
--   Secure access with two-factor authentication
+-   Secure access with two-factor authentication and OIDC SSO
+-   Separate users and servers into Organizations
 
 ## 🚀 Run preview
 
@@ -68,6 +69,7 @@ The server listens on port 6989 by default. You can modify this behavior using e
 -   `NODE_ENV`: Runtime environment (development/production)
 -   `ENCRYPTION_KEY`: Encryption key for passwords, SSH keys and passphrases (default: Randomly generated key)
 -   `AI_SYSTEM_PROMPT`: System prompt for AI features (example: You are a Linux command generator assistant.)
+-   `LOG_LEVEL`: Logging level for application and guacd (system/info/verbose/debug/warn/error, default: system)
 
 ## 🛡️ Security
 
@@ -75,6 +77,7 @@ The server listens on port 6989 by default. You can modify this behavior using e
 -   Session management
 -   Password encryption
 -   Docker container isolation
+-   Oauth 2.0 OpenID Connect SSO
 
 ## 🤝 Contributing
 

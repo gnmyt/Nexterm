@@ -1,0 +1,288 @@
+{
+    "name"  : "vnc",
+    "connectionForms" : [
+
+        {
+            "name"  : "network",
+            "fields" : [
+                {
+                    "name"  : "hostname",
+                    "type"  : "TEXT"
+                },
+                {
+                    "name"  : "port",
+                    "type"  : "NUMERIC"
+                }
+            ]
+        },
+
+        {
+            "name"  : "authentication",
+            "fields" : [
+                {
+                    "name"  : "username",
+                    "type"  : "USERNAME"
+                },
+                {
+                    "name"  : "password",
+                    "type"  : "PASSWORD"
+                }
+            ]
+        },
+
+        {
+            "name"  : "display",
+            "fields" : [
+                {
+                    "name"    : "read-only",
+                    "type"    : "BOOLEAN",
+                    "options" : [ "true" ]
+                },
+                {
+                    "name"    : "disable-server-input",
+                    "type"    : "BOOLEAN",
+                    "options" : [ "true" ]
+                },
+                {
+                    "name"    : "disable-display-resize",
+                    "type"    : "BOOLEAN",
+                    "options" : [ "true" ]
+                },
+                {
+                    "name"    : "swap-red-blue",
+                    "type"    : "BOOLEAN",
+                    "options" : [ "true" ]
+                },
+                {
+                    "name"  : "cursor",
+                    "type"  : "ENUM",
+                    "options" : [ "", "local", "remote" ]
+                },
+                {
+                    "name"  : "color-depth",
+                    "type"  : "ENUM",
+                    "options" : [ "", "8", "16", "24", "32" ]
+                },
+                {
+                    "name"    : "force-lossless",
+                    "type"    : "BOOLEAN",
+                    "options" : [ "true" ]
+                },
+                {
+                    "name"    : "compress-level",
+                    "type"    : "ENUM",
+                    "options" : [ "", "0", "1", "2", "3", "4", "5", "6", "7", "8", "9" ]
+                },
+                {
+                    "name"    : "quality-level",
+                    "type"    : "ENUM",
+                    "options" : [ "", "0", "1", "2", "3", "4", "5", "6", "7", "8", "9" ]
+                },
+                {
+                    "name" : "encodings",
+                    "type" : "TEXT"
+                }
+            ]
+        },
+
+        {
+            "name"  : "clipboard",
+            "fields" : [
+                {
+                    "name"    : "clipboard-encoding",
+                    "type"    : "ENUM",
+                    "options" : [ "", "ISO8859-1", "UTF-8", "UTF-16", "CP1252" ]
+                },
+                {
+                    "name"    : "disable-copy",
+                    "type"    : "BOOLEAN",
+                    "options" : [ "true" ]
+                },
+                {
+                    "name"    : "disable-paste",
+                    "type"    : "BOOLEAN",
+                    "options" : [ "true" ]
+                }
+            ]
+        },
+
+        {
+            "name"  : "repeater",
+            "fields" : [
+                {
+                    "name"  : "dest-host",
+                    "type"  : "TEXT"
+                },
+                {
+                    "name"  : "dest-port",
+                    "type"  : "NUMERIC"
+                }
+            ]
+        },
+
+        {
+            "name" : "recording",
+            "fields" : [
+                {
+                    "name"  : "recording-path",
+                    "type"  : "TEXT"
+                },
+                {
+                    "name"  : "recording-name",
+                    "type"  : "TEXT"
+                },
+                {
+                    "name"  : "recording-exclude-output",
+                    "type"  : "BOOLEAN",
+                    "options" : [ "true" ]
+                },
+                {
+                    "name"  : "recording-exclude-mouse",
+                    "type"  : "BOOLEAN",
+                    "options" : [ "true" ]
+                },
+                {
+                    "name"  : "recording-include-keys",
+                    "type"  : "BOOLEAN",
+                    "options" : [ "true" ]
+                },
+                {
+                    "name"  : "create-recording-path",
+                    "type"  : "BOOLEAN",
+                    "options" : [ "true" ]
+                },
+                {
+                    "name"  : "recording-write-existing",
+                    "type"  : "BOOLEAN",
+                    "options" : [ "true" ]
+                }
+            ]
+        },
+
+        {
+            "name"  : "sftp",
+            "fields" : [
+                {
+                    "name"    : "enable-sftp",
+                    "type"    : "BOOLEAN",
+                    "options" : [ "true" ]
+                },
+                {
+                    "name"  : "sftp-hostname",
+                    "type"  : "TEXT"
+                },
+                {
+                    "name"  : "sftp-port",
+                    "type"  : "NUMERIC"
+                },
+                {
+                    "name"  : "sftp-timeout",
+                    "type"  : "NUMERIC"
+                },
+                {
+                    "name"  : "sftp-host-key",
+                    "type"  : "TEXT"
+                },
+                {
+                    "name"  : "sftp-username",
+                    "type"  : "USERNAME"
+                },
+                {
+                    "name"  : "sftp-password",
+                    "type"  : "PASSWORD"
+                },
+                {
+                    "name"  : "sftp-private-key",
+                    "type"  : "MULTILINE"
+                },
+                {
+                    "name"  : "sftp-passphrase",
+                    "type"  : "PASSWORD"
+                },
+                {
+                    "name"  : "sftp-public-key",
+                    "type"  : "MULTILINE"
+                },
+                {
+                    "name"  : "sftp-root-directory",
+                    "type"  : "TEXT"
+                },
+                {
+                    "name"  : "sftp-directory",
+                    "type"  : "TEXT"
+                },
+                {
+                    "name"  : "sftp-server-alive-interval",
+                    "type"  : "NUMERIC"
+                },
+                {
+                    "name"    : "sftp-disable-download",
+                    "type"    : "BOOLEAN",
+                    "options" : [ "true" ]
+                },
+                {
+                    "name"    : "sftp-disable-upload",
+                    "type"    : "BOOLEAN",
+                    "options" : [ "true" ]
+                }
+            ]
+        },
+
+        {
+            "name"  : "audio",
+            "fields" : [
+                {
+                    "name"    : "enable-audio",
+                    "type"    : "BOOLEAN",
+                    "options" : [ "true" ]
+                },
+                {
+                    "name"  : "audio-servername",
+                    "type"  : "TEXT"
+                }
+            ]
+        },
+        
+        {
+            "name"   : "wol",
+            "fields" : [
+                {
+                    "name"    : "wol-send-packet",
+                    "type"    : "BOOLEAN",
+                    "options" : [ "true" ]
+                },
+                {
+                    "name" : "wol-mac-addr",
+                    "type" : "TEXT"
+                },
+                {
+                    "name" : "wol-broadcast-addr",
+                    "type" : "TEXT"
+                },
+                {
+                    "name" : "wol-udp-port",
+                    "type" : "NUMERIC"
+                },
+                {
+                    "name" : "wol-wait-time",
+                    "type" : "NUMERIC"
+                }
+            ]
+        }
+
+    ],
+    "sharingProfileForms" : [
+
+        {
+            "name"  : "display",
+            "fields" : [
+                {
+                    "name"    : "read-only",
+                    "type"    : "BOOLEAN",
+                    "options" : [ "true" ]
+                }
+            ]
+        }
+
+    ]
+}

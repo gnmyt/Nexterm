@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+    Licensed to the Apache Software Foundation (ASF) under one
+    or more contributor license agreements.  See the NOTICE file
+    distributed with this work for additional information
+    regarding copyright ownership.  The ASF licenses this file
+    to you under the Apache License, Version 2.0 (the
+    "License"); you may not use this file except in compliance
+    with the License.  You may obtain a copy of the License at
+
+      http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing,
+    software distributed under the License is distributed on an
+    "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+    KIND, either express or implied.  See the License for the
+    specific language governing permissions and limitations
+    under the License.
+-->
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
+                        http://maven.apache.org/maven-v4_0_0.xsd">
+
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>org.apache.guacamole</groupId>
+    <artifactId>guacamole-auth-sso</artifactId>
+    <packaging>pom</packaging>
+    <version>1.6.0</version>
+    <name>guacamole-auth-sso</name>
+    <url>http://guacamole.apache.org/</url>
+
+    <parent>
+        <groupId>org.apache.guacamole</groupId>
+        <artifactId>extensions</artifactId>
+        <version>1.6.0</version>
+        <relativePath>../</relativePath>
+    </parent>
+
+    <modules>
+
+        <!-- Distribution .tar.gz -->
+        <module>modules/guacamole-auth-sso-dist</module>
+
+        <!-- Base classes -->
+        <module>modules/guacamole-auth-sso-base</module>
+
+        <!-- SSO implementations -->
+        <module>modules/guacamole-auth-sso-cas</module>
+        <module>modules/guacamole-auth-sso-openid</module>
+        <module>modules/guacamole-auth-sso-saml</module>
+        <module>modules/guacamole-auth-sso-ssl</module>
+
+    </modules>
+
+    <dependencyManagement>
+        <dependencies>
+
+            <!-- Guacamole Extension API -->
+            <dependency>
+                <groupId>org.apache.guacamole</groupId>
+                <artifactId>guacamole-ext</artifactId>
+                <version>1.6.0</version>
+                <scope>provided</scope>
+            </dependency>
+
+            <!-- Core SSO support -->
+            <dependency>
+                <groupId>org.apache.guacamole</groupId>
+                <artifactId>guacamole-auth-sso-base</artifactId>
+                <version>1.6.0</version>
+            </dependency>
+
+            <!-- Java servlet API -->
+            <dependency>
+                <groupId>javax.servlet</groupId>
+                <artifactId>servlet-api</artifactId>
+                <version>2.5</version>
+                <scope>provided</scope>
+            </dependency>
+
+            <!-- JAX-RS Annotations -->
+            <dependency>
+                <groupId>javax.ws.rs</groupId>
+                <artifactId>jsr311-api</artifactId>
+                <version>1.1.1</version>
+                <scope>provided</scope>
+            </dependency>
+
+        </dependencies>
+    </dependencyManagement>
+
+</project>

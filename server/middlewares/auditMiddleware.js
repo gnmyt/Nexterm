@@ -1,5 +1,6 @@
 const { isConnectionReasonRequired } = require("../controllers/audit");
-const Server = require("../models/Server");
+const logger = require("../utils/logger");
+const Entry = require("../models/Entry");
 
 const checkConnectionReason = async (ws, req, next) => {
     try {
@@ -8,12 +9,12 @@ const checkConnectionReason = async (ws, req, next) => {
             return next();
         }
 
-        const server = await Server.findByPk(serverId);
-        if (!server || !server.organizationId) {
+        const entry = await Entry.findByPk(serverId);
+        if (!entry || !entry.organizationId) {
             return next();
         }
 
-        const requiresReason = await isConnectionReasonRequired(server.organizationId);
+        const requiresReason = await isConnectionReasonRequired(entry.organizationId);
         if (requiresReason && !req.query.reason) {
             ws.close(4010, "Connection reason is required for this organization");
             return;
@@ -21,7 +22,7 @@ const checkConnectionReason = async (ws, req, next) => {
 
         next();
     } catch (error) {
-        console.error("Error checking connection reason requirement:", error);
+        logger.error("Error checking connection reason requirement", { serverId: req.query.serverId, error: error.message });
         next();
     }
 };

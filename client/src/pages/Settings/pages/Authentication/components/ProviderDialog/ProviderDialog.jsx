@@ -16,6 +16,7 @@ import {
 import Button from "@/common/components/Button";
 import { patchRequest, putRequest } from "@/common/utils/RequestUtil.js";
 import { useToast } from "@/common/contexts/ToastContext.jsx";
+import { getBaseUrl } from "@/common/utils/ConnectionUtil.js";
 
 export const ProviderDialog = ({ open, onClose, provider, onSave }) => {
     const { t } = useTranslation();
@@ -51,7 +52,8 @@ export const ProviderDialog = ({ open, onClose, provider, onSave }) => {
             setIssuer("");
             setClientId("");
             setClientSecret("");
-            setRedirectUri(window.location.origin + "/api/oidc/callback");
+            const baseUrl = getBaseUrl() || window.location.origin;
+            setRedirectUri(baseUrl + "/api/oidc/callback");
             setScope("openid profile email");
             setEmailAttr("email");
             setUsernameAttr("preferred_username");

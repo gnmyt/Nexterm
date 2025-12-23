@@ -20,9 +20,7 @@ module.exports = db.define("organizations", {
             enableIdentityManagementAudit: true,
             enableServerManagementAudit: true,
             enableFolderManagementAudit: true,
-            enableSessionRecording: false,
             enableScriptExecutionAudit: true,
-            enableAppInstallationAudit: true,
         },
     }
 }, { freezeTableName: true });

@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<!--
+    Licensed to the Apache Software Foundation (ASF) under one
+    or more contributor license agreements.  See the NOTICE file
+    distributed with this work for additional information
+    regarding copyright ownership.  The ASF licenses this file
+    to you under the Apache License, Version 2.0 (the
+    "License"); you may not use this file except in compliance
+    with the License.  You may obtain a copy of the License at
+
+      http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing,
+    software distributed under the License is distributed on an
+    "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+    KIND, either express or implied.  See the License for the
+    specific language governing permissions and limitations
+    under the License.
+-->
+
+<mapper namespace="org.apache.guacamole.auth.jdbc.sharingprofile.SharingProfileParameterMapper">
+
+    <!-- Result mapper for sharing profile parameters -->
+    <resultMap id="ParameterResultMap" type="org.apache.guacamole.auth.jdbc.sharingprofile.SharingProfileParameterModel">
+        <result column="sharing_profile_id" property="sharingProfileIdentifier" jdbcType="INTEGER"/>
+        <result column="parameter_name"     property="name"                     jdbcType="VARCHAR"/>
+        <result column="parameter_value"    property="value"                    jdbcType="VARCHAR"/>
+    </resultMap>
+
+    <!-- Select all parameters of a given sharing profile -->
+    <select id="select" resultMap="ParameterResultMap">
+        SELECT
+            sharing_profile_id,
+            parameter_name,
+            parameter_value
+        FROM guacamole_sharing_profile_parameter
+        WHERE
+            sharing_profile_id = #{identifier,jdbcType=INTEGER}::integer
+    </select>
+
+    <!-- Delete all parameters of a given sharing profile -->
+    <delete id="delete">
+        DELETE FROM guacamole_sharing_profile_parameter
+        WHERE sharing_profile_id = #{identifier,jdbcType=INTEGER}::integer
+    </delete>
+
+    <!-- Insert all given parameters -->
+    <insert id="insert" parameterType="org.apache.guacamole.auth.jdbc.sharingprofile.SharingProfileParameterModel">
+
+        INSERT INTO guacamole_sharing_profile_parameter (
+            sharing_profile_id,
+            parameter_name,
+            parameter_value
+        )
+        VALUES 
+            <foreach collection="parameters" item="parameter" separator=",">
+                (#{parameter.sharingProfileIdentifier,jdbcType=INTEGER}::integer,
+                 #{parameter.name,jdbcType=VARCHAR},
+                 #{parameter.value,jdbcType=VARCHAR})
+            </foreach>
+
+    </insert>
+
+
+</mapper>

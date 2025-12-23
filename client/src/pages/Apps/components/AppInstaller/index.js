@@ -1,1 +1,0 @@
-export {AppInstaller as default} from "./AppInstaller.jsx";

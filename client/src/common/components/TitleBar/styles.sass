@@ -1,0 +1,55 @@
+@use "@/common/styles/colors"
+
+.title-bar
+  position: fixed
+  top: 0
+  left: 0
+  right: 0
+  display: flex
+  justify-content: space-between
+  align-items: center
+  height: 32px
+  padding-left: 0.75rem
+  background-color: colors.$lighter-background
+  border-bottom: 1px solid colors.$dark-gray
+  user-select: none
+  -webkit-app-region: drag
+  z-index: 100000
+
+  .title-bar-left
+    display: flex
+    align-items: center
+    gap: 0.5rem
+    font-size: 0.75rem
+    font-weight: 600
+    color: #d4d4d4
+    transition: color 0.15s
+
+  &.inactive .title-bar-left
+    color: colors.$subtext
+
+  .title-bar-controls
+    display: flex
+    height: 100%
+    -webkit-app-region: no-drag
+
+    .title-bar-btn
+      width: 46px
+      height: 100%
+      display: flex
+      align-items: center
+      justify-content: center
+      background: transparent
+      border: none
+      color: colors.$white
+      cursor: pointer
+      transition: background-color 0.15s
+
+      &:hover
+        background-color: colors.$dark-gray
+
+      &.close:hover
+        background-color: #e81123
+
+      svg
+        pointer-events: none

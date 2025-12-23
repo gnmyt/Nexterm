@@ -1,0 +1,114 @@
+name: Release
+
+on:
+  push:
+    tags: ["v*"]
+
+jobs:
+  create-release:
+    name: "Create Release"
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.get_version.outputs.version }}
+      semver: ${{ steps.get_version.outputs.semver }}
+      upload_url: ${{ steps.create_release.outputs.upload_url }}
+      release_id: ${{ steps.create_release.outputs.id }}
+
+    steps:
+      - name: Checkout project
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Get version from tag
+        id: get_version
+        run: |
+          VERSION="${GITHUB_REF#refs/tags/v}"
+          SEMVER=$(echo "$VERSION" | sed 's/-.*//')
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+          echo "semver=$SEMVER" >> $GITHUB_OUTPUT
+
+      - name: Create GitHub Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ github.ref }}
+          release_name: Release ${{ steps.get_version.outputs.version }}
+          draft: true
+          prerelease: false
+
+  build-mobile:
+    name: "Build Mobile"
+    needs: create-release
+    uses: ./.github/workflows/build-mobile.yml
+    with:
+      version: ${{ needs.create-release.outputs.version }}
+      semver: ${{ needs.create-release.outputs.semver }}
+      upload_url: ${{ needs.create-release.outputs.upload_url }}
+    secrets: inherit
+
+  build-connector:
+    name: "Build Connector"
+    needs: create-release
+    uses: ./.github/workflows/build-connector.yml
+    with:
+      version: ${{ needs.create-release.outputs.version }}
+      semver: ${{ needs.create-release.outputs.semver }}
+      upload_url: ${{ needs.create-release.outputs.upload_url }}
+    secrets: inherit
+
+  build-docker:
+    name: "Build Docker"
+    needs: create-release
+    uses: ./.github/workflows/build-docker.yml
+    with:
+      version: ${{ needs.create-release.outputs.version }}
+    secrets: inherit
+
+  finalize-release:
+    name: "Finalize Release"
+    needs: [create-release, build-mobile, build-connector, build-docker]
+    uses: ./.github/workflows/finalize-release.yml
+    with:
+      version: ${{ needs.create-release.outputs.version }}
+      semver: ${{ needs.create-release.outputs.semver }}
+      release_id: ${{ needs.create-release.outputs.release_id }}
+    secrets: inherit
+
+  cleanup-on-failure:
+    name: "Cleanup on Failure"
+    runs-on: ubuntu-latest
+    needs: [create-release, build-mobile, build-connector, build-docker]
+    if: failure()
+    steps:
+      - name: Delete release
+        uses: actions/github-script@v7
+        with:
+          script: |
+            try {
+              await github.rest.repos.deleteRelease({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                release_id: ${{ needs.create-release.outputs.release_id }}
+              });
+              console.log('Release deleted');
+            } catch (e) {
+              console.log('Failed to delete release:', e.message);
+            }
+
+      - name: Delete tag
+        uses: actions/github-script@v7
+        with:
+          script: |
+            try {
+              await github.rest.git.deleteRef({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                ref: 'tags/${{ github.ref_name }}'
+              });
+              console.log('Tag deleted');
+            } catch (e) {
+              console.log('Failed to delete tag:', e.message);
+            }
