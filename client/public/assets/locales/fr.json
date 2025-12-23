@@ -6,6 +6,7 @@
     "actions": {
       "cancel": "Annuler",
       "confirm": "Confirme",
+      "discard": "Annuler",
       "login": "Connexion",
       "register": "S'inscrire",
       "save": "Sauvegarde",
@@ -31,14 +32,17 @@
     },
     "confirmDialog": {
       "title": "Es-tu sûre ?",
-      "defaultText": "Cette action ne peut pas être annulée."
+      "defaultText": "Cette action ne peut pas être annulée.",
+      "unsavedChangesTitle": "Changements non enregistrés",
+      "unsavedChangesText": "Vous avez des changements non enregistrés. Êtes-vous sûr de vouloir quitter?"
     },
     "loginDialog": {
       "title": "Nexterm",
       "registrationTitle": "Inscription",
       "ssoOrContinueWith": "ou continue avec",
-      "ssoSignInWith": "inscris-toi avec",
-      "noAuthMethodsAvailable": "Aucune méthode d'authentification n'est disponible."
+      "noAuthMethodsAvailable": "Aucune méthode d'authentification n'est disponible.",
+      "signInWithPasskey": "Se connecter avec une clé d’accès",
+      "authenticating": "Authentification..."
     },
     "selectBox": {
       "defaultOption": "Choisis une option...",
@@ -49,12 +53,27 @@
       "settings": "Paramètres",
       "servers": "Serveurs",
       "monitoring": "Surveillance",
-      "snippets": "Bribes",
+      "snippets": "Snippets",
       "audit": "Audit",
       "logout": "Déconnexion",
       "collapseTitle": "Réduire la barre latérale",
-      "logoutConfirmText": "Cela te déconnectera du compte {{username}} . Es-tu sûr ?",
-      "navigationConfirmText": "Tu as des sessions actives. Naviguer à l'écart te déconnectera de tous les serveurs. Es-tu sûr de toi ?"
+      "logoutConfirmText": "Cela vous déconnectera du compte {{username}} . Êtes-vous sûr(e) ?",
+      "navigationConfirmText": "Vous avez des sessions actives. Naviguer vous déconnectera de tous les serveurs. Êtes-vous sûr ?"
+    },
+    "quickAction": {
+      "placeholder": "Search servers, snippets, or navigate...",
+      "noResults": "No results found",
+      "navigation": "Navigation",
+      "settings": "Settings",
+      "navigate": "Navigate",
+      "select": "Select",
+      "close": "Close",
+      "types": {
+        "server": "Server",
+        "snippet": "Snippet",
+        "navigation": "Go to",
+        "settings": "Settings"
+      }
     },
     "errors": {
       "loadingAuthProviders": "Erreur de chargement des fournisseurs d'authentification : {{error}}",
@@ -62,7 +81,9 @@
       "invalidCredentials": "Nom d'utilisateur ou mot de passe invalide",
       "invalidTwoFactor": "Code à deux facteurs invalide",
       "internalAuthDisabled": "L'authentification interne est désactivée",
-      "ssoLoginFailed": "Échec de la connexion SSO"
+      "ssoLoginFailed": "Échec de la connexion SSO",
+      "passkeyLoginFailed": "Échec de l'authentification avec clé d'accès",
+      "passkeyCancelled": "L'authentification par clé a été annulée"
     },
     "messages": {
       "invitationAccepted": "Invitation acceptée",
@@ -71,13 +92,13 @@
       "organizationDeleted": "Organisation supprimée avec succès",
       "organizationDeleteError": "Échec de la suppression de l'organisation",
       "leftOrganization": "Tu as quitté l'organisation",
-      "leaveOrganizationError": "N'a pas quitté l'organisation"
+      "leaveOrganizationError": "Échec de la sortie de l'organisation"
     }
   },
   "audit": {
     "page": {
       "title": "Journaux d'audit",
-      "subtitle": "Trace et surveille toutes les activités au sein de ton infrastructure."
+      "subtitle": "Suivre et surveiller toutes les activités de votre infrastructure"
     },
     "errors": {
       "failedToLoadData": "Échec du chargement des données d'audit",
@@ -91,12 +112,12 @@
       "resource": "Ressource",
       "startDate": "Date de début",
       "endDate": "Date de fin",
-      "clearAll": "Effacer tout",
+      "clearAll": "Tout effacer",
       "options": {
         "allActions": "Toutes les actions",
         "allResources": "Toutes les ressources",
         "allOrganizations": "Toutes les organisations (Personal + Org)",
-        "personalOnly": "Personnel seulement",
+        "personalOnly": "Individuel uniquement",
         "categoryAll": "{{category}} (Tous)"
       }
     },
@@ -111,12 +132,12 @@
       },
       "noLogs": {
         "title": "Aucun journal d'audit n'a été trouvé",
-        "subtitle": "Essaie d'ajuster tes filtres ou reviens plus tard."
+        "subtitle": "Essayez d'ajuster vos filtres ou revenez plus tard."
       },
       "loading": "Chargement des journaux d'audit...",
       "expandedDetails": {
         "connectionReason": "Raison de la connexion",
-        "userAgent": "Agent de l'utilisateur",
+        "userAgent": "User-Agent",
         "additionalDetails": "Détails supplémentaires"
       },
       "badges": {
@@ -184,7 +205,8 @@
         "required": "Le nom et la commande sont obligatoires",
         "loadFailed": "Échec du chargement des données du snippet",
         "saveFailed": "L'enregistrement de l'extrait a échoué",
-        "deleteFailed": "Échec de la suppression de l'extrait"
+        "deleteFailed": "Échec de la suppression de l'extrait",
+        "reorderFailed": "Impossible de réorganiser le snippet"
       }
     }
   },
@@ -229,7 +251,7 @@
       }
     },
     "list": {
-      "empty": "Tu n'as pas encore de scripts. Crée ton premier !",
+      "empty": "Vous n'avez pas encore de scripts. Créez votre premier script!",
       "actions": {
         "edit": "Éditer le script",
         "delete": "Supprimer le script"
@@ -242,7 +264,7 @@
       },
       "scriptDetails": "Détails du script",
       "scriptContent": "Contenu du script",
-      "helpTip": "Utilise les directives @NEXTERM : pour les fonctions interactives",
+      "helpTip": "Utilisez les directives @NEXTERM: pour les fonctionnalités interactives",
       "fields": {
         "name": "Nom",
         "description": "Description"
@@ -270,11 +292,13 @@
       "success": {
         "created": "Script créé avec succès",
         "updated": "Le script a été mis à jour avec succès",
-        "deleted": "Script supprimé avec succès"
+        "deleted": "Script supprimé avec succès",
+        "reordered": "Script réordonné avec succès"
       },
       "errors": {
         "loadFailed": "Échec du chargement des données du script",
-        "deleteFailed": "Échec de la suppression du script"
+        "deleteFailed": "Échec de la suppression du script",
+        "reorderFailed": "Impossible de réorganiser le script"
       }
     },
     "menu": {
@@ -304,7 +328,9 @@
         "memoryUsage": "Utilisation de la mémoire",
         "loadAverage": "Moyenne de la charge",
         "processes": "Processus",
-        "uptime": "Temps de fonctionnement"
+        "uptime": "Temps de fonctionnement",
+        "nodes": "Nœuds",
+        "vms": "VMs/Conteneurs"
       },
       "status": {
         "serverOffline": "Serveur hors ligne",
@@ -332,14 +358,17 @@
         "24h": "24h"
       },
       "tabs": {
-        "overview": "Vue d'ensemble",
+        "overview": "Aperçu",
         "charts": "Graphiques",
         "storage": "Stockage",
-        "network": "Réseau"
+        "network": "Réseau",
+        "processes": "Processus",
+        "nodes": "Nœuds"
       },
       "overview": {
         "systemInfo": {
           "title": "Informations sur le système",
+          "hostname": "Affichage de {{count}} sur {{total}} processus",
           "os": "OS",
           "version": "Version",
           "kernel": "Noyau",
@@ -349,7 +378,7 @@
           "noData": "Aucune information sur le système n'est disponible"
         },
         "performance": {
-          "title": "Mesures de performance",
+          "title": "Métriques de Performance",
           "cpuUsage": "Utilisation de l'unité centrale",
           "memoryUsage": "Utilisation de la mémoire",
           "loadAverage": "Moyenne de la charge",
@@ -377,13 +406,45 @@
         "available": "Disponible : {{value}}",
         "total": "Total : {{value}}",
         "type": "Type : {{value}}",
-        "noData": "Aucune donnée sur l'utilisation du disque n'est disponible"
+        "noData": "Aucune donnée sur l'utilisation du disque n'est disponible",
+        "noPartitions": "Aucune partition montée"
       },
       "network": {
         "title": "Interfaces réseau",
         "rxBytes": "Octets RX",
         "txBytes": "Octets TX",
+        "mac": "Adresse MAC",
+        "speed": "Débit",
         "noData": "Aucune donnée sur l'interface réseau n'est disponible"
+      },
+      "processes": {
+        "title": "Processus en cours",
+        "searchPlaceholder": "Recherche de processus...",
+        "showing": "Affichage de {{count}} sur {{total}} processus",
+        "noData": "Aucune donnée de processus disponible. Les données de processus apparaîtront après le prochain cycle de surveillance.",
+        "noResults": "Aucun processus ne correspond à vos critères de recherche."
+      },
+      "pve": {
+        "clusterInfo": "Informations sur le cluster",
+        "resources": "Utilisation des ressources",
+        "virtualMachines": "Machines virtuelles",
+        "totalNodes": "Nombre total de nœuds",
+        "onlineNodes": "Nœuds en ligne",
+        "totalCPU": "CPU Total",
+        "totalMemory": "Mémoire Totale",
+        "totalStorage": "Stockage total",
+        "storageUsage": "Utilisation Stockage",
+        "cores": "Coeurs",
+        "uptime": "Durée de fonctionnement",
+        "qemuVMs": "VMs QEMU",
+        "lxcContainers": "Conteneur LXC",
+        "running": "{{count}} courir",
+        "vmContainerCount": "Nombre de VM/conteneurs",
+        "cpu": "Processeur",
+        "memory": "Mémoire vive",
+        "storage": "Espace disque",
+        "nodeOffline": "Ce nœud est actuellement hors ligne",
+        "noNodes": "Aucun nœud disponible"
       }
     }
   },
@@ -394,14 +455,15 @@
     "pages": {
       "account": "Compte",
       "terminal": "Terminal",
-      "keymaps": "Cartes clés",
+      "keymaps": "Raccourcis",
       "identities": "Identités",
       "sessions": "Sessions",
       "organizations": "Organisations",
       "users": "Utilisateurs",
       "authentication": "Authentification",
       "sources": "Sources",
-      "ai": "AI"
+      "ai": "AI",
+      "monitoring": "Surveillance"
     },
     "account": {
       "title": "Compte",
@@ -409,10 +471,15 @@
       "firstName": "Prénom",
       "lastName": "Nom de famille",
       "appearance": "Apparence",
-      "appearanceDescription": "Choisis ton thème préféré. Suit automatiquement les paramètres de ton système et s'ajuste en fonction de l'heure de la journée.",
+      "appearanceDescription": "Choisissez votre thème préféré. Suivez les paramètres de votre système et ajustez en fonction de l'heure de la journée.",
       "themeAuto": "Auto",
-      "themeLight": "Lumière",
+      "themeLight": "Clair",
       "themeDark": "Sombre",
+      "themeOled": "OLED",
+      "oledEnabled": "Mode OLED activé",
+      "oledDisabled": "Mode OLED désactivé",
+      "themeLabel": "Thème",
+      "accentColor": "Couleur d'accent",
       "twoFactor": "Authentification à deux facteurs",
       "twoFactorActive": "Actif",
       "twoFactorInactive": "Inactif",
@@ -425,10 +492,10 @@
       "language": "Langue",
       "languageDescription": "Choisis la langue que tu préfères pour l'interface.",
       "currentLanguage": "Langue actuelle",
-      "missingLanguage": "Ta langue te manque ?",
-      "helpTranslateLink": "Aide à traduire Nexterm",
+      "missingLanguage": "Votre langue est manquante?",
+      "helpTranslateLink": "Aidez à traduire le Nexterm",
       "sessionSynchronization": "Synchronisation des sessions",
-      "sessionSyncDescription": "Contrôle la façon dont tes sessions sur le serveur sont stockées et synchronisées entre les appareils et les onglets du navigateur.",
+      "sessionSyncDescription": "Contrôlez comment vos sessions serveur sont stockées et synchronisées entre les périphériques et les onglets du navigateur.",
       "sessionSyncAcrossDevices": "À travers les appareils",
       "sessionSyncSameBrowser": "Même navigateur",
       "sessionSyncSameTab": "Même onglet",
@@ -437,42 +504,58 @@
       "sessionSyncSameTabDesc": "Les sessions se synchroniseront dans l'onglet de ton navigateur",
       "twoFactorDialog": {
         "title": "Activer 2FA",
-        "description": "Scanne le code avec ton application d'authentification ou saisis-le manuellement. <span class=\"totp-code\">{{secret}}</span> manuellement.",
-        "codePlaceholder": "Saisis le code 2FA",
+        "description": "Scannez le code avec votre application d'authentification ou saisissez <span class=\"totp-code\">{{secret}}</span> manuellement.",
+        "codePlaceholder": "Entrez le code 2FA",
         "enableButton": "Activer",
         "messages": {
-          "setupFailed": "L'installation de 2FA a échoué. Essaie à nouveau."
+          "setupFailed": "La configuration de l'A2F a échoué. Veuillez réessayer."
         }
+      },
+      "passkeys": {
+        "sectionTitle": "Clés d'accès",
+        "sectionDescription": "Utilisez les clés d'accès pour une connexion plus rapide et plus sécurisée sans mot de passe.",
+        "addButton": "Ajouter une clé d'accès",
+        "addDialogTitle": "Ajouter une clé d'accès",
+        "addDialogDescription": "Donnez un nom à votre clé pour vous aider à l'identifier ultérieurement.",
+        "namePlaceholder": "Nom de la clé d'accès",
+        "enterName": "Entrez un nom pour cette clé d'accès:",
+        "defaultName": "Ma clé d'accès",
+        "confirmDelete": "Êtes-vous sûr de vouloir supprimer cette clé d'accès ?",
+        "createdAt": "Créé le {{date}}",
+        "registerError": "Impossible d'enregistrer la clé d'accès. Veuillez réessayer.",
+        "noPasskeys": "Aucun mot de passe enregistré pour le moment",
+        "rename": "Renommer",
+        "delete": "Supprimer"
       }
     },
     "passwordChange": {
       "title": "Modifier le mot de passe",
       "description": "Un mot de passe solide contient des caractères spéciaux, des chiffres et des lettres en majuscules et en minuscules.",
       "newPassword": "Nouveau mot de passe",
-      "confirmPassword": "Confirme le nouveau mot de passe",
+      "confirmPassword": "Confirmer le nouveau mot de passe",
       "changePasswordButton": "Modifier le mot de passe"
     },
     "organizations": {
-      "title": "Tes organisations",
+      "title": "Vos organisations",
       "createOrganization": "Créer une organisation",
-      "noOrganizations": "Tu n'as pas encore d'organisations.",
-      "noOrganizationsDescription": "Crée-en un pour commencer à collaborer avec ton équipe.",
-      "invite": "Invite",
+      "noOrganizations": "Vous n'avez pas encore d'organisation.",
+      "noOrganizationsDescription": "Créez en un pour commencer à collaborer avec votre équipe.",
+      "invite": "Invitation",
       "delete": "Effacer",
-      "leave": "Pars",
-      "members": "Les membres",
+      "leave": "Quitter",
+      "members": "Membres",
       "auditSettings": "Paramètres d'audit",
       "pendingInvitations": "Invitations en attente",
       "invitedBy": "Invité par : {{name}}",
       "deleteConfirmation": "Cela supprimera définitivement l'organisation et tous ses membres. Cette action ne peut pas être annulée.",
-      "leaveConfirmation": "Es-tu sûr de vouloir quitter cette organisation ?",
+      "leaveConfirmation": "Êtes-vous sûr de vouloir quitter cette organisation ?",
       "dialog": {
         "title": "Créer une organisation",
         "fields": {
           "name": "Nom",
           "namePlaceholder": "Nom de l'organisation",
           "description": "Description (facultatif)",
-          "descriptionPlaceholder": "Brève description de ton organisation"
+          "descriptionPlaceholder": "Brève description de votre organisation"
         },
         "actions": {
           "cancel": "Annuler",
@@ -523,7 +606,7 @@
       "browserOn": "{{browser}} {{version}} sur {{os}} {{osVersion}}"
     },
     "keymaps": {
-      "title": "Cartes clés",
+      "title": "Raccourcis",
       "description": "Personnalise les raccourcis clavier pour qu'ils correspondent à ton flux de travail.",
       "resetAll": "Réinitialiser tout",
       "actions": {
@@ -531,8 +614,12 @@
           "title": "Recherche",
           "description": "Ouvre l'entrée de recherche"
         },
+        "quickaction": {
+          "title": "Quick Action",
+          "description": "Open the quick action menu"
+        },
         "aimenu": {
-          "title": "Menu AI",
+          "title": "Menu IA",
           "description": "Ouvre le menu des commandes AI"
         },
         "snippets": {
@@ -575,13 +662,13 @@
       "title": "Terminal",
       "font": {
         "title": "Police",
-        "description": "Personnalise la famille et la taille des polices pour ton terminal.",
+        "description": "Personnaliser la famille de polices et la taille de votre terminal.",
         "fontFamily": "Famille de polices",
         "fontSize": "Taille de la police"
       },
       "cursor": {
         "title": "Curseur",
-        "description": "Personnalise l'apparence et le comportement du curseur de ton terminal.",
+        "description": "Personnalisez l'apparence et le comportement du curseur de votre terminal.",
         "cursorStyle": "Style de curseur",
         "cursorBlinking": "Curseur clignotant",
         "enabled": "Activé",
@@ -589,7 +676,7 @@
       },
       "theme": {
         "title": "Thème",
-        "description": "Choisis un thème de couleur pour ton terminal."
+        "description": "Choisissez un thème de couleur pour votre terminal."
       },
       "preview": {
         "text": "$ echo 'Hi, Nexterm!'\nBonjour, Nexterm !\n$ "
@@ -610,18 +697,18 @@
         "editTitle": "Modifier le fournisseur d'authentification",
         "fields": {
           "displayName": "Nom d'affichage",
-          "displayNamePlaceholder": "par exemple, le SSO de l'entreprise",
+          "displayNamePlaceholder": "par exemple : le SSO de l'entreprise",
           "issuerUrl": "URL de l'émetteur",
           "issuerUrlPlaceholder": "https://auth.company.com",
           "clientId": "ID du client",
           "clientIdPlaceholder": "ID du client",
           "clientSecret": "Secret du client",
           "clientSecretPlaceholder": "Secret du client",
-          "clientSecretPlaceholderEdit": "Laisse en blanc pour conserver l'existant",
+          "clientSecretPlaceholderEdit": "Laisser vide pour garder existant",
           "redirectUri": "Rediriger l'URI",
           "redirectUriPlaceholder": "https://your-domain.com/api/oidc/callback",
           "scope": "Champ d'application",
-          "scopePlaceholder": "profil openid email",
+          "scopePlaceholder": "E-mail du profil openid",
           "emailAttribute": "Attribut de l'email",
           "emailAttributePlaceholder": "courriel",
           "usernameAttribute": "Attribut du nom d'utilisateur",
@@ -640,13 +727,13 @@
           "saveChanges": "Sauvegarder les changements"
         },
         "messages": {
-          "saveFailed": "N'a pas réussi à sauvegarder le fournisseur"
+          "saveFailed": "Échec de l'enregistrement du fournisseur"
         }
       }
     },
     "ai": {
       "title": "Configuration de l'assistant AI",
-      "description": "Configure la génération de commandes alimentée par l'IA pour les sessions de terminal et la création de snippets.",
+      "description": "Configurer la génération de commandes par IA pour les sessions terminales et la création de snippet.",
       "loading": "Chargement des paramètres de l'IA...",
       "enable": {
         "title": "Activer l'assistant AI",
@@ -662,8 +749,8 @@
       },
       "apiKey": {
         "title": "Clé API",
-        "description": "Ta clé API OpenAI pour l'authentification",
-        "placeholder": "Saisis ta clé API OpenAI",
+        "description": "Votre clé API OpenAI pour l'authentification",
+        "placeholder": "Entrez votre clé API OpenAI",
         "setPlaceholder": "La clé API est définie (laisser vide pour rester à jour)"
       },
       "ollamaUrl": {
@@ -671,8 +758,8 @@
         "description": "L'URL où ton instance d'Ollama est en cours d'exécution",
         "placeholder": "http://localhost:11434"
       },
-      "selectProvider": "Choisis un fournisseur...",
-      "selectModel": "Choisis un modèle...",
+      "selectProvider": "Sélectionnez un fournisseur...",
+      "selectModel": "Sélectionnez un modèle...",
       "loadingModels": "Chargement des modèles...",
       "noModels": "Aucun modèle disponible",
       "saveSettings": "Sauvegarder les paramètres",
@@ -686,9 +773,61 @@
         "testConnection": "Le test de connexion AI a échoué"
       }
     },
+    "monitoring": {
+      "loading": "Chargement des paramètres de surveillance...",
+      "saveSettings": "Sauvegarder les réglages",
+      "saveSuccess": "Paramètres de surveillance enregistrés avec succès",
+      "seconds": "secondes",
+      "hours": "heures",
+      "servers": "serveurs",
+      "statusChecker": {
+        "title": "Vérificateur de statut",
+        "description": "Configure la façon dont Nexterm vérifie le statut en ligne/hors ligne de tes serveurs.",
+        "enable": {
+          "title": "Activer le vérificateur d'état",
+          "description": "Vérifie automatiquement si les serveurs sont en ligne ou hors ligne. Si cette option est désactivée, tous les serveurs seront marqués comme étant en ligne."
+        },
+        "interval": {
+          "title": "Intervalle de vérification",
+          "description": "Fréquence de vérification de l'état du serveur (10-300 secondes)"
+        }
+      },
+      "dataCollection": {
+        "title": "Collecte de données",
+        "description": "Configure la collecte des données de surveillance pour les métriques du processeur, de la mémoire, du disque et du réseau.",
+        "enable": {
+          "title": "Activer la surveillance",
+          "description": "Recueille des données détaillées sur les performances des serveurs dont la surveillance est activée."
+        },
+        "interval": {
+          "title": "Intervalle de collecte",
+          "description": "Fréquence de collecte des données de surveillance (30-600 secondes)"
+        },
+        "retention": {
+          "title": "Rétention de données",
+          "description": "Durée de conservation des données de suivi (1-24 heures)"
+        }
+      },
+      "advanced": {
+        "title": "Paramètres avancés",
+        "description": "Améliorer la performance de la surveillance et l'utilisation des ressources.",
+        "timeout": {
+          "title": "Expiration de la connexion",
+          "description": "Temps maximum d'attente d'une réponse du serveur (5-120 secondes)"
+        },
+        "batchSize": {
+          "title": "Taille de chaque lot",
+          "description": "Nombre de serveurs à vérifier simultanément (1-50)"
+        }
+      },
+      "errors": {
+        "loadSettings": "Échec du chargement des paramètres de surveillance",
+        "saveSettings": "Échec de l'enregistrement des paramètres de surveillance"
+      }
+    },
     "identities": {
       "title": "Clés et justificatifs SSH",
-      "description": "Gère tes clés SSH et tes identifiants de connexion au serveur.",
+      "description": "Gérer vos clés SSH et vos identifiants de connexion pour les connexions au serveur",
       "createIdentity": "Créer une identité",
       "personal": "Personnel",
       "noUsername": "Pas de nom d'utilisateur",
@@ -697,8 +836,8 @@
       "editIdentity": "Modifier l'identité",
       "deleteIdentity": "Supprimer l'identité",
       "noIdentities": "Aucune identité trouvée",
-      "noIdentitiesDescription": "Crée ta première identité pour commencer à établir des connexions avec le serveur.",
-      "deleteConfirm": "Es-tu sûr de vouloir supprimer \"{{name}}\" ? Cette action ne peut pas être annulée et supprimera cette identité de tous les serveurs qui l'utilisent.",
+      "noIdentitiesDescription": "Créez votre première identité pour commencer avec les connexions de serveur",
+      "deleteConfirm": "Êtes-vous sûr de vouloir supprimer \"{{name}}\" ? Cette action ne peut pas être annulée et supprimera cette identité de tous les serveurs qui l'utilisent.",
       "deleteSuccess": "Identité supprimée avec succès",
       "deleteError": "Échec de la suppression de l'identité",
       "dialog": {
@@ -712,17 +851,18 @@
           "authType": "Type d'authentification",
           "password": "Mot de passe",
           "passwordPlaceholder": "Saisis le mot de passe",
-          "passwordPlaceholderEdit": "Laisse en blanc pour conserver le mot de passe actuel",
+          "passwordPlaceholderEdit": "Laissez vide pour conserver le mot de passe actuel",
           "sshKey": "Clé privée SSH",
           "passphrase": "Phrase de passe (facultatif)",
           "passphrasePlaceholder": "Saisir la phrase d'authentification (facultatif)",
-          "passphrasePlaceholderEdit": "Laisse en blanc pour conserver la phrase de passe actuelle"
+          "passphrasePlaceholderEdit": "Laisser vide pour conserver le mot de passe actuel"
         },
         "authTypes": {
           "password": "Mot de passe",
-          "ssh": "Clé SSH"
+          "password-only": "Aucun nom d'utilisateur",
+          "ssh": "Clé SSH",
+          "both": "Clé+Passe"
         },
-        "keyFileLoaded": "Fichier clé chargé",
         "actions": {
           "cancel": "Annuler",
           "create": "Créer une identité",
@@ -749,10 +889,10 @@
       "snippets": "extraits",
       "scripts": "scripts",
       "neverSynced": "Jamais synchronisé",
-      "sync": "Synchronise-toi maintenant",
+      "sync": "Synchroniser maintenant",
       "edit": "Éditer",
       "delete": "Supprimer",
-      "deleteConfirm": "Es-tu sûr de vouloir supprimer la source \"{{name}}\" ? Tous les scripts et snippets synchronisés de cette source seront également supprimés.",
+      "deleteConfirm": "Êtes-vous sûr de vouloir supprimer la source \"{{name}}\" ? Tous les scripts et extraits synchronisés de cette source seront également supprimés.",
       "status": {
         "success": "Synchronisé",
         "error": "Erreur",
@@ -786,6 +926,35 @@
         "validationFailed": "Échec de la validation de l'URL",
         "requiredFields": "Le nom et l'URL sont obligatoires"
       }
+    }
+  },
+  "tunnel": {
+    "title": "Redirection de port",
+    "identity": "Identité",
+    "remoteHost": "Hôte distant",
+    "remotePort": "Port Distant",
+    "localPort": "Port local",
+    "start": "Lancer le tunnel",
+    "stop": "Arrêter le tunnel",
+    "status": {
+      "idle": "Non connecté",
+      "starting": "Démarrage...",
+      "listening": "Écoute sur localhost:{{port}}",
+      "error": "Erreur",
+      "stopped": "Arrêté"
+    },
+    "error": {
+      "fillAllFields": "Veuillez remplir tous les champs"
+    }
+  },
+  "share": {
+    "errors": {
+      "unableToConnect": "Impossible de se connecter",
+      "failedToJoin": "Impossible de rejoindre la session"
+    },
+    "sessionEnded": {
+      "title": "Session terminée",
+      "description": "La session partagée a été fermée"
     }
   },
   "servers": {
@@ -825,16 +994,31 @@
       "connect": "Connecte-toi",
       "quickConnect": "Connexion rapide",
       "openSFTP": "Ouvrir SFTP",
+      "forwardPort": "Transfert de port",
       "runScript": "Exécuter le script",
       "editServer": "Editer le serveur",
       "editIntegration": "Modifier l'intégration",
       "duplicateServer": "Serveur de duplication",
       "deleteServer": "Supprimer le serveur",
+      "wakeOnLan": "Wake-On-LAN",
       "editPVE": "Modifier PVE",
       "deletePVE": "Supprimer PVE",
       "shutdown": "Arrêt",
       "stop": "Arrêter",
       "start": "Démarrer"
+    },
+    "wol": {
+      "successDescription": "Magic packet sent to {{name}}",
+      "errorDescription": "Failed to send magic packet"
+    },
+    "messages": {
+      "fillRequiredFields": "Remplis tous les champs obligatoires",
+      "serverCreated": "Le serveur a été créé avec succès",
+      "serverUpdated": "Le serveur a été mis à jour avec succès",
+      "createFailed": "Échec de la création du serveur",
+      "updateFailed": "Échec de la mise à jour du serveur",
+      "createIdentityFailed": "Échec de la création de l'identité",
+      "updateIdentityFailed": "Échec de la mise à jour de l'identité"
     },
     "dialog": {
       "addServer": "Ajouter un serveur",
@@ -852,24 +1036,26 @@
       "fields": {
         "name": "Nom",
         "icon": "Icône",
-        "serverIp": "Serveur-IP",
+        "serverIp": "Hôte",
         "port": "Port",
         "protocol": "Protocole",
         "username": "Nom d'utilisateur",
         "password": "Mot de passe",
         "host": "Hôte",
         "nodeName": "Nom du nœud",
-        "vmid": "ID VM"
+        "vmid": "ID VM",
+        "macAddress": "MAC Address"
       },
       "placeholders": {
         "serverName": "Nom du serveur",
-        "serverIp": "Serveur-IP",
+        "serverIp": "Nom d'hôte ou IP",
         "port": "Port",
         "username": "Nom d'utilisateur",
         "password": "Mot de passe",
         "host": "Hôte",
         "nodeName": "Nom du nœud",
-        "vmid": "ID VM"
+        "vmid": "ID VM",
+        "macAddress": "AA:BB:CC:DD:EE:FF"
       },
       "settings": {
         "jumpHosts": {
@@ -883,9 +1069,46 @@
           "title": "Activer la surveillance des performances",
           "description": "Recueille les mesures du processeur, de la mémoire, du disque et du réseau pour ce serveur."
         },
+        "wakeOnLan": {
+          "title": "Enable Wake-On-LAN",
+          "description": "Allow waking this server remotely using its MAC address"
+        },
         "keyboardLayout": {
           "title": "Disposition du clavier",
           "description": "Sélectionne la disposition du clavier à utiliser pour cette connexion."
+        },
+        "display": {
+          "title": "Paramètres d'affichage",
+          "description": "Configure la profondeur des couleurs et le comportement de redimensionnement pour l'affichage à distance",
+          "colorDepth": "Profondeur couleur",
+          "resizeMethod": "Méthode de redimensionnement"
+        },
+        "performance": {
+          "title": "Paramètres de performance",
+          "description": "Activer/désactiver les effets visuels pouvant affecter les performances sur les connexions plus lentes",
+          "enableWallpaper": "Activer le fond d'écran",
+          "enableWallpaperDesc": "Afficher le fond d'écran du bureau sur le système distant",
+          "enableTheming": "Activer le thème",
+          "enableThemingDesc": "Utilise un thème personnalisé pour les fenêtres et les commandes sur le système distant",
+          "enableFontSmoothing": "Activer le lissage des polices",
+          "enableFontSmoothingDesc": "Rendre le texte avec des bords lisses pour une meilleure lisibilité",
+          "enableFullWindowDrag": "Activer le glissement de la fenêtre complète",
+          "enableFullWindowDragDesc": "Affiche le contenu des fenêtres lorsque tu les fais glisser",
+          "enableDesktopComposition": "Activer la composition du bureau",
+          "enableDesktopCompositionDesc": "Active les fenêtres transparentes et les effets visuels",
+          "enableMenuAnimations": "Activer les animations de menu",
+          "enableMenuAnimationsDesc": "Active les animations d'ouverture et de fermeture des menus"
+        },
+        "audio": {
+          "enableAudio": "Activer l'audio",
+          "enableAudioDesc": "Diffusez de l'audio depuis le système distant vers votre navigateur"
+        },
+        "terminal": {
+          "title": "Terminal Compatibility",
+          "description": "Adjust key behavior for different terminal types",
+          "backspace": "Backspace",
+          "delete": "Delete",
+          "functionKeys": "Function Keys"
         },
         "noSettings": "Aucun paramètre supplémentaire n'est disponible pour ce type d'entrée."
       },
@@ -897,8 +1120,11 @@
         "identityName": "Nom d'identité",
         "username": "Nom d'utilisateur",
         "authentication": "Authentification",
-        "password": "Mot de passe",
+        "passwordField": "Mot de passe",
+        "userPassword": "Mot de passe",
+        "passwordOnly": "Aucun nom d'utilisateur",
         "sshKey": "Clé SSH",
+        "both": "Clé+Passe",
         "sshPrivateKey": "Clé privée SSH",
         "passphrase": "Phrase de passe (facultatif)",
         "new": "Nouveau",
@@ -923,8 +1149,10 @@
         "port": "Port",
         "username": "Nom d'utilisateur",
         "password": "Mot de passe",
-        "nodeName": "Nom du nœud (facultatif)"
+        "nodeName": "Nom du nœud (facultatif)",
+        "monitoring": "Suivi des performances"
       },
+      "monitoringDescription": "Recueillir des métriques de CPU, de mémoire et de stockage à l'échelle du cluster",
       "placeholders": {
         "name": "Nom",
         "serverIp": "Serveur-IP",
@@ -936,6 +1164,12 @@
       "actions": {
         "import": "Importation",
         "edit": "Éditer"
+      },
+      "messages": {
+        "created": "Intégration de Proxmox créée avec succès",
+        "updated": "Intégration de Proxmox mise à jour avec succès",
+        "createFailed": "Échec de la création de l'intégration Proxmox",
+        "updateFailed": "Échec de la mise à jour de l'intégration Proxmox"
       }
     },
     "connectionReasonDialog": {
@@ -1028,7 +1262,15 @@
       "title": "Assistant AI",
       "placeholder": "Décris ce que tu veux faire...",
       "hint": "Appuie sur Enter pour générer - Esc pour fermer",
-      "closeLabel": "Fermer l'assistant AI"
+      "hintUse": "Appuyez sur Entrée pour utiliser la commande • Échap pour fermer",
+      "closeLabel": "Fermer l'assistant AI",
+      "generate": "Générer une commande",
+      "generating": "Génération de la commande...",
+      "generatedCommand": "Commande générée",
+      "useCommand": "Utiliser la commande",
+      "tryAgain": "Réessayer",
+      "copy": "Copier dans le Presse-papier",
+      "error": "Impossible de générer la commande. Veuillez réessayer."
     },
     "snippets": {
       "title": "Bribes",
@@ -1044,15 +1286,6 @@
       "fullScreen": "Plein écran",
       "exitFullScreen": "Quitter le mode plein écran",
       "badgeOn": "ON"
-    },
-    "messages": {
-      "fillRequiredFields": "Remplis tous les champs obligatoires",
-      "serverCreated": "Le serveur a été créé avec succès",
-      "serverUpdated": "Le serveur a été mis à jour avec succès",
-      "createFailed": "Échec de la création du serveur",
-      "updateFailed": "Échec de la mise à jour du serveur",
-      "createIdentityFailed": "Échec de la création de l'identité",
-      "updateIdentityFailed": "Échec de la mise à jour de l'identité"
     }
   }
 }
