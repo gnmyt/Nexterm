@@ -55,6 +55,7 @@
       "monitoring": "Мониторинг",
       "snippets": "Сниппеты",
       "audit": "Аудит",
+      "account": "Account",
       "logout": "Выйти",
       "collapseTitle": "Свернуть боковую панель",
       "logoutConfirmText": "Это приведёт к выходу из аккаунта {{username}}. Вы уверены?",
