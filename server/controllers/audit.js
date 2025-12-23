@@ -73,7 +73,6 @@ const getOrgAuditSettings = async (organizationId) => {
 
 const shouldAudit = (action, settings) => {
     if (!settings) return true;
-    // Specific checks: credential access may be audited separately from general identity management
     if (action === AUDIT_ACTIONS.IDENTITY_CREDENTIALS_ACCESS) return settings.enableIdentityCredentialsAccessAudit;
 
     const checks = [
