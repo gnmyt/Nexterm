@@ -26,6 +26,8 @@ const DraggableTab = ({
     onShareUpdate,
 }) => {
     const contextMenu = useContextMenu();
+    const { identities } = useContext(IdentityContext);
+    const { t } = useTranslation();
     const { popOutSession } = useActiveSessions();
     const { identities } = useContext(IdentityContext);
     

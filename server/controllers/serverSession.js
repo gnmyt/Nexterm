@@ -2,6 +2,7 @@ const SessionManager = require("../lib/SessionManager");
 const Entry = require("../models/Entry");
 const Account = require("../models/Account");
 const { validateEntryAccess } = require("./entry");
+const { getIdentityCredentials, getIdentity } = require("./identity");
 const { getOrganizationAuditSettingsInternal, createAuditLog, AUDIT_ACTIONS, RESOURCE_TYPES } = require("./audit");
 const { resolveIdentity } = require("../utils/identityResolver");
 const Organization = require('../models/Organization');
@@ -257,4 +258,59 @@ const duplicateSession = async (accountId, sessionId, tabId = null, browserId = 
     );
 };
 
-module.exports = { createSession, getSessions, getSession, hibernateSession, resumeSession, deleteSession, startSharing, stopSharing, updateSharePermissions, duplicateSession };
+const pasteIdentityPassword = async (accountId, sessionId) => {
+    const { session, error } = (function() {
+        const s = SessionManager.get(sessionId);
+        if (!s) return { error: { code: 404, message: 'Session not found' } };
+        if (s.accountId !== accountId) return { error: { code: 403, message: 'Access denied' } };
+        return { session: s };
+    })();
+
+    if (error) return error;
+
+    const identityId = session.configuration?.identityId;
+    if (!identityId) return { code: 400, message: 'No identity attached to session' };
+
+    // validate access to identity
+    const identity = await getIdentity(accountId, identityId);
+    if (identity?.code) return identity;
+
+    // fetch credentials
+    const creds = await getIdentityCredentials(identityId);
+    const password = creds?.password;
+    if (!password) return { code: 400, message: 'Identity does not contain a password' };
+
+    // get underlying connection stream
+    const connection = SessionManager.getConnection(sessionId);
+    if (!connection || !connection.stream) return { code: 400, message: 'Session stream not available' };
+
+    // translate keys according to entry config if possible
+    const Entry = require('../models/Entry');
+    const entry = await Entry.findByPk(session.entryId);
+    const config = entry?.config || null;
+    const { translateKeys } = require('../utils/keyTranslation');
+
+    try {
+        const translated = translateKeys(password, config);
+        connection.stream.write(translated);
+
+        // audit credential access (controller/createAuditLog will check org settings)
+        await createAuditLog({
+            accountId,
+            organizationId: entry?.organizationId || null,
+            action: AUDIT_ACTIONS.IDENTITY_CREDENTIALS_ACCESS,
+            resource: RESOURCE_TYPES.IDENTITY,
+            resourceId: identity.id,
+            details: { identityName: identity.name, identityType: identity.type },
+            ipAddress: null,
+            userAgent: null,
+        });
+
+        return { message: 'Password pasted' };
+    } catch (e) {
+        console.error('Failed to paste identity password', e);
+        return { code: 500, message: 'Failed to paste password' };
+    }
+};
+
+module.exports = { createSession, getSessions, getSession, hibernateSession, resumeSession, deleteSession, startSharing, stopSharing, updateSharePermissions, duplicateSession, pasteIdentityPassword };

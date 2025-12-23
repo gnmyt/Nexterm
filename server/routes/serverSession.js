@@ -1,5 +1,5 @@
 const { Router } = require("express");
-const { createSession, getSessions, getSession, hibernateSession, resumeSession, deleteSession, startSharing, stopSharing, updateSharePermissions, duplicateSession } = require("../controllers/serverSession");
+const { createSession, getSessions, getSession, hibernateSession, resumeSession, deleteSession, startSharing, stopSharing, updateSharePermissions, duplicateSession, pasteIdentityPassword } = require("../controllers/serverSession");
 const { createSessionValidation, sessionIdValidation, resumeSessionValidation, duplicateSessionValidation } = require("../validations/serverSession");
 const { validateSchema } = require("../utils/schema");
 
@@ -205,6 +205,28 @@ app.post("/:id/duplicate", async (req, res) => {
         return res.status(result.code).json({ error: result.message });
     }
     res.status(201).json(result);
+});
+
+/**
+ * POST /connections/{id}/paste-password
+ * @summary Paste identity password into session
+ * @description Inserts the password of the identity attached to the session into the active session stream.
+ * @tags Connection
+ * @produces application/json
+ * @security BearerAuth
+ * @param {string} id.path.required - Session ID
+ */
+app.post("/:id/paste-password", async (req, res) => {
+    if (validateSchema(res, sessionIdValidation, req.params)) return;
+
+    try {
+        const result = await pasteIdentityPassword(req.user.id, req.params.id);
+        if (result?.code) return res.status(result.code).json({ error: result.message });
+        res.json(result);
+    } catch (error) {
+        console.error('Error pasting identity password:', error);
+        res.status(500).json({ error: 'Internal server error' });
+    }
 });
 
 module.exports = app;

@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState, useContext } from "react";
 import { UserContext } from "@/common/contexts/UserContext.jsx";
+import { IdentityContext } from "@/common/contexts/IdentityContext.jsx";
 import { AIContext } from "@/common/contexts/AIContext.jsx";
 import { useKeymaps, matchesKeybind } from "@/common/contexts/KeymapContext.jsx";
 import { Terminal as Xterm } from "@xterm/xterm";
@@ -10,10 +11,11 @@ import { ContextMenu, ContextMenuItem, ContextMenuSeparator, useContextMenu } fr
 import AICommandPopover from "./components/AICommandPopover";
 import SnippetsMenu from "./components/SnippetsMenu";
 import { createProgressParser } from "../utils/progressParser";
-import { mdiContentCopy, mdiContentPaste, mdiCodeBrackets, mdiSelectAll, mdiDelete, mdiKeyboard } from "@mdi/js";
+import { mdiContentCopy, mdiContentPaste, mdiCodeBrackets, mdiSelectAll, mdiDelete, mdiKeyboard, mdiKey } from "@mdi/js";
 import { useTranslation } from "react-i18next";
 import ConnectionLoader from "./components/ConnectionLoader";
 import { getWebSocketUrl } from "@/common/utils/ConnectionUtil.js";
+import { getRequest, postRequest } from "@/common/utils/RequestUtil.js";
 import "@xterm/xterm/css/xterm.css";
 import "./styles/xterm.sass";
 
@@ -39,6 +41,7 @@ const XtermRenderer = ({ session, disconnectFromServer, registerTerminalRef, bro
     const { t } = useTranslation();
     const [showAIPopover, setShowAIPopover] = useState(false);
     const contextMenu = useContextMenu();
+    const { identities } = useContext(IdentityContext);
     const [showSnippetsMenu, setShowSnippetsMenu] = useState(false);
 
     useEffect(() => {
@@ -113,6 +116,15 @@ const XtermRenderer = ({ session, disconnectFromServer, registerTerminalRef, bro
             if (text) termRef.current?.paste(text);
         } catch (err) {
             console.error('Failed to paste:', err);
+        }
+        contextMenu.close();
+    };
+
+    const handlePasteIdentity = async () => {
+        try {
+            await postRequest(`connections/${session.id}/paste-password`);
+        } catch (err) {
+            console.error('Failed to paste identity password via API:', err);
         }
         contextMenu.close();
     };
@@ -425,6 +437,13 @@ const XtermRenderer = ({ session, disconnectFromServer, registerTerminalRef, bro
                         label={t('servers.fileManager.contextMenu.insertSnippet')}
                         onClick={handleInsertSnippet}
                     />
+                    {(identities && session.identity && identities.find(i => i.id === session.identity) && ['password','both','password-only'].includes(identities.find(i => i.id === session.identity).type)) && (
+                        <ContextMenuItem
+                            icon={mdiKey}
+                            label={t('servers.contextMenu.pasteIdentityPassword')}
+                            onClick={handlePasteIdentity}
+                        />
+                    )}
                     <ContextMenuSeparator />
                     <ContextMenuItem
                         icon={mdiKeyboard}
