@@ -258,43 +258,28 @@ const duplicateSession = async (accountId, sessionId, tabId = null, browserId = 
     );
 };
 
-const pasteIdentityPassword = async (accountId, sessionId) => {
-    const { session, error } = (function() {
-        const s = SessionManager.get(sessionId);
-        if (!s) return { error: { code: 404, message: 'Session not found' } };
-        if (s.accountId !== accountId) return { error: { code: 403, message: 'Access denied' } };
-        return { session: s };
-    })();
-
+const pasteIdentityPassword = async (accountId, sessionId, ipAddress = null, userAgent = null) => {
+    const { session, error } = validateSessionOwnership(accountId, sessionId);
     if (error) return error;
 
     const identityId = session.configuration?.identityId;
     if (!identityId) return { code: 400, message: 'No identity attached to session' };
 
-    // validate access to identity
     const identity = await getIdentity(accountId, identityId);
     if (identity?.code) return identity;
 
-    // fetch credentials
     const creds = await getIdentityCredentials(identityId);
     const password = creds?.password;
     if (!password) return { code: 400, message: 'Identity does not contain a password' };
 
-    // get underlying connection stream
     const connection = SessionManager.getConnection(sessionId);
     if (!connection || !connection.stream) return { code: 400, message: 'Session stream not available' };
 
-    // translate keys according to entry config if possible
-    const Entry = require('../models/Entry');
     const entry = await Entry.findByPk(session.entryId);
-    const config = entry?.config || null;
-    const { translateKeys } = require('../utils/keyTranslation');
 
     try {
-        const translated = translateKeys(password, config);
-        connection.stream.write(translated);
+        connection.stream.write(password);
 
-        // audit credential access (controller/createAuditLog will check org settings)
         await createAuditLog({
             accountId,
             organizationId: entry?.organizationId || null,
@@ -302,8 +287,8 @@ const pasteIdentityPassword = async (accountId, sessionId) => {
             resource: RESOURCE_TYPES.IDENTITY,
             resourceId: identity.id,
             details: { identityName: identity.name, identityType: identity.type },
-            ipAddress: null,
-            userAgent: null,
+            ipAddress,
+            userAgent,
         });
 
         return { message: 'Password pasted' };

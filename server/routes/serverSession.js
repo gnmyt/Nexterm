@@ -220,7 +220,7 @@ app.post("/:id/paste-password", async (req, res) => {
     if (validateSchema(res, sessionIdValidation, req.params)) return;
 
     try {
-        const result = await pasteIdentityPassword(req.user.id, req.params.id);
+        const result = await pasteIdentityPassword(req.user.id, req.params.id, req.ip, req.headers?.["user-agent"]);
         if (result?.code) return res.status(result.code).json({ error: result.message });
         res.json(result);
     } catch (error) {
