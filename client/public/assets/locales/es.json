@@ -181,12 +181,14 @@
       "fields": {
         "name": "Nombre",
         "description": "Descripción (opcional)",
-        "command": "Mando"
+        "command": "Mando",
+        "osFilter": "Compatible OS"
       },
       "placeholders": {
         "name": "Nombre del fragmento",
         "description": "¿Qué ordena esto?",
-        "command": "Introduce tu orden"
+        "command": "Introduce tu orden",
+        "osFilter": "All operating systems"
       },
       "actions": {
         "cancel": "Cancelar",
@@ -268,11 +270,13 @@
       "helpTip": "Utiliza las directivas @NEXTERM: para las funciones interactivas",
       "fields": {
         "name": "Nombre",
-        "description": "Descripción"
+        "description": "Descripción",
+        "osFilter": "Compatible OS"
       },
       "placeholders": {
         "name": "Nombre del script",
-        "description": "¿Qué hace este script?"
+        "description": "¿Qué hace este script?",
+        "osFilter": "All operating systems"
       },
       "actions": {
         "cancel": "Cancela",
