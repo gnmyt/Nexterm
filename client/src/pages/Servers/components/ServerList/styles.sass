@@ -1,5 +1,20 @@
 @use "@/common/styles/colors"
 
+$mobile: 768px
+
+.server-list-overlay
+  display: none
+  position: fixed
+  top: var(--title-bar-height, 0)
+  left: 0
+  right: 0
+  bottom: var(--mobile-nav-height, 0)
+  background-color: rgba(0, 0, 0, 0.5)
+  z-index: 99
+
+  @media (max-width: $mobile)
+    display: block
+
 .server-list
   background-color: colors.$lighter-background
   height: 100%
@@ -15,6 +30,23 @@
     padding: 0
     border-right-width: 2px
     cursor: e-resize
+
+  &.mobile
+    position: fixed
+    top: var(--title-bar-height, 0)
+    left: 0
+    height: calc(var(--content-height, 100%) - var(--mobile-nav-height, 0px))
+    width: 85vw !important
+    max-width: 320px
+    transform: translateX(-100%)
+    z-index: 100
+    box-shadow: none
+    transition: transform 0.3s ease, box-shadow 0.3s ease
+    border-right: none
+
+    &.mobile-open
+      transform: translateX(0)
+      box-shadow: 4px 0 20px rgba(0, 0, 0, 0.3)
 
   .server-list-inner
     display: flex
@@ -32,6 +64,9 @@
       gap: 0.5rem
       align-items: flex-start
       position: relative
+
+      @media (max-width: $mobile)
+        margin-top: 0.75rem
 
       .tag-filter-button
         display: flex
@@ -84,6 +119,11 @@
       flex: 1
       overflow-x: hidden
       overflow-y: auto
+      -webkit-overflow-scrolling: touch
+
+      @media (max-width: $mobile)
+        margin-top: 0.75rem
+        gap: 0.25rem
 
       &::-webkit-scrollbar
         width: 4px
@@ -121,6 +161,16 @@
         width: 5rem
         height: 5rem
 
+      @media (max-width: $mobile)
+        svg
+          width: 4rem
+          height: 4rem
+
+        p
+          font-size: 0.9rem
+          text-align: center
+          padding: 0 1rem
+
   .resizer
     position: absolute
     right: -4px
@@ -130,6 +180,9 @@
     background-color: transparent
     cursor: col-resize
     z-index: 10
+
+    @media (max-width: $mobile)
+      display: none
 
     &:hover
       background-color: colors.$primary
