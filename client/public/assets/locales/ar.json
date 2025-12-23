@@ -999,6 +999,7 @@
       "editServer": "تحرير الخادم",
       "editIntegration": "تحرير التكامل",
       "duplicateServer": "تكرار الخادم",
+      "pasteIdentityPassword": "Paste Password",
       "deleteServer": "حذف الخادم",
       "wakeOnLan": "Wake-On-LAN",
       "editPVE": "تحرير PVE",
