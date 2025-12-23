@@ -33,6 +33,7 @@ export const AI = () => {
         { value: "", label: t("settings.ai.selectProvider") },
         { value: "ollama", label: "Ollama" },
         { value: "openai", label: "OpenAI" },
+        { value: "openai_compatible", label: "OpenAI Compatible" },
     ];
 
     const modelOptions = useMemo(() => {
@@ -128,7 +129,8 @@ export const AI = () => {
             ...prev,
             provider: provider,
             model: "",
-            apiUrl: provider === "ollama" ? "http://localhost:11434" : prev.apiUrl,
+            apiUrl: provider === "ollama" ? "http://localhost:11434" : 
+                   provider === "openai_compatible" ? "" : prev.apiUrl,
         }));
     }, []);
 
@@ -137,7 +139,12 @@ export const AI = () => {
         if (!settings.provider) return false;
         if (!settings.model) return false;
 
-        return !(settings.provider === "openai" && !settings.apiKey && !settings.hasApiKey);
+        if (settings.provider === "openai" && !settings.apiKey && !settings.hasApiKey) return false;
+        if (settings.provider === "openai_compatible") {
+            if (!settings.apiUrl) return false;
+            if (!settings.apiKey && !settings.hasApiKey) return false;
+        }
+        return true;
     };
 
     useEffect(() => {
