@@ -55,6 +55,7 @@
       "monitoring": "Monitoring",
       "snippets": "Snippets",
       "audit": "Audit",
+      "account": "Account",
       "logout": "Abmelden",
       "collapseTitle": "Seitenleiste ausblenden",
       "logoutConfirmText": "Du wirst aus dem Account {{username}} ausgeloggt. Möchtest du fortfahren?",
