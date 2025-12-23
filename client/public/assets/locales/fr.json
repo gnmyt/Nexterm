@@ -55,6 +55,7 @@
       "monitoring": "Surveillance",
       "snippets": "Snippets",
       "audit": "Audit",
+      "account": "Account",
       "logout": "Déconnexion",
       "collapseTitle": "Réduire la barre latérale",
       "logoutConfirmText": "Cela vous déconnectera du compte {{username}} . Êtes-vous sûr(e) ?",
