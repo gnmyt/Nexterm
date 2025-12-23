@@ -30,8 +30,10 @@ features:
     title: Organizations
     details: Seamlessly share server access with your team members.
   - icon: ✂️
-    title: [Snippets](./scripts&snippets.md)
+    title: Snippets
     details: Create and manage snippets for quick access to commands.
+    link: /scripts&snippets
+    linkText: Learn more
   - icon: 📦
     title: Apps
     details: Automate app installations and configurations with apps.
