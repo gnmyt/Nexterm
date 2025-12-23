@@ -35,6 +35,8 @@ features:
   - icon: 📜
     title: Scripts
     details: Automate repetitive tasks with customizable scripts.
+    link: /scripts&snippets
+    linkText: Learn more
 
 ---
 
