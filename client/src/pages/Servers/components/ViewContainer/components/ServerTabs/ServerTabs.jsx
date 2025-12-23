@@ -168,7 +168,13 @@ const DraggableTab = ({
                     <ContextMenuItem
                         icon={mdiKey}
                         label={t('servers.contextMenu.pasteIdentityPassword')}
-                        onClick={() => window.dispatchEvent(new CustomEvent('paste-identity-password', { detail: { sessionId: session.id, identityId: session.identity } }))}
+                        onClick={async () => {
+                            try {
+                                await postRequest(`connections/${session.id}/paste-password`);
+                            } catch (e) {
+                                console.error('Failed to paste password', e);
+                            }
+                        }}
                     />
                 )}
                 <ContextMenuItem

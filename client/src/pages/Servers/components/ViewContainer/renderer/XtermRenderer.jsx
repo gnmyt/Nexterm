@@ -15,7 +15,7 @@ import { mdiContentCopy, mdiContentPaste, mdiCodeBrackets, mdiSelectAll, mdiDele
 import { useTranslation } from "react-i18next";
 import ConnectionLoader from "./components/ConnectionLoader";
 import { getWebSocketUrl } from "@/common/utils/ConnectionUtil.js";
-import { getRequest } from "@/common/utils/RequestUtil.js";
+import { getRequest, postRequest } from "@/common/utils/RequestUtil.js";
 import "@xterm/xterm/css/xterm.css";
 import "./styles/xterm.sass";
 
@@ -121,37 +121,13 @@ const XtermRenderer = ({ session, disconnectFromServer, registerTerminalRef, bro
     };
 
     const handlePasteIdentity = async () => {
-        const id = session.identity;
-        if (!id) return contextMenu.close();
         try {
-            const creds = await getRequest(`identities/${id}/credentials`);
-            const pwd = creds?.password;
-            if (pwd && termRef.current) termRef.current.paste(pwd);
+            await postRequest(`connections/${session.id}/paste-password`);
         } catch (err) {
-            console.error('Failed to paste identity password:', err);
+            console.error('Failed to paste identity password via API:', err);
         }
         contextMenu.close();
     };
-
-    useEffect(() => {
-        const handler = async (e) => {
-            try {
-                const detail = e?.detail || {};
-                if (detail.sessionId && detail.sessionId !== session.id) return;
-                const id = detail.identityId || session.identity;
-                if (!id) return;
-                const creds = await getRequest(`identities/${id}/credentials`);
-                const pwd = creds?.password;
-                if (pwd && termRef.current) termRef.current.paste(pwd);
-            } catch (err) {
-                console.error('Failed to paste identity password (event):', err);
-            }
-            contextMenu.close();
-        };
-
-        window.addEventListener('paste-identity-password', handler);
-        return () => window.removeEventListener('paste-identity-password', handler);
-    }, [session.id, session.identity]);
 
     const handleSelectAll = () => {
         termRef.current?.selectAll();
