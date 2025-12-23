@@ -1,6 +1,7 @@
 const SessionManager = require("../lib/SessionManager");
 const Entry = require("../models/Entry");
 const Account = require("../models/Account");
+const MonitoringSnapshot = require("../models/MonitoringSnapshot");
 const { validateEntryAccess } = require("./entry");
 const { getIdentityCredentials, getIdentity } = require("./identity");
 const { getOrganizationAuditSettingsInternal, createAuditLog, AUDIT_ACTIONS, RESOURCE_TYPES } = require("./audit");
@@ -77,42 +78,32 @@ const createSession = async (accountId, entryId, identityId, connectionReason, t
 
 const getSessions = async (accountId, tabId = null, browserId = null) => {
     const account = await Account.findByPk(accountId);
-    if (!account) {
-        return [];
-    }
+    if (!account) return [];
 
     const sessionSync = account.sessionSync || 'same_browser';
-    const logger = require('../utils/logger');
-    logger.info('Getting sessions', { accountId, tabId, browserId, sessionSync });
-    
-    let filterTabId = undefined;
-    let filterBrowserId = undefined;
-
-    if (sessionSync === 'same_tab') {
-        filterTabId = tabId;
-    } else if (sessionSync === 'same_browser') {
-        filterBrowserId = browserId;
-    }
+    let filterTabId, filterBrowserId;
+    if (sessionSync === 'same_tab') filterTabId = tabId;
+    else if (sessionSync === 'same_browser') filterBrowserId = browserId;
 
     const sessions = SessionManager.getAll(accountId, filterTabId, filterBrowserId);
-    logger.info('Sessions found', { count: sessions.length });
-    
+    if (!sessions.length) return [];
 
-    return await Promise.all(sessions.map(async (session) => {
-        const entry = await Entry.findByPk(session.entryId, {
-            attributes: ['id', 'organizationId']
-        });
+    const entryIds = [...new Set(sessions.map(s => s.entryId))];
+    const [entries, snapshots] = await Promise.all([
+        Entry.findAll({ where: { id: entryIds }, attributes: ['id', 'organizationId'] }),
+        MonitoringSnapshot.findAll({ where: { entryId: entryIds }, attributes: ['entryId', 'osInfo'] }),
+    ]);
 
-        let organizationName = null;
-        if (entry?.organizationId) {
-            const org = await Organization.findByPk(entry.organizationId, {
-                attributes: ['name']
-            });
-            organizationName = org?.name || null;
-        }
+    const entryMap = Object.fromEntries(entries.map(e => [e.id, e]));
+    const snapshotMap = Object.fromEntries(snapshots.map(s => [s.entryId, s.osInfo?.name || null]));
 
+    const orgIds = [...new Set(entries.filter(e => e.organizationId).map(e => e.organizationId))];
+    const orgs = orgIds.length ? await Organization.findAll({ where: { id: orgIds }, attributes: ['id', 'name'] }) : [];
+    const orgMap = Object.fromEntries(orgs.map(o => [o.id, o.name]));
+
+    return sessions.map(session => {
+        const entry = entryMap[session.entryId];
         const { directIdentity, ...safeConfiguration } = session.configuration;
-
         return {
             sessionId: session.sessionId,
             entryId: session.entryId,
@@ -120,11 +111,12 @@ const getSessions = async (accountId, tabId = null, browserId = null) => {
             isHibernated: session.isHibernated,
             lastActivity: session.lastActivity,
             organizationId: entry?.organizationId || null,
-            organizationName,
+            organizationName: entry?.organizationId ? orgMap[entry.organizationId] || null : null,
+            osName: snapshotMap[session.entryId] || null,
             shareId: session.shareId || null,
             shareWritable: session.shareWritable || false,
         };
-    }));
+    });
 };
 
 const hibernateSession = (sessionId) => {

@@ -172,4 +172,26 @@
     height: 0.9rem
     color: colors.$primary
     flex-shrink: 0
-    margin-left: auto
+
+  &__item-badges
+    display: flex
+    align-items: center
+    gap: 0.5rem
+    flex-shrink: 0
+
+  &__os-badge
+    display: inline-flex
+    align-items: center
+    gap: 0.25rem
+    font-size: 0.65rem
+    padding: 0.15rem 0.4rem
+    background-color: colors.$primary-opacity
+    color: colors.$white
+    border-radius: 0.25rem
+    font-weight: 500
+    white-space: nowrap
+
+    svg
+      width: 0.75rem !important
+      height: 0.75rem !important
+      color: colors.$primary

@@ -7,21 +7,24 @@ import { useToast } from "@/common/contexts/ToastContext.jsx";
 import { useSnippets } from "@/common/contexts/SnippetContext.jsx";
 import { useAI } from "@/common/contexts/AIContext.jsx";
 import IconInput from "@/common/components/IconInput";
+import SelectBox from "@/common/components/SelectBox";
 import { mdiFormTextbox, mdiTextBox, mdiRobot, mdiCodeBrackets } from "@mdi/js";
 import Icon from "@mdi/react";
 import { useTranslation } from "react-i18next";
+import { OS_OPTIONS, parseOsFilter } from "@/common/utils/osUtils.js";
 
 export const SnippetDialog = ({ open, onClose, editSnippetId, selectedOrganization }) => {
     const { t } = useTranslation();
     const [name, setName] = useState("");
     const [command, setCommand] = useState("");
     const [description, setDescription] = useState("");
+    const [osFilter, setOsFilter] = useState([]);
     const [isGeneratingAI, setIsGeneratingAI] = useState(false);
     const { sendToast } = useToast();
     const { loadAllSnippets } = useSnippets();
     const { isAIAvailable } = useAI();
     
-    const initialValues = useRef({ name: '', command: '', description: '' });
+    const initialValues = useRef({ name: '', command: '', description: '', osFilter: [] });
 
     useEffect(() => {
         if (open) {
@@ -37,10 +40,12 @@ export const SnippetDialog = ({ open, onClose, editSnippetId, selectedOrganizati
         try {
             const queryParams = selectedOrganization ? `?organizationId=${selectedOrganization}` : '';
             const snippet = await getRequest(`snippets/${editSnippetId}${queryParams}`);
+            const parsedOsFilter = parseOsFilter(snippet.osFilter);
             setName(snippet.name);
             setCommand(snippet.command);
             setDescription(snippet.description || "");
-            initialValues.current = { name: snippet.name, command: snippet.command, description: snippet.description || '' };
+            setOsFilter(parsedOsFilter);
+            initialValues.current = { name: snippet.name, command: snippet.command, description: snippet.description || '', osFilter: parsedOsFilter };
         } catch (error) {
             console.error("Failed to load snippet:", error);
             sendToast("Error", t('snippets.messages.errors.loadFailed'));
@@ -52,7 +57,8 @@ export const SnippetDialog = ({ open, onClose, editSnippetId, selectedOrganizati
         setName("");
         setCommand("");
         setDescription("");
-        initialValues.current = { name: '', command: '', description: '' };
+        setOsFilter([]);
+        initialValues.current = { name: '', command: '', description: '', osFilter: [] };
     };
 
     const handleSubmit = async (e) => {
@@ -68,6 +74,7 @@ export const SnippetDialog = ({ open, onClose, editSnippetId, selectedOrganizati
                     name,
                     command,
                     description: description || undefined,
+                    osFilter: osFilter.length > 0 ? osFilter : null,
                 };
                 const queryParams = selectedOrganization ? `?organizationId=${selectedOrganization}` : '';
                 await patchRequest(`snippets/${editSnippetId}${queryParams}`, snippetData);
@@ -78,6 +85,7 @@ export const SnippetDialog = ({ open, onClose, editSnippetId, selectedOrganizati
                     command,
                     description: description || undefined,
                     organizationId: selectedOrganization || undefined,
+                    osFilter: osFilter.length > 0 ? osFilter : null,
                 };
                 await putRequest("snippets", snippetData);
                 sendToast("Success", t('snippets.messages.success.created'));
@@ -110,9 +118,15 @@ export const SnippetDialog = ({ open, onClose, editSnippetId, selectedOrganizati
         }
     };
 
+    const arraysEqual = (a, b) => {
+        if (a.length !== b.length) return false;
+        return a.every((val, i) => val === b[i]);
+    };
+
     const isDirty = name !== initialValues.current.name || 
                      command !== initialValues.current.command || 
-                     description !== initialValues.current.description;
+                     description !== initialValues.current.description ||
+                     !arraysEqual(osFilter, initialValues.current.osFilter);
 
     return (
         <DialogProvider open={open} onClose={onClose} isDirty={isDirty}>
@@ -136,6 +150,17 @@ export const SnippetDialog = ({ open, onClose, editSnippetId, selectedOrganizati
                             <label htmlFor="description">{t('snippets.dialog.fields.description')}</label>
                             <IconInput icon={mdiTextBox} value={description} setValue={setDescription}
                                        placeholder={t('snippets.dialog.placeholders.description')} id="description" />
+                        </div>
+
+                        <div className="form-group">
+                            <label>{t('snippets.dialog.fields.osFilter')}</label>
+                            <SelectBox 
+                                options={OS_OPTIONS} 
+                                selected={osFilter} 
+                                setSelected={setOsFilter} 
+                                multiple={true}
+                                placeholder={t('snippets.dialog.placeholders.osFilter')}
+                            />
                         </div>
 
                         <div className="form-group">

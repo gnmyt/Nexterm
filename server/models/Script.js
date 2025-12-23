@@ -37,4 +37,23 @@ module.exports = db.define("scripts", {
         allowNull: false,
         defaultValue: 0,
     },
-}, { freezeTableName: true, createdAt: true, updatedAt: true });
+    osFilter: {
+        type: Sequelize.JSON,
+        allowNull: true,
+        defaultValue: null,
+    },
+}, {
+    freezeTableName: true,
+    createdAt: false,
+    updatedAt: false,
+    hooks: {
+        afterFind: (results) => {
+            const parse = (item) => {
+                if (item?.osFilter && typeof item.osFilter === 'string') {
+                    try { item.osFilter = JSON.parse(item.osFilter); } catch {}
+                }
+            };
+            Array.isArray(results) ? results.forEach(parse) : parse(results);
+        },
+    },
+});

@@ -4,6 +4,7 @@ import { useState, useEffect, useRef } from "react";
 import { getRequest, postRequest, putRequest } from "@/common/utils/RequestUtil.js";
 import Button from "@/common/components/Button";
 import IconInput from "@/common/components/IconInput";
+import SelectBox from "@/common/components/SelectBox";
 import { mdiFormTextbox, mdiFileDocument, mdiCheck, mdiClose, mdiCodeTags, mdiLightbulb, mdiScript } from "@mdi/js";
 import Icon from "@mdi/react";
 import Editor, { loader } from "@monaco-editor/react";
@@ -11,6 +12,7 @@ import { registerNextermLanguage } from "@/common/monaco/nexterm-lang.js";
 import { useToast } from "@/common/contexts/ToastContext.jsx";
 import { useTranslation } from "react-i18next";
 import { useScripts } from "@/common/contexts/ScriptContext.jsx";
+import { OS_OPTIONS, parseOsFilter } from "@/common/utils/osUtils.js";
 import * as monaco from "monaco-editor";
 
 loader.config({ monaco });
@@ -19,8 +21,9 @@ export const ScriptDialog = ({ open, onClose, editScriptId, selectedOrganization
     const [name, setName] = useState("");
     const [description, setDescription] = useState("");
     const [content, setContent] = useState("");
+    const [osFilter, setOsFilter] = useState([]);
     const editorRef = useRef(null);
-    const initialValues = useRef({ name: '', description: '', content: '' });
+    const initialValues = useRef({ name: '', description: '', content: '', osFilter: [] });
 
     const { sendToast } = useToast();
     const { t } = useTranslation();
@@ -63,13 +66,16 @@ fi
         try {
             const queryParams = selectedOrganization ? `?organizationId=${selectedOrganization}` : "";
             const script = await getRequest(`scripts/${editScriptId}${queryParams}`);
+            const parsedOsFilter = parseOsFilter(script.osFilter);
             setName(script.name || "");
             setDescription(script.description || "");
             setContent(script.content || getDefaultContent());
+            setOsFilter(parsedOsFilter);
             initialValues.current = { 
                 name: script.name || '', 
                 description: script.description || '', 
-                content: script.content || getDefaultContent() 
+                content: script.content || getDefaultContent(),
+                osFilter: parsedOsFilter
             };
         } catch (error) {
             console.error("Failed to load script:", error);
@@ -102,6 +108,7 @@ fi
                     name: name.trim(),
                     description: description.trim(),
                     content: content.trim(),
+                    osFilter: osFilter.length > 0 ? osFilter : null,
                 };
                 const queryParams = selectedOrganization ? `?organizationId=${selectedOrganization}` : "";
                 await putRequest(`scripts/${editScriptId}${queryParams}`, scriptData);
@@ -112,6 +119,7 @@ fi
                     description: description.trim(),
                     content: content.trim(),
                     organizationId: selectedOrganization || undefined,
+                    osFilter: osFilter.length > 0 ? osFilter : null,
                 };
                 await postRequest("scripts", scriptData);
                 sendToast("Success", t("scripts.messages.success.created"));
@@ -137,7 +145,8 @@ fi
         setName("");
         setDescription("");
         setContent(defaultContent);
-        initialValues.current = { name: '', description: '', content: defaultContent };
+        setOsFilter([]);
+        initialValues.current = { name: '', description: '', content: defaultContent, osFilter: [] };
     };
 
     const handleClose = () => {
@@ -145,9 +154,15 @@ fi
         onClose();
     };
 
+    const arraysEqual = (a, b) => {
+        if (a.length !== b.length) return false;
+        return a.every((val, i) => val === b[i]);
+    };
+
     const isDirty = name !== initialValues.current.name || 
                      description !== initialValues.current.description || 
-                     content !== initialValues.current.content;
+                     content !== initialValues.current.content ||
+                     !arraysEqual(osFilter, initialValues.current.osFilter);
 
     return (
         <DialogProvider open={open} onClose={handleClose} isDirty={isDirty}>
@@ -186,6 +201,17 @@ fi
                                     placeholder={t("scripts.dialog.placeholders.description")}
                                 />
                             </div>
+                        </div>
+
+                        <div className="form-group">
+                            <label>{t("scripts.dialog.fields.osFilter")}</label>
+                            <SelectBox 
+                                options={OS_OPTIONS} 
+                                selected={osFilter} 
+                                setSelected={setOsFilter} 
+                                multiple={true}
+                                placeholder={t("scripts.dialog.placeholders.osFilter")}
+                            />
                         </div>
                     </div>
 
