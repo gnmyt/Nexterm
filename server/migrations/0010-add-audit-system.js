@@ -50,7 +50,6 @@ module.exports = {
                     defaultValue: DataTypes.NOW,
                 },
             });
-            console.log("Created audit_logs table");
         }
 
         const orgTableInfo = await queryInterface.describeTable("organizations");
@@ -65,7 +64,6 @@ module.exports = {
                     enableIdentityManagementAudit: true,
                     enableServerManagementAudit: true,
                     enableFolderManagementAudit: true,
-                    enableSessionRecording: false,
                 }),
             });
         }

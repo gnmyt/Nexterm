@@ -1,0 +1,52 @@
+{
+
+    "DATA_SOURCE_TOTP" : {
+        "NAME" : "TOTP TFA 后端"
+    },
+
+    "LOGIN" : {
+        "FIELD_HEADER_GUAC_TOTP" : ""
+    },
+
+    "TOTP" : {
+
+        "ACTION_HIDE_DETAILS" : "隐藏",
+        "ACTION_SHOW_DETAILS" : "显示",
+
+        "FIELD_HEADER_ALGORITHM"  : "算法：",
+        "FIELD_HEADER_DIGITS"     : "数字位数：",
+        "FIELD_HEADER_INTERVAL"   : "时间间隔：",
+        "FIELD_HEADER_SECRET_KEY" : "密钥：",
+
+        "FIELD_PLACEHOLDER_CODE" : "认证码",
+
+        "INFO_CODE_REQUIRED"       : "请输入您的认证码以验证您的身份。",
+        "INFO_ENROLL_REQUIRED"     : "您的账户已启用多因素身份验证。",
+        "INFO_VERIFICATION_FAILED" : "验证失败，请重试。",
+
+        "HELP_ENROLL_BARCODE" : "为了完成注册流程，请使用您的手机或设备上的双因素身份验证应用程序扫描下面的条形码。",
+        "HELP_ENROLL_VERIFY"  : "扫描条形码后，输入显示的 {DIGITS} 位认证码以验证注册是否成功。",
+
+        "SECTION_HEADER_DETAILS" : "详细信息："
+
+    },
+
+    "USER_ATTRIBUTES" : {
+        
+        "FIELD_HEADER_GUAC_TOTP_DISABLED"      : "禁用 TOTP：",
+        "FIELD_HEADER_GUAC_TOTP_KEY_GENERATED" : "已生成密钥：",
+        "FIELD_HEADER_GUAC_TOTP_KEY_CONFIRMED" : "已确认身份验证设备：",
+        
+        "SECTION_HEADER_TOTP_ENROLLMENT_STATUS" : "TOTP 注册状态"
+        
+    },
+
+    "USER_GROUP_ATTRIBUTES" : {
+        
+        "FIELD_HEADER_GUAC_TOTP_DISABLED" : "禁用 TOTP：",
+        
+        "SECTION_HEADER_TOTP_USER_GROUP_CONFIG" : "TOTP 配置"
+        
+    }
+
+}

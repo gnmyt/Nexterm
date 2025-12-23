@@ -1,119 +1,152 @@
 const { Router } = require("express");
-const prepareSSH = require("../utils/prepareSSH");
-const Server = require("../models/Server");
-const Identity = require("../models/Identity");
 const Session = require("../models/Session");
 const Account = require("../models/Account");
+const SessionManager = require("../lib/SessionManager");
+const Entry = require("../models/Entry");
+const Identity = require("../models/Identity");
 const { createAuditLog, AUDIT_ACTIONS, RESOURCE_TYPES } = require("../controllers/audit");
-const { validateServerAccess } = require("../controllers/server");
+const { createSSH } = require("../utils/createSSH");
+const { addFolderToArchive } = require("../utils/sftpHelpers");
+const logger = require("../utils/logger");
+const archiver = require("archiver");
 
 const app = Router();
 
+const cleanup = (ssh) => {
+    ssh.end();
+    if (ssh._jumpConnections) ssh._jumpConnections.forEach(conn => conn.ssh.end());
+};
+
 app.get("/", async (req, res) => {
-    const sessionToken = req.query["sessionToken"];
-    const serverId = req.query["serverId"];
-    const identityId = req.query["identityId"];
-    const path = req.query["path"];
-    const connectionReason = req.query["connectionReason"];
+    const { sessionToken, sessionId, path: remotePath, preview } = req.query;
 
-    if (!sessionToken) {
-        res.status(400).send("You need to provide the token in the 'sessionToken' parameter");
-        return;
-    }
+    if (!sessionToken) return res.status(400).send("Missing 'sessionToken' parameter");
+    if (!sessionId) return res.status(400).send("Missing 'sessionId' parameter");
+    if (!remotePath) return res.status(400).send("Missing 'path' parameter");
 
-    if (!serverId) {
-        res.status(400).send("You need to provide the serverId in the 'serverId' parameter");
-        return;
-    }
+    const session = await Session.findOne({ where: { token: sessionToken } });
+    if (!session) return res.status(400).send("Invalid token");
 
-    if (!identityId) {
-        res.status(400).send("You need to provide the identity in the 'identityId' parameter");
-        return;
-    }
+    await Session.update({ lastActivity: new Date() }, { where: { id: session.id } });
 
-    if (!path) {
-        res.status(400).send("You need to provide the path in the 'path' parameter");
-        return;
-    }
+    const user = await Account.findByPk(session.accountId);
+    if (!user) return res.status(400).send("Invalid token");
 
-    req.session = await Session.findOne({ where: { token: sessionToken } });
+    const serverSession = SessionManager.get(sessionId);
+    if (!serverSession) return res.status(404).send("Session not found");
+    if (serverSession.accountId !== user.id) return res.status(403).send("Unauthorized");
 
-    if (req.session === null) {
-        res.status(400).send("The token is not valid");
-        return;
-    }
+    const entry = await Entry.findByPk(serverSession.entryId);
+    if (!entry) return res.status(404).send("Entry not found");
 
-    await Session.update({ lastActivity: new Date() }, { where: { id: req.session.id } });
+    const identity = serverSession.configuration?.identityId
+        ? await Identity.findByPk(serverSession.configuration.identityId)
+        : null;
 
-    req.user = await Account.findByPk(req.session.accountId);
-    if (req.user === null) {
-        res.status(400).send("The token is not valid");
-        return;
-    }
-
-    const server = await Server.findByPk(serverId);
-    if (server === null) {
-        res.status(404).send("The server does not exist");
-        return;
-    }
-
-    const accessCheck = await validateServerAccess(req.user.id, server);
-    if (!accessCheck.valid) {
-        res.status(403).send("You don't have access to this server");
-        return;
-    }
-
-    if (server.identities.length === 0 && identityId) return;
-
-    const identity = await Identity.findByPk(identityId || server.identities[0]);
-    if (identity === null) return;
-
-    const userInfo = {
-        accountId: req.user.id,
-        ip: req.ip || req.socket?.remoteAddress || 'unknown',
-        userAgent: req.headers['user-agent'] || 'unknown',
-        connectionReason: connectionReason || null
-    };
-
-    const ssh = await prepareSSH(server, identity, null, res, userInfo);
-
-    if (!ssh) return;
-
-    ssh.on("ready", () => {
-        ssh.sftp((err, sftp) => {
-            if (err) return;
-
-            sftp.stat(path, (err, stats) => {
-                if (err) {
-                    res.status(404).send("The file does not exist");
-                    return;
-                }
-
-                res.header("Content-Disposition", `attachment; filename="${path.split("/").pop()}"`);
-                res.header("Content-Length", stats.size);
-
-                const readStream = sftp.createReadStream(path);
-                readStream.pipe(res);
-
-                createAuditLog({
-                    accountId: req.user.id,
-                    organizationId: server.organizationId,
-                    action: AUDIT_ACTIONS.FILE_DOWNLOAD,
-                    resource: RESOURCE_TYPES.FILE,
-                    details: {
-                        filePath: path,
-                        fileSize: stats.size,
-                        connectionReason: connectionReason || null,
-                    },
-                    ipAddress: req.ip,
-                    userAgent: req.headers['user-agent'],
-                });
-            });
-        });
-    });
+    const { ssh, sshOptions } = await createSSH(entry, identity);
 
     ssh.on("error", () => {
-        res.status(500).send("This file cannot be downloaded");
+        cleanup(ssh);
+        if (!res.headersSent) res.status(500).send("Connection error");
+    });
+
+    try {
+        ssh.connect(sshOptions);
+    } catch (err) {
+        cleanup(ssh);
+        return res.status(500).send(err.message);
+    }
+
+    logger.system(`Authorized download from ${entry.config.ip}`, {
+        entryId: entry.id, identityId: identity?.id, username: user.username, path: remotePath
+    });
+
+    ssh.on("ready", () => {
+        ssh.sftp(async (err, sftp) => {
+            if (err) {
+                cleanup(ssh);
+                return res.status(500).send("SFTP connection failed");
+            }
+
+            sftp.stat(remotePath, async (err, stats) => {
+                if (err) {
+                    cleanup(ssh);
+                    return res.status(404).send("Path does not exist");
+                }
+
+                const fileName = remotePath.split("/").pop();
+                const activeStreams = [];
+
+                let cleaned = false;
+                const cleanupAll = () => {
+                    if (cleaned) return;
+                    cleaned = true;
+                    activeStreams.forEach(s => s.destroy?.());
+                    cleanup(ssh);
+                };
+
+                req.on("close", () => { if (!res.writableEnded) cleanupAll(); });
+
+                if (stats.isDirectory()) {
+                    try {
+                        res.header("Content-Disposition", `attachment; filename="${fileName}.zip"`);
+                        res.header("Content-Type", "application/zip");
+
+                        const archive = archiver("zip", { zlib: { level: 5 } });
+                        activeStreams.push(archive);
+
+                        archive.on("error", (err) => {
+                            logger.error("Archive error", { error: err.message, path: remotePath });
+                            archive.abort();
+                            cleanupAll();
+                        });
+
+                        archive.on("end", () => cleanupAll());
+                        archive.pipe(res);
+
+                        await addFolderToArchive(sftp, remotePath, archive, fileName, activeStreams);
+                        archive.finalize();
+
+                        createAuditLog({
+                            accountId: user.id,
+                            organizationId: entry.organizationId,
+                            action: AUDIT_ACTIONS.FOLDER_DOWNLOAD,
+                            resource: RESOURCE_TYPES.FOLDER,
+                            details: { folderPath: remotePath, connectionReason: serverSession.connectionReason || null },
+                            ipAddress: req.ip,
+                            userAgent: req.headers["user-agent"],
+                        });
+                    } catch (err) {
+                        logger.error("Folder download error", { error: err.message, path: remotePath });
+                        cleanupAll();
+                        if (!res.headersSent) res.status(500).send("Download failed");
+                    }
+                } else {
+                    res.header("Content-Disposition", `${preview === "true" ? "inline" : "attachment"}; filename="${fileName}"`);
+                    res.header("Content-Length", stats.size);
+
+                    const readStream = sftp.createReadStream(remotePath);
+                    activeStreams.push(readStream);
+                    readStream.pipe(res);
+
+                    readStream.on("end", () => cleanupAll());
+                    readStream.on("error", () => {
+                        cleanupAll();
+                        if (!res.headersSent) res.status(500).send("Read failed");
+                    });
+
+                    createAuditLog({
+                        accountId: user.id,
+                        organizationId: entry.organizationId,
+                        action: AUDIT_ACTIONS.FILE_DOWNLOAD,
+                        resource: RESOURCE_TYPES.FILE,
+                        details: { filePath: remotePath, fileSize: stats.size, connectionReason: serverSession.connectionReason || null },
+                        ipAddress: req.ip,
+                        userAgent: req.headers["user-agent"],
+                    });
+                }
+            });
+        });
     });
 });
 

@@ -1,0 +1,37 @@
+name: 🌍 Suggest a Language
+description: Suggest a new language to be added to Nexterm
+title: "[Language] "
+labels: ["translation"]
+body:
+  - type: checkboxes
+    attributes:
+      label: General
+      description: Please confirm the following statements
+      options:
+        - label: This language is not already available in Nexterm.
+          required: true
+        - label: I have checked that this language has not been suggested by anyone else.
+          required: true
+  - type: input
+    attributes:
+      label: Language Name
+      description: What language would you like to see added?
+      placeholder: e.g., Spanish, Japanese, German
+    validations:
+      required: true
+  - type: dropdown
+    attributes:
+      label: Would you like to help with the translation?
+      description: Translations are managed through Crowdin. We'd love your help!
+      options:
+        - "Yes, I'd like to contribute"
+        - "No, just suggesting"
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: Additional Context
+      description: Is there anything else you'd like to add? (e.g., why this language would be beneficial, community size)
+      placeholder: This language would be helpful because ...
+    validations:
+      required: false

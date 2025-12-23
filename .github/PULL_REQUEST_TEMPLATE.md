@@ -15,6 +15,7 @@ necessary context.
 - [ ] My code follows the style guidelines of this project
 - [ ] I have performed a self-review of my own code
 - [ ] I have looked for similar pull requests in the repository and found none
+- [ ] This pull request does not contain translations (translations are managed through Crowdin)
 
 ## 🔗 Related Issues <!-- If there are any related issues, please link them here. -->
 

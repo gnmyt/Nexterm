@@ -1,0 +1,114 @@
+@use "@/common/styles/colors"
+
+.keymaps-page
+    width: 100%
+
+    &.loading
+        display: flex
+        justify-content: center
+        align-items: center
+        min-height: 200px
+        color: colors.$subtext
+
+    .keymaps-header
+        display: flex
+        align-items: center
+        justify-content: space-between
+        margin-bottom: 1.5rem
+
+        .header-text
+            h2
+                margin: 0
+                font-size: 1.3rem
+
+            p
+                margin: 0.375rem 0 0
+                color: colors.$subtext
+                font-size: 0.85rem
+
+    .vertical-list
+        display: flex
+        flex-direction: column
+        gap: 0.75rem
+
+    .item
+        display: flex
+        align-items: center
+        justify-content: space-between
+        background-color: colors.$lighter-background
+        border: 1px solid colors.$dark-gray
+        border-radius: 0.5rem
+        padding: 0.875rem 1rem
+        transition: border-color 0.1s ease
+
+        &:hover
+            border-color: colors.$gray
+
+        .left-section
+            display: flex
+            align-items: center
+            gap: 0.75rem
+
+            .icon
+                display: flex
+                align-items: center
+                justify-content: center
+                width: 2rem
+                height: 2rem
+                border-radius: 0.375rem
+                flex-shrink: 0
+
+                svg
+                    width: 1.125rem
+                    height: 1.125rem
+
+                &.primary
+                    background-color: colors.$primary-opacity
+                    svg
+                        color: colors.$primary
+
+            .details
+                h3
+                    margin: 0
+                    font-size: 0.9rem
+                    font-weight: 600
+
+                p
+                    margin: 0.25rem 0 0
+                    color: colors.$subtext
+                    font-size: 0.8rem
+
+        .right-section
+            display: flex
+            align-items: center
+
+            .keybind-recorder
+                display: flex
+                align-items: center
+                gap: 0.75rem
+
+                .keybind-display
+                    min-width: 120px
+                    padding: 0.5rem 0.75rem
+                    background: colors.$gray-full
+                    border: 1px solid colors.$dark-gray
+                    border-radius: 0.375rem
+                    text-align: center
+                    cursor: pointer
+                    transition: border-color 0.1s ease
+
+                    &:hover
+                        border-color: colors.$primary
+
+                    .current-key,
+                    .recording-text
+                        font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace
+                        font-size: 0.8rem
+                        font-weight: 600
+
+                    .recording-text
+                        color: colors.$subtext
+
+                .keybind-actions
+                    display: flex
+                    gap: 0.5rem

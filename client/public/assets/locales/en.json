@@ -1,10 +1,19 @@
 {
   "common": {
+    "error": "Error",
+    "success": "Success",
+    "loading": "Loading...",
     "actions": {
       "cancel": "Cancel",
       "confirm": "Confirm",
+      "discard": "Discard",
       "login": "Login",
-      "register": "Register"
+      "register": "Register",
+      "save": "Save",
+      "download": "Download",
+      "close": "Close",
+      "maximize": "Maximize",
+      "restore": "Restore"
     },
     "labels": {
       "username": "Username",
@@ -23,17 +32,22 @@
     },
     "confirmDialog": {
       "title": "Are you sure?",
-      "defaultText": "This action cannot be undone."
+      "defaultText": "This action cannot be undone.",
+      "unsavedChangesTitle": "Unsaved Changes",
+      "unsavedChangesText": "You have unsaved changes. Are you sure you want to close?"
     },
     "loginDialog": {
       "title": "Nexterm",
       "registrationTitle": "Registration",
       "ssoOrContinueWith": "or continue with",
-      "ssoSignInWith": "sign in with",
-      "noAuthMethodsAvailable": "No authentication methods available."
+      "noAuthMethodsAvailable": "No authentication methods available.",
+      "signInWithPasskey": "Sign in with Passkey",
+      "authenticating": "Authenticating..."
     },
     "selectBox": {
-      "defaultOption": "Select an option..."
+      "defaultOption": "Select an option...",
+      "search": "Search...",
+      "noResults": "No results found"
     },
     "sidebar": {
       "settings": "Settings",
@@ -41,11 +55,25 @@
       "monitoring": "Monitoring",
       "snippets": "Snippets",
       "audit": "Audit",
-      "apps": "Apps",
       "logout": "Logout",
       "collapseTitle": "Collapse Sidebar",
       "logoutConfirmText": "This will log you out of the {{username}} account. Are you sure?",
       "navigationConfirmText": "You have active sessions. Navigating away will disconnect you from all servers. Are you sure?"
+    },
+    "quickAction": {
+      "placeholder": "Search servers, snippets, or navigate...",
+      "noResults": "No results found",
+      "navigation": "Navigation",
+      "settings": "Settings",
+      "navigate": "Navigate",
+      "select": "Select",
+      "close": "Close",
+      "types": {
+        "server": "Server",
+        "snippet": "Snippet",
+        "navigation": "Go to",
+        "settings": "Settings"
+      }
     },
     "errors": {
       "loadingAuthProviders": "Error loading authentication providers: {{error}}",
@@ -53,7 +81,9 @@
       "invalidCredentials": "Invalid username or password",
       "invalidTwoFactor": "Invalid two-factor code",
       "internalAuthDisabled": "Internal authentication is disabled",
-      "ssoLoginFailed": "Failed to initiate SSO login"
+      "ssoLoginFailed": "Failed to initiate SSO login",
+      "passkeyLoginFailed": "Passkey authentication failed",
+      "passkeyCancelled": "Passkey authentication was cancelled"
     },
     "messages": {
       "invitationAccepted": "Invitation accepted",
@@ -127,7 +157,13 @@
     "page": {
       "title": "Snippets",
       "subtitle": "Manage your command snippets for quick access in terminals",
-      "addSnippet": "Add Snippet"
+      "addSnippet": "Add Snippet",
+      "personal": "Personal",
+      "selectOrganization": "Select Organization",
+      "tabs": {
+        "snippets": "Snippets",
+        "scripts": "Scripts"
+      }
     },
     "list": {
       "empty": "You don't have any snippets yet. Create your first one!",
@@ -169,8 +205,107 @@
         "required": "Name and command are required",
         "loadFailed": "Failed to load snippet data",
         "saveFailed": "Failed to save snippet",
-        "deleteFailed": "Failed to delete snippet"
+        "deleteFailed": "Failed to delete snippet",
+        "reorderFailed": "Failed to reorder snippet"
       }
+    }
+  },
+  "scripts": {
+    "page": {
+      "title": "Scripts",
+      "subtitle": "Manage your automation scripts for server tasks",
+      "addScript": "Add Script",
+      "personal": "Personal",
+      "selectOrganization": "Select Organization",
+      "tabs": {
+        "snippets": "Snippets",
+        "scripts": "Scripts"
+      }
+    },
+    "execution": {
+      "progressPanel": {
+        "title": "Script Execution",
+        "noSteps": "No steps yet",
+        "noStepsDescription": "Steps will appear here as the script executes",
+        "steps": "Steps"
+      },
+      "dialogs": {
+        "enterValue": "Enter value",
+        "selectOption": "Select an option",
+        "confirm": "Confirm",
+        "submit": "Submit",
+        "cancel": "Cancel",
+        "ok": "OK",
+        "yes": "Yes",
+        "no": "No",
+        "copyCell": "Copy Cell",
+        "copyRow": "Copy Row",
+        "copyTable": "Copy Table",
+        "close": "Close"
+      },
+      "status": {
+        "running": "Running",
+        "completed": "Completed",
+        "error": "Error",
+        "pending": "Pending"
+      }
+    },
+    "list": {
+      "empty": "You don't have any scripts yet. Create your first one!",
+      "actions": {
+        "edit": "Edit script",
+        "delete": "Delete script"
+      }
+    },
+    "dialog": {
+      "title": {
+        "create": "Create Script",
+        "edit": "Edit Script"
+      },
+      "scriptDetails": "Script Details",
+      "scriptContent": "Script Content",
+      "helpTip": "Use @NEXTERM: directives for interactive features",
+      "fields": {
+        "name": "Name",
+        "description": "Description"
+      },
+      "placeholders": {
+        "name": "Script name",
+        "description": "What does this script do?"
+      },
+      "actions": {
+        "cancel": "Cancel",
+        "create": "Create",
+        "update": "Update",
+        "creating": "Creating...",
+        "updating": "Updating..."
+      },
+      "errors": {
+        "nameRequired": "Script name is required",
+        "descriptionRequired": "Script description is required",
+        "contentRequired": "Script content is required",
+        "createFailed": "Failed to create script",
+        "updateFailed": "Failed to update script"
+      }
+    },
+    "messages": {
+      "success": {
+        "created": "Script created successfully",
+        "updated": "Script updated successfully",
+        "deleted": "Script deleted successfully",
+        "reordered": "Script reordered successfully"
+      },
+      "errors": {
+        "loadFailed": "Failed to load script data",
+        "deleteFailed": "Failed to delete script",
+        "reorderFailed": "Failed to reorder script"
+      }
+    },
+    "menu": {
+      "searchPlaceholder": "Search scripts...",
+      "noScripts": "No scripts available. Create some in the Scripts section.",
+      "noMatch": "No scripts match your search.",
+      "selectIdentity": "Select Identity"
     }
   },
   "monitoring": {
@@ -193,7 +328,9 @@
         "memoryUsage": "Memory Usage",
         "loadAverage": "Load Average",
         "processes": "Processes",
-        "uptime": "Uptime"
+        "uptime": "Uptime",
+        "nodes": "Nodes",
+        "vms": "VMs/Containers"
       },
       "status": {
         "serverOffline": "Server Offline",
@@ -224,11 +361,14 @@
         "overview": "Overview",
         "charts": "Charts",
         "storage": "Storage",
-        "network": "Network"
+        "network": "Network",
+        "processes": "Processes",
+        "nodes": "Nodes"
       },
       "overview": {
         "systemInfo": {
           "title": "System Information",
+          "hostname": "Hostname",
           "os": "OS",
           "version": "Version",
           "kernel": "Kernel",
@@ -266,13 +406,45 @@
         "available": "Available: {{value}}",
         "total": "Total: {{value}}",
         "type": "Type: {{value}}",
-        "noData": "No disk usage data available"
+        "noData": "No disk usage data available",
+        "noPartitions": "No mounted partitions"
       },
       "network": {
         "title": "Network Interfaces",
         "rxBytes": "RX Bytes",
         "txBytes": "TX Bytes",
+        "mac": "MAC Address",
+        "speed": "Speed",
         "noData": "No network interface data available"
+      },
+      "processes": {
+        "title": "Running Processes",
+        "searchPlaceholder": "Search processes...",
+        "showing": "Showing {{count}} of {{total}} processes",
+        "noData": "No process data available. Process data will appear after the next monitoring cycle.",
+        "noResults": "No processes match your search criteria."
+      },
+      "pve": {
+        "clusterInfo": "Cluster Information",
+        "resources": "Resource Usage",
+        "virtualMachines": "Virtual Machines",
+        "totalNodes": "Total Nodes",
+        "onlineNodes": "Online Nodes",
+        "totalCPU": "Total CPU",
+        "totalMemory": "Total Memory",
+        "totalStorage": "Total Storage",
+        "storageUsage": "Storage Usage",
+        "cores": "Cores",
+        "uptime": "Uptime",
+        "qemuVMs": "QEMU VMs",
+        "lxcContainers": "LXC Containers",
+        "running": "{{count}} running",
+        "vmContainerCount": "VM/Container Count",
+        "cpu": "CPU",
+        "memory": "Memory",
+        "storage": "Storage",
+        "nodeOffline": "This node is currently offline",
+        "noNodes": "No nodes available"
       }
     }
   },
@@ -283,12 +455,15 @@
     "pages": {
       "account": "Account",
       "terminal": "Terminal",
+      "keymaps": "Keymaps",
       "identities": "Identities",
       "sessions": "Sessions",
       "organizations": "Organizations",
       "users": "Users",
       "authentication": "Authentication",
-      "ai": "AI"
+      "sources": "Sources",
+      "ai": "AI",
+      "monitoring": "Monitoring"
     },
     "account": {
       "title": "Account",
@@ -296,9 +471,15 @@
       "firstName": "First name",
       "lastName": "Last name",
       "appearance": "Appearance",
-      "appearanceDescription": "Choose between light and dark theme for your interface.",
-      "switchToLight": "Switch to Light Mode",
-      "switchToDark": "Switch to Dark Mode",
+      "appearanceDescription": "Choose your preferred theme. Auto follows your system settings and adjusts based on time of day.",
+      "themeAuto": "Auto",
+      "themeLight": "Light",
+      "themeDark": "Dark",
+      "themeOled": "OLED",
+      "oledEnabled": "OLED mode enabled",
+      "oledDisabled": "OLED mode disabled",
+      "themeLabel": "Theme",
+      "accentColor": "Accent Color",
       "twoFactor": "Two-factor authentication",
       "twoFactorActive": "Active",
       "twoFactorInactive": "Inactive",
@@ -313,6 +494,14 @@
       "currentLanguage": "Current Language",
       "missingLanguage": "Missing your language?",
       "helpTranslateLink": "Help translate Nexterm",
+      "sessionSynchronization": "Session Synchronization",
+      "sessionSyncDescription": "Control how your server sessions are stored and synchronized across devices and browser tabs.",
+      "sessionSyncAcrossDevices": "Across devices",
+      "sessionSyncSameBrowser": "Same browser",
+      "sessionSyncSameTab": "Same tab",
+      "sessionSyncAcrossDevicesDesc": "Sessions will be available across devices and synced",
+      "sessionSyncSameBrowserDesc": "Sessions will synchronize for the current user session",
+      "sessionSyncSameTabDesc": "Sessions will synchronize inside your browser tab",
       "twoFactorDialog": {
         "title": "Enable 2FA",
         "description": "Scan the code with your authenticator app or enter <span class=\"totp-code\">{{secret}}</span> manually.",
@@ -321,6 +510,22 @@
         "messages": {
           "setupFailed": "2FA setup failed. Please try again."
         }
+      },
+      "passkeys": {
+        "sectionTitle": "Passkeys",
+        "sectionDescription": "Use passkeys for faster, more secure sign-in without passwords.",
+        "addButton": "Add Passkey",
+        "addDialogTitle": "Add Passkey",
+        "addDialogDescription": "Give your passkey a name to help you identify it later.",
+        "namePlaceholder": "Passkey name",
+        "enterName": "Enter a name for this passkey:",
+        "defaultName": "My Passkey",
+        "confirmDelete": "Are you sure you want to delete this passkey?",
+        "createdAt": "Created {{date}}",
+        "registerError": "Failed to register passkey. Please try again.",
+        "noPasskeys": "No passkeys registered yet",
+        "rename": "Rename",
+        "delete": "Delete"
       }
     },
     "passwordChange": {
@@ -399,6 +604,59 @@
       "logout": "Logout",
       "revoke": "Revoke",
       "browserOn": "{{browser}} {{version}} on {{os}} {{osVersion}}"
+    },
+    "keymaps": {
+      "title": "Keymaps",
+      "description": "Customize keyboard shortcuts to match your workflow.",
+      "resetAll": "Reset All",
+      "actions": {
+        "search": {
+          "title": "Search",
+          "description": "Open the search input"
+        },
+        "quickaction": {
+          "title": "Quick Action",
+          "description": "Open the quick action menu"
+        },
+        "aimenu": {
+          "title": "AI Menu",
+          "description": "Open the AI command menu"
+        },
+        "snippets": {
+          "title": "Snippets",
+          "description": "Open the snippets dialog"
+        },
+        "keyboardshortcuts": {
+          "title": "Keyboard Shortcuts",
+          "description": "Open the keyboard shortcuts menu"
+        },
+        "broadcast": {
+          "title": "Broadcast Mode",
+          "description": "Toggle broadcast mode when using split view"
+        },
+        "copy": {
+          "title": "Copy",
+          "description": "Copy selected text to clipboard"
+        },
+        "fullscreen": {
+          "title": "Full-Screen",
+          "description": "Toggle full-screen mode"
+        }
+      },
+      "recorder": {
+        "pressKeys": "Press keys...",
+        "save": "Save",
+        "cancel": "Cancel",
+        "reset": "Reset"
+      },
+      "messages": {
+        "updateSuccess": "Keybind updated successfully",
+        "updateFailed": "Failed to update keybind",
+        "resetSuccess": "Keybind reset to default",
+        "resetFailed": "Failed to reset keybind",
+        "resetAllSuccess": "All keybinds reset to defaults",
+        "resetAllFailed": "Failed to reset keybinds"
+      }
     },
     "terminal": {
       "title": "Terminal",
@@ -515,10 +773,63 @@
         "testConnection": "AI connection test failed"
       }
     },
+    "monitoring": {
+      "loading": "Loading monitoring settings...",
+      "saveSettings": "Save Settings",
+      "saveSuccess": "Monitoring settings saved successfully",
+      "seconds": "seconds",
+      "hours": "hours",
+      "servers": "servers",
+      "statusChecker": {
+        "title": "Status Checker",
+        "description": "Configure how Nexterm checks the online/offline status of your servers.",
+        "enable": {
+          "title": "Enable Status Checker",
+          "description": "Automatically check if servers are online or offline. When disabled, all servers will be marked as online."
+        },
+        "interval": {
+          "title": "Check Interval",
+          "description": "How often to check server status (10-300 seconds)"
+        }
+      },
+      "dataCollection": {
+        "title": "Data Collection",
+        "description": "Configure monitoring data collection for CPU, memory, disk, and network metrics.",
+        "enable": {
+          "title": "Enable Monitoring",
+          "description": "Collect detailed performance metrics from servers with monitoring enabled."
+        },
+        "interval": {
+          "title": "Collection Interval",
+          "description": "How often to collect monitoring data (30-600 seconds)"
+        },
+        "retention": {
+          "title": "Data Retention",
+          "description": "How long to keep monitoring data (1-24 hours)"
+        }
+      },
+      "advanced": {
+        "title": "Advanced Settings",
+        "description": "Fine-tune monitoring performance and resource usage.",
+        "timeout": {
+          "title": "Connection Timeout",
+          "description": "Maximum time to wait for a server response (5-120 seconds)"
+        },
+        "batchSize": {
+          "title": "Batch Size",
+          "description": "Number of servers to check simultaneously (1-50)"
+        }
+      },
+      "errors": {
+        "loadSettings": "Failed to load monitoring settings",
+        "saveSettings": "Failed to save monitoring settings"
+      }
+    },
     "identities": {
       "title": "SSH Keys & Credentials",
       "description": "Manage your SSH keys and login credentials for server connections",
       "createIdentity": "Create Identity",
+      "personal": "Personal",
       "noUsername": "No username",
       "sshKey": "SSH Key",
       "password": "Password",
@@ -548,9 +859,10 @@
         },
         "authTypes": {
           "password": "Password",
-          "ssh": "SSH Key"
+          "password-only": "No Username",
+          "ssh": "SSH Key",
+          "both": "Key+Pass"
         },
-        "keyFileLoaded": "Key file loaded",
         "actions": {
           "cancel": "Cancel",
           "create": "Create Identity",
@@ -566,30 +878,147 @@
           "updateFailed": "Failed to update identity"
         }
       }
+    },
+    "sources": {
+      "title": "Script & Snippet Sources",
+      "description": "Configure external sources to automatically sync scripts and snippets.",
+      "loading": "Loading sources...",
+      "noSources": "No Sources Configured",
+      "noSourcesDescription": "Add external sources to automatically sync scripts and snippets.",
+      "addSource": "Add Source",
+      "snippets": "snippets",
+      "scripts": "scripts",
+      "neverSynced": "Never synced",
+      "sync": "Sync now",
+      "edit": "Edit",
+      "delete": "Delete",
+      "deleteConfirm": "Are you sure you want to delete the source \"{{name}}\"? All synced scripts and snippets from this source will also be deleted.",
+      "status": {
+        "success": "Synced",
+        "error": "Error",
+        "pending": "Pending",
+        "disabled": "Disabled"
+      },
+      "dialog": {
+        "createTitle": "Add Source",
+        "editTitle": "Edit Source",
+        "name": "Name",
+        "namePlaceholder": "e.g. Company Scripts",
+        "url": "Source URL",
+        "urlPlaceholder": "https://scripts.example.com",
+        "enabled": "Enabled",
+        "enabledDescription": "When disabled, this source will not be synced",
+        "validating": "Validating URL...",
+        "validationSuccess": "Valid source found: {{snippets}} snippets, {{scripts}} scripts",
+        "create": "Create"
+      },
+      "messages": {
+        "created": "Source created successfully",
+        "updated": "Source updated successfully",
+        "deleted": "Source deleted successfully",
+        "synced": "Source synced successfully"
+      },
+      "errors": {
+        "loadFailed": "Failed to load sources",
+        "saveFailed": "Failed to save source",
+        "deleteFailed": "Failed to delete source",
+        "syncFailed": "Failed to sync source",
+        "validationFailed": "Failed to validate URL",
+        "requiredFields": "Name and URL are required"
+      }
+    }
+  },
+  "tunnel": {
+    "title": "Port Forward",
+    "identity": "Identity",
+    "remoteHost": "Remote Host",
+    "remotePort": "Remote Port",
+    "localPort": "Local Port",
+    "start": "Start Tunnel",
+    "stop": "Stop Tunnel",
+    "status": {
+      "idle": "Not connected",
+      "starting": "Starting...",
+      "listening": "Listening on localhost:{{port}}",
+      "error": "Error",
+      "stopped": "Stopped"
+    },
+    "error": {
+      "fillAllFields": "Please fill in all fields"
+    }
+  },
+  "share": {
+    "errors": {
+      "unableToConnect": "Unable to Connect",
+      "failedToJoin": "Failed to join session"
+    },
+    "sessionEnded": {
+      "title": "Session Ended",
+      "description": "The shared session has been closed"
     }
   },
   "servers": {
+    "time": {
+      "justNow": "Just now",
+      "minuteAgo": "{{count}} min ago",
+      "minutesAgo": "{{count}} mins ago",
+      "hourAgo": "{{count}} hour ago",
+      "hoursAgo": "{{count}} hours ago",
+      "dayAgo": "{{count}} day ago",
+      "daysAgo": "{{count}} days ago"
+    },
+    "tags": {
+      "title": "Tags",
+      "createNewTag": "Create new tag",
+      "tagName": "Tag name",
+      "create": "Create",
+      "filterByTags": "Filter by Tags",
+      "clearAll": "Clear all",
+      "noTagsCreated": "No tags created yet",
+      "editTag": "Edit tag",
+      "deleteTag": "Delete tag"
+    },
     "contextMenu": {
       "createFolder": "Create Folder",
       "deleteFolder": "Delete Folder",
       "renameFolder": "Rename Folder",
+      "new": "New",
+      "sshServer": "SSH Server",
+      "telnetServer": "Telnet Server",
+      "rdpServer": "RDP Server",
+      "vncServer": "VNC Server",
       "createServer": "Create Server",
       "import": "Import",
       "pve": "PVE",
       "sshConfig": "SSH-Config",
       "connect": "Connect",
+      "quickConnect": "Quick Connect",
       "openSFTP": "Open SFTP",
+      "forwardPort": "Forward Port",
+      "runScript": "Run Script",
       "editServer": "Edit Server",
+      "editIntegration": "Edit Integration",
       "duplicateServer": "Duplicate Server",
       "deleteServer": "Delete Server",
+      "wakeOnLan": "Wake-On-LAN",
       "editPVE": "Edit PVE",
       "deletePVE": "Delete PVE",
       "shutdown": "Shutdown",
       "stop": "Stop",
       "start": "Start"
     },
+    "wol": {
+      "successDescription": "Magic packet sent to {{name}}",
+      "errorDescription": "Failed to send magic packet"
+    },
+    "messages": {
+      "usernameRequired": "Username is required",
+      "passwordRequired": "Password is required",
+      "sshKeyRequired": "SSH key is required"
+    },
     "dialog": {
       "addServer": "Add server",
+      "addProtocolServer": "Add {{protocol}} server",
       "editServer": "Edit server",
       "tabs": {
         "details": "Details",
@@ -603,20 +1032,106 @@
       "fields": {
         "name": "Name",
         "icon": "Icon",
-        "serverIp": "Server-IP",
+        "serverIp": "Host",
         "port": "Port",
         "protocol": "Protocol",
         "username": "Username",
         "password": "Password",
-        "host": "Host"
+        "host": "Host",
+        "nodeName": "Node Name",
+        "vmid": "VM ID",
+        "macAddress": "MAC Address"
       },
       "placeholders": {
         "serverName": "Server name",
-        "serverIp": "Server-IP",
+        "serverIp": "Hostname or IP",
         "port": "Port",
         "username": "Username",
         "password": "Password",
-        "host": "Host"
+        "host": "Host",
+        "nodeName": "Node name",
+        "vmid": "VM ID",
+        "macAddress": "AA:BB:CC:DD:EE:FF"
+      },
+      "settings": {
+        "jumpHosts": {
+          "title": "Jump Hosts",
+          "description": "Connect through intermediate servers to reach this target server",
+          "addButton": "Add Jump Host",
+          "removeTooltip": "Remove jump host",
+          "noServersAvailable": "No SSH servers available for jump hosts. Create SSH servers first."
+        },
+        "monitoring": {
+          "title": "Enable Performance Monitoring",
+          "description": "Collect CPU, memory, disk, and network metrics for this server"
+        },
+        "wakeOnLan": {
+          "title": "Enable Wake-On-LAN",
+          "description": "Allow waking this server remotely using its MAC address"
+        },
+        "keyboardLayout": {
+          "title": "Keyboard Layout",
+          "description": "Select the keyboard layout to use for this connection."
+        },
+        "display": {
+          "title": "Display Settings",
+          "description": "Configure color depth and resize behavior for the remote display",
+          "colorDepth": "Color Depth",
+          "resizeMethod": "Resize Method"
+        },
+        "performance": {
+          "title": "Performance Settings",
+          "description": "Toggle visual effects that may impact performance over slower connections",
+          "enableWallpaper": "Enable Wallpaper",
+          "enableWallpaperDesc": "Show the desktop wallpaper on the remote system",
+          "enableTheming": "Enable Theming",
+          "enableThemingDesc": "Use themed windows and controls on the remote system",
+          "enableFontSmoothing": "Enable Font Smoothing",
+          "enableFontSmoothingDesc": "Render text with smooth edges for better readability",
+          "enableFullWindowDrag": "Enable Full Window Drag",
+          "enableFullWindowDragDesc": "Display window contents while dragging windows",
+          "enableDesktopComposition": "Enable Desktop Composition",
+          "enableDesktopCompositionDesc": "Enable transparent windows and visual effects",
+          "enableMenuAnimations": "Enable Menu Animations",
+          "enableMenuAnimationsDesc": "Enable menu open and close animations"
+        },
+        "audio": {
+          "enableAudio": "Enable Audio",
+          "enableAudioDesc": "Stream audio from the remote system to your browser"
+        },
+        "terminal": {
+          "title": "Terminal Compatibility",
+          "description": "Adjust key behavior for different terminal types",
+          "backspace": "Backspace",
+          "delete": "Delete",
+          "functionKeys": "Function Keys"
+        },
+        "noSettings": "No additional settings available for this entry type."
+      },
+      "identities": {
+        "organizationIdentities": "Organization Identities",
+        "personalIdentities": "Personal Identities",
+        "orgDescription": "Shared with all organization members. Everyone can use these identities.",
+        "personalDescription": "Only visible to you. Other organization members cannot see these.",
+        "identityName": "Identity Name",
+        "username": "Username",
+        "authentication": "Authentication",
+        "passwordField": "Password",
+        "userPassword": "Password",
+        "passwordOnly": "No Username",
+        "sshKey": "SSH Key",
+        "both": "Key+Pass",
+        "sshPrivateKey": "SSH Private Key",
+        "passphrase": "Passphrase (optional)",
+        "new": "New",
+        "removeIdentity": "Remove identity",
+        "unlinkIdentity": "Unlink identity",
+        "moveToOrg": "Move to organization",
+        "selectOrganization": "Select Organization",
+        "availableToLink": "Available to Link",
+        "noUsername": "No username",
+        "noOrgIdentities": "No organization identities. Create one to share with all members.",
+        "noPersonalIdentities": "No personal identities. Create one for your private use."
       }
     },
     "proxmoxDialog": {
@@ -630,8 +1145,10 @@
         "port": "Port",
         "username": "Username",
         "password": "Password",
-        "nodeName": "Node Name (Optional)"
+        "nodeName": "Node Name (Optional)",
+        "monitoring": "Performance Monitoring"
       },
+      "monitoringDescription": "Collect cluster-wide CPU, memory, and storage metrics",
       "placeholders": {
         "name": "Name",
         "serverIp": "Server-IP",
@@ -643,6 +1160,12 @@
       "actions": {
         "import": "Import",
         "edit": "Edit"
+      },
+      "messages": {
+        "created": "Proxmox integration created successfully",
+        "updated": "Proxmox integration updated successfully",
+        "createFailed": "Failed to create Proxmox integration",
+        "updateFailed": "Failed to update Proxmox integration"
       }
     },
     "connectionReasonDialog": {
@@ -713,20 +1236,52 @@
         "createFolder": "Create Folder",
         "upload": "Upload File",
         "edit": "Edit",
-        "bigFileConfirm": "This file is {{size}} MB large. Are you sure you want to edit it?"
+        "preview": "Preview",
+        "bigFileConfirm": "This file is {{size}} MB large. Are you sure you want to edit it?",
+        "selectAll": "Select All",
+        "insertSnippet": "Insert Snippet",
+        "sendCtrlC": "Send Ctrl+C",
+        "clearTerminal": "Clear Terminal"
+      },
+      "filePreview": {
+        "title": "File Preview",
+        "loading": "Loading...",
+        "cannotPreview": "Cannot Preview File",
+        "unsupportedFileType": "This file type is not supported for preview",
+        "videoNotSupported": "Your browser does not support video playback",
+        "audioNotSupported": "Your browser does not support audio playback",
+        "download": "Download",
+        "close": "Close"
       }
     },
     "aiAssistant": {
       "title": "AI Assistant",
       "placeholder": "Describe what you want to do...",
       "hint": "Press Enter to generate • Esc to close",
-      "closeLabel": "Close AI Assistant"
+      "hintUse": "Press Enter to use command • Esc to close",
+      "closeLabel": "Close AI Assistant",
+      "generate": "Generate command",
+      "generating": "Generating command...",
+      "generatedCommand": "Generated Command",
+      "useCommand": "Use Command",
+      "tryAgain": "Try Again",
+      "copy": "Copy to clipboard",
+      "error": "Failed to generate command. Please try again."
     },
     "snippets": {
       "title": "Snippets",
       "noSnippets": "No snippets available",
       "searchPlaceholder": "Search snippets...",
       "createNew": "Create New Snippet"
+    },
+    "terminalActions": {
+      "menuTitle": "Terminal Actions",
+      "snippets": "Snippets",
+      "keyboardShortcuts": "Keyboard Shortcuts",
+      "broadcasting": "Broadcasting",
+      "fullScreen": "Full-Screen",
+      "exitFullScreen": "Exit Full-Screen Mode",
+      "badgeOn": "ON"
     },
     "messages": {
       "fillRequiredFields": "Please fill in all required fields",
@@ -736,133 +1291,6 @@
       "updateFailed": "Failed to update server",
       "createIdentityFailed": "Failed to create identity",
       "updateIdentityFailed": "Failed to update identity"
-    }
-  },
-  "apps": {
-    "title": "Apps",
-    "navigation": {
-      "categories": {
-        "all": "All",
-        "results": "Results",
-        "scripts": "Scripts",
-        "networking": "Networking",
-        "media": "Media",
-        "cloud": "Cloud",
-        "development": "Development",
-        "utilities": "Utilities"
-      }
-    },
-    "store": {
-      "appStore": "App Store",
-      "scripts": "Scripts",
-      "appStoreDescription": "Your favorite apps, deployed with a single click.",
-      "scriptsDescription": "Automate your server tasks with custom scripts.",
-      "manageSources": "Manage sources",
-      "createScript": "Create Script",
-      "source": "Source:",
-      "sourceFilter": {
-        "all": "All",
-        "custom": "Custom"
-      }
-    },
-    "list": {
-      "noApps": "More apps coming soon",
-      "noScripts": "No scripts available",
-      "selectApp": "Select app to continue",
-      "selectScript": "Select script to continue"
-    },
-    "actions": {
-      "deploy": "Deploy",
-      "run": "Run",
-      "view": "View",
-      "edit": "Edit",
-      "delete": "Delete",
-      "logs": "Logs",
-      "open": "Open",
-      "stop": "Stop Script",
-      "version": "Version"
-    },
-    "items": {
-      "customBadge": "Custom",
-      "scriptType": "Script",
-      "running": "Running...",
-      "runScript": "Run"
-    },
-    "installer": {
-      "deploymentFailed": "Deployment failed",
-      "deploymentCompleted": "Deployment completed",
-      "deploying": "Deploying...",
-      "installationLog": "Installation Log",
-      "steps": {
-        "lookupDistro": "Look up Linux distro",
-        "checkPermissions": "Check permissions",
-        "installDocker": "Install Docker Engine",
-        "downloadImage": "Download base image",
-        "preInstall": "Run pre-install command",
-        "startContainer": "Start Docker container",
-        "postInstall": "Run post-install command",
-        "detected": "Detected {{os}}"
-      }
-    },
-    "scriptExecutor": {
-      "executionFailed": "Script execution failed",
-      "executionCompleted": "Script execution completed",
-      "executing": "Executing script...",
-      "initializing": "Initializing script execution",
-      "finished": "Script execution finished",
-      "cancelled": "Script execution cancelled by user"
-    },
-    "dialogs": {
-      "deployServer": {
-        "deployTitle": "Deploy {{name}}",
-        "runTitle": "Run {{name}}",
-        "noServersAvailable": "No SSH servers available"
-      },
-      "source": {
-        "title": "App sources",
-        "refreshApps": "Refresh apps",
-        "addNewSource": "Add new source"
-      },
-      "script": {
-        "createTitle": "Create Custom Script",
-        "editTitle": "Edit Script",
-        "viewTitle": "View Script",
-        "source": "Source: {{source}}",
-        "scriptDetails": "Script Details",
-        "scriptContent": "Script Content",
-        "helpTip": "Use @NEXTERM: commands for interactive prompts",
-        "fields": {
-          "name": "Script Name *",
-          "description": "Description *",
-          "namePlaceholder": "My Awesome Script",
-          "descriptionPlaceholder": "What does this script do?"
-        },
-        "actions": {
-          "close": "Close",
-          "cancel": "Cancel",
-          "create": "Create Script",
-          "update": "Update Script",
-          "creating": "Creating...",
-          "updating": "Updating..."
-        },
-        "errors": {
-          "nameRequired": "Script name is required",
-          "descriptionRequired": "Script description is required",
-          "contentRequired": "Script content cannot be empty",
-          "createFailed": "Failed to create script",
-          "updateFailed": "Failed to update script"
-        },
-        "success": {
-          "created": "Script created successfully",
-          "updated": "Script updated successfully"
-        }
-      }
-    },
-    "messages": {
-      "onlyCustomScriptsCanBeDeleted": "Only custom scripts can be deleted",
-      "scriptDeletedSuccessfully": "Script deleted successfully",
-      "failedToDeleteScript": "Failed to delete script",
-      "deleteScriptConfirmation": "Are you sure you want to delete the script \"{{name}}\"? This action cannot be undone."
     }
   }
 }

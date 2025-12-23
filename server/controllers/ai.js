@@ -1,4 +1,6 @@
 const AISettings = require("../models/AISettings");
+const MonitoringSnapshot = require("../models/MonitoringSnapshot");
+const logger = require("../utils/logger");
 
 const SYSTEM_PROMPT = process.env.AI_SYSTEM_PROMPT || `You are a Linux command generator assistant. Your job is to generate appropriate Linux/Unix shell commands based on user requests.
 
@@ -19,6 +21,27 @@ Response: find . -type f -size +100M -exec ls -lh {} + | sort -k5 -hr
 
 User: "check memory usage"
 Response: free -h && top -o %MEM -n 1`;
+
+const buildSystemPrompt = (osInfo, recentOutput) => {
+    let prompt = SYSTEM_PROMPT;
+
+    if (osInfo) {
+        const osParts = [];
+        if (osInfo.hostname) osParts.push(`hostname: ${osInfo.hostname}`);
+        if (osInfo.kernel) osParts.push(`kernel: ${osInfo.kernel}`);
+        if (osInfo.name) osParts.push(`distro: ${osInfo.name}`);
+        if (osInfo.version) osParts.push(`release: ${osInfo.version}`);
+        if (osParts.length) {
+            prompt += `\n\nServer info: ${osParts.join(', ')}`;
+        }
+    }
+
+    if (recentOutput) {
+        prompt += `\n\nRecent terminal output:\n${recentOutput}`;
+    }
+
+    return prompt;
+};
 
 module.exports.getAISettings = async () => {
     let settings = await AISettings.findOne();
@@ -142,7 +165,7 @@ module.exports.testAIConnection = async () => {
 
         return { success: true, message: "Connection test successful" };
     } catch (error) {
-        console.error("AI connection test failed:", error);
+        logger.error("AI connection test failed", { error: error.message, stack: error.stack });
         return { code: 500, message: `Connection test failed: ${error.message}` };
     }
 };
@@ -203,7 +226,7 @@ module.exports.getAvailableModels = async () => {
 
             return { models: chatModels || [] };
         } catch (error) {
-            console.error("Error fetching OpenAI models:", error);
+            logger.error("Error fetching OpenAI models", { error: error.message });
             return { models: [] };
         }
     } else if (settings.provider === "openai_compatible") {
@@ -234,19 +257,34 @@ module.exports.getAvailableModels = async () => {
     }
 };
 
-module.exports.generateCommand = async (prompt) => {
+module.exports.generateCommand = async (prompt, entryId, recentOutput) => {
     const settings = await AISettings.findOne();
 
     if (!settings || !settings.enabled) return { code: 400, message: "AI is not enabled" };
     if (!settings.provider || !settings.model) return { code: 400, message: "AI not properly configured" };
 
+    let osInfo = null;
+
+    if (entryId) {
+        try {
+            const snapshot = await MonitoringSnapshot.findOne({ where: { entryId } });
+            if (snapshot && snapshot.osInfo) {
+                osInfo = snapshot.osInfo;
+            }
+        } catch (error) {
+            logger.error("Failed to fetch monitoring snapshot for AI", { entryId, error: error.message });
+        }
+    }
+
+    const systemPrompt = buildSystemPrompt(osInfo, recentOutput);
+
     let command;
     if (settings.provider === "openai") {
-        command = await generateOpenAICommand(prompt, settings);
+        command = await generateOpenAICommand(prompt, settings, systemPrompt);
     } else if (settings.provider === "openai_compatible") {
         command = await generateOllamaCommand(prompt, settings);
     } else if (settings.provider === "ollama") {
-        command = await generateOllamaCommand(prompt, settings);
+        command = await generateOllamaCommand(prompt, settings, systemPrompt);
     } else {
         return { code: 400, message: "Unsupported AI provider" };
     }
@@ -254,7 +292,7 @@ module.exports.generateCommand = async (prompt) => {
     return { command };
 };
 
-const generateOpenAICommand = async (prompt, settings) => {
+const generateOpenAICommand = async (prompt, settings, systemPrompt) => {
     if (!settings.apiKey) throw new Error("OpenAI API key not configured");
 
     const response = await fetch("https://api.openai.com/v1/chat/completions", {
@@ -266,7 +304,7 @@ const generateOpenAICommand = async (prompt, settings) => {
         body: JSON.stringify({
             model: settings.model,
             messages: [
-                { role: "system", content: SYSTEM_PROMPT },
+                { role: "system", content: systemPrompt },
                 { role: "user", content: prompt },
             ],
             max_tokens: 150,
@@ -285,7 +323,7 @@ const generateOpenAICommand = async (prompt, settings) => {
     return parseAIResponse(rawContent);
 };
 
-const generateOllamaCommand = async (prompt, settings) => {
+const generateOllamaCommand = async (prompt, settings, systemPrompt) => {
     let ollamaUrl = settings.apiUrl || "http://localhost:11434";
     ollamaUrl = ollamaUrl.replace(/\/+$/, "");
 
@@ -297,7 +335,7 @@ const generateOllamaCommand = async (prompt, settings) => {
         body: JSON.stringify({
             model: settings.model,
             messages: [
-                { role: "system", content: SYSTEM_PROMPT },
+                { role: "system", content: systemPrompt },
                 { role: "user", content: prompt },
             ],
             stream: false,

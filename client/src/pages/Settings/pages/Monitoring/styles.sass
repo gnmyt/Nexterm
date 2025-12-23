@@ -1,0 +1,71 @@
+@use "@/common/styles/colors"
+
+.monitoring-settings
+  display: flex
+  flex-direction: column
+  margin-top: 1rem
+  gap: 2rem
+
+.monitoring-settings-loading
+  padding: 2rem
+  text-align: center
+  color: colors.$subtext
+
+.settings-section
+  h2
+    margin: 0 0 0.5rem 0
+    color: colors.$white
+    font-size: 1.25rem
+  > p
+    margin: 0 0 1.5rem 0
+    color: colors.$subtext
+    font-size: 0.9rem
+
+.setting-item
+  display: flex
+  align-items: flex-start
+  justify-content: space-between
+  padding: 1rem 0
+  border-bottom: 1px solid colors.$gray
+  &:last-child
+    border-bottom: none
+  .setting-label
+    flex: 1
+    margin-right: 2rem
+    h4
+      margin: 0 0 0.25rem 0
+      color: colors.$white
+      font-size: 1rem
+      font-weight: 600
+    p
+      margin: 0
+      color: colors.$subtext
+      font-size: 0.85rem
+
+.number-input
+  display: flex
+  align-items: center
+  gap: 0.5rem
+  input
+    width: 80px
+    padding: 0.6rem 0.8rem
+    background: colors.$lighter-background
+    border: 1px solid colors.$gray
+    border-radius: 0.5rem
+    color: colors.$white
+    font-size: 14pt
+    outline: none
+    text-align: center
+    &:focus
+      border-color: colors.$primary
+    &::-webkit-inner-spin-button, &::-webkit-outer-spin-button
+      -webkit-appearance: none
+  .unit
+    color: colors.$subtext
+    font-size: 0.9rem
+
+.settings-actions
+  display: flex
+  justify-content: flex-end
+  padding-top: 2rem
+  border-top: 1px solid colors.$gray

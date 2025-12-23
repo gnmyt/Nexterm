@@ -1,0 +1,41 @@
+<div class="group-list">
+
+    <script type="text/ng-template" id="nestedItem.html">
+        <div class="{{item.type}}" ng-if="isVisible(item.type)"
+            ng-class="{
+                balancer   : item.balancing,
+                expanded   : item.expanded,
+                expandable : item.expandable,
+                empty      : !item.children.length
+            }">
+
+            <!-- Item caption -->
+            <div class="caption">
+
+                <!-- Expand/collapse icon -->
+                <div class="icon expand" ng-click="toggleExpanded(item)"
+                    ng-if="item.expandable"></div>
+
+                <ng-include src="templates[item.type]"></ng-include>
+
+            </div>
+
+            <!-- Children of item (if any) -->
+            <div class="children" ng-if="item.expanded">
+                <div class="list-item" ng-repeat="item in item.children | orderBy : 'name'"
+                    ng-include="'nestedItem.html'"></div>
+            </div>
+
+        </div>
+    </script>
+
+    <!-- Root-level connections / groups -->
+    <div class="group-list-page">
+        <div class="list-item" ng-repeat="item in childrenPage" ng-include="'nestedItem.html'"></div>
+    </div>
+
+    <!-- Pager for connections / groups -->
+    <guac-pager page="childrenPage" items="rootItems | orderBy : ['weight', 'name']"
+                page-size="pageSize"></guac-pager>
+
+</div>

@@ -1,10 +1,18 @@
 {
   "common": {
+    "error": "Error",
+    "success": "Éxito",
+    "loading": "Cargando...",
     "actions": {
       "cancel": "Cancela",
       "confirm": "Confirma",
       "login": "Iniciar sesión",
-      "register": "Regístrate en"
+      "register": "Regístrate en",
+      "save": "Guardar",
+      "download": "Descarga",
+      "close": "Cerrar",
+      "maximize": "Maximizar",
+      "restore": "Restaurar"
     },
     "labels": {
       "username": "Nombre de usuario",
@@ -33,7 +41,9 @@
       "noAuthMethodsAvailable": "No hay métodos de autenticación disponibles."
     },
     "selectBox": {
-      "defaultOption": "Selecciona una opción..."
+      "defaultOption": "Selecciona una opción...",
+      "search": "Buscar...",
+      "noResults": "No se han encontrado resultados"
     },
     "sidebar": {
       "settings": "Ajustes",
@@ -41,7 +51,6 @@
       "monitoring": "Supervisión",
       "snippets": "Fragmentos",
       "audit": "Auditoría",
-      "apps": "Aplicaciones",
       "logout": "Cerrar sesión",
       "collapseTitle": "Contraer la barra lateral",
       "logoutConfirmText": "Esto te desconectará de la cuenta {{username}} . ¿Estás seguro?",
@@ -127,7 +136,13 @@
     "page": {
       "title": "Fragmentos",
       "subtitle": "Gestiona tus fragmentos de comandos para acceder rápidamente a ellos en los terminales",
-      "addSnippet": "Añadir fragmento"
+      "addSnippet": "Añadir fragmento",
+      "personal": "Personal",
+      "selectOrganization": "Selecciona Organización",
+      "tabs": {
+        "snippets": "Fragmentos",
+        "scripts": "Guiones"
+      }
     },
     "list": {
       "empty": "Aún no tienes ningún fragmento. ¡Crea el primero!",
@@ -171,6 +186,102 @@
         "saveFailed": "No se ha podido guardar el fragmento",
         "deleteFailed": "No se ha podido eliminar el fragmento"
       }
+    }
+  },
+  "scripts": {
+    "page": {
+      "title": "Guiones",
+      "subtitle": "Gestiona tus scripts de automatización para las tareas del servidor",
+      "addScript": "Añadir guión",
+      "personal": "Personal",
+      "selectOrganization": "Selecciona Organización",
+      "tabs": {
+        "snippets": "Fragmentos",
+        "scripts": "Guiones"
+      }
+    },
+    "execution": {
+      "progressPanel": {
+        "title": "Ejecución del script",
+        "noSteps": "Aún no hay pasos",
+        "noStepsDescription": "Los pasos aparecerán aquí a medida que se ejecute el script",
+        "steps": "Pasos"
+      },
+      "dialogs": {
+        "enterValue": "Introduce el valor",
+        "selectOption": "Selecciona una opción",
+        "confirm": "Confirmar",
+        "submit": "Enviar",
+        "cancel": "Cancelar",
+        "ok": "OK",
+        "yes": "Sí",
+        "no": "No",
+        "copyCell": "Copiar celda",
+        "copyRow": "Fila de copias",
+        "copyTable": "Copiar tabla",
+        "close": "Cerrar"
+      },
+      "status": {
+        "running": "Correr",
+        "completed": "Completado",
+        "error": "Error",
+        "pending": "Pendiente"
+      }
+    },
+    "list": {
+      "empty": "Aún no tienes ningún guión. ¡Crea el primero!",
+      "actions": {
+        "edit": "Editar guión",
+        "delete": "Borrar script"
+      }
+    },
+    "dialog": {
+      "title": {
+        "create": "Crear guión",
+        "edit": "Editar Guión"
+      },
+      "scriptDetails": "Detalles del guión",
+      "scriptContent": "Contenido del guión",
+      "helpTip": "Utiliza las directivas @NEXTERM: para las funciones interactivas",
+      "fields": {
+        "name": "Nombre",
+        "description": "Descripción"
+      },
+      "placeholders": {
+        "name": "Nombre del script",
+        "description": "¿Qué hace este script?"
+      },
+      "actions": {
+        "cancel": "Cancela",
+        "create": "Crea",
+        "update": "Actualiza",
+        "creating": "Crear...",
+        "updating": "Actualizando..."
+      },
+      "errors": {
+        "nameRequired": "El nombre del script es obligatorio",
+        "descriptionRequired": "Se requiere la descripción del guión",
+        "contentRequired": "Se requiere contenido de guión",
+        "createFailed": "Error al crear el script",
+        "updateFailed": "Error al actualizar el script"
+      }
+    },
+    "messages": {
+      "success": {
+        "created": "Script creado correctamente",
+        "updated": "Script actualizado correctamente",
+        "deleted": "Script eliminado correctamente"
+      },
+      "errors": {
+        "loadFailed": "Error al cargar los datos del script",
+        "deleteFailed": "Error al borrar el script"
+      }
+    },
+    "menu": {
+      "searchPlaceholder": "Buscar guiones...",
+      "noScripts": "No hay guiones disponibles. Crea algunos en la sección Scripts.",
+      "noMatch": "No hay guiones que coincidan con tu búsqueda.",
+      "selectIdentity": "Selecciona Identidad"
     }
   },
   "monitoring": {
@@ -283,11 +394,13 @@
     "pages": {
       "account": "Cuenta",
       "terminal": "Terminal",
+      "keymaps": "Mapas clave",
       "identities": "Identidades",
       "sessions": "Sesiones",
       "organizations": "Organizaciones",
       "users": "Usuarios",
       "authentication": "Autenticación",
+      "sources": "Fuentes",
       "ai": "AI"
     },
     "account": {
@@ -296,9 +409,10 @@
       "firstName": "Nombre",
       "lastName": "Apellidos",
       "appearance": "Apariencia",
-      "appearanceDescription": "Elige entre un tema claro u oscuro para tu interfaz.",
-      "switchToLight": "Cambiar al modo Luz",
-      "switchToDark": "Cambiar al modo oscuro",
+      "appearanceDescription": "Elige el tema que prefieras. Sigue automáticamente la configuración de tu sistema y se ajusta en función de la hora del día.",
+      "themeAuto": "Auto",
+      "themeLight": "Luz",
+      "themeDark": "Oscuro",
       "twoFactor": "Autenticación de dos factores",
       "twoFactorActive": "Activo",
       "twoFactorInactive": "Inactivo",
@@ -313,6 +427,14 @@
       "currentLanguage": "Lengua actual",
       "missingLanguage": "¿Echas de menos tu lengua?",
       "helpTranslateLink": "Ayuda a traducir Nexterm",
+      "sessionSynchronization": "Sincronización de sesiones",
+      "sessionSyncDescription": "Controla cómo se almacenan y sincronizan tus sesiones de servidor entre dispositivos y pestañas del navegador.",
+      "sessionSyncAcrossDevices": "En todos los dispositivos",
+      "sessionSyncSameBrowser": "Mismo navegador",
+      "sessionSyncSameTab": "Misma pestaña",
+      "sessionSyncAcrossDevicesDesc": "Las sesiones estarán disponibles en todos los dispositivos y sincronizadas",
+      "sessionSyncSameBrowserDesc": "Las sesiones se sincronizarán para la sesión de usuario actual",
+      "sessionSyncSameTabDesc": "Las sesiones se sincronizarán dentro de la pestaña de tu navegador",
       "twoFactorDialog": {
         "title": "Activar 2FA",
         "description": "Escanea el código con tu aplicación de autenticación o introdúcelo <span class=\"totp-code\">{{secret}}</span> manualmente.",
@@ -399,6 +521,55 @@
       "logout": "Cerrar sesión",
       "revoke": "Revoca",
       "browserOn": "{{browser}} {{version}} en {{os}} {{osVersion}}"
+    },
+    "keymaps": {
+      "title": "Mapas clave",
+      "description": "Personaliza los atajos de teclado para adaptarlos a tu flujo de trabajo.",
+      "resetAll": "Restablecer todo",
+      "actions": {
+        "search": {
+          "title": "Busca en",
+          "description": "Abre la entrada de búsqueda"
+        },
+        "aimenu": {
+          "title": "Menú AI",
+          "description": "Abre el menú de comandos AI"
+        },
+        "snippets": {
+          "title": "Fragmentos",
+          "description": "Abrir el diálogo de fragmentos"
+        },
+        "keyboardshortcuts": {
+          "title": "Atajos de teclado",
+          "description": "Abre el menú de atajos de teclado"
+        },
+        "broadcast": {
+          "title": "Modo Difusión",
+          "description": "Conmutar el modo de emisión al utilizar la vista dividida"
+        },
+        "copy": {
+          "title": "Copia",
+          "description": "Copiar el texto seleccionado al portapapeles"
+        },
+        "fullscreen": {
+          "title": "Pantalla completa",
+          "description": "Activar el modo de pantalla completa"
+        }
+      },
+      "recorder": {
+        "pressKeys": "Pulsa las teclas...",
+        "save": "Guarda",
+        "cancel": "Cancela",
+        "reset": "Restablece"
+      },
+      "messages": {
+        "updateSuccess": "Keybind actualizado correctamente",
+        "updateFailed": "No se ha podido actualizar la combinación de teclas",
+        "resetSuccess": "Restablecer la combinación de teclas por defecto",
+        "resetFailed": "No se ha podido restablecer la combinación de teclas",
+        "resetAllSuccess": "Todas las combinaciones de teclas se restablecen a los valores predeterminados",
+        "resetAllFailed": "Error al restablecer combinaciones de teclas"
+      }
     },
     "terminal": {
       "title": "Terminal",
@@ -519,6 +690,7 @@
       "title": "Claves y credenciales SSH",
       "description": "Gestiona tus claves SSH y credenciales de acceso para las conexiones al servidor",
       "createIdentity": "Crear identidad",
+      "personal": "Personal",
       "noUsername": "Sin nombre de usuario",
       "sshKey": "Clave SSH",
       "password": "Contraseña",
@@ -566,20 +738,96 @@
           "updateFailed": "Error al actualizar la identidad"
         }
       }
+    },
+    "sources": {
+      "title": "Fuentes de scripts y fragmentos",
+      "description": "Configura fuentes externas para sincronizar automáticamente guiones y fragmentos.",
+      "loading": "Cargando fuentes...",
+      "noSources": "No hay fuentes configuradas",
+      "noSourcesDescription": "Añade fuentes externas para sincronizar automáticamente guiones y fragmentos.",
+      "addSource": "Añadir fuente",
+      "snippets": "fragmentos",
+      "scripts": "guiones",
+      "neverSynced": "Nunca sincronizado",
+      "sync": "Sincronizar ahora",
+      "edit": "Edita",
+      "delete": "Borra",
+      "deleteConfirm": "¿Estás seguro de que quieres eliminar la fuente \"{{name}}\"? También se eliminarán todos los guiones y fragmentos sincronizados de esta fuente.",
+      "status": {
+        "success": "Sincronizado",
+        "error": "Error",
+        "pending": "Pendiente",
+        "disabled": "Discapacitados"
+      },
+      "dialog": {
+        "createTitle": "Añadir fuente",
+        "editTitle": "Editar fuente",
+        "name": "Nombre",
+        "namePlaceholder": "p. ej. Guiones de empresa",
+        "url": "Fuente URL",
+        "urlPlaceholder": "https://scripts.example.com",
+        "enabled": "Activado",
+        "enabledDescription": "Si se desactiva, esta fuente no se sincronizará",
+        "validating": "Validando URL...",
+        "validationSuccess": "Fuente válida encontrada: {{snippets}} fragmentos, {{scripts}} scripts",
+        "create": "Crea"
+      },
+      "messages": {
+        "created": "Fuente creada correctamente",
+        "updated": "Fuente actualizada correctamente",
+        "deleted": "Fuente eliminada correctamente",
+        "synced": "Fuente sincronizada correctamente"
+      },
+      "errors": {
+        "loadFailed": "Error al cargar fuentes",
+        "saveFailed": "No se ha podido guardar la fuente",
+        "deleteFailed": "Error al borrar la fuente",
+        "syncFailed": "Error al sincronizar la fuente",
+        "validationFailed": "No se ha podido validar la URL",
+        "requiredFields": "El nombre y la URL son obligatorios"
+      }
     }
   },
   "servers": {
+    "time": {
+      "justNow": "Ahora mismo",
+      "minuteAgo": "{{count}} hace un minuto",
+      "minutesAgo": "{{count}} hace unos minutos",
+      "hourAgo": "{{count}} hace una hora",
+      "hoursAgo": "{{count}} hace horas",
+      "dayAgo": "{{count}} hace un día",
+      "daysAgo": "{{count}} hace unos días"
+    },
+    "tags": {
+      "title": "Etiquetas",
+      "createNewTag": "Crear nueva etiqueta",
+      "tagName": "Nombre de la etiqueta",
+      "create": "Crea",
+      "filterByTags": "Filtrar por etiquetas",
+      "clearAll": "Borrar todo",
+      "noTagsCreated": "Aún no se han creado etiquetas",
+      "editTag": "Editar etiqueta",
+      "deleteTag": "Eliminar etiqueta"
+    },
     "contextMenu": {
       "createFolder": "Crear carpeta",
       "deleteFolder": "Eliminar carpeta",
       "renameFolder": "Cambiar nombre de carpeta",
+      "new": "Nuevo",
+      "sshServer": "Servidor SSH",
+      "telnetServer": "Servidor Telnet",
+      "rdpServer": "Servidor RDP",
+      "vncServer": "Servidor VNC",
       "createServer": "Crear servidor",
       "import": "Importa",
       "pve": "PVE",
       "sshConfig": "SSH-Config",
       "connect": "Conecta",
+      "quickConnect": "Conexión rápida",
       "openSFTP": "Abrir SFTP",
+      "runScript": "Ejecutar script",
       "editServer": "Editar servidor",
+      "editIntegration": "Editar Integración",
       "duplicateServer": "Servidor duplicado",
       "deleteServer": "Borrar servidor",
       "editPVE": "Editar PVE",
@@ -590,6 +838,7 @@
     },
     "dialog": {
       "addServer": "Añadir servidor",
+      "addProtocolServer": "Añade el servidor {{protocol}}",
       "editServer": "Editar servidor",
       "tabs": {
         "details": "Detalles",
@@ -608,7 +857,9 @@
         "protocol": "Protocolo",
         "username": "Nombre de usuario",
         "password": "Contraseña",
-        "host": "Anfitrión"
+        "host": "Anfitrión",
+        "nodeName": "Nombre del nodo",
+        "vmid": "ID VM"
       },
       "placeholders": {
         "serverName": "Nombre del servidor",
@@ -616,7 +867,49 @@
         "port": "Puerto",
         "username": "Nombre de usuario",
         "password": "Contraseña",
-        "host": "Anfitrión"
+        "host": "Anfitrión",
+        "nodeName": "Nombre del nodo",
+        "vmid": "ID VM"
+      },
+      "settings": {
+        "jumpHosts": {
+          "title": "Anfitriones de salto",
+          "description": "Conectar a través de servidores intermedios para llegar a este servidor de destino",
+          "addButton": "Añadir Anfitrión de Salto",
+          "removeTooltip": "Eliminar host de salto",
+          "noServersAvailable": "No hay servidores SSH disponibles para los hosts de salto. Crea primero servidores SSH."
+        },
+        "monitoring": {
+          "title": "Activar la supervisión del rendimiento",
+          "description": "Recopila las métricas de CPU, memoria, disco y red de este servidor"
+        },
+        "keyboardLayout": {
+          "title": "Disposición del teclado",
+          "description": "Selecciona la distribución de teclado que se utilizará para esta conexión."
+        },
+        "noSettings": "No hay ajustes adicionales disponibles para este tipo de entrada."
+      },
+      "identities": {
+        "organizationIdentities": "Identidades organizativas",
+        "personalIdentities": "Identidades personales",
+        "orgDescription": "Compartidas con todos los miembros de la organización. Todos pueden utilizar estas identidades.",
+        "personalDescription": "Sólo visibles para ti. Los demás miembros de la organización no pueden verlas.",
+        "identityName": "Nombre de identidad",
+        "username": "Nombre de usuario",
+        "authentication": "Autenticación",
+        "password": "Contraseña",
+        "sshKey": "Clave SSH",
+        "sshPrivateKey": "Clave privada SSH",
+        "passphrase": "Frase de acceso (opcional)",
+        "new": "Nuevo",
+        "removeIdentity": "Eliminar identidad",
+        "unlinkIdentity": "Desvincular identidad",
+        "moveToOrg": "Pasar a la organización",
+        "selectOrganization": "Selecciona Organización",
+        "availableToLink": "Disponible para enlazar",
+        "noUsername": "Sin nombre de usuario",
+        "noOrgIdentities": "No hay identidades de organización. Crea una para compartirla con todos los miembros.",
+        "noPersonalIdentities": "Nada de identidades personales. Crea una para tu uso privado."
       }
     },
     "proxmoxDialog": {
@@ -713,7 +1006,22 @@
         "createFolder": "Crear carpeta",
         "upload": "Subir archivo",
         "edit": "Edita",
-        "bigFileConfirm": "Este archivo tiene un tamaño de {{size}} MB. ¿Estás seguro de que quieres editarlo?"
+        "preview": "Vista previa",
+        "bigFileConfirm": "Este archivo tiene un tamaño de {{size}} MB. ¿Estás seguro de que quieres editarlo?",
+        "selectAll": "Seleccionar todo",
+        "insertSnippet": "Insertar fragmento",
+        "sendCtrlC": "Enviar Ctrl+C",
+        "clearTerminal": "Borrar terminal"
+      },
+      "filePreview": {
+        "title": "Vista previa del archivo",
+        "loading": "Cargando...",
+        "cannotPreview": "No se puede previsualizar el archivo",
+        "unsupportedFileType": "Este tipo de archivo no es compatible con la vista previa",
+        "videoNotSupported": "Tu navegador no soporta la reproducción de vídeo",
+        "audioNotSupported": "Tu navegador no soporta la reproducción de audio",
+        "download": "Descarga",
+        "close": "Cerrar"
       }
     },
     "aiAssistant": {
@@ -728,6 +1036,15 @@
       "searchPlaceholder": "Buscar fragmentos...",
       "createNew": "Crear nuevo fragmento"
     },
+    "terminalActions": {
+      "menuTitle": "Acciones terminales",
+      "snippets": "Fragmentos",
+      "keyboardShortcuts": "Atajos de teclado",
+      "broadcasting": "Difusión",
+      "fullScreen": "Pantalla completa",
+      "exitFullScreen": "Salir del Modo Pantalla Completa",
+      "badgeOn": "EN"
+    },
     "messages": {
       "fillRequiredFields": "Rellena todos los campos obligatorios",
       "serverCreated": "Servidor creado correctamente",
@@ -736,133 +1053,6 @@
       "updateFailed": "Error al actualizar el servidor",
       "createIdentityFailed": "Error al crear identidad",
       "updateIdentityFailed": "Error al actualizar la identidad"
-    }
-  },
-  "apps": {
-    "title": "Aplicaciones",
-    "navigation": {
-      "categories": {
-        "all": "Todos",
-        "results": "Resultados",
-        "scripts": "Guiones",
-        "networking": "Red",
-        "media": "Medios de comunicación",
-        "cloud": "Nube",
-        "development": "Desarrollo",
-        "utilities": "Utilidades"
-      }
-    },
-    "store": {
-      "appStore": "App Store",
-      "scripts": "Guiones",
-      "appStoreDescription": "Tus aplicaciones favoritas, desplegadas con un solo clic.",
-      "scriptsDescription": "Automatiza las tareas de tu servidor con scripts personalizados.",
-      "manageSources": "Gestionar fuentes",
-      "createScript": "Crear guión",
-      "source": "Fuente:",
-      "sourceFilter": {
-        "all": "Todos",
-        "custom": "Personalizado"
-      }
-    },
-    "list": {
-      "noApps": "Pronto más aplicaciones",
-      "noScripts": "No hay guiones disponibles",
-      "selectApp": "Selecciona la app para continuar",
-      "selectScript": "Selecciona la secuencia de comandos para continuar"
-    },
-    "actions": {
-      "deploy": "Despliega",
-      "run": "Ejecuta",
-      "view": "Ver",
-      "edit": "Edita",
-      "delete": "Borra",
-      "logs": "Registros",
-      "open": "Abre",
-      "stop": "Detener Guión",
-      "version": "Versión"
-    },
-    "items": {
-      "customBadge": "Personalizado",
-      "scriptType": "Guión",
-      "running": "Corriendo...",
-      "runScript": "Ejecuta"
-    },
-    "installer": {
-      "deploymentFailed": "Error de implantación",
-      "deploymentCompleted": "Despliegue completado",
-      "deploying": "Desplegar...",
-      "installationLog": "Registro de instalación",
-      "steps": {
-        "lookupDistro": "Buscar distro Linux",
-        "checkPermissions": "Comprobar permisos",
-        "installDocker": "Instalar el motor Docker",
-        "downloadImage": "Descargar imagen base",
-        "preInstall": "Ejecuta el comando de preinstalación",
-        "startContainer": "Iniciar contenedor Docker",
-        "postInstall": "Ejecuta el comando post-instalación",
-        "detected": "Detectado {{os}}"
-      }
-    },
-    "scriptExecutor": {
-      "executionFailed": "Fallo en la ejecución del script",
-      "executionCompleted": "Ejecución del script completada",
-      "executing": "Ejecutando script...",
-      "initializing": "Inicializar la ejecución del script",
-      "finished": "Finalizada la ejecución del script",
-      "cancelled": "Ejecución del script cancelada por el usuario"
-    },
-    "dialogs": {
-      "deployServer": {
-        "deployTitle": "Despliega {{name}}",
-        "runTitle": "Ejecuta {{name}}",
-        "noServersAvailable": "No hay servidores SSH disponibles"
-      },
-      "source": {
-        "title": "Fuentes de la app",
-        "refreshApps": "Actualizar aplicaciones",
-        "addNewSource": "Añadir nueva fuente"
-      },
-      "script": {
-        "createTitle": "Crear script personalizado",
-        "editTitle": "Editar Guión",
-        "viewTitle": "Ver Guión",
-        "source": "Fuente: {{source}}",
-        "scriptDetails": "Detalles del guión",
-        "scriptContent": "Contenido del guión",
-        "helpTip": "Utiliza comandos @NEXTERM: para indicaciones interactivas",
-        "fields": {
-          "name": "Nombre del script *",
-          "description": "Descripción",
-          "namePlaceholder": "Mi impresionante guión",
-          "descriptionPlaceholder": "¿Qué hace este script?"
-        },
-        "actions": {
-          "close": "Cerrar",
-          "cancel": "Cancela",
-          "create": "Crear guión",
-          "update": "Guión de actualización",
-          "creating": "Crear...",
-          "updating": "Actualizando..."
-        },
-        "errors": {
-          "nameRequired": "El nombre del script es obligatorio",
-          "descriptionRequired": "Se requiere la descripción del guión",
-          "contentRequired": "El contenido del guión no puede estar vacío",
-          "createFailed": "Error al crear el script",
-          "updateFailed": "Error al actualizar el script"
-        },
-        "success": {
-          "created": "Script creado correctamente",
-          "updated": "Script actualizado correctamente"
-        }
-      }
-    },
-    "messages": {
-      "onlyCustomScriptsCanBeDeleted": "Sólo se pueden borrar los guiones personalizados",
-      "scriptDeletedSuccessfully": "Script eliminado correctamente",
-      "failedToDeleteScript": "Error al borrar el script",
-      "deleteScriptConfirmation": "¿Estás seguro de que quieres borrar el script \"{{name}}\"? Esta acción no se puede deshacer."
     }
   }
 }

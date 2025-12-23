@@ -33,12 +33,37 @@
     padding: 0.8rem
     border: 1px solid colors.$gray
     width: 3rem
-    background-color: colors.$dark-gray
-    color: colors.$light-gray
-    border-radius: 0.5rem
+    background-color: colors.$lighter-background
+    color: colors.$white
+    border-radius: 0.7rem
     font-size: 14pt
     outline: none
 
     &:focus
       border: 1px solid colors.$primary
-      background-color: colors.$gray
+      background-color: colors.$dark-gray
+
+  .settings-toggle
+    display: flex
+    justify-content: space-between
+    align-items: center
+    padding: 1rem
+    background-color: colors.$lighter-background
+    border: 1px solid colors.$gray
+    border-radius: 0.7rem
+
+    .settings-toggle-info
+      display: flex
+      flex-direction: column
+      gap: 0.25rem
+
+      .settings-toggle-label
+        color: colors.$white
+        font-weight: 600
+        font-size: 0.9rem
+        display: flex
+        align-items: center
+
+      .settings-toggle-description
+        color: colors.$subtext
+        font-size: 0.8rem

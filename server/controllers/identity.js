@@ -1,179 +1,108 @@
 const Identity = require("../models/Identity");
-const Server = require("../models/Server");
-const { encrypt } = require("../utils/encryption");
+const Credential = require("../models/Credential");
+const EntryIdentity = require("../models/EntryIdentity");
 const { hasOrganizationAccess } = require("../utils/permission");
 const OrganizationMember = require("../models/OrganizationMember");
 const { Op } = require("sequelize");
+const logger = require("../utils/logger");
 
-module.exports.mapIdentitySecure = (identity) => {
-    return {
-        id: identity.id,
-        name: identity.name,
-        username: identity.username,
-        type: identity.type,
-        organizationId: identity.organizationId,
-    };
-};
-
-const encryptIdentity = (identity) => {
-    if (identity.password && identity.password !== "********") {
-        const encrypted = encrypt(identity.password);
-        identity.password = encrypted.encrypted;
-        identity.passwordIV = encrypted.iv;
-        identity.passwordAuthTag = encrypted.authTag;
-    }
-    if (identity.sshKey) {
-        const encrypted = encrypt(identity.sshKey);
-        identity.sshKey = encrypted.encrypted;
-        identity.sshKeyIV = encrypted.iv;
-        identity.sshKeyAuthTag = encrypted.authTag;
-    }
-    if (identity.passphrase && identity.passphrase !== "********") {
-        const encrypted = encrypt(identity.passphrase);
-        identity.passphrase = encrypted.encrypted;
-        identity.passphraseIV = encrypted.iv;
-        identity.passphraseAuthTag = encrypted.authTag;
-    }
-
-    return identity;
-};
-
-const validateIdentityAccess = async (accountId, identity) => {
-    if (!identity) return { valid: false, error: { code: 501, message: "The identity does not exist" } };
-
-    if (identity.accountId && identity.accountId !== accountId) {
-        return { valid: false, error: { code: 403, message: "You don't have permission to access this identity" } };
-    } else if (identity.organizationId) {
-        const hasAccess = await hasOrganizationAccess(accountId, identity.organizationId);
-        if (!hasAccess) {
-            return {
-                valid: false,
-                error: { code: 403, message: "You don't have access to this organization's identity" },
-            };
-        }
-    }
+const validateAccess = async (accountId, identity) => {
+    if (!identity) return { valid: false, error: { code: 501, message: "Identity does not exist" } };
+    if (identity.accountId && identity.accountId !== accountId) return { valid: false, error: { code: 403, message: "No permission to access this identity" } };
+    if (identity.organizationId && !(await hasOrganizationAccess(accountId, identity.organizationId))) return { valid: false, error: { code: 403, message: "No access to this organization's identity" } };
     return { valid: true, identity };
 };
 
-module.exports.listIdentities = async (accountId) => {
-    const personalIdentities = await Identity.findAll({ where: { accountId } });
-
-    const memberships = await OrganizationMember.findAll({ where: { accountId, status: "active" } });
-
-    const organizationIds = memberships.map(m => m.organizationId);
-
-    let organizationIdentities = [];
-    if (organizationIds.length > 0) {
-        organizationIdentities = await Identity.findAll({ where: { organizationId: { [Op.in]: organizationIds } } });
-    }
-
-    const allIdentities = [...personalIdentities, ...organizationIdentities];
-    return allIdentities.map(this.mapIdentitySecure);
+const upsertCredential = async (identityId, type, secret) => {
+    const existing = await Credential.findOne({ where: { identityId, type }, raw: false });
+    existing ? (existing.secret = secret, await existing.save()) : await Credential.create({ identityId, type, secret });
 };
 
-module.exports.createIdentity = async (accountId, configuration) => {
-    if (configuration.organizationId) {
-        const hasAccess = await hasOrganizationAccess(accountId, configuration.organizationId);
-        if (!hasAccess) {
-            return { code: 403, message: "You don't have access to this organization" };
-        }
-        return await Identity.create({
-            ...encryptIdentity(configuration),
-            accountId: null,
-            organizationId: configuration.organizationId,
-        });
+const syncCredentials = async (identityId, type, password, sshKey, passphrase) => {
+    if (type === "password" && password) {
+        await upsertCredential(identityId, "password", password);
+        await Credential.destroy({ where: { identityId, type: { [Op.in]: ["ssh-key", "passphrase"] } } });
+    } else if (type === "password-only" && password) {
+        await upsertCredential(identityId, "password", password);
+        await Credential.destroy({ where: { identityId, type: { [Op.in]: ["ssh-key", "passphrase"] } } });
+    } else if (type === "both" && sshKey) {
+        await upsertCredential(identityId, "ssh-key", sshKey);
+        passphrase ? await upsertCredential(identityId, "passphrase", passphrase) : await Credential.destroy({ where: { identityId, type: "passphrase" } });
+        if (password) await upsertCredential(identityId, "password", password);
+    } else if (type === "ssh" && sshKey) {
+        await upsertCredential(identityId, "ssh-key", sshKey);
+        passphrase ? await upsertCredential(identityId, "passphrase", passphrase) : await Credential.destroy({ where: { identityId, type: "passphrase" } });
+        await Credential.destroy({ where: { identityId, type: "password" } });
     }
+};
 
-    return await Identity.create({ ...encryptIdentity(configuration), accountId, organizationId: null });
+module.exports.getIdentityCredentials = async (identityId) => {
+    const creds = await Credential.findAll({ where: { identityId } });
+    return creds.reduce((acc, c) => ({ ...acc, [c.type]: c.secret }), {});
+};
+
+module.exports.listIdentities = async (accountId) => {
+    const personal = await Identity.findAll({ where: { accountId, organizationId: null } });
+    const memberships = await OrganizationMember.findAll({ where: { accountId, status: "active" } });
+    const orgIds = memberships.map(m => m.organizationId);
+    const org = orgIds.length ? await Identity.findAll({ where: { organizationId: { [Op.in]: orgIds } } }) : [];
+    
+    const format = (i, scope) => ({ id: i.id, name: i.name, type: i.type, username: i.username, organizationId: i.organizationId, accountId: i.accountId, scope });
+    return [...personal.map(i => format(i, 'personal')), ...org.map(i => format(i, 'organization'))];
+};
+
+module.exports.createIdentity = async (accountId, config) => {
+    if (config.organizationId && !(await hasOrganizationAccess(accountId, config.organizationId))) {
+        return { code: 403, message: "No access to this organization" };
+    }
+    const identity = await Identity.create({
+        ...config, accountId: config.organizationId ? null : accountId, organizationId: config.organizationId || null,
+        password: undefined, sshKey: undefined, passphrase: undefined,
+    });
+    await syncCredentials(identity.id, config.type, config.password, config.sshKey, config.passphrase);
+    logger.info("Identity created", { identityId: identity.id, name: identity.name, scope: config.organizationId ? 'organization' : 'personal' });
+    return identity;
 };
 
 module.exports.deleteIdentity = async (accountId, identityId) => {
     const identity = await Identity.findByPk(identityId);
-    const accessCheck = await validateIdentityAccess(accountId, identity);
+    const check = await validateAccess(accountId, identity);
+    if (!check.valid) return check.error;
 
-    if (!accessCheck.valid) return accessCheck.error;
-
-    const identityInfo = {
-        id: identity.id,
-        name: identity.name,
-        type: identity.type,
-        organizationId: identity.organizationId,
-        accountId: identity.accountId,
-    };
-
-    const personalServers = await Server.findAll({ where: { accountId } });
-    
-    const memberships = await OrganizationMember.findAll({ where: { accountId, status: "active" } });
-    const organizationIds = memberships.map(m => m.organizationId);
-    
-    let organizationServers = [];
-    if (organizationIds.length > 0) organizationServers = await Server.findAll({ where: { organizationId: { [Op.in]: organizationIds } } });
-
-    const allServers = [...personalServers, ...organizationServers];
-
-    const identityIdNum = parseInt(identityId);
-    
-    for (const server of allServers) {
-        let serverIdentities = [];
-
-        if (typeof server.identities === "string") {
-            try {
-                serverIdentities = JSON.parse(server.identities);
-            } catch (e) {
-                serverIdentities = [];
-            }
-        } else if (Array.isArray(server.identities)) {
-            serverIdentities = server.identities;
-        }
-        const updatedIdentities = serverIdentities.filter(id => parseInt(id) !== identityIdNum);
-
-        if (updatedIdentities.length !== serverIdentities.length) {
-            await Server.update({ identities: updatedIdentities }, { where: { id: server.id } });
-        }
-    }
-
-    if (identity.organizationId) {
-        await Identity.destroy({ where: { id: identityId, organizationId: identity.organizationId } });
-    } else {
-        await Identity.destroy({ where: { id: identityId, accountId } });
-    }
-
-    return { success: true, identity: identityInfo };
+    await Credential.destroy({ where: { identityId } });
+    await EntryIdentity.destroy({ where: { identityId } });
+    await Identity.destroy({ where: { id: identityId, ...(identity.organizationId ? { organizationId: identity.organizationId } : { accountId }) } });
+    logger.info("Identity deleted", { identityId, name: identity.name });
+    return { success: true, identity: { id: identity.id, name: identity.name, type: identity.type, organizationId: identity.organizationId, accountId: identity.accountId } };
 };
 
-module.exports.updateIdentity = async (accountId, identityId, configuration) => {
+module.exports.updateIdentity = async (accountId, identityId, config) => {
     const identity = await Identity.findByPk(identityId);
-    const accessCheck = await validateIdentityAccess(accountId, identity);
+    const check = await validateAccess(accountId, identity);
+    if (!check.valid) return check.error;
 
-    if (!accessCheck.valid) return accessCheck.error;
+    const { password, sshKey, passphrase, accountId: _, organizationId: __, ...updateConfig } = config;
+    await Identity.update(updateConfig, { where: { id: identityId, ...(identity.organizationId ? { organizationId: identity.organizationId } : { accountId }) } });
 
-    const identityInfo = {
-        id: identity.id,
-        name: identity.name,
-        type: identity.type,
-        organizationId: identity.organizationId,
-        accountId: identity.accountId,
-    };
+    const effectiveType = config.type || identity.type;
+    await syncCredentials(identityId, effectiveType, password, sshKey, passphrase);
+    logger.info("Identity updated", { identityId, name: identity.name });
+    return { success: true, identity: { id: identity.id, name: identity.name, type: identity.type, organizationId: identity.organizationId, accountId: identity.accountId } };
+};
 
-    delete configuration.accountId;
-    delete configuration.organizationId;
+module.exports.moveIdentityToOrganization = async (accountId, identityId, organizationId) => {
+    const identity = await Identity.findByPk(identityId);
+    if (!identity) return { code: 501, message: "Identity does not exist" };
+    if (identity.accountId !== accountId) return { code: 403, message: "Can only move your own personal identities" };
+    if (!(await hasOrganizationAccess(accountId, organizationId))) return { code: 403, message: "No access to this organization" };
 
-    if (identity.organizationId) {
-        await Identity.update(encryptIdentity(configuration), {
-            where: { id: identityId, organizationId: identity.organizationId },
-        });
-    } else {
-        await Identity.update(encryptIdentity(configuration), { where: { id: identityId, accountId } });
-    }
-
-    return { success: true, identity: identityInfo };
+    await Identity.update({ accountId: null, organizationId }, { where: { id: identityId } });
+    logger.info("Identity moved to organization", { identityId, name: identity.name, organizationId });
+    return { success: true, identity: { id: identity.id, name: identity.name, type: identity.type, organizationId, accountId: null } };
 };
 
 module.exports.getIdentity = async (accountId, identityId) => {
     const identity = await Identity.findByPk(identityId);
-    const accessCheck = await validateIdentityAccess(accountId, identity);
-
-    if (!accessCheck.valid) return accessCheck.error;
-
-    return identity;
+    const check = await validateAccess(accountId, identity);
+    return check.valid ? identity : check.error;
 };

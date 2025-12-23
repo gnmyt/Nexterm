@@ -3,47 +3,53 @@
 .file-list
   display: flex
   flex-direction: column
-  gap: 0.4rem
-  overflow-y: scroll
-  height: 100%
-  margin-top: 1rem
-  padding: 0 0.8rem
+  overflow-y: auto
+  flex: 1
+  min-height: 0
+  padding: 0
+  background-color: colors.$terminal
+  scrollbar-width: thin
+  scrollbar-color: colors.$gray transparent
+
+  &::-webkit-scrollbar
+    width: 6px
+
+  &::-webkit-scrollbar-track
+    background: transparent
+
+  &::-webkit-scrollbar-thumb
+    background-color: colors.$gray
+    border-radius: 10px
 
   .file-list-header
     display: grid
-    grid-template-columns: minmax(180px, 2fr) minmax(70px, auto) minmax(110px, auto) auto
+    grid-template-columns: minmax(200px, 2fr) minmax(80px, auto) minmax(120px, auto) 2.25rem
     background-color: colors.$terminal
     align-items: center
-    padding: 0.4rem 0.8rem
+    padding: 0.625rem 1.5rem
     border-bottom: 1px solid colors.$gray
-    margin-bottom: 0.4rem
     position: sticky
     top: 0
-    z-index: 1
-    gap: 0.8rem
+    z-index: 10
+    gap: 1rem
+    flex-shrink: 0
 
     .header-name,
     .header-size,
     .header-date,
     .header-actions
-      font-size: 0.85rem
+      font-size: 0.8rem
       font-weight: 600
       color: colors.$subtext
       text-transform: uppercase
-      letter-spacing: 0.5px
+      letter-spacing: 0.05em
 
     .header-size,
     .header-date
       text-align: right
 
-    .header-size
-      min-width: 50px
-
-    .header-date
-      min-width: 90px
-
     .header-actions
-      width: 1.6rem
+      width: 2.25rem
       text-align: center
 
   .loading-state,
@@ -53,96 +59,97 @@
     flex-direction: column
     align-items: center
     justify-content: center
-    height: 200px
+    padding: 4rem 2rem
     text-align: center
-    padding: 2rem
     position: absolute
     top: 50%
     left: 50%
     transform: translate(-50%, -50%)
     width: auto
+    max-width: 28rem
+
+    svg
+      width: 3.5rem
+      height: 3.5rem
+      margin-bottom: 1rem
+      flex-shrink: 0
+
+    h3
+      margin: 0 0 0.5rem
+      font-size: 1.125rem
+      font-weight: 700
+      color: colors.$white
 
     p
       margin: 0
-      font-size: 0.9rem
+      font-size: 0.875rem
+      color: colors.$subtext
+      line-height: 1.5
 
   .loading-state
-    color: colors.$subtext
+    svg
+      opacity: 0.5
 
     .loading-spinner
       width: 3rem
       height: 3rem
-      border: 0.3rem solid colors.$gray
-      border-top: 0.3rem solid colors.$primary
+      border: 3px solid colors.$gray
+      border-top: 3px solid colors.$primary
       border-radius: 50%
-      animation: spin 1s linear infinite
-      margin-bottom: 1rem
-
-    p
-      opacity: 0.7
+      animation: spin 0.8s linear infinite
+      margin-bottom: 1.5rem
 
   .error-state
-    color: colors.$error
-
     svg
-      width: 4rem
-      height: 4rem
-      margin-bottom: 1rem
       color: colors.$error
+      opacity: 0.9
 
     h3
-      margin: 0 0 0.5rem
-      font-size: 1.2rem
-      font-weight: 600
       color: colors.$error
-
-    p
-      color: colors.$subtext
-      opacity: 0.8
-      max-width: 400px
-      line-height: 1.4
 
   .empty-state
-    color: colors.$subtext
-
     svg
-      width: 4rem
-      height: 4rem
-      margin-bottom: 1rem
-      opacity: 0.5
+      color: colors.$subtext
+      opacity: 0.4
 
-    h3
-      margin: 0 0 0.5rem
-      font-size: 1.2rem
-      font-weight: 600
-
-    p
-      opacity: 0.7
+  .file-items-container
+    display: flex
+    flex-direction: column
+    gap: 0.375rem
+    padding: 1rem 1.5rem
+    flex: 1
 
   .file-item
     user-select: none
     display: grid
-    border-radius: 0.4rem
-    grid-template-columns: minmax(180px, 2fr) minmax(70px, auto) minmax(110px, auto) auto
+    grid-template-columns: minmax(200px, 2fr) minmax(80px, auto) minmax(120px, auto) 2.25rem
     align-items: center
-    padding: 0.5rem 0.8rem
-    background-color: colors.$dark-gray
+    padding: 0.625rem 0.75rem
+    background-color: transparent
     cursor: pointer
-    transition: all 0.2s ease
-    border: 1px solid transparent
+    transition: background-color 0.1s ease, border-color 0.1s ease
+    border: 1px solid colors.$gray
+    border-radius: 0.5rem
     position: relative
     overflow: hidden
-    gap: 0.8rem
-    min-height: 2.2rem
+    gap: 1rem
+    flex-shrink: 0
+
+    &.symlink::before
+      content: ''
+      position: absolute
+      left: 0.375rem
+      top: 50%
+      transform: translateY(-50%)
+      width: 0.375rem
+      height: 0.375rem
+      background-color: colors.$primary
+      border-radius: 50%
+      opacity: 0.8
 
     &:hover
       background-color: colors.$gray
-      border-color: colors.$primary-opacity
-      transform: translateY(-1px)
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15)
-
-      .file-name svg
-        transform: scale(1.1)
+      border-color: colors.$dark-gray
 
       .file-name h2
         color: colors.$white
@@ -150,92 +157,124 @@
       .dots-menu
         opacity: 1
 
+    &.symlink:hover::before
+      opacity: 1
+      box-shadow: 0 0 0 2px rgba(colors.$primary, 0.2)
+
     &:active
-      transform: translateY(0)
-      background-color: colors.$primary-opacity
+      transform: scale(0.99)
 
     &.focused,
     &:focus
       outline: none
-      border-color: colors.$primary
       background-color: colors.$gray
 
-      .file-name svg
-        color: colors.$primary
-
     &:focus-visible
-      box-shadow: 0 0 0 2px colors.$primary-opacity
+      outline: 2px solid colors.$primary
+      outline-offset: -2px
 
     .file-name
       display: flex
-      gap: 0.7rem
+      gap: 0.75rem
       align-items: center
       min-width: 0
 
       svg
-        width: 1.6rem
-        height: 1.6rem
-        transition: all 0.2s ease
+        width: 1.25rem
+        height: 1.25rem
+        transition: transform 0.1s ease
         flex-shrink: 0
+        opacity: 0.9
 
       h2
         margin: 0
-        font-size: 0.85rem
+        font-size: 0.875rem
         font-weight: 500
         color: colors.$white
-        transition: color 0.2s ease
+        transition: color 0.1s ease
         white-space: nowrap
         overflow: hidden
         text-overflow: ellipsis
+        letter-spacing: -0.01em
+
+      .symlink-badge
+        display: none
 
     .file-size,
     .file-date
       margin: 0
-      font-size: 0.75rem
+      font-size: 0.8rem
       color: colors.$subtext
       text-align: right
       white-space: nowrap
 
-    .file-size
-      min-width: 50px
-
-    .file-date
-      min-width: 90px
-
     .dots-menu
-      width: 1.6rem
-      height: 1.6rem
+      width: 1.125rem
+      height: 1.125rem
       opacity: 0
-      transition: all 0.2s ease
+      transition: all 0.1s ease
       color: colors.$subtext
       flex-shrink: 0
       justify-self: center
+      padding: 0.375rem
+      border-radius: 0.375rem
+      cursor: pointer
 
       &:hover
-        color: colors.$primary
-        transform: scale(1.1)
+        color: colors.$white
+        background-color: colors.$gray
 
   &.grid
-    display: grid
-    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr))
-    grid-auto-rows: max-content
-    gap: 1rem
-    padding: 1rem
-    align-content: start
+    display: block
     overflow-y: auto
+    padding: 0
+
+    .file-list-header
+      display: none
+
+    .file-items-container
+      display: grid
+      grid-template-columns: repeat(auto-fill, minmax(140px, 1fr))
+      grid-auto-rows: max-content
+      gap: 0.75rem
+      padding: 1rem 1.5rem
+      align-content: start
 
     .file-item
       display: flex
       flex-direction: column
       align-items: center
       text-align: center
-      padding: 1rem 0.5rem
-      min-height: auto
+      padding: 1.25rem 0.75rem
+      background-color: transparent
+      border: 1px solid colors.$gray
       border-radius: 0.5rem
+      gap: 0.75rem
+      transition: all 0.1s ease
+      position: relative
+
+      &.symlink::before
+        content: ''
+        position: absolute
+        top: 0.5rem
+        right: 0.5rem
+        width: 0.5rem
+        height: 0.5rem
+        background-color: colors.$primary
+        border-radius: 50%
+        opacity: 0.8
+
+      &:hover
+        background-color: colors.$gray
+        border-color: colors.$dark-gray
+
+      &.symlink:hover::before
+        opacity: 1
+        box-shadow: 0 0 0 2px rgba(colors.$primary, 0.2)
 
       .file-name
         flex-direction: column
-        gap: 0.5rem
+        gap: 0.625rem
         text-align: center
         width: 100%
 
@@ -253,6 +292,13 @@
           -webkit-line-clamp: 2
           -webkit-box-orient: vertical
           max-height: 2.4rem
+
+        .symlink-badge
+          display: none
+
+      .file-size,
+      .file-date
+        display: none
 
       .dots-menu
         position: absolute

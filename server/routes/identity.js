@@ -1,7 +1,7 @@
 const { Router } = require("express");
 const { validateSchema } = require("../utils/schema");
-const { listIdentities, createIdentity, deleteIdentity, updateIdentity } = require("../controllers/identity");
-const { createIdentityValidation, updateIdentityValidation } = require("../validations/identity");
+const { listIdentities, createIdentity, deleteIdentity, updateIdentity, moveIdentityToOrganization } = require("../controllers/identity");
+const { createIdentityValidation, updateIdentityValidation, moveIdentityValidation } = require("../validations/identity");
 const { createAuditLog, AUDIT_ACTIONS, RESOURCE_TYPES } = require("../controllers/audit");
 
 const app = Router();
@@ -9,11 +9,11 @@ const app = Router();
 /**
  * GET /identity/list
  * @summary List User Identities
- * @description Retrieves a list of all authentication identities (SSH keys, credentials) created by the authenticated user for server connections.
+ * @description Retrieves a list of all authentication identities (SSH keys, credentials) available to the authenticated user. Returns both personal identities and organization identities the user has access to.
  * @tags Identity
  * @produces application/json
  * @security BearerAuth
- * @return {array} 200 - List of user identities
+ * @return {array} 200 - List of user identities with scope indication (personal/organization)
  */
 app.get("/list", async (req, res) => {
     res.json(await listIdentities(req.user.id));
@@ -22,11 +22,11 @@ app.get("/list", async (req, res) => {
 /**
  * PUT /identity
  * @summary Create New Identity
- * @description Creates a new authentication identity for server connections, such as SSH keys or username/password credentials.
+ * @description Creates a new authentication identity for server connections. Can be personal (bound to account) or organizational (shared with organization members).
  * @tags Identity
  * @produces application/json
  * @security BearerAuth
- * @param {CreateIdentity} request.body.required - Identity configuration including type, credentials, and connection details
+ * @param {CreateIdentity} request.body.required - Identity configuration including type, credentials, and optional organizationId
  * @return {object} 200 - Identity successfully created with new identity ID
  * @return {object} 400 - Invalid identity configuration
  */
@@ -45,6 +45,7 @@ app.put("/", async (req, res) => {
         details: {
             identityName: req.body.name,
             identityType: req.body.type,
+            scope: req.body.organizationId ? 'organization' : 'personal',
         },
         ipAddress: req.ip,
         userAgent: req.headers?.["user-agent"],
@@ -56,7 +57,7 @@ app.put("/", async (req, res) => {
 /**
  * DELETE /identity/{identityId}
  * @summary Delete Identity
- * @description Permanently removes an authentication identity from the user's account. This will affect any servers using this identity.
+ * @description Permanently removes an authentication identity. Personal identities can only be deleted by the owner. Organization identities can be deleted by any organization member.
  * @tags Identity
  * @produces application/json
  * @security BearerAuth
@@ -119,6 +120,42 @@ app.patch("/:identityId", async (req, res) => {
     });
 
     res.json({ message: "Identity got successfully edited" });
+});
+
+/**
+ * POST /identity/{identityId}/move
+ * @summary Move Identity to Organization
+ * @description Moves a personal identity to an organization, making it accessible to all organization members. Only the identity owner can perform this action.
+ * @tags Identity
+ * @produces application/json
+ * @security BearerAuth
+ * @param {string} identityId.path.required - The unique identifier of the personal identity to move
+ * @param {MoveIdentity} request.body.required - Target organization configuration
+ * @return {object} 200 - Identity successfully moved to organization
+ * @return {object} 403 - Not authorized to move this identity or access target organization
+ * @return {object} 404 - Identity not found
+ */
+app.post("/:identityId/move", async (req, res) => {
+    if (validateSchema(res, moveIdentityValidation, req.body)) return;
+
+    const result = await moveIdentityToOrganization(req.user.id, req.params.identityId, req.body.organizationId);
+    if (result?.code) return res.json(result);
+
+    await createAuditLog({
+        accountId: req.user.id,
+        organizationId: req.body.organizationId,
+        action: AUDIT_ACTIONS.IDENTITY_UPDATE,
+        resource: RESOURCE_TYPES.IDENTITY,
+        resourceId: req.params.identityId,
+        details: {
+            identityName: result.identity?.name,
+            targetOrganizationId: req.body.organizationId,
+        },
+        ipAddress: req.ip,
+        userAgent: req.headers?.["user-agent"],
+    });
+
+    res.json({ message: "Identity successfully moved to organization", identity: result.identity });
 });
 
 module.exports = app;

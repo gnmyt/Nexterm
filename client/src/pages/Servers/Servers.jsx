@@ -1,36 +1,133 @@
 import "./styles.sass";
 import ServerList from "@/pages/Servers/components/ServerList";
-import { UserContext } from "@/common/contexts/UserContext.jsx";
-import { useContext, useEffect, useState } from "react";
-import Button from "@/common/components/Button";
-import WelcomeImage from "@/common/img/welcome.avif";
-import { DISCORD_URL, GITHUB_URL } from "@/App.jsx";
+import { useContext, useEffect, useState, useCallback } from "react";
+import WelcomePanel from "@/pages/Servers/components/WelcomePanel";
 import ServerDialog from "@/pages/Servers/components/ServerDialog";
 import ViewContainer from "@/pages/Servers/components/ViewContainer";
 import ProxmoxDialog from "@/pages/Servers/components/ProxmoxDialog";
 import SSHConfigImportDialog from "@/pages/Servers/components/SSHConfigImportDialog";
 import ConnectionReasonDialog from "@/pages/Servers/components/ConnectionReasonDialog";
-import { mdiStar } from "@mdi/js";
-import { siDiscord } from "simple-icons";
+import DirectConnectDialog from "@/pages/Servers/components/DirectConnectDialog";
+import FileEditorWindow from "@/common/components/FileEditorWindow";
+import FilePreviewWindow from "@/common/components/FilePreviewWindow";
 import { useActiveSessions } from "@/common/contexts/SessionContext.jsx";
 import { useLocation, useNavigate } from "react-router-dom";
 import { ServerContext } from "@/common/contexts/ServerContext.jsx";
+import { isTauri } from "@/common/utils/TauriUtil.js";
+
+import { getRequest, postRequest, deleteRequest } from "@/common/utils/RequestUtil";
 
 export const Servers = () => {
 
     const [serverDialogOpen, setServerDialogOpen] = useState(false);
+    const [serverDialogProtocol, setServerDialogProtocol] = useState(null);
     const [proxmoxDialogOpen, setProxmoxDialogOpen] = useState(false);
     const [sshConfigImportDialogOpen, setSSHConfigImportDialogOpen] = useState(false);
     const [connectionReasonDialogOpen, setConnectionReasonDialogOpen] = useState(false);
+    const [directConnectDialogOpen, setDirectConnectDialogOpen] = useState(false);
+    const [directConnectServer, setDirectConnectServer] = useState(null);
     const [pendingConnection, setPendingConnection] = useState(null);
+    const [openFileEditors, setOpenFileEditors] = useState([]);
 
     const [currentFolderId, setCurrentFolderId] = useState(null);
+    const [currentOrganizationId, setCurrentOrganizationId] = useState(null);
     const [editServerId, setEditServerId] = useState(null);
-    const { user } = useContext(UserContext);
-    const { activeSessions, setActiveSessions, activeSessionId, setActiveSessionId } = useActiveSessions();
-    const { getServerById, getPVEServerById, getPVEContainerById, servers } = useContext(ServerContext);
+    const { activeSessions, setActiveSessions, activeSessionId, setActiveSessionId, poppedOutSessions } = useActiveSessions();
+    const { getServerById, servers } = useContext(ServerContext);
     const location = useLocation();
     const navigate = useNavigate();
+
+    const [hibernatedSessions, setHibernatedSessions] = useState([]);
+
+    const visibleSessions = activeSessions.filter(s => !poppedOutSessions.includes(s.id));
+
+    const getTabId = () => {
+        let tabId = sessionStorage.getItem("nexterm_tab_id");
+        if (!tabId) {
+            tabId = `tab_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+            sessionStorage.setItem("nexterm_tab_id", tabId);
+        }
+        return tabId;
+    };
+
+    const getBrowserId = () => {
+        let browserId = localStorage.getItem("nexterm_browser_id");
+        if (!browserId) {
+            browserId = `browser_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+            localStorage.setItem("nexterm_browser_id", browserId);
+        }
+        return browserId;
+    };
+
+    const fetchSessions = async () => {
+        try {
+            const params = new URLSearchParams({
+                tabId: getTabId(),
+                browserId: getBrowserId(),
+            });
+            const sessions = await getRequest(`/connections?${params.toString()}`);
+            const mappedSessions = sessions.map(session => {
+                const server = getServerById(session.entryId);
+                if (!server) return null;
+
+                return {
+                    id: session.sessionId,
+                    server: server,
+                    identity: session.configuration.identityId,
+                    isHibernated: session.isHibernated,
+                    lastActivity: session.lastActivity,
+                    type: session.configuration.type || undefined,
+                    organizationId: session.organizationId,
+                    organizationName: session.organizationName,
+                    scriptId: session.configuration.scriptId || undefined,
+                    shareId: session.shareId || null,
+                    shareWritable: session.shareWritable || false,
+                };
+            }).filter(s => s !== null);
+
+            const activeMapped = mappedSessions.filter(s => !s.isHibernated);
+            const hibernatedMapped = mappedSessions.filter(s => s.isHibernated);
+
+            setActiveSessions(prevSessions => {
+                const prevSessionMap = new Map(prevSessions.map(s => [s.id, s]));
+                return activeMapped.map(newSession => {
+                    const existingSession = prevSessionMap.get(newSession.id);
+                    if (existingSession) {
+                        return {
+                            ...newSession,
+                            scriptId: existingSession.scriptId || newSession.scriptId,
+                            scriptName: existingSession.scriptName || newSession.scriptName,
+                        };
+                    }
+                    return newSession;
+                });
+            });
+            setHibernatedSessions(hibernatedMapped);
+
+            if (activeMapped.length > 0) {
+                if (!activeSessionId || !activeMapped.find(s => s.id === activeSessionId)) {
+                    setActiveSessionId(activeMapped[activeMapped.length - 1].id);
+                }
+            }
+        } catch (error) {
+            console.error("Failed to fetch sessions", error);
+        }
+    };
+
+    const refreshSession = useCallback(async (sessionId) => {
+        try {
+            const sessionData = await getRequest(`/connections/${sessionId}`);
+            setActiveSessions(prev => prev.map(s => s.id === sessionId ? { ...s, shareId: sessionData.shareId, shareWritable: sessionData.shareWritable } : s));
+        } catch (error) {
+            console.error("Failed to refresh session", error);
+        }
+    }, [setActiveSessions]);
+
+    useEffect(() => {
+        if (servers) {
+            fetchSessions();
+        }
+    }, [servers]);
 
     const findOrganizationForServer = (serverIdNum, entries, currentOrg = null) => {
         for (const entry of entries) {
@@ -53,43 +150,116 @@ export const Servers = () => {
         return findOrganizationForServer(parseInt(serverId), servers)?.requireConnectionReason || false;
     };
 
-    const connectToServer = async (server, identity) => {
-        const requiresReason = checkConnectionReasonRequired(server, servers);
+    const connectToServer = async (serverId, identity, overrideRenderer) => {
+        const server = getServerById(serverId);
+
+        const hibernated = hibernatedSessions.find(s => s.server.id === serverId && s.identity === identity?.id);
+        if (hibernated) {
+            resumeConnection(hibernated.id);
+            return;
+        }
+
+        const requiresReason = checkConnectionReasonRequired(serverId, servers);
         if (requiresReason) {
-            setPendingConnection({ type: "ssh", server, identity });
+            setPendingConnection({ server: { ...server, renderer: overrideRenderer || server.renderer }, identity });
             setConnectionReasonDialogOpen(true);
             return;
         }
 
-        performConnection("ssh", server, identity);
+        performConnection({ ...server, renderer: overrideRenderer || server.renderer }, identity);
     };
 
     const openSFTP = async (server, identity) => {
+        const serverObj = getServerById(server);
         const requiresReason = checkConnectionReasonRequired(server, servers);
+
         if (requiresReason) {
-            setPendingConnection({ type: "sftp", server, identity });
+            setPendingConnection({ server: serverObj, identity, type: "sftp" });
             setConnectionReasonDialogOpen(true);
             return;
         }
 
-        performConnection("sftp", server, identity);
+        performConnection(serverObj, identity, null, "sftp");
     };
 
-    const performConnection = (type, server, identity, connectionReason = null) => {
-        const sessionId = "session-" + (Math.random().toString(36).substring(2, 15));
-        const sessionData = { server, identity, type, id: sessionId, connectionReason };
+    const performConnection = async (server, identity, connectionReason = null, type = null, directIdentity = null, scriptId = null, scriptName = null) => {
+        try {
+            const payload = {
+                entryId: server.id,
+                identityId: identity?.id,
+                connectionReason,
+                type,
+                tabId: getTabId(),
+                browserId: getBrowserId(),
+            };
 
-        setActiveSessions(prevSessions => [...prevSessions, sessionData]);
-        setActiveSessionId(sessionId);
+            if (directIdentity) payload.directIdentity = directIdentity;
+            if (scriptId) payload.scriptId = scriptId;
+            const session = await postRequest("/connections", payload);
+
+            const organization = findOrganizationForServer(server.id, servers);
+            const organizationId = organization ? parseInt(organization.id.split("-")[1]) : null;
+
+            const sessionData = {
+                server,
+                identity: identity?.id,
+                id: session.sessionId,
+                type: type || undefined,
+                organizationId: organizationId,
+                organizationName: organization?.name || null,
+                scriptId: scriptId || undefined,
+                scriptName: scriptName || undefined,
+            };
+
+            setActiveSessions(prevSessions => [...prevSessions, sessionData]);
+            setActiveSessionId(session.sessionId);
+        } catch (error) {
+            console.error("Failed to create session", error);
+        }
+    };
+
+    const runScript = async (serverId, identityId, scriptId) => {
+        const server = getServerById(serverId);
+        if (!server) {
+            console.error("Server not found");
+            return;
+        }
+
+        const identity = { id: identityId };
+        
+        const requiresReason = checkConnectionReasonRequired(serverId, servers);
+        if (requiresReason) {
+            setPendingConnection({ server, identity, scriptId });
+            setConnectionReasonDialogOpen(true);
+            return;
+        }
+
+        performConnection(server, identity, null, null, null, scriptId);
+    };
+
+    const resumeConnection = async (sessionId) => {
+        try {
+            await postRequest(`/connections/${sessionId}/resume`, {
+                tabId: getTabId(),
+                browserId: getBrowserId(),
+            });
+            setActiveSessionId(sessionId);
+            await fetchSessions();
+        } catch (error) {
+            console.error("Failed to resume session", error);
+        }
     };
 
     const handleConnectionReasonProvided = (reason) => {
         if (pendingConnection) {
-            if (pendingConnection.type === "pve") {
-                performPVEConnection(pendingConnection.serverId, pendingConnection.containerId, reason);
-            } else {
-                performConnection(pendingConnection.type, pendingConnection.server, pendingConnection.identity, reason);
-            }
+            performConnection(
+                pendingConnection.server,
+                pendingConnection.identity,
+                reason,
+                pendingConnection.type || null,
+                pendingConnection.directIdentity || null,
+                pendingConnection.scriptId || null,
+            );
             setPendingConnection(null);
         }
         setConnectionReasonDialogOpen(false);
@@ -98,35 +268,6 @@ export const Servers = () => {
     const handleConnectionReasonCanceled = () => {
         setPendingConnection(null);
         setConnectionReasonDialogOpen(false);
-    };
-
-    const connectToPVEServer = async (serverId, containerId) => {
-        try {
-            const pveServerId = serverId.toString().replace("pve-", "");
-            const requiresReason = checkConnectionReasonRequired(pveServerId, servers);
-            if (requiresReason) {
-                setPendingConnection({ type: "pve", serverId, containerId });
-                setConnectionReasonDialogOpen(true);
-                return;
-            }
-
-            performPVEConnection(serverId, containerId);
-        } catch (error) {
-            performPVEConnection(serverId, containerId);
-        }
-    };
-
-    const performPVEConnection = (serverId, containerId, connectionReason = null) => {
-        const sessionId = "session-" + (Math.random().toString(36).substring(2, 15));
-        const sessionData = {
-            server: serverId.toString().replace("pve-", ""),
-            containerId: containerId.toString().split("-")[containerId.toString().split("-").length - 1],
-            id: sessionId,
-            connectionReason,
-        };
-
-        setActiveSessions(activeSessions => [...activeSessions, sessionData]);
-        setActiveSessionId(sessionId);
     };
 
     const disconnectFromServer = (sessionId) => {
@@ -141,10 +282,62 @@ export const Servers = () => {
 
             return newSessions;
         });
+    }
+
+    const closeSession = (sessionId) => {
+        deleteRequest(`/connections/${sessionId}`).catch(error => {
+            console.debug("Session deletion request failed:", error);
+        });
+        disconnectFromServer(sessionId);
+    };
+
+    const hibernateSession = async (sessionId) => {
+        try {
+            await postRequest(`/connections/${sessionId}/hibernate`);
+
+            if (sessionId === activeSessionId) {
+                const otherSessions = activeSessions.filter(s => s.id !== sessionId);
+                if (otherSessions.length > 0) {
+                    setActiveSessionId(otherSessions[otherSessions.length - 1].id);
+                } else {
+                    setActiveSessionId(null);
+                }
+            }
+
+            await fetchSessions();
+        } catch (error) {
+            console.error("Failed to hibernate session", error);
+        }
+    };
+
+    const duplicateSession = async (sessionId) => {
+        try {
+            const result = await postRequest(`/connections/${sessionId}/duplicate`, {
+                tabId: getTabId(),
+                browserId: getBrowserId(),
+            });
+
+            if (result?.sessionId) {
+                const originalSession = activeSessions.find(s => s.id === sessionId);
+                if (originalSession) {
+                    const sessionData = {
+                        ...originalSession,
+                        id: result.sessionId,
+                        shareId: null,
+                        shareWritable: false,
+                    };
+                    setActiveSessions(prevSessions => [...prevSessions, sessionData]);
+                    setActiveSessionId(result.sessionId);
+                }
+            }
+        } catch (error) {
+            console.error("Failed to duplicate session", error);
+        }
     };
 
     const closeDialog = () => {
         setServerDialogOpen(false);
+        setServerDialogProtocol(null);
         setCurrentFolderId(null);
         setEditServerId(null);
     };
@@ -160,6 +353,45 @@ export const Servers = () => {
         setCurrentFolderId(null);
     };
 
+    const openDirectConnect = (server) => {
+        setDirectConnectServer(server);
+        setDirectConnectDialogOpen(true);
+    };
+
+    const openPortForward = async (server) => {
+        if (!isTauri()) return;
+        try {
+            const { invoke } = await import("@tauri-apps/api/core");
+            await invoke("open_tunnel_window", { 
+                entryId: server.id,
+                entryName: server.name 
+            });
+        } catch (error) {
+            console.error("Failed to open port forward window", error);
+        }
+    };
+
+    const closeDirectConnectDialog = () => {
+        setDirectConnectDialogOpen(false);
+        setDirectConnectServer(null);
+    };
+
+    const handleDirectConnect = (directIdentity) => {
+        if (!directConnectServer) return;
+
+        const requiresReason = checkConnectionReasonRequired(directConnectServer.id, servers);
+        if (requiresReason) {
+            setPendingConnection({
+                server: directConnectServer,
+                identity: null,
+                directIdentity,
+            });
+            setConnectionReasonDialogOpen(true);
+        } else {
+            performConnection(directConnectServer, null, null, null, directIdentity);
+        }
+    };
+
     useEffect(() => {
         if (!servers) return;
 
@@ -171,41 +403,21 @@ export const Servers = () => {
 
             const handleAutoConnect = async () => {
                 const server = getServerById(connectId);
+                const isPveEntry = server?.type?.startsWith("pve-");
+                const hasIdentities = server?.identities && server.identities.length > 0;
 
-                if (server && server.identities && server.identities.length > 0) {
+                if (server && (isPveEntry || hasIdentities)) {
+                    const identity = isPveEntry ? null : server.identities[0];
                     try {
                         const requiresReason = checkConnectionReasonRequired(connectId, servers);
                         if (requiresReason) {
-                            setPendingConnection({ type: "ssh", server: connectId, identity: server.identities[0] });
+                            setPendingConnection({ server, identity });
                             setConnectionReasonDialogOpen(true);
                         } else {
-                            performConnection("ssh", connectId, server.identities[0]);
+                            performConnection(server, identity);
                         }
                     } catch (error) {
-                        performConnection("ssh", connectId, server.identities[0]);
-                    }
-                } else {
-                    const isPveServer = connectId.includes("-");
-
-                    if (isPveServer) {
-                        const [pveId, containerId] = connectId.split("-");
-                        const pveServer = getPVEServerById(pveId);
-                        const container = pveServer && containerId ?
-                            getPVEContainerById(pveId, containerId) : null;
-
-                        if (pveServer && container && container.status === "running") {
-                            try {
-                                const requiresReason = checkConnectionReasonRequired(pveId, servers);
-                                if (requiresReason) {
-                                    setPendingConnection({ type: "pve", serverId: pveId, containerId });
-                                    setConnectionReasonDialogOpen(true);
-                                } else {
-                                    performPVEConnection(pveId, containerId);
-                                }
-                            } catch (error) {
-                                performPVEConnection(pveId, containerId);
-                            }
-                        }
+                        performConnection(server, identity);
                     }
                 }
             };
@@ -217,40 +429,75 @@ export const Servers = () => {
     return (
         <div className="server-page">
             <ServerDialog open={serverDialogOpen} onClose={closeDialog} currentFolderId={currentFolderId}
-                          editServerId={editServerId} />
+                          currentOrganizationId={currentOrganizationId} editServerId={editServerId}
+                          initialProtocol={serverDialogProtocol} />
             <ProxmoxDialog open={proxmoxDialogOpen} onClose={closePVEDialog}
                            currentFolderId={currentFolderId}
+                           currentOrganizationId={currentOrganizationId}
                            editServerId={editServerId} />
             <SSHConfigImportDialog open={sshConfigImportDialogOpen} onClose={closeSSHConfigImportDialog}
-                                   currentFolderId={currentFolderId} />
+                                   currentFolderId={currentFolderId}
+                                   currentOrganizationId={currentOrganizationId} />
+            <DirectConnectDialog
+                open={directConnectDialogOpen}
+                onClose={closeDirectConnectDialog}
+                server={directConnectServer}
+                onConnect={handleDirectConnect}
+            />
             <ConnectionReasonDialog
                 isOpen={connectionReasonDialogOpen}
                 onClose={handleConnectionReasonCanceled}
                 onConnect={handleConnectionReasonProvided}
-                serverName={pendingConnection ? (
-                    pendingConnection.type === "pve"
-                        ? getPVEServerById(pendingConnection.serverId.toString().replace("pve-", ""))?.name || "Unknown Server"
-                        : getServerById(pendingConnection.server)?.name || "Unknown Server"
-                ) : ""}
+                serverName={pendingConnection?.server?.name || "Unknown Server"}
             />
-            <ServerList setServerDialogOpen={() => setServerDialogOpen(true)} connectToServer={connectToServer}
-                        connectToPVEServer={connectToPVEServer} setProxmoxDialogOpen={() => setProxmoxDialogOpen(true)}
+            <ServerList setServerDialogOpen={(protocol = null) => {
+                setServerDialogProtocol(protocol);
+                setServerDialogOpen(true);
+            }}
+                        connectToServer={connectToServer}
+                        setProxmoxDialogOpen={() => setProxmoxDialogOpen(true)}
                         setSSHConfigImportDialogOpen={() => setSSHConfigImportDialogOpen(true)}
-                        setCurrentFolderId={setCurrentFolderId} setEditServerId={setEditServerId} openSFTP={openSFTP} />
-            {activeSessions.length === 0 && <div className="welcome-area">
-                <div className="area-left">
-                    <h1>Hi, <span>{user?.firstName || "User"} {user?.lastName || "name"}</span>!</h1>
-                    <p>Welcome to Nexterm. The open-source server manager for SSH, VNC and RDP.</p>
-                    <div className="button-area">
-                        <Button text="Star on GitHub" onClick={() => window.open(GITHUB_URL, "_blank")} icon={mdiStar} />
-                        <Button text="Join Discord" onClick={() => window.open(DISCORD_URL, "_blank")} icon={siDiscord.path} />
-                    </div>
-                </div>
-                <img src={WelcomeImage} alt="Welcome" />
-            </div>}
-            {activeSessions.length > 0 &&
-                <ViewContainer activeSessions={activeSessions} disconnectFromServer={disconnectFromServer}
-                               activeSessionId={activeSessionId} setActiveSessionId={setActiveSessionId} />}
+                        setCurrentFolderId={setCurrentFolderId} setCurrentOrganizationId={setCurrentOrganizationId}
+                        setEditServerId={setEditServerId} openSFTP={openSFTP}
+                        hibernatedSessions={hibernatedSessions} resumeSession={resumeConnection}
+                        openDirectConnect={openDirectConnect} runScript={runScript}
+                        openPortForward={isTauri() ? openPortForward : undefined} />
+            {visibleSessions.length === 0 && 
+                <WelcomePanel 
+                    connectToServer={connectToServer} 
+                    hibernatedSessions={hibernatedSessions} 
+                    resumeSession={resumeConnection}
+                    openSFTP={openSFTP}
+                    openDirectConnect={openDirectConnect}
+                />
+            }
+            {visibleSessions.length > 0 &&
+                <ViewContainer activeSessions={visibleSessions} disconnectFromServer={disconnectFromServer}
+                               closeSession={closeSession}
+                               activeSessionId={activeSessionId} setActiveSessionId={setActiveSessionId}
+                               hibernateSession={hibernateSession} duplicateSession={duplicateSession}
+                               setOpenFileEditors={setOpenFileEditors}
+                               onShareUpdate={refreshSession} />}
+            {openFileEditors.map((editor, index) => (
+                editor.type === "preview" ? (
+                    <FilePreviewWindow
+                        key={editor.id}
+                        file={editor.file}
+                        session={editor.session}
+                        onClose={() => setOpenFileEditors(prev => prev.filter(e => e.id !== editor.id))}
+                        zIndex={10000 + index}
+                    />
+                ) : (
+                    <FileEditorWindow
+                        key={editor.id}
+                        file={editor.file}
+                        session={editor.session}
+                        sendOperation={editor.sendOperation}
+                        onClose={() => setOpenFileEditors(prev => prev.filter(e => e.id !== editor.id))}
+                        zIndex={10000 + index}
+                    />
+                )
+            ))}
         </div>
     );
 };

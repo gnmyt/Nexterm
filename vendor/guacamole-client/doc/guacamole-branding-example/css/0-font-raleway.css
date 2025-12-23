@@ -1,0 +1,54 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ */
+
+@font-face {
+    font-family: 'Raleway';
+    font-weight: normal;
+    font-style: normal;
+    src: url('app/ext/guacamole-branding-example/resources/fonts/raleway/Raleway-Regular.woff') format('woff'),
+         url('app/ext/guacamole-branding-example/resources/fonts/raleway/Raleway-Regular.otf') format('opentype'),
+         url('app/ext/guacamole-branding-example/resources/fonts/raleway/Raleway-Regular.ttf') format('ttf');
+}
+
+@font-face {
+    font-family: 'Raleway';
+    font-weight: bold;
+    font-style: normal;
+    src: url('app/ext/guacamole-branding-example/resources/fonts/raleway/Raleway-Bold.woff') format('woff'),
+         url('app/ext/guacamole-branding-example/resources/fonts/raleway/Raleway-Bold.otf') format('opentype'),
+         url('app/ext/guacamole-branding-example/resources/fonts/raleway/Raleway-Bold.ttf') format('ttf');
+}
+
+@font-face {
+    font-family: 'Raleway';
+    font-weight: normal;
+    font-style: italic;
+    src: url('app/ext/guacamole-branding-example/resources/fonts/raleway/Raleway-Italic.woff') format('woff'),
+         url('app/ext/guacamole-branding-example/resources/fonts/raleway/Raleway-Italic.otf') format('opentype'),
+         url('app/ext/guacamole-branding-example/resources/fonts/raleway/Raleway-Italic.ttf') format('ttf');
+}
+
+@font-face {
+    font-family: 'Raleway';
+    font-weight: bold;
+    font-style: italic;
+    src: url('app/ext/guacamole-branding-example/resources/fonts/raleway/Raleway-BoldItalic.woff') format('woff'),
+         url('app/ext/guacamole-branding-example/resources/fonts/raleway/Raleway-BoldItalic.otf') format('opentype'),
+         url('app/ext/guacamole-branding-example/resources/fonts/raleway/Raleway-BoldItalic.ttf') format('ttf');
+}

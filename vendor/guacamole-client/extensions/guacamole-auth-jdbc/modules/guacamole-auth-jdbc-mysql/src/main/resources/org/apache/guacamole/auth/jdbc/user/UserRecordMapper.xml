@@ -1,0 +1,227 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<!--
+    Licensed to the Apache Software Foundation (ASF) under one
+    or more contributor license agreements.  See the NOTICE file
+    distributed with this work for additional information
+    regarding copyright ownership.  The ASF licenses this file
+    to you under the Apache License, Version 2.0 (the
+    "License"); you may not use this file except in compliance
+    with the License.  You may obtain a copy of the License at
+
+      http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing,
+    software distributed under the License is distributed on an
+    "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+    KIND, either express or implied.  See the License for the
+    specific language governing permissions and limitations
+    under the License.
+-->
+
+<mapper namespace="org.apache.guacamole.auth.jdbc.user.UserRecordMapper" >
+
+    <!-- Result mapper for system permissions -->
+    <resultMap id="UserRecordResultMap" type="org.apache.guacamole.auth.jdbc.base.ActivityRecordModel">
+        <id     column="history_id"  property="recordID"   jdbcType="INTEGER"/>
+        <result column="remote_host" property="remoteHost" jdbcType="VARCHAR"/>
+        <result column="user_id"     property="userID"     jdbcType="INTEGER"/>
+        <result column="username"    property="username"   jdbcType="VARCHAR"/>
+        <result column="start_date"  property="startDate"  jdbcType="TIMESTAMP"/>
+        <result column="end_date"    property="endDate"    jdbcType="TIMESTAMP"/>
+    </resultMap>
+
+    <!-- Insert the given user record -->
+    <insert id="insert" useGeneratedKeys="true" keyProperty="record.recordID"
+            parameterType="org.apache.guacamole.auth.jdbc.base.ActivityRecordModel">
+
+        INSERT INTO guacamole_user_history (
+            remote_host,
+            user_id,
+            username,
+            start_date,
+            end_date
+        )
+        VALUES (
+            #{record.remoteHost,jdbcType=VARCHAR},
+            (SELECT user_id FROM guacamole_user
+             JOIN guacamole_entity ON guacamole_user.entity_id = guacamole_entity.entity_id
+             WHERE
+                <choose>
+                    <when test="caseSensitivity.caseSensitiveUsernames()">
+                        guacamole_entity.name = #{record.username,jdbcType=VARCHAR}
+                    </when>
+                    <otherwise>
+                        LOWER(guacamole_entity.name) = LOWER(#{record.username,jdbcType=VARCHAR})
+                    </otherwise>
+                </choose>  
+               AND guacamole_entity.type = 'USER'),
+            #{record.username,jdbcType=VARCHAR},
+            #{record.startDate,jdbcType=TIMESTAMP},
+            #{record.endDate,jdbcType=TIMESTAMP}
+        )
+
+    </insert>
+
+    <!-- Update the given user record, assigning an end date -->
+    <update id="updateEndDate" parameterType="org.apache.guacamole.auth.jdbc.base.ActivityRecordModel">
+        UPDATE guacamole_user_history
+        SET end_date = #{record.endDate,jdbcType=TIMESTAMP}
+        WHERE history_id = #{record.recordID,jdbcType=INTEGER}
+    </update>
+
+    <!-- Search for specific user records -->
+    <select id="search" resultMap="UserRecordResultMap">
+
+        SELECT
+            guacamole_user_history.history_id,
+            guacamole_user_history.remote_host,
+            guacamole_user_history.user_id,
+            guacamole_user_history.username,
+            guacamole_user_history.start_date,
+            guacamole_user_history.end_date
+        FROM guacamole_user_history
+
+        <!-- Search terms -->
+        <where>
+            
+            <if test="identifier != null">
+                <choose>
+                    <when test="caseSensitivity.caseSensitiveUsernames()">
+                        guacamole_user_history.username = #{identifier,jdbcType=VARCHAR}
+                    </when>
+                    <otherwise>
+                        LOWER(guacamole_user_history.username) = LOWER(#{identifier,jdbcType=VARCHAR})
+                    </otherwise>
+                </choose>
+            </if>
+            
+            <foreach collection="terms" item="term" open=" AND " separator=" AND ">
+                (
+
+                    guacamole_user_history.user_id IN (
+                        SELECT user_id
+                        FROM guacamole_user
+                        JOIN guacamole_entity ON guacamole_user.entity_id = guacamole_entity.entity_id
+                        WHERE
+                            <choose>
+                                <when test="caseSensitivity.caseSensitiveUsernames()">
+                                    POSITION(#{term.term,jdbcType=VARCHAR} IN guacamole_entity.name) > 0
+                                </when>
+                                <otherwise>
+                                    POSITION(LOWER(#{term.term,jdbcType=VARCHAR}) IN LOWER(guacamole_entity.name)) > 0
+                                </otherwise>
+                            </choose>
+                            AND guacamole_entity.type = 'USER'),
+                    )
+
+                    <if test="term.startDate != null and term.endDate != null">
+                        OR start_date BETWEEN #{term.startDate,jdbcType=TIMESTAMP} AND #{term.endDate,jdbcType=TIMESTAMP}
+                    </if>
+
+                )
+            </foreach>
+            
+        </where>
+
+        <!-- Bind sort property enum values for sake of readability -->
+        <bind name="START_DATE" value="@org.apache.guacamole.net.auth.ActivityRecordSet$SortableProperty@START_DATE"/>
+
+        <!-- Sort predicates -->
+        <foreach collection="sortPredicates" item="sortPredicate"
+                 open="ORDER BY " separator=", ">
+            <choose>
+                <when test="sortPredicate.property == START_DATE">guacamole_user_history.start_date</when>
+                <otherwise>1</otherwise>
+            </choose>
+            <if test="sortPredicate.descending">DESC</if>
+        </foreach>
+
+        LIMIT #{limit,jdbcType=INTEGER}
+
+    </select>
+
+    <!-- Search for specific user records -->
+    <select id="searchReadable" resultMap="UserRecordResultMap">
+
+        SELECT
+            guacamole_user_history.history_id,
+            guacamole_user_history.remote_host,
+            guacamole_user_history.user_id,
+            guacamole_user_history.username,
+            guacamole_user_history.start_date,
+            guacamole_user_history.end_date
+        FROM guacamole_user_history
+
+        <!-- Search terms -->
+        <where>
+
+            <!-- Restrict to readable users -->
+            guacamole_connection_history.user_id IN (
+                <include refid="org.apache.guacamole.auth.jdbc.user.UserMapper.getReadableIDs">
+                    <property name="entityID" value="#{user.entityID,jdbcType=INTEGER}"/>
+                    <property name="groups"   value="effectiveGroups"/>
+                    <property name="caseSensitivity" value="${caseSensitivity}"/>
+                </include>
+            )
+            
+            <if test="identifier != null">
+                AND
+                <choose>
+                    <when test="caseSensitivity.caseSensitiveUsernames()">
+                        guacamole_entity.name = #{identifier,jdbcType=VARCHAR}
+                    </when>
+                    <otherwise>
+                        LOWER(guacamole_entity.name) = LOWER(#{identifier,jdbcType=VARCHAR})
+                    </otherwise>
+                </choose>
+            </if>
+            
+            <foreach collection="terms" item="term" open=" AND " separator=" AND ">
+                (
+
+                    guacamole_user_history.user_id IN (
+                        SELECT user_id
+                        FROM guacamole_user
+                        JOIN guacamole_entity ON guacamole_user.entity_id = guacamole_entity.entity_id
+                        WHERE
+                            <choose>
+                                <when test="caseSensitivity.caseSensitiveUsernames()">
+                                    POSITION(#{term.term,jdbcType=VARCHAR} IN guacamole_entity.name) > 0
+                                </when>
+                                <otherwise>
+                                    POSITION(LOWER(#{term.term,jdbcType=VARCHAR}) IN LOWER(guacamole_entity.name)) > 0
+                                </otherwise>
+                            </choose>
+                            AND guacamole_entity.type = 'USER'
+                    )
+
+                    <if test="term.startDate != null and term.endDate != null">
+                        OR start_date BETWEEN #{term.startDate,jdbcType=TIMESTAMP} AND #{term.endDate,jdbcType=TIMESTAMP}
+                    </if>
+
+                )
+            </foreach>
+            
+        </where>
+
+        <!-- Bind sort property enum values for sake of readability -->
+        <bind name="START_DATE" value="@org.apache.guacamole.net.auth.ActivityRecordSet$SortableProperty@START_DATE"/>
+
+        <!-- Sort predicates -->
+        <foreach collection="sortPredicates" item="sortPredicate"
+                 open="ORDER BY " separator=", ">
+            <choose>
+                <when test="sortPredicate.property == START_DATE">guacamole_user_history.start_date</when>
+                <otherwise>1</otherwise>
+            </choose>
+            <if test="sortPredicate.descending">DESC</if>
+        </foreach>
+
+        LIMIT #{limit,jdbcType=INTEGER}
+
+    </select>
+
+</mapper>

@@ -22,15 +22,62 @@
       color: white
       width: 1rem
 
+  .system-icon-offline
+    background-color: colors.$gray
+    opacity: 0.6
+
   .pve-icon
+    width: 1.5rem
+    height: 1.5rem
+    display: flex
+    border-radius: 0.2rem
+    justify-content: center
+    align-items: center
     background-color: colors.$warning
+    svg
+      color: white
+      width: 1rem
 
   .pve-icon-offline
     background-color: colors.$gray
+    opacity: 0.6
 
   p
     margin: 0
     flex: 1
+
+  .hibernation-indicator
+    display: flex
+    align-items: center
+    gap: 3px
+    background-color: colors.$primary-opacity
+    border: 1px solid colors.$primary
+    border-radius: 10px
+    padding: 2px 6px
+    margin-left: auto
+    
+    svg
+      width: 0.75rem
+      height: 0.75rem
+      color: colors.$primary
+    
+    span
+      font-size: 0.7rem
+      font-weight: 600
+      color: colors.$primary
+      line-height: 1
+
+  .tag-circles
+    display: flex
+    gap: 4px
+    margin-left: auto
+    padding-right: 4px
+
+    .tag-circle
+      width: 10px
+      height: 10px
+      border-radius: 50%
+      flex-shrink: 0
 
   &:hover
     color: colors.$white

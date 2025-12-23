@@ -1,0 +1,1 @@
+export { QuickAction as default } from "./QuickAction.jsx";

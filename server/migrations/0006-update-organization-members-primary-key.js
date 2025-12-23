@@ -1,11 +1,12 @@
 const { DataTypes } = require("sequelize");
+const logger = require('../utils/logger');
 
 
 module.exports = {
     async up(queryInterface) {
         const tables = await queryInterface.showAllTables();
         if (!tables.includes("organization_members")) {
-            console.log("Table organization_members does not exist, skipping migration");
+            logger.info("Table organization_members does not exist, skipping migration");
             return;
         }
 
@@ -65,7 +66,5 @@ module.exports = {
         `);
 
         await queryInterface.sequelize.query("DROP TABLE organization_members_backup");
-
-        console.log("Successfully updated organization_members table with composite primary key");
     },
 };

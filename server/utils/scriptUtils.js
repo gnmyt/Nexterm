@@ -158,27 +158,61 @@ module.exports.transformScript = (scriptContent) => {
         },
     );
 
-    return `#!/bin/bash
+    const scriptWithHeader = `#!/bin/bash
 set -e
 ${transformedContent}
-exit 0
 `;
+
+    const base64Script = Buffer.from(scriptWithHeader).toString("base64");
+
+    return `_script=$(mktemp) && echo '${base64Script}' | base64 -d > "$_script" && chmod +x "$_script" && "$_script"; _exit=$?; rm -f "$_script"; exit $_exit`;
+};
+
+module.exports.stripAnsi = (str) => {
+    return str.replace(/\x1B(?:[@-Z\\-_]|\[[0-?]*[ -/]*[@-~])/g, "");
+};
+
+module.exports.findNextermCommand = (line) => {
+    const cleanLine = module.exports.stripAnsi(line);
+
+    if (cleanLine.match(/echo\s+["']?NEXTERM_/i)) {
+        return null;
+    }
+
+    const trimmedLine = cleanLine.trim();
+    if (trimmedLine.match(/^[$#>]\s+.*NEXTERM_/)) {
+        return null;
+    }
+
+    const match = cleanLine.match(/NEXTERM_(INPUT|SELECT|STEP|WARN|INFO|CONFIRM|PROGRESS|SUCCESS|SUMMARY|TABLE|MSGBOX):(.*)/s);
+    if (match) {
+        return {
+            command: `NEXTERM_${match[1]}`,
+            rest: match[2],
+        };
+    }
+    return null;
 };
 
 module.exports.processNextermLine = (line) => {
-    if (line.startsWith("NEXTERM_INPUT:")) {
-        const parts = line.substring(14).split(":");
+    const found = module.exports.findNextermCommand(line);
+    if (!found) return null;
+
+    const { command, rest } = found;
+
+    if (command === "NEXTERM_INPUT") {
+        const parts = rest.split(":");
         const varName = parts[0];
-        const prompt = module.exports.unescapeColons(parts[1]);
+        const prompt = module.exports.unescapeColons(parts[1] || "");
         const defaultValue = parts[2] ? module.exports.unescapeColons(parts[2]) : "";
 
         return { type: "input", variable: varName, prompt: prompt, default: defaultValue || "" };
     }
 
-    if (line.startsWith("NEXTERM_SELECT:")) {
-        const parts = line.substring(15).split(":");
+    if (command === "NEXTERM_SELECT") {
+        const parts = rest.split(":");
         const varName = parts[0];
-        const prompt = module.exports.unescapeColons(parts[1]);
+        const prompt = module.exports.unescapeColons(parts[1] || "");
         const optionsStr = parts.slice(2).join(":");
         const unescapedOptionsStr = module.exports.unescapeColons(optionsStr);
         const options = module.exports.parseOptions(unescapedOptionsStr);
@@ -186,57 +220,57 @@ module.exports.processNextermLine = (line) => {
         return { type: "select", variable: varName, prompt: prompt, options: options, default: options[0] || "" };
     }
 
-    if (line.startsWith("NEXTERM_STEP:")) {
-        const stepDesc = line.substring(13);
+    if (command === "NEXTERM_STEP") {
+        const stepDesc = rest.trim();
         return { type: "step", description: stepDesc };
     }
 
-    if (line.startsWith("NEXTERM_WARN:")) {
-        const message = module.exports.unescapeColons(line.substring(13));
+    if (command === "NEXTERM_WARN") {
+        const message = module.exports.unescapeColons(rest);
         return { type: "warning", message: message };
     }
 
-    if (line.startsWith("NEXTERM_INFO:")) {
-        const message = module.exports.unescapeColons(line.substring(13));
+    if (command === "NEXTERM_INFO") {
+        const message = module.exports.unescapeColons(rest);
         return { type: "info", message: message };
     }
 
-    if (line.startsWith("NEXTERM_CONFIRM:")) {
-        const message = module.exports.unescapeColons(line.substring(16));
+    if (command === "NEXTERM_CONFIRM") {
+        const message = module.exports.unescapeColons(rest);
         return { type: "confirm", message: message };
     }
 
-    if (line.startsWith("NEXTERM_PROGRESS:")) {
-        const [percentage] = line.substring(17).split(":");
+    if (command === "NEXTERM_PROGRESS") {
+        const [percentage] = rest.split(":");
         return { type: "progress", percentage: parseInt(percentage) || 0 };
     }
 
-    if (line.startsWith("NEXTERM_SUCCESS:")) {
-        const message = module.exports.unescapeColons(line.substring(16));
+    if (command === "NEXTERM_SUCCESS") {
+        const message = module.exports.unescapeColons(rest);
         return { type: "success", message: message };
     }
 
-    if (line.startsWith("NEXTERM_SUMMARY:")) {
-        const parts = line.substring(16).split(":");
-        const title = module.exports.unescapeColons(parts[0]);
+    if (command === "NEXTERM_SUMMARY") {
+        const parts = rest.split(":");
+        const title = module.exports.unescapeColons(parts[0] || "");
         const dataStr = parts.slice(1).join(":");
         const unescapedDataStr = module.exports.unescapeColons(dataStr);
         const data = module.exports.parseOptions(unescapedDataStr);
         return { type: "summary", title: title, data: data };
     }
 
-    if (line.startsWith("NEXTERM_TABLE:")) {
-        const parts = line.substring(14).split(":");
-        const title = module.exports.unescapeColons(parts[0]);
+    if (command === "NEXTERM_TABLE") {
+        const parts = rest.split(":");
+        const title = module.exports.unescapeColons(parts[0] || "");
         const dataStr = parts.slice(1).join(":");
         const unescapedDataStr = module.exports.unescapeColons(dataStr);
         const data = module.exports.parseOptions(unescapedDataStr);
         return { type: "table", title: title, data: data };
     }
 
-    if (line.startsWith("NEXTERM_MSGBOX:")) {
-        const parts = line.substring(15).split(":");
-        const title = module.exports.unescapeColons(parts[0]);
+    if (command === "NEXTERM_MSGBOX") {
+        const parts = rest.split(":");
+        const title = module.exports.unescapeColons(parts[0] || "");
         const message = module.exports.unescapeColons(parts.slice(1).join(":"));
         return { type: "msgbox", title: title, message: message };
     }

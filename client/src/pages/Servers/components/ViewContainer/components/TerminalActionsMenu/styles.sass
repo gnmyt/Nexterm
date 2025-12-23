@@ -1,0 +1,79 @@
+@use "@/common/styles/colors"
+
+.terminal-actions-menu
+  position: relative
+  display: flex
+  align-items: center
+
+  .actions-menu-btn
+    cursor: pointer
+    padding: 0.5rem
+    border-radius: 4px
+    transition: all 0.2s ease
+    color: colors.$subtext
+    width: 1.8rem
+    height: 1.8rem
+
+    &:hover
+      background-color: colors.$gray
+      color: colors.$white
+
+    &.active
+      background-color: colors.$primary
+      color: colors.$white
+
+  .actions-menu-dropdown
+    position: absolute
+    top: calc(100% + 8px)
+    left: 0
+    background-color: colors.$gray-full
+    border: 1px solid colors.$gray
+    border-radius: 6px
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3)
+    z-index: 10000
+    min-width: 200px
+    overflow: hidden
+
+    .menu-item
+      display: flex
+      align-items: center
+      gap: 12px
+      padding: 10px 16px
+      cursor: pointer
+      transition: all 0.2s ease
+      color: colors.$white
+
+      svg
+        width: 18px
+        height: 18px
+        color: colors.$light-gray
+
+      span
+        font-size: 14px
+
+      &:hover
+        background-color: colors.$dark-gray
+
+        svg
+          color: colors.$primary
+
+      &.active
+        background-color: colors.$primary-opacity
+
+        svg
+          color: colors.$primary
+
+        .badge
+          background-color: colors.$primary
+
+      &:not(:last-child)
+        border-bottom: 1px solid colors.$gray
+
+    .badge
+      margin-left: auto
+      padding: 2px 8px
+      border-radius: 12px
+      background-color: colors.$gray
+      color: colors.$white
+      font-size: 11px
+      font-weight: bold

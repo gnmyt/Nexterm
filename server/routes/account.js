@@ -1,6 +1,6 @@
 const { Router } = require("express");
-const { registerValidation, totpSetup, passwordChangeValidation, updateNameValidation } = require("../validations/account");
-const { createAccount, updateTOTP, updatePassword, updateName } = require("../controllers/account");
+const { registerValidation, totpSetup, passwordChangeValidation, updateNameValidation, updateSessionSyncValidation } = require("../validations/account");
+const { createAccount, updateTOTP, updatePassword, updateName, updateSessionSync } = require("../controllers/account");
 const speakeasy = require("speakeasy");
 const { authenticate } = require("../middlewares/auth");
 const { validateSchema } = require("../utils/schema");
@@ -24,6 +24,7 @@ app.get("/me", authenticate, async (req, res) => {
     res.json({
         id: req.user.id, username: req.user.username, totpEnabled: req.user.totpEnabled,
         firstName: req.user.firstName, lastName: req.user.lastName, role: req.user.role,
+        sessionSync: req.user.sessionSync,
     });
 });
 
@@ -146,6 +147,25 @@ app.post("/totp/disable", authenticate, async (req, res) => {
     if (enabledError) return res.json(enabledError);
 
     res.json({ message: "TOTP has been successfully disabled on your account." });
+});
+
+/**
+ * PATCH /account/session-sync
+ * @summary Update Session Synchronization
+ * @description Updates the session synchronization mode for the user account.
+ * @tags Account
+ * @produces application/json
+ * @security BearerAuth
+ * @param {UpdateSessionSync} request.body.required - Session sync mode
+ * @return {object} 200 - Session sync mode successfully updated
+ */
+app.patch("/session-sync", authenticate, async (req, res) => {
+    if (validateSchema(res, updateSessionSyncValidation, req.body)) return;
+
+    const error = await updateSessionSync(req.user.id, req.body.sessionSync);
+    if (error) return res.json(error);
+
+    res.json({ message: "Session synchronization mode has been successfully updated." });
 });
 
 module.exports = app;
