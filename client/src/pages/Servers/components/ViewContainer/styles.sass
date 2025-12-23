@@ -1,5 +1,8 @@
 @use "@/common/styles/colors"
 
+$mobile: 768px
+$tablet: 1024px
+
 .view-container
   display: flex
   flex-direction: column
@@ -8,6 +11,9 @@
   flex: 1
   overflow: hidden
   transition: all 0.3s ease
+
+  @media (max-width: $mobile)
+    min-height: 0
 
   &.fullscreen
     position: fixed
@@ -19,6 +25,14 @@
   z-index: 1001
   touch-action: none
   user-select: none
+
+  @media (max-width: $mobile)
+    .exit-fullscreen-btn
+      padding: 0.75rem
+      
+      svg
+        width: 1.75rem
+        height: 1.75rem
 
   &.dragging
     cursor: grabbing
@@ -60,6 +74,12 @@
   width: 100%
   overflow: hidden
 
+  @media (max-width: $tablet)
+    height: calc(100% - 3rem)
+
+  @media (max-width: $mobile)
+    height: calc(100% - 2.5rem)
+
   .view-container.fullscreen &
     height: var(--content-height)
 
@@ -80,6 +100,14 @@
     gap: 0
     background-color: colors.$darker-gray
 
+    @media (max-width: $mobile)
+      .session-renderer
+        position: absolute !important
+        top: 0 !important
+        left: 0 !important
+        width: 100% !important
+        height: 100% !important
+
   &.resizing
     .session-renderer
       pointer-events: none
@@ -92,6 +120,7 @@
 .session-renderer
   background-color: colors.$terminal
   overflow: hidden
+  -webkit-overflow-scrolling: touch
 
   &.visible
     opacity: 1
@@ -106,6 +135,19 @@
   transition: background-color 0.2s ease
   user-select: none
   flex-shrink: 0
+  touch-action: none
+
+  @media (max-width: $tablet)
+    &.vertical
+      width: 12px !important
+      margin-left: -6px
+
+    &.horizontal
+      height: 12px !important
+      margin-top: -6px
+
+  @media (max-width: $mobile)
+    display: none
 
   &:hover
     background-color: colors.$primary !important
