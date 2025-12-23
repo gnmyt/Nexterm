@@ -25,9 +25,7 @@ export const getWebSocketUrl = (path, params = {}) => {
     
     const url = baseUrl 
         ? `${baseUrl}${path}`
-        : process.env.NODE_ENV === "production"
-            ? `${protocol}://${window.location.host}${path}`
-            : `${protocol}://localhost:6989${path}`;
+        : `${protocol}://${window.location.host}${path}`;
     
     const queryString = new URLSearchParams(params).toString();
     return queryString ? `${url}?${queryString}` : url;
