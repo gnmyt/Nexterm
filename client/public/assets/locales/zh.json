@@ -19,7 +19,7 @@
       "username": "用户名",
       "password": "密码",
       "firstName": "名字",
-      "lastName": "姓氏",
+      "lastName": "姓",
       "code": "验证码",
       "twoFACode": "双因素验证码"
     },
@@ -27,7 +27,7 @@
       "username": "用户名",
       "password": "密码",
       "firstName": "名字",
-      "lastName": "姓氏",
+      "lastName": "姓",
       "code": "验证码"
     },
     "confirmDialog": {
@@ -37,7 +37,7 @@
       "unsavedChangesText": "You have unsaved changes. Are you sure you want to close?"
     },
     "loginDialog": {
-      "title": "Nexterm",
+      "title": "登录",
       "registrationTitle": "注册",
       "ssoOrContinueWith": "或继续使用",
       "noAuthMethodsAvailable": "无可用的身份验证方式。",
@@ -58,7 +58,7 @@
       "logout": "退出登录",
       "collapseTitle": "折叠侧边栏",
       "logoutConfirmText": "此操作将退出 {{username}} 账户。确定继续吗？",
-      "navigationConfirmText": "您有活动会话。离开页面将断开所有服务器连接。确定继续吗？"
+      "navigationConfirmText": "您有活动会话。离开此页面将断开您与所有服务器的连接。确定要继续吗？"
     },
     "quickAction": {
       "placeholder": "Search servers, snippets, or navigate...",
@@ -125,7 +125,7 @@
       "headers": {
         "timestamp": "时间戳",
         "action": "操作",
-        "actor": "执行者",
+        "actor": "操作者",
         "resource": "资源",
         "organization": "组织",
         "details": "详情"
@@ -147,7 +147,7 @@
       }
     },
     "pagination": {
-      "showing": "显示第 {{start}} 至 {{end}} 条，共 {{total}} 条日志",
+      "showing": "显示 {{total}} 条日志中的第 {{start}} - {{end}} 条",
       "previous": "上一页",
       "next": "下一页",
       "pageInfo": "第 {{current}} 页，共 {{total}} 页"
@@ -185,13 +185,13 @@
       "placeholders": {
         "name": "代码片段名称",
         "description": "此命令的作用？",
-        "command": "输入您的命令"
+        "command": "输入命令"
       },
       "actions": {
         "cancel": "取消",
         "create": "创建",
         "save": "保存",
-        "generateAI": "AI 生成",
+        "generateAI": "用 AI 生成",
         "generating": "生成中..."
       }
     },
@@ -318,7 +318,7 @@
       "loadFailed": "加载监控数据失败"
     },
     "grid": {
-      "loading": "加载监控数据中...",
+      "loading": "加载监控数据...",
       "noServers": {
         "title": "未找到服务器",
         "subtitle": "无可用的SSH服务器进行监控。\n添加服务器以开始监控。"
@@ -327,7 +327,7 @@
         "cpuUsage": "CPU 使用率",
         "memoryUsage": "内存使用率",
         "loadAverage": "平均负载",
-        "processes": "进程数",
+        "processes": "进程",
         "uptime": "运行时间",
         "nodes": "节点",
         "vms": "虚拟机/容器"
@@ -382,7 +382,7 @@
           "cpuUsage": "CPU 使用率",
           "memoryUsage": "内存使用率",
           "loadAverage": "平均负载",
-          "processes": "活跃进程",
+          "processes": "活动进程",
           "total": "总数: {{value}}",
           "loadDetail": "5分钟: {{fiveMin}}, 15分钟: {{fifteenMin}}"
         },
@@ -397,15 +397,15 @@
       "charts": {
         "cpuUsage": "CPU 使用率",
         "memoryUsage": "内存使用率",
-        "processes": "活跃进程",
+        "processes": "活动进程",
         "noData": "所选时间范围内无数据"
       },
       "storage": {
         "title": "磁盘使用情况",
         "used": "已用: {{value}}",
-        "available": "可用: {{value}}",
+        "available": "可用： {{value}}",
         "total": "总计: {{value}}",
-        "type": "类型: {{value}}",
+        "type": "类型： {{value}}",
         "noData": "无磁盘使用数据",
         "noPartitions": "未挂载分区"
       },
@@ -469,9 +469,9 @@
       "title": "账户",
       "accountName": "账户名称",
       "firstName": "名字",
-      "lastName": "姓氏",
+      "lastName": "姓",
       "appearance": "外观",
-      "appearanceDescription": "选择首选主题。自动模式将遵循系统设置并根据时间自动调整。",
+      "appearanceDescription": "选择您喜欢的主题。自动模式会跟随系统设置并根据时间调整。",
       "themeAuto": "自动",
       "themeLight": "浅色",
       "themeDark": "深色",
@@ -483,7 +483,7 @@
       "twoFactor": "双因素认证",
       "twoFactorActive": "已启用",
       "twoFactorInactive": "未启用",
-      "twoFactorDescription": "启用双因素认证为账户增加额外安全保障。",
+      "twoFactorDescription": "启用双因素身份验证，为您的账户增加额外的安全保护。",
       "enable2FA": "启用 2FA",
       "disable2FA": "禁用 2FA",
       "changePassword": "修改密码",
@@ -494,17 +494,17 @@
       "currentLanguage": "当前语言",
       "missingLanguage": "缺少您的语言？",
       "helpTranslateLink": "帮助翻译 Nexterm",
-      "sessionSynchronization": "会话同步",
-      "sessionSyncDescription": "控制服务器会话如何在设备和浏览器标签页间存储及同步。",
-      "sessionSyncAcrossDevices": "跨设备",
-      "sessionSyncSameBrowser": "同浏览器",
-      "sessionSyncSameTab": "同标签页",
-      "sessionSyncAcrossDevicesDesc": "会话将在所有设备间同步并可用",
-      "sessionSyncSameBrowserDesc": "会话将在当前用户会话中同步",
-      "sessionSyncSameTabDesc": "会话将在当前浏览器标签页内同步",
+      "sessionSynchronization": "会话同步方式",
+      "sessionSyncDescription": "控制服务器会话在不同设备和浏览器标签页之间的存储和同步方式。",
+      "sessionSyncAcrossDevices": "跨设备同步",
+      "sessionSyncSameBrowser": "同一浏览器",
+      "sessionSyncSameTab": "仅当前标签页",
+      "sessionSyncAcrossDevicesDesc": "会话在所有设备间同步，可随时随地访问",
+      "sessionSyncSameBrowserDesc": "会话仅在当前浏览器的所有标签页间同步",
+      "sessionSyncSameTabDesc": "会话仅保存在当前标签页，关闭后不保留",
       "twoFactorDialog": {
         "title": "启用 2FA",
-        "description": "使用身份验证器应用扫描此二维码，或手动输入 <span class=\"totp-code\">{{secret}}</span>。",
+        "description": "使用身份验证应用扫描二维码，或手动输入密钥 <span class=\"totp-code\">{{secret}}</span>。",
         "codePlaceholder": "输入 2FA 代码",
         "enableButton": "启用",
         "messages": {
@@ -587,18 +587,18 @@
     "userDialog": {
       "title": "创建新用户",
       "firstName": "名字",
-      "lastName": "姓氏",
+      "lastName": "姓",
       "username": "用户名",
       "password": "密码",
       "firstNamePlaceholder": "名字",
-      "lastNamePlaceholder": "姓氏",
+      "lastNamePlaceholder": "姓",
       "usernamePlaceholder": "用户名",
       "passwordPlaceholder": "密码",
       "create": "创建",
       "errorOccurred": "发生错误"
     },
     "sessions": {
-      "title": "会话",
+      "title": "会话管理",
       "lastActivity": "最后活动：{{date}}，来自 {{ip}}",
       "currentSession": "当前会话",
       "logout": "退出登录",
@@ -606,7 +606,7 @@
       "browserOn": "{{browser}} {{version}}，运行于 {{os}} {{osVersion}}"
     },
     "keymaps": {
-      "title": "快捷键",
+      "title": "快捷键设置",
       "description": "自定义键盘快捷键以匹配工作流程。",
       "resetAll": "重置全部",
       "actions": {
@@ -627,7 +627,7 @@
           "description": "打开代码片段对话框"
         },
         "keyboardshortcuts": {
-          "title": "键盘快捷键",
+          "title": "快捷键列表",
           "description": "打开键盘快捷键菜单"
         },
         "broadcast": {
@@ -655,7 +655,7 @@
         "resetSuccess": "快捷键已重置为默认值",
         "resetFailed": "重置快捷键失败",
         "resetAllSuccess": "所有快捷键已重置为默认值",
-        "resetAllFailed": "重置所有快捷键失败"
+        "resetAllFailed": "重置快捷键失败"
       }
     },
     "terminal": {
@@ -672,7 +672,7 @@
         "cursorStyle": "光标样式",
         "cursorBlinking": "光标闪烁",
         "enabled": "启用",
-        "disabled": "禁用"
+        "disabled": "已禁用"
       },
       "theme": {
         "title": "主题",
@@ -733,19 +733,19 @@
     },
     "ai": {
       "title": "AI 助手配置",
-      "description": "配置 AI 驱动的命令生成功能，用于终端会话和代码片段创建。",
+      "description": "配置 AI 驱动的命令生成功能，用于终端会话和代码片段。",
       "loading": "加载 AI 设置中...",
       "enable": {
         "title": "启用 AI 助手",
         "description": "允许用户使用 AI 生成命令"
       },
       "provider": {
-        "title": "AI 服务提供商",
-        "description": "选择您的 AI 服务提供商"
+        "title": "AI 提供商",
+        "description": "选择 AI 服务提供商"
       },
       "model": {
-        "title": "模型",
-        "description": "选择用于命令生成的 AI 模型"
+        "title": "AI 模型",
+        "description": "选择用于生成命令的 AI 模型"
       },
       "apiKey": {
         "title": "API 密钥",
@@ -754,8 +754,8 @@
         "setPlaceholder": "API 密钥已设置（留空表示保留当前值）"
       },
       "ollamaUrl": {
-        "title": "Ollama URL",
-        "description": "您的 Ollama 实例运行地址",
+        "title": "Ollama 地址",
+        "description": "Ollama 实例的访问地址",
         "placeholder": "http://localhost:11434"
       },
       "selectProvider": "选择服务提供商...",
@@ -1036,7 +1036,7 @@
       "fields": {
         "name": "名称",
         "icon": "图标",
-        "serverIp": "Host",
+        "serverIp": "服务器 IP",
         "port": "端口",
         "protocol": "协议",
         "username": "用户名",
@@ -1048,7 +1048,7 @@
       },
       "placeholders": {
         "serverName": "服务器名称",
-        "serverIp": "Hostname or IP",
+        "serverIp": "服务器 IP",
         "port": "端口",
         "username": "用户名",
         "password": "密码",
