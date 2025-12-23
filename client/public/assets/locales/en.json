@@ -181,12 +181,14 @@
       "fields": {
         "name": "Name",
         "description": "Description (optional)",
-        "command": "Command"
+        "command": "Command",
+        "osFilter": "Compatible OS"
       },
       "placeholders": {
         "name": "Snippet name",
         "description": "What does this command?",
-        "command": "Enter your command"
+        "command": "Enter your command",
+        "osFilter": "All operating systems"
       },
       "actions": {
         "cancel": "Cancel",
@@ -268,11 +270,13 @@
       "helpTip": "Use @NEXTERM: directives for interactive features",
       "fields": {
         "name": "Name",
-        "description": "Description"
+        "description": "Description",
+        "osFilter": "Compatible OS"
       },
       "placeholders": {
         "name": "Script name",
-        "description": "What does this script do?"
+        "description": "What does this script do?",
+        "osFilter": "All operating systems"
       },
       "actions": {
         "cancel": "Cancel",
