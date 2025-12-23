@@ -999,6 +999,7 @@
       "editServer": "编辑服务器",
       "editIntegration": "编辑集成",
       "duplicateServer": "复制服务器",
+      "pasteIdentityPassword": "Paste Password",
       "deleteServer": "删除服务器",
       "wakeOnLan": "Wake-On-LAN",
       "editPVE": "编辑 PVE",
