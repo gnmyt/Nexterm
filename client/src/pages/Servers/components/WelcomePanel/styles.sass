@@ -208,15 +208,24 @@
   to
     transform: rotate(360deg)
 
-@media (max-width: 900px)
+@media (max-width: 1100px)
   .welcome-panel
     flex-direction: column
     justify-content: flex-start
-    padding-top: 3rem
+    align-items: stretch
+    padding: 1.5rem
 
     .welcome-left
       width: 100%
+      min-width: 0
       text-align: center
+
+      h1
+        font-size: 1.5rem
+
+      p
+        font-size: 0.9rem
+        margin: 0.5rem 0 1rem 0
 
       .button-area
         justify-content: center
@@ -224,3 +233,10 @@
     .welcome-right
       width: 100%
       max-width: 100%
+      min-width: 0
+
+    .recent-connections
+      max-width: 100%
+
+    .empty-state
+      padding: 2rem 1rem
