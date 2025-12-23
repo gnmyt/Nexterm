@@ -108,6 +108,7 @@ const XtermRenderer = ({ session, disconnectFromServer, registerTerminalRef, bro
         const selection = termRef.current?.getSelection();
         if (selection) copyToClipboard(selection);
         contextMenu.close();
+        termRef.current?.focus();
     };
 
     const handlePaste = async () => {
@@ -118,6 +119,7 @@ const XtermRenderer = ({ session, disconnectFromServer, registerTerminalRef, bro
             console.error('Failed to paste:', err);
         }
         contextMenu.close();
+        termRef.current?.focus();
     };
 
     const handlePasteIdentity = async () => {
@@ -127,16 +129,19 @@ const XtermRenderer = ({ session, disconnectFromServer, registerTerminalRef, bro
             console.error('Failed to paste identity password via API:', err);
         }
         contextMenu.close();
+        termRef.current?.focus();
     };
 
     const handleSelectAll = () => {
         termRef.current?.selectAll();
         contextMenu.close();
+        termRef.current?.focus();
     };
 
     const handleClearTerminal = () => {
         termRef.current?.clear();
         contextMenu.close();
+        termRef.current?.focus();
     };
 
     const handleInsertSnippet = () => {
@@ -157,6 +162,7 @@ const XtermRenderer = ({ session, disconnectFromServer, registerTerminalRef, bro
             wsRef.current.send('\x03');
         }
         contextMenu.close();
+        termRef.current?.focus();
     };
 
     useEffect(() => {
