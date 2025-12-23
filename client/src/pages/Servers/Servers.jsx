@@ -86,6 +86,7 @@ export const Servers = () => {
                     type: session.configuration.type || undefined,
                     organizationId: session.organizationId,
                     organizationName: session.organizationName,
+                    osName: session.osName || null,
                     scriptId: session.configuration.scriptId || undefined,
                     shareId: session.shareId || null,
                     shareWritable: session.shareWritable || false,
@@ -104,6 +105,7 @@ export const Servers = () => {
                             ...newSession,
                             scriptId: existingSession.scriptId || newSession.scriptId,
                             scriptName: existingSession.scriptName || newSession.scriptName,
+                            osName: newSession.osName || existingSession.osName,
                         };
                     }
                     return newSession;
