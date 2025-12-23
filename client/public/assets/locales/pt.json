@@ -55,6 +55,7 @@
       "monitoring": "Monitoramento",
       "snippets": "Snippets",
       "audit": "Auditoria",
+      "account": "Account",
       "logout": "Logout",
       "collapseTitle": "Alternar a Barra Lateral",
       "logoutConfirmText": "Isso irá encerrar sua sessão na conta {{username}}. Tem certeza?",
