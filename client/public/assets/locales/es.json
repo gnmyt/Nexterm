@@ -55,6 +55,7 @@
       "monitoring": "Supervisión",
       "snippets": "Fragmentos",
       "audit": "Auditoría",
+      "account": "Account",
       "logout": "Cerrar sesión",
       "collapseTitle": "Contraer la barra lateral",
       "logoutConfirmText": "Esto te desconectará de la cuenta {{username}} . ¿Estás seguro?",
