@@ -1,5 +1,7 @@
 @use "@/common/styles/colors"
 
+$mobile: 768px
+
 .sidebar
   width: 5rem
   user-select: none
@@ -19,6 +21,9 @@
     height: 100dvh
     height: -webkit-fill-available
 
+  @media (max-width: $mobile)
+    display: none
+
   &.collapsed
     margin-left: -5rem
     position: absolute
@@ -35,6 +40,7 @@
     align-items: center
     flex: 1
     overflow-y: auto
+    width: 100%
 
   .sidebar-logo
     margin-top: 0.5rem
@@ -109,7 +115,8 @@
     position: relative
     width: 100%
     display: flex
-    justify-content: center
+    flex-direction: column
+    align-items: center
 
   .user-btn
     width: 3.75rem
