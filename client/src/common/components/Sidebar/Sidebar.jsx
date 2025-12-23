@@ -1,6 +1,6 @@
 import "./styles.sass";
 import NextermLogo from "@/common/components/NextermLogo";
-import { mdiCog, mdiLogout, mdiServerOutline, mdiCodeBraces, mdiChartBoxOutline, mdiShieldCheckOutline, mdiAccountCogOutline } from "@mdi/js";
+import { mdiCog, mdiLogout, mdiAccountCogOutline } from "@mdi/js";
 import Icon from "@mdi/react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useContext, useState, useRef, useEffect } from "react";
@@ -9,6 +9,7 @@ import { ActionConfirmDialog } from "@/common/components/ActionConfirmDialog/Act
 import Tooltip from "@/common/components/Tooltip";
 import { useTranslation } from "react-i18next";
 import { SettingsDialog } from "@/common/components/SettingsDialog/SettingsDialog.jsx";
+import { getSidebarNavigation } from "@/common/utils/navigationConfig";
 
 export const Sidebar = () => {
     const { t } = useTranslation();
@@ -33,12 +34,7 @@ export const Sidebar = () => {
         return () => window.removeEventListener("openSettings", handleOpenSettings);
     }, []);
 
-    const navigation = [
-        { title: t('common.sidebar.servers'), path: "/servers", icon: mdiServerOutline },
-        { title: t('common.sidebar.monitoring'), path: "/monitoring", icon: mdiChartBoxOutline },
-        { title: t('common.sidebar.snippets'), path: "/snippets", icon: mdiCodeBraces },
-        { title: t('common.sidebar.audit'), path: "/audit", icon: mdiShieldCheckOutline },
-    ];
+    const navigation = getSidebarNavigation(t);
 
     return (<>
         <div className={`sidebar ${isCollapsed ? "collapsed" : ""}`}>

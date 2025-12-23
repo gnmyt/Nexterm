@@ -17,6 +17,7 @@ import Loading from "@/common/components/Loading";
 import { ErrorBoundary } from "@/common/components/ErrorBoundary";
 import TitleBar from "@/common/components/TitleBar";
 import { waitForTauri } from "@/common/utils/TauriUtil.js";
+import MobileNav from "@/common/components/MobileNav";
 
 const Sidebar = lazy(() => import("@/common/components/Sidebar"));
 
@@ -60,6 +61,7 @@ const AppContent = () => {
                                                         </Suspense>
                                                     </div>
                                                 </div>
+                                                <MobileNav />
                                             </div>
                                         </QuickActionProvider>
                                     </SessionProvider>

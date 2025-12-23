@@ -28,6 +28,7 @@ export const Servers = () => {
     const [directConnectServer, setDirectConnectServer] = useState(null);
     const [pendingConnection, setPendingConnection] = useState(null);
     const [openFileEditors, setOpenFileEditors] = useState([]);
+    const [mobileServerListOpen, setMobileServerListOpen] = useState(false);
 
     const [currentFolderId, setCurrentFolderId] = useState(null);
     const [currentOrganizationId, setCurrentOrganizationId] = useState(null);
@@ -40,6 +41,12 @@ export const Servers = () => {
     const [hibernatedSessions, setHibernatedSessions] = useState([]);
 
     const visibleSessions = activeSessions.filter(s => !poppedOutSessions.includes(s.id));
+
+    useEffect(() => {
+        const handleToggle = () => setMobileServerListOpen(prev => !prev);
+        window.addEventListener('toggleServerList', handleToggle);
+        return () => window.removeEventListener('toggleServerList', handleToggle);
+    }, []);
 
     const getTabId = () => {
         let tabId = sessionStorage.getItem("nexterm_tab_id");
@@ -461,7 +468,8 @@ export const Servers = () => {
                         setEditServerId={setEditServerId} openSFTP={openSFTP}
                         hibernatedSessions={hibernatedSessions} resumeSession={resumeConnection}
                         openDirectConnect={openDirectConnect} runScript={runScript}
-                        openPortForward={isTauri() ? openPortForward : undefined} />
+                        openPortForward={isTauri() ? openPortForward : undefined}
+                        mobileOpen={mobileServerListOpen} setMobileOpen={setMobileServerListOpen} />
             {visibleSessions.length === 0 && 
                 <WelcomePanel 
                     connectToServer={connectToServer} 

@@ -1,8 +1,16 @@
 @use "colors"
 
+$mobile: 768px
+
 :root
   --title-bar-height: 0px
   --content-height: 100vh
+  --mobile-nav-height: 0px
+  --safe-area-top: env(safe-area-inset-top, 0px)
+
+  @media (max-width: $mobile)
+    --mobile-nav-height: calc(3.5rem + env(safe-area-inset-bottom, 0px))
+    --content-height: calc(100vh - var(--safe-area-top))
 
 body, html
   margin: 0
@@ -31,6 +39,7 @@ body.tauri-mode
   height: var(--content-height)
   width: 100vw
   overflow: hidden
+  padding-top: var(--safe-area-top)
 
 .content-wrapper
   display: flex
@@ -38,6 +47,9 @@ body.tauri-mode
   width: 100vw
   overflow: hidden
   min-height: 0
+
+  @media (max-width: $mobile)
+    padding-bottom: var(--mobile-nav-height)
 
   > *
     min-width: 0

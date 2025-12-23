@@ -55,6 +55,7 @@
       "monitoring": "Monitoring",
       "snippets": "Snippets",
       "audit": "Audit",
+      "account": "Account",
       "logout": "Logout",
       "collapseTitle": "Collapse Sidebar",
       "logoutConfirmText": "This will log you out of the {{username}} account. Are you sure?",

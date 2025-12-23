@@ -1,5 +1,8 @@
 @use "@/common/styles/colors"
 
+$mobile: 768px
+$tablet: 1024px
+
 .users-page
   width: 100%
 
@@ -9,9 +12,17 @@
     justify-content: space-between
     margin-bottom: 1.5rem
 
+    @media (max-width: $mobile)
+      flex-direction: column
+      align-items: flex-start
+      gap: 0.75rem
+
     h2
       margin: 0
       font-size: 1.3rem
+
+      @media (max-width: $mobile)
+        font-size: 1.15rem
 
   .no-users
     display: flex
@@ -52,6 +63,11 @@
     border-radius: 0.5rem
     padding: 0.875rem 1rem
     transition: border-color 0.1s ease
+
+    @media (max-width: $mobile)
+      flex-direction: column
+      align-items: flex-start
+      gap: 0.75rem
 
     &:hover
       border-color: colors.$gray
@@ -100,6 +116,10 @@
       align-items: center
       gap: 0.75rem
 
+      @media (max-width: $mobile)
+        width: 100%
+        justify-content: space-between
+
       .totp-badge
         display: flex
         align-items: center
@@ -133,19 +153,3 @@
         &:hover
           background-color: colors.$gray
           color: colors.$white
-
-@media (max-width: 600px)
-  .users-page
-    .users-header
-      flex-direction: column
-      align-items: flex-start
-      gap: 0.75rem
-
-    .item
-      flex-direction: column
-      align-items: flex-start
-      gap: 0.75rem
-
-      .right-section
-        width: 100%
-        justify-content: space-between

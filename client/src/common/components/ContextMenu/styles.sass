@@ -1,5 +1,7 @@
 @use "@/common/styles/colors"
 
+$mobile: 768px
+
 .context-menu
   background-color: colors.$lighter-background
   border: 1px solid colors.$dark-gray
@@ -8,11 +10,19 @@
   position: fixed
   z-index: 10000
   min-width: 200px
+  max-width: calc(100vw - 20px)
+  max-height: calc(100vh - 20px)
+  overflow: visible
   box-shadow: 0 12px 48px rgba(0, 0, 0, 0.5), 0 4px 16px rgba(0, 0, 0, 0.3)
   opacity: 0
   transform: scale(0.95) translateY(-8px)
   transition: opacity 0.12s cubic-bezier(0.4, 0, 0.2, 1), transform 0.12s cubic-bezier(0.4, 0, 0.2, 1)
   pointer-events: none
+
+  @media (max-width: $mobile)
+    min-width: 180px
+    padding: 0.25rem
+    overflow-y: auto
 
   &.open
     opacity: 1
@@ -38,11 +48,21 @@
     position: relative
     font-size: 0.9rem
 
+    @media (max-width: $mobile)
+      padding: 0.75rem
+      font-size: 0.95rem
+      gap: 0.625rem
+      flex-wrap: wrap
+
     .menu-icon
       width: 1.125rem
       height: 1.125rem
       flex-shrink: 0
       opacity: 0.9
+
+      @media (max-width: $mobile)
+        width: 1.25rem
+        height: 1.25rem
 
       svg
         width: 100%
@@ -65,6 +85,10 @@
       margin-left: auto
       flex-shrink: 0
       opacity: 0.5
+      transition: transform 0.2s ease
+
+      &.open
+        transform: rotate(180deg)
 
     &:hover:not(.disabled):not(.custom)
       background-color: colors.$gray
@@ -95,6 +119,30 @@
       &:hover
         background-color: transparent
 
+    &.submenu-open-mobile
+      background-color: colors.$gray
+      flex-direction: column
+      align-items: stretch
+
+      > .menu-icon,
+      > .menu-label,
+      > .submenu-arrow
+        display: flex
+        align-items: center
+
+      > .menu-icon
+        position: absolute
+        top: 0.75rem
+        left: 0.75rem
+
+      > .menu-label
+        padding-left: 2rem
+
+      > .submenu-arrow
+        position: absolute
+        top: 0.75rem
+        right: 0.75rem
+
   .context-menu-submenu
     position: absolute
     background-color: colors.$lighter-background
@@ -102,9 +150,28 @@
     border-radius: 0.75rem
     padding: 0.375rem
     min-width: 200px
+    max-width: calc(100vw - 20px)
+    max-height: calc(100vh - 100px)
+    overflow-y: auto
     z-index: 10001
     box-shadow: 0 12px 48px rgba(0, 0, 0, 0.5), 0 4px 16px rgba(0, 0, 0, 0.3)
     animation: submenuFadeIn 0.15s cubic-bezier(0.4, 0, 0.2, 1)
+
+    &.mobile
+      position: relative
+      width: 100%
+      min-width: 0
+      margin-top: 0.25rem
+      padding: 0.25rem
+      border-radius: 0.5rem
+      box-shadow: none
+      border: none
+      background-color: colors.$dark-gray
+      animation: submenuFadeInMobile 0.15s cubic-bezier(0.4, 0, 0.2, 1)
+
+      .context-menu-item
+        padding: 0.5rem 0.75rem
+        font-size: 0.875rem
 
     .context-menu-item
       white-space: nowrap
@@ -121,3 +188,11 @@
   to
     opacity: 1
     transform: translateX(0) scale(1)
+
+@keyframes submenuFadeInMobile
+  from
+    opacity: 0
+    transform: translateY(-4px)
+  to
+    opacity: 1
+    transform: translateY(0)

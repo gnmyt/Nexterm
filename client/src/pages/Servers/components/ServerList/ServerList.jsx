@@ -91,7 +91,9 @@ export const ServerList = ({
     resumeSession,
     openDirectConnect,
     runScript,
-    openPortForward
+    openPortForward,
+    mobileOpen = false,
+    setMobileOpen,
 }) => {
     const { t } = useTranslation();
     const { servers, loadServers, getServerById } = useContext(ServerContext);
@@ -114,8 +116,37 @@ export const ServerList = ({
     const [sourceScripts, setSourceScripts] = useState([]);
     const [scriptsMenuOpen, setScriptsMenuOpen] = useState(false);
     const [scriptsMenuServer, setScriptsMenuServer] = useState(null);
+    const [isMobile, setIsMobile] = useState(false);
 
     const contextMenu = useContextMenu();
+
+    useEffect(() => {
+        const checkMobile = () => {
+            const mobile = window.innerWidth <= 768;
+            setIsMobile(mobile);
+            if (!mobile && setMobileOpen) setMobileOpen(false);
+        };
+        checkMobile();
+        window.addEventListener('resize', checkMobile);
+        return () => window.removeEventListener('resize', checkMobile);
+    }, [setMobileOpen]);
+
+    useEffect(() => {
+        if (!isMobile || !mobileOpen) return;
+        const handleClickOutside = (e) => {
+            if (serverListRef.current && !serverListRef.current.contains(e.target) && 
+                !e.target.closest('.server-list-toggle') &&
+                !e.target.closest('.mobile-nav')) {
+                setMobileOpen?.(false);
+            }
+        };
+        document.addEventListener('mousedown', handleClickOutside);
+        document.addEventListener('touchstart', handleClickOutside);
+        return () => {
+            document.removeEventListener('mousedown', handleClickOutside);
+            document.removeEventListener('touchstart', handleClickOutside);
+        };
+    }, [isMobile, mobileOpen, setMobileOpen]);
 
     const server = contextClickedId ? (contextClickedType === "server-object" || contextClickedType?.startsWith("pve-")) ? getServerById(contextClickedId) : null : null;
     const isOrgFolder = contextClickedId && contextClickedId.toString().startsWith("org-");
@@ -418,11 +449,14 @@ export const ServerList = ({
     }, [isDragging, clientOffset]);
 
     return (
-        <div
-            className={`server-list ${isCollapsed ? "collapsed" : ""}`}
-            style={{ width: isCollapsed ? "0px" : `${width}px` }} ref={serverListRef}
-            onMouseDown={isCollapsed ? startResizing : undefined}>
-            {!isCollapsed && (
+        <>
+            {isMobile && mobileOpen && <div className="server-list-overlay" onClick={() => setMobileOpen?.(false)} />}
+            <div
+                className={`server-list ${isCollapsed ? "collapsed" : ""} ${isMobile ? "mobile" : ""} ${mobileOpen ? "mobile-open" : ""}`}
+                style={!isMobile ? { width: isCollapsed ? "0px" : `${width}px` } : undefined} 
+                ref={serverListRef}
+                onMouseDown={!isMobile && isCollapsed ? startResizing : undefined}>
+            {(!isCollapsed || (isMobile && mobileOpen)) && (
                 <div className="server-list-inner" ref={dropRef}>
                     <div className="search-container">
                         <ServerSearch search={search} setSearch={setSearch} />
@@ -795,7 +829,8 @@ export const ServerList = ({
                     />
                 </div>
             )}
-            <div className={`resizer${isResizing ? " is-resizing" : ""}`} onMouseDown={startResizing} />
+            {!isMobile && <div className={`resizer${isResizing ? " is-resizing" : ""}`} onMouseDown={startResizing} />}
         </div>
+        </>
     );
 };

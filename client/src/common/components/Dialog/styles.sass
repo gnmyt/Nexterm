@@ -1,5 +1,8 @@
 @use "@/common/styles/colors"
 
+$mobile: 768px
+$tablet: 1024px
+
 .dialog-area
   position: fixed
   top: 0
@@ -17,6 +20,7 @@
   backdrop-filter: blur(0.3rem)
   transition: all 0.2s
   isolation: isolate
+  padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left)
 
   @supports not (backdrop-filter: blur(0.3rem))
     background-color: rgba(0, 0, 0, 0.7)
@@ -31,11 +35,19 @@
   color: colors.$white
   border-radius: 0.75rem
   max-width: 80%
-  max-height: 90vh
-  overflow-y: auto
+  max-height: 85vh
+  overflow: hidden
+  display: flex
+  flex-direction: column
   box-shadow: 0 12px 48px rgba(0, 0, 0, 0.5), 0 4px 16px rgba(0, 0, 0, 0.3)
   animation: dialogFadeIn 0.3s
   position: relative
+
+  @media (max-width: $mobile)
+    max-width: 95%
+    max-height: 90vh
+    padding: 1rem
+    border-radius: 0.625rem
 
 .dialog-close-btn
   position: absolute
@@ -53,6 +65,13 @@
   color: colors.$subtext
   transition: background-color 0.1s ease, border-color 0.1s ease, color 0.1s ease
   z-index: 10
+  flex-shrink: 0
+
+  @media (max-width: $mobile)
+    width: 1.75rem
+    height: 1.75rem
+    top: 0.75rem
+    right: 0.75rem
 
   &:hover
     background-color: colors.$gray

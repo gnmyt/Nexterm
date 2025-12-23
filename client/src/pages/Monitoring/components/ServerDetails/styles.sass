@@ -1,9 +1,19 @@
 @use "@/common/styles/colors"
 
+$mobile: 768px
+$tablet: 1024px
+
 .server-details
   padding: 2rem
   height: 100%
   overflow-y: auto
+  overflow-x: hidden
+
+  @media (max-width: $tablet)
+    padding: 1.5rem
+
+  @media (max-width: $mobile)
+    padding: 1rem
 
   &.loading
     display: flex
@@ -16,6 +26,18 @@
     align-items: center
     gap: 0.5rem
     margin-bottom: 2rem
+    overflow-x: auto
+    -webkit-overflow-scrolling: touch
+    scrollbar-width: none
+    padding-bottom: 0.25rem
+
+    &::-webkit-scrollbar
+      display: none
+
+    @media (max-width: $mobile)
+      margin-bottom: 1.25rem
+      gap: 0.375rem
+      flex-wrap: nowrap
 
     .tab-header
       display: flex
@@ -28,14 +50,27 @@
       transition: all 0.2s
       color: colors.$subtext
       background-color: transparent
+      white-space: nowrap
+      flex-shrink: 0
+
+      @media (max-width: $mobile)
+        padding: 0.625rem 0.875rem
+        gap: 0.375rem
 
       svg
         width: 1.25rem
         height: 1.25rem
 
+        @media (max-width: $mobile)
+          width: 1.125rem
+          height: 1.125rem
+
       span
         font-weight: 600
         font-size: 0.9rem
+
+        @media (max-width: $mobile)
+          font-size: 0.8rem
 
       &:hover
         color: colors.$white
@@ -51,10 +86,18 @@
       display: flex
       gap: 0.5rem
       margin-left: auto
+      flex-shrink: 0
+
+      @media (max-width: $mobile)
+        gap: 0.25rem
 
       button
         padding: 0.5rem 1rem
         font-size: 0.85rem
+
+        @media (max-width: $mobile)
+          padding: 0.4rem 0.625rem
+          font-size: 0.75rem
 
   .tab-content
     .overview-tab, .charts-tab, .storage-tab, .network-tab, .nodes-tab
@@ -62,19 +105,30 @@
       flex-direction: column
       gap: 1.5rem
 
+      @media (max-width: $mobile)
+        gap: 1rem
+
 .stats-grid
   display: grid
   grid-template-columns: 1fr 1fr
   gap: 1.5rem
 
-  @media (max-width: 1200px)
+  @media (max-width: $tablet)
+    gap: 1rem
+
+  @media (max-width: $mobile)
     grid-template-columns: 1fr
+    gap: 0.75rem
 
 .stat-card
   background-color: colors.$lighter-background
   border: 2px solid colors.$dark-gray
   border-radius: 0.75rem
   padding: 1.5rem
+  min-width: 0
+
+  @media (max-width: $mobile)
+    padding: 1rem
 
   &.full-width
     grid-column: 1 / -1
@@ -84,10 +138,17 @@
     color: colors.$white
     font-size: 1.2rem
 
+    @media (max-width: $mobile)
+      font-size: 1rem
+      margin-bottom: 0.75rem
+
   .info-list
     display: flex
     flex-direction: column
     gap: 0.75rem
+
+    @media (max-width: $mobile)
+      gap: 0.5rem
 
     .info-item
       display: flex
@@ -95,6 +156,11 @@
       align-items: center
       padding: 0.5rem 0
       border-bottom: 1px solid colors.$dark-gray
+      gap: 0.5rem
+
+      @media (max-width: $mobile)
+        padding: 0.375rem 0
+        flex-wrap: wrap
 
       &:last-child
         border-bottom: none
@@ -102,18 +168,28 @@
       .label
         color: colors.$subtext
         font-weight: 500
+        flex-shrink: 0
+
+        @media (max-width: $mobile)
+          font-size: 0.85rem
 
       .value
         color: colors.$white
         font-weight: 600
+        text-align: right
+        word-break: break-word
+        min-width: 0
+
+        @media (max-width: $mobile)
+          font-size: 0.85rem
 
   .metrics-grid
     display: grid
     grid-template-columns: 1fr 1fr
     gap: 1rem
 
-    @media (max-width: 768px)
-      grid-template-columns: 1fr
+    @media (max-width: $mobile)
+      gap: 0.5rem
 
   .metric
     display: flex
@@ -123,10 +199,18 @@
     background-color: colors.$dark-gray
     border-radius: 0.5rem
 
+    @media (max-width: $mobile)
+      padding: 0.75rem
+
     .metric-label
       font-size: 0.85rem
       color: colors.$subtext
       margin-bottom: 0.5rem
+      text-align: center
+
+      @media (max-width: $mobile)
+        font-size: 0.75rem
+        margin-bottom: 0.375rem
 
     .metric-value
       font-size: 1.5rem
@@ -134,14 +218,24 @@
       color: colors.$white
       margin-bottom: 0.25rem
 
+      @media (max-width: $mobile)
+        font-size: 1.25rem
+
     .metric-avg, .metric-total, .metric-detail
       font-size: 0.75rem
       color: colors.$subtext
+      text-align: center
+
+      @media (max-width: $mobile)
+        font-size: 0.7rem
 
 .disk-list, .network-list
   display: flex
   flex-direction: column
   gap: 1.5rem
+
+  @media (max-width: $mobile)
+    gap: 0.75rem
 
 .disk-card
   .disk-header
@@ -151,20 +245,40 @@
     margin-bottom: 1rem
     padding-bottom: 1rem
     border-bottom: 1px solid colors.$gray
+    gap: 0.75rem
+
+    @media (max-width: $mobile)
+      flex-direction: column
+      align-items: flex-start
+      gap: 0.5rem
+      margin-bottom: 0.75rem
+      padding-bottom: 0.75rem
 
     .disk-info
       display: flex
       align-items: center
       gap: 0.75rem
+      flex-wrap: wrap
+      min-width: 0
+
+      @media (max-width: $mobile)
+        gap: 0.5rem
 
       .disk-name
         font-weight: 600
         color: colors.$white
         font-family: monospace
+        word-break: break-all
+
+        @media (max-width: $mobile)
+          font-size: 0.9rem
 
       .disk-model
         color: colors.$subtext
         font-size: 0.9rem
+
+        @media (max-width: $mobile)
+          font-size: 0.8rem
 
       .disk-type
         font-size: 0.75rem
@@ -184,31 +298,53 @@
       font-weight: 600
       color: colors.$white
       font-size: 1.1rem
+      flex-shrink: 0
+
+      @media (max-width: $mobile)
+        font-size: 1rem
 
 .partition-list
   display: flex
   flex-direction: column
   gap: 0.75rem
 
+  @media (max-width: $mobile)
+    gap: 0.5rem
+
 .partition-item
   padding: 0.75rem
   background-color: colors.$dark-gray
   border-radius: 0.5rem
+
+  @media (max-width: $mobile)
+    padding: 0.625rem
 
   .partition-header
     display: flex
     align-items: center
     gap: 0.75rem
     margin-bottom: 0.5rem
+    flex-wrap: wrap
+
+    @media (max-width: $mobile)
+      gap: 0.5rem
+      margin-bottom: 0.375rem
 
     .partition-name
       font-weight: 600
       color: colors.$white
       font-family: monospace
 
+      @media (max-width: $mobile)
+        font-size: 0.85rem
+
     .partition-mount
       color: colors.$subtext
       font-size: 0.9rem
+      word-break: break-all
+
+      @media (max-width: $mobile)
+        font-size: 0.8rem
 
     .partition-type
       font-size: 0.75rem
@@ -222,6 +358,9 @@
       color: colors.$primary
       font-weight: 600
 
+      @media (max-width: $mobile)
+        font-size: 0.9rem
+
   .partition-bar
     width: 100%
     height: 6px
@@ -229,6 +368,9 @@
     border-radius: 3px
     margin-bottom: 0.5rem
     overflow: hidden
+
+    @media (max-width: $mobile)
+      margin-bottom: 0.375rem
 
     .partition-fill
       height: 100%
@@ -240,10 +382,12 @@
     justify-content: space-between
     font-size: 0.8rem
     color: colors.$subtext
+    gap: 0.5rem
 
-    @media (max-width: 768px)
+    @media (max-width: $mobile)
       flex-direction: column
       gap: 0.25rem
+      font-size: 0.75rem
 
 .no-partitions
   text-align: center
@@ -256,20 +400,35 @@
   background-color: colors.$dark-gray
   border-radius: 0.5rem
 
+  @media (max-width: $mobile)
+    padding: 0.75rem
+
   .network-header
     display: flex
     align-items: center
     gap: 0.75rem
     margin-bottom: 0.5rem
+    flex-wrap: wrap
+
+    @media (max-width: $mobile)
+      gap: 0.5rem
+      margin-bottom: 0.375rem
 
     .network-name
       font-weight: 600
       color: colors.$white
 
+      @media (max-width: $mobile)
+        font-size: 0.9rem
+
     .network-mac
       color: colors.$subtext
       font-size: 0.9rem
       font-family: monospace
+      word-break: break-all
+
+      @media (max-width: $mobile)
+        font-size: 0.8rem
 
     .network-state
       font-size: 0.75rem
@@ -278,6 +437,9 @@
       text-transform: uppercase
       font-weight: 600
       margin-left: auto
+
+      @media (max-width: $mobile)
+        margin-left: 0
 
       &.up
         background-color: rgba(41, 193, 106, 0.2)
@@ -297,11 +459,20 @@
     gap: 0.5rem
     margin-bottom: 0.5rem
 
+    @media (max-width: $mobile)
+      gap: 0.375rem
+      margin-bottom: 0.375rem
+
     .ip-badge
       font-size: 0.8rem
       padding: 0.25rem 0.5rem
       border-radius: 0.25rem
       font-family: monospace
+      word-break: break-all
+
+      @media (max-width: $mobile)
+        font-size: 0.7rem
+        padding: 0.2rem 0.4rem
 
       &.ipv4
         background-color: rgba(49, 75, 211, 0.15)
@@ -319,9 +490,10 @@
     font-size: 0.85rem
     color: colors.$subtext
 
-    @media (max-width: 768px)
+    @media (max-width: $mobile)
       flex-direction: column
       gap: 0.25rem
+      font-size: 0.75rem
 
 .no-data
   text-align: center
@@ -334,6 +506,9 @@
   flex-direction: column
   gap: 1.5rem
 
+  @media (max-width: $mobile)
+    gap: 0.75rem
+
 .node-card
   .node-header
     display: flex
@@ -342,11 +517,20 @@
     margin-bottom: 1rem
     padding-bottom: 1rem
     border-bottom: 1px solid colors.$gray
+    gap: 0.5rem
+
+    @media (max-width: $mobile)
+      margin-bottom: 0.75rem
+      padding-bottom: 0.75rem
 
     .node-name
       font-weight: 600
       color: colors.$white
       font-size: 1.1rem
+      word-break: break-word
+
+      @media (max-width: $mobile)
+        font-size: 1rem
 
     .node-status
       font-size: 0.75rem
@@ -354,6 +538,7 @@
       border-radius: 0.25rem
       text-transform: uppercase
       font-weight: 600
+      flex-shrink: 0
 
       &.online
         background-color: rgba(41, 193, 106, 0.2)
@@ -368,16 +553,28 @@
     flex-direction: column
     gap: 0.75rem
 
+    @media (max-width: $mobile)
+      gap: 0.5rem
+
     .node-metric
       display: flex
       align-items: center
       gap: 1rem
+
+      @media (max-width: $mobile)
+        flex-wrap: wrap
+        gap: 0.5rem
 
       .metric-label
         width: 80px
         font-size: 0.85rem
         color: colors.$subtext
         font-weight: 500
+        flex-shrink: 0
+
+        @media (max-width: $mobile)
+          width: 60px
+          font-size: 0.75rem
 
       .metric-bar
         flex: 1
@@ -385,6 +582,7 @@
         background-color: colors.$gray
         border-radius: 4px
         overflow: hidden
+        min-width: 60px
 
         .metric-fill
           height: 100%
@@ -405,6 +603,13 @@
         color: colors.$white
         text-align: right
 
+        @media (max-width: $mobile)
+          min-width: 0
+          width: 100%
+          text-align: left
+          font-size: 0.75rem
+          margin-top: -0.25rem
+
   .node-details
     display: flex
     gap: 1.5rem
@@ -413,6 +618,12 @@
     border-top: 1px solid colors.$dark-gray
     font-size: 0.85rem
     color: colors.$subtext
+    flex-wrap: wrap
+
+    @media (max-width: $mobile)
+      gap: 0.75rem
+      margin-top: 0.75rem
+      font-size: 0.75rem
 
   .node-offline
     color: colors.$subtext
