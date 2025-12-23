@@ -1,6 +1,8 @@
 @use "colors"
 
-$title-bar-height: 32px
+:root
+  --title-bar-height: 0px
+  --content-height: 100vh
 
 body, html
   margin: 0
@@ -11,10 +13,12 @@ body, html
   font-weight: 700
 
 body.tauri-mode
+  --title-bar-height: 32px
+  --content-height: calc(100vh - 32px)
   -webkit-user-select: none
   -moz-user-select: none
   user-select: none
-  padding-top: $title-bar-height
+  padding-top: var(--title-bar-height)
 
   input, textarea, [contenteditable="true"], .allow-select
     -webkit-user-select: text
@@ -24,12 +28,9 @@ body.tauri-mode
 .app-wrapper
   display: flex
   flex-direction: column
-  height: 100vh
+  height: var(--content-height)
   width: 100vw
   overflow: hidden
-
-  body.tauri-mode &
-    height: calc(100vh - $title-bar-height)
 
 .content-wrapper
   display: flex

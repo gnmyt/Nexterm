@@ -10,7 +10,7 @@
   align-items: center
   border-right: 2px solid colors.$dark-gray
   overflow: visible
-  transition: all 0.2s
+  transition: margin-left 0.2s, box-shadow 0.2s
   left: 0
   top: 0
   z-index: 10
@@ -22,6 +22,8 @@
   &.collapsed
     margin-left: -5rem
     position: absolute
+    top: var(--title-bar-height)
+    height: var(--content-height)
 
     &:hover
       margin-left: 0
