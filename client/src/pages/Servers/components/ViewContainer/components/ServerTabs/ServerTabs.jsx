@@ -2,12 +2,11 @@ import { useRef, useState, useEffect, useCallback, useContext } from "react";
 import Icon from "@mdi/react";
 import { loadIcon } from "@/pages/Servers/utils/iconMapping.js";
 import { mdiClose, mdiViewSplitVertical, mdiChevronLeft, mdiChevronRight, mdiSleep, mdiOpenInNew, mdiShareVariant, mdiLinkVariant, mdiPencil, mdiEye, mdiCloseCircle, mdiContentDuplicate, mdiKey } from "@mdi/js";
-import { IdentityContext } from "@/common/contexts/IdentityContext.jsx";
-import { useTranslation } from "react-i18next";
 import { useDrag, useDrop } from "react-dnd";
 import TerminalActionsMenu from "../TerminalActionsMenu";
 import { ContextMenu, ContextMenuItem, ContextMenuSeparator, useContextMenu } from "@/common/components/ContextMenu";
 import { useActiveSessions } from "@/common/contexts/SessionContext.jsx";
+import { IdentityContext } from "@/common/contexts/IdentityContext.jsx";
 import { postRequest, deleteRequest, patchRequest } from "@/common/utils/RequestUtil";
 import { getBaseUrl } from "@/common/utils/ConnectionUtil.js";
 import "./styles.sass";
@@ -20,6 +19,7 @@ const DraggableTab = ({
     closeSession,
     hibernateSession,
     duplicateSession,
+    pasteIdentityPassword,
     index,
     moveTab,
     progress = 0,
@@ -29,6 +29,7 @@ const DraggableTab = ({
     const { identities } = useContext(IdentityContext);
     const { t } = useTranslation();
     const { popOutSession } = useActiveSessions();
+    const { identities } = useContext(IdentityContext);
     
     const canPopOut = !session.scriptId && session.type !== "sftp";
     const canShare = canPopOut;
@@ -82,6 +83,10 @@ const DraggableTab = ({
         e.stopPropagation();
         contextMenu.open(e, { x: e.clientX, y: e.clientY });
     };
+
+    const identityObj = identities?.find(i => i.id === session.identity);
+    const authType = identityObj ? (identityObj.authType || identityObj.type) : null;
+    const canPastePassword = Boolean(identityObj && (authType === 'password' || authType === 'password-only' || authType === 'both' || identityObj.password));
 
     return (
         <>
@@ -164,17 +169,11 @@ const DraggableTab = ({
                     label="Duplicate"
                     onClick={() => duplicateSession(session.id)}
                 />
-                {(identities && session.identity && identities.find(i => i.id === session.identity) && ['password','both','password-only'].includes(identities.find(i => i.id === session.identity).type)) && (
+                {(canPastePassword && session.id === activeSessionId) && (
                     <ContextMenuItem
                         icon={mdiKey}
-                        label={t('servers.contextMenu.pasteIdentityPassword')}
-                        onClick={async () => {
-                            try {
-                                await postRequest(`connections/${session.id}/paste-password`);
-                            } catch (e) {
-                                console.error('Failed to paste password', e);
-                            }
-                        }}
+                        label="Paste Password"
+                        onClick={() => pasteIdentityPassword(session.id)}
                     />
                 )}
                 <ContextMenuItem
@@ -200,6 +199,7 @@ export const ServerTabs = ({
     closeSession,
     hibernateSession,
     duplicateSession,
+    pasteIdentityPassword,
     layoutMode,
     onToggleSplit,
     orderRef,
@@ -335,7 +335,8 @@ export const ServerTabs = ({
                         return (
                             <DraggableTab key={session.id} session={session} server={session.server} index={index} moveTab={moveTab}
                                 activeSessionId={activeSessionId} setActiveSessionId={setActiveSessionId}
-                                closeSession={closeSession} hibernateSession={hibernateSession} duplicateSession={duplicateSession}
+                                closeSession={closeSession} hibernateSession={hibernateSession} duplicateSession={duplicateSession} 
+                                pasteIdentityPassword={pasteIdentityPassword}
                                 progress={sessionProgress[session.id] || 0} onShareUpdate={onShareUpdate} />
                         );
                     })}

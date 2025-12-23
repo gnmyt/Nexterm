@@ -335,6 +335,22 @@ export const Servers = () => {
         }
     };
 
+    const pasteIdentityPassword = async (sessionId) => {
+        try {
+            const session = activeSessions.find(s => s.id === sessionId);
+            if (!session || !session.identity) return;
+
+            const identityId = session.identity;
+            const identity = await getRequest(`identities/${identityId}`);
+            if (!identity || !identity.password) return;
+
+            // Dispatch a custom event so the renderer (which has refs) can paste directly
+            window.dispatchEvent(new CustomEvent('nexterm-paste', { detail: { sessionId, text: identity.password } }));
+        } catch (error) {
+            console.error("Failed to paste identity password", error);
+        }
+    }
+
     const closeDialog = () => {
         setServerDialogOpen(false);
         setServerDialogProtocol(null);
