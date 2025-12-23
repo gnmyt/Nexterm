@@ -19,6 +19,7 @@ export const SnippetsMenu = ({ onSelect, onClose, visible, activeSession }) => {
     const snippetRefs = useRef([]);
 
     const serverOsName = normalizeOsName(activeSession?.osName);
+    const isPveEntry = activeSession?.server?.type?.startsWith('pve-');
 
     useEffect(() => {
         const fetchSourceSnippets = async () => {
@@ -42,12 +43,23 @@ export const SnippetsMenu = ({ onSelect, onClose, visible, activeSession }) => {
         );
 
         const allAvailable = [...filteredUserSnippets, ...sourceSnippets];
-        if (!serverOsName) return allAvailable;
+        
         return allAvailable.filter(snippet => {
             const osFilter = parseOsFilter(snippet.osFilter);
-            return osFilter.length === 0 || osFilter.includes(serverOsName);
+            const hasPveFilter = osFilter.includes('Proxmox VE');
+            const isOnlyPve = osFilter.length === 1 && hasPveFilter;
+            
+            if (isPveEntry) {
+                if (osFilter.length === 0) return true;
+                return hasPveFilter;
+            } else {
+                if (isOnlyPve) return false;
+                if (osFilter.length === 0) return true;
+                if (!serverOsName) return !hasPveFilter || osFilter.length > 1;
+                return osFilter.includes(serverOsName);
+            }
         });
-    }, [allSnippets, activeSession?.organizationId, sourceSnippets, serverOsName]);
+    }, [allSnippets, activeSession?.organizationId, sourceSnippets, serverOsName, isPveEntry]);
 
     const filteredSnippets = () => {
         if (!availableSnippets || availableSnippets.length === 0) return [];
