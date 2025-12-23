@@ -181,12 +181,14 @@
       "fields": {
         "name": "Nom",
         "description": "Description (facultatif)",
-        "command": "Commande"
+        "command": "Commande",
+        "osFilter": "Compatible OS"
       },
       "placeholders": {
         "name": "Nom de l'extrait",
         "description": "Qu'est-ce que cela commande ?",
-        "command": "Saisis ta commande"
+        "command": "Saisis ta commande",
+        "osFilter": "All operating systems"
       },
       "actions": {
         "cancel": "Annuler",
@@ -268,11 +270,13 @@
       "helpTip": "Utilisez les directives @NEXTERM: pour les fonctionnalités interactives",
       "fields": {
         "name": "Nom",
-        "description": "Description"
+        "description": "Description",
+        "osFilter": "Compatible OS"
       },
       "placeholders": {
         "name": "Nom du script",
-        "description": "Que fait ce script ?"
+        "description": "Que fait ce script ?",
+        "osFilter": "All operating systems"
       },
       "actions": {
         "cancel": "Annuler",
