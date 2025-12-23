@@ -5,6 +5,7 @@ import { mdiMagnify, mdiScript, mdiAccountCircle, mdiCloudDownloadOutline, mdiEg
 import Icon from "@mdi/react";
 import { useTranslation } from "react-i18next";
 import { getRequest } from "@/common/utils/RequestUtil.js";
+import { matchesOsFilter, normalizeOsName } from "@/common/utils/osUtils.js";
 
 const KONAMI_CODE = ["ArrowUp", "ArrowUp", "ArrowDown", "ArrowDown", "ArrowLeft", "ArrowRight", "ArrowLeft", "ArrowRight", "b", "a"];
 
@@ -17,14 +18,27 @@ export const ScriptsMenu = ({ visible, onClose, scripts = [], server, serverOrga
     const [isVisible, setIsVisible] = useState(false);
     const [sourceScripts, setSourceScripts] = useState([]);
     const [showSecrets, setShowSecrets] = useState(false);
+    const [serverOsName, setServerOsName] = useState(null);
     const konamiIndexRef = useRef(0);
     const searchRef = useRef(null);
     const menuRef = useRef(null);
     const scriptRefs = useRef([]);
 
+    const isPveEntry = server?.type?.startsWith('pve-');
+
     useEffect(() => {
         getRequest("scripts/sources").then(setSourceScripts).catch(() => {});
     }, []);
+
+    useEffect(() => {
+        if (!visible || !server?.id || isPveEntry) {
+            setServerOsName(null);
+            return;
+        }
+        getRequest(`monitoring/${server.id}`)
+            .then(data => setServerOsName(normalizeOsName(data?.latest?.osInfo?.name)))
+            .catch(() => setServerOsName(null));
+    }, [visible, server?.id, isPveEntry]);
 
     const availableScripts = useMemo(() => {
         const filtered = (scripts || []).filter(s => 
@@ -34,8 +48,10 @@ export const ScriptsMenu = ({ visible, onClose, scripts = [], server, serverOrga
             ...s,
             isSecret: s.name === "???" && s.description === "What happened?",
         }));
-        return showSecrets ? all : all.filter(s => !s.isSecret);
-    }, [scripts, serverOrganizationId, sourceScripts, showSecrets]);
+        const visible = showSecrets ? all : all.filter(s => !s.isSecret);
+        
+        return visible.filter(script => matchesOsFilter(script.osFilter, serverOsName, isPveEntry));
+    }, [scripts, serverOrganizationId, sourceScripts, showSecrets, isPveEntry, serverOsName]);
 
     const filteredScripts = useMemo(() => {
         if (!search) return availableScripts;

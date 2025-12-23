@@ -39,3 +39,19 @@ export const normalizeOsName = (osName) => {
     }
     return osName;
 };
+
+export const matchesOsFilter = (osFilter, serverOsName, isPveEntry) => {
+    const filter = parseOsFilter(osFilter);
+    const hasPveFilter = filter.includes('Proxmox VE');
+    const isOnlyPve = filter.length === 1 && hasPveFilter;
+    
+    if (isPveEntry) {
+        if (filter.length === 0) return true;
+        return hasPveFilter;
+    } else {
+        if (isOnlyPve) return false;
+        if (filter.length === 0) return true;
+        if (!serverOsName) return !hasPveFilter || filter.length > 1;
+        return filter.includes(serverOsName);
+    }
+};

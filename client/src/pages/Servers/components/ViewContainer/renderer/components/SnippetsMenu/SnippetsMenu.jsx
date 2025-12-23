@@ -5,7 +5,7 @@ import "./styles.sass";
 import { mdiMagnify, mdiCloudDownloadOutline, mdiLinux } from "@mdi/js";
 import Icon from "@mdi/react";
 import { getRequest } from "@/common/utils/RequestUtil.js";
-import { parseOsFilter, normalizeOsName } from "@/common/utils/osUtils.js";
+import { parseOsFilter, matchesOsFilter, normalizeOsName } from "@/common/utils/osUtils.js";
 
 export const SnippetsMenu = ({ onSelect, onClose, visible, activeSession }) => {
     const { allSnippets } = useSnippets();
@@ -44,21 +44,7 @@ export const SnippetsMenu = ({ onSelect, onClose, visible, activeSession }) => {
 
         const allAvailable = [...filteredUserSnippets, ...sourceSnippets];
         
-        return allAvailable.filter(snippet => {
-            const osFilter = parseOsFilter(snippet.osFilter);
-            const hasPveFilter = osFilter.includes('Proxmox VE');
-            const isOnlyPve = osFilter.length === 1 && hasPveFilter;
-            
-            if (isPveEntry) {
-                if (osFilter.length === 0) return true;
-                return hasPveFilter;
-            } else {
-                if (isOnlyPve) return false;
-                if (osFilter.length === 0) return true;
-                if (!serverOsName) return !hasPveFilter || osFilter.length > 1;
-                return osFilter.includes(serverOsName);
-            }
-        });
+        return allAvailable.filter(snippet => matchesOsFilter(snippet.osFilter, serverOsName, isPveEntry));
     }, [allSnippets, activeSession?.organizationId, sourceSnippets, serverOsName, isPveEntry]);
 
     const filteredSnippets = () => {
