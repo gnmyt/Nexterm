@@ -66,6 +66,7 @@ export default defineConfig({
                     { text: "Home", link: "/" },
                     { text: "Preview", link: "/preview" },
                     { text: "SSL/HTTPS", link: "/ssl" },
+                    { text: "Scripts & Snippets", link: "/scripts&snippets" },
                     { text: "Contributing", link: "/contributing" },
                     {
                         text: "API Reference",
