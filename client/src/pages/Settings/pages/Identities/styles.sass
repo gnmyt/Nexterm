@@ -1,5 +1,8 @@
 @use "@/common/styles/colors"
 
+$mobile: 768px
+$tablet: 1024px
+
 .identities-page
   display: flex
   flex-direction: column
@@ -20,11 +23,18 @@
       align-items: flex-start
       margin-bottom: 1.5rem
 
+      @media (max-width: $mobile)
+        flex-direction: column
+        gap: 0.75rem
+
       .header-content
         h2
           font-size: 1.3rem
           margin-bottom: 0.5rem
           font-weight: 600
+
+          @media (max-width: $mobile)
+            font-size: 1.15rem
         
         p
           font-size: 0.9rem
@@ -39,6 +49,9 @@
       grid-template-columns: repeat(auto-fill, minmax(320px, 1fr))
       gap: 0.75rem
 
+      @media (max-width: $mobile)
+        grid-template-columns: 1fr
+
       .identity-card
         background-color: colors.$lighter-background
         border: 1px solid colors.$dark-gray
@@ -49,6 +62,9 @@
         justify-content: space-between
         align-items: flex-start
 
+        @media (max-width: $mobile)
+          padding: 1rem
+
         &:hover
           border-color: colors.$gray
 
@@ -57,6 +73,10 @@
           align-items: flex-start
           gap: 1rem
           flex: 1
+          min-width: 0
+
+          @media (max-width: $mobile)
+            gap: 0.75rem
 
           .identity-icon
             width: 2rem
@@ -66,17 +86,26 @@
             margin-top: 0.125rem
             flex-shrink: 0
 
+            @media (max-width: $mobile)
+              width: 1.5rem
+              height: 1.5rem
+
           .identity-details
+            min-width: 0
+            flex: 1
+
             h3
               margin: 0 0 0.5rem 0
               color: colors.$white
               font-size: 0.95rem
               font-weight: 600
+              word-break: break-word
 
             .identity-username
               margin: 0 0 0.625rem 0
               color: colors.$subtext
               font-size: 0.85rem
+              word-break: break-word
 
             .identity-type
               background-color: colors.$primary-opacity
@@ -126,6 +155,9 @@
         padding: 3rem 2rem
         color: colors.$subtext
 
+        @media (max-width: $mobile)
+          padding: 2rem 1rem
+
         svg
           width: 3rem
           height: 3rem
@@ -142,20 +174,3 @@
           text-align: center
           max-width: 24rem
           font-size: 0.9rem
-
-  @media (max-width: 600px)
-    .identities-section
-      .section-header
-        flex-direction: column
-        gap: 0.75rem
-
-      .identities-grid
-        grid-template-columns: 1fr
-
-        .identity-card
-          .identity-info
-            gap: 0.75rem
-
-            .identity-icon
-              width: 1.5rem
-              height: 1.5rem

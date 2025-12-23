@@ -1,18 +1,30 @@
 @use "@/common/styles/colors"
 
+$mobile: 768px
+$tablet: 1024px
+
 .terminal-settings-page
   display: flex
   flex-direction: column
   margin-top: 1rem
   gap: 2rem
 
+  @media (max-width: $mobile)
+    gap: 1.5rem
+
 .terminal-section
   h2
     margin: 0
 
+    @media (max-width: $mobile)
+      font-size: 1.25rem
+
   p
     color: colors.$subtext
     margin: 0 0 1rem 0
+
+    @media (max-width: $mobile)
+      font-size: 0.85rem
 
   .section-inner
     margin-top: 1rem
@@ -21,6 +33,9 @@
   display: grid
   grid-template-columns: repeat(auto-fit, minmax(280px, 1fr))
   gap: 0.75rem
+
+  @media (max-width: $mobile)
+    grid-template-columns: 1fr
 
 .theme-card
   border: 1px solid colors.$dark-gray
@@ -115,23 +130,22 @@
   margin-bottom: 2rem
   flex-wrap: wrap
 
+  @media (max-width: $mobile)
+    flex-direction: column
+    gap: 1rem
+
   .font-option
     display: flex
     flex-direction: column
     gap: 0.5rem
     min-width: 200px
 
+    @media (max-width: $mobile)
+      min-width: 100%
+
     label
       color: colors.$subtext
       font-weight: 600
 
-@media (max-width: 600px)
-  .theme-cards
-    grid-template-columns: 1fr
-
-  .font-settings, .cursor-settings
-    flex-direction: column
-    gap: 1rem
-
-    .font-option
-      min-width: 100%
+      @media (max-width: $mobile)
+        font-size: 0.9rem

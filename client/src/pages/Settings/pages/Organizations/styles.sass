@@ -1,5 +1,8 @@
 @use "@/common/styles/colors"
 
+$mobile: 768px
+$tablet: 1024px
+
 .organizations-page
   width: 100%
 
@@ -9,9 +12,17 @@
     justify-content: space-between
     margin-bottom: 1.5rem
 
+    @media (max-width: $mobile)
+      flex-direction: column
+      align-items: flex-start
+      gap: 0.75rem
+
     h2
       margin: 0
       font-size: 1.3rem
+
+      @media (max-width: $mobile)
+        font-size: 1.15rem
 
   .no-organizations
     display: flex
@@ -53,6 +64,12 @@
     padding: 1.25rem
     transition: border-color 0.1s ease
 
+    @media (max-width: $mobile)
+      flex-direction: column
+      align-items: flex-start
+      gap: 0.75rem
+      padding: 1rem
+
     &:hover
       border-color: colors.$gray
 
@@ -68,6 +85,9 @@
       display: flex
       align-items: center
       gap: 1rem
+
+      @media (max-width: $mobile)
+        width: 100%
 
       .icon
         display: flex
@@ -108,6 +128,10 @@
       align-items: center
       gap: 0.5rem
 
+      @media (max-width: $mobile)
+        width: 100%
+        justify-content: flex-end
+
       svg
         cursor: pointer
         width: 1.5rem
@@ -143,6 +167,15 @@
       margin-bottom: 1.25rem
       border-bottom: 1px solid colors.$dark-gray
       padding-bottom: 0.75rem
+      overflow-x: auto
+      scrollbar-width: none
+
+      &::-webkit-scrollbar
+        display: none
+
+      @media (max-width: $mobile)
+        flex-wrap: nowrap
+        -webkit-overflow-scrolling: touch
 
       .tab-header
         display: flex
@@ -155,6 +188,11 @@
         color: colors.$subtext
         background-color: transparent
         position: relative
+        white-space: nowrap
+        flex-shrink: 0
+
+        @media (max-width: $mobile)
+          padding: 0.375rem 0.75rem
 
         svg
           width: 1.125rem
