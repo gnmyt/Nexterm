@@ -999,6 +999,7 @@
       "editServer": "Editar servidor",
       "editIntegration": "Editar Integración",
       "duplicateServer": "Servidor duplicado",
+      "pasteIdentityPassword": "Paste Password",
       "deleteServer": "Borrar servidor",
       "wakeOnLan": "Wake-On-LAN",
       "editPVE": "Editar PVE",
