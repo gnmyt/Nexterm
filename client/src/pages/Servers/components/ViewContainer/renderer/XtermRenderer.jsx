@@ -15,7 +15,7 @@ import { mdiContentCopy, mdiContentPaste, mdiCodeBrackets, mdiSelectAll, mdiDele
 import { useTranslation } from "react-i18next";
 import ConnectionLoader from "./components/ConnectionLoader";
 import { getWebSocketUrl } from "@/common/utils/ConnectionUtil.js";
-import { getRequest, postRequest } from "@/common/utils/RequestUtil.js";
+import { postRequest } from "@/common/utils/RequestUtil.js";
 import "@xterm/xterm/css/xterm.css";
 import "./styles/xterm.sass";
 
