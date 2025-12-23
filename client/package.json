@@ -9,13 +9,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@fontsource/fira-code": "^5.2.7",
-    "@fontsource/inconsolata": "^5.2.8",
-    "@fontsource/jetbrains-mono": "^5.2.8",
     "@fontsource/plus-jakarta-sans": "^5.2.8",
-    "@fontsource/roboto-mono": "^5.2.8",
-    "@fontsource/source-code-pro": "^5.2.7",
-    "@fontsource/ubuntu-mono": "^5.2.8",
     "@mdi/js": "^7.4.47",
     "@mdi/react": "^1.6.1",
     "@monaco-editor/react": "^4.7.0",
@@ -27,7 +21,6 @@
     "@xterm/xterm": "^5.5.0",
     "chart.js": "^4.5.1",
     "fuse.js": "^7.1.0",
-    "hack-font": "^3.3.0",
     "i18next": "^25.7.3",
     "i18next-browser-languagedetector": "^8.2.0",
     "i18next-http-backend": "^3.0.2",

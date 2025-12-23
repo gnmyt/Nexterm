@@ -368,40 +368,10 @@
     "@eslint/core" "^0.17.0"
     levn "^0.4.1"
 
-"@fontsource/fira-code@^5.2.7":
-  version "5.2.7"
-  resolved "https://registry.yarnpkg.com/@fontsource/fira-code/-/fira-code-5.2.7.tgz#9ecbd909d53e7196a5d895b601747fe34491fc6a"
-  integrity sha512-tnB9NNund9TwIym8/7DMJe573nlPEQb+fKUV5GL8TBYXjIhDvL0D7mgmNVNQUPhXp+R7RylQeiBdkA4EbOHPGQ==
-
-"@fontsource/inconsolata@^5.2.8":
-  version "5.2.8"
-  resolved "https://registry.yarnpkg.com/@fontsource/inconsolata/-/inconsolata-5.2.8.tgz#593859a9229939558219efb9c894f9f5ee6c491a"
-  integrity sha512-lIZW+WOZYpUH91g9r6rYYhfTmptF3YPPM54ZOs8IYVeeL4SeiAu4tfj7mdr8llYEq31DLYgi6JtGIJa192gB0Q==
-
-"@fontsource/jetbrains-mono@^5.2.8":
-  version "5.2.8"
-  resolved "https://registry.yarnpkg.com/@fontsource/jetbrains-mono/-/jetbrains-mono-5.2.8.tgz#56a1bbb8a36a47fe480d3e90b30b520c89853aa5"
-  integrity sha512-6w8/SG4kqvIMu7xd7wt6x3idn1Qux3p9N62s6G3rfldOUYHpWcc2FKrqf+Vo44jRvqWj2oAtTHrZXEP23oSKwQ==
-
 "@fontsource/plus-jakarta-sans@^5.2.8":
   version "5.2.8"
   resolved "https://registry.yarnpkg.com/@fontsource/plus-jakarta-sans/-/plus-jakarta-sans-5.2.8.tgz#c07f9cba01acee30748d6b78ee06ab4b79266547"
   integrity sha512-P5qE49fqdeD+7DXH1KBxmMPlB17LTz1zvBhFH0tFzfnYTKVJVyb0pR6plh0ZGXxcB+Oayb54FZZw3V42/DawTw==
-
-"@fontsource/roboto-mono@^5.2.8":
-  version "5.2.8"
-  resolved "https://registry.yarnpkg.com/@fontsource/roboto-mono/-/roboto-mono-5.2.8.tgz#b77a6e3f6c0329ed2d762f0aa9c9ea4740bc4ff5"
-  integrity sha512-M0XPRcvkOKiTPooXwX7yJSNpuad3CPcQwsADBfnopz3apBs+VKI47pc42mlvAxJjNTRauu5rndSxHc8F52bR7Q==
-
-"@fontsource/source-code-pro@^5.2.7":
-  version "5.2.7"
-  resolved "https://registry.yarnpkg.com/@fontsource/source-code-pro/-/source-code-pro-5.2.7.tgz#ab5cd5882e21cdc38076e12939ddf01424139f61"
-  integrity sha512-7papq9TH94KT+S5VSY8cU7tFmwuGkIe3qxXRMscuAXH6AjMU+KJI75f28FzgBVDrlMfA0jjlTV4/x5+H5o/5EQ==
-
-"@fontsource/ubuntu-mono@^5.2.8":
-  version "5.2.8"
-  resolved "https://registry.yarnpkg.com/@fontsource/ubuntu-mono/-/ubuntu-mono-5.2.8.tgz#ba0ed70cfaa071f979055722369e3f93248e6f44"
-  integrity sha512-N4nT8+GYWWcDODVSBLU4f3PycZQH9YIF6SypDI0rti3HrLqcXFS9u6wMvAd9vx1FmjAQkYv7Ld9CZ8XYTEOD0A==
 
 "@humanfs/core@^0.19.1":
   version "0.19.1"
@@ -1658,11 +1628,6 @@ gopd@^1.0.1, gopd@^1.2.0:
   version "1.2.0"
   resolved "https://registry.yarnpkg.com/gopd/-/gopd-1.2.0.tgz#89f56b8217bdbc8802bd299df6d7f1081d7e51a1"
   integrity sha512-ZUKRh6/kUFoAiTAtTYPZJ3hw9wNxx+BIBOijnlG9PnrJsCcSjs1wyyD6vJpaYtgnzDrKYRSqf3OO6Rfa93xsRg==
-
-hack-font@^3.3.0:
-  version "3.3.0"
-  resolved "https://registry.yarnpkg.com/hack-font/-/hack-font-3.3.0.tgz#be36ffe9cfc318c555aa04c8c26a48d0e53230d5"
-  integrity sha512-RohrcAr3UaKiIoxDlOytCjObcUAucfFc6V5fKu6gBrvmvTfIXeBqZwR0Q5kb9qpbluThJWt326LClLKIGiFyug==
 
 has-bigints@^1.0.2:
   version "1.1.0"
