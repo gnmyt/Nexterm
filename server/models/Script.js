@@ -37,4 +37,9 @@ module.exports = db.define("scripts", {
         allowNull: false,
         defaultValue: 0,
     },
+    osFilter: {
+        type: Sequelize.JSON,
+        allowNull: true,
+        defaultValue: null,
+    },
 }, { freezeTableName: true, createdAt: true, updatedAt: true });

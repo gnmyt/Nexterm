@@ -36,5 +36,10 @@ module.exports = db.define("snippets", {
         type: Sequelize.INTEGER,
         allowNull: false,
         defaultValue: 0,
+    },
+    osFilter: {
+        type: Sequelize.JSON,
+        allowNull: true,
+        defaultValue: null,
     }
 }, { freezeTableName: true, createdAt: false, updatedAt: false });
