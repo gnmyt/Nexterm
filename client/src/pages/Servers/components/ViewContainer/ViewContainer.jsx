@@ -17,6 +17,7 @@ export const ViewContainer = ({
                                   closeSession,
                                   hibernateSession,
                                   duplicateSession,
+                                  pasteIdentityPassword,
                                   setOpenFileEditors,
                                   onShareUpdate,
                               }) => {
@@ -51,6 +52,45 @@ export const ViewContainer = ({
     const registerGuacamoleRef = useCallback((sessionId, refs) => {
         refs ? guacamoleRefs.current[sessionId] = refs : delete guacamoleRefs.current[sessionId];
     }, []);
+
+    useEffect(() => {
+        const handler = (e) => {
+            try {
+                const { sessionId, text } = e.detail || {};
+                if (!sessionId || !text) return;
+
+                const session = activeSessions.find(s => s.id === sessionId);
+                if (!session) return;
+
+                const renderer = session.type || session.server?.renderer;
+
+                if (renderer === "terminal") {
+                    const refs = terminalRefs.current[sessionId];
+                    if (refs && refs.ws && refs.ws.readyState === WebSocket.OPEN) {
+                        refs.ws.send(text);
+                        if (refs.term) refs.term.focus();
+                    }
+                } else if (renderer === "guac") {
+                    const guac = guacamoleRefs.current[sessionId];
+                    const client = guac?.client;
+                    if (client) {
+                        for (let i = 0; i < text.length; i++) {
+                            const char = text.charCodeAt(i);
+                            setTimeout(() => {
+                                client.sendKeyEvent(1, char);
+                                setTimeout(() => client.sendKeyEvent(0, char), 10);
+                            }, i * 20);
+                        }
+                    }
+                }
+            } catch (err) {
+                console.error('Paste handler error', err);
+            }
+        };
+
+        window.addEventListener('nexterm-paste', handler);
+        return () => window.removeEventListener('nexterm-paste', handler);
+    }, [activeSessions]);
 
     const updateSessionProgress = useCallback((sessionId, progress) => {
         setSessionProgress(prev => ({
@@ -413,6 +453,7 @@ export const ViewContainer = ({
                                             sessionProgress={sessionProgress} fullscreenEnabled={fullscreenMode}
                                             onFullscreenToggle={toggleFullscreenMode}
                                             hibernateSession={hibernateSession} duplicateSession={duplicateSession}
+                                            pasteIdentityPassword={pasteIdentityPassword}
                                             onShareUpdate={onShareUpdate} />}
 
             <div ref={layoutRef}
