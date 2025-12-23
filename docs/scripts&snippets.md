@@ -12,42 +12,60 @@ Nexterm uses file extensions to distinguish scripts from snippets, not folder st
 
 **Snippets** are quick commands you can paste into your terminal session. They're useful for frequently used commands you don't want to type out every time.
 
+## File Format
+
+Both scripts and snippets use comments at the top to define metadata:
+
+::: code-group
+
+```sh [Script (.sh)]
+# @name: Largest files
+# @description: Find the 10 largest files on the system.
+# @os: Ubuntu, Debian, Fedora
+
+find / -type f -exec ls -lh {} + | sort -k5 -h | tail -10
+```
+
+```txt [Snippet (.snippet)]
+# @name: Update packages
+# @description: Update and upgrade all packages
+# @os: Ubuntu, Debian
+
+sudo apt update && sudo apt upgrade -y
+```
+
+```txt [Proxmox Snippet]
+# @name: Backup all VMs
+# @description: Create a backup of all running VMs
+# @os: Proxmox VE
+
+vzdump --all --mode snapshot --compress zstd
+```
+
+:::
+
 ## Supported Extensions
 
 **Snippets:** `.snippet`, `.txt`, `.cmd`
 
 **Scripts:** `.sh`, `.bash`, `.zsh`, `.fish`, `.ps1`
 
-## File Format
+## Available Tags
 
-Both scripts and snippets use comments at the top to define their name and description:
+| Tag | Description |
+|-----|-------------|
+| `@name` | Display name in the Nexterm UI |
+| `@description` | Additional context about what the command does |
+| `@os` | Comma-separated list of compatible operating systems |
 
-```sh
-# @name: Largest files
-# @description: Find the 10 largest files on the system.
+## Supported OS Values
 
-find / -type f -exec ls -lh {} + | sort -k5 -h | tail -10
-```
+Use these exact values for the `@os` tag:
 
-The `@name` is what appears in the Nexterm UI, and `@description` provides additional context.
+`Ubuntu`, `Debian`, `Alpine Linux`, `Fedora`, `CentOS`, `Red Hat`, `Rocky Linux`, `AlmaLinux`, `openSUSE`, `Arch Linux`, `Manjaro`, `Gentoo`, `NixOS`, `Proxmox VE`
 
-## Examples
-
-**Script** (`10_largest_files.sh`):
-```sh
-# @name: Largest files
-# @description: Find the 10 largest files on the system.
-
-find / -type f -exec ls -lh {} + | sort -k5 -h | tail -10
-```
-
-**Snippet** (`quick-ip.snippet`):
-```txt
-# @name: Quick IP Check
-# @description: Display the current system IP address
-
-ipconfig getifaddr en0
-```
+> [!TIP]
+> Snippets without an `@os` tag are shown on all systems. Use `Proxmox VE` for commands specific to PVE shell or LXC consoles.
 
 > [!TIP]
 > Check out the [NexStore repository](https://github.com/gnmyt/NexStore/tree/main/nexterm) for more examples.
