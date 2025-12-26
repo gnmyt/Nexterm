@@ -13,7 +13,7 @@ const createResizeBuffer = (width, height) => {
     ]);
 };
 
-const setupSocketMessageHandler = (ws, socket, config = null) => {
+const setupSocketMessageHandler = (ws, socket, sessionId = null, config = null) => {
     ws.on("message", (data) => {
         try {
             data = data.toString();
@@ -24,6 +24,7 @@ const setupSocketMessageHandler = (ws, socket, config = null) => {
                     const [width, height] = resizeData.split(",").map(Number);
                     if (!isNaN(width) && !isNaN(height)) {
                         socket.write(createResizeBuffer(width, height));
+                        if (sessionId) SessionManager.recordResize(sessionId, width, height);
                         return;
                     }
                 }
@@ -44,6 +45,7 @@ const setupSocketMessageHandler = (ws, socket, config = null) => {
 module.exports = async (ws, context) => {
     const { entry, auditLogId, serverSession } = context;
     const connectionStartTime = Date.now();
+    const organizationId = entry?.organizationId || null;
 
     let existingConnection = null;
     if (serverSession) existingConnection = SessionManager.getConnection(serverSession.sessionId);
@@ -59,7 +61,7 @@ module.exports = async (ws, context) => {
         socket.on("data", onData);
 
         SessionManager.addWebSocket(serverSession.sessionId, ws);
-        setupSocketMessageHandler(ws, socket, entry.config);
+        setupSocketMessageHandler(ws, socket, serverSession.sessionId, entry.config);
 
         ws.on("close", () => {
             socket.removeListener("data", onData);
@@ -72,11 +74,12 @@ module.exports = async (ws, context) => {
     const socket = new net.Socket();
     let connectionEstablished = false;
 
-    socket.connect(entry.config.port || 23, entry.config.ip, () => {
+    socket.connect(entry.config.port || 23, entry.config.ip, async () => {
         connectionEstablished = true;
         logger.info(`Telnet connection established`, { ip: entry.config.ip, port: entry.config.port || 23, entryId: entry.id });
 
         if (serverSession) {
+            await SessionManager.initRecording(serverSession.sessionId, organizationId);
             SessionManager.setConnection(serverSession.sessionId, { socket, auditLogId });
             SessionManager.addWebSocket(serverSession.sessionId, ws);
         }
@@ -86,6 +89,7 @@ module.exports = async (ws, context) => {
         if (ws.readyState === ws.OPEN) {
             ws.send(data.toString());
         }
+        if (serverSession) SessionManager.appendLog(serverSession.sessionId, data.toString());
     });
 
     socket.on("close", async () => {
@@ -105,7 +109,7 @@ module.exports = async (ws, context) => {
         if (serverSession) SessionManager.remove(serverSession.sessionId);
     });
 
-    setupSocketMessageHandler(ws, socket, entry.config);
+    setupSocketMessageHandler(ws, socket, serverSession?.sessionId, entry.config);
 
     ws.on("close", async () => {
         if (serverSession) SessionManager.removeWebSocket(serverSession.sessionId, ws);

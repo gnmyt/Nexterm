@@ -8,15 +8,17 @@ import {
     mdiAccountCircleOutline,
     mdiDomain,
     mdiWeb,
-    mdiLoading,
+    mdiPlayCircleOutline,
 } from "@mdi/js";
 import Button from "@/common/components/Button";
+import RecordingPlayer from "../RecordingPlayer";
 import { useTranslation } from "react-i18next";
 import "./styles.sass";
 
 export const AuditTable = ({ logs, loading, pagination, onPageChange, getIconForAction }) => {
     const { t } = useTranslation();
     const [expandedRow, setExpandedRow] = useState(null);
+    const [playingRecording, setPlayingRecording] = useState(null);
 
     const formatTimestamp = useCallback((timestamp) => {
         const date = new Date(timestamp);
@@ -69,6 +71,18 @@ export const AuditTable = ({ logs, loading, pagination, onPageChange, getIconFor
         setExpandedRow(prev => prev === logId ? null : logId);
     }, []);
 
+    const handlePlayRecording = useCallback((e, log) => {
+        e.stopPropagation();
+        setPlayingRecording({
+            auditLogId: log.id,
+            recordingType: log.details?.recordingType || "guac",
+        });
+    }, []);
+
+    const handleCloseRecording = useCallback(() => {
+        setPlayingRecording(null);
+    }, []);
+
     if (logs.length === 0 && !loading) {
         return (
             <div className="audit-table-container">
@@ -83,13 +97,6 @@ export const AuditTable = ({ logs, loading, pagination, onPageChange, getIconFor
 
     return (
         <div className="audit-table-container">
-            {loading && (
-                <div className="loading-overlay">
-                    <Icon path={mdiLoading} spin />
-                    <span>{t('audit.table.loading')}</span>
-                </div>
-            )}
-
             <div className="audit-table">
                 <div className="table-header">
                     <div className="header-cell timestamp">
@@ -170,6 +177,14 @@ export const AuditTable = ({ logs, loading, pagination, onPageChange, getIconFor
                                     </div>
 
                                     <div className="cell details" data-label="Details">
+                                        {log.details?.hasRecording && (
+                                            <button
+                                                className="play-recording-btn"
+                                                onClick={(e) => handlePlayRecording(e, log)}
+                                            >
+                                                <Icon path={mdiPlayCircleOutline} size={0.9} />
+                                            </button>
+                                        )}
                                         <Icon path={mdiChevronRight}
                                               className={`expand-icon ${isExpanded ? "expanded" : ""}`} />
                                     </div>
@@ -242,6 +257,14 @@ export const AuditTable = ({ logs, loading, pagination, onPageChange, getIconFor
                         />
                     </div>
                 </div>
+            )}
+
+            {playingRecording && (
+                <RecordingPlayer
+                    auditLogId={playingRecording.auditLogId}
+                    recordingType={playingRecording.recordingType}
+                    onClose={handleCloseRecording}
+                />
             )}
         </div>
     );

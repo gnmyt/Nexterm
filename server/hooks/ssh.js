@@ -11,6 +11,7 @@ const setupStreamHandlers = (ws, stream, sessionId = null, config = null) => {
         if (resize) {
             if (!sessionId || SessionManager.isActiveWs(sessionId, ws)) {
                 stream.setWindow(resize.height, resize.width);
+                if (sessionId) SessionManager.recordResize(sessionId, resize.width, resize.height);
             }
         } else {
             if (sessionId) SessionManager.setActiveWs(sessionId, ws);
@@ -69,6 +70,7 @@ module.exports = async (ws, context) => {
     const { auditLogId, serverSession, ssh, reuseConnection, entry } = context;
     const config = entry?.config || null;
     const connectionStartTime = Date.now();
+    const organizationId = entry?.organizationId || null;
 
     if (reuseConnection) {
         const { stream } = SessionManager.getConnection(serverSession.sessionId);
@@ -101,12 +103,13 @@ module.exports = async (ws, context) => {
     }
 
     ssh.on("ready", () => {
-        ssh.shell({ term: "xterm-256color" }, (err, stream) => {
+        ssh.shell({ term: "xterm-256color" }, async (err, stream) => {
             if (err) {
                 reject?.(err);
                 return ws.close(4008, `Shell error: ${err.message}`);
             }
             if (serverSession) {
+                await SessionManager.initRecording(serverSession.sessionId, organizationId);
                 stream.on("data", (data) => SessionManager.appendLog(serverSession.sessionId, data.toString()));
                 SessionManager.setConnection(serverSession.sessionId, { ssh, stream, auditLogId });
                 SessionManager.addWebSocket(serverSession.sessionId, ws);

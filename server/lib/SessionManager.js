@@ -1,5 +1,8 @@
+const fs = require("fs");
 const { v4: uuidv4 } = require("uuid");
 const logger = require("../utils/logger");
+const AuditLog = require("../models/AuditLog");
+const { isRecordingEnabled, getRecordingPath, compressRecording, finalizeGuacRecording } = require("../utils/recordingService");
 
 class SessionManager {
     constructor() {
@@ -104,6 +107,32 @@ class SessionManager {
         this.remove(sessionId);
     }
 
+    async initRecording(sessionId, organizationId, cols = 80, rows = 24) {
+        const session = this.get(sessionId);
+        logger.info("initRecording called", { sessionId, organizationId, hasSession: !!session, auditLogId: session?.auditLogId });
+        if (!session?.auditLogId) return false;
+        
+        const enabled = await isRecordingEnabled(organizationId);
+        logger.info("initRecording isRecordingEnabled result", { sessionId, organizationId, enabled });
+        if (!enabled) return false;
+
+        const castPath = getRecordingPath(session.auditLogId, "cast", false);
+        const stream = fs.createWriteStream(castPath, { flags: "w" });
+        const startTime = Date.now();
+        stream.write(JSON.stringify({ version: 2, width: cols, height: rows, timestamp: Math.floor(startTime / 1000), env: { SHELL: "/bin/bash", TERM: "xterm-256color" } }) + "\n");
+        session.recording = { stream, startTime, path: castPath, cols, rows };
+        logger.info("Recording started", { sessionId, auditLogId: session.auditLogId, castPath });
+        return true;
+    }
+
+    recordResize(sessionId, cols, rows) {
+        const rec = this.get(sessionId)?.recording;
+        if (!rec?.stream || (rec.cols === cols && rec.rows === rows)) return;
+        rec.cols = cols;
+        rec.rows = rows;
+        rec.stream.write(JSON.stringify([(Date.now() - rec.startTime) / 1000, "r", `${cols}x${rows}`]) + "\n");
+    }
+
     appendLog(sessionId, data) {
         const session = this.get(sessionId);
         if (!session) return;
@@ -111,6 +140,33 @@ class SessionManager {
         if (session.logBuffer.length > SessionManager.MAX_LOG_BUFFER_SIZE) {
             session.logBuffer = session.logBuffer.slice(-SessionManager.MAX_LOG_BUFFER_SIZE);
         }
+        session.recording?.stream?.write(JSON.stringify([(Date.now() - session.recording.startTime) / 1000, "o", data]) + "\n");
+    }
+
+    async finalizeTerminalRecording(sessionId) {
+        const rec = this.get(sessionId)?.recording;
+        if (!rec?.stream) return;
+        const { stream, path } = rec;
+        const auditLogId = this.get(sessionId).auditLogId;
+        this.get(sessionId).recording = null;
+        stream.end();
+        await new Promise(r => stream.on("finish", r));
+        await compressRecording(path, getRecordingPath(auditLogId, "cast", true));
+        await this.markRecordingComplete(auditLogId, "cast");
+    }
+
+    async finalizeGuacRecording(auditLogId) {
+        if (await finalizeGuacRecording(auditLogId)) {
+            await this.markRecordingComplete(auditLogId, "guac");
+        }
+    }
+
+    async markRecordingComplete(auditLogId, recordingType) {
+        if (!auditLogId) return;
+        const log = await AuditLog.findByPk(auditLogId);
+        if (!log) return;
+        const details = typeof log.details === "string" ? JSON.parse(log.details) : log.details || {};
+        await AuditLog.update({ details: { ...details, hasRecording: true, recordingType } }, { where: { id: auditLogId } });
     }
 
     getLogBuffer(sessionId) {
@@ -175,14 +231,21 @@ class SessionManager {
         return true;
     }
 
-    remove(sessionId) {
+    async remove(sessionId) {
         const session = this.get(sessionId);
         if (!session) return false;
 
         this.closeAllWebSockets(sessionId);
 
+        if (session.recording) {
+            await this.finalizeTerminalRecording(sessionId);
+        }
+
         if (session.masterConnection) {
             const conn = session.masterConnection;
+            if (conn.recordingEnabled && conn.auditLogId) {
+                await this.finalizeGuacRecording(conn.auditLogId);
+            }
             if (conn.guacdConnection) {
                 try { conn.guacdConnection.removeAllListeners(); } catch (e) {}
                 try { conn.guacdConnection.end(); } catch (e) {}

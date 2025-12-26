@@ -57,6 +57,7 @@ const handleResize = (data, sessionId, ws, sendFn) => {
             if (!isNaN(width) && !isNaN(height)) {
                 if (!sessionId || SessionManager.isActiveWs(sessionId, ws)) {
                     sendFn(width, height);
+                    if (sessionId) SessionManager.recordResize(sessionId, width, height);
                 }
                 return true;
             }
@@ -108,6 +109,7 @@ module.exports = async (ws, context) => {
     const { integration, entry, containerId, ticket, node, vncTicket, auditLogId, serverSession } = context;
     const connectionStartTime = Date.now();
     const vmid = containerId ?? entry.config?.vmid ?? "0";
+    const organizationId = entry?.organizationId || integration?.organizationId || null;
 
     let existingConnection = null;
     if (serverSession) {
@@ -200,7 +202,7 @@ module.exports = async (ws, context) => {
             if (serverSession) SessionManager.remove(serverSession.sessionId);
         });
 
-        lxcSocket.on("open", () => {
+        lxcSocket.on("open", async () => {
             try {
                 lxcSocket.send(`${server.username}:${vncTicket.ticket}\n`);
                 keepAliveTimer = setInterval(() => {
@@ -210,6 +212,7 @@ module.exports = async (ws, context) => {
                 }, 30000);
 
                 if (serverSession) {
+                    await SessionManager.initRecording(serverSession.sessionId, organizationId);
                     lxcSocket.on("message", (message) => {
                         if (message instanceof Buffer) message = message.toString();
                         if (message !== "OK") {

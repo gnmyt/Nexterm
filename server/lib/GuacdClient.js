@@ -19,6 +19,7 @@
 const Net = require('net');
 const SessionManager = require('./SessionManager');
 const logger = require('../utils/logger');
+const { RECORDINGS_DIR } = require('../utils/recordingService');
 
 class GuacdClient {
 
@@ -34,6 +35,9 @@ class GuacdClient {
         this.guacdConnection = null;
         this.guacdConnectionId = null;
         this.connectionType = this.connectionSettings.connection?.type || 'vnc';
+
+        this.recordingEnabled = options.recordingEnabled || false;
+        this.auditLogId = options.auditLogId || null;
         
         this.state = 'connecting';
         this.handshakeComplete = false;
@@ -93,6 +97,12 @@ class GuacdClient {
 
         const attributes = serverHandshake.split(',');
         const conn = this.connectionSettings.connection || {};
+
+        if (this.recordingEnabled && this.isMaster && this.auditLogId) {
+            conn['recording-path'] = RECORDINGS_DIR;
+            conn['recording-name'] = String(this.auditLogId);
+            conn['create-recording-path'] = 'true';
+        }
 
         this.sendOpCode(['size', conn.width || 1024, conn.height || 768, conn.dpi || 96]);
         this.sendOpCode(['audio'].concat(this.GUAC_AUDIO));
@@ -217,6 +227,8 @@ class GuacdClient {
             connectionType: this.connectionType,
             keepAliveInterval: this.keepAliveInterval,
             guacdClient: this,
+            recordingEnabled: this.recordingEnabled,
+            auditLogId: this.auditLogId,
         };
     }
 }

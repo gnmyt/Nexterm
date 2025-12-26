@@ -58,6 +58,28 @@
             line-height: 1.4
             margin-top: 0.125rem
 
+        .retention-input
+          width: 5rem
+          padding: 0.5rem 0.75rem
+          background-color: colors.$dark-gray
+          border: 1px solid colors.$gray
+          border-radius: 0.375rem
+          color: colors.$white
+          font-size: 0.875rem
+          text-align: center
+
+          &:focus
+            outline: none
+            border-color: colors.$primary
+
+          &:disabled
+            opacity: 0.5
+            cursor: not-allowed
+
+          &::-webkit-inner-spin-button,
+          &::-webkit-outer-spin-button
+            opacity: 1
+
   .settings-actions
     margin-top: 1.25rem
     padding-top: 1rem

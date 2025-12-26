@@ -91,3 +91,19 @@ export const deleteRequest = (url) => {
 export const patchRequest = (url, body) => {
     return sessionRequest(url, "PATCH", getToken(), body);
 }
+
+export const getRawRequest = async (url) => {
+    url = url.startsWith("/") ? url.substring(1) : url;
+    const baseUrl = getBaseUrl();
+    const fullUrl = baseUrl ? `${baseUrl}/api/${url}` : `/api/${url}`;
+    
+    const response = await tauriFetch(fullUrl, {
+        method: "GET",
+        headers: { "Authorization": `Bearer ${getToken()}` },
+    });
+
+    if (response.status === 401) throw new Error("Unauthorized");
+    if (!response.ok) throw new Error("Request failed");
+
+    return response;
+}
