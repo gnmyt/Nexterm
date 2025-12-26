@@ -6,7 +6,6 @@
   "author": "Mathias Wagner",
   "license": "MIT",
   "dependencies": {
-    "@marsaud/smb2": "^0.18.0",
     "@simplewebauthn/server": "^13.2.2",
     "archiver": "^7.0.1",
     "axios": "^1.13.2",
