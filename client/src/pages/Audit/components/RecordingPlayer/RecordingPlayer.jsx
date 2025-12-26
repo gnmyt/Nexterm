@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState, useCallback } from "react";
 import Icon from "@mdi/react";
-import { mdiPlay, mdiPause, mdiRewind, mdiFastForward, mdiLoading, mdiAlertCircleOutline } from "@mdi/js";
+import { mdiPlay, mdiPause, mdiRewind, mdiFastForward, mdiLoading, mdiAlertCircleOutline, mdiFullscreen, mdiFullscreenExit } from "@mdi/js";
 import Guacamole from "guacamole-common-js";
 import * as AsciinemaPlayer from "asciinema-player";
 import "asciinema-player/dist/bundle/asciinema-player.css";
@@ -19,10 +19,20 @@ const formatTime = (ms) => {
 const RecordingPlayerContent = ({ auditLogId, recordingType }) => {
     const containerRef = useRef(null);
     const playerRef = useRef(null);
+    const playerContentRef = useRef(null);
     const initRef = useRef(false);
-    const [state, setState] = useState({ loading: true, error: null, playing: false, duration: 0, position: 0 });
+    const [state, setState] = useState({ loading: true, error: null, playing: false, duration: 0, position: 0, fullscreen: false });
 
     const updateState = (changes) => setState(prevState => ({ ...prevState, ...changes }));
+
+    const handleFullscreen = useCallback(() => {
+        if (!playerContentRef.current) return;
+        if (!document.fullscreenElement) {
+            playerContentRef.current.requestFullscreen().then(() => updateState({ fullscreen: true })).catch(() => {});
+        } else {
+            document.exitFullscreen().then(() => updateState({ fullscreen: false })).catch(() => {});
+        }
+    }, []);
 
     const handlePlayPause = useCallback(async () => {
         const player = playerRef.current;
@@ -184,13 +194,19 @@ const RecordingPlayerContent = ({ auditLogId, recordingType }) => {
             if (event.key === " ") { event.preventDefault(); handlePlayPause(); }
             else if (event.key === "ArrowLeft") handleSkip(-5000);
             else if (event.key === "ArrowRight") handleSkip(5000);
+            else if (event.key === "f" || event.key === "F") handleFullscreen();
         };
+        const handleFullscreenChange = () => updateState({ fullscreen: !!document.fullscreenElement });
         document.addEventListener("keydown", handleKeyDown);
-        return () => document.removeEventListener("keydown", handleKeyDown);
-    }, [handlePlayPause, handleSkip]);
+        document.addEventListener("fullscreenchange", handleFullscreenChange);
+        return () => {
+            document.removeEventListener("keydown", handleKeyDown);
+            document.removeEventListener("fullscreenchange", handleFullscreenChange);
+        };
+    }, [handlePlayPause, handleSkip, handleFullscreen]);
 
     return (
-        <div className="recording-player-content">
+        <div className={`recording-player-content ${state.fullscreen ? "fullscreen" : ""}`} ref={playerContentRef}>
             <h2>Session Recording</h2>
             <div className="recording-display-area">
                 {state.loading && <div className="loading-state"><Icon path={mdiLoading} spin size={2} /><span>Loading recording...</span></div>}
@@ -210,6 +226,11 @@ const RecordingPlayerContent = ({ auditLogId, recordingType }) => {
                             <div className="progress-fill" style={{ width: `${state.duration > 0 ? (state.position / state.duration) * 100 : 0}%` }} />
                         </div>
                         <span className="time-display">{formatTime(state.duration)}</span>
+                    </div>
+                    <div className="controls-right">
+                        <button className="control-btn" onClick={handleFullscreen}>
+                            <Icon path={state.fullscreen ? mdiFullscreenExit : mdiFullscreen} size={0.9} />
+                        </button>
                     </div>
                 </div>
             )}
