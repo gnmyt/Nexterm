@@ -74,15 +74,6 @@ module.exports.deleteProvider = async (providerId) => {
     await BackupSettings.update({ providers: JSON.stringify(providers) }, { where: { id: settings.id } });
 };
 
-module.exports.testProvider = async (providerId) => {
-    const settings = await getSettings();
-    const provider = settings.providers.find(p => p.id === providerId);
-    if (!provider) return { code: 404, message: "Provider not found" };
-
-    await backupService.testProvider(provider);
-    return { success: true };
-};
-
 module.exports.getStorageStats = () => backupService.getStorageStats();
 
 module.exports.createBackup = async (providerId) => backupService.createBackup(providerId);
