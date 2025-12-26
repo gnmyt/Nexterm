@@ -1,4 +1,5 @@
 const { Router } = require("express");
+const fs = require("fs");
 const logger = require("../utils/logger");
 const auditController = require("../controllers/audit");
 const { getAuditLogsValidation, updateOrganizationAuditSettingsValidation } = require("../validations/audit");
@@ -26,20 +27,14 @@ const app = Router();
 app.get("/logs", async (req, res) => {
     try {
         if (validateSchema(res, getAuditLogsValidation, req.query)) return;
-
         const filters = {
             organizationId: req.query.organizationId === 'personal' ? 'personal' : (req.query.organizationId ? parseInt(req.query.organizationId) : null),
-            action: req.query.action,
-            resource: req.query.resource,
-            startDate: req.query.startDate,
-            endDate: req.query.endDate,
-            limit: req.query.limit ? parseInt(req.query.limit) : 50,
-            offset: req.query.offset ? parseInt(req.query.offset) : 0,
+            action: req.query.action, resource: req.query.resource,
+            startDate: req.query.startDate, endDate: req.query.endDate,
+            limit: parseInt(req.query.limit) || 50, offset: parseInt(req.query.offset) || 0,
         };
-
         const result = await auditController.getAuditLogs(req.user.id, filters);
         if (result.code) return res.status(result.code).json({ message: result.message });
-
         res.json(result);
     } catch (error) {
         logger.error("Error in audit logs route", { error: error.message, stack: error.stack });
@@ -80,12 +75,8 @@ app.get("/metadata", async (req, res) => {
  */
 app.get("/organizations/:id/settings", async (req, res) => {
     try {
-        const organizationId = parseInt(req.params.id);
-
-        const result = await auditController.getOrganizationAuditSettings(req.user.id, organizationId);
-
+        const result = await auditController.getOrganizationAuditSettings(req.user.id, parseInt(req.params.id));
         if (result.code) return res.status(result.code).json({ message: result.message });
-
         res.json(result);
     } catch (error) {
         logger.error("Error getting organization audit settings", { organizationId: req.params.id, error: error.message });
@@ -110,17 +101,47 @@ app.get("/organizations/:id/settings", async (req, res) => {
 app.patch("/organizations/:id/settings", async (req, res) => {
     try {
         if (validateSchema(res, updateOrganizationAuditSettingsValidation, req.body)) return;
-
-        const organizationId = parseInt(req.params.id);
-
-        const result = await auditController.updateOrganizationAuditSettings(req.user.id, organizationId, req.body);
-
+        const result = await auditController.updateOrganizationAuditSettings(req.user.id, parseInt(req.params.id), req.body);
         if (result.code) return res.status(result.code).json({ message: result.message });
-
         res.json(result);
     } catch (error) {
         logger.error("Error updating organization audit settings", { organizationId: req.params.id, error: error.message });
         res.status(500).json({ message: "An error occurred while updating audit settings" });
+    }
+});
+
+/**
+ * GET /audit/{auditLogId}/recording
+ * @summary Download Session Recording
+ * @description Downloads a session recording file for the specified audit log entry. Recordings are returned as gzip-compressed files in either Guacamole (.guac) or Asciicast (.cast) format depending on the session type.
+ * @tags Audit
+ * @produces application/octet-stream, application/json
+ * @security BearerAuth
+ * @param {number} auditLogId.path.required - The unique identifier of the audit log entry containing the recording
+ * @return {file} 200 - Gzip-compressed session recording file
+ * @return {object} 403 - Access denied to the recording
+ * @return {object} 404 - Recording not found
+ * @return {object} 500 - Internal server error
+ */
+app.get("/:auditLogId/recording", async (req, res) => {
+    try {
+        const auditLogId = parseInt(req.params.auditLogId);
+        const result = await auditController.getRecording(req.user.id, auditLogId);
+        if (result.code) return res.status(result.code).json({ message: result.message });
+        
+        res.setHeader("Content-Type", result.type === "cast" ? "application/json" : "application/octet-stream");
+        res.setHeader("Content-Encoding", "gzip");
+        res.setHeader("Content-Disposition", `attachment; filename="${auditLogId}.${result.type}.gz"`);
+        
+        const fileStream = fs.createReadStream(result.path);
+        fileStream.pipe(res);
+        fileStream.on("error", (error) => {
+            logger.error("Error streaming recording file", { auditLogId, error: error.message });
+            if (!res.headersSent) res.status(500).json({ message: "Failed to stream recording" });
+        });
+    } catch (error) {
+        logger.error("Error in recording route", { auditLogId: req.params.auditLogId, error: error.message });
+        res.status(500).json({ message: "An error occurred while retrieving the recording" });
     }
 });
 

@@ -21,6 +21,8 @@ module.exports = db.define("organizations", {
             enableServerManagementAudit: true,
             enableFolderManagementAudit: true,
             enableScriptExecutionAudit: true,
+            enableSessionRecording: false,
+            recordingRetentionDays: 90,
         },
     }
 }, { freezeTableName: true });

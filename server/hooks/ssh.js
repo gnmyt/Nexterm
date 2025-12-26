@@ -11,6 +11,7 @@ const setupStreamHandlers = (ws, stream, sessionId = null, config = null) => {
         if (resize) {
             if (!sessionId || SessionManager.isActiveWs(sessionId, ws)) {
                 stream.setWindow(resize.height, resize.width);
+                if (sessionId) SessionManager.recordResize(sessionId, resize.width, resize.height);
             }
         } else {
             if (sessionId) SessionManager.setActiveWs(sessionId, ws);
@@ -49,6 +50,7 @@ const handleSharedConnection = (ws, context) => {
         if (resize) {
             if (SessionManager.isActiveWs(sessionId, ws)) {
                 stream.setWindow(resize.height, resize.width);
+                SessionManager.recordResize(sessionId, resize.width, resize.height);
             }
         } else {
             SessionManager.setActiveWs(sessionId, ws);
@@ -66,7 +68,7 @@ const handleSharedConnection = (ws, context) => {
 module.exports = async (ws, context) => {
     if (context.isShared) return handleSharedConnection(ws, context);
 
-    const { auditLogId, serverSession, ssh, reuseConnection, entry } = context;
+    const { auditLogId, serverSession, ssh, reuseConnection, entry, organizationId } = context;
     const config = entry?.config || null;
     const connectionStartTime = Date.now();
 
@@ -83,6 +85,7 @@ module.exports = async (ws, context) => {
             if (resize) {
                 stream.setWindow(resize.height - 1, resize.width);
                 setTimeout(() => stream.setWindow(resize.height, resize.width), 50);
+                SessionManager.recordResize(serverSession.sessionId, resize.width, resize.height);
                 ws.removeListener("message", onFirstResize);
             }
         };
@@ -101,12 +104,14 @@ module.exports = async (ws, context) => {
     }
 
     ssh.on("ready", () => {
-        ssh.shell({ term: "xterm-256color" }, (err, stream) => {
+        ssh.shell({ term: "xterm-256color" }, async (err, stream) => {
             if (err) {
                 reject?.(err);
                 return ws.close(4008, `Shell error: ${err.message}`);
             }
+
             if (serverSession) {
+                await SessionManager.initRecording(serverSession.sessionId, organizationId);
                 stream.on("data", (data) => SessionManager.appendLog(serverSession.sessionId, data.toString()));
                 SessionManager.setConnection(serverSession.sessionId, { ssh, stream, auditLogId });
                 SessionManager.addWebSocket(serverSession.sessionId, ws);
@@ -119,9 +124,9 @@ module.exports = async (ws, context) => {
                 if (serverSession) SessionManager.removeWebSocket(serverSession.sessionId, ws);
                 await updateAuditLogWithSessionDuration(auditLogId, connectionStartTime);
             });
-            stream.on("close", () => {
+            stream.on("close", async () => {
                 ws.close();
-                if (serverSession) SessionManager.remove(serverSession.sessionId);
+                if (serverSession) await SessionManager.remove(serverSession.sessionId);
             });
         });
     });

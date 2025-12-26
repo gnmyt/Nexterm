@@ -20,6 +20,7 @@ const GuacdClient = require("./GuacdClient.js");
 const { updateAuditLogWithSessionDuration } = require("../controllers/audit");
 const SessionManager = require("./SessionManager");
 const logger = require("../utils/logger");
+const { isRecordingEnabled } = require("../utils/recordingService");
 
 class ClientConnection {
     constructor(webSocket, clientOptions, settings) {
@@ -32,6 +33,7 @@ class ClientConnection {
         this.activityCheckInterval = null;
         this.closed = false;
         this.guacdClient = null;
+        this.recordingEnabled = false;
 
         this.connectionType = settings.connection?.type || 'vnc';
 
@@ -45,7 +47,7 @@ class ClientConnection {
         this.initialize();
     }
 
-    initialize() {
+    async initialize() {
         if (!this.sessionId) {
             logger.warn(`ClientConnection without sessionId`);
             this.webSocket.close(4007, "Session required");
@@ -58,6 +60,9 @@ class ClientConnection {
             this.webSocket.close(4007, "Session not found");
             return;
         }
+
+        const organizationId = this.connectionSettings.organizationId || null;
+        this.recordingEnabled = await isRecordingEnabled(organizationId);
 
         if (SessionManager.hasMasterConnection(this.sessionId)) {
             this.joinMasterConnection();
@@ -75,6 +80,8 @@ class ClientConnection {
             sessionId: this.sessionId,
             connectionSettings: this.connectionSettings,
             isMaster: true,
+            recordingEnabled: this.recordingEnabled,
+            auditLogId: this.connectionSettings.auditLogId,
             onData: (data) => this.sendToWebSocket(data),
             onReady: (connectionId) => {
                 logger.info(`Master connection ready`, { sessionId: this.sessionId, connectionId });

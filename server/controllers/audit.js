@@ -5,6 +5,7 @@ const Account = require("../models/Account");
 const { hasOrganizationAccess } = require("../utils/permission");
 const { Op } = require("sequelize");
 const logger = require("../utils/logger");
+const { getRecordingInfo } = require("../utils/recordingService");
 
 const AUDIT_ACTIONS = {
     SSH_CONNECT: "entry.ssh_connect",
@@ -264,6 +265,28 @@ module.exports.getOrganizationAuditSettingsInternal = async (organizationId) => 
     } catch (error) {
         logger.error("Error getting organization audit settings internally", { error: error.message, organizationId });
         return null;
+    }
+};
+
+module.exports.getRecording = async (accountId, auditLogId) => {
+    try {
+        const auditLog = await AuditLog.findByPk(auditLogId);
+        if (!auditLog) return { code: 404, message: "Audit log not found" };
+
+        if (auditLog.organizationId) {
+            if (!(await hasOrganizationAccess(accountId, auditLog.organizationId))) 
+                return { code: 403, message: "You don't have access to this recording" };
+        } else if (auditLog.accountId !== accountId) {
+            return { code: 403, message: "You don't have access to this recording" };
+        }
+
+        const recordingInfo = getRecordingInfo(auditLogId);
+        if (!recordingInfo.exists) return { code: 404, message: "Recording not found" };
+
+        return { type: recordingInfo.type, path: recordingInfo.path };
+    } catch (error) {
+        logger.error("Error getting recording", { error: error.message, auditLogId });
+        return { code: 500, message: "Failed to retrieve recording" };
     }
 };
 
