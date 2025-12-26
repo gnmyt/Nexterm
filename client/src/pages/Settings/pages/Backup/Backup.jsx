@@ -10,7 +10,7 @@ import ActionConfirmDialog from "@/common/components/ActionConfirmDialog";
 import Icon from "@mdi/react";
 import {
     mdiPlus, mdiDatabase, mdiVideo, mdiFileDocument, mdiHarddisk, mdiLanConnect,
-    mdiFolder, mdiPencil, mdiTrashCan, mdiBackupRestore, mdiCloudUpload, mdiLoading, mdiContentSave, mdiRestore, mdiArchive,
+    mdiCloud, mdiPencil, mdiTrashCan, mdiBackupRestore, mdiCloudUpload, mdiLoading, mdiContentSave, mdiRestore, mdiArchive,
 } from "@mdi/js";
 import ProviderDialog from "./components/ProviderDialog";
 
@@ -179,7 +179,13 @@ export const Backup = () => {
         }
     };
 
-    const getProviderIcon = (type) => type === "smb" ? mdiLanConnect : mdiFolder;
+    const getProviderIcon = (type) => {
+        switch (type) {
+            case "smb": return mdiLanConnect;
+            case "webdav": return mdiCloud;
+            default: return mdiHarddisk;
+        }
+    };
 
     if (loading) return <div className="backup-loading">{t("settings.backup.loading")}</div>;
 
