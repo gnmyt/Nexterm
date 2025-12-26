@@ -5,7 +5,7 @@ import Icon from "@mdi/react";
 import {
     mdiClose, mdiAccountCircleOutline, mdiAccountGroup, mdiClockStarFourPointsOutline,
     mdiShieldAccountOutline, mdiDomain, mdiCreationOutline, mdiKeyVariant, mdiConsole,
-    mdiKeyboardOutline, mdiCloudDownloadOutline, mdiChartLine, mdiLogout,
+    mdiKeyboardOutline, mdiCloudDownloadOutline, mdiChartLine, mdiLogout, mdiBackupRestore,
 } from "@mdi/js";
 import { UserContext } from "@/common/contexts/UserContext.jsx";
 import { ActionConfirmDialog } from "@/common/components/ActionConfirmDialog/ActionConfirmDialog.jsx";
@@ -20,6 +20,7 @@ import Terminal from "@/pages/Settings/pages/Terminal";
 import Keymaps from "@/pages/Settings/pages/Keymaps";
 import Sources from "@/pages/Settings/pages/Sources";
 import Monitoring from "@/pages/Settings/pages/Monitoring";
+import Backup from "@/pages/Settings/pages/Backup";
 import "./styles.sass";
 
 export const SettingsDialog = ({ open, onClose, initialTab = "account" }) => {
@@ -54,6 +55,7 @@ export const SettingsDialog = ({ open, onClose, initialTab = "account" }) => {
         },
         { title: t("settings.pages.sources"), key: "sources", icon: mdiCloudDownloadOutline, content: <Sources /> },
         { title: t("settings.pages.monitoring"), key: "monitoring", icon: mdiChartLine, content: <Monitoring /> },
+        { title: t("settings.pages.backup"), key: "backup", icon: mdiBackupRestore, content: <Backup /> },
         { title: t("settings.pages.ai"), key: "ai", icon: mdiCreationOutline, content: <AI /> },
     ];
 
