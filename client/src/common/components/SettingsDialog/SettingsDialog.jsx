@@ -5,7 +5,7 @@ import Icon from "@mdi/react";
 import {
     mdiClose, mdiAccountCircleOutline, mdiAccountGroup, mdiClockStarFourPointsOutline,
     mdiShieldAccountOutline, mdiDomain, mdiCreationOutline, mdiKeyVariant, mdiConsole,
-    mdiKeyboardOutline, mdiCloudDownloadOutline, mdiChartLine, mdiLogout, mdiBackupRestore,
+    mdiKeyboardOutline, mdiCloudDownloadOutline, mdiChartLine, mdiLogout, mdiHarddisk,
 } from "@mdi/js";
 import { UserContext } from "@/common/contexts/UserContext.jsx";
 import { ActionConfirmDialog } from "@/common/components/ActionConfirmDialog/ActionConfirmDialog.jsx";
@@ -55,7 +55,7 @@ export const SettingsDialog = ({ open, onClose, initialTab = "account" }) => {
         },
         { title: t("settings.pages.sources"), key: "sources", icon: mdiCloudDownloadOutline, content: <Sources /> },
         { title: t("settings.pages.monitoring"), key: "monitoring", icon: mdiChartLine, content: <Monitoring /> },
-        { title: t("settings.pages.backup"), key: "backup", icon: mdiBackupRestore, content: <Backup /> },
+        { title: t("settings.pages.backup"), key: "backup", icon: mdiHarddisk, content: <Backup /> },
         { title: t("settings.pages.ai"), key: "ai", icon: mdiCreationOutline, content: <AI /> },
     ];
 
