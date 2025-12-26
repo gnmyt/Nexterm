@@ -130,7 +130,7 @@
   dependencies:
     "@babel/helper-plugin-utils" "^7.27.1"
 
-"@babel/runtime@^7.23.2", "@babel/runtime@^7.27.6", "@babel/runtime@^7.28.4", "@babel/runtime@^7.9.2":
+"@babel/runtime@^7.21.0", "@babel/runtime@^7.23.2", "@babel/runtime@^7.27.6", "@babel/runtime@^7.28.4", "@babel/runtime@^7.9.2":
   version "7.28.4"
   resolved "https://registry.yarnpkg.com/@babel/runtime/-/runtime-7.28.4.tgz#a70226016fabe25c5783b2f22d3e1c9bc5ca3326"
   integrity sha512-Q/N6JNWvIvPnLDvjlE1OUBLPQHH6l3CltCEsHIujp45zQUSSh8K+gHnaEX45yAT1nyngnINhvWtzN+Nb9D8RAQ==
@@ -685,6 +685,23 @@
   resolved "https://registry.yarnpkg.com/@simplewebauthn/browser/-/browser-13.2.2.tgz#4cde38c4c6969a039c23c2a3d931ecb69f937910"
   integrity sha512-FNW1oLQpTJyqG5kkDg5ZsotvWgmBaC6jCHR7Ej0qUNep36Wl9tj2eZu7J5rP+uhXgHaLk+QQ3lqcw2vS5MX1IA==
 
+"@solid-primitives/refs@^1.0.5":
+  version "1.1.2"
+  resolved "https://registry.yarnpkg.com/@solid-primitives/refs/-/refs-1.1.2.tgz#1a37a825754bc8fe7f8845fc0c7664683646288e"
+  integrity sha512-K7tf2thy7L+YJjdqXspXOg5xvNEOH8tgEWsp0+1mQk3obHBRD6hEjYZk7p7FlJphSZImS35je3UfmWuD7MhDfg==
+  dependencies:
+    "@solid-primitives/utils" "^6.3.2"
+
+"@solid-primitives/transition-group@^1.0.2":
+  version "1.1.2"
+  resolved "https://registry.yarnpkg.com/@solid-primitives/transition-group/-/transition-group-1.1.2.tgz#be9af05871a7ca6323277f9782f4aeb20cb7f73f"
+  integrity sha512-gnHS0OmcdjeoHN9n7Khu8KNrOlRc8a2weETDt2YT6o1zeW/XtUC6Db3Q9pkMU/9cCKdEmN4b0a/41MKAHRhzWA==
+
+"@solid-primitives/utils@^6.3.2":
+  version "6.3.2"
+  resolved "https://registry.yarnpkg.com/@solid-primitives/utils/-/utils-6.3.2.tgz#13d6126fc5a498965d7c45dd41c052e42dcfd7e1"
+  integrity sha512-hZ/M/qr25QOCcwDPOHtGjxTD8w2mNyVAYvcfgwzBHq2RwNqHNdDNsMZYap20+ruRwW4A3Cdkczyoz0TSxLCAPQ==
+
 "@tauri-apps/api@^2", "@tauri-apps/api@^2.8.0":
   version "2.9.1"
   resolved "https://registry.yarnpkg.com/@tauri-apps/api/-/api-2.9.1.tgz#e539bfa437e53864fd5e7ed0f28e8217fbc74de1"
@@ -896,6 +913,15 @@ arraybuffer.prototype.slice@^1.0.4:
     get-intrinsic "^1.2.6"
     is-array-buffer "^3.0.4"
 
+asciinema-player@^3.13.5:
+  version "3.13.5"
+  resolved "https://registry.yarnpkg.com/asciinema-player/-/asciinema-player-3.13.5.tgz#b92f8ee29a02a9d383d90d54a7f77d533fe5bb61"
+  integrity sha512-mgpJc9g6I+k4Tz5qVUNd0H+GoYlhiUwvlay6vD6IXiuiWOWhBOjxbvqQ1bcI/HPTrOYxhTyxZuzHIXM36Tw60Q==
+  dependencies:
+    "@babel/runtime" "^7.21.0"
+    solid-js "^1.3.0"
+    solid-transition-group "^0.2.3"
+
 async-function@^1.0.0:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/async-function/-/async-function-1.0.0.tgz#509c9fca60eaf85034c6829838188e4e4c8ffb2b"
@@ -1055,7 +1081,7 @@ cross-spawn@^7.0.6:
     shebang-command "^2.0.0"
     which "^2.0.1"
 
-csstype@^3.2.2:
+csstype@^3.1.0, csstype@^3.2.2:
   version "3.2.3"
   resolved "https://registry.yarnpkg.com/csstype/-/csstype-3.2.3.tgz#ec48c0f3e993e50648c86da559e2610995cf989a"
   integrity sha512-z1HGKcYy2xA8AGQfwrn0PAy+PB7X/GSj3UVJW9qKyn43xWa+gl5nXmU4qqLMRzWVLFC8KusUX8T/0kCiOYpAIQ==
@@ -2621,6 +2647,16 @@ semver@^6.3.1:
   resolved "https://registry.yarnpkg.com/semver/-/semver-6.3.1.tgz#556d2ef8689146e46dcea4bfdd095f3434dffcb4"
   integrity sha512-BR7VvDCVHO+q2xBEWskxS6DJE1qRnb7DxzUrogb71CWoSficBxYsiAGd+Kl0mmq/MprG9yArRkyrQxTO6XjMzA==
 
+seroval-plugins@~1.3.0:
+  version "1.3.3"
+  resolved "https://registry.yarnpkg.com/seroval-plugins/-/seroval-plugins-1.3.3.tgz#51bcacf09e5384080d7ea4002b08fd9f6166daf5"
+  integrity sha512-16OL3NnUBw8JG1jBLUoZJsLnQq0n5Ua6aHalhJK4fMQkz1lqR7Osz1sA30trBtd9VUDc2NgkuRCn8+/pBwqZ+w==
+
+seroval@~1.3.0:
+  version "1.3.2"
+  resolved "https://registry.yarnpkg.com/seroval/-/seroval-1.3.2.tgz#7e5be0dc1a3de020800ef013ceae3a313f20eca7"
+  integrity sha512-RbcPH1n5cfwKrru7v7+zrZvjLurgHhGyso3HTyGtRivGWgYjbOmGuivCQaORNELjNONoK35nj28EoWul9sb1zQ==
+
 set-cookie-parser@^2.6.0:
   version "2.7.2"
   resolved "https://registry.yarnpkg.com/set-cookie-parser/-/set-cookie-parser-2.7.2.tgz#ccd08673a9ae5d2e44ea2a2de25089e67c7edf68"
@@ -2713,6 +2749,23 @@ simple-icons@^16.2.0:
   version "16.2.0"
   resolved "https://registry.yarnpkg.com/simple-icons/-/simple-icons-16.2.0.tgz#a9ffaa1f72f011ac06589f23830d4f5b6862db76"
   integrity sha512-SCV4cAX8O2M2WQ3QJm+3k4QdcUIJiBiwKNViQiOwPjWbFWgypzelviW+Bp0A2ij6r/DIEZpTTDcLgD/BE4aexQ==
+
+solid-js@^1.3.0:
+  version "1.9.10"
+  resolved "https://registry.yarnpkg.com/solid-js/-/solid-js-1.9.10.tgz#95e57b004f3788d38f19e3b47101e90a9ab9dd0f"
+  integrity sha512-Coz956cos/EPDlhs6+jsdTxKuJDPT7B5SVIWgABwROyxjY7Xbr8wkzD68Et+NxnV7DLJ3nJdAC2r9InuV/4Jew==
+  dependencies:
+    csstype "^3.1.0"
+    seroval "~1.3.0"
+    seroval-plugins "~1.3.0"
+
+solid-transition-group@^0.2.3:
+  version "0.2.3"
+  resolved "https://registry.yarnpkg.com/solid-transition-group/-/solid-transition-group-0.2.3.tgz#ef441d9e4620cddc4d29cdbc958b09f94db515c4"
+  integrity sha512-iB72c9N5Kz9ykRqIXl0lQohOau4t0dhel9kjwFvx81UZJbVwaChMuBuyhiZmK24b8aKEK0w3uFM96ZxzcyZGdg==
+  dependencies:
+    "@solid-primitives/refs" "^1.0.5"
+    "@solid-primitives/transition-group" "^1.0.2"
 
 "source-map-js@>=0.6.2 <2.0.0", source-map-js@^1.2.1:
   version "1.2.1"
