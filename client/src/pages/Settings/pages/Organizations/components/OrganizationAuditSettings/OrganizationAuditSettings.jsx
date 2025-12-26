@@ -28,6 +28,13 @@ export const OrganizationAuditSettings = ({ organizationId, isOwner, onClose }) 
         setSettings(prev => ({ ...prev, [key]: value }));
     };
 
+    const handleRetentionChange = (e) => {
+        const value = parseInt(e.target.value, 10);
+        if (!isNaN(value) && value >= 1 && value <= 365) {
+            setSettings(prev => ({ ...prev, recordingRetentionDays: value }));
+        }
+    };
+
     const saveSettings = async () => {
         try {
             await patchRequest(`audit/organizations/${organizationId}/settings`, settings);
@@ -43,6 +50,48 @@ export const OrganizationAuditSettings = ({ organizationId, isOwner, onClose }) 
     return (
         <div className="organization-audit-settings">
             <div className="settings-content">
+                <div className="setting-section">
+                    <div className="section-header">
+                        <h4>Session Recording</h4>
+                        <p>Record terminal and remote desktop sessions for playback</p>
+                    </div>
+
+                    <div className="settings-list">
+                        <div className="setting-item">
+                            <div className="setting-info">
+                                <span className="setting-label">Enable Session Recording</span>
+                                <span className="setting-description">
+                                    Record SSH, Telnet, RDP, and VNC sessions for later playback
+                                </span>
+                            </div>
+                            <ToggleSwitch
+                                id="enableSessionRecording"
+                                checked={settings.enableSessionRecording !== false}
+                                onChange={(value) => handleSettingChange("enableSessionRecording", value)}
+                                disabled={!isOwner}
+                            />
+                        </div>
+
+                        <div className="setting-item">
+                            <div className="setting-info">
+                                <span className="setting-label">Recording Retention (days)</span>
+                                <span className="setting-description">
+                                    How long to keep session recordings before automatic deletion (1-365 days)
+                                </span>
+                            </div>
+                            <input
+                                type="number"
+                                className="retention-input"
+                                value={settings.recordingRetentionDays || 90}
+                                onChange={handleRetentionChange}
+                                min="1"
+                                max="365"
+                                disabled={!isOwner || settings.enableSessionRecording === false}
+                            />
+                        </div>
+                    </div>
+                </div>
+
                 <div className="setting-section">
                     <div className="section-header">
                         <h4>Connection Requirements</h4>
