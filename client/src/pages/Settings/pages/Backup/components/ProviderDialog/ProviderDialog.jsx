@@ -6,7 +6,7 @@ import IconInput from "@/common/components/IconInput";
 import SelectBox from "@/common/components/SelectBox";
 import { useToast } from "@/common/contexts/ToastContext.jsx";
 import { postRequest, patchRequest } from "@/common/utils/RequestUtil.js";
-import { mdiFolder, mdiLanConnect, mdiFormTextbox, mdiFolderOpen, mdiAccount, mdiLock, mdiWeb } from "@mdi/js";
+import { mdiHarddisk, mdiLanConnect, mdiFormTextbox, mdiFolderOpen, mdiAccount, mdiLock, mdiWeb, mdiCloud } from "@mdi/js";
 
 export const ProviderDialog = ({ open, onClose, provider, onSaved }) => {
     const { t } = useTranslation();
@@ -17,8 +17,9 @@ export const ProviderDialog = ({ open, onClose, provider, onSaved }) => {
     const [saving, setSaving] = useState(false);
 
     const typeOptions = [
-        { value: "local", label: t("settings.backup.providerTypes.local"), icon: mdiFolder },
+        { value: "local", label: t("settings.backup.providerTypes.local"), icon: mdiHarddisk },
         { value: "smb", label: t("settings.backup.providerTypes.smb"), icon: mdiLanConnect },
+        { value: "webdav", label: t("settings.backup.providerTypes.webdav"), icon: mdiCloud },
     ];
 
     useEffect(() => {
@@ -87,6 +88,26 @@ export const ProviderDialog = ({ open, onClose, provider, onSaved }) => {
                             <div className="form-group">
                                 <label>{t("settings.backup.smbDomain")}</label>
                                 <IconInput icon={mdiWeb} value={config.domain || ""} setValue={(v) => updateConfig("domain", v)} placeholder={t("settings.backup.smbDomainPlaceholder")} />
+                            </div>
+                        </>
+                    )}
+                    {type === "webdav" && (
+                        <>
+                            <div className="form-group">
+                                <label>{t("settings.backup.webdavUrl")}</label>
+                                <IconInput icon={mdiWeb} value={config.url || ""} setValue={(v) => updateConfig("url", v)} placeholder={t("settings.backup.webdavUrlPlaceholder")} />
+                            </div>
+                            <div className="form-group">
+                                <label>{t("settings.backup.webdavFolder")}</label>
+                                <IconInput icon={mdiFolderOpen} value={config.folder || ""} setValue={(v) => updateConfig("folder", v)} placeholder={t("settings.backup.webdavFolderPlaceholder")} />
+                            </div>
+                            <div className="form-group">
+                                <label>{t("settings.backup.webdavUsername")}</label>
+                                <IconInput icon={mdiAccount} value={config.username || ""} setValue={(v) => updateConfig("username", v)} placeholder={t("settings.backup.webdavUsernamePlaceholder")} />
+                            </div>
+                            <div className="form-group">
+                                <label>{t("settings.backup.webdavPassword")}</label>
+                                <IconInput type="password" icon={mdiLock} value={config.password || ""} setValue={(v) => updateConfig("password", v)} placeholder={t("settings.backup.webdavPasswordPlaceholder")} />
                             </div>
                         </>
                     )}
