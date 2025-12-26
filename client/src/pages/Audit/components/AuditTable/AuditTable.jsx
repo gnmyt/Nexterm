@@ -8,7 +8,6 @@ import {
     mdiAccountCircleOutline,
     mdiDomain,
     mdiWeb,
-    mdiLoading,
     mdiPlayCircleOutline,
 } from "@mdi/js";
 import Button from "@/common/components/Button";
@@ -98,13 +97,6 @@ export const AuditTable = ({ logs, loading, pagination, onPageChange, getIconFor
 
     return (
         <div className="audit-table-container">
-            {loading && (
-                <div className="loading-overlay">
-                    <Icon path={mdiLoading} spin />
-                    <span>{t('audit.table.loading')}</span>
-                </div>
-            )}
-
             <div className="audit-table">
                 <div className="table-header">
                     <div className="header-cell timestamp">
