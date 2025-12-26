@@ -32,10 +32,8 @@ const handleSharedConnection = (ws, context) => {
         
         if (data.startsWith("\x01")) {
             const [width, height] = data.substring(1).split(",").map(Number);
-            if (!isNaN(width) && !isNaN(height) && SessionManager.isActiveWs(sessionId, ws)) {
+            if (!isNaN(width) && !isNaN(height) && SessionManager.isActiveWs(sessionId, ws))
                 lxcSocket.send("1:" + width + ":" + height + ":");
-                SessionManager.recordResize(sessionId, width, height);
-            }
             return;
         }
         
@@ -92,14 +90,11 @@ const setupClientMessageHandler = (ws, lxcSocket, vmid, sessionId = null) => {
     });
 };
 
-const setupLxcMessageHandler = (lxcSocket, ws, vmid, sessionId = null) => {
+const setupLxcMessageHandler = (lxcSocket, ws, vmid) => {
     const onMessage = (message) => {
         try {
             if (message instanceof Buffer) message = message.toString();
-            if (message !== "OK") {
-                if (ws.readyState === ws.OPEN) ws.send(message);
-                if (sessionId) SessionManager.appendLog(sessionId, message);
-            }
+            if (message !== "OK" && ws.readyState === ws.OPEN) ws.send(message);
         } catch (error) {
             logger.error(`Error handling LXC socket message`, { error: error.message, vmid });
         }
@@ -111,9 +106,10 @@ const setupLxcMessageHandler = (lxcSocket, ws, vmid, sessionId = null) => {
 module.exports = async (ws, context) => {
     if (context.isShared) return handleSharedConnection(ws, context);
 
-    const { integration, entry, containerId, ticket, node, vncTicket, auditLogId, serverSession, organizationId } = context;
+    const { integration, entry, containerId, ticket, node, vncTicket, auditLogId, serverSession } = context;
     const connectionStartTime = Date.now();
     const vmid = containerId ?? entry.config?.vmid ?? "0";
+    const organizationId = entry?.organizationId || integration?.organizationId || null;
 
     let existingConnection = null;
     if (serverSession) {
@@ -160,7 +156,6 @@ module.exports = async (ws, context) => {
                 if (!isNaN(width) && !isNaN(height)) {
                     lxcSocket.send("1:" + width + ":" + (height - 1) + ":");
                     setTimeout(() => lxcSocket.send("1:" + width + ":" + height + ":"), 50);
-                    SessionManager.recordResize(serverSession.sessionId, width, height);
                     ws.removeListener("message", onFirstResize);
                 }
             }
@@ -201,22 +196,28 @@ module.exports = async (ws, context) => {
         lxcSocket.on("close", async () => {
             await updateAuditLogWithSessionDuration(auditLogId, connectionStartTime);
             if (keepAliveTimer) clearInterval(keepAliveTimer);
-            if (ws.readyState === ws.OPEN) ws.close();
-            if (serverSession) await SessionManager.remove(serverSession.sessionId);
+            if (ws.readyState === ws.OPEN) {
+                ws.close();
+            }
+            if (serverSession) SessionManager.remove(serverSession.sessionId);
         });
 
         lxcSocket.on("open", async () => {
             try {
                 lxcSocket.send(`${server.username}:${vncTicket.ticket}\n`);
                 keepAliveTimer = setInterval(() => {
-                    if (lxcSocket.readyState === lxcSocket.OPEN) lxcSocket.send("2");
+                    if (lxcSocket.readyState === lxcSocket.OPEN) {
+                        lxcSocket.send("2");
+                    }
                 }, 30000);
 
                 if (serverSession) {
                     await SessionManager.initRecording(serverSession.sessionId, organizationId);
                     lxcSocket.on("message", (message) => {
                         if (message instanceof Buffer) message = message.toString();
-                        if (message !== "OK") SessionManager.appendLog(serverSession.sessionId, message);
+                        if (message !== "OK") {
+                            SessionManager.appendLog(serverSession.sessionId, message);
+                        }
                     });
                     SessionManager.setConnection(serverSession.sessionId, { lxcSocket, keepAliveTimer, auditLogId });
                     SessionManager.addWebSocket(serverSession.sessionId, ws);
@@ -228,7 +229,9 @@ module.exports = async (ws, context) => {
                 reject?.(error);
                 if (keepAliveTimer) clearInterval(keepAliveTimer);
                 lxcSocket.close();
-                if (ws.readyState === ws.OPEN) ws.close(1011, "Internal server error");
+                if (ws.readyState === ws.OPEN) {
+                    ws.close(1011, "Internal server error");
+                }
             }
         });
 
@@ -237,12 +240,16 @@ module.exports = async (ws, context) => {
             reject?.(error);
             await updateAuditLogWithSessionDuration(auditLogId, connectionStartTime);
             if (keepAliveTimer) clearInterval(keepAliveTimer);
-            if (lxcSocket.readyState === lxcSocket.OPEN) lxcSocket.close();
-            if (ws.readyState === ws.OPEN) ws.close(1011, "Internal server error");
-            if (serverSession) await SessionManager.remove(serverSession.sessionId);
+            if (lxcSocket.readyState === lxcSocket.OPEN) {
+                lxcSocket.close();
+            }
+            if (ws.readyState === ws.OPEN) {
+                ws.close(1011, "Internal server error");
+            }
+            if (serverSession) SessionManager.remove(serverSession.sessionId);
         });
 
-        const onLxcData = setupLxcMessageHandler(lxcSocket, ws, vmid, serverSession?.sessionId);
+        const onLxcData = setupLxcMessageHandler(lxcSocket, ws, vmid);
         setupClientMessageHandler(ws, lxcSocket, vmid, serverSession?.sessionId);
         
         ws.on("close", async () => {

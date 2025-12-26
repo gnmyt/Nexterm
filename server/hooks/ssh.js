@@ -50,7 +50,6 @@ const handleSharedConnection = (ws, context) => {
         if (resize) {
             if (SessionManager.isActiveWs(sessionId, ws)) {
                 stream.setWindow(resize.height, resize.width);
-                SessionManager.recordResize(sessionId, resize.width, resize.height);
             }
         } else {
             SessionManager.setActiveWs(sessionId, ws);
@@ -68,9 +67,10 @@ const handleSharedConnection = (ws, context) => {
 module.exports = async (ws, context) => {
     if (context.isShared) return handleSharedConnection(ws, context);
 
-    const { auditLogId, serverSession, ssh, reuseConnection, entry, organizationId } = context;
+    const { auditLogId, serverSession, ssh, reuseConnection, entry } = context;
     const config = entry?.config || null;
     const connectionStartTime = Date.now();
+    const organizationId = entry?.organizationId || null;
 
     if (reuseConnection) {
         const { stream } = SessionManager.getConnection(serverSession.sessionId);
@@ -85,7 +85,6 @@ module.exports = async (ws, context) => {
             if (resize) {
                 stream.setWindow(resize.height - 1, resize.width);
                 setTimeout(() => stream.setWindow(resize.height, resize.width), 50);
-                SessionManager.recordResize(serverSession.sessionId, resize.width, resize.height);
                 ws.removeListener("message", onFirstResize);
             }
         };
@@ -109,7 +108,6 @@ module.exports = async (ws, context) => {
                 reject?.(err);
                 return ws.close(4008, `Shell error: ${err.message}`);
             }
-
             if (serverSession) {
                 await SessionManager.initRecording(serverSession.sessionId, organizationId);
                 stream.on("data", (data) => SessionManager.appendLog(serverSession.sessionId, data.toString()));
@@ -124,9 +122,9 @@ module.exports = async (ws, context) => {
                 if (serverSession) SessionManager.removeWebSocket(serverSession.sessionId, ws);
                 await updateAuditLogWithSessionDuration(auditLogId, connectionStartTime);
             });
-            stream.on("close", async () => {
+            stream.on("close", () => {
                 ws.close();
-                if (serverSession) await SessionManager.remove(serverSession.sessionId);
+                if (serverSession) SessionManager.remove(serverSession.sessionId);
             });
         });
     });

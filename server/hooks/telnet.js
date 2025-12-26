@@ -13,7 +13,7 @@ const createResizeBuffer = (width, height) => {
     ]);
 };
 
-const setupSocketMessageHandler = (ws, socket, config = null, sessionId = null) => {
+const setupSocketMessageHandler = (ws, socket, sessionId = null, config = null) => {
     ws.on("message", (data) => {
         try {
             data = data.toString();
@@ -43,29 +43,41 @@ const setupSocketMessageHandler = (ws, socket, config = null, sessionId = null) 
 };
 
 module.exports = async (ws, context) => {
-    const { entry, auditLogId, serverSession, organizationId } = context;
+    const { entry, auditLogId, serverSession } = context;
     const connectionStartTime = Date.now();
+    const organizationId = entry?.organizationId || null;
 
     let existingConnection = null;
     if (serverSession) existingConnection = SessionManager.getConnection(serverSession.sessionId);
 
     if (existingConnection) {
         const socket = existingConnection.socket;
-        const onData = (data) => ws.readyState === ws.OPEN && ws.send(data.toString());
+
+        const onData = (data) => {
+            if (ws.readyState === ws.OPEN) {
+                ws.send(data.toString());
+            }
+        };
         socket.on("data", onData);
+
         SessionManager.addWebSocket(serverSession.sessionId, ws);
-        setupSocketMessageHandler(ws, socket, entry.config, serverSession.sessionId);
+        setupSocketMessageHandler(ws, socket, serverSession.sessionId, entry.config);
+
         ws.on("close", () => {
             socket.removeListener("data", onData);
             SessionManager.removeWebSocket(serverSession.sessionId, ws);
         });
+
         return;
     }
 
     const socket = new net.Socket();
+    let connectionEstablished = false;
 
     socket.connect(entry.config.port || 23, entry.config.ip, async () => {
+        connectionEstablished = true;
         logger.info(`Telnet connection established`, { ip: entry.config.ip, port: entry.config.port || 23, entryId: entry.id });
+
         if (serverSession) {
             await SessionManager.initRecording(serverSession.sessionId, organizationId);
             SessionManager.setConnection(serverSession.sessionId, { socket, auditLogId });
@@ -74,25 +86,30 @@ module.exports = async (ws, context) => {
     });
 
     socket.on("data", (data) => {
-        const dataStr = data.toString();
-        if (ws.readyState === ws.OPEN) ws.send(dataStr);
-        if (serverSession) SessionManager.appendLog(serverSession.sessionId, dataStr);
+        if (ws.readyState === ws.OPEN) {
+            ws.send(data.toString());
+        }
+        if (serverSession) SessionManager.appendLog(serverSession.sessionId, data.toString());
     });
 
     socket.on("close", async () => {
         await updateAuditLogWithSessionDuration(auditLogId, connectionStartTime);
-        if (ws.readyState === ws.OPEN) ws.close();
-        if (serverSession) await SessionManager.remove(serverSession.sessionId);
+        if (ws.readyState === ws.OPEN) {
+            ws.close();
+        }
+        if (serverSession) SessionManager.remove(serverSession.sessionId);
     });
 
     socket.on("error", async (error) => {
         logger.error(`Telnet connection error`, { error: error.message, ip: entry.config.ip, port: entry.config.port || 23 });
         await updateAuditLogWithSessionDuration(auditLogId, connectionStartTime);
-        if (ws.readyState === ws.OPEN) ws.close(1011, error.message);
-        if (serverSession) await SessionManager.remove(serverSession.sessionId);
+        if (ws.readyState === ws.OPEN) {
+            ws.close(1011, error.message);
+        }
+        if (serverSession) SessionManager.remove(serverSession.sessionId);
     });
 
-    setupSocketMessageHandler(ws, socket, entry.config, serverSession?.sessionId);
+    setupSocketMessageHandler(ws, socket, serverSession?.sessionId, entry.config);
 
     ws.on("close", async () => {
         if (serverSession) SessionManager.removeWebSocket(serverSession.sessionId, ws);

@@ -165,6 +165,7 @@ module.exports = async (ws, req) => {
             connectionConfig.userAgent = userAgent;
             connectionConfig.connectionReason = connectionReason;
             connectionConfig.serverSession = serverSession;
+            connectionConfig.organizationId = entry.organizationId;
         }
 
         await guacamoleHook(ws, { connectionConfig });
