@@ -187,7 +187,7 @@ export const IdentityDialog = ({ open, onClose, identity, organizationId }) => {
                                 <label htmlFor="password">{t('settings.identities.dialog.fields.password')}</label>
                                 <IconInput icon={mdiLockOutline} type="password" value={password} setValue={setPassword}
                                            placeholder={isEditing ? t('settings.identities.dialog.fields.passwordPlaceholderEdit') : t('settings.identities.dialog.fields.passwordPlaceholder')}
-                                           id="password" required={!isEditing && authType === "password"} autoComplete="new-password" />
+                                           id="password" name="password" required={!isEditing && authType === "password"} autoComplete="new-password" />
                             </div>
                         )}
 
@@ -204,7 +204,7 @@ export const IdentityDialog = ({ open, onClose, identity, organizationId }) => {
                                     <IconInput icon={mdiLockOutline} type="password" value={passphrase}
                                                setValue={setPassphrase}
                                                placeholder={isEditing ? t('settings.identities.dialog.fields.passphrasePlaceholderEdit') : t('settings.identities.dialog.fields.passphrasePlaceholder')}
-                                               id="passphrase" autoComplete="new-password" />
+                                               id="passphrase" name="passphrase" autoComplete="new-password" />
                                 </div>
                             </>
                         )}
