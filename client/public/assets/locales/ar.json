@@ -468,7 +468,8 @@
       "authentication": "المصادقة",
       "sources": "المصادر",
       "ai": "الذكاء الاصطناعي",
-      "monitoring": "Monitoring"
+      "monitoring": "Monitoring",
+      "backup": "Storage"
     },
     "account": {
       "title": "الحساب",
@@ -931,6 +932,97 @@
         "validationFailed": "فشل التحقق من صحة عنوان URL",
         "requiredFields": "الاسم وعنوان URL مطلوبان"
       }
+    },
+    "backup": {
+      "loading": "Loading storage settings...",
+      "storage": {
+        "title": "Storage",
+        "description": "View disk usage for your Nexterm data.",
+        "database": "Database",
+        "recordings": "Recordings",
+        "logs": "Logs",
+        "total": "Total"
+      },
+      "backupsSection": {
+        "title": "Backups",
+        "description": "Configure backup providers and schedule automatic backups."
+      },
+      "addProvider": "Add Provider",
+      "editProvider": "Edit Provider",
+      "providerName": "Provider Name",
+      "providerNamePlaceholder": "My Backup",
+      "providerType": "Type",
+      "providerTypes": {
+        "local": "Local",
+        "smb": "SMB Share",
+        "webdav": "WebDAV"
+      },
+      "localPath": "Backup Path",
+      "localPathPlaceholder": "/path/to/backups",
+      "smbShare": "SMB Share",
+      "smbSharePlaceholder": "\\\\server\\share",
+      "smbFolder": "Folder (optional)",
+      "smbFolderPlaceholder": "backups",
+      "smbUsername": "Username",
+      "smbUsernamePlaceholder": "user",
+      "smbPassword": "Password",
+      "smbPasswordPlaceholder": "password",
+      "smbDomain": "Domain (optional)",
+      "smbDomainPlaceholder": "WORKGROUP",
+      "webdavUrl": "Server URL",
+      "webdavUrlPlaceholder": "https://cloud.example.com/remote.php/dav/files/user",
+      "webdavFolder": "Folder (optional)",
+      "webdavFolderPlaceholder": "backups",
+      "webdavUsername": "Username",
+      "webdavUsernamePlaceholder": "user",
+      "webdavPassword": "Password",
+      "webdavPasswordPlaceholder": "password",
+      "passwordUnchanged": "Leave empty to keep current",
+      "schedule": {
+        "title": "Automatic Backup",
+        "disabled": "Disabled",
+        "hourly": "Every hour",
+        "every6h": "Every 6 hours",
+        "every12h": "Every 12 hours",
+        "daily": "Daily",
+        "weekly": "Weekly"
+      },
+      "retention": {
+        "title": "Retention Policy"
+      },
+      "backups": "backups",
+      "includes": {
+        "title": "Include in Backups",
+        "database": "Database",
+        "recordings": "Recordings",
+        "logs": "Logs"
+      },
+      "providers": "Providers",
+      "saveSettings": "Save Settings",
+      "noProviders": "No Backup Providers",
+      "noProvidersDescription": "Add a backup provider to start creating backups.",
+      "backupList": "Backups - {{name}}",
+      "loadingBackups": "Loading backups...",
+      "noBackups": "No backups found",
+      "restoreConfirm": "Are you sure you want to restore \"{{name}}\"? This will overwrite your current data and restart the server.",
+      "deleteProviderConfirm": "Are you sure you want to delete \"{{name}}\"? This will not delete existing backups.",
+      "providerCreated": "Backup provider created",
+      "providerUpdated": "Backup provider updated",
+      "providerDeleted": "Backup provider deleted",
+      "backupCreated": "Backup created successfully",
+      "restoreStarted": "Restore started, server will restart",
+      "saveSuccess": "Settings saved successfully",
+      "errors": {
+        "loadFailed": "Failed to load backup settings",
+        "saveFailed": "Failed to save settings",
+        "deleteFailed": "Failed to delete",
+        "backupFailed": "Failed to create backup",
+        "loadBackupsFailed": "Failed to load backups",
+        "restoreFailed": "Failed to restore backup",
+        "exportFailed": "Failed to export data",
+        "nameRequired": "Provider name is required"
+      },
+      "noFiles": "No files found"
     }
   },
   "tunnel": {
