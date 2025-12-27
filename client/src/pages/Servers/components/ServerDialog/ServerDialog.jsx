@@ -1,8 +1,9 @@
 import { DialogProvider } from "@/common/components/Dialog";
 import "./styles.sass";
-import { useContext, useEffect, useState, useCallback, useRef } from "react";
+import { useContext, useEffect, useState, useCallback, useRef, useMemo } from "react";
 import DetailsPage from "@/pages/Servers/components/ServerDialog/pages/DetailsPage.jsx";
 import Button from "@/common/components/Button";
+import TabSwitcher from "@/common/components/TabSwitcher";
 import { getRequest, patchRequest, putRequest } from "@/common/utils/RequestUtil.js";
 import { ServerContext } from "@/common/contexts/ServerContext.jsx";
 import IdentityPage from "@/pages/Servers/components/ServerDialog/pages/IdentityPage.jsx";
@@ -300,6 +301,11 @@ export const ServerDialog = ({ open, onClose, currentFolderId, currentOrganizati
                      monitoringEnabled !== initialValues.current.monitoringEnabled ||
                      Object.keys(identityUpdates).length > 0;
 
+    const tabSwitcherTabs = useMemo(() => tabs.map((tab, index) => ({
+        key: index.toString(),
+        label: t(tab.label)
+    })), [tabs, t]);
+
     return (
         <DialogProvider open={open} onClose={onClose} isDirty={isDirty}>
             <div className="server-dialog">
@@ -329,16 +335,18 @@ export const ServerDialog = ({ open, onClose, currentFolderId, currentOrganizati
                     </div>
                 </div>
 
-                <div className="server-dialog-tabs">
-                    {tabs.length > 1 && tabs.map((tab, index) => (
-                        <div key={index} className={`tabs-item ${activeTab === index ? "tabs-item-active" : ""}`}
-                             onClick={() => setActiveTab(index)}>
-                            <h3>{t(tab.label)}</h3>
-                        </div>
-                    ))}
-                </div>
+                {tabs.length > 1 && (
+                    <div className="server-dialog-tabs">
+                        <TabSwitcher
+                            tabs={tabSwitcherTabs}
+                            activeTab={activeTab.toString()}
+                            onTabChange={(tabKey) => setActiveTab(parseInt(tabKey))}
+                            variant="dialog"
+                        />
+                    </div>
+                )}
 
-                <div className="server-dialog-content">
+                <form className="server-dialog-content" onSubmit={(e) => e.preventDefault()} autoComplete="on">
                     {activeTab === 0 && <DetailsPage name={name} setName={setName}
                                                      icon={icon} setIcon={setIcon}
                                                      config={config} setConfig={setConfig}
@@ -351,7 +359,7 @@ export const ServerDialog = ({ open, onClose, currentFolderId, currentOrganizati
                         <SettingsPage config={config} setConfig={setConfig}
                                       monitoringEnabled={monitoringEnabled} setMonitoringEnabled={setMonitoringEnabled}
                                       fieldConfig={fieldConfig} editServerId={editServerId} />}
-                </div>
+                </form>
 
                 <Button className="server-dialog-button" onClick={handleSubmit}
                         text={editServerId ? t("servers.dialog.actions.save") : t("servers.dialog.actions.create")} />
