@@ -2,6 +2,7 @@ const EntryIdentity = require("../models/EntryIdentity");
 const Identity = require("../models/Identity");
 const { authenticateWebSocket } = require("../middlewares/wsAuth");
 const { createSSH } = require("./createSSH");
+const { listIdentities } = require("../controllers/identity");
 
 const authenticateWS = async (ws, req) => {
     const baseAuth = await authenticateWebSocket(ws, req.query);
@@ -9,15 +10,18 @@ const authenticateWS = async (ws, req) => {
 
     const { user, entry } = baseAuth;
 
+    const accessibleIds = new Set((await listIdentities(user.id)).map(i => i.id));
     const entryIdentities = await EntryIdentity.findAll({ where: { entryId: entry.id }, order: [['isDefault', 'DESC']] });
-    if (entryIdentities.length === 0) {
-        ws.close(4007, "The entry has no identities");
-        return null;
+    
+    let identity = null;
+    for (const ei of entryIdentities) {
+        if (!accessibleIds.has(ei.identityId)) continue;
+        identity = await Identity.findByPk(ei.identityId);
+        if (identity) break;
     }
 
-    const identity = await Identity.findByPk(entryIdentities[0].identityId);
     if (!identity) {
-        ws.close(4008, "The identity does not exist");
+        ws.close(4007, "No accessible identity configured");
         return null;
     }
 
@@ -31,7 +35,7 @@ const authenticateWS = async (ws, req) => {
                 }
             });
         }
-    });
+    }, user.id);
 
     try {
         ssh.connect(sshOptions);

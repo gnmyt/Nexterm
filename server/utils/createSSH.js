@@ -2,7 +2,7 @@ const sshd = require("ssh2");
 const { getIdentityCredentials } = require("../controllers/identity");
 const { establishJumpHosts, buildSSHOptions, forwardToTarget } = require("./jumpHostHelper");
 
-const createSSH = async (entry, identity, options = {}) => {
+const createSSH = async (entry, identity, options = {}, accountId = null) => {
     let credentials;
     if (identity.isDirect && identity.directCredentials) {
         credentials = identity.directCredentials;
@@ -12,7 +12,7 @@ const createSSH = async (entry, identity, options = {}) => {
     const jumpHostIds = entry.config?.jumpHosts || [];
     
     if (jumpHostIds.length > 0) {
-        return await createSSHWithJumpHosts(entry, identity, credentials, jumpHostIds, options);
+        return await createSSHWithJumpHosts(entry, identity, credentials, jumpHostIds, options, accountId);
     }
 
     const sshOptions = buildSSHOptions(identity, credentials, entry.config);
@@ -25,9 +25,9 @@ const createSSH = async (entry, identity, options = {}) => {
     return { ssh, sshOptions };
 }
 
-const createSSHWithJumpHosts = async (targetEntry, targetIdentity, targetCredentials, jumpHostIds, options = {}) => {
+const createSSHWithJumpHosts = async (targetEntry, targetIdentity, targetCredentials, jumpHostIds, options = {}, accountId = null) => {
     try {
-        const connections = await establishJumpHosts(jumpHostIds);
+        const connections = await establishJumpHosts(jumpHostIds, accountId);
         const targetSsh = new sshd.Client();
         
         if (options.onKeyboardInteractive) {

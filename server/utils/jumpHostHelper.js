@@ -1,5 +1,5 @@
 const sshd = require("ssh2");
-const { getIdentityCredentials } = require("../controllers/identity");
+const { getIdentityCredentials, listIdentities } = require("../controllers/identity");
 const Entry = require("../models/Entry");
 const EntryIdentity = require("../models/EntryIdentity");
 const Identity = require("../models/Identity");
@@ -42,8 +42,9 @@ const forwardToTarget = async (lastJumpConnection, targetEntry) => {
     });
 };
 
-const establishJumpHosts = async (jumpHostIds) => {
+const establishJumpHosts = async (jumpHostIds, accountId = null) => {
     const connections = [];
+    const accessibleIds = accountId ? new Set((await listIdentities(accountId)).map(i => i.id)) : null;
 
     try {
         for (let i = 0; i < jumpHostIds.length; i++) {
@@ -52,14 +53,20 @@ const establishJumpHosts = async (jumpHostIds) => {
                 throw new Error(`Jump host ${jumpHostIds[i]} not found or is not an SSH server`);
             }
 
-            const jumpEntryIdentity = await EntryIdentity.findOne({
+            const entryIdentities = await EntryIdentity.findAll({
                 where: { entryId: jumpEntry.id },
                 order: [["isDefault", "DESC"]],
             });
 
-            if (!jumpEntryIdentity) throw new Error(`No identity configured for jump host ${jumpEntry.name}`);
+            let jumpIdentity = null;
+            for (const ei of entryIdentities) {
+                if (accessibleIds && !accessibleIds.has(ei.identityId)) continue;
+                jumpIdentity = await Identity.findByPk(ei.identityId);
+                if (jumpIdentity) break;
+            }
 
-            const jumpIdentity = await Identity.findByPk(jumpEntryIdentity.identityId);
+            if (!jumpIdentity) throw new Error(`No accessible identity for jump host ${jumpEntry.name}`);
+
             const jumpCredentials = await getIdentityCredentials(jumpIdentity.id);
 
             const jumpSsh = new sshd.Client();
