@@ -2,6 +2,7 @@ const { Router } = require("express");
 const { createSession, getSessions, getSession, hibernateSession, resumeSession, deleteSession, startSharing, stopSharing, updateSharePermissions, duplicateSession, pasteIdentityPassword } = require("../controllers/serverSession");
 const { createSessionValidation, sessionIdValidation, resumeSessionValidation, duplicateSessionValidation } = require("../validations/serverSession");
 const { validateSchema } = require("../utils/schema");
+const stateBroadcaster = require("../lib/StateBroadcaster");
 
 const app = Router();
 
@@ -28,6 +29,7 @@ app.post("/", async (req, res) => {
             return res.status(result.code).json({ error: result.message });
         }
         
+        stateBroadcaster.broadcast("CONNECTIONS", { accountId: req.user.id });
         res.status(201).json(result);
     } catch (error) {
         console.error('Error creating session:', error);
@@ -86,6 +88,7 @@ app.post("/:id/hibernate", async (req, res) => {
     if (result?.code) {
         return res.status(result.code).json({ error: result.message });
     }
+    stateBroadcaster.broadcast("CONNECTIONS", { accountId: req.user.id });
     res.json(result);
 });
 
@@ -108,6 +111,7 @@ app.post("/:id/resume", async (req, res) => {
     if (result?.code) {
         return res.status(result.code).json({ error: result.message });
     }
+    stateBroadcaster.broadcast("CONNECTIONS", { accountId: req.user.id });
     res.json(result);
 });
 
@@ -128,6 +132,7 @@ app.delete("/:id", async (req, res) => {
     if (result?.code) {
         return res.status(result.code).json({ error: result.message });
     }
+    stateBroadcaster.broadcast("CONNECTIONS", { accountId: req.user.id });
     res.json(result);
 });
 
@@ -145,6 +150,7 @@ app.post("/:id/share", (req, res) => {
     if (validateSchema(res, sessionIdValidation, req.params)) return;
     const result = startSharing(req.user.id, req.params.id, req.body?.writable === true);
     if (result?.code) return res.status(result.code).json({ error: result.message });
+    stateBroadcaster.broadcast("CONNECTIONS", { accountId: req.user.id });
     res.json(result);
 });
 
@@ -162,6 +168,7 @@ app.delete("/:id/share", (req, res) => {
     if (validateSchema(res, sessionIdValidation, req.params)) return;
     const result = stopSharing(req.user.id, req.params.id);
     if (result?.code) return res.status(result.code).json({ error: result.message });
+    stateBroadcaster.broadcast("CONNECTIONS", { accountId: req.user.id });
     res.json(result);
 });
 
@@ -179,6 +186,7 @@ app.patch("/:id/share", (req, res) => {
     if (validateSchema(res, sessionIdValidation, req.params)) return;
     const result = updateSharePermissions(req.user.id, req.params.id, req.body?.writable === true);
     if (result?.code) return res.status(result.code).json({ error: result.message });
+    stateBroadcaster.broadcast("CONNECTIONS", { accountId: req.user.id });
     res.json(result);
 });
 
@@ -204,6 +212,7 @@ app.post("/:id/duplicate", async (req, res) => {
     if (result?.code) {
         return res.status(result.code).json({ error: result.message });
     }
+    stateBroadcaster.broadcast("CONNECTIONS", { accountId: req.user.id });
     res.status(201).json(result);
 });
 
