@@ -13,9 +13,10 @@ import FilePreviewWindow from "@/common/components/FilePreviewWindow";
 import { useActiveSessions } from "@/common/contexts/SessionContext.jsx";
 import { useLocation, useNavigate } from "react-router-dom";
 import { ServerContext } from "@/common/contexts/ServerContext.jsx";
+import { StateStreamContext, STATE_TYPES } from "@/common/contexts/StateStreamContext.jsx";
 import { isTauri } from "@/common/utils/TauriUtil.js";
-
-import { getRequest, postRequest, deleteRequest } from "@/common/utils/RequestUtil";
+import { getTabId, getBrowserId } from "@/common/utils/ConnectionUtil.js";
+import { postRequest, deleteRequest } from "@/common/utils/RequestUtil";
 
 export const Servers = () => {
 
@@ -35,6 +36,7 @@ export const Servers = () => {
     const [editServerId, setEditServerId] = useState(null);
     const { activeSessions, setActiveSessions, activeSessionId, setActiveSessionId, poppedOutSessions } = useActiveSessions();
     const { getServerById, servers } = useContext(ServerContext);
+    const { registerHandler } = useContext(StateStreamContext);
     const location = useLocation();
     const navigate = useNavigate();
 
@@ -48,95 +50,51 @@ export const Servers = () => {
         return () => window.removeEventListener('toggleServerList', handleToggle);
     }, []);
 
-    const getTabId = () => {
-        let tabId = sessionStorage.getItem("nexterm_tab_id");
-        if (!tabId) {
-            tabId = `tab_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
-            sessionStorage.setItem("nexterm_tab_id", tabId);
-        }
-        return tabId;
-    };
+    const handleConnectionsUpdate = useCallback((sessions) => {
+        if (!servers) return;
+        const mappedSessions = sessions.map(session => {
+            const server = getServerById(session.entryId);
+            if (!server) return null;
+            return {
+                id: session.sessionId,
+                server,
+                identity: session.configuration.identityId,
+                isHibernated: session.isHibernated,
+                lastActivity: session.lastActivity,
+                type: session.configuration.type || undefined,
+                organizationId: session.organizationId,
+                organizationName: session.organizationName,
+                osName: session.osName || null,
+                scriptId: session.configuration.scriptId || undefined,
+                shareId: session.shareId || null,
+                shareWritable: session.shareWritable || false,
+            };
+        }).filter(Boolean);
 
-    const getBrowserId = () => {
-        let browserId = localStorage.getItem("nexterm_browser_id");
-        if (!browserId) {
-            browserId = `browser_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
-            localStorage.setItem("nexterm_browser_id", browserId);
-        }
-        return browserId;
-    };
+        const activeMapped = mappedSessions.filter(s => !s.isHibernated);
+        const hibernatedMapped = mappedSessions.filter(s => s.isHibernated);
+        const newActiveIds = new Set(activeMapped.map(s => s.id));
 
-    const fetchSessions = async () => {
-        try {
-            const params = new URLSearchParams({
-                tabId: getTabId(),
-                browserId: getBrowserId(),
+        setActiveSessions(prev => {
+            const prevMap = new Map(prev.map(s => [s.id, s]));
+            return activeMapped.map(newSession => {
+                const existing = prevMap.get(newSession.id);
+                return existing ? { ...newSession, scriptId: existing.scriptId || newSession.scriptId, scriptName: existing.scriptName, osName: newSession.osName || existing.osName } : newSession;
             });
-            const sessions = await getRequest(`/connections?${params.toString()}`);
-            const mappedSessions = sessions.map(session => {
-                const server = getServerById(session.entryId);
-                if (!server) return null;
+        });
+        setHibernatedSessions(hibernatedMapped);
 
-                return {
-                    id: session.sessionId,
-                    server: server,
-                    identity: session.configuration.identityId,
-                    isHibernated: session.isHibernated,
-                    lastActivity: session.lastActivity,
-                    type: session.configuration.type || undefined,
-                    organizationId: session.organizationId,
-                    organizationName: session.organizationName,
-                    osName: session.osName || null,
-                    scriptId: session.configuration.scriptId || undefined,
-                    shareId: session.shareId || null,
-                    shareWritable: session.shareWritable || false,
-                };
-            }).filter(s => s !== null);
-
-            const activeMapped = mappedSessions.filter(s => !s.isHibernated);
-            const hibernatedMapped = mappedSessions.filter(s => s.isHibernated);
-
-            setActiveSessions(prevSessions => {
-                const prevSessionMap = new Map(prevSessions.map(s => [s.id, s]));
-                return activeMapped.map(newSession => {
-                    const existingSession = prevSessionMap.get(newSession.id);
-                    if (existingSession) {
-                        return {
-                            ...newSession,
-                            scriptId: existingSession.scriptId || newSession.scriptId,
-                            scriptName: existingSession.scriptName || newSession.scriptName,
-                            osName: newSession.osName || existingSession.osName,
-                        };
-                    }
-                    return newSession;
-                });
-            });
-            setHibernatedSessions(hibernatedMapped);
-
-            if (activeMapped.length > 0) {
-                if (!activeSessionId || !activeMapped.find(s => s.id === activeSessionId)) {
-                    setActiveSessionId(activeMapped[activeMapped.length - 1].id);
-                }
+        setActiveSessionId(prev => {
+            if (!prev || !newActiveIds.has(prev)) {
+                return activeMapped.at(-1)?.id || null;
             }
-        } catch (error) {
-            console.error("Failed to fetch sessions", error);
-        }
-    };
-
-    const refreshSession = useCallback(async (sessionId) => {
-        try {
-            const sessionData = await getRequest(`/connections/${sessionId}`);
-            setActiveSessions(prev => prev.map(s => s.id === sessionId ? { ...s, shareId: sessionData.shareId, shareWritable: sessionData.shareWritable } : s));
-        } catch (error) {
-            console.error("Failed to refresh session", error);
-        }
-    }, [setActiveSessions]);
+            return prev;
+        });
+    }, [servers, getServerById, setActiveSessions, setActiveSessionId]);
 
     useEffect(() => {
-        if (servers) {
-            fetchSessions();
-        }
-    }, [servers]);
+        if (servers) return registerHandler(STATE_TYPES.CONNECTIONS, handleConnectionsUpdate);
+    }, [servers, registerHandler, handleConnectionsUpdate]);
 
     const findOrganizationForServer = (serverIdNum, entries, currentOrg = null) => {
         for (const entry of entries) {
@@ -253,7 +211,6 @@ export const Servers = () => {
                 browserId: getBrowserId(),
             });
             setActiveSessionId(sessionId);
-            await fetchSessions();
         } catch (error) {
             console.error("Failed to resume session", error);
         }
@@ -279,19 +236,17 @@ export const Servers = () => {
         setConnectionReasonDialogOpen(false);
     };
 
-    const disconnectFromServer = (sessionId) => {
-        setActiveSessions(activeSessions => {
-            const newSessions = activeSessions.filter(session => session.id !== sessionId);
-
-            if (newSessions.length === 0) {
-                setActiveSessionId(null);
-            } else if (sessionId === activeSessionId) {
-                setActiveSessionId(newSessions[newSessions.length - 1].id);
-            }
-
+    const disconnectFromServer = useCallback((sessionId) => {
+        setActiveSessions(prev => {
+            const newSessions = prev.filter(session => session.id !== sessionId);
+            setActiveSessionId(currentActiveId => {
+                if (newSessions.length === 0) return null;
+                if (sessionId === currentActiveId) return newSessions.at(-1)?.id || null;
+                return currentActiveId;
+            });
             return newSessions;
         });
-    }
+    }, [setActiveSessions, setActiveSessionId]);
 
     const closeSession = (sessionId) => {
         deleteRequest(`/connections/${sessionId}`).catch(error => {
@@ -306,14 +261,8 @@ export const Servers = () => {
 
             if (sessionId === activeSessionId) {
                 const otherSessions = activeSessions.filter(s => s.id !== sessionId);
-                if (otherSessions.length > 0) {
-                    setActiveSessionId(otherSessions[otherSessions.length - 1].id);
-                } else {
-                    setActiveSessionId(null);
-                }
+                setActiveSessionId(otherSessions.at(-1)?.id || null);
             }
-
-            await fetchSessions();
         } catch (error) {
             console.error("Failed to hibernate session", error);
         }
@@ -486,8 +435,7 @@ export const Servers = () => {
                                closeSession={closeSession}
                                activeSessionId={activeSessionId} setActiveSessionId={setActiveSessionId}
                                hibernateSession={hibernateSession} duplicateSession={duplicateSession}
-                               setOpenFileEditors={setOpenFileEditors}
-                               onShareUpdate={refreshSession} />}
+                               setOpenFileEditors={setOpenFileEditors} />}
             {openFileEditors.map((editor, index) => (
                 editor.type === "preview" ? (
                     <FilePreviewWindow

@@ -1,5 +1,6 @@
-import { createContext, useContext, useEffect, useState } from "react";
+import { createContext, useContext, useEffect, useState, useCallback } from "react";
 import { UserContext } from "@/common/contexts/UserContext.jsx";
+import { StateStreamContext, STATE_TYPES } from "@/common/contexts/StateStreamContext.jsx";
 import { getRequest } from "@/common/utils/RequestUtil.js";
 
 export const SnippetContext = createContext({});
@@ -7,35 +8,23 @@ export const SnippetContext = createContext({});
 export const SnippetProvider = ({ children }) => {
     const [allSnippets, setAllSnippets] = useState([]);
     const { user, sessionToken } = useContext(UserContext);
-
-    const loadAllSnippets = async () => {
-        try {
-            const response = await getRequest("/snippets/all");
-            setAllSnippets(response);
-        } catch (error) {
-            console.error("Failed to load all snippets", error.message);
-        }
-    };
+    const { registerHandler } = useContext(StateStreamContext);
 
     useEffect(() => {
-        if (user) {
-            loadAllSnippets();
+        if (user) return registerHandler(STATE_TYPES.SNIPPETS, setAllSnippets);
+    }, [user, registerHandler]);
 
-            const interval = setInterval(() => {
-                loadAllSnippets();
-            }, 5000);
+    const loadAllSnippets = useCallback(async () => {
+        try {
+            setAllSnippets(await getRequest("/snippets/all"));
+        } catch {}
+    }, []);
 
-            return () => clearInterval(interval);
-        } else if (!sessionToken) {
-            setAllSnippets([]);
-        }
-    }, [user]);
+    useEffect(() => {
+        if (!sessionToken) setAllSnippets([]);
+    }, [sessionToken]);
 
-    return (
-        <SnippetContext.Provider value={{ allSnippets, loadAllSnippets }}>
-            {children}
-        </SnippetContext.Provider>
-    );
+    return <SnippetContext.Provider value={{ allSnippets, loadAllSnippets }}>{children}</SnippetContext.Provider>;
 };
 
 export const useSnippets = () => useContext(SnippetContext);
