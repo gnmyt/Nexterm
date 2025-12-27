@@ -21,7 +21,6 @@ const DraggableTab = ({
     index,
     moveTab,
     progress = 0,
-    onShareUpdate,
 }) => {
     const contextMenu = useContextMenu();
     const { popOutSession } = useActiveSessions();
@@ -36,13 +35,11 @@ const DraggableTab = ({
             const baseUrl = getBaseUrl() || window.location.origin;
             navigator.clipboard.writeText(`${baseUrl}/share/${result.shareId}`);
         }
-        onShareUpdate?.(session.id);
-    }, [session.id, onShareUpdate]);
+    }, [session.id]);
 
     const handleStopSharing = useCallback(async () => {
         await deleteRequest(`connections/${session.id}/share`);
-        onShareUpdate?.(session.id);
-    }, [session.id, onShareUpdate]);
+    }, [session.id]);
 
     const handleCopyLink = useCallback(() => {
         const baseUrl = getBaseUrl() || window.location.origin;
@@ -51,8 +48,7 @@ const DraggableTab = ({
 
     const handlePermissionChange = useCallback(async (writable) => {
         await patchRequest(`connections/${session.id}/share`, { writable });
-        onShareUpdate?.(session.id);
-    }, [session.id, onShareUpdate]);
+    }, [session.id]);
     
     const [{ isDragging }, drag] = useDrag({
         type: "TAB",
@@ -195,7 +191,6 @@ export const ServerTabs = ({
     sessionProgress = {},
     fullscreenEnabled,
     onFullscreenToggle,
-    onShareUpdate,
 }) => {
 
     const tabsRef = useRef(null);
@@ -319,7 +314,7 @@ export const ServerTabs = ({
                             <DraggableTab key={session.id} session={session} server={session.server} index={index} moveTab={moveTab}
                                 activeSessionId={activeSessionId} setActiveSessionId={setActiveSessionId}
                                 closeSession={closeSession} hibernateSession={hibernateSession} duplicateSession={duplicateSession}
-                                progress={sessionProgress[session.id] || 0} onShareUpdate={onShareUpdate} />
+                                progress={sessionProgress[session.id] || 0} />
                         );
                     })}
                 </div>

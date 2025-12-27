@@ -36,7 +36,6 @@ export const ViewContainer = ({
                                   hibernateSession,
                                   duplicateSession,
                                   setOpenFileEditors,
-                                  onShareUpdate,
                               }) => {
 
     const [layoutMode, setLayoutMode] = useState("single");
@@ -476,8 +475,7 @@ export const ViewContainer = ({
                                             onKeyboardShortcut={handleKeyboardShortcut} hasGuacamole={hasGuacamole}
                                             sessionProgress={sessionProgress} fullscreenEnabled={fullscreenMode}
                                             onFullscreenToggle={toggleFullscreenMode}
-                                            hibernateSession={hibernateSession} duplicateSession={duplicateSession}
-                                            onShareUpdate={onShareUpdate} />}
+                                            hibernateSession={hibernateSession} duplicateSession={duplicateSession} />}
 
             <div ref={layoutRef}
                  className={`view-layouter ${layoutMode} ${isResizing ? "resizing" : ""} ${isResizing && resizingDirection ? `resizing-${resizingDirection}` : ""}`}

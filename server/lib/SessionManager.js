@@ -3,6 +3,7 @@ const { v4: uuidv4 } = require("uuid");
 const logger = require("../utils/logger");
 const AuditLog = require("../models/AuditLog");
 const { isRecordingEnabled, getRecordingPath, compressRecording, finalizeGuacRecording } = require("../utils/recordingService");
+const stateBroadcaster = require("./StateBroadcaster");
 
 class SessionManager {
     constructor() {
@@ -275,8 +276,12 @@ class SessionManager {
             this.shareIndex.delete(session.shareId);
         }
 
+        const accountId = session.accountId;
         this.sessions.delete(sessionId);
         logger.info(`Session removed`, { sessionId });
+
+        stateBroadcaster.broadcast("CONNECTIONS", { accountId });
+
         return true;
     }
 

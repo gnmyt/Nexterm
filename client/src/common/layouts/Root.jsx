@@ -1,5 +1,6 @@
 import { Outlet } from "react-router-dom";
 import { UserProvider } from "@/common/contexts/UserContext.jsx";
+import { StateStreamProvider } from "@/common/contexts/StateStreamContext.jsx";
 import { ServerProvider } from "@/common/contexts/ServerContext.jsx";
 import { IdentityProvider } from "@/common/contexts/IdentityContext.jsx";
 import { ToastProvider } from "@/common/contexts/ToastContext.jsx";
@@ -16,6 +17,7 @@ import { Suspense, lazy, useState, useEffect } from "react";
 import Loading from "@/common/components/Loading";
 import { ErrorBoundary } from "@/common/components/ErrorBoundary";
 import TitleBar from "@/common/components/TitleBar";
+import ConnectionErrorBanner from "@/common/components/ConnectionErrorBanner";
 import { waitForTauri } from "@/common/utils/TauriUtil.js";
 import MobileNav from "@/common/components/MobileNav";
 
@@ -41,36 +43,39 @@ const AppContent = () => {
 
     return (
         <UserProvider>
-            <KeymapProvider>
-                <AIProvider>
-                    <ServerProvider>
-                        <IdentityProvider>
-                            <SnippetProvider>
-                                <ScriptProvider>
-                                    <SessionProvider>
-                                        <QuickActionProvider>
-                                            <div className="app-wrapper">
-                                                <TitleBar />
-                                                <div className="content-wrapper">
-                                                    <Suspense fallback={<Loading />}>
-                                                        <Sidebar />
-                                                    </Suspense>
-                                                    <div className="main-content">
+            <StateStreamProvider>
+                <KeymapProvider>
+                    <AIProvider>
+                        <ServerProvider>
+                            <IdentityProvider>
+                                <SnippetProvider>
+                                    <ScriptProvider>
+                                        <SessionProvider>
+                                            <QuickActionProvider>
+                                                <div className="app-wrapper">
+                                                    <TitleBar />
+                                                    <ConnectionErrorBanner />
+                                                    <div className="content-wrapper">
                                                         <Suspense fallback={<Loading />}>
-                                                            <Outlet />
+                                                            <Sidebar />
                                                         </Suspense>
+                                                        <div className="main-content">
+                                                            <Suspense fallback={<Loading />}>
+                                                                <Outlet />
+                                                            </Suspense>
+                                                        </div>
                                                     </div>
+                                                    <MobileNav />
                                                 </div>
-                                                <MobileNav />
-                                            </div>
-                                        </QuickActionProvider>
-                                    </SessionProvider>
-                                </ScriptProvider>
-                            </SnippetProvider>
-                        </IdentityProvider>
-                    </ServerProvider>
-                </AIProvider>
-            </KeymapProvider>
+                                            </QuickActionProvider>
+                                        </SessionProvider>
+                                    </ScriptProvider>
+                                </SnippetProvider>
+                            </IdentityProvider>
+                        </ServerProvider>
+                    </AIProvider>
+                </KeymapProvider>
+            </StateStreamProvider>
         </UserProvider>
     );
 };

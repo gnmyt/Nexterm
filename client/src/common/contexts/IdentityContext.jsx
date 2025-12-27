@@ -1,85 +1,44 @@
-import { createContext, useContext, useEffect, useState, useMemo } from "react";
+import { createContext, useContext, useEffect, useState, useMemo, useCallback } from "react";
 import { UserContext } from "@/common/contexts/UserContext.jsx";
+import { StateStreamContext, STATE_TYPES } from "@/common/contexts/StateStreamContext.jsx";
 import { getRequest, postRequest } from "@/common/utils/RequestUtil.js";
 
 export const IdentityContext = createContext({});
 
 export const IdentityProvider = ({ children }) => {
-
     const [identities, setIdentities] = useState(null);
-    const {user, sessionToken} = useContext(UserContext);
+    const { user, sessionToken } = useContext(UserContext);
+    const { registerHandler } = useContext(StateStreamContext);
 
-    const loadIdentities = async () => {
+    useEffect(() => {
+        if (user) return registerHandler(STATE_TYPES.IDENTITIES, setIdentities);
+    }, [user, registerHandler]);
+
+    const loadIdentities = useCallback(async () => {
         try {
-            getRequest("/identities/list").then((response) => {
-                setIdentities(response);
-            });
-        } catch (error) {
-            console.error("Failed to load identities", error.message);
-        }
-    }
+            setIdentities(await getRequest("/identities/list"));
+        } catch {}
+    }, []);
 
-    const personalIdentities = useMemo(() => {
-        return identities?.filter(i => i.scope === 'personal') || [];
-    }, [identities]);
-
-    const organizationIdentities = useMemo(() => {
-        return identities?.filter(i => i.scope === 'organization') || [];
-    }, [identities]);
-
-    const getOrganizationIdentities = (organizationId) => {
-        return organizationIdentities.filter(i => i.organizationId === organizationId);
-    };
-
-    const getIdentitiesForContext = (organizationId = null) => {
-        if (!organizationId) {
-            return personalIdentities;
-        }
-        return [
-            ...getOrganizationIdentities(organizationId),
-            ...personalIdentities,
-        ];
-    };
+    const personalIdentities = useMemo(() => identities?.filter(i => i.scope === 'personal') || [], [identities]);
+    const organizationIdentities = useMemo(() => identities?.filter(i => i.scope === 'organization') || [], [identities]);
+    const getOrganizationIdentities = (orgId) => organizationIdentities.filter(i => i.organizationId === orgId);
+    const getIdentitiesForContext = (orgId = null) => orgId ? [...getOrganizationIdentities(orgId), ...personalIdentities] : personalIdentities;
 
     const moveIdentityToOrganization = async (identityId, organizationId) => {
         try {
             const result = await postRequest(`/identities/${identityId}/move`, { organizationId });
-            if (result.identity) {
-                await loadIdentities();
-                return { success: true, identity: result.identity };
-            }
-            return { success: false, error: result.message };
+            return result.identity ? { success: true, identity: result.identity } : { success: false, error: result.message };
         } catch (error) {
-            console.error("Failed to move identity", error.message);
             return { success: false, error: error.message };
         }
     };
 
-    useEffect(() => {
-        if (user) {
-            loadIdentities();
-
-            const interval = setInterval(() => {
-                loadIdentities();
-            }, 5000);
-
-            return () => clearInterval(interval);
-        } else if (!sessionToken) {
-            setIdentities([]);
-        }
-    }, [user]);
+    useEffect(() => { if (!sessionToken) setIdentities([]); }, [sessionToken]);
 
     return (
-        <IdentityContext.Provider value={{
-            identities,
-            personalIdentities,
-            organizationIdentities,
-            loadIdentities,
-            getOrganizationIdentities,
-            getIdentitiesForContext,
-            moveIdentityToOrganization,
-        }}>
+        <IdentityContext.Provider value={{ identities, personalIdentities, organizationIdentities, loadIdentities, getOrganizationIdentities, getIdentitiesForContext, moveIdentityToOrganization }}>
             {children}
         </IdentityContext.Provider>
-    )
-}
+    );
+};

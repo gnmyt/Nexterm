@@ -5,6 +5,7 @@ const OrganizationMember = require("../models/OrganizationMember");
 const { Op } = require("sequelize");
 const { hasOrganizationAccess } = require("../utils/permission");
 const { createAuditLog, AUDIT_ACTIONS, RESOURCE_TYPES } = require("./audit");
+const stateBroadcaster = require("../lib/StateBroadcaster");
 
 const updateFolderContext = async (folderId, organizationId, accountId) => {
     await Folder.update(
@@ -71,6 +72,8 @@ module.exports.createFolder = async (accountId, configuration) => {
         details: { folderName: configuration.name },
     });
 
+    stateBroadcaster.broadcast("ENTRIES", { accountId, organizationId: configuration.organizationId });
+
     return folder;
 };
 
@@ -107,6 +110,8 @@ module.exports.deleteFolder = async (accountId, folderId) => {
         resourceId: folderId,
         details: { folderName: folder.name },
     });
+
+    stateBroadcaster.broadcast("ENTRIES", { accountId, organizationId: folder.organizationId });
 
     return { success: true };
 };
@@ -219,6 +224,8 @@ module.exports.editFolder = async (accountId, folderId, configuration) => {
         resourceId: folderId,
         details: configuration,
     });
+
+    stateBroadcaster.broadcast("ENTRIES", { accountId, organizationId: folder.organizationId });
 
     return { success: true };
 };

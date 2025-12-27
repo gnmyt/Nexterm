@@ -12,6 +12,7 @@ const { listIdentities } = require("./identity");
 const { createAuditLog, AUDIT_ACTIONS, RESOURCE_TYPES } = require("./audit");
 const logger = require("../utils/logger");
 const { sendWakeOnLan } = require("../utils/wol");
+const stateBroadcaster = require("../lib/StateBroadcaster");
 
 const validateEntryAccess = async (accountId, entry, errorMessage = "You don't have permission to access this entry") => {
     if (!entry) return { code: 401, message: "Entry does not exist" };
@@ -155,6 +156,8 @@ module.exports.createEntry = async (accountId, configuration) => {
 
     logger.info(`Entry created`, { entryId: entry.id, name: entry.name, type: entry.type });
 
+    stateBroadcaster.broadcast("ENTRIES", { accountId, organizationId: entry.organizationId });
+
     return entry;
 };
 
@@ -176,6 +179,8 @@ module.exports.deleteEntry = async (accountId, entryId) => {
     });
 
     logger.info(`Entry deleted`, { entryId, name: entry.name });
+
+    stateBroadcaster.broadcast("ENTRIES", { accountId, organizationId: entry.organizationId });
 
     return { success: true };
 };
@@ -244,6 +249,8 @@ module.exports.editEntry = async (accountId, entryId, configuration) => {
         resourceId: entryId,
         details: configuration
     });
+
+    stateBroadcaster.broadcast("ENTRIES", { accountId, organizationId: entry.organizationId });
 
     return { success: true };
 };
@@ -436,6 +443,8 @@ module.exports.duplicateEntry = async (accountId, entryId) => {
 
     logger.info(`Entry duplicated`, { originalEntryId: entryId, newEntryId: newEntry.id, name: newEntry.name });
 
+    stateBroadcaster.broadcast("ENTRIES", { accountId, organizationId: entry.organizationId });
+
     return newEntry;
 };
 
@@ -505,6 +514,10 @@ module.exports.importSSHConfig = async (accountId, configuration) => {
     }
 
     logger.info(`SSH config import completed`, { imported: results.imported, skipped: results.skipped, errors: results.errors });
+
+    if (results.imported > 0) {
+        stateBroadcaster.broadcast("ENTRIES", { accountId, organizationId: orgId });
+    }
 
     return {
         message: `SSH config import: ${results.imported} imported, ${results.skipped} skipped, ${results.errors} errors`,
@@ -592,6 +605,11 @@ module.exports.repositionEntry = async (accountId, entryId, { targetId, placemen
         resourceId: entryIdNum,
         details: { action: 'reposition', targetId, placement, folderId: targetFolderId }
     });
+
+    stateBroadcaster.broadcast("ENTRIES", { accountId, organizationId: entry.organizationId });
+    if (targetOrganizationId && targetOrganizationId !== entry.organizationId) {
+        stateBroadcaster.broadcast("ENTRIES", { organizationId: targetOrganizationId });
+    }
 
     return { success: true };
 };
