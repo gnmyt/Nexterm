@@ -55,6 +55,7 @@
       "monitoring": "Supervisión",
       "snippets": "Fragmentos",
       "audit": "Auditoría",
+      "account": "Account",
       "logout": "Cerrar sesión",
       "collapseTitle": "Contraer la barra lateral",
       "logoutConfirmText": "Esto te desconectará de la cuenta {{username}} . ¿Estás seguro?",
@@ -77,6 +78,10 @@
     },
     "errors": {
       "loadingAuthProviders": "Error al cargar los proveedores de autenticación: {{error}}",
+      "webSocketConnection": {
+        "title": "WebSocket Connection Failed",
+        "message": "Connections are unavailable. This may be due to WebSocket not being enabled in your reverse proxy or network restrictions."
+      },
       "generalError": "Se ha producido un error",
       "invalidCredentials": "Nombre de usuario o contraseña no válidos",
       "invalidTwoFactor": "Código de dos factores no válido",
@@ -180,12 +185,14 @@
       "fields": {
         "name": "Nombre",
         "description": "Descripción (opcional)",
-        "command": "Mando"
+        "command": "Mando",
+        "osFilter": "Compatible OS"
       },
       "placeholders": {
         "name": "Nombre del fragmento",
         "description": "¿Qué ordena esto?",
-        "command": "Introduce tu orden"
+        "command": "Introduce tu orden",
+        "osFilter": "All operating systems"
       },
       "actions": {
         "cancel": "Cancelar",
@@ -267,11 +274,13 @@
       "helpTip": "Utiliza las directivas @NEXTERM: para las funciones interactivas",
       "fields": {
         "name": "Nombre",
-        "description": "Descripción"
+        "description": "Descripción",
+        "osFilter": "Compatible OS"
       },
       "placeholders": {
         "name": "Nombre del script",
-        "description": "¿Qué hace este script?"
+        "description": "¿Qué hace este script?",
+        "osFilter": "All operating systems"
       },
       "actions": {
         "cancel": "Cancela",
@@ -463,7 +472,8 @@
       "authentication": "Autenticación",
       "sources": "Fuentes",
       "ai": "AI",
-      "monitoring": "Monitoring"
+      "monitoring": "Monitoring",
+      "backup": "Storage"
     },
     "account": {
       "title": "Cuenta",
@@ -685,6 +695,7 @@
     "authentication": {
       "title": "{{count}} Proveedores de autenticación",
       "addProvider": "Añadir proveedor",
+      "addLdapProvider": "Add LDAP",
       "system": "Sistema",
       "systemDescription": "Autenticación por nombre de usuario y contraseña",
       "deleteConfirm": "Esto eliminará permanentemente este proveedor de autenticación.",
@@ -708,9 +719,7 @@
           "redirectUri": "Redirigir URI",
           "redirectUriPlaceholder": "https://your-domain.com/api/oidc/callback",
           "scope": "Alcance",
-          "scopePlaceholder": "email del perfil openid",
-          "emailAttribute": "Atributo Email",
-          "emailAttributePlaceholder": "correo electrónico",
+          "scopePlaceholder": "openid profile",
           "usernameAttribute": "Atributo Nombre de usuario",
           "usernameAttributePlaceholder": "nombre_usuario_preferido",
           "firstNameAttribute": "Atributo del nombre",
@@ -728,6 +737,51 @@
         },
         "messages": {
           "saveFailed": "No se ha podido guardar el proveedor"
+        }
+      },
+      "ldapDialog": {
+        "createTitle": "Add LDAP Provider",
+        "editTitle": "Edit LDAP Provider",
+        "fields": {
+          "displayName": "Display Name",
+          "displayNamePlaceholder": "e.g. Company LDAP",
+          "host": "Host",
+          "hostPlaceholder": "ldap.company.com",
+          "port": "Port",
+          "bindDN": "Bind DN",
+          "bindDNPlaceholder": "cn=admin,dc=company,dc=com",
+          "bindPassword": "Bind Password",
+          "bindPasswordPlaceholder": "Bind password",
+          "bindPasswordPlaceholderEdit": "Leave blank to keep existing",
+          "baseDN": "Base DN",
+          "baseDNPlaceholder": "dc=company,dc=com",
+          "userSearchFilter": "User Search Filter",
+          "userSearchFilterPlaceholder": "(uid={{username}}) or (sAMAccountName={{username}})",
+          "useTLS": "Use TLS/SSL",
+          "usernameAttribute": "Username Attribute",
+          "usernameAttributePlaceholder": "uid",
+          "emailAttribute": "Email Attribute",
+          "emailAttributePlaceholder": "mail",
+          "firstNameAttribute": "First Name Attribute",
+          "firstNameAttributePlaceholder": "givenName",
+          "lastNameAttribute": "Last Name Attribute",
+          "lastNameAttributePlaceholder": "sn"
+        },
+        "advanced": {
+          "show": "Show Advanced Settings",
+          "hide": "Hide Advanced Settings"
+        },
+        "actions": {
+          "addProvider": "Add Provider",
+          "saveChanges": "Save Changes",
+          "testConnection": "Test Connection",
+          "testing": "Testing..."
+        },
+        "messages": {
+          "saveFailed": "Failed to save provider",
+          "saveFirst": "Save the provider first to test the connection",
+          "testSuccess": "Connection test successful",
+          "testFailed": "Connection test failed"
         }
       }
     },
@@ -926,6 +980,97 @@
         "validationFailed": "No se ha podido validar la URL",
         "requiredFields": "El nombre y la URL son obligatorios"
       }
+    },
+    "backup": {
+      "loading": "Loading storage settings...",
+      "storage": {
+        "title": "Storage",
+        "description": "View disk usage for your Nexterm data.",
+        "database": "Database",
+        "recordings": "Recordings",
+        "logs": "Logs",
+        "total": "Total"
+      },
+      "backupsSection": {
+        "title": "Backups",
+        "description": "Configure backup providers and schedule automatic backups."
+      },
+      "addProvider": "Add Provider",
+      "editProvider": "Edit Provider",
+      "providerName": "Provider Name",
+      "providerNamePlaceholder": "My Backup",
+      "providerType": "Type",
+      "providerTypes": {
+        "local": "Local",
+        "smb": "SMB Share",
+        "webdav": "WebDAV"
+      },
+      "localPath": "Backup Path",
+      "localPathPlaceholder": "/path/to/backups",
+      "smbShare": "SMB Share",
+      "smbSharePlaceholder": "\\\\server\\share",
+      "smbFolder": "Folder (optional)",
+      "smbFolderPlaceholder": "backups",
+      "smbUsername": "Username",
+      "smbUsernamePlaceholder": "user",
+      "smbPassword": "Password",
+      "smbPasswordPlaceholder": "password",
+      "smbDomain": "Domain (optional)",
+      "smbDomainPlaceholder": "WORKGROUP",
+      "webdavUrl": "Server URL",
+      "webdavUrlPlaceholder": "https://cloud.example.com/remote.php/dav/files/user",
+      "webdavFolder": "Folder (optional)",
+      "webdavFolderPlaceholder": "backups",
+      "webdavUsername": "Username",
+      "webdavUsernamePlaceholder": "user",
+      "webdavPassword": "Password",
+      "webdavPasswordPlaceholder": "password",
+      "passwordUnchanged": "Leave empty to keep current",
+      "schedule": {
+        "title": "Automatic Backup",
+        "disabled": "Disabled",
+        "hourly": "Every hour",
+        "every6h": "Every 6 hours",
+        "every12h": "Every 12 hours",
+        "daily": "Daily",
+        "weekly": "Weekly"
+      },
+      "retention": {
+        "title": "Retention Policy"
+      },
+      "backups": "backups",
+      "includes": {
+        "title": "Include in Backups",
+        "database": "Database",
+        "recordings": "Recordings",
+        "logs": "Logs"
+      },
+      "providers": "Providers",
+      "saveSettings": "Save Settings",
+      "noProviders": "No Backup Providers",
+      "noProvidersDescription": "Add a backup provider to start creating backups.",
+      "backupList": "Backups - {{name}}",
+      "loadingBackups": "Loading backups...",
+      "noBackups": "No backups found",
+      "restoreConfirm": "Are you sure you want to restore \"{{name}}\"? This will overwrite your current data and restart the server.",
+      "deleteProviderConfirm": "Are you sure you want to delete \"{{name}}\"? This will not delete existing backups.",
+      "providerCreated": "Backup provider created",
+      "providerUpdated": "Backup provider updated",
+      "providerDeleted": "Backup provider deleted",
+      "backupCreated": "Backup created successfully",
+      "restoreStarted": "Restore started, server will restart",
+      "saveSuccess": "Settings saved successfully",
+      "errors": {
+        "loadFailed": "Failed to load backup settings",
+        "saveFailed": "Failed to save settings",
+        "deleteFailed": "Failed to delete",
+        "backupFailed": "Failed to create backup",
+        "loadBackupsFailed": "Failed to load backups",
+        "restoreFailed": "Failed to restore backup",
+        "exportFailed": "Failed to export data",
+        "nameRequired": "Provider name is required"
+      },
+      "noFiles": "No files found"
     }
   },
   "tunnel": {
@@ -999,6 +1144,7 @@
       "editServer": "Editar servidor",
       "editIntegration": "Editar Integración",
       "duplicateServer": "Servidor duplicado",
+      "pasteIdentityPassword": "Paste Password",
       "deleteServer": "Borrar servidor",
       "wakeOnLan": "Wake-On-LAN",
       "editPVE": "Editar PVE",
