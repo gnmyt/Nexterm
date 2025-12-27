@@ -42,12 +42,12 @@ export const LoginDialog = ({ open }) => {
         if (isConnectorMode && !serverConnected) return;
         
         try {
-            const providers = await getRequest("oidc/providers");
+            const providers = await getRequest("auth/providers");
 
             const internalProvider = providers.find(p => p.isInternal);
             const externalProviders = providers.filter(p => !p.isInternal && p.enabled);
             
-            const internalAuthEnabled = internalProvider ? internalProvider.enabled : false;
+            const internalAuthEnabled = internalProvider ? Boolean(internalProvider.enabled) : false;
             setInternalAuthEnabled(internalAuthEnabled);
             setProviders(externalProviders);
 
@@ -134,7 +134,7 @@ export const LoginDialog = ({ open }) => {
         }
 
         try {
-            const response = await request("oidc/login/" + providerId, "POST");
+            const response = await request("auth/oidc/login/" + providerId, "POST");
             if (response.url) {
                 window.location.href = response.url;
             }
@@ -255,9 +255,11 @@ export const LoginDialog = ({ open }) => {
 
                     {(!firstTimeSetup && !totpRequired) ? (
                         <div className="sso-options">
-                            <div className="divider">
-                                <span>{t('common.loginDialog.ssoOrContinueWith')}</span>
-                            </div>
+                            {isInternalAuthEnabled() && (
+                                <div className="divider">
+                                    <span>{t('common.loginDialog.ssoOrContinueWith')}</span>
+                                </div>
+                            )}
                             <div className="sso-buttons">
                                 <Button
                                     type="secondary"
