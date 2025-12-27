@@ -119,8 +119,13 @@ module.exports = async (ws, req) => {
         }
     }
 
-    const result = await resolveIdentity(entry, identityId, directIdentity);
+    const result = await resolveIdentity(entry, identityId, directIdentity, user.id);
     const identity = result?.identity !== undefined ? result.identity : result;
+
+    if (result.accessDenied) {
+        ws.close(4006, "You don't have access to this identity");
+        return null;
+    }
 
     if (result.requiresIdentity && !identity) {
         ws.close(4006, "Identity not found");
