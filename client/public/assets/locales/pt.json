@@ -695,6 +695,7 @@
     "authentication": {
       "title": "{{count}} Provedor(es) de Autenticação",
       "addProvider": "Adicionar Provedor",
+      "addLdapProvider": "Add LDAP",
       "system": "Sistema",
       "systemDescription": "Autenticação por nome de usuário e senha",
       "deleteConfirm": "Isso excluirá permanentemente esse provedor de autenticação.",
@@ -718,9 +719,7 @@
           "redirectUri": "URI de Redirecionamento",
           "redirectUriPlaceholder": "https://your-domain.com/api/oidc/callback",
           "scope": "Escopo",
-          "scopePlaceholder": "openid profile email",
-          "emailAttribute": "Atributo de E-mail",
-          "emailAttributePlaceholder": "email",
+          "scopePlaceholder": "openid profile",
           "usernameAttribute": "Atributo de Nome de Usuário",
           "usernameAttributePlaceholder": "preferred_username",
           "firstNameAttribute": "Atributo de Nome",
@@ -738,6 +737,51 @@
         },
         "messages": {
           "saveFailed": "Falha ao salvar o provedor"
+        }
+      },
+      "ldapDialog": {
+        "createTitle": "Add LDAP Provider",
+        "editTitle": "Edit LDAP Provider",
+        "fields": {
+          "displayName": "Display Name",
+          "displayNamePlaceholder": "e.g. Company LDAP",
+          "host": "Host",
+          "hostPlaceholder": "ldap.company.com",
+          "port": "Port",
+          "bindDN": "Bind DN",
+          "bindDNPlaceholder": "cn=admin,dc=company,dc=com",
+          "bindPassword": "Bind Password",
+          "bindPasswordPlaceholder": "Bind password",
+          "bindPasswordPlaceholderEdit": "Leave blank to keep existing",
+          "baseDN": "Base DN",
+          "baseDNPlaceholder": "dc=company,dc=com",
+          "userSearchFilter": "User Search Filter",
+          "userSearchFilterPlaceholder": "(uid={{username}}) or (sAMAccountName={{username}})",
+          "useTLS": "Use TLS/SSL",
+          "usernameAttribute": "Username Attribute",
+          "usernameAttributePlaceholder": "uid",
+          "emailAttribute": "Email Attribute",
+          "emailAttributePlaceholder": "mail",
+          "firstNameAttribute": "First Name Attribute",
+          "firstNameAttributePlaceholder": "givenName",
+          "lastNameAttribute": "Last Name Attribute",
+          "lastNameAttributePlaceholder": "sn"
+        },
+        "advanced": {
+          "show": "Show Advanced Settings",
+          "hide": "Hide Advanced Settings"
+        },
+        "actions": {
+          "addProvider": "Add Provider",
+          "saveChanges": "Save Changes",
+          "testConnection": "Test Connection",
+          "testing": "Testing..."
+        },
+        "messages": {
+          "saveFailed": "Failed to save provider",
+          "saveFirst": "Save the provider first to test the connection",
+          "testSuccess": "Connection test successful",
+          "testFailed": "Connection test failed"
         }
       }
     },
