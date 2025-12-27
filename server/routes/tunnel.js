@@ -47,7 +47,7 @@ module.exports = async (ws, req) => {
     try {
         ssh = await new Promise((resolve, reject) => {
             const timeout = setTimeout(() => reject(new Error("SSH connection timeout")), 30000);
-            createSSHConnection(entry, identity).then(conn => {
+            createSSHConnection(entry, identity, null, user.id).then(conn => {
                 conn.on("ready", () => {
                     clearTimeout(timeout);
                     resolve(conn);
