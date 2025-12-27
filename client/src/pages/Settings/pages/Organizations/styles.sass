@@ -161,59 +161,6 @@ $tablet: 1024px
     padding: 1.25rem
     animation: slideDown 0.15s ease-out
 
-    .tab-headers
-      display: flex
-      gap: 0.25rem
-      margin-bottom: 1.25rem
-      border-bottom: 1px solid colors.$dark-gray
-      padding-bottom: 0.75rem
-      overflow-x: auto
-      scrollbar-width: none
-
-      &::-webkit-scrollbar
-        display: none
-
-      @media (max-width: $mobile)
-        flex-wrap: nowrap
-        -webkit-overflow-scrolling: touch
-
-      .tab-header
-        display: flex
-        align-items: center
-        gap: 0.5rem
-        padding: 0.5rem 1rem
-        cursor: pointer
-        border-radius: 0.5rem
-        transition: all 0.1s ease
-        color: colors.$subtext
-        background-color: transparent
-        position: relative
-        white-space: nowrap
-        flex-shrink: 0
-
-        @media (max-width: $mobile)
-          padding: 0.375rem 0.75rem
-
-        svg
-          width: 1.125rem
-          height: 1.125rem
-          opacity: 0.9
-
-        span
-          font-weight: 500
-          font-size: 0.9rem
-
-        &:hover
-          color: colors.$white
-          background-color: colors.$gray
-
-        &.active
-          color: colors.$white
-          background-color: colors.$gray
-
-          svg
-            color: colors.$primary
-
     .tab-content
       margin-top: 0.5rem
 
@@ -261,11 +208,3 @@ $tablet: 1024px
       .right-section
         width: 100%
         justify-content: flex-end
-
-    .organization-members
-      .tab-headers
-        flex-wrap: wrap
-
-        .tab-header
-          padding: 0.375rem 0.75rem
-          font-size: 0.85rem

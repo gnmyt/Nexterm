@@ -85,7 +85,7 @@ const Identity = ({ identity, onUpdate, onDelete, onMoveToOrg, isOrgContext, org
                 {(authType === "password" || authType === "password-only" || authType === "both") && (
                     <div className="form-group">
                         <label>{t("servers.dialog.identities.passwordField")}</label>
-                        <Input icon={mdiLockOutline} type="password" placeholder={t("servers.dialog.identities.passwordField")} autoComplete="new-password" value={password} setValue={(v) => { setPassword(v); setPwTouched(true); }} />
+                        <Input icon={mdiLockOutline} type="password" id={`identity-password-${identity.id}`} name="password" placeholder={t("servers.dialog.identities.passwordField")} autoComplete="new-password" value={password} setValue={(v) => { setPassword(v); setPwTouched(true); }} />
                     </div>
                 )}
                 {(authType === "ssh" || authType === "both") && (
@@ -96,7 +96,7 @@ const Identity = ({ identity, onUpdate, onDelete, onMoveToOrg, isOrgContext, org
                         </div>
                         <div className="form-group">
                             <label>{t("servers.dialog.identities.passphrase")}</label>
-                            <Input icon={mdiLockOutline} type="password" placeholder={t("servers.dialog.identities.passphrase")} autoComplete="new-password" value={passphrase} setValue={(v) => { setPassphrase(v); setPpTouched(true); }} />
+                            <Input icon={mdiLockOutline} type="password" id={`identity-passphrase-${identity.id}`} name="passphrase" placeholder={t("servers.dialog.identities.passphrase")} autoComplete="new-password" value={passphrase} setValue={(v) => { setPassphrase(v); setPpTouched(true); }} />
                         </div>
                     </>
                 )}
