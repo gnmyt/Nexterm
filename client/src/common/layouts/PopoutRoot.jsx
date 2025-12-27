@@ -1,5 +1,6 @@
 import { Outlet } from "react-router-dom";
 import { UserProvider } from "@/common/contexts/UserContext.jsx";
+import { StateStreamProvider } from "@/common/contexts/StateStreamContext.jsx";
 import { ServerProvider } from "@/common/contexts/ServerContext.jsx";
 import { IdentityProvider } from "@/common/contexts/IdentityContext.jsx";
 import { ToastProvider } from "@/common/contexts/ToastContext.jsx";
@@ -22,23 +23,25 @@ export default () => {
                 <ToastProvider>
                     <TerminalSettingsProvider>
                         <UserProvider>
-                            <KeymapProvider>
-                                <AIProvider>
-                                    <ServerProvider>
-                                        <IdentityProvider>
-                                            <SnippetProvider>
-                                                <ScriptProvider>
-                                                    <SessionProvider>
-                                                        <Suspense fallback={<Loading />}>
-                                                            <Outlet />
-                                                        </Suspense>
-                                                    </SessionProvider>
-                                                </ScriptProvider>
-                                            </SnippetProvider>
-                                        </IdentityProvider>
-                                    </ServerProvider>
-                                </AIProvider>
-                            </KeymapProvider>
+                            <StateStreamProvider>
+                                <KeymapProvider>
+                                    <AIProvider>
+                                        <ServerProvider>
+                                            <IdentityProvider>
+                                                <SnippetProvider>
+                                                    <ScriptProvider>
+                                                        <SessionProvider>
+                                                            <Suspense fallback={<Loading />}>
+                                                                <Outlet />
+                                                            </Suspense>
+                                                        </SessionProvider>
+                                                    </ScriptProvider>
+                                                </SnippetProvider>
+                                            </IdentityProvider>
+                                        </ServerProvider>
+                                    </AIProvider>
+                                </KeymapProvider>
+                            </StateStreamProvider>
                         </UserProvider>
                     </TerminalSettingsProvider>
                 </ToastProvider>
