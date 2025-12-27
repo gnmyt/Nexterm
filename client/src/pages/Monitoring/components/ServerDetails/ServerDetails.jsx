@@ -1,9 +1,9 @@
 import { useState, useEffect, useCallback, useMemo } from "react";
 import "./styles.sass";
 import { getRequest } from "@/common/utils/RequestUtil.js";
-import Icon from "@mdi/react";
 import { mdiChartLine, mdiInformation, mdiHarddisk, mdiNetwork, mdiConsole, mdiServerNetwork } from "@mdi/js";
 import Button from "@/common/components/Button";
+import TabSwitcher from "@/common/components/TabSwitcher";
 import MonitoringChart from "./components/MonitoringChart";
 import ProcessesTab from "./components/ProcessesTab";
 import { useTranslation } from "react-i18next";
@@ -68,15 +68,22 @@ export const ServerDetails = ({ server, activeTab = "overview", onTabChange }) =
     const latest = useMemo(() => detailData?.latest || detailData?.data?.[0] || null, [detailData]);
     const validTab = tabs.some(t => t.id === activeTab) ? activeTab : "overview";
 
+    const tabSwitcherTabs = useMemo(() => tabs.map(tab => ({
+        key: tab.id,
+        label: t(tab.labelKey),
+        icon: tab.icon
+    })), [tabs, t]);
+
     return (
         <div className="server-details">
             <div className="details-tabs">
                 <div className="tab-headers">
-                    {tabs.map(tab => (
-                        <div key={tab.id} className={`tab-header ${validTab === tab.id ? "active" : ""}`} onClick={() => onTabChange?.(tab.id)}>
-                            <Icon path={tab.icon} /><span>{t(tab.labelKey)}</span>
-                        </div>
-                    ))}
+                    <TabSwitcher
+                        tabs={tabSwitcherTabs}
+                        activeTab={validTab}
+                        onTabChange={(tabKey) => onTabChange?.(tabKey)}
+                        variant="flat"
+                    />
                     {validTab === "charts" && (
                         <div className="time-range-selector">
                             {["1h", "6h", "24h"].map(r => <Button key={r} text={t(`monitoring.details.timeRanges.${r}`)} type={timeRange === r ? "primary" : "secondary"} onClick={() => setTimeRange(r)} />)}
