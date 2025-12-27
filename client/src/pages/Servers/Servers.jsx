@@ -1,6 +1,6 @@
 import "./styles.sass";
 import ServerList from "@/pages/Servers/components/ServerList";
-import { useContext, useEffect, useState, useCallback } from "react";
+import { useContext, useEffect, useState, useCallback, useRef } from "react";
 import WelcomePanel from "@/pages/Servers/components/WelcomePanel";
 import ServerDialog from "@/pages/Servers/components/ServerDialog";
 import ViewContainer from "@/pages/Servers/components/ViewContainer";
@@ -41,6 +41,7 @@ export const Servers = () => {
     const navigate = useNavigate();
 
     const [hibernatedSessions, setHibernatedSessions] = useState([]);
+    const closingSessionsRef = useRef(new Set());
 
     const visibleSessions = activeSessions.filter(s => !poppedOutSessions.includes(s.id));
 
@@ -71,8 +72,17 @@ export const Servers = () => {
             };
         }).filter(Boolean);
 
-        const activeMapped = mappedSessions.filter(s => !s.isHibernated);
+        const closingSessions = closingSessionsRef.current;
+        const activeMapped = mappedSessions.filter(s => !s.isHibernated && !closingSessions.has(s.id));
         const hibernatedMapped = mappedSessions.filter(s => s.isHibernated);
+        
+        const serverSessionIds = new Set(sessions.map(s => s.sessionId));
+        closingSessions.forEach(id => {
+            if (!serverSessionIds.has(id)) {
+                closingSessions.delete(id);
+            }
+        });
+        
         const newActiveIds = new Set(activeMapped.map(s => s.id));
 
         setActiveSessions(prev => {
@@ -249,6 +259,7 @@ export const Servers = () => {
     }, [setActiveSessions, setActiveSessionId]);
 
     const closeSession = (sessionId) => {
+        closingSessionsRef.current.add(sessionId);
         deleteRequest(`/connections/${sessionId}`).catch(error => {
             console.debug("Session deletion request failed:", error);
         });
