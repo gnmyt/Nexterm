@@ -1,9 +1,5 @@
 const OrganizationMember = require("../models/OrganizationMember");
 const logger = require("../utils/logger");
-const entryController = require("../controllers/entry");
-const identityController = require("../controllers/identity");
-const snippetController = require("../controllers/snippet");
-const serverSessionController = require("../controllers/serverSession");
 
 const STATE_TYPES = { ENTRIES: "ENTRIES", IDENTITIES: "IDENTITIES", SNIPPETS: "SNIPPETS", CONNECTIONS: "CONNECTIONS" };
 
@@ -32,14 +28,14 @@ class StateBroadcaster {
     async getStateData(stateType, accountId, tabId = null, browserId = null) {
         switch (stateType) {
             case STATE_TYPES.ENTRIES:
-                return entryController.listEntries(accountId);
+                return require("../controllers/entry").listEntries(accountId);
             case STATE_TYPES.IDENTITIES:
-                return identityController.listIdentities(accountId);
+                return require("../controllers/identity").listIdentities(accountId);
             case STATE_TYPES.SNIPPETS:
                 const memberships = await OrganizationMember.findAll({ where: { accountId, status: "active" } });
-                return snippetController.listAllAccessibleSnippets(accountId, memberships.map(m => m.organizationId));
+                return require("../controllers/snippet").listAllAccessibleSnippets(accountId, memberships.map(m => m.organizationId));
             case STATE_TYPES.CONNECTIONS:
-                return serverSessionController.getSessions(accountId, tabId, browserId);
+                return require("../controllers/serverSession").getSessions(accountId, tabId, browserId);
             default:
                 return null;
         }
