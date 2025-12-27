@@ -78,6 +78,10 @@
     },
     "errors": {
       "loadingAuthProviders": "Errore nel caricamento dei provider di autenticazione: {{error}}",
+      "webSocketConnection": {
+        "title": "WebSocket Connection Failed",
+        "message": "Connections are unavailable. This may be due to WebSocket not being enabled in your reverse proxy or network restrictions."
+      },
       "generalError": "Si è verificato un errore",
       "invalidCredentials": "Nome utente o password non validi",
       "invalidTwoFactor": "Codice a due fattori non valido",
