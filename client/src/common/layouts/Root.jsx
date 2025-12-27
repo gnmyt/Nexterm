@@ -17,6 +17,7 @@ import { Suspense, lazy, useState, useEffect } from "react";
 import Loading from "@/common/components/Loading";
 import { ErrorBoundary } from "@/common/components/ErrorBoundary";
 import TitleBar from "@/common/components/TitleBar";
+import ConnectionErrorBanner from "@/common/components/ConnectionErrorBanner";
 import { waitForTauri } from "@/common/utils/TauriUtil.js";
 import MobileNav from "@/common/components/MobileNav";
 
@@ -53,6 +54,7 @@ const AppContent = () => {
                                             <QuickActionProvider>
                                                 <div className="app-wrapper">
                                                     <TitleBar />
+                                                    <ConnectionErrorBanner />
                                                     <div className="content-wrapper">
                                                         <Suspense fallback={<Loading />}>
                                                             <Sidebar />

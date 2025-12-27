@@ -17,7 +17,7 @@ export const StateStreamProvider = ({ children }) => {
         handlersRef.current[type].forEach(handler => handler(data));
     }])), []);
 
-    const { isConnected, requestRefresh } = useStateStream(sessionToken, stateHandlers);
+    const { isConnected, connectionError, requestRefresh } = useStateStream(sessionToken, stateHandlers);
 
     useEffect(() => {
         if (!sessionToken) stateBufferRef.current = Object.fromEntries(allTypes.map(type => [type, null]));
@@ -30,6 +30,12 @@ export const StateStreamProvider = ({ children }) => {
         return () => handlersRef.current[stateType].delete(handler);
     }, []);
 
-    const contextValue = useMemo(() => ({ isConnected, registerHandler, requestRefresh }), [isConnected, registerHandler, requestRefresh]);
+    const contextValue = useMemo(() => ({ 
+        isConnected, 
+        connectionError, 
+        registerHandler, 
+        requestRefresh 
+    }), [isConnected, connectionError, registerHandler, requestRefresh]);
+    
     return <StateStreamContext.Provider value={contextValue}>{children}</StateStreamContext.Provider>;
 };
