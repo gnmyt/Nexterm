@@ -78,6 +78,10 @@
     },
     "errors": {
       "loadingAuthProviders": "加载身份验证提供程序时出错：{{error}}",
+      "webSocketConnection": {
+        "title": "WebSocket Connection Failed",
+        "message": "Connections are unavailable. This may be due to WebSocket not being enabled in your reverse proxy or network restrictions."
+      },
       "generalError": "发生错误",
       "invalidCredentials": "用户名或密码无效",
       "invalidTwoFactor": "双因素验证码无效",
