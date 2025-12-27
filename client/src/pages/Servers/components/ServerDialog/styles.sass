@@ -135,39 +135,9 @@
 
   .server-dialog-tabs
     display: flex
-    gap: 0.375rem
-    padding: 0.375rem
-    background-color: colors.$lighter-background
-    border-radius: 0.75rem
-    border: 1px solid colors.$dark-gray
     
     &:empty
       display: none
-
-  .tabs-item
-    padding: 0.625rem 0.75rem
-    cursor: pointer
-    border-radius: 0.5rem
-    transition: background-color 0.1s ease
-    user-select: none
-    flex: 1
-    text-align: center
-
-    h3
-      margin: 0
-      font-weight: 600
-      font-size: 0.9rem
-      color: colors.$subtext
-      transition: color 0.1s ease
-
-    &:hover:not(.tabs-item-active)
-      background-color: colors.$gray
-
-  .tabs-item-active
-    background-color: colors.$gray
-
-    h3
-      color: colors.$white
 
   .identities
     display: flex
