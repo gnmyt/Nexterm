@@ -78,6 +78,10 @@
     },
     "errors": {
       "loadingAuthProviders": "Es konnte keine Verbindung zum Provider aufgebaut werden: {{error}}",
+      "webSocketConnection": {
+        "title": "WebSocket Connection Failed",
+        "message": "Connections are unavailable. This may be due to WebSocket not being enabled in your reverse proxy or network restrictions."
+      },
       "generalError": "Ein Fehler ist aufgetreten",
       "invalidCredentials": "Benutzername oder Passwort ungültig",
       "invalidTwoFactor": "Ungültiger 2FA-Code",
