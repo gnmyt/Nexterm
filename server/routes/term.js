@@ -97,7 +97,7 @@ module.exports = async (ws, req) => {
                 }
             }
 
-            const ssh = await createSSHConnection(entry, identity, ws);
+            const ssh = await createSSHConnection(entry, identity, ws, user.id);
 
             logger.system(`SSH connection established`, {
                 protocol: 'ssh',

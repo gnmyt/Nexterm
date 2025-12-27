@@ -6,7 +6,7 @@ const Identity = require("../models/Identity");
 const { createRDPToken, createVNCToken } = require("../utils/tokenGenerator");
 const { validateEntryAccess } = require("../controllers/entry");
 const { getOrganizationAuditSettingsInternal } = require("../controllers/audit");
-const { getIdentityCredentials } = require("../controllers/identity");
+const { getIdentityCredentials, listIdentities } = require("../controllers/identity");
 const logger = require("../utils/logger");
 
 module.exports.authenticate = async (req, res, next) => {
@@ -72,11 +72,25 @@ module.exports.authorizeGuacamole = async (req) => {
 
     if (!((await validateEntryAccess(req.user.id, entry)).valid)) return;
 
+    const accessibleIds = new Set((await listIdentities(req.user.id)).map(i => i.id));
     const entryIdentities = await EntryIdentity.findAll({ where: { entryId: entry.id }, order: [['isDefault', 'DESC']] });
     
     if (entryIdentities.length === 0 && query.identity) return;
 
-    const identityId = query.identity || (entryIdentities.length > 0 ? entryIdentities[0].identityId : null);
+    let identityId = null;
+    if (query.identity) {
+        const requestedId = parseInt(query.identity, 10);
+        if (!accessibleIds.has(requestedId)) return;
+        identityId = requestedId;
+    } else {
+        for (const ei of entryIdentities) {
+            if (accessibleIds.has(ei.identityId)) {
+                identityId = ei.identityId;
+                break;
+            }
+        }
+    }
+
     const identity = identityId ? await Identity.findByPk(identityId) : null;
     if (identity === null) return;
 

@@ -11,14 +11,14 @@ const setupKeyboardInteractive = (ssh, ws) => {
     });
 };
 
-const createSSHConnection = async (entry, identity, ws = null) => {
+const createSSHConnection = async (entry, identity, ws = null, accountId = null) => {
     const credentials = identity.isDirect && identity.directCredentials 
         ? identity.directCredentials 
         : await getIdentityCredentials(identity.id);
     
     const jumpHostIds = entry.config?.jumpHosts || [];
     if (jumpHostIds.length > 0) {
-        return createSSHConnectionWithJumpHosts(entry, identity, credentials, jumpHostIds, ws);
+        return createSSHConnectionWithJumpHosts(entry, identity, credentials, jumpHostIds, ws, accountId);
     }
 
     const ssh = new sshd.Client();
@@ -28,8 +28,8 @@ const createSSHConnection = async (entry, identity, ws = null) => {
     return ssh;
 };
 
-const createSSHConnectionWithJumpHosts = async (targetEntry, targetIdentity, targetCredentials, jumpHostIds, ws) => {
-    const connections = await establishJumpHosts(jumpHostIds);
+const createSSHConnectionWithJumpHosts = async (targetEntry, targetIdentity, targetCredentials, jumpHostIds, ws, accountId = null) => {
+    const connections = await establishJumpHosts(jumpHostIds, accountId);
     const targetSsh = new sshd.Client();
     setupKeyboardInteractive(targetSsh, ws);
 

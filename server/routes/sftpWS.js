@@ -17,7 +17,7 @@ module.exports = async (ws, req) => {
         const connectionStartTime = Date.now();
         const auditLogId = serverSession?.auditLogId || null;
 
-        const ssh = await createSSHConnection(entry, identity, ws);
+        const ssh = await createSSHConnection(entry, identity, ws, user.id);
 
         ssh.on("error", async () => {
             await updateAuditLogWithSessionDuration(auditLogId, connectionStartTime);

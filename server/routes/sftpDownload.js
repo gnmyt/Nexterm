@@ -43,7 +43,7 @@ app.get("/", async (req, res) => {
         ? await Identity.findByPk(serverSession.configuration.identityId)
         : null;
 
-    const { ssh, sshOptions } = await createSSH(entry, identity);
+    const { ssh, sshOptions } = await createSSH(entry, identity, {}, user.id);
 
     ssh.on("error", () => {
         cleanup(ssh);

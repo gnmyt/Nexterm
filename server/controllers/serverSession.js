@@ -46,8 +46,12 @@ const createSession = async (accountId, entryId, identityId, connectionReason, t
         }
     }
 
-    const result = await resolveIdentity(entry, identityId, directIdentity);
+    const result = await resolveIdentity(entry, identityId, directIdentity, accountId);
     const identity = result?.identity !== undefined ? result.identity : result;
+
+    if (result.accessDenied) {
+        return { code: 403, message: "You don't have access to this identity" };
+    }
 
     if (result.requiresIdentity && !identity) {
         return { code: 400, message: "Identity not found" };
