@@ -1,0 +1,59 @@
+@use "@/common/styles/colors" as *
+
+.ldap-provider-dialog
+  display: flex
+  flex-direction: column
+  gap: 1rem
+  padding: 1rem
+  width: 500px
+  max-height: 70vh
+  overflow-y: auto
+
+  h2
+    margin: 0 0 1rem
+
+  .form-group
+    display: flex
+    flex-direction: column
+    gap: 0.5rem
+
+    label
+      font-size: 0.9rem
+      font-weight: 600
+      color: $subtext
+
+  .form-row
+    display: flex
+    gap: 1rem
+
+    .form-group
+      flex: 1
+
+    .port-field
+      flex: 0 0 120px
+
+  .toggle-group
+    flex-direction: row
+    align-items: center
+    justify-content: space-between
+
+  .advanced-settings
+    display: flex
+    flex-direction: column
+    gap: 1rem
+    margin-top: 0.5rem
+
+    .advanced-form
+      display: flex
+      flex-direction: column
+      gap: 1rem
+      padding: 1rem
+      background-color: $dark-gray
+      border-radius: 0.75rem
+      border: 1px solid $gray
+
+  .button-row
+    display: flex
+    gap: 0.5rem
+    justify-content: flex-end
+    margin-top: 0.5rem
