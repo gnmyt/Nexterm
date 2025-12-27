@@ -695,6 +695,7 @@
     "authentication": {
       "title": "{{count}} 个身份验证提供程序",
       "addProvider": "添加提供程序",
+      "addLdapProvider": "Add LDAP",
       "system": "系统",
       "systemDescription": "用户名和密码身份验证",
       "deleteConfirm": "此操作将永久删除此身份验证提供程序。",
@@ -718,9 +719,7 @@
           "redirectUri": "重定向 URI",
           "redirectUriPlaceholder": "https://your-domain.com/api/oidc/callback  ",
           "scope": "范围",
-          "scopePlaceholder": "openid profile email",
-          "emailAttribute": "邮箱属性",
-          "emailAttributePlaceholder": "email",
+          "scopePlaceholder": "openid profile",
           "usernameAttribute": "用户名属性",
           "usernameAttributePlaceholder": "preferred_username",
           "firstNameAttribute": "名字属性",
@@ -738,6 +737,51 @@
         },
         "messages": {
           "saveFailed": "保存提供程序失败"
+        }
+      },
+      "ldapDialog": {
+        "createTitle": "Add LDAP Provider",
+        "editTitle": "Edit LDAP Provider",
+        "fields": {
+          "displayName": "Display Name",
+          "displayNamePlaceholder": "e.g. Company LDAP",
+          "host": "Host",
+          "hostPlaceholder": "ldap.company.com",
+          "port": "Port",
+          "bindDN": "Bind DN",
+          "bindDNPlaceholder": "cn=admin,dc=company,dc=com",
+          "bindPassword": "Bind Password",
+          "bindPasswordPlaceholder": "Bind password",
+          "bindPasswordPlaceholderEdit": "Leave blank to keep existing",
+          "baseDN": "Base DN",
+          "baseDNPlaceholder": "dc=company,dc=com",
+          "userSearchFilter": "User Search Filter",
+          "userSearchFilterPlaceholder": "(uid={{username}}) or (sAMAccountName={{username}})",
+          "useTLS": "Use TLS/SSL",
+          "usernameAttribute": "Username Attribute",
+          "usernameAttributePlaceholder": "uid",
+          "emailAttribute": "Email Attribute",
+          "emailAttributePlaceholder": "mail",
+          "firstNameAttribute": "First Name Attribute",
+          "firstNameAttributePlaceholder": "givenName",
+          "lastNameAttribute": "Last Name Attribute",
+          "lastNameAttributePlaceholder": "sn"
+        },
+        "advanced": {
+          "show": "Show Advanced Settings",
+          "hide": "Hide Advanced Settings"
+        },
+        "actions": {
+          "addProvider": "Add Provider",
+          "saveChanges": "Save Changes",
+          "testConnection": "Test Connection",
+          "testing": "Testing..."
+        },
+        "messages": {
+          "saveFailed": "Failed to save provider",
+          "saveFirst": "Save the provider first to test the connection",
+          "testSuccess": "Connection test successful",
+          "testFailed": "Connection test failed"
         }
       }
     },
