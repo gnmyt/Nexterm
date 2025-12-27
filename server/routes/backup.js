@@ -1,10 +1,67 @@
 const { Router } = require("express");
+const fs = require("fs");
+const path = require("path");
 const {
     getSettings, updateSettings, addProvider, updateProvider, deleteProvider,
     getStorageStats, createBackup, listBackups, restoreBackup,
 } = require("../controllers/backup");
 
+const DATA_DIR = path.join(__dirname, "../../data");
+const VALID_TYPES = ["recordings", "logs"];
+
 const app = Router();
+
+const validateType = (type) => VALID_TYPES.includes(type);
+const getFilePath = (type, filename) => path.join(DATA_DIR, type, path.basename(filename));
+
+/**
+ * GET /backup/files/{type}
+ * @summary List files in recordings or logs directory
+ * @tags Backup
+ * @security BearerAuth
+ * @param {string} type.path.required - File type (recordings or logs)
+ * @return {array<object>} 200 - List of files with name, size, and modified date
+ * @return {object} 400 - Invalid type
+ */
+app.get("/files/:type", (req, res) => {
+    const { type } = req.params;
+    if (!validateType(type)) return res.status(400).json({ message: "Invalid type" });
+    
+    const dirPath = path.join(DATA_DIR, type);
+    if (!fs.existsSync(dirPath)) return res.json([]);
+    
+    const files = fs.readdirSync(dirPath)
+        .filter(f => !f.startsWith("."))
+        .map(name => {
+            const stat = fs.statSync(path.join(dirPath, name));
+            return { name, size: stat.size, modified: stat.mtime };
+        })
+        .sort((a, b) => new Date(b.modified) - new Date(a.modified));
+    
+    res.json(files);
+});
+
+/**
+ * DELETE /backup/files/{type}/{filename}
+ * @summary Delete a file from recordings or logs
+ * @tags Backup
+ * @security BearerAuth
+ * @param {string} type.path.required - File type (recordings or logs)
+ * @param {string} filename.path.required - Name of the file to delete
+ * @return {object} 200 - File deleted successfully
+ * @return {object} 400 - Invalid type
+ * @return {object} 404 - File not found
+ */
+app.delete("/files/:type/:filename", (req, res) => {
+    const { type, filename } = req.params;
+    if (!validateType(type)) return res.status(400).json({ message: "Invalid type" });
+    
+    const filePath = getFilePath(type, filename);
+    if (!fs.existsSync(filePath)) return res.status(404).json({ message: "File not found" });
+    
+    fs.unlinkSync(filePath);
+    res.json({ message: "File deleted" });
+});
 
 /**
  * GET /backup/settings

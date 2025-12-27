@@ -103,6 +103,17 @@ $mobile: 768px
   display: flex
   align-items: center
   gap: 0.75rem
+  transition: border-color 0.15s ease, background-color 0.15s ease
+
+  &.clickable
+    cursor: pointer
+
+    &:hover
+      border-color: colors.$primary
+      background-color: rgba(colors.$primary, 0.05)
+
+      .action-icon
+        opacity: 1
 
   .storage-icon
     width: 1.75rem
@@ -111,6 +122,8 @@ $mobile: 768px
     opacity: 0.9
 
   .storage-info
+    flex: 1
+
     h4
       margin: 0
       color: colors.$subtext
@@ -121,6 +134,13 @@ $mobile: 768px
       color: colors.$white
       font-size: 1.1rem
       font-weight: 600
+
+  .action-icon
+    width: 1.25rem
+    height: 1.25rem
+    color: colors.$subtext
+    opacity: 0.4
+    transition: opacity 0.15s ease
 
 .settings-actions
   display: flex

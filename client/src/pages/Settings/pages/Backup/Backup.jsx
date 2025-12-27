@@ -1,7 +1,8 @@
 import "./styles.sass";
 import { useEffect, useState, useCallback } from "react";
 import { useTranslation } from "react-i18next";
-import { getRequest, patchRequest, postRequest, deleteRequest } from "@/common/utils/RequestUtil.js";
+import { getRequest, patchRequest, postRequest, deleteRequest, downloadFile } from "@/common/utils/RequestUtil.js";
+import { formatBytes, formatDate } from "@/common/utils/formatUtils.js";
 import Button from "@/common/components/Button";
 import Chip from "@/common/components/Chip";
 import SelectBox from "@/common/components/SelectBox";
@@ -10,36 +11,27 @@ import ActionConfirmDialog from "@/common/components/ActionConfirmDialog";
 import Icon from "@mdi/react";
 import {
     mdiPlus, mdiDatabase, mdiVideo, mdiFileDocument, mdiHarddisk, mdiLanConnect,
-    mdiCloud, mdiPencil, mdiTrashCan, mdiBackupRestore, mdiCloudUpload, mdiLoading, mdiContentSave, mdiRestore, mdiArchive,
+    mdiCloud, mdiPencil, mdiTrashCan, mdiBackupRestore, mdiCloudUpload, mdiLoading, mdiContentSave, mdiRestore, mdiArchive, mdiDownload, mdiFolderOpen,
 } from "@mdi/js";
 import ProviderDialog from "./components/ProviderDialog";
+import { FileBrowserDialog } from "./components/FileBrowserDialog";
 
-const formatBytes = (bytes) => {
-    if (bytes === 0) return "0 B";
-    const k = 1024;
-    const sizes = ["B", "KB", "MB", "GB"];
-    const i = Math.floor(Math.log(bytes) / Math.log(k));
-    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + " " + sizes[i];
-};
-
-const formatDate = (date) => new Date(date).toLocaleString();
-
-const StorageCard = ({ icon, title, size }) => (
-    <div className="storage-card">
+const StorageCard = ({ icon, title, size, onClick, actionIcon }) => (
+    <div className={`storage-card ${onClick ? "clickable" : ""}`} onClick={onClick}>
         <Icon path={icon} className="storage-icon" />
         <div className="storage-info">
             <h4>{title}</h4>
             <span className="storage-size">{formatBytes(size)}</span>
         </div>
+        {actionIcon && <Icon path={actionIcon} className="action-icon" />}
     </div>
 );
 
 export const Backup = () => {
     const { t } = useTranslation();
     const { sendToast } = useToast();
-    const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
-    const [settings, setSettings] = useState(null);
+    const [settings, setSettings] = useState({ scheduleInterval: 0, retention: 5, includeDatabase: true, includeRecordings: false, includeLogs: false, providers: [] });
     const [storage, setStorage] = useState({ database: 0, recordings: 0, logs: 0 });
     const [providerDialogOpen, setProviderDialogOpen] = useState(false);
     const [editProvider, setEditProvider] = useState(null);
@@ -50,6 +42,7 @@ export const Backup = () => {
     const [restoreDialog, setRestoreDialog] = useState({ open: false, provider: null, backup: null });
     const [creatingBackup, setCreatingBackup] = useState({});
     const [restoring, setRestoring] = useState(null);
+    const [fileBrowser, setFileBrowser] = useState({ open: false, type: null });
 
     const scheduleOptions = [
         { value: 0, label: t("settings.backup.schedule.disabled") },
@@ -67,7 +60,6 @@ export const Backup = () => {
 
     const loadData = useCallback(async () => {
         try {
-            setLoading(true);
             const [settingsData, storageData] = await Promise.all([
                 getRequest("backup/settings"),
                 getRequest("backup/storage"),
@@ -76,8 +68,6 @@ export const Backup = () => {
             setStorage(storageData);
         } catch {
             sendToast(t("common.error"), t("settings.backup.errors.loadFailed"));
-        } finally {
-            setLoading(false);
         }
     }, [sendToast, t]);
 
@@ -187,7 +177,9 @@ export const Backup = () => {
         }
     };
 
-    if (loading) return <div className="backup-loading">{t("settings.backup.loading")}</div>;
+    const handleDatabaseExport = () => {
+        downloadFile("backup/export/database");
+    };
 
     return (
         <div className="backup-page">
@@ -199,9 +191,9 @@ export const Backup = () => {
                     </div>
                 </div>
                 <div className="storage-grid">
-                    <StorageCard icon={mdiDatabase} title={t("settings.backup.storage.database")} size={storage.database} />
-                    <StorageCard icon={mdiVideo} title={t("settings.backup.storage.recordings")} size={storage.recordings} />
-                    <StorageCard icon={mdiFileDocument} title={t("settings.backup.storage.logs")} size={storage.logs} />
+                    <StorageCard icon={mdiDatabase} title={t("settings.backup.storage.database")} size={storage.database} onClick={handleDatabaseExport} actionIcon={mdiDownload} />
+                    <StorageCard icon={mdiVideo} title={t("settings.backup.storage.recordings")} size={storage.recordings} onClick={() => setFileBrowser({ open: true, type: "recordings" })} actionIcon={mdiFolderOpen} />
+                    <StorageCard icon={mdiFileDocument} title={t("settings.backup.storage.logs")} size={storage.logs} onClick={() => setFileBrowser({ open: true, type: "logs" })} actionIcon={mdiFolderOpen} />
                     <StorageCard icon={mdiHarddisk} title={t("settings.backup.storage.total")} size={storage.database + storage.recordings + storage.logs} />
                 </div>
             </div>
@@ -309,6 +301,7 @@ export const Backup = () => {
             </div>
 
             <ProviderDialog open={providerDialogOpen} onClose={() => setProviderDialogOpen(false)} provider={editProvider} onSaved={handleProviderSaved} />
+            <FileBrowserDialog open={fileBrowser.open} onClose={() => setFileBrowser({ open: false, type: null })} type={fileBrowser.type} onFilesChanged={loadData} />
             <ActionConfirmDialog open={deleteDialog.open} setOpen={(open) => setDeleteDialog(prev => ({ ...prev, open }))} onConfirm={handleDeleteProvider} text={t("settings.backup.deleteProviderConfirm", { name: deleteDialog.provider?.name })} />
             <ActionConfirmDialog open={restoreDialog.open} setOpen={(open) => setRestoreDialog(prev => ({ ...prev, open }))} onConfirm={handleRestore} text={t("settings.backup.restoreConfirm", { name: restoreDialog.backup?.name })} />
         </div>

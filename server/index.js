@@ -65,6 +65,7 @@ app.use("/api/snippets", authenticate, require("./routes/snippet"));
 app.use("/api/organizations", authenticate, require("./routes/organization"));
 app.use("/api/tags", authenticate, require("./routes/tag"));
 app.use("/api/keymaps", authenticate, require("./routes/keymap"));
+app.use("/api/backup/export", require("./routes/backupExport"));
 app.use("/api/backup", authenticate, isAdmin, require("./routes/backup"));
 
 app.use("/api/scripts", authenticate, require("./routes/scripts"));

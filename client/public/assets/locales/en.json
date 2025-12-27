@@ -1014,12 +1014,14 @@
       "errors": {
         "loadFailed": "Failed to load backup settings",
         "saveFailed": "Failed to save settings",
-        "deleteFailed": "Failed to delete provider",
+        "deleteFailed": "Failed to delete",
         "backupFailed": "Failed to create backup",
         "loadBackupsFailed": "Failed to load backups",
         "restoreFailed": "Failed to restore backup",
+        "exportFailed": "Failed to export data",
         "nameRequired": "Provider name is required"
-      }
+      },
+      "noFiles": "No files found"
     }
   },
   "tunnel": {
