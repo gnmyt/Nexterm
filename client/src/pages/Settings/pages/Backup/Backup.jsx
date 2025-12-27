@@ -14,7 +14,7 @@ import {
     mdiCloud, mdiPencil, mdiTrashCan, mdiBackupRestore, mdiCloudUpload, mdiLoading, mdiContentSave, mdiRestore, mdiArchive, mdiDownload, mdiFolderOpen,
 } from "@mdi/js";
 import ProviderDialog from "./components/ProviderDialog";
-import { FileBrowserDialog } from "./components/FileBrowserDialog";
+import FileBrowserDialog from "./components/FileBrowserDialog";
 
 const StorageCard = ({ icon, title, size, onClick, actionIcon }) => (
     <div className={`storage-card ${onClick ? "clickable" : ""}`} onClick={onClick}>
