@@ -92,6 +92,24 @@ export const patchRequest = (url, body) => {
     return sessionRequest(url, "PATCH", getToken(), body);
 }
 
+export const downloadFile = (url) => {
+    url = url.startsWith("/") ? url.substring(1) : url;
+    const baseUrl = getBaseUrl();
+    const fullUrl = baseUrl ? `${baseUrl}/api/${url}` : `/api/${url}`;
+    const separator = fullUrl.includes("?") ? "&" : "?";
+    const downloadUrl = `${fullUrl}${separator}token=${encodeURIComponent(getToken())}`;
+    
+    const a = document.createElement("a");
+    a.href = downloadUrl;
+    a.download = "";
+    a.target = "_blank";
+    a.rel = "noopener noreferrer";
+    a.style.display = "none";
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+}
+
 export const getRawRequest = async (url) => {
     url = url.startsWith("/") ? url.substring(1) : url;
     const baseUrl = getBaseUrl();

@@ -58,3 +58,36 @@
 
 .type-danger
   background-color: colors.$error-opacity
+
+.btn.icon-only
+  padding: 0.5rem
+  background-color: transparent
+  border: none
+
+  svg
+    width: 1.125rem
+    height: 1.125rem
+    color: colors.$subtext
+
+  &:hover
+    background-color: colors.$gray
+    filter: none
+
+    svg
+      color: colors.$white
+
+  &.type-primary
+    &:hover
+      background-color: colors.$primary-opacity
+
+      svg
+        color: colors.$primary
+
+  &.type-danger
+    background-color: transparent
+
+    &:hover
+      background-color: colors.$error-opacity
+
+      svg
+        color: colors.$error

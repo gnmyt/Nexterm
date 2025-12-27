@@ -16,6 +16,7 @@ const { generateOpenAPISpec } = require("./openapi");
 const { isAdmin } = require("./middlewares/permission");
 const logger = require("./utils/logger");
 const { startSourceSyncService, stopSourceSyncService } = require("./utils/sourceSyncService");
+const backupService = require("./utils/backupService");
 require("./utils/folder");
 
 process.on("uncaughtException", (err) => require("./utils/errorHandling")(err));
@@ -64,6 +65,8 @@ app.use("/api/snippets", authenticate, require("./routes/snippet"));
 app.use("/api/organizations", authenticate, require("./routes/organization"));
 app.use("/api/tags", authenticate, require("./routes/tag"));
 app.use("/api/keymaps", authenticate, require("./routes/keymap"));
+app.use("/api/backup/export", require("./routes/backupExport"));
+app.use("/api/backup", authenticate, isAdmin, require("./routes/backup"));
 
 app.use("/api/scripts", authenticate, require("./routes/scripts"));
 app.use("/api/share", require("./routes/share"));
@@ -109,6 +112,8 @@ db.authenticate()
 
         startSourceSyncService();
 
+        backupService.start();
+
         app.listen(APP_PORT, () =>
             logger.system(`Server listening on port ${APP_PORT}`)
         );
@@ -140,6 +145,7 @@ process.on("SIGINT", async () => {
     recordingService.stop();
     stopStatusChecker();
     stopSourceSyncService();
+    backupService.stop();
 
     await db.close();
 

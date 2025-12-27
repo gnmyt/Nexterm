@@ -1,0 +1,82 @@
+@use "@/common/styles/colors"
+
+.file-browser-dialog
+  width: 32rem
+  max-width: 90vw
+
+  h2
+    margin: 0 0 1rem 0
+    font-size: 1.25rem
+
+  .fb-list
+    display: flex
+    flex-direction: column
+    gap: 0.5rem
+    max-height: 50vh
+    overflow-y: auto
+    margin-bottom: 1rem
+
+  .fb-loading, .fb-empty
+    display: flex
+    flex-direction: column
+    align-items: center
+    justify-content: center
+    gap: 0.75rem
+    padding: 2rem
+    color: colors.$subtext
+
+    svg
+      opacity: 0.7
+
+  .fb-item
+    display: flex
+    align-items: center
+    padding: 0.75rem
+    background-color: colors.$background
+    border: 1px solid colors.$dark-gray
+    border-radius: 0.5rem
+    gap: 0.75rem
+
+    &:hover
+      border-color: colors.$gray
+
+  .fb-info
+    display: flex
+    align-items: center
+    gap: 0.75rem
+    flex: 1
+    min-width: 0
+
+  .fb-icon
+    width: 1.25rem
+    height: 1.25rem
+    color: colors.$primary
+    flex-shrink: 0
+
+  .fb-details
+    display: flex
+    flex-direction: column
+    gap: 0.125rem
+    min-width: 0
+
+  .fb-name
+    color: colors.$white
+    font-size: 0.875rem
+    font-weight: 500
+    white-space: nowrap
+    overflow: hidden
+    text-overflow: ellipsis
+
+  .fb-meta
+    color: colors.$subtext
+    font-size: 0.75rem
+
+  .fb-actions
+    display: flex
+    gap: 0.25rem
+    flex-shrink: 0
+
+  .fb-dialog-actions
+    display: flex
+    justify-content: flex-end
+    gap: 0.5rem

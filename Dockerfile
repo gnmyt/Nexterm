@@ -62,7 +62,7 @@ RUN apk add --no-cache \
     pango libvncserver libwebp openssl freerdp2-libs \
     pulseaudio libvorbis libogg libssh2 \
     ffmpeg-libavcodec ffmpeg-libavformat ffmpeg-libavutil ffmpeg-libswscale \
-    util-linux
+    util-linux samba-client
 
 COPY --from=guacd-builder /install/usr/local/sbin/ /usr/local/sbin/
 COPY --from=guacd-builder /install/usr/local/lib/ /usr/local/lib/

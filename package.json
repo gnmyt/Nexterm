@@ -6,8 +6,8 @@
   "author": "Mathias Wagner",
   "license": "MIT",
   "dependencies": {
-    "archiver": "^7.0.1",
     "@simplewebauthn/server": "^13.2.2",
+    "archiver": "^7.0.1",
     "axios": "^1.13.2",
     "bcrypt": "^6.0.0",
     "decompress": "^4.2.1",
@@ -22,6 +22,7 @@
     "sqlite3": "^5.1.7",
     "ssh2": "^1.17.0",
     "uuid": "^13.0.0",
+    "webdav": "^5.8.0",
     "winston": "^3.19.0",
     "ws": "^8.18.3"
   },
