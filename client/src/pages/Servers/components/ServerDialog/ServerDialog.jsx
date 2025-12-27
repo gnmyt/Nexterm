@@ -303,7 +303,8 @@ export const ServerDialog = ({ open, onClose, currentFolderId, currentOrganizati
 
     const tabSwitcherTabs = useMemo(() => tabs.map((tab, index) => ({
         key: index.toString(),
-        label: t(tab.label)
+        label: t(tab.label),
+        icon: tab.icon
     })), [tabs, t]);
 
     return (

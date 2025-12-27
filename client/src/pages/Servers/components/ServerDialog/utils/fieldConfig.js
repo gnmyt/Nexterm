@@ -1,3 +1,5 @@
+import { mdiInformationOutline, mdiAccountKeyOutline, mdiCogOutline } from "@mdi/js";
+
 export const getFieldConfig = (type, protocol) => {
     if (type === "server") {
         switch (protocol) {
@@ -120,14 +122,14 @@ export const getAvailableTabs = (type, protocol) => {
     const config = getFieldConfig(type, protocol);
     const tabs = [];
 
-    tabs.push({ key: "details", label: "servers.dialog.tabs.details" });
+    tabs.push({ key: "details", label: "servers.dialog.tabs.details", icon: mdiInformationOutline });
 
     if (config.showIdentities) {
-        tabs.push({ key: "identities", label: "servers.dialog.tabs.identities" });
+        tabs.push({ key: "identities", label: "servers.dialog.tabs.identities", icon: mdiAccountKeyOutline });
     }
 
     if (config.showSettings && (config.showMonitoring || config.showKeyboardLayout || config.showDisplaySettings || config.showAudioSettings || config.showWakeOnLan || config.showTerminalSettings)) {
-        tabs.push({ key: "settings", label: "servers.dialog.tabs.settings" });
+        tabs.push({ key: "settings", label: "servers.dialog.tabs.settings", icon: mdiCogOutline });
     }
 
     return tabs;
