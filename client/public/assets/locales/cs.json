@@ -1,0 +1,1394 @@
+{
+  "common": {
+    "error": "Chyba",
+    "success": "Hotovo",
+    "loading": "Načítání...",
+    "actions": {
+      "cancel": "Zrušit",
+      "confirm": "Potvrdit",
+      "discard": "Zahodit",
+      "login": "Přihlásit se",
+      "register": "Registrovat",
+      "save": "Uložit",
+      "download": "Stáhnout",
+      "close": "Zavřít",
+      "maximize": "Maximalizovat",
+      "restore": "Obnovit"
+    },
+    "labels": {
+      "username": "Uživatelské jméno",
+      "password": "Heslo",
+      "firstName": "Jméno",
+      "lastName": "Příjmení",
+      "code": "Kód",
+      "twoFACode": "2FA kód"
+    },
+    "placeholders": {
+      "username": "Uživatelské jméno",
+      "password": "Heslo",
+      "firstName": "Jméno",
+      "lastName": "Příjmení",
+      "code": "Kód"
+    },
+    "confirmDialog": {
+      "title": "Jste si jisti?",
+      "defaultText": "Tuto akci nelze vrátit zpět.",
+      "unsavedChangesTitle": "Neuložené změny",
+      "unsavedChangesText": "Máte neuložené změny. Opravdu chcete zavřít?"
+    },
+    "loginDialog": {
+      "title": "Nexterm",
+      "registrationTitle": "Registrace",
+      "ssoOrContinueWith": "nebo pokračujte s",
+      "noAuthMethodsAvailable": "Žádné metody ověření nejsou k dispozici.",
+      "signInWithPasskey": "Přihlásit se pomocí Passkey",
+      "authenticating": "Probíhá ověření..."
+    },
+    "selectBox": {
+      "defaultOption": "Vyberte možnost...",
+      "search": "Hledat...",
+      "noResults": "Žádné výsledky"
+    },
+    "sidebar": {
+      "settings": "Nastavení",
+      "servers": "Servery",
+      "monitoring": "Monitoring",
+      "snippets": "Snippety",
+      "audit": "Audit",
+      "account": "Účet",
+      "logout": "Odhlásit se",
+      "collapseTitle": "Sbalit postranní panel",
+      "logoutConfirmText": "Tímto se odhlásíte z účtu {{username}}. Jste si jisti?",
+      "navigationConfirmText": "Máte aktivní relace. Opuštěním stránky se odpojíte od všech serverů. Jste si jisti?"
+    },
+    "quickAction": {
+      "placeholder": "Hledat servery, snippety nebo navigovat...",
+      "noResults": "Žádné výsledky",
+      "navigation": "Navigace",
+      "settings": "Nastavení",
+      "navigate": "Navigovat",
+      "select": "Vybrat",
+      "close": "Zavřít",
+      "types": {
+        "server": "Server",
+        "snippet": "Snippet",
+        "navigation": "Přejít na",
+        "settings": "Nastavení"
+      }
+    },
+    "errors": {
+      "loadingAuthProviders": "Chyba při načítání poskytovatelů ověření: {{error}}",
+      "generalError": "Došlo k chybě",
+      "invalidCredentials": "Neplatné uživatelské jméno nebo heslo",
+      "invalidTwoFactor": "Neplatný dvoufaktorový kód",
+      "internalAuthDisabled": "Interní ověření je zakázáno",
+      "ssoLoginFailed": "Nepodařilo se zahájit SSO přihlášení",
+      "passkeyLoginFailed": "Ověření pomocí Passkey selhalo",
+      "passkeyCancelled": "Ověření pomocí Passkey bylo zrušeno"
+    },
+    "messages": {
+      "invitationAccepted": "Pozvánka přijata",
+      "invitationDeclined": "Pozvánka odmítnuta",
+      "invitationError": "Nepodařilo se zpracovat pozvánku",
+      "organizationDeleted": "Organizace byla úspěšně smazána",
+      "organizationDeleteError": "Nepodařilo se smazat organizaci",
+      "leftOrganization": "Opustili jste organizaci",
+      "leaveOrganizationError": "Nepodařilo se opustit organizaci"
+    }
+  },
+  "audit": {
+    "page": {
+      "title": "Auditní záznamy",
+      "subtitle": "Sledujte a monitorujte všechny aktivity ve vaší infrastruktuře"
+    },
+    "errors": {
+      "failedToLoadData": "Nepodařilo se načíst auditní data",
+      "failedToLoadLogs": "Nepodařilo se načíst auditní záznamy"
+    },
+    "filters": {
+      "title": "Filtry",
+      "activeCount": "{{count}} aktivních",
+      "organization": "Organizace",
+      "action": "Akce",
+      "resource": "Zdroj",
+      "startDate": "Datum od",
+      "endDate": "Datum do",
+      "clearAll": "Vymazat vše",
+      "options": {
+        "allActions": "Všechny akce",
+        "allResources": "Všechny zdroje",
+        "allOrganizations": "Všechny organizace (Osobní + Org)",
+        "personalOnly": "Pouze osobní",
+        "categoryAll": "{{category}} (Vše)"
+      }
+    },
+    "table": {
+      "headers": {
+        "timestamp": "Čas",
+        "action": "Akce",
+        "actor": "Uživatel",
+        "resource": "Zdroj",
+        "organization": "Organizace",
+        "details": "Podrobnosti"
+      },
+      "noLogs": {
+        "title": "Žádné auditní záznamy nenalezeny",
+        "subtitle": "Zkuste upravit filtry nebo se vraťte později."
+      },
+      "loading": "Načítání auditních záznamů...",
+      "expandedDetails": {
+        "connectionReason": "Důvod připojení",
+        "userAgent": "User Agent",
+        "additionalDetails": "Další podrobnosti"
+      },
+      "badges": {
+        "personal": "Osobní",
+        "user": "Uživatel #{{id}}",
+        "organization": "Org #{{id}}"
+      }
+    },
+    "pagination": {
+      "showing": "Zobrazeno {{start}} až {{end}} z {{total}} záznamů",
+      "previous": "Předchozí",
+      "next": "Další",
+      "pageInfo": "Stránka {{current}} z {{total}}"
+    }
+  },
+  "snippets": {
+    "page": {
+      "title": "Snippety",
+      "subtitle": "Spravujte své příkazové snippety pro rychlý přístup v terminálech",
+      "addSnippet": "Přidat snippet",
+      "personal": "Osobní",
+      "selectOrganization": "Vybrat organizaci",
+      "tabs": {
+        "snippets": "Snippety",
+        "scripts": "Skripty"
+      }
+    },
+    "list": {
+      "empty": "Zatím nemáte žádné snippety. Vytvořte svůj první!",
+      "actions": {
+        "edit": "Upravit snippet",
+        "delete": "Smazat snippet"
+      }
+    },
+    "dialog": {
+      "title": {
+        "create": "Vytvořit snippet",
+        "edit": "Upravit snippet"
+      },
+      "fields": {
+        "name": "Název",
+        "description": "Popis (volitelný)",
+        "command": "Příkaz",
+        "osFilter": "Kompatibilní OS"
+      },
+      "placeholders": {
+        "name": "Název snippetu",
+        "description": "Co tento příkaz dělá?",
+        "command": "Zadejte svůj příkaz",
+        "osFilter": "Všechny operační systémy"
+      },
+      "actions": {
+        "cancel": "Zrušit",
+        "create": "Vytvořit",
+        "save": "Uložit",
+        "generateAI": "Generovat pomocí AI",
+        "generating": "Generuji..."
+      }
+    },
+    "messages": {
+      "success": {
+        "created": "Snippet úspěšně vytvořen",
+        "updated": "Snippet úspěšně aktualizován",
+        "deleted": "Snippet úspěšně smazán"
+      },
+      "errors": {
+        "required": "Název a příkaz jsou povinné",
+        "loadFailed": "Nepodařilo se načíst data snippetu",
+        "saveFailed": "Nepodařilo se uložit snippet",
+        "deleteFailed": "Nepodařilo se smazat snippet",
+        "reorderFailed": "Nepodařilo se změnit pořadí snippetu"
+      }
+    }
+  },
+  "scripts": {
+    "page": {
+      "title": "Skripty",
+      "subtitle": "Spravujte své automatizační skripty pro serverové úlohy",
+      "addScript": "Přidat skript",
+      "personal": "Osobní",
+      "selectOrganization": "Vybrat organizaci",
+      "tabs": {
+        "snippets": "Snippety",
+        "scripts": "Skripty"
+      }
+    },
+    "execution": {
+      "progressPanel": {
+        "title": "Spuštění skriptu",
+        "noSteps": "Zatím žádné kroky",
+        "noStepsDescription": "Kroky se zobrazí zde během spuštění skriptu",
+        "steps": "Kroky"
+      },
+      "dialogs": {
+        "enterValue": "Zadejte hodnotu",
+        "selectOption": "Vyberte možnost",
+        "confirm": "Potvrdit",
+        "submit": "Odeslat",
+        "cancel": "Zrušit",
+        "ok": "OK",
+        "yes": "Ano",
+        "no": "Ne",
+        "copyCell": "Kopírovat buňku",
+        "copyRow": "Kopírovat řádek",
+        "copyTable": "Kopírovat tabulku",
+        "close": "Zavřít"
+      },
+      "status": {
+        "running": "Běží",
+        "completed": "Dokončeno",
+        "error": "Chyba",
+        "pending": "Čeká"
+      }
+    },
+    "list": {
+      "empty": "Zatím nemáte žádné skripty. Vytvořte svůj první!",
+      "actions": {
+        "edit": "Upravit skript",
+        "delete": "Smazat skript"
+      }
+    },
+    "dialog": {
+      "title": {
+        "create": "Vytvořit skript",
+        "edit": "Upravit skript"
+      },
+      "scriptDetails": "Podrobnosti skriptu",
+      "scriptContent": "Obsah skriptu",
+      "helpTip": "Použijte @NEXTERM: direktivy pro interaktivní funkce",
+      "fields": {
+        "name": "Název",
+        "description": "Popis",
+        "osFilter": "Kompatibilní OS"
+      },
+      "placeholders": {
+        "name": "Název skriptu",
+        "description": "Co tento skript dělá?",
+        "osFilter": "Všechny operační systémy"
+      },
+      "actions": {
+        "cancel": "Zrušit",
+        "create": "Vytvořit",
+        "update": "Aktualizovat",
+        "creating": "Vytvářím...",
+        "updating": "Aktualizuji..."
+      },
+      "errors": {
+        "nameRequired": "Název skriptu je povinný",
+        "descriptionRequired": "Popis skriptu je povinný",
+        "contentRequired": "Obsah skriptu je povinný",
+        "createFailed": "Nepodařilo se vytvořit skript",
+        "updateFailed": "Nepodařilo se aktualizovat skript"
+      }
+    },
+    "messages": {
+      "success": {
+        "created": "Skript úspěšně vytvořen",
+        "updated": "Skript úspěšně aktualizován",
+        "deleted": "Skript úspěšně smazán",
+        "reordered": "Skript úspěšně přeřazen"
+      },
+      "errors": {
+        "loadFailed": "Nepodařilo se načíst data skriptu",
+        "deleteFailed": "Nepodařilo se smazat skript",
+        "reorderFailed": "Nepodařilo se změnit pořadí skriptu"
+      }
+    },
+    "menu": {
+      "searchPlaceholder": "Hledat skripty...",
+      "noScripts": "Žádné skripty nejsou k dispozici. Vytvořte některé v sekci Skripty.",
+      "noMatch": "Žádné skripty neodpovídají vyhledávání.",
+      "selectIdentity": "Vybrat identitu"
+    }
+  },
+  "monitoring": {
+    "page": {
+      "title": "Monitoring serverů",
+      "subtitle": "Statistiky serverů a monitoring stavu v reálném čase",
+      "searchPlaceholder": "Hledat servery..."
+    },
+    "errors": {
+      "loadFailed": "Nepodařilo se načíst data monitoringu"
+    },
+    "grid": {
+      "loading": "Načítání dat monitoringu...",
+      "noServers": {
+        "title": "Žádné servery nenalezeny",
+        "subtitle": "Žádné SSH servery nejsou k dispozici pro monitoring.\nPřidejte některé servery pro zahájení monitorování."
+      },
+      "metrics": {
+        "cpuUsage": "Vytížení CPU",
+        "memoryUsage": "Využití paměti",
+        "loadAverage": "Průměrná zátěž",
+        "processes": "Procesy",
+        "uptime": "Doba běhu",
+        "nodes": "Uzly",
+        "vms": "VM/Kontejnery"
+      },
+      "status": {
+        "serverOffline": "Server offline",
+        "connectionError": "Chyba připojení",
+        "statusUnknown": "Stav neznámý",
+        "offlineMessage": "Server aktuálně neodpovídá na požadavky monitoringu.",
+        "errorMessage": "Nelze navázat spojení se serverem.",
+        "unknownMessage": "Stav serveru nelze určit.",
+        "lastSeen": "Naposledy viděn: {{time}}",
+        "noRecentActivity": "Žádná nedávná aktivita"
+      },
+      "uptime": {
+        "unknown": "Neznámo",
+        "format": {
+          "days": "{{days}}d {{hours}}h {{minutes}}m",
+          "hours": "{{hours}}h {{minutes}}m",
+          "minutes": "{{minutes}}m"
+        }
+      }
+    },
+    "details": {
+      "timeRanges": {
+        "1h": "1h",
+        "6h": "6h",
+        "24h": "24h"
+      },
+      "tabs": {
+        "overview": "Přehled",
+        "charts": "Grafy",
+        "storage": "Úložiště",
+        "network": "Síť",
+        "processes": "Procesy",
+        "nodes": "Uzly"
+      },
+      "overview": {
+        "systemInfo": {
+          "title": "Informace o systému",
+          "hostname": "Název hostitele",
+          "os": "OS",
+          "version": "Verze",
+          "kernel": "Jádro",
+          "architecture": "Architektura",
+          "uptime": "Doba běhu",
+          "unknown": "Neznámo",
+          "noData": "Žádné informace o systému nejsou k dispozici"
+        },
+        "performance": {
+          "title": "Výkonnostní metriky",
+          "cpuUsage": "Vytížení CPU",
+          "memoryUsage": "Využití paměti",
+          "loadAverage": "Průměrná zátěž",
+          "processes": "Aktivní procesy",
+          "total": "Celkem: {{value}}",
+          "loadDetail": "5m: {{fiveMin}}, 15m: {{fifteenMin}}"
+        },
+        "uptime": {
+          "format": {
+            "full": "{{days}} dnů, {{hours}} hodin, {{minutes}} minut",
+            "hoursMinutes": "{{hours}} hodin, {{minutes}} minut",
+            "minutes": "{{minutes}} minut"
+          }
+        }
+      },
+      "charts": {
+        "cpuUsage": "Vytížení CPU",
+        "memoryUsage": "Využití paměti",
+        "processes": "Aktivní procesy",
+        "noData": "Žádná data pro vybraný časový rozsah"
+      },
+      "storage": {
+        "title": "Využití disku",
+        "used": "Použito: {{value}}",
+        "available": "Dostupné: {{value}}",
+        "total": "Celkem: {{value}}",
+        "type": "Typ: {{value}}",
+        "noData": "Žádná data o využití disku nejsou k dispozici",
+        "noPartitions": "Žádné připojené oddíly"
+      },
+      "network": {
+        "title": "Síťová rozhraní",
+        "rxBytes": "Přijato bajtů",
+        "txBytes": "Odesláno bajtů",
+        "mac": "MAC adresa",
+        "speed": "Rychlost",
+        "noData": "Žádná data o síťových rozhraních nejsou k dispozici"
+      },
+      "processes": {
+        "title": "Běžící procesy",
+        "searchPlaceholder": "Hledat procesy...",
+        "showing": "Zobrazeno {{count}} z {{total}} procesů",
+        "noData": "Žádná data o procesech nejsou k dispozici. Data procesů se zobrazí po dalším cyklu monitoringu.",
+        "noResults": "Žádné procesy neodpovídají kritériím vyhledávání."
+      },
+      "pve": {
+        "clusterInfo": "Informace o clusteru",
+        "resources": "Využití prostředků",
+        "virtualMachines": "Virtuální stroje",
+        "totalNodes": "Celkem uzlů",
+        "onlineNodes": "Online uzlů",
+        "totalCPU": "Celkem CPU",
+        "totalMemory": "Celkem paměti",
+        "totalStorage": "Celkem úložiště",
+        "storageUsage": "Využití úložiště",
+        "cores": "Jader",
+        "uptime": "Doba běhu",
+        "qemuVMs": "QEMU VM",
+        "lxcContainers": "LXC kontejnery",
+        "running": "{{count}} běžící",
+        "vmContainerCount": "Počet VM/kontejnerů",
+        "cpu": "CPU",
+        "memory": "Paměť",
+        "storage": "Úložiště",
+        "nodeOffline": "Tento uzel je aktuálně offline",
+        "noNodes": "Žádné uzly k dispozici"
+      }
+    }
+  },
+  "settings": {
+    "title": "Nastavení",
+    "userSettings": "UŽIVATELSKÁ NASTAVENÍ",
+    "adminSettings": "ADMINISTRÁTORSKÁ NASTAVENÍ",
+    "pages": {
+      "account": "Účet",
+      "terminal": "Terminál",
+      "keymaps": "Klávesové zkratky",
+      "identities": "Identity",
+      "sessions": "Relace",
+      "organizations": "Organizace",
+      "users": "Uživatelé",
+      "authentication": "Ověření",
+      "sources": "Zdroje",
+      "ai": "AI",
+      "monitoring": "Monitoring",
+      "backup": "Úložiště"
+    },
+    "account": {
+      "title": "Účet",
+      "accountName": "Název účtu",
+      "firstName": "Jméno",
+      "lastName": "Příjmení",
+      "appearance": "Vzhled",
+      "appearanceDescription": "Vyberte preferovaný motiv. Automatický sleduje nastavení systému a přizpůsobuje se podle denní doby.",
+      "themeAuto": "Automatický",
+      "themeLight": "Světlý",
+      "themeDark": "Tmavý",
+      "themeOled": "OLED",
+      "oledEnabled": "OLED režim povolen",
+      "oledDisabled": "OLED režim zakázán",
+      "themeLabel": "Motiv",
+      "accentColor": "Akcentová barva",
+      "twoFactor": "Dvoufaktorové ověření",
+      "twoFactorActive": "Aktivní",
+      "twoFactorInactive": "Neaktivní",
+      "twoFactorDescription": "Přidejte další vrstvu zabezpečení svého účtu povolením dvoufaktorového ověření.",
+      "enable2FA": "Povolit 2FA",
+      "disable2FA": "Zakázat 2FA",
+      "changePassword": "Změnit heslo",
+      "changePasswordDescription": "Zde si zvolte nové a bezpečné heslo pro svůj účet.",
+      "changePasswordButton": "Změnit heslo",
+      "language": "Jazyk",
+      "languageDescription": "Vyberte preferovaný jazyk rozhraní.",
+      "currentLanguage": "Aktuální jazyk",
+      "missingLanguage": "Chybí váš jazyk?",
+      "helpTranslateLink": "Pomozte přeložit Nexterm",
+      "sessionSynchronization": "Synchronizace relací",
+      "sessionSyncDescription": "Ovládejte, jak jsou vaše serverové relace ukládány a synchronizovány mezi zařízeními a kartami prohlížeče.",
+      "sessionSyncAcrossDevices": "Mezi zařízeními",
+      "sessionSyncSameBrowser": "Stejný prohlížeč",
+      "sessionSyncSameTab": "Stejná karta",
+      "sessionSyncAcrossDevicesDesc": "Relace budou dostupné a synchronizované mezi zařízeními",
+      "sessionSyncSameBrowserDesc": "Relace budou synchronizovány pro aktuální uživatelskou relaci",
+      "sessionSyncSameTabDesc": "Relace budou synchronizovány uvnitř vaší karty prohlížeče",
+      "twoFactorDialog": {
+        "title": "Povolit 2FA",
+        "description": "Naskenujte kód svou autentifikační aplikací nebo zadejte <span class=\"totp-code\">{{secret}}</span> ručně.",
+        "codePlaceholder": "Zadejte 2FA kód",
+        "enableButton": "Povolit",
+        "messages": {
+          "setupFailed": "Nastavení 2FA selhalo. Prosím zkuste to znovu."
+        }
+      },
+      "passkeys": {
+        "sectionTitle": "Passkeys",
+        "sectionDescription": "Použijte passkeys pro rychlejší a bezpečnější přihlašování bez hesel.",
+        "addButton": "Přidat Passkey",
+        "addDialogTitle": "Přidat Passkey",
+        "addDialogDescription": "Dejte svému passkey název, abyste ho později snadno identifikovali.",
+        "namePlaceholder": "Název passkey",
+        "enterName": "Zadejte název pro tento passkey:",
+        "defaultName": "Můj Passkey",
+        "confirmDelete": "Opravdu chcete smazat tento passkey?",
+        "createdAt": "Vytvořeno {{date}}",
+        "registerError": "Nepodařilo se zaregistrovat passkey. Prosím zkuste to znovu.",
+        "noPasskeys": "Zatím nejsou zaregistrovány žádné passkeys",
+        "rename": "Přejmenovat",
+        "delete": "Smazat"
+      }
+    },
+    "passwordChange": {
+      "title": "Změnit heslo",
+      "description": "Silné heslo obsahuje speciální znaky, čísla a písmena jak velká, tak malá.",
+      "newPassword": "Nové heslo",
+      "confirmPassword": "Potvrdit nové heslo",
+      "changePasswordButton": "Změnit heslo"
+    },
+    "organizations": {
+      "title": "Vaše organizace",
+      "createOrganization": "Vytvořit organizaci",
+      "noOrganizations": "Zatím nemáte žádné organizace.",
+      "noOrganizationsDescription": "Vytvořte jednu pro zahájení spolupráce s vaším týmem.",
+      "invite": "Pozvat",
+      "delete": "Smazat",
+      "leave": "Opustit",
+      "members": "Členové",
+      "auditSettings": "Nastavení auditu",
+      "pendingInvitations": "Čekající pozvánky",
+      "invitedBy": "Pozval: {{name}}",
+      "deleteConfirmation": "Toto trvale smaže organizaci a odstraní všechny členy. Tuto akci nelze vrátit zpět.",
+      "leaveConfirmation": "Opravdu chcete opustit tuto organizaci?",
+      "dialog": {
+        "title": "Vytvořit organizaci",
+        "fields": {
+          "name": "Název",
+          "namePlaceholder": "Název organizace",
+          "description": "Popis (volitelný)",
+          "descriptionPlaceholder": "Krátký popis vaší organizace"
+        },
+        "actions": {
+          "cancel": "Zrušit",
+          "create": "Vytvořit"
+        },
+        "messages": {
+          "nameRequired": "Název organizace je povinný",
+          "createSuccess": "Organizace úspěšně vytvořena",
+          "createFailed": "Nepodařilo se vytvořit organizaci"
+        }
+      }
+    },
+    "users": {
+      "title": "{{count}} uživatelů",
+      "createNewUser": "Vytvořit nového uživatele",
+      "twoFactorEnabled": "2FA povoleno",
+      "twoFactorDisabled": "2FA zakázáno",
+      "contextMenu": {
+        "changePassword": "Změnit heslo",
+        "promoteToAdmin": "Povýšit na admina",
+        "demoteToUser": "Snížit na uživatele",
+        "deleteUser": "Smazat uživatele",
+        "loginAsUser": "Přihlásit se jako uživatel",
+        "deleteConfirm": "Toto trvale smaže uživatele a všechna přidružená data.",
+        "promoteConfirm": "Toto povýší uživatele na administrátora.",
+        "demoteConfirm": "Toto sníží uživatele na běžného uživatele."
+      }
+    },
+    "userDialog": {
+      "title": "Vytvořit nového uživatele",
+      "firstName": "Jméno",
+      "lastName": "Příjmení",
+      "username": "Uživatelské jméno",
+      "password": "Heslo",
+      "firstNamePlaceholder": "Jméno",
+      "lastNamePlaceholder": "Příjmení",
+      "usernamePlaceholder": "Uživatelské jméno",
+      "passwordPlaceholder": "Heslo",
+      "create": "Vytvořit",
+      "errorOccurred": "Došlo k chybě"
+    },
+    "sessions": {
+      "title": "Relace",
+      "lastActivity": "Poslední aktivita: {{date}} z {{ip}}",
+      "currentSession": "Aktuální relace",
+      "logout": "Odhlásit se",
+      "revoke": "Zrušit",
+      "browserOn": "{{browser}} {{version}} na {{os}} {{osVersion}}"
+    },
+    "keymaps": {
+      "title": "Klávesové zkratky",
+      "description": "Přizpůsobte klávesové zkratky svému pracovnímu postupu.",
+      "resetAll": "Obnovit vše",
+      "actions": {
+        "search": {
+          "title": "Hledat",
+          "description": "Otevřít vyhledávací pole"
+        },
+        "quickaction": {
+          "title": "Rychlá akce",
+          "description": "Otevřít menu rychlých akcí"
+        },
+        "aimenu": {
+          "title": "AI Menu",
+          "description": "Otevřít menu AI příkazů"
+        },
+        "snippets": {
+          "title": "Snippety",
+          "description": "Otevřít dialog snippetů"
+        },
+        "keyboardshortcuts": {
+          "title": "Klávesové zkratky",
+          "description": "Otevřít menu klávesových zkratek"
+        },
+        "broadcast": {
+          "title": "Režim vysílání",
+          "description": "Přepnout režim vysílání při použití rozděleného zobrazení"
+        },
+        "copy": {
+          "title": "Kopírovat",
+          "description": "Kopírovat vybraný text do schránky"
+        },
+        "fullscreen": {
+          "title": "Celá obrazovka",
+          "description": "Přepnout režim celé obrazovky"
+        }
+      },
+      "recorder": {
+        "pressKeys": "Stiskněte klávesy...",
+        "save": "Uložit",
+        "cancel": "Zrušit",
+        "reset": "Obnovit"
+      },
+      "messages": {
+        "updateSuccess": "Klávesová zkratka úspěšně aktualizována",
+        "updateFailed": "Nepodařilo se aktualizovat klávesovou zkratku",
+        "resetSuccess": "Klávesová zkratka obnovena na výchozí",
+        "resetFailed": "Nepodařilo se obnovit klávesovou zkratku",
+        "resetAllSuccess": "Všechny klávesové zkratky obnoveny na výchozí",
+        "resetAllFailed": "Nepodařilo se obnovit klávesové zkratky"
+      }
+    },
+    "terminal": {
+      "title": "Terminál",
+      "font": {
+        "title": "Písmo",
+        "description": "Přizpůsobte rodinu a velikost písma pro váš terminál.",
+        "fontFamily": "Rodina písma",
+        "fontSize": "Velikost písma"
+      },
+      "cursor": {
+        "title": "Kurzor",
+        "description": "Přizpůsobte vzhled a chování kurzoru terminálu.",
+        "cursorStyle": "Styl kurzoru",
+        "cursorBlinking": "Blikání kurzoru",
+        "enabled": "Povoleno",
+        "disabled": "Zakázáno"
+      },
+      "theme": {
+        "title": "Motiv",
+        "description": "Vyberte barevný motiv pro váš terminál."
+      },
+      "preview": {
+        "text": "$ echo 'Ahoj, Nexterm!'\nAhoj, Nexterm!\n$ "
+      }
+    },
+    "authentication": {
+      "title": "{{count}} poskytovatelů ověření",
+      "addProvider": "Přidat poskytovatele",
+      "system": "Systém",
+      "systemDescription": "Ověření uživatelským jménem a heslem",
+      "deleteConfirm": "Toto trvale smaže tohoto poskytovatele ověření.",
+      "errors": {
+        "deleteProvider": "Chyba při mazání poskytovatele",
+        "toggleProvider": "Chyba při přepínání poskytovatele"
+      },
+      "providerDialog": {
+        "createTitle": "Přidat poskytovatele ověření",
+        "editTitle": "Upravit poskytovatele ověření",
+        "fields": {
+          "displayName": "Zobrazovaný název",
+          "displayNamePlaceholder": "např. Firemní SSO",
+          "issuerUrl": "URL vydavatele",
+          "issuerUrlPlaceholder": "https://auth.spolecnost.cz",
+          "clientId": "ID klienta",
+          "clientIdPlaceholder": "ID klienta",
+          "clientSecret": "Tajný klíč klienta",
+          "clientSecretPlaceholder": "Tajný klíč klienta",
+          "clientSecretPlaceholderEdit": "Ponechte prázdné pro zachování stávajícího",
+          "redirectUri": "URI přesměrování",
+          "redirectUriPlaceholder": "https://vase-domena.cz/api/oidc/callback",
+          "scope": "Rozsah",
+          "scopePlaceholder": "openid profile email",
+          "emailAttribute": "Atribut emailu",
+          "emailAttributePlaceholder": "email",
+          "usernameAttribute": "Atribut uživatelského jména",
+          "usernameAttributePlaceholder": "preferred_username",
+          "firstNameAttribute": "Atribut jména",
+          "firstNameAttributePlaceholder": "given_name",
+          "lastNameAttribute": "Atribut příjmení",
+          "lastNameAttributePlaceholder": "family_name"
+        },
+        "advanced": {
+          "show": "Zobrazit pokročilé nastavení",
+          "hide": "Skrýt pokročilé nastavení"
+        },
+        "actions": {
+          "addProvider": "Přidat poskytovatele",
+          "saveChanges": "Uložit změny"
+        },
+        "messages": {
+          "saveFailed": "Nepodařilo se uložit poskytovatele"
+        }
+      }
+    },
+    "ai": {
+      "title": "Konfigurace AI asistenta",
+      "description": "Nakonfigurujte generování příkazů pomocí AI pro terminálové relace a tvorbu snippetů.",
+      "loading": "Načítání nastavení AI...",
+      "enable": {
+        "title": "Povolit AI asistenta",
+        "description": "Umožnit uživatelům generovat příkazy pomocí AI"
+      },
+      "provider": {
+        "title": "Poskytovatel AI",
+        "description": "Vyberte poskytovatele AI služby"
+      },
+      "model": {
+        "title": "Model",
+        "description": "Vyberte AI model pro generování příkazů"
+      },
+      "apiKey": {
+        "title": "API klíč",
+        "description": "Váš OpenAI API klíč pro ověření",
+        "placeholder": "Zadejte svůj OpenAI API klíč",
+        "setPlaceholder": "API klíč je nastaven (ponechte prázdné pro zachování)"
+      },
+      "ollamaUrl": {
+        "title": "Ollama URL",
+        "description": "URL, kde běží vaše instance Ollama",
+        "placeholder": "http://localhost:11434"
+      },
+      "selectProvider": "Vyberte poskytovatele...",
+      "selectModel": "Vyberte model...",
+      "loadingModels": "Načítání modelů...",
+      "noModels": "Žádné modely k dispozici",
+      "saveSettings": "Uložit nastavení",
+      "testConnection": "Otestovat připojení",
+      "testing": "Testuji...",
+      "saveSuccess": "Nastavení AI úspěšně uloženo",
+      "testSuccess": "Test připojení AI úspěšný",
+      "errors": {
+        "loadSettings": "Nepodařilo se načíst nastavení AI",
+        "saveSettings": "Nepodařilo se uložit nastavení AI",
+        "testConnection": "Test připojení AI selhal"
+      }
+    },
+    "monitoring": {
+      "loading": "Načítání nastavení monitoringu...",
+      "saveSettings": "Uložit nastavení",
+      "saveSuccess": "Nastavení monitoringu úspěšně uloženo",
+      "seconds": "sekund",
+      "hours": "hodin",
+      "servers": "serverů",
+      "statusChecker": {
+        "title": "Kontrola stavu",
+        "description": "Nakonfigurujte, jak Nexterm kontroluje online/offline stav vašich serverů.",
+        "enable": {
+          "title": "Povolit kontrolu stavu",
+          "description": "Automaticky kontrolovat, zda jsou servery online nebo offline. Při zakázání budou všechny servery označeny jako online."
+        },
+        "interval": {
+          "title": "Interval kontroly",
+          "description": "Jak často kontrolovat stav serverů (10-300 sekund)"
+        }
+      },
+      "dataCollection": {
+        "title": "Sběr dat",
+        "description": "Nakonfigurujte sběr monitorovacích dat pro CPU, paměť, disk a síťové metriky.",
+        "enable": {
+          "title": "Povolit monitoring",
+          "description": "Sbírat podrobné výkonnostní metriky ze serverů s povoleným monitoringem."
+        },
+        "interval": {
+          "title": "Interval sběru",
+          "description": "Jak často sbírat monitorovací data (30-600 sekund)"
+        },
+        "retention": {
+          "title": "Uchovávání dat",
+          "description": "Jak dlouho uchovávat monitorovací data (1-24 hodin)"
+        }
+      },
+      "advanced": {
+        "title": "Pokročilé nastavení",
+        "description": "Dolaďte výkon monitoringu a využití prostředků.",
+        "timeout": {
+          "title": "Časový limit připojení",
+          "description": "Maximální doba čekání na odpověď serveru (5-120 sekund)"
+        },
+        "batchSize": {
+          "title": "Velikost dávky",
+          "description": "Počet serverů kontrolovaných současně (1-50)"
+        }
+      },
+      "errors": {
+        "loadSettings": "Nepodařilo se načíst nastavení monitoringu",
+        "saveSettings": "Nepodařilo se uložit nastavení monitoringu"
+      }
+    },
+    "identities": {
+      "title": "SSH klíče a přihlašovací údaje",
+      "description": "Spravujte své SSH klíče a přihlašovací údaje pro připojení k serverům",
+      "createIdentity": "Vytvořit identitu",
+      "personal": "Osobní",
+      "noUsername": "Bez uživatelského jména",
+      "sshKey": "SSH klíč",
+      "password": "Heslo",
+      "editIdentity": "Upravit identitu",
+      "deleteIdentity": "Smazat identitu",
+      "noIdentities": "Žádné identity nenalezeny",
+      "noIdentitiesDescription": "Vytvořte svou první identitu pro zahájení připojení k serverům",
+      "deleteConfirm": "Opravdu chcete smazat \"{{name}}\"? Tuto akci nelze vrátit zpět a odstraní tuto identitu ze všech serverů, které ji používají.",
+      "deleteSuccess": "Identita úspěšně smazána",
+      "deleteError": "Nepodařilo se smazat identitu",
+      "dialog": {
+        "createTitle": "Vytvořit novou identitu",
+        "editTitle": "Upravit identitu",
+        "fields": {
+          "name": "Název identity",
+          "namePlaceholder": "Zadejte název identity",
+          "username": "Uživatelské jméno",
+          "usernamePlaceholder": "Uživatelské jméno (volitelné)",
+          "authType": "Typ ověření",
+          "password": "Heslo",
+          "passwordPlaceholder": "Zadejte heslo",
+          "passwordPlaceholderEdit": "Ponechte prázdné pro zachování aktuálního hesla",
+          "sshKey": "SSH privátní klíč",
+          "passphrase": "Heslo klíče (volitelné)",
+          "passphrasePlaceholder": "Zadejte heslo klíče (volitelné)",
+          "passphrasePlaceholderEdit": "Ponechte prázdné pro zachování aktuálního hesla klíče"
+        },
+        "authTypes": {
+          "password": "Heslo",
+          "password-only": "Bez uživatelského jména",
+          "ssh": "SSH klíč",
+          "both": "Klíč+Heslo"
+        },
+        "actions": {
+          "cancel": "Zrušit",
+          "create": "Vytvořit identitu",
+          "update": "Aktualizovat identitu"
+        },
+        "messages": {
+          "nameRequired": "Název identity je povinný",
+          "passwordRequired": "Heslo je povinné",
+          "sshKeyRequired": "SSH klíč je povinný",
+          "createSuccess": "Identita úspěšně vytvořena",
+          "updateSuccess": "Identita úspěšně aktualizována",
+          "createFailed": "Nepodařilo se vytvořit identitu",
+          "updateFailed": "Nepodařilo se aktualizovat identitu"
+        }
+      }
+    },
+    "sources": {
+      "title": "Zdroje skriptů a snippetů",
+      "description": "Nakonfigurujte externí zdroje pro automatickou synchronizaci skriptů a snippetů.",
+      "loading": "Načítání zdrojů...",
+      "noSources": "Žádné zdroje nakonfigurovány",
+      "noSourcesDescription": "Přidejte externí zdroje pro automatickou synchronizaci skriptů a snippetů.",
+      "addSource": "Přidat zdroj",
+      "snippets": "snippetů",
+      "scripts": "skriptů",
+      "neverSynced": "Nikdy synchronizováno",
+      "sync": "Synchronizovat nyní",
+      "edit": "Upravit",
+      "delete": "Smazat",
+      "deleteConfirm": "Opravdu chcete smazat zdroj \"{{name}}\"? Všechny synchronizované skripty a snippety z tohoto zdroje budou také smazány.",
+      "status": {
+        "success": "Synchronizováno",
+        "error": "Chyba",
+        "pending": "Čeká",
+        "disabled": "Zakázáno"
+      },
+      "dialog": {
+        "createTitle": "Přidat zdroj",
+        "editTitle": "Upravit zdroj",
+        "name": "Název",
+        "namePlaceholder": "např. Firemní skripty",
+        "url": "URL zdroje",
+        "urlPlaceholder": "https://skripty.priklad.cz",
+        "enabled": "Povoleno",
+        "enabledDescription": "Když je zakázáno, tento zdroj nebude synchronizován",
+        "validating": "Ověřuji URL...",
+        "validationSuccess": "Platný zdroj nalezen: {{snippets}} snippetů, {{scripts}} skriptů",
+        "create": "Vytvořit"
+      },
+      "messages": {
+        "created": "Zdroj úspěšně vytvořen",
+        "updated": "Zdroj úspěšně aktualizován",
+        "deleted": "Zdroj úspěšně smazán",
+        "synced": "Zdroj úspěšně synchronizován"
+      },
+      "errors": {
+        "loadFailed": "Nepodařilo se načíst zdroje",
+        "saveFailed": "Nepodařilo se uložit zdroj",
+        "deleteFailed": "Nepodařilo se smazat zdroj",
+        "syncFailed": "Nepodařilo se synchronizovat zdroj",
+        "validationFailed": "Nepodařilo se ověřit URL",
+        "requiredFields": "Název a URL jsou povinné"
+      }
+    },
+    "backup": {
+      "loading": "Načítání nastavení úložiště...",
+      "storage": {
+        "title": "Úložiště",
+        "description": "Zobrazte využití disku pro vaše Nexterm data.",
+        "database": "Databáze",
+        "recordings": "Nahrávky",
+        "logs": "Logy",
+        "total": "Celkem"
+      },
+      "backupsSection": {
+        "title": "Zálohy",
+        "description": "Nakonfigurujte poskytovatele záloh a naplánujte automatické zálohování."
+      },
+      "addProvider": "Přidat poskytovatele",
+      "editProvider": "Upravit poskytovatele",
+      "providerName": "Název poskytovatele",
+      "providerNamePlaceholder": "Moje záloha",
+      "providerType": "Typ",
+      "providerTypes": {
+        "local": "Lokální",
+        "smb": "SMB sdílení",
+        "webdav": "WebDAV"
+      },
+      "localPath": "Cesta zálohy",
+      "localPathPlaceholder": "/cesta/k/zaloham",
+      "smbShare": "SMB sdílení",
+      "smbSharePlaceholder": "\\\\server\\sdileni",
+      "smbFolder": "Složka (volitelné)",
+      "smbFolderPlaceholder": "zalohy",
+      "smbUsername": "Uživatelské jméno",
+      "smbUsernamePlaceholder": "uzivatel",
+      "smbPassword": "Heslo",
+      "smbPasswordPlaceholder": "heslo",
+      "smbDomain": "Doména (volitelné)",
+      "smbDomainPlaceholder": "WORKGROUP",
+      "webdavUrl": "URL serveru",
+      "webdavUrlPlaceholder": "https://cloud.priklad.cz/remote.php/dav/files/uzivatel",
+      "webdavFolder": "Složka (volitelné)",
+      "webdavFolderPlaceholder": "zalohy",
+      "webdavUsername": "Uživatelské jméno",
+      "webdavUsernamePlaceholder": "uzivatel",
+      "webdavPassword": "Heslo",
+      "webdavPasswordPlaceholder": "heslo",
+      "passwordUnchanged": "Ponechte prázdné pro zachování aktuálního",
+      "schedule": {
+        "title": "Automatická záloha",
+        "disabled": "Zakázáno",
+        "hourly": "Každou hodinu",
+        "every6h": "Každých 6 hodin",
+        "every12h": "Každých 12 hodin",
+        "daily": "Denně",
+        "weekly": "Týdně"
+      },
+      "retention": {
+        "title": "Politika uchovávání"
+      },
+      "backups": "záloh",
+      "includes": {
+        "title": "Zahrnout do záloh",
+        "database": "Databáze",
+        "recordings": "Nahrávky",
+        "logs": "Logy"
+      },
+      "providers": "Poskytovatelé",
+      "saveSettings": "Uložit nastavení",
+      "noProviders": "Žádní poskytovatelé záloh",
+      "noProvidersDescription": "Přidejte poskytovatele záloh pro zahájení vytváření záloh.",
+      "backupList": "Zálohy - {{name}}",
+      "loadingBackups": "Načítání záloh...",
+      "noBackups": "Žádné zálohy nenalezeny",
+      "restoreConfirm": "Opravdu chcete obnovit \"{{name}}\"? Toto přepíše vaše aktuální data a restartuje server.",
+      "deleteProviderConfirm": "Opravdu chcete smazat \"{{name}}\"? Toto nesmaže existující zálohy.",
+      "providerCreated": "Poskytovatel záloh vytvořen",
+      "providerUpdated": "Poskytovatel záloh aktualizován",
+      "providerDeleted": "Poskytovatel záloh smazán",
+      "backupCreated": "Záloha úspěšně vytvořena",
+      "restoreStarted": "Obnova zahájena, server se restartuje",
+      "saveSuccess": "Nastavení úspěšně uloženo",
+      "errors": {
+        "loadFailed": "Nepodařilo se načíst nastavení záloh",
+        "saveFailed": "Nepodařilo se uložit nastavení",
+        "deleteFailed": "Nepodařilo se smazat",
+        "backupFailed": "Nepodařilo se vytvořit zálohu",
+        "loadBackupsFailed": "Nepodařilo se načíst zálohy",
+        "restoreFailed": "Nepodařilo se obnovit zálohu",
+        "exportFailed": "Nepodařilo se exportovat data",
+        "nameRequired": "Název poskytovatele je povinný"
+      },
+      "noFiles": "Žádné soubory nenalezeny"
+    }
+  },
+  "tunnel": {
+    "title": "Přesměrování portu",
+    "identity": "Identita",
+    "remoteHost": "Vzdálený hostitel",
+    "remotePort": "Vzdálený port",
+    "localPort": "Lokální port",
+    "start": "Spustit tunel",
+    "stop": "Zastavit tunel",
+    "status": {
+      "idle": "Nepřipojeno",
+      "starting": "Spouštění...",
+      "listening": "Naslouchání na localhost:{{port}}",
+      "error": "Chyba",
+      "stopped": "Zastaveno"
+    },
+    "error": {
+      "fillAllFields": "Prosím vyplňte všechna pole"
+    }
+  },
+  "share": {
+    "errors": {
+      "unableToConnect": "Nelze se připojit",
+      "failedToJoin": "Nepodařilo se připojit k relaci"
+    },
+    "sessionEnded": {
+      "title": "Relace ukončena",
+      "description": "Sdílená relace byla uzavřena"
+    }
+  },
+  "servers": {
+    "time": {
+      "justNow": "Právě teď",
+      "minuteAgo": "před {{count}} min",
+      "minutesAgo": "před {{count}} min",
+      "hourAgo": "před {{count}} hod",
+      "hoursAgo": "před {{count}} hod",
+      "dayAgo": "před {{count}} dnem",
+      "daysAgo": "před {{count}} dny"
+    },
+    "tags": {
+      "title": "Štítky",
+      "createNewTag": "Vytvořit nový štítek",
+      "tagName": "Název štítku",
+      "create": "Vytvořit",
+      "filterByTags": "Filtrovat podle štítků",
+      "clearAll": "Vymazat vše",
+      "noTagsCreated": "Zatím nebyly vytvořeny žádné štítky",
+      "editTag": "Upravit štítek",
+      "deleteTag": "Smazat štítek"
+    },
+    "contextMenu": {
+      "createFolder": "Vytvořit složku",
+      "deleteFolder": "Smazat složku",
+      "renameFolder": "Přejmenovat složku",
+      "new": "Nový",
+      "sshServer": "SSH server",
+      "telnetServer": "Telnet server",
+      "rdpServer": "RDP server",
+      "vncServer": "VNC server",
+      "createServer": "Vytvořit server",
+      "import": "Importovat",
+      "pve": "PVE",
+      "sshConfig": "SSH-Config",
+      "connect": "Připojit",
+      "quickConnect": "Rychlé připojení",
+      "openSFTP": "Otevřít SFTP",
+      "forwardPort": "Přesměrovat port",
+      "runScript": "Spustit skript",
+      "editServer": "Upravit server",
+      "editIntegration": "Upravit integraci",
+      "duplicateServer": "Duplikovat server",
+      "pasteIdentityPassword": "Vložit heslo",
+      "deleteServer": "Smazat server",
+      "wakeOnLan": "Wake-On-LAN",
+      "editPVE": "Upravit PVE",
+      "deletePVE": "Smazat PVE",
+      "shutdown": "Vypnout",
+      "stop": "Zastavit",
+      "start": "Spustit"
+    },
+    "wol": {
+      "successDescription": "Magic packet odeslán na {{name}}",
+      "errorDescription": "Nepodařilo se odeslat magic packet"
+    },
+    "messages": {
+      "usernameRequired": "Uživatelské jméno je povinné",
+      "passwordRequired": "Heslo je povinné",
+      "sshKeyRequired": "SSH klíč je povinný"
+    },
+    "dialog": {
+      "addServer": "Přidat server",
+      "addProtocolServer": "Přidat {{protocol}} server",
+      "editServer": "Upravit server",
+      "tabs": {
+        "details": "Podrobnosti",
+        "identities": "Identity",
+        "settings": "Nastavení"
+      },
+      "actions": {
+        "save": "Uložit",
+        "create": "Vytvořit"
+      },
+      "fields": {
+        "name": "Název",
+        "icon": "Ikona",
+        "serverIp": "Hostitel",
+        "port": "Port",
+        "protocol": "Protokol",
+        "username": "Uživatelské jméno",
+        "password": "Heslo",
+        "host": "Hostitel",
+        "nodeName": "Název uzlu",
+        "vmid": "VM ID",
+        "macAddress": "MAC adresa"
+      },
+      "placeholders": {
+        "serverName": "Název serveru",
+        "serverIp": "Název hostitele nebo IP",
+        "port": "Port",
+        "username": "Uživatelské jméno",
+        "password": "Heslo",
+        "host": "Hostitel",
+        "nodeName": "Název uzlu",
+        "vmid": "VM ID",
+        "macAddress": "AA:BB:CC:DD:EE:FF"
+      },
+      "settings": {
+        "jumpHosts": {
+          "title": "Jump hosty",
+          "description": "Připojte se přes meziservery k dosažení tohoto cílového serveru",
+          "addButton": "Přidat jump host",
+          "removeTooltip": "Odebrat jump host",
+          "noServersAvailable": "Žádné SSH servery nejsou k dispozici pro jump hosty. Nejprve vytvořte SSH servery."
+        },
+        "monitoring": {
+          "title": "Povolit monitoring výkonu",
+          "description": "Sbírat CPU, paměť, disk a síťové metriky pro tento server"
+        },
+        "wakeOnLan": {
+          "title": "Povolit Wake-On-LAN",
+          "description": "Umožnit vzdálené probuzení tohoto serveru pomocí jeho MAC adresy"
+        },
+        "keyboardLayout": {
+          "title": "Rozložení klávesnice",
+          "description": "Vyberte rozložení klávesnice pro toto připojení."
+        },
+        "display": {
+          "title": "Nastavení displeje",
+          "description": "Nakonfigurujte barevnou hloubku a chování změny velikosti pro vzdálený displej",
+          "colorDepth": "Barevná hloubka",
+          "resizeMethod": "Metoda změny velikosti"
+        },
+        "performance": {
+          "title": "Nastavení výkonu",
+          "description": "Přepněte vizuální efekty, které mohou ovlivnit výkon při pomalejších připojeních",
+          "enableWallpaper": "Povolit tapetu",
+          "enableWallpaperDesc": "Zobrazit tapetu plochy na vzdáleném systému",
+          "enableTheming": "Povolit motivy",
+          "enableThemingDesc": "Použít motivy oken a ovládacích prvků na vzdáleném systému",
+          "enableFontSmoothing": "Povolit vyhlazování písma",
+          "enableFontSmoothingDesc": "Vykreslit text s hladkými hranami pro lepší čitelnost",
+          "enableFullWindowDrag": "Povolit plné přetahování oken",
+          "enableFullWindowDragDesc": "Zobrazit obsah okna během přetahování oken",
+          "enableDesktopComposition": "Povolit kompozici plochy",
+          "enableDesktopCompositionDesc": "Povolit průhledná okna a vizuální efekty",
+          "enableMenuAnimations": "Povolit animace menu",
+          "enableMenuAnimationsDesc": "Povolit animace otevírání a zavírání menu"
+        },
+        "audio": {
+          "enableAudio": "Povolit zvuk",
+          "enableAudioDesc": "Streamovat zvuk ze vzdáleného systému do vašeho prohlížeče"
+        },
+        "terminal": {
+          "title": "Kompatibilita terminálu",
+          "description": "Upravte chování kláves pro různé typy terminálů",
+          "backspace": "Backspace",
+          "delete": "Delete",
+          "functionKeys": "Funkční klávesy"
+        },
+        "noSettings": "Pro tento typ záznamu nejsou k dispozici žádná další nastavení."
+      },
+      "identities": {
+        "organizationIdentities": "Identity organizace",
+        "personalIdentities": "Osobní identity",
+        "orgDescription": "Sdíleno se všemi členy organizace. Všichni mohou používat tyto identity.",
+        "personalDescription": "Viditelné pouze pro vás. Ostatní členové organizace je neuvidí.",
+        "identityName": "Název identity",
+        "username": "Uživatelské jméno",
+        "authentication": "Ověření",
+        "passwordField": "Heslo",
+        "userPassword": "Heslo",
+        "passwordOnly": "Bez uživatelského jména",
+        "sshKey": "SSH klíč",
+        "both": "Klíč+Heslo",
+        "sshPrivateKey": "SSH privátní klíč",
+        "passphrase": "Heslo klíče (volitelné)",
+        "new": "Nový",
+        "removeIdentity": "Odebrat identitu",
+        "unlinkIdentity": "Odpojit identitu",
+        "moveToOrg": "Přesunout do organizace",
+        "selectOrganization": "Vybrat organizaci",
+        "availableToLink": "K dispozici pro propojení",
+        "noUsername": "Bez uživatelského jména",
+        "noOrgIdentities": "Žádné identity organizace. Vytvořte jednu pro sdílení se všemi členy.",
+        "noPersonalIdentities": "Žádné osobní identity. Vytvořte jednu pro své soukromé použití."
+      }
+    },
+    "proxmoxDialog": {
+      "title": {
+        "import": "Importovat Proxmox VE",
+        "edit": "Upravit Proxmox VE"
+      },
+      "fields": {
+        "name": "Název",
+        "serverIp": "IP serveru",
+        "port": "Port",
+        "username": "Uživatelské jméno",
+        "password": "Heslo",
+        "nodeName": "Název uzlu (volitelné)",
+        "monitoring": "Monitoring výkonu"
+      },
+      "monitoringDescription": "Sbírat metriky CPU, paměti a úložiště v rámci celého clusteru",
+      "placeholders": {
+        "name": "Název",
+        "serverIp": "IP serveru",
+        "port": "Port",
+        "username": "Uživatelské jméno (např. root@pam)",
+        "password": "Heslo",
+        "specificNode": "Konkrétní název uzlu"
+      },
+      "actions": {
+        "import": "Importovat",
+        "edit": "Upravit"
+      },
+      "messages": {
+        "created": "Integrace Proxmox úspěšně vytvořena",
+        "updated": "Integrace Proxmox úspěšně aktualizována",
+        "createFailed": "Nepodařilo se vytvořit integraci Proxmox",
+        "updateFailed": "Nepodařilo se aktualizovat integraci Proxmox"
+      }
+    },
+    "connectionReasonDialog": {
+      "title": "Požadován důvod připojení",
+      "reasonLabel": "Prosím uveďte důvod připojení k <strong>{{serverName}}</strong>:",
+      "placeholder": "Zadejte důvod pro toto připojení...",
+      "characterCount": "{{count}}/500",
+      "actions": {
+        "cancel": "Zrušit",
+        "connect": "Připojit"
+      }
+    },
+    "sshConfigImport": {
+      "title": "Importovat SSH Config",
+      "configContent": {
+        "label": "Obsah SSH Config",
+        "placeholder": "Vložte obsah vašeho SSH config..."
+      },
+      "keyFiles": {
+        "label": "SSH soubory klíčů ({{count}} nalezeno)",
+        "userLabel": "Uživatel: {{username}}",
+        "uploaded": "Nahráno",
+        "uploadButton": "Nahrát"
+      },
+      "actions": {
+        "cancel": "Zrušit",
+        "import": "Importovat",
+        "importing": "Importuji..."
+      },
+      "messages": {
+        "noContent": "Prosím zadejte obsah SSH config",
+        "noFolder": "Žádná složka nevybrána",
+        "uploadSuccess": "Klíč {{name}} úspěšně nahrán",
+        "uploadFailed": "Nepodařilo se nahrát klíč {{name}}",
+        "importFailed": "Nepodařilo se importovat SSH config"
+      }
+    },
+    "fileManager": {
+      "createFolder": {
+        "title": "Vytvořit složku",
+        "placeholder": "Název složky",
+        "button": "Vytvořit složku"
+      },
+      "renameItem": {
+        "title": "Přejmenovat",
+        "placeholder": "Nový název",
+        "button": "Přejmenovat"
+      },
+      "fileEditor": {
+        "title": "Editor souborů",
+        "save": "Uložit",
+        "cancel": "Zrušit",
+        "loading": "Načítání...",
+        "saving": "Ukládání...",
+        "saveSuccess": "Soubor úspěšně uložen",
+        "saveFailed": "Nepodařilo se uložit soubor",
+        "loadFailed": "Nepodařilo se načíst soubor",
+        "unsavedChanges": "Máte neuložené změny. Opravdu chcete zavřít tento soubor?"
+      },
+      "contextMenu": {
+        "open": "Otevřít",
+        "download": "Stáhnout",
+        "rename": "Přejmenovat",
+        "delete": "Smazat",
+        "copy": "Kopírovat",
+        "cut": "Vyjmout",
+        "paste": "Vložit",
+        "createFolder": "Vytvořit složku",
+        "upload": "Nahrát soubor",
+        "edit": "Upravit",
+        "preview": "Náhled",
+        "bigFileConfirm": "Tento soubor má {{size}} MB. Opravdu ho chcete upravit?",
+        "selectAll": "Vybrat vše",
+        "insertSnippet": "Vložit snippet",
+        "sendCtrlC": "Odeslat Ctrl+C",
+        "clearTerminal": "Vyčistit terminál"
+      },
+      "filePreview": {
+        "title": "Náhled souboru",
+        "loading": "Načítání...",
+        "cannotPreview": "Nelze zobrazit náhled souboru",
+        "unsupportedFileType": "Tento typ souboru není podporován pro náhled",
+        "videoNotSupported": "Váš prohlížeč nepodporuje přehrávání videa",
+        "audioNotSupported": "Váš prohlížeč nepodporuje přehrávání zvuku",
+        "download": "Stáhnout",
+        "close": "Zavřít"
+      }
+    },
+    "aiAssistant": {
+      "title": "AI asistent",
+      "placeholder": "Popište, co chcete udělat...",
+      "hint": "Stiskněte Enter pro generování, Esc pro zavření",
+      "hintUse": "Stiskněte Enter pro použití příkazu, Esc pro zavření",
+      "closeLabel": "Zavřít AI asistenta",
+      "generate": "Generovat příkaz",
+      "generating": "Generuji příkaz...",
+      "generatedCommand": "Vygenerovaný příkaz",
+      "useCommand": "Použít příkaz",
+      "tryAgain": "Zkusit znovu",
+      "copy": "Kopírovat do schránky",
+      "error": "Nepodařilo se vygenerovat příkaz. Prosím zkuste to znovu."
+    },
+    "snippets": {
+      "title": "Snippety",
+      "noSnippets": "Žádné snippety k dispozici",
+      "searchPlaceholder": "Hledat snippety...",
+      "createNew": "Vytvořit nový snippet"
+    },
+    "terminalActions": {
+      "menuTitle": "Akce terminálu",
+      "snippets": "Snippety",
+      "keyboardShortcuts": "Klávesové zkratky",
+      "broadcasting": "Vysílání",
+      "fullScreen": "Celá obrazovka",
+      "exitFullScreen": "Opustit režim celé obrazovky",
+      "badgeOn": "ZAP"
+    },
+    "messages": {
+      "fillRequiredFields": "Prosím vyplňte všechna povinná pole",
+      "serverCreated": "Server úspěšně vytvořen",
+      "serverUpdated": "Server úspěšně aktualizován",
+      "createFailed": "Nepodařilo se vytvořit server",
+      "updateFailed": "Nepodařilo se aktualizovat server",
+      "createIdentityFailed": "Nepodařilo se vytvořit identitu",
+      "updateIdentityFailed": "Nepodařilo se aktualizovat identitu"
+    }
+  }
+}

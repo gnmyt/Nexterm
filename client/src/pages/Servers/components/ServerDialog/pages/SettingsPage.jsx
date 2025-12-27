@@ -37,6 +37,7 @@ const FUNCTION_KEY_MODES = [
 ];
 
 const KEYBOARD_LAYOUTS = [
+    { label: "Čeština (Qwertz)", value: "cs-cz-qwertz" },
     { label: "Dänisch (Qwerty)", value: "da-dk-qwerty" },
     { label: "Swiss German (Qwertz)", value: "de-ch-qwertz" },
     { label: "Deutsch (Qwertz)", value: "de-de-qwertz" },
