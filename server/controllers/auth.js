@@ -3,11 +3,22 @@ const Session = require("../models/Session");
 const speakeasy = require("speakeasy");
 const { compare } = require("bcrypt");
 const OIDCProvider = require("../models/OIDCProvider");
+const { authenticateUser: ldapAuth, getEnabledProvider: getLdapProvider } = require("./ldap");
 const logger = require("../utils/logger");
 
 module.exports.login = async (configuration, user) => {
     const internalProvider = await OIDCProvider.findOne({ where: { isInternal: true, enabled: true } });
-    if (!internalProvider) return { code: 403, message: "Internal authentication is disabled" };
+    const ldapProvider = await getLdapProvider();
+
+    if (!internalProvider && !ldapProvider) {
+        return { code: 403, message: "No login method is enabled" };
+    }
+
+    if (ldapProvider) {
+        const ldapResult = await ldapAuth(configuration.username, configuration.password, user);
+        if (ldapResult) return ldapResult;
+        return { code: 201, message: "Username or password incorrect" };
+    }
 
     const account = await Account.findOne({ where: { username: configuration.username } });
 
