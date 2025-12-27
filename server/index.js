@@ -1,3 +1,6 @@
+const { loadSecrets } = require("./utils/secrets");
+loadSecrets();
+
 const express = require("express");
 const path = require("path");
 const fs = require("fs");
@@ -85,7 +88,7 @@ if (process.env.NODE_ENV === "production") {
     );
 }
 
-if (!process.env.ENCRYPTION_KEY) throw new Error("ENCRYPTION_KEY environment variable is not set. Please set it to a random hex string.");
+if (!process.env.ENCRYPTION_KEY) throw new Error("ENCRYPTION_KEY not found. Set it via Docker secret (/run/secrets/encryption_key) or environment variable.");
 
 logger.system(`Starting Nexterm version ${packageJson.version} in ${process.env.NODE_ENV || 'development'} mode`);
 logger.system(`Running on Node.js ${process.version}`);
