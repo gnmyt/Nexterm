@@ -78,6 +78,10 @@
     },
     "errors": {
       "loadingAuthProviders": "حدث خطأ أثناء تحميل موفري المصادقة: {{error}}",
+      "webSocketConnection": {
+        "title": "WebSocket Connection Failed",
+        "message": "Connections are unavailable. This may be due to WebSocket not being enabled in your reverse proxy or network restrictions."
+      },
       "generalError": "حدث خطأ",
       "invalidCredentials": "اسم المستخدم أو كلمة المرور غير صحيحة",
       "invalidTwoFactor": "رمز التحقق الثنائي غير صالح",
