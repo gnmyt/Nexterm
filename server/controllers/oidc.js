@@ -6,6 +6,7 @@ const Session = require("../models/Session");
 const { genSalt, hash } = require("bcrypt");
 const crypto = require("crypto");
 const { Op } = require("sequelize");
+const logger = require("../utils/logger");
 
 const stateStore = new Map();
 
@@ -97,16 +98,21 @@ module.exports.initiateOIDCLogin = async (providerId) => {
             return { code: 404, message: "Provider not found or disabled" };
         }
 
+        let issuerUrl = provider.issuer.replace(/\/$/, "");
+        
         const configuration = await client.discovery(
-            new URL(provider.issuer),
+            new URL(issuerUrl),
             provider.clientId,
             provider.clientSecret,
         );
 
         const state = client.randomState();
         const nonce = client.randomNonce();
+        
+        const codeVerifier = client.randomPKCECodeVerifier();
+        const codeChallenge = await client.calculatePKCECodeChallenge(codeVerifier);
 
-        stateStore.set(state, { nonce, providerId, timestamp: Date.now() });
+        stateStore.set(state, { nonce, providerId, codeVerifier, timestamp: Date.now() });
 
         for (const [key, value] of stateStore.entries()) {
             if (Date.now() - value.timestamp > 10 * 60 * 1000) {
@@ -114,12 +120,20 @@ module.exports.initiateOIDCLogin = async (providerId) => {
             }
         }
 
-        const parameters = { redirect_uri: provider.redirectUri, scope: provider.scope, state, nonce };
+        const parameters = { 
+            redirect_uri: provider.redirectUri, 
+            scope: provider.scope, 
+            state, 
+            nonce,
+            code_challenge: codeChallenge,
+            code_challenge_method: "S256",
+        };
         const redirectTo = client.buildAuthorizationUrl(configuration, parameters);
 
         return { url: redirectTo.href };
     } catch (error) {
-        return { code: 500, message: error.message };
+        logger.error("OIDC login initiation failed", { providerId, error: error.message, stack: error.stack });
+        return { code: 500, message: "Failed to initiate OIDC login: " + error.message };
     }
 };
 
@@ -127,38 +141,42 @@ module.exports.handleOIDCCallback = async (query, userInfo) => {
     try {
         const storedData = stateStore.get(query.state);
         if (!storedData) {
+            logger.warn("OIDC callback received with invalid or expired state", { state: query.state });
             return { code: 400, message: "Invalid or expired state" };
         }
 
         stateStore.delete(query.state);
 
-        const { providerId, nonce } = storedData;
+        const { providerId, nonce, codeVerifier } = storedData;
         const provider = await OIDCProvider.findByPk(providerId);
 
         if (!provider) {
             return { code: 404, message: "Provider not found" };
         }
 
-        const configuration = await client.discovery(new URL(provider.issuer), provider.clientId, provider.clientSecret);
+        let issuerUrl = provider.issuer.replace(/\/$/, "");
+        
+        const configuration = await client.discovery(new URL(issuerUrl), provider.clientId, provider.clientSecret);
 
         const url = new URL(provider.redirectUri + "?" + new URLSearchParams(query).toString());
 
         const tokens = await client.authorizationCodeGrant(configuration, url, {
             expectedState: query.state,
             expectedNonce: nonce,
+            pkceCodeVerifier: codeVerifier,
         });
 
-        const protectedResourceResponse = await client.fetchProtectedResource(
-            configuration,
-            tokens.access_token,
-            new URL(configuration.serverMetadata().userinfo_endpoint),
-        );
+        let userinfo;
+        try {
+            userinfo = await client.fetchUserInfo(configuration, tokens.access_token, tokens.claims().sub);
+        } catch (userinfoError) {
+            logger.warn("Failed to fetch userinfo, falling back to ID token claims", { error: userinfoError.message });
+            userinfo = tokens.claims();
+        }
 
-        const userinfo = await protectedResourceResponse.json();
-
-        const username = userinfo[provider.usernameAttribute] || userinfo.sub;
-        const firstName = userinfo[provider.firstNameAttribute] || "";
-        const lastName = userinfo[provider.lastNameAttribute] || "";
+        const username = userinfo[provider.usernameAttribute] || userinfo.preferred_username || userinfo.email || userinfo.sub;
+        const firstName = userinfo[provider.firstNameAttribute] || userinfo.given_name || "";
+        const lastName = userinfo[provider.lastNameAttribute] || userinfo.family_name || "";
 
         let account = await Account.findOne({ where: { username: String(username) } });
 
@@ -198,6 +216,7 @@ module.exports.handleOIDCCallback = async (query, userInfo) => {
             },
         };
     } catch (error) {
+        logger.error("OIDC callback processing failed", { error: error.message, stack: error.stack });
         return { code: 500, message: "Failed to process OIDC login: " + error.message };
     }
 };
