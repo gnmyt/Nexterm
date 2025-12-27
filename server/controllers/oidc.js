@@ -1,5 +1,6 @@
 const client = require("openid-client");
 const OIDCProvider = require("../models/OIDCProvider");
+const LDAPProvider = require("../models/LDAPProvider");
 const Account = require("../models/Account");
 const Session = require("../models/Session");
 const { genSalt, hash } = require("bcrypt");
@@ -8,16 +9,30 @@ const { Op } = require("sequelize");
 
 const stateStore = new Map();
 
-module.exports.listProviders = async (includeSecret = false) => {
+const hasOtherEnabledProvider = async (excludeOidcId = null) => {
+    const [oidc, ldap] = await Promise.all([
+        OIDCProvider.findOne({ where: excludeOidcId ? { enabled: true, id: { [Op.ne]: excludeOidcId } } : { enabled: true } }),
+        LDAPProvider.findOne({ where: { enabled: true } }),
+    ]);
+    return !!(oidc || ldap);
+};
+
+module.exports.listProviders = async (includeSecret = false, forPublic = false) => {
     const providers = await OIDCProvider.findAll();
 
     if (!includeSecret) {
+        let ldapEnabled = false;
+        if (forPublic) {
+            ldapEnabled = !!(await LDAPProvider.findOne({ where: { enabled: true } }));
+        }
+        
         return providers.map(provider => ({
             id: provider.id, name: provider.name, issuer: provider.issuer,
             clientId: provider.clientId, redirectUri: provider.redirectUri, scope: provider.scope,
-            enabled: provider.enabled, emailAttribute: provider.emailAttribute,
-            usernameAttribute: provider.usernameAttribute, firstNameAttribute: provider.firstNameAttribute,
-            lastNameAttribute: provider.lastNameAttribute, isInternal: provider.isInternal,
+            enabled: (forPublic && provider.isInternal) ? (provider.enabled || ldapEnabled) : provider.enabled,
+            usernameAttribute: provider.usernameAttribute,
+            firstNameAttribute: provider.firstNameAttribute, lastNameAttribute: provider.lastNameAttribute,
+            isInternal: provider.isInternal,
         }));
     }
 
@@ -36,16 +51,19 @@ module.exports.updateProvider = async (providerId, data) => {
     const provider = await OIDCProvider.findByPk(providerId);
     if (!provider) return { code: 404, message: "Provider not found" };
 
+    if (data.enabled === false && provider.enabled) {
+        if (!await hasOtherEnabledProvider(providerId)) {
+            return { code: 400, message: "At least one authentication provider must remain enabled" };
+        }
+    }
+
     if (provider.isInternal) {
         if (Object.keys(data).length !== 1 || !data.hasOwnProperty("enabled")) {
             return { code: 400, message: "Internal authentication provider can only be enabled or disabled" };
         }
-    }
 
-    if (data.enabled === false) {
-        const hasOtherEnabled = await this.validateAtLeastOneEnabled(providerId);
-        if (!hasOtherEnabled) {
-            return { code: 400, message: "At least one authentication provider must remain enabled" };
+        if (data.enabled === true) {
+            await LDAPProvider.update({ enabled: false }, { where: {} });
         }
     }
 
@@ -61,6 +79,10 @@ module.exports.deleteProvider = async (providerId) => {
 
     if (provider.isInternal) {
         return { code: 400, message: "Cannot delete internal authentication provider" };
+    }
+
+    if (provider.enabled && !await hasOtherEnabledProvider(providerId)) {
+        return { code: 400, message: "Cannot delete the only enabled authentication provider" };
     }
 
     await OIDCProvider.destroy({ where: { id: providerId } });
@@ -135,7 +157,6 @@ module.exports.handleOIDCCallback = async (query, userInfo) => {
         const userinfo = await protectedResourceResponse.json();
 
         const username = userinfo[provider.usernameAttribute] || userinfo.sub;
-        const email = userinfo[provider.emailAttribute];
         const firstName = userinfo[provider.firstNameAttribute] || "";
         const lastName = userinfo[provider.lastNameAttribute] || "";
 
@@ -151,14 +172,12 @@ module.exports.handleOIDCCallback = async (query, userInfo) => {
                 password: hashedPassword,
                 firstName: String(firstName),
                 lastName: String(lastName),
-                email: String(email),
                 role: "user",
             });
         } else {
             await Account.update({
                 firstName: String(firstName),
                 lastName: String(lastName),
-                email: String(email),
             }, { where: { id: account.id } });
         }
 
@@ -196,17 +215,10 @@ module.exports.ensureInternalProvider = async () => {
             scope: "internal",
             enabled: true,
             isInternal: true,
-            emailAttribute: "email",
             usernameAttribute: "username",
             firstNameAttribute: "firstName",
             lastNameAttribute: "lastName",
         });
     }
-};
-
-module.exports.validateAtLeastOneEnabled = async (excludeProviderId = null) => {
-    const enabledProviders = await OIDCProvider.findAll({ where: { enabled: true, ...(excludeProviderId && { id: { [Op.ne]: excludeProviderId } }) } });
-
-    return enabledProviders.length > 0;
 };
 
