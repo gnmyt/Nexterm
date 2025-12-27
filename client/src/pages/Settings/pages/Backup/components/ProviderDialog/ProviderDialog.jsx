@@ -83,7 +83,7 @@ export const ProviderDialog = ({ open, onClose, provider, onSaved }) => {
                             </div>
                             <div className="form-group">
                                 <label>{t("settings.backup.smbPassword")}</label>
-                                <IconInput type="password" icon={mdiLock} value={config.password || ""} setValue={(v) => updateConfig("password", v)} placeholder={t("settings.backup.smbPasswordPlaceholder")} />
+                                <IconInput type="password" icon={mdiLock} value={config.password || ""} setValue={(v) => updateConfig("password", v)} placeholder={provider?.config?.hasPassword ? t("settings.backup.passwordUnchanged") : t("settings.backup.smbPasswordPlaceholder")} />
                             </div>
                             <div className="form-group">
                                 <label>{t("settings.backup.smbDomain")}</label>
@@ -107,7 +107,7 @@ export const ProviderDialog = ({ open, onClose, provider, onSaved }) => {
                             </div>
                             <div className="form-group">
                                 <label>{t("settings.backup.webdavPassword")}</label>
-                                <IconInput type="password" icon={mdiLock} value={config.password || ""} setValue={(v) => updateConfig("password", v)} placeholder={t("settings.backup.webdavPasswordPlaceholder")} />
+                                <IconInput type="password" icon={mdiLock} value={config.password || ""} setValue={(v) => updateConfig("password", v)} placeholder={provider?.config?.hasPassword ? t("settings.backup.passwordUnchanged") : t("settings.backup.webdavPasswordPlaceholder")} />
                             </div>
                         </>
                     )}

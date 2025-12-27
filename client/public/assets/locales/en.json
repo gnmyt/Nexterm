@@ -977,6 +977,7 @@
       "webdavUsernamePlaceholder": "user",
       "webdavPassword": "Password",
       "webdavPasswordPlaceholder": "password",
+      "passwordUnchanged": "Leave empty to keep current",
       "schedule": {
         "title": "Automatic Backup",
         "disabled": "Disabled",

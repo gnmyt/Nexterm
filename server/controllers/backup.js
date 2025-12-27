@@ -1,6 +1,19 @@
 const BackupSettings = require("../models/BackupSettings");
 const backupService = require("../utils/backupService");
+const { encrypt, encryptConfigPassword, decryptConfigPassword } = require("../utils/encryption");
 const { v4: uuid } = require("uuid");
+
+const sanitizeProviderForClient = (provider) => ({
+    ...provider,
+    config: {
+        ...provider.config,
+        password: undefined,
+        passwordEncrypted: undefined,
+        passwordIV: undefined,
+        passwordAuthTag: undefined,
+        hasPassword: !!provider.config?.passwordEncrypted,
+    },
+});
 
 const getSettings = async () => {
     let settings = await BackupSettings.findOne();
@@ -11,7 +24,7 @@ const getSettings = async () => {
 module.exports.getSettings = async () => {
     const settings = await getSettings();
     return {
-        providers: settings.providers,
+        providers: settings.providers.map(sanitizeProviderForClient),
         scheduleInterval: settings.scheduleInterval,
         retention: settings.retention,
         includeDatabase: settings.includeDatabase,
@@ -41,13 +54,15 @@ module.exports.updateSettings = async (data) => {
 module.exports.addProvider = async (data) => {
     const settings = await getSettings();
     const providers = [...settings.providers];
-    const newProvider = { id: uuid(), type: data.type, name: data.name, config: data.config };
+    const encryptedConfig = encryptConfigPassword(data.config);
+    const newProvider = { id: uuid(), type: data.type, name: data.name, config: encryptedConfig };
 
-    await backupService.testProvider(newProvider);
+    const testProvider = { ...newProvider, config: decryptConfigPassword(encryptedConfig) };
+    await backupService.testProvider(testProvider);
     providers.push(newProvider);
 
     await BackupSettings.update({ providers: JSON.stringify(providers) }, { where: { id: settings.id } });
-    return newProvider;
+    return sanitizeProviderForClient(newProvider);
 };
 
 module.exports.updateProvider = async (providerId, data) => {
@@ -56,14 +71,29 @@ module.exports.updateProvider = async (providerId, data) => {
     const index = providers.findIndex(p => p.id === providerId);
     if (index === -1) return { code: 404, message: "Provider not found" };
 
-    const updated = { ...providers[index], ...data };
-    if (data.config) updated.config = { ...providers[index].config, ...data.config };
+    const existing = providers[index];
+    let updatedConfig = { ...existing.config };
 
-    await backupService.testProvider(updated);
+    if (data.config) {
+        const { password, ...otherConfig } = data.config;
+        updatedConfig = { ...updatedConfig, ...otherConfig };
+        
+        if (password) {
+            const encrypted = encrypt(password);
+            updatedConfig.passwordEncrypted = encrypted.encrypted;
+            updatedConfig.passwordIV = encrypted.iv;
+            updatedConfig.passwordAuthTag = encrypted.authTag;
+        }
+    }
+
+    const updated = { ...existing, name: data.name || existing.name, type: data.type || existing.type, config: updatedConfig };
+
+    const testProvider = { ...updated, config: decryptConfigPassword(updatedConfig) };
+    await backupService.testProvider(testProvider);
     providers[index] = updated;
 
     await BackupSettings.update({ providers: JSON.stringify(providers) }, { where: { id: settings.id } });
-    return updated;
+    return sanitizeProviderForClient(updated);
 };
 
 module.exports.deleteProvider = async (providerId) => {

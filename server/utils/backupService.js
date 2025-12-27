@@ -3,6 +3,7 @@ const path = require("path");
 const archiver = require("archiver");
 const decompress = require("decompress");
 const BackupSettings = require("../models/BackupSettings");
+const { decryptConfigPassword } = require("./encryption");
 const { createProvider } = require("./backupProviders");
 const logger = require("./logger");
 
@@ -16,10 +17,11 @@ let scheduleInterval = null;
 
 const getSettings = async () => {
     let settings = await BackupSettings.findOne();
-    if (!settings) {
-        settings = await BackupSettings.create({});
-    }
-    return settings;
+    if (!settings) settings = await BackupSettings.create({});
+    return {
+        ...settings.dataValues,
+        providers: settings.providers.map(p => ({ ...p, config: decryptConfigPassword(p.config) })),
+    };
 };
 
 const getProvider = async (providerId) => {
