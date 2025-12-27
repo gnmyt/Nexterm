@@ -8,7 +8,7 @@
     margin: 0 0 1rem 0
     font-size: 1.25rem
 
-  .file-list
+  .fb-list
     display: flex
     flex-direction: column
     gap: 0.5rem
@@ -16,7 +16,7 @@
     overflow-y: auto
     margin-bottom: 1rem
 
-  .loading-state, .empty-state
+  .fb-loading, .fb-empty
     display: flex
     flex-direction: column
     align-items: center
@@ -28,9 +28,8 @@
     svg
       opacity: 0.7
 
-  .file-item
+  .fb-item
     display: flex
-    justify-content: space-between
     align-items: center
     padding: 0.75rem
     background-color: colors.$background
@@ -41,43 +40,43 @@
     &:hover
       border-color: colors.$gray
 
-    .file-info
-      display: flex
-      align-items: center
-      gap: 0.75rem
-      flex: 1
-      min-width: 0
+  .fb-info
+    display: flex
+    align-items: center
+    gap: 0.75rem
+    flex: 1
+    min-width: 0
 
-    .file-icon
-      width: 1.25rem
-      height: 1.25rem
-      color: colors.$primary
-      flex-shrink: 0
+  .fb-icon
+    width: 1.25rem
+    height: 1.25rem
+    color: colors.$primary
+    flex-shrink: 0
 
-    .file-details
-      display: flex
-      flex-direction: column
-      gap: 0.125rem
-      min-width: 0
+  .fb-details
+    display: flex
+    flex-direction: column
+    gap: 0.125rem
+    min-width: 0
 
-      .file-name
-        color: colors.$white
-        font-size: 0.875rem
-        font-weight: 500
-        white-space: nowrap
-        overflow: hidden
-        text-overflow: ellipsis
+  .fb-name
+    color: colors.$white
+    font-size: 0.875rem
+    font-weight: 500
+    white-space: nowrap
+    overflow: hidden
+    text-overflow: ellipsis
 
-      .file-meta
-        color: colors.$subtext
-        font-size: 0.75rem
+  .fb-meta
+    color: colors.$subtext
+    font-size: 0.75rem
 
-    .file-actions
-      display: flex
-      gap: 0.25rem
-      flex-shrink: 0
+  .fb-actions
+    display: flex
+    gap: 0.25rem
+    flex-shrink: 0
 
-  .dialog-actions
+  .fb-dialog-actions
     display: flex
     justify-content: flex-end
     gap: 0.5rem

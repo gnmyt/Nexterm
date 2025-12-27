@@ -65,28 +65,28 @@ export const FileBrowserDialog = ({ open, onClose, type, onFilesChanged }) => {
         <DialogProvider open={open} onClose={handleClose}>
             <div className="file-browser-dialog">
                 <h2>{title}</h2>
-                <div className="file-list">
+                <div className="fb-list">
                     {loading ? (
-                        <div className="loading-state">
+                        <div className="fb-loading">
                             <Icon path={mdiLoading} spin size={1} />
                             <span>{t("settings.backup.loading")}</span>
                         </div>
                     ) : files.length === 0 ? (
-                        <div className="empty-state">
+                        <div className="fb-empty">
                             <Icon path={icon} size={1.5} />
                             <span>{t("settings.backup.noFiles")}</span>
                         </div>
                     ) : (
                         files.map((file) => (
-                            <div key={file.name} className="file-item">
-                                <div className="file-info">
-                                    <Icon path={icon} className="file-icon" />
-                                    <div className="file-details">
-                                        <span className="file-name">{file.name}</span>
-                                        <span className="file-meta">{formatBytes(file.size)} • {formatDate(file.modified)}</span>
+                            <div key={file.name} className="fb-item">
+                                <div className="fb-info">
+                                    <Icon path={icon} className="fb-icon" />
+                                    <div className="fb-details">
+                                        <span className="fb-name">{file.name}</span>
+                                        <span className="fb-meta">{formatBytes(file.size)} • {formatDate(file.modified)}</span>
                                     </div>
                                 </div>
-                                <div className="file-actions">
+                                <div className="fb-actions">
                                     <Button icon={mdiDownload} onClick={() => handleDownload(file.name)} type="secondary" />
                                     <Button 
                                         icon={deleting === file.name ? mdiLoading : mdiTrashCan} 
@@ -99,7 +99,7 @@ export const FileBrowserDialog = ({ open, onClose, type, onFilesChanged }) => {
                         ))
                     )}
                 </div>
-                <div className="dialog-actions">
+                <div className="fb-dialog-actions">
                     <Button text={t("common.actions.close")} onClick={handleClose} type="secondary" />
                 </div>
             </div>
