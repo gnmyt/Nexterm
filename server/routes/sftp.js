@@ -89,6 +89,22 @@ const audit = (v, req, action, resource, details) => {
     });
 };
 
+/**
+ * POST /sftp/upload
+ * @summary Upload File via SFTP
+ * @description Uploads a file to a remote server via SFTP. The file content should be sent as the raw request body. Requires an active session with SFTP capabilities.
+ * @tags SFTP
+ * @produces application/json
+ * @param {string} sessionToken.query.required - Session authentication token
+ * @param {string} sessionId.query.required - Active server session ID
+ * @param {string} path.query.required - Remote destination path for the uploaded file
+ * @return {object} 200 - Upload successful with file path and size
+ * @return {object} 400 - Missing parameters or invalid path
+ * @return {object} 401 - Invalid session token
+ * @return {object} 403 - Permission denied
+ * @return {object} 404 - Session or entry not found
+ * @return {object} 500 - Upload error
+ */
 app.post("/upload", async (req, res) => {
     const { sessionToken, sessionId, path: remotePath } = req.query;
     if (!sessionToken || !sessionId || !remotePath) return res.status(400).json({ error: "Missing parameters" });
@@ -137,6 +153,27 @@ app.post("/upload", async (req, res) => {
     }
 });
 
+/**
+ * GET /sftp
+ * @summary Download or Preview File via SFTP
+ * @description Downloads a file or folder from a remote server via SFTP. Supports file preview, thumbnail generation for images, and folder download as ZIP archive.
+ * @tags SFTP
+ * @produces application/octet-stream
+ * @produces application/zip
+ * @produces image/jpeg
+ * @param {string} sessionToken.query.required - Session authentication token
+ * @param {string} sessionId.query.required - Active server session ID
+ * @param {string} path.query.required - Remote file or folder path to download
+ * @param {string} preview.query - Set to "true" to display file inline instead of downloading
+ * @param {string} thumbnail.query - Set to "true" to generate a thumbnail (images only, max 10MB)
+ * @param {number} size.query - Thumbnail size in pixels (50-300, default: 100)
+ * @return {file} 200 - File content, ZIP archive, or thumbnail image
+ * @return {object} 400 - Missing parameters or invalid path
+ * @return {object} 401 - Invalid session token
+ * @return {object} 403 - Permission denied
+ * @return {object} 404 - File, session, or entry not found
+ * @return {object} 500 - Download error
+ */
 app.get("/", async (req, res) => {
     const { sessionToken, sessionId, path: remotePath, preview, thumbnail, size } = req.query;
     if (!sessionToken || !sessionId || !remotePath) return res.status(400).json({ error: "Missing parameters" });
@@ -231,6 +268,23 @@ const addFileToArchive = (sftp, remotePath, archive, archiveName, streams) => ne
     });
 });
 
+/**
+ * POST /sftp/multi
+ * @summary Download Multiple Files via SFTP
+ * @description Downloads multiple files and/or folders as a single ZIP archive. Supports mixed selection of files and folders. Failed items are skipped and logged.
+ * @tags SFTP
+ * @consumes application/x-www-form-urlencoded
+ * @produces application/zip
+ * @param {string} sessionToken.query.required - Session authentication token
+ * @param {string} sessionId.query.required - Active server session ID
+ * @param {string} paths.body.required - JSON array of remote file/folder paths to download
+ * @return {file} 200 - ZIP archive containing all requested files and folders
+ * @return {object} 400 - Missing parameters, invalid paths format, or no paths provided
+ * @return {object} 401 - Invalid session token
+ * @return {object} 403 - Permission denied
+ * @return {object} 404 - Session or entry not found
+ * @return {object} 500 - Download error
+ */
 app.post("/multi", express.urlencoded({ extended: true }), async (req, res) => {
     const { sessionToken, sessionId } = req.query;
     let paths = req.body.paths;
