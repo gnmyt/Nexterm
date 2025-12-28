@@ -1,0 +1,1 @@
+export { FileItem as default } from './FileItem';

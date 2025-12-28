@@ -25,7 +25,7 @@
 
   .file-list-header
     display: grid
-    grid-template-columns: minmax(200px, 2fr) minmax(80px, auto) minmax(120px, auto) 2.25rem
+    grid-template-columns: minmax(200px, 2fr) minmax(80px, auto) minmax(100px, auto) minmax(100px, auto) 2.25rem
     background-color: colors.$terminal
     align-items: center
     padding: 0.625rem 1.5rem
@@ -38,6 +38,7 @@
 
     .header-name,
     .header-size,
+    .header-permissions,
     .header-date,
     .header-actions
       font-size: 0.8rem
@@ -47,6 +48,7 @@
       letter-spacing: 0.05em
 
     .header-size,
+    .header-permissions,
     .header-date
       text-align: right
 
@@ -134,7 +136,7 @@
 
   .file-item
     display: grid
-    grid-template-columns: minmax(200px, 2fr) minmax(80px, auto) minmax(120px, auto) 2.25rem
+    grid-template-columns: minmax(200px, 2fr) minmax(80px, auto) minmax(100px, auto) minmax(100px, auto) 2.25rem
     align-items: center
     padding: 0.625rem 0.75rem
     background-color: transparent
@@ -212,6 +214,7 @@
       .file-name svg,
       .file-name h2,
       .file-size,
+      .file-permissions,
       .file-date
         opacity: 0.7
 
@@ -264,12 +267,19 @@
         display: none
 
     .file-size,
+    .file-permissions,
     .file-date
       margin: 0
       font-size: 0.8rem
       color: colors.$subtext
       text-align: right
       white-space: nowrap
+
+    .file-permissions
+      .perms-text
+        font-family: monospace
+        letter-spacing: 0.5px
+        font-size: 0.75rem
 
     .dots-menu
       width: 1.125rem
@@ -397,6 +407,7 @@
           display: none
 
       .file-size,
+      .file-permissions,
       .file-date
         display: none
 
