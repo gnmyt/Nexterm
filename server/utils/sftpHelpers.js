@@ -1,29 +1,24 @@
 const deleteFolderRecursive = (sftp, folderPath, callback) => {
     sftp.readdir(folderPath, (err, list) => {
-        if (err) return callback(err);
+        if (err) return err.code === 2 ? callback(null) : callback(err);
 
-        if (list.length === 0) return sftp.rmdir(folderPath, callback);
+        if (!list || list.length === 0) {
+            return sftp.rmdir(folderPath, (err) => callback(err?.code !== 2 ? err : null));
+        }
 
-        let itemsToDelete = list.length;
+        let remaining = list.length;
+        let hasError = false;
+
+        const onDeleted = (err) => {
+            if (hasError) return;
+            if (err && err.code !== 2) { hasError = true; return callback(err); }
+            if (--remaining === 0) sftp.rmdir(folderPath, (err) => callback(err?.code !== 2 ? err : null));
+        };
 
         list.forEach(file => {
+            if (hasError) return;
             const fullPath = `${folderPath}/${file.filename}`;
-
-            if (file.longname.startsWith("d")) {
-                deleteFolderRecursive(sftp, fullPath, (err) => {
-                    if (err) return callback(err);
-
-                    itemsToDelete -= 1;
-                    if (itemsToDelete === 0) sftp.rmdir(folderPath, callback);
-                });
-            } else {
-                sftp.unlink(fullPath, (err) => {
-                    if (err) return callback(err);
-
-                    itemsToDelete -= 1;
-                    if (itemsToDelete === 0) sftp.rmdir(folderPath, callback);
-                });
-            }
+            file.longname.startsWith("d") ? deleteFolderRecursive(sftp, fullPath, onDeleted) : sftp.unlink(fullPath, onDeleted);
         });
     });
 };
@@ -31,88 +26,114 @@ const deleteFolderRecursive = (sftp, folderPath, callback) => {
 const searchDirectories = (sftp, searchPath, callback, maxResults = 20) => {
     const results = [];
     const searchQuery = searchPath.toLowerCase();
+    let done = false, pending = 0, timeoutId = null;
 
-    const isSearchingInside = searchPath.endsWith("/");
-    let basePath, searchTerm;
+    const finish = (err, data) => {
+        if (done) return;
+        done = true;
+        if (timeoutId) clearTimeout(timeoutId);
+        callback(err, data);
+    };
 
-    if (isSearchingInside) {
-        basePath = searchPath === "/" ? "/" : searchPath.slice(0, -1);
-        searchTerm = "";
-    } else {
-        const lastSlashIndex = searchPath.lastIndexOf("/");
-        basePath = lastSlashIndex === 0 ? "/" : searchPath.substring(0, lastSlashIndex);
-        searchTerm = searchPath.substring(lastSlashIndex + 1).toLowerCase();
-    }
+    const getResults = () => [...new Set(results)].sort().slice(0, maxResults);
 
-    const searchRecursive = (currentPath, depth = 0) => {
-        if (depth > 3 || results.length >= maxResults) return;
+    timeoutId = setTimeout(() => { if (!done) finish(null, getResults()); }, 5000);
+
+    const isInside = searchPath.endsWith("/");
+    const lastSlash = searchPath.lastIndexOf("/");
+    const basePath = isInside ? (searchPath === "/" ? "/" : searchPath.slice(0, -1)) : (lastSlash === 0 ? "/" : searchPath.substring(0, lastSlash));
+    const searchTerm = isInside ? "" : searchPath.substring(lastSlash + 1).toLowerCase();
+
+    const checkDone = () => { if (--pending === 0 && !done) finish(null, getResults()); };
+
+    const search = (currentPath, depth = 0) => {
+        if (done || depth > 3 || results.length >= maxResults) return checkDone();
 
         sftp.readdir(currentPath, (err, list) => {
-            if (err || !list) return;
+            if (done || err || !list) return checkDone();
 
-            list.forEach(file => {
-                if (!file.longname.startsWith("d")) return;
+            const dirs = list.filter(f => f.longname.startsWith("d"));
+            if (dirs.length === 0) return checkDone();
 
+            dirs.forEach(file => {
+                if (done || results.length >= maxResults) return;
                 const fullPath = currentPath === "/" ? `/${file.filename}` : `${currentPath}/${file.filename}`;
-                const fileName = file.filename.toLowerCase();
+                const name = file.filename.toLowerCase();
 
-                if (isSearchingInside) {
-                    if (currentPath === basePath) results.push(fullPath);
-                } else {
-                    if (fileName.startsWith(searchTerm) || fullPath.toLowerCase().includes(searchQuery)) results.push(fullPath);
+                if (isInside ? currentPath === basePath : (name.startsWith(searchTerm) || fullPath.toLowerCase().includes(searchQuery))) {
+                    results.push(fullPath);
                 }
 
-                if (results.length < maxResults && depth < 3) searchRecursive(fullPath, depth + 1);
+                if (results.length < maxResults && depth < 3) { pending++; search(fullPath, depth + 1); }
             });
-
-            if (depth === 0) {
-                const uniqueResults = [...new Set(results)].sort();
-                callback(null, uniqueResults.slice(0, maxResults));
-            }
+            checkDone();
         });
     };
 
-    searchRecursive(basePath || "/");
+    pending = 1;
+    search(basePath || "/");
 };
 
 const OPERATIONS = {
-    READY: 0x0, LIST_FILES: 0x1, UPLOAD_FILE_START: 0x2, UPLOAD_FILE_CHUNK: 0x3,
-    UPLOAD_FILE_END: 0x4, CREATE_FOLDER: 0x5, DELETE_FILE: 0x6, DELETE_FOLDER: 0x7,
-    RENAME_FILE: 0x8, ERROR: 0x9, SEARCH_DIRECTORIES: 0xA, RESOLVE_SYMLINK: 0xB,
-    READ_FILE: 0xC, WRITE_FILE: 0xD,
+    READY: 0x0, LIST_FILES: 0x1, CREATE_FOLDER: 0x5, DELETE_FILE: 0x6,
+    DELETE_FOLDER: 0x7, RENAME_FILE: 0x8, ERROR: 0x9, SEARCH_DIRECTORIES: 0xA,
+    RESOLVE_SYMLINK: 0xB,
 };
 
-const addFolderToArchive = (sftp, folderPath, archive, basePath = "", activeStreams = []) => new Promise((resolve, reject) => {
-    sftp.readdir(folderPath, async (err, list) => {
-        if (err) return reject(err);
-        if (!list?.length) {
-            archive.append("", { name: basePath + "/" });
-            return resolve();
-        }
+const addFolderToArchive = (sftp, folderPath, archive, basePath = "", activeStreams = [], options = {}) => {
+    const { timeout = 30000, maxFiles = 10000 } = options;
+    let fileCount = 0;
 
-        try {
-            for (const file of list) {
-                if (file.longname.startsWith("l")) continue;
-                const fullPath = folderPath === "/" ? `/${file.filename}` : `${folderPath}/${file.filename}`;
-                const archivePath = basePath ? `${basePath}/${file.filename}` : file.filename;
+    const addFolder = (currentPath, currentBasePath) => new Promise((resolve, reject) => {
+        const tid = setTimeout(() => reject(new Error(`Timeout: ${currentPath}`)), timeout);
 
-                if (file.longname.startsWith("d")) {
-                    await addFolderToArchive(sftp, fullPath, archive, archivePath, activeStreams);
-                } else {
-                    await new Promise((res, rej) => {
-                        const stream = sftp.createReadStream(fullPath);
-                        activeStreams.push(stream);
-                        stream.on("error", rej);
-                        stream.on("end", res);
-                        archive.append(stream, { name: archivePath });
-                    });
-                }
+        sftp.readdir(currentPath, async (err, list) => {
+            clearTimeout(tid);
+            if (err) return err.code === 3 ? resolve() : reject(err);
+
+            if (!list?.length) {
+                try { archive.append("", { name: currentBasePath + "/" }); } catch {}
+                return resolve();
             }
-            resolve();
-        } catch (e) {
-            reject(e);
-        }
+
+            try {
+                for (const file of list) {
+                    if (file.longname.startsWith("l")) continue;
+                    if (++fileCount > maxFiles) break;
+
+                    const fullPath = currentPath === "/" ? `/${file.filename}` : `${currentPath}/${file.filename}`;
+                    const archivePath = currentBasePath ? `${currentBasePath}/${file.filename}` : file.filename;
+
+                    if (file.longname.startsWith("d")) {
+                        await addFolder(fullPath, archivePath);
+                    } else {
+                        await new Promise((res, rej) => {
+                            const stid = setTimeout(() => rej(new Error(`Timeout: ${fullPath}`)), timeout);
+                            let resolved = false;
+                            const done = (err) => {
+                                if (resolved) return;
+                                resolved = true;
+                                clearTimeout(stid);
+                                err && err.code !== 3 ? rej(err) : res();
+                            };
+
+                            try {
+                                const stream = sftp.createReadStream(fullPath);
+                                activeStreams.push(stream);
+                                stream.on("error", done);
+                                stream.on("end", () => done());
+                                stream.on("close", () => done());
+                                archive.append(stream, { name: archivePath });
+                            } catch (e) { clearTimeout(stid); rej(e); }
+                        });
+                    }
+                }
+                resolve();
+            } catch (e) { reject(e); }
+        });
     });
-});
+
+    return addFolder(folderPath, basePath);
+};
 
 module.exports = { deleteFolderRecursive, searchDirectories, addFolderToArchive, OPERATIONS };

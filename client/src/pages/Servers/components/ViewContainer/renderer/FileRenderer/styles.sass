@@ -21,7 +21,7 @@
     backdrop-filter: blur(0.3rem)
     z-index: 100
     opacity: 0
-    transition: opacity 0.2s cubic-bezier(0.4, 0, 0.2, 1)
+    transition: opacity 0.2s
     pointer-events: none
 
     &.active
@@ -38,20 +38,11 @@
       align-items: center
       gap: 1rem
       background-color: colors.$primary-opacity
-      backdrop-filter: blur(0.5rem)
-      box-shadow: 0 12px 48px rgba(0, 0, 0, 0.5), 0 4px 16px rgba(0, 0, 0, 0.3)
-      transform: scale(0.95)
-      transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1)
-
-      .drag-overlay.active &
-        transform: scale(1)
 
       svg
         width: 4rem
         height: 4rem
         color: colors.$primary
-        flex-shrink: 0
-        animation: pulse 2s ease-in-out infinite
 
       h2
         margin: 0
@@ -59,7 +50,6 @@
         font-size: 1.125rem
         text-align: center
         color: colors.$white
-        letter-spacing: -0.01em
 
   .file-manager
     height: 100%
@@ -72,15 +62,6 @@
     bottom: 0
     left: 0
     height: 0.25rem
-    background: linear-gradient(90deg, colors.$primary 0%, rgba(colors.$primary, 0.7) 100%)
+    background-color: colors.$primary
     transition: width 0.3s ease
     z-index: 101
-    box-shadow: 0 -2px 8px rgba(colors.$primary, 0.4)
-
-@keyframes pulse
-  0%, 100%
-    opacity: 1
-    transform: scale(1)
-  50%
-    opacity: 0.7
-    transform: scale(1.05)

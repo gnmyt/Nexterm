@@ -464,6 +464,7 @@
     "pages": {
       "account": "Account",
       "terminal": "Terminal",
+      "fileManager": "File Manager",
       "keymaps": "Keymaps",
       "identities": "Identities",
       "sessions": "Sessions",
@@ -690,6 +691,42 @@
       },
       "preview": {
         "text": "$ echo 'Hi, Nexterm!'\nHi, Nexterm!\n$ "
+      }
+    },
+    "fileManager": {
+      "title": "File Manager",
+      "description": "Configure how files and folders are displayed and managed.",
+      "defaultView": {
+        "title": "Default View Mode",
+        "description": "Choose the default layout when opening the file manager.",
+        "list": "List View",
+        "listDescription": "Show files in a detailed list with size and date columns",
+        "grid": "Grid View",
+        "gridDescription": "Show files as icons in a grid layout with thumbnails"
+      },
+      "thumbnails": {
+        "title": "Image Thumbnails",
+        "description": "Show image thumbnails in grid view. This uses additional bandwidth to generate previews.",
+        "enabled": "Show Thumbnails",
+        "enabledDescription": "Display image previews in grid view for quick visual identification",
+        "disabled": "Hide Thumbnails",
+        "disabledDescription": "Show only file icons to save bandwidth and improve performance"
+      },
+      "hiddenFiles": {
+        "title": "Hidden Files",
+        "description": "Control visibility of hidden files and folders (names starting with a dot).",
+        "show": "Show Hidden Files",
+        "showDescription": "Display all files including .dotfiles and system directories",
+        "hide": "Hide Hidden Files",
+        "hideDescription": "Only show regular files and folders"
+      },
+      "deleteConfirmation": {
+        "title": "Delete Confirmation",
+        "description": "Require confirmation before deleting files and folders.",
+        "enabled": "Confirm Deletions",
+        "enabledDescription": "Show a confirmation dialog before deleting items",
+        "disabled": "Delete Immediately",
+        "disabledDescription": "Delete files without asking for confirmation"
       }
     },
     "authentication": {
@@ -1384,6 +1421,7 @@
         "edit": "Edit",
         "preview": "Preview",
         "bigFileConfirm": "This file is {{size}} MB large. Are you sure you want to edit it?",
+        "deleteConfirm": "Are you sure you want to delete \"{{name}}\"? This action cannot be undone.",
         "selectAll": "Select All",
         "insertSnippet": "Insert Snippet",
         "sendCtrlC": "Send Ctrl+C",

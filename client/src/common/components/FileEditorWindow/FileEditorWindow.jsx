@@ -2,7 +2,8 @@ import { useContext, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { UserContext } from "@/common/contexts/UserContext.jsx";
 import { useTheme } from "@/common/contexts/ThemeContext.jsx";
-import { downloadRequest } from "@/common/utils/RequestUtil.js";
+import { useToast } from "@/common/contexts/ToastContext.jsx";
+import { downloadRequest, uploadFile } from "@/common/utils/RequestUtil.js";
 import { ActionConfirmDialog } from "@/common/components/ActionConfirmDialog/ActionConfirmDialog.jsx";
 import { useWindowControls } from "@/common/hooks/useWindowControls.js";
 import Editor, { loader } from "@monaco-editor/react";
@@ -13,20 +14,20 @@ import * as monaco from "monaco-editor";
 
 loader.config({ monaco });
 
-export const FileEditorWindow = ({ file, session, onClose, sendOperation, zIndex = 9999 }) => {
+export const FileEditorWindow = ({ file, session, onClose, zIndex = 9999 }) => {
     const { t } = useTranslation();
     const { theme } = useTheme();
     const { sessionToken } = useContext(UserContext);
+    const { sendToast } = useToast();
     const [fileContent, setFileContent] = useState("");
     const [fileContentChanged, setFileContentChanged] = useState(false);
     const [unsavedChangesDialog, setUnsavedChangesDialog] = useState(false);
+    const [saving, setSaving] = useState(false);
 
     const {
         windowRef, headerRef, isMaximized, handleMouseDown, handleResizeStart, toggleMaximize,
         getWindowStyle, getWindowClasses,
     } = useWindowControls();
-
-    const toBase64 = (bytes) => btoa(String.fromCodePoint(...bytes));
 
     useEffect(() => {
         if (!file) return;
@@ -39,14 +40,19 @@ export const FileEditorWindow = ({ file, session, onClose, sendOperation, zIndex
         });
     }, [file]);
 
-    const saveFile = () => {
-        sendOperation(0x2, { path: file });
-        const encoder = new TextEncoder();
-        for (let i = 0; i < fileContent.length; i += 1024) {
-            sendOperation(0x3, { chunk: toBase64(encoder.encode(fileContent.substring(i, i + 1024))) });
+    const saveFile = async () => {
+        setSaving(true);
+        try {
+            const blob = new Blob([fileContent], { type: "application/octet-stream" });
+            const url = `/api/entries/sftp-download/upload?sessionId=${session.id}&path=${encodeURIComponent(file)}&sessionToken=${sessionToken}`;
+            await uploadFile(url, blob);
+            setFileContentChanged(false);
+            sendToast("Success", t("servers.fileManager.fileEditor.saveSuccess"));
+        } catch (err) {
+            sendToast("Error", err.message || t("servers.fileManager.fileEditor.saveFailed"));
+        } finally {
+            setSaving(false);
         }
-        sendOperation(0x4);
-        setFileContentChanged(false);
     };
 
     const closeFile = () => fileContentChanged ? setUnsavedChangesDialog(true) : onClose();
@@ -84,7 +90,7 @@ export const FileEditorWindow = ({ file, session, onClose, sendOperation, zIndex
                 <div className="file-editor-actions">
                     <button
                         onClick={saveFile}
-                        disabled={!fileContentChanged}
+                        disabled={!fileContentChanged || saving}
                         className="action-btn"
                         title={t("common.save")}
                     >

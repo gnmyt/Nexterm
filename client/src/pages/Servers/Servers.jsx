@@ -461,7 +461,6 @@ export const Servers = () => {
                         key={editor.id}
                         file={editor.file}
                         session={editor.session}
-                        sendOperation={editor.sendOperation}
                         onClose={() => setOpenFileEditors(prev => prev.filter(e => e.id !== editor.id))}
                         zIndex={10000 + index}
                     />
