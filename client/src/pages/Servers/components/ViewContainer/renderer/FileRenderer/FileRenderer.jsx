@@ -1,5 +1,6 @@
 import { useContext, useEffect, useState, useRef } from "react";
 import { UserContext } from "@/common/contexts/UserContext.jsx";
+import { useFileSettings } from "@/common/contexts/FileSettingsContext.jsx";
 import useWebSocket from "react-use-websocket";
 import ActionBar from "@/pages/Servers/components/ViewContainer/renderer/FileRenderer/components/ActionBar";
 import FileList from "@/pages/Servers/components/ViewContainer/renderer/FileRenderer/components/FileList";
@@ -13,6 +14,7 @@ const CHUNK_SIZE = 128 * 1024;
 
 export const FileRenderer = ({ session, disconnectFromServer, setOpenFileEditors }) => {
     const { sessionToken } = useContext(UserContext);
+    const { defaultViewMode } = useFileSettings();
 
     const [dragging, setDragging] = useState(false);
     const [folderDialogOpen, setFolderDialogOpen] = useState(false);
@@ -23,7 +25,7 @@ export const FileRenderer = ({ session, disconnectFromServer, setOpenFileEditors
     const [error, setError] = useState(null);
     const [history, setHistory] = useState(["/"]);
     const [historyIndex, setHistoryIndex] = useState(0);
-    const [viewMode, setViewMode] = useState("list");
+    const [viewMode, setViewMode] = useState(defaultViewMode);
     const [directorySuggestions, setDirectorySuggestions] = useState([]);
     
     const symlinkCallbacks = useRef([]);
@@ -219,7 +221,7 @@ export const FileRenderer = ({ session, disconnectFromServer, setOpenFileEditors
                     searchDirectories={searchDirectories} directorySuggestions={directorySuggestions} 
                     setDirectorySuggestions={setDirectorySuggestions} />
                 <FileList items={items} path={directory} updatePath={changeDirectory} sendOperation={sendOperation}
-                          downloadFile={downloadFile} setCurrentFile={handleOpenFile} setPreviewFile={handleOpenPreview} loading={loading} viewMode={viewMode} error={error} resolveSymlink={resolveSymlink} />
+                          downloadFile={downloadFile} setCurrentFile={handleOpenFile} setPreviewFile={handleOpenPreview} loading={loading} viewMode={viewMode} error={error} resolveSymlink={resolveSymlink} session={session} />
             </div>
             {uploadProgress > 0 && <div className="upload-progress" style={{ width: `${uploadProgress}%` }} />}
         </div>
