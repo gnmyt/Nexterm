@@ -6,7 +6,6 @@ import useWebSocket from "react-use-websocket";
 import ActionBar from "@/pages/Servers/components/ViewContainer/renderer/FileRenderer/components/ActionBar";
 import FileList from "@/pages/Servers/components/ViewContainer/renderer/FileRenderer/components/FileList";
 import "./styles.sass";
-import CreateFolderDialog from "./components/CreateFolderDialog";
 import Icon from "@mdi/react";
 import { mdiCloudUpload } from "@mdi/js";
 import { getWebSocketUrl, getBaseUrl } from "@/common/utils/ConnectionUtil.js";
@@ -24,7 +23,6 @@ export const FileRenderer = ({ session, disconnectFromServer, setOpenFileEditors
     const { sendToast } = useToast();
 
     const [dragging, setDragging] = useState(false);
-    const [folderDialogOpen, setFolderDialogOpen] = useState(false);
     const [uploadProgress, setUploadProgress] = useState(0);
     const [isUploading, setIsUploading] = useState(false);
     const [directory, setDirectory] = useState("/");
@@ -42,6 +40,7 @@ export const FileRenderer = ({ session, disconnectFromServer, setOpenFileEditors
     const dropZoneRef = useRef(null);
     const uploadQueueRef = useRef([]);
     const reconnectAttemptsRef = useRef(0);
+    const fileListRef = useRef(null);
 
     const wsUrl = getWebSocketUrl("/api/ws/sftp", { sessionToken, sessionId: session.id });
 
@@ -53,6 +52,30 @@ export const FileRenderer = ({ session, disconnectFromServer, setOpenFileEditors
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
+    }
+
+    const downloadMultipleFiles = (paths) => {
+        if (!paths || paths.length === 0) return;
+
+        const baseUrl = getBaseUrl();
+        const url = `${baseUrl}/api/entries/sftp/multi?sessionId=${session.id}&sessionToken=${sessionToken}`;
+        
+        const form = document.createElement('form');
+        form.method = 'POST';
+        form.action = url;
+        form.style.display = 'none';
+        
+        const pathsInput = document.createElement('input');
+        pathsInput.type = 'hidden';
+        pathsInput.name = 'paths';
+        pathsInput.value = JSON.stringify(paths);
+        form.appendChild(pathsInput);
+        
+        document.body.appendChild(form);
+        form.submit();
+        document.body.removeChild(form);
+        
+        sendToast("Success", `Downloading ${paths.length} item${paths.length > 1 ? 's' : ''}...`);
     }
 
     const uploadFileHttp = async (file, targetDir) => {
@@ -219,15 +242,15 @@ export const FileRenderer = ({ session, disconnectFromServer, setOpenFileEditors
                 </div>
             </div>
             <div className="file-manager">
-                <CreateFolderDialog open={folderDialogOpen} onClose={() => setFolderDialogOpen(false)} createFolder={createFolder} />
-                <ActionBar path={directory} updatePath={changeDirectory} createFolder={() => setFolderDialogOpen(true)}
+                <ActionBar path={directory} updatePath={changeDirectory} createFolder={() => fileListRef.current?.startCreateFolder()}
                     uploadFile={uploadFile} goBack={goBack} goForward={goForward} historyIndex={historyIndex}
                     historyLength={history.length} viewMode={viewMode} setViewMode={setViewMode} 
                     searchDirectories={searchDirectories} directorySuggestions={directorySuggestions} 
                     setDirectorySuggestions={setDirectorySuggestions} />
-                <FileList items={items} path={directory} updatePath={changeDirectory} sendOperation={sendOperation}
-                    downloadFile={downloadFile} setCurrentFile={handleOpenFile} setPreviewFile={handleOpenPreview} 
-                    loading={loading} viewMode={viewMode} error={error || connectionError} resolveSymlink={resolveSymlink} session={session} />
+                <FileList ref={fileListRef} items={items} path={directory} updatePath={changeDirectory} sendOperation={sendOperation}
+                    downloadFile={downloadFile} downloadMultipleFiles={downloadMultipleFiles} setCurrentFile={handleOpenFile} setPreviewFile={handleOpenPreview} 
+                    loading={loading} viewMode={viewMode} error={error || connectionError} resolveSymlink={resolveSymlink} session={session}
+                    createFolder={createFolder} />
             </div>
             {isUploading && <div className="upload-progress" style={{ width: `${uploadProgress}%` }} />}
         </div>

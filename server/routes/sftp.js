@@ -1,4 +1,5 @@
 const { Router } = require("express");
+const express = require("express");
 const Session = require("../models/Session");
 const Account = require("../models/Account");
 const SessionManager = require("../lib/SessionManager");
@@ -201,6 +202,90 @@ app.get("/", async (req, res) => {
                 rs.pipe(res);
 
                 audit(v, req, AUDIT_ACTIONS.FILE_DOWNLOAD, RESOURCE_TYPES.FILE, { filePath: remotePath, fileSize: stats.size });
+            } catch (err) {
+                cleanupAll();
+                handleError(res, err);
+            }
+        });
+    } catch (err) {
+        cleanupAll();
+        handleError(res, err);
+    }
+});
+
+const addFileToArchive = (sftp, remotePath, archive, archiveName, streams) => new Promise((resolve, reject) => {
+    sftp.stat(remotePath, (err, stats) => {
+        if (err) return reject(err);
+        
+        if (stats.isDirectory()) {
+            addFolderToArchive(sftp, remotePath, archive, archiveName, streams)
+                .then(resolve)
+                .catch(reject);
+        } else {
+            const stream = sftp.createReadStream(remotePath);
+            streams.push(stream);
+            stream.on("error", reject);
+            archive.append(stream, { name: archiveName });
+            stream.on("end", resolve);
+        }
+    });
+});
+
+app.post("/multi", express.urlencoded({ extended: true }), async (req, res) => {
+    const { sessionToken, sessionId } = req.query;
+    let paths = req.body.paths;
+    
+    if (typeof paths === "string") {
+        try { paths = JSON.parse(paths); }
+        catch { return res.status(400).json({ error: "Invalid paths format" }); }
+    }
+
+    if (!sessionToken || !sessionId) return res.status(400).json({ error: "Missing session parameters" });
+    if (!paths || !Array.isArray(paths) || paths.length === 0) return res.status(400).json({ error: "No paths provided" });
+    if (paths.some(p => p.includes(".."))) return res.status(400).json({ error: "Invalid path" });
+
+    let ssh = null;
+    const streams = [];
+    let cleaned = false;
+    const cleanupAll = () => { if (cleaned) return; cleaned = true; cleanup(ssh, streams); };
+
+    try {
+        const validation = await validateSession(sessionToken, sessionId);
+        if (validation.error) return res.status(validation.status).json({ error: validation.error });
+
+        const setup = await setupSSH(validation, req, res, cleanupAll);
+        ssh = setup.ssh;
+        ssh.on("end", cleanupAll);
+        ssh.connect(setup.sshOptions);
+
+        ssh.on("ready", async () => {
+            try {
+                const sftp = await sftpConnect(ssh);
+                const timestamp = new Date().toISOString().replace(/[:.]/g, "-").slice(0, 19);
+                
+                res.header("Content-Disposition", `attachment; filename="nexterm-download-${timestamp}.zip"`);
+                res.header("Content-Type", "application/zip");
+
+                const archive = archiver("zip", { zlib: { level: 5 } });
+                streams.push(archive);
+                archive.on("error", () => { archive.abort(); cleanupAll(); });
+                archive.on("end", cleanupAll);
+                archive.pipe(res);
+
+                for (const remotePath of paths) {
+                    try {
+                        await addFileToArchive(sftp, remotePath, archive, remotePath.split("/").pop(), streams);
+                    } catch (err) {
+                        logger.warn("Failed to add file to archive", { path: remotePath, error: err.message });
+                    }
+                }
+
+                archive.finalize();
+                audit(validation, req, AUDIT_ACTIONS.FILE_DOWNLOAD, RESOURCE_TYPES.FILE, { 
+                    paths, 
+                    count: paths.length,
+                    connectionReason: validation.serverSession.connectionReason || null 
+                });
             } catch (err) {
                 cleanupAll();
                 handleError(res, err);
