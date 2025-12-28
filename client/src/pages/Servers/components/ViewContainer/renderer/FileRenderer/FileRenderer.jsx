@@ -14,7 +14,7 @@ import { uploadFile as uploadFileRequest } from "@/common/utils/RequestUtil.js";
 const OPERATIONS = {
     READY: 0x0, LIST_FILES: 0x1, CREATE_FILE: 0x4, CREATE_FOLDER: 0x5, DELETE_FILE: 0x6, 
     DELETE_FOLDER: 0x7, RENAME_FILE: 0x8, ERROR: 0x9, SEARCH_DIRECTORIES: 0xA, 
-    RESOLVE_SYMLINK: 0xB, MOVE_FILES: 0xC, COPY_FILES: 0xD,
+    RESOLVE_SYMLINK: 0xB, MOVE_FILES: 0xC, COPY_FILES: 0xD, CHMOD: 0xE,
 };
 
 export const FileRenderer = ({ session, disconnectFromServer, setOpenFileEditors, isActive }) => {
@@ -153,6 +153,7 @@ export const FileRenderer = ({ session, disconnectFromServer, setOpenFileEditors
                 case OPERATIONS.RENAME_FILE:
                 case OPERATIONS.MOVE_FILES:
                 case OPERATIONS.COPY_FILES:
+                case OPERATIONS.CHMOD:
                     listFiles();
                     break;
                 case OPERATIONS.ERROR:
