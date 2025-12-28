@@ -302,6 +302,72 @@ module.exports = async (ws, req) => {
                                     });
                                 });
                                 break;
+
+                            case OPERATIONS.STAT:
+                                if (!payload?.path) return sendError(ws, "Invalid path");
+                                sftp.stat(payload.path, (err, stats) => {
+                                    if (err) return sendError(ws, getErrMsg(err, "Failed to get file info"));
+                                    const escapePath = (p) => `'${p.replace(/'/g, "'\\''")}'`;
+                                    ssh.exec(`stat -c '%U:%G' ${escapePath(payload.path)} 2>/dev/null || echo ":"`, (execErr, stream) => {
+                                        let ownerGroup = ":";
+                                        if (!execErr) {
+                                            stream.on("data", (data) => { ownerGroup = data.toString().trim(); });
+                                            stream.on("close", () => {
+                                                const [owner, group] = ownerGroup.split(":");
+                                                safeSend(ws, Buffer.concat([Buffer.from([OPERATIONS.STAT]), Buffer.from(JSON.stringify({
+                                                    size: stats.size, mode: stats.mode, uid: stats.uid, gid: stats.gid,
+                                                    atime: stats.atime, mtime: stats.mtime, owner: owner || "", group: group || "",
+                                                }))]));
+                                            });
+                                        } else {
+                                            safeSend(ws, Buffer.concat([Buffer.from([OPERATIONS.STAT]), Buffer.from(JSON.stringify({
+                                                size: stats.size, mode: stats.mode, uid: stats.uid, gid: stats.gid,
+                                                atime: stats.atime, mtime: stats.mtime, owner: "", group: "",
+                                            }))]));
+                                        }
+                                    });
+                                });
+                                break;
+
+                            case OPERATIONS.CHECKSUM:
+                                if (!payload?.path || !payload?.algorithm) return sendError(ws, "Invalid path or algorithm");
+                                {
+                                    const algo = payload.algorithm.toLowerCase();
+                                    const commands = { md5: "md5sum", sha1: "sha1sum", sha256: "sha256sum", sha512: "sha512sum" };
+                                    const cmd = commands[algo];
+                                    if (!cmd) return sendError(ws, "Unsupported algorithm");
+                                    const escapePath = (p) => `'${p.replace(/'/g, "'\\''")}'`;
+                                    ssh.exec(`${cmd} ${escapePath(payload.path)}`, (err, stream) => {
+                                        if (err) return sendError(ws, "Failed to calculate checksum");
+                                        let output = "", stderr = "";
+                                        stream.on("data", (data) => { output += data.toString(); });
+                                        stream.stderr.on("data", (data) => { stderr += data.toString(); });
+                                        stream.on("close", (code) => {
+                                            if (code !== 0) return sendError(ws, stderr.trim() || "Checksum failed");
+                                            const hash = output.split(/\s+/)[0];
+                                            safeSend(ws, Buffer.concat([Buffer.from([OPERATIONS.CHECKSUM]), Buffer.from(JSON.stringify({ hash, algorithm: algo }))]));
+                                        });
+                                    });
+                                }
+                                break;
+
+                            case OPERATIONS.FOLDER_SIZE:
+                                if (!payload?.path) return sendError(ws, "Invalid path");
+                                {
+                                    const escapePath = (p) => `'${p.replace(/'/g, "'\\''")}'`;
+                                    ssh.exec(`du -sb ${escapePath(payload.path)} 2>/dev/null | cut -f1`, (err, stream) => {
+                                        if (err) return sendError(ws, "Failed to calculate folder size");
+                                        let output = "", stderr = "";
+                                        stream.on("data", (data) => { output += data.toString(); });
+                                        stream.stderr.on("data", (data) => { stderr += data.toString(); });
+                                        stream.on("close", (code) => {
+                                            if (code !== 0) return sendError(ws, stderr.trim() || "Failed to calculate size");
+                                            const size = parseInt(output.trim(), 10) || 0;
+                                            safeSend(ws, Buffer.concat([Buffer.from([OPERATIONS.FOLDER_SIZE]), Buffer.from(JSON.stringify({ size }))]));
+                                        });
+                                    });
+                                }
+                                break;
                         }
                     } catch (err) {
                         sendError(ws, "Operation failed: " + err.message);

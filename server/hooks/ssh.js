@@ -71,6 +71,7 @@ module.exports = async (ws, context) => {
     const config = entry?.config || null;
     const connectionStartTime = Date.now();
     const organizationId = entry?.organizationId || null;
+    const startPath = serverSession?.configuration?.startPath || null;
 
     if (reuseConnection) {
         const { stream } = SessionManager.getConnection(serverSession.sessionId);
@@ -117,6 +118,8 @@ module.exports = async (ws, context) => {
                 resolve?.();
             }
             const onData = setupStreamHandlers(ws, stream, serverSession?.sessionId, config);
+            if (startPath) stream.write(`cd '${startPath.replace(/'/g, "'\\''")}' && clear\n`);
+            
             ws.on("close", async () => {
                 stream.removeListener("data", onData);
                 if (serverSession) SessionManager.removeWebSocket(serverSession.sessionId, ws);

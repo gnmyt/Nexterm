@@ -8,6 +8,7 @@ module.exports.createSessionValidation = Joi.object({
     tabId: Joi.string().allow(null).optional(),
     browserId: Joi.string().allow(null).optional(),
     scriptId: Joi.number().allow(null).optional(),
+    startPath: Joi.string().allow(null).optional(),
     directIdentity: Joi.object({
         username: Joi.string().max(255).optional(),
         type: Joi.string().valid("password", "ssh", "both", "password-only").required(),
