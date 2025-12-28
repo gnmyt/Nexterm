@@ -98,10 +98,8 @@ module.exports.initiateOIDCLogin = async (providerId) => {
             return { code: 404, message: "Provider not found or disabled" };
         }
 
-        let issuerUrl = provider.issuer.replace(/\/$/, "");
-        
         const configuration = await client.discovery(
-            new URL(issuerUrl),
+            new URL(provider.issuer),
             provider.clientId,
             provider.clientSecret,
         );
@@ -154,9 +152,7 @@ module.exports.handleOIDCCallback = async (query, userInfo) => {
             return { code: 404, message: "Provider not found" };
         }
 
-        let issuerUrl = provider.issuer.replace(/\/$/, "");
-        
-        const configuration = await client.discovery(new URL(issuerUrl), provider.clientId, provider.clientSecret);
+        const configuration = await client.discovery(new URL(provider.issuer), provider.clientId, provider.clientSecret);
 
         const url = new URL(provider.redirectUri + "?" + new URLSearchParams(query).toString());
 
