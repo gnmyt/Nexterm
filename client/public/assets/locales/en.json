@@ -1436,6 +1436,17 @@
         "audioNotSupported": "Your browser does not support audio playback",
         "download": "Download",
         "close": "Close"
+      },
+      "selection": {
+        "itemsSelected": "{{count}} items selected",
+        "filesSelected": "{{count}} file(s) selected",
+        "foldersSelected": "{{count}} folder(s) selected",
+        "clearSelection": "Clear selection",
+        "downloadSelected": "Download selected",
+        "deleteSelected": "Delete selected",
+        "download": "Download",
+        "delete": "Delete",
+        "deleteConfirm": "Are you sure you want to delete {{count}} item(s)?"
       }
     },
     "aiAssistant": {
