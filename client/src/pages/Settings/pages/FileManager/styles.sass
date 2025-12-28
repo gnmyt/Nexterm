@@ -1,0 +1,116 @@
+@use "@/common/styles/colors"
+
+$mobile: 768px
+
+.file-manager-settings
+  display: flex
+  flex-direction: column
+  margin-top: 1rem
+  gap: 2rem
+
+.settings-section
+  h2
+    margin: 0 0 0.5rem 0
+    color: colors.$white
+    font-size: 1.25rem
+
+    @media (max-width: $mobile)
+      font-size: 1.1rem
+
+  > p
+    margin: 0 0 1.5rem 0
+    color: colors.$subtext
+    font-size: 0.9rem
+
+.setting-item
+  display: flex
+  align-items: center
+  justify-content: space-between
+  padding: 1rem 0
+  border-bottom: 1px solid colors.$gray
+
+  @media (max-width: $mobile)
+    flex-direction: column
+    align-items: flex-start
+    gap: 0.75rem
+
+  &:last-child
+    border-bottom: none
+
+  .setting-info
+    display: flex
+    align-items: flex-start
+    gap: 0.75rem
+    flex: 1
+    margin-right: 2rem
+
+    @media (max-width: $mobile)
+      margin-right: 0
+
+  .setting-icon
+    display: flex
+    align-items: center
+    justify-content: center
+    width: 2rem
+    height: 2rem
+    border-radius: 0.5rem
+    background-color: colors.$gray
+    flex-shrink: 0
+    margin-top: 0.1rem
+
+    svg
+      color: colors.$primary
+
+  .setting-label
+    flex: 1
+
+    h4
+      margin: 0 0 0.25rem 0
+      color: colors.$white
+      font-size: 1rem
+      font-weight: 600
+
+    p
+      margin: 0
+      color: colors.$subtext
+      font-size: 0.85rem
+
+.view-options
+  display: flex
+  gap: 0.5rem
+
+  @media (max-width: $mobile)
+    width: 100%
+
+  &.three-options
+    @media (max-width: $mobile)
+      flex-wrap: wrap
+
+.view-option
+  display: flex
+  align-items: center
+  gap: 0.5rem
+  padding: 0.5rem 0.75rem
+  border-radius: 0.5rem
+  border: 1px solid colors.$gray
+  background: colors.$lighter-background
+  cursor: pointer
+  transition: all 0.15s ease
+  color: colors.$subtext
+
+  @media (max-width: $mobile)
+    flex: 1
+    justify-content: center
+
+  &:hover
+    border-color: colors.$primary
+    color: colors.$white
+
+  &.selected
+    border-color: colors.$primary
+    background: colors.$primary-opacity
+    color: colors.$white
+
+  span
+    font-size: 0.85rem
+    font-weight: 500

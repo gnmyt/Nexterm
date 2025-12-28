@@ -4,7 +4,7 @@ import { getWebSocketUrl, getTabId, getBrowserId } from "@/common/utils/Connecti
 
 export const STATE_TYPES = { ENTRIES: "ENTRIES", IDENTITIES: "IDENTITIES", SNIPPETS: "SNIPPETS", CONNECTIONS: "CONNECTIONS" };
 
-const CONNECTION_TIMEOUT_MS = 3000;
+const CONNECTION_TIMEOUT_MS = 5000;
 
 export const useStateStream = (sessionToken, handlers = {}) => {
     const handlersRef = useRef(handlers);

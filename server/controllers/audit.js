@@ -18,6 +18,7 @@ const AUDIT_ACTIONS = {
     FILE_DOWNLOAD: "file.download",
     FILE_DELETE: "file.delete",
     FILE_RENAME: "file.rename",
+    FILE_CHMOD: "file.chmod",
 
     FOLDER_CREATE: "folder.create",
     FOLDER_DELETE: "folder.delete",

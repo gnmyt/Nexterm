@@ -1,136 +1,224 @@
-import { useContext, useEffect, useState, useRef } from "react";
+import { useContext, useEffect, useState, useRef, useCallback } from "react";
+import { useTranslation } from "react-i18next";
 import { UserContext } from "@/common/contexts/UserContext.jsx";
+import { useFileSettings } from "@/common/contexts/FileSettingsContext.jsx";
+import { useToast } from "@/common/contexts/ToastContext.jsx";
 import useWebSocket from "react-use-websocket";
 import ActionBar from "@/pages/Servers/components/ViewContainer/renderer/FileRenderer/components/ActionBar";
 import FileList from "@/pages/Servers/components/ViewContainer/renderer/FileRenderer/components/FileList";
 import "./styles.sass";
-import CreateFolderDialog from "./components/CreateFolderDialog";
 import Icon from "@mdi/react";
 import { mdiCloudUpload } from "@mdi/js";
 import { getWebSocketUrl, getBaseUrl } from "@/common/utils/ConnectionUtil.js";
+import { uploadFile as uploadFileRequest } from "@/common/utils/RequestUtil.js";
 
-const CHUNK_SIZE = 128 * 1024;
+const OPERATIONS = {
+    READY: 0x0, LIST_FILES: 0x1, CREATE_FILE: 0x4, CREATE_FOLDER: 0x5, DELETE_FILE: 0x6, 
+    DELETE_FOLDER: 0x7, RENAME_FILE: 0x8, ERROR: 0x9, SEARCH_DIRECTORIES: 0xA, 
+    RESOLVE_SYMLINK: 0xB, MOVE_FILES: 0xC, COPY_FILES: 0xD, CHMOD: 0xE,
+    STAT: 0xF, CHECKSUM: 0x10, FOLDER_SIZE: 0x11,
+};
 
-export const FileRenderer = ({ session, disconnectFromServer, setOpenFileEditors }) => {
+export const FileRenderer = ({ session, disconnectFromServer, setOpenFileEditors, isActive, onOpenTerminal }) => {
+    const { t } = useTranslation();
     const { sessionToken } = useContext(UserContext);
+    const { defaultViewMode } = useFileSettings();
+    const { sendToast } = useToast();
 
     const [dragging, setDragging] = useState(false);
-    const [folderDialogOpen, setFolderDialogOpen] = useState(false);
     const [uploadProgress, setUploadProgress] = useState(0);
+    const [isUploading, setIsUploading] = useState(false);
     const [directory, setDirectory] = useState("/");
     const [items, setItems] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [history, setHistory] = useState(["/"]);
     const [historyIndex, setHistoryIndex] = useState(0);
-    const [viewMode, setViewMode] = useState("list");
+    const [viewMode, setViewMode] = useState(defaultViewMode);
     const [directorySuggestions, setDirectorySuggestions] = useState([]);
+    const [connectionError, setConnectionError] = useState(null);
+    const [isReady, setIsReady] = useState(false);
     
     const symlinkCallbacks = useRef([]);
     const dropZoneRef = useRef(null);
+    const uploadQueueRef = useRef([]);
+    const reconnectAttemptsRef = useRef(0);
+    const fileListRef = useRef(null);
+    const propertiesHandlerRef = useRef(null);
 
     const wsUrl = getWebSocketUrl("/api/ws/sftp", { sessionToken, sessionId: session.id });
 
     const downloadFile = (path) => {
         const baseUrl = getBaseUrl();
         const link = document.createElement("a");
-        link.href = `${baseUrl}/api/entries/sftp-download?sessionId=${session.id}&path=${path}&sessionToken=${sessionToken}`;
+        link.href = `${baseUrl}/api/entries/sftp?sessionId=${session.id}&path=${path}&sessionToken=${sessionToken}`;
         link.download = path.split("/").pop();
         document.body.appendChild(link);
         link.click();
+        document.body.removeChild(link);
     }
 
-    const readFileChunk = (file, start, end) => {
-        return new Promise((resolve, reject) => {
-            const reader = new FileReader();
-            reader.onload = () => {
-                resolve(btoa(new Uint8Array(reader.result).reduce((acc, byte) => acc + String.fromCharCode(byte), "")));
-            };
-            reader.onerror = reject;
-            reader.readAsArrayBuffer(file.slice(start, end));
-        });
+    const downloadMultipleFiles = (paths) => {
+        if (!paths || paths.length === 0) return;
+
+        const baseUrl = getBaseUrl();
+        const url = `${baseUrl}/api/entries/sftp/multi?sessionId=${session.id}&sessionToken=${sessionToken}`;
+        
+        const form = document.createElement('form');
+        form.method = 'POST';
+        form.action = url;
+        form.style.display = 'none';
+        
+        const pathsInput = document.createElement('input');
+        pathsInput.type = 'hidden';
+        pathsInput.name = 'paths';
+        pathsInput.value = JSON.stringify(paths);
+        form.appendChild(pathsInput);
+        
+        document.body.appendChild(form);
+        form.submit();
+        document.body.removeChild(form);
+        
+        sendToast(t("common.success"), t("servers.fileManager.toast.downloadingItems", { count: paths.length }));
+    }
+
+    const uploadFileHttp = async (file, targetDir) => {
+        const filePath = `${targetDir}/${file.name}`.replace(/\/+/g, '/');
+        setIsUploading(true);
+        setUploadProgress(0);
+
+        try {
+            const url = `/api/entries/sftp/upload?sessionId=${session.id}&path=${encodeURIComponent(filePath)}&sessionToken=${sessionToken}`;
+            await uploadFileRequest(url, file, {
+                onProgress: setUploadProgress,
+                timeout: 5 * 60 * 1000,
+            });
+
+            setIsUploading(false);
+            setUploadProgress(0);
+            listFiles();
+            sendToast(t("common.success"), t("servers.fileManager.toast.uploaded", { name: file.name }));
+            return true;
+        } catch (err) {
+            console.error("Upload error:", err);
+            sendToast(t("common.error"), t("servers.fileManager.toast.uploadFailed", { message: err.message }));
+            setIsUploading(false);
+            setUploadProgress(0);
+            return false;
+        }
     };
 
-    const uploadFileChunks = async (file) => {
-        sendOperation(0x2, { path: directory + "/" + file.name });
-
-        const totalChunks = Math.ceil(file.size / CHUNK_SIZE);
-        for (let i = 0; i < totalChunks; i++) {
-            const start = i * CHUNK_SIZE;
-            const end = Math.min(start + CHUNK_SIZE, file.size);
-            const chunk = await readFileChunk(file, start, end);
-
-            setUploadProgress((i + 1) / totalChunks * 100);
-            sendOperation(0x3, { chunk });
+    const processUploadQueue = async () => {
+        while (uploadQueueRef.current.length > 0) {
+            const { file, targetDir } = uploadQueueRef.current[0];
+            await uploadFileHttp(file, targetDir);
+            uploadQueueRef.current.shift();
         }
+    };
 
-        sendOperation(0x4);
+    const queueUpload = (file, targetDir) => {
+        uploadQueueRef.current.push({ file, targetDir });
+        if (uploadQueueRef.current.length === 1) processUploadQueue();
     };
 
     const uploadFile = async () => {
         const fileInput = document.createElement("input");
         fileInput.type = "file";
+        fileInput.multiple = true;
         fileInput.onchange = async () => {
-            const file = fileInput.files[0];
-            await uploadFileChunks(file);
-            setUploadProgress(0);
+            for (const file of fileInput.files) queueUpload(file, directory);
         };
         fileInput.click();
     };
 
     const processMessage = async (event) => {
-        const data = await event.data.text();
-        const operation = data.charCodeAt(0);
-        let payload;
-        try { payload = JSON.parse(data.slice(1)); } catch {}
+        try {
+            const data = await event.data.text();
+            const operation = data.charCodeAt(0);
+            let payload;
+            try { payload = JSON.parse(data.slice(1)); } catch {}
 
-        if ([0x0, 0x5, 0x6, 0x7, 0x8].includes(operation)) {
-            listFiles();
-        } else if (operation === 0x1) {
-            if (payload?.error) {
-                setError(payload.error);
-                setItems([]);
-            } else if (payload?.files) {
-                setItems(payload.files);
-                setError(null);
-            } else {
-                setError("Failed to load directory contents");
-                setItems([]);
+            switch (operation) {
+                case OPERATIONS.READY:
+                    setIsReady(true);
+                    setConnectionError(null);
+                    reconnectAttemptsRef.current = 0;
+                    listFiles();
+                    break;
+                case OPERATIONS.LIST_FILES:
+                    if (payload?.files) { setItems(payload.files); setError(null); } 
+                    else { setError("Failed to load directory contents"); setItems([]); }
+                    setLoading(false);
+                    break;
+                case OPERATIONS.CREATE_FILE:
+                case OPERATIONS.CREATE_FOLDER:
+                case OPERATIONS.DELETE_FILE:
+                case OPERATIONS.DELETE_FOLDER:
+                case OPERATIONS.RENAME_FILE:
+                case OPERATIONS.MOVE_FILES:
+                case OPERATIONS.COPY_FILES:
+                case OPERATIONS.CHMOD:
+                    listFiles();
+                    break;
+                case OPERATIONS.ERROR:
+                    sendToast(t("common.error"), payload?.message || t("servers.fileManager.toast.error"));
+                    setLoading(false);
+                    break;
+                case OPERATIONS.SEARCH_DIRECTORIES:
+                    if (payload?.directories) setDirectorySuggestions(payload.directories);
+                    break;
+                case OPERATIONS.RESOLVE_SYMLINK:
+                    if (payload) { const cb = symlinkCallbacks.current.shift(); if (cb) cb(payload); }
+                    break;
+                case OPERATIONS.STAT:
+                case OPERATIONS.CHECKSUM:
+                case OPERATIONS.FOLDER_SIZE:
+                    propertiesHandlerRef.current?.({ operation, payload });
+                    break;
             }
-            setLoading(false);
-        } else if (operation === 0x9) {
-            setError(payload?.message || "An error occurred");
-            setItems([]);
-            setLoading(false);
-        } else if (operation === 0xA && payload?.directories) {
-            setDirectorySuggestions(payload.directories);
-        } else if (operation === 0xB && payload) {
-            const callback = symlinkCallbacks.current.shift();
-            if (callback) callback(payload);
-        }
+        } catch (err) { console.error("Error processing SFTP message:", err); }
     };
 
-    const { sendMessage } = useWebSocket(wsUrl, {
-        onError: () => disconnectFromServer(session.id),
+    const handleWsError = useCallback((event) => {
+        console.error("SFTP WebSocket error:", event);
+        setConnectionError("Connection error");
+        setIsReady(false);
+        if (reconnectAttemptsRef.current >= 3) {
+            sendToast(t("common.error"), t("servers.fileManager.toast.connectionLost"));
+            disconnectFromServer(session.id);
+        }
+    }, [disconnectFromServer, session.id]);
+
+    const handleWsClose = useCallback(() => setIsReady(false), []);
+    const handleWsOpen = useCallback(() => { reconnectAttemptsRef.current = 0; setConnectionError(null); }, []);
+
+    const { sendMessage, readyState } = useWebSocket(wsUrl, {
+        onError: handleWsError,
         onMessage: processMessage,
-        shouldReconnect: () => true,
+        onClose: handleWsClose,
+        onOpen: handleWsOpen,
+        shouldReconnect: (e) => e.code !== 1000 && e.code < 4000 && ++reconnectAttemptsRef.current <= 3,
+        reconnectAttempts: 3,
+        reconnectInterval: 2000,
     });
 
-    const sendOperation = (operation, payload) => {
-        const payloadBytes = new TextEncoder().encode(JSON.stringify(payload));
-        const message = new Uint8Array(1 + payloadBytes.length);
-        message[0] = operation;
-        message.set(payloadBytes, 1);
-        sendMessage(message);
-    };
+    const sendOperation = useCallback((operation, payload = {}) => {
+        if (readyState !== 1) return false;
+        try {
+            const payloadBytes = new TextEncoder().encode(JSON.stringify(payload));
+            const message = new Uint8Array(1 + payloadBytes.length);
+            message[0] = operation;
+            message.set(payloadBytes, 1);
+            sendMessage(message);
+            return true;
+        } catch { return false; }
+    }, [sendMessage, readyState]);
 
-    const createFolder = (folderName) => sendOperation(0x5, { path: `${directory}/${folderName}` });
-
-    const listFiles = () => {
-        setLoading(true);
-        setError(null);
-        sendOperation(0x1, { path: directory });
-    };
+    const createFile = (fileName) => sendOperation(OPERATIONS.CREATE_FILE, { path: `${directory}/${fileName}` });
+    const createFolder = (folderName) => sendOperation(OPERATIONS.CREATE_FOLDER, { path: `${directory}/${folderName}` });
+    const listFiles = useCallback(() => { setLoading(true); setError(null); sendOperation(OPERATIONS.LIST_FILES, { path: directory }); }, [directory, sendOperation]);
+    const moveFiles = useCallback((sources, destination) => sendOperation(OPERATIONS.MOVE_FILES, { sources, destination }), [sendOperation]);
+    const copyFiles = useCallback((sources, destination) => sendOperation(OPERATIONS.COPY_FILES, { sources, destination }), [sendOperation]);
 
     const changeDirectory = (newDirectory) => {
         if (newDirectory === directory) return;
@@ -139,72 +227,31 @@ export const FileRenderer = ({ session, disconnectFromServer, setOpenFileEditors
         setDirectory(newDirectory);
     };
 
-    const goBack = () => {
-        if (historyIndex > 0) {
-            const newIndex = historyIndex - 1;
-            setHistoryIndex(newIndex);
-            setDirectory(history[newIndex]);
-        }
-    };
-
-    const goForward = () => {
-        if (historyIndex < history.length - 1) {
-            const newIndex = historyIndex + 1;
-            setHistoryIndex(newIndex);
-            setDirectory(history[newIndex]);
-        }
-    };
+    const goBack = () => { if (historyIndex > 0) { setHistoryIndex(historyIndex - 1); setDirectory(history[historyIndex - 1]); } };
+    const goForward = () => { if (historyIndex < history.length - 1) { setHistoryIndex(historyIndex + 1); setDirectory(history[historyIndex + 1]); } };
 
     const handleDrag = async (e) => {
+        if (e.dataTransfer.types.includes("application/x-sftp-files")) return;
         e.preventDefault();
         e.stopPropagation();
-
-        if (e.type === "dragover") {
-            setDragging(true);
-        } else if (e.type === "dragleave" && !dropZoneRef.current.contains(e.relatedTarget)) {
+        if (e.type === "dragover") setDragging(true);
+        else if (e.type === "dragleave" && !dropZoneRef.current.contains(e.relatedTarget)) setDragging(false);
+        else if (e.type === "drop") {
             setDragging(false);
-        } else if (e.type === "drop") {
-            setDragging(false);
-            for (let i = 0; i < e.dataTransfer.files.length; i++) {
-                await uploadFileChunks(e.dataTransfer.files[i]);
-            }
-            setUploadProgress(0);
+            for (let i = 0; i < e.dataTransfer.files.length; i++) queueUpload(e.dataTransfer.files[i], directory);
         }
     };
 
-    const searchDirectories = (searchPath) => sendOperation(0xA, { searchPath });
+    const searchDirectories = (searchPath) => sendOperation(OPERATIONS.SEARCH_DIRECTORIES, { searchPath });
+    const resolveSymlink = (path, callback) => { symlinkCallbacks.current.push(callback); sendOperation(OPERATIONS.RESOLVE_SYMLINK, { path }); };
 
-    const resolveSymlink = (path, callback) => {
-        symlinkCallbacks.current.push(callback);
-        sendOperation(0xB, { path });
-    };
+    const handleOpenFile = (filePath) => setOpenFileEditors(prev => [...prev, { id: `${session.id}-${filePath}-${Date.now()}`, file: filePath, session, type: 'editor' }]);
+    const handleOpenPreview = (filePath) => setOpenFileEditors(prev => [...prev, { id: `${session.id}-${filePath}-${Date.now()}`, file: filePath, session, type: 'preview' }]);
 
-    const handleOpenFile = (filePath) => {
-        setOpenFileEditors(prev => [...prev, {
-            id: `${session.id}-${filePath}-${Date.now()}`,
-            file: filePath,
-            session: session,
-            sendOperation: sendOperation,
-            type: 'editor'
-        }]);
-    };
-
-    const handleOpenPreview = (filePath) => {
-        setOpenFileEditors(prev => [...prev, {
-            id: `${session.id}-${filePath}-${Date.now()}`,
-            file: filePath,
-            session: session,
-            type: 'preview'
-        }]);
-    };
-
-    useEffect(() => {
-        listFiles();
-    }, [directory]);
+    useEffect(() => { if (isReady) listFiles(); }, [directory, isReady]);
 
     return (
-        <div className="file-renderer" ref={dropZoneRef} onDragOver={handleDrag} onDragLeave={handleDrag}
-             onDrop={handleDrag}>
+        <div className="file-renderer" ref={dropZoneRef} onDragOver={handleDrag} onDragLeave={handleDrag} onDrop={handleDrag}>
             <div className={`drag-overlay ${dragging ? "active" : ""}`}>
                 <div className="drag-item">
                     <Icon path={mdiCloudUpload} />
@@ -212,16 +259,19 @@ export const FileRenderer = ({ session, disconnectFromServer, setOpenFileEditors
                 </div>
             </div>
             <div className="file-manager">
-                <CreateFolderDialog open={folderDialogOpen} onClose={() => setFolderDialogOpen(false)} createFolder={createFolder} />
-                <ActionBar path={directory} updatePath={changeDirectory} createFolder={() => setFolderDialogOpen(true)}
-                    uploadFile={uploadFile} goBack={goBack} goForward={goForward} historyIndex={historyIndex}
+                <ActionBar path={directory} updatePath={changeDirectory} createFile={() => fileListRef.current?.startCreateFile()}
+                    createFolder={() => fileListRef.current?.startCreateFolder()} uploadFile={uploadFile} goBack={goBack} goForward={goForward} historyIndex={historyIndex}
                     historyLength={history.length} viewMode={viewMode} setViewMode={setViewMode} 
                     searchDirectories={searchDirectories} directorySuggestions={directorySuggestions} 
-                    setDirectorySuggestions={setDirectorySuggestions} />
-                <FileList items={items} path={directory} updatePath={changeDirectory} sendOperation={sendOperation}
-                          downloadFile={downloadFile} setCurrentFile={handleOpenFile} setPreviewFile={handleOpenPreview} loading={loading} viewMode={viewMode} error={error} resolveSymlink={resolveSymlink} />
+                    setDirectorySuggestions={setDirectorySuggestions} moveFiles={moveFiles} copyFiles={copyFiles} 
+                    sessionId={session.id} />
+                <FileList ref={fileListRef} items={items} path={directory} updatePath={changeDirectory} sendOperation={sendOperation}
+                    downloadFile={downloadFile} downloadMultipleFiles={downloadMultipleFiles} setCurrentFile={handleOpenFile} setPreviewFile={handleOpenPreview} 
+                    loading={loading} viewMode={viewMode} error={error || connectionError} resolveSymlink={resolveSymlink} session={session}
+                    createFile={createFile} createFolder={createFolder} moveFiles={moveFiles} copyFiles={copyFiles} isActive={isActive}
+                    onOpenTerminal={onOpenTerminal} onPropertiesMessage={(handler) => { propertiesHandlerRef.current = handler; }} />
             </div>
-            {uploadProgress > 0 && <div className="upload-progress" style={{ width: `${uploadProgress}%` }} />}
+            {isUploading && <div className="upload-progress" style={{ width: `${uploadProgress}%` }} />}
         </div>
     );
 };

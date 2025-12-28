@@ -34,7 +34,7 @@ export const FilePreviewWindow = ({ file, session, onClose, zIndex = 9999 }) => 
 
         const extension = file.split(".").pop()?.toLowerCase();
         const baseUrl = getBaseUrl();
-        const url = `${baseUrl}/api/entries/sftp-download?sessionId=${session.id}&path=${file}&sessionToken=${sessionToken}&preview=true`;
+        const url = `${baseUrl}/api/entries/sftp?sessionId=${session.id}&path=${file}&sessionToken=${sessionToken}&preview=true`;
 
         setFileUrl(url);
 

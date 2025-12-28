@@ -6,6 +6,7 @@ import {
     mdiClose, mdiAccountCircleOutline, mdiAccountGroup, mdiClockStarFourPointsOutline,
     mdiShieldAccountOutline, mdiDomain, mdiCreationOutline, mdiKeyVariant, mdiConsole,
     mdiKeyboardOutline, mdiCloudDownloadOutline, mdiChartLine, mdiLogout, mdiHarddisk,
+    mdiFolderOutline,
 } from "@mdi/js";
 import { UserContext } from "@/common/contexts/UserContext.jsx";
 import { ActionConfirmDialog } from "@/common/components/ActionConfirmDialog/ActionConfirmDialog.jsx";
@@ -17,6 +18,7 @@ import Organizations from "@/pages/Settings/pages/Organizations";
 import AI from "@/pages/Settings/pages/AI";
 import Identities from "@/pages/Settings/pages/Identities";
 import Terminal from "@/pages/Settings/pages/Terminal";
+import FileManager from "@/pages/Settings/pages/FileManager";
 import Keymaps from "@/pages/Settings/pages/Keymaps";
 import Sources from "@/pages/Settings/pages/Sources";
 import Monitoring from "@/pages/Settings/pages/Monitoring";
@@ -34,6 +36,7 @@ export const SettingsDialog = ({ open, onClose, initialTab = "account" }) => {
     const userPages = [
         { title: t("settings.pages.account"), key: "account", icon: mdiAccountCircleOutline, content: <Account /> },
         { title: t("settings.pages.terminal"), key: "terminal", icon: mdiConsole, content: <Terminal /> },
+        { title: t("settings.pages.fileManager"), key: "fileManager", icon: mdiFolderOutline, content: <FileManager /> },
         { title: t("settings.pages.keymaps"), key: "keymaps", icon: mdiKeyboardOutline, content: <Keymaps /> },
         { title: t("settings.pages.identities"), key: "identities", icon: mdiKeyVariant, content: <Identities /> },
         {

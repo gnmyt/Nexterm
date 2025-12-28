@@ -24,7 +24,7 @@ const getAuditAction = (entry, scriptId) => {
     return ENTRY_TYPE_TO_AUDIT_ACTION[type] || AUDIT_ACTIONS.SSH_CONNECT;
 };
 
-const createSession = async (accountId, entryId, identityId, connectionReason, type = null, directIdentity = null, tabId = null, browserId = null, scriptId = null, ipAddress = null, userAgent = null) => {
+const createSession = async (accountId, entryId, identityId, connectionReason, type = null, directIdentity = null, tabId = null, browserId = null, scriptId = null, startPath = null, ipAddress = null, userAgent = null) => {
     const entry = await Entry.findByPk(entryId);
     if (!entry) {
         return { code: 404, message: "Entry not found" };
@@ -73,6 +73,7 @@ const createSession = async (accountId, entryId, identityId, connectionReason, t
         type: type || null,
         directIdentity: directIdentity || null,
         scriptId: scriptId || null,
+        startPath: startPath || null,
         renderer: type === "sftp" ? "sftp" : entry.renderer,
     };
 

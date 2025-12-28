@@ -1,0 +1,91 @@
+@use "@/common/styles/colors"
+
+.checkbox
+  position: relative
+  flex-shrink: 0
+
+  &.size-small
+    width: 20px
+    height: 20px
+
+    .checkbox-box
+      border-radius: 4px
+
+      svg
+        width: 14px
+        height: 14px
+
+  &.size-medium
+    width: 24px
+    height: 24px
+
+    .checkbox-box
+      border-radius: 5px
+
+      svg
+        width: 16px
+        height: 16px
+
+  &.size-large
+    width: 32px
+    height: 32px
+
+    .checkbox-box
+      border-radius: 6px
+
+      svg
+        width: 20px
+        height: 20px
+
+  input
+    opacity: 0
+    width: 0
+    height: 0
+    position: absolute
+
+  .checkbox-box
+    position: absolute
+    cursor: pointer
+    top: 0
+    left: 0
+    right: 0
+    bottom: 0
+    background-color: colors.$terminal
+    border: 1px solid colors.$gray
+    display: flex
+    align-items: center
+    justify-content: center
+    transition: all 0.15s ease
+
+    svg
+      color: transparent
+      transition: all 0.15s ease
+
+    &:hover
+      border-color: colors.$primary
+      background-color: colors.$gray
+
+  input:checked + .checkbox-box,
+  &.checked .checkbox-box
+    background-color: colors.$primary
+    border-color: colors.$primary
+
+    svg
+      color: #FFFFFF
+
+    &:hover
+      filter: brightness(1.1)
+
+  input:focus-visible + .checkbox-box
+    outline: 2px solid colors.$primary
+    outline-offset: 2px
+
+  input:disabled + .checkbox-box,
+  &.disabled .checkbox-box
+    opacity: 0.4
+    cursor: not-allowed
+
+    &:hover
+      border-color: colors.$gray
+      background-color: colors.$terminal
+      filter: none

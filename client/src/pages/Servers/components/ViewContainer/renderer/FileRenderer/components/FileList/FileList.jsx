@@ -1,116 +1,151 @@
-import React, { useState } from "react";
+import { useState, useRef, useCallback, useEffect, useMemo, forwardRef, useImperativeHandle } from "react";
 import "./styles.sass";
 import Icon from "@mdi/react";
 import {
-    mdiArchive,
-    mdiDotsVertical,
-    mdiFile,
-    mdiFileDocument,
-    mdiFolder,
-    mdiImage,
-    mdiMovie,
-    mdiMusicNote,
-    mdiAlertCircle,
-    mdiFormTextbox,
-    mdiTextBoxEdit,
-    mdiFileDownload,
-    mdiTrashCan,
-    mdiLinkVariant,
-    mdiEye,
+    mdiFile, mdiFolder, mdiAlertCircle, mdiFormTextbox, mdiTextBoxEdit,
+    mdiFileDownload, mdiTrashCan, mdiEye, mdiFileMove, mdiContentCopy,
+    mdiInformationOutline, mdiConsole,
 } from "@mdi/js";
 import { ContextMenu, ContextMenuItem, useContextMenu } from "@/common/components/ContextMenu";
-import RenameItemDialog from "./components/RenameItemDialog";
 import { ActionConfirmDialog } from "@/common/components/ActionConfirmDialog/ActionConfirmDialog.jsx";
 import { useTranslation } from "react-i18next";
+import { useFileSettings } from "@/common/contexts/FileSettingsContext.jsx";
+import SelectionActionBar from "../SelectionActionBar";
+import FileItem from "./components/FileItem";
+import PropertiesDialog from "./components/PropertiesDialog";
+import { useBoxSelection, useDragDrop, useKeyboardNavigation, useClipboard } from "./hooks";
+import { isPreviewable, getFullPath, OPERATIONS } from "./utils/fileUtils";
 
-export const FileList = ({
-                             items,
-                             updatePath,
-                             path,
-                             sendOperation,
-                             downloadFile,
-                             setCurrentFile,
-                             setPreviewFile,
-                             loading,
-                             viewMode = "list",
-                             error,
-                             resolveSymlink,
-                         }) => {
+export const FileList = forwardRef(({
+    items, updatePath, path, sendOperation, downloadFile, downloadMultipleFiles,
+    setCurrentFile, setPreviewFile, loading, viewMode = "list", error,
+    resolveSymlink, session, createFile, createFolder, moveFiles, copyFiles, isActive,
+    onOpenTerminal, onPropertiesMessage,
+}, ref) => {
     const { t } = useTranslation();
+    const { showThumbnails, showHiddenFiles, confirmBeforeDelete, dragDropAction } = useFileSettings();
+    
     const [selectedItem, setSelectedItem] = useState(null);
-    const [focusedIndex, setFocusedIndex] = useState(-1);
-    const [renameDialogOpen, setRenameDialogOpen] = useState(false);
+    const [renamingItem, setRenamingItem] = useState(null);
+    const [renameValue, setRenameValue] = useState("");
+    const [creatingFolder, setCreatingFolder] = useState(false);
+    const [newFolderName, setNewFolderName] = useState("");
+    const [creatingFile, setCreatingFile] = useState(false);
+    const [newFileName, setNewFileName] = useState("");
     const [bigFileDialogOpen, setBigFileDialogOpen] = useState(false);
-
+    const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+    const [massDeleteDialogOpen, setMassDeleteDialogOpen] = useState(false);
+    const [selectedItems, setSelectedItems] = useState([]);
+    const [propertiesDialogOpen, setPropertiesDialogOpen] = useState(false);
+    const [propertiesItem, setPropertiesItem] = useState(null);
+    
+    const containerRef = useRef(null);
+    const itemRefs = useRef({});
     const contextMenu = useContextMenu();
+    const emptyContextMenu = useContextMenu();
+    const dropMenu = useContextMenu();
 
-    const getIconByFileEnding = (ending) => {
-        const icons = {
-            jpg: mdiImage, jpeg: mdiImage, png: mdiImage, gif: mdiImage, bmp: mdiImage,
-            mp3: mdiMusicNote, wav: mdiMusicNote, flac: mdiMusicNote, ogg: mdiMusicNote,
-            mp4: mdiMovie, avi: mdiMovie, mov: mdiMovie, mkv: mdiMovie,
-            txt: mdiFileDocument, log: mdiFileDocument, md: mdiFileDocument,
-            zip: mdiArchive, rar: mdiArchive, "7z": mdiArchive,
-        };
-        return icons[ending] || mdiFile;
-    };
+    useImperativeHandle(ref, () => ({
+        startCreateFolder: () => { setCreatingFolder(true); setNewFolderName(""); },
+        startCreateFile: () => { setCreatingFile(true); setNewFileName(""); },
+    }));
 
-    const getIconColor = (item) => {
-        if (item.type === "folder") return "";
+    const filteredItems = useMemo(() => {
+        const filtered = showHiddenFiles ? items : items.filter(item => !item.name.startsWith("."));
+        return [...filtered].sort((a, b) => b.type.localeCompare(a.type) || a.name.localeCompare(b.name));
+    }, [items, showHiddenFiles]);
 
-        const ending = item.name.split(".").pop()?.toLowerCase();
-        const colorMap = {
-            jpg: "#ff6b6b", jpeg: "#ff6b6b", png: "#ff6b6b", gif: "#ff6b6b", bmp: "#ff6b6b",
-            mp3: "#51cf66", wav: "#51cf66", flac: "#51cf66", ogg: "#51cf66",
-            mp4: "#ffa500", avi: "#ffa500", mov: "#ffa500", mkv: "#ffa500",
-            txt: "#74c0fc", log: "#74c0fc", md: "#74c0fc",
-            zip: "#ffd43b", rar: "#ffd43b", "7z": "#ffd43b",
-        };
-        return colorMap[ending] || "#adb5bd";
-    };
+    useEffect(() => setSelectedItems([]), [path]);
 
-    const convertUnits = (bytes) => {
-        const sizes = ["Bytes", "KB", "MB", "GB", "TB"];
-        if (bytes === 0) return "0 Byte";
-        const i = parseInt(Math.floor(Math.log(bytes) / Math.log(1024)));
-        return Math.round(bytes / Math.pow(1024, i), 2) + " " + sizes[i];
-    };
+    useEffect(() => {
+        if (selectedItem) {
+            const updated = items.find(i => i.name === selectedItem.name && i.type === selectedItem.type);
+            if (updated && updated.mode !== selectedItem.mode) {
+                setSelectedItem(updated);
+            }
+        }
+    }, [items, selectedItem]);
 
-    const isPreviewable = (filename) => {
-        const extension = filename.split(".").pop()?.toLowerCase();
-        const previewableExtensions = [
-            "jpg", "jpeg", "png", "gif", "bmp", "webp", "svg",
-            "mp4", "webm", "ogg", "mov",
-            "mp3", "wav", "ogg", "flac", "m4a",
-            "pdf",
-        ];
-        return previewableExtensions.includes(extension);
-    };
+    const isItemSelected = useCallback((item) => (
+        selectedItems.some(s => s.name === item.name && s.type === item.type)
+    ), [selectedItems]);
 
-    const handleClick = (item) => {
-        const fullPath = `${path.endsWith("/") ? path : path + "/"}${item.name}`;
+    const handleClick = useCallback((item) => {
+        const fullPath = getFullPath(path, item.name);
         if (item.isSymlink) {
             resolveSymlink?.(fullPath, (result) => {
-                if (result.isDirectory) {
-                    updatePath(result.path);
-                } else if (isPreviewable(result.path)) {
-                    setPreviewFile?.(result.path);
-                } else if (result.size < 1024 * 1024) {
-                    setCurrentFile(result.path);
-                } else {
-                    downloadFile(result.path);
-                }
+                if (result.isDirectory) updatePath(result.path);
+                else if (isPreviewable(result.path)) setPreviewFile?.(result.path);
+                else if (result.size < 1024 * 1024) setCurrentFile(result.path);
+                else downloadFile(result.path);
             });
         } else if (item.type === "folder") {
             updatePath(fullPath);
-        } else if (item.type === "file" && isPreviewable(item.name)) {
+        } else if (isPreviewable(item.name)) {
             setPreviewFile?.(fullPath);
-        } else if (item.type === "file" && item.size < 1024 * 1024) {
+        } else if (item.size < 1024 * 1024) {
             setCurrentFile(fullPath);
         } else {
             downloadFile(fullPath);
         }
-    };
+    }, [path, resolveSymlink, updatePath, setPreviewFile, setCurrentFile, downloadFile]);
+
+    const { handleCopy, handleCut, handlePaste, isItemCut } = useClipboard({
+        selectedItems, selectedItem, path, copyFiles, moveFiles,
+    });
+
+    const contextMenuOpen = contextMenu.isOpen || emptyContextMenu.isOpen || dropMenu.isOpen;
+
+    const { focusedIndex } = useKeyboardNavigation({
+        isActive, filteredItems, selectedItems, setSelectedItems, itemRefs,
+        renamingItem, creatingFolder, creatingFile, contextMenuOpen,
+        handleCopy, handleCut, handlePaste, handleClick,
+    });
+
+    const { isSelecting, selectionBox, handleSelectionStart } = useBoxSelection({
+        containerRef, itemRefs, filteredItems, onSelectionChange: setSelectedItems,
+    });
+
+    const {
+        draggedItems, dropTarget, dragImageRef,
+        handleDragStart, handleDragEnd, handleDragOver, handleDragLeave,
+        handleDrop, handleContainerDrop, handleDropAction, setPendingDrop,
+    } = useDragDrop({
+        path, sessionId: session.id, selectedItems, isItemSelected,
+        moveFiles, copyFiles, dragDropAction, updatePath,
+    });
+
+    const handleItemClick = useCallback((event, item) => {
+        if (event.ctrlKey || event.metaKey) {
+            event.preventDefault();
+            setSelectedItems(prev => prev.some(s => s.name === item.name)
+                ? prev.filter(s => s.name !== item.name)
+                : [...prev, item]
+            );
+            return;
+        }
+        if (selectedItems.length > 0) setSelectedItems([]);
+        handleClick(item);
+    }, [selectedItems, handleClick]);
+
+    const handleMassDownload = useCallback(() => {
+        if (selectedItems.length === 0) return;
+        downloadMultipleFiles?.(selectedItems.map(item => `${path}/${item.name}`));
+    }, [selectedItems, path, downloadMultipleFiles]);
+
+    const executeMassDelete = useCallback(() => {
+        selectedItems.forEach(item => {
+            sendOperation(item.type === "folder" ? OPERATIONS.DELETE_FOLDER : OPERATIONS.DELETE_FILE, { path: `${path}/${item.name}` });
+        });
+        setSelectedItems([]);
+    }, [selectedItems, path, sendOperation]);
+
+    const handleMassDelete = useCallback(() => {
+        if (selectedItems.length === 0) return;
+        confirmBeforeDelete ? setMassDeleteDialogOpen(true) : executeMassDelete();
+    }, [selectedItems, confirmBeforeDelete, executeMassDelete]);
+
+    const clearSelection = useCallback(() => setSelectedItems([]), []);
 
     const handleContextMenu = (event, item, fromDots = false) => {
         event.preventDefault();
@@ -119,139 +154,160 @@ export const FileList = ({
         contextMenu.open(event, fromDots ? undefined : { x: event.pageX, y: event.pageY });
     };
 
-    const handleDelete = () => sendOperation(selectedItem.type === "folder" ? 0x7 : 0x6, { path: `${path}/${selectedItem.name}` });
-    const handleDownload = () => downloadFile(`${path}/${selectedItem.name}`);
-    const handleRename = (newName) => sendOperation(0x8, {
-        path: `${path}/${selectedItem.name}`,
-        newPath: `${path}/${newName}`,
-    });
-    const openFile = () => selectedItem.type === "file" && selectedItem.size >= 1024 * 1024 ? setBigFileDialogOpen(true) : setCurrentFile(`${path}/${selectedItem.name}`);
-    const handlePreview = () => setPreviewFile?.(`${path}/${selectedItem.name}`);
+    const handleDelete = () => sendOperation(selectedItem.type === "folder" ? OPERATIONS.DELETE_FOLDER : OPERATIONS.DELETE_FILE, { path: `${path}/${selectedItem?.name}` });
+    const handleDeleteClick = () => confirmBeforeDelete ? setDeleteDialogOpen(true) : handleDelete();
+    const handleRename = (item, newName) => { if (newName && newName !== item.name) sendOperation(OPERATIONS.RENAME_FILE, { path: `${path}/${item.name}`, newPath: `${path}/${newName}` }); setRenamingItem(null); };
+    const startRename = (item) => { setRenamingItem(item); setRenameValue(item.name); };
+    const handleRenameKeyDown = (e, item) => e.key === 'Enter' ? (e.preventDefault(), handleRename(item, renameValue)) : e.key === 'Escape' && setRenamingItem(null);
+    const handleCreateFolder = () => { if (newFolderName.trim()) createFolder(newFolderName.trim()); setCreatingFolder(false); };
+    const handleCreateFolderKeyDown = (e) => e.key === 'Enter' ? (e.preventDefault(), handleCreateFolder()) : e.key === 'Escape' && setCreatingFolder(false);
+    const handleCreateFile = () => { if (newFileName.trim()) createFile(newFileName.trim()); setCreatingFile(false); };
+    const handleCreateFileKeyDown = (e) => e.key === 'Enter' ? (e.preventDefault(), handleCreateFile()) : e.key === 'Escape' && setCreatingFile(false);
+    const openFile = () => selectedItem?.size >= 1024 * 1024 ? setBigFileDialogOpen(true) : setCurrentFile(`${path}/${selectedItem?.name}`);
+    const handlePropertiesClick = (item = null) => { setPropertiesItem(item); setPropertiesDialogOpen(true); };
+    const handleEmptyContextMenu = (e) => { if (e.target.closest('.file-item')) return; e.preventDefault(); emptyContextMenu.open(e, { x: e.pageX, y: e.pageY }); };
+    const handleOpenTerminal = (targetPath = null) => onOpenTerminal?.(targetPath || path);
 
     return (
         <div className={`file-list ${viewMode}`}>
             {viewMode === "list" && (
                 <div className="file-list-header">
-                    <div className="header-name">Name</div>
-                    <div className="header-size">Size</div>
-                    <div className="header-date">Modified</div>
+                    <div className="header-name">{t("servers.fileManager.header.name")}</div>
+                    <div className="header-size">{t("servers.fileManager.header.size")}</div>
+                    <div className="header-permissions">{t("servers.fileManager.header.permissions")}</div>
+                    <div className="header-date">{t("servers.fileManager.header.modified")}</div>
                     <div className="header-actions"></div>
                 </div>
             )}
             {loading ? (
                 <div className="loading-state">
                     <div className="loading-spinner"></div>
-                    <p>Loading files...</p>
+                    <p>{t("servers.fileManager.states.loading")}</p>
                 </div>
             ) : error ? (
                 <div className="error-state">
                     <Icon path={mdiAlertCircle} />
-                    <h3>Access Denied</h3>
+                    <h3>{t("servers.fileManager.states.accessDenied")}</h3>
                     <p>{error}</p>
                 </div>
-            ) : items.length === 0 ? (
+            ) : filteredItems.length === 0 && !creatingFolder && !creatingFile ? (
                 <div className="empty-state">
                     <Icon path={mdiFolder} />
-                    <h3>This folder is empty</h3>
-                    <p>Drop files here to upload them</p>
+                    <h3>{t("servers.fileManager.states.emptyFolder")}</h3>
+                    <p>{t("servers.fileManager.states.dropFilesHint")}</p>
                 </div>
             ) : (
-                <div className="file-items-container">
-                    {items
-                        .sort((a, b) => b.type.localeCompare(a.type) || a.name.localeCompare(b.name))
-                        .map((item, index) => (
-                            <div
-                                key={index}
-                                className={`file-item ${focusedIndex === index ? "focused" : ""} ${viewMode} ${item.isSymlink ? "symlink" : ""}`}
-                                onClick={() => handleClick(item)}
-                                onContextMenu={(e) => handleContextMenu(e, item)}
-                                onMouseEnter={() => setFocusedIndex(index)}
-                                onMouseLeave={() => setFocusedIndex(-1)}
-                                tabIndex={0}
-                            >
-                                <div className="file-name">
-                                    <Icon
-                                        path={item.type === "folder" ? mdiFolder : getIconByFileEnding(item.name.split(".").pop()?.toLowerCase())}
-                                        style={{ color: getIconColor(item) }}
-                                    />
-                                    <h2 title={item.name}>{item.name}</h2>
-                                    {item.isSymlink && (
-                                        <span className="symlink-badge">
-                                            <Icon path={mdiLinkVariant} />
-                                            link
-                                        </span>
-                                    )}
-                                </div>
-                                {viewMode === "list" && (
-                                    <>
-                                        <p className="file-size">{item.type === "file" && convertUnits(item.size)}</p>
-                                        <p className="file-date">{new Date(item.last_modified * 1000).toLocaleDateString()}</p>
-                                    </>
-                                )}
-                                <Icon
-                                    path={mdiDotsVertical}
-                                    className="dots-menu"
-                                    onClick={(e) => handleContextMenu(e, item, true)}
-                                />
+                <div
+                    className="file-items-container"
+                    ref={containerRef}
+                    tabIndex={0}
+                    onMouseDown={(event) => {
+                        containerRef.current?.focus({ preventScroll: true });
+                        handleSelectionStart(event);
+                    }}
+                    onContextMenu={handleEmptyContextMenu}
+                    onDragOver={(e) => e.dataTransfer.types.includes("application/x-sftp-files") && e.preventDefault()}
+                    onDrop={(e) => handleContainerDrop(e, clearSelection, (ev) => dropMenu.open(ev, { x: ev.clientX, y: ev.clientY }))}
+                >
+                    {isSelecting && selectionBox && (
+                        <div className="selection-box" style={{ left: selectionBox.left, top: selectionBox.top, width: selectionBox.width, height: selectionBox.height }} />
+                    )}
+                    {creatingFile && (
+                        <div className={`file-item ${viewMode} new-file`} onMouseDown={(e) => e.stopPropagation()}>
+                            <div className="file-name">
+                                <Icon path={mdiFile} />
+                                <input type="text" className="rename-input" value={newFileName} onChange={(e) => setNewFileName(e.target.value)} onKeyDown={handleCreateFileKeyDown} onBlur={handleCreateFile} placeholder={t("servers.fileManager.createFile.placeholder")} autoFocus />
                             </div>
-                        ))
-                    }
+                            {viewMode === "list" && <><p className="file-size"></p><p className="file-date"></p></>}
+                        </div>
+                    )}
+                    {creatingFolder && (
+                        <div className={`file-item ${viewMode} new-folder`} onMouseDown={(e) => e.stopPropagation()}>
+                            <div className="file-name">
+                                <Icon path={mdiFolder} />
+                                <input type="text" className="rename-input" value={newFolderName} onChange={(e) => setNewFolderName(e.target.value)} onKeyDown={handleCreateFolderKeyDown} onBlur={handleCreateFolder} placeholder={t("servers.fileManager.createFolder.placeholder")} autoFocus />
+                            </div>
+                            {viewMode === "list" && <><p className="file-size"></p><p className="file-date"></p></>}
+                        </div>
+                    )}
+                    {filteredItems.map((item, index) => (
+                        <FileItem
+                            key={item.name}
+                            item={item}
+                            viewMode={viewMode}
+                            path={path}
+                            session={session}
+                            isSelected={isItemSelected(item)}
+                            isFocused={focusedIndex === index}
+                            isRenaming={renamingItem?.name === item.name}
+                            isBeingDragged={draggedItems.some(d => d.name === item.name)}
+                            isDropTarget={dropTarget === item.name}
+                            isCut={isItemCut(`${path}/${item.name}`)}
+                            showThumbnails={showThumbnails}
+                            renameValue={renameValue}
+                            onRenameChange={(e) => setRenameValue(e.target.value)}
+                            onRenameKeyDown={(e) => handleRenameKeyDown(e, item)}
+                            onRenameBlur={() => handleRename(item, renameValue)}
+                            onClick={(e) => renamingItem?.name !== item.name && handleItemClick(e, item)}
+                            onContextMenu={(e) => handleContextMenu(e, item)}
+                            onDotsClick={(e) => { e.stopPropagation(); handleContextMenu(e, item, true); }}
+                            onDragStart={(e) => handleDragStart(e, item)}
+                            onDragEnd={handleDragEnd}
+                            onDragOver={(e) => handleDragOver(e, item)}
+                            onDragLeave={handleDragLeave}
+                            onDrop={(e) => handleDrop(e, item, clearSelection, (ev) => dropMenu.open(ev, { x: ev.clientX, y: ev.clientY }))}
+                            itemRef={(el) => itemRefs.current[item.name] = el}
+                        />
+                    ))}
                 </div>
             )}
 
-            <RenameItemDialog
-                open={renameDialogOpen}
-                closeDialog={() => setRenameDialogOpen(false)}
-                renameItem={handleRename}
-                item={selectedItem}
+            <SelectionActionBar selectedItems={selectedItems} onClearSelection={clearSelection} onDownload={handleMassDownload} onDelete={handleMassDelete} containerRef={containerRef} />
+
+            <ActionConfirmDialog open={bigFileDialogOpen} setOpen={setBigFileDialogOpen} onConfirm={() => setCurrentFile(`${path}/${selectedItem?.name}`)} text={t("servers.fileManager.contextMenu.bigFileConfirm", { size: Math.round(selectedItem?.size / 1024 / 1024) })} />
+            <ActionConfirmDialog open={deleteDialogOpen} setOpen={setDeleteDialogOpen} onConfirm={handleDelete} text={t("servers.fileManager.contextMenu.deleteConfirm", { name: selectedItem?.name })} />
+            <ActionConfirmDialog open={massDeleteDialogOpen} setOpen={setMassDeleteDialogOpen} onConfirm={executeMassDelete} text={t("servers.fileManager.selection.deleteConfirm", { count: selectedItems.length })} />
+
+            <PropertiesDialog
+                open={propertiesDialogOpen}
+                onClose={() => setPropertiesDialogOpen(false)}
+                item={propertiesItem}
+                path={path}
+                sendOperation={sendOperation}
+                OPERATIONS={OPERATIONS}
+                onRegisterHandler={onPropertiesMessage}
             />
 
-            <ActionConfirmDialog
-                open={bigFileDialogOpen}
-                setOpen={setBigFileDialogOpen}
-                onConfirm={() => setCurrentFile(path + "/" + selectedItem?.name)}
-                text={t("servers.fileManager.contextMenu.bigFileConfirm", { size: Math.round(selectedItem?.size / 1024 / 1024) })}
-            />
-
-            <ContextMenu
-                isOpen={contextMenu.isOpen}
-                position={contextMenu.position}
-                onClose={contextMenu.close}
-                trigger={contextMenu.triggerRef}
-            >
-                <ContextMenuItem
-                    icon={mdiFormTextbox}
-                    label={t("servers.fileManager.contextMenu.rename")}
-                    onClick={() => setRenameDialogOpen(true)}
-                />
+            <ContextMenu isOpen={contextMenu.isOpen} position={contextMenu.position} onClose={contextMenu.close} trigger={contextMenu.triggerRef}>
+                <ContextMenuItem icon={mdiFormTextbox} label={t("servers.fileManager.contextMenu.rename")} onClick={() => startRename(selectedItem)} />
                 {selectedItem?.type === "file" && (
                     <>
-                        {isPreviewable(selectedItem.name) && (
-                            <ContextMenuItem
-                                icon={mdiEye}
-                                label={t("servers.fileManager.contextMenu.preview")}
-                                onClick={handlePreview}
-                            />
-                        )}
-                        <ContextMenuItem
-                            icon={mdiTextBoxEdit}
-                            label={t("servers.fileManager.contextMenu.edit")}
-                            onClick={openFile}
-                        />
+                        {isPreviewable(selectedItem.name) && <ContextMenuItem icon={mdiEye} label={t("servers.fileManager.contextMenu.preview")} onClick={() => setPreviewFile?.(`${path}/${selectedItem.name}`)} />}
+                        <ContextMenuItem icon={mdiTextBoxEdit} label={t("servers.fileManager.contextMenu.edit")} onClick={openFile} />
                     </>
                 )}
-                <ContextMenuItem
-                    icon={mdiFileDownload}
-                    label={t("servers.fileManager.contextMenu.download")}
-                    onClick={handleDownload}
-                />
-                <ContextMenuItem
-                    icon={mdiTrashCan}
-                    label={t("servers.fileManager.contextMenu.delete")}
-                    onClick={handleDelete}
-                    danger
-                />
+                <ContextMenuItem icon={mdiFileDownload} label={t("servers.fileManager.contextMenu.download")} onClick={() => downloadFile(`${path}/${selectedItem?.name}`)} />
+                <ContextMenuItem icon={mdiInformationOutline} label={t("servers.fileManager.contextMenu.properties")} onClick={() => handlePropertiesClick(selectedItem)} />
+                {selectedItem?.type === "folder" && (
+                    <ContextMenuItem icon={mdiConsole} label={t("servers.fileManager.contextMenu.openTerminal")} onClick={() => handleOpenTerminal(`${path}/${selectedItem.name}`)} />
+                )}
+                <ContextMenuItem icon={mdiTrashCan} label={t("servers.fileManager.contextMenu.delete")} onClick={handleDeleteClick} danger />
             </ContextMenu>
+
+            <ContextMenu isOpen={emptyContextMenu.isOpen} position={emptyContextMenu.position} onClose={emptyContextMenu.close} trigger={emptyContextMenu.triggerRef}>
+                <ContextMenuItem icon={mdiFileDownload} label={t("servers.fileManager.contextMenu.downloadFolder")} onClick={() => downloadFile(path)} />
+                <ContextMenuItem icon={mdiInformationOutline} label={t("servers.fileManager.contextMenu.properties")} onClick={() => handlePropertiesClick(null)} />
+                <ContextMenuItem icon={mdiConsole} label={t("servers.fileManager.contextMenu.openTerminal")} onClick={() => handleOpenTerminal()} />
+            </ContextMenu>
+
+            <ContextMenu isOpen={dropMenu.isOpen} position={dropMenu.position} onClose={() => { dropMenu.close(); setPendingDrop(null); }}>
+                <ContextMenuItem icon={mdiFileMove} label={t("servers.fileManager.contextMenu.moveHere")} onClick={() => handleDropAction("move", clearSelection, dropMenu.close)} />
+                <ContextMenuItem icon={mdiContentCopy} label={t("servers.fileManager.contextMenu.copyHere")} onClick={() => handleDropAction("copy", clearSelection, dropMenu.close)} />
+            </ContextMenu>
+
+            <div className="drag-preview" ref={dragImageRef}>
+                <div className="drag-icons"><div className="drag-badge"></div></div>
+            </div>
         </div>
     );
-};
+});

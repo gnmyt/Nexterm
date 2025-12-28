@@ -5,6 +5,7 @@ import { ServerProvider } from "@/common/contexts/ServerContext.jsx";
 import { IdentityProvider } from "@/common/contexts/IdentityContext.jsx";
 import { ToastProvider } from "@/common/contexts/ToastContext.jsx";
 import { TerminalSettingsProvider } from "@/common/contexts/TerminalSettingsContext.jsx";
+import { FileSettingsProvider } from "@/common/contexts/FileSettingsContext.jsx";
 import { AIProvider } from "@/common/contexts/AIContext.jsx";
 import { KeymapProvider } from "@/common/contexts/KeymapContext.jsx";
 import { DndProvider } from "react-dnd";
@@ -86,7 +87,9 @@ export default () => {
             <DndProvider backend={HTML5Backend}>
                 <ToastProvider>
                     <TerminalSettingsProvider>
-                        <AppContent />
+                        <FileSettingsProvider>
+                            <AppContent />
+                        </FileSettingsProvider>
                     </TerminalSettingsProvider>
                 </ToastProvider>
             </DndProvider>

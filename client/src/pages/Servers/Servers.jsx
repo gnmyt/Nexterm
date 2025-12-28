@@ -304,6 +304,41 @@ export const Servers = () => {
         }
     };
 
+    const openTerminalFromFileManager = async (sessionId, path) => {
+        try {
+            const originalSession = activeSessions.find(s => s.id === sessionId);
+            if (!originalSession) {
+                console.error("Original session not found");
+                return;
+            }
+
+            const payload = {
+                entryId: originalSession.server.id,
+                identityId: originalSession.identity,
+                type: "terminal",
+                startPath: path,
+                tabId: getTabId(),
+                browserId: getBrowserId(),
+            };
+
+            const session = await postRequest("/connections", payload);
+
+            const sessionData = {
+                server: { ...originalSession.server, renderer: "terminal" },
+                identity: originalSession.identity,
+                id: session.sessionId,
+                type: "terminal",
+                organizationId: originalSession.organizationId,
+                organizationName: originalSession.organizationName,
+            };
+
+            setActiveSessions(prevSessions => [...prevSessions, sessionData]);
+            setActiveSessionId(session.sessionId);
+        } catch (error) {
+            console.error("Failed to open terminal from file manager", error);
+        }
+    };
+
     const closeDialog = () => {
         setServerDialogOpen(false);
         setServerDialogProtocol(null);
@@ -446,7 +481,8 @@ export const Servers = () => {
                                closeSession={closeSession}
                                activeSessionId={activeSessionId} setActiveSessionId={setActiveSessionId}
                                hibernateSession={hibernateSession} duplicateSession={duplicateSession}
-                               setOpenFileEditors={setOpenFileEditors} />}
+                               setOpenFileEditors={setOpenFileEditors}
+                               openTerminalFromFileManager={openTerminalFromFileManager} />}
             {openFileEditors.map((editor, index) => (
                 editor.type === "preview" ? (
                     <FilePreviewWindow
@@ -461,7 +497,6 @@ export const Servers = () => {
                         key={editor.id}
                         file={editor.file}
                         session={editor.session}
-                        sendOperation={editor.sendOperation}
                         onClose={() => setOpenFileEditors(prev => prev.filter(e => e.id !== editor.id))}
                         zIndex={10000 + index}
                     />
