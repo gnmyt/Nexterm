@@ -3,6 +3,10 @@
     "error": "Chyba",
     "success": "Hotovo",
     "loading": "Načítání...",
+    "saving": "Saving...",
+    "close": "Close",
+    "cancel": "Cancel",
+    "save": "Save",
     "actions": {
       "cancel": "Zrušit",
       "confirm": "Potvrdit",
@@ -78,6 +82,10 @@
     },
     "errors": {
       "loadingAuthProviders": "Chyba při načítání poskytovatelů ověření: {{error}}",
+      "webSocketConnection": {
+        "title": "WebSocket Connection Failed",
+        "message": "Connections are unavailable. This may be due to WebSocket not being enabled in your reverse proxy or network restrictions."
+      },
       "generalError": "Došlo k chybě",
       "invalidCredentials": "Neplatné uživatelské jméno nebo heslo",
       "invalidTwoFactor": "Neplatný dvoufaktorový kód",
@@ -460,6 +468,7 @@
     "pages": {
       "account": "Účet",
       "terminal": "Terminál",
+      "fileManager": "File Manager",
       "keymaps": "Klávesové zkratky",
       "identities": "Identity",
       "sessions": "Relace",
@@ -688,9 +697,53 @@
         "text": "$ echo 'Ahoj, Nexterm!'\nAhoj, Nexterm!\n$ "
       }
     },
+    "fileManager": {
+      "title": "File Manager",
+      "description": "Configure how files and folders are displayed and managed.",
+      "defaultView": {
+        "title": "Default View Mode",
+        "description": "Choose the default layout when opening the file manager.",
+        "list": "List View",
+        "listDescription": "Show files in a detailed list with size and date columns",
+        "grid": "Grid View",
+        "gridDescription": "Show files as icons in a grid layout with thumbnails"
+      },
+      "thumbnails": {
+        "title": "Image Thumbnails",
+        "description": "Show image thumbnails in grid view. This uses additional bandwidth to generate previews.",
+        "enabled": "Show Thumbnails",
+        "enabledDescription": "Display image previews in grid view for quick visual identification",
+        "disabled": "Hide Thumbnails",
+        "disabledDescription": "Show only file icons to save bandwidth and improve performance"
+      },
+      "hiddenFiles": {
+        "title": "Hidden Files",
+        "description": "Control visibility of hidden files and folders (names starting with a dot).",
+        "show": "Show Hidden Files",
+        "showDescription": "Display all files including .dotfiles and system directories",
+        "hide": "Hide Hidden Files",
+        "hideDescription": "Only show regular files and folders"
+      },
+      "deleteConfirmation": {
+        "title": "Delete Confirmation",
+        "description": "Require confirmation before deleting files and folders.",
+        "enabled": "Confirm Deletions",
+        "enabledDescription": "Show a confirmation dialog before deleting items",
+        "disabled": "Delete Immediately",
+        "disabledDescription": "Delete files without asking for confirmation"
+      },
+      "dragDropAction": {
+        "title": "Drag & Drop Action",
+        "description": "Default action when dragging files to a new location.",
+        "move": "Move",
+        "copy": "Copy",
+        "ask": "Ask"
+      }
+    },
     "authentication": {
       "title": "{{count}} poskytovatelů ověření",
       "addProvider": "Přidat poskytovatele",
+      "addLdapProvider": "Add LDAP",
       "system": "Systém",
       "systemDescription": "Ověření uživatelským jménem a heslem",
       "deleteConfirm": "Toto trvale smaže tohoto poskytovatele ověření.",
@@ -715,8 +768,6 @@
           "redirectUriPlaceholder": "https://vase-domena.cz/api/oidc/callback",
           "scope": "Rozsah",
           "scopePlaceholder": "openid profile email",
-          "emailAttribute": "Atribut emailu",
-          "emailAttributePlaceholder": "email",
           "usernameAttribute": "Atribut uživatelského jména",
           "usernameAttributePlaceholder": "preferred_username",
           "firstNameAttribute": "Atribut jména",
@@ -734,6 +785,51 @@
         },
         "messages": {
           "saveFailed": "Nepodařilo se uložit poskytovatele"
+        }
+      },
+      "ldapDialog": {
+        "createTitle": "Add LDAP Provider",
+        "editTitle": "Edit LDAP Provider",
+        "fields": {
+          "displayName": "Display Name",
+          "displayNamePlaceholder": "e.g. Company LDAP",
+          "host": "Host",
+          "hostPlaceholder": "ldap.company.com",
+          "port": "Port",
+          "bindDN": "Bind DN",
+          "bindDNPlaceholder": "cn=admin,dc=company,dc=com",
+          "bindPassword": "Bind Password",
+          "bindPasswordPlaceholder": "Bind password",
+          "bindPasswordPlaceholderEdit": "Leave blank to keep existing",
+          "baseDN": "Base DN",
+          "baseDNPlaceholder": "dc=company,dc=com",
+          "userSearchFilter": "User Search Filter",
+          "userSearchFilterPlaceholder": "(uid={{username}}) or (sAMAccountName={{username}})",
+          "useTLS": "Use TLS/SSL",
+          "usernameAttribute": "Username Attribute",
+          "usernameAttributePlaceholder": "uid",
+          "emailAttribute": "Email Attribute",
+          "emailAttributePlaceholder": "mail",
+          "firstNameAttribute": "First Name Attribute",
+          "firstNameAttributePlaceholder": "givenName",
+          "lastNameAttribute": "Last Name Attribute",
+          "lastNameAttributePlaceholder": "sn"
+        },
+        "advanced": {
+          "show": "Show Advanced Settings",
+          "hide": "Hide Advanced Settings"
+        },
+        "actions": {
+          "addProvider": "Add Provider",
+          "saveChanges": "Save Changes",
+          "testConnection": "Test Connection",
+          "testing": "Testing..."
+        },
+        "messages": {
+          "saveFailed": "Failed to save provider",
+          "saveFirst": "Save the provider first to test the connection",
+          "testSuccess": "Connection test successful",
+          "testFailed": "Connection test failed"
         }
       }
     },
@@ -1110,9 +1206,13 @@
       "errorDescription": "Nepodařilo se odeslat magic packet"
     },
     "messages": {
-      "usernameRequired": "Uživatelské jméno je povinné",
-      "passwordRequired": "Heslo je povinné",
-      "sshKeyRequired": "SSH klíč je povinný"
+      "fillRequiredFields": "Prosím vyplňte všechna povinná pole",
+      "serverCreated": "Server úspěšně vytvořen",
+      "serverUpdated": "Server úspěšně aktualizován",
+      "createFailed": "Nepodařilo se vytvořit server",
+      "updateFailed": "Nepodařilo se aktualizovat server",
+      "createIdentityFailed": "Nepodařilo se vytvořit identitu",
+      "updateIdentityFailed": "Nepodařilo se aktualizovat identitu"
     },
     "dialog": {
       "addServer": "Přidat server",
@@ -1302,6 +1402,11 @@
       }
     },
     "fileManager": {
+      "createFile": {
+        "title": "Create File",
+        "placeholder": "File Name",
+        "button": "Create File"
+      },
       "createFolder": {
         "title": "Vytvořit složku",
         "placeholder": "Název složky",
@@ -1335,11 +1440,44 @@
         "upload": "Nahrát soubor",
         "edit": "Upravit",
         "preview": "Náhled",
+        "moveHere": "Move here",
+        "copyHere": "Copy here",
         "bigFileConfirm": "Tento soubor má {{size}} MB. Opravdu ho chcete upravit?",
+        "deleteConfirm": "Are you sure you want to delete \"{{name}}\"? This action cannot be undone.",
         "selectAll": "Vybrat vše",
         "insertSnippet": "Vložit snippet",
         "sendCtrlC": "Odeslat Ctrl+C",
-        "clearTerminal": "Vyčistit terminál"
+        "clearTerminal": "Vyčistit terminál",
+        "properties": "Properties",
+        "openTerminal": "Open Terminal Here",
+        "downloadFolder": "Download Folder"
+      },
+      "properties": {
+        "general": "General",
+        "permissions": "Permissions",
+        "checksum": "Checksum",
+        "folder": "Folder",
+        "file": "File",
+        "path": "Location",
+        "size": "Size",
+        "calculateSize": "Calculate",
+        "owner": "Owner",
+        "group": "Group",
+        "modified": "Modified",
+        "accessed": "Accessed",
+        "calculating": "Calculating...",
+        "calculate": "Calculate"
+      },
+      "permissions": {
+        "owner": "Owner",
+        "group": "Group",
+        "others": "Others",
+        "read": "Read",
+        "write": "Write",
+        "execute": "Execute",
+        "octal": "Octal",
+        "preview": "Preview",
+        "apply": "Apply"
       },
       "filePreview": {
         "title": "Náhled souboru",
@@ -1350,6 +1488,45 @@
         "audioNotSupported": "Váš prohlížeč nepodporuje přehrávání zvuku",
         "download": "Stáhnout",
         "close": "Zavřít"
+      },
+      "selection": {
+        "itemsSelected": "{{count}} items selected",
+        "filesSelected": "{{count}} file(s) selected",
+        "foldersSelected": "{{count}} folder(s) selected",
+        "clearSelection": "Clear selection",
+        "downloadSelected": "Download selected",
+        "deleteSelected": "Delete selected",
+        "download": "Download",
+        "delete": "Delete",
+        "deleteConfirm": "Are you sure you want to delete {{count}} item(s)?"
+      },
+      "header": {
+        "name": "Name",
+        "size": "Size",
+        "permissions": "Permissions",
+        "modified": "Modified"
+      },
+      "actionBar": {
+        "enterDirectory": "Enter directory path...",
+        "hiddenDirectories": "{{count}} hidden directories",
+        "switchToGrid": "Switch to grid view",
+        "switchToList": "Switch to list view"
+      },
+      "item": {
+        "link": "link"
+      },
+      "states": {
+        "loading": "Loading files...",
+        "accessDenied": "Access Denied",
+        "emptyFolder": "This folder is empty",
+        "dropFilesHint": "Drop files here to upload them"
+      },
+      "toast": {
+        "downloadingItems": "Downloading {{count}} item(s)...",
+        "uploaded": "Uploaded {{name}}",
+        "uploadFailed": "Upload failed: {{message}}",
+        "connectionLost": "SFTP connection lost. Please reconnect.",
+        "error": "An error occurred"
       }
     },
     "aiAssistant": {
@@ -1380,15 +1557,6 @@
       "fullScreen": "Celá obrazovka",
       "exitFullScreen": "Opustit režim celé obrazovky",
       "badgeOn": "ZAP"
-    },
-    "messages": {
-      "fillRequiredFields": "Prosím vyplňte všechna povinná pole",
-      "serverCreated": "Server úspěšně vytvořen",
-      "serverUpdated": "Server úspěšně aktualizován",
-      "createFailed": "Nepodařilo se vytvořit server",
-      "updateFailed": "Nepodařilo se aktualizovat server",
-      "createIdentityFailed": "Nepodařilo se vytvořit identitu",
-      "updateIdentityFailed": "Nepodařilo se aktualizovat identitu"
     }
   }
 }
