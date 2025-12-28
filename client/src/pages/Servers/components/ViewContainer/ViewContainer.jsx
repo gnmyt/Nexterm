@@ -36,6 +36,7 @@ export const ViewContainer = ({
                                   hibernateSession,
                                   duplicateSession,
                                   setOpenFileEditors,
+                                  openTerminalFromFileManager,
                               }) => {
 
     const [layoutMode, setLayoutMode] = useState("single");
@@ -374,7 +375,8 @@ export const ViewContainer = ({
                                       onFullscreenToggle={toggleFullscreenMode} />;
             case "sftp":
                 return <FileRenderer session={session} disconnectFromServer={disconnectFromServer}
-                                     setOpenFileEditors={setOpenFileEditors} isActive={session.id === activeSessionId} />;
+                                     setOpenFileEditors={setOpenFileEditors} isActive={session.id === activeSessionId}
+                                     onOpenTerminal={(path) => openTerminalFromFileManager?.(session.id, path)} />;
             default:
                 return <p>Unknown renderer: {renderer}</p>;
         }

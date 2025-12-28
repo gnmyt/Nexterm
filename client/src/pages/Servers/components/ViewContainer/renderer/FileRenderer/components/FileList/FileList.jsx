@@ -1,9 +1,10 @@
-import React, { useState, useRef, useCallback, useEffect, useMemo, forwardRef, useImperativeHandle } from "react";
+import { useState, useRef, useCallback, useEffect, useMemo, forwardRef, useImperativeHandle } from "react";
 import "./styles.sass";
 import Icon from "@mdi/react";
 import {
     mdiFile, mdiFolder, mdiAlertCircle, mdiFormTextbox, mdiTextBoxEdit,
-    mdiFileDownload, mdiTrashCan, mdiEye, mdiFileMove, mdiContentCopy, mdiShieldLock,
+    mdiFileDownload, mdiTrashCan, mdiEye, mdiFileMove, mdiContentCopy,
+    mdiInformationOutline, mdiConsole,
 } from "@mdi/js";
 import { ContextMenu, ContextMenuItem, useContextMenu } from "@/common/components/ContextMenu";
 import { ActionConfirmDialog } from "@/common/components/ActionConfirmDialog/ActionConfirmDialog.jsx";
@@ -11,7 +12,7 @@ import { useTranslation } from "react-i18next";
 import { useFileSettings } from "@/common/contexts/FileSettingsContext.jsx";
 import SelectionActionBar from "../SelectionActionBar";
 import FileItem from "./components/FileItem";
-import PermissionsDialog from "./components/PermissionsDialog";
+import PropertiesDialog from "./components/PropertiesDialog";
 import { useBoxSelection, useDragDrop, useKeyboardNavigation, useClipboard } from "./hooks";
 import { isPreviewable, getFullPath, OPERATIONS } from "./utils/fileUtils";
 
@@ -19,6 +20,7 @@ export const FileList = forwardRef(({
     items, updatePath, path, sendOperation, downloadFile, downloadMultipleFiles,
     setCurrentFile, setPreviewFile, loading, viewMode = "list", error,
     resolveSymlink, session, createFile, createFolder, moveFiles, copyFiles, isActive,
+    onOpenTerminal, onPropertiesMessage,
 }, ref) => {
     const { t } = useTranslation();
     const { showThumbnails, showHiddenFiles, confirmBeforeDelete, dragDropAction } = useFileSettings();
@@ -34,11 +36,13 @@ export const FileList = forwardRef(({
     const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
     const [massDeleteDialogOpen, setMassDeleteDialogOpen] = useState(false);
     const [selectedItems, setSelectedItems] = useState([]);
-    const [permissionsDialogOpen, setPermissionsDialogOpen] = useState(false);
+    const [propertiesDialogOpen, setPropertiesDialogOpen] = useState(false);
+    const [propertiesItem, setPropertiesItem] = useState(null);
     
     const containerRef = useRef(null);
     const itemRefs = useRef({});
     const contextMenu = useContextMenu();
+    const emptyContextMenu = useContextMenu();
     const dropMenu = useContextMenu();
 
     useImperativeHandle(ref, () => ({
@@ -90,9 +94,11 @@ export const FileList = forwardRef(({
         selectedItems, selectedItem, path, copyFiles, moveFiles,
     });
 
+    const contextMenuOpen = contextMenu.isOpen || emptyContextMenu.isOpen || dropMenu.isOpen;
+
     const { focusedIndex } = useKeyboardNavigation({
         isActive, filteredItems, selectedItems, setSelectedItems, itemRefs,
-        renamingItem, creatingFolder, creatingFile,
+        renamingItem, creatingFolder, creatingFile, contextMenuOpen,
         handleCopy, handleCut, handlePaste, handleClick,
     });
 
@@ -152,19 +158,15 @@ export const FileList = forwardRef(({
     const handleDeleteClick = () => confirmBeforeDelete ? setDeleteDialogOpen(true) : handleDelete();
     const handleRename = (item, newName) => { if (newName && newName !== item.name) sendOperation(OPERATIONS.RENAME_FILE, { path: `${path}/${item.name}`, newPath: `${path}/${newName}` }); setRenamingItem(null); };
     const startRename = (item) => { setRenamingItem(item); setRenameValue(item.name); };
-    const handleRenameKeyDown = (e, item) => { if (e.key === 'Enter') { e.preventDefault(); handleRename(item, renameValue); } else if (e.key === 'Escape') setRenamingItem(null); };
+    const handleRenameKeyDown = (e, item) => e.key === 'Enter' ? (e.preventDefault(), handleRename(item, renameValue)) : e.key === 'Escape' && setRenamingItem(null);
     const handleCreateFolder = () => { if (newFolderName.trim()) createFolder(newFolderName.trim()); setCreatingFolder(false); };
-    const handleCreateFolderKeyDown = (e) => { if (e.key === 'Enter') { e.preventDefault(); handleCreateFolder(); } else if (e.key === 'Escape') setCreatingFolder(false); };
+    const handleCreateFolderKeyDown = (e) => e.key === 'Enter' ? (e.preventDefault(), handleCreateFolder()) : e.key === 'Escape' && setCreatingFolder(false);
     const handleCreateFile = () => { if (newFileName.trim()) createFile(newFileName.trim()); setCreatingFile(false); };
-    const handleCreateFileKeyDown = (e) => { if (e.key === 'Enter') { e.preventDefault(); handleCreateFile(); } else if (e.key === 'Escape') setCreatingFile(false); };
+    const handleCreateFileKeyDown = (e) => e.key === 'Enter' ? (e.preventDefault(), handleCreateFile()) : e.key === 'Escape' && setCreatingFile(false);
     const openFile = () => selectedItem?.size >= 1024 * 1024 ? setBigFileDialogOpen(true) : setCurrentFile(`${path}/${selectedItem?.name}`);
-
-    const handlePermissionsClick = () => setPermissionsDialogOpen(true);
-    const handlePermissionsSave = (mode) => {
-        if (selectedItem) {
-            sendOperation(OPERATIONS.CHMOD, { path: `${path}/${selectedItem.name}`, mode });
-        }
-    };
+    const handlePropertiesClick = (item = null) => { setPropertiesItem(item); setPropertiesDialogOpen(true); };
+    const handleEmptyContextMenu = (e) => { if (e.target.closest('.file-item')) return; e.preventDefault(); emptyContextMenu.open(e, { x: e.pageX, y: e.pageY }); };
+    const handleOpenTerminal = (targetPath = null) => onOpenTerminal?.(targetPath || path);
 
     return (
         <div className={`file-list ${viewMode}`}>
@@ -203,6 +205,7 @@ export const FileList = forwardRef(({
                         containerRef.current?.focus({ preventScroll: true });
                         handleSelectionStart(event);
                     }}
+                    onContextMenu={handleEmptyContextMenu}
                     onDragOver={(e) => e.dataTransfer.types.includes("application/x-sftp-files") && e.preventDefault()}
                     onDrop={(e) => handleContainerDrop(e, clearSelection, (ev) => dropMenu.open(ev, { x: ev.clientX, y: ev.clientY }))}
                 >
@@ -265,11 +268,14 @@ export const FileList = forwardRef(({
             <ActionConfirmDialog open={deleteDialogOpen} setOpen={setDeleteDialogOpen} onConfirm={handleDelete} text={t("servers.fileManager.contextMenu.deleteConfirm", { name: selectedItem?.name })} />
             <ActionConfirmDialog open={massDeleteDialogOpen} setOpen={setMassDeleteDialogOpen} onConfirm={executeMassDelete} text={t("servers.fileManager.selection.deleteConfirm", { count: selectedItems.length })} />
 
-            <PermissionsDialog
-                open={permissionsDialogOpen}
-                onClose={() => setPermissionsDialogOpen(false)}
-                item={selectedItem}
-                onSave={handlePermissionsSave}
+            <PropertiesDialog
+                open={propertiesDialogOpen}
+                onClose={() => setPropertiesDialogOpen(false)}
+                item={propertiesItem}
+                path={path}
+                sendOperation={sendOperation}
+                OPERATIONS={OPERATIONS}
+                onRegisterHandler={onPropertiesMessage}
             />
 
             <ContextMenu isOpen={contextMenu.isOpen} position={contextMenu.position} onClose={contextMenu.close} trigger={contextMenu.triggerRef}>
@@ -281,8 +287,17 @@ export const FileList = forwardRef(({
                     </>
                 )}
                 <ContextMenuItem icon={mdiFileDownload} label={t("servers.fileManager.contextMenu.download")} onClick={() => downloadFile(`${path}/${selectedItem?.name}`)} />
-                <ContextMenuItem icon={mdiShieldLock} label={t("servers.fileManager.contextMenu.permissions", "Permissions")} onClick={handlePermissionsClick} />
+                <ContextMenuItem icon={mdiInformationOutline} label={t("servers.fileManager.contextMenu.properties", "Properties")} onClick={() => handlePropertiesClick(selectedItem)} />
+                {selectedItem?.type === "folder" && (
+                    <ContextMenuItem icon={mdiConsole} label={t("servers.fileManager.contextMenu.openTerminal", "Open Terminal Here")} onClick={() => handleOpenTerminal(`${path}/${selectedItem.name}`)} />
+                )}
                 <ContextMenuItem icon={mdiTrashCan} label={t("servers.fileManager.contextMenu.delete")} onClick={handleDeleteClick} danger />
+            </ContextMenu>
+
+            <ContextMenu isOpen={emptyContextMenu.isOpen} position={emptyContextMenu.position} onClose={emptyContextMenu.close} trigger={emptyContextMenu.triggerRef}>
+                <ContextMenuItem icon={mdiFileDownload} label={t("servers.fileManager.contextMenu.downloadFolder", "Download Folder")} onClick={() => downloadFile(path)} />
+                <ContextMenuItem icon={mdiInformationOutline} label={t("servers.fileManager.contextMenu.properties", "Properties")} onClick={() => handlePropertiesClick(null)} />
+                <ContextMenuItem icon={mdiConsole} label={t("servers.fileManager.contextMenu.openTerminal", "Open Terminal Here")} onClick={() => handleOpenTerminal()} />
             </ContextMenu>
 
             <ContextMenu isOpen={dropMenu.isOpen} position={dropMenu.position} onClose={() => { dropMenu.close(); setPendingDrop(null); }}>

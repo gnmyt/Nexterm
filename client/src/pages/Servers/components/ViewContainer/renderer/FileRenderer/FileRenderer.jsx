@@ -15,9 +15,10 @@ const OPERATIONS = {
     READY: 0x0, LIST_FILES: 0x1, CREATE_FILE: 0x4, CREATE_FOLDER: 0x5, DELETE_FILE: 0x6, 
     DELETE_FOLDER: 0x7, RENAME_FILE: 0x8, ERROR: 0x9, SEARCH_DIRECTORIES: 0xA, 
     RESOLVE_SYMLINK: 0xB, MOVE_FILES: 0xC, COPY_FILES: 0xD, CHMOD: 0xE,
+    STAT: 0xF, CHECKSUM: 0x10, FOLDER_SIZE: 0x11,
 };
 
-export const FileRenderer = ({ session, disconnectFromServer, setOpenFileEditors, isActive }) => {
+export const FileRenderer = ({ session, disconnectFromServer, setOpenFileEditors, isActive, onOpenTerminal }) => {
     const { sessionToken } = useContext(UserContext);
     const { defaultViewMode } = useFileSettings();
     const { sendToast } = useToast();
@@ -41,6 +42,7 @@ export const FileRenderer = ({ session, disconnectFromServer, setOpenFileEditors
     const uploadQueueRef = useRef([]);
     const reconnectAttemptsRef = useRef(0);
     const fileListRef = useRef(null);
+    const propertiesHandlerRef = useRef(null);
 
     const wsUrl = getWebSocketUrl("/api/ws/sftp", { sessionToken, sessionId: session.id });
 
@@ -166,6 +168,11 @@ export const FileRenderer = ({ session, disconnectFromServer, setOpenFileEditors
                 case OPERATIONS.RESOLVE_SYMLINK:
                     if (payload) { const cb = symlinkCallbacks.current.shift(); if (cb) cb(payload); }
                     break;
+                case OPERATIONS.STAT:
+                case OPERATIONS.CHECKSUM:
+                case OPERATIONS.FOLDER_SIZE:
+                    propertiesHandlerRef.current?.({ operation, payload });
+                    break;
             }
         } catch (err) { console.error("Error processing SFTP message:", err); }
     };
@@ -259,7 +266,8 @@ export const FileRenderer = ({ session, disconnectFromServer, setOpenFileEditors
                 <FileList ref={fileListRef} items={items} path={directory} updatePath={changeDirectory} sendOperation={sendOperation}
                     downloadFile={downloadFile} downloadMultipleFiles={downloadMultipleFiles} setCurrentFile={handleOpenFile} setPreviewFile={handleOpenPreview} 
                     loading={loading} viewMode={viewMode} error={error || connectionError} resolveSymlink={resolveSymlink} session={session}
-                    createFile={createFile} createFolder={createFolder} moveFiles={moveFiles} copyFiles={copyFiles} isActive={isActive} />
+                    createFile={createFile} createFolder={createFolder} moveFiles={moveFiles} copyFiles={copyFiles} isActive={isActive}
+                    onOpenTerminal={onOpenTerminal} onPropertiesMessage={(handler) => { propertiesHandlerRef.current = handler; }} />
             </div>
             {isUploading && <div className="upload-progress" style={{ width: `${uploadProgress}%` }} />}
         </div>
