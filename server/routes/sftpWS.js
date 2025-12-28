@@ -106,6 +106,7 @@ module.exports = async (ws, req) => {
                                         isSymlink: f.longname.startsWith("l"),
                                         last_modified: f.attrs.mtime,
                                         size: f.attrs.size,
+                                        mode: f.attrs.mode,
                                     }));
                                     safeSend(ws, Buffer.concat([Buffer.from([OPERATIONS.LIST_FILES]), Buffer.from(JSON.stringify({ files }))]));
                                 });
@@ -283,6 +284,23 @@ module.exports = async (ws, req) => {
                                         });
                                     });
                                 }
+                                break;
+
+                            case OPERATIONS.CHMOD:
+                                if (!payload?.path || payload?.mode === undefined) return sendError(ws, "Invalid path or mode");
+                                sftp.chmod(payload.path, payload.mode, (err) => {
+                                    if (err) return sendError(ws, getErrMsg(err, "Failed to change permissions"));
+                                    safeSend(ws, Buffer.from([OPERATIONS.CHMOD]));
+                                    createAuditLog({
+                                        accountId: user.id,
+                                        organizationId: entry.organizationId,
+                                        action: AUDIT_ACTIONS.FILE_CHMOD,
+                                        resource: RESOURCE_TYPES.FILE,
+                                        details: { filePath: payload.path, mode: payload.mode.toString(8) },
+                                        ipAddress,
+                                        userAgent,
+                                    });
+                                });
                                 break;
                         }
                     } catch (err) {
