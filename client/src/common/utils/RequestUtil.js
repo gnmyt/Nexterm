@@ -22,6 +22,67 @@ const tauriFetch = async (url, options) => {
     return fetch(url, options);
 };
 
+export const uploadFile = async (url, file, { onProgress, timeout = 300000 } = {}) => {
+    const baseUrl = getBaseUrl();
+    const fullUrl = baseUrl ? `${baseUrl}${url}` : url;
+
+    if (isTauri()) {
+        try {
+            const { fetch: tFetch } = await import("@tauri-apps/plugin-http");
+            const arrayBuffer = await file.arrayBuffer();
+            
+            const response = await tFetch(fullUrl, {
+                method: "POST",
+                headers: { "Content-Type": "application/octet-stream" },
+                body: arrayBuffer,
+            });
+
+            if (onProgress) onProgress(100);
+
+            if (!response.ok) {
+                const text = await response.text();
+                let error = `Upload failed (${response.status})`;
+                try { error = JSON.parse(text).error || error; } catch {}
+                throw new Error(error);
+            }
+
+            const text = await response.text();
+            try { return JSON.parse(text); } catch { return { success: true }; }
+        } catch (e) {
+            if (e.message?.includes("Upload failed")) throw e;
+            console.warn("Tauri upload failed, trying XHR fallback:", e);
+        }
+    }
+
+    return new Promise((resolve, reject) => {
+        const xhr = new XMLHttpRequest();
+        
+        if (onProgress) {
+            xhr.upload.addEventListener("progress", (e) => {
+                if (e.lengthComputable) onProgress(Math.round((e.loaded / e.total) * 100));
+            });
+        }
+
+        xhr.onload = () => {
+            if (xhr.status >= 200 && xhr.status < 300) {
+                try { resolve(JSON.parse(xhr.responseText)); } catch { resolve({ success: true }); }
+            } else {
+                let errorMsg = `Upload failed (${xhr.status})`;
+                try { errorMsg = JSON.parse(xhr.responseText).error || errorMsg; } catch {}
+                reject(new Error(errorMsg));
+            }
+        };
+        xhr.onerror = () => reject(new Error("Network error"));
+        xhr.onabort = () => reject(new Error("Upload cancelled"));
+        xhr.ontimeout = () => reject(new Error("Upload timed out"));
+        xhr.timeout = timeout;
+
+        xhr.open("POST", fullUrl, true);
+        xhr.setRequestHeader("Content-Type", "application/octet-stream");
+        xhr.send(file);
+    });
+};
+
 export const request = async (url, method, body, headers) => {
     url = url.startsWith("/") ? url.substring(1) : url;
     
