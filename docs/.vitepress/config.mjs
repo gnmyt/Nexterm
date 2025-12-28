@@ -66,6 +66,15 @@ export default defineConfig({
                     { text: "Home", link: "/" },
                     { text: "Preview", link: "/preview" },
                     { text: "SSL/HTTPS", link: "/ssl" },
+                    { text: "Reverse Proxy", link: "/reverse-proxy" },
+                    {
+                        text: "Authentication",
+                        collapsed: true,
+                        items: [
+                            { text: "OIDC / SSO", link: "/oidc" },
+                            { text: "LDAP", link: "/ldap" },
+                        ],
+                    },
                     {
                         text: "Custom Sources",
                         collapsed: true,
