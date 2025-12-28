@@ -134,11 +134,20 @@
     .path-part-divider
       color: colors.$subtext
       cursor: pointer
-      transition: color 0.1s ease
+      transition: color 0.1s ease, background-color 0.1s ease
       font-weight: 500
+      padding: 0.25rem
+      border-radius: 0.25rem
 
       &:hover
         color: colors.$primary
+
+      &.root-drop
+        margin-left: -0.25rem
+
+      &.drop-target
+        color: colors.$primary
+        background-color: colors.$primary-opacity
 
     .path-part
       cursor: pointer
@@ -155,6 +164,11 @@
       &:hover
         color: colors.$primary
         background-color: colors.$primary-opacity
+
+      &.drop-target
+        color: colors.$white
+        background-color: colors.$primary
+        border-color: colors.$primary
 
       &.ellipsis
         cursor: help

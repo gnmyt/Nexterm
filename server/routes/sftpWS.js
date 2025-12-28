@@ -200,6 +200,69 @@ module.exports = async (ws, req) => {
                                     });
                                 });
                                 break;
+
+                            case OPERATIONS.MOVE_FILES:
+                                if (!payload?.sources?.length || !payload?.destination) return sendError(ws, "Invalid paths");
+                                {
+                                    let completed = 0, hasError = false;
+                                    const total = payload.sources.length;
+                                    const onDone = (err) => {
+                                        if (hasError) return;
+                                        if (err) { hasError = true; return sendError(ws, getErrMsg(err, "Failed to move")); }
+                                        if (++completed === total) {
+                                            safeSend(ws, Buffer.from([OPERATIONS.MOVE_FILES]));
+                                            createAuditLog({
+                                                accountId: user.id,
+                                                organizationId: entry.organizationId,
+                                                action: AUDIT_ACTIONS.FILE_RENAME,
+                                                resource: RESOURCE_TYPES.FILE,
+                                                details: { sources: payload.sources, destination: payload.destination },
+                                                ipAddress,
+                                                userAgent,
+                                            });
+                                        }
+                                    };
+                                    payload.sources.forEach(src => {
+                                        const name = src.split("/").pop();
+                                        const dest = `${payload.destination}/${name}`;
+                                        sftp.rename(src, dest, onDone);
+                                    });
+                                }
+                                break;
+
+                            case OPERATIONS.COPY_FILES:
+                                if (!payload?.sources?.length || !payload?.destination) return sendError(ws, "Invalid paths");
+                                {
+                                    const escapePath = (p) => `'${p.replace(/'/g, "'\\''")}'`;
+                                    const copyCommands = payload.sources.map(src => {
+                                        const name = src.split("/").pop();
+                                        const dest = `${payload.destination}/${name}`;
+                                        return `cp -r ${escapePath(src)} ${escapePath(dest)}`;
+                                    }).join(" && ");
+                                    
+                                    ssh.exec(copyCommands, (err, stream) => {
+                                        if (err) return sendError(ws, getErrMsg(err, "Failed to copy"));
+                                        let stderr = "";
+                                        stream.on("data", () => {});
+                                        stream.stderr.on("data", (data) => { stderr += data.toString(); });
+                                        stream.on("close", (code) => {
+                                            if (code !== 0) {
+                                                return sendError(ws, stderr.trim() || "Failed to copy files");
+                                            }
+                                            safeSend(ws, Buffer.from([OPERATIONS.COPY_FILES]));
+                                            createAuditLog({
+                                                accountId: user.id,
+                                                organizationId: entry.organizationId,
+                                                action: AUDIT_ACTIONS.FILE_CREATE,
+                                                resource: RESOURCE_TYPES.FILE,
+                                                details: { sources: payload.sources, destination: payload.destination },
+                                                ipAddress,
+                                                userAgent,
+                                            });
+                                        });
+                                    });
+                                }
+                                break;
                         }
                     } catch (err) {
                         sendError(ws, "Operation failed: " + err.message);

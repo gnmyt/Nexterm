@@ -727,6 +727,13 @@
         "enabledDescription": "Show a confirmation dialog before deleting items",
         "disabled": "Delete Immediately",
         "disabledDescription": "Delete files without asking for confirmation"
+      },
+      "dragDropAction": {
+        "title": "Drag & Drop Action",
+        "description": "Default action when dragging files to a new location.",
+        "move": "Move",
+        "copy": "Copy",
+        "ask": "Ask"
       }
     },
     "authentication": {
@@ -1420,6 +1427,8 @@
         "upload": "Upload File",
         "edit": "Edit",
         "preview": "Preview",
+        "moveHere": "Move here",
+        "copyHere": "Copy here",
         "bigFileConfirm": "This file is {{size}} MB large. Are you sure you want to edit it?",
         "deleteConfirm": "Are you sure you want to delete \"{{name}}\"? This action cannot be undone.",
         "selectAll": "Select All",

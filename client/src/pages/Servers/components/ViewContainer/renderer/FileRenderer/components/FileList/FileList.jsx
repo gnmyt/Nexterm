@@ -4,7 +4,7 @@ import Icon from "@mdi/react";
 import {
     mdiArchive, mdiDotsVertical, mdiFile, mdiFileDocument, mdiFolder, mdiImage, mdiMovie,
     mdiMusicNote, mdiAlertCircle, mdiFormTextbox, mdiTextBoxEdit, mdiFileDownload,
-    mdiTrashCan, mdiLinkVariant, mdiEye,
+    mdiTrashCan, mdiLinkVariant, mdiEye, mdiFileMove, mdiContentCopy,
 } from "@mdi/js";
 import { ContextMenu, ContextMenuItem, useContextMenu } from "@/common/components/ContextMenu";
 import { ActionConfirmDialog } from "@/common/components/ActionConfirmDialog/ActionConfirmDialog.jsx";
@@ -17,10 +17,10 @@ import SelectionActionBar from "../SelectionActionBar";
 export const FileList = forwardRef(({
     items, updatePath, path, sendOperation, downloadFile, downloadMultipleFiles,
     setCurrentFile, setPreviewFile, loading, viewMode = "list", error,
-    resolveSymlink, session, createFolder,
+    resolveSymlink, session, createFolder, moveFiles, copyFiles, isActive,
 }, ref) => {
     const { t } = useTranslation();
-    const { showThumbnails, showHiddenFiles, confirmBeforeDelete } = useFileSettings();
+    const { showThumbnails, showHiddenFiles, confirmBeforeDelete, dragDropAction } = useFileSettings();
     const { sessionToken } = useContext(UserContext);
     
     const [selectedItem, setSelectedItem] = useState(null);
@@ -37,16 +37,23 @@ export const FileList = forwardRef(({
     const [isSelecting, setIsSelecting] = useState(false);
     const [selectionBox, setSelectionBox] = useState(null);
     const [selectionStart, setSelectionStart] = useState(null);
+    const [draggedItems, setDraggedItems] = useState([]);
+    const [dropTarget, setDropTarget] = useState(null);
     
     const containerRef = useRef(null);
     const itemRefs = useRef({});
+    const dragImageRef = useRef(null);
+    const hoverTimerRef = useRef(null);
     const contextMenu = useContextMenu();
+    const dropMenu = useContextMenu();
+    const [pendingDrop, setPendingDrop] = useState(null);
+    const [clipboard, setClipboard] = useState(null);
 
     useImperativeHandle(ref, () => ({
         startCreateFolder: () => {
             setCreatingFolder(true);
             setNewFolderName("");
-        }
+        },
     }));
 
     const THUMBNAIL_EXTENSIONS = ["jpg", "jpeg", "png", "gif", "webp", "bmp"];
@@ -106,10 +113,7 @@ export const FileList = forwardRef(({
         };
     }, []);
 
-    const rectsIntersect = useCallback((r1, r2) => (
-        !(r2.left > r1.left + r1.width || r2.left + r2.width < r1.left ||
-          r2.top > r1.top + r1.height || r2.top + r2.height < r1.top)
-    ), []);
+    const rectsIntersect = (r1, r2) => !(r2.left > r1.left + r1.width || r2.left + r2.width < r1.left || r2.top > r1.top + r1.height || r2.top + r2.height < r1.top);
 
     const handleSelectionStart = useCallback((event) => {
         if (event.button !== 0 || event.target.closest('.file-item')) return;
@@ -158,34 +162,15 @@ export const FileList = forwardRef(({
 
     useEffect(() => {
         if (!isSelecting) return;
-        const handleMouseMove = (event) => handleSelectionMove(event);
-        const handleMouseUp = () => handleSelectionEnd();
-        document.addEventListener('mousemove', handleMouseMove);
-        document.addEventListener('mouseup', handleMouseUp);
+        const handleMove = (e) => handleSelectionMove(e);
+        const handleUp = () => handleSelectionEnd();
+        document.addEventListener('mousemove', handleMove);
+        document.addEventListener('mouseup', handleUp);
         return () => {
-            document.removeEventListener('mousemove', handleMouseMove);
-            document.removeEventListener('mouseup', handleMouseUp);
+            document.removeEventListener('mousemove', handleMove);
+            document.removeEventListener('mouseup', handleUp);
         };
     }, [isSelecting, handleSelectionMove, handleSelectionEnd]);
-
-    useEffect(() => {
-        const handleKeyDown = (event) => {
-            const container = containerRef.current;
-            if (!container) return;
-            const activeEl = document.activeElement;
-            if (activeEl?.tagName === 'INPUT' || activeEl?.tagName === 'TEXTAREA') return;
-            if (!container.contains(activeEl) && container !== activeEl) return;
-            
-            if ((event.ctrlKey || event.metaKey) && event.key === 'a') {
-                event.preventDefault();
-                setSelectedItems([...filteredItems]);
-            } else if (event.key === 'Escape' && selectedItems.length > 0) {
-                setSelectedItems([]);
-            }
-        };
-        document.addEventListener('keydown', handleKeyDown);
-        return () => document.removeEventListener('keydown', handleKeyDown);
-    }, [filteredItems, selectedItems.length]);
 
     const isItemSelected = useCallback((item) => (
         selectedItems.some(s => s.name === item.name && s.type === item.type)
@@ -243,6 +228,111 @@ export const FileList = forwardRef(({
 
     const clearSelection = useCallback(() => setSelectedItems([]), []);
 
+    const handleDragStart = useCallback((event, item) => {
+        const itemsToDrag = isItemSelected(item) ? selectedItems : [item];
+        setDraggedItems(itemsToDrag);
+        const paths = itemsToDrag.map(i => `${path}/${i.name}`);
+        const dragData = { paths, items: itemsToDrag, sessionId: session.id };
+        event.dataTransfer.setData("text/plain", JSON.stringify(dragData));
+        event.dataTransfer.setData("application/x-sftp-files", JSON.stringify(dragData));
+        event.dataTransfer.effectAllowed = "copyMove";
+        if (dragImageRef.current) {
+            const preview = dragImageRef.current;
+            const iconsContainer = preview.querySelector('.drag-icons');
+            const badge = preview.querySelector('.drag-badge');
+            if (iconsContainer && badge) {
+                iconsContainer.querySelectorAll('.drag-icon-wrapper').forEach(el => el.remove());
+                itemsToDrag.slice(0, 3).reverse().forEach((dragItem, idx) => {
+                    const reverseIdx = Math.min(itemsToDrag.length, 3) - 1 - idx;
+                    const iconWrapper = document.createElement('div');
+                    iconWrapper.className = 'drag-icon-wrapper';
+                    iconWrapper.style.cssText = `transform:translate(${reverseIdx * 6}px,${reverseIdx * 6}px);z-index:${idx + 1}`;
+                    iconWrapper.innerHTML = `<svg viewBox="0 0 24 24"><path fill="currentColor" d="${dragItem.type === 'folder' ? 'M10,4H4C2.89,4 2,4.89 2,6V18A2,2 0 0,0 4,20H20A2,2 0 0,0 22,18V8C22,6.89 21.1,6 20,6H12L10,4Z' : 'M14,2H6A2,2 0 0,0 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2M18,20H6V4H13V9H18V20Z'}"/></svg>`;
+                    iconsContainer.insertBefore(iconWrapper, badge);
+                });
+                badge.textContent = itemsToDrag.length > 1 ? itemsToDrag.length : '';
+                badge.style.display = itemsToDrag.length > 1 ? 'flex' : 'none';
+                event.dataTransfer.setDragImage(preview, -5, -5);
+            }
+        }
+    }, [selectedItems, isItemSelected, path, session.id]);
+
+    const handleDragEnd = useCallback(() => {
+        setDraggedItems([]);
+        setDropTarget(null);
+        if (hoverTimerRef.current) {
+            clearTimeout(hoverTimerRef.current);
+            hoverTimerRef.current = null;
+        }
+    }, []);
+
+    const handleDragOver = useCallback((event, item) => {
+        if (item.type !== "folder" || !event.dataTransfer.types.includes("application/x-sftp-files")) return;
+        event.preventDefault();
+        event.stopPropagation();
+        if (dropTarget !== item.name) {
+            setDropTarget(item.name);
+            if (hoverTimerRef.current) clearTimeout(hoverTimerRef.current);
+            hoverTimerRef.current = setTimeout(() => {
+                updatePath(`${path.endsWith("/") ? path : path + "/"}${item.name}`);
+                setDropTarget(null);
+            }, 800);
+        }
+    }, [dropTarget, path, updatePath]);
+
+    const handleDragLeave = useCallback((event) => {
+        const relatedTarget = event.relatedTarget;
+        if (relatedTarget && event.currentTarget.contains(relatedTarget)) return;
+        setDropTarget(null);
+        if (hoverTimerRef.current) {
+            clearTimeout(hoverTimerRef.current);
+            hoverTimerRef.current = null;
+        }
+    }, []);
+
+    const executeDrop = useCallback((paths, destination, action) => {
+        if (action === "move") moveFiles?.(paths, destination);
+        else if (action === "copy") copyFiles?.(paths, destination);
+        else return false;
+        setSelectedItems([]);
+        return true;
+    }, [moveFiles, copyFiles]);
+
+    const handleDrop = useCallback((event, item) => {
+        event.preventDefault();
+        event.stopPropagation();
+        if (hoverTimerRef.current) { clearTimeout(hoverTimerRef.current); hoverTimerRef.current = null; }
+        setDropTarget(null);
+        setDraggedItems([]);
+        if (item.type !== "folder") return;
+        try {
+            const data = JSON.parse(event.dataTransfer.getData("application/x-sftp-files"));
+            if (!data?.paths?.length || data.sessionId !== session.id || data.items?.some(d => d.name === item.name)) return;
+            const destination = `${path.endsWith("/") ? path : path + "/"}${item.name}`;
+            if (!executeDrop(data.paths, destination, dragDropAction)) {
+                setPendingDrop({ paths: data.paths, destination });
+                dropMenu.open(event, { x: event.clientX, y: event.clientY });
+            }
+        } catch {}
+    }, [path, session.id, dropMenu, dragDropAction, executeDrop]);
+
+    const handleContainerDrop = useCallback((event) => {
+        if (event.target !== containerRef.current) return;
+        event.preventDefault();
+        event.stopPropagation();
+        setDraggedItems([]);
+        try {
+            const data = JSON.parse(event.dataTransfer.getData("application/x-sftp-files"));
+            if (!data?.paths?.length || data.sessionId !== session.id) return;
+            const currentDir = path.endsWith("/") ? path.slice(0, -1) : path;
+            if (data.paths.every(p => { const parent = p.substring(0, p.lastIndexOf("/")) || "/"; return parent === currentDir || parent === path; })) return;
+            if (!executeDrop(data.paths, path, dragDropAction)) {
+                setPendingDrop({ paths: data.paths, destination: path });
+                dropMenu.open(event, { x: event.clientX, y: event.clientY });
+            }
+        } catch {}
+    }, [path, session.id, dropMenu, dragDropAction, executeDrop]);
+
     const handleContextMenu = (event, item, fromDots = false) => {
         event.preventDefault();
         setSelectedItem(item);
@@ -250,48 +340,54 @@ export const FileList = forwardRef(({
         contextMenu.open(event, fromDots ? undefined : { x: event.pageX, y: event.pageY });
     };
 
+    const handleDropAction = useCallback((action) => {
+        if (pendingDrop) {
+            action === "move" ? moveFiles?.(pendingDrop.paths, pendingDrop.destination) : copyFiles?.(pendingDrop.paths, pendingDrop.destination);
+            setSelectedItems([]);
+            setPendingDrop(null);
+        }
+        dropMenu.close();
+    }, [pendingDrop, moveFiles, copyFiles, dropMenu]);
+
+    const handleCopy = useCallback(() => {
+        const items = selectedItems.length > 0 ? selectedItems : (selectedItem ? [selectedItem] : []);
+        if (items.length > 0) setClipboard({ paths: items.map(item => `${path}/${item.name}`), operation: 'copy' });
+    }, [selectedItems, selectedItem, path]);
+
+    const handleCut = useCallback(() => {
+        const items = selectedItems.length > 0 ? selectedItems : (selectedItem ? [selectedItem] : []);
+        if (items.length > 0) setClipboard({ paths: items.map(item => `${path}/${item.name}`), operation: 'cut' });
+    }, [selectedItems, selectedItem, path]);
+
+    const handlePaste = useCallback(() => {
+        if (!clipboard?.paths?.length) return;
+        clipboard.operation === 'copy' ? copyFiles?.(clipboard.paths, path) : (moveFiles?.(clipboard.paths, path), setClipboard(null));
+    }, [clipboard, path, copyFiles, moveFiles]);
+
+    useEffect(() => {
+        if (!isActive) return;
+        const handleKeyDown = (event) => {
+            if (renamingItem || creatingFolder || event.target.tagName === 'INPUT' || event.target.tagName === 'TEXTAREA') return;
+            const isMod = event.ctrlKey || event.metaKey;
+            if (isMod && event.key === 'c') { event.preventDefault(); handleCopy(); }
+            else if (isMod && event.key === 'x') { event.preventDefault(); handleCut(); }
+            else if (isMod && event.key === 'v') { event.preventDefault(); handlePaste(); }
+            else if (isMod && event.key === 'a') { event.preventDefault(); setSelectedItems(filteredItems); }
+            else if (event.key === 'Escape' && selectedItems.length > 0) setSelectedItems([]);
+        };
+        document.addEventListener('keydown', handleKeyDown);
+        return () => document.removeEventListener('keydown', handleKeyDown);
+    }, [isActive, renamingItem, creatingFolder, handleCopy, handleCut, handlePaste, filteredItems, selectedItems.length]);
+
     const getFullPath = (item) => `${path}/${item?.name}`;
     const handleDelete = () => sendOperation(selectedItem.type === "folder" ? 0x7 : 0x6, { path: getFullPath(selectedItem) });
     const handleDeleteClick = () => confirmBeforeDelete ? setDeleteDialogOpen(true) : handleDelete();
-    const handleDownload = () => downloadFile(getFullPath(selectedItem));
-
-    const handleRename = (item, newName) => {
-        if (newName && newName !== item.name) {
-            sendOperation(0x8, { path: getFullPath(item), newPath: `${path}/${newName}` });
-        }
-        setRenamingItem(null);
-    };
-
-    const startRename = (item) => {
-        setRenamingItem(item);
-        setRenameValue(item.name);
-    };
-
-    const handleRenameKeyDown = (event, item) => {
-        if (event.key === 'Enter') {
-            event.preventDefault();
-            handleRename(item, renameValue);
-        } else if (event.key === 'Escape') {
-            setRenamingItem(null);
-        }
-    };
-
-    const handleCreateFolder = () => {
-        if (newFolderName.trim()) createFolder(newFolderName.trim());
-        setCreatingFolder(false);
-    };
-
-    const handleCreateFolderKeyDown = (event) => {
-        if (event.key === 'Enter') {
-            event.preventDefault();
-            handleCreateFolder();
-        } else if (event.key === 'Escape') {
-            setCreatingFolder(false);
-        }
-    };
-
+    const handleRename = (item, newName) => { if (newName && newName !== item.name) sendOperation(0x8, { path: getFullPath(item), newPath: `${path}/${newName}` }); setRenamingItem(null); };
+    const startRename = (item) => { setRenamingItem(item); setRenameValue(item.name); };
+    const handleRenameKeyDown = (e, item) => { if (e.key === 'Enter') { e.preventDefault(); handleRename(item, renameValue); } else if (e.key === 'Escape') setRenamingItem(null); };
+    const handleCreateFolder = () => { if (newFolderName.trim()) createFolder(newFolderName.trim()); setCreatingFolder(false); };
+    const handleCreateFolderKeyDown = (e) => { if (e.key === 'Enter') { e.preventDefault(); handleCreateFolder(); } else if (e.key === 'Escape') setCreatingFolder(false); };
     const openFile = () => selectedItem?.size >= 1024 * 1024 ? setBigFileDialogOpen(true) : setCurrentFile(getFullPath(selectedItem));
-    const handlePreview = () => setPreviewFile?.(getFullPath(selectedItem));
 
     return (
         <div className={`file-list ${viewMode}`}>
@@ -325,10 +421,17 @@ export const FileList = forwardRef(({
                     className="file-items-container"
                     ref={containerRef}
                     tabIndex={0}
+
                     onMouseDown={(event) => {
                         containerRef.current?.focus({ preventScroll: true });
                         handleSelectionStart(event);
                     }}
+                    onDragOver={(e) => {
+                        if (e.dataTransfer.types.includes("application/x-sftp-files")) {
+                            e.preventDefault();
+                        }
+                    }}
+                    onDrop={handleContainerDrop}
                 >
                     {isSelecting && selectionBox && (
                         <div
@@ -357,6 +460,9 @@ export const FileList = forwardRef(({
                     {filteredItems.map((item, index) => {
                         const canShowThumbnail = viewMode === "grid" && showThumbnails && item.type === "file" && isThumbnailSupported(item.name) && !thumbnailErrors[item.name];
                         const isRenaming = renamingItem?.name === item.name;
+                        const isBeingDragged = draggedItems.some(d => d.name === item.name);
+                        const isDropTarget = dropTarget === item.name;
+                        const isCut = clipboard?.operation === 'cut' && clipboard.paths.some(p => p === `${path}/${item.name}`);
                         const classNames = [
                             "file-item",
                             viewMode,
@@ -365,6 +471,9 @@ export const FileList = forwardRef(({
                             canShowThumbnail && "has-thumbnail",
                             isItemSelected(item) && "selected",
                             isRenaming && "renaming",
+                            isBeingDragged && "dragging",
+                            isDropTarget && "drop-target",
+                            isCut && "cut",
                         ].filter(Boolean).join(" ");
 
                         return (
@@ -376,6 +485,12 @@ export const FileList = forwardRef(({
                                 onContextMenu={(event) => handleContextMenu(event, item)}
                                 onMouseEnter={() => setFocusedIndex(index)}
                                 onMouseLeave={() => setFocusedIndex(-1)}
+                                draggable={!isRenaming}
+                                onDragStart={(e) => handleDragStart(e, item)}
+                                onDragEnd={handleDragEnd}
+                                onDragOver={(e) => handleDragOver(e, item)}
+                                onDragLeave={handleDragLeave}
+                                onDrop={(e) => handleDrop(e, item)}
                                 tabIndex={0}
                             >
                                 <div className="file-name">
@@ -463,9 +578,18 @@ export const FileList = forwardRef(({
                         <ContextMenuItem icon={mdiTextBoxEdit} label={t("servers.fileManager.contextMenu.edit")} onClick={openFile} />
                     </>
                 )}
-                <ContextMenuItem icon={mdiFileDownload} label={t("servers.fileManager.contextMenu.download")} onClick={handleDownload} />
+                <ContextMenuItem icon={mdiFileDownload} label={t("servers.fileManager.contextMenu.download")} onClick={() => downloadFile(getFullPath(selectedItem))} />
                 <ContextMenuItem icon={mdiTrashCan} label={t("servers.fileManager.contextMenu.delete")} onClick={handleDeleteClick} danger />
             </ContextMenu>
+
+            <ContextMenu isOpen={dropMenu.isOpen} position={dropMenu.position} onClose={() => { dropMenu.close(); setPendingDrop(null); }}>
+                <ContextMenuItem icon={mdiFileMove} label={t("servers.fileManager.contextMenu.moveHere")} onClick={() => handleDropAction("move")} />
+                <ContextMenuItem icon={mdiContentCopy} label={t("servers.fileManager.contextMenu.copyHere")} onClick={() => handleDropAction("copy")} />
+            </ContextMenu>
+
+            <div className="drag-preview" ref={dragImageRef}>
+                <div className="drag-icons"><div className="drag-badge"></div></div>
+            </div>
         </div>
     );
 });

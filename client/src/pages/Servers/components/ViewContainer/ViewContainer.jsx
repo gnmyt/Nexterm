@@ -374,7 +374,7 @@ export const ViewContainer = ({
                                       onFullscreenToggle={toggleFullscreenMode} />;
             case "sftp":
                 return <FileRenderer session={session} disconnectFromServer={disconnectFromServer}
-                                     setOpenFileEditors={setOpenFileEditors} />;
+                                     setOpenFileEditors={setOpenFileEditors} isActive={session.id === activeSessionId} />;
             default:
                 return <p>Unknown renderer: {renderer}</p>;
         }

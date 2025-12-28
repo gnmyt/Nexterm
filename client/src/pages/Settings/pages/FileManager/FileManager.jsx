@@ -2,7 +2,7 @@ import "./styles.sass";
 import { useFileSettings } from "@/common/contexts/FileSettingsContext.jsx";
 import { useTranslation } from "react-i18next";
 import Icon from "@mdi/react";
-import { mdiViewGrid, mdiViewList, mdiImage, mdiEyeOff, mdiShieldCheck } from "@mdi/js";
+import { mdiViewGrid, mdiViewList, mdiImage, mdiEyeOff, mdiShieldCheck, mdiCursorMove, mdiFileMove, mdiContentCopy, mdiHelpCircle } from "@mdi/js";
 import ToggleSwitch from "@/common/components/ToggleSwitch";
 
 const SettingItem = ({ icon, title, description, children }) => (
@@ -36,6 +36,7 @@ export const FileManager = () => {
         defaultViewMode, setDefaultViewMode,
         showHiddenFiles, setShowHiddenFiles,
         confirmBeforeDelete, setConfirmBeforeDelete,
+        dragDropAction, setDragDropAction,
     } = useFileSettings();
 
     return (
@@ -99,6 +100,33 @@ export const FileManager = () => {
                         checked={confirmBeforeDelete} 
                         onChange={setConfirmBeforeDelete} 
                     />
+                </SettingItem>
+
+                <SettingItem 
+                    icon={mdiCursorMove}
+                    title={t("settings.fileManager.dragDropAction.title")} 
+                    description={t("settings.fileManager.dragDropAction.description")}
+                >
+                    <div className="view-options three-options">
+                        <ViewOption 
+                            icon={mdiFileMove} 
+                            label={t("settings.fileManager.dragDropAction.move")} 
+                            selected={dragDropAction === "move"}
+                            onClick={() => setDragDropAction("move")}
+                        />
+                        <ViewOption 
+                            icon={mdiContentCopy} 
+                            label={t("settings.fileManager.dragDropAction.copy")} 
+                            selected={dragDropAction === "copy"}
+                            onClick={() => setDragDropAction("copy")}
+                        />
+                        <ViewOption 
+                            icon={mdiHelpCircle} 
+                            label={t("settings.fileManager.dragDropAction.ask")} 
+                            selected={dragDropAction === "ask"}
+                            onClick={() => setDragDropAction("ask")}
+                        />
+                    </div>
                 </SettingItem>
             </div>
         </div>

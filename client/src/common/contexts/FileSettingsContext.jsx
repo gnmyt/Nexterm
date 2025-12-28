@@ -25,21 +25,18 @@ export const FileSettingsProvider = ({ children }) => {
         return saved !== null ? saved === "true" : true;
     });
 
+    const [dragDropAction, setDragDropAction] = useState(() => {
+        const saved = localStorage.getItem("file-drag-drop-action");
+        return saved || "ask";
+    });
+
     useEffect(() => {
         localStorage.setItem("file-show-thumbnails", showThumbnails.toString());
-    }, [showThumbnails]);
-
-    useEffect(() => {
         localStorage.setItem("file-default-view-mode", defaultViewMode);
-    }, [defaultViewMode]);
-
-    useEffect(() => {
         localStorage.setItem("file-show-hidden", showHiddenFiles.toString());
-    }, [showHiddenFiles]);
-
-    useEffect(() => {
         localStorage.setItem("file-confirm-delete", confirmBeforeDelete.toString());
-    }, [confirmBeforeDelete]);
+        localStorage.setItem("file-drag-drop-action", dragDropAction);
+    }, [showThumbnails, defaultViewMode, showHiddenFiles, confirmBeforeDelete, dragDropAction]);
 
     const toggleThumbnails = () => setShowThumbnails(prev => !prev);
     const toggleHiddenFiles = () => setShowHiddenFiles(prev => !prev);
@@ -58,6 +55,8 @@ export const FileSettingsProvider = ({ children }) => {
             confirmBeforeDelete,
             setConfirmBeforeDelete,
             toggleConfirmBeforeDelete,
+            dragDropAction,
+            setDragDropAction,
         }}>
             {children}
         </FileSettingsContext.Provider>

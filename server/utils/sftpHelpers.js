@@ -77,7 +77,7 @@ const searchDirectories = (sftp, searchPath, callback, maxResults = 20) => {
 const OPERATIONS = {
     READY: 0x0, LIST_FILES: 0x1, CREATE_FOLDER: 0x5, DELETE_FILE: 0x6,
     DELETE_FOLDER: 0x7, RENAME_FILE: 0x8, ERROR: 0x9, SEARCH_DIRECTORIES: 0xA,
-    RESOLVE_SYMLINK: 0xB,
+    RESOLVE_SYMLINK: 0xB, MOVE_FILES: 0xC, COPY_FILES: 0xD,
 };
 
 const addFolderToArchive = (sftp, folderPath, archive, basePath = "", activeStreams = [], options = {}) => {

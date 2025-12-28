@@ -14,10 +14,10 @@ import { uploadFile as uploadFileRequest } from "@/common/utils/RequestUtil.js";
 const OPERATIONS = {
     READY: 0x0, LIST_FILES: 0x1, CREATE_FOLDER: 0x5, DELETE_FILE: 0x6, 
     DELETE_FOLDER: 0x7, RENAME_FILE: 0x8, ERROR: 0x9, SEARCH_DIRECTORIES: 0xA, 
-    RESOLVE_SYMLINK: 0xB,
+    RESOLVE_SYMLINK: 0xB, MOVE_FILES: 0xC, COPY_FILES: 0xD,
 };
 
-export const FileRenderer = ({ session, disconnectFromServer, setOpenFileEditors }) => {
+export const FileRenderer = ({ session, disconnectFromServer, setOpenFileEditors, isActive }) => {
     const { sessionToken } = useContext(UserContext);
     const { defaultViewMode } = useFileSettings();
     const { sendToast } = useToast();
@@ -150,10 +150,12 @@ export const FileRenderer = ({ session, disconnectFromServer, setOpenFileEditors
                 case OPERATIONS.DELETE_FILE:
                 case OPERATIONS.DELETE_FOLDER:
                 case OPERATIONS.RENAME_FILE:
+                case OPERATIONS.MOVE_FILES:
+                case OPERATIONS.COPY_FILES:
                     listFiles();
                     break;
                 case OPERATIONS.ERROR:
-                    setError(payload?.message || "An error occurred");
+                    sendToast("Error", payload?.message || "An error occurred");
                     setLoading(false);
                     break;
                 case OPERATIONS.SEARCH_DIRECTORIES:
@@ -203,6 +205,8 @@ export const FileRenderer = ({ session, disconnectFromServer, setOpenFileEditors
 
     const createFolder = (folderName) => sendOperation(OPERATIONS.CREATE_FOLDER, { path: `${directory}/${folderName}` });
     const listFiles = useCallback(() => { setLoading(true); setError(null); sendOperation(OPERATIONS.LIST_FILES, { path: directory }); }, [directory, sendOperation]);
+    const moveFiles = useCallback((sources, destination) => sendOperation(OPERATIONS.MOVE_FILES, { sources, destination }), [sendOperation]);
+    const copyFiles = useCallback((sources, destination) => sendOperation(OPERATIONS.COPY_FILES, { sources, destination }), [sendOperation]);
 
     const changeDirectory = (newDirectory) => {
         if (newDirectory === directory) return;
@@ -215,6 +219,7 @@ export const FileRenderer = ({ session, disconnectFromServer, setOpenFileEditors
     const goForward = () => { if (historyIndex < history.length - 1) { setHistoryIndex(historyIndex + 1); setDirectory(history[historyIndex + 1]); } };
 
     const handleDrag = async (e) => {
+        if (e.dataTransfer.types.includes("application/x-sftp-files")) return;
         e.preventDefault();
         e.stopPropagation();
         if (e.type === "dragover") setDragging(true);
@@ -246,11 +251,12 @@ export const FileRenderer = ({ session, disconnectFromServer, setOpenFileEditors
                     uploadFile={uploadFile} goBack={goBack} goForward={goForward} historyIndex={historyIndex}
                     historyLength={history.length} viewMode={viewMode} setViewMode={setViewMode} 
                     searchDirectories={searchDirectories} directorySuggestions={directorySuggestions} 
-                    setDirectorySuggestions={setDirectorySuggestions} />
+                    setDirectorySuggestions={setDirectorySuggestions} moveFiles={moveFiles} copyFiles={copyFiles} 
+                    sessionId={session.id} />
                 <FileList ref={fileListRef} items={items} path={directory} updatePath={changeDirectory} sendOperation={sendOperation}
                     downloadFile={downloadFile} downloadMultipleFiles={downloadMultipleFiles} setCurrentFile={handleOpenFile} setPreviewFile={handleOpenPreview} 
                     loading={loading} viewMode={viewMode} error={error || connectionError} resolveSymlink={resolveSymlink} session={session}
-                    createFolder={createFolder} />
+                    createFolder={createFolder} moveFiles={moveFiles} copyFiles={copyFiles} isActive={isActive} />
             </div>
             {isUploading && <div className="upload-progress" style={{ width: `${uploadProgress}%` }} />}
         </div>

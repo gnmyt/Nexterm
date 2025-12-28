@@ -8,8 +8,13 @@ import {
     mdiFolderPlus,
     mdiViewList,
     mdiViewGrid,
+    mdiFileMove,
+    mdiContentCopy,
 } from "@mdi/js";
-import { Fragment, useState, useRef, useEffect } from "react";
+import { Fragment, useState, useRef, useEffect, useCallback } from "react";
+import { ContextMenu, ContextMenuItem, useContextMenu } from "@/common/components/ContextMenu";
+import { useTranslation } from "react-i18next";
+import { useFileSettings } from "@/common/contexts/FileSettingsContext.jsx";
 
 export const ActionBar = ({
                               path,
@@ -25,16 +30,26 @@ export const ActionBar = ({
                               searchDirectories,
                               directorySuggestions = [],
                               setDirectorySuggestions,
+                              moveFiles,
+                              copyFiles,
+                              sessionId,
                           }) => {
     const [isEditing, setIsEditing] = useState(false);
     const [editPath, setEditPath] = useState(path);
     const [showSuggestions, setShowSuggestions] = useState(false);
     const [selectedSuggestion, setSelectedSuggestion] = useState(-1);
+    const [pendingDrop, setPendingDrop] = useState(null);
+    const { t } = useTranslation();
+    const { dragDropAction } = useFileSettings();
+    const dropMenu = useContextMenu();
 
     const inputRef = useRef(null);
     const suggestionsRef = useRef(null);
     const breadcrumbRef = useRef(null);
     const isNavigatingWithKeyboardRef = useRef(false);
+    const hoverTimerRef = useRef(null);
+
+    const [dropTarget, setDropTarget] = useState(null);
 
     const getPathArray = () => path.split("/").filter(Boolean);
 
@@ -185,19 +200,78 @@ export const ActionBar = ({
         }, 100);
     };
 
+    const handlePathDragOver = useCallback((event, targetPath) => {
+        if (!event.dataTransfer.types.includes("application/x-sftp-files")) return;
+        event.preventDefault();
+        event.stopPropagation();
+        event.dataTransfer.dropEffect = event.ctrlKey || event.metaKey ? "copy" : "move";
+        if (dropTarget !== targetPath) {
+            setDropTarget(targetPath);
+            if (hoverTimerRef.current) clearTimeout(hoverTimerRef.current);
+            hoverTimerRef.current = setTimeout(() => {
+                updatePath(targetPath);
+                setDropTarget(null);
+            }, 800);
+        }
+    }, [dropTarget, updatePath]);
+
+    const handlePathDragLeave = useCallback(() => {
+        setDropTarget(null);
+        if (hoverTimerRef.current) {
+            clearTimeout(hoverTimerRef.current);
+            hoverTimerRef.current = null;
+        }
+    }, []);
+
+    const handlePathDrop = useCallback((event, targetPath) => {
+        event.preventDefault();
+        event.stopPropagation();
+        if (hoverTimerRef.current) {
+            clearTimeout(hoverTimerRef.current);
+            hoverTimerRef.current = null;
+        }
+        setDropTarget(null);
+        try {
+            const data = JSON.parse(event.dataTransfer.getData("application/x-sftp-files"));
+            if (!data?.paths?.length) return;
+            if (!data.sessionId || data.sessionId !== sessionId) return;
+            if (dragDropAction === "move") {
+                moveFiles?.(data.paths, targetPath);
+            } else if (dragDropAction === "copy") {
+                copyFiles?.(data.paths, targetPath);
+            } else {
+                setPendingDrop({ paths: data.paths, destination: targetPath });
+                dropMenu.open(event, { x: event.clientX, y: event.clientY });
+            }
+        } catch {}
+    }, [sessionId, dropMenu, dragDropAction, moveFiles, copyFiles]);
+
+    const handleDropAction = useCallback((action) => {
+        if (pendingDrop) {
+            action === "move" ? moveFiles?.(pendingDrop.paths, pendingDrop.destination) : copyFiles?.(pendingDrop.paths, pendingDrop.destination);
+            setPendingDrop(null);
+        }
+        dropMenu.close();
+    }, [pendingDrop, moveFiles, copyFiles, dropMenu]);
+
     const renderBreadcrumbs = () => {
         const { parts, showEllipsis, ellipsisIndex, originalLength } = getTruncatedPathArray();
         const fullArray = getPathArray();
 
         return (
             <>
-                <div className="path-part-divider" onClick={(e) => {
-                    e.stopPropagation();
-                    updatePath("/");
-                }}>/
+                <div 
+                    className={`path-part-divider root-drop ${dropTarget === "/" ? "drop-target" : ""}`}
+                    onClick={(e) => { e.stopPropagation(); updatePath("/"); }}
+                    onDragOver={(e) => handlePathDragOver(e, "/")}
+                    onDragLeave={handlePathDragLeave}
+                    onDrop={(e) => handlePathDrop(e, "/")}
+                >/
                 </div>
                 {parts.map((part, i) => {
                     const originalIndex = showEllipsis ? (i === 0 ? 0 : fullArray.length - (parts.length - i)) : i;
+                    const targetPath = `/${fullArray.slice(0, originalIndex + 1).join("/")}`;
+                    const isDropping = dropTarget === targetPath;
 
                     return (
                         <Fragment key={`${originalIndex}-${part}`}>
@@ -210,10 +284,14 @@ export const ActionBar = ({
                                     <div className="path-part-divider">/</div>
                                 </>
                             )}
-                            <div title={part} className="path-part" onClick={(e) => {
-                                e.stopPropagation();
-                                navigate(i, showEllipsis, originalIndex);
-                            }}>{part}</div>
+                            <div 
+                                title={part} 
+                                className={`path-part ${isDropping ? "drop-target" : ""}`}
+                                onClick={(e) => { e.stopPropagation(); navigate(i, showEllipsis, originalIndex); }}
+                                onDragOver={(e) => handlePathDragOver(e, targetPath)}
+                                onDragLeave={handlePathDragLeave}
+                                onDrop={(e) => handlePathDrop(e, targetPath)}
+                            >{part}</div>
                             <div className="path-part-divider">/</div>
                         </Fragment>
                     );
@@ -267,6 +345,12 @@ export const ActionBar = ({
                 <Icon path={mdiFileUpload} onClick={uploadFile} />
                 <Icon path={mdiFolderPlus} onClick={createFolder} />
             </div>
+
+            <ContextMenu isOpen={dropMenu.isOpen} position={dropMenu.position} onClose={() => { dropMenu.close(); setPendingDrop(null); }}>
+                <ContextMenuItem icon={mdiFileMove} label={t("servers.fileManager.contextMenu.moveHere")} onClick={() => handleDropAction("move")} />
+                <ContextMenuItem icon={mdiContentCopy} label={t("servers.fileManager.contextMenu.copyHere")} onClick={() => handleDropAction("copy")} />
+            </ContextMenu>
         </div>
     );
 };
+
