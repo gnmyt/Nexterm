@@ -1394,6 +1394,11 @@
       }
     },
     "fileManager": {
+      "createFile": {
+        "title": "Create File",
+        "placeholder": "File Name",
+        "button": "Create File"
+      },
       "createFolder": {
         "title": "Create Folder",
         "placeholder": "Folder Name",

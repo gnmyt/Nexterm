@@ -17,7 +17,7 @@ import SelectionActionBar from "../SelectionActionBar";
 export const FileList = forwardRef(({
     items, updatePath, path, sendOperation, downloadFile, downloadMultipleFiles,
     setCurrentFile, setPreviewFile, loading, viewMode = "list", error,
-    resolveSymlink, session, createFolder, moveFiles, copyFiles, isActive,
+    resolveSymlink, session, createFile, createFolder, moveFiles, copyFiles, isActive,
 }, ref) => {
     const { t } = useTranslation();
     const { showThumbnails, showHiddenFiles, confirmBeforeDelete, dragDropAction } = useFileSettings();
@@ -29,6 +29,8 @@ export const FileList = forwardRef(({
     const [renameValue, setRenameValue] = useState("");
     const [creatingFolder, setCreatingFolder] = useState(false);
     const [newFolderName, setNewFolderName] = useState("");
+    const [creatingFile, setCreatingFile] = useState(false);
+    const [newFileName, setNewFileName] = useState("");
     const [bigFileDialogOpen, setBigFileDialogOpen] = useState(false);
     const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
     const [thumbnailErrors, setThumbnailErrors] = useState({});
@@ -53,6 +55,10 @@ export const FileList = forwardRef(({
         startCreateFolder: () => {
             setCreatingFolder(true);
             setNewFolderName("");
+        },
+        startCreateFile: () => {
+            setCreatingFile(true);
+            setNewFileName("");
         },
     }));
 
@@ -387,6 +393,8 @@ export const FileList = forwardRef(({
     const handleRenameKeyDown = (e, item) => { if (e.key === 'Enter') { e.preventDefault(); handleRename(item, renameValue); } else if (e.key === 'Escape') setRenamingItem(null); };
     const handleCreateFolder = () => { if (newFolderName.trim()) createFolder(newFolderName.trim()); setCreatingFolder(false); };
     const handleCreateFolderKeyDown = (e) => { if (e.key === 'Enter') { e.preventDefault(); handleCreateFolder(); } else if (e.key === 'Escape') setCreatingFolder(false); };
+    const handleCreateFile = () => { if (newFileName.trim()) createFile(newFileName.trim()); setCreatingFile(false); };
+    const handleCreateFileKeyDown = (e) => { if (e.key === 'Enter') { e.preventDefault(); handleCreateFile(); } else if (e.key === 'Escape') setCreatingFile(false); };
     const openFile = () => selectedItem?.size >= 1024 * 1024 ? setBigFileDialogOpen(true) : setCurrentFile(getFullPath(selectedItem));
 
     return (
@@ -410,7 +418,7 @@ export const FileList = forwardRef(({
                     <h3>Access Denied</h3>
                     <p>{error}</p>
                 </div>
-            ) : filteredItems.length === 0 && !creatingFolder ? (
+            ) : filteredItems.length === 0 && !creatingFolder && !creatingFile ? (
                 <div className="empty-state">
                     <Icon path={mdiFolder} />
                     <h3>This folder is empty</h3>
@@ -438,6 +446,24 @@ export const FileList = forwardRef(({
                             className="selection-box"
                             style={{ left: selectionBox.left, top: selectionBox.top, width: selectionBox.width, height: selectionBox.height }}
                         />
+                    )}
+                    {creatingFile && (
+                        <div className={`file-item ${viewMode} new-file`} onMouseDown={(event) => event.stopPropagation()}>
+                            <div className="file-name">
+                                <Icon path={mdiFile} />
+                                <input
+                                    type="text"
+                                    className="rename-input"
+                                    value={newFileName}
+                                    onChange={(event) => setNewFileName(event.target.value)}
+                                    onKeyDown={handleCreateFileKeyDown}
+                                    onBlur={handleCreateFile}
+                                    placeholder={t("servers.fileManager.createFile.placeholder")}
+                                    autoFocus
+                                />
+                            </div>
+                            {viewMode === "list" && <><p className="file-size"></p><p className="file-date"></p></>}
+                        </div>
                     )}
                     {creatingFolder && (
                         <div className={`file-item ${viewMode} new-folder`} onMouseDown={(event) => event.stopPropagation()}>
@@ -573,7 +599,7 @@ export const FileList = forwardRef(({
                 {selectedItem?.type === "file" && (
                     <>
                         {isPreviewable(selectedItem.name) && (
-                            <ContextMenuItem icon={mdiEye} label={t("servers.fileManager.contextMenu.preview")} onClick={handlePreview} />
+                            <ContextMenuItem icon={mdiEye} label={t("servers.fileManager.contextMenu.preview")} onClick={() => setPreviewFile?.(getFullPath(selectedItem))} />
                         )}
                         <ContextMenuItem icon={mdiTextBoxEdit} label={t("servers.fileManager.contextMenu.edit")} onClick={openFile} />
                     </>

@@ -5,6 +5,7 @@ import {
     mdiChevronRight,
     mdiChevronUp,
     mdiFileUpload,
+    mdiFilePlus,
     mdiFolderPlus,
     mdiViewList,
     mdiViewGrid,
@@ -19,6 +20,7 @@ import { useFileSettings } from "@/common/contexts/FileSettingsContext.jsx";
 export const ActionBar = ({
                               path,
                               updatePath,
+                              createFile,
                               createFolder,
                               uploadFile,
                               goBack,
@@ -343,6 +345,7 @@ export const ActionBar = ({
                       onClick={() => setViewMode(viewMode === "list" ? "grid" : "list")}
                       title={viewMode === "list" ? "Switch to grid view" : "Switch to list view"} />
                 <Icon path={mdiFileUpload} onClick={uploadFile} />
+                <Icon path={mdiFilePlus} onClick={createFile} />
                 <Icon path={mdiFolderPlus} onClick={createFolder} />
             </div>
 

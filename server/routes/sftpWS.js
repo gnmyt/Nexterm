@@ -111,6 +111,27 @@ module.exports = async (ws, req) => {
                                 });
                                 break;
 
+                            case OPERATIONS.CREATE_FILE:
+                                if (!payload?.path) return sendError(ws, "Invalid path");
+                                {
+                                    const writeStream = sftp.createWriteStream(payload.path);
+                                    writeStream.on("error", (err) => sendError(ws, getErrMsg(err, "Failed to create file")));
+                                    writeStream.on("close", () => {
+                                        safeSend(ws, Buffer.from([OPERATIONS.CREATE_FILE]));
+                                        createAuditLog({
+                                            accountId: user.id,
+                                            organizationId: entry.organizationId,
+                                            action: AUDIT_ACTIONS.FILE_CREATE,
+                                            resource: RESOURCE_TYPES.FILE,
+                                            details: { filePath: payload.path },
+                                            ipAddress,
+                                            userAgent,
+                                        });
+                                    });
+                                    writeStream.end();
+                                }
+                                break;
+
                             case OPERATIONS.CREATE_FOLDER:
                                 if (!payload?.path) return sendError(ws, "Invalid path");
                                 sftp.mkdir(payload.path, (err) => {

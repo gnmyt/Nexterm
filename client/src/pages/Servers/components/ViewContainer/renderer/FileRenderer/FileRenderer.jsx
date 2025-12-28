@@ -12,7 +12,7 @@ import { getWebSocketUrl, getBaseUrl } from "@/common/utils/ConnectionUtil.js";
 import { uploadFile as uploadFileRequest } from "@/common/utils/RequestUtil.js";
 
 const OPERATIONS = {
-    READY: 0x0, LIST_FILES: 0x1, CREATE_FOLDER: 0x5, DELETE_FILE: 0x6, 
+    READY: 0x0, LIST_FILES: 0x1, CREATE_FILE: 0x4, CREATE_FOLDER: 0x5, DELETE_FILE: 0x6, 
     DELETE_FOLDER: 0x7, RENAME_FILE: 0x8, ERROR: 0x9, SEARCH_DIRECTORIES: 0xA, 
     RESOLVE_SYMLINK: 0xB, MOVE_FILES: 0xC, COPY_FILES: 0xD,
 };
@@ -146,6 +146,7 @@ export const FileRenderer = ({ session, disconnectFromServer, setOpenFileEditors
                     else { setError("Failed to load directory contents"); setItems([]); }
                     setLoading(false);
                     break;
+                case OPERATIONS.CREATE_FILE:
                 case OPERATIONS.CREATE_FOLDER:
                 case OPERATIONS.DELETE_FILE:
                 case OPERATIONS.DELETE_FOLDER:
@@ -203,6 +204,7 @@ export const FileRenderer = ({ session, disconnectFromServer, setOpenFileEditors
         } catch { return false; }
     }, [sendMessage, readyState]);
 
+    const createFile = (fileName) => sendOperation(OPERATIONS.CREATE_FILE, { path: `${directory}/${fileName}` });
     const createFolder = (folderName) => sendOperation(OPERATIONS.CREATE_FOLDER, { path: `${directory}/${folderName}` });
     const listFiles = useCallback(() => { setLoading(true); setError(null); sendOperation(OPERATIONS.LIST_FILES, { path: directory }); }, [directory, sendOperation]);
     const moveFiles = useCallback((sources, destination) => sendOperation(OPERATIONS.MOVE_FILES, { sources, destination }), [sendOperation]);
@@ -247,8 +249,8 @@ export const FileRenderer = ({ session, disconnectFromServer, setOpenFileEditors
                 </div>
             </div>
             <div className="file-manager">
-                <ActionBar path={directory} updatePath={changeDirectory} createFolder={() => fileListRef.current?.startCreateFolder()}
-                    uploadFile={uploadFile} goBack={goBack} goForward={goForward} historyIndex={historyIndex}
+                <ActionBar path={directory} updatePath={changeDirectory} createFile={() => fileListRef.current?.startCreateFile()}
+                    createFolder={() => fileListRef.current?.startCreateFolder()} uploadFile={uploadFile} goBack={goBack} goForward={goForward} historyIndex={historyIndex}
                     historyLength={history.length} viewMode={viewMode} setViewMode={setViewMode} 
                     searchDirectories={searchDirectories} directorySuggestions={directorySuggestions} 
                     setDirectorySuggestions={setDirectorySuggestions} moveFiles={moveFiles} copyFiles={copyFiles} 
@@ -256,7 +258,7 @@ export const FileRenderer = ({ session, disconnectFromServer, setOpenFileEditors
                 <FileList ref={fileListRef} items={items} path={directory} updatePath={changeDirectory} sendOperation={sendOperation}
                     downloadFile={downloadFile} downloadMultipleFiles={downloadMultipleFiles} setCurrentFile={handleOpenFile} setPreviewFile={handleOpenPreview} 
                     loading={loading} viewMode={viewMode} error={error || connectionError} resolveSymlink={resolveSymlink} session={session}
-                    createFolder={createFolder} moveFiles={moveFiles} copyFiles={copyFiles} isActive={isActive} />
+                    createFile={createFile} createFolder={createFolder} moveFiles={moveFiles} copyFiles={copyFiles} isActive={isActive} />
             </div>
             {isUploading && <div className="upload-progress" style={{ width: `${uploadProgress}%` }} />}
         </div>
