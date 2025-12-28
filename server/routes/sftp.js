@@ -166,12 +166,12 @@ app.get("/", async (req, res) => {
                 if (stats.isDirectory()) {
                     res.header("Content-Disposition", `attachment; filename="${safeFileName}.zip"`);
                     res.header("Content-Type", "application/zip");
-                    const archive = archiver("zip", { zlib: { level: 5 } });
+                    const archive = archiver("zip", { zlib: { level: 1 } });
                     streams.push(archive);
                     archive.on("error", () => { archive.abort(); cleanupAll(); });
                     archive.on("end", cleanupAll);
                     archive.pipe(res);
-                    await addFolderToArchive(sftp, remotePath, archive, safeFileName, streams);
+                    await addFolderToArchive(sftp, remotePath, archive, safeFileName, streams, { concurrency: 8 });
                     archive.finalize();
                     audit(v, req, AUDIT_ACTIONS.FOLDER_DOWNLOAD, RESOURCE_TYPES.FOLDER, { folderPath: remotePath });
                     return;

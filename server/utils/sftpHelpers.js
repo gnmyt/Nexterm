@@ -81,57 +81,62 @@ const OPERATIONS = {
 };
 
 const addFolderToArchive = (sftp, folderPath, archive, basePath = "", activeStreams = [], options = {}) => {
-    const { timeout = 30000, maxFiles = 10000 } = options;
+    const { timeout = 60000, maxFiles = 10000, concurrency = 8 } = options;
     let fileCount = 0;
 
-    const addFolder = (currentPath, currentBasePath) => new Promise((resolve, reject) => {
-        const tid = setTimeout(() => reject(new Error(`Timeout: ${currentPath}`)), timeout);
-
-        sftp.readdir(currentPath, async (err, list) => {
+    const processFile = (fullPath, archivePath) => new Promise((res, rej) => {
+        const tid = setTimeout(() => rej(new Error(`Timeout: ${fullPath}`)), timeout);
+        let resolved = false;
+        const done = (err) => {
+            if (resolved) return;
+            resolved = true;
             clearTimeout(tid);
-            if (err) return err.code === 3 ? resolve() : reject(err);
+            err && err.code !== 3 ? rej(err) : res();
+        };
 
-            if (!list?.length) {
-                try { archive.append("", { name: currentBasePath + "/" }); } catch {}
-                return resolve();
-            }
-
-            try {
-                for (const file of list) {
-                    if (file.longname.startsWith("l")) continue;
-                    if (++fileCount > maxFiles) break;
-
-                    const fullPath = currentPath === "/" ? `/${file.filename}` : `${currentPath}/${file.filename}`;
-                    const archivePath = currentBasePath ? `${currentBasePath}/${file.filename}` : file.filename;
-
-                    if (file.longname.startsWith("d")) {
-                        await addFolder(fullPath, archivePath);
-                    } else {
-                        await new Promise((res, rej) => {
-                            const stid = setTimeout(() => rej(new Error(`Timeout: ${fullPath}`)), timeout);
-                            let resolved = false;
-                            const done = (err) => {
-                                if (resolved) return;
-                                resolved = true;
-                                clearTimeout(stid);
-                                err && err.code !== 3 ? rej(err) : res();
-                            };
-
-                            try {
-                                const stream = sftp.createReadStream(fullPath);
-                                activeStreams.push(stream);
-                                stream.on("error", done);
-                                stream.on("end", () => done());
-                                stream.on("close", () => done());
-                                archive.append(stream, { name: archivePath });
-                            } catch (e) { clearTimeout(stid); rej(e); }
-                        });
-                    }
-                }
-                resolve();
-            } catch (e) { reject(e); }
-        });
+        try {
+            const stream = sftp.createReadStream(fullPath, { highWaterMark: 64 * 1024 });
+            activeStreams.push(stream);
+            stream.on("error", done);
+            stream.on("end", () => done());
+            stream.on("close", () => done());
+            archive.append(stream, { name: archivePath });
+        } catch (e) { clearTimeout(tid); rej(e); }
     });
+
+    const processInBatches = async (items, processor) => {
+        for (let i = 0; i < items.length; i += concurrency) {
+            await Promise.all(items.slice(i, i + concurrency).map(processor));
+        }
+    };
+
+    const addFolder = async (currentPath, currentBasePath) => {
+        const list = await new Promise((resolve, reject) => {
+            const tid = setTimeout(() => reject(new Error(`Timeout: ${currentPath}`)), timeout);
+            sftp.readdir(currentPath, (err, list) => {
+                clearTimeout(tid);
+                if (err) return err.code === 3 ? resolve([]) : reject(err);
+                resolve(list || []);
+            });
+        });
+
+        if (!list.length) {
+            try { archive.append("", { name: currentBasePath + "/" }); } catch {}
+            return;
+        }
+
+        const files = [], dirs = [];
+        for (const file of list) {
+            if (file.longname.startsWith("l")) continue;
+            if (++fileCount > maxFiles) break;
+            const fullPath = currentPath === "/" ? `/${file.filename}` : `${currentPath}/${file.filename}`;
+            const archivePath = currentBasePath ? `${currentBasePath}/${file.filename}` : file.filename;
+            (file.longname.startsWith("d") ? dirs : files).push({ fullPath, archivePath });
+        }
+
+        await processInBatches(files, ({ fullPath, archivePath }) => processFile(fullPath, archivePath));
+        for (const { fullPath, archivePath } of dirs) await addFolder(fullPath, archivePath);
+    };
 
     return addFolder(folderPath, basePath);
 };
