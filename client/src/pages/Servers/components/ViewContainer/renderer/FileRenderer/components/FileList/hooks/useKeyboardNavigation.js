@@ -9,6 +9,7 @@ export const useKeyboardNavigation = ({
     renamingItem,
     creatingFolder,
     creatingFile,
+    contextMenuOpen,
     handleCopy,
     handleCut,
     handlePaste,
@@ -39,7 +40,7 @@ export const useKeyboardNavigation = ({
         if (!isActive) return;
 
         const handleKeyDown = (event) => {
-            if (renamingItem || creatingFolder || creatingFile) return;
+            if (renamingItem || creatingFolder || creatingFile || contextMenuOpen) return;
             if (event.target.tagName === 'INPUT' || event.target.tagName === 'TEXTAREA') return;
 
             const isMod = event.ctrlKey || event.metaKey;
@@ -59,43 +60,23 @@ export const useKeyboardNavigation = ({
 
             if (event.key === 'ArrowDown' || event.key === 'ArrowUp') {
                 event.preventDefault();
-                
                 if (filteredItems.length === 0) return;
-
-                let newIndex;
-                if (focusedIndex === -1) {
-                    newIndex = event.key === 'ArrowDown' ? 0 : filteredItems.length - 1;
-                } else {
-                    if (event.key === 'ArrowDown') {
-                        newIndex = Math.min(focusedIndex + 1, filteredItems.length - 1);
-                    } else {
-                        newIndex = Math.max(focusedIndex - 1, 0);
-                    }
-                }
-
+                const newIndex = focusedIndex === -1
+                    ? (event.key === 'ArrowDown' ? 0 : filteredItems.length - 1)
+                    : Math.max(0, Math.min(filteredItems.length - 1, focusedIndex + (event.key === 'ArrowDown' ? 1 : -1)));
                 setFocusedIndex(newIndex);
                 scrollItemIntoView(newIndex);
-
-                if (event.shiftKey) {
-                    const item = filteredItems[newIndex];
-                    if (!selectedItems.some(s => s.name === item.name)) {
-                        setSelectedItems(prev => [...prev, item]);
-                    }
+                if (event.shiftKey && !selectedItems.some(s => s.name === filteredItems[newIndex].name)) {
+                    setSelectedItems(prev => [...prev, filteredItems[newIndex]]);
                 }
                 return;
             }
 
-            if (event.key === 'Home') {
+            if (event.key === 'Home' || event.key === 'End') {
                 event.preventDefault();
-                setFocusedIndex(0);
-                scrollItemIntoView(0);
-                return;
-            }
-            if (event.key === 'End') {
-                event.preventDefault();
-                const lastIndex = filteredItems.length - 1;
-                setFocusedIndex(lastIndex);
-                scrollItemIntoView(lastIndex);
+                const idx = event.key === 'Home' ? 0 : filteredItems.length - 1;
+                setFocusedIndex(idx);
+                scrollItemIntoView(idx);
                 return;
             }
 
@@ -114,7 +95,7 @@ export const useKeyboardNavigation = ({
         document.addEventListener('keydown', handleKeyDown);
         return () => document.removeEventListener('keydown', handleKeyDown);
     }, [
-        isActive, renamingItem, creatingFolder, creatingFile, focusedIndex, filteredItems,
+        isActive, renamingItem, creatingFolder, creatingFile, contextMenuOpen, focusedIndex, filteredItems,
         selectedItems, setSelectedItems, handleCopy, handleCut, handlePaste, handleClick,
         scrollItemIntoView, toggleSelection,
     ]);
