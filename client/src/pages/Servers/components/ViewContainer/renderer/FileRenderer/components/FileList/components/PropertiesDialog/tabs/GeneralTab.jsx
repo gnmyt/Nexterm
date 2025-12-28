@@ -27,7 +27,7 @@ export const GeneralTab = ({
         <div className="properties-content">
             <div className="property-section">
                 <div className="property-row">
-                    <span className="label">{t("servers.fileManager.properties.path", "Location")}</span>
+                    <span className="label">{t("servers.fileManager.properties.path")}</span>
                     <span className="value path-value">
                         <code>{fullPath}</code>
                         <Button icon={copied === "path" ? mdiCheck : mdiContentCopy} onClick={() => onCopy(fullPath, "path")} type="primary" />
@@ -37,7 +37,7 @@ export const GeneralTab = ({
 
             <div className="property-section">
                 <div className="property-row">
-                    <span className="label">{t("servers.fileManager.properties.size", "Size")}</span>
+                    <span className="label">{t("servers.fileManager.properties.size")}</span>
                     <span className="value">
                         {loadingStats ? (
                             <Icon path={mdiLoading} className="spinning" />
@@ -50,7 +50,7 @@ export const GeneralTab = ({
                             ) : (
                                 <Button
                                     icon={loadingFolderSize ? mdiLoading : mdiCalculator}
-                                    text={t("servers.fileManager.properties.calculateSize", "Calculate")}
+                                    text={t("servers.fileManager.properties.calculateSize")}
                                     onClick={onCalculateFolderSize}
                                     disabled={loadingFolderSize}
                                     type="secondary"
@@ -70,22 +70,22 @@ export const GeneralTab = ({
 
             <div className="property-section">
                 <div className="property-row">
-                    <span className="label">{t("servers.fileManager.properties.owner", "Owner")}</span>
+                    <span className="label">{t("servers.fileManager.properties.owner")}</span>
                     <span className="value">{loadingStats ? <Icon path={mdiLoading} className="spinning" /> : stats?.owner || "-"}</span>
                 </div>
                 <div className="property-row">
-                    <span className="label">{t("servers.fileManager.properties.group", "Group")}</span>
+                    <span className="label">{t("servers.fileManager.properties.group")}</span>
                     <span className="value">{loadingStats ? <Icon path={mdiLoading} className="spinning" /> : stats?.group || "-"}</span>
                 </div>
             </div>
 
             <div className="property-section">
                 <div className="property-row">
-                    <span className="label">{t("servers.fileManager.properties.modified", "Modified")}</span>
+                    <span className="label">{t("servers.fileManager.properties.modified")}</span>
                     <span className="value">{loadingStats ? <Icon path={mdiLoading} className="spinning" /> : formatDate(stats?.mtime || item?.last_modified)}</span>
                 </div>
                 <div className="property-row">
-                    <span className="label">{t("servers.fileManager.properties.accessed", "Accessed")}</span>
+                    <span className="label">{t("servers.fileManager.properties.accessed")}</span>
                     <span className="value">{loadingStats ? <Icon path={mdiLoading} className="spinning" /> : formatDate(stats?.atime)}</span>
                 </div>
             </div>

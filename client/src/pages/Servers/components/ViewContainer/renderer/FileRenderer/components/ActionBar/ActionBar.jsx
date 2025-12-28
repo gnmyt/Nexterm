@@ -280,7 +280,7 @@ export const ActionBar = ({
                             {showEllipsis && i === ellipsisIndex && (
                                 <>
                                     <div className="path-part ellipsis"
-                                         title={`${originalLength - parts.length + 1} hidden directories`}>
+                                         title={t("servers.fileManager.actionBar.hiddenDirectories", { count: originalLength - parts.length + 1 })}>
                                         ...
                                     </div>
                                     <div className="path-part-divider">/</div>
@@ -314,7 +314,7 @@ export const ActionBar = ({
                     <div className="path-input-container">
                         <input ref={inputRef} className="path-input" type="text" value={editPath}
                                onChange={(e) => setEditPath(e.target.value)} onKeyDown={handleInputKeyDown}
-                               onBlur={handleInputBlur} placeholder="Enter directory path..." autoComplete="off"
+                               onBlur={handleInputBlur} placeholder={t("servers.fileManager.actionBar.enterDirectory")} autoComplete="off"
                                spellCheck="false" />
                         {showSuggestions && directorySuggestions.length > 0 && (
                             <div className="suggestions-dropdown" ref={suggestionsRef}>
@@ -343,7 +343,7 @@ export const ActionBar = ({
             <div className="file-actions">
                 <Icon path={viewMode === "list" ? mdiViewGrid : mdiViewList}
                       onClick={() => setViewMode(viewMode === "list" ? "grid" : "list")}
-                      title={viewMode === "list" ? "Switch to grid view" : "Switch to list view"} />
+                      title={viewMode === "list" ? t("servers.fileManager.actionBar.switchToGrid") : t("servers.fileManager.actionBar.switchToList")} />
                 <Icon path={mdiFileUpload} onClick={uploadFile} />
                 <Icon path={mdiFilePlus} onClick={createFile} />
                 <Icon path={mdiFolderPlus} onClick={createFolder} />

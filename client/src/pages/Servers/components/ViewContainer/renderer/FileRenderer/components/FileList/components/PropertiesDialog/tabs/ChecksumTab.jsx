@@ -26,7 +26,7 @@ export const ChecksumTab = ({
                     ) : (
                         <Button
                             icon={loadingChecksum[algo] ? mdiLoading : mdiCalculator}
-                            text={loadingChecksum[algo] ? t("servers.fileManager.properties.calculating", "Calculating...") : t("servers.fileManager.properties.calculate", "Calculate")}
+                            text={loadingChecksum[algo] ? t("servers.fileManager.properties.calculating") : t("servers.fileManager.properties.calculate")}
                             onClick={() => onCalculate(algo)}
                             disabled={loadingChecksum[algo]}
                             type="secondary"

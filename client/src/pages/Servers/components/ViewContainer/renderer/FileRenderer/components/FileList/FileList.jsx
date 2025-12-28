@@ -172,29 +172,29 @@ export const FileList = forwardRef(({
         <div className={`file-list ${viewMode}`}>
             {viewMode === "list" && (
                 <div className="file-list-header">
-                    <div className="header-name">Name</div>
-                    <div className="header-size">Size</div>
-                    <div className="header-permissions">Permissions</div>
-                    <div className="header-date">Modified</div>
+                    <div className="header-name">{t("servers.fileManager.header.name")}</div>
+                    <div className="header-size">{t("servers.fileManager.header.size")}</div>
+                    <div className="header-permissions">{t("servers.fileManager.header.permissions")}</div>
+                    <div className="header-date">{t("servers.fileManager.header.modified")}</div>
                     <div className="header-actions"></div>
                 </div>
             )}
             {loading ? (
                 <div className="loading-state">
                     <div className="loading-spinner"></div>
-                    <p>Loading files...</p>
+                    <p>{t("servers.fileManager.states.loading")}</p>
                 </div>
             ) : error ? (
                 <div className="error-state">
                     <Icon path={mdiAlertCircle} />
-                    <h3>Access Denied</h3>
+                    <h3>{t("servers.fileManager.states.accessDenied")}</h3>
                     <p>{error}</p>
                 </div>
             ) : filteredItems.length === 0 && !creatingFolder && !creatingFile ? (
                 <div className="empty-state">
                     <Icon path={mdiFolder} />
-                    <h3>This folder is empty</h3>
-                    <p>Drop files here to upload them</p>
+                    <h3>{t("servers.fileManager.states.emptyFolder")}</h3>
+                    <p>{t("servers.fileManager.states.dropFilesHint")}</p>
                 </div>
             ) : (
                 <div
@@ -287,17 +287,17 @@ export const FileList = forwardRef(({
                     </>
                 )}
                 <ContextMenuItem icon={mdiFileDownload} label={t("servers.fileManager.contextMenu.download")} onClick={() => downloadFile(`${path}/${selectedItem?.name}`)} />
-                <ContextMenuItem icon={mdiInformationOutline} label={t("servers.fileManager.contextMenu.properties", "Properties")} onClick={() => handlePropertiesClick(selectedItem)} />
+                <ContextMenuItem icon={mdiInformationOutline} label={t("servers.fileManager.contextMenu.properties")} onClick={() => handlePropertiesClick(selectedItem)} />
                 {selectedItem?.type === "folder" && (
-                    <ContextMenuItem icon={mdiConsole} label={t("servers.fileManager.contextMenu.openTerminal", "Open Terminal Here")} onClick={() => handleOpenTerminal(`${path}/${selectedItem.name}`)} />
+                    <ContextMenuItem icon={mdiConsole} label={t("servers.fileManager.contextMenu.openTerminal")} onClick={() => handleOpenTerminal(`${path}/${selectedItem.name}`)} />
                 )}
                 <ContextMenuItem icon={mdiTrashCan} label={t("servers.fileManager.contextMenu.delete")} onClick={handleDeleteClick} danger />
             </ContextMenu>
 
             <ContextMenu isOpen={emptyContextMenu.isOpen} position={emptyContextMenu.position} onClose={emptyContextMenu.close} trigger={emptyContextMenu.triggerRef}>
-                <ContextMenuItem icon={mdiFileDownload} label={t("servers.fileManager.contextMenu.downloadFolder", "Download Folder")} onClick={() => downloadFile(path)} />
-                <ContextMenuItem icon={mdiInformationOutline} label={t("servers.fileManager.contextMenu.properties", "Properties")} onClick={() => handlePropertiesClick(null)} />
-                <ContextMenuItem icon={mdiConsole} label={t("servers.fileManager.contextMenu.openTerminal", "Open Terminal Here")} onClick={() => handleOpenTerminal()} />
+                <ContextMenuItem icon={mdiFileDownload} label={t("servers.fileManager.contextMenu.downloadFolder")} onClick={() => downloadFile(path)} />
+                <ContextMenuItem icon={mdiInformationOutline} label={t("servers.fileManager.contextMenu.properties")} onClick={() => handlePropertiesClick(null)} />
+                <ContextMenuItem icon={mdiConsole} label={t("servers.fileManager.contextMenu.openTerminal")} onClick={() => handleOpenTerminal()} />
             </ContextMenu>
 
             <ContextMenu isOpen={dropMenu.isOpen} position={dropMenu.position} onClose={() => { dropMenu.close(); setPendingDrop(null); }}>

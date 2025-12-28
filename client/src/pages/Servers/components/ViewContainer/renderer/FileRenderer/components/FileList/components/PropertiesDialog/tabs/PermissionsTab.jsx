@@ -17,15 +17,15 @@ export const PermissionsTab = ({
     const { t } = useTranslation();
 
     const permissionCategories = [
-        { key: 'owner', label: t('servers.fileManager.permissions.owner', 'Owner') },
-        { key: 'group', label: t('servers.fileManager.permissions.group', 'Group') },
-        { key: 'others', label: t('servers.fileManager.permissions.others', 'Others') },
+        { key: 'owner', label: t('servers.fileManager.permissions.owner') },
+        { key: 'group', label: t('servers.fileManager.permissions.group') },
+        { key: 'others', label: t('servers.fileManager.permissions.others') },
     ];
 
     const permissionLabels = [
-        { key: 'r', label: t('servers.fileManager.permissions.read', 'Read'), short: 'R' },
-        { key: 'w', label: t('servers.fileManager.permissions.write', 'Write'), short: 'W' },
-        { key: 'x', label: t('servers.fileManager.permissions.execute', 'Execute'), short: 'X' },
+        { key: 'r', label: t('servers.fileManager.permissions.read'), short: 'R' },
+        { key: 'w', label: t('servers.fileManager.permissions.write'), short: 'W' },
+        { key: 'x', label: t('servers.fileManager.permissions.execute'), short: 'X' },
     ];
 
     const handlePermissionToggle = useCallback((category, permission) => {
@@ -82,7 +82,7 @@ export const PermissionsTab = ({
             </div>
 
             <div className="octal-section">
-                <label>{t('servers.fileManager.permissions.octal', 'Octal')}</label>
+                <label>{t('servers.fileManager.permissions.octal')}</label>
                 <div className="octal-input-wrapper">
                     <input
                         type="text"
@@ -97,7 +97,7 @@ export const PermissionsTab = ({
             </div>
 
             <div className="permissions-preview">
-                <span>{t('servers.fileManager.permissions.preview', 'Preview')}</span>
+                <span>{t('servers.fileManager.permissions.preview')}</span>
                 <code>
                     {isFolder ? 'd' : '-'}
                     {permissions.owner.r ? 'r' : '-'}

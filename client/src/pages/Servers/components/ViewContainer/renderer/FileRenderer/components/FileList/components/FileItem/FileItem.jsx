@@ -1,4 +1,5 @@
 import React, { memo, useState, useContext } from "react";
+import { useTranslation } from "react-i18next";
 import Icon from "@mdi/react";
 import { mdiDotsVertical, mdiFolder, mdiLinkVariant } from "@mdi/js";
 import { UserContext } from "@/common/contexts/UserContext.jsx";
@@ -34,6 +35,7 @@ export const FileItem = memo(({
                                   onDrop,
                                   itemRef,
                               }) => {
+    const { t } = useTranslation();
     const { sessionToken } = useContext(UserContext);
     const [thumbnailError, setThumbnailError] = useState(false);
 
@@ -101,7 +103,7 @@ export const FileItem = memo(({
                 ) : (
                     <h2 title={item.name}>{item.name}</h2>
                 )}
-                {item.isSymlink && <span className="symlink-badge"><Icon path={mdiLinkVariant} />link</span>}
+                {item.isSymlink && <span className="symlink-badge"><Icon path={mdiLinkVariant} />{t("servers.fileManager.item.link")}</span>}
             </div>
             {viewMode === "list" && (
                 <>

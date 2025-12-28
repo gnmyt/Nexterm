@@ -3,6 +3,10 @@
     "error": "Error",
     "success": "Success",
     "loading": "Loading...",
+    "saving": "Saving...",
+    "close": "Close",
+    "cancel": "Cancel",
+    "save": "Save",
     "actions": {
       "cancel": "Cancel",
       "confirm": "Confirm",
@@ -1439,7 +1443,37 @@
         "selectAll": "Select All",
         "insertSnippet": "Insert Snippet",
         "sendCtrlC": "Send Ctrl+C",
-        "clearTerminal": "Clear Terminal"
+        "clearTerminal": "Clear Terminal",
+        "properties": "Properties",
+        "openTerminal": "Open Terminal Here",
+        "downloadFolder": "Download Folder"
+      },
+      "properties": {
+        "general": "General",
+        "permissions": "Permissions",
+        "checksum": "Checksum",
+        "folder": "Folder",
+        "file": "File",
+        "path": "Location",
+        "size": "Size",
+        "calculateSize": "Calculate",
+        "owner": "Owner",
+        "group": "Group",
+        "modified": "Modified",
+        "accessed": "Accessed",
+        "calculating": "Calculating...",
+        "calculate": "Calculate"
+      },
+      "permissions": {
+        "owner": "Owner",
+        "group": "Group",
+        "others": "Others",
+        "read": "Read",
+        "write": "Write",
+        "execute": "Execute",
+        "octal": "Octal",
+        "preview": "Preview",
+        "apply": "Apply"
       },
       "filePreview": {
         "title": "File Preview",
@@ -1461,6 +1495,34 @@
         "download": "Download",
         "delete": "Delete",
         "deleteConfirm": "Are you sure you want to delete {{count}} item(s)?"
+      },
+      "header": {
+        "name": "Name",
+        "size": "Size",
+        "permissions": "Permissions",
+        "modified": "Modified"
+      },
+      "actionBar": {
+        "enterDirectory": "Enter directory path...",
+        "hiddenDirectories": "{{count}} hidden directories",
+        "switchToGrid": "Switch to grid view",
+        "switchToList": "Switch to list view"
+      },
+      "item": {
+        "link": "link"
+      },
+      "states": {
+        "loading": "Loading files...",
+        "accessDenied": "Access Denied",
+        "emptyFolder": "This folder is empty",
+        "dropFilesHint": "Drop files here to upload them"
+      },
+      "toast": {
+        "downloadingItems": "Downloading {{count}} item(s)...",
+        "uploaded": "Uploaded {{name}}",
+        "uploadFailed": "Upload failed: {{message}}",
+        "connectionLost": "SFTP connection lost. Please reconnect.",
+        "error": "An error occurred"
       }
     },
     "aiAssistant": {

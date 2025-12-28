@@ -1,4 +1,5 @@
 import { useContext, useEffect, useState, useRef, useCallback } from "react";
+import { useTranslation } from "react-i18next";
 import { UserContext } from "@/common/contexts/UserContext.jsx";
 import { useFileSettings } from "@/common/contexts/FileSettingsContext.jsx";
 import { useToast } from "@/common/contexts/ToastContext.jsx";
@@ -19,6 +20,7 @@ const OPERATIONS = {
 };
 
 export const FileRenderer = ({ session, disconnectFromServer, setOpenFileEditors, isActive, onOpenTerminal }) => {
+    const { t } = useTranslation();
     const { sessionToken } = useContext(UserContext);
     const { defaultViewMode } = useFileSettings();
     const { sendToast } = useToast();
@@ -77,7 +79,7 @@ export const FileRenderer = ({ session, disconnectFromServer, setOpenFileEditors
         form.submit();
         document.body.removeChild(form);
         
-        sendToast("Success", `Downloading ${paths.length} item${paths.length > 1 ? 's' : ''}...`);
+        sendToast(t("common.success"), t("servers.fileManager.toast.downloadingItems", { count: paths.length }));
     }
 
     const uploadFileHttp = async (file, targetDir) => {
@@ -95,11 +97,11 @@ export const FileRenderer = ({ session, disconnectFromServer, setOpenFileEditors
             setIsUploading(false);
             setUploadProgress(0);
             listFiles();
-            sendToast("Success", `Uploaded ${file.name}`);
+            sendToast(t("common.success"), t("servers.fileManager.toast.uploaded", { name: file.name }));
             return true;
         } catch (err) {
             console.error("Upload error:", err);
-            sendToast("Error", `Upload failed: ${err.message}`);
+            sendToast(t("common.error"), t("servers.fileManager.toast.uploadFailed", { message: err.message }));
             setIsUploading(false);
             setUploadProgress(0);
             return false;
@@ -159,7 +161,7 @@ export const FileRenderer = ({ session, disconnectFromServer, setOpenFileEditors
                     listFiles();
                     break;
                 case OPERATIONS.ERROR:
-                    sendToast("Error", payload?.message || "An error occurred");
+                    sendToast(t("common.error"), payload?.message || t("servers.fileManager.toast.error"));
                     setLoading(false);
                     break;
                 case OPERATIONS.SEARCH_DIRECTORIES:
@@ -182,7 +184,7 @@ export const FileRenderer = ({ session, disconnectFromServer, setOpenFileEditors
         setConnectionError("Connection error");
         setIsReady(false);
         if (reconnectAttemptsRef.current >= 3) {
-            sendToast("Error", "SFTP connection lost. Please reconnect.");
+            sendToast(t("common.error"), t("servers.fileManager.toast.connectionLost"));
             disconnectFromServer(session.id);
         }
     }, [disconnectFromServer, session.id]);

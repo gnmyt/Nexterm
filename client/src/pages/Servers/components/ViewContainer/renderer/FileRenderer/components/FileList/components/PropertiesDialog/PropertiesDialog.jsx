@@ -101,9 +101,9 @@ export const PropertiesDialog = ({ open, onClose, item, path, sendOperation, OPE
     }, [permissions, sendOperation, OPERATIONS, fullPath]);
 
     const tabs = [
-        { key: "general", label: t("servers.fileManager.properties.general", "General") },
-        { key: "permissions", label: t("servers.fileManager.properties.permissions", "Permissions") },
-        ...(!isFolder ? [{ key: "checksum", label: t("servers.fileManager.properties.checksum", "Checksum") }] : []),
+        { key: "general", label: t("servers.fileManager.properties.general") },
+        { key: "permissions", label: t("servers.fileManager.properties.permissions") },
+        ...(!isFolder ? [{ key: "checksum", label: t("servers.fileManager.properties.checksum") }] : []),
     ];
 
     return (
@@ -115,7 +115,7 @@ export const PropertiesDialog = ({ open, onClose, item, path, sendOperation, OPE
                     </div>
                     <div className="file-info">
                         <h2 title={displayName}>{displayName}</h2>
-                        <span className="file-type">{isFolder ? t("servers.fileManager.properties.folder", "Folder") : t("servers.fileManager.properties.file", "File")}</span>
+                        <span className="file-type">{isFolder ? t("servers.fileManager.properties.folder") : t("servers.fileManager.properties.file")}</span>
                     </div>
                 </div>
 
@@ -161,13 +161,13 @@ export const PropertiesDialog = ({ open, onClose, item, path, sendOperation, OPE
                 <div className="dialog-actions">
                     {activeTab === "permissions" && (
                         <Button
-                            text={permissionsSaving ? t('common.saving', 'Saving...') : t('servers.fileManager.permissions.apply', 'Apply')}
+                            text={permissionsSaving ? t('common.saving') : t('servers.fileManager.permissions.apply')}
                             onClick={handleSavePermissions}
                             disabled={permissionsSaving}
                             icon={permissionsSaving ? mdiLoading : undefined}
                         />
                     )}
-                    <Button text={t("common.close", "Close")} onClick={onClose} type="primary" />
+                    <Button text={t("common.close")} onClick={onClose} type="primary" />
                 </div>
             </div>
         </DialogProvider>
