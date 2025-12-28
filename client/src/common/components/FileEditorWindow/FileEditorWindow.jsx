@@ -20,6 +20,7 @@ export const FileEditorWindow = ({ file, session, onClose, zIndex = 9999 }) => {
     const { sessionToken } = useContext(UserContext);
     const { sendToast } = useToast();
     const [fileContent, setFileContent] = useState("");
+    const [isLoading, setIsLoading] = useState(true);
     const [fileContentChanged, setFileContentChanged] = useState(false);
     const [unsavedChangesDialog, setUnsavedChangesDialog] = useState(false);
     const [saving, setSaving] = useState(false);
@@ -31,14 +32,22 @@ export const FileEditorWindow = ({ file, session, onClose, zIndex = 9999 }) => {
 
     useEffect(() => {
         if (!file) return;
+        setIsLoading(true);
+        setFileContent("");
+        setFileContentChanged(false);
 
         const url = `/api/entries/sftp?sessionId=${session.id}&path=${file}&sessionToken=${sessionToken}`;
         downloadRequest(url).then((res) => {
             const reader = new FileReader();
-            reader.onload = () => setFileContent(reader.result);
+            reader.onload = () => {
+                setFileContent(reader.result);
+                setIsLoading(false);
+            };
             reader.readAsText(res);
+        }).catch(() => {
+            setIsLoading(false);
         });
-    }, [file]);
+    }, [file, session.id, sessionToken]);
 
     const saveFile = async () => {
         setSaving(true);
@@ -114,21 +123,28 @@ export const FileEditorWindow = ({ file, session, onClose, zIndex = 9999 }) => {
             </div>
 
             <div className="file-editor-content">
-                <Editor
-                    value={fileContent || t("servers.fileManager.fileEditor.loading")}
-                    onChange={updateContent}
-                    theme={theme === "dark" ? "vs-dark" : "vs-light"}
-                    options={{
-                        minimap: { enabled: false },
-                        fontSize: 14,
-                        lineNumbers: "on",
-                        scrollBeyondLastLine: false,
-                        automaticLayout: true,
-                        wordWrap: "off",
-                        tabSize: 4,
-                        insertSpaces: true,
-                    }}
-                />
+                {isLoading ? (
+                    <div className="file-editor-loading">
+                        <div className="loading-spinner" />
+                        <span>{t("servers.fileManager.fileEditor.loading")}</span>
+                    </div>
+                ) : (
+                    <Editor
+                        value={fileContent}
+                        onChange={updateContent}
+                        theme={theme === "dark" || theme === "oled" ? "vs-dark" : "vs-light"}
+                        options={{
+                            minimap: { enabled: false },
+                            fontSize: 14,
+                            lineNumbers: "on",
+                            scrollBeyondLastLine: false,
+                            automaticLayout: true,
+                            wordWrap: "off",
+                            tabSize: 4,
+                            insertSpaces: true,
+                        }}
+                    />
+                )}
             </div>
 
             {!isMaximized && (
