@@ -80,6 +80,7 @@
         align-items: center
         gap: 8px
         min-width: 0
+        overflow: hidden
 
         code
           font-family: monospace
@@ -92,6 +93,7 @@
         &.path-value
           code
             flex: 1
+            min-width: 0
             overflow: hidden
             text-overflow: ellipsis
             white-space: nowrap
@@ -253,3 +255,127 @@
     transform: rotate(0deg)
   to
     transform: rotate(360deg)
+
+@media (max-width: 480px)
+  .properties-dialog
+    width: 100%
+    min-width: 280px
+    gap: 12px
+
+    .dialog-header
+      gap: 10px
+      padding-bottom: 12px
+
+      .file-icon
+        width: 40px
+        height: 40px
+        border-radius: 10px
+
+        svg
+          width: 22px
+          height: 22px
+
+      .file-info
+        h2
+          font-size: 14px
+
+        .file-type
+          font-size: 11px
+
+    .properties-content
+      max-height: 300px
+      gap: 10px
+
+      .property-section
+        padding: 10px
+        gap: 8px
+        overflow: hidden
+
+      .property-row
+        flex-direction: column
+        align-items: flex-start
+        gap: 4px
+        max-width: 100%
+
+        .label
+          min-width: auto
+          font-size: 11px
+
+        .value
+          width: 100%
+          font-size: 12px
+          max-width: 100%
+
+          code
+            font-size: 11px
+
+          &.path-value
+            flex-direction: column
+            align-items: stretch
+            gap: 6px
+            
+            code
+              width: 100%
+              max-width: 100%
+              padding: 5px 8px
+              box-sizing: border-box
+              word-break: break-all
+              white-space: normal
+              
+            .button
+              align-self: flex-end
+
+    .checksum-content
+      .checksum-row
+        padding: 8px 10px
+
+        .checksum-value
+          flex-direction: column
+          gap: 6px
+
+          code
+            font-size: 8px
+            padding: 5px 6px
+
+          .button
+            width: 100%
+
+    .permissions-content
+      .permissions-grid
+        padding: 10px
+
+        .grid-header,
+        .grid-row
+          grid-template-columns: 1fr repeat(3, 32px)
+          gap: 4px
+
+        .grid-cell
+          &.category-label
+            font-size: 12px
+
+          &.permission-label
+            font-size: 10px
+
+      .octal-section
+        .octal-input
+          padding: 8px 10px
+          font-size: 16px
+          letter-spacing: 4px
+
+      .permissions-preview
+        padding: 10px
+        gap: 8px
+        flex-direction: column
+        align-items: flex-start
+
+        span
+          font-size: 11px
+
+        code
+          font-size: 13px
+
+    .dialog-actions
+      padding-top: 6px
+      
+      .button
+        flex: 1
