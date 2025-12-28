@@ -1,0 +1,255 @@
+@use "@/common/styles/colors"
+
+.properties-dialog
+  display: flex
+  flex-direction: column
+  gap: 16px
+  width: 400px
+
+  .dialog-header
+    display: flex
+    align-items: center
+    gap: 14px
+    padding-bottom: 16px
+    border-bottom: 1px solid colors.$gray
+    
+    .file-icon
+      display: flex
+      align-items: center
+      justify-content: center
+      width: 48px
+      height: 48px
+      background: colors.$terminal
+      border-radius: 12px
+      flex-shrink: 0
+      
+      svg
+        width: 28px
+        height: 28px
+        color: colors.$primary
+    
+    .file-info
+      flex: 1
+      min-width: 0
+      
+      h2
+        margin: 0 0 4px 0
+        font-size: 16px
+        font-weight: 600
+        color: colors.$white
+        overflow: hidden
+        text-overflow: ellipsis
+        white-space: nowrap
+      
+      .file-type
+        font-size: 12px
+        color: colors.$subtext
+
+  .properties-content
+    display: flex
+    flex-direction: column
+    gap: 12px
+    max-height: 350px
+    overflow-y: auto
+    padding-right: 4px
+
+    .property-section
+      display: flex
+      flex-direction: column
+      gap: 10px
+      padding: 12px
+      background: colors.$terminal
+      border-radius: 8px
+
+    .property-row
+      display: flex
+      align-items: center
+      gap: 12px
+
+      .label
+        min-width: 80px
+        font-size: 12px
+        color: colors.$subtext
+        flex-shrink: 0
+
+      .value
+        flex: 1
+        font-size: 13px
+        color: colors.$white
+        display: flex
+        align-items: center
+        gap: 8px
+        min-width: 0
+
+        code
+          font-family: monospace
+          font-size: 12px
+          background: colors.$gray
+          padding: 2px 6px
+          border-radius: 4px
+          color: colors.$white
+
+        &.path-value
+          code
+            flex: 1
+            overflow: hidden
+            text-overflow: ellipsis
+            white-space: nowrap
+            padding: 6px 10px
+
+        .size-display
+          .size-bytes
+            font-size: 11px
+            color: colors.$subtext
+
+        svg.spinning
+          animation: spin 1s linear infinite
+          width: 14px
+          height: 14px
+          color: colors.$subtext
+          flex-shrink: 0
+
+  .checksum-content
+    gap: 8px !important
+
+    .checksum-row
+      display: flex
+      flex-direction: column
+      gap: 8px
+      padding: 10px 12px
+      background: colors.$terminal
+      border-radius: 8px
+
+      .algo-label
+        font-size: 11px
+        font-weight: 700
+        color: colors.$subtext
+        letter-spacing: 0.5px
+
+      .checksum-value
+        display: flex
+        align-items: flex-start
+        gap: 8px
+        width: 100%
+
+        code
+          flex: 1
+          min-width: 0
+          font-family: monospace
+          font-size: 9px
+          line-height: 1.4
+          color: colors.$white
+          word-break: break-all
+          background: colors.$gray
+          padding: 6px 8px
+          border-radius: 4px
+
+      &.calculated
+        background: rgba(colors.$primary, 0.05)
+        border: 1px solid rgba(colors.$primary, 0.2)
+
+  .permissions-content
+    .permissions-grid
+      background: colors.$terminal
+      border-radius: 8px
+      padding: 12px
+
+      .grid-header,
+      .grid-row
+        display: grid
+        grid-template-columns: 1fr repeat(3, 40px)
+        gap: 8px
+        align-items: center
+
+      .grid-header
+        margin-bottom: 8px
+
+      .grid-row
+        padding: 8px 0
+        border-bottom: 1px solid colors.$gray
+
+        &:last-child
+          border-bottom: none
+
+      .grid-cell
+        display: flex
+        align-items: center
+        justify-content: center
+
+        &.category-label
+          justify-content: flex-start
+          font-size: 13px
+          color: colors.$white
+          font-weight: 500
+
+        &.permission-label
+          font-size: 11px
+          font-weight: 700
+          color: colors.$subtext
+          letter-spacing: 0.5px
+
+    .octal-section
+      display: flex
+      flex-direction: column
+      gap: 8px
+
+      label
+        font-size: 12px
+        color: colors.$subtext
+
+      .octal-input-wrapper
+        display: flex
+        gap: 8px
+
+        .octal-input
+          flex: 1
+          padding: 10px 14px
+          border: 1px solid colors.$gray
+          border-radius: 8px
+          background: colors.$terminal
+          color: colors.$white
+          font-family: monospace
+          font-size: 18px
+          font-weight: 600
+          letter-spacing: 6px
+          text-align: center
+          outline: none
+          transition: border-color 0.15s ease
+
+          &:focus
+            border-color: colors.$primary
+
+          &::placeholder
+            color: colors.$subtext
+            opacity: 0.5
+
+    .permissions-preview
+      display: flex
+      align-items: center
+      gap: 12px
+      padding: 12px
+      background: colors.$terminal
+      border-radius: 8px
+
+      span
+        font-size: 12px
+        color: colors.$subtext
+
+      code
+        font-family: monospace
+        font-size: 14px
+        color: colors.$primary
+        letter-spacing: 1px
+
+  .dialog-actions
+    display: flex
+    justify-content: flex-end
+    gap: 8px
+    padding-top: 8px
+    border-top: 1px solid colors.$gray
+
+@keyframes spin
+  from
+    transform: rotate(0deg)
+  to
+    transform: rotate(360deg)

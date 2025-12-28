@@ -1,1 +1,0 @@
-export { PermissionsDialog as default } from './PermissionsDialog';
