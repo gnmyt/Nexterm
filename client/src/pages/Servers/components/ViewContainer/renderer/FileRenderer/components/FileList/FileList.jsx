@@ -62,7 +62,7 @@ export const FileList = ({
     const getThumbnailUrl = (filename) => {
         const baseUrl = getBaseUrl();
         const fullPath = `${path.endsWith("/") ? path : path + "/"}${filename}`;
-        return `${baseUrl}/api/entries/sftp-download?sessionId=${session.id}&path=${encodeURIComponent(fullPath)}&sessionToken=${sessionToken}&thumbnail=true&size=100`;
+        return `${baseUrl}/api/entries/sftp?sessionId=${session.id}&path=${encodeURIComponent(fullPath)}&sessionToken=${sessionToken}&thumbnail=true&size=100`;
     };
 
     const handleThumbnailError = (filename) => {

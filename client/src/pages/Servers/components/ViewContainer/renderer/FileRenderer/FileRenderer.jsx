@@ -48,7 +48,7 @@ export const FileRenderer = ({ session, disconnectFromServer, setOpenFileEditors
     const downloadFile = (path) => {
         const baseUrl = getBaseUrl();
         const link = document.createElement("a");
-        link.href = `${baseUrl}/api/entries/sftp-download?sessionId=${session.id}&path=${path}&sessionToken=${sessionToken}`;
+        link.href = `${baseUrl}/api/entries/sftp?sessionId=${session.id}&path=${path}&sessionToken=${sessionToken}`;
         link.download = path.split("/").pop();
         document.body.appendChild(link);
         link.click();
@@ -61,7 +61,7 @@ export const FileRenderer = ({ session, disconnectFromServer, setOpenFileEditors
         setUploadProgress(0);
 
         try {
-            const url = `/api/entries/sftp-download/upload?sessionId=${session.id}&path=${encodeURIComponent(filePath)}&sessionToken=${sessionToken}`;
+            const url = `/api/entries/sftp/upload?sessionId=${session.id}&path=${encodeURIComponent(filePath)}&sessionToken=${sessionToken}`;
             await uploadFileRequest(url, file, {
                 onProgress: setUploadProgress,
                 timeout: 5 * 60 * 1000,

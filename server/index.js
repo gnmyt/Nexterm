@@ -52,7 +52,7 @@ app.ws("/api/ws/sftp", require("./routes/sftpWS"));
 app.ws("/api/ws/tunnel", require("./routes/tunnel"));
 app.ws("/api/ws/state", require("./routes/state"));
 
-app.use("/api/entries/sftp-download", require("./routes/sftpDownload"));
+app.use("/api/entries/sftp", require("./routes/sftp"));
 
 app.use("/api/users", authenticate, isAdmin, require("./routes/users"));
 app.use("/api/sources", authenticate, isAdmin, require("./routes/source"));

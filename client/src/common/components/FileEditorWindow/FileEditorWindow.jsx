@@ -32,7 +32,7 @@ export const FileEditorWindow = ({ file, session, onClose, zIndex = 9999 }) => {
     useEffect(() => {
         if (!file) return;
 
-        const url = `/api/entries/sftp-download?sessionId=${session.id}&path=${file}&sessionToken=${sessionToken}`;
+        const url = `/api/entries/sftp?sessionId=${session.id}&path=${file}&sessionToken=${sessionToken}`;
         downloadRequest(url).then((res) => {
             const reader = new FileReader();
             reader.onload = () => setFileContent(reader.result);
@@ -44,7 +44,7 @@ export const FileEditorWindow = ({ file, session, onClose, zIndex = 9999 }) => {
         setSaving(true);
         try {
             const blob = new Blob([fileContent], { type: "application/octet-stream" });
-            const url = `/api/entries/sftp-download/upload?sessionId=${session.id}&path=${encodeURIComponent(file)}&sessionToken=${sessionToken}`;
+            const url = `/api/entries/sftp/upload?sessionId=${session.id}&path=${encodeURIComponent(file)}&sessionToken=${sessionToken}`;
             await uploadFile(url, blob);
             setFileContentChanged(false);
             sendToast("Success", t("servers.fileManager.fileEditor.saveSuccess"));
