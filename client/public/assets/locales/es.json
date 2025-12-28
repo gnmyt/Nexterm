@@ -3,6 +3,10 @@
     "error": "Error",
     "success": "Éxito",
     "loading": "Cargando...",
+    "saving": "Saving...",
+    "close": "Close",
+    "cancel": "Cancel",
+    "save": "Save",
     "actions": {
       "cancel": "Cancela",
       "confirm": "Confirma",
@@ -464,6 +468,7 @@
     "pages": {
       "account": "Cuenta",
       "terminal": "Terminal",
+      "fileManager": "File Manager",
       "keymaps": "Mapas clave",
       "identities": "Identidades",
       "sessions": "Sesiones",
@@ -690,6 +695,49 @@
       },
       "preview": {
         "text": "$ echo '¡Hola, Nexterm!\n¡Hola, Nexterm!\n$ "
+      }
+    },
+    "fileManager": {
+      "title": "File Manager",
+      "description": "Configure how files and folders are displayed and managed.",
+      "defaultView": {
+        "title": "Default View Mode",
+        "description": "Choose the default layout when opening the file manager.",
+        "list": "List View",
+        "listDescription": "Show files in a detailed list with size and date columns",
+        "grid": "Grid View",
+        "gridDescription": "Show files as icons in a grid layout with thumbnails"
+      },
+      "thumbnails": {
+        "title": "Image Thumbnails",
+        "description": "Show image thumbnails in grid view. This uses additional bandwidth to generate previews.",
+        "enabled": "Show Thumbnails",
+        "enabledDescription": "Display image previews in grid view for quick visual identification",
+        "disabled": "Hide Thumbnails",
+        "disabledDescription": "Show only file icons to save bandwidth and improve performance"
+      },
+      "hiddenFiles": {
+        "title": "Hidden Files",
+        "description": "Control visibility of hidden files and folders (names starting with a dot).",
+        "show": "Show Hidden Files",
+        "showDescription": "Display all files including .dotfiles and system directories",
+        "hide": "Hide Hidden Files",
+        "hideDescription": "Only show regular files and folders"
+      },
+      "deleteConfirmation": {
+        "title": "Delete Confirmation",
+        "description": "Require confirmation before deleting files and folders.",
+        "enabled": "Confirm Deletions",
+        "enabledDescription": "Show a confirmation dialog before deleting items",
+        "disabled": "Delete Immediately",
+        "disabledDescription": "Delete files without asking for confirmation"
+      },
+      "dragDropAction": {
+        "title": "Drag & Drop Action",
+        "description": "Default action when dragging files to a new location.",
+        "move": "Move",
+        "copy": "Copy",
+        "ask": "Ask"
       }
     },
     "authentication": {
@@ -1354,6 +1402,11 @@
       }
     },
     "fileManager": {
+      "createFile": {
+        "title": "Create File",
+        "placeholder": "File Name",
+        "button": "Create File"
+      },
       "createFolder": {
         "title": "Crear carpeta",
         "placeholder": "Nombre de la carpeta",
@@ -1387,11 +1440,44 @@
         "upload": "Subir archivo",
         "edit": "Edita",
         "preview": "Vista previa",
+        "moveHere": "Move here",
+        "copyHere": "Copy here",
         "bigFileConfirm": "Este archivo tiene un tamaño de {{size}} MB. ¿Estás seguro de que quieres editarlo?",
+        "deleteConfirm": "Are you sure you want to delete \"{{name}}\"? This action cannot be undone.",
         "selectAll": "Seleccionar todo",
         "insertSnippet": "Insertar fragmento",
         "sendCtrlC": "Enviar Ctrl+C",
-        "clearTerminal": "Borrar terminal"
+        "clearTerminal": "Borrar terminal",
+        "properties": "Properties",
+        "openTerminal": "Open Terminal Here",
+        "downloadFolder": "Download Folder"
+      },
+      "properties": {
+        "general": "General",
+        "permissions": "Permissions",
+        "checksum": "Checksum",
+        "folder": "Folder",
+        "file": "File",
+        "path": "Location",
+        "size": "Size",
+        "calculateSize": "Calculate",
+        "owner": "Owner",
+        "group": "Group",
+        "modified": "Modified",
+        "accessed": "Accessed",
+        "calculating": "Calculating...",
+        "calculate": "Calculate"
+      },
+      "permissions": {
+        "owner": "Owner",
+        "group": "Group",
+        "others": "Others",
+        "read": "Read",
+        "write": "Write",
+        "execute": "Execute",
+        "octal": "Octal",
+        "preview": "Preview",
+        "apply": "Apply"
       },
       "filePreview": {
         "title": "Vista previa del archivo",
@@ -1402,6 +1488,45 @@
         "audioNotSupported": "Tu navegador no soporta la reproducción de audio",
         "download": "Descarga",
         "close": "Cerrar"
+      },
+      "selection": {
+        "itemsSelected": "{{count}} items selected",
+        "filesSelected": "{{count}} file(s) selected",
+        "foldersSelected": "{{count}} folder(s) selected",
+        "clearSelection": "Clear selection",
+        "downloadSelected": "Download selected",
+        "deleteSelected": "Delete selected",
+        "download": "Download",
+        "delete": "Delete",
+        "deleteConfirm": "Are you sure you want to delete {{count}} item(s)?"
+      },
+      "header": {
+        "name": "Name",
+        "size": "Size",
+        "permissions": "Permissions",
+        "modified": "Modified"
+      },
+      "actionBar": {
+        "enterDirectory": "Enter directory path...",
+        "hiddenDirectories": "{{count}} hidden directories",
+        "switchToGrid": "Switch to grid view",
+        "switchToList": "Switch to list view"
+      },
+      "item": {
+        "link": "link"
+      },
+      "states": {
+        "loading": "Loading files...",
+        "accessDenied": "Access Denied",
+        "emptyFolder": "This folder is empty",
+        "dropFilesHint": "Drop files here to upload them"
+      },
+      "toast": {
+        "downloadingItems": "Downloading {{count}} item(s)...",
+        "uploaded": "Uploaded {{name}}",
+        "uploadFailed": "Upload failed: {{message}}",
+        "connectionLost": "SFTP connection lost. Please reconnect.",
+        "error": "An error occurred"
       }
     },
     "aiAssistant": {
