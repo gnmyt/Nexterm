@@ -253,6 +253,12 @@
       transition: all 0.1s ease
       position: relative
 
+      &.has-thumbnail
+        padding-top: 0.5rem
+        
+        .file-name
+          gap: 0.5rem
+
       &.symlink::before
         content: ''
         position: absolute
@@ -281,6 +287,14 @@
         svg
           width: 2.5rem
           height: 2.5rem
+
+        .file-thumbnail
+          width: 80px
+          height: 80px
+          object-fit: cover
+          border-radius: 0.375rem
+          background-color: colors.$gray
+          flex-shrink: 0
 
         h2
           font-size: 0.8rem

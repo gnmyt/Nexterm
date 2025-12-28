@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import "./styles.sass";
 import Icon from "@mdi/react";
 import {
@@ -22,6 +22,9 @@ import { ContextMenu, ContextMenuItem, useContextMenu } from "@/common/component
 import RenameItemDialog from "./components/RenameItemDialog";
 import { ActionConfirmDialog } from "@/common/components/ActionConfirmDialog/ActionConfirmDialog.jsx";
 import { useTranslation } from "react-i18next";
+import { useFileSettings } from "@/common/contexts/FileSettingsContext.jsx";
+import { UserContext } from "@/common/contexts/UserContext.jsx";
+import { getBaseUrl } from "@/common/utils/ConnectionUtil.js";
 
 export const FileList = ({
                              items,
@@ -35,14 +38,36 @@ export const FileList = ({
                              viewMode = "list",
                              error,
                              resolveSymlink,
+                             session,
                          }) => {
     const { t } = useTranslation();
+    const { showThumbnails, showHiddenFiles, confirmBeforeDelete } = useFileSettings();
+    const { sessionToken } = useContext(UserContext);
     const [selectedItem, setSelectedItem] = useState(null);
     const [focusedIndex, setFocusedIndex] = useState(-1);
     const [renameDialogOpen, setRenameDialogOpen] = useState(false);
     const [bigFileDialogOpen, setBigFileDialogOpen] = useState(false);
+    const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+    const [thumbnailErrors, setThumbnailErrors] = useState({});
 
     const contextMenu = useContextMenu();
+
+    const THUMBNAIL_EXTENSIONS = ["jpg", "jpeg", "png", "gif", "webp", "bmp"];
+
+    const isThumbnailSupported = (filename) => {
+        const ext = filename.split(".").pop()?.toLowerCase();
+        return THUMBNAIL_EXTENSIONS.includes(ext);
+    };
+
+    const getThumbnailUrl = (filename) => {
+        const baseUrl = getBaseUrl();
+        const fullPath = `${path.endsWith("/") ? path : path + "/"}${filename}`;
+        return `${baseUrl}/api/entries/sftp-download?sessionId=${session.id}&path=${encodeURIComponent(fullPath)}&sessionToken=${sessionToken}&thumbnail=true&size=100`;
+    };
+
+    const handleThumbnailError = (filename) => {
+        setThumbnailErrors(prev => ({ ...prev, [filename]: true }));
+    };
 
     const getIconByFileEnding = (ending) => {
         const icons = {
@@ -120,6 +145,13 @@ export const FileList = ({
     };
 
     const handleDelete = () => sendOperation(selectedItem.type === "folder" ? 0x7 : 0x6, { path: `${path}/${selectedItem.name}` });
+    const handleDeleteClick = () => {
+        if (confirmBeforeDelete) {
+            setDeleteDialogOpen(true);
+        } else {
+            handleDelete();
+        }
+    };
     const handleDownload = () => downloadFile(`${path}/${selectedItem.name}`);
     const handleRename = (newName) => sendOperation(0x8, {
         path: `${path}/${selectedItem.name}`,
@@ -127,6 +159,10 @@ export const FileList = ({
     });
     const openFile = () => selectedItem.type === "file" && selectedItem.size >= 1024 * 1024 ? setBigFileDialogOpen(true) : setCurrentFile(`${path}/${selectedItem.name}`);
     const handlePreview = () => setPreviewFile?.(`${path}/${selectedItem.name}`);
+
+    const filteredItems = showHiddenFiles 
+        ? items 
+        : items.filter(item => !item.name.startsWith("."));
 
     return (
         <div className={`file-list ${viewMode}`}>
@@ -149,7 +185,7 @@ export const FileList = ({
                     <h3>Access Denied</h3>
                     <p>{error}</p>
                 </div>
-            ) : items.length === 0 ? (
+            ) : filteredItems.length === 0 ? (
                 <div className="empty-state">
                     <Icon path={mdiFolder} />
                     <h3>This folder is empty</h3>
@@ -157,12 +193,19 @@ export const FileList = ({
                 </div>
             ) : (
                 <div className="file-items-container">
-                    {items
+                    {filteredItems
                         .sort((a, b) => b.type.localeCompare(a.type) || a.name.localeCompare(b.name))
-                        .map((item, index) => (
+                        .map((item, index) => {
+                            const canShowThumbnail = viewMode === "grid" && 
+                                showThumbnails && 
+                                item.type === "file" && 
+                                isThumbnailSupported(item.name) && 
+                                !thumbnailErrors[item.name];
+                            
+                            return (
                             <div
                                 key={index}
-                                className={`file-item ${focusedIndex === index ? "focused" : ""} ${viewMode} ${item.isSymlink ? "symlink" : ""}`}
+                                className={`file-item ${focusedIndex === index ? "focused" : ""} ${viewMode} ${item.isSymlink ? "symlink" : ""} ${canShowThumbnail ? "has-thumbnail" : ""}`}
                                 onClick={() => handleClick(item)}
                                 onContextMenu={(e) => handleContextMenu(e, item)}
                                 onMouseEnter={() => setFocusedIndex(index)}
@@ -170,10 +213,20 @@ export const FileList = ({
                                 tabIndex={0}
                             >
                                 <div className="file-name">
-                                    <Icon
-                                        path={item.type === "folder" ? mdiFolder : getIconByFileEnding(item.name.split(".").pop()?.toLowerCase())}
-                                        style={{ color: getIconColor(item) }}
-                                    />
+                                    {canShowThumbnail ? (
+                                        <img 
+                                            src={getThumbnailUrl(item.name)} 
+                                            alt={item.name}
+                                            className="file-thumbnail"
+                                            loading="lazy"
+                                            onError={() => handleThumbnailError(item.name)}
+                                        />
+                                    ) : (
+                                        <Icon
+                                            path={item.type === "folder" ? mdiFolder : getIconByFileEnding(item.name.split(".").pop()?.toLowerCase())}
+                                            style={{ color: getIconColor(item) }}
+                                        />
+                                    )}
                                     <h2 title={item.name}>{item.name}</h2>
                                     {item.isSymlink && (
                                         <span className="symlink-badge">
@@ -194,7 +247,7 @@ export const FileList = ({
                                     onClick={(e) => handleContextMenu(e, item, true)}
                                 />
                             </div>
-                        ))
+                        )})
                     }
                 </div>
             )}
@@ -211,6 +264,13 @@ export const FileList = ({
                 setOpen={setBigFileDialogOpen}
                 onConfirm={() => setCurrentFile(path + "/" + selectedItem?.name)}
                 text={t("servers.fileManager.contextMenu.bigFileConfirm", { size: Math.round(selectedItem?.size / 1024 / 1024) })}
+            />
+
+            <ActionConfirmDialog
+                open={deleteDialogOpen}
+                setOpen={setDeleteDialogOpen}
+                onConfirm={handleDelete}
+                text={t("servers.fileManager.contextMenu.deleteConfirm", { name: selectedItem?.name })}
             />
 
             <ContextMenu
@@ -248,7 +308,7 @@ export const FileList = ({
                 <ContextMenuItem
                     icon={mdiTrashCan}
                     label={t("servers.fileManager.contextMenu.delete")}
-                    onClick={handleDelete}
+                    onClick={handleDeleteClick}
                     danger
                 />
             </ContextMenu>
