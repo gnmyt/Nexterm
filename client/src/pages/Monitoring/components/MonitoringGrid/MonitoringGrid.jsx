@@ -1,7 +1,7 @@
 import Icon from "@mdi/react";
-import { mdiServerOutline, mdiServerOff, mdiAlertCircle, mdiClockOutline, mdiServerNetwork } from "@mdi/js";
-import { loadIcon } from "@/pages/Servers/utils/iconMapping.js";
+import { mdiServerOff, mdiAlertCircle, mdiClockOutline, mdiServerNetwork } from "@mdi/js";
 import { useTranslation } from "react-i18next";
+import { getIconPath } from "@/common/utils/iconUtils.js";
 
 const STATUS_ICONS = { offline: mdiServerOff, error: mdiAlertCircle, unknown: mdiClockOutline };
 
@@ -32,8 +32,7 @@ export const MonitoringGrid = ({ servers, onServerSelect }) => {
 
     const getServerIcon = (server) => {
         if (server.type === "proxmox") return mdiServerNetwork;
-        if (server.icon) return loadIcon(server.icon);
-        return mdiServerOutline;
+        return getIconPath(server.icon);
     };
 
     const getMetrics = (server) => {
