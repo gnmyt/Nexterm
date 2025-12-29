@@ -47,6 +47,22 @@ $tablet: 1024px
         @media (max-width: $mobile)
           font-size: 0.85rem
 
+    .header-action
+      display: flex
+      align-items: center
+
+      .sync-icon
+        color: colors.$subtext
+        cursor: pointer
+        display: inline-flex
+        align-items: center
+        justify-content: center
+        svg
+          width: 1rem
+          height: 1rem
+        &:hover
+          color: colors.$primary
+
   .tfa-title
     display: flex
     align-items: center

@@ -36,6 +36,10 @@ class StateBroadcaster {
                 return require("../controllers/snippet").listAllAccessibleSnippets(accountId, memberships.map(m => m.organizationId));
             case STATE_TYPES.CONNECTIONS:
                 return require("../controllers/serverSession").getSessions(accountId, tabId, browserId);
+            case STATE_TYPES.PREFERENCES:
+                const Account = require("../models/Account");
+                const acc = await Account.findByPk(accountId);
+                return acc ? (acc.preferences || {}) : {};
             default:
                 return null;
         }

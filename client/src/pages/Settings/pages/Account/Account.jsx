@@ -212,10 +212,10 @@ export const Account = () => {
                     </div>
                     <div className="header-action">
                         <Icon
+                            className="sync-icon"
                             path={overrideAppearance ? mdiSyncOff : mdiSync}
                             size={0.8}
                             onClick={() => setOverrideAppearance(!overrideAppearance)}
-                            style={{ cursor: 'pointer', color: (theme === 'dark' || theme === 'oled') ? '#fff' : '#000', alignSelf: 'center' }}
                         />
                     </div>
                 </div>

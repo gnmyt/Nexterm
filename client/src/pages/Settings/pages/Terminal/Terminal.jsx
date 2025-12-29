@@ -64,12 +64,11 @@ export const Terminal = () => {
 
     const renderSection = (title, description, children, overrideFlag, toggleOverride) => (
         <div className="terminal-section">
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+            <div className="section-header" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                 <h2>{title}</h2>
                 {typeof toggleOverride === 'function' && (
-                    <Icon path={overrideFlag ? mdiSyncOff : mdiSync} size={0.8}
-                          onClick={() => toggleOverride(!overrideFlag)}
-                          style={{ cursor: 'pointer', color: (theme === 'dark' || theme === 'oled') ? '#fff' : '#000' }} />
+                    <Icon className="sync-icon" path={overrideFlag ? mdiSyncOff : mdiSync} size={0.8}
+                          onClick={() => toggleOverride(!overrideFlag)} />
                 )}
             </div>
             <div className="section-inner">

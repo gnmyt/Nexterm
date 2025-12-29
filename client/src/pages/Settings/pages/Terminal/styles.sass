@@ -29,6 +29,23 @@ $tablet: 1024px
   .section-inner
     margin-top: 1rem
 
+  .section-header
+    display: inline-flex
+    align-items: center
+    gap: 0.5rem
+
+    .sync-icon
+      color: colors.$subtext
+      cursor: pointer
+      display: inline-flex
+      align-items: center
+      justify-content: center
+      svg
+        width: 1rem
+        height: 1rem
+      &:hover
+        color: colors.$primary
+
 .theme-cards
   display: grid
   grid-template-columns: repeat(auto-fit, minmax(280px, 1fr))
