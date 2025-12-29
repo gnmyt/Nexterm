@@ -9,7 +9,7 @@ import {
 import { ContextMenu, ContextMenuItem, useContextMenu } from "@/common/components/ContextMenu";
 import { ActionConfirmDialog } from "@/common/components/ActionConfirmDialog/ActionConfirmDialog.jsx";
 import { useTranslation } from "react-i18next";
-import { useFileSettings } from "@/common/contexts/FileSettingsContext.jsx";
+import { usePreferences } from "@/common/contexts/PreferencesContext.jsx";
 import SelectionActionBar from "../SelectionActionBar";
 import FileItem from "./components/FileItem";
 import PropertiesDialog from "./components/PropertiesDialog";
@@ -23,7 +23,7 @@ export const FileList = forwardRef(({
     onOpenTerminal, onPropertiesMessage,
 }, ref) => {
     const { t } = useTranslation();
-    const { showThumbnails, showHiddenFiles, confirmBeforeDelete, dragDropAction } = useFileSettings();
+    const { showThumbnails, showHiddenFiles, confirmBeforeDelete, dragDropAction } = usePreferences();
     
     const [selectedItem, setSelectedItem] = useState(null);
     const [renamingItem, setRenamingItem] = useState(null);

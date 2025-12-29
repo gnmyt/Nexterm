@@ -1,7 +1,7 @@
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import App from "@/App.jsx";
-import { ThemeProvider } from "@/common/contexts/ThemeContext.jsx";
+import { PreferencesProvider } from "@/common/contexts/PreferencesContext.jsx";
 
 document.addEventListener("contextmenu", (e) => {
     const tag = e.target.tagName?.toLowerCase();
@@ -11,8 +11,8 @@ document.addEventListener("contextmenu", (e) => {
 
 createRoot(document.getElementById("root")).render(
     <StrictMode>
-        <ThemeProvider>
+        <PreferencesProvider>
             <App />
-        </ThemeProvider>
+        </PreferencesProvider>
     </StrictMode>,
 );

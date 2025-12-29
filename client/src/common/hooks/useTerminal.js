@@ -1,7 +1,6 @@
 import { useEffect, useRef, useContext } from "react";
 import { UserContext } from "@/common/contexts/UserContext.jsx";
-import { useTheme } from "@/common/contexts/ThemeContext.jsx";
-import { useTerminalSettings } from "@/common/contexts/TerminalSettingsContext.jsx";
+import { usePreferences } from "@/common/contexts/PreferencesContext.jsx";
 import { Terminal as Xterm } from "@xterm/xterm";
 import { FitAddon } from "@xterm/addon-fit";
 import { getWebSocketUrl } from "@/common/utils/ConnectionUtil.js";
@@ -53,8 +52,7 @@ export const useTerminal = (containerRef, session, options = {}) => {
     const fitAddonRef = useRef(null);
 
     const { sessionToken } = useContext(UserContext);
-    const { theme } = useTheme();
-    const { getCurrentTheme, selectedFont, fontSize, cursorStyle, cursorBlink, selectedTheme, isOledMode } = useTerminalSettings();
+    const { theme, getCurrentTheme, selectedFont, fontSize, cursorStyle, cursorBlink, selectedTheme, isOledMode } = usePreferences();
 
     useEffect(() => {
         if (!sessionToken || !containerRef.current) return;
