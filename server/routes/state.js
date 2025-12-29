@@ -14,8 +14,8 @@ module.exports = async (ws, req) => {
     const user = await Account.findByPk(session.accountId);
     if (!user) return ws.close(4004, "Account not found");
 
-    const conn = { ws, tabId: tabId || null, browserId: browserId || null };
-    stateBroadcaster.register(user.id, ws, tabId || null, browserId || null);
+    const conn = { ws, tabId: tabId || null, browserId: browserId || null, sessionId: session.id };
+    stateBroadcaster.register(user.id, session.id, ws, tabId || null, browserId || null);
     stateBroadcaster.sendAllStateToConnection(user.id, conn).catch(() => {});
 
     ws.on("message", async (msg) => {

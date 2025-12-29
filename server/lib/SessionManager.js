@@ -359,6 +359,14 @@ class SessionManager {
         return removed;
     }
 
+    async removeAllByAccountId(accountId) {
+        const numericId = Number(accountId);
+        const toRemove = [...this.sessions.entries()].filter(([, s]) => s.accountId === numericId).map(([id]) => id);
+        for (const id of toRemove) await this.remove(id);
+        logger.info(`Removed all sessions for account`, { accountId, count: toRemove.length });
+        return toRemove.length;
+    }
+
     startCleanupInterval() {
         setInterval(() => {
             const removed = this.cleanupOldSessions();

@@ -34,6 +34,13 @@ export const Popout = () => {
         return () => window.removeEventListener("beforeunload", cleanup);
     }, [sessionId, isConnectorMode]);
 
+    useEffect(() => {
+        if (!channel) return;
+        const handler = ({ data }) => data.type === "force_close" && window.close();
+        channel.addEventListener("message", handler);
+        return () => channel.removeEventListener("message", handler);
+    }, []);
+
     if (loading) return <Loading />;
     if (!session || session.error) return null;
 
