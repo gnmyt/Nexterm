@@ -1,0 +1,161 @@
+@use "@/common/styles/colors"
+
+$mobile: 768px
+
+.icon-chooser
+  position: relative
+  user-select: none
+  cursor: pointer
+
+  &__trigger
+    padding: 0.8rem
+    border: 1px solid colors.$gray
+    background-color: colors.$lighter-background
+    box-sizing: border-box
+    border-radius: 0.7rem
+    display: flex
+    align-items: center
+    justify-content: space-between
+    gap: 0.5rem
+    transition: border-color 0.15s ease, background-color 0.15s ease
+
+    svg
+      color: colors.$white
+
+    &:hover
+      border-color: rgba(255, 255, 255, 0.2)
+      background-color: colors.$dark-gray
+
+  &__chevron
+    color: colors.$subtext !important
+    opacity: 0.7
+
+  &__dropdown
+    position: fixed
+    background-color: colors.$lighter-background
+    border: 1px solid colors.$dark-gray
+    border-radius: 0.75rem
+    padding: 0.5rem
+    z-index: 10000
+    box-shadow: 0 12px 48px rgba(0, 0, 0, 0.5), 0 4px 16px rgba(0, 0, 0, 0.3)
+    opacity: 0
+    transform: scale(0.95) translateY(-8px)
+    transition: opacity 0.12s ease, transform 0.12s ease
+    pointer-events: none
+    width: 320px
+    max-width: 90vw
+
+    @media (max-width: $mobile)
+      width: calc(100vw - 2rem)
+      left: 1rem !important
+      right: 1rem
+
+    &.open
+      opacity: 1
+      transform: scale(1) translateY(0)
+      pointer-events: auto
+
+  &__search
+    padding: 0.625rem 0.75rem
+    border-bottom: 1px solid colors.$dark-gray
+    display: flex
+    align-items: center
+    gap: 0.75rem
+    margin-bottom: 0.5rem
+
+    svg
+      color: colors.$subtext
+      flex-shrink: 0
+
+    input
+      flex: 1
+      background: transparent
+      border: none
+      outline: none
+      color: colors.$white
+      font-size: 0.9rem
+      padding: 0
+
+      @media (max-width: $mobile)
+        font-size: 1rem
+
+      &::placeholder
+        color: colors.$subtext
+
+  &__clear
+    display: flex
+    align-items: center
+    justify-content: center
+    background: none
+    border: none
+    cursor: pointer
+    padding: 0.25rem
+    color: colors.$subtext
+    border-radius: 0.25rem
+
+    &:hover
+      color: colors.$white
+
+  &__label
+    font-size: 0.75rem
+    font-weight: 600
+    color: colors.$subtext
+    text-transform: uppercase
+    letter-spacing: 0.05em
+    padding: 0.25rem 0.5rem 0.5rem
+
+  &__grid
+    display: grid
+    grid-template-columns: repeat(6, 1fr)
+    gap: 0.375rem
+    max-height: 280px
+    overflow-y: auto
+    scrollbar-width: thin
+    scrollbar-color: colors.$gray colors.$lighter-background
+    padding: 0.25rem
+
+    @media (max-width: $mobile)
+      grid-template-columns: repeat(5, 1fr)
+      max-height: 50vh
+      gap: 0.5rem
+
+    &::-webkit-scrollbar
+      width: 6px
+
+    &::-webkit-scrollbar-thumb
+      background-color: colors.$gray
+      border-radius: 10px
+
+  &__item
+    display: flex
+    align-items: center
+    justify-content: center
+    aspect-ratio: 1
+    padding: 0.5rem
+    border-radius: 0.5rem
+    cursor: pointer
+    transition: background-color 0.1s ease
+    border: 2px solid transparent
+
+    @media (max-width: $mobile)
+      padding: 0.75rem
+
+    svg
+      color: colors.$white
+
+    &:hover
+      background-color: colors.$gray
+
+    &.selected
+      background-color: rgba(colors.$primary, 0.2)
+      border-color: colors.$primary
+
+      svg
+        color: colors.$primary
+
+  &__empty
+    grid-column: 1 / -1
+    text-align: center
+    padding: 2rem
+    color: colors.$subtext
+    font-size: 0.9rem
