@@ -7,6 +7,9 @@
     "close": "Close",
     "cancel": "Cancel",
     "save": "Save",
+    "download": "Download",
+    "maximize": "Maximize",
+    "restore": "Restore",
     "actions": {
       "cancel": "Cancelar",
       "confirm": "Confirmar",
@@ -1522,6 +1525,7 @@
         "dropFilesHint": "Drop files here to upload them"
       },
       "toast": {
+        "downloaded": "Downloaded {{name}}",
         "downloadingItems": "Downloading {{count}} item(s)...",
         "uploaded": "Uploaded {{name}}",
         "uploadFailed": "Upload failed: {{message}}",
