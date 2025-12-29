@@ -1,6 +1,8 @@
 import { createContext, useContext, useState, useEffect, useRef } from "react";
 import { getWebSocketUrl, getTabId, getBrowserId } from "@/common/utils/ConnectionUtil.js";
-import { patchRequest } from "@/common/utils/RequestUtil.js";
+import { patchRequest, getRequest } from "@/common/utils/RequestUtil.js";
+import { UserContext } from "@/common/contexts/UserContext.jsx";
+import { hasPreferenceOverride, readPreferenceOverride, writePreferenceOverride, removePreferenceOverride } from "@/common/utils/PreferenceOverrideUtil.js";
 
 const ThemeContext = createContext({});
 
@@ -27,6 +29,21 @@ const getSystemTheme = () => {
 };
 
 export const ThemeProvider = ({ children }) => {
+    const { user } = useContext(UserContext);
+
+    const getAppearancePrefsFrom = (prefs) => {
+        const root = prefs && typeof prefs === "object" ? prefs : {};
+        const appearance = root.appearance && typeof root.appearance === "object" ? root.appearance : {};
+
+        const themeMode = appearance.themeMode ?? root.themeMode ?? appearance.theme ?? root.theme;
+        const accentColor = appearance.accentColor ?? root.accentColor ?? appearance.accent ?? root.accent;
+
+        return {
+            themeMode: typeof themeMode === "string" ? themeMode : undefined,
+            accentColor: typeof accentColor === "string" ? accentColor : undefined,
+        };
+    };
+
     const [themeMode, setThemeMode] = useState(() => {
         const savedTheme = localStorage.getItem("theme");
         return savedTheme || "auto";
@@ -45,15 +62,29 @@ export const ThemeProvider = ({ children }) => {
     });
 
     const [overrideAppearance, setOverrideAppearance] = useState(() => {
-        const saved = localStorage.getItem("override_appearance");
-        return saved ? saved === "true" : false;
+        return false;
     });
 
     const wsRef = useRef(null);
 
     useEffect(() => {
-        localStorage.setItem("override_appearance", overrideAppearance.toString());
-    }, [overrideAppearance]);
+        if (!user?.id) return;
+
+        const localOverride = readPreferenceOverride(user.id, "appearance");
+
+        if (localOverride) {
+            if (!overrideAppearance) setOverrideAppearance(true);
+            if (localOverride?.themeMode) setThemeMode(localOverride.themeMode);
+            if (localOverride?.accentColor) setAccentColorState(localOverride.accentColor);
+            return;
+        }
+
+        if (overrideAppearance) setOverrideAppearance(false);
+
+        const serverAppearance = getAppearancePrefsFrom(user?.preferences);
+        if (serverAppearance.themeMode) setThemeMode(serverAppearance.themeMode);
+        if (serverAppearance.accentColor) setAccentColorState(serverAppearance.accentColor);
+    }, [user]);
 
     useEffect(() => {
         if (themeMode === "auto") {
@@ -89,17 +120,12 @@ export const ThemeProvider = ({ children }) => {
         localStorage.setItem("accentColor", accentColor);
     }, [accentColor]);
 
-    // When user re-enables syncing (overrideAppearance === false), commit current appearance values
     useEffect(() => {
-        if (!overrideAppearance) {
-            try {
-                if (wsRef.current && wsRef.current.readyState === WebSocket.OPEN) {
-                    wsRef.current.send(JSON.stringify({ action: "preferencesUpdate", group: "appearance", values: { themeMode, accentColor } }));
-                }
-            } catch {}
-            try { patchRequest("accounts/preferences", { group: "appearance", values: { themeMode, accentColor } }); } catch {}
-        }
-    }, [overrideAppearance]);
+        if (!overrideAppearance) return;
+        if (!user?.id) return;
+        if (!hasPreferenceOverride(user.id, "appearance")) return;
+        writePreferenceOverride(user.id, "appearance", { themeMode, accentColor });
+    }, [themeMode, accentColor, overrideAppearance, user]);
 
     useEffect(() => {
         const token = localStorage.getItem("sessionToken") || localStorage.getItem("overrideToken");
@@ -126,6 +152,10 @@ export const ThemeProvider = ({ children }) => {
 
     const setTheme = (mode) => {
         setThemeMode(mode);
+        if (overrideAppearance && user?.id) {
+            writePreferenceOverride(user.id, "appearance", { themeMode: mode, accentColor });
+            return;
+        }
         try {
             if (wsRef.current && wsRef.current.readyState === WebSocket.OPEN && !overrideAppearance) {
                 wsRef.current.send(JSON.stringify({ action: "preferencesUpdate", group: "appearance", values: { themeMode: mode } }));
@@ -136,12 +166,48 @@ export const ThemeProvider = ({ children }) => {
 
     const setAccentColor = (color) => {
         setAccentColorState(color);
+        if (overrideAppearance && user?.id) {
+            writePreferenceOverride(user.id, "appearance", { themeMode, accentColor: color });
+            return;
+        }
         try {
             if (wsRef.current && wsRef.current.readyState === WebSocket.OPEN && !overrideAppearance) {
                 wsRef.current.send(JSON.stringify({ action: "preferencesUpdate", group: "appearance", values: { accentColor: color } }));
             }
         } catch {}
         try { if (!overrideAppearance) patchRequest("accounts/preferences", { group: "appearance", values: { accentColor: color } }); } catch {}
+    };
+
+    const setOverrideAppearancePreference = (value) => {
+        const next = typeof value === "function" ? value(overrideAppearance) : value;
+
+        if (user?.id && next) {
+            writePreferenceOverride(user.id, "appearance", { themeMode, accentColor });
+            setOverrideAppearance(true);
+            return;
+        }
+
+        if (user?.id && !next) {
+            removePreferenceOverride(user.id, "appearance");
+
+            (async () => {
+                let prefs;
+                try {
+                    const me = await getRequest("accounts/me");
+                    prefs = me?.preferences || {};
+                } catch {
+                    prefs = user?.preferences || {};
+                }
+
+                const serverAppearance = getAppearancePrefsFrom(prefs);
+                if (serverAppearance.themeMode) setThemeMode(serverAppearance.themeMode);
+                if (serverAppearance.accentColor) setAccentColorState(serverAppearance.accentColor);
+                setOverrideAppearance(false);
+            })();
+            return;
+        }
+
+        setOverrideAppearance(next);
     };
 
     const toggleTheme = () => {
@@ -161,7 +227,7 @@ export const ThemeProvider = ({ children }) => {
             setAccentColor, 
             accentColors: ACCENT_COLORS,
             overrideAppearance,
-            setOverrideAppearance,
+            setOverrideAppearance: setOverrideAppearancePreference,
         }}>
             {children}
         </ThemeContext.Provider>

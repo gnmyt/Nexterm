@@ -5,6 +5,7 @@ import { ServerProvider } from "@/common/contexts/ServerContext.jsx";
 import { IdentityProvider } from "@/common/contexts/IdentityContext.jsx";
 import { ToastProvider } from "@/common/contexts/ToastContext.jsx";
 import { TerminalSettingsProvider } from "@/common/contexts/TerminalSettingsContext.jsx";
+import { ThemeProvider } from "@/common/contexts/ThemeContext.jsx";
 import { AIProvider } from "@/common/contexts/AIContext.jsx";
 import { KeymapProvider } from "@/common/contexts/KeymapContext.jsx";
 import { DndProvider } from "react-dnd";
@@ -42,41 +43,39 @@ const AppContent = () => {
     }
 
     return (
-        <UserProvider>
-            <StateStreamProvider>
-                <KeymapProvider>
-                    <AIProvider>
-                        <ServerProvider>
-                            <IdentityProvider>
-                                <SnippetProvider>
-                                    <ScriptProvider>
-                                        <SessionProvider>
-                                            <QuickActionProvider>
-                                                <div className="app-wrapper">
-                                                    <TitleBar />
-                                                    <ConnectionErrorBanner />
-                                                    <div className="content-wrapper">
+        <StateStreamProvider>
+            <KeymapProvider>
+                <AIProvider>
+                    <ServerProvider>
+                        <IdentityProvider>
+                            <SnippetProvider>
+                                <ScriptProvider>
+                                    <SessionProvider>
+                                        <QuickActionProvider>
+                                            <div className="app-wrapper">
+                                                <TitleBar />
+                                                <ConnectionErrorBanner />
+                                                <div className="content-wrapper">
+                                                    <Suspense fallback={<Loading />}>
+                                                        <Sidebar />
+                                                    </Suspense>
+                                                    <div className="main-content">
                                                         <Suspense fallback={<Loading />}>
-                                                            <Sidebar />
+                                                            <Outlet />
                                                         </Suspense>
-                                                        <div className="main-content">
-                                                            <Suspense fallback={<Loading />}>
-                                                                <Outlet />
-                                                            </Suspense>
-                                                        </div>
                                                     </div>
-                                                    <MobileNav />
                                                 </div>
-                                            </QuickActionProvider>
-                                        </SessionProvider>
-                                    </ScriptProvider>
-                                </SnippetProvider>
-                            </IdentityProvider>
-                        </ServerProvider>
-                    </AIProvider>
-                </KeymapProvider>
-            </StateStreamProvider>
-        </UserProvider>
+                                                <MobileNav />
+                                            </div>
+                                        </QuickActionProvider>
+                                    </SessionProvider>
+                                </ScriptProvider>
+                            </SnippetProvider>
+                        </IdentityProvider>
+                    </ServerProvider>
+                </AIProvider>
+            </KeymapProvider>
+        </StateStreamProvider>
     );
 };
 
@@ -85,9 +84,13 @@ export default () => {
         <ErrorBoundary>
             <DndProvider backend={HTML5Backend}>
                 <ToastProvider>
-                    <TerminalSettingsProvider>
-                        <AppContent />
-                    </TerminalSettingsProvider>
+                    <UserProvider>
+                        <ThemeProvider>
+                            <TerminalSettingsProvider>
+                                <AppContent />
+                            </TerminalSettingsProvider>
+                        </ThemeProvider>
+                    </UserProvider>
                 </ToastProvider>
             </DndProvider>
         </ErrorBoundary>

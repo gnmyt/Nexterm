@@ -4,6 +4,7 @@ import { StateStreamProvider } from "@/common/contexts/StateStreamContext.jsx";
 import { ServerProvider } from "@/common/contexts/ServerContext.jsx";
 import { IdentityProvider } from "@/common/contexts/IdentityContext.jsx";
 import { ToastProvider } from "@/common/contexts/ToastContext.jsx";
+import { ThemeProvider } from "@/common/contexts/ThemeContext.jsx";
 import { Suspense } from "react";
 import Loading from "@/common/components/Loading";
 import { ErrorBoundary } from "@/common/components/ErrorBoundary";
@@ -13,15 +14,17 @@ export default () => {
         <ErrorBoundary>
             <ToastProvider>
                 <UserProvider>
-                    <StateStreamProvider>
-                        <ServerProvider>
-                            <IdentityProvider>
-                                <Suspense fallback={<Loading />}>
-                                    <Outlet />
-                                </Suspense>
-                            </IdentityProvider>
-                        </ServerProvider>
-                    </StateStreamProvider>
+                    <ThemeProvider>
+                        <StateStreamProvider>
+                            <ServerProvider>
+                                <IdentityProvider>
+                                    <Suspense fallback={<Loading />}>
+                                        <Outlet />
+                                    </Suspense>
+                                </IdentityProvider>
+                            </ServerProvider>
+                        </StateStreamProvider>
+                    </ThemeProvider>
                 </UserProvider>
             </ToastProvider>
         </ErrorBoundary>

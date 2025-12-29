@@ -1,7 +1,9 @@
 import { createContext, useContext, useState, useEffect, useRef } from "react";
 import { useTheme } from "@/common/contexts/ThemeContext.jsx";
 import { getWebSocketUrl, getTabId, getBrowserId } from "@/common/utils/ConnectionUtil.js";
-import { patchRequest } from "@/common/utils/RequestUtil.js";
+import { patchRequest, getRequest } from "@/common/utils/RequestUtil.js";
+import { UserContext } from "@/common/contexts/UserContext.jsx";
+import { hasPreferenceOverride, readPreferenceOverride, writePreferenceOverride, removePreferenceOverride } from "@/common/utils/PreferenceOverrideUtil.js";
 
 const TerminalSettingsContext = createContext({});
 
@@ -293,6 +295,29 @@ const CURSOR_STYLES = [
 
 export const TerminalSettingsProvider = ({ children }) => {
     const { themeMode } = useTheme();
+    const { user } = useContext(UserContext);
+
+    const getTerminalPrefsFrom = (prefs) => {
+        const root = prefs && typeof prefs === "object" ? prefs : {};
+        const terminal = root.terminal && typeof root.terminal === "object" ? root.terminal : {};
+        const font = terminal.font && typeof terminal.font === "object" ? terminal.font : {};
+        const cursor = terminal.cursor && typeof terminal.cursor === "object" ? terminal.cursor : {};
+        const theme = terminal.theme && typeof terminal.theme === "object" ? terminal.theme : {};
+
+        const selectedFont = font.selectedFont ?? terminal.selectedFont ?? root.selectedFont;
+        const fontSize = font.fontSize ?? terminal.fontSize ?? root.fontSize;
+        const cursorStyle = cursor.cursorStyle ?? terminal.cursorStyle ?? root.cursorStyle;
+        const cursorBlink = cursor.cursorBlink ?? terminal.cursorBlink ?? root.cursorBlink;
+        const selectedTheme = theme.selectedTheme ?? terminal.selectedTheme ?? root.selectedTheme;
+
+        return {
+            selectedFont: typeof selectedFont === "string" ? selectedFont : undefined,
+            fontSize: typeof fontSize === "number" ? fontSize : (typeof fontSize === "string" ? parseInt(fontSize) : undefined),
+            cursorStyle: typeof cursorStyle === "string" ? cursorStyle : undefined,
+            cursorBlink: typeof cursorBlink === "boolean" ? cursorBlink : (typeof cursorBlink === "string" ? cursorBlink === "true" : undefined),
+            selectedTheme: typeof selectedTheme === "string" ? selectedTheme : undefined,
+        };
+    };
     
     const [selectedTheme, setSelectedTheme] = useState(() => {
         const saved = localStorage.getItem("terminal-theme");
@@ -323,23 +348,76 @@ export const TerminalSettingsProvider = ({ children }) => {
     });
 
     const [overrideFont, setOverrideFont] = useState(() => {
-        const saved = localStorage.getItem("override_terminal_font");
-        return saved ? saved === "true" : false;
+        return false;
     });
     const [overrideCursor, setOverrideCursor] = useState(() => {
-        const saved = localStorage.getItem("override_terminal_cursor");
-        return saved ? saved === "true" : false;
+        return false;
     });
     const [overrideTheme, setOverrideTheme] = useState(() => {
-        const saved = localStorage.getItem("override_terminal_theme");
-        return saved ? saved === "true" : false;
+        return false;
     });
 
     const wsRef = useRef(null);
+    const suppressFontSyncRef = useRef(false);
+    const suppressCursorSyncRef = useRef(false);
+    const suppressThemeSyncRef = useRef(false);
 
-    useEffect(() => { localStorage.setItem("override_terminal_font", overrideFont.toString()); }, [overrideFont]);
-    useEffect(() => { localStorage.setItem("override_terminal_cursor", overrideCursor.toString()); }, [overrideCursor]);
-    useEffect(() => { localStorage.setItem("override_terminal_theme", overrideTheme.toString()); }, [overrideTheme]);
+    useEffect(() => {
+        if (!user?.id) return;
+
+        suppressFontSyncRef.current = true;
+        suppressCursorSyncRef.current = true;
+        suppressThemeSyncRef.current = true;
+
+        const localFont = readPreferenceOverride(user.id, "terminal_font");
+        const localCursor = readPreferenceOverride(user.id, "terminal_cursor");
+        const localTheme = readPreferenceOverride(user.id, "terminal_theme");
+
+        if (localFont) {
+            if (!overrideFont) setOverrideFont(true);
+            if (localFont?.selectedFont) setSelectedFont(localFont.selectedFont);
+            if (localFont?.fontSize) setFontSize(localFont.fontSize);
+        } else {
+            if (overrideFont) setOverrideFont(false);
+        }
+
+        if (localCursor) {
+            if (!overrideCursor) setOverrideCursor(true);
+            if (localCursor?.cursorStyle) setCursorStyle(localCursor.cursorStyle);
+            if (typeof localCursor?.cursorBlink !== "undefined") setCursorBlink(localCursor.cursorBlink);
+        } else {
+            if (overrideCursor) setOverrideCursor(false);
+        }
+
+        if (localTheme) {
+            if (!overrideTheme) setOverrideTheme(true);
+            if (localTheme?.selectedTheme) setSelectedTheme(localTheme.selectedTheme);
+        } else {
+            if (overrideTheme) setOverrideTheme(false);
+        }
+
+        const serverTerminal = getTerminalPrefsFrom(user?.preferences);
+
+        if (!localFont) {
+            if (serverTerminal.selectedFont) setSelectedFont(serverTerminal.selectedFont);
+            if (typeof serverTerminal.fontSize === "number") setFontSize(serverTerminal.fontSize);
+        }
+
+        if (!localCursor) {
+            if (serverTerminal.cursorStyle) setCursorStyle(serverTerminal.cursorStyle);
+            if (typeof serverTerminal.cursorBlink !== "undefined") setCursorBlink(serverTerminal.cursorBlink);
+        }
+
+        if (!localTheme) {
+            if (serverTerminal.selectedTheme) setSelectedTheme(serverTerminal.selectedTheme);
+        }
+
+        setTimeout(() => {
+            suppressFontSyncRef.current = false;
+            suppressCursorSyncRef.current = false;
+            suppressThemeSyncRef.current = false;
+        }, 0);
+    }, [user]);
 
     useEffect(() => {
         localStorage.setItem("terminal-theme", selectedTheme);
@@ -360,6 +438,27 @@ export const TerminalSettingsProvider = ({ children }) => {
     useEffect(() => {
         localStorage.setItem("terminal-cursor-blink", cursorBlink.toString());
     }, [cursorBlink]);
+
+    useEffect(() => {
+        if (!overrideFont) return;
+        if (!user?.id) return;
+        if (!hasPreferenceOverride(user.id, "terminal_font")) return;
+        writePreferenceOverride(user.id, "terminal_font", { selectedFont, fontSize });
+    }, [selectedFont, fontSize, overrideFont, user]);
+
+    useEffect(() => {
+        if (!overrideCursor) return;
+        if (!user?.id) return;
+        if (!hasPreferenceOverride(user.id, "terminal_cursor")) return;
+        writePreferenceOverride(user.id, "terminal_cursor", { cursorStyle, cursorBlink });
+    }, [cursorStyle, cursorBlink, overrideCursor, user]);
+
+    useEffect(() => {
+        if (!overrideTheme) return;
+        if (!user?.id) return;
+        if (!hasPreferenceOverride(user.id, "terminal_theme")) return;
+        writePreferenceOverride(user.id, "terminal_theme", { selectedTheme });
+    }, [selectedTheme, overrideTheme, user]);
 
     useEffect(() => {
         const token = localStorage.getItem("sessionToken") || localStorage.getItem("overrideToken");
@@ -425,30 +524,131 @@ export const TerminalSettingsProvider = ({ children }) => {
     // broadcast updates per subgroup when changed and not overridden
     useEffect(() => {
         try {
+            if (suppressFontSyncRef.current) return;
+            if (!user?.id) return;
             if (wsRef.current && wsRef.current.readyState === WebSocket.OPEN && !overrideFont) {
                 wsRef.current.send(JSON.stringify({ action: "preferencesUpdate", group: "terminal", values: { font: { selectedFont, fontSize } } }));
             }
         } catch {}
-        try { if (!overrideFont) patchRequest("accounts/preferences", { group: "terminal", values: { font: { selectedFont, fontSize } } }); } catch {}
+        try { if (!overrideFont && !suppressFontSyncRef.current && user?.id) patchRequest("accounts/preferences", { group: "terminal", values: { font: { selectedFont, fontSize } } }); } catch {}
     }, [selectedFont, fontSize, overrideFont]);
 
     useEffect(() => {
         try {
+            if (suppressCursorSyncRef.current) return;
+            if (!user?.id) return;
             if (wsRef.current && wsRef.current.readyState === WebSocket.OPEN && !overrideCursor) {
                 wsRef.current.send(JSON.stringify({ action: "preferencesUpdate", group: "terminal", values: { cursor: { cursorStyle, cursorBlink } } }));
             }
         } catch {}
-        try { if (!overrideCursor) patchRequest("accounts/preferences", { group: "terminal", values: { cursor: { cursorStyle, cursorBlink } } }); } catch {}
+        try { if (!overrideCursor && !suppressCursorSyncRef.current && user?.id) patchRequest("accounts/preferences", { group: "terminal", values: { cursor: { cursorStyle, cursorBlink } } }); } catch {}
     }, [cursorStyle, cursorBlink, overrideCursor]);
 
     useEffect(() => {
         try {
+            if (suppressThemeSyncRef.current) return;
+            if (!user?.id) return;
             if (wsRef.current && wsRef.current.readyState === WebSocket.OPEN && !overrideTheme) {
                 wsRef.current.send(JSON.stringify({ action: "preferencesUpdate", group: "terminal", values: { theme: { selectedTheme } } }));
             }
         } catch {}
-        try { if (!overrideTheme) patchRequest("accounts/preferences", { group: "terminal", values: { theme: { selectedTheme } } }); } catch {}
+        try { if (!overrideTheme && !suppressThemeSyncRef.current && user?.id) patchRequest("accounts/preferences", { group: "terminal", values: { theme: { selectedTheme } } }); } catch {}
     }, [selectedTheme, overrideTheme]);
+
+    const setOverrideFontPreference = (value) => {
+        const next = typeof value === "function" ? value(overrideFont) : value;
+        if (user?.id) {
+            if (next) {
+                writePreferenceOverride(user.id, "terminal_font", { selectedFont, fontSize });
+                setOverrideFont(true);
+                return;
+            } else {
+                removePreferenceOverride(user.id, "terminal_font");
+                suppressFontSyncRef.current = true;
+
+                (async () => {
+                    let prefs;
+                    try {
+                        const me = await getRequest("accounts/me");
+                        prefs = me?.preferences;
+                    } catch {
+                        prefs = user?.preferences;
+                    }
+
+                    const serverTerminal = getTerminalPrefsFrom(prefs);
+                    if (serverTerminal.selectedFont) setSelectedFont(serverTerminal.selectedFont);
+                    if (typeof serverTerminal.fontSize === "number") setFontSize(serverTerminal.fontSize);
+                    setOverrideFont(false);
+                    setTimeout(() => { suppressFontSyncRef.current = false; }, 0);
+                })();
+                return;
+            }
+        }
+        setOverrideFont(next);
+    };
+
+    const setOverrideCursorPreference = (value) => {
+        const next = typeof value === "function" ? value(overrideCursor) : value;
+        if (user?.id) {
+            if (next) {
+                writePreferenceOverride(user.id, "terminal_cursor", { cursorStyle, cursorBlink });
+                setOverrideCursor(true);
+                return;
+            } else {
+                removePreferenceOverride(user.id, "terminal_cursor");
+                suppressCursorSyncRef.current = true;
+
+                (async () => {
+                    let prefs;
+                    try {
+                        const me = await getRequest("accounts/me");
+                        prefs = me?.preferences;
+                    } catch {
+                        prefs = user?.preferences;
+                    }
+
+                    const serverTerminal = getTerminalPrefsFrom(prefs);
+                    if (serverTerminal.cursorStyle) setCursorStyle(serverTerminal.cursorStyle);
+                    if (typeof serverTerminal.cursorBlink !== "undefined") setCursorBlink(serverTerminal.cursorBlink);
+                    setOverrideCursor(false);
+                    setTimeout(() => { suppressCursorSyncRef.current = false; }, 0);
+                })();
+                return;
+            }
+        }
+        setOverrideCursor(next);
+    };
+
+    const setOverrideThemePreference = (value) => {
+        const next = typeof value === "function" ? value(overrideTheme) : value;
+        if (user?.id) {
+            if (next) {
+                writePreferenceOverride(user.id, "terminal_theme", { selectedTheme });
+                setOverrideTheme(true);
+                return;
+            } else {
+                removePreferenceOverride(user.id, "terminal_theme");
+                suppressThemeSyncRef.current = true;
+
+                (async () => {
+                    let prefs;
+                    try {
+                        const me = await getRequest("accounts/me");
+                        prefs = me?.preferences;
+                    } catch {
+                        prefs = user?.preferences;
+                    }
+
+                    const serverTerminal = getTerminalPrefsFrom(prefs);
+                    if (serverTerminal.selectedTheme) setSelectedTheme(serverTerminal.selectedTheme);
+                    setOverrideTheme(false);
+                    setTimeout(() => { suppressThemeSyncRef.current = false; }, 0);
+                })();
+                return;
+            }
+        }
+        setOverrideTheme(next);
+    };
 
     return (
         <TerminalSettingsContext.Provider value={{
@@ -457,11 +657,11 @@ export const TerminalSettingsProvider = ({ children }) => {
             getCurrentTheme, getTerminalTheme, getAvailableThemes, getAvailableFonts, getCursorStyles,
             isOledMode: themeMode === "oled",
             overrideFont,
-            setOverrideFont,
+            setOverrideFont: setOverrideFontPreference,
             overrideCursor,
-            setOverrideCursor,
+            setOverrideCursor: setOverrideCursorPreference,
             overrideTheme,
-            setOverrideTheme,
+            setOverrideTheme: setOverrideThemePreference,
         }}>
             {children}
         </TerminalSettingsContext.Provider>

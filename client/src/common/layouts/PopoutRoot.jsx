@@ -7,6 +7,7 @@ import { ToastProvider } from "@/common/contexts/ToastContext.jsx";
 import { TerminalSettingsProvider } from "@/common/contexts/TerminalSettingsContext.jsx";
 import { AIProvider } from "@/common/contexts/AIContext.jsx";
 import { KeymapProvider } from "@/common/contexts/KeymapContext.jsx";
+import { ThemeProvider } from "@/common/contexts/ThemeContext.jsx";
 import { DndProvider } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
 import { SessionProvider } from "@/common/contexts/SessionContext.jsx";
@@ -21,29 +22,31 @@ export default () => {
         <ErrorBoundary>
             <DndProvider backend={HTML5Backend}>
                 <ToastProvider>
-                    <TerminalSettingsProvider>
-                        <UserProvider>
-                            <StateStreamProvider>
-                                <KeymapProvider>
-                                    <AIProvider>
-                                        <ServerProvider>
-                                            <IdentityProvider>
-                                                <SnippetProvider>
-                                                    <ScriptProvider>
-                                                        <SessionProvider>
-                                                            <Suspense fallback={<Loading />}>
-                                                                <Outlet />
-                                                            </Suspense>
-                                                        </SessionProvider>
-                                                    </ScriptProvider>
-                                                </SnippetProvider>
-                                            </IdentityProvider>
-                                        </ServerProvider>
-                                    </AIProvider>
-                                </KeymapProvider>
-                            </StateStreamProvider>
-                        </UserProvider>
-                    </TerminalSettingsProvider>
+                    <UserProvider>
+                        <ThemeProvider>
+                            <TerminalSettingsProvider>
+                                <StateStreamProvider>
+                                    <KeymapProvider>
+                                        <AIProvider>
+                                            <ServerProvider>
+                                                <IdentityProvider>
+                                                    <SnippetProvider>
+                                                        <ScriptProvider>
+                                                            <SessionProvider>
+                                                                <Suspense fallback={<Loading />}>
+                                                                    <Outlet />
+                                                                </Suspense>
+                                                            </SessionProvider>
+                                                        </ScriptProvider>
+                                                    </SnippetProvider>
+                                                </IdentityProvider>
+                                            </ServerProvider>
+                                        </AIProvider>
+                                    </KeymapProvider>
+                                </StateStreamProvider>
+                            </TerminalSettingsProvider>
+                        </ThemeProvider>
+                    </UserProvider>
                 </ToastProvider>
             </DndProvider>
         </ErrorBoundary>
