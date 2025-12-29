@@ -512,6 +512,11 @@
       "currentLanguage": "Langue actuelle",
       "missingLanguage": "Votre langue est manquante?",
       "helpTranslateLink": "Aidez à traduire le Nexterm",
+      "syncLoginRequired": "Please log in to sync settings",
+      "appearanceSyncEnabled": "Appearance settings will now sync to your account",
+      "appearanceSyncDisabled": "Appearance settings will no longer sync",
+      "generalSyncEnabled": "General settings will now sync to your account",
+      "generalSyncDisabled": "General settings will no longer sync",
       "sessionSynchronization": "Synchronisation des sessions",
       "sessionSyncDescription": "Contrôlez comment vos sessions serveur sont stockées et synchronisées entre les périphériques et les onglets du navigateur.",
       "sessionSyncAcrossDevices": "À travers les appareils",
@@ -678,11 +683,14 @@
     },
     "terminal": {
       "title": "Terminal",
+      "syncLoginRequired": "Please log in to sync terminal settings",
       "font": {
         "title": "Police",
         "description": "Personnaliser la famille de polices et la taille de votre terminal.",
         "fontFamily": "Famille de polices",
-        "fontSize": "Taille de la police"
+        "fontSize": "Taille de la police",
+        "syncEnabled": "Font settings will now sync to your account",
+        "syncDisabled": "Font settings will no longer sync"
       },
       "cursor": {
         "title": "Curseur",
@@ -690,11 +698,15 @@
         "cursorStyle": "Style de curseur",
         "cursorBlinking": "Curseur clignotant",
         "enabled": "Activé",
-        "disabled": "Désactivé"
+        "disabled": "Désactivé",
+        "syncEnabled": "Cursor settings will now sync to your account",
+        "syncDisabled": "Cursor settings will no longer sync"
       },
       "theme": {
         "title": "Thème",
-        "description": "Choisissez un thème de couleur pour votre terminal."
+        "description": "Choisissez un thème de couleur pour votre terminal.",
+        "syncEnabled": "Theme settings will now sync to your account",
+        "syncDisabled": "Theme settings will no longer sync"
       },
       "preview": {
         "text": "$ echo 'Hi, Nexterm!'\nBonjour, Nexterm !\n$ "
@@ -703,6 +715,9 @@
     "fileManager": {
       "title": "Gestionnaire de fichiers",
       "description": "Configure la façon dont les fichiers et les dossiers sont affichés et gérés.",
+      "syncLoginRequired": "Please log in to sync file manager settings",
+      "syncEnabled": "File manager settings will now sync to your account",
+      "syncDisabled": "File manager settings will no longer sync",
       "defaultView": {
         "title": "Mode d'affichage par défaut",
         "description": "Choisis la présentation par défaut lors de l'ouverture du gestionnaire de fichiers.",
