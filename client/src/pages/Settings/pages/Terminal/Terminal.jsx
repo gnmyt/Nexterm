@@ -19,25 +19,24 @@ export const Terminal = () => {
         isGroupSynced, toggleGroupSync,
     } = usePreferences();
 
-    const isTerminalSynced = isGroupSynced("terminal");
-
-    const handleSyncToggle = () => {
+    const handleSyncToggle = (group, messageKey) => {
         if (!user) {
             sendToast(t("common.error"), t("settings.terminal.syncLoginRequired"));
             return;
         }
-        toggleGroupSync("terminal");
+        const wasSynced = isGroupSynced(group);
+        toggleGroupSync(group);
         sendToast(
             t("common.success"), 
-            isTerminalSynced ? t("settings.terminal.syncDisabled") : t("settings.terminal.syncEnabled")
+            wasSynced ? t(`settings.terminal.${messageKey}.syncDisabled`) : t(`settings.terminal.${messageKey}.syncEnabled`)
         );
     };
 
-    const renderSyncButton = () => (
+    const renderSyncButton = (group) => (
         <Button
-            icon={isTerminalSynced ? mdiCloudSync : mdiCloudOffOutline}
-            onClick={handleSyncToggle}
-            type={isTerminalSynced ? "primary" : undefined}
+            icon={isGroupSynced(group) ? mdiCloudSync : mdiCloudOffOutline}
+            onClick={() => handleSyncToggle(group, group.split(".")[1])}
+            type={isGroupSynced(group) ? "primary" : undefined}
         />
     );
 
@@ -85,11 +84,11 @@ export const Terminal = () => {
         );
     };
 
-    const renderSection = (title, description, children) => (
+    const renderSection = (title, description, group, children) => (
         <div className="terminal-section">
             <div className="section-header">
                 <h2>{title}</h2>
-                {renderSyncButton()}
+                {renderSyncButton(group)}
             </div>
             <div className="section-inner">
                 <p>{description}</p>
@@ -107,21 +106,21 @@ export const Terminal = () => {
 
     return (
         <div className="terminal-settings-page">
-            {renderSection(t("settings.terminal.font.title"), t("settings.terminal.font.description"), (
+            {renderSection(t("settings.terminal.font.title"), t("settings.terminal.font.description"), "terminal.font", (
                 <div className="font-settings">
                     {renderFontOption(t("settings.terminal.font.fontFamily"), fontOptions, selectedFont, setSelectedFont)}
                     {renderFontOption(t("settings.terminal.font.fontSize"), fontSizeOptions, fontSize, setFontSize)}
                 </div>
             ))}
 
-            {renderSection(t("settings.terminal.cursor.title"), t("settings.terminal.cursor.description"), (
+            {renderSection(t("settings.terminal.cursor.title"), t("settings.terminal.cursor.description"), "terminal.cursor", (
                 <div className="cursor-settings">
                     {renderFontOption(t("settings.terminal.cursor.cursorStyle"), cursorStyleOptions, cursorStyle, setCursorStyle)}
                     {renderFontOption(t("settings.terminal.cursor.cursorBlinking"), cursorBlinkOptions, cursorBlink.toString(), (value) => setCursorBlink(value === "true"))}
                 </div>
             ))}
 
-            {renderSection(t("settings.terminal.theme.title"), t("settings.terminal.theme.description"), (
+            {renderSection(t("settings.terminal.theme.title"), t("settings.terminal.theme.description"), "terminal.theme", (
                 <div className="theme-cards">
                     {themes.map((theme) => (
                         <div 

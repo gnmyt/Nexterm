@@ -205,20 +205,20 @@ export const Account = () => {
                 <div className="section-header">
                     <h2><Icon path={mdiPalette} size={0.8} style={{marginRight: '8px'}} />{t("settings.account.appearance")}</h2>
                     <Button
-                        icon={isGroupSynced("theme") ? mdiCloudSync : mdiCloudOffOutline}
+                        icon={isGroupSynced("appearance") ? mdiCloudSync : mdiCloudOffOutline}
                         onClick={() => {
                             if (!user) {
                                 sendToast(t("common.error"), t("settings.account.syncLoginRequired"));
                                 return;
                             }
-                            const wasSynced = isGroupSynced("theme");
-                            toggleGroupSync("theme");
+                            const wasSynced = isGroupSynced("appearance");
+                            toggleGroupSync("appearance");
                             sendToast(
                                 t("common.success"), 
                                 wasSynced ? t("settings.account.appearanceSyncDisabled") : t("settings.account.appearanceSyncEnabled")
                             );
                         }}
-                        type={isGroupSynced("theme") ? "primary" : undefined}
+                        type={isGroupSynced("appearance") ? "primary" : undefined}
                     />
                 </div>
                 <div className="section-inner appearance-section">

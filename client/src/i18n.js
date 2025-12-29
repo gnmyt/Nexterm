@@ -2,15 +2,6 @@ import i18n from "i18next";
 import {initReactI18next} from "react-i18next";
 import HttpApi from 'i18next-http-backend';
 
-const getStoredLanguage = () => {
-    try {
-        const preferences = JSON.parse(localStorage.getItem('preferences') || '{}');
-        return preferences?.general?.language || navigator.language.split('-')[0];
-    } catch {
-        return navigator.language.split('-')[0];
-    }
-};
-
 export const languages = [
     {name: 'English', code: 'en'},
     {name: 'Čeština', code: 'cs'},
@@ -24,7 +15,7 @@ export const languages = [
 ]
 
 i18n.use(initReactI18next).use(HttpApi).init({
-    lng: getStoredLanguage(),
+    lng: navigator.language.split('-')[0],
     supportedLngs: languages.map(lang => lang.code),
     fallbackLng: 'en',
     backend: {

@@ -25,9 +25,9 @@ import MobileNav from "@/common/components/MobileNav";
 const Sidebar = lazy(() => import("@/common/components/Sidebar"));
 
 const PreferencesWrapper = ({ children }) => {
-    const { user } = useContext(UserContext);
+    const { user, login } = useContext(UserContext);
     return (
-        <PreferencesProvider user={user}>
+        <PreferencesProvider user={user} refreshUser={login}>
             {children}
         </PreferencesProvider>
     );

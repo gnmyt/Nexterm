@@ -1,15 +1,44 @@
 import { createContext, useContext, useState, useEffect, useCallback, useRef } from "react";
-import { patchRequest, getRequest } from "@/common/utils/RequestUtil.js";
+import { patchRequest } from "@/common/utils/RequestUtil.js";
 import i18n from "@/i18n.js";
 
 const PreferencesContext = createContext({});
-
 export const usePreferences = () => useContext(PreferencesContext);
 
-const LOCAL_OVERRIDES_KEY_PREFIX = "preferences-override-";
-const PREFERENCE_GROUPS = ["terminal", "theme", "files", "general"];
+const OVERRIDE_KEY_PREFIX = "pref-override-";
+const GROUPS = ["terminal.font", "terminal.cursor", "terminal.theme", "appearance", "files", "general"];
 
-const getOverrideKey = (group, userId) => `${LOCAL_OVERRIDES_KEY_PREFIX}${group}-${userId}`;
+const PATH_TO_GROUP = {
+    "terminal.fontFamily": "terminal.font", "terminal.fontSize": "terminal.font",
+    "terminal.cursorStyle": "terminal.cursor", "terminal.cursorBlink": "terminal.cursor",
+    "terminal.theme": "terminal.theme",
+    "theme.mode": "appearance", "theme.accentColor": "appearance",
+    "files.showThumbnails": "files", "files.defaultViewMode": "files", "files.showHiddenFiles": "files",
+    "files.confirmBeforeDelete": "files", "files.dragDropAction": "files",
+    "general.language": "general",
+};
+
+const GROUP_PATHS = GROUPS.reduce((acc, g) => {
+    acc[g] = Object.entries(PATH_TO_GROUP).filter(([, grp]) => grp === g).map(([p]) => p);
+    return acc;
+}, {});
+
+const overrideKey = (group, userId) => `${OVERRIDE_KEY_PREFIX}${group}-${userId}`;
+
+const getVal = (obj, path) => path?.split(".").reduce((o, k) => o?.[k], obj);
+const setVal = (obj, path, val) => {
+    const keys = path.split(".");
+    const res = JSON.parse(JSON.stringify(obj || {}));
+    let cur = res;
+    for (let i = 0; i < keys.length - 1; i++) {
+        if (typeof cur[keys[i]] !== "object") cur[keys[i]] = {};
+        cur = cur[keys[i]];
+    }
+    cur[keys.at(-1)] = val;
+    return res;
+};
+
+const getSystemTheme = () => window.matchMedia?.("(prefers-color-scheme: dark)").matches ? "dark" : "light";
 
 const DEFAULT_TERMINAL_THEMES = {
     default: {
@@ -306,182 +335,95 @@ const ACCENT_COLORS = [
     { name: "Cyan", value: "#0891B2" },
 ];
 
-const getNestedValue = (obj, path) => {
-    if (!obj || !path) return undefined;
-    const keys = path.split(".");
-    let current = obj;
-    for (const key of keys) {
-        if (current === undefined || current === null) return undefined;
-        current = current[key];
-    }
-    return current;
-};
-
-const setNestedValue = (obj, path, value) => {
-    const keys = path.split(".");
-    const result = JSON.parse(JSON.stringify(obj || {}));
-    let current = result;
-    for (let i = 0; i < keys.length - 1; i++) {
-        const key = keys[i];
-        if (!(key in current) || typeof current[key] !== "object") {
-            current[key] = {};
-        }
-        current = current[key];
-    }
-    current[keys[keys.length - 1]] = value;
-    return result;
-};
-
-const getSystemTheme = () => {
-    if (window.matchMedia?.("(prefers-color-scheme: dark)").matches) {
-        return "dark";
-    }
-    return "light";
-};
-
-export const PreferencesProvider = ({ children, user }) => {
-    const [localOverrides, setLocalOverrides] = useState({});
-    const [preferences, setPreferences] = useState({});
+export const PreferencesProvider = ({ children, user, refreshUser }) => {
+    const [overrides, setOverrides] = useState({});
+    const [prefs, setPrefs] = useState({});
     const [isLoading, setIsLoading] = useState(!!user);
     const debounceRef = useRef(null);
-    const pendingUpdatesRef = useRef({});
+    const pendingRef = useRef({});
 
-    const getGroupFromPath = useCallback((path) => {
-        const group = path.split(".")[0];
-        return PREFERENCE_GROUPS.includes(group) ? group : null;
-    }, []);
-
-    const hasLocalOverride = useCallback((group) => {
-        return localOverrides[group] !== undefined;
-    }, [localOverrides]);
-
-    const isGroupSynced = useCallback((group) => {
-        return !hasLocalOverride(group);
-    }, [hasLocalOverride]);
+    const hasOverride = useCallback((g) => overrides[g] !== undefined, [overrides]);
+    const isGroupSynced = useCallback((g) => !hasOverride(g), [hasOverride]);
 
     useEffect(() => {
-        const loadedOverrides = {};
-        const serverPrefs = user?.preferences || {};
-        const merged = {};
-        
-        PREFERENCE_GROUPS.forEach(group => {
-            const key = user ? getOverrideKey(group, user.id) : null;
-            let localOverride = null;
-            
-            if (key) {
-                try {
-                    const stored = localStorage.getItem(key);
-                    if (stored) {
-                        localOverride = JSON.parse(stored);
-                        loadedOverrides[group] = localOverride;
-                    }
-                } catch {}
-            }
-            
-            if (localOverride) {
-                merged[group] = localOverride;
-            } else if (serverPrefs[group]) {
-                merged[group] = serverPrefs[group];
-            }
+        const loaded = {}, merged = {}, serverPrefs = user?.preferences || {};
+        GROUPS.forEach(g => {
+            if (user) try {
+                const s = localStorage.getItem(overrideKey(g, user.id));
+                if (s) loaded[g] = JSON.parse(s);
+            } catch {}
         });
-        
-        setLocalOverrides(loadedOverrides);
-        setPreferences(merged);
+        Object.entries(PATH_TO_GROUP).forEach(([path, g]) => {
+            const [top, prop] = path.split(".");
+            if (!merged[top]) merged[top] = {};
+            merged[top][prop] = loaded[g]?.[prop] ?? serverPrefs[top]?.[prop];
+        });
+        setOverrides(loaded);
+        setPrefs(merged);
         setIsLoading(false);
     }, [user]);
 
-    const flushToServer = useCallback(async () => {
+    const flush = useCallback(async () => {
         if (!user) return;
-        
-        const updates = { ...pendingUpdatesRef.current };
-        pendingUpdatesRef.current = {};
-        
-        if (Object.keys(updates).length === 0) return;
-        
-        try {
-            await patchRequest("accounts/me/preferences", updates);
-        } catch (error) {
-            console.error("Failed to sync preferences:", error);
+        const updates = { ...pendingRef.current };
+        pendingRef.current = {};
+        if (Object.keys(updates).length) {
+            try { await patchRequest("accounts/me/preferences", updates); }
+            catch (e) { console.error("Sync failed:", e); }
         }
     }, [user]);
 
     const scheduleFlush = useCallback(() => {
-        if (debounceRef.current) {
-            clearTimeout(debounceRef.current);
-        }
-        debounceRef.current = setTimeout(() => {
-            flushToServer();
-        }, 500);
-    }, [flushToServer]);
+        clearTimeout(debounceRef.current);
+        debounceRef.current = setTimeout(flush, 500);
+    }, [flush]);
 
     const get = useCallback((path, fallback) => {
-        const value = getNestedValue(preferences, path);
-        return value !== undefined ? value : fallback;
-    }, [preferences]);
+        const v = getVal(prefs, path);
+        return v !== undefined ? v : fallback;
+    }, [prefs]);
 
     const set = useCallback((path, value) => {
-        const group = getGroupFromPath(path);
-        const newPrefs = setNestedValue(preferences, path, value);
-        setPreferences(newPrefs);
-        
-        if (group && user) {
-            if (hasLocalOverride(group)) {
-                const key = getOverrideKey(group, user.id);
-                localStorage.setItem(key, JSON.stringify(newPrefs[group]));
-                setLocalOverrides(prev => ({ ...prev, [group]: newPrefs[group] }));
+        const g = PATH_TO_GROUP[path];
+        setPrefs(prev => setVal(prev, path, value));
+        if (g && user) {
+            const [top, prop] = path.split(".");
+            if (hasOverride(g)) {
+                const newOvr = { ...overrides[g], [prop]: value };
+                localStorage.setItem(overrideKey(g, user.id), JSON.stringify(newOvr));
+                setOverrides(prev => ({ ...prev, [g]: newOvr }));
             } else {
-                const pathParts = path.split(".");
-                let update = pendingUpdatesRef.current;
-                for (let i = 0; i < pathParts.length - 1; i++) {
-                    const k = pathParts[i];
-                    if (!(k in update) || typeof update[k] !== "object") update[k] = {};
-                    update = update[k];
-                }
-                update[pathParts[pathParts.length - 1]] = value;
+                if (!pendingRef.current[top]) pendingRef.current[top] = {};
+                pendingRef.current[top][prop] = value;
                 scheduleFlush();
             }
         }
-    }, [getGroupFromPath, preferences, user, hasLocalOverride, scheduleFlush]);
+    }, [prefs, user, hasOverride, overrides, scheduleFlush]);
 
-    const enableGroupSync = useCallback(async (group) => {
-        if (!user || !PREFERENCE_GROUPS.includes(group)) return false;
-        const key = getOverrideKey(group, user.id);
-        localStorage.removeItem(key);
-        setLocalOverrides(prev => {
-            const next = { ...prev };
-            delete next[group];
-            return next;
-        });
-        try {
-            const result = await getRequest("accounts/me");
-            if (result.preferences?.[group]) {
-                setPreferences(prev => ({ ...prev, [group]: result.preferences[group] }));
-            }
-        } catch (e) {
-            console.error(`Failed to fetch ${group} preferences:`, e);
-        }
+    const enableGroupSync = useCallback(async (g) => {
+        if (!user || !GROUPS.includes(g)) return false;
+        localStorage.removeItem(overrideKey(g, user.id));
+        setOverrides(prev => { const n = { ...prev }; delete n[g]; return n; });
+        if (refreshUser) await refreshUser();
         return true;
-    }, [user]);
+    }, [user, refreshUser]);
 
-    const disableGroupSync = useCallback((group) => {
-        if (!user || !PREFERENCE_GROUPS.includes(group)) return;
-        const key = getOverrideKey(group, user.id);
-        const currentGroupPrefs = preferences[group] || {};
-        localStorage.setItem(key, JSON.stringify(currentGroupPrefs));
-        setLocalOverrides(prev => ({ ...prev, [group]: currentGroupPrefs }));
-    }, [user, preferences]);
+    const disableGroupSync = useCallback((g) => {
+        if (!user || !GROUPS.includes(g)) return;
+        const ovr = {};
+        GROUP_PATHS[g]?.forEach(p => {
+            const [top, prop] = p.split(".");
+            if (prefs[top]?.[prop] !== undefined) ovr[prop] = prefs[top][prop];
+        });
+        localStorage.setItem(overrideKey(g, user.id), JSON.stringify(ovr));
+        setOverrides(prev => ({ ...prev, [g]: ovr }));
+    }, [user, prefs]);
 
-    const toggleGroupSync = useCallback((group) => {
-        if (hasLocalOverride(group)) {
-            enableGroupSync(group);
-        } else {
-            disableGroupSync(group);
-        }
-    }, [hasLocalOverride, enableGroupSync, disableGroupSync]);
+    const toggleGroupSync = useCallback((g) => hasOverride(g) ? enableGroupSync(g) : disableGroupSync(g), 
+        [hasOverride, enableGroupSync, disableGroupSync]);
 
     const themeMode = get("theme.mode", "auto");
     const accentColor = get("theme.accentColor", "#314BD3");
-
     const actualTheme = themeMode === "auto" ? getSystemTheme() : themeMode;
 
     useEffect(() => {
@@ -572,7 +514,7 @@ export const PreferencesProvider = ({ children, user }) => {
 
     return (
         <PreferencesContext.Provider value={{
-            get, set, isLoading, preferences,
+            get, set, isLoading, preferences: prefs,
             isGroupSynced, enableGroupSync, disableGroupSync, toggleGroupSync,
             theme: actualTheme, themeMode, setTheme, toggleTheme, accentColor, setAccentColor, accentColors: ACCENT_COLORS,
             selectedTheme, setSelectedTheme, selectedFont, setSelectedFont, fontSize, setFontSize,

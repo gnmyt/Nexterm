@@ -18,9 +18,9 @@ import Loading from "@/common/components/Loading";
 import { ErrorBoundary } from "@/common/components/ErrorBoundary";
 
 const PreferencesWrapper = ({ children }) => {
-    const { user } = useContext(UserContext);
+    const { user, login } = useContext(UserContext);
     return (
-        <PreferencesProvider user={user}>
+        <PreferencesProvider user={user} refreshUser={login}>
             {children}
         </PreferencesProvider>
     );
