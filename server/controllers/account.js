@@ -123,14 +123,12 @@ module.exports.updatePreferences = async (id, payload) => {
 
     try {
         if (!payload) {
-            // nothing to do
         } else if (payload.group && payload.values && typeof payload.values === 'object' && payload.values !== null && !Array.isArray(payload.values)) {
             const group = String(payload.group);
             if (allowedGroups.includes(group)) {
                 merged[group] = { ...(current[group] || {}), ...payload.values };
             }
         } else {
-            // accept explicit group keys only to avoid iterating arbitrary objects
             if (payload.appearance && typeof payload.appearance === 'object' && payload.appearance !== null && !Array.isArray(payload.appearance)) {
                 merged.appearance = { ...(current.appearance || {}), ...payload.appearance };
             }
