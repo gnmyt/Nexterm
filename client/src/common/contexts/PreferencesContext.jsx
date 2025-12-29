@@ -1,14 +1,15 @@
 import { createContext, useContext, useState, useEffect, useCallback, useRef } from "react";
-import { patchRequest } from "@/common/utils/RequestUtil.js";
+import { patchRequest, getRequest } from "@/common/utils/RequestUtil.js";
 import i18n from "@/i18n.js";
 
 const PreferencesContext = createContext({});
 
 export const usePreferences = () => useContext(PreferencesContext);
 
-const GROUP_SYNC_KEY_PREFIX = "preferences-sync-";
-const LOCAL_PREFERENCES_KEY = "preferences";
+const LOCAL_OVERRIDES_KEY_PREFIX = "preferences-override-";
 const PREFERENCE_GROUPS = ["terminal", "theme", "files", "general"];
+
+const getOverrideKey = (group, userId) => `${LOCAL_OVERRIDES_KEY_PREFIX}${group}-${userId}`;
 
 const DEFAULT_TERMINAL_THEMES = {
     default: {
@@ -339,24 +340,8 @@ const getSystemTheme = () => {
 };
 
 export const PreferencesProvider = ({ children, user }) => {
-    const [groupSyncEnabled, setGroupSyncEnabled] = useState(() => {
-        const syncState = {};
-        PREFERENCE_GROUPS.forEach(group => {
-            const stored = localStorage.getItem(`${GROUP_SYNC_KEY_PREFIX}${group}`);
-            syncState[group] = stored === null ? true : stored === "true";
-        });
-        return syncState;
-    });
-
-    const [preferences, setPreferences] = useState(() => {
-        try {
-            const stored = localStorage.getItem(LOCAL_PREFERENCES_KEY);
-            return stored ? JSON.parse(stored) : {};
-        } catch {
-            return {};
-        }
-    });
-
+    const [localOverrides, setLocalOverrides] = useState({});
+    const [preferences, setPreferences] = useState({});
     const [isLoading, setIsLoading] = useState(!!user);
     const debounceRef = useRef(null);
     const pendingUpdatesRef = useRef({});
@@ -366,31 +351,44 @@ export const PreferencesProvider = ({ children, user }) => {
         return PREFERENCE_GROUPS.includes(group) ? group : null;
     }, []);
 
+    const hasLocalOverride = useCallback((group) => {
+        return localOverrides[group] !== undefined;
+    }, [localOverrides]);
+
     const isGroupSynced = useCallback((group) => {
-        return groupSyncEnabled[group] || false;
-    }, [groupSyncEnabled]);
+        return !hasLocalOverride(group);
+    }, [hasLocalOverride]);
 
     useEffect(() => {
-        if (user) {
-            const serverPrefs = user.preferences || {};
-            setPreferences(prev => {
-                const merged = { ...prev };
-                PREFERENCE_GROUPS.forEach(group => {
-                    if (groupSyncEnabled[group] && serverPrefs[group]) {
-                        merged[group] = serverPrefs[group];
+        const loadedOverrides = {};
+        const serverPrefs = user?.preferences || {};
+        const merged = {};
+        
+        PREFERENCE_GROUPS.forEach(group => {
+            const key = user ? getOverrideKey(group, user.id) : null;
+            let localOverride = null;
+            
+            if (key) {
+                try {
+                    const stored = localStorage.getItem(key);
+                    if (stored) {
+                        localOverride = JSON.parse(stored);
+                        loadedOverrides[group] = localOverride;
                     }
-                });
-                return merged;
-            });
-        }
+                } catch {}
+            }
+            
+            if (localOverride) {
+                merged[group] = localOverride;
+            } else if (serverPrefs[group]) {
+                merged[group] = serverPrefs[group];
+            }
+        });
+        
+        setLocalOverrides(loadedOverrides);
+        setPreferences(merged);
         setIsLoading(false);
     }, [user]);
-
-    useEffect(() => {
-        if (!isLoading) {
-            localStorage.setItem(LOCAL_PREFERENCES_KEY, JSON.stringify(preferences));
-        }
-    }, [preferences, isLoading]);
 
     const flushToServer = useCallback(async () => {
         if (!user) return;
@@ -401,22 +399,11 @@ export const PreferencesProvider = ({ children, user }) => {
         if (Object.keys(updates).length === 0) return;
         
         try {
-            const result = await patchRequest("accounts/me/preferences", updates);
-            if (result.preferences) {
-                setPreferences(prev => {
-                    const merged = { ...prev };
-                    PREFERENCE_GROUPS.forEach(group => {
-                        if (groupSyncEnabled[group] && result.preferences[group]) {
-                            merged[group] = result.preferences[group];
-                        }
-                    });
-                    return merged;
-                });
-            }
+            await patchRequest("accounts/me/preferences", updates);
         } catch (error) {
             console.error("Failed to sync preferences:", error);
         }
-    }, [user, groupSyncEnabled]);
+    }, [user]);
 
     const scheduleFlush = useCallback(() => {
         if (debounceRef.current) {
@@ -433,46 +420,64 @@ export const PreferencesProvider = ({ children, user }) => {
     }, [preferences]);
 
     const set = useCallback((path, value) => {
-        setPreferences(prev => setNestedValue(prev, path, value));
         const group = getGroupFromPath(path);
-        if (group && groupSyncEnabled[group] && user) {
-            const pathParts = path.split(".");
-            let update = pendingUpdatesRef.current;
-            for (let i = 0; i < pathParts.length - 1; i++) {
-                const key = pathParts[i];
-                if (!(key in update) || typeof update[key] !== "object") update[key] = {};
-                update = update[key];
+        const newPrefs = setNestedValue(preferences, path, value);
+        setPreferences(newPrefs);
+        
+        if (group && user) {
+            if (hasLocalOverride(group)) {
+                const key = getOverrideKey(group, user.id);
+                localStorage.setItem(key, JSON.stringify(newPrefs[group]));
+                setLocalOverrides(prev => ({ ...prev, [group]: newPrefs[group] }));
+            } else {
+                const pathParts = path.split(".");
+                let update = pendingUpdatesRef.current;
+                for (let i = 0; i < pathParts.length - 1; i++) {
+                    const k = pathParts[i];
+                    if (!(k in update) || typeof update[k] !== "object") update[k] = {};
+                    update = update[k];
+                }
+                update[pathParts[pathParts.length - 1]] = value;
+                scheduleFlush();
             }
-            update[pathParts[pathParts.length - 1]] = value;
-            scheduleFlush();
         }
-    }, [getGroupFromPath, groupSyncEnabled, user, scheduleFlush]);
+    }, [getGroupFromPath, preferences, user, hasLocalOverride, scheduleFlush]);
 
     const enableGroupSync = useCallback(async (group) => {
         if (!user || !PREFERENCE_GROUPS.includes(group)) return false;
-        localStorage.setItem(`${GROUP_SYNC_KEY_PREFIX}${group}`, "true");
-        setGroupSyncEnabled(prev => ({ ...prev, [group]: true }));
-        const groupPrefs = preferences[group];
-        if (groupPrefs) {
-            try { await patchRequest("accounts/me/preferences", { [group]: groupPrefs }); }
-            catch (e) { console.error(`Failed to sync ${group} preferences:`, e); }
+        const key = getOverrideKey(group, user.id);
+        localStorage.removeItem(key);
+        setLocalOverrides(prev => {
+            const next = { ...prev };
+            delete next[group];
+            return next;
+        });
+        try {
+            const result = await getRequest("accounts/me");
+            if (result.preferences?.[group]) {
+                setPreferences(prev => ({ ...prev, [group]: result.preferences[group] }));
+            }
+        } catch (e) {
+            console.error(`Failed to fetch ${group} preferences:`, e);
         }
         return true;
-    }, [user, preferences]);
+    }, [user]);
 
     const disableGroupSync = useCallback((group) => {
-        if (!PREFERENCE_GROUPS.includes(group)) return;
-        localStorage.setItem(`${GROUP_SYNC_KEY_PREFIX}${group}`, "false");
-        setGroupSyncEnabled(prev => ({ ...prev, [group]: false }));
-    }, []);
+        if (!user || !PREFERENCE_GROUPS.includes(group)) return;
+        const key = getOverrideKey(group, user.id);
+        const currentGroupPrefs = preferences[group] || {};
+        localStorage.setItem(key, JSON.stringify(currentGroupPrefs));
+        setLocalOverrides(prev => ({ ...prev, [group]: currentGroupPrefs }));
+    }, [user, preferences]);
 
     const toggleGroupSync = useCallback((group) => {
-        if (groupSyncEnabled[group]) {
-            disableGroupSync(group);
-        } else {
+        if (hasLocalOverride(group)) {
             enableGroupSync(group);
+        } else {
+            disableGroupSync(group);
         }
-    }, [groupSyncEnabled, enableGroupSync, disableGroupSync]);
+    }, [hasLocalOverride, enableGroupSync, disableGroupSync]);
 
     const themeMode = get("theme.mode", "auto");
     const accentColor = get("theme.accentColor", "#314BD3");
