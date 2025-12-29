@@ -5,6 +5,8 @@ const { compare } = require("bcrypt");
 const OIDCProvider = require("../models/OIDCProvider");
 const { authenticateUser: ldapAuth, getEnabledProvider: getLdapProvider } = require("./ldap");
 const logger = require("../utils/logger");
+const stateBroadcaster = require("../lib/StateBroadcaster");
+const sessionManager = require("../lib/SessionManager");
 
 module.exports.login = async (configuration, user) => {
     const internalProvider = await OIDCProvider.findOne({ where: { isInternal: true, enabled: true } });
@@ -67,4 +69,6 @@ module.exports.logout = async token => {
     logger.system(`User logged out`, { accountId: session.accountId });
 
     await Session.destroy({ where: { token } });
+    sessionManager.removeAllByAccountId(session.accountId);
+    stateBroadcaster.forceLogoutSession(session.id);
 };

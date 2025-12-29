@@ -1,25 +1,38 @@
 const OrganizationMember = require("../models/OrganizationMember");
 const logger = require("../utils/logger");
 
-const STATE_TYPES = { ENTRIES: "ENTRIES", IDENTITIES: "IDENTITIES", SNIPPETS: "SNIPPETS", CONNECTIONS: "CONNECTIONS" };
+const STATE_TYPES = { ENTRIES: "ENTRIES", IDENTITIES: "IDENTITIES", SNIPPETS: "SNIPPETS", CONNECTIONS: "CONNECTIONS", LOGOUT: "LOGOUT" };
+const BROADCASTABLE_TYPES = [STATE_TYPES.ENTRIES, STATE_TYPES.IDENTITIES, STATE_TYPES.SNIPPETS, STATE_TYPES.CONNECTIONS];
 
 class StateBroadcaster {
     constructor() {
         this.connections = new Map();
+        this.sessionIndex = new Map();
         this.pendingBroadcasts = new Map();
         this.debounceDelay = 100;
     }
 
-    register(accountId, ws, tabId = null, browserId = null) {
+    register(accountId, sessionId, ws, tabId = null, browserId = null) {
         if (!this.connections.has(accountId)) this.connections.set(accountId, new Set());
-        this.connections.get(accountId).add({ ws, tabId, browserId });
+        const conn = { ws, tabId, browserId, sessionId };
+        this.connections.get(accountId).add(conn);
+        if (!this.sessionIndex.has(sessionId)) this.sessionIndex.set(sessionId, new Set());
+        this.sessionIndex.get(sessionId).add(conn);
     }
 
     unregister(accountId, ws) {
         const conns = this.connections.get(accountId);
         if (conns) {
             for (const conn of conns) {
-                if (conn.ws === ws) { conns.delete(conn); break; }
+                if (conn.ws === ws) {
+                    conns.delete(conn);
+                    const sessionConns = this.sessionIndex.get(conn.sessionId);
+                    if (sessionConns) {
+                        sessionConns.delete(conn);
+                        if (sessionConns.size === 0) this.sessionIndex.delete(conn.sessionId);
+                    }
+                    break;
+                }
             }
             if (conns.size === 0) this.connections.delete(accountId);
         }
@@ -58,7 +71,7 @@ class StateBroadcaster {
     }
 
     async sendAllStateToConnection(accountId, conn) {
-        for (const type of Object.values(STATE_TYPES)) await this.sendStateToConnection(accountId, conn, type);
+        for (const type of BROADCASTABLE_TYPES) await this.sendStateToConnection(accountId, conn, type);
     }
 
     async sendAllStateToAccount(accountId) {
@@ -90,6 +103,46 @@ class StateBroadcaster {
             this.pendingBroadcasts.delete(key);
             this.sendStateToAccount(accountId, stateType);
         }, this.debounceDelay));
+    }
+
+    forceLogout(accountId) {
+        const numericId = Number(accountId);
+        const conns = this.connections.get(numericId);
+        if (!conns?.size) return;
+        for (const conn of conns) {
+            if (conn.ws.readyState === 1) {
+                try {
+                    conn.ws.send(JSON.stringify({ type: STATE_TYPES.LOGOUT, data: { reason: "session_invalidated" } }));
+                    conn.ws.close(4010, "Session invalidated");
+                } catch (e) {
+                    logger.error(`StateBroadcaster: failed to send LOGOUT`, { accountId, error: e.message });
+                }
+            }
+            if (conn.sessionId) {
+                const sessionConns = this.sessionIndex.get(conn.sessionId);
+                if (sessionConns) sessionConns.delete(conn);
+                if (!sessionConns?.size) this.sessionIndex.delete(conn.sessionId);
+            }
+        }
+        this.connections.delete(numericId);
+        logger.info(`StateBroadcaster: forced logout for account`, { accountId: numericId });
+    }
+
+    forceLogoutSession(sessionId) {
+        const conns = this.sessionIndex.get(sessionId);
+        if (!conns?.size) return;
+        for (const conn of conns) {
+            if (conn.ws.readyState === 1) {
+                try {
+                    conn.ws.send(JSON.stringify({ type: STATE_TYPES.LOGOUT, data: { reason: "session_invalidated" } }));
+                    conn.ws.close(4010, "Session invalidated");
+                } catch (e) {
+                    logger.error(`StateBroadcaster: failed to send LOGOUT`, { sessionId, error: e.message });
+                }
+            }
+        }
+        this.sessionIndex.delete(sessionId);
+        logger.info(`StateBroadcaster: forced logout for session`, { sessionId });
     }
 }
 

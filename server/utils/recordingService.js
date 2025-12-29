@@ -57,8 +57,7 @@ const getAuditSettings = async (orgId) => {
     if (!orgId) return null;
     try {
         const org = await Organization.findByPk(orgId, { attributes: ["auditSettings"] });
-        if (!org?.auditSettings) return null;
-        return typeof org.auditSettings === "string" ? JSON.parse(org.auditSettings) : org.auditSettings;
+        return org?.auditSettings || null;
     } catch (e) { 
         logger.error("getAuditSettings error", { orgId, error: e.message });
         return null; 
@@ -88,7 +87,7 @@ const cleanupOldRecordings = async () => {
         
         let count = 0;
         for (const log of logs) {
-            const details = typeof log.details === "string" ? JSON.parse(log.details) : log.details || {};
+            const details = log.details || {};
             if (!details.hasRecording) continue;
             
             if (now - new Date(log.timestamp).getTime() > retention.get(log.organizationId) * 86400000) {

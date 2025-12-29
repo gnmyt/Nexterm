@@ -166,7 +166,7 @@ class SessionManager {
         if (!auditLogId) return;
         const log = await AuditLog.findByPk(auditLogId);
         if (!log) return;
-        const details = typeof log.details === "string" ? JSON.parse(log.details) : log.details || {};
+        const details = log.details || {};
         await AuditLog.update({ details: { ...details, hasRecording: true, recordingType } }, { where: { id: auditLogId } });
     }
 
@@ -357,6 +357,14 @@ class SessionManager {
             }
         }
         return removed;
+    }
+
+    async removeAllByAccountId(accountId) {
+        const numericId = Number(accountId);
+        const toRemove = [...this.sessions.entries()].filter(([, s]) => s.accountId === numericId).map(([id]) => id);
+        for (const id of toRemove) await this.remove(id);
+        logger.info(`Removed all sessions for account`, { accountId, count: toRemove.length });
+        return toRemove.length;
     }
 
     startCleanupInterval() {

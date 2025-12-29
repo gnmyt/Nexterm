@@ -2,14 +2,22 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import useWebSocket, { ReadyState } from "react-use-websocket";
 import { getWebSocketUrl, getTabId, getBrowserId } from "@/common/utils/ConnectionUtil.js";
 
-export const STATE_TYPES = { ENTRIES: "ENTRIES", IDENTITIES: "IDENTITIES", SNIPPETS: "SNIPPETS", CONNECTIONS: "CONNECTIONS" };
+export const STATE_TYPES = { ENTRIES: "ENTRIES", IDENTITIES: "IDENTITIES", SNIPPETS: "SNIPPETS", CONNECTIONS: "CONNECTIONS", LOGOUT: "LOGOUT" };
 
-const CONNECTION_TIMEOUT_MS = 5000;
+const popoutChannel = typeof BroadcastChannel !== "undefined" ? new BroadcastChannel("nexterm_popout") : null;
+
+const forceLogoutClient = () => {
+    popoutChannel?.postMessage({ type: "force_close" });
+    localStorage.removeItem("sessionToken");
+    localStorage.removeItem("overrideToken");
+    window.location.reload();
+};
 
 export const useStateStream = (sessionToken, handlers = {}) => {
     const handlersRef = useRef(handlers);
     const [connectionError, setConnectionError] = useState(false);
     const hasConnectedRef = useRef(false);
+    const invalidatedRef = useRef(false);
     
     useEffect(() => { handlersRef.current = handlers; }, [handlers]);
 
@@ -20,20 +28,21 @@ export const useStateStream = (sessionToken, handlers = {}) => {
         setConnectionError(false);
     }, []);
     
-    const onClose = useCallback(() => {
-        if (!hasConnectedRef.current) {
-            setConnectionError(true);
+    const onClose = useCallback((e) => {
+        if (e.code === 4010 && hasConnectedRef.current) {
+            invalidatedRef.current = true;
+            forceLogoutClient();
+            return;
         }
+        if (!hasConnectedRef.current) setConnectionError(true);
     }, []);
     
     const onError = useCallback(() => {
-        if (!hasConnectedRef.current) {
-            setConnectionError(true);
-        }
+        if (!hasConnectedRef.current) setConnectionError(true);
     }, []);
 
     const { sendMessage, lastMessage, readyState } = useWebSocket(wsUrl, {
-        shouldReconnect: () => true,
+        shouldReconnect: (e) => !invalidatedRef.current && e.code !== 4010,
         reconnectAttempts: Infinity,
         reconnectInterval: 3000,
         retryOnError: true,
@@ -43,21 +52,15 @@ export const useStateStream = (sessionToken, handlers = {}) => {
     }, !!sessionToken);
 
     useEffect(() => {
-        if (!sessionToken || hasConnectedRef.current) return;
-        
-        if (readyState === ReadyState.CONNECTING) {
-            const timeout = setTimeout(() => {
-                if (!hasConnectedRef.current) {
-                    setConnectionError(true);
-                }
-            }, CONNECTION_TIMEOUT_MS);
-            return () => clearTimeout(timeout);
-        }
+        if (!sessionToken || hasConnectedRef.current || readyState !== ReadyState.CONNECTING) return;
+        const timeout = setTimeout(() => { if (!hasConnectedRef.current) setConnectionError(true); }, 5000);
+        return () => clearTimeout(timeout);
     }, [sessionToken, readyState]);
 
     useEffect(() => {
         if (!sessionToken) {
             hasConnectedRef.current = false;
+            invalidatedRef.current = false;
             setConnectionError(false);
         }
     }, [sessionToken]);

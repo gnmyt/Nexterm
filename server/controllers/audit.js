@@ -62,15 +62,7 @@ const getOrgAuditSettings = async (organizationId) => {
 
     if (!org?.auditSettings) return defaults;
     
-    let settings;
-    try {
-        settings = typeof org.auditSettings === "string" ? JSON.parse(org.auditSettings) : org.auditSettings;
-    } catch (e) {
-        logger.error("Failed to parse audit settings", { organizationId, error: e.message });
-        return defaults;
-    }
-    
-    return { ...defaults, ...settings };
+    return { ...defaults, ...org.auditSettings };
 };
 
 const shouldAudit = (action, settings) => {
@@ -170,7 +162,7 @@ const getAuditLogsInternal = async (accountId, filters = {}) => {
         id: log.id, accountId: log.accountId, organizationId: log.organizationId, action: log.action,
         resource: log.resource, resourceId: log.resourceId, ipAddress: log.ipAddress, userAgent: log.userAgent,
         timestamp: log.timestamp,
-        details: typeof log.details === "string" ? JSON.parse(log.details) : log.details,
+        details: log.details,
         actorFirstName: accountMap[log.accountId]?.firstName || null,
         actorLastName: accountMap[log.accountId]?.lastName || null,
         organizationName: orgMap[log.organizationId]?.name || null,
@@ -186,7 +178,7 @@ const updateAuditLogWithSessionDuration = async (auditLogId, connectionStartTime
         const auditLog = await AuditLog.findByPk(auditLogId);
         if (!auditLog) return;
 
-        const currentDetails = typeof auditLog.details === "string" ? JSON.parse(auditLog.details) : auditLog.details || {};
+        const currentDetails = auditLog.details || {};
         currentDetails.sessionDuration = Math.round((Date.now() - connectionStartTime) / 1000);
 
         await AuditLog.update({ details: currentDetails }, { where: { id: auditLogId } });
@@ -262,7 +254,7 @@ module.exports.getAuditMetadata = async () => ({
 module.exports.getOrganizationAuditSettingsInternal = async (organizationId) => {
     try {
         const organization = await Organization.findByPk(organizationId);
-        return organization?.auditSettings ? JSON.parse(organization.auditSettings) : null;
+        return organization?.auditSettings || null;
     } catch (error) {
         logger.error("Error getting organization audit settings internally", { error: error.message, organizationId });
         return null;

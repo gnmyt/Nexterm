@@ -1,5 +1,6 @@
 const Session = require("../models/Session");
 const Account = require("../models/Account");
+const stateBroadcaster = require("../lib/StateBroadcaster");
 
 module.exports.listSessions = async (accountId, currentSessionId) => {
     return (await Session.findAll({ where: { accountId } }))
@@ -26,6 +27,7 @@ module.exports.destroySession = async (accountId, sessionId) => {
         return { code: 206, message: "The provided session does not exist" };
 
     await Session.destroy({ where: { accountId, id: sessionId } });
+    stateBroadcaster.forceLogoutSession(sessionId);
 
     return { message: "The session has been successfully destroyed" };
 };

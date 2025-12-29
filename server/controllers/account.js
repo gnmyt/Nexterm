@@ -3,7 +3,10 @@ const Account = require("../models/Account");
 const Folder = require("../models/Folder");
 const Identity = require("../models/Identity");
 const Session = require("../models/Session");
+const OrganizationMember = require("../models/OrganizationMember");
 const logger = require("../utils/logger");
+const SessionManager = require("../lib/SessionManager");
+const stateBroadcaster = require("../lib/StateBroadcaster");
 
 module.exports.createAccount = async (configuration, firstTimeSetup = true) => {
     if (await Account.count() > 0 && firstTimeSetup)
@@ -33,9 +36,13 @@ module.exports.deleteAccount = async (id) => {
     if (await Account.count({ where: { role: "admin" } }) === 1 && account.role === "admin")
         return { code: 106, message: "You cannot delete the last admin account" };
 
+    stateBroadcaster.forceLogout(id);
+    await SessionManager.removeAllByAccountId(id);
+
     await Folder.destroy({ where: { accountId: id } });
     await Identity.destroy({ where: { accountId: id } });
     await Session.destroy({ where: { accountId: id } });
+    await OrganizationMember.destroy({ where: { accountId: id } });
 
     await Account.destroy({ where: { id } });
 

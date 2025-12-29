@@ -213,14 +213,16 @@ module.exports.listMembers = async (accountId, organizationId) => {
         attributes: ["id", "firstName", "lastName", "username"],
     });
 
-    return members.map(member => {
-        const account = accounts.find(a => a.id === member.accountId);
-
-        return {
-            id: member.id, accountId: account.id, name: `${account.firstName} ${account.lastName}`,
-            username: account.username, role: member.role, status: member.status,
-        };
-    });
+    return members
+        .map(member => {
+            const account = accounts.find(a => a.id === member.accountId);
+            if (!account) return null;
+            return {
+                id: member.id, accountId: account.id, name: `${account.firstName} ${account.lastName}`,
+                username: account.username, role: member.role, status: member.status,
+            };
+        })
+        .filter(Boolean);
 };
 
 module.exports.leaveOrganization = async (accountId, organizationId) => {
