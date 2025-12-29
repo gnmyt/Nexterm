@@ -512,6 +512,11 @@
       "currentLanguage": "اللغة الحالية",
       "missingLanguage": "هل تفتقد لغتك؟",
       "helpTranslateLink": "مساعدة في ترجمة نيكسترِم",
+      "syncLoginRequired": "Please log in to sync settings",
+      "appearanceSyncEnabled": "Appearance settings will now sync to your account",
+      "appearanceSyncDisabled": "Appearance settings will no longer sync",
+      "generalSyncEnabled": "General settings will now sync to your account",
+      "generalSyncDisabled": "General settings will no longer sync",
       "sessionSynchronization": "مزامنة الجلسة",
       "sessionSyncDescription": "تحكم في كيفية تخزين جلسات الخادم ومزامنتها عبر الأجهزة وعلامات تبويب المتصفح.",
       "sessionSyncAcrossDevices": "عبر الأجهزة",
@@ -678,11 +683,14 @@
     },
     "terminal": {
       "title": "الطرفية",
+      "syncLoginRequired": "Please log in to sync terminal settings",
       "font": {
         "title": "الخط",
         "description": "تخصيص عائلة الخط وحجم الخط للطرفية الخاصة بك.",
         "fontFamily": "عائلة الخط",
-        "fontSize": "حجم الخط"
+        "fontSize": "حجم الخط",
+        "syncEnabled": "Font settings will now sync to your account",
+        "syncDisabled": "Font settings will no longer sync"
       },
       "cursor": {
         "title": "المؤشر",
@@ -690,11 +698,15 @@
         "cursorStyle": "نمط المؤشر",
         "cursorBlinking": "وميض المؤشر",
         "enabled": "مفعل",
-        "disabled": "معطل"
+        "disabled": "معطل",
+        "syncEnabled": "Cursor settings will now sync to your account",
+        "syncDisabled": "Cursor settings will no longer sync"
       },
       "theme": {
         "title": "السمة",
-        "description": "اختر سمة لونية للطرفية الخاصة بك."
+        "description": "اختر سمة لونية للطرفية الخاصة بك.",
+        "syncEnabled": "Theme settings will now sync to your account",
+        "syncDisabled": "Theme settings will no longer sync"
       },
       "preview": {
         "text": "$ echo 'مرحباً، نيكسترِم!'\nمرحباً، نيكسترِم!\n$ "
@@ -703,6 +715,9 @@
     "fileManager": {
       "title": "مدير الملفات",
       "description": "تكوين كيفية عرض الملفات والمجلدات وإدارتها.",
+      "syncLoginRequired": "Please log in to sync file manager settings",
+      "syncEnabled": "File manager settings will now sync to your account",
+      "syncDisabled": "File manager settings will no longer sync",
       "defaultView": {
         "title": "وضع العرض الافتراضي",
         "description": "اختر التخطيط الافتراضي عند فتح مدير الملفات.",
