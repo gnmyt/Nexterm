@@ -57,8 +57,7 @@ const getAuditSettings = async (orgId) => {
     if (!orgId) return null;
     try {
         const org = await Organization.findByPk(orgId, { attributes: ["auditSettings"] });
-        if (!org?.auditSettings) return null;
-        return typeof org.auditSettings === "string" ? JSON.parse(org.auditSettings) : org.auditSettings;
+        return org?.auditSettings || null;
     } catch (e) { 
         logger.error("getAuditSettings error", { orgId, error: e.message });
         return null; 

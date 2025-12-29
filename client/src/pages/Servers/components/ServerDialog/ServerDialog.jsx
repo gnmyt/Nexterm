@@ -213,22 +213,15 @@ export const ServerDialog = ({ open, onClose, currentFolderId, currentOrganizati
                 setIdentities(server.identities);
                 setEntryType(server.type || "server");
 
-                try {
-                    const parsedConfig = typeof server.config === 'string' ? JSON.parse(server.config) : server.config || {};
-                    setConfig(parsedConfig);
-                    setMonitoringEnabled(Boolean(parsedConfig.monitoringEnabled ?? true));
-                    initialValues.current = {
-                        name: server.name,
-                        icon: server.icon || null,
-                        config: JSON.stringify(parsedConfig),
-                        monitoringEnabled: Boolean(parsedConfig.monitoringEnabled ?? true)
-                    };
-                } catch (error) {
-                    console.error("Failed to parse server config:", error);
-                    setConfig({});
-                    setMonitoringEnabled(false);
-                    initialValues.current = { name: server.name, icon: server.icon || null, config: '{}', monitoringEnabled: false };
-                }
+                const parsedConfig = server.config || {};
+                setConfig(parsedConfig);
+                setMonitoringEnabled(Boolean(parsedConfig.monitoringEnabled ?? true));
+                initialValues.current = {
+                    name: server.name,
+                    icon: server.icon || null,
+                    config: JSON.stringify(parsedConfig),
+                    monitoringEnabled: Boolean(parsedConfig.monitoringEnabled ?? true)
+                };
             });
         } else {
             setName("");

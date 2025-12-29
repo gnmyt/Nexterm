@@ -62,15 +62,7 @@ const getOrgAuditSettings = async (organizationId) => {
 
     if (!org?.auditSettings) return defaults;
     
-    let settings;
-    try {
-        settings = typeof org.auditSettings === "string" ? JSON.parse(org.auditSettings) : org.auditSettings;
-    } catch (e) {
-        logger.error("Failed to parse audit settings", { organizationId, error: e.message });
-        return defaults;
-    }
-    
-    return { ...defaults, ...settings };
+    return { ...defaults, ...org.auditSettings };
 };
 
 const shouldAudit = (action, settings) => {
@@ -262,7 +254,7 @@ module.exports.getAuditMetadata = async () => ({
 module.exports.getOrganizationAuditSettingsInternal = async (organizationId) => {
     try {
         const organization = await Organization.findByPk(organizationId);
-        return organization?.auditSettings ? JSON.parse(organization.auditSettings) : null;
+        return organization?.auditSettings || null;
     } catch (error) {
         logger.error("Error getting organization audit settings internally", { error: error.message, organizationId });
         return null;

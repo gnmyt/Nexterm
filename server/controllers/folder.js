@@ -298,11 +298,7 @@ module.exports.listFolders = async (accountId) => {
         });
 
         organizations.forEach(org => {
-            let requireConnectionReason = false;
-            if (org.auditSettings) {
-                const settings = typeof org.auditSettings === "string" ? JSON.parse(org.auditSettings) : org.auditSettings;
-                requireConnectionReason = settings.requireConnectionReason || false;
-            }
+            const requireConnectionReason = org.auditSettings?.requireConnectionReason || false;
 
             result.push({
                 id: `org-${org.id}`,
