@@ -166,7 +166,7 @@ class SessionManager {
         if (!auditLogId) return;
         const log = await AuditLog.findByPk(auditLogId);
         if (!log) return;
-        const details = typeof log.details === "string" ? JSON.parse(log.details) : log.details || {};
+        const details = log.details || {};
         await AuditLog.update({ details: { ...details, hasRecording: true, recordingType } }, { where: { id: auditLogId } });
     }
 

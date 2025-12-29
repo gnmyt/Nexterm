@@ -87,7 +87,7 @@ const cleanupOldRecordings = async () => {
         
         let count = 0;
         for (const log of logs) {
-            const details = typeof log.details === "string" ? JSON.parse(log.details) : log.details || {};
+            const details = log.details || {};
             if (!details.hasRecording) continue;
             
             if (now - new Date(log.timestamp).getTime() > retention.get(log.organizationId) * 86400000) {

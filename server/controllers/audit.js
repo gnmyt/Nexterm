@@ -162,7 +162,7 @@ const getAuditLogsInternal = async (accountId, filters = {}) => {
         id: log.id, accountId: log.accountId, organizationId: log.organizationId, action: log.action,
         resource: log.resource, resourceId: log.resourceId, ipAddress: log.ipAddress, userAgent: log.userAgent,
         timestamp: log.timestamp,
-        details: typeof log.details === "string" ? JSON.parse(log.details) : log.details,
+        details: log.details,
         actorFirstName: accountMap[log.accountId]?.firstName || null,
         actorLastName: accountMap[log.accountId]?.lastName || null,
         organizationName: orgMap[log.organizationId]?.name || null,
@@ -178,7 +178,7 @@ const updateAuditLogWithSessionDuration = async (auditLogId, connectionStartTime
         const auditLog = await AuditLog.findByPk(auditLogId);
         if (!auditLog) return;
 
-        const currentDetails = typeof auditLog.details === "string" ? JSON.parse(auditLog.details) : auditLog.details || {};
+        const currentDetails = auditLog.details || {};
         currentDetails.sessionDuration = Math.round((Date.now() - connectionStartTime) / 1000);
 
         await AuditLog.update({ details: currentDetails }, { where: { id: auditLogId } });
