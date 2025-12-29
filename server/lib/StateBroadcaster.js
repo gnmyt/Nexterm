@@ -1,7 +1,7 @@
 const OrganizationMember = require("../models/OrganizationMember");
 const logger = require("../utils/logger");
 
-const STATE_TYPES = { ENTRIES: "ENTRIES", IDENTITIES: "IDENTITIES", SNIPPETS: "SNIPPETS", CONNECTIONS: "CONNECTIONS" };
+const STATE_TYPES = { ENTRIES: "ENTRIES", IDENTITIES: "IDENTITIES", SNIPPETS: "SNIPPETS", CONNECTIONS: "CONNECTIONS", PREFERENCES: "PREFERENCES" };
 
 class StateBroadcaster {
     constructor() {
@@ -48,6 +48,20 @@ class StateBroadcaster {
             conn.ws.send(JSON.stringify({ type: stateType, data }));
         } catch (error) {
             logger.error(`StateBroadcaster: failed to send ${stateType}`, { accountId, error: error.message });
+        }
+    }
+
+    broadcastPreferences(accountId, payload, sourceWs = null) {
+        const conns = this.connections.get(accountId);
+        if (!conns?.size) return;
+        for (const conn of conns) {
+            try {
+                if (conn.ws && conn.ws.readyState === 1 && conn.ws !== sourceWs) {
+                    conn.ws.send(JSON.stringify({ type: STATE_TYPES.PREFERENCES, data: payload }));
+                }
+            } catch (e) {
+                logger.error(`StateBroadcaster: failed to broadcast preferences`, { accountId, error: e.message });
+            }
         }
     }
 

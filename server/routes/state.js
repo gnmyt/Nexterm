@@ -20,9 +20,15 @@ module.exports = async (ws, req) => {
 
     ws.on("message", async (msg) => {
         try {
-            const { action, type } = JSON.parse(msg);
+            const parsed = JSON.parse(msg);
+            const { action, type } = parsed;
             if (action === "refresh") {
                 type ? stateBroadcaster.sendStateToConnection(user.id, conn, type) : stateBroadcaster.sendAllStateToConnection(user.id, conn);
+            }
+            if (action === "preferencesUpdate") {
+                const { group, values, override } = parsed;
+                // broadcast preferences to other connections for this account
+                stateBroadcaster.broadcastPreferences(user.id, { group, values, override }, ws);
             }
         } catch {}
     });

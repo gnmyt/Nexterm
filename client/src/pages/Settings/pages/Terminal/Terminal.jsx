@@ -3,6 +3,9 @@ import { useTerminalSettings } from "@/common/contexts/TerminalSettingsContext.j
 import SelectBox from "@/common/components/SelectBox";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
+import Icon from "@mdi/react";
+import { mdiSync, mdiSyncOff } from "@mdi/js";
+import { useTheme } from "@/common/contexts/ThemeContext.jsx";
 
 export const Terminal = () => {
     const { t } = useTranslation();
@@ -10,7 +13,10 @@ export const Terminal = () => {
         selectedTheme, setSelectedTheme, selectedFont, setSelectedFont,
         fontSize, setFontSize, cursorStyle, setCursorStyle, cursorBlink, setCursorBlink,
         getAvailableThemes, getAvailableFonts, getTerminalTheme, getCursorStyles,
+        overrideFont, setOverrideFont, overrideCursor, setOverrideCursor, overrideTheme, setOverrideTheme,
     } = useTerminalSettings();
+
+    const { theme } = useTheme();
 
     const [previewText] = useState(t("settings.terminal.preview.text"));
     const themes = getAvailableThemes();
@@ -56,9 +62,16 @@ export const Terminal = () => {
         );
     };
 
-    const renderSection = (title, description, children) => (
+    const renderSection = (title, description, children, overrideFlag, toggleOverride) => (
         <div className="terminal-section">
-            <h2>{title}</h2>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                <h2>{title}</h2>
+                {typeof toggleOverride === 'function' && (
+                    <Icon path={overrideFlag ? mdiSyncOff : mdiSync} size={0.8}
+                          onClick={() => toggleOverride(!overrideFlag)}
+                          style={{ cursor: 'pointer', color: (theme === 'dark' || theme === 'oled') ? '#fff' : '#000' }} />
+                )}
+            </div>
             <div className="section-inner">
                 <p>{description}</p>
                 {children}
@@ -80,14 +93,14 @@ export const Terminal = () => {
                     {renderFontOption(t("settings.terminal.font.fontFamily"), fontOptions, selectedFont, setSelectedFont)}
                     {renderFontOption(t("settings.terminal.font.fontSize"), fontSizeOptions, fontSize, setFontSize)}
                 </div>
-            ))}
+            ), overrideFont, setOverrideFont)}
 
             {renderSection(t("settings.terminal.cursor.title"), t("settings.terminal.cursor.description"), (
                 <div className="cursor-settings">
                     {renderFontOption(t("settings.terminal.cursor.cursorStyle"), cursorStyleOptions, cursorStyle, setCursorStyle)}
                     {renderFontOption(t("settings.terminal.cursor.cursorBlinking"), cursorBlinkOptions, cursorBlink.toString(), (value) => setCursorBlink(value === "true"))}
                 </div>
-            ))}
+            ), overrideCursor, setOverrideCursor)}
 
             {renderSection(t("settings.terminal.theme.title"), t("settings.terminal.theme.description"), (
                 <div className="theme-cards">
@@ -105,7 +118,7 @@ export const Terminal = () => {
                         </div>
                     ))}
                 </div>
-            ))}
+            ), overrideTheme, setOverrideTheme)}
         </div>
     );
 };

@@ -1,5 +1,7 @@
-import { createContext, useContext, useState, useEffect } from "react";
+import { createContext, useContext, useState, useEffect, useRef } from "react";
 import { useTheme } from "@/common/contexts/ThemeContext.jsx";
+import { getWebSocketUrl, getTabId, getBrowserId } from "@/common/utils/ConnectionUtil.js";
+import { patchRequest } from "@/common/utils/RequestUtil.js";
 
 const TerminalSettingsContext = createContext({});
 
@@ -320,6 +322,25 @@ export const TerminalSettingsProvider = ({ children }) => {
         return saved ? saved === "true" : true;
     });
 
+    const [overrideFont, setOverrideFont] = useState(() => {
+        const saved = localStorage.getItem("override_terminal_font");
+        return saved ? saved === "true" : false;
+    });
+    const [overrideCursor, setOverrideCursor] = useState(() => {
+        const saved = localStorage.getItem("override_terminal_cursor");
+        return saved ? saved === "true" : false;
+    });
+    const [overrideTheme, setOverrideTheme] = useState(() => {
+        const saved = localStorage.getItem("override_terminal_theme");
+        return saved ? saved === "true" : false;
+    });
+
+    const wsRef = useRef(null);
+
+    useEffect(() => { localStorage.setItem("override_terminal_font", overrideFont.toString()); }, [overrideFont]);
+    useEffect(() => { localStorage.setItem("override_terminal_cursor", overrideCursor.toString()); }, [overrideCursor]);
+    useEffect(() => { localStorage.setItem("override_terminal_theme", overrideTheme.toString()); }, [overrideTheme]);
+
     useEffect(() => {
         localStorage.setItem("terminal-theme", selectedTheme);
     }, [selectedTheme]);
@@ -340,6 +361,49 @@ export const TerminalSettingsProvider = ({ children }) => {
         localStorage.setItem("terminal-cursor-blink", cursorBlink.toString());
     }, [cursorBlink]);
 
+    useEffect(() => {
+        const token = localStorage.getItem("sessionToken") || localStorage.getItem("overrideToken");
+        if (!token) return;
+        const wsUrl = getWebSocketUrl("/api/ws/state", { sessionToken: token, tabId: getTabId(), browserId: getBrowserId() });
+        const ws = new WebSocket(wsUrl);
+        wsRef.current = ws;
+        ws.addEventListener("message", (ev) => {
+            try {
+                const { type, data } = JSON.parse(ev.data);
+                if (type === "PREFERENCES" && data?.group === "terminal") {
+                    const values = data.values || {};
+                    // values may be nested: { font: {...}, cursor: {...}, theme: {...} }
+                    if (values.font && !overrideFont) {
+                        const f = values.font;
+                        if (f.selectedFont) setSelectedFont(f.selectedFont);
+                        if (f.fontSize) setFontSize(f.fontSize);
+                    }
+                    if (values.cursor && !overrideCursor) {
+                        const c = values.cursor;
+                        if (c.cursorStyle) setCursorStyle(c.cursorStyle);
+                        if (typeof c.cursorBlink !== 'undefined') setCursorBlink(c.cursorBlink);
+                    }
+                    if (values.theme && !overrideTheme) {
+                        const th = values.theme;
+                        if (th.selectedTheme) setSelectedTheme(th.selectedTheme);
+                    }
+                    // legacy flat values support
+                    if (!values.font && !values.cursor && !values.theme) {
+                        if (!overrideTheme && values.selectedTheme) setSelectedTheme(values.selectedTheme);
+                        if (!overrideFont && values.selectedFont) setSelectedFont(values.selectedFont);
+                        if (!overrideFont && values.fontSize) setFontSize(values.fontSize);
+                        if (!overrideCursor && values.cursorStyle) setCursorStyle(values.cursorStyle);
+                        if (!overrideCursor && typeof values.cursorBlink !== 'undefined') setCursorBlink(values.cursorBlink);
+                    }
+                }
+            } catch {}
+        });
+        return () => {
+            try { ws.close(); } catch {}
+            wsRef.current = null;
+        };
+    }, [overrideFont, overrideCursor, overrideTheme]);
+
     const getTerminalTheme = (theme) => {
         const baseTheme = DEFAULT_TERMINAL_THEMES[theme] || DEFAULT_TERMINAL_THEMES.default;
         if (themeMode === "oled" && theme === "default") {
@@ -358,12 +422,46 @@ export const TerminalSettingsProvider = ({ children }) => {
     const getAvailableFonts = () => DEFAULT_FONTS;
     const getCursorStyles = () => CURSOR_STYLES;
 
+    // broadcast updates per subgroup when changed and not overridden
+    useEffect(() => {
+        try {
+            if (wsRef.current && wsRef.current.readyState === WebSocket.OPEN && !overrideFont) {
+                wsRef.current.send(JSON.stringify({ action: "preferencesUpdate", group: "terminal", values: { font: { selectedFont, fontSize } } }));
+            }
+        } catch {}
+        try { if (!overrideFont) patchRequest("accounts/preferences", { group: "terminal", values: { font: { selectedFont, fontSize } } }); } catch {}
+    }, [selectedFont, fontSize, overrideFont]);
+
+    useEffect(() => {
+        try {
+            if (wsRef.current && wsRef.current.readyState === WebSocket.OPEN && !overrideCursor) {
+                wsRef.current.send(JSON.stringify({ action: "preferencesUpdate", group: "terminal", values: { cursor: { cursorStyle, cursorBlink } } }));
+            }
+        } catch {}
+        try { if (!overrideCursor) patchRequest("accounts/preferences", { group: "terminal", values: { cursor: { cursorStyle, cursorBlink } } }); } catch {}
+    }, [cursorStyle, cursorBlink, overrideCursor]);
+
+    useEffect(() => {
+        try {
+            if (wsRef.current && wsRef.current.readyState === WebSocket.OPEN && !overrideTheme) {
+                wsRef.current.send(JSON.stringify({ action: "preferencesUpdate", group: "terminal", values: { theme: { selectedTheme } } }));
+            }
+        } catch {}
+        try { if (!overrideTheme) patchRequest("accounts/preferences", { group: "terminal", values: { theme: { selectedTheme } } }); } catch {}
+    }, [selectedTheme, overrideTheme]);
+
     return (
         <TerminalSettingsContext.Provider value={{
             selectedTheme, setSelectedTheme, selectedFont, setSelectedFont,
             fontSize, setFontSize, cursorStyle, setCursorStyle, cursorBlink, setCursorBlink,
             getCurrentTheme, getTerminalTheme, getAvailableThemes, getAvailableFonts, getCursorStyles,
             isOledMode: themeMode === "oled",
+            overrideFont,
+            setOverrideFont,
+            overrideCursor,
+            setOverrideCursor,
+            overrideTheme,
+            setOverrideTheme,
         }}>
             {children}
         </TerminalSettingsContext.Provider>

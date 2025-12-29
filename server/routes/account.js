@@ -25,6 +25,7 @@ app.get("/me", authenticate, async (req, res) => {
         id: req.user.id, username: req.user.username, totpEnabled: req.user.totpEnabled,
         firstName: req.user.firstName, lastName: req.user.lastName, role: req.user.role,
         sessionSync: req.user.sessionSync,
+        preferences: req.user.preferences || {},
     });
 });
 
@@ -166,6 +167,23 @@ app.patch("/session-sync", authenticate, async (req, res) => {
     if (error) return res.json(error);
 
     res.json({ message: "Session synchronization mode has been successfully updated." });
+});
+
+/**
+ * PATCH /account/preferences
+ * @summary Update User Preferences
+ * @description Updates persisted user preferences (merged).
+ */
+app.patch("/preferences", authenticate, async (req, res) => {
+    const { updatePreferences } = require("../controllers/account");
+    const error = await updatePreferences(req.user.id, req.body);
+    if (error) return res.json(error);
+
+    // broadcast to other active sessions
+    const stateBroadcaster = require("../lib/StateBroadcaster");
+    try { stateBroadcaster.broadcastPreferences(req.user.id, req.body); } catch {}
+
+    res.json({ message: "Preferences updated." });
 });
 
 module.exports = app;

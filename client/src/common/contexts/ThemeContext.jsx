@@ -1,4 +1,6 @@
-import { createContext, useContext, useState, useEffect } from "react";
+import { createContext, useContext, useState, useEffect, useRef } from "react";
+import { getWebSocketUrl, getTabId, getBrowserId } from "@/common/utils/ConnectionUtil.js";
+import { patchRequest } from "@/common/utils/RequestUtil.js";
 
 const ThemeContext = createContext({});
 
@@ -42,6 +44,17 @@ export const ThemeProvider = ({ children }) => {
         return savedTheme;
     });
 
+    const [overrideAppearance, setOverrideAppearance] = useState(() => {
+        const saved = localStorage.getItem("override_appearance");
+        return saved ? saved === "true" : false;
+    });
+
+    const wsRef = useRef(null);
+
+    useEffect(() => {
+        localStorage.setItem("override_appearance", overrideAppearance.toString());
+    }, [overrideAppearance]);
+
     useEffect(() => {
         if (themeMode === "auto") {
             const updateTheme = () => {
@@ -76,12 +89,59 @@ export const ThemeProvider = ({ children }) => {
         localStorage.setItem("accentColor", accentColor);
     }, [accentColor]);
 
+    // When user re-enables syncing (overrideAppearance === false), commit current appearance values
+    useEffect(() => {
+        if (!overrideAppearance) {
+            try {
+                if (wsRef.current && wsRef.current.readyState === WebSocket.OPEN) {
+                    wsRef.current.send(JSON.stringify({ action: "preferencesUpdate", group: "appearance", values: { themeMode, accentColor } }));
+                }
+            } catch {}
+            try { patchRequest("accounts/preferences", { group: "appearance", values: { themeMode, accentColor } }); } catch {}
+        }
+    }, [overrideAppearance]);
+
+    useEffect(() => {
+        const token = localStorage.getItem("sessionToken") || localStorage.getItem("overrideToken");
+        if (!token) return;
+        const wsUrl = getWebSocketUrl("/api/ws/state", { sessionToken: token, tabId: getTabId(), browserId: getBrowserId() });
+        const ws = new WebSocket(wsUrl);
+        wsRef.current = ws;
+        ws.addEventListener("message", (ev) => {
+            try {
+                const { type, data } = JSON.parse(ev.data);
+                if (type === "PREFERENCES" && data?.group === "appearance") {
+                    if (overrideAppearance) return;
+                    const { values } = data;
+                    if (values?.themeMode) setThemeMode(values.themeMode);
+                    if (values?.accentColor) setAccentColorState(values.accentColor);
+                }
+            } catch {}
+        });
+        return () => {
+            try { ws.close(); } catch {};
+            wsRef.current = null;
+        };
+    }, [overrideAppearance]);
+
     const setTheme = (mode) => {
         setThemeMode(mode);
+        try {
+            if (wsRef.current && wsRef.current.readyState === WebSocket.OPEN && !overrideAppearance) {
+                wsRef.current.send(JSON.stringify({ action: "preferencesUpdate", group: "appearance", values: { themeMode: mode } }));
+            }
+        } catch {}
+        try { if (!overrideAppearance) patchRequest("accounts/preferences", { group: "appearance", values: { themeMode: mode } }); } catch {}
     };
 
     const setAccentColor = (color) => {
         setAccentColorState(color);
+        try {
+            if (wsRef.current && wsRef.current.readyState === WebSocket.OPEN && !overrideAppearance) {
+                wsRef.current.send(JSON.stringify({ action: "preferencesUpdate", group: "appearance", values: { accentColor: color } }));
+            }
+        } catch {}
+        try { if (!overrideAppearance) patchRequest("accounts/preferences", { group: "appearance", values: { accentColor: color } }); } catch {}
     };
 
     const toggleTheme = () => {
@@ -99,7 +159,9 @@ export const ThemeProvider = ({ children }) => {
             toggleTheme, 
             accentColor, 
             setAccentColor, 
-            accentColors: ACCENT_COLORS 
+            accentColors: ACCENT_COLORS,
+            overrideAppearance,
+            setOverrideAppearance,
         }}>
             {children}
         </ThemeContext.Provider>

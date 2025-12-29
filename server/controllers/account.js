@@ -106,6 +106,47 @@ module.exports.updateSessionSync = async (id, sessionSync) => {
     await Account.update({ sessionSync }, { where: { id } });
 };
 
+module.exports.updatePreferences = async (id, payload) => {
+    const account = await Account.findByPk(id);
+    if (account === null) return { code: 102, message: "The provided account does not exist" };
+
+    const current = account.preferences || {};
+
+    let merged = {};
+    try {
+        merged = current && typeof current === 'object' ? JSON.parse(JSON.stringify(current)) : {};
+    } catch (e) {
+        merged = {};
+    }
+
+    const allowedGroups = ["appearance", "terminal"];
+
+    try {
+        if (!payload) {
+            // nothing to do
+        } else if (payload.group && payload.values && typeof payload.values === 'object' && payload.values !== null && !Array.isArray(payload.values)) {
+            const group = String(payload.group);
+            if (allowedGroups.includes(group)) {
+                merged[group] = { ...(current[group] || {}), ...payload.values };
+            }
+        } else {
+            // accept explicit group keys only to avoid iterating arbitrary objects
+            if (payload.appearance && typeof payload.appearance === 'object' && payload.appearance !== null && !Array.isArray(payload.appearance)) {
+                merged.appearance = { ...(current.appearance || {}), ...payload.appearance };
+            }
+            if (payload.terminal && typeof payload.terminal === 'object' && payload.terminal !== null && !Array.isArray(payload.terminal)) {
+                merged.terminal = { ...(current.terminal || {}), ...payload.terminal };
+            }
+        }
+    } catch (err) {
+        const logger = require("../utils/logger");
+        logger.error("updatePreferences failed to merge payload", { error: err?.message || String(err), stack: err?.stack });
+        return { code: 400, message: "Invalid preferences payload" };
+    }
+
+    await Account.update({ preferences: merged }, { where: { id } });
+};
+
 module.exports.getFTSStatus = async () => {
     return await Account.count() === 0;
 }

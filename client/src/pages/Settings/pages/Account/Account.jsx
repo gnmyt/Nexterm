@@ -1,6 +1,6 @@
 import IconInput from "@/common/components/IconInput";
 import "./styles.sass";
-import { mdiAccountCircleOutline, mdiWhiteBalanceSunny, mdiAccountEdit, mdiPalette, mdiShieldCheck, mdiLockReset, mdiTranslate, mdiSync, mdiCloudSync, mdiWeb, mdiTabUnselected, mdiWeatherNight, mdiFingerprint, mdiKeyVariant, mdiPencil, mdiTrashCan, mdiPlus, mdiCheck } from "@mdi/js";
+import { mdiAccountCircleOutline, mdiWhiteBalanceSunny, mdiAccountEdit, mdiPalette, mdiShieldCheck, mdiLockReset, mdiTranslate, mdiSync, mdiSyncOff, mdiCloudSync, mdiWeb, mdiTabUnselected, mdiWeatherNight, mdiFingerprint, mdiKeyVariant, mdiPencil, mdiTrashCan, mdiPlus, mdiCheck } from "@mdi/js";
 import { useContext, useEffect, useRef, useState } from "react";
 import { UserContext } from "@/common/contexts/UserContext.jsx";
 import { useTheme } from "@/common/contexts/ThemeContext.jsx";
@@ -32,7 +32,7 @@ export const Account = () => {
     const darkClickTimeout = useRef(null);
 
     const { user, login } = useContext(UserContext);
-    const { themeMode, setTheme, accentColor, setAccentColor, accentColors } = useTheme();
+    const { theme, themeMode, setTheme, accentColor, setAccentColor, accentColors, overrideAppearance, setOverrideAppearance } = useTheme();
     const { sendToast } = useToast();
 
     const [updatedField, setUpdatedField] = useState(null);
@@ -206,7 +206,19 @@ export const Account = () => {
             </div>
 
             <div className="account-section">
-                <h2><Icon path={mdiPalette} size={0.8} style={{marginRight: '8px'}} />{t("settings.account.appearance")}</h2>
+                <div className="section-header">
+                    <div className="header-content">
+                        <h2><Icon path={mdiPalette} size={0.8} style={{marginRight: '8px'}} />{t("settings.account.appearance")}</h2>
+                    </div>
+                    <div className="header-action">
+                        <Icon
+                            path={overrideAppearance ? mdiSyncOff : mdiSync}
+                            size={0.8}
+                            onClick={() => setOverrideAppearance(!overrideAppearance)}
+                            style={{ cursor: 'pointer', color: (theme === 'dark' || theme === 'oled') ? '#fff' : '#000', alignSelf: 'center' }}
+                        />
+                    </div>
+                </div>
                 <div className="section-inner appearance-section">
                     <p style={{ maxWidth: "25rem" }}>{t("settings.account.appearanceDescription")}</p>
                     <div className="appearance-content">

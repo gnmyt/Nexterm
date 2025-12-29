@@ -37,4 +37,9 @@ module.exports = db.define("accounts", {
         type: Sequelize.STRING,
         defaultValue: "same_browser",
     },
+    preferences: {
+        type: Sequelize.JSON,
+        allowNull: true,
+        defaultValue: {},
+    },
 }, { freezeTableName: true, createdAt: false, updatedAt: false });
