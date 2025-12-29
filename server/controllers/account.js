@@ -106,6 +106,32 @@ module.exports.updateSessionSync = async (id, sessionSync) => {
     await Account.update({ sessionSync }, { where: { id } });
 };
 
+const deepMerge = (target, source) => {
+    const result = { ...target };
+    for (const key of Object.keys(source)) {
+        if (source[key] && typeof source[key] === 'object' && !Array.isArray(source[key])) {
+            result[key] = deepMerge(result[key] || {}, source[key]);
+        } else {
+            result[key] = source[key];
+        }
+    }
+    return result;
+};
+
+module.exports.updatePreferences = async (id, preferences) => {
+    const account = await Account.findByPk(id);
+
+    if (account === null)
+        return { code: 102, message: "The provided account does not exist" };
+
+    const currentPreferences = account.preferences || {};
+    const mergedPreferences = deepMerge(currentPreferences, preferences);
+
+    await Account.update({ preferences: mergedPreferences }, { where: { id } });
+
+    return mergedPreferences;
+};
+
 module.exports.getFTSStatus = async () => {
     return await Account.count() === 0;
 }
