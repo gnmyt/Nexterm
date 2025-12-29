@@ -96,7 +96,11 @@ Contributions are welcome! Please feel free to:
 -   [Report a bug](https://github.com/gnmyt/Nexterm/issues)
 -   [Request a feature](https://github.com/gnmyt/Nexterm/issues)
 
-## License
+## 💜 Powered by
+
+[![JetBrains logo](https://resources.jetbrains.com/storage/products/company/brand/logos/jetbrains.svg)](https://jb.gg/OpenSource)
+
+## 📄 License
 
 Distributed under the MIT license. See `LICENSE` for more information.
 
