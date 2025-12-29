@@ -3,17 +3,17 @@
     "error": "错误",
     "success": "成功",
     "loading": "加载中...",
-    "saving": "Saving...",
-    "close": "Close",
-    "cancel": "Cancel",
-    "save": "Save",
-    "download": "Download",
-    "maximize": "Maximize",
-    "restore": "Restore",
+    "saving": "节约...",
+    "close": "关闭",
+    "cancel": "取消",
+    "save": "节省",
+    "download": "下载",
+    "maximize": "最大化",
+    "restore": "恢复",
     "actions": {
       "cancel": "取消",
       "confirm": "确认",
-      "discard": "Discard",
+      "discard": "丢弃",
       "login": "登录",
       "register": "注册",
       "save": "保存",
@@ -40,8 +40,8 @@
     "confirmDialog": {
       "title": "确定吗？",
       "defaultText": "此操作无法撤销。",
-      "unsavedChangesTitle": "Unsaved Changes",
-      "unsavedChangesText": "You have unsaved changes. Are you sure you want to close?"
+      "unsavedChangesTitle": "未保存的更改",
+      "unsavedChangesText": "您有未保存的更改。您确定要关闭吗？"
     },
     "loginDialog": {
       "title": "登录",
@@ -62,32 +62,32 @@
       "monitoring": "监控",
       "snippets": "代码片段",
       "audit": "审计",
-      "account": "Account",
+      "account": "账户",
       "logout": "退出登录",
       "collapseTitle": "折叠侧边栏",
       "logoutConfirmText": "此操作将退出 {{username}} 账户。确定继续吗？",
       "navigationConfirmText": "您有活动会话。离开此页面将断开您与所有服务器的连接。确定要继续吗？"
     },
     "quickAction": {
-      "placeholder": "Search servers, snippets, or navigate...",
-      "noResults": "No results found",
-      "navigation": "Navigation",
-      "settings": "Settings",
-      "navigate": "Navigate",
-      "select": "Select",
-      "close": "Close",
+      "placeholder": "搜索服务器、片段或导航...",
+      "noResults": "未找到结果",
+      "navigation": "导航",
+      "settings": "设置",
+      "navigate": "导航",
+      "select": "选择",
+      "close": "关闭",
       "types": {
-        "server": "Server",
-        "snippet": "Snippet",
-        "navigation": "Go to",
-        "settings": "Settings"
+        "server": "服务器",
+        "snippet": "片段",
+        "navigation": "转到",
+        "settings": "设置"
       }
     },
     "errors": {
       "loadingAuthProviders": "加载身份验证提供程序时出错：{{error}}",
       "webSocketConnection": {
-        "title": "WebSocket Connection Failed",
-        "message": "Connections are unavailable. This may be due to WebSocket not being enabled in your reverse proxy or network restrictions."
+        "title": "WebSocket 连接失败",
+        "message": "连接不可用。这可能是由于反向代理未启用 WebSocket 或网络限制造成的。"
       },
       "generalError": "发生错误",
       "invalidCredentials": "用户名或密码无效",
@@ -193,13 +193,13 @@
         "name": "名称",
         "description": "描述（可选）",
         "command": "命令",
-        "osFilter": "Compatible OS"
+        "osFilter": "兼容操作系统"
       },
       "placeholders": {
         "name": "代码片段名称",
         "description": "此命令的作用？",
         "command": "输入命令",
-        "osFilter": "All operating systems"
+        "osFilter": "所有操作系统"
       },
       "actions": {
         "cancel": "取消",
@@ -282,12 +282,12 @@
       "fields": {
         "name": "名称",
         "description": "描述",
-        "osFilter": "Compatible OS"
+        "osFilter": "兼容操作系统"
       },
       "placeholders": {
         "name": "脚本名称",
         "description": "此脚本的作用？",
-        "osFilter": "All operating systems"
+        "osFilter": "所有操作系统"
       },
       "actions": {
         "cancel": "取消",
@@ -471,7 +471,7 @@
     "pages": {
       "account": "账户",
       "terminal": "终端",
-      "fileManager": "File Manager",
+      "fileManager": "文件管理器",
       "keymaps": "快捷键",
       "identities": "身份标识",
       "sessions": "会话",
@@ -481,7 +481,7 @@
       "sources": "来源",
       "ai": "AI",
       "monitoring": "监控",
-      "backup": "Storage"
+      "backup": "存储"
     },
     "account": {
       "title": "账户",
@@ -494,10 +494,10 @@
       "themeLight": "浅色",
       "themeDark": "深色",
       "themeOled": "OLED",
-      "oledEnabled": "OLED mode enabled",
-      "oledDisabled": "OLED mode disabled",
-      "themeLabel": "Theme",
-      "accentColor": "Accent Color",
+      "oledEnabled": "启用 OLED 模式",
+      "oledDisabled": "禁用 OLED 模式",
+      "themeLabel": "主题",
+      "accentColor": "点缀色",
       "twoFactor": "双因素认证",
       "twoFactorActive": "已启用",
       "twoFactorInactive": "未启用",
@@ -633,8 +633,8 @@
           "description": "打开搜索输入框"
         },
         "quickaction": {
-          "title": "Quick Action",
-          "description": "Open the quick action menu"
+          "title": "快速行动",
+          "description": "打开快速操作菜单"
         },
         "aimenu": {
           "title": "AI 菜单",
@@ -701,52 +701,52 @@
       }
     },
     "fileManager": {
-      "title": "File Manager",
-      "description": "Configure how files and folders are displayed and managed.",
+      "title": "文件管理器",
+      "description": "配置文件和文件夹的显示和管理方式。",
       "defaultView": {
-        "title": "Default View Mode",
-        "description": "Choose the default layout when opening the file manager.",
-        "list": "List View",
-        "listDescription": "Show files in a detailed list with size and date columns",
-        "grid": "Grid View",
-        "gridDescription": "Show files as icons in a grid layout with thumbnails"
+        "title": "默认查看模式",
+        "description": "打开文件管理器时选择默认布局。",
+        "list": "列表查看",
+        "listDescription": "在详细列表中显示文件，包括文件大小和日期列",
+        "grid": "网格视图",
+        "gridDescription": "在带缩略图的网格布局中以图标形式显示文件"
       },
       "thumbnails": {
-        "title": "Image Thumbnails",
-        "description": "Show image thumbnails in grid view. This uses additional bandwidth to generate previews.",
-        "enabled": "Show Thumbnails",
-        "enabledDescription": "Display image previews in grid view for quick visual identification",
-        "disabled": "Hide Thumbnails",
-        "disabledDescription": "Show only file icons to save bandwidth and improve performance"
+        "title": "图像缩略图",
+        "description": "在网格视图中显示图像缩略图。这会占用额外的带宽来生成预览。",
+        "enabled": "显示缩略图",
+        "enabledDescription": "在网格视图中显示图像预览，以便快速进行视觉识别",
+        "disabled": "隐藏缩略图",
+        "disabledDescription": "只显示文件图标，以节省带宽并提高性能"
       },
       "hiddenFiles": {
-        "title": "Hidden Files",
-        "description": "Control visibility of hidden files and folders (names starting with a dot).",
-        "show": "Show Hidden Files",
-        "showDescription": "Display all files including .dotfiles and system directories",
-        "hide": "Hide Hidden Files",
-        "hideDescription": "Only show regular files and folders"
+        "title": "隐藏文件",
+        "description": "控制隐藏文件和文件夹（名称以点开头）的可见性。",
+        "show": "显示隐藏文件",
+        "showDescription": "显示所有文件，包括 .dotfiles 和系统目录",
+        "hide": "隐藏隐藏文件",
+        "hideDescription": "只显示常规文件和文件夹"
       },
       "deleteConfirmation": {
-        "title": "Delete Confirmation",
-        "description": "Require confirmation before deleting files and folders.",
-        "enabled": "Confirm Deletions",
-        "enabledDescription": "Show a confirmation dialog before deleting items",
-        "disabled": "Delete Immediately",
-        "disabledDescription": "Delete files without asking for confirmation"
+        "title": "删除确认",
+        "description": "删除文件和文件夹前要求确认。",
+        "enabled": "确认删除",
+        "enabledDescription": "删除项目前显示确认对话框",
+        "disabled": "立即删除",
+        "disabledDescription": "无需确认即可删除文件"
       },
       "dragDropAction": {
-        "title": "Drag & Drop Action",
-        "description": "Default action when dragging files to a new location.",
-        "move": "Move",
-        "copy": "Copy",
-        "ask": "Ask"
+        "title": "拖放操作",
+        "description": "拖动文件到新位置时的默认操作。",
+        "move": "移动",
+        "copy": "复制",
+        "ask": "询问"
       }
     },
     "authentication": {
       "title": "{{count}} 个身份验证提供程序",
       "addProvider": "添加提供程序",
-      "addLdapProvider": "Add LDAP",
+      "addLdapProvider": "添加 LDAP",
       "system": "系统",
       "systemDescription": "用户名和密码身份验证",
       "deleteConfirm": "此操作将永久删除此身份验证提供程序。",
@@ -791,48 +791,48 @@
         }
       },
       "ldapDialog": {
-        "createTitle": "Add LDAP Provider",
-        "editTitle": "Edit LDAP Provider",
+        "createTitle": "添加 LDAP 提供程序",
+        "editTitle": "编辑 LDAP 提供程序",
         "fields": {
-          "displayName": "Display Name",
-          "displayNamePlaceholder": "e.g. Company LDAP",
-          "host": "Host",
+          "displayName": "显示名称",
+          "displayNamePlaceholder": "例如：公司 LDAP",
+          "host": "主持人",
           "hostPlaceholder": "ldap.company.com",
-          "port": "Port",
-          "bindDN": "Bind DN",
+          "port": "港口",
+          "bindDN": "绑定 DN",
           "bindDNPlaceholder": "cn=admin,dc=company,dc=com",
-          "bindPassword": "Bind Password",
-          "bindPasswordPlaceholder": "Bind password",
-          "bindPasswordPlaceholderEdit": "Leave blank to keep existing",
-          "baseDN": "Base DN",
+          "bindPassword": "绑定密码",
+          "bindPasswordPlaceholder": "绑定密码",
+          "bindPasswordPlaceholderEdit": "留空表示保留现有",
+          "baseDN": "基准 DN",
           "baseDNPlaceholder": "dc=company,dc=com",
-          "userSearchFilter": "User Search Filter",
-          "userSearchFilterPlaceholder": "(uid={{username}}) or (sAMAccountName={{username}})",
-          "useTLS": "Use TLS/SSL",
-          "usernameAttribute": "Username Attribute",
+          "userSearchFilter": "用户搜索过滤器",
+          "userSearchFilterPlaceholder": "(uid={{username}}) 或 (sAMAccountName={{username}})",
+          "useTLS": "使用 TLS/SSL",
+          "usernameAttribute": "用户名属性",
           "usernameAttributePlaceholder": "uid",
-          "emailAttribute": "Email Attribute",
-          "emailAttributePlaceholder": "mail",
-          "firstNameAttribute": "First Name Attribute",
-          "firstNameAttributePlaceholder": "givenName",
-          "lastNameAttribute": "Last Name Attribute",
-          "lastNameAttributePlaceholder": "sn"
+          "emailAttribute": "电子邮件属性",
+          "emailAttributePlaceholder": "邮政",
+          "firstNameAttribute": "名字属性",
+          "firstNameAttributePlaceholder": "给定名称",
+          "lastNameAttribute": "姓氏属性",
+          "lastNameAttributePlaceholder": "嗅"
         },
         "advanced": {
-          "show": "Show Advanced Settings",
-          "hide": "Hide Advanced Settings"
+          "show": "显示高级设置",
+          "hide": "隐藏高级设置"
         },
         "actions": {
-          "addProvider": "Add Provider",
-          "saveChanges": "Save Changes",
-          "testConnection": "Test Connection",
-          "testing": "Testing..."
+          "addProvider": "添加提供商",
+          "saveChanges": "保存更改",
+          "testConnection": "测试连接",
+          "testing": "测试..."
         },
         "messages": {
-          "saveFailed": "Failed to save provider",
-          "saveFirst": "Save the provider first to test the connection",
-          "testSuccess": "Connection test successful",
-          "testFailed": "Connection test failed"
+          "saveFailed": "未能保存提供商",
+          "saveFirst": "先保存提供程序以测试连接",
+          "testSuccess": "连接测试成功",
+          "testFailed": "连接测试失败"
         }
       }
     },
@@ -1033,114 +1033,114 @@
       }
     },
     "backup": {
-      "loading": "Loading storage settings...",
+      "loading": "加载存储设置...",
       "storage": {
-        "title": "Storage",
-        "description": "View disk usage for your Nexterm data.",
-        "database": "Database",
-        "recordings": "Recordings",
-        "logs": "Logs",
-        "total": "Total"
+        "title": "存储",
+        "description": "查看 Nexterm 数据的磁盘使用情况。",
+        "database": "数据库",
+        "recordings": "录音",
+        "logs": "日志",
+        "total": "总计"
       },
       "backupsSection": {
-        "title": "Backups",
-        "description": "Configure backup providers and schedule automatic backups."
+        "title": "备份",
+        "description": "配置备份提供商并安排自动备份。"
       },
-      "addProvider": "Add Provider",
-      "editProvider": "Edit Provider",
-      "providerName": "Provider Name",
-      "providerNamePlaceholder": "My Backup",
-      "providerType": "Type",
+      "addProvider": "添加提供商",
+      "editProvider": "编辑提供商",
+      "providerName": "提供方名称",
+      "providerNamePlaceholder": "我的备份",
+      "providerType": "类型",
       "providerTypes": {
-        "local": "Local",
-        "smb": "SMB Share",
+        "local": "当地",
+        "smb": "中小型企业共享",
         "webdav": "WebDAV"
       },
-      "localPath": "Backup Path",
+      "localPath": "备份路径",
       "localPathPlaceholder": "/path/to/backups",
-      "smbShare": "SMB Share",
-      "smbSharePlaceholder": "\\\\server\\share",
-      "smbFolder": "Folder (optional)",
-      "smbFolderPlaceholder": "backups",
-      "smbUsername": "Username",
-      "smbUsernamePlaceholder": "user",
-      "smbPassword": "Password",
-      "smbPasswordPlaceholder": "password",
-      "smbDomain": "Domain (optional)",
-      "smbDomainPlaceholder": "WORKGROUP",
-      "webdavUrl": "Server URL",
+      "smbShare": "中小型企业共享",
+      "smbSharePlaceholder": "\\\\共享",
+      "smbFolder": "文件夹（可选）",
+      "smbFolderPlaceholder": "备份",
+      "smbUsername": "用户名",
+      "smbUsernamePlaceholder": "用户",
+      "smbPassword": "密码",
+      "smbPasswordPlaceholder": "暗号",
+      "smbDomain": "域名（可选）",
+      "smbDomainPlaceholder": "工作组",
+      "webdavUrl": "服务器 URL",
       "webdavUrlPlaceholder": "https://cloud.example.com/remote.php/dav/files/user",
-      "webdavFolder": "Folder (optional)",
-      "webdavFolderPlaceholder": "backups",
-      "webdavUsername": "Username",
-      "webdavUsernamePlaceholder": "user",
-      "webdavPassword": "Password",
-      "webdavPasswordPlaceholder": "password",
-      "passwordUnchanged": "Leave empty to keep current",
+      "webdavFolder": "文件夹（可选）",
+      "webdavFolderPlaceholder": "备份",
+      "webdavUsername": "用户名",
+      "webdavUsernamePlaceholder": "用户",
+      "webdavPassword": "密码",
+      "webdavPasswordPlaceholder": "暗号",
+      "passwordUnchanged": "留空以保持最新",
       "schedule": {
-        "title": "Automatic Backup",
-        "disabled": "Disabled",
-        "hourly": "Every hour",
-        "every6h": "Every 6 hours",
-        "every12h": "Every 12 hours",
-        "daily": "Daily",
-        "weekly": "Weekly"
+        "title": "自动备份",
+        "disabled": "残疾",
+        "hourly": "每小时",
+        "every6h": "每 6 小时",
+        "every12h": "每 12 小时",
+        "daily": "每日",
+        "weekly": "每周"
       },
       "retention": {
-        "title": "Retention Policy"
+        "title": "保留政策"
       },
-      "backups": "backups",
+      "backups": "备份",
       "includes": {
-        "title": "Include in Backups",
-        "database": "Database",
-        "recordings": "Recordings",
-        "logs": "Logs"
+        "title": "包括在备份中",
+        "database": "数据库",
+        "recordings": "录音",
+        "logs": "日志"
       },
-      "providers": "Providers",
-      "saveSettings": "Save Settings",
-      "noProviders": "No Backup Providers",
-      "noProvidersDescription": "Add a backup provider to start creating backups.",
-      "backupList": "Backups - {{name}}",
-      "loadingBackups": "Loading backups...",
-      "noBackups": "No backups found",
-      "restoreConfirm": "Are you sure you want to restore \"{{name}}\"? This will overwrite your current data and restart the server.",
-      "deleteProviderConfirm": "Are you sure you want to delete \"{{name}}\"? This will not delete existing backups.",
-      "providerCreated": "Backup provider created",
-      "providerUpdated": "Backup provider updated",
-      "providerDeleted": "Backup provider deleted",
-      "backupCreated": "Backup created successfully",
-      "restoreStarted": "Restore started, server will restart",
-      "saveSuccess": "Settings saved successfully",
+      "providers": "提供商",
+      "saveSettings": "保存设置",
+      "noProviders": "无备份提供商",
+      "noProvidersDescription": "添加备份提供程序，开始创建备份。",
+      "backupList": "备份 - {{name}}",
+      "loadingBackups": "加载备份...",
+      "noBackups": "未找到备份",
+      "restoreConfirm": "您确定要恢复 \"{{name}}\" 吗？这将覆盖您当前的数据并重新启动服务器。",
+      "deleteProviderConfirm": "您确定要删除 \"{{name}}\" 吗？这不会删除现有备份。",
+      "providerCreated": "创建了备份提供程序",
+      "providerUpdated": "更新了备份提供商",
+      "providerDeleted": "删除备份提供程序",
+      "backupCreated": "成功创建备份",
+      "restoreStarted": "恢复已开始，服务器将重新启动",
+      "saveSuccess": "成功保存设置",
       "errors": {
-        "loadFailed": "Failed to load backup settings",
-        "saveFailed": "Failed to save settings",
-        "deleteFailed": "Failed to delete",
-        "backupFailed": "Failed to create backup",
-        "loadBackupsFailed": "Failed to load backups",
-        "restoreFailed": "Failed to restore backup",
-        "exportFailed": "Failed to export data",
-        "nameRequired": "Provider name is required"
+        "loadFailed": "加载备份设置失败",
+        "saveFailed": "保存设置失败",
+        "deleteFailed": "删除失败",
+        "backupFailed": "创建备份失败",
+        "loadBackupsFailed": "加载备份失败",
+        "restoreFailed": "恢复备份失败",
+        "exportFailed": "导出数据失败",
+        "nameRequired": "必须填写提供方名称"
       },
-      "noFiles": "No files found"
+      "noFiles": "未找到文件"
     }
   },
   "tunnel": {
-    "title": "Port Forward",
-    "identity": "Identity",
-    "remoteHost": "Remote Host",
-    "remotePort": "Remote Port",
-    "localPort": "Local Port",
-    "start": "Start Tunnel",
-    "stop": "Stop Tunnel",
+    "title": "端口转发",
+    "identity": "身份",
+    "remoteHost": "远程主机",
+    "remotePort": "远程端口",
+    "localPort": "当地港口",
+    "start": "起点隧道",
+    "stop": "停车隧道",
     "status": {
-      "idle": "Not connected",
-      "starting": "Starting...",
-      "listening": "Listening on localhost:{{port}}",
-      "error": "Error",
-      "stopped": "Stopped"
+      "idle": "未连接",
+      "starting": "开始...",
+      "listening": "监听本地主机：{{port}}",
+      "error": "错误",
+      "stopped": "已停止"
     },
     "error": {
-      "fillAllFields": "Please fill in all fields"
+      "fillAllFields": "请填写所有栏目"
     }
   },
   "share": {
@@ -1190,14 +1190,14 @@
       "connect": "连接",
       "quickConnect": "快速连接",
       "openSFTP": "打开 SFTP",
-      "forwardPort": "Forward Port",
+      "forwardPort": "转发端口",
       "runScript": "运行脚本",
       "editServer": "编辑服务器",
       "editIntegration": "编辑集成",
       "duplicateServer": "复制服务器",
-      "pasteIdentityPassword": "Paste Password",
+      "pasteIdentityPassword": "粘贴密码",
       "deleteServer": "删除服务器",
-      "wakeOnLan": "Wake-On-LAN",
+      "wakeOnLan": "网络唤醒",
       "editPVE": "编辑 PVE",
       "deletePVE": "删除 PVE",
       "shutdown": "关机",
@@ -1205,8 +1205,8 @@
       "start": "启动"
     },
     "wol": {
-      "successDescription": "Magic packet sent to {{name}}",
-      "errorDescription": "Failed to send magic packet"
+      "successDescription": "魔法数据包发送至 {{name}}",
+      "errorDescription": "发送魔法数据包失败"
     },
     "messages": {
       "fillRequiredFields": "请填写所有必填字段",
@@ -1241,7 +1241,7 @@
         "host": "主机",
         "nodeName": "节点名称",
         "vmid": "虚拟机 ID",
-        "macAddress": "MAC Address"
+        "macAddress": "MAC 地址"
       },
       "placeholders": {
         "serverName": "服务器名称",
@@ -1252,7 +1252,7 @@
         "host": "主机",
         "nodeName": "节点名称",
         "vmid": "虚拟机 ID",
-        "macAddress": "AA:BB:CC:DD:EE:FF"
+        "macAddress": "aa:bb:cc:dd:ee:ff"
       },
       "settings": {
         "jumpHosts": {
@@ -1267,8 +1267,8 @@
           "description": "收集此服务器的 CPU、内存、磁盘和网络指标"
         },
         "wakeOnLan": {
-          "title": "Enable Wake-On-LAN",
-          "description": "Allow waking this server remotely using its MAC address"
+          "title": "启用网络唤醒",
+          "description": "允许使用其 MAC 地址远程唤醒该服务器"
         },
         "keyboardLayout": {
           "title": "键盘布局",
@@ -1301,11 +1301,11 @@
           "enableAudioDesc": "将音频从远程系统串流到浏览器"
         },
         "terminal": {
-          "title": "Terminal Compatibility",
-          "description": "Adjust key behavior for different terminal types",
-          "backspace": "Backspace",
-          "delete": "Delete",
-          "functionKeys": "Function Keys"
+          "title": "终端兼容性",
+          "description": "针对不同终端类型调整按键行为",
+          "backspace": "退格",
+          "delete": "删除",
+          "functionKeys": "功能键"
         },
         "noSettings": "此条目类型无可用附加设置。"
       },
@@ -1406,9 +1406,9 @@
     },
     "fileManager": {
       "createFile": {
-        "title": "Create File",
-        "placeholder": "File Name",
-        "button": "Create File"
+        "title": "创建文件",
+        "placeholder": "文件名称",
+        "button": "创建文件"
       },
       "createFolder": {
         "title": "创建文件夹",
@@ -1443,44 +1443,44 @@
         "upload": "上传文件",
         "edit": "编辑",
         "preview": "预览",
-        "moveHere": "Move here",
-        "copyHere": "Copy here",
+        "moveHere": "搬到这里",
+        "copyHere": "在此复制",
         "bigFileConfirm": "此文件大小为 {{size}} MB。确定要编辑吗？",
-        "deleteConfirm": "Are you sure you want to delete \"{{name}}\"? This action cannot be undone.",
+        "deleteConfirm": "您确定要删除 \"{{name}}\" 吗？此操作无法撤销。",
         "selectAll": "全选",
         "insertSnippet": "插入代码片段",
         "sendCtrlC": "发送 Ctrl+C",
         "clearTerminal": "清除终端",
-        "properties": "Properties",
-        "openTerminal": "Open Terminal Here",
-        "downloadFolder": "Download Folder"
+        "properties": "属性",
+        "openTerminal": "在此打开终端",
+        "downloadFolder": "下载文件夹"
       },
       "properties": {
-        "general": "General",
-        "permissions": "Permissions",
-        "checksum": "Checksum",
-        "folder": "Folder",
-        "file": "File",
-        "path": "Location",
-        "size": "Size",
-        "calculateSize": "Calculate",
-        "owner": "Owner",
-        "group": "Group",
-        "modified": "Modified",
-        "accessed": "Accessed",
-        "calculating": "Calculating...",
-        "calculate": "Calculate"
+        "general": "一般情况",
+        "permissions": "权限",
+        "checksum": "校验和",
+        "folder": "文件夹",
+        "file": "文件",
+        "path": "地点",
+        "size": "尺寸",
+        "calculateSize": "计算",
+        "owner": "业主",
+        "group": "组别",
+        "modified": "改装",
+        "accessed": "已访问",
+        "calculating": "计算...",
+        "calculate": "计算"
       },
       "permissions": {
-        "owner": "Owner",
-        "group": "Group",
-        "others": "Others",
-        "read": "Read",
-        "write": "Write",
-        "execute": "Execute",
-        "octal": "Octal",
-        "preview": "Preview",
-        "apply": "Apply"
+        "owner": "业主",
+        "group": "组别",
+        "others": "其他",
+        "read": "阅读",
+        "write": "写",
+        "execute": "执行",
+        "octal": "八进制",
+        "preview": "预览",
+        "apply": "申请"
       },
       "filePreview": {
         "title": "文件预览",
@@ -1493,59 +1493,59 @@
         "close": "关闭"
       },
       "selection": {
-        "itemsSelected": "{{count}} items selected",
-        "filesSelected": "{{count}} file(s) selected",
-        "foldersSelected": "{{count}} folder(s) selected",
-        "clearSelection": "Clear selection",
-        "downloadSelected": "Download selected",
-        "deleteSelected": "Delete selected",
-        "download": "Download",
-        "delete": "Delete",
-        "deleteConfirm": "Are you sure you want to delete {{count}} item(s)?"
+        "itemsSelected": "{{count}} 所选项目",
+        "filesSelected": "{{count}} 所选文件",
+        "foldersSelected": "{{count}} 所选文件夹",
+        "clearSelection": "清除选择",
+        "downloadSelected": "下载选定的",
+        "deleteSelected": "删除选定",
+        "download": "下载",
+        "delete": "删除",
+        "deleteConfirm": "您确定要删除 {{count}} 项目吗？"
       },
       "header": {
-        "name": "Name",
-        "size": "Size",
-        "permissions": "Permissions",
-        "modified": "Modified"
+        "name": "名称",
+        "size": "尺寸",
+        "permissions": "权限",
+        "modified": "改装"
       },
       "actionBar": {
-        "enterDirectory": "Enter directory path...",
-        "hiddenDirectories": "{{count}} hidden directories",
-        "switchToGrid": "Switch to grid view",
-        "switchToList": "Switch to list view"
+        "enterDirectory": "输入目录路径...",
+        "hiddenDirectories": "{{count}} 隐藏目录",
+        "switchToGrid": "切换到网格视图",
+        "switchToList": "切换到列表视图"
       },
       "item": {
-        "link": "link"
+        "link": "链接"
       },
       "states": {
-        "loading": "Loading files...",
-        "accessDenied": "Access Denied",
-        "emptyFolder": "This folder is empty",
-        "dropFilesHint": "Drop files here to upload them"
+        "loading": "加载文件...",
+        "accessDenied": "拒绝访问",
+        "emptyFolder": "该文件夹为空",
+        "dropFilesHint": "将文件放在此处上传"
       },
       "toast": {
-        "downloaded": "Downloaded {{name}}",
-        "downloadingItems": "Downloading {{count}} item(s)...",
-        "uploaded": "Uploaded {{name}}",
-        "uploadFailed": "Upload failed: {{message}}",
-        "connectionLost": "SFTP connection lost. Please reconnect.",
-        "error": "An error occurred"
+        "downloaded": "下载 {{name}}",
+        "downloadingItems": "下载 {{count}} 项目...",
+        "uploaded": "上传 {{name}}",
+        "uploadFailed": "上传失败： {{message}}",
+        "connectionLost": "SFTP 连接丢失。请重新连接。",
+        "error": "发生错误"
       }
     },
     "aiAssistant": {
       "title": "AI 助手",
       "placeholder": "描述您想要执行的操作...",
       "hint": "按 Enter 生成 • 按 Esc 关闭",
-      "hintUse": "Press Enter to use command • Esc to close",
+      "hintUse": "按 Enter 使用命令 - 按 Esc 关闭",
       "closeLabel": "关闭 AI 助手",
-      "generate": "Generate command",
-      "generating": "Generating command...",
-      "generatedCommand": "Generated Command",
-      "useCommand": "Use Command",
-      "tryAgain": "Try Again",
-      "copy": "Copy to clipboard",
-      "error": "Failed to generate command. Please try again."
+      "generate": "生成命令",
+      "generating": "生成命令...",
+      "generatedCommand": "生成命令",
+      "useCommand": "使用命令",
+      "tryAgain": "再试一次",
+      "copy": "复制到剪贴板",
+      "error": "生成命令失败。请重试。"
     },
     "snippets": {
       "title": "代码片段",
