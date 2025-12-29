@@ -5,7 +5,7 @@ import Icon from "@mdi/react";
 import { mdiClose, mdiLogout } from "@mdi/js";
 import { UserContext } from "@/common/contexts/UserContext.jsx";
 import { ActionConfirmDialog } from "@/common/components/ActionConfirmDialog/ActionConfirmDialog.jsx";
-import { getSettingsUserPages, getSettingsAdminPages } from "@/common/utils/navigationConfig.js";
+import { getSettingsUserPages, getSettingsAdminPages } from "@/common/utils/navigationConfig.jsx";
 import "./styles.sass";
 
 export const SettingsDialog = ({ open, onClose, initialTab = "account" }) => {

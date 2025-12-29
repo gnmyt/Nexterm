@@ -9,7 +9,7 @@ import { ActionConfirmDialog } from "@/common/components/ActionConfirmDialog/Act
 import Tooltip from "@/common/components/Tooltip";
 import { useTranslation } from "react-i18next";
 import { SettingsDialog } from "@/common/components/SettingsDialog/SettingsDialog.jsx";
-import { getSidebarNavigation } from "@/common/utils/navigationConfig";
+import { getSidebarNavigation } from "@/common/utils/navigationConfig.jsx";
 
 export const Sidebar = () => {
     const { t } = useTranslation();

@@ -3,7 +3,7 @@ import { mdiAccountCogOutline } from "@mdi/js";
 import Icon from "@mdi/react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { getSidebarNavigation } from "@/common/utils/navigationConfig";
+import { getSidebarNavigation } from "@/common/utils/navigationConfig.jsx";
 
 export const MobileNav = () => {
     const { t } = useTranslation();
