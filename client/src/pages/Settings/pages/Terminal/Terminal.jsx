@@ -1,16 +1,45 @@
 import "./styles.sass";
-import { useTerminalSettings } from "@/common/contexts/TerminalSettingsContext.jsx";
+import { usePreferences } from "@/common/contexts/PreferencesContext.jsx";
 import SelectBox from "@/common/components/SelectBox";
-import { useState } from "react";
+import Button from "@/common/components/Button";
+import { useState, useContext } from "react";
 import { useTranslation } from "react-i18next";
+import { mdiCloudSync, mdiCloudOffOutline } from "@mdi/js";
+import { UserContext } from "@/common/contexts/UserContext.jsx";
+import { useToast } from "@/common/contexts/ToastContext.jsx";
 
 export const Terminal = () => {
     const { t } = useTranslation();
+    const { user } = useContext(UserContext);
+    const { sendToast } = useToast();
     const {
         selectedTheme, setSelectedTheme, selectedFont, setSelectedFont,
         fontSize, setFontSize, cursorStyle, setCursorStyle, cursorBlink, setCursorBlink,
         getAvailableThemes, getAvailableFonts, getTerminalTheme, getCursorStyles,
-    } = useTerminalSettings();
+        isGroupSynced, toggleGroupSync,
+    } = usePreferences();
+
+    const isTerminalSynced = isGroupSynced("terminal");
+
+    const handleSyncToggle = () => {
+        if (!user) {
+            sendToast(t("common.error"), t("settings.terminal.syncLoginRequired"));
+            return;
+        }
+        toggleGroupSync("terminal");
+        sendToast(
+            t("common.success"), 
+            isTerminalSynced ? t("settings.terminal.syncDisabled") : t("settings.terminal.syncEnabled")
+        );
+    };
+
+    const renderSyncButton = () => (
+        <Button
+            icon={isTerminalSynced ? mdiCloudSync : mdiCloudOffOutline}
+            onClick={handleSyncToggle}
+            type={isTerminalSynced ? "primary" : undefined}
+        />
+    );
 
     const [previewText] = useState(t("settings.terminal.preview.text"));
     const themes = getAvailableThemes();
@@ -58,7 +87,10 @@ export const Terminal = () => {
 
     const renderSection = (title, description, children) => (
         <div className="terminal-section">
-            <h2>{title}</h2>
+            <div className="section-header">
+                <h2>{title}</h2>
+                {renderSyncButton()}
+            </div>
             <div className="section-inner">
                 <p>{description}</p>
                 {children}

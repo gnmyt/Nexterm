@@ -1,9 +1,13 @@
 import "./styles.sass";
-import { useFileSettings } from "@/common/contexts/FileSettingsContext.jsx";
+import { usePreferences } from "@/common/contexts/PreferencesContext.jsx";
 import { useTranslation } from "react-i18next";
+import { useContext } from "react";
 import Icon from "@mdi/react";
-import { mdiViewGrid, mdiViewList, mdiImage, mdiEyeOff, mdiShieldCheck, mdiCursorMove, mdiFileMove, mdiContentCopy, mdiHelpCircle } from "@mdi/js";
+import { mdiViewGrid, mdiViewList, mdiImage, mdiEyeOff, mdiShieldCheck, mdiCursorMove, mdiFileMove, mdiContentCopy, mdiHelpCircle, mdiCloudSync, mdiCloudOffOutline } from "@mdi/js";
 import ToggleSwitch from "@/common/components/ToggleSwitch";
+import Button from "@/common/components/Button";
+import { UserContext } from "@/common/contexts/UserContext.jsx";
+import { useToast } from "@/common/contexts/ToastContext.jsx";
 
 const SettingItem = ({ icon, title, description, children }) => (
     <div className="setting-item">
@@ -31,18 +35,42 @@ const ViewOption = ({ icon, label, selected, onClick }) => (
 
 export const FileManager = () => {
     const { t } = useTranslation();
+    const { user } = useContext(UserContext);
+    const { sendToast } = useToast();
     const { 
         showThumbnails, setShowThumbnails,
         defaultViewMode, setDefaultViewMode,
         showHiddenFiles, setShowHiddenFiles,
         confirmBeforeDelete, setConfirmBeforeDelete,
         dragDropAction, setDragDropAction,
-    } = useFileSettings();
+        isGroupSynced, toggleGroupSync,
+    } = usePreferences();
+
+    const isFilesSynced = isGroupSynced("files");
+
+    const handleSyncToggle = () => {
+        if (!user) {
+            sendToast(t("common.error"), t("settings.fileManager.syncLoginRequired"));
+            return;
+        }
+        toggleGroupSync("files");
+        sendToast(
+            t("common.success"), 
+            isFilesSynced ? t("settings.fileManager.syncDisabled") : t("settings.fileManager.syncEnabled")
+        );
+    };
 
     return (
         <div className="file-manager-settings">
             <div className="settings-section">
-                <h2>{t("settings.fileManager.title")}</h2>
+                <div className="section-header">
+                    <h2>{t("settings.fileManager.title")}</h2>
+                    <Button
+                        icon={isFilesSynced ? mdiCloudSync : mdiCloudOffOutline}
+                        onClick={handleSyncToggle}
+                        type={isFilesSynced ? "primary" : undefined}
+                    />
+                </div>
                 <p>{t("settings.fileManager.description")}</p>
 
                 <SettingItem 
