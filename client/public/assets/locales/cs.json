@@ -512,6 +512,11 @@
       "currentLanguage": "Aktuální jazyk",
       "missingLanguage": "Chybí váš jazyk?",
       "helpTranslateLink": "Pomozte přeložit Nexterm",
+      "syncLoginRequired": "Please log in to sync settings",
+      "appearanceSyncEnabled": "Appearance settings will now sync to your account",
+      "appearanceSyncDisabled": "Appearance settings will no longer sync",
+      "generalSyncEnabled": "General settings will now sync to your account",
+      "generalSyncDisabled": "General settings will no longer sync",
       "sessionSynchronization": "Synchronizace relací",
       "sessionSyncDescription": "Ovládejte, jak jsou vaše serverové relace ukládány a synchronizovány mezi zařízeními a kartami prohlížeče.",
       "sessionSyncAcrossDevices": "Mezi zařízeními",
@@ -678,11 +683,14 @@
     },
     "terminal": {
       "title": "Terminál",
+      "syncLoginRequired": "Please log in to sync terminal settings",
       "font": {
         "title": "Písmo",
         "description": "Přizpůsobte rodinu a velikost písma pro váš terminál.",
         "fontFamily": "Rodina písma",
-        "fontSize": "Velikost písma"
+        "fontSize": "Velikost písma",
+        "syncEnabled": "Font settings will now sync to your account",
+        "syncDisabled": "Font settings will no longer sync"
       },
       "cursor": {
         "title": "Kurzor",
@@ -690,11 +698,15 @@
         "cursorStyle": "Styl kurzoru",
         "cursorBlinking": "Blikání kurzoru",
         "enabled": "Povoleno",
-        "disabled": "Zakázáno"
+        "disabled": "Zakázáno",
+        "syncEnabled": "Cursor settings will now sync to your account",
+        "syncDisabled": "Cursor settings will no longer sync"
       },
       "theme": {
         "title": "Motiv",
-        "description": "Vyberte barevný motiv pro váš terminál."
+        "description": "Vyberte barevný motiv pro váš terminál.",
+        "syncEnabled": "Theme settings will now sync to your account",
+        "syncDisabled": "Theme settings will no longer sync"
       },
       "preview": {
         "text": "$ echo 'Ahoj, Nexterm!'\nAhoj, Nexterm!\n$ "
@@ -703,6 +715,9 @@
     "fileManager": {
       "title": "Správce souborů",
       "description": "Konfigurace způsobu zobrazení a správy souborů a složek.",
+      "syncLoginRequired": "Please log in to sync file manager settings",
+      "syncEnabled": "File manager settings will now sync to your account",
+      "syncDisabled": "File manager settings will no longer sync",
       "defaultView": {
         "title": "Výchozí režim zobrazení",
         "description": "Při otevření správce souborů zvolte výchozí rozložení.",
