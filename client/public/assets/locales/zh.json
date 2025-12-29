@@ -512,6 +512,11 @@
       "currentLanguage": "当前语言",
       "missingLanguage": "缺少您的语言？",
       "helpTranslateLink": "帮助翻译 Nexterm",
+      "syncLoginRequired": "Please log in to sync settings",
+      "appearanceSyncEnabled": "Appearance settings will now sync to your account",
+      "appearanceSyncDisabled": "Appearance settings will no longer sync",
+      "generalSyncEnabled": "General settings will now sync to your account",
+      "generalSyncDisabled": "General settings will no longer sync",
       "sessionSynchronization": "会话同步方式",
       "sessionSyncDescription": "控制服务器会话在不同设备和浏览器标签页之间的存储和同步方式。",
       "sessionSyncAcrossDevices": "跨设备同步",
@@ -678,11 +683,14 @@
     },
     "terminal": {
       "title": "终端",
+      "syncLoginRequired": "Please log in to sync terminal settings",
       "font": {
         "title": "字体",
         "description": "自定义终端字体和字号。",
         "fontFamily": "字体",
-        "fontSize": "字号"
+        "fontSize": "字号",
+        "syncEnabled": "Font settings will now sync to your account",
+        "syncDisabled": "Font settings will no longer sync"
       },
       "cursor": {
         "title": "光标",
@@ -690,11 +698,15 @@
         "cursorStyle": "光标样式",
         "cursorBlinking": "光标闪烁",
         "enabled": "启用",
-        "disabled": "已禁用"
+        "disabled": "已禁用",
+        "syncEnabled": "Cursor settings will now sync to your account",
+        "syncDisabled": "Cursor settings will no longer sync"
       },
       "theme": {
         "title": "主题",
-        "description": "为终端选择颜色主题。"
+        "description": "为终端选择颜色主题。",
+        "syncEnabled": "Theme settings will now sync to your account",
+        "syncDisabled": "Theme settings will no longer sync"
       },
       "preview": {
         "text": "$ echo '你好，Nexterm!'\n你好，Nexterm!\n$ "
@@ -703,6 +715,9 @@
     "fileManager": {
       "title": "文件管理器",
       "description": "配置文件和文件夹的显示和管理方式。",
+      "syncLoginRequired": "Please log in to sync file manager settings",
+      "syncEnabled": "File manager settings will now sync to your account",
+      "syncDisabled": "File manager settings will no longer sync",
       "defaultView": {
         "title": "默认查看模式",
         "description": "打开文件管理器时选择默认布局。",
