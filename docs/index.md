@@ -10,6 +10,9 @@ hero:
       text: Run preview
       link: /preview
     - theme: alt
+      text: Screenshots
+      link: /screenshots
+    - theme: alt
       text: GitHub
       link: https://github.com/gnmyt/Nexterm
   image:
@@ -43,7 +46,6 @@ features:
 <style>
 :root {
   --vp-home-hero-name-color: #314BD3;
-
   --vp-home-hero-image-background-image: linear-gradient(rgba(49,75,211,0.25), rgba(49,75,211,0.25));
   --vp-home-hero-image-filter: blur(100px);
 }

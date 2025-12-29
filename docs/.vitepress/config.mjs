@@ -64,6 +64,7 @@ export default defineConfig({
                 text: "Documentation",
                 items: [
                     { text: "Home", link: "/" },
+                    { text: "Screenshots", link: "/screenshots" },
                     { text: "Preview", link: "/preview" },
                     { text: "SSL/HTTPS", link: "/ssl" },
                     { text: "Reverse Proxy", link: "/reverse-proxy" },

@@ -26,6 +26,21 @@ Nexterm is an open-source server management software that allows you to:
 -   Secure access with two-factor authentication and OIDC SSO
 -   Separate users and servers into Organizations
 
+## 📷 Screenshots
+
+<table>
+  <tr>
+    <td><img src="docs/public/assets/showoff/servers.png" alt="Servers" /></td>
+    <td><img src="docs/public/assets/showoff/connections.png" alt="Connections" /></td>
+    <td><img src="docs/public/assets/showoff/sftp.png" alt="SFTP" /></td>
+  </tr>
+  <tr>
+    <td><img src="docs/public/assets/showoff/snippets.png" alt="Snippets" /></td>
+    <td><img src="docs/public/assets/showoff/monitoring.png" alt="Monitoring" /></td>
+    <td><img src="docs/public/assets/showoff/recordings.png" alt="Recordings" /></td>
+  </tr>
+</table>
+
 ## 🚀 Run preview
 
 You can run a preview of Nexterm by clicking [here](https://docs.nexterm.dev/preview).
