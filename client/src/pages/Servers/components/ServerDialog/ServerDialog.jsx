@@ -13,7 +13,9 @@ import { useToast } from "@/common/contexts/ToastContext.jsx";
 import { useTranslation } from "react-i18next";
 import { getAvailableTabs, validateRequiredFields, getFieldConfig } from "./utils/fieldConfig.js";
 import Icon from "@mdi/react";
-import { mdiServerNetwork, mdiConsole, mdiMonitor, mdiDesktopClassic, mdiServer } from "@mdi/js";
+import * as mdiIcons from "@mdi/js";
+
+const PROTOCOL_DEFAULT_ICONS = { ssh: "mdiConsole", telnet: "mdiConsole", rdp: "mdiMicrosoftWindows", vnc: "mdiMonitor" };
 
 export const ServerDialog = ({ open, onClose, currentFolderId, currentOrganizationId, editServerId, initialProtocol }) => {
     const { t } = useTranslation();
@@ -23,15 +25,8 @@ export const ServerDialog = ({ open, onClose, currentFolderId, currentOrganizati
     const { sendToast } = useToast();
 
     const getProtocolIcon = (protocol, type) => {
-        if (type?.startsWith('pve')) return mdiServerNetwork;
-        
-        const iconMap = {
-            ssh: mdiConsole,
-            telnet: mdiConsole,
-            rdp: mdiMonitor,
-            vnc: mdiDesktopClassic,
-        };
-        return iconMap[protocol] || mdiServerNetwork;
+        if (type?.startsWith('pve')) return "mdiServerNetwork";
+        return { ssh: "mdiConsole", telnet: "mdiConsole", rdp: "mdiMonitor", vnc: "mdiDesktopClassic" }[protocol] || "mdiServerNetwork";
     };
 
     const [name, setName] = useState("");
@@ -214,7 +209,7 @@ export const ServerDialog = ({ open, onClose, currentFolderId, currentOrganizati
         if (editServerId) {
             getRequest("entries/" + editServerId).then((server) => {
                 setName(server.name);
-                setIcon(server.icon || "server");
+                setIcon(server.icon || null);
                 setIdentities(server.identities);
                 setEntryType(server.type || "server");
 
@@ -224,7 +219,7 @@ export const ServerDialog = ({ open, onClose, currentFolderId, currentOrganizati
                     setMonitoringEnabled(Boolean(parsedConfig.monitoringEnabled ?? true));
                     initialValues.current = {
                         name: server.name,
-                        icon: server.icon || 'server',
+                        icon: server.icon || null,
                         config: JSON.stringify(parsedConfig),
                         monitoringEnabled: Boolean(parsedConfig.monitoringEnabled ?? true)
                     };
@@ -232,7 +227,7 @@ export const ServerDialog = ({ open, onClose, currentFolderId, currentOrganizati
                     console.error("Failed to parse server config:", error);
                     setConfig({});
                     setMonitoringEnabled(false);
-                    initialValues.current = { name: server.name, icon: server.icon || 'server', config: '{}', monitoringEnabled: false };
+                    initialValues.current = { name: server.name, icon: server.icon || null, config: '{}', monitoringEnabled: false };
                 }
             });
         } else {
@@ -243,11 +238,11 @@ export const ServerDialog = ({ open, onClose, currentFolderId, currentOrganizati
             
             if (initialProtocol) {
                 setConfig({ protocol: initialProtocol });
-                const iconMap = { ssh: "terminal", telnet: "terminal", rdp: "windows", vnc: "desktop" };
-                setIcon(iconMap[initialProtocol] || null);
+                const defaultIcon = PROTOCOL_DEFAULT_ICONS[initialProtocol] || null;
+                setIcon(defaultIcon);
                 initialValues.current = { 
                     name: '', 
-                    icon: iconMap[initialProtocol] || null, 
+                    icon: defaultIcon, 
                     config: JSON.stringify({ protocol: initialProtocol }), 
                     monitoringEnabled: false 
                 };
@@ -312,7 +307,7 @@ export const ServerDialog = ({ open, onClose, currentFolderId, currentOrganizati
             <div className="server-dialog">
                 <div className="server-dialog-header">
                     <div className="dialog-icon">
-                        <Icon path={getProtocolIcon(config.protocol, entryType)} size={1} />
+                        <Icon path={mdiIcons[getProtocolIcon(config.protocol, entryType)] || mdiIcons.mdiServerNetwork} size={1} />
                     </div>
                     <div className="server-dialog-title">
                         <h2>

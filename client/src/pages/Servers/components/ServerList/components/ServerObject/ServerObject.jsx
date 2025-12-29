@@ -1,12 +1,12 @@
 import Icon from "@mdi/react";
 import { mdiSleep } from "@mdi/js";
+import { getIconPath } from "@/common/utils/iconUtils.js";
 import "./styles.sass";
 import { ServerContext } from "@/common/contexts/ServerContext.jsx";
 import { useContext, useRef, useState } from "react";
 import { useDrag, useDrop } from "react-dnd";
 import { patchRequest } from "@/common/utils/RequestUtil.js";
 import { DropIndicator } from "../DropIndicator";
-import { loadIcon } from "@/pages/Servers/utils/iconMapping.js";
 
 export const ServerObject = ({ id, name, position, folderId, organizationId, nestedLevel, icon, type, connectToServer, status, tags = [], hibernatedSessionCount = 0 }) => {
     const { loadServers, getServerById } = useContext(ServerContext);
@@ -81,7 +81,7 @@ export const ServerObject = ({ id, name, position, folderId, organizationId, nes
                     ? (status === 'offline' || status === 'stopped' ? "pve-icon pve-icon-offline" : "pve-icon")
                     : (status === 'offline' ? "system-icon system-icon-offline" : "system-icon")
             }>
-                <Icon path={loadIcon(icon)} />
+                <Icon path={getIconPath(icon)} />
             </div>
             <p className="truncate-text">{name}</p>
             {hibernatedSessionCount > 0 && (

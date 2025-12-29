@@ -1,6 +1,5 @@
 import { useRef, useState, useEffect, useCallback } from "react";
 import Icon from "@mdi/react";
-import { loadIcon } from "@/pages/Servers/utils/iconMapping.js";
 import { mdiClose, mdiViewSplitVertical, mdiChevronLeft, mdiChevronRight, mdiSleep, mdiOpenInNew, mdiShareVariant, mdiLinkVariant, mdiPencil, mdiEye, mdiCloseCircle, mdiContentDuplicate } from "@mdi/js";
 import { useDrag, useDrop } from "react-dnd";
 import TerminalActionsMenu from "../TerminalActionsMenu";
@@ -8,6 +7,7 @@ import { ContextMenu, ContextMenuItem, ContextMenuSeparator, useContextMenu } fr
 import { useActiveSessions } from "@/common/contexts/SessionContext.jsx";
 import { postRequest, deleteRequest, patchRequest } from "@/common/utils/RequestUtil";
 import { getBaseUrl } from "@/common/utils/ConnectionUtil.js";
+import { getIconPath } from "@/common/utils/iconUtils.js";
 import "./styles.sass";
 
 const DraggableTab = ({
@@ -108,7 +108,7 @@ const DraggableTab = ({
                             />
                         </svg>
                     )}
-                    <Icon path={loadIcon(server.icon)} className="progress-icon" />
+                    <Icon path={getIconPath(server.icon)} className="progress-icon" />
                 </div>
                 <h2>{server?.name} {session.type === "sftp" ? " (SFTP)" : ""}</h2>
                 <div className="tab-actions">

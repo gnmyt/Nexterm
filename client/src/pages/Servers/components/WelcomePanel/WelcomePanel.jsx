@@ -4,22 +4,13 @@ import { UserContext } from "@/common/contexts/UserContext.jsx";
 import { ServerContext } from "@/common/contexts/ServerContext.jsx";
 import Button from "@/common/components/Button";
 import Icon from "@mdi/react";
-import {
-    mdiStar,
-    mdiHistory,
-    mdiPower,
-    mdiPlay,
-    mdiServerNetwork,
-    mdiConnection,
-    mdiFolderOpen,
-    mdiCursorDefaultClick,
-} from "@mdi/js";
+import { mdiStar, mdiHistory, mdiPower, mdiPlay, mdiServerNetwork, mdiConnection, mdiFolderOpen, mdiCursorDefaultClick } from "@mdi/js";
 import { siDiscord } from "simple-icons";
 import { DISCORD_URL, GITHUB_URL } from "@/App.jsx";
 import { getRequest } from "@/common/utils/RequestUtil";
 import { useTranslation } from "react-i18next";
 import { ContextMenu, ContextMenuItem, useContextMenu } from "@/common/components/ContextMenu";
-import { loadIcon } from "@/pages/Servers/utils/iconMapping.js";
+import { getIconPath } from "@/common/utils/iconUtils.js";
 
 const formatTimeAgo = (timestamp) => {
     const diffMins = Math.floor((Date.now() - new Date(timestamp)) / 60000);
@@ -120,7 +111,7 @@ export const WelcomePanel = ({
                                          className={`recent-item${hibernated ? " hibernated" : ""}`}
                                          onClick={() => handleClick(item)}
                                          onContextMenu={(e) => handleContextMenu(e, item)}>
-                                        <div className="item-icon"><Icon path={loadIcon(item.icon)} /></div>
+                                        <div className="item-icon"><Icon path={getIconPath(item.icon)} /></div>
                                         <div className="item-info">
                                             <span className="item-name">{item.name}</span>
                                             <span className="item-meta">
