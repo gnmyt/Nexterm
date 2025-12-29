@@ -3,14 +3,21 @@
     "error": "Erro",
     "success": "Sucesso",
     "loading": "Carregando...",
+    "saving": "Salvando...",
+    "close": "Fechar",
+    "cancel": "Cancelar",
+    "save": "Salvar",
+    "download": "Baixar",
+    "maximize": "Maximizar",
+    "restore": "Restaurar",
     "actions": {
       "cancel": "Cancelar",
       "confirm": "Confirmar",
-      "discard": "Discard",
+      "discard": "Descartar",
       "login": "Login",
       "register": "Registrar",
       "save": "Salvar",
-      "download": "Download",
+      "download": "Baixar",
       "close": "Fechar",
       "maximize": "Maximizar",
       "restore": "Restaurar"
@@ -33,16 +40,16 @@
     "confirmDialog": {
       "title": "Você tem certeza?",
       "defaultText": "Essa ação não pode ser desfeita.",
-      "unsavedChangesTitle": "Unsaved Changes",
-      "unsavedChangesText": "You have unsaved changes. Are you sure you want to close?"
+      "unsavedChangesTitle": "Alterações não salvas",
+      "unsavedChangesText": "Você tem alterações não salvas. Você tem certeza de que deseja fechar?"
     },
     "loginDialog": {
       "title": "Nexterm",
       "registrationTitle": "Registrar",
       "ssoOrContinueWith": "ou continuar com",
       "noAuthMethodsAvailable": "Não há métodos de autenticação disponíveis.",
-      "signInWithPasskey": "Sign in with Passkey",
-      "authenticating": "Authenticating..."
+      "signInWithPasskey": "Faça login com a Passkey",
+      "authenticating": "Autenticação..."
     },
     "selectBox": {
       "defaultOption": "Selecionar uma opção...",
@@ -53,42 +60,42 @@
       "settings": "Configurações",
       "servers": "Servidores",
       "monitoring": "Monitoramento",
-      "snippets": "Snippets",
+      "snippets": "Trechos",
       "audit": "Auditoria",
-      "account": "Account",
-      "logout": "Logout",
+      "account": "Conta",
+      "logout": "Fazer logout",
       "collapseTitle": "Alternar a Barra Lateral",
       "logoutConfirmText": "Isso irá encerrar sua sessão na conta {{username}}. Tem certeza?",
       "navigationConfirmText": "Você tem sessões ativas. Sair deste site irá desconectá-lo de todos os servidores. Você tem certeza?"
     },
     "quickAction": {
-      "placeholder": "Search servers, snippets, or navigate...",
-      "noResults": "No results found",
-      "navigation": "Navigation",
-      "settings": "Settings",
-      "navigate": "Navigate",
-      "select": "Select",
-      "close": "Close",
+      "placeholder": "Pesquise servidores, trechos ou navegue...",
+      "noResults": "Nenhum resultado encontrado",
+      "navigation": "Navegação",
+      "settings": "Configurações",
+      "navigate": "Navegar",
+      "select": "Selecione",
+      "close": "Fechar",
       "types": {
-        "server": "Server",
-        "snippet": "Snippet",
-        "navigation": "Go to",
-        "settings": "Settings"
+        "server": "Servidor",
+        "snippet": "Trecho",
+        "navigation": "Ir para",
+        "settings": "Configurações"
       }
     },
     "errors": {
       "loadingAuthProviders": "Erro ao carregar os provedores de autenticação: {{error}}",
       "webSocketConnection": {
-        "title": "WebSocket Connection Failed",
-        "message": "Connections are unavailable. This may be due to WebSocket not being enabled in your reverse proxy or network restrictions."
+        "title": "Falha na conexão WebSocket",
+        "message": "As conexões não estão disponíveis. Isso pode ser devido ao fato de o WebSocket não estar ativado em seu proxy reverso ou a restrições de rede."
       },
       "generalError": "Ocorreu um erro",
       "invalidCredentials": "Nome de usuário ou senha inválidos",
       "invalidTwoFactor": "Código de dois fatores inválido",
       "internalAuthDisabled": "A autenticação interna está desativada",
       "ssoLoginFailed": "Falha ao iniciar o login SSO",
-      "passkeyLoginFailed": "Passkey authentication failed",
-      "passkeyCancelled": "Passkey authentication was cancelled"
+      "passkeyLoginFailed": "Falha na autenticação da chave de acesso",
+      "passkeyCancelled": "A autenticação da chave de acesso foi cancelada"
     },
     "messages": {
       "invitationAccepted": "Convite aceito",
@@ -142,7 +149,7 @@
       "loading": "Carregando logs de auditoria...",
       "expandedDetails": {
         "connectionReason": "Razão da Conexão",
-        "userAgent": "User Agent",
+        "userAgent": "Agente do usuário",
         "additionalDetails": "Detalhes Adicionais"
       },
       "badges": {
@@ -160,13 +167,13 @@
   },
   "snippets": {
     "page": {
-      "title": "Snippets",
+      "title": "Trechos",
       "subtitle": "Gerencie seus snippets de comandos para acesso rápido nos terminais",
       "addSnippet": "Adicionar Snippet",
       "personal": "Pessoal",
       "selectOrganization": "Selecionar Organização",
       "tabs": {
-        "snippets": "Snippets",
+        "snippets": "Trechos",
         "scripts": "Scripts"
       }
     },
@@ -186,13 +193,13 @@
         "name": "Nome",
         "description": "Descrição (opcional)",
         "command": "Comando",
-        "osFilter": "Compatible OS"
+        "osFilter": "Sistema operacional compatível"
       },
       "placeholders": {
         "name": "Nome do snippet",
         "description": "O que esse comando faz?",
         "command": "Digite seu comando",
-        "osFilter": "All operating systems"
+        "osFilter": "Todos os sistemas operacionais"
       },
       "actions": {
         "cancel": "Cancelar",
@@ -225,7 +232,7 @@
       "personal": "Pessoal",
       "selectOrganization": "Selecionar Organização",
       "tabs": {
-        "snippets": "Snippets",
+        "snippets": "Trechos",
         "scripts": "Scripts"
       }
     },
@@ -275,12 +282,12 @@
       "fields": {
         "name": "Nome",
         "description": "Descrição",
-        "osFilter": "Compatible OS"
+        "osFilter": "Sistema operacional compatível"
       },
       "placeholders": {
         "name": "Nome do script",
         "description": "O que esse script faz?",
-        "osFilter": "All operating systems"
+        "osFilter": "Todos os sistemas operacionais"
       },
       "actions": {
         "cancel": "Cancelar",
@@ -337,9 +344,9 @@
         "memoryUsage": "Uso de Memória",
         "loadAverage": "Média de Carga",
         "processes": "Processos",
-        "uptime": "Uptime",
-        "nodes": "Nodes",
-        "vms": "VMs/Containers"
+        "uptime": "Tempo de atividade",
+        "nodes": "Nós",
+        "vms": "VMs/contêineres"
       },
       "status": {
         "serverOffline": "Servidor Offline",
@@ -371,18 +378,18 @@
         "charts": "Gráficos",
         "storage": "Armazenamento",
         "network": "Rede",
-        "processes": "Processes",
-        "nodes": "Nodes"
+        "processes": "Processos",
+        "nodes": "Nós"
       },
       "overview": {
         "systemInfo": {
           "title": "Informações do Sistema",
-          "hostname": "Hostname",
-          "os": "OS",
+          "hostname": "Nome do host",
+          "os": "SO",
           "version": "Versão",
           "kernel": "Kernel",
           "architecture": "Arquitetura",
-          "uptime": "Uptime",
+          "uptime": "Tempo de atividade",
           "unknown": "Desconhecido",
           "noData": "Nenhuma informação do sistema disponível"
         },
@@ -416,44 +423,44 @@
         "total": "Total: {{value}}",
         "type": "Tipo: {{value}}",
         "noData": "Nenhum dado de uso de disco disponível",
-        "noPartitions": "No mounted partitions"
+        "noPartitions": "Sem partições montadas"
       },
       "network": {
         "title": "Interfaces de Rede",
-        "rxBytes": "RX Bytes",
-        "txBytes": "TX Bytes",
-        "mac": "MAC Address",
-        "speed": "Speed",
+        "rxBytes": "Bytes RX",
+        "txBytes": "Bytes TX",
+        "mac": "Endereço MAC",
+        "speed": "Velocidade",
         "noData": "Nenhum dado de interface de rede disponível"
       },
       "processes": {
-        "title": "Running Processes",
-        "searchPlaceholder": "Search processes...",
-        "showing": "Showing {{count}} of {{total}} processes",
-        "noData": "No process data available. Process data will appear after the next monitoring cycle.",
-        "noResults": "No processes match your search criteria."
+        "title": "Processos em execução",
+        "searchPlaceholder": "Processos de pesquisa...",
+        "showing": "Mostrando {{count}} de {{total}} processos",
+        "noData": "Não há dados de processo disponíveis. Os dados do processo serão exibidos após o próximo ciclo de monitoramento.",
+        "noResults": "Nenhum processo corresponde aos seus critérios de pesquisa."
       },
       "pve": {
-        "clusterInfo": "Cluster Information",
-        "resources": "Resource Usage",
-        "virtualMachines": "Virtual Machines",
-        "totalNodes": "Total Nodes",
-        "onlineNodes": "Online Nodes",
-        "totalCPU": "Total CPU",
-        "totalMemory": "Total Memory",
-        "totalStorage": "Total Storage",
-        "storageUsage": "Storage Usage",
-        "cores": "Cores",
-        "uptime": "Uptime",
-        "qemuVMs": "QEMU VMs",
-        "lxcContainers": "LXC Containers",
-        "running": "{{count}} running",
-        "vmContainerCount": "VM/Container Count",
+        "clusterInfo": "Informações sobre o cluster",
+        "resources": "Uso de recursos",
+        "virtualMachines": "Máquinas virtuais",
+        "totalNodes": "Total de nós",
+        "onlineNodes": "Nós on-line",
+        "totalCPU": "CPU total",
+        "totalMemory": "Memória total",
+        "totalStorage": "Armazenamento total",
+        "storageUsage": "Uso do armazenamento",
+        "cores": "Núcleos",
+        "uptime": "Tempo de atividade",
+        "qemuVMs": "VMs QEMU",
+        "lxcContainers": "Contêineres LXC",
+        "running": "{{count}} em execução",
+        "vmContainerCount": "Contagem de VMs/contêineres",
         "cpu": "CPU",
-        "memory": "Memory",
-        "storage": "Storage",
-        "nodeOffline": "This node is currently offline",
-        "noNodes": "No nodes available"
+        "memory": "Memória",
+        "storage": "Armazenamento",
+        "nodeOffline": "Este nó está off-line no momento",
+        "noNodes": "Não há nós disponíveis"
       }
     }
   },
@@ -464,6 +471,7 @@
     "pages": {
       "account": "Conta",
       "terminal": "Terminal",
+      "fileManager": "Gerenciador de arquivos",
       "keymaps": "Mapa de Teclas",
       "identities": "Identidades",
       "sessions": "Sessões",
@@ -472,8 +480,8 @@
       "authentication": "Autenticação",
       "sources": "Fontes",
       "ai": "IA",
-      "monitoring": "Monitoring",
-      "backup": "Storage"
+      "monitoring": "Monitoramento",
+      "backup": "Armazenamento"
     },
     "account": {
       "title": "Conta",
@@ -486,10 +494,10 @@
       "themeLight": "Claro",
       "themeDark": "Escuro",
       "themeOled": "OLED",
-      "oledEnabled": "OLED mode enabled",
-      "oledDisabled": "OLED mode disabled",
-      "themeLabel": "Theme",
-      "accentColor": "Accent Color",
+      "oledEnabled": "Modo OLED ativado",
+      "oledDisabled": "Modo OLED desativado",
+      "themeLabel": "Tema",
+      "accentColor": "Cor de destaque",
       "twoFactor": "Autenticação de dois fatores",
       "twoFactorActive": "Ativa",
       "twoFactorInactive": "Inativa",
@@ -522,20 +530,20 @@
         }
       },
       "passkeys": {
-        "sectionTitle": "Passkeys",
-        "sectionDescription": "Use passkeys for faster, more secure sign-in without passwords.",
-        "addButton": "Add Passkey",
-        "addDialogTitle": "Add Passkey",
-        "addDialogDescription": "Give your passkey a name to help you identify it later.",
-        "namePlaceholder": "Passkey name",
-        "enterName": "Enter a name for this passkey:",
-        "defaultName": "My Passkey",
-        "confirmDelete": "Are you sure you want to delete this passkey?",
-        "createdAt": "Created {{date}}",
-        "registerError": "Failed to register passkey. Please try again.",
-        "noPasskeys": "No passkeys registered yet",
-        "rename": "Rename",
-        "delete": "Delete"
+        "sectionTitle": "Chaves de acesso",
+        "sectionDescription": "Use senhas para fazer login mais rápido e mais seguro sem senhas.",
+        "addButton": "Adicionar chave de acesso",
+        "addDialogTitle": "Adicionar chave de acesso",
+        "addDialogDescription": "Dê um nome à sua chave de acesso para ajudar você a identificá-la mais tarde.",
+        "namePlaceholder": "Nome da chave de acesso",
+        "enterName": "Digite um nome para essa chave de acesso:",
+        "defaultName": "Minha chave de acesso",
+        "confirmDelete": "Você tem certeza de que deseja excluir essa chave de acesso?",
+        "createdAt": "Criado em {{date}}",
+        "registerError": "Falha ao registrar a chave de acesso. Tente novamente.",
+        "noPasskeys": "Ainda não há chaves de acesso registradas",
+        "rename": "Renomear",
+        "delete": "Excluir"
       }
     },
     "passwordChange": {
@@ -611,7 +619,7 @@
       "title": "Sessões",
       "lastActivity": "Última atividade: {{date}} de {{ip}}",
       "currentSession": "Sessão atual",
-      "logout": "Logout",
+      "logout": "Fazer logout",
       "revoke": "Revogar",
       "browserOn": "{{browser}} {{version}} em {{os}} {{osVersion}}"
     },
@@ -625,15 +633,15 @@
           "description": "Abrir a caixa de pesquisa"
         },
         "quickaction": {
-          "title": "Quick Action",
-          "description": "Open the quick action menu"
+          "title": "Ação rápida",
+          "description": "Abra o menu de ação rápida"
         },
         "aimenu": {
           "title": "Menu de IA",
           "description": "Abrir o menu de comandos de IA"
         },
         "snippets": {
-          "title": "Snippets",
+          "title": "Trechos",
           "description": "Abrir a caixa de diálogo de snippets"
         },
         "keyboardshortcuts": {
@@ -692,10 +700,53 @@
         "text": "$ echo 'Olá, Nexterm!'\nOlá, Nexterm!\n$ "
       }
     },
+    "fileManager": {
+      "title": "Gerenciador de arquivos",
+      "description": "Configure como os arquivos e as pastas são exibidos e gerenciados.",
+      "defaultView": {
+        "title": "Modo de exibição padrão",
+        "description": "Escolha o layout padrão ao abrir o gerenciador de arquivos.",
+        "list": "Exibição de lista",
+        "listDescription": "Mostrar arquivos em uma lista detalhada com colunas de tamanho e data",
+        "grid": "Visualização em grade",
+        "gridDescription": "Mostrar arquivos como ícones em um layout de grade com miniaturas"
+      },
+      "thumbnails": {
+        "title": "Miniaturas de imagens",
+        "description": "Mostrar miniaturas de imagens na exibição de grade. Isso usa largura de banda adicional para gerar visualizações.",
+        "enabled": "Mostrar miniaturas",
+        "enabledDescription": "Exibir visualizações prévias de imagens na exibição de grade para uma rápida identificação visual",
+        "disabled": "Ocultar miniaturas",
+        "disabledDescription": "Mostrar apenas ícones de arquivos para economizar largura de banda e melhorar o desempenho"
+      },
+      "hiddenFiles": {
+        "title": "Arquivos ocultos",
+        "description": "Controle a visibilidade de arquivos e pastas ocultos (nomes que começam com um ponto).",
+        "show": "Mostrar arquivos ocultos",
+        "showDescription": "Exibir todos os arquivos, inclusive .dotfiles e diretórios do sistema",
+        "hide": "Ocultar arquivos ocultos",
+        "hideDescription": "Mostrar apenas arquivos e pastas comuns"
+      },
+      "deleteConfirmation": {
+        "title": "Excluir confirmação",
+        "description": "Exigir confirmação antes de excluir arquivos e pastas.",
+        "enabled": "Confirmar exclusões",
+        "enabledDescription": "Mostrar uma caixa de diálogo de confirmação antes de excluir itens",
+        "disabled": "Excluir imediatamente",
+        "disabledDescription": "Excluir arquivos sem pedir confirmação"
+      },
+      "dragDropAction": {
+        "title": "Ação de arrastar e soltar",
+        "description": "Ação padrão ao arrastar arquivos para um novo local.",
+        "move": "Mover",
+        "copy": "Cópia",
+        "ask": "Perguntar"
+      }
+    },
     "authentication": {
       "title": "{{count}} Provedor(es) de Autenticação",
       "addProvider": "Adicionar Provedor",
-      "addLdapProvider": "Add LDAP",
+      "addLdapProvider": "Adicionar LDAP",
       "system": "Sistema",
       "systemDescription": "Autenticação por nome de usuário e senha",
       "deleteConfirm": "Isso excluirá permanentemente esse provedor de autenticação.",
@@ -719,13 +770,13 @@
           "redirectUri": "URI de Redirecionamento",
           "redirectUriPlaceholder": "https://your-domain.com/api/oidc/callback",
           "scope": "Escopo",
-          "scopePlaceholder": "openid profile",
+          "scopePlaceholder": "perfil openid",
           "usernameAttribute": "Atributo de Nome de Usuário",
-          "usernameAttributePlaceholder": "preferred_username",
+          "usernameAttributePlaceholder": "nome de usuário preferido",
           "firstNameAttribute": "Atributo de Nome",
-          "firstNameAttributePlaceholder": "given_name",
+          "firstNameAttributePlaceholder": "nome_do_dado",
           "lastNameAttribute": "Atributo de Sobrenome",
-          "lastNameAttributePlaceholder": "family_name"
+          "lastNameAttributePlaceholder": "nome_da_família"
         },
         "advanced": {
           "show": "Mostrar Configurações Avançadas",
@@ -740,48 +791,48 @@
         }
       },
       "ldapDialog": {
-        "createTitle": "Add LDAP Provider",
-        "editTitle": "Edit LDAP Provider",
+        "createTitle": "Adicionar provedor LDAP",
+        "editTitle": "Editar provedor LDAP",
         "fields": {
-          "displayName": "Display Name",
-          "displayNamePlaceholder": "e.g. Company LDAP",
-          "host": "Host",
+          "displayName": "Nome de exibição",
+          "displayNamePlaceholder": "Por exemplo, LDAP da empresa",
+          "host": "Anfitrião",
           "hostPlaceholder": "ldap.company.com",
-          "port": "Port",
-          "bindDN": "Bind DN",
-          "bindDNPlaceholder": "cn=admin,dc=company,dc=com",
-          "bindPassword": "Bind Password",
-          "bindPasswordPlaceholder": "Bind password",
-          "bindPasswordPlaceholderEdit": "Leave blank to keep existing",
+          "port": "Porto",
+          "bindDN": "Vincular DN",
+          "bindDNPlaceholder": "cn=admin,dc=companhia,dc=com",
+          "bindPassword": "Vincular senha",
+          "bindPasswordPlaceholder": "Vincular senha",
+          "bindPasswordPlaceholderEdit": "Deixe em branco para manter o existente",
           "baseDN": "Base DN",
-          "baseDNPlaceholder": "dc=company,dc=com",
-          "userSearchFilter": "User Search Filter",
-          "userSearchFilterPlaceholder": "(uid={{username}}) or (sAMAccountName={{username}})",
+          "baseDNPlaceholder": "dc=empresa, dc=com",
+          "userSearchFilter": "Filtro de pesquisa do usuário",
+          "userSearchFilterPlaceholder": "(uid={{username}}) ou (sAMAccountName={{username}})",
           "useTLS": "Use TLS/SSL",
-          "usernameAttribute": "Username Attribute",
+          "usernameAttribute": "Atributo de nome de usuário",
           "usernameAttributePlaceholder": "uid",
-          "emailAttribute": "Email Attribute",
-          "emailAttributePlaceholder": "mail",
-          "firstNameAttribute": "First Name Attribute",
+          "emailAttribute": "Atributo de e-mail",
+          "emailAttributePlaceholder": "correio",
+          "firstNameAttribute": "Atributo do primeiro nome",
           "firstNameAttributePlaceholder": "givenName",
-          "lastNameAttribute": "Last Name Attribute",
+          "lastNameAttribute": "Atributo Last Name",
           "lastNameAttributePlaceholder": "sn"
         },
         "advanced": {
-          "show": "Show Advanced Settings",
-          "hide": "Hide Advanced Settings"
+          "show": "Mostrar configurações avançadas",
+          "hide": "Ocultar configurações avançadas"
         },
         "actions": {
-          "addProvider": "Add Provider",
-          "saveChanges": "Save Changes",
-          "testConnection": "Test Connection",
-          "testing": "Testing..."
+          "addProvider": "Adicionar provedor",
+          "saveChanges": "Salvar alterações",
+          "testConnection": "Conexão de teste",
+          "testing": "Testes..."
         },
         "messages": {
-          "saveFailed": "Failed to save provider",
-          "saveFirst": "Save the provider first to test the connection",
-          "testSuccess": "Connection test successful",
-          "testFailed": "Connection test failed"
+          "saveFailed": "Falha ao salvar o provedor",
+          "saveFirst": "Salve o provedor primeiro para testar a conexão",
+          "testSuccess": "Teste de conexão bem-sucedido",
+          "testFailed": "Falha no teste de conexão"
         }
       }
     },
@@ -828,55 +879,55 @@
       }
     },
     "monitoring": {
-      "loading": "Loading monitoring settings...",
-      "saveSettings": "Save Settings",
-      "saveSuccess": "Monitoring settings saved successfully",
-      "seconds": "seconds",
-      "hours": "hours",
-      "servers": "servers",
+      "loading": "Carregando as configurações de monitoramento...",
+      "saveSettings": "Salvar configurações",
+      "saveSuccess": "Configurações de monitoramento salvas com sucesso",
+      "seconds": "segundos",
+      "hours": "horas",
+      "servers": "servidores",
       "statusChecker": {
-        "title": "Status Checker",
-        "description": "Configure how Nexterm checks the online/offline status of your servers.",
+        "title": "Verificador de status",
+        "description": "Configure como a Nexterm verifica o status on-line/off-line de seus servidores.",
         "enable": {
-          "title": "Enable Status Checker",
-          "description": "Automatically check if servers are online or offline. When disabled, all servers will be marked as online."
+          "title": "Ativar o verificador de status",
+          "description": "Verifica automaticamente se os servidores estão on-line ou off-line. Quando desativado, todos os servidores serão marcados como on-line."
         },
         "interval": {
-          "title": "Check Interval",
-          "description": "How often to check server status (10-300 seconds)"
+          "title": "Intervalo de verificação",
+          "description": "Com que frequência você deve verificar o status do servidor (10 a 300 segundos)"
         }
       },
       "dataCollection": {
-        "title": "Data Collection",
-        "description": "Configure monitoring data collection for CPU, memory, disk, and network metrics.",
+        "title": "Coleta de dados",
+        "description": "Configure a coleta de dados de monitoramento para métricas de CPU, memória, disco e rede.",
         "enable": {
-          "title": "Enable Monitoring",
-          "description": "Collect detailed performance metrics from servers with monitoring enabled."
+          "title": "Ativar monitoramento",
+          "description": "Colete métricas de desempenho detalhadas dos servidores com o monitoramento ativado."
         },
         "interval": {
-          "title": "Collection Interval",
-          "description": "How often to collect monitoring data (30-600 seconds)"
+          "title": "Intervalo de coleta",
+          "description": "Com que frequência você deve coletar dados de monitoramento (30 a 600 segundos)"
         },
         "retention": {
-          "title": "Data Retention",
-          "description": "How long to keep monitoring data (1-24 hours)"
+          "title": "Retenção de dados",
+          "description": "Por quanto tempo você deve manter os dados de monitoramento (1 a 24 horas)"
         }
       },
       "advanced": {
-        "title": "Advanced Settings",
-        "description": "Fine-tune monitoring performance and resource usage.",
+        "title": "Configurações avançadas",
+        "description": "Ajuste o desempenho do monitoramento e o uso de recursos.",
         "timeout": {
-          "title": "Connection Timeout",
-          "description": "Maximum time to wait for a server response (5-120 seconds)"
+          "title": "Tempo limite de conexão",
+          "description": "Tempo máximo de espera por uma resposta do servidor (5 a 120 segundos)"
         },
         "batchSize": {
-          "title": "Batch Size",
-          "description": "Number of servers to check simultaneously (1-50)"
+          "title": "Tamanho do lote",
+          "description": "Número de servidores a serem verificados simultaneamente (1 a 50)"
         }
       },
       "errors": {
-        "loadSettings": "Failed to load monitoring settings",
-        "saveSettings": "Failed to save monitoring settings"
+        "loadSettings": "Falha ao carregar as configurações de monitoramento",
+        "saveSettings": "Falha ao salvar as configurações de monitoramento"
       }
     },
     "identities": {
@@ -913,9 +964,9 @@
         },
         "authTypes": {
           "password": "Senha",
-          "password-only": "No Username",
+          "password-only": "Sem nome de usuário",
           "ssh": "Chave SSH",
-          "both": "Key+Pass"
+          "both": "Chave+Pass"
         },
         "actions": {
           "cancel": "Cancelar",
@@ -940,8 +991,8 @@
       "noSources": "Nenhuma Fonte Configurada",
       "noSourcesDescription": "Adicione fontes externas para sincronizar automaticamente scripts e snippets.",
       "addSource": "Adicionar Fonte",
-      "snippets": "snippets",
-      "scripts": "scripts",
+      "snippets": "trechos",
+      "scripts": "roteiros",
       "neverSynced": "Nunca sincronizado",
       "sync": "Sincronizar agora",
       "edit": "Editar",
@@ -982,124 +1033,124 @@
       }
     },
     "backup": {
-      "loading": "Loading storage settings...",
+      "loading": "Carregando configurações de armazenamento...",
       "storage": {
-        "title": "Storage",
-        "description": "View disk usage for your Nexterm data.",
-        "database": "Database",
-        "recordings": "Recordings",
-        "logs": "Logs",
+        "title": "Armazenamento",
+        "description": "Veja o uso do disco para seus dados Nexterm.",
+        "database": "Banco de dados",
+        "recordings": "Gravações",
+        "logs": "Registros",
         "total": "Total"
       },
       "backupsSection": {
         "title": "Backups",
-        "description": "Configure backup providers and schedule automatic backups."
+        "description": "Configurar provedores de backup e agendar backups automáticos."
       },
-      "addProvider": "Add Provider",
-      "editProvider": "Edit Provider",
-      "providerName": "Provider Name",
-      "providerNamePlaceholder": "My Backup",
-      "providerType": "Type",
+      "addProvider": "Adicionar provedor",
+      "editProvider": "Editar provedor",
+      "providerName": "Nome do provedor",
+      "providerNamePlaceholder": "Meu backup",
+      "providerType": "Tipo",
       "providerTypes": {
         "local": "Local",
-        "smb": "SMB Share",
+        "smb": "Compartilhamento de SMB",
         "webdav": "WebDAV"
       },
-      "localPath": "Backup Path",
-      "localPathPlaceholder": "/path/to/backups",
-      "smbShare": "SMB Share",
-      "smbSharePlaceholder": "\\\\server\\share",
-      "smbFolder": "Folder (optional)",
+      "localPath": "Caminho de backup",
+      "localPathPlaceholder": "/caminho/para/backups",
+      "smbShare": "Compartilhamento de SMB",
+      "smbSharePlaceholder": "\\\\Compartilhar",
+      "smbFolder": "Pasta (opcional)",
       "smbFolderPlaceholder": "backups",
-      "smbUsername": "Username",
-      "smbUsernamePlaceholder": "user",
-      "smbPassword": "Password",
-      "smbPasswordPlaceholder": "password",
-      "smbDomain": "Domain (optional)",
-      "smbDomainPlaceholder": "WORKGROUP",
-      "webdavUrl": "Server URL",
+      "smbUsername": "Nome de usuário",
+      "smbUsernamePlaceholder": "usuário",
+      "smbPassword": "Senha",
+      "smbPasswordPlaceholder": "senha",
+      "smbDomain": "Domínio (opcional)",
+      "smbDomainPlaceholder": "GRUPO DE TRABALHO",
+      "webdavUrl": "URL do servidor",
       "webdavUrlPlaceholder": "https://cloud.example.com/remote.php/dav/files/user",
-      "webdavFolder": "Folder (optional)",
+      "webdavFolder": "Pasta (opcional)",
       "webdavFolderPlaceholder": "backups",
-      "webdavUsername": "Username",
-      "webdavUsernamePlaceholder": "user",
-      "webdavPassword": "Password",
-      "webdavPasswordPlaceholder": "password",
-      "passwordUnchanged": "Leave empty to keep current",
+      "webdavUsername": "Nome de usuário",
+      "webdavUsernamePlaceholder": "usuário",
+      "webdavPassword": "Senha",
+      "webdavPasswordPlaceholder": "senha",
+      "passwordUnchanged": "Deixe em branco para manter-se atualizado",
       "schedule": {
-        "title": "Automatic Backup",
-        "disabled": "Disabled",
-        "hourly": "Every hour",
-        "every6h": "Every 6 hours",
-        "every12h": "Every 12 hours",
-        "daily": "Daily",
-        "weekly": "Weekly"
+        "title": "Backup automático",
+        "disabled": "Desativado",
+        "hourly": "A cada hora",
+        "every6h": "A cada 6 horas",
+        "every12h": "A cada 12 horas",
+        "daily": "Diariamente",
+        "weekly": "Semanal"
       },
       "retention": {
-        "title": "Retention Policy"
+        "title": "Política de retenção"
       },
       "backups": "backups",
       "includes": {
-        "title": "Include in Backups",
-        "database": "Database",
-        "recordings": "Recordings",
-        "logs": "Logs"
+        "title": "Incluir em backups",
+        "database": "Banco de dados",
+        "recordings": "Gravações",
+        "logs": "Registros"
       },
-      "providers": "Providers",
-      "saveSettings": "Save Settings",
-      "noProviders": "No Backup Providers",
-      "noProvidersDescription": "Add a backup provider to start creating backups.",
+      "providers": "Provedores",
+      "saveSettings": "Salvar configurações",
+      "noProviders": "Nenhum provedor de backup",
+      "noProvidersDescription": "Adicione um provedor de backup para começar a criar backups.",
       "backupList": "Backups - {{name}}",
-      "loadingBackups": "Loading backups...",
-      "noBackups": "No backups found",
-      "restoreConfirm": "Are you sure you want to restore \"{{name}}\"? This will overwrite your current data and restart the server.",
-      "deleteProviderConfirm": "Are you sure you want to delete \"{{name}}\"? This will not delete existing backups.",
-      "providerCreated": "Backup provider created",
-      "providerUpdated": "Backup provider updated",
-      "providerDeleted": "Backup provider deleted",
-      "backupCreated": "Backup created successfully",
-      "restoreStarted": "Restore started, server will restart",
-      "saveSuccess": "Settings saved successfully",
+      "loadingBackups": "Carregando backups...",
+      "noBackups": "Não foram encontrados backups",
+      "restoreConfirm": "Você tem certeza de que deseja restaurar \"{{name}}\"? Isso substituirá seus dados atuais e reiniciará o servidor.",
+      "deleteProviderConfirm": "Você tem certeza de que deseja excluir \"{{name}}\"? Isso não excluirá os backups existentes.",
+      "providerCreated": "Criado o provedor de backup",
+      "providerUpdated": "Atualização do provedor de backup",
+      "providerDeleted": "Provedor de backup excluído",
+      "backupCreated": "Backup criado com sucesso",
+      "restoreStarted": "A restauração foi iniciada, o servidor será reiniciado",
+      "saveSuccess": "Configurações salvas com sucesso",
       "errors": {
-        "loadFailed": "Failed to load backup settings",
-        "saveFailed": "Failed to save settings",
-        "deleteFailed": "Failed to delete",
-        "backupFailed": "Failed to create backup",
-        "loadBackupsFailed": "Failed to load backups",
-        "restoreFailed": "Failed to restore backup",
-        "exportFailed": "Failed to export data",
-        "nameRequired": "Provider name is required"
+        "loadFailed": "Falha ao carregar as configurações de backup",
+        "saveFailed": "Falha ao salvar as configurações",
+        "deleteFailed": "Falha ao excluir",
+        "backupFailed": "Falha ao criar o backup",
+        "loadBackupsFailed": "Falha ao carregar backups",
+        "restoreFailed": "Falha ao restaurar o backup",
+        "exportFailed": "Falha ao exportar dados",
+        "nameRequired": "O nome do provedor é obrigatório"
       },
-      "noFiles": "No files found"
+      "noFiles": "Nenhum arquivo encontrado"
     }
   },
   "tunnel": {
-    "title": "Port Forward",
-    "identity": "Identity",
-    "remoteHost": "Remote Host",
-    "remotePort": "Remote Port",
-    "localPort": "Local Port",
-    "start": "Start Tunnel",
-    "stop": "Stop Tunnel",
+    "title": "Encaminhamento de porta",
+    "identity": "Identidade",
+    "remoteHost": "Host remoto",
+    "remotePort": "Porta remota",
+    "localPort": "Porto local",
+    "start": "Iniciar túnel",
+    "stop": "Túnel de parada",
     "status": {
-      "idle": "Not connected",
-      "starting": "Starting...",
-      "listening": "Listening on localhost:{{port}}",
-      "error": "Error",
-      "stopped": "Stopped"
+      "idle": "Não conectado",
+      "starting": "Começando...",
+      "listening": "Você está ouvindo no localhost:{{port}}",
+      "error": "Erro",
+      "stopped": "Parado"
     },
     "error": {
-      "fillAllFields": "Please fill in all fields"
+      "fillAllFields": "Por favor, preencha todos os campos"
     }
   },
   "share": {
     "errors": {
-      "unableToConnect": "Unable to Connect",
-      "failedToJoin": "Failed to join session"
+      "unableToConnect": "Não é possível se conectar",
+      "failedToJoin": "Falha ao entrar na sessão"
     },
     "sessionEnded": {
-      "title": "Session Ended",
-      "description": "The shared session has been closed"
+      "title": "Sessão encerrada",
+      "description": "A sessão compartilhada foi encerrada"
     }
   },
   "servers": {
@@ -1139,12 +1190,12 @@
       "connect": "Conectar",
       "quickConnect": "Conexão Rápida",
       "openSFTP": "Abrir SFTP",
-      "forwardPort": "Forward Port",
+      "forwardPort": "Porta de encaminhamento",
       "runScript": "Executar Script",
       "editServer": "Editar Servidor",
       "editIntegration": "Editar Integração",
       "duplicateServer": "Duplicar Servidor",
-      "pasteIdentityPassword": "Paste Password",
+      "pasteIdentityPassword": "Colar senha",
       "deleteServer": "Excluir Servidor",
       "wakeOnLan": "Wake-On-LAN",
       "editPVE": "Editar PVE",
@@ -1154,8 +1205,8 @@
       "start": "Iniciar"
     },
     "wol": {
-      "successDescription": "Magic packet sent to {{name}}",
-      "errorDescription": "Failed to send magic packet"
+      "successDescription": "Pacote mágico enviado para {{name}}",
+      "errorDescription": "Falha ao enviar o pacote mágico"
     },
     "messages": {
       "fillRequiredFields": "Por favor, preencha todos os campos obrigatórios",
@@ -1182,30 +1233,30 @@
       "fields": {
         "name": "Nome",
         "icon": "Ícone",
-        "serverIp": "Host",
+        "serverIp": "Anfitrião",
         "port": "Porta",
         "protocol": "Protocolo",
         "username": "Nome de Usuário",
         "password": "Senha",
-        "host": "Host",
+        "host": "Anfitrião",
         "nodeName": "Nome do Node",
-        "vmid": "VM ID",
-        "macAddress": "MAC Address"
+        "vmid": "ID DA VM",
+        "macAddress": "Endereço MAC"
       },
       "placeholders": {
         "serverName": "Nome do servidor",
-        "serverIp": "Hostname or IP",
+        "serverIp": "Nome do host ou IP",
         "port": "Porta",
         "username": "Nome de usuário",
         "password": "Senha",
-        "host": "Host",
+        "host": "Anfitrião",
         "nodeName": "Nome do node",
-        "vmid": "VM ID",
+        "vmid": "ID DA VM",
         "macAddress": "AA:BB:CC:DD:EE:FF"
       },
       "settings": {
         "jumpHosts": {
-          "title": "Jump Hosts",
+          "title": "Anfitriões de salto",
           "description": "Conecte-se por servidores intermediários para alcançar esse servidor alvo",
           "addButton": "Adicionar Jump Host",
           "removeTooltip": "Remover Jump Host",
@@ -1216,45 +1267,45 @@
           "description": "Coletar métricas de CPU, memória, disco e rede para este servidor"
         },
         "wakeOnLan": {
-          "title": "Enable Wake-On-LAN",
-          "description": "Allow waking this server remotely using its MAC address"
+          "title": "Ativar Wake-On-LAN",
+          "description": "Permitir que você acorde esse servidor remotamente usando seu endereço MAC"
         },
         "keyboardLayout": {
           "title": "Layout do Teclado",
           "description": "Selecione o layout de teclado a ser usado para esta conexão."
         },
         "display": {
-          "title": "Display Settings",
-          "description": "Configure color depth and resize behavior for the remote display",
-          "colorDepth": "Color Depth",
-          "resizeMethod": "Resize Method"
+          "title": "Configurações de exibição",
+          "description": "Configurar a profundidade de cor e o comportamento de redimensionamento da tela remota",
+          "colorDepth": "Profundidade de cor",
+          "resizeMethod": "Método de redimensionamento"
         },
         "performance": {
-          "title": "Performance Settings",
-          "description": "Toggle visual effects that may impact performance over slower connections",
-          "enableWallpaper": "Enable Wallpaper",
-          "enableWallpaperDesc": "Show the desktop wallpaper on the remote system",
-          "enableTheming": "Enable Theming",
-          "enableThemingDesc": "Use themed windows and controls on the remote system",
-          "enableFontSmoothing": "Enable Font Smoothing",
-          "enableFontSmoothingDesc": "Render text with smooth edges for better readability",
-          "enableFullWindowDrag": "Enable Full Window Drag",
-          "enableFullWindowDragDesc": "Display window contents while dragging windows",
-          "enableDesktopComposition": "Enable Desktop Composition",
-          "enableDesktopCompositionDesc": "Enable transparent windows and visual effects",
-          "enableMenuAnimations": "Enable Menu Animations",
-          "enableMenuAnimationsDesc": "Enable menu open and close animations"
+          "title": "Configurações de desempenho",
+          "description": "Alternar efeitos visuais que podem afetar o desempenho em conexões mais lentas",
+          "enableWallpaper": "Ativar papel de parede",
+          "enableWallpaperDesc": "Mostrar o papel de parede da área de trabalho no sistema remoto",
+          "enableTheming": "Ativar temas",
+          "enableThemingDesc": "Use janelas e controles temáticos no sistema remoto",
+          "enableFontSmoothing": "Ativar suavização de fonte",
+          "enableFontSmoothingDesc": "Renderize o texto com bordas suaves para melhor legibilidade",
+          "enableFullWindowDrag": "Ativar arrastar a janela inteira",
+          "enableFullWindowDragDesc": "Exibir o conteúdo da janela ao arrastar janelas",
+          "enableDesktopComposition": "Ativar a composição da área de trabalho",
+          "enableDesktopCompositionDesc": "Habilitar janelas transparentes e efeitos visuais",
+          "enableMenuAnimations": "Ativar animações de menu",
+          "enableMenuAnimationsDesc": "Ativar animações de abertura e fechamento de menu"
         },
         "audio": {
-          "enableAudio": "Enable Audio",
-          "enableAudioDesc": "Stream audio from the remote system to your browser"
+          "enableAudio": "Ativar áudio",
+          "enableAudioDesc": "Transmita o áudio do sistema remoto para o seu navegador"
         },
         "terminal": {
-          "title": "Terminal Compatibility",
-          "description": "Adjust key behavior for different terminal types",
+          "title": "Compatibilidade de terminais",
+          "description": "Ajuste o comportamento das teclas para diferentes tipos de terminais",
           "backspace": "Backspace",
-          "delete": "Delete",
-          "functionKeys": "Function Keys"
+          "delete": "Excluir",
+          "functionKeys": "Teclas de função"
         },
         "noSettings": "Não há configurações adicionais disponíveis para esse tipo de entrada."
       },
@@ -1266,11 +1317,11 @@
         "identityName": "Nome da Identidade",
         "username": "Nome de Usuário",
         "authentication": "Autenticação",
-        "passwordField": "Password",
-        "userPassword": "Password",
-        "passwordOnly": "No Username",
+        "passwordField": "Senha",
+        "userPassword": "Senha",
+        "passwordOnly": "Sem nome de usuário",
         "sshKey": "Chave SSH",
-        "both": "Key+Pass",
+        "both": "Chave+Pass",
         "sshPrivateKey": "Chave Privada SSH",
         "passphrase": "Senha (opcional)",
         "new": "Nova",
@@ -1296,9 +1347,9 @@
         "username": "Nome de Usuário",
         "password": "Senha",
         "nodeName": "Nome do Node (Opcional)",
-        "monitoring": "Performance Monitoring"
+        "monitoring": "Monitoramento de desempenho"
       },
-      "monitoringDescription": "Collect cluster-wide CPU, memory, and storage metrics",
+      "monitoringDescription": "Coletar métricas de CPU, memória e armazenamento em todo o cluster",
       "placeholders": {
         "name": "Nome",
         "serverIp": "IP do Servidor",
@@ -1312,10 +1363,10 @@
         "edit": "Editar"
       },
       "messages": {
-        "created": "Proxmox integration created successfully",
-        "updated": "Proxmox integration updated successfully",
-        "createFailed": "Failed to create Proxmox integration",
-        "updateFailed": "Failed to update Proxmox integration"
+        "created": "Integração do Proxmox criada com sucesso",
+        "updated": "Integração do Proxmox atualizada com sucesso",
+        "createFailed": "Falha ao criar a integração com o Proxmox",
+        "updateFailed": "Falha ao atualizar a integração com o Proxmox"
       }
     },
     "connectionReasonDialog": {
@@ -1354,6 +1405,11 @@
       }
     },
     "fileManager": {
+      "createFile": {
+        "title": "Criar arquivo",
+        "placeholder": "Nome do arquivo",
+        "button": "Criar arquivo"
+      },
       "createFolder": {
         "title": "Criar Pasta",
         "placeholder": "Nome da Pasta",
@@ -1377,7 +1433,7 @@
       },
       "contextMenu": {
         "open": "Abrir",
-        "download": "Download",
+        "download": "Baixar",
         "rename": "Renomear",
         "delete": "Excluir",
         "copy": "Copiar",
@@ -1387,11 +1443,44 @@
         "upload": "Carregar Arquivo",
         "edit": "Editar",
         "preview": "Pré-visualizar",
+        "moveHere": "Venha para cá",
+        "copyHere": "Copie aqui",
         "bigFileConfirm": "Este arquivo tem {{size}} MB. Você tem certeza de que deseja editá-lo?",
+        "deleteConfirm": "Você tem certeza de que deseja excluir \"{{name}}\"? Essa ação não pode ser desfeita.",
         "selectAll": "Selecionar Todos",
         "insertSnippet": "Inserir Snippet",
         "sendCtrlC": "Enviar Ctrl+C",
-        "clearTerminal": "Limpar Terminal"
+        "clearTerminal": "Limpar Terminal",
+        "properties": "Propriedades",
+        "openTerminal": "Abra o terminal aqui",
+        "downloadFolder": "Baixar a pasta"
+      },
+      "properties": {
+        "general": "Geral",
+        "permissions": "Permissões",
+        "checksum": "Soma de verificação",
+        "folder": "Pasta",
+        "file": "Arquivo",
+        "path": "Localização",
+        "size": "Tamanho",
+        "calculateSize": "Calcular",
+        "owner": "Proprietário",
+        "group": "Grupo",
+        "modified": "Modificado",
+        "accessed": "Acessado",
+        "calculating": "Calculando...",
+        "calculate": "Calcular"
+      },
+      "permissions": {
+        "owner": "Proprietário",
+        "group": "Grupo",
+        "others": "Outros",
+        "read": "Ler",
+        "write": "Escrever",
+        "execute": "Executar",
+        "octal": "Octal",
+        "preview": "Prévia",
+        "apply": "Aplicar"
       },
       "filePreview": {
         "title": "Pré-visualização do Arquivo",
@@ -1400,35 +1489,75 @@
         "unsupportedFileType": "Esse tipo de arquivo não é suportado para pré-visualização",
         "videoNotSupported": "Seu navegador não suporta reprodução de vídeo",
         "audioNotSupported": "Seu navegador não suporta reprodução de áudio",
-        "download": "Download",
+        "download": "Baixar",
         "close": "Fechar"
+      },
+      "selection": {
+        "itemsSelected": "{{count}} itens selecionados",
+        "filesSelected": "{{count}} arquivo(s) selecionado(s)",
+        "foldersSelected": "{{count}} pasta(s) selecionada(s)",
+        "clearSelection": "Limpar seleção",
+        "downloadSelected": "Download selecionado",
+        "deleteSelected": "Excluir selecionado",
+        "download": "Baixar",
+        "delete": "Excluir",
+        "deleteConfirm": "Você tem certeza de que deseja excluir o(s) item(ns) {{count}} ?"
+      },
+      "header": {
+        "name": "Nome",
+        "size": "Tamanho",
+        "permissions": "Permissões",
+        "modified": "Modificado"
+      },
+      "actionBar": {
+        "enterDirectory": "Digite o caminho do diretório...",
+        "hiddenDirectories": "{{count}} diretórios ocultos",
+        "switchToGrid": "Alternar para a exibição de grade",
+        "switchToList": "Alternar para o modo de exibição de lista"
+      },
+      "item": {
+        "link": "link"
+      },
+      "states": {
+        "loading": "Carregando arquivos...",
+        "accessDenied": "Acesso negado",
+        "emptyFolder": "Essa pasta está vazia",
+        "dropFilesHint": "Solte os arquivos aqui para carregá-los"
+      },
+      "toast": {
+        "downloaded": "Baixado {{name}}",
+        "downloadingItems": "Baixando {{count}} item(ns)...",
+        "uploaded": "Carregado {{name}}",
+        "uploadFailed": "Falha no upload: {{message}}",
+        "connectionLost": "Você perdeu a conexão SFTP. Favor reconectar.",
+        "error": "Ocorreu um erro"
       }
     },
     "aiAssistant": {
       "title": "Assistente de IA",
       "placeholder": "Descreva o que você quer fazer...",
       "hint": "Pressione Enter para gerar • Esc para fechar",
-      "hintUse": "Press Enter to use command • Esc to close",
+      "hintUse": "Pressione Enter para usar o comando - Esc para fechar",
       "closeLabel": "Fechar Assistente de IA",
-      "generate": "Generate command",
-      "generating": "Generating command...",
-      "generatedCommand": "Generated Command",
-      "useCommand": "Use Command",
-      "tryAgain": "Try Again",
-      "copy": "Copy to clipboard",
-      "error": "Failed to generate command. Please try again."
+      "generate": "Gerar comando",
+      "generating": "Geração de comando...",
+      "generatedCommand": "Comando gerado",
+      "useCommand": "Usar o comando",
+      "tryAgain": "Tente novamente",
+      "copy": "Copiar para a área de transferência",
+      "error": "Falha ao gerar o comando. Tente novamente."
     },
     "snippets": {
-      "title": "Snippets",
+      "title": "Trechos",
       "noSnippets": "Nenhum snippet disponível",
       "searchPlaceholder": "Pesquisar snippets...",
       "createNew": "Criar Novo Snippet"
     },
     "terminalActions": {
       "menuTitle": "Ações de Terminal",
-      "snippets": "Snippets",
+      "snippets": "Trechos",
       "keyboardShortcuts": "Atalhos de Teclado",
-      "broadcasting": "Broadcasting",
+      "broadcasting": "Transmissão",
       "fullScreen": "Tela Cheia",
       "exitFullScreen": "Sair do Modo de Tela Cheia",
       "badgeOn": "ON"

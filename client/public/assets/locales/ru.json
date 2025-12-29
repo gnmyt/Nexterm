@@ -3,10 +3,17 @@
     "error": "Ошибка",
     "success": "Успешно",
     "loading": "Загрузка...",
+    "saving": "Экономия...",
+    "close": "Закрыть",
+    "cancel": "Отмена",
+    "save": "Сохрани",
+    "download": "Скачать",
+    "maximize": "Максимизируй",
+    "restore": "Восстанови",
     "actions": {
       "cancel": "Отмена",
       "confirm": "Подтвердить",
-      "discard": "Discard",
+      "discard": "Отбрось",
       "login": "Войти",
       "register": "Регистрация",
       "save": "Сохранить",
@@ -33,16 +40,16 @@
     "confirmDialog": {
       "title": "Вы уверены?",
       "defaultText": "Это действие нельзя отменить.",
-      "unsavedChangesTitle": "Unsaved Changes",
-      "unsavedChangesText": "You have unsaved changes. Are you sure you want to close?"
+      "unsavedChangesTitle": "Несохраненные изменения",
+      "unsavedChangesText": "У тебя есть несохраненные изменения. Ты уверен, что хочешь закрыться?"
     },
     "loginDialog": {
       "title": "Nexterm",
       "registrationTitle": "Регистрация",
       "ssoOrContinueWith": "или продолжить с помощью",
       "noAuthMethodsAvailable": "Нет доступных методов аутентификации.",
-      "signInWithPasskey": "Sign in with Passkey",
-      "authenticating": "Authenticating..."
+      "signInWithPasskey": "Войдите в систему с помощью Passkey",
+      "authenticating": "Аутентификация..."
     },
     "selectBox": {
       "defaultOption": "Выберите вариант...",
@@ -55,40 +62,40 @@
       "monitoring": "Мониторинг",
       "snippets": "Сниппеты",
       "audit": "Аудит",
-      "account": "Account",
+      "account": "Счет",
       "logout": "Выйти",
       "collapseTitle": "Свернуть боковую панель",
       "logoutConfirmText": "Это приведёт к выходу из аккаунта {{username}}. Вы уверены?",
       "navigationConfirmText": "У вас есть активные сессии. Переход приведёт к отключению от всех серверов. Вы уверены?"
     },
     "quickAction": {
-      "placeholder": "Search servers, snippets, or navigate...",
-      "noResults": "No results found",
-      "navigation": "Navigation",
-      "settings": "Settings",
-      "navigate": "Navigate",
-      "select": "Select",
-      "close": "Close",
+      "placeholder": "Ищи по серверам, сниппетам или перемещайся...",
+      "noResults": "Результаты не найдены",
+      "navigation": "Навигация",
+      "settings": "Настройки",
+      "navigate": "Перейдите по ссылке",
+      "select": "Выберите",
+      "close": "Закрыть",
       "types": {
-        "server": "Server",
-        "snippet": "Snippet",
-        "navigation": "Go to",
-        "settings": "Settings"
+        "server": "Сервер",
+        "snippet": "Сниппет",
+        "navigation": "Переходи к",
+        "settings": "Настройки"
       }
     },
     "errors": {
       "loadingAuthProviders": "Ошибка загрузки провайдеров аутентификации: {{error}}",
       "webSocketConnection": {
         "title": "WebSocket Connection Failed",
-        "message": "Connections are unavailable. This may be due to WebSocket not being enabled in your reverse proxy or network restrictions."
+        "message": "Соединения недоступны. Это может быть связано с тем, что WebSocket не включен в твоем обратном прокси или есть сетевые ограничения."
       },
       "generalError": "Произошла ошибка",
       "invalidCredentials": "Неверное имя пользователя или пароль",
       "invalidTwoFactor": "Неверный код двухфакторной аутентификации",
       "internalAuthDisabled": "Внутренняя аутентификация отключена",
       "ssoLoginFailed": "Не удалось инициировать вход через SSO",
-      "passkeyLoginFailed": "Passkey authentication failed",
-      "passkeyCancelled": "Passkey authentication was cancelled"
+      "passkeyLoginFailed": "Не удалось выполнить аутентификацию с помощью ключа",
+      "passkeyCancelled": "Аутентификация с помощью ключа была отменена"
     },
     "messages": {
       "invitationAccepted": "Приглашение принято",
@@ -142,7 +149,7 @@
       "loading": "Загрузка журналов аудита...",
       "expandedDetails": {
         "connectionReason": "Причина подключения",
-        "userAgent": "User Agent",
+        "userAgent": "Пользовательский агент",
         "additionalDetails": "Дополнительные сведения"
       },
       "badges": {
@@ -186,13 +193,13 @@
         "name": "Название",
         "description": "Описание (необязательно)",
         "command": "Команда",
-        "osFilter": "Compatible OS"
+        "osFilter": "Совместимые ОС"
       },
       "placeholders": {
         "name": "Название сниппета",
         "description": "Что делает эта команда?",
         "command": "Введите команду",
-        "osFilter": "All operating systems"
+        "osFilter": "Все операционные системы"
       },
       "actions": {
         "cancel": "Отмена",
@@ -275,12 +282,12 @@
       "fields": {
         "name": "Название",
         "description": "Описание",
-        "osFilter": "Compatible OS"
+        "osFilter": "Совместимые ОС"
       },
       "placeholders": {
         "name": "Название скрипта",
         "description": "Что делает этот скрипт?",
-        "osFilter": "All operating systems"
+        "osFilter": "Все операционные системы"
       },
       "actions": {
         "cancel": "Отмена",
@@ -338,8 +345,8 @@
         "loadAverage": "Средняя нагрузка",
         "processes": "Процессы",
         "uptime": "Время работы",
-        "nodes": "Nodes",
-        "vms": "VMs/Containers"
+        "nodes": "Узлы",
+        "vms": "ВМ/контейнеры"
       },
       "status": {
         "serverOffline": "Сервер недоступен",
@@ -371,13 +378,13 @@
         "charts": "Графики",
         "storage": "Хранилище",
         "network": "Сеть",
-        "processes": "Processes",
-        "nodes": "Nodes"
+        "processes": "Процессы",
+        "nodes": "Узлы"
       },
       "overview": {
         "systemInfo": {
           "title": "Системная информация",
-          "hostname": "Hostname",
+          "hostname": "Имя хоста",
           "os": "ОС",
           "version": "Версия",
           "kernel": "Ядро",
@@ -416,44 +423,44 @@
         "total": "Всего: {{value}}",
         "type": "Тип: {{value}}",
         "noData": "Нет данных об использовании диска",
-        "noPartitions": "No mounted partitions"
+        "noPartitions": "Никаких смонтированных перегородок"
       },
       "network": {
         "title": "Сетевые интерфейсы",
         "rxBytes": "Получено байт",
         "txBytes": "Отправлено байт",
-        "mac": "MAC Address",
-        "speed": "Speed",
+        "mac": "MAC-адрес",
+        "speed": "Скорость",
         "noData": "Нет данных о сетевых интерфейсах"
       },
       "processes": {
-        "title": "Running Processes",
-        "searchPlaceholder": "Search processes...",
-        "showing": "Showing {{count}} of {{total}} processes",
-        "noData": "No process data available. Process data will appear after the next monitoring cycle.",
-        "noResults": "No processes match your search criteria."
+        "title": "Запущенные процессы",
+        "searchPlaceholder": "Поисковые процессы...",
+        "showing": "Показывая {{count}} процессов {{total}}",
+        "noData": "Данные о процессе недоступны. Данные о процессе появятся после следующего цикла мониторинга.",
+        "noResults": "Ни один процесс не соответствует твоим критериям поиска."
       },
       "pve": {
-        "clusterInfo": "Cluster Information",
-        "resources": "Resource Usage",
-        "virtualMachines": "Virtual Machines",
-        "totalNodes": "Total Nodes",
-        "onlineNodes": "Online Nodes",
-        "totalCPU": "Total CPU",
-        "totalMemory": "Total Memory",
-        "totalStorage": "Total Storage",
-        "storageUsage": "Storage Usage",
-        "cores": "Cores",
+        "clusterInfo": "Информация о кластере",
+        "resources": "Использование ресурсов",
+        "virtualMachines": "Виртуальные машины",
+        "totalNodes": "Всего узлов",
+        "onlineNodes": "Онлайновые узлы",
+        "totalCPU": "Общий процессор",
+        "totalMemory": "Общая память",
+        "totalStorage": "Общее хранилище",
+        "storageUsage": "Использование хранилища",
+        "cores": "Ядра",
         "uptime": "Uptime",
-        "qemuVMs": "QEMU VMs",
-        "lxcContainers": "LXC Containers",
-        "running": "{{count}} running",
-        "vmContainerCount": "VM/Container Count",
-        "cpu": "CPU",
-        "memory": "Memory",
-        "storage": "Storage",
-        "nodeOffline": "This node is currently offline",
-        "noNodes": "No nodes available"
+        "qemuVMs": "ВМ QEMU",
+        "lxcContainers": "Контейнеры LXC",
+        "running": "{{count}} бег",
+        "vmContainerCount": "Количество виртуальных машин/контейнеров",
+        "cpu": "ПРОЦЕССОР",
+        "memory": "Память",
+        "storage": "Хранение",
+        "nodeOffline": "Этот узел сейчас находится в оффлайне",
+        "noNodes": "Нет доступных узлов"
       }
     }
   },
@@ -464,6 +471,7 @@
     "pages": {
       "account": "Аккаунт",
       "terminal": "Терминал",
+      "fileManager": "Файловый менеджер",
       "keymaps": "Горячие клавиши",
       "identities": "Учётные данные",
       "sessions": "Сессии",
@@ -472,8 +480,8 @@
       "authentication": "Аутентификация",
       "sources": "Источники",
       "ai": "ИИ",
-      "monitoring": "Monitoring",
-      "backup": "Storage"
+      "monitoring": "Мониторинг",
+      "backup": "Хранение"
     },
     "account": {
       "title": "Аккаунт",
@@ -486,10 +494,10 @@
       "themeLight": "Светлая",
       "themeDark": "Тёмная",
       "themeOled": "OLED",
-      "oledEnabled": "OLED mode enabled",
-      "oledDisabled": "OLED mode disabled",
-      "themeLabel": "Theme",
-      "accentColor": "Accent Color",
+      "oledEnabled": "Режим OLED включен",
+      "oledDisabled": "Режим OLED отключен",
+      "themeLabel": "Тема",
+      "accentColor": "Акцентный цвет",
       "twoFactor": "Двухфакторная аутентификация",
       "twoFactorActive": "Активна",
       "twoFactorInactive": "Неактивна",
@@ -523,19 +531,19 @@
       },
       "passkeys": {
         "sectionTitle": "Passkeys",
-        "sectionDescription": "Use passkeys for faster, more secure sign-in without passwords.",
-        "addButton": "Add Passkey",
-        "addDialogTitle": "Add Passkey",
-        "addDialogDescription": "Give your passkey a name to help you identify it later.",
-        "namePlaceholder": "Passkey name",
-        "enterName": "Enter a name for this passkey:",
-        "defaultName": "My Passkey",
-        "confirmDelete": "Are you sure you want to delete this passkey?",
-        "createdAt": "Created {{date}}",
-        "registerError": "Failed to register passkey. Please try again.",
-        "noPasskeys": "No passkeys registered yet",
-        "rename": "Rename",
-        "delete": "Delete"
+        "sectionDescription": "Используй пропуски для более быстрого и безопасного входа в систему без паролей.",
+        "addButton": "Добавь Passkey",
+        "addDialogTitle": "Добавь Passkey",
+        "addDialogDescription": "Дай своему ключу имя, которое поможет тебе опознать его позже.",
+        "namePlaceholder": "Имя ключа",
+        "enterName": "Введите имя для этого ключа:",
+        "defaultName": "Мой пропуск",
+        "confirmDelete": "Ты уверен, что хочешь удалить этот пропуск?",
+        "createdAt": "Создано {{date}}",
+        "registerError": "Не удалось зарегистрировать passskey. Пожалуйста, попробуй еще раз.",
+        "noPasskeys": "Паски пока не зарегистрированы",
+        "rename": "Переименуй",
+        "delete": "Удалить"
       }
     },
     "passwordChange": {
@@ -625,8 +633,8 @@
           "description": "Открыть поле поиска"
         },
         "quickaction": {
-          "title": "Quick Action",
-          "description": "Open the quick action menu"
+          "title": "Быстрое действие",
+          "description": "Открой меню быстрых действий"
         },
         "aimenu": {
           "title": "Меню ИИ",
@@ -692,10 +700,53 @@
         "text": "$ echo 'Привет, Nexterm!'\nПривет, Nexterm!\n$ "
       }
     },
+    "fileManager": {
+      "title": "Файловый менеджер",
+      "description": "Настрой отображение и управление файлами и папками.",
+      "defaultView": {
+        "title": "Режим просмотра по умолчанию",
+        "description": "Выбери раскладку по умолчанию при открытии файлового менеджера.",
+        "list": "Просмотр списка",
+        "listDescription": "Покажи файлы в подробном списке с колонками размера и даты",
+        "grid": "Вид на сетку",
+        "gridDescription": "Показывай файлы в виде иконок в макете сетки с миниатюрами"
+      },
+      "thumbnails": {
+        "title": "Эскизы изображений",
+        "description": "Показывай миниатюры изображений в режиме просмотра сетки. Это использует дополнительную полосу пропускания для генерации превьюшек.",
+        "enabled": "Показать миниатюры",
+        "enabledDescription": "Отображай предварительные просмотры изображений в виде сетки для быстрого визуального определения",
+        "disabled": "Скрыть миниатюры",
+        "disabledDescription": "Показывай только иконки файлов, чтобы сэкономить полосу пропускания и повысить производительность"
+      },
+      "hiddenFiles": {
+        "title": "Скрытые файлы",
+        "description": "Управляй видимостью скрытых файлов и папок (имена начинаются с точки).",
+        "show": "Показать скрытые файлы",
+        "showDescription": "Отобрази все файлы, включая .dotfiles и системные каталоги",
+        "hide": "Скрыть скрытые файлы",
+        "hideDescription": "Показывай только обычные файлы и папки"
+      },
+      "deleteConfirmation": {
+        "title": "Подтверждение удаления",
+        "description": "Требуй подтверждения перед удалением файлов и папок.",
+        "enabled": "Подтвердите удаление",
+        "enabledDescription": "Показывай диалог подтверждения перед удалением элементов",
+        "disabled": "Удалить немедленно",
+        "disabledDescription": "Удаляй файлы, не спрашивая подтверждения"
+      },
+      "dragDropAction": {
+        "title": "Drag & Drop Action",
+        "description": "Действие по умолчанию при перетаскивании файлов в новое место.",
+        "move": "Двигайся",
+        "copy": "Копируй",
+        "ask": "Спроси"
+      }
+    },
     "authentication": {
       "title": "{{count}} провайдеров аутентификации",
       "addProvider": "Добавить провайдера",
-      "addLdapProvider": "Add LDAP",
+      "addLdapProvider": "Добавь LDAP",
       "system": "Система",
       "systemDescription": "Аутентификация по логину и паролю",
       "deleteConfirm": "Это действие безвозвратно удалит провайдера аутентификации.",
@@ -719,13 +770,13 @@
           "redirectUri": "URI перенаправления",
           "redirectUriPlaceholder": "https://ваш-домен.com/api/oidc/callback",
           "scope": "Область",
-          "scopePlaceholder": "openid profile",
+          "scopePlaceholder": "профиль openid",
           "usernameAttribute": "Атрибут имени пользователя",
-          "usernameAttributePlaceholder": "preferred_username",
+          "usernameAttributePlaceholder": "предпочитаемое_имя_пользователя",
           "firstNameAttribute": "Атрибут имени",
-          "firstNameAttributePlaceholder": "given_name",
+          "firstNameAttributePlaceholder": "данное_имя",
           "lastNameAttribute": "Атрибут фамилии",
-          "lastNameAttributePlaceholder": "family_name"
+          "lastNameAttributePlaceholder": "имя_семьи"
         },
         "advanced": {
           "show": "Показать дополнительные настройки",
@@ -740,48 +791,48 @@
         }
       },
       "ldapDialog": {
-        "createTitle": "Add LDAP Provider",
-        "editTitle": "Edit LDAP Provider",
+        "createTitle": "Добавьте LDAP-провайдера",
+        "editTitle": "Редактирование LDAP-провайдера",
         "fields": {
-          "displayName": "Display Name",
-          "displayNamePlaceholder": "e.g. Company LDAP",
-          "host": "Host",
+          "displayName": "Отображаемое имя",
+          "displayNamePlaceholder": "Например, LDAP компании",
+          "host": "Хозяин",
           "hostPlaceholder": "ldap.company.com",
-          "port": "Port",
-          "bindDN": "Bind DN",
+          "port": "Порт",
+          "bindDN": "Привязать DN",
           "bindDNPlaceholder": "cn=admin,dc=company,dc=com",
-          "bindPassword": "Bind Password",
-          "bindPasswordPlaceholder": "Bind password",
-          "bindPasswordPlaceholderEdit": "Leave blank to keep existing",
-          "baseDN": "Base DN",
+          "bindPassword": "Привязать пароль",
+          "bindPasswordPlaceholder": "Привязать пароль",
+          "bindPasswordPlaceholderEdit": "Оставьте пустым, чтобы сохранить существующий",
+          "baseDN": "База DN",
           "baseDNPlaceholder": "dc=company,dc=com",
-          "userSearchFilter": "User Search Filter",
-          "userSearchFilterPlaceholder": "(uid={{username}}) or (sAMAccountName={{username}})",
-          "useTLS": "Use TLS/SSL",
-          "usernameAttribute": "Username Attribute",
+          "userSearchFilter": "Фильтр поиска пользователя",
+          "userSearchFilterPlaceholder": "(uid={{username}}) или (sAMAccountName={{username}})",
+          "useTLS": "Используй TLS/SSL",
+          "usernameAttribute": "Атрибут имени пользователя",
           "usernameAttributePlaceholder": "uid",
-          "emailAttribute": "Email Attribute",
-          "emailAttributePlaceholder": "mail",
-          "firstNameAttribute": "First Name Attribute",
+          "emailAttribute": "Атрибут электронной почты",
+          "emailAttributePlaceholder": "почта",
+          "firstNameAttribute": "Атрибут первого имени",
           "firstNameAttributePlaceholder": "givenName",
-          "lastNameAttribute": "Last Name Attribute",
+          "lastNameAttribute": "Атрибут фамилии",
           "lastNameAttributePlaceholder": "sn"
         },
         "advanced": {
-          "show": "Show Advanced Settings",
-          "hide": "Hide Advanced Settings"
+          "show": "Показать дополнительные настройки",
+          "hide": "Скрыть дополнительные настройки"
         },
         "actions": {
-          "addProvider": "Add Provider",
-          "saveChanges": "Save Changes",
-          "testConnection": "Test Connection",
-          "testing": "Testing..."
+          "addProvider": "Добавить поставщика",
+          "saveChanges": "Сохранить изменения",
+          "testConnection": "Тестовое соединение",
+          "testing": "Тестирование..."
         },
         "messages": {
-          "saveFailed": "Failed to save provider",
-          "saveFirst": "Save the provider first to test the connection",
-          "testSuccess": "Connection test successful",
-          "testFailed": "Connection test failed"
+          "saveFailed": "Не удалось сохранить провайдера",
+          "saveFirst": "Сначала сохрани провайдера, чтобы проверить соединение",
+          "testSuccess": "Тест соединения успешен",
+          "testFailed": "Тест соединения не удался"
         }
       }
     },
@@ -828,55 +879,55 @@
       }
     },
     "monitoring": {
-      "loading": "Loading monitoring settings...",
-      "saveSettings": "Save Settings",
-      "saveSuccess": "Monitoring settings saved successfully",
-      "seconds": "seconds",
-      "hours": "hours",
-      "servers": "servers",
+      "loading": "Загрузка настроек мониторинга...",
+      "saveSettings": "Сохранить настройки",
+      "saveSuccess": "Настройки мониторинга успешно сохранены",
+      "seconds": "секунды",
+      "hours": "Часы",
+      "servers": "Серверы",
       "statusChecker": {
-        "title": "Status Checker",
-        "description": "Configure how Nexterm checks the online/offline status of your servers.",
+        "title": "Проверка состояния",
+        "description": "Настрой, как Nexterm будет проверять онлайн/оффлайн статус твоих серверов.",
         "enable": {
-          "title": "Enable Status Checker",
-          "description": "Automatically check if servers are online or offline. When disabled, all servers will be marked as online."
+          "title": "Включить программу проверки состояния",
+          "description": "Автоматически проверяй, находятся ли серверы в онлайне или оффлайне. Если отключить эту функцию, все серверы будут помечены как онлайн."
         },
         "interval": {
-          "title": "Check Interval",
-          "description": "How often to check server status (10-300 seconds)"
+          "title": "Интервал проверки",
+          "description": "Как часто проверять состояние сервера (10-300 секунд)"
         }
       },
       "dataCollection": {
-        "title": "Data Collection",
-        "description": "Configure monitoring data collection for CPU, memory, disk, and network metrics.",
+        "title": "Сбор данных",
+        "description": "Настрой сбор данных мониторинга для метрик процессора, памяти, диска и сети.",
         "enable": {
-          "title": "Enable Monitoring",
-          "description": "Collect detailed performance metrics from servers with monitoring enabled."
+          "title": "Включи мониторинг",
+          "description": "Собирай подробные показатели производительности с серверов, на которых включен мониторинг."
         },
         "interval": {
-          "title": "Collection Interval",
-          "description": "How often to collect monitoring data (30-600 seconds)"
+          "title": "Интервал между сборами",
+          "description": "Как часто собирать данные мониторинга (30-600 секунд)"
         },
         "retention": {
-          "title": "Data Retention",
-          "description": "How long to keep monitoring data (1-24 hours)"
+          "title": "Сохранение данных",
+          "description": "Как долго хранить данные мониторинга (1-24 часа)"
         }
       },
       "advanced": {
-        "title": "Advanced Settings",
-        "description": "Fine-tune monitoring performance and resource usage.",
+        "title": "Дополнительные настройки",
+        "description": "Тонко настраивай производительность мониторинга и использование ресурсов.",
         "timeout": {
-          "title": "Connection Timeout",
-          "description": "Maximum time to wait for a server response (5-120 seconds)"
+          "title": "Таймаут соединения",
+          "description": "Максимальное время ожидания ответа сервера (5-120 секунд)"
         },
         "batchSize": {
-          "title": "Batch Size",
-          "description": "Number of servers to check simultaneously (1-50)"
+          "title": "Размер партии",
+          "description": "Количество серверов, которые нужно проверить одновременно (1-50)"
         }
       },
       "errors": {
-        "loadSettings": "Failed to load monitoring settings",
-        "saveSettings": "Failed to save monitoring settings"
+        "loadSettings": "Не удалось загрузить настройки мониторинга",
+        "saveSettings": "Не удалось сохранить настройки мониторинга"
       }
     },
     "identities": {
@@ -913,9 +964,9 @@
         },
         "authTypes": {
           "password": "Пароль",
-          "password-only": "No Username",
+          "password-only": "Нет имени пользователя",
           "ssh": "SSH-ключ",
-          "both": "Key+Pass"
+          "both": "Ключ+пасс"
         },
         "actions": {
           "cancel": "Отмена",
@@ -982,124 +1033,124 @@
       }
     },
     "backup": {
-      "loading": "Loading storage settings...",
+      "loading": "Загрузка настроек хранения...",
       "storage": {
-        "title": "Storage",
-        "description": "View disk usage for your Nexterm data.",
-        "database": "Database",
-        "recordings": "Recordings",
-        "logs": "Logs",
-        "total": "Total"
+        "title": "Хранение",
+        "description": "Просмотри использование диска для твоих данных Nexterm.",
+        "database": "База данных",
+        "recordings": "Записи",
+        "logs": "Журналы",
+        "total": "Всего"
       },
       "backupsSection": {
-        "title": "Backups",
-        "description": "Configure backup providers and schedule automatic backups."
+        "title": "Резервные копии",
+        "description": "Настрой поставщиков резервных копий и составь расписание автоматического резервного копирования."
       },
-      "addProvider": "Add Provider",
-      "editProvider": "Edit Provider",
-      "providerName": "Provider Name",
-      "providerNamePlaceholder": "My Backup",
-      "providerType": "Type",
+      "addProvider": "Добавить поставщика",
+      "editProvider": "Редактировать поставщика",
+      "providerName": "Имя провайдера",
+      "providerNamePlaceholder": "Мой запасной вариант",
+      "providerType": "Тип",
       "providerTypes": {
-        "local": "Local",
-        "smb": "SMB Share",
+        "local": "Местный",
+        "smb": "Доля СМБ",
         "webdav": "WebDAV"
       },
-      "localPath": "Backup Path",
+      "localPath": "Резервный путь",
       "localPathPlaceholder": "/path/to/backups",
-      "smbShare": "SMB Share",
-      "smbSharePlaceholder": "\\\\server\\share",
-      "smbFolder": "Folder (optional)",
-      "smbFolderPlaceholder": "backups",
-      "smbUsername": "Username",
-      "smbUsernamePlaceholder": "user",
-      "smbPassword": "Password",
-      "smbPasswordPlaceholder": "password",
-      "smbDomain": "Domain (optional)",
+      "smbShare": "Доля СМБ",
+      "smbSharePlaceholder": "\\\\\\server\\share",
+      "smbFolder": "Папка (опционально)",
+      "smbFolderPlaceholder": "Резервные копии",
+      "smbUsername": "Имя пользователя",
+      "smbUsernamePlaceholder": "Пользователь",
+      "smbPassword": "Пароль",
+      "smbPasswordPlaceholder": "Пароль",
+      "smbDomain": "Домен (необязательно)",
       "smbDomainPlaceholder": "WORKGROUP",
-      "webdavUrl": "Server URL",
+      "webdavUrl": "URL-адрес сервера",
       "webdavUrlPlaceholder": "https://cloud.example.com/remote.php/dav/files/user",
-      "webdavFolder": "Folder (optional)",
-      "webdavFolderPlaceholder": "backups",
-      "webdavUsername": "Username",
-      "webdavUsernamePlaceholder": "user",
-      "webdavPassword": "Password",
-      "webdavPasswordPlaceholder": "password",
-      "passwordUnchanged": "Leave empty to keep current",
+      "webdavFolder": "Папка (опционально)",
+      "webdavFolderPlaceholder": "Резервные копии",
+      "webdavUsername": "Имя пользователя",
+      "webdavUsernamePlaceholder": "Пользователь",
+      "webdavPassword": "Пароль",
+      "webdavPasswordPlaceholder": "Пароль",
+      "passwordUnchanged": "Оставьте пустым, чтобы сохранить актуальность",
       "schedule": {
-        "title": "Automatic Backup",
-        "disabled": "Disabled",
-        "hourly": "Every hour",
-        "every6h": "Every 6 hours",
-        "every12h": "Every 12 hours",
-        "daily": "Daily",
-        "weekly": "Weekly"
+        "title": "Автоматическое резервное копирование",
+        "disabled": "Инвалид",
+        "hourly": "Каждый час",
+        "every6h": "Каждые 6 часов",
+        "every12h": "Каждые 12 часов",
+        "daily": "Ежедневно",
+        "weekly": "Еженедельник"
       },
       "retention": {
-        "title": "Retention Policy"
+        "title": "Политика сохранения"
       },
-      "backups": "backups",
+      "backups": "Резервные копии",
       "includes": {
-        "title": "Include in Backups",
-        "database": "Database",
-        "recordings": "Recordings",
-        "logs": "Logs"
+        "title": "Включить в резервные копии",
+        "database": "База данных",
+        "recordings": "Записи",
+        "logs": "Журналы"
       },
-      "providers": "Providers",
-      "saveSettings": "Save Settings",
-      "noProviders": "No Backup Providers",
-      "noProvidersDescription": "Add a backup provider to start creating backups.",
-      "backupList": "Backups - {{name}}",
-      "loadingBackups": "Loading backups...",
-      "noBackups": "No backups found",
-      "restoreConfirm": "Are you sure you want to restore \"{{name}}\"? This will overwrite your current data and restart the server.",
-      "deleteProviderConfirm": "Are you sure you want to delete \"{{name}}\"? This will not delete existing backups.",
-      "providerCreated": "Backup provider created",
-      "providerUpdated": "Backup provider updated",
-      "providerDeleted": "Backup provider deleted",
-      "backupCreated": "Backup created successfully",
-      "restoreStarted": "Restore started, server will restart",
-      "saveSuccess": "Settings saved successfully",
+      "providers": "Провайдеры",
+      "saveSettings": "Сохранить настройки",
+      "noProviders": "Отсутствие резервных провайдеров",
+      "noProvidersDescription": "Добавь провайдера резервного копирования, чтобы начать создавать резервные копии.",
+      "backupList": "Резервные копии - {{name}}",
+      "loadingBackups": "Загрузка резервных копий...",
+      "noBackups": "Резервные копии не найдены",
+      "restoreConfirm": "Ты уверен, что хочешь восстановить \"{{name}}\"? Это перезапишет твои текущие данные и перезапустит сервер.",
+      "deleteProviderConfirm": "Ты уверен, что хочешь удалить \"{{name}}\"? Это не приведет к удалению существующих резервных копий.",
+      "providerCreated": "Создан провайдер резервного копирования",
+      "providerUpdated": "Обновление провайдера резервного копирования",
+      "providerDeleted": "Провайдер резервного копирования удален",
+      "backupCreated": "Резервная копия создана успешно",
+      "restoreStarted": "Восстановление началось, сервер будет перезапущен",
+      "saveSuccess": "Настройки успешно сохранены",
       "errors": {
-        "loadFailed": "Failed to load backup settings",
-        "saveFailed": "Failed to save settings",
-        "deleteFailed": "Failed to delete",
-        "backupFailed": "Failed to create backup",
-        "loadBackupsFailed": "Failed to load backups",
-        "restoreFailed": "Failed to restore backup",
-        "exportFailed": "Failed to export data",
-        "nameRequired": "Provider name is required"
+        "loadFailed": "Не удалось загрузить настройки резервного копирования",
+        "saveFailed": "Не удалось сохранить настройки",
+        "deleteFailed": "Не удалось удалить",
+        "backupFailed": "Не удалось создать резервную копию",
+        "loadBackupsFailed": "Не удалось загрузить резервные копии",
+        "restoreFailed": "Не удалось восстановить резервную копию",
+        "exportFailed": "Не удалось экспортировать данные",
+        "nameRequired": "Имя провайдера обязательно"
       },
-      "noFiles": "No files found"
+      "noFiles": "Файлы не найдены"
     }
   },
   "tunnel": {
-    "title": "Port Forward",
-    "identity": "Identity",
-    "remoteHost": "Remote Host",
-    "remotePort": "Remote Port",
-    "localPort": "Local Port",
-    "start": "Start Tunnel",
-    "stop": "Stop Tunnel",
+    "title": "Порт Форвард",
+    "identity": "Идентичность",
+    "remoteHost": "Удаленный хост",
+    "remotePort": "Удаленный порт",
+    "localPort": "Местный порт",
+    "start": "Стартовый туннель",
+    "stop": "Остановись в тоннеле",
     "status": {
-      "idle": "Not connected",
-      "starting": "Starting...",
-      "listening": "Listening on localhost:{{port}}",
-      "error": "Error",
-      "stopped": "Stopped"
+      "idle": "Не подключено",
+      "starting": "Начинаем...",
+      "listening": "Прослушивание на localhost:{{port}}",
+      "error": "Ошибка",
+      "stopped": "Остановись"
     },
     "error": {
-      "fillAllFields": "Please fill in all fields"
+      "fillAllFields": "Заполни все поля"
     }
   },
   "share": {
     "errors": {
-      "unableToConnect": "Unable to Connect",
-      "failedToJoin": "Failed to join session"
+      "unableToConnect": "Невозможно подключиться",
+      "failedToJoin": "Не удалось присоединиться к сессии"
     },
     "sessionEnded": {
-      "title": "Session Ended",
-      "description": "The shared session has been closed"
+      "title": "Сессия окончена",
+      "description": "Общая сессия была закрыта"
     }
   },
   "servers": {
@@ -1139,12 +1190,12 @@
       "connect": "Подключиться",
       "quickConnect": "Быстрое подключение",
       "openSFTP": "Открыть SFTP",
-      "forwardPort": "Forward Port",
+      "forwardPort": "Передовой порт",
       "runScript": "Запустить скрипт",
       "editServer": "Изменить сервер",
       "editIntegration": "Изменить интеграцию",
       "duplicateServer": "Дублировать сервер",
-      "pasteIdentityPassword": "Paste Password",
+      "pasteIdentityPassword": "Вставить пароль",
       "deleteServer": "Удалить сервер",
       "wakeOnLan": "Wake-On-LAN",
       "editPVE": "Изменить PVE",
@@ -1154,8 +1205,8 @@
       "start": "Запустить"
     },
     "wol": {
-      "successDescription": "Magic packet sent to {{name}}",
-      "errorDescription": "Failed to send magic packet"
+      "successDescription": "Волшебный пакет, отправленный на {{name}}",
+      "errorDescription": "Не удалось отправить волшебный пакет"
     },
     "messages": {
       "fillRequiredFields": "Пожалуйста, заполните все обязательные поля",
@@ -1182,7 +1233,7 @@
       "fields": {
         "name": "Название",
         "icon": "Иконка",
-        "serverIp": "Host",
+        "serverIp": "Хозяин",
         "port": "Порт",
         "protocol": "Протокол",
         "username": "Имя пользователя",
@@ -1190,11 +1241,11 @@
         "host": "Хост",
         "nodeName": "Имя узла",
         "vmid": "ID виртуальной машины",
-        "macAddress": "MAC Address"
+        "macAddress": "MAC-адрес"
       },
       "placeholders": {
         "serverName": "Название сервера",
-        "serverIp": "Hostname or IP",
+        "serverIp": "Имя хоста или IP",
         "port": "Порт",
         "username": "Имя пользователя",
         "password": "Пароль",
@@ -1216,45 +1267,45 @@
           "description": "Собирать метрики CPU, памяти, диска и сети для этого сервера"
         },
         "wakeOnLan": {
-          "title": "Enable Wake-On-LAN",
-          "description": "Allow waking this server remotely using its MAC address"
+          "title": "Включить Wake-On-LAN",
+          "description": "Разреши разбудить этот сервер удаленно, используя его MAC-адрес"
         },
         "keyboardLayout": {
           "title": "Раскладка клавиатуры",
           "description": "Выберите раскладку клавиатуры для этого подключения."
         },
         "display": {
-          "title": "Display Settings",
-          "description": "Configure color depth and resize behavior for the remote display",
-          "colorDepth": "Color Depth",
-          "resizeMethod": "Resize Method"
+          "title": "Настройки дисплея",
+          "description": "Настрой глубину цвета и поведение изменения размера для удаленного дисплея",
+          "colorDepth": "Глубина цвета",
+          "resizeMethod": "Метод изменения размера"
         },
         "performance": {
-          "title": "Performance Settings",
-          "description": "Toggle visual effects that may impact performance over slower connections",
-          "enableWallpaper": "Enable Wallpaper",
-          "enableWallpaperDesc": "Show the desktop wallpaper on the remote system",
-          "enableTheming": "Enable Theming",
-          "enableThemingDesc": "Use themed windows and controls on the remote system",
-          "enableFontSmoothing": "Enable Font Smoothing",
-          "enableFontSmoothingDesc": "Render text with smooth edges for better readability",
-          "enableFullWindowDrag": "Enable Full Window Drag",
-          "enableFullWindowDragDesc": "Display window contents while dragging windows",
-          "enableDesktopComposition": "Enable Desktop Composition",
-          "enableDesktopCompositionDesc": "Enable transparent windows and visual effects",
-          "enableMenuAnimations": "Enable Menu Animations",
-          "enableMenuAnimationsDesc": "Enable menu open and close animations"
+          "title": "Настройки производительности",
+          "description": "Отключи визуальные эффекты, которые могут повлиять на производительность при медленном соединении",
+          "enableWallpaper": "Включить обои",
+          "enableWallpaperDesc": "Покажи обои рабочего стола на удаленной системе",
+          "enableTheming": "Включи теминг",
+          "enableThemingDesc": "Используй тематические окна и элементы управления на удаленной системе",
+          "enableFontSmoothing": "Включить сглаживание шрифтов",
+          "enableFontSmoothingDesc": "Отрисуй текст с ровными краями, чтобы он лучше читался",
+          "enableFullWindowDrag": "Включить полнооконное перетаскивание",
+          "enableFullWindowDragDesc": "Отображение содержимого окна при перетаскивании окон",
+          "enableDesktopComposition": "Включи композицию рабочего стола",
+          "enableDesktopCompositionDesc": "Включи прозрачные окна и визуальные эффекты",
+          "enableMenuAnimations": "Включи анимацию меню",
+          "enableMenuAnimationsDesc": "Включи анимацию открытия и закрытия меню"
         },
         "audio": {
-          "enableAudio": "Enable Audio",
-          "enableAudioDesc": "Stream audio from the remote system to your browser"
+          "enableAudio": "Включить аудио",
+          "enableAudioDesc": "Транслируй аудио с удаленной системы в свой браузер"
         },
         "terminal": {
-          "title": "Terminal Compatibility",
-          "description": "Adjust key behavior for different terminal types",
+          "title": "Совместимость с терминалами",
+          "description": "Настрой поведение клавиш для разных типов терминалов",
           "backspace": "Backspace",
-          "delete": "Delete",
-          "functionKeys": "Function Keys"
+          "delete": "Удалить",
+          "functionKeys": "Функциональные клавиши"
         },
         "noSettings": "Дополнительные настройки для этого типа подключения отсутствуют."
       },
@@ -1266,11 +1317,11 @@
         "identityName": "Название учётных данных",
         "username": "Имя пользователя",
         "authentication": "Аутентификация",
-        "passwordField": "Password",
-        "userPassword": "Password",
-        "passwordOnly": "No Username",
+        "passwordField": "Пароль",
+        "userPassword": "Пароль",
+        "passwordOnly": "Нет имени пользователя",
         "sshKey": "SSH-ключ",
-        "both": "Key+Pass",
+        "both": "Ключ+пасс",
         "sshPrivateKey": "Приватный SSH-ключ",
         "passphrase": "Парольная фраза (необязательно)",
         "new": "Новые",
@@ -1296,9 +1347,9 @@
         "username": "Имя пользователя",
         "password": "Пароль",
         "nodeName": "Имя узла (необязательно)",
-        "monitoring": "Performance Monitoring"
+        "monitoring": "Мониторинг производительности"
       },
-      "monitoringDescription": "Collect cluster-wide CPU, memory, and storage metrics",
+      "monitoringDescription": "Собирай показатели процессора, памяти и хранилища в масштабах всего кластера.",
       "placeholders": {
         "name": "Название",
         "serverIp": "IP-адрес сервера",
@@ -1312,10 +1363,10 @@
         "edit": "Изменить"
       },
       "messages": {
-        "created": "Proxmox integration created successfully",
-        "updated": "Proxmox integration updated successfully",
-        "createFailed": "Failed to create Proxmox integration",
-        "updateFailed": "Failed to update Proxmox integration"
+        "created": "Интеграция с Proxmox успешно создана",
+        "updated": "Интеграция с Proxmox успешно обновлена",
+        "createFailed": "Не удалось создать интеграцию с Proxmox",
+        "updateFailed": "Не удалось обновить интеграцию Proxmox"
       }
     },
     "connectionReasonDialog": {
@@ -1354,6 +1405,11 @@
       }
     },
     "fileManager": {
+      "createFile": {
+        "title": "Создать файл",
+        "placeholder": "Имя файла",
+        "button": "Создать файл"
+      },
       "createFolder": {
         "title": "Создать папку",
         "placeholder": "Имя папки",
@@ -1387,11 +1443,44 @@
         "upload": "Загрузить файл",
         "edit": "Редактировать",
         "preview": "Предпросмотр",
+        "moveHere": "Переезжай сюда",
+        "copyHere": "Копия здесь",
         "bigFileConfirm": "Размер файла — {{size}} МБ. Вы уверены, что хотите его редактировать?",
+        "deleteConfirm": "Ты уверен, что хочешь удалить \"{{name}}\"? Это действие нельзя отменить.",
         "selectAll": "Выделить всё",
         "insertSnippet": "Вставить сниппет",
         "sendCtrlC": "Отправить Ctrl+C",
-        "clearTerminal": "Очистить терминал"
+        "clearTerminal": "Очистить терминал",
+        "properties": "Свойства",
+        "openTerminal": "Открыть терминал здесь",
+        "downloadFolder": "Скачать папку"
+      },
+      "properties": {
+        "general": "Общий",
+        "permissions": "Разрешения",
+        "checksum": "Контрольная сумма",
+        "folder": "Папка",
+        "file": "Файл",
+        "path": "Расположение",
+        "size": "Размер",
+        "calculateSize": "Рассчитай",
+        "owner": "Владелец",
+        "group": "Группа",
+        "modified": "Модифицированный",
+        "accessed": "Accessed",
+        "calculating": "Вычисляя...",
+        "calculate": "Рассчитай"
+      },
+      "permissions": {
+        "owner": "Владелец",
+        "group": "Группа",
+        "others": "Другие",
+        "read": "Читай",
+        "write": "Пиши",
+        "execute": "Выполни",
+        "octal": "Октал",
+        "preview": "Предварительный просмотр",
+        "apply": "Применяй"
       },
       "filePreview": {
         "title": "Предпросмотр файла",
@@ -1402,21 +1491,61 @@
         "audioNotSupported": "Ваш браузер не поддерживает воспроизведение аудио",
         "download": "Скачать",
         "close": "Закрыть"
+      },
+      "selection": {
+        "itemsSelected": "{{count}} выбранные предметы",
+        "filesSelected": "{{count}} выбранный файл(ы)",
+        "foldersSelected": "{{count}} выбранная папка (папки)",
+        "clearSelection": "Очистить выбор",
+        "downloadSelected": "Загрузи выбранное",
+        "deleteSelected": "Удалить выбранное",
+        "download": "Скачать",
+        "delete": "Удалить",
+        "deleteConfirm": "Ты уверен, что хочешь удалить {{count}} элемент(ы)?"
+      },
+      "header": {
+        "name": "Имя",
+        "size": "Размер",
+        "permissions": "Разрешения",
+        "modified": "Модифицированный"
+      },
+      "actionBar": {
+        "enterDirectory": "Введите путь к каталогу...",
+        "hiddenDirectories": "{{count}} скрытые каталоги",
+        "switchToGrid": "Переключись на вид сетки",
+        "switchToList": "Переключись в режим просмотра списка"
+      },
+      "item": {
+        "link": "ссылка"
+      },
+      "states": {
+        "loading": "Загрузка файлов...",
+        "accessDenied": "Доступ закрыт",
+        "emptyFolder": "Эта папка пуста",
+        "dropFilesHint": "Бросьте файлы сюда, чтобы загрузить их"
+      },
+      "toast": {
+        "downloaded": "Скачал {{name}}",
+        "downloadingItems": "Загрузка {{count}} ...",
+        "uploaded": "Загружено {{name}}",
+        "uploadFailed": "Загрузка не удалась: {{message}}",
+        "connectionLost": "SFTP-соединение потеряно. Пожалуйста, переподключись.",
+        "error": "Произошла ошибка"
       }
     },
     "aiAssistant": {
       "title": "ИИ-ассистент",
       "placeholder": "Опишите, что вы хотите сделать...",
       "hint": "Нажмите Enter для генерации • Esc для закрытия",
-      "hintUse": "Press Enter to use command • Esc to close",
+      "hintUse": "Нажмите Enter, чтобы использовать команду - Esc, чтобы закрыть",
       "closeLabel": "Закрыть ИИ-ассистент",
-      "generate": "Generate command",
-      "generating": "Generating command...",
-      "generatedCommand": "Generated Command",
-      "useCommand": "Use Command",
-      "tryAgain": "Try Again",
-      "copy": "Copy to clipboard",
-      "error": "Failed to generate command. Please try again."
+      "generate": "Создай команду",
+      "generating": "Генерирую команду...",
+      "generatedCommand": "Сгенерированная команда",
+      "useCommand": "Используйте команду",
+      "tryAgain": "Попробуй еще раз",
+      "copy": "Копируй в буфер обмена",
+      "error": "Не удалось сгенерировать команду. Пожалуйста, попробуй еще раз."
     },
     "snippets": {
       "title": "Сниппеты",
