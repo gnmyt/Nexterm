@@ -512,6 +512,11 @@
       "currentLanguage": "Текущий язык",
       "missingLanguage": "Нет вашего языка?",
       "helpTranslateLink": "Помочь перевести Nexterm",
+      "syncLoginRequired": "Please log in to sync settings",
+      "appearanceSyncEnabled": "Appearance settings will now sync to your account",
+      "appearanceSyncDisabled": "Appearance settings will no longer sync",
+      "generalSyncEnabled": "General settings will now sync to your account",
+      "generalSyncDisabled": "General settings will no longer sync",
       "sessionSynchronization": "Синхронизация сессий",
       "sessionSyncDescription": "Управление тем, как сессии серверов хранятся и синхронизируются между устройствами и вкладками браузера.",
       "sessionSyncAcrossDevices": "Между устройствами",
@@ -678,11 +683,14 @@
     },
     "terminal": {
       "title": "Терминал",
+      "syncLoginRequired": "Please log in to sync terminal settings",
       "font": {
         "title": "Шрифт",
         "description": "Настройте семейство шрифтов и размер для терминала.",
         "fontFamily": "Семейство шрифтов",
-        "fontSize": "Размер шрифта"
+        "fontSize": "Размер шрифта",
+        "syncEnabled": "Font settings will now sync to your account",
+        "syncDisabled": "Font settings will no longer sync"
       },
       "cursor": {
         "title": "Курсор",
@@ -690,11 +698,15 @@
         "cursorStyle": "Стиль курсора",
         "cursorBlinking": "Мерцание курсора",
         "enabled": "Включено",
-        "disabled": "Отключено"
+        "disabled": "Отключено",
+        "syncEnabled": "Cursor settings will now sync to your account",
+        "syncDisabled": "Cursor settings will no longer sync"
       },
       "theme": {
         "title": "Тема",
-        "description": "Выберите цветовую схему терминала."
+        "description": "Выберите цветовую схему терминала.",
+        "syncEnabled": "Theme settings will now sync to your account",
+        "syncDisabled": "Theme settings will no longer sync"
       },
       "preview": {
         "text": "$ echo 'Привет, Nexterm!'\nПривет, Nexterm!\n$ "
@@ -703,6 +715,9 @@
     "fileManager": {
       "title": "Файловый менеджер",
       "description": "Настрой отображение и управление файлами и папками.",
+      "syncLoginRequired": "Please log in to sync file manager settings",
+      "syncEnabled": "File manager settings will now sync to your account",
+      "syncDisabled": "File manager settings will no longer sync",
       "defaultView": {
         "title": "Режим просмотра по умолчанию",
         "description": "Выбери раскладку по умолчанию при открытии файлового менеджера.",
