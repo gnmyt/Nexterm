@@ -10,7 +10,8 @@ import "./styles.sass";
 import Icon from "@mdi/react";
 import { mdiCloudUpload } from "@mdi/js";
 import { getWebSocketUrl, getBaseUrl } from "@/common/utils/ConnectionUtil.js";
-import { uploadFile as uploadFileRequest } from "@/common/utils/RequestUtil.js";
+import { uploadFile as uploadFileRequest, tauriDownload } from "@/common/utils/RequestUtil.js";
+import { isTauri } from "@/common/utils/TauriUtil.js";
 
 const OPERATIONS = {
     READY: 0x0, LIST_FILES: 0x1, CREATE_FILE: 0x4, CREATE_FOLDER: 0x5, DELETE_FILE: 0x6, 
@@ -48,39 +49,59 @@ export const FileRenderer = ({ session, disconnectFromServer, setOpenFileEditors
 
     const wsUrl = getWebSocketUrl("/api/ws/sftp", { sessionToken, sessionId: session.id });
 
-    const downloadFile = (path) => {
+    const downloadFile = async (path) => {
         const baseUrl = getBaseUrl();
+        const fileName = path.split("/").pop();
+        const url = `${baseUrl}/api/entries/sftp?sessionId=${session.id}&path=${path}&sessionToken=${sessionToken}`;
+        
+        if (isTauri()) {
+            try {
+                await tauriDownload(url, fileName);
+                sendToast(t("common.success"), t("servers.fileManager.toast.downloaded", { name: fileName }));
+            } catch (e) {
+                if (e) sendToast(t("common.error"), e.message);
+            }
+            return;
+        }
         const link = document.createElement("a");
-        link.href = `${baseUrl}/api/entries/sftp?sessionId=${session.id}&path=${path}&sessionToken=${sessionToken}`;
-        link.download = path.split("/").pop();
+        link.href = url;
+        link.download = fileName;
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
-    }
+    };
 
-    const downloadMultipleFiles = (paths) => {
-        if (!paths || paths.length === 0) return;
-
+    const downloadMultipleFiles = async (paths) => {
+        if (!paths?.length) return;
         const baseUrl = getBaseUrl();
         const url = `${baseUrl}/api/entries/sftp/multi?sessionId=${session.id}&sessionToken=${sessionToken}`;
+        const defaultFileName = paths.length === 1 ? `${paths[0].split("/").pop()}.zip` : "files.zip";
         
-        const form = document.createElement('form');
-        form.method = 'POST';
+        if (isTauri()) {
+            try {
+                await tauriDownload(url, defaultFileName, {
+                    filters: [{ name: "ZIP Archive", extensions: ["zip"] }],
+                    fetchOptions: { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ paths }) }
+                });
+                sendToast(t("common.success"), t("servers.fileManager.toast.downloadingItems", { count: paths.length }));
+            } catch (e) {
+                if (e) sendToast(t("common.error"), e.message);
+            }
+            return;
+        }
+        const form = document.createElement("form");
+        form.method = "POST";
         form.action = url;
-        form.style.display = 'none';
-        
-        const pathsInput = document.createElement('input');
-        pathsInput.type = 'hidden';
-        pathsInput.name = 'paths';
-        pathsInput.value = JSON.stringify(paths);
-        form.appendChild(pathsInput);
-        
+        const input = document.createElement("input");
+        input.type = "hidden";
+        input.name = "paths";
+        input.value = JSON.stringify(paths);
+        form.appendChild(input);
         document.body.appendChild(form);
         form.submit();
         document.body.removeChild(form);
-        
         sendToast(t("common.success"), t("servers.fileManager.toast.downloadingItems", { count: paths.length }));
-    }
+    };
 
     const uploadFileHttp = async (file, targetDir) => {
         const filePath = `${targetDir}/${file.name}`.replace(/\/+/g, '/');

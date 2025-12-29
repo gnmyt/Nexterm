@@ -1,5 +1,20 @@
 import { isTauri, getActiveServerUrl } from "@/common/utils/TauriUtil.js";
 
+export const tauriDownload = async (url, defaultFileName, options = {}) => {
+    const { save } = await import("@tauri-apps/plugin-dialog");
+    const { writeFile } = await import("@tauri-apps/plugin-fs");
+    const { fetch: tFetch } = await import("@tauri-apps/plugin-http");
+    
+    const filePath = await save({ defaultPath: defaultFileName, title: "Save File", ...options });
+    if (!filePath) return null;
+    
+    const response = await tFetch(url, options.fetchOptions || { method: "GET" });
+    if (!response.ok) throw new Error(`Download failed: ${response.status}`);
+    
+    await writeFile(filePath, new Uint8Array(await response.arrayBuffer()));
+    return filePath;
+};
+
 const getBaseUrl = () => {
     if (isTauri()) {
         const activeServerUrl = getActiveServerUrl();
@@ -153,19 +168,19 @@ export const patchRequest = (url, body) => {
     return sessionRequest(url, "PATCH", getToken(), body);
 }
 
-export const downloadFile = (url) => {
+export const downloadFile = async (url) => {
     url = url.startsWith("/") ? url.substring(1) : url;
     const baseUrl = getBaseUrl();
     const fullUrl = baseUrl ? `${baseUrl}/api/${url}` : `/api/${url}`;
     const separator = fullUrl.includes("?") ? "&" : "?";
     const downloadUrl = `${fullUrl}${separator}token=${encodeURIComponent(getToken())}`;
+    const fileName = url.split("?")[0].split("/").pop() || "download";
+    
+    if (isTauri()) return tauriDownload(downloadUrl, fileName);
     
     const a = document.createElement("a");
     a.href = downloadUrl;
     a.download = "";
-    a.target = "_blank";
-    a.rel = "noopener noreferrer";
-    a.style.display = "none";
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);

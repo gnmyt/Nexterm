@@ -22,6 +22,10 @@
         "http://*:*",
         "https://*:*"
       ]
-    }
+    },
+    "dialog:allow-save",
+    "dialog:allow-open",
+    "fs:write-files",
+    "fs:read-files"
   ]
 }

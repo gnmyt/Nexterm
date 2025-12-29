@@ -2,7 +2,10 @@ import { useContext, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { UserContext } from "@/common/contexts/UserContext.jsx";
 import { useWindowControls } from "@/common/hooks/useWindowControls.js";
+import { useToast } from "@/common/contexts/ToastContext.jsx";
 import { getBaseUrl } from "@/common/utils/ConnectionUtil.js";
+import { isTauri } from "@/common/utils/TauriUtil.js";
+import { tauriDownload } from "@/common/utils/RequestUtil.js";
 import Icon from "@mdi/react";
 import {
     mdiClose,
@@ -17,6 +20,7 @@ import "./styles.sass";
 export const FilePreviewWindow = ({ file, session, onClose, zIndex = 9999 }) => {
     const { t } = useTranslation();
     const { sessionToken } = useContext(UserContext);
+    const { sendToast } = useToast();
     const [fileUrl, setFileUrl] = useState(null);
     const [fileType, setFileType] = useState(null);
 
@@ -38,23 +42,29 @@ export const FilePreviewWindow = ({ file, session, onClose, zIndex = 9999 }) => 
 
         setFileUrl(url);
 
-        if (["jpg", "jpeg", "png", "gif", "bmp", "webp", "svg"].includes(extension)) {
-            setFileType("image");
-        } else if (["mp4", "webm", "ogg", "mov"].includes(extension)) {
-            setFileType("video");
-        } else if (["mp3", "wav", "ogg", "flac", "m4a"].includes(extension)) {
-            setFileType("audio");
-        } else if (["pdf"].includes(extension)) {
-            setFileType("pdf");
-        } else {
-            setFileType("unknown");
-        }
+        const typeMap = {
+            image: ["jpg", "jpeg", "png", "gif", "bmp", "webp", "svg"],
+            video: ["mp4", "webm", "ogg", "mov"],
+            audio: ["mp3", "wav", "ogg", "flac", "m4a"],
+            pdf: ["pdf"],
+        };
+        setFileType(Object.entries(typeMap).find(([, exts]) => exts.includes(extension))?.[0] || "unknown");
     }, [file, session.id, sessionToken]);
 
-    const downloadFile = () => {
+    const downloadFile = async () => {
+        const fileName = file.split("/").pop();
+        if (isTauri()) {
+            try {
+                await tauriDownload(fileUrl, fileName);
+                sendToast(t("common.success"), t("servers.fileManager.toast.downloaded", { name: fileName }));
+            } catch (e) {
+                if (e) sendToast(t("common.error"), e.message);
+            }
+            return;
+        }
         const link = document.createElement("a");
         link.href = fileUrl;
-        link.download = file.split("/").pop();
+        link.download = fileName;
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
