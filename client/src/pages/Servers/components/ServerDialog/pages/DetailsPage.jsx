@@ -1,14 +1,8 @@
 import { mdiFormTextbox, mdiIp, mdiEthernet } from "@mdi/js";
 import Input from "@/common/components/IconInput";
-import Icon from "@mdi/react";
 import SelectBox from "@/common/components/SelectBox";
+import IconChooser from "../components/IconChooser";
 import { useTranslation } from "react-i18next";
-import { ICON_MAP } from "@/pages/Servers/utils/iconMapping.js";
-
-const ICON_OPTIONS = Object.entries(ICON_MAP).map(([value, icon]) => ({
-    label: <Icon path={icon} size={1} />,
-    value
-}));
 
 const PROTOCOL_OPTIONS = [
     { label: "SSH", value: "ssh" },
@@ -30,7 +24,7 @@ const DetailsPage = ({name, setName, icon, setIcon, config, setConfig, fieldConf
                 </div>
                 <div className="form-group">
                     <label>{t("servers.dialog.fields.icon")}</label>
-                    <SelectBox options={ICON_OPTIONS} selected={icon} setSelected={setIcon} />
+                    <IconChooser selected={icon} setSelected={setIcon} />
                 </div>
             </div>
             
