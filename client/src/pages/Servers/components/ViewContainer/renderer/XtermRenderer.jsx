@@ -4,8 +4,7 @@ import { IdentityContext } from "@/common/contexts/IdentityContext.jsx";
 import { AIContext } from "@/common/contexts/AIContext.jsx";
 import { useKeymaps, matchesKeybind } from "@/common/contexts/KeymapContext.jsx";
 import { Terminal as Xterm } from "@xterm/xterm";
-import { useTheme } from "@/common/contexts/ThemeContext.jsx";
-import { useTerminalSettings } from "@/common/contexts/TerminalSettingsContext.jsx";
+import { usePreferences } from "@/common/contexts/PreferencesContext.jsx";
 import { FitAddon } from "@xterm/addon-fit";
 import { ContextMenu, ContextMenuItem, ContextMenuSeparator, useContextMenu } from "@/common/components/ContextMenu";
 import AICommandPopover from "./components/AICommandPopover";
@@ -33,8 +32,7 @@ const XtermRenderer = ({ session, disconnectFromServer, registerTerminalRef, bro
     
     const userContext = useContext(UserContext);
     const sessionToken = userContext?.sessionToken;
-    const { theme } = useTheme();
-    const { getCurrentTheme, selectedFont, fontSize, cursorStyle, cursorBlink, selectedTheme } = useTerminalSettings();
+    const { theme, getCurrentTheme, selectedFont, fontSize, cursorStyle, cursorBlink, selectedTheme } = usePreferences();
     const aiContext = useContext(AIContext);
     const isAIAvailable = aiContext?.isAIAvailable || (() => false);
     const { getParsedKeybind } = useKeymaps();

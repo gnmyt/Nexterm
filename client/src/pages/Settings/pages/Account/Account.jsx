@@ -1,9 +1,9 @@
 import IconInput from "@/common/components/IconInput";
 import "./styles.sass";
-import { mdiAccountCircleOutline, mdiWhiteBalanceSunny, mdiAccountEdit, mdiPalette, mdiShieldCheck, mdiLockReset, mdiTranslate, mdiSync, mdiCloudSync, mdiWeb, mdiTabUnselected, mdiWeatherNight, mdiFingerprint, mdiKeyVariant, mdiPencil, mdiTrashCan, mdiPlus, mdiCheck } from "@mdi/js";
+import { mdiAccountCircleOutline, mdiWhiteBalanceSunny, mdiAccountEdit, mdiPalette, mdiShieldCheck, mdiLockReset, mdiTranslate, mdiSync, mdiCloudSync, mdiCloudOffOutline, mdiWeb, mdiTabUnselected, mdiWeatherNight, mdiFingerprint, mdiKeyVariant, mdiPencil, mdiTrashCan, mdiPlus, mdiCheck } from "@mdi/js";
 import { useContext, useEffect, useRef, useState } from "react";
 import { UserContext } from "@/common/contexts/UserContext.jsx";
-import { useTheme } from "@/common/contexts/ThemeContext.jsx";
+import { usePreferences } from "@/common/contexts/PreferencesContext.jsx";
 import Button from "@/common/components/Button";
 import { patchRequest, postRequest, getRequest, deleteRequest } from "@/common/utils/RequestUtil.js";
 import TwoFactorAuthentication from "@/pages/Settings/pages/Account/dialogs/TwoFactorAuthentication";
@@ -32,15 +32,15 @@ export const Account = () => {
     const darkClickTimeout = useRef(null);
 
     const { user, login } = useContext(UserContext);
-    const { themeMode, setTheme, accentColor, setAccentColor, accentColors } = useTheme();
+    const { themeMode, setTheme, accentColor, setAccentColor, accentColors, isGroupSynced, toggleGroupSync, language, setLanguage } = usePreferences();
     const { sendToast } = useToast();
 
     const [updatedField, setUpdatedField] = useState(null);
 
     const [firstName, setFirstName] = useState("");
     const [lastName, setLastName] = useState("");
-    const [currentLanguage, setCurrentLanguage] = useState(localStorage.getItem("language") || "en");
     const [sessionSync, setSessionSync] = useState("same_browser");
+    const currentLanguage = language || i18n.language || "en";
 
     const languageOptions = languages.map(lang => ({ label: lang.name, value: lang.code }));
 
@@ -50,11 +50,7 @@ export const Account = () => {
         { label: t("settings.account.sessionSyncSameTab"), value: "same_tab", icon: mdiTabUnselected }
     ];
 
-    const changeLanguage = (languageCode) => {
-        setCurrentLanguage(languageCode);
-        localStorage.setItem("language", languageCode);
-        i18n.changeLanguage(languageCode);
-    };
+    const changeLanguage = (languageCode) => setLanguage(languageCode);
 
     const changeSessionSync = (mode) => {
         setSessionSync(mode);
@@ -206,7 +202,25 @@ export const Account = () => {
             </div>
 
             <div className="account-section">
-                <h2><Icon path={mdiPalette} size={0.8} style={{marginRight: '8px'}} />{t("settings.account.appearance")}</h2>
+                <div className="section-header">
+                    <h2><Icon path={mdiPalette} size={0.8} style={{marginRight: '8px'}} />{t("settings.account.appearance")}</h2>
+                    <Button
+                        icon={isGroupSynced("appearance") ? mdiCloudSync : mdiCloudOffOutline}
+                        onClick={() => {
+                            if (!user) {
+                                sendToast(t("common.error"), t("settings.account.syncLoginRequired"));
+                                return;
+                            }
+                            const wasSynced = isGroupSynced("appearance");
+                            toggleGroupSync("appearance");
+                            sendToast(
+                                t("common.success"), 
+                                wasSynced ? t("settings.account.appearanceSyncDisabled") : t("settings.account.appearanceSyncEnabled")
+                            );
+                        }}
+                        type={isGroupSynced("appearance") ? "primary" : undefined}
+                    />
+                </div>
                 <div className="section-inner appearance-section">
                     <p style={{ maxWidth: "25rem" }}>{t("settings.account.appearanceDescription")}</p>
                     <div className="appearance-content">
@@ -314,7 +328,25 @@ export const Account = () => {
             </div>
 
             <div className="account-section">
-                <h2><Icon path={mdiTranslate} size={0.8} style={{marginRight: '8px'}} />{t("settings.account.language")}</h2>
+                <div className="section-header">
+                    <h2><Icon path={mdiTranslate} size={0.8} style={{marginRight: '8px'}} />{t("settings.account.language")}</h2>
+                    <Button
+                        icon={isGroupSynced("general") ? mdiCloudSync : mdiCloudOffOutline}
+                        onClick={() => {
+                            if (!user) {
+                                sendToast(t("common.error"), t("settings.account.syncLoginRequired"));
+                                return;
+                            }
+                            const wasSynced = isGroupSynced("general");
+                            toggleGroupSync("general");
+                            sendToast(
+                                t("common.success"), 
+                                wasSynced ? t("settings.account.generalSyncDisabled") : t("settings.account.generalSyncEnabled")
+                            );
+                        }}
+                        type={isGroupSynced("general") ? "primary" : undefined}
+                    />
+                </div>
                 <div className="section-inner">
                     <div className="language-help">
                         <p className="main-description">{t("settings.account.languageDescription")}</p>

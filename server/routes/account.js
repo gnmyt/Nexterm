@@ -1,6 +1,7 @@
 const { Router } = require("express");
 const { registerValidation, totpSetup, passwordChangeValidation, updateNameValidation, updateSessionSyncValidation } = require("../validations/account");
-const { createAccount, updateTOTP, updatePassword, updateName, updateSessionSync } = require("../controllers/account");
+const { preferencesValidation } = require("../validations/preferences");
+const { createAccount, updateTOTP, updatePassword, updateName, updateSessionSync, updatePreferences } = require("../controllers/account");
 const speakeasy = require("speakeasy");
 const { authenticate } = require("../middlewares/auth");
 const { validateSchema } = require("../utils/schema");
@@ -24,7 +25,7 @@ app.get("/me", authenticate, async (req, res) => {
     res.json({
         id: req.user.id, username: req.user.username, totpEnabled: req.user.totpEnabled,
         firstName: req.user.firstName, lastName: req.user.lastName, role: req.user.role,
-        sessionSync: req.user.sessionSync,
+        sessionSync: req.user.sessionSync, preferences: req.user.preferences || {},
     });
 });
 
@@ -166,6 +167,28 @@ app.patch("/session-sync", authenticate, async (req, res) => {
     if (error) return res.json(error);
 
     res.json({ message: "Session synchronization mode has been successfully updated." });
+});
+
+/**
+ * PATCH /account/me/preferences
+ * @summary Update User Preferences
+ * @description Updates the user's preferences (terminal settings, theme, file settings). Performs a deep merge with existing preferences.
+ * @tags Account
+ * @produces application/json
+ * @security BearerAuth
+ * @param {object} request.body.required - Preferences object with terminal, theme, and/or files properties
+ * @return {object} 200 - Preferences successfully updated with the merged result
+ * @return {object} 401 - User is not authenticated
+ */
+app.patch("/me/preferences", authenticate, async (req, res) => {
+    if (!req.user) return sendError(res, 401, 205, "You are not authenticated.");
+
+    if (validateSchema(res, preferencesValidation, req.body)) return;
+
+    const result = await updatePreferences(req.user.id, req.body);
+    if (result?.code) return res.json(result);
+
+    res.json({ message: "Preferences successfully updated.", preferences: result });
 });
 
 module.exports = app;

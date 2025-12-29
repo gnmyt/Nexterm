@@ -25,12 +25,18 @@ $tablet: 1024px
   .section-header
     display: flex
     justify-content: space-between
-    align-items: flex-start
+    align-items: center
     margin-bottom: 1rem
 
     @media (max-width: $mobile)
-      flex-direction: column
+      flex-direction: row
       gap: 0.75rem
+
+    &.has-description
+      align-items: flex-start
+
+      @media (max-width: $mobile)
+        flex-direction: column
 
     .header-content
       h2

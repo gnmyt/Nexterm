@@ -7,7 +7,7 @@ import { mdiServer, mdiCodeTags } from "@mdi/js";
 import Fuse from "fuse.js";
 import { ServerContext } from "@/common/contexts/ServerContext.jsx";
 import { SnippetContext } from "@/common/contexts/SnippetContext.jsx";
-import { getSidebarNavigation, getAllSettingsPages } from "@/common/utils/navigationConfig.js";
+import { getSidebarNavigation, getAllSettingsPages } from "@/common/utils/navigationConfig.jsx";
 import "./styles.sass";
 
 export const QuickAction = ({ isOpen, onClose }) => {
@@ -31,7 +31,7 @@ export const QuickAction = ({ isOpen, onClose }) => {
         ...flattenServers(servers),
         ...(allSnippets || []).map(snippet => ({ id: `snippet-${snippet.id}`, type: "snippet", name: snippet.name, path: snippet.description || "", icon: mdiCodeTags, data: snippet })),
         ...getSidebarNavigation(t).map(nav => ({ id: `nav-${nav.path.slice(1)}`, type: "navigation", name: nav.title, icon: nav.icon, route: nav.path, path: t("common.quickAction.navigation") })),
-        ...getAllSettingsPages(t).map(page => ({ id: `settings-${page.routeKey}`, type: "settings", name: page.title, icon: page.icon, settingsTab: page.routeKey, path: t("common.quickAction.settings") }))
+        ...getAllSettingsPages(t).map(page => ({ id: `settings-${page.key}`, type: "settings", name: page.title, icon: page.icon, settingsTab: page.key, path: t("common.quickAction.settings") }))
     ], [servers, allSnippets, t]);
 
     const filteredItems = useMemo(() => {

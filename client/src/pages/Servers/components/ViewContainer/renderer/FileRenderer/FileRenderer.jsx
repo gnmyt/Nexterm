@@ -1,7 +1,7 @@
 import { useContext, useEffect, useState, useRef, useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import { UserContext } from "@/common/contexts/UserContext.jsx";
-import { useFileSettings } from "@/common/contexts/FileSettingsContext.jsx";
+import { usePreferences } from "@/common/contexts/PreferencesContext.jsx";
 import { useToast } from "@/common/contexts/ToastContext.jsx";
 import useWebSocket from "react-use-websocket";
 import ActionBar from "@/pages/Servers/components/ViewContainer/renderer/FileRenderer/components/ActionBar";
@@ -23,7 +23,7 @@ const OPERATIONS = {
 export const FileRenderer = ({ session, disconnectFromServer, setOpenFileEditors, isActive, onOpenTerminal }) => {
     const { t } = useTranslation();
     const { sessionToken } = useContext(UserContext);
-    const { defaultViewMode } = useFileSettings();
+    const { defaultViewMode } = usePreferences();
     const { sendToast } = useToast();
 
     const [dragging, setDragging] = useState(false);

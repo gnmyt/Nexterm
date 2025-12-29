@@ -1,7 +1,7 @@
 import { useContext, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { UserContext } from "@/common/contexts/UserContext.jsx";
-import { useTheme } from "@/common/contexts/ThemeContext.jsx";
+import { usePreferences } from "@/common/contexts/PreferencesContext.jsx";
 import { useToast } from "@/common/contexts/ToastContext.jsx";
 import { downloadRequest, uploadFile } from "@/common/utils/RequestUtil.js";
 import { ActionConfirmDialog } from "@/common/components/ActionConfirmDialog/ActionConfirmDialog.jsx";
@@ -16,7 +16,7 @@ loader.config({ monaco });
 
 export const FileEditorWindow = ({ file, session, onClose, zIndex = 9999 }) => {
     const { t } = useTranslation();
-    const { theme } = useTheme();
+    const { theme } = usePreferences();
     const { sessionToken } = useContext(UserContext);
     const { sendToast } = useToast();
     const [fileContent, setFileContent] = useState("");

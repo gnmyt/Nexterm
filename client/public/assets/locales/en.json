@@ -512,6 +512,11 @@
       "currentLanguage": "Current Language",
       "missingLanguage": "Missing your language?",
       "helpTranslateLink": "Help translate Nexterm",
+      "syncLoginRequired": "Please log in to sync settings",
+      "appearanceSyncEnabled": "Appearance settings will now sync to your account",
+      "appearanceSyncDisabled": "Appearance settings will no longer sync",
+      "generalSyncEnabled": "General settings will now sync to your account",
+      "generalSyncDisabled": "General settings will no longer sync",
       "sessionSynchronization": "Session Synchronization",
       "sessionSyncDescription": "Control how your server sessions are stored and synchronized across devices and browser tabs.",
       "sessionSyncAcrossDevices": "Across devices",
@@ -678,11 +683,14 @@
     },
     "terminal": {
       "title": "Terminal",
+      "syncLoginRequired": "Please log in to sync terminal settings",
       "font": {
         "title": "Font",
         "description": "Customize the font family and size for your terminal.",
         "fontFamily": "Font Family",
-        "fontSize": "Font Size"
+        "fontSize": "Font Size",
+        "syncEnabled": "Font settings will now sync to your account",
+        "syncDisabled": "Font settings will no longer sync"
       },
       "cursor": {
         "title": "Cursor",
@@ -690,11 +698,15 @@
         "cursorStyle": "Cursor Style",
         "cursorBlinking": "Cursor Blinking",
         "enabled": "Enabled",
-        "disabled": "Disabled"
+        "disabled": "Disabled",
+        "syncEnabled": "Cursor settings will now sync to your account",
+        "syncDisabled": "Cursor settings will no longer sync"
       },
       "theme": {
         "title": "Theme",
-        "description": "Choose a color theme for your terminal."
+        "description": "Choose a color theme for your terminal.",
+        "syncEnabled": "Theme settings will now sync to your account",
+        "syncDisabled": "Theme settings will no longer sync"
       },
       "preview": {
         "text": "$ echo 'Hi, Nexterm!'\nHi, Nexterm!\n$ "
@@ -703,6 +715,9 @@
     "fileManager": {
       "title": "File Manager",
       "description": "Configure how files and folders are displayed and managed.",
+      "syncLoginRequired": "Please log in to sync file manager settings",
+      "syncEnabled": "File manager settings will now sync to your account",
+      "syncDisabled": "File manager settings will no longer sync",
       "defaultView": {
         "title": "Default View Mode",
         "description": "Choose the default layout when opening the file manager.",

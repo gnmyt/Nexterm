@@ -15,7 +15,7 @@ import {
 import { Fragment, useState, useRef, useEffect, useCallback } from "react";
 import { ContextMenu, ContextMenuItem, useContextMenu } from "@/common/components/ContextMenu";
 import { useTranslation } from "react-i18next";
-import { useFileSettings } from "@/common/contexts/FileSettingsContext.jsx";
+import { usePreferences } from "@/common/contexts/PreferencesContext.jsx";
 
 export const ActionBar = ({
                               path,
@@ -42,7 +42,7 @@ export const ActionBar = ({
     const [selectedSuggestion, setSelectedSuggestion] = useState(-1);
     const [pendingDrop, setPendingDrop] = useState(null);
     const { t } = useTranslation();
-    const { dragDropAction } = useFileSettings();
+    const { dragDropAction } = usePreferences();
     const dropMenu = useContextMenu();
 
     const inputRef = useRef(null);
