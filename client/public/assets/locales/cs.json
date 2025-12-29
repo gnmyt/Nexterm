@@ -3,13 +3,13 @@
     "error": "Chyba",
     "success": "Hotovo",
     "loading": "Načítání...",
-    "saving": "Saving...",
-    "close": "Close",
-    "cancel": "Cancel",
-    "save": "Save",
-    "download": "Download",
-    "maximize": "Maximize",
-    "restore": "Restore",
+    "saving": "Úspora...",
+    "close": "Zavřít",
+    "cancel": "Zrušit",
+    "save": "Uložit",
+    "download": "Stáhnout",
+    "maximize": "Maximalizujte",
+    "restore": "Obnovení",
     "actions": {
       "cancel": "Zrušit",
       "confirm": "Potvrdit",
@@ -59,7 +59,7 @@
     "sidebar": {
       "settings": "Nastavení",
       "servers": "Servery",
-      "monitoring": "Monitoring",
+      "monitoring": "Monitorování",
       "snippets": "Snippety",
       "audit": "Audit",
       "account": "Účet",
@@ -78,7 +78,7 @@
       "close": "Zavřít",
       "types": {
         "server": "Server",
-        "snippet": "Snippet",
+        "snippet": "Úryvek",
         "navigation": "Přejít na",
         "settings": "Nastavení"
       }
@@ -86,8 +86,8 @@
     "errors": {
       "loadingAuthProviders": "Chyba při načítání poskytovatelů ověření: {{error}}",
       "webSocketConnection": {
-        "title": "WebSocket Connection Failed",
-        "message": "Connections are unavailable. This may be due to WebSocket not being enabled in your reverse proxy or network restrictions."
+        "title": "Připojení WebSocket se nezdařilo",
+        "message": "Připojení nejsou k dispozici. To může být způsobeno tím, že WebSocket není povolen v reverzním proxy serveru nebo síťovými omezeními."
       },
       "generalError": "Došlo k chybě",
       "invalidCredentials": "Neplatné uživatelské jméno nebo heslo",
@@ -149,7 +149,7 @@
       "loading": "Načítání auditních záznamů...",
       "expandedDetails": {
         "connectionReason": "Důvod připojení",
-        "userAgent": "User Agent",
+        "userAgent": "Uživatelský agent",
         "additionalDetails": "Další podrobnosti"
       },
       "badges": {
@@ -471,7 +471,7 @@
     "pages": {
       "account": "Účet",
       "terminal": "Terminál",
-      "fileManager": "File Manager",
+      "fileManager": "Správce souborů",
       "keymaps": "Klávesové zkratky",
       "identities": "Identity",
       "sessions": "Relace",
@@ -480,7 +480,7 @@
       "authentication": "Ověření",
       "sources": "Zdroje",
       "ai": "AI",
-      "monitoring": "Monitoring",
+      "monitoring": "Monitorování",
       "backup": "Úložiště"
     },
     "account": {
@@ -637,7 +637,7 @@
           "description": "Otevřít menu rychlých akcí"
         },
         "aimenu": {
-          "title": "AI Menu",
+          "title": "Nabídka AI",
           "description": "Otevřít menu AI příkazů"
         },
         "snippets": {
@@ -701,52 +701,52 @@
       }
     },
     "fileManager": {
-      "title": "File Manager",
-      "description": "Configure how files and folders are displayed and managed.",
+      "title": "Správce souborů",
+      "description": "Konfigurace způsobu zobrazení a správy souborů a složek.",
       "defaultView": {
-        "title": "Default View Mode",
-        "description": "Choose the default layout when opening the file manager.",
-        "list": "List View",
-        "listDescription": "Show files in a detailed list with size and date columns",
-        "grid": "Grid View",
-        "gridDescription": "Show files as icons in a grid layout with thumbnails"
+        "title": "Výchozí režim zobrazení",
+        "description": "Při otevření správce souborů zvolte výchozí rozložení.",
+        "list": "Zobrazení seznamu",
+        "listDescription": "Zobrazení souborů v podrobném seznamu se sloupci velikosti a data",
+        "grid": "Zobrazení mřížky",
+        "gridDescription": "Zobrazení souborů jako ikony v mřížkovém uspořádání s miniaturami"
       },
       "thumbnails": {
-        "title": "Image Thumbnails",
-        "description": "Show image thumbnails in grid view. This uses additional bandwidth to generate previews.",
-        "enabled": "Show Thumbnails",
-        "enabledDescription": "Display image previews in grid view for quick visual identification",
-        "disabled": "Hide Thumbnails",
-        "disabledDescription": "Show only file icons to save bandwidth and improve performance"
+        "title": "Miniatury obrázků",
+        "description": "Zobrazení miniatur obrázků v zobrazení mřížky. To využívá další šířku pásma pro generování náhledů.",
+        "enabled": "Zobrazit náhledy",
+        "enabledDescription": "Zobrazení náhledů obrázků v zobrazení mřížky pro rychlou vizuální identifikaci",
+        "disabled": "Skrýt miniatury",
+        "disabledDescription": "Zobrazení pouze ikon souborů pro úsporu šířky pásma a zlepšení výkonu"
       },
       "hiddenFiles": {
-        "title": "Hidden Files",
-        "description": "Control visibility of hidden files and folders (names starting with a dot).",
-        "show": "Show Hidden Files",
-        "showDescription": "Display all files including .dotfiles and system directories",
-        "hide": "Hide Hidden Files",
-        "hideDescription": "Only show regular files and folders"
+        "title": "Skryté soubory",
+        "description": "Kontrola viditelnosti skrytých souborů a složek (názvy začínající tečkou).",
+        "show": "Zobrazit skryté soubory",
+        "showDescription": "Zobrazení všech souborů včetně souborů .dotfiles a systémových adresářů",
+        "hide": "Skrýt skryté soubory",
+        "hideDescription": "Zobrazení pouze běžných souborů a složek"
       },
       "deleteConfirmation": {
-        "title": "Delete Confirmation",
-        "description": "Require confirmation before deleting files and folders.",
-        "enabled": "Confirm Deletions",
-        "enabledDescription": "Show a confirmation dialog before deleting items",
-        "disabled": "Delete Immediately",
-        "disabledDescription": "Delete files without asking for confirmation"
+        "title": "Odstranit potvrzení",
+        "description": "Vyžadovat potvrzení před odstraněním souborů a složek.",
+        "enabled": "Potvrzení odstranění",
+        "enabledDescription": "Zobrazení potvrzovacího dialogu před odstraněním položek",
+        "disabled": "Okamžitě odstranit",
+        "disabledDescription": "Odstranění souborů bez žádosti o potvrzení"
       },
       "dragDropAction": {
-        "title": "Drag & Drop Action",
-        "description": "Default action when dragging files to a new location.",
-        "move": "Move",
-        "copy": "Copy",
-        "ask": "Ask"
+        "title": "Akce Drag & Drop",
+        "description": "Výchozí akce při přetahování souborů do nového umístění.",
+        "move": "Přesun",
+        "copy": "Kopírovat",
+        "ask": "Zeptejte se"
       }
     },
     "authentication": {
       "title": "{{count}} poskytovatelů ověření",
       "addProvider": "Přidat poskytovatele",
-      "addLdapProvider": "Add LDAP",
+      "addLdapProvider": "Přidání protokolu LDAP",
       "system": "Systém",
       "systemDescription": "Ověření uživatelským jménem a heslem",
       "deleteConfirm": "Toto trvale smaže tohoto poskytovatele ověření.",
@@ -776,7 +776,7 @@
           "firstNameAttribute": "Atribut jména",
           "firstNameAttributePlaceholder": "given_name",
           "lastNameAttribute": "Atribut příjmení",
-          "lastNameAttributePlaceholder": "family_name"
+          "lastNameAttributePlaceholder": "jméno_rodiny"
         },
         "advanced": {
           "show": "Zobrazit pokročilé nastavení",
@@ -791,48 +791,48 @@
         }
       },
       "ldapDialog": {
-        "createTitle": "Add LDAP Provider",
-        "editTitle": "Edit LDAP Provider",
+        "createTitle": "Přidání poskytovatele LDAP",
+        "editTitle": "Upravit zprostředkovatele LDAP",
         "fields": {
-          "displayName": "Display Name",
-          "displayNamePlaceholder": "e.g. Company LDAP",
-          "host": "Host",
+          "displayName": "Zobrazení názvu",
+          "displayNamePlaceholder": "např. firemní LDAP",
+          "host": "Hostitel",
           "hostPlaceholder": "ldap.company.com",
-          "port": "Port",
-          "bindDN": "Bind DN",
+          "port": "Přístav",
+          "bindDN": "Vazba DN",
           "bindDNPlaceholder": "cn=admin,dc=company,dc=com",
-          "bindPassword": "Bind Password",
-          "bindPasswordPlaceholder": "Bind password",
-          "bindPasswordPlaceholderEdit": "Leave blank to keep existing",
-          "baseDN": "Base DN",
+          "bindPassword": "Svázat heslo",
+          "bindPasswordPlaceholder": "Vázání hesla",
+          "bindPasswordPlaceholderEdit": "Nechte prázdné, chcete-li zachovat stávající",
+          "baseDN": "Základní DN",
           "baseDNPlaceholder": "dc=company,dc=com",
-          "userSearchFilter": "User Search Filter",
-          "userSearchFilterPlaceholder": "(uid={{username}}) or (sAMAccountName={{username}})",
-          "useTLS": "Use TLS/SSL",
-          "usernameAttribute": "Username Attribute",
+          "userSearchFilter": "Filtr pro vyhledávání uživatelů",
+          "userSearchFilterPlaceholder": "(uid={{username}}) nebo (sAMAccountName={{username}}).",
+          "useTLS": "Použití protokolu TLS/SSL",
+          "usernameAttribute": "Atribut uživatelského jména",
           "usernameAttributePlaceholder": "uid",
-          "emailAttribute": "Email Attribute",
+          "emailAttribute": "Atribut e-mailu",
           "emailAttributePlaceholder": "mail",
-          "firstNameAttribute": "First Name Attribute",
+          "firstNameAttribute": "Jméno Atribut",
           "firstNameAttributePlaceholder": "givenName",
-          "lastNameAttribute": "Last Name Attribute",
+          "lastNameAttribute": "Atribut příjmení",
           "lastNameAttributePlaceholder": "sn"
         },
         "advanced": {
-          "show": "Show Advanced Settings",
-          "hide": "Hide Advanced Settings"
+          "show": "Zobrazit pokročilá nastavení",
+          "hide": "Skrytí pokročilých nastavení"
         },
         "actions": {
-          "addProvider": "Add Provider",
-          "saveChanges": "Save Changes",
-          "testConnection": "Test Connection",
-          "testing": "Testing..."
+          "addProvider": "Přidat poskytovatele",
+          "saveChanges": "Uložení změn",
+          "testConnection": "Testovací připojení",
+          "testing": "Testování..."
         },
         "messages": {
-          "saveFailed": "Failed to save provider",
-          "saveFirst": "Save the provider first to test the connection",
-          "testSuccess": "Connection test successful",
-          "testFailed": "Connection test failed"
+          "saveFailed": "Nepodařilo se uložit poskytovatele",
+          "saveFirst": "Nejprve uložte poskytovatele a otestujte připojení",
+          "testSuccess": "Test připojení proběhl úspěšně",
+          "testFailed": "Test připojení se nezdařil"
         }
       }
     },
@@ -859,7 +859,7 @@
         "setPlaceholder": "API klíč je nastaven (ponechte prázdné pro zachování)"
       },
       "ollamaUrl": {
-        "title": "Ollama URL",
+        "title": "Adresa URL společnosti Ollama",
         "description": "URL, kde běží vaše instance Ollama",
         "placeholder": "http://localhost:11434"
       },
@@ -1067,7 +1067,7 @@
       "smbPassword": "Heslo",
       "smbPasswordPlaceholder": "heslo",
       "smbDomain": "Doména (volitelné)",
-      "smbDomainPlaceholder": "WORKGROUP",
+      "smbDomainPlaceholder": "PRACOVNÍ SKUPINA",
       "webdavUrl": "URL serveru",
       "webdavUrlPlaceholder": "https://cloud.priklad.cz/remote.php/dav/files/uzivatel",
       "webdavFolder": "Složka (volitelné)",
@@ -1234,24 +1234,24 @@
         "name": "Název",
         "icon": "Ikona",
         "serverIp": "Hostitel",
-        "port": "Port",
+        "port": "Přístav",
         "protocol": "Protokol",
         "username": "Uživatelské jméno",
         "password": "Heslo",
         "host": "Hostitel",
         "nodeName": "Název uzlu",
-        "vmid": "VM ID",
+        "vmid": "ID VIRTUÁLNÍHO POČÍTAČE",
         "macAddress": "MAC adresa"
       },
       "placeholders": {
         "serverName": "Název serveru",
         "serverIp": "Název hostitele nebo IP",
-        "port": "Port",
+        "port": "Přístav",
         "username": "Uživatelské jméno",
         "password": "Heslo",
         "host": "Hostitel",
         "nodeName": "Název uzlu",
-        "vmid": "VM ID",
+        "vmid": "ID VIRTUÁLNÍHO POČÍTAČE",
         "macAddress": "AA:BB:CC:DD:EE:FF"
       },
       "settings": {
@@ -1304,7 +1304,7 @@
           "title": "Kompatibilita terminálu",
           "description": "Upravte chování kláves pro různé typy terminálů",
           "backspace": "Backspace",
-          "delete": "Delete",
+          "delete": "Odstranit",
           "functionKeys": "Funkční klávesy"
         },
         "noSettings": "Pro tento typ záznamu nejsou k dispozici žádná další nastavení."
@@ -1343,7 +1343,7 @@
       "fields": {
         "name": "Název",
         "serverIp": "IP serveru",
-        "port": "Port",
+        "port": "Přístav",
         "username": "Uživatelské jméno",
         "password": "Heslo",
         "nodeName": "Název uzlu (volitelné)",
@@ -1353,7 +1353,7 @@
       "placeholders": {
         "name": "Název",
         "serverIp": "IP serveru",
-        "port": "Port",
+        "port": "Přístav",
         "username": "Uživatelské jméno (např. root@pam)",
         "password": "Heslo",
         "specificNode": "Konkrétní název uzlu"
@@ -1406,9 +1406,9 @@
     },
     "fileManager": {
       "createFile": {
-        "title": "Create File",
-        "placeholder": "File Name",
-        "button": "Create File"
+        "title": "Vytvořit soubor",
+        "placeholder": "Název souboru",
+        "button": "Vytvořit soubor"
       },
       "createFolder": {
         "title": "Vytvořit složku",
@@ -1443,44 +1443,44 @@
         "upload": "Nahrát soubor",
         "edit": "Upravit",
         "preview": "Náhled",
-        "moveHere": "Move here",
-        "copyHere": "Copy here",
+        "moveHere": "Přestěhujte se sem",
+        "copyHere": "Kopírovat zde",
         "bigFileConfirm": "Tento soubor má {{size}} MB. Opravdu ho chcete upravit?",
-        "deleteConfirm": "Are you sure you want to delete \"{{name}}\"? This action cannot be undone.",
+        "deleteConfirm": "Opravdu chcete odstranit \"{{name}}\"? Tuto akci nelze vzít zpět.",
         "selectAll": "Vybrat vše",
         "insertSnippet": "Vložit snippet",
         "sendCtrlC": "Odeslat Ctrl+C",
         "clearTerminal": "Vyčistit terminál",
-        "properties": "Properties",
-        "openTerminal": "Open Terminal Here",
-        "downloadFolder": "Download Folder"
+        "properties": "Vlastnosti",
+        "openTerminal": "Otevřete terminál zde",
+        "downloadFolder": "Složka ke stažení"
       },
       "properties": {
-        "general": "General",
-        "permissions": "Permissions",
-        "checksum": "Checksum",
-        "folder": "Folder",
-        "file": "File",
-        "path": "Location",
-        "size": "Size",
-        "calculateSize": "Calculate",
-        "owner": "Owner",
-        "group": "Group",
-        "modified": "Modified",
-        "accessed": "Accessed",
-        "calculating": "Calculating...",
-        "calculate": "Calculate"
+        "general": "Obecné",
+        "permissions": "Oprávnění",
+        "checksum": "Kontrolní součet",
+        "folder": "Složka",
+        "file": "Soubor",
+        "path": "Umístění",
+        "size": "Velikost",
+        "calculateSize": "Výpočet",
+        "owner": "Majitel",
+        "group": "Skupina",
+        "modified": "Upraveno",
+        "accessed": "Dostupné na",
+        "calculating": "Výpočet...",
+        "calculate": "Výpočet"
       },
       "permissions": {
-        "owner": "Owner",
-        "group": "Group",
-        "others": "Others",
-        "read": "Read",
-        "write": "Write",
-        "execute": "Execute",
-        "octal": "Octal",
-        "preview": "Preview",
-        "apply": "Apply"
+        "owner": "Majitel",
+        "group": "Skupina",
+        "others": "Ostatní",
+        "read": "Přečtěte si",
+        "write": "Napište na",
+        "execute": "Provést",
+        "octal": "Osmičkové",
+        "preview": "Náhled",
+        "apply": "Použít"
       },
       "filePreview": {
         "title": "Náhled souboru",
@@ -1493,44 +1493,44 @@
         "close": "Zavřít"
       },
       "selection": {
-        "itemsSelected": "{{count}} items selected",
-        "filesSelected": "{{count}} file(s) selected",
-        "foldersSelected": "{{count}} folder(s) selected",
-        "clearSelection": "Clear selection",
-        "downloadSelected": "Download selected",
-        "deleteSelected": "Delete selected",
-        "download": "Download",
-        "delete": "Delete",
-        "deleteConfirm": "Are you sure you want to delete {{count}} item(s)?"
+        "itemsSelected": "{{count}} vybrané položky",
+        "filesSelected": "{{count}} vybrané soubory",
+        "foldersSelected": "{{count}} vybrané složky",
+        "clearSelection": "Jasný výběr",
+        "downloadSelected": "Stáhnout vybrané",
+        "deleteSelected": "Odstranit vybrané",
+        "download": "Stáhnout",
+        "delete": "Odstranit",
+        "deleteConfirm": "Opravdu chcete odstranit položky {{count}} ?"
       },
       "header": {
-        "name": "Name",
-        "size": "Size",
-        "permissions": "Permissions",
-        "modified": "Modified"
+        "name": "Název",
+        "size": "Velikost",
+        "permissions": "Oprávnění",
+        "modified": "Upraveno"
       },
       "actionBar": {
-        "enterDirectory": "Enter directory path...",
-        "hiddenDirectories": "{{count}} hidden directories",
-        "switchToGrid": "Switch to grid view",
-        "switchToList": "Switch to list view"
+        "enterDirectory": "Zadejte cestu k adresáři...",
+        "hiddenDirectories": "{{count}} skryté adresáře",
+        "switchToGrid": "Přepnutí na zobrazení mřížky",
+        "switchToList": "Přepnutí na zobrazení seznamu"
       },
       "item": {
-        "link": "link"
+        "link": "odkaz"
       },
       "states": {
-        "loading": "Loading files...",
-        "accessDenied": "Access Denied",
-        "emptyFolder": "This folder is empty",
-        "dropFilesHint": "Drop files here to upload them"
+        "loading": "Načítání souborů...",
+        "accessDenied": "Přístup odepřen",
+        "emptyFolder": "Tato složka je prázdná",
+        "dropFilesHint": "Pro nahrání souborů sem napište"
       },
       "toast": {
-        "downloaded": "Downloaded {{name}}",
-        "downloadingItems": "Downloading {{count}} item(s)...",
-        "uploaded": "Uploaded {{name}}",
-        "uploadFailed": "Upload failed: {{message}}",
-        "connectionLost": "SFTP connection lost. Please reconnect.",
-        "error": "An error occurred"
+        "downloaded": "Staženo {{name}}",
+        "downloadingItems": "Stahování položek {{count}} ...",
+        "uploaded": "Nahráno {{name}}",
+        "uploadFailed": "Nahrávání se nezdařilo: {{message}}",
+        "connectionLost": "Ztráta připojení SFTP. Znovu se připojte.",
+        "error": "Došlo k chybě"
       }
     },
     "aiAssistant": {
