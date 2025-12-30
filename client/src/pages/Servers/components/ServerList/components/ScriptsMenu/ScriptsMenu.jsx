@@ -183,7 +183,7 @@ export const ScriptsMenu = ({ visible, onClose, scripts = [], server, serverOrga
                             <input
                                 ref={searchRef}
                                 type="text"
-                                placeholder={t("scripts.menu.searchPlaceholder", "Search scripts...")}
+                                placeholder={t("scripts.menu.searchPlaceholder")}
                                 value={search}
                                 onChange={(e) => { setSearch(e.target.value); setHighlightedIndex(-1); }}
                                 onClick={(e) => e.stopPropagation()}
@@ -193,8 +193,8 @@ export const ScriptsMenu = ({ visible, onClose, scripts = [], server, serverOrga
                             {filteredScripts.length === 0 ? (
                                 <div className="scripts-menu__no-results">
                                     <p>{availableScripts.length === 0 
-                                        ? t("scripts.menu.noScripts", "No scripts available. Create some in the Scripts section.")
-                                        : t("scripts.menu.noMatch", "No scripts match your search.")}</p>
+                                        ? t("scripts.menu.noScripts")
+                                        : t("scripts.menu.noMatch")}</p>
                                 </div>
                             ) : (
                                 <div className="scripts-menu__list">
@@ -228,10 +228,10 @@ export const ScriptsMenu = ({ visible, onClose, scripts = [], server, serverOrga
                         <div className="scripts-menu__header">
                             <div className="scripts-menu__title">
                                 <Icon path={mdiAccountCircle} />
-                                <span>{t("scripts.menu.selectIdentity", "Select Identity")}</span>
+                                <span>{t("scripts.menu.selectIdentity")}</span>
                             </div>
                             <div className="scripts-menu__script-info">
-                                <button className="scripts-menu__back" onClick={handleBack}>← {t("common.actions.back", "Back")}</button>
+                                <button className="scripts-menu__back" onClick={handleBack}>← {t("common.actions.back")}</button>
                                 <span className="scripts-menu__script-name">{selectedScript.name}</span>
                             </div>
                         </div>

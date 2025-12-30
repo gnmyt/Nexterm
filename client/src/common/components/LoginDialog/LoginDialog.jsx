@@ -3,20 +3,16 @@ import NextermLogo from "@/common/components/NextermLogo";
 import "./styles.sass";
 import Button from "@/common/components/Button";
 import Input from "@/common/components/IconInput";
-import { mdiAccountCircleOutline, mdiKeyOutline, mdiFingerprint, mdiServerNetwork } from "@mdi/js";
+import { mdiAccountCircleOutline, mdiKeyOutline, mdiFingerprint } from "@mdi/js";
 import { useContext, useEffect, useState } from "react";
 import { getRequest, request } from "@/common/utils/RequestUtil.js";
 import { UserContext } from "@/common/contexts/UserContext.jsx";
 import { useToast } from "@/common/contexts/ToastContext.jsx";
 import { useTranslation } from "react-i18next";
 import { startAuthentication } from "@simplewebauthn/browser";
-import { isTauri, getActiveServerUrl, setActiveServerUrl as saveServerUrl } from "@/common/utils/TauriUtil.js";
 
 export const LoginDialog = ({ open }) => {
     const { t } = useTranslation();
-    const isConnectorMode = isTauri();
-    const [serverUrl, setServerUrl] = useState(getActiveServerUrl() || "");
-    const [serverConnected, setServerConnected] = useState(!!getActiveServerUrl());
 
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
@@ -39,8 +35,6 @@ export const LoginDialog = ({ open }) => {
     };
 
     const loadProviders = async () => {
-        if (isConnectorMode && !serverConnected) return;
-        
         try {
             const providers = await getRequest("auth/providers");
 
@@ -57,19 +51,15 @@ export const LoginDialog = ({ open }) => {
                 }, 300);
             }
         } catch (error) {
-            if (isConnectorMode) {
-                sendToast("Error", "Failed to connect to server. Please check the URL.");
-            } else {
-                sendToast("Error", t('common.errors.loadingAuthProviders', { error: error }));
-            }
+            sendToast("Error", t('common.errors.loadingAuthProviders', { error: error }));
         }
     };
 
     useEffect(() => {
-        if (open && (!isConnectorMode || serverConnected)) {
+        if (open) {
             loadProviders();
         }
-    }, [open, serverConnected]);
+    }, [open]);
 
     const createAccountFirst = async () => {
         try {
@@ -83,21 +73,6 @@ export const LoginDialog = ({ open }) => {
 
     const submit = async (event) => {
         event.preventDefault();
-
-        if (isConnectorMode && serverUrl && serverUrl.trim()) {
-            const cleanUrl = serverUrl.trim().replace(/\/$/, "");
-            saveServerUrl(cleanUrl);
-
-            if (!serverConnected) {
-                setServerConnected(true);
-                return;
-            }
-        }
-
-        if (isConnectorMode && !serverUrl) {
-            sendToast("Error", "Please enter a server URL first");
-            return;
-        }
 
         if (!isInternalAuthEnabled()) {
             sendToast("Error", t('common.errors.internalAuthDisabled'));
@@ -191,20 +166,6 @@ export const LoginDialog = ({ open }) => {
                     <h1>{firstTimeSetup ? t('common.loginDialog.registrationTitle') : t('common.loginDialog.title')}</h1>
                 </div>
                 <form className="login-form" onSubmit={submit}>
-                    {isConnectorMode && (
-                        <div className="form-group server-url-group">
-                            <label htmlFor="serverUrl">Server URL</label>
-                            <Input 
-                                type="text" 
-                                id="serverUrl" 
-                                icon={mdiServerNetwork}
-                                placeholder="https://nexterm.example.com" 
-                                value={serverUrl} 
-                                setValue={setServerUrl}
-                            />
-                        </div>
-                    )}
-
                     {firstTimeSetup ? (
                         <div className="register-name-row">
                             <div className="form-group">

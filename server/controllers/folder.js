@@ -1,13 +1,57 @@
 const Folder = require("../models/Folder");
 const Entry = require("../models/Entry");
+const EntryIdentity = require("../models/EntryIdentity");
+const Identity = require("../models/Identity");
 const Organization = require("../models/Organization");
 const OrganizationMember = require("../models/OrganizationMember");
 const { Op } = require("sequelize");
 const { hasOrganizationAccess } = require("../utils/permission");
 const { createAuditLog, AUDIT_ACTIONS, RESOURCE_TYPES } = require("./audit");
 const stateBroadcaster = require("../lib/StateBroadcaster");
+const logger = require("../utils/logger");
+const SessionManager = require("../lib/SessionManager");
 
-const updateFolderContext = async (folderId, organizationId, accountId) => {
+const cleanupOrganizationIdentities = async (entryIds, oldOrganizationId) => {
+    if (!entryIds.length || !oldOrganizationId) return;
+
+    for (const entryId of entryIds) {
+        await SessionManager.removeAllByEntryId(entryId);
+    }
+
+    const entryIdentities = await EntryIdentity.findAll({
+        where: { entryId: { [Op.in]: entryIds } }
+    });
+    const identityIds = [...new Set(entryIdentities.map(ei => ei.identityId))];
+
+    if (identityIds.length > 0) {
+        const oldOrgIdentities = await Identity.findAll({
+            where: {
+                id: { [Op.in]: identityIds },
+                organizationId: oldOrganizationId,
+            }
+        });
+
+        const oldOrgIdentityIds = oldOrgIdentities.map(i => i.id);
+        if (oldOrgIdentityIds.length > 0) {
+            await EntryIdentity.destroy({
+                where: {
+                    entryId: { [Op.in]: entryIds },
+                    identityId: { [Op.in]: oldOrgIdentityIds }
+                }
+            });
+            logger.info(`Removed organization identities from entries after folder move`, { 
+                entryCount: entryIds.length, 
+                identityCount: oldOrgIdentityIds.length, 
+                oldOrganizationId 
+            });
+        }
+    }
+};
+
+const updateFolderContext = async (folderId, organizationId, accountId, oldOrganizationId = null) => {
+    const entries = await Entry.findAll({ where: { folderId }, attributes: ['id'] });
+    const entryIds = entries.map(e => e.id);
+
     await Folder.update(
         { organizationId, accountId },
         { where: { id: folderId } }
@@ -18,9 +62,13 @@ const updateFolderContext = async (folderId, organizationId, accountId) => {
         { where: { folderId } }
     );
 
+    if (oldOrganizationId && oldOrganizationId !== organizationId) {
+        await cleanupOrganizationIdentities(entryIds, oldOrganizationId);
+    }
+
     const subfolders = await Folder.findAll({ where: { parentId: folderId } });
     for (const subfolder of subfolders) {
-        await updateFolderContext(subfolder.id, organizationId, accountId);
+        await updateFolderContext(subfolder.id, organizationId, accountId, oldOrganizationId);
     }
 };
 
@@ -147,14 +195,14 @@ module.exports.editFolder = async (accountId, folderId, configuration) => {
                 const newAccountId = targetOrgId ? null : accountId;
                 
                 if (folder.organizationId !== newOrganizationId) {
-                    await updateFolderContext(parseInt(folderId), newOrganizationId, newAccountId);
+                    await updateFolderContext(parseInt(folderId), newOrganizationId, newAccountId, folder.organizationId);
                 }
             } else {
                 const newOrganizationId = null;
                 const newAccountId = accountId;
                 
                 if (folder.organizationId !== newOrganizationId) {
-                    await updateFolderContext(parseInt(folderId), newOrganizationId, newAccountId);
+                    await updateFolderContext(parseInt(folderId), newOrganizationId, newAccountId, folder.organizationId);
                 }
             }
         } else {
@@ -206,7 +254,7 @@ module.exports.editFolder = async (accountId, folderId, configuration) => {
             const newAccountId = targetFolder.organizationId ? null : accountId;
             
             if (folder.organizationId !== newOrganizationId) {
-                await updateFolderContext(parseInt(folderId), newOrganizationId, newAccountId);
+                await updateFolderContext(parseInt(folderId), newOrganizationId, newAccountId, folder.organizationId);
             }
         }
     }

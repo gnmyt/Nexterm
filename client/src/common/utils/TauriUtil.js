@@ -45,4 +45,19 @@ export const setActiveServerUrl = (url) => {
         : localStorage.removeItem("nexterm_server_url");
 };
 
+export const openExternalUrl = async (url) => {
+    if (!isTauri()) {
+        window.open(url, "_blank");
+        return;
+    }
+    
+    try {
+        const { invoke } = await import("@tauri-apps/api/core");
+        await invoke("open_external_url", { url });
+    } catch (e) {
+        console.warn("Failed to open external URL:", e);
+        window.open(url, "_blank");
+    }
+};
+
 waitForTauri();

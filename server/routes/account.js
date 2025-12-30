@@ -126,7 +126,9 @@ app.post("/totp/enable", authenticate, async (req, res) => {
     });
 
     if (!tokenCorrect)
-        return sendError(res, 400, 203, "Your provided code is invalid or has expired.");
+        return sendError(res, 400, 203, "Your provided code is invalid or has expired.", {
+            serverTime: new Date().toISOString()
+        });
 
     const enabledError = await updateTOTP(req.user?.id, true);
     if (enabledError) return res.json(enabledError);

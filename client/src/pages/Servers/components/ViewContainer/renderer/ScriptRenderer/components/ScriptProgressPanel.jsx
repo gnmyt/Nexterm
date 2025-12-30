@@ -113,7 +113,7 @@ const ScriptProgressPanel = ({
             </div>
 
             <div className="steps-container">
-                <div className="steps-label">{t("scripts.execution.steps", "Steps")}</div>
+                <div className="steps-label">{t("scripts.execution.progressPanel.steps")}</div>
                 <div className="steps-list">
                     {steps.map((step, index) => {
                         const type = getTypeByIndex(index);

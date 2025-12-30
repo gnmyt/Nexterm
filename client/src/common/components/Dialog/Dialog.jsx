@@ -113,14 +113,14 @@ export const DialogProvider = ({ disableClosing, open, children, onClose, isDirt
             {showConfirm && (
                 <div className="dialog-confirm-overlay">
                     <div className="dialog-confirm" ref={confirmRef}>
-                        <h3>{t('common.confirmDialog.unsavedChangesTitle', 'Unsaved Changes')}</h3>
-                        <p>{t('common.confirmDialog.unsavedChangesText', 'You have unsaved changes. Are you sure you want to close?')}</p>
+                        <h3>{t('common.confirmDialog.unsavedChangesTitle')}</h3>
+                        <p>{t('common.confirmDialog.unsavedChangesText')}</p>
                         <div className="dialog-confirm-actions">
                             <button className="dialog-confirm-btn secondary" onClick={handleCancelClose}>
-                                {t('common.actions.cancel', 'Cancel')}
+                                {t('common.actions.cancel')}
                             </button>
                             <button className="dialog-confirm-btn primary" onClick={handleConfirmClose}>
-                                {t('common.actions.discard', 'Discard')}
+                                {t('common.actions.discard')}
                             </button>
                         </div>
                     </div>

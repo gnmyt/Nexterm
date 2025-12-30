@@ -26,6 +26,8 @@
     "dialog:allow-save",
     "dialog:allow-open",
     "fs:write-files",
-    "fs:read-files"
+    "fs:read-files",
+    "shell:allow-open",
+    "opener:allow-open-url"
   ]
 }

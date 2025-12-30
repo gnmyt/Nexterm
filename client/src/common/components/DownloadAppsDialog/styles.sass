@@ -1,0 +1,129 @@
+@use "@/common/styles/colors"
+
+.download-apps-dialog
+  display: flex
+  flex-direction: column
+  gap: 1.25rem
+  width: 28rem
+  max-width: 100%
+
+.dialog-header
+  text-align: center
+
+  h2
+    margin: 0 0 0.25rem 0
+    font-size: 1.25rem
+
+  p
+    margin: 0
+    color: colors.$subtext
+    font-size: 0.9rem
+
+.loading-state
+  display: flex
+  align-items: center
+  justify-content: center
+  padding: 3rem
+
+  svg
+    width: 2rem
+    height: 2rem
+    color: colors.$primary
+
+.platform-grid
+  display: grid
+  grid-template-columns: repeat(4, 1fr)
+  gap: 0.75rem
+
+.platform-card
+  display: flex
+  flex-direction: column
+  align-items: center
+  gap: 0.5rem
+  padding: 1rem 0.5rem
+  background-color: colors.$dark-gray
+  border: 2px solid transparent
+  border-radius: 0.75rem
+  cursor: pointer
+  transition: all 0.15s ease
+
+  &:hover
+    background-color: colors.$gray
+    border-color: colors.$gray
+
+  &.selected
+    border-color: colors.$primary
+    background-color: colors.$primary-opacity
+
+    .platform-icon
+      background-color: colors.$primary
+
+  .platform-icon
+    width: 2.75rem
+    height: 2.75rem
+    display: flex
+    align-items: center
+    justify-content: center
+    border-radius: 0.625rem
+    background-color: colors.$gray
+    transition: background-color 0.15s ease
+
+    svg
+      width: 1.5rem
+      height: 1.5rem
+      color: colors.$white
+
+  .platform-name
+    font-weight: 600
+    font-size: 0.8rem
+    color: colors.$white
+    text-align: center
+
+.downloads-section
+  padding-top: 0.25rem
+  border-top: 1px solid colors.$gray
+
+.downloads-grid
+  display: grid
+  grid-template-columns: repeat(2, 1fr)
+  gap: 0.5rem
+  padding-top: 0.75rem
+
+.download-btn
+  display: flex
+  align-items: center
+  gap: 0.625rem
+  padding: 0.625rem 0.875rem
+  background-color: colors.$dark-gray
+  border: 1px solid colors.$gray
+  border-radius: 0.5rem
+  cursor: pointer
+  transition: all 0.15s ease
+  text-align: left
+
+  &:hover
+    background-color: colors.$gray
+    border-color: colors.$gray
+
+  .btn-icon
+    width: 1.25rem
+    height: 1.25rem
+    color: colors.$primary
+    flex-shrink: 0
+    transition: color 0.15s ease
+
+  .btn-text
+    display: flex
+    flex-direction: column
+    gap: 0.1rem
+    min-width: 0
+
+  .btn-format
+    font-weight: 600
+    font-size: 0.85rem
+    color: colors.$white
+
+  .btn-arch
+    font-size: 0.7rem
+    color: colors.$subtext
+    transition: color 0.15s ease

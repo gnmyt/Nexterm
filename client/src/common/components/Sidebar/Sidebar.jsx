@@ -1,15 +1,18 @@
 import "./styles.sass";
 import NextermLogo from "@/common/components/NextermLogo";
-import { mdiCog, mdiLogout, mdiAccountCogOutline } from "@mdi/js";
+import { mdiCog, mdiLogout, mdiAccountCogOutline, mdiStarOutline, mdiLifebuoy } from "@mdi/js";
 import Icon from "@mdi/react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useContext, useState, useRef, useEffect } from "react";
 import { UserContext } from "@/common/contexts/UserContext.jsx";
 import { ActionConfirmDialog } from "@/common/components/ActionConfirmDialog/ActionConfirmDialog.jsx";
+import SupportDialog from "@/common/components/SupportDialog";
 import Tooltip from "@/common/components/Tooltip";
 import { useTranslation } from "react-i18next";
 import { SettingsDialog } from "@/common/components/SettingsDialog/SettingsDialog.jsx";
 import { getSidebarNavigation } from "@/common/utils/navigationConfig.jsx";
+import { GITHUB_URL } from "@/App.jsx";
+import { openExternalUrl } from "@/common/utils/TauriUtil.js";
 
 export const Sidebar = () => {
     const { t } = useTranslation();
@@ -19,6 +22,7 @@ export const Sidebar = () => {
     const [settingsDialogOpen, setSettingsDialogOpen] = useState(false);
     const [settingsTab, setSettingsTab] = useState("account");
     const [logoutDialogOpen, setLogoutDialogOpen] = useState(false);
+    const [supportDialogOpen, setSupportDialogOpen] = useState(false);
     const [isCollapsed, setIsCollapsed] = useState(false);
     const [userMenuOpen, setUserMenuOpen] = useState(false);
     const hoverTimeoutRef = useRef(null);
@@ -69,6 +73,14 @@ export const Sidebar = () => {
                         <div className={`user-menu-item ${settingsDialogOpen ? 'active' : ''}`} onClick={() => { setSettingsDialogOpen(true); setUserMenuOpen(false); }}>
                             <Icon path={mdiCog} className="menu-icon" /><span className="menu-label">{t('common.sidebar.settings')}</span>
                         </div>
+                        <div className="user-menu-separator" />
+                        <div className="user-menu-item star" onClick={() => { openExternalUrl(GITHUB_URL); setUserMenuOpen(false); }}>
+                            <Icon path={mdiStarOutline} className="menu-icon" /><span className="menu-label">{t('common.sidebar.starOnGitHub')}</span>
+                        </div>
+                        <div className={`user-menu-item support ${supportDialogOpen ? 'active' : ''}`} onClick={() => { setSupportDialogOpen(true); setUserMenuOpen(false); }}>
+                            <Icon path={mdiLifebuoy} className="menu-icon" /><span className="menu-label">{t('common.sidebar.support')}</span>
+                        </div>
+                        <div className="user-menu-separator" />
                         <div className="user-menu-item danger" onClick={() => { setLogoutDialogOpen(true); setUserMenuOpen(false); }}>
                             <Icon path={mdiLogout} className="menu-icon" /><span className="menu-label">{t('common.sidebar.logout')}</span>
                         </div>
@@ -77,5 +89,6 @@ export const Sidebar = () => {
             </div>
         </div>
         <SettingsDialog open={settingsDialogOpen} onClose={() => setSettingsDialogOpen(false)} initialTab={settingsTab} />
+        <SupportDialog open={supportDialogOpen} onClose={() => setSupportDialogOpen(false)} />
     </>);
 };

@@ -13,6 +13,7 @@
     "decompress": "^4.2.1",
     "express": "^5.2.1",
     "express-jsdoc-swagger": "^1.8.0",
+    "express-rate-limit": "^8.2.1",
     "express-ws": "^5.0.2",
     "joi": "^18.0.2",
     "js-yaml": "^4.1.1",

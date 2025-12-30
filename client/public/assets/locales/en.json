@@ -20,7 +20,14 @@
       "download": "Download",
       "close": "Close",
       "maximize": "Maximize",
-      "restore": "Restore"
+      "restore": "Restore",
+      "back": "Back"
+    },
+    "iconChooser": {
+      "searchIcons": "Search icons...",
+      "searchResults": "Search Results",
+      "popularIcons": "Popular Icons",
+      "noResults": "No icons found"
     },
     "labels": {
       "username": "Username",
@@ -51,6 +58,53 @@
       "signInWithPasskey": "Sign in with Passkey",
       "authenticating": "Authenticating..."
     },
+    "deviceLink": {
+      "title": "Link Device",
+      "description": "Enter the code shown on your device to authorize it to access your account.",
+      "codeLabel": "Device Code",
+      "continue": "Continue",
+      "verifying": "Verifying...",
+      "confirmTitle": "Authorize Device",
+      "confirmDescription": "A device is requesting access to your account. Please verify the details below.",
+      "deviceInfo": "Device Information",
+      "type": "Type",
+      "ipAddress": "IP Address",
+      "userAgent": "Device",
+      "authorize": "Authorize Device",
+      "authorizing": "Authorizing...",
+      "deny": "Deny",
+      "invalidCode": "Invalid or expired code",
+      "authorizationFailed": "Authorization failed",
+      "deviceAuthorized": "Device authorized successfully",
+      "successTitle": "Device Authorized",
+      "successMessage": "You can close this tab and return to the app.",
+      "clientTypes": {
+        "mobile": "Mobile App",
+        "connector": "Desktop Connector"
+      }
+    },
+    "connectorSetup": {
+      "title": "Nexterm Connector",
+      "serverUrl": "Server URL",
+      "serverUrlDescription": "Enter the URL of your Nexterm server to connect.",
+      "connect": "Connect",
+      "connecting": "Connecting...",
+      "enterServerUrl": "Please enter a server URL",
+      "connectionFailed": "Failed to connect to server. Please check the URL.",
+      "deviceLinkingNotSupported": "This server does not support device linking. Please update your Nexterm server.",
+      "authMethodDescription": "Choose how you want to authenticate with the server.",
+      "showCode": "Show Code",
+      "showCodeDesc": "Display a code to enter manually on the web interface",
+      "openBrowser": "Authorize",
+      "openBrowserDesc": "Open your browser to authorize automatically",
+      "enterCodeDescription": "Enter this code on the Nexterm web interface to authorize this device.",
+      "copyCode": "Copy Code",
+      "codeCopied": "Code copied to clipboard",
+      "copyFailed": "Failed to copy code",
+      "waitingForAuth": "Waiting for authorization...",
+      "codeCreationFailed": "Failed to create device code",
+      "authSuccess": "Successfully authenticated!"
+    },
     "selectBox": {
       "defaultOption": "Select an option...",
       "search": "Search...",
@@ -66,7 +120,8 @@
       "logout": "Logout",
       "collapseTitle": "Collapse Sidebar",
       "logoutConfirmText": "This will log you out of the {{username}} account. Are you sure?",
-      "navigationConfirmText": "You have active sessions. Navigating away will disconnect you from all servers. Are you sure?"
+      "starOnGitHub": "Star on GitHub",
+      "support": "Support"
     },
     "quickAction": {
       "placeholder": "Search servers, snippets, or navigate...",
@@ -1581,6 +1636,41 @@
       "updateFailed": "Failed to update server",
       "createIdentityFailed": "Failed to create identity",
       "updateIdentityFailed": "Failed to update identity"
+    }
+  },
+  "support": {
+    "title": "Get Support",
+    "subtitle": "Need help or want to contribute?",
+    "footer": "Thank you for using Nexterm!",
+    "issues": {
+      "title": "Report an Issue",
+      "description": "Found a bug or have a feature request?"
+    },
+    "discord": {
+      "title": "Join Discord",
+      "description": "Chat with the community and get help."
+    },
+    "github": {
+      "title": "View on GitHub",
+      "description": "Browse source code and contribute."
+    }
+  },
+  "welcome": {
+    "subtitle": "Welcome to Nexterm. The open-source server manager for SSH, VNC and RDP.",
+    "downloadApps": "Download Apps",
+    "connectDevice": "Connect Device",
+    "recentConnections": "Recent Connections",
+    "getStarted": "Get Started",
+    "getStartedHint": "Add a server from the sidebar to begin managing your infrastructure."
+  },
+  "downloadApps": {
+    "title": "Download Apps",
+    "subtitle": "Get Nexterm on your devices",
+    "platforms": {
+      "windows": "Windows",
+      "macos": "macOS",
+      "linux": "Linux",
+      "android": "Android"
     }
   }
 }
