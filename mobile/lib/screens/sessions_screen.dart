@@ -75,20 +75,14 @@ class _SessionsScreenState extends State<SessionsScreen> {
     }
   }
 
-  IconData _getDeviceIcon(String? userAgent) {
-    if (userAgent == null) return MdiIcons.devices;
-    final ua = userAgent.toLowerCase();
-    if (ua.contains('mobile') ||
-        ua.contains('android') ||
-        ua.contains('iphone')) {
-      return MdiIcons.cellphone;
-    } else if (ua.contains('tablet') || ua.contains('ipad')) {
-      return MdiIcons.tablet;
-    } else if (ua.contains('mac') ||
-        ua.contains('windows') ||
-        ua.contains('linux')) {
-      return MdiIcons.laptop;
-    }
+  IconData _getDeviceIcon(String? ua) {
+    if (ua == null) return MdiIcons.devices;
+    if (ua.startsWith('NextermConnector/')) return MdiIcons.application;
+    if (ua.startsWith('NextermMobile/')) return MdiIcons.cellphoneLink;
+    final l = ua.toLowerCase();
+    if (l.contains('mobile') || l.contains('android') || l.contains('iphone')) return MdiIcons.cellphone;
+    if (l.contains('tablet') || l.contains('ipad')) return MdiIcons.tablet;
+    if (l.contains('mac') || l.contains('windows') || l.contains('linux')) return MdiIcons.laptop;
     return MdiIcons.devices;
   }
 
@@ -110,29 +104,23 @@ class _SessionsScreenState extends State<SessionsScreen> {
     }
   }
 
-  String _shortenUserAgent(String? userAgent) {
-    if (userAgent == null) return 'Unknown Device';
-
-    if (userAgent.contains('Chrome')) {
-      if (userAgent.contains('Windows')) return 'Chrome on Windows';
-      if (userAgent.contains('Mac')) return 'Chrome on Mac';
-      if (userAgent.contains('Linux')) return 'Chrome on Linux';
-      if (userAgent.contains('Android')) return 'Chrome on Android';
-      return 'Chrome';
-    } else if (userAgent.contains('Firefox')) {
-      if (userAgent.contains('Windows')) return 'Firefox on Windows';
-      if (userAgent.contains('Mac')) return 'Firefox on Mac';
-      if (userAgent.contains('Linux')) return 'Firefox on Linux';
-      return 'Firefox';
-    } else if (userAgent.contains('Safari') && !userAgent.contains('Chrome')) {
-      if (userAgent.contains('iPhone')) return 'Safari on iPhone';
-      if (userAgent.contains('iPad')) return 'Safari on iPad';
-      if (userAgent.contains('Mac')) return 'Safari on Mac';
-      return 'Safari';
-    } else if (userAgent.contains('Edge')) {
-      return 'Edge';
+  String _shortenUserAgent(String? ua) {
+    if (ua == null) return 'Unknown Device';
+    final conn = RegExp(r'^NextermConnector/([\d.]+)\s*\(([^;]+);').firstMatch(ua);
+    if (conn != null) return 'Nexterm Connector ${conn.group(1)} on ${conn.group(2)?.trim()}';
+    final mobile = RegExp(r'^NextermMobile/([\d.]+)\s*\(([^;)]+)').firstMatch(ua);
+    if (mobile != null) {
+      final p = mobile.group(2)?.trim() ?? '';
+      return 'Nexterm Mobile ${mobile.group(1)} on ${p.isNotEmpty ? p[0].toUpperCase() + p.substring(1) : p}';
     }
-
+    for (final b in ['Chrome', 'Firefox', 'Safari', 'Edge']) {
+      if (ua.contains(b) && (b != 'Safari' || !ua.contains('Chrome'))) {
+        for (final os in ['Windows', 'Mac', 'Linux', 'Android', 'iPhone', 'iPad']) {
+          if (ua.contains(os)) return '$b on $os';
+        }
+        return b;
+      }
+    }
     return 'Unknown Device';
   }
 
