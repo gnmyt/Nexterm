@@ -3,13 +3,14 @@ import { useContext, useEffect, useState } from "react";
 import { UserContext } from "@/common/contexts/UserContext.jsx";
 import { ServerContext } from "@/common/contexts/ServerContext.jsx";
 import Icon from "@mdi/react";
-import { mdiHistory, mdiPower, mdiPlay, mdiServerNetwork, mdiConnection, mdiFolderOpen, mdiCursorDefaultClick, mdiDownload } from "@mdi/js";
+import { mdiHistory, mdiPower, mdiPlay, mdiServerNetwork, mdiConnection, mdiFolderOpen, mdiCursorDefaultClick, mdiDownload, mdiLinkVariant } from "@mdi/js";
 import { getRequest } from "@/common/utils/RequestUtil";
 import { useTranslation } from "react-i18next";
 import { ContextMenu, ContextMenuItem, useContextMenu } from "@/common/components/ContextMenu";
 import { getIconPath } from "@/common/utils/iconUtils.js";
 import Button from "@/common/components/Button";
 import DownloadAppsDialog from "@/common/components/DownloadAppsDialog";
+import { DeviceLinkDialog } from "@/common/components/DeviceLinkDialog/DeviceLinkDialog.jsx";
 
 const formatTimeAgo = (timestamp) => {
     const diffMins = Math.floor((Date.now() - new Date(timestamp)) / 60000);
@@ -38,6 +39,7 @@ export const WelcomePanel = ({
     const [loading, setLoading] = useState(true);
     const [contextItem, setContextItem] = useState(null);
     const [downloadDialogOpen, setDownloadDialogOpen] = useState(false);
+    const [deviceLinkDialogOpen, setDeviceLinkDialogOpen] = useState(false);
     const contextMenu = useContextMenu();
 
     useEffect(() => {
@@ -84,7 +86,10 @@ export const WelcomePanel = ({
             <div className="welcome-left">
                 <h1>Hi, <span>{user?.firstName || "User"} {user?.lastName || ""}</span>!</h1>
                 <p>{t("welcome.subtitle")}</p>
-                <Button icon={mdiDownload} text={t("welcome.downloadApps")} onClick={() => setDownloadDialogOpen(true)} />
+                <div className="welcome-buttons">
+                    <Button icon={mdiDownload} text={t("welcome.downloadApps")} onClick={() => setDownloadDialogOpen(true)} />
+                    <Button icon={mdiLinkVariant} text={t("welcome.connectDevice")} onClick={() => setDeviceLinkDialogOpen(true)} />
+                </div>
             </div>
 
             <div className="welcome-right">
@@ -152,6 +157,7 @@ export const WelcomePanel = ({
             </ContextMenu>
 
             <DownloadAppsDialog open={downloadDialogOpen} onClose={() => setDownloadDialogOpen(false)} />
+            <DeviceLinkDialog open={deviceLinkDialogOpen} onClose={() => setDeviceLinkDialogOpen(false)} />
         </div>
     );
 };
