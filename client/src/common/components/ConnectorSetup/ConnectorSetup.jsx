@@ -76,13 +76,23 @@ export const ConnectorSetup = ({ open }) => {
             const response = await tauriFetch(`${cleanUrl}/api/service/is-fts`);
             if (!response.ok) throw new Error("Invalid response");
             setActiveServerUrl(cleanUrl);
+        } catch { 
+            sendToast("Error", t("common.connectorSetup.connectionFailed")); 
+            setConnecting(false);
+            return;
+        }
+        
+        try {
             const result = await request("auth/device/create", "POST", { clientType: "connector" });
-            if (result.code && typeof result.code === "number") { sendToast("Error", result.message); return; }
+            if (result.code && typeof result.code === "number") { sendToast("Error", result.message); setConnecting(false); return; }
             setDeviceCode(result.code);
             setDeviceToken(result.token);
             setStep(2);
             setPolling(true);
-        } catch { sendToast("Error", t("common.connectorSetup.connectionFailed")); }
+        } catch (e) { 
+            sendToast("Error", t("common.connectorSetup.deviceLinkingNotSupported")); 
+            setActiveServerUrl(null);
+        }
         finally { setConnecting(false); }
     };
 

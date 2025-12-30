@@ -91,6 +91,7 @@
       "connecting": "Connecting...",
       "enterServerUrl": "Please enter a server URL",
       "connectionFailed": "Failed to connect to server. Please check the URL.",
+      "deviceLinkingNotSupported": "This server does not support device linking. Please update your Nexterm server.",
       "authMethodDescription": "Choose how you want to authenticate with the server.",
       "showCode": "Show Code",
       "showCodeDesc": "Display a code to enter manually on the web interface",
