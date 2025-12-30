@@ -110,6 +110,21 @@
       "search": "Buscar...",
       "noResults": "No se han encontrado resultados"
     },
+    "userSearch": {
+      "placeholder": "Search for a user..."
+    },
+    "table": {
+      "noData": {
+        "title": "No data found",
+        "subtitle": "There are no items to display."
+      },
+      "pagination": {
+        "showing": "Showing {{start}} to {{end}} of {{total}}",
+        "previous": "Previous",
+        "next": "Next",
+        "pageInfo": "Page {{current}} of {{total}}"
+      }
+    },
     "sidebar": {
       "settings": "Ajustes",
       "servers": "Servidores",
@@ -649,8 +664,22 @@
     "users": {
       "title": "{{count}} usuarios",
       "createNewUser": "Crear nuevo usuario",
+      "searchPlaceholder": "Search users...",
       "twoFactorEnabled": "2FA activado",
       "twoFactorDisabled": "2FA desactivado",
+      "noUsers": "No Users Found",
+      "noUsersDescription": "Create a new user to get started.",
+      "noSearchResults": "No Users Found",
+      "noSearchResultsDescription": "Try adjusting your search query.",
+      "table": {
+        "user": "User",
+        "role": "Role",
+        "twoFactor": "2FA"
+      },
+      "roles": {
+        "admin": "Admin",
+        "user": "User"
+      },
       "contextMenu": {
         "changePassword": "Cambiar contraseña",
         "promoteToAdmin": "Ascender a admin",
