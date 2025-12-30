@@ -1694,7 +1694,8 @@
       "windows": "Windows",
       "macos": "macOS",
       "linux": "Linux",
-      "android": "Android"
+      "android": "Android",
+      "ios": "iOS"
     }
   }
 }
