@@ -20,6 +20,7 @@ tauri = { version = "2.9.5", features = [] }
 tauri-plugin-http = { version = "2", default-features = false, features = ["charset", "cookies", "http2", "gzip", "native-tls"] }
 tauri-plugin-dialog = "2"
 tauri-plugin-fs = "2"
+tauri-plugin-shell = "2"
 tokio = { version = "1", features = ["full"] }
 tokio-tungstenite = { version = "0.24", features = ["native-tls"] }
 futures-util = "0.3"

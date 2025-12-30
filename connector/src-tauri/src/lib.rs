@@ -93,6 +93,7 @@ pub fn run() {
         .plugin(tauri_plugin_http::init())
         .plugin(tauri_plugin_dialog::init())
         .plugin(tauri_plugin_fs::init())
+        .plugin(tauri_plugin_shell::init())
         .manage(tunnel_manager)
         .invoke_handler(tauri::generate_handler![
             open_popout,
