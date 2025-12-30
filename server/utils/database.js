@@ -3,7 +3,9 @@ const logger = require('./logger');
 
 const STORAGE_PATH = `data/nexterm.db`;
 
-Sequelize.DATE.prototype._stringify = () => new Date().toISOString();
+Sequelize.DATE.prototype._stringify = function(date) {
+    return (date instanceof Date ? date : new Date(date)).toISOString();
+};
 
 const getCallerFromStack = () => {
     const originalPrepare = Error.prepareStackTrace;
