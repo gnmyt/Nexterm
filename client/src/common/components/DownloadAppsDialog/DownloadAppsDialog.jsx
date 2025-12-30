@@ -1,7 +1,7 @@
 import "./styles.sass";
 import { DialogProvider } from "@/common/components/Dialog";
 import Icon from "@mdi/react";
-import { mdiMicrosoftWindows, mdiApple, mdiLinux, mdiAndroid, mdiDownload, mdiLoading, mdiGooglePlay } from "@mdi/js";
+import { mdiMicrosoftWindows, mdiApple, mdiLinux, mdiAndroid, mdiDownload, mdiLoading, mdiGooglePlay, mdiAppleIos } from "@mdi/js";
 import { useTranslation } from "react-i18next";
 import { useEffect, useState } from "react";
 import { getRequest } from "@/common/utils/RequestUtil.js";
@@ -47,10 +47,20 @@ const PLATFORMS = [
             { label: "APK", arch: "x64", file: "x86_64" },
         ],
     },
+    {
+        id: "ios",
+        icon: mdiAppleIos,
+        useVersionInFilename: true,
+        downloads: [
+            { label: "App Store", arch: "Soon", icon: mdiApple, disabled: true },
+            { label: "IPA", arch: "Universal", file: "ipa" },
+        ],
+    },
 ];
 
 const detectPlatform = () => {
     const ua = navigator.userAgent.toLowerCase();
+    if (ua.includes("iphone") || ua.includes("ipad")) return "ios";
     if (ua.includes("android")) return "android";
     if (ua.includes("win")) return "windows";
     if (ua.includes("mac")) return "macos";
@@ -78,6 +88,9 @@ export const DownloadAppsDialog = ({ open, onClose }) => {
     const getDownloadUrl = (platform, download) => {
         if (!version) return null;
         if (platform.useVersionInFilename) {
+            if (platform.id === "ios") {
+                return `${GITHUB_URL}/releases/download/v${version}/nexterm-${version}.ipa`;
+            }
             return `${GITHUB_URL}/releases/download/v${version}/nexterm-${version}-${download.file}.apk`;
         }
         return `${GITHUB_URL}/releases/download/v${version}/${download.file}`;
@@ -132,9 +145,10 @@ export const DownloadAppsDialog = ({ open, onClose }) => {
                                 <div className="downloads-grid">
                                     {currentPlatform.downloads.map(download => (
                                         <button
-                                            key={download.file || download.url}
-                                            className="download-btn"
-                                            onClick={() => handleDownload(currentPlatform, download)}
+                                            key={download.file || download.url || download.label}
+                                            className={`download-btn${download.disabled ? " disabled" : ""}`}
+                                            onClick={() => !download.disabled && handleDownload(currentPlatform, download)}
+                                            disabled={download.disabled}
                                         >
                                             <Icon path={download.icon || mdiDownload} className="btn-icon" />
                                             <div className="btn-text">

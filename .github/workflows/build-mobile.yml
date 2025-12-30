@@ -139,3 +139,61 @@ jobs:
           asset_path: mobile/build/app/outputs/flutter-apk/nexterm-${{ inputs.version }}-universal.apk
           asset_name: nexterm-${{ inputs.version }}-universal.apk
           asset_content_type: application/vnd.android.package-archive
+
+  build-ios:
+    name: "iOS IPA"
+    runs-on: macos-latest
+
+    steps:
+      - name: Checkout project
+        uses: actions/checkout@v4
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: "3.32.2"
+          channel: "stable"
+
+      - name: Update pubspec.yaml version
+        run: |
+          sed -i '' "s/^version: .*/version: ${{ inputs.semver }}+${{ github.run_number }}/" mobile/pubspec.yaml
+          sed -i '' "s/sdk: \^3.9.2/sdk: ^3.8.0/" mobile/pubspec.yaml
+
+      - name: Install dependencies
+        working-directory: mobile
+        run: flutter pub get
+
+      - name: Install CocoaPods dependencies
+        working-directory: mobile/ios
+        run: pod install
+
+      - name: Import Code-Signing Certificates
+        uses: apple-actions/import-codesign-certs@v3
+        with:
+          p12-file-base64: ${{ secrets.IOS_CERTIFICATE_BASE64 }}
+          p12-password: ${{ secrets.IOS_CERTIFICATE_PASSWORD }}
+
+      - name: Install Provisioning Profile
+        run: |
+          mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
+          echo "${{ secrets.IOS_PROVISIONING_PROFILE_BASE64 }}" | base64 -d > ~/Library/MobileDevice/Provisioning\ Profiles/profile.mobileprovision
+
+      - name: Build iOS IPA
+        working-directory: mobile
+        run: |
+          flutter build ipa --release --export-options-plist=ios/ExportOptions.plist
+
+      - name: Rename IPA
+        run: |
+          mv mobile/build/ios/ipa/*.ipa \
+             mobile/build/ios/ipa/nexterm-${{ inputs.version }}.ipa
+
+      - name: Upload IPA to Release
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ inputs.upload_url }}
+          asset_path: mobile/build/ios/ipa/nexterm-${{ inputs.version }}.ipa
+          asset_name: nexterm-${{ inputs.version }}.ipa
+          asset_content_type: application/octet-stream
