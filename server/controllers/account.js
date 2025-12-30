@@ -154,6 +154,28 @@ module.exports.getFTSStatus = async () => {
     return await Account.count() === 0;
 };
 
+module.exports.searchUsers = async (search = "") => {
+    if (!search || search.trim().length < 3) {
+        return { users: [] };
+    }
+
+    const searchTerm = `%${search.trim()}%`;
+    const users = await Account.findAll({
+        where: {
+            [Op.or]: [
+                { username: { [Op.like]: searchTerm } },
+                { firstName: { [Op.like]: searchTerm } },
+                { lastName: { [Op.like]: searchTerm } },
+            ],
+        },
+        attributes: ["id", "username", "firstName", "lastName", "role"],
+        limit: 5,
+        order: [["username", "ASC"]],
+    });
+
+    return { users };
+};
+
 module.exports.listUsers = async (options = {}) => {
     const { search = "", limit = 50, offset = 0 } = options;
 
