@@ -1,0 +1,64 @@
+@use "@/common/styles/colors"
+@use "@/common/styles/linking"
+
+.connector-setup
+    display: flex
+    flex-direction: column
+    align-items: center
+    gap: 1rem
+    user-select: none
+    width: 300px
+
+.connector-form
+    display: flex
+    flex-direction: column
+    gap: 0.75rem
+    width: 100%
+
+    .form-group
+        @extend .linking-form-group
+
+.connector-code-step
+    display: flex
+    flex-direction: column
+    align-items: center
+    gap: 1rem
+    width: 100%
+
+.code-display
+    display: flex
+    align-items: center
+    justify-content: center
+    gap: 0.75rem
+    background: colors.$dark-gray
+    padding: 1rem 1.25rem
+    border-radius: 10px
+    width: 100%
+    box-sizing: border-box
+    cursor: pointer
+    transition: background 0.2s ease
+    
+    &:hover
+        background: colors.$gray
+    
+    .code-value
+        font-family: monospace
+        font-size: 1.5rem
+        font-weight: 700
+        letter-spacing: 0.15em
+        color: colors.$primary
+    
+    .code-copy
+        background: transparent
+        border: none
+        cursor: pointer
+        padding: 0.4rem
+        border-radius: 6px
+        color: colors.$subtext
+        transition: all 0.2s ease
+        display: flex
+        align-items: center
+        justify-content: center
+        
+        &:hover
+            color: colors.$white
