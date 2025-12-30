@@ -1,7 +1,6 @@
 import { useState, useMemo, useCallback } from "react";
 import Icon from "@mdi/react";
 import {
-    mdiChevronLeft,
     mdiChevronRight,
     mdiInformationOutline,
     mdiCalendarClock,
@@ -10,7 +9,7 @@ import {
     mdiWeb,
     mdiPlayCircleOutline,
 } from "@mdi/js";
-import Button from "@/common/components/Button";
+import PaginatedTable from "@/common/components/PaginatedTable";
 import RecordingPlayer from "../RecordingPlayer";
 import { useTranslation } from "react-i18next";
 import "./styles.sass";
@@ -64,9 +63,6 @@ export const AuditTable = ({ logs, loading, pagination, onPageChange, getIconFor
         );
     }, []);
 
-    const totalPages = useMemo(() => Math.ceil(pagination.total / pagination.itemsPerPage),
-        [pagination.total, pagination.itemsPerPage]);
-
     const handleRowClick = useCallback((logId) => {
         setExpandedRow(prev => prev === logId ? null : logId);
     }, []);
@@ -83,181 +79,160 @@ export const AuditTable = ({ logs, loading, pagination, onPageChange, getIconFor
         setPlayingRecording(null);
     }, []);
 
-    if (logs.length === 0 && !loading) {
+    const columns = useMemo(() => [
+        {
+            key: "timestamp",
+            label: t('audit.table.headers.timestamp'),
+            icon: mdiCalendarClock,
+            className: "timestamp",
+        },
+        {
+            key: "action",
+            label: t('audit.table.headers.action'),
+            className: "action",
+        },
+        {
+            key: "actor",
+            label: t('audit.table.headers.actor'),
+            icon: mdiAccountCircleOutline,
+            className: "actor",
+        },
+        {
+            key: "resource",
+            label: t('audit.table.headers.resource'),
+            className: "resource",
+        },
+        {
+            key: "organization",
+            label: t('audit.table.headers.organization'),
+            icon: mdiDomain,
+            className: "organization",
+        },
+        {
+            key: "details",
+            label: t('audit.table.headers.details'),
+            icon: mdiInformationOutline,
+            className: "details",
+        },
+    ], [t]);
+
+    const renderRow = useCallback((log) => {
+        const timestamp = formatTimestamp(log.timestamp);
+        const isExpanded = expandedRow === log.id;
+
         return (
-            <div className="audit-table-container">
-                <div className="no-logs">
-                    <Icon path={mdiInformationOutline} />
-                    <h3>{t('audit.table.noLogs.title')}</h3>
-                    <p>{t('audit.table.noLogs.subtitle')}</p>
+            <div key={log.id} className="table-row">
+                <div className="row-main" onClick={() => handleRowClick(log.id)}>
+                    <div className="cell timestamp" data-label="Timestamp">
+                        <div className="timestamp-content">
+                            <span className="date">{timestamp.date}</span>
+                            <span className="time">{timestamp.time}</span>
+                        </div>
+                    </div>
+
+                    <div className="cell action" data-label="Action">
+                        <div className="action-content">
+                            <Icon path={getIconForAction(log.action)} />
+                            <span className={`action-badge ${getActionBadgeColor(log.action)}`}>
+                                {formatAction(log.action)}
+                            </span>
+                        </div>
+                    </div>
+
+                    <div className="cell actor" data-label="Actor">
+                        <div className="actor-info">
+                            <span className="actor-name">
+                                {log.actorFirstName && log.actorLastName
+                                    ? `${log.actorFirstName} ${log.actorLastName}`
+                                    : t('audit.table.badges.user', { id: log.accountId })
+                                }
+                            </span>
+                            {log.ipAddress && (
+                                <span className="actor-ip">{log.ipAddress}</span>
+                            )}
+                        </div>
+                    </div>
+
+                    <div className="cell resource" data-label="Resource">
+                        {log.resource && (
+                            <span className="resource-badge">
+                                {log.resource}
+                                {log.resourceId && ` #${log.resourceId}`}
+                            </span>
+                        )}
+                    </div>
+
+                    <div className="cell organization" data-label="Organization">
+                        {log.organizationId ? (
+                            <span className="org-badge">
+                                {log.organizationName || t('audit.table.badges.organization', { id: log.organizationId })}
+                            </span>
+                        ) : (
+                            <span className="personal-badge">{t('audit.table.badges.personal')}</span>
+                        )}
+                    </div>
+
+                    <div className="cell details" data-label="Details">
+                        {log.details?.hasRecording && (
+                            <button
+                                className="play-recording-btn"
+                                onClick={(e) => handlePlayRecording(e, log)}
+                            >
+                                <Icon path={mdiPlayCircleOutline} size={0.9} />
+                            </button>
+                        )}
+                        <Icon path={mdiChevronRight}
+                              className={`expand-icon ${isExpanded ? "expanded" : ""}`} />
+                    </div>
                 </div>
+
+                {isExpanded && (
+                    <div className="row-expanded">
+                        <div className="expanded-content">
+                            {log.reason && (
+                                <div className="reason-section">
+                                    <h4>{t('audit.table.expandedDetails.connectionReason')}</h4>
+                                    <p>{log.reason}</p>
+                                </div>
+                            )}
+
+                            {log.userAgent && (
+                                <div className="user-agent-section">
+                                    <h4>{t('audit.table.expandedDetails.userAgent')}</h4>
+                                    <p><Icon path={mdiWeb} /> {log.userAgent}</p>
+                                </div>
+                            )}
+
+                            {log.details && (
+                                <div className="details-section">
+                                    <h4>{t('audit.table.expandedDetails.additionalDetails')}</h4>
+                                    {renderDetails(log.details)}
+                                </div>
+                            )}
+                        </div>
+                    </div>
+                )}
             </div>
         );
-    }
+    }, [expandedRow, formatTimestamp, formatAction, getActionBadgeColor, getIconForAction, handleRowClick, handlePlayRecording, renderDetails, t]);
 
     return (
-        <div className="audit-table-container">
-            <div className="audit-table">
-                <div className="table-header">
-                    <div className="header-cell timestamp">
-                        <Icon path={mdiCalendarClock} />
-                        <span>{t('audit.table.headers.timestamp')}</span>
-                    </div>
-                    <div className="header-cell action">{t('audit.table.headers.action')}</div>
-                    <div className="header-cell actor">
-                        <Icon path={mdiAccountCircleOutline} />
-                        <span>{t('audit.table.headers.actor')}</span>
-                    </div>
-                    <div className="header-cell resource">{t('audit.table.headers.resource')}</div>
-                    <div className="header-cell organization">
-                        <Icon path={mdiDomain} />
-                        <span>{t('audit.table.headers.organization')}</span>
-                    </div>
-                    <div className="header-cell details">
-                        <Icon path={mdiInformationOutline} />
-                        <span>{t('audit.table.headers.details')}</span>
-                    </div>
-                </div>
-
-                <div className="table-body">
-                    {logs.map((log) => {
-                        const timestamp = formatTimestamp(log.timestamp);
-                        const isExpanded = expandedRow === log.id;
-
-                        return (
-                            <div key={log.id} className="table-row">
-                                <div className="row-main" onClick={() => handleRowClick(log.id)}>
-                                    <div className="cell timestamp" data-label="Timestamp">
-                                        <div className="timestamp-content">
-                                            <span className="date">{timestamp.date}</span>
-                                            <span className="time">{timestamp.time}</span>
-                                        </div>
-                                    </div>
-
-                                    <div className="cell action" data-label="Action">
-                                        <div className="action-content">
-                                            <Icon path={getIconForAction(log.action)} />
-                                            <span className={`action-badge ${getActionBadgeColor(log.action)}`}>
-                                                {formatAction(log.action)}
-                                            </span>
-                                        </div>
-                                    </div>
-
-                                    <div className="cell actor" data-label="Actor">
-                                        <div className="actor-info">
-                                            <span className="actor-name">
-                                                {log.actorFirstName && log.actorLastName
-                                                    ? `${log.actorFirstName} ${log.actorLastName}`
-                                                    : t('audit.table.badges.user', { id: log.accountId })
-                                                }
-                                            </span>
-                                            {log.ipAddress && (
-                                                <span className="actor-ip">{log.ipAddress}</span>
-                                            )}
-                                        </div>
-                                    </div>
-
-                                    <div className="cell resource" data-label="Resource">
-                                        {log.resource && (
-                                            <span className="resource-badge">
-                                                {log.resource}
-                                                {log.resourceId && ` #${log.resourceId}`}
-                                            </span>
-                                        )}
-                                    </div>
-
-                                    <div className="cell organization" data-label="Organization">
-                                        {log.organizationId ? (
-                                            <span className="org-badge">
-                                                {log.organizationName || t('audit.table.badges.organization', { id: log.organizationId })}
-                                            </span>
-                                        ) : (
-                                            <span className="personal-badge">{t('audit.table.badges.personal')}</span>
-                                        )}
-                                    </div>
-
-                                    <div className="cell details" data-label="Details">
-                                        {log.details?.hasRecording && (
-                                            <button
-                                                className="play-recording-btn"
-                                                onClick={(e) => handlePlayRecording(e, log)}
-                                            >
-                                                <Icon path={mdiPlayCircleOutline} size={0.9} />
-                                            </button>
-                                        )}
-                                        <Icon path={mdiChevronRight}
-                                              className={`expand-icon ${isExpanded ? "expanded" : ""}`} />
-                                    </div>
-                                </div>
-
-                                {isExpanded && (
-                                    <div className="row-expanded">
-                                        <div className="expanded-content">
-                                            {log.reason && (
-                                                <div className="reason-section">
-                                                    <h4>{t('audit.table.expandedDetails.connectionReason')}</h4>
-                                                    <p>{log.reason}</p>
-                                                </div>
-                                            )}
-
-                                            {log.userAgent && (
-                                                <div className="user-agent-section">
-                                                    <h4>{t('audit.table.expandedDetails.userAgent')}</h4>
-                                                    <p><Icon path={mdiWeb} /> {log.userAgent}</p>
-                                                </div>
-                                            )}
-
-                                            {log.details && (
-                                                <div className="details-section">
-                                                    <h4>{t('audit.table.expandedDetails.additionalDetails')}</h4>
-                                                    {renderDetails(log.details)}
-                                                </div>
-                                            )}
-                                        </div>
-                                    </div>
-                                )}
-                            </div>
-                        );
-                    })}
-                </div>
-            </div>
-
-            {logs.length > 0 && (
-                <div className="pagination">
-                    <div className="pagination-info">
-                        {t('audit.pagination.showing', {
-                            start: ((pagination.currentPage - 1) * pagination.itemsPerPage) + 1,
-                            end: Math.min(pagination.currentPage * pagination.itemsPerPage, pagination.total),
-                            total: pagination.total
-                        })}
-                    </div>
-
-                    <div className="pagination-controls">
-                        <Button
-                            text={t('audit.pagination.previous')}
-                            icon={mdiChevronLeft}
-                            onClick={() => onPageChange(pagination.currentPage - 1)}
-                            disabled={pagination.currentPage <= 1}
-                            type="secondary"
-                        />
-
-                        <span className="page-info">
-                            {t('audit.pagination.pageInfo', {
-                                current: pagination.currentPage,
-                                total: totalPages
-                            })}
-                        </span>
-
-                        <Button
-                            text={t('audit.pagination.next')}
-                            icon={mdiChevronRight}
-                            onClick={() => onPageChange(pagination.currentPage + 1)}
-                            disabled={pagination.currentPage >= totalPages}
-                            type="secondary"
-                        />
-                    </div>
-                </div>
-            )}
+        <>
+            <PaginatedTable
+                data={logs}
+                columns={columns}
+                pagination={pagination}
+                onPageChange={onPageChange}
+                renderRow={renderRow}
+                getRowKey={(log) => log.id}
+                loading={loading}
+                emptyState={{
+                    icon: mdiInformationOutline,
+                    title: t('audit.table.noLogs.title'),
+                    subtitle: t('audit.table.noLogs.subtitle'),
+                }}
+                className="audit-table-wrapper"
+            />
 
             {playingRecording && (
                 <RecordingPlayer
@@ -266,6 +241,6 @@ export const AuditTable = ({ logs, loading, pagination, onPageChange, getIconFor
                     onClose={handleCloseRecording}
                 />
             )}
-        </div>
+        </>
     );
 };
