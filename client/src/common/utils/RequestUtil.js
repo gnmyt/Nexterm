@@ -1,5 +1,18 @@
 import { isTauri, getActiveServerUrl } from "@/common/utils/TauriUtil.js";
 
+let cachedUserAgent = null;
+
+const getTauriUserAgent = async () => {
+    if (cachedUserAgent) return cachedUserAgent;
+    try {
+        const { invoke } = await import("@tauri-apps/api/core");
+        cachedUserAgent = await invoke("get_user_agent");
+        return cachedUserAgent;
+    } catch {
+        return "NextermConnector/1.0.0";
+    }
+};
+
 export const tauriDownload = async (url, defaultFileName, options = {}) => {
     const { save } = await import("@tauri-apps/plugin-dialog");
     const { writeFile } = await import("@tauri-apps/plugin-fs");
@@ -8,7 +21,9 @@ export const tauriDownload = async (url, defaultFileName, options = {}) => {
     const filePath = await save({ defaultPath: defaultFileName, title: "Save File", ...options });
     if (!filePath) return null;
     
-    const response = await tFetch(url, options.fetchOptions || { method: "GET" });
+    const userAgent = await getTauriUserAgent();
+    const fetchOptions = { method: "GET", ...options.fetchOptions, headers: { ...options.fetchOptions?.headers, "User-Agent": userAgent } };
+    const response = await tFetch(url, fetchOptions);
     if (!response.ok) throw new Error(`Download failed: ${response.status}`);
     
     await writeFile(filePath, new Uint8Array(await response.arrayBuffer()));
@@ -25,11 +40,13 @@ const getBaseUrl = () => {
     return "";
 };
 
-const tauriFetch = async (url, options) => {
+const tauriFetch = async (url, options = {}) => {
     if (isTauri()) {
         try {
             const { fetch: tFetch } = await import("@tauri-apps/plugin-http");
-            return tFetch(url, options);
+            const userAgent = await getTauriUserAgent();
+            const headers = { ...options.headers, "User-Agent": userAgent };
+            return tFetch(url, { ...options, headers });
         } catch (e) {
             console.warn("Tauri HTTP plugin not available, falling back to native fetch");
         }
@@ -44,11 +61,12 @@ export const uploadFile = async (url, file, { onProgress, timeout = 300000 } = {
     if (isTauri()) {
         try {
             const { fetch: tFetch } = await import("@tauri-apps/plugin-http");
+            const userAgent = await getTauriUserAgent();
             const arrayBuffer = await file.arrayBuffer();
             
             const response = await tFetch(fullUrl, {
                 method: "POST",
-                headers: { "Content-Type": "application/octet-stream" },
+                headers: { "Content-Type": "application/octet-stream", "User-Agent": userAgent },
                 body: arrayBuffer,
             });
 
