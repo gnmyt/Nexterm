@@ -110,6 +110,21 @@
       "search": "Hledat...",
       "noResults": "Žádné výsledky"
     },
+    "userSearch": {
+      "placeholder": "Search for a user..."
+    },
+    "table": {
+      "noData": {
+        "title": "No data found",
+        "subtitle": "There are no items to display."
+      },
+      "pagination": {
+        "showing": "Showing {{start}} to {{end}} of {{total}}",
+        "previous": "Previous",
+        "next": "Next",
+        "pageInfo": "Page {{current}} of {{total}}"
+      }
+    },
     "sidebar": {
       "settings": "Nastavení",
       "servers": "Servery",
@@ -649,8 +664,22 @@
     "users": {
       "title": "{{count}} uživatelů",
       "createNewUser": "Vytvořit nového uživatele",
+      "searchPlaceholder": "Search users...",
       "twoFactorEnabled": "2FA povoleno",
       "twoFactorDisabled": "2FA zakázáno",
+      "noUsers": "No Users Found",
+      "noUsersDescription": "Create a new user to get started.",
+      "noSearchResults": "No Users Found",
+      "noSearchResultsDescription": "Try adjusting your search query.",
+      "table": {
+        "user": "User",
+        "role": "Role",
+        "twoFactor": "2FA"
+      },
+      "roles": {
+        "admin": "Admin",
+        "user": "User"
+      },
       "contextMenu": {
         "changePassword": "Změnit heslo",
         "promoteToAdmin": "Povýšit na admina",
