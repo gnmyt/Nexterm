@@ -110,6 +110,21 @@
       "search": "بحث...",
       "noResults": "لم يتم العثور على نتائج"
     },
+    "userSearch": {
+      "placeholder": "Search for a user..."
+    },
+    "table": {
+      "noData": {
+        "title": "No data found",
+        "subtitle": "There are no items to display."
+      },
+      "pagination": {
+        "showing": "Showing {{start}} to {{end}} of {{total}}",
+        "previous": "Previous",
+        "next": "Next",
+        "pageInfo": "Page {{current}} of {{total}}"
+      }
+    },
     "sidebar": {
       "settings": "الإعدادات",
       "servers": "الخوادم",
@@ -649,8 +664,22 @@
     "users": {
       "title": "{{count}} مستخدمون",
       "createNewUser": "إنشاء مستخدم جديد",
+      "searchPlaceholder": "Search users...",
       "twoFactorEnabled": "2FA مفعل",
       "twoFactorDisabled": "2FA معطل",
+      "noUsers": "No Users Found",
+      "noUsersDescription": "Create a new user to get started.",
+      "noSearchResults": "No Users Found",
+      "noSearchResultsDescription": "Try adjusting your search query.",
+      "table": {
+        "user": "User",
+        "role": "Role",
+        "twoFactor": "2FA"
+      },
+      "roles": {
+        "admin": "Admin",
+        "user": "User"
+      },
       "contextMenu": {
         "changePassword": "تغيير كلمة المرور",
         "promoteToAdmin": "ترقية إلى مدير",
