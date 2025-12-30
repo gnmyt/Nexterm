@@ -8,6 +8,7 @@ import { useState, useEffect, useContext } from "react";
 import { request } from "@/common/utils/RequestUtil.js";
 import { useToast } from "@/common/contexts/ToastContext.jsx";
 import { useTranslation } from "react-i18next";
+import { tauriFetch } from "@/common/utils/RequestUtil.js";
 import { setActiveServerUrl, getActiveServerUrl, openExternalUrl } from "@/common/utils/TauriUtil.js";
 import { UserContext } from "@/common/contexts/UserContext.jsx";
 import Icon from "@mdi/react";
@@ -72,7 +73,7 @@ export const ConnectorSetup = ({ open }) => {
         setConnecting(true);
         const cleanUrl = serverUrl.trim().replace(/\/$/, "");
         try {
-            const response = await fetch(`${cleanUrl}/api/service/is-fts`);
+            const response = await tauriFetch(`${cleanUrl}/api/service/is-fts`);
             if (!response.ok) throw new Error("Invalid response");
             setActiveServerUrl(cleanUrl);
             const result = await request("auth/device/create", "POST", { clientType: "connector" });

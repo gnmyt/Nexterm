@@ -40,7 +40,7 @@ const getBaseUrl = () => {
     return "";
 };
 
-const tauriFetch = async (url, options = {}) => {
+export const tauriFetch = async (url, options = {}) => {
     if (isTauri()) {
         try {
             const { fetch: tFetch } = await import("@tauri-apps/plugin-http");
