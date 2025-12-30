@@ -1,8 +1,32 @@
 use tauri::{WebviewUrl, WebviewWindowBuilder, Emitter};
+use tauri_plugin_opener::OpenerExt;
 use std::sync::Arc;
 
 mod tunnel;
 use tunnel::{TunnelConfig, TunnelManager, TunnelStatus};
+
+const APP_VERSION: &str = env!("CARGO_PKG_VERSION");
+
+#[tauri::command]
+fn get_user_agent() -> String {
+    let arch = std::env::consts::ARCH;
+    let os_version = os_info::get();
+    
+    format!(
+        "NextermConnector/{} ({} {}; {})",
+        APP_VERSION,
+        os_version.os_type(),
+        os_version.version(),
+        arch
+    )
+}
+
+#[tauri::command]
+async fn open_external_url(app: tauri::AppHandle, url: String) -> Result<(), String> {
+    app.opener()
+        .open_url(&url, None::<&str>)
+        .map_err(|e| e.to_string())
+}
 
 #[tauri::command]
 async fn open_popout(app: tauri::AppHandle, session_id: String) -> Result<(), String> {
@@ -94,14 +118,17 @@ pub fn run() {
         .plugin(tauri_plugin_dialog::init())
         .plugin(tauri_plugin_fs::init())
         .plugin(tauri_plugin_shell::init())
+        .plugin(tauri_plugin_opener::init())
         .manage(tunnel_manager)
         .invoke_handler(tauri::generate_handler![
             open_popout,
             open_tunnel_window,
+            open_external_url,
             start_tunnel,
             stop_tunnel,
             list_tunnels,
-            get_tunnel_status
+            get_tunnel_status,
+            get_user_agent
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
