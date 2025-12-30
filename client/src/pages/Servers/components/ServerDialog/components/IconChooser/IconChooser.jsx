@@ -138,7 +138,7 @@ export const IconChooser = ({ selected, setSelected }) => {
                         <input
                             ref={searchInputRef}
                             type="text"
-                            placeholder={t("common.iconChooser.searchIcons", "Search icons...")}
+                            placeholder={t("common.iconChooser.searchIcons")}
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
                         />
@@ -151,8 +151,8 @@ export const IconChooser = ({ selected, setSelected }) => {
                     
                     <div className="icon-chooser__label">
                         {searchTerm 
-                            ? `${t("common.iconChooser.searchResults", "Search Results")} (${filteredIcons.length})`
-                            : t("common.iconChooser.popularIcons", "Popular Icons")
+                            ? `${t("common.iconChooser.searchResults")} (${filteredIcons.length})`
+                            : t("common.iconChooser.popularIcons")
                         }
                     </div>
 
@@ -170,7 +170,7 @@ export const IconChooser = ({ selected, setSelected }) => {
                             ))
                         ) : (
                             <div className="icon-chooser__empty">
-                                {t("common.iconChooser.noResults", "No icons found")}
+                                {t("common.iconChooser.noResults")}
                             </div>
                         )}
                     </div>

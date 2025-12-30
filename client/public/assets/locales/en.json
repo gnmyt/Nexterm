@@ -20,7 +20,14 @@
       "download": "Download",
       "close": "Close",
       "maximize": "Maximize",
-      "restore": "Restore"
+      "restore": "Restore",
+      "back": "Back"
+    },
+    "iconChooser": {
+      "searchIcons": "Search icons...",
+      "searchResults": "Search Results",
+      "popularIcons": "Popular Icons",
+      "noResults": "No icons found"
     },
     "labels": {
       "username": "Username",
@@ -66,7 +73,8 @@
       "logout": "Logout",
       "collapseTitle": "Collapse Sidebar",
       "logoutConfirmText": "This will log you out of the {{username}} account. Are you sure?",
-      "navigationConfirmText": "You have active sessions. Navigating away will disconnect you from all servers. Are you sure?"
+      "starOnGitHub": "Star on GitHub",
+      "support": "Support"
     },
     "quickAction": {
       "placeholder": "Search servers, snippets, or navigate...",
@@ -1581,6 +1589,40 @@
       "updateFailed": "Failed to update server",
       "createIdentityFailed": "Failed to create identity",
       "updateIdentityFailed": "Failed to update identity"
+    }
+  },
+  "support": {
+    "title": "Get Support",
+    "subtitle": "Need help or want to contribute?",
+    "footer": "Thank you for using Nexterm!",
+    "issues": {
+      "title": "Report an Issue",
+      "description": "Found a bug or have a feature request?"
+    },
+    "discord": {
+      "title": "Join Discord",
+      "description": "Chat with the community and get help."
+    },
+    "github": {
+      "title": "View on GitHub",
+      "description": "Browse source code and contribute."
+    }
+  },
+  "welcome": {
+    "subtitle": "Welcome to Nexterm. The open-source server manager for SSH, VNC and RDP.",
+    "downloadApps": "Download Apps",
+    "recentConnections": "Recent Connections",
+    "getStarted": "Get Started",
+    "getStartedHint": "Add a server from the sidebar to begin managing your infrastructure."
+  },
+  "downloadApps": {
+    "title": "Download Apps",
+    "subtitle": "Get Nexterm on your devices",
+    "platforms": {
+      "windows": "Windows",
+      "macos": "macOS",
+      "linux": "Linux",
+      "android": "Android"
     }
   }
 }

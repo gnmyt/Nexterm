@@ -74,10 +74,10 @@ export const Sidebar = () => {
                         </div>
                         <div className="user-menu-separator" />
                         <div className="user-menu-item star" onClick={() => { window.open(GITHUB_URL, "_blank"); setUserMenuOpen(false); }}>
-                            <Icon path={mdiStarOutline} className="menu-icon" /><span className="menu-label">{t('common.sidebar.starOnGitHub', 'Star on GitHub')}</span>
+                            <Icon path={mdiStarOutline} className="menu-icon" /><span className="menu-label">{t('common.sidebar.starOnGitHub')}</span>
                         </div>
                         <div className={`user-menu-item support ${supportDialogOpen ? 'active' : ''}`} onClick={() => { setSupportDialogOpen(true); setUserMenuOpen(false); }}>
-                            <Icon path={mdiLifebuoy} className="menu-icon" /><span className="menu-label">{t('common.sidebar.support', 'Support')}</span>
+                            <Icon path={mdiLifebuoy} className="menu-icon" /><span className="menu-label">{t('common.sidebar.support')}</span>
                         </div>
                         <div className="user-menu-separator" />
                         <div className="user-menu-item danger" onClick={() => { setLogoutDialogOpen(true); setUserMenuOpen(false); }}>

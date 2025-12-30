@@ -83,8 +83,8 @@ export const WelcomePanel = ({
         <div className="welcome-panel">
             <div className="welcome-left">
                 <h1>Hi, <span>{user?.firstName || "User"} {user?.lastName || ""}</span>!</h1>
-                <p>{t("welcome.subtitle", "Welcome to Nexterm. The open-source server manager for SSH, VNC and RDP.")}</p>
-                <Button icon={mdiDownload} text={t("welcome.downloadApps", "Download Apps")} onClick={() => setDownloadDialogOpen(true)} />
+                <p>{t("welcome.subtitle")}</p>
+                <Button icon={mdiDownload} text={t("welcome.downloadApps")} onClick={() => setDownloadDialogOpen(true)} />
             </div>
 
             <div className="welcome-right">
@@ -96,7 +96,7 @@ export const WelcomePanel = ({
                     <div className="recent-connections">
                         <div className="section-header">
                             <Icon path={mdiHistory} />
-                            <h3>{t("welcome.recentConnections", "Recent Connections")}</h3>
+                            <h3>{t("welcome.recentConnections")}</h3>
                         </div>
                         <div className="recent-list">
                             {recentConnections.map((item, i) => {
@@ -127,8 +127,8 @@ export const WelcomePanel = ({
                 ) : (
                     <div className="empty-state">
                         <Icon path={mdiServerNetwork} />
-                        <h3>{t("welcome.getStarted", "Get Started")}</h3>
-                        <p>{t("welcome.getStartedHint", "Add a server from the sidebar to begin managing your infrastructure.")}</p>
+                        <h3>{t("welcome.getStarted")}</h3>
+                        <p>{t("welcome.getStartedHint")}</p>
                     </div>
                 )}
             </div>
