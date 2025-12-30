@@ -1,0 +1,164 @@
+@use "@/common/styles/colors"
+
+.user-search
+  position: relative
+  width: 100%
+
+  &__input-container
+    position: relative
+    display: flex
+    align-items: center
+
+  &__icon
+    position: absolute
+    left: 0.875rem
+    width: 1.25rem
+    height: 1.25rem
+    color: colors.$subtext
+    pointer-events: none
+
+  &__input
+    width: 100%
+    padding: 0.8rem 2.5rem 0.8rem 2.75rem
+    border: 1px solid colors.$gray
+    background-color: colors.$lighter-background
+    color: colors.$white
+    border-radius: 0.7rem
+    font-size: 14pt
+    outline: none
+    transition: border-color 0.15s ease, background-color 0.15s ease
+
+    @media (max-width: 768px)
+      padding: 0.7rem 2.25rem 0.7rem 2.5rem
+      font-size: 13pt
+
+    &::placeholder
+      color: colors.$subtext
+
+    &:focus
+      border-color: colors.$primary
+      background-color: colors.$dark-gray
+
+    &:disabled
+      opacity: 0.6
+      cursor: not-allowed
+
+  &__clear
+    position: absolute
+    right: 0.75rem
+    display: flex
+    align-items: center
+    justify-content: center
+    background: none
+    border: none
+    cursor: pointer
+    padding: 0.25rem
+    color: colors.$subtext
+    transition: color 0.15s ease
+    border-radius: 0.25rem
+
+    svg
+      width: 1.125rem
+      height: 1.125rem
+
+    &:hover
+      color: colors.$white
+
+  &__dropdown
+    position: fixed
+    background-color: colors.$lighter-background
+    border: 1px solid colors.$dark-gray
+    border-radius: 0.75rem
+    padding: 0.375rem
+    z-index: 10000
+    box-shadow: 0 12px 48px rgba(0, 0, 0, 0.5), 0 4px 16px rgba(0, 0, 0, 0.3)
+    opacity: 0
+    transform: scale(0.95) translateY(-8px)
+    transition: opacity 0.12s cubic-bezier(0.4, 0, 0.2, 1), transform 0.12s cubic-bezier(0.4, 0, 0.2, 1)
+    pointer-events: none
+    max-height: 300px
+    overflow-y: auto
+    scrollbar-width: thin
+    scrollbar-color: colors.$gray colors.$lighter-background
+
+    &.open
+      opacity: 1
+      transform: scale(1) translateY(0)
+      pointer-events: auto
+
+    &::-webkit-scrollbar
+      width: 6px
+
+    &::-webkit-scrollbar-track
+      background: transparent
+
+    &::-webkit-scrollbar-thumb
+      background-color: colors.$gray
+      border-radius: 10px
+
+  &__option
+    display: flex
+    align-items: center
+    gap: 0.75rem
+    padding: 0.625rem 0.75rem
+    cursor: pointer
+    transition: background-color 0.1s ease
+    border-radius: 0.5rem
+    user-select: none
+
+    &:hover,
+    &.highlighted
+      background-color: colors.$gray
+
+    &.highlighted
+      outline: 2px solid colors.$primary
+      outline-offset: -2px
+
+  &__avatar
+    display: flex
+    align-items: center
+    justify-content: center
+    width: 2rem
+    height: 2rem
+    border-radius: 0.375rem
+    background-color: colors.$gray
+    flex-shrink: 0
+
+    svg
+      width: 1.125rem
+      height: 1.125rem
+      color: colors.$subtext
+
+    &.admin
+      background-color: colors.$primary-opacity
+
+      svg
+        color: colors.$primary
+
+  &__user-info
+    display: flex
+    flex-direction: column
+    gap: 0.125rem
+    min-width: 0
+    flex: 1
+
+  &__name
+    font-size: 0.9rem
+    font-weight: 500
+    color: colors.$white
+    white-space: nowrap
+    overflow: hidden
+    text-overflow: ellipsis
+
+  &__username
+    font-size: 0.8rem
+    color: colors.$subtext
+
+  &__role-badge
+    padding: 0.2rem 0.5rem
+    background-color: colors.$primary-opacity
+    color: colors.$primary
+    border-radius: 0.375rem
+    font-size: 0.7rem
+    font-weight: 500
+    flex-shrink: 0
