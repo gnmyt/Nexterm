@@ -1,0 +1,1 @@
+export { SupportDialog as default } from './SupportDialog';
