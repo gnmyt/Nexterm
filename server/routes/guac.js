@@ -157,7 +157,7 @@ module.exports = async (ws, req) => {
             return;
         }
 
-        if (connectionConfig && auditLogId) {
+        if (connectionConfig) {
             connectionConfig.user = user;
             connectionConfig.server = entry;
             connectionConfig.auditLogId = auditLogId;

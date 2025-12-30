@@ -7,12 +7,14 @@ const AuditLog = require("../models/AuditLog");
 const { listFolders } = require("./folder");
 const { hasOrganizationAccess, validateFolderAccess } = require("../utils/permission");
 const { Op } = require("sequelize");
+const Identity = require("../models/Identity");
 const OrganizationMember = require("../models/OrganizationMember");
 const { listIdentities } = require("./identity");
 const { createAuditLog, AUDIT_ACTIONS, RESOURCE_TYPES } = require("./audit");
 const logger = require("../utils/logger");
 const { sendWakeOnLan } = require("../utils/wol");
 const stateBroadcaster = require("../lib/StateBroadcaster");
+const SessionManager = require("../lib/SessionManager");
 
 const validateEntryAccess = async (accountId, entry, errorMessage = "You don't have permission to access this entry") => {
     if (!entry) return { code: 401, message: "Entry does not exist" };
@@ -595,6 +597,34 @@ module.exports.repositionEntry = async (accountId, entryId, { targetId, placemen
         }
 
         await Entry.update(updateData, { where: { id: normalizedEntries[i].id } });
+    }
+
+    const oldOrganizationId = entry.organizationId;
+    if (oldOrganizationId !== targetOrganizationId) {
+        const entryIdentities = await EntryIdentity.findAll({ where: { entryId: entryIdNum } });
+        const identityIds = entryIdentities.map(ei => ei.identityId);
+        
+        if (identityIds.length > 0) {
+            const oldOrgIdentities = await Identity.findAll({
+                where: {
+                    id: { [Op.in]: identityIds },
+                    organizationId: oldOrganizationId,
+                }
+            });
+            
+            const oldOrgIdentityIds = oldOrgIdentities.map(i => i.id);
+            if (oldOrgIdentityIds.length > 0) {
+                await EntryIdentity.destroy({
+                    where: {
+                        entryId: entryIdNum,
+                        identityId: { [Op.in]: oldOrgIdentityIds }
+                    }
+                });
+                logger.info(`Removed ${oldOrgIdentityIds.length} organization identities from entry after move`, { entryId: entryIdNum, oldOrganizationId, targetOrganizationId });
+            }
+        }
+
+        await SessionManager.removeAllByEntryId(entryIdNum);
     }
 
     await createAuditLog({
