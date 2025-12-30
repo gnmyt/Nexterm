@@ -10,39 +10,19 @@ $tablet: 1024px
   .paginated-table .table-body .table-row
     grid-template-columns: 2fr 1fr 1fr 0.5fr !important
 
+  .paginated-table .table-body .table-row .cell
     @media (max-width: $mobile)
-      display: flex
-      flex-direction: column
-      gap: 0.5rem
+      &.user-cell-wrapper::before,
+      &.actions-cell::before
+        display: none
 
-  .paginated-table .table-header
+  .paginated-table .table-body .table-row .cell.actions-cell
+    justify-content: flex-end
+    
     @media (max-width: $mobile)
-      display: none
-
-  .paginated-table .table-body .table-row
-    @media (max-width: $mobile)
-      padding: 0.75rem 0.625rem
-
-      .cell
-        display: flex
-        flex-direction: row
-        align-items: center
-        gap: 0.5rem
-
-        &[data-label]::before
-          content: attr(data-label)
-          font-size: 0.7rem
-          color: colors.$subtext
-          text-transform: uppercase
-          font-weight: 600
-          min-width: 60px
-          flex-shrink: 0
-
-        &.user-cell-wrapper::before
-          display: none
-
-        &.actions-cell::before
-          display: none
+      position: absolute
+      top: 0.625rem
+      right: 0.5rem
 
   .users-header
     display: flex
@@ -231,18 +211,6 @@ $tablet: 1024px
     &.disabled
       background-color: colors.$error-opacity
       color: colors.$error
-
-  .actions-cell
-    justify-content: flex-end
-
-    @media (max-width: $mobile)
-      position: absolute
-      top: 0.625rem
-      right: 0.5rem
-
-  .paginated-table .table-body .table-row
-    @media (max-width: $mobile)
-      position: relative
 
   .menu-trigger
     width: 1.5rem

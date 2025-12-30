@@ -153,6 +153,7 @@ $tablet: 1024px
         flex-direction: column
         gap: 0.5rem
         padding: 0.75rem 0.625rem
+        position: relative
 
       &.clickable
         cursor: pointer
@@ -171,6 +172,17 @@ $tablet: 1024px
 
         @media (max-width: $mobile)
           font-size: 0.85rem
+          flex-direction: row
+          gap: 0.5rem
+
+          &[data-label]:not([data-label=""])::before
+            content: attr(data-label)
+            font-size: 0.7rem
+            color: colors.$subtext
+            text-transform: uppercase
+            font-weight: 600
+            min-width: 60px
+            flex-shrink: 0
 
 .pagination
   display: flex
