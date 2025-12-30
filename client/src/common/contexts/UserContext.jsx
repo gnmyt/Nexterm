@@ -1,5 +1,6 @@
 import { createContext, useEffect, useState } from "react";
 import LoginDialog from "@/common/components/LoginDialog";
+import ConnectorSetup from "@/common/components/ConnectorSetup";
 import { getRequest, postRequest } from "@/common/utils/RequestUtil.js";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useToast } from "@/common/contexts/ToastContext.jsx";
@@ -89,7 +90,11 @@ export const UserProvider = ({ children }) => {
 
     return (
         <UserContext.Provider value={{ updateSessionToken, user, sessionToken, firstTimeSetup, login, logout, overrideToken }}>
-            <LoginDialog open={!sessionToken} />
+            {isConnectorMode ? (
+                <ConnectorSetup open={!sessionToken} />
+            ) : (
+                <LoginDialog open={!sessionToken} />
+            )}
             {children}
         </UserContext.Provider>
     );
