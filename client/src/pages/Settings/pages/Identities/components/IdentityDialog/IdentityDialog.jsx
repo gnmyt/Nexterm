@@ -211,8 +211,8 @@ export const IdentityDialog = ({ open, onClose, identity, organizationId }) => {
                     </div>
 
                     <div className="dialog-actions">
-                        <Button text={t('settings.identities.dialog.actions.cancel')} onClick={handleClose} type="secondary" />
-                        <Button text={isEditing ? t('settings.identities.dialog.actions.update') : t('settings.identities.dialog.actions.create')} type="submit"
+                        <Button text={t('settings.identities.dialog.actions.cancel')} onClick={handleClose} type="secondary" buttonType="button" />
+                        <Button text={isEditing ? t('settings.identities.dialog.actions.update') : t('settings.identities.dialog.actions.create')} buttonType="submit"
                                 disabled={isLoading} />
                     </div>
                 </form>
