@@ -4,6 +4,8 @@ module.exports.createVNCToken = (hostname, port, username, password, options = {
     logger.verbose(`VNC token generated`, { hostname, port });
     const settings = { hostname, port, password, "ignore-cert": true };
 
+    if (username) settings.username = username;
+
     if (options.colorDepth) settings["color-depth"] = options.colorDepth;
     if (options.resizeMethod && options.resizeMethod !== "none") settings["resize-method"] = options.resizeMethod;
 
