@@ -5,16 +5,6 @@ import '../utils/api_client.dart';
 import 'api_config.dart';
 
 class AuthService {
-  Future<LoginResponse> login(String username, String password, {int? totpCode}) async {
-    try {
-      final request = LoginRequest(username: username, password: password, code: totpCode);
-      final response = await ApiClient.post(ApiConfig.login, body: request.toJson());
-      return LoginResponse.fromJson(jsonDecode(response.body), response.statusCode);
-    } catch (e) {
-      return LoginResponse(error: 'Connection failed: $e', statusCode: 0);
-    }
-  }
-
   Future<bool> register(RegisterRequest request) async {
     try {
       final response = await ApiClient.post(ApiConfig.register, body: request.toJson());

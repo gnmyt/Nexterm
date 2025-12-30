@@ -20,6 +20,7 @@ dependencies:
   web_socket_channel: ^3.0.1
   google_fonts: ^6.2.1
   material_design_icons_flutter: ^7.0.7296
+  url_launcher: ^6.2.5
 
 dev_dependencies:
   flutter_test:
