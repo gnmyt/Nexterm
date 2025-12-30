@@ -1,14 +1,3 @@
-class RegisterRequest {
-  final String username;
-  final String password;
-  final String firstName;
-  final String lastName;
-
-  const RegisterRequest({required this.username, required this.password, required this.firstName, required this.lastName});
-
-  Map<String, dynamic> toJson() => {'username': username, 'password': password, 'firstName': firstName, 'lastName': lastName};
-}
-
 class UserInfo {
   final String username;
   final String firstName;
@@ -23,7 +12,7 @@ class UserInfo {
     firstName: json['firstName'] ?? '',
     lastName: json['lastName'] ?? '',
     role: json['role'] ?? 'user',
-    totpEnabled: json['totpEnabled'] ?? false,
+    totpEnabled: json['totpEnabled'] == true || json['totpEnabled'] == 1,
   );
 
   String get fullName => '$firstName $lastName';

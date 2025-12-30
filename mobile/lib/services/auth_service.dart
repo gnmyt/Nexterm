@@ -5,15 +5,6 @@ import '../utils/api_client.dart';
 import 'api_config.dart';
 
 class AuthService {
-  Future<bool> register(RegisterRequest request) async {
-    try {
-      final response = await ApiClient.post(ApiConfig.register, body: request.toJson());
-      return response.statusCode == 200;
-    } catch (_) {
-      return false;
-    }
-  }
-
   Future<bool> logout(String token) async {
     try {
       final response = await ApiClient.post(ApiConfig.logout, body: LogoutRequest(token: token).toJson());
