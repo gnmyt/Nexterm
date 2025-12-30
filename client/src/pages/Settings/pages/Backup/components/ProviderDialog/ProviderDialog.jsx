@@ -13,7 +13,13 @@ export const ProviderDialog = ({ open, onClose, provider, onSaved }) => {
     const { sendToast } = useToast();
     const [type, setType] = useState("local");
     const [name, setName] = useState("");
-    const [config, setConfig] = useState({});
+    const [path, setPath] = useState("");
+    const [url, setUrl] = useState("");
+    const [folder, setFolder] = useState("");
+    const [username, setUsername] = useState("");
+    const [password, setPassword] = useState("");
+    const [share, setShare] = useState("");
+    const [domain, setDomain] = useState("");
     const [saving, setSaving] = useState(false);
 
     const typeOptions = [
@@ -26,7 +32,13 @@ export const ProviderDialog = ({ open, onClose, provider, onSaved }) => {
         if (open) {
             setType(provider?.type || "local");
             setName(provider?.name || "");
-            setConfig(provider?.config || {});
+            setPath(provider?.path || "");
+            setUrl(provider?.url || "");
+            setFolder(provider?.folder || "");
+            setUsername(provider?.username || "");
+            setPassword("");
+            setShare(provider?.share || "");
+            setDomain(provider?.domain || "");
         }
     }, [open, provider]);
 
@@ -34,9 +46,12 @@ export const ProviderDialog = ({ open, onClose, provider, onSaved }) => {
         if (!name) return sendToast(t("common.error"), t("settings.backup.errors.nameRequired"));
         setSaving(true);
         try {
+            const data = { name, type, path, url, folder, username, share, domain };
+            if (password) data.password = password;
+            
             provider
-                ? await patchRequest(`backup/providers/${provider.id}`, { name, type, config })
-                : await postRequest("backup/providers", { name, type, config });
+                ? await patchRequest(`backup/providers/${provider.id}`, data)
+                : await postRequest("backup/providers", data);
             sendToast(t("common.success"), t(provider ? "settings.backup.providerUpdated" : "settings.backup.providerCreated"));
             onSaved();
         } catch (err) {
@@ -45,8 +60,6 @@ export const ProviderDialog = ({ open, onClose, provider, onSaved }) => {
             setSaving(false);
         }
     };
-
-    const updateConfig = (key, value) => setConfig(prev => ({ ...prev, [key]: value }));
 
     return (
         <DialogProvider open={open} onClose={onClose}>
@@ -64,30 +77,30 @@ export const ProviderDialog = ({ open, onClose, provider, onSaved }) => {
                     {type === "local" && (
                         <div className="form-group">
                             <label>{t("settings.backup.localPath")}</label>
-                            <IconInput icon={mdiFolderOpen} value={config.path || ""} setValue={(v) => updateConfig("path", v)} placeholder={t("settings.backup.localPathPlaceholder")} />
+                            <IconInput icon={mdiFolderOpen} value={path} setValue={setPath} placeholder={t("settings.backup.localPathPlaceholder")} />
                         </div>
                     )}
                     {type === "smb" && (
                         <>
                             <div className="form-group">
                                 <label>{t("settings.backup.smbShare")}</label>
-                                <IconInput icon={mdiWeb} value={config.share || ""} setValue={(v) => updateConfig("share", v)} placeholder={t("settings.backup.smbSharePlaceholder")} />
+                                <IconInput icon={mdiWeb} value={share} setValue={setShare} placeholder={t("settings.backup.smbSharePlaceholder")} />
                             </div>
                             <div className="form-group">
                                 <label>{t("settings.backup.smbFolder")}</label>
-                                <IconInput icon={mdiFolderOpen} value={config.folder || ""} setValue={(v) => updateConfig("folder", v)} placeholder={t("settings.backup.smbFolderPlaceholder")} />
+                                <IconInput icon={mdiFolderOpen} value={folder} setValue={setFolder} placeholder={t("settings.backup.smbFolderPlaceholder")} />
                             </div>
                             <div className="form-group">
                                 <label>{t("settings.backup.smbUsername")}</label>
-                                <IconInput icon={mdiAccount} value={config.username || ""} setValue={(v) => updateConfig("username", v)} placeholder={t("settings.backup.smbUsernamePlaceholder")} />
+                                <IconInput icon={mdiAccount} value={username} setValue={setUsername} placeholder={t("settings.backup.smbUsernamePlaceholder")} />
                             </div>
                             <div className="form-group">
                                 <label>{t("settings.backup.smbPassword")}</label>
-                                <IconInput type="password" icon={mdiLock} value={config.password || ""} setValue={(v) => updateConfig("password", v)} placeholder={provider?.config?.hasPassword ? t("settings.backup.passwordUnchanged") : t("settings.backup.smbPasswordPlaceholder")} />
+                                <IconInput type="password" icon={mdiLock} value={password} setValue={setPassword} placeholder={provider?.hasPassword ? t("settings.backup.passwordUnchanged") : t("settings.backup.smbPasswordPlaceholder")} />
                             </div>
                             <div className="form-group">
                                 <label>{t("settings.backup.smbDomain")}</label>
-                                <IconInput icon={mdiWeb} value={config.domain || ""} setValue={(v) => updateConfig("domain", v)} placeholder={t("settings.backup.smbDomainPlaceholder")} />
+                                <IconInput icon={mdiWeb} value={domain} setValue={setDomain} placeholder={t("settings.backup.smbDomainPlaceholder")} />
                             </div>
                         </>
                     )}
@@ -95,19 +108,19 @@ export const ProviderDialog = ({ open, onClose, provider, onSaved }) => {
                         <>
                             <div className="form-group">
                                 <label>{t("settings.backup.webdavUrl")}</label>
-                                <IconInput icon={mdiWeb} value={config.url || ""} setValue={(v) => updateConfig("url", v)} placeholder={t("settings.backup.webdavUrlPlaceholder")} />
+                                <IconInput icon={mdiWeb} value={url} setValue={setUrl} placeholder={t("settings.backup.webdavUrlPlaceholder")} />
                             </div>
                             <div className="form-group">
                                 <label>{t("settings.backup.webdavFolder")}</label>
-                                <IconInput icon={mdiFolderOpen} value={config.folder || ""} setValue={(v) => updateConfig("folder", v)} placeholder={t("settings.backup.webdavFolderPlaceholder")} />
+                                <IconInput icon={mdiFolderOpen} value={folder} setValue={setFolder} placeholder={t("settings.backup.webdavFolderPlaceholder")} />
                             </div>
                             <div className="form-group">
                                 <label>{t("settings.backup.webdavUsername")}</label>
-                                <IconInput icon={mdiAccount} value={config.username || ""} setValue={(v) => updateConfig("username", v)} placeholder={t("settings.backup.webdavUsernamePlaceholder")} />
+                                <IconInput icon={mdiAccount} value={username} setValue={setUsername} placeholder={t("settings.backup.webdavUsernamePlaceholder")} />
                             </div>
                             <div className="form-group">
                                 <label>{t("settings.backup.webdavPassword")}</label>
-                                <IconInput type="password" icon={mdiLock} value={config.password || ""} setValue={(v) => updateConfig("password", v)} placeholder={provider?.config?.hasPassword ? t("settings.backup.passwordUnchanged") : t("settings.backup.webdavPasswordPlaceholder")} />
+                                <IconInput type="password" icon={mdiLock} value={password} setValue={setPassword} placeholder={provider?.hasPassword ? t("settings.backup.passwordUnchanged") : t("settings.backup.webdavPasswordPlaceholder")} />
                             </div>
                         </>
                     )}

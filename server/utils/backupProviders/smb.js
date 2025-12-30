@@ -7,12 +7,12 @@ const escapeShell = (str) => `'${str.replace(/'/g, "'\\''")}'`;
 const sanitizeFilename = (name) => name.replace(/[^a-zA-Z0-9._-]/g, "_");
 
 module.exports = class SmbProvider {
-    constructor(config) {
-        this.share = config.share || "";
-        this.folder = config.folder || "";
-        this.username = config.username || "";
-        this.password = config.password || "";
-        this.domain = config.domain || "";
+    constructor(provider) {
+        this.share = provider.share || "";
+        this.folder = provider.folder || "";
+        this.username = provider.username || "";
+        this.password = provider.password || "";
+        this.domain = provider.domain || "";
     }
 
     buildCommands(cmd) {

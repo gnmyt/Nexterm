@@ -1,11 +1,11 @@
 const { createClient } = require("webdav");
 
 module.exports = class WebdavProvider {
-    constructor(config) {
-        this.url = config.url;
-        this.folder = config.folder || "";
-        this.username = config.username;
-        this.password = config.password;
+    constructor(provider) {
+        this.url = provider.url;
+        this.folder = provider.folder || "";
+        this.username = provider.username;
+        this.password = provider.password;
     }
 
     getClient() {

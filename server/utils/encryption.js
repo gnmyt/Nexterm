@@ -50,26 +50,4 @@ const decrypt = (encrypted, iv, authTag) => {
     return decrypted;
 };
 
-const encryptConfigPassword = (config) => {
-    if (!config?.password) return config;
-    const encrypted = encrypt(config.password);
-    return {
-        ...config,
-        password: undefined,
-        passwordEncrypted: encrypted.encrypted,
-        passwordIV: encrypted.iv,
-        passwordAuthTag: encrypted.authTag,
-    };
-};
-
-const decryptConfigPassword = (config) => {
-    if (!config?.passwordEncrypted) return config;
-    try {
-        const password = decrypt(config.passwordEncrypted, config.passwordIV, config.passwordAuthTag);
-        return { ...config, password };
-    } catch {
-        return config;
-    }
-};
-
-module.exports = { encrypt, decrypt, encryptConfigPassword, decryptConfigPassword };
+module.exports = { encrypt, decrypt };

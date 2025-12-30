@@ -1,35 +1,37 @@
 const BackupSettings = require("../models/BackupSettings");
+const BackupProvider = require("../models/BackupProvider");
 const backupService = require("../utils/backupService");
-const { encrypt, encryptConfigPassword, decryptConfigPassword } = require("../utils/encryption");
 const { v4: uuid } = require("uuid");
 
 const sanitizeProviderForClient = (provider) => ({
-    ...provider,
-    config: {
-        ...provider.config,
-        password: undefined,
-        passwordEncrypted: undefined,
-        passwordIV: undefined,
-        passwordAuthTag: undefined,
-        hasPassword: !!provider.config?.passwordEncrypted,
-    },
+    id: provider.id,
+    name: provider.name,
+    type: provider.type,
+    path: provider.path,
+    url: provider.url,
+    folder: provider.folder,
+    username: provider.username,
+    share: provider.share,
+    domain: provider.domain,
+    hasPassword: !!provider.password,
 });
 
 const getSettings = async () => {
-    let settings = await BackupSettings.findOne();
+    let settings = await BackupSettings.findOne({ raw: false });
     if (!settings) settings = await BackupSettings.create({});
     return settings;
 };
 
 module.exports.getSettings = async () => {
     const settings = await getSettings();
+    const providers = await BackupProvider.findAll();
     return {
-        providers: settings.providers.map(sanitizeProviderForClient),
-        scheduleInterval: settings.scheduleInterval,
-        retention: settings.retention,
-        includeDatabase: settings.includeDatabase,
-        includeRecordings: settings.includeRecordings,
-        includeLogs: settings.includeLogs,
+        providers: providers.map(sanitizeProviderForClient),
+        scheduleInterval: settings.scheduleInterval ?? 0,
+        retention: settings.retention ?? 5,
+        includeDatabase: settings.includeDatabase ?? true,
+        includeRecordings: settings.includeRecordings ?? true,
+        includeLogs: settings.includeLogs ?? false,
     };
 };
 
@@ -52,56 +54,50 @@ module.exports.updateSettings = async (data) => {
 };
 
 module.exports.addProvider = async (data) => {
-    const settings = await getSettings();
-    const providers = [...settings.providers];
-    const encryptedConfig = encryptConfigPassword(data.config);
-    const newProvider = { id: uuid(), type: data.type, name: data.name, config: encryptedConfig };
+    const newProvider = {
+        id: uuid(),
+        type: data.type,
+        name: data.name,
+        path: data.path,
+        url: data.url,
+        folder: data.folder,
+        username: data.username,
+        password: data.password,
+        share: data.share,
+        domain: data.domain,
+    };
 
-    const testProvider = { ...newProvider, config: decryptConfigPassword(encryptedConfig) };
-    await backupService.testProvider(testProvider);
-    providers.push(newProvider);
-
-    await BackupSettings.update({ providers: JSON.stringify(providers) }, { where: { id: settings.id } });
-    return sanitizeProviderForClient(newProvider);
+    await backupService.testProvider(newProvider);
+    const provider = await BackupProvider.create(newProvider);
+    return sanitizeProviderForClient(provider);
 };
 
 module.exports.updateProvider = async (providerId, data) => {
-    const settings = await getSettings();
-    const providers = [...settings.providers];
-    const index = providers.findIndex(p => p.id === providerId);
-    if (index === -1) return { code: 404, message: "Provider not found" };
+    const provider = await BackupProvider.findByPk(providerId, { raw: false });
+    if (!provider) return { code: 404, message: "Provider not found" };
 
-    const existing = providers[index];
-    let updatedConfig = { ...existing.config };
+    const updates = {};
+    if (data.name !== undefined) updates.name = data.name;
+    if (data.type !== undefined) updates.type = data.type;
+    if (data.path !== undefined) updates.path = data.path;
+    if (data.url !== undefined) updates.url = data.url;
+    if (data.folder !== undefined) updates.folder = data.folder;
+    if (data.username !== undefined) updates.username = data.username;
+    if (data.password) updates.password = data.password;
+    if (data.share !== undefined) updates.share = data.share;
+    if (data.domain !== undefined) updates.domain = data.domain;
 
-    if (data.config) {
-        const { password, ...otherConfig } = data.config;
-        updatedConfig = { ...updatedConfig, ...otherConfig };
-        
-        if (password) {
-            const encrypted = encrypt(password);
-            updatedConfig.passwordEncrypted = encrypted.encrypted;
-            updatedConfig.passwordIV = encrypted.iv;
-            updatedConfig.passwordAuthTag = encrypted.authTag;
-        }
-    }
-
-    const updated = { ...existing, name: data.name || existing.name, type: data.type || existing.type, config: updatedConfig };
-
-    const testProvider = { ...updated, config: decryptConfigPassword(updatedConfig) };
+    const testProvider = { ...provider.dataValues, ...updates };
     await backupService.testProvider(testProvider);
-    providers[index] = updated;
-
-    await BackupSettings.update({ providers: JSON.stringify(providers) }, { where: { id: settings.id } });
+    
+    await BackupProvider.update(updates, { where: { id: providerId } });
+    const updated = await BackupProvider.findByPk(providerId, { raw: false });
     return sanitizeProviderForClient(updated);
 };
 
 module.exports.deleteProvider = async (providerId) => {
-    const settings = await getSettings();
-    const providers = settings.providers.filter(p => p.id !== providerId);
-    if (providers.length === settings.providers.length) return { code: 404, message: "Provider not found" };
-
-    await BackupSettings.update({ providers: JSON.stringify(providers) }, { where: { id: settings.id } });
+    const deleted = await BackupProvider.destroy({ where: { id: providerId } });
+    if (!deleted) return { code: 404, message: "Provider not found" };
 };
 
 module.exports.getStorageStats = () => backupService.getStorageStats();

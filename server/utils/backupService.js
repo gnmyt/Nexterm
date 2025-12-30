@@ -3,7 +3,7 @@ const path = require("path");
 const archiver = require("archiver");
 const decompress = require("decompress");
 const BackupSettings = require("../models/BackupSettings");
-const { decryptConfigPassword } = require("./encryption");
+const BackupProvider = require("../models/BackupProvider");
 const { createProvider } = require("./backupProviders");
 const logger = require("./logger");
 
@@ -16,17 +16,19 @@ const TEMP_DIR = path.join(DATA_DIR, ".backup-temp");
 let scheduleInterval = null;
 
 const getSettings = async () => {
-    let settings = await BackupSettings.findOne();
+    let settings = await BackupSettings.findOne({ raw: false });
     if (!settings) settings = await BackupSettings.create({});
+    
     return {
         ...settings.dataValues,
-        providers: settings.providers.map(p => ({ ...p, config: decryptConfigPassword(p.config) })),
+        includeDatabase: settings.includeDatabase ?? true,
+        includeRecordings: settings.includeRecordings ?? true,
+        includeLogs: settings.includeLogs ?? false,
     };
 };
 
-const getProvider = async (providerId) => {
-    const settings = await getSettings();
-    const provider = settings.providers.find(p => p.id === providerId);
+const getProviderById = async (providerId) => {
+    const provider = await BackupProvider.findByPk(providerId);
     if (!provider) throw new Error("Provider not found");
     return createProvider(provider);
 };
@@ -51,7 +53,7 @@ module.exports.getStorageStats = () => ({
 
 module.exports.createBackup = async (providerId) => {
     const settings = await getSettings();
-    const provider = await getProvider(providerId);
+    const provider = await getProviderById(providerId);
     const timestamp = new Date().toISOString().replace(/[:.]/g, "-");
     const backupName = `backup-${timestamp}.tar.gz`;
     const tempPath = path.join(TEMP_DIR, backupName);
@@ -63,7 +65,11 @@ module.exports.createBackup = async (providerId) => {
         const archive = archiver("tar", { gzip: true });
 
         output.on("close", resolve);
+        output.on("error", reject);
         archive.on("error", reject);
+        archive.on("warning", (err) => {
+            if (err.code !== "ENOENT") reject(err);
+        });
         archive.pipe(output);
 
         if (settings.includeDatabase && fs.existsSync(DB_PATH)) {
@@ -76,7 +82,7 @@ module.exports.createBackup = async (providerId) => {
             archive.directory(LOGS_DIR, "logs");
         }
 
-        archive.finalize();
+        archive.finalize().catch(reject);
     });
 
     const buffer = fs.readFileSync(tempPath);
@@ -91,7 +97,7 @@ module.exports.createBackup = async (providerId) => {
 
 module.exports.enforceRetention = async (providerId) => {
     const settings = await getSettings();
-    const provider = await getProvider(providerId);
+    const provider = await getProviderById(providerId);
     const backups = await provider.list();
 
     if (backups.length > settings.retention) {
@@ -104,12 +110,12 @@ module.exports.enforceRetention = async (providerId) => {
 };
 
 module.exports.listBackups = async (providerId) => {
-    const provider = await getProvider(providerId);
+    const provider = await getProviderById(providerId);
     return provider.list();
 };
 
 module.exports.restoreBackup = async (providerId, backupName) => {
-    const provider = await getProvider(providerId);
+    const provider = await getProviderById(providerId);
     const buffer = await provider.download(backupName);
     const restorePath = path.join(TEMP_DIR, "restore");
 
@@ -150,8 +156,8 @@ module.exports.testProvider = async (providerConfig) => {
 };
 
 const runScheduledBackups = async () => {
-    const settings = await getSettings();
-    for (const provider of settings.providers) {
+    const providers = await BackupProvider.findAll();
+    for (const provider of providers) {
         try {
             await module.exports.createBackup(provider.id);
         } catch (err) {

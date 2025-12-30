@@ -2,8 +2,8 @@ const fs = require("fs");
 const path = require("path");
 
 module.exports = class LocalProvider {
-    constructor(config) {
-        this.path = config.path;
+    constructor(provider) {
+        this.path = provider.path;
     }
 
     async test() {
