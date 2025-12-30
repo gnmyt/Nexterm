@@ -17,6 +17,7 @@ import SelectBox from "@/common/components/SelectBox";
 import { languages } from "@/i18n.js";
 import i18n from "@/i18n.js";
 import Icon from "@mdi/react";
+import { openExternalUrl } from "@/common/utils/TauriUtil.js";
 
 export const Account = () => {
     const { t } = useTranslation();
@@ -352,10 +353,10 @@ export const Account = () => {
                         <p className="main-description">{t("settings.account.languageDescription")}</p>
                         <p className="translate-help">
                             {t("settings.account.missingLanguage")}
-                            <a href="https://crowdin.com/project/nexterm" target="_blank" rel="noopener noreferrer"
+                            <span onClick={() => openExternalUrl("https://crowdin.com/project/nexterm")}
                                className="translate-link">
                                 {t("settings.account.helpTranslateLink")}
-                            </a>
+                            </span>
                         </p>
                     </div>
                     <SelectBox options={languageOptions} selected={currentLanguage} setSelected={changeLanguage} />

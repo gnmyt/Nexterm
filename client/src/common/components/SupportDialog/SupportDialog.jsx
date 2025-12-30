@@ -5,12 +5,13 @@ import { mdiBugOutline, mdiOpenInNew } from "@mdi/js";
 import { siDiscord, siGithub } from "simple-icons";
 import { DISCORD_URL, GITHUB_URL } from "@/App.jsx";
 import { useTranslation } from "react-i18next";
+import { openExternalUrl } from "@/common/utils/TauriUtil.js";
 
 export const SupportDialog = ({ open, onClose }) => {
     const { t } = useTranslation();
 
     const openUrl = (url) => {
-        window.open(url, "_blank");
+        openExternalUrl(url);
         onClose();
     };
 

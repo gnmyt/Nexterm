@@ -6,6 +6,7 @@ import { useTranslation } from "react-i18next";
 import { useEffect, useState } from "react";
 import { getRequest } from "@/common/utils/RequestUtil.js";
 import { GITHUB_URL } from "@/App.jsx";
+import { openExternalUrl } from "@/common/utils/TauriUtil.js";
 
 const PLATFORMS = [
     {
@@ -84,12 +85,12 @@ export const DownloadAppsDialog = ({ open, onClose }) => {
 
     const handleDownload = (platform, download) => {
         if (download.url) {
-            window.open(download.url, "_blank");
+            openExternalUrl(download.url);
             return;
         }
         const url = getDownloadUrl(platform, download);
         if (url) {
-            window.open(url, "_blank");
+            openExternalUrl(url);
         }
     };
 

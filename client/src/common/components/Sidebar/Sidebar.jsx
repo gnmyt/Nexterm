@@ -12,6 +12,7 @@ import { useTranslation } from "react-i18next";
 import { SettingsDialog } from "@/common/components/SettingsDialog/SettingsDialog.jsx";
 import { getSidebarNavigation } from "@/common/utils/navigationConfig.jsx";
 import { GITHUB_URL } from "@/App.jsx";
+import { openExternalUrl } from "@/common/utils/TauriUtil.js";
 
 export const Sidebar = () => {
     const { t } = useTranslation();
@@ -73,7 +74,7 @@ export const Sidebar = () => {
                             <Icon path={mdiCog} className="menu-icon" /><span className="menu-label">{t('common.sidebar.settings')}</span>
                         </div>
                         <div className="user-menu-separator" />
-                        <div className="user-menu-item star" onClick={() => { window.open(GITHUB_URL, "_blank"); setUserMenuOpen(false); }}>
+                        <div className="user-menu-item star" onClick={() => { openExternalUrl(GITHUB_URL); setUserMenuOpen(false); }}>
                             <Icon path={mdiStarOutline} className="menu-icon" /><span className="menu-label">{t('common.sidebar.starOnGitHub')}</span>
                         </div>
                         <div className={`user-menu-item support ${supportDialogOpen ? 'active' : ''}`} onClick={() => { setSupportDialogOpen(true); setUserMenuOpen(false); }}>

@@ -3,6 +3,7 @@ import Button from "@/common/components/Button";
 import { mdiInformationOutline, mdiClose, mdiContentCopy, mdiFileDocumentOutline, mdiOpenInNew } from "@mdi/js";
 import Icon from "@mdi/react";
 import { useToast } from "@/common/contexts/ToastContext.jsx";
+import { openExternalUrl } from "@/common/utils/TauriUtil.js";
 import "./SummaryDialog.sass";
 
 const SummaryDialog = ({ open, onClose, summaryData }) => {
@@ -29,7 +30,7 @@ const SummaryDialog = ({ open, onClose, summaryData }) => {
         }
     };
 
-    const openInNewTab = (url) => window.open(url, "_blank", "noopener,noreferrer");
+    const openInNewTab = (url) => openExternalUrl(url);
 
     const copyToClipboard = async (text, label) => {
         try {
@@ -64,9 +65,9 @@ const SummaryDialog = ({ open, onClose, summaryData }) => {
                                     <div className="summary-key">{pair.key}</div>
                                     <div className={`summary-value ${isURL(pair.value) ? "is-link" : ""}`}>
                                         {isURL(pair.value) ? (
-                                            <a href={pair.value} target="_blank" rel="noopener noreferrer">
+                                            <span className="url-link" onClick={() => openInNewTab(pair.value)}>
                                                 {pair.value}
-                                            </a>
+                                            </span>
                                         ) : pair.value}
                                     </div>
                                     <div className="action-buttons">
