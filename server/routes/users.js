@@ -10,15 +10,19 @@ const app = Router();
 /**
  * GET /users/list
  * @summary List All Users (Admin)
- * @description Retrieves a list of all user accounts in the system including their roles and status. Admin access required.
+ * @description Retrieves a paginated list of all user accounts in the system including their roles and status. Supports search by username, first name, or last name. Admin access required.
  * @tags Users
  * @produces application/json
  * @security BearerAuth
- * @return {array} 200 - List of all user accounts
+ * @param {string} search.query - Search term to filter users by username, first name, or last name
+ * @param {number} limit.query - Maximum number of users to return (default: 50)
+ * @param {number} offset.query - Number of users to skip for pagination (default: 0)
+ * @return {object} 200 - Paginated list of user accounts with total count
  * @return {object} 403 - Admin access required
  */
 app.get("/list", async (req, res) => {
-    res.json(await listUsers());
+    const { search, limit, offset } = req.query;
+    res.json(await listUsers({ search, limit, offset }));
 });
 
 /**

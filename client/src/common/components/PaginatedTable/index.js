@@ -1,0 +1,1 @@
+export { PaginatedTable as default } from "./PaginatedTable";

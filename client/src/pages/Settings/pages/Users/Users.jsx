@@ -1,8 +1,9 @@
 import "./styles.sass";
-import { useContext, useEffect, useState } from "react";
+import { useCallback, useContext, useEffect, useMemo, useState } from "react";
 import { UserContext } from "@/common/contexts/UserContext.jsx";
 import { getRequest, deleteRequest, patchRequest, postRequest } from "@/common/utils/RequestUtil.js";
 import Button from "@/common/components/Button";
+import PaginatedTable from "@/common/components/PaginatedTable";
 import Icon from "@mdi/react";
 import {
     mdiAccount,
@@ -14,6 +15,8 @@ import {
     mdiAccountRemove,
     mdiLogin,
     mdiPlus,
+    mdiMagnify,
+    mdiAccountCircleOutline,
 } from "@mdi/js";
 import CreateUserDialog from "./components/CreateUserDialog";
 import { ContextMenu, ContextMenuItem, useContextMenu } from "@/common/components/ContextMenu";
@@ -22,9 +25,16 @@ import PasswordChange from "@/pages/Settings/pages/Account/dialogs/PasswordChang
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 
+const ITEMS_PER_PAGE = 25;
+
 export const Users = () => {
     const { t } = useTranslation();
     const [users, setUsers] = useState([]);
+    const [total, setTotal] = useState(0);
+    const [loading, setLoading] = useState(false);
+    const [searchQuery, setSearchQuery] = useState("");
+    const [debouncedSearch, setDebouncedSearch] = useState("");
+    const [currentPage, setCurrentPage] = useState(1);
     const { user, overrideToken } = useContext(UserContext);
     const navigate = useNavigate();
 
@@ -37,11 +47,39 @@ export const Users = () => {
 
     const contextMenu = useContextMenu();
 
-    const loadUsers = () => {
-        getRequest("users/list").then(response => {
-            setUsers([...response]);
-        });
-    };
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            setDebouncedSearch(searchQuery);
+            setCurrentPage(1);
+        }, 300);
+        return () => clearTimeout(timer);
+    }, [searchQuery]);
+
+    const loadUsers = useCallback(async () => {
+        setLoading(true);
+        try {
+            const offset = (currentPage - 1) * ITEMS_PER_PAGE;
+            const params = new URLSearchParams({
+                limit: ITEMS_PER_PAGE.toString(),
+                offset: offset.toString(),
+            });
+            if (debouncedSearch) {
+                params.set("search", debouncedSearch);
+            }
+            const response = await getRequest(`users/list?${params}`);
+            setUsers(response.users || []);
+            setTotal(response.total || 0);
+        } catch (error) {
+            setUsers([]);
+            setTotal(0);
+        } finally {
+            setLoading(false);
+        }
+    }, [currentPage, debouncedSearch]);
+
+    useEffect(() => {
+        loadUsers();
+    }, [loadUsers]);
 
     const openContextMenu = (e, userId) => {
         e.stopPropagation();
@@ -68,11 +106,72 @@ export const Users = () => {
         });
     };
 
-    useEffect(() => {
-        loadUsers();
-    }, [user]);
+    const handlePageChange = useCallback((page) => {
+        setCurrentPage(page);
+    }, []);
+
+    const pagination = useMemo(() => ({
+        total,
+        currentPage,
+        itemsPerPage: ITEMS_PER_PAGE,
+    }), [total, currentPage]);
 
     const contextUser = users.find(u => u.id === contextUserId);
+
+    const columns = useMemo(() => [
+        {
+            key: "user",
+            label: t("settings.users.table.user"),
+            icon: mdiAccountCircleOutline,
+            className: "user-cell-wrapper",
+            render: (currentUser) => (
+                <div className="user-cell">
+                    <div className={`user-icon ${currentUser.role === "admin" ? "primary" : "default"}`}>
+                        <Icon path={currentUser.role === "admin" ? mdiShieldAccount : mdiAccount} />
+                    </div>
+                    <div className="user-info">
+                        <span className="name">{currentUser.firstName} {currentUser.lastName}</span>
+                        <span className="username">@{currentUser.username}</span>
+                    </div>
+                </div>
+            ),
+        },
+        {
+            key: "role",
+            label: t("settings.users.table.role"),
+            icon: mdiShieldAccount,
+            mobileLabel: t("settings.users.table.role"),
+            render: (currentUser) => (
+                <span className={`role-badge ${currentUser.role}`}>
+                    {currentUser.role === "admin" ? t("settings.users.roles.admin") : t("settings.users.roles.user")}
+                </span>
+            ),
+        },
+        {
+            key: "totp",
+            label: t("settings.users.table.twoFactor"),
+            icon: mdiLock,
+            mobileLabel: t("settings.users.table.twoFactor"),
+            render: (currentUser) => (
+                <div className={`totp-badge ${currentUser.totpEnabled ? "enabled" : "disabled"}`}>
+                    <Icon path={mdiLock} />
+                    <span>{currentUser.totpEnabled ? t("settings.users.twoFactorEnabled") : t("settings.users.twoFactorDisabled")}</span>
+                </div>
+            ),
+        },
+        {
+            key: "actions",
+            label: "",
+            className: "actions-cell",
+            render: (currentUser) => (
+                <Icon
+                    path={mdiDotsVertical}
+                    className="menu-trigger"
+                    onClick={(e) => openContextMenu(e, currentUser.id)}
+                />
+            ),
+        },
+    ], [t]);
 
     return (
         <div className="users-page">
@@ -93,44 +192,34 @@ export const Users = () => {
                             accountId={contextUserId} />
 
             <div className="users-header">
-                <h2>{t("settings.users.title", { count: users.length })}</h2>
-                <Button onClick={() => setCreateUserDialogOpen(true)} text={t("settings.users.createNewUser")} icon={mdiPlus} />
+                <h2>{t("settings.users.title", { count: total })}</h2>
+                <div className="header-actions">
+                    <div className="search-box">
+                        <Icon path={mdiMagnify} />
+                        <input
+                            type="text"
+                            placeholder={t("settings.users.searchPlaceholder")}
+                            value={searchQuery}
+                            onChange={(e) => setSearchQuery(e.target.value)}
+                        />
+                    </div>
+                    <Button onClick={() => setCreateUserDialogOpen(true)} text={t("settings.users.createNewUser")} icon={mdiPlus} />
+                </div>
             </div>
 
-            {users.length === 0 ? (
-                <div className="no-users">
-                    <Icon path={mdiAccount} />
-                    <h2>{t("settings.users.noUsers")}</h2>
-                    <p>{t("settings.users.noUsersDescription")}</p>
-                </div>
-            ) : (
-                <div className="vertical-list">
-                    {users.map(currentUser => (
-                        <div key={currentUser.id} className="item">
-                            <div className="left-section">
-                                <div className={`icon ${currentUser.role === "admin" ? "primary" : "default"}`}>
-                                    <Icon path={currentUser.role === "admin" ? mdiShieldAccount : mdiAccount} />
-                                </div>
-                                <div className="details">
-                                    <h3>{currentUser.firstName} {currentUser.lastName}</h3>
-                                    <p>@{currentUser.username}</p>
-                                </div>
-                            </div>
-                            <div className="right-section">
-                                <div className={`totp-badge ${currentUser.totpEnabled ? "enabled" : "disabled"}`}>
-                                    <Icon path={mdiLock} />
-                                    <span>{currentUser.totpEnabled ? t("settings.users.twoFactorEnabled") : t("settings.users.twoFactorDisabled")}</span>
-                                </div>
-                                <Icon 
-                                    path={mdiDotsVertical} 
-                                    className="menu-trigger" 
-                                    onClick={(e) => openContextMenu(e, currentUser.id)} 
-                                />
-                            </div>
-                        </div>
-                    ))}
-                </div>
-            )}
+            <PaginatedTable
+                data={users}
+                columns={columns}
+                pagination={pagination}
+                onPageChange={handlePageChange}
+                getRowKey={(user) => user.id}
+                loading={loading}
+                emptyState={{
+                    icon: mdiAccount,
+                    title: debouncedSearch ? t("settings.users.noSearchResults") : t("settings.users.noUsers"),
+                    subtitle: debouncedSearch ? t("settings.users.noSearchResultsDescription") : t("settings.users.noUsersDescription"),
+                }}
+            />
 
             <ContextMenu
                 isOpen={contextMenu.isOpen}

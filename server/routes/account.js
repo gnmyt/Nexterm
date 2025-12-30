@@ -1,13 +1,31 @@
 const { Router } = require("express");
 const { registerValidation, totpSetup, passwordChangeValidation, updateNameValidation, updateSessionSyncValidation } = require("../validations/account");
 const { preferencesValidation } = require("../validations/preferences");
-const { createAccount, updateTOTP, updatePassword, updateName, updateSessionSync, updatePreferences } = require("../controllers/account");
+const { createAccount, updateTOTP, updatePassword, updateName, updateSessionSync, updatePreferences, searchUsers } = require("../controllers/account");
 const speakeasy = require("speakeasy");
 const { authenticate } = require("../middlewares/auth");
 const { validateSchema } = require("../utils/schema");
 const { sendError } = require("../utils/error");
 
 const app = Router();
+
+/**
+ * GET /account/search
+ * @summary Search Users
+ * @description Search for users by username, first name, or last name. Returns limited user info for autocomplete purposes. Requires at least 3 characters.
+ * @tags Account
+ * @produces application/json
+ * @security BearerAuth
+ * @param {string} search.query.required - Search term (min 3 characters)
+ * @return {object} 200 - List of matching users (max 5)
+ * @return {object} 401 - User is not authenticated
+ */
+app.get("/search", authenticate, async (req, res) => {
+    if (!req.user) return sendError(res, 401, 205, "You are not authenticated.");
+
+    const { search } = req.query;
+    res.json(await searchUsers(search));
+});
 
 /**
  * GET /account/me
