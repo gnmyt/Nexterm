@@ -2,15 +2,14 @@ import "./styles.sass";
 import { useContext, useEffect, useState } from "react";
 import { UserContext } from "@/common/contexts/UserContext.jsx";
 import { ServerContext } from "@/common/contexts/ServerContext.jsx";
-import Button from "@/common/components/Button";
 import Icon from "@mdi/react";
-import { mdiStar, mdiHistory, mdiPower, mdiPlay, mdiServerNetwork, mdiConnection, mdiFolderOpen, mdiCursorDefaultClick } from "@mdi/js";
-import { siDiscord } from "simple-icons";
-import { DISCORD_URL, GITHUB_URL } from "@/App.jsx";
+import { mdiHistory, mdiPower, mdiPlay, mdiServerNetwork, mdiConnection, mdiFolderOpen, mdiCursorDefaultClick, mdiDownload } from "@mdi/js";
 import { getRequest } from "@/common/utils/RequestUtil";
 import { useTranslation } from "react-i18next";
 import { ContextMenu, ContextMenuItem, useContextMenu } from "@/common/components/ContextMenu";
 import { getIconPath } from "@/common/utils/iconUtils.js";
+import Button from "@/common/components/Button";
+import DownloadAppsDialog from "@/common/components/DownloadAppsDialog";
 
 const formatTimeAgo = (timestamp) => {
     const diffMins = Math.floor((Date.now() - new Date(timestamp)) / 60000);
@@ -38,6 +37,7 @@ export const WelcomePanel = ({
     const [recentConnections, setRecentConnections] = useState([]);
     const [loading, setLoading] = useState(true);
     const [contextItem, setContextItem] = useState(null);
+    const [downloadDialogOpen, setDownloadDialogOpen] = useState(false);
     const contextMenu = useContextMenu();
 
     useEffect(() => {
@@ -84,12 +84,7 @@ export const WelcomePanel = ({
             <div className="welcome-left">
                 <h1>Hi, <span>{user?.firstName || "User"} {user?.lastName || ""}</span>!</h1>
                 <p>{t("welcome.subtitle", "Welcome to Nexterm. The open-source server manager for SSH, VNC and RDP.")}</p>
-                <div className="button-area">
-                    <Button text={t("welcome.starOnGitHub", "Star on GitHub")}
-                            onClick={() => window.open(GITHUB_URL, "_blank")} icon={mdiStar} />
-                    <Button text={t("welcome.joinDiscord", "Join Discord")}
-                            onClick={() => window.open(DISCORD_URL, "_blank")} icon={siDiscord.path} />
-                </div>
+                <Button icon={mdiDownload} text={t("welcome.downloadApps", "Download Apps")} onClick={() => setDownloadDialogOpen(true)} />
             </div>
 
             <div className="welcome-right">
@@ -155,6 +150,8 @@ export const WelcomePanel = ({
                     </>
                 )}
             </ContextMenu>
+
+            <DownloadAppsDialog open={downloadDialogOpen} onClose={() => setDownloadDialogOpen(false)} />
         </div>
     );
 };
