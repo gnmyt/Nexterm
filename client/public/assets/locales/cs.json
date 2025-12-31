@@ -21,13 +21,13 @@
       "close": "Zavřít",
       "maximize": "Maximalizovat",
       "restore": "Obnovit",
-      "back": "Back"
+      "back": "Zpět"
     },
     "iconChooser": {
-      "searchIcons": "Search icons...",
-      "searchResults": "Search Results",
-      "popularIcons": "Popular Icons",
-      "noResults": "No icons found"
+      "searchIcons": "Hledat ikony...",
+      "searchResults": "Výsledky vyhledávání",
+      "popularIcons": "Oblíbené ikony",
+      "noResults": "Nebyly nalezeny žádné ikony"
     },
     "labels": {
       "username": "Uživatelské jméno",
@@ -59,51 +59,51 @@
       "authenticating": "Probíhá ověření..."
     },
     "deviceLink": {
-      "title": "Link Device",
-      "description": "Enter the code shown on your device to authorize it to access your account.",
-      "codeLabel": "Device Code",
-      "continue": "Continue",
-      "verifying": "Verifying...",
-      "confirmTitle": "Authorize Device",
-      "confirmDescription": "A device is requesting access to your account. Please verify the details below.",
-      "deviceInfo": "Device Information",
-      "type": "Type",
-      "ipAddress": "IP Address",
-      "userAgent": "Device",
-      "authorize": "Authorize Device",
-      "authorizing": "Authorizing...",
-      "deny": "Deny",
-      "invalidCode": "Invalid or expired code",
-      "authorizationFailed": "Authorization failed",
-      "deviceAuthorized": "Device authorized successfully",
-      "successTitle": "Device Authorized",
-      "successMessage": "You can close this tab and return to the app.",
+      "title": "Odkaz Zařízení",
+      "description": "Zadejte kód zobrazený na zařízení a autorizujte jej pro přístup k účtu.",
+      "codeLabel": "Kód zařízení",
+      "continue": "Pokračovat",
+      "verifying": "Ověřování...",
+      "confirmTitle": "Autorizovat zařízení",
+      "confirmDescription": "Zařízení žádá o přístup k vašemu účtu. Ověřte prosím níže uvedené údaje.",
+      "deviceInfo": "Informace o zařízení",
+      "type": "Typ",
+      "ipAddress": "IP adresa",
+      "userAgent": "Zařízení",
+      "authorize": "Autorizovat zařízení",
+      "authorizing": "Povolení...",
+      "deny": "Odmítnout",
+      "invalidCode": "Neplatný nebo neplatný kód",
+      "authorizationFailed": "Autorizace se nezdařila",
+      "deviceAuthorized": "Zařízení bylo úspěšně autorizováno",
+      "successTitle": "Autorizované zařízení",
+      "successMessage": "Tuto kartu můžete zavřít a vrátit se do aplikace.",
       "clientTypes": {
-        "mobile": "Mobile App",
-        "connector": "Desktop Connector"
+        "mobile": "Mobilní aplikace",
+        "connector": "Konektor pro stolní počítače"
       }
     },
     "connectorSetup": {
-      "title": "Nexterm Connector",
-      "serverUrl": "Server URL",
-      "serverUrlDescription": "Enter the URL of your Nexterm server to connect.",
-      "connect": "Connect",
-      "connecting": "Connecting...",
-      "enterServerUrl": "Please enter a server URL",
-      "connectionFailed": "Failed to connect to server. Please check the URL.",
-      "deviceLinkingNotSupported": "This server does not support device linking. Please update your Nexterm server.",
-      "authMethodDescription": "Choose how you want to authenticate with the server.",
-      "showCode": "Show Code",
-      "showCodeDesc": "Display a code to enter manually on the web interface",
-      "openBrowser": "Authorize",
-      "openBrowserDesc": "Open your browser to authorize automatically",
-      "enterCodeDescription": "Enter this code on the Nexterm web interface to authorize this device.",
-      "copyCode": "Copy Code",
-      "codeCopied": "Code copied to clipboard",
-      "copyFailed": "Failed to copy code",
-      "waitingForAuth": "Waiting for authorization...",
-      "codeCreationFailed": "Failed to create device code",
-      "authSuccess": "Successfully authenticated!"
+      "title": "Konektor Nexterm",
+      "serverUrl": "Adresa URL serveru",
+      "serverUrlDescription": "Zadejte adresu URL serveru Nexterm, ke kterému se chcete připojit.",
+      "connect": "Připojení",
+      "connecting": "Připojení...",
+      "enterServerUrl": "Zadejte prosím adresu URL serveru",
+      "connectionFailed": "Nepodařilo se připojit k serveru. Zkontrolujte prosím adresu URL.",
+      "deviceLinkingNotSupported": "Tento server nepodporuje propojení zařízení. Aktualizujte prosím svůj server Nexterm.",
+      "authMethodDescription": "Zvolte způsob ověřování na serveru.",
+      "showCode": "Zobrazit kód",
+      "showCodeDesc": "Zobrazení kódu pro ruční zadání ve webovém rozhraní",
+      "openBrowser": "Autorizovat",
+      "openBrowserDesc": "Otevřete prohlížeč pro automatickou autorizaci",
+      "enterCodeDescription": "Zadáním tohoto kódu ve webovém rozhraní Nexterm toto zařízení autorizujete.",
+      "copyCode": "Kopírovat kód",
+      "codeCopied": "Kód zkopírovaný do schránky",
+      "copyFailed": "Nepodařilo se zkopírovat kód",
+      "waitingForAuth": "Čekání na povolení...",
+      "codeCreationFailed": "Nepodařilo se vytvořit kód zařízení",
+      "authSuccess": "Úspěšně ověřeno!"
     },
     "selectBox": {
       "defaultOption": "Vyberte možnost...",
@@ -111,18 +111,18 @@
       "noResults": "Žádné výsledky"
     },
     "userSearch": {
-      "placeholder": "Search for a user..."
+      "placeholder": "Vyhledání uživatele..."
     },
     "table": {
       "noData": {
-        "title": "No data found",
-        "subtitle": "There are no items to display."
+        "title": "Nebyly nalezeny žádné údaje",
+        "subtitle": "Nejsou žádné položky k zobrazení."
       },
       "pagination": {
-        "showing": "Showing {{start}} to {{end}} of {{total}}",
-        "previous": "Previous",
-        "next": "Next",
-        "pageInfo": "Page {{current}} of {{total}}"
+        "showing": "Zobrazeno na {{start}} až {{end}} z {{total}}",
+        "previous": "Předchozí",
+        "next": "Další",
+        "pageInfo": "Strana {{current}} z {{total}}"
       }
     },
     "sidebar": {
@@ -135,8 +135,8 @@
       "logout": "Odhlásit se",
       "collapseTitle": "Sbalit postranní panel",
       "logoutConfirmText": "Tímto se odhlásíte z účtu {{username}}. Jste si jisti?",
-      "starOnGitHub": "Star on GitHub",
-      "support": "Support"
+      "starOnGitHub": "Hvězda na GitHubu",
+      "support": "Podpora"
     },
     "quickAction": {
       "placeholder": "Hledat servery, snippety nebo navigovat...",
@@ -582,11 +582,11 @@
       "currentLanguage": "Aktuální jazyk",
       "missingLanguage": "Chybí váš jazyk?",
       "helpTranslateLink": "Pomozte přeložit Nexterm",
-      "syncLoginRequired": "Please log in to sync settings",
-      "appearanceSyncEnabled": "Appearance settings will now sync to your account",
-      "appearanceSyncDisabled": "Appearance settings will no longer sync",
-      "generalSyncEnabled": "General settings will now sync to your account",
-      "generalSyncDisabled": "General settings will no longer sync",
+      "syncLoginRequired": "Přihlaste se k synchronizaci nastavení",
+      "appearanceSyncEnabled": "Nastavení vzhledu se nyní synchronizuje s vaším účtem.",
+      "appearanceSyncDisabled": "Nastavení vzhledu se již nebude synchronizovat",
+      "generalSyncEnabled": "Obecná nastavení se nyní synchronizují s vaším účtem",
+      "generalSyncDisabled": "Obecná nastavení se již nebudou synchronizovat",
       "sessionSynchronization": "Synchronizace relací",
       "sessionSyncDescription": "Ovládejte, jak jsou vaše serverové relace ukládány a synchronizovány mezi zařízeními a kartami prohlížeče.",
       "sessionSyncAcrossDevices": "Mezi zařízeními",
@@ -664,21 +664,21 @@
     "users": {
       "title": "{{count}} uživatelů",
       "createNewUser": "Vytvořit nového uživatele",
-      "searchPlaceholder": "Search users...",
+      "searchPlaceholder": "Vyhledávání uživatelů...",
       "twoFactorEnabled": "2FA povoleno",
       "twoFactorDisabled": "2FA zakázáno",
-      "noUsers": "No Users Found",
-      "noUsersDescription": "Create a new user to get started.",
-      "noSearchResults": "No Users Found",
-      "noSearchResultsDescription": "Try adjusting your search query.",
+      "noUsers": "Nebyli nalezeni žádní uživatelé",
+      "noUsersDescription": "Vytvořte nového uživatele a začněte.",
+      "noSearchResults": "Nebyli nalezeni žádní uživatelé",
+      "noSearchResultsDescription": "Zkuste upravit vyhledávací dotaz.",
       "table": {
-        "user": "User",
+        "user": "Uživatel",
         "role": "Role",
         "twoFactor": "2FA"
       },
       "roles": {
         "admin": "Admin",
-        "user": "User"
+        "user": "Uživatel"
       },
       "contextMenu": {
         "changePassword": "Změnit heslo",
@@ -767,14 +767,14 @@
     },
     "terminal": {
       "title": "Terminál",
-      "syncLoginRequired": "Please log in to sync terminal settings",
+      "syncLoginRequired": "Přihlaste se prosím k synchronizaci nastavení terminálu",
       "font": {
         "title": "Písmo",
         "description": "Přizpůsobte rodinu a velikost písma pro váš terminál.",
         "fontFamily": "Rodina písma",
         "fontSize": "Velikost písma",
-        "syncEnabled": "Font settings will now sync to your account",
-        "syncDisabled": "Font settings will no longer sync"
+        "syncEnabled": "Nastavení písma se nyní synchronizuje s vaším účtem",
+        "syncDisabled": "Nastavení písma se již nesynchronizuje"
       },
       "cursor": {
         "title": "Kurzor",
@@ -783,14 +783,14 @@
         "cursorBlinking": "Blikání kurzoru",
         "enabled": "Povoleno",
         "disabled": "Zakázáno",
-        "syncEnabled": "Cursor settings will now sync to your account",
-        "syncDisabled": "Cursor settings will no longer sync"
+        "syncEnabled": "Nastavení kurzoru se nyní synchronizuje s vaším účtem.",
+        "syncDisabled": "Nastavení kurzoru se již nesynchronizuje"
       },
       "theme": {
         "title": "Motiv",
         "description": "Vyberte barevný motiv pro váš terminál.",
-        "syncEnabled": "Theme settings will now sync to your account",
-        "syncDisabled": "Theme settings will no longer sync"
+        "syncEnabled": "Nastavení motivu se nyní synchronizuje s vaším účtem.",
+        "syncDisabled": "Nastavení motivu se již nesynchronizuje"
       },
       "preview": {
         "text": "$ echo 'Ahoj, Nexterm!'\nAhoj, Nexterm!\n$ "
@@ -799,9 +799,9 @@
     "fileManager": {
       "title": "Správce souborů",
       "description": "Konfigurace způsobu zobrazení a správy souborů a složek.",
-      "syncLoginRequired": "Please log in to sync file manager settings",
-      "syncEnabled": "File manager settings will now sync to your account",
-      "syncDisabled": "File manager settings will no longer sync",
+      "syncLoginRequired": "Přihlaste se k synchronizaci nastavení správce souborů",
+      "syncEnabled": "Nastavení správce souborů se nyní synchronizuje s vaším účtem.",
+      "syncDisabled": "Nastavení správce souborů se již nesynchronizuje",
       "defaultView": {
         "title": "Výchozí režim zobrazení",
         "description": "Při otevření správce souborů zvolte výchozí rozložení.",
@@ -1663,33 +1663,33 @@
     }
   },
   "support": {
-    "title": "Get Support",
-    "subtitle": "Need help or want to contribute?",
-    "footer": "Thank you for using Nexterm!",
+    "title": "Získat podporu",
+    "subtitle": "Potřebujete pomoc nebo chcete přispět?",
+    "footer": "Děkujeme, že používáte Nexterm!",
     "issues": {
-      "title": "Report an Issue",
-      "description": "Found a bug or have a feature request?"
+      "title": "Nahlášení problému",
+      "description": "Našli jste chybu nebo máte požadavek na funkci?"
     },
     "discord": {
-      "title": "Join Discord",
-      "description": "Chat with the community and get help."
+      "title": "Připojte se k Discordu",
+      "description": "Chatujte s komunitou a získejte pomoc."
     },
     "github": {
-      "title": "View on GitHub",
-      "description": "Browse source code and contribute."
+      "title": "Zobrazit na GitHubu",
+      "description": "Procházejte zdrojový kód a přispívejte."
     }
   },
   "welcome": {
-    "subtitle": "Welcome to Nexterm. The open-source server manager for SSH, VNC and RDP.",
-    "downloadApps": "Download Apps",
-    "connectDevice": "Connect Device",
-    "recentConnections": "Recent Connections",
-    "getStarted": "Get Started",
-    "getStartedHint": "Add a server from the sidebar to begin managing your infrastructure."
+    "subtitle": "Vítejte na Nextermu. Správce serverů s otevřeným zdrojovým kódem pro SSH, VNC a RDP.",
+    "downloadApps": "Aplikace ke stažení",
+    "connectDevice": "Připojení zařízení",
+    "recentConnections": "Nedávná připojení",
+    "getStarted": "Začněte",
+    "getStartedHint": "Přidáním serveru z postranního panelu můžete začít spravovat svou infrastrukturu."
   },
   "downloadApps": {
-    "title": "Download Apps",
-    "subtitle": "Get Nexterm on your devices",
+    "title": "Aplikace ke stažení",
+    "subtitle": "Získejte Nexterm do svých zařízení",
     "platforms": {
       "windows": "Windows",
       "macos": "macOS",
