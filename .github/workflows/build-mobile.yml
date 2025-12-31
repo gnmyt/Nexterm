@@ -182,11 +182,12 @@ jobs:
             exit 1
           fi
           echo "Found app at: $APP_PATH"
-          PAYLOAD_DIR=$(dirname "$APP_PATH")/Payload
-          mkdir -p "$PAYLOAD_DIR"
-          cp -r "$APP_PATH" "$PAYLOAD_DIR/"
-          cd $(dirname "$APP_PATH")
-          zip -r ../../ipa/nexterm-${{ inputs.version }}.ipa Payload
+          WORK_DIR=$(mktemp -d)
+          mkdir -p "$WORK_DIR/Payload"
+          cp -r "$APP_PATH" "$WORK_DIR/Payload/"
+          cd "$WORK_DIR"
+          zip -r "$GITHUB_WORKSPACE/mobile/build/ios/ipa/nexterm-${{ inputs.version }}.ipa" Payload
+          rm -rf "$WORK_DIR"
 
       - name: Upload unsigned IPA to Release
         uses: actions/upload-release-asset@v1
