@@ -1,14 +1,17 @@
-# 🚀 Run preview
+# 🚀 Installation
 
-> [!CAUTION]
-> Nexterm is currently in early development and subject to change. It is not recommended to use it in a production
-> environment.
- 
-## 📦 Installation
+> [!WARNING]
+> Nexterm is still in beta. Please back up your data regularly and report any issues on [GitHub](https://github.com/gnmyt/Nexterm/issues).
 
-Since 1.0.3-OPEN-PREVIEW, you are required to set an encryption key in **hexadecimal format** (64 characters using only 0-9 and a-f). **Do not use arbitrary text or alphanumeric strings.** You can generate one with `openssl rand -hex 32`.
+## 🔐 Generate Encryption Key
 
-### 🐳 Docker
+Nexterm requires an encryption key to securely store your data. You can generate a strong key using the following command:
+
+```sh
+openssl rand -hex 32
+```
+
+## 🐳 Docker
 
 ::: code-group
 
@@ -37,7 +40,7 @@ docker run -d \
 > [!NOTE]
 > **Host Network** is strongly recommended. It allows Nexterm to access your host's network stack directly, which is required for features like Wake-on-LAN and connecting to servers via `localhost`. Only use **Bridge Network** if you specifically need network isolation.
 
-### 📦 Docker Compose
+## 📦 Docker Compose
 
 ::: code-group
 

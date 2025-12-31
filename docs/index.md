@@ -7,8 +7,8 @@ hero:
   tagline: The open source server management software for SSH, VNC & RDP
   actions:
     - theme: brand
-      text: Run preview
-      link: /preview
+      text: Install
+      link: /installation
     - theme: alt
       text: Screenshots
       link: /screenshots
@@ -20,9 +20,9 @@ hero:
     alt: MySpeed
 
 features:
-  - icon: 👀
-    title: Open Preview
-    details: Nexterm is currently in development and is open for preview. 
+  - icon: 📊
+    title: Monitoring
+    details: Real-time server monitoring with CPU, memory, and process metrics at a glance.
   - icon: 🔒
     title: Secure
     details: Two-factor authentication, session management and encryption built-in.

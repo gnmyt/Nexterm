@@ -41,9 +41,9 @@ Nexterm is an open-source server management software that allows you to:
   </tr>
 </table>
 
-## 🚀 Run preview
+## 🚀 Install
 
-You can run a preview of Nexterm by clicking [here](https://docs.nexterm.dev/preview).
+You can install Nexterm by clicking [here](https://docs.nexterm.dev/installation).
 
 ## 💻 Development
 

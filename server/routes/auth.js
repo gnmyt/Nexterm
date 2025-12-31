@@ -17,7 +17,6 @@ const deviceCodeRateLimiter = rateLimit({
     message: { code: 429, message: "Too many requests. Please try again later." },
     standardHeaders: true,
     legacyHeaders: false,
-    keyGenerator: (req) => req.ip,
 });
 
 /**

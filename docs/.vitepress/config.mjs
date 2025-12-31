@@ -48,7 +48,7 @@ export default defineConfig({
 
         nav: [
             { text: "Home", link: "/" },
-            { text: "Preview", link: "/preview" },
+            { text: "Install", link: "/installation" },
         ],
 
         footer: {
@@ -65,7 +65,7 @@ export default defineConfig({
                 items: [
                     { text: "Home", link: "/" },
                     { text: "Screenshots", link: "/screenshots" },
-                    { text: "Preview", link: "/preview" },
+                    { text: "Install", link: "/installation" },
                     { text: "SSL/HTTPS", link: "/ssl" },
                     { text: "Reverse Proxy", link: "/reverse-proxy" },
                     {
