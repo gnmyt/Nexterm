@@ -15,13 +15,14 @@ const parseResizeMessage = (message) => {
 };
 
 const setupSSHEventHandlers = (ssh, ws, options) => {
-    const { auditLogId, serverSession, connectionStartTime } = options;
+    const { auditLogId, serverSession, connectionStartTime, rejectConnecting } = options;
 
     ssh.on("error", (error) => {
         logger.error(`SSH error`, { message: error.message, level: error.level });
         const errorMsg = error.level === "client-timeout"
             ? "Client Timeout reached"
             : `SSH Error: ${error.message}`;
+        rejectConnecting?.(error);
         ws.close(error.level === "client-timeout" ? 4007 : 4005, errorMsg);
         if (serverSession) SessionManager.remove(serverSession.sessionId);
     });

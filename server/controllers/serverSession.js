@@ -1,4 +1,5 @@
 const SessionManager = require("../lib/SessionManager");
+const { createConnectionForSession } = require("../lib/ConnectionService");
 const Entry = require("../models/Entry");
 const Account = require("../models/Account");
 const MonitoringSnapshot = require("../models/MonitoringSnapshot");
@@ -7,6 +8,8 @@ const { getIdentityCredentials, getIdentity } = require("./identity");
 const { getOrganizationAuditSettingsInternal, createAuditLog, AUDIT_ACTIONS, RESOURCE_TYPES } = require("./audit");
 const { resolveIdentity } = require("../utils/identityResolver");
 const Organization = require('../models/Organization');
+const logger = require("../utils/logger");
+const stateBroadcaster = require("../lib/StateBroadcaster");
 
 const ENTRY_TYPE_TO_AUDIT_ACTION = {
     'ssh': AUDIT_ACTIONS.SSH_CONNECT,
@@ -78,6 +81,22 @@ const createSession = async (accountId, entryId, identityId, connectionReason, t
     };
 
     const session = SessionManager.create(accountId, entryId, configuration, connectionReason, tabId, browserId, auditLogId);
+
+    stateBroadcaster.broadcast("CONNECTIONS", { accountId });
+
+    createConnectionForSession(session.sessionId, accountId)
+        .then(() => {
+            logger.info("Session connection established", { sessionId: session.sessionId, entryId, type: entry.type });
+        })
+        .catch((error) => {
+            logger.error("Failed to create connection for session", { 
+                sessionId: session.sessionId, 
+                error: error.message,
+                stack: error.stack
+            });
+            SessionManager.remove(session.sessionId);
+        });
+
     return { sessionId: session.sessionId };
 };
 
