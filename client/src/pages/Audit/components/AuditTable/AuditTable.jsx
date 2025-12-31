@@ -156,8 +156,7 @@ export const AuditTable = ({ logs, loading, pagination, onPageChange, getIconFor
                     <div className="cell resource" data-label="Resource">
                         {log.resource && (
                             <span className="resource-badge">
-                                {log.resource}
-                                {log.resourceId && ` #${log.resourceId}`}
+                                {log.resourceName || log.resource}
                             </span>
                         )}
                     </div>

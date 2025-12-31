@@ -2,10 +2,21 @@ const AuditLog = require("../models/AuditLog");
 const Organization = require("../models/Organization");
 const OrganizationMember = require("../models/OrganizationMember");
 const Account = require("../models/Account");
+const Entry = require("../models/Entry");
+const Identity = require("../models/Identity");
+const Folder = require("../models/Folder");
+const Script = require("../models/Script");
 const { hasOrganizationAccess } = require("../utils/permission");
 const { Op } = require("sequelize");
 const logger = require("../utils/logger");
 const { getRecordingInfo } = require("../utils/recordingService");
+
+const RESOURCE_CONFIG = {
+    entry: { model: Entry, detailsKey: "name" },
+    identity: { model: Identity, detailsKey: "identityName" },
+    folder: { model: Folder, detailsKey: "folderName" },
+    script: { model: Script, detailsKey: "name" },
+};
 
 const AUDIT_ACTIONS = {
     SSH_CONNECT: "entry.ssh_connect",
@@ -144,29 +155,51 @@ const getAuditLogsInternal = async (accountId, filters = {}) => {
         where: whereClause, order: [["timestamp", "DESC"]], limit, offset,
     });
 
-    const [accounts, organizations] = await Promise.all([
-        Account.findAll({
-            where: { id: { [Op.in]: [...new Set(result.rows.map(log => log.accountId))] } },
-            attributes: ["id", "firstName", "lastName"],
-        }),
-        Organization.findAll({
-            where: { id: { [Op.in]: [...new Set(result.rows.map(log => log.organizationId).filter(Boolean))] } },
-            attributes: ["id", "name"],
-        }),
+    const accountIds = new Set(), orgIds = new Set(), resourceIdsByType = {};
+    for (const log of result.rows) {
+        accountIds.add(log.accountId);
+        if (log.organizationId) orgIds.add(log.organizationId);
+        if (log.resource && log.resourceId && RESOURCE_CONFIG[log.resource]) {
+            (resourceIdsByType[log.resource] ??= new Set()).add(log.resourceId);
+        }
+    }
+
+    const resourceQueries = Object.entries(resourceIdsByType).map(([type, ids]) =>
+        RESOURCE_CONFIG[type].model.findAll({ where: { id: { [Op.in]: [...ids] } }, attributes: ["id", "name"] })
+            .then(rows => [type, new Map(rows.map(r => [r.id, r.name]))])
+    );
+    const [accounts, orgs, ...resources] = await Promise.all([
+        Account.findAll({ where: { id: { [Op.in]: [...accountIds] } }, attributes: ["id", "firstName", "lastName"] }),
+        orgIds.size ? Organization.findAll({ where: { id: { [Op.in]: [...orgIds] } }, attributes: ["id", "name"] }) : [],
+        ...resourceQueries,
     ]);
 
-    const accountMap = Object.fromEntries(accounts.map(acc => [acc.id, acc]));
-    const orgMap = Object.fromEntries(organizations.map(org => [org.id, org]));
+    const accountMap = new Map(accounts.map(a => [a.id, a]));
+    const orgMap = new Map(orgs.map(o => [o.id, o.name]));
+    const resourceMaps = Object.fromEntries(resources);
 
-    result.rows = result.rows.map(log => ({
-        id: log.id, accountId: log.accountId, organizationId: log.organizationId, action: log.action,
-        resource: log.resource, resourceId: log.resourceId, ipAddress: log.ipAddress, userAgent: log.userAgent,
-        timestamp: log.timestamp,
-        details: log.details,
-        actorFirstName: accountMap[log.accountId]?.firstName || null,
-        actorLastName: accountMap[log.accountId]?.lastName || null,
-        organizationName: orgMap[log.organizationId]?.name || null,
-    }));
+    result.rows = result.rows.map(log => {
+        const cfg = RESOURCE_CONFIG[log.resource];
+        const resourceName = resourceMaps[log.resource]?.get(log.resourceId) || log.details?.[cfg?.detailsKey] || null;
+        const actor = accountMap.get(log.accountId);
+        return {
+            id: log.id,
+            accountId: log.accountId,
+            organizationId: log.organizationId,
+            action: log.action,
+            resource: log.resource,
+            resourceId: log.resourceId,
+            resourceName,
+            ipAddress: log.ipAddress,
+            userAgent: log.userAgent,
+            timestamp: log.timestamp,
+            details: log.details,
+            reason: log.reason,
+            actorFirstName: actor?.firstName || null,
+            actorLastName: actor?.lastName || null,
+            organizationName: orgMap.get(log.organizationId) || null,
+        };
+    });
 
     return result;
 };
