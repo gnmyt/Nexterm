@@ -8,12 +8,13 @@ const SessionManager = require("../lib/SessionManager");
 const waitForConnection = async (sessionId, timeoutMs = 5000) => {
     const start = Date.now();
     while (Date.now() - start < timeoutMs) {
-        if (!SessionManager.get(sessionId)) return null;
+        const session = SessionManager.get(sessionId);
+        if (!session) return { conn: null, sessionRemoved: true };
         const conn = SessionManager.getConnection(sessionId);
-        if (conn) return conn;
+        if (conn) return { conn, sessionRemoved: false };
         await new Promise(r => setTimeout(r, 100));
     }
-    return null;
+    return { conn: null, sessionRemoved: false };
 };
 
 module.exports = async (ws, req) => {
@@ -32,8 +33,15 @@ module.exports = async (ws, req) => {
     if (!serverSession) return ws.close(4007, "Session required");
 
     SessionManager.resume(serverSession.sessionId);
-    const conn = await waitForConnection(serverSession.sessionId, 5000);
-    if (!conn) return ws.close(4014, "Connection not available");
+    const { conn, sessionRemoved } = await waitForConnection(serverSession.sessionId, 5000);
+    
+    if (!conn) {
+        if (!sessionRemoved) {
+            logger.warn("Connection timeout, removing session", { sessionId: serverSession.sessionId });
+            await SessionManager.remove(serverSession.sessionId);
+        }
+        return ws.close(4014, "Connection not available");
+    }
 
     try {
         if (protocol === "ssh") await sshHook(ws, { ...context, reuseConnection: true, ssh: conn.ssh });

@@ -80,7 +80,16 @@ async function createSSHConnectionForSession(sessionId, entry, identity, organiz
             });
         });
 
-        ssh.on("error", (err) => { clearTimeout(timeout); logger.error("SSH error", { sessionId, error: err.message }); reject(err); });
+        ssh.on("error", (err) => { 
+            clearTimeout(timeout); 
+            logger.error("SSH error", { sessionId, error: err.message }); 
+            reject(err); 
+        });
+        
+        ssh.on("close", () => {
+            clearTimeout(timeout);
+            reject(new Error("SSH connection closed unexpectedly"));
+        });
     });
 }
 
@@ -90,11 +99,23 @@ async function createSSHClient(entry, identity, credentials) {
     if (jumpHostIds.length > 0) {
         const connections = await establishJumpHosts(jumpHostIds, null);
         const targetSsh = new sshd.Client();
-
-        const targetOptions = buildSSHOptions(identity, credentials, entry.config);
-        targetOptions.sock = await forwardToTarget(connections[connections.length - 1], entry);
         targetSsh._jumpConnections = connections;
-        targetSsh.connect(targetOptions);
+
+        const cleanupJumpConnections = () => {
+            connections.forEach(conn => { try { conn.ssh.end(); } catch (e) {} });
+        };
+
+        targetSsh.on("error", cleanupJumpConnections);
+        targetSsh.on("close", cleanupJumpConnections);
+
+        try {
+            const targetOptions = buildSSHOptions(identity, credentials, entry.config);
+            targetOptions.sock = await forwardToTarget(connections[connections.length - 1], entry);
+            targetSsh.connect(targetOptions);
+        } catch (err) {
+            cleanupJumpConnections();
+            throw err;
+        }
         return targetSsh;
     }
 
