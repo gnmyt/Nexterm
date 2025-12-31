@@ -95,9 +95,20 @@ class SessionManager {
 
     setMasterConnectionPending(sessionId) {
         const session = this.get(sessionId);
-        if (!session) return false;
-        if (session.masterConnection || session.masterConnectionPending) return false;
+        if (!session) {
+            logger.debug(`setMasterConnectionPending: no session`, { sessionId });
+            return false;
+        }
+        if (session.masterConnection || session.masterConnectionPending) {
+            logger.debug(`setMasterConnectionPending: already has connection or pending`, { 
+                sessionId, 
+                hasMasterConnection: !!session.masterConnection,
+                isPending: session.masterConnectionPending 
+            });
+            return false;
+        }
         session.masterConnectionPending = true;
+        logger.debug(`setMasterConnectionPending: set pending`, { sessionId });
         return true;
     }
 

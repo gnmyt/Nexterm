@@ -28,8 +28,7 @@ app.post("/", async (req, res) => {
         if (result?.code) {
             return res.status(result.code).json({ error: result.message });
         }
-        
-        stateBroadcaster.broadcast("CONNECTIONS", { accountId: req.user.id });
+
         res.status(201).json(result);
     } catch (error) {
         console.error('Error creating session:', error);
