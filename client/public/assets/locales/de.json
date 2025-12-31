@@ -20,7 +20,14 @@
       "download": "Herunterladen",
       "close": "Schließen",
       "maximize": "Maximiere",
-      "restore": "Wiederherstellen"
+      "restore": "Wiederherstellen",
+      "back": "Zurück"
+    },
+    "iconChooser": {
+      "searchIcons": "Icons suchen...",
+      "searchResults": "Suchergebnisse",
+      "popularIcons": "Beliebte Icons",
+      "noResults": "Keine Icons gefunden"
     },
     "labels": {
       "username": "Benutzername",
@@ -51,10 +58,72 @@
       "signInWithPasskey": "Anmeldung mit Passkey",
       "authenticating": "Die Authentifizierung..."
     },
+    "deviceLink": {
+      "title": "Link Gerät",
+      "description": "Gib den auf deinem Gerät angezeigten Code ein, um es für den Zugriff auf dein Konto zu autorisieren.",
+      "codeLabel": "Gerätecode",
+      "continue": "Weiter",
+      "verifying": "Überprüfen...",
+      "confirmTitle": "Gerät autorisieren",
+      "confirmDescription": "Ein Gerät fordert den Zugriff auf dein Konto an. Bitte überprüfe die unten stehenden Angaben.",
+      "deviceInfo": "Geräteinformationen",
+      "type": "Typ",
+      "ipAddress": "IP-Adresse",
+      "userAgent": "Gerät",
+      "authorize": "Gerät autorisieren",
+      "authorizing": "Die Ermächtigung...",
+      "deny": "Verweigern",
+      "invalidCode": "Ungültiger oder abgelaufener Code",
+      "authorizationFailed": "Autorisierung fehlgeschlagen",
+      "deviceAuthorized": "Gerät erfolgreich autorisiert",
+      "successTitle": "Gerät autorisiert",
+      "successMessage": "Du kannst diese Registerkarte schließen und zur App zurückkehren.",
+      "clientTypes": {
+        "mobile": "Mobile App",
+        "connector": "Desktop Connector"
+      }
+    },
+    "connectorSetup": {
+      "title": "Nexterm Connector",
+      "serverUrl": "Server URL",
+      "serverUrlDescription": "Gib die URL deines Nexterm-Servers ein, um eine Verbindung herzustellen.",
+      "connect": "Verbinde",
+      "connecting": "Verbinden...",
+      "enterServerUrl": "Bitte gib eine Server-URL ein",
+      "connectionFailed": "Die Verbindung zum Server konnte nicht hergestellt werden. Bitte überprüfe die URL.",
+      "deviceLinkingNotSupported": "Dieser Server unterstützt keine Geräteverknüpfung. Bitte aktualisiere deinen Nexterm-Server.",
+      "authMethodDescription": "Wähle aus, wie du dich beim Server authentifizieren willst.",
+      "showCode": "Code anzeigen",
+      "showCodeDesc": "Anzeige eines Codes zur manuellen Eingabe auf der Weboberfläche",
+      "openBrowser": "Autorisiere",
+      "openBrowserDesc": "Öffne deinen Browser zur automatischen Autorisierung",
+      "enterCodeDescription": "Gib diesen Code in der Nexterm-Weboberfläche ein, um das Gerät zu autorisieren.",
+      "copyCode": "Code kopieren",
+      "codeCopied": "Code in die Zwischenablage kopiert",
+      "copyFailed": "Code kann nicht kopiert werden",
+      "waitingForAuth": "Ich warte auf die Genehmigung...",
+      "codeCreationFailed": "Fehler bei der Erstellung des Gerätecodes",
+      "authSuccess": "Erfolgreich authentifiziert!"
+    },
     "selectBox": {
       "defaultOption": "Wähle eine Option aus...",
       "search": "Suche...",
       "noResults": "Keine Ergebnisse gefunden"
+    },
+    "userSearch": {
+      "placeholder": "Suche nach einem Benutzer..."
+    },
+    "table": {
+      "noData": {
+        "title": "Keine Daten gefunden",
+        "subtitle": "Es gibt keine Gegenstände zum Anzeigen."
+      },
+      "pagination": {
+        "showing": "Zeigt {{start}} bis {{end}} von {{total}}",
+        "previous": "Vorherige",
+        "next": "Nächste",
+        "pageInfo": "Seite {{current}} von {{total}}"
+      }
     },
     "sidebar": {
       "settings": "Einstellungen",
@@ -66,7 +135,8 @@
       "logout": "Abmelden",
       "collapseTitle": "Seitenleiste ausblenden",
       "logoutConfirmText": "Du wirst aus dem Account {{username}} ausgeloggt. Möchtest du fortfahren?",
-      "navigationConfirmText": "Du hast noch aktive Sitzungen laufen, die dann durch diese Aktion alle auf einmal getrennt werden. Ungespeicherte Änderungen können verloren gehen, möchtest du fortfahren?"
+      "starOnGitHub": "Stern auf GitHub",
+      "support": "Unterstütze"
     },
     "quickAction": {
       "placeholder": "Suche nach Servern, Snippets, oder navigiere...",
@@ -512,6 +582,11 @@
       "currentLanguage": "Aktuelle Sprache",
       "missingLanguage": "Findest du deine Sprache nicht?",
       "helpTranslateLink": "Hilf bei der Übersetzung von Nexterm",
+      "syncLoginRequired": "Bitte logge dich ein, um die Einstellungen zu synchronisieren",
+      "appearanceSyncEnabled": "Die Einstellungen für das Erscheinungsbild werden jetzt mit deinem Konto synchronisiert",
+      "appearanceSyncDisabled": "Die Einstellungen für das Erscheinungsbild werden nicht mehr synchronisiert",
+      "generalSyncEnabled": "Die allgemeinen Einstellungen werden jetzt mit deinem Konto synchronisiert",
+      "generalSyncDisabled": "Die allgemeinen Einstellungen werden nicht mehr synchronisiert",
       "sessionSynchronization": "Synchronisierung der Sitzungen",
       "sessionSyncDescription": "Kontrolliere, wie deine Serversitzungen gespeichert und über Geräte und Browser-Tabs hinweg synchronisiert werden.",
       "sessionSyncAcrossDevices": "Über Geräte hinweg",
@@ -589,8 +664,22 @@
     "users": {
       "title": "{{count}} Benutzer",
       "createNewUser": "Neuen Benutzer erstellen",
+      "searchPlaceholder": "Benutzer suchen...",
       "twoFactorEnabled": "2FA aktiviert",
       "twoFactorDisabled": "2FA deaktiviert",
+      "noUsers": "Keine Benutzer gefunden",
+      "noUsersDescription": "Erstelle einen neuen Benutzer, um loszulegen.",
+      "noSearchResults": "Keine Benutzer gefunden",
+      "noSearchResultsDescription": "Versuche, deine Suchanfrage anzupassen.",
+      "table": {
+        "user": "Benutzer",
+        "role": "Rolle",
+        "twoFactor": "2FA"
+      },
+      "roles": {
+        "admin": "Admin",
+        "user": "Benutzer"
+      },
       "contextMenu": {
         "changePassword": "Passwort ändern",
         "promoteToAdmin": "Zum Admin befördern",
@@ -678,11 +767,14 @@
     },
     "terminal": {
       "title": "Terminal",
+      "syncLoginRequired": "Bitte logge dich ein, um die Terminaleinstellungen zu synchronisieren",
       "font": {
         "title": "Schriftart",
         "description": "Passe die Schriftart und -größe für dein Terminal an.",
         "fontFamily": "Schriftart",
-        "fontSize": "Schriftgröße"
+        "fontSize": "Schriftgröße",
+        "syncEnabled": "Die Schrifteinstellungen werden jetzt mit deinem Konto synchronisiert",
+        "syncDisabled": "Die Schrifteinstellungen werden nicht mehr synchronisiert"
       },
       "cursor": {
         "title": "Cursor",
@@ -690,11 +782,15 @@
         "cursorStyle": "Cursor-Stil",
         "cursorBlinking": "Cursor blinkt",
         "enabled": "Aktiviert",
-        "disabled": "Deaktiviert"
+        "disabled": "Deaktiviert",
+        "syncEnabled": "Die Cursor-Einstellungen werden jetzt mit deinem Konto synchronisiert",
+        "syncDisabled": "Die Cursor-Einstellungen werden nicht mehr synchronisiert"
       },
       "theme": {
         "title": "Theme",
-        "description": "Wähle ein Theme für dein Terminal."
+        "description": "Wähle ein Theme für dein Terminal.",
+        "syncEnabled": "Die Themeneinstellungen werden jetzt mit deinem Konto synchronisiert",
+        "syncDisabled": "Die Themeneinstellungen werden nicht mehr synchronisiert"
       },
       "preview": {
         "text": "$ echo 'Hi, Nexterm!'\nHi, Nexterm!\n$ "
@@ -703,6 +799,9 @@
     "fileManager": {
       "title": "Dateimanager",
       "description": "Lege fest, wie Dateien und Ordner angezeigt und verwaltet werden.",
+      "syncLoginRequired": "Bitte melde dich an, um die Einstellungen des Dateimanagers zu synchronisieren",
+      "syncEnabled": "Die Einstellungen des Dateimanagers werden jetzt mit deinem Konto synchronisiert",
+      "syncDisabled": "Die Einstellungen des Dateimanagers werden nicht mehr synchronisiert",
       "defaultView": {
         "title": "Standard-Ansichtsmodus",
         "description": "Wähle das Standardlayout beim Öffnen des Dateimanagers.",
@@ -1561,6 +1660,42 @@
       "fullScreen": "Vollbild",
       "exitFullScreen": "Beenden des Vollbildmodus",
       "badgeOn": "ON"
+    }
+  },
+  "support": {
+    "title": "Unterstützung erhalten",
+    "subtitle": "Brauchst du Hilfe oder möchtest du etwas beitragen?",
+    "footer": "Danke, dass du Nexterm benutzt!",
+    "issues": {
+      "title": "Ein Problem melden",
+      "description": "Hast du einen Fehler gefunden oder einen Funktionswunsch?"
+    },
+    "discord": {
+      "title": "Discord beitreten",
+      "description": "Chatte mit der Community und hol dir Hilfe."
+    },
+    "github": {
+      "title": "Auf GitHub ansehen",
+      "description": "Durchsuche den Quellcode und trage dazu bei."
+    }
+  },
+  "welcome": {
+    "subtitle": "Willkommen bei Nexterm. Der Open-Source-Server-Manager für SSH, VNC und RDP.",
+    "downloadApps": "Apps herunterladen",
+    "connectDevice": "Gerät verbinden",
+    "recentConnections": "Neueste Verbindungen",
+    "getStarted": "Anfangen",
+    "getStartedHint": "Füge einen Server in der Seitenleiste hinzu, um mit der Verwaltung deiner Infrastruktur zu beginnen."
+  },
+  "downloadApps": {
+    "title": "Apps herunterladen",
+    "subtitle": "Hol dir Nexterm auf deine Geräte",
+    "platforms": {
+      "windows": "Windows",
+      "macos": "macOS",
+      "linux": "Linux",
+      "android": "Android",
+      "ios": "iOS"
     }
   }
 }

@@ -20,7 +20,14 @@
       "download": "Stáhnout",
       "close": "Zavřít",
       "maximize": "Maximalizovat",
-      "restore": "Obnovit"
+      "restore": "Obnovit",
+      "back": "Zpět"
+    },
+    "iconChooser": {
+      "searchIcons": "Hledat ikony...",
+      "searchResults": "Výsledky vyhledávání",
+      "popularIcons": "Oblíbené ikony",
+      "noResults": "Nebyly nalezeny žádné ikony"
     },
     "labels": {
       "username": "Uživatelské jméno",
@@ -51,10 +58,72 @@
       "signInWithPasskey": "Přihlásit se pomocí Passkey",
       "authenticating": "Probíhá ověření..."
     },
+    "deviceLink": {
+      "title": "Odkaz Zařízení",
+      "description": "Zadejte kód zobrazený na zařízení a autorizujte jej pro přístup k účtu.",
+      "codeLabel": "Kód zařízení",
+      "continue": "Pokračovat",
+      "verifying": "Ověřování...",
+      "confirmTitle": "Autorizovat zařízení",
+      "confirmDescription": "Zařízení žádá o přístup k vašemu účtu. Ověřte prosím níže uvedené údaje.",
+      "deviceInfo": "Informace o zařízení",
+      "type": "Typ",
+      "ipAddress": "IP adresa",
+      "userAgent": "Zařízení",
+      "authorize": "Autorizovat zařízení",
+      "authorizing": "Povolení...",
+      "deny": "Odmítnout",
+      "invalidCode": "Neplatný nebo neplatný kód",
+      "authorizationFailed": "Autorizace se nezdařila",
+      "deviceAuthorized": "Zařízení bylo úspěšně autorizováno",
+      "successTitle": "Autorizované zařízení",
+      "successMessage": "Tuto kartu můžete zavřít a vrátit se do aplikace.",
+      "clientTypes": {
+        "mobile": "Mobilní aplikace",
+        "connector": "Konektor pro stolní počítače"
+      }
+    },
+    "connectorSetup": {
+      "title": "Konektor Nexterm",
+      "serverUrl": "Adresa URL serveru",
+      "serverUrlDescription": "Zadejte adresu URL serveru Nexterm, ke kterému se chcete připojit.",
+      "connect": "Připojení",
+      "connecting": "Připojení...",
+      "enterServerUrl": "Zadejte prosím adresu URL serveru",
+      "connectionFailed": "Nepodařilo se připojit k serveru. Zkontrolujte prosím adresu URL.",
+      "deviceLinkingNotSupported": "Tento server nepodporuje propojení zařízení. Aktualizujte prosím svůj server Nexterm.",
+      "authMethodDescription": "Zvolte způsob ověřování na serveru.",
+      "showCode": "Zobrazit kód",
+      "showCodeDesc": "Zobrazení kódu pro ruční zadání ve webovém rozhraní",
+      "openBrowser": "Autorizovat",
+      "openBrowserDesc": "Otevřete prohlížeč pro automatickou autorizaci",
+      "enterCodeDescription": "Zadáním tohoto kódu ve webovém rozhraní Nexterm toto zařízení autorizujete.",
+      "copyCode": "Kopírovat kód",
+      "codeCopied": "Kód zkopírovaný do schránky",
+      "copyFailed": "Nepodařilo se zkopírovat kód",
+      "waitingForAuth": "Čekání na povolení...",
+      "codeCreationFailed": "Nepodařilo se vytvořit kód zařízení",
+      "authSuccess": "Úspěšně ověřeno!"
+    },
     "selectBox": {
       "defaultOption": "Vyberte možnost...",
       "search": "Hledat...",
       "noResults": "Žádné výsledky"
+    },
+    "userSearch": {
+      "placeholder": "Vyhledání uživatele..."
+    },
+    "table": {
+      "noData": {
+        "title": "Nebyly nalezeny žádné údaje",
+        "subtitle": "Nejsou žádné položky k zobrazení."
+      },
+      "pagination": {
+        "showing": "Zobrazeno na {{start}} až {{end}} z {{total}}",
+        "previous": "Předchozí",
+        "next": "Další",
+        "pageInfo": "Strana {{current}} z {{total}}"
+      }
     },
     "sidebar": {
       "settings": "Nastavení",
@@ -66,7 +135,8 @@
       "logout": "Odhlásit se",
       "collapseTitle": "Sbalit postranní panel",
       "logoutConfirmText": "Tímto se odhlásíte z účtu {{username}}. Jste si jisti?",
-      "navigationConfirmText": "Máte aktivní relace. Opuštěním stránky se odpojíte od všech serverů. Jste si jisti?"
+      "starOnGitHub": "Hvězda na GitHubu",
+      "support": "Podpora"
     },
     "quickAction": {
       "placeholder": "Hledat servery, snippety nebo navigovat...",
@@ -512,6 +582,11 @@
       "currentLanguage": "Aktuální jazyk",
       "missingLanguage": "Chybí váš jazyk?",
       "helpTranslateLink": "Pomozte přeložit Nexterm",
+      "syncLoginRequired": "Přihlaste se k synchronizaci nastavení",
+      "appearanceSyncEnabled": "Nastavení vzhledu se nyní synchronizuje s vaším účtem.",
+      "appearanceSyncDisabled": "Nastavení vzhledu se již nebude synchronizovat",
+      "generalSyncEnabled": "Obecná nastavení se nyní synchronizují s vaším účtem",
+      "generalSyncDisabled": "Obecná nastavení se již nebudou synchronizovat",
       "sessionSynchronization": "Synchronizace relací",
       "sessionSyncDescription": "Ovládejte, jak jsou vaše serverové relace ukládány a synchronizovány mezi zařízeními a kartami prohlížeče.",
       "sessionSyncAcrossDevices": "Mezi zařízeními",
@@ -589,8 +664,22 @@
     "users": {
       "title": "{{count}} uživatelů",
       "createNewUser": "Vytvořit nového uživatele",
+      "searchPlaceholder": "Vyhledávání uživatelů...",
       "twoFactorEnabled": "2FA povoleno",
       "twoFactorDisabled": "2FA zakázáno",
+      "noUsers": "Nebyli nalezeni žádní uživatelé",
+      "noUsersDescription": "Vytvořte nového uživatele a začněte.",
+      "noSearchResults": "Nebyli nalezeni žádní uživatelé",
+      "noSearchResultsDescription": "Zkuste upravit vyhledávací dotaz.",
+      "table": {
+        "user": "Uživatel",
+        "role": "Role",
+        "twoFactor": "2FA"
+      },
+      "roles": {
+        "admin": "Admin",
+        "user": "Uživatel"
+      },
       "contextMenu": {
         "changePassword": "Změnit heslo",
         "promoteToAdmin": "Povýšit na admina",
@@ -678,11 +767,14 @@
     },
     "terminal": {
       "title": "Terminál",
+      "syncLoginRequired": "Přihlaste se prosím k synchronizaci nastavení terminálu",
       "font": {
         "title": "Písmo",
         "description": "Přizpůsobte rodinu a velikost písma pro váš terminál.",
         "fontFamily": "Rodina písma",
-        "fontSize": "Velikost písma"
+        "fontSize": "Velikost písma",
+        "syncEnabled": "Nastavení písma se nyní synchronizuje s vaším účtem",
+        "syncDisabled": "Nastavení písma se již nesynchronizuje"
       },
       "cursor": {
         "title": "Kurzor",
@@ -690,11 +782,15 @@
         "cursorStyle": "Styl kurzoru",
         "cursorBlinking": "Blikání kurzoru",
         "enabled": "Povoleno",
-        "disabled": "Zakázáno"
+        "disabled": "Zakázáno",
+        "syncEnabled": "Nastavení kurzoru se nyní synchronizuje s vaším účtem.",
+        "syncDisabled": "Nastavení kurzoru se již nesynchronizuje"
       },
       "theme": {
         "title": "Motiv",
-        "description": "Vyberte barevný motiv pro váš terminál."
+        "description": "Vyberte barevný motiv pro váš terminál.",
+        "syncEnabled": "Nastavení motivu se nyní synchronizuje s vaším účtem.",
+        "syncDisabled": "Nastavení motivu se již nesynchronizuje"
       },
       "preview": {
         "text": "$ echo 'Ahoj, Nexterm!'\nAhoj, Nexterm!\n$ "
@@ -703,6 +799,9 @@
     "fileManager": {
       "title": "Správce souborů",
       "description": "Konfigurace způsobu zobrazení a správy souborů a složek.",
+      "syncLoginRequired": "Přihlaste se k synchronizaci nastavení správce souborů",
+      "syncEnabled": "Nastavení správce souborů se nyní synchronizuje s vaším účtem.",
+      "syncDisabled": "Nastavení správce souborů se již nesynchronizuje",
       "defaultView": {
         "title": "Výchozí režim zobrazení",
         "description": "Při otevření správce souborů zvolte výchozí rozložení.",
@@ -1561,6 +1660,42 @@
       "fullScreen": "Celá obrazovka",
       "exitFullScreen": "Opustit režim celé obrazovky",
       "badgeOn": "ZAP"
+    }
+  },
+  "support": {
+    "title": "Získat podporu",
+    "subtitle": "Potřebujete pomoc nebo chcete přispět?",
+    "footer": "Děkujeme, že používáte Nexterm!",
+    "issues": {
+      "title": "Nahlášení problému",
+      "description": "Našli jste chybu nebo máte požadavek na funkci?"
+    },
+    "discord": {
+      "title": "Připojte se k Discordu",
+      "description": "Chatujte s komunitou a získejte pomoc."
+    },
+    "github": {
+      "title": "Zobrazit na GitHubu",
+      "description": "Procházejte zdrojový kód a přispívejte."
+    }
+  },
+  "welcome": {
+    "subtitle": "Vítejte na Nextermu. Správce serverů s otevřeným zdrojovým kódem pro SSH, VNC a RDP.",
+    "downloadApps": "Aplikace ke stažení",
+    "connectDevice": "Připojení zařízení",
+    "recentConnections": "Nedávná připojení",
+    "getStarted": "Začněte",
+    "getStartedHint": "Přidáním serveru z postranního panelu můžete začít spravovat svou infrastrukturu."
+  },
+  "downloadApps": {
+    "title": "Aplikace ke stažení",
+    "subtitle": "Získejte Nexterm do svých zařízení",
+    "platforms": {
+      "windows": "Windows",
+      "macos": "macOS",
+      "linux": "Linux",
+      "android": "Android",
+      "ios": "iOS"
     }
   }
 }
