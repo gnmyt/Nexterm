@@ -21,13 +21,13 @@
       "close": "إغلاق",
       "maximize": "تعظيم",
       "restore": "الاستعادة",
-      "back": "Back"
+      "back": "رجوع"
     },
     "iconChooser": {
-      "searchIcons": "Search icons...",
-      "searchResults": "Search Results",
-      "popularIcons": "Popular Icons",
-      "noResults": "No icons found"
+      "searchIcons": "أيقونات البحث...",
+      "searchResults": "نتائج البحث",
+      "popularIcons": "الأيقونات الشائعة",
+      "noResults": "لم يتم العثور على أي أيقونات"
     },
     "labels": {
       "username": "اسم المستخدم",
@@ -59,51 +59,51 @@
       "authenticating": "توثيق..."
     },
     "deviceLink": {
-      "title": "Link Device",
-      "description": "Enter the code shown on your device to authorize it to access your account.",
-      "codeLabel": "Device Code",
-      "continue": "Continue",
-      "verifying": "Verifying...",
-      "confirmTitle": "Authorize Device",
-      "confirmDescription": "A device is requesting access to your account. Please verify the details below.",
-      "deviceInfo": "Device Information",
-      "type": "Type",
-      "ipAddress": "IP Address",
-      "userAgent": "Device",
-      "authorize": "Authorize Device",
-      "authorizing": "Authorizing...",
-      "deny": "Deny",
-      "invalidCode": "Invalid or expired code",
-      "authorizationFailed": "Authorization failed",
-      "deviceAuthorized": "Device authorized successfully",
-      "successTitle": "Device Authorized",
-      "successMessage": "You can close this tab and return to the app.",
+      "title": "جهاز الارتباط",
+      "description": "أدخل الرمز الظاهر على جهازك لتفويضه بالوصول إلى حسابك.",
+      "codeLabel": "رمز الجهاز",
+      "continue": "تابع",
+      "verifying": "التحقق من...",
+      "confirmTitle": "تفويض الجهاز",
+      "confirmDescription": "هناك جهاز يطلب الوصول إلى حسابك. يرجى التحقق من التفاصيل أدناه.",
+      "deviceInfo": "معلومات الجهاز",
+      "type": "النوع",
+      "ipAddress": "عنوان IP",
+      "userAgent": "الجهاز",
+      "authorize": "تفويض الجهاز",
+      "authorizing": "تفويض...",
+      "deny": "الرفض",
+      "invalidCode": "رمز غير صالح أو منتهي الصلاحية",
+      "authorizationFailed": "فشل التفويض",
+      "deviceAuthorized": "تم اعتماد الجهاز بنجاح",
+      "successTitle": "الجهاز المصرح به",
+      "successMessage": "يمكنك إغلاق علامة التبويب هذه والعودة إلى التطبيق.",
       "clientTypes": {
-        "mobile": "Mobile App",
-        "connector": "Desktop Connector"
+        "mobile": "تطبيق الهاتف المحمول",
+        "connector": "موصل سطح المكتب"
       }
     },
     "connectorSetup": {
-      "title": "Nexterm Connector",
-      "serverUrl": "Server URL",
-      "serverUrlDescription": "Enter the URL of your Nexterm server to connect.",
-      "connect": "Connect",
-      "connecting": "Connecting...",
-      "enterServerUrl": "Please enter a server URL",
-      "connectionFailed": "Failed to connect to server. Please check the URL.",
-      "deviceLinkingNotSupported": "This server does not support device linking. Please update your Nexterm server.",
-      "authMethodDescription": "Choose how you want to authenticate with the server.",
-      "showCode": "Show Code",
-      "showCodeDesc": "Display a code to enter manually on the web interface",
-      "openBrowser": "Authorize",
-      "openBrowserDesc": "Open your browser to authorize automatically",
-      "enterCodeDescription": "Enter this code on the Nexterm web interface to authorize this device.",
-      "copyCode": "Copy Code",
-      "codeCopied": "Code copied to clipboard",
-      "copyFailed": "Failed to copy code",
-      "waitingForAuth": "Waiting for authorization...",
-      "codeCreationFailed": "Failed to create device code",
-      "authSuccess": "Successfully authenticated!"
+      "title": "موصل نيكسيرم",
+      "serverUrl": "عنوان URL للخادم",
+      "serverUrlDescription": "أدخل عنوان URL الخاص بخادم Nexterm للاتصال.",
+      "connect": "الاتصال",
+      "connecting": "توصيل...",
+      "enterServerUrl": "الرجاء إدخال عنوان URL الخادم",
+      "connectionFailed": "فشل الاتصال بالخادم. يرجى التحقق من عنوان URL.",
+      "deviceLinkingNotSupported": "هذا الخادم لا يدعم ربط الجهاز. يرجى تحديث خادم Nexterm الخاص بك.",
+      "authMethodDescription": "اختر كيف تريد المصادقة مع الخادم.",
+      "showCode": "إظهار الرمز",
+      "showCodeDesc": "عرض رمز لإدخاله يدوياً على واجهة الويب",
+      "openBrowser": "تفويض",
+      "openBrowserDesc": "افتح متصفحك للتفويض تلقائياً",
+      "enterCodeDescription": "أدخل هذا الرمز على واجهة الويب Nexterm لتخويل هذا الجهاز.",
+      "copyCode": "نسخ الرمز",
+      "codeCopied": "الرمز المنسوخ إلى الحافظة",
+      "copyFailed": "فشل في نسخ الرمز",
+      "waitingForAuth": "في انتظار التفويض...",
+      "codeCreationFailed": "فشل في إنشاء رمز الجهاز",
+      "authSuccess": "تمت المصادقة بنجاح!"
     },
     "selectBox": {
       "defaultOption": "اختر خيارًا...",
@@ -111,18 +111,18 @@
       "noResults": "لم يتم العثور على نتائج"
     },
     "userSearch": {
-      "placeholder": "Search for a user..."
+      "placeholder": "البحث عن مستخدم..."
     },
     "table": {
       "noData": {
-        "title": "No data found",
-        "subtitle": "There are no items to display."
+        "title": "لم يتم العثور على بيانات",
+        "subtitle": "لا توجد عناصر للعرض."
       },
       "pagination": {
-        "showing": "Showing {{start}} to {{end}} of {{total}}",
-        "previous": "Previous",
-        "next": "Next",
-        "pageInfo": "Page {{current}} of {{total}}"
+        "showing": "عرض {{start}} إلى {{end}} من {{total}}",
+        "previous": "السابق",
+        "next": "التالي",
+        "pageInfo": "الصفحة {{current}} من {{total}}"
       }
     },
     "sidebar": {
@@ -135,8 +135,8 @@
       "logout": "تسجيل الخروج",
       "collapseTitle": "طي الشريط الجانبي",
       "logoutConfirmText": "سيتم تسجيل الخروج من حساب {{username}}. هل أنت متأكد؟",
-      "starOnGitHub": "Star on GitHub",
-      "support": "Support"
+      "starOnGitHub": "نجمة على GitHub",
+      "support": "الدعم"
     },
     "quickAction": {
       "placeholder": "ابحث في الخوادم أو المقتطفات أو التنقل...",
@@ -582,11 +582,11 @@
       "currentLanguage": "اللغة الحالية",
       "missingLanguage": "هل تفتقد لغتك؟",
       "helpTranslateLink": "مساعدة في ترجمة نيكسترِم",
-      "syncLoginRequired": "Please log in to sync settings",
-      "appearanceSyncEnabled": "Appearance settings will now sync to your account",
-      "appearanceSyncDisabled": "Appearance settings will no longer sync",
-      "generalSyncEnabled": "General settings will now sync to your account",
-      "generalSyncDisabled": "General settings will no longer sync",
+      "syncLoginRequired": "يُرجى تسجيل الدخول لمزامنة الإعدادات",
+      "appearanceSyncEnabled": "ستتم مزامنة إعدادات المظهر الآن مع حسابك",
+      "appearanceSyncDisabled": "لن تتم مزامنة إعدادات المظهر بعد الآن",
+      "generalSyncEnabled": "ستتم الآن مزامنة الإعدادات العامة مع حسابك",
+      "generalSyncDisabled": "لن تتم مزامنة الإعدادات العامة بعد الآن",
       "sessionSynchronization": "مزامنة الجلسة",
       "sessionSyncDescription": "تحكم في كيفية تخزين جلسات الخادم ومزامنتها عبر الأجهزة وعلامات تبويب المتصفح.",
       "sessionSyncAcrossDevices": "عبر الأجهزة",
@@ -664,21 +664,21 @@
     "users": {
       "title": "{{count}} مستخدمون",
       "createNewUser": "إنشاء مستخدم جديد",
-      "searchPlaceholder": "Search users...",
+      "searchPlaceholder": "بحث المستخدمين...",
       "twoFactorEnabled": "2FA مفعل",
       "twoFactorDisabled": "2FA معطل",
-      "noUsers": "No Users Found",
-      "noUsersDescription": "Create a new user to get started.",
-      "noSearchResults": "No Users Found",
-      "noSearchResultsDescription": "Try adjusting your search query.",
+      "noUsers": "لم يتم العثور على مستخدمين",
+      "noUsersDescription": "قم بإنشاء مستخدم جديد للبدء.",
+      "noSearchResults": "لم يتم العثور على مستخدمين",
+      "noSearchResultsDescription": "حاول تعديل استعلام البحث الخاص بك.",
       "table": {
-        "user": "User",
-        "role": "Role",
+        "user": "المستخدم",
+        "role": "الدور",
         "twoFactor": "2FA"
       },
       "roles": {
-        "admin": "Admin",
-        "user": "User"
+        "admin": "المسؤول",
+        "user": "المستخدم"
       },
       "contextMenu": {
         "changePassword": "تغيير كلمة المرور",
@@ -767,14 +767,14 @@
     },
     "terminal": {
       "title": "الطرفية",
-      "syncLoginRequired": "Please log in to sync terminal settings",
+      "syncLoginRequired": "يُرجى تسجيل الدخول لمزامنة إعدادات المحطة الطرفية",
       "font": {
         "title": "الخط",
         "description": "تخصيص عائلة الخط وحجم الخط للطرفية الخاصة بك.",
         "fontFamily": "عائلة الخط",
         "fontSize": "حجم الخط",
-        "syncEnabled": "Font settings will now sync to your account",
-        "syncDisabled": "Font settings will no longer sync"
+        "syncEnabled": "ستتم الآن مزامنة إعدادات الخط مع حسابك",
+        "syncDisabled": "لن تتم مزامنة إعدادات الخط بعد الآن"
       },
       "cursor": {
         "title": "المؤشر",
@@ -783,14 +783,14 @@
         "cursorBlinking": "وميض المؤشر",
         "enabled": "مفعل",
         "disabled": "معطل",
-        "syncEnabled": "Cursor settings will now sync to your account",
-        "syncDisabled": "Cursor settings will no longer sync"
+        "syncEnabled": "ستتم مزامنة إعدادات المؤشر الآن مع حسابك",
+        "syncDisabled": "لن تتم مزامنة إعدادات المؤشر بعد الآن"
       },
       "theme": {
         "title": "السمة",
         "description": "اختر سمة لونية للطرفية الخاصة بك.",
-        "syncEnabled": "Theme settings will now sync to your account",
-        "syncDisabled": "Theme settings will no longer sync"
+        "syncEnabled": "ستتم الآن مزامنة إعدادات القالب مع حسابك",
+        "syncDisabled": "لن تتم مزامنة إعدادات القالب بعد الآن"
       },
       "preview": {
         "text": "$ echo 'مرحباً، نيكسترِم!'\nمرحباً، نيكسترِم!\n$ "
@@ -799,9 +799,9 @@
     "fileManager": {
       "title": "مدير الملفات",
       "description": "تكوين كيفية عرض الملفات والمجلدات وإدارتها.",
-      "syncLoginRequired": "Please log in to sync file manager settings",
-      "syncEnabled": "File manager settings will now sync to your account",
-      "syncDisabled": "File manager settings will no longer sync",
+      "syncLoginRequired": "الرجاء تسجيل الدخول لمزامنة إعدادات مدير الملفات",
+      "syncEnabled": "ستتم مزامنة إعدادات مدير الملفات الآن مع حسابك",
+      "syncDisabled": "لن تتم مزامنة إعدادات مدير الملفات بعد الآن",
       "defaultView": {
         "title": "وضع العرض الافتراضي",
         "description": "اختر التخطيط الافتراضي عند فتح مدير الملفات.",
@@ -1663,38 +1663,38 @@
     }
   },
   "support": {
-    "title": "Get Support",
-    "subtitle": "Need help or want to contribute?",
-    "footer": "Thank you for using Nexterm!",
+    "title": "احصل على الدعم",
+    "subtitle": "هل تحتاج إلى مساعدة أو ترغب في المساهمة؟",
+    "footer": "شكراً لاستخدامك \"نيكستيرم\"!",
     "issues": {
-      "title": "Report an Issue",
-      "description": "Found a bug or have a feature request?"
+      "title": "الإبلاغ عن مشكلة",
+      "description": "هل عثرت على خطأ أو لديك طلب ميزة؟"
     },
     "discord": {
-      "title": "Join Discord",
-      "description": "Chat with the community and get help."
+      "title": "انضم إلى ديسكورد",
+      "description": "تحدث مع المجتمع واحصل على المساعدة."
     },
     "github": {
-      "title": "View on GitHub",
-      "description": "Browse source code and contribute."
+      "title": "عرض على GitHub",
+      "description": "تصفح التعليمات البرمجية المصدرية وساهم."
     }
   },
   "welcome": {
-    "subtitle": "Welcome to Nexterm. The open-source server manager for SSH, VNC and RDP.",
-    "downloadApps": "Download Apps",
-    "connectDevice": "Connect Device",
-    "recentConnections": "Recent Connections",
-    "getStarted": "Get Started",
-    "getStartedHint": "Add a server from the sidebar to begin managing your infrastructure."
+    "subtitle": "مرحبًا بك في Nexterm. مدير الخادم مفتوح المصدر لخوادم SSH و VNC و RDP.",
+    "downloadApps": "تنزيل التطبيقات",
+    "connectDevice": "توصيل الجهاز",
+    "recentConnections": "الاتصالات الحديثة",
+    "getStarted": "ابدأ الآن",
+    "getStartedHint": "أضف خادمًا من الشريط الجانبي لبدء إدارة بنيتك الأساسية."
   },
   "downloadApps": {
-    "title": "Download Apps",
-    "subtitle": "Get Nexterm on your devices",
+    "title": "تنزيل التطبيقات",
+    "subtitle": "احصل على Nexterm على أجهزتك",
     "platforms": {
-      "windows": "Windows",
-      "macos": "macOS",
-      "linux": "Linux",
-      "android": "Android",
+      "windows": "النوافذ",
+      "macos": "نظام التشغيل macOS",
+      "linux": "لينكس",
+      "android": "أندرويد",
       "ios": "iOS"
     }
   }
