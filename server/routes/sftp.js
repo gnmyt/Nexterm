@@ -277,7 +277,7 @@ const addFileToArchive = (sftp, remotePath, archive, archiveName, streams) => ne
  * @produces application/zip
  * @param {string} sessionToken.query.required - Session authentication token
  * @param {string} sessionId.query.required - Active server session ID
- * @param {string} paths.body.required - JSON array of remote file/folder paths to download
+ * @param {object} request.body.required - Request body containing paths array
  * @return {file} 200 - ZIP archive containing all requested files and folders
  * @return {object} 400 - Missing parameters, invalid paths format, or no paths provided
  * @return {object} 401 - Invalid session token
