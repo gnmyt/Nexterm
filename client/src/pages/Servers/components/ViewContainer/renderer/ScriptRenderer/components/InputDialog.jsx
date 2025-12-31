@@ -26,11 +26,13 @@ const InputDialog = ({ open, onSubmit, prompt }) => {
 
     if (!prompt) return null;
 
+    const promptType = prompt.inputType || prompt.type || "input";
+
     return (
         <DialogProvider open={open} onClose={() => {}} disableClosing={true}>
             <div className="input-dialog">
                 <div className="dialog-title">
-                    <Icon path={prompt.type === "password" ? mdiFormTextboxPassword : mdiFormTextbox} />
+                    <Icon path={promptType === "password" ? mdiFormTextboxPassword : mdiFormTextbox} />
                     <h2>Input Required</h2>
                 </div>
 
@@ -39,7 +41,7 @@ const InputDialog = ({ open, onSubmit, prompt }) => {
                         {prompt.prompt}
                     </div>
 
-                    {prompt.type === "select" ? (
+                    {promptType === "select" ? (
                         <div className="form-group">
                             <label>Select an option</label>
                             <div className="options-container">
@@ -48,7 +50,7 @@ const InputDialog = ({ open, onSubmit, prompt }) => {
                                 ))}
                             </div>
                         </div>
-                    ) : prompt.type === "confirm" ? (
+                    ) : promptType === "confirm" ? (
                         <div className="form-group">
                             <label>Confirm action</label>
                             <div className="confirm-actions">
@@ -60,11 +62,11 @@ const InputDialog = ({ open, onSubmit, prompt }) => {
                         <div className="form-group">
                             <label>Enter value</label>
                             <IconInput
-                                type={prompt.type === "password" ? "password" : "text"}
-                                icon={prompt.type === "password" ? mdiLock : mdiFormTextbox}
+                                type={promptType === "password" ? "password" : "text"}
+                                icon={promptType === "password" ? mdiLock : mdiFormTextbox}
                                 value={inputValue}
                                 setValue={setInputValue}
-                                placeholder={prompt.type === "password" ? "Enter password..." : (prompt.default || "Enter value...")}
+                                placeholder={promptType === "password" ? "Enter password..." : (prompt.default || "Enter value...")}
                                 onKeyDown={handleKeyDown}
                                 autoFocus
                             />
@@ -72,10 +74,10 @@ const InputDialog = ({ open, onSubmit, prompt }) => {
                     )}
                 </div>
 
-                {(prompt.type !== "select" && prompt.type !== "confirm") && (
+                {(promptType !== "select" && promptType !== "confirm") && (
                     <div className="dialog-actions">
                         <Button onClick={handleSubmit} text="Submit" icon={mdiSend}
-                                disabled={prompt.type === "password" ? !inputValue : !inputValue.trim()} />
+                                disabled={promptType === "password" ? !inputValue : !inputValue.trim()} />
                     </div>
                 )}
             </div>
