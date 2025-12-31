@@ -3,6 +3,22 @@ const OrganizationMember = require("../models/OrganizationMember");
 const Account = require("../models/Account");
 const { Op } = require("sequelize");
 
+const canActAsOwner = async (accountId, organizationId) => {
+    const membership = await OrganizationMember.findOne({
+        where: { organizationId, accountId, status: "active" },
+    });
+    if (!membership) return false;
+    if (membership.role === "owner") return true;
+
+    const ownerExists = await OrganizationMember.findOne({
+        where: { organizationId, role: "owner", status: "active" },
+    });
+    if (ownerExists) return false;
+
+    const account = await Account.findByPk(accountId);
+    return account && account.role === "admin";
+};
+
 module.exports.createOrganization = async (accountId, configuration) => {
     const organization = await Organization.create({
         name: configuration.name, description: configuration.description,
@@ -26,11 +42,8 @@ module.exports.deleteOrganization = async (accountId, organizationId) => {
     const orgId = parseInt(organizationId, 10);
     if (isNaN(orgId) || orgId <= 0) return { code: 400, message: "Invalid organization ID" };
 
-    const membership = await OrganizationMember.findOne({
-        where: { organizationId: orgId, accountId, status: "active", role: "owner" },
-    });
-
-    if (!membership) {
+    const canManage = await canActAsOwner(accountId, orgId);
+    if (!canManage) {
         return { code: 403, message: "You don't have permission to delete this organization or it doesn't exist" };
     }
 
@@ -47,11 +60,8 @@ module.exports.updateOrganization = async (accountId, organizationId, updates) =
         return { code: 400, message: "Invalid organization ID" };
     }
 
-    const membership = await OrganizationMember.findOne({
-        where: { organizationId: orgId, accountId, status: "active", role: "owner" },
-    });
-
-    if (!membership) {
+    const canManage = await canActAsOwner(accountId, orgId);
+    if (!canManage) {
         return { code: 403, message: "You don't have permission to update this organization" };
     }
 
@@ -79,9 +89,19 @@ module.exports.listOrganizations = async (accountId) => {
     const organizationIds = memberships.map(m => m.organizationId);
 
     const organizations = await Organization.findAll({ where: { id: { [Op.in]: organizationIds } } });
+
+    const account = await Account.findByPk(accountId);
+    const isSystemAdmin = account && account.role === "admin";
+
+    const owners = await OrganizationMember.findAll({
+        where: { organizationId: { [Op.in]: organizationIds }, role: "owner", status: "active" },
+    });
+
     return organizations.map(org => {
         const membership = memberships.find(m => m.organizationId === org.id);
-        return { ...org, isOwner: membership.role === "owner" };
+        const hasOwner = owners.some(o => o.organizationId === org.id);
+        const isOwner = membership.role === "owner" || (!hasOwner && isSystemAdmin);
+        return { ...org, isOwner };
     });
 };
 
@@ -119,11 +139,8 @@ module.exports.inviteUser = async (accountId, organizationId, username) => {
     const orgId = parseInt(organizationId, 10);
     if (isNaN(orgId) || orgId <= 0) return { code: 400, message: "Invalid organization ID" };
 
-    const membership = await OrganizationMember.findOne({
-        where: { organizationId: orgId, accountId, status: "active", role: "owner" },
-    });
-
-    if (!membership) return { code: 403, message: "You don't have permission to invite users to this organization" };
+    const canManage = await canActAsOwner(accountId, orgId);
+    if (!canManage) return { code: 403, message: "You don't have permission to invite users to this organization" };
     const invitedUser = await Account.findOne({ where: { username: username } });
 
     if (!invitedUser) return { code: 404, message: "User not found" };
@@ -172,11 +189,8 @@ module.exports.removeMember = async (accountId, organizationId, memberAccountId)
     if (isNaN(orgId) || orgId <= 0) return { code: 400, message: "Invalid organization ID" };
     if (isNaN(memberId) || memberId <= 0) return { code: 400, message: "Invalid member account ID" };
 
-    const membership = await OrganizationMember.findOne({
-        where: { organizationId: orgId, accountId, status: "active", role: "owner" },
-    });
-
-    if (!membership) {
+    const canManage = await canActAsOwner(accountId, orgId);
+    if (!canManage) {
         return { code: 403, message: "You don't have permission to remove members from this organization" };
     }
 
