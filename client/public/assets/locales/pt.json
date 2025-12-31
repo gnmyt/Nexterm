@@ -21,13 +21,13 @@
       "close": "Fechar",
       "maximize": "Maximizar",
       "restore": "Restaurar",
-      "back": "Back"
+      "back": "Voltar"
     },
     "iconChooser": {
-      "searchIcons": "Search icons...",
-      "searchResults": "Search Results",
-      "popularIcons": "Popular Icons",
-      "noResults": "No icons found"
+      "searchIcons": "Pesquisar ícones...",
+      "searchResults": "Resultados da pesquisa",
+      "popularIcons": "Ícones populares",
+      "noResults": "Não foram encontrados ícones"
     },
     "labels": {
       "username": "Nome de Usuário",
@@ -59,51 +59,51 @@
       "authenticating": "Autenticação..."
     },
     "deviceLink": {
-      "title": "Link Device",
-      "description": "Enter the code shown on your device to authorize it to access your account.",
-      "codeLabel": "Device Code",
-      "continue": "Continue",
-      "verifying": "Verifying...",
-      "confirmTitle": "Authorize Device",
-      "confirmDescription": "A device is requesting access to your account. Please verify the details below.",
-      "deviceInfo": "Device Information",
-      "type": "Type",
-      "ipAddress": "IP Address",
-      "userAgent": "Device",
-      "authorize": "Authorize Device",
-      "authorizing": "Authorizing...",
-      "deny": "Deny",
-      "invalidCode": "Invalid or expired code",
-      "authorizationFailed": "Authorization failed",
-      "deviceAuthorized": "Device authorized successfully",
-      "successTitle": "Device Authorized",
-      "successMessage": "You can close this tab and return to the app.",
+      "title": "Dispositivo de link",
+      "description": "Digite o código exibido no dispositivo para autorizá-lo a acessar sua conta.",
+      "codeLabel": "Código do dispositivo",
+      "continue": "Continuar",
+      "verifying": "Verificando...",
+      "confirmTitle": "Autorizar dispositivo",
+      "confirmDescription": "Um dispositivo está solicitando acesso à sua conta. Verifique os detalhes abaixo.",
+      "deviceInfo": "Informações sobre o dispositivo",
+      "type": "Tipo",
+      "ipAddress": "Endereço IP",
+      "userAgent": "Dispositivo",
+      "authorize": "Autorizar dispositivo",
+      "authorizing": "Autorizando...",
+      "deny": "Negar",
+      "invalidCode": "Código inválido ou expirado",
+      "authorizationFailed": "Falha na autorização",
+      "deviceAuthorized": "Dispositivo autorizado com sucesso",
+      "successTitle": "Dispositivo autorizado",
+      "successMessage": "Você pode fechar essa guia e retornar ao aplicativo.",
       "clientTypes": {
-        "mobile": "Mobile App",
-        "connector": "Desktop Connector"
+        "mobile": "Aplicativo móvel",
+        "connector": "Conector de desktop"
       }
     },
     "connectorSetup": {
-      "title": "Nexterm Connector",
-      "serverUrl": "Server URL",
-      "serverUrlDescription": "Enter the URL of your Nexterm server to connect.",
-      "connect": "Connect",
-      "connecting": "Connecting...",
-      "enterServerUrl": "Please enter a server URL",
-      "connectionFailed": "Failed to connect to server. Please check the URL.",
-      "deviceLinkingNotSupported": "This server does not support device linking. Please update your Nexterm server.",
-      "authMethodDescription": "Choose how you want to authenticate with the server.",
-      "showCode": "Show Code",
-      "showCodeDesc": "Display a code to enter manually on the web interface",
-      "openBrowser": "Authorize",
-      "openBrowserDesc": "Open your browser to authorize automatically",
-      "enterCodeDescription": "Enter this code on the Nexterm web interface to authorize this device.",
-      "copyCode": "Copy Code",
-      "codeCopied": "Code copied to clipboard",
-      "copyFailed": "Failed to copy code",
-      "waitingForAuth": "Waiting for authorization...",
-      "codeCreationFailed": "Failed to create device code",
-      "authSuccess": "Successfully authenticated!"
+      "title": "Conector Nexterm",
+      "serverUrl": "URL do servidor",
+      "serverUrlDescription": "Digite o URL do servidor Nexterm para se conectar.",
+      "connect": "Conectar",
+      "connecting": "Conectando...",
+      "enterServerUrl": "Digite um URL do servidor",
+      "connectionFailed": "Falha na conexão com o servidor. Verifique o URL.",
+      "deviceLinkingNotSupported": "Este servidor não é compatível com a vinculação de dispositivos. Atualize seu servidor Nexterm.",
+      "authMethodDescription": "Escolha como você deseja se autenticar no servidor.",
+      "showCode": "Mostrar código",
+      "showCodeDesc": "Exibir um código para você inserir manualmente na interface da Web",
+      "openBrowser": "Autorizar",
+      "openBrowserDesc": "Abra seu navegador para autorizar automaticamente",
+      "enterCodeDescription": "Digite esse código na interface da Web da Nexterm para autorizar esse dispositivo.",
+      "copyCode": "Código de cópia",
+      "codeCopied": "Código copiado para a área de transferência",
+      "copyFailed": "Falha ao copiar o código",
+      "waitingForAuth": "Aguardando autorização...",
+      "codeCreationFailed": "Falha ao criar o código do dispositivo",
+      "authSuccess": "Você foi autenticado com sucesso!"
     },
     "selectBox": {
       "defaultOption": "Selecionar uma opção...",
@@ -111,18 +111,18 @@
       "noResults": "Nenhum resultado encontrado"
     },
     "userSearch": {
-      "placeholder": "Search for a user..."
+      "placeholder": "Procure um usuário..."
     },
     "table": {
       "noData": {
-        "title": "No data found",
-        "subtitle": "There are no items to display."
+        "title": "Não foram encontrados dados",
+        "subtitle": "Não há itens para exibir."
       },
       "pagination": {
-        "showing": "Showing {{start}} to {{end}} of {{total}}",
-        "previous": "Previous",
-        "next": "Next",
-        "pageInfo": "Page {{current}} of {{total}}"
+        "showing": "Mostrando {{start}} a {{end}} de {{total}}",
+        "previous": "Anterior",
+        "next": "Próximo",
+        "pageInfo": "Página {{current}} de {{total}}"
       }
     },
     "sidebar": {
@@ -135,8 +135,8 @@
       "logout": "Fazer logout",
       "collapseTitle": "Alternar a Barra Lateral",
       "logoutConfirmText": "Isso irá encerrar sua sessão na conta {{username}}. Tem certeza?",
-      "starOnGitHub": "Star on GitHub",
-      "support": "Support"
+      "starOnGitHub": "Estrela no GitHub",
+      "support": "Suporte"
     },
     "quickAction": {
       "placeholder": "Pesquise servidores, trechos ou navegue...",
@@ -582,11 +582,11 @@
       "currentLanguage": "Idioma Atual",
       "missingLanguage": "Está sem seu idioma?",
       "helpTranslateLink": "Ajude a traduzir o Nexterm",
-      "syncLoginRequired": "Please log in to sync settings",
-      "appearanceSyncEnabled": "Appearance settings will now sync to your account",
-      "appearanceSyncDisabled": "Appearance settings will no longer sync",
-      "generalSyncEnabled": "General settings will now sync to your account",
-      "generalSyncDisabled": "General settings will no longer sync",
+      "syncLoginRequired": "Faça login para sincronizar as configurações",
+      "appearanceSyncEnabled": "As configurações de aparência agora serão sincronizadas com sua conta",
+      "appearanceSyncDisabled": "As configurações de aparência não serão mais sincronizadas",
+      "generalSyncEnabled": "As configurações gerais agora serão sincronizadas com sua conta",
+      "generalSyncDisabled": "As configurações gerais não serão mais sincronizadas",
       "sessionSynchronization": "Sincronização de Sessão",
       "sessionSyncDescription": "Controle como suas sessões de servidor são armazenadas e sincronizadas entre dispositivos e abas do navegador.",
       "sessionSyncAcrossDevices": "Entre dispositivos",
@@ -664,21 +664,21 @@
     "users": {
       "title": "{{count}} usuário(s)",
       "createNewUser": "Criar Usuário",
-      "searchPlaceholder": "Search users...",
+      "searchPlaceholder": "Pesquisar usuários...",
       "twoFactorEnabled": "2FA habilitado",
       "twoFactorDisabled": "2FA desabilitado",
-      "noUsers": "No Users Found",
-      "noUsersDescription": "Create a new user to get started.",
-      "noSearchResults": "No Users Found",
-      "noSearchResultsDescription": "Try adjusting your search query.",
+      "noUsers": "Nenhum usuário encontrado",
+      "noUsersDescription": "Para começar, crie um novo usuário.",
+      "noSearchResults": "Nenhum usuário encontrado",
+      "noSearchResultsDescription": "Tente ajustar sua consulta de pesquisa.",
       "table": {
-        "user": "User",
-        "role": "Role",
+        "user": "Usuário",
+        "role": "Função",
         "twoFactor": "2FA"
       },
       "roles": {
-        "admin": "Admin",
-        "user": "User"
+        "admin": "Administrador",
+        "user": "Usuário"
       },
       "contextMenu": {
         "changePassword": "Alterar a senha",
@@ -767,14 +767,14 @@
     },
     "terminal": {
       "title": "Terminal",
-      "syncLoginRequired": "Please log in to sync terminal settings",
+      "syncLoginRequired": "Faça login para sincronizar as configurações do terminal",
       "font": {
         "title": "Fonte",
         "description": "Personalize a família e o tamanho da fonte do seu terminal.",
         "fontFamily": "Fonte",
         "fontSize": "Tamanho da Fonte",
-        "syncEnabled": "Font settings will now sync to your account",
-        "syncDisabled": "Font settings will no longer sync"
+        "syncEnabled": "As configurações de fonte agora serão sincronizadas com sua conta",
+        "syncDisabled": "As configurações de fonte não serão mais sincronizadas"
       },
       "cursor": {
         "title": "Cursor",
@@ -783,14 +783,14 @@
         "cursorBlinking": "Cursor Piscando",
         "enabled": "Habilitado",
         "disabled": "Desabilitado",
-        "syncEnabled": "Cursor settings will now sync to your account",
-        "syncDisabled": "Cursor settings will no longer sync"
+        "syncEnabled": "As configurações do cursor agora serão sincronizadas com sua conta",
+        "syncDisabled": "As configurações do cursor não serão mais sincronizadas"
       },
       "theme": {
         "title": "Tema",
         "description": "Escolha um tema de cor para seu terminal.",
-        "syncEnabled": "Theme settings will now sync to your account",
-        "syncDisabled": "Theme settings will no longer sync"
+        "syncEnabled": "As configurações do tema agora serão sincronizadas com sua conta",
+        "syncDisabled": "As configurações do tema não serão mais sincronizadas"
       },
       "preview": {
         "text": "$ echo 'Olá, Nexterm!'\nOlá, Nexterm!\n$ "
@@ -799,9 +799,9 @@
     "fileManager": {
       "title": "Gerenciador de arquivos",
       "description": "Configure como os arquivos e as pastas são exibidos e gerenciados.",
-      "syncLoginRequired": "Please log in to sync file manager settings",
-      "syncEnabled": "File manager settings will now sync to your account",
-      "syncDisabled": "File manager settings will no longer sync",
+      "syncLoginRequired": "Faça login para sincronizar as configurações do gerenciador de arquivos",
+      "syncEnabled": "As configurações do gerenciador de arquivos agora serão sincronizadas com a sua conta",
+      "syncDisabled": "As configurações do gerenciador de arquivos não serão mais sincronizadas",
       "defaultView": {
         "title": "Modo de exibição padrão",
         "description": "Escolha o layout padrão ao abrir o gerenciador de arquivos.",
@@ -1663,35 +1663,35 @@
     }
   },
   "support": {
-    "title": "Get Support",
-    "subtitle": "Need help or want to contribute?",
-    "footer": "Thank you for using Nexterm!",
+    "title": "Obter suporte",
+    "subtitle": "Você precisa de ajuda ou quer contribuir?",
+    "footer": "Obrigado por você usar o Nexterm!",
     "issues": {
-      "title": "Report an Issue",
-      "description": "Found a bug or have a feature request?"
+      "title": "Relatar um problema",
+      "description": "Você encontrou um bug ou tem uma solicitação de recurso?"
     },
     "discord": {
-      "title": "Join Discord",
-      "description": "Chat with the community and get help."
+      "title": "Entre no Discord",
+      "description": "Converse com a comunidade e obtenha ajuda."
     },
     "github": {
-      "title": "View on GitHub",
-      "description": "Browse source code and contribute."
+      "title": "Exibir no GitHub",
+      "description": "Navegue pelo código-fonte e contribua."
     }
   },
   "welcome": {
-    "subtitle": "Welcome to Nexterm. The open-source server manager for SSH, VNC and RDP.",
-    "downloadApps": "Download Apps",
-    "connectDevice": "Connect Device",
-    "recentConnections": "Recent Connections",
-    "getStarted": "Get Started",
-    "getStartedHint": "Add a server from the sidebar to begin managing your infrastructure."
+    "subtitle": "Bem-vindo ao Nexterm. O gerenciador de servidor de código aberto para SSH, VNC e RDP.",
+    "downloadApps": "Baixar aplicativos",
+    "connectDevice": "Conectar dispositivo",
+    "recentConnections": "Conexões recentes",
+    "getStarted": "Começar a usar",
+    "getStartedHint": "Adicione um servidor na barra lateral para começar a gerenciar sua infraestrutura."
   },
   "downloadApps": {
-    "title": "Download Apps",
-    "subtitle": "Get Nexterm on your devices",
+    "title": "Baixar aplicativos",
+    "subtitle": "Obtenha o Nexterm em seus dispositivos",
     "platforms": {
-      "windows": "Windows",
+      "windows": "Janelas",
       "macos": "macOS",
       "linux": "Linux",
       "android": "Android",
