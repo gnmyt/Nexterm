@@ -21,13 +21,13 @@
       "close": "关闭",
       "maximize": "最大化",
       "restore": "还原",
-      "back": "Back"
+      "back": "返回"
     },
     "iconChooser": {
-      "searchIcons": "Search icons...",
-      "searchResults": "Search Results",
-      "popularIcons": "Popular Icons",
-      "noResults": "No icons found"
+      "searchIcons": "搜索图标...",
+      "searchResults": "搜索结果",
+      "popularIcons": "流行图标",
+      "noResults": "未找到图标"
     },
     "labels": {
       "username": "用户名",
@@ -59,51 +59,51 @@
       "authenticating": "正在验证…"
     },
     "deviceLink": {
-      "title": "Link Device",
-      "description": "Enter the code shown on your device to authorize it to access your account.",
-      "codeLabel": "Device Code",
-      "continue": "Continue",
-      "verifying": "Verifying...",
-      "confirmTitle": "Authorize Device",
-      "confirmDescription": "A device is requesting access to your account. Please verify the details below.",
-      "deviceInfo": "Device Information",
-      "type": "Type",
-      "ipAddress": "IP Address",
-      "userAgent": "Device",
-      "authorize": "Authorize Device",
-      "authorizing": "Authorizing...",
-      "deny": "Deny",
-      "invalidCode": "Invalid or expired code",
-      "authorizationFailed": "Authorization failed",
-      "deviceAuthorized": "Device authorized successfully",
-      "successTitle": "Device Authorized",
-      "successMessage": "You can close this tab and return to the app.",
+      "title": "链接设备",
+      "description": "输入设备上显示的代码，授权其访问您的账户。",
+      "codeLabel": "设备代码",
+      "continue": "继续",
+      "verifying": "验证...",
+      "confirmTitle": "授权设备",
+      "confirmDescription": "有设备请求访问您的账户。请验证以下详细信息。",
+      "deviceInfo": "设备信息",
+      "type": "类型",
+      "ipAddress": "IP 地址",
+      "userAgent": "设备",
+      "authorize": "授权设备",
+      "authorizing": "授权...",
+      "deny": "拒绝",
+      "invalidCode": "无效或过期代码",
+      "authorizationFailed": "授权失败",
+      "deviceAuthorized": "设备授权成功",
+      "successTitle": "设备授权",
+      "successMessage": "您可以关闭此选项卡并返回应用程序。",
       "clientTypes": {
-        "mobile": "Mobile App",
-        "connector": "Desktop Connector"
+        "mobile": "移动应用程序",
+        "connector": "桌面连接器"
       }
     },
     "connectorSetup": {
-      "title": "Nexterm Connector",
-      "serverUrl": "Server URL",
-      "serverUrlDescription": "Enter the URL of your Nexterm server to connect.",
-      "connect": "Connect",
-      "connecting": "Connecting...",
-      "enterServerUrl": "Please enter a server URL",
-      "connectionFailed": "Failed to connect to server. Please check the URL.",
-      "deviceLinkingNotSupported": "This server does not support device linking. Please update your Nexterm server.",
-      "authMethodDescription": "Choose how you want to authenticate with the server.",
-      "showCode": "Show Code",
-      "showCodeDesc": "Display a code to enter manually on the web interface",
-      "openBrowser": "Authorize",
-      "openBrowserDesc": "Open your browser to authorize automatically",
-      "enterCodeDescription": "Enter this code on the Nexterm web interface to authorize this device.",
-      "copyCode": "Copy Code",
-      "codeCopied": "Code copied to clipboard",
-      "copyFailed": "Failed to copy code",
-      "waitingForAuth": "Waiting for authorization...",
-      "codeCreationFailed": "Failed to create device code",
-      "authSuccess": "Successfully authenticated!"
+      "title": "Nexterm 连接器",
+      "serverUrl": "服务器 URL",
+      "serverUrlDescription": "输入 Nexterm 服务器的 URL 以进行连接。",
+      "connect": "连接",
+      "connecting": "连接...",
+      "enterServerUrl": "请输入服务器 URL",
+      "connectionFailed": "连接服务器失败。请检查 URL。",
+      "deviceLinkingNotSupported": "此服务器不支持设备链接。请更新您的 Nexterm 服务器。",
+      "authMethodDescription": "选择与服务器进行身份验证的方式。",
+      "showCode": "显示代码",
+      "showCodeDesc": "显示代码，以便在网络界面上手动输入",
+      "openBrowser": "授权",
+      "openBrowserDesc": "打开浏览器自动授权",
+      "enterCodeDescription": "在 Nexterm Web 界面上输入此代码以授权此设备。",
+      "copyCode": "复制代码",
+      "codeCopied": "代码复制到剪贴板",
+      "copyFailed": "复制代码失败",
+      "waitingForAuth": "等待授权...",
+      "codeCreationFailed": "创建设备代码失败",
+      "authSuccess": "验证成功！"
     },
     "selectBox": {
       "defaultOption": "选择选项...",
@@ -111,18 +111,18 @@
       "noResults": "未找到结果"
     },
     "userSearch": {
-      "placeholder": "Search for a user..."
+      "placeholder": "搜索用户..."
     },
     "table": {
       "noData": {
-        "title": "No data found",
-        "subtitle": "There are no items to display."
+        "title": "未找到数据",
+        "subtitle": "没有要显示的项目。"
       },
       "pagination": {
-        "showing": "Showing {{start}} to {{end}} of {{total}}",
-        "previous": "Previous",
-        "next": "Next",
-        "pageInfo": "Page {{current}} of {{total}}"
+        "showing": "显示 {{start}} 至 {{end}} 的 {{total}}",
+        "previous": "上一页",
+        "next": "下一页",
+        "pageInfo": "{{current}} of {{total}}"
       }
     },
     "sidebar": {
@@ -135,8 +135,8 @@
       "logout": "退出登录",
       "collapseTitle": "折叠侧边栏",
       "logoutConfirmText": "此操作将退出 {{username}} 账户。确定继续吗？",
-      "starOnGitHub": "Star on GitHub",
-      "support": "Support"
+      "starOnGitHub": "GitHub 上的明星",
+      "support": "支持"
     },
     "quickAction": {
       "placeholder": "搜索服务器、片段或导航...",
@@ -582,11 +582,11 @@
       "currentLanguage": "当前语言",
       "missingLanguage": "缺少您的语言？",
       "helpTranslateLink": "帮助翻译 Nexterm",
-      "syncLoginRequired": "Please log in to sync settings",
-      "appearanceSyncEnabled": "Appearance settings will now sync to your account",
-      "appearanceSyncDisabled": "Appearance settings will no longer sync",
-      "generalSyncEnabled": "General settings will now sync to your account",
-      "generalSyncDisabled": "General settings will no longer sync",
+      "syncLoginRequired": "请登录同步设置",
+      "appearanceSyncEnabled": "外观设置现在将同步到您的账户",
+      "appearanceSyncDisabled": "外观设置不再同步",
+      "generalSyncEnabled": "常规设置现在将同步到您的账户",
+      "generalSyncDisabled": "常规设置将不再同步",
       "sessionSynchronization": "会话同步方式",
       "sessionSyncDescription": "控制服务器会话在不同设备和浏览器标签页之间的存储和同步方式。",
       "sessionSyncAcrossDevices": "跨设备同步",
@@ -664,21 +664,21 @@
     "users": {
       "title": "{{count}} 个用户",
       "createNewUser": "创建新用户",
-      "searchPlaceholder": "Search users...",
+      "searchPlaceholder": "搜索用户...",
       "twoFactorEnabled": "2FA 已启用",
       "twoFactorDisabled": "2FA 未启用",
-      "noUsers": "No Users Found",
-      "noUsersDescription": "Create a new user to get started.",
-      "noSearchResults": "No Users Found",
-      "noSearchResultsDescription": "Try adjusting your search query.",
+      "noUsers": "未找到用户",
+      "noUsersDescription": "创建新用户开始使用。",
+      "noSearchResults": "未找到用户",
+      "noSearchResultsDescription": "尝试调整搜索查询。",
       "table": {
-        "user": "User",
-        "role": "Role",
+        "user": "用户",
+        "role": "角色",
         "twoFactor": "2FA"
       },
       "roles": {
-        "admin": "Admin",
-        "user": "User"
+        "admin": "管理员",
+        "user": "用户"
       },
       "contextMenu": {
         "changePassword": "修改密码",
@@ -767,14 +767,14 @@
     },
     "terminal": {
       "title": "终端",
-      "syncLoginRequired": "Please log in to sync terminal settings",
+      "syncLoginRequired": "请登录以同步终端设置",
       "font": {
         "title": "字体",
         "description": "自定义终端字体和字号。",
         "fontFamily": "字体",
         "fontSize": "字号",
-        "syncEnabled": "Font settings will now sync to your account",
-        "syncDisabled": "Font settings will no longer sync"
+        "syncEnabled": "字体设置将同步到您的账户",
+        "syncDisabled": "字体设置不再同步"
       },
       "cursor": {
         "title": "光标",
@@ -783,14 +783,14 @@
         "cursorBlinking": "光标闪烁",
         "enabled": "启用",
         "disabled": "已禁用",
-        "syncEnabled": "Cursor settings will now sync to your account",
-        "syncDisabled": "Cursor settings will no longer sync"
+        "syncEnabled": "光标设置现在将同步到您的账户",
+        "syncDisabled": "光标设置不再同步"
       },
       "theme": {
         "title": "主题",
         "description": "为终端选择颜色主题。",
-        "syncEnabled": "Theme settings will now sync to your account",
-        "syncDisabled": "Theme settings will no longer sync"
+        "syncEnabled": "现在，主题设置将同步到您的账户中",
+        "syncDisabled": "主题设置不再同步"
       },
       "preview": {
         "text": "$ echo '你好，Nexterm!'\n你好，Nexterm!\n$ "
@@ -799,9 +799,9 @@
     "fileManager": {
       "title": "文件管理器",
       "description": "配置文件和文件夹的显示和管理方式。",
-      "syncLoginRequired": "Please log in to sync file manager settings",
-      "syncEnabled": "File manager settings will now sync to your account",
-      "syncDisabled": "File manager settings will no longer sync",
+      "syncLoginRequired": "请登录同步文件管理器设置",
+      "syncEnabled": "文件管理器设置现在将同步到您的账户",
+      "syncDisabled": "文件管理器设置不再同步",
       "defaultView": {
         "title": "默认查看模式",
         "description": "打开文件管理器时选择默认布局。",
@@ -1663,38 +1663,38 @@
     }
   },
   "support": {
-    "title": "Get Support",
-    "subtitle": "Need help or want to contribute?",
-    "footer": "Thank you for using Nexterm!",
+    "title": "获取支持",
+    "subtitle": "需要帮助或想作出贡献？",
+    "footer": "感谢您使用 Nexterm！",
     "issues": {
-      "title": "Report an Issue",
-      "description": "Found a bug or have a feature request?"
+      "title": "报告问题",
+      "description": "发现错误或有功能请求？"
     },
     "discord": {
-      "title": "Join Discord",
-      "description": "Chat with the community and get help."
+      "title": "加入讨论区",
+      "description": "与社区聊天并获得帮助。"
     },
     "github": {
-      "title": "View on GitHub",
-      "description": "Browse source code and contribute."
+      "title": "在 GitHub 上查看",
+      "description": "浏览源代码并作出贡献。"
     }
   },
   "welcome": {
-    "subtitle": "Welcome to Nexterm. The open-source server manager for SSH, VNC and RDP.",
-    "downloadApps": "Download Apps",
-    "connectDevice": "Connect Device",
-    "recentConnections": "Recent Connections",
-    "getStarted": "Get Started",
-    "getStartedHint": "Add a server from the sidebar to begin managing your infrastructure."
+    "subtitle": "欢迎使用 Nexterm。用于 SSH、VNC 和 RDP 的开源服务器管理器。",
+    "downloadApps": "下载应用程序",
+    "connectDevice": "连接设备",
+    "recentConnections": "近期联系",
+    "getStarted": "开始",
+    "getStartedHint": "从侧边栏添加服务器，开始管理基础设施。"
   },
   "downloadApps": {
-    "title": "Download Apps",
-    "subtitle": "Get Nexterm on your devices",
+    "title": "下载应用程序",
+    "subtitle": "在您的设备上获取 Nexterm",
     "platforms": {
-      "windows": "Windows",
-      "macos": "macOS",
-      "linux": "Linux",
-      "android": "Android",
+      "windows": "视窗",
+      "macos": "MacOS",
+      "linux": "利纳克斯",
+      "android": "安卓",
       "ios": "iOS"
     }
   }
