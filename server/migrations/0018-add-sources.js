@@ -69,19 +69,5 @@ module.exports = {
                 onDelete: "CASCADE",
             });
         }
-
-        await queryInterface.changeColumn("snippets", "accountId", {
-            type: DataTypes.INTEGER,
-            allowNull: true,
-            references: { model: "accounts", key: "id" },
-            onDelete: "CASCADE",
-        });
-
-        await queryInterface.changeColumn("scripts", "accountId", {
-            type: DataTypes.INTEGER,
-            allowNull: true,
-            references: { model: "accounts", key: "id" },
-            onDelete: "CASCADE",
-        });
     },
 };
