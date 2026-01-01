@@ -6,7 +6,7 @@ import { mdiFormTextbox, mdiSend, mdiClose, mdiFormTextboxPassword, mdiLock } fr
 import Icon from "@mdi/react";
 import "./InputDialog.sass";
 
-const InputDialog = ({ open, onSubmit, prompt }) => {
+const InputDialog = ({ open, onSubmit, onCancel, prompt }) => {
     const [inputValue, setInputValue] = useState("");
 
     useEffect(() => {
@@ -20,6 +20,11 @@ const InputDialog = ({ open, onSubmit, prompt }) => {
 
     const handleKeyDown = (e) => {
         if (e.key === "Enter") handleSubmit();
+    };
+
+    const handleCancel = () => {
+        setInputValue("");
+        onCancel?.();
     };
 
     const selectOption = (option) => onSubmit(option);
@@ -48,6 +53,7 @@ const InputDialog = ({ open, onSubmit, prompt }) => {
                                 {prompt.options.map((option, index) => (
                                     <Button key={index} text={option} onClick={() => selectOption(option)} type="secondary" />
                                 ))}
+                                <Button text="Cancel" icon={mdiClose} onClick={handleCancel} type="secondary" className="cancel-btn" />
                             </div>
                         </div>
                     ) : promptType === "confirm" ? (
@@ -56,6 +62,7 @@ const InputDialog = ({ open, onSubmit, prompt }) => {
                             <div className="confirm-actions">
                                 <Button text="Yes" icon={mdiSend} onClick={() => selectOption("Yes")} />
                                 <Button text="No" icon={mdiClose} onClick={() => selectOption("No")} type="secondary" />
+                                <Button text="Cancel" icon={mdiClose} onClick={handleCancel} type="secondary" />
                             </div>
                         </div>
                     ) : (
@@ -76,6 +83,7 @@ const InputDialog = ({ open, onSubmit, prompt }) => {
 
                 {(promptType !== "select" && promptType !== "confirm") && (
                     <div className="dialog-actions">
+                        <Button onClick={handleCancel} text="Cancel" icon={mdiClose} type="secondary" />
                         <Button onClick={handleSubmit} text="Submit" icon={mdiSend}
                                 disabled={promptType === "password" ? !inputValue : !inputValue.trim()} />
                     </div>

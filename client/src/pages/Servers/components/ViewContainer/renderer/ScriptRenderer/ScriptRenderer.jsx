@@ -308,7 +308,10 @@ export const ScriptRenderer = ({ session, updateProgress, savedState, saveState 
         setDialogs(prev => ({ ...prev, [field]: null }));
     }, [sendControl]);
 
-    const handleCancel = useCallback(() => sendControl(MSG.INPUT_CANCELLED), [sendControl]);
+    const handleCancel = useCallback(() => {
+        sendControl(MSG.INPUT_CANCELLED);
+        setDialogs(prev => ({ ...prev, inputOpen: false, inputPrompt: null }));
+    }, [sendControl]);
 
     const getTypeByIndex = useCallback((index) => {
         const { failedStep, currentStep, isCompleted, currentProgress, steps } = state;
@@ -335,7 +338,7 @@ export const ScriptRenderer = ({ session, updateProgress, savedState, saveState 
                 getTypeByIndex={getTypeByIndex}
                 onCancel={handleCancel}
             />
-            <InputDialog open={dialogs.inputOpen} onSubmit={sendInput} prompt={dialogs.inputPrompt} />
+            <InputDialog open={dialogs.inputOpen} onSubmit={sendInput} onCancel={handleCancel} prompt={dialogs.inputPrompt} />
             <SummaryDialog open={!!dialogs.summaryData} onClose={closeDialog("NEXTERM_SUMMARY_RESULT", "summaryData")} summaryData={dialogs.summaryData} />
             <TableDialog open={!!dialogs.tableData} onClose={closeDialog("NEXTERM_TABLE_RESULT", "tableData")} tableData={dialogs.tableData} />
             <MessageBoxDialog open={!!dialogs.messageBoxData} onClose={closeDialog("NEXTERM_MSGBOX_RESULT", "messageBoxData")} messageData={dialogs.messageBoxData} />
