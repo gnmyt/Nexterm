@@ -49,7 +49,23 @@ const transformScript = (content) => {
 
     const script = `#!/bin/bash\nset -e\n${t}\n`;
     const b64 = Buffer.from(script).toString("base64");
-    return `_script=$(mktemp) && echo '${b64}' | base64 -d > "$_script" && chmod +x "$_script" && "$_script"; _exit=$?; rm -f "$_script"; echo "NEXTERM_END:$_exit"`;
+    return { b64, command: null };
+};
+
+const getScriptCommands = (b64) => {
+    const CHUNK_SIZE = 2000;
+    const commands = [];
+
+    commands.push(`_nts=$(mktemp) && _ntb=$(mktemp)`);
+    
+    for (let i = 0; i < b64.length; i += CHUNK_SIZE) {
+        const chunk = b64.slice(i, i + CHUNK_SIZE);
+        commands.push(`printf '%s' '${chunk}' >> "$_ntb"`);
+    }
+    
+    commands.push(`base64 -d < "$_ntb" > "$_nts" && rm -f "$_ntb" && chmod +x "$_nts" && "$_nts"; _exit=$?; rm -f "$_nts"; echo "NEXTERM_END:$_exit"`);
+    
+    return commands;
 };
 
 const stripAnsi = (s) => s.replace(/\x1B(?:[@-Z\\-_]|\[[0-?]*[ -/]*[@-~])/g, "");
@@ -95,4 +111,4 @@ const processNextermLine = (line) => {
     }
 };
 
-module.exports = { escapeColons, unescapeColons, parseOptions, checkSudoPrompt, transformScript, stripAnsi, findNextermCommand, processNextermLine };
+module.exports = { escapeColons, unescapeColons, parseOptions, checkSudoPrompt, transformScript, getScriptCommands, stripAnsi, findNextermCommand, processNextermLine };

@@ -1,4 +1,4 @@
-const { transformScript, processNextermLine, checkSudoPrompt } = require("../utils/scriptUtils");
+const { transformScript, getScriptCommands, processNextermLine, checkSudoPrompt } = require("../utils/scriptUtils");
 const SessionManager = require("./SessionManager");
 const logger = require("../utils/logger");
 
@@ -21,6 +21,8 @@ class ScriptLayer {
         this.running = false;
         this.handlers = new Set();
         this.events = [];
+        this.commandQueue = [];
+        this.commandIndex = 0;
         this.onData = this.onData.bind(this);
         this.onClose = this.onClose.bind(this);
     }
@@ -44,9 +46,26 @@ class ScriptLayer {
         this.running = true;
         logger.info("Script starting", { sessionId: this.sessionId, name: this.script.name });
         this.broadcast(MSG.SCRIPT_START, { name: this.script.name });
-        this.stream.write(transformScript(this.script.content) + "\n");
+        
+        const { b64 } = transformScript(this.script.content);
+        this.commandQueue = getScriptCommands(b64);
+        this.commandIndex = 0;
+        
         this.stream.on("data", this.onData);
         this.stream.on("close", this.onClose);
+
+        this.writeNextCommand();
+    }
+
+    writeNextCommand() {
+        if (this.commandIndex < this.commandQueue.length) {
+            const cmd = this.commandQueue[this.commandIndex++];
+            this.stream.write(cmd + "\n");
+            
+            if (this.commandIndex < this.commandQueue.length) {
+                setTimeout(() => this.writeNextCommand(), 50);
+            }
+        }
     }
 
     onData(data) { this.processOutput(data.toString()); }
