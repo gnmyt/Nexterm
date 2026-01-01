@@ -997,13 +997,6 @@
   resolved "https://registry.yarnpkg.com/@tootallnate/once/-/once-1.1.2.tgz#ccb91445360179a04e7fe6aff78c00ffc1eeaf82"
   integrity sha512-RbzJvlNzmRq5c3O09UipeuXno4tA1FE6ikOjxZK0tuxVv3412l64l5t1W5pj4+rJq9vpkm/kwiR07aZXnsKPxw==
 
-"@types/asn1@>=0.2.4":
-  version "0.2.4"
-  resolved "https://registry.yarnpkg.com/@types/asn1/-/asn1-0.2.4.tgz#a0f89f9ddad8186c9c081c5df2e5cade855d2ac0"
-  integrity sha512-V91DSJ2l0h0gRhVP4oBfBzRBN9lAbPUkGDMCnwedqPKX2d84aAMc9CulOvxdw1f7DfEYx99afab+Rsm3e52jhA==
-  dependencies:
-    "@types/node" "*"
-
 "@types/debug@^4.1.8":
   version "4.1.12"
   resolved "https://registry.yarnpkg.com/@types/debug/-/debug-4.1.12.tgz#a155f21690871953410df4b6b6f53187f0500917"
@@ -1403,7 +1396,7 @@ array-flatten@1.1.1:
   resolved "https://registry.yarnpkg.com/array-flatten/-/array-flatten-1.1.1.tgz#9a5f699051b1e7073328f2a008968b64ea2955d2"
   integrity sha512-PCVAQswWemu6UdxsDFFX/+gVeYqKAod3D3UVm91jHwynguOwAvYPhx8nNlM++NqRcK6CxxpUafjmhIdKiHibqg==
 
-asn1@0.2.6, asn1@^0.2.6:
+asn1@^0.2.6:
   version "0.2.6"
   resolved "https://registry.yarnpkg.com/asn1/-/asn1-0.2.6.tgz#0d3a7bb6e64e02a90c0303b31f292868ea09a08d"
   integrity sha512-ix/FxPn0MDjeyJ7i/yoHGFt/EX6LyNbxSEhPPXODPL+KB0VPk86UYfL0lMdy+KCnv+fmvIzySwaK5COwqVbWTQ==
@@ -1957,7 +1950,7 @@ debug@2.6.9:
   dependencies:
     ms "2.0.0"
 
-debug@4, debug@4.4.3, debug@^4, debug@^4.3.3, debug@^4.3.4, debug@^4.4.0, debug@^4.4.3:
+debug@4, debug@^4, debug@^4.3.3, debug@^4.3.4, debug@^4.4.0, debug@^4.4.3:
   version "4.4.3"
   resolved "https://registry.yarnpkg.com/debug/-/debug-4.4.3.tgz#c6ae432d9bd9662582fce08709b038c58e9e3d6a"
   integrity sha512-RGwwWnwQvkVfavKVt22FGLw+xYSdzARwm0ru6DhTVA3umU5hZc28V3kO4stgYryrTlLpuvgI9GiijltAjNbcqA==
@@ -2994,14 +2987,11 @@ lazystream@^1.0.0:
   dependencies:
     readable-stream "^2.0.5"
 
-ldapts@^8.0.36:
-  version "8.0.36"
-  resolved "https://registry.yarnpkg.com/ldapts/-/ldapts-8.0.36.tgz#8485af59845b4c5e0f855c34a82f4d372ca2d7fa"
-  integrity sha512-PGWfAjAukRQV0Kcv3yiw0MMIIchD0wHbI4c4oCXVDBES1rEU01tnaH8YWfoRfGYBEla+xjrlz7xd/pes2aiiHQ==
+ldapts@^8.1.2:
+  version "8.1.2"
+  resolved "https://registry.yarnpkg.com/ldapts/-/ldapts-8.1.2.tgz#f0bd388507f73fe57ab0f9ccb5e8d80ef6d67bae"
+  integrity sha512-QQAYM0fVzBcNzdo1VssKj9+v+BpjuyUqpgVjIUn1rWLdDj5cx60TtYoUWR5Ch9IMct1+jY92ES3G5fOoQaN34Q==
   dependencies:
-    "@types/asn1" ">=0.2.4"
-    asn1 "0.2.6"
-    debug "4.4.3"
     strict-event-emitter-types "2.0.0"
     whatwg-url "15.1.0"
 
