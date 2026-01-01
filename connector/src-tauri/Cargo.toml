@@ -1,6 +1,6 @@
 [package]
 name = "nexterm-connector"
-version = "1.0.9"
+version = "1.2.0"
 description = "The open source server management software for SSH, VNC & RDP"
 authors = ["Mathias Wagner"]
 license = "MIT"

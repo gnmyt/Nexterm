@@ -1,6 +1,6 @@
 {
   "name": "nexterm-connector",
-  "version": "1.0.9",
+  "version": "1.2.0",
   "private": true,
   "scripts": {
     "dev": "cargo tauri dev",
