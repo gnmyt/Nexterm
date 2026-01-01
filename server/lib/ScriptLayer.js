@@ -10,6 +10,8 @@ const MSG = {
     INPUT_RESPONSE: "input_response", INPUT_CANCELLED: "input_cancelled"
 };
 
+const DIALOG_TYPES = new Set([MSG.PROMPT, MSG.CONFIRM, MSG.SUMMARY, MSG.TABLE, MSG.MSGBOX]);
+
 class ScriptLayer {
     constructor(stream, ws, script, sessionId) {
         this.stream = stream;
@@ -29,7 +31,9 @@ class ScriptLayer {
 
     broadcast(type, payload = {}) {
         const msg = SCRIPT_MAGIC + JSON.stringify({ type, ...payload });
-        this.events.push(msg);
+        if (!DIALOG_TYPES.has(type)) {
+            this.events.push(msg);
+        }
         const session = SessionManager.get(this.sessionId);
         if (session) for (const ws of session.connectedWs) ws.readyState === ws.OPEN && ws.send(msg);
     }
