@@ -130,7 +130,7 @@
   dependencies:
     "@babel/helper-plugin-utils" "^7.27.1"
 
-"@babel/runtime@^7.21.0", "@babel/runtime@^7.23.2", "@babel/runtime@^7.27.6", "@babel/runtime@^7.28.4", "@babel/runtime@^7.9.2":
+"@babel/runtime@^7.21.0", "@babel/runtime@^7.23.2", "@babel/runtime@^7.28.4", "@babel/runtime@^7.9.2":
   version "7.28.4"
   resolved "https://registry.yarnpkg.com/@babel/runtime/-/runtime-7.28.4.tgz#a70226016fabe25c5783b2f22d3e1c9bc5ca3326"
   integrity sha512-Q/N6JNWvIvPnLDvjlE1OUBLPQHH6l3CltCEsHIujp45zQUSSh8K+gHnaEX45yAT1nyngnINhvWtzN+Nb9D8RAQ==
@@ -2358,12 +2358,12 @@ react-dom@^19.2.3:
   dependencies:
     scheduler "^0.27.0"
 
-react-i18next@^16.5.0:
-  version "16.5.0"
-  resolved "https://registry.yarnpkg.com/react-i18next/-/react-i18next-16.5.0.tgz#107e4323742344a2f8792feb905cea551da6fd2c"
-  integrity sha512-IMpPTyCTKxEj8klCrLKUTIUa8uYTd851+jcu2fJuUB9Agkk9Qq8asw4omyeHVnOXHrLgQJGTm5zTvn8HpaPiqw==
+react-i18next@^16.5.1:
+  version "16.5.1"
+  resolved "https://registry.yarnpkg.com/react-i18next/-/react-i18next-16.5.1.tgz#a299224b6d9c054dc92d7d65b642e48964b318ee"
+  integrity sha512-Hks6UIRZWW4c+qDAnx1csVsCGYeIR4MoBGQgJ+NUoNnO6qLxXuf8zu0xdcinyXUORgGzCdRsexxO1Xzv3sTdnw==
   dependencies:
-    "@babel/runtime" "^7.27.6"
+    "@babel/runtime" "^7.28.4"
     html-parse-stringify "^3.0.1"
     use-sync-external-store "^1.6.0"
 
