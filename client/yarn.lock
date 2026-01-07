@@ -934,10 +934,10 @@ arraybuffer.prototype.slice@^1.0.4:
     get-intrinsic "^1.2.6"
     is-array-buffer "^3.0.4"
 
-asciinema-player@^3.13.5:
-  version "3.13.5"
-  resolved "https://registry.yarnpkg.com/asciinema-player/-/asciinema-player-3.13.5.tgz#b92f8ee29a02a9d383d90d54a7f77d533fe5bb61"
-  integrity sha512-mgpJc9g6I+k4Tz5qVUNd0H+GoYlhiUwvlay6vD6IXiuiWOWhBOjxbvqQ1bcI/HPTrOYxhTyxZuzHIXM36Tw60Q==
+asciinema-player@^3.14.0:
+  version "3.14.0"
+  resolved "https://registry.yarnpkg.com/asciinema-player/-/asciinema-player-3.14.0.tgz#4660595433dd538cc5a31badadb9e76d3eee6d17"
+  integrity sha512-44m3CpNavn8i7DSr/AeeV+rJpHpcqc/OCildCs9FAu5gnXB6XNBdbhfg6mHMG4uU3R1rxFNA3ZRTt8FMhHC48Q==
   dependencies:
     "@babel/runtime" "^7.21.0"
     solid-js "^1.3.0"
