@@ -22,7 +22,7 @@
     "@tauri-apps/plugin-shell": "^2.3.3",
     "@xterm/addon-fit": "^0.11.0",
     "@xterm/xterm": "^6.0.0",
-    "asciinema-player": "^3.13.5",
+    "asciinema-player": "^3.14.0",
     "chart.js": "^4.5.1",
     "fuse.js": "^7.1.0",
     "i18next": "^25.7.3",
