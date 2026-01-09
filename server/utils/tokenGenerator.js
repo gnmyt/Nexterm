@@ -27,6 +27,13 @@ module.exports.createRDPToken = (hostname, port, username, password, options = {
         "server-layout": options.keyboardLayout || "en-us-qwerty",
     };
 
+    // Keep clipboard redirection enabled unless explicitly disabled.
+    const clipboardEnabled = options.enableClipboard !== false;
+    settings["disable-clipboard"] = clipboardEnabled ? false : true;
+    settings["disable-copy"] = clipboardEnabled ? false : true;
+    settings["disable-paste"] = clipboardEnabled ? false : true;
+    if (options.clipboardEncoding) settings["clipboard-encoding"] = options.clipboardEncoding;
+
     if (options.colorDepth) settings["color-depth"] = options.colorDepth;
     if (options.resizeMethod && options.resizeMethod !== "none") settings["resize-method"] = options.resizeMethod;
 

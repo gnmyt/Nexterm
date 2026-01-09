@@ -28,6 +28,7 @@ module.exports = async (ws, req) => {
             enableTheming: cfg.enableTheming !== false, enableFontSmoothing: cfg.enableFontSmoothing !== false,
             enableFullWindowDrag: cfg.enableFullWindowDrag === true, enableDesktopComposition: cfg.enableDesktopComposition === true,
             enableMenuAnimations: cfg.enableMenuAnimations === true, enableAudio: cfg.enableAudio !== false,
+            enableClipboard: cfg.enableClipboard !== false,
         };
 
         let connConfig = null;

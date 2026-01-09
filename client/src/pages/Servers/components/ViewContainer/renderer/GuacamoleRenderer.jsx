@@ -29,6 +29,10 @@ const GuacamoleRenderer = ({
     const sessionRef = useRef(session);
     const connectionLoaderRef = useRef(null);
     const audioPlayersRef = useRef([]);
+    const clipboardPollRef = useRef(null);
+    const lastLocalClipboardRef = useRef("");
+    const lastRemoteClipboardRef = useRef("");
+    const hiddenPasteRef = useRef(null);
 
     useEffect(() => {
         sessionRef.current = session;
@@ -63,14 +67,35 @@ const GuacamoleRenderer = ({
 
     const sendClipboardToServer = (text) => {
         if (!clientRef.current || !text) return;
+        lastLocalClipboardRef.current = text;
         const writer = new Guacamole.StringWriter(clientRef.current.createClipboardStream("text/plain"));
         writer.sendText(text);
         writer.sendEnd();
     };
 
-    const checkClipboardPermission = async () => {
+    const writeToSystemClipboard = async (text) => {
+        if (!text) return false;
+        if (navigator?.clipboard?.writeText) {
+            try {
+                await navigator.clipboard.writeText(text);
+                return true;
+            } catch {
+                /* ignored */
+            }
+        }
+
+        // Fallback for environments without clipboard permission (execCommand still requires focus).
         try {
-            return (await navigator.permissions.query({ name: "clipboard-read" })).state === "granted";
+            const textarea = document.createElement("textarea");
+            textarea.value = text;
+            textarea.style.position = "fixed";
+            textarea.style.opacity = "0";
+            document.body.appendChild(textarea);
+            textarea.focus();
+            textarea.select();
+            const ok = document.execCommand("copy");
+            document.body.removeChild(textarea);
+            return ok;
         } catch {
             return false;
         }
@@ -84,29 +109,46 @@ const GuacamoleRenderer = ({
             let data = "";
             reader.ontext = (t) => data += t;
             reader.onend = async () => {
-                try {
-                    await navigator.clipboard.writeText(data);
-                } catch {
-                }
+                lastRemoteClipboardRef.current = data;
+                await writeToSystemClipboard(data);
             };
         };
-        checkClipboardPermission().then(ok => {
-            if (!ok) return;
-            let cached = "";
-            setInterval(async () => {
-                try {
-                    const t = await navigator.clipboard.readText();
-                    if (t !== cached) {
-                        cached = t;
-                        sendClipboardToServer(t);
-                    }
-                } catch {
+
+        const syncLocalClipboard = async () => {
+            try {
+                const current = await navigator.clipboard.readText();
+                if (current && current !== lastLocalClipboardRef.current) {
+                    sendClipboardToServer(current);
                 }
-            }, 500);
-        });
+            } catch {
+                /* ignored */
+            }
+        };
+
         const onPaste = (e) => sendClipboardToServer(e.clipboardData?.getData("text"));
+        const onGlobalPaste = (e) => sendClipboardToServer(e.clipboardData?.getData("text"));
+        const onPointerDown = () => {
+            hiddenPasteRef.current?.focus();
+            syncLocalClipboard();
+        };
+        const onHiddenPaste = (e) => sendClipboardToServer(e.clipboardData?.getData("text"));
         ref.current.addEventListener("paste", onPaste);
-        return () => ref.current?.removeEventListener("paste", onPaste);
+        window.addEventListener("paste", onGlobalPaste, true);
+        ref.current.addEventListener("pointerdown", onPointerDown);
+        hiddenPasteRef.current?.addEventListener("paste", onHiddenPaste);
+        clipboardPollRef.current = setInterval(syncLocalClipboard, 1000);
+
+        return () => {
+            if (clipboardPollRef.current) {
+                clearInterval(clipboardPollRef.current);
+                clipboardPollRef.current = null;
+            }
+            ref.current?.removeEventListener("paste", onPaste);
+            window.removeEventListener("paste", onGlobalPaste, true);
+            ref.current?.removeEventListener("pointerdown", onPointerDown);
+            hiddenPasteRef.current?.removeEventListener("paste", onHiddenPaste);
+            clientRef.current.onclipboard = null;
+        };
     };
 
     const connect = () => {
@@ -165,6 +207,7 @@ const GuacamoleRenderer = ({
         ref.current.focus();
 
         const handleKeyDown = (e) => {
+            hiddenPasteRef.current?.focus();
             const kb = getParsedKeybind("fullscreen");
             if (kb && matchesKeybind(e, kb)) {
                 e.preventDefault();
@@ -192,7 +235,7 @@ const GuacamoleRenderer = ({
         tunnel.onerror = () => {
             if (!isCleaningUp) disconnectFromServer(s.id);
         };
-        handleClipboardEvents();
+        const cleanupClipboard = handleClipboardEvents();
 
         return () => {
             isCleaningUp = true;
@@ -200,6 +243,7 @@ const GuacamoleRenderer = ({
             client.onstatechange = tunnel.onstatechange = tunnel.onerror = null;
             audioPlayersRef.current = [];
             tunnel.disconnect();
+            cleanupClipboard?.();
             clientRef.current = null;
         };
     };
@@ -233,6 +277,11 @@ const GuacamoleRenderer = ({
                  backgroundColor: "#000",
                  cursor: "none",
              }}>
+            <textarea
+                ref={hiddenPasteRef}
+                aria-hidden="true"
+                style={{ position: "absolute", opacity: 0, pointerEvents: "none", width: 1, height: 1, left: -9999, top: -9999 }}
+            />
             <ConnectionLoader onReady={(loader) => {
                 connectionLoaderRef.current = loader;
             }} />

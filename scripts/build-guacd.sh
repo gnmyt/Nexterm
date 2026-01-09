@@ -51,7 +51,8 @@ start_guacd() {
     [ -n "$GUACD_PID" ] && kill $GUACD_PID 2>/dev/null && sleep 1
     echo "[guacd] Starting (log level: $GUACD_LOG_LEVEL)..."
 
-    export LD_LIBRARY_PATH="$GUACD_SRC/dist/lib:$LD_LIBRARY_PATH"
+    export LD_LIBRARY_PATH="$GUACD_SRC/dist/lib:$GUACD_SRC/dist/lib/freerdp2:$LD_LIBRARY_PATH"
+    export FREERDP_PLUGIN_PATH="$GUACD_SRC/dist/lib/freerdp2"
     export GUACD_HOME="$GUACD_SRC/dist"
     
     "$GUACD_SRC/src/guacd/guacd" -b 0.0.0.0 -f $GUACD_ARGS &
