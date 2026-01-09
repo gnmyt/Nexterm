@@ -715,9 +715,9 @@
     "@tauri-apps/api" "^2.8.0"
 
 "@tauri-apps/plugin-fs@^2":
-  version "2.4.4"
-  resolved "https://registry.yarnpkg.com/@tauri-apps/plugin-fs/-/plugin-fs-2.4.4.tgz#b5111e02ca8b632588ff192bb0be6dd4eb2c9a63"
-  integrity sha512-MTorXxIRmOnOPT1jZ3w96vjSuScER38ryXY88vl5F0uiKdnvTKKTtaEjTEo8uPbl4e3gnUtfsDVwC7h77GQLvQ==
+  version "2.4.5"
+  resolved "https://registry.yarnpkg.com/@tauri-apps/plugin-fs/-/plugin-fs-2.4.5.tgz#4b32b6de32e2ee735632bff356fab09fcc281b42"
+  integrity sha512-dVxWWGE6VrOxC7/jlhyE+ON/Cc2REJlM35R3PJX3UvFw2XwYhLGQVAIyrehenDdKjotipjYEVc4YjOl3qq90fA==
   dependencies:
     "@tauri-apps/api" "^2.8.0"
 
