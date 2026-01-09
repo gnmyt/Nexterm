@@ -735,10 +735,10 @@
   dependencies:
     "@tauri-apps/api" "^2.8.0"
 
-"@tauri-apps/plugin-shell@^2.3.3":
-  version "2.3.3"
-  resolved "https://registry.yarnpkg.com/@tauri-apps/plugin-shell/-/plugin-shell-2.3.3.tgz#ddbd9253d55e18343c6179243fd4fd2075bf15e8"
-  integrity sha512-Xod+pRcFxmOWFWEnqH5yZcA7qwAMuaaDkMR1Sply+F8VfBj++CGnj2xf5UoialmjZ2Cvd8qrvSCbU+7GgNVsKQ==
+"@tauri-apps/plugin-shell@^2.3.4":
+  version "2.3.4"
+  resolved "https://registry.yarnpkg.com/@tauri-apps/plugin-shell/-/plugin-shell-2.3.4.tgz#26cbfca659d127da81b0d4583dec9a56d13f5dfe"
+  integrity sha512-ktsRWf8wHLD17aZEyqE8c5x98eNAuTizR1FSX475zQ4TxaiJnhwksLygQz+AGwckJL5bfEP13nWrlTNQJUpKpA==
   dependencies:
     "@tauri-apps/api" "^2.8.0"
 
