@@ -1,5 +1,10 @@
 # 🔐 Enabling SSL/HTTPS
 
+> [!NOTE]
+> HTTPS is required for RDP clipboard sharing to work.
+
+
+
 ## 📁 Certificate Setup
 
 Place your SSL certificate files in the `data/certs` folder:
