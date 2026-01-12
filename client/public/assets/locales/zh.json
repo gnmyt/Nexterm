@@ -13,7 +13,7 @@
     "actions": {
       "cancel": "取消",
       "confirm": "确认",
-      "discard": "丢弃",
+      "discard": "放弃",
       "login": "登录",
       "register": "注册",
       "save": "保存",
