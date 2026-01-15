@@ -708,9 +708,9 @@
   integrity sha512-IGlhP6EivjXHepbBic618GOmiWe4URJiIeZFlB7x3czM0yDHHYviH1Xvoiv4FefdkQtn6v7TuwWCRfOGdnVUGw==
 
 "@tauri-apps/plugin-dialog@^2":
-  version "2.5.0"
-  resolved "https://registry.yarnpkg.com/@tauri-apps/plugin-dialog/-/plugin-dialog-2.5.0.tgz#52057077b52cc51643ac9829d48c2c590e5e1a54"
-  integrity sha512-I0R0ygwRd9AN8Wj5GnzCogOlqu2+OWAtBd0zEC4+kQCI32fRowIyuhPCBoUv4h/lQt2bM39kHlxPHD5vDcFjiA==
+  version "2.6.0"
+  resolved "https://registry.yarnpkg.com/@tauri-apps/plugin-dialog/-/plugin-dialog-2.6.0.tgz#e09bb26ab7008bfc4a1a044a5fb29ac0575f8898"
+  integrity sha512-q4Uq3eY87TdcYzXACiYSPhmpBA76shgmQswGkSVio4C82Sz2W4iehe9TnKYwbq7weHiL88Yw19XZm7v28+Micg==
   dependencies:
     "@tauri-apps/api" "^2.8.0"
 
