@@ -728,10 +728,10 @@
   dependencies:
     "@tauri-apps/api" "^2.8.0"
 
-"@tauri-apps/plugin-http@^2.5.5":
-  version "2.5.5"
-  resolved "https://registry.yarnpkg.com/@tauri-apps/plugin-http/-/plugin-http-2.5.5.tgz#66b8ba307d2b3882017f95ec1c09e3b957a92505"
-  integrity sha512-4hTS7AIBLmj8opDM3s8muEp7PBJQEiGDFvFF4fdMscQCOwhzXJf5hIZEHC867eH2Ck145Oce+H0AU0G/k9TbNg==
+"@tauri-apps/plugin-http@^2.5.6":
+  version "2.5.6"
+  resolved "https://registry.yarnpkg.com/@tauri-apps/plugin-http/-/plugin-http-2.5.6.tgz#d6413a3a3e0688689d50a699eedf4eec710255c5"
+  integrity sha512-KhCK3TDNDF4vdz75/j+KNQipYKf+295Visa8r32QcXScg0+D3JwShcCM6D+FN8WuDF24X3KSiAB8QtRxW6jKRA==
   dependencies:
     "@tauri-apps/api" "^2.8.0"
 
