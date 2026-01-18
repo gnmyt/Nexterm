@@ -1,0 +1,133 @@
+@use "@/common/styles/colors" as *
+
+.feature-grid-section
+  padding: 80px 48px
+  max-width: 1200px
+  margin: 0 auto
+
+  .section-header
+    text-align: center
+    margin-bottom: 56px
+
+    .section-label
+      display: inline-block
+      font-size: 0.875rem
+      font-weight: 500
+      color: $primary
+      text-transform: uppercase
+      letter-spacing: 0.1em
+      margin-bottom: 16px
+
+    h2
+      font-size: 2.5rem
+      font-weight: 700
+      letter-spacing: -0.02em
+      color: $text
+
+.feature-grid
+  display: grid
+  grid-template-columns: repeat(3, 1fr)
+  gap: 1rem
+
+.feature-card
+  position: relative
+  border-radius: 0.75rem
+  background: $background-lighter
+
+  &::before
+    content: ""
+    position: absolute
+    inset: 0
+    border-radius: inherit
+    padding: 1px
+    background: radial-gradient(400px circle at var(--mouse-x, 50%) var(--mouse-y, 50%), rgba(99, 130, 255, 0.4), transparent 40%)
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)
+    mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)
+    -webkit-mask-composite: xor
+    mask-composite: exclude
+    pointer-events: none
+    opacity: 0
+    transition: opacity 0.3s
+
+  &:hover::before
+    opacity: 1
+
+.feature-card-border
+  position: absolute
+  inset: 0
+  border-radius: inherit
+  border: 1px solid $dark-gray
+  pointer-events: none
+  transition: border-color 0.2s
+
+  .feature-card:hover &
+    border-color: transparent
+
+.feature-card-content
+  position: relative
+  padding: 1.5rem
+  z-index: 1
+
+.feature-card-glow
+  position: absolute
+  inset: 0
+  border-radius: 0.75rem
+  background: radial-gradient(600px circle at var(--mouse-x, 50%) var(--mouse-y, 50%), rgba(99, 130, 255, 0.06), transparent 40%)
+  opacity: 0
+  transition: opacity 0.3s
+  pointer-events: none
+
+  .feature-card:hover &
+    opacity: 1
+
+.feature-icon
+  width: 3rem
+  height: 3rem
+  display: flex
+  align-items: center
+  justify-content: center
+  background: $primary-opacity
+  border: 1px solid $dark-gray
+  border-radius: 0.75rem
+  margin-bottom: 1.25rem
+
+  svg
+    font-size: 1.25rem
+    color: $primary
+
+.feature-card h3
+  font-size: 1rem
+  font-weight: 600
+  margin-bottom: 0.5rem
+  color: $text
+
+.feature-card p
+  font-size: 0.9rem
+  color: $subtext
+  line-height: 1.6
+
+  a
+    color: $primary
+    font-weight: 500
+    transition: filter 0.2s
+
+    &:hover
+      filter: brightness(0.8)
+
+@media (max-width: 1024px)
+  .feature-grid
+    grid-template-columns: repeat(2, 1fr)
+
+@media (max-width: 640px)
+  .feature-grid-section
+    padding: 48px 20px
+
+    .section-header h2
+      font-size: 2rem
+
+  .feature-grid
+    grid-template-columns: 1fr
+    gap: 0.75rem
+
+  .feature-card-content
+    padding: 1.25rem
