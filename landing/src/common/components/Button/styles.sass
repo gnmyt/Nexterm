@@ -1,0 +1,110 @@
+@use "@/common/styles/colors" as *
+
+.btn
+  display: inline-flex
+  align-items: center
+  justify-content: center
+  gap: 0.5rem
+  font-family: inherit
+  font-weight: 500
+  border: 1px solid $dark-gray
+  border-radius: 0.5rem
+  cursor: pointer
+  transition: all 0.2s
+  white-space: nowrap
+
+  &:disabled
+    opacity: 0.5
+    cursor: not-allowed
+
+  &:active:not(:disabled)
+    transform: scale(0.97)
+
+  svg
+    font-size: 1em
+
+.btn-sm
+  padding: 0.5rem 1rem
+  font-size: 0.875rem
+
+.btn-md
+  padding: 0.75rem 1.5rem
+  font-size: 0.9375rem
+
+.btn-lg
+  padding: 1rem 2rem
+  font-size: 1rem
+
+.btn-filled
+  &.btn-primary
+    background: $primary-opacity
+    color: $text
+
+    &:hover:not(:disabled)
+      filter: brightness(0.8)
+
+  &.btn-blue
+    background: rgba(59, 130, 246, 0.25)
+    color: $text
+
+    &:hover:not(:disabled)
+      filter: brightness(0.8)
+
+  &.btn-red
+    background: rgba(220, 38, 38, 0.25)
+    color: $text
+
+    &:hover:not(:disabled)
+      filter: brightness(0.8)
+
+  &.btn-green
+    background: rgba(34, 197, 94, 0.25)
+    color: $text
+
+    &:hover:not(:disabled)
+      filter: brightness(0.8)
+
+.btn-outline
+  background: $background-lighter
+
+  &.btn-primary
+    color: $text
+
+    &:hover:not(:disabled)
+      filter: brightness(0.8)
+
+  &.btn-blue
+    color: $text
+
+    &:hover:not(:disabled)
+      filter: brightness(0.8)
+
+  &.btn-red
+    color: $text
+
+    &:hover:not(:disabled)
+      filter: brightness(0.8)
+
+  &.btn-green
+    color: $text
+
+    &:hover:not(:disabled)
+      filter: brightness(0.8)
+
+.btn-ghost
+  background: transparent
+  border: 1px solid transparent
+
+  &.btn-primary
+    color: $subtext
+
+    &:hover:not(:disabled)
+      background: $gray
+      color: $text
+
+  &.btn-blue
+    color: $subtext
+
+    &:hover:not(:disabled)
+      background: $gray
+      color: $text
