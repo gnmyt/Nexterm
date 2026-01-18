@@ -1,0 +1,158 @@
+@use "@/common/styles/colors" as *
+
+.home-page
+  overflow-x: hidden
+
+.hero
+  min-height: 100vh
+  display: flex
+  flex-direction: column
+  align-items: center
+  padding: 140px 24px 80px
+  position: relative
+
+.hero-content
+  text-align: center
+  max-width: 720px
+  margin-bottom: 64px
+
+.hero h1
+  font-size: 4rem
+  font-weight: 700
+  line-height: 1.1
+  letter-spacing: -0.03em
+  margin: 0 0 24px
+  color: $text
+
+  .highlight
+    position: relative
+    display: inline-block
+    background: linear-gradient(to top, #5B6BD9 0%, #8B9AEF 100%)
+    -webkit-background-clip: text
+    -webkit-text-fill-color: transparent
+    background-clip: text
+
+  .underline-sketch
+    position: absolute
+    bottom: -2px
+    left: -2%
+    width: 104%
+    height: 14px
+    overflow: visible
+
+    path
+      stroke: #5B6BD9
+      stroke-dasharray: 300
+      stroke-dashoffset: 300
+      animation: draw-line 1s ease-out 0.3s forwards
+
+@keyframes draw-line
+  to
+    stroke-dashoffset: 0
+
+.hero-description
+  font-size: 1.125rem
+  line-height: 1.7
+  color: $subtext
+  margin: 0 auto 40px
+  max-width: 520px
+
+.hero-actions
+  display: flex
+  gap: 12px
+  justify-content: center
+  flex-wrap: wrap
+
+.btn-primary
+  display: inline-flex
+  align-items: center
+  gap: 0.5rem
+  padding: 0.8rem 1.5rem
+  font-size: 1rem
+  font-weight: 500
+  font-family: inherit
+  color: $text
+  background: $primary-opacity
+  border: 1px solid $dark-gray
+  border-radius: 0.5rem
+  cursor: pointer
+  transition: all 0.2s
+  
+  &:hover
+    filter: brightness(0.8)
+
+  &:active
+    transform: scale(0.97)
+
+  svg
+    width: 1.1rem
+    height: 1.1rem
+    opacity: 0.9
+
+.btn-secondary
+  display: inline-flex
+  align-items: center
+  gap: 0.5rem
+  padding: 0.8rem 1.5rem
+  font-size: 1rem
+  font-weight: 500
+  font-family: inherit
+  color: $text
+  background: $background-lighter
+  border: 1px solid $dark-gray
+  border-radius: 0.5rem
+  cursor: pointer
+  transition: all 0.2s
+  
+  &:hover
+    filter: brightness(0.8)
+
+  &:active
+    transform: scale(0.97)
+
+  svg
+    width: 1.1rem
+    height: 1.1rem
+    opacity: 0.9
+
+.hero-visual
+  position: relative
+  width: 100%
+  max-width: 1100px
+  
+  img
+    width: 100%
+    border-radius: 0.75rem
+    border: 1px solid $dark-gray
+    box-shadow: $shadow-lg
+    transform: perspective(1200px) rotateX(12deg) scale(0.92)
+    transform-origin: center bottom
+    will-change: transform, opacity
+    transition: box-shadow 0.3s ease
+
+@media (max-width: 768px)
+  .hero
+    padding: 120px 20px 60px
+
+  .hero h1
+    font-size: 2.75rem
+
+  .hero-description
+    font-size: 1rem
+
+  .hero-content
+    margin-bottom: 48px
+
+  .hero-actions
+    flex-direction: column
+    
+    button
+      width: 100%
+      justify-content: center
+
+  .hero-visual img
+    transform: none
+
+@media (max-width: 480px)
+  .hero h1
+    font-size: 2.25rem
