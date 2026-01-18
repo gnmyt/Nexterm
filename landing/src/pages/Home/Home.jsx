@@ -5,6 +5,7 @@ import {faGithub} from "@fortawesome/free-brands-svg-icons";
 import Features from "@/pages/Home/components/Features";
 import FeatureGrid from "@/pages/Home/components/FeatureGrid";
 import GetStarted from "@/pages/Home/components/GetStarted";
+import Acknowledgments from "@/pages/Home/components/Acknowledgments";
 import Footer from "@/pages/Home/components/Footer";
 import {useNavigate} from "react-router-dom";
 import {useEffect, useRef} from "react";
@@ -80,6 +81,7 @@ export const Home = () => {
             <Features/>
             <FeatureGrid/>
             <GetStarted/>
+            <Acknowledgments/>
             <Footer/>
         </div>
     )
