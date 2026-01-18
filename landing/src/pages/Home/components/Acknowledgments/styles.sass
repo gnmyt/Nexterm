@@ -1,0 +1,65 @@
+@use "@/common/styles/colors" as *
+
+.acknowledgments
+  padding: 0 48px 80px
+  display: flex
+  justify-content: center
+
+.acknowledgments-content
+  max-width: 600px
+  text-align: center
+  
+  h2
+    font-size: 1.75rem
+    font-weight: 700
+    margin-bottom: 16px
+    color: $text
+
+.acknowledgments-icon
+  width: 56px
+  height: 56px
+  border-radius: 50%
+  background: linear-gradient(135deg, rgba(239, 68, 68, 0.15), rgba(236, 72, 153, 0.15))
+  display: flex
+  align-items: center
+  justify-content: center
+  margin: 0 auto 24px
+  
+  svg
+    font-size: 1.5rem
+    color: #f87171
+
+.acknowledgments-text
+  font-size: 1.0625rem
+  line-height: 1.7
+  color: $subtext
+  
+  a
+    color: $primary-light
+    text-decoration: none
+    font-weight: 500
+    margin: 0 4px
+    transition: color 0.2s
+    
+    &:hover
+      color: $text
+
+@media (max-width: 768px)
+  .acknowledgments
+    padding: 64px 24px
+    
+  .acknowledgments-content
+    h2
+      font-size: 1.5rem
+      
+  .acknowledgments-text
+    font-size: 1rem
+
+@media (max-width: 480px)
+  .acknowledgments
+    padding: 48px 20px
+    
+  .acknowledgments-badge
+    flex-direction: column
+    gap: 8px
+    padding: 16px 24px

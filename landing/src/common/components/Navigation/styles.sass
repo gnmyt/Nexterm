@@ -1,0 +1,199 @@
+@use "@/common/styles/colors" as *
+
+nav
+  position: fixed
+  top: 0
+  left: 0
+  right: 0
+  z-index: 100
+  display: flex
+  align-items: center
+  justify-content: space-between
+  padding: 16px 48px
+  background: transparent
+  transition: all 0.2s
+
+nav.nav-scrolled
+  background: rgba($background, 0.8)
+  backdrop-filter: blur(0.5rem)
+  border-bottom: 2px solid $dark-gray
+
+.logo-area
+  display: flex
+  align-items: center
+  gap: 10px
+  text-decoration: none
+  transition: all 0.2s
+
+  &:hover
+    filter: brightness(0.8)
+
+  img
+    width: 32px
+    height: 32px
+
+  span
+    font-size: 1.125rem
+    font-weight: 700
+    color: $text
+
+.nav-links
+  display: flex
+  align-items: center
+  gap: 32px
+
+  a
+    font-size: 0.9rem
+    font-weight: 500
+    color: $subtext
+    transition: color 0.2s
+
+    &:hover
+      color: $text
+
+    &.active
+      color: $primary
+
+  .external-link
+    display: flex
+    align-items: center
+    gap: 6px
+
+    svg
+      font-size: 0.625rem
+      opacity: 0.6
+
+.nav-actions
+  display: flex
+  align-items: center
+  gap: 8px
+
+.discord-link
+  display: flex
+  align-items: center
+  justify-content: center
+  width: 2.5rem
+  height: 2.5rem
+  background: transparent
+  border: 1px solid $dark-gray
+  border-radius: 0.5rem
+  color: $subtext
+  font-size: 1rem
+  transition: all 0.2s
+
+  &:hover
+    background: $gray
+    color: #5865F2
+
+.github-link
+  display: flex
+  align-items: center
+  gap: 0.5rem
+  padding: 0.5rem 1rem
+  background: $background-lighter
+  border: 1px solid $dark-gray
+  border-radius: 0.5rem
+  color: $text
+  font-size: 0.875rem
+  font-weight: 500
+  transition: all 0.2s
+
+  &:hover
+    filter: brightness(0.8)
+
+  svg
+    font-size: 1rem
+
+.mobile-toggle
+  display: none
+  background: none
+  border: none
+  color: $text
+  font-size: 1.25rem
+  cursor: pointer
+  padding: 8px
+
+.mobile-nav
+  position: fixed
+  top: 0
+  right: 0
+  width: 280px
+  height: 100vh
+  background: $background-lighter
+  z-index: 150
+  transform: translateX(100%)
+  transition: transform 0.2s
+  border-left: 2px solid $dark-gray
+
+.mobile-nav.mobile-open
+  transform: translateX(0)
+
+.mobile-content
+  padding: 24px
+  display: flex
+  flex-direction: column
+  gap: 32px
+
+.mobile-logo
+  display: flex
+  align-items: center
+  gap: 10px
+  text-decoration: none
+  padding-bottom: 24px
+  border-bottom: 2px solid $dark-gray
+
+  img
+    width: 36px
+    height: 36px
+
+  span
+    font-size: 1.25rem
+    font-weight: 700
+    color: $text
+
+.mobile-links
+  display: flex
+  flex-direction: column
+  gap: 4px
+
+  a
+    display: flex
+    align-items: center
+    gap: 8px
+    padding: 0.625rem 0.75rem
+    font-size: 0.9rem
+    font-weight: 500
+    color: $subtext
+    border-radius: 0.5rem
+    transition: all 0.2s
+
+    &:hover
+      background: $gray
+      color: $text
+
+    &.active
+      background: $primary-opacity
+      color: $primary
+
+    svg
+      font-size: 0.75rem
+      opacity: 0.6
+
+.mobile-overlay
+  position: fixed
+  inset: 0
+  background: rgba(0, 0, 0, 0.5)
+  backdrop-filter: blur(0.3rem)
+  z-index: 140
+
+@media (max-width: 768px)
+  nav
+    padding: 16px 20px
+
+  .nav-links, .nav-actions
+    display: none
+
+  .mobile-toggle
+    display: flex
+    align-items: center
+    justify-content: center
