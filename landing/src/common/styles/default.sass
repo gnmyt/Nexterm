@@ -1,0 +1,48 @@
+@use "colors" as *
+
+*
+  box-sizing: border-box
+  margin: 0
+  padding: 0
+
+body, html
+  background-color: $background
+  color: $text
+  font-family: "Plus Jakarta Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif
+  font-weight: 500
+  line-height: 1.5
+  -webkit-font-smoothing: antialiased
+  -moz-osx-font-smoothing: grayscale
+  scroll-behavior: smooth
+  overflow-x: hidden
+
+h1, h2, h3, h4, h5, h6
+  font-weight: 700
+  line-height: 1.2
+  color: $text
+
+p
+  color: $subtext
+  font-weight: 500
+
+a
+  color: inherit
+  text-decoration: none
+  transition: color 0.2s
+
+::selection
+  background: $primary-opacity
+  color: $text
+
+::-webkit-scrollbar
+  width: 10px
+
+::-webkit-scrollbar-track
+  background: transparent
+
+::-webkit-scrollbar-thumb
+  background: $background-lighter
+  border-radius: 10px
+
+::-webkit-scrollbar-thumb:hover
+  background: $gray
