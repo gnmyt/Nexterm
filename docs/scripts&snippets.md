@@ -69,3 +69,7 @@ Use these exact values for the `@os` tag:
 
 > [!TIP]
 > Check out the [NexStore repository](https://github.com/gnmyt/NexStore/tree/main/nexterm) for more examples.
+
+### Scripting Variables & Directives
+
+For advanced script functionality, including step tracking, user input collection, and real-time feedback, see the [📋 Scripting Variables & Directives](./ScriptingVariables.md) guide.
