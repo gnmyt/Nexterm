@@ -53,9 +53,9 @@
     "loginDialog": {
       "title": "Nexterm",
       "registrationTitle": "Регистрация",
-      "ssoOrContinueWith": "или продолжить с помощью",
+      "ssoOrContinueWith": "или продолжить с",
       "noAuthMethodsAvailable": "Нет доступных методов аутентификации.",
-      "signInWithPasskey": "Войдите в систему с помощью Passkey",
+      "signInWithPasskey": "Войти с помощью Passkey",
       "authenticating": "Аутентификация..."
     },
     "deviceLink": {
