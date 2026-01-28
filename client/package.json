@@ -35,7 +35,7 @@
     "react-dnd": "^16.0.1",
     "react-dnd-html5-backend": "^16.0.1",
     "react-dom": "^19.2.3",
-    "react-i18next": "^16.5.3",
+    "react-i18next": "^16.5.4",
     "react-router-dom": "^7.13.0",
     "react-use-websocket": "^4.13.0",
     "simple-icons": "^16.6.1",
