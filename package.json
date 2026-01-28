@@ -8,7 +8,7 @@
   "dependencies": {
     "@simplewebauthn/server": "^13.2.2",
     "archiver": "^7.0.1",
-    "axios": "^1.13.2",
+    "axios": "^1.13.4",
     "bcrypt": "^6.0.0",
     "decompress": "^4.2.1",
     "express": "^5.2.1",
