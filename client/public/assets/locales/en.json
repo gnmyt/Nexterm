@@ -165,7 +165,20 @@
       "internalAuthDisabled": "Internal authentication is disabled",
       "ssoLoginFailed": "Failed to initiate SSO login",
       "passkeyLoginFailed": "Passkey authentication failed",
-      "passkeyCancelled": "Passkey authentication was cancelled"
+      "passkeyCancelled": "Passkey authentication was cancelled",
+      "connection": {
+        "hostUnreachable": "Remote host unreachable",
+        "refused": "Connection refused by remote host",
+        "timeout": "Connection timed out",
+        "authenticationFailed": "Authentication failed",
+        "permissionDenied": "Permission denied",
+        "failed": "Connection failed",
+        "closedUnexpectedly": "Connection closed unexpectedly",
+        "error": "Connection error occurred",
+        "scriptFailed": "Script execution failed",
+        "scriptClosedUnexpectedly": "Script connection closed unexpectedly",
+        "scriptError": "Script connection error occurred"
+      }
     },
     "messages": {
       "invitationAccepted": "Invitation accepted",

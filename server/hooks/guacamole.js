@@ -35,8 +35,15 @@ const handleSharedGuac = (ws, context) => {
                 }
             } catch (e) {}
         },
-        onClose: () => {
-            try { ws.close(4016, "Session closed"); } catch (e) {}
+        onClose: (reason) => {
+            try { 
+                // Send close reason to client if it's an error
+                if (reason && reason.startsWith('error:')) {
+                    ws.close(4500, reason);
+                } else {
+                    ws.close(4016, "Session closed");
+                }
+            } catch (e) {}
         },
     });
     

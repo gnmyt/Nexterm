@@ -86,9 +86,16 @@ class ClientConnection {
             onReady: (connectionId) => {
                 logger.info(`Master connection ready`, { sessionId: this.sessionId, connectionId });
             },
-            onClose: () => {
+            onClose: (reason) => {
                 this.webSocket.removeAllListeners();
-                try { this.webSocket.close(); } catch (e) {}
+                try { 
+                    // Send close reason to client if it's an error
+                    if (reason && reason.startsWith('error:')) {
+                        this.webSocket.close(4500, reason);
+                    } else {
+                        this.webSocket.close();
+                    }
+                } catch (e) {}
             },
         });
         
