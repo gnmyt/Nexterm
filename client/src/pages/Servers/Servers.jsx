@@ -1,6 +1,7 @@
 import "./styles.sass";
 import ServerList from "@/pages/Servers/components/ServerList";
 import { useContext, useEffect, useState, useCallback, useRef } from "react";
+import { createPortal } from "react-dom";
 import WelcomePanel from "@/pages/Servers/components/WelcomePanel";
 import ServerDialog from "@/pages/Servers/components/ServerDialog";
 import ViewContainer from "@/pages/Servers/components/ViewContainer";
@@ -30,6 +31,7 @@ export const Servers = () => {
     const [pendingConnection, setPendingConnection] = useState(null);
     const [openFileEditors, setOpenFileEditors] = useState([]);
     const [mobileServerListOpen, setMobileServerListOpen] = useState(false);
+    const [leftPaneSlot, setLeftPaneSlot] = useState(null);
 
     const [currentFolderId, setCurrentFolderId] = useState(null);
     const [currentOrganizationId, setCurrentOrganizationId] = useState(null);
@@ -49,6 +51,10 @@ export const Servers = () => {
         const handleToggle = () => setMobileServerListOpen(prev => !prev);
         window.addEventListener('toggleServerList', handleToggle);
         return () => window.removeEventListener('toggleServerList', handleToggle);
+    }, []);
+
+    useEffect(() => {
+        setLeftPaneSlot(document.getElementById("left-pane-slot"));
     }, []);
 
     const handleConnectionsUpdate = useCallback((sessions) => {
@@ -454,19 +460,22 @@ export const Servers = () => {
                 onConnect={handleConnectionReasonProvided}
                 serverName={pendingConnection?.server?.name || "Unknown Server"}
             />
-            <ServerList setServerDialogOpen={(protocol = null) => {
-                setServerDialogProtocol(protocol);
-                setServerDialogOpen(true);
-            }}
-                        connectToServer={connectToServer}
-                        setProxmoxDialogOpen={() => setProxmoxDialogOpen(true)}
-                        setSSHConfigImportDialogOpen={() => setSSHConfigImportDialogOpen(true)}
-                        setCurrentFolderId={setCurrentFolderId} setCurrentOrganizationId={setCurrentOrganizationId}
-                        setEditServerId={setEditServerId} openSFTP={openSFTP}
-                        hibernatedSessions={hibernatedSessions} resumeSession={resumeConnection}
-                        openDirectConnect={openDirectConnect} runScript={runScript}
-                        openPortForward={isTauri() ? openPortForward : undefined}
-                        mobileOpen={mobileServerListOpen} setMobileOpen={setMobileServerListOpen} />
+            {leftPaneSlot && createPortal(
+                <ServerList setServerDialogOpen={(protocol = null) => {
+                    setServerDialogProtocol(protocol);
+                    setServerDialogOpen(true);
+                }}
+                            connectToServer={connectToServer}
+                            setProxmoxDialogOpen={() => setProxmoxDialogOpen(true)}
+                            setSSHConfigImportDialogOpen={() => setSSHConfigImportDialogOpen(true)}
+                            setCurrentFolderId={setCurrentFolderId} setCurrentOrganizationId={setCurrentOrganizationId}
+                            setEditServerId={setEditServerId} openSFTP={openSFTP}
+                            hibernatedSessions={hibernatedSessions} resumeSession={resumeConnection}
+                            openDirectConnect={openDirectConnect} runScript={runScript}
+                            openPortForward={isTauri() ? openPortForward : undefined}
+                            mobileOpen={mobileServerListOpen} setMobileOpen={setMobileServerListOpen} />,
+                leftPaneSlot
+            )}
             {visibleSessions.length === 0 && 
                 <WelcomePanel 
                     connectToServer={connectToServer} 

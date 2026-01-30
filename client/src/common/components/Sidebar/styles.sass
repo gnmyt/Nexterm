@@ -12,7 +12,7 @@ $mobile: 768px
   align-items: center
   border-right: 2px solid colors.$dark-gray
   overflow: visible
-  transition: margin-left 0.2s, box-shadow 0.2s
+  transition: box-shadow 0.2s
   left: 0
   top: 0
   z-index: 10
@@ -23,16 +23,6 @@ $mobile: 768px
 
   @media (max-width: $mobile)
     display: none
-
-  &.collapsed
-    margin-left: -5rem
-    position: absolute
-    top: var(--title-bar-height)
-    height: var(--content-height)
-
-    &:hover
-      margin-left: 0
-      box-shadow: 2px 0 10px rgba(0, 0, 0, 0.2)
 
   .sidebar-top
     display: flex
