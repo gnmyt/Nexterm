@@ -122,6 +122,10 @@ $tablet: 1024px
   overflow: hidden
   -webkit-overflow-scrolling: touch
 
+  .xterm, .xterm-screen, canvas
+    padding-left: 3px
+    box-sizing: border-box
+
   &.visible
     opacity: 1
     pointer-events: auto
@@ -131,11 +135,12 @@ $tablet: 1024px
     pointer-events: none
 
 .grid-resizer
-  background: transparent
-  transition: background-color 0.2s ease
+  background: colors.$gray
+  transition: background-color 0.4s ease
   user-select: none
   flex-shrink: 0
   touch-action: none
+  opacity: 0.1
 
   @media (max-width: $tablet)
     &.vertical
@@ -150,10 +155,10 @@ $tablet: 1024px
     display: none
 
   &:hover
-    background-color: colors.$primary !important
+    opacity: 0.6
 
   &:active, .view-layouter.resizing &
-    background-color: colors.$primary !important
+    opacity: 1
 
   &.vertical
     cursor: col-resize
