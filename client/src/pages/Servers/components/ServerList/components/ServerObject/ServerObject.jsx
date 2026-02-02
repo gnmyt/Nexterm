@@ -13,6 +13,8 @@ export const ServerObject = ({ id, name, position, folderId, organizationId, nes
     const [dropPlacement, setDropPlacement] = useState(null);
     const elementRef = useRef(null);
     const touchStartRef = useRef(null);
+    const tapTimeoutRef = useRef(null);
+    const lastTapRef = useRef(0);
 
     const [{ opacity }, dragRef] = useDrag({
         item: { type: "server", id, folderId, position },
@@ -86,9 +88,31 @@ export const ServerObject = ({ id, name, position, folderId, organizationId, nes
                     const moved = start
                         ? Math.abs(e.clientX - start.x) > 10 || Math.abs(e.clientY - start.y) > 10
                         : false;
-                    if (!moved) onTouchContextMenu?.(e, id, "server-object");
+                    if (!moved) {
+                        const now = Date.now();
+                        if (tapTimeoutRef.current && now - lastTapRef.current < 300) {
+                            clearTimeout(tapTimeoutRef.current);
+                            tapTimeoutRef.current = null;
+                            lastTapRef.current = 0;
+                        } else {
+                            lastTapRef.current = now;
+                            tapTimeoutRef.current = setTimeout(() => {
+                                onTouchContextMenu?.(e, id, "server-object");
+                                tapTimeoutRef.current = null;
+                                lastTapRef.current = 0;
+                            }, 300);
+                        }
+                    }
                     touchStartRef.current = null;
                 }
+            }}
+            onPointerCancel={() => {
+                if (tapTimeoutRef.current) {
+                    clearTimeout(tapTimeoutRef.current);
+                    tapTimeoutRef.current = null;
+                }
+                touchStartRef.current = null;
+                lastTapRef.current = 0;
             }}
             onMouseLeave={() => setDropPlacement(null)}>
             <DropIndicator show={isOver && dropPlacement === 'before'} placement="before" />
