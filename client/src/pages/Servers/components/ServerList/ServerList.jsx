@@ -261,6 +261,15 @@ export const ServerList = ({
         contextMenu.open(e, { x: e.clientX, y: e.clientY });
     };
 
+    const handleTouchContextMenu = (e, entryId, entryType = "server-object") => {
+        if (!e || e.pointerType !== "touch") return;
+        e.preventDefault();
+        e.stopPropagation();
+        setContextClickedId(entryId);
+        setContextClickedType(entryType);
+        contextMenu.open(e, { x: e.clientX, y: e.clientY });
+    };
+
     const hibernatedSessionsForServer = server ? hibernatedSessions.filter(s => s.server.id == server.id) : [];
     
     const formatSessionDate = (session) => {
@@ -483,7 +492,8 @@ export const ServerList = ({
                             onContextMenu={handleContextMenu}
                             ref={serversContainerRef}>
                             <ServerEntries entries={renameStateServers} setRenameStateId={setRenameStateId}
-                                nestedLevel={0} connectToServer={connectToServer} hibernatedSessions={hibernatedSessions} />
+                                nestedLevel={0} connectToServer={connectToServer} hibernatedSessions={hibernatedSessions}
+                                onTouchContextMenu={handleTouchContextMenu} />
                         </div>
                     )}
                     {servers && servers.length === 0 && (

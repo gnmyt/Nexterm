@@ -8,10 +8,11 @@ import { useDrag, useDrop } from "react-dnd";
 import { patchRequest } from "@/common/utils/RequestUtil.js";
 import { DropIndicator } from "../DropIndicator";
 
-export const ServerObject = ({ id, name, position, folderId, organizationId, nestedLevel, icon, type, connectToServer, status, tags = [], hibernatedSessionCount = 0 }) => {
+export const ServerObject = ({ id, name, position, folderId, organizationId, nestedLevel, icon, type, connectToServer, status, tags = [], hibernatedSessionCount = 0, onTouchContextMenu }) => {
     const { loadServers, getServerById } = useContext(ServerContext);
     const [dropPlacement, setDropPlacement] = useState(null);
     const elementRef = useRef(null);
+    const touchStartRef = useRef(null);
 
     const [{ opacity }, dragRef] = useDrag({
         item: { type: "server", id, folderId, position },
@@ -74,6 +75,21 @@ export const ServerObject = ({ id, name, position, folderId, organizationId, nes
                 dragRef(dropRef(node));
             }}
             onDoubleClick={connect}
+            onPointerDown={(e) => {
+                if (e.pointerType === "touch") {
+                    touchStartRef.current = { x: e.clientX, y: e.clientY };
+                }
+            }}
+            onPointerUp={(e) => {
+                if (e.pointerType === "touch") {
+                    const start = touchStartRef.current;
+                    const moved = start
+                        ? Math.abs(e.clientX - start.x) > 10 || Math.abs(e.clientY - start.y) > 10
+                        : false;
+                    if (!moved) onTouchContextMenu?.(e, id, "server-object");
+                    touchStartRef.current = null;
+                }
+            }}
             onMouseLeave={() => setDropPlacement(null)}>
             <DropIndicator show={isOver && dropPlacement === 'before'} placement="before" />
             <div className={
