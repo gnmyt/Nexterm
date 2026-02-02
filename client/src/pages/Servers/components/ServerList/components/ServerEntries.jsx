@@ -2,7 +2,7 @@ import ServerObject from "@/pages/Servers/components/ServerList/components/Serve
 import CollapsibleFolder from "./CollapsibleFolder.jsx";
 import OrganizationFolder from "./OrganizationFolder";
 
-const ServerEntries = ({ entries, nestedLevel, setRenameStateId, connectToServer, folderId, organizationId, hibernatedSessions = [] }) => {
+const ServerEntries = ({ entries, nestedLevel, setRenameStateId, connectToServer, folderId, organizationId, hibernatedSessions = [], onTouchContextMenu }) => {
     return (
         <>
             {entries.map(entry => {
@@ -52,6 +52,7 @@ const ServerEntries = ({ entries, nestedLevel, setRenameStateId, connectToServer
                             tags={entry.tags}
                             connectToServer={connectToServer}
                             hibernatedSessionCount={hibernatedCount}
+                            onTouchContextMenu={onTouchContextMenu}
                         />
                     );
                 }
