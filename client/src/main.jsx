@@ -9,6 +9,16 @@ document.addEventListener("contextmenu", (e) => {
     if (!isEditable) e.preventDefault();
 });
 
+const setViewportHeight = () => {
+    const height = window.visualViewport?.height || window.innerHeight;
+    document.documentElement.style.setProperty("--viewport-height", `${height}px`);
+};
+
+setViewportHeight();
+window.addEventListener("resize", setViewportHeight);
+window.visualViewport?.addEventListener("resize", setViewportHeight);
+window.visualViewport?.addEventListener("scroll", setViewportHeight);
+
 createRoot(document.getElementById("root")).render(
     <StrictMode>
         <PreferencesProvider>
