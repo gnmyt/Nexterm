@@ -35,6 +35,17 @@ window.addEventListener("resize", setViewportHeight);
 window.visualViewport?.addEventListener("resize", setViewportHeight);
 window.visualViewport?.addEventListener("scroll", setViewportHeight);
 
+const preventZoomGesture = (e) => {
+    if (e.touches && e.touches.length > 1) {
+        e.preventDefault();
+    }
+};
+
+document.addEventListener("gesturestart", (e) => e.preventDefault(), { passive: false });
+document.addEventListener("gesturechange", (e) => e.preventDefault(), { passive: false });
+document.addEventListener("gestureend", (e) => e.preventDefault(), { passive: false });
+document.addEventListener("touchmove", preventZoomGesture, { passive: false });
+
 createRoot(document.getElementById("root")).render(
     <StrictMode>
         <PreferencesProvider>
