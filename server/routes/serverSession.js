@@ -1,6 +1,6 @@
 const { Router } = require("express");
-const { createSession, getSessions, getSession, hibernateSession, resumeSession, deleteSession, startSharing, stopSharing, updateSharePermissions, duplicateSession, pasteIdentityPassword } = require("../controllers/serverSession");
-const { createSessionValidation, sessionIdValidation, resumeSessionValidation, duplicateSessionValidation } = require("../validations/serverSession");
+const { createSession, getSessions, getSession, hibernateSession, resumeSession, deleteSession, startSharing, stopSharing, updateSharePermissions, duplicateSession, reconnectSession, pasteIdentityPassword } = require("../controllers/serverSession");
+const { createSessionValidation, sessionIdValidation, resumeSessionValidation, duplicateSessionValidation, reconnectSessionValidation } = require("../validations/serverSession");
 const { validateSchema } = require("../utils/schema");
 const stateBroadcaster = require("../lib/StateBroadcaster");
 
@@ -208,6 +208,32 @@ app.post("/:id/duplicate", async (req, res) => {
     const userAgent = req.headers['user-agent'] || 'unknown';
     
     const result = await duplicateSession(req.user.id, req.params.id, tabId, browserId, ipAddress, userAgent);
+    if (result?.code) {
+        return res.status(result.code).json({ error: result.message });
+    }
+    stateBroadcaster.broadcast("CONNECTIONS", { accountId: req.user.id });
+    res.status(201).json(result);
+});
+
+/**
+ * POST /connections/{id}/reconnect
+ * @summary Reconnect Connection
+ * @description Restarts a server connection using the same session configuration.
+ * @tags Connection
+ * @produces application/json
+ * @security BearerAuth
+ * @param {string} id.path.required - Session ID
+ * @return {object} 201 - New session created
+ */
+app.post("/:id/reconnect", async (req, res) => {
+    if (validateSchema(res, sessionIdValidation, req.params)) return;
+    if (validateSchema(res, reconnectSessionValidation, req.body)) return;
+
+    const { tabId, browserId } = req.body;
+    const ipAddress = req.ip || req.socket?.remoteAddress || 'unknown';
+    const userAgent = req.headers['user-agent'] || 'unknown';
+
+    const result = await reconnectSession(req.user.id, req.params.id, tabId, browserId, ipAddress, userAgent);
     if (result?.code) {
         return res.status(result.code).json({ error: result.message });
     }

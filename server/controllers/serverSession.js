@@ -274,6 +274,48 @@ const duplicateSession = async (accountId, sessionId, tabId = null, browserId = 
     );
 };
 
+const reconnectSession = async (accountId, sessionId, tabId = null, browserId = null, ipAddress = null, userAgent = null) => {
+    const session = SessionManager.get(sessionId);
+    if (!session) {
+        return { code: 404, message: "Session not found" };
+    }
+
+    if (session.accountId !== accountId) {
+        return { code: 403, message: "Access denied" };
+    }
+
+    const entry = await Entry.findByPk(session.entryId);
+    if (!entry) {
+        return { code: 404, message: "Entry not found" };
+    }
+
+    const config = session.configuration || {};
+    const connectionReason = session.connectionReason || null;
+    const effectiveTabId = tabId ?? session.tabId ?? null;
+    const effectiveBrowserId = browserId ?? session.browserId ?? null;
+
+    const result = await createSession(
+        accountId,
+        session.entryId,
+        config.identityId,
+        connectionReason,
+        config.type,
+        config.directIdentity,
+        effectiveTabId,
+        effectiveBrowserId,
+        config.scriptId,
+        config.startPath,
+        ipAddress,
+        userAgent
+    );
+
+    if (!result?.code && result?.sessionId) {
+        await SessionManager.remove(sessionId);
+    }
+
+    return result;
+};
+
 const pasteIdentityPassword = async (accountId, sessionId, ipAddress = null, userAgent = null) => {
     const { session, error } = validateSessionOwnership(accountId, sessionId);
     if (error) return error;
@@ -314,4 +356,4 @@ const pasteIdentityPassword = async (accountId, sessionId, ipAddress = null, use
     }
 };
 
-module.exports = { createSession, getSessions, getSession, hibernateSession, resumeSession, deleteSession, startSharing, stopSharing, updateSharePermissions, duplicateSession, pasteIdentityPassword };
+module.exports = { createSession, getSessions, getSession, hibernateSession, resumeSession, deleteSession, startSharing, stopSharing, updateSharePermissions, duplicateSession, reconnectSession, pasteIdentityPassword };
