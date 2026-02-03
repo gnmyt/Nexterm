@@ -1035,7 +1035,7 @@
     },
     "identities": {
       "title": "Chaves e Credenciais SSH",
-      "description": "Gerencie suas chaves SSH e credenciais de login para conexões de servidor",
+      "description": "Gerencie suas chaves SSH e credenciais de login para conexões de servidor.",
       "createIdentity": "Criar Identidade",
       "personal": "Pessoal",
       "noUsername": "Sem nome de usuário",
