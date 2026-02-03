@@ -346,6 +346,11 @@
   resolved "https://registry.yarnpkg.com/@esbuild/win32-x64/-/win32-x64-0.21.5.tgz#acad351d582d157bb145535db2a6ff53dd514b5c"
   integrity sha512-tQd/1efJuzPC6rCFwEvLtci/xNFcTZknmXs98FYDfGE4wP9ClFV98nyKrzJKVPMhdDnjzLhdUyMX4PsQAPjwIw==
 
+"@exodus/bytes@^1.11.0":
+  version "1.11.0"
+  resolved "https://registry.yarnpkg.com/@exodus/bytes/-/bytes-1.11.0.tgz#e0fd4f7940997f3a1c09db4bbeb600ec0f633643"
+  integrity sha512-wO3vd8nsEHdumsXrjGO/v4p6irbg7hy9kvIeR6i2AwylZSk4HJdWgL0FNaVquW1+AweJcdvU1IEpuIWk/WaPnA==
+
 "@floating-ui/core@^1.7.3":
   version "1.7.3"
   resolved "https://registry.yarnpkg.com/@floating-ui/core/-/core-1.7.3.tgz#462d722f001e23e46d86fd2bd0d21b7693ccb8b7"
@@ -2987,13 +2992,13 @@ lazystream@^1.0.0:
   dependencies:
     readable-stream "^2.0.5"
 
-ldapts@^8.1.4:
-  version "8.1.4"
-  resolved "https://registry.yarnpkg.com/ldapts/-/ldapts-8.1.4.tgz#a2b39874555b7f722bdf20ede78da7331a4b4e97"
-  integrity sha512-FgCdJ6K31tnaylBlUmnAaxVQ+SMiVxY2VH17vhZcGnCr1caflx+jouFgHD+KpirrAz499tHvUPCZeY2dSwEigg==
+ldapts@^8.1.5:
+  version "8.1.5"
+  resolved "https://registry.yarnpkg.com/ldapts/-/ldapts-8.1.5.tgz#0866a096c4d367cb9ec85b9015e54dc4b699eaeb"
+  integrity sha512-gwNA0X3sMcY2ubwbl0CFNZT8WoEMaxE64yaOwEb6cOQTnmL1y6T8XHwFF127vwVbdnjFtjJ8SIHEJL4S4LyI5Q==
   dependencies:
     strict-event-emitter-types "2.0.0"
-    whatwg-url "15.1.0"
+    whatwg-url "16.0.0"
 
 lodash@^4.17.15, lodash@^4.17.21:
   version "4.17.21"
@@ -4842,18 +4847,19 @@ webdav@^5.8.0:
     url-join "^5.0.0"
     url-parse "^1.5.10"
 
-webidl-conversions@^8.0.0:
-  version "8.0.0"
-  resolved "https://registry.yarnpkg.com/webidl-conversions/-/webidl-conversions-8.0.0.tgz#821c92aa4f88d88a31264d887e244cb9655690c6"
-  integrity sha512-n4W4YFyz5JzOfQeA8oN7dUYpR+MBP3PIUsn2jLjWXwK5ASUzt0Jc/A5sAUZoCYFJRGF0FBKJ+1JjN43rNdsQzA==
+webidl-conversions@^8.0.1:
+  version "8.0.1"
+  resolved "https://registry.yarnpkg.com/webidl-conversions/-/webidl-conversions-8.0.1.tgz#0657e571fe6f06fcb15ca50ed1fdbcb495cd1686"
+  integrity sha512-BMhLD/Sw+GbJC21C/UgyaZX41nPt8bUTg+jWyDeg7e7YN4xOM05YPSIXceACnXVtqyEw/LMClUQMtMZ+PGGpqQ==
 
-whatwg-url@15.1.0:
-  version "15.1.0"
-  resolved "https://registry.yarnpkg.com/whatwg-url/-/whatwg-url-15.1.0.tgz#5c433439b9a5789eeb3806bbd0da89a8bd40b8d7"
-  integrity sha512-2ytDk0kiEj/yu90JOAp44PVPUkO9+jVhyf+SybKlRHSDlvOOZhdPIrr7xTH64l4WixO2cP+wQIcgujkGBPPz6g==
+whatwg-url@16.0.0:
+  version "16.0.0"
+  resolved "https://registry.yarnpkg.com/whatwg-url/-/whatwg-url-16.0.0.tgz#73bafd41b77c54abfa40c4a4fd9c6103024e97d2"
+  integrity sha512-9CcxtEKsf53UFwkSUZjG+9vydAsFO4lFHBpJUtjBcoJOCJpKnSJNwCw813zrYJHpCJ7sgfbtOe0V5Ku7Pa1XMQ==
   dependencies:
+    "@exodus/bytes" "^1.11.0"
     tr46 "^6.0.0"
-    webidl-conversions "^8.0.0"
+    webidl-conversions "^8.0.1"
 
 which-typed-array@^1.1.16:
   version "1.1.19"
