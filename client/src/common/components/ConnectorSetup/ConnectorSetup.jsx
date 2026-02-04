@@ -50,7 +50,7 @@ export const ConnectorSetup = ({ open }) => {
                 if (result.status === "authorized" && result.token) {
                     setPolling(false);
                     updateSessionToken(result.token);
-                    sendToast("Success", t("common.connectorSetup.authSuccess"));
+                    sendToast(t("common.success"), t("common.connectorSetup.authSuccess"));
                 } else if (result.status === "invalid") await regenerateCode();
             } catch {}
         };
@@ -62,14 +62,14 @@ export const ConnectorSetup = ({ open }) => {
     const regenerateCode = async () => {
         try {
             const result = await request("auth/device/create", "POST", { clientType: "connector" });
-            if (result.code && typeof result.code === "number") { sendToast("Error", result.message); return; }
+            if (result.code && typeof result.code === "number") { sendToast(t("common.error"), result.message); return; }
             setDeviceCode(result.code);
             setDeviceToken(result.token);
-        } catch (e) { sendToast("Error", e.message || t("common.connectorSetup.codeCreationFailed")); }
+        } catch (e) { sendToast(t("common.error"), e.message || t("common.connectorSetup.codeCreationFailed")); }
     };
 
     const validateServer = async () => {
-        if (!serverUrl.trim()) { sendToast("Error", t("common.connectorSetup.enterServerUrl")); return; }
+        if (!serverUrl.trim()) { sendToast(t("common.error"), t("common.connectorSetup.enterServerUrl")); return; }
         setConnecting(true);
         const cleanUrl = serverUrl.trim().replace(/\/$/, "");
         try {
@@ -77,20 +77,20 @@ export const ConnectorSetup = ({ open }) => {
             if (!response.ok) throw new Error("Invalid response");
             setActiveServerUrl(cleanUrl);
         } catch { 
-            sendToast("Error", t("common.connectorSetup.connectionFailed")); 
+            sendToast(t("common.error"), t("common.connectorSetup.connectionFailed")); 
             setConnecting(false);
             return;
         }
         
         try {
             const result = await request("auth/device/create", "POST", { clientType: "connector" });
-            if (result.code && typeof result.code === "number") { sendToast("Error", result.message); setConnecting(false); return; }
+            if (result.code && typeof result.code === "number") { sendToast(t("common.error"), result.message); setConnecting(false); return; }
             setDeviceCode(result.code);
             setDeviceToken(result.token);
             setStep(2);
             setPolling(true);
         } catch (e) { 
-            sendToast("Error", t("common.connectorSetup.deviceLinkingNotSupported")); 
+            sendToast(t("common.error"), t("common.connectorSetup.deviceLinkingNotSupported")); 
             setActiveServerUrl(null);
         }
         finally { setConnecting(false); }
@@ -104,8 +104,8 @@ export const ConnectorSetup = ({ open }) => {
 
     const copyCode = async () => {
         if (!deviceCode) return;
-        try { await navigator.clipboard.writeText(deviceCode); sendToast("Success", t("common.connectorSetup.codeCopied")); }
-        catch { sendToast("Error", t("common.connectorSetup.copyFailed")); }
+        try { await navigator.clipboard.writeText(deviceCode); sendToast(t("common.success"), t("common.connectorSetup.codeCopied")); }
+        catch { sendToast(t("common.error"), t("common.connectorSetup.copyFailed")); }
     };
 
     const handleBack = () => { setPolling(false); setDeviceCode(null); setDeviceToken(null); setStep(1); setActiveServerUrl(null); };
