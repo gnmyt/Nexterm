@@ -1,4 +1,5 @@
 import { useRef, useState, useEffect, useCallback } from "react";
+import { useTranslation } from "react-i18next";
 import Icon from "@mdi/react";
 import { mdiClose, mdiViewSplitVertical, mdiChevronLeft, mdiChevronRight, mdiSleep, mdiOpenInNew, mdiShareVariant, mdiLinkVariant, mdiPencil, mdiEye, mdiCloseCircle, mdiContentDuplicate } from "@mdi/js";
 import { useDrag, useDrop } from "react-dnd";
@@ -24,6 +25,7 @@ const DraggableTab = ({
 }) => {
     const contextMenu = useContextMenu();
     const { popOutSession } = useActiveSessions();
+    const { t } = useTranslation();
     
     const canPopOut = !session.scriptId && session.type !== "sftp";
     const canShare = canPopOut;
@@ -128,42 +130,42 @@ const DraggableTab = ({
                     <>
                         <ContextMenuItem
                             icon={mdiOpenInNew}
-                            label="Pop Out"
+                            label={t("servers.tabs.contextMenu.popOut")}
                             onClick={() => popOutSession(session.id)}
                         />
                         <ContextMenuSeparator />
                     </>
                 )}
                 {canShare && !isSharing && (
-                    <ContextMenuItem icon={mdiShareVariant} label="Start Sharing">
-                        <ContextMenuItem icon={mdiEye} label="Read-only" onClick={() => handleShare(false)} />
-                        <ContextMenuItem icon={mdiPencil} label="Read & Write" onClick={() => handleShare(true)} />
+                    <ContextMenuItem icon={mdiShareVariant} label={t("servers.tabs.contextMenu.startSharing")}>
+                        <ContextMenuItem icon={mdiEye} label={t("servers.tabs.contextMenu.readOnly")} onClick={() => handleShare(false)} />
+                        <ContextMenuItem icon={mdiPencil} label={t("servers.tabs.contextMenu.readWrite")} onClick={() => handleShare(true)} />
                     </ContextMenuItem>
                 )}
                 {canShare && isSharing && (
                     <>
-                        <ContextMenuItem icon={mdiLinkVariant} label="Copy Share Link" onClick={handleCopyLink} />
-                        <ContextMenuItem icon={mdiShareVariant} label="Change Permissions">
-                            <ContextMenuItem icon={mdiEye} label="Read-only" onClick={() => handlePermissionChange(false)} disabled={!session.shareWritable} />
-                            <ContextMenuItem icon={mdiPencil} label="Read & Write" onClick={() => handlePermissionChange(true)} disabled={session.shareWritable} />
+                        <ContextMenuItem icon={mdiLinkVariant} label={t("servers.tabs.contextMenu.copyShareLink")} onClick={handleCopyLink} />
+                        <ContextMenuItem icon={mdiShareVariant} label={t("servers.tabs.contextMenu.changePermissions")}>
+                            <ContextMenuItem icon={mdiEye} label={t("servers.tabs.contextMenu.readOnly")} onClick={() => handlePermissionChange(false)} disabled={!session.shareWritable} />
+                            <ContextMenuItem icon={mdiPencil} label={t("servers.tabs.contextMenu.readWrite")} onClick={() => handlePermissionChange(true)} disabled={session.shareWritable} />
                         </ContextMenuItem>
-                        <ContextMenuItem icon={mdiCloseCircle} label="Stop Sharing" onClick={handleStopSharing} danger />
+                        <ContextMenuItem icon={mdiCloseCircle} label={t("servers.tabs.contextMenu.stopSharing")} onClick={handleStopSharing} danger />
                         <ContextMenuSeparator />
                     </>
                 )}
                 <ContextMenuItem
                     icon={mdiContentDuplicate}
-                    label="Duplicate"
+                    label={t("servers.tabs.contextMenu.duplicate")}
                     onClick={() => duplicateSession(session.id)}
                 />
                 <ContextMenuItem
                     icon={mdiSleep}
-                    label="Hibernate Session"
+                    label={t("servers.tabs.contextMenu.hibernateSession")}
                     onClick={() => hibernateSession(session.id)}
                 />
                 <ContextMenuItem
                     icon={mdiClose}
-                    label="Close Session"
+                    label={t("servers.tabs.contextMenu.closeSession")}
                     onClick={() => closeSession(session.id)}
                     danger
                 />
