@@ -49,7 +49,6 @@ export const Sidebar = () => {
                 <Tooltip text={t('common.sidebar.collapseTitle')} disabled={isCollapsed}>
                     <div className="sidebar-logo" onClick={() => setIsCollapsed(!isCollapsed)} title={t('common.sidebar.collapseTitle')}><NextermLogo size={48 * uiScale} /></div>
                 </Tooltip>
-                <hr />
                 <nav>
                     {navigation.map((item, i) => (
                         <Tooltip key={i} text={item.title}>
