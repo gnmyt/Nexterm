@@ -90,7 +90,7 @@ $tablet: 1024px
       gap: 1.5rem
       width: 100%
 
-    .theme-selector, .accent-selector
+    .theme-selector, .accent-selector, .size-selector
       display: flex
       flex-direction: column
       gap: 0.5rem
@@ -98,7 +98,8 @@ $tablet: 1024px
       @media (max-width: $mobile)
         width: 100%
 
-    .theme-label, .accent-label
+
+    .theme-label, .accent-label, .size-label
       font-weight: 600
       color: colors.$subtext
       font-size: 0.875rem
@@ -186,6 +187,7 @@ $tablet: 1024px
       display: flex
       flex-wrap: wrap
       gap: 0.5rem
+      align-items: center
 
       @media (max-width: $mobile)
         gap: 0.625rem
@@ -220,6 +222,16 @@ $tablet: 1024px
           opacity: 0
           transition: opacity 0.2s ease
           filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.5))
+
+    .accent-colors-container
+      min-height: 3.5rem
+      display: flex
+      align-items: center
+
+    .appearance-control-container
+      min-height: 3.5rem
+      display: flex
+      align-items: center
 
   .section-inner
     margin-top: 1rem

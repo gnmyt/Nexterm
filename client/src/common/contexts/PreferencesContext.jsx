@@ -12,7 +12,7 @@ const PATH_TO_GROUP = {
     "terminal.fontFamily": "terminal.font", "terminal.fontSize": "terminal.font",
     "terminal.cursorStyle": "terminal.cursor", "terminal.cursorBlink": "terminal.cursor",
     "terminal.theme": "terminal.theme",
-    "theme.mode": "appearance", "theme.accentColor": "appearance",
+    "theme.mode": "appearance", "theme.accentColor": "appearance", "theme.uiScale": "appearance",
     "files.showThumbnails": "files", "files.defaultViewMode": "files", "files.showHiddenFiles": "files",
     "files.confirmBeforeDelete": "files", "files.dragDropAction": "files",
     "general.language": "general",
@@ -424,6 +424,7 @@ export const PreferencesProvider = ({ children, user, refreshUser }) => {
 
     const themeMode = get("theme.mode", "auto");
     const accentColor = get("theme.accentColor", "#314BD3");
+    const uiScale = Number(get("theme.uiScale", 1) ?? 1) || 1;
     const actualTheme = themeMode === "auto" ? getSystemTheme() : themeMode;
 
     useEffect(() => {
@@ -448,6 +449,11 @@ export const PreferencesProvider = ({ children, user, refreshUser }) => {
     useEffect(() => {
         document.documentElement.style.setProperty("--accent-color", accentColor);
     }, [accentColor]);
+
+    useEffect(() => {
+        const normalizedScale = typeof uiScale === "number" ? uiScale : Number(uiScale) || 1;
+        document.documentElement.style.setProperty("--ui-scale", normalizedScale.toString());
+    }, [uiScale]);
 
     const selectedTheme = get("terminal.theme", "default");
     const selectedFont = get("terminal.fontFamily", "monospace");
@@ -478,6 +484,7 @@ export const PreferencesProvider = ({ children, user, refreshUser }) => {
 
     const setTheme = useCallback((mode) => set("theme.mode", mode), [set]);
     const setAccentColor = useCallback((color) => set("theme.accentColor", color), [set]);
+    const setUiScale = useCallback((scale) => set("theme.uiScale", Number(scale) || 1), [set]);
     const toggleTheme = useCallback(() => {
         setTheme(themeMode === "auto" || themeMode === "dark" ? "light" : "dark");
     }, [setTheme, themeMode]);
@@ -517,6 +524,7 @@ export const PreferencesProvider = ({ children, user, refreshUser }) => {
             get, set, isLoading, preferences: prefs,
             isGroupSynced, enableGroupSync, disableGroupSync, toggleGroupSync,
             theme: actualTheme, themeMode, setTheme, toggleTheme, accentColor, setAccentColor, accentColors: ACCENT_COLORS,
+            uiScale, setUiScale,
             selectedTheme, setSelectedTheme, selectedFont, setSelectedFont, fontSize, setFontSize,
             cursorStyle, setCursorStyle, cursorBlink, setCursorBlink,
             getCurrentTheme, getTerminalTheme, getAvailableThemes, getAvailableFonts, getCursorStyles,
