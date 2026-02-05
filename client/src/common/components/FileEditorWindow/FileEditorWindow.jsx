@@ -14,6 +14,76 @@ import * as monaco from "monaco-editor";
 
 loader.config({ monaco });
 
+const normalizeFilename = (filename) => filename?.toLowerCase() || "";
+
+const getMonacoLanguage = (filename) => {
+    const name = normalizeFilename(filename);
+    if (!name) return "plaintext";
+
+    const basename = name.split("/").pop() || "";
+
+    const exactNameMap = {
+        "dockerfile": "dockerfile",
+        "makefile": "makefile",
+        ".env": "ini",
+    };
+
+    if (exactNameMap[basename]) return exactNameMap[basename];
+
+    const extension = basename.includes(".") ? basename.split(".").pop() : "";
+
+    const extensionMap = {
+        js: "javascript",
+        mjs: "javascript",
+        cjs: "javascript",
+        jsx: "javascript",
+        ts: "typescript",
+        tsx: "typescript",
+        json: "json",
+        html: "html",
+        htm: "html",
+        css: "css",
+        scss: "scss",
+        sass: "scss",
+        less: "less",
+        md: "markdown",
+        markdown: "markdown",
+        yml: "yaml",
+        yaml: "yaml",
+        xml: "xml",
+        sh: "shell",
+        bash: "shell",
+        zsh: "shell",
+        py: "python",
+        go: "go",
+        java: "java",
+        c: "c",
+        h: "c",
+        cpp: "cpp",
+        cc: "cpp",
+        cxx: "cpp",
+        hpp: "cpp",
+        hxx: "cpp",
+        cs: "csharp",
+        php: "php",
+        rb: "ruby",
+        rs: "rust",
+        swift: "swift",
+        kt: "kotlin",
+        kts: "kotlin",
+        sql: "sql",
+        gql: "graphql",
+        graphql: "graphql",
+        toml: "toml",
+        ini: "ini",
+        conf: "ini",
+        env: "ini",
+        txt: "plaintext",
+    };
+
+    return extensionMap[extension] || "plaintext";
+};
+
 export const FileEditorWindow = ({ file, session, onClose, zIndex = 9999 }) => {
     const { t } = useTranslation();
     const { theme } = usePreferences();
@@ -24,6 +94,7 @@ export const FileEditorWindow = ({ file, session, onClose, zIndex = 9999 }) => {
     const [fileContentChanged, setFileContentChanged] = useState(false);
     const [unsavedChangesDialog, setUnsavedChangesDialog] = useState(false);
     const [saving, setSaving] = useState(false);
+    const [language, setLanguage] = useState("plaintext");
 
     const {
         windowRef, headerRef, isMaximized, handleMouseDown, handleResizeStart, toggleMaximize,
@@ -35,6 +106,7 @@ export const FileEditorWindow = ({ file, session, onClose, zIndex = 9999 }) => {
         setIsLoading(true);
         setFileContent("");
         setFileContentChanged(false);
+        setLanguage(getMonacoLanguage(file));
 
         const url = `/api/entries/sftp?sessionId=${session.id}&path=${file}&sessionToken=${sessionToken}`;
         downloadRequest(url).then((res) => {
@@ -132,6 +204,7 @@ export const FileEditorWindow = ({ file, session, onClose, zIndex = 9999 }) => {
                     <Editor
                         value={fileContent}
                         onChange={updateContent}
+                        language={language}
                         theme={theme === "dark" || theme === "oled" ? "vs-dark" : "vs-light"}
                         options={{
                             minimap: { enabled: false },
