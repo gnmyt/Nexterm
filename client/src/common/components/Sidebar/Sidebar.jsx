@@ -14,7 +14,7 @@ import { getSidebarNavigation } from "@/common/utils/navigationConfig.jsx";
 import { GITHUB_URL } from "@/App.jsx";
 import { openExternalUrl } from "@/common/utils/TauriUtil.js";
 
-export const Sidebar = () => {
+export const Sidebar = ({ onToggleCollapse }) => {
     const { t } = useTranslation();
     const location = useLocation();
     const navigate = useNavigate();
@@ -23,7 +23,6 @@ export const Sidebar = () => {
     const [settingsTab, setSettingsTab] = useState("account");
     const [logoutDialogOpen, setLogoutDialogOpen] = useState(false);
     const [supportDialogOpen, setSupportDialogOpen] = useState(false);
-    const [isCollapsed, setIsCollapsed] = useState(false);
     const [userMenuOpen, setUserMenuOpen] = useState(false);
     const hoverTimeoutRef = useRef(null);
 
@@ -41,11 +40,11 @@ export const Sidebar = () => {
     const navigation = getSidebarNavigation(t);
 
     return (<>
-        <div className={`sidebar ${isCollapsed ? "collapsed" : ""}`}>
+        <div className="sidebar">
             <ActionConfirmDialog open={logoutDialogOpen} setOpen={setLogoutDialogOpen} text={t('common.sidebar.logoutConfirmText', { username: user?.username })} onConfirm={logout} />
             <div className="sidebar-top">
-                <Tooltip text={t('common.sidebar.collapseTitle')} disabled={isCollapsed}>
-                    <div className="sidebar-logo" onClick={() => setIsCollapsed(!isCollapsed)} title={t('common.sidebar.collapseTitle')}><NextermLogo size={64} /></div>
+                <Tooltip text={t('common.sidebar.collapseTitle')}>
+                    <div className="sidebar-logo nexterm-logo" onClick={onToggleCollapse} title={t('common.sidebar.collapseTitle')}><NextermLogo size={64} /></div>
                 </Tooltip>
                 <hr />
                 <nav>
