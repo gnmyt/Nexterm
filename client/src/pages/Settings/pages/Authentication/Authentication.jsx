@@ -78,8 +78,8 @@ export const Authentication = () => {
                             </div>
                             <div className="details">
                                 <h3>
-                                    {provider.name}
-                                    {provider.isInternal && (
+                                    {provider.isInternal ? t("settings.authentication.internalProviderName") : provider.name}
+                                    {!!provider.isInternal && (
                                         <span className="system-badge">{t("settings.authentication.system")}</span>
                                     )}
                                 </h3>
