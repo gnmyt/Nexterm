@@ -5,6 +5,7 @@ import * as fs from "fs";
 import * as http from "node:http";
 import * as https from "node:https";
 import { createRequire } from "node:module";
+import dotenv from "dotenv";
 
 const ensureUpgradeCallback = (ServerCtor) => {
     if (!ServerCtor?.prototype) return;
@@ -20,6 +21,9 @@ const ensureUpgradeCallback = (ServerCtor) => {
 ensureUpgradeCallback(http.Server);
 ensureUpgradeCallback(https.Server);
 
+dotenv.config({ path: path.resolve(__dirname, "../.env"), override: false });
+dotenv.config({ path: path.resolve(__dirname, ".env"), override: false });
+
 const require = createRequire(import.meta.url);
 
 const DEFAULT_CERT_PATH = process.env.SSL_CERT_PATH || path.resolve(__dirname, "../data/certs/cert.pem");
@@ -31,6 +35,10 @@ const loadOrCreateDevCerts = () => {
             cert: fs.readFileSync(DEFAULT_CERT_PATH),
             key: fs.readFileSync(DEFAULT_KEY_PATH)
         };
+    }
+
+    if (process.env.AUTO_SELF_CERT === "false") {
+        throw new Error("Dev HTTPS certs missing and AUTO_SELF_CERT=false");
     }
 
     const selfsigned = require("selfsigned");
