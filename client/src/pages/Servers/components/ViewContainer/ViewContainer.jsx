@@ -35,6 +35,7 @@ export const ViewContainer = ({
                                   closeSession,
                                   hibernateSession,
                                   duplicateSession,
+                                  reconnectSession,
                                   setOpenFileEditors,
                                   openTerminalFromFileManager,
                               }) => {
@@ -472,6 +473,7 @@ export const ViewContainer = ({
                                             closeSession={closeSession}
                                             layoutMode={layoutMode} onToggleSplit={toggleSplitMode}
                                             orderRef={tabOrderRef}
+                                            reconnectSession={reconnectSession}
                                             onTabOrderChange={onTabOrderChange} onBroadcastToggle={toggleBroadcastMode}
                                             onSnippetSelected={handleSnippetSelected} broadcastEnabled={broadcastMode}
                                             onKeyboardShortcut={handleKeyboardShortcut} hasGuacamole={hasGuacamole}
