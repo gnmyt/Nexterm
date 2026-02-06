@@ -2987,13 +2987,12 @@ lazystream@^1.0.0:
   dependencies:
     readable-stream "^2.0.5"
 
-ldapts@^8.1.4:
-  version "8.1.4"
-  resolved "https://registry.yarnpkg.com/ldapts/-/ldapts-8.1.4.tgz#a2b39874555b7f722bdf20ede78da7331a4b4e97"
-  integrity sha512-FgCdJ6K31tnaylBlUmnAaxVQ+SMiVxY2VH17vhZcGnCr1caflx+jouFgHD+KpirrAz499tHvUPCZeY2dSwEigg==
+ldapts@^8.1.6:
+  version "8.1.6"
+  resolved "https://registry.yarnpkg.com/ldapts/-/ldapts-8.1.6.tgz#2dcefa724f96ccf2c521dac4a79fba5acdfcf937"
+  integrity sha512-sofxzGEPRBvubSrdmly0mmUwjXHPfTbO51KLAUzuO4sHWwy+r0G6FwaLWWDwTPRpjJFkMdLId5BeRUHksUH4yA==
   dependencies:
     strict-event-emitter-types "2.0.0"
-    whatwg-url "15.1.0"
 
 lodash@^4.17.15, lodash@^4.17.21:
   version "4.17.21"
@@ -3702,11 +3701,6 @@ pump@^3.0.0:
   dependencies:
     end-of-stream "^1.1.0"
     once "^1.3.1"
-
-punycode@^2.3.1:
-  version "2.3.1"
-  resolved "https://registry.yarnpkg.com/punycode/-/punycode-2.3.1.tgz#027422e2faec0b25e1549c3e1bd8309b9133b6e5"
-  integrity sha512-vYt7UD1U9Wg6138shLtLOvdAu+8DsC/ilFtEVHcH+wydcSpNE20AfSOduf6MkRFahL5FY7X1oU7nKVZFtfq8Fg==
 
 pvtsutils@^1.3.6:
   version "1.3.6"
@@ -4543,13 +4537,6 @@ touch@^3.1.0:
   resolved "https://registry.yarnpkg.com/touch/-/touch-3.1.1.tgz#097a23d7b161476435e5c1344a95c0f75b4a5694"
   integrity sha512-r0eojU4bI8MnHr8c5bNo7lJDdI2qXlWWJk6a9EAFG7vbhTjElYhBVS3/miuE0uOuoLdb8Mc/rVfsmm6eo5o9GA==
 
-tr46@^6.0.0:
-  version "6.0.0"
-  resolved "https://registry.yarnpkg.com/tr46/-/tr46-6.0.0.tgz#f5a1ae546a0adb32a277a2278d0d17fa2f9093e6"
-  integrity sha512-bLVMLPtstlZ4iMQHpFHTR7GAGj2jxi8Dg0s2h2MafAE4uSWF98FC/3MomU51iQAMf8/qDUbKWf5GxuvvVcXEhw==
-  dependencies:
-    punycode "^2.3.1"
-
 tree-kill@1.2.2:
   version "1.2.2"
   resolved "https://registry.yarnpkg.com/tree-kill/-/tree-kill-1.2.2.tgz#4ca09a9092c88b73a7cdc5e8a01b507b0790a0cc"
@@ -4841,19 +4828,6 @@ webdav@^5.9.0:
     path-posix "^1.0.0"
     url-join "^5.0.0"
     url-parse "^1.5.10"
-
-webidl-conversions@^8.0.0:
-  version "8.0.0"
-  resolved "https://registry.yarnpkg.com/webidl-conversions/-/webidl-conversions-8.0.0.tgz#821c92aa4f88d88a31264d887e244cb9655690c6"
-  integrity sha512-n4W4YFyz5JzOfQeA8oN7dUYpR+MBP3PIUsn2jLjWXwK5ASUzt0Jc/A5sAUZoCYFJRGF0FBKJ+1JjN43rNdsQzA==
-
-whatwg-url@15.1.0:
-  version "15.1.0"
-  resolved "https://registry.yarnpkg.com/whatwg-url/-/whatwg-url-15.1.0.tgz#5c433439b9a5789eeb3806bbd0da89a8bd40b8d7"
-  integrity sha512-2ytDk0kiEj/yu90JOAp44PVPUkO9+jVhyf+SybKlRHSDlvOOZhdPIrr7xTH64l4WixO2cP+wQIcgujkGBPPz6g==
-  dependencies:
-    tr46 "^6.0.0"
-    webidl-conversions "^8.0.0"
 
 which-typed-array@^1.1.16:
   version "1.1.19"
