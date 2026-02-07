@@ -67,15 +67,32 @@ $mobile: 768px
     background-color: colors.$gray
     opacity: 0.6
 
-  p
-    margin: 0
+  .server-text
+    display: flex
+    flex-direction: column
+    gap: 0.125rem
     flex: 1
+    min-width: 0
+    padding-bottom: 2px
+
+  .server-name
+    margin: 0
+    line-height: 1.2
     white-space: nowrap
     overflow: hidden
     text-overflow: ellipsis
 
     @media (max-width: $mobile)
       font-size: 0.95rem
+
+  .server-note
+    color: colors.$subtext
+    font-size: 0.75rem
+    font-weight: 500
+    line-height: 1.2
+    white-space: nowrap
+    overflow: hidden
+    text-overflow: ellipsis
 
   .hibernation-indicator
     display: flex
