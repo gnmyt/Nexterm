@@ -11,7 +11,7 @@ import SettingsPage from "@/pages/Servers/components/ServerDialog/pages/Settings
 import { IdentityContext } from "@/common/contexts/IdentityContext.jsx";
 import { useToast } from "@/common/contexts/ToastContext.jsx";
 import { useTranslation } from "react-i18next";
-import { getAvailableTabs, validateRequiredFields, getFieldConfig } from "./utils/fieldConfig.js";
+import { getAvailableTabs, getFieldConfig, getRequiredFieldErrors } from "./utils/fieldConfig.js";
 import Icon from "@mdi/react";
 import * as mdiIcons from "@mdi/js";
 
@@ -21,7 +21,7 @@ export const ServerDialog = ({ open, onClose, currentFolderId, currentOrganizati
     const { t } = useTranslation();
 
     const { loadServers } = useContext(ServerContext);
-    const { loadIdentities } = useContext(IdentityContext);
+    const { identities: allIdentities, loadIdentities } = useContext(IdentityContext);
     const { sendToast } = useToast();
 
     const getProtocolIcon = (protocol, type) => {
@@ -39,11 +39,65 @@ export const ServerDialog = ({ open, onClose, currentFolderId, currentOrganizati
     const [identityUpdates, setIdentityUpdates] = useState({});
 
     const [activeTab, setActiveTab] = useState(0);
+
+    const [validationErrors, setValidationErrors] = useState({ details: {}, identities: {} });
+    const [showValidation, setShowValidation] = useState(false);
     
     const initialValues = useRef({ name: '', icon: null, config: {}, monitoringEnabled: false });
 
     const fieldConfig = getFieldConfig(entryType, config.protocol);
     const tabs = getAvailableTabs(entryType, config.protocol);
+
+    const getIdentityValidationErrors = useCallback(() => {
+        if (!fieldConfig.showIdentities) return {};
+
+        const errors = {};
+
+        Object.entries(identityUpdates || {}).forEach(([key, identity]) => {
+            if (!identity) return;
+
+            const identityId = identity.id ?? key;
+            const isNew = String(identityId).startsWith("new-");
+            const original = allIdentities?.find((item) => String(item.id) === String(identityId));
+            const originalType = original?.authType || original?.type;
+            const authType = identity.authType || identity.type || originalType;
+
+            if (!authType) return;
+
+            const needsUsername = authType !== "password-only";
+            const needsPassword = authType === "password" || authType === "password-only" || authType === "both";
+            const needsSshKey = authType === "ssh" || authType === "both";
+
+            const originalHasPassword = originalType === "password" || originalType === "password-only" || originalType === "both";
+            const originalHasSshKey = originalType === "ssh" || originalType === "both";
+
+            const nameValue = (identity.name || "").trim();
+            const usernameValue = (identity.username || "").trim();
+            const passwordValue = typeof identity.password === "string" ? identity.password.trim() : "";
+            const sshKeyValue = typeof identity.sshKey === "string" ? identity.sshKey.trim() : "";
+
+            const fieldErrors = {};
+
+            if (!nameValue) fieldErrors.name = true;
+            if (needsUsername && !usernameValue) fieldErrors.username = true;
+
+            if (needsPassword) {
+                const requirePassword = isNew || identity.passwordTouched || !originalHasPassword;
+                if (requirePassword && !passwordValue) fieldErrors.password = true;
+            }
+
+            if (needsSshKey) {
+                const requireSshKey = isNew || !originalHasSshKey;
+                if (requireSshKey && !sshKeyValue) fieldErrors.sshKey = true;
+            }
+
+            if (Object.keys(fieldErrors).length > 0) {
+                errors[identityId] = fieldErrors;
+            }
+        });
+
+        return errors;
+    }, [identityUpdates, allIdentities, fieldConfig.showIdentities]);
 
     const normalizeIdentity = (identity) => {
         const normalized = { ...identity };
@@ -196,12 +250,19 @@ export const ServerDialog = ({ open, onClose, currentFolderId, currentOrganizati
     };
 
     const handleSubmit = useCallback(() => {
-        if (!validateRequiredFields(entryType, config.protocol, name, config)) {
+        const detailErrors = getRequiredFieldErrors(entryType, config.protocol, name, config);
+        const identityErrors = getIdentityValidationErrors();
+        const hasDetailsErrors = Object.keys(detailErrors).length > 0;
+        const hasIdentityErrors = Object.keys(identityErrors).length > 0;
+
+        if (hasDetailsErrors || hasIdentityErrors) {
+            setShowValidation(true);
+            setValidationErrors({ details: detailErrors, identities: identityErrors });
             sendToast("Error", t("servers.messages.fillRequiredFields"));
             return;
         }
         editServerId ? patchServer() : createServer();
-    }, [name, icon, editServerId, identityUpdates, currentFolderId, config, monitoringEnabled, entryType, t]);
+    }, [name, icon, editServerId, identityUpdates, currentFolderId, config, monitoringEnabled, entryType, t, getIdentityValidationErrors]);
 
     useEffect(() => {
         if (!open) return;
@@ -248,7 +309,17 @@ export const ServerDialog = ({ open, onClose, currentFolderId, currentOrganizati
 
         setIdentityUpdates({});
         setActiveTab(0);
+        setShowValidation(false);
+        setValidationErrors({ details: {}, identities: {} });
     }, [open, editServerId, initialProtocol]);
+
+    useEffect(() => {
+        if (!showValidation) return;
+
+        const detailErrors = getRequiredFieldErrors(entryType, config.protocol, name, config);
+        const identityErrors = getIdentityValidationErrors();
+        setValidationErrors({ details: detailErrors, identities: identityErrors });
+    }, [showValidation, entryType, config, name, getIdentityValidationErrors]);
 
     useEffect(() => {
         if (!open) return;
@@ -289,11 +360,15 @@ export const ServerDialog = ({ open, onClose, currentFolderId, currentOrganizati
                      monitoringEnabled !== initialValues.current.monitoringEnabled ||
                      Object.keys(identityUpdates).length > 0;
 
+    const hasDetailsErrors = Object.keys(validationErrors.details || {}).length > 0;
+    const hasIdentityErrors = Object.keys(validationErrors.identities || {}).length > 0;
+
     const tabSwitcherTabs = useMemo(() => tabs.map((tab, index) => ({
         key: index.toString(),
         label: t(tab.label),
-        icon: tab.icon
-    })), [tabs, t]);
+        icon: tab.icon,
+        isError: (tab.key === "details" && hasDetailsErrors) || (tab.key === "identities" && hasIdentityErrors)
+    })), [tabs, t, hasDetailsErrors, hasIdentityErrors]);
 
     return (
         <DialogProvider open={open} onClose={onClose} isDirty={isDirty}>
@@ -339,11 +414,13 @@ export const ServerDialog = ({ open, onClose, currentFolderId, currentOrganizati
                     {activeTab === 0 && <DetailsPage name={name} setName={setName}
                                                      icon={icon} setIcon={setIcon}
                                                      config={config} setConfig={setConfig}
-                                                     fieldConfig={fieldConfig} />}
+                                                     fieldConfig={fieldConfig}
+                                                     invalidFields={showValidation ? validationErrors.details : {}} />}
                     {activeTab === 1 && tabs[1]?.key === "identities" &&
                         <IdentityPage serverIdentities={identities} setIdentityUpdates={setIdentityUpdates}
                                       identityUpdates={identityUpdates} setIdentities={setIdentities}
-                                      currentOrganizationId={currentOrganizationId} allowedAuthTypes={fieldConfig.allowedAuthTypes} />}
+                                      currentOrganizationId={currentOrganizationId} allowedAuthTypes={fieldConfig.allowedAuthTypes}
+                                      invalidIdentities={showValidation ? validationErrors.identities : {}} />}
                     {tabs.find((tab, idx) => idx === activeTab && tab.key === "settings") && 
                         <SettingsPage config={config} setConfig={setConfig}
                                       monitoringEnabled={monitoringEnabled} setMonitoringEnabled={setMonitoringEnabled}

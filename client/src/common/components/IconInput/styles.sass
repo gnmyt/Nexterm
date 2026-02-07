@@ -25,6 +25,12 @@
   width: 100%
   outline: none
 
+  &.is-invalid
+    border: 1px solid colors.$error
+
   &:focus
     border: 1px solid colors.$primary
     background-color: colors.$dark-gray
+
+  &.is-invalid:focus
+    border: 1px solid colors.$error
