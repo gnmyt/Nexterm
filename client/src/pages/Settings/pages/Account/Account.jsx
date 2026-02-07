@@ -53,11 +53,11 @@ export const Account = () => {
     ];
 
     const sizeOptions = [
-        { label: t("settings.account.sizeXS"), value: 0.8 },
-        { label: t("settings.account.sizeS"), value: 0.9 },
+        { label: t("settings.account.sizeXS"), value: 0.7 },
+        { label: t("settings.account.sizeS"), value: 0.85 },
         { label: t("settings.account.sizeM"), value: 1 },
-        { label: t("settings.account.sizeL"), value: 1.1 },
-        { label: t("settings.account.sizeXL"), value: 1.2 }
+        { label: t("settings.account.sizeL"), value: 1.15 },
+        { label: t("settings.account.sizeXL"), value: 1.3 }
     ];
 
     const changeLanguage = (languageCode) => setLanguage(languageCode);
