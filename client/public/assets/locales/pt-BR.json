@@ -182,7 +182,7 @@
   "audit": {
     "page": {
       "title": "Logs de Auditoria",
-      "subtitle": "Acompanhe e monitore todas as atividades em sua infraestrutura"
+      "subtitle": "Acompanhe e monitore todas as atividades em sua infraestrutura."
     },
     "errors": {
       "failedToLoadData": "Falha ao carregar dados de auditoria",
@@ -240,7 +240,7 @@
   "snippets": {
     "page": {
       "title": "Snippets",
-      "subtitle": "Gerencie seus snippets de comandos para acesso rápido nos terminais",
+      "subtitle": "Gerencie seus snippets de comandos para acesso rápido nos terminais.",
       "addSnippet": "Adicionar Snippet",
       "personal": "Pessoal",
       "selectOrganization": "Selecionar Organização",
@@ -299,7 +299,7 @@
   "scripts": {
     "page": {
       "title": "Scripts",
-      "subtitle": "Gerencie seus scripts de automação para tarefas do servidor",
+      "subtitle": "Gerencie seus scripts de automação para tarefas do servidor.",
       "addScript": "Adicionar Script",
       "personal": "Pessoal",
       "selectOrganization": "Selecionar Organização",
@@ -399,7 +399,7 @@
   "monitoring": {
     "page": {
       "title": "Monitoramento de Servidor",
-      "subtitle": "Estatísticas de servidores em tempo real e monitoramento de saúde",
+      "subtitle": "Estatísticas de servidores em tempo real e monitoramento de saúde.",
       "searchPlaceholder": "Pesquisar servidores..."
     },
     "errors": {
