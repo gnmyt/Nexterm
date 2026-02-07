@@ -7,7 +7,7 @@ import Icon from "@mdi/react";
 import Button from "@/common/components/Button";
 import { useTranslation } from "react-i18next";
 
-const Identity = ({ identity, onUpdate, onDelete, onMoveToOrg, isOrgContext, orgId, allowedAuthTypes }) => {
+const Identity = ({ identity, onUpdate, onDelete, onMoveToOrg, isOrgContext, orgId, allowedAuthTypes, invalidFields = {} }) => {
     const { t } = useTranslation();
     const isNew = !identity.id || String(identity.id).startsWith("new-");
     const isOrg = identity.scope === 'organization';
@@ -57,7 +57,8 @@ const Identity = ({ identity, onUpdate, onDelete, onMoveToOrg, isOrgContext, org
                     <Icon path={isOrg ? mdiAccountGroup : mdiAccount} size={0.8} />
                 </div>
                 <div className="identity-name-input">
-                    <Input icon={mdiAccountCircleOutline} value={name} setValue={setName} placeholder={t("servers.dialog.identities.identityName")} />
+                    <Input icon={mdiAccountCircleOutline} value={name} setValue={setName} placeholder={t("servers.dialog.identities.identityName")}
+                           customClass={invalidFields.name ? "is-invalid" : ""} />
                 </div>
                 {isNew && <span className="new-badge">NEW</span>}
                 {!isOrg && !isNew && isOrgContext && orgId && (
@@ -74,7 +75,8 @@ const Identity = ({ identity, onUpdate, onDelete, onMoveToOrg, isOrgContext, org
                     {showUsername && (
                         <div className="form-group">
                             <label>{t("servers.dialog.identities.username")}</label>
-                            <Input icon={mdiAccountCircleOutline} type="text" placeholder={t("servers.dialog.identities.username")} autoComplete="off" value={username} setValue={setUsername} />
+                            <Input icon={mdiAccountCircleOutline} type="text" placeholder={t("servers.dialog.identities.username")} autoComplete="off" value={username} setValue={setUsername}
+                                   customClass={invalidFields.username ? "is-invalid" : ""} />
                         </div>
                     )}
                     <div className="form-group">
@@ -85,14 +87,16 @@ const Identity = ({ identity, onUpdate, onDelete, onMoveToOrg, isOrgContext, org
                 {(authType === "password" || authType === "password-only" || authType === "both") && (
                     <div className="form-group">
                         <label>{t("servers.dialog.identities.passwordField")}</label>
-                        <Input icon={mdiLockOutline} type="password" id={`identity-password-${identity.id}`} name="password" placeholder={t("servers.dialog.identities.passwordField")} autoComplete="new-password" value={password} setValue={(v) => { setPassword(v); setPwTouched(true); }} />
+                        <Input icon={mdiLockOutline} type="password" id={`identity-password-${identity.id}`} name="password" placeholder={t("servers.dialog.identities.passwordField")} autoComplete="new-password" value={password} setValue={(v) => { setPassword(v); setPwTouched(true); }}
+                               customClass={invalidFields.password ? "is-invalid" : ""} />
                     </div>
                 )}
                 {(authType === "ssh" || authType === "both") && (
                     <>
                         <div className="form-group">
                             <label>{t("servers.dialog.identities.sshPrivateKey")}</label>
-                            <Input icon={mdiFileUploadOutline} type="file" autoComplete="off" onChange={readFile} />
+                            <Input icon={mdiFileUploadOutline} type="file" autoComplete="off" onChange={readFile}
+                                   customClass={invalidFields.sshKey ? "is-invalid" : ""} />
                         </div>
                         <div className="form-group">
                             <label>{t("servers.dialog.identities.passphrase")}</label>
@@ -114,7 +118,7 @@ const getAuthTypeLabel = (type, t) => {
     }
 };
 
-const IdentitySection = ({ title, icon, description, identities, available, onUpdate, onDelete, onMoveToOrg, onLink, onAdd, isOrgContext, orgId, emptyText, t, allowedAuthTypes }) => (
+const IdentitySection = ({ title, icon, description, identities, available, onUpdate, onDelete, onMoveToOrg, onLink, onAdd, isOrgContext, orgId, emptyText, t, allowedAuthTypes, invalidIdentities }) => (
     <div className="identities-section">
         <div className="identities-header">
             <div className="section-title"><Icon path={icon} size={0.9} /><h3>{title}</h3></div>
@@ -122,7 +126,7 @@ const IdentitySection = ({ title, icon, description, identities, available, onUp
         </div>
         {(identities.length > 0 || available.length === 0) && <p className="section-description">{description}</p>}
         <div className="identities-list">
-            {identities.map((i) => <Identity key={i.id} identity={i} onUpdate={onUpdate} onDelete={onDelete} onMoveToOrg={onMoveToOrg} isOrgContext={isOrgContext} orgId={orgId} allowedAuthTypes={allowedAuthTypes} />)}
+            {identities.map((i) => <Identity key={i.id} identity={i} onUpdate={onUpdate} onDelete={onDelete} onMoveToOrg={onMoveToOrg} isOrgContext={isOrgContext} orgId={orgId} allowedAuthTypes={allowedAuthTypes} invalidFields={invalidIdentities?.[i.id] || {}} />)}
             {available.length > 0 && (
                 <div className={`available-identities-section ${identities.length === 0 ? 'no-border' : ''}`}>
                     <div className="available-identities-header">
@@ -147,7 +151,7 @@ const IdentitySection = ({ title, icon, description, identities, available, onUp
     </div>
 );
 
-const IdentityPage = ({ serverIdentities, setIdentityUpdates, identityUpdates, setIdentities, currentOrganizationId, allowedAuthTypes }) => {
+const IdentityPage = ({ serverIdentities, setIdentityUpdates, identityUpdates, setIdentities, currentOrganizationId, allowedAuthTypes, invalidIdentities = {} }) => {
     const { t } = useTranslation();
     const { identities, personalIdentities, getOrganizationIdentities, moveIdentityToOrganization } = useContext(IdentityContext);
 
@@ -193,11 +197,13 @@ const IdentityPage = ({ serverIdentities, setIdentityUpdates, identityUpdates, s
             {currentOrganizationId && (
                 <IdentitySection title={t("servers.dialog.identities.organizationIdentities")} icon={mdiAccountGroup} description={t("servers.dialog.identities.orgDescription")}
                     identities={linkedOrg} available={availableOrg} onUpdate={handleUpdate} onDelete={handleDelete} onMoveToOrg={handleMove} onLink={handleLink} onAdd={() => addNew(true)}
-                    isOrgContext={true} orgId={currentOrganizationId} emptyText={t("servers.dialog.identities.noOrgIdentities")} t={t} allowedAuthTypes={allowedAuthTypes} />
+                    isOrgContext={true} orgId={currentOrganizationId} emptyText={t("servers.dialog.identities.noOrgIdentities")} t={t} allowedAuthTypes={allowedAuthTypes}
+                    invalidIdentities={invalidIdentities} />
             )}
             <IdentitySection title={t("servers.dialog.identities.personalIdentities")} icon={mdiAccount} description={t("servers.dialog.identities.personalDescription")}
                 identities={linkedPersonal} available={availablePersonal} onUpdate={handleUpdate} onDelete={handleDelete} onMoveToOrg={handleMove} onLink={handleLink} onAdd={() => addNew(false)}
-                isOrgContext={!!currentOrganizationId} orgId={currentOrganizationId} emptyText={t("servers.dialog.identities.noPersonalIdentities")} t={t} allowedAuthTypes={allowedAuthTypes} />
+                isOrgContext={!!currentOrganizationId} orgId={currentOrganizationId} emptyText={t("servers.dialog.identities.noPersonalIdentities")} t={t} allowedAuthTypes={allowedAuthTypes}
+                invalidIdentities={invalidIdentities} />
         </div>
     );
 };
