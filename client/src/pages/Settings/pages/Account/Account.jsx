@@ -18,6 +18,7 @@ import { languages } from "@/i18n.js";
 import i18n from "@/i18n.js";
 import Icon from "@mdi/react";
 import { openExternalUrl } from "@/common/utils/TauriUtil.js";
+import Tooltip from "@/common/components/Tooltip";
 
 export const Account = () => {
     const { t } = useTranslation();
@@ -33,7 +34,7 @@ export const Account = () => {
     const darkClickTimeout = useRef(null);
 
     const { user, login } = useContext(UserContext);
-    const { themeMode, setTheme, accentColor, setAccentColor, accentColors, isGroupSynced, toggleGroupSync, language, setLanguage } = usePreferences();
+    const { themeMode, setTheme, accentColor, setAccentColor, accentColors, uiScale, setUiScale, isGroupSynced, toggleGroupSync, language, setLanguage } = usePreferences();
     const { sendToast } = useToast();
 
     const [updatedField, setUpdatedField] = useState(null);
@@ -49,6 +50,14 @@ export const Account = () => {
         { label: t("settings.account.sessionSyncAcrossDevices"), value: "across_devices", icon: mdiCloudSync },
         { label: t("settings.account.sessionSyncSameBrowser"), value: "same_browser", icon: mdiWeb },
         { label: t("settings.account.sessionSyncSameTab"), value: "same_tab", icon: mdiTabUnselected }
+    ];
+
+    const sizeOptions = [
+        { label: t("settings.account.sizeXS"), value: 0.7 },
+        { label: t("settings.account.sizeS"), value: 0.85 },
+        { label: t("settings.account.sizeM"), value: 1 },
+        { label: t("settings.account.sizeL"), value: 1.15 },
+        { label: t("settings.account.sizeXL"), value: 1.3 }
     ];
 
     const changeLanguage = (languageCode) => setLanguage(languageCode);
@@ -227,77 +236,89 @@ export const Account = () => {
                     <div className="appearance-content">
                         <div className="theme-selector">
                             <span className="theme-label">{t("settings.account.themeLabel")}</span>
-                            <div className="theme-boxes">
-                                <div 
-                                    className={`theme-box ${themeMode === 'light' ? 'active' : ''}`}
-                                    onClick={() => setTheme('light')}
-                                >
-                                    <div className="theme-icon">
-                                        <Icon path={mdiWhiteBalanceSunny} size={1} />
+                            <div className="appearance-control-container">
+                                <div className="theme-boxes">
+                                    <div 
+                                        className={`theme-box ${themeMode === 'light' ? 'active' : ''}`}
+                                        onClick={() => setTheme('light')}
+                                    >
+                                        <div className="theme-icon">
+                                            <Icon path={mdiWhiteBalanceSunny} size={1} />
+                                        </div>
+                                        <span className="theme-name">{t("settings.account.themeLight")}</span>
                                     </div>
-                                    <span className="theme-name">{t("settings.account.themeLight")}</span>
-                                </div>
-                                <div 
-                                    className={`theme-box ${themeMode === 'dark' ? 'active' : ''} ${themeMode === 'oled' ? 'active oled-active' : ''}`}
-                                    onClick={() => {
-                                        if (themeMode === 'oled') {
-                                            setTheme('dark');
-                                            setDarkClickCount(0);
-                                            sendToast(t("common.success"), t("settings.account.oledDisabled"));
-                                        } else if (themeMode === 'dark') {
-                                            clearTimeout(darkClickTimeout.current);
-                                            const newCount = darkClickCount + 1;
-                                            setDarkClickCount(newCount);
-                                            if (newCount >= 3) {
-                                                setTheme('oled');
-                                                setDarkClickCount(0);
-                                                sendToast(t("common.success"), t("settings.account.oledEnabled"));
-                                            } else {
-                                                darkClickTimeout.current = setTimeout(() => setDarkClickCount(0), 1000);
-                                            }
-                                        } else {
-                                            setTheme('dark');
-                                            setDarkClickCount(0);
-                                        }
-                                    }}
-                                >
-                                    <div className="theme-icon">
-                                        <Icon path={mdiWeatherNight} size={1} />
+                                    <Tooltip text={t("settings.account.themeDarkHint")} delay={500}>
+                                        <div 
+                                            className={`theme-box ${themeMode === 'dark' ? 'active' : ''} ${themeMode === 'oled' ? 'active oled-active' : ''}`}
+                                            onClick={() => {
+                                                if (themeMode === 'oled') {
+                                                    setTheme('dark');
+                                                    setDarkClickCount(0);
+                                                    sendToast(t("common.success"), t("settings.account.oledDisabled"));
+                                                } else if (themeMode === 'dark') {
+                                                    clearTimeout(darkClickTimeout.current);
+                                                    const newCount = darkClickCount + 1;
+                                                    setDarkClickCount(newCount);
+                                                    if (newCount >= 3) {
+                                                        setTheme('oled');
+                                                        setDarkClickCount(0);
+                                                        sendToast(t("common.success"), t("settings.account.oledEnabled"));
+                                                    } else {
+                                                        darkClickTimeout.current = setTimeout(() => setDarkClickCount(0), 1000);
+                                                    }
+                                                } else {
+                                                    setTheme('dark');
+                                                    setDarkClickCount(0);
+                                                }
+                                            }}
+                                        >
+                                            <div className="theme-icon">
+                                                <Icon path={mdiWeatherNight} size={1} />
+                                            </div>
+                                            <span className="theme-name">{themeMode === 'oled' ? t("settings.account.themeOled") : t("settings.account.themeDark")}</span>
+                                        </div>
+                                    </Tooltip>
+                                    <div 
+                                        className={`theme-box ${themeMode === 'auto' ? 'active' : ''}`}
+                                        onClick={() => setTheme('auto')}
+                                    >
+                                        <div className="theme-icon auto-icon">
+                                            <span className="light-half">
+                                                <Icon path={mdiWhiteBalanceSunny} size={0.4} />
+                                            </span>
+                                            <span className="dark-half">
+                                                <Icon path={mdiWeatherNight} size={0.4} />
+                                            </span>
+                                        </div>
+                                        <span className="theme-name">{t("settings.account.themeAuto")}</span>
                                     </div>
-                                    <span className="theme-name">{themeMode === 'oled' ? t("settings.account.themeOled") : t("settings.account.themeDark")}</span>
-                                </div>
-                                <div 
-                                    className={`theme-box ${themeMode === 'auto' ? 'active' : ''}`}
-                                    onClick={() => setTheme('auto')}
-                                >
-                                    <div className="theme-icon auto-icon">
-                                        <span className="light-half">
-                                            <Icon path={mdiWhiteBalanceSunny} size={0.4} />
-                                        </span>
-                                        <span className="dark-half">
-                                            <Icon path={mdiWeatherNight} size={0.4} />
-                                        </span>
-                                    </div>
-                                    <span className="theme-name">{t("settings.account.themeAuto")}</span>
                                 </div>
                             </div>
                         </div>
                         <div className="accent-selector">
                             <span className="accent-label">{t("settings.account.accentColor")}</span>
-                            <div className="accent-colors">
-                                {accentColors.map((color) => (
-                                    <div
-                                        key={color.value}
-                                        className={`accent-color ${accentColor === color.value ? 'active' : ''}`}
-                                        style={{ backgroundColor: color.value }}
-                                        onClick={() => setAccentColor(color.value)}
-                                        title={color.name}
-                                    >
-                                        {accentColor === color.value && (
-                                            <Icon path={mdiCheck} size={0.6} className="check-icon" />
-                                        )}
-                                    </div>
-                                ))}
+                            <div className="accent-colors-container">
+                                <div className="accent-colors">
+                                    {accentColors.map((color) => (
+                                        <div
+                                            key={color.value}
+                                            className={`accent-color ${accentColor === color.value ? 'active' : ''}`}
+                                            style={{ backgroundColor: color.value }}
+                                            onClick={() => setAccentColor(color.value)}
+                                            title={color.name}
+                                        >
+                                            {accentColor === color.value && (
+                                                <Icon path={mdiCheck} size={0.6} className="check-icon" />
+                                            )}
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                        </div>
+                        <div className="size-selector">
+                            <span className="size-label">{t("settings.account.sizeLabel")}</span>
+                            <div className="appearance-control-container">
+                                <SelectBox options={sizeOptions} selected={uiScale} setSelected={setUiScale} />
                             </div>
                         </div>
                     </div>
