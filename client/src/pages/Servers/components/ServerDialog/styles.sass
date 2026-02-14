@@ -129,9 +129,15 @@
       outline: none
       transition: border-color 0.1s ease, background-color 0.1s ease
 
+      &.is-invalid
+        border: 1px solid colors.$error
+
       &:focus
         border: 1px solid colors.$primary
         background-color: colors.$dark-gray
+
+      &.is-invalid:focus
+        border: 1px solid colors.$error
 
   .server-dialog-tabs
     display: flex

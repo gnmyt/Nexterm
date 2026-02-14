@@ -135,20 +135,29 @@ export const getAvailableTabs = (type, protocol) => {
     return tabs;
 };
 
-export const validateRequiredFields = (type, protocol, name, config) => {
+export const getRequiredFieldErrors = (type, protocol, name, config) => {
     const fieldConfig = getFieldConfig(type, protocol);
+    const errors = {};
 
-    if (!name) return false;
+    if (!name) errors.name = true;
 
-    if (fieldConfig.showIpPort && (!config.ip || !config.port)) return false;
+    if (fieldConfig.showIpPort) {
+        if (!config.ip) errors.ip = true;
+        if (!config.port) errors.port = true;
+    }
 
-    if (fieldConfig.showProtocol && !config.protocol) return false;
+    if (fieldConfig.showProtocol && !config.protocol) errors.protocol = true;
 
     if (fieldConfig.showPveConfig && fieldConfig.pveFields) {
         for (const field of fieldConfig.pveFields) {
-            if (field === "vmid" && !config[field]) return false;
+            if (field === "vmid" && !config[field]) errors.vmid = true;
         }
     }
 
-    return true;
+    return errors;
+};
+
+export const validateRequiredFields = (type, protocol, name, config) => {
+    const errors = getRequiredFieldErrors(type, protocol, name, config);
+    return Object.keys(errors).length === 0;
 };
