@@ -844,6 +844,7 @@
     },
     "authentication": {
       "title": "{{count}} 个身份验证提供程序",
+      "internalProviderName": "Internal Authentication",
       "addProvider": "添加提供程序",
       "addLdapProvider": "添加 LDAP",
       "system": "系统",
