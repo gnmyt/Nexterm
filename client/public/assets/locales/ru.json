@@ -844,6 +844,7 @@
     },
     "authentication": {
       "title": "{{count}} провайдеров аутентификации",
+      "internalProviderName": "Internal Authentication",
       "addProvider": "Добавить провайдера",
       "addLdapProvider": "Добавь LDAP",
       "system": "Система",
