@@ -131,11 +131,12 @@ $tablet: 1024px
     pointer-events: none
 
 .grid-resizer
-  background: transparent
-  transition: background-color 0.2s ease
+  background: colors.$gray
+  transition: opacity 0.2s ease
   user-select: none
   flex-shrink: 0
   touch-action: none
+  opacity: 0.1
 
   @media (max-width: $tablet)
     &.vertical
@@ -150,10 +151,10 @@ $tablet: 1024px
     display: none
 
   &:hover
-    background-color: colors.$primary !important
+    opacity: 0.6
 
   &:active, .view-layouter.resizing &
-    background-color: colors.$primary !important
+    opacity: 1
 
   &.vertical
     cursor: col-resize
