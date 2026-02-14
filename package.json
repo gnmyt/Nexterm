@@ -34,7 +34,7 @@
     "dotenv": "^17.3.1",
     "nodemon": "^3.1.11",
     "vitepress": "^1.6.4",
-    "vitepress-openapi": "^0.1.13"
+    "vitepress-openapi": "^0.1.14"
   },
   "scripts": {
     "dev:server": "nodemon --ignore docs --ignore vendor --ignore client --ignore mobile --ignore data server/index.js",
