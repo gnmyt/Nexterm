@@ -38,23 +38,23 @@ const FUNCTION_KEY_MODES = [
 
 const KEYBOARD_LAYOUTS = [
     { label: "Čeština (Qwertz)", value: "cs-cz-qwertz" },
-    { label: "Dänisch (Qwerty)", value: "da-dk-qwerty" },
+    { label: "Dänish (Qwerty)", value: "da-dk-qwerty" },
     { label: "Swiss German (Qwertz)", value: "de-ch-qwertz" },
     { label: "Deutsch (Qwertz)", value: "de-de-qwertz" },
     { label: "English (GB) (Qwerty)", value: "en-gb-qwerty" },
     { label: "English (US) (Qwerty)", value: "en-us-qwerty" },
-    { label: "Spanisch (Qwerty)", value: "es-es-qwerty" },
-    { label: "Latin American (Qwerty)", value: "es-latam-qwerty" },
+    { label: "Spanish (Qwerty)", value: "es-es-qwerty" },
+    { label: "Spanish (Latin America) (Qwerty)", value: "es-latam-qwerty" },
     { label: "Unicode", value: "failsafe" },
     { label: "Belgian French (Azerty)", value: "fr-be-azerty" },
     { label: "Schweiz/Französisch (Qwertz)", value: "fr-ch-qwertz" },
-    { label: "Französisch (Azerty)", value: "fr-fr-azerty" },
+    { label: "French (Azerty)", value: "fr-fr-azerty" },
     { label: "Hungarian (Qwertz)", value: "hu-hu-qwertz" },
-    { label: "Italienisch (Qwerty)", value: "it-it-qwerty" },
-    { label: "Japanisch (Qwerty)", value: "ja-jp-qwerty" },
-    { label: "Portugiesisch (BR) (Qwerty)", value: "pt-br-qwerty" },
-    { label: "Schwedisch (Qwerty)", value: "sv-se-qwerty" },
-    { label: "Türkisch (Qwerty)", value: "tr-tr-qwerty" }
+    { label: "Italian (Qwerty)", value: "it-it-qwerty" },
+    { label: "Japanese (Qwerty)", value: "ja-jp-qwerty" },
+    { label: "Portuguese-Brazil (BR) (Qwerty)", value: "pt-br-qwerty" },
+    { label: "Swedish (Qwerty)", value: "sv-se-qwerty" },
+    { label: "Turkish (Qwerty)", value: "tr-tr-qwerty" }
 ];
 
 const SettingsPage = ({ config, setConfig, monitoringEnabled, setMonitoringEnabled, fieldConfig, editServerId }) => {
