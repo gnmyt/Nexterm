@@ -1303,6 +1303,20 @@
       "stop": "Fermati",
       "start": "Iniziare"
     },
+    "tabs": {
+      "contextMenu": {
+        "popOut": "Pop Out",
+        "startSharing": "Start Sharing",
+        "readOnly": "Read-only",
+        "readWrite": "Read & Write",
+        "copyShareLink": "Copy Share Link",
+        "changePermissions": "Change Permissions",
+        "stopSharing": "Stop Sharing",
+        "duplicate": "Duplicate",
+        "hibernateSession": "Hibernate",
+        "closeSession": "Disconnect"
+      }
+    },
     "wol": {
       "successDescription": "Pacchetto magico inviato a {{name}}",
       "errorDescription": "Non è riuscito a inviare il pacchetto magico"
