@@ -75,10 +75,19 @@ const DraggableTab = ({
         contextMenu.open(e, { x: e.clientX, y: e.clientY });
     };
 
+    const handleAuxClick = (e) => {
+        if (e.button === 1) {
+            e.preventDefault();
+            e.stopPropagation();
+            closeSession(session.id);
+        }
+    };
+
     return (
         <>
             <div ref={(node) => drag(drop(node))} onClick={() => setActiveSessionId(session.id)}
                 onContextMenu={handleContextMenu}
+                onAuxClick={handleAuxClick}
                 className={`server-tab ${session.id === activeSessionId ? "server-tab-active" : ""} ${isDragging ? "dragging" : ""} ${isOver ? "drop-target" : ""}`}
                 style={{ opacity: isDragging ? 0.5 : 1 }}>
                 <div className={`progress-circle ${!showProgress ? "no-progress" : ""}`}>
