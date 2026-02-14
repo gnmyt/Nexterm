@@ -3,7 +3,7 @@ import { UserProvider } from "@/common/contexts/UserContext.jsx";
 import { StateStreamProvider } from "@/common/contexts/StateStreamContext.jsx";
 import { ServerProvider } from "@/common/contexts/ServerContext.jsx";
 import { IdentityProvider } from "@/common/contexts/IdentityContext.jsx";
-import { ToastProvider } from "@/common/contexts/ToastContext.jsx";
+import { ToastProvider, useToast } from "@/common/contexts/ToastContext.jsx";
 import { PreferencesProvider } from "@/common/contexts/PreferencesContext.jsx";
 import { AIProvider } from "@/common/contexts/AIContext.jsx";
 import { KeymapProvider } from "@/common/contexts/KeymapContext.jsx";
@@ -14,6 +14,7 @@ import { SnippetProvider } from "@/common/contexts/SnippetContext.jsx";
 import { ScriptProvider } from "@/common/contexts/ScriptContext.jsx";
 import { QuickActionProvider } from "@/common/contexts/QuickActionContext.jsx";
 import { Suspense, lazy, useState, useEffect, useContext } from "react";
+import { useTranslation } from "react-i18next";
 import { UserContext } from "@/common/contexts/UserContext.jsx";
 import Loading from "@/common/components/Loading";
 import { ErrorBoundary } from "@/common/components/ErrorBoundary";
@@ -35,12 +36,38 @@ const PreferencesWrapper = ({ children }) => {
 
 const AppContent = () => {
     const [tauriReady, setTauriReady] = useState(false);
+    const { sendToast } = useToast();
+    const { t } = useTranslation();
 
     useEffect(() => {
         waitForTauri().then(() => {
             setTauriReady(true);
         });
     }, []);
+
+    useEffect(() => {
+        const isIpadOS = /iPad/.test(navigator.userAgent) || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
+        if (!isIpadOS) return;
+
+        const cookieKey = "nexterm_ipados_contextmenu_tip";
+        const hasCookie = document.cookie.split(";").some((item) => item.trim().startsWith(`${cookieKey}=`));
+        if (hasCookie) return;
+
+        const handleFirstContextMenu = () => {
+            sendToast(
+                t("common.info"),
+                t("common.messages.ipadosContextMenuTip"),
+                null,
+                Infinity,
+            );
+
+            document.cookie = `${cookieKey}=1; path=/; max-age=31536000`;
+            document.removeEventListener("contextmenu", handleFirstContextMenu, true);
+        };
+
+        document.addEventListener("contextmenu", handleFirstContextMenu, true);
+        return () => document.removeEventListener("contextmenu", handleFirstContextMenu, true);
+    }, [sendToast]);
 
     if (!tauriReady) {
         return (

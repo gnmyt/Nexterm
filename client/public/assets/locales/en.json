@@ -1,6 +1,7 @@
 {
   "common": {
     "error": "Error",
+    "info": "Info",
     "success": "Success",
     "loading": "Loading...",
     "saving": "Saving...",
@@ -174,7 +175,8 @@
       "organizationDeleted": "Organization deleted successfully",
       "organizationDeleteError": "Failed to delete organization",
       "leftOrganization": "You have left the organization",
-      "leaveOrganizationError": "Failed to leave organization"
+      "leaveOrganizationError": "Failed to leave organization",
+      "ipadosContextMenuTip": "An iPadOS webkit bug causes the native OS right-click menu to appear over the Nexterm menu. Use two-finger-click (not tap) to avoid this, or disable tap-to-click from from Settings app > General > Trackpad."
     }
   },
   "audit": {

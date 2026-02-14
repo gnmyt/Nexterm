@@ -8,9 +8,9 @@
   flex-direction: column-reverse
   gap: 12px
   z-index: 10002
-  pointer-events: none
+  pointer-events: auto
   max-width: 380px
-  width: calc(100% - 96px)
+  width: min(380px, calc(100% - 96px))
 
 .toast
   display: flex
