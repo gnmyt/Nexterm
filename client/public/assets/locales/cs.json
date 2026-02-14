@@ -844,6 +844,7 @@
     },
     "authentication": {
       "title": "{{count}} poskytovatelů ověření",
+      "internalProviderName": "Internal Authentication",
       "addProvider": "Přidat poskytovatele",
       "addLdapProvider": "Přidání protokolu LDAP",
       "system": "Systém",
