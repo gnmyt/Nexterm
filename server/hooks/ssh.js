@@ -4,10 +4,12 @@ const { parseResizeMessage } = require("../utils/sshEventHandlers");
 const { translateKeys } = require("../utils/keyTranslation");
 const { SCRIPT_MAGIC } = require("../lib/ScriptLayer");
 
-const setupHandlers = (ws, stream, sessionId, config, scriptLayer) => {
+const setupHandlers = (ws, stream, sessionId, config, scriptLayer, isShared = false) => {
     if (scriptLayer) scriptLayer.createMessageHandler(ws);
 
     const msgHandler = (data) => {
+        if (isShared && !SessionManager.get(sessionId)?.shareWritable) return;
+
         const msg = data.toString();
         const resize = parseResizeMessage(msg);
         if (resize) {
@@ -77,7 +79,7 @@ const handleShared = (ws, ctx) => {
     SessionManager.addWebSocket(serverSession.sessionId, ws, true);
     if (serverSession.shareWritable) SessionManager.setActiveWs(serverSession.sessionId, ws);
 
-    const { msgHandler, dataHandler } = setupHandlers(ws, stream, serverSession.sessionId, entry?.config, scriptLayer);
+    const { msgHandler, dataHandler } = setupHandlers(ws, stream, serverSession.sessionId, entry?.config, scriptLayer, true);
 
     ws.on("close", () => {
         stream.removeListener("data", dataHandler);
