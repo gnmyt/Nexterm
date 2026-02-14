@@ -844,6 +844,7 @@
     },
     "authentication": {
       "title": "{{count}} Anbieter verfügbar",
+      "internalProviderName": "Internal Authentication",
       "addProvider": "Anbieter hinzufügen",
       "addLdapProvider": "LDAP hinzufügen",
       "system": "System",
