@@ -844,6 +844,7 @@
     },
     "authentication": {
       "title": "{{count}} موفري مصادقة",
+      "internalProviderName": "Internal Authentication",
       "addProvider": "إضافة موفر",
       "addLdapProvider": "إضافة LDAP",
       "system": "النظام",
