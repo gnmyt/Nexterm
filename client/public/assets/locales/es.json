@@ -1303,6 +1303,20 @@
       "stop": "Para",
       "start": "Comienza"
     },
+    "tabs": {
+      "contextMenu": {
+        "popOut": "Pop Out",
+        "startSharing": "Start Sharing",
+        "readOnly": "Read-only",
+        "readWrite": "Read & Write",
+        "copyShareLink": "Copy Share Link",
+        "changePermissions": "Change Permissions",
+        "stopSharing": "Stop Sharing",
+        "duplicate": "Duplicate",
+        "hibernateSession": "Hibernate",
+        "closeSession": "Disconnect"
+      }
+    },
     "wol": {
       "successDescription": "Paquete mágico enviado a {{name}}",
       "errorDescription": "Error al enviar paquete mágico"
