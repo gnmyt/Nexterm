@@ -386,13 +386,15 @@ export const ViewContainer = ({
         const { rows, cols } = getDynamicLayout(gridSessions.length);
         const totalRowHeight = rowSizes.reduce((sum, s) => sum + s, 0) || rows;
         const resizers = [];
+        const dividerSize = 3;
+        const halfDivider = dividerSize / 2;
 
         let cumHeight = 0;
         for (let r = 0; r < rows - 1; r++) {
             cumHeight += (rowSizes[r] || 1) / totalRowHeight;
             resizers.push(
                 <div key={`h-${r}`} className="grid-resizer horizontal"
-                     style={{ position: 'absolute', top: `calc(${cumHeight * 100}% - 1.5px)`, left: 0, height: 3, width: "100%", cursor: "row-resize", zIndex: 10 }}
+                     style={{ position: 'absolute', top: `calc(${cumHeight * 100}% - ${halfDivider}px)`, left: 0, height: dividerSize, width: "100%", cursor: "row-resize", zIndex: 10 }}
                      onMouseDown={(e) => handleResizerMouseDown(e, "horizontal", r, null)} />
             );
         }
@@ -408,7 +410,7 @@ export const ViewContainer = ({
                 cumWidth += (rowCellWidths[c] || 1) / totalRowWidth;
                 resizers.push(
                     <div key={`v-${r}-${c}`} className="grid-resizer vertical"
-                         style={{ position: 'absolute', left: `calc(${cumWidth * 100}% - 1.5px)`, top: `${rowStart * 100}%`, width: 3, height: `${rowHeight * 100}%`, cursor: "col-resize", zIndex: 10 }}
+                         style={{ position: 'absolute', left: `calc(${cumWidth * 100}% - ${halfDivider}px)`, top: `${rowStart * 100}%`, width: dividerSize, height: `${rowHeight * 100}%`, cursor: "col-resize", zIndex: 10 }}
                          onMouseDown={(e) => handleResizerMouseDown(e, "vertical", c, r)} />
                 );
             }
@@ -436,8 +438,7 @@ export const ViewContainer = ({
         const spanFull = gridIndex === gridSessions.length - 1 && rowIdx === rows - 1 && gridSessions.length - (rows - 1) * cols === 1;
         const colWidth = spanFull ? 100 : (rowCellWidths[colIdx] || 1) / totalRowWidth * 100;
 
-        // Add gaps for dividers
-        const gapSize = 3; // 3px gap for dividers
+        const gapSize = 3;
         const isFirstRow = rowIdx === 0;
         const isLastRow = rowIdx === rows - 1;
         const isFirstCol = colIdx === 0;

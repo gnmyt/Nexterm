@@ -122,10 +122,6 @@ $tablet: 1024px
   overflow: hidden
   -webkit-overflow-scrolling: touch
 
-  .xterm, .xterm-screen, canvas
-    padding-left: 3px
-    box-sizing: border-box
-
   &.visible
     opacity: 1
     pointer-events: auto
@@ -136,7 +132,7 @@ $tablet: 1024px
 
 .grid-resizer
   background: colors.$gray
-  transition: background-color 0.4s ease
+  transition: opacity 0.2s ease
   user-select: none
   flex-shrink: 0
   touch-action: none
