@@ -1303,6 +1303,20 @@
       "stop": "停止",
       "start": "启动"
     },
+    "tabs": {
+      "contextMenu": {
+        "popOut": "Pop Out",
+        "startSharing": "Start Sharing",
+        "readOnly": "Read-only",
+        "readWrite": "Read & Write",
+        "copyShareLink": "Copy Share Link",
+        "changePermissions": "Change Permissions",
+        "stopSharing": "Stop Sharing",
+        "duplicate": "Duplicate",
+        "hibernateSession": "Hibernate",
+        "closeSession": "Disconnect"
+      }
+    },
     "wol": {
       "successDescription": "魔法数据包发送至 {{name}}",
       "errorDescription": "发送魔法数据包失败"
