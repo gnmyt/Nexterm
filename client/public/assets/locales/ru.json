@@ -1303,6 +1303,20 @@
       "stop": "Остановить",
       "start": "Запустить"
     },
+    "tabs": {
+      "contextMenu": {
+        "popOut": "Pop Out",
+        "startSharing": "Start Sharing",
+        "readOnly": "Read-only",
+        "readWrite": "Read & Write",
+        "copyShareLink": "Copy Share Link",
+        "changePermissions": "Change Permissions",
+        "stopSharing": "Stop Sharing",
+        "duplicate": "Duplicate",
+        "hibernateSession": "Hibernate",
+        "closeSession": "Disconnect"
+      }
+    },
     "wol": {
       "successDescription": "Волшебный пакет, отправленный на {{name}}",
       "errorDescription": "Не удалось отправить волшебный пакет"
