@@ -1,6 +1,8 @@
 import { mdiFormTextbox, mdiIp, mdiEthernet } from "@mdi/js";
 import Input from "@/common/components/IconInput";
 import SelectBox from "@/common/components/SelectBox";
+import Checkbox from "@/common/components/Checkbox";
+import Tooltip from "@/common/components/Tooltip";
 import IconChooser from "../components/IconChooser";
 import { useTranslation } from "react-i18next";
 
@@ -42,6 +44,38 @@ const DetailsPage = ({name, setName, icon, setIcon, config, setConfig, fieldConf
                             <input type="text" placeholder={t("servers.dialog.placeholders.port")} 
                                    value={config.port || ""} className="small-input" id="port"
                                    onChange={(e) => setConfig(prev => ({ ...prev, port: e.target.value }))} />
+                        </div>
+                    </div>
+                    <div className="notes-row">
+                        <div className="form-group">
+                            <label htmlFor="serverNotes">{t("servers.dialog.fields.notes")}</label>
+                            <textarea
+                                id="serverNotes"
+                                className="notes-input"
+                                rows={4}
+                                placeholder={t("servers.dialog.placeholders.notes")}
+                                value={config.notes || ""}
+                                onChange={(e) => setConfig(prev => ({ ...prev, notes: e.target.value }))}
+                                onKeyDown={(e) => {
+                                    if (e.key !== "Enter") return;
+                                    if (e.shiftKey) {
+                                        e.stopPropagation();
+                                        return;
+                                    }
+                                    e.preventDefault();
+                                }}
+                            />
+                        </div>
+                        <div className="form-group notes-checkbox">
+                            <label htmlFor="showNoteInList">{t("servers.dialog.fields.showNoteInList")}</label>
+                            <Tooltip text={t("servers.dialog.tooltips.showNoteInList")} delayMs={1000}>
+                                <Checkbox
+                                    id="showNoteInList"
+                                    checked={Boolean(config.showNoteInList)}
+                                    onChange={(checked) => setConfig(prev => ({ ...prev, showNoteInList: checked }))}
+                                    size="medium"
+                                />
+                            </Tooltip>
                         </div>
                     </div>
                     {fieldConfig.showProtocol && (
