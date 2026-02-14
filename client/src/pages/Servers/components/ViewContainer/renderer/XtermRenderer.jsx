@@ -41,6 +41,9 @@ const XtermRenderer = ({ session, disconnectFromServer, registerTerminalRef, bro
     const contextMenu = useContextMenu();
     const { identities } = useContext(IdentityContext);
     const [showSnippetsMenu, setShowSnippetsMenu] = useState(false);
+    const longPressTimeoutRef = useRef(null);
+    const longPressStartRef = useRef({ x: 0, y: 0 });
+    const longPressTriggeredRef = useRef(false);
 
     useEffect(() => {
         broadcastModeRef.current = broadcastMode;
@@ -88,6 +91,40 @@ const XtermRenderer = ({ session, disconnectFromServer, registerTerminalRef, bro
         e.preventDefault();
         e.stopPropagation();
         contextMenu.open(e, { x: e.clientX, y: e.clientY });
+    };
+
+    const clearLongPress = () => {
+        if (longPressTimeoutRef.current) {
+            clearTimeout(longPressTimeoutRef.current);
+            longPressTimeoutRef.current = null;
+        }
+    };
+
+    const handlePointerDown = (e) => {
+        if (isShared || e.pointerType !== "touch") return;
+        longPressTriggeredRef.current = false;
+        longPressStartRef.current = { x: e.clientX, y: e.clientY };
+        clearLongPress();
+        longPressTimeoutRef.current = setTimeout(() => {
+            longPressTriggeredRef.current = true;
+            contextMenu.open(null, { x: longPressStartRef.current.x, y: longPressStartRef.current.y });
+        }, 500);
+    };
+
+    const handlePointerMove = (e) => {
+        if (!longPressTimeoutRef.current) return;
+        const dx = Math.abs(e.clientX - longPressStartRef.current.x);
+        const dy = Math.abs(e.clientY - longPressStartRef.current.y);
+        if (dx > 10 || dy > 10) clearLongPress();
+    };
+
+    const handlePointerUp = (e) => {
+        if (longPressTriggeredRef.current) {
+            e.preventDefault();
+            e.stopPropagation();
+        }
+        clearLongPress();
+        longPressTriggeredRef.current = false;
     };
 
     const copyToClipboard = (text) => {
@@ -398,7 +435,15 @@ const XtermRenderer = ({ session, disconnectFromServer, registerTerminalRef, bro
     }, [sessionToken, selectedFont, fontSize, cursorStyle, cursorBlink, selectedTheme, isShared]);
 
     return (
-        <div className="xterm-container" onContextMenu={!isShared ? handleContextMenu : undefined}>
+        <div
+            className="xterm-container"
+            onContextMenu={!isShared ? handleContextMenu : undefined}
+            onPointerDown={handlePointerDown}
+            onPointerMove={handlePointerMove}
+            onPointerUp={handlePointerUp}
+            onPointerCancel={handlePointerUp}
+            onPointerLeave={handlePointerUp}
+        >
             <ConnectionLoader onReady={(loader) => { connectionLoaderRef.current = loader; }} />
             <div ref={ref} className="xterm-wrapper" />
             {!isShared && isAIAvailable() && (

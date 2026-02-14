@@ -24,6 +24,7 @@ const DraggableTab = ({
 }) => {
     const contextMenu = useContextMenu();
     const { popOutSession } = useActiveSessions();
+    const touchStartRef = useRef(null);
     
     const canPopOut = !session.scriptId && session.type !== "sftp";
     const canShare = canPopOut;
@@ -75,10 +76,29 @@ const DraggableTab = ({
         contextMenu.open(e, { x: e.clientX, y: e.clientY });
     };
 
+    const handleTouchContextMenu = (e) => {
+        if (e.pointerType !== "touch" || session.id !== activeSessionId) return;
+        const start = touchStartRef.current;
+        const moved = start
+            ? Math.abs(e.clientX - start.x) > 10 || Math.abs(e.clientY - start.y) > 10
+            : false;
+        if (moved) return;
+        e.preventDefault();
+        e.stopPropagation();
+        contextMenu.open(e, { x: e.clientX, y: e.clientY });
+    };
+
     return (
         <>
             <div ref={(node) => drag(drop(node))} onClick={() => setActiveSessionId(session.id)}
                 onContextMenu={handleContextMenu}
+                onPointerDown={(e) => {
+                    if (e.pointerType === "touch") {
+                        touchStartRef.current = { x: e.clientX, y: e.clientY };
+                    }
+                }}
+                onPointerUp={handleTouchContextMenu}
+                onPointerCancel={() => { touchStartRef.current = null; }}
                 className={`server-tab ${session.id === activeSessionId ? "server-tab-active" : ""} ${isDragging ? "dragging" : ""} ${isOver ? "drop-target" : ""}`}
                 style={{ opacity: isDragging ? 0.5 : 1 }}>
                 <div className={`progress-circle ${!showProgress ? "no-progress" : ""}`}>
