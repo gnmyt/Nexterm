@@ -1158,7 +1158,7 @@
       },
       "localPath": "Sicherungspfad",
       "localPathPlaceholder": "/pfad/zu/backups",
-      "smbShare": "SMB-Anteil",
+      "smbShare": "SMB-Freigabe",
       "smbSharePlaceholder": "\\\\server\\share",
       "smbFolder": "Ordner (optional)",
       "smbFolderPlaceholder": "Backups",
