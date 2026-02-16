@@ -1101,8 +1101,8 @@
       "status": {
         "success": "Synchronisiert",
         "error": "Fehler",
-        "pending": "Anhängig",
-        "disabled": "Behinderte"
+        "pending": "Ausstehend",
+        "disabled": "Deaktiviert"
       },
       "dialog": {
         "createTitle": "Quelle hinzufügen",
@@ -1153,10 +1153,10 @@
       "providerType": "Typ",
       "providerTypes": {
         "local": "Lokales",
-        "smb": "SMB-Anteil",
+        "smb": "SMB-Freigabe",
         "webdav": "WebDAV"
       },
-      "localPath": "Sicherungspfad",
+      "localPath": "Backup-Pfad",
       "localPathPlaceholder": "/pfad/zu/backups",
       "smbShare": "SMB-Freigabe",
       "smbSharePlaceholder": "\\\\server\\share",
@@ -1225,7 +1225,7 @@
     }
   },
   "tunnel": {
-    "title": "Port Forward",
+    "title": "Port-Weiterleitung",
     "identity": "Identität",
     "remoteHost": "Entfernter Host",
     "remotePort": "Remote Port",
