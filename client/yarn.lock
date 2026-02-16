@@ -2780,10 +2780,10 @@ side-channel@^1.1.0:
     side-channel-map "^1.0.1"
     side-channel-weakmap "^1.0.2"
 
-simple-icons@^16.8.0:
-  version "16.8.0"
-  resolved "https://registry.yarnpkg.com/simple-icons/-/simple-icons-16.8.0.tgz#a82bbd1a2543619e839f52a52b6455598a3a1136"
-  integrity sha512-JOqFl9rXrUkEVwYryZVvfySG6znMg+79KpDIDtAd9mXZAPfLyhVdhhGKg7EYioYzozxXd+5KvURTMguTl0QfbA==
+simple-icons@^16.9.0:
+  version "16.9.0"
+  resolved "https://registry.yarnpkg.com/simple-icons/-/simple-icons-16.9.0.tgz#e07062e77e227c4822c803dfb9edc20a01a932ac"
+  integrity sha512-aKst2C7cLkFyaiQ/Crlwxt9xYOpGPk05XuJZ0ZTJNNCzHCKYrGWz2ebJSi5dG8CmTCxUF/BGs6A8uyJn/EQxqw==
 
 solid-js@^1.3.0:
   version "1.9.10"
