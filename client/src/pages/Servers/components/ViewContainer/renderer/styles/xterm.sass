@@ -14,6 +14,13 @@
       margin: 0 !important
       padding: 0 !important
 
+      @supports (-webkit-touch-callout: none)
+        .xterm-screen,
+        .xterm-helpers textarea
+          caret-color: transparent !important
+          -webkit-user-select: none
+          user-select: none
+
       .xterm-scrollable-element,
       .xterm-screen
         height: 100% !important

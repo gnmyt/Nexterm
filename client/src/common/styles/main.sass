@@ -4,25 +4,49 @@ $mobile: 768px
 
 :root
   --title-bar-height: 0px
-  --content-height: 100vh
+  --viewport-height: 100vh
+  --content-height: var(--viewport-height)
   --mobile-nav-height: 0px
   --safe-area-top: env(safe-area-inset-top, 0px)
 
+  @supports (height: 100dvh)
+    --viewport-height: 100dvh
+
   @media (max-width: $mobile)
     --mobile-nav-height: calc(3.5rem + env(safe-area-inset-bottom, 0px))
-    --content-height: calc(100vh - var(--safe-area-top))
 
 body, html
   margin: 0
+  height: var(--viewport-height)
+  min-height: var(--viewport-height)
+  max-height: var(--viewport-height)
+  -webkit-user-select: none
+  -moz-user-select: none
+  user-select: none
   overflow: hidden
+  overscroll-behavior: none
+  touch-action: none
   background-color: colors.$background
   color: colors.$white
   font-family: "Plus Jakarta Sans", sans-serif
   font-weight: 700
 
+*
+  -webkit-touch-callout: none
+
+input, textarea, [contenteditable="true"], .allow-select
+  -webkit-user-select: text
+  -moz-user-select: text
+  user-select: text
+  -webkit-touch-callout: default
+
+#root
+  height: 100%
+  min-height: 100%
+
 body.tauri-mode
   --title-bar-height: 32px
-  --content-height: calc(100vh - 32px)
+  --content-height: calc(var(--viewport-height) - 32px)
   -webkit-user-select: none
   -moz-user-select: none
   user-select: none
@@ -39,6 +63,7 @@ body.tauri-mode
   height: var(--content-height)
   width: 100vw
   overflow: hidden
+  box-sizing: border-box
   padding-top: var(--safe-area-top)
 
 .content-wrapper
