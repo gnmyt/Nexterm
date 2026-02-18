@@ -11,6 +11,7 @@ const terminalSchema = Joi.object({
 const themeSchema = Joi.object({
     mode: Joi.string().valid('light', 'dark', 'auto', 'oled'),
     accentColor: Joi.string().pattern(/^#[0-9A-Fa-f]{6}$/),
+    uiScale: Joi.number().min(0.8).max(1.2),
 }).unknown(false);
 
 const filesSchema = Joi.object({

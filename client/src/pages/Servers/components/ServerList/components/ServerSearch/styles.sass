@@ -14,17 +14,17 @@ $mobile: 768px
 .search-icon
   position: absolute
   top: 50%
-  left: 0.75rem
-  width: 2rem
-  height: 2rem
+  left: 0.65rem
+  width: 1.7rem
+  height: 1.7rem
   transform: translateY(-50%)
   color: colors.$subtext
   transition: opacity 0.2s
 
   @media (max-width: $mobile)
-    width: 1.5rem
-    height: 1.5rem
-    left: 0.625rem
+    width: 1.275rem
+    height: 1.275rem
+    left: 0.55rem
 
   @container (max-width: 180px)
     opacity: 0
@@ -33,7 +33,7 @@ $mobile: 768px
 .info-container
   position: absolute
   top: 50%
-  right: 0.75rem
+  right: 0.65rem
   transform: translateY(-50%)
   user-select: none
   cursor: pointer
@@ -41,7 +41,7 @@ $mobile: 768px
   transition: opacity 0.2s
 
   @media (max-width: $mobile)
-    right: 0.5rem
+    right: 0.425rem
 
   @container (max-width: 180px)
     opacity: 0
@@ -49,31 +49,32 @@ $mobile: 768px
 
   p
     margin: 0
-    padding: 0.2rem 0.5rem
+    padding: 0.175rem 0.425rem
     border-radius: 0.5rem
-    font-size: 10pt
+    font-size: 9pt
     border: 1px solid colors.$gray
 
     @media (max-width: $mobile)
-      font-size: 9pt
-      padding: 0.15rem 0.4rem
+      font-size: 8pt
+      padding: 0.125rem 0.34rem
 
 .search-input
   user-select: none
-  padding: 0.8rem 6rem 0.8rem 3.5rem
+  padding: 0.68rem 5.1rem 0.68rem 2.975rem
   border: 1px solid colors.$gray
   background-color: colors.$lighter-background
   color: colors.$white
   box-sizing: border-box
   border-radius: 0.7rem
-  font-size: 14pt
+  font-size: 12pt
+  height: var(--search-control-size)
   width: 100%
   outline: none
   transition: border-color 0.2s ease
 
   @media (max-width: $mobile)
-    padding: 0.7rem 5rem 0.7rem 2.75rem
-    font-size: 13pt
+    padding: 0.6rem 4.25rem 0.6rem 2.35rem
+    font-size: 11pt
 
   @container (max-width: 180px)
     padding-right: 1rem
