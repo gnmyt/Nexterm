@@ -1304,28 +1304,18 @@
       "stop": "Stop",
       "start": "Start"
     },
-    "tabs": {
-      "contextMenu": {
-        "popOut": "Pop Out",
-        "startSharing": "Start Sharing",
-        "readOnly": "Read-only",
-        "readWrite": "Read & Write",
-        "copyShareLink": "Copy Share Link",
-        "changePermissions": "Change Permissions",
-        "stopSharing": "Stop Sharing",
-        "duplicate": "Duplicate",
-        "hibernateSession": "Hibernate",
-        "closeSession": "Disconnect"
-      }
-    },
     "wol": {
       "successDescription": "Magic packet sent to {{name}}",
       "errorDescription": "Failed to send magic packet"
     },
     "messages": {
-      "usernameRequired": "Username is required",
-      "passwordRequired": "Password is required",
-      "sshKeyRequired": "SSH key is required"
+      "fillRequiredFields": "Please fill in all required fields",
+      "serverCreated": "Server created successfully",
+      "serverUpdated": "Server updated successfully",
+      "createFailed": "Failed to create server",
+      "updateFailed": "Failed to update server",
+      "createIdentityFailed": "Failed to create identity",
+      "updateIdentityFailed": "Failed to update identity"
     },
     "dialog": {
       "addServer": "Add server",
@@ -1351,7 +1341,8 @@
         "host": "Host",
         "nodeName": "Node Name",
         "vmid": "VM ID",
-        "macAddress": "MAC Address"
+        "macAddress": "MAC Address",
+        "wolBroadcastAddress": "Broadcast Address"
       },
       "placeholders": {
         "serverName": "Server name",
@@ -1362,7 +1353,8 @@
         "host": "Host",
         "nodeName": "Node name",
         "vmid": "VM ID",
-        "macAddress": "AA:BB:CC:DD:EE:FF"
+        "macAddress": "AA:BB:CC:DD:EE:FF",
+        "wolBroadcastAddress": "255.255.255.255"
       },
       "settings": {
         "jumpHosts": {
@@ -1671,15 +1663,6 @@
       "fullScreen": "Full-Screen",
       "exitFullScreen": "Exit Full-Screen Mode",
       "badgeOn": "ON"
-    },
-    "messages": {
-      "fillRequiredFields": "Please fill in all required fields",
-      "serverCreated": "Server created successfully",
-      "serverUpdated": "Server updated successfully",
-      "createFailed": "Failed to create server",
-      "updateFailed": "Failed to update server",
-      "createIdentityFailed": "Failed to create identity",
-      "updateIdentityFailed": "Failed to update identity"
     }
   },
   "support": {

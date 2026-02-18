@@ -1340,7 +1340,8 @@
         "host": "Host",
         "nodeName": "Knotenpunkt Name",
         "vmid": "VM-ID",
-        "macAddress": "MAC-Adresse"
+        "macAddress": "MAC-Adresse",
+        "wolBroadcastAddress": "Broadcast-Adresse"
       },
       "placeholders": {
         "serverName": "Server Name",
@@ -1351,7 +1352,8 @@
         "host": "Host",
         "nodeName": "Name des Knotens",
         "vmid": "VM-ID",
-        "macAddress": "AA:BB:CC:DD:EE:FF"
+        "macAddress": "AA:BB:CC:DD:EE:FF",
+        "wolBroadcastAddress": "255.255.255.255"
       },
       "settings": {
         "jumpHosts": {
