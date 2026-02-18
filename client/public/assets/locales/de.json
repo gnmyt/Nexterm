@@ -1187,7 +1187,7 @@
         "weekly": "Wöchentlich"
       },
       "retention": {
-        "title": "Aufbewahrungspolitik"
+        "title": "Retention Policy"
       },
       "backups": "Backups",
       "includes": {
@@ -1199,25 +1199,25 @@
       "providers": "Anbieter",
       "saveSettings": "Einstellungen speichern",
       "noProviders": "Keine Backup-Anbieter",
-      "noProvidersDescription": "Füge einen Sicherungsanbieter hinzu, um mit der Erstellung von Sicherungen zu beginnen.",
+      "noProvidersDescription": "Füge einen Backup-Anbieter hinzu, um mit der Erstellung von Backups zu beginnen.",
       "backupList": "Backups - {{name}}",
-      "loadingBackups": "Backups laden...",
+      "loadingBackups": "Lade Backups...",
       "noBackups": "Keine Backups gefunden",
       "restoreConfirm": "Bist du sicher, dass du \"{{name}}\" wiederherstellen willst? Dadurch werden deine aktuellen Daten überschrieben und der Server neu gestartet.",
       "deleteProviderConfirm": "Bist du sicher, dass du \"{{name}}\" löschen willst? Dadurch werden bestehende Backups nicht gelöscht.",
-      "providerCreated": "Sicherungsanbieter erstellt",
+      "providerCreated": "Backup-Anbieter erstellt",
       "providerUpdated": "Backup-Anbieter aktualisiert",
-      "providerDeleted": "Sicherungsanbieter gelöscht",
-      "backupCreated": "Sicherung erfolgreich erstellt",
+      "providerDeleted": "Backup-Anbieter gelöscht",
+      "backupCreated": "Backup erfolgreich erstellt",
       "restoreStarted": "Wiederherstellung gestartet, Server wird neu gestartet",
       "saveSuccess": "Einstellungen erfolgreich gespeichert",
       "errors": {
         "loadFailed": "Backup-Einstellungen konnten nicht geladen werden",
         "saveFailed": "Einstellungen konnten nicht gespeichert werden",
         "deleteFailed": "Löschen fehlgeschlagen",
-        "backupFailed": "Sicherung kann nicht erstellt werden",
+        "backupFailed": "Backup kann nicht erstellt werden",
         "loadBackupsFailed": "Backups können nicht geladen werden",
-        "restoreFailed": "Wiederherstellung der Sicherung fehlgeschlagen",
+        "restoreFailed": "Wiederherstellung des Backups fehlgeschlagen",
         "exportFailed": "Daten können nicht exportiert werden",
         "nameRequired": "Der Name des Anbieters ist erforderlich"
       },
@@ -1227,15 +1227,15 @@
   "tunnel": {
     "title": "Port-Weiterleitung",
     "identity": "Identität",
-    "remoteHost": "Entfernter Host",
+    "remoteHost": "Remote Host",
     "remotePort": "Remote Port",
-    "localPort": "Lokaler Hafen",
+    "localPort": "Lokaler Port",
     "start": "Start Tunnel",
-    "stop": "Haltestelle Tunnel",
+    "stop": "Stoppe Tunnel",
     "status": {
       "idle": "Nicht verbunden",
-      "starting": "Ab...",
-      "listening": "Lauschen auf localhost:{{port}}",
+      "starting": "Starte...",
+      "listening": "Listening on localhost:{{port}}",
       "error": "Fehler",
       "stopped": "Gestoppt"
     },
@@ -1246,7 +1246,7 @@
   "share": {
     "errors": {
       "unableToConnect": "Verbindung nicht möglich",
-      "failedToJoin": "Sitzung kann nicht beitreten"
+      "failedToJoin": "Kann Sitzung nicht beitreten"
     },
     "sessionEnded": {
       "title": "Sitzung beendet",
@@ -1255,13 +1255,13 @@
   },
   "servers": {
     "time": {
-      "justNow": "Gerade jetzt",
-      "minuteAgo": "{{count}} min vor",
-      "minutesAgo": "{{count}} vor wenigen Minuten",
-      "hourAgo": "{{count}} vor einer Stunde",
-      "hoursAgo": "{{count}} vor Stunden",
-      "dayAgo": "{{count}} vor einem Tag",
-      "daysAgo": "{{count}} vor Tagen"
+      "justNow": "Gerade eben",
+      "minuteAgo": "vor {{count}} Minute",
+      "minutesAgo": "vor {{count}} Minuten",
+      "hourAgo": "vor {{count}} Stunde",
+      "hoursAgo": "vor {{count}} Stunden",
+      "dayAgo": "vor {{count}} Tag",
+      "daysAgo": "vor {{count}} Tagen"
     },
     "tags": {
       "title": "Tags",
@@ -1279,10 +1279,10 @@
       "deleteFolder": "Ordner löschen",
       "renameFolder": "Ordner umbenennen",
       "new": "Neu",
-      "sshServer": "SSH-Server",
-      "telnetServer": "Telnet-Server",
-      "rdpServer": "RDP-Server",
-      "vncServer": "VNC-Server",
+      "sshServer": "SSH Server",
+      "telnetServer": "Telnet Server",
+      "rdpServer": "RDP Server",
+      "vncServer": "VNC Server",
       "createServer": "Server erstellen",
       "import": "Importieren",
       "pve": "PVE",
@@ -1290,7 +1290,7 @@
       "connect": "Verbinden",
       "quickConnect": "Schnellverbindung",
       "openSFTP": "SFTP öffnen",
-      "forwardPort": "Weiterleiten Hafen",
+      "forwardPort": "Port weiterleiten",
       "runScript": "Skript ausführen",
       "editServer": "Server bearbeiten",
       "editIntegration": "Integration bearbeiten",
@@ -1319,8 +1319,8 @@
       }
     },
     "wol": {
-      "successDescription": "Magic-Paket an {{name}}gesendet",
-      "errorDescription": "Magisches Paket konnte nicht gesendet werden"
+      "successDescription": "Magic-Paket an {{name}} gesendet",
+      "errorDescription": "Magic-Paket konnte nicht gesendet werden"
     },
     "messages": {
       "fillRequiredFields": "Bitte fülle alle erforderlichen Felder aus",
@@ -1347,14 +1347,14 @@
       "fields": {
         "name": "Name",
         "icon": "Icon",
-        "serverIp": "Gastgeber",
+        "serverIp": "Host",
         "port": "Port",
         "protocol": "Protokoll",
         "username": "Benutzername",
         "password": "Passwort",
         "host": "Host",
-        "nodeName": "Knotenpunkt Name",
-        "vmid": "VM-ID",
+        "nodeName": "Node Name",
+        "vmid": "VM ID",
         "macAddress": "MAC-Adresse"
       },
       "placeholders": {
@@ -1364,8 +1364,8 @@
         "username": "Benutzername",
         "password": "Passwort",
         "host": "Host",
-        "nodeName": "Name des Knotens",
-        "vmid": "VM-ID",
+        "nodeName": "Name der Node",
+        "vmid": "VM ID",
         "macAddress": "AA:BB:CC:DD:EE:FF"
       },
       "settings": {
@@ -1374,11 +1374,11 @@
           "description": "Verbindung über Zwischenserver, um diesen Zielserver zu erreichen",
           "addButton": "Jump Host hinzufügen",
           "removeTooltip": "Jump Host entfernen",
-          "noServersAvailable": "Keine SSH-Server für Jump Hosts verfügbar. Erstelle zunächst SSH-Server."
+          "noServersAvailable": "Keine SSH Server für Jump Hosts verfügbar. Erstelle zunächst SSH Server."
         },
         "monitoring": {
-          "title": "Leistungsüberwachung einschalten",
-          "description": "Erfasse CPU-, Speicher-, Festplatten- und Netzwerkmetriken für diesen Server"
+          "title": "Leistungsüberwachung aktivieren",
+          "description": "Erfasse CPU-, Arbeitsspeicher-, Festplatten- und Netzwerkmetriken für diesen Server"
         },
         "wakeOnLan": {
           "title": "Wake-On-LAN einschalten",
@@ -1400,8 +1400,8 @@
           "enableWallpaper": "Hintergrundbild aktivieren",
           "enableWallpaperDesc": "Das Desktop-Hintergrundbild auf dem entfernten System anzeigen",
           "enableTheming": "Theming aktivieren",
-          "enableThemingDesc": "Thematische Fenster und Bedienelemente auf dem entfernten System verwenden",
-          "enableFontSmoothing": "Schriftglättung einschalten",
+          "enableThemingDesc": "Gethemete Fenster und Bedienelemente auf dem entfernten System verwenden",
+          "enableFontSmoothing": "Schriftglätten aktivieren",
           "enableFontSmoothingDesc": "Rendern von Text mit glatten Kanten für bessere Lesbarkeit",
           "enableFullWindowDrag": "Ziehen des gesamten Fensters aktivieren",
           "enableFullWindowDragDesc": "Fensterinhalte beim Ziehen von Fenstern anzeigen",
@@ -1463,7 +1463,7 @@
         "nodeName": "Name der Node (optional)",
         "monitoring": "Leistungsüberwachung"
       },
-      "monitoringDescription": "Erfassen von clusterweiten CPU-, Speicher- und Storage-Metriken",
+      "monitoringDescription": "Erfasse clusterweite CPU-, Arbeitsspeicher- und Storage-Metriken",
       "placeholders": {
         "name": "Name",
         "serverIp": "Server-IP",
@@ -1564,16 +1564,16 @@
         "selectAll": "Alle auswählen",
         "insertSnippet": "Snippet einfügen",
         "sendCtrlC": "Strg+C senden",
-        "clearTerminal": "Terminal löschen",
+        "clearTerminal": "Terminal leeren",
         "properties": "Eigenschaften",
         "openTerminal": "Terminal hier öffnen",
         "downloadFolder": "Ordner herunterladen"
       },
       "properties": {
         "general": "Allgemein",
-        "permissions": "Erlaubnisse",
+        "permissions": "Berechtigungen",
         "checksum": "Prüfsumme",
-        "folder": "Mappe",
+        "folder": "Ordner",
         "file": "Datei",
         "path": "Standort",
         "size": "Größe",
@@ -1589,12 +1589,12 @@
         "owner": "Besitzer",
         "group": "Gruppe",
         "others": "Andere",
-        "read": "Lies",
-        "write": "Schreibe",
+        "read": "Lesen",
+        "write": "Schreiben",
         "execute": "Ausführen",
         "octal": "Oktal",
         "preview": "Vorschau",
-        "apply": "Bewirb dich"
+        "apply": "Anwenden"
       },
       "filePreview": {
         "title": "Dateivorschau",
@@ -1607,26 +1607,26 @@
         "close": "Schließen"
       },
       "selection": {
-        "itemsSelected": "{{count}} ausgewählte Artikel",
-        "filesSelected": "{{count}} ausgewählte Datei(en)",
-        "foldersSelected": "{{count}} ausgewählte(r) Ordner",
+        "itemsSelected": "{{count}} Elemente ausgewählt",
+        "filesSelected": "{{count}} Datei(en) ausgewählt",
+        "foldersSelected": "{{count}} Ordner(e) ausgewählt",
         "clearSelection": "Auswahl löschen",
         "downloadSelected": "Ausgewählte herunterladen",
         "deleteSelected": "Ausgewählte löschen",
         "download": "Herunterladen",
         "delete": "löschen",
-        "deleteConfirm": "Bist du sicher, dass du {{count}} löschen möchtest?"
+        "deleteConfirm": "Bist du sicher, dass du {{count}} Element(e) löschen möchtest?"
       },
       "header": {
         "name": "Name",
         "size": "Größe",
-        "permissions": "Erlaubnisse",
+        "permissions": "Berechtigungen",
         "modified": "Geändert"
       },
       "actionBar": {
         "enterDirectory": "Verzeichnispfad eingeben...",
         "hiddenDirectories": "{{count}} versteckte Verzeichnisse",
-        "switchToGrid": "Zur Gitteransicht wechseln",
+        "switchToGrid": "Zur Rasteransicht wechseln",
         "switchToList": "Zur Listenansicht wechseln"
       },
       "item": {
@@ -1639,9 +1639,9 @@
         "dropFilesHint": "Dateien hier ablegen, um sie hochzuladen"
       },
       "toast": {
-        "downloaded": "Heruntergeladen {{name}}",
+        "downloaded": "{{name}} heruntergeladen",
         "downloadingItems": "Herunterladen von {{count}} item(s)...",
-        "uploaded": "Hochgeladen {{name}}",
+        "uploaded": "{{name}} hochgeladen",
         "uploadFailed": "Upload fehlgeschlagen: {{message}}",
         "connectionLost": "SFTP-Verbindung verloren. Bitte stelle die Verbindung wieder her.",
         "error": "Ein Fehler ist aufgetreten"
@@ -1651,10 +1651,10 @@
       "title": "KI-Assistent",
       "placeholder": "Beschreibe, was du tun möchtest...",
       "hint": "Drücke Enter zum Erstellen - Esc zum Schließen",
-      "hintUse": "Drücke Enter, um den Befehl zu verwenden - Esc zum Schließen",
+      "hintUse": "Drücke Enter, um den Befehl zu verwenden • Esc zum Schließen",
       "closeLabel": "KI-Assistent schließen",
       "generate": "Befehl generieren",
-      "generating": "Befehl generieren...",
+      "generating": "Generiere Befehl...",
       "generatedCommand": "Generierter Befehl",
       "useCommand": "Befehl verwenden",
       "tryAgain": "Nochmal versuchen",
@@ -1669,11 +1669,11 @@
     },
     "terminalActions": {
       "menuTitle": "Terminal-Aktionen",
-      "snippets": "Schnipsel",
-      "keyboardShortcuts": "Tastaturkürzel",
-      "broadcasting": "Sendung",
+      "snippets": "Snippets",
+      "keyboardShortcuts": "Tastenkürzel",
+      "broadcasting": "Broadcasting",
       "fullScreen": "Vollbild",
-      "exitFullScreen": "Beenden des Vollbildmodus",
+      "exitFullScreen": "Beende den Vollbildmodus",
       "badgeOn": "ON"
     }
   },
@@ -1683,7 +1683,7 @@
     "footer": "Danke, dass du Nexterm benutzt!",
     "issues": {
       "title": "Ein Problem melden",
-      "description": "Hast du einen Fehler gefunden oder einen Funktionswunsch?"
+      "description": "Hast du einen Fehler gefunden oder willst du eine Feature-Anfrage stellen?"
     },
     "discord": {
       "title": "Discord beitreten",
@@ -1699,7 +1699,7 @@
     "downloadApps": "Apps herunterladen",
     "connectDevice": "Gerät verbinden",
     "recentConnections": "Neueste Verbindungen",
-    "getStarted": "Anfangen",
+    "getStarted": "Erste Schritte",
     "getStartedHint": "Füge einen Server in der Seitenleiste hinzu, um mit der Verwaltung deiner Infrastruktur zu beginnen."
   },
   "downloadApps": {
