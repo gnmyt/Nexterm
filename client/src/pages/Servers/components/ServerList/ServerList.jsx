@@ -829,7 +829,7 @@ export const ServerList = ({
                     />
                 </div>
             )}
-            {!isMobile && <div className={`resizer${isResizing ? " is-resizing" : ""}`} onMouseDown={startResizing} />}
+            {!isMobile && !isCollapsed && <div className={`resizer${isResizing ? " is-resizing" : ""}`} onMouseDown={startResizing} />}
         </div>
         </>
     );
