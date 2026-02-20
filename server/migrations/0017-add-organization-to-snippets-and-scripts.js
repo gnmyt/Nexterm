@@ -2,7 +2,13 @@ const { DataTypes } = require("sequelize");
 
 module.exports = {
     async up(queryInterface) {
-        await queryInterface.sequelize.query("PRAGMA foreign_keys = OFF");
+        const isMysql = queryInterface.sequelize.options.dialect === 'mysql';
+
+        if (isMysql) {
+            await queryInterface.sequelize.query("SET FOREIGN_KEY_CHECKS = 0");
+        } else {
+            await queryInterface.sequelize.query("PRAGMA foreign_keys = OFF");
+        }
 
         const snippetsColumns = await queryInterface.describeTable("snippets");
         if (!snippetsColumns.organizationId) {
@@ -24,6 +30,11 @@ module.exports = {
             });
         }
 
-        await queryInterface.sequelize.query("PRAGMA foreign_keys = ON");
+        // Restore Foreign Key Checks
+        if (isMysql) {
+            await queryInterface.sequelize.query("SET FOREIGN_KEY_CHECKS = 1");
+        } else {
+            await queryInterface.sequelize.query("PRAGMA foreign_keys = ON");
+        }
     },
 };
