@@ -7,6 +7,8 @@ module.exports = {
     async up(queryInterface) {
         const isMysql = queryInterface.sequelize.options.dialect === 'mysql';
         const nowValue = isMysql ? 'NOW()' : "datetime('now')";
+        // SQLite uses rowid for deduplication, MariaDB can just use GROUP BY
+        const dedupeSuffix = isMysql ? "" : "HAVING MIN(rowid)";
 
         const tables = await queryInterface.showAllTables();
         if (!tables.includes("organization_members")) {
@@ -66,7 +68,7 @@ module.exports = {
                    COALESCE(updatedAt, ${nowValue}) as updatedAt
             FROM organization_members_backup
             GROUP BY organizationId, accountId
-            HAVING MIN(rowid)
+            ${dedupeSuffix}
         `);
 
         await queryInterface.sequelize.query("DROP TABLE organization_members_backup");
