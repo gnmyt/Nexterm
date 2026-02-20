@@ -1,7 +1,7 @@
 import { useRef, useState, useEffect, useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import Icon from "@mdi/react";
-import { mdiClose, mdiViewSplitVertical, mdiChevronLeft, mdiChevronRight, mdiSleep, mdiOpenInNew, mdiShareVariant, mdiLinkVariant, mdiPencil, mdiEye, mdiCloseCircle, mdiContentDuplicate } from "@mdi/js";
+import { mdiClose, mdiViewSplitVertical, mdiChevronLeft, mdiChevronRight, mdiSleep, mdiOpenInNew, mdiShareVariant, mdiLinkVariant, mdiPencil, mdiEye, mdiCloseCircle, mdiContentDuplicate, mdiKeyboard } from "@mdi/js";
 import { useDrag, useDrop } from "react-dnd";
 import TerminalActionsMenu from "../TerminalActionsMenu";
 import { ContextMenu, ContextMenuItem, ContextMenuSeparator, useContextMenu } from "@/common/components/ContextMenu";
@@ -19,6 +19,7 @@ const DraggableTab = ({
     closeSession,
     hibernateSession,
     duplicateSession,
+    onKeyboardShortcut,
     index,
     moveTab,
     progress = 0,
@@ -30,6 +31,7 @@ const DraggableTab = ({
     const canPopOut = !session.scriptId && session.type !== "sftp";
     const canShare = canPopOut;
     const isSharing = !!session.shareId;
+    const isRdpSession = session.type === "rdp" || session.server?.protocol === "rdp";
 
     const handleShare = useCallback(async (writable) => {
         const result = await postRequest(`connections/${session.id}/share`, { writable });
@@ -142,6 +144,13 @@ const DraggableTab = ({
                             label={t("servers.tabs.contextMenu.popOut")}
                             onClick={() => popOutSession(session.id)}
                         />
+                        {isRdpSession && (
+                            <ContextMenuItem
+                                icon={mdiKeyboard}
+                                label="CTRL + ALT + DEL"
+                                onClick={() => onKeyboardShortcut?.([0xffe3, 0xffe9, 0xffff])}
+                            />
+                        )}
                         <ContextMenuSeparator />
                     </>
                 )}
@@ -325,6 +334,7 @@ export const ServerTabs = ({
                             <DraggableTab key={session.id} session={session} server={session.server} index={index} moveTab={moveTab}
                                 activeSessionId={activeSessionId} setActiveSessionId={setActiveSessionId}
                                 closeSession={closeSession} hibernateSession={hibernateSession} duplicateSession={duplicateSession}
+                                onKeyboardShortcut={onKeyboardShortcut}
                                 progress={sessionProgress[session.id] || 0} />
                         );
                     })}
