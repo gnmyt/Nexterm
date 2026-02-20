@@ -5,6 +5,10 @@
   user-select: none
   cursor: pointer
 
+  &.invalid
+    .select-box__selected
+      border: 1px solid colors.$error
+
   &.disabled
     cursor: not-allowed
     opacity: 0.6
