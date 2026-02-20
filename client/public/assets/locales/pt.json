@@ -1340,7 +1340,8 @@
         "host": "Anfitrião",
         "nodeName": "Nome do Node",
         "vmid": "ID DA VM",
-        "macAddress": "Endereço MAC"
+        "macAddress": "Endereço MAC",
+        "wolBroadcastAddress": "Endereço de Broadcast"
       },
       "placeholders": {
         "serverName": "Nome do servidor",
@@ -1351,7 +1352,8 @@
         "host": "Anfitrião",
         "nodeName": "Nome do node",
         "vmid": "ID DA VM",
-        "macAddress": "AA:BB:CC:DD:EE:FF"
+        "macAddress": "AA:BB:CC:DD:EE:FF",
+        "wolBroadcastAddress": "255.255.255.255"
       },
       "settings": {
         "jumpHosts": {

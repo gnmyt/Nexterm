@@ -1340,7 +1340,8 @@
         "host": "主机",
         "nodeName": "节点名称",
         "vmid": "虚拟机 ID",
-        "macAddress": "MAC 地址"
+        "macAddress": "MAC 地址",
+        "wolBroadcastAddress": "广播地址"
       },
       "placeholders": {
         "serverName": "服务器名称",
@@ -1351,7 +1352,8 @@
         "host": "主机",
         "nodeName": "节点名称",
         "vmid": "虚拟机 ID",
-        "macAddress": "aa:bb:cc:dd:ee:ff"
+        "macAddress": "aa:bb:cc:dd:ee:ff",
+        "wolBroadcastAddress": "255.255.255.255"
       },
       "settings": {
         "jumpHosts": {
