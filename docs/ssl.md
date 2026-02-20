@@ -16,6 +16,13 @@ Nexterm will automatically detect them and start an HTTPS server.
 
 You can change the HTTPS port by setting the `HTTPS_PORT` environment variable.
 
+## 📌 Environment Variables
+
+- `HTTPS_PORT`: HTTPS listener port (default `5878`)
+- `SSL_CERT_PATH`: absolute or relative path to `cert.pem` (default `./data/certs/cert.pem`)
+- `SSL_KEY_PATH`: absolute or relative path to `key.pem` (default `./data/certs/key.pem`)
+- `AUTO_SELF_CERT`: set to `false` to disable auto-generation of self-signed certs
+
 ## 🐳 Docker Setup
 
 Add the following to your existing `docker-compose.yml`:

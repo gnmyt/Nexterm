@@ -18,20 +18,25 @@ const recordingService = require("./utils/recordingService");
 const { generateOpenAPISpec } = require("./openapi");
 const { isAdmin } = require("./middlewares/permission");
 const logger = require("./utils/logger");
+const { ensureSelfSignedCerts } = require("./utils/ssl");
 const { startSourceSyncService, stopSourceSyncService } = require("./utils/sourceSyncService");
 const backupService = require("./utils/backupService");
 require("./utils/folder");
 
 process.on("uncaughtException", (err) => require("./utils/errorHandling")(err));
 
-const APP_PORT = process.env.SERVER_PORT || 6989;
 const HTTPS_PORT = process.env.HTTPS_PORT || 5878;
+const AUTO_SELF_CERT_ENABLED = process.env.AUTO_SELF_CERT !== "false";
 
-const CERTS_DIR = path.join(__dirname, "../data/certs");
-const CERT_PATH = path.join(CERTS_DIR, "cert.pem");
-const KEY_PATH = path.join(CERTS_DIR, "key.pem");
-
-const hasSSLCerts = () => fs.existsSync(CERT_PATH) && fs.existsSync(KEY_PATH);
+const DEFAULT_CERTS_DIR = path.join(__dirname, "../data/certs");
+const CERT_PATH = process.env.SSL_CERT_PATH
+    ? path.resolve(process.env.SSL_CERT_PATH)
+    : path.join(DEFAULT_CERTS_DIR, "cert.pem");
+const KEY_PATH = process.env.SSL_KEY_PATH
+    ? path.resolve(process.env.SSL_KEY_PATH)
+    : path.join(DEFAULT_CERTS_DIR, "key.pem");
+const CERTS_DIR = path.dirname(CERT_PATH);
+const KEY_DIR = path.dirname(KEY_PATH);
 
 const app = expressWs(express()).app;
 
@@ -118,26 +123,43 @@ db.authenticate()
 
         backupService.start();
 
-        app.listen(APP_PORT, () =>
-            logger.system(`Server listening on port ${APP_PORT}`)
-        );
+        const certStatus = ensureSelfSignedCerts({
+            certPath: CERT_PATH,
+            keyPath: KEY_PATH,
+            certsDir: CERTS_DIR,
+            keyDir: KEY_DIR,
+            autoEnabled: AUTO_SELF_CERT_ENABLED
+        });
 
-        if (hasSSLCerts()) {
-            try {
-                const sslOptions = {
-                    cert: fs.readFileSync(CERT_PATH),
-                    key: fs.readFileSync(KEY_PATH)
-                };
+        if (certStatus.status === "partial") {
+            logger.error("TLS certificate or key missing. Provide both cert.pem and key.pem in data/certs.");
+            process.exit(112);
+        }
 
-                const httpsServer = https.createServer(sslOptions, app);
-                expressWs(app, httpsServer);
+        if (certStatus.status === "missing" && certStatus.autoDisabled) {
+            logger.error("TLS certificates missing and AUTO_SELF_CERT is disabled.");
+            process.exit(112);
+        }
 
-                httpsServer.listen(HTTPS_PORT, () =>
-                    logger.system(`HTTPS server listening on port ${HTTPS_PORT}`)
-                );
-            } catch (err) {
-                logger.error("Failed to start HTTPS server", { error: err.message });
-            }
+        if (certStatus.status === "error") {
+            process.exit(112);
+        }
+
+        try {
+            const sslOptions = {
+                cert: fs.readFileSync(CERT_PATH),
+                key: fs.readFileSync(KEY_PATH)
+            };
+
+            const httpsServer = https.createServer(sslOptions, app);
+            expressWs(app, httpsServer);
+
+            httpsServer.listen(HTTPS_PORT, () =>
+                logger.system(`HTTPS server listening on port ${HTTPS_PORT}`)
+            );
+        } catch (err) {
+            logger.error("Failed to start HTTPS server", { error: err.message });
+            process.exit(112);
         }
     });
 
