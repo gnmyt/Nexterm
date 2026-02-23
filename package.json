@@ -32,7 +32,7 @@
   "devDependencies": {
     "concurrently": "^9.2.1",
     "dotenv": "^17.3.1",
-    "nodemon": "^3.1.13",
+    "nodemon": "^3.1.14",
     "vitepress": "^1.6.4",
     "vitepress-openapi": "^0.1.14"
   },
