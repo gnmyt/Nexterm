@@ -23,7 +23,7 @@ case "$GUACD_LOG_LEVEL" in
         ;;
 esac
 
-mkdir -p /tmp/nexterm-drives
+mkdir -p /app/data/rdp-drives
 
 guacd -b 0.0.0.0 -l 4822 $GUACD_ARGS -f &
 exec node server/index.js
