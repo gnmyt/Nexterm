@@ -6,7 +6,7 @@
   "author": "Mathias Wagner",
   "license": "MIT",
   "dependencies": {
-    "@simplewebauthn/server": "^13.2.2",
+    "@simplewebauthn/server": "^13.2.3",
     "archiver": "^7.0.1",
     "axios": "^1.13.5",
     "bcrypt": "^6.0.0",
