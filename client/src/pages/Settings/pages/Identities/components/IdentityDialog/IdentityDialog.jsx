@@ -101,7 +101,10 @@ export const IdentityDialog = ({ open, onClose, identity, organizationId }) => {
                 type: authType,
                 // Handle Password
                 ...((authType === "password" || authType === "password-only" || authType === "both")
-                        ? { password: password === "********" ? undefined : (password || undefined) }
+                        ? { 
+                            // Omit password if it's the placeholder or empty to prevent overwriting or validation errors
+                            password: password === "********" ? undefined : (password || undefined) 
+                        }
                         : {}
                 ),
                 // Handle SSH Key and Passphrase
