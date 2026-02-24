@@ -64,16 +64,22 @@ export const SessionProvider = ({ children }) => {
     }, [activeSessions]);
 
     useEffect(() => {
-        // Register the handler for session errors
-        const unregister = registerHandler(STATE_TYPES.SESSION_ERROR, (data) => {
+        // Listen on the standard CONNECTIONS stream
+        const unregister = registerHandler(STATE_TYPES.CONNECTIONS, (data) => {
+            
+            // If it's just a regular connection update without an error, do nothing here
+            if (!data || !data.sessionError) return;
+
+            const { sessionId, message } = data.sessionError;
+
             // Show the error toast to the user
-            sendToast("Error", `Connection Failed: ${data.message}`);
+            sendToast("Error", `Connection Failed: ${message}`);
 
             // Cleanup the local session so the UI stops loading
-            setActiveSessions(prev => prev.filter(s => s.sessionId !== data.sessionId));
+            setActiveSessions(prev => prev.filter(s => s.sessionId !== sessionId));
             
             // If the failing session was the active tab, clear it
-            setActiveSessionId(prev => prev === data.sessionId ? null : prev);
+            setActiveSessionId(prev => prev === sessionId ? null : prev);
         });
 
         return () => unregister();

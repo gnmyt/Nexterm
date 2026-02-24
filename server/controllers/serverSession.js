@@ -95,7 +95,7 @@ const createSession = async (accountId, entryId, identityId, connectionReason, t
                 stack: error.stack
             });
             // Broadcast the failure so the frontend knows this specific session failed
-            stateBroadcaster.broadcast("SESSION_ERROR", { 
+            stateBroadcaster.broadcast("CONNECTIONS", { 
                 accountId, 
                 sessionId: session.sessionId, 
                 message: error.message || "Connection Failed" 
