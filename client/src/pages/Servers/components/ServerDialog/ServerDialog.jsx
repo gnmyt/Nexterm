@@ -230,13 +230,20 @@ export const ServerDialog = ({ open, onClose, currentFolderId, currentOrganizati
             setEntryType("server");
             
             if (initialProtocol) {
-                setConfig({ protocol: initialProtocol });
+                const portMap = { ssh: "22", telnet: "23", rdp: "3389", vnc: "5900" };
+
+                let initialConfig = { protocol: initialProtocol };
+                if (fieldConfig.showIpPort) {
+                    initialConfig.port = portMap[initialProtocol] || "";
+                }
+
+                setConfig(initialConfig);
                 const defaultIcon = PROTOCOL_DEFAULT_ICONS[initialProtocol] || null;
                 setIcon(defaultIcon);
                 initialValues.current = { 
                     name: '', 
                     icon: defaultIcon, 
-                    config: JSON.stringify({ protocol: initialProtocol }), 
+                    config: JSON.stringify(initialConfig), 
                     monitoringEnabled: false 
                 };
             } else {
@@ -248,7 +255,7 @@ export const ServerDialog = ({ open, onClose, currentFolderId, currentOrganizati
 
         setIdentityUpdates({});
         setActiveTab(0);
-    }, [open, editServerId, initialProtocol]);
+    }, [open, editServerId, initialProtocol, fieldConfig.showIpPort]);
 
     useEffect(() => {
         if (!open) return;
@@ -270,18 +277,6 @@ export const ServerDialog = ({ open, onClose, currentFolderId, currentOrganizati
         if (!editServerId) return;
         getRequest("servers/" + editServerId).then((server) => setIdentities(server.identities));
     };
-
-    useEffect(() => {
-        if (!open || !fieldConfig.showIpPort || editServerId) return;
-
-        const portMap = { ssh: "22", telnet: "23", rdp: "3389", vnc: "5900" };
-        const currentPort = config.port;
-        const expectedPort = portMap[config.protocol];
-
-        if (expectedPort && !currentPort) {
-            setConfig(prev => ({ ...prev, port: expectedPort }));
-        }
-    }, [config.protocol, open, fieldConfig.showIpPort, editServerId]);
 
     const isDirty = name !== initialValues.current.name || 
                      icon !== initialValues.current.icon ||
