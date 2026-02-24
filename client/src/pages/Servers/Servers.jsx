@@ -18,6 +18,7 @@ import { StateStreamContext, STATE_TYPES } from "@/common/contexts/StateStreamCo
 import { isTauri } from "@/common/utils/TauriUtil.js";
 import { getTabId, getBrowserId } from "@/common/utils/ConnectionUtil.js";
 import { postRequest, deleteRequest } from "@/common/utils/RequestUtil";
+import { useToast } from "@/common/contexts/ToastContext.jsx";
 
 export const Servers = () => {
 
@@ -46,6 +47,8 @@ export const Servers = () => {
     const closingSessionsRef = useRef(new Set());
 
     const visibleSessions = activeSessions.filter(s => !poppedOutSessions.includes(s.id));
+
+    const { sendToast } = useToast();
 
     useEffect(() => {
         const handleToggle = () => setMobileServerListOpen(prev => !prev);
@@ -198,6 +201,7 @@ export const Servers = () => {
             setActiveSessionId(session.sessionId);
         } catch (error) {
             console.error("Failed to create session", error);
+            sendToast("Error", error.error || error.message || "Connection Failed");
         }
     };
 
