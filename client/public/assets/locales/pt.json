@@ -844,7 +844,7 @@
     },
     "authentication": {
       "title": "{{count}} Provedor(es) de Autenticação",
-      "internalProviderName": "Internal Authentication",
+      "internalProviderName": "Autenticação Interna",
       "addProvider": "Adicionar Provedor",
       "addLdapProvider": "Adicionar LDAP",
       "system": "Sistema",
@@ -1306,16 +1306,16 @@
     },
     "tabs": {
       "contextMenu": {
-        "popOut": "Pop Out",
-        "startSharing": "Start Sharing",
-        "readOnly": "Read-only",
-        "readWrite": "Read & Write",
-        "copyShareLink": "Copy Share Link",
-        "changePermissions": "Change Permissions",
-        "stopSharing": "Stop Sharing",
-        "duplicate": "Duplicate",
-        "hibernateSession": "Hibernate",
-        "closeSession": "Disconnect"
+        "popOut": "Abrir em Janela Pop-Up",
+        "startSharing": "Iniciar Compartilhamento",
+        "readOnly": "Somente Leitura",
+        "readWrite": "Leitura & Escrita",
+        "copyShareLink": "Copiar Link de Compartilhamento",
+        "changePermissions": "Alterar Permissões",
+        "stopSharing": "Parar de Compartilhar",
+        "duplicate": "Duplicar",
+        "hibernateSession": "Hibernar",
+        "closeSession": "Desconectar"
       }
     },
     "wol": {
