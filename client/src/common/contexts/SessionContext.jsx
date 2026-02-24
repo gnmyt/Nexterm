@@ -67,10 +67,10 @@ export const SessionProvider = ({ children }) => {
         // Listen on the standard CONNECTIONS stream
         const unregister = registerHandler(STATE_TYPES.CONNECTIONS, (data) => {
             
-            // If it's just a regular connection update without an error, do nothing here
-            if (!data || !data.sessionError) return;
+            // If it's a regular connection update (no message or sessionId), ignore it
+            if (!data || !data.message || !data.sessionId) return;
 
-            const { sessionId, message } = data.sessionError;
+            const { sessionId, message } = data;
 
             // Show the error toast to the user
             sendToast("Error", `Connection Failed: ${message}`);
@@ -83,7 +83,7 @@ export const SessionProvider = ({ children }) => {
         });
 
         return () => unregister();
-    }, [registerHandler, sendToast]);
+    }, [registerHandler, sendToast, setActiveSessions, setActiveSessionId]);
 
     return (
         <SessionContext.Provider value={{ activeSessions, setActiveSessions, activeSessionId, setActiveSessionId, poppedOutSessions, popOutSession }}>
