@@ -60,17 +60,17 @@ module.exports.createIdentity = async (accountId, config) => {
     }
 
     // Validation block
-    if (!config.name || !config.name.trim()) {
+    if (!config.name?.trim()) {
         return { code: 400, message: "settings.identities.dialog.messages.nameRequired" };
     }
-    if (!config.username || !config.username.trim()) {
+    if (!config.username?.trim()) {
         return { code: 400, message: "settings.identities.dialog.messages.usernameRequired" };
     }
     if (
         (config.type === "password" ||
             config.type === "password-only" ||
             config.type === "both") &&
-        (!config.password || !config.password.trim())
+        (!config.password?.trim())
     ) {
         return { code: 400, message: "settings.identities.dialog.messages.passwordRequired" };
     }
