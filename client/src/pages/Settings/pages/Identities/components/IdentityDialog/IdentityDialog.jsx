@@ -82,7 +82,8 @@ export const IdentityDialog = ({ open, onClose, identity, organizationId }) => {
             return;
         }
 
-        if ((authType === "password" || authType === "password-only" || authType === "both") && !password && !isEditing) {
+        // Password is only strictly required for password-only or standard password types
+        if ((authType === "password" || authType === "password-only") && !password && !isEditing) {
             sendToast("Error", t('settings.identities.dialog.messages.passwordRequired'));
             return;
         }
@@ -102,8 +103,8 @@ export const IdentityDialog = ({ open, onClose, identity, organizationId }) => {
                 // Handle Password
                 ...((authType === "password" || authType === "password-only" || authType === "both")
                         ? { 
-                            // Omit password if it's the placeholder or empty to prevent overwriting or validation errors
-                            password: password === "********" ? undefined : (password || undefined) 
+                            // Only include password if it's not the placeholder and not empty
+                            ...(password && password !== "********" ? { password } : {})
                         }
                         : {}
                 ),
@@ -111,7 +112,7 @@ export const IdentityDialog = ({ open, onClose, identity, organizationId }) => {
                 ...((authType === "ssh" || authType === "both")
                         ? {
                             sshKey: sshKey || undefined,
-                            // Only include passphrase if it has a real value and isn't the placeholder
+                            // Only include passphrase if it's not the placeholder and not empty
                             ...(passphrase && passphrase !== "********" ? { passphrase } : {})
                         }
                         : {}
