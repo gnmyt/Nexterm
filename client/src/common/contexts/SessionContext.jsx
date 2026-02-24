@@ -1,5 +1,6 @@
 import { createContext, useContext, useState, useEffect, useCallback } from "react";
 import { isTauri } from "@/common/utils/TauriUtil.js";
+import { StateStreamContext } from "@/common/contexts/StateStreamContext";
 import { useToast } from "@/common/contexts/ToastContext.jsx";
 import { STATE_TYPES } from "@/common/hooks/useStateStream.js";
 
