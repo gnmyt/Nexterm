@@ -82,8 +82,7 @@ export const IdentityDialog = ({ open, onClose, identity, organizationId }) => {
             return;
         }
 
-        // Password is only strictly required for password-only or standard password types
-        if ((authType === "password" || authType === "password-only") && !password && !isEditing) {
+        if ((authType === "password" || authType === "password-only" || authType === "both") && !password && !isEditing) {
             sendToast("Error", t('settings.identities.dialog.messages.passwordRequired'));
             return;
         }
@@ -100,22 +99,18 @@ export const IdentityDialog = ({ open, onClose, identity, organizationId }) => {
                 name: name.trim(),
                 username: authType === "password-only" ? undefined : (username.trim() || undefined),
                 type: authType,
-                // Handle Password
-                ...((authType === "password" || authType === "password-only" || authType === "both")
-                        ? { 
-                            // Only include password if it's not the placeholder and not empty
-                            ...(password && password !== "********" ? { password } : {})
-                        }
-                        : {}
-                ),
-                // Handle SSH Key and Passphrase
-                ...((authType === "ssh" || authType === "both")
+                ...(authType === "password" || authType === "password-only"
+                        ? { password: password === "********" ? undefined : password }
+                        : authType === "both"
                         ? {
+                            password: password === "********" ? undefined : password,
                             sshKey: sshKey || undefined,
-                            // Only include passphrase if it's not the placeholder and not empty
-                            ...(passphrase && passphrase !== "********" ? { passphrase } : {})
+                            ...(passphrase && passphrase !== "********" ? { passphrase } : {}),
                         }
-                        : {}
+                        : {
+                            sshKey: sshKey || undefined,
+                            ...(passphrase && passphrase !== "********" ? { passphrase } : {}),
+                        }
                 ),
             };
 
@@ -192,7 +187,7 @@ export const IdentityDialog = ({ open, onClose, identity, organizationId }) => {
                                 <label htmlFor="password">{t('settings.identities.dialog.fields.password')}</label>
                                 <IconInput icon={mdiLockOutline} type="password" value={password} setValue={setPassword}
                                            placeholder={isEditing ? t('settings.identities.dialog.fields.passwordPlaceholderEdit') : t('settings.identities.dialog.fields.passwordPlaceholder')}
-                                           id="password" name="password" required={!isEditing && (authType === "password" || authType === "password-only")} autoComplete="new-password" />
+                                           id="password" name="password" required={!isEditing && authType === "password"} autoComplete="new-password" />
                             </div>
                         )}
 
