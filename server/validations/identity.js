@@ -5,7 +5,7 @@ module.exports.createIdentityValidation = Joi.object({
     type: Joi.string().valid("password", "ssh", "both", "password-only").required(),
     password: Joi.string().optional(),
     sshKey: Joi.string().optional(),
-    passphrase: Joi.string().optional(),
+    passphrase: Joi.string().allow("").optional(),
     organizationId: Joi.number().integer().optional(),
 });
 
