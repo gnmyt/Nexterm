@@ -4,6 +4,9 @@ import { useToast } from "@/common/contexts/ToastContext.jsx";
 import { STATE_TYPES } from "@/common/hooks/useStateStream.js";
 
 export const SessionContext = createContext({});
+export const useActiveSessions = () => useContext(SessionContext);
+
+const channel = typeof BroadcastChannel !== "undefined" ? new BroadcastChannel("nexterm_popout") : null;
 
 export const SessionProvider = ({ children }) => {
     const { registerHandler } = useContext(StateStreamContext);
