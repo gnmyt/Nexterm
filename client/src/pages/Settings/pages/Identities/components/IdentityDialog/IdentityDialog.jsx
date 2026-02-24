@@ -151,7 +151,7 @@ export const IdentityDialog = ({ open, onClose, identity, organizationId }) => {
                                 <div className="form-group">
                                     <label htmlFor="username">{t('settings.identities.dialog.fields.username')}</label>
                                     <IconInput icon={mdiAccountCircleOutline} value={username} setValue={setUsername}
-                                               placeholder={t('settings.identities.dialog.fields.usernamePlaceholder')} id="username" />
+                                               placeholder={t('settings.identities.dialog.fields.usernamePlaceholder')} id="username" required />
                                 </div>
                             )}
 

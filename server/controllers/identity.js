@@ -63,6 +63,9 @@ module.exports.createIdentity = async (accountId, config) => {
     if (!config.name || !config.name.trim()) {
         return { code: 400, message: "settings.identities.dialog.messages.nameRequired" };
     }
+    if (!config.username || !config.username.trim()) {
+        return { code: 400, message: "settings.identities.dialog.messages.usernameRequired" };
+    }
     if (
         (config.type === "password" ||
             config.type === "password-only" ||
