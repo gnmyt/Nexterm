@@ -57,6 +57,24 @@ export const SessionProvider = ({ children }) => {
         return () => unlisten?.();
     }, [activeSessions]);
 
+    useEffect(() => {
+        // Register the handler for session errors
+        const unregister = registerHandler(STATE_TYPES.SESSION_ERROR, (data) => {
+            // Show the error toast to the user
+            addToast({
+                title: "Connection Failed",
+                message: data.message,
+                type: "error",
+                duration: 5000
+            });
+
+            // Cleanup the local session so the UI stops loading
+            setSessions(prev => prev.filter(s => s.sessionId !== data.sessionId));
+        });
+
+        return () => unregister();
+    }, [registerHandler, addToast]);
+
     return (
         <SessionContext.Provider value={{ activeSessions, setActiveSessions, activeSessionId, setActiveSessionId, poppedOutSessions, popOutSession }}>
             {children}

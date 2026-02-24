@@ -2,7 +2,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import useWebSocket, { ReadyState } from "react-use-websocket";
 import { getWebSocketUrl, getTabId, getBrowserId } from "@/common/utils/ConnectionUtil.js";
 
-export const STATE_TYPES = { ENTRIES: "ENTRIES", IDENTITIES: "IDENTITIES", SNIPPETS: "SNIPPETS", CONNECTIONS: "CONNECTIONS", LOGOUT: "LOGOUT" };
+export const STATE_TYPES = { ENTRIES: "ENTRIES", IDENTITIES: "IDENTITIES", SNIPPETS: "SNIPPETS", CONNECTIONS: "CONNECTIONS", LOGOUT: "LOGOUT", SESSION_ERROR: "SESSION_ERROR" };
 
 const popoutChannel = typeof BroadcastChannel !== "undefined" ? new BroadcastChannel("nexterm_popout") : null;
 
