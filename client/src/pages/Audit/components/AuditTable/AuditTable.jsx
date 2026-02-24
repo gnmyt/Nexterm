@@ -33,7 +33,7 @@ export const AuditTable = ({ logs, loading, pagination, onPageChange, getIconFor
 
     const getActionBadgeColor = useCallback((action) => {
         if (action.startsWith("user.")) return "blue";
-        if (action.startsWith("server.")) {
+        if (action.startsWith("server.") || action.startsWith("entry.")) {
             if (action.includes("connect")) return "green";
             if (action.includes("disconnect")) return "orange";
         }
