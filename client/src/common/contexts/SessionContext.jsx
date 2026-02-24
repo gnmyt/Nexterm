@@ -1,8 +1,5 @@
 import { createContext, useContext, useState, useEffect, useCallback } from "react";
 import { isTauri } from "@/common/utils/TauriUtil.js";
-import { StateStreamContext } from "@/common/contexts/StateStreamContext";
-import { useToast } from "@/common/contexts/ToastContext.jsx";
-import { STATE_TYPES } from "@/common/hooks/useStateStream.js";
 
 export const SessionContext = createContext({});
 export const useActiveSessions = () => useContext(SessionContext);
@@ -10,9 +7,6 @@ export const useActiveSessions = () => useContext(SessionContext);
 const channel = typeof BroadcastChannel !== "undefined" ? new BroadcastChannel("nexterm_popout") : null;
 
 export const SessionProvider = ({ children }) => {
-    const { registerHandler } = useContext(StateStreamContext);
-    const { sendToast } = useToast(); 
-
     const [activeSessions, setActiveSessions] = useState([]);
     const [activeSessionId, setActiveSessionId] = useState(null);
     const [poppedOutSessions, setPoppedOutSessions] = useState([]);
@@ -62,28 +56,6 @@ export const SessionProvider = ({ children }) => {
         
         return () => unlisten?.();
     }, [activeSessions]);
-
-    useEffect(() => {
-        // Listen on the standard CONNECTIONS stream
-        const unregister = registerHandler(STATE_TYPES.CONNECTIONS, (data) => {
-            
-            // If it's a regular connection update (no message or sessionId), ignore it
-            if (!data || !data.message || !data.sessionId) return;
-
-            const { sessionId, message } = data;
-
-            // Show the error toast to the user
-            sendToast("Error", `Connection Failed: ${message}`);
-
-            // Cleanup the local session so the UI stops loading
-            setActiveSessions(prev => prev.filter(s => s.sessionId !== sessionId));
-            
-            // If the failing session was the active tab, clear it
-            setActiveSessionId(prev => prev === sessionId ? null : prev);
-        });
-
-        return () => unregister();
-    }, [registerHandler, sendToast, setActiveSessions, setActiveSessionId]);
 
     return (
         <SessionContext.Provider value={{ activeSessions, setActiveSessions, activeSessionId, setActiveSessionId, poppedOutSessions, popOutSession }}>

@@ -82,28 +82,30 @@ const createSession = async (accountId, entryId, identityId, connectionReason, t
 
     const session = SessionManager.create(accountId, entryId, configuration, connectionReason, tabId, browserId, auditLogId);
 
-    stateBroadcaster.broadcast("CONNECTIONS", { accountId });
+    try {
+        // Wait for the connection handshake to complete
+        await createConnectionForSession(session.sessionId, accountId);
+        
+        // Broadcast the new tab to the UI only after a successful connection
+        stateBroadcaster.broadcast("CONNECTIONS", { accountId });
+        logger.info("Session connection established", { sessionId: session.sessionId, entryId, type: entry.type });
+        
+        return { sessionId: session.sessionId };
 
-    createConnectionForSession(session.sessionId, accountId)
-        .then(() => {
-            logger.info("Session connection established", { sessionId: session.sessionId, entryId, type: entry.type });
-        })
-        .catch((error) => {
-            logger.error("Failed to create connection for session", { 
-                sessionId: session.sessionId, 
-                error: error.message,
-                stack: error.stack
-            });
-            // Broadcast the failure so the frontend knows this specific session failed
-            stateBroadcaster.broadcast("CONNECTIONS", { 
-                accountId, 
-                sessionId: session.sessionId, 
-                message: error.message || "Connection Failed" 
-            });
-            SessionManager.remove(session.sessionId);
+    } catch (error) {
+        logger.error("Failed to create connection for session", { 
+            sessionId: session.sessionId, 
+            error: error.message,
+            stack: error.stack
         });
-
-    return { sessionId: session.sessionId };
+        
+        // Cleanup the failed session
+        SessionManager.remove(session.sessionId);
+        
+        // Return a standard HTTP error. Nexterm's API client will automatically
+        // catch this and display a red toast notification in the UI!
+        return { code: 400, message: `Connection Failed: ${error.message}` };
+    }
 };
 
 const getSessions = async (accountId, tabId = null, browserId = null) => {
