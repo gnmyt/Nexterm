@@ -299,7 +299,7 @@ export const ServerList = ({
     };
 
     const openDeleteFolderConfirm = () => {
-        const folderEntry = servers?.flatMap(flattenEntries).find(entry => entry.type === "folder" && entry.id === Number(contextClickedId));
+        const folderEntry = flattenEntries(Array.isArray(servers) ? servers : []).find(entry => entry.type === "folder" && entry.id === Number(contextClickedId));
         setDeleteConfirmDialog({
             open: true,
             entryName: folderEntry?.name ?? "",
@@ -849,11 +849,7 @@ export const ServerList = ({
                         open={deleteConfirmDialog.open}
                         setOpen={(open) => setDeleteConfirmDialog(prev => ({ ...prev, open }))}
                         onConfirm={handleDeleteConfirm}
-                        text={
-                           deleteConfirmDialog.entryType === "folder"
-                             ? t("servers.contextMenu.deleteFolderConfirm", { name: deleteConfirmDialog.entryName })
-                             : t("servers.fileManager.contextMenu.deleteConfirm", { name: deleteConfirmDialog.entryName })
-                        }
+                        text={t("servers.fileManager.contextMenu.deleteConfirm", { name: deleteConfirmDialog.entryName })}
                     />
 
                     <ScriptsMenu
