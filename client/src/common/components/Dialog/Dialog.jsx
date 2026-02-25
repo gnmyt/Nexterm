@@ -151,7 +151,7 @@ export const DialogProvider = ({ disableClosing, open, children, onClose, isDirt
     };
 
     const dialogContent = isVisible ? (
-        <div className={`dialog-area ${isClosing ? "dialog-area-hidden" : ""}`} ref={areaRef} onKeyDown={handleKeyDownTrap} tabIndex={-1} role="dialog" aria-modal="true">
+        <dialog className={`dialog-area ${isClosing ? "dialog-area-hidden" : ""}`} ref={areaRef} onKeyDown={handleKeyDownTrap} open={isVisible}>
             <div className={`dialog ${isClosing ? "dialog-hidden" : ""}`} ref={ref}
                 onAnimationEnd={handleAnimationEnd}>
                 {!disableClosing && (
@@ -177,7 +177,7 @@ export const DialogProvider = ({ disableClosing, open, children, onClose, isDirt
                     </div>
                 </div>
             )}
-        </div>
+        </dialog>
     ) : null;
 
     return (
