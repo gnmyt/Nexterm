@@ -27,12 +27,12 @@ export const AuditTable = ({ logs, loading, pagination, onPageChange, getIconFor
         };
     }, []);
 
-    function formatSessionDuration(seconds, t) {
+    const formatSessionDuration = useCallback((seconds, t) => {
         if (!seconds && seconds !== 0) return "";
         if (seconds < 60) return `${seconds} ${t("audit.table.durationUnits.seconds")}`;
         if (seconds < 3600) return `${Math.floor(seconds / 60)} ${t("audit.table.durationUnits.minutes")}`;
         return `${Math.floor(seconds / 3600)} ${t("audit.table.durationUnits.hours")}`;
-    }
+    }, []);
 
     const formatAction = useCallback((action) =>
             action.replace(".", " → ").replace(/_/g, " ").toUpperCase()
