@@ -52,10 +52,15 @@ export const DialogProvider = ({ disableClosing, open, children, onClose, isDirt
             cancelBtnRef.current.classList.add("focus-outline");
         } else if (ref.current) {
             // Focus first focusable element in the dialog
-            const focusable = ref.current.querySelectorAll(
-                'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
-            );
-            if (focusable.length) focusable[0].focus();
+            let btnAreaBtns = ref.current.querySelectorAll('.btn-area button');
+            if (btnAreaBtns.length > 0) {
+                btnAreaBtns[0].focus();
+            } else {
+                const focusable = ref.current.querySelectorAll(
+                    'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+                );
+                if (focusable.length) focusable[0].focus();
+            }
         }
     }, [isVisible, showConfirm]);
 
