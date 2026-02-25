@@ -10,7 +10,7 @@ import { UserContext } from "@/common/contexts/UserContext.jsx";
 import { useToast } from "@/common/contexts/ToastContext.jsx";
 import { useTranslation } from "react-i18next";
 import { startAuthentication } from "@simplewebauthn/browser";
-import { getProviderIcon, getProviderLabel } from "@/common/utils/iconUtils";
+import { getProviderIcon } from "@/common/utils/iconUtils";
 import Icon from "@mdi/react";
 
 export const LoginDialog = ({ open }) => {
