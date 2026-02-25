@@ -6,7 +6,7 @@ import Button from "@/common/components/Button";
 import ToggleSwitch from "@/common/components/ToggleSwitch";
 import { getProviderIcon } from "@/common/utils/iconUtils";
 import Icon from "@mdi/react";
-import { mdiPencil, mdiPlus, mdiShieldAccountOutline, mdiTrashCan, mdiLock, mdiServer } from "@mdi/js";
+import { mdiPencil, mdiPlus, mdiTrashCan, mdiLock, mdiServer } from "@mdi/js";
 import ProviderDialog from "./components/ProviderDialog";
 import LDAPProviderDialog from "./components/LDAPProviderDialog";
 import { ActionConfirmDialog } from "@/common/components/ActionConfirmDialog/ActionConfirmDialog.jsx";
