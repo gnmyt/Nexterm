@@ -19,13 +19,13 @@ export const providerIconMap = {
  * @param {object} provider - Provider object which should have 'issuerUri' or similar field.
  */
 export function getProviderIcon(provider) {
-    console.log("Providers:", providers);
     console.log("Checking icon for issuerUri:", provider.issuerUri);
     if (!provider?.issuerUri) return mdiIcons.mdiShieldAccount;
     try {
         // Extract domain from issuerUri (e.g. https://login.microsoftonline.com/xxx)
         const url = new URL(provider.issuerUri);
         const domain = url.hostname.toLowerCase();
+        console.log("Mapping provider:", domain, "in map:", Object.keys(providerIconMap));
         return providerIconMap[domain] || mdiIcons.mdiShieldAccount;
     } catch (e) {
         console.debug("Failed to parse issuerUri for icon:", provider?.issuerUri, e);
