@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useContext } from "react";
 import { useTranslation } from "react-i18next";
 import { DialogProvider } from "@/common/components/Dialog";
 import { useToast } from "@/common/contexts/ToastContext.jsx";
@@ -6,13 +6,15 @@ import IconInput from "@/common/components/IconInput";
 import { mdiDomain, mdiFormTextbox } from "@mdi/js";
 import Button from "@/common/components/Button";
 import { putRequest } from "@/common/utils/RequestUtil.js";
-import "./styles.sass";
+import { ServerContext } from "@/common/contexts/ServerContext.jsx";
+import "./styles.sass"
 
 export const OrganizationDialog = ({ open, onClose, refreshOrganizations }) => {
     const { t } = useTranslation();
     const { sendToast } = useToast();
     const [name, setName] = useState("");
     const [description, setDescription] = useState("");
+    const { loadServers } = useContext(ServerContext);
 
     useEffect(() => {
         if (!open) {
@@ -36,6 +38,7 @@ export const OrganizationDialog = ({ open, onClose, refreshOrganizations }) => {
             });
             
             sendToast("Success", t('settings.organizations.dialog.messages.createSuccess'));
+            await loadServers();
             refreshOrganizations();
             onClose();
         } catch (error) {
