@@ -57,7 +57,7 @@ export const DialogProvider = ({ disableClosing, open, children, onClose, isDirt
                 btnAreaBtns[0].focus();
             } else {
                 const focusable = ref.current.querySelectorAll(
-                    'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+                    'input, select, textarea, button, [href], [tabindex]:not([tabindex="-1"])'
                 );
                 if (focusable.length) focusable[0].focus();
             }
@@ -77,7 +77,7 @@ export const DialogProvider = ({ disableClosing, open, children, onClose, isDirt
         if (!dialogNode) return;
 
         const focusable = dialogNode.querySelectorAll(
-            'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+            'input, select, textarea, button, [href], [tabindex]:not([tabindex="-1"])'
         );
         const focusableArray = Array.from(focusable).filter(el => !el.disabled && el.tabIndex !== -1);
 
