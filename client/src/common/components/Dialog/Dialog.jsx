@@ -56,10 +56,15 @@ export const DialogProvider = ({ disableClosing, open, children, onClose, isDirt
             if (btnAreaBtns.length > 0) {
                 btnAreaBtns[0].focus();
             } else {
-                const focusable = ref.current.querySelectorAll(
-                    'input, select, textarea, button, [href], [tabindex]:not([tabindex="-1"])'
-                );
-                if (focusable.length) focusable[0].focus();
+                // The order in the selector doesn’t change the DOM traversal result:
+                // querySelectorAll traverses the DOM tree and returns matches in document order.
+                const input = ref.current.querySelectorAll('input, select, textarea, [tabindex]:not([tabindex="-1"])');
+                if (input.length) {
+                    input[0].focus();
+                } else {
+                    const focusable = ref.current.querySelectorAll('button, [href]');
+                    if (focusable.length) focusable[0].focus();
+                }
             }
         }
     }, [isVisible, showConfirm]);
@@ -77,7 +82,7 @@ export const DialogProvider = ({ disableClosing, open, children, onClose, isDirt
         if (!dialogNode) return;
 
         const focusable = dialogNode.querySelectorAll(
-            'input, select, textarea, button, [href], [tabindex]:not([tabindex="-1"])'
+            'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
         );
         const focusableArray = Array.from(focusable).filter(el => !el.disabled && el.tabIndex !== -1);
 
