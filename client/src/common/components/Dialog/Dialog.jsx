@@ -77,7 +77,7 @@ export const DialogProvider = ({ disableClosing, open, children, onClose, isDirt
         if (focusableArray.length === 0) return;
 
         const first = focusableArray[0];
-        const last = focusableArray[focusableArray.length - 1];
+        const last = focusableArray.at(-1);
 
         const focused = document.activeElement;
         const isShift = e.shiftKey;
@@ -151,7 +151,7 @@ export const DialogProvider = ({ disableClosing, open, children, onClose, isDirt
     };
 
     const dialogContent = isVisible ? (
-        <div className={`dialog-area ${isClosing ? "dialog-area-hidden" : ""}`} ref={areaRef} onKeyDown={handleKeyDownTrap}>
+        <div className={`dialog-area ${isClosing ? "dialog-area-hidden" : ""}`} ref={areaRef} onKeyDown={handleKeyDownTrap} tabIndex={-1} role="dialog" aria-modal="true">
             <div className={`dialog ${isClosing ? "dialog-hidden" : ""}`} ref={ref}
                 onAnimationEnd={handleAnimationEnd}>
                 {!disableClosing && (
