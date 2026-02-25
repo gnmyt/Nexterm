@@ -299,7 +299,11 @@ export const ServerList = ({
     };
 
     const openDeleteFolderConfirm = () => {
-        const folderEntry = flattenEntries(Array.isArray(servers) ? servers : []).find(entry => entry.type === "folder" && entry.id === Number(contextClickedId));
+        console.log("servers", servers);
+        console.log("contextClickedId", contextClickedId);
+        const folderEntry = flattenEntries(Array.isArray(servers) ? servers : []).find(
+            entry => entry.type === "folder" && String(entry.id) === String(contextClickedId)
+        );
         setDeleteConfirmDialog({
             open: true,
             entryName: folderEntry?.name ?? "",
@@ -310,9 +314,19 @@ export const ServerList = ({
 
     const handleDeleteConfirm = () => {
         if (deleteConfirmDialog.entryType === "folder" && deleteConfirmDialog.entryId) {
-            deleteRequest("folders/" + deleteConfirmDialog.entryId).then(loadServers);
+            deleteRequest("folders/" + deleteConfirmDialog.entryId)
+            .then(loadServers)
+            .catch(() => sendToast(
+                "Error",
+                t("servers.contextMenu.deleteFailFolder", { name: deleteConfirmDialog.entryName })
+            ));
         } else if (deleteConfirmDialog.entryId) {
-            deleteRequest("entries/" + deleteConfirmDialog.entryId).then(loadServers);
+            deleteRequest("entries/" + deleteConfirmDialog.entryId)
+            .then(loadServers)
+            .catch(() => sendToast(
+                "Error",
+                t("servers.fileManager.contextMenu.deleteFailFile", { name: deleteConfirmDialog.entryName })
+            ));
         }
         setDeleteConfirmDialog({ open: false, entryName: null, entryId: null, entryType: null });
     };
