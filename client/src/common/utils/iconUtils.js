@@ -16,19 +16,18 @@ export const providerIconMap = {
 
 /**
  * Returns the icon (MDI path) for an authentication provider based on issuer URI or a known domain.
- * @param {object} provider - Provider object which should have 'issuerUri' or similar field.
+ * @param {object} provider - Provider object which should have 'issuer' field.
  */
 export function getProviderIcon(provider) {
-    console.log("Checking icon for issuerUri:", provider.issuerUri);
-    if (!provider?.issuerUri) return mdiIcons.mdiShieldAccount;
+    if (!provider?.issuer) return mdiIcons.mdiShieldAccount;
     try {
-        // Extract domain from issuerUri (e.g. https://login.microsoftonline.com/xxx)
-        const url = new URL(provider.issuerUri);
+        // Extract domain from issuer (e.g. https://login.microsoftonline.com/xxx)
+        const url = new URL(provider.issuer);
         const domain = url.hostname.toLowerCase();
         console.log("Mapping provider:", domain, "in map:", Object.keys(providerIconMap));
         return providerIconMap[domain] || mdiIcons.mdiShieldAccount;
     } catch (e) {
-        console.debug("Failed to parse issuerUri for icon:", provider?.issuerUri, e);
+        console.debug("Failed to parse issuer for icon:", provider?.issuer, e);
         return mdiIcons.mdiShieldAccount;
     }
 }
