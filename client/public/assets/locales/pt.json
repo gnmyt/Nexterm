@@ -637,7 +637,7 @@
       "delete": "Excluir",
       "leave": "Sair",
       "members": "Membros",
-      "auditSettings": "Auditar Configurações",
+      "auditSettings": "Configurações de Auditoria",
       "pendingInvitations": "Convites Pendentes",
       "invitedBy": "Convidado por: {{name}}",
       "deleteConfirmation": "Isso excluirá permanentemente a organização e removerá todos os membros. Essa ação não pode ser desfeita.",
