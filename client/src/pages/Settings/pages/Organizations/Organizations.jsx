@@ -17,8 +17,8 @@ import "./styles.sass";
 export const Organizations = () => {
     const { t } = useTranslation();
     const { sendToast } = useToast();
-
     const { loadServers } = useContext(ServerContext);
+
     const [organizations, setOrganizations] = useState([]);
     const [pendingInvitations, setPendingInvitations] = useState([]);
     const [createDialogOpen, setCreateDialogOpen] = useState(false);
