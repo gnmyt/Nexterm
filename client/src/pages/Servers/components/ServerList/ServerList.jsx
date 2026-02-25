@@ -299,9 +299,7 @@ export const ServerList = ({
     };
 
     const openDeleteFolderConfirm = () => {
-        console.log("servers", servers);
-        console.log("contextClickedId", contextClickedId);
-        const folderEntry = flattenEntries(Array.isArray(servers) ? servers : []).find(
+        const folderEntry = (Array.isArray(servers) ? servers : []).find(
             entry => entry.type === "folder" && String(entry.id) === String(contextClickedId)
         );
         setDeleteConfirmDialog({
