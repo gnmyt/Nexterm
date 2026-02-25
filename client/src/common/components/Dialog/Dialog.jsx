@@ -48,6 +48,8 @@ export const DialogProvider = ({ disableClosing, open, children, onClose, isDirt
 
         if (showConfirm && cancelBtnRef.current) {
             cancelBtnRef.current.focus();
+            // Add a custom class to force the focus ring
+            cancelBtnRef.current.classList.add("focus-outline");
         } else if (ref.current) {
             // Focus first focusable element in the dialog
             const focusable = ref.current.querySelectorAll(
