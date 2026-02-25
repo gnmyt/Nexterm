@@ -237,7 +237,7 @@ export const LoginDialog = ({ open }) => {
                                     key={provider.id}
                                     type="secondary"
                                     icon={getProviderIcon(provider)}
-                                    text={getProviderLabel(provider)}
+                                    text={provider.name}
                                     onClick={(e) => handleOIDCLogin(e, provider.id)}
                                     buttonType="button"
                                 />
