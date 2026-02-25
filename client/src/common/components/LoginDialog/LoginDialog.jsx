@@ -11,7 +11,6 @@ import { useToast } from "@/common/contexts/ToastContext.jsx";
 import { useTranslation } from "react-i18next";
 import { startAuthentication } from "@simplewebauthn/browser";
 import { getProviderIcon } from "@/common/utils/iconUtils";
-import Icon from "@mdi/react";
 
 export const LoginDialog = ({ open }) => {
     const { t } = useTranslation();

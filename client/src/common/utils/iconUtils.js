@@ -26,6 +26,7 @@ export function getProviderIcon(provider) {
     const domain = url.hostname.toLowerCase();
     return providerIconMap[domain] || mdiIcons.mdiShieldAccount;
   } catch (e) {
+    console.debug("Failed to parse issuerUri for icon:", provider?.issuerUri, e);
     return mdiIcons.mdiShieldAccount;
   }
 }
