@@ -10,6 +10,8 @@ import { UserContext } from "@/common/contexts/UserContext.jsx";
 import { useToast } from "@/common/contexts/ToastContext.jsx";
 import { useTranslation } from "react-i18next";
 import { startAuthentication } from "@simplewebauthn/browser";
+import { getProviderIcon, getProviderLabel } from "@/common/utils/iconUtils";
+import Icon from "@mdi/react";
 
 export const LoginDialog = ({ open }) => {
     const { t } = useTranslation();
@@ -231,12 +233,14 @@ export const LoginDialog = ({ open }) => {
                                     buttonType="button"
                                 />
                                 {providers.map(provider => (
-                                    <Button
-                                        key={provider.id}
-                                        type="secondary"
-                                        text={provider.name}
-                                        onClick={(e) => handleOIDCLogin(e, provider.id)}
-                                    />
+                                <Button
+                                    key={provider.id}
+                                    type="secondary"
+                                    icon={getProviderIcon(provider)}
+                                    text={getProviderLabel(provider)}
+                                    onClick={(e) => handleOIDCLogin(e, provider.id)}
+                                    buttonType="button"
+                                />
                                 ))}
                             </div>
                         </div>
