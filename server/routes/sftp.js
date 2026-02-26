@@ -11,6 +11,7 @@ const sharp = require("sharp");
 
 const app = Router();
 const THUMB_EXTS = new Set(["jpg", "jpeg", "png", "gif", "webp", "bmp"]);
+const MAX_THUMB_SIZE = 10 * 1024 * 1024;
 const MIME_TYPES = {
     pdf: "application/pdf", jpg: "image/jpeg", jpeg: "image/jpeg", png: "image/png",
     gif: "image/gif", webp: "image/webp", svg: "image/svg+xml", mp4: "video/mp4",
@@ -19,6 +20,8 @@ const MIME_TYPES = {
 };
 
 const getExt = (p) => p.split(".").pop()?.toLowerCase();
+const getFileName = (p) => p.split("/").pop();
+const sanitizeFileName = (name) => name.replaceAll(/[^\w\s.-]/g, "_").substring(0, 255);
 
 const handleError = (res, err) => {
     if (res.headersSent) return;
@@ -28,14 +31,14 @@ const handleError = (res, err) => {
     res.status(500).json({ error: msg });
 };
 
-const audit = (v, req, action, resource, details) => {
+const audit = (ctx, req, action, resource, details) => {
     createAuditLog({
-        accountId: v.user.id, organizationId: v.entry.organizationId,
+        accountId: ctx.user.id, organizationId: ctx.entry.organizationId,
         action, resource, details, ipAddress: req.ip, userAgent: req.headers["user-agent"],
     });
 };
 
-async function archiveFolder(sftpClient, archive, dirPath, basePath) {
+const archiveFolder = async (sftpClient, archive, dirPath, basePath) => {
     const entries = await sftpClient.listDir(dirPath);
     if (entries.length === 0) {
         archive.append("", { name: basePath + "/" });
@@ -52,6 +55,25 @@ async function archiveFolder(sftpClient, archive, dirPath, basePath) {
             await totalSizePromise;
             archive.append(stream, { name: archivePath });
             await done;
+        }
+    }
+}
+
+const archiveItems = async (sftpClient, archive, paths) => {
+    for (const remotePath of paths) {
+        try {
+            const stats = await sftpClient.stat(remotePath);
+            const name = getFileName(remotePath);
+            if (stats.isDir) {
+                await archiveFolder(sftpClient, archive, remotePath, name);
+            } else {
+                const { stream, totalSizePromise, done } = sftpClient.readFile(remotePath);
+                await totalSizePromise;
+                archive.append(stream, { name });
+                await done;
+            }
+        } catch (err) {
+            logger.warn("Failed to add file to archive", { path: remotePath, error: err.message });
         }
     }
 }
@@ -78,6 +100,13 @@ const validateSession = async (sessionToken, sessionId) => {
     return { session, user, serverSession, entry, sftpClient: conn.sftpClient };
 };
 
+const validateRequest = (query) => {
+    const { sessionToken, sessionId, path: remotePath } = query;
+    if (!sessionToken || !sessionId || !remotePath) return "Missing parameters";
+    if (remotePath.includes("..")) return "Invalid path";
+    return null;
+};
+
 /**
  * POST /sftp/upload
  * @summary Upload File via SFTP
@@ -95,19 +124,20 @@ const validateSession = async (sessionToken, sessionId) => {
  * @return {object} 500 - Upload error
  */
 app.post("/upload", async (req, res) => {
+    const error = validateRequest(req.query);
+    if (error) return res.status(400).json({ error });
+
     const { sessionToken, sessionId, path: remotePath } = req.query;
-    if (!sessionToken || !sessionId || !remotePath) return res.status(400).json({ error: "Missing parameters" });
-    if (remotePath.includes("..")) return res.status(400).json({ error: "Invalid path" });
 
     try {
-        const v = await validateSession(sessionToken, sessionId);
-        if (v.error) return res.status(v.status).json({ error: v.error });
+        const ctx = await validateSession(sessionToken, sessionId);
+        if (ctx.error) return res.status(ctx.status).json({ error: ctx.error });
 
-        await v.sftpClient.writeFile(remotePath, req);
+        await ctx.sftpClient.writeFile(remotePath, req);
 
         const totalSize = Number.parseInt(req.headers["content-length"]) || 0;
         res.json({ success: true, path: remotePath, size: totalSize });
-        audit(v, req, AUDIT_ACTIONS.FILE_UPLOAD, RESOURCE_TYPES.FILE, { filePath: remotePath, fileSize: totalSize });
+        audit(ctx, req, AUDIT_ACTIONS.FILE_UPLOAD, RESOURCE_TYPES.FILE, { filePath: remotePath, fileSize: totalSize });
     } catch (err) {
         logger.error("Upload error", { error: err.message, path: remotePath });
         handleError(res, err);
@@ -136,52 +166,50 @@ app.post("/upload", async (req, res) => {
  * @return {object} 500 - Download error
  */
 app.get("/", async (req, res) => {
-    const { sessionToken, sessionId, path: remotePath, preview, thumbnail, size } = req.query;
-    if (!sessionToken || !sessionId || !remotePath) return res.status(400).json({ error: "Missing parameters" });
-    if (remotePath.includes("..")) return res.status(400).json({ error: "Invalid path" });
+    const error = validateRequest(req.query);
+    if (error) return res.status(400).json({ error });
 
-    const thumbSize = Math.min(Math.max(Number.parseInt(size) || 100, 50), 300);
+    const { sessionToken, sessionId, path: remotePath, preview, thumbnail, size } = req.query;
 
     try {
-        const v = await validateSession(sessionToken, sessionId);
-        if (v.error) return res.status(v.status).json({ error: v.error });
+        const ctx = await validateSession(sessionToken, sessionId);
+        if (ctx.error) return res.status(ctx.status).json({ error: ctx.error });
 
-        const sftpClient = v.sftpClient;
+        const { sftpClient } = ctx;
         const stats = await sftpClient.stat(remotePath);
-        const fileName = remotePath.split("/").pop();
-        const safeFileName = fileName.replaceAll(/[^\w\s.-]/g, "_").substring(0, 255);
+        const fileName = getFileName(remotePath);
+        const safeFileName = sanitizeFileName(fileName);
 
         if (stats.isDir) {
             res.header("Content-Disposition", `attachment; filename="${safeFileName}.zip"`);
             res.header("Content-Type", "application/zip");
             const archive = archiver("zip", { zlib: { level: 1 } });
-            archive.on("error", () => { archive.abort(); });
+            archive.on("error", () => archive.abort());
             archive.pipe(res);
-
             await archiveFolder(sftpClient, archive, remotePath, safeFileName);
             archive.finalize();
-            audit(v, req, AUDIT_ACTIONS.FOLDER_DOWNLOAD, RESOURCE_TYPES.FOLDER, { folderPath: remotePath });
+            audit(ctx, req, AUDIT_ACTIONS.FOLDER_DOWNLOAD, RESOURCE_TYPES.FOLDER, { folderPath: remotePath });
             return;
         }
 
-        if (thumbnail === "true" && THUMB_EXTS.has(getExt(remotePath)) && stats.size <= 10 * 1024 * 1024) {
+        if (thumbnail === "true" && THUMB_EXTS.has(getExt(remotePath)) && stats.size <= MAX_THUMB_SIZE) {
+            const thumbSize = Math.min(Math.max(Number.parseInt(size) || 100, 50), 300);
             res.header("Content-Type", "image/jpeg");
             res.header("Cache-Control", "public, max-age=3600");
             const { stream } = sftpClient.readFile(remotePath);
-            const tf = sharp().resize(thumbSize, thumbSize, { fit: "cover" }).jpeg({ quality: 80 });
-            stream.pipe(tf).pipe(res);
+            stream.pipe(sharp().resize(thumbSize, thumbSize, { fit: "cover" }).jpeg({ quality: 80 })).pipe(res);
             return;
         }
 
-        res.header("Content-Disposition", `${preview === "true" ? "inline" : "attachment"}; filename="${safeFileName}"; filename*=UTF-8''${encodeURIComponent(fileName)}`);
+        const disposition = preview === "true" ? "inline" : "attachment";
+        res.header("Content-Disposition", `${disposition}; filename="${safeFileName}"; filename*=UTF-8''${encodeURIComponent(fileName)}`);
         res.header("Content-Length", stats.size);
         const ext = getExt(remotePath);
         if (MIME_TYPES[ext]) res.header("Content-Type", MIME_TYPES[ext]);
 
         const { stream } = sftpClient.readFile(remotePath);
         stream.pipe(res);
-
-        audit(v, req, AUDIT_ACTIONS.FILE_DOWNLOAD, RESOURCE_TYPES.FILE, { filePath: remotePath, fileSize: stats.size });
+        audit(ctx, req, AUDIT_ACTIONS.FILE_DOWNLOAD, RESOURCE_TYPES.FILE, { filePath: remotePath, fileSize: stats.size });
     } catch (err) {
         handleError(res, err);
     }
@@ -206,7 +234,7 @@ app.get("/", async (req, res) => {
  */
 app.post("/multi", express.urlencoded({ extended: true }), async (req, res) => {
     const { sessionToken, sessionId } = req.query;
-    let paths = req.body.paths;
+    let { paths } = req.body;
 
     if (typeof paths === "string") {
         try { paths = JSON.parse(paths); }
@@ -214,48 +242,28 @@ app.post("/multi", express.urlencoded({ extended: true }), async (req, res) => {
     }
 
     if (!sessionToken || !sessionId) return res.status(400).json({ error: "Missing session parameters" });
-    if (!paths || !Array.isArray(paths) || paths.length === 0) return res.status(400).json({ error: "No paths provided" });
-    if (paths.some(p => p.includes(".."))) return res.status(400).json({ error: "Invalid path" });
+    if (!Array.isArray(paths) || paths.length === 0) return res.status(400).json({ error: "No paths provided" });
+    if (paths.some((p) => p.includes(".."))) return res.status(400).json({ error: "Invalid path" });
 
     try {
-        const validation = await validateSession(sessionToken, sessionId);
-        if (validation.error) return res.status(validation.status).json({ error: validation.error });
+        const ctx = await validateSession(sessionToken, sessionId);
+        if (ctx.error) return res.status(ctx.status).json({ error: ctx.error });
 
-        const sftpClient = validation.sftpClient;
         const timestamp = new Date().toISOString().replaceAll(/[:.]/g, "-").slice(0, 19);
         res.header("Content-Disposition", `attachment; filename="nexterm-download-${timestamp}.zip"`);
         res.header("Content-Type", "application/zip");
 
         const archive = archiver("zip", { zlib: { level: 5 } });
-        archive.on("error", () => { archive.abort(); });
+        archive.on("error", () => archive.abort());
         archive.pipe(res);
 
-        const addFileOrFolder = async (remotePath, archiveName) => {
-            const stats = await sftpClient.stat(remotePath);
-            if (stats.isDir) {
-                await archiveFolder(sftpClient, archive, remotePath, archiveName);
-            } else {
-                const { stream, totalSizePromise, done } = sftpClient.readFile(remotePath);
-                await totalSizePromise;
-                archive.append(stream, { name: archiveName });
-                await done;
-            }
-        };
-
-        for (const remotePath of paths) {
-            try {
-                await addFileOrFolder(remotePath, remotePath.split("/").pop());
-            } catch (err) {
-                logger.warn("Failed to add file to archive", { path: remotePath, error: err.message });
-            }
-        }
-
+        await archiveItems(ctx.sftpClient, archive, paths);
         archive.finalize();
 
-        audit(validation, req, AUDIT_ACTIONS.FILE_DOWNLOAD, RESOURCE_TYPES.FILE, {
+        audit(ctx, req, AUDIT_ACTIONS.FILE_DOWNLOAD, RESOURCE_TYPES.FILE, {
             paths,
             count: paths.length,
-            connectionReason: validation.serverSession.connectionReason || null
+            connectionReason: ctx.serverSession.connectionReason || null,
         });
     } catch (err) {
         handleError(res, err);
