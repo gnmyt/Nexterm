@@ -168,6 +168,18 @@ export const ServerList = ({
         return null;
     };
 
+    const findEntryById = (entries, id) => {
+        for (const entry of entries) {
+            if (entry.id === id) return entry;
+            // If this entry is a folder or organization with nested entries
+            if (entry.entries) {
+                const found = findEntryById(entry.entries, id);
+                if (found) return found;
+            }
+        }
+        return null;
+    };
+
     const getServerOrganizationId = (serverId) => {
         if (!servers || !serverId) return null;
         const org = findOrganizationForServer(parseInt(serverId), servers);
@@ -289,24 +301,13 @@ export const ServerList = ({
         });
     };
 
-    const openDeleteServerConfirm = () => {
+    const openDeleteEntryConfirm = () => {
+        const entry = findEntryById(servers, contextClickedId);
         setDeleteConfirmDialog({
             open: true,
-            entryName: server?.name ?? "",
-            entryId: server?.id,
-            entryType: "server"
-        });
-    };
-
-    const openDeleteFolderConfirm = () => {
-        const folderEntry = (Array.isArray(servers) ? servers : []).find(
-            entry => entry.type === "folder" && String(entry.id) === String(contextClickedId)
-        );
-        setDeleteConfirmDialog({
-            open: true,
-            entryName: folderEntry?.name ?? "",
-            entryId: folderEntry?.id,
-            entryType: "folder"
+            entryName: entry?.name ?? "",
+            entryId: entry?.id,
+            entryType: entry?.type ?? ""
         });
     };
 
@@ -604,7 +605,7 @@ export const ServerList = ({
                                 <ContextMenuItem
                                     icon={mdiFolderRemove}
                                     label={t("servers.contextMenu.deleteFolder")}
-                                    onClick={openDeleteFolderConfirm}
+                                    onClick={openDeleteEntryConfirm}
                                     danger
                                 />
                             </>
@@ -761,7 +762,7 @@ export const ServerList = ({
                                 <ContextMenuItem
                                     icon={mdiServerMinus}
                                     label={t("servers.contextMenu.deleteServer")}
-                                    onClick={openDeleteServerConfirm}
+                                    onClick={openDeleteEntryConfirm}
                                     danger
                                 />
                             </>
