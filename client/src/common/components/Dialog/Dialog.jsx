@@ -12,6 +12,7 @@ export const DialogProvider = ({ disableClosing, open, children, onClose, isDirt
     const areaRef = useRef();
     const ref = useRef();
     const confirmRef = useRef();
+    const cancelBtnRef = useRef();
 
     const [isVisible, setIsVisible] = useState(false);
     const [isClosing, setIsClosing] = useState(false);
@@ -40,6 +41,68 @@ export const DialogProvider = ({ disableClosing, open, children, onClose, isDirt
     const handleCancelClose = useCallback(() => {
         setShowConfirm(false);
     }, []);
+
+    // ----------- Focus Trap & Cancel auto-focus ----------- //
+    useEffect(() => {
+        if (!isVisible) return;
+
+        if (showConfirm && cancelBtnRef.current) {
+            cancelBtnRef.current.focus();
+            // Add a custom class to force the focus ring
+            cancelBtnRef.current.classList.add("focus-outline");
+        } else if (ref.current) {
+            // Focus first focusable element in the dialog
+            let btnAreaBtns = ref.current.querySelectorAll('.btn-area button');
+            if (btnAreaBtns.length > 0) {
+                btnAreaBtns[0].focus();
+            } else {
+                // The order in the selector doesn’t change the DOM traversal result:
+                // querySelectorAll traverses the DOM tree and returns matches in document order.
+                const input = ref.current.querySelectorAll('input, select, textarea, [tabindex]:not([tabindex="-1"])');
+                if (input.length) {
+                    input[0].focus();
+                } else {
+                    const focusable = ref.current.querySelectorAll('button, [href]');
+                    if (focusable.length) focusable[0].focus();
+                }
+            }
+        }
+    }, [isVisible, showConfirm]);
+
+    const handleKeyDownTrap = (e) => {
+        if (!isVisible) return;
+        if (e.key !== "Tab") return;
+
+        let dialogNode;
+        if (showConfirm && confirmRef.current) {
+            dialogNode = confirmRef.current;
+        } else {
+            dialogNode = ref.current;
+        }
+        if (!dialogNode) return;
+
+        const focusable = dialogNode.querySelectorAll(
+            'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+        );
+        const focusableArray = Array.from(focusable).filter(el => !el.disabled && el.tabIndex !== -1);
+
+        if (focusableArray.length === 0) return;
+
+        const first = focusableArray[0];
+        const last = focusableArray.at(-1);
+
+        const focused = document.activeElement;
+        const isShift = e.shiftKey;
+
+        if (!isShift && focused === last) {
+            e.preventDefault();
+            first.focus();
+        } else if (isShift && focused === first) {
+            e.preventDefault();
+            last.focus();
+        }
+    };
+    // ----------------------------------------------------- //
 
     useEffect(() => {
         const handleClick = (event) => {
@@ -100,7 +163,7 @@ export const DialogProvider = ({ disableClosing, open, children, onClose, isDirt
     };
 
     const dialogContent = isVisible ? (
-        <div className={`dialog-area ${isClosing ? "dialog-area-hidden" : ""}`} ref={areaRef}>
+        <dialog className={`dialog-area ${isClosing ? "dialog-area-hidden" : ""}`} ref={areaRef} onKeyDown={handleKeyDownTrap} open={isVisible}>
             <div className={`dialog ${isClosing ? "dialog-hidden" : ""}`} ref={ref}
                 onAnimationEnd={handleAnimationEnd}>
                 {!disableClosing && (
@@ -116,7 +179,7 @@ export const DialogProvider = ({ disableClosing, open, children, onClose, isDirt
                         <h3>{t('common.confirmDialog.unsavedChangesTitle')}</h3>
                         <p>{t('common.confirmDialog.unsavedChangesText')}</p>
                         <div className="dialog-confirm-actions">
-                            <button className="dialog-confirm-btn secondary" onClick={handleCancelClose}>
+                            <button className="dialog-confirm-btn secondary" onClick={handleCancelClose} ref={cancelBtnRef}>
                                 {t('common.actions.cancel')}
                             </button>
                             <button className="dialog-confirm-btn primary" onClick={handleConfirmClose}>
@@ -126,7 +189,7 @@ export const DialogProvider = ({ disableClosing, open, children, onClose, isDirt
                     </div>
                 </div>
             )}
-        </div>
+        </dialog>
     ) : null;
 
     return (
