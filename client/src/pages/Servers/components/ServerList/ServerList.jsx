@@ -75,9 +75,7 @@ const filterEntries = (entries, searchTerm, selectedTags = []) => {
 };
 
 const findEntryById = (entries, id) => {
-    console.log("entries:", entries, "id:", id);
     for (const entry of entries) {
-        console.log("entry.id:", entry.id, "targetId:", id);
         if (Number(entry.id) === Number(id)) return entry;
         // If this entry is a folder or organization with nested entries
         if (entry.entries) {
@@ -304,8 +302,6 @@ export const ServerList = ({
     };
 
     const openDeleteEntryConfirm = () => {
-        console.log('servers', servers);
-        console.log('contextClickedId', contextClickedId);
         const entry = findEntryById(servers, contextClickedId);
         setDeleteConfirmDialog({
             open: true,
