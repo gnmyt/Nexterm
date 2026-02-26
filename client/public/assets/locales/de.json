@@ -3,23 +3,23 @@
     "error": "Fehler",
     "success": "Erfolg",
     "loading": "Laden...",
-    "saving": "Sparen...",
+    "saving": "Speichern...",
     "close": "Schließen",
     "cancel": "Abbrechen",
     "save": "Speichern",
     "download": "Herunterladen",
-    "maximize": "Maximiere",
+    "maximize": "Maximieren",
     "restore": "Wiederherstellen",
     "actions": {
       "cancel": "Abbrechen",
       "confirm": "Bestätigen",
-      "discard": "Ablegen",
+      "discard": "Verwerfen",
       "login": "Einloggen",
       "register": "Registrieren",
       "save": "Speichern",
       "download": "Herunterladen",
       "close": "Schließen",
-      "maximize": "Maximiere",
+      "maximize": "Maximieren",
       "restore": "Wiederherstellen",
       "back": "Zurück"
     },
@@ -56,14 +56,14 @@
       "ssoOrContinueWith": "oder weiter mit",
       "noAuthMethodsAvailable": "Keine Authentifizierungsmethoden verfügbar.",
       "signInWithPasskey": "Anmeldung mit Passkey",
-      "authenticating": "Die Authentifizierung..."
+      "authenticating": "Authentifiziere..."
     },
     "deviceLink": {
-      "title": "Link Gerät",
+      "title": "Gerät verbinden",
       "description": "Gib den auf deinem Gerät angezeigten Code ein, um es für den Zugriff auf dein Konto zu autorisieren.",
       "codeLabel": "Gerätecode",
       "continue": "Weiter",
-      "verifying": "Überprüfen...",
+      "verifying": "Überprüfe...",
       "confirmTitle": "Gerät autorisieren",
       "confirmDescription": "Ein Gerät fordert den Zugriff auf dein Konto an. Bitte überprüfe die unten stehenden Angaben.",
       "deviceInfo": "Geräteinformationen",
@@ -71,7 +71,7 @@
       "ipAddress": "IP-Adresse",
       "userAgent": "Gerät",
       "authorize": "Gerät autorisieren",
-      "authorizing": "Die Ermächtigung...",
+      "authorizing": "Autorisieren...",
       "deny": "Verweigern",
       "invalidCode": "Ungültiger oder abgelaufener Code",
       "authorizationFailed": "Autorisierung fehlgeschlagen",
@@ -101,7 +101,7 @@
       "copyCode": "Code kopieren",
       "codeCopied": "Code in die Zwischenablage kopiert",
       "copyFailed": "Code kann nicht kopiert werden",
-      "waitingForAuth": "Ich warte auf die Genehmigung...",
+      "waitingForAuth": "Warte auf Authorisierung...",
       "codeCreationFailed": "Fehler bei der Erstellung des Gerätecodes",
       "authSuccess": "Erfolgreich authentifiziert!"
     },
@@ -116,7 +116,7 @@
     "table": {
       "noData": {
         "title": "Keine Daten gefunden",
-        "subtitle": "Es gibt keine Gegenstände zum Anzeigen."
+        "subtitle": "Es gibt keine Elemente zum Anzeigen."
       },
       "pagination": {
         "showing": "Zeigt {{start}} bis {{end}} von {{total}}",
@@ -148,7 +148,7 @@
       "close": "Schließen",
       "types": {
         "server": "Server",
-        "snippet": "Schnipsel",
+        "snippet": "Snippet",
         "navigation": "Gehe zu",
         "settings": "Einstellungen"
       }
@@ -243,7 +243,7 @@
       "personal": "Persönlich",
       "selectOrganization": "Organisation auswählen",
       "tabs": {
-        "snippets": "Schnipsel",
+        "snippets": "Snippets",
         "scripts": "Skripte"
       }
     },
@@ -302,7 +302,7 @@
       "personal": "Persönlich",
       "selectOrganization": "Organisation auswählen",
       "tabs": {
-        "snippets": "Schnipsel",
+        "snippets": "Snippets",
         "scripts": "Skripte"
       }
     },
@@ -311,13 +311,13 @@
         "title": "Skript-Ausführung",
         "noSteps": "Noch keine Schritte",
         "noStepsDescription": "Die Schritte werden hier angezeigt, wenn das Skript ausgeführt wird",
-        "steps": "Steps"
+        "steps": "Schritte"
       },
       "dialogs": {
         "enterValue": "Wert eingeben",
         "selectOption": "Wähle eine Option",
         "confirm": "Bestätige",
-        "submit": "einreichen",
+        "submit": "Bestätigen",
         "cancel": "Abbrechen",
         "ok": "OK",
         "yes": "Ja",
@@ -328,10 +328,10 @@
         "close": "Schließen"
       },
       "status": {
-        "running": "Laufen",
+        "running": "Wird ausgeführt",
         "completed": "Abgeschlossen",
         "error": "Fehler",
-        "pending": "Anhängig"
+        "pending": "Ausstehend"
       }
     },
     "list": {
@@ -415,7 +415,7 @@
         "loadAverage": "Durchschnittliche Last",
         "processes": "Prozesse",
         "uptime": "Betriebszeit",
-        "nodes": "Knotenpunkte",
+        "nodes": "Nodes",
         "vms": "VMs/Container"
       },
       "status": {
@@ -449,7 +449,7 @@
         "storage": "Speicher",
         "network": "Netzwerk",
         "processes": "Prozesse",
-        "nodes": "Knotenpunkte"
+        "nodes": "Nodes"
       },
       "overview": {
         "systemInfo": {
@@ -493,7 +493,7 @@
         "total": "Insgesamt: {{value}}",
         "type": "Typ: {{value}}",
         "noData": "Keine Daten zur Speichernutzung verfügbar",
-        "noPartitions": "Keine montierten Trennwände"
+        "noPartitions": "Keine gemounteten Partitionen"
       },
       "network": {
         "title": "Netzwerk-Schnittstellen",
@@ -515,10 +515,10 @@
         "resources": "Ressourcennutzung",
         "virtualMachines": "Virtuelle Maschinen",
         "totalNodes": "Total Knoten",
-        "onlineNodes": "Online-Knotenpunkte",
-        "totalCPU": "Gesamt CPU",
-        "totalMemory": "Gesamtspeicher",
-        "totalStorage": "Gesamt Speicher",
+        "onlineNodes": "Online Nodes",
+        "totalCPU": "Gesamte CPU",
+        "totalMemory": "Gesamter Arbeitsspeicher",
+        "totalStorage": "Gesamter Speicher",
         "storageUsage": "Nutzung des Speichers",
         "cores": "Kerne",
         "uptime": "Betriebszeit",
@@ -528,9 +528,9 @@
         "vmContainerCount": "VM/Container Anzahl",
         "cpu": "CPU",
         "memory": "Speicher",
-        "storage": "Lagerung",
-        "nodeOffline": "Dieser Knoten ist derzeit offline",
-        "noNodes": "Keine Knotenpunkte verfügbar"
+        "storage": "Speicher",
+        "nodeOffline": "Diese Node ist derzeit offline",
+        "noNodes": "Keine Nodes verfügbar"
       }
     }
   },
@@ -542,7 +542,7 @@
       "account": "Konto",
       "terminal": "Terminal",
       "fileManager": "Dateimanager",
-      "keymaps": "Keymaps",
+      "keymaps": "Tastenkürzel",
       "identities": "Identitäten",
       "sessions": "Sitzungen",
       "organizations": "Organisationen",
@@ -551,7 +551,7 @@
       "sources": "Quellen",
       "ai": "AI",
       "monitoring": "Überwachung",
-      "backup": "Lagerung"
+      "backup": "Speicher"
     },
     "account": {
       "title": "Account",
@@ -559,14 +559,14 @@
       "firstName": "Vorname",
       "lastName": "Nachname",
       "appearance": "Erscheinungsbild",
-      "appearanceDescription": "Wähle dein bevorzugtes Thema. Folgt automatisch deinen Systemeinstellungen und passt sich je nach Tageszeit an.",
+      "appearanceDescription": "Wähle dein bevorzugtes Theme. Folgt automatisch deinen Systemeinstellungen und passt sich je nach Tageszeit an.",
       "themeAuto": "Auto",
-      "themeLight": "Licht",
+      "themeLight": "Hell",
       "themeDark": "Dunkel",
       "themeOled": "OLED",
       "oledEnabled": "OLED-Modus aktiviert",
       "oledDisabled": "OLED-Modus deaktiviert",
-      "themeLabel": "Thema",
+      "themeLabel": "Theme",
       "accentColor": "Akzentfarbe",
       "twoFactor": "Zwei-Faktor-Authentifizierung",
       "twoFactorActive": "Aktiv",
@@ -605,17 +605,17 @@
         }
       },
       "passkeys": {
-        "sectionTitle": "Passwörter",
+        "sectionTitle": "Passkeys",
         "sectionDescription": "Verwende Passkeys für eine schnellere und sicherere Anmeldung ohne Passwörter.",
         "addButton": "Passkey hinzufügen",
         "addDialogTitle": "Passkey hinzufügen",
-        "addDialogDescription": "Gib deinem Hauptschlüssel einen Namen, damit du ihn später leichter identifizieren kannst.",
-        "namePlaceholder": "Name des Hauptschlüssels",
-        "enterName": "Gib einen Namen für diesen Hauptschlüssel ein:",
-        "defaultName": "Mein Hauptschlüssel",
-        "confirmDelete": "Bist du sicher, dass du diesen Hauptschlüssel löschen willst?",
+        "addDialogDescription": "Gib deinem Passkey einen Namen, damit du ihn später leichter identifizieren kannst.",
+        "namePlaceholder": "Name des Passkeys",
+        "enterName": "Gib einen Namen für diesen Passkey ein:",
+        "defaultName": "Mein Passkey",
+        "confirmDelete": "Bist du sicher, dass du diesen Passkey löschen willst?",
         "createdAt": "Erstellt {{date}}",
-        "registerError": "Der Hauptschlüssel konnte nicht registriert werden. Bitte versuche es erneut.",
+        "registerError": "Der Passkey konnte nicht registriert werden. Bitte versuche es erneut.",
         "noPasskeys": "Noch keine Passkeys registriert",
         "rename": "umbenennen",
         "delete": "löschen"
@@ -713,8 +713,8 @@
       "browserOn": "{{browser}} {{version}} auf {{os}} {{osVersion}}"
     },
     "keymaps": {
-      "title": "Keymaps",
-      "description": "Passe die Tastaturkürzel an deinen Arbeitsablauf an.",
+      "title": "Tastenkürzel",
+      "description": "Passe die Tastenkürzel an deinen Arbeitsablauf an.",
       "resetAll": "Alle zurücksetzen",
       "actions": {
         "search": {
@@ -722,7 +722,7 @@
           "description": "Öffne die Sucheingabe"
         },
         "quickaction": {
-          "title": "Schnelle Aktion",
+          "title": "Schnellaktion",
           "description": "Öffne das Schnellaktionsmenü"
         },
         "aimenu": {
@@ -730,16 +730,16 @@
           "description": "Öffne das AI-Befehlsmenü"
         },
         "snippets": {
-          "title": "Schnipsel",
-          "description": "Öffne den Schnipsel-Dialog"
+          "title": "Snippets",
+          "description": "Öffne den Snippet-Dialog"
         },
         "keyboardshortcuts": {
-          "title": "Tastaturkürzel",
-          "description": "Öffne das Menü der Tastaturkürzel"
+          "title": "Tastenkürzel",
+          "description": "Öffne das Menü der Tastenkürzel"
         },
         "broadcast": {
           "title": "Broadcast-Modus",
-          "description": "Umschalten des Sendemodus bei Verwendung der geteilten Ansicht"
+          "description": "Umschalten des Broadcast-Modus bei Verwendung der geteilten Ansicht"
         },
         "copy": {
           "title": "Kopiere",
@@ -757,12 +757,12 @@
         "reset": "Zurücksetzen"
       },
       "messages": {
-        "updateSuccess": "Keybind erfolgreich aktualisiert",
-        "updateFailed": "Aktualisierung der Schlüsselbindung fehlgeschlagen",
-        "resetSuccess": "Keybind auf Standard zurücksetzen",
-        "resetFailed": "Keybind zurücksetzen fehlgeschlagen",
-        "resetAllSuccess": "Alle Tastenkombinationen werden auf die Standardwerte zurückgesetzt",
-        "resetAllFailed": "Zurücksetzen der Tastaturbelegung fehlgeschlagen"
+        "updateSuccess": "Tastenkürzel erfolgreich aktualisiert",
+        "updateFailed": "Aktualisierung der Tastenkürzel fehlgeschlagen",
+        "resetSuccess": "Tastenkürzel auf Standard zurücksetzen",
+        "resetFailed": "Tastenkürzel zurücksetzen fehlgeschlagen",
+        "resetAllSuccess": "Alle Tastenkürzel werden auf die Standardwerte zurückgesetzt",
+        "resetAllFailed": "Zurücksetzen der Tastenkürzel fehlgeschlagen"
       }
     },
     "terminal": {
@@ -789,8 +789,8 @@
       "theme": {
         "title": "Theme",
         "description": "Wähle ein Theme für dein Terminal.",
-        "syncEnabled": "Die Themeneinstellungen werden jetzt mit deinem Konto synchronisiert",
-        "syncDisabled": "Die Themeneinstellungen werden nicht mehr synchronisiert"
+        "syncEnabled": "Die Theme-Einstellungen werden jetzt mit Ihrem Konto synchronisiert",
+        "syncDisabled": "Die Theme-Einstellungen werden nicht mehr synchronisiert"
       },
       "preview": {
         "text": "$ echo 'Hi, Nexterm!'\nHi, Nexterm!\n$ "
@@ -828,10 +828,10 @@
       },
       "deleteConfirmation": {
         "title": "Bestätigung löschen",
-        "description": "Verlange eine Bestätigung, bevor du Dateien und Ordner löschst.",
+        "description": "Bestätigung vor dem Löschen von Dateien und Ordnern erforderlich.",
         "enabled": "Bestätige Löschungen",
         "enabledDescription": "Einen Bestätigungsdialog vor dem Löschen von Elementen anzeigen",
-        "disabled": "Unmittelbar löschen",
+        "disabled": "Sofort löschen",
         "disabledDescription": "Dateien löschen, ohne nach einer Bestätigung zu fragen"
       },
       "dragDropAction": {
@@ -839,11 +839,12 @@
         "description": "Standardaktion beim Ziehen von Dateien an einen neuen Ort.",
         "move": "Verschiebe",
         "copy": "Kopiere",
-        "ask": "Frag"
+        "ask": "Fragen"
       }
     },
     "authentication": {
       "title": "{{count}} Anbieter verfügbar",
+      "internalProviderName": "Interne Authentifizierung",
       "addProvider": "Anbieter hinzufügen",
       "addLdapProvider": "LDAP hinzufügen",
       "system": "System",
@@ -869,7 +870,7 @@
           "redirectUri": "URI weiterleiten",
           "redirectUriPlaceholder": "https://your-domain.com/api/oidc/callback",
           "scope": "Zugriffsart",
-          "scopePlaceholder": "openid-Profil",
+          "scopePlaceholder": "openid profile",
           "usernameAttribute": "Benutzername Attribut",
           "usernameAttributePlaceholder": "dein_benutzername",
           "firstNameAttribute": "Vorname Attribut",
@@ -893,24 +894,24 @@
         "createTitle": "LDAP-Anbieter hinzufügen",
         "editTitle": "LDAP-Anbieter bearbeiten",
         "fields": {
-          "displayName": "Name anzeigen",
+          "displayName": "Anzeigename",
           "displayNamePlaceholder": "z.B. Unternehmens-LDAP",
-          "host": "Gastgeber",
-          "hostPlaceholder": "ldap.firma.de",
-          "port": "Hafen",
+          "host": "Host",
+          "hostPlaceholder": "ldap.company.com",
+          "port": "Port",
           "bindDN": "DN binden",
-          "bindDNPlaceholder": "cn=admin,dc=firma,dc=com",
+          "bindDNPlaceholder": "cn=admin,dc=company,dc=com",
           "bindPassword": "Passwort binden",
           "bindPasswordPlaceholder": "Passwort binden",
           "bindPasswordPlaceholderEdit": "Leer lassen, um das Vorhandene zu behalten",
           "baseDN": "Basis-DN",
-          "baseDNPlaceholder": "dc=Firma,dc=com",
+          "baseDNPlaceholder": "dc=company,dc=com",
           "userSearchFilter": "Benutzer-Suchfilter",
           "userSearchFilterPlaceholder": "(uid={{username}}) oder (sAMAccountName={{username}})",
           "useTLS": "TLS/SSL verwenden",
           "usernameAttribute": "Benutzername Attribut",
           "usernameAttributePlaceholder": "uid",
-          "emailAttribute": "E-Mail-Attribut",
+          "emailAttribute": "Email Attribut",
           "emailAttributePlaceholder": "Mail",
           "firstNameAttribute": "Vorname Attribut",
           "firstNameAttributePlaceholder": "givenName",
@@ -924,7 +925,7 @@
         "actions": {
           "addProvider": "Anbieter hinzufügen",
           "saveChanges": "Änderungen speichern",
-          "testConnection": "Test Verbindung",
+          "testConnection": "Verbindung testen",
           "testing": "Testen..."
         },
         "messages": {
@@ -1020,7 +1021,7 @@
           "description": "Maximale Wartezeit für eine Serverantwort (5-120 Sekunden)"
         },
         "batchSize": {
-          "title": "Chargengröße",
+          "title": "Batch Größe",
           "description": "Anzahl der gleichzeitig zu prüfenden Server (1-50)"
         }
       },
@@ -1065,7 +1066,7 @@
           "password": "Passwort",
           "password-only": "Kein Benutzername",
           "ssh": "SSH-Schlüssel",
-          "both": "Schlüssel+Pass"
+          "both": "Schlüssel+Passwort"
         },
         "actions": {
           "cancel": "Abbrechen",
@@ -1090,7 +1091,7 @@
       "noSources": "Keine Quellen konfiguriert",
       "noSourcesDescription": "Füge externe Quellen hinzu, um Skripte und Snippets automatisch zu synchronisieren.",
       "addSource": "Quelle hinzufügen",
-      "snippets": "Schnipsel",
+      "snippets": "Snippets",
       "scripts": "Skripte",
       "neverSynced": "Nie synchronisiert",
       "sync": "Jetzt synchronisieren",
@@ -1100,8 +1101,8 @@
       "status": {
         "success": "Synchronisiert",
         "error": "Fehler",
-        "pending": "Anhängig",
-        "disabled": "Behinderte"
+        "pending": "Ausstehend",
+        "disabled": "Deaktiviert"
       },
       "dialog": {
         "createTitle": "Quelle hinzufügen",
@@ -1134,7 +1135,7 @@
     "backup": {
       "loading": "Laden der Speichereinstellungen...",
       "storage": {
-        "title": "Lagerung",
+        "title": "Speicher",
         "description": "Sieh dir die Speichernutzung deiner Nexterm-Daten an.",
         "database": "Datenbank",
         "recordings": "Aufzeichnungen",
@@ -1152,12 +1153,12 @@
       "providerType": "Typ",
       "providerTypes": {
         "local": "Lokales",
-        "smb": "SMB-Anteil",
+        "smb": "SMB-Freigabe",
         "webdav": "WebDAV"
       },
-      "localPath": "Sicherungspfad",
+      "localPath": "Backup-Pfad",
       "localPathPlaceholder": "/pfad/zu/backups",
-      "smbShare": "SMB-Anteil",
+      "smbShare": "SMB-Freigabe",
       "smbSharePlaceholder": "\\\\server\\share",
       "smbFolder": "Ordner (optional)",
       "smbFolderPlaceholder": "Backups",
@@ -1175,10 +1176,10 @@
       "webdavUsernamePlaceholder": "Benutzer",
       "webdavPassword": "Passwort",
       "webdavPasswordPlaceholder": "Passwort",
-      "passwordUnchanged": "Leer lassen, um aktuell zu bleiben",
+      "passwordUnchanged": "Leer lassen, um das Aktuelle zu behalten",
       "schedule": {
         "title": "Automatische Sicherung",
-        "disabled": "Behinderte",
+        "disabled": "Deaktiviert",
         "hourly": "Jede Stunde",
         "every6h": "Alle 6 Stunden",
         "every12h": "Alle 12 Stunden",
@@ -1186,7 +1187,7 @@
         "weekly": "Wöchentlich"
       },
       "retention": {
-        "title": "Aufbewahrungspolitik"
+        "title": "Retention Policy"
       },
       "backups": "Backups",
       "includes": {
@@ -1198,25 +1199,25 @@
       "providers": "Anbieter",
       "saveSettings": "Einstellungen speichern",
       "noProviders": "Keine Backup-Anbieter",
-      "noProvidersDescription": "Füge einen Sicherungsanbieter hinzu, um mit der Erstellung von Sicherungen zu beginnen.",
+      "noProvidersDescription": "Füge einen Backup-Anbieter hinzu, um mit der Erstellung von Backups zu beginnen.",
       "backupList": "Backups - {{name}}",
-      "loadingBackups": "Backups laden...",
+      "loadingBackups": "Lade Backups...",
       "noBackups": "Keine Backups gefunden",
       "restoreConfirm": "Bist du sicher, dass du \"{{name}}\" wiederherstellen willst? Dadurch werden deine aktuellen Daten überschrieben und der Server neu gestartet.",
       "deleteProviderConfirm": "Bist du sicher, dass du \"{{name}}\" löschen willst? Dadurch werden bestehende Backups nicht gelöscht.",
-      "providerCreated": "Sicherungsanbieter erstellt",
+      "providerCreated": "Backup-Anbieter erstellt",
       "providerUpdated": "Backup-Anbieter aktualisiert",
-      "providerDeleted": "Sicherungsanbieter gelöscht",
-      "backupCreated": "Sicherung erfolgreich erstellt",
+      "providerDeleted": "Backup-Anbieter gelöscht",
+      "backupCreated": "Backup erfolgreich erstellt",
       "restoreStarted": "Wiederherstellung gestartet, Server wird neu gestartet",
       "saveSuccess": "Einstellungen erfolgreich gespeichert",
       "errors": {
         "loadFailed": "Backup-Einstellungen konnten nicht geladen werden",
         "saveFailed": "Einstellungen konnten nicht gespeichert werden",
         "deleteFailed": "Löschen fehlgeschlagen",
-        "backupFailed": "Sicherung kann nicht erstellt werden",
+        "backupFailed": "Backup kann nicht erstellt werden",
         "loadBackupsFailed": "Backups können nicht geladen werden",
-        "restoreFailed": "Wiederherstellung der Sicherung fehlgeschlagen",
+        "restoreFailed": "Wiederherstellung des Backups fehlgeschlagen",
         "exportFailed": "Daten können nicht exportiert werden",
         "nameRequired": "Der Name des Anbieters ist erforderlich"
       },
@@ -1224,17 +1225,17 @@
     }
   },
   "tunnel": {
-    "title": "Port Forward",
+    "title": "Port-Weiterleitung",
     "identity": "Identität",
-    "remoteHost": "Entfernter Host",
+    "remoteHost": "Remote Host",
     "remotePort": "Remote Port",
-    "localPort": "Lokaler Hafen",
+    "localPort": "Lokaler Port",
     "start": "Start Tunnel",
-    "stop": "Haltestelle Tunnel",
+    "stop": "Stoppe Tunnel",
     "status": {
       "idle": "Nicht verbunden",
-      "starting": "Ab...",
-      "listening": "Lauschen auf localhost:{{port}}",
+      "starting": "Starte...",
+      "listening": "Listening on localhost:{{port}}",
       "error": "Fehler",
       "stopped": "Gestoppt"
     },
@@ -1245,7 +1246,7 @@
   "share": {
     "errors": {
       "unableToConnect": "Verbindung nicht möglich",
-      "failedToJoin": "Sitzung kann nicht beitreten"
+      "failedToJoin": "Kann Sitzung nicht beitreten"
     },
     "sessionEnded": {
       "title": "Sitzung beendet",
@@ -1254,13 +1255,13 @@
   },
   "servers": {
     "time": {
-      "justNow": "Gerade jetzt",
-      "minuteAgo": "{{count}} min vor",
-      "minutesAgo": "{{count}} vor wenigen Minuten",
-      "hourAgo": "{{count}} vor einer Stunde",
-      "hoursAgo": "{{count}} vor Stunden",
-      "dayAgo": "{{count}} vor einem Tag",
-      "daysAgo": "{{count}} vor Tagen"
+      "justNow": "Gerade eben",
+      "minuteAgo": "vor {{count}} Minute",
+      "minutesAgo": "vor {{count}} Minuten",
+      "hourAgo": "vor {{count}} Stunde",
+      "hoursAgo": "vor {{count}} Stunden",
+      "dayAgo": "vor {{count}} Tag",
+      "daysAgo": "vor {{count}} Tagen"
     },
     "tags": {
       "title": "Tags",
@@ -1278,10 +1279,10 @@
       "deleteFolder": "Ordner löschen",
       "renameFolder": "Ordner umbenennen",
       "new": "Neu",
-      "sshServer": "SSH-Server",
-      "telnetServer": "Telnet-Server",
-      "rdpServer": "RDP-Server",
-      "vncServer": "VNC-Server",
+      "sshServer": "SSH Server",
+      "telnetServer": "Telnet Server",
+      "rdpServer": "RDP Server",
+      "vncServer": "VNC Server",
       "createServer": "Server erstellen",
       "import": "Importieren",
       "pve": "PVE",
@@ -1289,7 +1290,7 @@
       "connect": "Verbinden",
       "quickConnect": "Schnellverbindung",
       "openSFTP": "SFTP öffnen",
-      "forwardPort": "Weiterleiten Hafen",
+      "forwardPort": "Port weiterleiten",
       "runScript": "Skript ausführen",
       "editServer": "Server bearbeiten",
       "editIntegration": "Integration bearbeiten",
@@ -1303,9 +1304,23 @@
       "stop": "Stop",
       "start": "Start"
     },
+    "tabs": {
+      "contextMenu": {
+        "popOut": "Pop Out",
+        "startSharing": "Teilen beginnen",
+        "readOnly": "Read-only",
+        "readWrite": "Read & Write",
+        "copyShareLink": "Link zum Teilen kopieren",
+        "changePermissions": "Berechtigungen ändern",
+        "stopSharing": "Teilen beenden",
+        "duplicate": "Duplizieren",
+        "hibernateSession": "Ruhezustand aktivieren",
+        "closeSession": "Trennen"
+      }
+    },
     "wol": {
-      "successDescription": "Magic-Paket an {{name}}gesendet",
-      "errorDescription": "Magisches Paket konnte nicht gesendet werden"
+      "successDescription": "Magic-Paket an {{name}} gesendet",
+      "errorDescription": "Magic-Paket konnte nicht gesendet werden"
     },
     "messages": {
       "fillRequiredFields": "Bitte fülle alle erforderlichen Felder aus",
@@ -1332,14 +1347,14 @@
       "fields": {
         "name": "Name",
         "icon": "Icon",
-        "serverIp": "Gastgeber",
+        "serverIp": "Host",
         "port": "Port",
         "protocol": "Protokoll",
         "username": "Benutzername",
         "password": "Passwort",
         "host": "Host",
-        "nodeName": "Knotenpunkt Name",
-        "vmid": "VM-ID",
+        "nodeName": "Node Name",
+        "vmid": "VM ID",
         "macAddress": "MAC-Adresse"
       },
       "placeholders": {
@@ -1349,8 +1364,8 @@
         "username": "Benutzername",
         "password": "Passwort",
         "host": "Host",
-        "nodeName": "Name des Knotens",
-        "vmid": "VM-ID",
+        "nodeName": "Name der Node",
+        "vmid": "VM ID",
         "macAddress": "AA:BB:CC:DD:EE:FF"
       },
       "settings": {
@@ -1359,11 +1374,11 @@
           "description": "Verbindung über Zwischenserver, um diesen Zielserver zu erreichen",
           "addButton": "Jump Host hinzufügen",
           "removeTooltip": "Jump Host entfernen",
-          "noServersAvailable": "Keine SSH-Server für Jump Hosts verfügbar. Erstelle zunächst SSH-Server."
+          "noServersAvailable": "Keine SSH Server für Jump Hosts verfügbar. Erstelle zunächst SSH Server."
         },
         "monitoring": {
-          "title": "Leistungsüberwachung einschalten",
-          "description": "Erfasse CPU-, Speicher-, Festplatten- und Netzwerkmetriken für diesen Server"
+          "title": "Leistungsüberwachung aktivieren",
+          "description": "Erfasse CPU-, Arbeitsspeicher-, Festplatten- und Netzwerkmetriken für diesen Server"
         },
         "wakeOnLan": {
           "title": "Wake-On-LAN einschalten",
@@ -1385,8 +1400,8 @@
           "enableWallpaper": "Hintergrundbild aktivieren",
           "enableWallpaperDesc": "Das Desktop-Hintergrundbild auf dem entfernten System anzeigen",
           "enableTheming": "Theming aktivieren",
-          "enableThemingDesc": "Thematische Fenster und Bedienelemente auf dem entfernten System verwenden",
-          "enableFontSmoothing": "Schriftglättung einschalten",
+          "enableThemingDesc": "Gethemete Fenster und Bedienelemente auf dem entfernten System verwenden",
+          "enableFontSmoothing": "Schriftglätten aktivieren",
           "enableFontSmoothingDesc": "Rendern von Text mit glatten Kanten für bessere Lesbarkeit",
           "enableFullWindowDrag": "Ziehen des gesamten Fensters aktivieren",
           "enableFullWindowDragDesc": "Fensterinhalte beim Ziehen von Fenstern anzeigen",
@@ -1448,7 +1463,7 @@
         "nodeName": "Name der Node (optional)",
         "monitoring": "Leistungsüberwachung"
       },
-      "monitoringDescription": "Erfassen von clusterweiten CPU-, Speicher- und Storage-Metriken",
+      "monitoringDescription": "Erfasse clusterweite CPU-, Arbeitsspeicher- und Storage-Metriken",
       "placeholders": {
         "name": "Name",
         "serverIp": "Server-IP",
@@ -1549,16 +1564,16 @@
         "selectAll": "Alle auswählen",
         "insertSnippet": "Snippet einfügen",
         "sendCtrlC": "Strg+C senden",
-        "clearTerminal": "Terminal löschen",
+        "clearTerminal": "Terminal leeren",
         "properties": "Eigenschaften",
         "openTerminal": "Terminal hier öffnen",
         "downloadFolder": "Ordner herunterladen"
       },
       "properties": {
         "general": "Allgemein",
-        "permissions": "Erlaubnisse",
+        "permissions": "Berechtigungen",
         "checksum": "Prüfsumme",
-        "folder": "Mappe",
+        "folder": "Ordner",
         "file": "Datei",
         "path": "Standort",
         "size": "Größe",
@@ -1574,12 +1589,12 @@
         "owner": "Besitzer",
         "group": "Gruppe",
         "others": "Andere",
-        "read": "Lies",
-        "write": "Schreibe",
+        "read": "Lesen",
+        "write": "Schreiben",
         "execute": "Ausführen",
         "octal": "Oktal",
         "preview": "Vorschau",
-        "apply": "Bewirb dich"
+        "apply": "Anwenden"
       },
       "filePreview": {
         "title": "Dateivorschau",
@@ -1592,26 +1607,26 @@
         "close": "Schließen"
       },
       "selection": {
-        "itemsSelected": "{{count}} ausgewählte Artikel",
-        "filesSelected": "{{count}} ausgewählte Datei(en)",
-        "foldersSelected": "{{count}} ausgewählte(r) Ordner",
+        "itemsSelected": "{{count}} Elemente ausgewählt",
+        "filesSelected": "{{count}} Datei(en) ausgewählt",
+        "foldersSelected": "{{count}} Ordner(e) ausgewählt",
         "clearSelection": "Auswahl löschen",
         "downloadSelected": "Ausgewählte herunterladen",
         "deleteSelected": "Ausgewählte löschen",
         "download": "Herunterladen",
         "delete": "löschen",
-        "deleteConfirm": "Bist du sicher, dass du {{count}} löschen möchtest?"
+        "deleteConfirm": "Bist du sicher, dass du {{count}} Element(e) löschen möchtest?"
       },
       "header": {
         "name": "Name",
         "size": "Größe",
-        "permissions": "Erlaubnisse",
+        "permissions": "Berechtigungen",
         "modified": "Geändert"
       },
       "actionBar": {
         "enterDirectory": "Verzeichnispfad eingeben...",
         "hiddenDirectories": "{{count}} versteckte Verzeichnisse",
-        "switchToGrid": "Zur Gitteransicht wechseln",
+        "switchToGrid": "Zur Rasteransicht wechseln",
         "switchToList": "Zur Listenansicht wechseln"
       },
       "item": {
@@ -1624,9 +1639,9 @@
         "dropFilesHint": "Dateien hier ablegen, um sie hochzuladen"
       },
       "toast": {
-        "downloaded": "Heruntergeladen {{name}}",
+        "downloaded": "{{name}} heruntergeladen",
         "downloadingItems": "Herunterladen von {{count}} item(s)...",
-        "uploaded": "Hochgeladen {{name}}",
+        "uploaded": "{{name}} hochgeladen",
         "uploadFailed": "Upload fehlgeschlagen: {{message}}",
         "connectionLost": "SFTP-Verbindung verloren. Bitte stelle die Verbindung wieder her.",
         "error": "Ein Fehler ist aufgetreten"
@@ -1636,10 +1651,10 @@
       "title": "KI-Assistent",
       "placeholder": "Beschreibe, was du tun möchtest...",
       "hint": "Drücke Enter zum Erstellen - Esc zum Schließen",
-      "hintUse": "Drücke Enter, um den Befehl zu verwenden - Esc zum Schließen",
+      "hintUse": "Drücke Enter, um den Befehl zu verwenden • Esc zum Schließen",
       "closeLabel": "KI-Assistent schließen",
       "generate": "Befehl generieren",
-      "generating": "Befehl generieren...",
+      "generating": "Generiere Befehl...",
       "generatedCommand": "Generierter Befehl",
       "useCommand": "Befehl verwenden",
       "tryAgain": "Nochmal versuchen",
@@ -1654,11 +1669,11 @@
     },
     "terminalActions": {
       "menuTitle": "Terminal-Aktionen",
-      "snippets": "Schnipsel",
-      "keyboardShortcuts": "Tastaturkürzel",
-      "broadcasting": "Sendung",
+      "snippets": "Snippets",
+      "keyboardShortcuts": "Tastenkürzel",
+      "broadcasting": "Broadcasting",
       "fullScreen": "Vollbild",
-      "exitFullScreen": "Beenden des Vollbildmodus",
+      "exitFullScreen": "Beende den Vollbildmodus",
       "badgeOn": "ON"
     }
   },
@@ -1668,7 +1683,7 @@
     "footer": "Danke, dass du Nexterm benutzt!",
     "issues": {
       "title": "Ein Problem melden",
-      "description": "Hast du einen Fehler gefunden oder einen Funktionswunsch?"
+      "description": "Hast du einen Fehler gefunden oder willst du eine Feature-Anfrage stellen?"
     },
     "discord": {
       "title": "Discord beitreten",
@@ -1684,7 +1699,7 @@
     "downloadApps": "Apps herunterladen",
     "connectDevice": "Gerät verbinden",
     "recentConnections": "Neueste Verbindungen",
-    "getStarted": "Anfangen",
+    "getStarted": "Erste Schritte",
     "getStartedHint": "Füge einen Server in der Seitenleiste hinzu, um mit der Verwaltung deiner Infrastruktur zu beginnen."
   },
   "downloadApps": {
