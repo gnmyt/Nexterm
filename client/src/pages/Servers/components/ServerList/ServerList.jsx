@@ -74,6 +74,18 @@ const filterEntries = (entries, searchTerm, selectedTags = []) => {
     return rebuild(entries);
 };
 
+const findEntryById = (entries, id) => {
+    for (const entry of entries) {
+        if (entry.id === id) return entry;
+        // If this entry is a folder or organization with nested entries
+        if (entry.entries) {
+            const found = findEntryById(entry.entries, id);
+            if (found) return found;
+        }
+    }
+    return null;
+};
+
 const applyRenameState = folderId => entry =>
     entry.type === "folder" && entry.id === parseInt(folderId)
         ? { ...entry, renameState: true }
@@ -162,18 +174,6 @@ export const ServerList = ({
                 if (found) return found;
             } else if (entry.type === "folder" && entry.entries) {
                 const found = findOrganizationForServer(serverIdNum, entry.entries, currentOrg);
-                if (found) return found;
-            }
-        }
-        return null;
-    };
-
-    const findEntryById = (entries, id) => {
-        for (const entry of entries) {
-            if (entry.id === id) return entry;
-            // If this entry is a folder or organization with nested entries
-            if (entry.entries) {
-                const found = findEntryById(entry.entries, id);
                 if (found) return found;
             }
         }
