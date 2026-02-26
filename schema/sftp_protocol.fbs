@@ -1,0 +1,140 @@
+namespace Nexterm.SftpProtocol;
+
+enum SftpMsgType : ubyte {
+    Ready = 0,
+
+    ListDir = 1,
+    Stat = 2,
+    Mkdir = 3,
+    Rmdir = 4,
+    Unlink = 5,
+    Rename = 6,
+    Chmod = 7,
+    Realpath = 8,
+    ReadFile = 9,
+    WriteBegin = 10,
+    WriteData = 11,
+    WriteEnd = 12,
+    Exec = 13,
+    SearchDirs = 14,
+
+    DirList = 50,
+    StatResult = 51,
+    RealpathResult = 52,
+    FileData = 53,
+    FileEnd = 54,
+    ExecResult = 55,
+    Ok = 56,
+    Error = 57,
+    SearchResult = 58,
+}
+
+table DirEntry {
+    name: string;
+    is_dir: bool;
+    is_symlink: bool;
+    size: uint64;
+    mtime: uint32;
+    mode: uint32;
+}
+
+table PathReq {
+    path: string;
+}
+
+table RmdirReq {
+    path: string;
+    recursive: bool;
+}
+
+table RenameReq {
+    old_path: string;
+    new_path: string;
+}
+
+table ChmodReq {
+    path: string;
+    mode: uint32;
+}
+
+table WriteBeginReq {
+    path: string;
+}
+
+table WriteDataReq {
+    data: [ubyte];
+}
+
+table ExecReq {
+    command: string;
+}
+
+table SearchReq {
+    search_path: string;
+    max_results: uint32;
+}
+
+table DirListRes {
+    entries: [DirEntry];
+}
+
+table StatRes {
+    size: uint64;
+    mode: uint32;
+    uid: uint32;
+    gid: uint32;
+    atime: uint32;
+    mtime: uint32;
+    owner: string;
+    group: string;
+    is_dir: bool;
+}
+
+table RealpathRes {
+    path: string;
+    is_dir: bool;
+}
+
+table FileDataRes {
+    data: [ubyte];
+    total_size: uint64;
+}
+
+table ExecRes {
+    stdout_data: string;
+    stderr_data: string;
+    exit_code: int32;
+}
+
+table ErrorRes {
+    message: string;
+    code: int32;
+}
+
+table SearchRes {
+    directories: [string];
+}
+
+table SftpMessage {
+    msg_type: SftpMsgType;
+    request_id: uint32;
+
+    path_req: PathReq;
+    rmdir_req: RmdirReq;
+    rename_req: RenameReq;
+    chmod_req: ChmodReq;
+    write_begin_req: WriteBeginReq;
+    write_data_req: WriteDataReq;
+    exec_req: ExecReq;
+    search_req: SearchReq;
+
+    dir_list_res: DirListRes;
+    stat_res: StatRes;
+    realpath_res: RealpathRes;
+    file_data_res: FileDataRes;
+    exec_res: ExecRes;
+    error_res: ErrorRes;
+    search_res: SearchRes;
+}
+
+root_type SftpMessage;
