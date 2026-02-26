@@ -5,7 +5,7 @@ import Icon from "@mdi/react";
 import { mdiChevronDown, mdiMagnify, mdiClose } from "@mdi/js";
 import { useTranslation } from "react-i18next";
 
-export const SelectBox = ({ options, selected, setSelected, id, disabled = false, searchable = false, multiple = false, placeholder }) => {
+export const SelectBox = ({ options, selected, setSelected, id, disabled = false, searchable = false, multiple = false, placeholder, invalid = false }) => {
     const { t } = useTranslation();
     const [isOpen, setIsOpen] = useState(false);
     const [adjustedPosition, setAdjustedPosition] = useState({ top: 0, left: 0, width: 0 });
@@ -209,7 +209,7 @@ export const SelectBox = ({ options, selected, setSelected, id, disabled = false
     };
     
     return (
-        <div className={`select-box ${disabled ? 'disabled' : ''} ${multiple ? 'select-box--multiple' : ''}`} ref={selectBoxRef}>
+        <div className={`select-box ${disabled ? 'disabled' : ''} ${multiple ? 'select-box--multiple' : ''} ${invalid ? 'invalid' : ''}`} ref={selectBoxRef}>
             <div className="select-box__selected" onClick={() => !disabled && setIsOpen(!isOpen)}>
                 <div className={`select-box__selected-content ${!hasIconProperty && !multiple ? 'icon-only' : ''}`}>
                     {renderSelectedContent()}

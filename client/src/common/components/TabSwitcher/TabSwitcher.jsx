@@ -36,7 +36,7 @@ export const TabSwitcher = ({ tabs, activeTab, onTabChange, variant = "default",
                     <div
                         key={tab.key}
                         ref={el => tabRefs.current[tab.key] = el}
-                        className={`tab-switcher-tab${activeTab === tab.key ? ' active' : ''}`}
+                        className={`tab-switcher-tab${activeTab === tab.key ? ' active' : ''}${tab.isError ? ' error' : ''}`}
                         onClick={() => onTabChange(tab.key)}
                     >
                         {tab.icon && <Icon path={tab.icon} />}
