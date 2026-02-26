@@ -661,7 +661,7 @@ module.exports.wakeEntry = async (accountId, entryId) => {
     }
 
     try {
-        await sendWakeOnLan(macAddress);
+        await sendWakeOnLan(macAddress, config.wolBroadcastAddress);
         return { success: true };
     } catch (error) {
         logger.error(`Failed to send Wake-On-LAN packet to ${macAddress}: ${error.message}`);
