@@ -73,7 +73,7 @@ export const ProviderDialog = ({ open, onClose, provider, onSave }) => {
             if (provider) {
                 await patchRequest(`auth/providers/admin/oidc/${provider.id}`, data);
             } else {
-                data.enabled = true; // New providers are enabled by default
+                data.enabled = true;
                 await putRequest("auth/providers/admin/oidc", data);
             }
 
