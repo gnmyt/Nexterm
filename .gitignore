@@ -142,3 +142,9 @@ docs/.vitepress/dist
 docs/.vitepress/cache
 docs/public/openapi.json
 .DS_Store
+
+# Schemas
+**/generated
+
+# Engine Build Cache
+**/build
