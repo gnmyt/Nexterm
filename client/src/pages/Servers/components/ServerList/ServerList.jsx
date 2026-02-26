@@ -75,6 +75,8 @@ const filterEntries = (entries, searchTerm, selectedTags = []) => {
 };
 
 const findEntryById = (entries, id) => {
+    console.log("entries", entries);
+    console.log("contextClickedId", id);
     for (const entry of entries) {
         if (entry.id === id) return entry;
         // If this entry is a folder or organization with nested entries
