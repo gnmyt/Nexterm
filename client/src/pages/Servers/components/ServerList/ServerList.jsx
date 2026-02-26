@@ -851,7 +851,7 @@ export const ServerList = ({
                                 <ContextMenuItem
                                     icon={mdiServerMinus}
                                     label={t("servers.contextMenu.deleteServer")}
-                                    onClick={openDeleteServerConfirm}
+                                    onClick={openDeleteEntryConfirm}
                                     danger
                                 />
                             </>
