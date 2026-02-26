@@ -44,7 +44,7 @@ module.exports = async (ws, req) => {
     }
 
     try {
-        if (protocol === "ssh") await sshHook(ws, { ...context, reuseConnection: true, ssh: conn.ssh });
+        if (protocol === "ssh") await sshHook(ws, { ...context, reuseConnection: true });
         else if (protocol === "telnet") await telnetHook(ws, { ...context, reuseConnection: true });
         else if (protocol === "pve-lxc" || protocol === "pve-shell") await pveLxcHook(ws, { ...context, reuseConnection: true });
         else ws.close(4009, `Unsupported: ${entry.type}`);
