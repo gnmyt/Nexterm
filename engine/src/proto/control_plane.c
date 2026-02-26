@@ -125,6 +125,75 @@ static void handle_ping(nexterm_control_plane_t* cp,
     LOG_TRACE("Ping/Pong (ts=%lu)", (unsigned long)ts);
 }
 
+static void store_jump_hosts_as_params(nexterm_session_t* session,
+                                       Nexterm_ControlPlane_JumpHost_vec_t jump_hosts) {
+    if (!jump_hosts) return;
+    size_t count = Nexterm_ControlPlane_JumpHost_vec_len(jump_hosts);
+    if (count == 0) return;
+    if (count > MAX_JUMP_HOSTS) count = MAX_JUMP_HOSTS;
+
+    char buf[32];
+    snprintf(buf, sizeof(buf), "%zu", count);
+    nexterm_session_add_param(session, "jumpHostCount", buf);
+
+    for (size_t i = 0; i < count; i++) {
+        Nexterm_ControlPlane_JumpHost_table_t jh =
+            Nexterm_ControlPlane_JumpHost_vec_at(jump_hosts, i);
+        char key[64];
+
+        const char* host = Nexterm_ControlPlane_JumpHost_host(jh);
+        snprintf(key, sizeof(key), "jumpHost%zu_host", i);
+        nexterm_session_add_param(session, key, host ? host : "");
+
+        snprintf(key, sizeof(key), "jumpHost%zu_port", i);
+        snprintf(buf, sizeof(buf), "%u", Nexterm_ControlPlane_JumpHost_port(jh));
+        nexterm_session_add_param(session, key, buf);
+
+        const char* username = Nexterm_ControlPlane_JumpHost_username(jh);
+        snprintf(key, sizeof(key), "jumpHost%zu_username", i);
+        nexterm_session_add_param(session, key, username ? username : "");
+
+        const char* password = Nexterm_ControlPlane_JumpHost_password(jh);
+        snprintf(key, sizeof(key), "jumpHost%zu_password", i);
+        nexterm_session_add_param(session, key, password ? password : "");
+
+        const char* private_key = Nexterm_ControlPlane_JumpHost_private_key(jh);
+        snprintf(key, sizeof(key), "jumpHost%zu_privateKey", i);
+        nexterm_session_add_param(session, key, private_key ? private_key : "");
+
+        const char* passphrase = Nexterm_ControlPlane_JumpHost_passphrase(jh);
+        snprintf(key, sizeof(key), "jumpHost%zu_passphrase", i);
+        nexterm_session_add_param(session, key, passphrase ? passphrase : "");
+    }
+}
+
+static void extract_jump_hosts_from_msg(Nexterm_ControlPlane_JumpHost_vec_t jh_vec,
+                                        jump_host_t* jump_hosts, int* jump_count) {
+    *jump_count = 0;
+    if (!jh_vec) return;
+    size_t count = Nexterm_ControlPlane_JumpHost_vec_len(jh_vec);
+    if (count == 0) return;
+    if (count > MAX_JUMP_HOSTS) count = MAX_JUMP_HOSTS;
+
+    for (size_t i = 0; i < count; i++) {
+        Nexterm_ControlPlane_JumpHost_table_t jh =
+            Nexterm_ControlPlane_JumpHost_vec_at(jh_vec, i);
+        memset(&jump_hosts[i], 0, sizeof(jump_host_t));
+
+        const char* host = Nexterm_ControlPlane_JumpHost_host(jh);
+        if (host) snprintf(jump_hosts[i].host, sizeof(jump_hosts[i].host), "%s", host);
+        jump_hosts[i].port = Nexterm_ControlPlane_JumpHost_port(jh);
+
+        const char* username = Nexterm_ControlPlane_JumpHost_username(jh);
+        if (username) snprintf(jump_hosts[i].username, sizeof(jump_hosts[i].username), "%s", username);
+
+        jump_hosts[i].password = (char*)Nexterm_ControlPlane_JumpHost_password(jh);
+        jump_hosts[i].private_key = (char*)Nexterm_ControlPlane_JumpHost_private_key(jh);
+        jump_hosts[i].passphrase = (char*)Nexterm_ControlPlane_JumpHost_passphrase(jh);
+    }
+    *jump_count = (int)count;
+}
+
 static void handle_session_open(nexterm_control_plane_t* cp,
                                 Nexterm_ControlPlane_Envelope_table_t envelope) {
     Nexterm_ControlPlane_SessionOpen_table_t open_msg =
@@ -163,6 +232,9 @@ static void handle_session_open(nexterm_control_plane_t* cp,
                 Nexterm_ControlPlane_ConnectionParam_value(p));
         }
     }
+
+    store_jump_hosts_as_params(session,
+        Nexterm_ControlPlane_SessionOpen_jump_hosts(open_msg));
 
     if (start_session_connection(session, cp, stype) != 0) {
         nexterm_cp_send_session_result(cp, sid, false,
@@ -268,10 +340,17 @@ static void handle_exec_command(nexterm_control_plane_t* cp,
     extract_ssh_credentials(Nexterm_ControlPlane_ExecCommand_params(exec_msg), &creds);
     if (!creds.username) creds.username = "";
 
-    LOG_INFO("ExecCommand: req=%s host=%s:%u cmd=%.64s...",
-             req_id, host, port, command);
+    jump_host_t jump_hosts[MAX_JUMP_HOSTS];
+    int jump_count = 0;
+    extract_jump_hosts_from_msg(
+        Nexterm_ControlPlane_ExecCommand_jump_hosts(exec_msg),
+        jump_hosts, &jump_count);
 
-    nexterm_ssh_exec_command(cp, req_id, host, port, &creds, command);
+    LOG_INFO("ExecCommand: req=%s host=%s:%u cmd=%.64s... (jump_hosts=%d)",
+             req_id, host, port, command, jump_count);
+
+    nexterm_ssh_exec_command(cp, req_id, host, port, &creds, command,
+                             jump_hosts, jump_count);
 }
 
 static bool check_port_open(const char* host, uint16_t port, uint32_t timeout_ms) {

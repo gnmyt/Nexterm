@@ -7,7 +7,7 @@
 
 #define MAX_SESSION_ID_LEN 64
 #define MAX_SESSIONS 256
-#define MAX_PARAMS 64
+#define MAX_PARAMS 128
 
 typedef enum {
     SESSION_TYPE_VNC,

@@ -2,6 +2,7 @@
 #define NEXTERM_SSH_H
 
 #include "session.h"
+#include "ssh_common.h"
 
 struct nexterm_control_plane;
 
@@ -25,6 +26,12 @@ int nexterm_ssh_exec_command(struct nexterm_control_plane* cp,
                              const char* request_id,
                              const char* host, uint16_t port,
                              const ssh_credentials_t* creds,
-                             const char* command);
+                             const char* command,
+                             const jump_host_t* jump_hosts,
+                             int jump_count);
+
+int nexterm_extract_jump_hosts(const nexterm_session_t* session,
+                               jump_host_t* jump_hosts,
+                               int max_jump_hosts);
 
 #endif

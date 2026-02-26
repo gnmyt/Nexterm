@@ -13,6 +13,7 @@ const {
     ExecCommand,
     PortCheck,
     PortCheckTarget,
+    JumpHost,
 } = require("../generated/control_plane_generated");
 const packageJson = require("../../../package.json");
 
@@ -35,6 +36,26 @@ const buildConnectionParams = (builder, params, vectorOwner = SessionOpen) => {
     return offsets.length > 0
         ? vectorOwner.createParamsVector(builder, offsets)
         : 0;
+};
+
+const buildJumpHostsVector = (builder, jumpHosts, vectorOwner = SessionOpen) => {
+    if (!jumpHosts || jumpHosts.length === 0) return 0;
+    const offsets = jumpHosts.map((jh) => {
+        const hostOff = builder.createString(jh.host || "");
+        const usernameOff = builder.createString(jh.username || "");
+        const passwordOff = jh.password ? builder.createString(jh.password) : 0;
+        const privateKeyOff = jh.privateKey ? builder.createString(jh.privateKey) : 0;
+        const passphraseOff = jh.passphrase ? builder.createString(jh.passphrase) : 0;
+        JumpHost.startJumpHost(builder);
+        JumpHost.addHost(builder, hostOff);
+        JumpHost.addPort(builder, jh.port || 22);
+        JumpHost.addUsername(builder, usernameOff);
+        if (passwordOff) JumpHost.addPassword(builder, passwordOff);
+        if (privateKeyOff) JumpHost.addPrivateKey(builder, privateKeyOff);
+        if (passphraseOff) JumpHost.addPassphrase(builder, passphraseOff);
+        return JumpHost.endJumpHost(builder);
+    });
+    return vectorOwner.createJumpHostsVector(builder, offsets);
 };
 
 const buildEngineHelloAck = (accepted) => {
@@ -74,11 +95,12 @@ const buildPing = () => {
     return finishEnvelope(builder, Envelope.endEnvelope(builder));
 };
 
-const buildSessionOpen = (sessionId, sessionType, host, port, params) => {
+const buildSessionOpen = (sessionId, sessionType, host, port, params, jumpHosts) => {
     const builder = new flatbuffers.Builder(512);
     const sidOff = builder.createString(sessionId);
     const hostOff = builder.createString(host);
     const paramsVecOff = buildConnectionParams(builder, params);
+    const jumpHostsVecOff = buildJumpHostsVector(builder, jumpHosts);
 
     SessionOpen.startSessionOpen(builder);
     SessionOpen.addSessionId(builder, sidOff);
@@ -86,6 +108,7 @@ const buildSessionOpen = (sessionId, sessionType, host, port, params) => {
     SessionOpen.addHost(builder, hostOff);
     SessionOpen.addPort(builder, port);
     if (paramsVecOff) SessionOpen.addParams(builder, paramsVecOff);
+    if (jumpHostsVecOff) SessionOpen.addJumpHosts(builder, jumpHostsVecOff);
     const openOff = SessionOpen.endSessionOpen(builder);
 
     Envelope.startEnvelope(builder);
@@ -138,12 +161,13 @@ const buildSessionResize = (sessionId, cols, rows) => {
     return finishEnvelope(builder, Envelope.endEnvelope(builder));
 };
 
-const buildExecCommand = (requestId, host, port, params, command) => {
+const buildExecCommand = (requestId, host, port, params, command, jumpHosts) => {
     const builder = new flatbuffers.Builder(1024);
     const reqIdOff = builder.createString(requestId);
     const hostOff = builder.createString(host);
     const cmdOff = builder.createString(command);
     const paramsVecOff = buildConnectionParams(builder, params, ExecCommand);
+    const jumpHostsVecOff = buildJumpHostsVector(builder, jumpHosts, ExecCommand);
 
     ExecCommand.startExecCommand(builder);
     ExecCommand.addRequestId(builder, reqIdOff);
@@ -151,6 +175,7 @@ const buildExecCommand = (requestId, host, port, params, command) => {
     ExecCommand.addPort(builder, port);
     if (paramsVecOff) ExecCommand.addParams(builder, paramsVecOff);
     ExecCommand.addCommand(builder, cmdOff);
+    if (jumpHostsVecOff) ExecCommand.addJumpHosts(builder, jumpHostsVecOff);
     const execOff = ExecCommand.endExecCommand(builder);
 
     Envelope.startEnvelope(builder);

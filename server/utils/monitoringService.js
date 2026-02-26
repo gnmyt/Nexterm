@@ -8,7 +8,7 @@ const { Op } = require("sequelize");
 const { getIdentityCredentials } = require("../controllers/identity");
 const { getMonitoringSettingsInternal } = require("../controllers/monitoring");
 const controlPlane = require("../lib/controlPlane/ControlPlaneServer");
-const { buildSSHParams } = require("../lib/ConnectionService");
+const { buildSSHParams, resolveJumpHosts } = require("../lib/ConnectionService");
 
 let monitoringInterval = null;
 let isRunning = false;
@@ -67,10 +67,10 @@ const monitorEntry = async (entry) => {
     }
 };
 
-const executeCommand = async (host, port, params, cmd) => {
+const executeCommand = async (host, port, params, cmd, jumpHosts = []) => {
     if (!controlPlane.hasEngine()) throw new Error("No engine connected");
 
-    const result = await controlPlane.execCommand(host, port, params, cmd);
+    const result = await controlPlane.execCommand(host, port, params, cmd, jumpHosts);
     if (!result.success) {
         throw new Error(result.errorMessage || "Command execution failed");
     }
@@ -92,9 +92,10 @@ const collectServerData = async (entry, identity, credentials) => {
     }
 
     const params = buildSSHParams(identity, credentials);
+    const jumpHosts = await resolveJumpHosts(entry);
 
     try {
-        const execCmd = (cmd) => executeCommand(host, port, params, cmd);
+        const execCmd = (cmd) => executeCommand(host, port, params, cmd, jumpHosts);
 
         const [cpu, mem, uptime, load, processes] = await Promise.all([
             getCPUUsage(execCmd), getMemoryUsage(execCmd), getUptime(execCmd), getLoadAverage(execCmd), getProcessCount(execCmd)

@@ -1,4 +1,5 @@
 #include "sftp.h"
+#include "ssh.h"
 #include "ssh_common.h"
 #include "control_plane.h"
 #include "io.h"
@@ -850,6 +851,7 @@ static void* sftp_session_thread(void* arg) {
     int ssh_sock = -1;
     LIBSSH2_SESSION* ssh = NULL;
     LIBSSH2_SFTP* sftp = NULL;
+    jump_chain_t jump_chain = {0};
 
     session->state = SESSION_STATE_CONNECTING;
 
@@ -867,8 +869,11 @@ static void* sftp_session_thread(void* arg) {
         return NULL;
     }
 
-    LOG_INFO("SFTP session %s: connecting to %s:%u as %s",
-             session->session_id, session->host, session->port, username);
+    jump_host_t jump_hosts[MAX_JUMP_HOSTS];
+    int jump_count = nexterm_extract_jump_hosts(session, jump_hosts, MAX_JUMP_HOSTS);
+
+    LOG_INFO("SFTP session %s: connecting to %s:%u as %s (jump_hosts=%d)",
+             session->session_id, session->host, session->port, username, jump_count);
 
     data_fd = nexterm_cp_open_data_connection(cp, session->session_id);
     if (data_fd < 0) {
@@ -879,7 +884,8 @@ static void* sftp_session_thread(void* arg) {
         return NULL;
     }
 
-    if (nexterm_ssh_setup(session->host, session->port, &ssh_sock, &ssh) != 0) {
+    if (nexterm_ssh_setup_with_jumphosts(session->host, session->port,
+            jump_hosts, jump_count, &ssh_sock, &ssh, &jump_chain) != 0) {
         nexterm_cp_send_session_result(cp, session->session_id, false,
                                        "Failed to connect to SSH host", NULL);
         goto cleanup;
@@ -921,7 +927,7 @@ static void* sftp_session_thread(void* arg) {
 
 cleanup:
     if (sftp) libssh2_sftp_shutdown(sftp);
-    nexterm_ssh_teardown(ssh, NULL, ssh_sock, "Session ended");
+    nexterm_ssh_full_cleanup(ssh, NULL, ssh_sock, &jump_chain, "Session ended");
     if (data_fd >= 0)
         close(data_fd);
 

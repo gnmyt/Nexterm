@@ -51,10 +51,37 @@ const getHostPort = (entry, defaultPort = 22) => {
     return { host, port };
 };
 
-const openEngineSession = async (sessionId, sessionType, host, port, params, engineId) => {
+const resolveJumpHosts = async (entry) => {
+    const jumpHostIds = entry.config?.jumpHosts;
+    if (!jumpHostIds || jumpHostIds.length === 0) return [];
+
+    const jumpHosts = [];
+    for (const jumpHostId of jumpHostIds) {
+        const jhEntry = await Entry.findByPk(jumpHostId);
+        if (!jhEntry) throw new Error(`Jump host entry ${jumpHostId} not found`);
+
+        const { host, port } = getHostPort(jhEntry);
+        const identityResult = await resolveIdentity(jhEntry, null, null, null);
+        const identity = extractIdentity(identityResult);
+        if (!identity) throw new Error(`No identity found for jump host ${jumpHostId}`);
+
+        const credentials = await resolveCredentials(identity);
+        jumpHosts.push({
+            host,
+            port,
+            username: identity.username || credentials.username || "",
+            password: credentials.password || null,
+            privateKey: credentials.privateKey || credentials["ssh-key"] || null,
+            passphrase: credentials.passphrase || null,
+        });
+    }
+    return jumpHosts;
+};
+
+const openEngineSession = async (sessionId, sessionType, host, port, params, jumpHosts = [], engineId) => {
     const dataSocketPromise = controlPlane.waitForDataConnection(sessionId);
     try {
-        await controlPlane.openSession(sessionId, sessionType, host, port, params, engineId || null);
+        await controlPlane.openSession(sessionId, sessionType, host, port, params, jumpHosts, engineId || null);
     } catch (err) {
         dataSocketPromise.catch(() => {});
         throw err;
@@ -112,9 +139,10 @@ const createSFTPConnectionForSession = async (sessionId, entry, accountId) => {
     const session = requireSession(sessionId);
     const { identityId, directIdentity } = session.configuration;
     const { host, port, params } = await resolveSSHContext(entry, identityId, directIdentity, accountId);
+    const jumpHosts = await resolveJumpHosts(entry);
 
     const dataSocket = await openEngineSession(
-        sessionId, SessionType.SFTP, host, port, params, entry.config?.engineId
+        sessionId, SessionType.SFTP, host, port, params, jumpHosts, entry.config?.engineId
     );
 
     const sftpClient = new EngineSftpClient(dataSocket);
@@ -137,9 +165,10 @@ const createSSHConnectionForSession = async (sessionId, entry, identity, organiz
     const credentials = await resolveCredentials(identity);
     const { host, port } = getHostPort(entry);
     const params = buildSSHParams(identity, credentials);
+    const jumpHosts = await resolveJumpHosts(entry);
 
     const dataSocket = await openEngineSession(
-        sessionId, SessionType.SSH, host, port, params, entry.config?.engineId
+        sessionId, SessionType.SSH, host, port, params, jumpHosts, entry.config?.engineId
     );
 
     await SessionManager.initRecording(sessionId, organizationId);
@@ -313,4 +342,5 @@ module.exports = {
     createConnectionForSession,
     createSFTPConnectionForSession,
     buildSSHParams,
+    resolveJumpHosts,
 };

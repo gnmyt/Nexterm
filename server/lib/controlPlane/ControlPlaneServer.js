@@ -77,7 +77,7 @@ class ControlPlaneServer extends EventEmitter {
         logger.system("Control plane server stopped");
     }
 
-    openSession(sessionId, sessionType, host, port, params = {}, engineId = null) {
+    openSession(sessionId, sessionType, host, port, params = {}, jumpHosts = [], engineId = null) {
         const engine = this._resolveEngine(engineId);
         if (!engine) return Promise.reject(new Error("No engine connected"));
 
@@ -87,7 +87,7 @@ class ControlPlaneServer extends EventEmitter {
         return this._createPendingRequest(sessionId, (result) => {
             if (!result.success) this._sessionEngineMap.delete(sessionId);
         }, () => {
-            this._sendFrame(engine.socket, buildSessionOpen(sessionId, sessionType, host, port, params));
+            this._sendFrame(engine.socket, buildSessionOpen(sessionId, sessionType, host, port, params, jumpHosts));
         });
     }
 
@@ -114,13 +114,13 @@ class ControlPlaneServer extends EventEmitter {
         this._sendFrame(engine.socket, buildSessionResize(sessionId, cols, rows));
     }
 
-    execCommand(host, port, params, command, engineId = null) {
+    execCommand(host, port, params, command, jumpHosts = [], engineId = null) {
         const engine = this._resolveEngine(engineId);
         if (!engine) return Promise.reject(new Error("No engine connected"));
 
         const requestId = `exec-${Date.now()}-${Math.random().toString(36).substring(2, 10)}`;
         return this._createPendingRequest(requestId, null, () => {
-            this._sendFrame(engine.socket, buildExecCommand(requestId, host, port, params, command));
+            this._sendFrame(engine.socket, buildExecCommand(requestId, host, port, params, command, jumpHosts));
         });
     }
 

@@ -65,12 +65,22 @@ table ConnectionParam {
     value: string;
 }
 
+table JumpHost {
+    host: string;
+    port: uint16;
+    username: string;
+    password: string;
+    private_key: string;
+    passphrase: string;
+}
+
 table SessionOpen {
     session_id: string;
     session_type: SessionType;
     host: string;
     port: uint16;
     params: [ConnectionParam];
+    jump_hosts: [JumpHost];
 }
 
 table SessionOpenResult {
@@ -106,6 +116,7 @@ table ExecCommand {
     port: uint16;
     params: [ConnectionParam];
     command: string;
+    jump_hosts: [JumpHost];
 }
 
 table ExecCommandResult {

@@ -17,6 +17,44 @@
 #define SSH_READ_BUF_SIZE  16384
 #define SSH_EXEC_BUF_SIZE  (256 * 1024)
 
+int nexterm_extract_jump_hosts(const nexterm_session_t* session,
+                               jump_host_t* jump_hosts,
+                               int max_jump_hosts) {
+    const char* count_str = nexterm_session_get_param(session, "jumpHostCount");
+    if (!count_str) return 0;
+    int count = atoi(count_str);
+    if (count <= 0) return 0;
+    if (count > max_jump_hosts) count = max_jump_hosts;
+
+    for (int i = 0; i < count; i++) {
+        char key[64];
+        memset(&jump_hosts[i], 0, sizeof(jump_host_t));
+
+        snprintf(key, sizeof(key), "jumpHost%d_host", i);
+        const char* host = nexterm_session_get_param(session, key);
+        if (!host || host[0] == '\0') return i;
+        snprintf(jump_hosts[i].host, sizeof(jump_hosts[i].host), "%s", host);
+
+        snprintf(key, sizeof(key), "jumpHost%d_port", i);
+        const char* port_str = nexterm_session_get_param(session, key);
+        jump_hosts[i].port = port_str ? (uint16_t)atoi(port_str) : 22;
+
+        snprintf(key, sizeof(key), "jumpHost%d_username", i);
+        const char* username = nexterm_session_get_param(session, key);
+        if (username) snprintf(jump_hosts[i].username, sizeof(jump_hosts[i].username), "%s", username);
+
+        snprintf(key, sizeof(key), "jumpHost%d_password", i);
+        jump_hosts[i].password = (char*)nexterm_session_get_param(session, key);
+
+        snprintf(key, sizeof(key), "jumpHost%d_privateKey", i);
+        jump_hosts[i].private_key = (char*)nexterm_session_get_param(session, key);
+
+        snprintf(key, sizeof(key), "jumpHost%d_passphrase", i);
+        jump_hosts[i].passphrase = (char*)nexterm_session_get_param(session, key);
+    }
+    return count;
+}
+
 typedef struct {
     nexterm_session_t* session;
     nexterm_control_plane_t* cp;
@@ -119,6 +157,7 @@ static void* ssh_session_thread(void* arg) {
     int ssh_sock = -1;
     LIBSSH2_SESSION* ssh_session = NULL;
     LIBSSH2_CHANNEL* channel = NULL;
+    jump_chain_t jump_chain = {0};
 
     session->state = SESSION_STATE_CONNECTING;
 
@@ -136,8 +175,11 @@ static void* ssh_session_thread(void* arg) {
         return NULL;
     }
 
-    LOG_INFO("SSH session %s: connecting to %s:%u as %s",
-             session->session_id, session->host, session->port, username);
+    jump_host_t jump_hosts[MAX_JUMP_HOSTS];
+    int jump_count = nexterm_extract_jump_hosts(session, jump_hosts, MAX_JUMP_HOSTS);
+
+    LOG_INFO("SSH session %s: connecting to %s:%u as %s (jump_hosts=%d)",
+             session->session_id, session->host, session->port, username, jump_count);
 
     data_fd = nexterm_cp_open_data_connection(cp, session->session_id);
     if (data_fd < 0) {
@@ -148,7 +190,8 @@ static void* ssh_session_thread(void* arg) {
         return NULL;
     }
 
-    if (nexterm_ssh_setup(session->host, session->port, &ssh_sock, &ssh_session) != 0) {
+    if (nexterm_ssh_setup_with_jumphosts(session->host, session->port,
+            jump_hosts, jump_count, &ssh_sock, &ssh_session, &jump_chain) != 0) {
         nexterm_cp_send_session_result(cp, session->session_id, false,
                                        "Failed to connect to SSH host", NULL);
         goto cleanup;
@@ -201,7 +244,7 @@ cleanup:
     session->ssh_channel = NULL;
     session->ssh_sock = -1;
 
-    nexterm_ssh_teardown(ssh_session, channel, ssh_sock, "Session ended");
+    nexterm_ssh_full_cleanup(ssh_session, channel, ssh_sock, &jump_chain, "Session ended");
 
     if (data_fd >= 0)
         close(data_fd);
@@ -252,6 +295,7 @@ static void* tunnel_session_thread(void* arg) {
     int ssh_sock = -1;
     LIBSSH2_SESSION* ssh_session = NULL;
     LIBSSH2_CHANNEL* channel = NULL;
+    jump_chain_t jump_chain = {0};
 
     session->state = SESSION_STATE_CONNECTING;
 
@@ -284,8 +328,11 @@ static void* tunnel_session_thread(void* arg) {
         return NULL;
     }
 
-    LOG_INFO("Tunnel session %s: %s:%u -> forward to %s:%ld",
-             session->session_id, session->host, session->port, remote_host, remote_port);
+    jump_host_t jump_hosts[MAX_JUMP_HOSTS];
+    int jump_count = nexterm_extract_jump_hosts(session, jump_hosts, MAX_JUMP_HOSTS);
+
+    LOG_INFO("Tunnel session %s: %s:%u -> forward to %s:%ld (jump_hosts=%d)",
+             session->session_id, session->host, session->port, remote_host, remote_port, jump_count);
 
     data_fd = nexterm_cp_open_data_connection(cp, session->session_id);
     if (data_fd < 0) {
@@ -296,7 +343,8 @@ static void* tunnel_session_thread(void* arg) {
         return NULL;
     }
 
-    if (nexterm_ssh_setup(session->host, session->port, &ssh_sock, &ssh_session) != 0) {
+    if (nexterm_ssh_setup_with_jumphosts(session->host, session->port,
+            jump_hosts, jump_count, &ssh_sock, &ssh_session, &jump_chain) != 0) {
         nexterm_cp_send_session_result(cp, session->session_id, false,
                                        "Failed to connect to SSH host", NULL);
         goto cleanup;
@@ -339,7 +387,7 @@ cleanup:
     session->ssh_channel = NULL;
     session->ssh_sock = -1;
 
-    nexterm_ssh_teardown(ssh_session, channel, ssh_sock, "Tunnel ended");
+    nexterm_ssh_full_cleanup(ssh_session, channel, ssh_sock, &jump_chain, "Tunnel ended");
 
     if (data_fd >= 0)
         close(data_fd);
@@ -380,6 +428,8 @@ typedef struct {
     char* private_key;
     char* passphrase;
     char* command;
+    jump_host_t jump_hosts[MAX_JUMP_HOSTS];
+    int jump_count;
 } exec_cmd_args_t;
 
 static void exec_cmd_free(exec_cmd_args_t* args) {
@@ -388,6 +438,11 @@ static void exec_cmd_free(exec_cmd_args_t* args) {
     free(args->private_key);
     free(args->passphrase);
     free(args->command);
+    for (int i = 0; i < args->jump_count; i++) {
+        free(args->jump_hosts[i].password);
+        free(args->jump_hosts[i].private_key);
+        free(args->jump_hosts[i].passphrase);
+    }
     free(args);
 }
 
@@ -396,8 +451,10 @@ static void* exec_command_thread(void* arg) {
     int ssh_sock = -1;
     LIBSSH2_SESSION* ssh = NULL;
     LIBSSH2_CHANNEL* channel = NULL;
+    jump_chain_t jump_chain = {0};
 
-    if (nexterm_ssh_setup(args->host, args->port, &ssh_sock, &ssh) != 0) {
+    if (nexterm_ssh_setup_with_jumphosts(args->host, args->port,
+            args->jump_hosts, args->jump_count, &ssh_sock, &ssh, &jump_chain) != 0) {
         nexterm_cp_send_exec_result(args->cp, args->request_id, false,
                                     NULL, NULL, -1, "Failed to connect to SSH host");
         exec_cmd_free(args);
@@ -451,7 +508,7 @@ static void* exec_command_thread(void* arg) {
     }
 
 cleanup:
-    nexterm_ssh_teardown(ssh, channel, ssh_sock, "Done");
+    nexterm_ssh_full_cleanup(ssh, channel, ssh_sock, &jump_chain, "Done");
     exec_cmd_free(args);
     return NULL;
 }
@@ -460,7 +517,9 @@ int nexterm_ssh_exec_command(nexterm_control_plane_t* cp,
                              const char* request_id,
                              const char* host, uint16_t port,
                              const ssh_credentials_t* creds,
-                             const char* command) {
+                             const char* command,
+                             const jump_host_t* jump_hosts,
+                             int jump_count) {
     exec_cmd_args_t* args = calloc(1, sizeof(exec_cmd_args_t));
     if (!args) return -1;
 
@@ -478,6 +537,16 @@ int nexterm_ssh_exec_command(nexterm_control_plane_t* cp,
         !args->passphrase || !args->command) {
         exec_cmd_free(args);
         return -1;
+    }
+
+    args->jump_count = (jump_count > MAX_JUMP_HOSTS) ? MAX_JUMP_HOSTS : jump_count;
+    for (int i = 0; i < args->jump_count; i++) {
+        snprintf(args->jump_hosts[i].host, sizeof(args->jump_hosts[i].host), "%s", jump_hosts[i].host);
+        args->jump_hosts[i].port = jump_hosts[i].port;
+        snprintf(args->jump_hosts[i].username, sizeof(args->jump_hosts[i].username), "%s", jump_hosts[i].username);
+        args->jump_hosts[i].password = strdup(jump_hosts[i].password ? jump_hosts[i].password : "");
+        args->jump_hosts[i].private_key = strdup(jump_hosts[i].private_key ? jump_hosts[i].private_key : "");
+        args->jump_hosts[i].passphrase = strdup(jump_hosts[i].passphrase ? jump_hosts[i].passphrase : "");
     }
 
     pthread_t thread;
