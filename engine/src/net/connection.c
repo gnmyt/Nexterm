@@ -1,6 +1,7 @@
 #include "connection.h"
 #include "control_plane.h"
 #include "ssh.h"
+#include "telnet.h"
 #include "log.h"
 
 #include <guacamole/client.h>
@@ -356,7 +357,7 @@ int nexterm_connection_start_ssh(nexterm_session_t* session,
 
 int nexterm_connection_start_telnet(nexterm_session_t* session,
                                     nexterm_control_plane_t* cp) {
-    return nexterm_connection_start_guac(session, cp);
+    return nexterm_telnet_start(session, cp);
 }
 
 int nexterm_connection_join_guac(nexterm_session_t* session,
@@ -417,6 +418,12 @@ void nexterm_connection_close(nexterm_session_t* session) {
 
     if (session->guac_client)
         guac_client_stop((guac_client*)session->guac_client);
+
+    if (session->telnet_sock >= 0) {
+        shutdown(session->telnet_sock, SHUT_RDWR);
+        close(session->telnet_sock);
+        session->telnet_sock = -1;
+    }
 
     if (session->data_fd >= 0) {
         shutdown(session->data_fd, SHUT_RDWR);

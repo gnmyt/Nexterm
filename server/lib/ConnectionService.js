@@ -1,4 +1,3 @@
-const net = require("node:net");
 const { WebSocket } = require("ws");
 const SessionManager = require("./SessionManager");
 const GuacdClient = require("./GuacdClient");
@@ -167,25 +166,37 @@ const createSSHConnectionForSession = async (sessionId, entry, identity, organiz
 };
 
 const createTelnetConnectionForSession = async (sessionId, entry, organizationId) => {
+    requireEngine();
     const session = requireSession(sessionId);
     const { ip, port = 23 } = entry.config || {};
 
-    return new Promise((resolve, reject) => {
-        const socket = new net.Socket();
-        const timeout = setTimeout(() => { socket.destroy(); reject(new Error("Telnet connection timeout")); }, 30000);
+    if (!ip) throw new Error("Missing host configuration");
 
-        socket.connect(port, ip, async () => {
-            clearTimeout(timeout);
-            await SessionManager.initRecording(sessionId, organizationId);
-            socket.on("data", (data) => SessionManager.appendLog(sessionId, data.toString()));
-            SessionManager.setConnection(sessionId, { socket, auditLogId: session.auditLogId, type: "telnet" });
-            logger.info("Telnet connected", { sessionId, ip, port });
-            resolve({ success: true });
-        });
+    const dataSocket = await openEngineSession(
+        sessionId, SessionType.Telnet, ip, port, {}, entry.config?.engineId
+    );
 
-        socket.on("error", (err) => { clearTimeout(timeout); reject(err); });
-        socket.on("close", () => SessionManager.remove(sessionId));
+    await SessionManager.initRecording(sessionId, organizationId);
+
+    dataSocket.on("data", (data) => SessionManager.appendLog(sessionId, data.toString()));
+    dataSocket.on("close", () => {
+        logger.info("Telnet data connection closed", { sessionId });
+        SessionManager.remove(sessionId);
     });
+    dataSocket.on("error", (err) => {
+        logger.error("Telnet data socket error", { sessionId, error: err.message });
+        SessionManager.remove(sessionId);
+    });
+
+    SessionManager.setConnection(sessionId, {
+        dataSocket,
+        sessionId,
+        type: "telnet",
+        auditLogId: session.auditLogId,
+    });
+
+    logger.info("Telnet connected", { sessionId, ip, port });
+    return { success: true };
 }
 
 const createPveLxcConnectionForSession = async (sessionId, entry, organizationId) => {

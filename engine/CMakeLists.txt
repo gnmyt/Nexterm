@@ -75,6 +75,7 @@ set(ENGINE_SOURCES
     src/net/ssh.c
     src/net/ssh_common.c
     src/net/sftp.c
+    src/net/telnet.c
     src/proto/control_plane.c
 )
 

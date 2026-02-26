@@ -53,6 +53,8 @@ typedef struct nexterm_session {
     void* ssh_channel;
     int ssh_sock;
 
+    int telnet_sock;
+
     pthread_t thread;
     bool thread_active;
 } nexterm_session_t;

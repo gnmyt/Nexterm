@@ -45,6 +45,7 @@ nexterm_session_t* nexterm_sm_create(nexterm_session_manager_t* sm,
     session->join_pipe[1] = -1;
     session->guac_client = NULL;
     session->ssh_sock = -1;
+    session->telnet_sock = -1;
     session->param_count = 0;
 
     sm->count++;

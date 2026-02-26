@@ -3,6 +3,7 @@
 #include "session.h"
 #include "connection.h"
 #include "ssh.h"
+#include "telnet.h"
 #include "sftp.h"
 #include "log.h"
 
@@ -198,6 +199,8 @@ static void handle_session_resize(Nexterm_ControlPlane_Envelope_table_t envelope
     nexterm_session_t* session = nexterm_sm_find(&g_session_manager, sid);
     if (session && session->type == SESSION_TYPE_SSH)
         nexterm_ssh_resize(session, cols, rows);
+    else if (session && session->type == SESSION_TYPE_TELNET)
+        nexterm_telnet_resize(session, cols, rows);
 }
 
 static void handle_session_join(nexterm_control_plane_t* cp,
