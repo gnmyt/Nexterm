@@ -58,4 +58,10 @@ int nexterm_cp_send_exec_result(nexterm_control_plane_t* cp,
                                 int32_t exit_code,
                                 const char* error_message);
 
+int nexterm_cp_send_port_check_result(nexterm_control_plane_t* cp,
+                                       const char* request_id,
+                                       const char** ids,
+                                       const bool* online,
+                                       size_t count);
+
 #endif

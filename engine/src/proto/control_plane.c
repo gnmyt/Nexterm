@@ -13,6 +13,9 @@
 #include <stdlib.h>
 #include <string.h>
 #include <sys/socket.h>
+#include <netdb.h>
+#include <fcntl.h>
+#include <poll.h>
 #include <time.h>
 #include <unistd.h>
 
@@ -271,6 +274,137 @@ static void handle_exec_command(nexterm_control_plane_t* cp,
     nexterm_ssh_exec_command(cp, req_id, host, port, &creds, command);
 }
 
+static bool check_port_open(const char* host, uint16_t port, uint32_t timeout_ms) {
+    struct addrinfo hints = {0};
+    hints.ai_family = AF_UNSPEC;
+    hints.ai_socktype = SOCK_STREAM;
+
+    char port_str[8];
+    snprintf(port_str, sizeof(port_str), "%u", port);
+
+    struct addrinfo* res = NULL;
+    if (getaddrinfo(host, port_str, &hints, &res) != 0 || !res) {
+        if (res) freeaddrinfo(res);
+        return false;
+    }
+
+    int fd = socket(res->ai_family, res->ai_socktype, res->ai_protocol);
+    if (fd < 0) {
+        freeaddrinfo(res);
+        return false;
+    }
+
+    int flags = fcntl(fd, F_GETFL, 0);
+    fcntl(fd, F_SETFL, flags | O_NONBLOCK);
+
+    int rc = connect(fd, res->ai_addr, res->ai_addrlen);
+    freeaddrinfo(res);
+
+    if (rc == 0) {
+        close(fd);
+        return true;
+    }
+
+    if (errno != EINPROGRESS) {
+        close(fd);
+        return false;
+    }
+
+    struct pollfd pfd = { .fd = fd, .events = POLLOUT };
+    rc = poll(&pfd, 1, (int)timeout_ms);
+
+    if (rc <= 0) {
+        close(fd);
+        return false;
+    }
+
+    int err = 0;
+    socklen_t len = sizeof(err);
+    getsockopt(fd, SOL_SOCKET, SO_ERROR, &err, &len);
+    close(fd);
+    return err == 0;
+}
+
+typedef struct {
+    nexterm_control_plane_t* cp;
+    char* request_id;
+    char** ids;
+    char** hosts;
+    uint16_t* ports;
+    size_t count;
+    uint32_t timeout_ms;
+} port_check_ctx_t;
+
+static void free_port_check_ctx(port_check_ctx_t* ctx) {
+    for (size_t i = 0; i < ctx->count; i++) {
+        free(ctx->ids[i]);
+        free(ctx->hosts[i]);
+    }
+    free(ctx->ids);
+    free(ctx->hosts);
+    free(ctx->ports);
+    free(ctx->request_id);
+    free(ctx);
+}
+
+static void* port_check_thread(void* arg) {
+    port_check_ctx_t* ctx = (port_check_ctx_t*)arg;
+    bool* results = calloc(ctx->count, sizeof(bool));
+    if (!results) {
+        free_port_check_ctx(ctx);
+        return NULL;
+    }
+
+    for (size_t i = 0; i < ctx->count; i++)
+        results[i] = check_port_open(ctx->hosts[i], ctx->ports[i], ctx->timeout_ms);
+
+    nexterm_cp_send_port_check_result(ctx->cp, ctx->request_id,
+                                      (const char**)ctx->ids, results, ctx->count);
+    free(results);
+    free_port_check_ctx(ctx);
+    return NULL;
+}
+
+static void handle_port_check(nexterm_control_plane_t* cp,
+                               Nexterm_ControlPlane_Envelope_table_t envelope) {
+    Nexterm_ControlPlane_PortCheck_table_t pc_msg =
+        Nexterm_ControlPlane_Envelope_port_check(envelope);
+    if (!pc_msg) return;
+
+    const char* req_id = Nexterm_ControlPlane_PortCheck_request_id(pc_msg);
+    uint32_t timeout_ms = Nexterm_ControlPlane_PortCheck_timeout_ms(pc_msg);
+    if (timeout_ms == 0) timeout_ms = 2000;
+
+    Nexterm_ControlPlane_PortCheckTarget_vec_t targets =
+        Nexterm_ControlPlane_PortCheck_targets(pc_msg);
+    size_t count = targets ? Nexterm_ControlPlane_PortCheckTarget_vec_len(targets) : 0;
+    if (!req_id || count == 0) return;
+
+    port_check_ctx_t* ctx = calloc(1, sizeof(port_check_ctx_t));
+    ctx->cp = cp;
+    ctx->request_id = strdup(req_id);
+    ctx->count = count;
+    ctx->timeout_ms = timeout_ms;
+    ctx->ids = calloc(count, sizeof(char*));
+    ctx->hosts = calloc(count, sizeof(char*));
+    ctx->ports = calloc(count, sizeof(uint16_t));
+
+    for (size_t i = 0; i < count; i++) {
+        Nexterm_ControlPlane_PortCheckTarget_table_t t =
+            Nexterm_ControlPlane_PortCheckTarget_vec_at(targets, i);
+        ctx->ids[i] = strdup(Nexterm_ControlPlane_PortCheckTarget_id(t));
+        ctx->hosts[i] = strdup(Nexterm_ControlPlane_PortCheckTarget_host(t));
+        ctx->ports[i] = Nexterm_ControlPlane_PortCheckTarget_port(t);
+    }
+
+    pthread_t thread;
+    if (pthread_create(&thread, NULL, port_check_thread, ctx) != 0) {
+        free_port_check_ctx(ctx);
+        return;
+    }
+    pthread_detach(thread);
+}
+
 static void handle_message(nexterm_control_plane_t* cp, const uint8_t* buf) {
     Nexterm_ControlPlane_Envelope_table_t envelope = Nexterm_ControlPlane_Envelope_as_root(buf);
     if (!envelope) {
@@ -306,6 +440,9 @@ static void handle_message(nexterm_control_plane_t* cp, const uint8_t* buf) {
             break;
         case Nexterm_ControlPlane_MessageType_ExecCommand:
             handle_exec_command(cp, envelope);
+            break;
+        case Nexterm_ControlPlane_MessageType_PortCheck:
+            handle_port_check(cp, envelope);
             break;
         default:
             LOG_WARN("Unknown message type: %d",
@@ -578,6 +715,36 @@ int nexterm_cp_send_exec_result(nexterm_control_plane_t* cp,
         Nexterm_ControlPlane_ExecCommandResult_error_message_create_str(&builder, error_message);
 
     Nexterm_ControlPlane_Envelope_exec_command_result_end(&builder);
+    Nexterm_ControlPlane_Envelope_end_as_root(&builder);
+
+    return cp_send(cp, &builder);
+}
+
+int nexterm_cp_send_port_check_result(nexterm_control_plane_t* cp,
+                                       const char* request_id,
+                                       const char** ids,
+                                       const bool* online,
+                                       size_t count) {
+    flatcc_builder_t builder;
+    flatcc_builder_init(&builder);
+
+    Nexterm_ControlPlane_Envelope_start_as_root(&builder);
+    Nexterm_ControlPlane_Envelope_msg_type_add(&builder,
+        Nexterm_ControlPlane_MessageType_PortCheckResult);
+
+    Nexterm_ControlPlane_Envelope_port_check_result_start(&builder);
+    Nexterm_ControlPlane_PortCheckResult_request_id_create_str(&builder, request_id);
+
+    Nexterm_ControlPlane_PortCheckResult_results_start(&builder);
+    for (size_t i = 0; i < count; i++) {
+        Nexterm_ControlPlane_PortCheckResult_results_push_start(&builder);
+        Nexterm_ControlPlane_PortCheckEntry_id_create_str(&builder, ids[i]);
+        Nexterm_ControlPlane_PortCheckEntry_online_add(&builder, online[i]);
+        Nexterm_ControlPlane_PortCheckResult_results_push_end(&builder);
+    }
+    Nexterm_ControlPlane_PortCheckResult_results_end(&builder);
+
+    Nexterm_ControlPlane_Envelope_port_check_result_end(&builder);
     Nexterm_ControlPlane_Envelope_end_as_root(&builder);
 
     return cp_send(cp, &builder);

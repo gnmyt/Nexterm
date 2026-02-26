@@ -19,6 +19,9 @@ enum MessageType : byte {
 
     ExecCommand = 30,
     ExecCommandResult = 31,
+
+    PortCheck = 40,
+    PortCheckResult = 41,
 }
 
 enum SessionType : byte {
@@ -130,6 +133,28 @@ table ConnectionError {
     error_message: string;
 }
 
+table PortCheckTarget {
+    id: string;
+    host: string;
+    port: uint16;
+}
+
+table PortCheck {
+    request_id: string;
+    targets: [PortCheckTarget];
+    timeout_ms: uint32;
+}
+
+table PortCheckEntry {
+    id: string;
+    online: bool;
+}
+
+table PortCheckResult {
+    request_id: string;
+    results: [PortCheckEntry];
+}
+
 
 table Envelope {
     msg_type: MessageType;
@@ -149,6 +174,8 @@ table Envelope {
     connection_error: ConnectionError;
     exec_command: ExecCommand;
     exec_command_result: ExecCommandResult;
+    port_check: PortCheck;
+    port_check_result: PortCheckResult;
 }
 
 root_type Envelope;

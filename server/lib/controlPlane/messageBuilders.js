@@ -11,6 +11,8 @@ const {
     SessionResize,
     ConnectionParam,
     ExecCommand,
+    PortCheck,
+    PortCheckTarget,
 } = require("../generated/control_plane_generated");
 const packageJson = require("../../../package.json");
 
@@ -157,6 +159,33 @@ const buildExecCommand = (requestId, host, port, params, command) => {
     return finishEnvelope(builder, Envelope.endEnvelope(builder));
 };
 
+const buildPortCheck = (requestId, targets, timeoutMs) => {
+    const builder = new flatbuffers.Builder(512);
+    const reqIdOff = builder.createString(requestId);
+
+    const targetOffsets = targets.map(({ id, host, port }) => {
+        const idOff = builder.createString(String(id));
+        const hostOff = builder.createString(host);
+        PortCheckTarget.startPortCheckTarget(builder);
+        PortCheckTarget.addId(builder, idOff);
+        PortCheckTarget.addHost(builder, hostOff);
+        PortCheckTarget.addPort(builder, port);
+        return PortCheckTarget.endPortCheckTarget(builder);
+    });
+    const targetsVecOff = PortCheck.createTargetsVector(builder, targetOffsets);
+
+    PortCheck.startPortCheck(builder);
+    PortCheck.addRequestId(builder, reqIdOff);
+    PortCheck.addTargets(builder, targetsVecOff);
+    PortCheck.addTimeoutMs(builder, timeoutMs);
+    const pcOff = PortCheck.endPortCheck(builder);
+
+    Envelope.startEnvelope(builder);
+    Envelope.addMsgType(builder, MessageType.PortCheck);
+    Envelope.addPortCheck(builder, pcOff);
+    return finishEnvelope(builder, Envelope.endEnvelope(builder));
+};
+
 module.exports = {
     buildEngineHelloAck,
     buildPong,
@@ -166,4 +195,5 @@ module.exports = {
     buildSessionJoin,
     buildSessionResize,
     buildExecCommand,
+    buildPortCheck,
 };

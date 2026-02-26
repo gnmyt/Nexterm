@@ -14,6 +14,7 @@ const {
     buildSessionJoin,
     buildSessionResize,
     buildExecCommand,
+    buildPortCheck,
 } = require("./messageBuilders");
 const logger = require("../../utils/logger");
 const { findByToken, updateLastConnected } = require("../../controllers/engine");
@@ -120,6 +121,16 @@ class ControlPlaneServer extends EventEmitter {
         const requestId = `exec-${Date.now()}-${Math.random().toString(36).substring(2, 10)}`;
         return this._createPendingRequest(requestId, null, () => {
             this._sendFrame(engine.socket, buildExecCommand(requestId, host, port, params, command));
+        });
+    }
+
+    portCheck(targets, timeoutMs = 2000, engineId = null) {
+        const engine = this._resolveEngine(engineId);
+        if (!engine) return Promise.reject(new Error("No engine connected"));
+
+        const requestId = `portcheck-${Date.now()}-${Math.random().toString(36).substring(2, 10)}`;
+        return this._createPendingRequest(requestId, null, () => {
+            this._sendFrame(engine.socket, buildPortCheck(requestId, targets, timeoutMs));
         });
     }
 
@@ -387,6 +398,22 @@ class ControlPlaneServer extends EventEmitter {
                     exitCode: result.exitCode(),
                     errorMessage: result.errorMessage(),
                 });
+                break;
+            }
+
+            case MessageType.PortCheckResult: {
+                const result = envelope.portCheckResult();
+                if (!result) break;
+
+                const requestId = result.requestId();
+                const resultsLen = result.resultsLength();
+                const entries = [];
+                for (let i = 0; i < resultsLen; i++) {
+                    const entry = result.results(i);
+                    entries.push({ id: entry.id(), online: entry.online() });
+                }
+
+                this._resolvePending(requestId, { entries });
                 break;
             }
 
