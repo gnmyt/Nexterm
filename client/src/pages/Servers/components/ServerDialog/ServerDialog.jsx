@@ -343,7 +343,8 @@ export const ServerDialog = ({ open, onClose, currentFolderId, currentOrganizati
                     {activeTab === 1 && tabs[1]?.key === "identities" &&
                         <IdentityPage serverIdentities={identities} setIdentityUpdates={setIdentityUpdates}
                                       identityUpdates={identityUpdates} setIdentities={setIdentities}
-                                      currentOrganizationId={currentOrganizationId} allowedAuthTypes={fieldConfig.allowedAuthTypes} />}
+                                      currentOrganizationId={currentOrganizationId} allowedAuthTypes={fieldConfig.allowedAuthTypes}
+                                      serverName={name} />}
                     {tabs.find((tab, idx) => idx === activeTab && tab.key === "settings") && 
                         <SettingsPage config={config} setConfig={setConfig}
                                       monitoringEnabled={monitoringEnabled} setMonitoringEnabled={setMonitoringEnabled}
