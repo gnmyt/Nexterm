@@ -1557,6 +1557,8 @@
         "copyHere": "Copy here",
         "bigFileConfirm": "This file is {{size}} MB large. Are you sure you want to edit it?",
         "deleteConfirm": "Are you sure you want to delete \"{{name}}\"? This action cannot be undone.",
+        "deleteFailFile": "Failed to delete \"{{name}}\".",
+        "deleteFailFolder": "Failed to delete the folder \"{{name}}\".",
         "selectAll": "Select All",
         "insertSnippet": "Insert Snippet",
         "sendCtrlC": "Send Ctrl+C",
