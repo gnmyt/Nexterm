@@ -21,6 +21,7 @@
     "openid-client": "^6.8.2",
     "sequelize": "^6.37.7",
     "sharp": "^0.34.5",
+    "selfsigned": "^2.4.1",
     "speakeasy": "^2.0.0",
     "sqlite3": "^5.1.7",
     "ssh2": "^1.17.0",
