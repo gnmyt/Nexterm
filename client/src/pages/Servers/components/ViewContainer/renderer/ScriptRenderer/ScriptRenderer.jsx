@@ -245,9 +245,30 @@ export const ScriptRenderer = ({ session, updateProgress, savedState, saveState 
             ws.send(`\x01${term.cols},${term.rows}`);
         };
 
-        ws.onclose = () => {
+        ws.onclose = (event) => {
             clearInterval(interval);
             if (!isCleaningUp) {
+                // Show toast if connection closed with an error
+                if (event.code >= 4000 && event.reason) {
+                    const errorMessage = event.reason.replace('error: ', '').toLowerCase();
+                    let friendlyMessage;
+                    
+                    if (errorMessage.includes('connection not available') || errorMessage.includes('not available')) {
+                        friendlyMessage = t('common.errors.connection.hostUnreachable');
+                    } else if (errorMessage.includes('timeout')) {
+                        friendlyMessage = t('common.errors.connection.timeout');
+                    } else if (errorMessage.includes('refused')) {
+                        friendlyMessage = t('common.errors.connection.refused');
+                    } else if (errorMessage.includes('authentication')) {
+                        friendlyMessage = t('common.errors.connection.authenticationFailed');
+                    } else {
+                        friendlyMessage = event.reason.replace('error: ', '').replace(/\(see logs\)/gi, '').trim();
+                    }
+                    
+                    sendToast("Error", friendlyMessage);
+                } else if (event.code !== 1000 && event.code !== 1005) {
+                    sendToast("Error", t('common.errors.connection.scriptClosedUnexpectedly'));
+                }
                 setState(prev => ({ ...prev, isCompleted: true }));
             }
         };
@@ -255,6 +276,7 @@ export const ScriptRenderer = ({ session, updateProgress, savedState, saveState 
         ws.onerror = (error) => {
             console.error("WebSocket error:", error);
             if (!isCleaningUp) {
+                sendToast("Error", t('common.errors.connection.scriptError'));
                 setState(prev => ({ ...prev, failedStep: prev.currentStep }));
             }
         };
@@ -294,7 +316,7 @@ export const ScriptRenderer = ({ session, updateProgress, savedState, saveState 
             wsRef.current = null;
             fitAddonRef.current = null;
         };
-    }, [sessionToken, selectedFont, fontSize, cursorStyle, cursorBlink, selectedTheme, session.id, getCurrentTheme, theme]);
+    }, [sessionToken, selectedFont, fontSize, cursorStyle, cursorBlink, selectedTheme, session.id, getCurrentTheme, theme, t, sendToast]);
 
     const sendInput = useCallback((value) => {
         if (dialogs.inputPrompt) {

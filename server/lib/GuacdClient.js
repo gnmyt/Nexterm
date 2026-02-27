@@ -143,7 +143,12 @@ class GuacdClient {
             if (errorMatch) {
                 const errorMessage = errorMatch[2];
                 logger.error(`Guacd error received`, { sessionId: this.sessionId, error: errorMessage, isMaster: this.isMaster });
-                this.handleClose(`error: ${errorMessage}`);
+                // Send the error to the client before closing
+                if (this.onDataCallback) {
+                    this.onDataCallback(dataToSend);
+                }
+                // Give time for the error to be sent to client before closing
+                setTimeout(() => this.handleClose(`error: ${errorMessage}`), 100);
                 return;
             }
         }
