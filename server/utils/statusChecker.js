@@ -1,5 +1,5 @@
 const Entry = require("../models/Entry");
-const { checkServerStatus } = require("../hooks/status/portHook");
+const { checkServerStatusBatch } = require("../hooks/status/portHook");
 const { checkPVEStatus } = require("../hooks/status/pveHook");
 const { getMonitoringSettingsInternal } = require("../controllers/monitoring");
 const logger = require("./logger");
@@ -14,9 +14,7 @@ const DEFAULT_BATCH_SIZE = 10;
 const executeByType = async (entry) => {
     const type = entry.type;
 
-    if (type === "server") {
-        return await checkServerStatus(entry);
-    } else if (type === "pve-qemu" || type === "pve-lxc" || type === "pve-shell") {
+    if (type === "pve-qemu" || type === "pve-lxc" || type === "pve-shell") {
         return await checkPVEStatus(entry);
     }
 
@@ -120,24 +118,30 @@ const runStatusCheck = async () => {
             return;
         }
 
-        const batchSize = currentSettings.batchSize || DEFAULT_BATCH_SIZE;
         const batchTimeout = (currentSettings.connectionTimeout || 30) * 1000;
 
-        logger.info(`Checking status for ${entries.length} entries`, { 
-            batchSize: batchSize, 
-            batches: Math.ceil(entries.length / batchSize) 
+        const serverEntries = entries.filter(e => e.type === "server");
+        const pveEntries = entries.filter(e => e.type !== "server");
+
+        logger.info(`Checking status for ${entries.length} entries`, {
+            servers: serverEntries.length,
+            pve: pveEntries.length,
         });
 
         const allResults = [];
 
-        for (let i = 0; i < entries.length; i += batchSize) {
-            const batch = entries.slice(i, i + batchSize);
-            logger.verbose(`Processing batch ${Math.floor(i / batchSize) + 1}`, { 
-                entries: batch.map(e => ({ id: e.id, type: e.type, name: e.name })) 
-            });
-
-            const batchResults = await processBatch(batch, batchTimeout);
+        if (serverEntries.length > 0) {
+            const batchResults = await checkServerStatusBatch(serverEntries, batchTimeout);
             allResults.push(...batchResults);
+        }
+
+        if (pveEntries.length > 0) {
+            const batchSize = currentSettings.batchSize || DEFAULT_BATCH_SIZE;
+            for (let i = 0; i < pveEntries.length; i += batchSize) {
+                const batch = pveEntries.slice(i, i + batchSize);
+                const batchResults = await processBatch(batch, batchTimeout);
+                allResults.push(...batchResults);
+            }
         }
 
         await updateStatuses(allResults);
