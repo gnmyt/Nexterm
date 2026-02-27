@@ -44,7 +44,7 @@
     "dev:engine": "./scripts/build-engine.sh",
     "dev": "concurrently --kill-others-on-fail \"yarn dev:server\" \"yarn dev:client -- --host\" \"yarn schema:watch\"",
     "docs:openapi": "node scripts/generate-openapi.js",
-    "schema:generate": "flatc --ts --ts-flat-files -o server/lib/generated schema/control_plane.fbs schema/sftp_protocol.fbs && esbuild server/lib/generated/*_generated.ts --format=cjs --outdir=server/lib/generated --allow-overwrite --platform=node && rm -f server/lib/generated/*.ts",
+    "schema:generate": "flatc --ts --ts-flat-files -o server/lib/generated schema/control_plane.fbs schema/sftp_protocol.fbs && esbuild server/lib/generated/nexterm/control-plane.ts --bundle --format=cjs --outfile=server/lib/generated/control_plane_generated.js --allow-overwrite --platform=node --external:flatbuffers && esbuild server/lib/generated/nexterm/sftp-protocol.ts --bundle --format=cjs --outfile=server/lib/generated/sftp_protocol_generated.js --allow-overwrite --platform=node --external:flatbuffers && rm -rf server/lib/generated/nexterm",
     "schema:watch": "nodemon --watch schema -e fbs --exec 'yarn schema:generate'",
     "docs:dev": "yarn docs:openapi && vitepress dev docs",
     "docs:build": "yarn docs:openapi && vitepress build docs",

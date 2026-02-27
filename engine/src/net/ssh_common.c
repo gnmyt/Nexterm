@@ -11,6 +11,7 @@
 #include <sys/socket.h>
 #include <poll.h>
 #include <errno.h>
+#include <stdlib.h>
 
 int nexterm_ssh_setup(const char* host, uint16_t port,
                       int* out_sock, LIBSSH2_SESSION** out_session) {

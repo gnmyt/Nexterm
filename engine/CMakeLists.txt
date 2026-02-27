@@ -27,7 +27,7 @@ else()
     set(FLATCC_BUILD_DIR ${CMAKE_BINARY_DIR}/flatcc_project-prefix/src/flatcc_project)
     ExternalProject_Add(flatcc_project
         GIT_REPOSITORY https://github.com/dvidelabs/flatcc.git
-        GIT_TAG v0.6.1
+        GIT_TAG master
         CMAKE_ARGS -DFLATCC_TEST=OFF
                    -DFLATCC_REFLECTION=OFF
                    -DFLATCC_INSTALL=OFF
