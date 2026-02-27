@@ -310,6 +310,29 @@ export const Servers = () => {
         }
     };
 
+    const reconnectSession = async (sessionId) => {
+        try {
+            const result = await postRequest(`/connections/${sessionId}/reconnect`, {
+                tabId: getTabId(),
+                browserId: getBrowserId(),
+            });
+
+            if (result?.sessionId) {
+                const newSessionId = result.sessionId;
+                setActiveSessions(prevSessions => prevSessions.map(session =>
+                    session.id === sessionId
+                        ? { ...session, id: newSessionId, shareId: null, shareWritable: false }
+                        : session
+                ));
+                setActiveSessionId(currentActiveId => currentActiveId === sessionId ? newSessionId : currentActiveId);
+                return { sessionId: newSessionId };
+            }
+        } catch (error) {
+            console.error("Failed to reconnect session", error);
+        }
+        return null;
+    };
+
     const openTerminalFromFileManager = async (sessionId, path) => {
         try {
             const originalSession = activeSessions.find(s => s.id === sessionId);
@@ -490,6 +513,7 @@ export const Servers = () => {
                                closeSession={closeSession}
                                activeSessionId={activeSessionId} setActiveSessionId={setActiveSessionId}
                                hibernateSession={hibernateSession} duplicateSession={duplicateSession}
+                               reconnectSession={reconnectSession}
                                setOpenFileEditors={setOpenFileEditors}
                                openTerminalFromFileManager={openTerminalFromFileManager} />}
             {openFileEditors.map((editor, index) => (

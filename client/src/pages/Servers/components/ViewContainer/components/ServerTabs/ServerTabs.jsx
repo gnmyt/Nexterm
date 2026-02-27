@@ -1,7 +1,7 @@
 import { useRef, useState, useEffect, useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import Icon from "@mdi/react";
-import { mdiClose, mdiViewSplitVertical, mdiChevronLeft, mdiChevronRight, mdiSleep, mdiOpenInNew, mdiShareVariant, mdiLinkVariant, mdiPencil, mdiEye, mdiCloseCircle, mdiContentDuplicate } from "@mdi/js";
+import { mdiClose, mdiViewSplitVertical, mdiChevronLeft, mdiChevronRight, mdiSleep, mdiOpenInNew, mdiShareVariant, mdiLinkVariant, mdiPencil, mdiEye, mdiCloseCircle, mdiContentDuplicate, mdiRefresh } from "@mdi/js";
 import { useDrag, useDrop } from "react-dnd";
 import TerminalActionsMenu from "../TerminalActionsMenu";
 import { ContextMenu, ContextMenuItem, ContextMenuSeparator, useContextMenu } from "@/common/components/ContextMenu";
@@ -9,6 +9,7 @@ import { useActiveSessions } from "@/common/contexts/SessionContext.jsx";
 import { postRequest, deleteRequest, patchRequest } from "@/common/utils/RequestUtil";
 import { getBaseUrl } from "@/common/utils/ConnectionUtil.js";
 import { getIconPath } from "@/common/utils/iconUtils.js";
+import { useTranslation } from "react-i18next";
 import "./styles.sass";
 
 const DraggableTab = ({
@@ -19,6 +20,7 @@ const DraggableTab = ({
     closeSession,
     hibernateSession,
     duplicateSession,
+    onReconnect,
     index,
     moveTab,
     progress = 0,
@@ -168,6 +170,11 @@ const DraggableTab = ({
                     onClick={() => duplicateSession(session.id)}
                 />
                 <ContextMenuItem
+                    icon={mdiRefresh}
+                    label={t("servers.tabs.contextMenu.reconnectSession")}
+                    onClick={onReconnect}
+                />
+                <ContextMenuItem
                     icon={mdiSleep}
                     label={t("servers.tabs.contextMenu.hibernateSession")}
                     onClick={() => hibernateSession(session.id)}
@@ -190,6 +197,7 @@ export const ServerTabs = ({
     closeSession,
     hibernateSession,
     duplicateSession,
+    reconnectSession,
     layoutMode,
     onToggleSplit,
     orderRef,
@@ -293,6 +301,20 @@ export const ServerTabs = ({
         if (onTabOrderChange) onTabOrderChange(newOrder);
     };
 
+    const handleReconnect = useCallback(async (sessionId) => {
+        if (!reconnectSession) return;
+        const result = await reconnectSession(sessionId);
+        const newSessionId = result?.sessionId;
+        if (newSessionId && newSessionId !== sessionId) {
+            setTabOrder(prev => {
+                const updated = prev.map(id => id === sessionId ? newSessionId : id);
+                if (orderRef) orderRef.current = updated;
+                if (onTabOrderChange) onTabOrderChange(updated);
+                return updated;
+            });
+        }
+    }, [reconnectSession, orderRef, onTabOrderChange]);
+
     const orderedSessions = tabOrder.map(sessionId => activeSessions.find(session => session.id === sessionId)).filter(Boolean);
 
     return (
@@ -325,6 +347,7 @@ export const ServerTabs = ({
                             <DraggableTab key={session.id} session={session} server={session.server} index={index} moveTab={moveTab}
                                 activeSessionId={activeSessionId} setActiveSessionId={setActiveSessionId}
                                 closeSession={closeSession} hibernateSession={hibernateSession} duplicateSession={duplicateSession}
+                                onReconnect={() => handleReconnect(session.id)}
                                 progress={sessionProgress[session.id] || 0} />
                         );
                     })}

@@ -1274,6 +1274,11 @@
       "editTag": "Edit tag",
       "deleteTag": "Delete tag"
     },
+    "tabs": {
+      "contextMenu": {
+        "reconnectSession": "Reconnect"
+      }
+    },
     "contextMenu": {
       "createFolder": "Create Folder",
       "deleteFolder": "Delete Folder",
@@ -1321,11 +1326,6 @@
     "wol": {
       "successDescription": "Magic packet sent to {{name}}",
       "errorDescription": "Failed to send magic packet"
-    },
-    "messages": {
-      "usernameRequired": "Username is required",
-      "passwordRequired": "Password is required",
-      "sshKeyRequired": "SSH key is required"
     },
     "dialog": {
       "addServer": "Add server",
@@ -1673,6 +1673,9 @@
       "badgeOn": "ON"
     },
     "messages": {
+      "usernameRequired": "Username is required",
+      "passwordRequired": "Password is required",
+      "sshKeyRequired": "SSH key is required",
       "fillRequiredFields": "Please fill in all required fields",
       "serverCreated": "Server created successfully",
       "serverUpdated": "Server updated successfully",
