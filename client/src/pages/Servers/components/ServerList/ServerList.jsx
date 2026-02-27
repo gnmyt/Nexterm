@@ -490,7 +490,7 @@ export const ServerList = ({
                         <div className={`no-servers${isOver ? " drop-zone-active" : ""}`}
                             onContextMenu={handleContextMenu}>
                             <Icon path={mdiCursorDefaultClick} />
-                            <p>Right-click to add a new server</p>
+                            <p>{t("servers.addServerNote")}</p>
                         </div>
                     )}
 
