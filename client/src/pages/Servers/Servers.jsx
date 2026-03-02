@@ -142,8 +142,6 @@ export const Servers = () => {
             return;
         }
 
-        // If server has no identity assigned, open Quick Connect modal
-        // Don't show Quick Connect for PVE entries
         const isPveEntry = server?.type?.startsWith("pve-");
         const hasIdentities = server?.identities && server.identities.length > 0;
         if (server && !isPveEntry && !hasIdentities) {
