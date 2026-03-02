@@ -27,6 +27,13 @@ export const AuditTable = ({ logs, loading, pagination, onPageChange, getIconFor
         };
     }, []);
 
+    const formatSessionDuration = useCallback((seconds, t) => {
+        if (!seconds && seconds !== 0) return "";
+        if (seconds < 60) return `${seconds} ${t("audit.table.durationUnits.seconds")}`;
+        if (seconds < 3600) return `${Math.floor(seconds / 60)} ${t("audit.table.durationUnits.minutes")}`;
+        return `${Math.floor(seconds / 3600)} ${t("audit.table.durationUnits.hours")}`;
+    }, []);
+
     const formatAction = useCallback((action) =>
             action.replace(".", " → ").replace(/_/g, " ").toUpperCase()
         , []);
@@ -55,13 +62,20 @@ export const AuditTable = ({ logs, loading, pagination, onPageChange, getIconFor
             <div className="audit-details">
                 {Object.entries(details).map(([key, value]) => (
                     <div key={key} className="detail-item">
-                        <span className="detail-key">{key.replace(/([A-Z])/g, " $1").toLowerCase()}:</span>
-                        <span className="detail-value">{String(value)}</span>
+                        <span className="detail-key">
+                            {key.replace(/([A-Z])/g, " $1").toLowerCase()}:
+                        </span>
+                        <span className="detail-value">
+                            {key === "sessionDuration" 
+                                ? formatSessionDuration(Number(value), t)
+                                : String(value)
+                            }
+                        </span>
                     </div>
                 ))}
             </div>
         );
-    }, []);
+    }, [t]);
 
     const handleRowClick = useCallback((logId) => {
         setExpandedRow(prev => prev === logId ? null : logId);
