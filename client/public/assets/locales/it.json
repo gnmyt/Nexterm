@@ -1408,7 +1408,7 @@
         },
         "legacyCrypto": {
           "title": "Consenti crittografia legacy",
-          "description": "Abilitala solo se la connessione SSH non riesce a causa di dispositivi di rete legacy che richiedono algoritmi non sicuri."
+          "description": "Abilitala solo se la connessione SSH non riesce a causa di server legacy che richiedono algoritmi non sicuri."
         },
         "noSettings": "Non sono disponibili altre impostazioni per questo tipo di voce."
       },

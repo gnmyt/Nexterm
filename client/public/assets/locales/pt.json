@@ -1408,7 +1408,7 @@
         },
         "legacyCrypto": {
           "title": "Permitir criptografia legada",
-          "description": "Ative apenas se a conexão SSH falhar devido a dispositivos de rede legados que exigem algoritmos inseguros."
+          "description": "Ative apenas se a conexão SSH falhar devido a servidores legados que exigem algoritmos inseguros."
         },
         "noSettings": "Não há configurações adicionais disponíveis para esse tipo de entrada."
       },
