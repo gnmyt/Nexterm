@@ -1,9 +1,10 @@
 import { useRef, useState, useEffect, useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import Icon from "@mdi/react";
-import { mdiClose, mdiViewSplitVertical, mdiChevronLeft, mdiChevronRight, mdiSleep, mdiOpenInNew, mdiShareVariant, mdiLinkVariant, mdiPencil, mdiEye, mdiCloseCircle, mdiContentDuplicate } from "@mdi/js";
+import { mdiClose, mdiViewSplitVertical, mdiChevronLeft, mdiChevronRight, mdiSleep, mdiOpenInNew, mdiShareVariant, mdiLinkVariant, mdiPencil, mdiEye, mdiCloseCircle, mdiContentDuplicate, mdiKeyboard } from "@mdi/js";
 import { useDrag, useDrop } from "react-dnd";
 import TerminalActionsMenu from "../TerminalActionsMenu";
+import { KEYBOARD_SHORTCUTS } from "../TerminalActionsMenu/components/KeyboardShortcutsMenu/KeyboardShortcutsMenu.jsx";
 import { ContextMenu, ContextMenuItem, ContextMenuSeparator, useContextMenu } from "@/common/components/ContextMenu";
 import { useActiveSessions } from "@/common/contexts/SessionContext.jsx";
 import { postRequest, deleteRequest, patchRequest } from "@/common/utils/RequestUtil";
@@ -19,6 +20,7 @@ const DraggableTab = ({
     closeSession,
     hibernateSession,
     duplicateSession,
+    onKeyboardShortcut,
     index,
     moveTab,
     progress = 0,
@@ -30,6 +32,7 @@ const DraggableTab = ({
     const canPopOut = !session.scriptId && session.type !== "sftp";
     const canShare = canPopOut;
     const isSharing = !!session.shareId;
+    const isRdp = session.server?.protocol === "rdp";
 
     const handleShare = useCallback(async (writable) => {
         const result = await postRequest(`connections/${session.id}/share`, { writable });
@@ -159,7 +162,24 @@ const DraggableTab = ({
                             <ContextMenuItem icon={mdiPencil} label={t("servers.tabs.contextMenu.readWrite")} onClick={() => handlePermissionChange(true)} disabled={session.shareWritable} />
                         </ContextMenuItem>
                         <ContextMenuItem icon={mdiCloseCircle} label={t("servers.tabs.contextMenu.stopSharing")} onClick={handleStopSharing} danger />
+                        {!isRdp && <ContextMenuSeparator />}
+                    </>
+                )}
+                {isRdp && (
+                    <>
                         <ContextMenuSeparator />
+                        <ContextMenuItem
+                            icon={mdiKeyboard}
+                            label={t("servers.tabs.contextMenu.keyboardShortcuts")}
+                        >
+                            {KEYBOARD_SHORTCUTS.map((shortcut, index) => (
+                                <ContextMenuItem
+                                    key={index}
+                                    label={shortcut.label}
+                                    onClick={() => onKeyboardShortcut?.(shortcut.keys)}
+                                />
+                            ))}
+                        </ContextMenuItem>
                     </>
                 )}
                 <ContextMenuItem
@@ -325,6 +345,7 @@ export const ServerTabs = ({
                             <DraggableTab key={session.id} session={session} server={session.server} index={index} moveTab={moveTab}
                                 activeSessionId={activeSessionId} setActiveSessionId={setActiveSessionId}
                                 closeSession={closeSession} hibernateSession={hibernateSession} duplicateSession={duplicateSession}
+                                onKeyboardShortcut={onKeyboardShortcut}
                                 progress={sessionProgress[session.id] || 0} />
                         );
                     })}
