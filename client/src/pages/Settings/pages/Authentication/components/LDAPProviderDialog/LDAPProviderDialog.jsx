@@ -94,7 +94,7 @@ export const LDAPProviderDialog = ({ open, onClose, provider, onSave }) => {
 
                 <div className="form-group">
                     <label>{T("fields.userSearchFilter")}</label>
-                    <Input icon={mdiFilter} placeholder={T("fields.userSearchFilterPlaceholder")} value={form.userSearchFilter} setValue={set("userSearchFilter")} />
+                    <Input icon={mdiFilter} placeholder={T("fields.userSearchFilterPlaceholder")} value={form.userSearchFilter} setValue={set("userSearchFilter")} autoComplete="off" />
                 </div>
 
                 <div className="form-group toggle-group">
