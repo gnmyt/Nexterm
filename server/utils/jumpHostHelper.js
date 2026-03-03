@@ -1,52 +1,63 @@
-const crypto = require("crypto");
 const sshd = require("ssh2");
+const crypto = require("node:crypto");
 const { getIdentityCredentials, listIdentities } = require("../controllers/identity");
 const Entry = require("../models/Entry");
 const EntryIdentity = require("../models/EntryIdentity");
 const Identity = require("../models/Identity");
 
-// Default ssh2 algorithm sets (modern, secure algorithms)
-const ssh2Defaults = {
-    serverHostKey: ["ssh-ed25519", "ecdsa-sha2-nistp256", "ecdsa-sha2-nistp384", "ecdsa-sha2-nistp521", "rsa-sha2-512", "rsa-sha2-256", "ssh-rsa"],
-    kex: ["curve25519-sha256", "curve25519-sha256@libssh.org", "ecdh-sha2-nistp256", "ecdh-sha2-nistp384", "ecdh-sha2-nistp521", "diffie-hellman-group-exchange-sha256", "diffie-hellman-group14-sha256", "diffie-hellman-group15-sha512", "diffie-hellman-group16-sha512", "diffie-hellman-group17-sha512", "diffie-hellman-group18-sha512"],
-    cipher: ["chacha20-poly1305@openssh.com", "aes128-gcm", "aes128-gcm@openssh.com", "aes256-gcm", "aes256-gcm@openssh.com", "aes128-ctr", "aes192-ctr", "aes256-ctr"],
-    hmac: ["hmac-sha2-256-etm@openssh.com", "hmac-sha2-512-etm@openssh.com", "hmac-sha1-etm@openssh.com", "hmac-sha2-256", "hmac-sha2-512", "hmac-sha1"],
-};
-
-// Define everything we want to evaluate for legacy devices
-const rawLegacyAlgorithms = {
-    serverHostKey: ["ssh-dss"],
-    kex: ["diffie-hellman-group1-sha1", "diffie-hellman-group14-sha1", "diffie-hellman-group-exchange-sha1"],
-    cipher: ["3des-cbc", "aes128-cbc", "aes192-cbc", "aes256-cbc", "blowfish-cbc", "cast128-cbc", "arcfour", "arcfour128", "arcfour256"],
-    hmac: ["hmac-md5", "hmac-md5-96", "hmac-sha1-96", "hmac-sha2-256-96", "hmac-sha2-512-96"],
+// Define everything we want to evaluate for legacy support
+const legacyAlgorithmCandidates = {
+    serverHostKey: ["ssh-rsa", "ssh-dss"],
+    kex: [
+        "diffie-hellman-group14-sha1", 
+        "diffie-hellman-group1-sha1", 
+        "diffie-hellman-group-exchange-sha1"
+    ],
+    cipher: [
+        "3des-cbc", "aes128-cbc", "aes192-cbc", "aes256-cbc", 
+        "blowfish-cbc", "cast128-cbc", "arcfour", "arcfour128", "arcfour256"
+    ],
+    hmac: [
+        "hmac-sha1", "hmac-sha1-96", "hmac-md5", "hmac-md5-96", 
+        "hmac-sha2-256-96", "hmac-sha2-512-96"
+    ],
 };
 
 // Map SSH names to OpenSSL names for validation
 const sshToOpenSSL = {
-    ciphers: { "3des-cbc": "des-ede3-cbc", "aes128-cbc": "aes-128-cbc", "aes192-cbc": "aes-192-cbc", "aes256-cbc": "aes-256-cbc", "blowfish-cbc": "bf-cbc", "cast128-cbc": "cast5-cbc", "arcfour": "rc4", "arcfour128": "rc4", "arcfour256": "rc4" },
-    hashes: { "hmac-md5": "md5", "hmac-md5-96": "md5", "hmac-sha1-96": "sha1", "hmac-sha2-256-96": "sha256", "hmac-sha2-512-96": "sha512" }
+    ciphers: {
+        "3des-cbc": "des-ede3-cbc",
+        "aes128-cbc": "aes-128-cbc",
+        "aes192-cbc": "aes-192-cbc",
+        "aes256-cbc": "aes-256-cbc",
+        "blowfish-cbc": "bf-cbc",
+        "cast128-cbc": "cast5-cbc",
+        "arcfour": "rc4",
+        "arcfour128": "rc4",
+        "arcfour256": "rc4"
+    },
+    hashes: {
+        "hmac-sha1": "sha1",
+        "hmac-sha1-96": "sha1",
+        "hmac-md5": "md5",
+        "hmac-md5-96": "md5",
+        "hmac-sha2-256-96": "sha256",
+        "hmac-sha2-512-96": "sha512"
+    }
 };
 
-// Dynamically build the safe legacy array based on OS capabilities
+// Dynamically build the safe legacy array based on local OpenSSL capabilities
 const supportedCiphers = crypto.getCiphers();
 const supportedHashes = crypto.getHashes();
 
-// Legacy algorithm sets for older SSH devices (e.g. ssh-rsa/ssh-dss, weak kex, CBC ciphers)
 const legacyAlgorithms = {
-    // Keys and KEX don't rely directly on getCiphers(), so just filter out duplicates
-    serverHostKey: rawLegacyAlgorithms.serverHostKey.filter(k => !ssh2Defaults.serverHostKey.includes(k)),
-    kex: rawLegacyAlgorithms.kex.filter(k => !ssh2Defaults.kex.includes(k)),
-
-    // Filter ciphers: Must NOT be in modern defaults, AND must be supported by local OpenSSL
-    cipher: rawLegacyAlgorithms.cipher.filter(c => {
-        if (ssh2Defaults.cipher.includes(c)) return false;
+    serverHostKey: legacyAlgorithmCandidates.serverHostKey,
+    kex: legacyAlgorithmCandidates.kex,
+    cipher: legacyAlgorithmCandidates.cipher.filter(c => {
         const osslName = sshToOpenSSL.ciphers[c];
         return osslName && supportedCiphers.includes(osslName);
     }),
-
-    // Filter HMACs: Must NOT be in modern defaults, AND hash must be supported by local OpenSSL
-    hmac: rawLegacyAlgorithms.hmac.filter(h => {
-        if (ssh2Defaults.hmac.includes(h)) return false;
+    hmac: legacyAlgorithmCandidates.hmac.filter(h => {
         const osslName = sshToOpenSSL.hashes[h];
         return osslName && supportedHashes.includes(osslName);
     })
@@ -55,14 +66,9 @@ const legacyAlgorithms = {
 const buildSSHOptions = (identity, credentials, entryConfig) => {
     const base = { host: entryConfig.ip, port: entryConfig.port, username: identity.username, tryKeyboard: true };
 
-    // Inject legacy algorithms when enableLegacyCrypto is set, to support older network devices
+    // Inject ONLY legacy algorithms when the toggle is enabled
     if (entryConfig.enableLegacyCrypto) {
-        base.algorithms = {
-            serverHostKey: [...ssh2Defaults.serverHostKey, ...legacyAlgorithms.serverHostKey],
-            kex: [...ssh2Defaults.kex, ...legacyAlgorithms.kex],
-            cipher: [...ssh2Defaults.cipher, ...legacyAlgorithms.cipher],
-            hmac: [...ssh2Defaults.hmac, ...legacyAlgorithms.hmac],
-        };
+        base.algorithms = legacyAlgorithms;
     }
 
     if (identity.type === "password" || identity.type === "password-only") {
