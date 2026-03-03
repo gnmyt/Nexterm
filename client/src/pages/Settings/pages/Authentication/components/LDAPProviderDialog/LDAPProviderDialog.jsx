@@ -41,7 +41,7 @@ export const LDAPProviderDialog = ({ open, onClose, provider, onSave }) => {
                 firstNameAttribute: form.firstNameAttr, lastNameAttribute: form.lastNameAttr,
                 ...(form.bindPassword !== "********" && { bindPassword: form.bindPassword }),
             };
-            await (provider ? patchRequest(`auth/providers/admin/ldap/${provider.id}`, data) : putRequest("auth/providers/admin/ldap", data));
+            await (provider ? patchRequest(`auth/providers/admin/ldap/${provider.id}`, data) : putRequest("auth/providers/admin/ldap", { ...data, enabled: true }));
             onSave(); onClose();
         } catch (e) { sendToast("Error", e.message || T("messages.saveFailed")); }
     };

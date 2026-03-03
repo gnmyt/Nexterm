@@ -226,6 +226,11 @@
         "personal": "Personal",
         "user": "User #{{id}}",
         "organization": "Org #{{id}}"
+      },
+      "durationUnits": {
+        "seconds": "seconds",
+        "minutes": "minutes",
+        "hours": "hours"
       }
     },
     "pagination": {
@@ -844,6 +849,7 @@
     },
     "authentication": {
       "title": "{{count}} Authentication Providers",
+      "internalProviderName": "Internal Authentication",
       "addProvider": "Add Provider",
       "addLdapProvider": "Add LDAP",
       "system": "System",
@@ -1302,6 +1308,20 @@
       "shutdown": "Shutdown",
       "stop": "Stop",
       "start": "Start"
+    },
+    "tabs": {
+      "contextMenu": {
+        "popOut": "Pop Out",
+        "startSharing": "Start Sharing",
+        "readOnly": "Read-only",
+        "readWrite": "Read & Write",
+        "copyShareLink": "Copy Share Link",
+        "changePermissions": "Change Permissions",
+        "stopSharing": "Stop Sharing",
+        "duplicate": "Duplicate",
+        "hibernateSession": "Hibernate",
+        "closeSession": "Disconnect"
+      }
     },
     "wol": {
       "successDescription": "Magic packet sent to {{name}}",

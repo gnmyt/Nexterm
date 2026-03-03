@@ -10,6 +10,7 @@ const { hasOrganizationAccess } = require("../utils/permission");
 const { Op } = require("sequelize");
 const logger = require("../utils/logger");
 const { getRecordingInfo } = require("../utils/recordingService");
+const { normalizeIp } = require("../utils/ip");
 
 const RESOURCE_CONFIG = {
     entry: { model: Entry, detailsKey: "name" },
@@ -112,7 +113,7 @@ const createAuditLog = async ({
 
         const auditLog = await AuditLog.create({
             accountId, organizationId, action, resource, resourceId, details,
-            ipAddress, userAgent, reason, timestamp: new Date(),
+            ipAddress: normalizeIp(ipAddress), userAgent, reason, timestamp: new Date(),
         });
 
         return auditLog.id;
