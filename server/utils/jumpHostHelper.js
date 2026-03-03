@@ -5,7 +5,7 @@ const EntryIdentity = require("../models/EntryIdentity");
 const Identity = require("../models/Identity");
 
 const buildSSHOptions = (identity, credentials, entryConfig) => {
-    const base = { host: entryConfig.ip, port: entryConfig.port, username: identity.username, tryKeyboard: true };
+    const base = { host: entryConfig.ip, port: entryConfig.port, username: identity.username, tryKeyboard: true, readyTimeout: 30000 };
     
     if (identity.type === "password" || identity.type === "password-only") {
         return { ...base, password: credentials.password };
