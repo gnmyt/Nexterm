@@ -3,7 +3,7 @@ import SelectBox from "@/common/components/SelectBox";
 import ToggleSwitch from "@/common/components/ToggleSwitch";
 import { ServerContext } from "@/common/contexts/ServerContext.jsx";
 import Icon from "@mdi/react";
-import { mdiServerNetwork, mdiClose, mdiPlus, mdiChartLine, mdiMonitor, mdiPalette, mdiVolumeHigh, mdiPowerPlug, mdiKeyboardOutline } from "@mdi/js";
+import { mdiServerNetwork, mdiClose, mdiPlus, mdiChartLine, mdiMonitor, mdiPalette, mdiVolumeHigh, mdiPowerPlug, mdiKeyboardOutline, mdiLockOutline } from "@mdi/js";
 import { useTranslation } from "react-i18next";
 
 const COLOR_DEPTHS = [
@@ -235,7 +235,10 @@ const SettingsPage = ({ config, setConfig, monitoringEnabled, setMonitoringEnabl
             {showJumpHosts && (
                 <div className="settings-toggle">
                     <div className="settings-toggle-info">
-                        <span className="settings-toggle-label">{t('servers.dialog.settings.legacyCrypto.title')}</span>
+                        <span className="settings-toggle-label">
+                            <Icon path={mdiLockOutline} size={0.8} style={{ marginRight: '8px', verticalAlign: 'middle' }} />
+                            {t('servers.dialog.settings.legacyCrypto.title')}
+                        </span>
                         <span className="settings-toggle-description">{t('servers.dialog.settings.legacyCrypto.description')}</span>
                     </div>
                     <ToggleSwitch checked={enableLegacyCrypto} onChange={(val) => handleDisplaySettingChange('enableLegacyCrypto', val, setEnableLegacyCrypto)} id="enable-legacy-crypto" />
