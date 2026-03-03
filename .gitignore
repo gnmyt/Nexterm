@@ -142,4 +142,3 @@ docs/.vitepress/dist
 docs/.vitepress/cache
 docs/public/openapi.json
 .DS_Store
-client/package-lock.json
