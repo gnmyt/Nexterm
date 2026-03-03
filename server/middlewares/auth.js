@@ -6,7 +6,7 @@ const Identity = require("../models/Identity");
 const { createRDPToken, createVNCToken } = require("../utils/tokenGenerator");
 const { validateEntryAccess } = require("../controllers/entry");
 const { getOrganizationAuditSettingsInternal } = require("../controllers/audit");
-const { getIdentityCredentials } = require("../controllers/identity");
+const { getIdentityCredentials, listIdentities } = require("../controllers/identity");
 const logger = require("../utils/logger");
 
 module.exports.authenticate = async (req, res, next) => {
@@ -29,6 +29,21 @@ module.exports.authenticate = async (req, res, next) => {
     if (req.user === null)
         return res.status(401).json({ message: "The account associated to the token is not registered" });
 
+    next();
+};
+
+module.exports.authenticateDownload = async (req, res, next) => {
+    const token = req.query.token;
+    if (!token) return res.status(401).json({ message: "Token required" });
+    
+    const session = await Session.findOne({ where: { token } });
+    if (!session) return res.status(401).json({ message: "Invalid token" });
+    
+    const user = await Account.findByPk(session.accountId);
+    if (!user || user.role !== "admin") return res.status(403).json({ message: "Admin access required" });
+    
+    req.user = user;
+    req.session = session;
     next();
 };
 
@@ -57,11 +72,25 @@ module.exports.authorizeGuacamole = async (req) => {
 
     if (!((await validateEntryAccess(req.user.id, entry)).valid)) return;
 
+    const accessibleIds = new Set((await listIdentities(req.user.id)).map(i => i.id));
     const entryIdentities = await EntryIdentity.findAll({ where: { entryId: entry.id }, order: [['isDefault', 'DESC']] });
     
     if (entryIdentities.length === 0 && query.identity) return;
 
-    const identityId = query.identity || (entryIdentities.length > 0 ? entryIdentities[0].identityId : null);
+    let identityId = null;
+    if (query.identity) {
+        const requestedId = parseInt(query.identity, 10);
+        if (!accessibleIds.has(requestedId)) return;
+        identityId = requestedId;
+    } else {
+        for (const ei of entryIdentities) {
+            if (accessibleIds.has(ei.identityId)) {
+                identityId = ei.identityId;
+                break;
+            }
+        }
+    }
+
     const identity = identityId ? await Identity.findByPk(identityId) : null;
     if (identity === null) return;
 
@@ -85,8 +114,7 @@ module.exports.authorizeGuacamole = async (req) => {
                 entry.config.keyboardLayout || "en-us-qwerty");
             break;
         case "vnc":
-            connectionConfig = createVNCToken(entry.config.ip, entry.config.port, identity.username, credentials.password,
-                entry.config.keyboardLayout || "en-us-qwerty");
+            connectionConfig = createVNCToken(entry.config.ip, entry.config.port, identity.username, credentials.password);
             break;
         default:
             return;

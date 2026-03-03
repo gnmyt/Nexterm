@@ -3,16 +3,31 @@
     "error": "Error",
     "success": "Éxito",
     "loading": "Cargando...",
+    "saving": "Ahorrar...",
+    "close": "Cerrar",
+    "cancel": "Cancela",
+    "save": "Guarda",
+    "download": "Descarga",
+    "maximize": "Maximiza",
+    "restore": "Restaura",
     "actions": {
       "cancel": "Cancela",
       "confirm": "Confirma",
+      "discard": "Descartar",
       "login": "Iniciar sesión",
       "register": "Regístrate en",
       "save": "Guardar",
       "download": "Descarga",
       "close": "Cerrar",
       "maximize": "Maximizar",
-      "restore": "Restaurar"
+      "restore": "Restaurar",
+      "back": "Volver"
+    },
+    "iconChooser": {
+      "searchIcons": "Buscar iconos...",
+      "searchResults": "Resultados de la búsqueda",
+      "popularIcons": "Iconos populares",
+      "noResults": "No se han encontrado iconos"
     },
     "labels": {
       "username": "Nombre de usuario",
@@ -31,19 +46,84 @@
     },
     "confirmDialog": {
       "title": "¿Estás seguro?",
-      "defaultText": "Esta acción no se puede deshacer."
+      "defaultText": "Esta acción no se puede deshacer.",
+      "unsavedChangesTitle": "Cambios no guardados",
+      "unsavedChangesText": "Tienes cambios sin guardar. ¿Estás seguro de que quieres cerrar?"
     },
     "loginDialog": {
       "title": "Nexterm",
       "registrationTitle": "Inscripción",
       "ssoOrContinueWith": "o continúa con",
-      "ssoSignInWith": "inicia sesión con",
-      "noAuthMethodsAvailable": "No hay métodos de autenticación disponibles."
+      "noAuthMethodsAvailable": "No hay métodos de autenticación disponibles.",
+      "signInWithPasskey": "Iniciar sesión con Passkey",
+      "authenticating": "Autentificar..."
+    },
+    "deviceLink": {
+      "title": "Dispositivo de enlace",
+      "description": "Introduce el código que aparece en tu dispositivo para autorizarlo a acceder a tu cuenta.",
+      "codeLabel": "Código de dispositivo",
+      "continue": "Continúa en",
+      "verifying": "Verificando...",
+      "confirmTitle": "Autorizar Dispositivo",
+      "confirmDescription": "Un dispositivo está solicitando acceso a tu cuenta. Por favor, verifica los siguientes datos.",
+      "deviceInfo": "Información del dispositivo",
+      "type": "Tipo",
+      "ipAddress": "Dirección IP",
+      "userAgent": "Dispositivo",
+      "authorize": "Autorizar Dispositivo",
+      "authorizing": "Autorizar...",
+      "deny": "Deniega",
+      "invalidCode": "Código no válido o caducado",
+      "authorizationFailed": "Autorización fallida",
+      "deviceAuthorized": "Dispositivo autorizado correctamente",
+      "successTitle": "Dispositivo autorizado",
+      "successMessage": "Puedes cerrar esta pestaña y volver a la aplicación.",
+      "clientTypes": {
+        "mobile": "Aplicación móvil",
+        "connector": "Conector de escritorio"
+      }
+    },
+    "connectorSetup": {
+      "title": "Conector Nexterm",
+      "serverUrl": "URL del servidor",
+      "serverUrlDescription": "Introduce la URL de tu servidor Nexterm para conectarte.",
+      "connect": "Conecta",
+      "connecting": "Conectando...",
+      "enterServerUrl": "Por favor, introduce la URL del servidor",
+      "connectionFailed": "No se ha podido conectar con el servidor. Por favor, comprueba la URL.",
+      "deviceLinkingNotSupported": "Este servidor no admite la vinculación de dispositivos. Actualiza tu servidor Nexterm.",
+      "authMethodDescription": "Elige cómo quieres autenticarte con el servidor.",
+      "showCode": "Mostrar código",
+      "showCodeDesc": "Mostrar un código para introducirlo manualmente en la interfaz web",
+      "openBrowser": "Autoriza",
+      "openBrowserDesc": "Abre tu navegador para autorizar automáticamente",
+      "enterCodeDescription": "Introduce este código en la interfaz web de Nexterm para autorizar este dispositivo.",
+      "copyCode": "Copiar código",
+      "codeCopied": "Código copiado en el portapapeles",
+      "copyFailed": "Error al copiar código",
+      "waitingForAuth": "Esperando autorización...",
+      "codeCreationFailed": "Error al crear código de dispositivo",
+      "authSuccess": "¡Autentificado con éxito!"
     },
     "selectBox": {
       "defaultOption": "Selecciona una opción...",
       "search": "Buscar...",
       "noResults": "No se han encontrado resultados"
+    },
+    "userSearch": {
+      "placeholder": "Busca un usuario..."
+    },
+    "table": {
+      "noData": {
+        "title": "No se han encontrado datos",
+        "subtitle": "No hay elementos para mostrar."
+      },
+      "pagination": {
+        "showing": "Mostrando {{start}} a {{end}} de {{total}}",
+        "previous": "Anterior",
+        "next": "Siguiente",
+        "pageInfo": "Página {{current}} de {{total}}"
+      }
     },
     "sidebar": {
       "settings": "Ajustes",
@@ -51,18 +131,41 @@
       "monitoring": "Supervisión",
       "snippets": "Fragmentos",
       "audit": "Auditoría",
+      "account": "Cuenta",
       "logout": "Cerrar sesión",
       "collapseTitle": "Contraer la barra lateral",
       "logoutConfirmText": "Esto te desconectará de la cuenta {{username}} . ¿Estás seguro?",
-      "navigationConfirmText": "Tienes sesiones activas. Si te alejas, te desconectarás de todos los servidores. ¿Estás seguro?"
+      "starOnGitHub": "Estrella en GitHub",
+      "support": "Ayuda"
+    },
+    "quickAction": {
+      "placeholder": "Busca servidores, fragmentos o navega...",
+      "noResults": "No se han encontrado resultados",
+      "navigation": "Navegación",
+      "settings": "Ajustes",
+      "navigate": "Navega por",
+      "select": "Selecciona",
+      "close": "Cerrar",
+      "types": {
+        "server": "Servidor",
+        "snippet": "Recortes",
+        "navigation": "Ir a",
+        "settings": "Ajustes"
+      }
     },
     "errors": {
       "loadingAuthProviders": "Error al cargar los proveedores de autenticación: {{error}}",
+      "webSocketConnection": {
+        "title": "Fallo en la conexión WebSocket",
+        "message": "Las conexiones no están disponibles. Esto puede deberse a que WebSocket no está habilitado en tu proxy inverso o a restricciones de red."
+      },
       "generalError": "Se ha producido un error",
       "invalidCredentials": "Nombre de usuario o contraseña no válidos",
       "invalidTwoFactor": "Código de dos factores no válido",
       "internalAuthDisabled": "La autenticación interna está desactivada",
-      "ssoLoginFailed": "Error al iniciar sesión SSO"
+      "ssoLoginFailed": "Error al iniciar sesión SSO",
+      "passkeyLoginFailed": "Fallo en la autenticación de la clave de acceso",
+      "passkeyCancelled": "Se ha cancelado la autenticación con clave de acceso"
     },
     "messages": {
       "invitationAccepted": "Invitación aceptada",
@@ -159,12 +262,14 @@
       "fields": {
         "name": "Nombre",
         "description": "Descripción (opcional)",
-        "command": "Mando"
+        "command": "Mando",
+        "osFilter": "Sistema operativo compatible"
       },
       "placeholders": {
         "name": "Nombre del fragmento",
         "description": "¿Qué ordena esto?",
-        "command": "Introduce tu orden"
+        "command": "Introduce tu orden",
+        "osFilter": "Todos los sistemas operativos"
       },
       "actions": {
         "cancel": "Cancelar",
@@ -184,7 +289,8 @@
         "required": "El nombre y el mando son obligatorios",
         "loadFailed": "Error al cargar los datos del fragmento",
         "saveFailed": "No se ha podido guardar el fragmento",
-        "deleteFailed": "No se ha podido eliminar el fragmento"
+        "deleteFailed": "No se ha podido eliminar el fragmento",
+        "reorderFailed": "Error al reordenar el fragmento"
       }
     }
   },
@@ -245,11 +351,13 @@
       "helpTip": "Utiliza las directivas @NEXTERM: para las funciones interactivas",
       "fields": {
         "name": "Nombre",
-        "description": "Descripción"
+        "description": "Descripción",
+        "osFilter": "Sistema operativo compatible"
       },
       "placeholders": {
         "name": "Nombre del script",
-        "description": "¿Qué hace este script?"
+        "description": "¿Qué hace este script?",
+        "osFilter": "Todos los sistemas operativos"
       },
       "actions": {
         "cancel": "Cancela",
@@ -270,11 +378,13 @@
       "success": {
         "created": "Script creado correctamente",
         "updated": "Script actualizado correctamente",
-        "deleted": "Script eliminado correctamente"
+        "deleted": "Script eliminado correctamente",
+        "reordered": "Script reordenado correctamente"
       },
       "errors": {
         "loadFailed": "Error al cargar los datos del script",
-        "deleteFailed": "Error al borrar el script"
+        "deleteFailed": "Error al borrar el script",
+        "reorderFailed": "Error al reordenar el script"
       }
     },
     "menu": {
@@ -304,7 +414,9 @@
         "memoryUsage": "Uso de la memoria",
         "loadAverage": "Carga Media",
         "processes": "Procesos",
-        "uptime": "Tiempo de actividad"
+        "uptime": "Tiempo de actividad",
+        "nodes": "Nodos",
+        "vms": "VMs/Contenedores"
       },
       "status": {
         "serverOffline": "Servidor desconectado",
@@ -335,11 +447,14 @@
         "overview": "Visión general",
         "charts": "Gráficos",
         "storage": "Almacenamiento",
-        "network": "Red"
+        "network": "Red",
+        "processes": "Procesos",
+        "nodes": "Nodos"
       },
       "overview": {
         "systemInfo": {
           "title": "Información del sistema",
+          "hostname": "Nombre de host",
           "os": "OS",
           "version": "Versión",
           "kernel": "Núcleo",
@@ -377,13 +492,45 @@
         "available": "Disponible: {{value}}",
         "total": "Total: {{value}}",
         "type": "Tipo: {{value}}",
-        "noData": "No hay datos de uso de disco disponibles"
+        "noData": "No hay datos de uso de disco disponibles",
+        "noPartitions": "No hay particiones montadas"
       },
       "network": {
         "title": "Interfaces de red",
         "rxBytes": "Bytes RX",
         "txBytes": "TX Bytes",
+        "mac": "Dirección MAC",
+        "speed": "Velocidad",
         "noData": "No hay datos de interfaz de red disponibles"
+      },
+      "processes": {
+        "title": "Procesos en ejecución",
+        "searchPlaceholder": "Procesos de búsqueda...",
+        "showing": "Mostrando {{count}} de {{total}} procesos",
+        "noData": "No hay datos de proceso disponibles. Los datos del proceso aparecerán después del siguiente ciclo de monitorización.",
+        "noResults": "Ningún proceso coincide con tus criterios de búsqueda."
+      },
+      "pve": {
+        "clusterInfo": "Información del grupo",
+        "resources": "Uso de recursos",
+        "virtualMachines": "Máquinas virtuales",
+        "totalNodes": "Nodos totales",
+        "onlineNodes": "Nodos en línea",
+        "totalCPU": "CPU total",
+        "totalMemory": "Memoria total",
+        "totalStorage": "Almacenamiento total",
+        "storageUsage": "Uso del almacenamiento",
+        "cores": "Núcleos",
+        "uptime": "Tiempo de actividad",
+        "qemuVMs": "Máquinas virtuales QEMU",
+        "lxcContainers": "Contenedores LXC",
+        "running": "{{count}} corriendo",
+        "vmContainerCount": "Recuento de VM/Contenedores",
+        "cpu": "CPU",
+        "memory": "Memoria",
+        "storage": "Almacenamiento",
+        "nodeOffline": "Este nodo está actualmente desconectado",
+        "noNodes": "No hay nodos disponibles"
       }
     }
   },
@@ -394,6 +541,7 @@
     "pages": {
       "account": "Cuenta",
       "terminal": "Terminal",
+      "fileManager": "Gestor de archivos",
       "keymaps": "Mapas clave",
       "identities": "Identidades",
       "sessions": "Sesiones",
@@ -401,7 +549,9 @@
       "users": "Usuarios",
       "authentication": "Autenticación",
       "sources": "Fuentes",
-      "ai": "AI"
+      "ai": "AI",
+      "monitoring": "Supervisión",
+      "backup": "Almacenamiento"
     },
     "account": {
       "title": "Cuenta",
@@ -413,6 +563,11 @@
       "themeAuto": "Auto",
       "themeLight": "Luz",
       "themeDark": "Oscuro",
+      "themeOled": "OLED",
+      "oledEnabled": "Modo OLED activado",
+      "oledDisabled": "Modo OLED desactivado",
+      "themeLabel": "Tema",
+      "accentColor": "Color de acento",
       "twoFactor": "Autenticación de dos factores",
       "twoFactorActive": "Activo",
       "twoFactorInactive": "Inactivo",
@@ -427,6 +582,11 @@
       "currentLanguage": "Lengua actual",
       "missingLanguage": "¿Echas de menos tu lengua?",
       "helpTranslateLink": "Ayuda a traducir Nexterm",
+      "syncLoginRequired": "Inicia sesión para sincronizar los ajustes",
+      "appearanceSyncEnabled": "Los ajustes de apariencia se sincronizarán ahora con tu cuenta",
+      "appearanceSyncDisabled": "Los ajustes de apariencia ya no se sincronizarán",
+      "generalSyncEnabled": "Los ajustes generales se sincronizarán ahora con tu cuenta",
+      "generalSyncDisabled": "Los ajustes generales ya no se sincronizarán",
       "sessionSynchronization": "Sincronización de sesiones",
       "sessionSyncDescription": "Controla cómo se almacenan y sincronizan tus sesiones de servidor entre dispositivos y pestañas del navegador.",
       "sessionSyncAcrossDevices": "En todos los dispositivos",
@@ -443,6 +603,22 @@
         "messages": {
           "setupFailed": "Ha fallado la configuración 2FA. Inténtalo de nuevo."
         }
+      },
+      "passkeys": {
+        "sectionTitle": "Llaves de paso",
+        "sectionDescription": "Utiliza claves de acceso para iniciar sesión de forma más rápida y segura, sin contraseñas.",
+        "addButton": "Añadir clave de acceso",
+        "addDialogTitle": "Añadir clave de acceso",
+        "addDialogDescription": "Dale un nombre a tu llave maestra para ayudarte a identificarla más tarde.",
+        "namePlaceholder": "Nombre de la clave",
+        "enterName": "Introduce un nombre para esta clave de acceso:",
+        "defaultName": "Mi Passkey",
+        "confirmDelete": "¿Estás seguro de que quieres borrar esta clave?",
+        "createdAt": "Creado {{date}}",
+        "registerError": "No se ha podido registrar la clave de acceso. Inténtalo de nuevo.",
+        "noPasskeys": "Aún no se ha registrado ninguna contraseña",
+        "rename": "Cambia el nombre de",
+        "delete": "Borra"
       }
     },
     "passwordChange": {
@@ -488,8 +664,22 @@
     "users": {
       "title": "{{count}} usuarios",
       "createNewUser": "Crear nuevo usuario",
+      "searchPlaceholder": "Buscar usuarios...",
       "twoFactorEnabled": "2FA activado",
       "twoFactorDisabled": "2FA desactivado",
+      "noUsers": "No se han encontrado usuarios",
+      "noUsersDescription": "Crea un nuevo usuario para empezar.",
+      "noSearchResults": "No se han encontrado usuarios",
+      "noSearchResultsDescription": "Prueba a ajustar tu consulta de búsqueda.",
+      "table": {
+        "user": "Usuario",
+        "role": "Papel",
+        "twoFactor": "2FA"
+      },
+      "roles": {
+        "admin": "Admin",
+        "user": "Usuario"
+      },
       "contextMenu": {
         "changePassword": "Cambiar contraseña",
         "promoteToAdmin": "Ascender a admin",
@@ -530,6 +720,10 @@
         "search": {
           "title": "Busca en",
           "description": "Abre la entrada de búsqueda"
+        },
+        "quickaction": {
+          "title": "Acción rápida",
+          "description": "Abre el menú de acción rápida"
         },
         "aimenu": {
           "title": "Menú AI",
@@ -573,11 +767,14 @@
     },
     "terminal": {
       "title": "Terminal",
+      "syncLoginRequired": "Inicia sesión para sincronizar la configuración del terminal",
       "font": {
         "title": "Fuente",
         "description": "Personaliza la familia y el tamaño de la fuente para tu terminal.",
         "fontFamily": "Familia tipográfica",
-        "fontSize": "Tamaño de letra"
+        "fontSize": "Tamaño de letra",
+        "syncEnabled": "La configuración de las fuentes se sincronizará ahora con tu cuenta",
+        "syncDisabled": "Los ajustes de fuente ya no se sincronizarán"
       },
       "cursor": {
         "title": "Cursor",
@@ -585,19 +782,70 @@
         "cursorStyle": "Estilo del cursor",
         "cursorBlinking": "Cursor parpadeante",
         "enabled": "Activado",
-        "disabled": "Discapacitados"
+        "disabled": "Discapacitados",
+        "syncEnabled": "La configuración del cursor se sincronizará ahora con tu cuenta",
+        "syncDisabled": "Los ajustes del cursor ya no se sincronizarán"
       },
       "theme": {
         "title": "Tema",
-        "description": "Elige un tema de color para tu terminal."
+        "description": "Elige un tema de color para tu terminal.",
+        "syncEnabled": "La configuración del tema se sincronizará ahora con tu cuenta",
+        "syncDisabled": "Los ajustes del tema ya no se sincronizarán"
       },
       "preview": {
         "text": "$ echo '¡Hola, Nexterm!\n¡Hola, Nexterm!\n$ "
       }
     },
+    "fileManager": {
+      "title": "Gestor de archivos",
+      "description": "Configura cómo se muestran y gestionan los archivos y carpetas.",
+      "syncLoginRequired": "Inicia sesión para sincronizar la configuración del gestor de archivos",
+      "syncEnabled": "La configuración del gestor de archivos se sincronizará ahora con tu cuenta",
+      "syncDisabled": "La configuración del gestor de archivos ya no se sincronizará",
+      "defaultView": {
+        "title": "Modo de vista por defecto",
+        "description": "Elige el diseño por defecto al abrir el gestor de archivos.",
+        "list": "Ver lista",
+        "listDescription": "Mostrar archivos en una lista detallada con columnas de tamaño y fecha",
+        "grid": "Vista en cuadrícula",
+        "gridDescription": "Mostrar archivos como iconos en una cuadrícula con miniaturas"
+      },
+      "thumbnails": {
+        "title": "Miniaturas de imágenes",
+        "description": "Mostrar miniaturas de imágenes en la vista de cuadrícula. Esto utiliza ancho de banda adicional para generar previsualizaciones.",
+        "enabled": "Mostrar miniaturas",
+        "enabledDescription": "Muestra previsualizaciones de imágenes en la vista de cuadrícula para una rápida identificación visual",
+        "disabled": "Ocultar miniaturas",
+        "disabledDescription": "Mostrar sólo iconos de archivos para ahorrar ancho de banda y mejorar el rendimiento"
+      },
+      "hiddenFiles": {
+        "title": "Archivos ocultos",
+        "description": "Controla la visibilidad de los archivos y carpetas ocultos (nombres que empiezan por un punto).",
+        "show": "Mostrar archivos ocultos",
+        "showDescription": "Mostrar todos los archivos, incluidos los .dotfiles y los directorios del sistema",
+        "hide": "Ocultar archivos ocultos",
+        "hideDescription": "Mostrar sólo archivos y carpetas normales"
+      },
+      "deleteConfirmation": {
+        "title": "Borrar Confirmación",
+        "description": "Requiere confirmación antes de borrar archivos y carpetas.",
+        "enabled": "Confirmar Supresiones",
+        "enabledDescription": "Mostrar un diálogo de confirmación antes de borrar elementos",
+        "disabled": "Borrar inmediatamente",
+        "disabledDescription": "Eliminar archivos sin pedir confirmación"
+      },
+      "dragDropAction": {
+        "title": "Acción de arrastrar y soltar",
+        "description": "Acción por defecto al arrastrar archivos a una nueva ubicación.",
+        "move": "Muévete",
+        "copy": "Copia",
+        "ask": "Pregunta a"
+      }
+    },
     "authentication": {
       "title": "{{count}} Proveedores de autenticación",
       "addProvider": "Añadir proveedor",
+      "addLdapProvider": "Añadir LDAP",
       "system": "Sistema",
       "systemDescription": "Autenticación por nombre de usuario y contraseña",
       "deleteConfirm": "Esto eliminará permanentemente este proveedor de autenticación.",
@@ -621,9 +869,7 @@
           "redirectUri": "Redirigir URI",
           "redirectUriPlaceholder": "https://your-domain.com/api/oidc/callback",
           "scope": "Alcance",
-          "scopePlaceholder": "email del perfil openid",
-          "emailAttribute": "Atributo Email",
-          "emailAttributePlaceholder": "correo electrónico",
+          "scopePlaceholder": "perfil openid",
           "usernameAttribute": "Atributo Nombre de usuario",
           "usernameAttributePlaceholder": "nombre_usuario_preferido",
           "firstNameAttribute": "Atributo del nombre",
@@ -641,6 +887,51 @@
         },
         "messages": {
           "saveFailed": "No se ha podido guardar el proveedor"
+        }
+      },
+      "ldapDialog": {
+        "createTitle": "Añadir proveedor LDAP",
+        "editTitle": "Editar proveedor LDAP",
+        "fields": {
+          "displayName": "Mostrar nombre",
+          "displayNamePlaceholder": "por ejemplo, LDAP de empresa",
+          "host": "Anfitrión",
+          "hostPlaceholder": "ldap.empresa.com",
+          "port": "Puerto",
+          "bindDN": "Enlazar DN",
+          "bindDNPlaceholder": "cn=admin,dc=empresa,dc=com",
+          "bindPassword": "Enlazar contraseña",
+          "bindPasswordPlaceholder": "Enlazar contraseña",
+          "bindPasswordPlaceholderEdit": "Dejar en blanco para mantener el existente",
+          "baseDN": "Base DN",
+          "baseDNPlaceholder": "dc=empresa,dc=com",
+          "userSearchFilter": "Filtro de búsqueda de usuario",
+          "userSearchFilterPlaceholder": "(uid={{username}}) o (sAMAccountName={{username}})",
+          "useTLS": "Utiliza TLS/SSL",
+          "usernameAttribute": "Atributo Nombre de usuario",
+          "usernameAttributePlaceholder": "uid",
+          "emailAttribute": "Atributo Email",
+          "emailAttributePlaceholder": "correo",
+          "firstNameAttribute": "Atributo del nombre",
+          "firstNameAttributePlaceholder": "givenName",
+          "lastNameAttribute": "Atributo Apellido",
+          "lastNameAttributePlaceholder": "sn"
+        },
+        "advanced": {
+          "show": "Mostrar ajustes avanzados",
+          "hide": "Ocultar ajustes avanzados"
+        },
+        "actions": {
+          "addProvider": "Añadir proveedor",
+          "saveChanges": "Guardar cambios",
+          "testConnection": "Conexión de prueba",
+          "testing": "Probando..."
+        },
+        "messages": {
+          "saveFailed": "No se ha podido guardar el proveedor",
+          "saveFirst": "Guarda primero el proveedor para probar la conexión",
+          "testSuccess": "Prueba de conexión correcta",
+          "testFailed": "Error en la prueba de conexión"
         }
       }
     },
@@ -686,6 +977,58 @@
         "testConnection": "Fallo en la prueba de conexión a la IA"
       }
     },
+    "monitoring": {
+      "loading": "Cargando ajustes de monitorización...",
+      "saveSettings": "Guardar ajustes",
+      "saveSuccess": "Ajustes de monitorización guardados correctamente",
+      "seconds": "segundos",
+      "hours": "horas",
+      "servers": "servidores",
+      "statusChecker": {
+        "title": "Comprobador de estado",
+        "description": "Configura cómo Nexterm comprueba el estado online/offline de tus servidores.",
+        "enable": {
+          "title": "Activar Comprobador de Estado",
+          "description": "Comprueba automáticamente si los servidores están conectados o desconectados. Si está desactivado, todos los servidores se marcarán como conectados."
+        },
+        "interval": {
+          "title": "Intervalo de comprobación",
+          "description": "Con qué frecuencia comprobar el estado del servidor (10-300 segundos)"
+        }
+      },
+      "dataCollection": {
+        "title": "Recogida de datos",
+        "description": "Configura la recogida de datos de monitorización para las métricas de CPU, memoria, disco y red.",
+        "enable": {
+          "title": "Activar monitorización",
+          "description": "Recopila métricas de rendimiento detalladas de los servidores con la monitorización activada."
+        },
+        "interval": {
+          "title": "Intervalo de recogida",
+          "description": "Con qué frecuencia recoger los datos de monitorización (30-600 segundos)"
+        },
+        "retention": {
+          "title": "Conservación de datos",
+          "description": "Cuánto tiempo conservar los datos de monitorización (1-24 horas)"
+        }
+      },
+      "advanced": {
+        "title": "Ajustes avanzados",
+        "description": "Ajusta el rendimiento de la monitorización y el uso de recursos.",
+        "timeout": {
+          "title": "Tiempo de espera de la conexión",
+          "description": "Tiempo máximo de espera de una respuesta del servidor (5-120 segundos)"
+        },
+        "batchSize": {
+          "title": "Tamaño del lote",
+          "description": "Número de servidores a comprobar simultáneamente (1-50)"
+        }
+      },
+      "errors": {
+        "loadSettings": "Error al cargar la configuración de monitorización",
+        "saveSettings": "No se ha podido guardar la configuración de monitorización"
+      }
+    },
     "identities": {
       "title": "Claves y credenciales SSH",
       "description": "Gestiona tus claves SSH y credenciales de acceso para las conexiones al servidor",
@@ -720,9 +1063,10 @@
         },
         "authTypes": {
           "password": "Contraseña",
-          "ssh": "Clave SSH"
+          "password-only": "Sin nombre de usuario",
+          "ssh": "Clave SSH",
+          "both": "Clave+Paso"
         },
-        "keyFileLoaded": "Archivo de claves cargado",
         "actions": {
           "cancel": "Cancela",
           "create": "Crear identidad",
@@ -786,6 +1130,126 @@
         "validationFailed": "No se ha podido validar la URL",
         "requiredFields": "El nombre y la URL son obligatorios"
       }
+    },
+    "backup": {
+      "loading": "Cargando ajustes de almacenamiento...",
+      "storage": {
+        "title": "Almacenamiento",
+        "description": "Ver el uso de disco de tus datos Nexterm.",
+        "database": "Base de datos",
+        "recordings": "Grabaciones",
+        "logs": "Registros",
+        "total": "Total"
+      },
+      "backupsSection": {
+        "title": "Copias de seguridad",
+        "description": "Configura los proveedores de copias de seguridad y programa copias de seguridad automáticas."
+      },
+      "addProvider": "Añadir proveedor",
+      "editProvider": "Editar Proveedor",
+      "providerName": "Nombre del proveedor",
+      "providerNamePlaceholder": "Mi copia de seguridad",
+      "providerType": "Tipo",
+      "providerTypes": {
+        "local": "Local",
+        "smb": "Acción PYME",
+        "webdav": "WebDAV"
+      },
+      "localPath": "Ruta de copia de seguridad",
+      "localPathPlaceholder": "/ruta/a/copias de seguridad",
+      "smbShare": "Acción PYME",
+      "smbSharePlaceholder": "\\\\compartir",
+      "smbFolder": "Carpeta (opcional)",
+      "smbFolderPlaceholder": "copias de seguridad",
+      "smbUsername": "Nombre de usuario",
+      "smbUsernamePlaceholder": "usuario",
+      "smbPassword": "Contraseña",
+      "smbPasswordPlaceholder": "contraseña",
+      "smbDomain": "Dominio (opcional)",
+      "smbDomainPlaceholder": "GRUPO DE TRABAJO",
+      "webdavUrl": "URL del servidor",
+      "webdavUrlPlaceholder": "https://cloud.example.com/remote.php/dav/files/user",
+      "webdavFolder": "Carpeta (opcional)",
+      "webdavFolderPlaceholder": "copias de seguridad",
+      "webdavUsername": "Nombre de usuario",
+      "webdavUsernamePlaceholder": "usuario",
+      "webdavPassword": "Contraseña",
+      "webdavPasswordPlaceholder": "contraseña",
+      "passwordUnchanged": "Dejar vacío para mantener la corriente",
+      "schedule": {
+        "title": "Copia de seguridad automática",
+        "disabled": "Discapacitados",
+        "hourly": "Cada hora",
+        "every6h": "Cada 6 horas",
+        "every12h": "Cada 12 horas",
+        "daily": "Diario",
+        "weekly": "Semanalmente"
+      },
+      "retention": {
+        "title": "Política de conservación"
+      },
+      "backups": "copias de seguridad",
+      "includes": {
+        "title": "Incluir en las copias de seguridad",
+        "database": "Base de datos",
+        "recordings": "Grabaciones",
+        "logs": "Registros"
+      },
+      "providers": "Proveedores",
+      "saveSettings": "Guardar ajustes",
+      "noProviders": "Sin proveedores de copias de seguridad",
+      "noProvidersDescription": "Añade un proveedor de copias de seguridad para empezar a crearlas.",
+      "backupList": "Copias de seguridad - {{name}}",
+      "loadingBackups": "Cargando copias de seguridad...",
+      "noBackups": "No se han encontrado copias de seguridad",
+      "restoreConfirm": "¿Estás seguro de que quieres restaurar \"{{name}}\"? Esto sobrescribirá tus datos actuales y reiniciará el servidor.",
+      "deleteProviderConfirm": "¿Estás seguro de que quieres borrar \"{{name}}\"? Esto no borrará las copias de seguridad existentes.",
+      "providerCreated": "Proveedor de copias de seguridad creado",
+      "providerUpdated": "Proveedor de copias de seguridad actualizado",
+      "providerDeleted": "Proveedor de copias de seguridad eliminado",
+      "backupCreated": "Copia de seguridad creada correctamente",
+      "restoreStarted": "Restauración iniciada, el servidor se reiniciará",
+      "saveSuccess": "Ajustes guardados correctamente",
+      "errors": {
+        "loadFailed": "Error al cargar la configuración de la copia de seguridad",
+        "saveFailed": "No se ha podido guardar la configuración",
+        "deleteFailed": "Error al borrar",
+        "backupFailed": "Error al crear copia de seguridad",
+        "loadBackupsFailed": "Error al cargar las copias de seguridad",
+        "restoreFailed": "Error al restaurar la copia de seguridad",
+        "exportFailed": "Error al exportar datos",
+        "nameRequired": "Se requiere el nombre del proveedor"
+      },
+      "noFiles": "No se han encontrado archivos"
+    }
+  },
+  "tunnel": {
+    "title": "Puerto de reenvío",
+    "identity": "Identidad",
+    "remoteHost": "Anfitrión remoto",
+    "remotePort": "Puerto remoto",
+    "localPort": "Puerto local",
+    "start": "Túnel de inicio",
+    "stop": "Túnel Stop",
+    "status": {
+      "idle": "No conectado",
+      "starting": "Empezando...",
+      "listening": "Escuchando en localhost:{{port}}",
+      "error": "Error",
+      "stopped": "Detenido"
+    },
+    "error": {
+      "fillAllFields": "Rellena todos los campos"
+    }
+  },
+  "share": {
+    "errors": {
+      "unableToConnect": "No se puede conectar",
+      "failedToJoin": "No se ha podido entrar en la sesión"
+    },
+    "sessionEnded": {
+      "title": "Sesión finalizada",
+      "description": "Se ha cerrado la sesión compartida"
     }
   },
   "servers": {
@@ -825,16 +1289,32 @@
       "connect": "Conecta",
       "quickConnect": "Conexión rápida",
       "openSFTP": "Abrir SFTP",
+      "forwardPort": "Puerto de reenvío",
       "runScript": "Ejecutar script",
       "editServer": "Editar servidor",
       "editIntegration": "Editar Integración",
       "duplicateServer": "Servidor duplicado",
+      "pasteIdentityPassword": "Pegar contraseña",
       "deleteServer": "Borrar servidor",
+      "wakeOnLan": "Wake-On-LAN",
       "editPVE": "Editar PVE",
       "deletePVE": "Borrar PVE",
       "shutdown": "Apaga",
       "stop": "Para",
       "start": "Comienza"
+    },
+    "wol": {
+      "successDescription": "Paquete mágico enviado a {{name}}",
+      "errorDescription": "Error al enviar paquete mágico"
+    },
+    "messages": {
+      "fillRequiredFields": "Rellena todos los campos obligatorios",
+      "serverCreated": "Servidor creado correctamente",
+      "serverUpdated": "Servidor actualizado correctamente",
+      "createFailed": "Error al crear el servidor",
+      "updateFailed": "Error al actualizar el servidor",
+      "createIdentityFailed": "Error al crear identidad",
+      "updateIdentityFailed": "Error al actualizar la identidad"
     },
     "dialog": {
       "addServer": "Añadir servidor",
@@ -852,24 +1332,26 @@
       "fields": {
         "name": "Nombre",
         "icon": "Icono",
-        "serverIp": "Servidor-IP",
+        "serverIp": "Anfitrión",
         "port": "Puerto",
         "protocol": "Protocolo",
         "username": "Nombre de usuario",
         "password": "Contraseña",
         "host": "Anfitrión",
         "nodeName": "Nombre del nodo",
-        "vmid": "ID VM"
+        "vmid": "ID VM",
+        "macAddress": "Dirección MAC"
       },
       "placeholders": {
         "serverName": "Nombre del servidor",
-        "serverIp": "Servidor-IP",
+        "serverIp": "Nombre de host o IP",
         "port": "Puerto",
         "username": "Nombre de usuario",
         "password": "Contraseña",
         "host": "Anfitrión",
         "nodeName": "Nombre del nodo",
-        "vmid": "ID VM"
+        "vmid": "ID VM",
+        "macAddress": "AA:BB:CC:DD:EE:FF"
       },
       "settings": {
         "jumpHosts": {
@@ -883,9 +1365,46 @@
           "title": "Activar la supervisión del rendimiento",
           "description": "Recopila las métricas de CPU, memoria, disco y red de este servidor"
         },
+        "wakeOnLan": {
+          "title": "Activar Wake-On-LAN",
+          "description": "Permitir la activación remota de este servidor utilizando su dirección MAC"
+        },
         "keyboardLayout": {
           "title": "Disposición del teclado",
           "description": "Selecciona la distribución de teclado que se utilizará para esta conexión."
+        },
+        "display": {
+          "title": "Ajustes de pantalla",
+          "description": "Configura la profundidad de color y el comportamiento de cambio de tamaño de la pantalla remota",
+          "colorDepth": "Profundidad de color",
+          "resizeMethod": "Método Redimensionar"
+        },
+        "performance": {
+          "title": "Ajustes de rendimiento",
+          "description": "Alternar los efectos visuales que pueden afectar al rendimiento en conexiones lentas",
+          "enableWallpaper": "Activar Papel Tapiz",
+          "enableWallpaperDesc": "Mostrar el fondo de escritorio del sistema remoto",
+          "enableTheming": "Activar Tematización",
+          "enableThemingDesc": "Utiliza ventanas temáticas y controles en el sistema remoto",
+          "enableFontSmoothing": "Activar suavizado de fuentes",
+          "enableFontSmoothingDesc": "Renderiza el texto con bordes suaves para una mejor legibilidad",
+          "enableFullWindowDrag": "Activar el arrastre de toda la ventana",
+          "enableFullWindowDragDesc": "Mostrar el contenido de las ventanas al arrastrarlas",
+          "enableDesktopComposition": "Activar la composición del escritorio",
+          "enableDesktopCompositionDesc": "Activar ventanas transparentes y efectos visuales",
+          "enableMenuAnimations": "Activar animaciones de menú",
+          "enableMenuAnimationsDesc": "Activar las animaciones de apertura y cierre del menú"
+        },
+        "audio": {
+          "enableAudio": "Activar audio",
+          "enableAudioDesc": "Transmite audio desde el sistema remoto a tu navegador"
+        },
+        "terminal": {
+          "title": "Compatibilidad de terminales",
+          "description": "Ajustar el comportamiento de las teclas para distintos tipos de terminal",
+          "backspace": "Retroceso",
+          "delete": "Borra",
+          "functionKeys": "Teclas de función"
         },
         "noSettings": "No hay ajustes adicionales disponibles para este tipo de entrada."
       },
@@ -897,8 +1416,11 @@
         "identityName": "Nombre de identidad",
         "username": "Nombre de usuario",
         "authentication": "Autenticación",
-        "password": "Contraseña",
+        "passwordField": "Contraseña",
+        "userPassword": "Contraseña",
+        "passwordOnly": "Sin nombre de usuario",
         "sshKey": "Clave SSH",
+        "both": "Clave+Pase",
         "sshPrivateKey": "Clave privada SSH",
         "passphrase": "Frase de acceso (opcional)",
         "new": "Nuevo",
@@ -923,8 +1445,10 @@
         "port": "Puerto",
         "username": "Nombre de usuario",
         "password": "Contraseña",
-        "nodeName": "Nombre del nodo (opcional)"
+        "nodeName": "Nombre del nodo (opcional)",
+        "monitoring": "Control del rendimiento"
       },
+      "monitoringDescription": "Recopila métricas de CPU, memoria y almacenamiento de todo el clúster",
       "placeholders": {
         "name": "Nombre",
         "serverIp": "Servidor-IP",
@@ -936,6 +1460,12 @@
       "actions": {
         "import": "Importa",
         "edit": "Edita"
+      },
+      "messages": {
+        "created": "Integración Proxmox creada con éxito",
+        "updated": "Integración de Proxmox actualizada con éxito",
+        "createFailed": "Error al crear la integración Proxmox",
+        "updateFailed": "Error al actualizar la integración de Proxmox"
       }
     },
     "connectionReasonDialog": {
@@ -974,6 +1504,11 @@
       }
     },
     "fileManager": {
+      "createFile": {
+        "title": "Crear archivo",
+        "placeholder": "Nombre del archivo",
+        "button": "Crear archivo"
+      },
       "createFolder": {
         "title": "Crear carpeta",
         "placeholder": "Nombre de la carpeta",
@@ -1007,11 +1542,44 @@
         "upload": "Subir archivo",
         "edit": "Edita",
         "preview": "Vista previa",
+        "moveHere": "Muévete aquí",
+        "copyHere": "Copia aquí",
         "bigFileConfirm": "Este archivo tiene un tamaño de {{size}} MB. ¿Estás seguro de que quieres editarlo?",
+        "deleteConfirm": "¿Estás seguro de que quieres borrar \"{{name}}\"? Esta acción no se puede deshacer.",
         "selectAll": "Seleccionar todo",
         "insertSnippet": "Insertar fragmento",
         "sendCtrlC": "Enviar Ctrl+C",
-        "clearTerminal": "Borrar terminal"
+        "clearTerminal": "Borrar terminal",
+        "properties": "Propiedades",
+        "openTerminal": "Abrir terminal aquí",
+        "downloadFolder": "Descargar carpeta"
+      },
+      "properties": {
+        "general": "General",
+        "permissions": "Permisos",
+        "checksum": "Suma de comprobación",
+        "folder": "Carpeta",
+        "file": "Archivo",
+        "path": "Ubicación",
+        "size": "Talla",
+        "calculateSize": "Calcula",
+        "owner": "Propietario",
+        "group": "Grupo",
+        "modified": "Modificado",
+        "accessed": "Consultado en",
+        "calculating": "Calculando...",
+        "calculate": "Calcula"
+      },
+      "permissions": {
+        "owner": "Propietario",
+        "group": "Grupo",
+        "others": "Otros",
+        "read": "Leer",
+        "write": "Escribe",
+        "execute": "Ejecuta",
+        "octal": "Octal",
+        "preview": "Vista previa",
+        "apply": "Aplica"
       },
       "filePreview": {
         "title": "Vista previa del archivo",
@@ -1022,13 +1590,61 @@
         "audioNotSupported": "Tu navegador no soporta la reproducción de audio",
         "download": "Descarga",
         "close": "Cerrar"
+      },
+      "selection": {
+        "itemsSelected": "{{count}} elementos seleccionados",
+        "filesSelected": "{{count}} archivo(s) seleccionado(s)",
+        "foldersSelected": "{{count}} carpeta(s) seleccionada(s)",
+        "clearSelection": "Borrar selección",
+        "downloadSelected": "Descarga seleccionada",
+        "deleteSelected": "Borrar seleccionado",
+        "download": "Descarga",
+        "delete": "Borra",
+        "deleteConfirm": "¿Estás seguro de que quieres borrar los elementos de {{count}} ?"
+      },
+      "header": {
+        "name": "Nombre",
+        "size": "Talla",
+        "permissions": "Permisos",
+        "modified": "Modificado"
+      },
+      "actionBar": {
+        "enterDirectory": "Introduce la ruta del directorio...",
+        "hiddenDirectories": "{{count}} directorios ocultos",
+        "switchToGrid": "Cambiar a vista de cuadrícula",
+        "switchToList": "Cambiar a vista de lista"
+      },
+      "item": {
+        "link": "enlace"
+      },
+      "states": {
+        "loading": "Cargando archivos...",
+        "accessDenied": "Acceso denegado",
+        "emptyFolder": "Esta carpeta está vacía",
+        "dropFilesHint": "Suelta los archivos aquí para subirlos"
+      },
+      "toast": {
+        "downloaded": "Descargado {{name}}",
+        "downloadingItems": "Descargando {{count}} elemento(s)...",
+        "uploaded": "Subido a {{name}}",
+        "uploadFailed": "Error de carga: {{message}}",
+        "connectionLost": "Se ha perdido la conexión SFTP. Por favor, vuelve a conectarte.",
+        "error": "Se ha producido un error"
       }
     },
     "aiAssistant": {
       "title": "Asistente de IA",
       "placeholder": "Describe lo que quieres hacer...",
       "hint": "Pulsa Intro para generar - Esc para cerrar",
-      "closeLabel": "Cerrar Asistente AI"
+      "hintUse": "Pulsa Intro para usar el comando - Esc para cerrar",
+      "closeLabel": "Cerrar Asistente AI",
+      "generate": "Generar comando",
+      "generating": "Generar comando...",
+      "generatedCommand": "Comando generado",
+      "useCommand": "Utiliza el comando",
+      "tryAgain": "Inténtalo de nuevo",
+      "copy": "Copiar al portapapeles",
+      "error": "No se ha podido generar el comando. Inténtalo de nuevo."
     },
     "snippets": {
       "title": "Fragmentos",
@@ -1044,15 +1660,42 @@
       "fullScreen": "Pantalla completa",
       "exitFullScreen": "Salir del Modo Pantalla Completa",
       "badgeOn": "EN"
+    }
+  },
+  "support": {
+    "title": "Conseguir ayuda",
+    "subtitle": "¿Necesitas ayuda o quieres contribuir?",
+    "footer": "¡Gracias por utilizar Nexterm!",
+    "issues": {
+      "title": "Informar de un problema",
+      "description": "¿Has encontrado un error o tienes una petición de función?"
     },
-    "messages": {
-      "fillRequiredFields": "Rellena todos los campos obligatorios",
-      "serverCreated": "Servidor creado correctamente",
-      "serverUpdated": "Servidor actualizado correctamente",
-      "createFailed": "Error al crear el servidor",
-      "updateFailed": "Error al actualizar el servidor",
-      "createIdentityFailed": "Error al crear identidad",
-      "updateIdentityFailed": "Error al actualizar la identidad"
+    "discord": {
+      "title": "Únete a Discord",
+      "description": "Chatea con la comunidad y obtén ayuda."
+    },
+    "github": {
+      "title": "Ver en GitHub",
+      "description": "Navega por el código fuente y contribuye."
+    }
+  },
+  "welcome": {
+    "subtitle": "Bienvenido a Nexterm. El gestor de servidores de código abierto para SSH, VNC y RDP.",
+    "downloadApps": "Descargar aplicaciones",
+    "connectDevice": "Conectar dispositivo",
+    "recentConnections": "Conexiones recientes",
+    "getStarted": "Empieza",
+    "getStartedHint": "Añade un servidor desde la barra lateral para empezar a gestionar tu infraestructura."
+  },
+  "downloadApps": {
+    "title": "Descargar aplicaciones",
+    "subtitle": "Consigue Nexterm en tus dispositivos",
+    "platforms": {
+      "windows": "Windows",
+      "macos": "macOS",
+      "linux": "Linux",
+      "android": "Android",
+      "ios": "iOS"
     }
   }
 }

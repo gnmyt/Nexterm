@@ -26,8 +26,11 @@
 
       .name-row
         display: grid
-        grid-template-columns: 4fr 1fr
+        grid-template-columns: 3fr 2fr
         gap: 1rem
+
+        &.single-column
+          grid-template-columns: 1fr
 
       .form-group
         display: flex

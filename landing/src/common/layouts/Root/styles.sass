@@ -1,0 +1,26 @@
+@use "@/common/styles/colors" as *
+
+.app-root
+  min-height: 100vh
+  display: flex
+  flex-direction: column
+  position: relative
+
+  &::before
+    content: ""
+    position: fixed
+    top: -30%
+    left: 50%
+    transform: translateX(-50%)
+    width: 150%
+    height: 80%
+    background: radial-gradient(ellipse at center, rgba($primary, 0.07) 0%, transparent 60%)
+    pointer-events: none
+    z-index: 0
+
+.main-content
+  flex: 1
+  display: flex
+  flex-direction: column
+  position: relative
+  z-index: 1

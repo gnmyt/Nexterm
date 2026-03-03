@@ -1,19 +1,33 @@
 const sshd = require("ssh2");
-const { getIdentityCredentials } = require("../controllers/identity");
+const { getIdentityCredentials, listIdentities } = require("../controllers/identity");
 const Entry = require("../models/Entry");
 const EntryIdentity = require("../models/EntryIdentity");
 const Identity = require("../models/Identity");
 
-const buildSSHOptions = (identity, credentials, entryConfig) => ({
-    host: entryConfig.ip,
-    port: entryConfig.port,
-    username: identity.username,
-    tryKeyboard: true,
-    ...(identity.type === "password"
-            ? { password: credentials.password }
-            : { privateKey: credentials["ssh-key"], passphrase: credentials.passphrase }
-    ),
-});
+const buildSSHOptions = (identity, credentials, entryConfig) => {
+    const base = { host: entryConfig.ip, port: entryConfig.port, username: identity.username, tryKeyboard: true };
+    
+    if (identity.type === "password" || identity.type === "password-only") {
+        return { ...base, password: credentials.password };
+    }
+    if (identity.type === "both") {
+        return { 
+            ...base, 
+            privateKey: credentials["ssh-key"], 
+            passphrase: credentials.passphrase,
+            password: credentials.password,
+            authHandler: (methodsLeft, partialSuccess, cb) => {
+                if (methodsLeft === null) return cb('publickey');
+                if (methodsLeft.includes('password') && partialSuccess) return cb('password');
+                if (methodsLeft.includes('publickey') && !partialSuccess) return cb('publickey');
+                if (methodsLeft.includes('password')) return cb('password');
+                if (methodsLeft.includes('keyboard-interactive')) return cb('keyboard-interactive');
+                return cb(false);
+            }
+        };
+    }
+    return { ...base, privateKey: credentials["ssh-key"], passphrase: credentials.passphrase };
+};
 
 const forwardToTarget = async (lastJumpConnection, targetEntry) => {
     return new Promise((resolve, reject) => {
@@ -28,8 +42,9 @@ const forwardToTarget = async (lastJumpConnection, targetEntry) => {
     });
 };
 
-const establishJumpHosts = async (jumpHostIds) => {
+const establishJumpHosts = async (jumpHostIds, accountId = null) => {
     const connections = [];
+    const accessibleIds = accountId ? new Set((await listIdentities(accountId)).map(i => i.id)) : null;
 
     try {
         for (let i = 0; i < jumpHostIds.length; i++) {
@@ -38,26 +53,24 @@ const establishJumpHosts = async (jumpHostIds) => {
                 throw new Error(`Jump host ${jumpHostIds[i]} not found or is not an SSH server`);
             }
 
-            const jumpEntryIdentity = await EntryIdentity.findOne({
+            const entryIdentities = await EntryIdentity.findAll({
                 where: { entryId: jumpEntry.id },
                 order: [["isDefault", "DESC"]],
             });
 
-            if (!jumpEntryIdentity) throw new Error(`No identity configured for jump host ${jumpEntry.name}`);
+            let jumpIdentity = null;
+            for (const ei of entryIdentities) {
+                if (accessibleIds && !accessibleIds.has(ei.identityId)) continue;
+                jumpIdentity = await Identity.findByPk(ei.identityId);
+                if (jumpIdentity) break;
+            }
 
-            const jumpIdentity = await Identity.findByPk(jumpEntryIdentity.identityId);
+            if (!jumpIdentity) throw new Error(`No accessible identity for jump host ${jumpEntry.name}`);
+
             const jumpCredentials = await getIdentityCredentials(jumpIdentity.id);
 
             const jumpSsh = new sshd.Client();
-            const jumpOptions = {
-                host: jumpEntry.config.ip,
-                port: jumpEntry.config.port,
-                username: jumpIdentity.username,
-                ...(jumpIdentity.type === "password"
-                        ? { password: jumpCredentials.password }
-                        : { privateKey: jumpCredentials["ssh-key"], passphrase: jumpCredentials.passphrase }
-                ),
-            };
+            const jumpOptions = buildSSHOptions(jumpIdentity, jumpCredentials, jumpEntry.config);
 
             if (i > 0) {
                 await new Promise((resolve, reject) => {

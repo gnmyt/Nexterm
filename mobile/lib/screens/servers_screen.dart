@@ -306,23 +306,10 @@ class _ServersScreenState extends State<ServersScreen> {
     if (server.type == 'pve-lxc') return MdiIcons.cubeOutline;
     if (server.type == 'pve-qemu') return MdiIcons.monitor;
     if (server.type == 'pve-shell') return MdiIcons.console;
-    return switch (server.icon?.toLowerCase()) {
-      'windows' => MdiIcons.microsoftWindows,
-      'linux' || 'arch' => MdiIcons.linux,
-      'debian' => MdiIcons.debian,
-      'ubuntu' => MdiIcons.ubuntu,
-      'freebsd' => MdiIcons.freebsd,
-      'macos' => MdiIcons.apple,
-      'docker' => MdiIcons.docker,
-      'kubernetes' => MdiIcons.kubernetes,
-      'database' => MdiIcons.database,
-      'cloud' => MdiIcons.cloud,
-      'raspberry' => MdiIcons.raspberryPi,
-      'terminal' => MdiIcons.console,
-      'desktop' => MdiIcons.monitor,
-      'vm' => MdiIcons.cube,
-      _ => MdiIcons.server,
-    };
+    final icon = server.icon;
+    if (icon == null || !icon.startsWith('mdi')) return MdiIcons.server;
+    final camelName = icon.substring(3, 4).toLowerCase() + icon.substring(4);
+    return MdiIcons.fromString(camelName) ?? MdiIcons.server;
   }
 
   Color _parseColor(String c) {

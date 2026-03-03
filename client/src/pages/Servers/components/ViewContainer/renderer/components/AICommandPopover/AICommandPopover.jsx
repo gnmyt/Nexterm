@@ -1,95 +1,85 @@
 import { useState, useRef, useEffect } from "react";
 import { useTranslation } from "react-i18next";
-import { mdiRobot, mdiSend, mdiClose, mdiLoading } from "@mdi/js";
+import { mdiRobot, mdiSend, mdiContentCopy, mdiCheck } from "@mdi/js";
 import Icon from "@mdi/react";
-import "./styles.sass";
+import { DialogProvider } from "@/common/components/Dialog";
 import { postRequest } from "@/common/utils/RequestUtil.js";
+import { useToast } from "@/common/contexts/ToastContext.jsx";
+import "./styles.sass";
 
-export const AICommandPopover = ({ visible, onClose, onCommandGenerated, position, focusTerminal }) => {
+export const AICommandPopover = ({ visible, onClose, onCommandGenerated, focusTerminal, entryId, recentOutput }) => {
     const { t } = useTranslation();
+    const { sendToast } = useToast();
     const [prompt, setPrompt] = useState("");
     const [loading, setLoading] = useState(false);
+    const [command, setCommand] = useState("");
+    const [copied, setCopied] = useState(false);
     const inputRef = useRef(null);
+    const cmdRef = useRef(null);
 
     useEffect(() => {
-        if (visible && inputRef.current) inputRef.current.focus();
+        if (visible) {
+            setPrompt(""); setCommand(""); setCopied(false);
+            setTimeout(() => inputRef.current?.focus(), 100);
+        }
     }, [visible]);
+
+    const handleClose = () => { onClose(); focusTerminal?.(); };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        if (!prompt.trim()) return;
-
-        setLoading(true);
-
+        if (!prompt.trim() || loading) return;
+        setLoading(true); setCommand("");
         try {
-            const response = await postRequest("ai/generate", { prompt: prompt.trim() });
-            onCommandGenerated(response.command);
-            setPrompt("");
-            handleClose();
-        } catch (error) {
-            console.error("Error generating AI command:", error);
-            setPrompt("");
-            handleClose();
-        } finally {
-            setLoading(false);
-        }
+            const payload = { prompt: prompt.trim() };
+            if (entryId) payload.entryId = entryId;
+            if (recentOutput) payload.recentOutput = recentOutput;
+            const res = await postRequest("ai/generate", payload);
+            setCommand(res.command);
+            setTimeout(() => cmdRef.current?.focus(), 50);
+        } catch { sendToast("Error", t('servers.aiAssistant.error')); }
+        finally { setLoading(false); }
     };
 
-    const handleKeyDown = (e) => {
-        if (e.key === "Escape") {
-            onClose();
-            if (focusTerminal) {
-                focusTerminal();
-            }
-        }
-    };
+    const handleUse = () => { if (command.trim()) { onCommandGenerated(command); handleClose(); } };
 
-    const handleClose = () => {
-        onClose();
-        if (focusTerminal) {
-            focusTerminal();
-        }
-    };
-
-    if (!visible) return null;
-
-    const shouldShowBelow = position && position.y < 250;
-
-    const popoverStyle = {
-        left: position?.x || "50%",
-        top: position?.y || "50%",
-        transform: shouldShowBelow ? "translate(-50%, 0%)" : "translate(-50%, -100%)",
-        marginTop: shouldShowBelow ? "30px" : "",
+    const handleCopy = () => {
+        navigator.clipboard.writeText(command).then(() => {
+            setCopied(true); setTimeout(() => setCopied(false), 1500);
+        });
     };
 
     return (
-        <div className="ai-command-popover-overlay">
-            <div className="ai-command-popover" style={popoverStyle}>
-                <div className="popover-header">
-                    <div className="popover-title">
-                        <Icon path={mdiRobot} />
-                        <span>{t('servers.aiAssistant.title')}</span>
-                    </div>
-                    <button className="close-button" onClick={handleClose} aria-label={t('servers.aiAssistant.closeLabel')}>
-                        <Icon path={mdiClose} />
+        <DialogProvider open={visible} onClose={handleClose}>
+            <div className="ai-dialog">
+                <div className="ai-header"><Icon path={mdiRobot} /><h3>{t('servers.aiAssistant.title')}</h3></div>
+                <form onSubmit={handleSubmit} className="ai-form">
+                    <input ref={inputRef} type="text" value={prompt} onChange={(e) => setPrompt(e.target.value)}
+                        placeholder={t('servers.aiAssistant.placeholder')} disabled={loading || command} />
+                    <button type="submit" disabled={!prompt.trim() || loading || command}>
+                        {loading ? <span className="ai-spinner" /> : <Icon path={mdiSend} />}
                     </button>
-                </div>
-
-                <form onSubmit={handleSubmit} className="popover-form">
-                    <div className="input-container">
-                        <input ref={inputRef} type="text" value={prompt} onChange={(e) => setPrompt(e.target.value)}
-                               onKeyDown={handleKeyDown} placeholder={t('servers.aiAssistant.placeholder')}
-                               disabled={loading} className="prompt-input" />
-                        <button type="submit" disabled={!prompt.trim() || loading} className="submit-button">
-                            {loading ? <Icon path={mdiLoading} spin /> : <Icon path={mdiSend} />}
-                        </button>
-                    </div>
                 </form>
-
-                <div className="popover-hint">
-                    {t('servers.aiAssistant.hint')}
-                </div>
+                {command && !loading && (
+                    <div className="ai-result">
+                        <div className="ai-result-header">
+                            <span className="ai-label">{t('servers.aiAssistant.generatedCommand')}</span>
+                            <button className="ai-copy" onClick={handleCopy} title={t('servers.aiAssistant.copy')}>
+                                <Icon path={copied ? mdiCheck : mdiContentCopy} />
+                            </button>
+                        </div>
+                        <textarea ref={cmdRef} value={command} onChange={(e) => setCommand(e.target.value)}
+                            onKeyDown={(e) => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); e.stopPropagation(); handleUse(); } }} rows={3} />
+                        <div className="ai-actions">
+                            <button className="secondary" onClick={() => { setCommand(""); inputRef.current?.focus(); }}>
+                                {t('servers.aiAssistant.tryAgain')}
+                            </button>
+                            <button className="primary" onClick={handleUse}>{t('servers.aiAssistant.useCommand')}</button>
+                        </div>
+                    </div>
+                )}
+                <div className="ai-hint">{command ? t('servers.aiAssistant.hintUse') : t('servers.aiAssistant.hint')}</div>
             </div>
-        </div>
+        </DialogProvider>
     );
 };

@@ -1,9 +1,24 @@
 const { Router } = require("express");
-const { createEntry, deleteEntry, editEntry, getEntry, listEntries, duplicateEntry, importSSHConfig, repositionEntry } = require("../controllers/entry");
+const { createEntry, deleteEntry, editEntry, getEntry, listEntries, duplicateEntry, importSSHConfig, repositionEntry, getRecentConnections, wakeEntry } = require("../controllers/entry");
 const { createServerValidation, updateServerValidation, repositionServerValidation } = require("../validations/server");
 const { validateSchema } = require("../utils/schema");
 
 const app = Router();
+
+/**
+ * GET /entry/recent
+ * @summary Get Recent Connections
+ * @description Retrieves a list of recently connected entries for the authenticated user, useful for quick reconnection.
+ * @tags Entry
+ * @produces application/json
+ * @security BearerAuth
+ * @param {number} limit.query - Maximum number of recent connections to return (default: 5)
+ * @return {array} 200 - List of recent connections with entry details
+ */
+app.get("/recent", async (req, res) => {
+    const limit = parseInt(req.query.limit) || 5;
+    res.json(await getRecentConnections(req.user.id, limit));
+});
 
 /**
  * GET /entry/list
@@ -149,6 +164,25 @@ app.patch("/:entryId/reposition", async (req, res) => {
     if (result?.code) return res.json(result);
 
     res.json({ message: "Entry successfully repositioned" });
+});
+
+/**
+ * POST /entry/{entryId}/wake
+ * @summary Wake Entry Server
+ * @description Sends a Wake-On-LAN magic packet to wake up a server. Requires the server to have a MAC address configured.
+ * @tags Entry
+ * @produces application/json
+ * @security BearerAuth
+ * @param {string} entryId.path.required - The unique identifier of the entry to wake
+ * @return {object} 200 - Wake-On-LAN packet sent successfully
+ * @return {object} 400 - No MAC address configured or entry type not supported
+ * @return {object} 404 - Entry not found
+ */
+app.post("/:entryId/wake", async (req, res) => {
+    const result = await wakeEntry(req.user.id, req.params.entryId);
+    if (result?.code) return res.json(result);
+
+    res.json({ message: "Wake-On-LAN packet sent successfully" });
 });
 
 module.exports = app;

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:xterm/xterm.dart';
-import 'package:web_socket_channel/web_socket_channel.dart';
+import 'package:web_socket_channel/io.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'dart:async';
 import '../models/server.dart';
@@ -28,7 +28,7 @@ class TerminalScreen extends StatefulWidget {
 
 class _TerminalScreenState extends State<TerminalScreen> {
   late Terminal terminal;
-  WebSocketChannel? _channel;
+  IOWebSocketChannel? _channel;
   StreamSubscription? _channelSubscription;
   bool _connected = false;
   String? _errorMessage;
@@ -106,7 +106,10 @@ class _TerminalScreenState extends State<TerminalScreen> {
         if (identityId != null) 'identityId': identityId.toString(),
       };
 
-      _channel = WebSocketChannel.connect(Uri.parse(ApiClient.buildWebSocketUrl('/ws/term', queryParams: queryParams)));
+      _channel = IOWebSocketChannel.connect(
+        Uri.parse(ApiClient.buildWebSocketUrl('/ws/term', queryParams: queryParams)),
+        headers: {'User-Agent': ApiClient.userAgent},
+      );
       _channelSubscription = _channel!.stream.listen(
         (data) {
           if (data is String) {

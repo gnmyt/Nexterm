@@ -20,7 +20,7 @@ module.exports = {
                 },
                 accountId: {
                     type: DataTypes.INTEGER,
-                    allowNull: false,
+                    allowNull: true,
                     references: { model: "accounts", key: "id" },
                     onDelete: "CASCADE",
                 },
@@ -30,14 +30,6 @@ module.exports = {
                 },
                 content: {
                     type: DataTypes.TEXT,
-                    allowNull: false,
-                },
-                createdAt: {
-                    type: DataTypes.DATE,
-                    allowNull: false,
-                },
-                updatedAt: {
-                    type: DataTypes.DATE,
                     allowNull: false,
                 },
             });

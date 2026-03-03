@@ -1,5 +1,5 @@
 import "./styles.sass";
-import { mdiPencil, mdiTrashCan, mdiChevronLeft, mdiChevronRight, mdiCloudDownloadOutline } from "@mdi/js";
+import { mdiPencil, mdiTrashCan, mdiChevronLeft, mdiChevronRight, mdiCloudDownloadOutline, mdiLinux } from "@mdi/js";
 import Icon from "@mdi/react";
 import { useScripts } from "@/common/contexts/ScriptContext.jsx";
 import { deleteRequest, patchRequest } from "@/common/utils/RequestUtil.js";
@@ -8,17 +8,27 @@ import { useTranslation } from "react-i18next";
 import { useState, useMemo } from "react";
 import { useDrag, useDrop } from "react-dnd";
 import Button from "@/common/components/Button";
+import { parseOsFilter } from "@/common/utils/osUtils.js";
 
 const ScriptItem = ({ script, onEdit, onDelete, isReadOnly, onReposition, t }) => {
     const [{ isDragging }, drag] = useDrag({ type: "script", item: { id: script.id }, canDrag: !isReadOnly, collect: m => ({ isDragging: m.isDragging() }) });
     const [{ isOver }, drop] = useDrop({ accept: "script", drop: item => item.id !== script.id && onReposition(item.id, script.id), collect: m => ({ isOver: m.isOver() && m.getItem()?.id !== script.id }) });
+    const osFilter = parseOsFilter(script.osFilter);
 
     return (
         <div className={`script-item${isReadOnly ? ' read-only' : ''}${isDragging ? ' dragging' : ''}${isOver ? ' drop-target' : ''}`} ref={node => !isReadOnly && drag(drop(node))}>
             <div className="script-info">
                 <div className="script-header">
                     <h3>{script.name}</h3>
-                    {script.sourceId && <Icon path={mdiCloudDownloadOutline} size={0.65} className="source-badge" />}
+                    <div className="script-badges">
+                        {osFilter.length > 0 && (
+                            <span className="os-badge" title={osFilter.join(", ")}>
+                                <Icon path={mdiLinux} size={0.5} />
+                                {osFilter.length === 1 ? osFilter[0] : `${osFilter.length} OS`}
+                            </span>
+                        )}
+                        {script.sourceId && <Icon path={mdiCloudDownloadOutline} size={0.65} className="source-badge" />}
+                    </div>
                 </div>
                 {script.description && <p>{script.description}</p>}
                 <div className="script-preview"><pre>{script.content?.substring(0, 150)}{script.content?.length > 150 ? '...' : ''}</pre></div>

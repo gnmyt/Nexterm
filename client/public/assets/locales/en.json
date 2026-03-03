@@ -3,16 +3,31 @@
     "error": "Error",
     "success": "Success",
     "loading": "Loading...",
+    "saving": "Saving...",
+    "close": "Close",
+    "cancel": "Cancel",
+    "save": "Save",
+    "download": "Download",
+    "maximize": "Maximize",
+    "restore": "Restore",
     "actions": {
       "cancel": "Cancel",
       "confirm": "Confirm",
+      "discard": "Discard",
       "login": "Login",
       "register": "Register",
       "save": "Save",
       "download": "Download",
       "close": "Close",
       "maximize": "Maximize",
-      "restore": "Restore"
+      "restore": "Restore",
+      "back": "Back"
+    },
+    "iconChooser": {
+      "searchIcons": "Search icons...",
+      "searchResults": "Search Results",
+      "popularIcons": "Popular Icons",
+      "noResults": "No icons found"
     },
     "labels": {
       "username": "Username",
@@ -31,19 +46,84 @@
     },
     "confirmDialog": {
       "title": "Are you sure?",
-      "defaultText": "This action cannot be undone."
+      "defaultText": "This action cannot be undone.",
+      "unsavedChangesTitle": "Unsaved Changes",
+      "unsavedChangesText": "You have unsaved changes. Are you sure you want to close?"
     },
     "loginDialog": {
       "title": "Nexterm",
       "registrationTitle": "Registration",
       "ssoOrContinueWith": "or continue with",
-      "ssoSignInWith": "sign in with",
-      "noAuthMethodsAvailable": "No authentication methods available."
+      "noAuthMethodsAvailable": "No authentication methods available.",
+      "signInWithPasskey": "Sign in with Passkey",
+      "authenticating": "Authenticating..."
+    },
+    "deviceLink": {
+      "title": "Link Device",
+      "description": "Enter the code shown on your device to authorize it to access your account.",
+      "codeLabel": "Device Code",
+      "continue": "Continue",
+      "verifying": "Verifying...",
+      "confirmTitle": "Authorize Device",
+      "confirmDescription": "A device is requesting access to your account. Please verify the details below.",
+      "deviceInfo": "Device Information",
+      "type": "Type",
+      "ipAddress": "IP Address",
+      "userAgent": "Device",
+      "authorize": "Authorize Device",
+      "authorizing": "Authorizing...",
+      "deny": "Deny",
+      "invalidCode": "Invalid or expired code",
+      "authorizationFailed": "Authorization failed",
+      "deviceAuthorized": "Device authorized successfully",
+      "successTitle": "Device Authorized",
+      "successMessage": "You can close this tab and return to the app.",
+      "clientTypes": {
+        "mobile": "Mobile App",
+        "connector": "Desktop Connector"
+      }
+    },
+    "connectorSetup": {
+      "title": "Nexterm Connector",
+      "serverUrl": "Server URL",
+      "serverUrlDescription": "Enter the URL of your Nexterm server to connect.",
+      "connect": "Connect",
+      "connecting": "Connecting...",
+      "enterServerUrl": "Please enter a server URL",
+      "connectionFailed": "Failed to connect to server. Please check the URL.",
+      "deviceLinkingNotSupported": "This server does not support device linking. Please update your Nexterm server.",
+      "authMethodDescription": "Choose how you want to authenticate with the server.",
+      "showCode": "Show Code",
+      "showCodeDesc": "Display a code to enter manually on the web interface",
+      "openBrowser": "Authorize",
+      "openBrowserDesc": "Open your browser to authorize automatically",
+      "enterCodeDescription": "Enter this code on the Nexterm web interface to authorize this device.",
+      "copyCode": "Copy Code",
+      "codeCopied": "Code copied to clipboard",
+      "copyFailed": "Failed to copy code",
+      "waitingForAuth": "Waiting for authorization...",
+      "codeCreationFailed": "Failed to create device code",
+      "authSuccess": "Successfully authenticated!"
     },
     "selectBox": {
       "defaultOption": "Select an option...",
       "search": "Search...",
       "noResults": "No results found"
+    },
+    "userSearch": {
+      "placeholder": "Search for a user..."
+    },
+    "table": {
+      "noData": {
+        "title": "No data found",
+        "subtitle": "There are no items to display."
+      },
+      "pagination": {
+        "showing": "Showing {{start}} to {{end}} of {{total}}",
+        "previous": "Previous",
+        "next": "Next",
+        "pageInfo": "Page {{current}} of {{total}}"
+      }
     },
     "sidebar": {
       "settings": "Settings",
@@ -51,18 +131,41 @@
       "monitoring": "Monitoring",
       "snippets": "Snippets",
       "audit": "Audit",
+      "account": "Account",
       "logout": "Logout",
       "collapseTitle": "Collapse Sidebar",
       "logoutConfirmText": "This will log you out of the {{username}} account. Are you sure?",
-      "navigationConfirmText": "You have active sessions. Navigating away will disconnect you from all servers. Are you sure?"
+      "starOnGitHub": "Star on GitHub",
+      "support": "Support"
+    },
+    "quickAction": {
+      "placeholder": "Search servers, snippets, or navigate...",
+      "noResults": "No results found",
+      "navigation": "Navigation",
+      "settings": "Settings",
+      "navigate": "Navigate",
+      "select": "Select",
+      "close": "Close",
+      "types": {
+        "server": "Server",
+        "snippet": "Snippet",
+        "navigation": "Go to",
+        "settings": "Settings"
+      }
     },
     "errors": {
       "loadingAuthProviders": "Error loading authentication providers: {{error}}",
+      "webSocketConnection": {
+        "title": "WebSocket Connection Failed",
+        "message": "Connections are unavailable. This may be due to WebSocket not being enabled in your reverse proxy or network restrictions."
+      },
       "generalError": "An error occurred",
       "invalidCredentials": "Invalid username or password",
       "invalidTwoFactor": "Invalid two-factor code",
       "internalAuthDisabled": "Internal authentication is disabled",
-      "ssoLoginFailed": "Failed to initiate SSO login"
+      "ssoLoginFailed": "Failed to initiate SSO login",
+      "passkeyLoginFailed": "Passkey authentication failed",
+      "passkeyCancelled": "Passkey authentication was cancelled"
     },
     "messages": {
       "invitationAccepted": "Invitation accepted",
@@ -123,6 +226,11 @@
         "personal": "Personal",
         "user": "User #{{id}}",
         "organization": "Org #{{id}}"
+      },
+      "durationUnits": {
+        "seconds": "seconds",
+        "minutes": "minutes",
+        "hours": "hours"
       }
     },
     "pagination": {
@@ -159,12 +267,14 @@
       "fields": {
         "name": "Name",
         "description": "Description (optional)",
-        "command": "Command"
+        "command": "Command",
+        "osFilter": "Compatible OS"
       },
       "placeholders": {
         "name": "Snippet name",
         "description": "What does this command?",
-        "command": "Enter your command"
+        "command": "Enter your command",
+        "osFilter": "All operating systems"
       },
       "actions": {
         "cancel": "Cancel",
@@ -246,11 +356,13 @@
       "helpTip": "Use @NEXTERM: directives for interactive features",
       "fields": {
         "name": "Name",
-        "description": "Description"
+        "description": "Description",
+        "osFilter": "Compatible OS"
       },
       "placeholders": {
         "name": "Script name",
-        "description": "What does this script do?"
+        "description": "What does this script do?",
+        "osFilter": "All operating systems"
       },
       "actions": {
         "cancel": "Cancel",
@@ -307,7 +419,9 @@
         "memoryUsage": "Memory Usage",
         "loadAverage": "Load Average",
         "processes": "Processes",
-        "uptime": "Uptime"
+        "uptime": "Uptime",
+        "nodes": "Nodes",
+        "vms": "VMs/Containers"
       },
       "status": {
         "serverOffline": "Server Offline",
@@ -338,11 +452,14 @@
         "overview": "Overview",
         "charts": "Charts",
         "storage": "Storage",
-        "network": "Network"
+        "network": "Network",
+        "processes": "Processes",
+        "nodes": "Nodes"
       },
       "overview": {
         "systemInfo": {
           "title": "System Information",
+          "hostname": "Hostname",
           "os": "OS",
           "version": "Version",
           "kernel": "Kernel",
@@ -380,13 +497,45 @@
         "available": "Available: {{value}}",
         "total": "Total: {{value}}",
         "type": "Type: {{value}}",
-        "noData": "No disk usage data available"
+        "noData": "No disk usage data available",
+        "noPartitions": "No mounted partitions"
       },
       "network": {
         "title": "Network Interfaces",
         "rxBytes": "RX Bytes",
         "txBytes": "TX Bytes",
+        "mac": "MAC Address",
+        "speed": "Speed",
         "noData": "No network interface data available"
+      },
+      "processes": {
+        "title": "Running Processes",
+        "searchPlaceholder": "Search processes...",
+        "showing": "Showing {{count}} of {{total}} processes",
+        "noData": "No process data available. Process data will appear after the next monitoring cycle.",
+        "noResults": "No processes match your search criteria."
+      },
+      "pve": {
+        "clusterInfo": "Cluster Information",
+        "resources": "Resource Usage",
+        "virtualMachines": "Virtual Machines",
+        "totalNodes": "Total Nodes",
+        "onlineNodes": "Online Nodes",
+        "totalCPU": "Total CPU",
+        "totalMemory": "Total Memory",
+        "totalStorage": "Total Storage",
+        "storageUsage": "Storage Usage",
+        "cores": "Cores",
+        "uptime": "Uptime",
+        "qemuVMs": "QEMU VMs",
+        "lxcContainers": "LXC Containers",
+        "running": "{{count}} running",
+        "vmContainerCount": "VM/Container Count",
+        "cpu": "CPU",
+        "memory": "Memory",
+        "storage": "Storage",
+        "nodeOffline": "This node is currently offline",
+        "noNodes": "No nodes available"
       }
     }
   },
@@ -397,6 +546,7 @@
     "pages": {
       "account": "Account",
       "terminal": "Terminal",
+      "fileManager": "File Manager",
       "keymaps": "Keymaps",
       "identities": "Identities",
       "sessions": "Sessions",
@@ -404,7 +554,9 @@
       "users": "Users",
       "authentication": "Authentication",
       "sources": "Sources",
-      "ai": "AI"
+      "ai": "AI",
+      "monitoring": "Monitoring",
+      "backup": "Storage"
     },
     "account": {
       "title": "Account",
@@ -416,6 +568,11 @@
       "themeAuto": "Auto",
       "themeLight": "Light",
       "themeDark": "Dark",
+      "themeOled": "OLED",
+      "oledEnabled": "OLED mode enabled",
+      "oledDisabled": "OLED mode disabled",
+      "themeLabel": "Theme",
+      "accentColor": "Accent Color",
       "twoFactor": "Two-factor authentication",
       "twoFactorActive": "Active",
       "twoFactorInactive": "Inactive",
@@ -430,6 +587,11 @@
       "currentLanguage": "Current Language",
       "missingLanguage": "Missing your language?",
       "helpTranslateLink": "Help translate Nexterm",
+      "syncLoginRequired": "Please log in to sync settings",
+      "appearanceSyncEnabled": "Appearance settings will now sync to your account",
+      "appearanceSyncDisabled": "Appearance settings will no longer sync",
+      "generalSyncEnabled": "General settings will now sync to your account",
+      "generalSyncDisabled": "General settings will no longer sync",
       "sessionSynchronization": "Session Synchronization",
       "sessionSyncDescription": "Control how your server sessions are stored and synchronized across devices and browser tabs.",
       "sessionSyncAcrossDevices": "Across devices",
@@ -446,6 +608,22 @@
         "messages": {
           "setupFailed": "2FA setup failed. Please try again."
         }
+      },
+      "passkeys": {
+        "sectionTitle": "Passkeys",
+        "sectionDescription": "Use passkeys for faster, more secure sign-in without passwords.",
+        "addButton": "Add Passkey",
+        "addDialogTitle": "Add Passkey",
+        "addDialogDescription": "Give your passkey a name to help you identify it later.",
+        "namePlaceholder": "Passkey name",
+        "enterName": "Enter a name for this passkey:",
+        "defaultName": "My Passkey",
+        "confirmDelete": "Are you sure you want to delete this passkey?",
+        "createdAt": "Created {{date}}",
+        "registerError": "Failed to register passkey. Please try again.",
+        "noPasskeys": "No passkeys registered yet",
+        "rename": "Rename",
+        "delete": "Delete"
       }
     },
     "passwordChange": {
@@ -491,8 +669,22 @@
     "users": {
       "title": "{{count}} users",
       "createNewUser": "Create new user",
+      "searchPlaceholder": "Search users...",
       "twoFactorEnabled": "2FA enabled",
       "twoFactorDisabled": "2FA disabled",
+      "noUsers": "No Users Found",
+      "noUsersDescription": "Create a new user to get started.",
+      "noSearchResults": "No Users Found",
+      "noSearchResultsDescription": "Try adjusting your search query.",
+      "table": {
+        "user": "User",
+        "role": "Role",
+        "twoFactor": "2FA"
+      },
+      "roles": {
+        "admin": "Admin",
+        "user": "User"
+      },
       "contextMenu": {
         "changePassword": "Change password",
         "promoteToAdmin": "Promote to admin",
@@ -533,6 +725,10 @@
         "search": {
           "title": "Search",
           "description": "Open the search input"
+        },
+        "quickaction": {
+          "title": "Quick Action",
+          "description": "Open the quick action menu"
         },
         "aimenu": {
           "title": "AI Menu",
@@ -576,11 +772,14 @@
     },
     "terminal": {
       "title": "Terminal",
+      "syncLoginRequired": "Please log in to sync terminal settings",
       "font": {
         "title": "Font",
         "description": "Customize the font family and size for your terminal.",
         "fontFamily": "Font Family",
-        "fontSize": "Font Size"
+        "fontSize": "Font Size",
+        "syncEnabled": "Font settings will now sync to your account",
+        "syncDisabled": "Font settings will no longer sync"
       },
       "cursor": {
         "title": "Cursor",
@@ -588,19 +787,71 @@
         "cursorStyle": "Cursor Style",
         "cursorBlinking": "Cursor Blinking",
         "enabled": "Enabled",
-        "disabled": "Disabled"
+        "disabled": "Disabled",
+        "syncEnabled": "Cursor settings will now sync to your account",
+        "syncDisabled": "Cursor settings will no longer sync"
       },
       "theme": {
         "title": "Theme",
-        "description": "Choose a color theme for your terminal."
+        "description": "Choose a color theme for your terminal.",
+        "syncEnabled": "Theme settings will now sync to your account",
+        "syncDisabled": "Theme settings will no longer sync"
       },
       "preview": {
         "text": "$ echo 'Hi, Nexterm!'\nHi, Nexterm!\n$ "
       }
     },
+    "fileManager": {
+      "title": "File Manager",
+      "description": "Configure how files and folders are displayed and managed.",
+      "syncLoginRequired": "Please log in to sync file manager settings",
+      "syncEnabled": "File manager settings will now sync to your account",
+      "syncDisabled": "File manager settings will no longer sync",
+      "defaultView": {
+        "title": "Default View Mode",
+        "description": "Choose the default layout when opening the file manager.",
+        "list": "List View",
+        "listDescription": "Show files in a detailed list with size and date columns",
+        "grid": "Grid View",
+        "gridDescription": "Show files as icons in a grid layout with thumbnails"
+      },
+      "thumbnails": {
+        "title": "Image Thumbnails",
+        "description": "Show image thumbnails in grid view. This uses additional bandwidth to generate previews.",
+        "enabled": "Show Thumbnails",
+        "enabledDescription": "Display image previews in grid view for quick visual identification",
+        "disabled": "Hide Thumbnails",
+        "disabledDescription": "Show only file icons to save bandwidth and improve performance"
+      },
+      "hiddenFiles": {
+        "title": "Hidden Files",
+        "description": "Control visibility of hidden files and folders (names starting with a dot).",
+        "show": "Show Hidden Files",
+        "showDescription": "Display all files including .dotfiles and system directories",
+        "hide": "Hide Hidden Files",
+        "hideDescription": "Only show regular files and folders"
+      },
+      "deleteConfirmation": {
+        "title": "Delete Confirmation",
+        "description": "Require confirmation before deleting files and folders.",
+        "enabled": "Confirm Deletions",
+        "enabledDescription": "Show a confirmation dialog before deleting items",
+        "disabled": "Delete Immediately",
+        "disabledDescription": "Delete files without asking for confirmation"
+      },
+      "dragDropAction": {
+        "title": "Drag & Drop Action",
+        "description": "Default action when dragging files to a new location.",
+        "move": "Move",
+        "copy": "Copy",
+        "ask": "Ask"
+      }
+    },
     "authentication": {
       "title": "{{count}} Authentication Providers",
+      "internalProviderName": "Internal Authentication",
       "addProvider": "Add Provider",
+      "addLdapProvider": "Add LDAP",
       "system": "System",
       "systemDescription": "Username and password authentication",
       "deleteConfirm": "This will permanently delete this authentication provider.",
@@ -624,9 +875,7 @@
           "redirectUri": "Redirect URI",
           "redirectUriPlaceholder": "https://your-domain.com/api/oidc/callback",
           "scope": "Scope",
-          "scopePlaceholder": "openid profile email",
-          "emailAttribute": "Email Attribute",
-          "emailAttributePlaceholder": "email",
+          "scopePlaceholder": "openid profile",
           "usernameAttribute": "Username Attribute",
           "usernameAttributePlaceholder": "preferred_username",
           "firstNameAttribute": "First Name Attribute",
@@ -644,6 +893,51 @@
         },
         "messages": {
           "saveFailed": "Failed to save provider"
+        }
+      },
+      "ldapDialog": {
+        "createTitle": "Add LDAP Provider",
+        "editTitle": "Edit LDAP Provider",
+        "fields": {
+          "displayName": "Display Name",
+          "displayNamePlaceholder": "e.g. Company LDAP",
+          "host": "Host",
+          "hostPlaceholder": "ldap.company.com",
+          "port": "Port",
+          "bindDN": "Bind DN",
+          "bindDNPlaceholder": "cn=admin,dc=company,dc=com",
+          "bindPassword": "Bind Password",
+          "bindPasswordPlaceholder": "Bind password",
+          "bindPasswordPlaceholderEdit": "Leave blank to keep existing",
+          "baseDN": "Base DN",
+          "baseDNPlaceholder": "dc=company,dc=com",
+          "userSearchFilter": "User Search Filter",
+          "userSearchFilterPlaceholder": "(uid={{username}}) or (sAMAccountName={{username}})",
+          "useTLS": "Use TLS/SSL",
+          "usernameAttribute": "Username Attribute",
+          "usernameAttributePlaceholder": "uid",
+          "emailAttribute": "Email Attribute",
+          "emailAttributePlaceholder": "mail",
+          "firstNameAttribute": "First Name Attribute",
+          "firstNameAttributePlaceholder": "givenName",
+          "lastNameAttribute": "Last Name Attribute",
+          "lastNameAttributePlaceholder": "sn"
+        },
+        "advanced": {
+          "show": "Show Advanced Settings",
+          "hide": "Hide Advanced Settings"
+        },
+        "actions": {
+          "addProvider": "Add Provider",
+          "saveChanges": "Save Changes",
+          "testConnection": "Test Connection",
+          "testing": "Testing..."
+        },
+        "messages": {
+          "saveFailed": "Failed to save provider",
+          "saveFirst": "Save the provider first to test the connection",
+          "testSuccess": "Connection test successful",
+          "testFailed": "Connection test failed"
         }
       }
     },
@@ -689,6 +983,58 @@
         "testConnection": "AI connection test failed"
       }
     },
+    "monitoring": {
+      "loading": "Loading monitoring settings...",
+      "saveSettings": "Save Settings",
+      "saveSuccess": "Monitoring settings saved successfully",
+      "seconds": "seconds",
+      "hours": "hours",
+      "servers": "servers",
+      "statusChecker": {
+        "title": "Status Checker",
+        "description": "Configure how Nexterm checks the online/offline status of your servers.",
+        "enable": {
+          "title": "Enable Status Checker",
+          "description": "Automatically check if servers are online or offline. When disabled, all servers will be marked as online."
+        },
+        "interval": {
+          "title": "Check Interval",
+          "description": "How often to check server status (10-300 seconds)"
+        }
+      },
+      "dataCollection": {
+        "title": "Data Collection",
+        "description": "Configure monitoring data collection for CPU, memory, disk, and network metrics.",
+        "enable": {
+          "title": "Enable Monitoring",
+          "description": "Collect detailed performance metrics from servers with monitoring enabled."
+        },
+        "interval": {
+          "title": "Collection Interval",
+          "description": "How often to collect monitoring data (30-600 seconds)"
+        },
+        "retention": {
+          "title": "Data Retention",
+          "description": "How long to keep monitoring data (1-24 hours)"
+        }
+      },
+      "advanced": {
+        "title": "Advanced Settings",
+        "description": "Fine-tune monitoring performance and resource usage.",
+        "timeout": {
+          "title": "Connection Timeout",
+          "description": "Maximum time to wait for a server response (5-120 seconds)"
+        },
+        "batchSize": {
+          "title": "Batch Size",
+          "description": "Number of servers to check simultaneously (1-50)"
+        }
+      },
+      "errors": {
+        "loadSettings": "Failed to load monitoring settings",
+        "saveSettings": "Failed to save monitoring settings"
+      }
+    },
     "identities": {
       "title": "SSH Keys & Credentials",
       "description": "Manage your SSH keys and login credentials for server connections",
@@ -723,9 +1069,10 @@
         },
         "authTypes": {
           "password": "Password",
-          "ssh": "SSH Key"
+          "password-only": "No Username",
+          "ssh": "SSH Key",
+          "both": "Key+Pass"
         },
-        "keyFileLoaded": "Key file loaded",
         "actions": {
           "cancel": "Cancel",
           "create": "Create Identity",
@@ -789,6 +1136,126 @@
         "validationFailed": "Failed to validate URL",
         "requiredFields": "Name and URL are required"
       }
+    },
+    "backup": {
+      "loading": "Loading storage settings...",
+      "storage": {
+        "title": "Storage",
+        "description": "View disk usage for your Nexterm data.",
+        "database": "Database",
+        "recordings": "Recordings",
+        "logs": "Logs",
+        "total": "Total"
+      },
+      "backupsSection": {
+        "title": "Backups",
+        "description": "Configure backup providers and schedule automatic backups."
+      },
+      "addProvider": "Add Provider",
+      "editProvider": "Edit Provider",
+      "providerName": "Provider Name",
+      "providerNamePlaceholder": "My Backup",
+      "providerType": "Type",
+      "providerTypes": {
+        "local": "Local",
+        "smb": "SMB Share",
+        "webdav": "WebDAV"
+      },
+      "localPath": "Backup Path",
+      "localPathPlaceholder": "/path/to/backups",
+      "smbShare": "SMB Share",
+      "smbSharePlaceholder": "\\\\server\\share",
+      "smbFolder": "Folder (optional)",
+      "smbFolderPlaceholder": "backups",
+      "smbUsername": "Username",
+      "smbUsernamePlaceholder": "user",
+      "smbPassword": "Password",
+      "smbPasswordPlaceholder": "password",
+      "smbDomain": "Domain (optional)",
+      "smbDomainPlaceholder": "WORKGROUP",
+      "webdavUrl": "Server URL",
+      "webdavUrlPlaceholder": "https://cloud.example.com/remote.php/dav/files/user",
+      "webdavFolder": "Folder (optional)",
+      "webdavFolderPlaceholder": "backups",
+      "webdavUsername": "Username",
+      "webdavUsernamePlaceholder": "user",
+      "webdavPassword": "Password",
+      "webdavPasswordPlaceholder": "password",
+      "passwordUnchanged": "Leave empty to keep current",
+      "schedule": {
+        "title": "Automatic Backup",
+        "disabled": "Disabled",
+        "hourly": "Every hour",
+        "every6h": "Every 6 hours",
+        "every12h": "Every 12 hours",
+        "daily": "Daily",
+        "weekly": "Weekly"
+      },
+      "retention": {
+        "title": "Retention Policy"
+      },
+      "backups": "backups",
+      "includes": {
+        "title": "Include in Backups",
+        "database": "Database",
+        "recordings": "Recordings",
+        "logs": "Logs"
+      },
+      "providers": "Providers",
+      "saveSettings": "Save Settings",
+      "noProviders": "No Backup Providers",
+      "noProvidersDescription": "Add a backup provider to start creating backups.",
+      "backupList": "Backups - {{name}}",
+      "loadingBackups": "Loading backups...",
+      "noBackups": "No backups found",
+      "restoreConfirm": "Are you sure you want to restore \"{{name}}\"? This will overwrite your current data and restart the server.",
+      "deleteProviderConfirm": "Are you sure you want to delete \"{{name}}\"? This will not delete existing backups.",
+      "providerCreated": "Backup provider created",
+      "providerUpdated": "Backup provider updated",
+      "providerDeleted": "Backup provider deleted",
+      "backupCreated": "Backup created successfully",
+      "restoreStarted": "Restore started, server will restart",
+      "saveSuccess": "Settings saved successfully",
+      "errors": {
+        "loadFailed": "Failed to load backup settings",
+        "saveFailed": "Failed to save settings",
+        "deleteFailed": "Failed to delete",
+        "backupFailed": "Failed to create backup",
+        "loadBackupsFailed": "Failed to load backups",
+        "restoreFailed": "Failed to restore backup",
+        "exportFailed": "Failed to export data",
+        "nameRequired": "Provider name is required"
+      },
+      "noFiles": "No files found"
+    }
+  },
+  "tunnel": {
+    "title": "Port Forward",
+    "identity": "Identity",
+    "remoteHost": "Remote Host",
+    "remotePort": "Remote Port",
+    "localPort": "Local Port",
+    "start": "Start Tunnel",
+    "stop": "Stop Tunnel",
+    "status": {
+      "idle": "Not connected",
+      "starting": "Starting...",
+      "listening": "Listening on localhost:{{port}}",
+      "error": "Error",
+      "stopped": "Stopped"
+    },
+    "error": {
+      "fillAllFields": "Please fill in all fields"
+    }
+  },
+  "share": {
+    "errors": {
+      "unableToConnect": "Unable to Connect",
+      "failedToJoin": "Failed to join session"
+    },
+    "sessionEnded": {
+      "title": "Session Ended",
+      "description": "The shared session has been closed"
     }
   },
   "servers": {
@@ -828,16 +1295,42 @@
       "connect": "Connect",
       "quickConnect": "Quick Connect",
       "openSFTP": "Open SFTP",
+      "forwardPort": "Forward Port",
       "runScript": "Run Script",
       "editServer": "Edit Server",
       "editIntegration": "Edit Integration",
       "duplicateServer": "Duplicate Server",
+      "pasteIdentityPassword": "Paste Password",
       "deleteServer": "Delete Server",
+      "wakeOnLan": "Wake-On-LAN",
       "editPVE": "Edit PVE",
       "deletePVE": "Delete PVE",
       "shutdown": "Shutdown",
       "stop": "Stop",
       "start": "Start"
+    },
+    "tabs": {
+      "contextMenu": {
+        "popOut": "Pop Out",
+        "startSharing": "Start Sharing",
+        "readOnly": "Read-only",
+        "readWrite": "Read & Write",
+        "copyShareLink": "Copy Share Link",
+        "changePermissions": "Change Permissions",
+        "stopSharing": "Stop Sharing",
+        "duplicate": "Duplicate",
+        "hibernateSession": "Hibernate",
+        "closeSession": "Disconnect"
+      }
+    },
+    "wol": {
+      "successDescription": "Magic packet sent to {{name}}",
+      "errorDescription": "Failed to send magic packet"
+    },
+    "messages": {
+      "usernameRequired": "Username is required",
+      "passwordRequired": "Password is required",
+      "sshKeyRequired": "SSH key is required"
     },
     "dialog": {
       "addServer": "Add server",
@@ -855,24 +1348,26 @@
       "fields": {
         "name": "Name",
         "icon": "Icon",
-        "serverIp": "Server-IP",
+        "serverIp": "Host",
         "port": "Port",
         "protocol": "Protocol",
         "username": "Username",
         "password": "Password",
         "host": "Host",
         "nodeName": "Node Name",
-        "vmid": "VM ID"
+        "vmid": "VM ID",
+        "macAddress": "MAC Address"
       },
       "placeholders": {
         "serverName": "Server name",
-        "serverIp": "Server-IP",
+        "serverIp": "Hostname or IP",
         "port": "Port",
         "username": "Username",
         "password": "Password",
         "host": "Host",
         "nodeName": "Node name",
-        "vmid": "VM ID"
+        "vmid": "VM ID",
+        "macAddress": "AA:BB:CC:DD:EE:FF"
       },
       "settings": {
         "jumpHosts": {
@@ -886,9 +1381,46 @@
           "title": "Enable Performance Monitoring",
           "description": "Collect CPU, memory, disk, and network metrics for this server"
         },
+        "wakeOnLan": {
+          "title": "Enable Wake-On-LAN",
+          "description": "Allow waking this server remotely using its MAC address"
+        },
         "keyboardLayout": {
           "title": "Keyboard Layout",
           "description": "Select the keyboard layout to use for this connection."
+        },
+        "display": {
+          "title": "Display Settings",
+          "description": "Configure color depth and resize behavior for the remote display",
+          "colorDepth": "Color Depth",
+          "resizeMethod": "Resize Method"
+        },
+        "performance": {
+          "title": "Performance Settings",
+          "description": "Toggle visual effects that may impact performance over slower connections",
+          "enableWallpaper": "Enable Wallpaper",
+          "enableWallpaperDesc": "Show the desktop wallpaper on the remote system",
+          "enableTheming": "Enable Theming",
+          "enableThemingDesc": "Use themed windows and controls on the remote system",
+          "enableFontSmoothing": "Enable Font Smoothing",
+          "enableFontSmoothingDesc": "Render text with smooth edges for better readability",
+          "enableFullWindowDrag": "Enable Full Window Drag",
+          "enableFullWindowDragDesc": "Display window contents while dragging windows",
+          "enableDesktopComposition": "Enable Desktop Composition",
+          "enableDesktopCompositionDesc": "Enable transparent windows and visual effects",
+          "enableMenuAnimations": "Enable Menu Animations",
+          "enableMenuAnimationsDesc": "Enable menu open and close animations"
+        },
+        "audio": {
+          "enableAudio": "Enable Audio",
+          "enableAudioDesc": "Stream audio from the remote system to your browser"
+        },
+        "terminal": {
+          "title": "Terminal Compatibility",
+          "description": "Adjust key behavior for different terminal types",
+          "backspace": "Backspace",
+          "delete": "Delete",
+          "functionKeys": "Function Keys"
         },
         "noSettings": "No additional settings available for this entry type."
       },
@@ -900,8 +1432,11 @@
         "identityName": "Identity Name",
         "username": "Username",
         "authentication": "Authentication",
-        "password": "Password",
+        "passwordField": "Password",
+        "userPassword": "Password",
+        "passwordOnly": "No Username",
         "sshKey": "SSH Key",
+        "both": "Key+Pass",
         "sshPrivateKey": "SSH Private Key",
         "passphrase": "Passphrase (optional)",
         "new": "New",
@@ -926,8 +1461,10 @@
         "port": "Port",
         "username": "Username",
         "password": "Password",
-        "nodeName": "Node Name (Optional)"
+        "nodeName": "Node Name (Optional)",
+        "monitoring": "Performance Monitoring"
       },
+      "monitoringDescription": "Collect cluster-wide CPU, memory, and storage metrics",
       "placeholders": {
         "name": "Name",
         "serverIp": "Server-IP",
@@ -939,6 +1476,12 @@
       "actions": {
         "import": "Import",
         "edit": "Edit"
+      },
+      "messages": {
+        "created": "Proxmox integration created successfully",
+        "updated": "Proxmox integration updated successfully",
+        "createFailed": "Failed to create Proxmox integration",
+        "updateFailed": "Failed to update Proxmox integration"
       }
     },
     "connectionReasonDialog": {
@@ -977,6 +1520,11 @@
       }
     },
     "fileManager": {
+      "createFile": {
+        "title": "Create File",
+        "placeholder": "File Name",
+        "button": "Create File"
+      },
       "createFolder": {
         "title": "Create Folder",
         "placeholder": "Folder Name",
@@ -1010,11 +1558,44 @@
         "upload": "Upload File",
         "edit": "Edit",
         "preview": "Preview",
+        "moveHere": "Move here",
+        "copyHere": "Copy here",
         "bigFileConfirm": "This file is {{size}} MB large. Are you sure you want to edit it?",
+        "deleteConfirm": "Are you sure you want to delete \"{{name}}\"? This action cannot be undone.",
         "selectAll": "Select All",
         "insertSnippet": "Insert Snippet",
         "sendCtrlC": "Send Ctrl+C",
-        "clearTerminal": "Clear Terminal"
+        "clearTerminal": "Clear Terminal",
+        "properties": "Properties",
+        "openTerminal": "Open Terminal Here",
+        "downloadFolder": "Download Folder"
+      },
+      "properties": {
+        "general": "General",
+        "permissions": "Permissions",
+        "checksum": "Checksum",
+        "folder": "Folder",
+        "file": "File",
+        "path": "Location",
+        "size": "Size",
+        "calculateSize": "Calculate",
+        "owner": "Owner",
+        "group": "Group",
+        "modified": "Modified",
+        "accessed": "Accessed",
+        "calculating": "Calculating...",
+        "calculate": "Calculate"
+      },
+      "permissions": {
+        "owner": "Owner",
+        "group": "Group",
+        "others": "Others",
+        "read": "Read",
+        "write": "Write",
+        "execute": "Execute",
+        "octal": "Octal",
+        "preview": "Preview",
+        "apply": "Apply"
       },
       "filePreview": {
         "title": "File Preview",
@@ -1025,13 +1606,61 @@
         "audioNotSupported": "Your browser does not support audio playback",
         "download": "Download",
         "close": "Close"
+      },
+      "selection": {
+        "itemsSelected": "{{count}} items selected",
+        "filesSelected": "{{count}} file(s) selected",
+        "foldersSelected": "{{count}} folder(s) selected",
+        "clearSelection": "Clear selection",
+        "downloadSelected": "Download selected",
+        "deleteSelected": "Delete selected",
+        "download": "Download",
+        "delete": "Delete",
+        "deleteConfirm": "Are you sure you want to delete {{count}} item(s)?"
+      },
+      "header": {
+        "name": "Name",
+        "size": "Size",
+        "permissions": "Permissions",
+        "modified": "Modified"
+      },
+      "actionBar": {
+        "enterDirectory": "Enter directory path...",
+        "hiddenDirectories": "{{count}} hidden directories",
+        "switchToGrid": "Switch to grid view",
+        "switchToList": "Switch to list view"
+      },
+      "item": {
+        "link": "link"
+      },
+      "states": {
+        "loading": "Loading files...",
+        "accessDenied": "Access Denied",
+        "emptyFolder": "This folder is empty",
+        "dropFilesHint": "Drop files here to upload them"
+      },
+      "toast": {
+        "downloaded": "Downloaded {{name}}",
+        "downloadingItems": "Downloading {{count}} item(s)...",
+        "uploaded": "Uploaded {{name}}",
+        "uploadFailed": "Upload failed: {{message}}",
+        "connectionLost": "SFTP connection lost. Please reconnect.",
+        "error": "An error occurred"
       }
     },
     "aiAssistant": {
       "title": "AI Assistant",
       "placeholder": "Describe what you want to do...",
       "hint": "Press Enter to generate • Esc to close",
-      "closeLabel": "Close AI Assistant"
+      "hintUse": "Press Enter to use command • Esc to close",
+      "closeLabel": "Close AI Assistant",
+      "generate": "Generate command",
+      "generating": "Generating command...",
+      "generatedCommand": "Generated Command",
+      "useCommand": "Use Command",
+      "tryAgain": "Try Again",
+      "copy": "Copy to clipboard",
+      "error": "Failed to generate command. Please try again."
     },
     "snippets": {
       "title": "Snippets",
@@ -1056,6 +1685,42 @@
       "updateFailed": "Failed to update server",
       "createIdentityFailed": "Failed to create identity",
       "updateIdentityFailed": "Failed to update identity"
+    }
+  },
+  "support": {
+    "title": "Get Support",
+    "subtitle": "Need help or want to contribute?",
+    "footer": "Thank you for using Nexterm!",
+    "issues": {
+      "title": "Report an Issue",
+      "description": "Found a bug or have a feature request?"
+    },
+    "discord": {
+      "title": "Join Discord",
+      "description": "Chat with the community and get help."
+    },
+    "github": {
+      "title": "View on GitHub",
+      "description": "Browse source code and contribute."
+    }
+  },
+  "welcome": {
+    "subtitle": "Welcome to Nexterm. The open-source server manager for SSH, VNC and RDP.",
+    "downloadApps": "Download Apps",
+    "connectDevice": "Connect Device",
+    "recentConnections": "Recent Connections",
+    "getStarted": "Get Started",
+    "getStartedHint": "Add a server from the sidebar to begin managing your infrastructure."
+  },
+  "downloadApps": {
+    "title": "Download Apps",
+    "subtitle": "Get Nexterm on your devices",
+    "platforms": {
+      "windows": "Windows",
+      "macos": "macOS",
+      "linux": "Linux",
+      "android": "Android",
+      "ios": "iOS"
     }
   }
 }

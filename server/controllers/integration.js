@@ -46,6 +46,7 @@ module.exports.createIntegration = async (accountId, configuration) => {
         ip: configuration.ip,
         port: configuration.port,
         username: configuration.username,
+        monitoringEnabled: configuration.monitoringEnabled || false,
     };
 
     if (configuration.type === 'proxmox' || !configuration.type) {
@@ -171,6 +172,7 @@ module.exports.editIntegration = async (accountId, integrationId, configuration)
         ip: configuration.ip !== undefined ? configuration.ip : integration.config.ip,
         port: configuration.port !== undefined ? configuration.port : integration.config.port,
         username: configuration.username !== undefined ? configuration.username : integration.config.username,
+        monitoringEnabled: configuration.monitoringEnabled !== undefined ? configuration.monitoringEnabled : integration.config.monitoringEnabled,
     };
 
     delete configuration.organizationId;
@@ -178,6 +180,7 @@ module.exports.editIntegration = async (accountId, integrationId, configuration)
     delete configuration.port;
     delete configuration.username;
     delete configuration.folderId;
+    delete configuration.monitoringEnabled;
 
     await Integration.update({
         ...configuration,
@@ -210,6 +213,7 @@ module.exports.getIntegrationUnsafe = async (accountId, integrationId) => {
         ip: integration.config.ip,
         port: integration.config.port,
         username: integration.config.username,
+        monitoringEnabled: integration.config.monitoringEnabled || false,
         password: credential ? credential.secret : null,
         online: integration.status === 'online',
     };

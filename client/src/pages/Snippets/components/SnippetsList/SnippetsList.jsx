@@ -1,5 +1,5 @@
 import "./styles.sass";
-import { mdiPencil, mdiTrashCan, mdiChevronLeft, mdiChevronRight, mdiCloudDownloadOutline } from "@mdi/js";
+import { mdiPencil, mdiTrashCan, mdiChevronLeft, mdiChevronRight, mdiCloudDownloadOutline, mdiLinux } from "@mdi/js";
 import Icon from "@mdi/react";
 import { useSnippets } from "@/common/contexts/SnippetContext.jsx";
 import { deleteRequest, patchRequest } from "@/common/utils/RequestUtil.js";
@@ -8,17 +8,27 @@ import { useTranslation } from "react-i18next";
 import { useState, useMemo } from "react";
 import { useDrag, useDrop } from "react-dnd";
 import Button from "@/common/components/Button";
+import { parseOsFilter } from "@/common/utils/osUtils.js";
 
 const SnippetItem = ({ snippet, onEdit, onDelete, isReadOnly, onReposition, t }) => {
     const [{ isDragging }, drag] = useDrag({ type: "snippet", item: { id: snippet.id }, canDrag: !isReadOnly, collect: m => ({ isDragging: m.isDragging() }) });
     const [{ isOver }, drop] = useDrop({ accept: "snippet", drop: item => item.id !== snippet.id && onReposition(item.id, snippet.id), collect: m => ({ isOver: m.isOver() && m.getItem()?.id !== snippet.id }) });
+    const osFilter = parseOsFilter(snippet.osFilter);
 
     return (
         <div className={`snippet-item${isReadOnly ? ' read-only' : ''}${isDragging ? ' dragging' : ''}${isOver ? ' drop-target' : ''}`} ref={node => !isReadOnly && drag(drop(node))}>
             <div className="snippet-info">
                 <div className="snippet-header">
                     <h3>{snippet.name}</h3>
-                    {snippet.sourceId && <Icon path={mdiCloudDownloadOutline} size={0.65} className="source-badge" />}
+                    <div className="snippet-badges">
+                        {osFilter.length > 0 && (
+                            <span className="os-badge" title={osFilter.join(", ")}>
+                                <Icon path={mdiLinux} size={0.5} />
+                                {osFilter.length === 1 ? osFilter[0] : `${osFilter.length} OS`}
+                            </span>
+                        )}
+                        {snippet.sourceId && <Icon path={mdiCloudDownloadOutline} size={0.65} className="source-badge" />}
+                    </div>
                 </div>
                 {snippet.description && <p>{snippet.description}</p>}
                 <pre className="snippet-command">{snippet.command}</pre>

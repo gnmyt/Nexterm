@@ -1,162 +1,101 @@
-const { WebSocket } = require("ws");
 const { updateAuditLogWithSessionDuration } = require("../controllers/audit");
 const SessionManager = require("../lib/SessionManager");
-const logger = require("../utils/logger");
 
-const handleResize = (data, socket, sendFn) => {
-    if (data.startsWith("\x01")) {
-        const resizeData = data.substring(1);
-        if (resizeData.includes(",")) {
-            const [width, height] = resizeData.split(",").map(Number);
-            if (!isNaN(width) && !isNaN(height)) {
-                sendFn(width, height);
-                return true;
-            }
-        }
-    }
-    return false;
-};
+const handleShared = (ws, { serverSession }) => {
+    const sessionId = serverSession.sessionId;
+    const { lxcSocket } = SessionManager.getConnection(sessionId) || {};
+    if (!lxcSocket || lxcSocket.readyState !== lxcSocket.OPEN) return ws.close(4014, "Session not connected");
 
-const setupClientMessageHandler = (ws, lxcSocket, vmid) => {
+    const logs = SessionManager.getLogBuffer(sessionId);
+    if (logs && ws.readyState === ws.OPEN) ws.send(logs);
+
+    SessionManager.addWebSocket(sessionId, ws, true);
+    if (serverSession.shareWritable) SessionManager.setActiveWs(sessionId, ws);
+
+    const onMsg = (m) => { m = m instanceof Buffer ? m.toString() : m; if (m !== "OK" && ws.readyState === ws.OPEN) ws.send(m); };
+    const onClose = () => ws.readyState === ws.OPEN && ws.close(4014, "Session ended");
+    const onErr = () => ws.readyState === ws.OPEN && ws.close(4014, "Session error");
+
+    lxcSocket.on("message", onMsg);
+    lxcSocket.on("close", onClose);
+    lxcSocket.on("error", onErr);
+
     ws.on("message", (data) => {
-        try {
-            data = data.toString();
-
-            if (lxcSocket.readyState !== lxcSocket.OPEN) {
-                logger.warn(`Attempted to send data to closed LXC socket`, { vmid });
-                return;
-            }
-
-            const handled = handleResize(data, lxcSocket, (width, height) => {
-                lxcSocket.send("1:" + width + ":" + height + ":");
-            });
-
-            if (!handled) {
-                lxcSocket.send("0:" + data.length + ":" + data);
-            }
-        } catch (error) {
-            logger.error(`Error sending message to LXC socket`, { error: error.message, vmid });
+        if (!SessionManager.get(sessionId)?.shareWritable || lxcSocket.readyState !== lxcSocket.OPEN) return;
+        data = data.toString();
+        if (data.startsWith("\x01")) {
+            const [w, h] = data.substring(1).split(",").map(Number);
+            if (!isNaN(w) && !isNaN(h) && SessionManager.isActiveWs(sessionId, ws)) lxcSocket.send(`1:${w}:${h}:`);
+            return;
         }
+        SessionManager.setActiveWs(sessionId, ws);
+        lxcSocket.send(`0:${data.length}:${data}`);
+    });
+
+    ws.on("close", () => {
+        lxcSocket.removeListener("message", onMsg);
+        lxcSocket.removeListener("close", onClose);
+        lxcSocket.removeListener("error", onErr);
+        SessionManager.removeWebSocket(sessionId, ws, true);
     });
 };
 
-const setupLxcMessageHandler = (lxcSocket, ws, vmid) => {
-    lxcSocket.on("message", (message) => {
-        try {
-            if (message instanceof Buffer) message = message.toString();
-
-            if (message !== "OK" && ws.readyState === ws.OPEN) {
-                ws.send(message);
+const setupHandler = (ws, lxcSocket, sessionId) => {
+    ws.on("message", (data) => {
+        if (lxcSocket.readyState !== lxcSocket.OPEN) return;
+        data = data.toString();
+        if (data.startsWith("\x01")) {
+            const [w, h] = data.substring(1).split(",").map(Number);
+            if (!isNaN(w) && !isNaN(h) && (!sessionId || SessionManager.isActiveWs(sessionId, ws))) {
+                lxcSocket.send(`1:${w}:${h}:`);
+                if (sessionId) SessionManager.recordResize(sessionId, w, h);
             }
-        } catch (error) {
-            logger.error(`Error handling LXC socket message`, { error: error.message, vmid });
+            return;
         }
+        if (sessionId) SessionManager.setActiveWs(sessionId, ws);
+        lxcSocket.send(`0:${data.length}:${data}`);
     });
 };
 
 module.exports = async (ws, context) => {
-    const { integration, entry, containerId, ticket, node, vncTicket, auditLogId, serverSession } = context;
-    const connectionStartTime = Date.now();
+    if (context.isShared) return handleShared(ws, context);
 
-    let existingConnection = null;
-    if (serverSession) existingConnection = SessionManager.getConnection(serverSession.sessionId);
+    const { serverSession } = context;
+    if (!serverSession) return ws.close(4007, "Session required");
 
-    if (existingConnection) {
-        const lxcSocket = existingConnection.lxcSocket;
+    const conn = SessionManager.getConnection(serverSession.sessionId);
+    if (!conn?.lxcSocket) return ws.close(4014, "Session not connected");
 
-        setupClientMessageHandler(ws, lxcSocket, containerId);
+    const { lxcSocket, auditLogId } = conn;
+    const startTime = Date.now();
 
-        const onMessage = (message) => {
-            try {
-                if (message instanceof Buffer) message = message.toString();
+    const logs = SessionManager.getLogBuffer(serverSession.sessionId);
+    if (logs && ws.readyState === ws.OPEN) ws.send(logs);
 
-                if (message !== "OK" && ws.readyState === ws.OPEN) {
-                    ws.send(message);
-                }
-            } catch (error) {
-                logger.error(`Error handling LXC socket message`, { error: error.message, vmid: containerId });
+    SessionManager.addWebSocket(serverSession.sessionId, ws);
+    SessionManager.setActiveWs(serverSession.sessionId, ws);
+    setupHandler(ws, lxcSocket, serverSession.sessionId);
+
+    const onMsg = (m) => { m = m instanceof Buffer ? m.toString() : m; if (m !== "OK" && ws.readyState === ws.OPEN) ws.send(m); };
+    lxcSocket.on("message", onMsg);
+
+    const onFirstResize = (data) => {
+        data = data.toString();
+        if (data.startsWith("\x01")) {
+            const [w, h] = data.substring(1).split(",").map(Number);
+            if (!isNaN(w) && !isNaN(h)) {
+                lxcSocket.send(`1:${w}:${h - 1}:`);
+                setTimeout(() => lxcSocket.send(`1:${w}:${h}:`), 50);
+                ws.removeListener("message", onFirstResize);
             }
-        };
+        }
+    };
+    ws.on("message", onFirstResize);
 
-        lxcSocket.on("message", onMessage);
-
-        ws.on("close", () => {
-            lxcSocket.removeListener("message", onMessage);
-        });
-
-        return;
-    }
-
-    let keepAliveTimer;
-
-    try {
-        const vmid = containerId ?? entry.config?.vmid ?? "0";
-        const containerPart = vmid === 0 || vmid === "0" ? "" : `lxc/${vmid}`;
-        const server = { ...integration.config, ...entry.config };
-
-        const lxcSocket = new WebSocket(
-            `wss://${server.ip}:${server.port}/api2/json/nodes/${node}/${containerPart}/vncwebsocket?port=${vncTicket.port}&vncticket=${encodeURIComponent(vncTicket.ticket)}`,
-            undefined,
-            {
-                rejectUnauthorized: false,
-                headers: {
-                    "Cookie": `PVEAuthCookie=${ticket.ticket}`,
-                },
-            }
-        );
-
-        lxcSocket.on("close", async () => {
-            await updateAuditLogWithSessionDuration(auditLogId, connectionStartTime);
-            if (keepAliveTimer) clearInterval(keepAliveTimer);
-            if (ws.readyState === ws.OPEN) {
-                ws.close();
-            }
-            if (serverSession) SessionManager.remove(serverSession.sessionId);
-        });
-
-        lxcSocket.on("open", () => {
-            try {
-                lxcSocket.send(`${server.username}:${vncTicket.ticket}\n`);
-                keepAliveTimer = setInterval(() => {
-                    if (lxcSocket.readyState === lxcSocket.OPEN) {
-                        lxcSocket.send("2");
-                    }
-                }, 30000);
-
-                if (serverSession) {
-                    SessionManager.setConnection(serverSession.sessionId, { lxcSocket, keepAliveTimer, auditLogId });
-                }
-            } catch (error) {
-                logger.error(`Error during LXC socket open`, { error: error.message, vmid });
-                if (keepAliveTimer) clearInterval(keepAliveTimer);
-                lxcSocket.close();
-                if (ws.readyState === ws.OPEN) {
-                    ws.close(1011, "Internal server error");
-                }
-            }
-        });
-
-        lxcSocket.on("error", async (error) => {
-            logger.error(`LXC socket error`, { error: error.message, vmid });
-            await updateAuditLogWithSessionDuration(auditLogId, connectionStartTime);
-            if (keepAliveTimer) clearInterval(keepAliveTimer);
-            if (lxcSocket.readyState === lxcSocket.OPEN) {
-                lxcSocket.close();
-            }
-            if (ws.readyState === ws.OPEN) {
-                ws.close(1011, "Internal server error");
-            }
-            if (serverSession) SessionManager.remove(serverSession.sessionId);
-        });
-
-        ws.on("close", async () => {
-            await updateAuditLogWithSessionDuration(auditLogId, connectionStartTime);
-        });
-
-        setupClientMessageHandler(ws, lxcSocket, vmid);
-        setupLxcMessageHandler(lxcSocket, ws, vmid);
-    } catch (error) {
-        if (keepAliveTimer) clearInterval(keepAliveTimer);
-        throw error;
-    }
+    ws.on("close", async () => {
+        lxcSocket.removeListener("message", onMsg);
+        ws.removeListener("message", onFirstResize);
+        SessionManager.removeWebSocket(serverSession.sessionId, ws);
+        await updateAuditLogWithSessionDuration(auditLogId, startTime);
+    });
 };

@@ -1,8 +1,8 @@
 const Joi = require('joi');
 
 module.exports.loginValidation = Joi.object({
-    username: Joi.string().min(3).max(15).alphanum().required(),
-    password: Joi.string().min(3).max(150).required(),
+    username: Joi.string().max(255).required(),
+    password: Joi.string().max(255).required(),
     code: Joi.number().integer()
 });
 

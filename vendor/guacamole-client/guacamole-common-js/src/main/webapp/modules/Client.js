@@ -344,13 +344,22 @@ Guacamole.Client = function(tunnel) {
      *
      * @param {!number} keysym
      *     The keysym of the key being pressed or released.
+     *
+     * @param {number} [scancode]
+     *     The XT scancode representing the physical key position. If provided,
+     *     this can be used by the server to send hardware scancodes for
+     *     protocols that support them (e.g., VNC with QEMU Extended Key Event).
      */
-    this.sendKeyEvent = function(pressed, keysym) {
+    this.sendKeyEvent = function(pressed, keysym, scancode) {
         // Do not send requests if not connected
         if (!isConnected())
             return;
 
-        tunnel.sendMessage("key", keysym, pressed);
+        if (scancode) {
+            tunnel.sendMessage("key", keysym, pressed, scancode);
+        } else {
+            tunnel.sendMessage("key", keysym, pressed);
+        }
     };
 
     /**

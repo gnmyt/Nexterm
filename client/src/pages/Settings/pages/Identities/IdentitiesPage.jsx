@@ -14,6 +14,13 @@ import "./styles.sass";
 export const IdentityCard = ({ identity, onEdit, onDelete }) => {
     const { t } = useTranslation();
     
+    const getIdentityTypeLabel = (type) => {
+        if (type === "ssh") return t("settings.identities.dialog.authTypes.ssh");
+        if (type === "both") return t("settings.identities.dialog.authTypes.both");
+        if (type === "password-only") return t("settings.identities.dialog.authTypes.password-only");
+        return t("settings.identities.dialog.authTypes.password");
+    };
+    
     return (
         <div className="identity-card">
             <div className="identity-info">
@@ -21,7 +28,7 @@ export const IdentityCard = ({ identity, onEdit, onDelete }) => {
                 <div className="identity-details">
                     <h3>{identity.name}</h3>
                     <p className="identity-username">{identity.username || t("settings.identities.noUsername")}</p>
-                    <span className="identity-type">{identity.type === "ssh" ? t("settings.identities.sshKey") : t("settings.identities.password")}</span>
+                    <span className="identity-type">{getIdentityTypeLabel(identity.type)}</span>
                 </div>
             </div>
             <div className="identity-actions">

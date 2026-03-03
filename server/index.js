@@ -1,5 +1,10 @@
+const { loadSecrets } = require("./utils/secrets");
+loadSecrets();
+
 const express = require("express");
 const path = require("path");
+const fs = require("fs");
+const https = require("https");
 const db = require("./utils/database");
 const packageJson = require("../package.json");
 const MigrationRunner = require("./utils/migrationRunner");
@@ -8,15 +13,25 @@ const expressWs = require("express-ws");
 const { startStatusChecker, stopStatusChecker } = require("./utils/statusChecker");
 const { ensureInternalProvider } = require("./controllers/oidc");
 const monitoringService = require("./utils/monitoringService");
+const pveMonitoringService = require("./utils/pveMonitoringService");
+const recordingService = require("./utils/recordingService");
 const { generateOpenAPISpec } = require("./openapi");
 const { isAdmin } = require("./middlewares/permission");
 const logger = require("./utils/logger");
 const { startSourceSyncService, stopSourceSyncService } = require("./utils/sourceSyncService");
+const backupService = require("./utils/backupService");
 require("./utils/folder");
 
 process.on("uncaughtException", (err) => require("./utils/errorHandling")(err));
 
 const APP_PORT = process.env.SERVER_PORT || 6989;
+const HTTPS_PORT = process.env.HTTPS_PORT || 5878;
+
+const CERTS_DIR = path.join(__dirname, "../data/certs");
+const CERT_PATH = path.join(CERTS_DIR, "cert.pem");
+const KEY_PATH = path.join(CERTS_DIR, "key.pem");
+
+const hasSSLCerts = () => fs.existsSync(CERT_PATH) && fs.existsSync(KEY_PATH);
 
 const app = expressWs(express()).app;
 
@@ -27,16 +42,17 @@ app.use(express.json());
 
 app.use("/api/service", require("./routes/service"));
 app.use("/api/accounts", require("./routes/account"));
+app.use("/api/accounts/passkeys", require("./routes/passkey"));
 app.use("/api/auth", require("./routes/auth"));
-app.use("/api/oidc", require("./routes/oidc"));
+app.use("/api/auth", require("./routes/authProviders"));
 
-// Unified WebSocket endpoints
 app.ws("/api/ws/term", require("./routes/term"));
 app.ws("/api/ws/guac", require("./routes/guac"));
 app.ws("/api/ws/sftp", require("./routes/sftpWS"));
+app.ws("/api/ws/tunnel", require("./routes/tunnel"));
+app.ws("/api/ws/state", require("./routes/state"));
 
-// SFTP download endpoint
-app.use("/api/entries/sftp-download", require("./routes/sftpDownload"));
+app.use("/api/entries/sftp", require("./routes/sftp"));
 
 app.use("/api/users", authenticate, isAdmin, require("./routes/users"));
 app.use("/api/sources", authenticate, isAdmin, require("./routes/source"));
@@ -53,8 +69,11 @@ app.use("/api/snippets", authenticate, require("./routes/snippet"));
 app.use("/api/organizations", authenticate, require("./routes/organization"));
 app.use("/api/tags", authenticate, require("./routes/tag"));
 app.use("/api/keymaps", authenticate, require("./routes/keymap"));
+app.use("/api/backup/export", require("./routes/backupExport"));
+app.use("/api/backup", authenticate, isAdmin, require("./routes/backup"));
 
 app.use("/api/scripts", authenticate, require("./routes/scripts"));
+app.use("/api/share", require("./routes/share"));
 
 if (process.env.NODE_ENV === "production") {
     app.use(express.static(path.join(__dirname, "../dist")));
@@ -69,7 +88,7 @@ if (process.env.NODE_ENV === "production") {
     );
 }
 
-if (!process.env.ENCRYPTION_KEY) throw new Error("ENCRYPTION_KEY environment variable is not set. Please set it to a random hex string.");
+if (!process.env.ENCRYPTION_KEY) throw new Error("ENCRYPTION_KEY not found. Set it via Docker secret (/run/secrets/encryption_key) or environment variable.");
 
 logger.system(`Starting Nexterm version ${packageJson.version} in ${process.env.NODE_ENV || 'development'} mode`);
 logger.system(`Running on Node.js ${process.version}`);
@@ -91,19 +110,46 @@ db.authenticate()
 
         monitoringService.start();
 
+        pveMonitoringService.start();
+
+        recordingService.start();
+
         startSourceSyncService();
+
+        backupService.start();
 
         app.listen(APP_PORT, () =>
             logger.system(`Server listening on port ${APP_PORT}`)
         );
+
+        if (hasSSLCerts()) {
+            try {
+                const sslOptions = {
+                    cert: fs.readFileSync(CERT_PATH),
+                    key: fs.readFileSync(KEY_PATH)
+                };
+
+                const httpsServer = https.createServer(sslOptions, app);
+                expressWs(app, httpsServer);
+
+                httpsServer.listen(HTTPS_PORT, () =>
+                    logger.system(`HTTPS server listening on port ${HTTPS_PORT}`)
+                );
+            } catch (err) {
+                logger.error("Failed to start HTTPS server", { error: err.message });
+            }
+        }
     });
 
 process.on("SIGINT", async () => {
     logger.system("Shutting down server");
 
     monitoringService.stop();
+    pveMonitoringService.stop();
+    recordingService.stop();
     stopStatusChecker();
     stopSourceSyncService();
+    backupService.stop();
 
     await db.close();
 

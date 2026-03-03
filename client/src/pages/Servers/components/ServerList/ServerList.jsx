@@ -18,7 +18,7 @@ import {
     mdiPencil,
     mdiPower,
     mdiServerMinus,
-    mdiServerPlus,
+    mdiPowerPlug,
     mdiStop,
     mdiAccountCircle,
     mdiImport,
@@ -30,6 +30,7 @@ import {
     mdiCog,
     mdiPlay,
     mdiScript,
+    mdiTunnel,
 } from "@mdi/js";
 import { ContextMenu, ContextMenuItem, ContextMenuSeparator, useContextMenu } from "@/common/components/ContextMenu";
 import { useDrop, useDragLayer } from "react-dnd";
@@ -39,73 +40,43 @@ import ProxmoxLogo from "./assets/proxmox.jsx";
 import TagsSubmenu from "./components/TagsSubmenu";
 import ScriptsMenu from "./components/ScriptsMenu";
 import Fuse from "fuse.js";
+import { useToast } from "@/common/contexts/ToastContext.jsx";
 
-const flattenEntries = (entries, path = []) => {
-    return entries.flatMap(entry => {
-        const item = { ...entry, _path: path };
-        const isContainer = entry.type === "folder" || entry.type === "organization";
-        return isContainer ? [item, ...flattenEntries(entry.entries, [...path, entry])] : [item];
-    });
-};
+const flattenEntries = (entries, path = []) => entries.flatMap(entry =>
+    entry.type === "folder" || entry.type === "organization"
+        ? flattenEntries(entry.entries, [...path, entry])
+        : [{ ...entry, _path: path }]
+);
 
 const filterEntries = (entries, searchTerm, selectedTags = []) => {
-    const tagFilter = entry => selectedTags.length === 0 ||
-        (entry.tags?.some(tag => selectedTags.includes(tag.id)));
+    const tagFilter = e => !selectedTags.length || e.tags?.some(tag => selectedTags.includes(tag.id));
+    const isContainer = e => e.type === "folder" || e.type === "organization";
 
     if (!searchTerm) {
-        return entries.map(entry => {
-            const isContainer = entry.type === "folder" || entry.type === "organization";
-            if (isContainer) {
-                const filteredEntries = filterEntries(entry.entries, searchTerm, selectedTags);
-                return filteredEntries.length > 0 ? { ...entry, entries: filteredEntries } : null;
-            }
-            return tagFilter(entry) ? entry : null;
-        }).filter(Boolean);
+        return entries.map(e => isContainer(e)
+            ? (f => f.length ? { ...e, entries: f } : null)(filterEntries(e.entries, searchTerm, selectedTags))
+            : (tagFilter(e) ? e : null)
+        ).filter(Boolean);
     }
 
-    const flatEntries = flattenEntries(entries);
-    const fuseOptions = {
-        keys: [{ name: 'name', weight: 2 }, { name: 'ip', weight: 1 }],
-        threshold: 0.3,
-        ignoreLocation: true,
-        minMatchCharLength: 1,
-    };
+    const flat = flattenEntries(entries);
+    const opts = { keys: ['name', 'ip'], threshold: 0.3, ignoreLocation: true, minMatchCharLength: 1 };
+    let results = new Fuse(flat, opts).search(searchTerm);
+    if (results.length > 0 && results.length < 3) results = new Fuse(flat, { ...opts, threshold: 0.5 }).search(searchTerm);
+    else if (results.length > 20) results = new Fuse(flat, { ...opts, threshold: 0.2 }).search(searchTerm);
 
-    let results = new Fuse(flatEntries, fuseOptions).search(searchTerm);
-
-    if (results.length < 3 && results.length > 0) {
-        const newResults = new Fuse(flatEntries, { ...fuseOptions, threshold: 0.5 }).search(searchTerm);
-        if (newResults.length > results.length) results = newResults;
-    } else if (results.length > 20) {
-        results = new Fuse(flatEntries, { ...fuseOptions, threshold: 0.2 }).search(searchTerm);
-    }
-
-    const matchedEntries = results.map(r => r.item).filter(entry =>
-        !(entry.type === "server" || entry.type.startsWith("pve-")) || tagFilter(entry)
-    );
-    const matchedIds = new Set(matchedEntries.map(item => item.id));
-
-    const rebuildTree = entries => entries.map(entry => {
-        const isContainer = entry.type === "folder" || entry.type === "organization";
-        if (isContainer) {
-            const filteredEntries = rebuildTree(entry.entries);
-            return filteredEntries.length > 0 || matchedIds.has(entry.id)
-                ? { ...entry, entries: filteredEntries } : null;
-        }
-        return matchedIds.has(entry.id) ? entry : null;
-    }).filter(Boolean);
-
-    return rebuildTree(entries);
+    const ids = new Set(results.map(r => r.item).filter(e => !e.type?.startsWith("pve-") && e.type !== "server" || tagFilter(e)).map(e => e.id));
+    const rebuild = arr => arr.map(e => isContainer(e)
+        ? (f => f.length || ids.has(e.id) ? { ...e, entries: f } : null)(rebuild(e.entries))
+        : (ids.has(e.id) ? e : null)
+    ).filter(Boolean);
+    return rebuild(entries);
 };
 
-const applyRenameState = (folderId) => (entry) => {
-    if (entry.type === "folder" && entry.id === parseInt(folderId)) {
-        return { ...entry, renameState: true };
-    } else if ((entry.type === "folder" || entry.type === "organization") && entry.entries) {
-        return { ...entry, entries: entry.entries.map(applyRenameState(folderId)) };
-    }
-    return entry;
-};
+const applyRenameState = folderId => entry =>
+    entry.type === "folder" && entry.id === parseInt(folderId)
+        ? { ...entry, renameState: true }
+        : entry.entries ? { ...entry, entries: entry.entries.map(applyRenameState(folderId)) } : entry;
 
 export const ServerList = ({
     setServerDialogOpen,
@@ -119,11 +90,15 @@ export const ServerList = ({
     hibernatedSessions = [],
     resumeSession,
     openDirectConnect,
-    runScript
+    runScript,
+    openPortForward,
+    mobileOpen = false,
+    setMobileOpen,
 }) => {
     const { t } = useTranslation();
     const { servers, loadServers, getServerById } = useContext(ServerContext);
     const { identities } = useContext(IdentityContext);
+    const { sendToast } = useToast();
     const [search, setSearch] = useState("");
     const [selectedTags, setSelectedTags] = useState([]);
     const [showTagFilter, setShowTagFilter] = useState(false);
@@ -141,8 +116,37 @@ export const ServerList = ({
     const [sourceScripts, setSourceScripts] = useState([]);
     const [scriptsMenuOpen, setScriptsMenuOpen] = useState(false);
     const [scriptsMenuServer, setScriptsMenuServer] = useState(null);
+    const [isMobile, setIsMobile] = useState(false);
 
     const contextMenu = useContextMenu();
+
+    useEffect(() => {
+        const checkMobile = () => {
+            const mobile = window.innerWidth <= 768;
+            setIsMobile(mobile);
+            if (!mobile && setMobileOpen) setMobileOpen(false);
+        };
+        checkMobile();
+        window.addEventListener('resize', checkMobile);
+        return () => window.removeEventListener('resize', checkMobile);
+    }, [setMobileOpen]);
+
+    useEffect(() => {
+        if (!isMobile || !mobileOpen) return;
+        const handleClickOutside = (e) => {
+            if (serverListRef.current && !serverListRef.current.contains(e.target) && 
+                !e.target.closest('.server-list-toggle') &&
+                !e.target.closest('.mobile-nav')) {
+                setMobileOpen?.(false);
+            }
+        };
+        document.addEventListener('mousedown', handleClickOutside);
+        document.addEventListener('touchstart', handleClickOutside);
+        return () => {
+            document.removeEventListener('mousedown', handleClickOutside);
+            document.removeEventListener('touchstart', handleClickOutside);
+        };
+    }, [isMobile, mobileOpen, setMobileOpen]);
 
     const server = contextClickedId ? (contextClickedType === "server-object" || contextClickedType?.startsWith("pve-")) ? getServerById(contextClickedId) : null : null;
     const isOrgFolder = contextClickedId && contextClickedId.toString().startsWith("org-");
@@ -189,6 +193,17 @@ export const ServerList = ({
     const closeScriptsMenu = () => {
         setScriptsMenuOpen(false);
         setScriptsMenuServer(null);
+    };
+
+    const wakeServer = async () => {
+        if (!server) return;
+
+        try {
+            await postRequest(`entries/${server.id}/wake`);
+            sendToast("Success", t("servers.wol.successDescription", { name: server.name }));
+        } catch (error) {
+            sendToast("Error", t("servers.wol.errorDescription"));
+        }
     };
 
     const { isDragging, clientOffset } = useDragLayer((monitor) => ({
@@ -249,25 +264,14 @@ export const ServerList = ({
     const hibernatedSessionsForServer = server ? hibernatedSessions.filter(s => s.server.id == server.id) : [];
     
     const formatSessionDate = (session) => {
-        if (!session || !session.createdAt) return '';
-        const date = new Date(session.createdAt);
-        const now = new Date();
-        const diffMs = now - date;
-        const diffMins = Math.floor(diffMs / 60000);
-        const diffHours = Math.floor(diffMs / 3600000);
-        const diffDays = Math.floor(diffMs / 86400000);
-        
-        if (diffMins < 1) return t('servers.time.justNow');
-        if (diffMins < 60) return diffMins === 1 
-            ? t('servers.time.minuteAgo', { count: diffMins })
-            : t('servers.time.minutesAgo', { count: diffMins });
-        if (diffHours < 24) return diffHours === 1 
-            ? t('servers.time.hourAgo', { count: diffHours })
-            : t('servers.time.hoursAgo', { count: diffHours });
-        if (diffDays < 7) return diffDays === 1 
-            ? t('servers.time.dayAgo', { count: diffDays })
-            : t('servers.time.daysAgo', { count: diffDays });
-        return date.toLocaleDateString();
+        if (!session?.lastActivity) return '';
+        const diff = Date.now() - new Date(session.lastActivity);
+        const mins = Math.floor(diff / 60000), hrs = Math.floor(diff / 3600000), days = Math.floor(diff / 86400000);
+        if (mins < 1) return t('servers.time.justNow');
+        if (mins < 60) return t(mins === 1 ? 'servers.time.minuteAgo' : 'servers.time.minutesAgo', { count: mins });
+        if (hrs < 24) return t(hrs === 1 ? 'servers.time.hourAgo' : 'servers.time.hoursAgo', { count: hrs });
+        if (days < 7) return t(days === 1 ? 'servers.time.dayAgo' : 'servers.time.daysAgo', { count: days });
+        return new Date(session.lastActivity).toLocaleDateString();
     };
 
     const createFolder = () => {
@@ -287,53 +291,23 @@ export const ServerList = ({
 
     const deleteServer = () => deleteRequest("entries/" + contextClickedId).then(loadServers);
 
-    const createServer = (protocol) => {
+    const setFolderContext = () => {
         if (isOrgFolder) {
-            const orgId = parseInt(contextClickedId.toString().split("-")[1]);
             setCurrentFolderId(null);
-            setCurrentOrganizationId(orgId);
+            setCurrentOrganizationId(parseInt(contextClickedId.toString().split("-")[1]));
         } else {
             setCurrentFolderId(contextClickedId);
             setCurrentOrganizationId(null);
         }
-        setServerDialogOpen(protocol);
     };
 
-    const createPVEServer = () => {
-        if (isOrgFolder) {
-            const orgId = parseInt(contextClickedId.toString().split("-")[1]);
-            setCurrentFolderId(null);
-            setCurrentOrganizationId(orgId);
-        } else {
-            setCurrentFolderId(contextClickedId);
-            setCurrentOrganizationId(null);
-        }
-        setProxmoxDialogOpen();
-    };
+    const createServer = (protocol) => { setFolderContext(); setServerDialogOpen(protocol); };
+    const createPVEServer = () => { setFolderContext(); setProxmoxDialogOpen(); };
+    const openSSHConfigImport = () => { setFolderContext(); setSSHConfigImportDialogOpen(); };
 
-    const openSSHConfigImport = () => {
-        if (isOrgFolder) {
-            const orgId = parseInt(contextClickedId.toString().split("-")[1]);
-            setCurrentFolderId(null);
-            setCurrentOrganizationId(orgId);
-        } else {
-            setCurrentFolderId(contextClickedId);
-            setCurrentOrganizationId(null);
-        }
-        setSSHConfigImportDialogOpen();
-    };
-
-    const connect = (identityId = null) => {
-        const targetIdentityId = identityId || server?.identities[0];
-        const identity = identities?.find(id => id.id === targetIdentityId);
-        connectToServer(server?.id, identity);
-    };
-
-    const connectSFTP = (identityId = null) => {
-        const targetIdentityId = identityId || server?.identities[0];
-        const identity = identities?.find(id => id.id === targetIdentityId);
-        openSFTP(server?.id, identity);
-    };
+    const getIdentity = (id = null) => identities?.find(i => i.id === (id || server?.identities[0]));
+    const connect = (id = null) => connectToServer(server?.id, getIdentity(id));
+    const connectSFTP = (id = null) => openSFTP(server?.id, getIdentity(id));
 
     const getIdentityName = (identityId) => {
         const identity = identities?.find(id => id.id === identityId);
@@ -475,11 +449,14 @@ export const ServerList = ({
     }, [isDragging, clientOffset]);
 
     return (
-        <div
-            className={`server-list ${isCollapsed ? "collapsed" : ""}`}
-            style={{ width: isCollapsed ? "0px" : `${width}px` }} ref={serverListRef}
-            onMouseDown={isCollapsed ? startResizing : undefined}>
-            {!isCollapsed && (
+        <>
+            {isMobile && mobileOpen && <div className="server-list-overlay" onClick={() => setMobileOpen?.(false)} />}
+            <div
+                className={`server-list ${isCollapsed ? "collapsed" : ""} ${isMobile ? "mobile" : ""} ${mobileOpen ? "mobile-open" : ""}`}
+                style={!isMobile ? { width: isCollapsed ? "0px" : `${width}px` } : undefined} 
+                ref={serverListRef}
+                onMouseDown={!isMobile && isCollapsed ? startResizing : undefined}>
+            {(!isCollapsed || (isMobile && mobileOpen)) && (
                 <div className="server-list-inner" ref={dropRef}>
                     <div className="search-container">
                         <ServerSearch search={search} setSearch={setSearch} />
@@ -689,6 +666,14 @@ export const ServerList = ({
                                     </>
                                 )}
 
+                                {server?.identities?.length > 0 && server?.protocol === "ssh" && openPortForward && (
+                                    <ContextMenuItem
+                                        icon={mdiTunnel}
+                                        label={t("servers.contextMenu.forwardPort")}
+                                        onClick={() => openPortForward(server)}
+                                    />
+                                )}
+
                                 {server?.identities?.length > 0 && server?.protocol === "ssh" && (scripts.length > 0 || sourceScripts.length > 0) && (
                                     <ContextMenuItem
                                         icon={mdiScript}
@@ -702,6 +687,14 @@ export const ServerList = ({
                                         icon={mdiCursorDefaultClick}
                                         label={t("servers.contextMenu.quickConnect")}
                                         onClick={() => openDirectConnect(server)}
+                                    />
+                                )}
+
+                                {server?.wakeOnLanEnabled && server?.macAddress && (
+                                    <ContextMenuItem
+                                        icon={mdiPowerPlug}
+                                        label={t("servers.contextMenu.wakeOnLan")}
+                                        onClick={wakeServer}
                                     />
                                 )}
 
@@ -836,7 +829,8 @@ export const ServerList = ({
                     />
                 </div>
             )}
-            <div className={`resizer${isResizing ? " is-resizing" : ""}`} onMouseDown={startResizing} />
+            {!isMobile && !isCollapsed && <div className={`resizer${isResizing ? " is-resizing" : ""}`} onMouseDown={startResizing} />}
         </div>
+        </>
     );
 };

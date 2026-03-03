@@ -3,13 +3,18 @@ const EntryIdentity = require("../models/EntryIdentity");
 const Folder = require("../models/Folder");
 const EntryTag = require("../models/EntryTag");
 const Tag = require("../models/Tag");
+const AuditLog = require("../models/AuditLog");
 const { listFolders } = require("./folder");
 const { hasOrganizationAccess, validateFolderAccess } = require("../utils/permission");
 const { Op } = require("sequelize");
+const Identity = require("../models/Identity");
 const OrganizationMember = require("../models/OrganizationMember");
 const { listIdentities } = require("./identity");
 const { createAuditLog, AUDIT_ACTIONS, RESOURCE_TYPES } = require("./audit");
 const logger = require("../utils/logger");
+const { sendWakeOnLan } = require("../utils/wol");
+const stateBroadcaster = require("../lib/StateBroadcaster");
+const SessionManager = require("../lib/SessionManager");
 
 const validateEntryAccess = async (accountId, entry, errorMessage = "You don't have permission to access this entry") => {
     if (!entry) return { code: 401, message: "Entry does not exist" };
@@ -153,6 +158,8 @@ module.exports.createEntry = async (accountId, configuration) => {
 
     logger.info(`Entry created`, { entryId: entry.id, name: entry.name, type: entry.type });
 
+    stateBroadcaster.broadcast("ENTRIES", { accountId, organizationId: entry.organizationId });
+
     return entry;
 };
 
@@ -174,6 +181,8 @@ module.exports.deleteEntry = async (accountId, entryId) => {
     });
 
     logger.info(`Entry deleted`, { entryId, name: entry.name });
+
+    stateBroadcaster.broadcast("ENTRIES", { accountId, organizationId: entry.organizationId });
 
     return { success: true };
 };
@@ -242,6 +251,8 @@ module.exports.editEntry = async (accountId, entryId, configuration) => {
         resourceId: entryId,
         details: configuration
     });
+
+    stateBroadcaster.broadcast("ENTRIES", { accountId, organizationId: entry.organizationId });
 
     return { success: true };
 };
@@ -363,6 +374,8 @@ module.exports.listEntries = async (accountId) => {
                 identities: identities,
                 protocol: entry.config?.protocol,
                 ip: entry.config?.ip,
+                macAddress: entry.config?.macAddress,
+                wakeOnLanEnabled: entry.config?.wakeOnLanEnabled,
             };
         }
 
@@ -431,6 +444,8 @@ module.exports.duplicateEntry = async (accountId, entryId) => {
     });
 
     logger.info(`Entry duplicated`, { originalEntryId: entryId, newEntryId: newEntry.id, name: newEntry.name });
+
+    stateBroadcaster.broadcast("ENTRIES", { accountId, organizationId: entry.organizationId });
 
     return newEntry;
 };
@@ -501,6 +516,10 @@ module.exports.importSSHConfig = async (accountId, configuration) => {
     }
 
     logger.info(`SSH config import completed`, { imported: results.imported, skipped: results.skipped, errors: results.errors });
+
+    if (results.imported > 0) {
+        stateBroadcaster.broadcast("ENTRIES", { accountId, organizationId: orgId });
+    }
 
     return {
         message: `SSH config import: ${results.imported} imported, ${results.skipped} skipped, ${results.errors} errors`,
@@ -580,6 +599,34 @@ module.exports.repositionEntry = async (accountId, entryId, { targetId, placemen
         await Entry.update(updateData, { where: { id: normalizedEntries[i].id } });
     }
 
+    const oldOrganizationId = entry.organizationId;
+    if (oldOrganizationId !== targetOrganizationId) {
+        const entryIdentities = await EntryIdentity.findAll({ where: { entryId: entryIdNum } });
+        const identityIds = entryIdentities.map(ei => ei.identityId);
+        
+        if (identityIds.length > 0) {
+            const oldOrgIdentities = await Identity.findAll({
+                where: {
+                    id: { [Op.in]: identityIds },
+                    organizationId: oldOrganizationId,
+                }
+            });
+            
+            const oldOrgIdentityIds = oldOrgIdentities.map(i => i.id);
+            if (oldOrgIdentityIds.length > 0) {
+                await EntryIdentity.destroy({
+                    where: {
+                        entryId: entryIdNum,
+                        identityId: { [Op.in]: oldOrgIdentityIds }
+                    }
+                });
+                logger.info(`Removed ${oldOrgIdentityIds.length} organization identities from entry after move`, { entryId: entryIdNum, oldOrganizationId, targetOrganizationId });
+            }
+        }
+
+        await SessionManager.removeAllByEntryId(entryIdNum);
+    }
+
     await createAuditLog({
         action: AUDIT_ACTIONS.ENTRY_UPDATE,
         accountId,
@@ -589,7 +636,115 @@ module.exports.repositionEntry = async (accountId, entryId, { targetId, placemen
         details: { action: 'reposition', targetId, placement, folderId: targetFolderId }
     });
 
+    stateBroadcaster.broadcast("ENTRIES", { accountId, organizationId: entry.organizationId });
+    if (targetOrganizationId && targetOrganizationId !== entry.organizationId) {
+        stateBroadcaster.broadcast("ENTRIES", { organizationId: targetOrganizationId });
+    }
+
     return { success: true };
 };
 
+module.exports.wakeEntry = async (accountId, entryId) => {
+    const entry = await Entry.findByPk(entryId);
+    const accessCheck = await validateEntryAccess(accountId, entry);
+    if (!accessCheck.valid) return accessCheck;
+
+    if (entry.type !== 'server') {
+        return { code: 400, message: "Wake-On-LAN is only supported for server entries" };
+    }
+
+    const config = entry.config || {};
+    const macAddress = config.macAddress;
+
+    if (!macAddress) {
+        return { code: 400, message: "No MAC address configured for this server" };
+    }
+
+    try {
+        await sendWakeOnLan(macAddress);
+        return { success: true };
+    } catch (error) {
+        logger.error(`Failed to send Wake-On-LAN packet to ${macAddress}: ${error.message}`);
+        return { code: 500, message: "Failed to send Wake-On-LAN packet" };
+    }
+};
+
 module.exports.validateEntryAccess = validateEntryAccess;
+
+module.exports.getRecentConnections = async (accountId, limit = 5) => {
+    try {
+        const memberships = await OrganizationMember.findAll({ 
+            where: { accountId, status: "active" } 
+        });
+        const organizationIds = memberships.map(m => m.organizationId);
+
+        const connectionActions = [
+            AUDIT_ACTIONS.SSH_CONNECT,
+            AUDIT_ACTIONS.SFTP_CONNECT,
+            AUDIT_ACTIONS.PVE_CONNECT,
+            AUDIT_ACTIONS.RDP_CONNECT,
+            AUDIT_ACTIONS.VNC_CONNECT,
+        ];
+
+        const logs = await AuditLog.findAll({
+            where: {
+                action: { [Op.in]: connectionActions },
+                resource: RESOURCE_TYPES.ENTRY,
+                [Op.or]: [
+                    { accountId, organizationId: null },
+                    { organizationId: { [Op.in]: organizationIds } },
+                ],
+            },
+            order: [["timestamp", "DESC"]],
+            limit: limit * 3,
+        });
+
+        const seenEntries = new Set();
+        const uniqueLogs = [];
+        for (const log of logs) {
+            if (!seenEntries.has(log.resourceId) && uniqueLogs.length < limit) {
+                seenEntries.add(log.resourceId);
+                uniqueLogs.push(log);
+            }
+        }
+
+        const entryIds = uniqueLogs.map(log => log.resourceId);
+        const entries = await Entry.findAll({
+            where: { id: { [Op.in]: entryIds } },
+        });
+        const entryMap = new Map(entries.map(e => [e.id, e]));
+
+        const allEntryIdentities = await EntryIdentity.findAll({
+            where: { entryId: { [Op.in]: entryIds } },
+            order: [['isDefault', 'DESC']]
+        });
+        const identitiesMap = new Map();
+        allEntryIdentities.forEach(ei => {
+            if (!identitiesMap.has(ei.entryId)) {
+                identitiesMap.set(ei.entryId, []);
+            }
+            identitiesMap.get(ei.entryId).push(ei.identityId);
+        });
+
+        return uniqueLogs
+            .map(log => {
+                const entry = entryMap.get(log.resourceId);
+                if (!entry) return null;
+
+                return {
+                    entryId: entry.id,
+                    name: entry.name,
+                    icon: entry.icon,
+                    type: entry.type,
+                    protocol: entry.config?.protocol || null,
+                    connectionType: log.action,
+                    timestamp: log.timestamp,
+                    identities: identitiesMap.get(entry.id) || [],
+                };
+            })
+            .filter(Boolean);
+    } catch (error) {
+        logger.error("Error getting recent connections", { error: error.message, accountId });
+        return [];
+    }
+};

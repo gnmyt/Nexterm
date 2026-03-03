@@ -1,23 +1,24 @@
-import { createContext, useContext, useEffect, useState } from "react";
+import { createContext, useContext, useEffect, useState, useCallback } from "react";
 import { UserContext } from "@/common/contexts/UserContext.jsx";
+import { StateStreamContext, STATE_TYPES } from "@/common/contexts/StateStreamContext.jsx";
 import { getRequest } from "@/common/utils/RequestUtil.js";
 
 export const ServerContext = createContext({});
 
 export const ServerProvider = ({ children }) => {
-
     const [servers, setServers] = useState(null);
     const { user, sessionToken } = useContext(UserContext);
+    const { registerHandler } = useContext(StateStreamContext);
 
-    const loadServers = async () => {
+    useEffect(() => {
+        if (user) return registerHandler(STATE_TYPES.ENTRIES, setServers);
+    }, [user, registerHandler]);
+
+    const loadServers = useCallback(async () => {
         try {
-            getRequest("/entries/list").then((response) => {
-                setServers(response);
-            });
-        } catch (error) {
-            console.error("Failed to load servers", error.message);
-        }
-    };
+            setServers(await getRequest("/entries/list"));
+        } catch {}
+    }, []);
 
     const retrieveServerById = async (serverId) => {
         try {
@@ -27,39 +28,17 @@ export const ServerProvider = ({ children }) => {
         }
     };
 
-    const getServerById = (serverId, entries) => {
-        if (!entries) entries = servers;
-        for (const server of entries) {
+    const getServerById = (serverId, entries = servers) => {
+        for (const server of entries || []) {
             if (server.type === "folder" || server.type === "organization") {
                 const result = getServerById(serverId, server.entries);
-                if (result) {
-                    return result;
-                }
-            } else if (server.id === parseInt(serverId)) {
-                return server;
-            }
+                if (result) return result;
+            } else if (server.id === parseInt(serverId)) return server;
         }
         return null;
     };
 
-    useEffect(() => {
-        if (user) {
-            loadServers();
+    useEffect(() => { if (!sessionToken) setServers([]); }, [sessionToken]);
 
-            const interval = setInterval(() => {
-                loadServers();
-            }, 5000);
-
-            return () => clearInterval(interval);
-        } else if (!sessionToken) {
-            setServers([]);
-        }
-    }, [user]);
-
-    return (
-        <ServerContext.Provider
-            value={{ servers, loadServers, getServerById, retrieveServerById }}>
-            {children}
-        </ServerContext.Provider>
-    );
+    return <ServerContext.Provider value={{ servers, loadServers, getServerById, retrieveServerById }}>{children}</ServerContext.Provider>;
 };

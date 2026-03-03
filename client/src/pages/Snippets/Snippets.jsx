@@ -9,6 +9,7 @@ import ScriptDialog from "@/pages/Snippets/components/ScriptDialog";
 import Button from "@/common/components/Button";
 import PageHeader from "@/common/components/PageHeader";
 import SelectBox from "@/common/components/SelectBox";
+import TabSwitcher from "@/common/components/TabSwitcher";
 import { mdiCodeBraces, mdiPlus, mdiScriptText, mdiCloudDownloadOutline, mdiAccount, mdiDomain } from "@mdi/js";
 import { useTranslation } from "react-i18next";
 import { getRequest } from "@/common/utils/RequestUtil.js";
@@ -196,18 +197,14 @@ export const Snippets = () => {
             <div className="snippets-content-wrapper">
                 <div className="snippets-controls">
                     <div className="snippets-tabs">
-                        <div
-                            className={`tabs-item ${activeTab === 0 ? "tabs-item-active" : ""}`}
-                            onClick={() => setActiveTab(0)}
-                        >
-                            <h3>{t("snippets.page.tabs.snippets")}</h3>
-                        </div>
-                        <div
-                            className={`tabs-item ${activeTab === 1 ? "tabs-item-active" : ""}`}
-                            onClick={() => setActiveTab(1)}
-                        >
-                            <h3>{t("scripts.page.tabs.scripts")}</h3>
-                        </div>
+                        <TabSwitcher
+                            tabs={[
+                                { key: "snippets", label: t("snippets.page.tabs.snippets"), icon: mdiCodeBraces },
+                                { key: "scripts", label: t("scripts.page.tabs.scripts"), icon: mdiScriptText }
+                            ]}
+                            activeTab={activeTab === 0 ? "snippets" : "scripts"}
+                            onTabChange={(tabKey) => setActiveTab(tabKey === "snippets" ? 0 : 1)}
+                        />
                     </div>
 
                     <div className="organization-selector">

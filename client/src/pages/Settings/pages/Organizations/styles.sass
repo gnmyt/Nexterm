@@ -1,5 +1,8 @@
 @use "@/common/styles/colors"
 
+$mobile: 768px
+$tablet: 1024px
+
 .organizations-page
   width: 100%
 
@@ -9,9 +12,17 @@
     justify-content: space-between
     margin-bottom: 1.5rem
 
+    @media (max-width: $mobile)
+      flex-direction: column
+      align-items: flex-start
+      gap: 0.75rem
+
     h2
       margin: 0
       font-size: 1.3rem
+
+      @media (max-width: $mobile)
+        font-size: 1.15rem
 
   .no-organizations
     display: flex
@@ -53,6 +64,12 @@
     padding: 1.25rem
     transition: border-color 0.1s ease
 
+    @media (max-width: $mobile)
+      flex-direction: column
+      align-items: flex-start
+      gap: 0.75rem
+      padding: 1rem
+
     &:hover
       border-color: colors.$gray
 
@@ -68,6 +85,9 @@
       display: flex
       align-items: center
       gap: 1rem
+
+      @media (max-width: $mobile)
+        width: 100%
 
       .icon
         display: flex
@@ -108,6 +128,10 @@
       align-items: center
       gap: 0.5rem
 
+      @media (max-width: $mobile)
+        width: 100%
+        justify-content: flex-end
+
       svg
         cursor: pointer
         width: 1.5rem
@@ -137,45 +161,6 @@
     padding: 1.25rem
     animation: slideDown 0.15s ease-out
 
-    .tab-headers
-      display: flex
-      gap: 0.25rem
-      margin-bottom: 1.25rem
-      border-bottom: 1px solid colors.$dark-gray
-      padding-bottom: 0.75rem
-
-      .tab-header
-        display: flex
-        align-items: center
-        gap: 0.5rem
-        padding: 0.5rem 1rem
-        cursor: pointer
-        border-radius: 0.5rem
-        transition: all 0.1s ease
-        color: colors.$subtext
-        background-color: transparent
-        position: relative
-
-        svg
-          width: 1.125rem
-          height: 1.125rem
-          opacity: 0.9
-
-        span
-          font-weight: 500
-          font-size: 0.9rem
-
-        &:hover
-          color: colors.$white
-          background-color: colors.$gray
-
-        &.active
-          color: colors.$white
-          background-color: colors.$gray
-
-          svg
-            color: colors.$primary
-
     .tab-content
       margin-top: 0.5rem
 
@@ -204,3 +189,22 @@
       margin: 0 0 1rem
       font-size: 1.1rem
       font-weight: 600
+
+@media (max-width: 600px)
+  .organizations-page
+    .org-header
+      flex-direction: column
+      align-items: flex-start
+      gap: 0.75rem
+
+    .item
+      flex-direction: column
+      align-items: flex-start
+      gap: 0.75rem
+
+      .left-section
+        width: 100%
+
+      .right-section
+        width: 100%
+        justify-content: flex-end

@@ -34,6 +34,14 @@ guac_user_mouse_handler guac_vnc_user_mouse_handler;
  */
 guac_user_key_handler guac_vnc_user_key_handler;
 
+#ifdef LIBVNC_HAS_EXTENDED_KEY_EVENT
+/**
+ * Handler for Guacamole user extended key events with scancode.
+ * Uses SendExtendedKeyEvent to send XT scancodes for proper keyboard layout support.
+ */
+guac_user_key_handler_ext guac_vnc_user_key_handler_ext;
+#endif // LIBVNC_HAS_EXTENDED_KEY_EVENT
+
 /**
  * Handler for Guacamole user resize events.
  */

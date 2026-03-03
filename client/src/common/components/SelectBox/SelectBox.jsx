@@ -1,11 +1,11 @@
-import React, { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef } from "react";
 import { createPortal } from "react-dom";
 import "./styles.sass";
 import Icon from "@mdi/react";
-import { mdiChevronDown, mdiMagnify } from "@mdi/js";
+import { mdiChevronDown, mdiMagnify, mdiClose } from "@mdi/js";
 import { useTranslation } from "react-i18next";
 
-export const SelectBox = ({ options, selected, setSelected, id, disabled = false, searchable = false }) => {
+export const SelectBox = ({ options, selected, setSelected, id, disabled = false, searchable = false, multiple = false, placeholder }) => {
     const { t } = useTranslation();
     const [isOpen, setIsOpen] = useState(false);
     const [adjustedPosition, setAdjustedPosition] = useState({ top: 0, left: 0, width: 0 });
@@ -18,20 +18,26 @@ export const SelectBox = ({ options, selected, setSelected, id, disabled = false
     const optionsRef = useRef(null);
     const optionRefs = useRef([]);
 
-    const findSelected = (selected) => {
-        return options.findIndex((option) => option.value === selected);
-    }
+    const selectedArray = multiple ? (Array.isArray(selected) ? selected : []) : null;
+    const findSelected = (val) => options.findIndex((o) => o.value === val);
+    const filteredOptions = searchable && searchTerm ? options.filter(o => o.label.toLowerCase().includes(searchTerm.toLowerCase())) : options;
+    const selectedOption = !multiple && selected && findSelected(selected) !== -1 ? options[findSelected(selected)] : (!multiple && options.length > 0 ? options[0] : null);
+    const hasIconProperty = selectedOption?.icon;
 
     const handleOptionClick = (option) => {
-        setSelected(option);
-        setSearchTerm("");
-        setHighlightedIndex(-1);
-        setIsOpen(false);
+        if (multiple) {
+            setSelected(selectedArray.includes(option) ? selectedArray.filter(v => v !== option) : [...selectedArray, option]);
+        } else {
+            setSelected(option);
+            setSearchTerm("");
+            setHighlightedIndex(-1);
+            setIsOpen(false);
+        }
     };
 
-    const filteredOptions = searchable && searchTerm
-        ? options.filter(opt => opt.label.toLowerCase().includes(searchTerm.toLowerCase()))
-        : options;
+    const removeChip = (value, e) => { e.stopPropagation(); multiple && setSelected(selectedArray.filter(v => v !== value)); };
+    const clearAll = (e) => { e.stopPropagation(); multiple && setSelected([]); };
+    const isOptionSelected = (val) => multiple ? selectedArray.includes(val) : selected && findSelected(selected) !== -1 && options[findSelected(selected)].value === val;
 
     useEffect(() => {
         if (isOpen) {
@@ -59,7 +65,6 @@ export const SelectBox = ({ options, selected, setSelected, id, disabled = false
                         if (left + menuRect.width > innerWidth - 10) left = innerWidth - menuRect.width - 10;
                         if (left < 10) left = 10;
 
-
                         if (top + menuRect.height > innerHeight - 10) {
                             const topPosition = rect.top - menuRect.height - 5;
                             if (topPosition >= 10) {
@@ -70,43 +75,27 @@ export const SelectBox = ({ options, selected, setSelected, id, disabled = false
                         }
                         if (top < 10) top = 10;
 
-
                         setAdjustedPosition({ top, left, width });
                         setIsPositioned(true);
                     });
                 });
             }
-        }
-    }, [isOpen]);
-
-    const handleAnimationEnd = (e) => {
-        if (e && e.target === optionsRef.current && !isOpen) {
-            setIsVisible(false);
-        }
-    };
-
-    useEffect(() => {
-        if (!isOpen) setIsPositioned(false);
-
-    }, [isOpen]);
-
-    useEffect(() => {
-        if (options.length > 0 && !selected) setSelected(options[0].value);
-    }, [selected]);
-
-    useEffect(() => {
-        if (isOpen && searchable && searchInputRef.current) {
-            searchInputRef.current.focus();
-        }
-    }, [isOpen, searchable]);
-
-    useEffect(() => {
-        if (!isOpen) {
+        } else {
+            setIsPositioned(false);
             setSearchTerm("");
             setHighlightedIndex(-1);
-        } else if (!searchable) {
-            const selectedIdx = findSelected(selected);
-            setHighlightedIndex(selectedIdx !== -1 ? selectedIdx : 0);
+        }
+    }, [isOpen]);
+
+    useEffect(() => {
+        if (!multiple && options.length > 0 && !selected) setSelected(options[0].value);
+    }, [selected, multiple]);
+
+    useEffect(() => {
+        if (isOpen && searchable && searchInputRef.current) searchInputRef.current.focus();
+        if (isOpen && !searchable && !multiple) {
+            const idx = findSelected(selected);
+            setHighlightedIndex(idx !== -1 ? idx : 0);
         }
     }, [isOpen, searchable, selected]);
 
@@ -191,23 +180,48 @@ export const SelectBox = ({ options, selected, setSelected, id, disabled = false
             window.removeEventListener('resize', handleScroll, true);
             document.removeEventListener("keydown", handleKeyDown);
         };
-    }, [isOpen, isPositioned, highlightedIndex, filteredOptions, searchable]);
+    }, [isOpen, isPositioned, highlightedIndex, filteredOptions, searchable, multiple]);
 
-    const handleDropdownClick = (event) => event.stopPropagation();
+    const handleDropdownClick = (e) => e.stopPropagation();
+    const handleAnimationEnd = (e) => e?.target === optionsRef.current && !isOpen && setIsVisible(false);
 
-    const selectedOption = selected && findSelected(selected) !== -1 ? options[findSelected(selected)] : (options.length > 0 ? options[0] : null);
-    const hasIconProperty = selectedOption?.icon;
+    const renderSelectedContent = () => {
+        if (multiple) {
+            if (selectedArray.length === 0) return <span className="select-box__placeholder">{placeholder || t('common.selectBox.defaultOption')}</span>;
+            return (
+                <div className="select-box__chips">
+                    {selectedArray.slice(0, 3).map(value => (
+                        <span key={value} className="select-box__chip">
+                            {options.find(o => o.value === value)?.label || value}
+                            <button type="button" className="select-box__chip-remove" onClick={(e) => removeChip(value, e)}><Icon path={mdiClose} /></button>
+                        </span>
+                    ))}
+                    {selectedArray.length > 3 && <span className="select-box__chip select-box__chip--more">+{selectedArray.length - 3}</span>}
+                </div>
+            );
+        }
+        return (
+            <>
+                {hasIconProperty && <Icon className="select-box__option-icon" path={selectedOption.icon} />}
+                {selectedOption ? selectedOption.label : t('common.selectBox.defaultOption')}
+            </>
+        );
+    };
     
     return (
-        <div className={`select-box ${disabled ? 'disabled' : ''}`} ref={selectBoxRef}>
+        <div className={`select-box ${disabled ? 'disabled' : ''} ${multiple ? 'select-box--multiple' : ''}`} ref={selectBoxRef}>
             <div className="select-box__selected" onClick={() => !disabled && setIsOpen(!isOpen)}>
-                <div className={`select-box__selected-content ${!hasIconProperty ? 'icon-only' : ''}`}>
-                    {hasIconProperty && (
-                        <Icon className="select-box__option-icon" path={selectedOption.icon} />
-                    )}
-                    {selectedOption ? selectedOption.label : t('common.selectBox.defaultOption')}
+                <div className={`select-box__selected-content ${!hasIconProperty && !multiple ? 'icon-only' : ''}`}>
+                    {renderSelectedContent()}
                 </div>
-                <Icon className={`select-box__arrow ${isOpen ? "open" : ""}`} path={mdiChevronDown} />
+                <div className="select-box__actions">
+                    {multiple && selectedArray.length > 0 && (
+                        <button type="button" className="select-box__clear" onClick={clearAll}>
+                            <Icon path={mdiClose} />
+                        </button>
+                    )}
+                    <Icon className={`select-box__arrow ${isOpen ? "open" : ""}`} path={mdiChevronDown} />
+                </div>
             </div>
             {isVisible && createPortal(
                 <div 
@@ -242,20 +256,19 @@ export const SelectBox = ({ options, selected, setSelected, id, disabled = false
                             <div 
                                 key={index} 
                                 ref={(el) => (optionRefs.current[index] = el)}
-                                className={`select-box__option ${!option.icon ? 'icon-only' : ''} ${
-                                    selected && findSelected(selected) !== -1 && options[findSelected(selected)].value === option.value ? "selected" : ""
-                                } ${highlightedIndex === index ? "highlighted" : ""}`}
-                                onClick={(e) => handleOptionClick(option.value, e)}
+                                className={`select-box__option ${!option.icon && !multiple ? 'icon-only' : ''} ${isOptionSelected(option.value) ? "selected" : ""} ${highlightedIndex === index ? "highlighted" : ""}`}
+                                onClick={() => handleOptionClick(option.value)}
                                 onMouseEnter={() => setHighlightedIndex(index)}
                                 role="menuitem"
                                 tabIndex={-1}
                             >
-                                {option.icon && <Icon className="select-box__option-icon" path={option.icon} />}
-                                {option.icon ? (
-                                    <span className="select-box__option-label">{option.label}</span>
-                                ) : (
-                                    option.label
+                                {multiple && (
+                                    <div className={`select-box__checkbox ${isOptionSelected(option.value) ? 'checked' : ''}`}>
+                                        <svg viewBox="0 0 24 24"><path fill="currentColor" d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z" /></svg>
+                                    </div>
                                 )}
+                                {option.icon && <Icon className="select-box__option-icon" path={option.icon} />}
+                                <span className="select-box__option-label">{option.label}</span>
                             </div>
                         )) : (
                             <div className="select-box__no-results">{t('common.selectBox.noResults')}</div>

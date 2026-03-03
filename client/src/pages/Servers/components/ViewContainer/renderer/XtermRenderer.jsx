@@ -1,39 +1,45 @@
 import { useEffect, useRef, useState, useContext } from "react";
 import { UserContext } from "@/common/contexts/UserContext.jsx";
-import { useAI } from "@/common/contexts/AIContext.jsx";
+import { IdentityContext } from "@/common/contexts/IdentityContext.jsx";
+import { AIContext } from "@/common/contexts/AIContext.jsx";
 import { useKeymaps, matchesKeybind } from "@/common/contexts/KeymapContext.jsx";
 import { Terminal as Xterm } from "@xterm/xterm";
-import { useTheme } from "@/common/contexts/ThemeContext.jsx";
-import { useTerminalSettings } from "@/common/contexts/TerminalSettingsContext.jsx";
+import { usePreferences } from "@/common/contexts/PreferencesContext.jsx";
 import { FitAddon } from "@xterm/addon-fit";
 import { ContextMenu, ContextMenuItem, ContextMenuSeparator, useContextMenu } from "@/common/components/ContextMenu";
 import AICommandPopover from "./components/AICommandPopover";
 import SnippetsMenu from "./components/SnippetsMenu";
 import { createProgressParser } from "../utils/progressParser";
-import { mdiContentCopy, mdiContentPaste, mdiCodeBrackets, mdiSelectAll, mdiRefresh, mdiClose, mdiDelete, mdiKeyboard } from "@mdi/js";
+import { mdiContentCopy, mdiContentPaste, mdiCodeBrackets, mdiSelectAll, mdiDelete, mdiKeyboard, mdiKey } from "@mdi/js";
 import { useTranslation } from "react-i18next";
+import ConnectionLoader from "./components/ConnectionLoader";
+import { getWebSocketUrl } from "@/common/utils/ConnectionUtil.js";
+import { postRequest } from "@/common/utils/RequestUtil.js";
 import "@xterm/xterm/css/xterm.css";
 import "./styles/xterm.sass";
 
-const XtermRenderer = ({ session, disconnectFromServer, registerTerminalRef, broadcastMode, terminalRefs, updateProgress, layoutMode, onBroadcastToggle, onFullscreenToggle }) => {
+const XtermRenderer = ({ session, disconnectFromServer, registerTerminalRef, broadcastMode, terminalRefs, updateProgress, layoutMode, onBroadcastToggle, onFullscreenToggle, isShared = false }) => {
     const ref = useRef(null);
     const termRef = useRef(null);
     const wsRef = useRef(null);
     const broadcastModeRef = useRef(broadcastMode);
     const progressParserRef = useRef(null);
+    const terminalBufferRef = useRef([]);
     const layoutModeRef = useRef(layoutMode);
     const onBroadcastToggleRef = useRef(onBroadcastToggle);
     const onFullscreenToggleRef = useRef(onFullscreenToggle);
+    const connectionLoaderRef = useRef(null);
     
-    const { sessionToken } = useContext(UserContext);
-    const { theme } = useTheme();
-    const { getCurrentTheme, selectedFont, fontSize, cursorStyle, cursorBlink, selectedTheme } = useTerminalSettings();
-    const { isAIAvailable } = useAI();
+    const userContext = useContext(UserContext);
+    const sessionToken = userContext?.sessionToken;
+    const { theme, getCurrentTheme, selectedFont, fontSize, cursorStyle, cursorBlink, selectedTheme } = usePreferences();
+    const aiContext = useContext(AIContext);
+    const isAIAvailable = aiContext?.isAIAvailable || (() => false);
     const { getParsedKeybind } = useKeymaps();
     const { t } = useTranslation();
     const [showAIPopover, setShowAIPopover] = useState(false);
-    const [aiPopoverPosition, setAIPopoverPosition] = useState(null);
     const contextMenu = useContextMenu();
+    const { identities } = useContext(IdentityContext);
     const [showSnippetsMenu, setShowSnippetsMenu] = useState(false);
 
     useEffect(() => {
@@ -66,20 +72,7 @@ const XtermRenderer = ({ session, disconnectFromServer, registerTerminalRef, bro
     }, [session.id, updateProgress]);
 
     const toggleAIPopover = () => {
-        if (!showAIPopover) {
-            const term = termRef.current;
-            const terminalElement = ref.current;
-            if (term && terminalElement) {
-                const rect = terminalElement.getBoundingClientRect();
-                const buffer = term.buffer.active;
-                const charWidth = rect.width / term.cols;
-                const charHeight = rect.height / term.rows;
-                setAIPopoverPosition({
-                    x: rect.left + (buffer.cursorX * charWidth),
-                    y: rect.top + (buffer.cursorY * charHeight)
-                });
-            }
-        } else {
+        if (showAIPopover) {
             setTimeout(() => termRef.current?.focus(), 0);
         }
         setShowAIPopover(!showAIPopover);
@@ -97,34 +90,56 @@ const XtermRenderer = ({ session, disconnectFromServer, registerTerminalRef, bro
         contextMenu.open(e, { x: e.clientX, y: e.clientY });
     };
 
+    const copyToClipboard = (text) => {
+        navigator.clipboard.writeText(text).catch(() => {
+            const textArea = document.createElement('textarea');
+            textArea.value = text;
+            textArea.style.cssText = 'position:fixed;left:-9999px;top:-9999px';
+            document.body.appendChild(textArea);
+            textArea.select();
+            document.execCommand('copy');
+            document.body.removeChild(textArea);
+        });
+    };
+
     const handleCopy = () => {
         const selection = termRef.current?.getSelection();
-        if (selection) {
-            navigator.clipboard.writeText(selection).catch(() => {});
-        }
+        if (selection) copyToClipboard(selection);
         contextMenu.close();
+        termRef.current?.focus();
     };
 
     const handlePaste = async () => {
         try {
             const text = await navigator.clipboard.readText();
-            if (text && wsRef.current && wsRef.current.readyState === WebSocket.OPEN) {
-                wsRef.current.send(text);
-            }
+            if (text) termRef.current?.paste(text);
         } catch (err) {
             console.error('Failed to paste:', err);
         }
         contextMenu.close();
+        termRef.current?.focus();
+    };
+
+    const handlePasteIdentity = async () => {
+        try {
+            await postRequest(`connections/${session.id}/paste-password`);
+        } catch (err) {
+            console.error('Failed to paste identity password via API:', err);
+        }
+        contextMenu.close();
+        termRef.current?.focus();
     };
 
     const handleSelectAll = () => {
         termRef.current?.selectAll();
         contextMenu.close();
+        termRef.current?.focus();
     };
 
     const handleClearTerminal = () => {
         termRef.current?.clear();
         contextMenu.close();
+        termRef.current?.focus();
     };
 
     const handleInsertSnippet = () => {
@@ -145,10 +160,11 @@ const XtermRenderer = ({ session, disconnectFromServer, registerTerminalRef, bro
             wsRef.current.send('\x03');
         }
         contextMenu.close();
+        termRef.current?.focus();
     };
 
     useEffect(() => {
-        if (!sessionToken) return;
+        if (!sessionToken && !isShared) return;
 
         let isCleaningUp = false;
 
@@ -198,16 +214,22 @@ const XtermRenderer = ({ session, disconnectFromServer, registerTerminalRef, bro
 
         window.addEventListener("resize", handleResize);
 
-        const protocol = location.protocol === "https:" ? "wss" : "ws";
+        const handleNativePaste = (e) => {
+            const text = e.clipboardData?.getData('text');
+            if (text) {
+                e.preventDefault();
+                term.paste(text);
+            }
+        };
+        ref.current?.addEventListener('paste', handleNativePaste);
 
         let ws;
 
-        let url = process.env.NODE_ENV === "production" ? `${window.location.host}/api/ws/term` : "localhost:6989/api/ws/term";
+        const wsParams = isShared 
+            ? { shareId: session.shareId || session.id.split('/').pop() }
+            : { sessionToken, sessionId: session.id };
 
-        let wsUrl = `${protocol}://${url}?sessionToken=${sessionToken}&entryId=${session.server.id}&identityId=${session.identity}&sessionId=${session.id}`;
-        if (session.connectionReason) {
-            wsUrl += `&connectionReason=${encodeURIComponent(session.connectionReason)}`;
-        }
+        const wsUrl = getWebSocketUrl("/api/ws/term", wsParams);
 
         ws = new WebSocket(wsUrl);
         wsRef.current = ws;
@@ -241,6 +263,8 @@ const XtermRenderer = ({ session, disconnectFromServer, registerTerminalRef, bro
         ws.onmessage = (event) => {
             const data = event.data;
 
+            connectionLoaderRef.current?.hide();
+
             if (data.startsWith("\x02")) {
                 const prompt = data.substring(1);
                 term.write(prompt);
@@ -262,6 +286,8 @@ const XtermRenderer = ({ session, disconnectFromServer, registerTerminalRef, bro
                 });
             } else {
                 term.write(data);
+                terminalBufferRef.current.push(data);
+                if (terminalBufferRef.current.length > 50) terminalBufferRef.current.shift();
 
                 if (progressParserRef.current && updateProgress) {
                     const progress = progressParserRef.current.parseData(data);
@@ -297,7 +323,7 @@ const XtermRenderer = ({ session, disconnectFromServer, registerTerminalRef, bro
                     if (selection) {
                         event.preventDefault();
                         event.stopPropagation();
-                        navigator.clipboard.writeText(selection).catch(() => { });
+                        copyToClipboard(selection);
                         return false;
                     }
                 }
@@ -358,6 +384,7 @@ const XtermRenderer = ({ session, disconnectFromServer, registerTerminalRef, bro
                 registerTerminalRef(session.id, null);
             }
             window.removeEventListener("resize", handleResize);
+            ref.current?.removeEventListener('paste', handleNativePaste);
             if (ws) {
                 ws.onclose = null;
                 ws.onerror = null;
@@ -368,62 +395,80 @@ const XtermRenderer = ({ session, disconnectFromServer, registerTerminalRef, bro
             termRef.current = null;
             wsRef.current = null;
         };
-    }, [sessionToken, selectedFont, fontSize, cursorStyle, cursorBlink, selectedTheme]);
+    }, [sessionToken, selectedFont, fontSize, cursorStyle, cursorBlink, selectedTheme, isShared]);
 
     return (
-        <div className="xterm-container" onContextMenu={handleContextMenu}>
+        <div className="xterm-container" onContextMenu={!isShared ? handleContextMenu : undefined}>
+            <ConnectionLoader onReady={(loader) => { connectionLoaderRef.current = loader; }} />
             <div ref={ref} className="xterm-wrapper" />
-            {isAIAvailable() && (
+            {!isShared && isAIAvailable() && (
                 <AICommandPopover visible={showAIPopover} onClose={() => setShowAIPopover(false)}
-                    onCommandGenerated={handleAICommandGenerated} position={aiPopoverPosition}
-                    focusTerminal={() => termRef.current?.focus()} />
+                    onCommandGenerated={handleAICommandGenerated} focusTerminal={() => termRef.current?.focus()}
+                    entryId={session.server?.id}
+                    recentOutput={terminalBufferRef.current.join('')
+                        .replace(/\x1B\[[0-9;]*[a-zA-Z]/g, '')
+                        .replace(/[\x00-\x1F\x7F]/g, ' ')
+                        .replace(/\s+/g, ' ')
+                        .trim()
+                        .slice(-1500)} />
             )}
-            <ContextMenu
-                isOpen={contextMenu.isOpen}
-                position={contextMenu.position}
-                onClose={contextMenu.close}
-                trigger={contextMenu.triggerRef}
-            >
-                <ContextMenuItem
-                    icon={mdiContentCopy}
-                    label={t('servers.fileManager.contextMenu.copy')}
-                    onClick={handleCopy}
-                    disabled={!termRef.current?.getSelection()}
+            {!isShared && (
+                <ContextMenu
+                    isOpen={contextMenu.isOpen}
+                    position={contextMenu.position}
+                    onClose={contextMenu.close}
+                    trigger={contextMenu.triggerRef}
+                >
+                    <ContextMenuItem
+                        icon={mdiContentCopy}
+                        label={t('servers.fileManager.contextMenu.copy')}
+                        onClick={handleCopy}
+                        disabled={!termRef.current?.getSelection()}
+                    />
+                    <ContextMenuItem
+                        icon={mdiContentPaste}
+                        label={t('servers.fileManager.contextMenu.paste')}
+                        onClick={handlePaste}
+                    />
+                    <ContextMenuItem
+                        icon={mdiSelectAll}
+                        label={t('servers.fileManager.contextMenu.selectAll')}
+                        onClick={handleSelectAll}
+                    />
+                    <ContextMenuSeparator />
+                    <ContextMenuItem
+                        icon={mdiCodeBrackets}
+                        label={t('servers.fileManager.contextMenu.insertSnippet')}
+                        onClick={handleInsertSnippet}
+                    />
+                    {(identities && session.identity && identities.find(i => i.id === session.identity) && ['password','both','password-only'].includes(identities.find(i => i.id === session.identity).type)) && (
+                        <ContextMenuItem
+                            icon={mdiKey}
+                            label={t('servers.contextMenu.pasteIdentityPassword')}
+                            onClick={handlePasteIdentity}
+                        />
+                    )}
+                    <ContextMenuSeparator />
+                    <ContextMenuItem
+                        icon={mdiKeyboard}
+                        label={t('servers.fileManager.contextMenu.sendCtrlC')}
+                        onClick={handleSendCtrlC}
+                    />
+                    <ContextMenuItem
+                        icon={mdiDelete}
+                        label={t('servers.fileManager.contextMenu.clearTerminal')}
+                        onClick={handleClearTerminal}
+                    />
+                </ContextMenu>
+            )}
+            {!isShared && (
+                <SnippetsMenu
+                    visible={showSnippetsMenu}
+                    onSelect={handleSnippetSelect}
+                    onClose={() => setShowSnippetsMenu(false)}
+                    activeSession={session}
                 />
-                <ContextMenuItem
-                    icon={mdiContentPaste}
-                    label={t('servers.fileManager.contextMenu.paste')}
-                    onClick={handlePaste}
-                />
-                <ContextMenuItem
-                    icon={mdiSelectAll}
-                    label={t('servers.fileManager.contextMenu.selectAll')}
-                    onClick={handleSelectAll}
-                />
-                <ContextMenuSeparator />
-                <ContextMenuItem
-                    icon={mdiCodeBrackets}
-                    label={t('servers.fileManager.contextMenu.insertSnippet')}
-                    onClick={handleInsertSnippet}
-                />
-                <ContextMenuSeparator />
-                <ContextMenuItem
-                    icon={mdiKeyboard}
-                    label={t('servers.fileManager.contextMenu.sendCtrlC')}
-                    onClick={handleSendCtrlC}
-                />
-                <ContextMenuItem
-                    icon={mdiDelete}
-                    label={t('servers.fileManager.contextMenu.clearTerminal')}
-                    onClick={handleClearTerminal}
-                />
-            </ContextMenu>
-            <SnippetsMenu
-                visible={showSnippetsMenu}
-                onSelect={handleSnippetSelect}
-                onClose={() => setShowSnippetsMenu(false)}
-                activeSession={session}
-            />
+            )}
         </div>
     );
 };

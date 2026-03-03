@@ -1,5 +1,7 @@
 @use "@/common/styles/colors"
 
+$mobile: 768px
+
 .server-object
   display: flex
   align-items: center
@@ -9,6 +11,11 @@
   padding: 0.4rem
   cursor: pointer
   font-weight: 600
+  transition: background-color 0.15s ease, border-color 0.15s ease
+
+  @media (max-width: $mobile)
+    padding: 0.6rem 0.5rem
+    gap: 0.625rem
 
   .system-icon
     width: 1.5rem
@@ -18,9 +25,18 @@
     justify-content: center
     align-items: center
     background-color: colors.$primary
+    flex-shrink: 0
+
+    @media (max-width: $mobile)
+      width: 1.75rem
+      height: 1.75rem
+
     svg
       color: white
       width: 1rem
+
+      @media (max-width: $mobile)
+        width: 1.125rem
 
   .system-icon-offline
     background-color: colors.$gray
@@ -34,9 +50,18 @@
     justify-content: center
     align-items: center
     background-color: colors.$warning
+    flex-shrink: 0
+
+    @media (max-width: $mobile)
+      width: 1.75rem
+      height: 1.75rem
+
     svg
       color: white
       width: 1rem
+
+      @media (max-width: $mobile)
+        width: 1.125rem
 
   .pve-icon-offline
     background-color: colors.$gray
@@ -45,6 +70,12 @@
   p
     margin: 0
     flex: 1
+    white-space: nowrap
+    overflow: hidden
+    text-overflow: ellipsis
+
+    @media (max-width: $mobile)
+      font-size: 0.95rem
 
   .hibernation-indicator
     display: flex
@@ -55,6 +86,10 @@
     border-radius: 10px
     padding: 2px 6px
     margin-left: auto
+    flex-shrink: 0
+
+    @media (max-width: $mobile)
+      padding: 3px 8px
     
     svg
       width: 0.75rem
@@ -67,11 +102,15 @@
       color: colors.$primary
       line-height: 1
 
+      @media (max-width: $mobile)
+        font-size: 0.75rem
+
   .tag-circles
     display: flex
     gap: 4px
     margin-left: auto
     padding-right: 4px
+    flex-shrink: 0
 
     .tag-circle
       width: 10px
@@ -84,6 +123,10 @@
     background-color: colors.$dark-gray
     border: 1px solid colors.$gray
     border-radius: 0.3rem
+
+  &:active
+    background-color: colors.$gray
+    border-color: colors.$primary
 
 .server-is-over
   background-color: colors.$dark-gray

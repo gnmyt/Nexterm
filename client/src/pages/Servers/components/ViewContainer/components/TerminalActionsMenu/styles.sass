@@ -1,5 +1,7 @@
 @use "@/common/styles/colors"
 
+$mobile: 768px
+
 .terminal-actions-menu
   position: relative
   display: flex
@@ -13,6 +15,11 @@
     color: colors.$subtext
     width: 1.8rem
     height: 1.8rem
+
+    @media (max-width: $mobile)
+      width: 1.5rem
+      height: 1.5rem
+      padding: 0.375rem
 
     &:hover
       background-color: colors.$gray
@@ -32,7 +39,20 @@
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3)
     z-index: 10000
     min-width: 200px
+    max-width: calc(100vw - 20px)
     overflow: hidden
+
+    @media (max-width: $mobile)
+      position: fixed
+      top: auto
+      bottom: 0
+      left: 0
+      right: 0
+      border-radius: 12px 12px 0 0
+      min-width: 100%
+      max-height: 60vh
+      overflow-y: auto
+      -webkit-overflow-scrolling: touch
 
     .menu-item
       display: flex
@@ -43,13 +63,24 @@
       transition: all 0.2s ease
       color: colors.$white
 
+      @media (max-width: $mobile)
+        padding: 14px 20px
+        gap: 14px
+
       svg
         width: 18px
         height: 18px
         color: colors.$light-gray
 
+        @media (max-width: $mobile)
+          width: 20px
+          height: 20px
+
       span
         font-size: 14px
+
+        @media (max-width: $mobile)
+          font-size: 15px
 
       &:hover
         background-color: colors.$dark-gray
@@ -77,3 +108,7 @@
       color: colors.$white
       font-size: 11px
       font-weight: bold
+
+      @media (max-width: $mobile)
+        font-size: 12px
+        padding: 3px 10px

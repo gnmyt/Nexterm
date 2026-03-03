@@ -41,17 +41,12 @@ module.exports = db.define("oidc_providers", {
         scope: {
             type: Sequelize.STRING,
             allowNull: false,
-            defaultValue: "openid profile email",
+            defaultValue: "openid profile",
         },
         enabled: {
             type: Sequelize.BOOLEAN,
             allowNull: false,
             defaultValue: false,
-        },
-        emailAttribute: {
-            type: Sequelize.STRING,
-            allowNull: true,
-            defaultValue: "email",
         },
         firstNameAttribute: {
             type: Sequelize.STRING,

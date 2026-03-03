@@ -1,9 +1,12 @@
 import 'dart:convert';
+import 'dart:io';
 import 'package:http/http.dart' as http;
 import '../services/api_config.dart';
 
 class ApiClient {
   static const Duration _timeout = Duration(seconds: 30);
+  static const String _appVersion = '1.0.8';
+  static String get userAgent => 'NextermMobile/$_appVersion (${Platform.operatingSystem}; ${Platform.operatingSystemVersion})';
 
   static String normalizeBaseUrl(String url) {
     url = url.trim();
@@ -15,6 +18,7 @@ class ApiClient {
 
   static Map<String, String> _headers(Map<String, String>? headers, String? token) => {
     'Content-Type': 'application/json',
+    'User-Agent': userAgent,
     ...?headers,
     if (token != null) 'Authorization': 'Bearer $token',
   };

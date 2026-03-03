@@ -1,10 +1,8 @@
 import "./styles.sass";
 import ServerList from "@/pages/Servers/components/ServerList";
-import { UserContext } from "@/common/contexts/UserContext.jsx";
-import { useContext, useEffect, useState } from "react";
-import Button from "@/common/components/Button";
-import WelcomeImage from "@/common/img/welcome.avif";
-import { DISCORD_URL, GITHUB_URL } from "@/App.jsx";
+import { useContext, useEffect, useState, useCallback, useRef } from "react";
+import { createPortal } from "react-dom";
+import WelcomePanel from "@/pages/Servers/components/WelcomePanel";
 import ServerDialog from "@/pages/Servers/components/ServerDialog";
 import ViewContainer from "@/pages/Servers/components/ViewContainer";
 import ProxmoxDialog from "@/pages/Servers/components/ProxmoxDialog";
@@ -13,13 +11,13 @@ import ConnectionReasonDialog from "@/pages/Servers/components/ConnectionReasonD
 import DirectConnectDialog from "@/pages/Servers/components/DirectConnectDialog";
 import FileEditorWindow from "@/common/components/FileEditorWindow";
 import FilePreviewWindow from "@/common/components/FilePreviewWindow";
-import { mdiStar } from "@mdi/js";
-import { siDiscord } from "simple-icons";
 import { useActiveSessions } from "@/common/contexts/SessionContext.jsx";
 import { useLocation, useNavigate } from "react-router-dom";
 import { ServerContext } from "@/common/contexts/ServerContext.jsx";
-
-import { getRequest, postRequest, deleteRequest } from "@/common/utils/RequestUtil";
+import { StateStreamContext, STATE_TYPES } from "@/common/contexts/StateStreamContext.jsx";
+import { isTauri } from "@/common/utils/TauriUtil.js";
+import { getTabId, getBrowserId } from "@/common/utils/ConnectionUtil.js";
+import { postRequest, deleteRequest } from "@/common/utils/RequestUtil";
 
 export const Servers = () => {
 
@@ -32,96 +30,87 @@ export const Servers = () => {
     const [directConnectServer, setDirectConnectServer] = useState(null);
     const [pendingConnection, setPendingConnection] = useState(null);
     const [openFileEditors, setOpenFileEditors] = useState([]);
+    const [mobileServerListOpen, setMobileServerListOpen] = useState(false);
+    const [leftPaneSlot, setLeftPaneSlot] = useState(null);
 
     const [currentFolderId, setCurrentFolderId] = useState(null);
     const [currentOrganizationId, setCurrentOrganizationId] = useState(null);
     const [editServerId, setEditServerId] = useState(null);
-    const { user } = useContext(UserContext);
-    const { activeSessions, setActiveSessions, activeSessionId, setActiveSessionId } = useActiveSessions();
+    const { activeSessions, setActiveSessions, activeSessionId, setActiveSessionId, poppedOutSessions } = useActiveSessions();
     const { getServerById, servers } = useContext(ServerContext);
+    const { registerHandler } = useContext(StateStreamContext);
     const location = useLocation();
     const navigate = useNavigate();
 
     const [hibernatedSessions, setHibernatedSessions] = useState([]);
+    const closingSessionsRef = useRef(new Set());
 
-    const getTabId = () => {
-        let tabId = sessionStorage.getItem("nexterm_tab_id");
-        if (!tabId) {
-            tabId = `tab_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
-            sessionStorage.setItem("nexterm_tab_id", tabId);
-        }
-        return tabId;
-    };
-
-    const getBrowserId = () => {
-        let browserId = localStorage.getItem("nexterm_browser_id");
-        if (!browserId) {
-            browserId = `browser_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
-            localStorage.setItem("nexterm_browser_id", browserId);
-        }
-        return browserId;
-    };
-
-    const fetchSessions = async () => {
-        try {
-            const params = new URLSearchParams({
-                tabId: getTabId(),
-                browserId: getBrowserId(),
-            });
-            const sessions = await getRequest(`/connections?${params.toString()}`);
-            const mappedSessions = sessions.map(session => {
-                const server = getServerById(session.entryId);
-                if (!server) return null;
-
-                return {
-                    id: session.sessionId,
-                    server: server,
-                    identity: session.configuration.identityId,
-                    connectionReason: session.connectionReason,
-                    isHibernated: session.isHibernated,
-                    createdAt: session.createdAt,
-                    lastActivity: session.lastActivity,
-                    type: session.configuration.type || undefined,
-                    organizationId: session.organizationId,
-                    organizationName: session.organizationName,
-                    scriptId: session.configuration.scriptId || undefined,
-                };
-            }).filter(s => s !== null);
-
-            const activeMapped = mappedSessions.filter(s => !s.isHibernated);
-            const hibernatedMapped = mappedSessions.filter(s => s.isHibernated);
-
-            setActiveSessions(prevSessions => {
-                const prevSessionMap = new Map(prevSessions.map(s => [s.id, s]));
-                return activeMapped.map(newSession => {
-                    const existingSession = prevSessionMap.get(newSession.id);
-                    if (existingSession) {
-                        return {
-                            ...newSession,
-                            scriptId: existingSession.scriptId || newSession.scriptId,
-                            scriptName: existingSession.scriptName || newSession.scriptName,
-                        };
-                    }
-                    return newSession;
-                });
-            });
-            setHibernatedSessions(hibernatedMapped);
-
-            if (activeMapped.length > 0) {
-                if (!activeSessionId || !activeMapped.find(s => s.id === activeSessionId)) {
-                    setActiveSessionId(activeMapped[activeMapped.length - 1].id);
-                }
-            }
-        } catch (error) {
-            console.error("Failed to fetch sessions", error);
-        }
-    };
+    const visibleSessions = activeSessions.filter(s => !poppedOutSessions.includes(s.id));
 
     useEffect(() => {
-        if (servers) {
-            fetchSessions();
-        }
-    }, [servers]);
+        const handleToggle = () => setMobileServerListOpen(prev => !prev);
+        window.addEventListener('toggleServerList', handleToggle);
+        return () => window.removeEventListener('toggleServerList', handleToggle);
+    }, []);
+
+    useEffect(() => {
+        setLeftPaneSlot(document.getElementById("left-pane-slot"));
+    }, []);
+
+    const handleConnectionsUpdate = useCallback((sessions) => {
+        if (!servers) return;
+        const mappedSessions = sessions.map(session => {
+            const server = getServerById(session.entryId);
+            if (!server) return null;
+            return {
+                id: session.sessionId,
+                server,
+                identity: session.configuration.identityId,
+                isHibernated: session.isHibernated,
+                lastActivity: session.lastActivity,
+                type: session.configuration.type || undefined,
+                organizationId: session.organizationId,
+                organizationName: session.organizationName,
+                osName: session.osName || null,
+                scriptId: session.configuration.scriptId || undefined,
+                shareId: session.shareId || null,
+                shareWritable: session.shareWritable || false,
+            };
+        }).filter(Boolean);
+
+        const closingSessions = closingSessionsRef.current;
+        const activeMapped = mappedSessions.filter(s => !s.isHibernated && !closingSessions.has(s.id));
+        const hibernatedMapped = mappedSessions.filter(s => s.isHibernated);
+        
+        const serverSessionIds = new Set(sessions.map(s => s.sessionId));
+        closingSessions.forEach(id => {
+            if (!serverSessionIds.has(id)) {
+                closingSessions.delete(id);
+            }
+        });
+        
+        const newActiveIds = new Set(activeMapped.map(s => s.id));
+
+        setActiveSessions(prev => {
+            const prevMap = new Map(prev.map(s => [s.id, s]));
+            return activeMapped.map(newSession => {
+                const existing = prevMap.get(newSession.id);
+                return existing ? { ...newSession, scriptId: existing.scriptId || newSession.scriptId, scriptName: existing.scriptName, osName: newSession.osName || existing.osName } : newSession;
+            });
+        });
+        setHibernatedSessions(hibernatedMapped);
+
+        setActiveSessionId(prev => {
+            if (!prev || !newActiveIds.has(prev)) {
+                return activeMapped.at(-1)?.id || null;
+            }
+            return prev;
+        });
+    }, [servers, getServerById, setActiveSessions, setActiveSessionId]);
+
+    useEffect(() => {
+        if (servers) return registerHandler(STATE_TYPES.CONNECTIONS, handleConnectionsUpdate);
+    }, [servers, registerHandler, handleConnectionsUpdate]);
 
     const findOrganizationForServer = (serverIdNum, entries, currentOrg = null) => {
         for (const entry of entries) {
@@ -150,6 +139,13 @@ export const Servers = () => {
         const hibernated = hibernatedSessions.find(s => s.server.id === serverId && s.identity === identity?.id);
         if (hibernated) {
             resumeConnection(hibernated.id);
+            return;
+        }
+
+        const isPveEntry = server?.type?.startsWith("pve-");
+        const hasIdentities = server?.identities && server.identities.length > 0;
+        if (server && !isPveEntry && !hasIdentities) {
+            openDirectConnect(server);
             return;
         }
 
@@ -198,7 +194,6 @@ export const Servers = () => {
                 server,
                 identity: identity?.id,
                 id: session.sessionId,
-                connectionReason,
                 type: type || undefined,
                 organizationId: organizationId,
                 organizationName: organization?.name || null,
@@ -239,7 +234,6 @@ export const Servers = () => {
                 browserId: getBrowserId(),
             });
             setActiveSessionId(sessionId);
-            await fetchSessions();
         } catch (error) {
             console.error("Failed to resume session", error);
         }
@@ -265,22 +259,24 @@ export const Servers = () => {
         setConnectionReasonDialogOpen(false);
     };
 
-    const disconnectFromServer = (sessionId) => {
-        setActiveSessions(activeSessions => {
-            const newSessions = activeSessions.filter(session => session.id !== sessionId);
-
-            if (newSessions.length === 0) {
-                setActiveSessionId(null);
-            } else if (sessionId === activeSessionId) {
-                setActiveSessionId(newSessions[newSessions.length - 1].id);
-            }
-
+    const disconnectFromServer = useCallback((sessionId) => {
+        setActiveSessions(prev => {
+            const newSessions = prev.filter(session => session.id !== sessionId);
+            setActiveSessionId(currentActiveId => {
+                if (newSessions.length === 0) return null;
+                if (sessionId === currentActiveId) return newSessions.at(-1)?.id || null;
+                return currentActiveId;
+            });
             return newSessions;
         });
+    }, [setActiveSessions, setActiveSessionId]);
 
+    const closeSession = (sessionId) => {
+        closingSessionsRef.current.add(sessionId);
         deleteRequest(`/connections/${sessionId}`).catch(error => {
-            console.debug("Session deletion request failed (session may already be closed):", error);
+            console.debug("Session deletion request failed:", error);
         });
+        disconnectFromServer(sessionId);
     };
 
     const hibernateSession = async (sessionId) => {
@@ -289,16 +285,70 @@ export const Servers = () => {
 
             if (sessionId === activeSessionId) {
                 const otherSessions = activeSessions.filter(s => s.id !== sessionId);
-                if (otherSessions.length > 0) {
-                    setActiveSessionId(otherSessions[otherSessions.length - 1].id);
-                } else {
-                    setActiveSessionId(null);
-                }
+                setActiveSessionId(otherSessions.at(-1)?.id || null);
             }
-
-            await fetchSessions();
         } catch (error) {
             console.error("Failed to hibernate session", error);
+        }
+    };
+
+    const duplicateSession = async (sessionId) => {
+        try {
+            const result = await postRequest(`/connections/${sessionId}/duplicate`, {
+                tabId: getTabId(),
+                browserId: getBrowserId(),
+            });
+
+            if (result?.sessionId) {
+                const originalSession = activeSessions.find(s => s.id === sessionId);
+                if (originalSession) {
+                    const sessionData = {
+                        ...originalSession,
+                        id: result.sessionId,
+                        shareId: null,
+                        shareWritable: false,
+                    };
+                    setActiveSessions(prevSessions => [...prevSessions, sessionData]);
+                    setActiveSessionId(result.sessionId);
+                }
+            }
+        } catch (error) {
+            console.error("Failed to duplicate session", error);
+        }
+    };
+
+    const openTerminalFromFileManager = async (sessionId, path) => {
+        try {
+            const originalSession = activeSessions.find(s => s.id === sessionId);
+            if (!originalSession) {
+                console.error("Original session not found");
+                return;
+            }
+
+            const payload = {
+                entryId: originalSession.server.id,
+                identityId: originalSession.identity,
+                type: "terminal",
+                startPath: path,
+                tabId: getTabId(),
+                browserId: getBrowserId(),
+            };
+
+            const session = await postRequest("/connections", payload);
+
+            const sessionData = {
+                server: { ...originalSession.server, renderer: "terminal" },
+                identity: originalSession.identity,
+                id: session.sessionId,
+                type: "terminal",
+                organizationId: originalSession.organizationId,
+                organizationName: originalSession.organizationName,
+            };
+
+            setActiveSessions(prevSessions => [...prevSessions, sessionData]);
+            setActiveSessionId(session.sessionId);
+        } catch (error) {
+            console.error("Failed to open terminal from file manager", error);
         }
     };
 
@@ -323,6 +373,19 @@ export const Servers = () => {
     const openDirectConnect = (server) => {
         setDirectConnectServer(server);
         setDirectConnectDialogOpen(true);
+    };
+
+    const openPortForward = async (server) => {
+        if (!isTauri()) return;
+        try {
+            const { invoke } = await import("@tauri-apps/api/core");
+            await invoke("open_tunnel_window", { 
+                entryId: server.id,
+                entryName: server.name 
+            });
+        } catch (error) {
+            console.error("Failed to open port forward window", error);
+        }
     };
 
     const closeDirectConnectDialog = () => {
@@ -404,34 +467,38 @@ export const Servers = () => {
                 onConnect={handleConnectionReasonProvided}
                 serverName={pendingConnection?.server?.name || "Unknown Server"}
             />
-            <ServerList setServerDialogOpen={(protocol = null) => {
-                setServerDialogProtocol(protocol);
-                setServerDialogOpen(true);
-            }}
-                        connectToServer={connectToServer}
-                        setProxmoxDialogOpen={() => setProxmoxDialogOpen(true)}
-                        setSSHConfigImportDialogOpen={() => setSSHConfigImportDialogOpen(true)}
-                        setCurrentFolderId={setCurrentFolderId} setCurrentOrganizationId={setCurrentOrganizationId}
-                        setEditServerId={setEditServerId} openSFTP={openSFTP}
-                        hibernatedSessions={hibernatedSessions} resumeSession={resumeConnection}
-                        openDirectConnect={openDirectConnect} runScript={runScript} />
-            {activeSessions.length === 0 && <div className="welcome-area">
-                <div className="area-left">
-                    <h1>Hi, <span>{user?.firstName || "User"} {user?.lastName || "name"}</span>!</h1>
-                    <p>Welcome to Nexterm. The open-source server manager for SSH, VNC and RDP.</p>
-                    <div className="button-area">
-                        <Button text="Star on GitHub" onClick={() => window.open(GITHUB_URL, "_blank")}
-                                icon={mdiStar} />
-                        <Button text="Join Discord" onClick={() => window.open(DISCORD_URL, "_blank")}
-                                icon={siDiscord.path} />
-                    </div>
-                </div>
-                <img src={WelcomeImage} alt="Welcome" />
-            </div>}
-            {activeSessions.length > 0 &&
-                <ViewContainer activeSessions={activeSessions} disconnectFromServer={disconnectFromServer}
+            {leftPaneSlot && createPortal(
+                <ServerList setServerDialogOpen={(protocol = null) => {
+                    setServerDialogProtocol(protocol);
+                    setServerDialogOpen(true);
+                }}
+                            connectToServer={connectToServer}
+                            setProxmoxDialogOpen={() => setProxmoxDialogOpen(true)}
+                            setSSHConfigImportDialogOpen={() => setSSHConfigImportDialogOpen(true)}
+                            setCurrentFolderId={setCurrentFolderId} setCurrentOrganizationId={setCurrentOrganizationId}
+                            setEditServerId={setEditServerId} openSFTP={openSFTP}
+                            hibernatedSessions={hibernatedSessions} resumeSession={resumeConnection}
+                            openDirectConnect={openDirectConnect} runScript={runScript}
+                            openPortForward={isTauri() ? openPortForward : undefined}
+                            mobileOpen={mobileServerListOpen} setMobileOpen={setMobileServerListOpen} />,
+                leftPaneSlot
+            )}
+            {visibleSessions.length === 0 && 
+                <WelcomePanel 
+                    connectToServer={connectToServer} 
+                    hibernatedSessions={hibernatedSessions} 
+                    resumeSession={resumeConnection}
+                    openSFTP={openSFTP}
+                    openDirectConnect={openDirectConnect}
+                />
+            }
+            {visibleSessions.length > 0 &&
+                <ViewContainer activeSessions={visibleSessions} disconnectFromServer={disconnectFromServer}
+                               closeSession={closeSession}
                                activeSessionId={activeSessionId} setActiveSessionId={setActiveSessionId}
-                               hibernateSession={hibernateSession} setOpenFileEditors={setOpenFileEditors} />}
+                               hibernateSession={hibernateSession} duplicateSession={duplicateSession}
+                               setOpenFileEditors={setOpenFileEditors}
+                               openTerminalFromFileManager={openTerminalFromFileManager} />}
             {openFileEditors.map((editor, index) => (
                 editor.type === "preview" ? (
                     <FilePreviewWindow
@@ -446,7 +513,6 @@ export const Servers = () => {
                         key={editor.id}
                         file={editor.file}
                         session={editor.session}
-                        sendOperation={editor.sendOperation}
                         onClose={() => setOpenFileEditors(prev => prev.filter(e => e.id !== editor.id))}
                         zIndex={10000 + index}
                     />

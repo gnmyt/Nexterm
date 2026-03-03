@@ -1,5 +1,8 @@
 @use "@/common/styles/colors"
 
+$mobile: 768px
+$tablet: 1024px
+
 .sources-page
   display: flex
   flex-direction: column
@@ -20,11 +23,18 @@
       align-items: flex-start
       margin-bottom: 1.5rem
 
+      @media (max-width: $mobile)
+        flex-direction: column
+        gap: 0.75rem
+
       .header-content
         h2
           font-size: 1.3rem
           margin-bottom: 0.5rem
           font-weight: 600
+
+          @media (max-width: $mobile)
+            font-size: 1.15rem
         
         p
           font-size: 0.9rem
@@ -33,6 +43,9 @@
       display: grid
       grid-template-columns: repeat(auto-fill, minmax(380px, 1fr))
       gap: 0.75rem
+
+      @media (max-width: $mobile)
+        grid-template-columns: 1fr
 
       .source-card
         background-color: colors.$lighter-background
@@ -43,6 +56,9 @@
         display: flex
         justify-content: space-between
         align-items: flex-start
+
+        @media (max-width: $mobile)
+          padding: 1rem
 
         &:hover
           border-color: colors.$gray
@@ -57,6 +73,9 @@
           flex: 1
           min-width: 0
 
+          @media (max-width: $mobile)
+            gap: 0.75rem
+
           .source-icon
             width: 2rem
             height: 2rem
@@ -64,6 +83,10 @@
             opacity: 0.9
             margin-top: 0.125rem
             flex-shrink: 0
+
+            @media (max-width: $mobile)
+              width: 1.5rem
+              height: 1.5rem
 
           .source-details
             flex: 1
@@ -74,6 +97,7 @@
               align-items: center
               gap: 0.5rem
               margin-bottom: 0.5rem
+              flex-wrap: wrap
 
               h3
                 margin: 0
@@ -115,6 +139,9 @@
               gap: 1rem
               font-size: 0.8rem
               color: colors.$subtext
+
+              @media (max-width: $mobile)
+                gap: 0.5rem 1rem
 
               .meta-item
                 display: flex
@@ -179,6 +206,9 @@
         padding: 3rem 2rem
         color: colors.$subtext
 
+        @media (max-width: $mobile)
+          padding: 2rem 1rem
+
         svg
           width: 3rem
           height: 3rem
@@ -199,10 +229,17 @@
 .source-dialog
   min-width: 400px
 
+  @media (max-width: $mobile)
+    min-width: unset
+    width: 100%
+
   h2
     margin: 0 0 1.5rem
     font-size: 1.5rem
     color: colors.$white
+
+    @media (max-width: $mobile)
+      font-size: 1.25rem
 
   .form-group
     margin-bottom: 1.25rem
@@ -264,3 +301,9 @@
     justify-content: flex-end
     gap: 0.75rem
     margin-top: 1.5rem
+
+    @media (max-width: $mobile)
+      flex-direction: column-reverse
+
+      button
+        width: 100%

@@ -1,3 +1,5 @@
+import { mdiInformationOutline, mdiAccountKeyOutline, mdiCogOutline } from "@mdi/js";
+
 export const getFieldConfig = (type, protocol) => {
     if (type === "server") {
         switch (protocol) {
@@ -9,15 +11,20 @@ export const getFieldConfig = (type, protocol) => {
                     showSettings: true,
                     showMonitoring: true,
                     showKeyboardLayout: false,
+                    showTerminalSettings: true,
+                    allowedAuthTypes: ["password", "ssh", "both"],
+                    showWakeOnLan: true,
                 };
             case "telnet":
                 return {
                     showProtocol: false,
                     showIpPort: true,
                     showIdentities: false,
-                    showSettings: false,
+                    showSettings: true,
                     showMonitoring: false,
                     showKeyboardLayout: false,
+                    showTerminalSettings: true,
+                    showWakeOnLan: true,
                 };
             case "rdp":
                 return {
@@ -27,6 +34,11 @@ export const getFieldConfig = (type, protocol) => {
                     showSettings: true,
                     showMonitoring: false,
                     showKeyboardLayout: true,
+                    showDisplaySettings: true,
+                    showPerformanceSettings: true,
+                    showAudioSettings: true,
+                    allowedAuthTypes: ["password-only", "password"],
+                    showWakeOnLan: true,
                 };
             case "vnc":
                 return {
@@ -35,7 +47,11 @@ export const getFieldConfig = (type, protocol) => {
                     showIdentities: true,
                     showSettings: true,
                     showMonitoring: false,
-                    showKeyboardLayout: true,
+                    showKeyboardLayout: false,
+                    showDisplaySettings: true,
+                    showAudioSettings: true,
+                    allowedAuthTypes: ["password-only", "password"],
+                    showWakeOnLan: true,
                 };
             default:
                 return {
@@ -45,6 +61,8 @@ export const getFieldConfig = (type, protocol) => {
                     showSettings: true,
                     showMonitoring: true,
                     showKeyboardLayout: true,
+                    allowedAuthTypes: ["password", "ssh", "both"],
+                    showWakeOnLan: true,
                 };
         }
     }
@@ -82,7 +100,9 @@ export const getFieldConfig = (type, protocol) => {
             showIdentities: false,
             showSettings: true,
             showMonitoring: false,
-            showKeyboardLayout: true,
+            showKeyboardLayout: false,
+            showDisplaySettings: true,
+            showAudioSettings: true,
             showPveConfig: true,
             pveFields: ["nodeName", "vmid"],
         };
@@ -102,14 +122,14 @@ export const getAvailableTabs = (type, protocol) => {
     const config = getFieldConfig(type, protocol);
     const tabs = [];
 
-    tabs.push({ key: "details", label: "servers.dialog.tabs.details" });
+    tabs.push({ key: "details", label: "servers.dialog.tabs.details", icon: mdiInformationOutline });
 
     if (config.showIdentities) {
-        tabs.push({ key: "identities", label: "servers.dialog.tabs.identities" });
+        tabs.push({ key: "identities", label: "servers.dialog.tabs.identities", icon: mdiAccountKeyOutline });
     }
 
-    if (config.showSettings && (config.showMonitoring || config.showKeyboardLayout)) {
-        tabs.push({ key: "settings", label: "servers.dialog.tabs.settings" });
+    if (config.showSettings && (config.showMonitoring || config.showKeyboardLayout || config.showDisplaySettings || config.showAudioSettings || config.showWakeOnLan || config.showTerminalSettings)) {
+        tabs.push({ key: "settings", label: "servers.dialog.tabs.settings", icon: mdiCogOutline });
     }
 
     return tabs;

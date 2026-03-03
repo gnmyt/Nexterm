@@ -1,5 +1,6 @@
 const express = require("express");
 const { getFTSStatus } = require("../controllers/account");
+const packageJson = require("../../package.json");
 
 const app = express.Router();
 
@@ -15,6 +16,18 @@ app.get("/is-fts", (req, res) => {
     getFTSStatus()
         .then(status => res.json(status))
         .catch(err => res.status(500).json({ error: err.message }));
+});
+
+/**
+ * GET /service/version
+ * @summary Get Version
+ * @description Returns the current Nexterm server version.
+ * @tags Service
+ * @produces application/json
+ * @return {object} 200 - Version information
+ */
+app.get("/version", (req, res) => {
+    res.json({ version: packageJson.version });
 });
 
 module.exports = app;

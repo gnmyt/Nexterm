@@ -7,7 +7,6 @@ import {
     mdiAccountMultiple,
     mdiCog,
     mdiDomain,
-    mdiEmail,
     mdiFormTextbox,
     mdiKey,
     mdiKeyChain,
@@ -16,6 +15,7 @@ import {
 import Button from "@/common/components/Button";
 import { patchRequest, putRequest } from "@/common/utils/RequestUtil.js";
 import { useToast } from "@/common/contexts/ToastContext.jsx";
+import { getBaseUrl } from "@/common/utils/ConnectionUtil.js";
 
 export const ProviderDialog = ({ open, onClose, provider, onSave }) => {
     const { t } = useTranslation();
@@ -26,9 +26,8 @@ export const ProviderDialog = ({ open, onClose, provider, onSave }) => {
     const [clientId, setClientId] = useState("");
     const [clientSecret, setClientSecret] = useState("");
     const [redirectUri, setRedirectUri] = useState("");
-    const [scope, setScope] = useState("openid profile email");
+    const [scope, setScope] = useState("openid profile");
 
-    const [emailAttr, setEmailAttr] = useState("email");
     const [usernameAttr, setUsernameAttr] = useState("preferred_username");
     const [firstNameAttr, setFirstNameAttr] = useState("given_name");
     const [lastNameAttr, setLastNameAttr] = useState("family_name");
@@ -42,7 +41,6 @@ export const ProviderDialog = ({ open, onClose, provider, onSave }) => {
             setClientSecret("********");
             setRedirectUri(provider.redirectUri);
             setScope(provider.scope);
-            setEmailAttr(provider.emailAttribute);
             setUsernameAttr(provider.usernameAttribute);
             setFirstNameAttr(provider.firstNameAttribute);
             setLastNameAttr(provider.lastNameAttribute);
@@ -51,9 +49,9 @@ export const ProviderDialog = ({ open, onClose, provider, onSave }) => {
             setIssuer("");
             setClientId("");
             setClientSecret("");
-            setRedirectUri(window.location.origin + "/api/oidc/callback");
-            setScope("openid profile email");
-            setEmailAttr("email");
+            const baseUrl = getBaseUrl() || window.location.origin;
+            setRedirectUri(baseUrl + "/api/auth/oidc/callback");
+            setScope("openid profile");
             setUsernameAttr("preferred_username");
             setFirstNameAttr("given_name");
             setLastNameAttr("family_name");
@@ -64,7 +62,7 @@ export const ProviderDialog = ({ open, onClose, provider, onSave }) => {
     const handleSubmit = async () => {
         try {
             const data = {
-                name, issuer, clientId, redirectUri, scope, emailAttribute: emailAttr,
+                name, issuer, clientId, redirectUri, scope,
                 usernameAttribute: usernameAttr, firstNameAttribute: firstNameAttr, lastNameAttribute: lastNameAttr,
             };
 
@@ -73,9 +71,10 @@ export const ProviderDialog = ({ open, onClose, provider, onSave }) => {
             }
 
             if (provider) {
-                await patchRequest(`oidc/admin/providers/${provider.id}`, data);
+                await patchRequest(`auth/providers/admin/oidc/${provider.id}`, data);
             } else {
-                await putRequest("oidc/admin/providers", data);
+                data.enabled = true;
+                await putRequest("auth/providers/admin/oidc", data);
             }
 
             onSave();
@@ -134,12 +133,6 @@ export const ProviderDialog = ({ open, onClose, provider, onSave }) => {
 
                     {showAdvanced && (
                         <div className="advanced-form">
-                            <div className="form-group">
-                                <label htmlFor="emailAttr">{t('settings.authentication.providerDialog.fields.emailAttribute')}</label>
-                                <Input type="text" id="emailAttr" icon={mdiEmail}
-                                       placeholder={t('settings.authentication.providerDialog.fields.emailAttributePlaceholder')} value={emailAttr} setValue={setEmailAttr} />
-                            </div>
-
                             <div className="form-group">
                                 <label htmlFor="usernameAttr">{t('settings.authentication.providerDialog.fields.usernameAttribute')}</label>
                                 <Input type="text" id="usernameAttr" icon={mdiAccountMultiple}

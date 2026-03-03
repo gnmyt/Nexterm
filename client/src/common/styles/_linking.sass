@@ -1,0 +1,106 @@
+@use "@/common/styles/colors"
+
+.linking-header
+    display: flex
+    align-items: center
+    justify-content: center
+    gap: 0.6rem
+    padding: 0.5rem 0
+
+.linking-logo
+    width: 48px
+    height: 48px
+    background: colors.$primary-opacity
+    border-radius: 12px
+    display: flex
+    align-items: center
+    justify-content: center
+    transition: all 0.3s ease
+    
+    &.connected
+        background: colors.$success-opacity
+        
+        svg path
+            fill: colors.$success !important
+
+.linking-dots
+    display: flex
+    align-items: center
+    gap: 0.35rem
+    
+    .dot
+        width: 5px
+        height: 5px
+        border-radius: 50%
+        background: colors.$gray
+        transition: background 0.3s ease
+        
+        &:nth-child(1)
+            animation: dotPulse 1.5s ease-in-out infinite
+            
+        &:nth-child(2)
+            animation: dotPulse 1.5s ease-in-out infinite 0.2s
+            
+        &:nth-child(3)
+            animation: dotPulse 1.5s ease-in-out infinite 0.4s
+    
+    &.connected .dot
+        background: colors.$success
+        animation: none
+
+@keyframes dotPulse
+    0%, 100%
+        opacity: 0.3
+    50%
+        opacity: 1
+
+.device-icon-wrapper
+    width: 48px
+    height: 48px
+    background: colors.$dark-gray
+    border: 2px solid colors.$gray
+    border-radius: 12px
+    display: flex
+    align-items: center
+    justify-content: center
+    transition: all 0.3s ease
+    
+    svg
+        color: colors.$subtext
+        transition: color 0.3s ease
+    
+    &.connected
+        border-color: colors.$success
+        background: colors.$success-opacity
+        
+        svg
+            color: colors.$success
+
+.linking-title
+    margin: 0
+    font-size: 1.2rem
+    font-weight: 600
+    text-align: center
+
+.linking-description
+    color: colors.$subtext
+    text-align: center
+    margin: 0
+    font-size: 0.85rem
+    line-height: 1.4
+
+.linking-form-group
+    display: flex
+    flex-direction: column
+    gap: 0.3rem
+
+    label
+        color: colors.$subtext
+        font-weight: 600
+        font-size: 0.8rem
+
+.linking-actions
+    display: flex
+    flex-direction: column
+    gap: 0.5rem
+    width: 100%

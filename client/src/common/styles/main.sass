@@ -1,21 +1,109 @@
 @use "colors"
 
+$mobile: 768px
+
+:root
+  --title-bar-height: 0px
+  --content-height: 100vh
+  --mobile-nav-height: 0px
+  --safe-area-top: env(safe-area-inset-top, 0px)
+
+  @media (max-width: $mobile)
+    --mobile-nav-height: calc(3.5rem + env(safe-area-inset-bottom, 0px))
+    --content-height: calc(100vh - var(--safe-area-top))
+
 body, html
   margin: 0
-  overflow-x: hidden
+  overflow: hidden
   background-color: colors.$background
   color: colors.$white
   font-family: "Plus Jakarta Sans", sans-serif
   font-weight: 700
 
+body.tauri-mode
+  --title-bar-height: 32px
+  --content-height: calc(100vh - 32px)
+  -webkit-user-select: none
+  -moz-user-select: none
+  user-select: none
+  padding-top: var(--title-bar-height)
+
+  input, textarea, [contenteditable="true"], .allow-select
+    -webkit-user-select: text
+    -moz-user-select: text
+    user-select: text
+
+.app-wrapper
+  display: flex
+  flex-direction: column
+  height: var(--content-height)
+  width: 100vw
+  overflow: hidden
+  padding-top: var(--safe-area-top)
+
 .content-wrapper
   display: flex
-  height: 100vh
+  flex: 1
   width: 100vw
+  overflow: hidden
+  min-height: 0
+  position: relative
+
+  @media (max-width: $mobile)
+    padding-bottom: var(--mobile-nav-height)
 
   > *
     min-width: 0
     flex-shrink: 0
+
+.left-pane
+  position: relative
+  left: 0
+  top: 0
+  height: 100%
+  display: flex
+  align-items: stretch
+  z-index: 30
+  transform: translateX(0)
+  transition: transform 0.2s ease, box-shadow 0.2s ease
+  flex-shrink: 0
+
+  &.collapsed
+    position: absolute
+    transform: translateX(-100%)
+    box-shadow: none
+    pointer-events: none
+
+  &.collapsed.open
+    transform: translateX(0)
+    box-shadow: 4px 0 20px rgba(0, 0, 0, 0.3)
+    pointer-events: auto
+
+  &.collapsed
+    .resizer
+      display: none
+
+.left-pane-slot
+  display: flex
+  height: 100%
+
+.left-pane-hover-bar
+  width: 10px
+  height: 100%
+  flex-shrink: 0
+  background-color: colors.$lighter-background
+  border-right: 1px solid colors.$lighter-background
+  cursor: pointer
+  opacity: 0.6
+  transition: opacity 0.15s ease, background-color 0.15s ease
+  display: none
+
+  &.active
+    display: block
+
+  &:hover
+    opacity: 1
+    background-color: colors.$gray
 
 .sidebar
   width: calc(5rem + 2px)
@@ -27,6 +115,16 @@ body, html
   overflow-y: auto
   > *
     height: 100%
+
+@media (max-width: $mobile)
+  .left-pane
+    position: static
+    transform: none
+    box-shadow: none
+    pointer-events: auto
+
+  .left-pane-hover-bar
+    display: none
 
 ::-webkit-scrollbar
   width: 13px

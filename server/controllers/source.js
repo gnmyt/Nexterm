@@ -234,12 +234,14 @@ module.exports.syncSource = async (sourceId) => {
                     name: parsed.name,
                     command: parsed.command,
                     description: parsed.description,
+                    osFilter: parsed.osFilter,
                 }, { where: { id: existing.id } });
             } else {
                 await Snippet.create({
                     name: parsed.name,
                     command: parsed.command,
                     description: parsed.description,
+                    osFilter: parsed.osFilter,
                     accountId: null,
                     organizationId: null,
                     sourceId,
@@ -281,12 +283,14 @@ module.exports.syncSource = async (sourceId) => {
                     name: parsed.name,
                     content: parsed.content,
                     description: parsed.description,
+                    osFilter: parsed.osFilter,
                 }, { where: { id: existing.id } });
             } else {
                 await Script.create({
                     name: parsed.name,
                     content: parsed.content,
                     description: parsed.description,
+                    osFilter: parsed.osFilter,
                     accountId: null,
                     organizationId: null,
                     sourceId,
@@ -357,6 +361,7 @@ const parseSnippetContent = (content, defaultName) => {
     const lines = content.split("\n");
     let name = defaultName;
     let description = "";
+    let osFilter = [];
     const commandLines = [];
 
     for (const line of lines) {
@@ -372,6 +377,12 @@ const parseSnippetContent = (content, defaultName) => {
             continue;
         }
 
+        const osLine = line.match(/^#\s*@os:\s*(.+)$/i);
+        if (osLine) {
+            osFilter = osLine[1].split(',').map(s => s.trim()).filter(Boolean);
+            continue;
+        }
+
         if (line.startsWith("#") && commandLines.length === 0) {
             continue;
         }
@@ -383,6 +394,7 @@ const parseSnippetContent = (content, defaultName) => {
         name,
         command: commandLines.join("\n").trim(),
         description,
+        osFilter: osFilter.length > 0 ? osFilter : null,
     };
 };
 
@@ -390,6 +402,7 @@ const parseScriptContent = (content, defaultName) => {
     const lines = content.split("\n");
     let name = defaultName;
     let description = "";
+    let osFilter = [];
 
     for (const line of lines) {
         const nameLine = line.match(/^#\s*@name:\s*(.+)$/i);
@@ -401,11 +414,19 @@ const parseScriptContent = (content, defaultName) => {
         const descLine = line.match(/^#\s*@description:\s*(.+)$/i);
         if (descLine) {
             description = descLine[1].trim();
-            break;
+            continue;
         }
+
+        const osLine = line.match(/^#\s*@os:\s*(.+)$/i);
+        if (osLine) {
+            osFilter = osLine[1].split(',').map(s => s.trim()).filter(Boolean);
+            continue;
+        }
+
+        if (!line.startsWith("#")) break;
     }
 
-    return { name, content: content, description };
+    return { name, content, description, osFilter: osFilter.length > 0 ? osFilter : null };
 };
 
 module.exports.ensureDefaultSource = async () => {

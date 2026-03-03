@@ -13,6 +13,12 @@ export const FolderObject = ({ id, name, nestedLevel, position, onClick, isOpen,
     const { loadServers } = useContext(ServerContext);
     const [nameState, setNameState] = useState(name || "");
 
+    useEffect(() => {
+        if (!renameState) {
+            setNameState(name || "");
+        }
+    }, [name, renameState]);
+
     const [{ opacity }, dragRef] = useDrag({
         type: "folder",
         item: { type: "folder", id, position },

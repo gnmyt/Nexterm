@@ -2,9 +2,10 @@ import { useSnippets } from "@/common/contexts/SnippetContext.jsx";
 import { useState, useRef, useEffect, useMemo } from "react";
 import { createPortal } from "react-dom";
 import "./styles.sass";
-import { mdiMagnify, mdiCloudDownloadOutline } from "@mdi/js";
+import { mdiMagnify, mdiCloudDownloadOutline, mdiLinux } from "@mdi/js";
 import Icon from "@mdi/react";
 import { getRequest } from "@/common/utils/RequestUtil.js";
+import { parseOsFilter, matchesOsFilter, normalizeOsName } from "@/common/utils/osUtils.js";
 
 export const SnippetsMenu = ({ onSelect, onClose, visible, activeSession }) => {
     const { allSnippets } = useSnippets();
@@ -16,6 +17,9 @@ export const SnippetsMenu = ({ onSelect, onClose, visible, activeSession }) => {
     const searchRef = useRef(null);
     const menuRef = useRef(null);
     const snippetRefs = useRef([]);
+
+    const serverOsName = normalizeOsName(activeSession?.osName);
+    const isPveEntry = activeSession?.server?.type?.startsWith('pve-');
 
     useEffect(() => {
         const fetchSourceSnippets = async () => {
@@ -38,8 +42,10 @@ export const SnippetsMenu = ({ onSelect, onClose, visible, activeSession }) => {
             (sessionOrgId && snippet.organizationId === sessionOrgId),
         );
 
-        return [...filteredUserSnippets, ...sourceSnippets];
-    }, [allSnippets, activeSession?.organizationId, sourceSnippets]);
+        const allAvailable = [...filteredUserSnippets, ...sourceSnippets];
+        
+        return allAvailable.filter(snippet => matchesOsFilter(snippet.osFilter, serverOsName, isPveEntry));
+    }, [allSnippets, activeSession?.organizationId, sourceSnippets, serverOsName, isPveEntry]);
 
     const filteredSnippets = () => {
         if (!availableSnippets || availableSnippets.length === 0) return [];
@@ -191,10 +197,23 @@ export const SnippetsMenu = ({ onSelect, onClose, visible, activeSession }) => {
                                 >
                                     <div className="snippets-menu__item-header">
                                         <h4 className="snippets-menu__item-name">{snippet.name}</h4>
-                                        {snippet.sourceId && (
-                                            <Icon path={mdiCloudDownloadOutline} size={0.65}
-                                                  className="snippets-menu__source-badge" />
-                                        )}
+                                        {(() => {
+                                            const osFilter = parseOsFilter(snippet.osFilter);
+                                            return (
+                                                <div className="snippets-menu__item-badges">
+                                                    {osFilter.length > 0 && (
+                                                        <span className="snippets-menu__os-badge" title={osFilter.join(", ")}>
+                                                            <Icon path={mdiLinux} size={0.5} />
+                                                            {osFilter.length === 1 ? osFilter[0] : `${osFilter.length} OS`}
+                                                        </span>
+                                                    )}
+                                                    {snippet.sourceId && (
+                                                        <Icon path={mdiCloudDownloadOutline} size={0.65}
+                                                              className="snippets-menu__source-badge" />
+                                                    )}
+                                                </div>
+                                            );
+                                        })()}
                                     </div>
                                     {snippet.description && (
                                         <p className="snippets-menu__item-description">{snippet.description}</p>

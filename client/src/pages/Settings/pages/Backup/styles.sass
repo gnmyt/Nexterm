@@ -1,0 +1,383 @@
+@use "@/common/styles/colors"
+
+$mobile: 768px
+
+.backup-page
+  display: flex
+  flex-direction: column
+  margin-top: 1rem
+  gap: 2rem
+
+.backup-loading
+  padding: 2rem
+  text-align: center
+  color: colors.$subtext
+
+.settings-section
+  p
+    color: colors.$subtext
+
+  > h2
+    margin: 0 0 0.5rem 0
+    color: colors.$white
+    font-size: 1.25rem
+
+    @media (max-width: $mobile)
+      font-size: 1.1rem
+
+  > h3
+    margin: 1.5rem 0 1rem 0
+    color: colors.$white
+    font-size: 1rem
+    font-weight: 600
+
+  .section-header
+    display: flex
+    justify-content: space-between
+    align-items: flex-start
+    margin-bottom: 1rem
+
+    @media (max-width: $mobile)
+      flex-direction: column
+      gap: 0.75rem
+
+    .header-content
+      h2
+        margin: 0 0 0.5rem 0
+        font-size: 1.3rem
+
+        @media (max-width: $mobile)
+          font-size: 1.15rem
+
+      p
+        margin: 0
+        font-size: 0.9rem
+
+        @media (max-width: $mobile)
+          font-size: 0.85rem
+
+.storage-grid
+  display: grid
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr))
+  gap: 0.75rem
+
+  @media (max-width: $mobile)
+    grid-template-columns: repeat(2, 1fr)
+
+.backup-options
+  display: flex
+  gap: 1rem
+  margin-bottom: 1rem
+
+  @media (max-width: $mobile)
+    flex-direction: column
+
+  .option-group
+    display: flex
+    flex-direction: column
+    gap: 0.25rem
+    flex: 1
+
+    label
+      color: colors.$subtext
+      font-size: 0.85rem
+
+.backup-includes
+  display: flex
+  align-items: center
+  gap: 0.75rem
+  flex-wrap: wrap
+  padding: 0.75rem 0
+  border-bottom: 1px solid colors.$gray
+
+  .includes-label
+    color: colors.$subtext
+    font-size: 0.85rem
+    margin-right: 0.25rem
+
+.storage-card
+  background-color: colors.$lighter-background
+  border: 1px solid colors.$dark-gray
+  border-radius: 0.75rem
+  padding: 1rem
+  display: flex
+  align-items: center
+  gap: 0.75rem
+  transition: border-color 0.15s ease, background-color 0.15s ease
+
+  &.clickable
+    cursor: pointer
+
+    &:hover
+      border-color: colors.$primary
+      background-color: rgba(colors.$primary, 0.05)
+
+      .action-icon
+        opacity: 1
+
+  .storage-icon
+    width: 1.75rem
+    height: 1.75rem
+    color: colors.$primary
+    opacity: 0.9
+
+  .storage-info
+    flex: 1
+
+    h4
+      margin: 0
+      color: colors.$subtext
+      font-size: 0.8rem
+      font-weight: 500
+
+    .storage-size
+      color: colors.$white
+      font-size: 1.1rem
+      font-weight: 600
+
+  .action-icon
+    width: 1.25rem
+    height: 1.25rem
+    color: colors.$subtext
+    opacity: 0.4
+    transition: opacity 0.15s ease
+
+.settings-actions
+  display: flex
+  justify-content: flex-end
+  margin-top: 0.5rem
+  padding-top: 1rem
+  border-top: 1px solid colors.$gray
+
+.vertical-list
+  display: flex
+  flex-direction: column
+  gap: 0.75rem
+
+.item
+  display: flex
+  align-items: center
+  justify-content: space-between
+  background-color: colors.$lighter-background
+  border: 1px solid colors.$dark-gray
+  border-radius: 0.75rem
+  padding: 1.25rem
+  transition: border-color 0.1s ease
+
+  @media (max-width: $mobile)
+    flex-direction: column
+    align-items: flex-start
+    gap: 0.75rem
+    padding: 1rem
+
+  &:hover
+    border-color: colors.$gray
+
+  &.clickable
+    cursor: pointer
+
+  &.expanded
+    border-bottom-left-radius: 0
+    border-bottom-right-radius: 0
+    border-bottom-color: transparent
+
+  .left-section
+    display: flex
+    align-items: center
+    gap: 1rem
+
+    @media (max-width: $mobile)
+      width: 100%
+
+    .icon
+      display: flex
+      align-items: center
+      justify-content: center
+      width: 2.5rem
+      height: 2.5rem
+      border-radius: 0.5rem
+      flex-shrink: 0
+
+      svg
+        width: 1.25rem
+        height: 1.25rem
+
+      &.primary
+        background-color: colors.$primary-opacity
+        svg
+          color: colors.$primary
+
+    .details
+      h3
+        margin: 0
+        font-size: 1rem
+        font-weight: 600
+
+      p
+        margin: 0.375rem 0 0
+        color: colors.$subtext
+        font-size: 0.85rem
+
+  .right-section
+    display: flex
+    align-items: center
+    gap: 0.25rem
+
+    @media (max-width: $mobile)
+      width: 100%
+      justify-content: flex-end
+
+.provider-backups
+  background-color: colors.$lighter-background
+  border: 1px solid colors.$dark-gray
+  border-top: none
+  border-bottom-left-radius: 0.75rem
+  border-bottom-right-radius: 0.75rem
+  padding: 1.25rem
+  animation: slideDown 0.15s ease-out
+
+  h4
+    margin: 0 0 1rem 0
+    color: colors.$white
+    font-size: 0.95rem
+    font-weight: 600
+
+  .backup-loading-inline, .no-backups-inline
+    display: flex
+    align-items: center
+    justify-content: center
+    gap: 0.5rem
+    padding: 1.5rem
+    color: colors.$subtext
+    font-size: 0.9rem
+
+    svg
+      width: 1.25rem
+      height: 1.25rem
+
+  .backup-list
+    display: flex
+    flex-direction: column
+    gap: 0.5rem
+
+  .backup-item
+    display: flex
+    justify-content: space-between
+    align-items: center
+    padding: 0.75rem 1rem
+    background-color: colors.$background
+    border: 1px solid colors.$dark-gray
+    border-radius: 0.5rem
+
+    @media (max-width: $mobile)
+      flex-direction: column
+      align-items: flex-start
+      gap: 0.75rem
+
+    .backup-left
+      display: flex
+      align-items: center
+      gap: 0.75rem
+
+    .backup-icon
+      display: flex
+      align-items: center
+      justify-content: center
+      width: 2rem
+      height: 2rem
+      border-radius: 0.375rem
+      background-color: colors.$primary-opacity
+      flex-shrink: 0
+
+      svg
+        width: 1rem
+        height: 1rem
+        color: colors.$primary
+
+    .backup-info
+      display: flex
+      flex-direction: column
+      gap: 0.125rem
+
+      .backup-name
+        color: colors.$white
+        font-size: 0.875rem
+        font-weight: 500
+
+      .backup-meta
+        color: colors.$subtext
+        font-size: 0.75rem
+
+    @media (max-width: $mobile)
+      .btn
+        width: 100%
+
+@keyframes slideDown
+  from
+    opacity: 0
+    transform: translateY(-8px)
+  to
+    opacity: 1
+    transform: translateY(0)
+
+.no-providers
+  display: flex
+  flex-direction: column
+  align-items: center
+  justify-content: center
+  padding: 3rem 2rem
+  color: colors.$subtext
+  background-color: colors.$lighter-background
+  border: 1px solid colors.$dark-gray
+  border-radius: 0.75rem
+
+  @media (max-width: $mobile)
+    padding: 2rem 1rem
+
+  svg
+    width: 3rem
+    height: 3rem
+    margin-bottom: 1rem
+    opacity: 0.9
+
+  h3
+    margin: 0 0 0.5rem 0
+    color: colors.$white
+    font-size: 1.1rem
+
+  p
+    margin: 0
+    text-align: center
+    font-size: 0.9rem
+
+.provider-dialog
+  width: 26rem
+
+  @media (max-width: $mobile)
+    width: 100%
+
+  h2
+    margin: 0 0 1rem 0
+    font-size: 1.25rem
+
+  .dialog-content
+    display: flex
+    flex-direction: column
+    gap: 0.75rem
+    max-height: 55vh
+    overflow-y: auto
+
+  .form-group
+    display: flex
+    flex-direction: column
+    gap: 0.25rem
+
+    label
+      color: colors.$subtext
+      font-size: 0.85rem
+
+  .dialog-actions
+    display: flex
+    justify-content: flex-end
+    gap: 0.5rem
+    margin-top: 1rem

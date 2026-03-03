@@ -7,21 +7,27 @@ COPY vendor/guacamole-client/guacamole-common-js/ ./vendor/guacamole-client/guac
 WORKDIR /app/client
 
 COPY client/package.json client/yarn.lock ./
-RUN yarn install --frozen-lockfile --network-timeout 100000
+RUN for i in 1 2 3; do yarn install --frozen-lockfile --network-timeout 500000 && break || sleep 15; done
 
 COPY client/ .
 RUN yarn build
 
 FROM node:22-alpine AS server-builder
 
+ARG VERSION
+
 WORKDIR /app
 
 RUN apk add --no-cache \
     python3 py3-pip py3-setuptools \
-    make g++ gcc build-base
+    make g++ gcc build-base \
+    jq
 
 COPY package.json yarn.lock ./
-RUN yarn install --production --frozen-lockfile --network-timeout 100000
+RUN if [ -n "$VERSION" ]; then \
+        jq --arg v "$VERSION" '.version = $v' package.json > tmp.json && mv tmp.json package.json; \
+    fi
+RUN for i in 1 2 3; do yarn install --production --frozen-lockfile --network-timeout 500000 && break || sleep 15; done
 
 COPY server/ server/
 
@@ -30,7 +36,8 @@ FROM node:22-alpine AS guacd-builder
 RUN apk add --no-cache \
     cairo-dev jpeg-dev libpng-dev ossp-uuid-dev \
     pango-dev libvncserver-dev libwebp-dev openssl-dev freerdp2-dev \
-    libpulse libogg libc-dev libssh2-dev \
+    pulseaudio-dev libvorbis-dev libogg-dev libssh2-dev \
+    ffmpeg-dev \
     build-base autoconf automake libtool
 
 WORKDIR /build
@@ -53,10 +60,13 @@ FROM node:22-alpine
 RUN apk add --no-cache \
     cairo jpeg libpng ossp-uuid \
     pango libvncserver libwebp openssl freerdp2-libs \
-    libpulse libogg libssh2 util-linux
+    pulseaudio libvorbis libogg libssh2 \
+    ffmpeg-libavcodec ffmpeg-libavformat ffmpeg-libavutil ffmpeg-libswscale \
+    util-linux samba-client
 
 COPY --from=guacd-builder /install/usr/local/sbin/ /usr/local/sbin/
 COPY --from=guacd-builder /install/usr/local/lib/ /usr/local/lib/
+COPY --from=guacd-builder /install/usr/lib/freerdp2/ /usr/lib/freerdp2/
 
 RUN ldconfig /usr/local/lib 2>/dev/null || true
 

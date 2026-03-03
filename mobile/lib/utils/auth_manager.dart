@@ -26,26 +26,16 @@ class AuthManager extends ChangeNotifier {
     }
   }
 
-  Future<String?> login(String username, String password, {int? totpCode}) async {
-    try {
-      final response = await _authService.login(username, password, totpCode: totpCode);
-      if (response.isSuccess && response.token != null) {
-        _sessionToken = response.token;
-        _isAuthenticated = true;
+  Future<void> loginWithToken(String token) async {
+    _sessionToken = token;
+    _isAuthenticated = true;
 
-        final prefs = await SharedPreferences.getInstance();
-        await prefs.setBool('isLoggedIn', true);
-        await prefs.setString('sessionToken', response.token!);
-        await prefs.setString('username', username);
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool('isLoggedIn', true);
+    await prefs.setString('sessionToken', token);
 
-        _userInfo = await _authService.getCurrentUser(response.token!);
-        notifyListeners();
-        return null;
-      }
-      return response.totpRequired == true ? 'totp_required' : (response.error ?? 'Login failed');
-    } catch (e) {
-      return 'Connection error: $e';
-    }
+    _userInfo = await _authService.getCurrentUser(token);
+    notifyListeners();
   }
 
   Future<void> logout() async {

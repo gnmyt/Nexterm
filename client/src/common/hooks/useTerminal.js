@@ -1,26 +1,12 @@
 import { useEffect, useRef, useContext } from "react";
 import { UserContext } from "@/common/contexts/UserContext.jsx";
-import { useTheme } from "@/common/contexts/ThemeContext.jsx";
-import { useTerminalSettings } from "@/common/contexts/TerminalSettingsContext.jsx";
+import { usePreferences } from "@/common/contexts/PreferencesContext.jsx";
 import { Terminal as Xterm } from "@xterm/xterm";
 import { FitAddon } from "@xterm/addon-fit";
+import { getWebSocketUrl } from "@/common/utils/ConnectionUtil.js";
 
 export const buildTerminalWebSocketUrl = (sessionToken, session) => {
-    const protocol = location.protocol === "https:" ? "wss" : "ws";
-    const host = process.env.NODE_ENV === "production" 
-        ? `${window.location.host}/api/ws/term` 
-        : "localhost:6989/api/ws/term";
-
-    let wsUrl = `${protocol}://${host}?sessionToken=${sessionToken}&entryId=${session.server.id}&identityId=${session.identity}&sessionId=${session.id}`;
-    
-    if (session.connectionReason) {
-        wsUrl += `&connectionReason=${encodeURIComponent(session.connectionReason)}`;
-    }
-    if (session.scriptId) {
-        wsUrl += `&scriptId=${encodeURIComponent(session.scriptId)}`;
-    }
-    
-    return wsUrl;
+    return getWebSocketUrl("/api/ws/term", { sessionToken, sessionId: session.id });
 };
 
 export const createTerminalTheme = (appTheme, terminalTheme, selectedTheme) => {
@@ -66,8 +52,7 @@ export const useTerminal = (containerRef, session, options = {}) => {
     const fitAddonRef = useRef(null);
 
     const { sessionToken } = useContext(UserContext);
-    const { theme } = useTheme();
-    const { getCurrentTheme, selectedFont, fontSize, cursorStyle, cursorBlink, selectedTheme } = useTerminalSettings();
+    const { theme, getCurrentTheme, selectedFont, fontSize, cursorStyle, cursorBlink, selectedTheme, isOledMode } = usePreferences();
 
     useEffect(() => {
         if (!sessionToken || !containerRef.current) return;
@@ -156,7 +141,7 @@ export const useTerminal = (containerRef, session, options = {}) => {
             wsRef.current = null;
             fitAddonRef.current = null;
         };
-    }, [sessionToken, selectedFont, fontSize, cursorStyle, cursorBlink, selectedTheme]);
+    }, [sessionToken, selectedFont, fontSize, cursorStyle, cursorBlink, selectedTheme, isOledMode]);
 
     return { termRef, wsRef, fitAddonRef };
 };

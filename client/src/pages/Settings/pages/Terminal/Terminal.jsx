@@ -1,16 +1,44 @@
 import "./styles.sass";
-import { useTerminalSettings } from "@/common/contexts/TerminalSettingsContext.jsx";
+import { usePreferences } from "@/common/contexts/PreferencesContext.jsx";
 import SelectBox from "@/common/components/SelectBox";
-import { useState } from "react";
+import Button from "@/common/components/Button";
+import { useState, useContext } from "react";
 import { useTranslation } from "react-i18next";
+import { mdiCloudSync, mdiCloudOffOutline } from "@mdi/js";
+import { UserContext } from "@/common/contexts/UserContext.jsx";
+import { useToast } from "@/common/contexts/ToastContext.jsx";
 
 export const Terminal = () => {
     const { t } = useTranslation();
+    const { user } = useContext(UserContext);
+    const { sendToast } = useToast();
     const {
         selectedTheme, setSelectedTheme, selectedFont, setSelectedFont,
         fontSize, setFontSize, cursorStyle, setCursorStyle, cursorBlink, setCursorBlink,
         getAvailableThemes, getAvailableFonts, getTerminalTheme, getCursorStyles,
-    } = useTerminalSettings();
+        isGroupSynced, toggleGroupSync,
+    } = usePreferences();
+
+    const handleSyncToggle = (group, messageKey) => {
+        if (!user) {
+            sendToast(t("common.error"), t("settings.terminal.syncLoginRequired"));
+            return;
+        }
+        const wasSynced = isGroupSynced(group);
+        toggleGroupSync(group);
+        sendToast(
+            t("common.success"), 
+            wasSynced ? t(`settings.terminal.${messageKey}.syncDisabled`) : t(`settings.terminal.${messageKey}.syncEnabled`)
+        );
+    };
+
+    const renderSyncButton = (group) => (
+        <Button
+            icon={isGroupSynced(group) ? mdiCloudSync : mdiCloudOffOutline}
+            onClick={() => handleSyncToggle(group, group.split(".")[1])}
+            type={isGroupSynced(group) ? "primary" : undefined}
+        />
+    );
 
     const [previewText] = useState(t("settings.terminal.preview.text"));
     const themes = getAvailableThemes();
@@ -56,9 +84,12 @@ export const Terminal = () => {
         );
     };
 
-    const renderSection = (title, description, children) => (
+    const renderSection = (title, description, group, children) => (
         <div className="terminal-section">
-            <h2>{title}</h2>
+            <div className="section-header">
+                <h2>{title}</h2>
+                {renderSyncButton(group)}
+            </div>
             <div className="section-inner">
                 <p>{description}</p>
                 {children}
@@ -75,21 +106,21 @@ export const Terminal = () => {
 
     return (
         <div className="terminal-settings-page">
-            {renderSection(t("settings.terminal.font.title"), t("settings.terminal.font.description"), (
+            {renderSection(t("settings.terminal.font.title"), t("settings.terminal.font.description"), "terminal.font", (
                 <div className="font-settings">
                     {renderFontOption(t("settings.terminal.font.fontFamily"), fontOptions, selectedFont, setSelectedFont)}
                     {renderFontOption(t("settings.terminal.font.fontSize"), fontSizeOptions, fontSize, setFontSize)}
                 </div>
             ))}
 
-            {renderSection(t("settings.terminal.cursor.title"), t("settings.terminal.cursor.description"), (
+            {renderSection(t("settings.terminal.cursor.title"), t("settings.terminal.cursor.description"), "terminal.cursor", (
                 <div className="cursor-settings">
                     {renderFontOption(t("settings.terminal.cursor.cursorStyle"), cursorStyleOptions, cursorStyle, setCursorStyle)}
                     {renderFontOption(t("settings.terminal.cursor.cursorBlinking"), cursorBlinkOptions, cursorBlink.toString(), (value) => setCursorBlink(value === "true"))}
                 </div>
             ))}
 
-            {renderSection(t("settings.terminal.theme.title"), t("settings.terminal.theme.description"), (
+            {renderSection(t("settings.terminal.theme.title"), t("settings.terminal.theme.description"), "terminal.theme", (
                 <div className="theme-cards">
                     {themes.map((theme) => (
                         <div 

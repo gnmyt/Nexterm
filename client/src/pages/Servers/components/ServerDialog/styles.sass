@@ -135,39 +135,9 @@
 
   .server-dialog-tabs
     display: flex
-    gap: 0.375rem
-    padding: 0.375rem
-    background-color: colors.$lighter-background
-    border-radius: 0.75rem
-    border: 1px solid colors.$dark-gray
     
     &:empty
       display: none
-
-  .tabs-item
-    padding: 0.625rem 0.75rem
-    cursor: pointer
-    border-radius: 0.5rem
-    transition: background-color 0.1s ease
-    user-select: none
-    flex: 1
-    text-align: center
-
-    h3
-      margin: 0
-      font-weight: 600
-      font-size: 0.9rem
-      color: colors.$subtext
-      transition: color 0.1s ease
-
-    &:hover:not(.tabs-item-active)
-      background-color: colors.$gray
-
-  .tabs-item-active
-    background-color: colors.$gray
-
-    h3
-      color: colors.$white
 
   .identities
     display: flex
@@ -437,6 +407,9 @@
         grid-template-columns: 1fr 1fr
         gap: 0.625rem
 
+        &.single-column
+          grid-template-columns: 1fr
+
       .form-group
         display: flex
         flex-direction: column
@@ -447,7 +420,7 @@
           color: colors.$subtext
           font-weight: 600
 
-  .monitoring-toggle-container
+  .settings-toggle
     display: flex
     justify-content: flex-start
     align-items: center
@@ -461,18 +434,18 @@
     &:hover
       background-color: colors.$dark-gray
 
-    .monitoring-toggle-info
+    .settings-toggle-info
       display: flex
       flex-direction: column
       gap: 0.25rem
       flex: 1
 
-      .monitoring-label
+      .settings-toggle-label
         font-weight: 700
         font-size: 0.95rem
         color: colors.$white
 
-      .monitoring-description
+      .settings-toggle-description
         font-size: 0.8rem
         color: colors.$subtext
 
@@ -505,11 +478,36 @@
     border: 1px solid colors.$gray
     padding: 0.75rem
     border-radius: 0.75rem
-    margin-bottom: 1rem
+    margin-bottom: 0.5rem
     transition: background-color 0.1s ease
 
     &:hover
       background-color: colors.$dark-gray
+
+    .terminal-settings-grid
+      display: grid
+      grid-template-columns: repeat(3, 1fr)
+      gap: 0.5rem
+
+      .form-group
+        display: flex
+        flex-direction: column
+        gap: 0.375rem
+
+        label
+          font-size: 0.75rem
+          color: colors.$subtext
+          font-weight: 600
+
+    .settings-toggle
+      border: none
+      padding: 0.5rem 0
+
+      &:hover
+        background-color: transparent
+
+      .settings-toggle-label
+        font-size: 0.875rem
 
     .jump-hosts-header
       margin-bottom: 0.625rem

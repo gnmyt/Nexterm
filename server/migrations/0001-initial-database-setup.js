@@ -320,7 +320,7 @@ module.exports = {
                 },
                 accountId: {
                     type: DataTypes.INTEGER,
-                    allowNull: false,
+                    allowNull: true,
                 },
                 command: {
                     type: DataTypes.TEXT,

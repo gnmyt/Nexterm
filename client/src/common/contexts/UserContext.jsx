@@ -1,14 +1,19 @@
 import { createContext, useEffect, useState } from "react";
 import LoginDialog from "@/common/components/LoginDialog";
+import ConnectorSetup from "@/common/components/ConnectorSetup";
 import { getRequest, postRequest } from "@/common/utils/RequestUtil.js";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useToast } from "@/common/contexts/ToastContext.jsx";
+import { isTauri, getActiveServerUrl } from "@/common/utils/TauriUtil.js";
 
 export const UserContext = createContext({});
 
 export const UserProvider = ({ children }) => {
     const location = useLocation();
     const navigate = useNavigate();
+
+    const isConnectorMode = isTauri();
+    const hasActiveServer = !!getActiveServerUrl();
 
     const [sessionToken, setSessionToken] = useState(localStorage.getItem("overrideToken")
         || localStorage.getItem("sessionToken"));
@@ -23,6 +28,8 @@ export const UserProvider = ({ children }) => {
     };
 
     const checkFirstTimeSetup = async () => {
+        if (isConnectorMode && !hasActiveServer) return;
+
         try {
             const response = await getRequest("service/is-fts");
             setFirstTimeSetup(response);
@@ -32,6 +39,8 @@ export const UserProvider = ({ children }) => {
     };
 
     const login = async () => {
+        if (isConnectorMode && !hasActiveServer) return;
+        
         try {
             const userObj = await getRequest("accounts/me");
             setUser(userObj);
@@ -74,12 +83,18 @@ export const UserProvider = ({ children }) => {
     }, [location]);
 
     useEffect(() => {
+        if (isConnectorMode && !hasActiveServer) return;
+
         sessionToken ? login() : checkFirstTimeSetup();
-    }, []);
+    }, [sessionToken]);
 
     return (
         <UserContext.Provider value={{ updateSessionToken, user, sessionToken, firstTimeSetup, login, logout, overrideToken }}>
-            <LoginDialog open={!sessionToken} />
+            {isConnectorMode ? (
+                <ConnectorSetup open={!sessionToken} />
+            ) : (
+                <LoginDialog open={!sessionToken} />
+            )}
             {children}
         </UserContext.Provider>
     );

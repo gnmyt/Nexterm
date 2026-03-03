@@ -7,8 +7,11 @@ hero:
   tagline: The open source server management software for SSH, VNC & RDP
   actions:
     - theme: brand
-      text: Run preview
-      link: /preview
+      text: Install
+      link: /installation
+    - theme: alt
+      text: Screenshots
+      link: /screenshots
     - theme: alt
       text: GitHub
       link: https://github.com/gnmyt/Nexterm
@@ -17,9 +20,9 @@ hero:
     alt: MySpeed
 
 features:
-  - icon: 👀
-    title: Open Preview
-    details: Nexterm is currently in development and is open for preview. 
+  - icon: 📊
+    title: Monitoring
+    details: Real-time server monitoring with CPU, memory, and process metrics at a glance.
   - icon: 🔒
     title: Secure
     details: Two-factor authentication, session management and encryption built-in.
@@ -35,13 +38,14 @@ features:
   - icon: 📜
     title: Scripts
     details: Automate repetitive tasks with customizable scripts.
+    link: /scripts&snippets
+    linkText: Learn more
 
 ---
 
 <style>
 :root {
   --vp-home-hero-name-color: #314BD3;
-
   --vp-home-hero-image-background-image: linear-gradient(rgba(49,75,211,0.25), rgba(49,75,211,0.25));
   --vp-home-hero-image-filter: blur(100px);
 }

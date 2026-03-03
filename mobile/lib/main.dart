@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'screens/login_screen.dart';
+import 'screens/device_setup_screen.dart';
 import 'screens/main_navigation_page.dart';
 import 'services/api_config.dart';
 import 'utils/theme_manager.dart';
@@ -95,6 +95,6 @@ class _MyAppState extends State<MyApp> {
             authManager: _authManager,
             snippetManager: _snippetManager,
           )
-        : LoginScreen(authManager: _authManager);
+        : DeviceSetupScreen(authManager: _authManager);
   }
 }

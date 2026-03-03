@@ -1,72 +1,92 @@
 const { updateAuditLogWithSessionDuration } = require("../controllers/audit");
 const SessionManager = require("../lib/SessionManager");
-const { parseResizeMessage, setupSSHEventHandlers } = require("../utils/sshEventHandlers");
+const { parseResizeMessage } = require("../utils/sshEventHandlers");
+const { translateKeys } = require("../utils/keyTranslation");
+const { SCRIPT_MAGIC } = require("../lib/ScriptLayer");
 
-const setupStreamHandlers = (ws, stream) => {
-    const onData = (data) => {
-        if (ws.readyState === ws.OPEN) {
-            ws.send(data.toString());
+const setupHandlers = (ws, stream, sessionId, config, scriptLayer, isShared = false) => {
+    if (scriptLayer) scriptLayer.createMessageHandler(ws);
+
+    const msgHandler = (data) => {
+        if (isShared && !SessionManager.get(sessionId)?.shareWritable) return;
+
+        const msg = data.toString();
+        const resize = parseResizeMessage(msg);
+        if (resize) {
+            if (!sessionId || SessionManager.isActiveWs(sessionId, ws)) {
+                stream.setWindow(resize.height, resize.width);
+                if (sessionId) SessionManager.recordResize(sessionId, resize.width, resize.height);
+            }
+            return;
+        }
+        if (scriptLayer && msg.startsWith(SCRIPT_MAGIC)) return;
+        if (sessionId) SessionManager.setActiveWs(sessionId, ws);
+        stream.write(translateKeys(data, config));
+    };
+    ws.on("message", msgHandler);
+
+    const dataHandler = (data) => ws.readyState === ws.OPEN && ws.send(data.toString());
+    stream.on("data", dataHandler);
+
+    return { msgHandler, dataHandler };
+};
+
+const handleAttach = (ws, ctx) => {
+    const { serverSession, entry } = ctx;
+    const conn = SessionManager.getConnection(serverSession.sessionId);
+    if (!conn?.stream) return ws.close(4014, "Session not connected");
+
+    const { stream, scriptLayer, auditLogId } = conn;
+    const startTime = Date.now();
+
+    const logs = SessionManager.getLogBuffer(serverSession.sessionId);
+    if (logs && ws.readyState === ws.OPEN) ws.send(logs);
+
+    SessionManager.addWebSocket(serverSession.sessionId, ws);
+    SessionManager.setActiveWs(serverSession.sessionId, ws);
+
+    const { msgHandler, dataHandler } = setupHandlers(ws, stream, serverSession.sessionId, entry?.config, scriptLayer);
+
+    const onResize = (data) => {
+        const r = parseResizeMessage(data);
+        if (r) {
+            stream.setWindow(r.height - 1, r.width);
+            setTimeout(() => stream.setWindow(r.height, r.width), 50);
+            ws.removeListener("message", onResize);
         }
     };
-    stream.on("data", onData);
+    ws.on("message", onResize);
 
-    ws.on("message", (data) => {
-        const resize = parseResizeMessage(data);
-        if (resize) {
-            stream.setWindow(resize.height, resize.width);
-        } else {
-            stream.write(data);
-        }
+    ws.on("close", async () => {
+        stream.removeListener("data", dataHandler);
+        ws.removeListener("message", msgHandler);
+        ws.removeListener("message", onResize);
+        if (scriptLayer) scriptLayer.removeMessageHandler(ws);
+        SessionManager.removeWebSocket(serverSession.sessionId, ws);
+        await updateAuditLogWithSessionDuration(auditLogId, startTime);
     });
-
-    return onData;
 };
 
-module.exports = async (ws, context) => {
-    const { auditLogId, serverSession } = context;
-    let { ssh } = context;
-    const connectionStartTime = Date.now();
+const handleShared = (ws, ctx) => {
+    const { serverSession, entry } = ctx;
+    const conn = SessionManager.getConnection(serverSession.sessionId);
+    if (!conn?.stream) return ws.close(4014, "Session not connected");
 
-    let existingConnection = null;
-    if (serverSession) existingConnection = SessionManager.getConnection(serverSession.sessionId);
+    const { stream, scriptLayer } = conn;
+    const logs = SessionManager.getLogBuffer(serverSession.sessionId);
+    if (logs && ws.readyState === ws.OPEN) ws.send(logs);
 
-    if (existingConnection) {
-        ssh = existingConnection.ssh;
-        const stream = existingConnection.stream;
+    SessionManager.addWebSocket(serverSession.sessionId, ws, true);
+    if (serverSession.shareWritable) SessionManager.setActiveWs(serverSession.sessionId, ws);
 
-        const onData = setupStreamHandlers(ws, stream);
+    const { msgHandler, dataHandler } = setupHandlers(ws, stream, serverSession.sessionId, entry?.config, scriptLayer, true);
 
-        ws.on("close", () => {
-            stream.removeListener("data", onData);
-        });
-
-        return;
-    }
-
-    ssh.on("ready", () => {
-        ssh.shell({ term: "xterm-256color" }, (err, stream) => {
-            if (err) {
-                ws.close(4008, `Shell error: ${err.message}`);
-                return;
-            }
-
-            if (serverSession) {
-                SessionManager.setConnection(serverSession.sessionId, { ssh, stream, auditLogId });
-            }
-
-            const onData = setupStreamHandlers(ws, stream);
-
-            ws.on("close", async () => {
-                stream.removeListener("data", onData);
-                await updateAuditLogWithSessionDuration(auditLogId, connectionStartTime);
-            });
-
-            stream.on("close", () => {
-                ws.close();
-                if (serverSession) SessionManager.remove(serverSession.sessionId);
-            });
-        });
+    ws.on("close", () => {
+        stream.removeListener("data", dataHandler);
+        ws.removeListener("message", msgHandler);
+        if (scriptLayer) scriptLayer.removeMessageHandler(ws);
+        SessionManager.removeWebSocket(serverSession.sessionId, ws, true);
     });
-
-    setupSSHEventHandlers(ssh, ws, { auditLogId, serverSession, connectionStartTime });
 };
+
+module.exports = async (ws, ctx) => ctx.isShared ? handleShared(ws, ctx) : handleAttach(ws, ctx);

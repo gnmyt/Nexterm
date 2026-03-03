@@ -18,10 +18,8 @@ class ApiConfig {
     _baseUrl = url;
   }
 
-  static const String login = '/auth/login';
   static const String logout = '/auth/logout';
-  static const String register = '/account/register';
-  static const String me = '/account/me';
+  static const String me = '/accounts/me';
   static const String isFirstTimeSetup = '/service/is-fts';
   static const String sessionList = '/sessions/list';
   static String sessionRevoke(String id) => '/sessions/$id';

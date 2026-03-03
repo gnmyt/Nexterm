@@ -1,8 +1,7 @@
 import { useEffect, useState } from "react";
 import { DialogProvider } from "@/common/components/Dialog";
 import { useToast } from "@/common/contexts/ToastContext.jsx";
-import IconInput from "@/common/components/IconInput";
-import { mdiAccount } from "@mdi/js";
+import UserSearch from "@/common/components/UserSearch";
 import Button from "@/common/components/Button";
 import { postRequest } from "@/common/utils/RequestUtil.js";
 import "./styles.sass";
@@ -48,8 +47,14 @@ export const InviteMemberDialog = ({ open, onClose, organization, refreshMembers
                 <form onSubmit={handleInvite}>
                     <div className="form-group">
                         <label htmlFor="username">Username</label>
-                        <IconInput icon={mdiAccount} id="username" placeholder="Enter username"
-                                   value={username} setValue={setUsername} required />
+                        <UserSearch 
+                            id="invite-username"
+                            value={username}
+                            onChange={setUsername}
+                            onSelect={(user) => setUsername(user.username)}
+                            placeholder="Search for a user to invite..."
+                            required
+                        />
                     </div>
 
                     <div className="dialog-actions">

@@ -6,7 +6,7 @@ import { mdiFormTextbox, mdiSend, mdiClose, mdiFormTextboxPassword, mdiLock } fr
 import Icon from "@mdi/react";
 import "./InputDialog.sass";
 
-const InputDialog = ({ open, onSubmit, prompt }) => {
+const InputDialog = ({ open, onSubmit, onCancel, prompt }) => {
     const [inputValue, setInputValue] = useState("");
 
     useEffect(() => {
@@ -22,15 +22,22 @@ const InputDialog = ({ open, onSubmit, prompt }) => {
         if (e.key === "Enter") handleSubmit();
     };
 
+    const handleCancel = () => {
+        setInputValue("");
+        onCancel?.();
+    };
+
     const selectOption = (option) => onSubmit(option);
 
     if (!prompt) return null;
+
+    const promptType = prompt.inputType || prompt.type || "input";
 
     return (
         <DialogProvider open={open} onClose={() => {}} disableClosing={true}>
             <div className="input-dialog">
                 <div className="dialog-title">
-                    <Icon path={prompt.type === "password" ? mdiFormTextboxPassword : mdiFormTextbox} />
+                    <Icon path={promptType === "password" ? mdiFormTextboxPassword : mdiFormTextbox} />
                     <h2>Input Required</h2>
                 </div>
 
@@ -39,32 +46,34 @@ const InputDialog = ({ open, onSubmit, prompt }) => {
                         {prompt.prompt}
                     </div>
 
-                    {prompt.type === "select" ? (
+                    {promptType === "select" ? (
                         <div className="form-group">
                             <label>Select an option</label>
                             <div className="options-container">
                                 {prompt.options.map((option, index) => (
                                     <Button key={index} text={option} onClick={() => selectOption(option)} type="secondary" />
                                 ))}
+                                <Button text="Cancel" icon={mdiClose} onClick={handleCancel} type="secondary" className="cancel-btn" />
                             </div>
                         </div>
-                    ) : prompt.type === "confirm" ? (
+                    ) : promptType === "confirm" ? (
                         <div className="form-group">
                             <label>Confirm action</label>
                             <div className="confirm-actions">
                                 <Button text="Yes" icon={mdiSend} onClick={() => selectOption("Yes")} />
                                 <Button text="No" icon={mdiClose} onClick={() => selectOption("No")} type="secondary" />
+                                <Button text="Cancel" icon={mdiClose} onClick={handleCancel} type="secondary" />
                             </div>
                         </div>
                     ) : (
                         <div className="form-group">
                             <label>Enter value</label>
                             <IconInput
-                                type={prompt.type === "password" ? "password" : "text"}
-                                icon={prompt.type === "password" ? mdiLock : mdiFormTextbox}
+                                type={promptType === "password" ? "password" : "text"}
+                                icon={promptType === "password" ? mdiLock : mdiFormTextbox}
                                 value={inputValue}
                                 setValue={setInputValue}
-                                placeholder={prompt.type === "password" ? "Enter password..." : (prompt.default || "Enter value...")}
+                                placeholder={promptType === "password" ? "Enter password..." : (prompt.default || "Enter value...")}
                                 onKeyDown={handleKeyDown}
                                 autoFocus
                             />
@@ -72,10 +81,11 @@ const InputDialog = ({ open, onSubmit, prompt }) => {
                     )}
                 </div>
 
-                {(prompt.type !== "select" && prompt.type !== "confirm") && (
+                {(promptType !== "select" && promptType !== "confirm") && (
                     <div className="dialog-actions">
+                        <Button onClick={handleCancel} text="Cancel" icon={mdiClose} type="secondary" />
                         <Button onClick={handleSubmit} text="Submit" icon={mdiSend}
-                                disabled={prompt.type === "password" ? !inputValue : !inputValue.trim()} />
+                                disabled={promptType === "password" ? !inputValue : !inputValue.trim()} />
                     </div>
                 )}
             </div>

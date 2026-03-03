@@ -1,0 +1,1 @@
+export { ErrorBoundary, RouteErrorPage } from "./ErrorBoundary.jsx";

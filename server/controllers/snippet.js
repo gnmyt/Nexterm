@@ -1,5 +1,6 @@
 const Snippet = require("../models/Snippet");
 const { Op } = require("sequelize");
+const stateBroadcaster = require("../lib/StateBroadcaster");
 
 const getWhereClause = (id, accountId, organizationId) => organizationId 
     ? { id, organizationId } 
@@ -11,11 +12,15 @@ module.exports.createSnippet = async (accountId, configuration) => {
             ? { organizationId: configuration.organizationId }
             : { accountId, organizationId: null, sourceId: null }
     }) || 0;
-    return Snippet.create({ 
+    const snippet = await Snippet.create({ 
         ...configuration, 
         accountId: configuration.organizationId ? null : accountId,
         sortOrder: maxSortOrder + 1 
     });
+
+    stateBroadcaster.broadcast("SNIPPETS", { accountId, organizationId: configuration.organizationId });
+
+    return snippet;
 };
 
 module.exports.deleteSnippet = async (accountId, snippetId, organizationId = null) => {
@@ -23,6 +28,8 @@ module.exports.deleteSnippet = async (accountId, snippetId, organizationId = nul
     if (!snippet) return { code: 404, message: "Snippet does not exist" };
     if (snippet.sourceId) return { code: 403, message: "Cannot delete source-synced snippets" };
     await Snippet.destroy({ where: { id: snippetId } });
+
+    stateBroadcaster.broadcast("SNIPPETS", { accountId, organizationId: snippet.organizationId });
 };
 
 module.exports.editSnippet = async (accountId, snippetId, configuration, organizationId = null) => {
@@ -31,6 +38,8 @@ module.exports.editSnippet = async (accountId, snippetId, configuration, organiz
     if (snippet.sourceId) return { code: 403, message: "Cannot edit source-synced snippets" };
     const { organizationId: _, accountId: __, ...updateData } = configuration;
     await Snippet.update(updateData, { where: { id: snippetId } });
+
+    stateBroadcaster.broadcast("SNIPPETS", { accountId, organizationId: snippet.organizationId });
 };
 
 module.exports.repositionSnippet = async (accountId, snippetId, { targetId }, organizationId = null) => {
@@ -49,6 +58,9 @@ module.exports.repositionSnippet = async (accountId, snippetId, { targetId }, or
     
     all.splice(tgtIdx, 0, all.splice(srcIdx, 1)[0]);
     await Promise.all(all.map((s, i) => Snippet.update({ sortOrder: i + 1 }, { where: { id: s.id } })));
+
+    stateBroadcaster.broadcast("SNIPPETS", { accountId, organizationId: snippet.organizationId });
+
     return { success: true };
 };
 

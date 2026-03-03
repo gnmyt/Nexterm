@@ -1,19 +1,28 @@
 @use "@/common/styles/colors"
 
+$mobile: 768px
+$tablet: 1024px
+
 .create-script-dialog
   display: flex
   flex-direction: column
   width: min(90vw, 1200px)
   max-width: 100%
-  max-height: 85vh
+  max-height: 80vh
   overflow: hidden
   user-select: none
   gap: 1rem
   box-sizing: border-box
+
+  @media (max-width: $mobile)
+    width: 100%
+    max-height: 85vh
+    gap: 0.75rem
   
   .dialog-header
     padding-bottom: 0.75rem
     border-bottom: 1px solid colors.$gray
+    flex-shrink: 0
     
     h2
       margin: 0 0 0.25rem 0
@@ -25,17 +34,27 @@
       align-items: center
       gap: 0.625rem
 
+      @media (max-width: $mobile)
+        font-size: 1rem
+
       svg
         width: 1.25rem
         height: 1.25rem
         color: colors.$primary
         opacity: 0.95
+
+        @media (max-width: $mobile)
+          width: 1.125rem
+          height: 1.125rem
     
     p
       margin: 0
       color: colors.$subtext
       font-size: 0.85rem
       line-height: 1.4
+
+      @media (max-width: $mobile)
+        font-size: 0.8rem
 
   .dialog-body
     display: flex
@@ -50,6 +69,9 @@
     margin-right: -0.25rem
     scrollbar-width: thin
     scrollbar-color: colors.$gray transparent
+
+    @media (max-width: $mobile)
+      gap: 0.75rem
 
     &::-webkit-scrollbar
       width: 4px
@@ -71,6 +93,11 @@
     border-radius: 0.75rem
     padding: 1rem
 
+    @media (max-width: $mobile)
+      padding: 0.75rem
+      gap: 0.75rem
+      border-radius: 0.625rem
+
     h3
       margin: 0
       font-size: 0.9rem
@@ -82,6 +109,10 @@
       letter-spacing: -0.01em
       padding-bottom: 0.75rem
       border-bottom: 1px solid rgba(255, 255, 255, 0.1)
+
+      @media (max-width: $mobile)
+        font-size: 0.85rem
+        padding-bottom: 0.625rem
 
       svg
         width: 1.125rem
@@ -98,6 +129,9 @@
         color: colors.$subtext
         font-weight: 500
 
+        @media (max-width: $mobile)
+          display: none
+
         svg
           width: 0.9rem
           height: 0.9rem
@@ -107,6 +141,12 @@
     display: grid
     grid-template-columns: 1fr 1fr
     gap: 1rem
+
+    @media (max-width: $tablet)
+      grid-template-columns: 1fr
+
+    @media (max-width: $mobile)
+      gap: 0.75rem
 
   .form-group
     display: flex
@@ -119,6 +159,9 @@
       font-size: 0.85rem
       letter-spacing: 0.01em
       opacity: 0.9
+
+      @media (max-width: $mobile)
+        font-size: 0.8rem
 
   .code-editor-container
     border: 1px solid rgba(255, 255, 255, 0.1)
@@ -140,25 +183,8 @@
     gap: 0.75rem
     padding-top: 0.75rem
     border-top: 1px solid colors.$dark-gray
+    flex-shrink: 0
 
-@media (max-width: 1024px)
-  .create-script-dialog
-    .form-row
-      grid-template-columns: 1fr
-
-@media (max-width: 768px)
-  .create-script-dialog
-    width: 95vw
-    max-height: 95vh
-
-    .dialog-header
-      h2
-        font-size: 1.2rem
-
-    .form-section
-      h3
-        .help-tip
-          display: none
-
-    .dialog-actions
-      flex-direction: column
+    @media (max-width: $mobile)
+      gap: 0.5rem
+      padding-top: 0.625rem

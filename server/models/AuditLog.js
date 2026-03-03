@@ -62,4 +62,17 @@ module.exports = db.define("audit_logs", {
     freezeTableName: true,
     createdAt: false,
     updatedAt: false,
+    hooks: {
+        afterFind: (result) => {
+            const parseDetails = (instance) => {
+                if (instance?.details && typeof instance.details === "string") {
+                    try {
+                        instance.details = JSON.parse(instance.details);
+                    } catch (e) {}
+                }
+            };
+            if (Array.isArray(result)) result.forEach(parseDetails);
+            else parseDetails(result);
+        }
+    }
 });

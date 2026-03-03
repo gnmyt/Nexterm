@@ -1,14 +1,15 @@
 const Entry = require("../models/Entry");
 const { checkServerStatus } = require("../hooks/status/portHook");
 const { checkPVEStatus } = require("../hooks/status/pveHook");
+const { getMonitoringSettingsInternal } = require("../controllers/monitoring");
 const logger = require("./logger");
 
 let statusCheckInterval = null;
 let isRunning = false;
+let currentSettings = null;
 
-const CHECK_INTERVAL = 30000;
-const BATCH_SIZE = 10;
-const BATCH_TIMEOUT = 5000;
+const DEFAULT_CHECK_INTERVAL = 30000;
+const DEFAULT_BATCH_SIZE = 10;
 
 const executeByType = async (entry) => {
     const type = entry.type;
@@ -37,9 +38,9 @@ const checkEntryWithTimeout = async (entry, timeout) => {
 };
 
 
-const processBatch = async (entries) => {
+const processBatch = async (entries, batchTimeout) => {
     logger.verbose(`Processing status check batch`, { batchSize: entries.length });
-    const checks = entries.map(entry => checkEntryWithTimeout(entry, BATCH_TIMEOUT));
+    const checks = entries.map(entry => checkEntryWithTimeout(entry, batchTimeout));
 
     const results = await Promise.all(checks);
 
@@ -95,9 +96,22 @@ const runStatusCheck = async () => {
     }
 
     isRunning = true;
-    logger.verbose(`Starting status check cycle`);
-
+    
     try {
+        currentSettings = await getMonitoringSettingsInternal();
+        
+        if (!currentSettings || !currentSettings.statusCheckerEnabled) {
+            logger.verbose(`Status checker is disabled, setting all entries to online`);
+            const entries = await listAllServers();
+            if (entries.length > 0) {
+                await updateStatuses(entries.map(e => ({ id: e.id, status: "online" })));
+            }
+            isRunning = false;
+            return;
+        }
+        
+        logger.verbose(`Starting status check cycle`);
+        
         const entries = await listAllServers();
 
         if (entries.length === 0) {
@@ -106,20 +120,23 @@ const runStatusCheck = async () => {
             return;
         }
 
+        const batchSize = currentSettings.batchSize || DEFAULT_BATCH_SIZE;
+        const batchTimeout = (currentSettings.connectionTimeout || 30) * 1000;
+
         logger.info(`Checking status for ${entries.length} entries`, { 
-            batchSize: BATCH_SIZE, 
-            batches: Math.ceil(entries.length / BATCH_SIZE) 
+            batchSize: batchSize, 
+            batches: Math.ceil(entries.length / batchSize) 
         });
 
         const allResults = [];
 
-        for (let i = 0; i < entries.length; i += BATCH_SIZE) {
-            const batch = entries.slice(i, i + BATCH_SIZE);
-            logger.verbose(`Processing batch ${Math.floor(i / BATCH_SIZE) + 1}`, { 
+        for (let i = 0; i < entries.length; i += batchSize) {
+            const batch = entries.slice(i, i + batchSize);
+            logger.verbose(`Processing batch ${Math.floor(i / batchSize) + 1}`, { 
                 entries: batch.map(e => ({ id: e.id, type: e.type, name: e.name })) 
             });
 
-            const batchResults = await processBatch(batch);
+            const batchResults = await processBatch(batch, batchTimeout);
             allResults.push(...batchResults);
         }
 
@@ -135,17 +152,20 @@ const runStatusCheck = async () => {
     }
 }
 
-const startStatusChecker = (interval = CHECK_INTERVAL) => {
+const startStatusChecker = async (interval = null) => {
     if (statusCheckInterval !== null) {
         logger.warn(`Status checker already running`);
         return;
     }
 
-    logger.system(`Starting status checker`, { interval: interval, batchSize: BATCH_SIZE });
+    currentSettings = await getMonitoringSettingsInternal();
+    const checkInterval = interval || (currentSettings?.statusInterval ? currentSettings.statusInterval * 1000 : DEFAULT_CHECK_INTERVAL);
+
+    logger.system(`Starting status checker`, { interval: checkInterval, batchSize: currentSettings?.batchSize || DEFAULT_BATCH_SIZE });
 
     runStatusCheck();
 
-    statusCheckInterval = setInterval(runStatusCheck, interval);
+    statusCheckInterval = setInterval(runStatusCheck, checkInterval);
 };
 
 const stopStatusChecker = () => {

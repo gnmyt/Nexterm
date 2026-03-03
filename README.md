@@ -26,9 +26,24 @@ Nexterm is an open-source server management software that allows you to:
 -   Secure access with two-factor authentication and OIDC SSO
 -   Separate users and servers into Organizations
 
-## 🚀 Run preview
+## 📷 Screenshots
 
-You can run a preview of Nexterm by clicking [here](https://docs.nexterm.dev/preview).
+<table>
+  <tr>
+    <td><img src="docs/public/assets/showoff/servers.png" alt="Servers" /></td>
+    <td><img src="docs/public/assets/showoff/connections.png" alt="Connections" /></td>
+    <td><img src="docs/public/assets/showoff/sftp.png" alt="SFTP" /></td>
+  </tr>
+  <tr>
+    <td><img src="docs/public/assets/showoff/snippets.png" alt="Snippets" /></td>
+    <td><img src="docs/public/assets/showoff/monitoring.png" alt="Monitoring" /></td>
+    <td><img src="docs/public/assets/showoff/recordings.png" alt="Recordings" /></td>
+  </tr>
+</table>
+
+## 🚀 Install
+
+You can install Nexterm by clicking [here](https://docs.nexterm.dev/installation).
 
 ## 💻 Development
 
@@ -67,7 +82,7 @@ The server listens on port 6989 by default. You can modify this behavior using e
 
 -   `SERVER_PORT`: Server listening port (default: 6989)
 -   `NODE_ENV`: Runtime environment (development/production)
--   `ENCRYPTION_KEY`: Encryption key for passwords, SSH keys and passphrases (default: Randomly generated key)
+-   `ENCRYPTION_KEY`: Encryption key for passwords, SSH keys and passphrases. Supports Docker secrets via /run/secrets/encryption_key`
 -   `AI_SYSTEM_PROMPT`: System prompt for AI features (example: You are a Linux command generator assistant.)
 -   `LOG_LEVEL`: Logging level for application and guacd (system/info/verbose/debug/warn/error, default: system)
 
@@ -96,7 +111,11 @@ Contributions are welcome! Please feel free to:
 -   [Report a bug](https://github.com/gnmyt/Nexterm/issues)
 -   [Request a feature](https://github.com/gnmyt/Nexterm/issues)
 
-## License
+## 💜 Powered by
+
+[![JetBrains logo](https://resources.jetbrains.com/storage/products/company/brand/logos/jetbrains.svg)](https://jb.gg/OpenSource)
+
+## 📄 License
 
 Distributed under the MIT license. See `LICENSE` for more information.
 

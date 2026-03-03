@@ -1,10 +1,14 @@
-import { useRef, useState, useEffect } from "react";
+import { useRef, useState, useEffect, useCallback } from "react";
+import { useTranslation } from "react-i18next";
 import Icon from "@mdi/react";
-import { loadIcon } from "@/pages/Servers/utils/iconMapping.js";
-import { mdiClose, mdiViewSplitVertical, mdiChevronLeft, mdiChevronRight, mdiSleep } from "@mdi/js";
+import { mdiClose, mdiViewSplitVertical, mdiChevronLeft, mdiChevronRight, mdiSleep, mdiOpenInNew, mdiShareVariant, mdiLinkVariant, mdiPencil, mdiEye, mdiCloseCircle, mdiContentDuplicate } from "@mdi/js";
 import { useDrag, useDrop } from "react-dnd";
 import TerminalActionsMenu from "../TerminalActionsMenu";
-import { ContextMenu, ContextMenuItem, useContextMenu } from "@/common/components/ContextMenu";
+import { ContextMenu, ContextMenuItem, ContextMenuSeparator, useContextMenu } from "@/common/components/ContextMenu";
+import { useActiveSessions } from "@/common/contexts/SessionContext.jsx";
+import { postRequest, deleteRequest, patchRequest } from "@/common/utils/RequestUtil";
+import { getBaseUrl } from "@/common/utils/ConnectionUtil.js";
+import { getIconPath } from "@/common/utils/iconUtils.js";
 import "./styles.sass";
 
 const DraggableTab = ({
@@ -12,13 +16,41 @@ const DraggableTab = ({
     server,
     activeSessionId,
     setActiveSessionId,
-    disconnectFromServer,
+    closeSession,
     hibernateSession,
+    duplicateSession,
     index,
     moveTab,
     progress = 0,
 }) => {
     const contextMenu = useContextMenu();
+    const { popOutSession } = useActiveSessions();
+    const { t } = useTranslation();
+    
+    const canPopOut = !session.scriptId && session.type !== "sftp";
+    const canShare = canPopOut;
+    const isSharing = !!session.shareId;
+
+    const handleShare = useCallback(async (writable) => {
+        const result = await postRequest(`connections/${session.id}/share`, { writable });
+        if (result?.shareId) {
+            const baseUrl = getBaseUrl() || window.location.origin;
+            navigator.clipboard.writeText(`${baseUrl}/share/${result.shareId}`);
+        }
+    }, [session.id]);
+
+    const handleStopSharing = useCallback(async () => {
+        await deleteRequest(`connections/${session.id}/share`);
+    }, [session.id]);
+
+    const handleCopyLink = useCallback(() => {
+        const baseUrl = getBaseUrl() || window.location.origin;
+        navigator.clipboard.writeText(`${baseUrl}/share/${session.shareId}`);
+    }, [session.shareId]);
+
+    const handlePermissionChange = useCallback(async (writable) => {
+        await patchRequest(`connections/${session.id}/share`, { writable });
+    }, [session.id]);
     
     const [{ isDragging }, drag] = useDrag({
         type: "TAB",
@@ -45,10 +77,19 @@ const DraggableTab = ({
         contextMenu.open(e, { x: e.clientX, y: e.clientY });
     };
 
+    const handleAuxClick = (e) => {
+        if (e.button === 1) {
+            e.preventDefault();
+            e.stopPropagation();
+            closeSession(session.id);
+        }
+    };
+
     return (
         <>
             <div ref={(node) => drag(drop(node))} onClick={() => setActiveSessionId(session.id)}
                 onContextMenu={handleContextMenu}
+                onAuxClick={handleAuxClick}
                 className={`server-tab ${session.id === activeSessionId ? "server-tab-active" : ""} ${isDragging ? "dragging" : ""} ${isOver ? "drop-target" : ""}`}
                 style={{ opacity: isDragging ? 0.5 : 1 }}>
                 <div className={`progress-circle ${!showProgress ? "no-progress" : ""}`}>
@@ -78,13 +119,13 @@ const DraggableTab = ({
                             />
                         </svg>
                     )}
-                    <Icon path={loadIcon(server.icon)} className="progress-icon" />
+                    <Icon path={getIconPath(server.icon)} className="progress-icon" />
                 </div>
                 <h2>{server?.name} {session.type === "sftp" ? " (SFTP)" : ""}</h2>
                 <div className="tab-actions">
                     <Icon path={mdiClose} className="close-btn" title="Close Session" onClick={(e) => {
                         e.stopPropagation();
-                        disconnectFromServer(session.id);
+                        closeSession(session.id);
                     }} />
                 </div>
             </div>
@@ -94,15 +135,47 @@ const DraggableTab = ({
                 onClose={contextMenu.close}
                 trigger={contextMenu.triggerRef}
             >
+                {canPopOut && (
+                    <>
+                        <ContextMenuItem
+                            icon={mdiOpenInNew}
+                            label={t("servers.tabs.contextMenu.popOut")}
+                            onClick={() => popOutSession(session.id)}
+                        />
+                        <ContextMenuSeparator />
+                    </>
+                )}
+                {canShare && !isSharing && (
+                    <ContextMenuItem icon={mdiShareVariant} label={t("servers.tabs.contextMenu.startSharing")}>
+                        <ContextMenuItem icon={mdiEye} label={t("servers.tabs.contextMenu.readOnly")} onClick={() => handleShare(false)} />
+                        <ContextMenuItem icon={mdiPencil} label={t("servers.tabs.contextMenu.readWrite")} onClick={() => handleShare(true)} />
+                    </ContextMenuItem>
+                )}
+                {canShare && isSharing && (
+                    <>
+                        <ContextMenuItem icon={mdiLinkVariant} label={t("servers.tabs.contextMenu.copyShareLink")} onClick={handleCopyLink} />
+                        <ContextMenuItem icon={mdiShareVariant} label={t("servers.tabs.contextMenu.changePermissions")}>
+                            <ContextMenuItem icon={mdiEye} label={t("servers.tabs.contextMenu.readOnly")} onClick={() => handlePermissionChange(false)} disabled={!session.shareWritable} />
+                            <ContextMenuItem icon={mdiPencil} label={t("servers.tabs.contextMenu.readWrite")} onClick={() => handlePermissionChange(true)} disabled={session.shareWritable} />
+                        </ContextMenuItem>
+                        <ContextMenuItem icon={mdiCloseCircle} label={t("servers.tabs.contextMenu.stopSharing")} onClick={handleStopSharing} danger />
+                        <ContextMenuSeparator />
+                    </>
+                )}
+                <ContextMenuItem
+                    icon={mdiContentDuplicate}
+                    label={t("servers.tabs.contextMenu.duplicate")}
+                    onClick={() => duplicateSession(session.id)}
+                />
                 <ContextMenuItem
                     icon={mdiSleep}
-                    label="Hibernate Session"
+                    label={t("servers.tabs.contextMenu.hibernateSession")}
                     onClick={() => hibernateSession(session.id)}
                 />
                 <ContextMenuItem
                     icon={mdiClose}
-                    label="Close Session"
-                    onClick={() => disconnectFromServer(session.id)}
+                    label={t("servers.tabs.contextMenu.closeSession")}
+                    onClick={() => closeSession(session.id)}
                     danger
                 />
             </ContextMenu>
@@ -114,8 +187,9 @@ export const ServerTabs = ({
     activeSessions,
     setActiveSessionId,
     activeSessionId,
-    disconnectFromServer,
+    closeSession,
     hibernateSession,
+    duplicateSession,
     layoutMode,
     onToggleSplit,
     orderRef,
@@ -250,7 +324,7 @@ export const ServerTabs = ({
                         return (
                             <DraggableTab key={session.id} session={session} server={session.server} index={index} moveTab={moveTab}
                                 activeSessionId={activeSessionId} setActiveSessionId={setActiveSessionId}
-                                disconnectFromServer={disconnectFromServer} hibernateSession={hibernateSession}
+                                closeSession={closeSession} hibernateSession={hibernateSession} duplicateSession={duplicateSession}
                                 progress={sessionProgress[session.id] || 0} />
                         );
                     })}
