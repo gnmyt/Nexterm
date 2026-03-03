@@ -1408,7 +1408,7 @@
         },
         "legacyCrypto": {
           "title": "Permitir criptografía heredada",
-          "description": "Mantenga esto deshabilitado de forma predeterminada. Habilítelo solo si la conexión SSH falla debido a dispositivos de red antiguos que requieren algoritmos inseguros."
+          "description": "Habilítelo solo si la conexión SSH falla debido a dispositivos de red antiguos que requieren algoritmos inseguros."
         },
         "noSettings": "No hay ajustes adicionales disponibles para este tipo de entrada."
       },
