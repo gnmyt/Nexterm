@@ -74,6 +74,7 @@ const SettingsPage = ({ config, setConfig, monitoringEnabled, setMonitoringEnabl
     const [enableDesktopComposition, setEnableDesktopComposition] = useState(config?.enableDesktopComposition === true);
     const [enableMenuAnimations, setEnableMenuAnimations] = useState(config?.enableMenuAnimations === true);
     const [wakeOnLanEnabled, setWakeOnLanEnabled] = useState(config?.wakeOnLanEnabled === true);
+    const [enableLegacyCrypto, setEnableLegacyCrypto] = useState(config?.enableLegacyCrypto === true);
     const [backspaceMode, setBackspaceMode] = useState(config?.backspaceMode || "del");
     const [deleteMode, setDeleteMode] = useState(config?.deleteMode || "vt");
     const [functionKeyMode, setFunctionKeyMode] = useState(config?.functionKeyMode || "xterm");
@@ -103,6 +104,7 @@ const SettingsPage = ({ config, setConfig, monitoringEnabled, setMonitoringEnabl
         if (config?.enableDesktopComposition !== undefined) setEnableDesktopComposition(config.enableDesktopComposition);
         if (config?.enableMenuAnimations !== undefined) setEnableMenuAnimations(config.enableMenuAnimations);
         if (config?.wakeOnLanEnabled !== undefined) setWakeOnLanEnabled(config.wakeOnLanEnabled);
+        if (config?.enableLegacyCrypto !== undefined) setEnableLegacyCrypto(config.enableLegacyCrypto);
         if (config?.backspaceMode !== undefined) setBackspaceMode(config.backspaceMode);
         if (config?.deleteMode !== undefined) setDeleteMode(config.deleteMode);
         if (config?.functionKeyMode !== undefined) setFunctionKeyMode(config.functionKeyMode);
@@ -226,6 +228,17 @@ const SettingsPage = ({ config, setConfig, monitoringEnabled, setMonitoringEnabl
                             {t('servers.dialog.settings.jumpHosts.noServersAvailable')}
                         </p>
                     )}
+                </div>
+            )}
+
+            {/* Allow Legacy Cryptography toggle - only visible for SSH connections */}
+            {showJumpHosts && (
+                <div className="settings-toggle">
+                    <div className="settings-toggle-info">
+                        <span className="settings-toggle-label">{t('servers.dialog.settings.legacyCrypto.title')}</span>
+                        <span className="settings-toggle-description">{t('servers.dialog.settings.legacyCrypto.description')}</span>
+                    </div>
+                    <ToggleSwitch checked={enableLegacyCrypto} onChange={(val) => handleDisplaySettingChange('enableLegacyCrypto', val, setEnableLegacyCrypto)} id="enable-legacy-crypto" />
                 </div>
             )}
 

@@ -4,9 +4,35 @@ const Entry = require("../models/Entry");
 const EntryIdentity = require("../models/EntryIdentity");
 const Identity = require("../models/Identity");
 
+// Default ssh2 algorithm sets (modern, secure algorithms)
+const ssh2Defaults = {
+    serverHostKey: ["ssh-ed25519", "ecdsa-sha2-nistp256", "ecdsa-sha2-nistp384", "ecdsa-sha2-nistp521", "rsa-sha2-512", "rsa-sha2-256", "ssh-rsa"],
+    kex: ["curve25519-sha256", "curve25519-sha256@libssh.org", "ecdh-sha2-nistp256", "ecdh-sha2-nistp384", "ecdh-sha2-nistp521", "diffie-hellman-group-exchange-sha256", "diffie-hellman-group14-sha256", "diffie-hellman-group15-sha512", "diffie-hellman-group16-sha512", "diffie-hellman-group17-sha512", "diffie-hellman-group18-sha512"],
+    cipher: ["chacha20-poly1305@openssh.com", "aes128-gcm", "aes128-gcm@openssh.com", "aes256-gcm", "aes256-gcm@openssh.com", "aes128-ctr", "aes192-ctr", "aes256-ctr"],
+    hmac: ["hmac-sha2-256-etm@openssh.com", "hmac-sha2-512-etm@openssh.com", "hmac-sha1-etm@openssh.com", "hmac-sha2-256", "hmac-sha2-512", "hmac-sha1"],
+};
+
+// Legacy algorithm sets for older SSH devices (e.g. ssh-rsa/ssh-dss, weak kex, CBC ciphers)
+const legacyAlgorithms = {
+    serverHostKey: ["ssh-dss"],
+    kex: ["diffie-hellman-group1-sha1", "diffie-hellman-group14-sha1", "diffie-hellman-group-exchange-sha1"],
+    cipher: ["3des-cbc", "aes128-cbc", "aes192-cbc", "aes256-cbc", "blowfish-cbc"],
+    hmac: ["hmac-md5", "hmac-md5-96", "hmac-sha1-96", "hmac-sha2-256-96", "hmac-sha2-512-96"],
+};
+
 const buildSSHOptions = (identity, credentials, entryConfig) => {
     const base = { host: entryConfig.ip, port: entryConfig.port, username: identity.username, tryKeyboard: true };
-    
+
+    // Inject legacy algorithms when enableLegacyCrypto is set, to support older network devices
+    if (entryConfig.enableLegacyCrypto) {
+        base.algorithms = {
+            serverHostKey: [...ssh2Defaults.serverHostKey, ...legacyAlgorithms.serverHostKey],
+            kex: [...ssh2Defaults.kex, ...legacyAlgorithms.kex],
+            cipher: [...ssh2Defaults.cipher, ...legacyAlgorithms.cipher],
+            hmac: [...ssh2Defaults.hmac, ...legacyAlgorithms.hmac],
+        };
+    }
+
     if (identity.type === "password" || identity.type === "password-only") {
         return { ...base, password: credentials.password };
     }

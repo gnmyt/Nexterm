@@ -1406,6 +1406,10 @@
           "delete": "löschen",
           "functionKeys": "Funktionstasten"
         },
+        "legacyCrypto": {
+          "title": "Veraltete Kryptografie erlauben",
+          "description": "Standardmäßig deaktiviert lassen. Nur aktivieren, wenn die SSH-Verbindung aufgrund veralteter Algorithmen bei älteren Netzwerkgeräten fehlschlägt."
+        },
         "noSettings": "Für diesen Eintragstyp sind keine weiteren Einstellungen verfügbar."
       },
       "identities": {

@@ -1406,6 +1406,10 @@
           "delete": "Odstranit",
           "functionKeys": "Funkční klávesy"
         },
+        "legacyCrypto": {
+          "title": "Povolit starší kryptografii",
+          "description": "Ve výchozím nastavení ponechte tuto možnost zakázanou. Povolte ji pouze v případě, že připojení SSH selže kvůli starším síťovým zařízením vyžadujícím zastaralé algoritmy."
+        },
         "noSettings": "Pro tento typ záznamu nejsou k dispozici žádná další nastavení."
       },
       "identities": {

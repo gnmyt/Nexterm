@@ -1411,6 +1411,10 @@
           "delete": "Delete",
           "functionKeys": "Teclas de Função"
         },
+        "legacyCrypto": {
+          "title": "Permitir criptografia legada",
+          "description": "Mantenha esta opção desabilitada por padrão. Ative somente se a conexão SSH falhar devido a dispositivos de rede legados que exigem algoritmos desatualizados."
+        },
         "noSettings": "Não há configurações adicionais disponíveis para esse tipo de entrada."
       },
       "identities": {

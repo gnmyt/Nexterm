@@ -1406,6 +1406,10 @@
           "delete": "Borra",
           "functionKeys": "Teclas de función"
         },
+        "legacyCrypto": {
+          "title": "Permitir criptografía heredada",
+          "description": "Mantenga esto deshabilitado de forma predeterminada. Habilítelo solo si la conexión SSH falla debido a dispositivos de red antiguos que requieren algoritmos obsoletos."
+        },
         "noSettings": "No hay ajustes adicionales disponibles para este tipo de entrada."
       },
       "identities": {

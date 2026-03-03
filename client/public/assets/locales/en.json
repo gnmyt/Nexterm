@@ -1328,9 +1328,13 @@
       "errorDescription": "Failed to send magic packet"
     },
     "messages": {
-      "usernameRequired": "Username is required",
-      "passwordRequired": "Password is required",
-      "sshKeyRequired": "SSH key is required"
+      "fillRequiredFields": "Please fill in all required fields",
+      "serverCreated": "Server created successfully",
+      "serverUpdated": "Server updated successfully",
+      "createFailed": "Failed to create server",
+      "updateFailed": "Failed to update server",
+      "createIdentityFailed": "Failed to create identity",
+      "updateIdentityFailed": "Failed to update identity"
     },
     "dialog": {
       "addServer": "Add server",
@@ -1421,6 +1425,10 @@
           "backspace": "Backspace",
           "delete": "Delete",
           "functionKeys": "Function Keys"
+        },
+        "legacyCrypto": {
+          "title": "Allow Legacy Cryptography",
+          "description": "Keep this disabled by default. Enable only if the SSH connection fails due to legacy network devices requiring outdated algorithms."
         },
         "noSettings": "No additional settings available for this entry type."
       },
@@ -1676,15 +1684,6 @@
       "fullScreen": "Full-Screen",
       "exitFullScreen": "Exit Full-Screen Mode",
       "badgeOn": "ON"
-    },
-    "messages": {
-      "fillRequiredFields": "Please fill in all required fields",
-      "serverCreated": "Server created successfully",
-      "serverUpdated": "Server updated successfully",
-      "createFailed": "Failed to create server",
-      "updateFailed": "Failed to update server",
-      "createIdentityFailed": "Failed to create identity",
-      "updateIdentityFailed": "Failed to update identity"
     }
   },
   "support": {
