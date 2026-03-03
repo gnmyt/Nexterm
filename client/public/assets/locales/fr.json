@@ -1408,7 +1408,7 @@
         },
         "legacyCrypto": {
           "title": "Autoriser la cryptographie héritée",
-          "description": "Gardez cette option désactivée par défaut. Activez-la uniquement si la connexion SSH échoue en raison d'appareils réseau anciens nécessitant des algorithmes obsolètes."
+          "description": "Gardez cette option désactivée par défaut. Activez-la uniquement si la connexion SSH échoue en raison d'appareils réseau anciens nécessitant des algorithmes non sécurisés."
         },
         "noSettings": "Aucun paramètre supplémentaire n'est disponible pour ce type d'entrée."
       },

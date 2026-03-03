@@ -1428,7 +1428,7 @@
         },
         "legacyCrypto": {
           "title": "Allow Legacy Cryptography",
-          "description": "Keep this disabled by default. Enable only if the SSH connection fails due to legacy network devices requiring outdated algorithms."
+          "description": "Keep this disabled by default. Enable only if the SSH connection fails due to legacy network devices requiring insecure algorithms."
         },
         "noSettings": "No additional settings available for this entry type."
       },

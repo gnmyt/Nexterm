@@ -1408,7 +1408,7 @@
         },
         "legacyCrypto": {
           "title": "Povolit starší kryptografii",
-          "description": "Ve výchozím nastavení ponechte tuto možnost zakázanou. Povolte ji pouze v případě, že připojení SSH selže kvůli starším síťovým zařízením vyžadujícím zastaralé algoritmy."
+          "description": "Ve výchozím nastavení ponechte tuto možnost zakázanou. Povolte ji pouze v případě, že připojení SSH selže kvůli starším síťovým zařízením vyžadujícím nezabezpečené algoritmy."
         },
         "noSettings": "Pro tento typ záznamu nejsou k dispozici žádná další nastavení."
       },
