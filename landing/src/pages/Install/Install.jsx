@@ -197,7 +197,7 @@ ${volumeConfig}${volumesSection}`;
                             <div className="access-info">
                                 <span className="access-label">After deployment, access Nexterm at</span>
                                 <div className="access-url">
-                                    <code>http://localhost:{import.meta.env.VITE_SERVER_PORT || 6989}</code>
+                                    <code>http://localhost:6989</code>
                                 </div>
                             </div>
                         </div>

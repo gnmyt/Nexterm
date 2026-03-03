@@ -42,7 +42,7 @@ module.exports.generateOpenAPISpec = (app) => {
         },
         servers: [
             { url: "/api", description: "Production API server" },
-            { url: `http://localhost:${process.env.SERVER_PORT || 6989}/api`, description: "Development API server" },
+            { url: "http://localhost:6989/api", description: "Development API server" },
         ],
         baseDir: __dirname,
         filesPattern: ["./routes/**/*.js",],
