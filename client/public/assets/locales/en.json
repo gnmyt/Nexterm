@@ -1328,13 +1328,9 @@
       "errorDescription": "Failed to send magic packet"
     },
     "messages": {
-      "fillRequiredFields": "Please fill in all required fields",
-      "serverCreated": "Server created successfully",
-      "serverUpdated": "Server updated successfully",
-      "createFailed": "Failed to create server",
-      "updateFailed": "Failed to update server",
-      "createIdentityFailed": "Failed to create identity",
-      "updateIdentityFailed": "Failed to update identity"
+      "usernameRequired": "Username is required",
+      "passwordRequired": "Password is required",
+      "sshKeyRequired": "SSH key is required"
     },
     "dialog": {
       "addServer": "Add server",
@@ -1684,6 +1680,15 @@
       "fullScreen": "Full-Screen",
       "exitFullScreen": "Exit Full-Screen Mode",
       "badgeOn": "ON"
+    },
+    "messages": {
+      "fillRequiredFields": "Please fill in all required fields",
+      "serverCreated": "Server created successfully",
+      "serverUpdated": "Server updated successfully",
+      "createFailed": "Failed to create server",
+      "updateFailed": "Failed to update server",
+      "createIdentityFailed": "Failed to create identity",
+      "updateIdentityFailed": "Failed to update identity"
     }
   },
   "support": {
