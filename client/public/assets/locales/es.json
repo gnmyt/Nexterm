@@ -1407,7 +1407,7 @@
           "functionKeys": "Teclas de función"
         },
         "legacyCrypto": {
-          "title": "Permitir criptografía heredada",
+          "title": "Permitir Criptografía Heredada",
           "description": "Habilítelo solo si la conexión SSH falla debido a servidores antiguos que requieren algoritmos inseguros"
         },
         "noSettings": "No hay ajustes adicionales disponibles para este tipo de entrada."

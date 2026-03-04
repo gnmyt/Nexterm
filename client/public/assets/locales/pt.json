@@ -1407,7 +1407,7 @@
           "functionKeys": "Teclas de função"
         },
         "legacyCrypto": {
-          "title": "Permitir criptografia legada",
+          "title": "Permitir Criptografia Legada",
           "description": "Ative apenas se a conexão SSH falhar devido a servidores legados que exigem algoritmos inseguros"
         },
         "noSettings": "Não há configurações adicionais disponíveis para esse tipo de entrada."

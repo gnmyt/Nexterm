@@ -1407,7 +1407,7 @@
           "functionKeys": "Touches de fonction"
         },
         "legacyCrypto": {
-          "title": "Autoriser la cryptographie héritée",
+          "title": "Autoriser La Cryptographie Héritée",
           "description": "Activez-la uniquement si la connexion SSH échoue en raison de serveurs anciens nécessitant des algorithmes non sécurisés"
         },
         "noSettings": "Aucun paramètre supplémentaire n'est disponible pour ce type d'entrée."

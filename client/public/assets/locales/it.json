@@ -1407,7 +1407,7 @@
           "functionKeys": "Tasti funzione"
         },
         "legacyCrypto": {
-          "title": "Consenti crittografia legacy",
+          "title": "Consenti Crittografia Legacy",
           "description": "Abilitala solo se la connessione SSH non riesce a causa di server legacy che richiedono algoritmi non sicuri"
         },
         "noSettings": "Non sono disponibili altre impostazioni per questo tipo di voce."

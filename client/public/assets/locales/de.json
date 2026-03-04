@@ -1407,7 +1407,7 @@
           "functionKeys": "Funktionstasten"
         },
         "legacyCrypto": {
-          "title": "Veraltete Kryptografie erlauben",
+          "title": "Veraltete Kryptografie Erlauben",
           "description": "Nur aktivieren, wenn die SSH-Verbindung aufgrund unsicherer Algorithmen bei älteren Servern fehlschlägt"
         },
         "noSettings": "Für diesen Eintragstyp sind keine weiteren Einstellungen verfügbar."
