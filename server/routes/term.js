@@ -33,7 +33,7 @@ module.exports = async (ws, req) => {
     if (!serverSession) return ws.close(4007, "Session required");
 
     SessionManager.resume(serverSession.sessionId);
-    const connectionTimeout = protocol === "ssh" ? 30000 : 5000;
+    const connectionTimeout = protocol === "ssh" ? 20000 : 5000;
     const { conn, sessionRemoved } = await waitForConnection(serverSession.sessionId, connectionTimeout);
     
     if (!conn) {
