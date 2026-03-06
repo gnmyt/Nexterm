@@ -49,4 +49,35 @@ const setupSSHEventHandlers = (ssh, ws, options) => {
     });
 };
 
-module.exports = { parseResizeMessage, setupSSHEventHandlers };
+/**
+ * Triggers a passive SSH session by sending a newline character.
+ * * Inspired by Netmiko's session establishment. Passive proxies (OCI)
+ * and legacy devices (Cisco/HP) often remain silent until they receive input.
+ * This function acts as a behavioral trigger to ensure the data stream begins,
+ * followed by an ANSI escape sequence to clear the terminal. Since the reset
+ * uses ANSI codes, it is handled by the terminal emulator (xterm.js), not the
+ * remote shell, so it works even if the device doesn't have a clear command,
+ * ensuring compatibility without relying on shell-specific commands.
+ * * Note: Most Linux servers send their banner/MOTD in < 50ms; they will never
+ * trigger this function as the data listener clears this timer immediately.
+ * * @param {Object} stream - The SSH2 channel stream.
+ * @param {number} [timeoutMs=300] - Wait time before triggering.
+ * @returns {NodeJS.Timeout} - The timer instance for external cleanup.
+ */
+function triggerPassiveSession(stream, timeoutMs = 300) {
+    const triggerTimer = setTimeout(() => {
+        if (stream.writable) {
+            stream.write('\x0A\x1B[2J\x1B[H');
+        }
+    }, timeoutMs);
+
+    const cleanup = () => clearTimeout(triggerTimer);
+
+    // Self-destruct logic: the timer dies if data arrives,
+    // an error occurs, or the stream closes.
+    stream.once("data", cleanup);
+    stream.once("error", cleanup);
+    stream.once("close", cleanup);
+}
+
+module.exports = { parseResizeMessage, setupSSHEventHandlers, triggerPassiveSession };
