@@ -822,10 +822,10 @@
   resolved "https://registry.yarnpkg.com/@types/trusted-types/-/trusted-types-2.0.7.tgz#baccb07a970b91707df3a3e8ba6896c57ead2d11"
   integrity sha512-ScaPdn1dQczgbl0QFTeTOmVHFULt394XJgOQNoyVhZ6r2vLnMLJfBPd53SB52T/3G36VI1/g2MZaX0cwDuXsfw==
 
-"@vitejs/plugin-react@^5.1.4":
-  version "5.1.4"
-  resolved "https://registry.yarnpkg.com/@vitejs/plugin-react/-/plugin-react-5.1.4.tgz#5b477e060bf612a7394c4febacc5de33a219b0e4"
-  integrity sha512-VIcFLdRi/VYRU8OL/puL7QXMYafHmqOnwTZY50U1JPlCNj30PxCMx65c494b1K9be9hX83KVt0+gTEwTWLqToA==
+"@vitejs/plugin-react@^5.2.0":
+  version "5.2.0"
+  resolved "https://registry.yarnpkg.com/@vitejs/plugin-react/-/plugin-react-5.2.0.tgz#108bd0f566f288ce3566982df4eff137ded7b15f"
+  integrity sha512-YmKkfhOAi3wsB1PhJq5Scj3GXMn3WvtQ/JC0xoopuHoXSdmtdStOpFrYaT1kie2YgFBcIe64ROzMYRjCrYOdYw==
   dependencies:
     "@babel/core" "^7.29.0"
     "@babel/plugin-transform-react-jsx-self" "^7.27.1"
