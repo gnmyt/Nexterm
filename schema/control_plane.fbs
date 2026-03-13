@@ -1,0 +1,192 @@
+namespace Nexterm.ControlPlane;
+
+enum MessageType : byte {
+    Ping = 0,
+    Pong = 1,
+    EngineHello = 2,
+    EngineHelloAck = 3,
+
+    SessionOpen = 10,
+    SessionOpenResult = 11,
+    SessionClose = 12,
+    SessionClosed = 13,
+    SessionResize = 14,
+    SessionJoin = 15,
+
+    ConnectionReady = 20,
+    ConnectionData = 21,
+    ConnectionError = 22,
+
+    ExecCommand = 30,
+    ExecCommandResult = 31,
+
+    PortCheck = 40,
+    PortCheckResult = 41,
+}
+
+enum SessionType : byte {
+    VNC = 0,
+    RDP = 1,
+    SSH = 2,
+    SFTP = 3,
+    Telnet = 4,
+    Tunnel = 5,
+}
+
+enum ErrorCode : byte {
+    None = 0,
+    UnknownSession = 1,
+    ConnectionFailed = 2,
+    ProtocolError = 3,
+    Timeout = 4,
+    Internal = 5,
+}
+
+table EngineHello {
+    version: string;
+    registration_token: string;
+}
+
+table EngineHelloAck {
+    accepted: bool;
+    server_version: string;
+}
+
+table Ping {
+    timestamp: uint64;
+}
+
+table Pong {
+    timestamp: uint64;
+}
+
+table ConnectionParam {
+    key: string;
+    value: string;
+}
+
+table JumpHost {
+    host: string;
+    port: uint16;
+    username: string;
+    password: string;
+    private_key: string;
+    passphrase: string;
+}
+
+table SessionOpen {
+    session_id: string;
+    session_type: SessionType;
+    host: string;
+    port: uint16;
+    params: [ConnectionParam];
+    jump_hosts: [JumpHost];
+}
+
+table SessionOpenResult {
+    session_id: string;
+    success: bool;
+    error_code: ErrorCode;
+    error_message: string;
+    connection_id: string;
+}
+
+table SessionClose {
+    session_id: string;
+}
+
+table SessionClosed {
+    session_id: string;
+    reason: string;
+}
+
+table SessionResize {
+    session_id: string;
+    cols: uint16;
+    rows: uint16;
+}
+
+table SessionJoin {
+    session_id: string;
+}
+
+table ExecCommand {
+    request_id: string;
+    host: string;
+    port: uint16;
+    params: [ConnectionParam];
+    command: string;
+    jump_hosts: [JumpHost];
+}
+
+table ExecCommandResult {
+    request_id: string;
+    success: bool;
+    stdout_data: string;
+    stderr_data: string;
+    exit_code: int32;
+    error_message: string;
+}
+
+table ConnectionReady {
+    session_id: string;
+    connection_id: string;
+}
+
+table ConnectionData {
+    session_id: string;
+    data: [ubyte];
+}
+
+table ConnectionError {
+    session_id: string;
+    error_code: ErrorCode;
+    error_message: string;
+}
+
+table PortCheckTarget {
+    id: string;
+    host: string;
+    port: uint16;
+}
+
+table PortCheck {
+    request_id: string;
+    targets: [PortCheckTarget];
+    timeout_ms: uint32;
+}
+
+table PortCheckEntry {
+    id: string;
+    online: bool;
+}
+
+table PortCheckResult {
+    request_id: string;
+    results: [PortCheckEntry];
+}
+
+
+table Envelope {
+    msg_type: MessageType;
+
+    engine_hello: EngineHello;
+    engine_hello_ack: EngineHelloAck;
+    ping: Ping;
+    pong: Pong;
+    session_open: SessionOpen;
+    session_open_result: SessionOpenResult;
+    session_close: SessionClose;
+    session_closed: SessionClosed;
+    session_resize: SessionResize;
+    session_join: SessionJoin;
+    connection_ready: ConnectionReady;
+    connection_data: ConnectionData;
+    connection_error: ConnectionError;
+    exec_command: ExecCommand;
+    exec_command_result: ExecCommandResult;
+    port_check: PortCheck;
+    port_check_result: PortCheckResult;
+}
+
+root_type Envelope;
