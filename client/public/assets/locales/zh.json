@@ -1406,6 +1406,10 @@
           "delete": "删除",
           "functionKeys": "功能键"
         },
+        "legacyCrypto": {
+          "title": "允许旧版加密",
+          "description": "仅在SSH连接因旧版服务器需要不安全算法而失败时才启用"
+        },
         "noSettings": "此条目类型无可用附加设置。"
       },
       "identities": {
