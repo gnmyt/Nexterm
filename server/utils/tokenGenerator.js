@@ -24,6 +24,7 @@ module.exports.createRDPToken = (hostname, port, username, password, options = {
         password,
         domain,
         "ignore-cert": true,
+        "security": "any",
         "server-layout": options.keyboardLayout || "en-us-qwerty",
     };
 
@@ -36,6 +37,12 @@ module.exports.createRDPToken = (hostname, port, username, password, options = {
     if (options.enableFullWindowDrag === true) settings["enable-full-window-drag"] = true;
     if (options.enableDesktopComposition === true) settings["enable-desktop-composition"] = true;
     if (options.enableMenuAnimations === true) settings["enable-menu-animations"] = true;
+
+    // Drive redirection for file transfer support
+    settings["enable-drive"] = "true";
+    settings["drive-name"] = "Nexterm";
+    settings["drive-path"] = "/app/data/rdp-drives/" + (options.sessionId || "default");
+    settings["create-drive-path"] = "true";
 
     return { connection: { type: "rdp", settings } };
 };
