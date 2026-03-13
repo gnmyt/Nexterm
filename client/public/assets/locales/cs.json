@@ -844,6 +844,7 @@
     },
     "authentication": {
       "title": "{{count}} poskytovatelů ověření",
+      "internalProviderName": "Internal Authentication",
       "addProvider": "Přidat poskytovatele",
       "addLdapProvider": "Přidání protokolu LDAP",
       "system": "Systém",
@@ -1302,6 +1303,20 @@
       "shutdown": "Vypnout",
       "stop": "Zastavit",
       "start": "Spustit"
+    },
+    "tabs": {
+      "contextMenu": {
+        "popOut": "Pop Out",
+        "startSharing": "Start Sharing",
+        "readOnly": "Read-only",
+        "readWrite": "Read & Write",
+        "copyShareLink": "Copy Share Link",
+        "changePermissions": "Change Permissions",
+        "stopSharing": "Stop Sharing",
+        "duplicate": "Duplicate",
+        "hibernateSession": "Hibernate",
+        "closeSession": "Disconnect"
+      }
     },
     "wol": {
       "successDescription": "Magic packet odeslán na {{name}}",
