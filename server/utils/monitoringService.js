@@ -73,9 +73,12 @@ const detectOS = async (conn) => {
     try {
         await executeCommand(conn, "cat /proc/version");
         return "linux";
-    } catch {
-        return "windows";
-    }
+    } catch {}
+    try {
+        const result = await executeCommand(conn, 'powershell -NoProfile -Command "(Get-WmiObject Win32_OperatingSystem).Caption"');
+        if (result && result.toLowerCase().includes("windows")) return "windows";
+    } catch {}
+    return "unknown";
 };
 
 // ─── Main Collection ─────────────────────────────────────────────────────────
@@ -96,7 +99,9 @@ const collectServerData = async (entry, identity) => {
             try {
                 const os = await detectOS(conn);
 
-                if (os === "windows") {
+                if (os === "unknown") {
+                    data = { ...data, status: "error", errorMessage: "Unknown OS, cannot collect metrics" };
+                } else if (os === "windows") {
                     const [cpu, mem, uptime, processes] = await Promise.all([
                         getWindowsCPUUsage(conn),
                         getWindowsMemoryUsage(conn),
@@ -173,7 +178,7 @@ const getWindowsCPUUsage = async (conn) => {
         const out = await executeCommand(conn,
             `powershell -NoProfile -Command "Get-WmiObject Win32_Processor | Measure-Object -Property LoadPercentage -Average | Select-Object -ExpandProperty Average"`
         );
-        return Math.round(parseFloat(out));
+        return Math.round(Number.parseFloat(out));
     } catch { return null; }
 };
 
@@ -182,7 +187,7 @@ const getWindowsMemoryUsage = async (conn) => {
         const out = await executeCommand(conn,
             `powershell -NoProfile -Command "$os = Get-WmiObject Win32_OperatingSystem; Write-Output ($os.TotalVisibleMemorySize * 1024); Write-Output ($os.FreePhysicalMemory * 1024)"`
         );
-        const [total, free] = out.split("\n").map(l => parseInt(l.trim()));
+        const [total, free] = out.split("\n").map(l => Number.parseInt(l.trim()));
         return { usage: Math.round(((total - free) / total) * 100), total };
     } catch { return { usage: null, total: null }; }
 };
@@ -192,7 +197,7 @@ const getWindowsUptime = async (conn) => {
         const out = await executeCommand(conn,
             `powershell -NoProfile -Command "[int](((Get-Date) - (gcim Win32_OperatingSystem).LastBootUpTime).TotalSeconds)"`
         );
-        return parseInt(out.trim());
+        return Number.parseInt(out.trim());
     } catch { return null; }
 };
 
@@ -201,7 +206,7 @@ const getWindowsProcessCount = async (conn) => {
         const out = await executeCommand(conn,
             `powershell -NoProfile -Command "(Get-Process).Count"`
         );
-        return parseInt(out.trim());
+        return Number.parseInt(out.trim());
     } catch { return null; }
 };
 
@@ -212,8 +217,8 @@ const getWindowsDiskUsage = async (conn) => {
         );
         return out.split("\n").filter(Boolean).map(line => {
             const [device, size, free, fs, label] = line.trim().split("|");
-            const sizeBytes = parseInt(size) || 0;
-            const freeBytes = parseInt(free) || 0;
+            const sizeBytes = Number.parseInt(size) || 0;
+            const freeBytes = Number.parseInt(free) || 0;
             const used = sizeBytes - freeBytes;
             return {
                 name: device.replace(":", ""),
@@ -244,9 +249,9 @@ const getWindowsProcessList = async (conn) => {
             const parts = line.trim().split("|");
             return {
                 user: parts[0] || "SYSTEM",
-                pid: parseInt(parts[1]) || 0,
-                cpu: parseFloat(parts[2]) || 0,
-                mem: parseFloat(parts[3]) || 0,
+                pid: Number.parseInt(parts[1]) || 0,
+                cpu: Number.parseFloat(parts[2]) || 0,
+                mem: Number.parseFloat(parts[3]) || 0,
                 vsz: 0, rss: 0, tty: "?", stat: "?",
                 start: "", time: "",
                 command: parts[4] || "",
@@ -277,9 +282,9 @@ const getWindowsNetworkInterfaces = async (conn) => {
                 mac: mac || null,
                 state: (state || "").toLowerCase().trim(),
                 mtu: null,
-                speed: speed ? parseInt(speed.replace(/\D/g, "")) / 1000000 : null,
-                rxBytes: parseInt(rx) || 0,
-                txBytes: parseInt(tx) || 0,
+                speed: speed ? Number.parseInt(speed.replace(/\D/g, "")) / 1000000 : null,
+                rxBytes: Number.parseInt(rx) || 0,
+                txBytes: Number.parseInt(tx) || 0,
                 ipv4: ipv4 ? [ipv4] : [],
                 ipv6: [],
             };
