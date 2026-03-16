@@ -76,7 +76,7 @@ const detectOS = async (conn) => {
     } catch {}
     try {
         const result = await executeCommand(conn, 'powershell -NoProfile -Command "(Get-WmiObject Win32_OperatingSystem).Caption"');
-        if (result && result.toLowerCase().includes("windows")) return "windows";
+        if (result?.toLowerCase().includes("windows")) return "windows";
     } catch {}
     return "unknown";
 };
@@ -282,7 +282,7 @@ const getWindowsNetworkInterfaces = async (conn) => {
                 mac: mac || null,
                 state: (state || "").toLowerCase().trim(),
                 mtu: null,
-                speed: speed ? Number.parseInt(speed.replace(/\D/g, "")) / 1000000 : null,
+                speed: speed ? Number.parseInt(speed.replaceAll(/\D/g, "")) / 1000000 : null,
                 rxBytes: Number.parseInt(rx) || 0,
                 txBytes: Number.parseInt(tx) || 0,
                 ipv4: ipv4 ? [ipv4] : [],
