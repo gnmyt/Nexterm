@@ -1,1 +1,0 @@
-export {FileEditor as default} from "./FileEditor.jsx";

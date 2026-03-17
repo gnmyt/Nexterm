@@ -1,0 +1,114 @@
+{
+
+    "LOGIN" : {
+
+        "ERROR_PASSWORD_BLANK"    : "@:APP.ERROR_PASSWORD_BLANK",
+        "ERROR_PASSWORD_SAME"     : "The new password must be different from the expired password.",
+        "ERROR_PASSWORD_MISMATCH" : "@:APP.ERROR_PASSWORD_MISMATCH",
+        "ERROR_NOT_VALID"         : "This user account is not currently valid.",
+        "ERROR_NOT_ACCESSIBLE"    : "Access to this account is not currently allowed. Please try again later.",
+
+        "INFO_PASSWORD_EXPIRED" : "Your password has expired and must be reset. Please enter a new password to continue.",
+
+        "FIELD_HEADER_NEW_PASSWORD"         : "New password",
+        "FIELD_HEADER_CONFIRM_NEW_PASSWORD" : "Confirm new password"
+
+    },
+
+    "CONNECTION_ATTRIBUTES" : {
+
+        "FIELD_HEADER_MAX_CONNECTIONS"          : "Maximum number of connections:",
+        "FIELD_HEADER_MAX_CONNECTIONS_PER_USER" : "Maximum number of connections per user:",
+
+        "FIELD_HEADER_FAILOVER_ONLY"            : "Use for failover only:",
+        "FIELD_HEADER_WEIGHT"                   : "Connection weight:",
+
+        "FIELD_HEADER_GUACD_HOSTNAME"   : "Hostname:",
+        "FIELD_HEADER_GUACD_ENCRYPTION" : "Encryption:",
+        "FIELD_HEADER_GUACD_PORT"       : "Port:",
+
+        "FIELD_OPTION_GUACD_ENCRYPTION_EMPTY" : "",
+        "FIELD_OPTION_GUACD_ENCRYPTION_NONE"  : "None (unencrypted)",
+        "FIELD_OPTION_GUACD_ENCRYPTION_SSL"   : "SSL / TLS",
+
+        "SECTION_HEADER_CONCURRENCY"    : "Concurrency Limits",
+        "SECTION_HEADER_LOAD_BALANCING" : "Load Balancing",
+        "SECTION_HEADER_GUACD"          : "Guacamole Proxy Parameters (guacd)"
+
+    },
+
+    "CONNECTION_GROUP_ATTRIBUTES" : {
+
+        "FIELD_HEADER_ENABLE_SESSION_AFFINITY"  : "Enable session affinity:",
+        "FIELD_HEADER_MAX_CONNECTIONS"          : "Maximum number of connections:",
+        "FIELD_HEADER_MAX_CONNECTIONS_PER_USER" : "Maximum number of connections per user:",
+
+        "SECTION_HEADER_CONCURRENCY" : "Concurrency Limits (Balancing Groups)"
+
+    },
+
+    "DATA_SOURCE_MYSQL" : {
+        "NAME" : "MySQL"
+    },
+
+    "DATA_SOURCE_MYSQL_SHARED" : {
+        "NAME" : "Shared Connections (MySQL)"
+    },
+
+    "DATA_SOURCE_POSTGRESQL" : {
+        "NAME" : "PostgreSQL"
+    },
+
+    "DATA_SOURCE_POSTGRESQL_SHARED" : {
+        "NAME" : "Shared Connections (PostgreSQL)"
+    },
+
+    "DATA_SOURCE_SQLSERVER" : {
+        "NAME" : "SQL Server"
+    },
+
+    "DATA_SOURCE_SQLSERVER_SHARED" : {
+        "NAME" : "Shared Connections (SQL Server)"
+    },
+
+    "HOME" : {
+        "INFO_SHARED_BY" : "Shared by {USERNAME}"
+    },
+
+    "PASSWORD_POLICY" : {
+
+        "ERROR_CONTAINS_USERNAME"      : "Passwords may not contain the username.",
+        "ERROR_REQUIRES_DIGIT"         : "Passwords must contain at least one digit.",
+        "ERROR_REQUIRES_MULTIPLE_CASE" : "Passwords must contain both uppercase and lowercase characters.",
+        "ERROR_REQUIRES_NON_ALNUM"     : "Passwords must contain at least one symbol.",
+        "ERROR_REUSED"                 : "This password has already been used. Please do not reuse any of the previous {HISTORY_SIZE} {HISTORY_SIZE, plural, one{password} other{passwords}}.",
+        "ERROR_TOO_SHORT"              : "Passwords must be at least {LENGTH} {LENGTH, plural, one{character} other{characters}} long.",
+        "ERROR_TOO_YOUNG"              : "The password for this account has already been reset. Please wait at least {WAIT} more {WAIT, plural, one{day} other{days}} before changing the password again."
+
+    },
+
+    "USER_ATTRIBUTES" : {
+
+        "FIELD_HEADER_EXPIRED"             : "Password expired:",
+        "FIELD_HEADER_ACCESS_WINDOW_END"   : "Do not allow access after:",
+        "FIELD_HEADER_ACCESS_WINDOW_START" : "Allow access after:",
+        "FIELD_HEADER_TIMEZONE"            : "User time zone:",
+        "FIELD_HEADER_VALID_FROM"          : "Enable account after:",
+        "FIELD_HEADER_VALID_UNTIL"         : "Disable account after:",
+
+        "SECTION_HEADER_RESTRICTIONS" : "Account Restrictions",
+        "SECTION_HEADER_PROFILE"      : "Profile"
+
+    },
+
+    "USER_GROUP_ATTRIBUTES" : {
+
+        "SECTION_HEADER_RESTRICTIONS" : "Group Restrictions"
+
+    },
+
+    "CONNECTION_PARAMETERS": {
+        "DATABASE_PARAMETER_VALUE_TOO_LONG": "The value provided for connection parameter {PARAMETER_NAME} exceeds the maximum allowed length of {MAX_SIZE} {MAX_SIZE, plural, one{character} other{characters}}."
+    } 
+
+}

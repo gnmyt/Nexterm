@@ -1,0 +1,190 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ */
+
+.import .import-buttons {
+
+    margin-top: 10px;
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+
+}
+
+.import .errors table {
+
+    width: 100%;
+
+}
+
+.import .errors .error-message {
+
+    color: red;
+
+}
+
+.import .errors .error-message ul {
+
+    margin: 0px;
+
+}
+
+.file-upload-container {
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 24px 24px 24px;
+
+    width: fit-content;
+
+    border: 1px solid rgba(0,0,0,.25);
+    box-shadow: 1px 1px 2px rgb(0 0 0 / 25%);
+
+    margin-left: auto;
+    margin-right: auto;
+
+}
+
+.file-upload-container.file-selected {
+
+    display: flex;
+    flex-direction: row;
+    gap: 100px;
+
+}
+
+.file-upload-container .clear {
+
+    margin: 0;
+
+}
+
+.file-upload-container .upload-header {
+
+    display: flex;
+    flex-direction: row;
+    width: 500px;
+    margin-bottom: 5px;
+    justify-content: space-between;
+
+}
+
+.file-upload-container .file-error {
+
+    color: red;
+
+}
+
+.file-upload-container .file-options {
+
+    font-weight: bold;
+
+}
+
+.file-upload-container .file-upload-input {
+
+    display: none;
+
+}
+
+.file-upload-container .drop-target {
+
+    display: flex;
+    flex-direction: column;
+
+    align-items: center;
+    justify-content: space-evenly;
+
+    width: 500px;
+    height: 200px;
+
+    background: rgba(0,0,0,.04);
+    border: 1px solid black;
+
+}
+
+.file-upload-container .drop-target.file-present {
+
+    background: rgba(0,0,0,.15);
+
+}
+
+
+.file-upload-container .drop-target .file-name {
+
+    font-weight: bold;
+    font-size: 1.5em;
+
+}
+
+.file-upload-container .drop-target.drop-pending {
+
+    background: #3161a9;
+
+}
+
+.file-upload-container .drop-target.drop-pending > * {
+
+    opacity: 0.5;
+
+}
+
+.file-upload-container .drop-target .title {
+
+    font-weight: bold;
+    font-size: 1.25em;
+
+}
+
+.file-upload-container .drop-target .browse-link {
+
+    text-decoration: underline;
+    cursor: pointer;
+
+}
+
+.file-upload-container .import-config {
+
+    margin-top: 0.5em;
+    list-style: none;
+    width: 100%;
+    padding-left: 0;
+
+}
+
+.file-upload-container .import-config .help {
+
+    visibility: hidden;
+    cursor: help;
+    
+}
+
+.file-upload-container .import-config .help::after {
+
+    content: '';
+    visibility: visible;
+    display: inline-block;
+    background-image: url('images/question.svg');
+    background-size: contain;
+    width: 20px;
+    height: 20px;
+    position: relative;
+    top: 4px;
+
+}

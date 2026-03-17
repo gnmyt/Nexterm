@@ -1,0 +1,67 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ */
+
+a.button.add-user,
+a.button.add-user-group,
+a.button.add-connection,
+a.button.add-connection-group,
+a.button.import-connections {
+    font-size: 0.8em;
+    padding-left: 1.8em;
+    position: relative;
+}
+
+a.button.add-user::before,
+a.button.add-user-group::before,
+a.button.add-connection::before,
+a.button.add-connection-group::before,
+a.button.import-connections::before {
+
+    content: ' ';
+    position: absolute;
+    width: 1.8em;
+    top: 0;
+    bottom: 0;
+    left: 0;
+
+    background-repeat: no-repeat;
+    background-size: 1em;
+    background-position: 0.5em 0.45em;
+
+}
+
+a.button.add-user::before {
+    background-image: url('images/action-icons/guac-user-add.svg');
+}
+
+a.button.add-user-group::before {
+    background-image: url('images/action-icons/guac-user-group-add.svg');
+}
+
+a.button.add-connection::before {
+    background-image: url('images/action-icons/guac-monitor-add.svg');
+}
+
+a.button.add-connection-group::before {
+    background-image: url('images/action-icons/guac-group-add.svg');
+}
+
+a.button.import-connections::before {
+    background-image: url('images/action-icons/guac-file-import.svg');
+}

@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+    Licensed to the Apache Software Foundation (ASF) under one
+    or more contributor license agreements.  See the NOTICE file
+    distributed with this work for additional information
+    regarding copyright ownership.  The ASF licenses this file
+    to you under the Apache License, Version 2.0 (the
+    "License"); you may not use this file except in compliance
+    with the License.  You may obtain a copy of the License at
+
+      http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing,
+    software distributed under the License is distributed on an
+    "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+    KIND, either express or implied.  See the License for the
+    specific language governing permissions and limitations
+    under the License.
+-->
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
+                        http://maven.apache.org/maven-v4_0_0.xsd">
+
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>org.apache.guacamole</groupId>
+    <artifactId>extensions</artifactId>
+    <packaging>pom</packaging>
+    <version>1.6.0</version>
+    <name>extensions</name>
+    <url>http://guacamole.apache.org/</url>
+
+    <parent>
+        <groupId>org.apache.guacamole</groupId>
+        <artifactId>guacamole-client</artifactId>
+        <version>1.6.0</version>
+        <relativePath>../</relativePath>
+    </parent>
+
+    <modules>
+
+        <!-- Authentication extensions -->
+        <module>guacamole-auth-ban</module>
+        <module>guacamole-auth-duo</module>
+        <module>guacamole-auth-header</module>
+        <module>guacamole-auth-jdbc</module>
+        <module>guacamole-auth-json</module>
+        <module>guacamole-auth-ldap</module>
+        <module>guacamole-auth-quickconnect</module>
+        <module>guacamole-auth-restrict</module>
+        <module>guacamole-auth-sso</module>
+        <module>guacamole-auth-totp</module>
+
+        <!-- Additional features -->
+        <module>guacamole-history-recording-storage</module>
+        <module>guacamole-vault</module>
+
+        <!-- Utility extensions -->
+        <module>guacamole-display-statistics</module>
+
+    </modules>
+
+    <build>
+        <plugins>
+
+            <!-- Copy dependencies prior to packaging -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <version>3.1.2</version>
+                <executions>
+                    <execution>
+                        <id>copy-runtime-dependencies</id>
+                        <phase>prepare-package</phase>
+                        <goals>
+                            <goal>copy-dependencies</goal>
+                        </goals>
+                        <configuration>
+                            <includeScope>runtime</includeScope>
+                            <outputDirectory>${project.build.directory}/classes</outputDirectory>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <!-- Automatically generate LICENSE and NOTICE -->
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>exec-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>generate-license-files</id>
+                        <phase>generate-resources</phase>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <!-- Verify that SLF4J is *NEVER* bundled within extensions (it
+                will conflict with the version bundled with the webapp) -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-enforcer-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>never-bundle-slf4j</id>
+                        <configuration>
+                            <rules>
+                                <bannedDependencies>
+                                    <excludes>
+                                        <exclude>org.slf4j:*:*:*:compile</exclude>
+                                        <exclude>org.slf4j:*:*:*:runtime</exclude>
+                                    </excludes>
+                                </bannedDependencies>
+                            </rules>
+                        </configuration>
+                        <goals>
+                            <goal>enforce</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
+        </plugins>
+    </build>
+
+    <dependencies>
+
+        <!-- SLF4J is always available via the webapp -->
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        
+    </dependencies>
+
+    <profiles>
+
+        <!-- Build extensions with LGPL-licensed dependencies only if explicitly requested -->
+        <profile>
+            <id>lgpl-extensions</id>
+            <modules>
+                <module>guacamole-auth-radius</module>
+            </modules>
+        </profile>
+
+    </profiles>
+
+</project>

@@ -1,0 +1,56 @@
+@use "@/common/styles/colors" as *
+
+.not-found-page
+  min-height: 100vh
+  display: flex
+  align-items: center
+  justify-content: center
+  padding: 2rem
+
+.not-found-content
+  text-align: center
+  max-width: 500px
+
+.error-code
+  font-size: 8rem
+  font-weight: 800
+  line-height: 1
+  background: linear-gradient(135deg, $primary 0%, $blue 100%)
+  -webkit-background-clip: text
+  -webkit-text-fill-color: transparent
+  background-clip: text
+  margin-bottom: 1rem
+
+.not-found-content h1
+  font-size: 2rem
+  font-weight: 700
+  margin-bottom: 0.75rem
+
+.not-found-content p
+  font-size: 1.0625rem
+  color: $text-secondary
+  margin-bottom: 0.5rem
+
+.redirect-notice
+  font-size: 0.9375rem
+  color: $text-muted
+  margin-bottom: 2rem
+
+.not-found-actions
+  display: flex
+  gap: 1rem
+  justify-content: center
+
+@media (max-width: 640px)
+  .error-code
+    font-size: 5rem
+    
+  .not-found-content h1
+    font-size: 1.5rem
+    
+  .not-found-actions
+    flex-direction: column
+    
+    .btn
+      width: 100%
+      justify-content: center

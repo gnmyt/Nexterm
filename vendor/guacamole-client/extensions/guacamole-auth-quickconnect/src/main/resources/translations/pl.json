@@ -1,0 +1,18 @@
+{
+
+    "DATA_SOURCE_QUICKCONNECT" : {
+        "NAME" : "QuickConnect"
+    },
+
+    "QUICKCONNECT" : {
+        "ACTION_CONNECT"        : "Połącz",
+        
+        "ERROR_INVALID_URI"      : "Podano nieprawidłowy URI",
+        "ERROR_NO_HOST"          : "Nie podano hosta",
+        "ERROR_NO_PROTOCOL"      : "Nie podano protokołu",
+        "ERROR_NOT_ABSOLUTE_URI" : "Adres URI nie jest absolutny",
+        
+        "FIELD_PLACEHOLDER_URI" : "Podaj URI Połączenia"
+    }
+
+}

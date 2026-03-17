@@ -1,0 +1,2 @@
+commons-beanutils:commons-beanutils-core:jar:1.7.0
+commons-beanutils:commons-beanutils:jar:1.7.0

@@ -1,0 +1,5 @@
+{
+    "LOGIN": {
+        "ERROR_TOO_MANY_ATTEMPTS" : "Too many failed authentication attempts. Please try again later."
+    }
+}

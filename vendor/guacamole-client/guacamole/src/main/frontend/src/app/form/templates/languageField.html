@@ -1,0 +1,7 @@
+<div class="language-field">
+    <select guac-focus="focused"
+            ng-attr-id="{{ fieldId }}"
+            ng-attr-name="{{ field.name }}"
+            ng-model="model"
+            ng-options="language.key as language.value for language in languages | toArray | orderBy: key"></select>
+</div>

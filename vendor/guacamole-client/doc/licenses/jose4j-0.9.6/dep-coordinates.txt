@@ -1,0 +1,1 @@
+org.bitbucket.b_c:jose4j:jar:0.9.6

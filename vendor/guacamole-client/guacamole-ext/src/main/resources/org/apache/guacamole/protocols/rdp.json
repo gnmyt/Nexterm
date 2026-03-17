@@ -1,0 +1,523 @@
+{
+    "name"  : "rdp",
+    "connectionForms" : [
+
+        {
+            "name"  : "network",
+            "fields" : [
+                {
+                    "name"  : "hostname",
+                    "type"  : "TEXT"
+                },
+                {
+                    "name"  : "port",
+                    "type"  : "NUMERIC"
+                },
+                {
+                    "name"  : "timeout",
+                    "type"  : "NUMERIC"
+                }
+            ]
+        },
+
+        {
+            "name"  : "authentication",
+            "fields" : [
+                {
+                    "name"  : "username",
+                    "type"  : "USERNAME"
+                },
+                {
+                    "name"  : "password",
+                    "type"  : "PASSWORD"
+                },
+                {
+                    "name"  : "domain",
+                    "type"  : "TEXT"
+                },
+                {
+                    "name"    : "security",
+                    "type"    : "ENUM",
+                    "options" : [ "", "rdp", "tls", "nla", "vmconnect", "any" ]
+                },
+                {
+                    "name"    : "disable-auth",
+                    "type"    : "BOOLEAN",
+                    "options" : [ "true" ]
+                },
+                {
+                    "name"    : "ignore-cert",
+                    "type"    : "BOOLEAN",
+                    "options" : [ "true" ]
+                },
+                {
+                    "name"    : "cert-tofu",
+                    "type"    : "BOOLEAN",
+                    "options" : [ "true" ]
+                },
+                {
+                    "name"    : "cert-fingerprints",
+                    "type"    : "TEXT"
+                }
+            ]
+        },
+
+        {
+            "name"  : "gateway",
+            "fields" : [
+                {
+                    "name"  : "gateway-hostname",
+                    "type"  : "TEXT"
+                },
+                {
+                    "name"  : "gateway-port",
+                    "type"  : "NUMERIC"
+                },
+                {
+                    "name"  : "gateway-username",
+                    "type"  : "USERNAME"
+                },
+                {
+                    "name"  : "gateway-password",
+                    "type"  : "PASSWORD"
+                },
+                {
+                    "name"  : "gateway-domain",
+                    "type"  : "TEXT"
+                }
+            ]
+        },
+
+        {
+            "name"  : "basic-parameters",
+            "fields" : [
+                {
+                    "name"  : "initial-program",
+                    "type"  : "TEXT"
+                },
+                {
+                    "name"  : "client-name",
+                    "type"  : "TEXT"
+                },
+                {
+                    "name"    : "server-layout",
+                    "type"    : "ENUM",
+                    "options" : [
+                        "",
+                        "cs-cz-qwertz",
+                        "de-ch-qwertz",
+                        "de-de-qwertz",
+                        "en-gb-qwerty",
+                        "en-us-qwerty",
+                        "es-es-qwerty",
+                        "es-latam-qwerty",
+                        "failsafe",
+                        "fr-be-azerty",
+                        "fr-fr-azerty",
+                        "fr-ca-qwerty",
+                        "fr-ch-qwertz",
+                        "hu-hu-qwertz",                        
+                        "it-it-qwerty",
+                        "ja-jp-qwerty",
+                        "no-no-qwerty",
+                        "pl-pl-qwerty",
+                        "pt-br-qwerty",
+                        "pt-pt-qwerty",
+                        "ro-ro-qwerty",
+                        "sv-se-qwerty",
+                        "da-dk-qwerty",
+                        "tr-tr-qwerty"
+                    ]
+                },
+                {
+                    "name"  : "timezone",
+                    "type"  : "TIMEZONE"
+                },
+                {
+                    "name"    : "enable-touch",
+                    "type"    : "BOOLEAN",
+                    "options" : [ "true" ]
+                },
+                {
+                    "name"    : "console",
+                    "type"    : "BOOLEAN",
+                    "options" : [ "true" ]
+                }
+            ]
+        },
+
+        {
+            "name"  : "display",
+            "fields" : [
+                {
+                    "name"  : "width",
+                    "type"  : "NUMERIC"
+                },
+                {
+                    "name"  : "height",
+                    "type"  : "NUMERIC"
+                },
+                {
+                    "name"  : "dpi",
+                    "type"  : "NUMERIC"
+                },
+                {
+                    "name"    : "color-depth",
+                    "type"    : "ENUM",
+                    "options" : [ "", "8", "16", "24", "32" ]
+                },
+                {
+                    "name"    : "force-lossless",
+                    "type"    : "BOOLEAN",
+                    "options" : [ "true" ]
+                },
+                {
+                    "name"    : "resize-method",
+                    "type"    : "ENUM",
+                    "options" : [ "", "reconnect", "display-update" ]
+                },
+                {
+                    "name"    : "read-only",
+                    "type"    : "BOOLEAN",
+                    "options" : [ "true" ]
+                }
+            ]
+        },
+
+        {
+            "name"  : "clipboard",
+            "fields" : [
+                {
+                    "name"    : "normalize-clipboard",
+                    "type"    : "ENUM",
+                    "options" : [ "", "preserve", "unix", "windows" ]
+                },
+                {
+                    "name"    : "disable-copy",
+                    "type"    : "BOOLEAN",
+                    "options" : [ "true" ]
+                },
+                {
+                    "name"    : "disable-paste",
+                    "type"    : "BOOLEAN",
+                    "options" : [ "true" ]
+                }
+            ]
+        },
+
+        {
+            "name"  : "device-redirection",
+            "fields" : [
+                {
+                    "name"    : "console-audio",
+                    "type"    : "BOOLEAN",
+                    "options" : [ "true" ]
+                },
+                {
+                    "name"    : "disable-audio",
+                    "type"    : "BOOLEAN",
+                    "options" : [ "true" ]
+                },
+                {
+                    "name"    : "enable-audio-input",
+                    "type"    : "BOOLEAN",
+                    "options" : [ "true" ]
+                },
+                {
+                    "name"    : "enable-printing",
+                    "type"    : "BOOLEAN",
+                    "options" : [ "true" ]
+                },
+                {
+                    "name"   : "printer-name",
+                    "type"   : "TEXT"
+                },
+                {
+                    "name"    : "enable-drive",
+                    "type"    : "BOOLEAN",
+                    "options" : [ "true" ]
+                },
+                {
+                    "name"    : "drive-name",
+                    "type"    : "TEXT"
+                },
+                {
+                    "name"    : "disable-download",
+                    "type"    : "BOOLEAN",
+                    "options" : [ "true" ]
+                },
+                {
+                    "name"    : "disable-upload",
+                    "type"    : "BOOLEAN",
+                    "options" : [ "true" ]
+                },
+                {
+                    "name"  : "drive-path",
+                    "type"  : "TEXT"
+                },
+                {
+                    "name"    : "create-drive-path",
+                    "type"    : "BOOLEAN",
+                    "options" : [ "true" ]
+                },
+                {
+                    "name"  : "static-channels",
+                    "type"  : "TEXT"
+                }
+            ]
+        },
+
+        {
+            "name" : "performance",
+            "fields" : [
+                {
+                    "name"    : "enable-wallpaper",
+                    "type"    : "BOOLEAN",
+                    "options" : [ "true" ]
+                },
+                {
+                    "name"    : "enable-theming",
+                    "type"    : "BOOLEAN",
+                    "options" : [ "true" ]
+                },
+                {
+                    "name"    : "enable-font-smoothing",
+                    "type"    : "BOOLEAN",
+                    "options" : [ "true" ]
+                },
+                {
+                    "name"    : "enable-full-window-drag",
+                    "type"    : "BOOLEAN",
+                    "options" : [ "true" ]
+                },
+                {
+                    "name"    : "enable-desktop-composition",
+                    "type"    : "BOOLEAN",
+                    "options" : [ "true" ]
+                },
+                {
+                    "name"    : "enable-menu-animations",
+                    "type"    : "BOOLEAN",
+                    "options" : [ "true" ]
+                },
+                {
+                    "name"    : "disable-bitmap-caching",
+                    "type"    : "BOOLEAN",
+                    "options" : [ "true" ]
+                },
+                {
+                    "name"    : "disable-offscreen-caching",
+                    "type"    : "BOOLEAN",
+                    "options" : [ "true" ]
+                },
+                {
+                    "name"    : "disable-glyph-caching",
+                    "type"    : "BOOLEAN",
+                    "options" : [ "true" ]
+                },
+                {
+                    "name"    : "disable-gfx",
+                    "type"    : "BOOLEAN",
+                    "options" : [ "true" ]
+                }
+            ]
+        },
+
+        {
+            "name"  : "remoteapp",
+            "fields" : [
+                {
+                    "name"  : "remote-app",
+                    "type"  : "TEXT"
+                },
+                {
+                    "name"  : "remote-app-dir",
+                    "type"  : "TEXT"
+                },
+                {
+                    "name"  : "remote-app-args",
+                    "type"  : "TEXT"
+                }
+            ]
+        },
+
+        {
+            "name"  : "preconnection-pdu",
+            "fields" : [
+                {
+                    "name"  : "preconnection-id",
+                    "type"  : "NUMERIC"
+                },
+                {
+                    "name"  : "preconnection-blob",
+                    "type"  : "TEXT"
+                }
+            ]
+        },
+
+        {
+            "name"  : "load-balancing",
+            "fields" : [
+                {
+                    "name"  : "load-balance-info",
+                    "type"  : "TEXT"
+                }
+            ]
+        },
+
+        {
+            "name" : "recording",
+            "fields" : [
+                {
+                    "name"  : "recording-path",
+                    "type"  : "TEXT"
+                },
+                {
+                    "name"  : "recording-name",
+                    "type"  : "TEXT"
+                },
+                {
+                    "name"  : "recording-exclude-output",
+                    "type"  : "BOOLEAN",
+                    "options" : [ "true" ]
+                },
+                {
+                    "name"  : "recording-exclude-mouse",
+                    "type"  : "BOOLEAN",
+                    "options" : [ "true" ]
+                },
+                {
+                    "name"  : "recording-exclude-touch",
+                    "type"  : "BOOLEAN",
+                    "options" : [ "true" ]
+                },
+                {
+                    "name"  : "recording-include-keys",
+                    "type"  : "BOOLEAN",
+                    "options" : [ "true" ]
+                },
+                {
+                    "name"  : "create-recording-path",
+                    "type"  : "BOOLEAN",
+                    "options" : [ "true" ]
+                },
+                {
+                    "name"  : "recording-write-existing",
+                    "type"  : "BOOLEAN",
+                    "options" : [ "true" ]
+                }
+            ]
+        },
+
+        {
+            "name"  : "sftp",
+            "fields" : [
+                {
+                    "name"    : "enable-sftp",
+                    "type"    : "BOOLEAN",
+                    "options" : [ "true" ]
+                },
+                {
+                    "name"  : "sftp-hostname",
+                    "type"  : "TEXT"
+                },
+                {
+                    "name"  : "sftp-port",
+                    "type"  : "NUMERIC"
+                },
+                {
+                    "name"  : "sftp-timeout",
+                    "type"  : "NUMERIC"
+                },
+                {
+                    "name"  : "sftp-host-key",
+                    "type"  : "TEXT"
+                },
+                {
+                    "name"  : "sftp-username",
+                    "type"  : "USERNAME"
+                },
+                {
+                    "name"  : "sftp-password",
+                    "type"  : "PASSWORD"
+                },
+                {
+                    "name"  : "sftp-private-key",
+                    "type"  : "MULTILINE"
+                },
+                {
+                    "name"  : "sftp-passphrase",
+                    "type"  : "PASSWORD"
+                },
+                {
+                    "name"  : "sftp-public-key",
+                    "type"  : "MULTILINE"
+                },
+                {
+                    "name"  : "sftp-root-directory",
+                    "type"  : "TEXT"
+                },
+                {
+                    "name"  : "sftp-directory",
+                    "type"  : "TEXT"
+                },
+                {
+                    "name"  : "sftp-server-alive-interval",
+                    "type"  : "NUMERIC"
+                },
+                {
+                    "name"    : "sftp-disable-download",
+                    "type"    : "BOOLEAN",
+                    "options" : [ "true" ]
+                },
+                {
+                    "name"    : "sftp-disable-upload",
+                    "type"    : "BOOLEAN",
+                    "options" : [ "true" ]
+                }
+            ]
+        },
+        
+        {
+            "name"   : "wol",
+            "fields" : [
+                {
+                    "name"    : "wol-send-packet",
+                    "type"    : "BOOLEAN",
+                    "options" : [ "true" ]
+                },
+                {
+                    "name" : "wol-mac-addr",
+                    "type" : "TEXT"
+                },
+                {
+                    "name" : "wol-broadcast-addr",
+                    "type" : "TEXT"
+                },
+                {
+                    "name" : "wol-udp-port",
+                    "type" : "NUMERIC"
+                },
+                {
+                    "name" : "wol-wait-time",
+                    "type" : "NUMERIC"
+                }
+            ]
+        }
+
+    ],
+    "sharingProfileForms" : [
+
+        {
+            "name"  : "display",
+            "fields" : [
+                {
+                    "name"    : "read-only",
+                    "type"    : "BOOLEAN",
+                    "options" : [ "true" ]
+                }
+            ]
+        }
+
+    ]
+}

@@ -34,6 +34,8 @@ const encrypt = (text) => {
 const decrypt = (encrypted, iv, authTag) => {
     if (!encrypted || !iv || !authTag) return null;
 
+    const encryptedHex = Buffer.isBuffer(encrypted) ? encrypted.toString('hex') : encrypted;
+
     const decipher = crypto.createDecipheriv(
         algorithm,
         Buffer.from(getEncryptionKey(), "hex"),
@@ -42,7 +44,7 @@ const decrypt = (encrypted, iv, authTag) => {
 
     decipher.setAuthTag(Buffer.from(authTag, "hex"));
 
-    let decrypted = decipher.update(encrypted, "hex", "utf8");
+    let decrypted = decipher.update(encryptedHex, "hex", "utf8");
     decrypted += decipher.final("utf8");
 
     return decrypted;

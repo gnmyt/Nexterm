@@ -1,0 +1,63 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ */
+
+.fatal-page-error-modal guac-modal {
+    z-index: 30;
+}
+
+.fatal-page-error {
+    display: inline-block;
+    width: 100%;
+    max-width: 5in;
+    padding: 1em;
+    text-align: left;
+}
+
+.fatal-page-error h1 {
+    text-transform: uppercase;
+    padding: 0;
+    padding-right: 1em;
+}
+
+.fatal-page-error h1::before {
+    content: ' ';
+    display: inline-block;
+    background: url('images/warning.svg');
+    background-repeat: no-repeat;
+    height: 1em;
+    width: 1em;
+    background-size: contain;
+    margin: 0 0.25em;
+    margin-bottom: -0.2em;
+}
+
+/* Ensure fatal error is initially hidden, fading the error message in when
+ * needed */
+
+.fatal-page-error-outer {
+    visibility: hidden;
+    opacity: 0;
+    transition: opacity, visibility;
+    transition-duration: 0.25s;
+}
+
+.shown.fatal-page-error-outer {
+    visibility: visible;
+    opacity: 1;
+}

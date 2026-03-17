@@ -1,0 +1,1 @@
+net.sf.ehcache:ehcache-core:jar:2.4.0

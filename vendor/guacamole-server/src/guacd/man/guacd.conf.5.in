@@ -1,0 +1,178 @@
+.\"
+.\" Licensed to the Apache Software Foundation (ASF) under one
+.\" or more contributor license agreements.  See the NOTICE file
+.\" distributed with this work for additional information
+.\" regarding copyright ownership.  The ASF licenses this file
+.\" to you under the Apache License, Version 2.0 (the
+.\" "License"); you may not use this file except in compliance
+.\" with the License.  You may obtain a copy of the License at
+.\"
+.\"   http://www.apache.org/licenses/LICENSE-2.0
+.\"
+.\" Unless required by applicable law or agreed to in writing,
+.\" software distributed under the License is distributed on an
+.\" "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+.\" KIND, either express or implied.  See the License for the
+.\" specific language governing permissions and limitations
+.\" under the License.
+.\"
+.TH guacd.conf 5 "1 Jun 2017" "version @PACKAGE_VERSION@" "Apache Guacamole"
+.
+.SH NAME
+/etc/guacamole/guacd.conf \- Configuration file for guacd
+.
+.SH DESCRIPTION
+.B /etc/guacamole/guacd.conf
+is the configuration file for the Guacamole proxy daemon used by the Guacamole
+web application and framework,
+.B guacd.
+Use of this file is entirely optional, and all of its options can be specified
+from the command line when running
+.B guacd.
+If you provide both the
+.B guacd.conf
+file and command line options, the command line options will take precedence.
+.
+.SH SYNTAX
+.B guacd.conf
+is made up of sections, where each section contains a set of parameter/value
+pairs. The parameters available are dictated by the section in use, and
+parameters may only be specified within a section.
+.P
+The beginning of each section is denoted with a section name in brackets, and
+each section ends implicitly with the beginning of a new section, or at the end
+of the file.
+.TP
+\fB[server]\fR
+Contains parameters which control how
+.B guacd
+behaves as a server, from a network perspective.
+.TP
+\fB[daemon]\fR
+Parameters which configure how
+.B guacd
+behaves as a daemon, such as what file should contain the PID, if any.
+.TP
+\fB[ssl]\fR
+Parameters which control the SSL support of
+.B guacd,
+such as the certificate and private key used for encryption of the Guacamole
+protocol. This section and its parameters are only valid if
+.B guacd
+was built with SSL support.
+.P
+Parameters within sections are written as a parameter name, followed by an
+equals sign, followed by the parameter value, all on one line. Comments may be
+placed anywhere, and consist of arbitrary text following a
+.B #
+symbol until end-of-line:
+.TP
+\fIname\fR \fB=\fR \fIvalue\fR \fB#\fR \fISome arbitrary comment text\fR
+.P
+Beware that it is the combination of the section name with the parameter name
+that makes up the fully qualified name of a parameter. Each parameter
+absolutely
+.I must
+be placed only within its proper section, or
+.B guacd.conf
+will fail to be parsed, and
+.B guacd
+will not start.
+.P
+If special characters need to be placed within a parameter value, such as
+whitespace, \fB#\fR, \fB"\fR, or \fB\\\fR, the entire value must be enclosed in
+double quotes, and each occurrence of \fB"\fR or \fB\\\fR within the value must
+be escaped with backslashes:
+.TP
+\fIname\fR \fB=\fR \fB"\fR\fIquoted # value \\\\ with \\" special characters\fR\fB"\fR
+.
+.SH SERVER PARAMETERS
+.TP
+\fBbind_host\fR \fB=\fR \fIHOSTNAME\fR
+Requires
+.B guacd
+to bind to a specific host when listening for connections. By default,
+.B guacd
+will bind to localhost only.
+.TP
+\fBbind_port\fR \fB=\fR \fIPORT\fR
+Requires
+.B guacd
+to bind to a specific port when listening for connections. By default,
+.B guacd
+will bind to port 4822.
+.
+.SH DAEMON PARAMETERS
+.TP
+\fBlog_level\fR \fB=\fR \fILEVEL\fR
+Sets the maximum level at which
+.B guacd
+will log messages to syslog and, if running in the foreground, the console.
+Legal values are
+.B trace,
+.B debug,
+.B info,
+.B warning,
+and
+.B error.
+The default value is
+.B info.
+.TP
+\fBpid_file\fR \fB=\fR \fIFILE\fR
+Causes
+.B guacd
+to write its PID to the specified file upon startup. Note that
+.B guacd
+must have sufficient privileges to create or write this file, or it will fail
+to start. This parameter is typically needed for startup scripts, such that the
+script can report on the status of
+.B guacd
+and kill it if necessary.
+.
+.SH SSL PARAMETERS
+If
+.B guacd
+was built with SSL support, then connections between the web application and
+.B guacd
+can be encrypted if an SSL certificate and key file are given.
+.P
+When using a chain of certificates, you must append the additional certificates
+to your server certificate. This can be done easily with the standard
+.B cat
+command. Beware that the certificate for
+.B guacd
+.I must
+be the first certificate in the file.
+.TP
+\fBserver_certificate\fR \fB=\fR \fICERTIFICATE FILE\fR
+Enables SSL/TLS using the given certificate file. Future connections to
+.B guacd
+will require SSL/TLS enabled in the client (the web application).
+.TP
+\fBserver_key\fR \fB=\fR \fIKEY FILE\fR
+Enables SSL/TLS using the given private key file. Future connections to
+.B guacd
+will require SSL/TLS enabled in the client (the web application).
+.
+.SH EXAMPLE
+.nf
+.RS
+#
+# guacd.conf example
+#
+
+[daemon]
+
+pid_file = /var/run/guacd.pid
+
+[server]
+
+bind_host = localhost
+bind_port = 4822
+
+[ssl]
+
+server_certificate = /etc/ssl/certs/guacd.crt
+server_key = /etc/ssl/private/guacd.key
+.RE
+.fi

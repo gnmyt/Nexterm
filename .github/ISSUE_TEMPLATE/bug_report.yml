@@ -28,6 +28,7 @@ body:
         - In the browser
         - On mobile
         - On a tablet
+        - On the connector app
     validations:
       required: true
   - type: dropdown

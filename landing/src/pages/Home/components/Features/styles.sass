@@ -1,0 +1,141 @@
+@use "@/common/styles/colors" as *
+
+.features-section
+  padding: 80px 48px
+  max-width: 1200px
+  margin: 0 auto
+
+.section-header
+  text-align: center
+  margin-bottom: 80px
+  
+  .section-label
+    display: inline-block
+    font-size: 0.875rem
+    font-weight: 500
+    color: $primary
+    text-transform: uppercase
+    letter-spacing: 0.1em
+    margin-bottom: 16px
+    
+  h2
+    font-size: 2.5rem
+    font-weight: 700
+    letter-spacing: -0.02em
+    margin-bottom: 12px
+    color: $text
+    
+  p
+    font-size: 1rem
+    color: $subtext
+    max-width: 480px
+    margin: 0 auto
+    line-height: 1.6
+
+.feature-blocks
+  display: flex
+  flex-direction: column
+  gap: 120px
+
+.feature-block
+  display: grid
+  grid-template-columns: 1fr 1.2fr
+  gap: 64px
+  align-items: center
+
+.feature-block.feature-reverse
+  grid-template-columns: 1.2fr 1fr
+  
+  .feature-content
+    order: 2
+
+.feature-content
+  display: flex
+  flex-direction: column
+  gap: 16px
+
+.feature-number
+  font-size: 0.875rem
+  font-weight: 600
+  color: $primary
+  font-family: "SF Mono", "Fira Code", monospace
+  letter-spacing: 0.05em
+
+.feature-content h3
+  font-size: 1.75rem
+  font-weight: 700
+  letter-spacing: -0.02em
+  color: $text
+
+.feature-content p
+  font-size: 1rem
+  line-height: 1.7
+  color: $subtext
+
+.feature-list
+  list-style: none
+  display: flex
+  flex-direction: column
+  gap: 12px
+  margin-top: 8px
+  
+  li
+    display: flex
+    align-items: center
+    gap: 12px
+    font-size: 0.9375rem
+    color: $subtext
+    
+    &::before
+      content: ""
+      width: 6px
+      height: 6px
+      background: $primary
+      border-radius: 50%
+      flex-shrink: 0
+
+.feature-image
+  position: relative
+  
+  img
+    width: 100%
+    border-radius: 0.75rem
+    border: 1px solid $dark-gray
+    box-shadow: $shadow-lg
+
+@media (max-width: 968px)
+  .features-section
+    padding: 60px 24px
+    
+  .section-header
+    margin-bottom: 60px
+    
+    h2
+      font-size: 2rem
+    
+  .feature-blocks
+    gap: 80px
+    
+  .feature-block,
+  .feature-block.feature-reverse
+    grid-template-columns: 1fr
+    gap: 32px
+    
+    .feature-content
+      order: 0
+    
+  .feature-content h3
+    font-size: 1.5rem
+
+@media (max-width: 640px)
+  .features-section
+    padding: 48px 20px
+    
+  .section-header
+    margin-bottom: 48px
+    
+    h2
+      font-size: 1.75rem
+      
+  .feature-blocks
+    gap: 64px

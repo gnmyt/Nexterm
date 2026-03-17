@@ -4,19 +4,23 @@ import Icon from "@mdi/react";
 const PageHeader = ({ icon, title, subtitle, children, onBackClick, backIcon }) => {
     return (
         <div className="page-header">
-            <div className="header-title">
+            <div className="header-left">
                 {onBackClick ? (
                     <div className="header-back" onClick={onBackClick}>
-                        <Icon path={backIcon} />
-                        <div>
+                        <div className="header-icon">
+                            <Icon path={backIcon} size={1} />
+                        </div>
+                        <div className="header-content">
                             <h1>{title}</h1>
                             {subtitle && <p>{subtitle}</p>}
                         </div>
                     </div>
                 ) : (
                     <>
-                        <Icon path={icon} />
-                        <div>
+                        <div className="header-icon">
+                            <Icon path={icon} size={1} />
+                        </div>
+                        <div className="header-content">
                             <h1>{title}</h1>
                             {subtitle && <p>{subtitle}</p>}
                         </div>

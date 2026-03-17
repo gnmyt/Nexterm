@@ -1,0 +1,101 @@
+@use "@/common/styles/colors" as *
+
+.footer
+  padding: 48px
+  border-top: 2px solid $dark-gray
+
+.footer-content
+  display: flex
+  justify-content: space-between
+  align-items: flex-start
+  gap: 48px
+  max-width: 1200px
+  margin: 0 auto 32px
+
+.footer-brand
+  max-width: 260px
+  
+  p
+    font-size: 0.9rem
+    color: $subtext
+    line-height: 1.6
+    margin-top: 12px
+
+.footer-logo
+  display: flex
+  align-items: center
+  gap: 10px
+  text-decoration: none
+  
+  img
+    width: 28px
+    height: 28px
+    
+  span
+    font-size: 1.125rem
+    font-weight: 700
+    color: $text
+
+.footer-links
+  display: flex
+  gap: 64px
+
+.footer-column
+  display: flex
+  flex-direction: column
+  gap: 12px
+  
+  h4
+    font-size: 0.75rem
+    font-weight: 600
+    color: $subtext
+    margin-bottom: 4px
+    text-transform: uppercase
+    letter-spacing: 0.08em
+    
+  a
+    font-size: 0.9rem
+    color: $subtext
+    transition: color 0.2s
+    display: flex
+    align-items: center
+    gap: 8px
+    
+    &:hover
+      color: $text
+      
+    svg
+      font-size: 0.9375rem
+
+.footer-bottom
+  max-width: 1200px
+  margin: 0 auto
+  padding-top: 24px
+  border-top: 2px solid $dark-gray
+  
+  p
+    font-size: 0.8125rem
+    color: $subtext
+
+@media (max-width: 768px)
+  .footer
+    padding: 32px 24px
+    
+  .footer-content
+    flex-direction: column
+    gap: 32px
+    
+  .footer-brand
+    max-width: 100%
+    
+  .footer-links
+    flex-wrap: wrap
+    gap: 32px
+
+@media (max-width: 480px)
+  .footer
+    padding: 24px 20px
+    
+  .footer-links
+    flex-direction: column
+    gap: 24px

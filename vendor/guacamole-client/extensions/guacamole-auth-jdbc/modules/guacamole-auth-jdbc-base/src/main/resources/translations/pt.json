@@ -1,0 +1,111 @@
+
+{
+
+    "LOGIN" : {
+
+        "ERROR_PASSWORD_BLANK"    : "@:APP.ERROR_PASSWORD_BLANK",
+        "ERROR_PASSWORD_SAME"     : "A nova senha deve ser diferente da senha expirada.",
+        "ERROR_PASSWORD_MISMATCH" : "@:APP.ERROR_PASSWORD_MISMATCH",
+        "ERROR_NOT_VALID"         : "Esta conta não é atualmente válida.",
+        "ERROR_NOT_ACCESSIBLE"    : "O Acesso para esta conta não é atualmente permitido. Por favor tente novamente mais tarde.",
+
+        "INFO_PASSWORD_EXPIRED" : "Usa senha foi expirada e precisa ser alterada. Por favor, digite uma nova senha para continuar.",
+
+        "FIELD_HEADER_NEW_PASSWORD"         : "Nova senha",
+        "FIELD_HEADER_CONFIRM_NEW_PASSWORD" : "Confirme a nova senha"
+
+    },
+
+    "CONNECTION_ATTRIBUTES" : {
+
+        "FIELD_HEADER_MAX_CONNECTIONS"          : "Número máximo de conexões:",
+        "FIELD_HEADER_MAX_CONNECTIONS_PER_USER" : "Número máximo de conexões por usuário:",
+
+        "FIELD_HEADER_FAILOVER_ONLY"            : "Uso apenas para failover:",
+        "FIELD_HEADER_WEIGHT"                   : "Carga de conexão:",
+
+        "FIELD_HEADER_GUACD_HOSTNAME"   : "Nome do host:",
+        "FIELD_HEADER_GUACD_ENCRYPTION" : "Método de Cryptografia:",
+        "FIELD_HEADER_GUACD_PORT"       : "Porta:",
+
+        "FIELD_OPTION_GUACD_ENCRYPTION_EMPTY" : "",
+        "FIELD_OPTION_GUACD_ENCRYPTION_NONE"  : "Nenhuma (não criptografado)",
+        "FIELD_OPTION_GUACD_ENCRYPTION_SSL"   : "SSL / TLS",
+
+        "SECTION_HEADER_CONCURRENCY"    : "Limites de simultaneidade",
+        "SECTION_HEADER_LOAD_BALANCING" : "Load Balancing",
+        "SECTION_HEADER_GUACD"          : "Parâmetros do Guacamole Proxy (guacd)"
+
+    },
+
+    "CONNECTION_GROUP_ATTRIBUTES" : {
+
+        "FIELD_HEADER_ENABLE_SESSION_AFFINITY"  : "Ativar afinidade de sessão:",
+        "FIELD_HEADER_MAX_CONNECTIONS"          : "Número máximo de conexões:",
+        "FIELD_HEADER_MAX_CONNECTIONS_PER_USER" : "Número máximo de conexões por usuário:",
+
+        "SECTION_HEADER_CONCURRENCY" : "Limites de simultaneidade (Balanceamento de Grupos)"
+
+    },
+
+    "DATA_SOURCE_MYSQL" : {
+        "NAME" : "MySQL"
+    },
+
+    "DATA_SOURCE_MYSQL_SHARED" : {
+        "NAME" : "Conexões compartilhadas (MySQL)"
+    },
+
+    "DATA_SOURCE_POSTGRESQL" : {
+        "NAME" : "PostgreSQL"
+    },
+
+    "DATA_SOURCE_POSTGRESQL_SHARED" : {
+        "NAME" : "Conexões compartilhadas (PostgreSQL)"
+    },
+
+    "DATA_SOURCE_SQLSERVER" : {
+        "NAME" : "SQL Server"
+    },
+
+    "DATA_SOURCE_SQLSERVER_SHARED" : {
+        "NAME" : "Conexões compartilhadas (SQL Server)"
+    },
+
+    "HOME" : {
+        "INFO_SHARED_BY" : "Compartilhado por {USERNAME}"
+    },
+
+    "PASSWORD_POLICY" : {
+
+        "ERROR_CONTAINS_USERNAME"      : "Senhas não podem conter o nome de usuário.",
+        "ERROR_REQUIRES_DIGIT"         : "Senhas devem conter pelo menos um número.",
+        "ERROR_REQUIRES_MULTIPLE_CASE" : "Senhas devem conter ambos caracteres maiúsculos e minúsculos.",
+        "ERROR_REQUIRES_NON_ALNUM"     : "Senhas devem conter pelo menos um sìmbolo.",
+        "ERROR_REUSED"                 : "Esta senha já foi usada. Por favor não reuse {HISTORY_SIZE} {HISTORY_SIZE, plural, one{senha} other{senhas}} anteriores.",
+        "ERROR_TOO_SHORT"              : "Senhas devem ter pelo menos {LENGTH} {LENGTH, plural, one{caracter} other{caracteres}}.",
+        "ERROR_TOO_YOUNG"              : "A senha para esta conta foi atualizada. Por favor aguarde pelo menos {WAIT} {WAIT, plural, one{dia} other{dias}} para mudar a senha novamente."
+
+    },
+
+    "USER_ATTRIBUTES" : {
+
+        "FIELD_HEADER_EXPIRED"             : "Senha expirada:",
+        "FIELD_HEADER_ACCESS_WINDOW_END"   : "Não permitir acesso após:",
+        "FIELD_HEADER_ACCESS_WINDOW_START" : "Permitir acesso após:",
+        "FIELD_HEADER_TIMEZONE"            : "Fuso horário do usuário:",
+        "FIELD_HEADER_VALID_FROM"          : "Ativar conta após:",
+        "FIELD_HEADER_VALID_UNTIL"         : "Desativar conta após:",
+
+        "SECTION_HEADER_RESTRICTIONS" : "Restrições de Conta",
+        "SECTION_HEADER_PROFILE"      : "Perfil"
+
+    },
+
+    "USER_GROUP_ATTRIBUTES" : {
+
+        "SECTION_HEADER_RESTRICTIONS" : "Restrições de Grupo"
+
+    }
+
+}

@@ -1,0 +1,15 @@
+{
+
+    "DATA_SOURCE_CAS" : {
+        "NAME" : "Бэкенд CAS SSO"
+    },
+
+    "DATA_SOURCE_OPENID" : {
+        "NAME" : "Бэкенд OpenID SSO"
+    },
+
+    "LOGIN" : {
+        "INFO_IDP_REDIRECT_PENDING" : "Пожалуйста, подождите. Переадресую на страницу аутентификации..."
+    }
+
+}

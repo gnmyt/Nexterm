@@ -1,0 +1,134 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ */
+
+a.button {
+    cursor: default;
+    display: inline-block;
+}
+
+input[type="submit"], button, a.button {
+    
+    -webkit-appearance: none;
+    text-decoration: none;
+
+    background-color: #3C3C3C;
+    border: 1px solid rgba(0, 0, 0, 0.4);
+
+    color: white;
+    text-shadow: -1px -1px rgba(0, 0, 0, 0.3);
+    font-size: 1em;
+    font-weight: bold;
+    font-family: Carlito, FreeSans, Helvetica, Arial, sans-serif;
+
+    padding: 0.35em 1em;
+    min-width: 5em;
+    margin: 0.25em;
+
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.25);
+
+}
+
+input[type="submit"]:hover, button:hover, a.button:hover {
+    background-color: #5A5A5A;
+}
+
+input[type="submit"]:active, button:active, a.button:active {
+
+    background-color: #2C2C2C;
+    
+    box-shadow: 
+                inset 1px 1px 0.25em rgba(0, 0, 0, 0.25),
+                -1px -1px 0.25em rgba(0, 0, 0, 0.25),
+                1px 1px 0.25em rgba(255, 255, 255, 0.25);
+}
+
+button.danger, a.button.danger {
+    background: #A43;
+}
+
+button.danger:hover, a.button.danger:hover {
+    background: #C54;
+}
+
+button.danger:active, a.button.danger:active {
+    background: #932;
+}
+
+input[type="submit"]:disabled, button:disabled, button.danger:disabled {
+    background-color: #3C3C3C;
+    color: rgba(255, 255, 255, 0.5);
+    opacity: 0.75;
+}
+
+.button.logout,          button.logout,
+.button.reconnect,       button.reconnect,
+.button.manage,          button.manage,
+.button.back,            button.back,
+.button.home,            button.home,
+.button.change-password, button.change-password {
+    position: relative;
+    padding-left: 1.8em;
+}
+
+.button.logout::before,          button.logout::before,
+.button.reconnect::before,       button.reconnect::before,
+.button.manage::before,          button.manage::before,
+.button.back::before,            button.back::before,
+.button.home::before,            button.home::before,
+.button.change-password::before, button.change-password::before {
+    content: ' ';
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 1.8em;
+    background-repeat: no-repeat;
+    background-size: 1em;
+    background-position: 0.5em 0.45em;
+}
+
+.button.logout::before,
+button.logout::before {
+    background-image: url('images/action-icons/guac-logout.svg');
+}
+
+.button.reconnect::before,
+button.reconnect::before {
+    background-image: url('images/circle-arrows.svg');
+}
+
+.button.manage::before,
+button.manage::before {
+    background-image: url('images/action-icons/guac-config.svg');
+}
+
+.button.back::before,
+button.back::before {
+    background-image: url('images/action-icons/guac-back.svg');
+}
+
+.button.home::before,
+button.home::before {
+    background-image: url('images/action-icons/guac-home.svg');
+}
+
+.button.change-password::before,
+button.change-password::before {
+    background-image: url('images/action-icons/guac-key.svg');
+}

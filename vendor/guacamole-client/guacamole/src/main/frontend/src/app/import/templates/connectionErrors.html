@@ -1,0 +1,49 @@
+<div ng-show="hasErrors()" class="errors">
+
+    <!-- Connection / Error filter -->
+    <guac-filter filtered-items="filteredErrors" items="connectionErrors"
+                 placeholder="'IMPORT.FIELD_PLACEHOLDER_FILTER' | translate"
+                 properties="filteredErrorProperties"></guac-filter>
+
+    <!-- List of connection import errors -->
+    <table class="sorted">
+        <thead>
+            <tr>
+                <th guac-sort-order="errorOrder" guac-sort-property="'rowNumber'">
+                    {{'IMPORT.TABLE_HEADER_ROW_NUMBER' | translate}}
+                </th>
+                <th guac-sort-order="errorOrder" guac-sort-property="'name'">
+                    {{'IMPORT.TABLE_HEADER_NAME' | translate}}
+                </th>
+                <th guac-sort-order="errorOrder" guac-sort-property="'group'">
+                    {{'IMPORT.TABLE_HEADER_GROUP' | translate}}
+                </th>
+                <th guac-sort-order="errorOrder" guac-sort-property="'protocol'">
+                    {{'IMPORT.TABLE_HEADER_PROTOCOL' | translate}}
+                </th>
+                <th guac-sort-order="errorOrder" guac-sort-property="'errors'">
+                    {{'IMPORT.TABLE_HEADER_ERRORS' | translate}}
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr ng-repeat="error in errorPage">
+                <td>{{error.rowNumber}}</td>
+                <td>{{error.name}}</td>
+                <td>{{error.group}}</td>
+                <td>{{error.protocol}}</td>
+                <td class="error-message" ng-class="{ 'has-errors' : error.errors.getArray().length }">
+                    <ul>
+                        <li ng-repeat="message in error.errors.getArray()">
+                            {{ message }}
+                        </li>
+                    </ul>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+
+    <!-- Pager for connection error list -->
+    <guac-pager page="errorPage" page-size="25"
+                items="filteredErrors | orderBy : errorOrder.predicate"></guac-pager>
+</div>

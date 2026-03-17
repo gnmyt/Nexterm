@@ -1,0 +1,12 @@
+<div class="labeled-field" ng-show="isFieldVisible()"
+     ng-class="getFieldClasses()">
+
+    <!-- Field header -->
+    <div class="field-header">
+        <label ng-attr-for="{{ fieldId }}">{{getFieldHeader() | translate}}</label>
+    </div>
+
+    <!-- Field content -->
+    <div class="form-field"></div>
+
+</div>

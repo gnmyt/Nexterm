@@ -1,4 +1,5 @@
 const express = require("express");
+const logger = require("../utils/logger");
 const app = express.Router();
 const { authenticate } = require("../middlewares/auth");
 const { validateSchema } = require("../utils/schema");
@@ -33,7 +34,7 @@ app.put("/", authenticate, async (req, res) => {
 
         res.status(201).json(result);
     } catch (error) {
-        console.error("Error creating organization:", error);
+        logger.error("Error creating organization", { error: error.message, stack: error.stack });
         res.status(500).json({ message: "An error occurred while creating the organization" });
     }
 });
@@ -63,7 +64,7 @@ app.patch("/:id", authenticate, async (req, res) => {
 
         res.json(result);
     } catch (error) {
-        console.error("Error updating organization:", error);
+        logger.error("Error updating organization", { organizationId: req.params.id, error: error.message });
         res.status(500).json({ message: "An error occurred while updating the organization" });
     }
 });
@@ -90,7 +91,7 @@ app.delete("/:id", authenticate, async (req, res) => {
 
         res.json(result);
     } catch (error) {
-        console.error("Error deleting organization:", error);
+        logger.error("Error deleting organization", { organizationId: req.params.id, error: error.message });
         res.status(500).json({ message: "An error occurred while deleting the organization" });
     }
 });
@@ -117,7 +118,7 @@ app.get("/:id", authenticate, async (req, res) => {
 
         res.json(result);
     } catch (error) {
-        console.error("Error fetching organization:", error);
+        logger.error("Error fetching organization", { organizationId: req.params.id, error: error.message });
         res.status(500).json({ message: "An error occurred while fetching the organization" });
     }
 });
@@ -136,7 +137,7 @@ app.get("/", authenticate, async (req, res) => {
         const result = await organizationController.listOrganizations(req.user.id);
         res.json(result);
     } catch (error) {
-        console.error("Error listing organizations:", error);
+        logger.error("Error listing organizations", { error: error.message });
         res.status(500).json({ message: "An error occurred while listing organizations" });
     }
 });
@@ -163,7 +164,7 @@ app.get("/:id/members", authenticate, async (req, res) => {
 
         res.json(result);
     } catch (error) {
-        console.error("Error listing organization members:", error);
+        logger.error("Error listing organization members", { organizationId: req.params.id, error: error.message });
         res.status(500).json({ message: "An error occurred while listing organization members" });
     }
 });
@@ -193,7 +194,7 @@ app.post("/:id/invite", authenticate, async (req, res) => {
 
         res.json(result);
     } catch (error) {
-        console.error("Error inviting user to organization:", error);
+        logger.error("Error inviting user to organization", { organizationId: req.params.id, error: error.message });
         res.status(500).json({ message: "An error occurred while sending the invitation" });
     }
 });
@@ -221,7 +222,7 @@ app.delete("/:id/members/:accountId", authenticate, async (req, res) => {
 
         res.json(result);
     } catch (error) {
-        console.error("Error removing member from organization:", error);
+        logger.error("Error removing member from organization", { organizationId: req.params.id, accountId: req.params.accountId, error: error.message });
         res.status(500).json({ message: "An error occurred while removing the member" });
     }
 });
@@ -240,7 +241,7 @@ app.get("/invitations/pending", authenticate, async (req, res) => {
         const result = await organizationController.listPendingInvitations(req.user.id);
         res.json(result);
     } catch (error) {
-        console.error("Error listing pending invitations:", error);
+        logger.error("Error listing pending invitations", { error: error.message });
         res.status(500).json({ message: "An error occurred while listing pending invitations" });
     }
 });
@@ -269,7 +270,7 @@ app.post("/invitations/:id/respond", authenticate, async (req, res) => {
 
         res.json(result);
     } catch (error) {
-        console.error("Error responding to invitation:", error);
+        logger.error("Error responding to invitation", { invitationId: req.params.id, error: error.message });
         res.status(500).json({ message: "An error occurred while processing your response" });
     }
 });
@@ -296,7 +297,7 @@ app.post("/:id/leave", authenticate, async (req, res) => {
 
         res.json(result);
     } catch (error) {
-        console.error("Error leaving organization:", error);
+        logger.error("Error leaving organization", { organizationId: req.params.id, error: error.message });
         res.status(500).json({ message: "An error occurred while leaving the organization" });
     }
 });

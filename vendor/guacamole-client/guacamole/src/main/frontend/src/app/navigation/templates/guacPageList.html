@@ -1,0 +1,13 @@
+<div class="page-list" ng-show="levels.length">
+
+    <!-- Navigation links -->
+    <ul class="page-list-level" ng-repeat="level in levels track by $index">
+        <li ng-repeat="page in getPages(level)" class="{{page.className}}">
+            <a class="home" ng-click="navigateToPage(page)"
+               ng-class="{current: isCurrentPage(page)}" href="#{{page.url}}">
+                {{page.name | translate}}
+            </a>
+        </li>
+    </ul>
+
+</div>

@@ -1,0 +1,15 @@
+
+# Compiled init script
+init.d/guacd
+
+# Compiled systemd unit
+systemd/guacd.service
+
+# Compiled proxy
+guacd
+guacd.exe
+
+# Documentation (built from .in files)
+man/guacd.8
+man/guacd.conf.5
+

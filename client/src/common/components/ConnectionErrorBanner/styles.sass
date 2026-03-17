@@ -1,0 +1,55 @@
+@use "../../styles/colors" as *
+
+.connection-error-banner
+  display: flex
+  align-items: center
+  background-color: $error-opacity
+  border-bottom: 1px solid $error
+  padding: 0.625rem 1rem
+  gap: 0.75rem
+  z-index: 1000
+  animation: banner-slide-in 0.3s ease-out
+
+  .banner-icon
+    width: 1.25rem
+    height: 1.25rem
+    flex-shrink: 0
+    color: $error
+
+  .banner-content
+    flex: 1
+    display: flex
+    flex-wrap: wrap
+    align-items: center
+    gap: 0.25rem 0.5rem
+    min-width: 0
+
+  .banner-title
+    font-weight: 600
+    color: $white
+    font-size: 0.85rem
+
+  .banner-description
+    color: $subtext
+    font-size: 0.8rem
+    line-height: 1.4
+
+@keyframes banner-slide-in
+  0%
+    opacity: 0
+    transform: translateY(-100%)
+  100%
+    opacity: 1
+    transform: translateY(0)
+
+@media (max-width: 768px)
+  .connection-error-banner
+    padding: 0.5rem 0.75rem
+
+    .banner-content
+      flex-direction: column
+      align-items: flex-start
+      gap: 0.125rem
+
+    .banner-description
+      font-size: 0.75rem

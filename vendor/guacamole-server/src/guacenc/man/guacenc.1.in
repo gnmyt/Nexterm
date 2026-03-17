@@ -1,0 +1,80 @@
+.\"
+.\" Licensed to the Apache Software Foundation (ASF) under one
+.\" or more contributor license agreements.  See the NOTICE file
+.\" distributed with this work for additional information
+.\" regarding copyright ownership.  The ASF licenses this file
+.\" to you under the Apache License, Version 2.0 (the
+.\" "License"); you may not use this file except in compliance
+.\" with the License.  You may obtain a copy of the License at
+.\"
+.\"   http://www.apache.org/licenses/LICENSE-2.0
+.\"
+.\" Unless required by applicable law or agreed to in writing,
+.\" software distributed under the License is distributed on an
+.\" "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+.\" KIND, either express or implied.  See the License for the
+.\" specific language governing permissions and limitations
+.\" under the License.
+.\"
+.TH guacenc 1 "26 Jan 2018" "version @PACKAGE_VERSION@" "Apache Guacamole"
+.
+.SH NAME
+guacenc \- Guacamole video encoder
+.
+.SH SYNOPSIS
+.B guacenc
+[\fB-s\fR \fIWIDTH\fRx\fIHEIGHT\fR]
+[\fB-r\fR \fIBITRATE\fR]
+[\fB-f\fR]
+[\fIFILE\fR]...
+.
+.SH DESCRIPTION
+.B guacenc
+is a video encoder which accepts Guacamole protocol dumps, such as those saved
+when screen recording is enabled on a Guacamole connection, writing standard
+video files as output.
+.B guacenc
+is essentially an implementation of a Guacamole client which accepts
+its input from files instead of a network connection, and renders directly to
+video instead of to the user's screen.
+.P
+Each \fIFILE\fR specified will be encoded as MPEG-4 video to a new
+file named \fIFILE\fR.m4v, encoded according to the other options specified. By
+default, the output video will be \fI640\fRx\fI480\fR pixels, and will be saved
+with a bitrate of \fI2000000\fR bits per second (2 Mbps). These defaults can be
+overridden with the \fB-s\fR and \fB-r\fR options respectively. Existing files
+will not be overwritten; the encoding process for any input file will be
+aborted if it would result in overwriting an existing file.
+.P
+Guacamole acquires a write lock on recordings as they are being written. By
+default,
+.B guacenc
+will check whether the each input file is locked and will refuse to read and
+encode an input file if it appears to be an in-progress recording. This
+behavior can be overridden by specifying the \fB-f\fR option. Encoding an
+in-progress recording will still result in a valid video; the video will simply
+cover the user's session only up to the current point in time.
+.
+.SH OPTIONS
+.TP
+\fB-s\fR \fIWIDTH\fRx\fIHEIGHT\fR
+Changes the resolution of the video that
+.B guacenc
+renders. By default, this will be \fI640\fRx\fI480\fR.
+.TP
+\fB-r\fR \fIBITRATE\fR
+Changes the bitrate that
+.B guacenc
+will use for the saved video. This is specified in bits per second. By default,
+this will be \fI2000000\fR (2 Mbps). Higher values will result in larger but
+higher-quality video files. Lower values will result in smaller but
+lower-quality video files.
+.TP
+\fB-f\fR
+Overrides the default behavior of
+.B guacenc
+such that input files will be encoded even if they appear to be recordings of
+in-progress Guacamole sessions.
+.
+.SH SEE ALSO
+.BR guaclog (1)

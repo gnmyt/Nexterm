@@ -1,0 +1,39 @@
+<dl class="client-statistics">
+
+    <dt class="client-statistic desktop-fps">
+        {{ 'CLIENT.FIELD_HEADER_DESKTOP_FRAMERATE' | translate }}
+    </dt>
+    <dd ng-class="{ 'no-value' : !hasValue(statistics.desktopFps) }">
+        <span ng-show="hasValue(statistics.desktopFps)"
+            translate="CLIENT.INFO_FRAMERATE"
+            translate-values="{ VALUE : round(statistics.desktopFps) }"></span>
+    </dd>
+
+    <dt class="client-statistic server-fps">
+        {{ 'CLIENT.FIELD_HEADER_SERVER_FRAMERATE' | translate }}
+    </dt>
+    <dd ng-class="{ 'no-value' : !hasValue(statistics.serverFps) }">
+        <span ng-show="hasValue(statistics.serverFps)"
+            translate="CLIENT.INFO_FRAMERATE"
+            translate-values="{ VALUE : round(statistics.serverFps) }"></span>
+    </dd>
+
+    <dt class="client-statistic client-fps">
+        {{ 'CLIENT.FIELD_HEADER_CLIENT_FRAMERATE' | translate }}
+    </dt>
+    <dd ng-class="{ 'no-value' : !hasValue(statistics.clientFps) }">
+        <span ng-show="hasValue(statistics.clientFps)"
+            translate="CLIENT.INFO_FRAMERATE"
+            translate-values="{ VALUE : round(statistics.clientFps) }"></span>
+    </dd>
+
+    <dt class="client-statistic drop-rate">
+        {{ 'CLIENT.FIELD_HEADER_DROP_FRAMERATE' | translate }}
+    </dt>
+    <dd ng-class="{ 'no-value' : !hasValue(statistics.dropRate) }">
+        <span ng-show="hasValue(statistics.dropRate)"
+            translate="CLIENT.INFO_FRAMERATE"
+            translate-values="{ VALUE : round(statistics.dropRate) }"></span>
+    </dd>
+
+</dl>

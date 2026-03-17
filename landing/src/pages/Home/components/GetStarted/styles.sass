@@ -1,0 +1,124 @@
+@use "@/common/styles/colors" as *
+
+.cta-section
+  padding: 80px 48px
+
+.cta-container
+  position: relative
+  max-width: 900px
+  margin: 0 auto
+  padding: 80px 48px
+  background: $background-lighter
+  border: 1px solid $dark-gray
+  border-radius: 0.75rem
+  overflow: hidden
+
+.cta-glow
+  position: absolute
+  top: -100px
+  left: 50%
+  transform: translateX(-50%)
+  width: 400px
+  height: 400px
+  background: radial-gradient(ellipse, $primary-opacity 0%, transparent 70%)
+  pointer-events: none
+
+.cta-content
+  position: relative
+  z-index: 1
+  text-align: center
+  display: flex
+  flex-direction: column
+  align-items: center
+  gap: 12px
+  
+  h2
+    font-size: 2.25rem
+    font-weight: 700
+    letter-spacing: -0.02em
+    color: $text
+    
+  p
+    font-size: 1rem
+    color: $subtext
+    max-width: 420px
+
+.cta-actions
+  display: flex
+  gap: 12px
+  margin-top: 24px
+
+.cta-primary
+  display: inline-flex
+  align-items: center
+  gap: 0.5rem
+  padding: 0.8rem 1.5rem
+  font-size: 1rem
+  font-weight: 500
+  font-family: inherit
+  color: $text
+  background: $primary-opacity
+  border: 1px solid $dark-gray
+  border-radius: 0.5rem
+  cursor: pointer
+  transition: all 0.2s
+  
+  &:hover
+    filter: brightness(0.8)
+
+  &:active
+    transform: scale(0.97)
+
+  svg
+    width: 1rem
+    height: 1rem
+    opacity: 0.9
+
+.cta-secondary
+  display: inline-flex
+  align-items: center
+  gap: 0.5rem
+  padding: 0.8rem 1.5rem
+  font-size: 1rem
+  font-weight: 500
+  font-family: inherit
+  color: $subtext
+  background: transparent
+  border: none
+  border-radius: 0.5rem
+  cursor: pointer
+  transition: all 0.2s
+  
+  &:hover
+    color: $text
+    background: $gray
+
+  svg
+    width: 1rem
+    height: 1rem
+
+@media (max-width: 768px)
+  .cta-section
+    padding: 48px 20px
+    
+  .cta-container
+    padding: 56px 24px
+    
+  .cta-content h2
+    font-size: 1.75rem
+
+@media (max-width: 480px)
+  .cta-content
+    h2
+      font-size: 1.5rem
+      
+    p
+      font-size: 1rem
+      
+  .cta-actions
+    flex-direction: column
+    width: 100%
+    
+    button
+      width: 100%
+      justify-content: center

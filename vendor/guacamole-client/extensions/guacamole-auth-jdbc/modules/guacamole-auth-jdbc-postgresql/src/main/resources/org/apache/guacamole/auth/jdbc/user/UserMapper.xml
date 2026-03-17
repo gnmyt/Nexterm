@@ -1,0 +1,441 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<!--
+    Licensed to the Apache Software Foundation (ASF) under one
+    or more contributor license agreements.  See the NOTICE file
+    distributed with this work for additional information
+    regarding copyright ownership.  The ASF licenses this file
+    to you under the Apache License, Version 2.0 (the
+    "License"); you may not use this file except in compliance
+    with the License.  You may obtain a copy of the License at
+
+      http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing,
+    software distributed under the License is distributed on an
+    "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+    KIND, either express or implied.  See the License for the
+    specific language governing permissions and limitations
+    under the License.
+-->
+
+<mapper namespace="org.apache.guacamole.auth.jdbc.user.UserMapper" >
+
+    <!-- Result mapper for user objects -->
+    <resultMap id="UserResultMap" type="org.apache.guacamole.auth.jdbc.user.UserModel" >
+
+        <!-- User properties -->
+        <id     column="user_id"             property="objectID"           jdbcType="INTEGER"/>
+        <result column="entity_id"           property="entityID"           jdbcType="INTEGER"/>
+        <result column="name"                property="identifier"         jdbcType="VARCHAR"/>
+        <result column="password_hash"       property="passwordHash"       jdbcType="BINARY"/>
+        <result column="password_salt"       property="passwordSalt"       jdbcType="BINARY"/>
+        <result column="password_date"       property="passwordDate"       jdbcType="TIMESTAMP"/>
+        <result column="disabled"            property="disabled"           jdbcType="BOOLEAN"/>
+        <result column="expired"             property="expired"            jdbcType="BOOLEAN"/>
+        <result column="access_window_start" property="accessWindowStart"  jdbcType="TIME"/>
+        <result column="access_window_end"   property="accessWindowEnd"    jdbcType="TIME"/>
+        <result column="valid_from"          property="validFrom"          jdbcType="DATE"/>
+        <result column="valid_until"         property="validUntil"         jdbcType="DATE"/>
+        <result column="timezone"            property="timeZone"           jdbcType="VARCHAR"/>
+        <result column="full_name"           property="fullName"           jdbcType="VARCHAR"/>
+        <result column="email_address"       property="emailAddress"       jdbcType="VARCHAR"/>
+        <result column="organization"        property="organization"       jdbcType="VARCHAR"/>
+        <result column="organizational_role" property="organizationalRole" jdbcType="VARCHAR"/>
+        <result column="last_active"         property="lastActive"         jdbcType="TIMESTAMP"/>
+
+        <!-- Arbitrary attributes -->
+        <collection property="arbitraryAttributes" resultSet="arbitraryAttributes"
+                    ofType="org.apache.guacamole.auth.jdbc.base.ArbitraryAttributeModel"
+                    column="user_id" foreignColumn="user_id">
+            <result property="name"     column="attribute_name"  jdbcType="VARCHAR"/>
+            <result property="value"    column="attribute_value" jdbcType="VARCHAR"/>
+        </collection>
+
+    </resultMap>
+
+    <!-- Select all usernames -->
+    <select id="selectIdentifiers" resultType="string">
+        SELECT name
+        FROM guacamole_entity
+        WHERE guacamole_entity.type = 'USER'::guacamole_entity_type
+    </select>
+
+    <!--
+      * SQL fragment which lists the IDs of all users readable by the entity
+      * having the given entity ID. If group identifiers are provided, the IDs
+      * of the entities for all groups having those identifiers are tested, as
+      * well. Disabled groups are ignored.
+      *
+      * @param entityID
+      *     The ID of the specific entity to test against.
+      *
+      * @param groups
+      *     A collection of group identifiers to additionally test against.
+      *     Though this functionality is optional, a collection must always be
+      *     given, even if that collection is empty.
+      -->
+    <sql id="getReadableIDs">
+        SELECT DISTINCT guacamole_user_permission.affected_user_id
+        FROM guacamole_user_permission
+        WHERE
+            <include refid="org.apache.guacamole.auth.jdbc.base.EntityMapper.isRelatedEntity">
+                <property name="column"          value="entity_id"/>
+                <property name="entityID"        value="${entityID}"/>
+                <property name="groups"          value="${groups}"/>
+                <property name="caseSensitivity" value="${caseSensitivity}"/>
+            </include>
+            AND permission = 'READ'
+    </sql>
+
+    <!-- Select usernames of all readable users -->
+    <select id="selectReadableIdentifiers" resultType="string">
+        SELECT guacamole_entity.name
+        FROM guacamole_user
+        JOIN guacamole_entity ON guacamole_user.entity_id = guacamole_entity.entity_id
+        WHERE guacamole_entity.type = 'USER'::guacamole_entity_type
+            AND guacamole_user.user_id IN (
+                <include refid="org.apache.guacamole.auth.jdbc.user.UserMapper.getReadableIDs">
+                    <property name="entityID"        value="#{user.entityID,jdbcType=INTEGER}"/>
+                    <property name="groups"          value="effectiveGroups"/>
+                    <property name="caseSensitivity" value="${caseSensitivity}"/>
+                </include>
+            )
+    </select>
+
+    <!-- Select multiple users by username -->
+    <select id="select" resultMap="UserResultMap"
+            resultSets="users,arbitraryAttributes">
+
+        SELECT
+            guacamole_user.user_id,
+            guacamole_entity.entity_id,
+            guacamole_entity.name,
+            password_hash,
+            password_salt,
+            password_date,
+            disabled,
+            expired,
+            access_window_start,
+            access_window_end,
+            valid_from,
+            valid_until,
+            timezone,
+            full_name,
+            email_address,
+            organization,
+            organizational_role,
+            MAX(start_date) AS last_active
+        FROM guacamole_user
+        JOIN guacamole_entity ON guacamole_user.entity_id = guacamole_entity.entity_id
+        LEFT JOIN guacamole_user_history ON guacamole_user_history.user_id = guacamole_user.user_id
+        WHERE guacamole_entity.type = 'USER'::guacamole_entity_type
+            AND
+            <choose>
+                <when test="caseSensitivity.caseSensitiveUsernames()">
+                    guacamole_entity.name
+                </when>
+                <otherwise>
+                    LOWER(guacamole_entity.name)
+                </otherwise>
+            </choose>
+            IN
+            <foreach collection="identifiers" item="identifier"
+                    open="(" separator="," close=")">
+                <choose>
+                    <when test="caseSensitivity.caseSensitiveUsernames()">
+                        #{identifier,jdbcType=VARCHAR}
+                    </when>
+                    <otherwise>
+                        LOWER(#{identifier,jdbcType=VARCHAR})
+                    </otherwise>
+                </choose>
+            </foreach>    
+        GROUP BY guacamole_user.user_id, guacamole_entity.entity_id;
+
+        SELECT
+            guacamole_user_attribute.user_id,
+            guacamole_user_attribute.attribute_name,
+            guacamole_user_attribute.attribute_value
+        FROM guacamole_user_attribute
+        JOIN guacamole_user ON guacamole_user.user_id = guacamole_user_attribute.user_id
+        JOIN guacamole_entity ON guacamole_user.entity_id = guacamole_entity.entity_id
+        WHERE guacamole_entity.type = 'USER'::guacamole_entity_type
+            AND
+            <choose>
+                <when test="caseSensitivity.caseSensitiveUsernames()">
+                    guacamole_entity.name
+                </when>
+                <otherwise>
+                    LOWER(guacamole_entity.name)
+                </otherwise>
+            </choose>
+            IN
+            <foreach collection="identifiers" item="identifier"
+                    open="(" separator="," close=")">
+                <choose>
+                    <when test="caseSensitivity.caseSensitiveUsernames()">
+                        #{identifier,jdbcType=VARCHAR}
+                    </when>
+                    <otherwise>
+                        LOWER(#{identifier,jdbcType=VARCHAR})
+                    </otherwise>
+                </choose>
+            </foreach>
+            ;
+
+    </select>
+
+    <!-- Select multiple users by username only if readable -->
+    <select id="selectReadable" resultMap="UserResultMap"
+            resultSets="users,arbitraryAttributes">
+
+        SELECT
+            guacamole_user.user_id,
+            guacamole_entity.entity_id,
+            guacamole_entity.name,
+            password_hash,
+            password_salt,
+            password_date,
+            disabled,
+            expired,
+            access_window_start,
+            access_window_end,
+            valid_from,
+            valid_until,
+            timezone,
+            full_name,
+            email_address,
+            organization,
+            organizational_role,
+            MAX(start_date) AS last_active
+        FROM guacamole_user
+        JOIN guacamole_entity ON guacamole_user.entity_id = guacamole_entity.entity_id
+        LEFT JOIN guacamole_user_history ON guacamole_user_history.user_id = guacamole_user.user_id
+        WHERE guacamole_entity.type = 'USER'::guacamole_entity_type
+            AND
+            <choose>
+                <when test="caseSensitivity.caseSensitiveUsernames()">
+                    guacamole_entity.name
+                </when>
+                <otherwise>
+                    LOWER(guacamole_entity.name)
+                </otherwise>
+            </choose>
+            IN
+            <foreach collection="identifiers" item="identifier"
+                     open="(" separator="," close=")">
+                <choose>
+                    <when test="caseSensitivity.caseSensitiveUsernames()">
+                        #{identifier,jdbcType=VARCHAR}
+                    </when>
+                    <otherwise>
+                        LOWER(#{identifier,jdbcType=VARCHAR})
+                    </otherwise>
+                </choose>
+            </foreach>
+            AND guacamole_user.user_id IN (
+                <include refid="org.apache.guacamole.auth.jdbc.user.UserMapper.getReadableIDs">
+                    <property name="entityID"        value="#{user.entityID,jdbcType=INTEGER}"/>
+                    <property name="groups"          value="effectiveGroups"/>
+                    <property name="caseSensitivity" value="${caseSensitivity}"/>
+                </include>
+            )
+        GROUP BY guacamole_user.user_id, guacamole_entity.entity_id;
+
+        SELECT
+            guacamole_user_attribute.user_id,
+            guacamole_user_attribute.attribute_name,
+            guacamole_user_attribute.attribute_value
+        FROM guacamole_user_attribute
+        JOIN guacamole_user ON guacamole_user.user_id = guacamole_user_attribute.user_id
+        JOIN guacamole_entity ON guacamole_user.entity_id = guacamole_entity.entity_id
+        WHERE guacamole_entity.type = 'USER'::guacamole_entity_type
+            AND
+            <choose>
+                <when test="caseSensitivity.caseSensitiveUsernames()">
+                    guacamole_entity.name
+                </when>
+                <otherwise>
+                    LOWER(guacamole_entity.name)
+                </otherwise>
+            </choose>
+            IN
+            <foreach collection="identifiers" item="identifier"
+                     open="(" separator="," close=")">
+                <choose>
+                    <when test="caseSensitivity.caseSensitiveUsernames()">
+                        #{identifier,jdbcType=VARCHAR}
+                    </when>
+                    <otherwise>
+                        LOWER(#{identifier,jdbcType=VARCHAR})
+                    </otherwise>
+                </choose>
+            </foreach>
+            AND guacamole_user.user_id IN (
+                <include refid="org.apache.guacamole.auth.jdbc.user.UserMapper.getReadableIDs">
+                    <property name="entityID"        value="#{user.entityID,jdbcType=INTEGER}"/>
+                    <property name="groups"          value="effectiveGroups"/>
+                    <property name="caseSensitivity" value="${caseSensitivity}"/>
+                </include>
+            );
+
+    </select>
+
+    <!-- Select single user by username -->
+    <select id="selectOne" resultMap="UserResultMap"
+            resultSets="users,arbitraryAttributes">
+
+        SELECT
+            guacamole_user.user_id,
+            guacamole_entity.entity_id,
+            guacamole_entity.name,
+            password_hash,
+            password_salt,
+            password_date,
+            disabled,
+            expired,
+            access_window_start,
+            access_window_end,
+            valid_from,
+            valid_until,
+            timezone,
+            full_name,
+            email_address,
+            organization,
+            organizational_role,
+            MAX(start_date) AS last_active
+        FROM guacamole_user
+        JOIN guacamole_entity ON guacamole_user.entity_id = guacamole_entity.entity_id
+        LEFT JOIN guacamole_user_history ON guacamole_user_history.user_id = guacamole_user.user_id
+        WHERE guacamole_entity.type = 'USER'::guacamole_entity_type
+            AND
+            <choose>
+                <when test="caseSensitivity.caseSensitiveUsernames()">
+                    guacamole_entity.name = #{username,jdbcType=VARCHAR}
+                </when>
+                <otherwise>
+                    LOWER(guacamole_entity.name) = LOWER(#{username,jdbcType=VARCHAR})
+                </otherwise>
+            </choose>
+        GROUP BY guacamole_user.user_id, guacamole_entity.entity_id;
+
+        SELECT
+            guacamole_user_attribute.user_id,
+            guacamole_user_attribute.attribute_name,
+            guacamole_user_attribute.attribute_value
+        FROM guacamole_user_attribute
+        JOIN guacamole_user ON guacamole_user.user_id = guacamole_user_attribute.user_id
+        JOIN guacamole_entity ON guacamole_user.entity_id = guacamole_entity.entity_id
+        WHERE guacamole_entity.type = 'USER'::guacamole_entity_type
+            AND
+            <choose>
+                <when test="caseSensitivity.caseSensitiveUsernames()">
+                    guacamole_entity.name = #{username,jdbcType=VARCHAR}
+                </when>
+                <otherwise>
+                    LOWER(guacamole_entity.name) = LOWER(#{username,jdbcType=VARCHAR})
+                </otherwise>
+            </choose>
+    </select>
+
+    <!-- Delete single user by username -->
+    <delete id="delete">
+        DELETE FROM guacamole_entity
+        WHERE type = 'USER'::guacamole_entity_type
+            AND
+            <choose>
+                <when test="caseSensitivity.caseSensitiveUsernames()">
+                    name = #{identifier,jdbcType=VARCHAR}
+                </when>
+                <otherwise>
+                    LOWER(name) = LOWER(#{identifier,jdbcType=VARCHAR})
+                </otherwise>
+            </choose>
+    </delete>
+
+    <!-- Insert single user -->
+    <insert id="insert" useGeneratedKeys="true" keyProperty="object.objectID"
+            parameterType="org.apache.guacamole.auth.jdbc.user.UserModel">
+
+        INSERT INTO guacamole_user (
+            entity_id,
+            password_hash,
+            password_salt,
+            password_date,
+            disabled,
+            expired,
+            access_window_start,
+            access_window_end,
+            valid_from,
+            valid_until,
+            timezone,
+            full_name,
+            email_address,
+            organization,
+            organizational_role
+        )
+        VALUES (
+            #{object.entityID,jdbcType=VARCHAR},
+            #{object.passwordHash,jdbcType=BINARY},
+            #{object.passwordSalt,jdbcType=BINARY},
+            #{object.passwordDate,jdbcType=TIMESTAMP},
+            #{object.disabled,jdbcType=BOOLEAN},
+            #{object.expired,jdbcType=BOOLEAN},
+            #{object.accessWindowStart,jdbcType=TIME},
+            #{object.accessWindowEnd,jdbcType=TIME},
+            #{object.validFrom,jdbcType=DATE},
+            #{object.validUntil,jdbcType=DATE},
+            #{object.timeZone,jdbcType=VARCHAR},
+            #{object.fullName,jdbcType=VARCHAR},
+            #{object.emailAddress,jdbcType=VARCHAR},
+            #{object.organization,jdbcType=VARCHAR},
+            #{object.organizationalRole,jdbcType=VARCHAR}
+        )
+
+    </insert>
+
+    <!-- Update single user -->
+    <update id="update" parameterType="org.apache.guacamole.auth.jdbc.user.UserModel">
+        UPDATE guacamole_user
+        SET password_hash = #{object.passwordHash,jdbcType=BINARY},
+            password_salt = #{object.passwordSalt,jdbcType=BINARY},
+            password_date = #{object.passwordDate,jdbcType=TIMESTAMP},
+            disabled = #{object.disabled,jdbcType=BOOLEAN},
+            expired = #{object.expired,jdbcType=BOOLEAN},
+            access_window_start = #{object.accessWindowStart,jdbcType=TIME},
+            access_window_end = #{object.accessWindowEnd,jdbcType=TIME},
+            valid_from = #{object.validFrom,jdbcType=DATE},
+            valid_until = #{object.validUntil,jdbcType=DATE},
+            timezone = #{object.timeZone,jdbcType=VARCHAR},
+            full_name = #{object.fullName,jdbcType=VARCHAR},
+            email_address = #{object.emailAddress,jdbcType=VARCHAR},
+            organization = #{object.organization,jdbcType=VARCHAR},
+            organizational_role = #{object.organizationalRole,jdbcType=VARCHAR}
+        WHERE user_id = #{object.objectID,jdbcType=INTEGER}
+    </update>
+
+    <!-- Delete attributes associated with user -->
+    <delete id="deleteAttributes">
+        DELETE FROM guacamole_user_attribute
+        WHERE user_id = #{object.objectID,jdbcType=INTEGER}
+    </delete>
+
+    <!-- Insert attributes for user -->
+    <insert id="insertAttributes" parameterType="org.apache.guacamole.auth.jdbc.base.ArbitraryAttributeModel">
+        INSERT INTO guacamole_user_attribute (
+            user_id,
+            attribute_name,
+            attribute_value
+        )
+        VALUES
+            <foreach collection="object.arbitraryAttributes" item="attribute" separator=",">
+                (#{object.objectID,jdbcType=INTEGER},
+                 #{attribute.name,jdbcType=VARCHAR},
+                 #{attribute.value,jdbcType=VARCHAR})
+            </foreach>
+    </insert>
+
+</mapper>

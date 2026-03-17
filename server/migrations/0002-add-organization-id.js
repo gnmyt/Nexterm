@@ -1,10 +1,11 @@
 const { DataTypes } = require("sequelize");
+const logger = require('../utils/logger');
 
 module.exports = {
     async up(queryInterface) {
         const organizationIdExists = await queryInterface.describeTable("identities").then((table) => table.organizationId !== undefined);
         if (organizationIdExists) {
-            console.log("Migration already applied: organizationId column exists.");
+            logger.info("Migration already applied: organizationId column exists.");
             return;
         }
         

@@ -1,0 +1,15 @@
+{
+
+    "DATA_SOURCE_CAS" : {
+        "NAME" : "CAS SSO后端"
+    },
+
+    "DATA_SOURCE_OPENID" : {
+        "NAME" : "OpenID SSO后端"
+    },
+
+    "LOGIN" : {
+        "INFO_IDP_REDIRECT_PENDING" : "请稍候，正在重定向到身份提供者..."
+    }
+
+}

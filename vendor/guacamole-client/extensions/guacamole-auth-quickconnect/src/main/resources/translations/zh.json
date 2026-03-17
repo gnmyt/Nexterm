@@ -1,0 +1,18 @@
+{
+
+    "DATA_SOURCE_QUICKCONNECT" : {
+        "NAME" : "快速连接"
+    },
+
+    "QUICKCONNECT" : {
+        "ACTION_CONNECT"        : "连接",
+        
+        "ERROR_INVALID_URI"      : "指定的URI无效",
+        "ERROR_NO_HOST"          : "未指定主机",
+        "ERROR_NO_PROTOCOL"      : "未指定协议",
+        "ERROR_NOT_ABSOLUTE_URI" : "不是绝对URI地址",
+        
+        "FIELD_PLACEHOLDER_URI" : "输入连接URI"
+    }
+
+}

@@ -1,24 +1,50 @@
 @use "@/common/styles/colors"
 
+$mobile: 768px
+$tablet: 1024px
+
 .server-tabs
   display: flex
   padding: 0.7rem 1rem 0 1rem
   gap: 1rem
   align-items: center
   user-select: none
-  overflow: hidden
+  overflow: visible
+  position: relative
+
+  @media (max-width: $tablet)
+    padding: 0.5rem 0.75rem 0 0.75rem
+    gap: 0.5rem
+
+  @media (max-width: $mobile)
+    padding: 0.5rem 0.5rem 0 0.5rem
+    gap: 0.25rem
 
   svg
     width: 2rem
     height: 2rem
 
+    @media (max-width: $mobile)
+      width: 1.5rem
+      height: 1.5rem
+
   .layout-controls
     display: flex
-    gap: 0.5rem
+    gap: 0.3rem
     align-items: center
     margin-right: 1rem
     padding-right: 1rem
     border-right: 1px solid colors.$gray
+
+    @media (max-width: $tablet)
+      margin-right: 0.5rem
+      padding-right: 0.5rem
+
+    @media (max-width: $mobile)
+      margin-right: 0
+      padding-right: 0
+      border-right: none
+      gap: 0.1rem
 
     .layout-btn
       cursor: pointer
@@ -26,6 +52,11 @@
       border-radius: 4px
       transition: all 0.2s ease
       color: colors.$subtext
+      width: 1.8rem
+      height: 1.8rem
+
+      @media (max-width: $mobile)
+        display: none
 
       &:hover
         background-color: colors.$gray
@@ -35,6 +66,54 @@
         background-color: colors.$primary
         color: colors.$white
 
+  .tabs-container
+    position: relative
+    flex: 1
+    display: flex
+    align-items: center
+    overflow: hidden
+
+    .scroll-indicator
+      position: absolute
+      top: 0
+      bottom: 0
+      width: 3rem
+      display: flex
+      align-items: center
+      justify-content: center
+      cursor: pointer
+      z-index: 10
+      transition: all 0.2s ease
+      pointer-events: all
+
+      @media (max-width: $mobile)
+        width: 2rem
+
+      &.left
+        left: 0
+        background: linear-gradient(to right, colors.$background 50%, transparent)
+
+      &.right
+        right: 0
+        background: linear-gradient(to left, colors.$background 50%, transparent)
+
+      svg
+        width: 2rem
+        height: 2rem
+        color: colors.$subtext
+        transition: all 0.2s ease
+        padding: 0.5rem
+        border-radius: 4px
+
+        @media (max-width: $mobile)
+          width: 1.5rem
+          height: 1.5rem
+          padding: 0.25rem
+
+      &:hover svg
+        background-color: colors.$gray
+        color: colors.$white
+
   .tabs
     display: flex
     gap: 0.5rem
@@ -42,6 +121,10 @@
     overflow-x: auto
     overflow-y: hidden
     scrollbar-width: none
+    -webkit-overflow-scrolling: touch
+
+    @media (max-width: $mobile)
+      gap: 0.25rem
 
     &::-webkit-scrollbar
       display: none
@@ -59,6 +142,14 @@
       flex-shrink: 0
       transition: all 0.2s ease
 
+      @media (max-width: $tablet)
+        padding: 0.5rem 0.75rem
+        gap: 0.375rem
+
+      @media (max-width: $mobile)
+        padding: 0.375rem 0.5rem
+        gap: 0.25rem
+
       &:hover
         background-color: colors.$gray
         border-bottom: 2px solid colors.$primary-opacity
@@ -73,13 +164,79 @@
         background-color: colors.$primary-opacity
 
       svg
-        width: 1.5rem
-        height: 1.5rem
+        width: 1.2rem
+        height: 1.2rem
+        flex-shrink: 0
+
+        @media (max-width: $mobile)
+          width: 1rem
+          height: 1rem
+
+      .progress-circle
+        position: relative
+        width: 36px
+        height: 36px
+        flex-shrink: 0
+        display: flex
+        align-items: center
+        justify-content: center
+
+        @media (max-width: $mobile)
+          width: 28px
+          height: 28px
+
+        &.no-progress
+          .progress-icon
+            width: 1.5rem
+            height: 1.5rem
+
+            @media (max-width: $mobile)
+              width: 1.25rem
+              height: 1.25rem
+
+        svg
+          width: 36px
+          height: 36px
+          position: absolute
+          top: 0
+          left: 0
+
+          @media (max-width: $mobile)
+            width: 28px
+            height: 28px
+
+          .progress-bg
+            opacity: 0.15
+            color: colors.$subtext
+
+          .progress-bar
+            color: colors.$success
+            transition: stroke-dashoffset 0.1s linear
+
+        .progress-icon
+          width: 1rem
+          height: 1rem
+          position: relative
+          z-index: 1
+          transition: all 0.2s ease
+
+          @media (max-width: $mobile)
+            width: 0.875rem
+            height: 0.875rem
 
       h2
         margin: 0
         font-size: 1.3rem
         flex: 1
+
+        @media (max-width: $tablet)
+          font-size: 1.1rem
+
+        @media (max-width: $mobile)
+          font-size: 0.9rem
+          max-width: 100px
+          overflow: hidden
+          text-overflow: ellipsis
 
       .tab-actions
         display: flex
@@ -92,6 +249,9 @@
           transition: all 0.2s ease
           padding: 0.25rem
           border-radius: 0.25rem
+
+          @media (max-width: $mobile)
+            padding: 0.125rem
 
           &:hover
             opacity: 1

@@ -1,0 +1,121 @@
+.\"
+.\" Licensed to the Apache Software Foundation (ASF) under one
+.\" or more contributor license agreements.  See the NOTICE file
+.\" distributed with this work for additional information
+.\" regarding copyright ownership.  The ASF licenses this file
+.\" to you under the Apache License, Version 2.0 (the
+.\" "License"); you may not use this file except in compliance
+.\" with the License.  You may obtain a copy of the License at
+.\"
+.\"   http://www.apache.org/licenses/LICENSE-2.0
+.\"
+.\" Unless required by applicable law or agreed to in writing,
+.\" software distributed under the License is distributed on an
+.\" "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+.\" KIND, either express or implied.  See the License for the
+.\" specific language governing permissions and limitations
+.\" under the License.
+.\"
+.TH guacd 8 "1 Jun 2017" "version @PACKAGE_VERSION@" "Apache Guacamole"
+.
+.SH NAME
+guacd \- Guacamole proxy daemon
+.
+.SH SYNOPSIS
+.B guacd
+[\fB-b\fR \fIHOST\fR]
+[\fB-l\fR \fIPORT\fR]
+[\fB-p\fR \fIPID FILE\fR]
+[\fB-L\fR \fILOG LEVEL\fR]
+[\fB-C\fR \fICERTIFICATE FILE\fR]
+[\fB-K\fR \fIKEY FILE\fR]
+[\fB-f\fR]
+[\fB-v\fR]
+.
+.SH DESCRIPTION
+.B guacd
+is the Guacamole proxy daemon used by the Guacamole web application and
+framework. As JavaScript cannot handle binary protocols (like VNC and remote
+desktop) efficiently, a new text-based protocol was developed which would
+contain a common superset of the operations needed for efficient remote
+desktop access, but would be easy for JavaScript programs to process.
+.B guacd
+is the proxy which translates between arbitrary protocols and the Guacamole
+protocol.
+.
+.SH OPTIONS
+.TP
+\fB\-b\fR \fIHOST\fR
+Changes the host or address that
+.B guacd
+listens on.
+.TP
+\fB\-l\fR \fIPORT\fR
+Changes the port that
+.B guacd
+listens on (the default is port 4822).
+.TP
+\fB\-p\fR \fIFILE\fR
+Causes
+.B guacd
+to write the PID of the daemon process to the specified
+file. This is useful for init scripts and is used by the provided init
+script.
+.TP
+\fB\-L\fR \fILEVEL\fR
+Sets the maximum level at which
+.B guacd
+will log messages to syslog and, if running in the foreground, the console.
+Legal values are
+.B trace,
+.B debug,
+.B info,
+.B warning,
+and
+.B error.
+The default value is
+.B info.
+.TP
+\fB\-f\fR
+Causes
+.B guacd
+to run in the foreground, rather than automatically forking into the
+background.
+.TP
+\fB\-v\fR
+Causes
+.B guacd
+to simply print its version information and exit.
+.
+.SH SSL/TLS OPTIONS
+If libssl was present at the time
+.B guacd
+was compiled, it will contain SSL/TLS support, and connections between the
+web application and
+.B guacd
+can be encrypted if a certificate file is given.
+.P
+When using a chain of certificates, you must append the additional certificates
+to your server certificate. This can be done easily with the standard
+.B cat
+command. Beware that the certificate for
+.B guacd
+.I must
+be the first certificate in the file.
+.TP
+\fB-C\fR \fICERTIFICATE FILE\fR
+Enables SSL/TLS using the given certificate file. Future connections to
+this instance of
+.B guacd
+will require SSL/TLS enabled in the client (the web application). If
+this option is not given, communication with guacd must be unencrypted.
+.TP
+\fB-K\fR \fIKEY FILE\fR
+Enables SSL/TLS using the given private key file. Future connections to
+this instance of
+.B guacd
+will require SSL/TLS enabled in the client (the web application). If
+this option is not given, communication with guacd must be unencrypted.
+.
+.SH SEE ALSO
+.BR guacd.conf (5)

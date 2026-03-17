@@ -1,3 +1,6 @@
+:root
+  --accent-color: #314BD3
+
 :root[data-theme="dark"]
   --background: #000A12
   --terminal: #13181C
@@ -8,8 +11,8 @@
   --dark-gray: rgba(255, 255, 255, 0.05)
   --gray: rgba(255, 255, 255, 0.1)
   --light-gray: #F6F6F6
-  --primary: #314BD3
-  --primary-opacity: rgba(49, 75, 211, 0.25)
+  --primary: var(--accent-color)
+  --primary-opacity: color-mix(in srgb, var(--accent-color) 25%, transparent)
   --error: #a44747
   --error-opacity: rgba(164, 71, 71, 0.25)
   --success: #29C16A
@@ -30,8 +33,8 @@
   --dark-gray: rgba(0, 0, 0, 0.05)
   --gray: rgba(0, 0, 0, 0.1)
   --light-gray: #333333
-  --primary: #314BD3
-  --primary-opacity: rgba(49, 75, 211, 0.15)
+  --primary: var(--accent-color)
+  --primary-opacity: color-mix(in srgb, var(--accent-color) 15%, transparent)
   --error: #d85959
   --error-opacity: rgba(216, 89, 89, 0.15)
   --success: #29C16A
@@ -41,6 +44,28 @@
   --white: #000000
   --subtext: #666666
   --text: #000000
+
+:root[data-theme="oled"]
+  --background: #000000
+  --terminal: #000000
+  --lighter-background: #0a0a0a
+  --dialog-background: rgba(0, 0, 0, 0.5)
+  --gray-full: #1a1a1a
+  --darker-gray: rgba(20, 20, 20, 0.8)
+  --dark-gray: rgba(255, 255, 255, 0.05)
+  --gray: rgba(255, 255, 255, 0.1)
+  --light-gray: #F6F6F6
+  --primary: var(--accent-color)
+  --primary-opacity: color-mix(in srgb, var(--accent-color) 25%, transparent)
+  --error: #a44747
+  --error-opacity: rgba(164, 71, 71, 0.25)
+  --success: #29C16A
+  --success-opacity: rgba(41, 193, 106, 0.25)
+  --warning: #DC5600
+  --warning-opacity: rgba(220, 86, 0, 0.25)
+  --white: #FFFFFF
+  --subtext: #888888
+  --text: #FFFFFF
 
 $background: var(--background)
 $dialog-background: var(--dialog-background)

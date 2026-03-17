@@ -1,0 +1,1 @@
+export { TagsSubmenu as default } from "./TagsSubmenu.jsx";

@@ -1,0 +1,119 @@
+<div class="preferences" ng-class="{loading: !isLoaded()}">
+
+    <!-- Locale settings -->
+    <div class="settings section locale">
+        <p>{{'SETTINGS_PREFERENCES.HELP_LOCALE' | translate}}</p>
+        <guac-form content="localeFields" model="preferences" namespace="'SETTINGS_PREFERENCES'"></guac-form>
+    </div>
+
+    <!-- Appearance -->
+    <h2 class="header">{{'SETTINGS_PREFERENCES.SECTION_HEADER_APPEARANCE' | translate}}</h2>
+    <div class="settings section appearance">
+        <p>{{'SETTINGS_PREFERENCES.HELP_APPEARANCE' | translate}}</p>
+        <div class='form'>
+            <table class='fields'>
+                <tr>
+                    <th>{{'SETTINGS_PREFERENCES.FIELD_HEADER_SHOW_RECENT_CONNECTIONS' | translate}}</th>
+                    <td><input ng-model="preferences.showRecentConnections" type="checkbox"/></td>
+                </tr>
+                <tr>
+                    <th>{{'SETTINGS_PREFERENCES.FIELD_HEADER_NUMBER_RECENT_CONNECTIONS' | translate}}</th>
+                    <td><input ng-model="preferences.numberOfRecentConnections" type="number" min="1" max="20"/></td>
+                </tr>
+            </table>
+        </div>
+    </div>
+
+    <!-- Password update -->
+    <h2 class="header" ng-show="canUpdateSelf">{{'SETTINGS_PREFERENCES.SECTION_HEADER_UPDATE_PASSWORD' | translate}}</h2>
+    <div class="settings section update-password" ng-show="canUpdateSelf">
+        <p>{{'SETTINGS_PREFERENCES.HELP_UPDATE_PASSWORD' | translate}}</p>
+
+        <!-- Password editor -->
+        <div class="form">
+            <table class="fields">
+                <tr>
+                    <th>{{'SETTINGS_PREFERENCES.FIELD_HEADER_PASSWORD_OLD' | translate}}</th>
+                    <td><input ng-model="oldPassword" type="password"></td>
+                </tr>
+                <tr>
+                    <th>{{'SETTINGS_PREFERENCES.FIELD_HEADER_PASSWORD_NEW' | translate}}</th>
+                    <td><input ng-model="newPassword" type="password"></td>
+                </tr>
+                <tr>
+                    <th>{{'SETTINGS_PREFERENCES.FIELD_HEADER_PASSWORD_NEW_AGAIN' | translate}}</th>
+                    <td><input ng-model="newPasswordMatch" type="password"></td>
+                </tr>
+            </table>
+        </div>
+
+        <!-- Form action buttons -->
+        <div class="action-buttons">
+            <button class="change-password" ng-click="updatePassword()">{{'SETTINGS_PREFERENCES.ACTION_UPDATE_PASSWORD' | translate}}</button>
+        </div>
+    </div>
+
+    <!-- Input method -->
+    <h2 class="header">{{'SETTINGS_PREFERENCES.SECTION_HEADER_DEFAULT_INPUT_METHOD' | translate}}</h2>
+    <div class="settings section input-method">
+        <p>{{'SETTINGS_PREFERENCES.HELP_DEFAULT_INPUT_METHOD' | translate}}</p>
+        <div class="choices">
+
+            <!-- No IME -->
+            <div class="choice">
+                <label><input id="ime-none" name="input-method" ng-model="preferences.inputMethod" type="radio" value="none"> {{'SETTINGS_PREFERENCES.NAME_INPUT_METHOD_NONE' | translate}}</label>
+                <p class="caption"><label for="ime-none">{{'SETTINGS_PREFERENCES.HELP_INPUT_METHOD_NONE' | translate}}</label></p>
+            </div>
+
+            <!-- Text input -->
+            <div class="choice">
+                <label><input id="ime-text" name="input-method" ng-model="preferences.inputMethod" type="radio" value="text"> {{'SETTINGS_PREFERENCES.NAME_INPUT_METHOD_TEXT' | translate}}</label>
+                <p class="caption"><label for="ime-text">{{'SETTINGS_PREFERENCES.HELP_INPUT_METHOD_TEXT' | translate}} </label></p>
+            </div>
+
+            <!-- Guac OSK -->
+            <div class="choice">
+                <label><input id="ime-osk" name="input-method" ng-model="preferences.inputMethod" type="radio" value="osk"> {{'SETTINGS_PREFERENCES.NAME_INPUT_METHOD_OSK' | translate}}</label>
+                <p class="caption"><label for="ime-osk">{{'SETTINGS_PREFERENCES.HELP_INPUT_METHOD_OSK' | translate}}</label></p>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Mouse mode -->
+    <h2 class="header">{{'SETTINGS_PREFERENCES.SECTION_HEADER_DEFAULT_MOUSE_MODE' | translate}}</h2>
+    <div class="settings section mouse-mode">
+        <p>{{'SETTINGS_PREFERENCES.HELP_DEFAULT_MOUSE_MODE' | translate}}</p>
+        <div class="choices">
+
+            <!-- Touchscreen -->
+            <div class="choice">
+                <input name="mouse-mode" ng-model="preferences.emulateAbsoluteMouse" type="radio" ng-value="true" checked="checked" id="absolute">
+                <div class="figure">
+                    <label for="absolute"><img src="images/settings/touchscreen.svg" alt="{{'SETTINGS_PREFERENCES.NAME_MOUSE_MODE_ABSOLUTE' | translate}}"></label>
+                    <p class="caption"><label for="absolute">{{'SETTINGS_PREFERENCES.HELP_MOUSE_MODE_ABSOLUTE' | translate}}</label></p>
+                </div>
+            </div>
+
+            <!-- Touchpad -->
+            <div class="choice">
+                <input name="mouse-mode" ng-model="preferences.emulateAbsoluteMouse" type="radio" ng-value="false" id="relative">
+                <div class="figure">
+                    <label for="relative"><img src="images/settings/touchpad.svg" alt="{{'SETTINGS_PREFERENCES.NAME_MOUSE_MODE_RELATIVE' | translate}}"></label>
+                    <p class="caption"><label for="relative">{{'SETTINGS_PREFERENCES.HELP_MOUSE_MODE_RELATIVE' | translate}}</label></p>
+                </div>
+            </div>
+
+        </div>
+    </div>
+    
+    <!-- User attributes section -->
+    <div class="attributes" ng-show="canUpdateSelf && attributes.length">
+        <guac-form namespace="'USER_ATTRIBUTES'" content="attributes"
+                   model="user.attributes"></guac-form>
+
+        <!-- User attributes save button -->
+        <button ng-show="attributes.length" ng-click="saveUser()" class="save">{{'SETTINGS_PREFERENCES.ACTION_SAVE' | translate}}</button>
+    </div>
+
+</div>

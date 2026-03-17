@@ -1,0 +1,11 @@
+{
+
+    "DATA_SOURCE_SAML" : {
+        "NAME" : "SAML 인증 확장 프로그램"
+    },
+
+    "LOGIN" : {
+        "INFO_IDP_REDIRECT_PENDING" : "잠시만 기다려주십시오. ID 제공자로 리디렉션 중..."
+    }
+
+}

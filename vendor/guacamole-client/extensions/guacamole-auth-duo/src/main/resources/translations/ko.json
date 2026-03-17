@@ -1,0 +1,8 @@
+{
+
+    "LOGIN" : {
+        "INFO_DUO_VALIDATION_CODE_INCORRECT"    : "Duo 유효성 검사 코드가 잘못되었습니다.",
+        "INFO_DUO_AUTH_REQUIRED"                : "계속하려면 Duo로 인증하세요."
+    }
+
+}

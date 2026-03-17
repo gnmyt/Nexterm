@@ -1,0 +1,25 @@
+{
+
+    "DATA_SOURCE_KEEPER_SECRETS_MANAGER" : {
+        "NAME" : "Keeper Secrets Manager"
+    },
+
+    "CONNECTION_ATTRIBUTES" : {
+        "SECTION_HEADER_KSM_CONFIG"            : "Keeper Secrets Manager",
+        "FIELD_HEADER_KSM_USER_CONFIG_ENABLED" : "Allow user-provided KSM configuration"
+    },
+
+    "CONNECTION_GROUP_ATTRIBUTES" : {
+        "SECTION_HEADER_KSM_CONFIG" : "Keeper Secrets Manager",
+        "FIELD_HEADER_KSM_CONFIG"   : "KSM Service Configuration ",
+
+        "ERROR_INVALID_KSM_CONFIG_BLOB"    : "The provided base64-encoded KSM configuration blob is not valid. Please ensure that you have copied the entire blob.",
+        "ERROR_INVALID_KSM_ONE_TIME_TOKEN" : "The provided configuration is not a valid KSM one-time token or base64-encoded configuration blob. Please ensure that you have copied the entire token value."
+    },
+
+    "USER_ATTRIBUTES" : {
+        "SECTION_HEADER_KSM_CONFIG" : "Keeper Secrets Manager",
+        "FIELD_HEADER_KSM_CONFIG"   : "KSM Service Configuration "
+    }
+
+}

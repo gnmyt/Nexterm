@@ -1,0 +1,10 @@
+<div class="section-tabs" ng-show="tabs.length">
+    <ul>
+        <li ng-repeat="name in tabs">
+            <a ng-click="selectTab(name)"
+               ng-class="{ current : isSelected(name) }">
+                {{ getSectionHeader(name) | translate }}
+            </a>
+        </li>
+    </ul>
+</div>

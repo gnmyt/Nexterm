@@ -1,0 +1,2 @@
+com.google.zxing:core:jar:3.5.3
+com.google.zxing:javase:jar:3.5.3

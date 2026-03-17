@@ -1,0 +1,67 @@
+#
+# Licensed to the Apache Software Foundation (ASF) under one
+# or more contributor license agreements.  See the NOTICE file
+# distributed with this work for additional information
+# regarding copyright ownership.  The ASF licenses this file
+# to you under the Apache License, Version 2.0 (the
+# "License"); you may not use this file except in compliance
+# with the License.  You may obtain a copy of the License at
+#
+#   http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing,
+# software distributed under the License is distributed on an
+# "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+# KIND, either express or implied.  See the License for the
+# specific language governing permissions and limitations
+# under the License.
+#
+
+parent  "base_altgr"
+name    "pt-br-qwerty"
+freerdp "KBD_PORTUGUESE_BRAZILIAN_ABNT2"
+
+#
+# Basic keys
+#
+
+map -caps -altgr -shift 0x29 0x02..0x0D      ~ "'1234567890-="
+map -caps -altgr -shift      0x10..0x19 0x1B ~ "qwertyuiop["
+map -caps -altgr -shift      0x1E..0x27 0x2B ~ "asdfghjklç]"
+map -caps -altgr -shift 0x56 0x2C..0x35 0x73 ~ "\zxcvbnm,.;/"
+
+map -caps -altgr +shift 0x29 0x02..0x06 0x08..0x0D ~ ""!@#$%&*()_+"
+map -caps -altgr +shift      0x10..0x19 0x1B       ~ "QWERTYUIOP{"
+map -caps -altgr +shift      0x1E..0x27 0x2B       ~ "ASDFGHJKLÇ}"
+map -caps -altgr +shift 0x56 0x2C..0x35 0x73       ~ "|ZXCVBNM<>:?"
+
+map +caps -altgr -shift 0x29 0x02..0x0D      ~ "'1234567890-="
+map +caps -altgr -shift      0x10..0x19 0x1B ~ "QWERTYUIOP["
+map +caps -altgr -shift      0x1E..0x27 0x2B ~ "ASDFGHJKLÇ]"
+map +caps -altgr -shift 0x56 0x2C..0x35 0x73 ~ "\ZXCVBNM,.;/"
+
+map +caps -altgr +shift 0x29 0x02..0x06 0x08..0x0D ~ ""!@#$%&*()_+"
+map +caps -altgr +shift      0x10..0x19 0x1B       ~ "qwertyuiop{"
+map +caps -altgr +shift      0x1E..0x27 0x2B       ~ "asdfghjklç}"
+map +caps -altgr +shift 0x56 0x2C..0x35 0x73       ~ "|zxcvbnm<>:?"
+
+#
+# Keys requiring AltGr
+#
+
+map +altgr -shift 0x02..0x07 0x0D ~ "¹²³£¢¬§"
+map +altgr -shift 0x10..0x11 ~ "/?"
+map +altgr -shift 0x12 ~ "°"
+map +altgr -shift 0x1B ~ "ª"
+map +altgr -shift 0x2B ~ "º"
+map +altgr -shift 0x2E ~ "₢"
+
+#
+# Dead keys
+#
+
+map -altgr +shift 0x07 ~ 0xFE57 # Dead diaeresis (umlaut)
+map -altgr +shift 0x1A ~ 0xFE50 # Dead grave
+map -altgr -shift 0x1A ~ 0xFE51 # Dead acute
+map -altgr +shift 0x28 ~ 0xFE52 # Dead circumflex
+map -altgr -shift 0x28 ~ 0xFE53 # Dead tilde

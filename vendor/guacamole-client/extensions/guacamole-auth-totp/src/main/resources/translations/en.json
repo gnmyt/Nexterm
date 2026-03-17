@@ -1,0 +1,52 @@
+{
+
+    "DATA_SOURCE_TOTP" : {
+        "NAME" : "TOTP TFA Backend"
+    },
+
+    "LOGIN" : {
+        "FIELD_HEADER_GUAC_TOTP" : ""
+    },
+
+    "TOTP" : {
+
+        "ACTION_HIDE_DETAILS" : "Hide",
+        "ACTION_SHOW_DETAILS" : "Show",
+
+        "FIELD_HEADER_ALGORITHM"  : "Algorithm:",
+        "FIELD_HEADER_DIGITS"     : "Digits:",
+        "FIELD_HEADER_INTERVAL"   : "Interval:",
+        "FIELD_HEADER_SECRET_KEY" : "Secret Key:",
+
+        "FIELD_PLACEHOLDER_CODE" : "Authentication Code",
+
+        "INFO_CODE_REQUIRED"       : "Please enter your authentication code to verify your identity.",
+        "INFO_ENROLL_REQUIRED"     : "Multi-factor authentication has been enabled on your account.",
+        "INFO_VERIFICATION_FAILED" : "Verification failed. Please try again.",
+
+        "HELP_ENROLL_BARCODE" : "To complete the enrollment process, scan the barcode below with the two-factor authentication app on your phone or device.",
+        "HELP_ENROLL_VERIFY"  : "After scanning the barcode, enter the {DIGITS}-digit authentication code displayed to verify that enrollment was successful.",
+
+        "SECTION_HEADER_DETAILS" : "Details:"
+
+    },
+    
+    "USER_ATTRIBUTES" : {
+        
+        "FIELD_HEADER_GUAC_TOTP_DISABLED"      : "Disable TOTP:",
+        "FIELD_HEADER_GUAC_TOTP_KEY_GENERATED" : "Secret key generated:",
+        "FIELD_HEADER_GUAC_TOTP_KEY_CONFIRMED" : "Authentication device confirmed:",
+        
+        "SECTION_HEADER_TOTP_ENROLLMENT_STATUS" : "TOTP Enrollment Status"
+        
+    },
+    
+    "USER_GROUP_ATTRIBUTES" : {
+        
+        "FIELD_HEADER_GUAC_TOTP_DISABLED" : "Disable TOTP:",
+        
+        "SECTION_HEADER_TOTP_USER_GROUP_CONFIG" : "TOTP Configuration"
+        
+    }
+
+}

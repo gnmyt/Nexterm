@@ -1,0 +1,5 @@
+{
+    "LOGIN": {
+        "ERROR_TOO_MANY_ATTEMPTS" : "Zbyt wiele nieudanych prób logowania. Spróbuj ponownie później."
+    }
+}

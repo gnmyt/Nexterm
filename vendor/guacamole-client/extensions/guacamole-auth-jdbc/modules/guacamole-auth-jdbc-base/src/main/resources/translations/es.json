@@ -1,0 +1,110 @@
+{
+
+    "LOGIN" : {
+
+        "ERROR_PASSWORD_BLANK"    : "@:APP.ERROR_PASSWORD_BLANK",
+        "ERROR_PASSWORD_SAME"     : "La nueva contraseña debe ser diferente a la que ha expirado.",
+        "ERROR_PASSWORD_MISMATCH" : "@:APP.ERROR_PASSWORD_MISMATCH",
+        "ERROR_NOT_VALID"         : "Esta cuenta de usuario no es válida actualmente.",
+        "ERROR_NOT_ACCESSIBLE"    : "Actualmente no se permite el acceso a esta cuenta. Por favor, inténtelo de nuevo mas tarde.",
+
+        "INFO_PASSWORD_EXPIRED" : "Su contraseña ha expirado y debe renovarla. Por favor, introduzca una nueva contraseña para continuar.",
+
+        "FIELD_HEADER_NEW_PASSWORD"         : "Nueva contraseña",
+        "FIELD_HEADER_CONFIRM_NEW_PASSWORD" : "Confirmar nuena contraseña"
+
+    },
+
+    "CONNECTION_ATTRIBUTES" : {
+
+        "FIELD_HEADER_MAX_CONNECTIONS"          : "Número máximo de conexiones:",
+        "FIELD_HEADER_MAX_CONNECTIONS_PER_USER" : "Número máximo de conexiones por usuario:",
+
+        "FIELD_HEADER_FAILOVER_ONLY"            : "Usar solo para failover:",
+        "FIELD_HEADER_WEIGHT"                   : "Peso de la conexión:",
+
+        "FIELD_HEADER_GUACD_HOSTNAME"   : "Nombre del Host:",
+        "FIELD_HEADER_GUACD_ENCRYPTION" : "Cifrado:",
+        "FIELD_HEADER_GUACD_PORT"       : "Puerto:",
+
+        "FIELD_OPTION_GUACD_ENCRYPTION_EMPTY" : "",
+        "FIELD_OPTION_GUACD_ENCRYPTION_NONE"  : "Ninguno (sin cifrado)",
+        "FIELD_OPTION_GUACD_ENCRYPTION_SSL"   : "SSL / TLS",
+
+        "SECTION_HEADER_CONCURRENCY"    : "Límites de concurrencia",
+        "SECTION_HEADER_LOAD_BALANCING" : "Balanceo de carga",
+        "SECTION_HEADER_GUACD"          : "Parámetros del proxy de Guacamole (guacd)"
+
+    },
+
+    "CONNECTION_GROUP_ATTRIBUTES" : {
+
+        "FIELD_HEADER_ENABLE_SESSION_AFFINITY"  : "Activar afinidad de sesión:",
+        "FIELD_HEADER_MAX_CONNECTIONS"          : "Número máximo de conexiones:",
+        "FIELD_HEADER_MAX_CONNECTIONS_PER_USER" : "Número máximo de conexiones por usuario:",
+
+        "SECTION_HEADER_CONCURRENCY" : "Límites de concurrencia (grupos de balanceo)"
+
+    },
+
+    "DATA_SOURCE_MYSQL" : {
+        "NAME" : "MySQL"
+    },
+
+    "DATA_SOURCE_MYSQL_SHARED" : {
+        "NAME" : "Conexiones compartidas (MySQL)"
+    },
+
+    "DATA_SOURCE_POSTGRESQL" : {
+        "NAME" : "PostgreSQL"
+    },
+
+    "DATA_SOURCE_POSTGRESQL_SHARED" : {
+        "NAME" : "Conexiones compartidas (PostgreSQL)"
+    },
+
+    "DATA_SOURCE_SQLSERVER" : {
+        "NAME" : "SQL Server"
+    },
+
+    "DATA_SOURCE_SQLSERVER_SHARED" : {
+        "NAME" : "Conexiones compartidas (SQL Server)"
+    },
+
+    "HOME" : {
+        "INFO_SHARED_BY" : "Compartidas por {USERNAME}"
+    },
+
+    "PASSWORD_POLICY" : {
+
+        "ERROR_CONTAINS_USERNAME"      : "Las contraseñas no pueden contener el nombre de usuario.",
+        "ERROR_REQUIRES_DIGIT"         : "Las contraseñas deben contener al menos un número.",
+        "ERROR_REQUIRES_MULTIPLE_CASE" : "Las contraseñas deben contener caractéres en mayúscula y minúscula.",
+        "ERROR_REQUIRES_NON_ALNUM"     : "Las contraseñas deben contener al menos un símbolo.",
+        "ERROR_REUSED"                 : "Esta contraseña ya se ha utilizado. Por favor, no vuelva a usar {HISTORY_SIZE, plural, one{la última contraseña} other{ninguna de las últimas {HISTORY_SIZE} contraseñas}}.",
+        "ERROR_TOO_SHORT"              : "Las contraseñas deben ser como mínimo de {LENGTH} {LENGTH, plural, one{caracter} other{caracteres}} de largo.",
+        "ERROR_TOO_YOUNG"              : "La contraseña de esta cuenta ya se ha cambiado. Espere como mínimo {WAIT} {WAIT, plural, one{dia} other{dias}} mas, antes de volver a cambiarla."
+
+    },
+
+    "USER_ATTRIBUTES" : {
+
+        "FIELD_HEADER_EXPIRED"             : "Contraseña expirada:",
+        "FIELD_HEADER_ACCESS_WINDOW_END"   : "No permitir acceso despues de:",
+        "FIELD_HEADER_ACCESS_WINDOW_START" : "Permitir acceso despues de:",
+        "FIELD_HEADER_TIMEZONE"            : "Zona horaria del usuario:",
+        "FIELD_HEADER_VALID_FROM"          : "Activar la cuenta despues de",
+        "FIELD_HEADER_VALID_UNTIL"         : "Desactivar la cuenta despues de",
+
+        "SECTION_HEADER_RESTRICTIONS" : "Restricciones de la cuenta",
+        "SECTION_HEADER_PROFILE"      : "Perfil"
+
+    },
+
+    "USER_GROUP_ATTRIBUTES" : {
+
+        "SECTION_HEADER_RESTRICTIONS" : "Restricciones de grupo"
+
+    }
+
+}

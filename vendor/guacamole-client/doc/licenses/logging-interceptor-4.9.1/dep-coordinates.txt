@@ -1,0 +1,1 @@
+com.squareup.okhttp3:logging-interceptor:jar:4.9.1

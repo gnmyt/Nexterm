@@ -1,0 +1,13 @@
+<div class="sharing-profile-permission choice">
+
+    <!-- Sharing profile icon -->
+    <div class="icon type"></div>
+
+    <!-- Permission checkbox -->
+    <input type="checkbox" ng-model="context.getPermissionFlags().sharingProfilePermissions.READ[item.identifier]"
+                           ng-change="context.sharingProfilePermissionChanged(item.identifier)">
+
+    <!-- Sharing profile name -->
+    <span class="name">{{item.name}}</span>
+
+</div>

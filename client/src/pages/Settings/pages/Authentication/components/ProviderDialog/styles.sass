@@ -5,7 +5,9 @@
   flex-direction: column
   gap: 1rem
   padding: 1rem
-  min-width: 500px
+  width: 500px
+  max-height: 70vh
+  overflow-y: auto
 
   h2
     margin: 0 0 1rem
@@ -17,18 +19,20 @@
 
     label
       font-size: 0.9rem
-      opacity: 0.7
+      font-weight: 600
+      color: $subtext
 
   .advanced-settings
     display: flex
     flex-direction: column
     gap: 1rem
-    margin-top: 1rem
+    margin-top: 0.5rem
 
     .advanced-form
       display: flex
       flex-direction: column
       gap: 1rem
       padding: 1rem
-      background-color: $darker-gray
-      border-radius: 8px
+      background-color: $dark-gray
+      border-radius: 0.75rem
+      border: 1px solid $gray

@@ -2,6 +2,7 @@ const fs = require('fs');
 const path = require('path');
 const { DataTypes } = require('sequelize');
 const db = require('./database');
+const logger = require('./logger');
 
 class MigrationRunner {
     constructor() {
@@ -21,7 +22,7 @@ class MigrationRunner {
                     primaryKey: true
                 }
             });
-            console.log('Created SequelizeMeta table for tracking migrations');
+            logger.info('Created SequelizeMeta table for tracking migrations');
         }
     }
 
@@ -51,7 +52,7 @@ class MigrationRunner {
     }
 
     async runMigrations() {
-        console.log('Starting migration process...');
+        logger.info('Starting migration process');
         
         await this.ensureMigrationTable();
         
@@ -61,17 +62,17 @@ class MigrationRunner {
         const pendingMigrations = migrationFiles.filter(file => !executedMigrations.includes(file));
 
         if (pendingMigrations.length === 0) {
-            console.log('No pending migrations found');
+            logger.info('No pending migrations found');
             return;
         }
 
-        console.log(`Found ${pendingMigrations.length} pending migration(s)`);
+        logger.info(`Found ${pendingMigrations.length} pending migrations`);
         
         for (const migrationFile of pendingMigrations) {
             const migrationPath = path.join(this.migrationDir, migrationFile);
             
             try {
-                console.log(`Running migration: ${migrationFile}`);
+                logger.info(`Running migration`, { file: migrationFile });
                 
                 const migration = require(migrationPath);
                 
@@ -82,15 +83,15 @@ class MigrationRunner {
                 await migration.up(this.queryInterface, DataTypes);
                 await this.recordMigration(migrationFile);
                 
-                console.log(`Migration ${migrationFile} completed successfully`);
+                logger.info(`Migration completed`, { file: migrationFile });
                 
             } catch (error) {
-                console.error(`Migration ${migrationFile} failed:`, error.message);
+                logger.error(`Migration failed`, { file: migrationFile, error: error.message });
                 throw error;
             }
         }
         
-        console.log('All migrations completed successfully');
+        logger.info('All migrations completed successfully');
     }
 }
 

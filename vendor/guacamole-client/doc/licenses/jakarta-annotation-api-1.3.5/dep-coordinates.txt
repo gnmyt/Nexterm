@@ -1,0 +1,1 @@
+jakarta.annotation:jakarta.annotation-api:jar:1.3.5

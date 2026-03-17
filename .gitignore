@@ -141,3 +141,4 @@ data/
 docs/.vitepress/dist
 docs/.vitepress/cache
 docs/public/openapi.json
+.DS_Store

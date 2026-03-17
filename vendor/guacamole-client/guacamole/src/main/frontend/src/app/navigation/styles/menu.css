@@ -1,0 +1,161 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ */
+
+.menu-dropdown {
+
+    /* IE10 */
+    display: -ms-flexbox;
+    -ms-flex-align: center;
+    -ms-flex-direction: row;
+
+    /* Ancient Mozilla */
+    display: -moz-box;
+    -moz-box-align: center;
+    -moz-box-orient: horizontal;
+    
+    /* Ancient WebKit */
+    display: -webkit-box;
+    -webkit-box-align: center;
+    -webkit-box-orient: horizontal;
+
+    /* Old WebKit */
+    display: -webkit-flex;
+    -webkit-align-items: center;
+    -webkit-flex-direction: row;
+
+    /* W3C */
+    display: flex;
+    align-items: center;
+    flex-direction: row;
+
+}
+
+.menu-dropdown {
+    position: relative;
+    border-left: 1px solid rgba(0,0,0,0.125);
+    background: rgba(0,0,0,0.04);
+}
+
+.menu-dropdown:hover {
+    background: rgba(0,0,0,0.01);
+}
+
+.menu-dropdown.open,
+.menu-dropdown.open:hover {
+    background: rgba(0,0,0,0.3);
+}
+
+.menu-dropdown .menu-title {
+
+    cursor: default;
+    margin: 0;
+    padding: 0.5em;
+    padding-right: 2em;
+
+    white-space: nowrap;
+    overflow: hidden;
+    width: 100%;
+    text-overflow: ellipsis;
+
+    -ms-flex: 0 0 auto;
+    -moz-box-flex: 0;
+    -webkit-box-flex: 0;
+    -webkit-flex: 0 0 auto;
+    flex: 0 0 auto;
+   
+}
+
+.menu-dropdown .menu-indicator {
+
+    position: absolute;
+    right: 0;
+    top: 0;
+    bottom: 0;
+
+    width: 2em;
+    background-repeat: no-repeat;
+    background-size: 1em;
+    background-position: center center;
+    background-image: url('images/arrows/down.svg');
+
+}
+
+.menu-dropdown .menu-contents {
+
+    visibility: hidden;
+
+    position: absolute;
+    top: 100%;
+    right: 0;
+    min-width: 100%;
+    white-space: nowrap;
+
+    background: #EEE;
+    box-shadow: 0 2px 2px rgba(0, 0, 0, 0.125);
+    border-left: 1px solid rgba(0,0,0,0.125);
+    border-bottom: 1px solid rgba(0,0,0,0.125);
+
+    z-index: 5;
+    
+}
+
+.menu-dropdown .menu-contents ul {
+    margin: 0;
+    padding: 0;
+}
+
+.menu-dropdown.open .menu-contents {
+    visibility: visible;
+}
+
+.menu-dropdown .menu-contents li {
+    padding: 0;
+    list-style-type: none;
+}
+
+.menu-dropdown .menu-contents li a {
+
+    display: block;
+    cursor: pointer;
+    color: black;
+    text-decoration: none;
+    padding: 0.75em;
+
+}
+
+.menu-dropdown .menu-contents li a:hover {
+    background-color: #CDA;
+}
+
+.menu-dropdown .menu-contents li a.current,
+.menu-dropdown .menu-contents li a.current:hover {
+    background-color: transparent;
+    cursor: default;
+    opacity: 0.25;
+}
+
+.menu-dropdown .menu-contents li a.danger {
+    color: white;
+    font-weight: bold;
+    background-color: #A43;
+}
+
+.menu-dropdown .menu-contents li a.danger:hover {
+    background-color: #C54;
+}

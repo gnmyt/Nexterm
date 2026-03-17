@@ -1,0 +1,92 @@
+#
+# Licensed to the Apache Software Foundation (ASF) under one
+# or more contributor license agreements.  See the NOTICE file
+# distributed with this work for additional information
+# regarding copyright ownership.  The ASF licenses this file
+# to you under the Apache License, Version 2.0 (the
+# "License"); you may not use this file except in compliance
+# with the License.  You may obtain a copy of the License at
+#
+#   http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing,
+# software distributed under the License is distributed on an
+# "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+# KIND, either express or implied.  See the License for the
+# specific language governing permissions and limitations
+# under the License.
+#
+
+name "base"
+
+# Typeable characters
+map 0x39 ~ " "    # Space
+map 0x0F ~ 0xff09 # Tab
+
+# Control characters
+map      0x0E ~ 0xff08 # BackSpace
+map      0x1C ~ 0xff0d # Return
+map      0x01 ~ 0xff1b # Escape
+map +ext 0x52 ~ 0xff63 # Insert
+map +ext 0x53 ~ 0xffff # Delete
+map +ext 0x47 ~ 0xff50 # Home
+map +ext 0x4F ~ 0xff57 # End
+map +ext 0x4B ~ 0xff51 # Left
+map +ext 0x48 ~ 0xff52 # Up
+map +ext 0x4D ~ 0xff53 # Right
+map +ext 0x50 ~ 0xff54 # Down
+map +ext 0x49 ~ 0xff55 # Page_Up
+map +ext 0x51 ~ 0xff56 # Page_Down
+map +ext 0x37 ~ 0xff61 # Print Screen
+
+# Locks
+map      0x45 ~ 0xff7f # Num_Lock
+map      0x46 ~ 0xff14 # Scroll_Lock
+map      0x3A ~ 0xffe5 # Caps_Lock
+
+# Keypad numerals
+map -shift +num 0x52 ~ 0xffb0 # KP_0
+map -shift +num 0x4F ~ 0xffb1 # KP_1
+map -shift +num 0x50 ~ 0xffb2 # KP_2
+map -shift +num 0x51 ~ 0xffb3 # KP_3
+map -shift +num 0x4B ~ 0xffb4 # KP_4
+map -shift +num 0x4C ~ 0xffb5 # KP_5
+map -shift +num 0x4D ~ 0xffb6 # KP_6
+map -shift +num 0x47 ~ 0xffb7 # KP_7
+map -shift +num 0x48 ~ 0xffb8 # KP_8
+map -shift +num 0x49 ~ 0xffb9 # KP_9
+
+# Keypad operators
+map      0x37 ~ 0xffaa # KP_multiply
+map      0x4e ~ 0xffab # KP_add
+map      0x4a ~ 0xffad # KP_subtract
+map      0x53 ~ 0xffae # KP_decimal
+map +ext 0x35 ~ 0xffaf # KP_divide
+
+# F keys
+map 0x3B ~ 0xffbe # F1
+map 0x3C ~ 0xffbf # F2
+map 0x3D ~ 0xffc0 # F3
+map 0x3E ~ 0xffc1 # F4
+map 0x3F ~ 0xffc2 # F5
+map 0x40 ~ 0xffc3 # F6
+map 0x41 ~ 0xffc4 # F7
+map 0x42 ~ 0xffc5 # F8
+map 0x43 ~ 0xffc6 # F9
+map 0x44 ~ 0xffc7 # F10
+map 0x57 ~ 0xffc8 # F11
+map 0x58 ~ 0xffc9 # F12
+
+# Modifiers
+map      0x2A ~ 0xffe1 # Shift_L
+map      0x36 ~ 0xffe2 # Shift_R
+map      0x1D ~ 0xffe3 # Control_L
+map +ext 0x1D ~ 0xffe4 # Control_R
+map      0x38 ~ 0xffe9 # Alt_L
+map +ext 0x38 ~ 0xffea # Alt_R
+map +ext 0x5B ~ 0xffe7 # Meta_L
+map +ext 0x5C ~ 0xffe8 # Meta_R
+map +ext 0x5B ~ 0xffeb # Super_L
+map +ext 0x5C ~ 0xffec # Super_R
+map +ext 0x5D ~ 0xff67 # Menu
+

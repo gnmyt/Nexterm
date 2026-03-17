@@ -1,0 +1,88 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ */
+
+.totp-enroll p, .totp-details {
+    font-size: 0.8em;
+}
+
+.totp-qr-code {
+    text-align: center;
+}
+
+.totp-qr-code img {
+    margin: 1em;
+    border: 1px solid rgba(0,0,0,0.25);
+    box-shadow: 1px 1px 2px rgba(0,0,0,0.25);
+    cursor: pointer;
+}
+
+h3.totp-details-header {
+    font-size: 0.8em;
+}
+
+h3.totp-details-header::before {
+    content: '▸ ';
+}
+
+.totp-details-visible h3.totp-details-header::before {
+    content: '▾ ';
+}
+
+.totp-details,
+.totp-hide-details {
+    display: none;
+}
+
+.totp-details-visible .totp-details {
+    display: table;
+}
+
+.totp-details-visible .totp-hide-details {
+    display: inline;
+}
+
+.totp-details-visible .totp-show-details {
+    display: none;
+}
+
+.totp-hide-details, .totp-show-details {
+    color: blue;
+    text-decoration: underline;
+    cursor: pointer;
+    margin: 0 0.25em;
+    font-weight: normal;
+}
+
+.totp-details {
+    margin: 0 auto;
+}
+
+.totp-details th {
+    padding-right: 0.25em;
+    text-align: left;
+}
+
+.totp-details td {
+    font-family: monospace;
+}
+
+.totp-detail {
+    display: inline-block;
+    margin: 0 0.25em;
+}

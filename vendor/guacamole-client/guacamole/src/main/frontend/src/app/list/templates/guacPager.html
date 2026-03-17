@@ -1,0 +1,25 @@
+<div class="pager" ng-show="pageNumbers.length > 1">
+
+    <!-- First / Previous -->
+    <div class="first-page icon" ng-class="{disabled: !canSelectPage(firstPage)}"    ng-click="selectPage(firstPage)"></div>
+    <div class="prev-page icon"  ng-class="{disabled: !canSelectPage(previousPage)}" ng-click="selectPage(previousPage)"></div>
+
+    <!-- Indicator of the existence of pages before the first page number shown -->
+    <div class="more-pages" ng-show="hasMorePagesBefore()">...</div>
+    
+    <!-- Page numbers -->
+    <ul class="page-numbers">
+        <li class="set-page"
+            ng-class="{current: isSelected(pageNumber)}"
+            ng-repeat="pageNumber in pageNumbers"
+            ng-click="selectPage(pageNumber)">{{pageNumber}}</li>
+    </ul>
+
+    <!-- Indicator of the existence of pages beyond the last page number shown -->
+    <div class="more-pages" ng-show="hasMorePagesAfter()">...</div>
+
+    <!-- Next / Last -->
+    <div class="next-page icon" ng-class="{disabled: !canSelectPage(nextPage)}" ng-click="selectPage(nextPage)"></div>
+    <div class="last-page icon" ng-class="{disabled: !canSelectPage(lastPage)}" ng-click="selectPage(lastPage)"></div>
+
+</div>

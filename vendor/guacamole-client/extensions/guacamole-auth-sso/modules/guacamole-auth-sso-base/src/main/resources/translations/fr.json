@@ -1,0 +1,29 @@
+{
+
+    "DATA_SOURCE_CAS" : {
+        "NAME" : "Backend CAS SSO"
+    },
+
+    "DATA_SOURCE_OPENID" : {
+        "NAME" : "Backend OpenID SSO"
+    },
+
+    "DATA_SOURCE_SAML" : {
+        "NAME" : "Backend SAML SSO"
+    },
+
+    "DATA_SOURCE_SSL" : {
+        "NAME" : "Backend SSL/TLS SSO"
+    },
+
+    "LOGIN" : {
+        "INFO_IDP_REDIRECT_PENDING" : "Veuillez patienter, redirection vers le fournisseur d'identité...",
+        "INFO_REDIRECT_PENDING"      : "Veuillez patienter pendant que vous êtes redirigé...",
+        "NAME_IDP_CAS"               : "CAS",
+        "NAME_IDP_OPENID"            : "OpenID",
+        "NAME_IDP_SAML"              : "SAML",
+        "NAME_IDP_SSL"               : "Certificat / Carte à puce",
+        "SECTION_HEADER_SSO_OPTIONS" : "Connectez-vous avec:"
+    }
+
+}

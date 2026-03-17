@@ -1,0 +1,36 @@
+{
+
+    "guacamoleVersion" : "1.6.0",
+
+    "name"      : "SQLServer Authentication",
+    "namespace" : "sqlserver",
+
+    "authProviders" : [
+        "org.apache.guacamole.auth.sqlserver.SQLServerAuthenticationProvider",
+        "org.apache.guacamole.auth.sqlserver.SQLServerSharedAuthenticationProvider"
+    ],
+
+    "css" : [
+        "styles/jdbc.css"
+    ],
+
+    "html" : [
+        "html/shared-connection.html"
+    ],
+
+    "translations" : [
+        "translations/ca.json",
+        "translations/de.json",
+        "translations/en.json",
+        "translations/es.json",
+        "translations/fr.json",
+        "translations/ja.json",
+        "translations/ko.json",
+        "translations/pl.json",
+        "translations/pt.json",
+        "translations/ru.json",
+        "translations/zh.json"
+    ]
+
+}
+

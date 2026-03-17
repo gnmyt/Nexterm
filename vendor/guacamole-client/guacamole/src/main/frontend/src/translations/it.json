@@ -1,0 +1,604 @@
+{
+    
+    "NAME" : "Italiano",
+    
+    "APP" : {
+
+        "ACTION_ACKNOWLEDGE"        : "OK",
+        "ACTION_CANCEL"             : "Annulla",
+        "ACTION_CLONE"              : "Clona",
+        "ACTION_CONTINUE"           : "Continua",
+        "ACTION_DELETE"             : "Cancella",
+        "ACTION_DELETE_SESSIONS"    : "Termina Sessione",
+        "ACTION_LOGIN"              : "Entra",
+        "ACTION_LOGOUT"             : "Esci",
+        "ACTION_MANAGE_CONNECTIONS" : "Connessioni",
+        "ACTION_MANAGE_PREFERENCES" : "Preferenze",
+        "ACTION_MANAGE_SETTINGS"    : "Opzioni",
+        "ACTION_MANAGE_SESSIONS"    : "Sessioni Attive",
+        "ACTION_MANAGE_USERS"       : "Utenti",
+        "ACTION_NAVIGATE_BACK"      : "Indietro",
+        "ACTION_NAVIGATE_HOME"      : "Home",
+        "ACTION_SAVE"               : "Salva",
+        "ACTION_UPDATE_PASSWORD"    : "Aggiorna Password",
+
+        "DIALOG_HEADER_ERROR" : "Errore",
+
+        "ERROR_PASSWORD_BLANK"    : "La password non può essere vuota.",
+        "ERROR_PASSWORD_MISMATCH" : "Le password inserite sono diverse!",
+        
+        "FIELD_HEADER_PASSWORD"       : "Password:",
+        "FIELD_HEADER_PASSWORD_AGAIN" : "Re-inserisci la password:",
+
+        "FIELD_PLACEHOLDER_FILTER" : "Filtro",
+
+        "FORMAT_DATE_TIME_PRECISE" : "dd-MM-yyyy HH:mm:ss",
+
+        "INFO_ACTIVE_USER_COUNT" : "Ora utilizzato da {USERS} {USERS, plural, one{user} other{users}}."
+
+    },
+
+    "CLIENT" : {
+
+        "ACTION_ACKNOWLEDGE"               : "@:APP.ACTION_ACKNOWLEDGE",
+        "ACTION_CLEAR_COMPLETED_TRANSFERS" : "Pulisci i trasferimenti completati",
+        "ACTION_DISCONNECT"                : "Disconnetti",
+        "ACTION_LOGOUT"                    : "@:APP.ACTION_LOGOUT",
+        "ACTION_NAVIGATE_BACK"             : "@:APP.ACTION_NAVIGATE_BACK",
+        "ACTION_NAVIGATE_HOME"             : "@:APP.ACTION_NAVIGATE_HOME",
+        "ACTION_RECONNECT"                 : "Riconnetti",
+        "ACTION_SAVE_FILE"                 : "@:APP.ACTION_SAVE",
+        "ACTION_UPLOAD_FILES"              : "Carica un file",
+
+        "DIALOG_HEADER_CONNECTING"       : "Connessione in corso",
+        "DIALOG_HEADER_CONNECTION_ERROR" : "Errore di Connessione",
+        "DIALOG_HEADER_DISCONNECTED"     : "Disconnesso",
+
+        "ERROR_CLIENT_201"     : "La connessione è stata chiusa perchè il server è sovraccarico. Attendi qualche minuto e riprova a collegarti.",
+        "ERROR_CLIENT_202"     : "Il server Guacamole ha chiuso la connessione perchè il desktop remoto risponde troppo lentamente. Per favore riprova o contatta il tuo amministratore di sistema.",
+        "ERROR_CLIENT_203"     : "Il desktop remoto ha riscontrato un errore ed ha chiuso la connessione. Per favore riprova o contatta il tuo amministratore di sistema.",
+        "ERROR_CLIENT_205"     : "Questa connessione è stata chiusa a causa di un conflitto con un'altra connessione. Riprova tra qualche minuto.",
+        "ERROR_CLIENT_301"     : "Autenticazione fallita. Prova ad effettaure nuovamente la connessione.",
+        "ERROR_CLIENT_303"     : "Non hai i permessi per accedere a questa connessione. Se ne hai bisogno, chiedi ai tuoi amministratori di sistema di aggiungerti agli utenti abilitati.",
+        "ERROR_CLIENT_308"     : "Il server Guacamole ha chiuso la connessione perchè il tuo browser non ha risposto per troppo tempo e sembrava essersi disconnesso. Solitamente la causa è un problema di rete, ad esempio un segnale wifi instabile o una connesisone molto lenta. Controlla la tua rete e riprova.",
+        "ERROR_CLIENT_31D"     : "Il server Guacamole rifiuta l'accesso alla connessione perchè hai raggiunto il limite massimo di connessioni simultanee per singolo utente. Chiudi una o più connessioni e riprova.",
+        "ERROR_CLIENT_DEFAULT" : "Si è verificato un errore interno sul server Guacamole, la connessione è stata terminata. Se il problema persiste avvisa il tuo amministratore di sistema o controlla i file di log.",
+
+        "ERROR_TUNNEL_201"     : "Il server Guacamole ha rifiutato questa connessione perchè ci sono troppe connessioni attive. Attendi qualche minuto e riprova.",
+        "ERROR_TUNNEL_202"     : "La connessione è stata chiusa dal server perché ci vuole troppo tempo per rispondere. Solitamente la causa è un problema di rete, ad esempio un segnale wifi instabile o una connesisone molto lenta. Controlla la tua rete e riprova.",
+        "ERROR_TUNNEL_203"     : "Si è verificato un errore sul server e la connessione è stata chiusa. Riprova o contatta il tuo amministratore di sistema.",
+        "ERROR_TUNNEL_204"     : "La connessione richiesta non esiste. Controlla il nome della connessione e riprova. Grazie.",
+        "ERROR_TUNNEL_205"     : "Questa connessione è già in uso, non sono possibili accessi concorrenti. Riprova più tardi. Grazie.",
+        "ERROR_TUNNEL_301"     : "Non hai i permessi per accedere a questa connessione perchè non hai effettuato il login. Inserisci nome utente e password e riprova.",
+        "ERROR_TUNNEL_303"     : "Non hai i permessi per accedere a questa connessione. Se ne hai bisogno, chiedi ai tuoi amministratori di sistema di aggiungerti agli utenti abilitati.",
+        "ERROR_TUNNEL_308"     : "Il server Guacamole ha chiuso la connessione perchè il tuo browser non ha risposto per troppo tempo e sembrava essersi disconnesso. Solitamente la causa è un problema di rete, ad esempio un segnale wifi instabile o una connesisone molto lenta. Controlla la tua rete e riprova.",
+        "ERROR_TUNNEL_31D"     : "Il server Guacamole rifiuta l'accesso alla connessione perchè hai raggiunto il limite massimo di connessioni simultanee per singolo utente. Chiudi una o più connessioni e riprova. Grazie.",
+        "ERROR_TUNNEL_DEFAULT" : "Si è verificato un errore interno sul server Guacamole, e la connessione è stata terminata. Se il problema persiste avvisa il tuo amministratore di sistema o controlla i file di log.",
+
+        "ERROR_UPLOAD_100"     : "Il trasferimento di file non è supportato o non è attivo. Contatta il tuo amministratore di sistema.",
+        "ERROR_UPLOAD_201"     : "Ci sono troppi file in coda per il trasferimento. Attendi che siano completati i trasferimenti in atto e riprova.",
+        "ERROR_UPLOAD_202"     : "Trasferimento annullato: il desktop remoto risponde troppo lentamente. Per favore riprova o contatta il tuo amministratore di sistema.",
+        "ERROR_UPLOAD_203"     : "Il desktop remoto ha incontrato un errore durante il trasferimento. Per favore riprova o contatta il tuo amministratore di sistema.",
+        "ERROR_UPLOAD_204"     : "La destinazione del file non esiste. Controlla che la destinazione esista e riprova.",
+        "ERROR_UPLOAD_205"     : "La destinazione del file è bloccata. Per favore attendi che ogni processo in corso sia terminato e riprova.",
+        "ERROR_UPLOAD_301"     : "Non hai i permessi per caricare i file perchè non hai fatto il login. Inserisci nome utente e password e riprova.",
+        "ERROR_UPLOAD_303"     : "Non hai i permessi per caricare i file. Se ti serve questa funzionalità contatta il tuo amministratore di sistema.",
+        "ERROR_UPLOAD_308"     : "Il trasferimento di file si è fermato. Solitamente la causa è un problema di rete, ad esempio un segnale wifi instabile o una connesisone molto lenta. Controlla la tua rete e riprova.",
+        "ERROR_UPLOAD_31D"     : "Ci sono troppi file in coda per il trasferimento. Attendi che siano completati i trasferimenti in atto e riprova.",
+        "ERROR_UPLOAD_DEFAULT" : "Si è verificato un errore sul server e la connessione è stata chiusa. Riprova o contatta il tuo amministratore di sistema.",
+
+        "FIELD_PLACEHOLDER_FILTER" : "@:APP.FIELD_PLACEHOLDER_FILTER",
+
+        "HELP_CLIPBOARD"           : "Il testo copiato/tagliato appare qui. I cambiamenti effettuati al testo qui sotto saranno riportati negli appunti remoti.",
+        "HELP_INPUT_METHOD_NONE"   : "Non c'è nessun metodo di immissione. L'input da tastiera è accettato da una tastiera fisica connessa.",
+        "HELP_INPUT_METHOD_OSK"    : "Mostra e accetta input dalla tastiera su schermo. La tastiera su schermo ti permette di scrivere combinazioni di tasti altrimenti impossibli (ad esempio Ctrl-Alt-Canc).",
+        "HELP_INPUT_METHOD_TEXT"   : "Abilita la battitura di testo ed emula gli eventi da tastiera basati sul testo battuto. Questo è necessario per tablet e smartphone che non hanno una tastiera fisica.",
+        "HELP_MOUSE_MODE"          : "Determina come si deve comportare il mouse remoto in base al touch.",
+        "HELP_MOUSE_MODE_ABSOLUTE" : "Tap to click. Il click è sostituito dal tocco.",
+        "HELP_MOUSE_MODE_RELATIVE" : "Trascina il dito per muovere il puntatore del mouse e fai tap al posto del click. Il click sarà effettuato dove si trova il puntatore.",
+
+        "INFO_NO_FILE_TRANSFERS" : "Nessun trasferimento di file.",
+
+        "NAME_INPUT_METHOD_NONE"   : "Nessuno",
+        "NAME_INPUT_METHOD_OSK"    : "Tastiera su schermo",
+        "NAME_INPUT_METHOD_TEXT"   : "Inserimento Testo",
+        "NAME_KEY_CTRL"            : "Ctrl",
+        "NAME_KEY_ALT"             : "Alt",
+        "NAME_KEY_ESC"             : "Esc",
+        "NAME_KEY_TAB"             : "Tab",
+        "NAME_MOUSE_MODE_ABSOLUTE" : "Touchscreen",
+        "NAME_MOUSE_MODE_RELATIVE" : "Touchpad",
+
+        "SECTION_HEADER_CLIPBOARD"      : "Appunti",
+        "SECTION_HEADER_DEVICES"        : "Dispositivi",
+        "SECTION_HEADER_DISPLAY"        : "Schermo",
+        "SECTION_HEADER_FILE_TRANSFERS" : "Trasferimento file",
+        "SECTION_HEADER_INPUT_METHOD"   : "Metodo di input",
+        "SECTION_HEADER_MOUSE_MODE"     : "Modalità di emulazione del mouse",
+
+        "TEXT_ZOOM_AUTO_FIT"              : "Automatically fit to browser window",
+        "TEXT_CLIENT_STATUS_IDLE"         : "Inattivo.",
+        "TEXT_CLIENT_STATUS_CONNECTING"   : "Connessione in corso a Guacamole...",
+        "TEXT_CLIENT_STATUS_DISCONNECTED" : "Sei stato disconnesso.",
+        "TEXT_CLIENT_STATUS_WAITING"      : "Connesso a Guacamole. Attendi una risposta...",
+        "TEXT_RECONNECT_COUNTDOWN"        : "Riconnessione in {REMAINING} {REMAINING, plural, one{second} other{seconds}}...",
+        "TEXT_FILE_TRANSFER_PROGRESS"     : "{PROGRESS} {UNIT, select, b{B} kb{KB} mb{MB} gb{GB} other{}}",
+
+        "URL_OSK_LAYOUT" : "layouts/it-it-qwerty.json"
+
+    },
+
+    "FORM" : {
+
+        "HELP_SHOW_PASSWORD" : "Fare clic per mostrare la password",
+        "HELP_HIDE_PASSWORD" : "Fare clic per nascondere la password"
+
+    },
+
+    "HOME" : {
+
+        "FIELD_PLACEHOLDER_FILTER" : "@:APP.FIELD_PLACEHOLDER_FILTER",
+
+        "INFO_ACTIVE_USER_COUNT" : "@:APP.INFO_ACTIVE_USER_COUNT",
+
+        "INFO_NO_RECENT_CONNECTIONS" : "Nessuna connessione recente.",
+        
+        "PASSWORD_CHANGED" : "Password modificata.",
+
+        "SECTION_HEADER_ALL_CONNECTIONS"    : "Tutte le Connessioni",
+        "SECTION_HEADER_RECENT_CONNECTIONS" : "Connessioni Recenti"
+
+    },
+
+    "LOGIN": {
+
+        "ACTION_ACKNOWLEDGE" : "@:APP.ACTION_ACKNOWLEDGE",
+        "ACTION_CONTINUE"    : "@:APP.ACTION_CONTINUE",
+        "ACTION_LOGIN"       : "@:APP.ACTION_LOGIN",
+
+        "DIALOG_HEADER_ERROR" : "@:APP.DIALOG_HEADER_ERROR",
+
+        "ERROR_INVALID_LOGIN" : "Nome utente e/o password errati.",
+
+        "FIELD_HEADER_USERNAME" : "Nome utente",
+        "FIELD_HEADER_PASSWORD" : "Password"
+
+    },
+
+    "MANAGE_CONNECTION" : {
+
+        "ACTION_ACKNOWLEDGE"          : "@:APP.ACTION_ACKNOWLEDGE",
+        "ACTION_CANCEL"               : "@:APP.ACTION_CANCEL",
+        "ACTION_CLONE"                : "@:APP.ACTION_CLONE",
+        "ACTION_DELETE"               : "@:APP.ACTION_DELETE",
+        "ACTION_SAVE"                 : "@:APP.ACTION_SAVE",
+
+        "DIALOG_HEADER_CONFIRM_DELETE" : "Elimina connessione",
+        "DIALOG_HEADER_ERROR"          : "@:APP.DIALOG_HEADER_ERROR",
+
+        "FIELD_HEADER_LOCATION" : "Posizione:",
+        "FIELD_HEADER_NAME"     : "Nome:",
+        "FIELD_HEADER_PROTOCOL" : "Protocollo:",
+
+        "FORMAT_HISTORY_START" : "@:APP.FORMAT_DATE_TIME_PRECISE",
+
+        "INFO_CONNECTION_DURATION_UNKNOWN" : "--",
+        "INFO_CONNECTION_ACTIVE_NOW"       : "Attiva adesso",
+        "INFO_CONNECTION_NOT_USED"         : "Questa connessione non è mai stata usata.",
+
+        "SECTION_HEADER_EDIT_CONNECTION" : "Modifica Connessione",
+        "SECTION_HEADER_HISTORY"         : "Cronologia di utilizzo",
+        "SECTION_HEADER_PARAMETERS"      : "Parametri",
+
+        "TABLE_HEADER_HISTORY_USERNAME" : "Nome utente",
+        "TABLE_HEADER_HISTORY_START"    : "Ora di inizio",
+        "TABLE_HEADER_HISTORY_DURATION" : "Durata",
+
+        "TEXT_CONFIRM_DELETE"   : "Le Connessioni non possono essere ripristinate dopo la loro eliminazione. Sei sicuro di volere eliminare questa connessione?"
+
+    },
+
+    "MANAGE_CONNECTION_GROUP" : {
+
+        "ACTION_ACKNOWLEDGE"   : "@:APP.ACTION_ACKNOWLEDGE",
+        "ACTION_CANCEL"        : "@:APP.ACTION_CANCEL",
+        "ACTION_DELETE"        : "@:APP.ACTION_DELETE",
+        "ACTION_SAVE"          : "@:APP.ACTION_SAVE",
+
+        "DIALOG_HEADER_CONFIRM_DELETE" : "Elimina Gruppo di Connesisoni",
+        "DIALOG_HEADER_ERROR"          : "@:APP.DIALOG_HEADER_ERROR",
+
+        "FIELD_HEADER_LOCATION" : "Posizione:",
+        "FIELD_HEADER_NAME"     : "Nome:",
+        "FIELD_HEADER_TYPE"     : "Tipo:",
+
+        "NAME_TYPE_BALANCING"       : "Bilanciamento",
+        "NAME_TYPE_ORGANIZATIONAL"  : "Organizzazione",
+
+        "SECTION_HEADER_EDIT_CONNECTION_GROUP" : "Modifica Gruppo di Connessioni",
+
+        "TEXT_CONFIRM_DELETE" : "Un Gruppo di Connessioni non può essere ripristinato dopo l'eliminazione. Sei sicuro di volere eliminare questa gruppo?"
+
+    },
+
+    "MANAGE_SHARING_PROFILE" : {
+
+        "ACTION_ACKNOWLEDGE" : "@:APP.ACTION_ACKNOWLEDGE",
+        "ACTION_CANCEL"      : "@:APP.ACTION_CANCEL",
+        "ACTION_CLONE"       : "@:APP.ACTION_CLONE",
+        "ACTION_DELETE"      : "@:APP.ACTION_DELETE",
+        "ACTION_SAVE"        : "@:APP.ACTION_SAVE",
+
+        "DIALOG_HEADER_ERROR" : "@:APP.DIALOG_HEADER_ERROR",
+
+        "FIELD_HEADER_NAME" : "Nome:",
+
+        "SECTION_HEADER_PARAMETERS" : "Parametri"
+
+    },
+
+    "MANAGE_USER" : {
+
+        "ACTION_ACKNOWLEDGE"   : "@:APP.ACTION_ACKNOWLEDGE",
+        "ACTION_CANCEL"        : "@:APP.ACTION_CANCEL",
+        "ACTION_CLONE"         : "@:APP.ACTION_CLONE",
+        "ACTION_DELETE"        : "@:APP.ACTION_DELETE",
+        "ACTION_SAVE"          : "@:APP.ACTION_SAVE",
+
+        "DIALOG_HEADER_CONFIRM_DELETE" : "Elimina utente",
+        "DIALOG_HEADER_ERROR"          : "@:APP.DIALOG_HEADER_ERROR",
+
+        "ERROR_PASSWORD_MISMATCH" : "@:APP.ERROR_PASSWORD_MISMATCH",
+
+        "FIELD_HEADER_ADMINISTER_SYSTEM"             : "Amministartore di sistema:",
+        "FIELD_HEADER_CHANGE_OWN_PASSWORD"           : "Cambia la tua password:",
+        "FIELD_HEADER_CREATE_NEW_USERS"              : "Crea un utente:",
+        "FIELD_HEADER_CREATE_NEW_CONNECTIONS"        : "Crea una connessione:",
+        "FIELD_HEADER_CREATE_NEW_CONNECTION_GROUPS"  : "Crea un ruppo di connessioni:",
+        "FIELD_HEADER_PASSWORD"                      : "@:APP.FIELD_HEADER_PASSWORD",
+        "FIELD_HEADER_PASSWORD_AGAIN"                : "@:APP.FIELD_HEADER_PASSWORD_AGAIN",
+        "FIELD_HEADER_USERNAME"                      : "Nome utente:",
+        
+        "FIELD_PLACEHOLDER_FILTER" : "@:APP.FIELD_PLACEHOLDER_FILTER",
+
+        "SECTION_HEADER_CONNECTIONS" : "Connessioni",
+        "SECTION_HEADER_EDIT_USER"   : "Modifica Utente",
+        "SECTION_HEADER_PERMISSIONS" : "Permessi",
+
+        "TEXT_CONFIRM_DELETE" : "L'utente non può essere ripristinato dopo l'eliminazione. Sei sicuro di volere eliminare l'utente?"
+
+    },
+    
+    "PROTOCOL_RDP" : {
+
+        "FIELD_HEADER_COLOR_DEPTH"     : "Profondità di colore:",
+        "FIELD_HEADER_CONSOLE"         : "Console amministratore:",
+        "FIELD_HEADER_CONSOLE_AUDIO"   : "Supporta l'audio nella console:",
+        "FIELD_HEADER_CLIENT_NAME"     : "Client name:",
+        "FIELD_HEADER_DISABLE_AUDIO"   : "Disattiva audio:",
+        "FIELD_HEADER_DISABLE_AUTH"    : "Disabilita autenticazione:",
+        "FIELD_HEADER_DOMAIN"          : "Dominio:",
+        "FIELD_HEADER_DPI"             : "Risoluzione (DPI):",
+        "FIELD_HEADER_DRIVE_PATH"      : "Drive path:",
+        "FIELD_HEADER_ENABLE_DESKTOP_COMPOSITION" : "Abilita composizione desktop (Aero):",
+        "FIELD_HEADER_ENABLE_DRIVE"               : "Abilita drive:",
+        "FIELD_HEADER_ENABLE_FONT_SMOOTHING"      : "Abilita l'arrotondamento dei caratteri (ClearType):",
+        "FIELD_HEADER_ENABLE_FULL_WINDOW_DRAG"    : "Abilita il trascinamento della finestra intera:",
+        "FIELD_HEADER_ENABLE_MENU_ANIMATIONS"     : "Abilita le animazioni del menu:",
+        "FIELD_HEADER_ENABLE_PRINTING"            : "Abilita la stampa:",
+        "FIELD_HEADER_ENABLE_SFTP"                : "Abilita SFTP:",
+        "FIELD_HEADER_ENABLE_THEMING"             : "Abilita temi:",
+        "FIELD_HEADER_ENABLE_WALLPAPER"           : "Abilita sfondo:",
+        "FIELD_HEADER_HEIGHT"          : "Altezza:",
+        "FIELD_HEADER_HOSTNAME"        : "Nome host:",
+        "FIELD_HEADER_IGNORE_CERT"     : "Ignora certificato server:",
+        "FIELD_HEADER_INITIAL_PROGRAM" : "Programma iniziale:",
+        "FIELD_HEADER_PASSWORD"        : "Password:",
+        "FIELD_HEADER_PORT"            : "Porta:",
+        "FIELD_HEADER_REMOTE_APP_ARGS" : "Parametri:",
+        "FIELD_HEADER_REMOTE_APP_DIR"  : "Directory di lavoro:",
+        "FIELD_HEADER_REMOTE_APP"      : "Programma:",
+        "FIELD_HEADER_SECURITY"        : "Modalità di sicurezza:",
+        "FIELD_HEADER_SERVER_LAYOUT"   : "Layout della tastiera:",
+        "FIELD_HEADER_SFTP_HOSTNAME"   : "Nome host:",
+        "FIELD_HEADER_SFTP_PASSPHRASE" : "Passphrase:",
+        "FIELD_HEADER_SFTP_PASSWORD"   : "Password:",
+        "FIELD_HEADER_SFTP_PORT"       : "Porta:",
+        "FIELD_HEADER_SFTP_PRIVATE_KEY" : "Chiave privata:",
+        "FIELD_HEADER_SFTP_USERNAME"   : "Nome utente:",        
+        "FIELD_HEADER_STATIC_CHANNELS" : "Nomi dei canali statici:",
+        "FIELD_HEADER_USERNAME"        : "Nome utente:",
+        "FIELD_HEADER_WIDTH"           : "Larghezza:",        
+
+        "FIELD_OPTION_COLOR_DEPTH_16"    : "Low color (16-bit)",
+        "FIELD_OPTION_COLOR_DEPTH_24"    : "True color (24-bit)",
+        "FIELD_OPTION_COLOR_DEPTH_32"    : "True color (32-bit)",
+        "FIELD_OPTION_COLOR_DEPTH_8"     : "256 color",
+        "FIELD_OPTION_COLOR_DEPTH_EMPTY" : "",
+
+        "FIELD_OPTION_SECURITY_ANY"   : "Qualsiasi",
+        "FIELD_OPTION_SECURITY_EMPTY" : "",
+        "FIELD_OPTION_SECURITY_NLA"   : "NLA (Network Level Authentication)",
+        "FIELD_OPTION_SECURITY_RDP"   : "RDP encryption",
+        "FIELD_OPTION_SECURITY_TLS"   : "TLS encryption",
+
+        "FIELD_OPTION_SERVER_LAYOUT_DE_DE_QWERTZ" : "German (Qwertz)",
+        "FIELD_OPTION_SERVER_LAYOUT_EMPTY"        : "",
+        "FIELD_OPTION_SERVER_LAYOUT_EN_US_QWERTY" : "US English (Qwerty)",
+        "FIELD_OPTION_SERVER_LAYOUT_FAILSAFE"     : "Unicode",
+        "FIELD_OPTION_SERVER_LAYOUT_FR_FR_AZERTY" : "French (Azerty)",
+        "FIELD_OPTION_SERVER_LAYOUT_IT_IT_QWERTY" : "Italiana (Qwerty)",
+        "FIELD_OPTION_SERVER_LAYOUT_PL_PL_QWERTY" : "Polacca (Qwerty)",
+        "FIELD_OPTION_SERVER_LAYOUT_RO_RO_QWERTY" : "Rumeno (Qwerty)",
+        "FIELD_OPTION_SERVER_LAYOUT_SV_SE_QWERTY" : "Swedish (Qwerty)",
+
+        "NAME" : "RDP",
+
+        "SECTION_HEADER_AUTHENTICATION"     : "Autenticazione",
+        "SECTION_HEADER_BASIC_PARAMETERS"   : "Impostazioni di base",
+        "SECTION_HEADER_CLIPBOARD"          : "Appunti",
+        "SECTION_HEADER_DEVICE_REDIRECTION" : "Reindirizzamento del dispositivo",
+        "SECTION_HEADER_DISPLAY"            : "Display",
+        "SECTION_HEADER_NETWORK"            : "Network",
+        "SECTION_HEADER_PERFORMANCE"        : "Prestazione",
+        "SECTION_HEADER_REMOTEAPP"          : "RemoteApp",
+        "SECTION_HEADER_SFTP"               : "SFTP"
+
+    },
+
+    "PROTOCOL_SSH" : {
+
+        "FIELD_HEADER_FONT_NAME"   : "Nome carattere:",
+        "FIELD_HEADER_FONT_SIZE"   : "Dimensione del carattere:",
+        "FIELD_HEADER_ENABLE_SFTP" : "Abilita SFTP:",
+        "FIELD_HEADER_HOSTNAME"    : "Nome host:",
+        "FIELD_HEADER_USERNAME"    : "Nome utente:",
+        "FIELD_HEADER_PASSWORD"    : "Password:",
+        "FIELD_HEADER_PASSPHRASE"  : "Passphrase:",
+        "FIELD_HEADER_PORT"        : "Porta:",
+        "FIELD_HEADER_PRIVATE_KEY" : "Chiave privata:",
+
+        "FIELD_OPTION_FONT_SIZE_8"     : "8",
+        "FIELD_OPTION_FONT_SIZE_9"     : "9",
+        "FIELD_OPTION_FONT_SIZE_10"    : "10",
+        "FIELD_OPTION_FONT_SIZE_11"    : "11",
+        "FIELD_OPTION_FONT_SIZE_12"    : "12",
+        "FIELD_OPTION_FONT_SIZE_14"    : "14",
+        "FIELD_OPTION_FONT_SIZE_18"    : "18",
+        "FIELD_OPTION_FONT_SIZE_24"    : "24",
+        "FIELD_OPTION_FONT_SIZE_30"    : "30",
+        "FIELD_OPTION_FONT_SIZE_36"    : "36",
+        "FIELD_OPTION_FONT_SIZE_48"    : "48",
+        "FIELD_OPTION_FONT_SIZE_60"    : "60",
+        "FIELD_OPTION_FONT_SIZE_72"    : "72",
+        "FIELD_OPTION_FONT_SIZE_96"    : "96",
+        "FIELD_OPTION_FONT_SIZE_EMPTY" : "",
+
+        "NAME" : "SSH",
+
+        "SECTION_HEADER_AUTHENTICATION" : "Autenticazione",
+        "SECTION_HEADER_CLIPBOARD"      : "Appunti",
+        "SECTION_HEADER_DISPLAY"        : "Display",
+        "SECTION_HEADER_NETWORK"        : "Network",
+        "SECTION_HEADER_SFTP"           : "SFTP"
+
+    },
+
+    "PROTOCOL_TELNET" : {
+
+        "FIELD_HEADER_FONT_NAME"      : "Nome carattere:",
+        "FIELD_HEADER_FONT_SIZE"      : "Dimensione del carattere:",
+        "FIELD_HEADER_HOSTNAME"       : "Nome host:",
+        "FIELD_HEADER_USERNAME"       : "Nome utente:",
+        "FIELD_HEADER_PASSWORD"       : "Password:",
+        "FIELD_HEADER_PASSWORD_REGEX" : "Espressione regolare della password:",
+        "FIELD_HEADER_PORT"           : "Porta:",
+
+        "FIELD_OPTION_FONT_SIZE_8"     : "8",
+        "FIELD_OPTION_FONT_SIZE_9"     : "9",
+        "FIELD_OPTION_FONT_SIZE_10"    : "10",
+        "FIELD_OPTION_FONT_SIZE_11"    : "11",
+        "FIELD_OPTION_FONT_SIZE_12"    : "12",
+        "FIELD_OPTION_FONT_SIZE_14"    : "14",
+        "FIELD_OPTION_FONT_SIZE_18"    : "18",
+        "FIELD_OPTION_FONT_SIZE_24"    : "24",
+        "FIELD_OPTION_FONT_SIZE_30"    : "30",
+        "FIELD_OPTION_FONT_SIZE_36"    : "36",
+        "FIELD_OPTION_FONT_SIZE_48"    : "48",
+        "FIELD_OPTION_FONT_SIZE_60"    : "60",
+        "FIELD_OPTION_FONT_SIZE_72"    : "72",
+        "FIELD_OPTION_FONT_SIZE_96"    : "96",
+        "FIELD_OPTION_FONT_SIZE_EMPTY" : "",
+
+        "NAME" : "Telnet",
+
+        "SECTION_HEADER_AUTHENTICATION" : "Autenticazione",
+        "SECTION_HEADER_CLIPBOARD"      : "Appunti",
+        "SECTION_HEADER_DISPLAY"        : "Display",
+        "SECTION_HEADER_NETWORK"        : "Network"
+
+    },
+
+    "PROTOCOL_VNC" : {
+
+        "FIELD_HEADER_AUDIO_SERVERNAME" : "Nome del server audio:",
+        "FIELD_HEADER_COLOR_DEPTH"      : "Profondità di colore:",
+        "FIELD_HEADER_CURSOR"           : "Cursore:",
+        "FIELD_HEADER_DEST_HOST"        : "Host di destinazione:",
+        "FIELD_HEADER_DEST_PORT"        : "Porto di destinazione:",
+        "FIELD_HEADER_ENABLE_AUDIO"     : "Abilita audio:",
+        "FIELD_HEADER_ENABLE_SFTP"      : "Abilita SFTP:",
+        "FIELD_HEADER_HOSTNAME"         : "Nome host:",
+        "FIELD_HEADER_USERNAME"         : "Nome utente:",
+        "FIELD_HEADER_PASSWORD"         : "Password:",
+        "FIELD_HEADER_PORT"             : "Porta:",
+        "FIELD_HEADER_READ_ONLY"        : "Sola lettura:",
+        "FIELD_HEADER_SFTP_HOSTNAME"    : "Nome host:",
+        "FIELD_HEADER_SFTP_PASSPHRASE"  : "Passphrase:",
+        "FIELD_HEADER_SFTP_PASSWORD"    : "Password:",
+        "FIELD_HEADER_SFTP_PORT"        : "Porta:",
+        "FIELD_HEADER_SFTP_PRIVATE_KEY" : "Chiave privata:",
+        "FIELD_HEADER_SFTP_USERNAME"    : "Nome utente:",
+        "FIELD_HEADER_SWAP_RED_BLUE"    : "Scambia componenti rosso/blu:",
+
+        "FIELD_OPTION_COLOR_DEPTH_8"     : "256 color",
+        "FIELD_OPTION_COLOR_DEPTH_16"    : "Low color (16-bit)",
+        "FIELD_OPTION_COLOR_DEPTH_24"    : "True color (24-bit)",
+        "FIELD_OPTION_COLOR_DEPTH_32"    : "True color (32-bit)",
+        "FIELD_OPTION_COLOR_DEPTH_EMPTY" : "",
+
+        "FIELD_OPTION_CURSOR_EMPTY"  : "",
+        "FIELD_OPTION_CURSOR_LOCAL"  : "Locale",
+        "FIELD_OPTION_CURSOR_REMOTE" : "Remoto",
+
+        "NAME" : "VNC",
+
+        "SECTION_HEADER_AUDIO"          : "Audio",
+        "SECTION_HEADER_AUTHENTICATION" : "Autenticazione",
+        "SECTION_HEADER_CLIPBOARD"      : "Appunti",
+        "SECTION_HEADER_DISPLAY"        : "Display",
+        "SECTION_HEADER_NETWORK"        : "Network",
+        "SECTION_HEADER_REPEATER"       : "VNC Repeater",
+        "SECTION_HEADER_SFTP"           : "SFTP"
+
+    },
+
+    "SETTINGS" : {
+
+        "SECTION_HEADER_SETTINGS" : "Impostazioni"
+
+    },
+
+    "SETTINGS_CONNECTIONS" : {
+
+        "ACTION_ACKNOWLEDGE"          : "@:APP.ACTION_ACKNOWLEDGE",
+        "ACTION_NEW_CONNECTION"       : "Nuova Connessione",
+        "ACTION_NEW_CONNECTION_GROUP" : "Nuovo Gruppo",
+
+        "DIALOG_HEADER_ERROR" : "@:APP.DIALOG_HEADER_ERROR",
+
+        "FIELD_PLACEHOLDER_FILTER" : "@:APP.FIELD_PLACEHOLDER_FILTER",
+
+        "HELP_CONNECTIONS"   : "Fai click o tap sulla connessione qui sotto per gestire quella connessione. In base al tuo livello di accesso, le connessioni possono essere create, eliminate, e le relative proprietà (protocol, hostname, port, etc.) possono essere cambiate.",
+        
+        "INFO_ACTIVE_USER_COUNT" : "@:APP.INFO_ACTIVE_USER_COUNT",
+
+        "SECTION_HEADER_CONNECTIONS"     : "Connessioni"
+
+    },
+
+    "SETTINGS_CONNECTION_HISTORY" : {
+
+        "FIELD_PLACEHOLDER_FILTER" : "@:APP.FIELD_PLACEHOLDER_FILTER",
+
+        "FORMAT_DATE" : "@:APP.FORMAT_DATE_TIME_PRECISE",
+
+        "INFO_CONNECTION_DURATION_UNKNOWN" : "--",
+
+        "TABLE_HEADER_SESSION_CONNECTION_NAME" : "Nome della connessione",
+        "TABLE_HEADER_SESSION_STARTDATE"       : "Ora di inizio",
+        "TABLE_HEADER_SESSION_DURATION"        : "Durata",
+        "TABLE_HEADER_SESSION_USERNAME"        : "Nome utente"
+
+    },
+
+    "SETTINGS_PREFERENCES" : {
+
+        "ACTION_ACKNOWLEDGE"        : "@:APP.ACTION_ACKNOWLEDGE",
+        "ACTION_CANCEL"             : "@:APP.ACTION_CANCEL",
+        "ACTION_UPDATE_PASSWORD"    : "@:APP.ACTION_UPDATE_PASSWORD",
+
+        "DIALOG_HEADER_ERROR"    : "@:APP.DIALOG_HEADER_ERROR",
+
+        "ERROR_PASSWORD_BLANK"    : "@:APP.ERROR_PASSWORD_BLANK",
+        "ERROR_PASSWORD_MISMATCH" : "@:APP.ERROR_PASSWORD_MISMATCH",
+
+        "FIELD_HEADER_LANGUAGE"           : "Lingua dell'interfaccia:",
+        "FIELD_HEADER_PASSWORD"           : "Password:",
+        "FIELD_HEADER_PASSWORD_OLD"       : "Password Attuale:",
+        "FIELD_HEADER_PASSWORD_NEW"       : "Nuova Password:",
+        "FIELD_HEADER_PASSWORD_NEW_AGAIN" : "Conferma Nuova Password:",
+        "FIELD_HEADER_USERNAME"           : "Nome utente",
+        
+        "HELP_DEFAULT_INPUT_METHOD" : "Il metodo di input predefinito determina come gli eventi della tastiera vengono ricevuti da Guacamole. La modifica di questa impostazione potrebbe essere necessaria quando si utilizza un dispositivo mobile o quando si digita un IME. Questa impostazione può essere ignorata in base alla connessione all'interno del menu Guacamole.",
+        "HELP_DEFAULT_MOUSE_MODE"   : "La modalità di emulazione del mouse predefinita determina come si comporterà il mouse remoto nelle nuove connessioni rispetto ai tocchi. Questa impostazione può essere ignorata in base alla connessione all'interno del menu Guacamole.",
+        "HELP_INPUT_METHOD_NONE"    : "@:CLIENT.HELP_INPUT_METHOD_NONE",
+        "HELP_INPUT_METHOD_OSK"     : "@:CLIENT.HELP_INPUT_METHOD_OSK",
+        "HELP_INPUT_METHOD_TEXT"    : "@:CLIENT.HELP_INPUT_METHOD_TEXT",
+        "HELP_LANGUAGE"             : "Seleziona una lingua diversa di seguito per cambiare la lingua di tutto il testo all'interno di Guacamole. Le scelte disponibili dipenderanno dalle lingue installate.",
+        "HELP_MOUSE_MODE_ABSOLUTE"  : "@:CLIENT.HELP_MOUSE_MODE_ABSOLUTE",
+        "HELP_MOUSE_MODE_RELATIVE"  : "@:CLIENT.HELP_MOUSE_MODE_RELATIVE",
+        "HELP_UPDATE_PASSWORD"      : "Se desideri cambiare la tua password, inserisci la tua password attuale e sotto scrivi quella che desideri come nuova password, clicca \"Modifica Password\". La modifica avrà effetto immediato.",
+
+        "INFO_PASSWORD_CHANGED" : "Password Modificata.",
+
+        "NAME_INPUT_METHOD_NONE" : "@:CLIENT.NAME_INPUT_METHOD_NONE",
+        "NAME_INPUT_METHOD_OSK"  : "@:CLIENT.NAME_INPUT_METHOD_OSK",
+        "NAME_INPUT_METHOD_TEXT" : "@:CLIENT.NAME_INPUT_METHOD_TEXT",
+
+        "SECTION_HEADER_DEFAULT_INPUT_METHOD" : "Metodo di immissione predefinito",
+        "SECTION_HEADER_DEFAULT_MOUSE_MODE"   : "Modalità di emulazione del mouse predefinita",
+        "SECTION_HEADER_UPDATE_PASSWORD"      : "Modifica Password"
+
+    },
+
+    "SETTINGS_USERS" : {
+
+        "ACTION_ACKNOWLEDGE"   : "@:APP.ACTION_ACKNOWLEDGE",
+        "ACTION_NEW_USER"      : "Nuovo utente",
+
+        "DIALOG_HEADER_ERROR" : "@:APP.DIALOG_HEADER_ERROR",
+
+        "FIELD_PLACEHOLDER_FILTER" : "@:APP.FIELD_PLACEHOLDER_FILTER",
+
+        "FORMAT_DATE" : "@:APP.FORMAT_DATE_TIME_PRECISE",
+
+        "HELP_USERS" : "Fare clic o toccare un utente di seguito per gestire quell'utente. A seconda del livello di accesso, gli utenti possono essere aggiunti ed eliminati e le loro password possono essere modificate.",
+
+        "SECTION_HEADER_USERS"       : "Utenti",
+
+        "TABLE_HEADER_USERNAME" : "Nome utente"
+
+    },
+    
+    "SETTINGS_SESSIONS" : {
+        
+        "ACTION_ACKNOWLEDGE" : "@:APP.ACTION_ACKNOWLEDGE",
+        "ACTION_CANCEL"      : "@:APP.ACTION_CANCEL",
+        "ACTION_DELETE"      : "Termina Sessione",
+        
+        "DIALOG_HEADER_CONFIRM_DELETE" : "Termina Sessione",
+        "DIALOG_HEADER_ERROR"          : "@:APP.DIALOG_HEADER_ERROR",
+        
+        "FIELD_PLACEHOLDER_FILTER" : "@:APP.FIELD_PLACEHOLDER_FILTER",
+        
+        "FORMAT_STARTDATE" : "@:APP.FORMAT_DATE_TIME_PRECISE",
+
+        "HELP_SESSIONS" : "Questa pagina verrà popolata con connessioni attualmente attive. Le connessioni elencate e la possibilità di terminare tali connessioni dipende dal tuo livello di accesso. Se desideri terminare una o più sessioni, seleziona la casella accanto a quelle sessioni e fai clic su \"Termina sessione \". Terminando una sessione si disconnetterà immediatamente l'utente dalla connessione associata.",
+        
+        "INFO_NO_SESSIONS" : "Nessuna sessione attiva",
+
+        "SECTION_HEADER_SESSIONS" : "Sessioni Attive",
+        
+        "TABLE_HEADER_SESSION_USERNAME"        : "Nome utente",
+        "TABLE_HEADER_SESSION_STARTDATE"       : "Attivo da",
+        "TABLE_HEADER_SESSION_REMOTEHOST"      : "Host remoto",
+        "TABLE_HEADER_SESSION_CONNECTION_NAME" : "Nome della connessione",
+        
+        "TEXT_CONFIRM_DELETE" : "Sei sicuro di voler terminare la sessione selezionata? L'utente che sta utilizzando questa sessione sarà immediatamente disconnesso."
+
+    },
+
+    "USER_MENU" : {
+
+        "ACTION_LOGOUT"             : "@:APP.ACTION_LOGOUT",
+        "ACTION_MANAGE_CONNECTIONS" : "@:APP.ACTION_MANAGE_CONNECTIONS",
+        "ACTION_MANAGE_PREFERENCES" : "@:APP.ACTION_MANAGE_PREFERENCES",
+        "ACTION_MANAGE_SESSIONS"    : "@:APP.ACTION_MANAGE_SESSIONS",
+        "ACTION_MANAGE_SETTINGS"    : "@:APP.ACTION_MANAGE_SETTINGS",
+        "ACTION_MANAGE_USERS"       : "@:APP.ACTION_MANAGE_USERS",
+        "ACTION_NAVIGATE_HOME"      : "@:APP.ACTION_NAVIGATE_HOME"
+
+    }
+
+}

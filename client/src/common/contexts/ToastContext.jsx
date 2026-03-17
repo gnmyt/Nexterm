@@ -53,16 +53,16 @@ export const ToastProvider = ({ children }) => {
             {children}
             <div className="toast-container">
                 {toasts.map((toast) => (
-                    <div key={toast.id} id={toast.id} className="toast" data-type={toast.title}>
+                    <div key={toast.id} id={toast.id} className={`toast ${!toast.description ? 'no-description' : ''}`} data-type={toast.title}>
                         <div className="toast-icon">
-                            <Icon path={toast.icon} size={1} />
+                            <Icon path={toast.icon} />
                         </div>
                         <div className="toast-content">
                             {toast.title && <div className="toast-title">{toast.title}</div>}
                             {toast.description && <div className="toast-description">{toast.description}</div>}
                         </div>
                         <button className="toast-close" onClick={() => removeToast(toast.id)}>
-                            <Icon path={mdiClose} size={1} />
+                            <Icon path={mdiClose} />
                         </button>
                     </div>
                 ))}

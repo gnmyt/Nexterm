@@ -1,0 +1,1 @@
+org.glassfish.hk2:osgi-resource-locator:jar:1.0.3

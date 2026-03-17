@@ -1,0 +1,266 @@
+{
+    "name"  : "ssh",
+    "connectionForms" : [
+
+        {
+            "name"  : "network",
+            "fields" : [
+                {
+                    "name"  : "hostname",
+                    "type"  : "TEXT"
+                },
+                {
+                    "name"  : "port",
+                    "type"  : "NUMERIC"
+                },
+                {
+                    "name"  : "host-key",
+                    "type"  : "TEXT"
+                },
+                {
+                    "name"  : "timeout",
+                    "type"  : "NUMERIC"
+                }
+            ]
+        },
+
+        {
+            "name"  : "authentication",
+            "fields" : [
+                {
+                    "name"  : "username",
+                    "type"  : "USERNAME"
+                },
+                {
+                    "name"  : "password",
+                    "type"  : "PASSWORD"
+                },
+                {
+                    "name"  : "private-key",
+                    "type"  : "MULTILINE"
+                },
+                {
+                    "name"  : "passphrase",
+                    "type"  : "PASSWORD"
+                },
+                {
+                    "name"  : "public-key",
+                    "type"  : "MULTILINE"
+                }
+            ]
+        },
+
+        {
+            "name"  : "display",
+            "fields" : [
+                {
+                    "name"  : "color-scheme",
+                    "type"  : "TERMINAL_COLOR_SCHEME",
+                    "options" : [ "", "black-white", "gray-black", "green-black", "white-black" ]
+                },
+                {
+                    "name"  : "font-name",
+                    "type"  : "TEXT"
+                },
+                {
+                    "name"  : "font-size",
+                    "type"  : "ENUM",
+                    "options" : [ "", "8", "9", "10", "11", "12", "14", "18", "24", "30", "36", "48", "60", "72", "96" ]
+                },
+                {
+                    "name"  : "scrollback",
+                    "type"  : "NUMERIC"
+                },
+                {
+                    "name"    : "read-only",
+                    "type"    : "BOOLEAN",
+                    "options" : [ "true" ]
+                }
+            ]
+        },
+
+        {
+            "name"  : "clipboard",
+            "fields" : [
+                {
+                    "name"    : "disable-copy",
+                    "type"    : "BOOLEAN",
+                    "options" : [ "true" ]
+                },
+                {
+                    "name"    : "disable-paste",
+                    "type"    : "BOOLEAN",
+                    "options" : [ "true" ]
+                }
+            ]
+        },
+
+        {
+            "name" : "session",
+            "fields" : [
+                {
+                    "name"  : "command",
+                    "type"  : "TEXT"
+                },
+                {
+                    "name"  : "locale",
+                    "type"  : "TEXT"
+                },
+                {
+                    "name"  : "timezone",
+                    "type"  : "TIMEZONE"
+                },
+                {
+                    "name"  : "server-alive-interval",
+                    "type"  : "NUMERIC"
+                }
+            ]
+        },
+
+        {
+            "name" : "behavior",
+            "fields" : [
+                {
+                    "name"    : "backspace",
+                    "type"    : "ENUM",
+                    "options" : [ "", "127", "8" ]
+                },
+                {
+                    "name"    : "terminal-type",
+                    "type"    : "ENUM",
+                    "options" : [ "", "xterm", "xterm-256color", "vt220", "vt100", "ansi", "linux" ]
+                }
+            ]
+        },
+
+        {
+            "name" : "typescript",
+            "fields" : [
+                {
+                    "name"  : "typescript-path",
+                    "type"  : "TEXT"
+                },
+                {
+                    "name"  : "typescript-name",
+                    "type"  : "TEXT"
+                },
+                {
+                    "name"  : "create-typescript-path",
+                    "type"  : "BOOLEAN",
+                    "options" : [ "true" ]
+                },
+                {
+                    "name"  : "typescript-write-existing",
+                    "type"  : "BOOLEAN",
+                    "options" : [ "true" ]
+                }
+            ]
+        },
+
+        {
+            "name" : "recording",
+            "fields" : [
+                {
+                    "name"  : "recording-path",
+                    "type"  : "TEXT"
+                },
+                {
+                    "name"  : "recording-name",
+                    "type"  : "TEXT"
+                },
+                {
+                    "name"  : "recording-exclude-output",
+                    "type"  : "BOOLEAN",
+                    "options" : [ "true" ]
+                },
+                {
+                    "name"  : "recording-exclude-mouse",
+                    "type"  : "BOOLEAN",
+                    "options" : [ "true" ]
+                },
+                {
+                    "name"  : "recording-include-keys",
+                    "type"  : "BOOLEAN",
+                    "options" : [ "true" ]
+                },
+                {
+                    "name"  : "create-recording-path",
+                    "type"  : "BOOLEAN",
+                    "options" : [ "true" ]
+                },
+                {
+                    "name"  : "recording-write-existing",
+                    "type"  : "BOOLEAN",
+                    "options" : [ "true" ]
+                }
+            ]
+        },
+
+        {
+            "name"  : "sftp",
+            "fields" : [
+                {
+                    "name"    : "enable-sftp",
+                    "type"    : "BOOLEAN",
+                    "options" : [ "true" ]
+                },
+                {
+                    "name"  : "sftp-root-directory",
+                    "type"  : "TEXT"
+                },
+                {
+                    "name"    : "sftp-disable-download",
+                    "type"    : "BOOLEAN",
+                    "options" : [ "true" ]
+                },
+                {
+                    "name"    : "sftp-disable-upload",
+                    "type"    : "BOOLEAN",
+                    "options" : [ "true" ]
+                }
+            ]
+        },
+        
+        {
+            "name"   : "wol",
+            "fields" : [
+                {
+                    "name"    : "wol-send-packet",
+                    "type"    : "BOOLEAN",
+                    "options" : [ "true" ]
+                },
+                {
+                    "name" : "wol-mac-addr",
+                    "type" : "TEXT"
+                },
+                {
+                    "name" : "wol-broadcast-addr",
+                    "type" : "TEXT"
+                },
+                {
+                    "name" : "wol-udp-port",
+                    "type" : "NUMERIC"
+                },
+                {
+                    "name" : "wol-wait-time",
+                    "type" : "NUMERIC"
+                }
+            ]
+        }
+
+    ],
+    "sharingProfileForms" : [
+
+        {
+            "name"  : "display",
+            "fields" : [
+                {
+                    "name"    : "read-only",
+                    "type"    : "BOOLEAN",
+                    "options" : [ "true" ]
+                }
+            ]
+        }
+
+    ]
+}

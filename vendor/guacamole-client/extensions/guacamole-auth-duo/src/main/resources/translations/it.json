@@ -1,0 +1,8 @@
+{
+
+    "LOGIN" : {
+        "INFO_DUO_VALIDATION_CODE_INCORRECT"    : "Codice di convalida Duo errato.",
+        "INFO_DUO_AUTH_REQUIRED"                : "Si prega di autenticarsi con Duo per continuare."
+    }
+
+}

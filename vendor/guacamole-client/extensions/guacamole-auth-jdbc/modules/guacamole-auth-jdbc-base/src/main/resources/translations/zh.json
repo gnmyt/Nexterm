@@ -1,0 +1,110 @@
+{
+
+    "LOGIN" : {
+
+        "ERROR_PASSWORD_BLANK"    : "@:APP.ERROR_PASSWORD_BLANK",
+        "ERROR_PASSWORD_SAME"     : "新密码必须与过期密码不同。",
+        "ERROR_PASSWORD_MISMATCH" : "@:APP.ERROR_PASSWORD_MISMATCH",
+        "ERROR_NOT_VALID"         : "此用户帐户当前无效。",
+        "ERROR_NOT_ACCESSIBLE"    : "当前不允许访问该帐户。请稍后再试。",
+
+        "INFO_PASSWORD_EXPIRED" : "您的密码已过期，必须重新设置。请输入新密码以继续。",
+
+        "FIELD_HEADER_NEW_PASSWORD"         : "新密码",
+        "FIELD_HEADER_CONFIRM_NEW_PASSWORD" : "确认新密码"
+
+    },
+
+    "CONNECTION_ATTRIBUTES" : {
+
+        "FIELD_HEADER_MAX_CONNECTIONS"          : "最大连接数：",
+        "FIELD_HEADER_MAX_CONNECTIONS_PER_USER" : "每个用户的最大连接数：",
+
+        "FIELD_HEADER_FAILOVER_ONLY"            : "仅用于故障转移：",
+        "FIELD_HEADER_WEIGHT"                   : "连接权重：",
+
+        "FIELD_HEADER_GUACD_HOSTNAME"   : "主机名：",
+        "FIELD_HEADER_GUACD_ENCRYPTION" : "加密：",
+        "FIELD_HEADER_GUACD_PORT"       : "端口：",
+
+        "FIELD_OPTION_GUACD_ENCRYPTION_EMPTY" : "",
+        "FIELD_OPTION_GUACD_ENCRYPTION_NONE"  : "没有 (未加密)",
+        "FIELD_OPTION_GUACD_ENCRYPTION_SSL"   : "SSL / TLS",
+
+        "SECTION_HEADER_CONCURRENCY"    : "并发限制",
+        "SECTION_HEADER_LOAD_BALANCING" : "负载均衡",
+        "SECTION_HEADER_GUACD"          : "Guacamole代理参数(guacd)"
+
+    },
+
+    "CONNECTION_GROUP_ATTRIBUTES" : {
+
+        "FIELD_HEADER_ENABLE_SESSION_AFFINITY"  : "启用会话亲和：",
+        "FIELD_HEADER_MAX_CONNECTIONS"          : "最大连接数：",
+        "FIELD_HEADER_MAX_CONNECTIONS_PER_USER" : "每个用户的最大连接数：",
+
+        "SECTION_HEADER_CONCURRENCY" : "并发限制(组负载均衡)"
+
+    },
+
+    "DATA_SOURCE_MYSQL" : {
+        "NAME" : "MySQL"
+    },
+
+    "DATA_SOURCE_MYSQL_SHARED" : {
+        "NAME" : "共享连接(MySQL)"
+    },
+
+    "DATA_SOURCE_POSTGRESQL" : {
+        "NAME" : "PostgreSQL"
+    },
+
+    "DATA_SOURCE_POSTGRESQL_SHARED" : {
+        "NAME" : "共享连接(PostgreSQL)"
+    },
+
+    "DATA_SOURCE_SQLSERVER" : {
+        "NAME" : "SQL Server"
+    },
+
+    "DATA_SOURCE_SQLSERVER_SHARED" : {
+        "NAME" : "共享连接(SQL Server)"
+    },
+
+    "HOME" : {
+        "INFO_SHARED_BY" : "由{USERNAME}共享"
+    },
+
+    "PASSWORD_POLICY" : {
+
+        "ERROR_CONTAINS_USERNAME"      : "密码可能不包含用户名。",
+        "ERROR_REQUIRES_DIGIT"         : "密码必须至少包含一位数字。",
+        "ERROR_REQUIRES_MULTIPLE_CASE" : "密码必须同时包含大写和小写字符。",
+        "ERROR_REQUIRES_NON_ALNUM"     : "密码必须包含至少一个符号。",
+        "ERROR_REUSED"                 : "此密码已被使用。请勿重复使用以前的密码。",
+        "ERROR_TOO_SHORT"              : "密码必须至少{LENGTH}位长度。",
+        "ERROR_TOO_YOUNG"              : "此帐户的密码已被重设。请至少再等待 {WAIT}天，然后再次更改密码。"
+
+    },
+
+    "USER_ATTRIBUTES" : {
+
+        "FIELD_HEADER_EXPIRED"             : "密码已过期:",
+        "FIELD_HEADER_ACCESS_WINDOW_END"   : "之后不允许访问:",
+        "FIELD_HEADER_ACCESS_WINDOW_START" : "之后允许访问:",
+        "FIELD_HEADER_TIMEZONE"            : "用户时区:",
+        "FIELD_HEADER_VALID_FROM"          : "之后启用帐户:",
+        "FIELD_HEADER_VALID_UNTIL"         : "之后禁用帐户:",
+
+        "SECTION_HEADER_RESTRICTIONS" : "帐户限制",
+        "SECTION_HEADER_PROFILE"      : "个人资料"
+
+    },
+
+    "USER_GROUP_ATTRIBUTES" : {
+
+        "SECTION_HEADER_RESTRICTIONS" : "组限制"
+
+    }
+
+}

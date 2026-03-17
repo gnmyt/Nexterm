@@ -33,6 +33,7 @@ export const AI = () => {
         { value: "", label: t("settings.ai.selectProvider") },
         { value: "ollama", label: "Ollama" },
         { value: "openai", label: "OpenAI" },
+        { value: "openai_compatible", label: "OpenAI Compatible" },
     ];
 
     const modelOptions = useMemo(() => {
@@ -128,7 +129,8 @@ export const AI = () => {
             ...prev,
             provider: provider,
             model: "",
-            apiUrl: provider === "ollama" ? "http://localhost:11434" : prev.apiUrl,
+            apiUrl: provider === "ollama" ? "http://localhost:11434" : 
+                   provider === "openai_compatible" ? "" : prev.apiUrl,
         }));
     }, []);
 
@@ -137,7 +139,12 @@ export const AI = () => {
         if (!settings.provider) return false;
         if (!settings.model) return false;
 
-        return !(settings.provider === "openai" && !settings.apiKey && !settings.hasApiKey);
+        if (settings.provider === "openai" && !settings.apiKey && !settings.hasApiKey) return false;
+        if (settings.provider === "openai_compatible") {
+            if (!settings.apiUrl) return false;
+            if (!settings.apiKey && !settings.hasApiKey) return false;
+        }
+        return true;
     };
 
     useEffect(() => {
@@ -192,7 +199,8 @@ export const AI = () => {
                                     <div className="setting-input">
                                         <SelectBox setSelected={(model) => handleInputChange("model", model)}
                                                    disabled={loadingModels} options={modelOptions}
-                                                   selected={settings.model} />
+                                                   selected={settings.model}
+                                                   searchable={availableModels.length > 5} />
                                     </div>
                                 </div>
 
@@ -214,6 +222,31 @@ export const AI = () => {
                                         </div>
                                     </div>
                                 )}
+
+                                {settings.provider === "openai_compatible" && (
+                                    <div className="setting-item">
+                                        <div className="setting-label">
+                                            <h4>{t("settings.ai.apiKey.title")}</h4>
+                                            <p>{t("settings.ai.apiKey.description")}</p>
+                                        </div>
+                                        <div className="setting-input">
+                                            <IconInput icon={mdiRobot} value={settings.apiUrl}
+                                                       setValue={(value) => handleInputChange("apiUrl", value)}
+                                                       placeholder={`${t("settings.ai.ollamaUrl.placeholder")}/compatible-mode/v1`} />
+                                        </div>
+                                        <div className="setting-input api-key-input">
+                                            <IconInput
+                                                icon={showApiKey ? mdiEyeOff : mdiEye}
+                                                type={showApiKey ? "text" : "password"}
+                                                value={settings.apiKey}
+                                                setValue={(value) => handleInputChange("apiKey", value)}
+                                                placeholder={settings.hasApiKey ? t("settings.ai.apiKey.setPlaceholder") : t("settings.ai.apiKey.placeholder")}
+                                                onIconClick={() => setShowApiKey(!showApiKey)}
+                                            />
+                                        </div>
+                                    </div>
+                                )}
+
 
                                 {settings.provider === "ollama" && (
                                     <div className="setting-item">

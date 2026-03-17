@@ -1,0 +1,38 @@
+<div class="timeRestrictionField">
+    <table class="restrictionList" ng-show="restrictions !== null && restrictions.length > 0">
+        <tr>
+            <th>{{ 'RESTRICT.TABLE_HEADER_DAY' | translate }}</th>
+            <th>{{ 'RESTRICT.TABLE_HEADER_START_TIME' | translate }}</th>
+            <th>{{ 'RESTRICT.TABLE_HEADER_END_TIME' | translate }}</th>
+            <th>&nbsp;</th>
+        </tr>
+        <tr class="restrictionListItem" ng-repeat="entry in restrictions">
+            <td>
+                <select ng-model="entry.weekDay"
+                        ng-options="weekDay.id as weekDay.day for weekDay in weekDays"
+                        ng-model-options="modelOptions">
+                </select>
+            </td>
+            <td>
+                <input type="time"
+                       ng-model="entry.startTime"
+                       ng-model-options="modelOptions">
+            </td>
+            <td>
+                <input type="time"
+                       ng-model="entry.endTime"
+                       ng-model-options="modelOptions">
+            </td>
+            <td>
+                <img class="restrictionListItem"
+                     src="images/x-red.svg"
+                     alt="Remove entry"
+                     ng-click="removeEntry(entry)">
+            </td>
+        </tr>
+    </table>
+    <button ng-click="addEntry()"
+            class="restrictionListButton">
+        {{ 'RESTRICT.ACTION_ADD_ENTRY' | translate }}
+    </button>
+</div>

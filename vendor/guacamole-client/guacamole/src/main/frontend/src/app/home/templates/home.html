@@ -1,0 +1,36 @@
+<div class="home-view view" ng-class="{loading: !isLoaded()}">
+
+    <div class="connection-list-ui">
+
+        <!-- The recent connections for this user -->
+        <div class="header" ng-show="isRecentConnectionsVisible()">
+            <h2 id="section-header-recent-connections">{{'HOME.SECTION_HEADER_RECENT_CONNECTIONS' | translate}}</h2>
+            <guac-user-menu></guac-user-menu>
+        </div>
+        <guac-recent-connections
+            root-groups="rootConnectionGroups"
+            ng-show="isRecentConnectionsVisible()"></guac-recent-connections>
+
+        <!-- All connections for this user -->
+        <div class="header">
+            <h2 id="section-header-all-connections">{{'HOME.SECTION_HEADER_ALL_CONNECTIONS' | translate}}</h2>
+            <guac-group-list-filter connection-groups="rootConnectionGroups"
+                filtered-connection-groups="filteredRootConnectionGroups"
+                placeholder="'HOME.FIELD_PLACEHOLDER_FILTER' | translate"
+                connection-properties="filteredConnectionProperties"
+                connection-group-properties="filteredConnectionGroupProperties"></guac-group-list-filter>
+            <guac-user-menu></guac-user-menu>
+        </div>
+        <div class="all-connections">
+            <guac-group-list
+                connection-groups="filteredRootConnectionGroups"
+                templates="{
+                    'connection'       : 'app/home/templates/connection.html',
+                    'connection-group' : 'app/home/templates/connectionGroup.html'
+                }"
+                page-size="20"></guac-group-list>
+        </div>
+
+    </div>
+
+</div>

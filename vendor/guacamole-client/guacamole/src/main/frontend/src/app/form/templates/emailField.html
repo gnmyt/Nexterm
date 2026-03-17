@@ -1,0 +1,12 @@
+<div class="email-field">
+    <input type="email"
+           ng-disabled="disabled"
+           ng-attr-id="{{ fieldId }}"
+           ng-attr-name="{{ field.name }}"
+           ng-model="model"
+           ng-hide="readOnly"
+           guac-focus="focused"
+           autocorrect="off"
+           autocapitalize="off">
+    <a href="mailto:{{model}}" ng-show="readOnly">{{model}}</a>
+</div>

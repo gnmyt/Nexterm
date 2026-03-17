@@ -1,0 +1,18 @@
+{
+
+    "DATA_SOURCE_QUICKCONNECT" : {
+        "NAME" : "QuickConnect"
+    },
+
+    "QUICKCONNECT" : {
+        "ACTION_CONNECT" : "Подключиться",
+
+        "ERROR_INVALID_URI"      : "Указан неверный адрес URI",
+        "ERROR_NO_HOST"          : "Не указан сервер",
+        "ERROR_NO_PROTOCOL"      : "Не указан протокол",
+        "ERROR_NOT_ABSOLUTE_URI" : "Адрес URI не является абсолютным",
+
+        "FIELD_PLACEHOLDER_URI" : "Введите адрес URI для подключения"
+    }
+
+}

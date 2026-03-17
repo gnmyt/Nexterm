@@ -1,0 +1,32 @@
+{
+
+    "DATA_SOURCE_CAS" : {
+        "NAME" : "CAS SSO Backend"
+    },
+
+    "DATA_SOURCE_OPENID" : {
+        "NAME" : "OpenID SSO Backend"
+    },
+
+    "DATA_SOURCE_SAML" : {
+        "NAME" : "SAML SSO Backend"
+    },
+
+    "DATA_SOURCE_SSL" : {
+        "NAME" : "SSL/TLS SSO Backend"
+    },
+
+    "LOGIN" : {
+        "FIELD_HEADER_ID_TOKEN"      : "",
+        "FIELD_HEADER_STATE"         : "",
+        "FIELD_HEADER_TICKET"        : "",
+        "INFO_IDP_REDIRECT_PENDING"  : "Please wait, redirecting to identity provider...",
+        "INFO_REDIRECT_PENDING"      : "Please wait while you are redirected...",
+        "NAME_IDP_CAS"               : "CAS",
+        "NAME_IDP_OPENID"            : "OpenID",
+        "NAME_IDP_SAML"              : "SAML",
+        "NAME_IDP_SSL"               : "Certificate / Smart Card",
+        "SECTION_HEADER_SSO_OPTIONS" : "Sign in with:"
+    }
+
+}

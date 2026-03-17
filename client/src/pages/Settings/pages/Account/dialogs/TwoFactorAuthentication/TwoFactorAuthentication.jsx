@@ -8,10 +8,12 @@ import { getRequest, postRequest } from "@/common/utils/RequestUtil.js";
 import { QRCodeCanvas } from "qrcode.react";
 import "./styles.sass";
 import { UserContext } from "@/common/contexts/UserContext.jsx";
+import { useToast } from "@/common/contexts/ToastContext.jsx";
 
 export const TwoFactorAuthentication = ({open, onClose}) => {
     const { t } = useTranslation();
     const { login } = useContext(UserContext);
+    const { sendToast } = useToast();
 
     const [code, setCode] = useState("");
     const [setupFailed, setSetupFailed] = useState(false);
@@ -24,6 +26,11 @@ export const TwoFactorAuthentication = ({open, onClose}) => {
             onClose();
         } catch (error) {
             setSetupFailed(true);
+            let errorMessage = error.message;
+            if (error.serverTime) {
+                errorMessage += ` (Server time: ${new Date(error.serverTime).toLocaleTimeString()})`;
+            }
+            sendToast("Error", errorMessage);
 
             setTimeout(() => {
                 setSetupFailed(false);

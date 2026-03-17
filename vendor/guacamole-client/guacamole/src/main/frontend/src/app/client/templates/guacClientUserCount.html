@@ -1,0 +1,11 @@
+<div class="client-user-count" title="{{ instance }}">
+    <span class="client-user-count-value">{{ client.userCount }}</span>
+    <ul class="client-user-count-messages"></ul>
+    <ul class="client-user-count-users">
+        <li class="client-user-count-user"
+            ng-repeat="user in userCounts | toArray | orderBy: key"
+            ng-class="{ anonymous : isAnonymous(user.key) }"
+            translate="{{ getUserCountTranslationKey(user.key) }}"
+            translate-values="{ USERNAME : user.key, COUNT : user.value }"></li>
+    </ul>
+</div>

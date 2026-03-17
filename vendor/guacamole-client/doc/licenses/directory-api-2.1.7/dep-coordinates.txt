@@ -1,0 +1,1 @@
+org.apache.directory.api:api-all:jar:2.1.7

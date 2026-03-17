@@ -1,0 +1,14 @@
+<div class="tiled-client-grid" ng-style="{
+        'width' : width + 'px',
+        'height' : height + 'px',
+    }">
+    <div class="tiled-client-row" ng-repeat="clientRow in getClientGrid(clientGroup)">
+        <div class="tiled-client-cell" ng-repeat="client in clientRow">
+
+            <div class="client-tile" ng-if="client">
+                <guac-thumbnail client="client"></guac-thumbnail>
+            </div>
+
+        </div>
+    </div>
+</div>

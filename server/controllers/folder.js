@@ -1,10 +1,76 @@
 const Folder = require("../models/Folder");
-const Server = require("../models/Server");
+const Entry = require("../models/Entry");
+const EntryIdentity = require("../models/EntryIdentity");
+const Identity = require("../models/Identity");
 const Organization = require("../models/Organization");
 const OrganizationMember = require("../models/OrganizationMember");
 const { Op } = require("sequelize");
 const { hasOrganizationAccess } = require("../utils/permission");
 const { createAuditLog, AUDIT_ACTIONS, RESOURCE_TYPES } = require("./audit");
+const stateBroadcaster = require("../lib/StateBroadcaster");
+const logger = require("../utils/logger");
+const SessionManager = require("../lib/SessionManager");
+
+const cleanupOrganizationIdentities = async (entryIds, oldOrganizationId) => {
+    if (!entryIds.length || !oldOrganizationId) return;
+
+    for (const entryId of entryIds) {
+        await SessionManager.removeAllByEntryId(entryId);
+    }
+
+    const entryIdentities = await EntryIdentity.findAll({
+        where: { entryId: { [Op.in]: entryIds } }
+    });
+    const identityIds = [...new Set(entryIdentities.map(ei => ei.identityId))];
+
+    if (identityIds.length > 0) {
+        const oldOrgIdentities = await Identity.findAll({
+            where: {
+                id: { [Op.in]: identityIds },
+                organizationId: oldOrganizationId,
+            }
+        });
+
+        const oldOrgIdentityIds = oldOrgIdentities.map(i => i.id);
+        if (oldOrgIdentityIds.length > 0) {
+            await EntryIdentity.destroy({
+                where: {
+                    entryId: { [Op.in]: entryIds },
+                    identityId: { [Op.in]: oldOrgIdentityIds }
+                }
+            });
+            logger.info(`Removed organization identities from entries after folder move`, { 
+                entryCount: entryIds.length, 
+                identityCount: oldOrgIdentityIds.length, 
+                oldOrganizationId 
+            });
+        }
+    }
+};
+
+const updateFolderContext = async (folderId, organizationId, accountId, oldOrganizationId = null) => {
+    const entries = await Entry.findAll({ where: { folderId }, attributes: ['id'] });
+    const entryIds = entries.map(e => e.id);
+
+    await Folder.update(
+        { organizationId, accountId },
+        { where: { id: folderId } }
+    );
+
+    await Entry.update(
+        { organizationId, accountId },
+        { where: { folderId } }
+    );
+
+    if (oldOrganizationId && oldOrganizationId !== organizationId) {
+        await cleanupOrganizationIdentities(entryIds, oldOrganizationId);
+    }
+
+    const subfolders = await Folder.findAll({ where: { parentId: folderId } });
+    for (const subfolder of subfolders) {
+        await updateFolderContext(subfolder.id, organizationId, accountId, oldOrganizationId);
+    }
+};
 
 module.exports.createFolder = async (accountId, configuration) => {
     if (configuration.parentId && !configuration.organizationId) {
@@ -54,6 +120,8 @@ module.exports.createFolder = async (accountId, configuration) => {
         details: { folderName: configuration.name },
     });
 
+    stateBroadcaster.broadcast("ENTRIES", { accountId, organizationId: configuration.organizationId });
+
     return folder;
 };
 
@@ -78,7 +146,7 @@ module.exports.deleteFolder = async (accountId, folderId) => {
         await module.exports.deleteFolder(accountId, subfolder.id);
     }
 
-    await Server.destroy({ where: { folderId: folderId } });
+    await Entry.destroy({ where: { folderId: folderId } });
 
     await Folder.destroy({ where: { id: folderId } });
 
@@ -90,6 +158,8 @@ module.exports.deleteFolder = async (accountId, folderId) => {
         resourceId: folderId,
         details: { folderName: folder.name },
     });
+
+    stateBroadcaster.broadcast("ENTRIES", { accountId, organizationId: folder.organizationId });
 
     return { success: true };
 };
@@ -110,37 +180,82 @@ module.exports.editFolder = async (accountId, folderId, configuration) => {
         }
     }
 
-    if (configuration.parentId) {
-        let targetFolder = await Folder.findByPk(configuration.parentId);
-        if (!targetFolder) {
-            return { code: 302, message: "Target parent folder does not exist" };
-        }
-
-        if (folder.organizationId && !targetFolder.organizationId) {
-            return { code: 403, message: "Cannot move organization folder to personal space" };
-        }
-
-        if (targetFolder.organizationId && !folder.organizationId) {
-            return { code: 403, message: "Cannot move personal folder to organization space" };
-        }
-
-        if (folder.organizationId && targetFolder.organizationId !== folder.organizationId) {
-            return { code: 403, message: "Parent folder must be in the same organization" };
-        } else if (!folder.organizationId && targetFolder.accountId !== accountId) {
-            return { code: 403, message: "You don't have access to the target parent folder" };
-        }
-
-        let currentFolder = targetFolder;
-        while (currentFolder) {
-            if (currentFolder.id === parseInt(folderId)) {
-                return { code: 303, message: "Cannot move folder to its own subfolder" };
+    if (configuration.parentId !== undefined) {
+        if (configuration.parentId === null) {
+            if (configuration.organizationId !== undefined) {
+                const targetOrgId = configuration.organizationId;
+                if (targetOrgId !== null) {
+                    const hasAccess = await hasOrganizationAccess(accountId, targetOrgId);
+                    if (!hasAccess) {
+                        return { code: 403, message: "You don't have access to the target organization" };
+                    }
+                }
+                
+                const newOrganizationId = targetOrgId;
+                const newAccountId = targetOrgId ? null : accountId;
+                
+                if (folder.organizationId !== newOrganizationId) {
+                    await updateFolderContext(parseInt(folderId), newOrganizationId, newAccountId, folder.organizationId);
+                }
+            } else {
+                const newOrganizationId = null;
+                const newAccountId = accountId;
+                
+                if (folder.organizationId !== newOrganizationId) {
+                    await updateFolderContext(parseInt(folderId), newOrganizationId, newAccountId, folder.organizationId);
+                }
+            }
+        } else {
+            let targetFolder = await Folder.findByPk(configuration.parentId);
+            if (!targetFolder) {
+                return { code: 302, message: "Target parent folder does not exist" };
             }
 
-            if (currentFolder.parentId === null) {
-                break;
+            if (folder.organizationId && !targetFolder.organizationId) {
+                const hasOrgAccess = await hasOrganizationAccess(accountId, folder.organizationId);
+                if (!hasOrgAccess) {
+                    return { code: 403, message: "You don't have access to this organization's folder" };
+                }
             }
 
-            currentFolder = await Folder.findByPk(currentFolder.parentId);
+            if (targetFolder.organizationId && !folder.organizationId) {
+                const hasOrgAccess = await hasOrganizationAccess(accountId, targetFolder.organizationId);
+                if (!hasOrgAccess) {
+                    return { code: 403, message: "You don't have access to the target organization" };
+                }
+            }
+
+            if (folder.organizationId && targetFolder.organizationId && targetFolder.organizationId !== folder.organizationId) {
+                const hasSourceAccess = await hasOrganizationAccess(accountId, folder.organizationId);
+                const hasTargetAccess = await hasOrganizationAccess(accountId, targetFolder.organizationId);
+                if (!hasSourceAccess || !hasTargetAccess) {
+                    return { code: 403, message: "You don't have access to one or both organizations" };
+                }
+            } else if (!folder.organizationId && !targetFolder.organizationId) {
+                if (targetFolder.accountId !== accountId) {
+                    return { code: 403, message: "You don't have access to the target parent folder" };
+                }
+            }
+
+            let currentFolder = targetFolder;
+            while (currentFolder) {
+                if (currentFolder.id === parseInt(folderId)) {
+                    return { code: 303, message: "Cannot move folder to its own subfolder" };
+                }
+
+                if (currentFolder.parentId === null) {
+                    break;
+                }
+
+                currentFolder = await Folder.findByPk(currentFolder.parentId);
+            }
+
+            const newOrganizationId = targetFolder.organizationId || null;
+            const newAccountId = targetFolder.organizationId ? null : accountId;
+            
+            if (folder.organizationId !== newOrganizationId) {
+                await updateFolderContext(parseInt(folderId), newOrganizationId, newAccountId, folder.organizationId);
+            }
         }
     }
 
@@ -157,6 +272,8 @@ module.exports.editFolder = async (accountId, folderId, configuration) => {
         resourceId: folderId,
         details: configuration,
     });
+
+    stateBroadcaster.broadcast("ENTRIES", { accountId, organizationId: folder.organizationId });
 
     return { success: true };
 };
@@ -188,6 +305,7 @@ module.exports.listFolders = async (accountId) => {
             id: folder.id,
             name: folder.name,
             type: "folder",
+            folderType: folder.type,
             position: folder.position,
             organizationId: folder.organizationId,
             entries: [],
@@ -228,11 +346,7 @@ module.exports.listFolders = async (accountId) => {
         });
 
         organizations.forEach(org => {
-            let requireConnectionReason = false;
-            if (org.auditSettings) {
-                const settings = typeof org.auditSettings === "string" ? JSON.parse(org.auditSettings) : org.auditSettings;
-                requireConnectionReason = settings.requireConnectionReason || false;
-            }
+            const requireConnectionReason = org.auditSettings?.requireConnectionReason || false;
 
             result.push({
                 id: `org-${org.id}`,

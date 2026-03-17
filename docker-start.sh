@@ -1,4 +1,27 @@
 #!/bin/bash
 
-guacd -b 0.0.0.0 -l 4822 -f > /dev/null 2>&1 &
+GUACD_LOG_LEVEL=${LOG_LEVEL:-system}
+
+case "$GUACD_LOG_LEVEL" in
+    error)
+        GUACD_ARGS="-L error"
+        ;;
+    warn)
+        GUACD_ARGS="-L warning"
+        ;;
+    system|info)
+        GUACD_ARGS="-L info"
+        ;;
+    verbose)
+        GUACD_ARGS="-L debug"
+        ;;
+    debug)
+        GUACD_ARGS="-L trace"
+        ;;
+    *)
+        GUACD_ARGS="-L info"
+        ;;
+esac
+
+guacd -b 0.0.0.0 -l 4822 $GUACD_ARGS -f &
 exec node server/index.js

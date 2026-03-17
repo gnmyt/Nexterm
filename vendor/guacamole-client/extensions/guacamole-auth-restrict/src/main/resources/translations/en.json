@@ -1,0 +1,67 @@
+{
+
+    "DATA_SOURCE_LOGIN_RESTRICTIONS" : {
+        "NAME" : "Additional Restrictions"
+    },
+    
+    "CONNECTION_ATTRIBUTES" : {
+        
+        "FIELD_HEADER_GUAC_RESTRICT_HOSTS_ALLOWED" : "Hosts from which connection may be accessed:",
+        "FIELD_HEADER_GUAC_RESTRICT_HOSTS_DENIED"  : "Hosts from which connection may not be accessed:",
+        "FIELD_HEADER_GUAC_RESTRICT_TIME_ALLOWED"  : "Times connection is allowed to be used:",
+        "FIELD_HEADER_GUAC_RESTRICT_TIME_DENIED"   : "Times connection may not be used:",
+        
+        "SECTION_HEADER_RESTRICT_LOGIN_FORM" : "Additional Connection Restrictions"
+        
+    },
+    
+    "CONNECTION_GROUP_ATTRIBUTES" : {
+        
+        "FIELD_HEADER_GUAC_RESTRICT_HOSTS_ALLOWED" : "Hosts from which connection group may be accessed:",
+        "FIELD_HEADER_GUAC_RESTRICT_HOSTS_DENIED"  : "Hosts from which connection group may not be accessed:",
+        "FIELD_HEADER_GUAC_RESTRICT_TIME_ALLOWED"  : "Times connection group is allowed to be used:",
+        "FIELD_HEADER_GUAC_RESTRICT_TIME_DENIED"   : "Times connection group may not be used:",
+        
+        "SECTION_HEADER_RESTRICT_LOGIN_FORM" : "Additional Connection Restrictions"
+        
+    },
+    
+    "RESTRICT" : {
+        
+        "ACTION_ADD_ENTRY" : "Add Entry",
+        
+        "ERROR_CONNECTION_NOT_ALLOWED_NOW"       : "The connection is not available at this time.",
+        "ERROR_CONNECTION_NOT_ALLOWED_FROM_HOST" : "The connection is not allowed from this host.",
+        "ERROR_USER_LOGIN_NOT_ALLOWED_NOW"       : "The login for this user is not allowed at this time.",
+        "ERROR_USER_LOGIN_NOT_ALLOWED_FROM_HOST" : "The login for this user is not allowed from this host.",
+        
+        "TABLE_HEADER_DAY"        : "Day",
+        "TABLE_HEADER_END_TIME"   : "End Time",
+        "TABLE_HEADER_HOST"       : "Host",
+        "TABLE_HEADER_START_TIME" : "Start Time"
+        
+    },
+    
+    "USER_ATTRIBUTES" : {
+        
+        "FIELD_HEADER_GUAC_RESTRICT_HOSTS_ALLOWED" : "Hosts from which user can log in:",
+        "FIELD_HEADER_GUAC_RESTRICT_HOSTS_DENIED"  : "Hosts from which user may not log in:",
+        "FIELD_HEADER_GUAC_RESTRICT_TIME_ALLOWED"  : "Times user is allowed to log in:",
+        "FIELD_HEADER_GUAC_RESTRICT_TIME_DENIED"   : "Times user is denied from log in:",
+        
+        "SECTION_HEADER_RESTRICT_LOGIN_FORM" : "Additional Login Restrictions"
+        
+    },
+    
+    "USER_GROUP_ATTRIBUTES" : {
+        
+        "FIELD_HEADER_GUAC_RESTRICT_HOSTS_ALLOWED" : "Hosts from which members may log in:",
+        "FIELD_HEADER_GUAC_RESTRICT_HOSTS_DENIED"  : "Hosts from which members may not log in:",
+        "FIELD_HEADER_GUAC_RESTRICT_TIME_ALLOWED"  : "Times members are allowed to log in:",
+        "FIELD_HEADER_GUAC_RESTRICT_TIME_DENIED"   : "Times members are denied from log in:",
+        
+        "SECTION_HEADER_RESTRICT_LOGIN_FORM" : "Additional Login Restrictions"
+        
+    }
+
+}

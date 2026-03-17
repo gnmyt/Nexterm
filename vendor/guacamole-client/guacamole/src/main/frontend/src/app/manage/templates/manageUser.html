@@ -1,0 +1,93 @@
+
+<div class="manage-user view" ng-class="{loading: !isLoaded()}">
+
+    <!-- User header and data source tabs -->
+    <div class="header tabbed">
+        <h2>{{'MANAGE_USER.SECTION_HEADER_EDIT_USER' | translate}}</h2>
+        <guac-user-menu></guac-user-menu>
+    </div>
+    <data-data-source-tabs ng-hide="cloneSourceUsername"
+        permissions="managementPermissions"
+        url="getUserURL(dataSource)">
+    </data-data-source-tabs>
+
+    <!-- Warn if user is read-only -->
+    <div class="section" ng-hide="managementPermissions[dataSource].canSaveObject">
+        <p class="notice read-only">{{'MANAGE_USER.INFO_READ_ONLY' | translate}}</p>
+    </div>
+
+    <!-- Sections applicable to non-read-only users -->
+    <div ng-show="managementPermissions[dataSource].canSaveObject">
+
+        <!-- User password section -->
+        <div class="section">
+            <table class="properties">
+                <tr>
+                    <th>{{'MANAGE_USER.FIELD_HEADER_USERNAME' | translate}}</th>
+                    <td>
+                        <input ng-show="canEditUsername()" ng-model="user.username" type="text">
+                        <span  ng-hide="canEditUsername()">{{user.username}}</span>
+                    </td>
+                </tr>
+                <tr>
+                    <th>{{'MANAGE_USER.FIELD_HEADER_PASSWORD' | translate}}</th>
+                    <td><input ng-model="user.password" type="password"></td>
+                </tr>
+                <tr>
+                    <th>{{'MANAGE_USER.FIELD_HEADER_PASSWORD_AGAIN' | translate}}</th>
+                    <td><input ng-model="passwordMatch" type="password"></td>
+                </tr>
+                <tr>
+                    <th>{{'MANAGE_USER.FIELD_HEADER_USER_DISABLED' | translate}}</th>
+                    <td><input ng-model="user.disabled" type="checkbox"></td>
+                </tr>
+            </table>
+        </div>
+
+        <!-- User attributes section -->
+        <div class="attributes" ng-show="managementPermissions[dataSource].canChangeAttributes">
+            <guac-form namespace="'USER_ATTRIBUTES'" content="attributes"
+                       model="user.attributes"
+                       model-only="!managementPermissions[dataSource].canChangeAllAttributes"></guac-form>
+        </div>
+
+        <!-- System permissions section -->
+        <system-permission-editor ng-show="managementPermissions[dataSource].canChangePermissions"
+              username="selfUsername"
+              data-data-source="dataSource"
+              permission-flags="permissionFlags"
+              permissions-added="permissionsAdded"
+              permissions-removed="permissionsRemoved">
+        </system-permission-editor>
+
+        <!-- Parent group section -->
+        <identifier-set-editor
+            header="MANAGE_USER.SECTION_HEADER_USER_GROUPS"
+            empty-placeholder="MANAGE_USER.HELP_NO_USER_GROUPS"
+            unavailable-placeholder="MANAGE_USER.INFO_NO_USER_GROUPS_AVAILABLE"
+            identifiers-available="availableGroups"
+            identifiers="parentGroups"
+            identifiers-added="parentGroupsAdded"
+            identifiers-removed="parentGroupsRemoved">
+        </identifier-set-editor>
+
+        <!-- Connection permissions section -->
+        <connection-permission-editor ng-show="managementPermissions[dataSource].canChangePermissions"
+              data-data-source="dataSource"
+              permission-flags="permissionFlags"
+              permissions-added="permissionsAdded"
+              permissions-removed="permissionsRemoved">
+        </connection-permission-editor>
+
+        <!-- Form action buttons -->
+        <management-buttons namespace="MANAGE_USER"
+              permissions="managementPermissions[dataSource]"
+              save="saveUser()"
+              delete="deleteUser()"
+              clone="cloneUser()"
+              return="returnToUserList()">
+        </management-buttons>
+
+    </div>
+
+</div>

@@ -1,9 +1,11 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useContext } from "react";
 import { useToast } from "@/common/contexts/ToastContext.jsx";
 import { getRequest, postRequest, deleteRequest } from "@/common/utils/RequestUtil.js";
+import { ServerContext } from "@/common/contexts/ServerContext.jsx";
 import Icon from "@mdi/react";
 import { mdiCheckCircleOutline, mdiCloseCircleOutline, mdiDomain, mdiPlus, mdiShieldCheckOutline } from "@mdi/js";
 import Button from "@/common/components/Button";
+import TabSwitcher from "@/common/components/TabSwitcher";
 import OrganizationDialog from "./components/OrganizationDialog";
 import InviteMemberDialog from "./components/InviteMemberDialog";
 import MemberList from "./components/MemberList";
@@ -15,6 +17,7 @@ import "./styles.sass";
 export const Organizations = () => {
     const { t } = useTranslation();
     const { sendToast } = useToast();
+    const { loadServers } = useContext(ServerContext);
 
     const [organizations, setOrganizations] = useState([]);
     const [pendingInvitations, setPendingInvitations] = useState([]);
@@ -35,6 +38,7 @@ export const Organizations = () => {
         } catch (error) {
             setOrganizations([]);
         }
+        await loadServers();
     };
 
     const fetchPendingInvitations = async () => {
@@ -95,10 +99,6 @@ export const Organizations = () => {
         setInviteDialogOpen(true);
     };
 
-    const isOrgOwner = (org) => {
-        return org.isOwner;
-    };
-
     const showConfirmDialog = (action, text) => {
         setConfirmAction(() => action);
         setConfirmText(text);
@@ -146,30 +146,30 @@ export const Organizations = () => {
                 <Button text={t("settings.organizations.createOrganization")} icon={mdiPlus} onClick={() => setCreateDialogOpen(true)} />
             </div>
 
-            {organizations.length === 0 ? (
-                <div className="no-organizations">
-                    <p>{t("settings.organizations.noOrganizations")}</p>
-                    <p>{t("settings.organizations.noOrganizationsDescription")}</p>
-                </div>
-            ) : (
-                <div className="vertical-list">
-                    {organizations.map((org) => (
-                        <div key={org.id}>
-                            <div
-                                className={`item clickable ${expandedOrgId === org.id ? "expanded" : ""}`}
-                                onClick={() => handleOrgClick(org)}
-                            >
-                                <div className="left-section">
-                                    <div className="icon primary">
-                                        <Icon path={mdiDomain} />
-                                    </div>
-                                    <div className="details">
-                                        <h3>{org.name}</h3>
-                                        {org.description && <p>{org.description}</p>}
-                                    </div>
+            <div className="vertical-list">
+                {organizations.length === 0 ? (
+                    <div className="no-organizations">
+                        <Icon path={mdiDomain} />
+                        <h2>{t("settings.organizations.noOrganizations")}</h2>
+                        <p>{t("settings.organizations.noOrganizationsDescription")}</p>
+                    </div>
+                ) : organizations.map((org) => (
+                    <div key={org.id}>
+                        <div
+                            className={`item clickable ${expandedOrgId === org.id ? "expanded" : ""}`}
+                            onClick={() => handleOrgClick(org)}
+                        >
+                            <div className="left-section">
+                                <div className="icon primary">
+                                    <Icon path={mdiDomain} />
                                 </div>
+                                <div className="details">
+                                    <h3>{org.name}</h3>
+                                    {org.description && <p>{org.description}</p>}
+                                </div>
+                            </div>
                                 <div className="right-section">
-                                    {isOrgOwner(org) ? (
+                                    {org.isOwner ? (
                                         <>
                                             <Button text={t("settings.organizations.invite")} onClick={(e) => handleInviteMember(org, e)} />
                                             <Button text={t("settings.organizations.delete")} type="danger"
@@ -182,41 +182,34 @@ export const Organizations = () => {
                             </div>
                             {expandedOrgId === org.id && (
                                 <div className="organization-members">
-                                    <div className="tab-headers">
-                                        <div
-                                            className={`tab-header ${(activeTab[org.id] || "members") === "members" ? "active" : ""}`}
-                                            onClick={() => setActiveTab(prev => ({ ...prev, [org.id]: "members" }))}>
-                                            <Icon path={mdiDomain} />
-                                            <span>{t("settings.organizations.members")}</span>
-                                        </div>
-                                        {isOrgOwner(org) && (
-                                            <div
-                                                className={`tab-header ${activeTab[org.id] === "audit" ? "active" : ""}`}
-                                                onClick={() => setActiveTab(prev => ({ ...prev, [org.id]: "audit" }))}>
-                                                <Icon path={mdiShieldCheckOutline} />
-                                                <span>{t("settings.organizations.auditSettings")}</span>
-                                            </div>
-                                        )}
-                                    </div>
+                                    <TabSwitcher
+                                        tabs={[
+                                            { key: "members", label: t("settings.organizations.members"), icon: mdiDomain },
+                                            ...(org.isOwner ? [{ key: "audit", label: t("settings.organizations.auditSettings"), icon: mdiShieldCheckOutline }] : [])
+                                        ]}
+                                        activeTab={activeTab[org.id] || "members"}
+                                        onTabChange={(tabKey) => setActiveTab(prev => ({ ...prev, [org.id]: tabKey }))}
+                                        variant="flat"
+                                    />
 
                                     <div className="tab-content">
                                         {(activeTab[org.id] || "members") === "members" && membersByOrgId[org.id] && (
                                             <MemberList members={membersByOrgId[org.id]} organizationId={org.id}
-                                                        isOwner={isOrgOwner(org)}
+                                                        isOwner={org.isOwner}
                                                         refreshMembers={() => fetchMembers(org.id)} />
                                         )}
 
-                                        {activeTab[org.id] === "audit" && isOrgOwner(org) && (
+                                        {activeTab[org.id] === "audit" && org.isOwner && (
                                             <OrganizationAuditSettings organizationId={org.id}
-                                                                       isOwner={isOrgOwner(org)} />
+                                                                       isOwner={org.isOwner} />
                                         )}
                                     </div>
                                 </div>
                             )}
                         </div>
-                    ))}
+                    ))
+                }
                 </div>
-            )}
 
             {pendingInvitations.length > 0 && (
                 <div className="pending-invitations">

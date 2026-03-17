@@ -1,0 +1,29 @@
+<div class="guac-player-text-container">
+
+    <div class="text-controls">
+        <div class="filter">
+            <input class="search-string"
+                placeholder="{{'PLAYER.FIELD_PLACEHOLDER_TEXT_BATCH_FILTER' | translate}}"
+                type="text" ng-model="searchPhrase">
+        </div>
+        <span class="fullscreen-button" ng-click="toggleKeyLogFullscreen()"></span>
+    </div>
+
+    <div class="result-count"
+            ng-show="searchPhrase.length"
+            translate="PLAYER.INFO_NUMBER_OF_RESULTS"
+            translate-values="{RESULTS: filteredBatches.length}"></div>
+
+    <div class="text-batches">
+        <div ng-repeat="batch in filteredBatches" class="text-batch" ng-click="seek({timestamp: batch.events[0].timestamp})">
+            <div class="timestamp">{{ formatTime(batch.events[0].timestamp) }}</div>
+            <div class="text">
+                <span
+                    ng-repeat="event in batch.events"
+                    class="key-event"
+                    ng-class="{ 'not-typed' : !event.typed, 'future': event.timestamp >= currentPosition }"
+                >{{ event.text }}</span>
+            </div>
+        </span>
+    </div>
+</div>

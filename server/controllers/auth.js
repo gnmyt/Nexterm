@@ -3,10 +3,24 @@ const Session = require("../models/Session");
 const speakeasy = require("speakeasy");
 const { compare } = require("bcrypt");
 const OIDCProvider = require("../models/OIDCProvider");
+const { authenticateUser: ldapAuth, getEnabledProvider: getLdapProvider } = require("./ldap");
+const logger = require("../utils/logger");
+const stateBroadcaster = require("../lib/StateBroadcaster");
+const sessionManager = require("../lib/SessionManager");
 
 module.exports.login = async (configuration, user) => {
     const internalProvider = await OIDCProvider.findOne({ where: { isInternal: true, enabled: true } });
-    if (!internalProvider) return { code: 403, message: "Internal authentication is disabled" };
+    const ldapProvider = await getLdapProvider();
+
+    if (!internalProvider && !ldapProvider) {
+        return { code: 403, message: "No login method is enabled" };
+    }
+
+    if (ldapProvider) {
+        const ldapResult = await ldapAuth(configuration.username, configuration.password, user);
+        if (ldapResult) return ldapResult;
+        return { code: 201, message: "Username or password incorrect" };
+    }
 
     const account = await Account.findOne({ where: { username: configuration.username } });
 
@@ -41,6 +55,8 @@ module.exports.login = async (configuration, user) => {
         userAgent: user.userAgent,
     });
 
+    logger.system(`User ${account.username} logged in`, { accountId: account.id, ip: user.ip });
+
     return { token: session.token, totpRequired: account.totpEnabled };
 };
 
@@ -50,5 +66,9 @@ module.exports.logout = async token => {
     if (session === null)
         return { code: 204, message: "Your session token is invalid" };
 
+    logger.system(`User logged out`, { accountId: session.accountId });
+
     await Session.destroy({ where: { token } });
+    sessionManager.removeAllByAccountId(session.accountId);
+    stateBroadcaster.forceLogoutSession(session.id);
 };

@@ -1,0 +1,14 @@
+{
+
+    "DATA_SOURCE_RECORDING_STORAGE" : {
+        "NAME" : "Archiviazione della registrazione della sessione"
+    },
+
+    "RECORDING_STORAGE" : {
+        "INFO_GUACAMOLE_SESSION_RECORDING" :  "Registrazione grafica della sessione desktop remoto",
+        "INFO_SERVER_LOG" :  "Server/system log",
+        "INFO_TYPESCRIPT" :  "Registrazione del testo della sessione del terminale",
+        "INFO_TYPESCRIPT_TIMING" :  "Informazioni sull'orario per la registrazione del testo della sessione del terminale"
+    }
+
+}

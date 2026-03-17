@@ -1,0 +1,75 @@
+#
+# Licensed to the Apache Software Foundation (ASF) under one
+# or more contributor license agreements.  See the NOTICE file
+# distributed with this work for additional information
+# regarding copyright ownership.  The ASF licenses this file
+# to you under the Apache License, Version 2.0 (the
+# "License"); you may not use this file except in compliance
+# with the License.  You may obtain a copy of the License at
+#
+#   http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing,
+# software distributed under the License is distributed on an
+# "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+# KIND, either express or implied.  See the License for the
+# specific language governing permissions and limitations
+# under the License.
+#
+
+parent  "base_altgr"
+name    "de-de-qwertz"
+freerdp "KBD_GERMAN"
+
+#
+# Basic keys
+#
+
+map -caps -altgr -shift      0x02..0x0C      ~ "1234567890ß"
+map -caps -altgr -shift      0x10..0x1B      ~ "qwertzuiopü+"
+map -caps -altgr -shift      0x1E..0x28 0x2B ~ "asdfghjklöä#"
+map -caps -altgr -shift 0x56 0x2C..0x35      ~ "<yxcvbnm,.-"
+
+map -caps -altgr +shift 0x29 0x02..0x0C      ~ "°!"§$%&/()=?"
+map -caps -altgr +shift      0x10..0x1B      ~ "QWERTZUIOPÜ*"
+map -caps -altgr +shift      0x1E..0x28 0x2B ~ "ASDFGHJKLÖÄ'"
+map -caps -altgr +shift 0x56 0x2C..0x35      ~ ">YXCVBNM;:_"
+
+map +caps -altgr -shift      0x02..0x0C      ~ "!"§$%&/()=?"
+map +caps -altgr -shift      0x10..0x1B      ~ "QWERTZUIOPÜ*"
+map +caps -altgr -shift      0x1E..0x28 0x2B ~ "ASDFGHJKLÖÄ'"
+map +caps -altgr -shift 0x56 0x2C..0x35      ~ "<YXCVBNM;:-"
+
+map +caps -altgr +shift 0x29 0x02..0x0C      ~ "°1234567890ß"
+map +caps -altgr +shift      0x10..0x1B      ~ "qwertzuiopü+"
+map +caps -altgr +shift      0x1E..0x28 0x2B ~ "asdfghjklöä#"
+map +caps -altgr +shift 0x56 0x2C..0x35      ~ ">yxcvbnm,._"
+
+#
+# Keys requiring AltGr
+#
+
+map +altgr -shift 0x03 ~ "²"
+map +altgr -shift 0x04 ~ "³"
+map +altgr -shift 0x08 ~ "{"
+map +altgr -shift 0x09 ~ "["
+map +altgr -shift 0x0A ~ "]"
+map +altgr -shift 0x0B ~ "}"
+map +altgr -shift 0x0C ~ "\"
+
+map +altgr -shift 0x10 ~ "@"
+map +altgr -shift 0x12 ~ "€"
+map +altgr -shift 0x1B ~ "~"
+
+map +altgr -shift 0x56 ~ "|"
+map +altgr -shift 0x32 ~ "µ"
+
+#
+# Dead keys
+#
+
+map -altgr +shift 0x0D ~ 0xFE50 # Dead grave
+map -altgr -shift 0x0D ~ 0xFE51 # Dead acute
+map -altgr -shift 0x29 ~ 0xFE52 # Dead circumflex
+map +altgr -shift 0x0C ~ 0xFE53 # Dead tilde
+

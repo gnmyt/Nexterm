@@ -1,62 +1,50 @@
-const Session = require("../models/Session");
-const Account = require("../models/Account");
-const Server = require("../models/Server");
+const EntryIdentity = require("../models/EntryIdentity");
 const Identity = require("../models/Identity");
-const prepareSSH = require("./prepareSSH");
-const { validateServerAccess } = require("../controllers/server");
+const { authenticateWebSocket } = require("../middlewares/wsAuth");
+const { createSSH } = require("./createSSH");
+const { listIdentities } = require("../controllers/identity");
 
-const authenticateWS = async (ws, req, options = {}) => {
-    const { requiredParams = ['sessionToken', 'serverId'] } = options;
+const authenticateWS = async (ws, req) => {
+    const baseAuth = await authenticateWebSocket(ws, req.query);
+    if (!baseAuth) return null;
 
-    for (const param of requiredParams) {
-        if (!req.query[param]) {
-            const errorCode = param === 'sessionToken' ? 4001 : 
-                            param === 'serverId' ? 4002 : 4009;
-            ws.close(errorCode, `You need to provide the ${param} in the '${param}' parameter`);
-            return null;
-        }
+    const { user, entry } = baseAuth;
+
+    const accessibleIds = new Set((await listIdentities(user.id)).map(i => i.id));
+    const entryIdentities = await EntryIdentity.findAll({ where: { entryId: entry.id }, order: [['isDefault', 'DESC']] });
+    
+    let identity = null;
+    for (const ei of entryIdentities) {
+        if (!accessibleIds.has(ei.identityId)) continue;
+        identity = await Identity.findByPk(ei.identityId);
+        if (identity) break;
     }
 
-    const session = await Session.findOne({ where: { token: req.query.sessionToken } });
-    if (!session) {
-        ws.close(4003, "The token is not valid");
-        return null;
-    }
-
-    await Session.update({ lastActivity: new Date() }, { where: { id: session.id } });
-
-    const user = await Account.findByPk(session.accountId);
-    if (!user) {
-        ws.close(4004, "The token is not valid");
-        return null;
-    }
-
-    const server = await Server.findByPk(req.query.serverId);
-    if (!server) {
-        ws.close(4006, "The server does not exist");
-        return null;
-    }
-
-    const accessCheck = await validateServerAccess(user.id, server);
-    if (!accessCheck.valid) {
-        ws.close(4005, "You don't have access to this server");
-        return null;
-    }
-
-    if (server.identities.length === 0) {
-        ws.close(4007, "The server has no identities");
-        return null;
-    }
-
-    const identity = await Identity.findByPk(JSON.parse(server.identities)[0]);
     if (!identity) {
-        ws.close(4008, "The identity does not exist");
+        ws.close(4007, "No accessible identity configured");
         return null;
     }
 
-    const ssh = await prepareSSH(server, identity, ws);
+    const { ssh, sshOptions } = await createSSH(entry, identity, {
+        onKeyboardInteractive: (name, instructions, lang, prompts, finish) => {
+            ws.send(`\x02${prompts[0].prompt}`);
+            ws.on("message", (data) => {
+                if (data.toString().startsWith("\x03")) {
+                    const totpCode = data.substring(1);
+                    finish([totpCode]);
+                }
+            });
+        }
+    }, user.id);
 
-    return { user, server, identity, ssh };
+    try {
+        ssh.connect(sshOptions);
+    } catch (err) {
+        ws.close(4004, err.message);
+        return null;
+    }
+
+    return { user, server: entry, entry, identity, ssh };
 };
 
 module.exports = { authenticateWS };

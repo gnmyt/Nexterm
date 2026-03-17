@@ -1,0 +1,18 @@
+<div class="time-zone-field">
+
+    <!-- Available time zone regions -->
+    <select class="time-zone-region"
+            ng-disabled="disabled"
+            guac-focus="focused"
+            ng-attr-id="{{ fieldId }}"
+            ng-model="region"
+            ng-options="name for name in regions | orderBy: name"></select>
+
+    <!-- Time zones within selected region -->
+    <select class="time-zone"
+            ng-attr-name="{{ field.name }}"
+            ng-disabled="disabled || !region"
+            ng-model="model"
+            ng-options="timeZone.value as timeZone.key for timeZone in timeZones[region] | toArray | orderBy: key"></select>
+
+</div>

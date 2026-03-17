@@ -1,0 +1,34 @@
+{
+
+    "DATA_SOURCE_TOTP" : {
+        "NAME" : "TOTP TFA Backend"
+    },
+
+    "LOGIN" : {
+        "FIELD_HEADER_GUAC_TOTP" : ""
+    },
+
+    "TOTP" : {
+
+        "ACTION_HIDE_DETAILS" : "Esconder",
+        "ACTION_SHOW_DETAILS" : "Exibir",
+
+        "FIELD_HEADER_ALGORITHM"  : "Algoritmo:",
+        "FIELD_HEADER_DIGITS"     : "Digitos:",
+        "FIELD_HEADER_INTERVAL"   : "Intervalo:",
+        "FIELD_HEADER_SECRET_KEY" : "Chave Secreta:",
+
+        "FIELD_PLACEHOLDER_CODE" : "Código de autenticação",
+
+        "INFO_CODE_REQUIRED"       : "Por favor digite seu código de autenticação para verificar sua identidade.",
+        "INFO_ENROLL_REQUIRED"     : "Autenticação Multi-factor foi habilitada para sua conta.",
+        "INFO_VERIFICATION_FAILED" : "A verificação falhou. Por favor tente novamente.",
+
+        "HELP_ENROLL_BARCODE" : "Para completar o processo de inscrição, faça o scan do código de barras abaixo com o app de autenticação de dois fatores no seu telefone ou dispositivo.",
+        "HELP_ENROLL_VERIFY"  : "Após escanear o código de barras, digite os {DIGITS}-digitos do código de autenticação exibidos para verificar se sua inscrição foi recebida com sucesso.",
+
+        "SECTION_HEADER_DETAILS" : "Detalhes:"
+
+    }
+
+}

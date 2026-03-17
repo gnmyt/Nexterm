@@ -10,7 +10,7 @@ import { postRequest, putRequest } from "@/common/utils/RequestUtil.js";
 import { useToast } from "@/common/contexts/ToastContext.jsx";
 import Icon from "@mdi/react";
 
-export const SSHConfigImportDialog = ({ open, onClose, currentFolderId }) => {
+export const SSHConfigImportDialog = ({ open, onClose, currentFolderId, currentOrganizationId }) => {
     const { t } = useTranslation();
     const [configContent, setConfigContent] = useState("");
     const [isImporting, setIsImporting] = useState(false);
@@ -180,9 +180,10 @@ export const SSHConfigImportDialog = ({ open, onClose, currentFolderId }) => {
                 };
             });
 
-            const result = await postRequest("servers/import/ssh-config", {
+            const result = await postRequest("entries/import/ssh-config", {
                 servers: serverData,
-                folderId: currentFolderId
+                folderId: currentFolderId,
+                organizationId: currentOrganizationId
             });
 
             if (result.code) {

@@ -1,0 +1,546 @@
+{
+
+    "language" : "ru_RU",
+    "type"     : "qwerty",
+    "width"    : 22,
+
+    "keys" : {
+
+        "Back"  : 65288,
+        "Tab"   : 65289,
+        "Enter" : 65293,
+        "Esc"   : 65307,
+        "Home"  : 65360,
+        "PgUp"  : 65365,
+        "PgDn"  : 65366,
+        "End"   : 65367,
+        "Ins"   : 65379,
+        "F1"    : 65470,
+        "F2"    : 65471,
+        "F3"    : 65472,
+        "F4"    : 65473,
+        "F5"    : 65474,
+        "F6"    : 65475,
+        "F7"    : 65476,
+        "F8"    : 65477,
+        "F9"    : 65478,
+        "F10"   : 65479,
+        "F11"   : 65480,
+        "F12"   : 65481,
+        "Del"   : 65535,
+
+        "Space" : " ",
+
+        "Left" : [{
+            "title"  : "←",
+            "keysym" : 65361
+        }],
+        "Up" : [{
+            "title"  : "↑",
+            "keysym" : 65362
+        }],
+        "Right" : [{
+            "title"  : "→",
+            "keysym" : 65363
+        }],
+        "Down" : [{
+            "title"  : "↓",
+            "keysym" : 65364
+        }],
+
+        "Menu" : [{
+            "title"    : "Menu",
+            "keysym"   : 65383
+        }],
+        "LShift" : [{
+            "title"    : "Shift",
+            "modifier" : "shift",
+            "keysym"   : 65505
+        }],
+        "RShift" : [{
+            "title"    : "Shift",
+            "modifier" : "shift",
+            "keysym"   : 65506
+        }],
+        "LCtrl" : [{
+            "title"    : "Ctrl",
+            "modifier" : "control",
+            "keysym"   : 65507
+        }],
+        "RCtrl" : [{
+            "title"    : "Ctrl",
+            "modifier" : "control",
+            "keysym"   : 65508
+        }],
+        "Caps" : [{
+            "title"    : "Caps",
+            "modifier" : "caps",
+            "keysym"   : 65509
+        }],
+        "LAlt" : [{
+            "title"    : "Alt",
+            "modifier" : "alt",
+            "keysym"   : 65513
+        }],
+        "RAlt" : [{
+            "title"    : "Alt",
+            "modifier" : "alt",
+            "keysym"   : 65514
+        }],
+        "Meta" : [{
+            "title"    : "Meta",
+            "modifier" : "meta",
+            "keysym"   : 65511
+        }],
+        "Latin" : [{
+            "title"    : "Latin",
+            "modifier" : "lat"
+        }],
+
+        "`" : [
+            { "title" : "`", "requires" : [         ] },
+            { "title" : "~", "requires" : [ "shift" ] }
+        ],
+        "1" : [
+            { "title" : "1", "requires" : [         ] },
+            { "title" : "!", "requires" : [ "shift" ] }
+        ],
+        "2" : [
+            { "title" : "2", "requires" : [         ] },
+            { "title" : "@", "requires" : [ "shift" ] }
+        ],
+        "3" : [
+            { "title" : "3", "requires" : [         ] },
+            { "title" : "#", "requires" : [ "shift" ] }
+        ],
+        "4" : [
+            { "title" : "4", "requires" : [         ] },
+            { "title" : "$", "requires" : [ "shift" ] }
+        ],
+        "5" : [
+            { "title" : "5", "requires" : [         ] },
+            { "title" : "%", "requires" : [ "shift" ] }
+        ],
+        "6" : [
+            { "title" : "6", "requires" : [         ] },
+            { "title" : "^", "requires" : [ "shift" ] }
+        ],
+        "7" : [
+            { "title" : "7", "requires" : [         ] },
+            { "title" : "&", "requires" : [ "shift" ] }
+        ],
+        "8" : [
+            { "title" : "8", "requires" : [         ] },
+            { "title" : "*", "requires" : [ "shift" ] }
+        ],
+        "9" : [
+            { "title" : "9", "requires" : [         ] },
+            { "title" : "(", "requires" : [ "shift" ] }
+        ],
+        "0" : [
+            { "title" : "0", "requires" : [         ] },
+            { "title" : ")", "requires" : [ "shift" ] }
+        ],
+        "-" : [
+            { "title" : "-", "requires" : [         ] },
+            { "title" : "_", "requires" : [ "shift" ] }
+        ],
+        "=" : [
+            { "title" : "=", "requires" : [         ] },
+            { "title" : "+", "requires" : [ "shift" ] }
+        ],
+        "б" : [
+            { "title" : "б", "requires" : [                 ] },
+            { "title" : "Б", "requires" : [ "caps"          ] },
+            { "title" : "Б", "requires" : [ "shift"         ] },
+            { "title" : "б", "requires" : [ "caps", "shift" ] },
+            { "title" : ",", "requires" : [ "lat"           ] },
+            { "title" : "<", "requires" : [ "lat", "shift"  ] }
+        ],
+        "ю" : [
+            { "title" : "ю", "requires" : [                 ] },
+            { "title" : "Ю", "requires" : [ "caps"          ] },
+            { "title" : "Ю", "requires" : [ "shift"         ] },
+            { "title" : "ю", "requires" : [ "caps", "shift" ] },
+            { "title" : ".", "requires" : [ "lat"           ] },
+            { "title" : ">", "requires" : [ "lat", "shift"  ] }
+        ],
+        "/" : [
+            { "title" : "/", "requires" : [         ] },
+            { "title" : "?", "requires" : [ "shift" ] }
+        ],
+        "х" : [
+            { "title" : "х", "requires" : [                 ] },
+            { "title" : "Х", "requires" : [ "caps"          ] },
+            { "title" : "Х", "requires" : [ "shift"         ] },
+            { "title" : "х", "requires" : [ "caps", "shift" ] },
+            { "title" : "[", "requires" : [ "lat"           ] },
+            { "title" : "{", "requires" : [ "lat",  "shift" ] }
+        ],
+        "ъ" : [
+            { "title" : "ъ", "requires" : [                 ] },
+            { "title" : "Ъ", "requires" : [ "caps"          ] },
+            { "title" : "Ъ", "requires" : [ "shift"         ] },
+            { "title" : "ъ", "requires" : [ "caps", "shift" ] },
+            { "title" : "]", "requires" : [ "lat"           ] },
+            { "title" : "}", "requires" : [ "lat",  "shift" ] }
+        ],
+        "\\" : [
+            { "title" : "\\", "requires" : [         ] },
+            { "title" : "|",  "requires" : [ "shift" ] }
+        ],
+        "ж" : [
+            { "title" : "ж", "requires" : [                 ] },
+            { "title" : "Ж", "requires" : [ "caps"          ] },
+            { "title" : "Ж", "requires" : [ "shift"         ] },
+            { "title" : "ж", "requires" : [ "caps", "shift" ] },
+            { "title" : ";", "requires" : [ "lat"           ] },
+            { "title" : ":", "requires" : [ "lat",  "shift" ] }
+        ],
+        "э" : [
+            { "title" : "э", "requires" : [                 ] },
+            { "title" : "Э", "requires" : [ "caps"          ] },
+            { "title" : "Э", "requires" : [ "shift"         ] },
+            { "title" : "э", "requires" : [ "caps", "shift" ] },
+            { "title" : "'",  "requires" : [ "lat"           ] },
+            { "title" : "\"", "requires" : [ "lat",  "shift" ] }
+        ],
+
+        "й" : [
+            { "title" : "й", "requires" : [                 ] },
+            { "title" : "Й", "requires" : [ "caps"          ] },
+            { "title" : "Й", "requires" : [ "shift"         ] },
+            { "title" : "й", "requires" : [ "caps", "shift" ] },
+            { "title" : "q", "requires" : [ "lat"           ] },
+            { "title" : "Q", "requires" : [ "lat", "caps"   ] },
+            { "title" : "Q", "requires" : [ "lat", "shift"  ] },
+            { "title" : "q", "requires" : [ "lat", "caps", "shift" ] }
+        ],
+        "ц" : [
+            { "title" : "ц", "requires" : [                 ] },
+            { "title" : "Ц", "requires" : [ "caps"          ] },
+            { "title" : "Ц", "requires" : [ "shift"         ] },
+            { "title" : "ц", "requires" : [ "caps", "shift" ] },
+            { "title" : "w", "requires" : [ "lat"           ] },
+            { "title" : "W", "requires" : [ "lat", "caps"   ] },
+            { "title" : "W", "requires" : [ "lat", "shift"  ] },
+            { "title" : "w", "requires" : [ "lat", "caps", "shift" ] }
+        ],
+        "у" : [
+            { "title" : "у", "requires" : [                 ] },
+            { "title" : "У", "requires" : [ "caps"          ] },
+            { "title" : "У", "requires" : [ "shift"         ] },
+            { "title" : "у", "requires" : [ "caps", "shift" ] },
+            { "title" : "e", "requires" : [ "lat"           ] },
+            { "title" : "E", "requires" : [ "lat", "caps"   ] },
+            { "title" : "E", "requires" : [ "lat", "shift"  ] },
+            { "title" : "e", "requires" : [ "lat", "caps", "shift" ] }
+        ],
+        "к" : [
+            { "title" : "к", "requires" : [                 ] },
+            { "title" : "К", "requires" : [ "caps"          ] },
+            { "title" : "К", "requires" : [ "shift"         ] },
+            { "title" : "к", "requires" : [ "caps", "shift" ] },
+            { "title" : "r", "requires" : [ "lat"           ] },
+            { "title" : "R", "requires" : [ "lat", "caps"   ] },
+            { "title" : "R", "requires" : [ "lat", "shift"  ] },
+            { "title" : "r", "requires" : [ "lat", "caps", "shift" ] }
+        ],
+        "е" : [
+            { "title" : "е", "requires" : [                 ] },
+            { "title" : "Е", "requires" : [ "caps"          ] },
+            { "title" : "Е", "requires" : [ "shift"         ] },
+            { "title" : "е", "requires" : [ "caps", "shift" ] },
+            { "title" : "t", "requires" : [ "lat"           ] },
+            { "title" : "T", "requires" : [ "lat", "caps"   ] },
+            { "title" : "T", "requires" : [ "lat", "shift"  ] },
+            { "title" : "t", "requires" : [ "lat", "caps", "shift" ] }
+        ],
+        "н" : [
+            { "title" : "н", "requires" : [                 ] },
+            { "title" : "Н", "requires" : [ "caps"          ] },
+            { "title" : "Н", "requires" : [ "shift"         ] },
+            { "title" : "н", "requires" : [ "caps", "shift" ] },
+            { "title" : "y", "requires" : [ "lat"           ] },
+            { "title" : "Y", "requires" : [ "lat", "caps"   ] },
+            { "title" : "Y", "requires" : [ "lat", "shift"  ] },
+            { "title" : "y", "requires" : [ "lat", "caps", "shift" ] }
+        ],
+        "г" : [
+            { "title" : "г", "requires" : [                 ] },
+            { "title" : "Г", "requires" : [ "caps"          ] },
+            { "title" : "Г", "requires" : [ "shift"         ] },
+            { "title" : "г", "requires" : [ "caps", "shift" ] },
+            { "title" : "u", "requires" : [ "lat"           ] },
+            { "title" : "U", "requires" : [ "lat", "caps"   ] },
+            { "title" : "U", "requires" : [ "lat", "shift"  ] },
+            { "title" : "u", "requires" : [ "lat", "caps", "shift" ] }
+        ],
+        "ш" : [
+            { "title" : "ш", "requires" : [                 ] },
+            { "title" : "Ш", "requires" : [ "caps"          ] },
+            { "title" : "Ш", "requires" : [ "shift"         ] },
+            { "title" : "ш", "requires" : [ "caps", "shift" ] },
+            { "title" : "i", "requires" : [ "lat"           ] },
+            { "title" : "I", "requires" : [ "lat", "caps"   ] },
+            { "title" : "I", "requires" : [ "lat", "shift"  ] },
+            { "title" : "i", "requires" : [ "lat", "caps", "shift" ] }
+        ],
+        "щ" : [
+            { "title" : "щ", "requires" : [                 ] },
+            { "title" : "Щ", "requires" : [ "caps"          ] },
+            { "title" : "Щ", "requires" : [ "shift"         ] },
+            { "title" : "щ", "requires" : [ "caps", "shift" ] },
+            { "title" : "o", "requires" : [ "lat"           ] },
+            { "title" : "O", "requires" : [ "lat", "caps"   ] },
+            { "title" : "O", "requires" : [ "lat", "shift"  ] },
+            { "title" : "o", "requires" : [ "lat", "caps", "shift" ] }
+        ],
+        "з" : [
+            { "title" : "з", "requires" : [                 ] },
+            { "title" : "З", "requires" : [ "caps"          ] },
+            { "title" : "З", "requires" : [ "shift"         ] },
+            { "title" : "з", "requires" : [ "caps", "shift" ] },
+            { "title" : "p", "requires" : [ "lat"           ] },
+            { "title" : "P", "requires" : [ "lat", "caps"   ] },
+            { "title" : "P", "requires" : [ "lat", "shift"  ] },
+            { "title" : "p", "requires" : [ "lat", "caps", "shift" ] }
+        ],
+        "ф" : [
+            { "title" : "ф", "requires" : [                 ] },
+            { "title" : "Ф", "requires" : [ "caps"          ] },
+            { "title" : "Ф", "requires" : [ "shift"         ] },
+            { "title" : "ф", "requires" : [ "caps", "shift" ] },
+            { "title" : "a", "requires" : [ "lat"           ] },
+            { "title" : "A", "requires" : [ "lat", "caps"   ] },
+            { "title" : "A", "requires" : [ "lat", "shift"  ] },
+            { "title" : "a", "requires" : [ "lat", "caps", "shift" ] }
+        ],
+        "ы" : [
+            { "title" : "ы", "requires" : [                 ] },
+            { "title" : "Ы", "requires" : [ "caps"          ] },
+            { "title" : "Ы", "requires" : [ "shift"         ] },
+            { "title" : "ы", "requires" : [ "caps", "shift" ] },
+            { "title" : "s", "requires" : [ "lat"           ] },
+            { "title" : "S", "requires" : [ "lat", "caps"   ] },
+            { "title" : "S", "requires" : [ "lat", "shift"  ] },
+            { "title" : "s", "requires" : [ "lat", "caps", "shift" ] }
+        ],
+        "в" : [
+            { "title" : "в", "requires" : [                 ] },
+            { "title" : "В", "requires" : [ "caps"          ] },
+            { "title" : "В", "requires" : [ "shift"         ] },
+            { "title" : "в", "requires" : [ "caps", "shift" ] },
+            { "title" : "d", "requires" : [ "lat"           ] },
+            { "title" : "D", "requires" : [ "lat", "caps"   ] },
+            { "title" : "D", "requires" : [ "lat", "shift"  ] },
+            { "title" : "d", "requires" : [ "lat", "caps", "shift" ] }
+        ],
+        "а" : [
+            { "title" : "а", "requires" : [                 ] },
+            { "title" : "А", "requires" : [ "caps"          ] },
+            { "title" : "А", "requires" : [ "shift"         ] },
+            { "title" : "а", "requires" : [ "caps", "shift" ] },
+            { "title" : "f", "requires" : [ "lat"           ] },
+            { "title" : "F", "requires" : [ "lat", "caps"   ] },
+            { "title" : "F", "requires" : [ "lat", "shift"  ] },
+            { "title" : "f", "requires" : [ "lat", "caps", "shift" ] }
+        ],
+        "п" : [
+            { "title" : "п", "requires" : [                 ] },
+            { "title" : "П", "requires" : [ "caps"          ] },
+            { "title" : "П", "requires" : [ "shift"         ] },
+            { "title" : "п", "requires" : [ "caps", "shift" ] },
+            { "title" : "g", "requires" : [ "lat"           ] },
+            { "title" : "G", "requires" : [ "lat", "caps"   ] },
+            { "title" : "G", "requires" : [ "lat", "shift"  ] },
+            { "title" : "g", "requires" : [ "lat", "caps", "shift" ] }
+        ],
+        "р" : [
+            { "title" : "р", "requires" : [                 ] },
+            { "title" : "Р", "requires" : [ "caps"          ] },
+            { "title" : "Р", "requires" : [ "shift"         ] },
+            { "title" : "р", "requires" : [ "caps", "shift" ] },
+            { "title" : "h", "requires" : [ "lat"           ] },
+            { "title" : "H", "requires" : [ "lat", "caps"   ] },
+            { "title" : "H", "requires" : [ "lat", "shift"  ] },
+            { "title" : "h", "requires" : [ "lat", "caps", "shift" ] }
+        ],
+        "о" : [
+            { "title" : "о", "requires" : [                 ] },
+            { "title" : "О", "requires" : [ "caps"          ] },
+            { "title" : "О", "requires" : [ "shift"         ] },
+            { "title" : "о", "requires" : [ "caps", "shift" ] },
+            { "title" : "j", "requires" : [ "lat"           ] },
+            { "title" : "J", "requires" : [ "lat", "caps"   ] },
+            { "title" : "J", "requires" : [ "lat", "shift"  ] },
+            { "title" : "j", "requires" : [ "lat", "caps", "shift" ] }
+        ],
+        "л" : [
+            { "title" : "л", "requires" : [                 ] },
+            { "title" : "Л", "requires" : [ "caps"          ] },
+            { "title" : "Л", "requires" : [ "shift"         ] },
+            { "title" : "л", "requires" : [ "caps", "shift" ] },
+            { "title" : "k", "requires" : [ "lat"           ] },
+            { "title" : "K", "requires" : [ "lat", "caps"   ] },
+            { "title" : "K", "requires" : [ "lat", "shift"  ] },
+            { "title" : "k", "requires" : [ "lat", "caps", "shift" ] }
+        ],
+        "д" : [
+            { "title" : "д", "requires" : [                 ] },
+            { "title" : "Д", "requires" : [ "caps"          ] },
+            { "title" : "Д", "requires" : [ "shift"         ] },
+            { "title" : "д", "requires" : [ "caps", "shift" ] },
+            { "title" : "l", "requires" : [ "lat"           ] },
+            { "title" : "L", "requires" : [ "lat", "caps"   ] },
+            { "title" : "L", "requires" : [ "lat", "shift"  ] },
+            { "title" : "l", "requires" : [ "lat", "caps", "shift" ] }
+        ],
+        "я" : [
+            { "title" : "я", "requires" : [                 ] },
+            { "title" : "Я", "requires" : [ "caps"          ] },
+            { "title" : "Я", "requires" : [ "shift"         ] },
+            { "title" : "я", "requires" : [ "caps", "shift" ] },
+            { "title" : "z", "requires" : [ "lat"           ] },
+            { "title" : "Z", "requires" : [ "lat", "caps"   ] },
+            { "title" : "Z", "requires" : [ "lat", "shift"  ] },
+            { "title" : "z", "requires" : [ "lat", "caps", "shift" ] }
+        ],
+        "ч" : [
+            { "title" : "ч", "requires" : [                 ] },
+            { "title" : "Ч", "requires" : [ "caps"          ] },
+            { "title" : "Ч", "requires" : [ "shift"         ] },
+            { "title" : "ч", "requires" : [ "caps", "shift" ] },
+            { "title" : "x", "requires" : [ "lat"           ] },
+            { "title" : "X", "requires" : [ "lat", "caps"   ] },
+            { "title" : "X", "requires" : [ "lat", "shift"  ] },
+            { "title" : "x", "requires" : [ "lat", "caps", "shift" ] }
+        ],
+        "с" : [
+            { "title" : "с", "requires" : [                 ] },
+            { "title" : "С", "requires" : [ "caps"          ] },
+            { "title" : "С", "requires" : [ "shift"         ] },
+            { "title" : "с", "requires" : [ "caps", "shift" ] },
+            { "title" : "c", "requires" : [ "lat"           ] },
+            { "title" : "C", "requires" : [ "lat", "caps"   ] },
+            { "title" : "C", "requires" : [ "lat", "shift"  ] },
+            { "title" : "c", "requires" : [ "lat", "caps", "shift" ] }
+        ],
+        "м" : [
+            { "title" : "м", "requires" : [                 ] },
+            { "title" : "М", "requires" : [ "caps"          ] },
+            { "title" : "М", "requires" : [ "shift"         ] },
+            { "title" : "м", "requires" : [ "caps", "shift" ] },
+            { "title" : "v", "requires" : [ "lat"           ] },
+            { "title" : "V", "requires" : [ "lat", "caps"   ] },
+            { "title" : "V", "requires" : [ "lat", "shift"  ] },
+            { "title" : "v", "requires" : [ "lat", "caps", "shift" ] }
+        ],
+        "и" : [
+            { "title" : "и", "requires" : [                 ] },
+            { "title" : "И", "requires" : [ "caps"          ] },
+            { "title" : "И", "requires" : [ "shift"         ] },
+            { "title" : "и", "requires" : [ "caps", "shift" ] },
+            { "title" : "b", "requires" : [ "lat"           ] },
+            { "title" : "B", "requires" : [ "lat", "caps"   ] },
+            { "title" : "B", "requires" : [ "lat", "shift"  ] },
+            { "title" : "b", "requires" : [ "lat", "caps", "shift" ] }
+        ],
+        "т" : [
+            { "title" : "т", "requires" : [                 ] },
+            { "title" : "Т", "requires" : [ "caps"          ] },
+            { "title" : "Т", "requires" : [ "shift"         ] },
+            { "title" : "т", "requires" : [ "caps", "shift" ] },
+            { "title" : "n", "requires" : [ "lat"           ] },
+            { "title" : "N", "requires" : [ "lat", "caps"   ] },
+            { "title" : "N", "requires" : [ "lat", "shift"  ] },
+            { "title" : "n", "requires" : [ "lat", "caps", "shift" ] }
+        ],
+        "ь" : [
+            { "title" : "ь", "requires" : [                 ] },
+            { "title" : "Ь", "requires" : [ "caps"          ] },
+            { "title" : "Ь", "requires" : [ "shift"         ] },
+            { "title" : "ь", "requires" : [ "caps", "shift" ] },
+            { "title" : "m", "requires" : [ "lat"           ] },
+            { "title" : "M", "requires" : [ "lat", "caps"   ] },
+            { "title" : "M", "requires" : [ "lat", "shift"  ] },
+            { "title" : "m", "requires" : [ "lat", "caps", "shift" ] }
+        ]
+
+    },
+
+    "layout" : [
+
+        {
+            "top" : {
+                "function": [
+
+                    [ "Esc", 0.7, "F1", "F2",  "F3",  "F4",
+                             0.7, "F5", "F6",  "F7",  "F8",
+                             0.7, "F9", "F10", "F11", "F12" ]
+
+                ],
+
+                "virtual": [
+
+                    [ "Latin" ]
+
+                ]
+            }
+        },
+
+        [ 0.1 ],
+
+        {
+            "main" : {
+                "alpha" : [
+
+                    [ "`", "1", "2", "3", "4", "5", "6", "7", "8", "9", "0", "-", "=", "Back" ],
+                    [ "Tab", "й", "ц", "у", "к", "е", "н", "г", "ш", "щ", "з", "х", "ъ", "\\" ],
+                    [ "Caps",  "ф", "ы", "в", "а", "п", "р", "о", "л", "д", "ж", "э", "Enter" ],
+                    [ "LShift", "я", "ч", "с", "м",  "и", "т",  "ь", "б", "ю", "/",  "RShift" ],
+                    [ "LCtrl", "Meta", "LAlt",        "Space",        "RAlt", "Menu", "RCtrl" ]
+
+                ],
+
+                "movement" : [
+                    [ "Ins",  "Home", "PgUp"  ],
+                    [ "Del",  "End",  "PgDn"  ],
+                    [          1.1            ],
+                    [          "Up"           ],
+                    [ "Left", "Down", "Right" ]
+                ]
+            }
+        }
+
+    ],
+
+    "keyWidths" : {
+
+        "Back"   : 2,
+        "Tab"    : 1.5,
+        "\\"     : 1.5,
+        "Caps"   : 1.85,
+        "Enter"  : 2.25,
+        "LShift" : 2.1,
+        "RShift" : 3.1,
+
+        "LCtrl" : 1.6,
+        "Meta" : 1.6,
+        "LAlt"  : 1.6,
+        "Space" : 6.1,
+        "RAlt"  : 1.6,
+        "Menu"  : 1.6,
+        "RCtrl" : 1.6,
+
+        "Latin": 1.6,
+        "Ins"  : 1.6,
+        "Home" : 1.6,
+        "PgUp" : 1.6,
+        "Del"  : 1.6,
+        "End"  : 1.6,
+        "PgDn" : 1.6
+
+    }
+
+}

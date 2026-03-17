@@ -1,0 +1,12 @@
+<div class="guac-player-progress-text">{{ percentage }}%</div>
+<div class="guac-player-progress-bar-container" ng-class="{
+        'past-halfway' : progress > 0.5
+    }">
+    <div class="guac-player-progress-bar" ng-style="{
+        '-webkit-transform' : barTransform,
+        '-moz-transform' : barTransform,
+        '-ms-transform' : barTransform,
+        '-o-transform' : barTransform,
+        'transform' : barTransform
+    }"></div>
+</div>

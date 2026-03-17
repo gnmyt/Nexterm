@@ -1,0 +1,96 @@
+@use "@/common/styles/colors"
+
+.connection-loader
+  position: absolute
+  top: 0
+  left: 0
+  width: 100%
+  height: 100%
+  background: colors.$background
+  display: flex
+  justify-content: center
+  align-items: center
+  z-index: 100
+  opacity: 1
+  transition: opacity 0.2s ease-out
+  pointer-events: none
+
+  &--hidden
+    opacity: 0
+
+.connection-loader__progress-bar
+  position: absolute
+  top: 0
+  left: 0
+  height: 2px
+  background: colors.$primary
+  width: 0%
+  animation: connectionProgress 8s cubic-bezier(0.4, 0.0, 0.2, 1) forwards
+  box-shadow: 0 0 8px colors.$primary, 0 0 4px colors.$primary
+
+  &--complete
+    animation: none
+    width: 100% !important
+    transition: width 0.15s ease-out
+
+.connection-loader__content
+  display: flex
+  justify-content: center
+  align-items: center
+  gap: 2rem
+
+.connection-loader__device
+  display: flex
+  justify-content: center
+  align-items: center
+
+.connection-loader__device-icon
+  width: 2.5rem
+  height: 2.5rem
+  color: colors.$subtext
+
+.connection-loader__dots
+  display: flex
+  align-items: center
+  gap: 0.75rem
+
+  span
+    width: 6px
+    height: 6px
+    background-color: colors.$primary
+    border-radius: 50%
+    opacity: 0
+    animation: dotFlow 1.5s ease-in-out infinite
+
+    &:nth-child(1)
+      animation-delay: 0s
+
+    &:nth-child(2)
+      animation-delay: 0.3s
+
+    &:nth-child(3)
+      animation-delay: 0.6s
+
+@keyframes connectionProgress
+  0%
+    width: 0%
+  15%
+    width: 25%
+  30%
+    width: 45%
+  50%
+    width: 55%
+  70%
+    width: 65%
+  85%
+    width: 75%
+  100%
+    width: 85%
+
+@keyframes dotFlow
+  0%, 100%
+    opacity: 0
+    transform: translateX(-4px)
+  50%
+    opacity: 1
+    transform: translateX(4px)

@@ -1,0 +1,87 @@
+@use "@/common/styles/colors"
+
+.support-dialog
+  display: flex
+  flex-direction: column
+  gap: 1rem
+  width: 26rem
+  max-width: 100%
+
+  h2
+    margin: 0
+
+  > p
+    margin: 0
+    color: colors.$subtext
+    font-size: 0.95rem
+
+.support-options
+  display: flex
+  flex-direction: column
+  gap: 0.75rem
+  margin-top: 0.5rem
+
+.support-option
+  display: flex
+  align-items: center
+  gap: 1rem
+  padding: 1rem
+  background-color: colors.$dark-gray
+  border: 1px solid transparent
+  border-radius: 0.75rem
+  cursor: pointer
+  transition: all 0.15s ease
+
+  &:hover
+    background-color: colors.$gray
+    border-color: colors.$gray
+
+    .option-arrow
+      opacity: 1
+
+  .option-icon
+    width: 2.75rem
+    height: 2.75rem
+    display: flex
+    align-items: center
+    justify-content: center
+    border-radius: 0.625rem
+    flex-shrink: 0
+    background-color: colors.$gray
+
+    svg
+      width: 1.35rem
+      height: 1.35rem
+      color: colors.$white
+
+  &.github .option-icon
+    background-color: #333
+
+  .option-text
+    flex: 1
+    min-width: 0
+    display: flex
+    flex-direction: column
+    gap: 0.2rem
+
+    .option-title
+      font-weight: 600
+      font-size: 0.95rem
+      color: colors.$white
+
+    .option-desc
+      font-size: 0.8rem
+      color: colors.$subtext
+
+  .option-arrow
+    width: 1.1rem
+    height: 1.1rem
+    color: colors.$subtext
+    opacity: 0
+    transition: opacity 0.15s ease
+
+.support-footer
+  margin: 0.5rem 0 0 0
+  text-align: center
+  font-size: 0.85rem
+  color: colors.$subtext

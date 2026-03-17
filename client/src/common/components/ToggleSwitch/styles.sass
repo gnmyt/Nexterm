@@ -2,8 +2,9 @@
 
 .toggle-switch
   position: relative
-  width: 60px
-  height: 30px
+  width: 44px
+  height: 24px
+  flex-shrink: 0
 
   input
     opacity: 0
@@ -19,37 +20,44 @@
     right: 0
     bottom: 0
     background-color: colors.$gray
-    border-radius: 30px
-    transition: 0.3s
+    border: 1px solid colors.$dark-gray
+    border-radius: 12px
+    transition: all 0.15s ease
     display: block
 
     &:before
       position: absolute
       content: ""
-      height: 22px
-      width: 22px
-      left: 4px
-      bottom: 4px
-      background-color: colors.$white
+      height: 18px
+      width: 18px
+      left: 2px
+      top: 50%
+      transform: translateY(-50%)
+      background-color: colors.$subtext
       border-radius: 50%
-      transition: 0.3s
+      transition: all 0.15s ease
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2)
 
-  input:checked + .toggle-slider
-    background-color: colors.$primary
+    &:hover
+      border-color: colors.$gray
 
-    &:before
-      transform: translateX(30px)
-
+  input:checked + .toggle-slider,
   &.enabled .toggle-slider
     background-color: colors.$primary
+    border-color: colors.$primary
 
     &:before
-      transform: translateX(30px)
+      transform: translateY(-50%) translateX(20px)
+      background-color: #FFFFFF
 
-  input:disabled + .toggle-slider
-    opacity: 0.5
-    cursor: not-allowed
+  input:focus-visible + .toggle-slider
+    outline: 2px solid colors.$primary
+    outline-offset: 2px
 
+  input:disabled + .toggle-slider,
   &.disabled .toggle-slider
-    opacity: 0.5
+    opacity: 0.4
     cursor: not-allowed
+
+    &:hover
+      border-color: colors.$dark-gray

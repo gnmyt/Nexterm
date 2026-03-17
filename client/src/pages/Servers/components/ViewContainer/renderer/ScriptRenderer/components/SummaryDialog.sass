@@ -1,0 +1,128 @@
+@use "@/common/styles/colors"
+
+.summary-dialog
+  display: flex
+  flex-direction: column
+  gap: 0.75rem
+  min-width: 320px
+  max-width: 480px
+
+  .dialog-title
+    display: flex
+    align-items: center
+    gap: 0.5rem
+    padding-bottom: 0.625rem
+    border-bottom: 1px solid colors.$dark-gray
+
+    svg
+      width: 1.125rem
+      height: 1.125rem
+      color: colors.$primary
+
+    h2
+      margin: 0
+      font-size: 0.95rem
+      font-weight: 600
+      color: colors.$white
+
+  .summary-content
+    .summary-table
+      display: flex
+      flex-direction: column
+      gap: 0.375rem
+
+      .summary-row
+        display: grid
+        grid-template-columns: 1fr 2fr auto
+        gap: 0.625rem
+        padding: 0.5rem 0.625rem
+        background: colors.$dark-gray
+        border-radius: 0.5rem
+        border: 1px solid transparent
+        align-items: center
+        transition: border-color 0.15s ease
+
+        &:hover
+          border-color: colors.$gray
+
+        .summary-key
+          font-weight: 600
+          font-size: 0.8rem
+          color: colors.$white
+          white-space: nowrap
+          overflow: hidden
+          text-overflow: ellipsis
+
+        .summary-value
+          color: colors.$subtext
+          font-size: 0.8rem
+          word-break: break-word
+
+          &.is-link
+            a
+              color: colors.$primary
+              text-decoration: none
+              transition: all 0.15s ease
+
+              &:hover
+                text-decoration: underline
+                filter: brightness(1.15)
+
+        .action-buttons
+          display: flex
+          gap: 0.375rem
+          align-items: center
+
+        .copy-button, .open-button
+          background: transparent
+          border: 1px solid colors.$gray
+          border-radius: 0.375rem
+          padding: 0.25rem
+          cursor: pointer
+          transition: all 0.15s ease
+          display: flex
+          align-items: center
+          justify-content: center
+          opacity: 0.6
+
+          svg
+            width: 0.875rem
+            height: 0.875rem
+            color: colors.$subtext
+            transition: color 0.15s ease
+
+          &:hover
+            background: colors.$gray
+            border-color: colors.$primary
+            opacity: 1
+
+            svg
+              color: colors.$primary
+
+          &:active
+            transform: scale(0.95)
+
+        .open-button
+          &:hover
+            border-color: colors.$success
+
+            svg
+              color: colors.$success
+
+    .no-data
+      text-align: center
+      padding: 1.5rem
+      color: colors.$subtext
+      background: colors.$dark-gray
+      border-radius: 0.5rem
+
+      p
+        margin: 0
+        font-size: 0.85rem
+
+  .dialog-actions
+    display: flex
+    justify-content: flex-end
+    gap: 0.5rem
+    padding-top: 0.5rem
+    border-top: 1px solid colors.$dark-gray

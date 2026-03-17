@@ -1,10 +1,13 @@
 const Account = require("../models/Account");
 const Session = require("../models/Session");
-const Server = require("../models/Server");
+const Entry = require("../models/Entry");
+const EntryIdentity = require("../models/EntryIdentity");
 const Identity = require("../models/Identity");
 const { createRDPToken, createVNCToken } = require("../utils/tokenGenerator");
-const { validateServerAccess } = require("../controllers/server");
+const { validateEntryAccess } = require("../controllers/entry");
 const { getOrganizationAuditSettingsInternal } = require("../controllers/audit");
+const { getIdentityCredentials, listIdentities } = require("../controllers/identity");
+const logger = require("../utils/logger");
 
 module.exports.authenticate = async (req, res, next) => {
     const authHeader = req.header("authorization");
@@ -29,6 +32,21 @@ module.exports.authenticate = async (req, res, next) => {
     next();
 };
 
+module.exports.authenticateDownload = async (req, res, next) => {
+    const token = req.query.token;
+    if (!token) return res.status(401).json({ message: "Token required" });
+    
+    const session = await Session.findOne({ where: { token } });
+    if (!session) return res.status(401).json({ message: "Invalid token" });
+    
+    const user = await Account.findByPk(session.accountId);
+    if (!user || user.role !== "admin") return res.status(403).json({ message: "Admin access required" });
+    
+    req.user = user;
+    req.session = session;
+    next();
+};
+
 
 module.exports.authorizeGuacamole = async (req) => {
     const query = req.url.split("?")[1].split("&").map((x) => x.split("=")).reduce((acc, x) => {
@@ -49,41 +67,54 @@ module.exports.authorizeGuacamole = async (req) => {
 
     if (!query.serverId) return;
 
-    const server = await Server.findByPk(query.serverId);
-    if (server === null) return;
+    const entry = await Entry.findByPk(query.serverId);
+    if (entry === null) return;
 
-    if (!((await validateServerAccess(req.user.id, server)).valid)) return;
+    if (!((await validateEntryAccess(req.user.id, entry)).valid)) return;
 
-    if (server.identities.length === 0 && query.identity) return;
+    const accessibleIds = new Set((await listIdentities(req.user.id)).map(i => i.id));
+    const entryIdentities = await EntryIdentity.findAll({ where: { entryId: entry.id }, order: [['isDefault', 'DESC']] });
+    
+    if (entryIdentities.length === 0 && query.identity) return;
 
-    const identity = await Identity.findByPk(query.identity || server.identities[0]);
-    if (identity === null) return;
-
-    if (server.organizationId) {
-        const auditSettings = await getOrganizationAuditSettingsInternal(server.organizationId);
-        if (auditSettings?.requireConnectionReason && !query.connectionReason) return;
-    }
-
-    console.log("Authorized connection to server " + server.ip + " with identity " + identity.name);
-
-    let config = {};
-    if (server.config) {
-        try {
-            config = JSON.parse(server.config);
-        } catch (e) {
-            console.error("Error parsing server config:", e);
+    let identityId = null;
+    if (query.identity) {
+        const requestedId = parseInt(query.identity, 10);
+        if (!accessibleIds.has(requestedId)) return;
+        identityId = requestedId;
+    } else {
+        for (const ei of entryIdentities) {
+            if (accessibleIds.has(ei.identityId)) {
+                identityId = ei.identityId;
+                break;
+            }
         }
     }
 
+    const identity = identityId ? await Identity.findByPk(identityId) : null;
+    if (identity === null) return;
+
+    const credentials = await getIdentityCredentials(identityId);
+
+    if (entry.organizationId) {
+        const auditSettings = await getOrganizationAuditSettingsInternal(entry.organizationId);
+        if (auditSettings?.requireConnectionReason && !query.connectionReason) return;
+    }
+
+    logger.system(`Authorized connection to ${entry.config?.ip} with identity ${identity.name}`, { 
+        entryId: entry.id, 
+        identityId: identity.id, 
+        username: req.user.username 
+    });
+
     let connectionConfig;
-    switch (server.protocol) {
+    switch (entry.config?.protocol) {
         case "rdp":
-            connectionConfig = createRDPToken(server.ip, server.port, identity.username, identity.password,
-                config.keyboardLayout || "en-us-qwerty");
+            connectionConfig = createRDPToken(entry.config.ip, entry.config.port, identity.username, credentials.password,
+                entry.config.keyboardLayout || "en-us-qwerty");
             break;
         case "vnc":
-            connectionConfig = createVNCToken(server.ip, server.port, identity.username, identity.password,
-                config.keyboardLayout || "en-us-qwerty");
+            connectionConfig = createVNCToken(entry.config.ip, entry.config.port, identity.username, credentials.password);
             break;
         default:
             return;
@@ -91,7 +122,7 @@ module.exports.authorizeGuacamole = async (req) => {
 
     if (connectionConfig) {
         connectionConfig.user = req.user;
-        connectionConfig.server = server;
+        connectionConfig.server = entry;
         connectionConfig.identity = identity;
         connectionConfig.ipAddress = req.ip || req.socket?.remoteAddress || 'unknown';
         connectionConfig.userAgent = req.headers?.['user-agent'] || 'unknown';

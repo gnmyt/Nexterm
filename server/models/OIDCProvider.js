@@ -1,4 +1,5 @@
 const Sequelize = require("sequelize");
+const logger = require("../utils/logger");
 const db = require("../utils/database");
 const { encrypt, decrypt } = require("../utils/encryption");
 
@@ -40,17 +41,12 @@ module.exports = db.define("oidc_providers", {
         scope: {
             type: Sequelize.STRING,
             allowNull: false,
-            defaultValue: "openid profile email",
+            defaultValue: "openid profile",
         },
         enabled: {
             type: Sequelize.BOOLEAN,
             allowNull: false,
             defaultValue: false,
-        },
-        emailAttribute: {
-            type: Sequelize.STRING,
-            allowNull: true,
-            defaultValue: "email",
         },
         firstNameAttribute: {
             type: Sequelize.STRING,
@@ -107,7 +103,7 @@ module.exports = db.define("oidc_providers", {
                                     provider.clientSecretAuthTag,
                                 );
                             } catch (error) {
-                                console.error(`Failed to decrypt client secret for provider ${provider.id}`);
+                                logger.error("Failed to decrypt client secret for OIDC provider", { providerId: provider.id, error: error.message });
                             }
                         }
                     });
@@ -119,7 +115,7 @@ module.exports = db.define("oidc_providers", {
                             providers.clientSecretAuthTag,
                         );
                     } catch (error) {
-                        console.error(`Failed to decrypt client secret for provider ${providers.id}`);
+                        logger.error("Failed to decrypt client secret for OIDC provider", { providerId: providers.id, error: error.message });
                     }
                 }
 

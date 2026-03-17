@@ -1,107 +1,44 @@
-import { createContext, useContext, useEffect, useState } from "react";
+import { createContext, useContext, useEffect, useState, useCallback } from "react";
 import { UserContext } from "@/common/contexts/UserContext.jsx";
-import { getRequest, postRequest } from "@/common/utils/RequestUtil.js";
+import { StateStreamContext, STATE_TYPES } from "@/common/contexts/StateStreamContext.jsx";
+import { getRequest } from "@/common/utils/RequestUtil.js";
 
 export const ServerContext = createContext({});
 
 export const ServerProvider = ({ children }) => {
-
     const [servers, setServers] = useState(null);
-    const {user, sessionToken} = useContext(UserContext);
+    const { user, sessionToken } = useContext(UserContext);
+    const { registerHandler } = useContext(StateStreamContext);
 
-    const loadServers = async () => {
+    useEffect(() => {
+        if (user) return registerHandler(STATE_TYPES.ENTRIES, setServers);
+    }, [user, registerHandler]);
+
+    const loadServers = useCallback(async () => {
         try {
-            postRequest("pve-servers/refresh").then(() => {});
-
-            getRequest("/servers/list").then((response) => {
-                setServers(response);
-            });
-        } catch (error) {
-            console.error("Failed to load servers", error.message);
-        }
-    }
+            setServers(await getRequest("/entries/list"));
+        } catch {}
+    }, []);
 
     const retrieveServerById = async (serverId) => {
         try {
-            return await getRequest(`/servers/${serverId}`);
+            return await getRequest(`/entries/${serverId}`);
         } catch (error) {
             console.error("Failed to retrieve server", error.message);
         }
-    }
+    };
 
-    const getPVEServerById = (serverId, entries) => {
-        if (!entries) entries = servers;
-        for (const server of entries) {
-            if (server.id === parseInt(serverId) && server.type === "pve-server") {
-                return server;
-            } else if (server.type === "folder" || server.type === "organization") {
-                const result = getPVEServerById(serverId, server.entries);
-                if (result) {
-                    return result;
-                }
-            }
-        }
-        return null;
-    }
-
-    const getPVEContainerById = (serverId, containerId) => {
-        const pveServer = getPVEServerById(serverId);
-        if (!pveServer) return null;
-
-        for (const container of pveServer.entries) {
-            if (container.id === parseInt(containerId)) {
-                return container;
-            }
-        }
-    }
-
-    const getServerById = (serverId, entries) => {
-        if (!entries) entries = servers;
-        for (const server of entries) {
-            if (server.id === parseInt(serverId) && server.type === "server") {
-                return server;
-            } else if (server.type === "folder" || server.type === "organization") {
+    const getServerById = (serverId, entries = servers) => {
+        for (const server of entries || []) {
+            if (server.type === "folder" || server.type === "organization") {
                 const result = getServerById(serverId, server.entries);
-                if (result) {
-                    return result;
-                }
-            }
+                if (result) return result;
+            } else if (server.id === parseInt(serverId)) return server;
         }
         return null;
-    }
+    };
 
-    const getServerListInFolder = (folderId, entries) => {
-        if (!entries) entries = servers;
-        for (const entry of entries) {
-            if (entry.id === parseInt(folderId) && entry.type === "folder") {
-                return entry.entries;
-            } else if (entry.type === "folder" || entry.type === "organization") {
-                const result = getServerListInFolder(folderId, entry.entries);
-                if (result) {
-                    return result;
-                }
-            }
-        }
-        return null;
-    }
+    useEffect(() => { if (!sessionToken) setServers([]); }, [sessionToken]);
 
-    useEffect(() => {
-        if (user) {
-            loadServers();
-
-            const interval = setInterval(() => {
-                loadServers();
-            }, 5000);
-
-            return () => clearInterval(interval);
-        } else if (!sessionToken) {
-            setServers([]);
-        }
-    }, [user]);
-
-    return (
-        <ServerContext.Provider value={{servers, loadServers, getServerById, getPVEServerById, getPVEContainerById, retrieveServerById,getServerListInFolder}}>
-            {children}
-        </ServerContext.Provider>
-    )
-}
+    return <ServerContext.Provider value={{ servers, loadServers, getServerById, retrieveServerById }}>{children}</ServerContext.Provider>;
+};

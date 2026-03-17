@@ -1,0 +1,1 @@
+export { TabSwitcher as default } from "./TabSwitcher.jsx";

@@ -1,0 +1,2 @@
+angular-route:1.8.3
+angular:1.8.3

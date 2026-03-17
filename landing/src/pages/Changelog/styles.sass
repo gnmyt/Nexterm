@@ -1,0 +1,265 @@
+@use "@/common/styles/colors" as *
+
+.changelog-page
+  min-height: 100vh
+  display: flex
+  flex-direction: column
+
+.changelog-container
+  flex: 1
+  max-width: 800px
+  margin: 0 auto
+  padding: 140px 24px 80px
+  width: 100%
+
+.changelog-header
+  margin-bottom: 48px
+
+  h1
+    font-size: 2.5rem
+    font-weight: 700
+    letter-spacing: -0.03em
+    margin-bottom: 8px
+    color: $text
+
+  p
+    font-size: 1rem
+    color: $subtext
+
+.changelog-state
+  display: flex
+  align-items: center
+  justify-content: center
+  gap: 12px
+  padding: 64px 24px
+  color: $subtext
+  font-size: 0.9375rem
+
+  svg
+    font-size: 1.125rem
+
+  &.error
+    color: #ef4444
+
+.releases-timeline
+  display: flex
+  flex-direction: column
+
+.release-item
+  display: flex
+  gap: 20px
+  position: relative
+
+.timeline-marker
+  display: flex
+  flex-direction: column
+  align-items: center
+  padding-top: 6px
+
+  .marker-dot
+    width: 10px
+    height: 10px
+    border-radius: 50%
+    background: $primary
+    flex-shrink: 0
+    position: relative
+    z-index: 1
+
+    &.beta
+      background: #fbbf24
+
+    &.preview
+      background: #a855f7
+
+    &.stable
+      background: #22c55e
+
+  .marker-line
+    width: 2px
+    flex: 1
+    background: $dark-gray
+    margin-top: 8px
+
+.release-content
+  flex: 1
+  padding-bottom: 32px
+
+.release-header
+  display: flex
+  align-items: center
+  justify-content: space-between
+  gap: 12px
+  margin-bottom: 16px
+  flex-wrap: wrap
+
+.release-info
+  display: flex
+  align-items: center
+  gap: 10px
+
+.version-tag
+  display: inline-flex
+  align-items: center
+  gap: 6px
+  font-family: "SF Mono", "Fira Code", monospace
+  font-size: 0.875rem
+  font-weight: 600
+  color: $text
+
+  svg
+    font-size: 0.75rem
+    color: $primary
+
+  &.beta svg
+    color: #fbbf24
+
+  &.preview svg
+    color: #a855f7
+
+  &.stable svg
+    color: #22c55e
+
+.latest-tag
+  padding: 3px 8px
+  background: $primary-opacity
+  border: 1px solid $dark-gray
+  border-radius: 0.25rem
+  font-size: 0.6875rem
+  font-weight: 600
+  color: $primary
+  text-transform: uppercase
+  letter-spacing: 0.05em
+
+.release-actions
+  display: flex
+  align-items: center
+  gap: 12px
+
+.release-date
+  display: flex
+  align-items: center
+  gap: 6px
+  font-size: 0.8125rem
+  color: $subtext
+
+  svg
+    font-size: 0.6875rem
+
+.github-link
+  display: flex
+  align-items: center
+  gap: 4px
+  padding: 6px 10px
+  background: $background-lighter
+  border: 1px solid $dark-gray
+  border-radius: 0.375rem
+  font-size: 0.8125rem
+  color: $subtext
+  transition: all 0.2s
+
+  &:hover
+    filter: brightness(0.8)
+
+  svg:last-child
+    font-size: 0.625rem
+    opacity: 0.6
+
+.changes-list
+  list-style: none
+  display: flex
+  flex-direction: column
+  gap: 8px
+  background: $background-lighter
+  border: 1px solid $dark-gray
+  border-radius: 0.5rem
+  padding: 1rem 1.25rem
+
+  li
+    display: flex
+    align-items: baseline
+    gap: 8px
+    font-size: 0.875rem
+    color: $subtext
+    line-height: 1.5
+
+    &::before
+      content: "-"
+      color: $dark-gray
+      flex-shrink: 0
+
+  .change-text a
+    color: $text
+    transition: color 0.2s
+
+    &:hover
+      color: $primary
+
+.author-link
+  font-size: 0.75rem
+  color: $subtext
+  opacity: 0.7
+  transition: opacity 0.2s
+  white-space: nowrap
+
+  &:hover
+    opacity: 1
+    color: $primary
+
+.no-changes
+  font-size: 0.875rem
+  color: $subtext
+
+.load-more
+  display: flex
+  align-items: center
+  justify-content: center
+  gap: 10px
+  padding: 32px
+  color: $subtext
+  font-size: 0.875rem
+  min-height: 80px
+
+  svg
+    font-size: 1rem
+
+.end-message
+  text-align: center
+  padding: 24px
+  font-size: 0.8125rem
+  color: $subtext
+  border-top: 1px solid $dark-gray
+
+@media (max-width: 640px)
+  .changelog-container
+    padding: 120px 20px 60px
+
+  .changelog-header
+    h1
+      font-size: 2rem
+
+  .release-item
+    gap: 16px
+
+  .timeline-marker
+    display: none
+
+  .release-content
+    padding-bottom: 24px
+    padding-left: 0
+    border-left: none
+
+  .release-header
+    flex-direction: column
+    align-items: flex-start
+    gap: 10px
+
+  .release-actions
+    width: 100%
+    justify-content: space-between
+
+  .changes-list
+    padding: 0.875rem 1rem
+
+    li
+      flex-direction: column
+      gap: 2px

@@ -1,0 +1,83 @@
+<div class="guac-player-container">
+
+    <!-- Actual playback display -->
+    <guac-player-display display="recording.getDisplay()"
+                        ng-click="togglePlayback()"></guac-player-display>
+
+    <!-- Show the text viewer only if text exists -->
+    <guac-player-text-view ng-show="showKeyLog"
+                        text-batches="textBatches"
+                        seek="seekToTimestamp(timestamp)"
+                        current-position="seekPosition || playbackPosition"
+                        duration="recording.getDuration()"
+    ></guac-player-text-view>
+
+</div>
+
+<!-- Player controls -->
+<div class="guac-player-controls" ng-show="recording"
+        ng-class="{
+            'paused' : !recording.isPlaying(),
+            'playing' : recording.isPlaying()
+        }">
+
+    <!-- Playback position slider -->
+    <input class="guac-player-seek" type="range" min="0" step="1"
+           ng-attr-max="{{ recording.getDuration() }}"
+           ng-change="beginSeekRequest()"
+           ng-model="playbackPosition"
+           ng-on-change="commitSeekRequest()">
+
+    <div class="heat-map">
+        <svg class="frame-events" ng-attr-view_box="0 0 {{ HEATMAP_WIDTH }} {{ HEATMAP_HEIGHT }}" preserveAspectRatio="none">
+            <path ng-attr-d="{{ frameHeatmap }}"/>
+        </svg>
+
+        <svg class="key-events" ng-attr-view_box="0 0 {{ HEATMAP_WIDTH }} {{ HEATMAP_HEIGHT }}" preserveAspectRatio="none">
+            <path ng-attr-d="{{ keyHeatmap }}"/>
+        </svg>
+
+        <div class="legend">
+            <span class="frame-events">{{ 'PLAYER.INFO_FRAME_EVENTS_LEGEND' | translate }}</span>
+            <span class="key-events">{{ 'PLAYER.INFO_KEY_EVENTS_LEGEND' | translate }}</span>
+        </div>
+    </div>
+
+    <div class="guac-player-buttons">
+
+        <!-- Play button -->
+        <button class="guac-player-play"
+                ng-attr-title="{{ 'PLAYER.ACTION_PLAY' | translate }}"
+                ng-click="recording.play()"
+                ng-hide="recording.isPlaying()"><span class="play-icon"></span></button>
+
+        <!-- Pause button -->
+        <button class="guac-player-pause"
+                ng-attr-title="{{ 'PLAYER.ACTION_PAUSE' | translate }}"
+                ng-click="recording.pause()"
+                ng-show="recording.isPlaying()"><span class="pause-icon"></span></button>
+
+        <!-- Playback position and duration -->
+        <span class="guac-player-position">
+            {{ formatTime(playbackPosition) }} / {{ formatTime(recording.getDuration()) }}
+        </span>
+
+        <span ng-show="hasTextBatches()" class="guac-player-keys" ng-click="toggleKeyLogView()">
+            {{ 'PLAYER.ACTION_SHOW_KEY_LOG' | translate }}
+        </span>
+
+        <span ng-show="!hasTextBatches()" class="guac-player-keys disabled">
+            {{ 'PLAYER.INFO_NO_KEY_LOG' | translate }}
+        </span>
+    </div>
+
+</div>
+
+<!-- Modal status indicator -->
+<div class="guac-player-status" ng-show="operationMessage">
+    <guac-player-progress-indicator progress="operationProgress"></guac-player-progress-indicator>
+    <p translate="{{ operationMessage }}"></p>
+    <button class="guac-player-button guac-player-cancel"
+            ng-show="cancelOperation"
+            ng-click="cancelOperation()">{{ 'PLAYER.ACTION_CANCEL' | translate }}</button>
+</div>

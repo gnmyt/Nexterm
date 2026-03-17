@@ -1,0 +1,136 @@
+@use "@/common/styles/colors"
+
+.keyboard-shortcuts-overlay
+  position: fixed
+  top: 0
+  left: 0
+  right: 0
+  bottom: 0
+  background: rgba(0, 0, 0, 0.5)
+  backdrop-filter: blur(4px)
+  z-index: 9999
+  display: flex
+  align-items: center
+  justify-content: center
+
+.keyboard-shortcuts-menu
+  position: relative
+  width: 500px
+  max-width: 90vw
+  max-height: 70vh
+  background-color: colors.$lighter-background
+  border: 1px solid colors.$dark-gray
+  border-radius: 0.75rem
+  padding: 0.375rem
+  box-shadow: 0 12px 48px rgba(0, 0, 0, 0.5), 0 4px 16px rgba(0, 0, 0, 0.3)
+  display: flex
+  flex-direction: column
+  overflow: hidden
+  opacity: 0
+  transform: scale(0.95) translateY(-8px)
+  transition: opacity 0.12s cubic-bezier(0.4, 0, 0.2, 1), transform 0.12s cubic-bezier(0.4, 0, 0.2, 1)
+  pointer-events: none
+
+  &.open
+    opacity: 1
+    transform: scale(1) translateY(0)
+    pointer-events: auto
+
+  &.closed
+    opacity: 0
+    transform: scale(0.95) translateY(-8px)
+    pointer-events: none
+
+  &__search
+    padding: 0.625rem 0.75rem
+    border-bottom: 1px solid colors.$dark-gray
+    display: flex
+    align-items: center
+    gap: 0.75rem
+    margin-bottom: 0.25rem
+    flex-shrink: 0
+
+    svg
+      width: 1.125rem
+      height: 1.125rem
+      color: colors.$subtext
+      flex-shrink: 0
+      opacity: 0.9
+
+    input
+      flex: 1
+      background: transparent
+      border: none
+      outline: none
+      color: colors.$white
+      font-size: 0.9rem
+      padding: 0
+
+      &::placeholder
+        color: colors.$subtext
+
+  &__content
+    display: flex
+    flex-direction: column
+    overflow-y: auto
+    overflow-x: hidden
+    flex: 1
+    scrollbar-width: thin
+    scrollbar-color: colors.$gray colors.$lighter-background
+
+    &::-webkit-scrollbar
+      width: 6px
+
+    &::-webkit-scrollbar-track
+      background: transparent
+
+    &::-webkit-scrollbar-thumb
+      background-color: colors.$gray
+      border-radius: 10px
+
+  &__no-results
+    padding: 1.5rem 1rem
+    text-align: center
+    color: colors.$subtext
+    font-size: 0.9rem
+
+    p
+      margin: 0
+
+  &__list
+    padding: 0.25rem
+    display: flex
+    flex-direction: column
+    gap: 0.25rem
+
+  &__item
+    padding: 0.625rem 0.75rem
+    background-color: colors.$dark-gray
+    border-radius: 0.5rem
+    cursor: pointer
+    transition: background-color 0.1s ease
+    user-select: none
+    outline: none
+    display: flex
+    align-items: center
+    justify-content: space-between
+
+    &:hover, &.highlighted
+      background-color: colors.$gray
+
+    &.highlighted
+      outline: 2px solid colors.$primary
+      outline-offset: -2px
+
+    &-label
+      color: colors.$white
+      font-size: 0.9rem
+      font-weight: 500
+
+    &-category
+      padding: 0.25rem 0.625rem
+      border-radius: 0.75rem
+      background-color: colors.$darker-gray
+      color: colors.$subtext
+      font-size: 0.75rem
+      font-weight: 500

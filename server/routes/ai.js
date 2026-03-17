@@ -9,6 +9,8 @@ const {
     getAvailableModels,
     generateCommand
 } = require("../controllers/ai");
+const { validateEntryAccess } = require("../controllers/entry");
+const Entry = require("../models/Entry");
 
 const app = Router();
 
@@ -112,7 +114,17 @@ app.post("/generate", async (req, res) => {
     try {
         if (validateSchema(res, generateCommandValidation, req.body)) return;
 
-        const result = await generateCommand(req.body.prompt);
+        const { prompt, entryId, recentOutput } = req.body;
+
+        if (entryId) {
+            const entry = await Entry.findByPk(entryId);
+            const accessCheck = await validateEntryAccess(req.user.id, entry);
+            if (accessCheck.code) {
+                return res.status(accessCheck.code).json({ error: accessCheck.message });
+            }
+        }
+
+        const result = await generateCommand(prompt, entryId, recentOutput);
         if (result.code) return res.status(result.code).json({ error: result.message });
 
         res.json(result);

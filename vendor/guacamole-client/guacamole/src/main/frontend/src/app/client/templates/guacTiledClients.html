@@ -1,0 +1,33 @@
+<div class="tiled-client-grid">
+    <div class="tiled-client-row" ng-repeat="clientRow in getClientGrid(clientGroup)">
+        <div class="tiled-client-cell" ng-repeat="client in clientRow">
+
+            <div class="client-tile" ng-if="client"
+                ng-class="{
+                    'focused' : client.clientProperties.focused,
+                    'shared'  : isShared(client),
+                    'joined'  : client.userCount
+                }"
+                guac-click="getFocusAssignmentCallback(client)">
+                <h3 class="client-tile-header" ng-if="hasMultipleClients(clientGroup)">
+                    <img class="client-tile-shared-indicator" src="images/share-white.svg">
+                    <span class="client-tile-name">{{ client.title }}</span>
+                    <guac-client-user-count client="client"></guac-client-user-count>
+                    <img ng-click="onClose({ '$client' : client })"
+                         class="client-tile-disconnect"
+                         ng-attr-alt="{{ 'CLIENT.ACTION_DISCONNECT' | translate }}"
+                         ng-attr-title="{{ 'CLIENT.ACTION_DISCONNECT' | translate }}"
+                         src="images/x.svg">
+                </h3>
+                <guac-client client="client" emulate-absolute-mouse="emulateAbsoluteMouse"></guac-client>
+
+                <!-- Client-specific status/error dialog -->
+                <guac-client-notification client="client"></guac-client-notification>
+
+                <guac-client-user-count client="client" ng-if="!hasMultipleClients(clientGroup)"></guac-client-user-count>
+
+            </div>
+
+        </div>
+    </div>
+</div>

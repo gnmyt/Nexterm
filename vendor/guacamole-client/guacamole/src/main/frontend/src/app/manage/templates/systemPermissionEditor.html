@@ -1,0 +1,18 @@
+<div class="system-permissions">
+    <h2 class="header">{{'MANAGE_USER.SECTION_HEADER_PERMISSIONS' | translate}}</h2>
+    <div class="section">
+        <table class="properties">
+            <tr ng-repeat="systemPermissionType in systemPermissionTypes"
+                ng-show="canChangeSystemPermissions()">
+                <th>{{systemPermissionType.label | translate}}</th>
+                <td><input type="checkbox" ng-model="permissionFlags.systemPermissions[systemPermissionType.value]"
+                                           ng-change="systemPermissionChanged(systemPermissionType.value)"></td>
+            </tr>
+            <tr ng-show="username">
+                <th>{{'MANAGE_USER.FIELD_HEADER_CHANGE_OWN_PASSWORD' | translate}}</th>
+                <td><input type="checkbox" ng-model="permissionFlags.userPermissions.UPDATE[username]"
+                                           ng-change="userPermissionChanged('UPDATE', username)"></td>
+            </tr>
+        </table>
+    </div>
+</div>

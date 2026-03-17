@@ -1,0 +1,8 @@
+
+# Compiled guaclog
+guaclog
+guaclog.exe
+
+# Documentation (built from .in files)
+man/guaclog.1
+

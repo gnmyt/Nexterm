@@ -1,0 +1,15 @@
+<div class="text-field">
+    <input type="text"
+           ng-attr-id="{{ fieldId }}"
+           ng-attr-list="{{ dataListId }}"
+           ng-attr-name="{{ field.name }}"
+           ng-model="model"
+           ng-disabled="disabled"
+           guac-focus="focused"
+           autocorrect="off"
+           autocapitalize="off">
+    <datalist ng-if="dataListId" ng-attr-id="{{ dataListId }}">
+        <option ng-repeat="option in field.options | orderBy: option"
+                value="{{ option }}">{{ getFieldOption(option) | translate }}</option>
+    </datalist>
+</div>

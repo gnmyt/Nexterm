@@ -1,0 +1,144 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ */
+
+.notification {
+    border: 1px solid rgba(0, 0, 0, 0.25);
+    box-shadow: 1px 1px 2px rgba(0, 0, 0, 0.25);
+    background: white;
+    color: black;
+}
+
+.notification.error {
+    background: #FDD;
+}
+
+.notification .body {
+    margin: 0.5em;
+}
+
+.notification .buttons {
+    margin: 0.5em;
+}
+
+@keyframes notification-progress {
+    from {background-position: 0px  0px;}
+    to   {background-position: 64px 0px;}
+}
+
+@-webkit-keyframes notification-progress {
+    from {background-position: 0px  0px;}
+    to   {background-position: 64px 0px;}
+}
+
+.notification .title-bar {
+    font-size: 1.25em;
+    font-weight: bold;
+
+    text-transform: uppercase;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.125);
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.125);
+    background: rgba(0, 0, 0, 0.04);
+
+    padding: 0.5em;
+    margin-bottom: 1em;
+}
+
+.notification .progress .bar {
+    background: #A3D655;
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 0;
+    box-shadow: inset  1px  1px 0 rgba(255, 255, 255, 0.5),
+                inset -1px -1px 0 rgba(  0,   0,   0, 0.1),
+                       1px 1px  0 gray;
+}
+
+.notification .progress {
+
+    width: 100%;
+    background: #C2C2C2 url('images/progress.svg');
+    background-size: 16px 16px;
+    -moz-background-size: 16px 16px;
+    -webkit-background-size: 16px 16px;
+    -khtml-background-size: 16px 16px;
+
+    animation-name: notification-progress;
+    animation-duration: 2s;
+    animation-timing-function: linear;
+    animation-iteration-count: infinite;
+
+    -webkit-animation-name: notification-progress;
+    -webkit-animation-duration: 2s;
+    -webkit-animation-timing-function: linear;
+    -webkit-animation-iteration-count: infinite;
+
+    padding: 0.25em;
+    
+    border: 1px solid gray;
+
+    position: relative;
+    
+}
+
+.notification .progress .text {
+    position: relative;
+}
+
+.notification .parameters {
+    width: 100%;
+}
+
+.notification .parameters .fields {
+    display: table;
+    width: 100%;
+}
+
+.notification .parameters .fields .labeled-field {
+    display: table-row;
+}
+
+.notification .parameters .fields .field-header,
+.notification .parameters .fields .form-field {
+    text-align: left;
+    display: table-cell;
+    padding: .125em;
+    vertical-align: top;
+}
+
+.notification .parameters .fields .field-header {
+    padding-right: 1em;
+}
+
+.notification .parameters .fields .field-header {
+    width: 0;
+}
+
+.notification .parameters .fields .form-field {
+    width: 100%;
+}
+
+.notification .parameters input[type=text],
+.notification .parameters input[type=email],
+.notification .parameters input[type=number],
+.notification .parameters input[type=password],
+.notification .parameters textarea {
+    max-width: 100%;
+}

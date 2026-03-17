@@ -1,0 +1,10 @@
+
+# Compiled code
+target/
+
+# Backup files
+*~
+
+# Generated docs
+doc/doxygen-output
+

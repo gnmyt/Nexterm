@@ -1,19 +1,89 @@
 @use "@/common/styles/colors"
 
+$mobile: 768px
+$tablet: 1024px
+
 .view-container
   display: flex
   flex-direction: column
-  height: 100vh
+  height: 100%
   width: 100%
   flex: 1
   overflow: hidden
+  transition: all 0.3s ease
+
+  @media (max-width: $mobile)
+    min-height: 0
+
+  &.fullscreen
+    position: fixed
+    inset: var(--title-bar-height) 0 0 0
+    z-index: 1000
+
+.exit-fullscreen-btn-container
+  position: fixed
+  z-index: 1001
+  touch-action: none
+  user-select: none
+
+  @media (max-width: $mobile)
+    .exit-fullscreen-btn
+      padding: 0.75rem
+      
+      svg
+        width: 1.75rem
+        height: 1.75rem
+
+  &.dragging
+    cursor: grabbing
+
+    .exit-fullscreen-btn
+      cursor: grabbing
+      transform: scale(1.1)
+      background-color: rgba(0, 0, 0, 0.9)
+      border-color: colors.$primary
+
+.exit-fullscreen-btn
+  background-color: rgba(0, 0, 0, 0.7)
+  border: 1px solid colors.$darker-gray
+  border-radius: 8px
+  padding: 0.5rem
+  cursor: grab
+  display: flex
+  align-items: center
+  justify-content: center
+  transition: background-color 0.2s ease, border-color 0.2s ease, transform 0.15s ease
+  backdrop-filter: blur(10px)
+
+  svg
+    width: 1.5rem
+    height: 1.5rem
+    color: colors.$white
+    pointer-events: none
+
+  &:hover
+    background-color: rgba(0, 0, 0, 0.9)
+    border-color: colors.$primary
+
+    svg
+      color: colors.$primary
 
 .view-layouter
   position: relative
-  height: calc(100vh - 3.5rem)
+  height: calc(100% - 3.5rem)
   width: 100%
   overflow: hidden
 
+  @media (max-width: $tablet)
+    height: calc(100% - 3rem)
+
+  @media (max-width: $mobile)
+    height: calc(100% - 2.5rem)
+
+  .view-container.fullscreen &
+    height: var(--content-height)
+
+.view-layouter
   &.single
     .session-renderer
       &.visible
@@ -24,50 +94,36 @@
         opacity: 0
         pointer-events: none
 
-  &[class*="grid-"]
-    display: grid
-    gap: 2px
+  &:not(.single)
+    display: flex
+    flex-direction: column
+    gap: 0
     background-color: colors.$darker-gray
+
+    @media (max-width: $mobile)
+      .session-renderer
+        position: absolute !important
+        top: 0 !important
+        left: 0 !important
+        width: 100% !important
+        height: 100% !important
 
   &.resizing
     .session-renderer
       pointer-events: none
 
-  &.grid-2x1
-    grid-template-columns: 1fr 1fr
-    grid-template-rows: 1fr
-
-  &.grid-2x2
-    grid-template-columns: 1fr 1fr
-    grid-template-rows: 1fr 1fr
-
-  &.grid-3
-    grid-template-columns: 1fr 1fr
-    grid-template-rows: 1fr 1fr
-
-  &.grid-5
-    grid-template-columns: 1fr 1fr
-    grid-template-rows: 1fr 1fr 1fr
-
-  &.grid-3x2
-    grid-template-columns: 1fr 1fr
-    grid-template-rows: 1fr 1fr 1fr
-
-  &.grid-2x3
-    grid-template-columns: 1fr 1fr 1fr
-    grid-template-rows: 1fr 1fr
-
-  &.grid-3x3
-    grid-template-columns: 1fr 1fr 1fr
-    grid-template-rows: 1fr 1fr 1fr
-
-  &.grid-4x2
-    grid-template-columns: 1fr 1fr
-    grid-template-rows: 1fr 1fr 1fr 1fr
+.grid-row
+  display: flex
+  gap: 0
+  overflow: hidden
 
 .session-renderer
   background-color: colors.$terminal
   overflow: hidden
+  -webkit-overflow-scrolling: touch
+
+  .xterm-screen
+    padding-left: 3px
 
   &.visible
     opacity: 1
@@ -78,15 +134,30 @@
     pointer-events: none
 
 .grid-resizer
-  background: transparent
-  transition: background-color 0.2s ease
+  background: colors.$gray
+  transition: opacity 0.2s ease
   user-select: none
+  flex-shrink: 0
+  touch-action: none
+  opacity: 0.1
+
+  @media (max-width: $tablet)
+    &.vertical
+      width: 12px !important
+      margin-left: -6px
+
+    &.horizontal
+      height: 12px !important
+      margin-top: -6px
+
+  @media (max-width: $mobile)
+    display: none
 
   &:hover
-    background-color: colors.$primary !important
+    opacity: 0.6
 
   &:active, .view-layouter.resizing &
-    background-color: colors.$primary !important
+    opacity: 1
 
   &.vertical
     cursor: col-resize
@@ -97,7 +168,9 @@
 .view-layouter.resizing
   *
     user-select: none !important
-    pointer-events: none !important
+
+  .grid-resizer
+    pointer-events: auto !important
 
   &.resizing-vertical
     cursor: col-resize !important

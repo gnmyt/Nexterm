@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<!--
+    Licensed to the Apache Software Foundation (ASF) under one
+    or more contributor license agreements.  See the NOTICE file
+    distributed with this work for additional information
+    regarding copyright ownership.  The ASF licenses this file
+    to you under the Apache License, Version 2.0 (the
+    "License"); you may not use this file except in compliance
+    with the License.  You may obtain a copy of the License at
+
+      http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing,
+    software distributed under the License is distributed on an
+    "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+    KIND, either express or implied.  See the License for the
+    specific language governing permissions and limitations
+    under the License.
+-->
+
+<mapper namespace="org.apache.guacamole.auth.jdbc.permission.SharingProfilePermissionMapper">
+
+    <!-- Result mapper for sharing profile permissions -->
+    <resultMap id="SharingProfilePermissionResultMap" type="org.apache.guacamole.auth.jdbc.permission.ObjectPermissionModel">
+        <result column="entity_id"          property="entityID"         jdbcType="INTEGER"/>
+        <result column="permission"         property="type"             jdbcType="VARCHAR"
+                javaType="org.apache.guacamole.net.auth.permission.ObjectPermission$Type"/>
+        <result column="sharing_profile_id" property="objectIdentifier" jdbcType="INTEGER"/>
+    </resultMap>
+
+    <!-- Select all permissions for a given entity -->
+    <select id="select" resultMap="SharingProfilePermissionResultMap">
+
+        SELECT DISTINCT
+            #{entity.entityID,jdbcType=INTEGER} AS entity_id,
+            permission,
+            sharing_profile_id
+        FROM guacamole_sharing_profile_permission
+        WHERE
+            <include refid="org.apache.guacamole.auth.jdbc.base.EntityMapper.isRelatedEntity">
+                <property name="column"          value="entity_id"/>
+                <property name="entityID"        value="#{entity.entityID,jdbcType=INTEGER}"/>
+                <property name="groups"          value="effectiveGroups"/>
+                <property name="caseSensitivity" value="${caseSensitivity}"/>
+            </include>
+
+    </select>
+
+    <!-- Select the single permission matching the given criteria -->
+    <select id="selectOne" resultMap="SharingProfilePermissionResultMap">
+
+        SELECT DISTINCT
+            #{entity.entityID,jdbcType=INTEGER} AS entity_id,
+            permission,
+            sharing_profile_id
+        FROM guacamole_sharing_profile_permission
+        WHERE
+            <include refid="org.apache.guacamole.auth.jdbc.base.EntityMapper.isRelatedEntity">
+                <property name="column"          value="entity_id"/>
+                <property name="entityID"        value="#{entity.entityID,jdbcType=INTEGER}"/>
+                <property name="groups"          value="effectiveGroups"/>
+                <property name="caseSensitivity" value="${caseSensitivity}"/>
+            </include>
+            AND permission = #{type,jdbcType=VARCHAR}::guacamole_object_permission_type
+            AND sharing_profile_id = #{identifier,jdbcType=INTEGER}::integer
+
+    </select>
+
+    <!-- Select identifiers accessible by the given entity for the given permissions -->
+    <select id="selectAccessibleIdentifiers" resultType="string">
+
+        SELECT DISTINCT sharing_profile_id
+        FROM guacamole_sharing_profile_permission
+        WHERE
+            <include refid="org.apache.guacamole.auth.jdbc.base.EntityMapper.isRelatedEntity">
+                <property name="column"          value="entity_id"/>
+                <property name="entityID"        value="#{entity.entityID,jdbcType=INTEGER}"/>
+                <property name="groups"          value="effectiveGroups"/>
+                <property name="caseSensitivity" value="${caseSensitivity}"/>
+            </include>
+            AND sharing_profile_id IN
+                <foreach collection="identifiers" item="identifier"
+                         open="(" separator="," close=")">
+                    #{identifier,jdbcType=INTEGER}::integer
+                </foreach>
+            AND permission IN
+                <foreach collection="permissions" item="permission"
+                         open="(" separator="," close=")">
+                    #{permission,jdbcType=VARCHAR}::guacamole_object_permission_type
+                </foreach>
+
+    </select>
+
+    <!-- Delete all given permissions -->
+    <delete id="delete" parameterType="org.apache.guacamole.auth.jdbc.permission.ObjectPermissionModel">
+
+        DELETE FROM guacamole_sharing_profile_permission
+        WHERE (entity_id, permission, sharing_profile_id) IN
+            <foreach collection="permissions" item="permission"
+                     open="(" separator="," close=")">
+                (#{permission.entityID,jdbcType=INTEGER},
+                 #{permission.type,jdbcType=VARCHAR}::guacamole_object_permission_type,
+                 #{permission.objectIdentifier,jdbcType=INTEGER}::integer)
+            </foreach>
+
+    </delete>
+
+    <!-- Insert all given permissions -->
+    <insert id="insert" parameterType="org.apache.guacamole.auth.jdbc.permission.ObjectPermissionModel">
+
+        INSERT INTO guacamole_sharing_profile_permission (
+            entity_id,
+            permission,
+            sharing_profile_id
+        )
+        SELECT DISTINCT
+            permissions.entity_id,
+            permissions.permission,
+            permissions.sharing_profile_id
+        FROM
+            <foreach collection="permissions" item="permission"
+                     open="(" separator="UNION ALL" close=")">
+                SELECT #{permission.entityID,jdbcType=INTEGER}                               AS entity_id,
+                       #{permission.type,jdbcType=VARCHAR}::guacamole_object_permission_type AS permission,
+                       #{permission.objectIdentifier,jdbcType=INTEGER}::integer              AS sharing_profile_id
+            </foreach>
+        AS permissions
+        WHERE (entity_id, permission, sharing_profile_id) NOT IN (
+            SELECT
+                guacamole_sharing_profile_permission.entity_id,
+                guacamole_sharing_profile_permission.permission,
+                guacamole_sharing_profile_permission.sharing_profile_id
+            FROM guacamole_sharing_profile_permission
+        );
+
+    </insert>
+
+</mapper>

@@ -1,0 +1,1139 @@
+{
+    
+    "NAME" : "Čeština",
+
+    "APP" : {
+
+
+        "ACTION_ACKNOWLEDGE"        : "OK",
+        "ACTION_CANCEL"             : "Zrušit",
+        "ACTION_CLEAR"              : "Vyčistit",
+        "ACTION_CLONE"              : "Klonovat",
+        "ACTION_CONTINUE"           : "Pokračovat",
+        "ACTION_DELETE"             : "Smazat",
+        "ACTION_DELETE_SESSIONS"    : "Ukončit sezení",
+        "ACTION_DOWNLOAD"           : "Stáhnout",
+        "ACTION_IMPORT"             : "Importovat",
+        "ACTION_LOGIN"              : "Přihlásit",
+        "ACTION_LOGIN_AGAIN"        : "Znovu přihlásit",
+        "ACTION_LOGOUT"             : "Odhlásit",
+        "ACTION_MANAGE_CONNECTIONS" : "Připojení",
+        "ACTION_MANAGE_PREFERENCES" : "Vlastnosti",
+        "ACTION_MANAGE_SETTINGS"    : "Nastavení",
+        "ACTION_MANAGE_SESSIONS"    : "Aktivní sezení",
+        "ACTION_MANAGE_USERS"       : "Uživatelé",
+        "ACTION_MANAGE_USER_GROUPS" : "Skupiny",
+        "ACTION_NAVIGATE_BACK"      : "Zpět",
+        "ACTION_NAVIGATE_HOME"      : "Domů",
+        "ACTION_PAUSE"              : "Pozastavit",
+        "ACTION_PLAY"               : "Přehrát",
+        "ACTION_SAVE"               : "Uložit",
+        "ACTION_SEARCH"             : "Hledat",
+        "ACTION_SHARE"              : "Sdílet",
+        "ACTION_UPDATE_PASSWORD"    : "Změnit heslo",
+        "ACTION_VIEW_HISTORY"       : "Historie",
+        "ACTION_VIEW_RECORDING"     : "Zobrazit",
+
+        "DIALOG_HEADER_ERROR" : "Chyba",
+
+        "ERROR_PAGE_UNAVAILABLE"  : "Došlo k chybě a tuto akci nelze dokončit. Pokud problém přetrvává, informujte prosím správce systému nebo zkontrolujte systémové protokoly.",
+        "ERROR_PASSWORD_BLANK"    : "Heslo nesmí být prázdné.",
+        "ERROR_PASSWORD_MISMATCH" : "Hesla nesouhlasí.",
+        "ERROR_SINGLE_FILE_ONLY"  : "Nahrajte prosím vždy pouze jeden soubor",
+        
+        "FIELD_HEADER_PASSWORD"       : "Heslo:",
+        "FIELD_HEADER_PASSWORD_AGAIN" : "Heslo znovu:",
+
+        "FIELD_PLACEHOLDER_FILTER" : "Filtr",
+
+        "FORMAT_DATE_TIME_PRECISE" : "yyyy-MM-dd HH:mm:ss",
+
+        "INFO_ACTIVE_USER_COUNT" : "V současné době používá {USERS} {USERS, plural, one{uživatel} other{uživatelů}}.",
+        "INFO_LOGGED_OUT"        : "Byli jste odhlášeni.",
+
+        "TEXT_ANONYMOUS_USER"   : "Anonymní uživatel",
+        "TEXT_HISTORY_DURATION" : "{VALUE} {UNIT, select, second{{VALUE, plural, one{sekundu} other{sekund}}} minute{{VALUE, plural, one{minutu} other{minut}}} hour{{VALUE, plural, one{hodinu} other{hodin}}} day{{VALUE, plural, one{den} other{dnů}}} other{}}",
+        "TEXT_UNTRANSLATED" : "{MESSAGE}"
+
+    },
+
+    "CLIENT" : {
+
+        "ACTION_ACKNOWLEDGE"               : "@:APP.ACTION_ACKNOWLEDGE",
+        "ACTION_CANCEL"                    : "@:APP.ACTION_CANCEL",
+        "ACTION_CLEAR_CLIENT_MESSAGES"     : "Vyčistit",
+        "ACTION_CLEAR_COMPLETED_TRANSFERS" : "Vyčistit",
+        "ACTION_CONTINUE"                  : "@:APP.ACTION_CONTINUE",
+        "ACTION_DISCONNECT"                : "Odpojit",
+        "ACTION_LOGOUT"                    : "@:APP.ACTION_LOGOUT",
+        "ACTION_NAVIGATE_BACK"             : "@:APP.ACTION_NAVIGATE_BACK",
+        "ACTION_NAVIGATE_HOME"             : "@:APP.ACTION_NAVIGATE_HOME",
+        "ACTION_RECONNECT"                 : "Znovu připojit",
+        "ACTION_SAVE_FILE"                 : "@:APP.ACTION_SAVE",
+        "ACTION_SHARE"                     : "@:APP.ACTION_SHARE",
+        "ACTION_SHOW_CLIPBOARD"            : "Kliknutím zobrazíte obsah schránky.",
+        "ACTION_UPLOAD_FILES"              : "Nahrát soubory",
+
+        "DIALOG_HEADER_CONNECTING"       : "Připojování",
+        "DIALOG_HEADER_CONNECTION_ERROR" : "Chyba připojení",
+        "DIALOG_HEADER_DISCONNECTED"     : "Odpojeno",
+
+        "ERROR_CLIENT_201"     : "Synchronizační server je zaneprázdněn, zkuste to prosím znovu později.",
+        "ERROR_CLIENT_202"     : "Guacamole server zavřel spojení protože vzdálený počítač příliš dlouho neodpovídal. Zkuste to prosím později, nebo kontaktujte správce.",
+        "ERROR_CLIENT_203"     : "Chyba vzdáleného serveru, spojení bylo uzavřeno. Zkuste to prosím později, nebo kontaktujte správce.",
+        "ERROR_CLIENT_207"     : "Server vzdálené plochy je aktuálně nedostupný. Pokud problém přetrvává, informujte prosím správce systému nebo zkontrolujte systémové protokoly.",
+        "ERROR_CLIENT_208"     : "Server vzdálené plochy není aktuálně k dispozici. Pokud problém přetrvává, informujte prosím správce systému nebo zkontrolujte systémové protokoly.",
+        "ERROR_CLIENT_209"     : "Server vzdálené plochy ukončil připojení, protože je v konfliktu s jiným připojením. Prosím zkuste to znovu později.",
+        "ERROR_CLIENT_20A"     : "Server vzdálené plochy ukončil připojení, protože se zdálo být neaktivní. Pokud je to nežádoucí nebo neočekávané, informujte prosím správce systému nebo zkontrolujte nastavení systému.",
+        "ERROR_CLIENT_20B"     : "Server vzdálené plochy násilně uzavřel připojení. Pokud je to nežádoucí nebo neočekávané, informujte prosím správce systému nebo zkontrolujte systémové protokoly.",
+        "ERROR_CLIENT_301"     : "Přihlášení selhalo. Připojte se a zkuste to znovu.",
+        "ERROR_CLIENT_303"     : "Server vzdálené plochy odepřel přístup k tomuto připojení. Pokud potřebujete přístup, požádejte správce systému, aby vám umožnil přístup, nebo zkontrolujte nastavení systému.",
+        "ERROR_CLIENT_308"     : "Server Guacamole ukončil spojení, protože z vašeho prohlížeče nebyla dostatečně dlouhá odezva, aby se zdálo, že je stále připojen. To je obvykle způsobeno problémy se sítí, jako je například nekvalitní bezdrátový signál, nebo jednoduše velmi pomalá síťová rychlost. Zkontrolujte síť a zkuste to znovu.",
+        "ERROR_CLIENT_31D"     : "Server Guacamole odepřel přístup k tomuto připojení, protože jste vyčerpali limit pro vícenásobné připojení tímto uživatelem. Zavřete jedno nebo více připojení a zkuste to znovu.",
+        "ERROR_CLIENT_DEFAULT" : "V rámci serveru Guacamole došlo k interní chybě a připojení bylo ukončeno. Pokud problém přetrvává, informujte prosím správce systému nebo zkontrolujte systémové protokoly.",
+
+        "ERROR_TUNNEL_201"     : "Server Guacamole odmítl tento pokus o připojení, protože existuje příliš mnoho aktivních připojení. Počkejte prosím několik minut a zkuste to znovu.",
+        "ERROR_TUNNEL_202"     : "Připojení bylo uzavřeno, protože serveru trvalo příliš dlouho, než odpověděl. To je obvykle způsobeno problémy se sítí, jako je například nekvalitní bezdrátový signál nebo pomalé připojení k síti. Zkontrolujte síťové připojení a zkuste to znovu nebo se obraťte na správce systému.",
+        "ERROR_TUNNEL_203"     : "Server zjistil chybu a připojení ukončil. Zkuste to prosím znovu nebo se obraťte na správce systému.",
+        "ERROR_TUNNEL_204"     : "Požadované připojení neexistuje. Zkontrolujte název připojení a zkuste to znovu.",
+        "ERROR_TUNNEL_205"     : "Toto připojení je právě používáno a vícenásobný přístup k tomuto připojení není povolen. Prosím zkuste to znovu později.",
+        "ERROR_TUNNEL_207"     : "Server Guacamole není v současné době dostupný. Zkontrolujte síť a zkuste to znovu",
+        "ERROR_TUNNEL_208"     : "Server Guacamole nepřijímá připojení. Zkontrolujte síť a zkuste to znovu.",
+        "ERROR_TUNNEL_301"     : "Nemáte oprávnění k přístupu k tomuto připojení, protože nejste přihlášeni. Přihlaste se a zkuste to znovu.",
+        "ERROR_TUNNEL_303"     : "Nemáte oprávnění k přístupu k tomuto připojení. Pokud potřebujete přístup, požádejte správce systému, aby vás přidal do seznamu povolených uživatelů nebo zkontrolujte nastavení systému.",
+        "ERROR_TUNNEL_308"     : "Server Guacamole ukončil spojení, protože z vašeho prohlížeče nebyla dostatečně dlouhá odezva, aby se zdálo, že je stále připojen. To je obvykle způsobeno problémy se sítí, jako je například nekvalitní bezdrátový signál, nebo jednoduše velmi pomalá síťová rychlost. Zkontrolujte síť a zkuste to znovu.",
+        "ERROR_TUNNEL_31D"     : "Server Guacamole odepřel přístup k tomuto připojení, protože jste vyčerpali limit pro vícenásobné připojení tímto uživatelem. Zavřete jedno nebo více připojení a zkuste to znovu.",
+        "ERROR_TUNNEL_DEFAULT" : "V rámci serveru Guacamole došlo k interní chybě a připojení bylo ukončeno. Pokud problém přetrvává, informujte prosím správce systému nebo zkontrolujte systémové protokoly.",
+
+        "ERROR_UPLOAD_100"     : "Přenos souborů není podporován nebo není povolen. Obraťte se na správce systému nebo zkontrolujte systémové protokoly.",
+        "ERROR_UPLOAD_201"     : "V současné době se přenáší příliš mnoho souborů. Počkejte prosím na dokončení probíhajících přenosů a akci opakujte.",
+        "ERROR_UPLOAD_202"     : "Soubor nelze přenést, protože serveru vzdálené plochy trvá příliš dlouho, než odpoví. Zkuste to prosím znovu nebo se obraťte na správce systému.",
+        "ERROR_UPLOAD_203"     : "Server vzdálené plochy zaznamenal chybu během přenosu. Zkuste to prosím znovu nebo se obraťte na správce systému.",
+        "ERROR_UPLOAD_204"     : "Cíl pro přenos souborů neexistuje. Zkontrolujte, zda cíl existuje a zkuste to znovu.",
+        "ERROR_UPLOAD_205"     : "Cíl přenosu souborů je aktuálně uzamčen. Počkejte prosím na dokončení probíhajících úkolů a zkuste to znovu.",
+        "ERROR_UPLOAD_301"     : "Nemáte oprávnění nahrát tento soubor, protože nejste přihlášeni. Přihlaste se a zkuste to znovu.",
+        "ERROR_UPLOAD_303"     : "Nemáte oprávnění k nahrání tohoto souboru. Pokud potřebujete přístup, zkontrolujte nastavení systému nebo se obraťte na správce systému.",
+        "ERROR_UPLOAD_308"     : "Přenos souboru se zastavil. To je obvykle způsobeno problémy se sítí, jako je například nekvalitní bezdrátový signál, nebo jednoduše velmi pomalé připojení k síťi. Zkontrolujte síť a zkuste to znovu.",
+        "ERROR_UPLOAD_31D"     : "V současné době se přenáší příliš mnoho souborů. Počkejte prosím na dokončení probíhajících přenosů a akci opakujte.",
+        "ERROR_UPLOAD_DEFAULT" : "V rámci serveru Guacamole došlo k interní chybě a připojení bylo ukončeno. Pokud problém přetrvává, informujte prosím správce systému nebo zkontrolujte systémové protokoly.",
+
+        "FIELD_PLACEHOLDER_FILTER" : "@:APP.FIELD_PLACEHOLDER_FILTER",
+
+        "HELP_CLIPBOARD"           : "Zde se zobrazí text zkopírovaný / oříznutý v Guacamole. Změny níže uvedeného textu ovlivní vzdálenou schránku.",
+        "HELP_INPUT_METHOD_NONE"   : "Není použita žádná metoda vstupu. Vstup z klávesnice je přijímán z připojené fyzické klávesnice.",
+        "HELP_INPUT_METHOD_OSK"    : "Zobrazte a přijměte vstup z vestavěné klávesnice Guacamole na obrazovce. Klávesnice na obrazovce umožňuje zadávat kombinace kláves, které jinak mohou být nemožné (například Ctrl-Alt-Del).",
+        "HELP_INPUT_METHOD_TEXT"   : "Povolit psaní textu a emulovat události klávesnice na základě zadaného textu. To je nezbytné pro zařízení, jako jsou mobilní telefony, které nemají fyzickou klávesnici.",
+        "HELP_MOUSE_MODE"          : "Určuje, jak se bude vzdálená myš chovat s ohledem na dotyky.",
+        "HELP_MOUSE_MODE_ABSOLUTE" : "Tap to click. Kliknutí nastane v místě dotyku.",
+        "HELP_MOUSE_MODE_RELATIVE" : "Přetažením myši posuňte ukazatel myši a klepněte na tlačítko. Kliknutí nastane v místě ukazatele.",
+        "HELP_SHARE_LINK"          : "Aktuální připojení je sdíleno a může k němu přistupovat kdokoli s následujícím {LINKS, plural, one{odkazem} other{odkazy}}:",
+
+        "INFO_ANONYMOUS_USER_COUNT" : "Anonymní{COUNT, plural, one{} other{ (#)}}",
+        "INFO_CONNECTION_SHARED"    : "Toto připojení je nyní sdíleno.",
+        "INFO_NO_FILE_TRANSFERS"    : "Žádné přenosy souborů.",
+        "INFO_USER_COUNT"           : "{USERNAME}{COUNT, plural, one{} other{ (#)}}",
+
+        "NAME_INPUT_METHOD_NONE"   : "Žádné",
+        "NAME_INPUT_METHOD_OSK"    : "Klávesnice na obrazovce",
+        "NAME_INPUT_METHOD_TEXT"   : "Textový vstup",
+        "NAME_KEY_CTRL"            : "Ctrl",
+        "NAME_KEY_ALT"             : "Alt",
+        "NAME_KEY_ESC"             : "Esc",
+        "NAME_KEY_TAB"             : "Tab",
+        "NAME_MOUSE_MODE_ABSOLUTE" : "Dotyková obrazovka",
+        "NAME_MOUSE_MODE_RELATIVE" : "Touchpad",
+
+        "SECTION_HEADER_CLIENT_MESSAGES" : "Zprávy",
+        "SECTION_HEADER_CLIPBOARD"       : "Schránka",
+        "SECTION_HEADER_DEVICES"         : "Zařízení",
+        "SECTION_HEADER_DISPLAY"         : "Zobrazení",
+        "SECTION_HEADER_FILE_TRANSFERS"  : "Přenos souborů",
+        "SECTION_HEADER_INPUT_METHOD"    : "Metoda vstupu",
+        
+        "SECTION_HEADER_MOUSE_MODE"      : "Mód emulace myši",
+
+        "TEXT_ANONYMOUS_USER_JOINED"      : "K připojení se připojil anonymní uživatel.",
+        "TEXT_ANONYMOUS_USER_LEFT"        : "Anonymní uživatel opustil připojení.",
+        "TEXT_ZOOM_AUTO_FIT"              : "Automaticky přizpůsobit prohlížeč oknu",
+        "TEXT_CLIENT_STATUS_IDLE"         : "Nečinný",
+        "TEXT_CLIENT_STATUS_CONNECTING"   : "Připojuji ke Guacamole...",
+        "TEXT_CLIENT_STATUS_DISCONNECTED" : "Byl jste odpojen.",
+        "TEXT_CLIENT_STATUS_UNSTABLE"     : "Síťové spojení ke  Guacamole serveru se zdá nestabilní.",
+        "TEXT_CLIENT_STATUS_WAITING"      : "Připojen ke Guacamole. Čekání na odpověď...",
+        "TEXT_USER_JOINED"                : "{USERNAME} se připojil ke spojení.",
+        "TEXT_USER_LEFT"                  : "{USERNAME} opustil spojení.",
+        "TEXT_RECONNECT_COUNTDOWN"        : "Znovu připojuji  {REMAINING} {REMAINING, plural, one{sekundu} other{sekund}}...",
+        "TEXT_FILE_TRANSFER_PROGRESS"     : "{PROGRESS} {UNIT, select, b{B} kb{KB} mb{MB} gb{GB} other{}}",
+
+        "URL_OSK_LAYOUT" : "layouts/en-us-qwerty.json"
+
+    },
+
+    "COLOR_SCHEME" : {
+
+        "ACTION_CANCEL"       : "@:APP.ACTION_CANCEL",
+        "ACTION_HIDE_DETAILS" : "Skrýt",
+        "ACTION_SAVE"         : "@:APP.ACTION_SAVE",
+        "ACTION_SHOW_DETAILS" : "Zobrazit",
+
+        "FIELD_HEADER_BACKGROUND" : "Pozadí",
+        "FIELD_HEADER_FOREGROUND" : "Popředí",
+
+        "FIELD_OPTION_CUSTOM" : "Vlastní...",
+
+        "SECTION_HEADER_DETAILS" : "Detaily:"
+
+    },
+
+    "IMPORT": {
+
+        "ACTION_ACKNOWLEDGE"        : "@:APP.ACTION_ACKNOWLEDGE",
+        "ACTION_BROWSE"             : "Vyhledejte soubor",
+        "ACTION_CANCEL"             : "@:APP.ACTION_CANCEL",
+        "ACTION_CLEAR"              : "@:APP.ACTION_CLEAR",
+        "ACTION_VIEW_FORMAT_HELP"   : "Zobrazit tipy formátů",
+        "ACTION_IMPORT"             : "@:APP.ACTION_IMPORT",
+        "ACTION_IMPORT_CONNECTIONS" : "Importovat připojení",
+
+        "DIALOG_HEADER_ERROR"   : "@:APP.DIALOG_HEADER_ERROR",
+        "DIALOG_HEADER_SUCCESS" : "Úspěch",
+
+        "ERROR_AMBIGUOUS_CSV_HEADER"         : "Nejednoznačné záhlaví CSV \"{HEADER}\", může být buď atribut nebo parametr připojení",
+        "ERROR_AMBIGUOUS_PARENT_GROUP"       : "Skupina a parentIdentifier nesmí být zadány současně",
+        "ERROR_ARRAY_REQUIRED"               : "Zadaný soubor musí obsahovat seznam připojení",
+        "ERROR_DETECTED_INVALID_TYPE"        : "Nepodporovaný typ souboru. Ujistěte se, že je soubor platný CSV, JSON nebo YAML.",
+        "ERROR_DUPLICATE_CONNECTION_IN_FILE" : "Duplicitní připojení \"{NAME}\" v \"{PATH}\" v souboru importu",
+        "ERROR_DUPLICATE_CSV_HEADER"         : "Duplicitní záhlaví CSV: {HEADER}",
+        "ERROR_EMPTY_FILE"                   : "Zadaný soubor je prázdný",
+        "ERROR_INVALID_CSV_HEADER"           : "Neplatné záhlaví CSV \"{HEADER}\" není atribut ani parametr",
+        "ERROR_INVALID_MIME_TYPE"            : "Nepodporovaný typ souboru: \"{TYPE}\"",
+        "ERROR_INVALID_GROUP"                : "Nebyla nalezena žádná skupina odpovídající \"{GROUP}\"",
+        "ERROR_INVALID_GROUP_IDENTIFIER"     : "Nebyla nalezena žádná skupina připojení s identifikátorem \"{IDENTIFIER}\"",
+        "ERROR_INVALID_GROUP_TYPE"           : "Neplatná skupina – musí být zadán řetězec.",
+        "ERROR_INVALID_PROTOCOL"             : "Neplatný protokol \"{PROTOCOL}\"",
+        "ERROR_INVALID_USER_GROUPS_TYPE"     : "Neplatné skupiny uživatelů – musí se jednat o pole identifikátorů skupiny uživatelů.",
+        "ERROR_INVALID_USERS_TYPE"           : "Neplatní uživatelé – musí se jednat o pole identifikátorů uživatelů.",
+        "ERROR_NO_FILE_SUPPLIED"             : "Vyberte soubor k importu",
+        "ERROR_PARSE_FAILURE_CSV"            : "Ujistěte se, že je váš soubor platný CSV. Analýza se nezdařila s chybou \"{ERROR}\". ",
+        "ERROR_PARSE_FAILURE_JSON"           : "Ujistěte se, že váš soubor je platný JSON. Analýza se nezdařila s chybou \"{ERROR}\". ",
+        "ERROR_PARSE_FAILURE_YAML"           : "Ujistěte se, že váš soubor je platný YAML. Analýza se nezdařila s chybou \"{ERROR}\". ",
+        "ERROR_REJECT_UPDATE_CONNECTION"     : "Připojení \"{NAME}\" již existuje v \"{PATH}\"",
+        "ERROR_REQUIRED_NAME_CONNECTION"     : "Název připojení je povinný parametr",
+        "ERROR_REQUIRED_PROTOCOL_CONNECTION" : "Protokol připojení je povinný parametr",
+        "ERROR_REQUIRED_NAME_FILE"           : "V zadaném souboru nebyl nalezen žádný název připojení",
+        "ERROR_REQUIRED_PROTOCOL_FILE"       : "V zadaném souboru nebyl nalezen žádný protokol připojení",
+
+        "FIELD_PLACEHOLDER_FILTER" : "@:APP.FIELD_PLACEHOLDER_FILTER",
+
+        "FIELD_HEADER_EXISTING_CONNECTION_MODE" : "Nahradit/aktualizovat stávající připojení",
+        "FIELD_HEADER_EXISTING_PERMISSION_MODE" : "Obnovit oprávnění",
+
+        "HELP_CSV_DESCRIPTION"              : "Soubor CSV pro import připojení má jeden záznam připojení na řádek. Každý sloupec bude specifikovat pole připojení. Minimálně musí být specifikován název připojení a protokol.",
+        "HELP_CSV_EXAMPLE"                  : "name,protocol,username,password,hostname,group,users,groups,guacd-encryption (attribute)\nprip1,vnc,alice,heslo1,prip1.web.com,ROOT,guac uživatel 1;guac uživatel 2,Uživatelé Připojení 1,none\nprip2,rdp,bob,heslo2,prip2.web.com,ROOT/Nadřazená skupina,guac uživatel 1,,ssl\nprip3,ssh,karolina,heslo3,prip3.web.com,ROOT/Nadřazená skupina/Podřízená skupina,guac uživatel 2;guac uživatel 3,,\nprip4,kubernetes,,,,,,,",
+        "HELP_CSV_MORE_DETAILS"             : "V záhlaví CSV každého řádku je uvedeno pole připojení. ID skupiny připojení, do které má být připojení importováno, lze přímo zadat pomocí parametru \"parentIdentifier\" nebo lze cestu k nadřazené skupině zadat pomocí parametru \"group\", jak je uvedeno níže. Ve většině případů by mezi poli neměl být žádný konflikt, ale v případě potřeby lze pro jednoznačnost přidat příponu \" (attribute)\" nebo \" (parameter)\". Seznamy identifikátorů uživatelů nebo skupin uživatelů musí být odděleny středníkem.¹",
+        "HELP_FILE_TYPE_DESCRIPTION"        : "Pro import připojení jsou podporovány tři typy souborů: CSV, JSON a YAML. Pro každý typ souboru mohou být zadána stejná data. Musí obsahovat název připojení a protokol. Volitelně lze také zadat umístění skupiny připojení, seznam uživatelů a/nebo skupiny uživatelů pro udělení přístupu, parametry připojení nebo protokoly připojení. Všichni uživatelé nebo skupiny uživatelů, kteří v aktuálním zdroji dat neexistují, budou automaticky vytvořeni. Upozorňujeme, že žádná existující oprávnění připojení nebudou odebrána pro aktualizovaná připojení, pokud není zaškrtnuto políčko \"Obnovit oprávnění\".",
+        "HELP_FILE_TYPE_HEADER"             : "Typy souborů",
+        "HELP_JSON_DESCRIPTION"             : "Soubor JSON pro import připojení je seznam objektů připojení. V každém objektu připojení musí být uvedeno minimálně jméno připojení a protokol.",
+        "HELP_JSON_EXAMPLE"                 : "[\n  \\{\n    \"name\": \"prip1\",\n    \"protocol\": \"vnc\",\n    \"parameters\": \\{ \"username\": \"alice\", \"password\": \"heslo1\", \"hostname\": \"prip1.web.com\" \\},\n    \"parentIdentifier\": \"ROOT\",\n    \"users\": [ \"guac uživatel 1\", \"guac uživatel 2\" ],\n    \"groups\": [ \"Uživatelé Připojení 1\" ],\n    \"attributes\": \\{ \"guacd-encryption\": \"none\" \\}\n  \\},\n  \\{\n    \"name\": \"prip2\",\n    \"protocol\": \"rdp\",\n    \"parameters\": \\{ \"username\": \"bob\", \"password\": \"heslo2\", \"hostname\": \"prip2.web.com\" \\},\n    \"group\": \"ROOT/Nadřazená skupina\",\n    \"users\": [ \"guac uživatel 1\" ],\n    \"attributes\": \\{ \"guacd-encryption\": \"none\" \\}\n  \\},\n  \\{\n    \"name\": \"prip3\",\n    \"protocol\": \"ssh\",\n    \"parameters\": \\{ \"username\": \"karolina\", \"password\": \"heslo3\", \"hostname\": \"prip3.web.com\" \\},\n    \"group\": \"ROOT/Nadřazená skupina/Podřízená skupina\",\n    \"users\": [ \"guac uživatel 2\", \"guac uživatel 3\" ]\n  \\},\n  \\{\n    \"name\": \"prip4\",\n    \"protocol\": \"kubernetes\"\n  \\}\n]",
+        "HELP_JSON_MORE_DETAILS"            : "ID skupiny připojení, do které má být připojení importováno, lze přímo zadat pomocí pole \"parentIdentifier\" nebo lze cestu k nadřazené skupině zadat pomocí pole \"group\", jak je uvedeno níže. Pro každé připojení lze zadat pole identifikátorů uživatelů a skupin uživatelů, kterým chcete udělit přístup.",
+        "HELP_EXISTING_CONNECTION_MODE"     : "Zcela nahradit/aktualizovat existující připojení, pokud jejich názvy a nadřazené skupiny připojení odpovídají hodnotám v poskytnutém souboru. Pokud není zaškrtnuto, pokus o import připojení se stejným názvem a nadřazenou skupinou připojení jako existující připojení bude považován za chybu.",
+        "HELP_EXISTING_PERMISSION_MODE"     : "Úplně resetujte oprávnění udělená pro všechna připojení v poskytnutém souboru za oprávnění určená v tomto souboru. Pokud nejsou zadána žádná oprávnění, všechna příslušná oprávnění k připojení budou odvolána. Pokud není zaškrtnuto, stávající oprávnění zůstanou zachována a všechna oprávnění uvedená v souboru budou přidána.",
+        "HELP_SEMICOLON_FOOTNOTE"           : "Pokud jsou přítomny středníky, mohou být escapovány zpětným lomítkem, např. \"první\\\\;poslední\"",
+        "HELP_UPLOAD_DROP_TITLE"            : "Sem přetáhněte soubor",
+        "HELP_UPLOAD_FILE_TYPES"            : "CSV, JSON, nebo YAML",
+        "HELP_YAML_DESCRIPTION"             : "Soubor YAML pro import připojení je seznam objektů připojení se zcela stejnou strukturou jako formát JSON.",
+        "HELP_YAML_EXAMPLE"                 : "---\n  - name: prip1\n    protocol: vnc\n    parameters:\n      username: alice\n      password: heslo1\n      hostname: prip1.web.com\n    group: ROOT\n    users:\n      - guac uživatel 1\n      - guac uživatel 2\n    groups:\n    - Uživatelé Připojení 1\n    attributes:\n      guacd-encryption: none\n  - name: prip2\n    protocol: rdp\n    parameters:\n      username: bob\n      password: heslo2\n      hostname: prip2.web.com\n    group: ROOT/Nadřazená skupina\n    users:\n      - guac uživatel 1\n    attributes:\n      guacd-encryption: none\n  - name: prip3\n    protocol: ssh\n    parameters:\n      username: karolina\n      password: heslo3\n      hostname: prip3.web.com\n    group: ROOT/Nadřazená skupina/Podřízená skupina\n    users:\n      - guac uživatel 2\n      - guac uživatel 3\n  - name: prip4\n    protocol: kubernetes",
+
+        "INFO_CONNECTIONS_IMPORTED_SUCCESS" : "{NUMBER} {NUMBER, plural, one{připojení} other{připojení}} úspěšně importováno.",
+        
+        "SECTION_HEADER_CONNECTION_IMPORT"           : "Import připojení",
+        "SECTION_HEADER_HELP_CONNECTION_IMPORT_FILE" : "Formát souboru importu připojení",
+        "SECTION_HEADER_CSV"                         : "Formát CSV",
+        "SECTION_HEADER_JSON"                        : "Formát JSON",
+        "SECTION_HEADER_YAML"                        : "Formát YAML",
+
+        "TABLE_HEADER_ERRORS"     : "Chyby",
+        "TABLE_HEADER_GROUP"      : "Skupina",
+        "TABLE_HEADER_NAME"       : "Jméno",
+        "TABLE_HEADER_PROTOCOL"   : "Protokol",
+        "TABLE_HEADER_ROW_NUMBER" : "Řádek #"
+    },
+
+    "DATA_SOURCE_DEFAULT" : {
+        "NAME" : "Výchozí (XML)"
+    },
+
+    "FORM" : {
+
+        "FIELD_PLACEHOLDER_DATE" : "YYYY-MM-DD",
+        "FIELD_PLACEHOLDER_TIME" : "HH:MM:SS",
+
+        "HELP_SHOW_PASSWORD" : "Klikněte pro zobrazní hesla",
+        "HELP_HIDE_PASSWORD" : "Klikněte pro skrytí hesla"
+
+    },
+
+    "HOME" : {
+
+        "FIELD_PLACEHOLDER_FILTER" : "@:APP.FIELD_PLACEHOLDER_FILTER",
+
+        "INFO_ACTIVE_USER_COUNT" : "@:APP.INFO_ACTIVE_USER_COUNT",
+
+        "INFO_NO_RECENT_CONNECTIONS" : "Žádná nedávná spojení.",
+        
+        "PASSWORD_CHANGED" : "Heslo bylo změněno.",
+
+        "SECTION_HEADER_ALL_CONNECTIONS"    : "Všechna spojení",
+        "SECTION_HEADER_RECENT_CONNECTIONS" : "Nedávná spojení"
+
+    },
+
+    "LIST" : {
+
+        "TEXT_ANONYMOUS_USER" : "Anonymní uživatel"
+
+    },
+
+    "LOGIN" : {
+
+        "ACTION_ACKNOWLEDGE" : "@:APP.ACTION_ACKNOWLEDGE",
+        "ACTION_CONTINUE"    : "@:APP.ACTION_CONTINUE",
+        "ACTION_LOGIN"       : "@:APP.ACTION_LOGIN",
+
+        "DIALOG_HEADER_ERROR" : "@:APP.DIALOG_HEADER_ERROR",
+
+        "ERROR_INVALID_LOGIN" : "Neplatné přihlašovací jméno",
+
+        "FIELD_HEADER_USERNAME" : "Uživatelské jméno",
+        "FIELD_HEADER_PASSWORD" : "Heslo"
+
+    },
+
+    "MANAGE_CONNECTION" : {
+
+        "ACTION_ACKNOWLEDGE"          : "@:APP.ACTION_ACKNOWLEDGE",
+        "ACTION_CANCEL"               : "@:APP.ACTION_CANCEL",
+        "ACTION_CLONE"                : "@:APP.ACTION_CLONE",
+        "ACTION_DELETE"               : "@:APP.ACTION_DELETE",
+        "ACTION_SAVE"                 : "@:APP.ACTION_SAVE",
+
+        "DIALOG_HEADER_CONFIRM_DELETE" : "Smazat spojení",
+        "DIALOG_HEADER_ERROR"          : "@:APP.DIALOG_HEADER_ERROR",
+
+        "FIELD_HEADER_LOCATION" : "Oblast:",
+        "FIELD_HEADER_NAME"     : "Jméno:",
+        "FIELD_HEADER_PROTOCOL" : "Protokol:",
+
+        "FORMAT_HISTORY_START" : "@:APP.FORMAT_DATE_TIME_PRECISE",
+
+        "INFO_CONNECTION_DURATION_UNKNOWN" : "--",
+        "INFO_CONNECTION_ACTIVE_NOW"       : "Nyní aktivní",
+        "INFO_CONNECTION_NOT_USED"         : "Toto spojení ještě nebylo použito.",
+
+        "SECTION_HEADER_EDIT_CONNECTION" : "Upravit spojení",
+        "SECTION_HEADER_HISTORY"         : "Historie využítí",
+        "SECTION_HEADER_PARAMETERS"      : "Parametry",
+
+        "TABLE_HEADER_HISTORY_USERNAME"   : "Uživatelské jméno",
+        "TABLE_HEADER_HISTORY_START"      : "Počáteční čas",
+        "TABLE_HEADER_HISTORY_DURATION"   : "Doba",
+        "TABLE_HEADER_HISTORY_REMOTEHOST" : "Vzdálený host",
+
+        "TEXT_CONFIRM_DELETE"   : "Spojení nemůže být obnoveno poté, co je smazáno. Opravdu chcete smazat toto spojení?",
+        "TEXT_HISTORY_DURATION" : "@:APP.TEXT_HISTORY_DURATION"
+
+    },
+
+    "MANAGE_CONNECTION_GROUP" : {
+
+        "ACTION_ACKNOWLEDGE"   : "@:APP.ACTION_ACKNOWLEDGE",
+        "ACTION_CANCEL"        : "@:APP.ACTION_CANCEL",
+        "ACTION_CLONE"         : "@:APP.ACTION_CLONE",
+        "ACTION_DELETE"        : "@:APP.ACTION_DELETE",
+        "ACTION_SAVE"          : "@:APP.ACTION_SAVE",
+
+        "DIALOG_HEADER_CONFIRM_DELETE" : "Smazat skupinu spojení",
+        "DIALOG_HEADER_ERROR"          : "@:APP.DIALOG_HEADER_ERROR",
+
+        "FIELD_HEADER_LOCATION" : "Lokace:",
+        "FIELD_HEADER_NAME"     : "Jméno:",
+        "FIELD_HEADER_TYPE"     : "Typ:",
+
+        "NAME_TYPE_BALANCING"      : "Vyvažování",
+        "NAME_TYPE_ORGANIZATIONAL" : "Organizační",
+
+        "SECTION_HEADER_EDIT_CONNECTION_GROUP" : "Upravit skupinu spojení",
+
+        "TEXT_CONFIRM_DELETE" : "Skupiny spojení nelze obnovit po jejich odstranění. Opravdu chcete odstranit tuto skupinu připojení?"
+
+    },
+
+    "MANAGE_SHARING_PROFILE" : {
+
+        "ACTION_ACKNOWLEDGE" : "@:APP.ACTION_ACKNOWLEDGE",
+        "ACTION_CANCEL"      : "@:APP.ACTION_CANCEL",
+        "ACTION_CLONE"       : "@:APP.ACTION_CLONE",
+        "ACTION_DELETE"      : "@:APP.ACTION_DELETE",
+        "ACTION_SAVE"        : "@:APP.ACTION_SAVE",
+
+        "DIALOG_HEADER_CONFIRM_DELETE" : "Odstranit profil sdílení",
+        "DIALOG_HEADER_ERROR"          : "@:APP.DIALOG_HEADER_ERROR",
+
+        "FIELD_HEADER_NAME"               : "Jméno:",
+        "FIELD_HEADER_PRIMARY_CONNECTION" : "Primární spojení:",
+
+        "SECTION_HEADER_EDIT_SHARING_PROFILE" : "Upravit sdílený profil",
+        "SECTION_HEADER_PARAMETERS"           : "Parametry",
+
+        "TEXT_CONFIRM_DELETE" : "Po smazání nelze obnovit profily sdílení. Opravdu chcete smazat tento profil sdílení?"
+
+    },
+
+    "MANAGE_USER" : {
+
+        "ACTION_ACKNOWLEDGE"   : "@:APP.ACTION_ACKNOWLEDGE",
+        "ACTION_CANCEL"        : "@:APP.ACTION_CANCEL",
+        "ACTION_CLONE"         : "@:APP.ACTION_CLONE",
+        "ACTION_DELETE"        : "@:APP.ACTION_DELETE",
+        "ACTION_SAVE"          : "@:APP.ACTION_SAVE",
+
+        "DIALOG_HEADER_CONFIRM_DELETE" : "Smazat uživatele",
+        "DIALOG_HEADER_ERROR"          : "@:APP.DIALOG_HEADER_ERROR",
+
+        "ERROR_PASSWORD_MISMATCH" : "@:APP.ERROR_PASSWORD_MISMATCH",
+
+        "FIELD_HEADER_ADMINISTER_SYSTEM"             : "Spravovat systém:",
+        "FIELD_HEADER_CHANGE_OWN_PASSWORD"           : "Změnit vlastní heslo:",
+        "FIELD_HEADER_CREATE_NEW_USERS"              : "Vytvořit nové uživatele:",
+        "FIELD_HEADER_CREATE_NEW_USER_GROUPS"        : "Vytvořit novou uživatelskou skupinu:",
+        "FIELD_HEADER_CREATE_NEW_CONNECTIONS"        : "Vytvořit nové spojení:",
+        "FIELD_HEADER_CREATE_NEW_CONNECTION_GROUPS"  : "Vytvořit nové skupiny připojení:",
+        "FIELD_HEADER_CREATE_NEW_SHARING_PROFILES"   : "Vytvořit nový sdílený profil:",
+        "FIELD_HEADER_PASSWORD"                      : "@:APP.FIELD_HEADER_PASSWORD",
+        "FIELD_HEADER_PASSWORD_AGAIN"                : "@:APP.FIELD_HEADER_PASSWORD_AGAIN",
+        "FIELD_HEADER_USERNAME"                      : "Uživatelské jméno:",
+
+        "FIELD_PLACEHOLDER_FILTER" : "@:APP.FIELD_PLACEHOLDER_FILTER",
+
+        "HELP_NO_USER_GROUPS" : "Tento uživatel momentálně nepatří do žádné skupiny. Rozbalte tuto sekci, abyste mohli přidát skupiny.",
+
+        "INFO_READ_ONLY"                : "Omlouváme se, ale tento uživatelský účet nelze upravovat.",
+        "INFO_NO_USER_GROUPS_AVAILABLE" : "Nejsou k dispozici žádné skupiny.",
+
+        "SECTION_HEADER_ALL_CONNECTIONS"     : "Všechna připojení",
+        "SECTION_HEADER_CONNECTIONS"         : "Připojení",
+        "SECTION_HEADER_CURRENT_CONNECTIONS" : "Aktuální připojení",
+        "SECTION_HEADER_EDIT_USER"           : "Upravit uživatele",
+        "SECTION_HEADER_PERMISSIONS"         : "Oprávnění",
+        "SECTION_HEADER_USER_GROUPS"         : "Skupiny",
+
+        "TEXT_CONFIRM_DELETE" : "Po odstranění nelze uživatele obnovit. Opravdu chcete tohoto uživatele smazat?"
+
+    },
+
+    "MANAGE_USER_GROUP" : {
+
+        "ACTION_ACKNOWLEDGE"   : "@:APP.ACTION_ACKNOWLEDGE",
+        "ACTION_CANCEL"        : "@:APP.ACTION_CANCEL",
+        "ACTION_CLONE"         : "@:APP.ACTION_CLONE",
+        "ACTION_DELETE"        : "@:APP.ACTION_DELETE",
+        "ACTION_SAVE"          : "@:APP.ACTION_SAVE",
+
+        "DIALOG_HEADER_CONFIRM_DELETE" : "Smazat skupinu",
+        "DIALOG_HEADER_ERROR"          : "@:APP.DIALOG_HEADER_ERROR",
+
+        "FIELD_HEADER_ADMINISTER_SYSTEM"             : "@:MANAGE_USER.FIELD_HEADER_ADMINISTER_SYSTEM",
+        "FIELD_HEADER_CHANGE_OWN_PASSWORD"           : "@:MANAGE_USER.FIELD_HEADER_CHANGE_OWN_PASSWORD",
+        "FIELD_HEADER_CREATE_NEW_USERS"              : "@:MANAGE_USER.FIELD_HEADER_CREATE_NEW_USERS",
+        "FIELD_HEADER_CREATE_NEW_USER_GROUPS"        : "@:MANAGE_USER.FIELD_HEADER_CREATE_NEW_USER_GROUPS",
+        "FIELD_HEADER_CREATE_NEW_CONNECTIONS"        : "@:MANAGE_USER.FIELD_HEADER_CREATE_NEW_CONNECTIONS",
+        "FIELD_HEADER_CREATE_NEW_CONNECTION_GROUPS"  : "@:MANAGE_USER.FIELD_HEADER_CREATE_NEW_CONNECTION_GROUPS",
+        "FIELD_HEADER_CREATE_NEW_SHARING_PROFILES"   : "@:MANAGE_USER.FIELD_HEADER_CREATE_NEW_SHARING_PROFILES",
+        "FIELD_HEADER_USER_GROUP_NAME"               : "Jméno skupiny:",
+
+        "FIELD_PLACEHOLDER_FILTER" : "@:APP.FIELD_PLACEHOLDER_FILTER",
+
+        "HELP_NO_USER_GROUPS"        : "Tato skupina momentálně nepatří do žádné skupiny. Rozbalením této sekce ji přidáte do skupiny.",
+        "HELP_NO_MEMBER_USER_GROUPS" : "Tato skupina v současné době neobsahuje žádné skupiny. Rozbalením této sekce ji přidáte do skupiny.",
+        "HELP_NO_MEMBER_USERS"       : "Tato skupina v současné době neobsahuje žádné uživatele. Rozbalením této sekce přidáte uživatele.",
+
+        "INFO_READ_ONLY"                : "Je nám líto, ale tuto skupinu nelze upravovat.",
+        "INFO_NO_USER_GROUPS_AVAILABLE" : "@:MANAGE_USER.INFO_NO_USER_GROUPS_AVAILABLE",
+        "INFO_NO_USERS_AVAILABLE"       : "Žádní uživatelé nejsou k dispozici.",
+
+        "SECTION_HEADER_ALL_CONNECTIONS"     : "@:MANAGE_USER.SECTION_HEADER_ALL_CONNECTIONS",
+        "SECTION_HEADER_CONNECTIONS"         : "@:MANAGE_USER.SECTION_HEADER_CONNECTIONS",
+        "SECTION_HEADER_CURRENT_CONNECTIONS" : "@:MANAGE_USER.SECTION_HEADER_CURRENT_CONNECTIONS",
+        "SECTION_HEADER_EDIT_USER_GROUP"     : "Upravit skupinu",
+        "SECTION_HEADER_MEMBER_USERS"        : "Členský uživatel",
+        "SECTION_HEADER_MEMBER_USER_GROUPS"  : "Členské skupiny",
+        "SECTION_HEADER_PERMISSIONS"         : "@:MANAGE_USER.SECTION_HEADER_PERMISSIONS",
+        "SECTION_HEADER_USER_GROUPS"         : "Rodičovské skupiny",
+
+        "TEXT_CONFIRM_DELETE" : "Skupiny nelze po jejich odstranění obnovit. Chcete opravdu smazat tuto skupinu?"
+
+    },
+
+    "PLAYER" : {
+
+        "ACTION_CANCEL" : "@:APP.ACTION_CANCEL",
+        "ACTION_PAUSE"  : "@:APP.ACTION_PAUSE",
+        "ACTION_PLAY"   : "@:APP.ACTION_PLAY",
+
+        "INFO_LOADING_RECORDING" : "Vaše nahrávka se nyní načítá. Čekejte prosím...",
+        "INFO_SEEK_IN_PROGRESS"  : "Hledání požadované pozice. Čekejte prosím..."
+
+    },
+
+    "PROTOCOL_KUBERNETES" : {
+
+        "FIELD_HEADER_BACKSPACE"       : "Klávesa Zpět odešle:",
+        "FIELD_HEADER_CA_CERT"         : "Certifikát certifikační autority:",
+        "FIELD_HEADER_CLIENT_CERT"     : "Klientský certifikát:",
+        "FIELD_HEADER_CLIENT_KEY"      : "Klientský klíč:",
+        "FIELD_HEADER_COLOR_SCHEME"    : "Barevné schéma:",
+        "FIELD_HEADER_CONTAINER"       : "Jméno kontejneru:",
+        "FIELD_HEADER_CREATE_RECORDING_PATH"  : "Automaticky vytvořit cestu k záznamu:",
+        "FIELD_HEADER_CREATE_TYPESCRIPT_PATH" : "Automaticky vytvořit cestu ke strojopisu:",
+        "FIELD_HEADER_EXEC_COMMAND"    : "Příkaz (exec):",
+        "FIELD_HEADER_FONT_NAME"       : "Jméno fontu:",
+        "FIELD_HEADER_FONT_SIZE"       : "Velikost fontu:",
+        "FIELD_HEADER_HOSTNAME"        : "Jméno hostitele:",
+        "FIELD_HEADER_IGNORE_CERT"     : "Ignorovat serverový certifikát:",
+        "FIELD_HEADER_NAMESPACE"       : "Obor názvů:",
+        "FIELD_HEADER_POD"             : "Jméno podu:",
+        "FIELD_HEADER_PORT"            : "Port:",
+        "FIELD_HEADER_READ_ONLY"       : "Pouze ke čtení:",
+        "FIELD_HEADER_RECORDING_EXCLUDE_MOUSE"  : "Vyloučit myš:",
+        "FIELD_HEADER_RECORDING_EXCLUDE_OUTPUT" : "Vyloučit grafiku/streamování:",
+        "FIELD_HEADER_RECORDING_INCLUDE_KEYS"   : "Zahrnout události kláves:",
+        "FIELD_HEADER_RECORDING_NAME"  : "Jméno záznamu:",
+        "FIELD_HEADER_RECORDING_PATH"  : "Cesta k záznamu:",
+        "FIELD_HEADER_SCROLLBACK"      : "Maximální délka historie:",
+        "FIELD_HEADER_TYPESCRIPT_NAME" : "Jméno strojopisu:",
+        "FIELD_HEADER_TYPESCRIPT_PATH" : "Cesta ke strojopisu:",
+        "FIELD_HEADER_USE_SSL"         : "Použít SSL/TLS",
+
+        "FIELD_OPTION_BACKSPACE_EMPTY" : "",
+        "FIELD_OPTION_BACKSPACE_8"     : "Zpět (Ctrl-H)",
+        "FIELD_OPTION_BACKSPACE_127"   : "Smazat (Ctrl-?)",
+
+        "FIELD_OPTION_COLOR_SCHEME_BLACK_WHITE" : "Černá na bílé",
+        "FIELD_OPTION_COLOR_SCHEME_EMPTY"       : "",
+        "FIELD_OPTION_COLOR_SCHEME_GRAY_BLACK"  : "Šedá na černé",
+        "FIELD_OPTION_COLOR_SCHEME_GREEN_BLACK" : "Zelená na černé",
+        "FIELD_OPTION_COLOR_SCHEME_WHITE_BLACK" : "Bílá na černé",
+
+        "FIELD_OPTION_FONT_SIZE_8"     : "8",
+        "FIELD_OPTION_FONT_SIZE_9"     : "9",
+        "FIELD_OPTION_FONT_SIZE_10"    : "10",
+        "FIELD_OPTION_FONT_SIZE_11"    : "11",
+        "FIELD_OPTION_FONT_SIZE_12"    : "12",
+        "FIELD_OPTION_FONT_SIZE_14"    : "14",
+        "FIELD_OPTION_FONT_SIZE_18"    : "18",
+        "FIELD_OPTION_FONT_SIZE_24"    : "24",
+        "FIELD_OPTION_FONT_SIZE_30"    : "30",
+        "FIELD_OPTION_FONT_SIZE_36"    : "36",
+        "FIELD_OPTION_FONT_SIZE_48"    : "48",
+        "FIELD_OPTION_FONT_SIZE_60"    : "60",
+        "FIELD_OPTION_FONT_SIZE_72"    : "72",
+        "FIELD_OPTION_FONT_SIZE_96"    : "96",
+        "FIELD_OPTION_FONT_SIZE_EMPTY" : "",
+
+        "NAME" : "Kubernetes",
+
+        "SECTION_HEADER_AUTHENTICATION" : "Ověřování",
+        "SECTION_HEADER_BEHAVIOR"       : "Chování terminálu",
+        "SECTION_HEADER_CONTAINER"      : "Kontejner",
+        "SECTION_HEADER_DISPLAY"        : "Zobrazení",
+        "SECTION_HEADER_RECORDING"      : "Záznam obrazovky",
+        "SECTION_HEADER_TYPESCRIPT"     : "Strojopis (textový záznam sezení)",
+        "SECTION_HEADER_NETWORK"        : "Síť"
+
+    },
+
+    "PROTOCOL_RDP" : {
+
+        "FIELD_HEADER_CLIENT_NAME"     : "Jméno klienta:",
+        "FIELD_HEADER_COLOR_DEPTH"     : "Barevná hloubka:",
+        "FIELD_HEADER_CONSOLE"         : "Konzola pro správu:",
+        "FIELD_HEADER_CONSOLE_AUDIO"   : "Podpora zvuku v konzole:",
+        "FIELD_HEADER_CREATE_DRIVE_PATH" : "Automaticky vytvořit disk:",
+        "FIELD_HEADER_CREATE_RECORDING_PATH" : "Automaticky vytvořit cestu k záznamu:",
+        "FIELD_HEADER_DISABLE_AUDIO"   : "Zakázat zvuk:",
+        "FIELD_HEADER_DISABLE_AUTH"    : "Zakázat ověřování:",
+        "FIELD_HEADER_DISABLE_COPY"    : "Zakázat kopírování ze vzdálené plochy:",
+        "FIELD_HEADER_DISABLE_DOWNLOAD" : "Zakázat stahování souborů:",
+        "FIELD_HEADER_DISABLE_PASTE"   : "Zakázat vkládání z klienta:",
+        "FIELD_HEADER_DISABLE_UPLOAD"   : "Zakázat nahrávání souborů:",
+        "FIELD_HEADER_DOMAIN"          : "Doména:",
+        "FIELD_HEADER_DPI"             : "Rozlišení (DPI):",
+        "FIELD_HEADER_DRIVE_NAME"       : "Název jednotky:",
+        "FIELD_HEADER_DRIVE_PATH"       : "Cesta na disku:",
+        "FIELD_HEADER_ENABLE_AUDIO_INPUT"         : "Povolit zvukový vstup (mikrofon):",
+        "FIELD_HEADER_ENABLE_DESKTOP_COMPOSITION" : "Povolit kompozici pracovní plochy (Aero):",
+        "FIELD_HEADER_ENABLE_DRIVE"               : "Povolit jednotku:",
+        "FIELD_HEADER_ENABLE_FONT_SMOOTHING"      : "Povolit vyhlazení písma (ClearType):",
+        "FIELD_HEADER_ENABLE_FULL_WINDOW_DRAG"    : "Povolit přetažení celého okna:",
+        "FIELD_HEADER_ENABLE_MENU_ANIMATIONS"     : "Povolit animace nabídky:",
+        "FIELD_HEADER_DISABLE_BITMAP_CACHING"     : "Zakázat ukládání do mezipaměti bitmap:",
+        "FIELD_HEADER_DISABLE_OFFSCREEN_CACHING"  : "Zakázat ukládání do mezipaměti mimo obrazovku:",
+        "FIELD_HEADER_DISABLE_GLYPH_CACHING"      : "Zakázat ukládání do mezipaměti glyfů:",
+        "FIELD_HEADER_DISABLE_GFX"                : "Zakázat rozšíření Graphics Pipeline:",
+        "FIELD_HEADER_ENABLE_PRINTING"            : "Povolit tisk:",
+        "FIELD_HEADER_ENABLE_SFTP"     : "Povolit SFTP:",
+        "FIELD_HEADER_ENABLE_THEMING"             : "Povolit motivy:",
+        "FIELD_HEADER_ENABLE_TOUCH"               : "Povolit vícedotykové ovládání:",
+        "FIELD_HEADER_ENABLE_WALLPAPER"           : "Povolit tapetu:",
+        "FIELD_HEADER_FORCE_LOSSLESS"             : "Vynutit bezeztrátovou kompresi:",
+        "FIELD_HEADER_GATEWAY_DOMAIN"   : "Doména:",
+        "FIELD_HEADER_GATEWAY_HOSTNAME" : "Jméno hostitele:",
+        "FIELD_HEADER_GATEWAY_PASSWORD" : "Heslo:",
+        "FIELD_HEADER_GATEWAY_PORT"     : "Port:",
+        "FIELD_HEADER_GATEWAY_USERNAME" : "Uživatelské jméno:",
+        "FIELD_HEADER_HEIGHT"          : "Výška:",
+        "FIELD_HEADER_HOSTNAME"        : "Jméno hostitele:",
+        "FIELD_HEADER_IGNORE_CERT"     : "Ignorovat serverový certifikát:",
+        "FIELD_HEADER_INITIAL_PROGRAM" : "Úvodní program:",
+        "FIELD_HEADER_LOAD_BALANCE_INFO" : "Vyvážení zátěže info/cookie:",
+        "FIELD_HEADER_NORMALIZE_CLIPBOARD" : "Konce řádků:",
+        "FIELD_HEADER_PASSWORD"        : "Heslo:",
+        "FIELD_HEADER_PORT"            : "Port:",
+        "FIELD_HEADER_PRINTER_NAME"    : "Název přesměrované tiskárny:",
+        "FIELD_HEADER_PRECONNECTION_BLOB" : "Preconnection BLOB (VM ID):",
+        "FIELD_HEADER_PRECONNECTION_ID"   : "Zdrojové ID RDP:",
+        "FIELD_HEADER_READ_ONLY"      : "Pouze ke čtení:",
+        "FIELD_HEADER_RECORDING_EXCLUDE_MOUSE"  : "Vyloučit myš:",
+        "FIELD_HEADER_RECORDING_EXCLUDE_OUTPUT" : "Vyloučit grafiku/strímování:",
+        "FIELD_HEADER_RECORDING_EXCLUDE_TOUCH"  : "Vyloučit dotykové události:",
+        "FIELD_HEADER_RECORDING_INCLUDE_KEYS"   : "Zahrnout klíčové události:",
+        "FIELD_HEADER_RECORDING_NAME" : "Název záznamu:",
+        "FIELD_HEADER_RECORDING_PATH" : "Cesta pro záznam:",
+        "FIELD_HEADER_RESIZE_METHOD" : "Metoda změny velikosti:",
+        "FIELD_HEADER_REMOTE_APP_ARGS" : "Parametry:",
+        "FIELD_HEADER_REMOTE_APP_DIR"  : "Pracovní adresář:",
+        "FIELD_HEADER_REMOTE_APP"      : "Program:",
+        "FIELD_HEADER_SECURITY"        : "Bezpečnostní mód:",
+        "FIELD_HEADER_SERVER_LAYOUT"   : "Rozložení klávesnice:",
+        "FIELD_HEADER_SFTP_DIRECTORY"             : "Výchozí složka pro uložení záznamu:",
+        "FIELD_HEADER_SFTP_DISABLE_DOWNLOAD"      : "Zakázat stahování souborů:",
+        "FIELD_HEADER_SFTP_HOST_KEY"              : "Veřejný klíč hosta (Base64):",
+        "FIELD_HEADER_SFTP_HOSTNAME"              : "Jméno hostitele:",
+        "FIELD_HEADER_SFTP_SERVER_ALIVE_INTERVAL" : "Interval udržování SFTP:",
+        "FIELD_HEADER_SFTP_PASSPHRASE"            : "Přístupová fráze:",
+        "FIELD_HEADER_SFTP_PASSWORD"              : "Heslo:",
+        "FIELD_HEADER_SFTP_PORT"                  : "Port:",
+        "FIELD_HEADER_SFTP_PRIVATE_KEY"           : "Privátní klíč:",
+        "FIELD_HEADER_SFTP_ROOT_DIRECTORY"        : "Souborový prohlížeč kořenové složky:",
+        "FIELD_HEADER_SFTP_DISABLE_UPLOAD"        : "Zakázat nahrávání souborů:",
+        "FIELD_HEADER_SFTP_USERNAME"              : "Uživatelské jméno:",
+        "FIELD_HEADER_STATIC_CHANNELS" : "Názvy statických kanálů:",
+        "FIELD_HEADER_TIMEZONE"        : "Časová zóna:",
+        "FIELD_HEADER_USERNAME"        : "Uživatelské jméno:",
+        "FIELD_HEADER_WIDTH"           : "Šířka:",
+        "FIELD_HEADER_WOL_BROADCAST_ADDR" : "Vysílací adresa pro paket WoL:",
+        "FIELD_HEADER_WOL_MAC_ADDR"       : "MAC adresa vzdáleného hosta:",
+        "FIELD_HEADER_WOL_SEND_PACKET"    : "Odeslat paket WoL:",
+        "FIELD_HEADER_WOL_UDP_PORT"       : "UDP port pro paket WoL: ",
+        "FIELD_HEADER_WOL_WAIT_TIME"      : "Doba čekání na spuštění hostitele:",
+
+        "FIELD_OPTION_NORMALIZE_CLIPBOARD_EMPTY"    : "",
+        "FIELD_OPTION_NORMALIZE_CLIPBOARD_PRESERVE" : "Zachovat tak, jak je",
+        "FIELD_OPTION_NORMALIZE_CLIPBOARD_UNIX"     : "Linux/Mac/Unix (LF)",
+        "FIELD_OPTION_NORMALIZE_CLIPBOARD_WINDOWS"  : "Windows (CRLF)",
+
+        "FIELD_OPTION_COLOR_DEPTH_16"    : "Nízké barvy (16-bitů)",
+        "FIELD_OPTION_COLOR_DEPTH_24"    : "Opravdové barvy (24-bitů)",
+        "FIELD_OPTION_COLOR_DEPTH_32"    : "Opravdové barvy (32-bitů)",
+        "FIELD_OPTION_COLOR_DEPTH_8"     : "256 barev",
+        "FIELD_OPTION_COLOR_DEPTH_EMPTY" : "",
+
+        "FIELD_OPTION_RESIZE_METHOD_DISPLAY_UPDATE" : "\"Aktualizace zobrazení\" virtuální kanál (RDP 8.1+)",
+        "FIELD_OPTION_RESIZE_METHOD_EMPTY"          : "",
+        "FIELD_OPTION_RESIZE_METHOD_RECONNECT"      : "Znovu připojit",
+
+        "FIELD_OPTION_SECURITY_ANY"       : "Jakýkoliv",
+        "FIELD_OPTION_SECURITY_EMPTY"     : "",
+        "FIELD_OPTION_SECURITY_NLA"       : "NLA (Ověřování na úrovni sítě)",
+        "FIELD_OPTION_SECURITY_RDP"       : "Šifrování RDP",
+        "FIELD_OPTION_SECURITY_TLS"       : "Šifrování TLS",
+        "FIELD_OPTION_SECURITY_VMCONNECT" : "Hyper-V / VMConnect",
+
+        "FIELD_OPTION_SERVER_LAYOUT_CS_CZ_QWERTZ" : "Čeština (Qwertz)",
+        "FIELD_OPTION_SERVER_LAYOUT_DA_DK_QWERTY" : "Dánština (Qwerty)",
+        "FIELD_OPTION_SERVER_LAYOUT_DE_CH_QWERTZ" : "Švícarská Němčina (Qwertz)",
+        "FIELD_OPTION_SERVER_LAYOUT_DE_DE_QWERTZ" : "Němčina (Qwertz)",
+        "FIELD_OPTION_SERVER_LAYOUT_EMPTY"        : "",
+        "FIELD_OPTION_SERVER_LAYOUT_EN_GB_QWERTY" : "UK Angličtina (Qwerty)",
+        "FIELD_OPTION_SERVER_LAYOUT_EN_US_QWERTY" : "US Angličtina (Qwerty)",
+        "FIELD_OPTION_SERVER_LAYOUT_ES_ES_QWERTY" : "Španělština (Qwerty)",
+        "FIELD_OPTION_SERVER_LAYOUT_ES_LATAM_QWERTY" : "Standardní Angličtina (Qwerty)",
+        "FIELD_OPTION_SERVER_LAYOUT_FAILSAFE"     : "Unicode",
+        "FIELD_OPTION_SERVER_LAYOUT_FR_BE_AZERTY" : "Belgická Francouzština (Azerty)",
+        "FIELD_OPTION_SERVER_LAYOUT_FR_CA_QWERTY" : "Kanadská francouzština (Qwerty)",
+        "FIELD_OPTION_SERVER_LAYOUT_FR_CH_QWERTZ" : "Švícarská Francouzština (Qwertz)",
+        "FIELD_OPTION_SERVER_LAYOUT_FR_FR_AZERTY" : "Francouzština (Azerty)",
+        "FIELD_OPTION_SERVER_LAYOUT_HU_HU_QWERTZ" : "Maďarština (Qwertz)",
+        "FIELD_OPTION_SERVER_LAYOUT_IT_IT_QWERTY" : "Italština (Qwerty)",
+        "FIELD_OPTION_SERVER_LAYOUT_JA_JP_QWERTY" : "Japonština (Qwerty)",
+        "FIELD_OPTION_SERVER_LAYOUT_NO_NO_QWERTY" : "Norština (Qwerty)",
+        "FIELD_OPTION_SERVER_LAYOUT_PL_PL_QWERTY" : "Polština (Qwerty)",
+        "FIELD_OPTION_SERVER_LAYOUT_PT_BR_QWERTY" : "Portugalská Brazilština (Qwerty)",
+        "FIELD_OPTION_SERVER_LAYOUT_PT_PT_QWERTY" : "Portugalština (Qwerty)",
+        "FIELD_OPTION_SERVER_LAYOUT_RO_RO_QWERTY" : "Rumunština (Qwerty)",
+        "FIELD_OPTION_SERVER_LAYOUT_SV_SE_QWERTY" : "Švédština (Qwerty)",
+        "FIELD_OPTION_SERVER_LAYOUT_TR_TR_QWERTY" : "Turečtina (Qwerty)",
+
+        "NAME" : "RDP",
+
+        "SECTION_HEADER_AUTHENTICATION"     : "Ověřování",
+        "SECTION_HEADER_BASIC_PARAMETERS"   : "Základní nastavení",
+        "SECTION_HEADER_CLIPBOARD"          : "Schránka",
+        "SECTION_HEADER_DEVICE_REDIRECTION" : "Přesměrování zařízení",
+        "SECTION_HEADER_DISPLAY"            : "Zobrazení",
+        "SECTION_HEADER_GATEWAY"            : "Brána vzdálené plochy",
+        "SECTION_HEADER_LOAD_BALANCING"     : "Rozložení zátěže",
+        "SECTION_HEADER_NETWORK"            : "Síť",
+        "SECTION_HEADER_PERFORMANCE"        : "Výkon",
+        "SECTION_HEADER_PRECONNECTION_PDU"  : "Preconnection PDU / Hyper-V",
+        "SECTION_HEADER_RECORDING"          : "Záznam obrazovky",
+        "SECTION_HEADER_REMOTEAPP"          : "RemoteApp",
+        "SECTION_HEADER_SFTP"               : "SFTP",
+        "SECTION_HEADER_WOL"                : "Wake-on-LAN (WoL)"
+
+    },
+
+    "PROTOCOL_SSH" : {
+
+        "FIELD_HEADER_BACKSPACE"    : "Klávesa Zpět odešle:",
+        "FIELD_HEADER_COLOR_SCHEME" : "Barva:",
+        "FIELD_HEADER_COMMAND"      : "Provést příkaz:",
+        "FIELD_HEADER_CREATE_RECORDING_PATH" : "Automaticky vytvořit cestu pro uložení záznamu:",
+        "FIELD_HEADER_CREATE_TYPESCRIPT_PATH" : "Automaticky vytvořit cestu ke strojopisu:",
+        "FIELD_HEADER_DISABLE_COPY"  : "Zakázat kopírování ze vzdáleného terminálu:",
+        "FIELD_HEADER_DISABLE_PASTE" : "Zakázat vkládání z klienta:",
+        "FIELD_HEADER_FONT_NAME"     : "Typ fontu:",
+        "FIELD_HEADER_FONT_SIZE"     : "Velikost písma:",
+        "FIELD_HEADER_ENABLE_SFTP"   : "Povolit SFTP:",
+        "FIELD_HEADER_HOST_KEY"      : "Veřejný klíč hosta (Base64):",
+        "FIELD_HEADER_HOSTNAME"      : "Jméno hostitele:",
+        "FIELD_HEADER_LOCALE"        : "Jazyk/Lokalizace ($LANG):",
+        "FIELD_HEADER_USERNAME"      : "Uživatelské jméno:",
+        "FIELD_HEADER_PASSWORD"      : "Heslo:",
+        "FIELD_HEADER_PASSPHRASE"    : "Přístupová fráze:",
+        "FIELD_HEADER_PORT"          : "Port:",
+        "FIELD_HEADER_PRIVATE_KEY"   : "Privátní klíč:",
+        "FIELD_HEADER_SCROLLBACK"    : "Maximální délka historie:",
+        "FIELD_HEADER_READ_ONLY"     : "Pouze ke čtení:",
+        "FIELD_HEADER_RECORDING_EXCLUDE_MOUSE"  : "Vynechat myš:",
+        "FIELD_HEADER_RECORDING_EXCLUDE_OUTPUT" : "Vynechat grafiku/streamování:",
+        "FIELD_HEADER_RECORDING_INCLUDE_KEYS"   : "Zahrnout události kláves:",
+        "FIELD_HEADER_RECORDING_NAME" : "Název záznamu:",
+        "FIELD_HEADER_RECORDING_PATH" : "Cesta pro záznam:",
+        "FIELD_HEADER_SERVER_ALIVE_INTERVAL" : "Serverový keepalive interval:",
+        "FIELD_HEADER_SFTP_DISABLE_DOWNLOAD" : "Zakázat stahování souborů:",
+        "FIELD_HEADER_SFTP_ROOT_DIRECTORY"   : "Souborový prohlížeč kořenové složky:",
+        "FIELD_HEADER_SFTP_DISABLE_UPLOAD"   : "Zakázat nahrávání souborů:",
+        "FIELD_HEADER_TERMINAL_TYPE"   : "Typ terminálu:",
+        "FIELD_HEADER_TIMEZONE"        : "Časová zóna ($TZ):",
+        "FIELD_HEADER_TYPESCRIPT_NAME" : "Jméno strojopisu:",
+        "FIELD_HEADER_TYPESCRIPT_PATH" : "Cesta ke strojopisu:",
+        "FIELD_HEADER_WOL_BROADCAST_ADDR" : "Vysílací adresa pro paket WoL:",
+        "FIELD_HEADER_WOL_MAC_ADDR"       : "MAC adresa vzdáleného hosta:",
+        "FIELD_HEADER_WOL_SEND_PACKET"    : "Odeslat paket WoL:",
+        "FIELD_HEADER_WOL_UDP_PORT"       : "UDP port pro paket WoL:",
+        "FIELD_HEADER_WOL_WAIT_TIME"      : "Doba čekání na spuštění hostitele:",
+
+        "FIELD_OPTION_BACKSPACE_EMPTY" : "",
+        "FIELD_OPTION_BACKSPACE_8"     : "Zpět (Ctrl-H)",
+        "FIELD_OPTION_BACKSPACE_127"   : "Smazat (Ctrl-?)",
+
+        "FIELD_OPTION_COLOR_SCHEME_BLACK_WHITE" : "Černá na bílé",
+        "FIELD_OPTION_COLOR_SCHEME_EMPTY"       : "",
+        "FIELD_OPTION_COLOR_SCHEME_GRAY_BLACK"  : "Šedá na černé",
+        "FIELD_OPTION_COLOR_SCHEME_GREEN_BLACK" : "Zelená na černé",
+        "FIELD_OPTION_COLOR_SCHEME_WHITE_BLACK" : "Bílá na černé",
+
+        "FIELD_OPTION_FONT_SIZE_8"     : "8",
+        "FIELD_OPTION_FONT_SIZE_9"     : "9",
+        "FIELD_OPTION_FONT_SIZE_10"    : "10",
+        "FIELD_OPTION_FONT_SIZE_11"    : "11",
+        "FIELD_OPTION_FONT_SIZE_12"    : "12",
+        "FIELD_OPTION_FONT_SIZE_14"    : "14",
+        "FIELD_OPTION_FONT_SIZE_18"    : "18",
+        "FIELD_OPTION_FONT_SIZE_24"    : "24",
+        "FIELD_OPTION_FONT_SIZE_30"    : "30",
+        "FIELD_OPTION_FONT_SIZE_36"    : "36",
+        "FIELD_OPTION_FONT_SIZE_48"    : "48",
+        "FIELD_OPTION_FONT_SIZE_60"    : "60",
+        "FIELD_OPTION_FONT_SIZE_72"    : "72",
+        "FIELD_OPTION_FONT_SIZE_96"    : "96",
+        "FIELD_OPTION_FONT_SIZE_EMPTY" : "",
+
+        "FIELD_OPTION_TERMINAL_TYPE_ANSI"           : "ansi",
+        "FIELD_OPTION_TERMINAL_TYPE_EMPTY"          : "",
+        "FIELD_OPTION_TERMINAL_TYPE_LINUX"          : "linux",
+        "FIELD_OPTION_TERMINAL_TYPE_VT100"          : "vt100",
+        "FIELD_OPTION_TERMINAL_TYPE_VT220"          : "vt220",
+        "FIELD_OPTION_TERMINAL_TYPE_XTERM"          : "xterm",
+        "FIELD_OPTION_TERMINAL_TYPE_XTERM_256COLOR" : "xterm-256color",
+
+        "NAME" : "SSH",
+
+        "SECTION_HEADER_AUTHENTICATION" : "Ověřování",
+        "SECTION_HEADER_BEHAVIOR"       : "Chování terminálu",
+        "SECTION_HEADER_CLIPBOARD"      : "Schránka",
+        "SECTION_HEADER_DISPLAY"        : "Zobrazení",
+        "SECTION_HEADER_NETWORK"        : "Síť",
+        "SECTION_HEADER_RECORDING"      : "Záznam obrazovky",
+        "SECTION_HEADER_SESSION"        : "Sezení / prostředí",
+        "SECTION_HEADER_TYPESCRIPT"     : "Strojopis (textový záznam sezení)",
+        "SECTION_HEADER_SFTP"           : "SFTP",
+        "SECTION_HEADER_WOL"            : "Wake-on-LAN (WoL)"
+
+    },
+
+    "PROTOCOL_TELNET" : {
+
+        "FIELD_HEADER_BACKSPACE"      : "Klávesa Zpět odešle:",
+        "FIELD_HEADER_COLOR_SCHEME"   : "Barevné schéma:",
+        "FIELD_HEADER_CREATE_RECORDING_PATH" : "Automaticky vytvořit cestu pro uložení záznamu:",
+        "FIELD_HEADER_CREATE_TYPESCRIPT_PATH" : "Automaticky vytvořit cestu ke strojopisu:",
+        "FIELD_HEADER_DISABLE_COPY"   : "Zakázat kopírování z terminálu:",
+        "FIELD_HEADER_DISABLE_PASTE"  : "Zakázat vkládání z klienta:",
+        "FIELD_HEADER_FONT_NAME"      : "Jméno fontu:",
+        "FIELD_HEADER_FONT_SIZE"      : "Velikost fontu:",
+        "FIELD_HEADER_HOSTNAME"       : "Jméno hostitele:",
+        "FIELD_HEADER_LOGIN_FAILURE_REGEX" : "Přihlášení se nezdařilo regulární výraz:",
+        "FIELD_HEADER_LOGIN_SUCCESS_REGEX" : "Přihlášení bylo úspěšné regulární výraz:",
+        "FIELD_HEADER_USERNAME"       : "Uživatelské jméno:",
+        "FIELD_HEADER_USERNAME_REGEX" : "Uživatelské jméno regulární výraz:",
+        "FIELD_HEADER_PASSWORD"       : "Heslo:",
+        "FIELD_HEADER_PASSWORD_REGEX" : "Heslo regulární výraz:",
+        "FIELD_HEADER_PORT"           : "Port:",
+        "FIELD_HEADER_READ_ONLY"      : "Pouze ke čtení:",
+        "FIELD_HEADER_RECORDING_EXCLUDE_MOUSE"  : "Vyloučit myš:",
+        "FIELD_HEADER_RECORDING_EXCLUDE_OUTPUT" : "Vyloučit grafiku/streamování:",
+        "FIELD_HEADER_RECORDING_INCLUDE_KEYS"   : "Zahrnout klíčové události:",
+        "FIELD_HEADER_RECORDING_NAME" : "Název záznamu:",
+        "FIELD_HEADER_RECORDING_PATH" : "Cesta pro záznam:",
+        "FIELD_HEADER_SCROLLBACK"     : "Maximální délka historie:",
+        "FIELD_HEADER_TERMINAL_TYPE"   : "Typ terminálu:",
+        "FIELD_HEADER_TYPESCRIPT_NAME" : "Jméno strojopisu:",
+        "FIELD_HEADER_TYPESCRIPT_PATH" : "Cesta ke strojopisu:",
+        "FIELD_HEADER_WOL_BROADCAST_ADDR" : "Vysílací adresa pro paket WoL:",
+        "FIELD_HEADER_WOL_MAC_ADDR"       : "MAC adresa vzdáleného hosta:",
+        "FIELD_HEADER_WOL_SEND_PACKET"    : "Odeslat paket WoL:",
+        "FIELD_HEADER_WOL_UDP_PORT"       : "UDP port pro paket WoL:",
+        "FIELD_HEADER_WOL_WAIT_TIME"      : "Doba čekání na spuštění hostitele:",
+
+        "FIELD_OPTION_BACKSPACE_EMPTY" : "",
+        "FIELD_OPTION_BACKSPACE_8"     : "Zpět (Ctrl-H)",
+        "FIELD_OPTION_BACKSPACE_127"   : "Smazat (Ctrl-?)",
+
+        "FIELD_OPTION_COLOR_SCHEME_BLACK_WHITE" : "Černá na bílé",
+        "FIELD_OPTION_COLOR_SCHEME_EMPTY"       : "",
+        "FIELD_OPTION_COLOR_SCHEME_GRAY_BLACK"  : "Šedá na černé",
+        "FIELD_OPTION_COLOR_SCHEME_GREEN_BLACK" : "Zelená na černé",
+        "FIELD_OPTION_COLOR_SCHEME_WHITE_BLACK" : "Bílá na černé",
+
+        "FIELD_OPTION_FONT_SIZE_8"     : "8",
+        "FIELD_OPTION_FONT_SIZE_9"     : "9",
+        "FIELD_OPTION_FONT_SIZE_10"    : "10",
+        "FIELD_OPTION_FONT_SIZE_11"    : "11",
+        "FIELD_OPTION_FONT_SIZE_12"    : "12",
+        "FIELD_OPTION_FONT_SIZE_14"    : "14",
+        "FIELD_OPTION_FONT_SIZE_18"    : "18",
+        "FIELD_OPTION_FONT_SIZE_24"    : "24",
+        "FIELD_OPTION_FONT_SIZE_30"    : "30",
+        "FIELD_OPTION_FONT_SIZE_36"    : "36",
+        "FIELD_OPTION_FONT_SIZE_48"    : "48",
+        "FIELD_OPTION_FONT_SIZE_60"    : "60",
+        "FIELD_OPTION_FONT_SIZE_72"    : "72",
+        "FIELD_OPTION_FONT_SIZE_96"    : "96",
+        "FIELD_OPTION_FONT_SIZE_EMPTY" : "",
+
+        "FIELD_OPTION_TERMINAL_TYPE_ANSI"           : "ansi",
+        "FIELD_OPTION_TERMINAL_TYPE_EMPTY"          : "",
+        "FIELD_OPTION_TERMINAL_TYPE_LINUX"          : "linux",
+        "FIELD_OPTION_TERMINAL_TYPE_VT100"          : "vt100",
+        "FIELD_OPTION_TERMINAL_TYPE_VT220"          : "vt220",
+        "FIELD_OPTION_TERMINAL_TYPE_XTERM"          : "xterm",
+        "FIELD_OPTION_TERMINAL_TYPE_XTERM_256COLOR" : "xterm-256color",
+
+        "NAME" : "Telnet",
+
+        "SECTION_HEADER_AUTHENTICATION" : "Ověřování",
+        "SECTION_HEADER_BEHAVIOR"       : "Chování terminálu",
+        "SECTION_HEADER_CLIPBOARD"      : "Schránka",
+        "SECTION_HEADER_DISPLAY"        : "Zobrazení",
+        "SECTION_HEADER_RECORDING"      : "Záznam obrazovky",
+        "SECTION_HEADER_TYPESCRIPT"     : "Strojopis (textový záznam sezení)",
+        "SECTION_HEADER_NETWORK"        : "Síť",
+        "SECTION_HEADER_WOL"            : "Wake-on-LAN (WoL)"
+
+    },
+
+    "PROTOCOL_VNC" : {
+
+        "FIELD_HEADER_AUDIO_SERVERNAME" : "Název zvukového serveru:",
+        "FIELD_HEADER_CLIPBOARD_ENCODING" : "Kódovávání:",
+        "FIELD_HEADER_COLOR_DEPTH"      : "Hloubka barev:",
+        "FIELD_HEADER_CREATE_RECORDING_PATH" : "Automaticky vytvořit cestu pro uložení záznamu:",
+        "FIELD_HEADER_CURSOR"           : "Kurzor:",
+        "FIELD_HEADER_DEST_HOST"        : "Cílový host:",
+        "FIELD_HEADER_DEST_PORT"        : "Vzdálený port:",
+        "FIELD_HEADER_DISABLE_COPY"     : "Zakázat kopírování ze vzdálené plochy:",
+        "FIELD_HEADER_DISABLE_PASTE"    : "Zakázat vkládání z klienta:",
+        "FIELD_HEADER_ENABLE_AUDIO"     : "Zapnout audio:",
+        "FIELD_HEADER_ENABLE_SFTP"      : "Povolit SFTP:",
+        "FIELD_HEADER_FORCE_LOSSLESS"   : "Vynutit bezeztrátovou kompresi:",
+        "FIELD_HEADER_HOSTNAME"         : "Jméno hostitele:",
+        "FIELD_HEADER_USERNAME"         : "Uživatelské jméno:",
+        "FIELD_HEADER_PASSWORD"         : "Heslo:",
+        "FIELD_HEADER_PORT"             : "Port:",
+        "FIELD_HEADER_READ_ONLY"        : "Pouze čtení:",
+        "FIELD_HEADER_RECORDING_EXCLUDE_MOUSE"  : "Vynechat myš:",
+        "FIELD_HEADER_RECORDING_EXCLUDE_OUTPUT" : "Vynechat grafiku/stremování:",
+        "FIELD_HEADER_RECORDING_INCLUDE_KEYS"   : "Zahrnout události kláves:",
+        "FIELD_HEADER_RECORDING_NAME" : "Název záznamu:",
+        "FIELD_HEADER_RECORDING_PATH" : "Cesta pro záznam:",
+        "FIELD_HEADER_SFTP_DIRECTORY"             : "Výchozí složka pro uložení záznamu:",
+        "FIELD_HEADER_SFTP_DISABLE_DOWNLOAD"      : "Zakázat stahování souborů:",
+        "FIELD_HEADER_SFTP_HOST_KEY"              : "Veřejný klíč hosta (Base64):",
+        "FIELD_HEADER_SFTP_HOSTNAME"              : "Jméno hostitele:",
+        "FIELD_HEADER_SFTP_SERVER_ALIVE_INTERVAL" : "Interval udržování SFTP:",
+        "FIELD_HEADER_SFTP_PASSPHRASE"            : "Přístupová fráze:",
+        "FIELD_HEADER_SFTP_PASSWORD"              : "Heslo:",
+        "FIELD_HEADER_SFTP_PORT"                  : "Port:",
+        "FIELD_HEADER_SFTP_PRIVATE_KEY"           : "Privátní klíč:",
+        "FIELD_HEADER_SFTP_ROOT_DIRECTORY"        : "Souborový prohlížeč kořenové složky:",
+        "FIELD_HEADER_SFTP_DISABLE_UPLOAD"        : "Zakázat nahrávání souborů:",
+        "FIELD_HEADER_SFTP_USERNAME"              : "Uživatelské jméno:",
+        "FIELD_HEADER_SWAP_RED_BLUE"    : "Přehodit červené/modré komponenty:",
+        "FIELD_HEADER_WOL_BROADCAST_ADDR" : "Vysílací adresa pro paket WoL:",
+        "FIELD_HEADER_WOL_MAC_ADDR"       : "MAC adresa vzdáleného hosta:",
+        "FIELD_HEADER_WOL_SEND_PACKET"    : "Odeslat paket WoL:",
+        "FIELD_HEADER_WOL_UDP_PORT"       : "UDP port pro paket WoL:",
+        "FIELD_HEADER_WOL_WAIT_TIME"      : "Doba čekání na spuštění hostitele:",
+
+        "FIELD_OPTION_COLOR_DEPTH_8"     : "256 barev",
+        "FIELD_OPTION_COLOR_DEPTH_16"    : "Nízké barvy (16-bitů)",
+        "FIELD_OPTION_COLOR_DEPTH_24"    : "Opravdové barvy (24-bitů)",
+        "FIELD_OPTION_COLOR_DEPTH_32"    : "Opravdové barvy (32-bitů)",
+        "FIELD_OPTION_COLOR_DEPTH_EMPTY" : "",
+
+        "FIELD_OPTION_CURSOR_EMPTY"  : "",
+        "FIELD_OPTION_CURSOR_LOCAL"  : "Místní",
+        "FIELD_OPTION_CURSOR_REMOTE" : "Vzdálený",
+
+        "FIELD_OPTION_CLIPBOARD_ENCODING_CP1252"    : "CP1252",
+        "FIELD_OPTION_CLIPBOARD_ENCODING_EMPTY"     : "",
+        "FIELD_OPTION_CLIPBOARD_ENCODING_ISO8859_1" : "ISO 8859-1",
+        "FIELD_OPTION_CLIPBOARD_ENCODING_UTF_8"     : "UTF-8",
+        "FIELD_OPTION_CLIPBOARD_ENCODING_UTF_16"    : "UTF-16",
+
+        "NAME" : "VNC",
+
+        "SECTION_HEADER_AUDIO"          : "Zvuk",
+        "SECTION_HEADER_AUTHENTICATION" : "Ověřování",
+        "SECTION_HEADER_CLIPBOARD"      : "Schránka",
+        "SECTION_HEADER_DISPLAY"        : "Zobrazení",
+        "SECTION_HEADER_NETWORK"        : "Síť",
+        "SECTION_HEADER_RECORDING"      : "Záznam obrazovky",
+        "SECTION_HEADER_REPEATER"       : "VNC opakovač",
+        "SECTION_HEADER_SFTP"           : "SFTP",
+        "SECTION_HEADER_WOL"            : "Wake-on-LAN (WoL)"
+
+    },
+
+    "SETTINGS" : {
+
+        "SECTION_HEADER_SETTINGS" : "Nastavení"
+
+    },
+
+    "SETTINGS_CONNECTION_HISTORY" : {
+
+        "ACTION_DOWNLOAD" : "@:APP.ACTION_DOWNLOAD",
+        "ACTION_SEARCH"   : "@:APP.ACTION_SEARCH",
+        "ACTION_VIEW_RECORDING" : "@:APP.ACTION_VIEW_RECORDING",
+
+        "FIELD_PLACEHOLDER_FILTER" : "@:APP.FIELD_PLACEHOLDER_FILTER",
+
+        "FILENAME_HISTORY_CSV" : "history.csv",
+
+        "FORMAT_DATE" : "@:APP.FORMAT_DATE_TIME_PRECISE",
+
+        "HELP_CONNECTION_HISTORY" : "Zde jsou uvedeny záznamy o historii připojení a lze je třídit kliknutím na záhlaví sloupců. Chcete-li vyhledat konkrétní záznamy, zadejte řetězec filtrů a klikněte na tlačítko Hledat. Zobrazí se pouze záznamy, které odpovídají zadanému řetězci filtrů.",
+
+        "INFO_CONNECTION_DURATION_UNKNOWN" : "--",
+        "INFO_NO_HISTORY"                  : "Žádné shodné záznamy",
+
+        "TABLE_HEADER_SESSION_CONNECTION_NAME" : "Název připojení",
+        "TABLE_HEADER_SESSION_DURATION"        : "Doba trvání",
+        "TABLE_HEADER_SESSION_LOGS"            : "Protokoly",
+        "TABLE_HEADER_SESSION_REMOTEHOST"      : "Vzdálený host",
+        "TABLE_HEADER_SESSION_STARTDATE"       : "Doba spuštění",
+        "TABLE_HEADER_SESSION_USERNAME"        : "Uživatelské jméno",
+
+        "TEXT_HISTORY_DURATION" : "@:APP.TEXT_HISTORY_DURATION"
+
+    },
+
+    "SETTINGS_CONNECTIONS" : {
+
+        "ACTION_ACKNOWLEDGE"          : "@:APP.ACTION_ACKNOWLEDGE",
+        "ACTION_IMPORT"               : "@:APP.ACTION_IMPORT",
+        "ACTION_NEW_CONNECTION"       : "Nové připojení",
+        "ACTION_NEW_CONNECTION_GROUP" : "Nový skupina",
+        "ACTION_NEW_SHARING_PROFILE"  : "Nový sdílený profil",
+
+        "DIALOG_HEADER_ERROR" : "@:APP.DIALOG_HEADER_ERROR",
+
+        "FIELD_PLACEHOLDER_FILTER" : "@:APP.FIELD_PLACEHOLDER_FILTER",
+
+        "HELP_CONNECTIONS" : "Toto připojení můžete spravovat klepnutím nebo klepnutím na níže uvedené připojení. V závislosti na vaší úrovni přístupu lze přidávat a mazat připojení a měnit jejich vlastnosti (protokol, název hostitele, port atd.).",
+        
+        "INFO_ACTIVE_USER_COUNT" : "@:APP.INFO_ACTIVE_USER_COUNT",
+
+        "SECTION_HEADER_CONNECTIONS" : "Připojení"
+
+    },
+
+    "SETTINGS_PREFERENCES" : {
+
+        "ACTION_ACKNOWLEDGE"        : "@:APP.ACTION_ACKNOWLEDGE",
+        "ACTION_CANCEL"             : "@:APP.ACTION_CANCEL",
+        "ACTION_SAVE"               : "@:APP.ACTION_SAVE",
+        "ACTION_UPDATE_PASSWORD"    : "@:APP.ACTION_UPDATE_PASSWORD",
+
+        "DIALOG_HEADER_ERROR"    : "@:APP.DIALOG_HEADER_ERROR",
+
+        "ERROR_PASSWORD_BLANK"    : "@:APP.ERROR_PASSWORD_BLANK",
+        "ERROR_PASSWORD_MISMATCH" : "@:APP.ERROR_PASSWORD_MISMATCH",
+
+        "FIELD_HEADER_LANGUAGE"           : "Jazyk zobrazení:",
+        "FIELD_HEADER_PASSWORD"           : "Heslo:",
+        "FIELD_HEADER_PASSWORD_OLD"       : "Aktuální heslo:",
+        "FIELD_HEADER_PASSWORD_NEW"       : "Nové heslo:",
+        "FIELD_HEADER_PASSWORD_NEW_AGAIN" : "Potvrďte nové heslo:",
+        "FIELD_HEADER_TIMEZONE"           : "Časové pásmo:",
+        "FIELD_HEADER_USERNAME"           : "Uživatelské jméno:",
+        
+        "HELP_DEFAULT_INPUT_METHOD" : "Výchozí metoda vstupu určuje, jak Guacamole přijímá události klávesnice. Změna tohoto nastavení může být nezbytná při používání mobilního zařízení nebo při psaní přes IME. Toto nastavení může být přepsáno na základě připojení v rámci nabídky Guacamole.",
+        "HELP_DEFAULT_MOUSE_MODE"   : "Výchozí režim emulace myši určuje, jak se bude vzdálená myš chovat v nových spojeních s ohledem na dotyky. Toto nastavení může být přepsáno na základě připojení v rámci nabídky Guacamole.",
+        "HELP_INPUT_METHOD_NONE"    : "@:CLIENT.HELP_INPUT_METHOD_NONE",
+        "HELP_INPUT_METHOD_OSK"     : "@:CLIENT.HELP_INPUT_METHOD_OSK",
+        "HELP_INPUT_METHOD_TEXT"    : "@:CLIENT.HELP_INPUT_METHOD_TEXT",
+        "HELP_LOCALE"               : "Níže uvedené možnosti se vztahují k místu uživatele a ovlivní způsob zobrazení různých částí rozhraní.",
+        "HELP_MOUSE_MODE_ABSOLUTE"  : "@:CLIENT.HELP_MOUSE_MODE_ABSOLUTE",
+        "HELP_MOUSE_MODE_RELATIVE"  : "@:CLIENT.HELP_MOUSE_MODE_RELATIVE",
+        "HELP_UPDATE_PASSWORD"      : "Pokud chcete změnit heslo, zadejte své aktuální heslo a níže požadované nové heslo a klikněte na tlačítko „Aktualizovat heslo“. Změna se projeví okamžitě.",
+
+        "INFO_PASSWORD_CHANGED" : "Heslo bylo změněno.",
+        "INFO_PREFERENCE_ATTRIBUTES_CHANGED" : "Uživatelská nastavení uložena.",
+
+        "NAME_INPUT_METHOD_NONE" : "@:CLIENT.NAME_INPUT_METHOD_NONE",
+        "NAME_INPUT_METHOD_OSK"  : "@:CLIENT.NAME_INPUT_METHOD_OSK",
+        "NAME_INPUT_METHOD_TEXT" : "@:CLIENT.NAME_INPUT_METHOD_TEXT",
+
+        "SECTION_HEADER_DEFAULT_INPUT_METHOD" : "Výchozí metoda vstupu",
+        "SECTION_HEADER_DEFAULT_MOUSE_MODE"   : "Výchozí mód emulace myši",
+        "SECTION_HEADER_UPDATE_PASSWORD"      : "Změnit heslo"
+
+    },
+
+    "SETTINGS_USERS" : {
+
+        "ACTION_ACKNOWLEDGE"   : "@:APP.ACTION_ACKNOWLEDGE",
+        "ACTION_NEW_USER"    : "Nový uživatel",
+
+        "DIALOG_HEADER_ERROR" : "@:APP.DIALOG_HEADER_ERROR",
+
+        "FIELD_PLACEHOLDER_FILTER" : "@:APP.FIELD_PLACEHOLDER_FILTER",
+
+        "FORMAT_DATE" : "@:APP.FORMAT_DATE_TIME_PRECISE",
+
+        "HELP_USERS" : "Chcete-li spravovat daného uživatele, klepněte na něj nebo klepněte na něj. V závislosti na úrovni přístupu mohou být uživatelé přidáváni a mazáni a jejich hesla mohou být změněna.",
+
+        "SECTION_HEADER_USERS" : "Uživatel",
+
+        "TABLE_HEADER_FULL_NAME"    : "Celé jméno",
+        "TABLE_HEADER_LAST_ACTIVE"  : "Naposledy aktivní",
+        "TABLE_HEADER_ORGANIZATION" : "Organizace",
+        "TABLE_HEADER_USERNAME"     : "Uživatelské jméno"
+
+    },
+
+    "SETTINGS_USER_GROUPS" : {
+
+        "ACTION_ACKNOWLEDGE"    : "@:APP.ACTION_ACKNOWLEDGE",
+        "ACTION_NEW_USER_GROUP" : "Nová skupina",
+
+        "DIALOG_HEADER_ERROR" : "@:APP.DIALOG_HEADER_ERROR",
+
+        "FIELD_PLACEHOLDER_FILTER" : "@:APP.FIELD_PLACEHOLDER_FILTER",
+
+        "FORMAT_DATE" : "@:APP.FORMAT_DATE_TIME_PRECISE",
+
+        "HELP_USER_GROUPS" : "Chcete-li tuto skupinu spravovat, klepněte na ni nebo klepněte na ni. V závislosti na úrovni přístupu lze skupiny přidávat a mazat a jejich členské uživatele a skupiny lze měnit.",
+
+        "SECTION_HEADER_USER_GROUPS" : "Skupiny",
+
+        "TABLE_HEADER_USER_GROUP_NAME" : "Jméno skupiny"
+
+    },
+
+    "SETTINGS_SESSIONS" : {
+        
+        "ACTION_ACKNOWLEDGE" : "@:APP.ACTION_ACKNOWLEDGE",
+        "ACTION_CANCEL"      : "@:APP.ACTION_CANCEL",
+        "ACTION_DELETE"      : "Ukončit sezení",
+        
+        "DIALOG_HEADER_CONFIRM_DELETE" : "Ukončit sezení",
+        "DIALOG_HEADER_ERROR"          : "@:APP.DIALOG_HEADER_ERROR",
+        
+        "FIELD_PLACEHOLDER_FILTER" : "@:APP.FIELD_PLACEHOLDER_FILTER",
+        
+        "FORMAT_STARTDATE" : "@:APP.FORMAT_DATE_TIME_PRECISE",
+
+        "HELP_SESSIONS" : "Tato stránka bude naplněna aktuálně aktivními připojeními. Uvedená připojení a schopnost zabít tato připojení závisí na úrovni přístupu. Pokud chcete zabít jednu nebo více relací, zaškrtněte políčko vedle těchto relací a klepněte na tlačítko \"Zabít relace\". Zabití relace okamžitě odpojí uživatele od přidruženého připojení.",
+        
+        "INFO_NO_SESSIONS" : "Žádné aktivní sezení",
+
+        "SECTION_HEADER_SESSIONS" : "Aktivní sezení",
+        
+        "TABLE_HEADER_SESSION_CONNECTION_NAME" : "Název připojení",
+        "TABLE_HEADER_SESSION_REMOTEHOST"      : "Vzdálený host",
+        "TABLE_HEADER_SESSION_STARTDATE"       : "Aktivní od",
+        "TABLE_HEADER_SESSION_USERNAME"        : "Uživatelské jméno",
+        
+        "TEXT_CONFIRM_DELETE" : "Jste si jisti, že chcete ukončit vybrané připojení? Uživatelé využívající toto připojení budou okamžitě odpojeni."
+
+    },
+
+    "USER_ATTRIBUTES" : {
+
+        "FIELD_HEADER_GUAC_EMAIL_ADDRESS"       : "Emailová adresa:",
+        "FIELD_HEADER_GUAC_FULL_NAME"           : "Celé jméno:",
+        "FIELD_HEADER_GUAC_ORGANIZATION"        : "Organizace:",
+        "FIELD_HEADER_GUAC_ORGANIZATIONAL_ROLE" : "Role:"
+
+    },
+
+    "USER_MENU" : {
+
+        "ACTION_LOGOUT"             : "@:APP.ACTION_LOGOUT",
+        "ACTION_MANAGE_CONNECTIONS" : "@:APP.ACTION_MANAGE_CONNECTIONS",
+        "ACTION_MANAGE_PREFERENCES" : "@:APP.ACTION_MANAGE_PREFERENCES",
+        "ACTION_MANAGE_SESSIONS"    : "@:APP.ACTION_MANAGE_SESSIONS",
+        "ACTION_MANAGE_SETTINGS"    : "@:APP.ACTION_MANAGE_SETTINGS",
+        "ACTION_MANAGE_USERS"       : "@:APP.ACTION_MANAGE_USERS",
+        "ACTION_MANAGE_USER_GROUPS" : "@:APP.ACTION_MANAGE_USER_GROUPS",
+        "ACTION_NAVIGATE_HOME"      : "@:APP.ACTION_NAVIGATE_HOME",
+        "ACTION_VIEW_HISTORY"       : "@:APP.ACTION_VIEW_HISTORY"
+
+    }
+
+}

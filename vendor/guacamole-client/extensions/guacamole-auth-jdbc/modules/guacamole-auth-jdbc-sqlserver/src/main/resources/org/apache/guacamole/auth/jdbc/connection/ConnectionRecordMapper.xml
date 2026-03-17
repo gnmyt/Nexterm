@@ -1,0 +1,257 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<!--
+    Licensed to the Apache Software Foundation (ASF) under one
+    or more contributor license agreements.  See the NOTICE file
+    distributed with this work for additional information
+    regarding copyright ownership.  The ASF licenses this file
+    to you under the Apache License, Version 2.0 (the
+    "License"); you may not use this file except in compliance
+    with the License.  You may obtain a copy of the License at
+
+      http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing,
+    software distributed under the License is distributed on an
+    "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+    KIND, either express or implied.  See the License for the
+    specific language governing permissions and limitations
+    under the License.
+-->
+
+<mapper namespace="org.apache.guacamole.auth.jdbc.connection.ConnectionRecordMapper" >
+
+    <!-- Result mapper for system permissions -->
+    <resultMap id="ConnectionRecordResultMap" type="org.apache.guacamole.auth.jdbc.connection.ConnectionRecordModel">
+        <id     column="history_id"           property="recordID"                 jdbcType="INTEGER"/>
+        <result column="connection_id"        property="connectionIdentifier"     jdbcType="INTEGER"/>
+        <result column="connection_name"      property="connectionName"           jdbcType="VARCHAR"/>
+        <result column="remote_host"          property="remoteHost"               jdbcType="VARCHAR"/>
+        <result column="sharing_profile_id"   property="sharingProfileIdentifier" jdbcType="INTEGER"/>
+        <result column="sharing_profile_name" property="sharingProfileName"       jdbcType="VARCHAR"/>
+        <result column="user_id"              property="userID"                   jdbcType="INTEGER"/>
+        <result column="username"             property="username"                 jdbcType="VARCHAR"/>
+        <result column="start_date"           property="startDate"                jdbcType="TIMESTAMP"/>
+        <result column="end_date"             property="endDate"                  jdbcType="TIMESTAMP"/>
+    </resultMap>
+
+    <!-- Update the given connection record, assigning an end date -->
+    <update id="updateEndDate" parameterType="org.apache.guacamole.auth.jdbc.connection.ConnectionRecordModel">
+        UPDATE [guacamole_connection_history]
+        SET end_date = #{record.endDate,jdbcType=TIMESTAMP}
+        WHERE history_id = #{record.recordID,jdbcType=INTEGER}
+    </update>
+
+    <!-- Insert the given connection record -->
+    <insert id="insert" useGeneratedKeys="true" keyProperty="record.recordID"
+            parameterType="org.apache.guacamole.auth.jdbc.connection.ConnectionRecordModel">
+
+        INSERT INTO [guacamole_connection_history] (
+            connection_id,
+            connection_name,
+            remote_host,
+            sharing_profile_id,
+            sharing_profile_name,
+            user_id,
+            username,
+            start_date,
+            end_date
+        )
+        VALUES (
+            #{record.connectionIdentifier,jdbcType=INTEGER},
+            #{record.connectionName,jdbcType=VARCHAR},
+            #{record.remoteHost,jdbcType=VARCHAR},
+            #{record.sharingProfileIdentifier,jdbcType=INTEGER},
+            #{record.sharingProfileName,jdbcType=VARCHAR},
+            (SELECT user_id FROM [guacamole_user]
+             JOIN [guacamole_entity] ON [guacamole_user].entity_id = [guacamole_entity].entity_id
+             WHERE
+                <choose>
+                    <when test="caseSensitivity.caseSensitiveUsernames()">
+                        [guacamole_entity].name = #{record.username,jdbcType=VARCHAR}
+                    </when>
+                    <otherwise>
+                        LOWER([guacamole_entity].name) = LOWER(#{record.username,jdbcType=VARCHAR})
+                    </otherwise>
+                </choose>
+               AND [guacamole_entity].type = 'USER'),
+            #{record.username,jdbcType=VARCHAR},
+            #{record.startDate,jdbcType=TIMESTAMP},
+            #{record.endDate,jdbcType=TIMESTAMP}
+        )
+
+    </insert>
+
+    <!-- Search for specific connection records -->
+    <select id="search" resultMap="ConnectionRecordResultMap">
+
+        SELECT TOP (#{limit,jdbcType=INTEGER})
+            [guacamole_connection_history].history_id,
+            [guacamole_connection_history].connection_id,
+            [guacamole_connection_history].connection_name,
+            [guacamole_connection_history].remote_host,
+            [guacamole_connection_history].sharing_profile_id,
+            [guacamole_connection_history].sharing_profile_name,
+            [guacamole_connection_history].user_id,
+            [guacamole_connection_history].username,
+            [guacamole_connection_history].start_date,
+            [guacamole_connection_history].end_date
+        FROM [guacamole_connection_history]
+
+        <!-- Search terms -->
+        <where>
+
+            <if test="recordIdentifier != null">
+                [guacamole_connection_history].history_id = #{recordIdentifier,jdbcType=INTEGER}
+            </if>
+
+            <if test="identifier != null">
+                AND [guacamole_connection_history].connection_id = #{identifier,jdbcType=INTEGER}
+            </if>
+            
+            <foreach collection="terms" item="term" open=" AND " separator=" AND ">
+                (
+
+                    [guacamole_connection_history].user_id IN (
+                        SELECT user_id
+                        FROM [guacamole_user]
+                        WHERE
+                            <choose>
+                                <when test="caseSensitivity.caseSensitiveUsernames()">
+                                    CHARINDEX(#{term.term,jdbcType=VARCHAR} IN username) > 0
+                                </when>
+                                <otherwise>
+                                    CHARINDEX(LOWER(#{term.term,jdbcType=VARCHAR}) IN LOWER(username)) > 0
+                                </otherwise>
+                            </choose>
+                    )
+
+                    OR [guacamole_connection_history].connection_id IN (
+                        SELECT connection_id
+                        FROM [guacamole_connection]
+                        WHERE CHARINDEX(#{term.term,jdbcType=VARCHAR}, connection_name) > 0
+                    )
+
+                    <if test="term.startDate != null and term.endDate != null">
+                        OR start_date BETWEEN #{term.startDate,jdbcType=TIMESTAMP} AND #{term.endDate,jdbcType=TIMESTAMP}
+                    </if>
+
+                )
+            </foreach>
+            
+        </where>
+
+        <!-- Bind sort property enum values for sake of readability -->
+        <bind name="START_DATE" value="@org.apache.guacamole.net.auth.ActivityRecordSet$SortableProperty@START_DATE"/>
+
+        <!-- Sort predicates -->
+        <foreach collection="sortPredicates" item="sortPredicate"
+                 open="ORDER BY " separator=", ">
+            <choose>
+                <when test="sortPredicate.property == START_DATE">[guacamole_connection_history].start_date</when>
+                <otherwise>1</otherwise>
+            </choose>
+            <if test="sortPredicate.descending">DESC</if>
+        </foreach>
+
+    </select>
+
+    <!-- Search for specific connection records -->
+    <select id="searchReadable" resultMap="ConnectionRecordResultMap">
+
+        SELECT TOP (#{limit,jdbcType=INTEGER})
+            [guacamole_connection_history].history_id,
+            [guacamole_connection_history].connection_id,
+            [guacamole_connection_history].connection_name,
+            [guacamole_connection_history].remote_host,
+            [guacamole_connection_history].sharing_profile_id,
+            [guacamole_connection_history].sharing_profile_name,
+            [guacamole_connection_history].user_id,
+            [guacamole_connection_history].username,
+            [guacamole_connection_history].start_date,
+            [guacamole_connection_history].end_date
+        FROM [guacamole_connection_history]
+        LEFT JOIN [guacamole_connection]            ON [guacamole_connection_history].connection_id = [guacamole_connection].connection_id
+        LEFT JOIN [guacamole_user]                  ON [guacamole_connection_history].user_id       = [guacamole_user].user_id
+
+        <!-- Search terms -->
+        <where>
+
+            <if test="recordIdentifier != null">
+                [guacamole_connection_history].history_id = #{recordIdentifier,jdbcType=INTEGER}
+            </if>
+
+            <!-- Restrict to readable connections -->
+            AND [guacamole_connection_history].connection_id IN (
+                <include refid="org.apache.guacamole.auth.jdbc.connection.ConnectionMapper.getReadableIDs">
+                    <property name="entityID"        value="#{user.entityID,jdbcType=INTEGER}"/>
+                    <property name="groups"          value="effectiveGroups"/>
+                    <property name="caseSensitivity" value="${caseSensitivity}"/>
+                </include>
+            )
+
+            <!-- Restrict to readable users -->
+            AND [guacamole_connection_history].user_id IN (
+                <include refid="org.apache.guacamole.auth.jdbc.user.UserMapper.getReadableIDs">
+                    <property name="entityID"        value="#{user.entityID,jdbcType=INTEGER}"/>
+                    <property name="groups"          value="effectiveGroups"/>
+                    <property name="caseSensitivity" value="${caseSensitivity}"/>
+                </include>
+            )
+
+            <if test="identifier != null">
+                AND [guacamole_connection_history].connection_id = #{identifier,jdbcType=INTEGER}
+            </if>
+            
+            <foreach collection="terms" item="term" open=" AND " separator=" AND ">
+                (
+
+                    [guacamole_connection_history].user_id IN (
+                        SELECT user_id
+                        FROM [guacamole_user]
+                        JOIN [guacamole_entity] ON [guacamole_user].entity_id = [guacamole_entity].entity_id
+                        WHERE
+                            <choose>
+                                <hen test="caseSensitivity.caseSensitiveUsernames()">
+                                    CHARINDEX(#{term.term,jdbcType=VARCHAR} IN [guacamole_entity].name) > 0
+                                </when>
+                                <otherwise>
+                                    CHARINDEX(LOWER(#{term.term,jdbcType=VARCHAR}) IN LOWER(guacamole_entity.name)) > 0
+                                </otherwise>
+                            </choose>
+                            AND [guacamole_entity].type = 'USER'
+                    )
+
+                    OR [guacamole_connection_history].connection_id IN (
+                        SELECT connection_id
+                        FROM [guacamole_connection]
+                        WHERE CHARINDEX(#{term.term,jdbcType=VARCHAR}, connection_name) > 0
+                    )
+
+                    <if test="term.startDate != null and term.endDate != null">
+                        OR start_date BETWEEN #{term.startDate,jdbcType=TIMESTAMP} AND #{term.endDate,jdbcType=TIMESTAMP}
+                    </if>
+
+                )
+            </foreach>
+            
+        </where>
+
+        <!-- Bind sort property enum values for sake of readability -->
+        <bind name="START_DATE" value="@org.apache.guacamole.net.auth.ActivityRecordSet$SortableProperty@START_DATE"/>
+
+        <!-- Sort predicates -->
+        <foreach collection="sortPredicates" item="sortPredicate"
+                 open="ORDER BY " separator=", ">
+            <choose>
+                <when test="sortPredicate.property == START_DATE">[guacamole_connection_history].start_date</when>
+                <otherwise>1</otherwise>
+            </choose>
+            <if test="sortPredicate.descending">DESC</if>
+        </foreach>
+
+    </select>
+
+</mapper>

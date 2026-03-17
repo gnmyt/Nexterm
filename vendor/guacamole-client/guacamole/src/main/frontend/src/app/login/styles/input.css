@@ -1,0 +1,47 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ */
+
+.login-ui .login-dialog .login-fields input {
+    display: block;
+    border: 1px solid rgba(0, 0, 0, 0.25);
+    -moz-border-radius: 0.2em;
+    -webkit-border-radius: 0.2em;
+    -khtml-border-radius: 0.2em;
+    font-family: Carlito, FreeSans, Helvetica, Arial, sans-serif;
+    border-radius: 0.2em;
+    width: 100%;
+    margin: 0;
+    margin-bottom: 0.5em;
+    padding: 0.5em 0.75em;
+    max-width: none;
+}
+
+.login-ui .login-dialog .buttons input[type="submit"] {
+    width: 100%;
+    margin: 0;
+}
+
+.login-ui.continuation .login-dialog .buttons input[type="submit"] {
+    width: auto;
+}
+
+.login-ui.initial .login-dialog input.continue-login,
+.login-ui.continuation .login-dialog input.login {
+    display: none;
+}

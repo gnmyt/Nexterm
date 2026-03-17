@@ -1,9 +1,15 @@
 @use "@/common/styles/colors"
 
+$mobile: 768px
+
 .server-search
-  margin-top: 1rem
   position: relative
-  width: 100%
+  flex: 1
+  min-width: 0
+  container-type: inline-size
+
+.search-icon
+  container-type: inline-size
 
 .search-icon
   position: absolute
@@ -13,6 +19,16 @@
   height: 2rem
   transform: translateY(-50%)
   color: colors.$subtext
+  transition: opacity 0.2s
+
+  @media (max-width: $mobile)
+    width: 1.5rem
+    height: 1.5rem
+    left: 0.625rem
+
+  @container (max-width: 180px)
+    opacity: 0
+    pointer-events: none
 
 .info-container
   position: absolute
@@ -22,6 +38,14 @@
   user-select: none
   cursor: pointer
   color: colors.$subtext
+  transition: opacity 0.2s
+
+  @media (max-width: $mobile)
+    right: 0.5rem
+
+  @container (max-width: 180px)
+    opacity: 0
+    pointer-events: none
 
   p
     margin: 0
@@ -30,18 +54,33 @@
     font-size: 10pt
     border: 1px solid colors.$gray
 
+    @media (max-width: $mobile)
+      font-size: 9pt
+      padding: 0.15rem 0.4rem
+
 .search-input
   user-select: none
   padding: 0.8rem 6rem 0.8rem 3.5rem
   border: 1px solid colors.$gray
-  background-color: colors.$dark-gray
-  color: colors.$light-gray
+  background-color: colors.$lighter-background
+  color: colors.$white
   box-sizing: border-box
   border-radius: 0.7rem
   font-size: 14pt
   width: 100%
   outline: none
+  transition: border-color 0.2s ease
+
+  @media (max-width: $mobile)
+    padding: 0.7rem 5rem 0.7rem 2.75rem
+    font-size: 13pt
+
+  @container (max-width: 180px)
+    padding-right: 1rem
+
+  @container (max-width: 180px)
+    padding-left: 1rem
 
   &:focus
     border: 1px solid colors.$primary
-    background-color: colors.$gray
+    background-color: colors.$dark-gray

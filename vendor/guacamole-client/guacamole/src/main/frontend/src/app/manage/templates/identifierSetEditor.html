@@ -1,0 +1,47 @@
+<div class="related-objects" ng-hide="isEmpty()">
+    <div class="header">
+        <h2>{{ header | translate }}</h2>
+        <div class="filter">
+            <input class="search-string" type="text"
+                   placeholder="{{ 'SETTINGS_USERS.FIELD_PLACEHOLDER_FILTER' | translate }}"
+                   ng-model="filterString">
+        </div>
+    </div>
+
+    <div class="section">
+
+        <!-- Abbreviated list of only the currently selected objects -->
+        <div class="abbreviated-related-objects">
+            <img src="images/arrows/right.svg" alt="Expand" class="expand" ng-hide="expanded" ng-click="expand()">
+            <img src="images/arrows/down.svg" alt="Collapse" class="collapse" ng-show="expanded" ng-click="collapse()">
+            <p ng-hide="identifiers.length" class="no-related-objects">{{ emptyPlaceholder | translate }}</p>
+            <ul>
+                <li ng-repeat="identifier in identifiers | filter: filterString">
+                    <label><img src="images/x-red.svg" alt="Remove" class="remove"
+                                ng-click="removeIdentifier(identifier)"
+                                ng-show="isEditable[identifier]"><span class="identifier">{{ identifier }}</span>
+                    </label>
+                </li>
+            </ul>
+        </div>
+
+        <!-- Exhaustive, paginated list of all objects -->
+        <div class="all-related-objects" ng-show="expanded">
+            <p ng-hide="identifiersAvailablePage.length" class="no-objects-available">{{ unavailablePlaceholder | translate }}</p>
+            <ul>
+                <li ng-repeat="identifier in identifiersAvailablePage">
+                    <label><input type="checkbox"
+                           ng-model="identifierFlags[identifier]"
+                           ng-change="identifierChanged(identifier)">
+                        <span class="identifier">{{ identifier }}</span>
+                    </label>
+                </li>
+            </ul>
+
+            <!-- Pager controls for user list -->
+            <guac-pager page="identifiersAvailablePage" page-size="25"
+                        items="identifiersAvailable | orderBy | filter: filterString"></guac-pager>
+        </div>
+
+    </div>
+</div>

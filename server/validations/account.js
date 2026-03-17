@@ -19,3 +19,7 @@ module.exports.updateNameValidation = Joi.object({
     firstName: Joi.string().min(2).max(50),
     lastName: Joi.string().min(2).max(50),
 }).or('firstName', 'lastName');
+
+module.exports.updateSessionSyncValidation = Joi.object({
+    sessionSync: Joi.string().valid('across_devices', 'same_browser', 'same_tab').required(),
+});

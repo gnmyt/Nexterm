@@ -1,0 +1,60 @@
+# Docker build spec
+Dockerfile
+
+# Git repository metadata
+.git
+**/.gitignore
+
+# Object code
+**/*.o
+**/*.so
+**/*.lo
+**/*.la
+
+# gcov files
+**/*.gcda
+**/*.gcov
+**/*.gcno
+
+# Backup files
+**/*~
+
+# Release files
+**/*.tar.gz
+
+# Files currently being edited by vim or vi
+**/*.swp
+
+# automake/autoconf
+**/.deps/
+**/.dirstamp
+**/.libs/
+**/Makefile
+**/Makefile.in
+aclocal.m4
+autom4te.cache/
+m4/*
+**/!README
+compile
+config.guess
+config.h
+config.h.in
+config.log
+config.status
+config.sub
+configure
+depcomp
+install-sh
+libtool
+ltmain.sh
+missing
+stamp-h1
+test-driver
+
+# Test binaries
+tests/test_*
+!tests/test_*.[ch]
+
+# Generated docs
+doc/*/doxygen-output
+

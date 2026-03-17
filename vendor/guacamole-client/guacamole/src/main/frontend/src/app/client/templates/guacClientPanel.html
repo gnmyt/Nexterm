@@ -1,0 +1,30 @@
+<div class="client-panel"
+     ng-class="{ 'has-clients': hasClientGroups(), 'hidden' : panelHidden() }">
+
+    <!-- Toggle panel visibility -->
+    <div class="client-panel-handle" ng-click="togglePanel()"></div>
+
+    <!-- List of connection thumbnails -->
+    <ul class="client-panel-connection-list">
+        <li ng-repeat="clientGroup in clientGroups | orderBy: '-lastUsed'"
+            ng-if="!clientGroup.attached"
+            ng-class="{ 'needs-attention' : hasStatusUpdate(clientGroup) }"
+            class="client-panel-connection">
+
+            <!-- Close connection -->
+            <button class="close-other-connection" ng-click="disconnect(clientGroup)">
+                <img ng-attr-alt="{{ 'CLIENT.ACTION_DISCONNECT' | translate }}"
+                     ng-attr-title="{{ 'CLIENT.ACTION_DISCONNECT' | translate }}"
+                     src="images/x.svg">
+            </button>
+
+            <!-- Thumbnail -->
+            <a href="#/client/{{ getIdentifier(clientGroup) }}">
+                <guac-tiled-thumbnails client-group="clientGroup"></guac-tiled-thumbnails>
+                <div class="name">{{ getTitle(clientGroup) }}</div>
+            </a>
+
+        </li>
+    </ul>
+
+</div>

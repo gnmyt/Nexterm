@@ -1,0 +1,48 @@
+<div class="settings section user-groups" ng-class="{loading: !isLoaded()}">
+
+    <!-- User group management -->
+    <p>{{'SETTINGS_USER_GROUPS.HELP_USER_GROUPS' | translate}}</p>
+
+
+    <!-- User management toolbar -->
+    <div class="toolbar">
+
+        <!-- Form action buttons -->
+        <div class="action-buttons">
+            <a class="add-user-group button" ng-show="canCreateUserGroups()"
+               href="#/manage/{{getDefaultDataSource() | escape}}/userGroups/">{{'SETTINGS_USER_GROUPS.ACTION_NEW_USER_GROUP' | translate}}</a>
+        </div>
+
+        <!-- User group filter -->
+        <guac-filter filtered-items="filteredManageableUserGroups" items="manageableUserGroups"
+                     placeholder="'SETTINGS_USER_GROUPS.FIELD_PLACEHOLDER_FILTER' | translate"
+                     properties="filteredUserGroupProperties"></guac-filter>
+
+    </div>
+
+    <!-- List of user groups this user has access to -->
+    <table class="sorted user-group-list">
+        <thead>
+            <tr>
+                <th guac-sort-order="order" guac-sort-property="'userGroup.identifier'" class="user-group-name">
+                    {{'SETTINGS_USER_GROUPS.TABLE_HEADER_USER_GROUP_NAME' | translate}}
+                </th>
+            </tr>
+        </thead>
+        <tbody ng-class="{loading: !isLoaded()}">
+            <tr ng-repeat="manageableUserGroup in manageableUserGroupPage" class="user-group" ng-class="{disabled: manageableUserGroup.userGroup.disabled}">
+                <td class="user-group-name">
+                    <a ng-href="#/manage/{{manageableUserGroup.dataSource | escape}}/userGroups/{{manageableUserGroup.userGroup.identifier | escape}}">
+                        <div class="icon user-group"></div>
+                        <span class="name">{{manageableUserGroup.userGroup.identifier}}</span>
+                    </a>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+
+    <!-- Pager controls for user group list -->
+    <guac-pager page="manageableUserGroupPage" page-size="25"
+                items="filteredManageableUserGroups | orderBy : order.predicate"></guac-pager>
+
+</div>

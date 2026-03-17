@@ -1,0 +1,844 @@
+{
+
+    "NAME" : "Русский",
+
+    "APP" : {
+
+        "ACTION_ACKNOWLEDGE"        : "ОК",
+        "ACTION_CANCEL"             : "Отмена",
+        "ACTION_CLONE"              : "Клонировать",
+        "ACTION_CONTINUE"           : "Продолжить",
+        "ACTION_DELETE"             : "Удалить",
+        "ACTION_DELETE_SESSIONS"    : "Завершить сессии",
+        "ACTION_DOWNLOAD"           : "Скачать",
+        "ACTION_LOGIN"              : "Вход",
+        "ACTION_LOGOUT"             : "Выход",
+        "ACTION_MANAGE_CONNECTIONS" : "Подключения",
+        "ACTION_MANAGE_PREFERENCES" : "Настройки",
+        "ACTION_MANAGE_SETTINGS"    : "Опции",
+        "ACTION_MANAGE_SESSIONS"    : "Активные сессии",
+        "ACTION_MANAGE_USERS"       : "Пользователи",
+        "ACTION_MANAGE_USER_GROUPS" : "Группы",
+        "ACTION_NAVIGATE_BACK"      : "Назад",
+        "ACTION_NAVIGATE_HOME"      : "Главная",
+        "ACTION_SAVE"               : "Сохранить",
+        "ACTION_SEARCH"             : "Искать",
+        "ACTION_SHARE"              : "Расшарить",
+        "ACTION_UPDATE_PASSWORD"    : "Обновить пароль",
+        "ACTION_VIEW_HISTORY"       : "История",
+
+        "DIALOG_HEADER_ERROR" : "Ошибка",
+
+        "ERROR_PAGE_UNAVAILABLE"  : "Произошла ошибка, действие не может быть завершено. Если проблема будет повторяться, обратитесь к системному администратору или проверьте системные журналы.",
+        "ERROR_PASSWORD_BLANK"    : "Пароль не может быть пустым.",
+        "ERROR_PASSWORD_MISMATCH" : "Указанные пароли не совпадают.",
+
+        "FIELD_HEADER_PASSWORD"       : "Пароль:",
+        "FIELD_HEADER_PASSWORD_AGAIN" : "Повтор пароля:",
+
+        "FIELD_PLACEHOLDER_FILTER" : "Фильтр",
+
+        "FORMAT_DATE_TIME_PRECISE" : "dd.MM.yyyy HH:mm:ss",
+
+        "INFO_ACTIVE_USER_COUNT" : "Сейчас в системе {USERS} {USERS, plural, one{пользователь} few{пользователя} many{пользователей} other{пользователя}}.",
+
+        "TEXT_ANONYMOUS_USER"   : "Аноним",
+        "TEXT_HISTORY_DURATION" : "{VALUE} {UNIT, select, second{{VALUE, plural, one{секунда} few{секуны} many{секунд} other{секуны}}} minute{{VALUE, plural, one{минута} few{минуты} many{минут} other{минуты}}} hour{{VALUE, plural, one{час} few{часа} many{часов} other{часа}}} day{{VALUE, plural, one{день} few{дня} many{дней} other{дня}}} other{}}"
+
+    },
+
+    "CLIENT" : {
+
+        "ACTION_ACKNOWLEDGE"               : "@:APP.ACTION_ACKNOWLEDGE",
+        "ACTION_CLEAR_COMPLETED_TRANSFERS" : "Очистить",
+        "ACTION_DISCONNECT"                : "Отключиться",
+        "ACTION_LOGOUT"                    : "@:APP.ACTION_LOGOUT",
+        "ACTION_NAVIGATE_BACK"             : "@:APP.ACTION_NAVIGATE_BACK",
+        "ACTION_NAVIGATE_HOME"             : "@:APP.ACTION_NAVIGATE_HOME",
+        "ACTION_RECONNECT"                 : "Переподключиться",
+        "ACTION_SAVE_FILE"                 : "@:APP.ACTION_SAVE",
+        "ACTION_SHARE"                     : "@:APP.ACTION_SHARE",
+        "ACTION_UPLOAD_FILES"              : "Загрузка файлов",
+
+        "DIALOG_HEADER_CONNECTING"       : "Подключение",
+        "DIALOG_HEADER_CONNECTION_ERROR" : "Ошибка подключения",
+        "DIALOG_HEADER_DISCONNECTED"     : "Отключено",
+
+        "ERROR_CLIENT_201"     : "Соединение было закрыто, так как сервер перегружен. Пожалуйста, попробуйте повторить попытку позднее.",
+        "ERROR_CLIENT_202"     : "Сервер Guacamole закрыл соединение, так как удаленный рабочий стол долго не отвечает. Пожалуйста, попробуйте повторить попытку позднее или обратитесь к администратору.",
+        "ERROR_CLIENT_203"     : "На сервере удаленных рабочих столов произошла ошибка и соединение было закрыто. Пожалуйста, попробуйте повторить попытку позднее или обратитесь к администратору.",
+        "ERROR_CLIENT_207"     : "Сервер удаленных рабочих столов недосягаем. Если проблема сохранится, свяжитесь с системным администратором или проверьте логи.",
+        "ERROR_CLIENT_208"     : "Сервер удаленных рабочих столов недоступен. Если проблема сохранится, свяжитесь с системным администратором или проверьте логи.",
+        "ERROR_CLIENT_209"     : "Сервер удаленных рабочих столов закрыл соединение, так как оно конфликтует с другим соединением. Пожалуйста, попробуйте повторить попытку позднее.",
+        "ERROR_CLIENT_20A"     : "Сервер удаленных рабочих столов закрыл соединение, так как оно долгое время было неактивно. Если это нежелательное поведение, обратитесь к системному администратору или проверьте настройки.",
+        "ERROR_CLIENT_20B"     : "Сервер удаленных рабочих столов закрыл соединение принудительно. Если это нежелательное поведение, обратитесь к системному администратору или проверьте настройки.",
+        "ERROR_CLIENT_301"     : "Не удалось выполнить вход. Пожалуйста, переподключитесь и повторите попытку.",
+        "ERROR_CLIENT_303"     : "Сервер удаленных рабочих столов запретил доступ к этому соединению. Для получения доступа, пожалуйста, обратитесь к администратору.",
+        "ERROR_CLIENT_308"     : "Сервер Guacamole закрыл соединение, так как браузер не ответил в течение отведенного времени. Такое бывает в случае возникновения проблем с доступом в сеть, связанных со слабым беспроводным сигналом или низкими скоростями передачи данных. Пожалуйста, проверьте ваше сетевое подключение и повторите попытку снова.",
+        "ERROR_CLIENT_31D"     : "Сервер Guacamole отклонил доступ к соединению, так как вы превысили максимальное количество одновременных подключений. Пожалуйста, закройте ненужные соединения и повторите попытку.",
+        "ERROR_CLIENT_DEFAULT" : "Соединение было прервано из-за внутренней ошибки сервера Guacamole. Пожалуйста, попробуйте повторить попытку позднее или обратитесь к администратору.",
+
+        "ERROR_TUNNEL_201"     : "Сервер Guacamole отклонил соединение, так как уже открыто слишком много соединений. Пожалуйста, попробуйте повторить попытку позднее.",
+        "ERROR_TUNNEL_202"     : "Соединение было закрыто, так как сервер долго не отвечает. Такое бывает в случае возникновения проблем с доступом в сеть, связанных со слабым беспроводным сигналом или низкими скоростями передачи данных. Пожалуйста, проверьте ваше сетевое подключение и повторите попытку снова.",
+        "ERROR_TUNNEL_203"     : "На сервере произошла ошибка и соединение было закрыто. Пожалуйста, попробуйте повторить попытку позднее или обратитесь к администратору.",
+        "ERROR_TUNNEL_204"     : "Соединение не существует. Проверьте, пожалуйста, название соединения.",
+        "ERROR_TUNNEL_205"     : "Соединение в настоящий момент занято и доступ к этому соединению не разрешен. Пожалуйста, попробуйте повторить попытку позднее.",
+        "ERROR_TUNNEL_207"     : "Сервер Guacamole на данный момент недоступен. Пожалуйста, проверьте ваше сетевое подключение и повторите попытку снова.",
+        "ERROR_TUNNEL_208"     : "Сервер Guacamole не принимает соединения. Пожалуйста, проверьте ваше сетевое подключение и повторите попытку снова.",
+        "ERROR_TUNNEL_301"     : "У вас нет разрешения для доступа к этому соединению, так как вы не выполнили вход. Пожалуйста, выполните вход и повторите попытку.",
+        "ERROR_TUNNEL_303"     : "У вас нет разрешения для доступа к этому соединению. Для получения доступа, пожалуйста, обратитесь к администратору.",
+        "ERROR_TUNNEL_308"     : "Сервер Guacamole закрыл соединение, так как браузер не ответил в течение отведенного времени. Такое бывает в случае возникновения проблем с доступом в сеть, связанных со слабым беспроводным сигналом или низкими скоростями передачи данных. Пожалуйста, проверьте ваше сетевое подключение и повторите попытку снова.",
+        "ERROR_TUNNEL_31D"     : "Сервер Guacamole отклонил доступ к соединению, так как вы превысили максимальное количество одновременных подключений. Пожалуйста, закройте несколько установленных соединений и повторите попытку.",
+        "ERROR_TUNNEL_DEFAULT" : "Соединение было прервано из-за внутренней ошибки сервера Guacamole. Пожалуйста, попробуйте повторить попытку позднее или обратитесь к администратору.",
+
+        "ERROR_UPLOAD_100"     : "Передача файлов либо не поддерживается, либо выключена. Пожалуйста, обратитесь к администратору или проверьте логи.",
+        "ERROR_UPLOAD_201"     : "Слишком много задач передачи файлов уже активно. Подождите завершения текущих задач и повторите попытку снова.",
+        "ERROR_UPLOAD_202"     : "Файл не может быть передан, так как удаленный рабочий стол не отвечает. Пожалуйста, попробуйте повторить попытку позднее или обратитесь к администратору.",
+        "ERROR_UPLOAD_203"     : "Произошла ошибка при передаче файла. Пожалуйста, попробуйте повторить попытку позднее или обратитесь к администратору.",
+        "ERROR_UPLOAD_204"     : "Место назначения для передаваемого файла не существует. Пожалуйста, проверьте правильность указания места назначения и повторите попытку снова.",
+        "ERROR_UPLOAD_205"     : "Место назначения для передаваемого файла заблокировано. Пожалуйста, дождитесь завершения других передач и повторите попытку снова.",
+        "ERROR_UPLOAD_301"     : "У вас нет разрешения на загрузку файла, так как вы не выполнили вход. Пожалуйста, выполните вход и повторите попытку передачи файла.",
+        "ERROR_UPLOAD_303"     : "У вас нет разрешения на загрузку файла. Для получения разрешения проверьте настройки или обратитесь к администратору.",
+        "ERROR_UPLOAD_308"     : "Передача файла зависла. Такое бывает в случае возникновения проблем с доступом в сеть, связанных со слабым беспроводным сигналом или низкими скоростями передачи данных. Пожалуйста, проверьте ваше сетевое подключение и повторите попытку снова.",
+        "ERROR_UPLOAD_31D"     : "Слишком много файлов уже передается в настоящий момент. Подождите завершения текущих передач и повторите попытку снова.",
+        "ERROR_UPLOAD_DEFAULT" : "Соединение было прервано из-за внутренней ошибки сервера Guacamole. Пожалуйста, попробуйте повторить попытку позднее или обратитесь к администратору.",
+
+        "HELP_CLIPBOARD"           : "Текст, скопированный или вырезанный внутри сеанса, появится в этом поле. Изменение текста в этом поле также отобразится в буфере обмена удаленного рабочего стола.",
+        "HELP_INPUT_METHOD_NONE"   : "Никакой метод ввода не используется. Ввод разрешен только для физической клавиатуры.",
+        "HELP_INPUT_METHOD_OSK"    : "Отображать и принимать ввод со встроенной экранной клавиатуры. Экранная клавиатура позволяет вводить любые комбинации, недоступные в других режимах (например Alt-Ctrl-Del).",
+        "HELP_INPUT_METHOD_TEXT"   : "Разрешить ввод текста, эмулировать события клавиатуры в зависимости от нажатых клавиш. Это необходимо для устройств без физической клавиатуры (смартфоны, планшеты).",
+        "HELP_MOUSE_MODE"          : "Определяет поведение курсора мыши при прикосновении.",
+        "HELP_MOUSE_MODE_ABSOLUTE" : "Прикоснитесь, чтобы сделать клик. Клик происходит в точке прикосновения к экрану.",
+        "HELP_MOUSE_MODE_RELATIVE" : "Потяните, чтобы перемещать курсор. Прикоснитесь, чтобы сделать клик. Клик происходит в точке нахождения курсора.",
+        "HELP_SHARE_LINK"          : "Это соединение расшарено и доступно всем по следующ{LINKS, plural, one{ей ссылке} other{им ссылкам}}:",
+
+        "INFO_CONNECTION_SHARED" : "Это соединение теперь расшарено.",
+        "INFO_NO_FILE_TRANSFERS" : "Нет загрузок.",
+
+        "NAME_INPUT_METHOD_NONE"   : "Нет",
+        "NAME_INPUT_METHOD_OSK"    : "Экранная клавиатура",
+        "NAME_INPUT_METHOD_TEXT"   : "Ввод текста",
+        "NAME_MOUSE_MODE_ABSOLUTE" : "Тачскрин",
+        "NAME_MOUSE_MODE_RELATIVE" : "Тачпад",
+
+        "SECTION_HEADER_CLIPBOARD"      : "Буфер обмена",
+        "SECTION_HEADER_DEVICES"        : "Устройства",
+        "SECTION_HEADER_DISPLAY"        : "Экран",
+        "SECTION_HEADER_FILE_TRANSFERS" : "Загрузки файлов",
+        "SECTION_HEADER_INPUT_METHOD"   : "Метод ввода",
+        "SECTION_HEADER_MOUSE_MODE"     : "Режим эмуляции мыши",
+
+        "TEXT_ZOOM_AUTO_FIT"              : "Автоматически умещать в браузере",
+        "TEXT_CLIENT_STATUS_IDLE"         : "Бездействие.",
+        "TEXT_CLIENT_STATUS_CONNECTING"   : "Подключение к Guacamole...",
+        "TEXT_CLIENT_STATUS_DISCONNECTED" : "Вы были отключены.",
+        "TEXT_CLIENT_STATUS_UNSTABLE"     : "Сетевое соединение с сервером Guacamole нестабильно.",
+        "TEXT_CLIENT_STATUS_WAITING"      : "Подключено к Guacamole. Ожидание ответа...",
+        "TEXT_RECONNECT_COUNTDOWN"        : "Переподключение через {REMAINING} {REMAINING, plural, one{секунду} few{секунды} many{секунд} other{секунды}}...",
+        "TEXT_FILE_TRANSFER_PROGRESS"     : "{PROGRESS} {UNIT, select, b{B} kb{KB} mb{MB} gb{GB} other{}}",
+
+        "URL_OSK_LAYOUT" : "layouts/ru-ru-qwerty.json"
+
+    },
+
+    "COLOR_SCHEME" : {
+
+        "ACTION_CANCEL"       : "@:APP.ACTION_CANCEL",
+        "ACTION_HIDE_DETAILS" : "Спрятать",
+        "ACTION_SAVE"         : "@:APP.ACTION_SAVE",
+        "ACTION_SHOW_DETAILS" : "Показать",
+
+        "FIELD_HEADER_BACKGROUND" : "Цвет фона",
+        "FIELD_HEADER_FOREGROUND" : "Основной цвет",
+
+        "FIELD_OPTION_CUSTOM" : "Выбрать...",
+
+        "SECTION_HEADER_DETAILS" : "Подробно:"
+
+    },
+
+    "DATA_SOURCE_DEFAULT" : {
+        "NAME" : "По умолчанию (XML)"
+    },
+
+    "FORM" : {
+
+        "FIELD_PLACEHOLDER_DATE" : "DD.MM.YYYY",
+        "FIELD_PLACEHOLDER_TIME" : "HH:MM:SS",
+
+        "HELP_SHOW_PASSWORD" : "Нажмите, чтобы показать пароль",
+        "HELP_HIDE_PASSWORD" : "Нажмите, чтобы спрятать пароль"
+
+    },
+
+    "HOME" : {
+
+        "FIELD_PLACEHOLDER_FILTER" : "@:APP.FIELD_PLACEHOLDER_FILTER",
+
+        "INFO_ACTIVE_USER_COUNT" : "@:APP.INFO_ACTIVE_USER_COUNT",
+
+        "INFO_NO_RECENT_CONNECTIONS" : "Нет недавних подключений.",
+
+        "PASSWORD_CHANGED" : "Пароль был изменен.",
+
+        "SECTION_HEADER_ALL_CONNECTIONS"    : "Все подключения",
+        "SECTION_HEADER_RECENT_CONNECTIONS" : "Недавние подключения"
+
+    },
+
+    "LIST" : {
+
+        "TEXT_ANONYMOUS_USER" : "@:APP.TEXT_ANONYMOUS_USER"
+
+    },
+
+    "LOGIN": {
+
+        "ACTION_ACKNOWLEDGE" : "@:APP.ACTION_ACKNOWLEDGE",
+        "ACTION_CONTINUE"    : "@:APP.ACTION_CONTINUE",
+        "ACTION_LOGIN"       : "@:APP.ACTION_LOGIN",
+
+        "DIALOG_HEADER_ERROR" : "@:APP.DIALOG_HEADER_ERROR",
+
+        "ERROR_INVALID_LOGIN" : "Неверные данные для входа",
+
+        "FIELD_HEADER_USERNAME" : "Имя пользователя",
+        "FIELD_HEADER_PASSWORD" : "Пароль"
+
+    },
+
+    "MANAGE_CONNECTION" : {
+
+        "ACTION_ACKNOWLEDGE"          : "@:APP.ACTION_ACKNOWLEDGE",
+        "ACTION_CANCEL"               : "@:APP.ACTION_CANCEL",
+        "ACTION_CLONE"                : "@:APP.ACTION_CLONE",
+        "ACTION_DELETE"               : "@:APP.ACTION_DELETE",
+        "ACTION_SAVE"                 : "@:APP.ACTION_SAVE",
+
+        "DIALOG_HEADER_CONFIRM_DELETE" : "Удалить подключение",
+        "DIALOG_HEADER_ERROR"          : "@:APP.DIALOG_HEADER_ERROR",
+
+        "FIELD_HEADER_LOCATION" : "Размещение:",
+        "FIELD_HEADER_NAME"     : "Название:",
+        "FIELD_HEADER_PROTOCOL" : "Протокол:",
+
+        "FORMAT_HISTORY_START" : "@:APP.FORMAT_DATE_TIME_PRECISE",
+
+        "INFO_CONNECTION_DURATION_UNKNOWN" : "--",
+        "INFO_CONNECTION_ACTIVE_NOW"       : "Активно",
+        "INFO_CONNECTION_NOT_USED"         : "Это подключение еще не использовалось.",
+
+        "SECTION_HEADER_EDIT_CONNECTION" : "Редактирование подключения",
+        "SECTION_HEADER_HISTORY"         : "История использования",
+        "SECTION_HEADER_PARAMETERS"      : "Настройки",
+
+        "TABLE_HEADER_HISTORY_USERNAME"   : "Имя пользователя",
+        "TABLE_HEADER_HISTORY_START"      : "Время начала",
+        "TABLE_HEADER_HISTORY_DURATION"   : "Продолжительность",
+        "TABLE_HEADER_HISTORY_REMOTEHOST" : "Удаленный узел",
+
+        "TEXT_CONFIRM_DELETE"   : "Подключения не могут быть восстановлены после удаления. Вы уверены, что хотите удалить подключение?",
+        "TEXT_HISTORY_DURATION" : "@:APP.TEXT_HISTORY_DURATION"
+
+    },
+
+    "MANAGE_CONNECTION_GROUP" : {
+
+        "ACTION_ACKNOWLEDGE"   : "@:APP.ACTION_ACKNOWLEDGE",
+        "ACTION_CANCEL"        : "@:APP.ACTION_CANCEL",
+        "ACTION_CLONE"         : "@:APP.ACTION_CLONE",
+        "ACTION_DELETE"        : "@:APP.ACTION_DELETE",
+        "ACTION_SAVE"          : "@:APP.ACTION_SAVE",
+
+        "DIALOG_HEADER_CONFIRM_DELETE" : "Удалить группу подключений",
+        "DIALOG_HEADER_ERROR"          : "@:APP.DIALOG_HEADER_ERROR",
+
+        "FIELD_HEADER_LOCATION" : "Размещение:",
+        "FIELD_HEADER_NAME"     : "Название:",
+        "FIELD_HEADER_TYPE"     : "Тип:",
+
+        "NAME_TYPE_BALANCING"       : "Балансирующая",
+        "NAME_TYPE_ORGANIZATIONAL"  : "Структурная",
+
+        "SECTION_HEADER_EDIT_CONNECTION_GROUP" : "Редактирование группы подключений",
+
+        "TEXT_CONFIRM_DELETE" : "Группы подключений не могут быть восстановлены после удаления. Вы уверены, что хотите удалить группу подключений?"
+
+    },
+
+    "MANAGE_SHARING_PROFILE" : {
+
+        "ACTION_ACKNOWLEDGE" : "@:APP.ACTION_ACKNOWLEDGE",
+        "ACTION_CANCEL"      : "@:APP.ACTION_CANCEL",
+        "ACTION_CLONE"       : "@:APP.ACTION_CLONE",
+        "ACTION_DELETE"      : "@:APP.ACTION_DELETE",
+        "ACTION_SAVE"        : "@:APP.ACTION_SAVE",
+
+        "DIALOG_HEADER_CONFIRM_DELETE" : "Удалить профиль расшаривания",
+        "DIALOG_HEADER_ERROR"          : "@:APP.DIALOG_HEADER_ERROR",
+
+        "FIELD_HEADER_NAME"               : "Название:",
+        "FIELD_HEADER_PRIMARY_CONNECTION" : "Изначальное подключение:",
+
+        "SECTION_HEADER_EDIT_SHARING_PROFILE" : "Редактирование профиля расшаривания",
+        "SECTION_HEADER_PARAMETERS"           : "Настройки",
+
+        "TEXT_CONFIRM_DELETE" : "Профили расшаривания не могут быть восстановлены после удаления. Вы уверены, что хотите удалить профиль расшаривания?"
+
+    },
+
+    "MANAGE_USER" : {
+
+        "ACTION_ACKNOWLEDGE"   : "@:APP.ACTION_ACKNOWLEDGE",
+        "ACTION_CANCEL"        : "@:APP.ACTION_CANCEL",
+        "ACTION_CLONE"         : "@:APP.ACTION_CLONE",
+        "ACTION_DELETE"        : "@:APP.ACTION_DELETE",
+        "ACTION_SAVE"          : "@:APP.ACTION_SAVE",
+
+        "DIALOG_HEADER_CONFIRM_DELETE" : "Удалить пользователя",
+        "DIALOG_HEADER_ERROR"          : "@:APP.DIALOG_HEADER_ERROR",
+
+        "ERROR_PASSWORD_MISMATCH" : "@:APP.ERROR_PASSWORD_MISMATCH",
+
+        "FIELD_HEADER_ADMINISTER_SYSTEM"             : "Администрирование системы:",
+        "FIELD_HEADER_CHANGE_OWN_PASSWORD"           : "Изменение собственного пароля:",
+        "FIELD_HEADER_CREATE_NEW_USERS"              : "Создание нового пользователя:",
+        "FIELD_HEADER_CREATE_NEW_USER_GROUPS"        : "Создание новой группы пользователей:",
+        "FIELD_HEADER_CREATE_NEW_CONNECTIONS"        : "Создание нового подключения:",
+        "FIELD_HEADER_CREATE_NEW_CONNECTION_GROUPS"  : "Создание новой группы подключений:",
+        "FIELD_HEADER_CREATE_NEW_SHARING_PROFILES"   : "Создание нового профиля расшаривания:",
+        "FIELD_HEADER_PASSWORD"                      : "@:APP.FIELD_HEADER_PASSWORD",
+        "FIELD_HEADER_PASSWORD_AGAIN"                : "@:APP.FIELD_HEADER_PASSWORD_AGAIN",
+        "FIELD_HEADER_USER_DISABLED"                 : "Аккаунт отключен:",
+        "FIELD_HEADER_USERNAME"                      : "Имя пользователя:",
+
+        "FIELD_PLACEHOLDER_FILTER" : "@:APP.FIELD_PLACEHOLDER_FILTER",
+
+        "HELP_NO_USER_GROUPS" : "Этот пользователь еще не сопоставлен ни с одной группой. Раскройте эту секцию для добавления групп.",
+
+        "INFO_READ_ONLY"                : "Извините, этот пользователь не может быть изменен.",
+        "INFO_NO_USER_GROUPS_AVAILABLE" : "Нет доступных групп.",
+
+        "SECTION_HEADER_ALL_CONNECTIONS"     : "Все подключения",
+        "SECTION_HEADER_CONNECTIONS"         : "Подключения",
+        "SECTION_HEADER_CURRENT_CONNECTIONS" : "Текущие подключения",
+        "SECTION_HEADER_EDIT_USER"           : "Редактирование пользователя",
+        "SECTION_HEADER_PERMISSIONS"         : "Разрешения",
+        "SECTION_HEADER_USER_GROUPS"         : "Группы",
+
+        "TEXT_CONFIRM_DELETE" : "Пользователи не могут быть восстановлены после удаления. Вы уверены, что хотите удалить пользователя?"
+
+    },
+
+    "MANAGE_USER_GROUP" : {
+
+        "ACTION_ACKNOWLEDGE"   : "@:APP.ACTION_ACKNOWLEDGE",
+        "ACTION_CANCEL"        : "@:APP.ACTION_CANCEL",
+        "ACTION_CLONE"         : "@:APP.ACTION_CLONE",
+        "ACTION_DELETE"        : "@:APP.ACTION_DELETE",
+        "ACTION_SAVE"          : "@:APP.ACTION_SAVE",
+
+        "DIALOG_HEADER_CONFIRM_DELETE" : "Удалить группу",
+        "DIALOG_HEADER_ERROR"          : "@:APP.DIALOG_HEADER_ERROR",
+
+        "FIELD_HEADER_ADMINISTER_SYSTEM"             : "@:MANAGE_USER.FIELD_HEADER_ADMINISTER_SYSTEM",
+        "FIELD_HEADER_CHANGE_OWN_PASSWORD"           : "@:MANAGE_USER.FIELD_HEADER_CHANGE_OWN_PASSWORD",
+        "FIELD_HEADER_CREATE_NEW_USERS"              : "@:MANAGE_USER.FIELD_HEADER_CREATE_NEW_USERS",
+        "FIELD_HEADER_CREATE_NEW_USER_GROUPS"        : "@:MANAGE_USER.FIELD_HEADER_CREATE_NEW_USER_GROUPS",
+        "FIELD_HEADER_CREATE_NEW_CONNECTIONS"        : "@:MANAGE_USER.FIELD_HEADER_CREATE_NEW_CONNECTIONS",
+        "FIELD_HEADER_CREATE_NEW_CONNECTION_GROUPS"  : "@:MANAGE_USER.FIELD_HEADER_CREATE_NEW_CONNECTION_GROUPS",
+        "FIELD_HEADER_CREATE_NEW_SHARING_PROFILES"   : "@:MANAGE_USER.FIELD_HEADER_CREATE_NEW_SHARING_PROFILES",
+        "FIELD_HEADER_USER_GROUP_DISABLED"           : "Группа отключена:",
+        "FIELD_HEADER_USER_GROUP_NAME"               : "Название:",
+
+        "FIELD_PLACEHOLDER_FILTER" : "@:APP.FIELD_PLACEHOLDER_FILTER",
+
+        "HELP_NO_USER_GROUPS"        : "Эта группа еще не сопоставлена ни с одной группой. Раскройте эту секцию для добавления групп.",
+        "HELP_NO_MEMBER_USER_GROUPS" : "Эта группа еще не содержит ни одной группы. Раскройте эту секцию для добавления групп.",
+        "HELP_NO_MEMBER_USERS"       : "Эта группа еще не содержит ни одного пользователя. Раскройте эту секцию для добавления пользователей.",
+
+        "INFO_READ_ONLY"                : "Извините, эта группа не может быть изменена.",
+        "INFO_NO_USER_GROUPS_AVAILABLE" : "@:MANAGE_USER.INFO_NO_USER_GROUPS_AVAILABLE",
+        "INFO_NO_USERS_AVAILABLE"       : "Нет доступных пользователей.",
+
+        "SECTION_HEADER_ALL_CONNECTIONS"     : "@:MANAGE_USER.SECTION_HEADER_ALL_CONNECTIONS",
+        "SECTION_HEADER_CONNECTIONS"         : "@:MANAGE_USER.SECTION_HEADER_CONNECTIONS",
+        "SECTION_HEADER_CURRENT_CONNECTIONS" : "@:MANAGE_USER.SECTION_HEADER_CURRENT_CONNECTIONS",
+        "SECTION_HEADER_EDIT_USER_GROUP"     : "Редактирование группы",
+        "SECTION_HEADER_MEMBER_USERS"        : "Пользователи в группе",
+        "SECTION_HEADER_MEMBER_USER_GROUPS"  : "Дочерние группы",
+        "SECTION_HEADER_PERMISSIONS"         : "@:MANAGE_USER.SECTION_HEADER_PERMISSIONS",
+        "SECTION_HEADER_USER_GROUPS"         : "Родительские группы",
+
+        "TEXT_CONFIRM_DELETE" : "Группы не могут быть восстановлены после удаления. Вы уверены, что хотите удалить группу?"
+
+    },
+
+    "PROTOCOL_KUBERNETES" : {
+
+        "FIELD_HEADER_BACKSPACE"                : "Клавиша Backspace посылает:",
+        "FIELD_HEADER_CA_CERT"                  : "Сертификат центра сертификации (CA):",
+        "FIELD_HEADER_CLIENT_CERT"              : "Сертификат клиента:",
+        "FIELD_HEADER_CLIENT_KEY"               : "Ключ клиента:",
+        "FIELD_HEADER_COLOR_SCHEME"             : "Цветовая схема:",
+        "FIELD_HEADER_CONTAINER"                : "Название контейнера:",
+        "FIELD_HEADER_CREATE_RECORDING_PATH"    : "Автоматически создавать путь для записи:",
+        "FIELD_HEADER_CREATE_TYPESCRIPT_PATH"   : "Автоматически создавать путь typescript:",
+        "FIELD_HEADER_FONT_NAME"                : "Шрифт:",
+        "FIELD_HEADER_FONT_SIZE"                : "Размер шрифта:",
+        "FIELD_HEADER_HOSTNAME"                 : "Сервер:",
+        "FIELD_HEADER_IGNORE_CERT"              : "Игнорировать сертификат сервера:",
+        "FIELD_HEADER_NAMESPACE"                : "Пространство имен:",
+        "FIELD_HEADER_POD"                      : "Название пода:",
+        "FIELD_HEADER_PORT"                     : "Порт:",
+        "FIELD_HEADER_READ_ONLY"                : "Только просмотр:",
+        "FIELD_HEADER_RECORDING_EXCLUDE_MOUSE"  : "Исключить мышь:",
+        "FIELD_HEADER_RECORDING_EXCLUDE_OUTPUT" : "Исключить графику/потоки:",
+        "FIELD_HEADER_RECORDING_INCLUDE_KEYS"   : "Включить события клавиатуры:",
+        "FIELD_HEADER_RECORDING_NAME"           : "Название записи:",
+        "FIELD_HEADER_RECORDING_PATH"           : "Путь для записи:",
+        "FIELD_HEADER_SCROLLBACK"               : "Размер буфера прокрутки:",
+        "FIELD_HEADER_TYPESCRIPT_NAME"          : "Название typescript:",
+        "FIELD_HEADER_TYPESCRIPT_PATH"          : "Путь typescript:",
+        "FIELD_HEADER_USE_SSL"                  : "Использовать SSL/TLS",
+
+        "FIELD_OPTION_COLOR_SCHEME_BLACK_WHITE" : "Черное на белом",
+        "FIELD_OPTION_COLOR_SCHEME_GRAY_BLACK"  : "Серое на черном",
+        "FIELD_OPTION_COLOR_SCHEME_GREEN_BLACK" : "Зеленое на черном",
+        "FIELD_OPTION_COLOR_SCHEME_WHITE_BLACK" : "Белое на черном",
+
+        "NAME" : "Kubernetes",
+
+        "SECTION_HEADER_AUTHENTICATION" : "Аутентификация",
+        "SECTION_HEADER_BEHAVIOR"       : "Поведение терминала",
+        "SECTION_HEADER_CONTAINER"      : "Контейнер",
+        "SECTION_HEADER_DISPLAY"        : "Экран",
+        "SECTION_HEADER_RECORDING"      : "Запись экрана",
+        "SECTION_HEADER_TYPESCRIPT"     : "Typescript (запись текстовой сессии)",
+        "SECTION_HEADER_NETWORK"        : "Сеть"
+
+    },
+
+    "PROTOCOL_RDP" : {
+
+        "FIELD_HEADER_CLIENT_NAME"                : "Имя клиента:",
+        "FIELD_HEADER_COLOR_DEPTH"                : "Глубина цвета:",
+        "FIELD_HEADER_CONSOLE"                    : "Консоль администратора:",
+        "FIELD_HEADER_CONSOLE_AUDIO"              : "Поддержка звука в консоли:",
+        "FIELD_HEADER_CREATE_DRIVE_PATH"          : "Автоматически создавать путь для диска:",
+        "FIELD_HEADER_CREATE_RECORDING_PATH"      : "Автоматически создавать путь для записи:",
+        "FIELD_HEADER_DISABLE_AUDIO"              : "Отключить звук:",
+        "FIELD_HEADER_DISABLE_AUTH"               : "Отключить аутентификацию:",
+        "FIELD_HEADER_DISABLE_COPY"               : "Отключить копирование в буфер обмена:",
+        "FIELD_HEADER_DISABLE_PASTE"              : "Отключить вставку из буфера обмена:",
+        "FIELD_HEADER_DOMAIN"                     : "Домен:",
+        "FIELD_HEADER_DPI"                        : "Разрешение экрана (DPI):",
+        "FIELD_HEADER_DRIVE_NAME"                 : "Название диска:",
+        "FIELD_HEADER_DRIVE_PATH"                 : "Путь для диска:",
+        "FIELD_HEADER_ENABLE_AUDIO_INPUT"         : "Включить звуковой вход (микрофон):",
+        "FIELD_HEADER_ENABLE_DESKTOP_COMPOSITION" : "Включить композитор рабочего стола (Aero):",
+        "FIELD_HEADER_ENABLE_DRIVE"               : "Включить диск:",
+        "FIELD_HEADER_ENABLE_FONT_SMOOTHING"      : "Включить сглаживание шрифтов (ClearType):",
+        "FIELD_HEADER_ENABLE_FULL_WINDOW_DRAG"    : "Включить отображение содержимого окна при перетаскивании:",
+        "FIELD_HEADER_ENABLE_MENU_ANIMATIONS"     : "Включить анимации меню:",
+        "FIELD_HEADER_DISABLE_BITMAP_CACHING"     : "Отключить кеширование битмапов:",
+        "FIELD_HEADER_DISABLE_OFFSCREEN_CACHING"  : "Отключить кеширование скрытых элементов:",
+        "FIELD_HEADER_DISABLE_GLYPH_CACHING"      : "Отключить кеширование глифов:",
+        "FIELD_HEADER_ENABLE_PRINTING"            : "Включить печать:",
+        "FIELD_HEADER_ENABLE_SFTP"                : "Включить SFTP:",
+        "FIELD_HEADER_ENABLE_THEMING"             : "Включить темы:",
+        "FIELD_HEADER_ENABLE_WALLPAPER"           : "Включить обои:",
+        "FIELD_HEADER_GATEWAY_DOMAIN"             : "Домен:",
+        "FIELD_HEADER_GATEWAY_HOSTNAME"           : "Сервер:",
+        "FIELD_HEADER_GATEWAY_PASSWORD"           : "Пароль:",
+        "FIELD_HEADER_GATEWAY_PORT"               : "Порт:",
+        "FIELD_HEADER_GATEWAY_USERNAME"           : "Имя пользователя:",
+        "FIELD_HEADER_HEIGHT"                     : "Высота:",
+        "FIELD_HEADER_HOSTNAME"                   : "Сервер:",
+        "FIELD_HEADER_IGNORE_CERT"                : "Игнорировать сертификат сервера:",
+        "FIELD_HEADER_INITIAL_PROGRAM"            : "Запуск программ при подключении:",
+        "FIELD_HEADER_LOAD_BALANCE_INFO"          : "Информация о балансировке нагрузки:",
+        "FIELD_HEADER_PASSWORD"                   : "Пароль:",
+        "FIELD_HEADER_PORT"                       : "Порт:",
+        "FIELD_HEADER_PRINTER_NAME"               : "Название принтера:",
+        "FIELD_HEADER_PRECONNECTION_BLOB"         : "Данные BLOB (HyperV VM ID):",
+        "FIELD_HEADER_PRECONNECTION_ID"           : "Данные RDP ID:",
+        "FIELD_HEADER_READ_ONLY"                  : "Только просмотр:",
+        "FIELD_HEADER_RECORDING_EXCLUDE_MOUSE"    : "Исключить мышь:",
+        "FIELD_HEADER_RECORDING_EXCLUDE_OUTPUT"   : "Исключить графику/потоки:",
+        "FIELD_HEADER_RECORDING_INCLUDE_KEYS"     : "Включить события клавиатуры:",
+        "FIELD_HEADER_RECORDING_NAME"             : "Название записи:",
+        "FIELD_HEADER_RECORDING_PATH"             : "Путь для записи:",
+        "FIELD_HEADER_RESIZE_METHOD"              : "Метод изменения размера стола:",
+        "FIELD_HEADER_REMOTE_APP_ARGS"            : "Параметры RemoteApp:",
+        "FIELD_HEADER_REMOTE_APP_DIR"             : "Рабочий каталог RemoteApp:",
+        "FIELD_HEADER_REMOTE_APP"                 : "Программа RemoteApp:",
+        "FIELD_HEADER_SECURITY"                   : "Режим безопасности:",
+        "FIELD_HEADER_SERVER_LAYOUT"              : "Раскладка клавиатуры:",
+        "FIELD_HEADER_SFTP_DIRECTORY"             : "Директория загрузки по умолчанию:",
+        "FIELD_HEADER_SFTP_HOST_KEY"              : "Публичный ключ сервера (Base64):",
+        "FIELD_HEADER_SFTP_HOSTNAME"              : "Сервер:",
+        "FIELD_HEADER_SFTP_SERVER_ALIVE_INTERVAL" : "Интервал keepalive для SFTP:",
+        "FIELD_HEADER_SFTP_PASSPHRASE"            : "Секретная фраза:",
+        "FIELD_HEADER_SFTP_PASSWORD"              : "Пароль:",
+        "FIELD_HEADER_SFTP_PORT"                  : "Порт:",
+        "FIELD_HEADER_SFTP_PRIVATE_KEY"           : "Приватный ключ:",
+        "FIELD_HEADER_SFTP_ROOT_DIRECTORY"        : "Директория просмотра по умолчанию:",
+        "FIELD_HEADER_SFTP_USERNAME"              : "Имя пользователя:",
+        "FIELD_HEADER_STATIC_CHANNELS"            : "Названия статических каналов:",
+        "FIELD_HEADER_TIMEZONE"                   : "Часовой пояс:",
+        "FIELD_HEADER_USERNAME"                   : "Имя пользователя:",
+        "FIELD_HEADER_WIDTH"                      : "Ширина:",
+
+        "FIELD_OPTION_COLOR_DEPTH_16" : "Low color (16-бит)",
+        "FIELD_OPTION_COLOR_DEPTH_24" : "True color (24-бит)",
+        "FIELD_OPTION_COLOR_DEPTH_32" : "True color (32-бит)",
+        "FIELD_OPTION_COLOR_DEPTH_8"  : "256 цветов",
+
+        "FIELD_OPTION_RESIZE_METHOD_DISPLAY_UPDATE" : "Виртуальный канал \"Display Update\" (RDP 8.1+)",
+        "FIELD_OPTION_RESIZE_METHOD_RECONNECT"      : "Переподключение",
+
+        "FIELD_OPTION_SECURITY_ANY" : "Любой",
+        "FIELD_OPTION_SECURITY_NLA" : "NLA (аутентификация уровня сети)",
+        "FIELD_OPTION_SECURITY_RDP" : "RDP-шифрование",
+        "FIELD_OPTION_SECURITY_TLS" : "TLS-шифрование",
+
+        "SECTION_HEADER_AUTHENTICATION"     : "Аутентификация",
+        "SECTION_HEADER_BASIC_PARAMETERS"   : "Основные настройки",
+        "SECTION_HEADER_DEVICE_REDIRECTION" : "Перенаправление устройств",
+        "SECTION_HEADER_DISPLAY"            : "Экран",
+        "SECTION_HEADER_GATEWAY"            : "Шлюз удаленных рабочих столов",
+        "SECTION_HEADER_LOAD_BALANCING"     : "Балансировщик нагрузки",
+        "SECTION_HEADER_NETWORK"            : "Сеть",
+        "SECTION_HEADER_PERFORMANCE"        : "Производительность",
+        "SECTION_HEADER_PRECONNECTION_PDU"  : "Предварительные данные подключения (Hyper-V)",
+        "SECTION_HEADER_RECORDING"          : "Запись экрана"
+
+    },
+
+    "PROTOCOL_SSH" : {
+
+        "FIELD_HEADER_BACKSPACE"                : "Клавиша Backspace посылает:",
+        "FIELD_HEADER_COLOR_SCHEME"             : "Цветовая схема:",
+        "FIELD_HEADER_COMMAND"                  : "Команда для выполнения:",
+        "FIELD_HEADER_CREATE_RECORDING_PATH"    : "Автоматически создавать путь для записи:",
+        "FIELD_HEADER_CREATE_TYPESCRIPT_PATH"   : "Автоматически создавать путь typescript:",
+        "FIELD_HEADER_DISABLE_COPY"             : "Отключить копирование в буфер обмена:",
+        "FIELD_HEADER_DISABLE_PASTE"            : "Отключить вставку из буфера обмена:",
+        "FIELD_HEADER_FONT_NAME"                : "Шрифт:",
+        "FIELD_HEADER_FONT_SIZE"                : "Размер шрифта:",
+        "FIELD_HEADER_ENABLE_SFTP"              : "Включить SFTP:",
+        "FIELD_HEADER_HOST_KEY"                 : "Публичный ключ сервера (Base64):",
+        "FIELD_HEADER_HOSTNAME"                 : "Сервер:",
+        "FIELD_HEADER_LOCALE"                   : "Language/Locale ($LANG):",
+        "FIELD_HEADER_USERNAME"                 : "Имя пользователя:",
+        "FIELD_HEADER_PASSWORD"                 : "Пароль:",
+        "FIELD_HEADER_PASSPHRASE"               : "Секретная фраза:",
+        "FIELD_HEADER_PORT"                     : "Порт:",
+        "FIELD_HEADER_PRIVATE_KEY"              : "Приватный ключ:",
+        "FIELD_HEADER_SCROLLBACK"               : "Размер буфера прокрутки:",
+        "FIELD_HEADER_READ_ONLY"                : "Только просмотр:",
+        "FIELD_HEADER_RECORDING_EXCLUDE_MOUSE"  : "Исключить мышь:",
+        "FIELD_HEADER_RECORDING_EXCLUDE_OUTPUT" : "Исключить графику/потоки:",
+        "FIELD_HEADER_RECORDING_INCLUDE_KEYS"   : "Включить события клавиатуры:",
+        "FIELD_HEADER_RECORDING_NAME"           : "Название записи:",
+        "FIELD_HEADER_RECORDING_PATH"           : "Путь для записи:",
+        "FIELD_HEADER_SERVER_ALIVE_INTERVAL"    : "Интервал keepalive для сервера:",
+        "FIELD_HEADER_SFTP_ROOT_DIRECTORY"      : "Директория просмотра по умолчанию:",
+        "FIELD_HEADER_TERMINAL_TYPE"            : "Тип терминала:",
+        "FIELD_HEADER_TIMEZONE"                 : "Часовой пояс ($TZ):",
+        "FIELD_HEADER_TYPESCRIPT_NAME"          : "Название typescript:",
+        "FIELD_HEADER_TYPESCRIPT_PATH"          : "Путь typescript:",
+
+        "FIELD_OPTION_COLOR_SCHEME_BLACK_WHITE" : "Черное на белом",
+        "FIELD_OPTION_COLOR_SCHEME_GRAY_BLACK"  : "Серое на черном",
+        "FIELD_OPTION_COLOR_SCHEME_GREEN_BLACK" : "Зеленое на черном",
+        "FIELD_OPTION_COLOR_SCHEME_WHITE_BLACK" : "Белое на черном",
+
+        "SECTION_HEADER_AUTHENTICATION" : "Аутентификация",
+        "SECTION_HEADER_BEHAVIOR"       : "Поведение терминала",
+        "SECTION_HEADER_DISPLAY"        : "Экран",
+        "SECTION_HEADER_NETWORK"        : "Сеть",
+        "SECTION_HEADER_RECORDING"      : "Запись экрана",
+        "SECTION_HEADER_SESSION"        : "Сессия / среда:",
+        "SECTION_HEADER_TYPESCRIPT"     : "Typescript (запись текстовой сессии)"
+
+    },
+
+    "PROTOCOL_TELNET" : {
+
+        "FIELD_HEADER_BACKSPACE"                : "Клавиша Backspace посылает:",
+        "FIELD_HEADER_COLOR_SCHEME"             : "Цветовая схема:",
+        "FIELD_HEADER_CREATE_RECORDING_PATH"    : "Автоматически создавать путь для записи:",
+        "FIELD_HEADER_CREATE_TYPESCRIPT_PATH"   : "Автоматически создавать путь typescript:",
+        "FIELD_HEADER_DISABLE_COPY"             : "Отключить копирование в буфер обмена:",
+        "FIELD_HEADER_DISABLE_PASTE"            : "Отключить вставку из буфера обмена:",
+        "FIELD_HEADER_FONT_NAME"                : "Шрифт:",
+        "FIELD_HEADER_FONT_SIZE"                : "Размер шрифта:",
+        "FIELD_HEADER_HOSTNAME"                 : "Сервер:",
+        "FIELD_HEADER_LOGIN_FAILURE_REGEX"      : "Regex определения отказа во входе:",
+        "FIELD_HEADER_LOGIN_SUCCESS_REGEX"      : "Regex определения успешного входа:",
+        "FIELD_HEADER_USERNAME"                 : "Имя пользователя:",
+        "FIELD_HEADER_USERNAME_REGEX"           : "Regex определения запроса имени пользователя:",
+        "FIELD_HEADER_PASSWORD"                 : "Пароль:",
+        "FIELD_HEADER_PASSWORD_REGEX"           : "Regex определения запроса пароля:",
+        "FIELD_HEADER_PORT"                     : "Порт:",
+        "FIELD_HEADER_READ_ONLY"                : "Только просмотр:",
+        "FIELD_HEADER_RECORDING_EXCLUDE_MOUSE"  : "Исключить мышь:",
+        "FIELD_HEADER_RECORDING_EXCLUDE_OUTPUT" : "Исключить графику/потоки:",
+        "FIELD_HEADER_RECORDING_INCLUDE_KEYS"   : "Включить события клавиатуры:",
+        "FIELD_HEADER_RECORDING_NAME"           : "Название записи:",
+        "FIELD_HEADER_RECORDING_PATH"           : "Путь для записи:",
+        "FIELD_HEADER_SCROLLBACK"               : "Размер буфера прокрутки:",
+        "FIELD_HEADER_TERMINAL_TYPE"            : "Тип терминала:",
+        "FIELD_HEADER_TYPESCRIPT_NAME"          : "Название typescript:",
+        "FIELD_HEADER_TYPESCRIPT_PATH"          : "Путь typescript:",
+
+        "FIELD_OPTION_COLOR_SCHEME_BLACK_WHITE" : "Черное на белом",
+        "FIELD_OPTION_COLOR_SCHEME_GRAY_BLACK"  : "Серое на черном",
+        "FIELD_OPTION_COLOR_SCHEME_GREEN_BLACK" : "Зеленое на черном",
+        "FIELD_OPTION_COLOR_SCHEME_WHITE_BLACK" : "Белое на черном",
+
+        "SECTION_HEADER_AUTHENTICATION" : "Аутентификация",
+        "SECTION_HEADER_BEHAVIOR"       : "Поведение терминала",
+        "SECTION_HEADER_DISPLAY"        : "Экран",
+        "SECTION_HEADER_RECORDING"      : "Запись экрана",
+        "SECTION_HEADER_TYPESCRIPT"     : "Typescript (запись текстовой сессии)",
+        "SECTION_HEADER_NETWORK"        : "Сеть"
+
+    },
+
+    "PROTOCOL_VNC" : {
+
+        "FIELD_HEADER_AUDIO_SERVERNAME"           : "Название аудио-сервера:",
+        "FIELD_HEADER_CLIPBOARD_ENCODING"         : "Кодировка:",
+        "FIELD_HEADER_COLOR_DEPTH"                : "Глубина цвета:",
+        "FIELD_HEADER_CREATE_RECORDING_PATH"      : "Автоматически создавать путь для записи:",
+        "FIELD_HEADER_CURSOR"                     : "Курсор:",
+        "FIELD_HEADER_DEST_HOST"                  : "Сервер назначения:",
+        "FIELD_HEADER_DEST_PORT"                  : "Порт назначения:",
+        "FIELD_HEADER_DISABLE_COPY"               : "Отключить копирование в буфер обмена:",
+        "FIELD_HEADER_DISABLE_PASTE"              : "Отключить вставку из буфера обмена:",
+        "FIELD_HEADER_ENABLE_AUDIO"               : "Включить звук:",
+        "FIELD_HEADER_ENABLE_SFTP"                : "Включить SFTP:",
+        "FIELD_HEADER_HOSTNAME"                   : "Сервер:",
+        "FIELD_HEADER_PASSWORD"                   : "Пароль:",
+        "FIELD_HEADER_PORT"                       : "Порт:",
+        "FIELD_HEADER_READ_ONLY"                  : "Только просмотр:",
+        "FIELD_HEADER_RECORDING_EXCLUDE_MOUSE"    : "Исключить мышь:",
+        "FIELD_HEADER_RECORDING_EXCLUDE_OUTPUT"   : "Исключить графику/потоки:",
+        "FIELD_HEADER_RECORDING_INCLUDE_KEYS"     : "Включить события клавиатуры:",
+        "FIELD_HEADER_RECORDING_NAME"             : "Название записи:",
+        "FIELD_HEADER_RECORDING_PATH"             : "Путь для записи:",
+        "FIELD_HEADER_SFTP_DIRECTORY"             : "Директория загрузки по умолчанию:",
+        "FIELD_HEADER_SFTP_HOST_KEY"              : "Публичный ключ сервера (Base64):",
+        "FIELD_HEADER_SFTP_HOSTNAME"              : "Сервер:",
+        "FIELD_HEADER_SFTP_SERVER_ALIVE_INTERVAL" : "Интервал keepalive для SFTP:",
+        "FIELD_HEADER_SFTP_PASSPHRASE"            : "Секретная фраза:",
+        "FIELD_HEADER_SFTP_PASSWORD"              : "Пароль:",
+        "FIELD_HEADER_SFTP_PORT"                  : "Порт:",
+        "FIELD_HEADER_SFTP_PRIVATE_KEY"           : "Приватный ключ:",
+        "FIELD_HEADER_SFTP_ROOT_DIRECTORY"        : "Директория просмотра по умолчанию:",
+        "FIELD_HEADER_SFTP_USERNAME"              : "Имя пользователя:",
+        "FIELD_HEADER_SWAP_RED_BLUE"              : "Поменять синий и красный компоненты:",
+
+        "FIELD_OPTION_COLOR_DEPTH_8"  : "256 цветов",
+        "FIELD_OPTION_COLOR_DEPTH_16" : "Low color (16-бит)",
+        "FIELD_OPTION_COLOR_DEPTH_24" : "True color (24-бит)",
+        "FIELD_OPTION_COLOR_DEPTH_32" : "True color (32-бит)",
+
+        "FIELD_OPTION_CURSOR_LOCAL"  : "Локальный",
+        "FIELD_OPTION_CURSOR_REMOTE" : "Удаленный",
+
+        "SECTION_HEADER_AUDIO"          : "Аудио",
+        "SECTION_HEADER_AUTHENTICATION" : "Аутентификация",
+        "SECTION_HEADER_CLIPBOARD"      : "Буфер обмена",
+        "SECTION_HEADER_DISPLAY"        : "Экран",
+        "SECTION_HEADER_NETWORK"        : "Сеть",
+        "SECTION_HEADER_RECORDING"      : "Запись экрана"
+
+    },
+
+    "SETTINGS" : {
+
+        "SECTION_HEADER_SETTINGS" : "Настройки"
+
+    },
+
+    "SETTINGS_CONNECTION_HISTORY" : {
+
+        "ACTION_DOWNLOAD" : "@:APP.ACTION_DOWNLOAD",
+        "ACTION_SEARCH"   : "@:APP.ACTION_SEARCH",
+
+        "FIELD_PLACEHOLDER_FILTER" : "@:APP.FIELD_PLACEHOLDER_FILTER",
+
+        "FORMAT_DATE" : "@:APP.FORMAT_DATE_TIME_PRECISE",
+
+        "HELP_CONNECTION_HISTORY" : "Здесь отображается журнал предыдущих подключений, который можно отсортировать, кликнув на заголовке колонки. Для поиска конкретных записей введите нужные данные и нажмите «Поиск». Тогда будут отображаться только записи, соответствующие данным для поиска.",
+
+        "INFO_CONNECTION_DURATION_UNKNOWN" : "--",
+        "INFO_NO_HISTORY"                  : "Подходящих записей нет",
+
+        "TABLE_HEADER_SESSION_CONNECTION_NAME" : "Название подключения",
+        "TABLE_HEADER_SESSION_DURATION"        : "Продолжительность",
+        "TABLE_HEADER_SESSION_REMOTEHOST"      : "Удаленный узел",
+        "TABLE_HEADER_SESSION_STARTDATE"       : "Время начала",
+        "TABLE_HEADER_SESSION_USERNAME"        : "Имя пользователя",
+
+        "TEXT_HISTORY_DURATION" : "@:APP.TEXT_HISTORY_DURATION"
+
+    },
+
+    "SETTINGS_CONNECTIONS" : {
+
+        "ACTION_ACKNOWLEDGE"          : "@:APP.ACTION_ACKNOWLEDGE",
+        "ACTION_NEW_CONNECTION"       : "Новое подключение",
+        "ACTION_NEW_CONNECTION_GROUP" : "Новая группа",
+        "ACTION_NEW_SHARING_PROFILE"  : "Новый профиль расшаривания",
+
+        "DIALOG_HEADER_ERROR" : "@:APP.DIALOG_HEADER_ERROR",
+
+        "FIELD_PLACEHOLDER_FILTER" : "@:APP.FIELD_PLACEHOLDER_FILTER",
+
+        "HELP_CONNECTIONS"   : "Нажмите на подключение, чтобы управлять им. В зависимости от прав доступа возможно добавление и удаление подключений, а также изменение их свойств (протокол, название сервера, порт и т.д.).",
+
+        "INFO_ACTIVE_USER_COUNT" : "@:APP.INFO_ACTIVE_USER_COUNT",
+
+        "SECTION_HEADER_CONNECTIONS" : "Подключения"
+
+    },
+
+    "SETTINGS_PREFERENCES" : {
+
+        "ACTION_ACKNOWLEDGE"     : "@:APP.ACTION_ACKNOWLEDGE",
+        "ACTION_CANCEL"          : "@:APP.ACTION_CANCEL",
+        "ACTION_UPDATE_PASSWORD" : "@:APP.ACTION_UPDATE_PASSWORD",
+
+        "DIALOG_HEADER_ERROR" : "@:APP.DIALOG_HEADER_ERROR",
+
+        "ERROR_PASSWORD_BLANK"    : "@:APP.ERROR_PASSWORD_BLANK",
+        "ERROR_PASSWORD_MISMATCH" : "@:APP.ERROR_PASSWORD_MISMATCH",
+
+        "FIELD_HEADER_LANGUAGE"           : "Язык:",
+        "FIELD_HEADER_PASSWORD"           : "Пароль:",
+        "FIELD_HEADER_PASSWORD_OLD"       : "Текущий пароль:",
+        "FIELD_HEADER_PASSWORD_NEW"       : "Новый пароль:",
+        "FIELD_HEADER_PASSWORD_NEW_AGAIN" : "Повтор нового пароля:",
+        "FIELD_HEADER_TIMEZONE"           : "Часовой пояс:",
+        "FIELD_HEADER_USERNAME"           : "Имя пользователя:",
+
+        "HELP_DEFAULT_INPUT_METHOD" : "Режим ввода по умолчанию определяет, каким образом нажатия на клавиатуру будут передаваться Guacamole. Изменение данной настройки может быть полезным при работе с мобильных устройств или при вводе через IME. Данная настройка может быть сделана для каждого подключения через основное меню Guacamole.",
+        "HELP_DEFAULT_MOUSE_MODE"   : "Режим эмуляции мыши по умолчанию определяет, каким образом мышь на удаленном сервере будет реагировать на прикосновения для новых подключений. Данная настройка может быть переопределена для каждого подключения через основное меню Guacamole.",
+        "HELP_INPUT_METHOD_NONE"    : "@:CLIENT.HELP_INPUT_METHOD_NONE",
+        "HELP_INPUT_METHOD_OSK"     : "@:CLIENT.HELP_INPUT_METHOD_OSK",
+        "HELP_INPUT_METHOD_TEXT"    : "@:CLIENT.HELP_INPUT_METHOD_TEXT",
+        "HELP_LOCALE"               : "Ниже вы можете выбрать язык и установить другие настройки локали, влияющие на отображение интерфейса пользователя.",
+        "HELP_MOUSE_MODE_ABSOLUTE"  : "@:CLIENT.HELP_MOUSE_MODE_ABSOLUTE",
+        "HELP_MOUSE_MODE_RELATIVE"  : "@:CLIENT.HELP_MOUSE_MODE_RELATIVE",
+        "HELP_UPDATE_PASSWORD"      : "Если вы хотите изменить пароль, укажите ваш текущий пароль и дважды укажите новый. Затем нажмите «Обновить пароль». Изменения вступят в силу моментально.",
+
+        "INFO_PASSWORD_CHANGED" : "Пароль успешно изменен.",
+
+        "NAME_INPUT_METHOD_NONE" : "@:CLIENT.NAME_INPUT_METHOD_NONE",
+        "NAME_INPUT_METHOD_OSK"  : "@:CLIENT.NAME_INPUT_METHOD_OSK",
+        "NAME_INPUT_METHOD_TEXT" : "@:CLIENT.NAME_INPUT_METHOD_TEXT",
+
+        "SECTION_HEADER_DEFAULT_INPUT_METHOD" : "Метод ввода по умолчанию",
+        "SECTION_HEADER_DEFAULT_MOUSE_MODE"   : "Режим эмуляции мыши по умолчанию",
+        "SECTION_HEADER_UPDATE_PASSWORD"      : "Изменить пароль"
+
+    },
+
+    "SETTINGS_USERS" : {
+
+        "ACTION_ACKNOWLEDGE" : "@:APP.ACTION_ACKNOWLEDGE",
+        "ACTION_NEW_USER"    : "Создать пользователя",
+
+        "DIALOG_HEADER_ERROR" : "@:APP.DIALOG_HEADER_ERROR",
+
+        "FIELD_PLACEHOLDER_FILTER" : "@:APP.FIELD_PLACEHOLDER_FILTER",
+
+        "FORMAT_DATE" : "@:APP.FORMAT_DATE_TIME_PRECISE",
+
+        "HELP_USERS" : "Нажмите на пользователя, чтобы управлять им. В зависимости от прав доступа возможно добавление и удаление пользователей, а также изменение паролей.",
+
+        "SECTION_HEADER_USERS"       : "Пользователи",
+
+        "TABLE_HEADER_FULL_NAME"    : "Полное имя",
+        "TABLE_HEADER_LAST_ACTIVE"  : "Был активен",
+        "TABLE_HEADER_ORGANIZATION" : "Организация",
+        "TABLE_HEADER_USERNAME"     : "Имя пользователя"
+
+    },
+
+    "SETTINGS_USER_GROUPS" : {
+
+        "ACTION_ACKNOWLEDGE"    : "@:APP.ACTION_ACKNOWLEDGE",
+        "ACTION_NEW_USER_GROUP" : "Создать группу",
+
+        "DIALOG_HEADER_ERROR" : "@:APP.DIALOG_HEADER_ERROR",
+
+        "FIELD_PLACEHOLDER_FILTER" : "@:APP.FIELD_PLACEHOLDER_FILTER",
+
+        "FORMAT_DATE" : "@:APP.FORMAT_DATE_TIME_PRECISE",
+
+        "HELP_USER_GROUPS" : "Нажмите на группу, чтобы управлять ей. В зависимости от прав доступа возможно добавление и удаление групп, а также изменение членства других групп и пользователей.",
+
+        "SECTION_HEADER_USER_GROUPS" : "Группы",
+
+        "TABLE_HEADER_USER_GROUP_NAME" : "Название группы"
+
+    },
+
+    "SETTINGS_SESSIONS" : {
+
+        "ACTION_ACKNOWLEDGE" : "@:APP.ACTION_ACKNOWLEDGE",
+        "ACTION_CANCEL"      : "@:APP.ACTION_CANCEL",
+        "ACTION_DELETE"      : "Завершить сессии",
+
+        "DIALOG_HEADER_CONFIRM_DELETE" : "Завершение сессий",
+        "DIALOG_HEADER_ERROR"          : "@:APP.DIALOG_HEADER_ERROR",
+
+        "FIELD_PLACEHOLDER_FILTER" : "@:APP.FIELD_PLACEHOLDER_FILTER",
+
+        "FORMAT_STARTDATE" : "@:APP.FORMAT_DATE_TIME_PRECISE",
+
+        "HELP_SESSIONS" : "Здесь показаны текущие активные сессии Guacamole. Отображаемые сессии и возможность их завершения зависит от ваших прав доступа. Если вы хотите завершить одну или несколько сессий, выберите нужные и нажмите «Завершить сессии». Принудительное завершение сессий приведет к немедленному отключению пользователей.",
+
+        "INFO_NO_SESSIONS" : "Нет активных сессий",
+
+        "SECTION_HEADER_SESSIONS" : "Активные сессии",
+
+        "TABLE_HEADER_SESSION_USERNAME"        : "Имя пользователя",
+        "TABLE_HEADER_SESSION_STARTDATE"       : "Активен с",
+        "TABLE_HEADER_SESSION_REMOTEHOST"      : "Удаленный узел",
+        "TABLE_HEADER_SESSION_CONNECTION_NAME" : "Название подключения",
+
+        "TEXT_CONFIRM_DELETE" : "Вы уверены, что хотите завершить все выбранные сессии? Пользователи, работающие в этих сессиях, будут немедленно отключены."
+
+    },
+
+    "USER_ATTRIBUTES" : {
+
+        "FIELD_HEADER_GUAC_EMAIL_ADDRESS"       : "Адрес электронной почты:",
+        "FIELD_HEADER_GUAC_FULL_NAME"           : "Полное имя:",
+        "FIELD_HEADER_GUAC_ORGANIZATION"        : "Организация:",
+        "FIELD_HEADER_GUAC_ORGANIZATIONAL_ROLE" : "Роль:"
+
+    },
+
+    "USER_MENU" : {
+
+        "ACTION_LOGOUT"             : "@:APP.ACTION_LOGOUT",
+        "ACTION_MANAGE_CONNECTIONS" : "@:APP.ACTION_MANAGE_CONNECTIONS",
+        "ACTION_MANAGE_PREFERENCES" : "@:APP.ACTION_MANAGE_PREFERENCES",
+        "ACTION_MANAGE_SESSIONS"    : "@:APP.ACTION_MANAGE_SESSIONS",
+        "ACTION_MANAGE_SETTINGS"    : "@:APP.ACTION_MANAGE_SETTINGS",
+        "ACTION_MANAGE_USERS"       : "@:APP.ACTION_MANAGE_USERS",
+        "ACTION_MANAGE_USER_GROUPS" : "@:APP.ACTION_MANAGE_USER_GROUPS",
+        "ACTION_NAVIGATE_HOME"      : "@:APP.ACTION_NAVIGATE_HOME",
+        "ACTION_VIEW_HISTORY"       : "@:APP.ACTION_VIEW_HISTORY"
+
+    }
+
+}

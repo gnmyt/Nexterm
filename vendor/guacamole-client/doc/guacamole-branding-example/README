@@ -1,0 +1,18 @@
+This directory structure provides an example of how to apply custom branding
+and HTML extension to the Guacamole Client web application.  This makes use
+of the guac-manifest.json file to specify the resources that are being provided,
+and provides examples of changing colors, fonts, and the login screen logo for
+the application.
+
+To use this, you need only to zip the file up into a JAR file, place it in the
+GUACAMOLE_HOME/extensions folder, and reload the web application.  For example:
+
+zip -r /tmp/guacamole-branding-example.jar ./
+mv /tmp/guacamole-branding-example.jar /etc/guacamole/extensions/
+touch /var/lib/tomcat/webapps/guacamole.war
+
+These commands assume that your current working directory is this example
+directory, that your GUACAMOLE_HOME is located at /etc/guacamole, and that your
+the Guacamole Client web application is deployed in the /var/lib/tomcat/webapps
+directory with the name "guacamole.war".  You should adjust the commands to fit
+your installation and environment.

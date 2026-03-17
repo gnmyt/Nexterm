@@ -2,43 +2,58 @@ const AuditLog = require("../models/AuditLog");
 const Organization = require("../models/Organization");
 const OrganizationMember = require("../models/OrganizationMember");
 const Account = require("../models/Account");
+const Entry = require("../models/Entry");
+const Identity = require("../models/Identity");
+const Folder = require("../models/Folder");
+const Script = require("../models/Script");
 const { hasOrganizationAccess } = require("../utils/permission");
 const { Op } = require("sequelize");
+const logger = require("../utils/logger");
+const { getRecordingInfo } = require("../utils/recordingService");
+const { normalizeIp } = require("../utils/ip");
+
+const RESOURCE_CONFIG = {
+    entry: { model: Entry, detailsKey: "name" },
+    identity: { model: Identity, detailsKey: "identityName" },
+    folder: { model: Folder, detailsKey: "folderName" },
+    script: { model: Script, detailsKey: "name" },
+};
 
 const AUDIT_ACTIONS = {
-    SSH_CONNECT: "server.ssh_connect",
-    SFTP_CONNECT: "server.sftp_connect",
-    PVE_CONNECT: "server.pve_connect",
-    RDP_CONNECT: "server.rdp_connect",
-    VNC_CONNECT: "server.vnc_connect",
+    SSH_CONNECT: "entry.ssh_connect",
+    SFTP_CONNECT: "entry.sftp_connect",
+    PVE_CONNECT: "entry.pve_connect",
+    RDP_CONNECT: "entry.rdp_connect",
+    VNC_CONNECT: "entry.vnc_connect",
 
     FILE_UPLOAD: "file.upload",
     FILE_DOWNLOAD: "file.download",
     FILE_DELETE: "file.delete",
     FILE_RENAME: "file.rename",
+    FILE_CHMOD: "file.chmod",
 
     FOLDER_CREATE: "folder.create",
     FOLDER_DELETE: "folder.delete",
+    FOLDER_DOWNLOAD: "folder.download",
 
-    SERVER_CREATE: "server.create",
-    SERVER_UPDATE: "server.update",
-    SERVER_DELETE: "server.delete",
+    ENTRY_CREATE: "entry.create",
+    ENTRY_UPDATE: "entry.update",
+    ENTRY_DELETE: "entry.delete",
 
     IDENTITY_CREATE: "identity.create",
     IDENTITY_UPDATE: "identity.update",
     IDENTITY_DELETE: "identity.delete",
+    IDENTITY_CREDENTIALS_ACCESS: "identity.credentials_access",
 
     FOLDER_CREATE_MGMT: "folder_mgmt.create",
     FOLDER_UPDATE_MGMT: "folder_mgmt.update",
     FOLDER_DELETE_MGMT: "folder_mgmt.delete",
 
     SCRIPT_EXECUTE: "script.execute",
-
-    APP_INSTALL: "app.install",
 };
 
 const RESOURCE_TYPES = {
-    USER: "user", SERVER: "server", IDENTITY: "identity", ORGANIZATION: "organization",
+    USER: "user", ENTRY: "entry", IDENTITY: "identity", ORGANIZATION: "organization",
     FOLDER: "folder", FILE: "file", SCRIPT: "script", APP: "app",
 };
 
@@ -47,26 +62,32 @@ const getOrgAuditSettings = async (organizationId) => {
 
     const org = await Organization.findByPk(organizationId);
     const defaults = {
-        requireConnectionReason: false, enableFileOperationAudit: true, enableServerConnectionAudit: true,
-        enableIdentityManagementAudit: true, enableServerManagementAudit: true, enableFolderManagementAudit: true,
-        enableScriptExecutionAudit: true, enableAppInstallationAudit: true,
+        requireConnectionReason: false, 
+        enableFileOperationAudit: true, 
+        enableServerConnectionAudit: true,
+        enableIdentityManagementAudit: true, 
+        enableIdentityCredentialsAccessAudit: true,
+        enableServerManagementAudit: true, 
+        enableFolderManagementAudit: true,
+        enableScriptExecutionAudit: true,
     };
 
     if (!org?.auditSettings) return defaults;
-    const settings = typeof org.auditSettings === "string" ? JSON.parse(org.auditSettings) : org.auditSettings;
-    return { ...defaults, ...settings };
+    
+    return { ...defaults, ...org.auditSettings };
 };
 
 const shouldAudit = (action, settings) => {
     if (!settings) return true;
+    if (action === AUDIT_ACTIONS.IDENTITY_CREDENTIALS_ACCESS) return settings.enableIdentityCredentialsAccessAudit;
+
     const checks = [
-        [action.startsWith("file."), settings.enableFileOperationAudit],
-        [action.startsWith("server.") && !action.includes("create") && !action.includes("update") && !action.includes("delete"), settings.enableServerConnectionAudit],
+        [action.startsWith("file.") || action.startsWith("folder."), settings.enableFileOperationAudit],
+        [action.startsWith("entry.") && !action.includes("create") && !action.includes("update") && !action.includes("delete"), settings.enableServerConnectionAudit],
         [action.startsWith("identity."), settings.enableIdentityManagementAudit],
-        [action.includes("server.create") || action.includes("server.update") || action.includes("server.delete"), settings.enableServerManagementAudit],
+        [action.includes("entry.create") || action.includes("entry.update") || action.includes("entry.delete"), settings.enableServerManagementAudit],
         [action.startsWith("folder_mgmt."), settings.enableFolderManagementAudit],
         [action.startsWith("script."), settings.enableScriptExecutionAudit],
-        [action.startsWith("app."), settings.enableAppInstallationAudit],
     ];
 
     for (const [condition, enabled] of checks) {
@@ -81,7 +102,7 @@ const createAuditLog = async ({
                               }) => {
     try {
         if (!accountId || !action || typeof action !== "string") {
-            console.error("Invalid audit log parameters:", { accountId, action });
+            logger.error("Invalid audit log parameters", { accountId, action });
             return;
         }
 
@@ -92,12 +113,12 @@ const createAuditLog = async ({
 
         const auditLog = await AuditLog.create({
             accountId, organizationId, action, resource, resourceId, details,
-            ipAddress, userAgent, reason, timestamp: new Date(),
+            ipAddress: normalizeIp(ipAddress), userAgent, reason, timestamp: new Date(),
         });
 
         return auditLog.id;
     } catch (error) {
-        console.error("Failed to create audit log:", error);
+        logger.error("Failed to create audit log", { error: error.message, stack: error.stack });
     }
 };
 
@@ -135,29 +156,51 @@ const getAuditLogsInternal = async (accountId, filters = {}) => {
         where: whereClause, order: [["timestamp", "DESC"]], limit, offset,
     });
 
-    const [accounts, organizations] = await Promise.all([
-        Account.findAll({
-            where: { id: { [Op.in]: [...new Set(result.rows.map(log => log.accountId))] } },
-            attributes: ["id", "firstName", "lastName"],
-        }),
-        Organization.findAll({
-            where: { id: { [Op.in]: [...new Set(result.rows.map(log => log.organizationId).filter(Boolean))] } },
-            attributes: ["id", "name"],
-        }),
+    const accountIds = new Set(), orgIds = new Set(), resourceIdsByType = {};
+    for (const log of result.rows) {
+        accountIds.add(log.accountId);
+        if (log.organizationId) orgIds.add(log.organizationId);
+        if (log.resource && log.resourceId && RESOURCE_CONFIG[log.resource]) {
+            (resourceIdsByType[log.resource] ??= new Set()).add(log.resourceId);
+        }
+    }
+
+    const resourceQueries = Object.entries(resourceIdsByType).map(([type, ids]) =>
+        RESOURCE_CONFIG[type].model.findAll({ where: { id: { [Op.in]: [...ids] } }, attributes: ["id", "name"] })
+            .then(rows => [type, new Map(rows.map(r => [r.id, r.name]))])
+    );
+    const [accounts, orgs, ...resources] = await Promise.all([
+        Account.findAll({ where: { id: { [Op.in]: [...accountIds] } }, attributes: ["id", "firstName", "lastName"] }),
+        orgIds.size ? Organization.findAll({ where: { id: { [Op.in]: [...orgIds] } }, attributes: ["id", "name"] }) : [],
+        ...resourceQueries,
     ]);
 
-    const accountMap = Object.fromEntries(accounts.map(acc => [acc.id, acc]));
-    const orgMap = Object.fromEntries(organizations.map(org => [org.id, org]));
+    const accountMap = new Map(accounts.map(a => [a.id, a]));
+    const orgMap = new Map(orgs.map(o => [o.id, o.name]));
+    const resourceMaps = Object.fromEntries(resources);
 
-    result.rows = result.rows.map(log => ({
-        id: log.id, accountId: log.accountId, organizationId: log.organizationId, action: log.action,
-        resource: log.resource, resourceId: log.resourceId, ipAddress: log.ipAddress, userAgent: log.userAgent,
-        timestamp: log.timestamp,
-        details: typeof log.details === "string" ? JSON.parse(log.details) : log.details,
-        actorFirstName: accountMap[log.accountId]?.firstName || null,
-        actorLastName: accountMap[log.accountId]?.lastName || null,
-        organizationName: orgMap[log.organizationId]?.name || null,
-    }));
+    result.rows = result.rows.map(log => {
+        const cfg = RESOURCE_CONFIG[log.resource];
+        const resourceName = resourceMaps[log.resource]?.get(log.resourceId) || log.details?.[cfg?.detailsKey] || null;
+        const actor = accountMap.get(log.accountId);
+        return {
+            id: log.id,
+            accountId: log.accountId,
+            organizationId: log.organizationId,
+            action: log.action,
+            resource: log.resource,
+            resourceId: log.resourceId,
+            resourceName,
+            ipAddress: log.ipAddress,
+            userAgent: log.userAgent,
+            timestamp: log.timestamp,
+            details: log.details,
+            reason: log.reason,
+            actorFirstName: actor?.firstName || null,
+            actorLastName: actor?.lastName || null,
+            organizationName: orgMap.get(log.organizationId) || null,
+        };
+    });
 
     return result;
 };
@@ -169,12 +212,12 @@ const updateAuditLogWithSessionDuration = async (auditLogId, connectionStartTime
         const auditLog = await AuditLog.findByPk(auditLogId);
         if (!auditLog) return;
 
-        const currentDetails = typeof auditLog.details === "string" ? JSON.parse(auditLog.details) : auditLog.details || {};
+        const currentDetails = auditLog.details || {};
         currentDetails.sessionDuration = Math.round((Date.now() - connectionStartTime) / 1000);
 
         await AuditLog.update({ details: currentDetails }, { where: { id: auditLogId } });
     } catch (error) {
-        console.error("Error updating audit log with session duration:", error);
+        logger.error("Error updating audit log with session duration", { error: error.message, auditLogId });
     }
 };
 
@@ -188,7 +231,7 @@ module.exports.getAuditLogs = async (accountId, filters = {}) => {
         const result = await getAuditLogsInternal(accountId, filters);
         return { logs: result.rows, total: result.count, filters };
     } catch (error) {
-        console.error("Error getting audit logs:", error);
+        logger.error("Error getting audit logs", { error: error.message, accountId });
         return { code: 500, message: "Failed to retrieve audit logs" };
     }
 };
@@ -202,7 +245,7 @@ module.exports.getOrganizationAuditSettings = async (accountId, organizationId) 
 
         return await getOrgAuditSettings(organizationId);
     } catch (error) {
-        console.error("Error getting organization audit settings:", error);
+        logger.error("Error getting organization audit settings", { error: error.message, organizationId });
         return { code: 500, message: "Failed to retrieve audit settings" };
     }
 };
@@ -220,7 +263,7 @@ module.exports.updateOrganizationAuditSettings = async (accountId, organizationI
         await Organization.update({ auditSettings: updatedSettings }, { where: { id: organizationId } });
         return updatedSettings;
     } catch (error) {
-        console.error("Error updating organization audit settings:", error);
+        logger.error("Error updating organization audit settings", { error: error.message, organizationId });
         return { code: 500, message: "Failed to update audit settings" };
     }
 };
@@ -245,10 +288,32 @@ module.exports.getAuditMetadata = async () => ({
 module.exports.getOrganizationAuditSettingsInternal = async (organizationId) => {
     try {
         const organization = await Organization.findByPk(organizationId);
-        return organization?.auditSettings ? JSON.parse(organization.auditSettings) : null;
+        return organization?.auditSettings || null;
     } catch (error) {
-        console.error("Error getting organization audit settings internally:", error);
+        logger.error("Error getting organization audit settings internally", { error: error.message, organizationId });
         return null;
+    }
+};
+
+module.exports.getRecording = async (accountId, auditLogId) => {
+    try {
+        const auditLog = await AuditLog.findByPk(auditLogId);
+        if (!auditLog) return { code: 404, message: "Audit log not found" };
+
+        if (auditLog.organizationId) {
+            if (!(await hasOrganizationAccess(accountId, auditLog.organizationId))) 
+                return { code: 403, message: "You don't have access to this recording" };
+        } else if (auditLog.accountId !== accountId) {
+            return { code: 403, message: "You don't have access to this recording" };
+        }
+
+        const recordingInfo = getRecordingInfo(auditLogId);
+        if (!recordingInfo.exists) return { code: 404, message: "Recording not found" };
+
+        return { type: recordingInfo.type, path: recordingInfo.path };
+    } catch (error) {
+        logger.error("Error getting recording", { error: error.message, auditLogId });
+        return { code: 500, message: "Failed to retrieve recording" };
     }
 };
 

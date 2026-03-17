@@ -1,0 +1,14 @@
+{
+    "source" : {
+        "include" : "src"
+    },
+    "opts" : {
+        "recurse" : true,
+        "destination" : "target/apidocs"
+    },
+    "templates" : {
+        "default" : {
+            "useLongnameInNav" : true
+        }
+    }
+}

@@ -1,0 +1,26 @@
+{
+
+    "DATA_SOURCE_CAS" : {
+        "NAME" : "CAS SSO Backend"
+    },
+
+    "DATA_SOURCE_OPENID" : {
+        "NAME" : "OpenID SSO Backend"
+    },
+
+    "DATA_SOURCE_SAML" : {
+        "NAME" : "SAML SSO Backend"
+    },
+
+    "LOGIN" : {
+        "FIELD_HEADER_ID_TOKEN"      : "",
+        "FIELD_HEADER_STATE"         : "",
+        "FIELD_HEADER_TICKET"        : "",
+        "INFO_IDP_REDIRECT_PENDING"  : "Proszę czekać, przekierowanie do dostawcy tożsamości...",
+        "NAME_IDP_CAS"               : "CAS",
+        "NAME_IDP_OPENID"            : "OpenID",
+        "NAME_IDP_SAML"              : "SAML",
+        "SECTION_HEADER_SSO_OPTIONS" : "Zaloguj z:"
+    }
+
+}

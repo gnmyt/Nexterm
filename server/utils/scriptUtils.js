@@ -1,245 +1,114 @@
-module.exports.escapeColons = (text) => {
-    return text.replace(/:/g, "\\x3A");
+const escapeColons = (t) => t.replace(/:/g, "\\x3A");
+const unescapeColons = (t) => t.replace(/\\x3A/g, ":");
+
+const parseOptions = (str) => {
+    const s = str.replace(/\\"/g, "\"");
+    const opts = [];
+    let cur = "", inQ = false;
+    for (let i = 0; i < s.length; i++) {
+        const c = s[i];
+        if (c === "\"" && (i === 0 || s[i - 1] === " ")) inQ = true;
+        else if (c === "\"" && inQ) { inQ = false; opts.push(cur.trim()); cur = ""; }
+        else if (c === " " && !inQ) { if (cur.trim()) { opts.push(cur.trim()); cur = ""; } }
+        else cur += c;
+    }
+    if (cur.trim()) opts.push(cur.trim());
+    return opts;
 };
 
-module.exports.unescapeColons = (text) => {
-    return text.replace(/\\x3A/g, ":");
+const checkSudoPrompt = (output) => {
+    const patterns = ["[sudo] password for", "Password:", "sudo: a password is required", "sudo: a terminal is required"];
+    if (!patterns.some(p => output.includes(p))) return null;
+    const m = output.match(/\[sudo\] password for ([^:]+):/);
+    return { variable: "SUDO_PASSWORD", prompt: `Enter sudo password for ${m?.[1] || "user"}`, default: "", isSudoPassword: true, type: "password" };
 };
 
-module.exports.parseOptions = (optionsStr) => {
-    const unescapedOptions = optionsStr.replace(/\\"/g, "\"");
+const transformScript = (content) => {
+    const esc = (t) => t.replace(/:/g, "\\x3A");
+    let t = content
+        .replace(/^(\s*)sudo(?!\s+-S)(\s+)/gm, "$1sudo -S$2")
+        .replace(/^(\s*)@NEXTERM:STEP\s+"((?:\\.|[^"\\])*)"/gm, "$1echo \"NEXTERM_STEP:$2\"")
+        .replace(/^(\s*)@NEXTERM:INPUT\s+(\S+)\s+"((?:\\.|[^"\\])*)"(?:\s+"((?:\\.|[^"\\]*)*)")?/gm, (_, i, v, p, d) =>
+            `${i}echo "NEXTERM_INPUT:${v}:${esc(p)}:${d ? esc(d) : ""}" && read -r ${v}`)
+        .replace(/^(\s*)@NEXTERM:SELECT\s+"((?:\\.|[^"\\])*)"\s+"((?:\\.|[^"\\])*)"\s+(.+)/gm, (_, i, v, p, o) =>
+            `${i}echo "NEXTERM_SELECT:${v}:${esc(p)}:${esc(o).replace(/"/g, "\\\"")}" && read -r ${v}`)
+        .replace(/^(\s*)@NEXTERM:SELECT\s+(\S+)\s+"((?:\\.|[^"\\])*)"\s+(.+)/gm, (_, i, v, p, o) =>
+            `${i}echo "NEXTERM_SELECT:${v}:${esc(p)}:${esc(o).replace(/"/g, "\\\"")}" && read -r ${v}`)
+        .replace(/^(\s*)@NEXTERM:WARN\s+"((?:\\.|[^"\\])*)"/gm, (_, i, m) => `${i}echo "NEXTERM_WARN:${esc(m)}"`)
+        .replace(/^(\s*)@NEXTERM:INFO\s+"((?:\\.|[^"\\])*)"/gm, (_, i, m) => `${i}echo "NEXTERM_INFO:${esc(m)}"`)
+        .replace(/^(\s*)@NEXTERM:CONFIRM\s+"((?:\\.|[^"\\])*)"/gm, (_, i, m) =>
+            `${i}echo "NEXTERM_CONFIRM:${esc(m)}" && read -r NEXTERM_CONFIRM_RESULT`)
+        .replace(/^(\s*)@NEXTERM:PROGRESS\s+(\$?\w+|\d+)/gm, "$1echo \"NEXTERM_PROGRESS:$2\"")
+        .replace(/^(\s*)@NEXTERM:SUCCESS\s+"((?:\\.|[^"\\])*)"/gm, (_, i, m) => `${i}echo "NEXTERM_SUCCESS:${esc(m)}"`)
+        .replace(/^(\s*)@NEXTERM:SUMMARY\s+"((?:\\.|[^"\\])*)"\s+(.+)/gm, (_, i, ti, d) =>
+            `${i}echo "NEXTERM_SUMMARY:${esc(ti).replace(/"/g, "\\\"")}:${esc(d).replace(/"/g, "\\\"")}" && read -r NEXTERM_SUMMARY_RESULT`)
+        .replace(/^(\s*)@NEXTERM:TABLE\s+"((?:\\.|[^"\\])*)"\s+(.+)/gm, (_, i, ti, d) =>
+            `${i}echo "NEXTERM_TABLE:${esc(ti).replace(/"/g, "\\\"")}:${esc(d).replace(/"/g, "\\\"")}" && read -r NEXTERM_TABLE_RESULT`)
+        .replace(/^(\s*)@NEXTERM:MSGBOX\s+"((?:\\.|[^"\\])*)"\s+"((?:\\.|[^"\\])*)"/gm, (_, i, ti, m) =>
+            `${i}echo "NEXTERM_MSGBOX:${esc(ti)}:${esc(m)}" && read -r NEXTERM_MSGBOX_RESULT`);
 
-    const options = [];
-    let current = "";
-    let inQuotes = false;
+    const script = `#!/bin/bash\nset -e\n${t}\n`;
+    const b64 = Buffer.from(script).toString("base64");
+    return { b64, command: null };
+};
 
-    for (let i = 0; i < unescapedOptions.length; i++) {
-        const char = unescapedOptions[i];
+const getScriptCommands = (b64) => {
+    const CHUNK_SIZE = 2000;
+    const commands = [];
 
-        if (char === "\"" && (i === 0 || unescapedOptions[i - 1] === " ")) {
-            inQuotes = true;
-        } else if (char === "\"" && inQuotes) {
-            inQuotes = false;
-            options.push(current.trim());
-            current = "";
-        } else if (char === " " && !inQuotes) {
-            if (current.trim()) {
-                options.push(current.trim());
-                current = "";
-            }
-        } else {
-            current += char;
+    commands.push(`_nts=$(mktemp) && _ntb=$(mktemp)`);
+    
+    for (let i = 0; i < b64.length; i += CHUNK_SIZE) {
+        const chunk = b64.slice(i, i + CHUNK_SIZE);
+        commands.push(`printf '%s' '${chunk}' >> "$_ntb"`);
+    }
+    
+    commands.push(`base64 -d < "$_ntb" > "$_nts" && rm -f "$_ntb" && chmod +x "$_nts" && "$_nts"; _exit=$?; rm -f "$_nts"; echo "NEXTERM_END:$_exit"`);
+    
+    return commands;
+};
+
+const stripAnsi = (s) => s.replace(/\x1B(?:[@-Z\\-_]|\[[0-?]*[ -/]*[@-~])/g, "");
+
+const findNextermCommand = (line) => {
+    const clean = stripAnsi(line);
+    if (clean.match(/echo\s+["']?NEXTERM_/i) || clean.trim().match(/^[$#>]\s+.*NEXTERM_/)) return null;
+    const m = clean.match(/NEXTERM_(INPUT|SELECT|STEP|WARN|INFO|CONFIRM|PROGRESS|SUCCESS|SUMMARY|TABLE|MSGBOX|END):(.*)/s);
+    return m ? { command: `NEXTERM_${m[1]}`, rest: m[2] } : null;
+};
+
+const processNextermLine = (line) => {
+    const found = findNextermCommand(line);
+    if (!found) return null;
+    const { command, rest } = found;
+    const parts = rest.split(":");
+    const unescape = unescapeColons;
+
+    switch (command) {
+        case "NEXTERM_INPUT":
+            return { type: "input", variable: parts[0], prompt: unescape(parts[1] || ""), default: parts[2] ? unescape(parts[2]) : "" };
+        case "NEXTERM_SELECT": {
+            const opts = parseOptions(unescape(parts.slice(2).join(":")));
+            return { type: "select", variable: parts[0], prompt: unescape(parts[1] || ""), options: opts, default: opts[0] || "" };
         }
+        case "NEXTERM_STEP": return { type: "step", description: rest.trim() };
+        case "NEXTERM_WARN": return { type: "warning", message: unescape(rest) };
+        case "NEXTERM_INFO": return { type: "info", message: unescape(rest) };
+        case "NEXTERM_CONFIRM": return { type: "confirm", message: unescape(rest) };
+        case "NEXTERM_PROGRESS": return { type: "progress", percentage: parseInt(rest.split(":")[0]) || 0 };
+        case "NEXTERM_SUCCESS": return { type: "success", message: unescape(rest) };
+        case "NEXTERM_SUMMARY": {
+            const data = parseOptions(unescape(parts.slice(1).join(":")));
+            return { type: "summary", title: unescape(parts[0] || ""), data };
+        }
+        case "NEXTERM_TABLE": {
+            const data = parseOptions(unescape(parts.slice(1).join(":")));
+            return { type: "table", title: unescape(parts[0] || ""), data };
+        }
+        case "NEXTERM_MSGBOX": return { type: "msgbox", title: unescape(parts[0] || ""), message: unescape(parts.slice(1).join(":")) };
+        case "NEXTERM_END": return { type: "end", exitCode: parseInt(rest.trim()) || 0 };
+        default: return null;
     }
-
-    if (current.trim()) options.push(current.trim());
-
-    return options;
 };
 
-module.exports.checkSudoPrompt = (output) => {
-    const sudoPatterns = ["[sudo] password for", "Password:", "sudo: a password is required", "sudo: a terminal is required"];
-
-    if (sudoPatterns.some(pattern => output.includes(pattern))) {
-        const sudoMatch = output.match(/\[sudo\] password for ([^:]+):/);
-        const username = sudoMatch ? sudoMatch[1] : "user";
-
-        return {
-            variable: "SUDO_PASSWORD",
-            prompt: `Enter sudo password for ${username}`,
-            default: "",
-            isSudoPassword: true,
-            type: "password",
-        };
-    }
-
-    return null;
-};
-
-module.exports.transformScript = (scriptContent) => {
-    let transformedContent = scriptContent;
-
-    transformedContent = transformedContent.replace(
-        /^(\s*)sudo(?!\s+-S)(\s+)/gm,
-        "$1sudo -S$2");
-
-    transformedContent = transformedContent.replace(
-        /^(\s*)@NEXTERM:STEP\s+"((?:\\.|[^"\\])*)"/gm,
-        "$1echo \"NEXTERM_STEP:$2\"");
-
-    transformedContent = transformedContent.replace(
-        /^(\s*)@NEXTERM:INPUT\s+(\S+)\s+"((?:\\.|[^"\\])*)"(?:\s+"((?:\\.|[^"\\]*)*)")?/gm,
-        (match, indent, varName, prompt, defaultValue) => {
-            const escapedPrompt = prompt.replace(/:/g, "\\x3A");
-            const escapedDefault = defaultValue ? defaultValue.replace(/:/g, "\\x3A") : "";
-            return `${indent}echo "NEXTERM_INPUT:${varName}:${escapedPrompt}:${escapedDefault}" && read -r ${varName}`;
-        },
-    );
-
-    transformedContent = transformedContent.replace(
-        /^(\s*)@NEXTERM:SELECT\s+"((?:\\.|[^"\\])*)"\s+"((?:\\.|[^"\\])*)"\s+(.+)/gm,
-        (match, indent, varName, prompt, options) => {
-            const escapedPrompt = prompt.replace(/:/g, "\\x3A");
-            const escapedOptions = options.replace(/:/g, "\\x3A").replace(/"/g, "\\\"");
-            return `${indent}echo "NEXTERM_SELECT:${varName}:${escapedPrompt}:${escapedOptions}" && read -r ${varName}`;
-        },
-    );
-
-    transformedContent = transformedContent.replace(
-        /^(\s*)@NEXTERM:SELECT\s+(\S+)\s+"((?:\\.|[^"\\])*)"\s+(.+)/gm,
-        (match, indent, varName, prompt, options) => {
-            const escapedPrompt = prompt.replace(/:/g, "\\x3A");
-            const escapedOptions = options.replace(/:/g, "\\x3A").replace(/"/g, "\\\"");
-            return `${indent}echo "NEXTERM_SELECT:${varName}:${escapedPrompt}:${escapedOptions}" && read -r ${varName}`;
-        },
-    );
-
-    transformedContent = transformedContent.replace(
-        /^(\s*)@NEXTERM:WARN\s+"((?:\\.|[^"\\])*)"/gm,
-        (match, indent, message) => {
-            const escapedMessage = message.replace(/:/g, "\\x3A");
-            return `${indent}echo "NEXTERM_WARN:${escapedMessage}"`;
-        },
-    );
-
-    transformedContent = transformedContent.replace(
-        /^(\s*)@NEXTERM:INFO\s+"((?:\\.|[^"\\])*)"/gm,
-        (match, indent, message) => {
-            const escapedMessage = message.replace(/:/g, "\\x3A");
-            return `${indent}echo "NEXTERM_INFO:${escapedMessage}"`;
-        },
-    );
-
-    transformedContent = transformedContent.replace(
-        /^(\s*)@NEXTERM:CONFIRM\s+"((?:\\.|[^"\\])*)"/gm,
-        (match, indent, message) => {
-            const escapedMessage = message.replace(/:/g, "\\x3A");
-            return `${indent}echo "NEXTERM_CONFIRM:${escapedMessage}" && read -r NEXTERM_CONFIRM_RESULT`;
-        },
-    );
-
-    transformedContent = transformedContent.replace(
-        /^(\s*)@NEXTERM:PROGRESS\s+(\$?\w+|\d+)/gm,
-        "$1echo \"NEXTERM_PROGRESS:$2\"",
-    );
-
-    transformedContent = transformedContent.replace(
-        /^(\s*)@NEXTERM:SUCCESS\s+"((?:\\.|[^"\\])*)"/gm,
-        (match, indent, message) => {
-            const escapedMessage = message.replace(/:/g, "\\x3A");
-            return `${indent}echo "NEXTERM_SUCCESS:${escapedMessage}"`;
-        },
-    );
-
-    transformedContent = transformedContent.replace(
-        /^(\s*)@NEXTERM:SUMMARY\s+"((?:\\.|[^"\\])*)"\s+(.+)/gm,
-        (match, indent, title, data) => {
-            const escapedTitle = title.replace(/:/g, "\\x3A").replace(/"/g, "\\\"");
-            const escapedData = data.replace(/:/g, "\\x3A").replace(/"/g, "\\\"");
-            return `${indent}echo "NEXTERM_SUMMARY:${escapedTitle}:${escapedData}" && read -r NEXTERM_SUMMARY_RESULT`;
-        },
-    );
-
-    transformedContent = transformedContent.replace(
-        /^(\s*)@NEXTERM:TABLE\s+"((?:\\.|[^"\\])*)"\s+(.+)/gm,
-        (match, indent, title, data) => {
-            const escapedTitle = title.replace(/:/g, "\\x3A").replace(/"/g, "\\\"");
-            const escapedData = data.replace(/:/g, "\\x3A").replace(/"/g, "\\\"");
-            return `${indent}echo "NEXTERM_TABLE:${escapedTitle}:${escapedData}" && read -r NEXTERM_TABLE_RESULT`;
-        },
-    );
-
-    transformedContent = transformedContent.replace(
-        /^(\s*)@NEXTERM:MSGBOX\s+"((?:\\.|[^"\\])*)"\s+"((?:\\.|[^"\\])*)"/gm,
-        (match, indent, title, message) => {
-            const escapedTitle = title.replace(/:/g, "\\x3A");
-            const escapedMessage = message.replace(/:/g, "\\x3A");
-            return `${indent}echo "NEXTERM_MSGBOX:${escapedTitle}:${escapedMessage}" && read -r NEXTERM_MSGBOX_RESULT`;
-        },
-    );
-
-    return `#!/bin/bash
-set -e
-${transformedContent}
-exit 0
-`;
-};
-
-module.exports.processNextermLine = (line) => {
-    if (line.startsWith("NEXTERM_INPUT:")) {
-        const parts = line.substring(14).split(":");
-        const varName = parts[0];
-        const prompt = module.exports.unescapeColons(parts[1]);
-        const defaultValue = parts[2] ? module.exports.unescapeColons(parts[2]) : "";
-
-        return { type: "input", variable: varName, prompt: prompt, default: defaultValue || "" };
-    }
-
-    if (line.startsWith("NEXTERM_SELECT:")) {
-        const parts = line.substring(15).split(":");
-        const varName = parts[0];
-        const prompt = module.exports.unescapeColons(parts[1]);
-        const optionsStr = parts.slice(2).join(":");
-        const unescapedOptionsStr = module.exports.unescapeColons(optionsStr);
-        const options = module.exports.parseOptions(unescapedOptionsStr);
-
-        return { type: "select", variable: varName, prompt: prompt, options: options, default: options[0] || "" };
-    }
-
-    if (line.startsWith("NEXTERM_STEP:")) {
-        const stepDesc = line.substring(13);
-        return { type: "step", description: stepDesc };
-    }
-
-    if (line.startsWith("NEXTERM_WARN:")) {
-        const message = module.exports.unescapeColons(line.substring(13));
-        return { type: "warning", message: message };
-    }
-
-    if (line.startsWith("NEXTERM_INFO:")) {
-        const message = module.exports.unescapeColons(line.substring(13));
-        return { type: "info", message: message };
-    }
-
-    if (line.startsWith("NEXTERM_CONFIRM:")) {
-        const message = module.exports.unescapeColons(line.substring(16));
-        return { type: "confirm", message: message };
-    }
-
-    if (line.startsWith("NEXTERM_PROGRESS:")) {
-        const [percentage] = line.substring(17).split(":");
-        return { type: "progress", percentage: parseInt(percentage) || 0 };
-    }
-
-    if (line.startsWith("NEXTERM_SUCCESS:")) {
-        const message = module.exports.unescapeColons(line.substring(16));
-        return { type: "success", message: message };
-    }
-
-    if (line.startsWith("NEXTERM_SUMMARY:")) {
-        const parts = line.substring(16).split(":");
-        const title = module.exports.unescapeColons(parts[0]);
-        const dataStr = parts.slice(1).join(":");
-        const unescapedDataStr = module.exports.unescapeColons(dataStr);
-        const data = module.exports.parseOptions(unescapedDataStr);
-        return { type: "summary", title: title, data: data };
-    }
-
-    if (line.startsWith("NEXTERM_TABLE:")) {
-        const parts = line.substring(14).split(":");
-        const title = module.exports.unescapeColons(parts[0]);
-        const dataStr = parts.slice(1).join(":");
-        const unescapedDataStr = module.exports.unescapeColons(dataStr);
-        const data = module.exports.parseOptions(unescapedDataStr);
-        return { type: "table", title: title, data: data };
-    }
-
-    if (line.startsWith("NEXTERM_MSGBOX:")) {
-        const parts = line.substring(15).split(":");
-        const title = module.exports.unescapeColons(parts[0]);
-        const message = module.exports.unescapeColons(parts.slice(1).join(":"));
-        return { type: "msgbox", title: title, message: message };
-    }
-
-    return null;
-};
+module.exports = { escapeColons, unescapeColons, parseOptions, checkSudoPrompt, transformScript, getScriptCommands, stripAnsi, findNextermCommand, processNextermLine };

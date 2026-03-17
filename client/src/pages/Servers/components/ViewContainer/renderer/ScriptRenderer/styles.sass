@@ -1,0 +1,25 @@
+@use "../../../../../../common/styles/colors"
+
+.script-renderer
+  position: relative
+  width: 100%
+  height: 100%
+  overflow: hidden
+
+  .script-terminal
+    width: 100%
+    height: 100%
+
+    .xterm
+      height: 100% !important
+      margin: 0 !important
+      padding: 0 !important
+
+      .xterm-scrollable-element,
+      .xterm-screen
+        height: 100% !important
+
+      .xterm-viewport
+        overflow-y: hidden !important
+        margin: 0 !important
+        padding: 0 !important
