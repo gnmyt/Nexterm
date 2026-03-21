@@ -52,12 +52,20 @@ const DetailsPage = ({name, setName, icon, setIcon, config, setConfig, fieldConf
                         </div>
                     )}
                     {config.wakeOnLanEnabled && (
-                        <div className="form-group">
-                            <label htmlFor="macAddress">{t("servers.dialog.fields.macAddress")}</label>
-                            <Input icon={mdiEthernet} type="text" placeholder={t("servers.dialog.placeholders.macAddress")} 
-                                   id="macAddress" autoComplete="off" value={config.macAddress || ""} 
-                                   setValue={(value) => setConfig(prev => ({ ...prev, macAddress: value }))} />
-                        </div>
+                        <>
+                            <div className="form-group">
+                                <label htmlFor="macAddress">{t("servers.dialog.fields.macAddress")}</label>
+                                <Input icon={mdiEthernet} type="text" placeholder={t("servers.dialog.placeholders.macAddress")}
+                                       id="macAddress" autoComplete="off" value={config.macAddress || ""}
+                                       setValue={(value) => setConfig(prev => ({ ...prev, macAddress: value }))} />
+                            </div>
+                            <div className="form-group">
+                                <label htmlFor="wolBroadcastAddress">{t("servers.dialog.fields.wolBroadcastAddress")}</label>
+                                <Input icon={mdiIp} type="text" placeholder={t("servers.dialog.placeholders.wolBroadcastAddress")}
+                                       id="wolBroadcastAddress" autoComplete="off" value={config.wolBroadcastAddress || ""}
+                                       setValue={(value) => setConfig(prev => ({ ...prev, wolBroadcastAddress: value }))} />
+                            </div>
+                        </>
                     )}
                 </>
             )}
