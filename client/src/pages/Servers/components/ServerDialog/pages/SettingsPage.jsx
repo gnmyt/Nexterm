@@ -3,7 +3,7 @@ import SelectBox from "@/common/components/SelectBox";
 import ToggleSwitch from "@/common/components/ToggleSwitch";
 import { ServerContext } from "@/common/contexts/ServerContext.jsx";
 import Icon from "@mdi/react";
-import { mdiServerNetwork, mdiClose, mdiPlus, mdiChartLine, mdiMonitor, mdiPalette, mdiVolumeHigh, mdiPowerPlug, mdiKeyboardOutline } from "@mdi/js";
+import { mdiServerNetwork, mdiClose, mdiPlus, mdiChartLine, mdiMonitor, mdiPalette, mdiVolumeHigh, mdiPowerPlug, mdiKeyboardOutline, mdiKeyAlertOutline } from "@mdi/js";
 import { useTranslation } from "react-i18next";
 
 const COLOR_DEPTHS = [
@@ -74,6 +74,7 @@ const SettingsPage = ({ config, setConfig, monitoringEnabled, setMonitoringEnabl
     const [enableDesktopComposition, setEnableDesktopComposition] = useState(config?.enableDesktopComposition === true);
     const [enableMenuAnimations, setEnableMenuAnimations] = useState(config?.enableMenuAnimations === true);
     const [wakeOnLanEnabled, setWakeOnLanEnabled] = useState(config?.wakeOnLanEnabled === true);
+    const [enableLegacyCrypto, setEnableLegacyCrypto] = useState(config?.enableLegacyCrypto === true);
     const [backspaceMode, setBackspaceMode] = useState(config?.backspaceMode || "del");
     const [deleteMode, setDeleteMode] = useState(config?.deleteMode || "vt");
     const [functionKeyMode, setFunctionKeyMode] = useState(config?.functionKeyMode || "xterm");
@@ -103,6 +104,7 @@ const SettingsPage = ({ config, setConfig, monitoringEnabled, setMonitoringEnabl
         if (config?.enableDesktopComposition !== undefined) setEnableDesktopComposition(config.enableDesktopComposition);
         if (config?.enableMenuAnimations !== undefined) setEnableMenuAnimations(config.enableMenuAnimations);
         if (config?.wakeOnLanEnabled !== undefined) setWakeOnLanEnabled(config.wakeOnLanEnabled);
+        if (config?.enableLegacyCrypto !== undefined) setEnableLegacyCrypto(config.enableLegacyCrypto);
         if (config?.backspaceMode !== undefined) setBackspaceMode(config.backspaceMode);
         if (config?.deleteMode !== undefined) setDeleteMode(config.deleteMode);
         if (config?.functionKeyMode !== undefined) setFunctionKeyMode(config.functionKeyMode);
@@ -256,6 +258,20 @@ const SettingsPage = ({ config, setConfig, monitoringEnabled, setMonitoringEnabl
                         </span>
                     </div>
                     <ToggleSwitch checked={wakeOnLanEnabled} onChange={(val) => handleDisplaySettingChange('wakeOnLanEnabled', val, setWakeOnLanEnabled)} id="wake-on-lan-toggle" />
+                </div>
+            )}
+
+            {/* Allow Legacy Cryptography toggle - only visible for SSH connections */}
+            {showJumpHosts && (
+                <div className={`settings-toggle${enableLegacyCrypto ? " danger" : ""}`}>
+                    <div className="settings-toggle-info">
+                        <span className="settings-toggle-label">
+                            <Icon path={mdiKeyAlertOutline} size={0.8} style={{ marginRight: '8px', verticalAlign: 'middle' }} />
+                            {t('servers.dialog.settings.legacyCrypto.title')}
+                        </span>
+                        <span className="settings-toggle-description">{t('servers.dialog.settings.legacyCrypto.description')}</span>
+                    </div>
+                    <ToggleSwitch checked={enableLegacyCrypto} onChange={(val) => handleDisplaySettingChange('enableLegacyCrypto', val, setEnableLegacyCrypto)} id="enable-legacy-crypto" />
                 </div>
             )}
 

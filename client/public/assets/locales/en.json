@@ -1422,6 +1422,10 @@
           "delete": "Delete",
           "functionKeys": "Function Keys"
         },
+        "legacyCrypto": {
+          "title": "Allow Legacy Cryptography",
+          "description": "Enable only if the SSH connection fails due to legacy servers requiring insecure algorithms"
+        },
         "noSettings": "No additional settings available for this entry type."
       },
       "identities": {
