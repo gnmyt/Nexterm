@@ -63,7 +63,7 @@ const getScriptCommands = (b64) => {
         commands.push(`printf '%s' '${chunk}' >> "$_ntb"`);
     }
     
-    commands.push(`base64 -d < "$_ntb" > "$_nts" && rm -f "$_ntb" && chmod +x "$_nts" && "$_nts"; _exit=$?; rm -f "$_nts"; echo "NEXTERM_END:$_exit"`);
+    commands.push(`base64 -d < "$_ntb" > "$_nts" && rm -f "$_ntb" && chmod +x "$_nts" && echo "NEXTERM_READY" && "$_nts"; _exit=$?; rm -f "$_nts"; echo "NEXTERM_END:$_exit"`);
     
     return commands;
 };

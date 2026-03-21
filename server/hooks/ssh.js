@@ -27,7 +27,10 @@ const bindHandlers = (ws, conn, sessionId, config, isShared) => {
     };
     ws.on("message", msgHandler);
 
-    const dataHandler = (data) => ws.readyState === ws.OPEN && ws.send(data.toString());
+    const dataHandler = (data) => {
+        if (scriptLayer?.suppressOutput) return;
+        ws.readyState === ws.OPEN && ws.send(data.toString());
+    };
     dataSocket.on("data", dataHandler);
 
     return { msgHandler, dataHandler };
@@ -42,8 +45,10 @@ const handleSession = (ws, ctx, isShared) => {
 
     const startTime = Date.now();
 
-    const logs = SessionManager.getLogBuffer(sessionId);
-    if (logs && ws.readyState === ws.OPEN) ws.send(logs);
+    if (!conn.scriptLayer) {
+        const logs = SessionManager.getLogBuffer(sessionId);
+        if (logs && ws.readyState === ws.OPEN) ws.send(logs);
+    }
 
     SessionManager.addWebSocket(sessionId, ws, isShared);
     if (!isShared || serverSession.shareWritable) SessionManager.setActiveWs(sessionId, ws);
