@@ -31,6 +31,7 @@ app.get("/", async (req, res) => {
                 connected: !!liveEngine,
                 version: liveEngine?.version || null,
                 remoteAddr: liveEngine?.remoteAddr || null,
+                encrypted: liveEngine?.encrypted || false,
             };
         });
 

@@ -1,4 +1,5 @@
 const net = require("node:net");
+const tls = require("node:tls");
 const { EventEmitter } = require("node:events");
 const flatbuffers = require("flatbuffers");
 const {
@@ -35,11 +36,16 @@ class ControlPlaneServer extends EventEmitter {
         this._pending = new Map();
         this._sessionEngineMap = new Map();
         this._pingInterval = null;
+        this._tlsContext = null;
+    }
+
+    setTlsContext(tlsOptions) {
+        this._tlsContext = tls.createSecureContext(tlsOptions);
     }
 
     start() {
         return new Promise((resolve, reject) => {
-            this.server = net.createServer((socket) => this._handleConnection(socket));
+            this.server = net.createServer((rawSocket) => this._handleRawConnection(rawSocket));
             this.server.on("error", (err) => {
                 logger.error("Control plane server error", { error: err.message });
                 reject(err);
@@ -237,6 +243,42 @@ class ControlPlaneServer extends EventEmitter {
         return resolvedId ? this._engines.get(resolvedId) : this._getDefaultEngine();
     }
 
+    _handleRawConnection(rawSocket) {
+        const remoteAddr = `${rawSocket.remoteAddress}:${rawSocket.remotePort}`;
+
+        rawSocket.once("readable", () => {
+            const chunk = rawSocket.read(1);
+            if (!chunk || chunk.length === 0) {
+                rawSocket.destroy();
+                return;
+            }
+
+            rawSocket.unshift(chunk);
+
+            if (chunk[0] === 0x16 && this._tlsContext) { // 0x16 = TLS handshake
+                const tlsSocket = new tls.TLSSocket(rawSocket, {
+                    secureContext: this._tlsContext,
+                    isServer: true,
+                });
+                tlsSocket._encrypted = true;
+                tlsSocket.on("secure", () => {
+                    this._handleConnection(tlsSocket);
+                });
+                tlsSocket.on("error", (err) => {
+                    logger.debug(`Control plane: TLS error from ${remoteAddr}: ${err.message}`);
+                    tlsSocket.destroy();
+                });
+            } else {
+                rawSocket._encrypted = false;
+                this._handleConnection(rawSocket);
+            }
+        });
+
+        rawSocket.on("error", (err) => {
+            logger.debug(`Control plane: raw socket error from ${remoteAddr}: ${err.message}`);
+        });
+    }
+
     _handleConnection(socket) {
         const remoteAddr = `${socket.remoteAddress}:${socket.remotePort}`;
         let identified = false;
@@ -303,7 +345,7 @@ class ControlPlaneServer extends EventEmitter {
         }
 
         const dbEngineId = String(engineRecord.id);
-        logger.system(`Engine connected: id=${dbEngineId} name=${engineRecord.name} version=${version} from ${remoteAddr}`);
+        logger.system(`Engine connected: id=${dbEngineId} name=${engineRecord.name} version=${version} from ${remoteAddr}${socket._encrypted ? " (TLS)" : ""}`);
 
         this._engines.set(dbEngineId, {
             socket,
@@ -312,6 +354,7 @@ class ControlPlaneServer extends EventEmitter {
             remoteAddr,
             connectedAt: Date.now(),
             lastPong: Date.now(),
+            encrypted: !!socket._encrypted,
         });
 
         await updateLastConnected(engineRecord.id);
