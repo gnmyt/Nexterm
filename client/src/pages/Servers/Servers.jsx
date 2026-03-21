@@ -142,6 +142,13 @@ export const Servers = () => {
             return;
         }
 
+        const isPveEntry = server?.type?.startsWith("pve-");
+        const hasIdentities = server?.identities && server.identities.length > 0;
+        if (server && !isPveEntry && !hasIdentities) {
+            openDirectConnect(server);
+            return;
+        }
+
         const requiresReason = checkConnectionReasonRequired(serverId, servers);
         if (requiresReason) {
             setPendingConnection({ server: { ...server, renderer: overrideRenderer || server.renderer }, identity });
