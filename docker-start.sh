@@ -20,6 +20,7 @@ if [ -x /usr/local/bin/nexterm-engine ]; then
 server_host: "127.0.0.1"
 server_port: ${CONTROL_PLANE_PORT:-7800}
 registration_token: "$LOCAL_ENGINE_TOKEN"
+tls: false
 EOF
     cd /tmp/nexterm-engine && /usr/local/bin/nexterm-engine &
     ENGINE_PID=$!
