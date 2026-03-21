@@ -64,6 +64,7 @@ async function createSSHConnectionForSession(sessionId, entry, identity, organiz
             clearTimeout(timeout);
             ssh.shell({ term: "xterm-256color" }, async (err, stream) => {
                 if (err) { ssh.end(); return reject(new Error(`Shell: ${err.message}`)); }
+                triggerPassiveSession(stream, 300);
                 stream.setMaxListeners(50);
                 await SessionManager.initRecording(sessionId, organizationId);
                 stream.on("data", (d) => SessionManager.appendLog(sessionId, d.toString()));
@@ -137,6 +138,7 @@ async function createTelnetConnectionForSession(sessionId, entry, organizationId
 
         socket.connect(port, ip, async () => {
             clearTimeout(timeout);
+            triggerPassiveSession(socket, 300);
             await SessionManager.initRecording(sessionId, organizationId);
             socket.on("data", (data) => SessionManager.appendLog(sessionId, data.toString()));
             SessionManager.setConnection(sessionId, { socket, auditLogId: session.auditLogId, type: 'telnet' });
@@ -223,6 +225,37 @@ async function prepareGuacamoleSession(sessionId, entry, identity, organizationI
     session.guacReady = true;
     logger.info("Guacamole prepared", { sessionId, protocol });
     return { success: true };
+}
+
+/**
+ * Triggers a passive SSH/Telnet session by sending a newline character.
+ * * Inspired by Netmiko's session establishment. Serial consoles, terminal
+ * servers and legacy switches often remain silent until they receive input.
+ * This function acts as a behavioral trigger to ensure the data stream begins,
+ * followed by an ANSI escape sequence to clear the terminal. Since the reset
+ * uses ANSI codes, it is handled by the terminal emulator (xterm.js), not the
+ * remote shell, so it works even if the device doesn't have a clear command,
+ * ensuring compatibility without relying on shell-specific commands.
+ * * Note: Most servers send their banner/prompt within 100-200ms; they will never
+ * trigger this function as the event listeners clears this timer immediately.
+ * * @param {Object} stream - The connection stream (socket or SSH2 channel).
+ * @param {number} [timeoutMs=300] - Wait time before triggering the session.
+ * @returns {NodeJS.Timeout} - The timer instance for external cleanup.
+ */
+function triggerPassiveSession(stream, timeoutMs = 300) {
+    const triggerTimer = setTimeout(() => {
+        if (stream.writable) {
+            stream.write('\x0A\x1B[2J\x1B[H');
+        }
+    }, timeoutMs);
+
+    const cleanup = () => clearTimeout(triggerTimer);
+
+    // Self-destruct logic: the timer dies if data arrives,
+    // an error occurs, or the stream closes.
+    stream.once("data", cleanup);
+    stream.once("error", cleanup);
+    stream.once("close", cleanup);
 }
 
 module.exports = {
