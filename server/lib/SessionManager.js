@@ -59,6 +59,27 @@ module.exports.setConnection = (sessionId, connection) => {
     return true;
 };
 
+module.exports.setGuacReady = (sessionId) => {
+    const session = module.exports.get(sessionId);
+    if (!session) return;
+    session.guacReady = true;
+    if (session._guacReadyWaiters) {
+        for (const resolve of session._guacReadyWaiters) resolve();
+        delete session._guacReadyWaiters;
+    }
+};
+
+module.exports.waitForGuacReady = (sessionId, timeoutMs = 30000) => {
+    const session = module.exports.get(sessionId);
+    if (!session) return Promise.reject(new Error("Session not found"));
+    if (session.guacReady) return Promise.resolve();
+    return new Promise((resolve, reject) => {
+        const timeout = setTimeout(() => reject(new Error("Guac ready timeout")), timeoutMs);
+        if (!session._guacReadyWaiters) session._guacReadyWaiters = [];
+        session._guacReadyWaiters.push(() => { clearTimeout(timeout); resolve(); });
+    });
+};
+
 module.exports.getConnection = (sessionId) => module.exports.get(sessionId)?.masterConnection || null;
 
 module.exports.updateConnectionId = (sessionId, connectionId) => {

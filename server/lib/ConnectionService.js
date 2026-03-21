@@ -347,7 +347,7 @@ const prepareGuacamoleSession = async (sessionId, entry, identity, organizationI
         masterClient.connect();
     });
 
-    session.guacReady = true;
+    SessionManager.setGuacReady(sessionId);
 
     SessionManager.setConnection(sessionId, {
         guacdClient: masterClient,
