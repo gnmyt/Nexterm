@@ -3,13 +3,17 @@ const SessionManager = require("../lib/SessionManager");
 const { parseResizeMessage } = require("../utils/sshEventHandlers");
 const { translateKeys } = require("../utils/keyTranslation");
 const controlPlane = require("../lib/controlPlane/ControlPlaneServer");
+const { SCRIPT_MAGIC } = require("../lib/ScriptLayer");
 
 const bindHandlers = (ws, conn, sessionId, config, isShared) => {
-    const { dataSocket } = conn;
+    const { dataSocket, scriptLayer } = conn;
 
     const msgHandler = (data) => {
         if (isShared && !SessionManager.get(sessionId)?.shareWritable) return;
         const msg = data.toString();
+
+        if (scriptLayer && msg.startsWith(SCRIPT_MAGIC)) return;
+
         const resize = parseResizeMessage(msg);
         if (resize) {
             if (SessionManager.isActiveWs(sessionId, ws)) {
@@ -46,6 +50,10 @@ const handleSession = (ws, ctx, isShared) => {
 
     const { msgHandler, dataHandler } = bindHandlers(ws, conn, sessionId, entry?.config, isShared);
 
+    if (conn.scriptLayer) {
+        conn.scriptLayer.createMessageHandler(ws);
+    }
+
     if (!isShared) {
         const onResize = (data) => {
             const r = parseResizeMessage(data);
@@ -61,6 +69,7 @@ const handleSession = (ws, ctx, isShared) => {
     ws.on("close", async () => {
         conn.dataSocket.removeListener("data", dataHandler);
         ws.removeListener("message", msgHandler);
+        if (conn.scriptLayer) conn.scriptLayer.removeMessageHandler(ws);
         SessionManager.removeWebSocket(sessionId, ws, isShared);
         if (!isShared) await updateAuditLogWithSessionDuration(conn.auditLogId, startTime);
     });
