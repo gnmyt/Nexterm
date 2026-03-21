@@ -21,6 +21,7 @@ import {
     mdiTagOutline,
     mdiIpOutline,
     mdiClockOutline,
+    mdiLanConnect,
 } from "@mdi/js";
 
 export const Engines = () => {
@@ -146,7 +147,7 @@ export const Engines = () => {
                         engines.map(engine => (
                             <div key={engine.id} className="engine-card">
                                 <div className="engine-info">
-                                    <Icon path={mdiEngine} className="engine-icon" />
+                                    <Icon path={engine.isLocal ? mdiLanConnect : mdiEngine} className="engine-icon" />
                                     <div className="engine-details">
                                         <div className="engine-name-row">
                                             <h3>{engine.name}</h3>
@@ -183,22 +184,24 @@ export const Engines = () => {
                                         </div>
                                     </div>
                                 </div>
-                                <div className="engine-actions">
-                                    <button
-                                        className="action-btn refresh-btn"
-                                        onClick={() => handleRegenerateToken(engine.id)}
-                                        title={t("settings.engines.regenerateToken")}
-                                    >
-                                        <Icon path={mdiRefresh} />
-                                    </button>
-                                    <button
-                                        className="action-btn delete-btn"
-                                        onClick={() => handleDeleteRequest(engine)}
-                                        title={t("settings.engines.deleteEngine")}
-                                    >
-                                        <Icon path={mdiTrashCan} />
-                                    </button>
-                                </div>
+                                {!engine.isLocal && (
+                                    <div className="engine-actions">
+                                        <button
+                                            className="action-btn refresh-btn"
+                                            onClick={() => handleRegenerateToken(engine.id)}
+                                            title={t("settings.engines.regenerateToken")}
+                                        >
+                                            <Icon path={mdiRefresh} />
+                                        </button>
+                                        <button
+                                            className="action-btn delete-btn"
+                                            onClick={() => handleDeleteRequest(engine)}
+                                            title={t("settings.engines.deleteEngine")}
+                                        >
+                                            <Icon path={mdiTrashCan} />
+                                        </button>
+                                    </div>
+                                )}
                             </div>
                         ))
                     )}
