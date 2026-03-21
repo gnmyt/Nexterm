@@ -67,6 +67,22 @@ const monitorEntry = async (entry) => {
     }
 };
 
+// ─── OS Detection ────────────────────────────────────────────────────────────
+
+const detectOS = async (conn) => {
+    try {
+        await executeCommand(conn, "cat /proc/version");
+        return "linux";
+    } catch {}
+    try {
+        const result = await executeCommand(conn, 'powershell -NoProfile -Command "(Get-WmiObject Win32_OperatingSystem).Caption"');
+        if (result?.toLowerCase().includes("windows")) return "windows";
+    } catch {}
+    return "unknown";
+};
+
+// ─── Main Collection ─────────────────────────────────────────────────────────
+
 const collectServerData = async (entry, identity) => {
     return new Promise((resolve) => {
         const conn = new Client();
@@ -81,17 +97,44 @@ const collectServerData = async (entry, identity) => {
         conn.on("ready", async () => {
             clearTimeout(timeout);
             try {
-                const [cpu, mem, uptime, load, processes] = await Promise.all([
-                    getCPUUsage(conn), getMemoryUsage(conn), getUptime(conn), getLoadAverage(conn), getProcessCount(conn)
-                ]);
-                const [disk, os, network] = await Promise.all([getDiskUsage(conn), getOSInfo(conn), getNetworkInterfaces(conn)]);
-                const processList = await getProcessList(conn);
-                
-                data = {
-                    status: "online", timestamp: new Date(), cpuUsage: cpu,
-                    memoryUsage: mem.usage, memoryTotal: mem.total, disk, uptime,
-                    loadAverage: load, processes, processList, osInfo: os, network
-                };
+                const os = await detectOS(conn);
+
+                if (os === "unknown") {
+                    data = { ...data, status: "error", errorMessage: "Unknown OS, cannot collect metrics" };
+                } else if (os === "windows") {
+                    const [cpu, mem, uptime, processes] = await Promise.all([
+                        getWindowsCPUUsage(conn),
+                        getWindowsMemoryUsage(conn),
+                        getWindowsUptime(conn),
+                        getWindowsProcessCount(conn),
+                    ]);
+                    const [disk, osInfo, network, processList] = await Promise.all([
+                        getWindowsDiskUsage(conn),
+                        getWindowsOSInfo(conn),
+                        getWindowsNetworkInterfaces(conn),
+                        getWindowsProcessList(conn),
+                    ]);
+                    data = {
+                        status: "online", timestamp: new Date(), cpuUsage: cpu,
+                        memoryUsage: mem.usage, memoryTotal: mem.total,
+                        disk, uptime, loadAverage: null, processes,
+                        processList, osInfo, network,
+                    };
+                } else {
+                    const [cpu, mem, uptime, load, processes] = await Promise.all([
+                        getCPUUsage(conn), getMemoryUsage(conn), getUptime(conn),
+                        getLoadAverage(conn), getProcessCount(conn)
+                    ]);
+                    const [disk, osInfo, network] = await Promise.all([
+                        getDiskUsage(conn), getOSInfo(conn), getNetworkInterfaces(conn)
+                    ]);
+                    const processList = await getProcessList(conn);
+                    data = {
+                        status: "online", timestamp: new Date(), cpuUsage: cpu,
+                        memoryUsage: mem.usage, memoryTotal: mem.total, disk, uptime,
+                        loadAverage: load, processes, processList, osInfo: osInfo, network
+                    };
+                }
             } catch (error) {
                 logger.error("Error during data collection", { error: error.message });
                 data = { ...data, status: "error", errorMessage: error.message };
@@ -117,6 +160,8 @@ const collectServerData = async (entry, identity) => {
     });
 };
 
+// ─── Shared Exec ─────────────────────────────────────────────────────────────
+
 const executeCommand = (conn, cmd) => new Promise((resolve, reject) => {
     conn.exec(cmd, (err, stream) => {
         if (err) return reject(err);
@@ -125,6 +170,129 @@ const executeCommand = (conn, cmd) => new Promise((resolve, reject) => {
         stream.on("close", code => code === 0 ? resolve(output.trim()) : reject(new Error(`Command failed: ${code}`)));
     });
 });
+
+// ─── Windows Metrics ─────────────────────────────────────────────────────────
+
+const getWindowsCPUUsage = async (conn) => {
+    try {
+        const out = await executeCommand(conn,
+            `powershell -NoProfile -Command "Get-WmiObject Win32_Processor | Measure-Object -Property LoadPercentage -Average | Select-Object -ExpandProperty Average"`
+        );
+        return Math.round(Number.parseFloat(out));
+    } catch { return null; }
+};
+
+const getWindowsMemoryUsage = async (conn) => {
+    try {
+        const out = await executeCommand(conn,
+            `powershell -NoProfile -Command "$os = Get-WmiObject Win32_OperatingSystem; Write-Output ($os.TotalVisibleMemorySize * 1024); Write-Output ($os.FreePhysicalMemory * 1024)"`
+        );
+        const [total, free] = out.split("\n").map(l => Number.parseInt(l.trim()));
+        return { usage: Math.round(((total - free) / total) * 100), total };
+    } catch { return { usage: null, total: null }; }
+};
+
+const getWindowsUptime = async (conn) => {
+    try {
+        const out = await executeCommand(conn,
+            `powershell -NoProfile -Command "[int](((Get-Date) - (gcim Win32_OperatingSystem).LastBootUpTime).TotalSeconds)"`
+        );
+        return Number.parseInt(out.trim());
+    } catch { return null; }
+};
+
+const getWindowsProcessCount = async (conn) => {
+    try {
+        const out = await executeCommand(conn,
+            `powershell -NoProfile -Command "(Get-Process).Count"`
+        );
+        return Number.parseInt(out.trim());
+    } catch { return null; }
+};
+
+const getWindowsDiskUsage = async (conn) => {
+    try {
+        const out = await executeCommand(conn,
+            `powershell -NoProfile -Command "Get-WmiObject Win32_LogicalDisk -Filter 'DriveType=3' | ForEach-Object { Write-Output ($_.DeviceID + '|' + $_.Size + '|' + $_.FreeSpace + '|' + $_.FileSystem + '|' + $_.VolumeName) }"`
+        );
+        return out.split("\n").filter(Boolean).map(line => {
+            const [device, size, free, fs, label] = line.trim().split("|");
+            const sizeBytes = Number.parseInt(size) || 0;
+            const freeBytes = Number.parseInt(free) || 0;
+            const used = sizeBytes - freeBytes;
+            return {
+                name: device.replace(":", ""),
+                size: sizeBytes,
+                model: label || null,
+                serial: null,
+                rotational: null,
+                partitions: [{
+                    name: device,
+                    size: sizeBytes,
+                    mountPoint: device,
+                    type: fs || null,
+                    used,
+                    available: freeBytes,
+                    usagePercent: sizeBytes > 0 ? Math.round((used / sizeBytes) * 100) : 0,
+                }],
+            };
+        });
+    } catch { return []; }
+};
+
+const getWindowsProcessList = async (conn) => {
+    try {
+        const out = await executeCommand(conn,
+            `powershell -NoProfile -Command "Get-Process | Sort-Object CPU -Descending | Select-Object -First 50 | ForEach-Object { Write-Output ($_.UserName + '|' + $_.Id + '|' + [math]::Round($_.CPU,1) + '|' + [math]::Round($_.WorkingSet/1MB,1) + '|' + $_.ProcessName) }"`
+        );
+        return out.split("\n").filter(Boolean).map(line => {
+            const parts = line.trim().split("|");
+            return {
+                user: parts[0] || "SYSTEM",
+                pid: Number.parseInt(parts[1]) || 0,
+                cpu: Number.parseFloat(parts[2]) || 0,
+                mem: Number.parseFloat(parts[3]) || 0,
+                vsz: 0, rss: 0, tty: "?", stat: "?",
+                start: "", time: "",
+                command: parts[4] || "",
+            };
+        });
+    } catch { return []; }
+};
+
+const getWindowsOSInfo = async (conn) => {
+    try {
+        const out = await executeCommand(conn,
+            `powershell -NoProfile -Command "$os = Get-WmiObject Win32_OperatingSystem; $cs = Get-WmiObject Win32_ComputerSystem; Write-Output ($os.Caption + '|' + $os.Version + '|' + $os.BuildNumber + '|' + $cs.DNSHostName + '|' + $cs.SystemType)"`
+        );
+        const [name, version, build, hostname, arch] = out.trim().split("|");
+        return { name: name || "Windows", version: version || "", kernel: build || "", hostname: hostname || "", architecture: arch || "" };
+    } catch { return {}; }
+};
+
+const getWindowsNetworkInterfaces = async (conn) => {
+    try {
+        const out = await executeCommand(conn,
+            `powershell -NoProfile -Command "Get-NetAdapter | Where-Object {$_.Status -eq 'Up'} | ForEach-Object { $s = Get-NetAdapterStatistics -Name $_.Name; $a = (Get-NetIPAddress -InterfaceIndex $_.InterfaceIndex -ErrorAction SilentlyContinue | Where-Object {$_.AddressFamily -eq 'IPv4'} | Select-Object -First 1).IPAddress; Write-Output ($_.Name + '|' + $_.MacAddress + '|' + $_.LinkSpeed + '|' + $s.ReceivedBytes + '|' + $s.SentBytes + '|' + $a + '|' + $_.Status) }"`
+        );
+        return out.split("\n").filter(Boolean).map(line => {
+            const [name, mac, speed, rx, tx, ipv4, state] = line.trim().split("|");
+            return {
+                name: name || "",
+                mac: mac || null,
+                state: (state || "").toLowerCase().trim(),
+                mtu: null,
+                speed: speed ? Number.parseInt(speed.replaceAll(/\D/g, "")) / 1000000 : null,
+                rxBytes: Number.parseInt(rx) || 0,
+                txBytes: Number.parseInt(tx) || 0,
+                ipv4: ipv4 ? [ipv4] : [],
+                ipv6: [],
+            };
+        });
+    } catch { return []; }
+};
+
+// ─── Linux Metrics (unchanged) ───────────────────────────────────────────────
 
 const getCPUUsage = async (conn) => {
     try {
@@ -154,12 +322,9 @@ const getDiskUsage = async (conn) => {
         for (const line of dfOutput.split("\n").filter(Boolean)) {
             const p = line.trim().split(/\s+/);
             usageMap[p[0]] = {
-                filesystem: p[0],
-                type: p[1],
-                size: parseInt(p[2], 10) || 0,
-                used: parseInt(p[3], 10) || 0,
-                available: parseInt(p[4], 10) || 0,
-                usagePercent: parseInt(p[5], 10) || 0,
+                filesystem: p[0], type: p[1],
+                size: parseInt(p[2], 10) || 0, used: parseInt(p[3], 10) || 0,
+                available: parseInt(p[4], 10) || 0, usagePercent: parseInt(p[5], 10) || 0,
                 mountPoint: p[6] || "",
             };
         }
@@ -170,25 +335,19 @@ const getDiskUsage = async (conn) => {
             for (const device of lsblk.blockdevices || []) {
                 if (device.type !== "disk") continue;
                 const disk = {
-                    name: device.name,
-                    size: parseInt(device.size, 10) || 0,
-                    model: device.model?.trim() || null,
-                    serial: device.serial?.trim() || null,
-                    rotational: device.rota === true || device.rota === "1",
-                    partitions: [],
+                    name: device.name, size: parseInt(device.size, 10) || 0,
+                    model: device.model?.trim() || null, serial: device.serial?.trim() || null,
+                    rotational: device.rota === true || device.rota === "1", partitions: [],
                 };
                 for (const child of device.children || []) {
                     if (child.type !== "part") continue;
                     const devPath = `/dev/${child.name}`;
                     const usage = usageMap[devPath] || {};
                     disk.partitions.push({
-                        name: child.name,
-                        size: parseInt(child.size, 10) || 0,
+                        name: child.name, size: parseInt(child.size, 10) || 0,
                         mountPoint: child.mountpoint || usage.mountPoint || null,
-                        type: usage.type || null,
-                        used: usage.used || 0,
-                        available: usage.available || 0,
-                        usagePercent: usage.usagePercent || 0,
+                        type: usage.type || null, used: usage.used || 0,
+                        available: usage.available || 0, usagePercent: usage.usagePercent || 0,
                     });
                 }
                 if (disk.partitions.length > 0 || device.mountpoint) {
@@ -196,13 +355,10 @@ const getDiskUsage = async (conn) => {
                         const devPath = `/dev/${device.name}`;
                         const usage = usageMap[devPath] || {};
                         disk.partitions.push({
-                            name: device.name,
-                            size: parseInt(device.size, 10) || 0,
+                            name: device.name, size: parseInt(device.size, 10) || 0,
                             mountPoint: device.mountpoint || usage.mountPoint || null,
-                            type: usage.type || null,
-                            used: usage.used || 0,
-                            available: usage.available || 0,
-                            usagePercent: usage.usagePercent || 0,
+                            type: usage.type || null, used: usage.used || 0,
+                            available: usage.available || 0, usagePercent: usage.usagePercent || 0,
                         });
                     }
                     disks.push(disk);
@@ -210,19 +366,12 @@ const getDiskUsage = async (conn) => {
             }
         } catch {
             return Object.values(usageMap).map(u => ({
-                name: u.filesystem.replace("/dev/", ""),
-                size: u.size,
-                model: null,
-                serial: null,
-                rotational: null,
+                name: u.filesystem.replace("/dev/", ""), size: u.size,
+                model: null, serial: null, rotational: null,
                 partitions: [{
-                    name: u.filesystem.replace("/dev/", ""),
-                    size: u.size,
-                    mountPoint: u.mountPoint,
-                    type: u.type,
-                    used: u.used,
-                    available: u.available,
-                    usagePercent: u.usagePercent,
+                    name: u.filesystem.replace("/dev/", ""), size: u.size,
+                    mountPoint: u.mountPoint, type: u.type, used: u.used,
+                    available: u.available, usagePercent: u.usagePercent,
                 }],
             }));
         }
@@ -331,6 +480,8 @@ const getNetworkInterfaces = async (conn) => {
         return [];
     }
 };
+
+// ─── Save & Cleanup ──────────────────────────────────────────────────────────
 
 const saveMonitoringData = async (entryId, data) => {
     try {
