@@ -19,6 +19,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <sys/socket.h>
+#include <sys/stat.h>
 #include <unistd.h>
 
 #define GUAC_HANDSHAKE_TIMEOUT_US 15000000
@@ -324,6 +325,16 @@ static void* guac_session_thread(void* arg) {
 
     if (session->join_pipe[0] >= 0) { close(session->join_pipe[0]); session->join_pipe[0] = -1; }
     if (session->join_pipe[1] >= 0) { close(session->join_pipe[1]); session->join_pipe[1] = -1; }
+
+    char rec_path[512];
+    snprintf(rec_path, sizeof(rec_path), "/tmp/nexterm-recordings/%s", session->session_id);
+    struct stat st;
+    if (stat(rec_path, &st) == 0) {
+        if (st.st_size > 1024)
+            nexterm_cp_upload_recording(cp, session->session_id, rec_path);
+        else
+            unlink(rec_path);
+    }
 
     session->state = SESSION_STATE_CLOSED;
     nexterm_cp_send_session_closed(cp, session->session_id, "session ended");

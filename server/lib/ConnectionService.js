@@ -325,6 +325,10 @@ const prepareGuacamoleSession = async (sessionId, entry, identity, organizationI
 
     const recordingEnabled = await isRecordingEnabled(organizationId);
 
+    if (recordingEnabled && session.auditLogId) {
+        controlPlane.registerRecordingSession(sessionId, session.auditLogId);
+    }
+
     const masterClient = new GuacdClient({
         sessionId,
         connectionSettings: {

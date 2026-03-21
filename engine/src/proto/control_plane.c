@@ -828,25 +828,33 @@ int nexterm_cp_send_session_closed(nexterm_control_plane_t* cp,
     return cp_send(cp, &builder);
 }
 
+typedef struct { int fd; SSL* ssl; } cp_raw_conn_t;
+
+static int cp_connect_raw(const nexterm_control_plane_t* cp, cp_raw_conn_t* c) {
+    c->fd = nexterm_tcp_connect(cp->server_host, cp->server_port);
+    if (c->fd < 0) return -1;
+    c->ssl = NULL;
+    if (cp->use_tls) {
+        c->ssl = nexterm_tls_handshake(cp->ssl_ctx, c->fd);
+        if (!c->ssl) { close(c->fd); return -1; }
+    }
+    return 0;
+}
+
+static void cp_close_raw(cp_raw_conn_t* c) {
+    if (c->ssl) nexterm_tls_cleanup(c->ssl);
+    close(c->fd);
+}
+
 int nexterm_cp_open_data_connection(const nexterm_control_plane_t* cp,
                                     const char* session_id) {
     LOG_DEBUG("Opening data connection for session %s%s",
              session_id, cp->use_tls ? " (TLS)" : "");
 
-    int data_fd = nexterm_tcp_connect(cp->server_host, cp->server_port);
-    if (data_fd < 0) {
+    cp_raw_conn_t conn;
+    if (cp_connect_raw(cp, &conn) != 0) {
         LOG_ERROR("Failed to open data connection for session %s", session_id);
         return -1;
-    }
-
-    SSL* data_ssl = NULL;
-    if (cp->use_tls) {
-        data_ssl = nexterm_tls_handshake(cp->ssl_ctx, data_fd);
-        if (!data_ssl) {
-            LOG_ERROR("TLS handshake failed for data connection (session %s)", session_id);
-            close(data_fd);
-            return -1;
-        }
     }
 
     flatcc_builder_t builder;
@@ -859,27 +867,25 @@ int nexterm_cp_open_data_connection(const nexterm_control_plane_t* cp,
     Nexterm_ControlPlane_Envelope_connection_ready_end(&builder);
     Nexterm_ControlPlane_Envelope_end_as_root(&builder);
 
-    if (finalize_and_send(&builder, data_fd, data_ssl, NULL) != 0) {
+    if (finalize_and_send(&builder, conn.fd, conn.ssl, NULL) != 0) {
         LOG_ERROR("Failed to send ConnectionReady for session %s", session_id);
-        if (data_ssl) nexterm_tls_cleanup(data_ssl);
-        close(data_fd);
+        cp_close_raw(&conn);
         return -1;
     }
 
-    if (data_ssl) {
-        int plain_fd = nexterm_tls_proxy_start(data_ssl, data_fd);
+    if (conn.ssl) {
+        int plain_fd = nexterm_tls_proxy_start(conn.ssl, conn.fd);
         if (plain_fd < 0) {
             LOG_ERROR("Failed to start TLS proxy for session %s", session_id);
-            nexterm_tls_cleanup(data_ssl);
-            close(data_fd);
+            cp_close_raw(&conn);
             return -1;
         }
         LOG_DEBUG("TLS data connection proxied for session %s (plain_fd=%d)", session_id, plain_fd);
         return plain_fd;
     }
 
-    LOG_DEBUG("Data connection established for session %s (fd=%d)", session_id, data_fd);
-    return data_fd;
+    LOG_DEBUG("Data connection established for session %s (fd=%d)", session_id, conn.fd);
+    return conn.fd;
 }
 
 int nexterm_cp_send_exec_result(nexterm_control_plane_t* cp,
@@ -942,4 +948,62 @@ int nexterm_cp_send_port_check_result(nexterm_control_plane_t* cp,
     Nexterm_ControlPlane_Envelope_end_as_root(&builder);
 
     return cp_send(cp, &builder);
+}
+
+int nexterm_cp_upload_recording(nexterm_control_plane_t* cp,
+                                const char* session_id,
+                                const char* file_path) {
+    FILE* f = fopen(file_path, "rb");
+    if (!f) { LOG_WARN("Recording file not found: %s", file_path); return -1; }
+
+    fseek(f, 0, SEEK_END);
+    long file_size = ftell(f);
+    fseek(f, 0, SEEK_SET);
+    if (file_size <= 0) { fclose(f); return -1; }
+
+    LOG_INFO("Uploading recording for session %s (%ld bytes)", session_id, file_size);
+
+    cp_raw_conn_t conn;
+    if (cp_connect_raw(cp, &conn) != 0) {
+        LOG_ERROR("Failed to open upload connection for session %s", session_id);
+        fclose(f);
+        return -1;
+    }
+
+    flatcc_builder_t builder;
+    flatcc_builder_init(&builder);
+    Nexterm_ControlPlane_Envelope_start_as_root(&builder);
+    Nexterm_ControlPlane_Envelope_msg_type_add(&builder, Nexterm_ControlPlane_MessageType_RecordingUpload);
+    Nexterm_ControlPlane_Envelope_recording_upload_start(&builder);
+    Nexterm_ControlPlane_RecordingUpload_session_id_create_str(&builder, session_id);
+    Nexterm_ControlPlane_RecordingUpload_file_size_add(&builder, (uint64_t)file_size);
+    Nexterm_ControlPlane_Envelope_recording_upload_end(&builder);
+    Nexterm_ControlPlane_Envelope_end_as_root(&builder);
+
+    if (finalize_and_send(&builder, conn.fd, conn.ssl, NULL) != 0) {
+        LOG_ERROR("Failed to send RecordingUpload header for session %s", session_id);
+        cp_close_raw(&conn);
+        fclose(f);
+        return -1;
+    }
+
+    uint8_t buf[32768];
+    size_t total_sent = 0;
+    int ret = 0;
+
+    while (total_sent < (size_t)file_size) {
+        size_t n = fread(buf, 1, sizeof(buf), f);
+        if (n == 0) { ret = -1; break; }
+        if (nexterm_write_exact_s(conn.fd, conn.ssl, buf, n) != 0) { ret = -1; break; }
+        total_sent += n;
+    }
+
+    fclose(f);
+    cp_close_raw(&conn);
+
+    if (ret == 0) {
+        LOG_INFO("Recording uploaded for session %s (%zu bytes)", session_id, total_sent);
+        unlink(file_path);
+    }
+    return ret;
 }

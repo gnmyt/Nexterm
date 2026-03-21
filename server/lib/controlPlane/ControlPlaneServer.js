@@ -1,4 +1,7 @@
 const net = require("node:net");
+const fs = require("node:fs");
+const path = require("node:path");
+const { pipeline } = require("node:stream");
 const tls = require("node:tls");
 const { EventEmitter } = require("node:events");
 const flatbuffers = require("flatbuffers");
@@ -21,6 +24,8 @@ const {
 const logger = require("../../utils/logger");
 const { findByToken, updateLastConnected } = require("../../controllers/engine");
 const { sendFrame, createFrameParser } = require("./frameProtocol");
+const { RECORDINGS_DIR, ensureRecordingsDir, compressRecording, getRecordingPath } = require("../../utils/recordingService");
+const AuditLog = require("../../models/AuditLog");
 
 const SESSION_TIMEOUT = 30000;
 const DATA_CONNECTION_TIMEOUT = 30000;
@@ -37,6 +42,7 @@ class ControlPlaneServer extends EventEmitter {
         this._sessionEngineMap = new Map();
         this._pingInterval = null;
         this._tlsContext = null;
+        this._recordingMeta = new Map();
     }
 
     setTlsContext(tlsOptions) {
@@ -153,6 +159,10 @@ class ControlPlaneServer extends EventEmitter {
 
     hasEngine() {
         return this._engines.size > 0;
+    }
+
+    registerRecordingSession(sessionId, auditLogId) {
+        this._recordingMeta.set(sessionId, auditLogId);
     }
 
     waitForDataConnection(sessionId) {
@@ -300,6 +310,9 @@ class ControlPlaneServer extends EventEmitter {
                 } else if (msgType === MessageType.ConnectionReady) {
                     socket.removeListener("data", onData);
                     this._handleConnectionReady(socket, envelope, remoteAddr, frameParser.drain());
+                } else if (msgType === MessageType.RecordingUpload) {
+                    socket.removeListener("data", onData);
+                    this._handleRecordingUpload(socket, envelope, remoteAddr, frameParser.drain());
                 } else {
                     logger.warn(`Control plane: unexpected first message type ${msgType} from ${remoteAddr}`);
                     socket.destroy();
@@ -394,6 +407,51 @@ class ControlPlaneServer extends EventEmitter {
         if (residualBuf && residualBuf.length > 0) {
             socket.unshift(residualBuf);
         }
+    }
+
+    _handleRecordingUpload(socket, envelope, remoteAddr, residualBuf) {
+        const upload = envelope.recordingUpload();
+        if (!upload) { socket.destroy(); return; }
+
+        const sessionId = upload.sessionId();
+        const fileSize = Number(upload.fileSize());
+        const auditLogId = this._recordingMeta.get(sessionId);
+
+        if (!auditLogId) {
+            logger.warn(`Recording upload for unknown session ${sessionId}, discarding`);
+            socket.destroy();
+            return;
+        }
+
+        logger.info(`Recording upload: session=${sessionId} auditLog=${auditLogId} size=${fileSize}`);
+        ensureRecordingsDir();
+        const rawPath = path.join(RECORDINGS_DIR, String(auditLogId));
+
+        if (residualBuf?.length > 0) socket.unshift(residualBuf);
+
+        pipeline(socket, fs.createWriteStream(rawPath), async (err) => {
+            if (err) {
+                logger.error("Recording upload failed", { sessionId, error: err.message });
+                try { fs.unlinkSync(rawPath); } catch {}
+                return;
+            }
+
+            try {
+                await compressRecording(rawPath, getRecordingPath(auditLogId, "guac", true));
+                const log = await AuditLog.findByPk(auditLogId);
+                if (log) {
+                    await AuditLog.update(
+                        { details: { ...log.details, hasRecording: true, recordingType: "guac" } },
+                        { where: { id: auditLogId } }
+                    );
+                }
+                this._recordingMeta.delete(sessionId);
+                logger.info(`Recording finalized: session=${sessionId}`);
+            } catch (finalizeErr) {
+                logger.error("Failed to finalize recording", { sessionId, error: finalizeErr.message });
+                try { fs.unlinkSync(rawPath); } catch {}
+            }
+        });
     }
 
     _handleControlMessage(socket, envelope, msgType) {

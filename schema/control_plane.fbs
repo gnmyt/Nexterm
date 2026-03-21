@@ -25,6 +25,8 @@ enum MessageType : byte {
 
     HttpFetch = 50,
     HttpFetchResult = 51,
+
+    RecordingUpload = 60,
 }
 
 enum SessionType : byte {
@@ -194,6 +196,11 @@ table HttpFetchResult {
     error_message: string;
 }
 
+table RecordingUpload {
+    session_id: string;
+    file_size: uint64;
+}
+
 
 table Envelope {
     msg_type: MessageType;
@@ -217,6 +224,7 @@ table Envelope {
     port_check_result: PortCheckResult;
     http_fetch: HttpFetch;
     http_fetch_result: HttpFetchResult;
+    recording_upload: RecordingUpload;
 }
 
 root_type Envelope;

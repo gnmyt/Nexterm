@@ -2,7 +2,7 @@ const fs = require("node:fs");
 const { v4: uuidv4 } = require("uuid");
 const logger = require("../utils/logger");
 const AuditLog = require("../models/AuditLog");
-const { isRecordingEnabled, getRecordingPath, compressRecording, finalizeGuacRecording } = require("../utils/recordingService");
+const { isRecordingEnabled, getRecordingPath, compressRecording } = require("../utils/recordingService");
 const stateBroadcaster = require("./StateBroadcaster");
 
 const MAX_LOG_BUFFER_SIZE = 200 * 1024;
@@ -129,12 +129,6 @@ const finalizeTerminalRecording = async (sessionId) => {
     await markRecordingComplete(auditLogId, "cast");
 };
 
-const finalizeGuacRecordingForSession = async (auditLogId) => {
-    if (await finalizeGuacRecording(auditLogId)) {
-        await markRecordingComplete(auditLogId, "guac");
-    }
-};
-
 module.exports.getLogBuffer = (sessionId) => module.exports.get(sessionId)?.logBuffer || "";
 
 module.exports.setActiveWs = (sessionId, ws) => {
@@ -194,9 +188,6 @@ module.exports.resume = (sessionId, tabId = null, browserId = null) => {
 };
 
 const cleanupConnection = async (conn, sessionId) => {
-    if (conn.recordingEnabled && conn.auditLogId) {
-        await finalizeGuacRecordingForSession(conn.auditLogId);
-    }
     if (CONTROL_PLANE_TYPES.has(conn.type)) {
         try { require("./controlPlane/ControlPlaneServer").closeSession(sessionId); } catch {}
     }

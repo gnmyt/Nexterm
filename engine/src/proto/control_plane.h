@@ -70,4 +70,8 @@ int nexterm_cp_send_port_check_result(nexterm_control_plane_t* cp,
                                        const bool* online,
                                        size_t count);
 
+int nexterm_cp_upload_recording(nexterm_control_plane_t* cp,
+                                const char* session_id,
+                                const char* file_path);
+
 #endif

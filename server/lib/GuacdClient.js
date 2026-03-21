@@ -18,7 +18,6 @@
 
 const SessionManager = require('./SessionManager');
 const logger = require('../utils/logger');
-const { RECORDINGS_DIR } = require('../utils/recordingService');
 
 class GuacdClient {
 
@@ -92,8 +91,8 @@ class GuacdClient {
         const conn = this.connectionSettings.connection || {};
 
         if (!this.joinConnectionId && this.recordingEnabled && this.auditLogId) {
-            conn['recording-path'] = RECORDINGS_DIR;
-            conn['recording-name'] = String(this.auditLogId);
+            conn['recording-path'] = '/tmp/nexterm-recordings';
+            conn['recording-name'] = this.sessionId;
             conn['create-recording-path'] = 'true';
         }
 
