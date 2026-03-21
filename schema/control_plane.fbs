@@ -22,6 +22,9 @@ enum MessageType : byte {
 
     PortCheck = 40,
     PortCheckResult = 41,
+
+    HttpFetch = 50,
+    HttpFetchResult = 51,
 }
 
 enum SessionType : byte {
@@ -31,6 +34,7 @@ enum SessionType : byte {
     SFTP = 3,
     Telnet = 4,
     Tunnel = 5,
+    WebSocket = 6,
 }
 
 enum ErrorCode : byte {
@@ -166,6 +170,30 @@ table PortCheckResult {
     results: [PortCheckEntry];
 }
 
+table HttpHeader {
+    name: string;
+    value: string;
+}
+
+table HttpFetch {
+    request_id: string;
+    method: string;
+    url: string;
+    headers: [HttpHeader];
+    body: string;
+    timeout_ms: uint32;
+    insecure: bool;
+}
+
+table HttpFetchResult {
+    request_id: string;
+    success: bool;
+    status_code: int32;
+    headers: [HttpHeader];
+    body: string;
+    error_message: string;
+}
+
 
 table Envelope {
     msg_type: MessageType;
@@ -187,6 +215,8 @@ table Envelope {
     exec_command_result: ExecCommandResult;
     port_check: PortCheck;
     port_check_result: PortCheckResult;
+    http_fetch: HttpFetch;
+    http_fetch_result: HttpFetchResult;
 }
 
 root_type Envelope;
