@@ -16,6 +16,7 @@ typedef enum {
     SESSION_TYPE_SFTP,
     SESSION_TYPE_TELNET,
     SESSION_TYPE_TUNNEL,
+    SESSION_TYPE_WEBSOCKET,
 } session_type_t;
 
 typedef enum {

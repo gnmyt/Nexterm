@@ -76,6 +76,8 @@ set(ENGINE_SOURCES
     src/net/ssh_common.c
     src/net/sftp.c
     src/net/telnet.c
+    src/net/http_fetch.c
+    src/net/websocket.c
     src/proto/control_plane.c
 )
 
@@ -123,12 +125,22 @@ if(NOT LIBSSH2_FOUND)
     message(FATAL_ERROR "libssh2 not found. Install with: apt install libssh2-1-dev")
 endif()
 
+find_package(CURL REQUIRED)
+if(NOT CURL_FOUND AND PkgConfig_FOUND)
+    pkg_check_modules(CURL REQUIRED libcurl)
+endif()
+
+find_package(OpenSSL REQUIRED)
+
 target_include_directories(nexterm-engine PRIVATE ${LIBSSH2_INCLUDE_DIRS})
 target_link_directories(nexterm-engine PRIVATE ${LIBSSH2_LIBRARY_DIRS})
 
 target_link_libraries(nexterm-engine PRIVATE
     guac
     ${LIBSSH2_LIBRARIES}
+    CURL::libcurl
+    OpenSSL::SSL
+    OpenSSL::Crypto
     pthread
     dl
 )

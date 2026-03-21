@@ -2,6 +2,7 @@
 #include "control_plane.h"
 #include "ssh.h"
 #include "telnet.h"
+#include "websocket.h"
 #include "log.h"
 
 #include <guacamole/client.h>

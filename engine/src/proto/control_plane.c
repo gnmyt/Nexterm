@@ -5,6 +5,8 @@
 #include "ssh.h"
 #include "telnet.h"
 #include "sftp.h"
+#include "http_fetch.h"
+#include "websocket.h"
 #include "log.h"
 
 #include <errno.h>
@@ -77,6 +79,7 @@ static session_type_t map_session_type(Nexterm_ControlPlane_SessionType_enum_t t
         case Nexterm_ControlPlane_SessionType_SFTP:   return SESSION_TYPE_SFTP;
         case Nexterm_ControlPlane_SessionType_Telnet: return SESSION_TYPE_TELNET;
         case Nexterm_ControlPlane_SessionType_Tunnel: return SESSION_TYPE_TUNNEL;
+        case Nexterm_ControlPlane_SessionType_WebSocket: return SESSION_TYPE_WEBSOCKET;
         default: return SESSION_TYPE_VNC;
     }
 }
@@ -96,6 +99,8 @@ static int start_session_connection(nexterm_session_t* session,
             return nexterm_sftp_start(session, cp);
         case SESSION_TYPE_TUNNEL:
             return nexterm_tunnel_start(session, cp);
+        case SESSION_TYPE_WEBSOCKET:
+            return nexterm_websocket_start(session, cp);
         default:
             LOG_WARN("Unsupported session type: %d", stype);
             return -1;
@@ -484,6 +489,52 @@ static void handle_port_check(nexterm_control_plane_t* cp,
     pthread_detach(thread);
 }
 
+static void handle_http_fetch(nexterm_control_plane_t* cp,
+                               Nexterm_ControlPlane_Envelope_table_t envelope) {
+    Nexterm_ControlPlane_HttpFetch_table_t fetch_msg =
+        Nexterm_ControlPlane_Envelope_http_fetch(envelope);
+    if (!fetch_msg) {
+        LOG_WARN("Invalid HttpFetch message");
+        return;
+    }
+
+    const char* req_id = Nexterm_ControlPlane_HttpFetch_request_id(fetch_msg);
+    const char* method = Nexterm_ControlPlane_HttpFetch_method(fetch_msg);
+    const char* url = Nexterm_ControlPlane_HttpFetch_url(fetch_msg);
+    const char* body = Nexterm_ControlPlane_HttpFetch_body(fetch_msg);
+    uint32_t timeout_ms = Nexterm_ControlPlane_HttpFetch_timeout_ms(fetch_msg);
+    bool insecure = Nexterm_ControlPlane_HttpFetch_insecure(fetch_msg);
+
+    if (!req_id || !method || !url) {
+        LOG_WARN("HttpFetch: missing required fields");
+        return;
+    }
+
+    Nexterm_ControlPlane_HttpHeader_vec_t headers =
+        Nexterm_ControlPlane_HttpFetch_headers(fetch_msg);
+    size_t header_count = headers ? Nexterm_ControlPlane_HttpHeader_vec_len(headers) : 0;
+
+    const char** header_names = NULL;
+    const char** header_values = NULL;
+
+    if (header_count > 0) {
+        header_names = calloc(header_count, sizeof(char*));
+        header_values = calloc(header_count, sizeof(char*));
+        for (size_t i = 0; i < header_count; i++) {
+            Nexterm_ControlPlane_HttpHeader_table_t h =
+                Nexterm_ControlPlane_HttpHeader_vec_at(headers, i);
+            header_names[i] = Nexterm_ControlPlane_HttpHeader_name(h);
+            header_values[i] = Nexterm_ControlPlane_HttpHeader_value(h);
+        }
+    }
+
+    nexterm_http_fetch(cp, req_id, method, url, header_names, header_values,
+                       header_count, body, timeout_ms, insecure);
+
+    free(header_names);
+    free(header_values);
+}
+
 static void handle_message(nexterm_control_plane_t* cp, const uint8_t* buf) {
     Nexterm_ControlPlane_Envelope_table_t envelope = Nexterm_ControlPlane_Envelope_as_root(buf);
     if (!envelope) {
@@ -522,6 +573,9 @@ static void handle_message(nexterm_control_plane_t* cp, const uint8_t* buf) {
             break;
         case Nexterm_ControlPlane_MessageType_PortCheck:
             handle_port_check(cp, envelope);
+            break;
+        case Nexterm_ControlPlane_MessageType_HttpFetch:
+            handle_http_fetch(cp, envelope);
             break;
         default:
             LOG_WARN("Unknown message type: %d",
