@@ -22,6 +22,8 @@ import {
     mdiIpOutline,
     mdiClockOutline,
     mdiLanConnect,
+    mdiLock,
+    mdiLockOpenVariantOutline,
 } from "@mdi/js";
 
 export const Engines = () => {
@@ -166,6 +168,10 @@ export const Engines = () => {
                                                     <span className="meta-item">
                                                         <Icon path={mdiIpOutline} />
                                                         {engine.remoteAddr}
+                                                    </span>
+                                                    <span className={`meta-item ${engine.encrypted ? "encrypted" : "unencrypted"}`}>
+                                                        <Icon path={engine.encrypted ? mdiLock : mdiLockOpenVariantOutline} />
+                                                        {engine.encrypted ? t("settings.engines.transport.encrypted") : t("settings.engines.transport.unencrypted")}
                                                     </span>
                                                 </>
                                             )}

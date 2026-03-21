@@ -1240,6 +1240,10 @@
       "deleteEngine": "Delete engine",
       "dismiss": "Dismiss",
       "copyToken": "Copy token",
+      "transport": {
+        "encrypted": "Encrypted",
+        "unencrypted": "Unencrypted"
+      },
       "tokenLabel": "Registration token for <strong>{{name}}</strong>",
       "tokenHint": "Set this in <code1>config.yaml</code1> or as <code2>REGISTRATION_TOKEN</code2> env variable.",
       "dialog": {
