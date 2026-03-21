@@ -1,0 +1,36 @@
+# Build artifacts & IDE
+**/node_modules/
+engine/build/
+engine/cmake-build-debug/
+build/
+*.o
+*.a
+
+# Data & runtime
+data/
+*.log
+
+# Documentation site
+docs/.vitepress/
+
+# Mobile & connector builds
+mobile/.dart_tool/
+mobile/build/
+mobile/.flutter-plugins*
+connector/src-tauri/target/
+
+# Landing page
+landing/dist/
+
+# Git & CI
+.git/
+.github/
+
+# Misc
+*.md
+!README.md
+LICENSE
+NOTICE
+.DS_Store
+.idea/
+.vscode/
