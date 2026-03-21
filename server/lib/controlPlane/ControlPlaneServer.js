@@ -15,6 +15,7 @@ const {
     buildSessionResize,
     buildExecCommand,
     buildPortCheck,
+    buildHttpFetch,
 } = require("./messageBuilders");
 const logger = require("../../utils/logger");
 const { findByToken, updateLastConnected } = require("../../controllers/engine");
@@ -131,6 +132,16 @@ class ControlPlaneServer extends EventEmitter {
         const requestId = `portcheck-${Date.now()}-${Math.random().toString(36).substring(2, 10)}`;
         return this._createPendingRequest(requestId, null, () => {
             this._sendFrame(engine.socket, buildPortCheck(requestId, targets, timeoutMs));
+        });
+    }
+
+    httpFetch(method, url, headers = {}, body = null, timeoutMs = 30000, insecure = false, engineId = null) {
+        const engine = this._resolveEngine(engineId);
+        if (!engine) return Promise.reject(new Error("No engine connected"));
+
+        const requestId = `fetch-${Date.now()}-${Math.random().toString(36).substring(2, 10)}`;
+        return this._createPendingRequest(requestId, null, () => {
+            this._sendFrame(engine.socket, buildHttpFetch(requestId, method, url, headers, body, timeoutMs, insecure));
         });
     }
 
@@ -414,6 +425,35 @@ class ControlPlaneServer extends EventEmitter {
                 }
 
                 this._resolvePending(requestId, { entries });
+                break;
+            }
+
+            case MessageType.HttpFetchResult: {
+                const result = envelope.httpFetchResult();
+                if (!result) break;
+
+                const requestId = result.requestId();
+                const responseHeaders = {};
+                const headersLen = result.headersLength();
+                for (let i = 0; i < headersLen; i++) {
+                    const h = result.headers(i);
+                    const name = h.name();
+                    if (name) responseHeaders[name.toLowerCase()] = h.value() || "";
+                }
+
+                const payload = {
+                    success: result.success(),
+                    statusCode: result.statusCode(),
+                    headers: responseHeaders,
+                    body: result.body() || "",
+                    errorMessage: result.errorMessage(),
+                };
+
+                if (payload.success) {
+                    this._resolvePending(requestId, payload);
+                } else {
+                    this._rejectPending(requestId, Object.assign(new Error(payload.errorMessage || "HTTP fetch failed"), payload));
+                }
                 break;
             }
 

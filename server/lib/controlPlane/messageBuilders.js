@@ -14,6 +14,8 @@ const {
     PortCheck,
     PortCheckTarget,
     JumpHost,
+    HttpFetch,
+    HttpHeader,
 } = require("../generated/control_plane_generated");
 const packageJson = require("../../../package.json");
 
@@ -211,6 +213,40 @@ const buildPortCheck = (requestId, targets, timeoutMs) => {
     return finishEnvelope(builder, Envelope.endEnvelope(builder));
 };
 
+const buildHttpFetch = (requestId, method, url, headers = {}, body = null, timeoutMs = 30000, insecure = false) => {
+    const builder = new flatbuffers.Builder(1024);
+    const reqIdOff = builder.createString(requestId);
+    const methodOff = builder.createString(method);
+    const urlOff = builder.createString(url);
+    const bodyOff = body ? builder.createString(body) : 0;
+
+    const headerEntries = Object.entries(headers);
+    let headersVecOff = 0;
+    if (headerEntries.length > 0) {
+        const headerOffsets = headerEntries.map(([name, value]) => {
+            const nameOff = builder.createString(name);
+            const valueOff = builder.createString(String(value));
+            return HttpHeader.createHttpHeader(builder, nameOff, valueOff);
+        });
+        headersVecOff = HttpFetch.createHeadersVector(builder, headerOffsets);
+    }
+
+    HttpFetch.startHttpFetch(builder);
+    HttpFetch.addRequestId(builder, reqIdOff);
+    HttpFetch.addMethod(builder, methodOff);
+    HttpFetch.addUrl(builder, urlOff);
+    if (headersVecOff) HttpFetch.addHeaders(builder, headersVecOff);
+    if (bodyOff) HttpFetch.addBody(builder, bodyOff);
+    HttpFetch.addTimeoutMs(builder, timeoutMs);
+    HttpFetch.addInsecure(builder, insecure);
+    const fetchOff = HttpFetch.endHttpFetch(builder);
+
+    Envelope.startEnvelope(builder);
+    Envelope.addMsgType(builder, MessageType.HttpFetch);
+    Envelope.addHttpFetch(builder, fetchOff);
+    return finishEnvelope(builder, Envelope.endEnvelope(builder));
+};
+
 module.exports = {
     buildEngineHelloAck,
     buildPong,
@@ -221,4 +257,5 @@ module.exports = {
     buildSessionResize,
     buildExecCommand,
     buildPortCheck,
+    buildHttpFetch,
 };
