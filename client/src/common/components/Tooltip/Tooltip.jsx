@@ -1,11 +1,12 @@
 import { useState, useRef, useEffect, useCallback } from "react";
 import "./styles.sass";
 
-export const Tooltip = ({ children, text, disabled = false }) => {
+export const Tooltip = ({ children, text, disabled = false, delayMs = 0 }) => {
     const [isVisible, setIsVisible] = useState(false);
     const [tooltipStyle, setTooltipStyle] = useState({});
     const triggerRef = useRef(null);
     const tooltipRef = useRef(null);
+    const timeoutRef = useRef(null);
 
     const updatePosition = useCallback(() => {
         if (!triggerRef.current || !tooltipRef.current) return;
@@ -36,11 +37,30 @@ export const Tooltip = ({ children, text, disabled = false }) => {
     }, [isVisible, updatePosition]);
 
     const handleMouseEnter = useCallback(() => {
-        if (!disabled && text) setIsVisible(true);
-    }, [disabled, text]);
+        if (disabled || !text) return;
+        if (delayMs > 0) {
+            timeoutRef.current = window.setTimeout(() => {
+                setIsVisible(true);
+            }, delayMs);
+        } else {
+            setIsVisible(true);
+        }
+    }, [disabled, text, delayMs]);
 
     const handleMouseLeave = useCallback(() => {
+        if (timeoutRef.current) {
+            window.clearTimeout(timeoutRef.current);
+            timeoutRef.current = null;
+        }
         setIsVisible(false);
+    }, []);
+
+    useEffect(() => {
+        return () => {
+            if (timeoutRef.current) {
+                window.clearTimeout(timeoutRef.current);
+            }
+        };
     }, []);
 
     return (

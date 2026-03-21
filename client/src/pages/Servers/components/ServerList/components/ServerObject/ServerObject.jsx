@@ -64,6 +64,10 @@ export const ServerObject = ({ id, name, position, folderId, organizationId, nes
         connectToServer(server.id, server.identities?.[0]);
     };
 
+    const noteLine = server?.showNoteInList
+        ? (server?.notes || "").split(/\r?\n/)[0].trim()
+        : "";
+
     return (
         <div 
             className={"server-object"}
@@ -83,7 +87,10 @@ export const ServerObject = ({ id, name, position, folderId, organizationId, nes
             }>
                 <Icon path={getIconPath(icon)} />
             </div>
-            <p className="truncate-text">{name}</p>
+            <div className="server-text">
+                <p className="server-name truncate-text">{name}</p>
+                {noteLine && <span className="server-note truncate-text">{noteLine}</span>}
+            </div>
             {hibernatedSessionCount > 0 && (
                 <div className="hibernation-indicator" title={`${hibernatedSessionCount} hibernated session${hibernatedSessionCount > 1 ? 's' : ''}`}>
                     <Icon path={mdiSleep} />

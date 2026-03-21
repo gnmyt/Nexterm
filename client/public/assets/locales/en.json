@@ -1356,7 +1356,9 @@
         "host": "Host",
         "nodeName": "Node Name",
         "vmid": "VM ID",
-        "macAddress": "MAC Address"
+        "macAddress": "MAC Address",
+        "notes": "Notes",
+        "showNoteInList": "Show"
       },
       "placeholders": {
         "serverName": "Server name",
@@ -1367,7 +1369,11 @@
         "host": "Host",
         "nodeName": "Node name",
         "vmid": "VM ID",
-        "macAddress": "AA:BB:CC:DD:EE:FF"
+        "macAddress": "AA:BB:CC:DD:EE:FF",
+        "notes": "Add a note about this server"
+      },
+      "tooltips": {
+        "showNoteInList": "Display the first line of these notes in the server list."
       },
       "settings": {
         "jumpHosts": {
