@@ -134,7 +134,7 @@ db.authenticate()
         });
 
         try {
-            controlPlane.setTlsContext(ensureCPCerts());
+            controlPlane.setTlsContext(await ensureCPCerts());
         } catch (err) {
             logger.warn("Could not set up control plane TLS certificates, engines will connect unencrypted", { error: err.message });
         }

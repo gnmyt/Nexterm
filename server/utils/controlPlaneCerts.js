@@ -7,11 +7,11 @@ const CERTS_DIR = path.join(__dirname, "../../data/certs");
 const CP_CERT_PATH = path.join(CERTS_DIR, "cp-cert.pem");
 const CP_KEY_PATH = path.join(CERTS_DIR, "cp-key.pem");
 
-const ensureCPCerts = () => {
+const ensureCPCerts = async () => {
     if (!fs.existsSync(CP_CERT_PATH) || !fs.existsSync(CP_KEY_PATH)) {
         logger.system("Generating self-signed control plane TLS certificates...");
         fs.mkdirSync(CERTS_DIR, { recursive: true });
-        const pems = selfsigned.generate([{ name: "commonName", value: "nexterm-control-plane" }], {
+        const pems = await selfsigned.generate([{ name: "commonName", value: "nexterm-control-plane" }], {
             keySize: 2048,
             days: 3650,
         });
