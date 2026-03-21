@@ -4,6 +4,7 @@
 #include <stdint.h>
 #include <stdbool.h>
 #include <pthread.h>
+#include <openssl/ssl.h>
 
 #define NEXTERM_ENGINE_VERSION "0.1.0"
 
@@ -23,11 +24,16 @@ typedef struct nexterm_control_plane {
     uint32_t reconnect_delay_ms;
 
     pthread_mutex_t send_mutex;
+
+    bool use_tls;
+    SSL_CTX* ssl_ctx;
+    SSL* ssl;
 } nexterm_control_plane_t;
 
 nexterm_control_plane_t* nexterm_cp_create(const char* server_host,
                                            uint16_t server_port,
-                                           const char* registration_token);
+                                           const char* registration_token,
+                                           bool use_tls);
 
 int nexterm_cp_start(nexterm_control_plane_t* cp);
 

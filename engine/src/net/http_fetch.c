@@ -140,7 +140,7 @@ static int send_http_fetch_result(nexterm_control_plane_t* cp,
 
     size_t size;
     uint8_t* buf = (uint8_t*)flatcc_builder_finalize_buffer(&builder, &size);
-    int ret = nexterm_send_frame(cp->sock_fd, buf, size, &cp->send_mutex);
+    int ret = nexterm_send_frame_s(cp->sock_fd, cp->ssl, buf, size, &cp->send_mutex);
     flatcc_builder_clear(&builder);
     free(buf);
     return ret;

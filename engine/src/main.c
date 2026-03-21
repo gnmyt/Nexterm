@@ -112,7 +112,8 @@ int main(int argc, char* argv[]) {
     nexterm_sm_init(&g_session_manager);
 
     nexterm_control_plane_t* cp = nexterm_cp_create(server_host, server_port,
-                                                     config.registration_token);
+                                                     config.registration_token,
+                                                     config.tls);
     if (!cp) {
         LOG_ERROR("Failed to create control plane client");
         return 1;

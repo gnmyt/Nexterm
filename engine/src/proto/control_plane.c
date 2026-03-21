@@ -28,17 +28,17 @@
 
 extern nexterm_session_manager_t g_session_manager;
 
-static int finalize_and_send(flatcc_builder_t* b, int fd, pthread_mutex_t* mutex) {
+static int finalize_and_send(flatcc_builder_t* b, int fd, SSL* ssl, pthread_mutex_t* mutex) {
     size_t size;
     uint8_t* buf = (uint8_t*)flatcc_builder_finalize_buffer(b, &size);
-    int ret = nexterm_send_frame(fd, buf, size, mutex);
+    int ret = nexterm_send_frame_s(fd, ssl, buf, size, mutex);
     flatcc_builder_clear(b);
     free(buf);
     return ret;
 }
 
 static int cp_send(nexterm_control_plane_t* cp, flatcc_builder_t* b) {
-    return finalize_and_send(b, cp->sock_fd, &cp->send_mutex);
+    return finalize_and_send(b, cp->sock_fd, cp->ssl, &cp->send_mutex);
 }
 
 static int send_engine_hello(nexterm_control_plane_t* cp) {
@@ -586,7 +586,7 @@ static void handle_message(nexterm_control_plane_t* cp, const uint8_t* buf) {
 
 static bool read_one_frame(nexterm_control_plane_t* cp) {
     uint32_t payload_len;
-    uint8_t* payload = nexterm_read_frame(cp->sock_fd, CP_MAX_FRAME_SIZE, &payload_len);
+    uint8_t* payload = nexterm_read_frame_s(cp->sock_fd, cp->ssl, CP_MAX_FRAME_SIZE, &payload_len);
     if (!payload) {
         if (cp->running) {
             LOG_WARN("Control plane connection lost");
@@ -646,7 +646,8 @@ static void* keepalive_loop(void* arg) {
 
 nexterm_control_plane_t* nexterm_cp_create(const char* server_host,
                                            uint16_t server_port,
-                                           const char* registration_token) {
+                                           const char* registration_token,
+                                           bool use_tls) {
     nexterm_control_plane_t* cp = calloc(1, sizeof(nexterm_control_plane_t));
     if (!cp) return NULL;
 
@@ -666,18 +667,45 @@ nexterm_control_plane_t* nexterm_cp_create(const char* server_host,
     cp->running = false;
     cp->keepalive_interval_ms = 10000;
     cp->reconnect_delay_ms = 5000;
+    cp->use_tls = use_tls;
+    cp->ssl_ctx = NULL;
+    cp->ssl = NULL;
+
+    if (use_tls) {
+        cp->ssl_ctx = nexterm_tls_client_ctx_create();
+        if (!cp->ssl_ctx) {
+            LOG_ERROR("Failed to create TLS context");
+            free(cp->server_host);
+            free(cp->registration_token);
+            free(cp);
+            return NULL;
+        }
+        LOG_INFO("TLS enabled for control plane connections");
+    }
 
     pthread_mutex_init(&cp->send_mutex, NULL);
     return cp;
 }
 
 int nexterm_cp_start(nexterm_control_plane_t* cp) {
-    LOG_INFO("Connecting to control plane at %s:%u", cp->server_host, cp->server_port);
+    LOG_INFO("Connecting to control plane at %s:%u%s",
+             cp->server_host, cp->server_port,
+             cp->use_tls ? " (TLS)" : "");
 
     cp->sock_fd = nexterm_tcp_connect(cp->server_host, cp->server_port);
     if (cp->sock_fd < 0) {
         LOG_ERROR("Failed to connect to control plane");
         return -1;
+    }
+
+    if (cp->use_tls) {
+        cp->ssl = nexterm_tls_handshake(cp->ssl_ctx, cp->sock_fd);
+        if (!cp->ssl) {
+            LOG_ERROR("TLS handshake failed for control plane");
+            close(cp->sock_fd);
+            cp->sock_fd = -1;
+            return -1;
+        }
     }
 
     cp->running = true;
@@ -717,6 +745,11 @@ void nexterm_cp_stop(nexterm_control_plane_t* cp) {
     LOG_INFO("Stopping control plane client");
     cp->running = false;
 
+    if (cp->ssl) {
+        nexterm_tls_cleanup(cp->ssl);
+        cp->ssl = NULL;
+    }
+
     if (cp->sock_fd >= 0) {
         shutdown(cp->sock_fd, SHUT_RDWR);
         close(cp->sock_fd);
@@ -730,6 +763,10 @@ void nexterm_cp_stop(nexterm_control_plane_t* cp) {
 void nexterm_cp_destroy(nexterm_control_plane_t* cp) {
     if (!cp) return;
     nexterm_cp_stop(cp);
+    if (cp->ssl_ctx) {
+        SSL_CTX_free(cp->ssl_ctx);
+        cp->ssl_ctx = NULL;
+    }
     pthread_mutex_destroy(&cp->send_mutex);
     free(cp->server_host);
     free(cp->registration_token);
@@ -738,7 +775,7 @@ void nexterm_cp_destroy(nexterm_control_plane_t* cp) {
 
 int nexterm_cp_send(nexterm_control_plane_t* cp, const uint8_t* buf, size_t len) {
     if (!cp->connected || cp->sock_fd < 0) return -1;
-    return nexterm_send_frame(cp->sock_fd, buf, len, &cp->send_mutex);
+    return nexterm_send_frame_s(cp->sock_fd, cp->ssl, buf, len, &cp->send_mutex);
 }
 
 int nexterm_cp_send_session_result(nexterm_control_plane_t* cp,
@@ -793,12 +830,23 @@ int nexterm_cp_send_session_closed(nexterm_control_plane_t* cp,
 
 int nexterm_cp_open_data_connection(const nexterm_control_plane_t* cp,
                                     const char* session_id) {
-    LOG_DEBUG("Opening data connection for session %s", session_id);
+    LOG_DEBUG("Opening data connection for session %s%s",
+             session_id, cp->use_tls ? " (TLS)" : "");
 
     int data_fd = nexterm_tcp_connect(cp->server_host, cp->server_port);
     if (data_fd < 0) {
         LOG_ERROR("Failed to open data connection for session %s", session_id);
         return -1;
+    }
+
+    SSL* data_ssl = NULL;
+    if (cp->use_tls) {
+        data_ssl = nexterm_tls_handshake(cp->ssl_ctx, data_fd);
+        if (!data_ssl) {
+            LOG_ERROR("TLS handshake failed for data connection (session %s)", session_id);
+            close(data_fd);
+            return -1;
+        }
     }
 
     flatcc_builder_t builder;
@@ -811,10 +859,23 @@ int nexterm_cp_open_data_connection(const nexterm_control_plane_t* cp,
     Nexterm_ControlPlane_Envelope_connection_ready_end(&builder);
     Nexterm_ControlPlane_Envelope_end_as_root(&builder);
 
-    if (finalize_and_send(&builder, data_fd, NULL) != 0) {
+    if (finalize_and_send(&builder, data_fd, data_ssl, NULL) != 0) {
         LOG_ERROR("Failed to send ConnectionReady for session %s", session_id);
+        if (data_ssl) nexterm_tls_cleanup(data_ssl);
         close(data_fd);
         return -1;
+    }
+
+    if (data_ssl) {
+        int plain_fd = nexterm_tls_proxy_start(data_ssl, data_fd);
+        if (plain_fd < 0) {
+            LOG_ERROR("Failed to start TLS proxy for session %s", session_id);
+            nexterm_tls_cleanup(data_ssl);
+            close(data_fd);
+            return -1;
+        }
+        LOG_DEBUG("TLS data connection proxied for session %s (plain_fd=%d)", session_id, plain_fd);
+        return plain_fd;
     }
 
     LOG_DEBUG("Data connection established for session %s (fd=%d)", session_id, data_fd);

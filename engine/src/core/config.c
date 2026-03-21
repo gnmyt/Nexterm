@@ -55,6 +55,8 @@ static int parse_config_file(nexterm_config_t* cfg) {
             long port = strtol(value, &endptr, 10);
             if (*endptr == '\0' && port > 0 && port <= 65535)
                 cfg->server_port = (uint16_t)port;
+        } else if (strcmp(key, "tls") == 0) {
+            cfg->tls = (strcmp(value, "true") == 0 || strcmp(value, "1") == 0);
         }
     }
 
@@ -72,6 +74,7 @@ static int write_default_config(const nexterm_config_t* cfg) {
     fprintf(f, "registration_token: \"%s\"\n", cfg->registration_token);
     fprintf(f, "server_host: \"%s\"\n", cfg->server_host);
     fprintf(f, "server_port: %u\n", cfg->server_port);
+    fprintf(f, "tls: %s\n", cfg->tls ? "true" : "false");
 
     fclose(f);
     LOG_INFO("Created default config file: %s", CONFIG_FILE);
@@ -82,6 +85,7 @@ int nexterm_config_load(nexterm_config_t* cfg) {
     memset(cfg, 0, sizeof(*cfg));
     snprintf(cfg->server_host, sizeof(cfg->server_host), "%s", "127.0.0.1");
     cfg->server_port = 7800;
+    cfg->tls = false;
     cfg->registration_token[0] = '\0';
 
     if (parse_config_file(cfg) != 0) {
