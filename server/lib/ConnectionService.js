@@ -300,9 +300,10 @@ const prepareGuacamoleSession = async (sessionId, entry, identity, organizationI
     const host = params.hostname || cfg.ip;
     const port = Number.parseInt(params.port || cfg.port || (protocol === "rdp" ? 3389 : 5900), 10);
     const sessionType = protocol === "rdp" ? SessionType.RDP : SessionType.VNC;
+    const jumpHosts = await resolveJumpHosts(entry);
 
     const dataSocket = await openEngineSession(
-        sessionId, sessionType, host, port, params, entry.config?.engineId
+        sessionId, sessionType, host, port, params, jumpHosts, entry.config?.engineId
     );
 
     const recordingEnabled = await isRecordingEnabled(organizationId);
