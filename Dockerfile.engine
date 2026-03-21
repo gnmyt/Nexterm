@@ -30,7 +30,7 @@ FROM alpine:3.21 AS engine-builder
 
 RUN apk add --no-cache \
     build-base cmake git pkgconf \
-    libssh2-dev openssl-dev \
+     libssh2-dev openssl-dev curl-dev \
     cairo-dev jpeg-dev libpng-dev ossp-uuid-dev \
     pango-dev libwebp-dev \
     pulseaudio-dev libvorbis-dev libogg-dev
@@ -53,7 +53,7 @@ RUN apk add --no-cache \
     cairo jpeg libpng ossp-uuid libuuid \
     pango libwebp openssl \
     libpulse libvorbis libogg libssh2 \
-    libvncserver freerdp-libs
+    libvncserver freerdp-libs libcurl
 
 COPY --from=guac-builder /src/vendor/guacamole-server/dist/lib/ /usr/local/lib/
 

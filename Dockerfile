@@ -8,7 +8,7 @@ RUN apk add --no-cache \
     cairo jpeg libpng ossp-uuid \
     pango libwebp openssl \
     libpulse libvorbis libogg libssh2 \
-    libvncserver freerdp-libs \
+    libvncserver freerdp-libs libcurl \
     util-linux samba-client
 
 COPY --from=engine /usr/local/lib/ /usr/local/lib/
