@@ -12,6 +12,7 @@
 #include <unistd.h>
 #include <poll.h>
 #include <errno.h>
+#include <fcntl.h>
 #include <openssl/err.h>
 
 int nexterm_read_exact(int fd, uint8_t* buf, size_t len) {
@@ -194,6 +195,10 @@ static void* tls_proxy_thread(void* arg) {
     tls_proxy_args_t* a = (tls_proxy_args_t*)arg;
     char buf[8192];
 
+    int flags = fcntl(a->tls_fd, F_GETFL, 0);
+    if (flags >= 0)
+        fcntl(a->tls_fd, F_SETFL, flags | O_NONBLOCK);
+
     struct pollfd fds[2] = {
         { .fd = a->plain_fd, .events = POLLIN },
         { .fd = a->tls_fd,   .events = POLLIN },
@@ -209,7 +214,21 @@ static void* tls_proxy_thread(void* arg) {
         if (fds[0].revents & POLLIN) {
             ssize_t n = read(a->plain_fd, buf, sizeof(buf));
             if (n <= 0) break;
-            if (SSL_write(a->ssl, buf, (int)n) <= 0) break;
+            size_t total = 0;
+            while (total < (size_t)n) {
+                int w = SSL_write(a->ssl, buf + total, (int)((size_t)n - total));
+                if (w > 0) {
+                    total += (size_t)w;
+                } else {
+                    int err = SSL_get_error(a->ssl, w);
+                    if (err == SSL_ERROR_WANT_WRITE || err == SSL_ERROR_WANT_READ) {
+                        struct pollfd wpfd = { .fd = a->tls_fd, .events = POLLOUT };
+                        poll(&wpfd, 1, 200);
+                        continue;
+                    }
+                    goto done;
+                }
+            }
         }
 
         if ((fds[1].revents & POLLIN) || has_pending) {
@@ -227,6 +246,7 @@ static void* tls_proxy_thread(void* arg) {
         if (fds[0].revents & (POLLERR | POLLHUP)) break;
         if (fds[1].revents & (POLLERR | POLLHUP)) break;
     }
+done:
 
     close(a->plain_fd);
     SSL_shutdown(a->ssl);
