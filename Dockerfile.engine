@@ -1,0 +1,69 @@
+FROM alpine:3.21 AS guac-builder
+
+RUN apk add --no-cache \
+    build-base autoconf automake libtool pkgconf \
+    cairo-dev jpeg-dev libpng-dev ossp-uuid-dev \
+    pango-dev libvncserver-dev libwebp-dev openssl-dev freerdp-dev \
+    pulseaudio-dev libvorbis-dev libogg-dev libssh2-dev \
+    ffmpeg-dev
+
+WORKDIR /src
+
+COPY vendor/guacamole-server/ ./vendor/guacamole-server/
+
+RUN cd vendor/guacamole-server \
+    && autoreconf -fi \
+    && ./configure \
+       --prefix=/src/vendor/guacamole-server/dist \
+       --with-freerdp-plugin-dir=/src/vendor/guacamole-server/dist/lib/freerdp2 \
+       --disable-guacenc \
+       --disable-guaclog \
+    && make -j$(nproc) \
+    && make install \
+    && rm -f /src/vendor/guacamole-server/dist/lib/*.a \
+    && rm -f /src/vendor/guacamole-server/dist/lib/*.la \
+    && strip /src/vendor/guacamole-server/dist/lib/*.so.* 2>/dev/null || true \
+    && strip /src/vendor/guacamole-server/dist/sbin/* 2>/dev/null || true
+
+
+FROM alpine:3.21 AS engine-builder
+
+RUN apk add --no-cache \
+    build-base cmake git pkgconf \
+    libssh2-dev openssl-dev \
+    cairo-dev jpeg-dev libpng-dev ossp-uuid-dev \
+    pango-dev libwebp-dev \
+    pulseaudio-dev libvorbis-dev libogg-dev
+
+WORKDIR /src
+
+COPY --from=guac-builder /src/vendor/guacamole-server/dist/ ./vendor/guacamole-server/dist/
+COPY schema/ ./schema/
+COPY engine/ ./engine/
+
+RUN cd engine && mkdir -p build && cd build \
+    && cmake .. -DCMAKE_BUILD_TYPE=Release \
+    && make -j$(nproc) \
+    && strip nexterm-engine 2>/dev/null || true
+
+
+FROM alpine:3.21
+
+RUN apk add --no-cache \
+    cairo jpeg libpng ossp-uuid libuuid \
+    pango libwebp openssl \
+    libpulse libvorbis libogg libssh2 \
+    libvncserver freerdp-libs
+
+COPY --from=guac-builder /src/vendor/guacamole-server/dist/lib/ /usr/local/lib/
+
+COPY --from=engine-builder /src/engine/build/nexterm-engine /usr/local/bin/nexterm-engine
+
+RUN cp /usr/local/lib/freerdp2/*.so /usr/lib/freerdp2/ \
+    && ldconfig /usr/local/lib 2>/dev/null || true
+
+ENV LOG_LEVEL=info
+
+WORKDIR /etc/nexterm
+
+ENTRYPOINT ["nexterm-engine"]
