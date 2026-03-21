@@ -231,7 +231,7 @@ ${volLine}${volSection}`;
                         </div>
                     </div>
 
-                    <div className="command-block" onClick={() => copyToClipboard(output)}>
+                    <div className="command-block" role="button" tabIndex={0} onClick={() => copyToClipboard(output)} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); copyToClipboard(output); } }}>
                         <div className="command-header">
                             <FontAwesomeIcon icon={faDocker}/>
                             <span>{deployMethod === 'docker' ? 'Terminal' : 'docker-compose.yml'}</span>
@@ -244,7 +244,7 @@ ${volLine}${volSection}`;
                     </div>
 
                     {imageType === 'engine' && (
-                        <div className="command-block" onClick={() => copyToClipboard(getEngineConfig(), setCopiedConfig)}>
+                        <div className="command-block" role="button" tabIndex={0} onClick={() => copyToClipboard(getEngineConfig(), setCopiedConfig)} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); copyToClipboard(getEngineConfig(), setCopiedConfig); } }}>
                             <div className="command-header">
                                 <span>config.yaml</span>
                                 <button className={`copy-btn ${copiedConfig ? 'copied' : ''}`}>
