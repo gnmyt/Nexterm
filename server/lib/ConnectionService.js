@@ -1,4 +1,3 @@
-const { WebSocket } = require("ws");
 const SessionManager = require("./SessionManager");
 const GuacdClient = require("./GuacdClient");
 const logger = require("../utils/logger");
@@ -237,6 +236,7 @@ const createTelnetConnectionForSession = async (sessionId, entry, organizationId
 }
 
 const createPveLxcConnectionForSession = async (sessionId, entry, organizationId) => {
+    requireEngine();
     const session = requireSession(sessionId);
 
     const integration = entry.integrationId ? await Integration.findByPk(entry.integrationId) : null;
@@ -249,43 +249,52 @@ const createPveLxcConnectionForSession = async (sessionId, entry, organizationId
     const node = await getNodeForServer(server, ticket);
     const vncTicket = await openLXCConsole({ ip: server.ip, port: server.port }, node, vmid, ticket);
 
-    return new Promise((resolve, reject) => {
-        const containerPart = vmid === 0 || vmid === "0" ? "" : `lxc/${vmid}`;
-        const lxcSocket = new WebSocket(
-            `wss://${server.ip}:${server.port}/api2/json/nodes/${node}/${containerPart}/vncwebsocket?port=${vncTicket.port}&vncticket=${encodeURIComponent(vncTicket.ticket)}`,
-            undefined,
-            { rejectUnauthorized: false, headers: { "Cookie": `PVEAuthCookie=${ticket.ticket}` } }
-        );
+    const containerPart = vmid === 0 || vmid === "0" ? "" : `lxc/${vmid}`;
+    const wsUrl = `wss://${server.ip}:${server.port}/api2/json/nodes/${node}/${containerPart}/vncwebsocket?port=${vncTicket.port}&vncticket=${encodeURIComponent(vncTicket.ticket)}`;
 
-        const timeout = setTimeout(() => { lxcSocket.close(); reject(new Error("PVE LXC timeout")); }, 30000);
-        let keepAliveTimer = null;
+    const params = {
+        ws_url: wsUrl,
+        ws_insecure: "true",
+        ws_header_Cookie: `PVEAuthCookie=${ticket.ticket}`,
+    };
 
-        lxcSocket.on("open", async () => {
-            clearTimeout(timeout);
-            try {
-                lxcSocket.send(`${server.username}:${vncTicket.ticket}\n`);
-                keepAliveTimer = setInterval(() => lxcSocket.readyState === lxcSocket.OPEN && lxcSocket.send("2"), 30000);
-                await SessionManager.initRecording(sessionId, organizationId);
-                lxcSocket.on("message", (msg) => {
-                    const data = msg instanceof Buffer ? msg.toString() : msg;
-                    if (data !== "OK") SessionManager.appendLog(sessionId, data);
-                });
-                SessionManager.setConnection(sessionId, { lxcSocket, keepAliveTimer, auditLogId: session.auditLogId, type: "pve-lxc" });
-                logger.info("PVE LXC connected", { sessionId, vmid });
-                resolve({ success: true });
-            } catch (err) { clearInterval(keepAliveTimer); lxcSocket.close(); reject(err); }
-        });
+    const dataSocket = await openEngineSession(
+        sessionId, SessionType.WebSocket, server.ip, Number(server.port) || 8006, params, [], entry.config?.engineId
+    );
 
-        lxcSocket.on("error", (err) => {
-            clearTimeout(timeout);
-            if (keepAliveTimer) clearInterval(keepAliveTimer);
-            reject(err);
-        });
-        lxcSocket.on("close", () => {
-            if (keepAliveTimer) clearInterval(keepAliveTimer);
-            SessionManager.remove(sessionId);
-        });
+    dataSocket.write(`${server.username}:${vncTicket.ticket}\n`);
+
+    await SessionManager.initRecording(sessionId, organizationId);
+
+    const keepAliveTimer = setInterval(() => {
+        if (!dataSocket.destroyed) dataSocket.write("2");
+    }, 30000);
+
+    dataSocket.on("data", (data) => {
+        const text = data.toString();
+        if (text !== "OK") SessionManager.appendLog(sessionId, text);
     });
+
+    dataSocket.on("close", () => {
+        clearInterval(keepAliveTimer);
+        SessionManager.remove(sessionId);
+    });
+
+    dataSocket.on("error", (err) => {
+        clearInterval(keepAliveTimer);
+        logger.error("PVE LXC data socket error", { sessionId, error: err.message });
+        SessionManager.remove(sessionId);
+    });
+
+    SessionManager.setConnection(sessionId, {
+        dataSocket,
+        keepAliveTimer,
+        type: "pve-lxc",
+        auditLogId: session.auditLogId,
+    });
+
+    logger.info("PVE LXC connected via engine", { sessionId, vmid });
+    return { success: true };
 }
 
 const prepareGuacamoleSession = async (sessionId, entry, identity, organizationId) => {

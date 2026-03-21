@@ -8,7 +8,7 @@ const stateBroadcaster = require("./StateBroadcaster");
 const MAX_LOG_BUFFER_SIZE = 200 * 1024;
 const sessions = new Map();
 const shareIndex = new Map();
-const CONTROL_PLANE_TYPES = new Set(["ssh", "sftp", "guac"]);
+const CONTROL_PLANE_TYPES = new Set(["ssh", "sftp", "guac", "pve-lxc"]);
 
 module.exports.create = (accountId, entryId, configuration, connectionReason = null, tabId = null, browserId = null, auditLogId = null) => {
     const sessionId = uuidv4();
@@ -209,7 +209,6 @@ const cleanupConnection = async (conn, sessionId) => {
     if (conn.keepAliveTimer) clearInterval(conn.keepAliveTimer);
     try { conn.guacdClient?.close(); } catch {}
     try { conn.sftpClient?.close(); } catch {}
-    try { conn.lxcSocket?.close(); } catch {}
 };
 
 module.exports.remove = async (sessionId) => {
