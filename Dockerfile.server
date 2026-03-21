@@ -13,6 +13,22 @@ COPY client/ .
 RUN yarn build
 
 
+FROM node:22 AS schema-builder
+
+WORKDIR /app
+
+RUN apt-get update -qq && apt-get install -y -qq flatbuffers-compiler && rm -rf /var/lib/apt/lists/*
+RUN npm install -g esbuild
+
+COPY schema/ schema/
+COPY package.json ./
+
+RUN mkdir -p server/lib/generated && \
+    flatc --ts --ts-flat-files -o server/lib/generated schema/control_plane.fbs schema/sftp_protocol.fbs && \
+    esbuild server/lib/generated/control_plane_generated.ts --bundle --format=cjs --outfile=server/lib/generated/control_plane_generated.js --allow-overwrite --platform=node --external:flatbuffers && \
+    esbuild server/lib/generated/sftp_protocol_generated.ts --bundle --format=cjs --outfile=server/lib/generated/sftp_protocol_generated.js --allow-overwrite --platform=node --external:flatbuffers
+
+
 FROM node:22-alpine AS server-builder
 
 ARG VERSION
@@ -36,6 +52,7 @@ RUN rm -rf node_modules/@img/sharp-libvips-linux-x64 \
            node_modules/@img/sharp-libvips-linux-arm64
 
 COPY server/ server/
+COPY --from=schema-builder /app/server/lib/generated/ server/lib/generated/
 
 
 FROM alpine:3.21
