@@ -79,12 +79,12 @@ export const LDAPProviderDialog = ({ open, onClose, provider, onSave }) => {
 
                 <div className="form-group">
                     <label>{T("fields.bindDN")}</label>
-                    <Input icon={mdiAccountMultiple} placeholder={T("fields.bindDNPlaceholder")} value={form.bindDN} setValue={set("bindDN")} />
+                    <Input icon={mdiAccountMultiple} placeholder={T("fields.bindDNPlaceholder")} value={form.bindDN} setValue={set("bindDN")} autoComplete="off" />
                 </div>
 
                 <div className="form-group">
                     <label>{T("fields.bindPassword")}</label>
-                    <Input icon={mdiKey} type="password" placeholder={provider ? T("fields.bindPasswordPlaceholderEdit") : T("fields.bindPasswordPlaceholder")} value={form.bindPassword} setValue={set("bindPassword")} />
+                    <Input icon={mdiKey} type="password" placeholder={provider ? T("fields.bindPasswordPlaceholderEdit") : T("fields.bindPasswordPlaceholder")} value={form.bindPassword} setValue={set("bindPassword")} autoComplete="off" />
                 </div>
 
                 <div className="form-group">
@@ -94,7 +94,7 @@ export const LDAPProviderDialog = ({ open, onClose, provider, onSave }) => {
 
                 <div className="form-group">
                     <label>{T("fields.userSearchFilter")}</label>
-                    <Input icon={mdiFilter} placeholder={T("fields.userSearchFilterPlaceholder")} value={form.userSearchFilter} setValue={set("userSearchFilter")} />
+                    <Input icon={mdiFilter} placeholder={T("fields.userSearchFilterPlaceholder")} value={form.userSearchFilter} setValue={set("userSearchFilter")} autoComplete="off" />
                 </div>
 
                 <div className="form-group toggle-group">
