@@ -21,6 +21,7 @@ module.exports.getEngine = async (id) => {
 module.exports.deleteEngine = async (id) => {
     const engine = await Engine.findByPk(id);
     if (!engine) return null;
+    if (engine.isLocal) return { error: "local" };
     await Engine.destroy({ where: { id } });
     return engine;
 };
@@ -28,6 +29,7 @@ module.exports.deleteEngine = async (id) => {
 module.exports.regenerateToken = async (id) => {
     const engine = await Engine.findByPk(id);
     if (!engine) return null;
+    if (engine.isLocal) return { error: "local" };
     const registrationToken = generateToken();
     await Engine.update({ registrationToken }, { where: { id } });
     return { ...engine, registrationToken };
@@ -39,4 +41,17 @@ module.exports.findByToken = async (token) => {
 
 module.exports.updateLastConnected = async (id) => {
     await Engine.update({ lastConnectedAt: new Date() }, { where: { id } });
+};
+
+module.exports.ensureLocalEngine = async (token) => {
+    const [engine, created] = await Engine.findOrCreate({
+        where: { isLocal: true },
+        defaults: { name: "Local Engine", registrationToken: token, isLocal: true },
+    });
+
+    if (!created && engine.registrationToken !== token) {
+        await Engine.update({ registrationToken: token }, { where: { id: engine.id } });
+    }
+
+    return engine;
 };

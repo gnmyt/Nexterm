@@ -25,6 +25,7 @@ app.get("/", async (req, res) => {
             return {
                 id: engine.id,
                 name: engine.name,
+                isLocal: !!engine.isLocal,
                 lastConnectedAt: engine.lastConnectedAt,
                 createdAt: engine.createdAt,
                 connected: !!liveEngine,
@@ -83,6 +84,7 @@ app.delete("/:id", async (req, res) => {
     try {
         const engine = await deleteEngine(req.params.id);
         if (!engine) return sendError(res, 404, 404, "Engine not found");
+        if (engine.error === "local") return sendError(res, 403, 403, "Cannot delete the local engine");
 
         controlPlane.disconnectEngine(engine.id);
 
@@ -107,6 +109,7 @@ app.post("/:id/regenerate-token", async (req, res) => {
     try {
         const engine = await regenerateToken(req.params.id);
         if (!engine) return sendError(res, 404, 404, "Engine not found");
+        if (engine.error === "local") return sendError(res, 403, 403, "Cannot regenerate token for the local engine");
 
         controlPlane.disconnectEngine(req.params.id);
 

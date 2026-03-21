@@ -22,6 +22,7 @@ const { startSourceSyncService, stopSourceSyncService } = require("./utils/sourc
 const backupService = require("./utils/backupService");
 const controlPlane = require("./lib/controlPlane/ControlPlaneServer");
 const SessionManager = require("./lib/SessionManager");
+const { ensureLocalEngine } = require("./controllers/engine");
 require("./utils/folder");
 
 process.on("uncaughtException", (err) => require("./utils/errorHandling")(err));
@@ -120,6 +121,11 @@ db.authenticate()
         startSourceSyncService();
 
         backupService.start();
+
+        if (process.env.LOCAL_ENGINE_TOKEN) {
+            await ensureLocalEngine(process.env.LOCAL_ENGINE_TOKEN);
+            logger.system("Local engine configured");
+        }
 
         controlPlane.on("sessionClosed", ({ sessionId, reason }) => {
             logger.info(`Engine session closed: ${sessionId} (reason: ${reason})`);

@@ -15,6 +15,11 @@ module.exports = db.define("engines", {
             type: Sequelize.DATE,
             allowNull: true,
         },
+        isLocal: {
+            type: Sequelize.BOOLEAN,
+            allowNull: false,
+            defaultValue: false,
+        },
     },
     { freezeTableName: true, timestamps: true },
 );
