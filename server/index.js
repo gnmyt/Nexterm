@@ -78,6 +78,7 @@ app.use("/api/backup", authenticate, isAdmin, require("./routes/backup"));
 app.use("/api/engines", authenticate, isAdmin, require("./routes/engine"));
 
 app.use("/api/scripts", authenticate, require("./routes/scripts"));
+app.use("/api/themes", authenticate, require("./routes/theme"));
 app.use("/api/share", require("./routes/share"));
 
 if (process.env.NODE_ENV === "production") {
