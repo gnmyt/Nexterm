@@ -77,6 +77,7 @@ app.post("/validate", async (req, res) => {
                 valid: true, 
                 snippetCount: result.index.snippets.length,
                 scriptCount: result.index.scripts.length,
+                themeCount: result.index.themes.length,
             });
         } else {
             res.json({ valid: false, error: result.error });

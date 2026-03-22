@@ -1,0 +1,91 @@
+@use "@/common/styles/colors"
+
+$mobile: 768px
+
+.css-theme-card
+  background: colors.$lighter-background
+  border: 1px solid colors.$dark-gray
+  border-radius: 0.75rem
+  padding: 0.875rem
+  display: flex
+  flex-direction: column
+  gap: 0.5rem
+  cursor: pointer
+  transition: border-color 0.15s ease, background 0.15s ease, box-shadow 0.15s ease
+  user-select: none
+
+  &:hover
+    border-color: colors.$primary
+    background: colors.$dark-gray
+
+    .css-theme-card-actions
+      opacity: 1
+      pointer-events: auto
+
+  &.active
+    border-color: colors.$primary
+    background: colors.$primary-opacity
+
+  .css-theme-card-top
+    display: flex
+    justify-content: space-between
+    align-items: flex-start
+    gap: 0.5rem
+
+  .css-theme-card-info
+    flex: 1
+    min-width: 0
+
+    h4
+      margin: 0
+      font-size: 0.85rem
+      font-weight: 600
+      white-space: nowrap
+      overflow: hidden
+      text-overflow: ellipsis
+
+  .css-theme-card-desc
+    margin: 0.2rem 0 0
+    font-size: 0.72rem
+    color: colors.$subtext
+    word-break: break-word
+
+  .css-theme-card-badges
+    display: flex
+    align-items: center
+    gap: 0.3rem
+    flex-shrink: 0
+
+    .source-badge
+      display: flex
+      align-items: center
+      color: colors.$subtext
+      opacity: 0.5
+
+  .css-theme-card-actions
+    display: flex
+    gap: 0.25rem
+    opacity: 0
+    pointer-events: none
+    transition: opacity 0.15s ease
+    margin-top: auto
+
+    .action-btn
+      background: transparent
+      border: none
+      border-radius: 0.3rem
+      padding: 0.3rem
+      cursor: pointer
+      color: colors.$subtext
+      display: flex
+      align-items: center
+      justify-content: center
+      transition: all 0.12s ease
+
+      &:hover
+        background-color: colors.$gray
+        color: colors.$white
+
+      &.delete-btn:hover
+        background-color: colors.$error-opacity
+        color: colors.$error
