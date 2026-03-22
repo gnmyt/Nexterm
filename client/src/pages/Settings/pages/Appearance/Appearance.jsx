@@ -16,6 +16,7 @@ import {
 } from "@mdi/js";
 import ThemeCard from "./components/ThemeCard";
 import ThemeEditorDialog from "./components/ThemeEditorDialog";
+import Tooltip from "@/common/components/Tooltip";
 
 export const Appearance = () => {
     const { t } = useTranslation();
@@ -159,6 +160,7 @@ export const Appearance = () => {
                                     </div>
                                     <span className="theme-name">{t("settings.account.themeLight")}</span>
                                 </div>
+                                <Tooltip text={t("settings.account.themeDarkHint")} delay={500}>
                                 <div
                                     className={`theme-box ${themeMode === "dark" ? "active" : ""} ${themeMode === "oled" ? "active oled-active" : ""}`}
                                     onClick={() => {
@@ -190,6 +192,7 @@ export const Appearance = () => {
                                         {themeMode === "oled" ? t("settings.account.themeOled") : t("settings.account.themeDark")}
                                     </span>
                                 </div>
+                                </Tooltip>
                                 <div
                                     className={`theme-box ${themeMode === "auto" ? "active" : ""}`}
                                     onClick={() => setTheme("auto")}
