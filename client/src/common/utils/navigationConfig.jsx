@@ -1,5 +1,6 @@
-import { mdiServerOutline, mdiCodeBraces, mdiChartBoxOutline, mdiShieldCheckOutline, mdiAccountCircleOutline, mdiAccountGroup, mdiClockStarFourPointsOutline, mdiShieldAccountOutline, mdiDomain, mdiCreationOutline, mdiKeyVariant, mdiConsole, mdiKeyboardOutline, mdiCloudDownloadOutline, mdiChartLine, mdiHarddisk, mdiFolderOutline, mdiEngine } from "@mdi/js";
+import { mdiServerOutline, mdiCodeBraces, mdiChartBoxOutline, mdiShieldCheckOutline, mdiAccountCircleOutline, mdiAccountGroup, mdiClockStarFourPointsOutline, mdiShieldAccountOutline, mdiDomain, mdiCreationOutline, mdiKeyVariant, mdiConsole, mdiKeyboardOutline, mdiCloudDownloadOutline, mdiChartLine, mdiHarddisk, mdiFolderOutline, mdiEngine, mdiPalette } from "@mdi/js";
 import Account from "@/pages/Settings/pages/Account";
+import Appearance from "@/pages/Settings/pages/Appearance";
 import Terminal from "@/pages/Settings/pages/Terminal";
 import FileManager from "@/pages/Settings/pages/FileManager";
 import Keymaps from "@/pages/Settings/pages/Keymaps";
@@ -23,6 +24,7 @@ export const getSidebarNavigation = t => [
 
 export const getSettingsUserPages = t => [
     { title: t("settings.pages.account"), key: "account", icon: mdiAccountCircleOutline, content: <Account /> },
+    { title: t("settings.pages.appearance"), key: "appearance", icon: mdiPalette, content: <Appearance /> },
     { title: t("settings.pages.terminal"), key: "terminal", icon: mdiConsole, content: <Terminal /> },
     { title: t("settings.pages.fileManager"), key: "fileManager", icon: mdiFolderOutline, content: <FileManager /> },
     { title: t("settings.pages.keymaps"), key: "keymaps", icon: mdiKeyboardOutline, content: <Keymaps /> },
