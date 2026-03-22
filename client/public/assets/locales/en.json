@@ -1386,6 +1386,7 @@
         "copyShareLink": "Copy Share Link",
         "changePermissions": "Change Permissions",
         "stopSharing": "Stop Sharing",
+        "keyboardShortcuts": "Shortcuts",
         "duplicate": "Duplicate",
         "hibernateSession": "Hibernate",
         "closeSession": "Disconnect"
