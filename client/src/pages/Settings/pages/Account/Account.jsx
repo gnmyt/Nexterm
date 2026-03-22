@@ -1,6 +1,6 @@
 import IconInput from "@/common/components/IconInput";
 import "./styles.sass";
-import { mdiAccountCircleOutline, mdiAccountEdit, mdiShieldCheck, mdiLockReset, mdiTranslate, mdiSync, mdiCloudSync, mdiCloudOffOutline, mdiWeb, mdiTabUnselected, mdiFingerprint, mdiKeyVariant, mdiPencil, mdiTrashCan, mdiPlus, mdiCheck } from "@mdi/js";
+import { mdiAccountCircleOutline, mdiAccountEdit, mdiShieldCheck, mdiLockReset, mdiTranslate, mdiSync, mdiCloudSync, mdiCloudOffOutline, mdiWeb, mdiTabUnselected, mdiFingerprint, mdiKeyVariant, mdiPencil, mdiTrashCan, mdiPlus } from "@mdi/js";
 import { useContext, useEffect, useState } from "react";
 import { UserContext } from "@/common/contexts/UserContext.jsx";
 import { usePreferences } from "@/common/contexts/PreferencesContext.jsx";

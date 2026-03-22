@@ -6,6 +6,7 @@ import { useToast } from "@/common/contexts/ToastContext.jsx";
 import { useTranslation } from "react-i18next";
 import { getRequest, putRequest, deleteRequest } from "@/common/utils/RequestUtil.js";
 import Button from "@/common/components/Button";
+import SelectBox from "@/common/components/SelectBox";
 import ActionConfirmDialog from "@/common/components/ActionConfirmDialog";
 import { applyActiveThemeCSS, removeActiveThemeCSS } from "@/common/components/ThemeLoader";
 import Icon from "@mdi/react";
@@ -15,14 +16,23 @@ import {
 } from "@mdi/js";
 import ThemeCard from "./components/ThemeCard";
 import ThemeEditorDialog from "./components/ThemeEditorDialog";
+import Tooltip from "@/common/components/Tooltip";
 
 export const Appearance = () => {
     const { t } = useTranslation();
     const { user, login } = useContext(UserContext);
     const {
         themeMode, setTheme, accentColor, setAccentColor, accentColors,
-        isGroupSynced, toggleGroupSync, theme: actualTheme,
+        uiScale, setUiScale, isGroupSynced, toggleGroupSync, theme: actualTheme,
     } = usePreferences();
+
+    const sizeOptions = [
+        { label: t("settings.account.sizeXS"), value: 0.7 },
+        { label: t("settings.account.sizeS"), value: 0.85 },
+        { label: t("settings.account.sizeM"), value: 1 },
+        { label: t("settings.account.sizeL"), value: 1.15 },
+        { label: t("settings.account.sizeXL"), value: 1.3 },
+    ];
     const { sendToast } = useToast();
 
     const [darkClickCount, setDarkClickCount] = useState(0);
@@ -150,6 +160,7 @@ export const Appearance = () => {
                                     </div>
                                     <span className="theme-name">{t("settings.account.themeLight")}</span>
                                 </div>
+                                <Tooltip text={t("settings.account.themeDarkHint")} delay={500}>
                                 <div
                                     className={`theme-box ${themeMode === "dark" ? "active" : ""} ${themeMode === "oled" ? "active oled-active" : ""}`}
                                     onClick={() => {
@@ -181,6 +192,7 @@ export const Appearance = () => {
                                         {themeMode === "oled" ? t("settings.account.themeOled") : t("settings.account.themeDark")}
                                     </span>
                                 </div>
+                                </Tooltip>
                                 <div
                                     className={`theme-box ${themeMode === "auto" ? "active" : ""}`}
                                     onClick={() => setTheme("auto")}
@@ -214,6 +226,10 @@ export const Appearance = () => {
                                     </div>
                                 ))}
                             </div>
+                        </div>
+                        <div className="size-selector">
+                            <span className="size-label">{t("settings.account.sizeLabel")}</span>
+                            <SelectBox options={sizeOptions} selected={uiScale} setSelected={setUiScale} />
                         </div>
                     </div>
                 </div>
