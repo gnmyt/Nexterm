@@ -37,11 +37,6 @@ const GuacamoleRenderer = ({
         onFullscreenToggleRef.current = onFullscreenToggle;
     }, [onFullscreenToggle]);
 
-    useEffect(() => {
-        if (registerGuacamoleRef && clientRef.current) registerGuacamoleRef(session.id, { client: clientRef.current });
-        return () => registerGuacamoleRef?.(session.id, null);
-    }, [session.id, registerGuacamoleRef, clientRef.current]);
-
     const applyDisplayStyles = (el, x, y, scale) => Object.assign(el.style, {
         position: "absolute", width: el.clientWidth + "px", height: el.clientHeight + "px",
         transform: `translate(${x}px, ${y}px) scale(${scale})`, transformOrigin: "0 0",
@@ -111,9 +106,13 @@ const GuacamoleRenderer = ({
 
     const connect = () => {
         if (isShared) {
-            if (!session.shareId || clientRef.current) return;
+            if (!session.shareId) return;
         } else {
-            if (!sessionToken || clientRef.current) return;
+            if (!sessionToken) return;
+        }
+        if (clientRef.current) {
+            registerGuacamoleRef?.(session.id, { client: clientRef.current });
+            return;
         }
         let isCleaningUp = false;
         const tunnelUrl = getWebSocketUrl("/api/ws/guac/", {});
@@ -132,8 +131,8 @@ const GuacamoleRenderer = ({
                 clientOnInstruction(opcode, args);
             }
         };
-
-        clientRef.current = client;
+    clientRef.current = client;
+    registerGuacamoleRef?.(session.id, { client });
         const display = client.getDisplay().getElement();
         display.style.position = "absolute";
         display.style.imageRendering = "crisp-edges";
@@ -200,6 +199,7 @@ const GuacamoleRenderer = ({
             client.onstatechange = tunnel.onstatechange = tunnel.onerror = null;
             audioPlayersRef.current = [];
             tunnel.disconnect();
+            registerGuacamoleRef?.(session.id, null);
             clientRef.current = null;
         };
     };
