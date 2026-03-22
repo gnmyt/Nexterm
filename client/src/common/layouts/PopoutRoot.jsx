@@ -16,6 +16,7 @@ import { Suspense, useContext } from "react";
 import { UserContext } from "@/common/contexts/UserContext.jsx";
 import Loading from "@/common/components/Loading";
 import { ErrorBoundary } from "@/common/components/ErrorBoundary";
+import ThemeLoader from "@/common/components/ThemeLoader";
 
 const PreferencesWrapper = ({ children }) => {
     const { user, login } = useContext(UserContext);
@@ -33,6 +34,7 @@ export default () => {
                 <ToastProvider>
                     <UserProvider>
                         <PreferencesWrapper>
+                            <ThemeLoader />
                             <StateStreamProvider>
                                 <KeymapProvider>
                                     <AIProvider>

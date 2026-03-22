@@ -21,6 +21,7 @@ import TitleBar from "@/common/components/TitleBar";
 import ConnectionErrorBanner from "@/common/components/ConnectionErrorBanner";
 import { waitForTauri } from "@/common/utils/TauriUtil.js";
 import MobileNav from "@/common/components/MobileNav";
+import ThemeLoader from "@/common/components/ThemeLoader";
 
 const Sidebar = lazy(() => import("@/common/components/Sidebar"));
 
@@ -83,6 +84,7 @@ const AppContent = () => {
     return (
         <UserProvider>
             <PreferencesWrapper>
+                <ThemeLoader />
                 <StateStreamProvider>
                     <KeymapProvider>
                         <AIProvider>
