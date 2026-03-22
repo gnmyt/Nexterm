@@ -3,22 +3,22 @@
 .install-page
   min-height: 100vh
   display: flex
-  align-items: center
-  justify-content: center
-  padding: 140px 24px 80px
+  flex-direction: column
 
 .install-container
+  flex: 1
+  max-width: 900px
+  margin: 0 auto
+  padding: 140px 24px 80px
   width: 100%
-  max-width: 800px
 
 .install-header
-  text-align: center
-  margin-bottom: 40px
+  margin-bottom: 32px
 
   h1
     font-size: 2.5rem
     font-weight: 700
-    letter-spacing: -0.02em
+    letter-spacing: -0.03em
     margin-bottom: 8px
     color: $text
 
@@ -26,197 +26,185 @@
     font-size: 1rem
     color: $subtext
 
-.wizard-progress
-  display: flex
-  align-items: center
-  justify-content: center
-  gap: 0
-  margin-bottom: 40px
+.install-step
+  margin-bottom: 32px
 
-.progress-step
+.step-header
   display: flex
-  flex-direction: column
-  align-items: center
-  gap: 8px
+  align-items: flex-start
+  gap: 14px
+  margin-bottom: 16px
 
-  .step-dot
-    width: 2rem
-    height: 2rem
-    display: flex
-    align-items: center
-    justify-content: center
-    background: $background-lighter
-    border: 1px solid $dark-gray
-    border-radius: 50%
+  h3
+    font-size: 1.125rem
+    font-weight: 600
+    color: $text
+    margin: 0
+
+  p
     font-size: 0.8125rem
-    font-weight: 600
     color: $subtext
-    transition: all 0.2s
+    margin: 2px 0 0
 
-  .step-label
-    font-size: 0.75rem
-    color: $subtext
-    transition: color 0.2s
-
-  &.active
-    .step-dot
-      background: $primary-opacity
-      border-color: $primary
-      color: $primary
-
-    .step-label
-      color: $text
-
-  &.completed
-    .step-dot
-      background: $primary
-      border-color: $primary
-      color: $text
-
-.progress-line
-  width: 40px
-  height: 2px
-  background: $dark-gray
-  margin: 0 8px
-  margin-bottom: 24px
-
-.wizard-content
-  background: $background-lighter
-  border: 1px solid $dark-gray
-  border-radius: 0.75rem
-  padding: 2rem
-  margin-bottom: 20px
-  min-height: 280px
-
-.wizard-step
-  h2
-    font-size: 1.25rem
-    font-weight: 600
-    margin-bottom: 8px
-    color: $text
-
-  > p
-    font-size: 0.9375rem
-    color: $subtext
-    margin-bottom: 24px
-
-.key-display
-  display: flex
-  align-items: center
-  gap: 12px
-  background: $background
-  border: 1px solid $dark-gray
-  border-radius: 0.5rem
-  padding: 14px 16px
-  margin-bottom: 12px
-
-  code
-    flex: 1
-    font-family: "SF Mono", "Fira Code", monospace
-    font-size: 0.75rem
-    color: $subtext
-    word-break: break-all
-    line-height: 1.5
-
-.icon-btn
+.step-number
   display: flex
   align-items: center
   justify-content: center
-  width: 2rem
-  height: 2rem
-  background: transparent
-  border: 1px solid $dark-gray
-  border-radius: 0.5rem
-  color: $subtext
-  cursor: pointer
-  transition: all 0.2s
-
-  &:hover
-    background: $gray
-    color: $text
-
-.hint
+  width: 28px
+  height: 28px
+  border-radius: 50%
+  background: $primary-opacity
+  color: $primary-light
   font-size: 0.8125rem
-  color: $subtext
+  font-weight: 700
+  flex-shrink: 0
+  margin-top: 1px
 
-.option-cards
-  display: grid
-  grid-template-columns: 1fr 1fr
-  gap: 12px
-  margin-bottom: 24px
-
-.option-card
+.type-list
   display: flex
   flex-direction: column
-  align-items: center
-  gap: 8px
-  padding: 1.5rem 1rem
-  background: $background
+  gap: 1px
+  background: $dark-gray
   border: 1px solid $dark-gray
   border-radius: 0.75rem
+  overflow: hidden
+  margin-bottom: 16px
+
+.type-row
+  display: flex
+  align-items: center
+  gap: 12px
+  padding: 16px 20px
+  background: $background-lighter
   cursor: pointer
-  transition: all 0.2s
-  text-align: center
+  border: none
+  font-family: inherit
+  text-align: left
+  transition: background-color 0.1s ease
 
   &:hover
     background: $gray
 
   &.selected
-    border-color: $primary
     background: $primary-opacity
 
-    svg
-      color: $primary
-
-  svg
-    font-size: 1.5rem
-    color: $subtext
-    transition: color 0.2s
-
-  .option-title
-    font-size: 0.9375rem
-    font-weight: 600
-    color: $text
-
-  .option-desc
-    font-size: 0.75rem
-    color: $subtext
-
-.input-group
-  display: flex
-  flex-direction: column
-  gap: 8px
-
-  label
-    font-size: 0.8125rem
-    font-weight: 500
-    color: $subtext
-
-  input
-    background: $background
-    border: 1px solid $dark-gray
-    border-radius: 0.5rem
-    padding: 0.75rem 1rem
-    font-size: 0.9375rem
-    font-family: "SF Mono", "Fira Code", monospace
-    color: $text
-    transition: border-color 0.2s
-
-    &:focus
-      outline: none
+    .type-radio
+      background: $primary
       border-color: $primary
 
-    &::placeholder
-      color: $subtext
+      &::after
+        transform: scale(1)
+
+.type-icon
+  width: 18px
+  font-size: 0.875rem
+  color: $subtext
+  flex-shrink: 0
+  text-align: center
+  transition: color 0.15s ease
+
+.type-row.selected .type-icon
+  color: $primary-light
+
+.type-name
+  font-size: 0.9375rem
+  font-weight: 600
+  color: $text
+  min-width: 80px
+
+.type-desc
+  flex: 1
+  font-size: 0.8125rem
+  color: $subtext
+
+.type-badge
+  font-size: 0.75rem
+  color: $subtext
+  padding: 2px 8px
+  background: $background
+  border-radius: 0.25rem
+
+.options-list
+  display: flex
+  flex-direction: column
+  gap: 1px
+  background: $dark-gray
+  border: 1px solid $dark-gray
+  border-radius: 0.75rem
+  overflow: hidden
+  margin-bottom: 16px
+
+.option-row
+  display: flex
+  align-items: center
+  gap: 16px
+  padding: 12px 20px
+  background: $background-lighter
+
+.option-label
+  font-size: 0.8125rem
+  font-weight: 500
+  color: $subtext
+  min-width: 64px
+  flex-shrink: 0
+
+.option-switcher
+  display: flex
+  background: $background
+  border: 1px solid $dark-gray
+  border-radius: 0.625rem
+  padding: 0.25rem
+  gap: 0.25rem
+
+  button
+    display: flex
+    align-items: center
+    gap: 6px
+    padding: 0.375rem 0.75rem
+    background: transparent
+    border: none
+    border-radius: 0.5rem
+    font-size: 0.8125rem
+    font-weight: 500
+    font-family: inherit
+    color: $subtext
+    cursor: pointer
+    transition: all 0.15s ease
+
+    &.active
+      background: $primary-opacity
+      color: $text
+
+    &:hover:not(.active)
+      color: $text
+
+.option-row input
+  flex: 1
+  min-width: 0
+  background: $background
+  border: 1px solid $dark-gray
+  border-radius: 0.5rem
+  padding: 0.5rem 0.75rem
+  font-size: 0.8125rem
+  font-family: "SF Mono", "Fira Code", monospace
+  color: $text
+  transition: border-color 0.15s ease
+
+  &:focus
+    outline: none
+    border-color: $primary
+
+  &::placeholder
+    color: $text-muted
 
 .command-block
-  background: $background
+  background: $background-lighter
   border: 1px solid $dark-gray
   border-radius: 0.75rem
   overflow: hidden
   cursor: pointer
-  transition: all 0.2s
-  margin-bottom: 24px
+  transition: background-color 0.1s ease
+  margin-bottom: 12px
 
   &:hover
     background: $gray
@@ -231,7 +219,7 @@
 
   svg
     color: $subtext
-    font-size: 0.9375rem
+    font-size: 0.875rem
 
   span
     flex: 1
@@ -251,7 +239,7 @@
   font-family: inherit
   padding: 4px 10px
   cursor: pointer
-  transition: all 0.2s
+  transition: all 0.15s ease
   border-radius: 0.25rem
 
   &:hover
@@ -272,40 +260,33 @@
     color: $subtext
     line-height: 1.7
     white-space: pre-wrap
+    word-break: break-all
 
-.access-info
+.info-bar
   display: flex
   align-items: center
-  justify-content: space-between
-  padding: 1rem 1.25rem
-  background: $background
+  gap: 12px
+  padding: 12px 20px
+  background: $background-lighter
   border: 1px solid $dark-gray
-  border-radius: 0.5rem
+  border-radius: 0.75rem
+  margin-bottom: 12px
 
-  .access-label
-    font-size: 0.875rem
-    color: $subtext
-
-  .access-url
-    code
-      font-family: "SF Mono", "Fira Code", monospace
-      font-size: 0.9375rem
-      color: $text
-      font-weight: 500
-
-.key-section
-  margin-bottom: 20px
-
-.key-header
-  display: flex
-  align-items: center
-  justify-content: space-between
-  margin-bottom: 6px
-
-  span
+  > span
     font-size: 0.875rem
     font-weight: 500
     color: $subtext
+
+  .info-hint
+    flex: 1
+    font-weight: 400
+    font-size: 0.75rem
+
+  code
+    font-family: "SF Mono", "Fira Code", monospace
+    font-size: 0.875rem
+    color: $text
+    font-weight: 500
 
 .regen-btn
   display: flex
@@ -314,122 +295,69 @@
   background: transparent
   border: 1px solid $dark-gray
   border-radius: 0.5rem
-  padding: 6px 12px
+  padding: 4px 10px
   font-size: 0.75rem
   font-weight: 500
   font-family: inherit
   color: $subtext
   cursor: pointer
-  transition: all 0.2s
+  transition: all 0.15s ease
 
   &:hover
     background: $gray
     color: $text
 
   svg
-    font-size: 0.6875rem
-
-.key-hint
-  font-size: 0.8125rem
-  color: $subtext
-  margin: 0
-
-.wizard-actions
-  display: flex
-  justify-content: space-between
-  gap: 12px
-  margin-bottom: 32px
-
-.btn-back
-  display: flex
-  align-items: center
-  gap: 0.5rem
-  padding: 0.8rem 1.25rem
-  background: $background-lighter
-  border: 1px solid $dark-gray
-  border-radius: 0.5rem
-  color: $text
-  font-size: 0.9375rem
-  font-weight: 500
-  font-family: inherit
-  cursor: pointer
-  transition: all 0.2s
-
-  &:hover
-    filter: brightness(0.8)
-
-  &:active
-    transform: scale(0.97)
-
-.btn-next
-  display: flex
-  align-items: center
-  gap: 0.5rem
-  padding: 0.8rem 1.5rem
-  background: $primary-opacity
-  border: 1px solid $dark-gray
-  border-radius: 0.5rem
-  color: $text
-  font-size: 0.9375rem
-  font-weight: 500
-  font-family: inherit
-  cursor: pointer
-  transition: all 0.2s
-  margin-left: auto
-
-  &:hover
-    filter: brightness(0.8)
-
-  &:active
-    transform: scale(0.97)
-
-.help-section
-  text-align: center
-  padding-top: 24px
-  border-top: 2px solid $dark-gray
-
-  > p
-    font-size: 0.875rem
-    color: $subtext
-    margin-bottom: 12px
+    font-size: 0.625rem
 
 .help-links
   display: flex
-  justify-content: center
-  flex-wrap: wrap
+  align-items: center
   gap: 20px
+  padding: 16px 0
+  border-top: 1px solid $dark-gray
+  margin-bottom: 48px
 
   a
     color: $subtext
-    font-size: 0.875rem
+    font-size: 0.8125rem
     font-weight: 500
-    cursor: pointer
-    transition: color 0.2s
+    text-decoration: none
+    transition: color 0.15s ease
 
     &:hover
       color: $primary
 
 @media (max-width: 640px)
-  .install-page
+  .install-container
     padding: 120px 20px 60px
 
   .install-header h1
     font-size: 2rem
 
-  .wizard-progress
-    gap: 0
+  .type-row
+    flex-wrap: wrap
 
-  .progress-line
-    width: 24px
-
-  .progress-step .step-label
+  .type-desc
     display: none
 
-  .wizard-content
-    padding: 1.5rem
+  .option-row
+    flex-direction: column
+    align-items: flex-start
+    gap: 8px
 
-  .option-cards
-    grid-template-columns: 1fr
+  .option-row input
+    width: 100%
 
-  .key-display code
-    font-size: 0.6875rem
+  .option-switcher
+    width: 100%
+
+    button
+      flex: 1
+      text-align: center
+
+  .info-bar
+    flex-wrap: wrap
+
+  .help-links
+    flex-wrap: wrap

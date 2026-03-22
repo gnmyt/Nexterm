@@ -226,6 +226,11 @@
         "personal": "Personal",
         "user": "User #{{id}}",
         "organization": "Org #{{id}}"
+      },
+      "durationUnits": {
+        "seconds": "seconds",
+        "minutes": "minutes",
+        "hours": "hours"
       }
     },
     "pagination": {
@@ -540,6 +545,7 @@
     "adminSettings": "ADMIN SETTINGS",
     "pages": {
       "account": "Account",
+      "appearance": "Appearance",
       "terminal": "Terminal",
       "fileManager": "File Manager",
       "keymaps": "Keymaps",
@@ -551,7 +557,8 @@
       "sources": "Sources",
       "ai": "AI",
       "monitoring": "Monitoring",
-      "backup": "Storage"
+      "backup": "Storage",
+      "engines": "Engines"
     },
     "account": {
       "title": "Account",
@@ -594,6 +601,32 @@
       "appearanceSyncDisabled": "Appearance settings will no longer sync",
       "generalSyncEnabled": "General settings will now sync to your account",
       "generalSyncDisabled": "General settings will no longer sync",
+      "customThemes": {
+        "title": "Custom Themes",
+        "description": "Create custom CSS themes or choose from synced source themes to personalize your interface.",
+        "newTheme": "New Theme",
+        "noThemesYet": "No themes yet",
+        "noThemesDescription": "Create a custom theme or add a source to get started.",
+        "editTheme": "Edit Theme",
+        "createTheme": "Create Theme",
+        "name": "Name",
+        "themeName": "Theme name",
+        "descriptionLabel": "Description",
+        "optionalDescription": "Optional description",
+        "saveChanges": "Save Changes",
+        "fromSource": "From source",
+        "edit": "Edit",
+        "delete": "Delete",
+        "deleteConfirm": "Are you sure you want to delete the theme \"{{name}}\"?",
+        "failedToLoadTheme": "Failed to load theme",
+        "nameAndCssRequired": "Name and CSS are required",
+        "themeUpdated": "Theme updated",
+        "themeCreated": "Theme created",
+        "failedToSaveTheme": "Failed to save theme",
+        "themeDeleted": "Theme deleted",
+        "failedToDeleteTheme": "Failed to delete theme",
+        "failedToActivateTheme": "Failed to activate theme"
+      },
       "sessionSynchronization": "Session Synchronization",
       "sessionSyncDescription": "Control how your server sessions are stored and synchronized across devices and browser tabs.",
       "sessionSyncAcrossDevices": "Across devices",
@@ -851,6 +884,7 @@
     },
     "authentication": {
       "title": "{{count}} Authentication Providers",
+      "internalProviderName": "Internal Authentication",
       "addProvider": "Add Provider",
       "addLdapProvider": "Add LDAP",
       "system": "System",
@@ -1099,6 +1133,7 @@
       "addSource": "Add Source",
       "snippets": "snippets",
       "scripts": "scripts",
+      "themes": "themes",
       "neverSynced": "Never synced",
       "sync": "Sync now",
       "edit": "Edit",
@@ -1120,7 +1155,7 @@
         "enabled": "Enabled",
         "enabledDescription": "When disabled, this source will not be synced",
         "validating": "Validating URL...",
-        "validationSuccess": "Valid source found: {{snippets}} snippets, {{scripts}} scripts",
+        "validationSuccess": "Valid source found: {{snippets}} snippets, {{scripts}} scripts, {{themes}} themes",
         "create": "Create"
       },
       "messages": {
@@ -1228,6 +1263,45 @@
         "nameRequired": "Provider name is required"
       },
       "noFiles": "No files found"
+    },
+    "engines": {
+      "title": "Engines",
+      "description": "Manage engine instances that handle remote connections.",
+      "addEngine": "Add Engine",
+      "noEngines": "No Engines",
+      "noEnginesDescription": "Add an engine to start connecting to remote servers.",
+      "status": {
+        "connected": "Connected",
+        "disconnected": "Disconnected"
+      },
+      "lastSeen": "Last seen {{date}}",
+      "neverConnected": "Never connected",
+      "regenerateToken": "Regenerate token",
+      "deleteEngine": "Delete engine",
+      "dismiss": "Dismiss",
+      "copyToken": "Copy token",
+      "transport": {
+        "encrypted": "Encrypted",
+        "unencrypted": "Unencrypted"
+      },
+      "tokenLabel": "Registration token for <strong>{{name}}</strong>",
+      "tokenHint": "Set this in <code1>config.yaml</code1> or as <code2>REGISTRATION_TOKEN</code2> env variable.",
+      "dialog": {
+        "title": "Add Engine",
+        "engineName": "Engine Name",
+        "namePlaceholder": "e.g. Office Network",
+        "create": "Create Engine"
+      },
+      "deleteConfirm": "Are you sure you want to delete \"{{name}}\"?",
+      "messages": {
+        "deleted": "Engine deleted successfully"
+      },
+      "errors": {
+        "loadFailed": "Failed to load engines",
+        "createFailed": "Failed to create engine",
+        "deleteFailed": "Failed to delete engine",
+        "regenerateFailed": "Failed to regenerate token"
+      }
     }
   },
   "tunnel": {
@@ -1310,6 +1384,20 @@
       "stop": "Stop",
       "start": "Start"
     },
+    "tabs": {
+      "contextMenu": {
+        "popOut": "Pop Out",
+        "startSharing": "Start Sharing",
+        "readOnly": "Read-only",
+        "readWrite": "Read & Write",
+        "copyShareLink": "Copy Share Link",
+        "changePermissions": "Change Permissions",
+        "stopSharing": "Stop Sharing",
+        "duplicate": "Duplicate",
+        "hibernateSession": "Hibernate",
+        "closeSession": "Disconnect"
+      }
+    },
     "wol": {
       "successDescription": "Magic packet sent to {{name}}",
       "errorDescription": "Failed to send magic packet"
@@ -1343,7 +1431,8 @@
         "host": "Host",
         "nodeName": "Node Name",
         "vmid": "VM ID",
-        "macAddress": "MAC Address"
+        "macAddress": "MAC Address",
+        "engine": "Engine"
       },
       "placeholders": {
         "serverName": "Server name",
@@ -1356,6 +1445,7 @@
         "vmid": "VM ID",
         "macAddress": "AA:BB:CC:DD:EE:FF"
       },
+      "engineOffline": "(offline)",
       "settings": {
         "jumpHosts": {
           "title": "Jump Hosts",

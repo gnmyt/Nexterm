@@ -4,15 +4,12 @@ const Credential = require("../models/Credential");
 const MonitoringData = require("../models/MonitoringData");
 const MonitoringSnapshot = require("../models/MonitoringSnapshot");
 const { Op } = require("sequelize");
-const axios = require("axios");
-const https = require("https");
+const { engineFetch } = require("../lib/engineFetch");
 const { getMonitoringSettingsInternal } = require("../controllers/monitoring");
 
 let monitoringInterval = null;
 let isRunning = false;
 let currentSettings = null;
-
-const httpsAgent = new https.Agent({ rejectUnauthorized: false });
 
 const start = async () => {
     if (isRunning) return;
@@ -61,13 +58,27 @@ const monitorIntegration = async (integration) => {
 };
 
 const pveRequest = async (ip, port, path, headers = {}) => {
-    const { data } = await axios.get(`https://${ip}:${port}/api2/json${path}`, { httpsAgent, headers, timeout: 10000 });
-    return data.data || [];
+    const resp = await engineFetch(`https://${ip}:${port}/api2/json${path}`, {
+        insecure: true, headers, timeout: 10000,
+    });
+    if (!resp.ok) throw new Error(`PVE API error: ${resp.status}`);
+    return resp.json().data || [];
 };
 
 const createTicket = async (ip, port, username, password) => {
-    const { data } = await axios.post(`https://${ip}:${port}/api2/json/access/ticket`, { username, password }, { timeout: 10000, httpsAgent });
-    return data.data;
+    const resp = await engineFetch(`https://${ip}:${port}/api2/json/access/ticket`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ username, password }),
+        timeout: 10000,
+        insecure: true,
+    });
+    if (!resp.ok) {
+        const err = new Error(`PVE auth failed: ${resp.status}`);
+        err.response = { status: resp.status };
+        throw err;
+    }
+    return resp.json().data;
 };
 
 const collectPVEData = async (integration, password) => {
