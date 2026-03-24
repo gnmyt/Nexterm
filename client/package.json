@@ -52,6 +52,6 @@
     "eslint-plugin-react-refresh": "^0.5.2",
     "globals": "^17.4.0",
     "sass-embedded": "^1.98.0",
-    "vite": "^8.0.1"
+    "vite": "^8.0.2"
   }
 }
