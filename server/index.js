@@ -2,9 +2,9 @@ const { loadSecrets } = require("./utils/secrets");
 loadSecrets();
 
 const express = require("express");
-const path = require("path");
-const fs = require("fs");
-const https = require("https");
+const path = require("node:path");
+const fs = require("node:fs");
+const https = require("node:https");
 const db = require("./utils/database");
 const packageJson = require("../package.json");
 const MigrationRunner = require("./utils/migrationRunner");
@@ -20,6 +20,10 @@ const { isAdmin } = require("./middlewares/permission");
 const logger = require("./utils/logger");
 const { startSourceSyncService, stopSourceSyncService } = require("./utils/sourceSyncService");
 const backupService = require("./utils/backupService");
+const controlPlane = require("./lib/controlPlane/ControlPlaneServer");
+const SessionManager = require("./lib/SessionManager");
+const { ensureLocalEngine } = require("./controllers/engine");
+const { ensureCPCerts } = require("./utils/controlPlaneCerts");
 require("./utils/folder");
 
 process.on("uncaughtException", (err) => require("./utils/errorHandling")(err));
@@ -71,8 +75,10 @@ app.use("/api/tags", authenticate, require("./routes/tag"));
 app.use("/api/keymaps", authenticate, require("./routes/keymap"));
 app.use("/api/backup/export", require("./routes/backupExport"));
 app.use("/api/backup", authenticate, isAdmin, require("./routes/backup"));
+app.use("/api/engines", authenticate, isAdmin, require("./routes/engine"));
 
 app.use("/api/scripts", authenticate, require("./routes/scripts"));
+app.use("/api/themes", authenticate, require("./routes/theme"));
 app.use("/api/share", require("./routes/share"));
 
 if (process.env.NODE_ENV === "production") {
@@ -118,6 +124,24 @@ db.authenticate()
 
         backupService.start();
 
+        if (process.env.LOCAL_ENGINE_TOKEN) {
+            await ensureLocalEngine(process.env.LOCAL_ENGINE_TOKEN);
+            logger.system("Local engine configured");
+        }
+
+        controlPlane.on("sessionClosed", ({ sessionId, reason }) => {
+            logger.info(`Engine session closed: ${sessionId} (reason: ${reason})`);
+            SessionManager.remove(sessionId);
+        });
+
+        try {
+            controlPlane.setTlsContext(await ensureCPCerts());
+        } catch (err) {
+            logger.warn("Could not set up control plane TLS certificates, engines will connect unencrypted", { error: err.message });
+        }
+
+        await controlPlane.start();
+
         app.listen(APP_PORT, () =>
             logger.system(`Server listening on port ${APP_PORT}`)
         );
@@ -150,6 +174,8 @@ process.on("SIGINT", async () => {
     stopStatusChecker();
     stopSourceSyncService();
     backupService.stop();
+
+    controlPlane.stop();
 
     await db.close();
 

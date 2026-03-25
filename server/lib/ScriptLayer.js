@@ -1,4 +1,4 @@
-const { transformScript, getScriptCommands, processNextermLine, checkSudoPrompt } = require("../utils/scriptUtils");
+const { transformScript, getScriptCommands, processNextermLine, checkSudoPrompt, stripAnsi } = require("../utils/scriptUtils");
 const SessionManager = require("./SessionManager");
 const logger = require("../utils/logger");
 
@@ -25,6 +25,7 @@ class ScriptLayer {
         this.events = [];
         this.commandQueue = [];
         this.commandIndex = 0;
+        this.suppressOutput = true;
         this.onData = this.onData.bind(this);
         this.onClose = this.onClose.bind(this);
     }
@@ -84,6 +85,13 @@ class ScriptLayer {
     }
 
     processLine(line) {
+        if (this.suppressOutput) {
+            const clean = stripAnsi(line).trim();
+            if (clean === "NEXTERM_READY") {
+                this.suppressOutput = false;
+                return;
+            }
+        }
         const cmd = processNextermLine(line);
         if (!cmd) return;
         switch (cmd.type) {

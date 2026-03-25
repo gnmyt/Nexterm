@@ -1,4 +1,5 @@
-FROM node:22-alpine AS client-builder
+ARG SERVER_IMAGE=nexterm/server:latest
+ARG ENGINE_IMAGE=nexterm/engine:latest
 
 WORKDIR /app
 
@@ -78,23 +79,11 @@ COPY --from=guacd-builder /install/usr/local/lib/ /usr/local/lib/
 # FreeRDP plugins (system + guacamole merged in builder stage)
 COPY --from=guacd-builder /install/usr/lib/freerdp2/ /usr/lib/freerdp2/
 
+COPY --from=engine /usr/local/bin/nexterm-engine /usr/local/bin/nexterm-engine
+
+COPY --from=engine /usr/local/lib/freerdp2/ /usr/lib/freerdp2/
+
 RUN ldconfig /usr/local/lib 2>/dev/null || true
-
-ENV NODE_ENV=production
-ENV LOG_LEVEL=system
-
-WORKDIR /app
-
-COPY --from=client-builder /app/client/dist ./dist
-
-COPY --from=server-builder /app/server ./server
-COPY --from=server-builder /app/node_modules ./node_modules
-COPY --from=server-builder /app/package.json ./
-COPY --from=server-builder /app/yarn.lock ./
-
-COPY docker-start.sh .
-
-RUN chmod +x docker-start.sh
 
 EXPOSE 6989
 

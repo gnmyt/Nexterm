@@ -1,0 +1,224 @@
+@use "@/common/styles/colors"
+
+$mobile: 768px
+$tablet: 1024px
+
+.appearance-page
+  display: flex
+  flex-direction: column
+  margin-top: 1rem
+  gap: 2.5rem
+
+.appearance-section
+  h2
+    margin: 0
+    display: flex
+    align-items: center
+    gap: 0.5rem
+
+    svg
+      opacity: 0.7
+
+  p
+    color: colors.$subtext
+
+  .section-header
+    display: flex
+    justify-content: space-between
+    align-items: center
+    margin-bottom: 1rem
+
+    @media (max-width: $mobile)
+      flex-direction: row
+      gap: 0.75rem
+
+    .header-content
+      h2
+        font-size: 1.3rem
+        margin-bottom: 0.4rem
+
+      p
+        font-size: 0.9rem
+        margin: 0
+
+  .section-inner
+    margin-top: 1rem
+
+  .appearance-controls
+    .appearance-description
+      margin: 0 0 0.25rem
+
+  .appearance-content
+    display: flex
+    flex-direction: row
+    gap: 2.5rem
+    align-items: flex-start
+
+    @media (max-width: $mobile)
+      flex-direction: column
+      gap: 1.5rem
+      width: 100%
+
+    .theme-selector, .accent-selector, .size-selector
+      display: flex
+      flex-direction: column
+      gap: 0.5rem
+
+      @media (max-width: $mobile)
+        width: 100%
+
+    .theme-label, .accent-label, .size-label
+      font-weight: 600
+      color: colors.$subtext
+      font-size: 0.875rem
+
+    .theme-boxes
+      display: flex
+      gap: 0.5rem
+
+      @media (max-width: $mobile)
+        width: 100%
+
+      .theme-box
+        display: flex
+        flex-direction: column
+        align-items: center
+        gap: 0.25rem
+        padding: 0.625rem 0.875rem
+        border-radius: 0.5rem
+        border: 2px solid colors.$gray
+        background: colors.$lighter-background
+        cursor: pointer
+        transition: all 0.2s ease
+
+        @media (max-width: $mobile)
+          flex: 1
+          padding: 0.75rem 0.5rem
+
+        &:hover
+          border-color: colors.$primary
+          background: colors.$dark-gray
+
+        &.active
+          border-color: colors.$primary
+          background: colors.$primary-opacity
+
+        &.oled-active
+          border-color: #000000
+          background: rgba(0, 0, 0, 0.8)
+          box-shadow: 0 0 8px rgba(255, 255, 255, 0.15)
+
+        .theme-icon
+          width: 1.25rem
+          height: 1.25rem
+          display: flex
+          align-items: center
+          justify-content: center
+          color: colors.$white
+
+          &.auto-icon
+            position: relative
+            width: 1.25rem
+            height: 1.25rem
+            border-radius: 50%
+            overflow: hidden
+            background: linear-gradient(135deg, #f59e0b 50%, #1e293b 50%)
+
+            .light-half, .dark-half
+              position: absolute
+              display: flex
+              align-items: center
+              justify-content: center
+
+            .light-half
+              top: 12%
+              left: 5%
+              color: #fff
+              svg
+                width: 0.5rem
+                height: 0.5rem
+
+            .dark-half
+              bottom: 12%
+              right: 5%
+              color: #fbbf24
+              svg
+                width: 0.5rem
+                height: 0.5rem
+
+        .theme-name
+          font-size: 0.7rem
+          font-weight: 500
+          color: colors.$white
+
+    .accent-colors
+      display: flex
+      flex-wrap: wrap
+      gap: 0.5rem
+
+      .accent-color
+        width: 2rem
+        height: 2rem
+        border-radius: 50%
+        cursor: pointer
+        border: 2px solid transparent
+        transition: all 0.2s ease
+        display: flex
+        align-items: center
+        justify-content: center
+
+        &:hover
+          transform: scale(1.1)
+
+        &.active
+          border-color: colors.$white
+          box-shadow: 0 0 0 2px var(--accent-color)
+
+          .check-icon
+            opacity: 1
+
+        .check-icon
+          color: white
+          opacity: 0
+          transition: opacity 0.2s ease
+          filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.5))
+
+.css-themes-grid
+  .no-themes
+    display: flex
+    flex-direction: column
+    align-items: center
+    justify-content: center
+    padding: 3rem
+    text-align: center
+    border: 1px dashed colors.$gray
+    border-radius: 0.75rem
+    background: colors.$dark-gray
+
+    svg
+      width: 2.5rem
+      height: 2.5rem
+      color: colors.$subtext
+      opacity: 0.4
+      margin-bottom: 0.75rem
+
+    h3
+      margin: 0 0 0.25rem
+      font-size: 1rem
+      color: colors.$white
+
+    p
+      margin: 0
+      font-size: 0.85rem
+      color: colors.$subtext
+
+.css-theme-cards
+  display: grid
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr))
+  gap: 0.75rem
+
+  @media (max-width: $mobile)
+    grid-template-columns: 1fr 1fr
+
+  @media (max-width: 480px)
+    grid-template-columns: 1fr
