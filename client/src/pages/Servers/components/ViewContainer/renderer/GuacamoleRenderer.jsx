@@ -164,14 +164,6 @@ const GuacamoleRenderer = ({
         }
     }, [uploadFiles]);
 
-    const checkClipboardPermission = async () => {
-        try {
-            return (await navigator.permissions.query({ name: "clipboard-read" })).state === "granted";
-        } catch {
-            return false;
-        }
-    };
-
     const handleClipboardEvents = () => {
         if (!clientRef.current) return;
         clientRef.current.onclipboard = (stream, mimetype) => {
@@ -187,9 +179,9 @@ const GuacamoleRenderer = ({
                 }
             };
         };
-        checkClipboardPermission().then(ok => {
-            if (!ok) return;
-            let cached = "";
+
+        const startClipboardPolling = (initialValue = "") => {
+            let cached = initialValue;
             clipboardIntervalRef.current = setInterval(async () => {
                 try {
                     const t = await navigator.clipboard.readText();
@@ -200,7 +192,31 @@ const GuacamoleRenderer = ({
                 } catch {
                 }
             }, 500);
-        });
+        };
+
+        (async () => {
+            try {
+                const status = await navigator.permissions.query({ name: "clipboard-read" });
+                if (status.state === "granted") {
+                    startClipboardPolling();
+                } else if (status.state === "prompt") {
+                    // Calling readText() triggers the browser permission dialog
+                    try {
+                        const t = await navigator.clipboard.readText();
+                        startClipboardPolling(t);
+                    } catch {
+                        // User denied or unsupported
+                    }
+                }
+            } catch {
+                // permissions API not supported — try readText() directly to prompt
+                try {
+                    const t = await navigator.clipboard.readText();
+                    startClipboardPolling(t);
+                } catch {
+                }
+            }
+        })();
         const onPaste = (e) => {
             if (e.clipboardData?.files?.length > 0) {
                 e.preventDefault();
