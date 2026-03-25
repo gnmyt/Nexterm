@@ -164,6 +164,42 @@ const GuacamoleRenderer = ({
         }
     }, [uploadFiles]);
 
+    const startClipboardPolling = (initialValue = "") => {
+        let cached = initialValue;
+        clipboardIntervalRef.current = setInterval(async () => {
+            try {
+                const t = await navigator.clipboard.readText();
+                if (t !== cached) {
+                    cached = t;
+                    sendClipboardToServer(t);
+                }
+            } catch {
+            }
+        }, 500);
+    };
+
+    const initClipboardPolling = async () => {
+        try {
+            const status = await navigator.permissions.query({ name: "clipboard-read" });
+            if (status.state === "granted") {
+                startClipboardPolling();
+            } else if (status.state === "prompt") {
+                // Calling readText() triggers the browser permission dialog
+                try {
+                    startClipboardPolling(await navigator.clipboard.readText());
+                } catch {
+                    // User denied or unsupported
+                }
+            }
+        } catch {
+            // permissions API not supported — try readText() directly to prompt
+            try {
+                startClipboardPolling(await navigator.clipboard.readText());
+            } catch {
+            }
+        }
+    };
+
     const handleClipboardEvents = () => {
         if (!clientRef.current) return;
         clientRef.current.onclipboard = (stream, mimetype) => {
@@ -180,43 +216,7 @@ const GuacamoleRenderer = ({
             };
         };
 
-        const startClipboardPolling = (initialValue = "") => {
-            let cached = initialValue;
-            clipboardIntervalRef.current = setInterval(async () => {
-                try {
-                    const t = await navigator.clipboard.readText();
-                    if (t !== cached) {
-                        cached = t;
-                        sendClipboardToServer(t);
-                    }
-                } catch {
-                }
-            }, 500);
-        };
-
-        (async () => {
-            try {
-                const status = await navigator.permissions.query({ name: "clipboard-read" });
-                if (status.state === "granted") {
-                    startClipboardPolling();
-                } else if (status.state === "prompt") {
-                    // Calling readText() triggers the browser permission dialog
-                    try {
-                        const t = await navigator.clipboard.readText();
-                        startClipboardPolling(t);
-                    } catch {
-                        // User denied or unsupported
-                    }
-                }
-            } catch {
-                // permissions API not supported — try readText() directly to prompt
-                try {
-                    const t = await navigator.clipboard.readText();
-                    startClipboardPolling(t);
-                } catch {
-                }
-            }
-        })();
+        initClipboardPolling();
         const onPaste = (e) => {
             if (e.clipboardData?.files?.length > 0) {
                 e.preventDefault();
