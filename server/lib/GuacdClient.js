@@ -136,7 +136,7 @@ class GuacdClient {
 
         // Match error instructions only at instruction boundaries (start of string or after ';')
         // to avoid false positives from filenames or clipboard text containing ".error,"
-        const errorMatch = dataToSend.match(/(?:^|;)\d+\.error,(\d+)\.([^,]+),/);
+        const errorMatch = /(?:^|;)\d+\.error,(\d+)\.([^,]+),/.exec(dataToSend);
         if (errorMatch) {
             const errorMessage = errorMatch[2];
             logger.error('Guacd error received', { sessionId: this.sessionId, error: errorMessage });
@@ -147,7 +147,7 @@ class GuacdClient {
         }
 
         if (!this.connectionId && dataToSend.includes('5.ready')) {
-            const match = dataToSend.match(/5\.ready,(\d+)\.([^;]+);/);
+            const match = /5\.ready,(\d+)\.([^;]+);/.exec(dataToSend);
             if (match?.[2]) {
                 this.connectionId = match[2];
                 logger.info('Connection ready', { sessionId: this.sessionId, connectionId: this.connectionId });
