@@ -1,7 +1,5 @@
 const wsAuth = require("../middlewares/wsAuth");
 const guacamoleHook = require("../hooks/guacamole");
-const { createVNCToken, createRDPToken } = require("../utils/tokenGenerator");
-const logger = require("../utils/logger");
 const SessionManager = require("../lib/SessionManager");
 
 module.exports = async (ws, req) => {
@@ -9,7 +7,7 @@ module.exports = async (ws, req) => {
     if (!context) return;
     if (context.isShared) return guacamoleHook(ws, context);
 
-    const { entry, user, connectionReason, ipAddress, userAgent, serverSession } = context;
+    const { serverSession } = context;
     if (!serverSession) return ws.close(4007, "Session required");
 
     SessionManager.resume(serverSession.sessionId);
@@ -46,15 +44,7 @@ module.exports = async (ws, req) => {
         } else {
             return ws.close(4009, `Unsupported: ${protocol}`);
         }
-
-        if (connConfig) {
-            Object.assign(connConfig, { user, server: entry, auditLogId: serverSession.auditLogId || null,
-                ipAddress, userAgent, connectionReason, serverSession, organizationId: entry.organizationId });
-        }
-
-        await guacamoleHook(ws, { connectionConfig: connConfig });
-    } catch (err) {
-        logger.error("Guacamole error", { error: err.message, stack: err.stack });
-        ws.close(4005, err.message);
     }
+
+    await guacamoleHook(ws, { connectionConfig: { serverSession } });
 };

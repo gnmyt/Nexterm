@@ -33,6 +33,10 @@ const GuacamoleRenderer = ({
     const connectionLoaderRef = useRef(null);
     const audioPlayersRef = useRef([]);
     const [isDragOver, setIsDragOver] = useState(false);
+    const [reconnectTrigger, setReconnectTrigger] = useState(0);
+    const reconnectAttemptsRef = useRef(0);
+    const reconnectTimeoutRef = useRef(null);
+    const clipboardIntervalRef = useRef(null);
 
     useEffect(() => {
         sessionRef.current = session;
@@ -67,9 +71,13 @@ const GuacamoleRenderer = ({
 
     const sendClipboardToServer = (text) => {
         if (!clientRef.current || !text) return;
-        const writer = new Guacamole.StringWriter(clientRef.current.createClipboardStream("text/plain"));
-        writer.sendText(text);
-        writer.sendEnd();
+        try {
+            const writer = new Guacamole.StringWriter(clientRef.current.createClipboardStream("text/plain"));
+            writer.sendText(text);
+            writer.sendEnd();
+        } catch (e) {
+            console.error("Failed to send clipboard to server:", e);
+        }
     };
 
     const uploadFileToRemote = useCallback((file) => {
@@ -78,15 +86,30 @@ const GuacamoleRenderer = ({
                 reject(new Error("No client or file"));
                 return;
             }
+            let settled = false;
+            const settle = (fn, val) => {
+                if (settled) return;
+                settled = true;
+                fn(val);
+            };
             const mimetype = file.type || "application/octet-stream";
             const stream = clientRef.current.createFileStream(mimetype, file.name);
             const writer = new Guacamole.BlobWriter(stream);
             writer.oncomplete = () => {
                 writer.sendEnd();
-                resolve({ name: file.name, size: file.size });
+                settle(resolve, { name: file.name, size: file.size });
             };
             writer.onerror = (blob, offset, error) => {
-                reject(new Error(`Upload failed for ${file.name}`));
+                console.error(`File read error for ${file.name}:`, error);
+                writer.sendEnd();
+                settle(reject, new Error(`Upload failed for ${file.name}`));
+            };
+            writer.onack = (status) => {
+                if (status.isError()) {
+                    console.error(`Server rejected upload for ${file.name}:`, status.message);
+                    writer.sendEnd();
+                    settle(reject, new Error(`Server rejected upload: ${status.message}`));
+                }
             };
             writer.sendBlob(file);
         });
@@ -141,11 +164,39 @@ const GuacamoleRenderer = ({
         }
     }, [uploadFiles]);
 
-    const checkClipboardPermission = async () => {
+    const startClipboardPolling = (initialValue = "") => {
+        let cached = initialValue;
+        clipboardIntervalRef.current = setInterval(async () => {
+            try {
+                const t = await navigator.clipboard.readText();
+                if (t !== cached) {
+                    cached = t;
+                    sendClipboardToServer(t);
+                }
+            } catch {
+            }
+        }, 500);
+    };
+
+    const initClipboardPolling = async () => {
         try {
-            return (await navigator.permissions.query({ name: "clipboard-read" })).state === "granted";
+            const status = await navigator.permissions.query({ name: "clipboard-read" });
+            if (status.state === "granted") {
+                startClipboardPolling();
+            } else if (status.state === "prompt") {
+                // Calling readText() triggers the browser permission dialog
+                try {
+                    startClipboardPolling(await navigator.clipboard.readText());
+                } catch {
+                    // User denied or unsupported
+                }
+            }
         } catch {
-            return false;
+            // permissions API not supported — try readText() directly to prompt
+            try {
+                startClipboardPolling(await navigator.clipboard.readText());
+            } catch {
+            }
         }
     };
 
@@ -159,24 +210,13 @@ const GuacamoleRenderer = ({
             reader.onend = async () => {
                 try {
                     await navigator.clipboard.writeText(data);
-                } catch {
+                } catch (e) {
+                    console.warn("Clipboard write failed (requires HTTPS and browser permission):", e.message);
                 }
             };
         };
-        checkClipboardPermission().then(ok => {
-            if (!ok) return;
-            let cached = "";
-            setInterval(async () => {
-                try {
-                    const t = await navigator.clipboard.readText();
-                    if (t !== cached) {
-                        cached = t;
-                        sendClipboardToServer(t);
-                    }
-                } catch {
-                }
-            }, 500);
-        });
+
+        initClipboardPolling();
         const onPaste = (e) => {
             if (e.clipboardData?.files?.length > 0) {
                 e.preventDefault();
@@ -197,7 +237,13 @@ const GuacamoleRenderer = ({
             e.preventDefault();
         };
         ref.current.addEventListener("paste", onPaste);
-        return () => ref.current?.removeEventListener("paste", onPaste);
+        return () => {
+            ref.current?.removeEventListener("paste", onPaste);
+            if (clipboardIntervalRef.current) {
+                clearInterval(clipboardIntervalRef.current);
+                clipboardIntervalRef.current = null;
+            }
+        };
     };
 
     const connect = () => {
@@ -217,6 +263,7 @@ const GuacamoleRenderer = ({
         tunnel.oninstruction = (opcode, args) => {
             if (!loaderHidden && opcode === "blob") {
                 loaderHidden = true;
+                reconnectAttemptsRef.current = 0;
                 connectionLoaderRef.current?.hide();
             }
             if (clientOnInstruction) {
@@ -278,17 +325,30 @@ const GuacamoleRenderer = ({
         };
         keyboard.onkeyup = (k, sc) => client.sendKeyEvent(0, k, sc);
 
+        const doReconnect = () => {
+            if (isCleaningUp) return;
+            if (reconnectAttemptsRef.current < 3) {
+                reconnectAttemptsRef.current++;
+                connectionLoaderRef.current?.show?.();
+                reconnectTimeoutRef.current = setTimeout(() => {
+                    setReconnectTrigger(t => t + 1);
+                }, 2000);
+            } else {
+                disconnectFromServer(s.id);
+            }
+        };
+
         client.onstatechange = (st) => {
             if (isCleaningUp) return;
-            if (st === Guacamole.Client.State.DISCONNECTED || st === Guacamole.Client.State.ERROR) disconnectFromServer(s.id);
+            if (st === Guacamole.Client.State.DISCONNECTED || st === Guacamole.Client.State.ERROR) doReconnect();
         };
         tunnel.onstatechange = (st) => {
-            if (!isCleaningUp && st === Guacamole.Tunnel.State.CLOSED) disconnectFromServer(s.id);
+            if (!isCleaningUp && st === Guacamole.Tunnel.State.CLOSED) doReconnect();
         };
         tunnel.onerror = () => {
-            if (!isCleaningUp) disconnectFromServer(s.id);
+            if (!isCleaningUp) doReconnect();
         };
-        handleClipboardEvents();
+        const cleanupClipboard = handleClipboardEvents();
 
         // Handle file downloads from remote
         client.onfile = (stream, mimetype, filename) => {
@@ -309,6 +369,11 @@ const GuacamoleRenderer = ({
 
         return () => {
             isCleaningUp = true;
+            if (reconnectTimeoutRef.current) {
+                clearTimeout(reconnectTimeoutRef.current);
+                reconnectTimeoutRef.current = null;
+            }
+            cleanupClipboard?.();
             ref.current?.removeEventListener("keydown", handleKeyDown, true);
             client.onstatechange = tunnel.onstatechange = tunnel.onerror = null;
             audioPlayersRef.current = [];
@@ -320,7 +385,7 @@ const GuacamoleRenderer = ({
     useEffect(() => {
         const cleanup = connect();
         return () => cleanup?.();
-    }, [sessionToken, session.id, isShared]);
+    }, [sessionToken, session.id, isShared, reconnectTrigger]);
 
     useEffect(() => {
         window.addEventListener("resize", resizeHandler);

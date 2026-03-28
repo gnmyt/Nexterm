@@ -3,6 +3,9 @@ import Input from "@/common/components/IconInput";
 import SelectBox from "@/common/components/SelectBox";
 import IconChooser from "../components/IconChooser";
 import { useTranslation } from "react-i18next";
+import { useEffect, useState } from "react";
+import { getRequest } from "@/common/utils/RequestUtil.js";
+import PropTypes from "prop-types";
 
 const PROTOCOL_OPTIONS = [
     { label: "SSH", value: "ssh" },
@@ -13,6 +16,18 @@ const PROTOCOL_OPTIONS = [
 
 const DetailsPage = ({name, setName, icon, setIcon, config, setConfig, fieldConfig}) => {
     const { t } = useTranslation();
+    const [engines, setEngines] = useState([]);
+
+    useEffect(() => {
+        getRequest("engines").then(data => setEngines(data || [])).catch(() => {});
+    }, []);
+
+    const engineOptions = engines.map(e => ({
+        label: `${e.name}${e.connected ? "" : " " + t("servers.dialog.engineOffline")}`,
+        value: String(e.id),
+    }));
+
+    const showEngineSelect = engines.length > 1;
     
     return (
         <>
@@ -27,6 +42,17 @@ const DetailsPage = ({name, setName, icon, setIcon, config, setConfig, fieldConf
                     <IconChooser selected={icon} setSelected={setIcon} />
                 </div>
             </div>
+
+            {showEngineSelect && (
+                <div className="form-group">
+                    <label>{t("servers.dialog.fields.engine")}</label>
+                    <SelectBox
+                        options={engineOptions}
+                        selected={config.engineId ? String(config.engineId) : engineOptions[0]?.value}
+                        setSelected={(value) => setConfig(prev => ({ ...prev, engineId: value }))}
+                    />
+                </div>
+            )}
             
             {fieldConfig.showIpPort && (
                 <>
@@ -93,5 +119,30 @@ const DetailsPage = ({name, setName, icon, setIcon, config, setConfig, fieldConf
         </>
     );
 }
+
+DetailsPage.propTypes = {
+    name: PropTypes.string.isRequired,
+    setName: PropTypes.func.isRequired,
+    icon: PropTypes.string,
+    setIcon: PropTypes.func.isRequired,
+    config: PropTypes.shape({
+        engineId: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+        ip: PropTypes.string,
+        port: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+        protocol: PropTypes.string,
+        wakeOnLanEnabled: PropTypes.bool,
+        macAddress: PropTypes.string,
+        wolBroadcastAddress: PropTypes.string,
+        nodeName: PropTypes.string,
+        vmid: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+    }).isRequired,
+    setConfig: PropTypes.func.isRequired,
+    fieldConfig: PropTypes.shape({
+        showIpPort: PropTypes.bool,
+        showProtocol: PropTypes.bool,
+        showPveConfig: PropTypes.bool,
+        pveFields: PropTypes.arrayOf(PropTypes.string),
+    }).isRequired,
+};
 
 export default DetailsPage;
