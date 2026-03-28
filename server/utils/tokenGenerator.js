@@ -41,7 +41,7 @@ module.exports.createRDPToken = (hostname, port, username, password, options = {
     // Drive redirection for file transfer support
     settings["enable-drive"] = "true";
     settings["drive-name"] = "Nexterm";
-    settings["drive-path"] = "/app/data/rdp-drives/" + (options.sessionId || "default");
+    settings["drive-path"] = "/app/data/rdpdrive";
     settings["create-drive-path"] = "true";
 
     return { connection: { type: "rdp", settings } };
