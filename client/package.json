@@ -27,7 +27,7 @@
     "fuse.js": "^7.1.0",
     "i18next": "^26.0.3",
     "i18next-browser-languagedetector": "^8.2.1",
-    "i18next-http-backend": "^3.0.2",
+    "i18next-http-backend": "^3.0.4",
     "monaco-editor": "^0.55.1",
     "qrcode.react": "^4.2.0",
     "react": "^19.2.4",
