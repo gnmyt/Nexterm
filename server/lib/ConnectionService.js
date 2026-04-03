@@ -197,6 +197,11 @@ const createSSHConnectionForSession = async (sessionId, entry, identity, organiz
         scriptLayer,
     });
 
+    if (!script && session.configuration.startPath) {
+        const safePath = session.configuration.startPath.replace(/[`$\\]/g, '\\$&');
+        dataSocket.write(`cd ${safePath}\n`);
+    }
+
     logger.info("SSH connected", { sessionId, target: host, port });
     return { success: true };
 };

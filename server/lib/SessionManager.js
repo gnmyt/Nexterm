@@ -247,6 +247,17 @@ module.exports.updateActivity = (sessionId) => {
     if (session) session.lastActivity = new Date();
 };
 
+module.exports.setSftpPath = (sessionId, path) => {
+    const session = module.exports.get(sessionId);
+    if (!session) return;
+    session.sftpPath = path;
+    session.lastActivity = new Date();
+};
+
+module.exports.getSftpPath = (sessionId) => {
+    return module.exports.get(sessionId)?.sftpPath || null;
+};
+
 module.exports.startSharing = (sessionId, writable = false) => {
     const session = module.exports.get(sessionId);
     if (!session) return null;

@@ -6,7 +6,6 @@ const {
     updateAuditLogWithSessionDuration,
 } = require("../controllers/audit");
 const SessionManager = require("../lib/SessionManager");
-const controlPlane = require("../lib/controlPlane/ControlPlaneServer");
 const { createSFTPConnectionForSession } = require("../lib/ConnectionService");
 const Entry = require("../models/Entry");
 
@@ -14,7 +13,7 @@ const OP = {
     READY: 0x0, LIST_FILES: 0x1, CREATE_FILE: 0x4, CREATE_FOLDER: 0x5, DELETE_FILE: 0x6,
     DELETE_FOLDER: 0x7, RENAME_FILE: 0x8, ERROR: 0x9, SEARCH_DIRECTORIES: 0xA,
     RESOLVE_SYMLINK: 0xB, MOVE_FILES: 0xC, COPY_FILES: 0xD, CHMOD: 0xE,
-    STAT: 0xF, CHECKSUM: 0x10, FOLDER_SIZE: 0x11,
+    STAT: 0xF, CHECKSUM: 0x10, FOLDER_SIZE: 0x11, PATH_SYNC: 0x12,
 };
 
 const CHECKSUM_COMMANDS = { md5: "md5sum", sha1: "sha1sum", sha256: "sha256sum", sha512: "sha512sum" };
@@ -143,21 +142,6 @@ module.exports = async (ws, req) => {
     const sessionId = serverSession?.sessionId;
     const auditLogId = serverSession?.auditLogId ?? null;
     const startTime = Date.now();
-    let isClosing = false;
-
-    const cleanup = async () => {
-        if (isClosing) return;
-        isClosing = true;
-        try { await updateAuditLogWithSessionDuration(auditLogId, startTime); } catch {}
-        if (!serverSession) return;
-
-        const conn = SessionManager.getConnection(sessionId);
-        if (conn?.sftpClient) conn.sftpClient.close();
-        if (controlPlane.hasEngine()) {
-            try { controlPlane.closeSession(sessionId); } catch {}
-        }
-        if (!serverSession.isHibernated) SessionManager.remove(sessionId);
-    };
 
     try {
         const sftpClient = await resolveSftpClient(sessionId, serverSession?.entryId ?? entry.id, user.id);
@@ -167,34 +151,60 @@ module.exports = async (ws, req) => {
             return;
         }
 
-        ws.on("close", () => cleanup());
-        ws.on("error", () => cleanup());
-        sftpClient.on("close", () => {
-            if (!isClosing) {
-                sendError(ws, "SFTP connection lost");
-                try { ws.close(4001); } catch {}
-            }
-        });
+        SessionManager.addWebSocket(sessionId, ws);
 
-        safeSend(ws, Buffer.from([OP.READY]));
+        const onSftpClose = () => {
+            sendError(ws, "SFTP connection lost");
+            try { ws.close(4001); } catch {}
+        };
+        sftpClient.on("close", onSftpClose);
+
+        const storedPath = SessionManager.getSftpPath(sessionId);
+        sendResult(ws, OP.READY, { path: storedPath });
 
         const logAudit = (action, resource, details) => {
             createAuditLog({ accountId: user.id, organizationId: entry.organizationId, action, resource, details, ipAddress, userAgent });
         };
         const handlers = buildOperationHandlers(sftpClient, ws, logAudit);
 
-        ws.on("message", async (msg) => {
-            if (isClosing) return;
-            const handler = handlers[msg[0]];
+        const messageHandler = async (msg) => {
+            const opCode = msg[0];
+
+            if (opCode === OP.PATH_SYNC) {
+                let payload;
+                try { payload = JSON.parse(msg.slice(1).toString()); } catch {}
+                if (payload?.path) {
+                    SessionManager.setSftpPath(sessionId, payload.path);
+                    const session = SessionManager.get(sessionId);
+                    if (session) {
+                        for (const other of session.connectedWs) {
+                            if (other !== ws && other.readyState === 1) {
+                                sendResult(other, OP.PATH_SYNC, { path: payload.path });
+                            }
+                        }
+                    }
+                }
+                return;
+            }
+
+            const handler = handlers[opCode];
             if (!handler) return;
             let payload;
             try { payload = JSON.parse(msg.slice(1).toString()); } catch {}
             try { await handler(payload); }
             catch (err) { sendError(ws, err.message || "Operation failed"); }
+        };
+
+        ws.on("message", messageHandler);
+
+        ws.on("close", async () => {
+            sftpClient.removeListener("close", onSftpClose);
+            ws.removeListener("message", messageHandler);
+            SessionManager.removeWebSocket(sessionId, ws);
+            try { await updateAuditLogWithSessionDuration(auditLogId, startTime); } catch {}
         });
     } catch (err) {
         sendError(ws, "Connection failed: " + err.message);
-        await cleanup();
         try { ws.close(4005); } catch {}
     }
 };
