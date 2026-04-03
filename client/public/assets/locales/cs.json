@@ -1340,7 +1340,8 @@
         "host": "Hostitel",
         "nodeName": "Název uzlu",
         "vmid": "ID VIRTUÁLNÍHO POČÍTAČE",
-        "macAddress": "MAC adresa"
+        "macAddress": "MAC adresa",
+        "wolBroadcastAddress": "Broadcastová adresa"
       },
       "placeholders": {
         "serverName": "Název serveru",
@@ -1351,7 +1352,8 @@
         "host": "Hostitel",
         "nodeName": "Název uzlu",
         "vmid": "ID VIRTUÁLNÍHO POČÍTAČE",
-        "macAddress": "AA:BB:CC:DD:EE:FF"
+        "macAddress": "AA:BB:CC:DD:EE:FF",
+        "wolBroadcastAddress": "255.255.255.255"
       },
       "settings": {
         "jumpHosts": {

@@ -1340,7 +1340,8 @@
         "host": "المضيف",
         "nodeName": "اسم العقدة",
         "vmid": "معرف الجهاز الافتراضي",
-        "macAddress": "عنوان MAC"
+        "macAddress": "عنوان MAC",
+        "wolBroadcastAddress": "عنوان البث"
       },
       "placeholders": {
         "serverName": "اسم الخادم",
@@ -1351,7 +1352,8 @@
         "host": "المضيف",
         "nodeName": "اسم العقدة",
         "vmid": "معرف الجهاز الافتراضي",
-        "macAddress": "aa:bb:bb:cc:dd:ee:ff"
+        "macAddress": "aa:bb:bb:cc:dd:ee:ff",
+        "wolBroadcastAddress": "255.255.255.255"
       },
       "settings": {
         "jumpHosts": {

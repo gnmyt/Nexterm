@@ -1344,8 +1344,9 @@
         "password": "Senha",
         "host": "Host",
         "nodeName": "Nome do Node",
-        "vmid": "ID da VM",
-        "macAddress": "Endereço MAC"
+        "vmid": "VM ID",
+        "macAddress": "Endereço MAC",
+        "wolBroadcastAddress": "Endereço de Broadcast"
       },
       "placeholders": {
         "serverName": "Nome do servidor",
@@ -1355,8 +1356,9 @@
         "password": "Senha",
         "host": "Host",
         "nodeName": "Nome do node",
-        "vmid": "ID da VM",
-        "macAddress": "AA:BB:CC:DD:EE:FF"
+        "vmid": "VM ID",
+        "macAddress": "AA:BB:CC:DD:EE:FF",
+        "wolBroadcastAddress": "255.255.255.255"
       },
       "settings": {
         "jumpHosts": {

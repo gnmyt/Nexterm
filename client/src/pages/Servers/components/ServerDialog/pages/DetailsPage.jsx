@@ -5,6 +5,7 @@ import IconChooser from "../components/IconChooser";
 import { useTranslation } from "react-i18next";
 import { useEffect, useState } from "react";
 import { getRequest } from "@/common/utils/RequestUtil.js";
+import PropTypes from "prop-types";
 
 const PROTOCOL_OPTIONS = [
     { label: "SSH", value: "ssh" },
@@ -77,12 +78,20 @@ const DetailsPage = ({name, setName, icon, setIcon, config, setConfig, fieldConf
                         </div>
                     )}
                     {config.wakeOnLanEnabled && (
-                        <div className="form-group">
-                            <label htmlFor="macAddress">{t("servers.dialog.fields.macAddress")}</label>
-                            <Input icon={mdiEthernet} type="text" placeholder={t("servers.dialog.placeholders.macAddress")} 
-                                   id="macAddress" autoComplete="off" value={config.macAddress || ""} 
-                                   setValue={(value) => setConfig(prev => ({ ...prev, macAddress: value }))} />
-                        </div>
+                        <>
+                            <div className="form-group">
+                                <label htmlFor="macAddress">{t("servers.dialog.fields.macAddress")}</label>
+                                <Input icon={mdiEthernet} type="text" placeholder={t("servers.dialog.placeholders.macAddress")}
+                                       id="macAddress" autoComplete="off" value={config.macAddress || ""}
+                                       setValue={(value) => setConfig(prev => ({ ...prev, macAddress: value }))} />
+                            </div>
+                            <div className="form-group">
+                                <label htmlFor="wolBroadcastAddress">{t("servers.dialog.fields.wolBroadcastAddress")}</label>
+                                <Input icon={mdiIp} type="text" placeholder={t("servers.dialog.placeholders.wolBroadcastAddress")}
+                                       id="wolBroadcastAddress" autoComplete="off" value={config.wolBroadcastAddress || ""}
+                                       setValue={(value) => setConfig(prev => ({ ...prev, wolBroadcastAddress: value }))} />
+                            </div>
+                        </>
                     )}
                 </>
             )}
@@ -110,5 +119,30 @@ const DetailsPage = ({name, setName, icon, setIcon, config, setConfig, fieldConf
         </>
     );
 }
+
+DetailsPage.propTypes = {
+    name: PropTypes.string.isRequired,
+    setName: PropTypes.func.isRequired,
+    icon: PropTypes.string,
+    setIcon: PropTypes.func.isRequired,
+    config: PropTypes.shape({
+        engineId: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+        ip: PropTypes.string,
+        port: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+        protocol: PropTypes.string,
+        wakeOnLanEnabled: PropTypes.bool,
+        macAddress: PropTypes.string,
+        wolBroadcastAddress: PropTypes.string,
+        nodeName: PropTypes.string,
+        vmid: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+    }).isRequired,
+    setConfig: PropTypes.func.isRequired,
+    fieldConfig: PropTypes.shape({
+        showIpPort: PropTypes.bool,
+        showProtocol: PropTypes.bool,
+        showPveConfig: PropTypes.bool,
+        pveFields: PropTypes.arrayOf(PropTypes.string),
+    }).isRequired,
+};
 
 export default DetailsPage;
