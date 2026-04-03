@@ -27,7 +27,7 @@
       "searchIcons": "Pesquisar ícones...",
       "searchResults": "Resultados da pesquisa",
       "popularIcons": "Ícones populares",
-      "noResults": "Não foram encontrados ícones"
+      "noResults": "Nenhum ícone encontrado"
     },
     "labels": {
       "username": "Nome de Usuário",
@@ -47,63 +47,63 @@
     "confirmDialog": {
       "title": "Você tem certeza?",
       "defaultText": "Essa ação não pode ser desfeita.",
-      "unsavedChangesTitle": "Alterações não salvas",
-      "unsavedChangesText": "Você tem alterações não salvas. Você tem certeza de que deseja fechar?"
+      "unsavedChangesTitle": "Alterações Não Salvas",
+      "unsavedChangesText": "Você tem alterações não salvas. Tem certeza de que deseja fechar?"
     },
     "loginDialog": {
       "title": "Nexterm",
       "registrationTitle": "Registrar",
       "ssoOrContinueWith": "ou continuar com",
       "noAuthMethodsAvailable": "Não há métodos de autenticação disponíveis.",
-      "signInWithPasskey": "Faça login com a Passkey",
-      "authenticating": "Autenticação..."
+      "signInWithPasskey": "Entrar com Chave de Acesso",
+      "authenticating": "Autenticando..."
     },
     "deviceLink": {
-      "title": "Dispositivo de link",
-      "description": "Digite o código exibido no dispositivo para autorizá-lo a acessar sua conta.",
-      "codeLabel": "Código do dispositivo",
+      "title": "Vincular Dispositivo",
+      "description": "Digite o código exibido no seu dispositivo para autorizá-lo a acessar sua conta.",
+      "codeLabel": "Código do Dispositivo",
       "continue": "Continuar",
       "verifying": "Verificando...",
-      "confirmTitle": "Autorizar dispositivo",
-      "confirmDescription": "Um dispositivo está solicitando acesso à sua conta. Verifique os detalhes abaixo.",
-      "deviceInfo": "Informações sobre o dispositivo",
+      "confirmTitle": "Autorizar Dispositivo",
+      "confirmDescription": "Um dispositivo está solicitando acesso à sua conta. Por favor, verifique os detalhes abaixo.",
+      "deviceInfo": "Informações do Dispositivo",
       "type": "Tipo",
       "ipAddress": "Endereço IP",
       "userAgent": "Dispositivo",
-      "authorize": "Autorizar dispositivo",
+      "authorize": "Autorizar Dispositivo",
       "authorizing": "Autorizando...",
       "deny": "Negar",
       "invalidCode": "Código inválido ou expirado",
       "authorizationFailed": "Falha na autorização",
       "deviceAuthorized": "Dispositivo autorizado com sucesso",
-      "successTitle": "Dispositivo autorizado",
-      "successMessage": "Você pode fechar essa guia e retornar ao aplicativo.",
+      "successTitle": "Dispositivo Autorizado",
+      "successMessage": "Você pode fechar esta aba e retornar ao aplicativo.",
       "clientTypes": {
-        "mobile": "Aplicativo móvel",
-        "connector": "Conector de desktop"
+        "mobile": "Aplicativo Móvel",
+        "connector": "Conector Desktop"
       }
     },
     "connectorSetup": {
       "title": "Conector Nexterm",
-      "serverUrl": "URL do servidor",
-      "serverUrlDescription": "Digite o URL do servidor Nexterm para se conectar.",
+      "serverUrl": "URL do Servidor",
+      "serverUrlDescription": "Digite a URL do seu servidor Nexterm para conectar.",
       "connect": "Conectar",
       "connecting": "Conectando...",
-      "enterServerUrl": "Digite um URL do servidor",
-      "connectionFailed": "Falha na conexão com o servidor. Verifique o URL.",
-      "deviceLinkingNotSupported": "Este servidor não é compatível com a vinculação de dispositivos. Atualize seu servidor Nexterm.",
-      "authMethodDescription": "Escolha como você deseja se autenticar no servidor.",
-      "showCode": "Mostrar código",
-      "showCodeDesc": "Exibir um código para você inserir manualmente na interface da Web",
+      "enterServerUrl": "Por favor, insira uma URL do servidor",
+      "connectionFailed": "Falha ao conectar ao servidor. Por favor, verifique a URL.",
+      "deviceLinkingNotSupported": "Este servidor não suporta vinculação de dispositivos. Por favor, atualize seu servidor Nexterm.",
+      "authMethodDescription": "Escolha como deseja se autenticar com o servidor.",
+      "showCode": "Mostrar Código",
+      "showCodeDesc": "Exibir um código para inserir manualmente na interface web",
       "openBrowser": "Autorizar",
       "openBrowserDesc": "Abra seu navegador para autorizar automaticamente",
-      "enterCodeDescription": "Digite esse código na interface da Web da Nexterm para autorizar esse dispositivo.",
-      "copyCode": "Código de cópia",
+      "enterCodeDescription": "Digite este código na interface web do Nexterm para autorizar este dispositivo.",
+      "copyCode": "Copiar Código",
       "codeCopied": "Código copiado para a área de transferência",
       "copyFailed": "Falha ao copiar o código",
       "waitingForAuth": "Aguardando autorização...",
       "codeCreationFailed": "Falha ao criar o código do dispositivo",
-      "authSuccess": "Você foi autenticado com sucesso!"
+      "authSuccess": "Autenticado com sucesso!"
     },
     "selectBox": {
       "defaultOption": "Selecionar uma opção...",
@@ -111,15 +111,15 @@
       "noResults": "Nenhum resultado encontrado"
     },
     "userSearch": {
-      "placeholder": "Procure um usuário..."
+      "placeholder": "Pesquisar por um usuário..."
     },
     "table": {
       "noData": {
-        "title": "Não foram encontrados dados",
+        "title": "Nenhum dado encontrado",
         "subtitle": "Não há itens para exibir."
       },
       "pagination": {
-        "showing": "Mostrando {{start}} a {{end}} de {{total}}",
+        "showing": "Exibindo {{start}} a {{end}} de {{total}}",
         "previous": "Anterior",
         "next": "Próximo",
         "pageInfo": "Página {{current}} de {{total}}"
@@ -135,16 +135,16 @@
       "logout": "Fazer logout",
       "collapseTitle": "Alternar a Barra Lateral",
       "logoutConfirmText": "Isso irá encerrar sua sessão na conta {{username}}. Tem certeza?",
-      "starOnGitHub": "Estrela no GitHub",
+      "starOnGitHub": "Dê uma estrela no GitHub",
       "support": "Suporte"
     },
     "quickAction": {
-      "placeholder": "Pesquise servidores, trechos ou navegue...",
+      "placeholder": "Pesquisar servidores, snippets ou navegar...",
       "noResults": "Nenhum resultado encontrado",
       "navigation": "Navegação",
       "settings": "Configurações",
       "navigate": "Navegar",
-      "select": "Selecione",
+      "select": "Selecionar",
       "close": "Fechar",
       "types": {
         "server": "Servidor",
@@ -156,16 +156,16 @@
     "errors": {
       "loadingAuthProviders": "Erro ao carregar os provedores de autenticação: {{error}}",
       "webSocketConnection": {
-        "title": "Falha na conexão WebSocket",
-        "message": "As conexões não estão disponíveis. Isso pode ser devido ao fato de o WebSocket não estar ativado em seu proxy reverso ou a restrições de rede."
+        "title": "Falha na Conexão WebSocket",
+        "message": "As conexões estão indisponíveis. Isso pode ser devido ao WebSocket não estar habilitado em seu proxy reverso ou restrições de rede."
       },
       "generalError": "Ocorreu um erro",
       "invalidCredentials": "Nome de usuário ou senha inválidos",
       "invalidTwoFactor": "Código de dois fatores inválido",
       "internalAuthDisabled": "A autenticação interna está desativada",
       "ssoLoginFailed": "Falha ao iniciar o login SSO",
-      "passkeyLoginFailed": "Falha na autenticação da chave de acesso",
-      "passkeyCancelled": "A autenticação da chave de acesso foi cancelada"
+      "passkeyLoginFailed": "Falha na autenticação com Chave de Acesso",
+      "passkeyCancelled": "Autenticação com Chave de Acesso foi cancelada"
     },
     "messages": {
       "invitationAccepted": "Convite aceito",
@@ -180,7 +180,7 @@
   "audit": {
     "page": {
       "title": "Logs de Auditoria",
-      "subtitle": "Acompanhe e monitore todas as atividades em sua infraestrutura"
+      "subtitle": "Acompanhe e monitore todas as atividades em sua infraestrutura."
     },
     "errors": {
       "failedToLoadData": "Falha ao carregar dados de auditoria",
@@ -238,7 +238,7 @@
   "snippets": {
     "page": {
       "title": "Trechos",
-      "subtitle": "Gerencie seus snippets de comandos para acesso rápido nos terminais",
+      "subtitle": "Gerencie seus snippets de comandos para acesso rápido nos terminais.",
       "addSnippet": "Adicionar Snippet",
       "personal": "Pessoal",
       "selectOrganization": "Selecionar Organização",
@@ -263,7 +263,7 @@
         "name": "Nome",
         "description": "Descrição (opcional)",
         "command": "Comando",
-        "osFilter": "Sistema operacional compatível"
+        "osFilter": "SO Compatível"
       },
       "placeholders": {
         "name": "Nome do snippet",
@@ -297,7 +297,7 @@
   "scripts": {
     "page": {
       "title": "Scripts",
-      "subtitle": "Gerencie seus scripts de automação para tarefas do servidor",
+      "subtitle": "Gerencie seus scripts de automação para tarefas do servidor.",
       "addScript": "Adicionar Script",
       "personal": "Pessoal",
       "selectOrganization": "Selecionar Organização",
@@ -352,7 +352,7 @@
       "fields": {
         "name": "Nome",
         "description": "Descrição",
-        "osFilter": "Sistema operacional compatível"
+        "osFilter": "SO Compatível"
       },
       "placeholders": {
         "name": "Nome do script",
@@ -397,7 +397,7 @@
   "monitoring": {
     "page": {
       "title": "Monitoramento de Servidor",
-      "subtitle": "Estatísticas de servidores em tempo real e monitoramento de saúde",
+      "subtitle": "Estatísticas de servidores em tempo real e monitoramento de saúde.",
       "searchPlaceholder": "Pesquisar servidores..."
     },
     "errors": {
@@ -493,7 +493,7 @@
         "total": "Total: {{value}}",
         "type": "Tipo: {{value}}",
         "noData": "Nenhum dado de uso de disco disponível",
-        "noPartitions": "Sem partições montadas"
+        "noPartitions": "Nenhuma partição montada"
       },
       "network": {
         "title": "Interfaces de Rede",
@@ -504,33 +504,33 @@
         "noData": "Nenhum dado de interface de rede disponível"
       },
       "processes": {
-        "title": "Processos em execução",
-        "searchPlaceholder": "Processos de pesquisa...",
+        "title": "Processos em Execução",
+        "searchPlaceholder": "Pesquisar processos...",
         "showing": "Mostrando {{count}} de {{total}} processos",
-        "noData": "Não há dados de processo disponíveis. Os dados do processo serão exibidos após o próximo ciclo de monitoramento.",
+        "noData": "Nenhum dado de processo disponível. Os dados do processo aparecerão após o próximo ciclo de monitoramento.",
         "noResults": "Nenhum processo corresponde aos seus critérios de pesquisa."
       },
       "pve": {
-        "clusterInfo": "Informações sobre o cluster",
-        "resources": "Uso de recursos",
-        "virtualMachines": "Máquinas virtuais",
-        "totalNodes": "Total de nós",
-        "onlineNodes": "Nós on-line",
-        "totalCPU": "CPU total",
-        "totalMemory": "Memória total",
-        "totalStorage": "Armazenamento total",
-        "storageUsage": "Uso do armazenamento",
+        "clusterInfo": "Informações do Cluster",
+        "resources": "Uso de Recursos",
+        "virtualMachines": "Máquinas Virtuais",
+        "totalNodes": "Total de Nodes",
+        "onlineNodes": "Nodes Online",
+        "totalCPU": "Total de CPU",
+        "totalMemory": "Total de Memória",
+        "totalStorage": "Total de Armazenamento",
+        "storageUsage": "Uso de Armazenamento",
         "cores": "Núcleos",
         "uptime": "Tempo de atividade",
         "qemuVMs": "VMs QEMU",
         "lxcContainers": "Contêineres LXC",
         "running": "{{count}} em execução",
-        "vmContainerCount": "Contagem de VMs/contêineres",
+        "vmContainerCount": "Contagem de VM/Container",
         "cpu": "CPU",
         "memory": "Memória",
         "storage": "Armazenamento",
-        "nodeOffline": "Este nó está off-line no momento",
-        "noNodes": "Não há nós disponíveis"
+        "nodeOffline": "Este node está atualmente offline",
+        "noNodes": "Nenhum node disponível"
       }
     }
   },
@@ -541,7 +541,7 @@
     "pages": {
       "account": "Conta",
       "terminal": "Terminal",
-      "fileManager": "Gerenciador de arquivos",
+      "fileManager": "Gerenciador de Arquivos",
       "keymaps": "Mapa de Teclas",
       "identities": "Identidades",
       "sessions": "Sessões",
@@ -567,7 +567,7 @@
       "oledEnabled": "Modo OLED ativado",
       "oledDisabled": "Modo OLED desativado",
       "themeLabel": "Tema",
-      "accentColor": "Cor de destaque",
+      "accentColor": "Cor de Destaque",
       "twoFactor": "Autenticação de dois fatores",
       "twoFactorActive": "Ativa",
       "twoFactorInactive": "Inativa",
@@ -582,7 +582,7 @@
       "currentLanguage": "Idioma Atual",
       "missingLanguage": "Está sem seu idioma?",
       "helpTranslateLink": "Ajude a traduzir o Nexterm",
-      "syncLoginRequired": "Faça login para sincronizar as configurações",
+      "syncLoginRequired": "Por favor, faça login para sincronizar as configurações",
       "appearanceSyncEnabled": "As configurações de aparência agora serão sincronizadas com sua conta",
       "appearanceSyncDisabled": "As configurações de aparência não serão mais sincronizadas",
       "generalSyncEnabled": "As configurações gerais agora serão sincronizadas com sua conta",
@@ -605,18 +605,18 @@
         }
       },
       "passkeys": {
-        "sectionTitle": "Chaves de acesso",
-        "sectionDescription": "Use senhas para fazer login mais rápido e mais seguro sem senhas.",
-        "addButton": "Adicionar chave de acesso",
-        "addDialogTitle": "Adicionar chave de acesso",
-        "addDialogDescription": "Dê um nome à sua chave de acesso para ajudar você a identificá-la mais tarde.",
-        "namePlaceholder": "Nome da chave de acesso",
-        "enterName": "Digite um nome para essa chave de acesso:",
+        "sectionTitle": "Chaves de Acesso",
+        "sectionDescription": "Use chaves de acesso (passkeys) para um login mais rápido e seguro, sem necessidade de senhas.",
+        "addButton": "Adicionar Chave de Acesso",
+        "addDialogTitle": "Adicionar Chave de Acesso",
+        "addDialogDescription": "Dê um nome à sua chave de acesso para ajudá-lo a identificá-la mais tarde.",
+        "namePlaceholder": "Nome da Chave de Acesso",
+        "enterName": "Digite um nome para esta chave de acesso:",
         "defaultName": "Minha chave de acesso",
-        "confirmDelete": "Você tem certeza de que deseja excluir essa chave de acesso?",
+        "confirmDelete": "Tem certeza de que deseja excluir esta chave de acesso?",
         "createdAt": "Criado em {{date}}",
-        "registerError": "Falha ao registrar a chave de acesso. Tente novamente.",
-        "noPasskeys": "Ainda não há chaves de acesso registradas",
+        "registerError": "Falha ao registrar a chave de acesso. Por favor, tente novamente.",
+        "noPasskeys": "Nenhuma chave de acesso registrada ainda",
         "rename": "Renomear",
         "delete": "Excluir"
       }
@@ -637,7 +637,7 @@
       "delete": "Excluir",
       "leave": "Sair",
       "members": "Membros",
-      "auditSettings": "Auditar Configurações",
+      "auditSettings": "Configurações de Auditoria",
       "pendingInvitations": "Convites Pendentes",
       "invitedBy": "Convidado por: {{name}}",
       "deleteConfirmation": "Isso excluirá permanentemente a organização e removerá todos os membros. Essa ação não pode ser desfeita.",
@@ -668,7 +668,7 @@
       "twoFactorEnabled": "2FA habilitado",
       "twoFactorDisabled": "2FA desabilitado",
       "noUsers": "Nenhum usuário encontrado",
-      "noUsersDescription": "Para começar, crie um novo usuário.",
+      "noUsersDescription": "Crie um novo usuário para começar.",
       "noSearchResults": "Nenhum usuário encontrado",
       "noSearchResultsDescription": "Tente ajustar sua consulta de pesquisa.",
       "table": {
@@ -722,8 +722,8 @@
           "description": "Abrir a caixa de pesquisa"
         },
         "quickaction": {
-          "title": "Ação rápida",
-          "description": "Abra o menu de ação rápida"
+          "title": "Ação Rápida",
+          "description": "Abrir o menu de ação rápida"
         },
         "aimenu": {
           "title": "Menu de IA",
@@ -767,14 +767,14 @@
     },
     "terminal": {
       "title": "Terminal",
-      "syncLoginRequired": "Faça login para sincronizar as configurações do terminal",
+      "syncLoginRequired": "Faça login para sincronizar as configurações do terminal.",
       "font": {
         "title": "Fonte",
         "description": "Personalize a família e o tamanho da fonte do seu terminal.",
         "fontFamily": "Fonte",
         "fontSize": "Tamanho da Fonte",
         "syncEnabled": "As configurações de fonte agora serão sincronizadas com sua conta",
-        "syncDisabled": "As configurações de fonte não serão mais sincronizadas"
+        "syncDisabled": "As configurações de fonte não serão mais sincronizadas com sua conta"
       },
       "cursor": {
         "title": "Cursor",
@@ -783,67 +783,68 @@
         "cursorBlinking": "Cursor Piscando",
         "enabled": "Habilitado",
         "disabled": "Desabilitado",
-        "syncEnabled": "As configurações do cursor agora serão sincronizadas com sua conta",
-        "syncDisabled": "As configurações do cursor não serão mais sincronizadas"
+        "syncEnabled": "As configurações de cursor agora serão sincronizadas com sua conta",
+        "syncDisabled": "As configurações de cursor não serão mais sincronizadas com sua conta"
       },
       "theme": {
         "title": "Tema",
         "description": "Escolha um tema de cor para seu terminal.",
-        "syncEnabled": "As configurações do tema agora serão sincronizadas com sua conta",
-        "syncDisabled": "As configurações do tema não serão mais sincronizadas"
+        "syncEnabled": "As configurações de tema agora serão sincronizadas com sua conta",
+        "syncDisabled": "As configurações de tema não serão mais sincronizadas com sua conta"
       },
       "preview": {
         "text": "$ echo 'Olá, Nexterm!'\nOlá, Nexterm!\n$ "
       }
     },
     "fileManager": {
-      "title": "Gerenciador de arquivos",
-      "description": "Configure como os arquivos e as pastas são exibidos e gerenciados.",
-      "syncLoginRequired": "Faça login para sincronizar as configurações do gerenciador de arquivos",
-      "syncEnabled": "As configurações do gerenciador de arquivos agora serão sincronizadas com a sua conta",
-      "syncDisabled": "As configurações do gerenciador de arquivos não serão mais sincronizadas",
+      "title": "Gerenciador de Arquivos",
+      "description": "Configure a forma como os arquivos e pastas são exibidos e gerenciados.",
+      "syncLoginRequired": "Faça login para sincronizar as configurações do gerenciador de arquivos.",
+      "syncEnabled": "As configurações do gerenciador de arquivos agora serão sincronizadas com sua conta.",
+      "syncDisabled": "As configurações do gerenciador de arquivos não serão mais sincronizadas com sua conta.",
       "defaultView": {
-        "title": "Modo de exibição padrão",
+        "title": "Modo de Exibição Padrão",
         "description": "Escolha o layout padrão ao abrir o gerenciador de arquivos.",
-        "list": "Exibição de lista",
+        "list": "Modo de Lista",
         "listDescription": "Mostrar arquivos em uma lista detalhada com colunas de tamanho e data",
-        "grid": "Visualização em grade",
+        "grid": "Modo de Grade",
         "gridDescription": "Mostrar arquivos como ícones em um layout de grade com miniaturas"
       },
       "thumbnails": {
-        "title": "Miniaturas de imagens",
-        "description": "Mostrar miniaturas de imagens na exibição de grade. Isso usa largura de banda adicional para gerar visualizações.",
-        "enabled": "Mostrar miniaturas",
-        "enabledDescription": "Exibir visualizações prévias de imagens na exibição de grade para uma rápida identificação visual",
-        "disabled": "Ocultar miniaturas",
+        "title": "Miniaturas de Imagem",
+        "description": "Mostrar miniaturas de imagem no modo de grade. Isso usa largura de banda adicional para gerar pré-visualizações.",
+        "enabled": "Mostrar Miniaturas",
+        "enabledDescription": "Mostrar pré-visualizações de imagens no modo de grade para identificação visual rápida",
+        "disabled": "Ocultar Miniaturas",
         "disabledDescription": "Mostrar apenas ícones de arquivos para economizar largura de banda e melhorar o desempenho"
       },
       "hiddenFiles": {
-        "title": "Arquivos ocultos",
-        "description": "Controle a visibilidade de arquivos e pastas ocultos (nomes que começam com um ponto).",
-        "show": "Mostrar arquivos ocultos",
-        "showDescription": "Exibir todos os arquivos, inclusive .dotfiles e diretórios do sistema",
-        "hide": "Ocultar arquivos ocultos",
-        "hideDescription": "Mostrar apenas arquivos e pastas comuns"
+        "title": "Arquivos Ocultos",
+        "description": "Controlar a visibilidade de arquivos e pastas ocultos (nomes começando com um ponto).",
+        "show": "Mostrar Arquivos Ocultos",
+        "showDescription": "Mostrar todos os arquivos, incluindo .dotfiles e diretórios do sistema",
+        "hide": "Ocultar Arquivos Ocultos",
+        "hideDescription": "Mostrar apenas arquivos e pastas regulares"
       },
       "deleteConfirmation": {
-        "title": "Excluir confirmação",
+        "title": "Confirmação de Exclusão",
         "description": "Exigir confirmação antes de excluir arquivos e pastas.",
-        "enabled": "Confirmar exclusões",
+        "enabled": "Confirmar Exclusões",
         "enabledDescription": "Mostrar uma caixa de diálogo de confirmação antes de excluir itens",
-        "disabled": "Excluir imediatamente",
+        "disabled": "Excluir Imediatamente",
         "disabledDescription": "Excluir arquivos sem pedir confirmação"
       },
       "dragDropAction": {
-        "title": "Ação de arrastar e soltar",
+        "title": "Ação de Arrastar e Soltar",
         "description": "Ação padrão ao arrastar arquivos para um novo local.",
         "move": "Mover",
-        "copy": "Cópia",
+        "copy": "Copiar",
         "ask": "Perguntar"
       }
     },
     "authentication": {
       "title": "{{count}} Provedor(es) de Autenticação",
+      "internalProviderName": "Autenticação Interna",
       "addProvider": "Adicionar Provedor",
       "addLdapProvider": "Adicionar LDAP",
       "system": "Sistema",
@@ -869,7 +870,7 @@
           "redirectUri": "URI de Redirecionamento",
           "redirectUriPlaceholder": "https://your-domain.com/api/oidc/callback",
           "scope": "Escopo",
-          "scopePlaceholder": "perfil openid",
+          "scopePlaceholder": "openid profile email",
           "usernameAttribute": "Atributo de Nome de Usuário",
           "usernameAttributePlaceholder": "nome de usuário preferido",
           "firstNameAttribute": "Atributo de Nome",
@@ -890,48 +891,48 @@
         }
       },
       "ldapDialog": {
-        "createTitle": "Adicionar provedor LDAP",
-        "editTitle": "Editar provedor LDAP",
+        "createTitle": "Adicionar Provedor LDAP",
+        "editTitle": "Editar Provedor LDAP",
         "fields": {
-          "displayName": "Nome de exibição",
-          "displayNamePlaceholder": "Por exemplo, LDAP da empresa",
+          "displayName": "Nome de Exibição",
+          "displayNamePlaceholder": "ex. LDAP da Empresa",
           "host": "Anfitrião",
-          "hostPlaceholder": "ldap.company.com",
-          "port": "Porto",
+          "hostPlaceholder": "ldap.empresa.com",
+          "port": "Porta",
           "bindDN": "Vincular DN",
-          "bindDNPlaceholder": "cn=admin,dc=companhia,dc=com",
+          "bindDNPlaceholder": "cn=admin,dc=empresa,dc=com",
           "bindPassword": "Vincular senha",
           "bindPasswordPlaceholder": "Vincular senha",
-          "bindPasswordPlaceholderEdit": "Deixe em branco para manter o existente",
+          "bindPasswordPlaceholderEdit": "Deixe em branco para manter o atual",
           "baseDN": "Base DN",
-          "baseDNPlaceholder": "dc=empresa, dc=com",
-          "userSearchFilter": "Filtro de pesquisa do usuário",
+          "baseDNPlaceholder": "dc=empresa,dc=com",
+          "userSearchFilter": "Filtro de Pesquisa de Usuário",
           "userSearchFilterPlaceholder": "(uid={{username}}) ou (sAMAccountName={{username}})",
-          "useTLS": "Use TLS/SSL",
-          "usernameAttribute": "Atributo de nome de usuário",
+          "useTLS": "Usar TLS/SSL",
+          "usernameAttribute": "Atributo de Nome de Usuário",
           "usernameAttributePlaceholder": "uid",
-          "emailAttribute": "Atributo de e-mail",
+          "emailAttribute": "Atributo de E-mail",
           "emailAttributePlaceholder": "correio",
-          "firstNameAttribute": "Atributo do primeiro nome",
+          "firstNameAttribute": "Atributo de Nome",
           "firstNameAttributePlaceholder": "givenName",
-          "lastNameAttribute": "Atributo Last Name",
+          "lastNameAttribute": "Atributo de Sobrenome",
           "lastNameAttributePlaceholder": "sn"
         },
         "advanced": {
-          "show": "Mostrar configurações avançadas",
-          "hide": "Ocultar configurações avançadas"
+          "show": "Mostrar Configurações Avançadas",
+          "hide": "Ocultar Configurações Avançadas"
         },
         "actions": {
-          "addProvider": "Adicionar provedor",
-          "saveChanges": "Salvar alterações",
-          "testConnection": "Conexão de teste",
-          "testing": "Testes..."
+          "addProvider": "Adicionar Provedor",
+          "saveChanges": "Salvar Alterações",
+          "testConnection": "Testar Conexão",
+          "testing": "Testando..."
         },
         "messages": {
           "saveFailed": "Falha ao salvar o provedor",
           "saveFirst": "Salve o provedor primeiro para testar a conexão",
           "testSuccess": "Teste de conexão bem-sucedido",
-          "testFailed": "Falha no teste de conexão"
+          "testFailed": "Teste de conexão falhou"
         }
       }
     },
@@ -978,50 +979,50 @@
       }
     },
     "monitoring": {
-      "loading": "Carregando as configurações de monitoramento...",
-      "saveSettings": "Salvar configurações",
+      "loading": "Carregando configurações de monitoramento...",
+      "saveSettings": "Salvar Configurações",
       "saveSuccess": "Configurações de monitoramento salvas com sucesso",
       "seconds": "segundos",
       "hours": "horas",
       "servers": "servidores",
       "statusChecker": {
-        "title": "Verificador de status",
-        "description": "Configure como a Nexterm verifica o status on-line/off-line de seus servidores.",
+        "title": "Verificador de Status",
+        "description": "Configure como o Nexterm verifica o status online/offline dos seus servidores.",
         "enable": {
-          "title": "Ativar o verificador de status",
-          "description": "Verifica automaticamente se os servidores estão on-line ou off-line. Quando desativado, todos os servidores serão marcados como on-line."
+          "title": "Ativar Verificador de Status",
+          "description": "Verifique automaticamente se os servidores estão online ou offline. Quando desativado, todos os servidores serão marcados como online."
         },
         "interval": {
-          "title": "Intervalo de verificação",
-          "description": "Com que frequência você deve verificar o status do servidor (10 a 300 segundos)"
+          "title": "Intervalo de Verificação",
+          "description": "Com que frequência verificar o status do servidor (10-300 segundos)"
         }
       },
       "dataCollection": {
-        "title": "Coleta de dados",
+        "title": "Coleta de Dados",
         "description": "Configure a coleta de dados de monitoramento para métricas de CPU, memória, disco e rede.",
         "enable": {
-          "title": "Ativar monitoramento",
-          "description": "Colete métricas de desempenho detalhadas dos servidores com o monitoramento ativado."
+          "title": "Ativar Monitoramento",
+          "description": "Colete métricas detalhadas de desempenho dos servidores com monitoramento ativado."
         },
         "interval": {
-          "title": "Intervalo de coleta",
-          "description": "Com que frequência você deve coletar dados de monitoramento (30 a 600 segundos)"
+          "title": "Intervalo de Coleta",
+          "description": "Com que frequência coletar dados de monitoramento (30-600 segundos)"
         },
         "retention": {
-          "title": "Retenção de dados",
-          "description": "Por quanto tempo você deve manter os dados de monitoramento (1 a 24 horas)"
+          "title": "Retenção de Dados",
+          "description": "Por quanto tempo manter os dados de monitoramento (1-24 horas)"
         }
       },
       "advanced": {
-        "title": "Configurações avançadas",
+        "title": "Configurações Avançadas",
         "description": "Ajuste o desempenho do monitoramento e o uso de recursos.",
         "timeout": {
-          "title": "Tempo limite de conexão",
-          "description": "Tempo máximo de espera por uma resposta do servidor (5 a 120 segundos)"
+          "title": "Tempo Limite de Conexão",
+          "description": "Tempo máximo para aguardar uma resposta do servidor (5-120 segundos)"
         },
         "batchSize": {
-          "title": "Tamanho do lote",
-          "description": "Número de servidores a serem verificados simultaneamente (1 a 50)"
+          "title": "Tamanho do Lote",
+          "description": "Número de servidores para verificar simultaneamente (1-50)"
         }
       },
       "errors": {
@@ -1031,7 +1032,7 @@
     },
     "identities": {
       "title": "Chaves e Credenciais SSH",
-      "description": "Gerencie suas chaves SSH e credenciais de login para conexões de servidor",
+      "description": "Gerencie suas chaves SSH e credenciais de login para conexões de servidor.",
       "createIdentity": "Criar Identidade",
       "personal": "Pessoal",
       "noUsername": "Sem nome de usuário",
@@ -1063,9 +1064,9 @@
         },
         "authTypes": {
           "password": "Senha",
-          "password-only": "Sem nome de usuário",
+          "password-only": "Sem Nome de Usuário",
           "ssh": "Chave SSH",
-          "both": "Chave+Pass"
+          "both": "Chave+Senha"
         },
         "actions": {
           "cancel": "Cancelar",
@@ -1135,106 +1136,106 @@
       "loading": "Carregando configurações de armazenamento...",
       "storage": {
         "title": "Armazenamento",
-        "description": "Veja o uso do disco para seus dados Nexterm.",
-        "database": "Banco de dados",
+        "description": "Visualize o uso do disco para seus dados Nexterm.",
+        "database": "Banco de Dados",
         "recordings": "Gravações",
         "logs": "Registros",
         "total": "Total"
       },
       "backupsSection": {
         "title": "Backups",
-        "description": "Configurar provedores de backup e agendar backups automáticos."
+        "description": "Configure provedores de backup e agende backups automáticos."
       },
-      "addProvider": "Adicionar provedor",
-      "editProvider": "Editar provedor",
-      "providerName": "Nome do provedor",
-      "providerNamePlaceholder": "Meu backup",
+      "addProvider": "Adicionar Provedor",
+      "editProvider": "Editar Provedor",
+      "providerName": "Nome do Provedor",
+      "providerNamePlaceholder": "Meu Backup",
       "providerType": "Tipo",
       "providerTypes": {
         "local": "Local",
-        "smb": "Compartilhamento de SMB",
+        "smb": "Compartilhamento SMB",
         "webdav": "WebDAV"
       },
-      "localPath": "Caminho de backup",
+      "localPath": "Caminho do Backup",
       "localPathPlaceholder": "/caminho/para/backups",
-      "smbShare": "Compartilhamento de SMB",
+      "smbShare": "Compartilhamento SMB",
       "smbSharePlaceholder": "\\\\Compartilhar",
       "smbFolder": "Pasta (opcional)",
       "smbFolderPlaceholder": "backups",
-      "smbUsername": "Nome de usuário",
+      "smbUsername": "Nome de Usuário",
       "smbUsernamePlaceholder": "usuário",
       "smbPassword": "Senha",
       "smbPasswordPlaceholder": "senha",
       "smbDomain": "Domínio (opcional)",
       "smbDomainPlaceholder": "GRUPO DE TRABALHO",
-      "webdavUrl": "URL do servidor",
+      "webdavUrl": "URL do Servidor",
       "webdavUrlPlaceholder": "https://cloud.example.com/remote.php/dav/files/user",
       "webdavFolder": "Pasta (opcional)",
       "webdavFolderPlaceholder": "backups",
-      "webdavUsername": "Nome de usuário",
+      "webdavUsername": "Nome de Usuário",
       "webdavUsernamePlaceholder": "usuário",
       "webdavPassword": "Senha",
       "webdavPasswordPlaceholder": "senha",
-      "passwordUnchanged": "Deixe em branco para manter-se atualizado",
+      "passwordUnchanged": "Deixe vazio para manter o atual",
       "schedule": {
-        "title": "Backup automático",
+        "title": "Backup Automático",
         "disabled": "Desativado",
         "hourly": "A cada hora",
         "every6h": "A cada 6 horas",
         "every12h": "A cada 12 horas",
         "daily": "Diariamente",
-        "weekly": "Semanal"
+        "weekly": "Semanalmente"
       },
       "retention": {
-        "title": "Política de retenção"
+        "title": "Política de Retenção"
       },
       "backups": "backups",
       "includes": {
-        "title": "Incluir em backups",
-        "database": "Banco de dados",
+        "title": "Incluir nos Backups",
+        "database": "Banco de Dados",
         "recordings": "Gravações",
         "logs": "Registros"
       },
       "providers": "Provedores",
-      "saveSettings": "Salvar configurações",
-      "noProviders": "Nenhum provedor de backup",
+      "saveSettings": "Salvar Configurações",
+      "noProviders": "Nenhum Provedor de Backup",
       "noProvidersDescription": "Adicione um provedor de backup para começar a criar backups.",
       "backupList": "Backups - {{name}}",
       "loadingBackups": "Carregando backups...",
-      "noBackups": "Não foram encontrados backups",
-      "restoreConfirm": "Você tem certeza de que deseja restaurar \"{{name}}\"? Isso substituirá seus dados atuais e reiniciará o servidor.",
-      "deleteProviderConfirm": "Você tem certeza de que deseja excluir \"{{name}}\"? Isso não excluirá os backups existentes.",
-      "providerCreated": "Criado o provedor de backup",
-      "providerUpdated": "Atualização do provedor de backup",
+      "noBackups": "Nenhum backup encontrado",
+      "restoreConfirm": "Tem certeza de que deseja restaurar \"{{name}}\"? Isso substituirá seus dados atuais e reiniciará o servidor.",
+      "deleteProviderConfirm": "Tem certeza de que deseja excluir \"{{name}}\"? Isso não excluirá os backups existentes.",
+      "providerCreated": "Provedor de backup criado",
+      "providerUpdated": "Provedor de backup atualizado",
       "providerDeleted": "Provedor de backup excluído",
       "backupCreated": "Backup criado com sucesso",
-      "restoreStarted": "A restauração foi iniciada, o servidor será reiniciado",
+      "restoreStarted": "Restauração iniciada, o servidor será reiniciado",
       "saveSuccess": "Configurações salvas com sucesso",
       "errors": {
-        "loadFailed": "Falha ao carregar as configurações de backup",
-        "saveFailed": "Falha ao salvar as configurações",
+        "loadFailed": "Falha ao carregar configurações de backup",
+        "saveFailed": "Falha ao salvar configurações",
         "deleteFailed": "Falha ao excluir",
-        "backupFailed": "Falha ao criar o backup",
+        "backupFailed": "Falha ao criar backup",
         "loadBackupsFailed": "Falha ao carregar backups",
-        "restoreFailed": "Falha ao restaurar o backup",
+        "restoreFailed": "Falha ao restaurar backup",
         "exportFailed": "Falha ao exportar dados",
-        "nameRequired": "O nome do provedor é obrigatório"
+        "nameRequired": "Nome do provedor é obrigatório"
       },
       "noFiles": "Nenhum arquivo encontrado"
     }
   },
   "tunnel": {
-    "title": "Encaminhamento de porta",
+    "title": "Tunelamento de Porta",
     "identity": "Identidade",
-    "remoteHost": "Host remoto",
-    "remotePort": "Porta remota",
-    "localPort": "Porto local",
-    "start": "Iniciar túnel",
-    "stop": "Túnel de parada",
+    "remoteHost": "Host Remoto",
+    "remotePort": "Porta Remota",
+    "localPort": "Porta Local",
+    "start": "Iniciar Tunelamento",
+    "stop": "Parar Tunelamento",
     "status": {
       "idle": "Não conectado",
-      "starting": "Começando...",
-      "listening": "Você está ouvindo no localhost:{{port}}",
+      "starting": "Iniciando...",
+      "listening": "Ouvindo em localhost:{{port}}",
       "error": "Erro",
       "stopped": "Parado"
     },
@@ -1244,11 +1245,11 @@
   },
   "share": {
     "errors": {
-      "unableToConnect": "Não é possível se conectar",
+      "unableToConnect": "Não Foi Possível Conectar",
       "failedToJoin": "Falha ao entrar na sessão"
     },
     "sessionEnded": {
-      "title": "Sessão encerrada",
+      "title": "Sessão Encerrada",
       "description": "A sessão compartilhada foi encerrada"
     }
   },
@@ -1289,12 +1290,12 @@
       "connect": "Conectar",
       "quickConnect": "Conexão Rápida",
       "openSFTP": "Abrir SFTP",
-      "forwardPort": "Porta de encaminhamento",
+      "forwardPort": "Tunelar Porta",
       "runScript": "Executar Script",
       "editServer": "Editar Servidor",
       "editIntegration": "Editar Integração",
       "duplicateServer": "Duplicar Servidor",
-      "pasteIdentityPassword": "Colar senha",
+      "pasteIdentityPassword": "Colar Senha",
       "deleteServer": "Excluir Servidor",
       "wakeOnLan": "Wake-On-LAN",
       "editPVE": "Editar PVE",
@@ -1303,9 +1304,23 @@
       "stop": "Parar",
       "start": "Iniciar"
     },
+    "tabs": {
+      "contextMenu": {
+        "popOut": "Abrir em Janela Pop-Up",
+        "startSharing": "Iniciar Compartilhamento",
+        "readOnly": "Somente Leitura",
+        "readWrite": "Leitura & Escrita",
+        "copyShareLink": "Copiar Link de Compartilhamento",
+        "changePermissions": "Alterar Permissões",
+        "stopSharing": "Parar de Compartilhar",
+        "duplicate": "Duplicar",
+        "hibernateSession": "Hibernar",
+        "closeSession": "Desconectar"
+      }
+    },
     "wol": {
       "successDescription": "Pacote mágico enviado para {{name}}",
-      "errorDescription": "Falha ao enviar o pacote mágico"
+      "errorDescription": "Falha ao enviar pacote mágico"
     },
     "messages": {
       "fillRequiredFields": "Por favor, preencha todos os campos obrigatórios",
@@ -1332,25 +1347,25 @@
       "fields": {
         "name": "Nome",
         "icon": "Ícone",
-        "serverIp": "Anfitrião",
+        "serverIp": "IP do Servidor",
         "port": "Porta",
         "protocol": "Protocolo",
         "username": "Nome de Usuário",
         "password": "Senha",
         "host": "Anfitrião",
         "nodeName": "Nome do Node",
-        "vmid": "ID DA VM",
+        "vmid": "ID da VM",
         "macAddress": "Endereço MAC"
       },
       "placeholders": {
         "serverName": "Nome do servidor",
-        "serverIp": "Nome do host ou IP",
+        "serverIp": "IP do Servidor",
         "port": "Porta",
         "username": "Nome de usuário",
         "password": "Senha",
         "host": "Anfitrião",
         "nodeName": "Nome do node",
-        "vmid": "ID DA VM",
+        "vmid": "ID da VM",
         "macAddress": "AA:BB:CC:DD:EE:FF"
       },
       "settings": {
@@ -1366,45 +1381,45 @@
           "description": "Coletar métricas de CPU, memória, disco e rede para este servidor"
         },
         "wakeOnLan": {
-          "title": "Ativar Wake-On-LAN",
-          "description": "Permitir que você acorde esse servidor remotamente usando seu endereço MAC"
+          "title": "Habilitar Wake-On-LAN",
+          "description": "Permitir acordar este servidor remotamente usando seu endereço MAC"
         },
         "keyboardLayout": {
           "title": "Layout do Teclado",
           "description": "Selecione o layout de teclado a ser usado para esta conexão."
         },
         "display": {
-          "title": "Configurações de exibição",
-          "description": "Configurar a profundidade de cor e o comportamento de redimensionamento da tela remota",
-          "colorDepth": "Profundidade de cor",
-          "resizeMethod": "Método de redimensionamento"
+          "title": "Configurações de Exibição",
+          "description": "Configure a profundidade de cor e o comportamento de redimensionamento para a exibição remota",
+          "colorDepth": "Profundidade de Cor",
+          "resizeMethod": "Método de Redimensionamento"
         },
         "performance": {
-          "title": "Configurações de desempenho",
-          "description": "Alternar efeitos visuais que podem afetar o desempenho em conexões mais lentas",
-          "enableWallpaper": "Ativar papel de parede",
+          "title": "Configurações de Desempenho",
+          "description": "Ative ou desative efeitos visuais que podem impactar o desempenho em conexões mais lentas",
+          "enableWallpaper": "Habilitar Papel de Parede",
           "enableWallpaperDesc": "Mostrar o papel de parede da área de trabalho no sistema remoto",
-          "enableTheming": "Ativar temas",
-          "enableThemingDesc": "Use janelas e controles temáticos no sistema remoto",
-          "enableFontSmoothing": "Ativar suavização de fonte",
-          "enableFontSmoothingDesc": "Renderize o texto com bordas suaves para melhor legibilidade",
-          "enableFullWindowDrag": "Ativar arrastar a janela inteira",
+          "enableTheming": "Habilitar Temas",
+          "enableThemingDesc": "Usar janelas e controles temáticos no sistema remoto",
+          "enableFontSmoothing": "Habilitar Suavização de Fontes",
+          "enableFontSmoothingDesc": "Renderizar texto com bordas suaves para melhor legibilidade",
+          "enableFullWindowDrag": "Habilitar Arrastar Janela Completa",
           "enableFullWindowDragDesc": "Exibir o conteúdo da janela ao arrastar janelas",
-          "enableDesktopComposition": "Ativar a composição da área de trabalho",
+          "enableDesktopComposition": "Habilitar Composição de Área de Trabalho",
           "enableDesktopCompositionDesc": "Habilitar janelas transparentes e efeitos visuais",
-          "enableMenuAnimations": "Ativar animações de menu",
-          "enableMenuAnimationsDesc": "Ativar animações de abertura e fechamento de menu"
+          "enableMenuAnimations": "Habilitar Animações de Menu",
+          "enableMenuAnimationsDesc": "Habilitar animações de abertura e fechamento de menus"
         },
         "audio": {
-          "enableAudio": "Ativar áudio",
-          "enableAudioDesc": "Transmita o áudio do sistema remoto para o seu navegador"
+          "enableAudio": "Habilitar Áudio",
+          "enableAudioDesc": "Transmitir áudio do sistema remoto para o seu navegador"
         },
         "terminal": {
-          "title": "Compatibilidade de terminais",
-          "description": "Ajuste o comportamento das teclas para diferentes tipos de terminais",
+          "title": "Compatibilidade do Terminal",
+          "description": "Ajustar o comportamento das teclas para diferentes tipos de terminal",
           "backspace": "Backspace",
           "delete": "Excluir",
-          "functionKeys": "Teclas de função"
+          "functionKeys": "Teclas de Função"
         },
         "noSettings": "Não há configurações adicionais disponíveis para esse tipo de entrada."
       },
@@ -1418,9 +1433,9 @@
         "authentication": "Autenticação",
         "passwordField": "Senha",
         "userPassword": "Senha",
-        "passwordOnly": "Sem nome de usuário",
+        "passwordOnly": "Sem Nome de Usuário",
         "sshKey": "Chave SSH",
-        "both": "Chave+Pass",
+        "both": "Chave+Senha",
         "sshPrivateKey": "Chave Privada SSH",
         "passphrase": "Senha (opcional)",
         "new": "Nova",
@@ -1446,7 +1461,7 @@
         "username": "Nome de Usuário",
         "password": "Senha",
         "nodeName": "Nome do Node (Opcional)",
-        "monitoring": "Monitoramento de desempenho"
+        "monitoring": "Monitoramento de Desempenho"
       },
       "monitoringDescription": "Coletar métricas de CPU, memória e armazenamento em todo o cluster",
       "placeholders": {
@@ -1462,10 +1477,10 @@
         "edit": "Editar"
       },
       "messages": {
-        "created": "Integração do Proxmox criada com sucesso",
-        "updated": "Integração do Proxmox atualizada com sucesso",
-        "createFailed": "Falha ao criar a integração com o Proxmox",
-        "updateFailed": "Falha ao atualizar a integração com o Proxmox"
+        "created": "Integração Proxmox criada com sucesso",
+        "updated": "Integração Proxmox atualizada com sucesso",
+        "createFailed": "Falha ao criar integração Proxmox",
+        "updateFailed": "Falha ao atualizar integração Proxmox"
       }
     },
     "connectionReasonDialog": {
@@ -1505,9 +1520,9 @@
     },
     "fileManager": {
       "createFile": {
-        "title": "Criar arquivo",
-        "placeholder": "Nome do arquivo",
-        "button": "Criar arquivo"
+        "title": "Criar Arquivo",
+        "placeholder": "Nome do Arquivo",
+        "button": "Criar Arquivo"
       },
       "createFolder": {
         "title": "Criar Pasta",
@@ -1542,17 +1557,17 @@
         "upload": "Carregar Arquivo",
         "edit": "Editar",
         "preview": "Pré-visualizar",
-        "moveHere": "Venha para cá",
-        "copyHere": "Copie aqui",
+        "moveHere": "Mover aqui",
+        "copyHere": "Copiar aqui",
         "bigFileConfirm": "Este arquivo tem {{size}} MB. Você tem certeza de que deseja editá-lo?",
-        "deleteConfirm": "Você tem certeza de que deseja excluir \"{{name}}\"? Essa ação não pode ser desfeita.",
+        "deleteConfirm": "Tem certeza de que deseja excluir \"{{name}}\"? Esta ação não pode ser desfeita.",
         "selectAll": "Selecionar Todos",
         "insertSnippet": "Inserir Snippet",
         "sendCtrlC": "Enviar Ctrl+C",
         "clearTerminal": "Limpar Terminal",
         "properties": "Propriedades",
-        "openTerminal": "Abra o terminal aqui",
-        "downloadFolder": "Baixar a pasta"
+        "openTerminal": "Abrir Terminal Aqui",
+        "downloadFolder": "Baixar Pasta"
       },
       "properties": {
         "general": "Geral",
@@ -1578,7 +1593,7 @@
         "write": "Escrever",
         "execute": "Executar",
         "octal": "Octal",
-        "preview": "Prévia",
+        "preview": "Pré-visualizar",
         "apply": "Aplicar"
       },
       "filePreview": {
@@ -1592,15 +1607,15 @@
         "close": "Fechar"
       },
       "selection": {
-        "itemsSelected": "{{count}} itens selecionados",
+        "itemsSelected": "{{count}} item(ns) selecionados",
         "filesSelected": "{{count}} arquivo(s) selecionado(s)",
         "foldersSelected": "{{count}} pasta(s) selecionada(s)",
         "clearSelection": "Limpar seleção",
-        "downloadSelected": "Download selecionado",
-        "deleteSelected": "Excluir selecionado",
+        "downloadSelected": "Baixar selecionados",
+        "deleteSelected": "Excluir selecionados",
         "download": "Baixar",
         "delete": "Excluir",
-        "deleteConfirm": "Você tem certeza de que deseja excluir o(s) item(ns) {{count}} ?"
+        "deleteConfirm": "Tem certeza de que deseja excluir o(s) item(ns) {{count}}?"
       },
       "header": {
         "name": "Nome",
@@ -1610,25 +1625,25 @@
       },
       "actionBar": {
         "enterDirectory": "Digite o caminho do diretório...",
-        "hiddenDirectories": "{{count}} diretórios ocultos",
-        "switchToGrid": "Alternar para a exibição de grade",
-        "switchToList": "Alternar para o modo de exibição de lista"
+        "hiddenDirectories": "{{count}} pastas ocultas",
+        "switchToGrid": "Mudar para visualização em grade",
+        "switchToList": "Mudar para visualização em lista"
       },
       "item": {
         "link": "link"
       },
       "states": {
         "loading": "Carregando arquivos...",
-        "accessDenied": "Acesso negado",
-        "emptyFolder": "Essa pasta está vazia",
-        "dropFilesHint": "Solte os arquivos aqui para carregá-los"
+        "accessDenied": "Acesso Negado",
+        "emptyFolder": "Esta pasta está vazia",
+        "dropFilesHint": "Solte os arquivos aqui para enviá-los"
       },
       "toast": {
         "downloaded": "Baixado {{name}}",
-        "downloadingItems": "Baixando {{count}} item(ns)...",
-        "uploaded": "Carregado {{name}}",
-        "uploadFailed": "Falha no upload: {{message}}",
-        "connectionLost": "Você perdeu a conexão SFTP. Favor reconectar.",
+        "downloadingItems": "Baixando {{count}} item(s)...",
+        "uploaded": "Enviado {{name}}",
+        "uploadFailed": "Falha no envio: {{message}}",
+        "connectionLost": "Conexão SFTP perdida. Por favor, reconecte-se.",
         "error": "Ocorreu um erro"
       }
     },
@@ -1636,15 +1651,15 @@
       "title": "Assistente de IA",
       "placeholder": "Descreva o que você quer fazer...",
       "hint": "Pressione Enter para gerar • Esc para fechar",
-      "hintUse": "Pressione Enter para usar o comando - Esc para fechar",
+      "hintUse": "Pressione Enter para usar o comando • Esc para fechar",
       "closeLabel": "Fechar Assistente de IA",
       "generate": "Gerar comando",
-      "generating": "Geração de comando...",
-      "generatedCommand": "Comando gerado",
-      "useCommand": "Usar o comando",
-      "tryAgain": "Tente novamente",
+      "generating": "Gerando comando...",
+      "generatedCommand": "Comando Gerado",
+      "useCommand": "Usar Comando",
+      "tryAgain": "Tentar Novamente",
       "copy": "Copiar para a área de transferência",
-      "error": "Falha ao gerar o comando. Tente novamente."
+      "error": "Falha ao gerar o comando. Por favor, tente novamente."
     },
     "snippets": {
       "title": "Trechos",
@@ -1663,32 +1678,32 @@
     }
   },
   "support": {
-    "title": "Obter suporte",
-    "subtitle": "Você precisa de ajuda ou quer contribuir?",
-    "footer": "Obrigado por você usar o Nexterm!",
+    "title": "Obter Suporte",
+    "subtitle": "Precisa de ajuda ou quer contribuir?",
+    "footer": "Obrigado por usar o Nexterm!",
     "issues": {
-      "title": "Relatar um problema",
-      "description": "Você encontrou um bug ou tem uma solicitação de recurso?"
+      "title": "Reportar um Problema",
+      "description": "Encontrou um bug ou tem uma solicitação de recurso?"
     },
     "discord": {
-      "title": "Entre no Discord",
+      "title": "Entrar no Discord",
       "description": "Converse com a comunidade e obtenha ajuda."
     },
     "github": {
-      "title": "Exibir no GitHub",
+      "title": "Ver no GitHub",
       "description": "Navegue pelo código-fonte e contribua."
     }
   },
   "welcome": {
-    "subtitle": "Bem-vindo ao Nexterm. O gerenciador de servidor de código aberto para SSH, VNC e RDP.",
-    "downloadApps": "Baixar aplicativos",
-    "connectDevice": "Conectar dispositivo",
-    "recentConnections": "Conexões recentes",
-    "getStarted": "Começar a usar",
+    "subtitle": "Bem-vindo ao Nexterm. O gerenciador de servidores open-source para SSH, VNC e RDP.",
+    "downloadApps": "Baixar Aplicativos",
+    "connectDevice": "Conectar Dispositivo",
+    "recentConnections": "Conexões Recentes",
+    "getStarted": "Começar",
     "getStartedHint": "Adicione um servidor na barra lateral para começar a gerenciar sua infraestrutura."
   },
   "downloadApps": {
-    "title": "Baixar aplicativos",
+    "title": "Baixar Apps",
     "subtitle": "Obtenha o Nexterm em seus dispositivos",
     "platforms": {
       "windows": "Janelas",
