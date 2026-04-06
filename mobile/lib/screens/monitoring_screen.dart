@@ -8,16 +8,26 @@ import '../utils/auth_manager.dart';
 class MonitoringScreen extends StatefulWidget {
   final AuthManager authManager;
   const MonitoringScreen({super.key, required this.authManager});
-  @override State<MonitoringScreen> createState() => _MonitoringScreenState();
+  @override State<MonitoringScreen> createState() => MonitoringScreenState();
 }
 
-class _MonitoringScreenState extends State<MonitoringScreen> {
+class MonitoringScreenState extends State<MonitoringScreen> {
   List<M> _servers = [];
   M? _selected;
   M? _details;
   bool _loading = true, _loadingDetails = false;
   String? _error;
   Timer? _timer;
+
+  bool get hasDetails => _selected != null;
+
+  bool goBack() {
+    if (_selected != null) {
+      setState(() { _selected = null; _details = null; });
+      return true;
+    }
+    return false;
+  }
 
   @override void initState() { super.initState(); _load(); _timer = Timer.periodic(const Duration(seconds: 60), (_) => _load(silent: true)); }
   @override void dispose() { _timer?.cancel(); super.dispose(); }

@@ -4,6 +4,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'screens/device_setup_screen.dart';
 import 'screens/main_navigation_page.dart';
 import 'services/api_config.dart';
+import 'services/session_manager.dart';
 import 'utils/theme_manager.dart';
 import 'utils/auth_manager.dart';
 import 'utils/snippet_manager.dart';
@@ -31,22 +32,26 @@ class MyApp extends StatefulWidget {
   State<MyApp> createState() => _MyAppState();
 }
 
-class _MyAppState extends State<MyApp> {
+class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
   late ThemeManager _themeManager;
   late AuthManager _authManager;
   late SnippetManager _snippetManager;
+  late SessionManager _sessionManager;
 
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
     _themeManager = ThemeManager(widget.themeMode);
     _authManager = AuthManager(widget.isLoggedIn);
     _snippetManager = SnippetManager();
+    _sessionManager = SessionManager();
 
     _authManager.addListener(_onAuthChanged);
 
     if (widget.isLoggedIn) {
       _loadSnippets();
+      _restoreSessions();
     }
   }
 
@@ -57,20 +62,41 @@ class _MyAppState extends State<MyApp> {
     }
   }
 
+  Future<void> _restoreSessions() async {
+    final token = _authManager.sessionToken;
+    if (token != null) {
+      await _sessionManager.restoreSessions(token: token);
+    }
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed && _authManager.isAuthenticated) {
+      _restoreSessions();
+    }
+  }
+
   @override
   void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
     _authManager.removeListener(_onAuthChanged);
     _themeManager.dispose();
     _authManager.dispose();
     _snippetManager.dispose();
+    _sessionManager.dispose();
     super.dispose();
   }
 
   void _onAuthChanged() {
     if (_authManager.isAuthenticated) {
       _loadSnippets();
+      _restoreSessions();
     } else {
       _snippetManager.clear();
+      final token = _authManager.sessionToken;
+      if (token != null) {
+        _sessionManager.closeAll(token);
+      }
     }
     setState(() {});
   }
@@ -101,6 +127,7 @@ class _MyAppState extends State<MyApp> {
             themeManager: _themeManager,
             authManager: _authManager,
             snippetManager: _snippetManager,
+            sessionManager: _sessionManager,
           )
         : DeviceSetupScreen(authManager: _authManager);
   }

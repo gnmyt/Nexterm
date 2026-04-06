@@ -29,7 +29,8 @@ class ServerService {
     return folders;
   }
 
-  static bool _isPveEntry(String? type) => type == 'pve-shell' || type == 'pve-lxc';
+  static bool _isPveEntry(String? type) =>
+      type == 'pve-shell' || type == 'pve-lxc' || type == 'pve-qemu';
 
   static List<dynamic> _filterEntries(List<dynamic> entries) {
     final List<dynamic> filtered = [];

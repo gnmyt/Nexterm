@@ -4,18 +4,18 @@ import 'package:material_design_icons_flutter/material_design_icons_flutter.dart
 import '../models/server.dart';
 import '../models/server_folder.dart';
 import '../services/server_service.dart';
+import '../services/session_manager.dart';
 import '../utils/auth_manager.dart';
 import '../utils/snippet_manager.dart';
 import '../utils/folder_state_manager.dart';
-import 'terminal_screen.dart';
-import 'guacamole_screen.dart';
-import 'sftp_screen.dart';
 
 class ServersScreen extends StatefulWidget {
   final AuthManager authManager;
   final SnippetManager snippetManager;
+  final SessionManager sessionManager;
+  final VoidCallback? onSwitchToSessions;
 
-  const ServersScreen({super.key, required this.authManager, required this.snippetManager});
+  const ServersScreen({super.key, required this.authManager, required this.snippetManager, required this.sessionManager, this.onSwitchToSessions});
 
   @override
   State<ServersScreen> createState() => _ServersScreenState();
@@ -137,7 +137,30 @@ class _ServersScreenState extends State<ServersScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Nexterm'), elevation: 0),
+      appBar: AppBar(
+        title: const Text('Nexterm'),
+        elevation: 0,
+        actions: [
+          ListenableBuilder(
+            listenable: widget.sessionManager,
+            builder: (context, _) {
+              final count = widget.sessionManager.sessionCount;
+              if (count == 0) return const SizedBox.shrink();
+              return Padding(
+                padding: const EdgeInsets.only(right: 8),
+                child: IconButton(
+                  onPressed: _navigateToSessions,
+                  icon: Badge(
+                    label: Text('$count'),
+                    child: Icon(MdiIcons.monitorMultiple),
+                  ),
+                  tooltip: '$count active session${count == 1 ? '' : 's'}',
+                ),
+              );
+            },
+          ),
+        ],
+      ),
       body: Column(children: [
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
@@ -296,13 +319,99 @@ class _ServersScreenState extends State<ServersScreen> {
     );
   }
 
+  Future<void> _connectGuacamole(Server server) async {
+    final token = widget.authManager.sessionToken;
+    if (token == null) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Not authenticated'), behavior: SnackBarBehavior.floating),
+        );
+      }
+      return;
+    }
+
+    try {
+      await widget.sessionManager.createGuacSession(
+        token: token,
+        server: server,
+      );
+      if (!mounted) return;
+      widget.onSwitchToSessions?.call();
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Failed to connect: $e'), behavior: SnackBarBehavior.floating),
+        );
+      }
+    }
+  }
+
+  Future<void> _connectTerminal(Server server) async {
+    final token = widget.authManager.sessionToken;
+    if (token == null) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Not authenticated'), behavior: SnackBarBehavior.floating),
+        );
+      }
+      return;
+    }
+
+    try {
+      await widget.sessionManager.createTerminalSession(
+        token: token,
+        server: server,
+      );
+      if (!mounted) return;
+      widget.onSwitchToSessions?.call();
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Failed to connect: $e'), behavior: SnackBarBehavior.floating),
+        );
+      }
+    }
+  }
+
+  void _navigateToSessions() {
+    if (!widget.sessionManager.hasActiveSessions) return;
+    widget.onSwitchToSessions?.call();
+  }
+
+  Future<void> _connectSftp(Server server) async {
+    final token = widget.authManager.sessionToken;
+    if (token == null) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Not authenticated'), behavior: SnackBarBehavior.floating),
+        );
+      }
+      return;
+    }
+
+    try {
+      await widget.sessionManager.createSftpSession(
+        token: token,
+        server: server,
+      );
+      if (!mounted) return;
+      widget.onSwitchToSessions?.call();
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Failed to connect: $e'), behavior: SnackBarBehavior.floating),
+        );
+      }
+    }
+  }
+
   void _connectToServer(Server server) {
     if (server.isStopped) {
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('${server.name} is ${server.isPve ? "not running" : "offline"}'), behavior: SnackBarBehavior.floating));
       return;
     }
-    if (ServerService.isGuacamoleProtocol(server.protocol)) {
-      Navigator.push(context, MaterialPageRoute(builder: (_) => GuacamoleScreen(server: server, authManager: widget.authManager)));
+    if (ServerService.isGuacamoleProtocol(server.protocol) || server.type == 'pve-qemu') {
+      _connectGuacamole(server);
     } else {
       showModalBottomSheet(
         context: context,
@@ -339,10 +448,7 @@ class _ServersScreenState extends State<ServersScreen> {
                     subtitle: const Text('Open SSH terminal session'),
                     onTap: () {
                       Navigator.pop(ctx);
-                      Navigator.push(context, MaterialPageRoute(builder: (_) =>
-                          TerminalScreen(server: server,
-                              authManager: widget.authManager,
-                              snippetManager: widget.snippetManager)));
+                      _connectTerminal(server);
                     },
                   ),
                   ListTile(
@@ -354,9 +460,7 @@ class _ServersScreenState extends State<ServersScreen> {
                     subtitle: const Text('Browse and manage files'),
                     onTap: () {
                       Navigator.pop(ctx);
-                      Navigator.push(context, MaterialPageRoute(builder: (_) =>
-                          SftpScreen(server: server,
-                              authManager: widget.authManager)));
+                      _connectSftp(server);
                     },
                   ),
                   const SizedBox(height: 8),
