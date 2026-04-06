@@ -25,6 +25,9 @@ dependencies:
   native_glass_navbar: ^1.0.1
   guacamole_common_dart:
     path: packages/guacamole_common_dart
+  file_picker: ^8.0.0
+  path_provider: ^2.1.5
+  share_plus: ^12.0.2
 
 dev_dependencies:
   flutter_test:

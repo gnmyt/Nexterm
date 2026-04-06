@@ -9,6 +9,7 @@ import '../utils/snippet_manager.dart';
 import '../utils/folder_state_manager.dart';
 import 'terminal_screen.dart';
 import 'guacamole_screen.dart';
+import 'sftp_screen.dart';
 
 class ServersScreen extends StatefulWidget {
   final AuthManager authManager;
@@ -303,7 +304,66 @@ class _ServersScreenState extends State<ServersScreen> {
     if (ServerService.isGuacamoleProtocol(server.protocol)) {
       Navigator.push(context, MaterialPageRoute(builder: (_) => GuacamoleScreen(server: server, authManager: widget.authManager)));
     } else {
-      Navigator.push(context, MaterialPageRoute(builder: (_) => TerminalScreen(server: server, authManager: widget.authManager, snippetManager: widget.snippetManager)));
+      showModalBottomSheet(
+        context: context,
+        shape: const RoundedRectangleBorder(
+            borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
+        builder: (ctx) =>
+            SafeArea(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Container(
+                    margin: const EdgeInsets.only(top: 12),
+                    width: 40, height: 4,
+                    decoration: BoxDecoration(color: Theme
+                        .of(ctx)
+                        .colorScheme
+                        .outlineVariant,
+                        borderRadius: BorderRadius.circular(2)),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.all(16),
+                    child: Text('Connect to ${server.name}', style: Theme
+                        .of(ctx)
+                        .textTheme
+                        .titleMedium
+                        ?.copyWith(fontWeight: FontWeight.w600)),
+                  ),
+                  ListTile(
+                    leading: Icon(MdiIcons.consoleLine, color: Theme
+                        .of(ctx)
+                        .colorScheme
+                        .primary),
+                    title: const Text('Terminal'),
+                    subtitle: const Text('Open SSH terminal session'),
+                    onTap: () {
+                      Navigator.pop(ctx);
+                      Navigator.push(context, MaterialPageRoute(builder: (_) =>
+                          TerminalScreen(server: server,
+                              authManager: widget.authManager,
+                              snippetManager: widget.snippetManager)));
+                    },
+                  ),
+                  ListTile(
+                    leading: Icon(MdiIcons.folderOutline, color: Theme
+                        .of(ctx)
+                        .colorScheme
+                        .primary),
+                    title: const Text('SFTP'),
+                    subtitle: const Text('Browse and manage files'),
+                    onTap: () {
+                      Navigator.pop(ctx);
+                      Navigator.push(context, MaterialPageRoute(builder: (_) =>
+                          SftpScreen(server: server,
+                              authManager: widget.authManager)));
+                    },
+                  ),
+                  const SizedBox(height: 8),
+                ],
+              ),
+            ),
+      );
     }
   }
 
