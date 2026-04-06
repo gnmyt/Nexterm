@@ -8,6 +8,7 @@ import '../utils/auth_manager.dart';
 import '../utils/snippet_manager.dart';
 import '../utils/folder_state_manager.dart';
 import 'terminal_screen.dart';
+import 'guacamole_screen.dart';
 
 class ServersScreen extends StatefulWidget {
   final AuthManager authManager;
@@ -299,13 +300,20 @@ class _ServersScreenState extends State<ServersScreen> {
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('${server.name} is ${server.isPve ? "not running" : "offline"}'), behavior: SnackBarBehavior.floating));
       return;
     }
-    Navigator.push(context, MaterialPageRoute(builder: (_) => TerminalScreen(server: server, authManager: widget.authManager, snippetManager: widget.snippetManager)));
+    if (ServerService.isGuacamoleProtocol(server.protocol)) {
+      Navigator.push(context, MaterialPageRoute(builder: (_) => GuacamoleScreen(server: server, authManager: widget.authManager)));
+    } else {
+      Navigator.push(context, MaterialPageRoute(builder: (_) => TerminalScreen(server: server, authManager: widget.authManager, snippetManager: widget.snippetManager)));
+    }
   }
 
   IconData _getServerIcon(Server server) {
     if (server.type == 'pve-lxc') return MdiIcons.cubeOutline;
     if (server.type == 'pve-qemu') return MdiIcons.monitor;
     if (server.type == 'pve-shell') return MdiIcons.console;
+    final protocol = server.protocol?.toLowerCase();
+    if (protocol == 'rdp') return MdiIcons.microsoftWindows;
+    if (protocol == 'vnc') return MdiIcons.remoteDesktop;
     final icon = server.icon;
     if (icon == null || !icon.startsWith('mdi')) return MdiIcons.server;
     final camelName = icon.substring(3, 4).toLowerCase() + icon.substring(4);

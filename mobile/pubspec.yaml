@@ -23,6 +23,8 @@ dependencies:
   url_launcher: ^6.2.5
   dynamic_color: ^1.8.1
   native_glass_navbar: ^1.0.1
+  guacamole_common_dart:
+    path: packages/guacamole_common_dart
 
 dev_dependencies:
   flutter_test:

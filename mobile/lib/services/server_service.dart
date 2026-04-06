@@ -41,7 +41,7 @@ class ServerService {
         final filteredEntry = Map<String, dynamic>.from(entry);
         filteredEntry['entries'] = _filterEntries(entry['entries'] as List<dynamic>? ?? []);
         if ((filteredEntry['entries'] as List).isNotEmpty) filtered.add(filteredEntry);
-      } else if (type == 'server' && _isSSHServer(entry)) {
+      } else if (type == 'server' && _isSupportedServer(entry)) {
         filtered.add(entry);
       } else if (_isPveEntry(type)) {
         filtered.add(entry);
@@ -50,23 +50,18 @@ class ServerService {
     return filtered;
   }
 
-  static bool _isSSHServer(Map<String, dynamic> entry) {
-    final protocol = (entry['protocol'] as String?)?.toLowerCase();
-    final connectionType = (entry['connectionType'] as String?)?.toLowerCase();
-    final port = entry['port'] as int?;
-
-    if (protocol != null) {
-      if (['rdp', 'vnc', 'http', 'https'].contains(protocol)) return false;
-      if (protocol == 'ssh') return true;
-    }
-    if (connectionType != null) {
-      if (['rdp', 'vnc', 'http', 'https'].contains(connectionType)) return false;
-      if (connectionType == 'ssh') return true;
-    }
-    if (port != null) {
-      if (port == 3389 || port == 80 || port == 443) return false;
-      if (port >= 5900 && port <= 5999) return false;
-    }
+  static bool _isSupportedServer(Map<String, dynamic> entry) {
     return entry['type'] == 'server';
+  }
+
+  static bool isGuacamoleServer(Map<String, dynamic>? entry) {
+    if (entry == null) return false;
+    final protocol = (entry['protocol'] as String?)?.toLowerCase();
+    return protocol == 'rdp' || protocol == 'vnc';
+  }
+
+  static bool isGuacamoleProtocol(String? protocol) {
+    final p = protocol?.toLowerCase();
+    return p == 'rdp' || p == 'vnc';
   }
 }
