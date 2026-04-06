@@ -2160,10 +2160,10 @@ doctrine@^3.0.0:
   dependencies:
     esutils "^2.0.2"
 
-dotenv@^17.4.0:
-  version "17.4.0"
-  resolved "https://registry.yarnpkg.com/dotenv/-/dotenv-17.4.0.tgz#9a5de24d7112a889b4b179ffbe83933298c41d37"
-  integrity sha512-kCKF62fwtzwYm0IGBNjRUjtJgMfGapII+FslMHIjMR5KTnwEmBmWLDRSnc3XSNP8bNy34tekgQyDT0hr7pERRQ==
+dotenv@^17.4.1:
+  version "17.4.1"
+  resolved "https://registry.yarnpkg.com/dotenv/-/dotenv-17.4.1.tgz#d8e2179fe287365ef3aecb9459668454168eda88"
+  integrity sha512-k8DaKGP6r1G30Lx8V4+pCsLzKr8vLmV2paqEj1Y55GdAgJuIqpRp5FfajGF8KtwMxCz9qJc6wUIJnm053d/WCw==
 
 dottie@^2.0.6:
   version "2.0.6"
