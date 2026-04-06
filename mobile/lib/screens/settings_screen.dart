@@ -23,6 +23,17 @@ class _SettingsScreenState extends State<SettingsScreen> {
   String? _username;
   String? _fullName;
 
+  String _themeModeLabel(ThemeMode mode) {
+    switch (mode) {
+      case ThemeMode.system:
+        return 'System';
+      case ThemeMode.light:
+        return 'Light';
+      case ThemeMode.dark:
+        return 'Dark';
+    }
+  }
+
   @override
   void initState() {
     super.initState();
@@ -78,7 +89,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
               child: ListTile(
                 leading: CircleAvatar(child: Icon(MdiIcons.account)),
                 title: Text(_fullName ?? _username!),
-                subtitle: Text('@${ApiConfig.baseUrl.replaceAll(RegExp(r'https?://'), '').replaceAll('/api', '')}'),
+                subtitle: Text(
+                  '@${ApiConfig.baseUrl.replaceAll(RegExp(r'https?://'), '').replaceAll('/api', '')}',
+                ),
                 trailing: TextButton(
                   onPressed: _handleLogout,
                   child: const Text('Logout'),
@@ -92,13 +105,30 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 ListenableBuilder(
                   listenable: widget.themeManager,
                   builder: (context, child) {
+                    final selectedMode = widget.themeManager.themeMode;
+
                     return ListTile(
                       leading: Icon(MdiIcons.themeLightDark),
-                      title: const Text('Dark Mode'),
-                      trailing: Switch(
-                        value: widget.themeManager.isDarkMode,
-                        onChanged: (bool value) {
-                          widget.themeManager.toggleTheme(value);
+                      title: const Text('Theme'),
+                      subtitle: Text(_themeModeLabel(selectedMode)),
+                      trailing: SegmentedButton<ThemeMode>(
+                        segments: const <ButtonSegment<ThemeMode>>[
+                          ButtonSegment<ThemeMode>(
+                            value: ThemeMode.system,
+                            icon: Icon(Icons.settings_suggest),
+                          ),
+                          ButtonSegment<ThemeMode>(
+                            value: ThemeMode.light,
+                            icon: Icon(Icons.light_mode),
+                          ),
+                          ButtonSegment<ThemeMode>(
+                            value: ThemeMode.dark,
+                            icon: Icon(Icons.dark_mode),
+                          ),
+                        ],
+                        selected: <ThemeMode>{selectedMode},
+                        onSelectionChanged: (Set<ThemeMode> newSelection) {
+                          widget.themeManager.setThemeMode(newSelection.first);
                         },
                       ),
                     );

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:dynamic_color/dynamic_color.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'screens/device_setup_screen.dart';
 import 'screens/main_navigation_page.dart';
@@ -10,19 +11,21 @@ import 'utils/snippet_manager.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   final prefs = await SharedPreferences.getInstance();
-  final isDarkMode = prefs.getBool('isDarkMode') ?? false;
+  final themeMode = ThemeManager.parseStoredThemeMode(
+    prefs.getString('themeMode'),
+  );
   final isLoggedIn = prefs.getBool('isLoggedIn') ?? false;
 
   await ApiConfig.loadFromPrefs();
 
-  runApp(MyApp(isDarkMode: isDarkMode, isLoggedIn: isLoggedIn));
+  runApp(MyApp(themeMode: themeMode, isLoggedIn: isLoggedIn));
 }
 
 class MyApp extends StatefulWidget {
-  final bool isDarkMode;
+  final ThemeMode themeMode;
   final bool isLoggedIn;
 
-  const MyApp({super.key, required this.isDarkMode, required this.isLoggedIn});
+  const MyApp({super.key, required this.themeMode, required this.isLoggedIn});
 
   @override
   State<MyApp> createState() => _MyAppState();
@@ -36,7 +39,7 @@ class _MyAppState extends State<MyApp> {
   @override
   void initState() {
     super.initState();
-    _themeManager = ThemeManager(widget.isDarkMode);
+    _themeManager = ThemeManager(widget.themeMode);
     _authManager = AuthManager(widget.isLoggedIn);
     _snippetManager = SnippetManager();
 
@@ -77,12 +80,16 @@ class _MyAppState extends State<MyApp> {
     return ListenableBuilder(
       listenable: _themeManager,
       builder: (context, child) {
-        return MaterialApp(
-          title: 'Nexterm',
-          theme: ThemeManager.lightTheme,
-          darkTheme: ThemeManager.darkTheme,
-          themeMode: _themeManager.themeMode,
-          home: _determineInitialScreen(),
+        return DynamicColorBuilder(
+          builder: (lightDynamic, darkDynamic) {
+            return MaterialApp(
+              title: 'Nexterm',
+              theme: ThemeManager.lightTheme(colorScheme: lightDynamic),
+              darkTheme: ThemeManager.darkTheme(colorScheme: darkDynamic),
+              themeMode: _themeManager.themeMode,
+              home: _determineInitialScreen(),
+            );
+          },
         );
       },
     );

@@ -1,5 +1,8 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+import 'package:native_glass_navbar/native_glass_navbar.dart';
 import '../utils/theme_manager.dart';
 import '../utils/auth_manager.dart';
 import '../utils/snippet_manager.dart';
@@ -42,28 +45,51 @@ class _MainNavigationPageState extends State<MainNavigationPage> {
 
     return Scaffold(
       body: pages[_selectedIndex],
-      bottomNavigationBar: NavigationBar(
-        selectedIndex: _selectedIndex,
-        onDestinationSelected: (index) =>
-            setState(() => _selectedIndex = index),
-        destinations: [
-          NavigationDestination(
-            icon: Icon(Icons.dns_outlined),
-            selectedIcon: Icon(Icons.dns),
-            label: 'Servers',
-          ),
-          NavigationDestination(
-            icon: Icon(MdiIcons.chartBoxOutline),
-            selectedIcon: Icon(MdiIcons.chartBox),
-            label: 'Monitoring',
-          ),
-          NavigationDestination(
-            icon: Icon(MdiIcons.cogOutline),
-            selectedIcon: Icon(MdiIcons.cog),
-            label: 'Settings',
-          ),
-        ],
-      ),
+      bottomNavigationBar: _buildBottomNavigationBar(context),
+    );
+  }
+
+  Widget _buildBottomNavigationBar(BuildContext context) {
+    final materialNavigationBar = _buildMaterialNavigationBar();
+
+    if (!Platform.isIOS) {
+      return materialNavigationBar;
+    }
+
+    return NativeGlassNavBar(
+      currentIndex: _selectedIndex,
+      onTap: (index) => setState(() => _selectedIndex = index),
+      tintColor: Theme.of(context).colorScheme.primary,
+      fallback: materialNavigationBar,
+      tabs: const [
+        NativeGlassNavBarItem(label: 'Servers', symbol: 'network'),
+        NativeGlassNavBarItem(label: 'Monitoring', symbol: 'chart.bar'),
+        NativeGlassNavBarItem(label: 'Settings', symbol: 'gear'),
+      ],
+    );
+  }
+
+  Widget _buildMaterialNavigationBar() {
+    return NavigationBar(
+      selectedIndex: _selectedIndex,
+      onDestinationSelected: (index) => setState(() => _selectedIndex = index),
+      destinations: [
+        NavigationDestination(
+          icon: Icon(Icons.dns_outlined),
+          selectedIcon: Icon(Icons.dns),
+          label: 'Servers',
+        ),
+        NavigationDestination(
+          icon: Icon(MdiIcons.chartBoxOutline),
+          selectedIcon: Icon(MdiIcons.chartBox),
+          label: 'Monitoring',
+        ),
+        NavigationDestination(
+          icon: Icon(MdiIcons.cogOutline),
+          selectedIcon: Icon(MdiIcons.cog),
+          label: 'Settings',
+        ),
+      ],
     );
   }
 }

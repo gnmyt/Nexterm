@@ -21,6 +21,8 @@ dependencies:
   google_fonts: ^6.2.1
   material_design_icons_flutter: ^7.0.7296
   url_launcher: ^6.2.5
+  dynamic_color: ^1.8.1
+  native_glass_navbar: ^1.0.1
 
 dev_dependencies:
   flutter_test:
@@ -37,6 +39,7 @@ flutter_launcher_icons:
   android: true
   ios: true
   image_path: "favicon.png"
+  image_path_ios: "assets/icons/ios_app_icon.png"
   remove_alpha_ios: true
   adaptive_icon_background: "#FFFFFF"
   adaptive_icon_foreground: "favicon.png"
