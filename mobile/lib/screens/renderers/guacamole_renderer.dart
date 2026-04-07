@@ -6,18 +6,21 @@ import 'package:guacamole_common_dart/guacamole_common_dart.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 
 import '../../services/session_manager.dart';
+import '../widgets/connection_loader.dart';
 
 enum MouseMode { direct, virtualMouse }
 
 class GuacamoleRenderer extends StatefulWidget {
   final AppSession session;
   final String token;
+  final SessionManager sessionManager;
   final VoidCallback? onDisconnected;
 
   const GuacamoleRenderer({
     super.key,
     required this.session,
     required this.token,
+    required this.sessionManager,
     this.onDisconnected,
   });
 
@@ -57,6 +60,8 @@ class _GuacamoleRendererState extends State<GuacamoleRenderer> {
   final FocusNode _keyboardFocusNode = FocusNode();
   final TextEditingController _keyboardController = TextEditingController();
   bool _keyboardVisible = false;
+  int _reconnectAttempts = 0;
+  static const int _maxReconnectAttempts = 5;
 
   static const _ks = (
     escape: 0xFF1B, tab: 0xFF09, enter: 0xFF0D, backspace: 0xFF08,
@@ -69,6 +74,9 @@ class _GuacamoleRendererState extends State<GuacamoleRenderer> {
   void initState() {
     super.initState();
     widget.session.showMenu = _showToolMenu;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      widget.session.onCallbacksReady?.call();
+    });
     _connect();
   }
 
@@ -79,6 +87,33 @@ class _GuacamoleRendererState extends State<GuacamoleRenderer> {
     _keyboardController.dispose();
     _repaint.dispose();
     super.dispose();
+  }
+
+  Future<void> _attemptReconnect() async {
+    if (!mounted || _reconnectAttempts >= _maxReconnectAttempts) {
+      widget.onDisconnected?.call();
+      return;
+    }
+
+    _reconnectAttempts++;
+    final delay = Duration(seconds: _reconnectAttempts.clamp(1, 5));
+    await Future.delayed(delay);
+
+    if (!mounted) return;
+
+    final success = await widget.sessionManager.reconnectGuacSession(
+      token: widget.token,
+      session: widget.session,
+    );
+
+    if (!mounted) return;
+
+    if (success) {
+      _initialSizeSent = false;
+      _connect();
+    } else {
+      _attemptReconnect();
+    }
   }
 
   Future<void> _connect() async {
@@ -104,11 +139,14 @@ class _GuacamoleRendererState extends State<GuacamoleRenderer> {
             state == ClientState.connected || state == ClientState.waiting;
         setState(() => _connected = connected);
         session.isConnected = connected;
-        if (state == ClientState.connected) _sendDisplaySize();
+        if (state == ClientState.connected) {
+          _sendDisplaySize();
+          _reconnectAttempts = 0;
+        }
         if (state == ClientState.disconnected) {
           setState(() => _connected = false);
           session.isConnected = false;
-          widget.onDisconnected?.call();
+          _attemptReconnect();
         }
       };
       _client!.onerror = (status) {
@@ -558,6 +596,9 @@ class _GuacamoleRendererState extends State<GuacamoleRenderer> {
             return Container(color: Colors.black, child: _buildDisplay());
           }),
         ),
+        Positioned.fill(
+          child: ConnectionLoader(visible: !_connected && _error == null),
+        ),
 
         Positioned(
           left: -100,
@@ -611,17 +652,6 @@ class _GuacamoleRendererState extends State<GuacamoleRenderer> {
   }
 
   Widget _buildDisplay() {
-    if (!_connected && _error == null) {
-      return const Center(
-          child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-            CircularProgressIndicator(),
-            SizedBox(height: 16),
-            Text('Connecting...',
-                style: TextStyle(color: Colors.white70)),
-          ]));
-    }
     return Listener(
       onPointerDown: _onPointerDown,
       onPointerMove: _onPointerMove,

@@ -36,6 +36,8 @@ class AppSession {
 
   VoidCallback? showAI;
 
+  VoidCallback? onCallbacksReady;
+
   AppSession({
     required this.sessionId,
     required this.server,
@@ -326,6 +328,81 @@ class SessionManager extends ChangeNotifier {
       _activeSessionId = _sessions.isNotEmpty ? _sessions.keys.last : null;
     }
     notifyListeners();
+  }
+
+  Future<bool> reconnectTerminalSession({
+    required String token,
+    required AppSession session,
+  }) async {
+    try {
+      session.termSubscription?.cancel();
+      session.termSubscription = null;
+
+      final identityId = session.server.identities?.isNotEmpty == true
+          ? session.server.identities!.first
+          : null;
+
+      final queryParams = <String, String>{
+        'sessionToken': token,
+        'entryId': session.server.id.toString(),
+        'sessionId': session.sessionId,
+        if (identityId != null) 'identityId': identityId.toString(),
+      };
+
+      final channel = IOWebSocketChannel.connect(
+        Uri.parse(ApiClient.buildWebSocketUrl('/ws/term', queryParams: queryParams)),
+        headers: {'User-Agent': ApiClient.userAgent},
+      );
+
+      session.termChannel = channel;
+      notifyListeners();
+      return true;
+    } catch (_) {
+      return false;
+    }
+  }
+
+  Future<bool> reconnectSftpSession({
+    required String token,
+    required AppSession session,
+  }) async {
+    try {
+      session.sftpSubscription?.cancel();
+      session.sftpSubscription = null;
+
+      final queryParams = <String, String>{
+        'sessionToken': token,
+        'sessionId': session.sessionId,
+      };
+
+      final channel = IOWebSocketChannel.connect(
+        Uri.parse(ApiClient.buildWebSocketUrl('/ws/sftp', queryParams: queryParams)),
+        headers: {'User-Agent': ApiClient.userAgent},
+      );
+
+      session.sftpChannel = channel;
+      notifyListeners();
+      return true;
+    } catch (_) {
+      return false;
+    }
+  }
+
+  Future<bool> reconnectGuacSession({
+    required String token,
+    required AppSession session,
+  }) async {
+    try {
+      final tunnel = GuacWebSocketTunnel(ApiClient.buildWebSocketUrl('/ws/guac/'));
+      final client = GuacClient(tunnel);
+
+      session.guacTunnel = tunnel;
+      session.guacClient = client;
+      notifyListeners();
+      return true;
+    } catch (_) {
+      return false;
+    }
   }
 
   Future<void> closeAll(String token) async {

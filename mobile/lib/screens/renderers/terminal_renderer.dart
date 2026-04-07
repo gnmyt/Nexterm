@@ -11,10 +11,12 @@ import '../../utils/ai_manager.dart';
 import '../../utils/snippet_manager.dart';
 import '../../utils/terminal_settings.dart';
 import '../widgets/ai_command_sheet.dart';
+import '../widgets/connection_loader.dart';
 
 class TerminalRenderer extends StatefulWidget {
   final AppSession session;
   final String token;
+  final SessionManager sessionManager;
   final SnippetManager snippetManager;
   final TerminalSettings terminalSettings;
   final AIManager aiManager;
@@ -24,6 +26,7 @@ class TerminalRenderer extends StatefulWidget {
     super.key,
     required this.session,
     required this.token,
+    required this.sessionManager,
     required this.snippetManager,
     required this.terminalSettings,
     required this.aiManager,
@@ -44,6 +47,8 @@ class _TerminalRendererState extends State<TerminalRenderer> {
   bool _ctrlPressed = false;
   bool _altPressed = false;
   bool _initialized = false;
+  int _reconnectAttempts = 0;
+  static const int _maxReconnectAttempts = 5;
 
   @override
   void initState() {
@@ -51,6 +56,9 @@ class _TerminalRendererState extends State<TerminalRenderer> {
     _terminalFocusNode.addListener(_onFocusChanged);
     widget.session.showSnippets = _showSnippets;
     widget.session.showAI = _showAISheet;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      widget.session.onCallbacksReady?.call();
+    });
     _setupTerminal();
   }
 
@@ -88,7 +96,6 @@ class _TerminalRendererState extends State<TerminalRenderer> {
     };
 
     if (widget.session.termSubscription == null) {
-      _terminal.write('Connecting to ${widget.session.server.name}...\r\n');
       widget.session.termSubscription = _channel?.stream.listen(
         (data) {
           if (data is String) {
@@ -97,20 +104,19 @@ class _TerminalRendererState extends State<TerminalRenderer> {
         },
         onError: (error) {
           if (mounted) setState(() { _errorMessage = 'Connection error: $error'; _connected = false; });
-          _terminal.write('\r\nConnection error: $error\r\n');
           widget.session.isConnected = false;
-          widget.onDisconnected?.call();
+          _attemptReconnect();
         },
         onDone: () {
           if (mounted) setState(() => _connected = false);
-          _terminal.write('\r\nConnection closed\r\n');
           widget.session.isConnected = false;
-          widget.onDisconnected?.call();
+          _attemptReconnect();
         },
       );
 
       if (mounted) setState(() => _connected = true);
       widget.session.isConnected = true;
+      _reconnectAttempts = 0;
 
       Future.delayed(const Duration(milliseconds: 100), () {
         if (_channel == null) return;
@@ -128,6 +134,37 @@ class _TerminalRendererState extends State<TerminalRenderer> {
     _terminalFocusNode.removeListener(_onFocusChanged);
     _terminalFocusNode.dispose();
     super.dispose();
+  }
+
+  Future<void> _attemptReconnect() async {
+    if (!mounted || _reconnectAttempts >= _maxReconnectAttempts) {
+      widget.onDisconnected?.call();
+      return;
+    }
+
+    _reconnectAttempts++;
+    final delay = Duration(seconds: _reconnectAttempts.clamp(1, 5));
+    await Future.delayed(delay);
+
+    if (!mounted) return;
+
+    final success = await widget.sessionManager.reconnectTerminalSession(
+      token: widget.token,
+      session: widget.session,
+    );
+
+    if (!mounted) return;
+
+    if (success) {
+      _initialized = false;
+      widget.session.termSubscription = null;
+      setState(() {
+        _errorMessage = null;
+      });
+      _setupTerminal();
+    } else {
+      _attemptReconnect();
+    }
   }
 
   void _sendSpecialKey(String key) {
@@ -313,6 +350,9 @@ class _TerminalRendererState extends State<TerminalRenderer> {
                   if (_showKeyboardToolbar) _buildKeyboardToolbar(),
                 ],
               ),
+            ),
+            Positioned.fill(
+              child: ConnectionLoader(visible: !_connected && _errorMessage == null),
             ),
           ],
         );

@@ -244,18 +244,21 @@ class _ActiveSessionsScreenState extends State<ActiveSessionsScreen> {
 
   Widget _buildRenderer(AppSession session) {
     final token = widget.authManager.sessionToken ?? '';
+    session.onCallbacksReady = _onChanged;
     switch (session.type) {
       case ConnectionType.guacamole:
         return GuacamoleRenderer(
           key: ValueKey('guac_${session.sessionId}'),
           session: session,
           token: token,
+          sessionManager: widget.sessionManager,
         );
       case ConnectionType.terminal:
         return TerminalRenderer(
           key: ValueKey('term_${session.sessionId}'),
           session: session,
           token: token,
+          sessionManager: widget.sessionManager,
           snippetManager: widget.snippetManager,
           aiManager: widget.aiManager,
           terminalSettings: widget.terminalSettings,
@@ -265,6 +268,7 @@ class _ActiveSessionsScreenState extends State<ActiveSessionsScreen> {
           key: ValueKey('sftp_${session.sessionId}'),
           session: session,
           token: token,
+          sessionManager: widget.sessionManager,
           sftpSettings: widget.sftpSettings,
         );
     }
