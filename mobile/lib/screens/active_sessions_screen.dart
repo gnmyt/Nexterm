@@ -4,6 +4,8 @@ import 'package:material_design_icons_flutter/material_design_icons_flutter.dart
 import '../services/session_manager.dart';
 import '../utils/auth_manager.dart';
 import '../utils/snippet_manager.dart';
+import '../utils/terminal_settings.dart';
+import '../utils/sftp_settings.dart';
 import 'renderers/guacamole_renderer.dart';
 import 'renderers/sftp_renderer.dart';
 import 'renderers/terminal_renderer.dart';
@@ -12,6 +14,8 @@ class ActiveSessionsScreen extends StatefulWidget {
   final SessionManager sessionManager;
   final AuthManager authManager;
   final SnippetManager snippetManager;
+  final TerminalSettings terminalSettings;
+  final SftpSettings sftpSettings;
   final VoidCallback? onExitFullscreen;
 
   const ActiveSessionsScreen({
@@ -19,6 +23,8 @@ class ActiveSessionsScreen extends StatefulWidget {
     required this.sessionManager,
     required this.authManager,
     required this.snippetManager,
+    required this.terminalSettings,
+    required this.sftpSettings,
     this.onExitFullscreen,
   });
 
@@ -233,12 +239,14 @@ class _ActiveSessionsScreenState extends State<ActiveSessionsScreen> {
           session: session,
           token: token,
           snippetManager: widget.snippetManager,
+          terminalSettings: widget.terminalSettings,
         );
       case ConnectionType.sftp:
         return SftpRenderer(
           key: ValueKey('sftp_${session.sessionId}'),
           session: session,
           token: token,
+          sftpSettings: widget.sftpSettings,
         );
     }
   }

@@ -8,6 +8,8 @@ import '../services/session_manager.dart';
 import '../utils/theme_manager.dart';
 import '../utils/auth_manager.dart';
 import '../utils/snippet_manager.dart';
+import '../utils/terminal_settings.dart';
+import '../utils/sftp_settings.dart';
 import 'servers_screen.dart';
 import 'active_sessions_screen.dart';
 import 'monitoring_screen.dart';
@@ -18,6 +20,8 @@ class MainNavigationPage extends StatefulWidget {
   final AuthManager authManager;
   final SnippetManager snippetManager;
   final SessionManager sessionManager;
+  final TerminalSettings terminalSettings;
+  final SftpSettings sftpSettings;
 
   const MainNavigationPage({
     super.key,
@@ -25,6 +29,8 @@ class MainNavigationPage extends StatefulWidget {
     required this.authManager,
     required this.snippetManager,
     required this.sessionManager,
+    required this.terminalSettings,
+    required this.sftpSettings,
   });
 
   @override
@@ -50,8 +56,12 @@ class _MainNavigationPageState extends State<MainNavigationPage> {
   void _onSessionsChanged() {
     if (!mounted) return;
 
-    if (!widget.sessionManager.hasActiveSessions && _selectedIndex == 1) {
-      _selectedIndex = 0;
+    if (!widget.sessionManager.hasActiveSessions) {
+      if (_selectedIndex == 1) {
+        _selectedIndex = 0;
+      } else if (_selectedIndex > 1) {
+        _selectedIndex -= 1;
+      }
     }
     setState(() {});
   }
@@ -61,10 +71,6 @@ class _MainNavigationPageState extends State<MainNavigationPage> {
   @override
   Widget build(BuildContext context) {
     final hasSessions = _hasSessions;
-
-    if (!hasSessions && _selectedIndex > 0) {
-      if (_selectedIndex > 2) _selectedIndex = 0;
-    }
 
     final List<Widget> pages = [
       ServersScreen(
@@ -80,12 +86,16 @@ class _MainNavigationPageState extends State<MainNavigationPage> {
           sessionManager: widget.sessionManager,
           authManager: widget.authManager,
           snippetManager: widget.snippetManager,
+          terminalSettings: widget.terminalSettings,
+          sftpSettings: widget.sftpSettings,
           onExitFullscreen: () => setState(() => _selectedIndex = 0),
         ),
       MonitoringScreen(key: _monitoringKey, authManager: widget.authManager),
       SettingsScreen(
         themeManager: widget.themeManager,
         authManager: widget.authManager,
+        terminalSettings: widget.terminalSettings,
+        sftpSettings: widget.sftpSettings,
       ),
     ];
 

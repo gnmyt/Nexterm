@@ -8,11 +8,13 @@ import 'package:xterm/xterm.dart';
 
 import '../../services/session_manager.dart';
 import '../../utils/snippet_manager.dart';
+import '../../utils/terminal_settings.dart';
 
 class TerminalRenderer extends StatefulWidget {
   final AppSession session;
   final String token;
   final SnippetManager snippetManager;
+  final TerminalSettings terminalSettings;
   final VoidCallback? onDisconnected;
 
   const TerminalRenderer({
@@ -20,6 +22,7 @@ class TerminalRenderer extends StatefulWidget {
     required this.session,
     required this.token,
     required this.snippetManager,
+    required this.terminalSettings,
     this.onDisconnected,
   });
 
@@ -159,6 +162,16 @@ class _TerminalRendererState extends State<TerminalRenderer> {
     }
   }
 
+  void _sendFunctionKey(int n) {
+    const fnKeys = <int, String>{
+      1: '\x1bOP', 2: '\x1bOQ', 3: '\x1bOR', 4: '\x1bOS',
+      5: '\x1b[15~', 6: '\x1b[17~', 7: '\x1b[18~', 8: '\x1b[19~',
+      9: '\x1b[20~', 10: '\x1b[21~', 11: '\x1b[23~', 12: '\x1b[24~',
+    };
+    final seq = fnKeys[n];
+    if (seq != null) _channel?.sink.add(seq);
+  }
+
   void _showSnippets() {
     if (!mounted) return;
     final sm = widget.snippetManager;
@@ -232,33 +245,39 @@ class _TerminalRendererState extends State<TerminalRenderer> {
 
   @override
   Widget build(BuildContext context) {
-    return Stack(
-      children: [
-        Positioned.fill(
-          child: Column(
-            children: [
-              if (_errorMessage != null) _errorBanner(),
-              Expanded(
-                child: GestureDetector(
-                  onTap: () => _terminalFocusNode.requestFocus(),
-                  child: TerminalView(
-                    _terminal,
-                    textStyle: TerminalStyle(
-                      fontSize: 13,
-                      fontFamily: GoogleFonts.jetBrainsMono().fontFamily ?? 'monospace',
-                      height: 1.2,
+    return ListenableBuilder(
+      listenable: widget.terminalSettings,
+      builder: (context, child) {
+        return Stack(
+          children: [
+            Positioned.fill(
+              child: Column(
+                children: [
+                  if (_errorMessage != null) _errorBanner(),
+                  Expanded(
+                    child: GestureDetector(
+                      onTap: () => _terminalFocusNode.requestFocus(),
+                      child: TerminalView(
+                        _terminal,
+                        theme: widget.terminalSettings.colorTheme.theme,
+                        textStyle: TerminalStyle(
+                          fontSize: widget.terminalSettings.fontSize,
+                          fontFamily: GoogleFonts.jetBrainsMono().fontFamily ?? 'monospace',
+                          height: 1.2,
+                        ),
+                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                        focusNode: _terminalFocusNode,
+                        autofocus: true,
+                      ),
                     ),
-                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                    focusNode: _terminalFocusNode,
-                    autofocus: true,
                   ),
-                ),
+                  if (_showKeyboardToolbar) _buildKeyboardToolbar(),
+                ],
               ),
-              if (_showKeyboardToolbar) _buildKeyboardToolbar(),
-            ],
-          ),
-        ),
-      ],
+            ),
+          ],
+        );
+      },
     );
   }
 
@@ -276,6 +295,7 @@ class _TerminalRendererState extends State<TerminalRenderer> {
   }
 
   Widget _buildKeyboardToolbar() {
+    final ts = widget.terminalSettings;
     return Container(
       decoration: BoxDecoration(
         color: Theme.of(context).colorScheme.surfaceContainer,
@@ -290,24 +310,50 @@ class _TerminalRendererState extends State<TerminalRenderer> {
             child: Row(children: [
               _toolbarBtn('ESC'), const SizedBox(width: 8),
               _toolbarBtn('TAB'), const SizedBox(width: 8),
-              _toolbarBtn('CTRL', isToggle: true, isActive: _ctrlPressed), const SizedBox(width: 8),
-              _toolbarBtn('ALT', isToggle: true, isActive: _altPressed), const SizedBox(width: 16),
-              _toolbarBtn('^C', onPressed: () => _channel?.sink.add('\x03'), compact: true), const SizedBox(width: 8),
-              _toolbarBtn('^Z', onPressed: () => _channel?.sink.add('\x1a'), compact: true), const SizedBox(width: 8),
-              _toolbarBtn('^D', onPressed: () => _channel?.sink.add('\x04'), compact: true), const SizedBox(width: 16),
-              _toolbarBtn('↑', onPressed: () => _sendSpecialKey('UP'), compact: true), const SizedBox(width: 8),
-              _toolbarBtn('↓', onPressed: () => _sendSpecialKey('DOWN'), compact: true), const SizedBox(width: 8),
-              _toolbarBtn('←', onPressed: () => _sendSpecialKey('LEFT'), compact: true), const SizedBox(width: 8),
-              _toolbarBtn('→', onPressed: () => _sendSpecialKey('RIGHT'), compact: true), const SizedBox(width: 16),
-              _toolbarBtn('HOME', compact: true), const SizedBox(width: 8),
-              _toolbarBtn('END', compact: true), const SizedBox(width: 8),
-              _toolbarBtn('PGUP', compact: true), const SizedBox(width: 8),
-              _toolbarBtn('PGDN', compact: true),
+              for (final group in ts.groupOrder)
+                if (ts.isGroupEnabled(group)) ..._buildGroupButtons(group),
             ]),
           ),
         ),
       ),
     );
+  }
+
+  List<Widget> _buildGroupButtons(ToolbarGroup group) {
+    switch (group) {
+      case ToolbarGroup.modifiers:
+        return [
+          _toolbarBtn('CTRL', isToggle: true, isActive: _ctrlPressed), const SizedBox(width: 8),
+          _toolbarBtn('ALT', isToggle: true, isActive: _altPressed), const SizedBox(width: 16),
+        ];
+      case ToolbarGroup.signals:
+        return [
+          _toolbarBtn('^C', onPressed: () => _channel?.sink.add('\x03'), compact: true), const SizedBox(width: 8),
+          _toolbarBtn('^Z', onPressed: () => _channel?.sink.add('\x1a'), compact: true), const SizedBox(width: 8),
+          _toolbarBtn('^D', onPressed: () => _channel?.sink.add('\x04'), compact: true), const SizedBox(width: 16),
+        ];
+      case ToolbarGroup.arrows:
+        return [
+          _toolbarBtn('↑', onPressed: () => _sendSpecialKey('UP'), compact: true), const SizedBox(width: 8),
+          _toolbarBtn('↓', onPressed: () => _sendSpecialKey('DOWN'), compact: true), const SizedBox(width: 8),
+          _toolbarBtn('←', onPressed: () => _sendSpecialKey('LEFT'), compact: true), const SizedBox(width: 8),
+          _toolbarBtn('→', onPressed: () => _sendSpecialKey('RIGHT'), compact: true), const SizedBox(width: 16),
+        ];
+      case ToolbarGroup.navigation:
+        return [
+          _toolbarBtn('HOME', compact: true), const SizedBox(width: 8),
+          _toolbarBtn('END', compact: true), const SizedBox(width: 8),
+          _toolbarBtn('PGUP', compact: true), const SizedBox(width: 8),
+          _toolbarBtn('PGDN', compact: true), const SizedBox(width: 16),
+        ];
+      case ToolbarGroup.functionKeys:
+        return [
+          for (int i = 1; i <= 12; i++) ...[
+            _toolbarBtn('F$i', onPressed: () => _sendFunctionKey(i), compact: true),
+            if (i < 12) const SizedBox(width: 8),
+          ],
+        ];
+    }
   }
 
   Widget _toolbarBtn(String label, {VoidCallback? onPressed, bool isToggle = false, bool isActive = false, bool compact = false}) {

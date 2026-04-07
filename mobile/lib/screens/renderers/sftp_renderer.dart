@@ -14,6 +14,7 @@ import '../../models/sftp_entry.dart';
 import '../../services/api_config.dart';
 import '../../services/session_manager.dart';
 import '../../utils/api_client.dart';
+import '../../utils/sftp_settings.dart';
 
 class _SftpOps {
   static const int ready = 0x0;
@@ -28,12 +29,14 @@ class _SftpOps {
 class SftpRenderer extends StatefulWidget {
   final AppSession session;
   final String token;
+  final SftpSettings sftpSettings;
   final VoidCallback? onDisconnected;
 
   const SftpRenderer({
     super.key,
     required this.session,
     required this.token,
+    required this.sftpSettings,
     this.onDisconnected,
   });
 
@@ -160,12 +163,19 @@ class _SftpRendererState extends State<SftpRenderer> {
       final decoded = json.decode(jsonPayload);
       final List<dynamic> files =
           decoded is List ? decoded : (decoded['files'] ?? []);
-      final entries = files
+      var entries = files
           .map((e) => SftpEntry.fromJson(e as Map<String, dynamic>))
           .toList();
+
+      if (!widget.sftpSettings.showHiddenFiles) {
+        entries = entries.where((e) => !e.name.startsWith('.')).toList();
+      }
+
       entries.sort((a, b) {
-        if (a.isDir && !b.isDir) return -1;
-        if (!a.isDir && b.isDir) return 1;
+        if (widget.sftpSettings.sortFoldersFirst) {
+          if (a.isDir && !b.isDir) return -1;
+          if (!a.isDir && b.isDir) return 1;
+        }
         return a.name.toLowerCase().compareTo(b.name.toLowerCase());
       });
       setState(() {
@@ -292,6 +302,10 @@ class _SftpRendererState extends State<SftpRenderer> {
   }
 
   void _showDeleteConfirmation(List<SftpEntry> entries) {
+    if (!widget.sftpSettings.confirmBeforeDelete) {
+      _performDelete(entries);
+      return;
+    }
     final count = entries.length;
     showDialog(
       context: context,
@@ -307,13 +321,7 @@ class _SftpRendererState extends State<SftpRenderer> {
               backgroundColor: Theme.of(ctx).colorScheme.error,
             ),
             onPressed: () {
-              for (final entry in entries) {
-                final path = _remotePath(entry.name);
-                _sendOperation(
-                  entry.isDir ? _SftpOps.deleteFolder : _SftpOps.deleteFile,
-                  {'path': path},
-                );
-              }
+              _performDelete(entries);
               Navigator.pop(ctx);
             },
             child: const Text('Delete'),
@@ -321,6 +329,16 @@ class _SftpRendererState extends State<SftpRenderer> {
         ],
       ),
     );
+  }
+
+  void _performDelete(List<SftpEntry> entries) {
+    for (final entry in entries) {
+      final path = _remotePath(entry.name);
+      _sendOperation(
+        entry.isDir ? _SftpOps.deleteFolder : _SftpOps.deleteFile,
+        {'path': path},
+      );
+    }
   }
 
   void _showCreateFolderDialog() {
