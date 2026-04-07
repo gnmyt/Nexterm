@@ -23,6 +23,13 @@ dependencies:
   url_launcher: ^6.2.5
   dynamic_color: ^1.8.1
   native_glass_navbar: ^1.0.1
+  guacamole_common_dart:
+    path: packages/guacamole_common_dart
+  file_picker: ^8.0.0
+  path_provider: ^2.1.5
+  share_plus: ^12.0.2
+  open_filex: ^4.6.0
+  speech_to_text: ^7.0.0
 
 dev_dependencies:
   flutter_test:
