@@ -28,14 +28,16 @@ class _AICommandSheetState extends State<AICommandSheet> with TickerProviderStat
   String? _error;
   bool _hasInput = false, _speechOk = false, _listening = false;
 
-  late final _pulse = AnimationController(vsync: this, duration: const Duration(milliseconds: 1000))
-    ..addListener(() => setState(() {}));
-  late final _shimmer = AnimationController(vsync: this, duration: const Duration(milliseconds: 1500))
-    ..repeat();
+  late final AnimationController _pulse;
+  late final AnimationController _shimmer;
 
   @override
   void initState() {
     super.initState();
+    _pulse = AnimationController(vsync: this, duration: const Duration(milliseconds: 1000))
+      ..addListener(() { if (mounted) setState(() {}); });
+    _shimmer = AnimationController(vsync: this, duration: const Duration(milliseconds: 1500))
+      ..repeat();
     _prompt.addListener(() {
       final has = _prompt.text.trim().isNotEmpty;
       if (has != _hasInput) setState(() => _hasInput = has);
@@ -55,8 +57,10 @@ class _AICommandSheetState extends State<AICommandSheet> with TickerProviderStat
   }
 
   void _stopListening() {
-    setState(() => _listening = false);
-    _pulse..stop()..reset();
+    _listening = false;
+    _pulse.stop();
+    _pulse.reset();
+    if (mounted) setState(() {});
   }
 
   void _toggleListening() {
@@ -118,9 +122,9 @@ class _AICommandSheetState extends State<AICommandSheet> with TickerProviderStat
 
   @override
   void dispose() {
+    if (_listening) _speech.stop();
     _prompt.dispose(); _command.dispose(); _focus.dispose();
     _pulse.dispose(); _shimmer.dispose();
-    if (_listening) _speech.stop();
     super.dispose();
   }
 

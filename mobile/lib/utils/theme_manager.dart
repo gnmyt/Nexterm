@@ -86,11 +86,22 @@ class ThemeManager extends ChangeNotifier {
     await setThemeMode(isDark ? ThemeMode.dark : ThemeMode.light);
   }
 
+  static const _pageTransitions = PageTransitionsTheme(
+    builders: {
+      TargetPlatform.android: FadeUpwardsPageTransitionsBuilder(),
+      TargetPlatform.iOS: CupertinoPageTransitionsBuilder(),
+      TargetPlatform.linux: FadeUpwardsPageTransitionsBuilder(),
+      TargetPlatform.macOS: CupertinoPageTransitionsBuilder(),
+      TargetPlatform.windows: FadeUpwardsPageTransitionsBuilder(),
+    },
+  );
+
   ThemeData lightTheme({ColorScheme? dynamicColorScheme}) => ThemeData(
     colorScheme: (_useDynamicColor && dynamicColorScheme != null)
         ? dynamicColorScheme
         : ColorScheme.fromSeed(seedColor: _accentColor),
     useMaterial3: true,
+    pageTransitionsTheme: _pageTransitions,
   );
 
   ThemeData darkTheme({ColorScheme? dynamicColorScheme}) => ThemeData(
@@ -98,5 +109,6 @@ class ThemeManager extends ChangeNotifier {
         ? dynamicColorScheme
         : ColorScheme.fromSeed(seedColor: _accentColor, brightness: Brightness.dark),
     useMaterial3: true,
+    pageTransitionsTheme: _pageTransitions,
   );
 }

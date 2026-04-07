@@ -22,8 +22,8 @@ class ServersScreen extends StatefulWidget {
 }
 
 class _ServersScreenState extends State<ServersScreen> {
-  List<ServerFolder> folders = [];
-  List<ServerFolder> filteredFolders = [];
+  List<dynamic> folders = [];
+  List<dynamic> filteredFolders = [];
   bool isLoading = true;
   String? errorMessage;
   FolderStateManager? _folderState;
@@ -35,10 +35,18 @@ class _ServersScreenState extends State<ServersScreen> {
   final Set<int> _selectedTags = {};
   List<Tag> _allTags = [];
 
-  int get _totalServers => folders.fold(0, (sum, f) => sum + _countServers(f));
-  int _countServers(ServerFolder f) => f.allServers.length + f.allFolders.fold(0, (sum, sf) => sum + _countServers(sf));
-  int get _onlineServers => folders.fold(0, (sum, f) => sum + _countOnline(f));
-  int _countOnline(ServerFolder f) => f.allServers.where((s) => s.isRunning).length + f.allFolders.fold(0, (sum, sf) => sum + _countOnline(sf));
+  int get _totalServers => folders.fold(0, (sum, item) => sum + _countServers(item));
+  int _countServers(dynamic item) {
+    if (item is Server) return 1;
+    if (item is ServerFolder) return item.allServers.length + item.allFolders.fold(0, (sum, sf) => sum + _countServers(sf));
+    return 0;
+  }
+  int get _onlineServers => folders.fold(0, (sum, item) => sum + _countOnline(item));
+  int _countOnline(dynamic item) {
+    if (item is Server) return item.isRunning ? 1 : 0;
+    if (item is ServerFolder) return item.allServers.where((s) => s.isRunning).length + item.allFolders.fold(0, (sum, sf) => sum + _countOnline(sf));
+    return 0;
+  }
 
   @override
   void initState() {
@@ -83,14 +91,16 @@ class _ServersScreenState extends State<ServersScreen> {
     }
   }
 
-  List<Tag> _collectTags(List<ServerFolder> list) {
+  List<Tag> _collectTags(List<dynamic> list) {
     final map = <int, Tag>{};
-    for (final f in list) {
-      for (final s in f.allServers) {
-        for (final t in s.tags ?? <Tag>[]) { map[t.id] = t; }
-      }
-      for (final sf in f.allFolders) {
-        for (final t in _collectTags([sf])) { map[t.id] = t; }
+    for (final item in list) {
+      if (item is Server) {
+        for (final t in item.tags ?? <Tag>[]) { map[t.id] = t; }
+      } else if (item is ServerFolder) {
+        for (final s in item.allServers) {
+          for (final t in s.tags ?? <Tag>[]) { map[t.id] = t; }
+        }
+        for (final t in _collectTags(item.allFolders)) { map[t.id] = t; }
       }
     }
     return map.values.toList()..sort((a, b) => a.name.compareTo(b.name));
@@ -100,7 +110,18 @@ class _ServersScreenState extends State<ServersScreen> {
 
   void _filterFolders() {
     if (_query.isEmpty && _selectedTags.isEmpty) { filteredFolders = List.from(folders); return; }
-    filteredFolders = folders.map(_filterFolder).whereType<ServerFolder>().toList();
+    filteredFolders = folders.map((item) {
+      if (item is ServerFolder) return _filterFolder(item);
+      if (item is Server) return _serverMatches(item) ? item : null;
+      return null;
+    }).where((e) => e != null).toList();
+  }
+
+  bool _serverMatches(Server s) {
+    final matchesTag = _serverMatchesTags(s);
+    if (_query.isEmpty) return matchesTag;
+    final q = _query.toLowerCase();
+    return matchesTag && (s.name.toLowerCase().contains(q) || (s.ip?.toLowerCase().contains(q) ?? false));
   }
 
   ServerFolder? _filterFolder(ServerFolder folder) {
@@ -137,10 +158,12 @@ class _ServersScreenState extends State<ServersScreen> {
     }
   }
 
-  void _restoreStates(List<ServerFolder> list) {
-    for (final f in list) {
-      if (_folderState != null && f.id != null && _folderState!.isFolderExpanded(f.id)) _expanded.add(f.id);
-      if (f.allFolders.isNotEmpty) _restoreStates(f.allFolders);
+  void _restoreStates(List<dynamic> list) {
+    for (final item in list) {
+      if (item is ServerFolder) {
+        if (_folderState != null && item.id != null && _folderState!.isFolderExpanded(item.id)) _expanded.add(item.id);
+        if (item.allFolders.isNotEmpty) _restoreStates(item.allFolders);
+      }
     }
   }
 

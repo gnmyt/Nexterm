@@ -1,16 +1,17 @@
 import 'dart:convert';
+import '../models/server.dart';
 import '../models/server_folder.dart';
 import '../utils/api_client.dart';
 
 class ServerService {
-  static Future<List<ServerFolder>> getServerList(String token) async {
+  static Future<List<dynamic>> getServerList(String token) async {
     final response = await ApiClient.get('/entries/list', token: token);
     if (response.statusCode != 200) {
       throw Exception('Failed to load servers: ${response.statusCode} - ${response.body}');
     }
 
     final List<dynamic> jsonData = json.decode(response.body);
-    final List<ServerFolder> folders = [];
+    final List<dynamic> items = [];
 
     for (var item in jsonData) {
       if (item is! Map<String, dynamic>) continue;
@@ -20,13 +21,13 @@ class ServerService {
         final filteredItem = Map<String, dynamic>.from(item);
         filteredItem['entries'] = _filterEntries(item['entries'] as List<dynamic>? ?? []);
         if ((filteredItem['entries'] as List).isNotEmpty) {
-          folders.add(ServerFolder.fromJson(filteredItem));
+          items.add(ServerFolder.fromJson(filteredItem));
         }
       } else if (type == 'server' || _isPveEntry(type)) {
-        folders.add(ServerFolder(name: 'Servers', type: 'folder', entries: [item]));
+        items.add(Server.fromJson(item));
       }
     }
-    return folders;
+    return items;
   }
 
   static bool _isPveEntry(String? type) =>

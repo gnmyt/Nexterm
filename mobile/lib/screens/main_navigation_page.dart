@@ -40,9 +40,15 @@ class MainNavigationPage extends StatefulWidget {
   State<MainNavigationPage> createState() => _MainNavigationPageState();
 }
 
-class _MainNavigationPageState extends State<MainNavigationPage> {
+class _MainNavigationPageState extends State<MainNavigationPage>
+    with SingleTickerProviderStateMixin {
   int _selectedIndex = 0;
   final _monitoringKey = GlobalKey<MonitoringScreenState>();
+  late final _fadeController = AnimationController(
+    vsync: this,
+    duration: const Duration(milliseconds: 200),
+    value: 1.0,
+  );
 
   @override
   void initState() {
@@ -53,7 +59,17 @@ class _MainNavigationPageState extends State<MainNavigationPage> {
   @override
   void dispose() {
     widget.sessionManager.removeListener(_onSessionsChanged);
+    _fadeController.dispose();
     super.dispose();
+  }
+
+  void _switchTab(int index) {
+    if (index == _selectedIndex) return;
+    _fadeController.reverse().then((_) {
+      if (!mounted) return;
+      setState(() => _selectedIndex = index);
+      _fadeController.forward();
+    });
   }
 
   void _onSessionsChanged() {
@@ -67,6 +83,7 @@ class _MainNavigationPageState extends State<MainNavigationPage> {
       }
     }
     setState(() {});
+    _fadeController.value = 1.0;
   }
 
   bool get _hasSessions => widget.sessionManager.hasActiveSessions;
@@ -81,7 +98,7 @@ class _MainNavigationPageState extends State<MainNavigationPage> {
         snippetManager: widget.snippetManager,
         sessionManager: widget.sessionManager,
         onSwitchToSessions: () {
-          if (_hasSessions) setState(() => _selectedIndex = 1);
+          if (_hasSessions) _switchTab(1);
         },
       ),
       if (hasSessions)
@@ -92,7 +109,7 @@ class _MainNavigationPageState extends State<MainNavigationPage> {
           aiManager: widget.aiManager,
           terminalSettings: widget.terminalSettings,
           sftpSettings: widget.sftpSettings,
-          onExitFullscreen: () => setState(() => _selectedIndex = 0),
+          onExitFullscreen: () => _switchTab(0),
         ),
       MonitoringScreen(key: _monitoringKey, authManager: widget.authManager),
       SettingsScreen(
@@ -114,7 +131,7 @@ class _MainNavigationPageState extends State<MainNavigationPage> {
         if (didPop) return;
 
         if (isOnSessionsTab) {
-          setState(() => _selectedIndex = 0);
+          _switchTab(0);
           return;
         }
 
@@ -124,16 +141,19 @@ class _MainNavigationPageState extends State<MainNavigationPage> {
         }
 
         if (_selectedIndex != 0) {
-          setState(() => _selectedIndex = 0);
+          _switchTab(0);
           return;
         }
 
         SystemNavigator.pop();
       },
       child: Scaffold(
-        body: IndexedStack(
-          index: _selectedIndex,
-          children: pages,
+        body: FadeTransition(
+          opacity: _fadeController,
+          child: IndexedStack(
+            index: _selectedIndex,
+            children: pages,
+          ),
         ),
         bottomNavigationBar: isOnSessionsTab
             ? null
@@ -151,7 +171,7 @@ class _MainNavigationPageState extends State<MainNavigationPage> {
 
     return NativeGlassNavBar(
       currentIndex: _selectedIndex,
-      onTap: (index) => setState(() => _selectedIndex = index),
+      onTap: (index) => _switchTab(index),
       tintColor: Theme.of(context).colorScheme.primary,
       fallback: materialNavigationBar,
       tabs: [
@@ -168,7 +188,7 @@ class _MainNavigationPageState extends State<MainNavigationPage> {
     final sessionCount = widget.sessionManager.sessionCount;
     return NavigationBar(
       selectedIndex: _selectedIndex,
-      onDestinationSelected: (index) => setState(() => _selectedIndex = index),
+      onDestinationSelected: (index) => _switchTab(index),
       destinations: [
         NavigationDestination(
           icon: Icon(Icons.dns_outlined),
