@@ -219,4 +219,12 @@ impl ApiClient {
         let base = self.base_url.replacen("https://", "wss://", 1).replacen("http://", "ws://", 1);
         Ok(format!("{base}/api/ws/term?sessionToken={token}&sessionId={session_id}"))
     }
+
+    pub fn tunnel_ws_url(&self, entry_id: u64, identity_id: Option<u64>, remote_host: &str, remote_port: u16) -> Result<String> {
+        let token = self.token.as_deref().ok_or_else(|| anyhow::anyhow!("Not authenticated"))?;
+        let base = self.base_url.replacen("https://", "wss://", 1).replacen("http://", "ws://", 1);
+        let mut url = format!("{base}/api/ws/tunnel?sessionToken={token}&entryId={entry_id}&remoteHost={remote_host}&remotePort={remote_port}");
+        if let Some(iid) = identity_id { url = format!("{url}&identityId={iid}"); }
+        Ok(url)
+    }
 }

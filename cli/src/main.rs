@@ -4,6 +4,7 @@ mod config;
 mod connect;
 mod entries;
 mod terminal;
+mod tunnel;
 
 use clap::{Parser, Subcommand};
 
@@ -38,6 +39,20 @@ enum Commands {
     },
     /// Show servers and select one to connect
     Recent,
+    /// Access a remote port on your local machine through a server
+    Forward {
+        /// Server ID or name
+        target: String,
+        /// Local port to listen on (defaults to same as --port)
+        #[arg(short, long)]
+        local: Option<u16>,
+        /// Remote host to connect to (default: 127.0.0.1)
+        #[arg(short, long, default_value = "127.0.0.1")]
+        remote: String,
+        /// Remote port to expose locally
+        #[arg(short = 'p', long)]
+        port: u16,
+    },
     /// Manage CLI configuration
     Config {
         #[command(subcommand)]
@@ -68,6 +83,9 @@ async fn main() -> anyhow::Result<()> {
             entries::search(&query, cmd.as_deref()).await
         }
         Commands::Recent => entries::recent().await,
+        Commands::Forward { target, local, remote, port } => {
+            tunnel::forward(&target, local.unwrap_or(port), &remote, port).await
+        }
         Commands::Config { action } => match action {
             ConfigAction::Set { key, value } => config::set(&key, &value),
             ConfigAction::Get { key } => config::get(&key),

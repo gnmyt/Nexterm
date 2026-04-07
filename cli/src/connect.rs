@@ -41,7 +41,7 @@ pub async fn exec(target: &str, command: &str) -> Result<()> {
     Ok(())
 }
 
-async fn pick_identity(client: &ApiClient, identity_ids: &[u64]) -> Result<Option<u64>> {
+pub async fn pick_identity(client: &ApiClient, identity_ids: &[u64]) -> Result<Option<u64>> {
     if identity_ids.len() <= 1 { return Ok(identity_ids.first().copied()); }
     let all = client.list_identities().await?;
     let matching: Vec<_> = all.iter().filter(|i| identity_ids.contains(&i.id)).collect();
