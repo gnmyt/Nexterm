@@ -408,6 +408,11 @@ class _ServersScreenState extends State<ServersScreen> {
       _connectGuacamole(server);
       return;
     }
+    final isSSH = server.protocol?.toLowerCase() == 'ssh' && !server.isPve;
+    if (!isSSH) {
+      _connectTerminal(server);
+      return;
+    }
     showModalBottomSheet(
       context: context,
       shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(20))),

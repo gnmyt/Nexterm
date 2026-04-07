@@ -24,33 +24,23 @@ class _ToolbarGroupTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
+    final cs = Theme.of(context).colorScheme;
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 2.0),
-      child: Row(
-        children: [
-          ReorderableDragStartListener(
-            index: index,
-            child: Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Icon(MdiIcons.dragHorizontalVariant, color: theme.colorScheme.outline, size: 20),
-            ),
+      child: Row(children: [
+        ReorderableDragStartListener(
+          index: index,
+          child: Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Icon(MdiIcons.dragHorizontalVariant, color: cs.outline, size: 20),
           ),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(group.label, style: theme.textTheme.bodyLarge),
-                Text(group.description, style: theme.textTheme.bodySmall?.copyWith(color: theme.colorScheme.outline)),
-              ],
-            ),
-          ),
-          Switch(
-            value: enabled,
-            onChanged: onToggle,
-          ),
-        ],
-      ),
+        ),
+        Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+          Text(group.label, style: const TextStyle(fontSize: 14)),
+          Text(group.description, style: TextStyle(fontSize: 12, color: cs.outline)),
+        ])),
+        Switch(value: enabled, onChanged: onToggle),
+      ]),
     );
   }
 }
@@ -97,272 +87,210 @@ class _SettingsScreenState extends State<SettingsScreen> {
         title: const Text('Logout'),
         content: const Text('Are you sure you want to logout?'),
         actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context, false),
-            child: const Text('Cancel'),
-          ),
-          FilledButton(
-            onPressed: () => Navigator.pop(context, true),
-            child: const Text('Logout'),
-          ),
+          TextButton(onPressed: () => Navigator.pop(context, false), child: const Text('Cancel')),
+          FilledButton(onPressed: () => Navigator.pop(context, true), child: const Text('Logout')),
         ],
       ),
     );
-
-    if (shouldLogout == true && mounted) {
-      await widget.authManager.logout();
-    }
+    if (shouldLogout == true && mounted) await widget.authManager.logout();
   }
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
+    final cs = Theme.of(context).colorScheme;
+    final tt = Theme.of(context).textTheme;
+    final server = ApiConfig.baseUrl.replaceAll(RegExp(r'https?://'), '').replaceAll('/api', '');
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Settings')),
-      body: ListView(
-        padding: const EdgeInsets.all(8.0),
-        children: [
-          if (_username != null)
-            Card(
-              margin: const EdgeInsets.symmetric(vertical: 4.0, horizontal: 8.0),
-              child: ListTile(
-                leading: CircleAvatar(child: Icon(MdiIcons.account)),
-                title: Text(_fullName ?? _username!),
-                subtitle: Text(
-                  '@${ApiConfig.baseUrl.replaceAll(RegExp(r'https?://'), '').replaceAll('/api', '')}',
+      body: SafeArea(
+        child: ListView(padding: const EdgeInsets.only(bottom: 24), children: [
+          Padding(
+            padding: const EdgeInsets.fromLTRB(20, 16, 20, 12),
+            child: Text('Settings', style: tt.headlineMedium?.copyWith(fontWeight: FontWeight.w700)),
+          ),
+
+          if (_username != null) Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+            child: Container(
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(color: cs.surfaceContainerHigh, borderRadius: BorderRadius.circular(16)),
+              child: Row(children: [
+                Container(
+                  width: 48, height: 48,
+                  decoration: BoxDecoration(color: cs.primaryContainer, borderRadius: BorderRadius.circular(14)),
+                  child: Icon(MdiIcons.account, color: cs.onPrimaryContainer, size: 24),
                 ),
-                trailing: TextButton(
+                const SizedBox(width: 14),
+                Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                  Text(_fullName ?? _username!, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
+                  Padding(padding: const EdgeInsets.only(top: 2),
+                    child: Text(server, style: TextStyle(fontSize: 12, color: cs.outline))),
+                ])),
+                FilledButton.tonal(
                   onPressed: _handleLogout,
-                  child: const Text('Logout'),
+                  style: FilledButton.styleFrom(
+                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                  ),
+                  child: const Text('Logout', style: TextStyle(fontSize: 13)),
                 ),
+              ]),
+            ),
+          ),
+
+          const SizedBox(height: 8),
+          _section(cs, children: [
+            _navTile(MdiIcons.serverNetwork, 'Connections',
+              '${widget.authManager.accountManager.accounts.length} server(s)', cs,
+              () => Navigator.push(context, MaterialPageRoute(
+                builder: (_) => ServerAccountsScreen(authManager: widget.authManager)))),
+            Divider(height: 1, indent: 56, color: cs.outlineVariant.withValues(alpha: 0.3)),
+            _navTile(MdiIcons.monitor, 'Sessions', 'Manage active sessions', cs,
+              () => Navigator.push(context, MaterialPageRoute(
+                builder: (_) => SessionsScreen(authManager: widget.authManager)))),
+          ]),
+
+          _sectionHeader('Appearance', cs),
+          _section(cs, children: [
+            ListenableBuilder(
+              listenable: widget.themeManager,
+              builder: (_, __) {
+                final mode = widget.themeManager.themeMode;
+                return Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                  child: Row(children: [
+                    Container(
+                      width: 36, height: 36,
+                      decoration: BoxDecoration(color: cs.primaryContainer, borderRadius: BorderRadius.circular(10)),
+                      child: Icon(MdiIcons.themeLightDark, color: cs.onPrimaryContainer, size: 18),
+                    ),
+                    const SizedBox(width: 12),
+                    const Expanded(child: Text('Theme', style: TextStyle(fontSize: 15))),
+                    SegmentedButton<ThemeMode>(
+                      segments: const [
+                        ButtonSegment(value: ThemeMode.system, icon: Icon(Icons.settings_suggest, size: 18)),
+                        ButtonSegment(value: ThemeMode.light, icon: Icon(Icons.light_mode, size: 18)),
+                        ButtonSegment(value: ThemeMode.dark, icon: Icon(Icons.dark_mode, size: 18)),
+                      ],
+                      selected: {mode},
+                      onSelectionChanged: (s) => widget.themeManager.setThemeMode(s.first),
+                      style: ButtonStyle(visualDensity: VisualDensity.compact),
+                    ),
+                  ]),
+                );
+              },
+            ),
+            Divider(height: 1, indent: 56, color: cs.outlineVariant.withValues(alpha: 0.3)),
+            ListenableBuilder(
+              listenable: widget.themeManager,
+              builder: (_, __) => SwitchListTile(
+                contentPadding: const EdgeInsets.only(left: 16, right: 12),
+                secondary: Container(
+                  width: 36, height: 36,
+                  decoration: BoxDecoration(color: cs.primaryContainer, borderRadius: BorderRadius.circular(10)),
+                  child: Icon(MdiIcons.palette, color: cs.onPrimaryContainer, size: 18),
+                ),
+                title: const Text('Dynamic Color', style: TextStyle(fontSize: 15)),
+                subtitle: Text('Use system accent color', style: TextStyle(fontSize: 12, color: cs.outline)),
+                value: widget.themeManager.useDynamicColor,
+                onChanged: (v) => widget.themeManager.setUseDynamicColor(v),
               ),
             ),
+            ListenableBuilder(
+              listenable: widget.themeManager,
+              builder: (_, __) {
+                if (widget.themeManager.useDynamicColor) return const SizedBox.shrink();
+                return Padding(
+                  padding: const EdgeInsets.fromLTRB(16, 4, 16, 14),
+                  child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                    Text('Accent Color', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: cs.outline)),
+                    const SizedBox(height: 10),
+                    Wrap(spacing: 10, runSpacing: 10, children: ThemeManager.accentColorOptions.map((color) {
+                      final sel = widget.themeManager.accentColor.toARGB32() == color.toARGB32();
+                      return GestureDetector(
+                        onTap: () => widget.themeManager.setAccentColor(color),
+                        child: Container(
+                          width: 38, height: 38,
+                          decoration: BoxDecoration(
+                            color: color, shape: BoxShape.circle,
+                            border: sel ? Border.all(color: cs.onSurface, width: 2.5) : null,
+                          ),
+                          child: sel ? const Icon(Icons.check, color: Colors.white, size: 18) : null,
+                        ),
+                      );
+                    }).toList()),
+                  ]),
+                );
+              },
+            ),
+          ]),
 
-          Card(
-            margin: const EdgeInsets.symmetric(vertical: 4.0, horizontal: 8.0),
-            child: Column(children: [
-              ListTile(
-                leading: Icon(MdiIcons.serverNetwork),
-                title: const Text('Connections'),
-                subtitle: Text(
-                  '${widget.authManager.accountManager.accounts.length} server(s)',
-                ),
-                trailing: Icon(MdiIcons.chevronRight),
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => ServerAccountsScreen(
-                        authManager: widget.authManager,
-                      ),
-                    ),
-                  );
-                },
-              ),
-              const Divider(height: 1),
-              ListTile(
-                leading: Icon(MdiIcons.monitor),
-                title: const Text('Sessions'),
-                subtitle: const Text('Manage active sessions'),
-                trailing: Icon(MdiIcons.chevronRight),
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) =>
-                          SessionsScreen(authManager: widget.authManager),
-                    ),
-                  );
-                },
-              ),
-            ]),
-          ),
-
-          _sectionHeader('Appearance'),
-          Card(
-            margin: const EdgeInsets.symmetric(vertical: 4.0, horizontal: 8.0),
-            child: Column(children: [
-              ListenableBuilder(
-                listenable: widget.themeManager,
-                builder: (context, child) {
-                  final selectedMode = widget.themeManager.themeMode;
-                  return ListTile(
-                    leading: Icon(MdiIcons.themeLightDark),
-                    title: const Text('Theme'),
-                    trailing: SegmentedButton<ThemeMode>(
-                      segments: const <ButtonSegment<ThemeMode>>[
-                        ButtonSegment<ThemeMode>(
-                          value: ThemeMode.system,
-                          icon: Icon(Icons.settings_suggest),
-                        ),
-                        ButtonSegment<ThemeMode>(
-                          value: ThemeMode.light,
-                          icon: Icon(Icons.light_mode),
-                        ),
-                        ButtonSegment<ThemeMode>(
-                          value: ThemeMode.dark,
-                          icon: Icon(Icons.dark_mode),
-                        ),
-                      ],
-                      selected: <ThemeMode>{selectedMode},
-                      onSelectionChanged: (Set<ThemeMode> newSelection) {
-                        widget.themeManager.setThemeMode(newSelection.first);
-                      },
-                    ),
-                  );
-                },
-              ),
-              const Divider(height: 1),
-              ListenableBuilder(
-                listenable: widget.themeManager,
-                builder: (context, child) {
-                  return SwitchListTile(
-                    secondary: Icon(MdiIcons.palette),
-                    title: const Text('Dynamic Color'),
-                    subtitle: const Text('Use system accent color'),
-                    value: widget.themeManager.useDynamicColor,
-                    onChanged: (value) {
-                      widget.themeManager.setUseDynamicColor(value);
-                    },
-                  );
-                },
-              ),
-              const Divider(height: 1),
-              ListenableBuilder(
-                listenable: widget.themeManager,
-                builder: (context, child) {
-                  if (widget.themeManager.useDynamicColor) {
-                    return const SizedBox.shrink();
-                  }
-                  return Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text('Accent Color', style: theme.textTheme.titleSmall),
-                        const SizedBox(height: 12),
-                        Wrap(
-                          spacing: 10,
-                          runSpacing: 10,
-                          children: ThemeManager.accentColorOptions.map((color) {
-                            final isSelected = widget.themeManager.accentColor.toARGB32() == color.toARGB32();
-                            return GestureDetector(
-                              onTap: () => widget.themeManager.setAccentColor(color),
-                              child: Container(
-                                width: 40,
-                                height: 40,
-                                decoration: BoxDecoration(
-                                  color: color,
-                                  shape: BoxShape.circle,
-                                  border: isSelected
-                                      ? Border.all(color: theme.colorScheme.onSurface, width: 3)
-                                      : null,
-                                ),
-                                child: isSelected
-                                    ? Icon(Icons.check, color: Colors.white, size: 20)
-                                    : null,
-                              ),
-                            );
-                          }).toList(),
-                        ),
-                      ],
-                    ),
-                  );
-                },
-              ),
-            ]),
-          ),
-
-          _sectionHeader('Terminal'),
-          Card(
-            margin: const EdgeInsets.symmetric(vertical: 4.0, horizontal: 8.0),
-            child: ListenableBuilder(
+          _sectionHeader('Terminal', cs),
+          _section(cs, children: [
+            ListenableBuilder(
               listenable: widget.terminalSettings,
-              builder: (context, child) {
+              builder: (_, __) {
                 final ts = widget.terminalSettings;
                 return Column(children: [
-                  ListTile(
-                    leading: Icon(MdiIcons.formatSize),
-                    title: const Text('Font Size'),
-                    subtitle: Text('${ts.fontSize.toInt()} pt'),
-                    trailing: SizedBox(
-                      width: 180,
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          IconButton(
-                            icon: Icon(MdiIcons.minus),
-                            onPressed: ts.fontSize > 8
-                                ? () => ts.setFontSize(ts.fontSize - 1)
-                                : null,
-                          ),
-                          Expanded(
-                            child: Slider(
-                              value: ts.fontSize,
-                              min: 8,
-                              max: 24,
-                              divisions: 16,
-                              onChanged: (v) => ts.setFontSize(v),
-                            ),
-                          ),
-                          IconButton(
-                            icon: Icon(MdiIcons.plus),
-                            onPressed: ts.fontSize < 24
-                                ? () => ts.setFontSize(ts.fontSize + 1)
-                                : null,
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                  const Divider(height: 1),
                   Padding(
-                    padding: const EdgeInsets.fromLTRB(16.0, 12.0, 16.0, 4.0),
-                    child: Text('Color Theme', style: theme.textTheme.titleSmall),
+                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                    child: Row(children: [
+                      Container(
+                        width: 36, height: 36,
+                        decoration: BoxDecoration(color: cs.primaryContainer, borderRadius: BorderRadius.circular(10)),
+                        child: Icon(MdiIcons.formatSize, color: cs.onPrimaryContainer, size: 18),
+                      ),
+                      const SizedBox(width: 12),
+                      const Text('Font Size', style: TextStyle(fontSize: 15)),
+                      const Spacer(),
+                      Text('${ts.fontSize.toInt()} pt', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: cs.outline)),
+                    ]),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 12),
+                    child: Row(children: [
+                      IconButton(icon: Icon(MdiIcons.minus, size: 18), onPressed: ts.fontSize > 8 ? () => ts.setFontSize(ts.fontSize - 1) : null),
+                      Expanded(child: Slider(value: ts.fontSize, min: 8, max: 24, divisions: 16, onChanged: (v) => ts.setFontSize(v))),
+                      IconButton(icon: Icon(MdiIcons.plus, size: 18), onPressed: ts.fontSize < 24 ? () => ts.setFontSize(ts.fontSize + 1) : null),
+                    ]),
+                  ),
+                  Divider(height: 1, indent: 16, endIndent: 16, color: cs.outlineVariant.withValues(alpha: 0.3)),
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(16, 12, 16, 4),
+                    child: Align(alignment: Alignment.centerLeft,
+                      child: Text('Color Theme', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: cs.outline))),
                   ),
                   SizedBox(
                     height: 72,
                     child: ListView.builder(
                       scrollDirection: Axis.horizontal,
-                      padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 4.0),
+                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
                       itemCount: TerminalThemes.all.length,
-                      itemBuilder: (context, index) {
-                        final t = TerminalThemes.all[index];
-                        final isSelected = ts.themeId == t.id;
+                      itemBuilder: (_, i) {
+                        final t = TerminalThemes.all[i];
+                        final sel = ts.themeId == t.id;
                         return Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 4.0),
+                          padding: const EdgeInsets.symmetric(horizontal: 4),
                           child: GestureDetector(
                             onTap: () => ts.setTheme(t.id),
                             child: Container(
                               width: 80,
                               decoration: BoxDecoration(
-                                color: t.background,
-                                borderRadius: BorderRadius.circular(10),
-                                border: isSelected
-                                    ? Border.all(color: theme.colorScheme.primary, width: 2.5)
-                                    : Border.all(color: theme.colorScheme.outlineVariant, width: 1),
+                                color: t.background, borderRadius: BorderRadius.circular(10),
+                                border: sel
+                                    ? Border.all(color: cs.primary, width: 2.5)
+                                    : Border.all(color: cs.outlineVariant, width: 1),
                               ),
                               padding: const EdgeInsets.all(6),
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Row(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      _colorDot(t.theme.red), _colorDot(t.theme.green),
-                                      _colorDot(t.theme.yellow), _colorDot(t.theme.blue),
-                                    ],
-                                  ),
-                                  const SizedBox(height: 4),
-                                  Text(
-                                    t.name,
-                                    style: TextStyle(color: t.foreground, fontSize: 10, fontWeight: FontWeight.w600),
-                                    maxLines: 1,
-                                    overflow: TextOverflow.ellipsis,
-                                  ),
-                                ],
-                              ),
+                              child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
+                                Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+                                  _colorDot(t.theme.red), _colorDot(t.theme.green),
+                                  _colorDot(t.theme.yellow), _colorDot(t.theme.blue),
+                                ]),
+                                const SizedBox(height: 4),
+                                Text(t.name, style: TextStyle(color: t.foreground, fontSize: 10, fontWeight: FontWeight.w600),
+                                  maxLines: 1, overflow: TextOverflow.ellipsis),
+                              ]),
                             ),
                           ),
                         );
@@ -373,126 +301,137 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 ]);
               },
             ),
-          ),
+          ]),
           const SizedBox(height: 4),
-          Card(
-            margin: const EdgeInsets.symmetric(vertical: 4.0, horizontal: 8.0),
-            child: ListenableBuilder(
+          _section(cs, children: [
+            ListenableBuilder(
               listenable: widget.terminalSettings,
-              builder: (context, child) {
+              builder: (_, __) {
                 final ts = widget.terminalSettings;
                 final order = ts.groupOrder.toList();
-                return Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.fromLTRB(16.0, 12.0, 16.0, 4.0),
-                      child: Text('Keyboard Toolbar', style: theme.textTheme.titleSmall),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.fromLTRB(16.0, 0, 16.0, 8.0),
-                      child: Text(
-                        'Toggle and drag to reorder key groups',
-                        style: theme.textTheme.bodySmall?.copyWith(
-                          color: theme.colorScheme.outline,
-                        ),
-                      ),
-                    ),
-                    ReorderableListView.builder(
-                      shrinkWrap: true,
-                      physics: const NeverScrollableScrollPhysics(),
-                      buildDefaultDragHandles: false,
-                      itemCount: order.length,
-                      proxyDecorator: (child, index, animation) {
-                        return Material(
-                          elevation: 4,
-                          borderRadius: BorderRadius.circular(12),
-                          child: child,
-                        );
-                      },
-                      onReorder: (oldIndex, newIndex) {
-                        if (newIndex > oldIndex) newIndex--;
-                        final item = order.removeAt(oldIndex);
-                        order.insert(newIndex, item);
-                        ts.setGroupOrder(order);
-                      },
-                      itemBuilder: (context, index) {
-                        final group = order[index];
-                        final enabled = ts.isGroupEnabled(group);
-                        return _ToolbarGroupTile(
-                          key: ValueKey(group),
-                          index: index,
-                          group: group,
-                          enabled: enabled,
-                          onToggle: (v) => ts.setGroupEnabled(group, v),
-                        );
-                      },
-                    ),
-                  ],
-                );
+                return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
+                    child: Text('Keyboard Toolbar', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: cs.outline)),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(16, 4, 16, 8),
+                    child: Text('Toggle and drag to reorder', style: TextStyle(fontSize: 12, color: cs.outline.withValues(alpha: 0.7))),
+                  ),
+                  ReorderableListView.builder(
+                    shrinkWrap: true,
+                    physics: const NeverScrollableScrollPhysics(),
+                    buildDefaultDragHandles: false,
+                    itemCount: order.length,
+                    proxyDecorator: (child, _, __) => Material(elevation: 4, borderRadius: BorderRadius.circular(12), child: child),
+                    onReorder: (o, n) {
+                      if (n > o) n--;
+                      final item = order.removeAt(o);
+                      order.insert(n, item);
+                      ts.setGroupOrder(order);
+                    },
+                    itemBuilder: (_, i) {
+                      final g = order[i];
+                      return _ToolbarGroupTile(key: ValueKey(g), index: i, group: g, enabled: ts.isGroupEnabled(g), onToggle: (v) => ts.setGroupEnabled(g, v));
+                    },
+                  ),
+                ]);
               },
             ),
-          ),
-          const SizedBox(height: 16),
+          ]),
 
-          _sectionHeader('File Browser'),
-          Card(
-            margin: const EdgeInsets.symmetric(vertical: 4.0, horizontal: 8.0),
-            child: ListenableBuilder(
+          _sectionHeader('File Browser', cs),
+          _section(cs, children: [
+            ListenableBuilder(
               listenable: widget.sftpSettings,
-              builder: (context, child) {
+              builder: (_, __) {
                 final sf = widget.sftpSettings;
                 return Column(children: [
                   SwitchListTile(
-                    secondary: Icon(MdiIcons.fileHidden),
-                    title: const Text('Show Hidden Files'),
-                    subtitle: const Text('Show files starting with .'),
+                    contentPadding: const EdgeInsets.only(left: 16, right: 12),
+                    secondary: Container(
+                      width: 36, height: 36,
+                      decoration: BoxDecoration(color: cs.primaryContainer, borderRadius: BorderRadius.circular(10)),
+                      child: Icon(MdiIcons.fileHidden, color: cs.onPrimaryContainer, size: 18),
+                    ),
+                    title: const Text('Show Hidden Files', style: TextStyle(fontSize: 15)),
+                    subtitle: Text('Show files starting with .', style: TextStyle(fontSize: 12, color: cs.outline)),
                     value: sf.showHiddenFiles,
                     onChanged: (v) => sf.setShowHiddenFiles(v),
                   ),
-                  const Divider(height: 1),
+                  Divider(height: 1, indent: 56, color: cs.outlineVariant.withValues(alpha: 0.3)),
                   SwitchListTile(
-                    secondary: Icon(MdiIcons.deleteAlert),
-                    title: const Text('Confirm Before Delete'),
+                    contentPadding: const EdgeInsets.only(left: 16, right: 12),
+                    secondary: Container(
+                      width: 36, height: 36,
+                      decoration: BoxDecoration(color: cs.primaryContainer, borderRadius: BorderRadius.circular(10)),
+                      child: Icon(MdiIcons.deleteAlert, color: cs.onPrimaryContainer, size: 18),
+                    ),
+                    title: const Text('Confirm Before Delete', style: TextStyle(fontSize: 15)),
                     value: sf.confirmBeforeDelete,
                     onChanged: (v) => sf.setConfirmBeforeDelete(v),
                   ),
-                  const Divider(height: 1),
+                  Divider(height: 1, indent: 56, color: cs.outlineVariant.withValues(alpha: 0.3)),
                   SwitchListTile(
-                    secondary: Icon(MdiIcons.folderArrowUp),
-                    title: const Text('Sort Folders First'),
+                    contentPadding: const EdgeInsets.only(left: 16, right: 12),
+                    secondary: Container(
+                      width: 36, height: 36,
+                      decoration: BoxDecoration(color: cs.primaryContainer, borderRadius: BorderRadius.circular(10)),
+                      child: Icon(MdiIcons.folderArrowUp, color: cs.onPrimaryContainer, size: 18),
+                    ),
+                    title: const Text('Sort Folders First', style: TextStyle(fontSize: 15)),
                     value: sf.sortFoldersFirst,
                     onChanged: (v) => sf.setSortFoldersFirst(v),
                   ),
                 ]);
               },
             ),
+          ]),
+        ]),
+      ),
+    );
+  }
+
+  Widget _section(ColorScheme cs, {required List<Widget> children}) => Padding(
+    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+    child: Container(
+      clipBehavior: Clip.antiAlias,
+      decoration: BoxDecoration(color: cs.surfaceContainerHigh, borderRadius: BorderRadius.circular(16)),
+      child: Column(children: children),
+    ),
+  );
+
+  Widget _navTile(IconData icon, String title, String sub, ColorScheme cs, VoidCallback onTap) => Material(
+    color: Colors.transparent,
+    child: InkWell(
+      onTap: onTap,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+        child: Row(children: [
+          Container(
+            width: 36, height: 36,
+            decoration: BoxDecoration(color: cs.primaryContainer, borderRadius: BorderRadius.circular(10)),
+            child: Icon(icon, color: cs.onPrimaryContainer, size: 18),
           ),
-          const SizedBox(height: 16),
-        ],
+          const SizedBox(width: 12),
+          Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+            Text(title, style: const TextStyle(fontSize: 15)),
+            Padding(padding: const EdgeInsets.only(top: 2),
+              child: Text(sub, style: TextStyle(fontSize: 12, color: cs.outline))),
+          ])),
+          Icon(MdiIcons.chevronRight, color: cs.outlineVariant, size: 18),
+        ]),
       ),
-    );
-  }
+    ),
+  );
 
-  Widget _colorDot(Color color) {
-    return Container(
-      width: 10,
-      height: 10,
-      margin: const EdgeInsets.symmetric(horizontal: 1),
-      decoration: BoxDecoration(color: color, shape: BoxShape.circle),
-    );
-  }
+  Widget _colorDot(Color color) => Container(
+    width: 10, height: 10, margin: const EdgeInsets.symmetric(horizontal: 1),
+    decoration: BoxDecoration(color: color, shape: BoxShape.circle),
+  );
 
-  Widget _sectionHeader(String title) {
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(16.0, 16.0, 16.0, 4.0),
-      child: Text(
-        title,
-        style: Theme.of(context).textTheme.titleSmall?.copyWith(
-          color: Theme.of(context).colorScheme.primary,
-          fontWeight: FontWeight.w600,
-        ),
-      ),
-    );
-  }
+  Widget _sectionHeader(String title, ColorScheme cs) => Padding(
+    padding: const EdgeInsets.fromLTRB(20, 20, 20, 4),
+    child: Text(title, style: TextStyle(fontSize: 13, fontWeight: FontWeight.w700, color: cs.primary)),
+  );
 }

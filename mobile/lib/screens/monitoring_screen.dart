@@ -145,9 +145,9 @@ class MonitoringScreenState extends State<MonitoringScreen> {
     final pve = s.isPVE;
     final hasErr = s.error != null && !s.hasData;
 
-    final (bg, fg) = pve
-        ? (cs.tertiaryContainer, cs.onTertiaryContainer)
-        : hasErr ? (cs.errorContainer, cs.onErrorContainer)
+    final (bg, fg) = hasErr
+        ? (cs.surfaceContainerHighest, cs.outline)
+        : pve ? (cs.tertiaryContainer, cs.onTertiaryContainer)
         : (cs.primaryContainer, cs.onPrimaryContainer);
 
     return Padding(
@@ -163,16 +163,7 @@ class MonitoringScreenState extends State<MonitoringScreen> {
               Container(
                 width: 44, height: 44,
                 decoration: BoxDecoration(color: bg, borderRadius: BorderRadius.circular(12)),
-                child: Stack(children: [
-                  Center(child: Icon(pve ? MdiIcons.serverNetwork : MdiIcons.server, color: fg, size: 20)),
-                  if (s.hasData) Positioned(right: 2, bottom: 2, child: Container(
-                    width: 9, height: 9,
-                    decoration: BoxDecoration(
-                      color: const Color(0xFF4CAF50), shape: BoxShape.circle,
-                      border: Border.all(color: cs.surfaceContainerHigh, width: 1.5),
-                    ),
-                  )),
-                ]),
+                child: Center(child: Icon(pve ? MdiIcons.serverNetwork : MdiIcons.server, color: fg, size: 20)),
               ),
               const SizedBox(width: 12),
               Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
