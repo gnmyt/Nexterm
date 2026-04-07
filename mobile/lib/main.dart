@@ -6,6 +6,7 @@ import 'screens/main_navigation_page.dart';
 import 'services/session_manager.dart';
 import 'utils/theme_manager.dart';
 import 'utils/auth_manager.dart';
+import 'utils/ai_manager.dart';
 import 'utils/snippet_manager.dart';
 import 'utils/server_account_manager.dart';
 import 'utils/terminal_settings.dart';
@@ -60,6 +61,7 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
   late ThemeManager _themeManager;
   late AuthManager _authManager;
   late SnippetManager _snippetManager;
+  late AIManager _aiManager;
   late SessionManager _sessionManager;
   late TerminalSettings _terminalSettings;
   late SftpSettings _sftpSettings;
@@ -75,6 +77,7 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
     );
     _authManager = AuthManager(widget.accountManager);
     _snippetManager = SnippetManager();
+    _aiManager = AIManager();
     _sessionManager = SessionManager();
     _terminalSettings = widget.terminalSettings;
     _sftpSettings = widget.sftpSettings;
@@ -83,6 +86,7 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
 
     if (_authManager.isAuthenticated) {
       _loadSnippets();
+      _loadAISettings();
       _restoreSessions();
     }
   }
@@ -91,6 +95,13 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
     final token = _authManager.sessionToken;
     if (token != null) {
       await _snippetManager.loadSnippets(token);
+    }
+  }
+
+  Future<void> _loadAISettings() async {
+    final token = _authManager.sessionToken;
+    if (token != null) {
+      await _aiManager.loadSettings(token);
     }
   }
 
@@ -115,6 +126,7 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
     _themeManager.dispose();
     _authManager.dispose();
     _snippetManager.dispose();
+    _aiManager.dispose();
     _sessionManager.dispose();
     _terminalSettings.dispose();
     _sftpSettings.dispose();
@@ -124,9 +136,11 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
   void _onAuthChanged() {
     if (_authManager.isAuthenticated) {
       _loadSnippets();
+      _loadAISettings();
       _restoreSessions();
     } else {
       _snippetManager.clear();
+      _aiManager.clear();
       final token = _authManager.sessionToken;
       if (token != null) {
         _sessionManager.closeAll(token);
@@ -161,6 +175,7 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
             themeManager: _themeManager,
             authManager: _authManager,
             snippetManager: _snippetManager,
+            aiManager: _aiManager,
             sessionManager: _sessionManager,
             terminalSettings: _terminalSettings,
             sftpSettings: _sftpSettings,

@@ -34,6 +34,8 @@ class AppSession {
 
   VoidCallback? showSnippets;
 
+  VoidCallback? showAI;
+
   AppSession({
     required this.sessionId,
     required this.server,

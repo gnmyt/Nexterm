@@ -3,6 +3,7 @@ import 'package:material_design_icons_flutter/material_design_icons_flutter.dart
 
 import '../services/session_manager.dart';
 import '../utils/auth_manager.dart';
+import '../utils/ai_manager.dart';
 import '../utils/snippet_manager.dart';
 import '../utils/terminal_settings.dart';
 import '../utils/sftp_settings.dart';
@@ -14,6 +15,7 @@ class ActiveSessionsScreen extends StatefulWidget {
   final SessionManager sessionManager;
   final AuthManager authManager;
   final SnippetManager snippetManager;
+  final AIManager aiManager;
   final TerminalSettings terminalSettings;
   final SftpSettings sftpSettings;
   final VoidCallback? onExitFullscreen;
@@ -23,6 +25,7 @@ class ActiveSessionsScreen extends StatefulWidget {
     required this.sessionManager,
     required this.authManager,
     required this.snippetManager,
+    required this.aiManager,
     required this.terminalSettings,
     required this.sftpSettings,
     this.onExitFullscreen,
@@ -40,11 +43,13 @@ class _ActiveSessionsScreenState extends State<ActiveSessionsScreen> {
   void initState() {
     super.initState();
     widget.sessionManager.addListener(_onChanged);
+    widget.aiManager.addListener(_onChanged);
   }
 
   @override
   void dispose() {
     widget.sessionManager.removeListener(_onChanged);
+    widget.aiManager.removeListener(_onChanged);
     super.dispose();
   }
 
@@ -219,6 +224,19 @@ class _ActiveSessionsScreenState extends State<ActiveSessionsScreen> {
               ),
             ),
           ],
+
+          if (active.showAI != null && widget.aiManager.isAvailable) ...[
+            Container(width: 1, height: 22, color: cs.outlineVariant.withValues(alpha: 0.5)),
+
+            GestureDetector(
+              onTap: () => active.showAI?.call(),
+              behavior: HitTestBehavior.opaque,
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 7),
+                child: Icon(MdiIcons.creation, size: 16, color: cs.primary),
+              ),
+            ),
+          ],
         ]),
       ),
     );
@@ -239,6 +257,7 @@ class _ActiveSessionsScreenState extends State<ActiveSessionsScreen> {
           session: session,
           token: token,
           snippetManager: widget.snippetManager,
+          aiManager: widget.aiManager,
           terminalSettings: widget.terminalSettings,
         );
       case ConnectionType.sftp:

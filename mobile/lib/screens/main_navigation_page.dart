@@ -8,6 +8,7 @@ import '../services/session_manager.dart';
 import '../utils/theme_manager.dart';
 import '../utils/auth_manager.dart';
 import '../utils/snippet_manager.dart';
+import '../utils/ai_manager.dart';
 import '../utils/terminal_settings.dart';
 import '../utils/sftp_settings.dart';
 import 'servers_screen.dart';
@@ -19,6 +20,7 @@ class MainNavigationPage extends StatefulWidget {
   final ThemeManager themeManager;
   final AuthManager authManager;
   final SnippetManager snippetManager;
+  final AIManager aiManager;
   final SessionManager sessionManager;
   final TerminalSettings terminalSettings;
   final SftpSettings sftpSettings;
@@ -28,6 +30,7 @@ class MainNavigationPage extends StatefulWidget {
     required this.themeManager,
     required this.authManager,
     required this.snippetManager,
+    required this.aiManager,
     required this.sessionManager,
     required this.terminalSettings,
     required this.sftpSettings,
@@ -86,6 +89,7 @@ class _MainNavigationPageState extends State<MainNavigationPage> {
           sessionManager: widget.sessionManager,
           authManager: widget.authManager,
           snippetManager: widget.snippetManager,
+          aiManager: widget.aiManager,
           terminalSettings: widget.terminalSettings,
           sftpSettings: widget.sftpSettings,
           onExitFullscreen: () => setState(() => _selectedIndex = 0),

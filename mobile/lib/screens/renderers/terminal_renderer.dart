@@ -7,14 +7,17 @@ import 'package:web_socket_channel/io.dart';
 import 'package:xterm/xterm.dart';
 
 import '../../services/session_manager.dart';
+import '../../utils/ai_manager.dart';
 import '../../utils/snippet_manager.dart';
 import '../../utils/terminal_settings.dart';
+import '../widgets/ai_command_sheet.dart';
 
 class TerminalRenderer extends StatefulWidget {
   final AppSession session;
   final String token;
   final SnippetManager snippetManager;
   final TerminalSettings terminalSettings;
+  final AIManager aiManager;
   final VoidCallback? onDisconnected;
 
   const TerminalRenderer({
@@ -23,6 +26,7 @@ class TerminalRenderer extends StatefulWidget {
     required this.token,
     required this.snippetManager,
     required this.terminalSettings,
+    required this.aiManager,
     this.onDisconnected,
   });
 
@@ -46,6 +50,7 @@ class _TerminalRendererState extends State<TerminalRenderer> {
     super.initState();
     _terminalFocusNode.addListener(_onFocusChanged);
     widget.session.showSnippets = _showSnippets;
+    widget.session.showAI = _showAISheet;
     _setupTerminal();
   }
 
@@ -170,6 +175,40 @@ class _TerminalRendererState extends State<TerminalRenderer> {
     };
     final seq = fnKeys[n];
     if (seq != null) _channel?.sink.add(seq);
+  }
+
+  String _getRecentOutput() {
+    final buffer = _terminal.buffer;
+    final lines = <String>[];
+    final totalLines = buffer.lines.length;
+    final start = (totalLines - 50).clamp(0, totalLines);
+    for (int i = start; i < totalLines; i++) {
+      lines.add(buffer.lines[i].getText());
+    }
+    final output = lines.join('\n').trimRight();
+    return output.length > 1500 ? output.substring(output.length - 1500) : output;
+  }
+
+  void _showAISheet() {
+    if (!mounted) return;
+    final serverId = widget.session.server.id;
+    final entryId = serverId is int ? serverId : int.tryParse(serverId.toString());
+
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (ctx) => AICommandSheet(
+        token: widget.token,
+        entryId: entryId,
+        recentOutput: _getRecentOutput(),
+        onCommandAccepted: (command) {
+          _channel?.sink.add(command);
+        },
+      ),
+    );
   }
 
   void _showSnippets() {
