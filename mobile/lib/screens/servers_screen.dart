@@ -342,16 +342,7 @@ class _ServersScreenState extends State<ServersScreen> {
               Container(
                 width: 42, height: 42,
                 decoration: BoxDecoration(color: bg, borderRadius: BorderRadius.circular(12)),
-                child: Stack(children: [
-                  Center(child: Icon(icon, color: fg, size: 20)),
-                  if (!offline) Positioned(right: 2, bottom: 2, child: Container(
-                    width: 9, height: 9,
-                    decoration: BoxDecoration(
-                      color: const Color(0xFF4CAF50), shape: BoxShape.circle,
-                      border: Border.all(color: cs.surface, width: 1.5),
-                    ),
-                  )),
-                ]),
+                child: Center(child: Icon(icon, color: fg, size: 20)),
               ),
               const SizedBox(width: 12),
               Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, mainAxisSize: MainAxisSize.min, children: [
