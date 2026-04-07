@@ -148,3 +148,6 @@ docs/public/openapi.json
 
 # Engine Build Cache
 **/build
+
+# CLI
+cli/target/
