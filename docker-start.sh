@@ -14,7 +14,6 @@ if [ -x /usr/local/bin/nexterm-engine ]; then
 
     sleep 2
 
-    echo "[nexterm] Starting local engine..."
     mkdir -p /tmp/nexterm-engine
     cat > /tmp/nexterm-engine/config.yaml <<EOF
 server_host: "127.0.0.1"
@@ -22,11 +21,18 @@ server_port: ${CONTROL_PLANE_PORT:-7800}
 registration_token: "$LOCAL_ENGINE_TOKEN"
 tls: false
 EOF
-    cd /tmp/nexterm-engine && /usr/local/bin/nexterm-engine &
-    ENGINE_PID=$!
-    cd /app
+
+    STOPPING=false
+
+    start_engine() {
+        echo "[nexterm] Starting local engine..."
+        cd /tmp/nexterm-engine && /usr/local/bin/nexterm-engine &
+        ENGINE_PID=$!
+        cd /app
+    }
 
     cleanup() {
+        STOPPING=true
         [ -n "$ENGINE_PID" ] && kill "$ENGINE_PID" 2>/dev/null
         [ -n "$SERVER_PID" ] && kill "$SERVER_PID" 2>/dev/null
         wait
@@ -34,8 +40,26 @@ EOF
     }
     trap cleanup SIGINT SIGTERM
 
-    wait -n
-    cleanup
+    start_engine
+
+    while true; do
+        wait -n $SERVER_PID $ENGINE_PID 2>/dev/null || true
+
+        if ! kill -0 "$SERVER_PID" 2>/dev/null; then
+            echo "[nexterm] Server exited, shutting down..."
+            cleanup
+        fi
+
+        if [ "$STOPPING" = true ]; then
+            break
+        fi
+
+        if ! kill -0 "$ENGINE_PID" 2>/dev/null; then
+            echo "[nexterm] Engine crashed, restarting in 3 seconds..."
+            sleep 3
+            start_engine
+        fi
+    done
 else
     echo "[nexterm] Starting server..."
     exec node server/index.js
