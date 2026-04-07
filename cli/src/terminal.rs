@@ -26,9 +26,19 @@ pub async fn run_session(ws_url: &str) -> Result<()> {
 async fn session_loop(tx: &mut WsWrite, rx: &mut WsRead) -> Result<()> {
     let mut stdout = io::stdout();
     let (mut totp_mode, mut totp_buf) = (false, String::new());
+    let (mut last_cols, mut last_rows) = terminal::size().unwrap_or((80, 24));
+    let mut size_check = tokio::time::interval(std::time::Duration::from_millis(300));
 
     loop {
         tokio::select! {
+            _ = size_check.tick() => {
+                if let Ok((c, r)) = terminal::size() {
+                    if c != last_cols || r != last_rows {
+                        last_cols = c; last_rows = r;
+                        tx.send(Message::Text(format!("\x01{c},{r}"))).await?;
+                    }
+                }
+            }
             msg = rx.next() => match msg {
                 Some(Ok(Message::Text(text))) if text.starts_with('\x02') => {
                     totp_mode = true;
