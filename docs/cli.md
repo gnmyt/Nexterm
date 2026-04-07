@@ -1,6 +1,6 @@
 # ⌨️ CLI
 
-The Nexterm CLI (`nt`) lets you connect to your servers straight from the terminal — no browser needed. It uses the same
+The Nexterm CLI (`nt`) lets you connect to your servers straight from the terminal – no browser needed. It uses the same
 authentication and entry system as the web UI, so all your servers, folders, and identities are already there.
 
 This is useful when you just want to quickly SSH into a machine without opening the web interface, or when you need to
@@ -41,7 +41,7 @@ nt ls
 ```
 
 Shows all your servers in a tree, just like the sidebar in the web UI. Only terminal-based entries (SSH, Telnet,
-PVE LXC, PVE Shell) are shown — RDP and VNC entries are skipped since they don't make sense in a terminal context.
+PVE LXC, PVE Shell) are shown.
 
 You can filter by folder or tag:
 
@@ -101,6 +101,25 @@ nt recent
 
 Shows all your servers in a list and lets you pick one to connect to. Handy when you don't remember the exact name
 or ID but want to browse through everything quickly.
+
+### Port Forwarding
+
+```sh
+nt forward <server> --local 8080 --port 3000
+```
+
+Lets you access a remote port on your local machine, similar to `ssh -L`. In this example, the server's port `3000`
+becomes available at `127.0.0.1:8080` on your machine.
+
+By default, the remote host is `127.0.0.1` (the server itself). You can forward to a different host on the server's
+network:
+
+```sh
+nt forward my-server --local 5432 --remote 10.0.0.5 --port 5432
+```
+
+This is useful for accessing databases, internal services, or admin panels that aren't directly exposed. The tunnel
+stays open until you press `Ctrl+C`.
 
 ## Configuration
 
