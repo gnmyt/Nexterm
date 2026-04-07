@@ -32,6 +32,8 @@ class _ServersScreenState extends State<ServersScreen> {
   String _query = '';
   Timer? _debounce;
   bool _searchFocused = false;
+  final Set<int> _selectedTags = {};
+  List<Tag> _allTags = [];
 
   int get _totalServers => folders.fold(0, (sum, f) => sum + _countServers(f));
   int _countServers(ServerFolder f) => f.allServers.length + f.allFolders.fold(0, (sum, sf) => sum + _countServers(sf));
@@ -73,6 +75,7 @@ class _ServersScreenState extends State<ServersScreen> {
       final data = await ServerService.getServerList(token);
       _expanded.clear();
       if (_folderState != null) _restoreStates(data);
+      _allTags = _collectTags(data);
       setState(() { folders = data; isLoading = false; errorMessage = null; });
       _filterFolders();
     } catch (e) {
@@ -80,14 +83,33 @@ class _ServersScreenState extends State<ServersScreen> {
     }
   }
 
+  List<Tag> _collectTags(List<ServerFolder> list) {
+    final map = <int, Tag>{};
+    for (final f in list) {
+      for (final s in f.allServers) {
+        for (final t in s.tags ?? <Tag>[]) { map[t.id] = t; }
+      }
+      for (final sf in f.allFolders) {
+        for (final t in _collectTags([sf])) { map[t.id] = t; }
+      }
+    }
+    return map.values.toList()..sort((a, b) => a.name.compareTo(b.name));
+  }
+
+  bool _serverMatchesTags(Server s) => _selectedTags.isEmpty || (s.tags?.any((t) => _selectedTags.contains(t.id)) ?? false);
+
   void _filterFolders() {
-    if (_query.isEmpty) { filteredFolders = List.from(folders); return; }
+    if (_query.isEmpty && _selectedTags.isEmpty) { filteredFolders = List.from(folders); return; }
     filteredFolders = folders.map(_filterFolder).whereType<ServerFolder>().toList();
   }
 
   ServerFolder? _filterFolder(ServerFolder folder) {
     final q = _query.toLowerCase();
-    final matchServers = folder.allServers.where((s) => s.name.toLowerCase().contains(q) || s.ip.toLowerCase().contains(q)).toList();
+    final matchServers = folder.allServers.where((s) {
+      final matchesTag = _serverMatchesTags(s);
+      if (q.isEmpty) return matchesTag;
+      return matchesTag && (s.name.toLowerCase().contains(q) || s.ip.toLowerCase().contains(q));
+    }).toList();
     final matchFolders = folder.allFolders.map(_filterFolder).whereType<ServerFolder>().toList();
     if (folder.name.toLowerCase().contains(q) || matchServers.isNotEmpty || matchFolders.isNotEmpty) {
       return ServerFolder(
@@ -105,6 +127,7 @@ class _ServersScreenState extends State<ServersScreen> {
       final token = widget.authManager.sessionToken;
       if (token == null) return;
       final data = await ServerService.getServerList(token);
+      _allTags = _collectTags(data);
       _expanded.clear();
       if (_folderState != null) _restoreStates(data);
       setState(() { folders = data; errorMessage = null; });
@@ -200,10 +223,58 @@ class _ServersScreenState extends State<ServersScreen> {
             ),
           ),
         ),
+        if (_allTags.isNotEmpty) ...[const SizedBox(height: 8), _buildTagBar(cs)],
         const SizedBox(height: 8),
       ]),
     );
   }
+
+  Widget _buildTagBar(ColorScheme cs) => SizedBox(
+    height: 34,
+    child: ListView.separated(
+      scrollDirection: Axis.horizontal,
+      itemCount: _allTags.length + (_selectedTags.isNotEmpty ? 1 : 0),
+      separatorBuilder: (_, __) => const SizedBox(width: 6),
+      itemBuilder: (_, i) {
+        if (_selectedTags.isNotEmpty && i == 0) {
+          return GestureDetector(
+            onTap: () => setState(() { _selectedTags.clear(); _filterFolders(); }),
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 10),
+              decoration: BoxDecoration(color: cs.errorContainer, borderRadius: BorderRadius.circular(10)),
+              alignment: Alignment.center,
+              child: Icon(MdiIcons.close, size: 16, color: cs.onErrorContainer),
+            ),
+          );
+        }
+        final idx = _selectedTags.isNotEmpty ? i - 1 : i;
+        final tag = _allTags[idx];
+        final sel = _selectedTags.contains(tag.id);
+        final tagColor = _parseColor(tag.color);
+        return GestureDetector(
+          onTap: () => setState(() {
+            sel ? _selectedTags.remove(tag.id) : _selectedTags.add(tag.id);
+            _filterFolders();
+          }),
+          child: AnimatedContainer(
+            duration: const Duration(milliseconds: 200),
+            padding: const EdgeInsets.symmetric(horizontal: 12),
+            decoration: BoxDecoration(
+              color: sel ? tagColor.withValues(alpha: 0.2) : cs.surfaceContainerHigh,
+              borderRadius: BorderRadius.circular(10),
+              border: sel ? Border.all(color: tagColor, width: 1.5) : Border.all(color: cs.outlineVariant.withValues(alpha: 0.3)),
+            ),
+            alignment: Alignment.center,
+            child: Row(mainAxisSize: MainAxisSize.min, children: [
+              Container(width: 8, height: 8, decoration: BoxDecoration(color: tagColor, shape: BoxShape.circle)),
+              const SizedBox(width: 6),
+              Text(tag.name, style: TextStyle(fontSize: 12, fontWeight: sel ? FontWeight.w600 : FontWeight.w500, color: sel ? tagColor : cs.onSurface)),
+            ]),
+          ),
+        );
+      },
+    ),
+  );
 
   Widget _buildError(ColorScheme cs, TextTheme tt) => Center(
     child: Padding(padding: const EdgeInsets.all(32), child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
