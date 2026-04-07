@@ -1,0 +1,92 @@
+name: Build CLI
+
+on:
+  workflow_call:
+    inputs:
+      version:
+        required: true
+        type: string
+      semver:
+        required: true
+        type: string
+      upload_url:
+        required: true
+        type: string
+
+jobs:
+  build-cli:
+    name: "CLI (${{ matrix.name }})"
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: linux-x64
+            os: ubuntu-22.04
+            target: x86_64-unknown-linux-gnu
+            artifact_name: nt-linux-x64
+          - name: linux-arm64
+            os: ubuntu-22.04
+            target: aarch64-unknown-linux-gnu
+            artifact_name: nt-linux-arm64
+            cross: true
+          - name: macos-x64
+            os: macos-latest
+            target: x86_64-apple-darwin
+            artifact_name: nt-macos-x64
+          - name: macos-arm64
+            os: macos-latest
+            target: aarch64-apple-darwin
+            artifact_name: nt-macos-arm64
+          - name: windows-x64
+            os: windows-latest
+            target: x86_64-pc-windows-msvc
+            artifact_name: nt-windows-x64.exe
+
+    steps:
+      - name: Checkout project
+        uses: actions/checkout@v4
+
+      - name: Install Rust
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: ${{ matrix.target }}
+
+      - name: Install cross-compilation tools (Linux ARM64)
+        if: matrix.cross
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y gcc-aarch64-linux-gnu
+          mkdir -p cli/.cargo
+          echo '[target.aarch64-unknown-linux-gnu]' >> cli/.cargo/config.toml
+          echo 'linker = "aarch64-linux-gnu-gcc"' >> cli/.cargo/config.toml
+
+      - name: Install OpenSSL (Linux ARM64)
+        if: matrix.cross
+        run: |
+          sudo dpkg --add-architecture arm64
+          sudo sed -i 's/^deb /deb [arch=amd64] /' /etc/apt/sources.list
+          echo "deb [arch=arm64] http://ports.ubuntu.com/ jammy main restricted universe" | sudo tee -a /etc/apt/sources.list
+          echo "deb [arch=arm64] http://ports.ubuntu.com/ jammy-updates main restricted universe" | sudo tee -a /etc/apt/sources.list
+          sudo apt-get update
+          sudo apt-get install -y libssl-dev:arm64
+          echo "PKG_CONFIG_SYSROOT_DIR=/usr/aarch64-linux-gnu" >> $GITHUB_ENV
+          echo "OPENSSL_DIR=/usr/aarch64-linux-gnu" >> $GITHUB_ENV
+
+      - name: Update CLI version
+        shell: bash
+        run: sed -i${{ runner.os == 'macOS' && " ''" || '' }} "s/^version = \".*\"/version = \"${{ inputs.semver }}\"/" cli/Cargo.toml
+
+      - name: Build CLI
+        working-directory: cli
+        run: cargo build --release --target ${{ matrix.target }}
+
+      - name: Upload to Release
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ inputs.upload_url }}
+          asset_path: cli/target/${{ matrix.target }}/release/${{ runner.os == 'Windows' && 'nt.exe' || 'nt' }}
+          asset_name: ${{ matrix.artifact_name }}
+          asset_content_type: application/octet-stream
