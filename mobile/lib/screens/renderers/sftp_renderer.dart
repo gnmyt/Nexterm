@@ -8,6 +8,8 @@ import 'package:flutter/material.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:open_filex/open_filex.dart';
+
+import '../widgets/connection_loader.dart';
 import 'package:http/http.dart' as http;
 
 import '../../models/sftp_entry.dart';
@@ -29,6 +31,7 @@ class _SftpOps {
 class SftpRenderer extends StatefulWidget {
   final AppSession session;
   final String token;
+  final SessionManager sessionManager;
   final SftpSettings sftpSettings;
   final VoidCallback? onDisconnected;
 
@@ -36,6 +39,7 @@ class SftpRenderer extends StatefulWidget {
     super.key,
     required this.session,
     required this.token,
+    required this.sessionManager,
     required this.sftpSettings,
     this.onDisconnected,
   });
@@ -56,6 +60,8 @@ class _SftpRendererState extends State<SftpRenderer> {
   bool _selectionMode = false;
   bool _uploading = false;
   bool _initialized = false;
+  int _reconnectAttempts = 0;
+  static const int _maxReconnectAttempts = 5;
 
   String get _sessionId => widget.session.sessionId;
 
@@ -89,12 +95,12 @@ class _SftpRendererState extends State<SftpRenderer> {
             });
           }
           widget.session.isConnected = false;
-          widget.onDisconnected?.call();
+          _attemptReconnect();
         },
         onDone: () {
           if (mounted) setState(() => _connected = false);
           widget.session.isConnected = false;
-          widget.onDisconnected?.call();
+          _attemptReconnect();
         },
       );
     } else {
@@ -102,6 +108,38 @@ class _SftpRendererState extends State<SftpRenderer> {
       if (_connected) {
         _listDirectory(_currentPath);
       }
+    }
+  }
+
+  Future<void> _attemptReconnect() async {
+    if (!mounted || _reconnectAttempts >= _maxReconnectAttempts) {
+      widget.onDisconnected?.call();
+      return;
+    }
+
+    _reconnectAttempts++;
+    final delay = Duration(seconds: _reconnectAttempts.clamp(1, 5));
+    await Future.delayed(delay);
+
+    if (!mounted) return;
+
+    final success = await widget.sessionManager.reconnectSftpSession(
+      token: widget.token,
+      session: widget.session,
+    );
+
+    if (!mounted) return;
+
+    if (success) {
+      _initialized = false;
+      widget.session.sftpSubscription = null;
+      setState(() {
+        _errorMessage = null;
+        _loading = true;
+      });
+      _setupConnection();
+    } else {
+      _attemptReconnect();
     }
   }
 
@@ -128,6 +166,7 @@ class _SftpRendererState extends State<SftpRenderer> {
       case _SftpOps.ready:
         if (mounted) setState(() => _connected = true);
         widget.session.isConnected = true;
+        _reconnectAttempts = 0;
         _listDirectory(_currentPath);
         break;
       case _SftpOps.listFiles:
@@ -756,17 +795,7 @@ class _SftpRendererState extends State<SftpRenderer> {
 
   Widget _buildBody() {
     if (!_connected && _loading) {
-      return Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            const CircularProgressIndicator(),
-            const SizedBox(height: 16),
-            Text('Connecting to ${widget.session.server.name}...',
-                style: Theme.of(context).textTheme.bodyLarge),
-          ],
-        ),
-      );
+      return const ConnectionLoader(visible: true);
     }
 
     if (_loading) return const Center(child: CircularProgressIndicator());
