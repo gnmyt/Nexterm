@@ -7,7 +7,7 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:share_plus/share_plus.dart';
+import 'package:open_filex/open_filex.dart';
 import 'package:http/http.dart' as http;
 
 import '../../models/sftp_entry.dart';
@@ -432,6 +432,14 @@ class _SftpRendererState extends State<SftpRenderer> {
     return http.get(url, headers: {'User-Agent': ApiClient.userAgent});
   }
 
+  Future<Directory> _getDownloadDir() async {
+    if (Platform.isAndroid) {
+      final dir = await getDownloadsDirectory();
+      if (dir != null) return dir;
+    }
+    return await getApplicationDocumentsDirectory();
+  }
+
   Future<void> _downloadFile(SftpEntry entry) async {
     setState(() => _uploading = true);
     try {
@@ -444,11 +452,19 @@ class _SftpRendererState extends State<SftpRenderer> {
         }
         return;
       }
-      final cacheDir = await getTemporaryDirectory();
-      final file = await File('${cacheDir.path}/${entry.name}')
+      final dir = await _getDownloadDir();
+      final file = await File('${dir.path}/${entry.name}')
           .writeAsBytes(response.bodyBytes);
       if (mounted) {
-        await SharePlus.instance.share(ShareParams(files: [XFile(file.path)]));
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Saved to ${file.path}'),
+            action: SnackBarAction(
+              label: 'Open',
+              onPressed: () => OpenFilex.open(file.path),
+            ),
+          ),
+        );
       }
     } catch (e) {
       if (mounted) {
@@ -473,17 +489,17 @@ class _SftpRendererState extends State<SftpRenderer> {
     }
 
     setState(() => _uploading = true);
-    final cacheDir = await getTemporaryDirectory();
-    final xFiles = <XFile>[];
+    final dir = await _getDownloadDir();
+    int saved = 0;
     int failed = 0;
 
     for (final entry in fileEntries) {
       try {
         final response = await _fetchFile(_remotePath(entry.name));
         if (response != null && response.statusCode == 200) {
-          final file = await File('${cacheDir.path}/${entry.name}')
+          await File('${dir.path}/${entry.name}')
               .writeAsBytes(response.bodyBytes);
-          xFiles.add(XFile(file.path));
+          saved++;
         } else {
           failed++;
         }
@@ -492,15 +508,11 @@ class _SftpRendererState extends State<SftpRenderer> {
       }
     }
 
-    if (mounted && xFiles.isNotEmpty) {
-      await SharePlus.instance.share(ShareParams(files: xFiles));
-    }
     if (mounted) {
-      if (failed > 0) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('${xFiles.length} ready, $failed failed')),
-        );
-      }
+      final msg = failed > 0
+          ? 'Saved $saved file(s) to ${dir.path}, $failed failed'
+          : 'Saved $saved file(s) to ${dir.path}';
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(msg)));
       setState(() => _uploading = false);
     }
   }
