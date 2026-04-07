@@ -1,5 +1,6 @@
 const { Router } = require("express");
 const { createSession, getSessions, getSession, hibernateSession, resumeSession, deleteSession, startSharing, stopSharing, updateSharePermissions, duplicateSession, pasteIdentityPassword } = require("../controllers/serverSession");
+const { execCommand } = require("../controllers/execCommand");
 const { createSessionValidation, sessionIdValidation, resumeSessionValidation, duplicateSessionValidation } = require("../validations/serverSession");
 const { validateSchema } = require("../utils/schema");
 const stateBroadcaster = require("../lib/StateBroadcaster");
@@ -233,6 +234,41 @@ app.post("/:id/paste-password", async (req, res) => {
         res.json(result);
     } catch (error) {
         console.error('Error pasting identity password:', error);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+});
+
+/**
+ * POST /connections/{entryId}/exec
+ * @summary Execute Command
+ * @description Executes a single command on a server entry and returns the output.
+ * @tags Connection
+ * @produces application/json
+ * @security BearerAuth
+ * @param {number} entryId.path.required - Entry ID
+ * @param {object} request.body.required - Command to execute
+ * @return {object} 200 - Command result with stdout, stderr, exitCode
+ */
+app.post("/:entryId/exec", async (req, res) => {
+    try {
+        const entryId = parseInt(req.params.entryId, 10);
+        if (isNaN(entryId)) return res.status(400).json({ error: "Invalid entry ID" });
+
+        const { command } = req.body;
+        if (!command || typeof command !== "string") {
+            return res.status(400).json({ error: "Command is required" });
+        }
+
+        const identityId = req.query.identityId ? parseInt(req.query.identityId, 10) : null;
+        const result = await execCommand(req.user.id, entryId, identityId, command);
+
+        if (result?.code) {
+            return res.status(result.code).json({ error: result.message });
+        }
+
+        res.json(result);
+    } catch (error) {
+        console.error('Error executing command:', error);
         res.status(500).json({ error: 'Internal server error' });
     }
 });
