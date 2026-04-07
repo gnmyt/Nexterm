@@ -795,7 +795,10 @@ class _SftpRendererState extends State<SftpRenderer> {
 
   Widget _buildBody() {
     if (!_connected && _loading) {
-      return const ConnectionLoader(visible: true);
+      return ConnectionLoader(
+        visible: true,
+        backgroundColor: Theme.of(context).colorScheme.surface,
+      );
     }
 
     if (_loading) return const Center(child: CircularProgressIndicator());

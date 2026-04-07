@@ -41,6 +41,7 @@ class _TerminalRendererState extends State<TerminalRenderer> {
   Terminal get _terminal => widget.session.terminal!;
   IOWebSocketChannel? get _channel => widget.session.termChannel;
   bool _connected = false;
+  bool _receivedData = false;
   String? _errorMessage;
   final FocusNode _terminalFocusNode = FocusNode();
   bool _showKeyboardToolbar = false;
@@ -98,6 +99,9 @@ class _TerminalRendererState extends State<TerminalRenderer> {
     if (widget.session.termSubscription == null) {
       widget.session.termSubscription = _channel?.stream.listen(
         (data) {
+          if (!_receivedData && mounted) {
+            setState(() => _receivedData = true);
+          }
           if (data is String) {
             _terminal.write(data.startsWith('\x02') ? data.substring(1) : data);
           }
@@ -160,6 +164,7 @@ class _TerminalRendererState extends State<TerminalRenderer> {
       widget.session.termSubscription = null;
       setState(() {
         _errorMessage = null;
+        _receivedData = false;
       });
       _setupTerminal();
     } else {
@@ -352,7 +357,7 @@ class _TerminalRendererState extends State<TerminalRenderer> {
               ),
             ),
             Positioned.fill(
-              child: ConnectionLoader(visible: !_connected && _errorMessage == null),
+              child: ConnectionLoader(visible: !_receivedData && _errorMessage == null),
             ),
           ],
         );

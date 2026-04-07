@@ -5,8 +5,9 @@ import 'package:material_design_icons_flutter/material_design_icons_flutter.dart
 
 class ConnectionLoader extends StatefulWidget {
   final bool visible;
+  final Color? backgroundColor;
 
-  const ConnectionLoader({super.key, required this.visible});
+  const ConnectionLoader({super.key, required this.visible, this.backgroundColor});
 
   @override
   State<ConnectionLoader> createState() => _ConnectionLoaderState();
@@ -63,16 +64,22 @@ class _ConnectionLoaderState extends State<ConnectionLoader>
 
   @override
   Widget build(BuildContext context) {
+    final bg = widget.backgroundColor ?? Colors.black;
+    final isDark = ThemeData.estimateBrightnessForColor(bg) == Brightness.dark;
+    final iconColor = isDark
+        ? Colors.white.withValues(alpha: 0.5)
+        : Colors.black.withValues(alpha: 0.4);
+
     return FadeTransition(
       opacity: _fadeController,
       child: IgnorePointer(
         ignoring: !widget.visible,
         child: Container(
-          color: Colors.black,
+          color: bg,
           child: Column(
             children: [
               _buildProgressBar(context),
-              Expanded(child: _buildContent(context)),
+              Expanded(child: _buildContent(context, iconColor)),
             ],
           ),
         ),
@@ -128,19 +135,18 @@ class _ConnectionLoaderState extends State<ConnectionLoader>
     return 0.75 + (t - 0.85) / 0.15 * 0.10;
   }
 
-  Widget _buildContent(BuildContext context) {
-    final subtext = Colors.white.withValues(alpha: 0.5);
+  Widget _buildContent(BuildContext context, Color iconColor) {
     final primary = Theme.of(context).colorScheme.primary;
 
     return Center(
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(MdiIcons.laptop, size: 36, color: subtext),
+          Icon(MdiIcons.laptop, size: 36, color: iconColor),
           const SizedBox(width: 24),
           _buildDots(primary),
           const SizedBox(width: 24),
-          Icon(MdiIcons.server, size: 36, color: subtext),
+          Icon(MdiIcons.server, size: 36, color: iconColor),
         ],
       ),
     );

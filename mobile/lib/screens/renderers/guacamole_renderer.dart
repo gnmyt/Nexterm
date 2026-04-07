@@ -31,6 +31,7 @@ class GuacamoleRenderer extends StatefulWidget {
 class _GuacamoleRendererState extends State<GuacamoleRenderer> {
   GuacClient? _client;
   bool _connected = false;
+  bool _receivedData = false;
   String? _error;
   MouseMode _mouseMode = MouseMode.direct;
 
@@ -110,6 +111,7 @@ class _GuacamoleRendererState extends State<GuacamoleRenderer> {
 
     if (success) {
       _initialSizeSent = false;
+      _receivedData = false;
       _connect();
     } else {
       _attemptReconnect();
@@ -123,7 +125,10 @@ class _GuacamoleRendererState extends State<GuacamoleRenderer> {
       _client = session.guacClient;
 
       _client!.display.onflush = () {
-        if (mounted) _repaint.notify();
+        if (mounted) {
+          if (!_receivedData) setState(() => _receivedData = true);
+          _repaint.notify();
+        }
       };
       _client!.display.onresize = (w, h) {
         if (!mounted) return;
@@ -597,7 +602,7 @@ class _GuacamoleRendererState extends State<GuacamoleRenderer> {
           }),
         ),
         Positioned.fill(
-          child: ConnectionLoader(visible: !_connected && _error == null),
+          child: ConnectionLoader(visible: !_receivedData && _error == null),
         ),
 
         Positioned(
