@@ -3,11 +3,11 @@ import 'package:dynamic_color/dynamic_color.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'screens/device_setup_screen.dart';
 import 'screens/main_navigation_page.dart';
-import 'services/api_config.dart';
 import 'services/session_manager.dart';
 import 'utils/theme_manager.dart';
 import 'utils/auth_manager.dart';
 import 'utils/snippet_manager.dart';
+import 'utils/server_account_manager.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -15,18 +15,18 @@ void main() async {
   final themeMode = ThemeManager.parseStoredThemeMode(
     prefs.getString('themeMode'),
   );
-  final isLoggedIn = prefs.getBool('isLoggedIn') ?? false;
 
-  await ApiConfig.loadFromPrefs();
+  final accountManager = ServerAccountManager();
+  await accountManager.load();
 
-  runApp(MyApp(themeMode: themeMode, isLoggedIn: isLoggedIn));
+  runApp(MyApp(themeMode: themeMode, accountManager: accountManager));
 }
 
 class MyApp extends StatefulWidget {
   final ThemeMode themeMode;
-  final bool isLoggedIn;
+  final ServerAccountManager accountManager;
 
-  const MyApp({super.key, required this.themeMode, required this.isLoggedIn});
+  const MyApp({super.key, required this.themeMode, required this.accountManager});
 
   @override
   State<MyApp> createState() => _MyAppState();
@@ -43,13 +43,13 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
     _themeManager = ThemeManager(widget.themeMode);
-    _authManager = AuthManager(widget.isLoggedIn);
+    _authManager = AuthManager(widget.accountManager);
     _snippetManager = SnippetManager();
     _sessionManager = SessionManager();
 
     _authManager.addListener(_onAuthChanged);
 
-    if (widget.isLoggedIn) {
+    if (_authManager.isAuthenticated) {
       _loadSnippets();
       _restoreSessions();
     }

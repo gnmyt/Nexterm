@@ -4,6 +4,7 @@ import '../utils/theme_manager.dart';
 import '../utils/auth_manager.dart';
 import '../services/api_config.dart';
 import 'sessions_screen.dart';
+import 'server_accounts_screen.dart';
 
 class SettingsScreen extends StatefulWidget {
   final ThemeManager themeManager;
@@ -40,12 +41,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
     _loadUserInfo();
   }
 
-  Future<void> _loadUserInfo() async {
-    final username = await widget.authManager.getUsername();
-    final fullName = await widget.authManager.getFullName();
+  void _loadUserInfo() {
     setState(() {
-      _username = username;
-      _fullName = fullName;
+      _username = widget.authManager.getUsername();
+      _fullName = widget.authManager.getFullName();
     });
   }
 
@@ -98,6 +97,27 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 ),
               ),
             ),
+          Card(
+            margin: const EdgeInsets.symmetric(vertical: 4.0, horizontal: 8.0),
+            child: ListTile(
+              leading: Icon(MdiIcons.serverNetwork),
+              title: const Text('Connections'),
+              subtitle: Text(
+                '${widget.authManager.accountManager.accounts.length} server(s)',
+              ),
+              trailing: Icon(MdiIcons.chevronRight),
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => ServerAccountsScreen(
+                      authManager: widget.authManager,
+                    ),
+                  ),
+                );
+              },
+            ),
+          ),
           Card(
             margin: const EdgeInsets.symmetric(vertical: 4.0, horizontal: 8.0),
             child: Column(

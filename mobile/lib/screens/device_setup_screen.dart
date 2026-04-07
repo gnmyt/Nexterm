@@ -10,8 +10,9 @@ import '../services/device_code_service.dart';
 
 class DeviceSetupScreen extends StatefulWidget {
   final AuthManager authManager;
+  final bool isAddingServer;
 
-  const DeviceSetupScreen({super.key, required this.authManager});
+  const DeviceSetupScreen({super.key, required this.authManager, this.isAddingServer = false});
 
   @override
   State<DeviceSetupScreen> createState() => _DeviceSetupScreenState();
@@ -31,28 +32,21 @@ class _DeviceSetupScreenState extends State<DeviceSetupScreen> {
   Timer? _pollTimer;
   
   String? _error;
+  String? _previousBaseUrl;
 
   @override
   void initState() {
     super.initState();
-    _checkExistingServerUrl();
-  }
-
-  Future<void> _checkExistingServerUrl() async {
-    await ApiConfig.loadFromPrefs();
-    if (ApiConfig.baseUrl != ApiConfig.defaultBaseUrl && ApiConfig.baseUrl.isNotEmpty) {
-      String savedUrl = ApiConfig.baseUrl;
-      if (savedUrl.endsWith('/api')) {
-        savedUrl = savedUrl.substring(0, savedUrl.length - 4);
-      }
-      savedUrl = savedUrl.replaceFirst(RegExp(r'^https?://'), '');
-      _serverUrlController.text = savedUrl;
-    }
+    _previousBaseUrl = ApiConfig.baseUrl;
   }
 
   @override
   void dispose() {
     _pollTimer?.cancel();
+
+    if (widget.isAddingServer && _previousBaseUrl != null) {
+      ApiConfig.setBaseUrlSync(_previousBaseUrl!);
+    }
     _serverUrlController.dispose();
     _serverUrlFocusNode.dispose();
     super.dispose();
@@ -73,9 +67,9 @@ class _DeviceSetupScreenState extends State<DeviceSetupScreen> {
     final normalizedUrl = ApiClient.normalizeBaseUrl(url);
     
     try {
+      ApiConfig.setBaseUrlSync(normalizedUrl);
       final response = await ApiClient.get('/service/is-fts');
       if (response.statusCode == 200) {
-        await ApiConfig.setBaseUrl(normalizedUrl);
         await _createDeviceCode();
         setState(() {
           _step = 2;
@@ -88,7 +82,7 @@ class _DeviceSetupScreenState extends State<DeviceSetupScreen> {
         });
       }
     } catch (e) {
-      await ApiConfig.setBaseUrl(normalizedUrl);
+      ApiConfig.setBaseUrlSync(normalizedUrl);
       try {
         final retryResponse = await ApiClient.get('/service/is-fts');
         if (retryResponse.statusCode == 200) {
@@ -136,11 +130,20 @@ class _DeviceSetupScreenState extends State<DeviceSetupScreen> {
     
     if (response.isAuthorized && response.token != null) {
       _pollTimer?.cancel();
-      await widget.authManager.loginWithToken(response.token!);
+      final serverUrl = _serverUrlController.text.trim();
+      final label = serverUrl.replaceFirst(RegExp(r'^https?://'), '');
+      await widget.authManager.loginWithToken(
+        response.token!,
+        baseUrl: ApiConfig.baseUrl,
+        label: label,
+      );
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Successfully authenticated!')),
         );
+        if (widget.isAddingServer) {
+          Navigator.pop(context);
+        }
       }
     } else if (response.isInvalid) {
       await _createDeviceCode();
@@ -201,6 +204,9 @@ class _DeviceSetupScreenState extends State<DeviceSetupScreen> {
     final colorScheme = Theme.of(context).colorScheme;
     
     return Scaffold(
+      appBar: widget.isAddingServer
+          ? AppBar(title: const Text('Add Server'))
+          : null,
       body: SafeArea(
         child: Center(
           child: SingleChildScrollView(
