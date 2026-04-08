@@ -1340,7 +1340,8 @@
         "host": "Хост",
         "nodeName": "Имя узла",
         "vmid": "ID виртуальной машины",
-        "macAddress": "MAC-адрес"
+        "macAddress": "MAC-адрес",
+        "wolBroadcastAddress": "Адрес широковещания"
       },
       "placeholders": {
         "serverName": "Название сервера",
@@ -1351,7 +1352,8 @@
         "host": "Хост",
         "nodeName": "Имя узла",
         "vmid": "ID виртуальной машины",
-        "macAddress": "AA:BB:CC:DD:EE:FF"
+        "macAddress": "AA:BB:CC:DD:EE:FF",
+        "wolBroadcastAddress": "255.255.255.255"
       },
       "settings": {
         "jumpHosts": {
