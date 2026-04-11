@@ -1,10 +1,10 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
-import 'package:mobile_scanner/mobile_scanner.dart';
 import '../utils/auth_manager.dart';
 import '../utils/api_client.dart';
 import '../services/api_config.dart';
+import '../widgets/qr_scanner_page.dart';
 
 class QrScannerScreen extends StatefulWidget {
   final AuthManager authManager;
@@ -15,12 +15,14 @@ class QrScannerScreen extends StatefulWidget {
 }
 
 class _QrScannerScreenState extends State<QrScannerScreen> {
-  final _controller = MobileScannerController();
-  bool _scanned = false, _authorizing = false;
+  bool _authorizing = false;
   String? _error, _code, _server;
 
   @override
-  void dispose() { _controller.dispose(); super.dispose(); }
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) => _openScanner());
+  }
 
   Map<String, String>? _parse(String value) {
     try {
@@ -33,14 +35,22 @@ class _QrScannerScreenState extends State<QrScannerScreen> {
     return null;
   }
 
-  void _onDetect(BarcodeCapture capture) {
-    if (_scanned || _authorizing) return;
-    final raw = capture.barcodes.firstOrNull?.rawValue;
-    if (raw == null) return;
-    final parsed = _parse(raw);
-    if (parsed == null) { setState(() => _error = 'Invalid QR code'); return; }
-    setState(() { _scanned = true; _code = parsed['code']; _server = parsed['server']; _error = null; });
-    _controller.stop();
+  Future<void> _openScanner() async {
+    final result = await Navigator.push<Map<String, String>>(context, MaterialPageRoute(
+      builder: (_) => QrScannerPage(
+        title: 'Scan QR Code',
+        hint: 'Point your camera at the QR code on the login page',
+        onDetect: (raw) {
+          final parsed = _parse(raw);
+          if (parsed == null) return false;
+          Navigator.pop(context, parsed);
+          return true;
+        },
+      ),
+    ));
+    if (!mounted) return;
+    if (result == null) { Navigator.pop(context); return; }
+    setState(() { _code = result['code']; _server = result['server']; });
   }
 
   String _norm(String url) {
@@ -74,60 +84,13 @@ class _QrScannerScreenState extends State<QrScannerScreen> {
     } finally { ApiConfig.setBaseUrlSync(prev); }
   }
 
-  void _reset() {
-    setState(() { _scanned = false; _authorizing = false; _code = null; _server = null; _error = null; });
-    _controller.start();
-  }
-
   @override
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
     final tt = Theme.of(context).textTheme;
-
-    return Scaffold(
-      body: SafeArea(child: _scanned ? _confirmBody(cs, tt) : _scanBody(cs, tt)),
-    );
+    if (_code == null) return const Scaffold(body: SizedBox.shrink());
+    return Scaffold(body: SafeArea(child: _confirmBody(cs, tt)));
   }
-
-  Widget _scanBody(ColorScheme cs, TextTheme tt) => Column(children: [
-    Padding(
-      padding: const EdgeInsets.fromLTRB(8, 8, 20, 12),
-      child: Row(children: [
-        IconButton(icon: const Icon(Icons.arrow_back), onPressed: () => Navigator.pop(context)),
-        const SizedBox(width: 4),
-        Text('Scan QR Code', style: tt.titleLarge?.copyWith(fontWeight: FontWeight.w700)),
-        const Spacer(),
-        ValueListenableBuilder(
-          valueListenable: _controller,
-          builder: (_, state, __) => IconButton(
-            icon: Icon(state.torchState == TorchState.on ? Icons.flash_on : Icons.flash_off),
-            onPressed: () => _controller.toggleTorch(),
-          ),
-        ),
-      ]),
-    ),
-    Expanded(child: Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16),
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(16),
-        child: Stack(children: [
-          MobileScanner(controller: _controller, onDetect: _onDetect),
-          CustomPaint(painter: _OverlayPainter(cs.primary, Colors.black54), child: const SizedBox.expand()),
-        ]),
-      ),
-    )),
-    Padding(
-      padding: const EdgeInsets.fromLTRB(20, 16, 20, 16),
-      child: Column(children: [
-        Text('Point your camera at the QR code on the login page',
-          style: TextStyle(fontSize: 14, color: cs.outline), textAlign: TextAlign.center),
-        if (_error != null) Padding(
-          padding: const EdgeInsets.only(top: 8),
-          child: Text(_error!, style: TextStyle(fontSize: 13, color: cs.error), textAlign: TextAlign.center),
-        ),
-      ]),
-    ),
-  ]);
 
   Widget _confirmBody(ColorScheme cs, TextTheme tt) => ListView(
     padding: const EdgeInsets.only(bottom: 24),
@@ -135,7 +98,7 @@ class _QrScannerScreenState extends State<QrScannerScreen> {
       Padding(
         padding: const EdgeInsets.fromLTRB(8, 8, 20, 12),
         child: Row(children: [
-          IconButton(icon: const Icon(Icons.arrow_back), onPressed: _authorizing ? null : _reset),
+          IconButton(icon: const Icon(Icons.arrow_back), onPressed: _authorizing ? null : _openScanner),
           const SizedBox(width: 4),
           Text('Authorize Login', style: tt.titleLarge?.copyWith(fontWeight: FontWeight.w700)),
         ]),
@@ -227,30 +190,4 @@ class _QrScannerScreenState extends State<QrScannerScreen> {
       ])),
     ]),
   );
-}
-
-class _OverlayPainter extends CustomPainter {
-  final Color borderColor, overlayColor;
-  _OverlayPainter(this.borderColor, this.overlayColor);
-
-  @override
-  void paint(Canvas canvas, Size size) {
-    final s = size.width * 0.7, l = (size.width - s) / 2, t = (size.height - s) / 2.5;
-    final rrect = RRect.fromRectAndRadius(Rect.fromLTWH(l, t, s, s), const Radius.circular(16));
-    canvas.drawPath(Path()..addRect(Rect.fromLTWH(0, 0, size.width, size.height))..addRRect(rrect)..fillType = PathFillType.evenOdd, Paint()..color = overlayColor);
-
-    final cl = 28.0, r = 16.0, rect = rrect.outerRect;
-    final p = Paint()..color = borderColor..strokeWidth = 4..style = PaintingStyle.stroke..strokeCap = StrokeCap.round;
-    for (final c in [
-      [rect.left, rect.top + cl, rect.left, rect.top + r, rect.left, rect.top, rect.left + r, rect.top, rect.left + cl, rect.top],
-      [rect.right - cl, rect.top, rect.right - r, rect.top, rect.right, rect.top, rect.right, rect.top + r, rect.right, rect.top + cl],
-      [rect.left, rect.bottom - cl, rect.left, rect.bottom - r, rect.left, rect.bottom, rect.left + r, rect.bottom, rect.left + cl, rect.bottom],
-      [rect.right - cl, rect.bottom, rect.right - r, rect.bottom, rect.right, rect.bottom, rect.right, rect.bottom - r, rect.right, rect.bottom - cl],
-    ]) {
-      canvas.drawPath(Path()..moveTo(c[0], c[1])..lineTo(c[2], c[3])..quadraticBezierTo(c[4], c[5], c[6], c[7])..lineTo(c[8], c[9]), p);
-    }
-  }
-
-  @override
-  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
 }

@@ -2,8 +2,8 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
-import 'package:mobile_scanner/mobile_scanner.dart';
 import 'package:url_launcher/url_launcher.dart';
+import '../widgets/qr_scanner_page.dart';
 import '../utils/auth_manager.dart';
 import '../utils/api_client.dart';
 import '../services/api_config.dart';
@@ -105,9 +105,26 @@ class _DeviceSetupScreenState extends State<DeviceSetupScreen> {
   }
 
   Future<void> _handleScanQr() async {
-    final result = await Navigator.push<Map<String, String>>(
-      context, MaterialPageRoute(builder: (_) => const _QrScannerPage()),
-    );
+    final result = await Navigator.push<Map<String, String>>(context, MaterialPageRoute(
+      builder: (_) => QrScannerPage(
+        title: 'Scan QR Code',
+        hint: 'Open "Link Device" in your web browser and scan the QR code shown there.',
+        onDetect: (raw) {
+          try {
+            final uri = Uri.parse(raw);
+            if (uri.scheme == 'nexterm' && uri.host == 'devicelink') {
+              final token = uri.queryParameters['token'];
+              final server = uri.queryParameters['server'];
+              if (token != null && server != null) {
+                Navigator.pop(context, {'token': token, 'server': server});
+                return true;
+              }
+            }
+          } catch (_) {}
+          return false;
+        },
+      ),
+    ));
     if (result == null || !mounted) return;
     final token = result['token'], server = result['server'];
     if (token == null || server == null) return;
@@ -305,81 +322,6 @@ class _DeviceSetupScreenState extends State<DeviceSetupScreen> {
         OutlinedButton(onPressed: _goBack,
           style: OutlinedButton.styleFrom(padding: const EdgeInsets.symmetric(vertical: 16)), child: const Text('Cancel')),
       ],
-    );
-  }
-}
-
-class _QrScannerPage extends StatefulWidget {
-  const _QrScannerPage();
-  @override
-  State<_QrScannerPage> createState() => _QrScannerPageState();
-}
-
-class _QrScannerPageState extends State<_QrScannerPage> {
-  final _controller = MobileScannerController();
-  bool _handled = false;
-  String? _error;
-
-  @override
-  void dispose() { _controller.dispose(); super.dispose(); }
-
-  void _onDetect(BarcodeCapture capture) {
-    if (_handled) return;
-    final raw = capture.barcodes.firstOrNull?.rawValue;
-    if (raw == null) return;
-    try {
-      final uri = Uri.parse(raw);
-      if (uri.scheme == 'nexterm' && uri.host == 'devicelink') {
-        final token = uri.queryParameters['token'];
-        final server = uri.queryParameters['server'];
-        if (token != null && server != null) {
-          _handled = true;
-          _controller.stop();
-          Navigator.pop(context, {'token': token, 'server': server});
-          return;
-        }
-      }
-    } catch (_) {}
-    setState(() => _error = 'Invalid QR code. Use the Link Device feature in your web browser.');
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final cs = Theme.of(context).colorScheme;
-    final tt = Theme.of(context).textTheme;
-    return Scaffold(
-      body: SafeArea(child: Column(children: [
-        Padding(
-          padding: const EdgeInsets.fromLTRB(8, 8, 20, 12),
-          child: Row(children: [
-            IconButton(icon: const Icon(Icons.arrow_back), onPressed: () => Navigator.pop(context)),
-            const SizedBox(width: 4),
-            Text('Scan QR Code', style: tt.titleLarge?.copyWith(fontWeight: FontWeight.w700)),
-            const Spacer(),
-            ValueListenableBuilder(
-              valueListenable: _controller,
-              builder: (_, state, __) => IconButton(
-                icon: Icon(state.torchState == TorchState.on ? Icons.flash_on : Icons.flash_off),
-                onPressed: () => _controller.toggleTorch(),
-              ),
-            ),
-          ]),
-        ),
-        Expanded(child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16),
-          child: ClipRRect(borderRadius: BorderRadius.circular(16), child: MobileScanner(controller: _controller, onDetect: _onDetect)),
-        )),
-        Padding(
-          padding: const EdgeInsets.fromLTRB(20, 16, 20, 16),
-          child: Column(children: [
-            Text('Open "Link Device" in your web browser and scan the QR code shown there.',
-              style: TextStyle(fontSize: 14, color: cs.outline), textAlign: TextAlign.center),
-            if (_error != null) Padding(
-              padding: const EdgeInsets.only(top: 8),
-              child: Text(_error!, style: TextStyle(fontSize: 13, color: cs.error), textAlign: TextAlign.center)),
-          ]),
-        ),
-      ])),
     );
   }
 }
