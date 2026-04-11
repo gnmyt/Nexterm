@@ -5,7 +5,7 @@ import Input from "@/common/components/IconInput";
 import TabSwitcher from "@/common/components/TabSwitcher";
 import { mdiLinkVariant, mdiCheck, mdiCellphone, mdiMonitor, mdiQrcode, mdiKeyboardVariant } from "@mdi/js";
 import { useState, useEffect, useRef } from "react";
-import { postRequest, request } from "@/common/utils/RequestUtil.js";
+import { postRequest } from "@/common/utils/RequestUtil.js";
 import { useToast } from "@/common/contexts/ToastContext.jsx";
 import { useTranslation } from "react-i18next";
 import Icon from "@mdi/react";
@@ -52,7 +52,7 @@ export const DeviceLinkContent = ({ prefillCode = "", onClose, isPage = false })
     const startQrMode = async () => {
         setQrLoading(true);
         try {
-            const result = await request("auth/device/create", "POST", { clientType: "mobile" });
+            const result = await postRequest("auth/device/create", { clientType: "mobile" });
             if (result?.code && typeof result.code === "number") {
                 sendToast("Error", result.message || t("common.errors.generalError"));
                 setQrLoading(false);
