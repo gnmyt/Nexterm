@@ -7,6 +7,7 @@ import '../utils/sftp_settings.dart';
 import '../services/api_config.dart';
 import 'sessions_screen.dart';
 import 'server_accounts_screen.dart';
+import 'qr_scanner_screen.dart';
 
 class _ToolbarGroupTile extends StatelessWidget {
   final int index;
@@ -148,6 +149,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
             _navTile(MdiIcons.monitor, 'Sessions', 'Manage active sessions', cs,
               () => Navigator.push(context, MaterialPageRoute(
                 builder: (_) => SessionsScreen(authManager: widget.authManager)))),
+            Divider(height: 1, indent: 56, color: cs.outlineVariant.withValues(alpha: 0.3)),
+            _navTile(MdiIcons.qrcodeScan, 'Scan QR Code', 'Authorize a web login', cs,
+              () => Navigator.push(context, MaterialPageRoute(
+                builder: (_) => QrScannerScreen(authManager: widget.authManager)))),
           ]),
 
           _sectionHeader('Appearance', cs),

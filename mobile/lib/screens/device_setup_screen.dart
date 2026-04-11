@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:url_launcher/url_launcher.dart';
+import '../widgets/qr_scanner_page.dart';
 import '../utils/auth_manager.dart';
 import '../utils/api_client.dart';
 import '../services/api_config.dart';
@@ -18,21 +19,19 @@ class DeviceSetupScreen extends StatefulWidget {
   State<DeviceSetupScreen> createState() => _DeviceSetupScreenState();
 }
 
+enum _SubStep { choice, code, qrWaiting }
+
 class _DeviceSetupScreenState extends State<DeviceSetupScreen> {
-  final _serverUrlController = TextEditingController();
-  final _serverUrlFocusNode = FocusNode();
-  final _deviceCodeService = DeviceCodeService();
+  final _urlController = TextEditingController();
+  final _urlFocus = FocusNode();
+  final _codeService = DeviceCodeService();
 
   int _step = 1;
+  _SubStep _subStep = _SubStep.choice;
   bool _isLoading = false;
-  bool _showCode = false;
-  
-  String? _deviceCode;
-  String? _deviceToken;
+  bool _loggedIn = false;
+  String? _deviceCode, _deviceToken, _error, _previousBaseUrl;
   Timer? _pollTimer;
-  
-  String? _error;
-  String? _previousBaseUrl;
 
   @override
   void initState() {
@@ -43,79 +42,39 @@ class _DeviceSetupScreenState extends State<DeviceSetupScreen> {
   @override
   void dispose() {
     _pollTimer?.cancel();
-
-    if (widget.isAddingServer && _previousBaseUrl != null) {
+    if (widget.isAddingServer && _previousBaseUrl != null && !_loggedIn) {
       ApiConfig.setBaseUrlSync(_previousBaseUrl!);
     }
-    _serverUrlController.dispose();
-    _serverUrlFocusNode.dispose();
+    _urlController.dispose();
+    _urlFocus.dispose();
     super.dispose();
   }
 
-  Future<void> _validateAndConnect() async {
-    final url = _serverUrlController.text.trim();
-    if (url.isEmpty) {
-      setState(() => _error = 'Please enter a server URL');
-      return;
-    }
-
-    setState(() {
-      _isLoading = true;
-      _error = null;
-    });
-
-    final normalizedUrl = ApiClient.normalizeBaseUrl(url);
-    
+  Future<bool> _tryConnect(String url) async {
+    ApiConfig.setBaseUrlSync(ApiClient.normalizeBaseUrl(url));
     try {
-      ApiConfig.setBaseUrlSync(normalizedUrl);
-      final response = await ApiClient.get('/service/is-fts');
-      if (response.statusCode == 200) {
-        await _createDeviceCode();
-        setState(() {
-          _step = 2;
-          _isLoading = false;
-        });
-      } else {
-        setState(() {
-          _error = 'Failed to connect to server';
-          _isLoading = false;
-        });
-      }
-    } catch (e) {
-      ApiConfig.setBaseUrlSync(normalizedUrl);
-      try {
-        final retryResponse = await ApiClient.get('/service/is-fts');
-        if (retryResponse.statusCode == 200) {
-          await _createDeviceCode();
-          setState(() {
-            _step = 2;
-            _isLoading = false;
-          });
-        } else {
-          setState(() {
-            _error = 'Failed to connect to server';
-            _isLoading = false;
-          });
-        }
-      } catch (e) {
-        setState(() {
-          _error = 'Failed to connect to server. Please check the URL.';
-          _isLoading = false;
-        });
-      }
+      return (await ApiClient.get('/service/is-fts')).statusCode == 200;
+    } catch (_) {
+      return false;
+    }
+  }
+
+  Future<void> _validateAndConnect() async {
+    final url = _urlController.text.trim();
+    if (url.isEmpty) { setState(() => _error = 'Please enter a server URL'); return; }
+    setState(() { _isLoading = true; _error = null; });
+    if (await _tryConnect(url)) {
+      await _createDeviceCode();
+      setState(() { _step = 2; _isLoading = false; });
+    } else {
+      setState(() { _error = 'Failed to connect to server'; _isLoading = false; });
     }
   }
 
   Future<void> _createDeviceCode() async {
-    final response = await _deviceCodeService.createCode();
-    if (response.error != null) {
-      setState(() => _error = response.error);
-      return;
-    }
-    setState(() {
-      _deviceCode = response.code;
-      _deviceToken = response.token;
-    });
+    final r = await _codeService.createCode();
+    if (r.error != null) { setState(() => _error = r.error); return; }
+    setState(() { _deviceCode = r.code; _deviceToken = r.token; });
   }
 
   void _startPolling() {
@@ -125,118 +84,108 @@ class _DeviceSetupScreenState extends State<DeviceSetupScreen> {
 
   Future<void> _pollForAuth() async {
     if (_deviceToken == null) return;
-
-    final response = await _deviceCodeService.pollToken(_deviceToken!);
-    
-    if (response.isAuthorized && response.token != null) {
+    final r = await _codeService.pollToken(_deviceToken!);
+    if (r.isAuthorized && r.token != null) {
       _pollTimer?.cancel();
-      final serverUrl = _serverUrlController.text.trim();
-      final label = serverUrl.replaceFirst(RegExp(r'^https?://'), '');
-      await widget.authManager.loginWithToken(
-        response.token!,
-        baseUrl: ApiConfig.baseUrl,
-        label: label,
-      );
+      _loggedIn = true;
+      final label = _urlController.text.trim().replaceFirst(RegExp(r'^https?://'), '');
+      await widget.authManager.loginWithToken(r.token!, baseUrl: ApiConfig.baseUrl, label: label);
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Successfully authenticated!')),
-        );
-        if (widget.isAddingServer) {
-          Navigator.pop(context);
-        }
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Successfully authenticated!')));
+        if (widget.isAddingServer) Navigator.pop(context);
       }
-    } else if (response.isInvalid) {
+    } else if (r.isInvalid) {
       await _createDeviceCode();
     }
   }
 
   void _handleShowCode() {
-    setState(() => _showCode = true);
+    setState(() => _subStep = _SubStep.code);
     _startPolling();
+  }
+
+  Future<void> _handleScanQr() async {
+    final result = await Navigator.push<Map<String, String>>(context, MaterialPageRoute(
+      builder: (_) => QrScannerPage(
+        title: 'Scan QR Code',
+        hint: 'Open "Link Device" in your web browser and scan the QR code shown there.',
+        onDetect: (raw) {
+          try {
+            final uri = Uri.parse(raw);
+            if (uri.scheme == 'nexterm' && uri.host == 'devicelink') {
+              final token = uri.queryParameters['token'];
+              final server = uri.queryParameters['server'];
+              if (token != null && server != null) {
+                Navigator.pop(context, {'token': token, 'server': server});
+                return true;
+              }
+            }
+          } catch (_) {}
+          return false;
+        },
+      ),
+    ));
+    if (result == null || !mounted) return;
+    final token = result['token'], server = result['server'];
+    if (token == null || server == null) return;
+    setState(() { _isLoading = true; _error = null; });
+    if (await _tryConnect(Uri.decodeComponent(server))) {
+      _urlController.text = Uri.decodeComponent(server);
+      _deviceToken = token;
+      _startPolling();
+      setState(() { _step = 2; _subStep = _SubStep.qrWaiting; _isLoading = false; });
+    } else {
+      setState(() { _error = 'Failed to connect to server'; _isLoading = false; });
+    }
   }
 
   Future<void> _handleOpenBrowser() async {
     if (_deviceCode == null) return;
-    
-    String baseUrl = ApiConfig.baseUrl;
-    if (baseUrl.endsWith('/api')) {
-      baseUrl = baseUrl.substring(0, baseUrl.length - 4);
-    }
-    
-    final linkUrl = Uri.parse('$baseUrl/link?code=$_deviceCode');
-    
+    var baseUrl = ApiConfig.baseUrl;
+    if (baseUrl.endsWith('/api')) baseUrl = baseUrl.substring(0, baseUrl.length - 4);
     try {
-      await launchUrl(linkUrl, mode: LaunchMode.externalApplication);
+      await launchUrl(Uri.parse('$baseUrl/link?code=$_deviceCode'), mode: LaunchMode.externalApplication);
     } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Could not open browser: $e')),
-        );
-      }
+      if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Could not open browser: $e')));
     }
-    
     _startPolling();
   }
 
   Future<void> _copyCode() async {
     if (_deviceCode == null) return;
     await Clipboard.setData(ClipboardData(text: _deviceCode!));
-    if (mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Code copied to clipboard')),
-      );
-    }
+    if (mounted) ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Code copied to clipboard')));
   }
 
   void _goBack() {
     _pollTimer?.cancel();
-    setState(() {
-      _step = 1;
-      _showCode = false;
-      _deviceCode = null;
-      _deviceToken = null;
-      _error = null;
-    });
+    setState(() { _step = 1; _subStep = _SubStep.choice; _deviceCode = null; _deviceToken = null; _error = null; });
   }
 
   @override
   Widget build(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
-    
+    final cs = Theme.of(context).colorScheme;
     return Scaffold(
-      appBar: widget.isAddingServer
-          ? AppBar(title: const Text('Add Server'))
-          : null,
+      appBar: widget.isAddingServer ? AppBar(title: const Text('Add Server')) : null,
       body: SafeArea(
         child: Center(
           child: SingleChildScrollView(
-            padding: const EdgeInsets.all(24.0),
+            padding: const EdgeInsets.all(24),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 ClipRRect(
                   borderRadius: BorderRadius.circular(16),
-                  child: Image.asset(
-                    'favicon.png',
-                    width: 100,
-                    height: 100,
-                    fit: BoxFit.contain,
-                  ),
+                  child: Image.asset('favicon.png', width: 100, height: 100, fit: BoxFit.contain),
                 ),
                 const SizedBox(height: 24),
-                Text(
-                  'Nexterm',
-                  style: Theme.of(context).textTheme.headlineLarge?.copyWith(
-                    fontWeight: FontWeight.bold,
-                  ),
-                  textAlign: TextAlign.center,
-                ),
+                Text('Nexterm', style: Theme.of(context).textTheme.headlineLarge?.copyWith(fontWeight: FontWeight.bold), textAlign: TextAlign.center),
                 const SizedBox(height: 48),
-                
-                if (_step == 1) _buildServerUrlStep(colorScheme),
-                if (_step == 2 && !_showCode) _buildAuthChoiceStep(colorScheme),
-                if (_step == 2 && _showCode) _buildCodeDisplayStep(colorScheme),
+                if (_step == 1) _buildServerUrlStep(cs),
+                if (_step == 2 && _subStep == _SubStep.choice) _buildAuthChoiceStep(cs),
+                if (_step == 2 && _subStep == _SubStep.code) _buildCodeDisplayStep(cs),
+                if (_step == 2 && _subStep == _SubStep.qrWaiting) _buildQrWaitingStep(cs),
               ],
             ),
           ),
@@ -245,237 +194,134 @@ class _DeviceSetupScreenState extends State<DeviceSetupScreen> {
     );
   }
 
-  Widget _buildServerUrlStep(ColorScheme colorScheme) {
+  Widget _buildServerUrlStep(ColorScheme cs) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        Text(
-          'Enter the URL of your Nexterm server to connect.',
-          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-            color: colorScheme.onSurfaceVariant,
-          ),
-          textAlign: TextAlign.center,
-        ),
+        Text('Enter the URL of your Nexterm server to connect.',
+          style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: cs.onSurfaceVariant), textAlign: TextAlign.center),
         const SizedBox(height: 24),
         TextFormField(
-          controller: _serverUrlController,
-          focusNode: _serverUrlFocusNode,
+          controller: _urlController, focusNode: _urlFocus,
           decoration: InputDecoration(
-            labelText: 'Server URL',
-            hintText: 'nexterm.example.com',
-            prefixIcon: Icon(MdiIcons.serverNetwork),
-            border: const OutlineInputBorder(),
-            errorText: _error,
+            labelText: 'Server URL', hintText: 'nexterm.example.com',
+            prefixIcon: Icon(MdiIcons.serverNetwork), border: const OutlineInputBorder(), errorText: _error,
           ),
-          keyboardType: TextInputType.url,
-          enabled: !_isLoading,
+          keyboardType: TextInputType.url, enabled: !_isLoading,
           onFieldSubmitted: (_) => _validateAndConnect(),
         ),
         const SizedBox(height: 16),
         FilledButton(
           onPressed: _isLoading ? null : _validateAndConnect,
-          style: FilledButton.styleFrom(
-            padding: const EdgeInsets.symmetric(vertical: 16),
-          ),
+          style: FilledButton.styleFrom(padding: const EdgeInsets.symmetric(vertical: 16)),
           child: _isLoading
-              ? const SizedBox(
-                  height: 20,
-                  width: 20,
-                  child: CircularProgressIndicator(strokeWidth: 2),
-                )
-              : const Text('Connect'),
+            ? const SizedBox(height: 20, width: 20, child: CircularProgressIndicator(strokeWidth: 2))
+            : const Text('Connect'),
+        ),
+        const SizedBox(height: 16),
+        Row(children: [
+          Expanded(child: Divider(color: cs.outlineVariant)),
+          Padding(padding: const EdgeInsets.symmetric(horizontal: 12),
+            child: Text('or', style: Theme.of(context).textTheme.bodySmall?.copyWith(color: cs.onSurfaceVariant))),
+          Expanded(child: Divider(color: cs.outlineVariant)),
+        ]),
+        const SizedBox(height: 16),
+        OutlinedButton.icon(
+          onPressed: _isLoading ? null : _handleScanQr,
+          icon: Icon(MdiIcons.qrcodeScan), label: const Text('Scan QR Code'),
+          style: OutlinedButton.styleFrom(padding: const EdgeInsets.symmetric(vertical: 16)),
         ),
       ],
     );
   }
 
-  Widget _buildAuthChoiceStep(ColorScheme colorScheme) {
+  Widget _authOption(ColorScheme cs, {required IconData icon, required String title, required String subtitle, required VoidCallback onTap}) {
+    return Card(
+      elevation: 0, color: cs.surfaceContainerHigh,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      child: ListTile(
+        leading: Container(
+          width: 42, height: 42,
+          decoration: BoxDecoration(color: cs.primaryContainer, borderRadius: BorderRadius.circular(12)),
+          child: Icon(icon, color: cs.onPrimaryContainer, size: 20),
+        ),
+        title: Text(title, style: const TextStyle(fontWeight: FontWeight.w600)),
+        subtitle: Text(subtitle, style: TextStyle(fontSize: 12, color: cs.onSurfaceVariant)),
+        trailing: Icon(Icons.chevron_right, color: cs.onSurfaceVariant),
+        onTap: onTap,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+      ),
+    );
+  }
+
+  Widget _buildAuthChoiceStep(ColorScheme cs) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        Text(
-          'Choose how you want to authenticate with the server.',
-          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-            color: colorScheme.onSurfaceVariant,
-          ),
-          textAlign: TextAlign.center,
-        ),
+        Text('Choose how to authenticate with the server.',
+          style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: cs.onSurfaceVariant), textAlign: TextAlign.center),
         const SizedBox(height: 24),
-        
-        _AuthOptionCard(
-          icon: MdiIcons.qrcode,
-          title: 'Show Code',
-          description: 'Display a code to enter on the web interface',
-          onTap: _handleShowCode,
-          colorScheme: colorScheme,
-        ),
-        const SizedBox(height: 12),
-        _AuthOptionCard(
-          icon: MdiIcons.openInNew,
-          title: 'Open in Browser',
-          description: 'Open your browser to authorize automatically',
-          onTap: _handleOpenBrowser,
-          colorScheme: colorScheme,
-        ),
-        
+        _authOption(cs, icon: MdiIcons.numeric, title: 'Enter Code', subtitle: 'Display a code to enter on the web interface', onTap: _handleShowCode),
+        const SizedBox(height: 8),
+        _authOption(cs, icon: MdiIcons.openInNew, title: 'Open in Browser', subtitle: 'Open your browser to authorize', onTap: _handleOpenBrowser),
         const SizedBox(height: 24),
-        OutlinedButton(
-          onPressed: _goBack,
-          style: OutlinedButton.styleFrom(
-            padding: const EdgeInsets.symmetric(vertical: 16),
-          ),
-          child: const Text('Back'),
-        ),
+        OutlinedButton(onPressed: _goBack,
+          style: OutlinedButton.styleFrom(padding: const EdgeInsets.symmetric(vertical: 16)), child: const Text('Back')),
       ],
     );
   }
 
-  Widget _buildCodeDisplayStep(ColorScheme colorScheme) {
+  Widget _waitingIndicator(ColorScheme cs, String label) {
+    return Column(children: [
+      Text(label, style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: cs.onSurfaceVariant)),
+      const SizedBox(height: 16),
+      ClipRRect(borderRadius: BorderRadius.circular(4), child: const LinearProgressIndicator()),
+    ]);
+  }
+
+  Widget _buildCodeDisplayStep(ColorScheme cs) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        Text(
-          'Enter this code on your Nexterm web interface or open in browser to authorize.',
-          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-            color: colorScheme.onSurfaceVariant,
-          ),
-          textAlign: TextAlign.center,
-        ),
+        Text('Enter this code on your Nexterm web interface.',
+          style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: cs.onSurfaceVariant), textAlign: TextAlign.center),
         const SizedBox(height: 32),
-        
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
-          decoration: BoxDecoration(
-            color: colorScheme.surfaceContainerHighest,
-            borderRadius: BorderRadius.circular(16),
-          ),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Text(
-                _deviceCode ?? '----',
-                style: Theme.of(context).textTheme.headlineLarge?.copyWith(
-                  fontWeight: FontWeight.bold,
-                  fontFamily: 'monospace',
-                  letterSpacing: 4,
-                  color: colorScheme.primary,
-                ),
-              ),
-              const SizedBox(width: 16),
-              IconButton(
-                onPressed: _copyCode,
-                icon: Icon(MdiIcons.contentCopy),
-                tooltip: 'Copy code',
-              ),
-            ],
-          ),
+          decoration: BoxDecoration(color: cs.surfaceContainerHighest, borderRadius: BorderRadius.circular(16)),
+          child: Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+            Text(_deviceCode ?? '----',
+              style: Theme.of(context).textTheme.headlineLarge?.copyWith(
+                fontWeight: FontWeight.bold, fontFamily: 'monospace', letterSpacing: 4, color: cs.primary)),
+            const SizedBox(width: 16),
+            IconButton(onPressed: _copyCode, icon: Icon(MdiIcons.contentCopy), tooltip: 'Copy code'),
+          ]),
         ),
-        
         const SizedBox(height: 24),
-        
-        Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            SizedBox(
-              width: 16,
-              height: 16,
-              child: CircularProgressIndicator(
-                strokeWidth: 2,
-                color: colorScheme.onSurfaceVariant,
-              ),
-            ),
-            const SizedBox(width: 8),
-            Text(
-              'Waiting for authorization...',
-              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                color: colorScheme.onSurfaceVariant,
-              ),
-            ),
-          ],
-        ),
-        
+        _waitingIndicator(cs, 'Waiting for authorization...'),
         const SizedBox(height: 32),
-        
-        Row(
-          children: [
-            Expanded(
-              child: OutlinedButton(
-                onPressed: _goBack,
-                style: OutlinedButton.styleFrom(
-                  padding: const EdgeInsets.symmetric(vertical: 16),
-                ),
-                child: const Text('Back'),
-              ),
-            ),
-            const SizedBox(width: 12),
-            Expanded(
-              child: FilledButton.icon(
-                onPressed: _handleOpenBrowser,
-                icon: Icon(MdiIcons.openInNew),
-                label: const Text('Open Browser'),
-                style: FilledButton.styleFrom(
-                  padding: const EdgeInsets.symmetric(vertical: 16),
-                ),
-              ),
-            ),
-          ],
-        ),
+        Row(children: [
+          Expanded(child: OutlinedButton(onPressed: _goBack,
+            style: OutlinedButton.styleFrom(padding: const EdgeInsets.symmetric(vertical: 16)), child: const Text('Back'))),
+          const SizedBox(width: 12),
+          Expanded(child: FilledButton.icon(onPressed: _handleOpenBrowser, icon: Icon(MdiIcons.openInNew), label: const Text('Open Browser'),
+            style: FilledButton.styleFrom(padding: const EdgeInsets.symmetric(vertical: 16)))),
+        ]),
       ],
     );
   }
-}
 
-class _AuthOptionCard extends StatelessWidget {
-  final IconData icon;
-  final String title;
-  final String description;
-  final VoidCallback onTap;
-  final ColorScheme colorScheme;
-
-  const _AuthOptionCard({
-    required this.icon,
-    required this.title,
-    required this.description,
-    required this.onTap,
-    required this.colorScheme,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Card(
-      elevation: 0,
-      color: colorScheme.surfaceContainerHighest,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(16),
-        side: BorderSide(color: colorScheme.outlineVariant),
-      ),
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(16),
-        child: Padding(
-          padding: const EdgeInsets.all(20),
-          child: Column(
-            children: [
-              Icon(icon, size: 40, color: colorScheme.primary),
-              const SizedBox(height: 12),
-              Text(
-                title,
-                style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-              const SizedBox(height: 4),
-              Text(
-                description,
-                style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                  color: colorScheme.onSurfaceVariant,
-                ),
-                textAlign: TextAlign.center,
-              ),
-            ],
-          ),
-        ),
-      ),
+  Widget _buildQrWaitingStep(ColorScheme cs) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        const SizedBox(height: 16),
+        _waitingIndicator(cs, 'Connecting to server...'),
+        const SizedBox(height: 32),
+        OutlinedButton(onPressed: _goBack,
+          style: OutlinedButton.styleFrom(padding: const EdgeInsets.symmetric(vertical: 16)), child: const Text('Cancel')),
+      ],
     );
   }
 }

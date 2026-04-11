@@ -33,12 +33,7 @@ class ServerAccountManager extends ChangeNotifier {
 
   Future<void> addAccount(ServerAccount account) async {
     _accounts.add(account);
-    if (_accounts.length == 1) {
-      _activeAccountId = account.id;
-      ApiConfig.setBaseUrlSync(account.baseUrl);
-    }
     await _save();
-    notifyListeners();
   }
 
   Future<void> removeAccount(String id) async {

@@ -3,14 +3,15 @@ import NextermLogo from "@/common/components/NextermLogo";
 import "./styles.sass";
 import Button from "@/common/components/Button";
 import Input from "@/common/components/IconInput";
-import { mdiAccountCircleOutline, mdiKeyOutline, mdiFingerprint } from "@mdi/js";
-import { useContext, useEffect, useState } from "react";
+import { mdiAccountCircleOutline, mdiKeyOutline, mdiFingerprint, mdiQrcode, mdiArrowLeft } from "@mdi/js";
+import { useContext, useEffect, useRef, useState } from "react";
 import { getRequest, request } from "@/common/utils/RequestUtil.js";
 import { UserContext } from "@/common/contexts/UserContext.jsx";
 import { useToast } from "@/common/contexts/ToastContext.jsx";
 import { useTranslation } from "react-i18next";
 import { startAuthentication } from "@simplewebauthn/browser";
 import { getProviderIcon } from "@/common/utils/iconUtils";
+import { QRCodeCanvas } from "qrcode.react";
 
 export const LoginDialog = ({ open }) => {
     const { t } = useTranslation();
@@ -23,6 +24,11 @@ export const LoginDialog = ({ open }) => {
     const [providers, setProviders] = useState([]);
     const [internalAuthEnabled, setInternalAuthEnabled] = useState(true);
     const [passkeyLoading, setPasskeyLoading] = useState(false);
+
+    const [qrMode, setQrMode] = useState(false);
+    const [qrCode, setQrCode] = useState(null);
+    const [qrLoading, setQrLoading] = useState(false);
+    const pollTimerRef = useRef(null);
 
     const { sendToast } = useToast();
 
@@ -159,13 +165,71 @@ export const LoginDialog = ({ open }) => {
         }
     };
 
+    const stopPolling = () => {
+        if (pollTimerRef.current) { clearInterval(pollTimerRef.current); pollTimerRef.current = null; }
+    };
+
+    const startQrLogin = async () => {
+        setQrLoading(true);
+        try {
+            const result = await request("auth/device/create", "POST", { clientType: "web" });
+            if (result?.code && typeof result.code === "number") {
+                sendToast("Error", result.message || t('common.errors.generalError'));
+                return;
+            }
+            setQrCode(result.code);
+            setQrMode(true);
+            stopPolling();
+            pollTimerRef.current = setInterval(async () => {
+                try {
+                    const poll = await request("auth/device/poll", "POST", { token: result.token });
+                    if (poll.status === "authorized" && poll.token) { stopPolling(); updateSessionToken(poll.token); }
+                    else if (poll.status === "invalid") { stopPolling(); setQrCode(null); setQrMode(false); sendToast("Error", t('common.errors.qrCodeExpired')); }
+                } catch (_) {}
+            }, 3000);
+        } catch (error) {
+            sendToast("Error", error.message || t('common.errors.generalError'));
+        } finally { setQrLoading(false); }
+    };
+
+    const exitQrMode = () => { stopPolling(); setQrMode(false); setQrCode(null); };
+
+    useEffect(() => () => stopPolling(), []);
+
+    const getQrValue = () => `nexterm://authorize?code=${qrCode}&server=${encodeURIComponent(window.location.origin)}`;
+
     return (
         <DialogProvider disableClosing open={open}>
-            <div className="login-dialog">
+            <div className={"login-dialog" + (qrMode ? " qr-mode" : "")}>
                 <div className="login-logo">
                     <NextermLogo size={48} />
                     <h1>{firstTimeSetup ? t('common.loginDialog.registrationTitle') : t('common.loginDialog.title')}</h1>
                 </div>
+
+                {qrMode ? (
+                    <div className="qr-login-container">
+                        <p className="qr-login-description">{t('common.loginDialog.qrScanDescription')}</p>
+                        <div className="qr-code-wrapper">
+                            {qrCode ? (
+                                <QRCodeCanvas
+                                    value={getQrValue()}
+                                    size={200}
+                                    bgColor="transparent"
+                                    fgColor="#ffffff"
+                                    level="M"
+                                />
+                            ) : null}
+                        </div>
+                        <div className="qr-device-code">{qrCode}</div>
+                        <Button
+                            type="secondary"
+                            icon={mdiArrowLeft}
+                            text={t('common.loginDialog.backToLogin')}
+                            onClick={exitQrMode}
+                            buttonType="button"
+                        />
+                    </div>
+                ) : (
                 <form className="login-form" onSubmit={submit}>
                     {firstTimeSetup ? (
                         <div className="register-name-row">
@@ -225,6 +289,14 @@ export const LoginDialog = ({ open }) => {
                             <div className="sso-buttons">
                                 <Button
                                     type="secondary"
+                                    icon={mdiQrcode}
+                                    text={qrLoading ? t('common.loginDialog.authenticating') : t('common.loginDialog.signInWithQrCode')}
+                                    onClick={startQrLogin}
+                                    disabled={qrLoading}
+                                    buttonType="button"
+                                />
+                                <Button
+                                    type="secondary"
                                     icon={mdiFingerprint}
                                     text={passkeyLoading ? t('common.loginDialog.authenticating') : t('common.loginDialog.signInWithPasskey')}
                                     onClick={handlePasskeyLogin}
@@ -249,6 +321,7 @@ export const LoginDialog = ({ open }) => {
                         <p>{t('common.loginDialog.noAuthMethodsAvailable')}</p>
                     ) : null}
                 </form>
+                )}
             </div>
         </DialogProvider>
     );
