@@ -4,7 +4,7 @@ const codeSchema = Joi.string().pattern(/^[A-Z0-9]{4}-[A-Z0-9]{4}$/).required()
     .messages({ "string.pattern.base": "Code must be in format XXXX-XXXX" });
 
 module.exports.createDeviceCodeValidation = Joi.object({
-    clientType: Joi.string().valid("mobile", "connector").required(),
+    clientType: Joi.string().valid("mobile", "connector", "web").required(),
 });
 
 module.exports.authorizeDeviceCodeValidation = Joi.object({

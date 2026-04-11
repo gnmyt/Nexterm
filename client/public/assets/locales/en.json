@@ -56,6 +56,9 @@
       "ssoOrContinueWith": "or continue with",
       "noAuthMethodsAvailable": "No authentication methods available.",
       "signInWithPasskey": "Sign in with Passkey",
+      "signInWithQrCode": "Sign in with QR Code",
+      "qrScanDescription": "Scan this QR code with the Nexterm mobile app to sign in instantly.",
+      "backToLogin": "Back to Login",
       "authenticating": "Authenticating..."
     },
     "deviceLink": {
@@ -165,7 +168,8 @@
       "internalAuthDisabled": "Internal authentication is disabled",
       "ssoLoginFailed": "Failed to initiate SSO login",
       "passkeyLoginFailed": "Passkey authentication failed",
-      "passkeyCancelled": "Passkey authentication was cancelled"
+      "passkeyCancelled": "Passkey authentication was cancelled",
+      "qrCodeExpired": "QR code expired. Please try again."
     },
     "messages": {
       "invitationAccepted": "Invitation accepted",
