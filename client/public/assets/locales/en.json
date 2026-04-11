@@ -64,6 +64,9 @@
     "deviceLink": {
       "title": "Link Device",
       "description": "Enter the code shown on your device to authorize it to access your account.",
+      "qrTab": "QR Code",
+      "codeTab": "Code",
+      "qrDescription": "Scan this QR code with the Nexterm mobile app to link your device.",
       "codeLabel": "Device Code",
       "continue": "Continue",
       "verifying": "Verifying...",

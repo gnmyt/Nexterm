@@ -18,3 +18,7 @@ module.exports.pollDeviceCodeValidation = Joi.object({
 module.exports.getDeviceCodeInfoValidation = Joi.object({
     code: codeSchema,
 });
+
+module.exports.checkLinkStatusValidation = Joi.object({
+    code: codeSchema,
+});
