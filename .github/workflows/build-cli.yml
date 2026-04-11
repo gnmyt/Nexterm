@@ -75,7 +75,12 @@ jobs:
 
       - name: Update CLI version
         shell: bash
-        run: sed -i${{ runner.os == 'macOS' && " ''" || '' }} "s/^version = \".*\"/version = \"${{ inputs.semver }}\"/" cli/Cargo.toml
+        run: |
+          if [[ "${{ runner.os }}" == "macOS" ]]; then
+            sed -i '' "s/^version = \".*\"/version = \"${{ inputs.semver }}\"/" cli/Cargo.toml
+          else
+            sed -i "s/^version = \".*\"/version = \"${{ inputs.semver }}\"/" cli/Cargo.toml
+          fi
 
       - name: Build CLI
         working-directory: cli
