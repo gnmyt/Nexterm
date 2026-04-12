@@ -21,7 +21,7 @@ export const useStateStream = (sessionToken, handlers = {}) => {
     
     useEffect(() => { handlersRef.current = handlers; }, [handlers]);
 
-    const wsUrl = sessionToken ? getWebSocketUrl("/api/ws/state", { sessionToken, tabId: getTabId(), browserId: getBrowserId() }) : null;
+    const wsUrl = sessionToken ? getWebSocketUrl("/api/ws/state", { tabId: getTabId(), browserId: getBrowserId() }) : null;
     
     const onOpen = useCallback(() => {
         hasConnectedRef.current = true;
