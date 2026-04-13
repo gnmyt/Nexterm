@@ -59,6 +59,16 @@ jobs:
       upload_url: ${{ needs.create-release.outputs.upload_url }}
     secrets: inherit
 
+  build-cli:
+    name: "Build CLI"
+    needs: create-release
+    uses: ./.github/workflows/build-cli.yml
+    with:
+      version: ${{ needs.create-release.outputs.version }}
+      semver: ${{ needs.create-release.outputs.semver }}
+      upload_url: ${{ needs.create-release.outputs.upload_url }}
+    secrets: inherit
+
   build-docker:
     name: "Build Docker"
     needs: create-release
@@ -69,7 +79,7 @@ jobs:
 
   finalize-release:
     name: "Finalize Release"
-    needs: [create-release, build-mobile, build-connector, build-docker]
+    needs: [create-release, build-mobile, build-connector, build-cli, build-docker]
     uses: ./.github/workflows/finalize-release.yml
     with:
       version: ${{ needs.create-release.outputs.version }}
@@ -80,7 +90,7 @@ jobs:
   cleanup-on-failure:
     name: "Cleanup on Failure"
     runs-on: ubuntu-latest
-    needs: [create-release, build-mobile, build-connector, build-docker]
+    needs: [create-release, build-mobile, build-connector, build-cli, build-docker]
     if: failure()
     steps:
       - name: Delete release

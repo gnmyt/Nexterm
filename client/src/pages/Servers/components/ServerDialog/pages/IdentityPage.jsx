@@ -11,7 +11,7 @@ const Identity = ({ identity, onUpdate, onDelete, onMoveToOrg, isOrgContext, org
     const { t } = useTranslation();
     const isNew = !identity.id || String(identity.id).startsWith("new-");
     const isOrg = identity.scope === 'organization';
-    const [name, setName] = useState(identity.name || (isNew ? "New Identity" : ""));
+    const [name, setName] = useState(identity.name || "");
     const [username, setUsername] = useState(identity.username || "");
     const [authType, setAuthType] = useState(identity.authType || identity.type || (allowedAuthTypes?.[0] || "password"));
     const [password, setPassword] = useState(identity.password || "");
@@ -43,8 +43,8 @@ const Identity = ({ identity, onUpdate, onDelete, onMoveToOrg, isOrgContext, org
             ...(authType === "password" || authType === "password-only"
                 ? { password, passwordTouched: pwTouched || isNew || password !== "" }
                 : authType === "both"
-                ? { password, passwordTouched: pwTouched || isNew || password !== "", sshKey, passphrase, passphraseTouched: ppTouched || isNew || passphrase !== "" }
-                : { sshKey, passphrase, passphraseTouched: ppTouched || isNew || passphrase !== "" }),
+                ? { password, passwordTouched: pwTouched || isNew || password !== "", sshKey, passphrase, passphraseTouched: ppTouched || passphrase !== "" }
+                : { sshKey, passphrase, passphraseTouched: ppTouched || passphrase !== "" }),
         });
     }, [name, username, authType, password, sshKey, passphrase, identity.id, pwTouched, ppTouched, isNew]);
 
@@ -147,7 +147,7 @@ const IdentitySection = ({ title, icon, description, identities, available, onUp
     </div>
 );
 
-const IdentityPage = ({ serverIdentities, setIdentityUpdates, identityUpdates, setIdentities, currentOrganizationId, allowedAuthTypes }) => {
+const IdentityPage = ({ serverIdentities, setIdentityUpdates, identityUpdates, setIdentities, currentOrganizationId, allowedAuthTypes, serverName }) => {
     const { t } = useTranslation();
     const { identities, personalIdentities, getOrganizationIdentities, moveIdentityToOrganization } = useContext(IdentityContext);
 
@@ -185,7 +185,7 @@ const IdentityPage = ({ serverIdentities, setIdentityUpdates, identityUpdates, s
     };
     const defaultAuthType = allowedAuthTypes?.[0] || "password";
     const addNew = (forOrg) => setIdentityUpdates(prev => ({
-        ...prev, [`new-${Date.now()}`]: { name: "New Identity", username: "", authType: defaultAuthType, password: "", scope: forOrg ? 'organization' : 'personal', organizationId: forOrg ? currentOrganizationId : null }
+        ...prev, [`new-${Date.now()}`]: { name: serverName || "", username: "", authType: defaultAuthType, password: "", scope: forOrg ? 'organization' : 'personal', organizationId: forOrg ? currentOrganizationId : null }
     }));
 
     return (

@@ -2,13 +2,15 @@ import { DialogProvider } from "@/common/components/Dialog";
 import "./styles.sass";
 import Button from "@/common/components/Button";
 import Input from "@/common/components/IconInput";
-import { mdiLinkVariant, mdiCheck, mdiCellphone, mdiMonitor } from "@mdi/js";
-import { useState, useEffect } from "react";
+import TabSwitcher from "@/common/components/TabSwitcher";
+import { mdiLinkVariant, mdiCheck, mdiCellphone, mdiMonitor, mdiQrcode, mdiKeyboardVariant } from "@mdi/js";
+import { useState, useEffect, useRef } from "react";
 import { postRequest } from "@/common/utils/RequestUtil.js";
 import { useToast } from "@/common/contexts/ToastContext.jsx";
 import { useTranslation } from "react-i18next";
 import Icon from "@mdi/react";
 import NextermLogo from "@/common/components/NextermLogo";
+import { QRCodeCanvas } from "qrcode.react";
 
 const DeviceIcon = ({ type, connected }) => (
     <div className={`device-icon-wrapper${connected ? " connected" : ""}`}>
@@ -33,8 +35,50 @@ export const DeviceLinkContent = ({ prefillCode = "", onClose, isPage = false })
     const [loading, setLoading] = useState(false);
     const [deviceInfo, setDeviceInfo] = useState(null);
     const [step, setStep] = useState("code");
+    const [mode, setMode] = useState("code");
+    const [qrToken, setQrToken] = useState(null);
+    const [qrCode, setQrCode] = useState(null);
+    const [qrLoading, setQrLoading] = useState(false);
+    const qrPollRef = useRef(null);
 
-    useEffect(() => { if (prefillCode) { setCode(prefillCode); handleContinue(prefillCode); } }, [prefillCode]);
+    useEffect(() => { if (prefillCode) { setCode(prefillCode); setMode("code"); handleContinue(prefillCode); } }, [prefillCode]);
+
+    const stopQrPolling = () => {
+        if (qrPollRef.current) { clearInterval(qrPollRef.current); qrPollRef.current = null; }
+    };
+
+    useEffect(() => () => stopQrPolling(), []);
+
+    const startQrMode = async () => {
+        setQrLoading(true);
+        try {
+            const result = await postRequest("auth/device/create", { clientType: "mobile" });
+            if (result?.code && typeof result.code === "number") {
+                sendToast("Error", result.message || t("common.errors.generalError"));
+                setQrLoading(false);
+                return;
+            }
+            await postRequest("auth/device/authorize", { code: result.code });
+            setQrCode(result.code);
+            setQrToken(result.token);
+            setQrLoading(false);
+            stopQrPolling();
+            qrPollRef.current = setInterval(async () => {
+                try {
+                    const poll = await postRequest("auth/device/link/status", { code: result.code });
+                    if (poll.status === "claimed") { stopQrPolling(); setStep("success"); setDeviceInfo({ clientType: "mobile" }); }
+                    else if (poll.status === "expired") { stopQrPolling(); setQrCode(null); setQrToken(null); sendToast("Error", t("common.errors.qrCodeExpired")); }
+                } catch (_) {}
+            }, 3000);
+        } catch (error) {
+            sendToast("Error", error.message || t("common.errors.generalError"));
+            setQrLoading(false);
+        }
+    };
+
+    useEffect(() => { if (mode === "qr" && !qrCode && !prefillCode) startQrMode(); }, [mode]);
+
+    const getQrValue = () => `nexterm://devicelink?token=${qrToken}&server=${encodeURIComponent(window.location.origin)}`;
 
     const formatCode = (v) => { const c = v.toUpperCase().replace(/[^A-Z0-9]/g, ""); return c.length <= 4 ? c : `${c.slice(0, 4)}-${c.slice(4, 8)}`; };
 
@@ -109,17 +153,44 @@ export const DeviceLinkContent = ({ prefillCode = "", onClose, isPage = false })
 
     return (
         <div className="device-link-content">
-            <LinkingHeader clientType="connector" />
+            <LinkingHeader clientType="mobile" />
             <div className="code-step">
                 <h2>{t("common.deviceLink.title")}</h2>
-                <p className="linking-description">{t("common.deviceLink.description")}</p>
-                <div className="form-group">
-                    <label htmlFor="deviceCode">{t("common.deviceLink.codeLabel")}</label>
-                    <Input type="text" id="deviceCode" icon={mdiLinkVariant} placeholder="XXXX-XXXX" 
-                           value={code} setValue={handleCodeChange} maxLength={9} autoComplete="off" onKeyDown={handleKeyDown} />
-                </div>
-                <Button text={loading ? t("common.deviceLink.verifying") : t("common.deviceLink.continue")} 
-                        onClick={() => handleContinue()} disabled={code.length !== 9 || loading} />
+                {!prefillCode && (
+                    <TabSwitcher
+                        tabs={[
+                            { key: "code", label: t("common.deviceLink.codeTab"), icon: mdiKeyboardVariant },
+                            { key: "qr", label: t("common.deviceLink.qrTab"), icon: mdiQrcode },
+                        ]}
+                        activeTab={mode}
+                        onTabChange={(key) => { if (key === "code") { stopQrPolling(); } setMode(key); }}
+                        variant="dialog"
+                    />
+                )}
+                {mode === "qr" && !prefillCode ? (
+                    <div className="qr-link-container">
+                        <p className="linking-description">{t("common.deviceLink.qrDescription")}</p>
+                        <div className="qr-link-wrapper">
+                            {qrToken ? (
+                                <QRCodeCanvas value={getQrValue()} size={180} bgColor="transparent" fgColor="#ffffff" level="M" />
+                            ) : qrLoading ? (
+                                <div className="qr-link-loading" />
+                            ) : null}
+                        </div>
+                        {qrCode && <div className="qr-link-code">{qrCode}</div>}
+                    </div>
+                ) : (
+                    <>
+                        <p className="linking-description">{t("common.deviceLink.description")}</p>
+                        <div className="form-group">
+                            <label htmlFor="deviceCode">{t("common.deviceLink.codeLabel")}</label>
+                            <Input type="text" id="deviceCode" icon={mdiLinkVariant} placeholder="XXXX-XXXX" 
+                                   value={code} setValue={handleCodeChange} maxLength={9} autoComplete="off" onKeyDown={handleKeyDown} />
+                        </div>
+                        <Button text={loading ? t("common.deviceLink.verifying") : t("common.deviceLink.continue")} 
+                                onClick={() => handleContinue()} disabled={code.length !== 9 || loading} />
+                    </>
+                )}
             </div>
         </div>
     );
@@ -129,7 +200,7 @@ export const DeviceLinkDialog = ({ open, onClose, prefillCode = "" }) => {
     const [localCode, setLocalCode] = useState(prefillCode);
 
     useEffect(() => { if (prefillCode) setLocalCode(prefillCode); }, [prefillCode]);
-    useEffect(() => { if (!open) setLocalCode(prefillCode || ""); }, [open, prefillCode]);
+    useEffect(() => { if (!open) { setLocalCode(prefillCode || ""); } }, [open, prefillCode]);
 
     return (
         <DialogProvider open={open} onClose={onClose}>

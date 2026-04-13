@@ -30,6 +30,7 @@ jobs:
           jq ".version = \"$S\"" connector/package.json > tmp && mv tmp connector/package.json
           jq ".version = \"$S\"" connector/src-tauri/tauri.conf.json > tmp && mv tmp connector/src-tauri/tauri.conf.json
           sed -i "s/^version = \".*\"/version = \"$S\"/" connector/src-tauri/Cargo.toml
+          sed -i "s/^version = \".*\"/version = \"$S\"/" cli/Cargo.toml
           sed -i "s/^version: .*/version: $S+${{ github.run_number }}/" mobile/pubspec.yaml
 
       - name: Commit & push
@@ -73,18 +74,26 @@ jobs:
             const L = (label, file) => `[${label}](../../releases/download/v${v}/${file})`;
             const apk = (arch) => L('APK', `nexterm-${v}-${arch}.apk`);
             const ipa = () => L('IPA', `nexterm-${v}.ipa`);
+            const cli = (name) => L(name, `nt-${name.toLowerCase().replace(/ /g, '-')}`);
             
             let body = '';
             if (v.toUpperCase().includes('PREVIEW')) body += '![Preview](https://i.imgur.com/Qu3wnvw.png)\n\n';
             else if (v.toUpperCase().includes('BETA')) body += '![Beta](https://i.imgur.com/iQQ7qYx.png)\n\n';
             
             body += `## 📦 Downloads\n\n`;
+            body += `### Connector (Desktop App)\n\n`;
             body += `| Platform / Architecture | Windows | macOS | Linux | Android | iOS |\n`;
             body += `| :-- | :-- | :-- | :-- | :-- | :-- |\n`;
             body += `| **x86-64** | ${L('EXE', 'nexterm-connector-windows-x64.exe')} · ${L('MSI', 'nexterm-connector-windows-x64.msi')} | ${L('DMG', 'nexterm-connector-macos-x64.dmg')} | ${L('DEB', 'nexterm-connector-linux-x64.deb')} · ${L('RPM', 'nexterm-connector-linux-x64.rpm')} · ${L('AppImage', 'nexterm-connector-linux-x64.AppImage')} | ${apk('x86_64')} | |\n`;
             body += `| **ARM64** | ${L('EXE', 'nexterm-connector-windows-arm64.exe')} | ${L('DMG', 'nexterm-connector-macos-arm64.dmg')} | | ${apk('arm64-v8a')} | |\n`;
             body += `| **ARM32** | | | | ${apk('armeabi-v7a')} | |\n`;
             body += `| **Universal** | | | | ${apk('universal')} | ${ipa()} |\n`;
+            body += `\n### CLI (\`nt\`)\n\n`;
+            body += `| Platform | x86-64 | ARM64 |\n`;
+            body += `| :-- | :-- | :-- |\n`;
+            body += `| **Windows** | ${L('nt.exe', 'nt-windows-x64.exe')} | |\n`;
+            body += `| **macOS** | ${L('nt', 'nt-macos-x64')} | ${L('nt', 'nt-macos-arm64')} |\n`;
+            body += `| **Linux** | ${L('nt', 'nt-linux-x64')} | ${L('nt', 'nt-linux-arm64')} |\n`;
             
             if (prs.length) {
               body += `\n---\n\n## What's Changed\n`;

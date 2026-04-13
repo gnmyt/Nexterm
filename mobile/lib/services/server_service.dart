@@ -1,16 +1,17 @@
 import 'dart:convert';
+import '../models/server.dart';
 import '../models/server_folder.dart';
 import '../utils/api_client.dart';
 
 class ServerService {
-  static Future<List<ServerFolder>> getServerList(String token) async {
+  static Future<List<dynamic>> getServerList(String token) async {
     final response = await ApiClient.get('/entries/list', token: token);
     if (response.statusCode != 200) {
       throw Exception('Failed to load servers: ${response.statusCode} - ${response.body}');
     }
 
     final List<dynamic> jsonData = json.decode(response.body);
-    final List<ServerFolder> folders = [];
+    final List<dynamic> items = [];
 
     for (var item in jsonData) {
       if (item is! Map<String, dynamic>) continue;
@@ -20,16 +21,17 @@ class ServerService {
         final filteredItem = Map<String, dynamic>.from(item);
         filteredItem['entries'] = _filterEntries(item['entries'] as List<dynamic>? ?? []);
         if ((filteredItem['entries'] as List).isNotEmpty) {
-          folders.add(ServerFolder.fromJson(filteredItem));
+          items.add(ServerFolder.fromJson(filteredItem));
         }
       } else if (type == 'server' || _isPveEntry(type)) {
-        folders.add(ServerFolder(name: 'Servers', type: 'folder', entries: [item]));
+        items.add(Server.fromJson(item));
       }
     }
-    return folders;
+    return items;
   }
 
-  static bool _isPveEntry(String? type) => type == 'pve-shell' || type == 'pve-lxc';
+  static bool _isPveEntry(String? type) =>
+      type == 'pve-shell' || type == 'pve-lxc' || type == 'pve-qemu';
 
   static List<dynamic> _filterEntries(List<dynamic> entries) {
     final List<dynamic> filtered = [];
@@ -41,7 +43,7 @@ class ServerService {
         final filteredEntry = Map<String, dynamic>.from(entry);
         filteredEntry['entries'] = _filterEntries(entry['entries'] as List<dynamic>? ?? []);
         if ((filteredEntry['entries'] as List).isNotEmpty) filtered.add(filteredEntry);
-      } else if (type == 'server' && _isSSHServer(entry)) {
+      } else if (type == 'server' && _isSupportedServer(entry)) {
         filtered.add(entry);
       } else if (_isPveEntry(type)) {
         filtered.add(entry);
@@ -50,23 +52,18 @@ class ServerService {
     return filtered;
   }
 
-  static bool _isSSHServer(Map<String, dynamic> entry) {
-    final protocol = (entry['protocol'] as String?)?.toLowerCase();
-    final connectionType = (entry['connectionType'] as String?)?.toLowerCase();
-    final port = entry['port'] as int?;
-
-    if (protocol != null) {
-      if (['rdp', 'vnc', 'http', 'https'].contains(protocol)) return false;
-      if (protocol == 'ssh') return true;
-    }
-    if (connectionType != null) {
-      if (['rdp', 'vnc', 'http', 'https'].contains(connectionType)) return false;
-      if (connectionType == 'ssh') return true;
-    }
-    if (port != null) {
-      if (port == 3389 || port == 80 || port == 443) return false;
-      if (port >= 5900 && port <= 5999) return false;
-    }
+  static bool _isSupportedServer(Map<String, dynamic> entry) {
     return entry['type'] == 'server';
+  }
+
+  static bool isGuacamoleServer(Map<String, dynamic>? entry) {
+    if (entry == null) return false;
+    final protocol = (entry['protocol'] as String?)?.toLowerCase();
+    return protocol == 'rdp' || protocol == 'vnc';
+  }
+
+  static bool isGuacamoleProtocol(String? protocol) {
+    final p = protocol?.toLowerCase();
+    return p == 'rdp' || p == 'vnc';
   }
 }

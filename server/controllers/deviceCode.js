@@ -89,6 +89,23 @@ module.exports.pollToken = async ({ token }) => {
     return { status: "pending" };
 };
 
+module.exports.checkLinkStatus = async ({ code }) => {
+    const deviceCode = await DeviceCode.findOne({
+        where: { code: code.toUpperCase() },
+    });
+
+    if (!deviceCode) return { status: "claimed" };
+
+    const createdTime = new Date(deviceCode.createdAt).getTime();
+    if (Date.now() > createdTime + CODE_EXPIRY_MS) {
+        await DeviceCode.destroy({ where: { id: deviceCode.id } });
+        return { status: "expired" };
+    }
+
+    if (deviceCode.sessionId) return { status: "authorized" };
+    return { status: "pending" };
+};
+
 module.exports.getCodeInfo = async ({ code }) => {
     await cleanupExpiredCodes();
 

@@ -52,6 +52,20 @@ class ConnectionService {
     } catch (_) {}
   }
 
+  static Future<List<Map<String, dynamic>>> listSessions({required String token}) async {
+    final browserId = await _getDeviceId();
+    final tabId = _getAppInstanceId();
+    final response = await ApiClient.get(
+      '/connections?tabId=${Uri.encodeComponent(tabId)}&browserId=${Uri.encodeComponent(browserId)}',
+      token: token,
+    );
+    if (response.statusCode == 200) {
+      final List<dynamic> data = json.decode(response.body);
+      return data.cast<Map<String, dynamic>>();
+    }
+    return [];
+  }
+
   static Future<void> hibernateSession({required String token, required String sessionId}) async {
     final response = await ApiClient.post('/connections/$sessionId/hibernate', token: token);
     if (response.statusCode != 200 && response.statusCode != 201) {

@@ -139,6 +139,7 @@ const getSessions = async (accountId, tabId = null, browserId = null) => {
             osName: snapshotMap[session.entryId] || null,
             shareId: session.shareId || null,
             shareWritable: session.shareWritable || false,
+            sftpPath: session.sftpPath || null,
         };
     });
 };

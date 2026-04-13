@@ -1,6 +1,7 @@
 const Source = require("../models/Source");
 const Snippet = require("../models/Snippet");
 const Script = require("../models/Script");
+const Theme = require("../models/Theme");
 const crypto = require("crypto");
 const logger = require("../utils/logger");
 
@@ -24,7 +25,7 @@ module.exports.validateSourceUrl = async (url) => {
         const indexContent = await response.text();
         const parsedIndex = parseNTINDEX(indexContent);
 
-        if (!parsedIndex.snippets.length && !parsedIndex.scripts.length) {
+        if (!parsedIndex.snippets.length && !parsedIndex.scripts.length && !parsedIndex.themes.length) {
             return { valid: false, error: "NTINDEX is empty or invalid" };
         }
 
@@ -41,15 +42,23 @@ const parseNTINDEX = (content) => {
     const lines = content.split("\n").filter(line => line.trim() && !line.startsWith("#"));
     const snippets = [];
     const scripts = [];
+    const themes = [];
 
     const scriptExtensions = [".sh", ".bash", ".zsh", ".fish", ".ps1"];
     const snippetExtensions = [".txt", ".snippet", ".cmd"];
+    const themeExtension = ".theme.css";
 
     for (const line of lines) {
         const parts = line.split("@").map(p => p.trim());
         if (parts.length < 2) continue;
 
         const [path, hash] = parts;
+
+        if (path.toLowerCase().endsWith(themeExtension)) {
+            themes.push({ hash, path });
+            continue;
+        }
+
         const ext = path.substring(path.lastIndexOf(".")).toLowerCase();
         const entry = { hash, path };
 
@@ -60,7 +69,7 @@ const parseNTINDEX = (content) => {
         }
     }
 
-    return { snippets, scripts };
+    return { snippets, scripts, themes };
 };
 
 const calculateContentHash = (content) => crypto.createHash("md5").update(content).digest("hex");
@@ -161,6 +170,7 @@ module.exports.deleteSource = async (sourceId) => {
 
     await Snippet.destroy({ where: { sourceId } });
     await Script.destroy({ where: { sourceId } });
+    await Theme.destroy({ where: { sourceId } });
 
     await Source.destroy({ where: { id: sourceId } });
 };
@@ -186,19 +196,23 @@ module.exports.syncSource = async (sourceId) => {
             return { success: false, error: validation.error };
         }
 
-        const { snippets: indexSnippets, scripts: indexScripts } = validation.index;
+        const { snippets: indexSnippets, scripts: indexScripts, themes: indexThemes } = validation.index;
 
         const existingSnippets = await Snippet.findAll({ where: { sourceId } });
         const existingScripts = await Script.findAll({ where: { sourceId } });
+        const existingThemes = await Theme.findAll({ where: { sourceId } });
 
         const existingSnippetMap = new Map(existingSnippets.map(s => [s.name, s]));
         const existingScriptMap = new Map(existingScripts.map(s => [s.name, s]));
+        const existingThemeMap = new Map(existingThemes.map(t => [t.name, t]));
 
         let snippetCount = 0;
         let scriptCount = 0;
+        let themeCount = 0;
 
         const processedSnippetNames = new Set();
         const processedScriptNames = new Set();
+        const processedThemeNames = new Set();
 
         for (const indexSnippet of indexSnippets) {
             let existingByHash = null;
@@ -299,6 +313,51 @@ module.exports.syncSource = async (sourceId) => {
             scriptCount++;
         }
 
+        for (const indexTheme of indexThemes) {
+            let existingByHash = null;
+            for (const [name, theme] of existingThemeMap) {
+                const existingHash = calculateContentHash(theme.css);
+                if (existingHash === indexTheme.hash) {
+                    existingByHash = theme;
+                    processedThemeNames.add(name);
+                    break;
+                }
+            }
+
+            if (existingByHash) {
+                themeCount++;
+                continue;
+            }
+
+            const content = await fetchSourceFile(source.url, indexTheme.path);
+            if (!content) {
+                logger.warn(`Failed to fetch theme: ${indexTheme.path}`);
+                continue;
+            }
+
+            const parsed = parseThemeContent(content, indexTheme.path);
+            const existing = existingThemeMap.get(parsed.name);
+
+            processedThemeNames.add(parsed.name);
+
+            if (existing) {
+                await Theme.update({
+                    name: parsed.name,
+                    css: parsed.css,
+                    description: parsed.description,
+                }, { where: { id: existing.id } });
+            } else {
+                await Theme.create({
+                    name: parsed.name,
+                    css: parsed.css,
+                    description: parsed.description,
+                    accountId: null,
+                    sourceId,
+                });
+            }
+            themeCount++;
+        }
+
         for (const [name, snippet] of existingSnippetMap) {
             if (!processedSnippetNames.has(name)) {
                 await Snippet.destroy({ where: { id: snippet.id } });
@@ -309,14 +368,20 @@ module.exports.syncSource = async (sourceId) => {
                 await Script.destroy({ where: { id: script.id } });
             }
         }
+        for (const [name, theme] of existingThemeMap) {
+            if (!processedThemeNames.has(name)) {
+                await Theme.destroy({ where: { id: theme.id } });
+            }
+        }
 
         await Source.update({
             lastSyncStatus: "success",
             snippetCount,
             scriptCount,
+            themeCount,
         }, { where: { id: sourceId } });
 
-        logger.info(`Source sync completed: ${source.name} - ${snippetCount} snippets, ${scriptCount} scripts`);
+        logger.info(`Source sync completed: ${source.name} - ${snippetCount} snippets, ${scriptCount} scripts, ${themeCount} themes`);
         return { success: true };
 
     } catch (error) {
@@ -427,6 +492,30 @@ const parseScriptContent = (content, defaultName) => {
     }
 
     return { name, content, description, osFilter: osFilter.length > 0 ? osFilter : null };
+};
+
+const parseThemeContent = (content, path) => {
+    const lines = content.split("\n");
+    let name = path.split("/").pop().replace(/\.theme\.css$/i, "");
+    let description = "";
+
+    for (const line of lines) {
+        const nameLine = line.match(/^\/\*\s*@name:\s*(.+?)\s*\*\/$/i) || line.match(/^\s*\/\*\*?\s*@name:\s*(.+?)\s*\*?\*?\/?\s*$/i);
+        if (nameLine) {
+            name = nameLine[1].trim();
+            continue;
+        }
+
+        const descLine = line.match(/^\/\*\s*@description:\s*(.+?)\s*\*\/$/i) || line.match(/^\s*\/\*\*?\s*@description:\s*(.+?)\s*\*?\*?\/?\s*$/i);
+        if (descLine) {
+            description = descLine[1].trim();
+            continue;
+        }
+
+        if (!line.trim().startsWith("/*") && !line.trim().startsWith("*") && line.trim()) break;
+    }
+
+    return { name, css: content, description };
 };
 
 module.exports.ensureDefaultSource = async () => {

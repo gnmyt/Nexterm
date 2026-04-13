@@ -1,12 +1,12 @@
 import { useState, useRef, useEffect, useCallback } from "react";
 import "./styles.sass";
 
-export const Tooltip = ({ children, text, disabled = false, delayMs = 0 }) => {
+export const Tooltip = ({ children, text, disabled = false, delay = 0 }) => {
     const [isVisible, setIsVisible] = useState(false);
     const [tooltipStyle, setTooltipStyle] = useState({});
     const triggerRef = useRef(null);
     const tooltipRef = useRef(null);
-    const timeoutRef = useRef(null);
+    const delayTimeoutRef = useRef(null);
 
     const updatePosition = useCallback(() => {
         if (!triggerRef.current || !tooltipRef.current) return;
@@ -38,29 +38,20 @@ export const Tooltip = ({ children, text, disabled = false, delayMs = 0 }) => {
 
     const handleMouseEnter = useCallback(() => {
         if (disabled || !text) return;
-        if (delayMs > 0) {
-            timeoutRef.current = window.setTimeout(() => {
-                setIsVisible(true);
-            }, delayMs);
-        } else {
-            setIsVisible(true);
-        }
-    }, [disabled, text, delayMs]);
+        if (delayTimeoutRef.current) clearTimeout(delayTimeoutRef.current);
+        delayTimeoutRef.current = setTimeout(() => setIsVisible(true), delay);
+    }, [disabled, text, delay]);
 
     const handleMouseLeave = useCallback(() => {
-        if (timeoutRef.current) {
-            window.clearTimeout(timeoutRef.current);
-            timeoutRef.current = null;
+        if (delayTimeoutRef.current) {
+            clearTimeout(delayTimeoutRef.current);
+            delayTimeoutRef.current = null;
         }
         setIsVisible(false);
     }, []);
 
-    useEffect(() => {
-        return () => {
-            if (timeoutRef.current) {
-                window.clearTimeout(timeoutRef.current);
-            }
-        };
+    useEffect(() => () => {
+        if (delayTimeoutRef.current) clearTimeout(delayTimeoutRef.current);
     }, []);
 
     return (

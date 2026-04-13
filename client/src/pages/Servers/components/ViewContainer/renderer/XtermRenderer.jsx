@@ -10,7 +10,7 @@ import { ContextMenu, ContextMenuItem, ContextMenuSeparator, useContextMenu } fr
 import AICommandPopover from "./components/AICommandPopover";
 import SnippetsMenu from "./components/SnippetsMenu";
 import { createProgressParser } from "../utils/progressParser";
-import { mdiContentCopy, mdiContentPaste, mdiCodeBrackets, mdiSelectAll, mdiDelete, mdiKeyboard, mdiKey } from "@mdi/js";
+import { mdiContentCopy, mdiContentPaste, mdiCodeBrackets, mdiSelectAll, mdiDelete, mdiKeyboard, mdiKey, mdiFolderOpen } from "@mdi/js";
 import { useTranslation } from "react-i18next";
 import ConnectionLoader from "./components/ConnectionLoader";
 import { getWebSocketUrl } from "@/common/utils/ConnectionUtil.js";
@@ -18,7 +18,7 @@ import { postRequest } from "@/common/utils/RequestUtil.js";
 import "@xterm/xterm/css/xterm.css";
 import "./styles/xterm.sass";
 
-const XtermRenderer = ({ session, disconnectFromServer, registerTerminalRef, broadcastMode, terminalRefs, updateProgress, layoutMode, onBroadcastToggle, onFullscreenToggle, isShared = false }) => {
+const XtermRenderer = ({ session, disconnectFromServer, registerTerminalRef, broadcastMode, terminalRefs, updateProgress, layoutMode, onBroadcastToggle, onFullscreenToggle, isShared = false, onOpenSftp }) => {
     const ref = useRef(null);
     const termRef = useRef(null);
     const wsRef = useRef(null);
@@ -459,6 +459,16 @@ const XtermRenderer = ({ session, disconnectFromServer, registerTerminalRef, bro
                         label={t('servers.fileManager.contextMenu.clearTerminal')}
                         onClick={handleClearTerminal}
                     />
+                    {onOpenSftp && (
+                        <>
+                            <ContextMenuSeparator />
+                            <ContextMenuItem
+                                icon={mdiFolderOpen}
+                                label={t('servers.tabs.contextMenu.openSftp')}
+                                onClick={() => { contextMenu.close(); onOpenSftp(); }}
+                            />
+                        </>
+                    )}
                 </ContextMenu>
             )}
             {!isShared && (
