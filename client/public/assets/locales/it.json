@@ -844,6 +844,7 @@
     },
     "authentication": {
       "title": "{{count}} Fornitori di autenticazione",
+      "internalProviderName": "Internal Authentication",
       "addProvider": "Aggiungi un fornitore",
       "addLdapProvider": "Aggiungi LDAP",
       "system": "Sistema",
@@ -1302,6 +1303,20 @@
       "shutdown": "Spegnimento",
       "stop": "Fermati",
       "start": "Iniziare"
+    },
+    "tabs": {
+      "contextMenu": {
+        "popOut": "Pop Out",
+        "startSharing": "Start Sharing",
+        "readOnly": "Read-only",
+        "readWrite": "Read & Write",
+        "copyShareLink": "Copy Share Link",
+        "changePermissions": "Change Permissions",
+        "stopSharing": "Stop Sharing",
+        "duplicate": "Duplicate",
+        "hibernateSession": "Hibernate",
+        "closeSession": "Disconnect"
+      }
     },
     "wol": {
       "successDescription": "Pacchetto magico inviato a {{name}}",
