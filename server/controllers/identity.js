@@ -58,6 +58,29 @@ module.exports.createIdentity = async (accountId, config) => {
     if (config.organizationId && !(await hasOrganizationAccess(accountId, config.organizationId))) {
         return { code: 403, message: "No access to this organization" };
     }
+
+    // Validation block
+    if (!config.name?.trim()) {
+        return { code: 400, message: "settings.identities.dialog.messages.nameRequired" };
+    }
+    if (!config.username?.trim()) {
+        return { code: 400, message: "settings.identities.dialog.messages.usernameRequired" };
+    }
+    if (
+        (config.type === "password" ||
+            config.type === "password-only" ||
+            config.type === "both") &&
+        (!config.password?.trim())
+    ) {
+        return { code: 400, message: "settings.identities.dialog.messages.passwordRequired" };
+    }
+    if (
+        (config.type === "ssh" || config.type === "both") &&
+        (!config.sshKey || typeof config.sshKey !== "string" || !config.sshKey.trim())
+    ) {
+        return { code: 400, message: "settings.identities.dialog.messages.sshKeyRequired" };
+    }
+
     const identity = await Identity.create({
         ...config, accountId: config.organizationId ? null : accountId, organizationId: config.organizationId || null,
         password: undefined, sshKey: undefined, passphrase: undefined,
