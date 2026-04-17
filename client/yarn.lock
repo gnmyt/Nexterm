@@ -2207,10 +2207,10 @@ react-dom@^19.2.5:
   dependencies:
     scheduler "^0.27.0"
 
-react-i18next@^17.0.3:
-  version "17.0.3"
-  resolved "https://registry.yarnpkg.com/react-i18next/-/react-i18next-17.0.3.tgz#1a5c11dc70fdb5663f705fc15b10253a1fa035b0"
-  integrity sha512-x4xjvUNZ56T+zfXWNedNnCET9Xq1IBYWX7IsWo5cCQ/RT+Rm7GWqt0h9PShFi4IhyMnsdiu1C6Jc4DE+/S3PFQ==
+react-i18next@^17.0.4:
+  version "17.0.4"
+  resolved "https://registry.yarnpkg.com/react-i18next/-/react-i18next-17.0.4.tgz#f6e5a2cea068f7e5b8638e5e968b36d97dc15499"
+  integrity sha512-hQipmK4EF0y6RO6tt6WuqnmWpWYEXmQUUzecmMBuNsIgYd3smXcG4GtYPWhvgxn0pqMOItKlEO8H24HCs5hc3g==
   dependencies:
     "@babel/runtime" "^7.29.2"
     html-parse-stringify "^3.0.1"
