@@ -4,9 +4,11 @@ import { getRequest, patchRequest } from "@/common/utils/RequestUtil.js";
 import { mdiContentSave } from "@mdi/js";
 import Button from "@/common/components/Button";
 import ToggleSwitch from "@/common/components/ToggleSwitch";
+import { useTranslation } from "react-i18next";
 import "./styles.sass";
 
 export const OrganizationAuditSettings = ({ organizationId, isOwner, onClose }) => {
+    const { t } = useTranslation();
     const { sendToast } = useToast();
     const [settings, setSettings] = useState(null);
 
@@ -38,10 +40,10 @@ export const OrganizationAuditSettings = ({ organizationId, isOwner, onClose }) 
     const saveSettings = async () => {
         try {
             await patchRequest(`audit/organizations/${organizationId}/settings`, settings);
-            sendToast("Success", "Audit settings updated successfully");
+            sendToast(t("common.success"), t("settings.organizations.auditSettings.messages.updated"));
             if (onClose) onClose();
         } catch (error) {
-            sendToast("Error", "Failed to update audit settings");
+            sendToast(t("common.error"), t("settings.organizations.auditSettings.messages.updateFailed"));
         }
     };
 
@@ -52,16 +54,16 @@ export const OrganizationAuditSettings = ({ organizationId, isOwner, onClose }) 
             <div className="settings-content">
                 <div className="setting-section">
                     <div className="section-header">
-                        <h4>Session Recording</h4>
-                        <p>Record terminal and remote desktop sessions for playback</p>
+                        <h4>{t("settings.organizations.auditSettings.sessionRecordingHeading")}</h4>
+                        <p>{t("settings.organizations.auditSettings.sessionRecordingDescription")}</p>
                     </div>
 
                     <div className="settings-list">
                         <div className="setting-item">
                             <div className="setting-info">
-                                <span className="setting-label">Enable Session Recording</span>
+                                <span className="setting-label">{t("settings.organizations.auditSettings.enableSessionRecordingLabel")}</span>
                                 <span className="setting-description">
-                                    Record SSH, Telnet, RDP, and VNC sessions for later playback
+                                    {t("settings.organizations.auditSettings.enableSessionRecordingDescription")}
                                 </span>
                             </div>
                             <ToggleSwitch
@@ -74,9 +76,9 @@ export const OrganizationAuditSettings = ({ organizationId, isOwner, onClose }) 
 
                         <div className="setting-item">
                             <div className="setting-info">
-                                <span className="setting-label">Recording Retention (days)</span>
+                                <span className="setting-label">{t("settings.organizations.auditSettings.recordingRetentionLabel")}</span>
                                 <span className="setting-description">
-                                    How long to keep session recordings before automatic deletion (1-365 days)
+                                    {t("settings.organizations.auditSettings.recordingRetentionDescription")}
                                 </span>
                             </div>
                             <input
@@ -94,16 +96,16 @@ export const OrganizationAuditSettings = ({ organizationId, isOwner, onClose }) 
 
                 <div className="setting-section">
                     <div className="section-header">
-                        <h4>Connection Requirements</h4>
-                        <p>Control connection behavior and requirements</p>
+                        <h4>{t("settings.organizations.auditSettings.connectionRequirementsHeading")}</h4>
+                        <p>{t("settings.organizations.auditSettings.connectionRequirementsDescription")}</p>
                     </div>
 
                     <div className="settings-list">
                         <div className="setting-item">
                             <div className="setting-info">
-                                <span className="setting-label">Require Connection Reason</span>
+                                <span className="setting-label">{t("settings.organizations.auditSettings.requireConnectionReasonLabel")}</span>
                                 <span className="setting-description">
-                                    Require users to provide a reason when connecting to servers
+                                    {t("settings.organizations.auditSettings.requireConnectionReasonDescription")}
                                 </span>
                             </div>
                             <ToggleSwitch
@@ -118,16 +120,16 @@ export const OrganizationAuditSettings = ({ organizationId, isOwner, onClose }) 
 
                 <div className="setting-section">
                     <div className="section-header">
-                        <h4>Activity Logging</h4>
-                        <p>Choose which types of activities to log</p>
+                        <h4>{t("settings.organizations.auditSettings.activityLoggingHeading")}</h4>
+                        <p>{t("settings.organizations.auditSettings.activityLoggingDescription")}</p>
                     </div>
 
                     <div className="settings-list">
                         <div className="setting-item">
                             <div className="setting-info">
-                                <span className="setting-label">File Operations</span>
+                                <span className="setting-label">{t("settings.organizations.auditSettings.fileOperationsLabel")}</span>
                                 <span className="setting-description">
-                                    Log file uploads, downloads, deletions, and renames via SFTP
+                                    {t("settings.organizations.auditSettings.fileOperationsDescription")}
                                 </span>
                             </div>
                             <ToggleSwitch
@@ -140,9 +142,9 @@ export const OrganizationAuditSettings = ({ organizationId, isOwner, onClose }) 
 
                         <div className="setting-item">
                             <div className="setting-info">
-                                <span className="setting-label">Server Connections</span>
+                                <span className="setting-label">{t("settings.organizations.auditSettings.serverConnectionsLabel")}</span>
                                 <span className="setting-description">
-                                    Log SSH, SFTP, and PVE connections and disconnections
+                                    {t("settings.organizations.auditSettings.serverConnectionsDescription")}
                                 </span>
                             </div>
                             <ToggleSwitch
@@ -155,9 +157,9 @@ export const OrganizationAuditSettings = ({ organizationId, isOwner, onClose }) 
 
                         <div className="setting-item">
                             <div className="setting-info">
-                                <span className="setting-label">Identity Management</span>
+                                <span className="setting-label">{t("settings.organizations.auditSettings.identityManagementLabel")}</span>
                                 <span className="setting-description">
-                                    Log creation, modification, and deletion of SSH identities
+                                    {t("settings.organizations.auditSettings.identityManagementDescription")}
                                 </span>
                             </div>
                             <ToggleSwitch
@@ -170,9 +172,9 @@ export const OrganizationAuditSettings = ({ organizationId, isOwner, onClose }) 
 
                         <div className="setting-item">
                             <div className="setting-info">
-                                <span className="setting-label">Password Paste</span>
+                                <span className="setting-label">{t("settings.organizations.auditSettings.passwordPasteLabel")}</span>
                                 <span className="setting-description">
-                                    Log usage of the password paste action
+                                    {t("settings.organizations.auditSettings.passwordPasteDescription")}
                                 </span>
                             </div>
                             <ToggleSwitch
@@ -185,9 +187,9 @@ export const OrganizationAuditSettings = ({ organizationId, isOwner, onClose }) 
 
                         <div className="setting-item">
                             <div className="setting-info">
-                                <span className="setting-label">Server Management</span>
+                                <span className="setting-label">{t("settings.organizations.auditSettings.serverManagementLabel")}</span>
                                 <span className="setting-description">
-                                    Log creation, modification, and deletion of server configurations
+                                    {t("settings.organizations.auditSettings.serverManagementDescription")}
                                 </span>
                             </div>
                             <ToggleSwitch
@@ -200,9 +202,9 @@ export const OrganizationAuditSettings = ({ organizationId, isOwner, onClose }) 
 
                         <div className="setting-item">
                             <div className="setting-info">
-                                <span className="setting-label">Folder Management</span>
+                                <span className="setting-label">{t("settings.organizations.auditSettings.folderManagementLabel")}</span>
                                 <span className="setting-description">
-                                    Log creation, modification, and deletion of folders
+                                    {t("settings.organizations.auditSettings.folderManagementDescription")}
                                 </span>
                             </div>
                             <ToggleSwitch
@@ -215,9 +217,9 @@ export const OrganizationAuditSettings = ({ organizationId, isOwner, onClose }) 
 
                         <div className="setting-item">
                             <div className="setting-info">
-                                <span className="setting-label">Script Execution</span>
+                                <span className="setting-label">{t("settings.organizations.auditSettings.scriptExecutionLabel")}</span>
                                 <span className="setting-description">
-                                    Log execution of scripts and automation tasks
+                                    {t("settings.organizations.auditSettings.scriptExecutionDescription")}
                                 </span>
                             </div>
                             <ToggleSwitch
@@ -233,7 +235,7 @@ export const OrganizationAuditSettings = ({ organizationId, isOwner, onClose }) 
 
             {isOwner && (
                 <div className="settings-actions">
-                    <Button text="Save Settings" icon={mdiContentSave} onClick={saveSettings} />
+                    <Button text={t("settings.organizations.auditSettings.actions.save")} icon={mdiContentSave} onClick={saveSettings} />
                 </div>
             )}
         </div>
