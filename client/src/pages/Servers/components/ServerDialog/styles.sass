@@ -85,12 +85,18 @@
 
   .address-row
     display: grid
-    grid-template-columns: 1fr auto
+    grid-template-columns: 4fr 1fr
     gap: 1rem
+
+  .notes-row
+    display: grid
+    grid-template-columns: 4fr 1fr
+    gap: 1rem
+    align-items: start
 
   .pve-config-row
     display: grid
-    grid-template-columns: 1fr auto
+    grid-template-columns: 4fr 1fr
     gap: 1rem
 
   .password-row
@@ -132,6 +138,27 @@
       &:focus
         border: 1px solid colors.$primary
         background-color: colors.$dark-gray
+
+    .notes-input
+      padding: 0.8rem
+      width: 100%
+      box-sizing: border-box
+      min-height: 4.5rem
+      border: 1px solid colors.$gray
+      background-color: colors.$lighter-background
+      color: colors.$white
+      border-radius: 0.5rem
+      font-size: 14pt
+      outline: none
+      resize: vertical
+      transition: border-color 0.1s ease, background-color 0.1s ease
+
+      &:focus
+        border: 1px solid colors.$primary
+        background-color: colors.$dark-gray
+
+  .notes-checkbox
+    align-items: flex-start
 
   .server-dialog-tabs
     display: flex

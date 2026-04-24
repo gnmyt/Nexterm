@@ -1439,6 +1439,8 @@
         "nodeName": "Node Name",
         "vmid": "VM ID",
         "macAddress": "MAC Address",
+        "notes": "Notes",
+        "showFirstLineInServer": "Show",
         "engine": "Engine"
       },
       "placeholders": {
@@ -1450,7 +1452,11 @@
         "host": "Host",
         "nodeName": "Node name",
         "vmid": "VM ID",
-        "macAddress": "AA:BB:CC:DD:EE:FF"
+        "macAddress": "AA:BB:CC:DD:EE:FF",
+        "notes": "Add a note about this server"
+      },
+      "tooltips": {
+        "showFirstLineInServer": "Display the first line of these notes in the server list."
       },
       "engineOffline": "(offline)",
       "settings": {
@@ -1759,7 +1765,17 @@
       "broadcasting": "Broadcasting",
       "fullScreen": "Full-Screen",
       "exitFullScreen": "Exit Full-Screen Mode",
-      "badgeOn": "ON"
+      "badgeOn": "ON",
+      "notes": "Notes"
+    },
+    "notesPanel": {
+      "title": "Notes",
+      "placeholder": "Write your notes here... (Markdown supported)",
+      "edit": "Edit",
+      "preview": "Preview",
+      "save": "Save",
+      "cancel": "Cancel",
+      "showFirstLineInServer": "Show first line in server list"
     },
     "messages": {
       "fillRequiredFields": "Please fill in all required fields",
