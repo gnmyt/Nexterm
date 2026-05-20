@@ -2079,10 +2079,10 @@ define-data-property@^1.1.4:
     es-errors "^1.3.0"
     gopd "^1.0.1"
 
-defu@^6.1.4:
-  version "6.1.4"
-  resolved "https://registry.yarnpkg.com/defu/-/defu-6.1.4.tgz#4e0c9cf9ff68fe5f3d7f2765cc1a012dfdcb0479"
-  integrity sha512-mEQCMmwJu317oSz8CwdIOdwf3xMif1ttiM8LTufzc3g6kR+9Pe236twL8j3IYT1F7GfRgGcW6MWxzZjLIkuHIg==
+defu@^6.1.5:
+  version "6.1.7"
+  resolved "https://registry.yarnpkg.com/defu/-/defu-6.1.7.tgz#72543567c8e9f97ff13ce402b6dbe09ac5ae4d23"
+  integrity sha512-7z22QmUWiQ/2d0KkdYmANbRUVABpZ9SNYyH5vx6PZ+nE5bcC0l7uFvEfHlyld/HcGBFTL536ClDt3DEcSlEJAQ==
 
 depd@2.0.0, depd@^2.0.0, depd@~2.0.0:
   version "2.0.0"
@@ -2996,10 +2996,10 @@ lru-cache@^11.0.0, lru-cache@^11.1.0, lru-cache@^11.2.1:
   resolved "https://registry.yarnpkg.com/lru-cache/-/lru-cache-11.2.7.tgz#9127402617f34cd6767b96daee98c28e74458d35"
   integrity sha512-aY/R+aEsRelme17KGQa/1ZSIpLpNYYrhcrepKTZgE+W3WM16YMCaPwOHLHsmopZHELU0Ojin1lPVxKR0MihncA==
 
-lucide-vue-next@^0.577.0:
-  version "0.577.0"
-  resolved "https://registry.yarnpkg.com/lucide-vue-next/-/lucide-vue-next-0.577.0.tgz#840cbc25e748dd69b6abd4133b8c52f8c7fbc052"
-  integrity sha512-py05bAfv9SHVJqscbiOnjcnLlEmOffA58a+7XhZuFxrs6txe1E8VoR1ngWGTYO+9aVKABAz8l3ee3PqiQN9QPA==
+lucide-vue-next@^1.0.0:
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/lucide-vue-next/-/lucide-vue-next-1.0.0.tgz#663ad26b7bfa327c7662b75bb0b843ebe749a31b"
+  integrity sha512-V6SPvx1IHTj/UY+FrIYWV5faISsPSb8BnWSFDxAtezWKvWc9ZZ40PDrdu1/Qb5vg4lHWr1hs1BAMGVGm6V1Xdg==
 
 magic-string@^0.30.21:
   version "0.30.21"
@@ -3772,10 +3772,10 @@ regex@^6.0.1:
   dependencies:
     regex-utilities "^2.3.0"
 
-reka-ui@^2.9.0:
-  version "2.9.2"
-  resolved "https://registry.yarnpkg.com/reka-ui/-/reka-ui-2.9.2.tgz#20c405a055e4ff4cc0d714de9d159197ebe80a54"
-  integrity sha512-/t4e6y1hcG+uDuRfpg6tbMz3uUEvRzNco6NeYTufoJeUghy5Iosxos5YL/p+ieAsid84sdMX9OrgDqpEuCJhBw==
+reka-ui@^2.9.5:
+  version "2.9.7"
+  resolved "https://registry.yarnpkg.com/reka-ui/-/reka-ui-2.9.7.tgz#cfed3b5bc83dcce9eadef275b53ee5fe62cb2ed4"
+  integrity sha512-aX7foYYR20v4+majO58OJJdBNfLMm0eJb448l9N4JVy8JB7GXOr4H/S4a+J1pkcoxZH8Cb7YHpJ855+miAm7sA==
   dependencies:
     "@floating-ui/dom" "^1.6.13"
     "@floating-ui/vue" "^1.1.6"
@@ -3785,7 +3785,7 @@ reka-ui@^2.9.0:
     "@vueuse/core" "^14.1.0"
     "@vueuse/shared" "^14.1.0"
     aria-hidden "^1.2.4"
-    defu "^6.1.4"
+    defu "^6.1.5"
     ohash "^2.0.11"
 
 require-directory@^2.1.1:
@@ -4606,17 +4606,17 @@ vite@^5.4.14:
   optionalDependencies:
     fsevents "~2.3.3"
 
-vitepress-openapi@^0.1.20:
-  version "0.1.20"
-  resolved "https://registry.yarnpkg.com/vitepress-openapi/-/vitepress-openapi-0.1.20.tgz#9f2b1fa72a12ad57d4bc3e7963f6709cfb37e759"
-  integrity sha512-0BRwfMdsXmQx/mI0akoJgfhPhxzJ+T5jriIC/oavaPR6+Jg0TsriZZb3VGQYq3sryOYbWzqI4gfun+Tq2jP33w==
+vitepress-openapi@^0.2.0:
+  version "0.2.0"
+  resolved "https://registry.yarnpkg.com/vitepress-openapi/-/vitepress-openapi-0.2.0.tgz#2801505545d0c501af3a5abed2b48195d32b6386"
+  integrity sha512-suCYD59HG0P+XKauEm2GayqeXiVqBnDfaltmwcqNS3zOUDgI/nDCN75z4zZqLGHLLw/YhryNko8LOykTaUGmtQ==
   dependencies:
     "@vueuse/core" "^14.2.1"
     class-variance-authority "^0.7.1"
     clsx "^2.1.1"
-    lucide-vue-next "^0.577.0"
+    lucide-vue-next "^1.0.0"
     markdown-it-link-attributes "^4.0.1"
-    reka-ui "^2.9.0"
+    reka-ui "^2.9.5"
 
 vitepress@^1.6.4:
   version "1.6.4"
