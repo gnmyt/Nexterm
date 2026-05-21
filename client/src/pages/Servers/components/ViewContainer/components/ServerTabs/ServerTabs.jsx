@@ -1,7 +1,7 @@
 import { useRef, useState, useEffect, useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import Icon from "@mdi/react";
-import { mdiClose, mdiViewSplitVertical, mdiChevronLeft, mdiChevronRight, mdiSleep, mdiOpenInNew, mdiShareVariant, mdiLinkVariant, mdiPencil, mdiEye, mdiCloseCircle, mdiContentDuplicate } from "@mdi/js";
+import { mdiClose, mdiViewSplitVertical, mdiChevronLeft, mdiChevronRight, mdiSleep, mdiOpenInNew, mdiShareVariant, mdiLinkVariant, mdiPencil, mdiEye, mdiCloseCircle, mdiContentDuplicate, mdiNoteEditOutline } from "@mdi/js";
 import { useDrag, useDrop } from "react-dnd";
 import TerminalActionsMenu from "../TerminalActionsMenu";
 import { ContextMenu, ContextMenuItem, ContextMenuSeparator, useContextMenu } from "@/common/components/ContextMenu";
@@ -19,6 +19,7 @@ const DraggableTab = ({
     closeSession,
     hibernateSession,
     duplicateSession,
+    openNotes,
     index,
     moveTab,
     progress = 0,
@@ -26,9 +27,13 @@ const DraggableTab = ({
     const contextMenu = useContextMenu();
     const { popOutSession } = useActiveSessions();
     const { t } = useTranslation();
-    
-    const canPopOut = !session.scriptId && session.type !== "sftp";
+
+    const isNotes = session.type === "notes";
+    const canPopOut = !session.scriptId && session.type !== "sftp" && !isNotes;
     const canShare = canPopOut;
+    const canHibernate = !isNotes;
+    const canDuplicate = !isNotes;
+    const canOpenNotes = !isNotes && !!server?.id && !session.scriptId;
     const isSharing = !!session.shareId;
 
     const handleShare = useCallback(async (writable) => {
@@ -119,9 +124,9 @@ const DraggableTab = ({
                             />
                         </svg>
                     )}
-                    <Icon path={getIconPath(server.icon)} className="progress-icon" />
+                    <Icon path={isNotes ? mdiNoteEditOutline : getIconPath(server.icon)} className="progress-icon" />
                 </div>
-                <h2>{server?.name} {session.type === "sftp" ? " (SFTP)" : ""}</h2>
+                <h2>{server?.name} {session.type === "sftp" ? " (SFTP)" : ""}{isNotes ? ` (${t("servers.notesPanel.title")})` : ""}</h2>
                 <div className="tab-actions">
                     <Icon path={mdiClose} className="close-btn" title="Close Session" onClick={(e) => {
                         e.stopPropagation();
@@ -162,16 +167,27 @@ const DraggableTab = ({
                         <ContextMenuSeparator />
                     </>
                 )}
-                <ContextMenuItem
-                    icon={mdiContentDuplicate}
-                    label={t("servers.tabs.contextMenu.duplicate")}
-                    onClick={() => duplicateSession(session.id)}
-                />
-                <ContextMenuItem
-                    icon={mdiSleep}
-                    label={t("servers.tabs.contextMenu.hibernateSession")}
-                    onClick={() => hibernateSession(session.id)}
-                />
+                {canOpenNotes && (
+                    <ContextMenuItem
+                        icon={mdiNoteEditOutline}
+                        label={t("servers.tabs.contextMenu.openNotes")}
+                        onClick={() => openNotes?.(server.id)}
+                    />
+                )}
+                {canDuplicate && (
+                    <ContextMenuItem
+                        icon={mdiContentDuplicate}
+                        label={t("servers.tabs.contextMenu.duplicate")}
+                        onClick={() => duplicateSession(session.id)}
+                    />
+                )}
+                {canHibernate && (
+                    <ContextMenuItem
+                        icon={mdiSleep}
+                        label={t("servers.tabs.contextMenu.hibernateSession")}
+                        onClick={() => hibernateSession(session.id)}
+                    />
+                )}
                 <ContextMenuItem
                     icon={mdiClose}
                     label={t("servers.tabs.contextMenu.closeSession")}
@@ -190,6 +206,7 @@ export const ServerTabs = ({
     closeSession,
     hibernateSession,
     duplicateSession,
+    openNotes,
     layoutMode,
     onToggleSplit,
     orderRef,
@@ -325,6 +342,7 @@ export const ServerTabs = ({
                             <DraggableTab key={session.id} session={session} server={session.server} index={index} moveTab={moveTab}
                                 activeSessionId={activeSessionId} setActiveSessionId={setActiveSessionId}
                                 closeSession={closeSession} hibernateSession={hibernateSession} duplicateSession={duplicateSession}
+                                openNotes={openNotes}
                                 progress={sessionProgress[session.id] || 0} />
                         );
                     })}
