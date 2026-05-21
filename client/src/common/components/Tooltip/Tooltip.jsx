@@ -14,15 +14,29 @@ export const Tooltip = ({ children, text, disabled = false, delay = 0 }) => {
         const triggerRect = triggerRef.current.getBoundingClientRect();
         const tooltipRect = tooltipRef.current.getBoundingClientRect();
 
-        const centerY = triggerRect.top + triggerRect.height / 2;
-        const left = triggerRect.right + 12;
-
         const viewportWidth = window.innerWidth;
-        const adjustedLeft = left + tooltipRect.width > viewportWidth - 8 ? triggerRect.left - tooltipRect.width - 12 : left;
+        const viewportHeight = window.innerHeight;
+        const margin = 8;
+        const gap = 12;
 
-        const adjustedTop = centerY - (tooltipRect.height / 2);
+        const rightEdge = triggerRect.right + gap + tooltipRect.width;
+        const fitsRight = rightEdge <= viewportWidth - margin;
+        const fitsLeft = triggerRect.left - gap - tooltipRect.width >= margin;
 
-        setTooltipStyle({ position: "fixed", top: `${adjustedTop}px`, left: `${adjustedLeft}px`, zIndex: 99999 });
+        let left;
+        if (fitsRight) {
+            left = triggerRect.right + gap;
+        } else if (fitsLeft) {
+            left = triggerRect.left - tooltipRect.width - gap;
+        } else {
+            left = Math.max(margin, viewportWidth - tooltipRect.width - margin);
+        }
+
+        const centerY = triggerRect.top + triggerRect.height / 2;
+        let top = centerY - (tooltipRect.height / 2);
+        top = Math.max(margin, Math.min(top, viewportHeight - tooltipRect.height - margin));
+
+        setTooltipStyle({ position: "fixed", top: `${top}px`, left: `${left}px`, zIndex: 99999 });
     }, []);
 
     useEffect(() => {
