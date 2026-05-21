@@ -1379,6 +1379,8 @@
       "openSFTP": "Open SFTP",
       "forwardPort": "Forward Port",
       "runScript": "Run Script",
+      "openNotes": "Open Notes",
+      "addNotes": "Add Notes",
       "editServer": "Edit Server",
       "editIntegration": "Edit Integration",
       "duplicateServer": "Duplicate Server",
@@ -1401,6 +1403,7 @@
         "changePermissions": "Change Permissions",
         "stopSharing": "Stop Sharing",
         "duplicate": "Duplicate",
+        "openNotes": "Open Notes",
         "hibernateSession": "Hibernate",
         "closeSession": "Disconnect"
       }
@@ -1760,6 +1763,18 @@
       "fullScreen": "Full-Screen",
       "exitFullScreen": "Exit Full-Screen Mode",
       "badgeOn": "ON"
+    },
+    "notesPanel": {
+      "title": "Notes",
+      "placeholder": "Write notes for this server…",
+      "showInList": "Show in list",
+      "showInListTooltip": "Display the first line of these notes under the server name in the sidebar.",
+      "status": {
+        "saving": "Saving",
+        "saved": "Saved",
+        "unsaved": "Unsaved",
+        "error": "Save failed"
+      }
     },
     "messages": {
       "fillRequiredFields": "Please fill in all required fields",

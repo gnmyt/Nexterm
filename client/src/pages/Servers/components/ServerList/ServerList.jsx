@@ -31,6 +31,7 @@ import {
     mdiPlay,
     mdiScript,
     mdiTunnel,
+    mdiNoteEditOutline,
 } from "@mdi/js";
 import { ContextMenu, ContextMenuItem, ContextMenuSeparator, useContextMenu } from "@/common/components/ContextMenu";
 import { useDrop, useDragLayer } from "react-dnd";
@@ -91,6 +92,7 @@ export const ServerList = ({
     resumeSession,
     openDirectConnect,
     runScript,
+    openNotes,
     openPortForward,
     mobileOpen = false,
     setMobileOpen,
@@ -699,6 +701,14 @@ export const ServerList = ({
                                 )}
 
                                 <ContextMenuSeparator />
+
+                                <ContextMenuItem
+                                    icon={mdiNoteEditOutline}
+                                    label={server?.notes
+                                        ? t("servers.contextMenu.openNotes")
+                                        : t("servers.contextMenu.addNotes")}
+                                    onClick={() => openNotes?.(server.id)}
+                                />
 
                                 <ContextMenuItem
                                     icon={mdiPencil}

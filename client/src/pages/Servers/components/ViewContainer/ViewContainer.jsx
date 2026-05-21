@@ -5,6 +5,7 @@ import GuacamoleRenderer from "@/pages/Servers/components/ViewContainer/renderer
 import XtermRenderer from "@/pages/Servers/components/ViewContainer/renderer/XtermRenderer.jsx";
 import FileRenderer from "@/pages/Servers/components/ViewContainer/renderer/FileRenderer";
 import ScriptRenderer from "@/pages/Servers/components/ViewContainer/renderer/ScriptRenderer";
+import NotesRenderer from "@/pages/Servers/components/ViewContainer/renderer/NotesRenderer";
 import Icon from "@mdi/react";
 import { mdiFullscreenExit } from "@mdi/js";
 import { useTranslation } from "react-i18next";
@@ -35,6 +36,7 @@ export const ViewContainer = ({
                                   closeSession,
                                   hibernateSession,
                                   duplicateSession,
+                                  openNotes,
                                   setOpenFileEditors,
                                   openTerminalFromFileManager,
                               }) => {
@@ -351,6 +353,10 @@ export const ViewContainer = ({
     }, [activeSessions.length, activeSessionId, focusSession]);
 
     const renderRenderer = (session) => {
+        if (session.type === "notes") {
+            return <NotesRenderer session={session} />;
+        }
+
         if (session.scriptId) {
             return <ScriptRenderer
                 session={session}
@@ -497,6 +503,7 @@ export const ViewContainer = ({
                                             onKeyboardShortcut={handleKeyboardShortcut} hasGuacamole={hasGuacamole}
                                             sessionProgress={sessionProgress} fullscreenEnabled={fullscreenMode}
                                             onFullscreenToggle={toggleFullscreenMode}
+                                            openNotes={openNotes}
                                             hibernateSession={hibernateSession} duplicateSession={duplicateSession} />}
 
             <div ref={layoutRef}
