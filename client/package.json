@@ -39,7 +39,7 @@
     "react-router-dom": "^7.15.1",
     "react-use-websocket": "^4.13.0",
     "simple-icons": "^16.20.0",
-    "ua-parser-js": "^2.0.9"
+    "ua-parser-js": "^2.0.10"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
