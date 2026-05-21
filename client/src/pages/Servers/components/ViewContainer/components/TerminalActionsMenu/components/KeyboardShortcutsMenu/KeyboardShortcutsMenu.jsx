@@ -4,7 +4,7 @@ import Icon from "@mdi/react";
 import { mdiMagnify } from "@mdi/js";
 import "./styles.sass";
 
-const KEYBOARD_SHORTCUTS = [
+export const KEYBOARD_SHORTCUTS = [
     { label: "Ctrl+Alt+Del", keys: [0xffe3, 0xffe9, 0xffff], category: "System" },
     { label: "Alt+Tab", keys: [0xffe9, 0xff09], category: "Windows" },
     { label: "Windows Key", keys: [0xffeb], category: "Windows" },
