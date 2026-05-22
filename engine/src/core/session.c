@@ -18,21 +18,24 @@ nexterm_session_t* nexterm_sm_create(nexterm_session_manager_t* sm,
                                      uint16_t port) {
     pthread_mutex_lock(&sm->mutex);
 
-    if (sm->count >= MAX_SESSIONS) {
-        LOG_ERROR("Maximum sessions reached (%d)", MAX_SESSIONS);
-        pthread_mutex_unlock(&sm->mutex);
-        return NULL;
-    }
-
-    for (int i = 0; i < sm->count; i++) {
-        if (strcmp(sm->sessions[i].session_id, session_id) == 0) {
+    int free_slot = -1;
+    for (int i = 0; i < MAX_SESSIONS; i++) {
+        if (sm->sessions[i].session_id[0] == '\0') {
+            if (free_slot < 0) free_slot = i;
+        } else if (strcmp(sm->sessions[i].session_id, session_id) == 0) {
             LOG_WARN("Session already exists: %s", session_id);
             pthread_mutex_unlock(&sm->mutex);
             return NULL;
         }
     }
 
-    nexterm_session_t* session = &sm->sessions[sm->count];
+    if (free_slot < 0) {
+        LOG_ERROR("Maximum sessions reached (%d)", MAX_SESSIONS);
+        pthread_mutex_unlock(&sm->mutex);
+        return NULL;
+    }
+
+    nexterm_session_t* session = &sm->sessions[free_slot];
     memset(session, 0, sizeof(nexterm_session_t));
 
     snprintf(session->session_id, sizeof(session->session_id), "%s", session_id);
@@ -60,8 +63,9 @@ nexterm_session_t* nexterm_sm_find(nexterm_session_manager_t* sm,
                                    const char* session_id) {
     pthread_mutex_lock(&sm->mutex);
 
-    for (int i = 0; i < sm->count; i++) {
-        if (strcmp(sm->sessions[i].session_id, session_id) == 0) {
+    for (int i = 0; i < MAX_SESSIONS; i++) {
+        if (sm->sessions[i].session_id[0] != '\0' &&
+            strcmp(sm->sessions[i].session_id, session_id) == 0) {
             nexterm_session_t* s = &sm->sessions[i];
             pthread_mutex_unlock(&sm->mutex);
             return s;
@@ -96,15 +100,12 @@ void nexterm_sm_remove(nexterm_session_manager_t* sm,
                        const char* session_id) {
     pthread_mutex_lock(&sm->mutex);
 
-    for (int i = 0; i < sm->count; i++) {
-        if (strcmp(sm->sessions[i].session_id, session_id) == 0) {
+    for (int i = 0; i < MAX_SESSIONS; i++) {
+        if (sm->sessions[i].session_id[0] != '\0' &&
+            strcmp(sm->sessions[i].session_id, session_id) == 0) {
             LOG_INFO("Session removed: %s", session_id);
             session_cleanup_resources(&sm->sessions[i]);
-
-            if (i < sm->count - 1) {
-                memmove(&sm->sessions[i], &sm->sessions[i + 1],
-                        (sm->count - i - 1) * sizeof(nexterm_session_t));
-            }
+            sm->sessions[i].session_id[0] = '\0';
             sm->count--;
             break;
         }
@@ -143,8 +144,12 @@ int nexterm_session_add_param(nexterm_session_t* session,
 void nexterm_sm_destroy(nexterm_session_manager_t* sm) {
     pthread_mutex_lock(&sm->mutex);
 
-    for (int i = 0; i < sm->count; i++)
-        session_cleanup_resources(&sm->sessions[i]);
+    for (int i = 0; i < MAX_SESSIONS; i++) {
+        if (sm->sessions[i].session_id[0] != '\0') {
+            session_cleanup_resources(&sm->sessions[i]);
+            sm->sessions[i].session_id[0] = '\0';
+        }
+    }
 
     sm->count = 0;
     pthread_mutex_unlock(&sm->mutex);

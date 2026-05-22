@@ -5,6 +5,8 @@
 #include "io.h"
 #include "log.h"
 
+extern nexterm_session_manager_t g_session_manager;
+
 #include <libssh2.h>
 #include <libssh2_sftp.h>
 
@@ -12,13 +14,15 @@
 #include "sftp_protocol_reader.h"
 
 #include <ctype.h>
+#include <errno.h>
+#include <poll.h>
 #include <pthread.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
 
-#define SFTP_CHUNK_SIZE    32768
+#define SFTP_CHUNK_SIZE    262144
 #define SFTP_MAX_PATH      4096
 #define SFTP_MAX_FRAME     (16 * 1024 * 1024)
 #define SFTP_SEARCH_DEPTH  3
@@ -819,6 +823,12 @@ static void sftp_request_loop(nexterm_session_t* session,
     sftp_write_state_t ws = { .handle = NULL, .rid = 0 };
 
     while (session->state == SESSION_STATE_ACTIVE) {
+        struct pollfd pfd = { .fd = data_fd, .events = POLLIN };
+        int ret = poll(&pfd, 1, 1000);
+        if (ret == 0) continue;
+        if (ret < 0) { if (errno == EINTR) continue; break; }
+        if (pfd.revents & (POLLERR | POLLHUP | POLLNVAL)) break;
+
         uint32_t payload_len;
         uint8_t* payload = nexterm_read_frame(data_fd, SFTP_MAX_FRAME, &payload_len);
         if (!payload) {
@@ -864,9 +874,7 @@ static void* sftp_session_thread(void* arg) {
         LOG_ERROR("SFTP session %s: missing username", session->session_id);
         nexterm_cp_send_session_result(cp, session->session_id, false,
                                        "Missing username", NULL);
-        session->state = SESSION_STATE_CLOSED;
-        free(args);
-        return NULL;
+        goto cleanup;
     }
 
     jump_host_t jump_hosts[MAX_JUMP_HOSTS];
@@ -879,9 +887,7 @@ static void* sftp_session_thread(void* arg) {
     if (data_fd < 0) {
         nexterm_cp_send_session_result(cp, session->session_id, false,
                                        "Failed to open data connection", NULL);
-        session->state = SESSION_STATE_CLOSED;
-        free(args);
-        return NULL;
+        goto cleanup;
     }
 
     if (nexterm_ssh_setup_with_jumphosts(session->host, session->port,
@@ -932,7 +938,12 @@ cleanup:
         close(data_fd);
 
     session->state = SESSION_STATE_CLOSED;
-    nexterm_cp_send_session_closed(cp, session->session_id, "session ended");
+    session->thread_active = false;
+
+    char sid[MAX_SESSION_ID_LEN];
+    snprintf(sid, sizeof(sid), "%s", session->session_id);
+    nexterm_cp_send_session_closed(cp, sid, "session ended");
+    nexterm_sm_remove(&g_session_manager, sid);
 
     free(args);
     return NULL;

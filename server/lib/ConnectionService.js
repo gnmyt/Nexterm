@@ -132,78 +132,97 @@ const resolveSSHContext = async (entry, identityId, directIdentity, accountId) =
 };
 
 const createSFTPConnectionForSession = async (sessionId, entry, accountId) => {
-    const existingConn = SessionManager.getConnection(sessionId);
-    if (existingConn?.sftpClient) return { success: true };
-
-    requireEngine();
     const session = requireSession(sessionId);
-    const { identityId, directIdentity } = session.configuration;
-    const { host, port, params } = await resolveSSHContext(entry, identityId, directIdentity, accountId);
-    const jumpHosts = await resolveJumpHosts(entry);
+    if (session.masterConnection?.sftpClient) return { success: true };
+    if (session._connecting) return session._connecting;
 
-    const dataSocket = await openEngineSession(
-        sessionId, SessionType.SFTP, host, port, params, jumpHosts, entry.config?.engineId
-    );
+    session._connecting = (async () => {
+        requireEngine();
+        const { identityId, directIdentity } = session.configuration;
+        const { host, port, params } = await resolveSSHContext(entry, identityId, directIdentity, accountId);
+        const jumpHosts = await resolveJumpHosts(entry);
 
-    const sftpClient = new EngineSftpClient(dataSocket);
-    await sftpClient.waitForReady();
+        const dataSocket = await openEngineSession(
+            sessionId, SessionType.SFTP, host, port, params, jumpHosts, entry.config?.engineId
+        );
 
-    SessionManager.setConnection(sessionId, {
-        sftpClient,
-        dataSocket,
-        type: "sftp",
-        auditLogId: session.auditLogId,
-    });
+        const sftpClient = new EngineSftpClient(dataSocket);
+        await sftpClient.waitForReady();
 
-    logger.info("SFTP connected", { sessionId, target: host, port });
-    return { success: true };
+        dataSocket.on("close", () => {
+            logger.info("SFTP data connection closed", { sessionId });
+            SessionManager.remove(sessionId);
+        });
+        dataSocket.on("error", (err) => {
+            logger.error("SFTP data socket error", { sessionId, error: err.message });
+            SessionManager.remove(sessionId);
+        });
+
+        SessionManager.setConnection(sessionId, {
+            sftpClient,
+            dataSocket,
+            type: "sftp",
+            auditLogId: session.auditLogId,
+        });
+
+        logger.info("SFTP connected", { sessionId, target: host, port });
+        return { success: true };
+    })().finally(() => { session._connecting = null; });
+
+    return session._connecting;
 };
 
 const createSSHConnectionForSession = async (sessionId, entry, identity, organizationId, script = null) => {
-    requireEngine();
     const session = requireSession(sessionId);
-    const credentials = await resolveCredentials(identity);
-    const { host, port } = getHostPort(entry);
-    const params = buildSSHParams(identity, credentials);
-    const jumpHosts = await resolveJumpHosts(entry);
+    if (session._connecting) return session._connecting;
 
-    const dataSocket = await openEngineSession(
-        sessionId, SessionType.SSH, host, port, params, jumpHosts, entry.config?.engineId
-    );
+    session._connecting = (async () => {
+        requireEngine();
+        const credentials = await resolveCredentials(identity);
+        const { host, port } = getHostPort(entry);
+        const params = buildSSHParams(identity, credentials);
+        const jumpHosts = await resolveJumpHosts(entry);
 
-    await SessionManager.initRecording(sessionId, organizationId);
+        const dataSocket = await openEngineSession(
+            sessionId, SessionType.SSH, host, port, params, jumpHosts, entry.config?.engineId
+        );
 
-    dataSocket.on("data", (data) => SessionManager.appendLog(sessionId, data.toString()));
-    dataSocket.on("close", () => {
-        logger.info("SSH data connection closed", { sessionId });
-        SessionManager.remove(sessionId);
-    });
-    dataSocket.on("error", (err) => {
-        logger.error("SSH data socket error", { sessionId, error: err.message });
-        SessionManager.remove(sessionId);
-    });
+        await SessionManager.initRecording(sessionId, organizationId);
 
-    let scriptLayer = null;
-    if (script) {
-        scriptLayer = new ScriptLayer(dataSocket, null, script, sessionId);
-        scriptLayer.start();
-    }
+        dataSocket.on("data", (data) => SessionManager.appendLog(sessionId, data.toString()));
+        dataSocket.on("close", () => {
+            logger.info("SSH data connection closed", { sessionId });
+            SessionManager.remove(sessionId);
+        });
+        dataSocket.on("error", (err) => {
+            logger.error("SSH data socket error", { sessionId, error: err.message });
+            SessionManager.remove(sessionId);
+        });
 
-    SessionManager.setConnection(sessionId, {
-        dataSocket,
-        sessionId,
-        type: "ssh",
-        auditLogId: session.auditLogId,
-        scriptLayer,
-    });
+        let scriptLayer = null;
+        if (script) {
+            scriptLayer = new ScriptLayer(dataSocket, null, script, sessionId);
+            scriptLayer.start();
+        }
 
-    if (!script && session.configuration.startPath) {
-        const safePath = session.configuration.startPath.replace(/[`$\\]/g, '\\$&');
-        dataSocket.write(`cd ${safePath}\n`);
-    }
+        SessionManager.setConnection(sessionId, {
+            dataSocket,
+            sessionId,
+            type: "ssh",
+            auditLogId: session.auditLogId,
+            scriptLayer,
+        });
 
-    logger.info("SSH connected", { sessionId, target: host, port });
-    return { success: true };
+        if (!script && session.configuration.startPath) {
+            const safePath = session.configuration.startPath.replace(/[`$\\]/g, '\\$&');
+            dataSocket.write(`cd ${safePath}\n`);
+        }
+
+        logger.info("SSH connected", { sessionId, target: host, port });
+        return { success: true };
+    })().finally(() => { session._connecting = null; });
+
+    return session._connecting;
 };
 
 const createTelnetConnectionForSession = async (sessionId, entry, organizationId) => {

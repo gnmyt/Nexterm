@@ -225,7 +225,8 @@ const cleanupConnection = async (conn, sessionId) => {
 
 module.exports.remove = async (sessionId) => {
     const session = module.exports.get(sessionId);
-    if (!session) return false;
+    if (!session || session._removing) return false;
+    session._removing = true;
 
     closeAllWebSockets(sessionId);
     if (session.recording) await finalizeTerminalRecording(sessionId);
