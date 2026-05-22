@@ -56,11 +56,17 @@
       "ssoOrContinueWith": "nebo pokračujte s",
       "noAuthMethodsAvailable": "Žádné metody ověření nejsou k dispozici.",
       "signInWithPasskey": "Přihlásit se pomocí Passkey",
+      "signInWithQrCode": "Sign in with QR Code",
+      "qrScanDescription": "Scan this QR code with the Nexterm mobile app to sign in instantly.",
+      "backToLogin": "Back to Login",
       "authenticating": "Probíhá ověření..."
     },
     "deviceLink": {
       "title": "Odkaz Zařízení",
       "description": "Zadejte kód zobrazený na zařízení a autorizujte jej pro přístup k účtu.",
+      "qrTab": "QR Code",
+      "codeTab": "Code",
+      "qrDescription": "Scan this QR code with the Nexterm mobile app to link your device.",
       "codeLabel": "Kód zařízení",
       "continue": "Pokračovat",
       "verifying": "Ověřování...",
@@ -104,6 +110,12 @@
       "waitingForAuth": "Čekání na povolení...",
       "codeCreationFailed": "Nepodařilo se vytvořit kód zařízení",
       "authSuccess": "Úspěšně ověřeno!"
+    },
+    "serverSwitcher": {
+      "title": "Servers",
+      "addServer": "Add Server",
+      "removeServer": "Remove Server",
+      "removeConfirmText": "This will remove the connection to {{server}}. Are you sure?"
     },
     "selectBox": {
       "defaultOption": "Vyberte možnost...",
@@ -165,7 +177,22 @@
       "internalAuthDisabled": "Interní ověření je zakázáno",
       "ssoLoginFailed": "Nepodařilo se zahájit SSO přihlášení",
       "passkeyLoginFailed": "Ověření pomocí Passkey selhalo",
-      "passkeyCancelled": "Ověření pomocí Passkey bylo zrušeno"
+      "passkeyCancelled": "Ověření pomocí Passkey bylo zrušeno",
+      "qrCodeExpired": "QR code expired. Please try again.",
+      "connection": {
+        "title": "Connection failed",
+        "close": "Close tab",
+        "hostUnreachable": "Remote host unreachable",
+        "refused": "Connection refused by remote host",
+        "timeout": "Connection timed out",
+        "authenticationFailed": "Authentication failed",
+        "permissionDenied": "Permission denied",
+        "failed": "Connection failed",
+        "closedUnexpectedly": "Connection closed unexpectedly",
+        "error": "Connection error occurred",
+        "scriptClosedUnexpectedly": "Script connection closed unexpectedly",
+        "scriptError": "Script connection error occurred"
+      }
     },
     "messages": {
       "invitationAccepted": "Pozvánka přijata",
@@ -226,6 +253,11 @@
         "personal": "Osobní",
         "user": "Uživatel #{{id}}",
         "organization": "Org #{{id}}"
+      },
+      "durationUnits": {
+        "seconds": "seconds",
+        "minutes": "minutes",
+        "hours": "hours"
       }
     },
     "pagination": {
@@ -540,6 +572,7 @@
     "adminSettings": "ADMINISTRÁTORSKÁ NASTAVENÍ",
     "pages": {
       "account": "Účet",
+      "appearance": "Appearance",
       "terminal": "Terminál",
       "fileManager": "Správce souborů",
       "keymaps": "Klávesové zkratky",
@@ -551,7 +584,8 @@
       "sources": "Zdroje",
       "ai": "AI",
       "monitoring": "Monitorování",
-      "backup": "Úložiště"
+      "backup": "Úložiště",
+      "engines": "Engines"
     },
     "account": {
       "title": "Účet",
@@ -563,11 +597,18 @@
       "themeAuto": "Automatický",
       "themeLight": "Světlý",
       "themeDark": "Tmavý",
+      "themeDarkHint": "Press three times to enable OLED mode.",
       "themeOled": "OLED",
       "oledEnabled": "OLED režim povolen",
       "oledDisabled": "OLED režim zakázán",
       "themeLabel": "Motiv",
       "accentColor": "Akcentová barva",
+      "sizeLabel": "Size",
+      "sizeXS": "XS",
+      "sizeS": "S",
+      "sizeM": "M",
+      "sizeL": "L",
+      "sizeXL": "XL",
       "twoFactor": "Dvoufaktorové ověření",
       "twoFactorActive": "Aktivní",
       "twoFactorInactive": "Neaktivní",
@@ -587,6 +628,32 @@
       "appearanceSyncDisabled": "Nastavení vzhledu se již nebude synchronizovat",
       "generalSyncEnabled": "Obecná nastavení se nyní synchronizují s vaším účtem",
       "generalSyncDisabled": "Obecná nastavení se již nebudou synchronizovat",
+      "customThemes": {
+        "title": "Custom Themes",
+        "description": "Create custom CSS themes or choose from synced source themes to personalize your interface.",
+        "newTheme": "New Theme",
+        "noThemesYet": "No themes yet",
+        "noThemesDescription": "Create a custom theme or add a source to get started.",
+        "editTheme": "Edit Theme",
+        "createTheme": "Create Theme",
+        "name": "Name",
+        "themeName": "Theme name",
+        "descriptionLabel": "Description",
+        "optionalDescription": "Optional description",
+        "saveChanges": "Save Changes",
+        "fromSource": "From source",
+        "edit": "Edit",
+        "delete": "Delete",
+        "deleteConfirm": "Are you sure you want to delete the theme \"{{name}}\"?",
+        "failedToLoadTheme": "Failed to load theme",
+        "nameAndCssRequired": "Name and CSS are required",
+        "themeUpdated": "Theme updated",
+        "themeCreated": "Theme created",
+        "failedToSaveTheme": "Failed to save theme",
+        "themeDeleted": "Theme deleted",
+        "failedToDeleteTheme": "Failed to delete theme",
+        "failedToActivateTheme": "Failed to activate theme"
+      },
       "sessionSynchronization": "Synchronizace relací",
       "sessionSyncDescription": "Ovládejte, jak jsou vaše serverové relace ukládány a synchronizovány mezi zařízeními a kartami prohlížeče.",
       "sessionSyncAcrossDevices": "Mezi zařízeními",
@@ -637,7 +704,42 @@
       "delete": "Smazat",
       "leave": "Opustit",
       "members": "Členové",
-      "auditSettings": "Nastavení auditu",
+      "auditSettings": {
+        "auditSettingsTab": "Audit Settings",
+        "sessionRecordingHeading": "Session Recording",
+        "sessionRecordingDescription": "Record terminal and remote desktop sessions for playback",
+        "enableSessionRecordingLabel": "Enable Session Recording",
+        "enableSessionRecordingDescription": "Record SSH, Telnet, RDP, and VNC sessions for later playback",
+        "recordingRetentionLabel": "Recording Retention (days)",
+        "recordingRetentionDescription": "How long to keep session recordings before automatic deletion (1-365 days)",
+        "connectionRequirementsHeading": "Connection Requirements",
+        "connectionRequirementsDescription": "Control connection behavior and requirements",
+        "requireConnectionReasonLabel": "Require Connection Reason",
+        "requireConnectionReasonDescription": "Require users to provide a reason when connecting to servers",
+        "activityLoggingHeading": "Activity Logging",
+        "activityLoggingDescription": "Choose which types of activities to log",
+        "fileOperationsLabel": "File Operations",
+        "fileOperationsDescription": "Log file uploads, downloads, deletions, and renames via SFTP",
+        "serverConnectionsLabel": "Server Connections",
+        "serverConnectionsDescription": "Log SSH, SFTP, and PVE connections and disconnections",
+        "identityManagementLabel": "Identity Management",
+        "identityManagementDescription": "Log creation, modification, and deletion of SSH identities",
+        "passwordPasteLabel": "Password Paste",
+        "passwordPasteDescription": "Log usage of the password paste action",
+        "serverManagementLabel": "Server Management",
+        "serverManagementDescription": "Log creation, modification, and deletion of server configurations",
+        "folderManagementLabel": "Folder Management",
+        "folderManagementDescription": "Log creation, modification, and deletion of folders",
+        "scriptExecutionLabel": "Script Execution",
+        "scriptExecutionDescription": "Log execution of scripts and automation tasks",
+        "actions": {
+          "save": "Save Settings"
+        },
+        "messages": {
+          "updated": "Audit settings updated successfully",
+          "updateFailed": "Failed to update audit settings"
+        }
+      },
       "pendingInvitations": "Čekající pozvánky",
       "invitedBy": "Pozval: {{name}}",
       "deleteConfirmation": "Toto trvale smaže organizaci a odstraní všechny členy. Tuto akci nelze vrátit zpět.",
@@ -844,7 +946,7 @@
     },
     "authentication": {
       "title": "{{count}} poskytovatelů ověření",
-      "internalProviderName": "Internal Authentication",
+      "internalProviderName": "Interní ověřování",
       "addProvider": "Přidat poskytovatele",
       "addLdapProvider": "Přidání protokolu LDAP",
       "system": "Systém",
@@ -1093,6 +1195,7 @@
       "addSource": "Přidat zdroj",
       "snippets": "snippetů",
       "scripts": "skriptů",
+      "themes": "themes",
       "neverSynced": "Nikdy synchronizováno",
       "sync": "Synchronizovat nyní",
       "edit": "Upravit",
@@ -1114,7 +1217,7 @@
         "enabled": "Povoleno",
         "enabledDescription": "Když je zakázáno, tento zdroj nebude synchronizován",
         "validating": "Ověřuji URL...",
-        "validationSuccess": "Platný zdroj nalezen: {{snippets}} snippetů, {{scripts}} skriptů",
+        "validationSuccess": "Valid source found: {{snippets}} snippets, {{scripts}} scripts, {{themes}} themes",
         "create": "Vytvořit"
       },
       "messages": {
@@ -1222,6 +1325,45 @@
         "nameRequired": "Název poskytovatele je povinný"
       },
       "noFiles": "Žádné soubory nenalezeny"
+    },
+    "engines": {
+      "title": "Engines",
+      "description": "Manage engine instances that handle remote connections.",
+      "addEngine": "Add Engine",
+      "noEngines": "No Engines",
+      "noEnginesDescription": "Add an engine to start connecting to remote servers.",
+      "status": {
+        "connected": "Connected",
+        "disconnected": "Disconnected"
+      },
+      "lastSeen": "Last seen {{date}}",
+      "neverConnected": "Never connected",
+      "regenerateToken": "Regenerate token",
+      "deleteEngine": "Delete engine",
+      "dismiss": "Dismiss",
+      "copyToken": "Copy token",
+      "transport": {
+        "encrypted": "Encrypted",
+        "unencrypted": "Unencrypted"
+      },
+      "tokenLabel": "Registration token for <strong>{{name}}</strong>",
+      "tokenHint": "Set this in <code1>config.yaml</code1> or as <code2>REGISTRATION_TOKEN</code2> env variable.",
+      "dialog": {
+        "title": "Add Engine",
+        "engineName": "Engine Name",
+        "namePlaceholder": "e.g. Office Network",
+        "create": "Create Engine"
+      },
+      "deleteConfirm": "Are you sure you want to delete \"{{name}}\"?",
+      "messages": {
+        "deleted": "Engine deleted successfully"
+      },
+      "errors": {
+        "loadFailed": "Failed to load engines",
+        "createFailed": "Failed to create engine",
+        "deleteFailed": "Failed to delete engine",
+        "regenerateFailed": "Failed to regenerate token"
+      }
     }
   },
   "tunnel": {
@@ -1254,6 +1396,8 @@
     }
   },
   "servers": {
+    "addServerNote": "Right-click to add a new server",
+    "searchPlaceholder": "Search",
     "time": {
       "justNow": "Právě teď",
       "minuteAgo": "před {{count}} min",
@@ -1292,6 +1436,8 @@
       "openSFTP": "Otevřít SFTP",
       "forwardPort": "Přesměrovat port",
       "runScript": "Spustit skript",
+      "openNotes": "Open Notes",
+      "addNotes": "Add Notes",
       "editServer": "Upravit server",
       "editIntegration": "Upravit integraci",
       "duplicateServer": "Duplikovat server",
@@ -1307,15 +1453,16 @@
     "tabs": {
       "contextMenu": {
         "popOut": "Pop Out",
-        "startSharing": "Start Sharing",
-        "readOnly": "Read-only",
-        "readWrite": "Read & Write",
-        "copyShareLink": "Copy Share Link",
-        "changePermissions": "Change Permissions",
-        "stopSharing": "Stop Sharing",
-        "duplicate": "Duplicate",
-        "hibernateSession": "Hibernate",
-        "closeSession": "Disconnect"
+        "startSharing": "Začněte sdílet",
+        "readOnly": "Pouze pro čtení",
+        "readWrite": "Čtení a psaní",
+        "copyShareLink": "Kopírovat odkaz pro sdílení",
+        "changePermissions": "Změna oprávnění",
+        "stopSharing": "Přestat sdílet",
+        "duplicate": "Duplikát",
+        "openNotes": "Open Notes",
+        "hibernateSession": "Hibernace",
+        "closeSession": "Odpojení"
       }
     },
     "wol": {
@@ -1355,7 +1502,8 @@
         "host": "Hostitel",
         "nodeName": "Název uzlu",
         "vmid": "ID VIRTUÁLNÍHO POČÍTAČE",
-        "macAddress": "MAC adresa"
+        "macAddress": "MAC adresa",
+        "engine": "Engine"
       },
       "placeholders": {
         "serverName": "Název serveru",
@@ -1368,6 +1516,7 @@
         "vmid": "ID VIRTUÁLNÍHO POČÍTAČE",
         "macAddress": "AA:BB:CC:DD:EE:FF"
       },
+      "engineOffline": "(offline)",
       "settings": {
         "jumpHosts": {
           "title": "Jump hosty",
@@ -1675,6 +1824,18 @@
       "fullScreen": "Celá obrazovka",
       "exitFullScreen": "Opustit režim celé obrazovky",
       "badgeOn": "ZAP"
+    },
+    "notesPanel": {
+      "title": "Notes",
+      "placeholder": "Write notes for this server…",
+      "showInList": "Show in list",
+      "showInListTooltip": "Display the first line of these notes under the server name in the sidebar.",
+      "status": {
+        "saving": "Saving",
+        "saved": "Saved",
+        "unsaved": "Unsaved",
+        "error": "Save failed"
+      }
     }
   },
   "support": {
@@ -1695,6 +1856,7 @@
     }
   },
   "welcome": {
+    "hello": "Hi",
     "subtitle": "Vítejte na Nextermu. Správce serverů s otevřeným zdrojovým kódem pro SSH, VNC a RDP.",
     "downloadApps": "Aplikace ke stažení",
     "connectDevice": "Připojení zařízení",
