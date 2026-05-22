@@ -101,35 +101,6 @@
         @media (max-width: breakpoints.$mobile)
           font-size: 0.75rem
 
-      .date-input
-        padding: 0.625rem 0.75rem
-        border: 1px solid colors.$dark-gray
-        border-radius: 0.5rem
-        background-color: colors.$dark-gray
-        color: colors.$white
-        font-size: 0.9rem
-        outline: none
-        transition: border-color 0.1s ease, background-color 0.1s ease
-        width: 100%
-        min-width: 0
-        box-sizing: border-box
-
-        @media (max-width: breakpoints.$mobile)
-          padding: 0.5rem 0.625rem
-          font-size: 0.8rem
-
-        &:hover
-          background-color: colors.$gray
-
-        &:focus
-          border-color: colors.$primary
-          background-color: colors.$gray
-
-        &::-webkit-calendar-picker-indicator
-          filter: invert(1)
-          cursor: pointer
-          opacity: 0.7
-
       &.filter-actions
         justify-content: flex-end
         align-items: flex-end

@@ -20,12 +20,16 @@ const RESOURCE_CONFIG = {
 };
 
 const AUDIT_ACTIONS = {
+    ENTRY_CREATE: "entry.create",
+    ENTRY_UPDATE: "entry.update",
+    ENTRY_DELETE: "entry.delete",
     SSH_CONNECT: "entry.ssh_connect",
     SFTP_CONNECT: "entry.sftp_connect",
     PVE_CONNECT: "entry.pve_connect",
     RDP_CONNECT: "entry.rdp_connect",
     VNC_CONNECT: "entry.vnc_connect",
 
+    FILE_CREATE: "file.create",
     FILE_UPLOAD: "file.upload",
     FILE_DOWNLOAD: "file.download",
     FILE_DELETE: "file.delete",
@@ -36,25 +40,74 @@ const AUDIT_ACTIONS = {
     FOLDER_DELETE: "folder.delete",
     FOLDER_DOWNLOAD: "folder.download",
 
-    ENTRY_CREATE: "entry.create",
-    ENTRY_UPDATE: "entry.update",
-    ENTRY_DELETE: "entry.delete",
+    FOLDER_MGMT_CREATE: "folder_mgmt.create",
+    FOLDER_MGMT_UPDATE: "folder_mgmt.update",
+    FOLDER_MGMT_DELETE: "folder_mgmt.delete",
 
     IDENTITY_CREATE: "identity.create",
     IDENTITY_UPDATE: "identity.update",
     IDENTITY_DELETE: "identity.delete",
     IDENTITY_CREDENTIALS_ACCESS: "identity.credentials_access",
 
-    FOLDER_CREATE_MGMT: "folder_mgmt.create",
-    FOLDER_UPDATE_MGMT: "folder_mgmt.update",
-    FOLDER_DELETE_MGMT: "folder_mgmt.delete",
-
     SCRIPT_EXECUTE: "script.execute",
 };
 
 const RESOURCE_TYPES = {
-    USER: "user", ENTRY: "entry", IDENTITY: "identity", ORGANIZATION: "organization",
-    FOLDER: "folder", FILE: "file", SCRIPT: "script", APP: "app",
+    ENTRY: "entry",
+    IDENTITY: "identity",
+    FOLDER: "folder",
+    FILE: "file",
+    SCRIPT: "script",
+};
+
+const ACTION_LABELS = {
+    "entry.create": "Server created",
+    "entry.update": "Server updated",
+    "entry.delete": "Server deleted",
+    "entry.ssh_connect": "SSH connection",
+    "entry.sftp_connect": "SFTP connection",
+    "entry.pve_connect": "Proxmox connection",
+    "entry.rdp_connect": "RDP connection",
+    "entry.vnc_connect": "VNC connection",
+
+    "file.create": "File created",
+    "file.upload": "File uploaded",
+    "file.download": "File downloaded",
+    "file.delete": "File deleted",
+    "file.rename": "File renamed / moved",
+    "file.chmod": "File permissions changed",
+
+    "folder.create": "Folder created (SFTP)",
+    "folder.delete": "Folder deleted (SFTP)",
+    "folder.download": "Folder downloaded",
+
+    "folder_mgmt.create": "Folder created",
+    "folder_mgmt.update": "Folder updated",
+    "folder_mgmt.delete": "Folder deleted",
+
+    "identity.create": "Identity created",
+    "identity.update": "Identity updated",
+    "identity.delete": "Identity deleted",
+    "identity.credentials_access": "Identity credentials accessed",
+
+    "script.execute": "Script executed",
+};
+
+const ACTION_CATEGORIES = [
+    { key: "entry", label: "Servers", description: "Server records and remote connections" },
+    { key: "file", label: "Files", description: "File create, upload, download, delete, rename, chmod" },
+    { key: "folder", label: "Folders (SFTP)", description: "Folder operations performed over SFTP" },
+    { key: "folder_mgmt", label: "Folder Management", description: "Folder records management" },
+    { key: "identity", label: "Identities", description: "Identity records and credential access" },
+    { key: "script", label: "Scripts", description: "Script execution" },
+];
+
+const RESOURCE_LABELS = {
+    entry: "Server",
+    identity: "Identity",
+    folder: "Folder",
+    file: "File",
+    script: "Script",
 };
 
 const getOrgAuditSettings = async (organizationId) => {
@@ -268,22 +321,22 @@ module.exports.updateOrganizationAuditSettings = async (accountId, organizationI
     }
 };
 
-module.exports.getAuditMetadata = async () => ({
-    actions: Object.entries(AUDIT_ACTIONS).map(([key, value]) => ({
-        key, value, category: value.split(".")[0],
-    })),
-    resources: Object.entries(RESOURCE_TYPES).map(([key, value]) => ({ key, value })),
-    actionCategories: [
-        { key: "user", label: "User Management", description: "Login, logout, profile changes" },
-        { key: "server", label: "Server Connections", description: "SSH, SFTP, PVE connections" },
-        { key: "file", label: "File Operations", description: "Upload, download, delete, rename" },
-        { key: "identity", label: "Identity Management", description: "Create, update, delete identities" },
-        { key: "organization", label: "Organization Management", description: "Organization and member management" },
-        { key: "folder_mgmt", label: "Folder Management", description: "Create, update, delete folders" },
-        { key: "script", label: "Script Execution", description: "Script and app execution" },
-        { key: "app", label: "App Management", description: "Application installation" },
-    ],
-});
+module.exports.getAuditMetadata = async () => {
+    const actions = Object.entries(AUDIT_ACTIONS).map(([key, value]) => ({
+        key,
+        value,
+        category: value.split(".")[0],
+        label: ACTION_LABELS[value] || value,
+    }));
+    const presentCategoryKeys = new Set(actions.map(a => a.category));
+    return {
+        actions,
+        resources: Object.entries(RESOURCE_TYPES).map(([key, value]) => ({
+            key, value, label: RESOURCE_LABELS[value] || key,
+        })),
+        actionCategories: ACTION_CATEGORIES.filter(c => presentCategoryKeys.has(c.key)),
+    };
+};
 
 module.exports.getOrganizationAuditSettingsInternal = async (organizationId) => {
     try {
