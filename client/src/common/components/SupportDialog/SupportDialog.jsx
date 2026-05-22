@@ -33,7 +33,7 @@ export const SupportDialog = ({ open, onClose }) => {
                         <Icon path={mdiOpenInNew} className="option-arrow" />
                     </div>
 
-                    <div className="support-option discord" onClick={() => openUrl(DISCORD_URL)}>
+                    <div className="support-option" onClick={() => openUrl(DISCORD_URL)}>
                         <div className="option-icon">
                             <Icon path={siDiscord.path} />
                         </div>
@@ -44,7 +44,7 @@ export const SupportDialog = ({ open, onClose }) => {
                         <Icon path={mdiOpenInNew} className="option-arrow" />
                     </div>
 
-                    <div className="support-option github" onClick={() => openUrl(GITHUB_URL)}>
+                    <div className="support-option" onClick={() => openUrl(GITHUB_URL)}>
                         <div className="option-icon">
                             <Icon path={siGithub.path} />
                         </div>
@@ -61,5 +61,3 @@ export const SupportDialog = ({ open, onClose }) => {
         </DialogProvider>
     );
 };
-
-export default SupportDialog;
