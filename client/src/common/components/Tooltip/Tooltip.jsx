@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect, useCallback } from "react";
+import { createPortal } from "react-dom";
 import "./styles.sass";
 
 export const Tooltip = ({ children, text, disabled = false, delay = 0 }) => {
@@ -72,12 +73,13 @@ export const Tooltip = ({ children, text, disabled = false, delay = 0 }) => {
         <div ref={triggerRef} onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}>
             {children}
 
-            {isVisible && (
+            {isVisible && createPortal(
                 <div ref={tooltipRef} className="tooltip" style={tooltipStyle}>
                     <div className="tooltip-content">
                         {text}
                     </div>
-                </div>
+                </div>,
+                document.body
             )}
         </div>
     );

@@ -1,6 +1,5 @@
 @use "@/common/styles/colors"
-
-$mobile: 768px
+@use "@/common/styles/breakpoints"
 
 .sidebar
   width: 5rem
@@ -21,7 +20,7 @@ $mobile: 768px
     height: 100dvh
     height: -webkit-fill-available
 
-  @media (max-width: $mobile)
+  @media (max-width: breakpoints.$mobile)
     display: none
 
   .sidebar-top
@@ -135,7 +134,7 @@ $mobile: 768px
     border-radius: 0.75rem
     padding: 0.375rem
     min-width: 200px
-    box-shadow: 0 12px 48px rgba(0, 0, 0, 0.3), 0 4px 16px rgba(0, 0, 0, 0.3)
+    box-shadow: colors.$shadow-lg
     opacity: 0
     transform: scale(0.95) translateY(8px)
     transition: opacity 0.12s cubic-bezier(0.4, 0, 0.2, 1), transform 0.12s cubic-bezier(0.4, 0, 0.2, 1)
@@ -234,8 +233,7 @@ $mobile: 768px
 
     &.star
       &:hover
-        background-color: rgba(255, 215, 0, 0.15)
-        color: #FFD700
+        background-color: colors.$gray
 
     &.support
       &:hover

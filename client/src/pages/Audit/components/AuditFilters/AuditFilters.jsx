@@ -2,6 +2,7 @@ import { useState, useMemo, useCallback } from "react";
 import Icon from "@mdi/react";
 import { mdiFilterVariantPlus, mdiFilterVariantMinus } from "@mdi/js";
 import SelectBox from "@/common/components/SelectBox";
+import DateInput from "@/common/components/DateInput";
 import Button from "@/common/components/Button";
 import { useTranslation } from "react-i18next";
 import "./styles.sass";
@@ -19,36 +20,39 @@ export const AuditFilters = ({ filters, metadata, organizations, onChange }) => 
     }, [onChange]);
 
     const actionOptions = useMemo(() => {
-        if (!metadata?.actionCategories) return [];
-
         const options = [{ value: "", label: t('audit.filters.options.allActions') }];
+        if (!metadata?.actions?.length) return options;
 
-        metadata.actionCategories.forEach(category => {
+        const actionsByCategory = new Map();
+        for (const action of metadata.actions) {
+            if (!actionsByCategory.has(action.category)) actionsByCategory.set(action.category, []);
+            actionsByCategory.get(action.category).push(action);
+        }
+
+        for (const category of metadata.actionCategories || []) {
+            const actions = actionsByCategory.get(category.key);
+            if (!actions?.length) continue;
+
             options.push({
                 value: `${category.key}.*`,
                 label: t('audit.filters.options.categoryAll', { category: category.label }),
-                isCategory: true,
             });
-        });
-
-        metadata?.actions?.forEach(action => {
-            options.push({
-                value: action.value,
-                label: action.value.replace(".", " → ").replace("_", " "),
-            });
-        });
+            for (const action of actions) {
+                options.push({ value: action.value, label: `  ${action.label || action.value}` });
+            }
+        }
 
         return options;
     }, [metadata, t]);
 
     const resourceOptions = useMemo(() => {
-        if (!metadata?.resources) return [{ value: "", label: t('audit.filters.options.allResources') }];
-
+        const base = [{ value: "", label: t('audit.filters.options.allResources') }];
+        if (!metadata?.resources) return base;
         return [
-            { value: "", label: t('audit.filters.options.allResources') },
+            ...base,
             ...metadata.resources.map(resource => ({
                 value: resource.value,
-                label: resource.key.charAt(0).toUpperCase() + resource.key.slice(1),
+                label: resource.label || (resource.key.charAt(0).toUpperCase() + resource.key.slice(1)),
             })),
         ];
     }, [metadata, t]);
@@ -88,7 +92,7 @@ export const AuditFilters = ({ filters, metadata, organizations, onChange }) => 
 
                         <div className="filter-group">
                             <label>{t('audit.filters.action')}</label>
-                            <SelectBox options={actionOptions} selected={filters.action}
+                            <SelectBox options={actionOptions} selected={filters.action} searchable
                                        setSelected={(value) => handleFilterChange("action", value)} />
                         </div>
 
@@ -102,16 +106,16 @@ export const AuditFilters = ({ filters, metadata, organizations, onChange }) => 
                     <div className="filters-row">
                         <div className="filter-group">
                             <label>{t('audit.filters.startDate')}</label>
-                            <input type="datetime-local" value={filters.startDate}
-                                   onChange={(e) => handleFilterChange("startDate", e.target.value)}
-                                   className="date-input" />
+                            <DateInput value={filters.startDate}
+                                       setValue={(value) => handleFilterChange("startDate", value)}
+                                       max={filters.endDate || undefined} />
                         </div>
 
                         <div className="filter-group">
                             <label>{t('audit.filters.endDate')}</label>
-                            <input type="datetime-local" value={filters.endDate}
-                                   onChange={(e) => handleFilterChange("endDate", e.target.value)}
-                                   className="date-input" />
+                            <DateInput value={filters.endDate}
+                                       setValue={(value) => handleFilterChange("endDate", value)}
+                                       min={filters.startDate || undefined} />
                         </div>
 
                         <div className="filter-group filter-actions">

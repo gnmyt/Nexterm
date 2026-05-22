@@ -1,6 +1,5 @@
 @use "@/common/styles/colors"
-
-$mobile: 768px
+@use "@/common/styles/breakpoints"
 
 .monitoring-chart
   background-color: colors.$lighter-background
@@ -10,7 +9,7 @@ $mobile: 768px
   margin-bottom: 1.5rem
   min-width: 0
 
-  @media (max-width: $mobile)
+  @media (max-width: breakpoints.$mobile)
     padding: 1rem
     margin-bottom: 0.75rem
 
@@ -20,7 +19,7 @@ $mobile: 768px
     font-size: 1.1rem
     font-weight: 600
 
-    @media (max-width: $mobile)
+    @media (max-width: breakpoints.$mobile)
       font-size: 0.95rem
       margin-bottom: 0.75rem
 
@@ -37,14 +36,14 @@ $mobile: 768px
     text-align: center
     min-height: 250px
 
-    @media (max-width: $mobile)
+    @media (max-width: breakpoints.$mobile)
       min-height: 180px
 
     h4
       color: colors.$white
       margin-bottom: 0.5rem
 
-      @media (max-width: $mobile)
+      @media (max-width: breakpoints.$mobile)
         font-size: 0.9rem
 
     p
@@ -52,7 +51,7 @@ $mobile: 768px
       font-style: italic
       margin: 0
 
-      @media (max-width: $mobile)
+      @media (max-width: breakpoints.$mobile)
         font-size: 0.85rem
 
 .charts-grid
@@ -64,7 +63,7 @@ $mobile: 768px
   @media (max-width: 1200px)
     grid-template-columns: 1fr
 
-  @media (max-width: $mobile)
+  @media (max-width: breakpoints.$mobile)
     gap: 0.75rem
     margin-bottom: 1rem
 

@@ -33,6 +33,7 @@ export const NotesRenderer = ({ session }) => {
     const inFlightRef = useRef(false);
     const pendingPatchRef = useRef(null);
     const lastSavedRef = useRef({ notes: initialNotes, showNoteInList: initialShowInList });
+    const valueRef = useRef(initialNotes);
 
     useEffect(() => {
         let cancelled = false;
@@ -43,7 +44,8 @@ export const NotesRenderer = ({ session }) => {
             entrySnapshotRef.current = entry;
             const remoteNotes = entry?.config?.notes ?? "";
             const remoteShowInList = Boolean(entry?.config?.showNoteInList);
-            if (remoteNotes !== lastSavedRef.current.notes && value === lastSavedRef.current.notes) {
+            if (remoteNotes !== lastSavedRef.current.notes && valueRef.current === lastSavedRef.current.notes) {
+                valueRef.current = remoteNotes;
                 setValue(remoteNotes);
                 lastSavedRef.current.notes = remoteNotes;
             }
@@ -132,11 +134,13 @@ export const NotesRenderer = ({ session }) => {
             clearTimeout(saveTimerRef.current);
             saveTimerRef.current = null;
         }
-        if (value !== lastSavedRef.current.notes) persist({ notes: value });
+        const latest = valueRef.current;
+        if (latest !== lastSavedRef.current.notes) persist({ notes: latest });
     }, []);
 
     const handleChange = (e) => {
         const next = e.target.value;
+        valueRef.current = next;
         setValue(next);
         setStatus(next === lastSavedRef.current.notes ? STATUS.IDLE : STATUS.DIRTY);
         scheduleNotesSave(next);

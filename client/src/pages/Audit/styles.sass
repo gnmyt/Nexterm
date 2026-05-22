@@ -1,7 +1,5 @@
 @use "@/common/styles/colors"
-
-$mobile: 768px
-$tablet: 1024px
+@use "@/common/styles/breakpoints"
 
 .audit-page
   background-color: colors.$background
@@ -21,11 +19,11 @@ $tablet: 1024px
     flex: 1
     min-width: 0
 
-    @media (max-width: $tablet)
+    @media (max-width: breakpoints.$tablet)
       padding: 1.5rem
       gap: 0.875rem
 
-    @media (max-width: $mobile)
+    @media (max-width: breakpoints.$mobile)
       padding: 1rem
       gap: 0.75rem
 

@@ -1,6 +1,5 @@
 @use "@/common/styles/colors"
-
-$mobile: 768px
+@use "@/common/styles/breakpoints"
 
 .engines-page
   display: flex
@@ -89,7 +88,7 @@ $mobile: 768px
       align-items: flex-start
       margin-bottom: 1.5rem
 
-      @media (max-width: $mobile)
+      @media (max-width: breakpoints.$mobile)
         flex-direction: column
         gap: 0.75rem
 
@@ -99,7 +98,7 @@ $mobile: 768px
           margin-bottom: 0.5rem
           font-weight: 600
 
-          @media (max-width: $mobile)
+          @media (max-width: breakpoints.$mobile)
             font-size: 1.15rem
 
         p
@@ -110,7 +109,7 @@ $mobile: 768px
       grid-template-columns: repeat(auto-fill, minmax(320px, 1fr))
       gap: 0.75rem
 
-      @media (max-width: $mobile)
+      @media (max-width: breakpoints.$mobile)
         grid-template-columns: 1fr
 
       .engine-card
@@ -123,7 +122,7 @@ $mobile: 768px
         justify-content: space-between
         align-items: flex-start
 
-        @media (max-width: $mobile)
+        @media (max-width: breakpoints.$mobile)
           padding: 1rem
 
         &:hover
@@ -136,7 +135,7 @@ $mobile: 768px
           flex: 1
           min-width: 0
 
-          @media (max-width: $mobile)
+          @media (max-width: breakpoints.$mobile)
             gap: 0.75rem
 
           .engine-icon
@@ -147,7 +146,7 @@ $mobile: 768px
             margin-top: 0.125rem
             flex-shrink: 0
 
-            @media (max-width: $mobile)
+            @media (max-width: breakpoints.$mobile)
               width: 1.5rem
               height: 1.5rem
 
@@ -247,7 +246,7 @@ $mobile: 768px
         padding: 3rem 2rem
         color: colors.$subtext
 
-        @media (max-width: $mobile)
+        @media (max-width: breakpoints.$mobile)
           padding: 2rem 1rem
 
         svg
@@ -270,7 +269,7 @@ $mobile: 768px
 .engine-dialog
   min-width: 400px
 
-  @media (max-width: $mobile)
+  @media (max-width: breakpoints.$mobile)
     min-width: unset
     width: 100%
 
@@ -279,7 +278,7 @@ $mobile: 768px
     font-size: 1.5rem
     color: colors.$white
 
-    @media (max-width: $mobile)
+    @media (max-width: breakpoints.$mobile)
       font-size: 1.25rem
 
   .form-group
@@ -297,7 +296,7 @@ $mobile: 768px
     gap: 0.75rem
     margin-top: 1.5rem
 
-    @media (max-width: $mobile)
+    @media (max-width: breakpoints.$mobile)
       flex-direction: column-reverse
 
       button
