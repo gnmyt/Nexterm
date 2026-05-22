@@ -1,1 +1,1 @@
-export { ConnectionError as default } from "./ConnectionError";
+export { ConnectionError as default, mapConnectionError } from "./ConnectionError";
