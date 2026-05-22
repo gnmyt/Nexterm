@@ -56,17 +56,17 @@
       "ssoOrContinueWith": "или продолжить с",
       "noAuthMethodsAvailable": "Нет доступных методов аутентификации.",
       "signInWithPasskey": "Войти с помощью Passkey",
-      "signInWithQrCode": "Sign in with QR Code",
-      "qrScanDescription": "Scan this QR code with the Nexterm mobile app to sign in instantly.",
-      "backToLogin": "Back to Login",
+      "signInWithQrCode": "Войти в систему с помощью QR-кода",
+      "qrScanDescription": "Отсканируй этот QR-код с помощью мобильного приложения Nexterm, чтобы мгновенно войти в систему.",
+      "backToLogin": "Назад к входу",
       "authenticating": "Аутентификация..."
     },
     "deviceLink": {
       "title": "Привязать устройство",
       "description": "Введи код, показанный на твоем устройстве, чтобы авторизовать его для доступа к аккаунту.",
-      "qrTab": "QR Code",
-      "codeTab": "Code",
-      "qrDescription": "Scan this QR code with the Nexterm mobile app to link your device.",
+      "qrTab": "QR-код",
+      "codeTab": "Код",
+      "qrDescription": "Отсканируй этот QR-код с помощью мобильного приложения Nexterm, чтобы связать свое устройство.",
       "codeLabel": "Код устройства",
       "continue": "Далее",
       "verifying": "Выполняется проверка...",
@@ -112,10 +112,10 @@
       "authSuccess": "Аутентификация успешно пройдена!"
     },
     "serverSwitcher": {
-      "title": "Servers",
-      "addServer": "Add Server",
-      "removeServer": "Remove Server",
-      "removeConfirmText": "This will remove the connection to {{server}}. Are you sure?"
+      "title": "Серверы",
+      "addServer": "Добавить сервер",
+      "removeServer": "Удалить сервер",
+      "removeConfirmText": "Это позволит удалить соединение с {{server}}. Ты уверен?"
     },
     "selectBox": {
       "defaultOption": "Выберите вариант...",
@@ -178,20 +178,20 @@
       "ssoLoginFailed": "Не удалось инициировать вход через SSO",
       "passkeyLoginFailed": "Не удалось выполнить аутентификацию с помощью ключа",
       "passkeyCancelled": "Аутентификация с помощью ключа была отменена",
-      "qrCodeExpired": "QR code expired. Please try again.",
+      "qrCodeExpired": "Срок действия QR-кода истек. Пожалуйста, попробуй еще раз.",
       "connection": {
-        "title": "Connection failed",
-        "close": "Close tab",
-        "hostUnreachable": "Remote host unreachable",
-        "refused": "Connection refused by remote host",
-        "timeout": "Connection timed out",
-        "authenticationFailed": "Authentication failed",
-        "permissionDenied": "Permission denied",
-        "failed": "Connection failed",
-        "closedUnexpectedly": "Connection closed unexpectedly",
-        "error": "Connection error occurred",
-        "scriptClosedUnexpectedly": "Script connection closed unexpectedly",
-        "scriptError": "Script connection error occurred"
+        "title": "Не удалось установить соединение",
+        "close": "Закрыть вкладку",
+        "hostUnreachable": "Удаленный хост недоступен",
+        "refused": "Удаленный хост отказал в подключении",
+        "timeout": "Соединение прервалось по таймеру",
+        "authenticationFailed": "Аутентификация не удалась",
+        "permissionDenied": "Разрешение отклонено",
+        "failed": "Не удалось установить соединение",
+        "closedUnexpectedly": "Соединение неожиданно закрылось",
+        "error": "Произошла ошибка подключения",
+        "scriptClosedUnexpectedly": "Неожиданно закрылось соединение со сценарием",
+        "scriptError": "Произошла ошибка подключения к сценарию"
       }
     },
     "messages": {
@@ -255,9 +255,9 @@
         "organization": "Орг #{{id}}"
       },
       "durationUnits": {
-        "seconds": "seconds",
-        "minutes": "minutes",
-        "hours": "hours"
+        "seconds": "секунды",
+        "minutes": "минут",
+        "hours": "Часы"
       }
     },
     "pagination": {
@@ -572,7 +572,7 @@
     "adminSettings": "АДМИНИСТРИРОВАНИЕ",
     "pages": {
       "account": "Аккаунт",
-      "appearance": "Appearance",
+      "appearance": "Внешний вид",
       "terminal": "Терминал",
       "fileManager": "Файловый менеджер",
       "keymaps": "Горячие клавиши",
@@ -585,7 +585,7 @@
       "ai": "ИИ",
       "monitoring": "Мониторинг",
       "backup": "Хранение",
-      "engines": "Engines"
+      "engines": "Двигатели"
     },
     "account": {
       "title": "Аккаунт",
@@ -597,13 +597,13 @@
       "themeAuto": "Авто",
       "themeLight": "Светлая",
       "themeDark": "Тёмная",
-      "themeDarkHint": "Press three times to enable OLED mode.",
+      "themeDarkHint": "Нажми три раза, чтобы включить режим OLED.",
       "themeOled": "OLED",
       "oledEnabled": "Режим OLED включен",
       "oledDisabled": "Режим OLED отключен",
       "themeLabel": "Тема",
       "accentColor": "Акцентный цвет",
-      "sizeLabel": "Size",
+      "sizeLabel": "Размер",
       "sizeXS": "XS",
       "sizeS": "S",
       "sizeM": "M",
@@ -629,30 +629,30 @@
       "generalSyncEnabled": "Общие настройки теперь будут синхронизироваться с твоим аккаунтом",
       "generalSyncDisabled": "Общие настройки больше не будут синхронизироваться",
       "customThemes": {
-        "title": "Custom Themes",
-        "description": "Create custom CSS themes or choose from synced source themes to personalize your interface.",
-        "newTheme": "New Theme",
-        "noThemesYet": "No themes yet",
-        "noThemesDescription": "Create a custom theme or add a source to get started.",
-        "editTheme": "Edit Theme",
-        "createTheme": "Create Theme",
-        "name": "Name",
-        "themeName": "Theme name",
-        "descriptionLabel": "Description",
-        "optionalDescription": "Optional description",
-        "saveChanges": "Save Changes",
-        "fromSource": "From source",
-        "edit": "Edit",
-        "delete": "Delete",
-        "deleteConfirm": "Are you sure you want to delete the theme \"{{name}}\"?",
-        "failedToLoadTheme": "Failed to load theme",
-        "nameAndCssRequired": "Name and CSS are required",
-        "themeUpdated": "Theme updated",
-        "themeCreated": "Theme created",
-        "failedToSaveTheme": "Failed to save theme",
-        "themeDeleted": "Theme deleted",
-        "failedToDeleteTheme": "Failed to delete theme",
-        "failedToActivateTheme": "Failed to activate theme"
+        "title": "Пользовательские темы",
+        "description": "Создавай собственные темы CSS или выбирай из синхронизированных исходных тем, чтобы персонализировать свой интерфейс.",
+        "newTheme": "Новая тема",
+        "noThemesYet": "Пока нет тем",
+        "noThemesDescription": "Создай пользовательскую тему или добавь источник, чтобы начать работу.",
+        "editTheme": "Редактировать тему",
+        "createTheme": "Создай тему",
+        "name": "Имя",
+        "themeName": "Название темы",
+        "descriptionLabel": "Описание",
+        "optionalDescription": "Необязательное описание",
+        "saveChanges": "Сохранить изменения",
+        "fromSource": "Из источника",
+        "edit": "Редактировать",
+        "delete": "Удалить",
+        "deleteConfirm": "Ты уверен, что хочешь удалить тему \"{{name}}\"?",
+        "failedToLoadTheme": "Не удалось загрузить тему",
+        "nameAndCssRequired": "Имя и CSS обязательны",
+        "themeUpdated": "Тема обновлена",
+        "themeCreated": "Тема создана",
+        "failedToSaveTheme": "Не удалось сохранить тему",
+        "themeDeleted": "Тема удалена",
+        "failedToDeleteTheme": "Не удалось удалить тему",
+        "failedToActivateTheme": "Не удалось активировать тему"
       },
       "sessionSynchronization": "Синхронизация сессий",
       "sessionSyncDescription": "Управление тем, как сессии серверов хранятся и синхронизируются между устройствами и вкладками браузера.",
@@ -705,39 +705,39 @@
       "leave": "Покинуть",
       "members": "Участники",
       "auditSettings": {
-        "auditSettingsTab": "Audit Settings",
-        "sessionRecordingHeading": "Session Recording",
-        "sessionRecordingDescription": "Record terminal and remote desktop sessions for playback",
-        "enableSessionRecordingLabel": "Enable Session Recording",
-        "enableSessionRecordingDescription": "Record SSH, Telnet, RDP, and VNC sessions for later playback",
-        "recordingRetentionLabel": "Recording Retention (days)",
-        "recordingRetentionDescription": "How long to keep session recordings before automatic deletion (1-365 days)",
-        "connectionRequirementsHeading": "Connection Requirements",
-        "connectionRequirementsDescription": "Control connection behavior and requirements",
-        "requireConnectionReasonLabel": "Require Connection Reason",
-        "requireConnectionReasonDescription": "Require users to provide a reason when connecting to servers",
-        "activityLoggingHeading": "Activity Logging",
-        "activityLoggingDescription": "Choose which types of activities to log",
-        "fileOperationsLabel": "File Operations",
-        "fileOperationsDescription": "Log file uploads, downloads, deletions, and renames via SFTP",
-        "serverConnectionsLabel": "Server Connections",
-        "serverConnectionsDescription": "Log SSH, SFTP, and PVE connections and disconnections",
-        "identityManagementLabel": "Identity Management",
-        "identityManagementDescription": "Log creation, modification, and deletion of SSH identities",
-        "passwordPasteLabel": "Password Paste",
-        "passwordPasteDescription": "Log usage of the password paste action",
-        "serverManagementLabel": "Server Management",
-        "serverManagementDescription": "Log creation, modification, and deletion of server configurations",
-        "folderManagementLabel": "Folder Management",
-        "folderManagementDescription": "Log creation, modification, and deletion of folders",
-        "scriptExecutionLabel": "Script Execution",
-        "scriptExecutionDescription": "Log execution of scripts and automation tasks",
+        "auditSettingsTab": "Настройки аудита",
+        "sessionRecordingHeading": "Запись сеанса",
+        "sessionRecordingDescription": "Запись сеансов терминала и удаленного рабочего стола для воспроизведения",
+        "enableSessionRecordingLabel": "Включи запись сеанса",
+        "enableSessionRecordingDescription": "Записывай сеансы SSH, Telnet, RDP и VNC для последующего воспроизведения",
+        "recordingRetentionLabel": "Срок хранения записей (дней)",
+        "recordingRetentionDescription": "Как долго хранить записи сеансов перед автоматическим удалением (1-365 дней)",
+        "connectionRequirementsHeading": "Требования к подключению",
+        "connectionRequirementsDescription": "Поведение и требования к контрольным соединениям",
+        "requireConnectionReasonLabel": "Требуется подключение Причина",
+        "requireConnectionReasonDescription": "Требуй от пользователей указывать причину при подключении к серверам",
+        "activityLoggingHeading": "Ведение журнала активности",
+        "activityLoggingDescription": "Выбирай, какие виды деятельности записывать в журнал",
+        "fileOperationsLabel": "Файловые операции",
+        "fileOperationsDescription": "Веди журнал загрузки, скачивания, удаления и переименования файлов через SFTP",
+        "serverConnectionsLabel": "Подключения к серверу",
+        "serverConnectionsDescription": "Веди журнал подключений и отключений SSH, SFTP и PVE",
+        "identityManagementLabel": "Управление идентификацией",
+        "identityManagementDescription": "Веди журнал создания, изменения и удаления SSH-идентификаторов",
+        "passwordPasteLabel": "Вставка пароля",
+        "passwordPasteDescription": "Ведите журнал использования действия по вставке пароля",
+        "serverManagementLabel": "Управление сервером",
+        "serverManagementDescription": "Веди журнал создания, изменения и удаления конфигураций сервера",
+        "folderManagementLabel": "Управление папками",
+        "folderManagementDescription": "Веди журнал создания, изменения и удаления папок",
+        "scriptExecutionLabel": "Выполнение сценария",
+        "scriptExecutionDescription": "Веди журнал выполнения скриптов и задач автоматизации",
         "actions": {
-          "save": "Save Settings"
+          "save": "Сохранить настройки"
         },
         "messages": {
-          "updated": "Audit settings updated successfully",
-          "updateFailed": "Failed to update audit settings"
+          "updated": "Настройки аудита успешно обновлены",
+          "updateFailed": "Не удалось обновить настройки аудита"
         }
       },
       "pendingInvitations": "Ожидающие приглашения",
@@ -1195,7 +1195,7 @@
       "addSource": "Добавить источник",
       "snippets": "сниппеты",
       "scripts": "скрипты",
-      "themes": "themes",
+      "themes": "темы",
       "neverSynced": "Ещё не синхронизировано",
       "sync": "Синхронизировать сейчас",
       "edit": "Изменить",
@@ -1217,7 +1217,7 @@
         "enabled": "Включено",
         "enabledDescription": "При отключении источник не будет синхронизироваться",
         "validating": "Проверка URL...",
-        "validationSuccess": "Valid source found: {{snippets}} snippets, {{scripts}} scripts, {{themes}} themes",
+        "validationSuccess": "Валидный источник найден: {{snippets}} сниппеты, {{scripts}} скрипты, {{themes}} темы",
         "create": "Создать"
       },
       "messages": {
@@ -1327,42 +1327,42 @@
       "noFiles": "Файлы не найдены"
     },
     "engines": {
-      "title": "Engines",
-      "description": "Manage engine instances that handle remote connections.",
-      "addEngine": "Add Engine",
-      "noEngines": "No Engines",
-      "noEnginesDescription": "Add an engine to start connecting to remote servers.",
+      "title": "Двигатели",
+      "description": "Управляй экземплярами движка, которые обрабатывают удаленные соединения.",
+      "addEngine": "Добавить двигатель",
+      "noEngines": "Нет двигателей",
+      "noEnginesDescription": "Добавь движок, чтобы начать подключаться к удаленным серверам.",
       "status": {
-        "connected": "Connected",
-        "disconnected": "Disconnected"
+        "connected": "Подключено",
+        "disconnected": "Отключенный"
       },
-      "lastSeen": "Last seen {{date}}",
-      "neverConnected": "Never connected",
-      "regenerateToken": "Regenerate token",
-      "deleteEngine": "Delete engine",
-      "dismiss": "Dismiss",
-      "copyToken": "Copy token",
+      "lastSeen": "Последний раз его видели на {{date}}.",
+      "neverConnected": "Никогда не подключался",
+      "regenerateToken": "Регенерируй токен",
+      "deleteEngine": "Удалить двигатель",
+      "dismiss": "Откажись от",
+      "copyToken": "Копируемый токен",
       "transport": {
-        "encrypted": "Encrypted",
-        "unencrypted": "Unencrypted"
+        "encrypted": "Зашифрованный",
+        "unencrypted": "Незашифрованный"
       },
-      "tokenLabel": "Registration token for <strong>{{name}}</strong>",
-      "tokenHint": "Set this in <code1>config.yaml</code1> or as <code2>REGISTRATION_TOKEN</code2> env variable.",
+      "tokenLabel": "Регистрационный токен для <strong>{{name}}</strong>",
+      "tokenHint": "Установи это в <code1>config.yaml</code1> или в качестве env-переменной <code2>REGISTRATION_TOKEN</code2>.",
       "dialog": {
-        "title": "Add Engine",
-        "engineName": "Engine Name",
-        "namePlaceholder": "e.g. Office Network",
-        "create": "Create Engine"
+        "title": "Добавить двигатель",
+        "engineName": "Название двигателя",
+        "namePlaceholder": "Например, офисная сеть",
+        "create": "Создай двигатель"
       },
-      "deleteConfirm": "Are you sure you want to delete \"{{name}}\"?",
+      "deleteConfirm": "Ты уверен, что хочешь удалить \"{{name}}\"?",
       "messages": {
-        "deleted": "Engine deleted successfully"
+        "deleted": "Двигатель успешно удален"
       },
       "errors": {
-        "loadFailed": "Failed to load engines",
-        "createFailed": "Failed to create engine",
-        "deleteFailed": "Failed to delete engine",
-        "regenerateFailed": "Failed to regenerate token"
+        "loadFailed": "Не удалось загрузить двигатели",
+        "createFailed": "Не удалось создать двигатель",
+        "deleteFailed": "Не удалось удалить двигатель",
+        "regenerateFailed": "Не удалось восстановить токен"
       }
     }
   },
@@ -1396,8 +1396,8 @@
     }
   },
   "servers": {
-    "addServerNote": "Right-click to add a new server",
-    "searchPlaceholder": "Search",
+    "addServerNote": "Щелкни правой кнопкой мыши, чтобы добавить новый сервер",
+    "searchPlaceholder": "Поиск",
     "time": {
       "justNow": "Только что",
       "minuteAgo": "{{count}} мин назад",
@@ -1436,8 +1436,8 @@
       "openSFTP": "Открыть SFTP",
       "forwardPort": "Передовой порт",
       "runScript": "Запустить скрипт",
-      "openNotes": "Open Notes",
-      "addNotes": "Add Notes",
+      "openNotes": "Открытые заметки",
+      "addNotes": "Добавляй заметки",
       "editServer": "Изменить сервер",
       "editIntegration": "Изменить интеграцию",
       "duplicateServer": "Дублировать сервер",
@@ -1460,7 +1460,7 @@
         "changePermissions": "Изменить разрешения",
         "stopSharing": "Перестать делиться",
         "duplicate": "Дублировать",
-        "openNotes": "Open Notes",
+        "openNotes": "Открытые заметки",
         "hibernateSession": "Гибернация",
         "closeSession": "Отключиться"
       }
@@ -1503,7 +1503,7 @@
         "nodeName": "Имя узла",
         "vmid": "ID виртуальной машины",
         "macAddress": "MAC-адрес",
-        "engine": "Engine"
+        "engine": "Двигатель"
       },
       "placeholders": {
         "serverName": "Название сервера",
@@ -1516,7 +1516,7 @@
         "vmid": "ID виртуальной машины",
         "macAddress": "AA:BB:CC:DD:EE:FF"
       },
-      "engineOffline": "(offline)",
+      "engineOffline": "(Оффлайн)",
       "settings": {
         "jumpHosts": {
           "title": "Промежуточные хосты",
@@ -1826,15 +1826,15 @@
       "badgeOn": "ВКЛ"
     },
     "notesPanel": {
-      "title": "Notes",
-      "placeholder": "Write notes for this server…",
-      "showInList": "Show in list",
-      "showInListTooltip": "Display the first line of these notes under the server name in the sidebar.",
+      "title": "Примечания",
+      "placeholder": "Напиши заметки для этого сервера…",
+      "showInList": "Показать в списке",
+      "showInListTooltip": "Отобрази первую строку этих заметок под именем сервера в боковой панели.",
       "status": {
-        "saving": "Saving",
-        "saved": "Saved",
-        "unsaved": "Unsaved",
-        "error": "Save failed"
+        "saving": "Экономия",
+        "saved": "Сохранил",
+        "unsaved": "Несохраненная",
+        "error": "Сохранить не удалось"
       }
     }
   },
@@ -1856,7 +1856,7 @@
     }
   },
   "welcome": {
-    "hello": "Hi",
+    "hello": "Привет",
     "subtitle": "Добро пожаловать в Nexterm. Менеджер серверов с открытым исходным кодом для SSH, VNC и RDP.",
     "downloadApps": "Скачать приложения",
     "connectDevice": "Подключи устройство",
