@@ -111,6 +111,12 @@
       "codeCreationFailed": "Failed to create device code",
       "authSuccess": "Successfully authenticated!"
     },
+    "serverSwitcher": {
+      "title": "Servers",
+      "addServer": "Add Server",
+      "removeServer": "Remove Server",
+      "removeConfirmText": "This will remove the connection to {{server}}. Are you sure?"
+    },
     "selectBox": {
       "defaultOption": "Select an option...",
       "search": "Search...",
