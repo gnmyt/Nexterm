@@ -13,7 +13,7 @@ $mobile: 768px
   max-width: calc(100vw - 20px)
   max-height: calc(100vh - 20px)
   overflow: visible
-  box-shadow: 0 12px 48px rgba(0, 0, 0, 0.5), 0 4px 16px rgba(0, 0, 0, 0.3)
+  box-shadow: colors.$shadow-lg
   opacity: 0
   transform: scale(0.95) translateY(-8px)
   transition: opacity 0.12s cubic-bezier(0.4, 0, 0.2, 1), transform 0.12s cubic-bezier(0.4, 0, 0.2, 1)
@@ -154,7 +154,7 @@ $mobile: 768px
     max-height: calc(100vh - 100px)
     overflow-y: auto
     z-index: 10001
-    box-shadow: 0 12px 48px rgba(0, 0, 0, 0.5), 0 4px 16px rgba(0, 0, 0, 0.3)
+    box-shadow: colors.$shadow-lg
     animation: submenuFadeIn 0.15s cubic-bezier(0.4, 0, 0.2, 1)
 
     &.mobile
