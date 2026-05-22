@@ -1,8 +1,10 @@
-import { useEffect, useRef, useContext } from "react";
+import { useEffect, useRef, useState, useContext } from "react";
 import Guacamole from "guacamole-common-js";
 import { UserContext } from "@/common/contexts/UserContext.jsx";
 import { useKeymaps, matchesKeybind } from "@/common/contexts/KeymapContext.jsx";
+import { useTranslation } from "react-i18next";
 import ConnectionLoader from "./components/ConnectionLoader";
+import ConnectionError, { mapConnectionError } from "./components/ConnectionError";
 import { getWebSocketUrl } from "@/common/utils/ConnectionUtil.js";
 
 const resumeAudioContext = () => {
@@ -15,6 +17,8 @@ const resumeAudioContext = () => {
 const GuacamoleRenderer = ({
                                session,
                                disconnectFromServer,
+                               markSessionErrored,
+                               getSessionError,
                                registerGuacamoleRef,
                                onFullscreenToggle,
                                isShared = false,
@@ -25,10 +29,22 @@ const GuacamoleRenderer = ({
     const scaleRef = useRef(1);
     const offsetRef = useRef({ x: 0, y: 0 });
     const { getParsedKeybind } = useKeymaps();
+    const { t } = useTranslation();
     const onFullscreenToggleRef = useRef(onFullscreenToggle);
     const sessionRef = useRef(session);
     const connectionLoaderRef = useRef(null);
     const audioPlayersRef = useRef([]);
+    const errorMessageRef = useRef(null);
+    const [connectionError, setConnectionError] = useState(() => getSessionError?.(session.id) || null);
+    const errorShownRef = useRef(!!connectionError);
+
+    const reportError = (rawMessage) => {
+        if (errorShownRef.current) return;
+        errorShownRef.current = true;
+        const mapped = mapConnectionError(rawMessage, t);
+        markSessionErrored?.(session.id, mapped);
+        setConnectionError(mapped);
+    };
 
     useEffect(() => {
         sessionRef.current = session;
@@ -110,6 +126,7 @@ const GuacamoleRenderer = ({
     };
 
     const connect = () => {
+        if (getSessionError?.(session.id)) return;
         if (isShared) {
             if (!session.shareId || clientRef.current) return;
         } else {
@@ -128,9 +145,10 @@ const GuacamoleRenderer = ({
                 loaderHidden = true;
                 connectionLoaderRef.current?.hide();
             }
-            if (clientOnInstruction) {
-                clientOnInstruction(opcode, args);
+            if (opcode === "error" && args?.length) {
+                errorMessageRef.current = args[0] || "Connection failed";
             }
+            clientOnInstruction?.(opcode, args);
         };
 
         clientRef.current = client;
@@ -184,18 +202,28 @@ const GuacamoleRenderer = ({
 
         client.onstatechange = (st) => {
             if (isCleaningUp) return;
-            if (st === Guacamole.Client.State.DISCONNECTED || st === Guacamole.Client.State.ERROR) disconnectFromServer(s.id);
+            if (st === Guacamole.Client.State.DISCONNECTED || st === Guacamole.Client.State.ERROR) {
+                if (errorShownRef.current) return;
+                if (errorMessageRef.current) reportError(errorMessageRef.current);
+                else disconnectFromServer(s.id);
+            }
         };
         tunnel.onstatechange = (st) => {
-            if (!isCleaningUp && st === Guacamole.Tunnel.State.CLOSED) disconnectFromServer(s.id);
+            if (isCleaningUp || st !== Guacamole.Tunnel.State.CLOSED) return;
+            if (errorShownRef.current) return;
+            if (errorMessageRef.current) reportError(errorMessageRef.current);
+            else disconnectFromServer(s.id);
         };
-        tunnel.onerror = () => {
-            if (!isCleaningUp) disconnectFromServer(s.id);
+        tunnel.onerror = (status) => {
+            if (isCleaningUp) return;
+            const message = status?.message || errorMessageRef.current || t("common.errors.connection.error");
+            reportError(message);
         };
         handleClipboardEvents();
 
         return () => {
             isCleaningUp = true;
+            errorShownRef.current = false;
             ref.current?.removeEventListener("keydown", handleKeyDown, true);
             client.onstatechange = tunnel.onstatechange = tunnel.onerror = null;
             audioPlayersRef.current = [];
@@ -236,6 +264,9 @@ const GuacamoleRenderer = ({
             <ConnectionLoader onReady={(loader) => {
                 connectionLoaderRef.current = loader;
             }} />
+            {connectionError && (
+                <ConnectionError message={connectionError} onClose={() => disconnectFromServer(session.id)} />
+            )}
         </div>
     );
 };

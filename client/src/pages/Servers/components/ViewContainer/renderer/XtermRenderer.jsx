@@ -13,12 +13,13 @@ import { createProgressParser } from "../utils/progressParser";
 import { mdiContentCopy, mdiContentPaste, mdiCodeBrackets, mdiSelectAll, mdiDelete, mdiKeyboard, mdiKey, mdiFolderOpen } from "@mdi/js";
 import { useTranslation } from "react-i18next";
 import ConnectionLoader from "./components/ConnectionLoader";
+import ConnectionError, { mapConnectionError } from "./components/ConnectionError";
 import { getWebSocketUrl } from "@/common/utils/ConnectionUtil.js";
 import { postRequest } from "@/common/utils/RequestUtil.js";
 import "@xterm/xterm/css/xterm.css";
 import "./styles/xterm.sass";
 
-const XtermRenderer = ({ session, disconnectFromServer, registerTerminalRef, broadcastMode, terminalRefs, updateProgress, layoutMode, onBroadcastToggle, onFullscreenToggle, isShared = false, onOpenSftp }) => {
+const XtermRenderer = ({ session, disconnectFromServer, markSessionErrored, getSessionError, registerTerminalRef, broadcastMode, terminalRefs, updateProgress, layoutMode, onBroadcastToggle, onFullscreenToggle, isShared = false, onOpenSftp }) => {
     const ref = useRef(null);
     const termRef = useRef(null);
     const wsRef = useRef(null);
@@ -29,7 +30,7 @@ const XtermRenderer = ({ session, disconnectFromServer, registerTerminalRef, bro
     const onBroadcastToggleRef = useRef(onBroadcastToggle);
     const onFullscreenToggleRef = useRef(onFullscreenToggle);
     const connectionLoaderRef = useRef(null);
-    
+
     const userContext = useContext(UserContext);
     const sessionToken = userContext?.sessionToken;
     const { theme, getCurrentTheme, selectedFont, fontSize, cursorStyle, cursorBlink, selectedTheme } = usePreferences();
@@ -41,6 +42,7 @@ const XtermRenderer = ({ session, disconnectFromServer, registerTerminalRef, bro
     const contextMenu = useContextMenu();
     const { identities } = useContext(IdentityContext);
     const [showSnippetsMenu, setShowSnippetsMenu] = useState(false);
+    const [connectionError, setConnectionError] = useState(() => getSessionError?.(session.id) || null);
 
     useEffect(() => {
         broadcastModeRef.current = broadcastMode;
@@ -165,8 +167,10 @@ const XtermRenderer = ({ session, disconnectFromServer, registerTerminalRef, bro
 
     useEffect(() => {
         if (!sessionToken && !isShared) return;
+        if (getSessionError?.(session.id)) return;
 
         let isCleaningUp = false;
+        setConnectionError(null);
 
         const terminalTheme = getCurrentTheme();
         const isLightTerminalTheme = selectedTheme === "light";
@@ -246,17 +250,28 @@ const XtermRenderer = ({ session, disconnectFromServer, registerTerminalRef, bro
             ws.send(`\x01${term.cols},${term.rows}`);
         }
 
-        ws.onclose = () => {
+        const reportError = (message) => {
+            markSessionErrored?.(session.id, message);
+            setConnectionError(message);
+        };
+
+        ws.onclose = (event) => {
             clearInterval(interval);
-            if (!isCleaningUp) {
+            if (isCleaningUp) return;
+
+            if (event.code >= 4000 && event.reason) {
+                reportError(mapConnectionError(event.reason, t));
+            } else if (event.code !== 1000 && event.code !== 1005) {
+                reportError(t("common.errors.connection.closedUnexpectedly"));
+            } else {
                 disconnectFromServer(session.id);
             }
         };
 
         ws.onerror = (error) => {
-            console.error('WebSocket error:', error);
+            console.error("WebSocket error:", error);
             if (!isCleaningUp) {
-                disconnectFromServer(session.id);
+                reportError(t("common.errors.connection.error"));
             }
         };
 
@@ -400,6 +415,9 @@ const XtermRenderer = ({ session, disconnectFromServer, registerTerminalRef, bro
     return (
         <div className="xterm-container" onContextMenu={!isShared ? handleContextMenu : undefined}>
             <ConnectionLoader onReady={(loader) => { connectionLoaderRef.current = loader; }} />
+            {connectionError && (
+                <ConnectionError message={connectionError} onClose={() => disconnectFromServer(session.id)} />
+            )}
             <div ref={ref} className="xterm-wrapper" />
             {!isShared && isAIAvailable() && (
                 <AICommandPopover visible={showAIPopover} onClose={() => setShowAIPopover(false)}

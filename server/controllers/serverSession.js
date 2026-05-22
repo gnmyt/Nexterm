@@ -89,12 +89,13 @@ const createSession = async (accountId, entryId, identityId, connectionReason, t
             logger.info("Session connection established", { sessionId: session.sessionId, entryId, type: entry.type });
         })
         .catch((error) => {
-            logger.error("Failed to create connection for session", { 
-                sessionId: session.sessionId, 
+            logger.error("Failed to create connection for session", {
+                sessionId: session.sessionId,
                 error: error.message,
                 stack: error.stack
             });
-            SessionManager.remove(session.sessionId);
+            SessionManager.markFailed(session.sessionId, error.message);
+            SessionManager.remove(session.sessionId, { code: 4017, reason: error.message });
         });
 
     return { sessionId: session.sessionId };

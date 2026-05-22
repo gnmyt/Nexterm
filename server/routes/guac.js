@@ -12,11 +12,17 @@ module.exports = async (ws, req) => {
 
     SessionManager.resume(serverSession.sessionId);
     const session = SessionManager.get(serverSession.sessionId);
-    if (!session) return ws.close(4007, "Session not found");
+    if (!session) {
+        const failedReason = SessionManager.consumeFailedReason(serverSession.sessionId);
+        if (failedReason) return ws.close(4017, failedReason);
+        return ws.close(4007, "Session not found");
+    }
     if (!session.guacReady) {
         try {
             await SessionManager.waitForGuacReady(serverSession.sessionId);
         } catch {
+            const failedReason = SessionManager.consumeFailedReason(serverSession.sessionId);
+            if (failedReason) return ws.close(4017, failedReason);
             return ws.close(4014, "Guacamole not prepared");
         }
     }

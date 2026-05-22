@@ -61,7 +61,9 @@ const authenticateWebSocket = async (ws, query) => {
     if (sessionId) {
         serverSession = SessionManager.get(sessionId);
         if (!serverSession) {
-            ws.close(4007, "Invalid session ID");
+            const failedReason = SessionManager.consumeFailedReason(sessionId);
+            if (failedReason) ws.close(4017, failedReason);
+            else ws.close(4007, "Invalid session ID");
             return null;
         }
         if (serverSession.accountId !== user.id) {

@@ -155,7 +155,8 @@ const createSFTPConnectionForSession = async (sessionId, entry, accountId) => {
         });
         dataSocket.on("error", (err) => {
             logger.error("SFTP data socket error", { sessionId, error: err.message });
-            SessionManager.remove(sessionId);
+            SessionManager.markFailed(sessionId, err.message);
+            SessionManager.remove(sessionId, { code: 4017, reason: err.message });
         });
 
         SessionManager.setConnection(sessionId, {
@@ -196,7 +197,8 @@ const createSSHConnectionForSession = async (sessionId, entry, identity, organiz
         });
         dataSocket.on("error", (err) => {
             logger.error("SSH data socket error", { sessionId, error: err.message });
-            SessionManager.remove(sessionId);
+            SessionManager.markFailed(sessionId, err.message);
+            SessionManager.remove(sessionId, { code: 4017, reason: err.message });
         });
 
         let scriptLayer = null;
@@ -245,7 +247,8 @@ const createTelnetConnectionForSession = async (sessionId, entry, organizationId
     });
     dataSocket.on("error", (err) => {
         logger.error("Telnet data socket error", { sessionId, error: err.message });
-        SessionManager.remove(sessionId);
+        SessionManager.markFailed(sessionId, err.message);
+        SessionManager.remove(sessionId, { code: 4017, reason: err.message });
     });
 
     SessionManager.setConnection(sessionId, {
@@ -307,7 +310,8 @@ const createPveLxcConnectionForSession = async (sessionId, entry, organizationId
     dataSocket.on("error", (err) => {
         clearInterval(keepAliveTimer);
         logger.error("PVE LXC data socket error", { sessionId, error: err.message });
-        SessionManager.remove(sessionId);
+        SessionManager.markFailed(sessionId, err.message);
+        SessionManager.remove(sessionId, { code: 4017, reason: err.message });
     });
 
     SessionManager.setConnection(sessionId, {
