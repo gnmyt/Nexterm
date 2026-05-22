@@ -56,11 +56,17 @@
       "ssoOrContinueWith": "或继续使用",
       "noAuthMethodsAvailable": "无可用的身份验证方式。",
       "signInWithPasskey": "使用密码登录",
+      "signInWithQrCode": "Sign in with QR Code",
+      "qrScanDescription": "Scan this QR code with the Nexterm mobile app to sign in instantly.",
+      "backToLogin": "Back to Login",
       "authenticating": "正在验证…"
     },
     "deviceLink": {
       "title": "链接设备",
       "description": "输入设备上显示的代码，授权其访问您的账户。",
+      "qrTab": "QR Code",
+      "codeTab": "Code",
+      "qrDescription": "Scan this QR code with the Nexterm mobile app to link your device.",
       "codeLabel": "设备代码",
       "continue": "继续",
       "verifying": "验证中...",
@@ -105,6 +111,12 @@
       "codeCreationFailed": "创建设备代码失败",
       "authSuccess": "验证成功！"
     },
+    "serverSwitcher": {
+      "title": "Servers",
+      "addServer": "Add Server",
+      "removeServer": "Remove Server",
+      "removeConfirmText": "This will remove the connection to {{server}}. Are you sure?"
+    },
     "selectBox": {
       "defaultOption": "选择选项...",
       "search": "搜索中...",
@@ -135,7 +147,7 @@
       "logout": "退出登录",
       "collapseTitle": "折叠侧边栏",
       "logoutConfirmText": "此操作将退出 {{username}} 账户。确定继续吗？",
-      "starOnGitHub": "在GitHub上关注",
+      "starOnGitHub": "在GitHub上点个star",
       "support": "支持"
     },
     "quickAction": {
@@ -165,7 +177,22 @@
       "internalAuthDisabled": "内部身份验证已禁用",
       "ssoLoginFailed": "发起SSO登录失败",
       "passkeyLoginFailed": "密码验证失败",
-      "passkeyCancelled": "密码验证已取消"
+      "passkeyCancelled": "密码验证已取消",
+      "qrCodeExpired": "QR code expired. Please try again.",
+      "connection": {
+        "title": "Connection failed",
+        "close": "Close tab",
+        "hostUnreachable": "Remote host unreachable",
+        "refused": "Connection refused by remote host",
+        "timeout": "Connection timed out",
+        "authenticationFailed": "Authentication failed",
+        "permissionDenied": "Permission denied",
+        "failed": "Connection failed",
+        "closedUnexpectedly": "Connection closed unexpectedly",
+        "error": "Connection error occurred",
+        "scriptClosedUnexpectedly": "Script connection closed unexpectedly",
+        "scriptError": "Script connection error occurred"
+      }
     },
     "messages": {
       "invitationAccepted": "邀请已接受",
@@ -226,6 +253,11 @@
         "personal": "个人",
         "user": "用户 #{{id}}",
         "organization": "组织 #{{id}}"
+      },
+      "durationUnits": {
+        "seconds": "seconds",
+        "minutes": "minutes",
+        "hours": "hours"
       }
     },
     "pagination": {
@@ -540,6 +572,7 @@
     "adminSettings": "管理设置",
     "pages": {
       "account": "账户",
+      "appearance": "Appearance",
       "terminal": "终端",
       "fileManager": "文件管理器",
       "keymaps": "快捷键",
@@ -551,7 +584,8 @@
       "sources": "来源",
       "ai": "AI",
       "monitoring": "监控",
-      "backup": "存储"
+      "backup": "存储",
+      "engines": "Engines"
     },
     "account": {
       "title": "账户",
@@ -563,11 +597,18 @@
       "themeAuto": "自动",
       "themeLight": "浅色",
       "themeDark": "深色",
+      "themeDarkHint": "Press three times to enable OLED mode.",
       "themeOled": "OLED",
       "oledEnabled": "启用 OLED 模式",
       "oledDisabled": "禁用 OLED 模式",
       "themeLabel": "主题",
       "accentColor": "点缀色",
+      "sizeLabel": "Size",
+      "sizeXS": "XS",
+      "sizeS": "S",
+      "sizeM": "M",
+      "sizeL": "L",
+      "sizeXL": "XL",
       "twoFactor": "双因素认证",
       "twoFactorActive": "已启用",
       "twoFactorInactive": "未启用",
@@ -587,6 +628,32 @@
       "appearanceSyncDisabled": "外观设置不再同步",
       "generalSyncEnabled": "常规设置现在将同步到您的账户",
       "generalSyncDisabled": "常规设置将不再同步",
+      "customThemes": {
+        "title": "Custom Themes",
+        "description": "Create custom CSS themes or choose from synced source themes to personalize your interface.",
+        "newTheme": "New Theme",
+        "noThemesYet": "No themes yet",
+        "noThemesDescription": "Create a custom theme or add a source to get started.",
+        "editTheme": "Edit Theme",
+        "createTheme": "Create Theme",
+        "name": "Name",
+        "themeName": "Theme name",
+        "descriptionLabel": "Description",
+        "optionalDescription": "Optional description",
+        "saveChanges": "Save Changes",
+        "fromSource": "From source",
+        "edit": "Edit",
+        "delete": "Delete",
+        "deleteConfirm": "Are you sure you want to delete the theme \"{{name}}\"?",
+        "failedToLoadTheme": "Failed to load theme",
+        "nameAndCssRequired": "Name and CSS are required",
+        "themeUpdated": "Theme updated",
+        "themeCreated": "Theme created",
+        "failedToSaveTheme": "Failed to save theme",
+        "themeDeleted": "Theme deleted",
+        "failedToDeleteTheme": "Failed to delete theme",
+        "failedToActivateTheme": "Failed to activate theme"
+      },
       "sessionSynchronization": "会话同步方式",
       "sessionSyncDescription": "控制服务器会话在不同设备和浏览器标签页之间的存储和同步方式。",
       "sessionSyncAcrossDevices": "跨设备同步",
@@ -637,7 +704,42 @@
       "delete": "删除",
       "leave": "离开",
       "members": "成员",
-      "auditSettings": "审计设置",
+      "auditSettings": {
+        "auditSettingsTab": "Audit Settings",
+        "sessionRecordingHeading": "Session Recording",
+        "sessionRecordingDescription": "Record terminal and remote desktop sessions for playback",
+        "enableSessionRecordingLabel": "Enable Session Recording",
+        "enableSessionRecordingDescription": "Record SSH, Telnet, RDP, and VNC sessions for later playback",
+        "recordingRetentionLabel": "Recording Retention (days)",
+        "recordingRetentionDescription": "How long to keep session recordings before automatic deletion (1-365 days)",
+        "connectionRequirementsHeading": "Connection Requirements",
+        "connectionRequirementsDescription": "Control connection behavior and requirements",
+        "requireConnectionReasonLabel": "Require Connection Reason",
+        "requireConnectionReasonDescription": "Require users to provide a reason when connecting to servers",
+        "activityLoggingHeading": "Activity Logging",
+        "activityLoggingDescription": "Choose which types of activities to log",
+        "fileOperationsLabel": "File Operations",
+        "fileOperationsDescription": "Log file uploads, downloads, deletions, and renames via SFTP",
+        "serverConnectionsLabel": "Server Connections",
+        "serverConnectionsDescription": "Log SSH, SFTP, and PVE connections and disconnections",
+        "identityManagementLabel": "Identity Management",
+        "identityManagementDescription": "Log creation, modification, and deletion of SSH identities",
+        "passwordPasteLabel": "Password Paste",
+        "passwordPasteDescription": "Log usage of the password paste action",
+        "serverManagementLabel": "Server Management",
+        "serverManagementDescription": "Log creation, modification, and deletion of server configurations",
+        "folderManagementLabel": "Folder Management",
+        "folderManagementDescription": "Log creation, modification, and deletion of folders",
+        "scriptExecutionLabel": "Script Execution",
+        "scriptExecutionDescription": "Log execution of scripts and automation tasks",
+        "actions": {
+          "save": "Save Settings"
+        },
+        "messages": {
+          "updated": "Audit settings updated successfully",
+          "updateFailed": "Failed to update audit settings"
+        }
+      },
       "pendingInvitations": "待处理邀请",
       "invitedBy": "邀请人：{{name}}",
       "deleteConfirmation": "此操作将永久删除组织并移除所有成员。此操作不可撤销。",
@@ -844,7 +946,7 @@
     },
     "authentication": {
       "title": "{{count}} 个身份验证提供程序",
-      "internalProviderName": "Internal Authentication",
+      "internalProviderName": "内部认证",
       "addProvider": "添加提供程序",
       "addLdapProvider": "添加 LDAP",
       "system": "系统",
@@ -1093,6 +1195,7 @@
       "addSource": "添加来源",
       "snippets": "代码片段",
       "scripts": "脚本",
+      "themes": "themes",
       "neverSynced": "从未同步",
       "sync": "立即同步",
       "edit": "编辑",
@@ -1114,7 +1217,7 @@
         "enabled": "已启用",
         "enabledDescription": "禁用时，此来源不会同步",
         "validating": "验证 URL 中...",
-        "validationSuccess": "有效来源：{{snippets}} 个代码片段，{{scripts}} 个脚本",
+        "validationSuccess": "Valid source found: {{snippets}} snippets, {{scripts}} scripts, {{themes}} themes",
         "create": "创建"
       },
       "messages": {
@@ -1138,7 +1241,7 @@
         "title": "存储",
         "description": "查看 Nexterm 数据的磁盘使用情况。",
         "database": "数据库",
-        "recordings": "录音",
+        "recordings": "录制",
         "logs": "日志",
         "total": "总计"
       },
@@ -1152,13 +1255,13 @@
       "providerNamePlaceholder": "我的备份",
       "providerType": "类型",
       "providerTypes": {
-        "local": "当地",
-        "smb": "中小型企业共享",
+        "local": "本地",
+        "smb": "SMB共享",
         "webdav": "WebDAV"
       },
       "localPath": "备份路径",
       "localPathPlaceholder": "/path/to/backups",
-      "smbShare": "中小型企业共享",
+      "smbShare": "SMB共享",
       "smbSharePlaceholder": "\\\\共享",
       "smbFolder": "文件夹（可选）",
       "smbFolderPlaceholder": "备份",
@@ -1179,7 +1282,7 @@
       "passwordUnchanged": "留空以保持最新",
       "schedule": {
         "title": "自动备份",
-        "disabled": "残疾",
+        "disabled": "已禁用",
         "hourly": "每小时",
         "every6h": "每 6 小时",
         "every12h": "每 12 小时",
@@ -1193,7 +1296,7 @@
       "includes": {
         "title": "包括在备份中",
         "database": "数据库",
-        "recordings": "录音",
+        "recordings": "录制",
         "logs": "日志"
       },
       "providers": "提供商",
@@ -1222,6 +1325,45 @@
         "nameRequired": "必须填写提供方名称"
       },
       "noFiles": "未找到文件"
+    },
+    "engines": {
+      "title": "Engines",
+      "description": "Manage engine instances that handle remote connections.",
+      "addEngine": "Add Engine",
+      "noEngines": "No Engines",
+      "noEnginesDescription": "Add an engine to start connecting to remote servers.",
+      "status": {
+        "connected": "Connected",
+        "disconnected": "Disconnected"
+      },
+      "lastSeen": "Last seen {{date}}",
+      "neverConnected": "Never connected",
+      "regenerateToken": "Regenerate token",
+      "deleteEngine": "Delete engine",
+      "dismiss": "Dismiss",
+      "copyToken": "Copy token",
+      "transport": {
+        "encrypted": "Encrypted",
+        "unencrypted": "Unencrypted"
+      },
+      "tokenLabel": "Registration token for <strong>{{name}}</strong>",
+      "tokenHint": "Set this in <code1>config.yaml</code1> or as <code2>REGISTRATION_TOKEN</code2> env variable.",
+      "dialog": {
+        "title": "Add Engine",
+        "engineName": "Engine Name",
+        "namePlaceholder": "e.g. Office Network",
+        "create": "Create Engine"
+      },
+      "deleteConfirm": "Are you sure you want to delete \"{{name}}\"?",
+      "messages": {
+        "deleted": "Engine deleted successfully"
+      },
+      "errors": {
+        "loadFailed": "Failed to load engines",
+        "createFailed": "Failed to create engine",
+        "deleteFailed": "Failed to delete engine",
+        "regenerateFailed": "Failed to regenerate token"
+      }
     }
   },
   "tunnel": {
@@ -1229,7 +1371,7 @@
     "identity": "身份",
     "remoteHost": "远程主机",
     "remotePort": "远程端口",
-    "localPort": "当地港口",
+    "localPort": "本地端口",
     "start": "起点隧道",
     "stop": "停车隧道",
     "status": {
@@ -1254,6 +1396,8 @@
     }
   },
   "servers": {
+    "addServerNote": "Right-click to add a new server",
+    "searchPlaceholder": "Search",
     "time": {
       "justNow": "刚刚",
       "minuteAgo": "{{count}} 分钟前",
@@ -1292,6 +1436,8 @@
       "openSFTP": "打开 SFTP",
       "forwardPort": "转发端口",
       "runScript": "运行脚本",
+      "openNotes": "Open Notes",
+      "addNotes": "Add Notes",
       "editServer": "编辑服务器",
       "editIntegration": "编辑集成",
       "duplicateServer": "复制服务器",
@@ -1306,16 +1452,17 @@
     },
     "tabs": {
       "contextMenu": {
-        "popOut": "Pop Out",
-        "startSharing": "Start Sharing",
-        "readOnly": "Read-only",
-        "readWrite": "Read & Write",
-        "copyShareLink": "Copy Share Link",
-        "changePermissions": "Change Permissions",
-        "stopSharing": "Stop Sharing",
-        "duplicate": "Duplicate",
-        "hibernateSession": "Hibernate",
-        "closeSession": "Disconnect"
+        "popOut": "弹出",
+        "startSharing": "开始分享",
+        "readOnly": "只读",
+        "readWrite": "读写",
+        "copyShareLink": "复制分享链接",
+        "changePermissions": "修改权限",
+        "stopSharing": "停止分享",
+        "duplicate": "复制",
+        "openNotes": "Open Notes",
+        "hibernateSession": "休眠",
+        "closeSession": "断开连接"
       }
     },
     "wol": {
@@ -1355,7 +1502,8 @@
         "host": "主机",
         "nodeName": "节点名称",
         "vmid": "虚拟机 ID",
-        "macAddress": "MAC 地址"
+        "macAddress": "MAC 地址",
+        "engine": "Engine"
       },
       "placeholders": {
         "serverName": "服务器名称",
@@ -1368,6 +1516,7 @@
         "vmid": "虚拟机 ID",
         "macAddress": "aa:bb:cc:dd:ee:ff"
       },
+      "engineOffline": "(offline)",
       "settings": {
         "jumpHosts": {
           "title": "跳板机",
@@ -1675,6 +1824,18 @@
       "fullScreen": "全屏",
       "exitFullScreen": "退出全屏模式",
       "badgeOn": "开启"
+    },
+    "notesPanel": {
+      "title": "Notes",
+      "placeholder": "Write notes for this server…",
+      "showInList": "Show in list",
+      "showInListTooltip": "Display the first line of these notes under the server name in the sidebar.",
+      "status": {
+        "saving": "Saving",
+        "saved": "Saved",
+        "unsaved": "Unsaved",
+        "error": "Save failed"
+      }
     }
   },
   "support": {
@@ -1695,6 +1856,7 @@
     }
   },
   "welcome": {
+    "hello": "Hi",
     "subtitle": "欢迎使用 Nexterm。用于 SSH、VNC 和 RDP 的开源服务器管理器。",
     "downloadApps": "下载应用程序",
     "connectDevice": "连接设备",
