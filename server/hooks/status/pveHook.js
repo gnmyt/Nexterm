@@ -1,5 +1,4 @@
-const axios = require("axios");
-const { Agent } = require("https");
+const { engineFetch } = require("../../lib/engineFetch");
 const { createTicket, getNodeForServer } = require("../../controllers/pve");
 const Integration = require("../../models/Integration");
 const Credential = require("../../models/Credential");
@@ -46,15 +45,15 @@ const checkPVEStatus = async (entry) => {
 
         if (entry.type === "pve-shell" && (!vmid || vmid === 0 || vmid === "0")) {
             const nodeUrl = `https://${config.ip}:${config.port}/api2/json/nodes/${node}/status`;
-            const nodeResponse = await axios.get(nodeUrl, {
+            const nodeResponse = await engineFetch(nodeUrl, {
                 timeout: 3000,
-                httpsAgent: new Agent({ rejectUnauthorized: false }),
+                insecure: true,
                 headers: {
                     Cookie: `PVEAuthCookie=${ticket.ticket}`,
                 },
             });
 
-            return nodeResponse.data.data ? "online" : "offline";
+            return nodeResponse.ok ? "online" : "offline";
         }
         
         if (!vmid) {
@@ -73,15 +72,17 @@ const checkPVEStatus = async (entry) => {
         }
 
         const statusUrl = `https://${config.ip}:${config.port}/api2/json/nodes/${node}/${resourceType}/${vmid}/status/current`;
-        const response = await axios.get(statusUrl, {
+        const response = await engineFetch(statusUrl, {
             timeout: 3000,
-            httpsAgent: new Agent({ rejectUnauthorized: false }),
+            insecure: true,
             headers: {
                 Cookie: `PVEAuthCookie=${ticket.ticket}`,
             },
         });
 
-        const status = response.data.data.status;
+        if (!response.ok) return "offline";
+        const data = response.json();
+        const status = data.data?.status;
 
         return status || "offline";
 

@@ -1,6 +1,7 @@
 import "./styles.sass";
 import ServerList from "@/pages/Servers/components/ServerList";
 import { useContext, useEffect, useState, useCallback, useRef } from "react";
+import { createPortal } from "react-dom";
 import WelcomePanel from "@/pages/Servers/components/WelcomePanel";
 import ServerDialog from "@/pages/Servers/components/ServerDialog";
 import ViewContainer from "@/pages/Servers/components/ViewContainer";
@@ -30,6 +31,7 @@ export const Servers = () => {
     const [pendingConnection, setPendingConnection] = useState(null);
     const [openFileEditors, setOpenFileEditors] = useState([]);
     const [mobileServerListOpen, setMobileServerListOpen] = useState(false);
+    const [leftPaneSlot, setLeftPaneSlot] = useState(null);
 
     const [currentFolderId, setCurrentFolderId] = useState(null);
     const [currentOrganizationId, setCurrentOrganizationId] = useState(null);
@@ -49,6 +51,10 @@ export const Servers = () => {
         const handleToggle = () => setMobileServerListOpen(prev => !prev);
         window.addEventListener('toggleServerList', handleToggle);
         return () => window.removeEventListener('toggleServerList', handleToggle);
+    }, []);
+
+    useEffect(() => {
+        setLeftPaneSlot(document.getElementById("left-pane-slot"));
     }, []);
 
     const handleConnectionsUpdate = useCallback((sessions) => {
@@ -84,21 +90,23 @@ export const Servers = () => {
         });
         
         const newActiveIds = new Set(activeMapped.map(s => s.id));
+        let mergedSessions = [];
 
         setActiveSessions(prev => {
             const prevMap = new Map(prev.map(s => [s.id, s]));
-            return activeMapped.map(newSession => {
+            const localOnly = prev.filter(s => s.type === "notes");
+            const merged = activeMapped.map(newSession => {
                 const existing = prevMap.get(newSession.id);
                 return existing ? { ...newSession, scriptId: existing.scriptId || newSession.scriptId, scriptName: existing.scriptName, osName: newSession.osName || existing.osName } : newSession;
             });
+            mergedSessions = [...merged, ...localOnly];
+            return mergedSessions;
         });
         setHibernatedSessions(hibernatedMapped);
 
         setActiveSessionId(prev => {
-            if (!prev || !newActiveIds.has(prev)) {
-                return activeMapped.at(-1)?.id || null;
-            }
-            return prev;
+            if (prev && (newActiveIds.has(prev) || mergedSessions.some(s => s.id === prev))) return prev;
+            return mergedSessions.at(-1)?.id || null;
         });
     }, [servers, getServerById, setActiveSessions, setActiveSessionId]);
 
@@ -133,6 +141,13 @@ export const Servers = () => {
         const hibernated = hibernatedSessions.find(s => s.server.id === serverId && s.identity === identity?.id);
         if (hibernated) {
             resumeConnection(hibernated.id);
+            return;
+        }
+
+        const isPveEntry = server?.type?.startsWith("pve-");
+        const hasIdentities = server?.identities && server.identities.length > 0;
+        if (server && !isPveEntry && !hasIdentities) {
+            openDirectConnect(server);
             return;
         }
 
@@ -259,11 +274,40 @@ export const Servers = () => {
     }, [setActiveSessions, setActiveSessionId]);
 
     const closeSession = (sessionId) => {
-        closingSessionsRef.current.add(sessionId);
-        deleteRequest(`/connections/${sessionId}`).catch(error => {
-            console.debug("Session deletion request failed:", error);
-        });
+        const session = activeSessions.find(s => s.id === sessionId);
+        if (session?.type !== "notes") {
+            closingSessionsRef.current.add(sessionId);
+            deleteRequest(`/connections/${sessionId}`).catch(error => {
+                console.debug("Session deletion request failed:", error);
+            });
+        }
         disconnectFromServer(sessionId);
+    };
+
+    const openNotes = (serverId) => {
+        const server = getServerById(serverId);
+        if (!server) return;
+
+        const notesId = `notes-${serverId}`;
+        const existing = activeSessions.find(s => s.id === notesId);
+        if (existing) {
+            setActiveSessionId(notesId);
+            return;
+        }
+
+        const organization = findOrganizationForServer(server.id, servers);
+        const organizationId = organization ? parseInt(organization.id.split("-")[1]) : null;
+
+        const sessionData = {
+            server,
+            id: notesId,
+            type: "notes",
+            organizationId,
+            organizationName: organization?.name || null,
+        };
+
+        setActiveSessions(prev => [...prev, sessionData]);
+        setActiveSessionId(notesId);
     };
 
     const hibernateSession = async (sessionId) => {
@@ -454,19 +498,23 @@ export const Servers = () => {
                 onConnect={handleConnectionReasonProvided}
                 serverName={pendingConnection?.server?.name || "Unknown Server"}
             />
-            <ServerList setServerDialogOpen={(protocol = null) => {
-                setServerDialogProtocol(protocol);
-                setServerDialogOpen(true);
-            }}
-                        connectToServer={connectToServer}
-                        setProxmoxDialogOpen={() => setProxmoxDialogOpen(true)}
-                        setSSHConfigImportDialogOpen={() => setSSHConfigImportDialogOpen(true)}
-                        setCurrentFolderId={setCurrentFolderId} setCurrentOrganizationId={setCurrentOrganizationId}
-                        setEditServerId={setEditServerId} openSFTP={openSFTP}
-                        hibernatedSessions={hibernatedSessions} resumeSession={resumeConnection}
-                        openDirectConnect={openDirectConnect} runScript={runScript}
-                        openPortForward={isTauri() ? openPortForward : undefined}
-                        mobileOpen={mobileServerListOpen} setMobileOpen={setMobileServerListOpen} />
+            {leftPaneSlot && createPortal(
+                <ServerList setServerDialogOpen={(protocol = null) => {
+                    setServerDialogProtocol(protocol);
+                    setServerDialogOpen(true);
+                }}
+                            connectToServer={connectToServer}
+                            setProxmoxDialogOpen={() => setProxmoxDialogOpen(true)}
+                            setSSHConfigImportDialogOpen={() => setSSHConfigImportDialogOpen(true)}
+                            setCurrentFolderId={setCurrentFolderId} setCurrentOrganizationId={setCurrentOrganizationId}
+                            setEditServerId={setEditServerId} openSFTP={openSFTP}
+                            hibernatedSessions={hibernatedSessions} resumeSession={resumeConnection}
+                            openDirectConnect={openDirectConnect} runScript={runScript}
+                            openNotes={openNotes}
+                            openPortForward={isTauri() ? openPortForward : undefined}
+                            mobileOpen={mobileServerListOpen} setMobileOpen={setMobileServerListOpen} />,
+                leftPaneSlot
+            )}
             {visibleSessions.length === 0 && 
                 <WelcomePanel 
                     connectToServer={connectToServer} 
@@ -481,6 +529,7 @@ export const Servers = () => {
                                closeSession={closeSession}
                                activeSessionId={activeSessionId} setActiveSessionId={setActiveSessionId}
                                hibernateSession={hibernateSession} duplicateSession={duplicateSession}
+                               openNotes={openNotes}
                                setOpenFileEditors={setOpenFileEditors}
                                openTerminalFromFileManager={openTerminalFromFileManager} />}
             {openFileEditors.map((editor, index) => (

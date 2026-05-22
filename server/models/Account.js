@@ -41,6 +41,12 @@ module.exports = db.define("accounts", {
         type: Sequelize.JSON,
         defaultValue: {},
     },
+    activeThemeId: {
+        type: Sequelize.INTEGER,
+        allowNull: true,
+        references: { model: "themes", key: "id" },
+        onDelete: "SET NULL",
+    },
 }, { 
     freezeTableName: true, 
     createdAt: false, 

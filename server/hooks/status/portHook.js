@@ -1,41 +1,28 @@
-const net = require("net");
-const logger = require("../../utils/logger");
+const controlPlane = require("../../lib/controlPlane/ControlPlaneServer");
 
-const isRemotePortOpen = (host, port, timeout = 1500) => {
-    return new Promise((resolve) => {
-        const socket = new net.Socket();
+const checkServerStatusBatch = async (entries, timeoutMs = 2000) => {
+    if (!controlPlane.hasEngine()) throw new Error("No engine connected");
 
-        const onError = () => {
-            socket.destroy();
-            resolve(false);
-        };
+    const targets = [];
+    const skipped = [];
 
-        socket.setTimeout(timeout);
-        socket.once("timeout", onError);
-        socket.once("error", onError);
-
-        socket.connect(port, host, () => {
-            socket.end();
-            resolve(true);
-        });
-    });
-}
-
-const checkServerStatus = async (entry) => {
-    try {
+    for (const entry of entries) {
         const { ip, port } = entry.config || {};
-        
         if (!ip || !port) {
-            logger.warn(`Entry missing IP or port configuration`, { entryId: entry.id, name: entry.name });
-            return "offline";
+            skipped.push({ id: entry.id, status: "offline" });
+            continue;
         }
-
-        const isOpen = await isRemotePortOpen(ip, port, 2000);
-        return isOpen ? "online" : "offline";
-    } catch (error) {
-        logger.error(`Error checking server status`, { entryId: entry.id, error: error.message });
-        return "offline";
+        targets.push({ id: String(entry.id), host: ip, port });
     }
+
+    if (targets.length === 0) return skipped;
+
+    const result = await controlPlane.portCheck(targets, timeoutMs);
+    const statusMap = new Map(result.entries.map(e => [e.id, e.online ? "online" : "offline"]));
+    return [
+        ...targets.map(t => ({ id: Number(t.id), status: statusMap.get(t.id) || "offline" })),
+        ...skipped,
+    ];
 }
 
-module.exports = { checkServerStatus };
+module.exports = { checkServerStatusBatch };

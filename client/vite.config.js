@@ -25,6 +25,9 @@ const guacamolePlugin = () => {
 
 export default defineConfig({
     plugins: [guacamolePlugin(), react()],
+    legacy: {
+        inconsistentCjsInterop: true,
+    },
     css: {
         preprocessorOptions: {
             sass: {

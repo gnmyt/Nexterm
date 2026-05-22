@@ -78,13 +78,23 @@ yarn dev
 
 ## 🔧 Configuration
 
+### Docker Images
+
+| Image            | Description                                              |
+|------------------|----------------------------------------------------------|
+| `nexterm/aio`    | All-In-One — server, client, and engine bundled together |
+| `nexterm/server` | Server + web client only (requires external engine)      |
+| `nexterm/engine` | Engine only                                              |
+
 The server listens on port 6989 by default. You can modify this behavior using environment variables:
 
--   `SERVER_PORT`: Server listening port (default: 6989)
--   `NODE_ENV`: Runtime environment (development/production)
--   `ENCRYPTION_KEY`: Encryption key for passwords, SSH keys and passphrases. Supports Docker secrets via /run/secrets/encryption_key`
--   `AI_SYSTEM_PROMPT`: System prompt for AI features (example: You are a Linux command generator assistant.)
--   `LOG_LEVEL`: Logging level for application and guacd (system/info/verbose/debug/warn/error, default: system)
+- `SERVER_PORT`: Server listening port (default: 6989)
+- `CONTROL_PLANE_PORT`: TCP port for engine communication (default: 7800)
+- `NODE_ENV`: Runtime environment (development/production)
+- `ENCRYPTION_KEY`: Encryption key for passwords, SSH keys and passphrases. Supports Docker secrets via
+  /run/secrets/encryption_key`
+- `AI_SYSTEM_PROMPT`: System prompt for AI features (example: You are a Linux command generator assistant.)
+- `LOG_LEVEL`: Logging level for application and engine (system/info/verbose/debug/warn/error, default: system)
 
 ## 🛡️ Security
 

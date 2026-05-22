@@ -13,7 +13,7 @@ import { SessionProvider } from "@/common/contexts/SessionContext.jsx";
 import { SnippetProvider } from "@/common/contexts/SnippetContext.jsx";
 import { ScriptProvider } from "@/common/contexts/ScriptContext.jsx";
 import { QuickActionProvider } from "@/common/contexts/QuickActionContext.jsx";
-import { Suspense, lazy, useState, useEffect, useContext } from "react";
+import { Suspense, lazy, useState, useEffect, useContext, useRef } from "react";
 import { UserContext } from "@/common/contexts/UserContext.jsx";
 import Loading from "@/common/components/Loading";
 import { ErrorBoundary } from "@/common/components/ErrorBoundary";
@@ -21,6 +21,7 @@ import TitleBar from "@/common/components/TitleBar";
 import ConnectionErrorBanner from "@/common/components/ConnectionErrorBanner";
 import { waitForTauri } from "@/common/utils/TauriUtil.js";
 import MobileNav from "@/common/components/MobileNav";
+import ThemeLoader from "@/common/components/ThemeLoader";
 
 const Sidebar = lazy(() => import("@/common/components/Sidebar"));
 
@@ -35,12 +36,39 @@ const PreferencesWrapper = ({ children }) => {
 
 const AppContent = () => {
     const [tauriReady, setTauriReady] = useState(false);
+    const [isLeftPaneCollapsed, setIsLeftPaneCollapsed] = useState(false);
+    const [isLeftPaneHovering, setIsLeftPaneHovering] = useState(false);
+    const leftPaneRef = useRef(null);
+    const hoverBarRef = useRef(null);
 
     useEffect(() => {
         waitForTauri().then(() => {
             setTauriReady(true);
         });
     }, []);
+    useEffect(() => {
+        if (!isLeftPaneCollapsed) return;
+        const isPointInRect = (rect, x, y) => rect && x >= rect.left && x <= rect.right && y >= rect.top && y <= rect.bottom;
+        const handleMouseMove = (event) => {
+            const leftPaneRect = leftPaneRef.current?.getBoundingClientRect();
+            const hoverBarRect = hoverBarRef.current?.getBoundingClientRect();
+            const isOverLeftPane = isPointInRect(leftPaneRect, event.clientX, event.clientY);
+            const isOverHoverBar = isPointInRect(hoverBarRect, event.clientX, event.clientY);
+            const nextHovering = Boolean(isOverLeftPane || isOverHoverBar);
+            setIsLeftPaneHovering(prev => (prev === nextHovering ? prev : nextHovering));
+        };
+        const handleMouseOut = (event) => {
+            if (!event.relatedTarget) {
+                setIsLeftPaneHovering(false);
+            }
+        };
+        document.addEventListener("mousemove", handleMouseMove);
+        window.addEventListener("mouseout", handleMouseOut);
+        return () => {
+            document.removeEventListener("mousemove", handleMouseMove);
+            window.removeEventListener("mouseout", handleMouseOut);
+        };
+    }, [isLeftPaneCollapsed]);
 
     if (!tauriReady) {
         return (
@@ -51,9 +79,12 @@ const AppContent = () => {
         );
     }
 
+    const isLeftPaneVisible = !isLeftPaneCollapsed || isLeftPaneHovering;
+
     return (
         <UserProvider>
             <PreferencesWrapper>
+                <ThemeLoader />
                 <StateStreamProvider>
                     <KeymapProvider>
                         <AIProvider>
@@ -67,9 +98,19 @@ const AppContent = () => {
                                                         <TitleBar />
                                                         <ConnectionErrorBanner />
                                                         <div className="content-wrapper">
-                                                            <Suspense fallback={<Loading />}>
-                                                                <Sidebar />
-                                                            </Suspense>
+                                                            <div
+                                                                className={`left-pane${isLeftPaneCollapsed ? " collapsed" : ""}${isLeftPaneVisible ? " open" : ""}`}
+                                                                ref={leftPaneRef}
+                                                            >
+                                                                <Suspense fallback={<Loading />}>
+                                                                    <Sidebar onToggleCollapse={() => setIsLeftPaneCollapsed(prev => !prev)} />
+                                                                </Suspense>
+                                                                <div className="left-pane-slot" id="left-pane-slot" />
+                                                            </div>
+                                                            <div
+                                                                className={`left-pane-hover-bar${isLeftPaneCollapsed ? " active" : ""}`}
+                                                                ref={hoverBarRef}
+                                                            />
                                                             <div className="main-content">
                                                                 <Suspense fallback={<Loading />}>
                                                                     <Outlet />

@@ -1,0 +1,12 @@
+name: guacamole_common_dart
+description: Dart implementation of the Apache Guacamole protocol client library.
+version: 0.1.0
+publish_to: 'none'
+
+environment:
+  sdk: ^3.9.2
+
+dependencies:
+  flutter:
+    sdk: flutter
+  web_socket_channel: ^3.0.1

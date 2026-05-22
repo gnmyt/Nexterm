@@ -5,7 +5,7 @@ const telnetHook = require("../hooks/telnet");
 const logger = require("../utils/logger");
 const SessionManager = require("../lib/SessionManager");
 
-const waitForConnection = async (sessionId, timeoutMs = 5000) => {
+const waitForConnection = async (sessionId, timeoutMs = 30000) => {
     const start = Date.now();
     while (Date.now() - start < timeoutMs) {
         const session = SessionManager.get(sessionId);
@@ -33,18 +33,17 @@ module.exports = async (ws, req) => {
     if (!serverSession) return ws.close(4007, "Session required");
 
     SessionManager.resume(serverSession.sessionId);
-    const { conn, sessionRemoved } = await waitForConnection(serverSession.sessionId, 5000);
+    const { conn, sessionRemoved } = await waitForConnection(serverSession.sessionId);
     
     if (!conn) {
         if (!sessionRemoved) {
-            logger.warn("Connection timeout, removing session", { sessionId: serverSession.sessionId });
-            await SessionManager.remove(serverSession.sessionId);
+            logger.warn("Connection timeout", { sessionId: serverSession.sessionId });
         }
         return ws.close(4014, "Connection not available");
     }
 
     try {
-        if (protocol === "ssh") await sshHook(ws, { ...context, reuseConnection: true, ssh: conn.ssh });
+        if (protocol === "ssh") await sshHook(ws, { ...context, reuseConnection: true });
         else if (protocol === "telnet") await telnetHook(ws, { ...context, reuseConnection: true });
         else if (protocol === "pve-lxc" || protocol === "pve-shell") await pveLxcHook(ws, { ...context, reuseConnection: true });
         else ws.close(4009, `Unsupported: ${entry.type}`);

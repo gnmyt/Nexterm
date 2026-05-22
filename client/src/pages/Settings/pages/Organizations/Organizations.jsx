@@ -1,6 +1,7 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useContext } from "react";
 import { useToast } from "@/common/contexts/ToastContext.jsx";
 import { getRequest, postRequest, deleteRequest } from "@/common/utils/RequestUtil.js";
+import { ServerContext } from "@/common/contexts/ServerContext.jsx";
 import Icon from "@mdi/react";
 import { mdiCheckCircleOutline, mdiCloseCircleOutline, mdiDomain, mdiPlus, mdiShieldCheckOutline } from "@mdi/js";
 import Button from "@/common/components/Button";
@@ -16,6 +17,7 @@ import "./styles.sass";
 export const Organizations = () => {
     const { t } = useTranslation();
     const { sendToast } = useToast();
+    const { loadServers } = useContext(ServerContext);
 
     const [organizations, setOrganizations] = useState([]);
     const [pendingInvitations, setPendingInvitations] = useState([]);
@@ -36,6 +38,7 @@ export const Organizations = () => {
         } catch (error) {
             setOrganizations([]);
         }
+        await loadServers();
     };
 
     const fetchPendingInvitations = async () => {

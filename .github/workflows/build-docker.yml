@@ -7,20 +7,128 @@ on:
         required: true
         type: string
 
-env:
-  REGISTRY_IMAGE: germannewsmaker/nexterm
-
 jobs:
-  build:
-    name: "Docker (${{ matrix.platform }})"
+  build-components:
+    name: "Docker ${{ matrix.slug }} (${{ matrix.platform_arch }})"
     runs-on: ${{ matrix.runner }}
     strategy:
       fail-fast: false
       matrix:
+        slug: [server, engine]
+        platform_arch: [amd64, arm64]
         include:
-          - platform: linux/amd64
+          - platform_arch: amd64
+            platform: linux/amd64
             runner: ubuntu-latest
-          - platform: linux/arm64
+          - platform_arch: arm64
+            platform: linux/arm64
+            runner: ubuntu-24.04-arm
+          - slug: server
+            image_name: nexterm/server
+            dockerfile: Dockerfile.server
+          - slug: engine
+            image_name: nexterm/engine
+            dockerfile: Dockerfile.engine
+
+    steps:
+      - name: Checkout project
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Login to DockerHub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Docker meta
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ matrix.image_name }}
+
+      - name: Build and push by digest
+        id: build
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: ${{ matrix.dockerfile }}
+          platforms: ${{ matrix.platform }}
+          labels: ${{ steps.meta.outputs.labels }}
+          build-args: |
+            VERSION=${{ inputs.version }}
+          outputs: type=image,name=${{ matrix.image_name }},push-by-digest=true,name-canonical=true,push=true
+          cache-from: type=gha,scope=${{ matrix.slug }}-${{ matrix.platform_arch }}
+          cache-to: type=gha,mode=max,scope=${{ matrix.slug }}-${{ matrix.platform_arch }}
+
+      - name: Export digest
+        run: |
+          mkdir -p ${{ runner.temp }}/digests/${{ matrix.slug }}
+          digest="${{ steps.build.outputs.digest }}"
+          touch "${{ runner.temp }}/digests/${{ matrix.slug }}/${digest#sha256:}"
+
+      - name: Upload digest
+        uses: actions/upload-artifact@v4
+        with:
+          name: digests-${{ matrix.slug }}-${{ matrix.platform_arch }}
+          path: ${{ runner.temp }}/digests/${{ matrix.slug }}/
+          if-no-files-found: error
+          retention-days: 1
+
+  merge-components:
+    name: "Merge Manifests (${{ matrix.slug }})"
+    runs-on: ubuntu-latest
+    needs: build-components
+    strategy:
+      matrix:
+        include:
+          - image: nexterm/server
+            slug: server
+          - image: nexterm/engine
+            slug: engine
+
+    steps:
+      - name: Download digests
+        uses: actions/download-artifact@v4
+        with:
+          path: ${{ runner.temp }}/digests
+          pattern: digests-${{ matrix.slug }}-*
+          merge-multiple: true
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Login to DockerHub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Create manifest list and push
+        run: |
+          docker buildx imagetools create \
+            -t ${{ matrix.image }}:latest \
+            -t ${{ matrix.image }}:${{ inputs.version }} \
+            $(printf '${{ matrix.image }}@sha256:%s ' $(ls "${{ runner.temp }}/digests/${{ matrix.slug }}"))
+
+  build-aio:
+    name: "Docker aio (${{ matrix.platform_arch }})"
+    runs-on: ${{ matrix.runner }}
+    needs: merge-components
+    strategy:
+      fail-fast: false
+      matrix:
+        platform_arch: [amd64, arm64]
+        include:
+          - platform_arch: amd64
+            platform: linux/amd64
+            runner: ubuntu-latest
+          - platform_arch: arm64
+            platform: linux/arm64
             runner: ubuntu-24.04-arm
 
     steps:
@@ -40,46 +148,48 @@ jobs:
         id: meta
         uses: docker/metadata-action@v5
         with:
-          images: ${{ env.REGISTRY_IMAGE }}
+          images: nexterm/aio
 
       - name: Build and push by digest
         id: build
         uses: docker/build-push-action@v6
         with:
           context: .
+          file: Dockerfile
           platforms: ${{ matrix.platform }}
           labels: ${{ steps.meta.outputs.labels }}
           build-args: |
-            VERSION=${{ inputs.version }}
-          outputs: type=image,name=${{ env.REGISTRY_IMAGE }},push-by-digest=true,name-canonical=true,push=true
-          cache-from: type=gha,scope=build-${{ matrix.platform }}
-          cache-to: type=gha,mode=max,scope=build-${{ matrix.platform }}
+            SERVER_IMAGE=nexterm/server:${{ inputs.version }}
+            ENGINE_IMAGE=nexterm/engine:${{ inputs.version }}
+          outputs: type=image,name=nexterm/aio,push-by-digest=true,name-canonical=true,push=true
+          cache-from: type=gha,scope=aio-${{ matrix.platform_arch }}
+          cache-to: type=gha,mode=max,scope=aio-${{ matrix.platform_arch }}
 
       - name: Export digest
         run: |
-          mkdir -p ${{ runner.temp }}/digests
+          mkdir -p ${{ runner.temp }}/digests/aio
           digest="${{ steps.build.outputs.digest }}"
-          touch "${{ runner.temp }}/digests/${digest#sha256:}"
+          touch "${{ runner.temp }}/digests/aio/${digest#sha256:}"
 
       - name: Upload digest
         uses: actions/upload-artifact@v4
         with:
-          name: digests-${{ matrix.platform == 'linux/amd64' && 'amd64' || 'arm64' }}
-          path: ${{ runner.temp }}/digests/*
+          name: digests-aio-${{ matrix.platform_arch }}
+          path: ${{ runner.temp }}/digests/aio/
           if-no-files-found: error
           retention-days: 1
 
-  merge:
-    name: "Merge Docker Manifests"
+  merge-aio:
+    name: "Merge Manifests (aio)"
     runs-on: ubuntu-latest
-    needs: build
+    needs: build-aio
 
     steps:
       - name: Download digests
         uses: actions/download-artifact@v4
         with:
           path: ${{ runner.temp }}/digests
-          pattern: digests-*
+          pattern: digests-aio-*
           merge-multiple: true
 
       - name: Set up Docker Buildx
@@ -92,9 +202,8 @@ jobs:
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
       - name: Create manifest list and push
-        working-directory: ${{ runner.temp }}/digests
         run: |
           docker buildx imagetools create \
-            -t ${{ env.REGISTRY_IMAGE }}:latest \
-            -t ${{ env.REGISTRY_IMAGE }}:${{ inputs.version }} \
-            $(printf '${{ env.REGISTRY_IMAGE }}@sha256:%s ' *)
+            -t nexterm/aio:latest \
+            -t nexterm/aio:${{ inputs.version }} \
+            $(printf 'nexterm/aio@sha256:%s ' $(ls "${{ runner.temp }}/digests/aio"))

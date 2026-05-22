@@ -1,6 +1,5 @@
 @use "@/common/styles/colors"
-
-$mobile: 768px
+@use "@/common/styles/breakpoints"
 
 .icon-chooser
   position: relative
@@ -37,7 +36,7 @@ $mobile: 768px
     border-radius: 0.75rem
     padding: 0.5rem
     z-index: 10000
-    box-shadow: 0 12px 48px rgba(0, 0, 0, 0.5), 0 4px 16px rgba(0, 0, 0, 0.3)
+    box-shadow: colors.$shadow-lg
     opacity: 0
     transform: scale(0.95) translateY(-8px)
     transition: opacity 0.12s ease, transform 0.12s ease
@@ -45,7 +44,7 @@ $mobile: 768px
     width: 320px
     max-width: 90vw
 
-    @media (max-width: $mobile)
+    @media (max-width: breakpoints.$mobile)
       width: calc(100vw - 2rem)
       left: 1rem !important
       right: 1rem
@@ -76,7 +75,7 @@ $mobile: 768px
       font-size: 0.9rem
       padding: 0
 
-      @media (max-width: $mobile)
+      @media (max-width: breakpoints.$mobile)
         font-size: 1rem
 
       &::placeholder
@@ -114,7 +113,7 @@ $mobile: 768px
     scrollbar-color: colors.$gray colors.$lighter-background
     padding: 0.25rem
 
-    @media (max-width: $mobile)
+    @media (max-width: breakpoints.$mobile)
       grid-template-columns: repeat(5, 1fr)
       max-height: 50vh
       gap: 0.5rem
@@ -137,7 +136,7 @@ $mobile: 768px
     transition: background-color 0.1s ease
     border: 2px solid transparent
 
-    @media (max-width: $mobile)
+    @media (max-width: breakpoints.$mobile)
       padding: 0.75rem
 
     svg

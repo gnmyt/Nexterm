@@ -17,7 +17,7 @@ const OPERATIONS = {
     READY: 0x0, LIST_FILES: 0x1, CREATE_FILE: 0x4, CREATE_FOLDER: 0x5, DELETE_FILE: 0x6, 
     DELETE_FOLDER: 0x7, RENAME_FILE: 0x8, ERROR: 0x9, SEARCH_DIRECTORIES: 0xA, 
     RESOLVE_SYMLINK: 0xB, MOVE_FILES: 0xC, COPY_FILES: 0xD, CHMOD: 0xE,
-    STAT: 0xF, CHECKSUM: 0x10, FOLDER_SIZE: 0x11,
+    STAT: 0xF, CHECKSUM: 0x10, FOLDER_SIZE: 0x11, PATH_SYNC: 0x12,
 };
 
 export const FileRenderer = ({ session, disconnectFromServer, setOpenFileEditors, isActive, onOpenTerminal }) => {
@@ -40,6 +40,8 @@ export const FileRenderer = ({ session, disconnectFromServer, setOpenFileEditors
     const [connectionError, setConnectionError] = useState(null);
     const [isReady, setIsReady] = useState(false);
     
+    const directoryRef = useRef(directory);
+    const skipNextPathSync = useRef(false);
     const symlinkCallbacks = useRef([]);
     const dropZoneRef = useRef(null);
     const uploadQueueRef = useRef([]);
@@ -164,7 +166,14 @@ export const FileRenderer = ({ session, disconnectFromServer, setOpenFileEditors
                     setIsReady(true);
                     setConnectionError(null);
                     reconnectAttemptsRef.current = 0;
-                    listFiles();
+                    if (payload?.path && payload.path !== directoryRef.current) {
+                        skipNextPathSync.current = true;
+                        setDirectory(payload.path);
+                        setHistory([payload.path]);
+                        setHistoryIndex(0);
+                    } else {
+                        listFiles();
+                    }
                     break;
                 case OPERATIONS.LIST_FILES:
                     if (payload?.files) { setItems(payload.files); setError(null); } 
@@ -191,6 +200,14 @@ export const FileRenderer = ({ session, disconnectFromServer, setOpenFileEditors
                 case OPERATIONS.RESOLVE_SYMLINK:
                     if (payload) { const cb = symlinkCallbacks.current.shift(); if (cb) cb(payload); }
                     break;
+                case OPERATIONS.PATH_SYNC:
+                    if (payload?.path && payload.path !== directoryRef.current) {
+                        skipNextPathSync.current = true;
+                        setDirectory(payload.path);
+                        setHistory(prev => [...prev, payload.path]);
+                        setHistoryIndex(prev => prev + 1);
+                    }
+                    break;
                 case OPERATIONS.STAT:
                 case OPERATIONS.CHECKSUM:
                 case OPERATIONS.FOLDER_SIZE:
@@ -204,13 +221,16 @@ export const FileRenderer = ({ session, disconnectFromServer, setOpenFileEditors
         console.error("SFTP WebSocket error:", event);
         setConnectionError("Connection error");
         setIsReady(false);
-        if (reconnectAttemptsRef.current >= 3) {
+    }, []);
+
+    const handleWsClose = useCallback((event) => {
+        setIsReady(false);
+        if (event.code === 4001 || event.code === 4002) {
             sendToast(t("common.error"), t("servers.fileManager.toast.connectionLost"));
             disconnectFromServer(session.id);
         }
     }, [disconnectFromServer, session.id]);
 
-    const handleWsClose = useCallback(() => setIsReady(false), []);
     const handleWsOpen = useCallback(() => { reconnectAttemptsRef.current = 0; setConnectionError(null); }, []);
 
     const { sendMessage, readyState } = useWebSocket(wsUrl, {
@@ -218,9 +238,9 @@ export const FileRenderer = ({ session, disconnectFromServer, setOpenFileEditors
         onMessage: processMessage,
         onClose: handleWsClose,
         onOpen: handleWsOpen,
-        shouldReconnect: (e) => e.code !== 1000 && e.code < 4000 && ++reconnectAttemptsRef.current <= 3,
-        reconnectAttempts: 3,
-        reconnectInterval: 2000,
+        shouldReconnect: (e) => e.code !== 1000 && e.code !== 4001 && e.code !== 4002 && ++reconnectAttemptsRef.current <= 10,
+        reconnectAttempts: 10,
+        reconnectInterval: 1500,
     });
 
     const sendOperation = useCallback((operation, payload = {}) => {
@@ -246,10 +266,11 @@ export const FileRenderer = ({ session, disconnectFromServer, setOpenFileEditors
         setHistory(historyIndex === history.length - 1 ? [...history, newDirectory] : [...history.slice(0, historyIndex + 1), newDirectory]);
         setHistoryIndex(historyIndex + 1);
         setDirectory(newDirectory);
+        sendOperation(OPERATIONS.PATH_SYNC, { path: newDirectory });
     };
 
-    const goBack = () => { if (historyIndex > 0) { setHistoryIndex(historyIndex - 1); setDirectory(history[historyIndex - 1]); } };
-    const goForward = () => { if (historyIndex < history.length - 1) { setHistoryIndex(historyIndex + 1); setDirectory(history[historyIndex + 1]); } };
+    const goBack = () => { if (historyIndex > 0) { setHistoryIndex(historyIndex - 1); const p = history[historyIndex - 1]; setDirectory(p); sendOperation(OPERATIONS.PATH_SYNC, { path: p }); } };
+    const goForward = () => { if (historyIndex < history.length - 1) { setHistoryIndex(historyIndex + 1); const p = history[historyIndex + 1]; setDirectory(p); sendOperation(OPERATIONS.PATH_SYNC, { path: p }); } };
 
     const handleDrag = async (e) => {
         if (e.dataTransfer.types.includes("application/x-sftp-files")) return;
@@ -269,7 +290,16 @@ export const FileRenderer = ({ session, disconnectFromServer, setOpenFileEditors
     const handleOpenFile = (filePath) => setOpenFileEditors(prev => [...prev, { id: `${session.id}-${filePath}-${Date.now()}`, file: filePath, session, type: 'editor' }]);
     const handleOpenPreview = (filePath) => setOpenFileEditors(prev => [...prev, { id: `${session.id}-${filePath}-${Date.now()}`, file: filePath, session, type: 'preview' }]);
 
-    useEffect(() => { if (isReady) listFiles(); }, [directory, isReady]);
+    useEffect(() => { directoryRef.current = directory; }, [directory]);
+
+    useEffect(() => {
+        if (isReady) {
+            if (skipNextPathSync.current) {
+                skipNextPathSync.current = false;
+            }
+            listFiles();
+        }
+    }, [directory, isReady]);
 
     return (
         <div className="file-renderer" ref={dropZoneRef} onDragOver={handleDrag} onDragLeave={handleDrag} onDrop={handleDrag}>

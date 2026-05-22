@@ -82,8 +82,10 @@ export default defineConfig({
                         link: "/customsource",
                         items: [
                             { text: "Scripts & Snippets", link: "/scripts&snippets" },
+                            { text: "Scripting Variables & Directives", link: "/ScriptingVariables" },
                         ],
                     },
+                    { text: "CLI", link: "/cli" },
                     { text: "Contributing", link: "/contributing" },
                     {
                         text: "API Reference",
