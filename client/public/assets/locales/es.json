@@ -56,11 +56,17 @@
       "ssoOrContinueWith": "o continúa con",
       "noAuthMethodsAvailable": "No hay métodos de autenticación disponibles.",
       "signInWithPasskey": "Iniciar sesión con Passkey",
+      "signInWithQrCode": "Sign in with QR Code",
+      "qrScanDescription": "Scan this QR code with the Nexterm mobile app to sign in instantly.",
+      "backToLogin": "Back to Login",
       "authenticating": "Autentificar..."
     },
     "deviceLink": {
       "title": "Dispositivo de enlace",
       "description": "Introduce el código que aparece en tu dispositivo para autorizarlo a acceder a tu cuenta.",
+      "qrTab": "QR Code",
+      "codeTab": "Code",
+      "qrDescription": "Scan this QR code with the Nexterm mobile app to link your device.",
       "codeLabel": "Código de dispositivo",
       "continue": "Continúa en",
       "verifying": "Verificando...",
@@ -104,6 +110,12 @@
       "waitingForAuth": "Esperando autorización...",
       "codeCreationFailed": "Error al crear código de dispositivo",
       "authSuccess": "¡Autentificado con éxito!"
+    },
+    "serverSwitcher": {
+      "title": "Servers",
+      "addServer": "Add Server",
+      "removeServer": "Remove Server",
+      "removeConfirmText": "This will remove the connection to {{server}}. Are you sure?"
     },
     "selectBox": {
       "defaultOption": "Selecciona una opción...",
@@ -165,7 +177,22 @@
       "internalAuthDisabled": "La autenticación interna está desactivada",
       "ssoLoginFailed": "Error al iniciar sesión SSO",
       "passkeyLoginFailed": "Fallo en la autenticación de la clave de acceso",
-      "passkeyCancelled": "Se ha cancelado la autenticación con clave de acceso"
+      "passkeyCancelled": "Se ha cancelado la autenticación con clave de acceso",
+      "qrCodeExpired": "QR code expired. Please try again.",
+      "connection": {
+        "title": "Connection failed",
+        "close": "Close tab",
+        "hostUnreachable": "Remote host unreachable",
+        "refused": "Connection refused by remote host",
+        "timeout": "Connection timed out",
+        "authenticationFailed": "Authentication failed",
+        "permissionDenied": "Permission denied",
+        "failed": "Connection failed",
+        "closedUnexpectedly": "Connection closed unexpectedly",
+        "error": "Connection error occurred",
+        "scriptClosedUnexpectedly": "Script connection closed unexpectedly",
+        "scriptError": "Script connection error occurred"
+      }
     },
     "messages": {
       "invitationAccepted": "Invitación aceptada",
@@ -226,6 +253,11 @@
         "personal": "Personal",
         "user": "Usuario #{{id}}",
         "organization": "Org #{{id}}"
+      },
+      "durationUnits": {
+        "seconds": "seconds",
+        "minutes": "minutes",
+        "hours": "hours"
       }
     },
     "pagination": {
@@ -540,6 +572,7 @@
     "adminSettings": "CONFIGURACIÓN ADMINISTRATIVA",
     "pages": {
       "account": "Cuenta",
+      "appearance": "Appearance",
       "terminal": "Terminal",
       "fileManager": "Gestor de archivos",
       "keymaps": "Mapas clave",
@@ -551,7 +584,8 @@
       "sources": "Fuentes",
       "ai": "AI",
       "monitoring": "Supervisión",
-      "backup": "Almacenamiento"
+      "backup": "Almacenamiento",
+      "engines": "Engines"
     },
     "account": {
       "title": "Cuenta",
@@ -563,11 +597,18 @@
       "themeAuto": "Auto",
       "themeLight": "Luz",
       "themeDark": "Oscuro",
+      "themeDarkHint": "Press three times to enable OLED mode.",
       "themeOled": "OLED",
       "oledEnabled": "Modo OLED activado",
       "oledDisabled": "Modo OLED desactivado",
       "themeLabel": "Tema",
       "accentColor": "Color de acento",
+      "sizeLabel": "Size",
+      "sizeXS": "XS",
+      "sizeS": "S",
+      "sizeM": "M",
+      "sizeL": "L",
+      "sizeXL": "XL",
       "twoFactor": "Autenticación de dos factores",
       "twoFactorActive": "Activo",
       "twoFactorInactive": "Inactivo",
@@ -587,6 +628,32 @@
       "appearanceSyncDisabled": "Los ajustes de apariencia ya no se sincronizarán",
       "generalSyncEnabled": "Los ajustes generales se sincronizarán ahora con tu cuenta",
       "generalSyncDisabled": "Los ajustes generales ya no se sincronizarán",
+      "customThemes": {
+        "title": "Custom Themes",
+        "description": "Create custom CSS themes or choose from synced source themes to personalize your interface.",
+        "newTheme": "New Theme",
+        "noThemesYet": "No themes yet",
+        "noThemesDescription": "Create a custom theme or add a source to get started.",
+        "editTheme": "Edit Theme",
+        "createTheme": "Create Theme",
+        "name": "Name",
+        "themeName": "Theme name",
+        "descriptionLabel": "Description",
+        "optionalDescription": "Optional description",
+        "saveChanges": "Save Changes",
+        "fromSource": "From source",
+        "edit": "Edit",
+        "delete": "Delete",
+        "deleteConfirm": "Are you sure you want to delete the theme \"{{name}}\"?",
+        "failedToLoadTheme": "Failed to load theme",
+        "nameAndCssRequired": "Name and CSS are required",
+        "themeUpdated": "Theme updated",
+        "themeCreated": "Theme created",
+        "failedToSaveTheme": "Failed to save theme",
+        "themeDeleted": "Theme deleted",
+        "failedToDeleteTheme": "Failed to delete theme",
+        "failedToActivateTheme": "Failed to activate theme"
+      },
       "sessionSynchronization": "Sincronización de sesiones",
       "sessionSyncDescription": "Controla cómo se almacenan y sincronizan tus sesiones de servidor entre dispositivos y pestañas del navegador.",
       "sessionSyncAcrossDevices": "En todos los dispositivos",
@@ -637,7 +704,42 @@
       "delete": "Borra",
       "leave": "Deja",
       "members": "Miembros",
-      "auditSettings": "Ajustes de auditoría",
+      "auditSettings": {
+        "auditSettingsTab": "Audit Settings",
+        "sessionRecordingHeading": "Session Recording",
+        "sessionRecordingDescription": "Record terminal and remote desktop sessions for playback",
+        "enableSessionRecordingLabel": "Enable Session Recording",
+        "enableSessionRecordingDescription": "Record SSH, Telnet, RDP, and VNC sessions for later playback",
+        "recordingRetentionLabel": "Recording Retention (days)",
+        "recordingRetentionDescription": "How long to keep session recordings before automatic deletion (1-365 days)",
+        "connectionRequirementsHeading": "Connection Requirements",
+        "connectionRequirementsDescription": "Control connection behavior and requirements",
+        "requireConnectionReasonLabel": "Require Connection Reason",
+        "requireConnectionReasonDescription": "Require users to provide a reason when connecting to servers",
+        "activityLoggingHeading": "Activity Logging",
+        "activityLoggingDescription": "Choose which types of activities to log",
+        "fileOperationsLabel": "File Operations",
+        "fileOperationsDescription": "Log file uploads, downloads, deletions, and renames via SFTP",
+        "serverConnectionsLabel": "Server Connections",
+        "serverConnectionsDescription": "Log SSH, SFTP, and PVE connections and disconnections",
+        "identityManagementLabel": "Identity Management",
+        "identityManagementDescription": "Log creation, modification, and deletion of SSH identities",
+        "passwordPasteLabel": "Password Paste",
+        "passwordPasteDescription": "Log usage of the password paste action",
+        "serverManagementLabel": "Server Management",
+        "serverManagementDescription": "Log creation, modification, and deletion of server configurations",
+        "folderManagementLabel": "Folder Management",
+        "folderManagementDescription": "Log creation, modification, and deletion of folders",
+        "scriptExecutionLabel": "Script Execution",
+        "scriptExecutionDescription": "Log execution of scripts and automation tasks",
+        "actions": {
+          "save": "Save Settings"
+        },
+        "messages": {
+          "updated": "Audit settings updated successfully",
+          "updateFailed": "Failed to update audit settings"
+        }
+      },
       "pendingInvitations": "Invitaciones pendientes",
       "invitedBy": "Invitada por: {{name}}",
       "deleteConfirmation": "Esto borrará permanentemente la organización y eliminará a todos sus miembros. Esta acción no se puede deshacer.",
@@ -844,7 +946,7 @@
     },
     "authentication": {
       "title": "{{count}} Proveedores de autenticación",
-      "internalProviderName": "Internal Authentication",
+      "internalProviderName": "Autenticación interna",
       "addProvider": "Añadir proveedor",
       "addLdapProvider": "Añadir LDAP",
       "system": "Sistema",
@@ -1093,6 +1195,7 @@
       "addSource": "Añadir fuente",
       "snippets": "fragmentos",
       "scripts": "guiones",
+      "themes": "themes",
       "neverSynced": "Nunca sincronizado",
       "sync": "Sincronizar ahora",
       "edit": "Edita",
@@ -1114,7 +1217,7 @@
         "enabled": "Activado",
         "enabledDescription": "Si se desactiva, esta fuente no se sincronizará",
         "validating": "Validando URL...",
-        "validationSuccess": "Fuente válida encontrada: {{snippets}} fragmentos, {{scripts}} scripts",
+        "validationSuccess": "Valid source found: {{snippets}} snippets, {{scripts}} scripts, {{themes}} themes",
         "create": "Crea"
       },
       "messages": {
@@ -1222,6 +1325,45 @@
         "nameRequired": "Se requiere el nombre del proveedor"
       },
       "noFiles": "No se han encontrado archivos"
+    },
+    "engines": {
+      "title": "Engines",
+      "description": "Manage engine instances that handle remote connections.",
+      "addEngine": "Add Engine",
+      "noEngines": "No Engines",
+      "noEnginesDescription": "Add an engine to start connecting to remote servers.",
+      "status": {
+        "connected": "Connected",
+        "disconnected": "Disconnected"
+      },
+      "lastSeen": "Last seen {{date}}",
+      "neverConnected": "Never connected",
+      "regenerateToken": "Regenerate token",
+      "deleteEngine": "Delete engine",
+      "dismiss": "Dismiss",
+      "copyToken": "Copy token",
+      "transport": {
+        "encrypted": "Encrypted",
+        "unencrypted": "Unencrypted"
+      },
+      "tokenLabel": "Registration token for <strong>{{name}}</strong>",
+      "tokenHint": "Set this in <code1>config.yaml</code1> or as <code2>REGISTRATION_TOKEN</code2> env variable.",
+      "dialog": {
+        "title": "Add Engine",
+        "engineName": "Engine Name",
+        "namePlaceholder": "e.g. Office Network",
+        "create": "Create Engine"
+      },
+      "deleteConfirm": "Are you sure you want to delete \"{{name}}\"?",
+      "messages": {
+        "deleted": "Engine deleted successfully"
+      },
+      "errors": {
+        "loadFailed": "Failed to load engines",
+        "createFailed": "Failed to create engine",
+        "deleteFailed": "Failed to delete engine",
+        "regenerateFailed": "Failed to regenerate token"
+      }
     }
   },
   "tunnel": {
@@ -1254,6 +1396,8 @@
     }
   },
   "servers": {
+    "addServerNote": "Right-click to add a new server",
+    "searchPlaceholder": "Search",
     "time": {
       "justNow": "Ahora mismo",
       "minuteAgo": "{{count}} hace un minuto",
@@ -1292,6 +1436,8 @@
       "openSFTP": "Abrir SFTP",
       "forwardPort": "Puerto de reenvío",
       "runScript": "Ejecutar script",
+      "openNotes": "Open Notes",
+      "addNotes": "Add Notes",
       "editServer": "Editar servidor",
       "editIntegration": "Editar Integración",
       "duplicateServer": "Servidor duplicado",
@@ -1306,16 +1452,17 @@
     },
     "tabs": {
       "contextMenu": {
-        "popOut": "Pop Out",
-        "startSharing": "Start Sharing",
-        "readOnly": "Read-only",
-        "readWrite": "Read & Write",
-        "copyShareLink": "Copy Share Link",
-        "changePermissions": "Change Permissions",
-        "stopSharing": "Stop Sharing",
-        "duplicate": "Duplicate",
-        "hibernateSession": "Hibernate",
-        "closeSession": "Disconnect"
+        "popOut": "Salir",
+        "startSharing": "Empezar a compartir",
+        "readOnly": "Sólo lectura",
+        "readWrite": "Leer y escribir",
+        "copyShareLink": "Copiar enlace para compartir",
+        "changePermissions": "Cambiar permisos",
+        "stopSharing": "Deja de compartir",
+        "duplicate": "Duplicar",
+        "openNotes": "Open Notes",
+        "hibernateSession": "Hibernar",
+        "closeSession": "Desconecta"
       }
     },
     "wol": {
@@ -1355,7 +1502,8 @@
         "host": "Anfitrión",
         "nodeName": "Nombre del nodo",
         "vmid": "ID VM",
-        "macAddress": "Dirección MAC"
+        "macAddress": "Dirección MAC",
+        "engine": "Engine"
       },
       "placeholders": {
         "serverName": "Nombre del servidor",
@@ -1368,6 +1516,7 @@
         "vmid": "ID VM",
         "macAddress": "AA:BB:CC:DD:EE:FF"
       },
+      "engineOffline": "(offline)",
       "settings": {
         "jumpHosts": {
           "title": "Anfitriones de salto",
@@ -1675,6 +1824,18 @@
       "fullScreen": "Pantalla completa",
       "exitFullScreen": "Salir del Modo Pantalla Completa",
       "badgeOn": "EN"
+    },
+    "notesPanel": {
+      "title": "Notes",
+      "placeholder": "Write notes for this server…",
+      "showInList": "Show in list",
+      "showInListTooltip": "Display the first line of these notes under the server name in the sidebar.",
+      "status": {
+        "saving": "Saving",
+        "saved": "Saved",
+        "unsaved": "Unsaved",
+        "error": "Save failed"
+      }
     }
   },
   "support": {
@@ -1695,6 +1856,7 @@
     }
   },
   "welcome": {
+    "hello": "Hi",
     "subtitle": "Bienvenido a Nexterm. El gestor de servidores de código abierto para SSH, VNC y RDP.",
     "downloadApps": "Descargar aplicaciones",
     "connectDevice": "Conectar dispositivo",
