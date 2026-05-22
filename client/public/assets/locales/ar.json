@@ -56,17 +56,17 @@
       "ssoOrContinueWith": "أو المتابعة بواسطة",
       "noAuthMethodsAvailable": "لا توجد طرق مصادقة متاحة.",
       "signInWithPasskey": "تسجيل الدخول باستخدام مفتاح المرور",
-      "signInWithQrCode": "Sign in with QR Code",
-      "qrScanDescription": "Scan this QR code with the Nexterm mobile app to sign in instantly.",
-      "backToLogin": "Back to Login",
+      "signInWithQrCode": "تسجيل الدخول باستخدام رمز الاستجابة السريعة",
+      "qrScanDescription": "امسح رمز الاستجابة السريعة هذا باستخدام تطبيق Nexterm للهاتف المحمول لتسجيل الدخول على الفور.",
+      "backToLogin": "العودة إلى تسجيل الدخول",
       "authenticating": "توثيق..."
     },
     "deviceLink": {
       "title": "جهاز الارتباط",
       "description": "أدخل الرمز الظاهر على جهازك لتفويضه بالوصول إلى حسابك.",
-      "qrTab": "QR Code",
-      "codeTab": "Code",
-      "qrDescription": "Scan this QR code with the Nexterm mobile app to link your device.",
+      "qrTab": "رمز الاستجابة السريعة",
+      "codeTab": "الكود",
+      "qrDescription": "امسح رمز الاستجابة السريعة هذا باستخدام تطبيق Nexterm للهاتف المحمول لربط جهازك.",
       "codeLabel": "رمز الجهاز",
       "continue": "تابع",
       "verifying": "التحقق من...",
@@ -112,10 +112,10 @@
       "authSuccess": "تمت المصادقة بنجاح!"
     },
     "serverSwitcher": {
-      "title": "Servers",
-      "addServer": "Add Server",
-      "removeServer": "Remove Server",
-      "removeConfirmText": "This will remove the connection to {{server}}. Are you sure?"
+      "title": "الخوادم",
+      "addServer": "إضافة خادم",
+      "removeServer": "إزالة الخادم",
+      "removeConfirmText": "سيؤدي ذلك إلى إزالة الاتصال بـ {{server}}. هل أنت متأكد؟"
     },
     "selectBox": {
       "defaultOption": "اختر خيارًا...",
@@ -178,20 +178,20 @@
       "ssoLoginFailed": "فشل في بدء تسجيل الدخول الموحد (SSO)",
       "passkeyLoginFailed": "فشل مصادقة مفتاح المرور",
       "passkeyCancelled": "تم إلغاء مصادقة مفتاح المرور",
-      "qrCodeExpired": "QR code expired. Please try again.",
+      "qrCodeExpired": "انتهت صلاحية رمز الاستجابة السريعة. يرجى المحاولة مرة أخرى.",
       "connection": {
-        "title": "Connection failed",
-        "close": "Close tab",
-        "hostUnreachable": "Remote host unreachable",
-        "refused": "Connection refused by remote host",
-        "timeout": "Connection timed out",
-        "authenticationFailed": "Authentication failed",
-        "permissionDenied": "Permission denied",
-        "failed": "Connection failed",
-        "closedUnexpectedly": "Connection closed unexpectedly",
-        "error": "Connection error occurred",
-        "scriptClosedUnexpectedly": "Script connection closed unexpectedly",
-        "scriptError": "Script connection error occurred"
+        "title": "فشل الاتصال",
+        "close": "علامة تبويب الإغلاق",
+        "hostUnreachable": "يتعذر الوصول إلى المضيف البعيد",
+        "refused": "تم رفض الاتصال من قبل المضيف البعيد",
+        "timeout": "انتهت مهلة الاتصال",
+        "authenticationFailed": "فشل المصادقة",
+        "permissionDenied": "تم رفض الإذن",
+        "failed": "فشل الاتصال",
+        "closedUnexpectedly": "تم إغلاق الاتصال بشكل غير متوقع",
+        "error": "حدث خطأ في الاتصال",
+        "scriptClosedUnexpectedly": "تم إغلاق اتصال البرنامج النصي بشكل غير متوقع",
+        "scriptError": "حدث خطأ في اتصال البرنامج النصي"
       }
     },
     "messages": {
@@ -255,9 +255,9 @@
         "organization": "المؤسسة رقم {{id}}"
       },
       "durationUnits": {
-        "seconds": "seconds",
-        "minutes": "minutes",
-        "hours": "hours"
+        "seconds": "ثوانٍ",
+        "minutes": "الدقائق",
+        "hours": "ساعات"
       }
     },
     "pagination": {
@@ -572,7 +572,7 @@
     "adminSettings": "إعدادات المدير",
     "pages": {
       "account": "الحساب",
-      "appearance": "Appearance",
+      "appearance": "المظهر",
       "terminal": "الطرفية",
       "fileManager": "مدير الملفات",
       "keymaps": "خرائط المفاتيح",
@@ -585,7 +585,7 @@
       "ai": "الذكاء الاصطناعي",
       "monitoring": "الرصد",
       "backup": "التخزين",
-      "engines": "Engines"
+      "engines": "المحركات"
     },
     "account": {
       "title": "الحساب",
@@ -597,14 +597,14 @@
       "themeAuto": "السيارات",
       "themeLight": "خفيف",
       "themeDark": "داكن",
-      "themeDarkHint": "Press three times to enable OLED mode.",
+      "themeDarkHint": "اضغط ثلاث مرات لتمكين وضع OLED.",
       "themeOled": "OLED",
       "oledEnabled": "تم تمكين وضع OLED",
       "oledDisabled": "تم تعطيل وضع OLED",
       "themeLabel": "الموضوع",
       "accentColor": "لون مميز",
-      "sizeLabel": "Size",
-      "sizeXS": "XS",
+      "sizeLabel": "الحجم",
+      "sizeXS": "إكس إس إس",
       "sizeS": "S",
       "sizeM": "M",
       "sizeL": "L",
@@ -629,30 +629,30 @@
       "generalSyncEnabled": "ستتم الآن مزامنة الإعدادات العامة مع حسابك",
       "generalSyncDisabled": "لن تتم مزامنة الإعدادات العامة بعد الآن",
       "customThemes": {
-        "title": "Custom Themes",
-        "description": "Create custom CSS themes or choose from synced source themes to personalize your interface.",
-        "newTheme": "New Theme",
-        "noThemesYet": "No themes yet",
-        "noThemesDescription": "Create a custom theme or add a source to get started.",
-        "editTheme": "Edit Theme",
-        "createTheme": "Create Theme",
-        "name": "Name",
-        "themeName": "Theme name",
-        "descriptionLabel": "Description",
-        "optionalDescription": "Optional description",
-        "saveChanges": "Save Changes",
-        "fromSource": "From source",
-        "edit": "Edit",
-        "delete": "Delete",
-        "deleteConfirm": "Are you sure you want to delete the theme \"{{name}}\"?",
-        "failedToLoadTheme": "Failed to load theme",
-        "nameAndCssRequired": "Name and CSS are required",
-        "themeUpdated": "Theme updated",
-        "themeCreated": "Theme created",
-        "failedToSaveTheme": "Failed to save theme",
-        "themeDeleted": "Theme deleted",
-        "failedToDeleteTheme": "Failed to delete theme",
-        "failedToActivateTheme": "Failed to activate theme"
+        "title": "السمات المخصصة",
+        "description": "أنشئ قوالب CSS مخصصة أو اختر من قوالب المصدر المتزامنة لتخصيص واجهتك.",
+        "newTheme": "موضوع جديد",
+        "noThemesYet": "لا توجد مواضيع بعد",
+        "noThemesDescription": "أنشئ قالباً مخصصاً أو أضف مصدراً للبدء.",
+        "editTheme": "تحرير السمة",
+        "createTheme": "إنشاء سمة",
+        "name": "الاسم",
+        "themeName": "اسم الموضوع",
+        "descriptionLabel": "الوصف",
+        "optionalDescription": "وصف اختياري",
+        "saveChanges": "حفظ التغييرات",
+        "fromSource": "من المصدر",
+        "edit": "تحرير",
+        "delete": "حذف",
+        "deleteConfirm": "هل أنت متأكد أنك تريد حذف السمة \"{{name}}\"؟",
+        "failedToLoadTheme": "فشل تحميل القالب",
+        "nameAndCssRequired": "الاسم و CSS مطلوبان",
+        "themeUpdated": "تحديث السمة",
+        "themeCreated": "موضوع تم إنشاؤه",
+        "failedToSaveTheme": "فشل في حفظ السمة",
+        "themeDeleted": "تم حذف الموضوع",
+        "failedToDeleteTheme": "فشل حذف السمة",
+        "failedToActivateTheme": "فشل تنشيط السمة"
       },
       "sessionSynchronization": "مزامنة الجلسة",
       "sessionSyncDescription": "تحكم في كيفية تخزين جلسات الخادم ومزامنتها عبر الأجهزة وعلامات تبويب المتصفح.",
@@ -705,39 +705,39 @@
       "leave": "مغادرة",
       "members": "الأعضاء",
       "auditSettings": {
-        "auditSettingsTab": "Audit Settings",
-        "sessionRecordingHeading": "Session Recording",
-        "sessionRecordingDescription": "Record terminal and remote desktop sessions for playback",
-        "enableSessionRecordingLabel": "Enable Session Recording",
-        "enableSessionRecordingDescription": "Record SSH, Telnet, RDP, and VNC sessions for later playback",
-        "recordingRetentionLabel": "Recording Retention (days)",
-        "recordingRetentionDescription": "How long to keep session recordings before automatic deletion (1-365 days)",
-        "connectionRequirementsHeading": "Connection Requirements",
-        "connectionRequirementsDescription": "Control connection behavior and requirements",
-        "requireConnectionReasonLabel": "Require Connection Reason",
-        "requireConnectionReasonDescription": "Require users to provide a reason when connecting to servers",
-        "activityLoggingHeading": "Activity Logging",
-        "activityLoggingDescription": "Choose which types of activities to log",
-        "fileOperationsLabel": "File Operations",
-        "fileOperationsDescription": "Log file uploads, downloads, deletions, and renames via SFTP",
-        "serverConnectionsLabel": "Server Connections",
-        "serverConnectionsDescription": "Log SSH, SFTP, and PVE connections and disconnections",
-        "identityManagementLabel": "Identity Management",
-        "identityManagementDescription": "Log creation, modification, and deletion of SSH identities",
-        "passwordPasteLabel": "Password Paste",
-        "passwordPasteDescription": "Log usage of the password paste action",
-        "serverManagementLabel": "Server Management",
-        "serverManagementDescription": "Log creation, modification, and deletion of server configurations",
-        "folderManagementLabel": "Folder Management",
-        "folderManagementDescription": "Log creation, modification, and deletion of folders",
-        "scriptExecutionLabel": "Script Execution",
-        "scriptExecutionDescription": "Log execution of scripts and automation tasks",
+        "auditSettingsTab": "إعدادات التدقيق",
+        "sessionRecordingHeading": "تسجيل الجلسة",
+        "sessionRecordingDescription": "تسجيل الجلسات الطرفية وجلسات سطح المكتب البعيد للتشغيل",
+        "enableSessionRecordingLabel": "تمكين تسجيل الجلسة",
+        "enableSessionRecordingDescription": "تسجيل جلسات SSH وTELNET وRDP وVNC لتشغيلها لاحقاً",
+        "recordingRetentionLabel": "الاحتفاظ بالتسجيل (بالأيام)",
+        "recordingRetentionDescription": "مدة الاحتفاظ بتسجيلات الجلسة قبل الحذف التلقائي (1-365 يوماً)",
+        "connectionRequirementsHeading": "متطلبات الاتصال",
+        "connectionRequirementsDescription": "التحكم في سلوك الاتصال ومتطلباته",
+        "requireConnectionReasonLabel": "سبب الاتصال المطلوب",
+        "requireConnectionReasonDescription": "مطالبة المستخدمين بتقديم سبب عند الاتصال بالخوادم",
+        "activityLoggingHeading": "تسجيل النشاط",
+        "activityLoggingDescription": "اختر أنواع الأنشطة التي تريد تسجيلها",
+        "fileOperationsLabel": "عمليات الملفات",
+        "fileOperationsDescription": "تسجيل تحميل الملفات وتنزيلها وحذفها وإعادة تسميتها عبر SFTP",
+        "serverConnectionsLabel": "اتصالات الخادم",
+        "serverConnectionsDescription": "تسجيل اتصالات SSH، وSFTP، وPVE وقطع الاتصال",
+        "identityManagementLabel": "إدارة الهوية",
+        "identityManagementDescription": "إنشاء سجلات إنشاء هويات SSH وتعديلها وحذفها",
+        "passwordPasteLabel": "لصق كلمة المرور",
+        "passwordPasteDescription": "سجل استخدام إجراء لصق كلمة المرور",
+        "serverManagementLabel": "إدارة الخوادم",
+        "serverManagementDescription": "إنشاء سجل تكوينات الخادم وتعديلها وحذفها وتعديلها",
+        "folderManagementLabel": "إدارة المجلدات",
+        "folderManagementDescription": "إنشاء سجلات إنشاء المجلدات وتعديلها وحذفها",
+        "scriptExecutionLabel": "تنفيذ البرنامج النصي",
+        "scriptExecutionDescription": "تسجيل تنفيذ البرامج النصية ومهام الأتمتة",
         "actions": {
-          "save": "Save Settings"
+          "save": "حفظ الإعدادات"
         },
         "messages": {
-          "updated": "Audit settings updated successfully",
-          "updateFailed": "Failed to update audit settings"
+          "updated": "تم تحديث إعدادات التدقيق بنجاح",
+          "updateFailed": "فشل في تحديث إعدادات التدقيق"
         }
       },
       "pendingInvitations": "الدعوات المعلقة",
@@ -1195,7 +1195,7 @@
       "addSource": "إضافة مصدر",
       "snippets": "مقتطفات",
       "scripts": "النصوص",
-      "themes": "themes",
+      "themes": "المواضيع",
       "neverSynced": "لم تتم مزامنته مطلقاً",
       "sync": "المزامنة الآن",
       "edit": "تحرير",
@@ -1217,7 +1217,7 @@
         "enabled": "ممكّنة",
         "enabledDescription": "عند تعطيلها، لن تتم مزامنة هذا المصدر",
         "validating": "التحقق من صحة عنوان URL...",
-        "validationSuccess": "Valid source found: {{snippets}} snippets, {{scripts}} scripts, {{themes}} themes",
+        "validationSuccess": "تم العثور على مصدر صالح: {{snippets}} مقتطفات، {{scripts}} البرامج النصية ، {{themes}} السمات",
         "create": "إنشاء"
       },
       "messages": {
@@ -1327,42 +1327,42 @@
       "noFiles": "لم يتم العثور على ملفات"
     },
     "engines": {
-      "title": "Engines",
-      "description": "Manage engine instances that handle remote connections.",
-      "addEngine": "Add Engine",
-      "noEngines": "No Engines",
-      "noEnginesDescription": "Add an engine to start connecting to remote servers.",
+      "title": "المحركات",
+      "description": "إدارة مثيلات المحرك التي تتعامل مع الاتصالات عن بُعد.",
+      "addEngine": "إضافة محرك",
+      "noEngines": "لا توجد محركات",
+      "noEnginesDescription": "إضافة محرك لبدء الاتصال بالخوادم البعيدة.",
       "status": {
-        "connected": "Connected",
-        "disconnected": "Disconnected"
+        "connected": "متصل",
+        "disconnected": "غير متصل"
       },
-      "lastSeen": "Last seen {{date}}",
-      "neverConnected": "Never connected",
-      "regenerateToken": "Regenerate token",
-      "deleteEngine": "Delete engine",
-      "dismiss": "Dismiss",
-      "copyToken": "Copy token",
+      "lastSeen": "آخر ظهور {{date}}",
+      "neverConnected": "غير متصل أبداً",
+      "regenerateToken": "إعادة توليد الرمز المميز",
+      "deleteEngine": "حذف المحرك",
+      "dismiss": "استبعاد",
+      "copyToken": "نسخ الرمز المميز",
       "transport": {
-        "encrypted": "Encrypted",
-        "unencrypted": "Unencrypted"
+        "encrypted": "مشفر",
+        "unencrypted": "غير مشفر"
       },
-      "tokenLabel": "Registration token for <strong>{{name}}</strong>",
-      "tokenHint": "Set this in <code1>config.yaml</code1> or as <code2>REGISTRATION_TOKEN</code2> env variable.",
+      "tokenLabel": "رمز التسجيل لـ <strong>{{name}}</strong>",
+      "tokenHint": "عيّن هذا في <code1>config.yaml</code1> أو كمتغير بيئة <code2>REGISTRATION_TOKEN</code2>.",
       "dialog": {
-        "title": "Add Engine",
-        "engineName": "Engine Name",
-        "namePlaceholder": "e.g. Office Network",
-        "create": "Create Engine"
+        "title": "إضافة محرك",
+        "engineName": "اسم المحرك",
+        "namePlaceholder": "على سبيل المثال شبكة المكتب",
+        "create": "إنشاء المحرك"
       },
-      "deleteConfirm": "Are you sure you want to delete \"{{name}}\"?",
+      "deleteConfirm": "هل أنت متأكد أنك تريد حذف \"{{name}}\"؟",
       "messages": {
-        "deleted": "Engine deleted successfully"
+        "deleted": "تم حذف المحرك بنجاح"
       },
       "errors": {
-        "loadFailed": "Failed to load engines",
-        "createFailed": "Failed to create engine",
-        "deleteFailed": "Failed to delete engine",
-        "regenerateFailed": "Failed to regenerate token"
+        "loadFailed": "فشل تحميل المحركات",
+        "createFailed": "فشل في إنشاء المحرك",
+        "deleteFailed": "فشل في حذف المحرك",
+        "regenerateFailed": "فشل في تجديد الرمز المميز"
       }
     }
   },
@@ -1396,8 +1396,8 @@
     }
   },
   "servers": {
-    "addServerNote": "Right-click to add a new server",
-    "searchPlaceholder": "Search",
+    "addServerNote": "انقر بزر الماوس الأيمن لإضافة خادم جديد",
+    "searchPlaceholder": "بحث",
     "time": {
       "justNow": "الآن فقط",
       "minuteAgo": "{{count}} منذ دقيقة",
@@ -1436,8 +1436,8 @@
       "openSFTP": "فتح SFTP",
       "forwardPort": "المنفذ الأمامي",
       "runScript": "تشغيل البرنامج النصي",
-      "openNotes": "Open Notes",
-      "addNotes": "Add Notes",
+      "openNotes": "فتح الملاحظات",
+      "addNotes": "إضافة ملاحظات",
       "editServer": "تحرير الخادم",
       "editIntegration": "تحرير التكامل",
       "duplicateServer": "تكرار الخادم",
@@ -1460,7 +1460,7 @@
         "changePermissions": "تغيير الأذونات",
         "stopSharing": "التوقف عن المشاركة",
         "duplicate": "مكررة",
-        "openNotes": "Open Notes",
+        "openNotes": "فتح الملاحظات",
         "hibernateSession": "السبات",
         "closeSession": "قطع الاتصال"
       }
@@ -1503,7 +1503,7 @@
         "nodeName": "اسم العقدة",
         "vmid": "معرف الجهاز الافتراضي",
         "macAddress": "عنوان MAC",
-        "engine": "Engine"
+        "engine": "المحرك"
       },
       "placeholders": {
         "serverName": "اسم الخادم",
@@ -1516,7 +1516,7 @@
         "vmid": "معرف الجهاز الافتراضي",
         "macAddress": "aa:bb:bb:cc:dd:ee:ff"
       },
-      "engineOffline": "(offline)",
+      "engineOffline": "(غير متصل بالإنترنت)",
       "settings": {
         "jumpHosts": {
           "title": "مضيفو القفزات",
@@ -1826,15 +1826,15 @@
       "badgeOn": "تشغيل"
     },
     "notesPanel": {
-      "title": "Notes",
-      "placeholder": "Write notes for this server…",
-      "showInList": "Show in list",
-      "showInListTooltip": "Display the first line of these notes under the server name in the sidebar.",
+      "title": "الملاحظات",
+      "placeholder": "اكتب ملاحظات لهذا الخادم…",
+      "showInList": "عرض في القائمة",
+      "showInListTooltip": "اعرض السطر الأول من هذه الملاحظات تحت اسم الخادم في الشريط الجانبي.",
       "status": {
-        "saving": "Saving",
-        "saved": "Saved",
-        "unsaved": "Unsaved",
-        "error": "Save failed"
+        "saving": "التوفير",
+        "saved": "تم الحفظ",
+        "unsaved": "غير محفوظ",
+        "error": "فشل الحفظ"
       }
     }
   },
@@ -1856,7 +1856,7 @@
     }
   },
   "welcome": {
-    "hello": "Hi",
+    "hello": "مرحباً",
     "subtitle": "مرحبًا بك في Nexterm. مدير الخادم مفتوح المصدر لخوادم SSH و VNC و RDP.",
     "downloadApps": "تنزيل التطبيقات",
     "connectDevice": "توصيل الجهاز",
