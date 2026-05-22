@@ -34,9 +34,12 @@ module.exports = async (ws, req) => {
 
     SessionManager.resume(serverSession.sessionId);
     const { conn, sessionRemoved } = await waitForConnection(serverSession.sessionId);
-    
+
     if (!conn) {
-        if (!sessionRemoved) {
+        if (sessionRemoved) {
+            const failedReason = SessionManager.consumeFailedReason(serverSession.sessionId);
+            if (failedReason) return ws.close(4017, failedReason);
+        } else {
             logger.warn("Connection timeout", { sessionId: serverSession.sessionId });
         }
         return ws.close(4014, "Connection not available");

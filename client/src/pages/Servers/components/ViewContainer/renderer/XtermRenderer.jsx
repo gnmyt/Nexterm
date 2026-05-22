@@ -2,7 +2,6 @@ import { useEffect, useRef, useState, useContext } from "react";
 import { UserContext } from "@/common/contexts/UserContext.jsx";
 import { IdentityContext } from "@/common/contexts/IdentityContext.jsx";
 import { AIContext } from "@/common/contexts/AIContext.jsx";
-import { useToast } from "@/common/contexts/ToastContext.jsx";
 import { useKeymaps, matchesKeybind } from "@/common/contexts/KeymapContext.jsx";
 import { Terminal as Xterm } from "@xterm/xterm";
 import { usePreferences } from "@/common/contexts/PreferencesContext.jsx";
@@ -14,12 +13,13 @@ import { createProgressParser } from "../utils/progressParser";
 import { mdiContentCopy, mdiContentPaste, mdiCodeBrackets, mdiSelectAll, mdiDelete, mdiKeyboard, mdiKey, mdiFolderOpen } from "@mdi/js";
 import { useTranslation } from "react-i18next";
 import ConnectionLoader from "./components/ConnectionLoader";
+import ConnectionError, { mapConnectionError } from "./components/ConnectionError";
 import { getWebSocketUrl } from "@/common/utils/ConnectionUtil.js";
 import { postRequest } from "@/common/utils/RequestUtil.js";
 import "@xterm/xterm/css/xterm.css";
 import "./styles/xterm.sass";
 
-const XtermRenderer = ({ session, disconnectFromServer, registerTerminalRef, broadcastMode, terminalRefs, updateProgress, layoutMode, onBroadcastToggle, onFullscreenToggle, isShared = false, onOpenSftp }) => {
+const XtermRenderer = ({ session, disconnectFromServer, markSessionErrored, getSessionError, registerTerminalRef, broadcastMode, terminalRefs, updateProgress, layoutMode, onBroadcastToggle, onFullscreenToggle, isShared = false, onOpenSftp }) => {
     const ref = useRef(null);
     const termRef = useRef(null);
     const wsRef = useRef(null);
@@ -37,12 +37,12 @@ const XtermRenderer = ({ session, disconnectFromServer, registerTerminalRef, bro
     const aiContext = useContext(AIContext);
     const isAIAvailable = aiContext?.isAIAvailable || (() => false);
     const { getParsedKeybind } = useKeymaps();
-    const { sendToast } = useToast();
     const { t } = useTranslation();
     const [showAIPopover, setShowAIPopover] = useState(false);
     const contextMenu = useContextMenu();
     const { identities } = useContext(IdentityContext);
     const [showSnippetsMenu, setShowSnippetsMenu] = useState(false);
+    const [connectionError, setConnectionError] = useState(() => getSessionError?.(session.id) || null);
 
     useEffect(() => {
         broadcastModeRef.current = broadcastMode;
@@ -167,8 +167,10 @@ const XtermRenderer = ({ session, disconnectFromServer, registerTerminalRef, bro
 
     useEffect(() => {
         if (!sessionToken && !isShared) return;
+        if (getSessionError?.(session.id)) return;
 
         let isCleaningUp = false;
+        setConnectionError(null);
 
         const terminalTheme = getCurrentTheme();
         const isLightTerminalTheme = selectedTheme === "light";
@@ -248,42 +250,28 @@ const XtermRenderer = ({ session, disconnectFromServer, registerTerminalRef, bro
             ws.send(`\x01${term.cols},${term.rows}`);
         }
 
+        const reportError = (message) => {
+            markSessionErrored?.(session.id, message);
+            setConnectionError(message);
+        };
+
         ws.onclose = (event) => {
             clearInterval(interval);
-            if (!isCleaningUp) {
-                // Show toast if connection closed with an error
-                if (event.code >= 4000 && event.reason) {
-                    const errorMessage = event.reason.replace('error: ', '').toLowerCase();
-                    let friendlyMessage;
-                    
-                    if (errorMessage.includes('connection not available') || errorMessage.includes('not available')) {
-                        friendlyMessage = t('common.errors.connection.hostUnreachable');
-                    } else if (errorMessage.includes('timeout')) {
-                        friendlyMessage = t('common.errors.connection.timeout');
-                    } else if (errorMessage.includes('refused')) {
-                        friendlyMessage = t('common.errors.connection.refused');
-                    } else if (errorMessage.includes('authentication')) {
-                        friendlyMessage = t('common.errors.connection.authenticationFailed');
-                    } else if (errorMessage.includes('permission denied')) {
-                        friendlyMessage = t('common.errors.connection.permissionDenied');
-                    } else {
-                        friendlyMessage = event.reason.replace('error: ', '').replace(/\(see logs\)/gi, '').trim();
-                    }
-                    
-                    sendToast("Error", friendlyMessage);
-                } else if (event.code !== 1000 && event.code !== 1005) {
-                    // Non-normal closure (not a clean disconnect)
-                    sendToast("Error", t('common.errors.connection.closedUnexpectedly'));
-                }
-                setTimeout(() => disconnectFromServer(session.id), 100);
+            if (isCleaningUp) return;
+
+            if (event.code >= 4000 && event.reason) {
+                reportError(mapConnectionError(event.reason, t));
+            } else if (event.code !== 1000 && event.code !== 1005) {
+                reportError(t("common.errors.connection.closedUnexpectedly"));
+            } else {
+                disconnectFromServer(session.id);
             }
         };
 
         ws.onerror = (error) => {
-            console.error('WebSocket error:', error);
+            console.error("WebSocket error:", error);
             if (!isCleaningUp) {
-                sendToast("Error", t('common.errors.connection.error'));
-                setTimeout(() => disconnectFromServer(session.id), 100);
+                reportError(t("common.errors.connection.error"));
             }
         };
 
@@ -422,11 +410,14 @@ const XtermRenderer = ({ session, disconnectFromServer, registerTerminalRef, bro
             termRef.current = null;
             wsRef.current = null;
         };
-    }, [sessionToken, selectedFont, fontSize, cursorStyle, cursorBlink, selectedTheme, isShared, t, session.id, disconnectFromServer, sendToast]);
+    }, [sessionToken, selectedFont, fontSize, cursorStyle, cursorBlink, selectedTheme, isShared, t, session.id, disconnectFromServer, markSessionErrored, getSessionError]);
 
     return (
         <div className="xterm-container" onContextMenu={!isShared ? handleContextMenu : undefined}>
             <ConnectionLoader onReady={(loader) => { connectionLoaderRef.current = loader; }} />
+            {connectionError && (
+                <ConnectionError message={connectionError} onClose={() => disconnectFromServer(session.id)} />
+            )}
             <div ref={ref} className="xterm-wrapper" />
             {!isShared && isAIAvailable() && (
                 <AICommandPopover visible={showAIPopover} onClose={() => setShowAIPopover(false)}

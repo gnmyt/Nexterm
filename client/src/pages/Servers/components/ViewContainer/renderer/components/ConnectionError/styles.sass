@@ -1,0 +1,107 @@
+@use "@/common/styles/colors"
+
+.connection-error
+  position: absolute
+  top: 0
+  left: 0
+  width: 100%
+  height: 100%
+  background: colors.$background
+  display: flex
+  flex-direction: column
+  justify-content: center
+  align-items: center
+  gap: 2rem
+  z-index: 100
+  padding: 2rem
+  cursor: default
+
+.connection-error__bar
+  position: absolute
+  top: 0
+  left: 0
+  width: 100%
+  height: 2px
+  background: colors.$error
+  box-shadow: 0 0 8px colors.$error, 0 0 4px colors.$error
+
+.connection-error__visual
+  display: flex
+  justify-content: center
+  align-items: center
+  gap: 1.75rem
+
+.connection-error__device
+  display: flex
+  justify-content: center
+  align-items: center
+
+.connection-error__device-icon
+  width: 3.5rem
+  height: 3.5rem
+  color: colors.$subtext
+
+.connection-error__link
+  display: flex
+  align-items: center
+  gap: 0.6rem
+
+.connection-error__link-line
+  width: 2rem
+  height: 2px
+  background: colors.$dark-gray
+  border-radius: 1px
+
+.connection-error__link-badge
+  display: flex
+  align-items: center
+  justify-content: center
+
+  svg
+    width: 2rem
+    height: 2rem
+    color: colors.$error
+
+.connection-error__text
+  display: flex
+  flex-direction: column
+  align-items: center
+  gap: 0.55rem
+  max-width: 34rem
+  text-align: center
+
+.connection-error__title
+  margin: 0
+  font-size: 1.4rem
+  font-weight: 600
+  color: colors.$white
+
+.connection-error__message
+  margin: 0
+  font-size: 1rem
+  color: colors.$subtext
+  line-height: 1.5
+  word-break: break-word
+
+.connection-error__action
+  display: inline-flex
+  align-items: center
+  gap: 0.5rem
+  background: transparent
+  color: colors.$subtext
+  border: 1px solid colors.$dark-gray
+  border-radius: 0.5rem
+  padding: 0.65rem 1.25rem
+  font-size: 0.95rem
+  font-weight: 500
+  cursor: pointer
+  transition: color 0.15s ease-out, border-color 0.15s ease-out, background 0.15s ease-out
+
+  svg
+    width: 1.15rem
+    height: 1.15rem
+
+  &:hover
+    color: colors.$white
+    border-color: colors.$gray
+    background: colors.$lighter-background

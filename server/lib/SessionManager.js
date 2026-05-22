@@ -93,7 +93,8 @@ module.exports.onMasterConnectionClosed = (sessionId, reason = "closed") => {
     const session = module.exports.get(sessionId);
     if (!session) return;
     logger.info(`Master connection ${reason}, terminating session`, { sessionId });
-    module.exports.remove(sessionId);
+    module.exports.markFailed(sessionId, reason);
+    module.exports.remove(sessionId, { code: 4017, reason });
 };
 
 module.exports.initRecording = async (sessionId, organizationId, cols = 80, rows = 24) => {
@@ -177,15 +178,34 @@ module.exports.removeWebSocket = (sessionId, ws, isShared = false) => {
 const closeAllWebSockets = (sessionId, code = 1000, reason = "Session terminated") => {
     const session = module.exports.get(sessionId);
     if (!session) return;
+    const sharedCode = code === 1000 ? 4016 : code;
     for (const ws of session.connectedWs) {
         try { if (ws.readyState <= 1) ws.close(code, reason); } catch {}
     }
     for (const ws of session.sharedWs) {
-        try { if (ws.readyState <= 1) ws.close(4016, reason); } catch {}
+        try { if (ws.readyState <= 1) ws.close(sharedCode, reason); } catch {}
     }
     session.connectedWs.clear();
     session.sharedWs.clear();
     session.activeWs = null;
+};
+
+const FAILED_SESSION_TTL_MS = 30000;
+const failedSessions = new Map();
+
+module.exports.markFailed = (sessionId, reason) => {
+    const existing = failedSessions.get(sessionId);
+    if (existing) clearTimeout(existing.timeout);
+    const timeout = setTimeout(() => failedSessions.delete(sessionId), FAILED_SESSION_TTL_MS);
+    failedSessions.set(sessionId, { reason: reason || "Connection failed", timeout });
+};
+
+module.exports.consumeFailedReason = (sessionId) => {
+    const entry = failedSessions.get(sessionId);
+    if (!entry) return null;
+    clearTimeout(entry.timeout);
+    failedSessions.delete(sessionId);
+    return entry.reason;
 };
 
 module.exports.hibernate = (sessionId) => {
@@ -223,12 +243,13 @@ const cleanupConnection = async (conn, sessionId) => {
     try { conn.sftpClient?.close(); } catch {}
 };
 
-module.exports.remove = async (sessionId) => {
+module.exports.remove = async (sessionId, options = {}) => {
     const session = module.exports.get(sessionId);
     if (!session || session._removing) return false;
     session._removing = true;
 
-    closeAllWebSockets(sessionId);
+    const { code = 1000, reason = "Session terminated" } = options;
+    closeAllWebSockets(sessionId, code, reason);
     if (session.recording) await finalizeTerminalRecording(sessionId);
     if (session.masterConnection) {
         await cleanupConnection(session.masterConnection, sessionId);

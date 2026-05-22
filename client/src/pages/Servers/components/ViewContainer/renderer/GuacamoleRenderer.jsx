@@ -1,10 +1,10 @@
-import { useEffect, useRef, useContext } from "react";
+import { useEffect, useRef, useState, useContext } from "react";
 import Guacamole from "guacamole-common-js";
 import { UserContext } from "@/common/contexts/UserContext.jsx";
 import { useKeymaps, matchesKeybind } from "@/common/contexts/KeymapContext.jsx";
-import { useToast } from "@/common/contexts/ToastContext.jsx";
 import { useTranslation } from "react-i18next";
 import ConnectionLoader from "./components/ConnectionLoader";
+import ConnectionError, { mapConnectionError } from "./components/ConnectionError";
 import { getWebSocketUrl } from "@/common/utils/ConnectionUtil.js";
 
 const resumeAudioContext = () => {
@@ -14,41 +14,11 @@ const resumeAudioContext = () => {
     }
 };
 
-const getUserFriendlyError = (errorMessage, t) => {
-    if (!errorMessage) return t('common.errors.connection.failed');
-    
-    const msg = errorMessage.toLowerCase();
-    
-    // Map common errors to user-friendly messages
-    if (msg.includes('aborted') || msg.includes('see logs')) {
-        return t('common.errors.connection.hostUnreachable');
-    }
-    if (msg.includes('connection refused')) {
-        return t('common.errors.connection.refused');
-    }
-    if (msg.includes('no route to host') || msg.includes('unreachable')) {
-        return t('common.errors.connection.hostUnreachable');
-    }
-    if (msg.includes('timeout') || msg.includes('timed out')) {
-        return t('common.errors.connection.timeout');
-    }
-    if (msg.includes('authentication') || msg.includes('auth')) {
-        return t('common.errors.connection.authenticationFailed');
-    }
-    if (msg.includes('permission denied')) {
-        return t('common.errors.connection.permissionDenied');
-    }
-    if (msg.includes('connection not available')) {
-        return t('common.errors.connection.hostUnreachable');
-    }
-    
-    // Return cleaned message
-    return errorMessage.replace(/\(see logs\)/gi, '').replace(/aborted/gi, t('common.errors.connection.failed')).trim();
-};
-
 const GuacamoleRenderer = ({
                                session,
                                disconnectFromServer,
+                               markSessionErrored,
+                               getSessionError,
                                registerGuacamoleRef,
                                onFullscreenToggle,
                                isShared = false,
@@ -59,14 +29,22 @@ const GuacamoleRenderer = ({
     const scaleRef = useRef(1);
     const offsetRef = useRef({ x: 0, y: 0 });
     const { getParsedKeybind } = useKeymaps();
-    const { sendToast } = useToast();
     const { t } = useTranslation();
     const onFullscreenToggleRef = useRef(onFullscreenToggle);
     const sessionRef = useRef(session);
     const connectionLoaderRef = useRef(null);
     const audioPlayersRef = useRef([]);
     const errorMessageRef = useRef(null);
-    const errorShownRef = useRef(false);
+    const [connectionError, setConnectionError] = useState(() => getSessionError?.(session.id) || null);
+    const errorShownRef = useRef(!!connectionError);
+
+    const reportError = (rawMessage) => {
+        if (errorShownRef.current) return;
+        errorShownRef.current = true;
+        const mapped = mapConnectionError(rawMessage, t);
+        markSessionErrored?.(session.id, mapped);
+        setConnectionError(mapped);
+    };
 
     useEffect(() => {
         sessionRef.current = session;
@@ -148,6 +126,7 @@ const GuacamoleRenderer = ({
     };
 
     const connect = () => {
+        if (getSessionError?.(session.id)) return;
         if (isShared) {
             if (!session.shareId || clientRef.current) return;
         } else {
@@ -167,15 +146,10 @@ const GuacamoleRenderer = ({
                 loaderHidden = true;
                 connectionLoaderRef.current?.hide();
             }
-            // Capture error instructions from guacd
-            if (opcode === "error" && args && args.length > 0) {
-                const errorMessage = args[0] || "Connection failed";
-                console.log('Guacamole error instruction:', opcode, args, errorMessage);
-                errorMessageRef.current = errorMessage;
+            if (opcode === "error" && args?.length) {
+                errorMessageRef.current = args[0] || "Connection failed";
             }
-            if (clientOnInstruction) {
-                clientOnInstruction(opcode, args);
-            }
+            clientOnInstruction?.(opcode, args);
         };
 
         clientRef.current = client;
@@ -196,24 +170,6 @@ const GuacamoleRenderer = ({
         const s = sessionRef.current;
         const params = isShared ? `shareId=${session.shareId}` : `sessionToken=${sessionToken}&sessionId=${s.id}`;
         client.connect(params);
-
-        // Intercept WebSocket close after connection is established
-        setTimeout(() => {
-            if (tunnel.socket) {
-                const ws = tunnel.socket;
-                const originalOnClose = ws.onclose;
-                ws.onclose = function(event) {
-                    console.log('WebSocket closed:', event.code, event.reason);
-                    if (event.code >= 4000 && event.reason) {
-                        errorMessageRef.current = event.reason.replace('error: ', '');
-                        console.log('Captured error message from WebSocket:', errorMessageRef.current);
-                    }
-                    if (originalOnClose) {
-                        originalOnClose.call(this, event);
-                    }
-                };
-            }
-        }, 10);
 
         const mouse = new Guacamole.Mouse(display);
         mouse.onmousedown = mouse.onmouseup = mouse.onmousemove = (state) => {
@@ -248,35 +204,21 @@ const GuacamoleRenderer = ({
         client.onstatechange = (st) => {
             if (isCleaningUp) return;
             if (st === Guacamole.Client.State.DISCONNECTED || st === Guacamole.Client.State.ERROR) {
-                console.log('Client state change:', st, 'Error message:', errorMessageRef.current);
-                if (!errorShownRef.current && errorMessageRef.current) {
-                    errorShownRef.current = true;
-                    const friendlyError = getUserFriendlyError(errorMessageRef.current, t);
-                    sendToast("Error", friendlyError);
-                }
-                setTimeout(() => disconnectFromServer(s.id), 100);
+                if (errorShownRef.current) return;
+                if (errorMessageRef.current) reportError(errorMessageRef.current);
+                else disconnectFromServer(s.id);
             }
         };
         tunnel.onstatechange = (st) => {
-            if (!isCleaningUp && st === Guacamole.Tunnel.State.CLOSED) {
-                console.log('Tunnel state change:', st, 'Error message:', errorMessageRef.current);
-                if (!errorShownRef.current && errorMessageRef.current) {
-                    errorShownRef.current = true;
-                    const friendlyError = getUserFriendlyError(errorMessageRef.current, t);
-                    sendToast("Error", friendlyError);
-                }
-                setTimeout(() => disconnectFromServer(s.id), 100);
-            }
+            if (isCleaningUp || st !== Guacamole.Tunnel.State.CLOSED) return;
+            if (errorShownRef.current) return;
+            if (errorMessageRef.current) reportError(errorMessageRef.current);
+            else disconnectFromServer(s.id);
         };
         tunnel.onerror = (status) => {
-            if (!isCleaningUp && !errorShownRef.current) {
-                errorShownRef.current = true;
-                const message = status?.message || errorMessageRef.current || t('common.errors.connection.error');
-                console.log('Tunnel error:', status, 'Message:', message);
-                const friendlyError = getUserFriendlyError(message, t);
-                sendToast("Error", friendlyError);
-                setTimeout(() => disconnectFromServer(s.id), 100);
-            }
+            if (isCleaningUp) return;
+            const message = status?.message || errorMessageRef.current || t("common.errors.connection.error");
+            reportError(message);
         };
         handleClipboardEvents();
 
@@ -323,6 +265,9 @@ const GuacamoleRenderer = ({
             <ConnectionLoader onReady={(loader) => {
                 connectionLoaderRef.current = loader;
             }} />
+            {connectionError && (
+                <ConnectionError message={connectionError} onClose={() => disconnectFromServer(session.id)} />
+            )}
         </div>
     );
 };

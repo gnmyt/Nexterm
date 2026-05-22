@@ -151,11 +151,13 @@ const createSFTPConnectionForSession = async (sessionId, entry, accountId) => {
 
         dataSocket.on("close", () => {
             logger.info("SFTP data connection closed", { sessionId });
-            SessionManager.remove(sessionId);
+            SessionManager.markFailed(sessionId, "SFTP connection closed");
+            SessionManager.remove(sessionId, { code: 4017, reason: "SFTP connection closed" });
         });
         dataSocket.on("error", (err) => {
             logger.error("SFTP data socket error", { sessionId, error: err.message });
-            SessionManager.remove(sessionId);
+            SessionManager.markFailed(sessionId, err.message);
+            SessionManager.remove(sessionId, { code: 4017, reason: err.message });
         });
 
         SessionManager.setConnection(sessionId, {
@@ -192,11 +194,13 @@ const createSSHConnectionForSession = async (sessionId, entry, identity, organiz
         dataSocket.on("data", (data) => SessionManager.appendLog(sessionId, data.toString()));
         dataSocket.on("close", () => {
             logger.info("SSH data connection closed", { sessionId });
-            SessionManager.remove(sessionId);
+            SessionManager.markFailed(sessionId, "SSH connection closed");
+            SessionManager.remove(sessionId, { code: 4017, reason: "SSH connection closed" });
         });
         dataSocket.on("error", (err) => {
             logger.error("SSH data socket error", { sessionId, error: err.message });
-            SessionManager.remove(sessionId);
+            SessionManager.markFailed(sessionId, err.message);
+            SessionManager.remove(sessionId, { code: 4017, reason: err.message });
         });
 
         let scriptLayer = null;
@@ -241,11 +245,13 @@ const createTelnetConnectionForSession = async (sessionId, entry, organizationId
     dataSocket.on("data", (data) => SessionManager.appendLog(sessionId, data.toString()));
     dataSocket.on("close", () => {
         logger.info("Telnet data connection closed", { sessionId });
-        SessionManager.remove(sessionId);
+        SessionManager.markFailed(sessionId, "Telnet connection closed");
+        SessionManager.remove(sessionId, { code: 4017, reason: "Telnet connection closed" });
     });
     dataSocket.on("error", (err) => {
         logger.error("Telnet data socket error", { sessionId, error: err.message });
-        SessionManager.remove(sessionId);
+        SessionManager.markFailed(sessionId, err.message);
+        SessionManager.remove(sessionId, { code: 4017, reason: err.message });
     });
 
     SessionManager.setConnection(sessionId, {
@@ -301,13 +307,15 @@ const createPveLxcConnectionForSession = async (sessionId, entry, organizationId
 
     dataSocket.on("close", () => {
         clearInterval(keepAliveTimer);
-        SessionManager.remove(sessionId);
+        SessionManager.markFailed(sessionId, "PVE LXC connection closed");
+        SessionManager.remove(sessionId, { code: 4017, reason: "PVE LXC connection closed" });
     });
 
     dataSocket.on("error", (err) => {
         clearInterval(keepAliveTimer);
         logger.error("PVE LXC data socket error", { sessionId, error: err.message });
-        SessionManager.remove(sessionId);
+        SessionManager.markFailed(sessionId, err.message);
+        SessionManager.remove(sessionId, { code: 4017, reason: err.message });
     });
 
     SessionManager.setConnection(sessionId, {

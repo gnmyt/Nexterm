@@ -37,10 +37,11 @@ export const ViewContainer = ({
                                   hibernateSession,
                                   duplicateSession,
                                   openNotes,
+                                  markSessionErrored,
+                                  getSessionError,
                                   setOpenFileEditors,
                                   openTerminalFromFileManager,
                               }) => {
-
     const [layoutMode, setLayoutMode] = useState("single");
     const [gridSessions, setGridSessions] = useState([]);
     const sessionRefs = useRef({});
@@ -361,6 +362,8 @@ export const ViewContainer = ({
             return <ScriptRenderer
                 session={session}
                 disconnectFromServer={disconnectFromServer}
+                markSessionErrored={markSessionErrored}
+                getSessionError={getSessionError}
                 updateProgress={updateSessionProgress}
                 savedState={getScriptState(session.id)}
                 saveState={(state) => updateScriptState(session.id, state)} />;
@@ -371,10 +374,14 @@ export const ViewContainer = ({
         switch (renderer) {
             case "guac":
                 return <GuacamoleRenderer session={session} disconnectFromServer={disconnectFromServer}
+                                          markSessionErrored={markSessionErrored}
+                                          getSessionError={getSessionError}
                                           registerGuacamoleRef={registerGuacamoleRef}
                                           onFullscreenToggle={toggleFullscreenMode} />;
             case "terminal":
                 return <XtermRenderer session={session} disconnectFromServer={disconnectFromServer}
+                                      markSessionErrored={markSessionErrored}
+                                      getSessionError={getSessionError}
                                       registerTerminalRef={registerTerminalRef} broadcastMode={broadcastMode}
                                       terminalRefs={terminalRefs} updateProgress={updateSessionProgress}
                                       layoutMode={layoutMode} onBroadcastToggle={toggleBroadcastMode}

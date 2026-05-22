@@ -44,6 +44,16 @@ export const Servers = () => {
 
     const [hibernatedSessions, setHibernatedSessions] = useState([]);
     const closingSessionsRef = useRef(new Set());
+    const erroredSessionsRef = useRef(new Map());
+
+    const markSessionErrored = useCallback((sessionId, message) => {
+        if (erroredSessionsRef.current.has(sessionId)) return;
+        erroredSessionsRef.current.set(sessionId, message);
+    }, []);
+
+    const getSessionError = useCallback((sessionId) => {
+        return erroredSessionsRef.current.get(sessionId) || null;
+    }, []);
 
     const visibleSessions = activeSessions.filter(s => !poppedOutSessions.includes(s.id));
 
@@ -99,7 +109,11 @@ export const Servers = () => {
                 const existing = prevMap.get(newSession.id);
                 return existing ? { ...newSession, scriptId: existing.scriptId || newSession.scriptId, scriptName: existing.scriptName, osName: newSession.osName || existing.osName } : newSession;
             });
-            mergedSessions = [...merged, ...localOnly];
+            const mergedIds = new Set(merged.map(s => s.id));
+            const erroredPinned = prev.filter(s =>
+                erroredSessionsRef.current.has(s.id) && !mergedIds.has(s.id) && s.type !== "notes"
+            );
+            mergedSessions = [...merged, ...erroredPinned, ...localOnly];
             return mergedSessions;
         });
         setHibernatedSessions(hibernatedMapped);
@@ -262,6 +276,7 @@ export const Servers = () => {
     };
 
     const disconnectFromServer = useCallback((sessionId) => {
+        erroredSessionsRef.current.delete(sessionId);
         setActiveSessions(prev => {
             const newSessions = prev.filter(session => session.id !== sessionId);
             setActiveSessionId(currentActiveId => {
@@ -530,6 +545,8 @@ export const Servers = () => {
                                activeSessionId={activeSessionId} setActiveSessionId={setActiveSessionId}
                                hibernateSession={hibernateSession} duplicateSession={duplicateSession}
                                openNotes={openNotes}
+                               markSessionErrored={markSessionErrored}
+                               getSessionError={getSessionError}
                                setOpenFileEditors={setOpenFileEditors}
                                openTerminalFromFileManager={openTerminalFromFileManager} />}
             {openFileEditors.map((editor, index) => (
