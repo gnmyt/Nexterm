@@ -1,7 +1,5 @@
 @use "@/common/styles/colors"
-
-$mobile: 768px
-$tablet: 1024px
+@use "@/common/styles/breakpoints"
 
 .dialog-area
   position: fixed
@@ -43,7 +41,7 @@ $tablet: 1024px
   animation: dialogFadeIn 0.3s
   position: relative
 
-  @media (max-width: $mobile)
+  @media (max-width: breakpoints.$mobile)
     max-width: 95%
     max-height: 90vh
     padding: 1rem
@@ -67,7 +65,7 @@ $tablet: 1024px
   z-index: 10
   flex-shrink: 0
 
-  @media (max-width: $mobile)
+  @media (max-width: breakpoints.$mobile)
     width: 1.75rem
     height: 1.75rem
     top: 0.75rem

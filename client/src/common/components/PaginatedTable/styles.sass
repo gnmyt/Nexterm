@@ -1,7 +1,5 @@
 @use "@/common/styles/colors"
-
-$mobile: 768px
-$tablet: 1024px
+@use "@/common/styles/breakpoints"
 
 .paginated-table-container
   background-color: colors.$lighter-background
@@ -16,7 +14,7 @@ $tablet: 1024px
   position: relative
   min-width: 0
 
-  @media (max-width: $mobile)
+  @media (max-width: breakpoints.$mobile)
     min-height: 300px
     padding: 0.25rem
 
@@ -54,7 +52,7 @@ $tablet: 1024px
     text-align: center
     flex: 1
 
-    @media (max-width: $mobile)
+    @media (max-width: breakpoints.$mobile)
       padding: 2rem 1rem
 
     svg
@@ -63,7 +61,7 @@ $tablet: 1024px
       margin-bottom: 1rem
       opacity: 0.7
 
-      @media (max-width: $mobile)
+      @media (max-width: breakpoints.$mobile)
         width: 2.5rem
         height: 2.5rem
 
@@ -72,14 +70,14 @@ $tablet: 1024px
       font-size: 0.95rem
       font-weight: 500
 
-      @media (max-width: $mobile)
+      @media (max-width: breakpoints.$mobile)
         font-size: 0.9rem
 
     p
       margin: 0
       font-size: 0.85rem
 
-      @media (max-width: $mobile)
+      @media (max-width: breakpoints.$mobile)
         font-size: 0.8rem
 
 .paginated-table
@@ -101,7 +99,7 @@ $tablet: 1024px
     font-size: 0.85rem
     color: colors.$subtext
 
-    @media (max-width: $mobile)
+    @media (max-width: breakpoints.$mobile)
       display: none
 
     .header-cell
@@ -148,7 +146,7 @@ $tablet: 1024px
       border-radius: 0.5rem
       margin-bottom: 0.25rem
 
-      @media (max-width: $mobile)
+      @media (max-width: breakpoints.$mobile)
         display: flex
         flex-direction: column
         gap: 0.5rem
@@ -170,7 +168,7 @@ $tablet: 1024px
         overflow: hidden
         color: colors.$white
 
-        @media (max-width: $mobile)
+        @media (max-width: breakpoints.$mobile)
           font-size: 0.85rem
           flex-direction: row
           gap: 0.5rem
@@ -194,14 +192,14 @@ $tablet: 1024px
   border-radius: 0 0 0.5rem 0.5rem
   flex-shrink: 0
 
-  @media (max-width: $mobile)
+  @media (max-width: breakpoints.$mobile)
     padding: 0.375rem 0.5rem
 
   .pagination-info
     color: colors.$subtext
     font-size: 0.85rem
 
-    @media (max-width: $mobile)
+    @media (max-width: breakpoints.$mobile)
       display: none
 
   .pagination-controls
@@ -209,7 +207,7 @@ $tablet: 1024px
     align-items: center
     gap: 0.75rem
 
-    @media (max-width: $mobile)
+    @media (max-width: breakpoints.$mobile)
       width: 100%
       justify-content: center
       gap: 0.5rem
@@ -220,10 +218,10 @@ $tablet: 1024px
       font-size: 0.9rem
       white-space: nowrap
 
-      @media (max-width: $mobile)
+      @media (max-width: breakpoints.$mobile)
         font-size: 0.8rem
 
     button
-      @media (max-width: $mobile)
+      @media (max-width: breakpoints.$mobile)
         padding: 0.35rem 0.625rem
         font-size: 0.8rem

@@ -1,7 +1,5 @@
 @use "@/common/styles/colors"
-
-$mobile: 768px
-$tablet: 1024px
+@use "@/common/styles/breakpoints"
 
 .monitoring-settings
   display: flex
@@ -20,7 +18,7 @@ $tablet: 1024px
     color: colors.$white
     font-size: 1.25rem
 
-    @media (max-width: $mobile)
+    @media (max-width: breakpoints.$mobile)
       font-size: 1.1rem
 
   > p
@@ -35,7 +33,7 @@ $tablet: 1024px
   padding: 1rem 0
   border-bottom: 1px solid colors.$gray
 
-  @media (max-width: $mobile)
+  @media (max-width: breakpoints.$mobile)
     flex-direction: column
     gap: 0.75rem
 
@@ -46,7 +44,7 @@ $tablet: 1024px
     flex: 1
     margin-right: 2rem
 
-    @media (max-width: $mobile)
+    @media (max-width: breakpoints.$mobile)
       margin-right: 0
 
     h4
@@ -64,7 +62,7 @@ $tablet: 1024px
   align-items: center
   gap: 0.5rem
 
-  @media (max-width: $mobile)
+  @media (max-width: breakpoints.$mobile)
     width: 100%
 
   input
@@ -78,7 +76,7 @@ $tablet: 1024px
     outline: none
     text-align: center
 
-    @media (max-width: $mobile)
+    @media (max-width: breakpoints.$mobile)
       flex: 1
 
     &:focus
@@ -95,7 +93,7 @@ $tablet: 1024px
   padding-top: 2rem
   border-top: 1px solid colors.$gray
 
-  @media (max-width: $mobile)
+  @media (max-width: breakpoints.$mobile)
     justify-content: stretch
 
     button

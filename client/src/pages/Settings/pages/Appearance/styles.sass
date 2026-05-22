@@ -1,7 +1,5 @@
 @use "@/common/styles/colors"
-
-$mobile: 768px
-$tablet: 1024px
+@use "@/common/styles/breakpoints"
 
 .appearance-page
   display: flex
@@ -28,7 +26,7 @@ $tablet: 1024px
     align-items: center
     margin-bottom: 1rem
 
-    @media (max-width: $mobile)
+    @media (max-width: breakpoints.$mobile)
       flex-direction: row
       gap: 0.75rem
 
@@ -54,7 +52,7 @@ $tablet: 1024px
     gap: 2.5rem
     align-items: flex-start
 
-    @media (max-width: $mobile)
+    @media (max-width: breakpoints.$mobile)
       flex-direction: column
       gap: 1.5rem
       width: 100%
@@ -64,7 +62,7 @@ $tablet: 1024px
       flex-direction: column
       gap: 0.5rem
 
-      @media (max-width: $mobile)
+      @media (max-width: breakpoints.$mobile)
         width: 100%
 
     .theme-label, .accent-label, .size-label
@@ -76,7 +74,7 @@ $tablet: 1024px
       display: flex
       gap: 0.5rem
 
-      @media (max-width: $mobile)
+      @media (max-width: breakpoints.$mobile)
         width: 100%
 
       .theme-box
@@ -91,7 +89,7 @@ $tablet: 1024px
         cursor: pointer
         transition: all 0.2s ease
 
-        @media (max-width: $mobile)
+        @media (max-width: breakpoints.$mobile)
           flex: 1
           padding: 0.75rem 0.5rem
 
@@ -172,7 +170,7 @@ $tablet: 1024px
 
         &.active
           border-color: colors.$white
-          box-shadow: 0 0 0 2px var(--accent-color)
+          box-shadow: 0 0 0 2px colors.$primary
 
           .check-icon
             opacity: 1
@@ -217,7 +215,7 @@ $tablet: 1024px
   grid-template-columns: repeat(auto-fill, minmax(200px, 1fr))
   gap: 0.75rem
 
-  @media (max-width: $mobile)
+  @media (max-width: breakpoints.$mobile)
     grid-template-columns: 1fr 1fr
 
   @media (max-width: 480px)

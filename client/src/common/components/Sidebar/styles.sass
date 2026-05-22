@@ -1,6 +1,5 @@
 @use "@/common/styles/colors"
-
-$mobile: 768px
+@use "@/common/styles/breakpoints"
 
 .sidebar
   width: 5rem
@@ -21,7 +20,7 @@ $mobile: 768px
     height: 100dvh
     height: -webkit-fill-available
 
-  @media (max-width: $mobile)
+  @media (max-width: breakpoints.$mobile)
     display: none
 
   .sidebar-top

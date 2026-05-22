@@ -1,6 +1,5 @@
 @use "@/common/styles/colors"
-
-$mobile: 768px
+@use "@/common/styles/breakpoints"
 
 .server-page
   display: flex
@@ -8,7 +7,7 @@ $mobile: 768px
   height: 100%
   position: relative
 
-  @media (max-width: $mobile)
+  @media (max-width: breakpoints.$mobile)
     flex-direction: column
 
   &:has(.view-container.fullscreen)

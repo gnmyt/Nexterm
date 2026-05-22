@@ -1,6 +1,5 @@
 @use "@/common/styles/colors"
-
-$mobile: 768px
+@use "@/common/styles/breakpoints"
 
 .server-search
   position: relative
@@ -21,7 +20,7 @@ $mobile: 768px
   color: colors.$subtext
   transition: opacity 0.2s
 
-  @media (max-width: $mobile)
+  @media (max-width: breakpoints.$mobile)
     width: 1.275rem
     height: 1.275rem
     left: 0.55rem
@@ -40,7 +39,7 @@ $mobile: 768px
   color: colors.$subtext
   transition: opacity 0.2s
 
-  @media (max-width: $mobile)
+  @media (max-width: breakpoints.$mobile)
     right: 0.425rem
 
   @container (max-width: 180px)
@@ -54,7 +53,7 @@ $mobile: 768px
     font-size: 9pt
     border: 1px solid colors.$gray
 
-    @media (max-width: $mobile)
+    @media (max-width: breakpoints.$mobile)
       font-size: 8pt
       padding: 0.125rem 0.34rem
 
@@ -72,7 +71,7 @@ $mobile: 768px
   outline: none
   transition: border-color 0.2s ease
 
-  @media (max-width: $mobile)
+  @media (max-width: breakpoints.$mobile)
     padding: 0.6rem 4.25rem 0.6rem 2.35rem
     font-size: 11pt
 

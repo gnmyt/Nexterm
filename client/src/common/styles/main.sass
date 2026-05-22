@@ -1,6 +1,5 @@
 @use "colors"
-
-$mobile: 768px
+@use "breakpoints"
 
 :root
   --title-bar-height: 0px
@@ -10,7 +9,7 @@ $mobile: 768px
   --ui-scale: 1
   font-size: calc(16px * var(--ui-scale))
 
-  @media (max-width: $mobile)
+  @media (max-width: breakpoints.$mobile)
     --mobile-nav-height: calc(3.5rem + env(safe-area-inset-bottom, 0px))
     --content-height: calc(100vh - var(--safe-area-top))
 
@@ -51,7 +50,7 @@ body.tauri-mode
   min-height: 0
   position: relative
 
-  @media (max-width: $mobile)
+  @media (max-width: breakpoints.$mobile)
     padding-bottom: var(--mobile-nav-height)
 
   > *
@@ -118,7 +117,7 @@ body.tauri-mode
   > *
     height: 100%
 
-@media (max-width: $mobile)
+@media (max-width: breakpoints.$mobile)
   .left-pane
     position: static
     transform: none

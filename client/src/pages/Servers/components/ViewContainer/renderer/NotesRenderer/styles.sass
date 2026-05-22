@@ -1,6 +1,5 @@
 @use "@/common/styles/colors"
-
-$mobile: 768px
+@use "@/common/styles/breakpoints"
 
 .notes-renderer
   display: flex
@@ -20,7 +19,7 @@ $mobile: 768px
     background-color: colors.$lighter-background
     flex-shrink: 0
 
-    @media (max-width: $mobile)
+    @media (max-width: breakpoints.$mobile)
       padding: 0.5rem 0.75rem
 
     .notes-title
@@ -51,7 +50,7 @@ $mobile: 768px
       gap: 0.75rem
       flex-shrink: 0
 
-      @media (max-width: $mobile)
+      @media (max-width: breakpoints.$mobile)
         gap: 0.5rem
 
     .notes-toggle
@@ -74,7 +73,7 @@ $mobile: 768px
         color: colors.$subtext
         white-space: nowrap
 
-        @media (max-width: $mobile)
+        @media (max-width: breakpoints.$mobile)
           display: none
 
     .notes-status
@@ -130,7 +129,7 @@ $mobile: 768px
     line-height: 1.55
     letter-spacing: 0.01em
 
-    @media (max-width: $mobile)
+    @media (max-width: breakpoints.$mobile)
       padding: 0.75rem 0.85rem
       font-size: 0.9rem
 
