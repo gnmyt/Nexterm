@@ -56,17 +56,17 @@
       "ssoOrContinueWith": "oder weiter mit",
       "noAuthMethodsAvailable": "Keine Authentifizierungsmethoden verfügbar.",
       "signInWithPasskey": "Anmeldung mit Passkey",
-      "signInWithQrCode": "Sign in with QR Code",
-      "qrScanDescription": "Scan this QR code with the Nexterm mobile app to sign in instantly.",
-      "backToLogin": "Back to Login",
+      "signInWithQrCode": "Anmeldung mit QR-Code",
+      "qrScanDescription": "Scanne diesen QR-Code mit der Nexterm Mobile App, um dich sofort anzumelden.",
+      "backToLogin": "Zurück zu Login",
       "authenticating": "Authentifiziere..."
     },
     "deviceLink": {
       "title": "Gerät verbinden",
       "description": "Gib den auf deinem Gerät angezeigten Code ein, um es für den Zugriff auf dein Konto zu autorisieren.",
-      "qrTab": "QR Code",
+      "qrTab": "QR-Code",
       "codeTab": "Code",
-      "qrDescription": "Scan this QR code with the Nexterm mobile app to link your device.",
+      "qrDescription": "Scanne diesen QR-Code mit der Nexterm Mobile App, um dein Gerät zu verbinden.",
       "codeLabel": "Gerätecode",
       "continue": "Weiter",
       "verifying": "Überprüfe...",
@@ -112,10 +112,10 @@
       "authSuccess": "Erfolgreich authentifiziert!"
     },
     "serverSwitcher": {
-      "title": "Servers",
-      "addServer": "Add Server",
-      "removeServer": "Remove Server",
-      "removeConfirmText": "This will remove the connection to {{server}}. Are you sure?"
+      "title": "Server",
+      "addServer": "Server hinzufügen",
+      "removeServer": "Server entfernen",
+      "removeConfirmText": "Dadurch wird die Verbindung zu {{server}}entfernt. Bist du sicher?"
     },
     "selectBox": {
       "defaultOption": "Wähle eine Option aus...",
@@ -178,20 +178,20 @@
       "ssoLoginFailed": "SSO-Anmeldung konnte nicht initiiert werden",
       "passkeyLoginFailed": "Passkey-Authentifizierung fehlgeschlagen",
       "passkeyCancelled": "Die Passkey-Authentifizierung wurde abgebrochen",
-      "qrCodeExpired": "QR code expired. Please try again.",
+      "qrCodeExpired": "Der QR-Code ist abgelaufen. Bitte versuche es erneut.",
       "connection": {
-        "title": "Connection failed",
-        "close": "Close tab",
-        "hostUnreachable": "Remote host unreachable",
-        "refused": "Connection refused by remote host",
-        "timeout": "Connection timed out",
-        "authenticationFailed": "Authentication failed",
-        "permissionDenied": "Permission denied",
-        "failed": "Connection failed",
-        "closedUnexpectedly": "Connection closed unexpectedly",
-        "error": "Connection error occurred",
-        "scriptClosedUnexpectedly": "Script connection closed unexpectedly",
-        "scriptError": "Script connection error occurred"
+        "title": "Verbindung fehlgeschlagen",
+        "close": "Registerkarte schließen",
+        "hostUnreachable": "Entfernter Host unerreichbar",
+        "refused": "Verbindung vom entfernten Host abgelehnt",
+        "timeout": "Zeitüberschreitung der Verbindung",
+        "authenticationFailed": "Authentifizierung fehlgeschlagen",
+        "permissionDenied": "Erlaubnis verweigert",
+        "failed": "Verbindung fehlgeschlagen",
+        "closedUnexpectedly": "Verbindung unerwartet geschlossen",
+        "error": "Verbindungsfehler aufgetreten",
+        "scriptClosedUnexpectedly": "Unerwartetes Schließen der Skriptverbindung",
+        "scriptError": "Skript-Verbindungsfehler aufgetreten"
       }
     },
     "messages": {
@@ -255,9 +255,9 @@
         "organization": "Org #{{id}}"
       },
       "durationUnits": {
-        "seconds": "seconds",
-        "minutes": "minutes",
-        "hours": "hours"
+        "seconds": "Sekunden",
+        "minutes": "Minuten",
+        "hours": "Stunden"
       }
     },
     "pagination": {
@@ -572,7 +572,7 @@
     "adminSettings": "ADMIN-EINSTELLUNGEN",
     "pages": {
       "account": "Konto",
-      "appearance": "Appearance",
+      "appearance": "Erscheinungsbild",
       "terminal": "Terminal",
       "fileManager": "Dateimanager",
       "keymaps": "Tastenkürzel",
@@ -585,7 +585,7 @@
       "ai": "AI",
       "monitoring": "Überwachung",
       "backup": "Speicher",
-      "engines": "Engines"
+      "engines": "Motoren"
     },
     "account": {
       "title": "Account",
@@ -597,13 +597,13 @@
       "themeAuto": "Auto",
       "themeLight": "Hell",
       "themeDark": "Dunkel",
-      "themeDarkHint": "Press three times to enable OLED mode.",
+      "themeDarkHint": "Drücke dreimal, um den OLED-Modus zu aktivieren.",
       "themeOled": "OLED",
       "oledEnabled": "OLED-Modus aktiviert",
       "oledDisabled": "OLED-Modus deaktiviert",
       "themeLabel": "Theme",
       "accentColor": "Akzentfarbe",
-      "sizeLabel": "Size",
+      "sizeLabel": "Größe",
       "sizeXS": "XS",
       "sizeS": "S",
       "sizeM": "M",
@@ -629,30 +629,30 @@
       "generalSyncEnabled": "Die allgemeinen Einstellungen werden jetzt mit deinem Konto synchronisiert",
       "generalSyncDisabled": "Die allgemeinen Einstellungen werden nicht mehr synchronisiert",
       "customThemes": {
-        "title": "Custom Themes",
-        "description": "Create custom CSS themes or choose from synced source themes to personalize your interface.",
-        "newTheme": "New Theme",
-        "noThemesYet": "No themes yet",
-        "noThemesDescription": "Create a custom theme or add a source to get started.",
-        "editTheme": "Edit Theme",
-        "createTheme": "Create Theme",
+        "title": "Benutzerdefinierte Themen",
+        "description": "Erstelle eigene CSS-Themen oder wähle aus synchronisierten Quellthemen, um deine Oberfläche zu personalisieren.",
+        "newTheme": "Neues Thema",
+        "noThemesYet": "Noch keine Themen",
+        "noThemesDescription": "Erstelle ein eigenes Thema oder füge eine Quelle hinzu, um loszulegen.",
+        "editTheme": "Thema bearbeiten",
+        "createTheme": "Thema erstellen",
         "name": "Name",
-        "themeName": "Theme name",
-        "descriptionLabel": "Description",
-        "optionalDescription": "Optional description",
-        "saveChanges": "Save Changes",
-        "fromSource": "From source",
-        "edit": "Edit",
-        "delete": "Delete",
-        "deleteConfirm": "Are you sure you want to delete the theme \"{{name}}\"?",
-        "failedToLoadTheme": "Failed to load theme",
-        "nameAndCssRequired": "Name and CSS are required",
-        "themeUpdated": "Theme updated",
-        "themeCreated": "Theme created",
-        "failedToSaveTheme": "Failed to save theme",
-        "themeDeleted": "Theme deleted",
-        "failedToDeleteTheme": "Failed to delete theme",
-        "failedToActivateTheme": "Failed to activate theme"
+        "themeName": "Themenname",
+        "descriptionLabel": "Beschreibung",
+        "optionalDescription": "Optionale Beschreibung",
+        "saveChanges": "Änderungen speichern",
+        "fromSource": "Von der Quelle",
+        "edit": "bearbeiten",
+        "delete": "löschen",
+        "deleteConfirm": "Bist du sicher, dass du das Thema \"{{name}} \" löschen möchtest?",
+        "failedToLoadTheme": "Thema konnte nicht geladen werden",
+        "nameAndCssRequired": "Name und CSS sind erforderlich",
+        "themeUpdated": "Thema aktualisiert",
+        "themeCreated": "Thema erstellt",
+        "failedToSaveTheme": "Thema konnte nicht gespeichert werden",
+        "themeDeleted": "Thema gelöscht",
+        "failedToDeleteTheme": "Thema kann nicht gelöscht werden",
+        "failedToActivateTheme": "Thema kann nicht aktiviert werden"
       },
       "sessionSynchronization": "Synchronisierung der Sitzungen",
       "sessionSyncDescription": "Kontrolliere, wie deine Serversitzungen gespeichert und über Geräte und Browser-Tabs hinweg synchronisiert werden.",
@@ -705,39 +705,39 @@
       "leave": "Verlassen",
       "members": "Mitglieder",
       "auditSettings": {
-        "auditSettingsTab": "Audit Settings",
-        "sessionRecordingHeading": "Session Recording",
-        "sessionRecordingDescription": "Record terminal and remote desktop sessions for playback",
-        "enableSessionRecordingLabel": "Enable Session Recording",
-        "enableSessionRecordingDescription": "Record SSH, Telnet, RDP, and VNC sessions for later playback",
-        "recordingRetentionLabel": "Recording Retention (days)",
-        "recordingRetentionDescription": "How long to keep session recordings before automatic deletion (1-365 days)",
-        "connectionRequirementsHeading": "Connection Requirements",
-        "connectionRequirementsDescription": "Control connection behavior and requirements",
-        "requireConnectionReasonLabel": "Require Connection Reason",
-        "requireConnectionReasonDescription": "Require users to provide a reason when connecting to servers",
-        "activityLoggingHeading": "Activity Logging",
-        "activityLoggingDescription": "Choose which types of activities to log",
-        "fileOperationsLabel": "File Operations",
-        "fileOperationsDescription": "Log file uploads, downloads, deletions, and renames via SFTP",
-        "serverConnectionsLabel": "Server Connections",
-        "serverConnectionsDescription": "Log SSH, SFTP, and PVE connections and disconnections",
-        "identityManagementLabel": "Identity Management",
-        "identityManagementDescription": "Log creation, modification, and deletion of SSH identities",
-        "passwordPasteLabel": "Password Paste",
-        "passwordPasteDescription": "Log usage of the password paste action",
+        "auditSettingsTab": "Audit-Einstellungen",
+        "sessionRecordingHeading": "Session-Aufzeichnung",
+        "sessionRecordingDescription": "Terminal- und Remote-Desktop-Sitzungen zur Wiedergabe aufzeichnen",
+        "enableSessionRecordingLabel": "Sitzungsaufzeichnung aktivieren",
+        "enableSessionRecordingDescription": "SSH-, Telnet-, RDP- und VNC-Sitzungen zur späteren Wiedergabe aufzeichnen",
+        "recordingRetentionLabel": "Aufbewahrung der Aufzeichnungen (Tage)",
+        "recordingRetentionDescription": "Wie lange die Sitzungsaufzeichnungen aufbewahrt werden sollen, bevor sie automatisch gelöscht werden (1-365 Tage)",
+        "connectionRequirementsHeading": "Verbindungsanforderungen",
+        "connectionRequirementsDescription": "Verbindungsverhalten und Anforderungen kontrollieren",
+        "requireConnectionReasonLabel": "Grund für die Verbindung verlangen",
+        "requireConnectionReasonDescription": "Verlange von den Nutzern, einen Grund anzugeben, wenn sie sich mit Servern verbinden",
+        "activityLoggingHeading": "Aktivitätsprotokollierung",
+        "activityLoggingDescription": "Wähle aus, welche Arten von Aktivitäten du protokollieren willst",
+        "fileOperationsLabel": "Dateioperationen",
+        "fileOperationsDescription": "Uploads, Downloads, Löschungen und Umbenennungen von Dateien über SFTP protokollieren",
+        "serverConnectionsLabel": "Server-Verbindungen",
+        "serverConnectionsDescription": "SSH-, SFTP- und PVE-Verbindungen und -Trennungen protokollieren",
+        "identityManagementLabel": "Identitätsmanagement",
+        "identityManagementDescription": "Protokollierung der Erstellung, Änderung und Löschung von SSH-Identitäten",
+        "passwordPasteLabel": "Passwort einfügen",
+        "passwordPasteDescription": "Protokollierung der Verwendung der Aktion \"Passwort einfügen",
         "serverManagementLabel": "Server Management",
-        "serverManagementDescription": "Log creation, modification, and deletion of server configurations",
-        "folderManagementLabel": "Folder Management",
-        "folderManagementDescription": "Log creation, modification, and deletion of folders",
-        "scriptExecutionLabel": "Script Execution",
-        "scriptExecutionDescription": "Log execution of scripts and automation tasks",
+        "serverManagementDescription": "Protokollierung der Erstellung, Änderung und Löschung von Serverkonfigurationen",
+        "folderManagementLabel": "Ordnerverwaltung",
+        "folderManagementDescription": "Protokollierung der Erstellung, Änderung und Löschung von Ordnern",
+        "scriptExecutionLabel": "Skript-Ausführung",
+        "scriptExecutionDescription": "Protokollierung der Ausführung von Skripten und Automatisierungsaufgaben",
         "actions": {
-          "save": "Save Settings"
+          "save": "Einstellungen speichern"
         },
         "messages": {
-          "updated": "Audit settings updated successfully",
-          "updateFailed": "Failed to update audit settings"
+          "updated": "Audit-Einstellungen erfolgreich aktualisiert",
+          "updateFailed": "Aktualisierung der Audit-Einstellungen fehlgeschlagen"
         }
       },
       "pendingInvitations": "Ausstehende Einladungen",
@@ -1195,7 +1195,7 @@
       "addSource": "Quelle hinzufügen",
       "snippets": "Snippets",
       "scripts": "Skripte",
-      "themes": "themes",
+      "themes": "Themen",
       "neverSynced": "Nie synchronisiert",
       "sync": "Jetzt synchronisieren",
       "edit": "bearbeiten",
@@ -1217,7 +1217,7 @@
         "enabled": "Aktiviert",
         "enabledDescription": "Wenn deaktiviert, wird diese Quelle nicht synchronisiert",
         "validating": "Validierung der URL...",
-        "validationSuccess": "Valid source found: {{snippets}} snippets, {{scripts}} scripts, {{themes}} themes",
+        "validationSuccess": "Gültige Quelle gefunden: {{snippets}} snippets, {{scripts}} scripts, {{themes}} themes",
         "create": "erstellen"
       },
       "messages": {
@@ -1327,42 +1327,42 @@
       "noFiles": "Keine Dateien gefunden"
     },
     "engines": {
-      "title": "Engines",
-      "description": "Manage engine instances that handle remote connections.",
-      "addEngine": "Add Engine",
-      "noEngines": "No Engines",
-      "noEnginesDescription": "Add an engine to start connecting to remote servers.",
+      "title": "Motoren",
+      "description": "Verwalte Engine-Instanzen, die Fernverbindungen verarbeiten.",
+      "addEngine": "Motor hinzufügen",
+      "noEngines": "Keine Motoren",
+      "noEnginesDescription": "Füge eine Engine hinzu, um eine Verbindung zu entfernten Servern herzustellen.",
       "status": {
-        "connected": "Connected",
-        "disconnected": "Disconnected"
+        "connected": "Verbunden",
+        "disconnected": "Getrennt"
       },
-      "lastSeen": "Last seen {{date}}",
-      "neverConnected": "Never connected",
-      "regenerateToken": "Regenerate token",
-      "deleteEngine": "Delete engine",
-      "dismiss": "Dismiss",
-      "copyToken": "Copy token",
+      "lastSeen": "Zuletzt gesehen {{date}}",
+      "neverConnected": "Nie verbunden",
+      "regenerateToken": "Token neu generieren",
+      "deleteEngine": "Motor löschen",
+      "dismiss": "Ablehnen",
+      "copyToken": "Token kopieren",
       "transport": {
-        "encrypted": "Encrypted",
-        "unencrypted": "Unencrypted"
+        "encrypted": "Verschlüsselt",
+        "unencrypted": "Unverschlüsselt"
       },
-      "tokenLabel": "Registration token for <strong>{{name}}</strong>",
-      "tokenHint": "Set this in <code1>config.yaml</code1> or as <code2>REGISTRATION_TOKEN</code2> env variable.",
+      "tokenLabel": "Registrierungs-Token für <strong>{{name}}</strong>",
+      "tokenHint": "Setze dies in <code1>config.yaml</code1> oder als <code2>REGISTRATION_TOKEN</code2> env-Variable.",
       "dialog": {
-        "title": "Add Engine",
-        "engineName": "Engine Name",
-        "namePlaceholder": "e.g. Office Network",
-        "create": "Create Engine"
+        "title": "Motor hinzufügen",
+        "engineName": "Motor Name",
+        "namePlaceholder": "z.B. Büronetzwerk",
+        "create": "Motor erstellen"
       },
-      "deleteConfirm": "Are you sure you want to delete \"{{name}}\"?",
+      "deleteConfirm": "Bist du sicher, dass du \"{{name}} \" löschen willst?",
       "messages": {
-        "deleted": "Engine deleted successfully"
+        "deleted": "Motor erfolgreich gelöscht"
       },
       "errors": {
-        "loadFailed": "Failed to load engines",
-        "createFailed": "Failed to create engine",
-        "deleteFailed": "Failed to delete engine",
-        "regenerateFailed": "Failed to regenerate token"
+        "loadFailed": "Motoren konnten nicht geladen werden",
+        "createFailed": "Motor kann nicht erstellt werden",
+        "deleteFailed": "Motor kann nicht gelöscht werden",
+        "regenerateFailed": "Token konnte nicht regeneriert werden"
       }
     }
   },
@@ -1396,8 +1396,8 @@
     }
   },
   "servers": {
-    "addServerNote": "Right-click to add a new server",
-    "searchPlaceholder": "Search",
+    "addServerNote": "Rechtsklick zum Hinzufügen eines neuen Servers",
+    "searchPlaceholder": "Suche",
     "time": {
       "justNow": "Gerade eben",
       "minuteAgo": "vor {{count}} Minute",
@@ -1436,8 +1436,8 @@
       "openSFTP": "SFTP öffnen",
       "forwardPort": "Port weiterleiten",
       "runScript": "Skript ausführen",
-      "openNotes": "Open Notes",
-      "addNotes": "Add Notes",
+      "openNotes": "Offene Noten",
+      "addNotes": "Anmerkungen hinzufügen",
       "editServer": "Server bearbeiten",
       "editIntegration": "Integration bearbeiten",
       "duplicateServer": "Server duplizieren",
@@ -1460,7 +1460,7 @@
         "changePermissions": "Berechtigungen ändern",
         "stopSharing": "Teilen beenden",
         "duplicate": "Duplizieren",
-        "openNotes": "Open Notes",
+        "openNotes": "Offene Noten",
         "hibernateSession": "Ruhezustand aktivieren",
         "closeSession": "Trennen"
       }
@@ -1503,7 +1503,7 @@
         "nodeName": "Node Name",
         "vmid": "VM ID",
         "macAddress": "MAC-Adresse",
-        "engine": "Engine"
+        "engine": "Motor"
       },
       "placeholders": {
         "serverName": "Server Name",
@@ -1826,15 +1826,15 @@
       "badgeOn": "ON"
     },
     "notesPanel": {
-      "title": "Notes",
-      "placeholder": "Write notes for this server…",
-      "showInList": "Show in list",
-      "showInListTooltip": "Display the first line of these notes under the server name in the sidebar.",
+      "title": "Anmerkungen",
+      "placeholder": "Schreibe Notizen für diesen Server…",
+      "showInList": "In Liste anzeigen",
+      "showInListTooltip": "Zeige die erste Zeile dieser Notizen unter dem Servernamen in der Seitenleiste an.",
       "status": {
-        "saving": "Saving",
-        "saved": "Saved",
-        "unsaved": "Unsaved",
-        "error": "Save failed"
+        "saving": "Sparen",
+        "saved": "Gerettet",
+        "unsaved": "Nicht gerettet",
+        "error": "Speichern fehlgeschlagen"
       }
     }
   },
@@ -1856,7 +1856,7 @@
     }
   },
   "welcome": {
-    "hello": "Hi",
+    "hello": "Hallo",
     "subtitle": "Willkommen bei Nexterm. Der Open-Source-Server-Manager für SSH, VNC und RDP.",
     "downloadApps": "Apps herunterladen",
     "connectDevice": "Gerät verbinden",
