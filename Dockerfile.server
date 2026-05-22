@@ -1,0 +1,80 @@
+FROM node:22-alpine AS client-builder
+
+WORKDIR /app
+
+COPY vendor/guacamole-client/guacamole-common-js/ ./vendor/guacamole-client/guacamole-common-js/
+
+WORKDIR /app/client
+
+COPY client/package.json client/yarn.lock ./
+RUN for i in 1 2 3; do yarn install --frozen-lockfile --network-timeout 500000 && break || sleep 15; done
+
+COPY client/ .
+RUN yarn build
+
+
+FROM node:22-alpine AS schema-builder
+
+WORKDIR /app
+
+RUN apk add --no-cache unzip && \
+    wget -qO /tmp/flatc.zip https://github.com/google/flatbuffers/releases/download/v24.12.23/Linux.flatc.binary.g++-13.zip && \
+    unzip -o /tmp/flatc.zip -d /usr/local/bin && chmod +x /usr/local/bin/flatc && rm /tmp/flatc.zip
+RUN npm install -g esbuild
+
+COPY schema/ schema/
+COPY package.json ./
+
+RUN mkdir -p server/lib/generated && \
+    flatc --ts --ts-flat-files -o server/lib/generated schema/control_plane.fbs schema/sftp_protocol.fbs && \
+    esbuild server/lib/generated/nexterm/control-plane.ts --bundle --format=cjs --outfile=server/lib/generated/control_plane_generated.js --allow-overwrite --platform=node --external:flatbuffers && \
+    esbuild server/lib/generated/nexterm/sftp-protocol.ts --bundle --format=cjs --outfile=server/lib/generated/sftp_protocol_generated.js --allow-overwrite --platform=node --external:flatbuffers && \
+    rm -rf server/lib/generated/nexterm
+
+
+FROM node:22-alpine AS server-builder
+
+ARG VERSION
+
+WORKDIR /app
+
+RUN apk add --no-cache \
+    python3 py3-pip py3-setuptools \
+    make g++ gcc build-base \
+    jq
+
+COPY package.json yarn.lock ./
+RUN if [ -n "$VERSION" ]; then \
+        jq --arg v "$VERSION" '.version = $v' package.json > tmp.json && mv tmp.json package.json; \
+    fi
+RUN for i in 1 2 3; do yarn install --production --network-timeout 500000 && break || sleep 15; done
+
+RUN rm -rf node_modules/@img/sharp-libvips-linux-x64 \
+           node_modules/@img/sharp-linux-x64 \
+           node_modules/@img/sharp-linux-arm64 \
+           node_modules/@img/sharp-libvips-linux-arm64
+
+COPY server/ server/
+COPY --from=schema-builder /app/server/lib/generated/ server/lib/generated/
+
+
+FROM alpine:3.21
+
+RUN apk add --no-cache nodejs
+
+ENV NODE_ENV=production
+ENV LOG_LEVEL=system
+
+WORKDIR /app
+
+COPY --from=client-builder /app/client/dist ./dist
+COPY --from=server-builder /app/server ./server
+COPY --from=server-builder /app/node_modules ./node_modules
+COPY --from=server-builder /app/package.json ./
+
+COPY docker-start.sh .
+RUN chmod +x docker-start.sh
+
+EXPOSE 6989
+
+CMD ["/bin/sh", "docker-start.sh"]

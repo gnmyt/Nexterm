@@ -1,7 +1,5 @@
 @use "@/common/styles/colors"
-
-$mobile: 768px
-$tablet: 1024px
+@use "@/common/styles/breakpoints"
 
 .identities-page
   display: flex
@@ -23,7 +21,7 @@ $tablet: 1024px
       align-items: flex-start
       margin-bottom: 1.5rem
 
-      @media (max-width: $mobile)
+      @media (max-width: breakpoints.$mobile)
         flex-direction: column
         gap: 0.75rem
 
@@ -33,7 +31,7 @@ $tablet: 1024px
           margin-bottom: 0.5rem
           font-weight: 600
 
-          @media (max-width: $mobile)
+          @media (max-width: breakpoints.$mobile)
             font-size: 1.15rem
         
         p
@@ -49,7 +47,7 @@ $tablet: 1024px
       grid-template-columns: repeat(auto-fill, minmax(320px, 1fr))
       gap: 0.75rem
 
-      @media (max-width: $mobile)
+      @media (max-width: breakpoints.$mobile)
         grid-template-columns: 1fr
 
       .identity-card
@@ -62,7 +60,7 @@ $tablet: 1024px
         justify-content: space-between
         align-items: flex-start
 
-        @media (max-width: $mobile)
+        @media (max-width: breakpoints.$mobile)
           padding: 1rem
 
         &:hover
@@ -75,7 +73,7 @@ $tablet: 1024px
           flex: 1
           min-width: 0
 
-          @media (max-width: $mobile)
+          @media (max-width: breakpoints.$mobile)
             gap: 0.75rem
 
           .identity-icon
@@ -86,7 +84,7 @@ $tablet: 1024px
             margin-top: 0.125rem
             flex-shrink: 0
 
-            @media (max-width: $mobile)
+            @media (max-width: breakpoints.$mobile)
               width: 1.5rem
               height: 1.5rem
 
@@ -155,7 +153,7 @@ $tablet: 1024px
         padding: 3rem 2rem
         color: colors.$subtext
 
-        @media (max-width: $mobile)
+        @media (max-width: breakpoints.$mobile)
           padding: 2rem 1rem
 
         svg

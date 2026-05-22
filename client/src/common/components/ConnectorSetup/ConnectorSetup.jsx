@@ -11,6 +11,7 @@ import { useTranslation } from "react-i18next";
 import { tauriFetch } from "@/common/utils/RequestUtil.js";
 import { setActiveServerUrl, getActiveServerUrl, openExternalUrl } from "@/common/utils/TauriUtil.js";
 import { UserContext } from "@/common/contexts/UserContext.jsx";
+import { addServer, activateServer } from "@/common/utils/ConnectorServers.js";
 import Icon from "@mdi/react";
 
 const ConnectorIcon = ({ connected }) => (
@@ -31,16 +32,28 @@ const LinkingHeader = ({ connected = false }) => (
     </div>
 );
 
-export const ConnectorSetup = ({ open }) => {
+export const ConnectorSetup = ({ open, isAddMode = false, onCancelAdd }) => {
     const { t } = useTranslation();
     const { sendToast } = useToast();
     const { updateSessionToken } = useContext(UserContext);
     const [step, setStep] = useState(1);
-    const [serverUrl, setServerUrl] = useState(getActiveServerUrl() || "");
+    const [serverUrl, setServerUrl] = useState(isAddMode ? "" : (getActiveServerUrl() || ""));
     const [connecting, setConnecting] = useState(false);
     const [deviceCode, setDeviceCode] = useState(null);
     const [deviceToken, setDeviceToken] = useState(null);
     const [polling, setPolling] = useState(false);
+    const [previousServerUrl] = useState(() => isAddMode ? getActiveServerUrl() : null);
+
+    useEffect(() => {
+        if (isAddMode && open) {
+            setStep(1);
+            setServerUrl("");
+            setConnecting(false);
+            setDeviceCode(null);
+            setDeviceToken(null);
+            setPolling(false);
+        }
+    }, [isAddMode, open]);
 
     useEffect(() => {
         if (!polling || !deviceToken) return;
@@ -49,8 +62,14 @@ export const ConnectorSetup = ({ open }) => {
                 const result = await request("auth/device/poll", "POST", { token: deviceToken });
                 if (result.status === "authorized" && result.token) {
                     setPolling(false);
-                    updateSessionToken(result.token);
-                    sendToast(t("common.success"), t("common.connectorSetup.authSuccess"));
+                    const id = addServer(getActiveServerUrl(), result.token);
+                    activateServer(id);
+                    if (isAddMode) {
+                        window.location.reload();
+                    } else {
+                        updateSessionToken(result.token);
+                        sendToast(t("common.success"), t("common.connectorSetup.authSuccess"));
+                    }
                 } else if (result.status === "invalid") await regenerateCode();
             } catch {}
         };
@@ -108,10 +127,27 @@ export const ConnectorSetup = ({ open }) => {
         catch { sendToast(t("common.error"), t("common.connectorSetup.copyFailed")); }
     };
 
-    const handleBack = () => { setPolling(false); setDeviceCode(null); setDeviceToken(null); setStep(1); setActiveServerUrl(null); };
+    const resetFlow = () => {
+        setPolling(false);
+        setDeviceCode(null);
+        setDeviceToken(null);
+        setStep(1);
+    };
+
+    const handleBack = () => {
+        resetFlow();
+        setActiveServerUrl(isAddMode && previousServerUrl ? previousServerUrl : null);
+    };
+
+    const handleCancel = () => {
+        resetFlow();
+        setServerUrl("");
+        if (previousServerUrl) setActiveServerUrl(previousServerUrl);
+        onCancelAdd?.();
+    };
 
     return (
-        <DialogProvider disableClosing open={open}>
+        <DialogProvider disableClosing={!isAddMode} open={open} onClose={isAddMode ? handleCancel : undefined}>
             <div className="connector-setup">
                 <LinkingHeader connected={step === 2 && polling} />
                 
@@ -125,6 +161,7 @@ export const ConnectorSetup = ({ open }) => {
                             <Input type="text" id="serverUrl" icon={mdiServerNetwork} placeholder="https://nexterm.example.com" value={serverUrl} setValue={setServerUrl} />
                         </div>
                         <Button text={connecting ? t("common.connectorSetup.connecting") : t("common.connectorSetup.connect")} disabled={connecting} />
+                        {isAddMode && <Button type="secondary" text={t("common.actions.cancel")} onClick={handleCancel} />}
                     </form>
                 )}
 

@@ -9,6 +9,9 @@
   user-select: none
   margin: 1rem 1.5rem
 
+  &.qr-mode
+    min-width: 20rem
+
 .login-logo
   display: flex
   align-items: center
@@ -20,6 +23,36 @@
 
   h1
     margin: 0
+
+.qr-login-container
+  display: flex
+  flex-direction: column
+  align-items: center
+  gap: 1.25rem
+  width: 100%
+
+  .qr-login-description
+    color: colors.$subtext
+    font-size: 0.9rem
+    text-align: center
+    margin: 0
+    max-width: 18rem
+
+  .qr-code-wrapper
+    padding: 1.25rem
+    border-radius: 1rem
+    background: colors.$primary
+
+  .qr-device-code
+    font-family: monospace
+    font-size: 1.1rem
+    font-weight: 600
+    letter-spacing: 0.15em
+    color: colors.$subtext
+    opacity: 0.7
+
+  .btn
+    width: 100%
 
 .login-form
   display: flex

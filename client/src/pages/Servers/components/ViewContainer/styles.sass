@@ -1,7 +1,5 @@
 @use "@/common/styles/colors"
-
-$mobile: 768px
-$tablet: 1024px
+@use "@/common/styles/breakpoints"
 
 .view-container
   display: flex
@@ -12,7 +10,7 @@ $tablet: 1024px
   overflow: hidden
   transition: all 0.3s ease
 
-  @media (max-width: $mobile)
+  @media (max-width: breakpoints.$mobile)
     min-height: 0
 
   &.fullscreen
@@ -26,7 +24,7 @@ $tablet: 1024px
   touch-action: none
   user-select: none
 
-  @media (max-width: $mobile)
+  @media (max-width: breakpoints.$mobile)
     .exit-fullscreen-btn
       padding: 0.75rem
       
@@ -74,10 +72,10 @@ $tablet: 1024px
   width: 100%
   overflow: hidden
 
-  @media (max-width: $tablet)
+  @media (max-width: breakpoints.$tablet)
     height: calc(100% - 3rem)
 
-  @media (max-width: $mobile)
+  @media (max-width: breakpoints.$mobile)
     height: calc(100% - 2.5rem)
 
   .view-container.fullscreen &
@@ -100,7 +98,7 @@ $tablet: 1024px
     gap: 0
     background-color: colors.$darker-gray
 
-    @media (max-width: $mobile)
+    @media (max-width: breakpoints.$mobile)
       .session-renderer
         position: absolute !important
         top: 0 !important
@@ -122,6 +120,9 @@ $tablet: 1024px
   overflow: hidden
   -webkit-overflow-scrolling: touch
 
+  .xterm-screen
+    padding-left: 3px
+
   &.visible
     opacity: 1
     pointer-events: auto
@@ -131,13 +132,14 @@ $tablet: 1024px
     pointer-events: none
 
 .grid-resizer
-  background: transparent
-  transition: background-color 0.2s ease
+  background: colors.$gray
+  transition: opacity 0.2s ease
   user-select: none
   flex-shrink: 0
   touch-action: none
+  opacity: 0.1
 
-  @media (max-width: $tablet)
+  @media (max-width: breakpoints.$tablet)
     &.vertical
       width: 12px !important
       margin-left: -6px
@@ -146,14 +148,14 @@ $tablet: 1024px
       height: 12px !important
       margin-top: -6px
 
-  @media (max-width: $mobile)
+  @media (max-width: breakpoints.$mobile)
     display: none
 
   &:hover
-    background-color: colors.$primary !important
+    opacity: 0.6
 
   &:active, .view-layouter.resizing &
-    background-color: colors.$primary !important
+    opacity: 1
 
   &.vertical
     cursor: col-resize

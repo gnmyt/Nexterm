@@ -3,6 +3,8 @@ import Input from "@/common/components/IconInput";
 import SelectBox from "@/common/components/SelectBox";
 import IconChooser from "../components/IconChooser";
 import { useTranslation } from "react-i18next";
+import { useEffect, useState } from "react";
+import { getRequest } from "@/common/utils/RequestUtil.js";
 
 const PROTOCOL_OPTIONS = [
     { label: "SSH", value: "ssh" },
@@ -13,6 +15,18 @@ const PROTOCOL_OPTIONS = [
 
 const DetailsPage = ({name, setName, icon, setIcon, config, setConfig, fieldConfig}) => {
     const { t } = useTranslation();
+    const [engines, setEngines] = useState([]);
+
+    useEffect(() => {
+        getRequest("engines").then(data => setEngines(data || [])).catch(() => {});
+    }, []);
+
+    const engineOptions = engines.map(e => ({
+        label: `${e.name}${e.connected ? "" : " " + t("servers.dialog.engineOffline")}`,
+        value: String(e.id),
+    }));
+
+    const showEngineSelect = engines.length > 1;
     
     return (
         <>
@@ -27,6 +41,17 @@ const DetailsPage = ({name, setName, icon, setIcon, config, setConfig, fieldConf
                     <IconChooser selected={icon} setSelected={setIcon} />
                 </div>
             </div>
+
+            {showEngineSelect && (
+                <div className="form-group">
+                    <label>{t("servers.dialog.fields.engine")}</label>
+                    <SelectBox
+                        options={engineOptions}
+                        selected={config.engineId ? String(config.engineId) : engineOptions[0]?.value}
+                        setSelected={(value) => setConfig(prev => ({ ...prev, engineId: value }))}
+                    />
+                </div>
+            )}
             
             {fieldConfig.showIpPort && (
                 <>

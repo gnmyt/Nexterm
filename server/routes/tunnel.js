@@ -1,6 +1,10 @@
 const wsAuth = require("../middlewares/wsAuth");
 const logger = require("../utils/logger");
-const { createSSHConnection } = require("../utils/sshConnection");
+const { v4: uuidv4 } = require("uuid");
+const { getIdentityCredentials } = require("../controllers/identity");
+const { SessionType } = require("../lib/generated/control_plane_generated");
+const controlPlane = require("../lib/controlPlane/ControlPlaneServer");
+const { buildSSHParams, resolveJumpHosts } = require("../lib/ConnectionService");
 
 module.exports = async (ws, req) => {
     const context = await wsAuth(ws, req);
@@ -8,9 +12,9 @@ module.exports = async (ws, req) => {
 
     const { entry, identity, user } = context;
     const remoteHost = req.query.remoteHost || "127.0.0.1";
-    const remotePort = parseInt(req.query.remotePort, 10);
+    const remotePort = Number.parseInt(req.query.remotePort, 10);
 
-    if (!remotePort || isNaN(remotePort)) {
+    if (!remotePort || Number.isNaN(remotePort)) {
         ws.close(4001, "Missing or invalid remotePort parameter");
         return;
     }
@@ -21,68 +25,62 @@ module.exports = async (ws, req) => {
         return;
     }
 
+    if (!controlPlane.hasEngine()) {
+        ws.close(4003, "No engine connected. Tunnels require the Nexterm Engine.");
+        return;
+    }
+
     logger.info(`Starting tunnel`, { user: user.username, server: entry.name, remoteHost, remotePort });
 
-    let ssh = null;
-    let forwardStream = null;
+    const sessionId = `tunnel-${uuidv4()}`;
+    let dataSocket = null;
 
     const cleanup = () => {
-        if (forwardStream) {
-            try {
-                forwardStream.destroy();
-            } catch (e) {
-            }
-            forwardStream = null;
+        if (dataSocket) {
+            try { dataSocket.destroy(); } catch {}
+            dataSocket = null;
         }
-        if (ssh) {
-            try {
-                if (ssh._jumpConnections) ssh._jumpConnections.forEach(conn => conn.ssh.end());
-                ssh.end();
-            } catch (e) {
-            }
-            ssh = null;
-        }
+        controlPlane.closeSession(sessionId);
     };
 
     try {
-        ssh = await new Promise((resolve, reject) => {
-            const timeout = setTimeout(() => reject(new Error("SSH connection timeout")), 30000);
-            createSSHConnection(entry, identity, null, user.id).then(conn => {
-                conn.on("ready", () => {
-                    clearTimeout(timeout);
-                    resolve(conn);
-                });
-                conn.on("error", (err) => {
-                    clearTimeout(timeout);
-                    reject(err);
-                });
-            }).catch(err => {
-                clearTimeout(timeout);
-                reject(err);
-            });
-        });
+        const credentials = identity.isDirect && identity.directCredentials
+            ? identity.directCredentials : await getIdentityCredentials(identity.id);
 
-        forwardStream = await new Promise((resolve, reject) => {
-            ssh.forwardOut("127.0.0.1", 0, remoteHost, remotePort, (err, stream) => {
-                err ? reject(new Error(`Port forward failed: ${err.message}`)) : resolve(stream);
-            });
-        });
+        const host = entry.config?.ip;
+        const port = entry.config?.port || 22;
+        if (!host) {
+            ws.close(4004, "Missing host configuration");
+            return;
+        }
+
+        const params = {
+            ...buildSSHParams(identity, credentials),
+            remoteHost,
+            remotePort: String(remotePort),
+        };
+
+        const jumpHosts = await resolveJumpHosts(entry);
+
+        const dataSocketPromise = controlPlane.waitForDataConnection(sessionId);
+        await controlPlane.openSession(sessionId, SessionType.Tunnel, host, port, params, jumpHosts);
+        dataSocket = await dataSocketPromise;
 
         logger.info(`Tunnel established`, { user: user.username, server: entry.name, remoteHost, remotePort });
         ws.send(JSON.stringify({ type: "ready" }));
 
-        forwardStream.on("data", (data) => ws.readyState === ws.OPEN && ws.send(data));
-        forwardStream.on("close", () => {
-            logger.info(`Tunnel stream closed`, { server: entry.name, remotePort });
+        dataSocket.on("data", (data) => ws.readyState === ws.OPEN && ws.send(data));
+        dataSocket.on("close", () => {
+            logger.info(`Tunnel data connection closed`, { server: entry.name, remotePort });
             ws.close(1000, "Tunnel closed");
         });
-        forwardStream.on("error", (err) => {
-            logger.error(`Tunnel stream error`, { error: err.message });
-            ws.close(4003, `Stream error: ${err.message}`);
+        dataSocket.on("error", (err) => {
+            logger.error(`Tunnel data socket error`, { error: err.message });
+            ws.close(4005, `Stream error: ${err.message}`);
         });
 
         ws.on("message", (data) => {
-            if (!forwardStream?.writable) return;
+            if (!dataSocket?.writable) return;
             const str = data.toString();
             if (str.startsWith("{")) {
                 try {
@@ -90,10 +88,9 @@ module.exports = async (ws, req) => {
                         ws.send(JSON.stringify({ type: "pong" }));
                         return;
                     }
-                } catch (e) {
-                }
+                } catch {}
             }
-            forwardStream.write(data);
+            dataSocket.write(data);
         });
 
         ws.on("close", () => {

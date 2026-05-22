@@ -6,76 +6,52 @@ import '../utils/auth_manager.dart';
 
 class SessionsScreen extends StatefulWidget {
   final AuthManager authManager;
-
   const SessionsScreen({super.key, required this.authManager});
-
-  @override
-  State<SessionsScreen> createState() => _SessionsScreenState();
+  @override State<SessionsScreen> createState() => _SessionsScreenState();
 }
 
 class _SessionsScreenState extends State<SessionsScreen> {
   List<SessionModel>? _sessions;
   bool _loading = false;
-  final AuthService _authService = AuthService();
+  final _auth = AuthService();
 
-  @override
-  void initState() {
-    super.initState();
-    _loadSessions();
-  }
+  @override void initState() { super.initState(); _load(); }
 
-  Future<void> _loadSessions() async {
+  Future<void> _load() async {
     setState(() => _loading = true);
     final token = widget.authManager.sessionToken;
     if (token != null) {
-      final sessions = await _authService.listSessions(token);
-      setState(() {
-        _sessions = sessions;
-        _loading = false;
-      });
+      final sessions = await _auth.listSessions(token);
+      if (mounted) setState(() { _sessions = sessions; _loading = false; });
     } else {
       setState(() => _loading = false);
     }
   }
 
-  Future<void> _revokeSession(String sessionId) async {
-    final confirmed = await showDialog<bool>(
+  Future<void> _revoke(String id) async {
+    final ok = await showDialog<bool>(
       context: context,
-      builder: (context) => AlertDialog(
+      builder: (ctx) => AlertDialog(
         title: const Text('Revoke Session'),
         content: const Text('Are you sure you want to end this session?'),
         actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context, false),
-            child: const Text('Cancel'),
-          ),
-          FilledButton(
-            onPressed: () => Navigator.pop(context, true),
-            child: const Text('Revoke'),
-          ),
+          TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('Cancel')),
+          FilledButton(onPressed: () => Navigator.pop(ctx, true), child: const Text('Revoke')),
         ],
       ),
     );
-
-    if (confirmed == true && mounted) {
-      final token = widget.authManager.sessionToken;
-      if (token != null) {
-        final success = await _authService.revokeSession(token, sessionId);
-        if (success && mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Session revoked successfully')),
-          );
-          _loadSessions();
-        } else if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Failed to revoke session')),
-          );
-        }
-      }
-    }
+    if (ok != true || !mounted) return;
+    final token = widget.authManager.sessionToken;
+    if (token == null) return;
+    final success = await _auth.revokeSession(token, id);
+    if (!mounted) return;
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+      content: Text(success ? 'Session revoked' : 'Failed to revoke session'),
+      behavior: SnackBarBehavior.floating));
+    if (success) _load();
   }
 
-  IconData _getDeviceIcon(String? ua) {
+  IconData _icon(String? ua) {
     if (ua == null) return MdiIcons.devices;
     if (ua.startsWith('NextermConnector/')) return MdiIcons.application;
     if (ua.startsWith('NextermMobile/')) return MdiIcons.cellphoneLink;
@@ -86,37 +62,29 @@ class _SessionsScreenState extends State<SessionsScreen> {
     return MdiIcons.devices;
   }
 
-  String _formatDate(DateTime? date) {
-    if (date == null) return 'Unknown';
-    final now = DateTime.now();
-    final difference = now.difference(date);
-
-    if (difference.inMinutes < 1) {
-      return 'Just now';
-    } else if (difference.inHours < 1) {
-      return '${difference.inMinutes}m ago';
-    } else if (difference.inDays < 1) {
-      return '${difference.inHours}h ago';
-    } else if (difference.inDays < 7) {
-      return '${difference.inDays}d ago';
-    } else {
-      return '${date.day}/${date.month}/${date.year}';
-    }
+  String _ago(DateTime? d) {
+    if (d == null) return 'Unknown';
+    final diff = DateTime.now().difference(d);
+    if (diff.inMinutes < 1) return 'Just now';
+    if (diff.inHours < 1) return '${diff.inMinutes}m ago';
+    if (diff.inDays < 1) return '${diff.inHours}h ago';
+    if (diff.inDays < 7) return '${diff.inDays}d ago';
+    return '${d.day}/${d.month}/${d.year}';
   }
 
-  String _shortenUserAgent(String? ua) {
+  String _device(String? ua) {
     if (ua == null) return 'Unknown Device';
     final conn = RegExp(r'^NextermConnector/([\d.]+)\s*\(([^;]+);').firstMatch(ua);
-    if (conn != null) return 'Nexterm Connector ${conn.group(1)} on ${conn.group(2)?.trim()}';
+    if (conn != null) return 'Connector ${conn.group(1)} · ${conn.group(2)?.trim()}';
     final mobile = RegExp(r'^NextermMobile/([\d.]+)\s*\(([^;)]+)').firstMatch(ua);
     if (mobile != null) {
       final p = mobile.group(2)?.trim() ?? '';
-      return 'Nexterm Mobile ${mobile.group(1)} on ${p.isNotEmpty ? p[0].toUpperCase() + p.substring(1) : p}';
+      return 'Mobile ${mobile.group(1)} · ${p.isNotEmpty ? p[0].toUpperCase() + p.substring(1) : p}';
     }
     for (final b in ['Chrome', 'Firefox', 'Safari', 'Edge']) {
       if (ua.contains(b) && (b != 'Safari' || !ua.contains('Chrome'))) {
         for (final os in ['Windows', 'Mac', 'Linux', 'Android', 'iPhone', 'iPad']) {
-          if (ua.contains(os)) return '$b on $os';
+          if (ua.contains(os)) return '$b · $os';
         }
         return b;
       }
@@ -126,82 +94,84 @@ class _SessionsScreenState extends State<SessionsScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
+    final tt = Theme.of(context).textTheme;
+
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Active Sessions'),
-        actions: [
-          IconButton(icon: Icon(MdiIcons.refresh), onPressed: _loadSessions),
-        ],
+      body: SafeArea(
+        child: Column(children: [
+          Padding(
+            padding: const EdgeInsets.fromLTRB(8, 8, 16, 4),
+            child: Row(children: [
+              IconButton(icon: const Icon(Icons.arrow_back), onPressed: () => Navigator.pop(context)),
+              const SizedBox(width: 4),
+              Expanded(child: Text('Active Sessions', style: tt.titleLarge?.copyWith(fontWeight: FontWeight.w700))),
+              IconButton(icon: Icon(MdiIcons.refresh, size: 22), onPressed: _load),
+            ]),
+          ),
+          Expanded(
+            child: _loading
+                ? const Center(child: CircularProgressIndicator())
+                : RefreshIndicator(onRefresh: _load, child: _sessions == null || _sessions!.isEmpty ? _empty(cs, tt) : _list(cs)),
+          ),
+        ]),
       ),
-      body: _loading
-          ? const Center(child: CircularProgressIndicator())
-          : RefreshIndicator(
-              onRefresh: _loadSessions,
-              child: _sessions == null || _sessions!.isEmpty
-                  ? ListView(
-                      children: [
-                        SizedBox(
-                          height: MediaQuery.of(context).size.height * 0.6,
-                          child: Center(
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Icon(
-                                  MdiIcons.monitor,
-                                  size: 64,
-                                  color: Theme.of(
-                                    context,
-                                  ).colorScheme.onSurfaceVariant,
-                                ),
-                                const SizedBox(height: 16),
-                                Text(
-                                  'No other active sessions',
-                                  style: Theme.of(
-                                    context,
-                                  ).textTheme.titleMedium?.copyWith(
-                                    color: Theme.of(
-                                      context,
-                                    ).colorScheme.onSurfaceVariant,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                      ],
-                    )
-                  : ListView.builder(
-                      itemCount: _sessions!.length,
-                      itemBuilder: (context, index) {
-                        final session = _sessions![index];
-                        return Card(
-                          margin: const EdgeInsets.symmetric(
-                            horizontal: 8.0,
-                            vertical: 4.0,
-                          ),
-                          child: ListTile(
-                            leading: Icon(
-                              _getDeviceIcon(session.userAgent),
-                              size: 32,
-                            ),
-                            title: Text(_shortenUserAgent(session.userAgent)),
-                            subtitle: Text(
-                              'IP: ${session.ip ?? 'Unknown'}\n'
-                              'Last Activity: ${_formatDate(
-                                session.lastActivity,
-                              )}',
-                            ),
-                            isThreeLine: true,
-                            trailing: IconButton(
-                              icon: Icon(MdiIcons.deleteOutline),
-                              onPressed: () => _revokeSession(session.id),
-                              color: Theme.of(context).colorScheme.error,
-                            ),
-                          ),
-                        );
-                      },
-                    ),
-            ),
     );
   }
+
+  Widget _empty(ColorScheme cs, TextTheme tt) => ListView(children: [SizedBox(
+    height: MediaQuery.of(context).size.height * 0.5,
+    child: Center(child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
+      Container(
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(color: cs.surfaceContainerHigh, shape: BoxShape.circle),
+        child: Icon(MdiIcons.monitor, size: 32, color: cs.outline),
+      ),
+      const SizedBox(height: 20),
+      Text('No other sessions', style: tt.titleMedium?.copyWith(fontWeight: FontWeight.w600)),
+      const SizedBox(height: 6),
+      Text('Only this device is active', style: tt.bodySmall?.copyWith(color: cs.outline)),
+    ])),
+  )]);
+
+  Widget _list(ColorScheme cs) => ListView.builder(
+    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+    itemCount: _sessions!.length,
+    itemBuilder: (_, i) => _sessionTile(_sessions![i], cs),
+  );
+
+  Widget _sessionTile(SessionModel s, ColorScheme cs) => Padding(
+    padding: const EdgeInsets.symmetric(vertical: 3),
+    child: Container(
+      padding: const EdgeInsets.all(14),
+      decoration: BoxDecoration(color: cs.surfaceContainerHigh, borderRadius: BorderRadius.circular(16)),
+      child: Row(children: [
+        Container(
+          width: 42, height: 42,
+          decoration: BoxDecoration(color: cs.primaryContainer, borderRadius: BorderRadius.circular(12)),
+          child: Icon(_icon(s.userAgent), color: cs.onPrimaryContainer, size: 20),
+        ),
+        const SizedBox(width: 12),
+        Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+          Text(_device(s.userAgent), style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600), overflow: TextOverflow.ellipsis),
+          Padding(padding: const EdgeInsets.only(top: 3),
+            child: Text('${s.ip ?? 'Unknown IP'} · ${_ago(s.lastActivity)}',
+              style: TextStyle(fontSize: 12, color: cs.outline), overflow: TextOverflow.ellipsis)),
+        ])),
+        const SizedBox(width: 8),
+        Material(
+          color: cs.errorContainer,
+          borderRadius: BorderRadius.circular(10),
+          child: InkWell(
+            onTap: () => _revoke(s.id),
+            borderRadius: BorderRadius.circular(10),
+            child: Padding(
+              padding: const EdgeInsets.all(8),
+              child: Icon(MdiIcons.deleteOutline, size: 18, color: cs.onErrorContainer),
+            ),
+          ),
+        ),
+      ]),
+    ),
+  );
 }

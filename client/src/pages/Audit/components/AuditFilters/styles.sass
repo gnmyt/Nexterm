@@ -1,14 +1,12 @@
 @use "@/common/styles/colors"
-
-$mobile: 768px
-$tablet: 1024px
+@use "@/common/styles/breakpoints"
 
 .audit-filters
   background-color: colors.$lighter-background
   border: 1px solid colors.$dark-gray
   border-radius: 0.75rem
   padding: 0.375rem
-  box-shadow: 0 12px 48px rgba(0, 0, 0, 0.5), 0 4px 16px rgba(0, 0, 0, 0.3)
+  box-shadow: colors.$shadow-lg
   overflow: hidden
   flex-shrink: 0
 
@@ -22,7 +20,7 @@ $tablet: 1024px
     border-radius: 0.5rem
     user-select: none
 
-    @media (max-width: $mobile)
+    @media (max-width: breakpoints.$mobile)
       padding: 0.5rem 0.625rem
 
     &:hover
@@ -36,7 +34,7 @@ $tablet: 1024px
       font-size: 0.9rem
       font-weight: 500
 
-      @media (max-width: $mobile)
+      @media (max-width: breakpoints.$mobile)
         font-size: 0.85rem
         gap: 0.5rem
 
@@ -46,7 +44,7 @@ $tablet: 1024px
         color: colors.$primary
         opacity: 0.9
 
-        @media (max-width: $mobile)
+        @media (max-width: breakpoints.$mobile)
           width: 1rem
           height: 1rem
 
@@ -58,7 +56,7 @@ $tablet: 1024px
       padding: 0.25rem 0.75rem
       border-radius: 0.5rem
 
-      @media (max-width: $mobile)
+      @media (max-width: breakpoints.$mobile)
         font-size: 0.7rem
         padding: 0.2rem 0.5rem
 
@@ -67,7 +65,7 @@ $tablet: 1024px
     border-top: 1px solid colors.$dark-gray
     margin-top: 0.375rem
 
-    @media (max-width: $mobile)
+    @media (max-width: breakpoints.$mobile)
       padding: 0.5rem
 
   .filters-row
@@ -76,12 +74,12 @@ $tablet: 1024px
     gap: 0.75rem
     margin-bottom: 0.75rem
 
-    @media (max-width: $tablet)
+    @media (max-width: breakpoints.$tablet)
       grid-template-columns: repeat(auto-fit, minmax(180px, 1fr))
       gap: 0.625rem
       margin-bottom: 0.625rem
 
-    @media (max-width: $mobile)
+    @media (max-width: breakpoints.$mobile)
       grid-template-columns: 1fr
       gap: 0.5rem
       margin-bottom: 0.5rem
@@ -100,42 +98,13 @@ $tablet: 1024px
         color: colors.$subtext
         font-weight: 500
 
-        @media (max-width: $mobile)
+        @media (max-width: breakpoints.$mobile)
           font-size: 0.75rem
-
-      .date-input
-        padding: 0.625rem 0.75rem
-        border: 1px solid colors.$dark-gray
-        border-radius: 0.5rem
-        background-color: colors.$dark-gray
-        color: colors.$white
-        font-size: 0.9rem
-        outline: none
-        transition: border-color 0.1s ease, background-color 0.1s ease
-        width: 100%
-        min-width: 0
-        box-sizing: border-box
-
-        @media (max-width: $mobile)
-          padding: 0.5rem 0.625rem
-          font-size: 0.8rem
-
-        &:hover
-          background-color: colors.$gray
-
-        &:focus
-          border-color: colors.$primary
-          background-color: colors.$gray
-
-        &::-webkit-calendar-picker-indicator
-          filter: invert(1)
-          cursor: pointer
-          opacity: 0.7
 
       &.filter-actions
         justify-content: flex-end
         align-items: flex-end
 
-        @media (max-width: $mobile)
+        @media (max-width: breakpoints.$mobile)
           justify-content: stretch
           align-items: stretch

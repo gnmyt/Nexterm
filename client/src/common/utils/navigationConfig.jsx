@@ -1,5 +1,6 @@
-import { mdiServerOutline, mdiCodeBraces, mdiChartBoxOutline, mdiShieldCheckOutline, mdiAccountCircleOutline, mdiAccountGroup, mdiClockStarFourPointsOutline, mdiShieldAccountOutline, mdiDomain, mdiCreationOutline, mdiKeyVariant, mdiConsole, mdiKeyboardOutline, mdiCloudDownloadOutline, mdiChartLine, mdiHarddisk, mdiFolderOutline } from "@mdi/js";
+import { mdiServerOutline, mdiCodeBraces, mdiChartBoxOutline, mdiShieldCheckOutline, mdiAccountCircleOutline, mdiAccountGroup, mdiClockStarFourPointsOutline, mdiShieldAccountOutline, mdiDomain, mdiCreationOutline, mdiKeyVariant, mdiConsole, mdiKeyboardOutline, mdiCloudDownloadOutline, mdiChartLine, mdiHarddisk, mdiFolderOutline, mdiEngine, mdiPalette } from "@mdi/js";
 import Account from "@/pages/Settings/pages/Account";
+import Appearance from "@/pages/Settings/pages/Appearance";
 import Terminal from "@/pages/Settings/pages/Terminal";
 import FileManager from "@/pages/Settings/pages/FileManager";
 import Keymaps from "@/pages/Settings/pages/Keymaps";
@@ -12,6 +13,7 @@ import Sources from "@/pages/Settings/pages/Sources";
 import Monitoring from "@/pages/Settings/pages/Monitoring";
 import Backup from "@/pages/Settings/pages/Backup";
 import AI from "@/pages/Settings/pages/AI";
+import Engines from "@/pages/Settings/pages/Engines";
 
 export const getSidebarNavigation = t => [
     { title: t('common.sidebar.servers'), key: "servers", path: "/servers", icon: mdiServerOutline, toggleEvent: "toggleServerList" },
@@ -22,6 +24,7 @@ export const getSidebarNavigation = t => [
 
 export const getSettingsUserPages = t => [
     { title: t("settings.pages.account"), key: "account", icon: mdiAccountCircleOutline, content: <Account /> },
+    { title: t("settings.pages.appearance"), key: "appearance", icon: mdiPalette, content: <Appearance /> },
     { title: t("settings.pages.terminal"), key: "terminal", icon: mdiConsole, content: <Terminal /> },
     { title: t("settings.pages.fileManager"), key: "fileManager", icon: mdiFolderOutline, content: <FileManager /> },
     { title: t("settings.pages.keymaps"), key: "keymaps", icon: mdiKeyboardOutline, content: <Keymaps /> },
@@ -35,6 +38,7 @@ export const getSettingsAdminPages = t => [
     { title: t("settings.pages.authentication"), key: "authentication", icon: mdiShieldAccountOutline, content: <Authentication /> },
     { title: t("settings.pages.sources"), key: "sources", icon: mdiCloudDownloadOutline, content: <Sources /> },
     { title: t("settings.pages.monitoring"), key: "monitoring", icon: mdiChartLine, content: <Monitoring /> },
+    { title: t("settings.pages.engines"), key: "engines", icon: mdiEngine, content: <Engines /> },
     { title: t("settings.pages.backup"), key: "backup", icon: mdiHarddisk, content: <Backup /> },
     { title: t("settings.pages.ai"), key: "ai", icon: mdiCreationOutline, content: <AI /> },
 ];

@@ -1,13 +1,11 @@
 @use "@/common/styles/colors"
-
-$mobile: 768px
-$tablet: 1024px
+@use "@/common/styles/breakpoints"
 
 .audit-table-wrapper
   .paginated-table .table-header
     grid-template-columns: minmax(100px, 1.5fr) minmax(120px, 2fr) minmax(100px, 1.5fr) minmax(80px, 1fr) minmax(80px, 1fr) 50px !important
 
-    @media (max-width: $tablet)
+    @media (max-width: breakpoints.$tablet)
       grid-template-columns: minmax(90px, 1.5fr) minmax(100px, 2fr) minmax(80px, 1fr) 40px !important
 
       .header-cell:nth-child(4),
@@ -31,12 +29,12 @@ $tablet: 1024px
     border-radius: 0.5rem
     user-select: none
 
-    @media (max-width: $tablet)
+    @media (max-width: breakpoints.$tablet)
       grid-template-columns: minmax(90px, 1.5fr) minmax(100px, 2fr) minmax(80px, 1fr) 40px
       gap: 0.5rem
       padding: 0.5rem 0.625rem
 
-    @media (max-width: $mobile)
+    @media (max-width: breakpoints.$mobile)
       display: flex
       flex-direction: column
       gap: 0.5rem
@@ -46,7 +44,7 @@ $tablet: 1024px
       background-color: colors.$gray
 
     &:active
-      @media (max-width: $mobile)
+      @media (max-width: breakpoints.$mobile)
         background-color: colors.$gray
 
   .cell
@@ -56,14 +54,14 @@ $tablet: 1024px
     min-width: 0
     overflow: hidden
 
-    @media (max-width: $tablet)
+    @media (max-width: breakpoints.$tablet)
       font-size: 0.85rem
 
       &:nth-child(4),
       &:nth-child(5)
         display: none
 
-    @media (max-width: $mobile)
+    @media (max-width: breakpoints.$mobile)
       display: flex !important
       flex-direction: row
       gap: 0.5rem
@@ -116,7 +114,7 @@ $tablet: 1024px
     text-transform: uppercase
     white-space: nowrap
 
-    @media (max-width: $mobile)
+    @media (max-width: breakpoints.$mobile)
       font-size: 0.7rem
       padding: 0.2rem 0.5rem
 
@@ -178,7 +176,7 @@ $tablet: 1024px
     overflow: hidden
     text-overflow: ellipsis
 
-    @media (max-width: $mobile)
+    @media (max-width: breakpoints.$mobile)
       font-size: 0.7rem
       padding: 0.2rem 0.5rem
 
@@ -193,7 +191,7 @@ $tablet: 1024px
     font-size: 0.75rem
     white-space: nowrap
 
-    @media (max-width: $mobile)
+    @media (max-width: breakpoints.$mobile)
       font-size: 0.7rem
       padding: 0.2rem 0.5rem
 
@@ -201,7 +199,7 @@ $tablet: 1024px
     justify-content: flex-end
     gap: 0.5rem
 
-    @media (max-width: $mobile)
+    @media (max-width: breakpoints.$mobile)
       display: none !important
 
   .play-recording-btn
@@ -243,7 +241,7 @@ $tablet: 1024px
     flex-direction: column
     gap: 0.75rem
 
-    @media (max-width: $mobile)
+    @media (max-width: breakpoints.$mobile)
       padding: 0.625rem
       gap: 0.5rem
 
@@ -256,7 +254,7 @@ $tablet: 1024px
       color: colors.$subtext
       font-weight: 500
 
-      @media (max-width: $mobile)
+      @media (max-width: breakpoints.$mobile)
         font-size: 0.75rem
         margin-bottom: 0.375rem
 
@@ -267,7 +265,7 @@ $tablet: 1024px
       font-size: 0.9rem
       word-break: break-word
 
-      @media (max-width: $mobile)
+      @media (max-width: breakpoints.$mobile)
         font-size: 0.85rem
 
       svg
@@ -281,11 +279,11 @@ $tablet: 1024px
     grid-template-columns: repeat(auto-fit, minmax(200px, 1fr))
     gap: 0.75rem
 
-    @media (max-width: $tablet)
+    @media (max-width: breakpoints.$tablet)
       grid-template-columns: repeat(auto-fit, minmax(150px, 1fr))
       gap: 0.625rem
 
-    @media (max-width: $mobile)
+    @media (max-width: breakpoints.$mobile)
       grid-template-columns: 1fr
       gap: 0.5rem
 
@@ -309,5 +307,5 @@ $tablet: 1024px
       font-size: 0.85rem
       word-break: break-word
 
-      @media (max-width: $mobile)
+      @media (max-width: breakpoints.$mobile)
         font-size: 0.8rem

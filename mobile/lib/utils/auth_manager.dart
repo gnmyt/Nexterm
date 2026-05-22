@@ -1,60 +1,51 @@
 import 'package:flutter/foundation.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import '../services/auth_service.dart';
-import '../models/auth_models.dart';
+import '../models/server_account.dart';
+import 'server_account_manager.dart';
 
 class AuthManager extends ChangeNotifier {
-  bool _isAuthenticated;
-  String? _sessionToken;
-  UserInfo? _userInfo;
+  final ServerAccountManager _accountManager;
   final _authService = AuthService();
 
-  bool get isAuthenticated => _isAuthenticated;
-  String? get sessionToken => _sessionToken;
-  UserInfo? get userInfo => _userInfo;
+  bool get isAuthenticated => _accountManager.activeAccount != null;
+  String? get sessionToken => _accountManager.activeAccount?.token;
+  ServerAccountManager get accountManager => _accountManager;
 
-  AuthManager(bool isAuthenticated) : _isAuthenticated = isAuthenticated {
-    if (isAuthenticated) _loadStoredToken();
+  AuthManager(this._accountManager) {
+    _accountManager.addListener(_onAccountChanged);
   }
 
-  Future<void> _loadStoredToken() async {
-    final prefs = await SharedPreferences.getInstance();
-    _sessionToken = prefs.getString('sessionToken');
-    if (_sessionToken != null) {
-      _userInfo = await _authService.getCurrentUser(_sessionToken!);
-      notifyListeners();
-    }
-  }
+  void _onAccountChanged() => notifyListeners();
 
-  Future<void> loginWithToken(String token) async {
-    _sessionToken = token;
-    _isAuthenticated = true;
-
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setBool('isLoggedIn', true);
-    await prefs.setString('sessionToken', token);
-
-    _userInfo = await _authService.getCurrentUser(token);
+  Future<void> loginWithToken(String token, {required String baseUrl, required String label}) async {
+    final userInfo = await _authService.getCurrentUser(token);
+    final account = ServerAccount(
+      id: DateTime.now().millisecondsSinceEpoch.toString(),
+      label: label, baseUrl: baseUrl, token: token,
+      username: userInfo?.username, fullName: userInfo?.fullName,
+    );
+    await _accountManager.addAccount(account);
+    await _accountManager.switchAccount(account.id);
     notifyListeners();
   }
 
-  Future<void> logout() async {
-    if (_sessionToken != null) await _authService.logout(_sessionToken!);
-    _isAuthenticated = false;
-    _sessionToken = null;
-    _userInfo = null;
+  Future<void> logout() async => removeAccount(_accountManager.activeAccountId!);
 
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setBool('isLoggedIn', false);
-    await prefs.remove('sessionToken');
-    await prefs.remove('username');
+  Future<void> removeAccount(String id) async {
+    final account = _accountManager.accounts.firstWhere((a) => a.id == id);
+    try { await _authService.logout(account.token); } catch (_) {}
+    await _accountManager.removeAccount(id);
     notifyListeners();
   }
 
-  Future<String?> getUsername() async {
-    if (_userInfo != null) return _userInfo!.username;
-    return (await SharedPreferences.getInstance()).getString('username');
-  }
+  Future<void> switchAccount(String id) async => _accountManager.switchAccount(id);
 
-  Future<String> getFullName() async => _userInfo?.fullName ?? await getUsername() ?? 'User';
+  String? getUsername() => _accountManager.activeAccount?.username;
+  String getFullName() => _accountManager.activeAccount?.fullName ?? _accountManager.activeAccount?.username ?? 'User';
+
+  @override
+  void dispose() {
+    _accountManager.removeListener(_onAccountChanged);
+    super.dispose();
+  }
 }

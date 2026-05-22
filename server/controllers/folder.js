@@ -112,7 +112,7 @@ module.exports.createFolder = async (accountId, configuration) => {
     });
 
     await createAuditLog({
-        action: AUDIT_ACTIONS.FOLDER_CREATE_MGMT,
+        action: AUDIT_ACTIONS.FOLDER_MGMT_CREATE,
         accountId,
         organizationId: configuration.organizationId || null,
         resource: RESOURCE_TYPES.FOLDER,
@@ -151,7 +151,7 @@ module.exports.deleteFolder = async (accountId, folderId) => {
     await Folder.destroy({ where: { id: folderId } });
 
     await createAuditLog({
-        action: AUDIT_ACTIONS.FOLDER_DELETE_MGMT,
+        action: AUDIT_ACTIONS.FOLDER_MGMT_DELETE,
         accountId,
         organizationId: folder.organizationId,
         resource: RESOURCE_TYPES.FOLDER,
@@ -265,7 +265,7 @@ module.exports.editFolder = async (accountId, folderId, configuration) => {
     await Folder.update(configuration, { where: { id: folderId } });
 
     await createAuditLog({
-        action: AUDIT_ACTIONS.FOLDER_UPDATE_MGMT,
+        action: AUDIT_ACTIONS.FOLDER_MGMT_UPDATE,
         accountId,
         organizationId: folder.organizationId,
         resource: RESOURCE_TYPES.FOLDER,

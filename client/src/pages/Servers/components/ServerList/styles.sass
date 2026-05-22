@@ -1,6 +1,5 @@
 @use "@/common/styles/colors"
-
-$mobile: 768px
+@use "@/common/styles/breakpoints"
 
 .server-list-overlay
   display: none
@@ -12,7 +11,7 @@ $mobile: 768px
   background-color: rgba(0, 0, 0, 0.5)
   z-index: 99
 
-  @media (max-width: $mobile)
+  @media (max-width: breakpoints.$mobile)
     display: block
 
 .server-list
@@ -46,7 +45,7 @@ $mobile: 768px
 
     &.mobile-open
       transform: translateX(0)
-      box-shadow: 4px 0 20px rgba(0, 0, 0, 0.3)
+      box-shadow: colors.$shadow-lg
 
   .server-list-inner
     display: flex
@@ -59,23 +58,27 @@ $mobile: 768px
     container-type: inline-size
 
     .search-container
-      margin-top: 1rem
+      margin-top: 10px
       display: flex
       gap: 0.5rem
-      align-items: flex-start
+      align-items: stretch
       position: relative
+      --search-control-size: 2.6rem
 
-      @media (max-width: $mobile)
-        margin-top: 0.75rem
+      @media (max-width: breakpoints.$mobile)
+        margin-top: calc(0.75rem + 5px)
+        --search-control-size: 2.4rem
 
       .tag-filter-button
         display: flex
         align-items: center
         justify-content: center
-        width: 2.85rem
-        height: 2.85rem
+        width: var(--search-control-size)
+        height: var(--search-control-size)
+        align-self: stretch
         border-radius: 0.7rem
         border: 1px solid colors.$gray
+        box-sizing: border-box
         background-color: colors.$lighter-background
         color: colors.$subtext
         cursor: pointer
@@ -83,15 +86,14 @@ $mobile: 768px
         position: relative
         flex-shrink: 0
 
-        @media (max-width: $mobile)
-          width: 2.55rem
-          height: 2.55rem
+        @media (max-width: breakpoints.$mobile)
+          aspect-ratio: 1 / 1
 
         svg
           width: 1.4rem
           height: 1.4rem
 
-          @media (max-width: $mobile)
+          @media (max-width: breakpoints.$mobile)
             width: 1.25rem
             height: 1.25rem
 
@@ -130,7 +132,7 @@ $mobile: 768px
       overflow-y: auto
       -webkit-overflow-scrolling: touch
 
-      @media (max-width: $mobile)
+      @media (max-width: breakpoints.$mobile)
         margin-top: 0.75rem
         gap: 0.25rem
 
@@ -170,7 +172,7 @@ $mobile: 768px
         width: 5rem
         height: 5rem
 
-      @media (max-width: $mobile)
+      @media (max-width: breakpoints.$mobile)
         svg
           width: 4rem
           height: 4rem
@@ -190,7 +192,7 @@ $mobile: 768px
     cursor: col-resize
     z-index: 10
 
-    @media (max-width: $mobile)
+    @media (max-width: breakpoints.$mobile)
       display: none
 
     &:hover

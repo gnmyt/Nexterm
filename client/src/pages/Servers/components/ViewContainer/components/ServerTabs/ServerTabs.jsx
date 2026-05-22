@@ -1,6 +1,7 @@
 import { useRef, useState, useEffect, useCallback } from "react";
+import { useTranslation } from "react-i18next";
 import Icon from "@mdi/react";
-import { mdiClose, mdiViewSplitVertical, mdiChevronLeft, mdiChevronRight, mdiSleep, mdiOpenInNew, mdiShareVariant, mdiLinkVariant, mdiPencil, mdiEye, mdiCloseCircle, mdiContentDuplicate } from "@mdi/js";
+import { mdiClose, mdiViewSplitVertical, mdiChevronLeft, mdiChevronRight, mdiSleep, mdiOpenInNew, mdiShareVariant, mdiLinkVariant, mdiPencil, mdiEye, mdiCloseCircle, mdiContentDuplicate, mdiNoteEditOutline } from "@mdi/js";
 import { useDrag, useDrop } from "react-dnd";
 import TerminalActionsMenu from "../TerminalActionsMenu";
 import { ContextMenu, ContextMenuItem, ContextMenuSeparator, useContextMenu } from "@/common/components/ContextMenu";
@@ -18,15 +19,21 @@ const DraggableTab = ({
     closeSession,
     hibernateSession,
     duplicateSession,
+    openNotes,
     index,
     moveTab,
     progress = 0,
 }) => {
     const contextMenu = useContextMenu();
     const { popOutSession } = useActiveSessions();
-    
-    const canPopOut = !session.scriptId && session.type !== "sftp";
+    const { t } = useTranslation();
+
+    const isNotes = session.type === "notes";
+    const canPopOut = !session.scriptId && session.type !== "sftp" && !isNotes;
     const canShare = canPopOut;
+    const canHibernate = !isNotes;
+    const canDuplicate = !isNotes;
+    const canOpenNotes = !isNotes && !!server?.id && !session.scriptId;
     const isSharing = !!session.shareId;
 
     const handleShare = useCallback(async (writable) => {
@@ -75,10 +82,19 @@ const DraggableTab = ({
         contextMenu.open(e, { x: e.clientX, y: e.clientY });
     };
 
+    const handleAuxClick = (e) => {
+        if (e.button === 1) {
+            e.preventDefault();
+            e.stopPropagation();
+            closeSession(session.id);
+        }
+    };
+
     return (
         <>
             <div ref={(node) => drag(drop(node))} onClick={() => setActiveSessionId(session.id)}
                 onContextMenu={handleContextMenu}
+                onAuxClick={handleAuxClick}
                 className={`server-tab ${session.id === activeSessionId ? "server-tab-active" : ""} ${isDragging ? "dragging" : ""} ${isOver ? "drop-target" : ""}`}
                 style={{ opacity: isDragging ? 0.5 : 1 }}>
                 <div className={`progress-circle ${!showProgress ? "no-progress" : ""}`}>
@@ -108,9 +124,9 @@ const DraggableTab = ({
                             />
                         </svg>
                     )}
-                    <Icon path={getIconPath(server.icon)} className="progress-icon" />
+                    <Icon path={isNotes ? mdiNoteEditOutline : getIconPath(server.icon)} className="progress-icon" />
                 </div>
-                <h2>{server?.name} {session.type === "sftp" ? " (SFTP)" : ""}</h2>
+                <h2>{server?.name} {session.type === "sftp" ? " (SFTP)" : ""}{isNotes ? ` (${t("servers.notesPanel.title")})` : ""}</h2>
                 <div className="tab-actions">
                     <Icon path={mdiClose} className="close-btn" title="Close Session" onClick={(e) => {
                         e.stopPropagation();
@@ -128,42 +144,53 @@ const DraggableTab = ({
                     <>
                         <ContextMenuItem
                             icon={mdiOpenInNew}
-                            label="Pop Out"
+                            label={t("servers.tabs.contextMenu.popOut")}
                             onClick={() => popOutSession(session.id)}
                         />
                         <ContextMenuSeparator />
                     </>
                 )}
                 {canShare && !isSharing && (
-                    <ContextMenuItem icon={mdiShareVariant} label="Start Sharing">
-                        <ContextMenuItem icon={mdiEye} label="Read-only" onClick={() => handleShare(false)} />
-                        <ContextMenuItem icon={mdiPencil} label="Read & Write" onClick={() => handleShare(true)} />
+                    <ContextMenuItem icon={mdiShareVariant} label={t("servers.tabs.contextMenu.startSharing")}>
+                        <ContextMenuItem icon={mdiEye} label={t("servers.tabs.contextMenu.readOnly")} onClick={() => handleShare(false)} />
+                        <ContextMenuItem icon={mdiPencil} label={t("servers.tabs.contextMenu.readWrite")} onClick={() => handleShare(true)} />
                     </ContextMenuItem>
                 )}
                 {canShare && isSharing && (
                     <>
-                        <ContextMenuItem icon={mdiLinkVariant} label="Copy Share Link" onClick={handleCopyLink} />
-                        <ContextMenuItem icon={mdiShareVariant} label="Change Permissions">
-                            <ContextMenuItem icon={mdiEye} label="Read-only" onClick={() => handlePermissionChange(false)} disabled={!session.shareWritable} />
-                            <ContextMenuItem icon={mdiPencil} label="Read & Write" onClick={() => handlePermissionChange(true)} disabled={session.shareWritable} />
+                        <ContextMenuItem icon={mdiLinkVariant} label={t("servers.tabs.contextMenu.copyShareLink")} onClick={handleCopyLink} />
+                        <ContextMenuItem icon={mdiShareVariant} label={t("servers.tabs.contextMenu.changePermissions")}>
+                            <ContextMenuItem icon={mdiEye} label={t("servers.tabs.contextMenu.readOnly")} onClick={() => handlePermissionChange(false)} disabled={!session.shareWritable} />
+                            <ContextMenuItem icon={mdiPencil} label={t("servers.tabs.contextMenu.readWrite")} onClick={() => handlePermissionChange(true)} disabled={session.shareWritable} />
                         </ContextMenuItem>
-                        <ContextMenuItem icon={mdiCloseCircle} label="Stop Sharing" onClick={handleStopSharing} danger />
+                        <ContextMenuItem icon={mdiCloseCircle} label={t("servers.tabs.contextMenu.stopSharing")} onClick={handleStopSharing} danger />
                         <ContextMenuSeparator />
                     </>
                 )}
-                <ContextMenuItem
-                    icon={mdiContentDuplicate}
-                    label="Duplicate"
-                    onClick={() => duplicateSession(session.id)}
-                />
-                <ContextMenuItem
-                    icon={mdiSleep}
-                    label="Hibernate Session"
-                    onClick={() => hibernateSession(session.id)}
-                />
+                {canOpenNotes && (
+                    <ContextMenuItem
+                        icon={mdiNoteEditOutline}
+                        label={t("servers.tabs.contextMenu.openNotes")}
+                        onClick={() => openNotes?.(server.id)}
+                    />
+                )}
+                {canDuplicate && (
+                    <ContextMenuItem
+                        icon={mdiContentDuplicate}
+                        label={t("servers.tabs.contextMenu.duplicate")}
+                        onClick={() => duplicateSession(session.id)}
+                    />
+                )}
+                {canHibernate && (
+                    <ContextMenuItem
+                        icon={mdiSleep}
+                        label={t("servers.tabs.contextMenu.hibernateSession")}
+                        onClick={() => hibernateSession(session.id)}
+                    />
+                )}
                 <ContextMenuItem
                     icon={mdiClose}
-                    label="Close Session"
+                    label={t("servers.tabs.contextMenu.closeSession")}
                     onClick={() => closeSession(session.id)}
                     danger
                 />
@@ -179,6 +206,7 @@ export const ServerTabs = ({
     closeSession,
     hibernateSession,
     duplicateSession,
+    openNotes,
     layoutMode,
     onToggleSplit,
     orderRef,
@@ -314,6 +342,7 @@ export const ServerTabs = ({
                             <DraggableTab key={session.id} session={session} server={session.server} index={index} moveTab={moveTab}
                                 activeSessionId={activeSessionId} setActiveSessionId={setActiveSessionId}
                                 closeSession={closeSession} hibernateSession={hibernateSession} duplicateSession={duplicateSession}
+                                openNotes={openNotes}
                                 progress={sessionProgress[session.id] || 0} />
                         );
                     })}

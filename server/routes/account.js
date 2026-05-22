@@ -44,6 +44,7 @@ app.get("/me", authenticate, async (req, res) => {
         id: req.user.id, username: req.user.username, totpEnabled: req.user.totpEnabled,
         firstName: req.user.firstName, lastName: req.user.lastName, role: req.user.role,
         sessionSync: req.user.sessionSync, preferences: req.user.preferences || {},
+        activeThemeId: req.user.activeThemeId || null,
     });
 });
 

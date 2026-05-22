@@ -1,27 +1,66 @@
 #!/bin/bash
 
-GUACD_LOG_LEVEL=${LOG_LEVEL:-system}
+set -e
 
-case "$GUACD_LOG_LEVEL" in
-    error)
-        GUACD_ARGS="-L error"
-        ;;
-    warn)
-        GUACD_ARGS="-L warning"
-        ;;
-    system|info)
-        GUACD_ARGS="-L info"
-        ;;
-    verbose)
-        GUACD_ARGS="-L debug"
-        ;;
-    debug)
-        GUACD_ARGS="-L trace"
-        ;;
-    *)
-        GUACD_ARGS="-L info"
-        ;;
-esac
+ENGINE_LOG_LEVEL=${LOG_LEVEL:-info}
 
-guacd -b 0.0.0.0 -l 4822 $GUACD_ARGS -f &
-exec node server/index.js
+if [ -x /usr/local/bin/nexterm-engine ]; then
+    LOCAL_ENGINE_TOKEN=$(head -c 32 /dev/urandom | od -An -tx1 | tr -d ' \n')
+    export LOCAL_ENGINE_TOKEN
+
+    echo "[nexterm] Starting server..."
+    node server/index.js &
+    SERVER_PID=$!
+
+    sleep 2
+
+    mkdir -p /tmp/nexterm-engine
+    cat > /tmp/nexterm-engine/config.yaml <<EOF
+server_host: "127.0.0.1"
+server_port: ${CONTROL_PLANE_PORT:-7800}
+registration_token: "$LOCAL_ENGINE_TOKEN"
+tls: false
+EOF
+
+    STOPPING=false
+
+    start_engine() {
+        echo "[nexterm] Starting local engine..."
+        cd /tmp/nexterm-engine && /usr/local/bin/nexterm-engine &
+        ENGINE_PID=$!
+        cd /app
+    }
+
+    cleanup() {
+        STOPPING=true
+        [ -n "$ENGINE_PID" ] && kill "$ENGINE_PID" 2>/dev/null
+        [ -n "$SERVER_PID" ] && kill "$SERVER_PID" 2>/dev/null
+        wait
+        exit 0
+    }
+    trap cleanup SIGINT SIGTERM
+
+    start_engine
+
+    while true; do
+        wait -n $SERVER_PID $ENGINE_PID 2>/dev/null || true
+
+        if ! kill -0 "$SERVER_PID" 2>/dev/null; then
+            echo "[nexterm] Server exited, shutting down..."
+            cleanup
+        fi
+
+        if [ "$STOPPING" = true ]; then
+            break
+        fi
+
+        if ! kill -0 "$ENGINE_PID" 2>/dev/null; then
+            echo "[nexterm] Engine crashed, restarting in 3 seconds..."
+            sleep 3
+            start_engine
+        fi
+    done
+else
+    echo "[nexterm] Starting server..."
+    exec node server/index.js
+fi
