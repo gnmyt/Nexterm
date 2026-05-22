@@ -3,17 +3,17 @@
     "error": "Ошибка",
     "success": "Успешно",
     "loading": "Загрузка...",
-    "saving": "Экономия...",
+    "saving": "Сохранение...",
     "close": "Закрыть",
     "cancel": "Отмена",
-    "save": "Сохрани",
+    "save": "Сохранить",
     "download": "Скачать",
-    "maximize": "Максимизируй",
-    "restore": "Восстанови",
+    "maximize": "Развернуть",
+    "restore": "Восстановить",
     "actions": {
       "cancel": "Отмена",
       "confirm": "Подтвердить",
-      "discard": "Отбрось",
+      "discard": "Отменить",
       "login": "Войти",
       "register": "Регистрация",
       "save": "Сохранить",
@@ -24,7 +24,7 @@
       "back": "Назад"
     },
     "iconChooser": {
-      "searchIcons": "Поисковые иконки...",
+      "searchIcons": "Найти иконки...",
       "searchResults": "Результаты поиска",
       "popularIcons": "Популярные иконки",
       "noResults": "Не найдено ни одной иконки"
@@ -48,22 +48,28 @@
       "title": "Вы уверены?",
       "defaultText": "Это действие нельзя отменить.",
       "unsavedChangesTitle": "Несохраненные изменения",
-      "unsavedChangesText": "У тебя есть несохраненные изменения. Ты уверен, что хочешь закрыться?"
+      "unsavedChangesText": "У вас есть несохраненные изменения. Вы уверены, что хотите отменить действие?"
     },
     "loginDialog": {
       "title": "Nexterm",
       "registrationTitle": "Регистрация",
-      "ssoOrContinueWith": "или продолжить с помощью",
+      "ssoOrContinueWith": "или продолжить с",
       "noAuthMethodsAvailable": "Нет доступных методов аутентификации.",
-      "signInWithPasskey": "Войдите в систему с помощью Passkey",
+      "signInWithPasskey": "Войти с помощью Passkey",
+      "signInWithQrCode": "Войти в систему с помощью QR-кода",
+      "qrScanDescription": "Отсканируй этот QR-код с помощью мобильного приложения Nexterm, чтобы мгновенно войти в систему.",
+      "backToLogin": "Назад к входу",
       "authenticating": "Аутентификация..."
     },
     "deviceLink": {
-      "title": "Устройство связи",
+      "title": "Привязать устройство",
       "description": "Введи код, показанный на твоем устройстве, чтобы авторизовать его для доступа к аккаунту.",
+      "qrTab": "QR-код",
+      "codeTab": "Код",
+      "qrDescription": "Отсканируй этот QR-код с помощью мобильного приложения Nexterm, чтобы связать свое устройство.",
       "codeLabel": "Код устройства",
-      "continue": "Продолжай",
-      "verifying": "Проверяем...",
+      "continue": "Далее",
+      "verifying": "Выполняется проверка...",
       "confirmTitle": "Авторизация устройства",
       "confirmDescription": "Устройство запрашивает доступ к твоему аккаунту. Пожалуйста, проверь данные, указанные ниже.",
       "deviceInfo": "Информация об устройстве",
@@ -71,39 +77,45 @@
       "ipAddress": "IP-адрес",
       "userAgent": "Устройство",
       "authorize": "Авторизация устройства",
-      "authorizing": "Разрешаю...",
-      "deny": "Откажись от",
+      "authorizing": "Авторизация...",
+      "deny": "Отклонить",
       "invalidCode": "Недействительный или просроченный код",
-      "authorizationFailed": "Авторизация не удалась",
+      "authorizationFailed": "Ошибка авторизации",
       "deviceAuthorized": "Устройство успешно авторизовано",
       "successTitle": "Устройство разрешено",
-      "successMessage": "Ты можешь закрыть эту вкладку и вернуться в приложение.",
+      "successMessage": "Вы можете закрыть эту вкладку и вернуться в приложение.",
       "clientTypes": {
         "mobile": "Мобильное приложение",
-        "connector": "Настольный коннектор"
+        "connector": "Коннектор для рабочего стола"
       }
     },
     "connectorSetup": {
       "title": "Коннектор Nexterm",
       "serverUrl": "URL-адрес сервера",
-      "serverUrlDescription": "Введи URL-адрес своего сервера Nexterm для подключения.",
-      "connect": "Подключи",
+      "serverUrlDescription": "Введите URL вашего Nexterm сервера для подключения.",
+      "connect": "Подключить",
       "connecting": "Подключение...",
-      "enterServerUrl": "Пожалуйста, введите URL-адрес сервера",
+      "enterServerUrl": "Введите URL сервера",
       "connectionFailed": "Не удалось подключиться к серверу. Пожалуйста, проверь URL.",
       "deviceLinkingNotSupported": "Этот сервер не поддерживает привязку устройств. Пожалуйста, обновите свой сервер Nexterm.",
-      "authMethodDescription": "Выбери, как ты хочешь аутентифицироваться на сервере.",
+      "authMethodDescription": "Выберите, как вы хотите авторизоваться на сервере.",
       "showCode": "Показать код",
-      "showCodeDesc": "Отобразите код, который нужно ввести вручную в веб-интерфейсе",
-      "openBrowser": "Авторизуйся",
+      "showCodeDesc": "Показать код для ручного ввода в веб-интерфейсе",
+      "openBrowser": "Авторизация",
       "openBrowserDesc": "Открой браузер, чтобы авторизоваться автоматически",
-      "enterCodeDescription": "Введи этот код в веб-интерфейсе Nexterm, чтобы авторизовать это устройство.",
-      "copyCode": "Код копирования",
+      "enterCodeDescription": "Введи этот код в веб-интерфейс Nexterm, чтобы авторизовать это устройство.",
+      "copyCode": "Скопировать код",
       "codeCopied": "Код, скопированный в буфер обмена",
       "copyFailed": "Не удалось скопировать код",
-      "waitingForAuth": "Жду разрешения...",
+      "waitingForAuth": "Ожидание авторизации...",
       "codeCreationFailed": "Не удалось создать код устройства",
-      "authSuccess": "Успешно прошел аутентификацию!"
+      "authSuccess": "Аутентификация успешно пройдена!"
+    },
+    "serverSwitcher": {
+      "title": "Серверы",
+      "addServer": "Добавить сервер",
+      "removeServer": "Удалить сервер",
+      "removeConfirmText": "Это позволит удалить соединение с {{server}}. Ты уверен?"
     },
     "selectBox": {
       "defaultOption": "Выберите вариант...",
@@ -116,12 +128,12 @@
     "table": {
       "noData": {
         "title": "Данные не найдены",
-        "subtitle": "Нет никаких предметов для отображения."
+        "subtitle": "Нет элементов для отображения."
       },
       "pagination": {
-        "showing": "Показывая от {{start}} до {{end}} из {{total}}.",
-        "previous": "Предыдущий",
-        "next": "Следующий",
+        "showing": "Показаны {{start}} {{end}} из {{total}}",
+        "previous": "Предыдущая",
+        "next": "Следующая",
         "pageInfo": "Страница {{current}} из {{total}}"
       }
     },
@@ -131,15 +143,15 @@
       "monitoring": "Мониторинг",
       "snippets": "Сниппеты",
       "audit": "Аудит",
-      "account": "Счет",
+      "account": "Учетная запись",
       "logout": "Выйти",
       "collapseTitle": "Свернуть боковую панель",
-      "logoutConfirmText": "Это приведёт к выходу из аккаунта {{username}}. Вы уверены?",
-      "starOnGitHub": "Звезда на GitHub",
-      "support": "Поддержи"
+      "logoutConfirmText": "Вы выйдете из учетной записи {{username}} . Вы уверены?",
+      "starOnGitHub": "Поставить звезду на GitHub",
+      "support": "Поддержка"
     },
     "quickAction": {
-      "placeholder": "Ищи по серверам, сниппетам или перемещайся...",
+      "placeholder": "Поиск серверов, сниппетов или навигация...",
       "noResults": "Результаты не найдены",
       "navigation": "Навигация",
       "settings": "Настройки",
@@ -149,7 +161,7 @@
       "types": {
         "server": "Сервер",
         "snippet": "Сниппет",
-        "navigation": "Переходи к",
+        "navigation": "Перейти к",
         "settings": "Настройки"
       }
     },
@@ -165,7 +177,22 @@
       "internalAuthDisabled": "Внутренняя аутентификация отключена",
       "ssoLoginFailed": "Не удалось инициировать вход через SSO",
       "passkeyLoginFailed": "Не удалось выполнить аутентификацию с помощью ключа",
-      "passkeyCancelled": "Аутентификация с помощью ключа была отменена"
+      "passkeyCancelled": "Аутентификация с помощью ключа была отменена",
+      "qrCodeExpired": "Срок действия QR-кода истек. Пожалуйста, попробуй еще раз.",
+      "connection": {
+        "title": "Не удалось установить соединение",
+        "close": "Закрыть вкладку",
+        "hostUnreachable": "Удаленный хост недоступен",
+        "refused": "Удаленный хост отказал в подключении",
+        "timeout": "Соединение прервалось по таймеру",
+        "authenticationFailed": "Аутентификация не удалась",
+        "permissionDenied": "Разрешение отклонено",
+        "failed": "Не удалось установить соединение",
+        "closedUnexpectedly": "Соединение неожиданно закрылось",
+        "error": "Произошла ошибка подключения",
+        "scriptClosedUnexpectedly": "Неожиданно закрылось соединение со сценарием",
+        "scriptError": "Произошла ошибка подключения к сценарию"
+      }
     },
     "messages": {
       "invitationAccepted": "Приглашение принято",
@@ -226,6 +253,11 @@
         "personal": "Личный",
         "user": "Пользователь #{{id}}",
         "organization": "Орг #{{id}}"
+      },
+      "durationUnits": {
+        "seconds": "секунды",
+        "minutes": "минут",
+        "hours": "Часы"
       }
     },
     "pagination": {
@@ -540,6 +572,7 @@
     "adminSettings": "АДМИНИСТРИРОВАНИЕ",
     "pages": {
       "account": "Аккаунт",
+      "appearance": "Внешний вид",
       "terminal": "Терминал",
       "fileManager": "Файловый менеджер",
       "keymaps": "Горячие клавиши",
@@ -551,7 +584,8 @@
       "sources": "Источники",
       "ai": "ИИ",
       "monitoring": "Мониторинг",
-      "backup": "Хранение"
+      "backup": "Хранение",
+      "engines": "Двигатели"
     },
     "account": {
       "title": "Аккаунт",
@@ -563,11 +597,18 @@
       "themeAuto": "Авто",
       "themeLight": "Светлая",
       "themeDark": "Тёмная",
+      "themeDarkHint": "Нажми три раза, чтобы включить режим OLED.",
       "themeOled": "OLED",
       "oledEnabled": "Режим OLED включен",
       "oledDisabled": "Режим OLED отключен",
       "themeLabel": "Тема",
       "accentColor": "Акцентный цвет",
+      "sizeLabel": "Размер",
+      "sizeXS": "XS",
+      "sizeS": "S",
+      "sizeM": "M",
+      "sizeL": "L",
+      "sizeXL": "XL",
       "twoFactor": "Двухфакторная аутентификация",
       "twoFactorActive": "Активна",
       "twoFactorInactive": "Неактивна",
@@ -587,6 +628,32 @@
       "appearanceSyncDisabled": "Настройки внешнего вида больше не будут синхронизироваться",
       "generalSyncEnabled": "Общие настройки теперь будут синхронизироваться с твоим аккаунтом",
       "generalSyncDisabled": "Общие настройки больше не будут синхронизироваться",
+      "customThemes": {
+        "title": "Пользовательские темы",
+        "description": "Создавай собственные темы CSS или выбирай из синхронизированных исходных тем, чтобы персонализировать свой интерфейс.",
+        "newTheme": "Новая тема",
+        "noThemesYet": "Пока нет тем",
+        "noThemesDescription": "Создай пользовательскую тему или добавь источник, чтобы начать работу.",
+        "editTheme": "Редактировать тему",
+        "createTheme": "Создай тему",
+        "name": "Имя",
+        "themeName": "Название темы",
+        "descriptionLabel": "Описание",
+        "optionalDescription": "Необязательное описание",
+        "saveChanges": "Сохранить изменения",
+        "fromSource": "Из источника",
+        "edit": "Редактировать",
+        "delete": "Удалить",
+        "deleteConfirm": "Ты уверен, что хочешь удалить тему \"{{name}}\"?",
+        "failedToLoadTheme": "Не удалось загрузить тему",
+        "nameAndCssRequired": "Имя и CSS обязательны",
+        "themeUpdated": "Тема обновлена",
+        "themeCreated": "Тема создана",
+        "failedToSaveTheme": "Не удалось сохранить тему",
+        "themeDeleted": "Тема удалена",
+        "failedToDeleteTheme": "Не удалось удалить тему",
+        "failedToActivateTheme": "Не удалось активировать тему"
+      },
       "sessionSynchronization": "Синхронизация сессий",
       "sessionSyncDescription": "Управление тем, как сессии серверов хранятся и синхронизируются между устройствами и вкладками браузера.",
       "sessionSyncAcrossDevices": "Между устройствами",
@@ -637,7 +704,42 @@
       "delete": "Удалить",
       "leave": "Покинуть",
       "members": "Участники",
-      "auditSettings": "Настройки аудита",
+      "auditSettings": {
+        "auditSettingsTab": "Настройки аудита",
+        "sessionRecordingHeading": "Запись сеанса",
+        "sessionRecordingDescription": "Запись сеансов терминала и удаленного рабочего стола для воспроизведения",
+        "enableSessionRecordingLabel": "Включи запись сеанса",
+        "enableSessionRecordingDescription": "Записывай сеансы SSH, Telnet, RDP и VNC для последующего воспроизведения",
+        "recordingRetentionLabel": "Срок хранения записей (дней)",
+        "recordingRetentionDescription": "Как долго хранить записи сеансов перед автоматическим удалением (1-365 дней)",
+        "connectionRequirementsHeading": "Требования к подключению",
+        "connectionRequirementsDescription": "Поведение и требования к контрольным соединениям",
+        "requireConnectionReasonLabel": "Требуется подключение Причина",
+        "requireConnectionReasonDescription": "Требуй от пользователей указывать причину при подключении к серверам",
+        "activityLoggingHeading": "Ведение журнала активности",
+        "activityLoggingDescription": "Выбирай, какие виды деятельности записывать в журнал",
+        "fileOperationsLabel": "Файловые операции",
+        "fileOperationsDescription": "Веди журнал загрузки, скачивания, удаления и переименования файлов через SFTP",
+        "serverConnectionsLabel": "Подключения к серверу",
+        "serverConnectionsDescription": "Веди журнал подключений и отключений SSH, SFTP и PVE",
+        "identityManagementLabel": "Управление идентификацией",
+        "identityManagementDescription": "Веди журнал создания, изменения и удаления SSH-идентификаторов",
+        "passwordPasteLabel": "Вставка пароля",
+        "passwordPasteDescription": "Ведите журнал использования действия по вставке пароля",
+        "serverManagementLabel": "Управление сервером",
+        "serverManagementDescription": "Веди журнал создания, изменения и удаления конфигураций сервера",
+        "folderManagementLabel": "Управление папками",
+        "folderManagementDescription": "Веди журнал создания, изменения и удаления папок",
+        "scriptExecutionLabel": "Выполнение сценария",
+        "scriptExecutionDescription": "Веди журнал выполнения скриптов и задач автоматизации",
+        "actions": {
+          "save": "Сохранить настройки"
+        },
+        "messages": {
+          "updated": "Настройки аудита успешно обновлены",
+          "updateFailed": "Не удалось обновить настройки аудита"
+        }
+      },
       "pendingInvitations": "Ожидающие приглашения",
       "invitedBy": "Приглашён от: {{name}}",
       "deleteConfirmation": "Это действие безвозвратно удалит организацию и всех её участников.",
@@ -844,6 +946,7 @@
     },
     "authentication": {
       "title": "{{count}} провайдеров аутентификации",
+      "internalProviderName": "Встроенная аутентификация",
       "addProvider": "Добавить провайдера",
       "addLdapProvider": "Добавь LDAP",
       "system": "Система",
@@ -1092,6 +1195,7 @@
       "addSource": "Добавить источник",
       "snippets": "сниппеты",
       "scripts": "скрипты",
+      "themes": "темы",
       "neverSynced": "Ещё не синхронизировано",
       "sync": "Синхронизировать сейчас",
       "edit": "Изменить",
@@ -1113,7 +1217,7 @@
         "enabled": "Включено",
         "enabledDescription": "При отключении источник не будет синхронизироваться",
         "validating": "Проверка URL...",
-        "validationSuccess": "Найден корректный источник: {{snippets}} сниппетов, {{scripts}} скриптов",
+        "validationSuccess": "Валидный источник найден: {{snippets}} сниппеты, {{scripts}} скрипты, {{themes}} темы",
         "create": "Создать"
       },
       "messages": {
@@ -1221,6 +1325,45 @@
         "nameRequired": "Имя провайдера обязательно"
       },
       "noFiles": "Файлы не найдены"
+    },
+    "engines": {
+      "title": "Двигатели",
+      "description": "Управляй экземплярами движка, которые обрабатывают удаленные соединения.",
+      "addEngine": "Добавить двигатель",
+      "noEngines": "Нет двигателей",
+      "noEnginesDescription": "Добавь движок, чтобы начать подключаться к удаленным серверам.",
+      "status": {
+        "connected": "Подключено",
+        "disconnected": "Отключенный"
+      },
+      "lastSeen": "Последний раз его видели на {{date}}.",
+      "neverConnected": "Никогда не подключался",
+      "regenerateToken": "Регенерируй токен",
+      "deleteEngine": "Удалить двигатель",
+      "dismiss": "Откажись от",
+      "copyToken": "Копируемый токен",
+      "transport": {
+        "encrypted": "Зашифрованный",
+        "unencrypted": "Незашифрованный"
+      },
+      "tokenLabel": "Регистрационный токен для <strong>{{name}}</strong>",
+      "tokenHint": "Установи это в <code1>config.yaml</code1> или в качестве env-переменной <code2>REGISTRATION_TOKEN</code2>.",
+      "dialog": {
+        "title": "Добавить двигатель",
+        "engineName": "Название двигателя",
+        "namePlaceholder": "Например, офисная сеть",
+        "create": "Создай двигатель"
+      },
+      "deleteConfirm": "Ты уверен, что хочешь удалить \"{{name}}\"?",
+      "messages": {
+        "deleted": "Двигатель успешно удален"
+      },
+      "errors": {
+        "loadFailed": "Не удалось загрузить двигатели",
+        "createFailed": "Не удалось создать двигатель",
+        "deleteFailed": "Не удалось удалить двигатель",
+        "regenerateFailed": "Не удалось восстановить токен"
+      }
     }
   },
   "tunnel": {
@@ -1253,6 +1396,8 @@
     }
   },
   "servers": {
+    "addServerNote": "Щелкни правой кнопкой мыши, чтобы добавить новый сервер",
+    "searchPlaceholder": "Поиск",
     "time": {
       "justNow": "Только что",
       "minuteAgo": "{{count}} мин назад",
@@ -1291,6 +1436,8 @@
       "openSFTP": "Открыть SFTP",
       "forwardPort": "Передовой порт",
       "runScript": "Запустить скрипт",
+      "openNotes": "Открытые заметки",
+      "addNotes": "Добавляй заметки",
       "editServer": "Изменить сервер",
       "editIntegration": "Изменить интеграцию",
       "duplicateServer": "Дублировать сервер",
@@ -1302,6 +1449,21 @@
       "shutdown": "Выключить",
       "stop": "Остановить",
       "start": "Запустить"
+    },
+    "tabs": {
+      "contextMenu": {
+        "popOut": "В отдельном окне",
+        "startSharing": "Начать делиться",
+        "readOnly": "Только чтение",
+        "readWrite": "Чтение и запись",
+        "copyShareLink": "Копировать ссылку",
+        "changePermissions": "Изменить разрешения",
+        "stopSharing": "Перестать делиться",
+        "duplicate": "Дублировать",
+        "openNotes": "Открытые заметки",
+        "hibernateSession": "Гибернация",
+        "closeSession": "Отключиться"
+      }
     },
     "wol": {
       "successDescription": "Волшебный пакет, отправленный на {{name}}",
@@ -1340,7 +1502,8 @@
         "host": "Хост",
         "nodeName": "Имя узла",
         "vmid": "ID виртуальной машины",
-        "macAddress": "MAC-адрес"
+        "macAddress": "MAC-адрес",
+        "engine": "Двигатель"
       },
       "placeholders": {
         "serverName": "Название сервера",
@@ -1353,6 +1516,7 @@
         "vmid": "ID виртуальной машины",
         "macAddress": "AA:BB:CC:DD:EE:FF"
       },
+      "engineOffline": "(Оффлайн)",
       "settings": {
         "jumpHosts": {
           "title": "Промежуточные хосты",
@@ -1660,6 +1824,18 @@
       "fullScreen": "Полный экран",
       "exitFullScreen": "Выйти из полноэкранного режима",
       "badgeOn": "ВКЛ"
+    },
+    "notesPanel": {
+      "title": "Примечания",
+      "placeholder": "Напиши заметки для этого сервера…",
+      "showInList": "Показать в списке",
+      "showInListTooltip": "Отобрази первую строку этих заметок под именем сервера в боковой панели.",
+      "status": {
+        "saving": "Экономия",
+        "saved": "Сохранил",
+        "unsaved": "Несохраненная",
+        "error": "Сохранить не удалось"
+      }
     }
   },
   "support": {
@@ -1680,6 +1856,7 @@
     }
   },
   "welcome": {
+    "hello": "Привет",
     "subtitle": "Добро пожаловать в Nexterm. Менеджер серверов с открытым исходным кодом для SSH, VNC и RDP.",
     "downloadApps": "Скачать приложения",
     "connectDevice": "Подключи устройство",

@@ -56,11 +56,17 @@
       "ssoOrContinueWith": "أو المتابعة بواسطة",
       "noAuthMethodsAvailable": "لا توجد طرق مصادقة متاحة.",
       "signInWithPasskey": "تسجيل الدخول باستخدام مفتاح المرور",
+      "signInWithQrCode": "تسجيل الدخول باستخدام رمز الاستجابة السريعة",
+      "qrScanDescription": "امسح رمز الاستجابة السريعة هذا باستخدام تطبيق Nexterm للهاتف المحمول لتسجيل الدخول على الفور.",
+      "backToLogin": "العودة إلى تسجيل الدخول",
       "authenticating": "توثيق..."
     },
     "deviceLink": {
       "title": "جهاز الارتباط",
       "description": "أدخل الرمز الظاهر على جهازك لتفويضه بالوصول إلى حسابك.",
+      "qrTab": "رمز الاستجابة السريعة",
+      "codeTab": "الكود",
+      "qrDescription": "امسح رمز الاستجابة السريعة هذا باستخدام تطبيق Nexterm للهاتف المحمول لربط جهازك.",
       "codeLabel": "رمز الجهاز",
       "continue": "تابع",
       "verifying": "التحقق من...",
@@ -104,6 +110,12 @@
       "waitingForAuth": "في انتظار التفويض...",
       "codeCreationFailed": "فشل في إنشاء رمز الجهاز",
       "authSuccess": "تمت المصادقة بنجاح!"
+    },
+    "serverSwitcher": {
+      "title": "الخوادم",
+      "addServer": "إضافة خادم",
+      "removeServer": "إزالة الخادم",
+      "removeConfirmText": "سيؤدي ذلك إلى إزالة الاتصال بـ {{server}}. هل أنت متأكد؟"
     },
     "selectBox": {
       "defaultOption": "اختر خيارًا...",
@@ -165,7 +177,22 @@
       "internalAuthDisabled": "تم تعطيل المصادقة الداخلية",
       "ssoLoginFailed": "فشل في بدء تسجيل الدخول الموحد (SSO)",
       "passkeyLoginFailed": "فشل مصادقة مفتاح المرور",
-      "passkeyCancelled": "تم إلغاء مصادقة مفتاح المرور"
+      "passkeyCancelled": "تم إلغاء مصادقة مفتاح المرور",
+      "qrCodeExpired": "انتهت صلاحية رمز الاستجابة السريعة. يرجى المحاولة مرة أخرى.",
+      "connection": {
+        "title": "فشل الاتصال",
+        "close": "علامة تبويب الإغلاق",
+        "hostUnreachable": "يتعذر الوصول إلى المضيف البعيد",
+        "refused": "تم رفض الاتصال من قبل المضيف البعيد",
+        "timeout": "انتهت مهلة الاتصال",
+        "authenticationFailed": "فشل المصادقة",
+        "permissionDenied": "تم رفض الإذن",
+        "failed": "فشل الاتصال",
+        "closedUnexpectedly": "تم إغلاق الاتصال بشكل غير متوقع",
+        "error": "حدث خطأ في الاتصال",
+        "scriptClosedUnexpectedly": "تم إغلاق اتصال البرنامج النصي بشكل غير متوقع",
+        "scriptError": "حدث خطأ في اتصال البرنامج النصي"
+      }
     },
     "messages": {
       "invitationAccepted": "تم قبول الدعوة",
@@ -226,6 +253,11 @@
         "personal": "شخصي",
         "user": "المستخدم رقم {{id}}",
         "organization": "المؤسسة رقم {{id}}"
+      },
+      "durationUnits": {
+        "seconds": "ثوانٍ",
+        "minutes": "الدقائق",
+        "hours": "ساعات"
       }
     },
     "pagination": {
@@ -540,6 +572,7 @@
     "adminSettings": "إعدادات المدير",
     "pages": {
       "account": "الحساب",
+      "appearance": "المظهر",
       "terminal": "الطرفية",
       "fileManager": "مدير الملفات",
       "keymaps": "خرائط المفاتيح",
@@ -551,7 +584,8 @@
       "sources": "المصادر",
       "ai": "الذكاء الاصطناعي",
       "monitoring": "الرصد",
-      "backup": "التخزين"
+      "backup": "التخزين",
+      "engines": "المحركات"
     },
     "account": {
       "title": "الحساب",
@@ -563,11 +597,18 @@
       "themeAuto": "السيارات",
       "themeLight": "خفيف",
       "themeDark": "داكن",
+      "themeDarkHint": "اضغط ثلاث مرات لتمكين وضع OLED.",
       "themeOled": "OLED",
       "oledEnabled": "تم تمكين وضع OLED",
       "oledDisabled": "تم تعطيل وضع OLED",
       "themeLabel": "الموضوع",
       "accentColor": "لون مميز",
+      "sizeLabel": "الحجم",
+      "sizeXS": "إكس إس إس",
+      "sizeS": "S",
+      "sizeM": "M",
+      "sizeL": "L",
+      "sizeXL": "XL",
       "twoFactor": "المصادقة الثنائية",
       "twoFactorActive": "نشط",
       "twoFactorInactive": "غير نشط",
@@ -587,6 +628,32 @@
       "appearanceSyncDisabled": "لن تتم مزامنة إعدادات المظهر بعد الآن",
       "generalSyncEnabled": "ستتم الآن مزامنة الإعدادات العامة مع حسابك",
       "generalSyncDisabled": "لن تتم مزامنة الإعدادات العامة بعد الآن",
+      "customThemes": {
+        "title": "السمات المخصصة",
+        "description": "أنشئ قوالب CSS مخصصة أو اختر من قوالب المصدر المتزامنة لتخصيص واجهتك.",
+        "newTheme": "موضوع جديد",
+        "noThemesYet": "لا توجد مواضيع بعد",
+        "noThemesDescription": "أنشئ قالباً مخصصاً أو أضف مصدراً للبدء.",
+        "editTheme": "تحرير السمة",
+        "createTheme": "إنشاء سمة",
+        "name": "الاسم",
+        "themeName": "اسم الموضوع",
+        "descriptionLabel": "الوصف",
+        "optionalDescription": "وصف اختياري",
+        "saveChanges": "حفظ التغييرات",
+        "fromSource": "من المصدر",
+        "edit": "تحرير",
+        "delete": "حذف",
+        "deleteConfirm": "هل أنت متأكد أنك تريد حذف السمة \"{{name}}\"؟",
+        "failedToLoadTheme": "فشل تحميل القالب",
+        "nameAndCssRequired": "الاسم و CSS مطلوبان",
+        "themeUpdated": "تحديث السمة",
+        "themeCreated": "موضوع تم إنشاؤه",
+        "failedToSaveTheme": "فشل في حفظ السمة",
+        "themeDeleted": "تم حذف الموضوع",
+        "failedToDeleteTheme": "فشل حذف السمة",
+        "failedToActivateTheme": "فشل تنشيط السمة"
+      },
       "sessionSynchronization": "مزامنة الجلسة",
       "sessionSyncDescription": "تحكم في كيفية تخزين جلسات الخادم ومزامنتها عبر الأجهزة وعلامات تبويب المتصفح.",
       "sessionSyncAcrossDevices": "عبر الأجهزة",
@@ -637,7 +704,42 @@
       "delete": "حذف",
       "leave": "مغادرة",
       "members": "الأعضاء",
-      "auditSettings": "إعدادات التدقيق",
+      "auditSettings": {
+        "auditSettingsTab": "إعدادات التدقيق",
+        "sessionRecordingHeading": "تسجيل الجلسة",
+        "sessionRecordingDescription": "تسجيل الجلسات الطرفية وجلسات سطح المكتب البعيد للتشغيل",
+        "enableSessionRecordingLabel": "تمكين تسجيل الجلسة",
+        "enableSessionRecordingDescription": "تسجيل جلسات SSH وTELNET وRDP وVNC لتشغيلها لاحقاً",
+        "recordingRetentionLabel": "الاحتفاظ بالتسجيل (بالأيام)",
+        "recordingRetentionDescription": "مدة الاحتفاظ بتسجيلات الجلسة قبل الحذف التلقائي (1-365 يوماً)",
+        "connectionRequirementsHeading": "متطلبات الاتصال",
+        "connectionRequirementsDescription": "التحكم في سلوك الاتصال ومتطلباته",
+        "requireConnectionReasonLabel": "سبب الاتصال المطلوب",
+        "requireConnectionReasonDescription": "مطالبة المستخدمين بتقديم سبب عند الاتصال بالخوادم",
+        "activityLoggingHeading": "تسجيل النشاط",
+        "activityLoggingDescription": "اختر أنواع الأنشطة التي تريد تسجيلها",
+        "fileOperationsLabel": "عمليات الملفات",
+        "fileOperationsDescription": "تسجيل تحميل الملفات وتنزيلها وحذفها وإعادة تسميتها عبر SFTP",
+        "serverConnectionsLabel": "اتصالات الخادم",
+        "serverConnectionsDescription": "تسجيل اتصالات SSH، وSFTP، وPVE وقطع الاتصال",
+        "identityManagementLabel": "إدارة الهوية",
+        "identityManagementDescription": "إنشاء سجلات إنشاء هويات SSH وتعديلها وحذفها",
+        "passwordPasteLabel": "لصق كلمة المرور",
+        "passwordPasteDescription": "سجل استخدام إجراء لصق كلمة المرور",
+        "serverManagementLabel": "إدارة الخوادم",
+        "serverManagementDescription": "إنشاء سجل تكوينات الخادم وتعديلها وحذفها وتعديلها",
+        "folderManagementLabel": "إدارة المجلدات",
+        "folderManagementDescription": "إنشاء سجلات إنشاء المجلدات وتعديلها وحذفها",
+        "scriptExecutionLabel": "تنفيذ البرنامج النصي",
+        "scriptExecutionDescription": "تسجيل تنفيذ البرامج النصية ومهام الأتمتة",
+        "actions": {
+          "save": "حفظ الإعدادات"
+        },
+        "messages": {
+          "updated": "تم تحديث إعدادات التدقيق بنجاح",
+          "updateFailed": "فشل في تحديث إعدادات التدقيق"
+        }
+      },
       "pendingInvitations": "الدعوات المعلقة",
       "invitedBy": "مدعو من قبل: {{name}}",
       "deleteConfirmation": "سيؤدي هذا إلى حذف المؤسسة نهائيًا وإزالة جميع الأعضاء. لا يمكن التراجع عن هذا الإجراء.",
@@ -844,6 +946,7 @@
     },
     "authentication": {
       "title": "{{count}} موفري مصادقة",
+      "internalProviderName": "المصادقة الداخلية",
       "addProvider": "إضافة موفر",
       "addLdapProvider": "إضافة LDAP",
       "system": "النظام",
@@ -1092,6 +1195,7 @@
       "addSource": "إضافة مصدر",
       "snippets": "مقتطفات",
       "scripts": "النصوص",
+      "themes": "المواضيع",
       "neverSynced": "لم تتم مزامنته مطلقاً",
       "sync": "المزامنة الآن",
       "edit": "تحرير",
@@ -1113,7 +1217,7 @@
         "enabled": "ممكّنة",
         "enabledDescription": "عند تعطيلها، لن تتم مزامنة هذا المصدر",
         "validating": "التحقق من صحة عنوان URL...",
-        "validationSuccess": "تم العثور على مصدر صالح: {{snippets}} مقتطفات، {{scripts}} البرامج النصية",
+        "validationSuccess": "تم العثور على مصدر صالح: {{snippets}} مقتطفات، {{scripts}} البرامج النصية ، {{themes}} السمات",
         "create": "إنشاء"
       },
       "messages": {
@@ -1221,6 +1325,45 @@
         "nameRequired": "اسم الموفر مطلوب"
       },
       "noFiles": "لم يتم العثور على ملفات"
+    },
+    "engines": {
+      "title": "المحركات",
+      "description": "إدارة مثيلات المحرك التي تتعامل مع الاتصالات عن بُعد.",
+      "addEngine": "إضافة محرك",
+      "noEngines": "لا توجد محركات",
+      "noEnginesDescription": "إضافة محرك لبدء الاتصال بالخوادم البعيدة.",
+      "status": {
+        "connected": "متصل",
+        "disconnected": "غير متصل"
+      },
+      "lastSeen": "آخر ظهور {{date}}",
+      "neverConnected": "غير متصل أبداً",
+      "regenerateToken": "إعادة توليد الرمز المميز",
+      "deleteEngine": "حذف المحرك",
+      "dismiss": "استبعاد",
+      "copyToken": "نسخ الرمز المميز",
+      "transport": {
+        "encrypted": "مشفر",
+        "unencrypted": "غير مشفر"
+      },
+      "tokenLabel": "رمز التسجيل لـ <strong>{{name}}</strong>",
+      "tokenHint": "عيّن هذا في <code1>config.yaml</code1> أو كمتغير بيئة <code2>REGISTRATION_TOKEN</code2>.",
+      "dialog": {
+        "title": "إضافة محرك",
+        "engineName": "اسم المحرك",
+        "namePlaceholder": "على سبيل المثال شبكة المكتب",
+        "create": "إنشاء المحرك"
+      },
+      "deleteConfirm": "هل أنت متأكد أنك تريد حذف \"{{name}}\"؟",
+      "messages": {
+        "deleted": "تم حذف المحرك بنجاح"
+      },
+      "errors": {
+        "loadFailed": "فشل تحميل المحركات",
+        "createFailed": "فشل في إنشاء المحرك",
+        "deleteFailed": "فشل في حذف المحرك",
+        "regenerateFailed": "فشل في تجديد الرمز المميز"
+      }
     }
   },
   "tunnel": {
@@ -1253,6 +1396,8 @@
     }
   },
   "servers": {
+    "addServerNote": "انقر بزر الماوس الأيمن لإضافة خادم جديد",
+    "searchPlaceholder": "بحث",
     "time": {
       "justNow": "الآن فقط",
       "minuteAgo": "{{count}} منذ دقيقة",
@@ -1291,6 +1436,8 @@
       "openSFTP": "فتح SFTP",
       "forwardPort": "المنفذ الأمامي",
       "runScript": "تشغيل البرنامج النصي",
+      "openNotes": "فتح الملاحظات",
+      "addNotes": "إضافة ملاحظات",
       "editServer": "تحرير الخادم",
       "editIntegration": "تحرير التكامل",
       "duplicateServer": "تكرار الخادم",
@@ -1302,6 +1449,21 @@
       "shutdown": "إغلاق",
       "stop": "إيقاف",
       "start": "بدء"
+    },
+    "tabs": {
+      "contextMenu": {
+        "popOut": "بوب آوت",
+        "startSharing": "بدء المشاركة",
+        "readOnly": "للقراءة فقط",
+        "readWrite": "القراءة والكتابة",
+        "copyShareLink": "نسخ رابط المشاركة",
+        "changePermissions": "تغيير الأذونات",
+        "stopSharing": "التوقف عن المشاركة",
+        "duplicate": "مكررة",
+        "openNotes": "فتح الملاحظات",
+        "hibernateSession": "السبات",
+        "closeSession": "قطع الاتصال"
+      }
     },
     "wol": {
       "successDescription": "الحزمة السحرية المرسلة إلى {{name}}",
@@ -1340,7 +1502,8 @@
         "host": "المضيف",
         "nodeName": "اسم العقدة",
         "vmid": "معرف الجهاز الافتراضي",
-        "macAddress": "عنوان MAC"
+        "macAddress": "عنوان MAC",
+        "engine": "المحرك"
       },
       "placeholders": {
         "serverName": "اسم الخادم",
@@ -1353,6 +1516,7 @@
         "vmid": "معرف الجهاز الافتراضي",
         "macAddress": "aa:bb:bb:cc:dd:ee:ff"
       },
+      "engineOffline": "(غير متصل بالإنترنت)",
       "settings": {
         "jumpHosts": {
           "title": "مضيفو القفزات",
@@ -1660,6 +1824,18 @@
       "fullScreen": "ملء الشاشة الكاملة",
       "exitFullScreen": "الخروج من وضع ملء الشاشة الكاملة",
       "badgeOn": "تشغيل"
+    },
+    "notesPanel": {
+      "title": "الملاحظات",
+      "placeholder": "اكتب ملاحظات لهذا الخادم…",
+      "showInList": "عرض في القائمة",
+      "showInListTooltip": "اعرض السطر الأول من هذه الملاحظات تحت اسم الخادم في الشريط الجانبي.",
+      "status": {
+        "saving": "التوفير",
+        "saved": "تم الحفظ",
+        "unsaved": "غير محفوظ",
+        "error": "فشل الحفظ"
+      }
     }
   },
   "support": {
@@ -1680,6 +1856,7 @@
     }
   },
   "welcome": {
+    "hello": "مرحباً",
     "subtitle": "مرحبًا بك في Nexterm. مدير الخادم مفتوح المصدر لخوادم SSH و VNC و RDP.",
     "downloadApps": "تنزيل التطبيقات",
     "connectDevice": "توصيل الجهاز",

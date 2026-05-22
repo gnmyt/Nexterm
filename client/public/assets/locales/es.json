@@ -56,11 +56,17 @@
       "ssoOrContinueWith": "o continúa con",
       "noAuthMethodsAvailable": "No hay métodos de autenticación disponibles.",
       "signInWithPasskey": "Iniciar sesión con Passkey",
+      "signInWithQrCode": "Iniciar sesión con código QR",
+      "qrScanDescription": "Escanea este código QR con la aplicación móvil Nexterm para iniciar sesión al instante.",
+      "backToLogin": "Volver al inicio de sesión",
       "authenticating": "Autentificar..."
     },
     "deviceLink": {
       "title": "Dispositivo de enlace",
       "description": "Introduce el código que aparece en tu dispositivo para autorizarlo a acceder a tu cuenta.",
+      "qrTab": "Código QR",
+      "codeTab": "Código",
+      "qrDescription": "Escanea este código QR con la aplicación móvil Nexterm para vincular tu dispositivo.",
       "codeLabel": "Código de dispositivo",
       "continue": "Continúa en",
       "verifying": "Verificando...",
@@ -104,6 +110,12 @@
       "waitingForAuth": "Esperando autorización...",
       "codeCreationFailed": "Error al crear código de dispositivo",
       "authSuccess": "¡Autentificado con éxito!"
+    },
+    "serverSwitcher": {
+      "title": "Servidores",
+      "addServer": "Añadir servidor",
+      "removeServer": "Eliminar servidor",
+      "removeConfirmText": "Esto eliminará la conexión a {{server}}. ¿Estás seguro?"
     },
     "selectBox": {
       "defaultOption": "Selecciona una opción...",
@@ -165,7 +177,22 @@
       "internalAuthDisabled": "La autenticación interna está desactivada",
       "ssoLoginFailed": "Error al iniciar sesión SSO",
       "passkeyLoginFailed": "Fallo en la autenticación de la clave de acceso",
-      "passkeyCancelled": "Se ha cancelado la autenticación con clave de acceso"
+      "passkeyCancelled": "Se ha cancelado la autenticación con clave de acceso",
+      "qrCodeExpired": "El código QR ha caducado. Inténtalo de nuevo.",
+      "connection": {
+        "title": "Error de conexión",
+        "close": "Cerrar pestaña",
+        "hostUnreachable": "Host remoto inalcanzable",
+        "refused": "Conexión rechazada por el host remoto",
+        "timeout": "Conexión interrumpida",
+        "authenticationFailed": "Autenticación fallida",
+        "permissionDenied": "Permiso denegado",
+        "failed": "Error de conexión",
+        "closedUnexpectedly": "Conexión cerrada inesperadamente",
+        "error": "Se ha producido un error de conexión",
+        "scriptClosedUnexpectedly": "Conexión de script cerrada inesperadamente",
+        "scriptError": "Se ha producido un error de conexión del script"
+      }
     },
     "messages": {
       "invitationAccepted": "Invitación aceptada",
@@ -226,6 +253,11 @@
         "personal": "Personal",
         "user": "Usuario #{{id}}",
         "organization": "Org #{{id}}"
+      },
+      "durationUnits": {
+        "seconds": "segundos",
+        "minutes": "minutos",
+        "hours": "horas"
       }
     },
     "pagination": {
@@ -540,6 +572,7 @@
     "adminSettings": "CONFIGURACIÓN ADMINISTRATIVA",
     "pages": {
       "account": "Cuenta",
+      "appearance": "Apariencia",
       "terminal": "Terminal",
       "fileManager": "Gestor de archivos",
       "keymaps": "Mapas clave",
@@ -551,7 +584,8 @@
       "sources": "Fuentes",
       "ai": "AI",
       "monitoring": "Supervisión",
-      "backup": "Almacenamiento"
+      "backup": "Almacenamiento",
+      "engines": "Motores"
     },
     "account": {
       "title": "Cuenta",
@@ -563,11 +597,18 @@
       "themeAuto": "Auto",
       "themeLight": "Luz",
       "themeDark": "Oscuro",
+      "themeDarkHint": "Pulsa tres veces para activar el modo OLED.",
       "themeOled": "OLED",
       "oledEnabled": "Modo OLED activado",
       "oledDisabled": "Modo OLED desactivado",
       "themeLabel": "Tema",
       "accentColor": "Color de acento",
+      "sizeLabel": "Talla",
+      "sizeXS": "XS",
+      "sizeS": "S",
+      "sizeM": "M",
+      "sizeL": "L",
+      "sizeXL": "XL",
       "twoFactor": "Autenticación de dos factores",
       "twoFactorActive": "Activo",
       "twoFactorInactive": "Inactivo",
@@ -587,6 +628,32 @@
       "appearanceSyncDisabled": "Los ajustes de apariencia ya no se sincronizarán",
       "generalSyncEnabled": "Los ajustes generales se sincronizarán ahora con tu cuenta",
       "generalSyncDisabled": "Los ajustes generales ya no se sincronizarán",
+      "customThemes": {
+        "title": "Temas personalizados",
+        "description": "Crea temas CSS personalizados o elige entre los temas fuente sincronizados para personalizar tu interfaz.",
+        "newTheme": "Nuevo tema",
+        "noThemesYet": "Aún no hay temas",
+        "noThemesDescription": "Crea un tema personalizado o añade una fuente para empezar.",
+        "editTheme": "Editar Tema",
+        "createTheme": "Crear tema",
+        "name": "Nombre",
+        "themeName": "Nombre del tema",
+        "descriptionLabel": "Descripción",
+        "optionalDescription": "Descripción opcional",
+        "saveChanges": "Guardar cambios",
+        "fromSource": "De la fuente",
+        "edit": "Edita",
+        "delete": "Borra",
+        "deleteConfirm": "¿Estás seguro de que quieres eliminar el tema \"{{name}}\"?",
+        "failedToLoadTheme": "Error al cargar el tema",
+        "nameAndCssRequired": "Nombre y CSS son obligatorios",
+        "themeUpdated": "Tema actualizado",
+        "themeCreated": "Tema creado",
+        "failedToSaveTheme": "No se ha podido guardar el tema",
+        "themeDeleted": "Tema eliminado",
+        "failedToDeleteTheme": "Error al eliminar el tema",
+        "failedToActivateTheme": "Error al activar el tema"
+      },
       "sessionSynchronization": "Sincronización de sesiones",
       "sessionSyncDescription": "Controla cómo se almacenan y sincronizan tus sesiones de servidor entre dispositivos y pestañas del navegador.",
       "sessionSyncAcrossDevices": "En todos los dispositivos",
@@ -637,7 +704,42 @@
       "delete": "Borra",
       "leave": "Deja",
       "members": "Miembros",
-      "auditSettings": "Ajustes de auditoría",
+      "auditSettings": {
+        "auditSettingsTab": "Ajustes de auditoría",
+        "sessionRecordingHeading": "Grabación de la sesión",
+        "sessionRecordingDescription": "Graba sesiones de terminal y escritorio remoto para reproducirlas",
+        "enableSessionRecordingLabel": "Activar grabación de sesión",
+        "enableSessionRecordingDescription": "Graba sesiones SSH, Telnet, RDP y VNC para reproducirlas más tarde",
+        "recordingRetentionLabel": "Retención de registros (días)",
+        "recordingRetentionDescription": "Cuánto tiempo conservar las grabaciones de sesión antes de su eliminación automática (1-365 días)",
+        "connectionRequirementsHeading": "Requisitos de conexión",
+        "connectionRequirementsDescription": "Comportamiento y requisitos de la conexión de control",
+        "requireConnectionReasonLabel": "Requerir conexión Motivo",
+        "requireConnectionReasonDescription": "Exigir a los usuarios que den una razón al conectarse a los servidores",
+        "activityLoggingHeading": "Registro de actividades",
+        "activityLoggingDescription": "Elige qué tipos de actividades registrar",
+        "fileOperationsLabel": "Operaciones de archivo",
+        "fileOperationsDescription": "Registra las cargas, descargas, eliminaciones y renombramientos de archivos mediante SFTP",
+        "serverConnectionsLabel": "Conexiones al servidor",
+        "serverConnectionsDescription": "Registra las conexiones y desconexiones SSH, SFTP y PVE",
+        "identityManagementLabel": "Gestión de identidades",
+        "identityManagementDescription": "Registrar la creación, modificación y eliminación de identidades SSH",
+        "passwordPasteLabel": "Pegar contraseña",
+        "passwordPasteDescription": "Registrar el uso de la acción de pegar contraseña",
+        "serverManagementLabel": "Gestión de servidores",
+        "serverManagementDescription": "Registra la creación, modificación y eliminación de configuraciones del servidor",
+        "folderManagementLabel": "Gestión de carpetas",
+        "folderManagementDescription": "Registra la creación, modificación y eliminación de carpetas",
+        "scriptExecutionLabel": "Ejecución del script",
+        "scriptExecutionDescription": "Registra la ejecución de scripts y tareas de automatización",
+        "actions": {
+          "save": "Guardar ajustes"
+        },
+        "messages": {
+          "updated": "Ajustes de auditoría actualizados correctamente",
+          "updateFailed": "Error al actualizar la configuración de auditoría"
+        }
+      },
       "pendingInvitations": "Invitaciones pendientes",
       "invitedBy": "Invitada por: {{name}}",
       "deleteConfirmation": "Esto borrará permanentemente la organización y eliminará a todos sus miembros. Esta acción no se puede deshacer.",
@@ -844,6 +946,7 @@
     },
     "authentication": {
       "title": "{{count}} Proveedores de autenticación",
+      "internalProviderName": "Autenticación interna",
       "addProvider": "Añadir proveedor",
       "addLdapProvider": "Añadir LDAP",
       "system": "Sistema",
@@ -1092,6 +1195,7 @@
       "addSource": "Añadir fuente",
       "snippets": "fragmentos",
       "scripts": "guiones",
+      "themes": "temas",
       "neverSynced": "Nunca sincronizado",
       "sync": "Sincronizar ahora",
       "edit": "Edita",
@@ -1113,7 +1217,7 @@
         "enabled": "Activado",
         "enabledDescription": "Si se desactiva, esta fuente no se sincronizará",
         "validating": "Validando URL...",
-        "validationSuccess": "Fuente válida encontrada: {{snippets}} fragmentos, {{scripts}} scripts",
+        "validationSuccess": "Fuente válida encontrada: {{snippets}} fragmentos, {{scripts}} scripts, {{themes}} temas",
         "create": "Crea"
       },
       "messages": {
@@ -1221,6 +1325,45 @@
         "nameRequired": "Se requiere el nombre del proveedor"
       },
       "noFiles": "No se han encontrado archivos"
+    },
+    "engines": {
+      "title": "Motores",
+      "description": "Gestiona las instancias del motor que gestionan las conexiones remotas.",
+      "addEngine": "Añadir motor",
+      "noEngines": "Sin motores",
+      "noEnginesDescription": "Añade un motor para empezar a conectarte a servidores remotos.",
+      "status": {
+        "connected": "Conectado",
+        "disconnected": "Desconectado"
+      },
+      "lastSeen": "Visto por última vez {{date}}",
+      "neverConnected": "Nunca conectado",
+      "regenerateToken": "Regenerar ficha",
+      "deleteEngine": "Borrar motor",
+      "dismiss": "Desestimar",
+      "copyToken": "Ficha de copia",
+      "transport": {
+        "encrypted": "Cifrado",
+        "unencrypted": "Sin encriptar"
+      },
+      "tokenLabel": "Ficha de registro para <strong>{{name}}</strong>",
+      "tokenHint": "Establécelo en <code1>config.yaml</code1> o como variable env <code2>REGISTRATION_TOKEN</code2>.",
+      "dialog": {
+        "title": "Añadir motor",
+        "engineName": "Nombre del motor",
+        "namePlaceholder": "p. ej. Red de oficinas",
+        "create": "Crear motor"
+      },
+      "deleteConfirm": "¿Estás seguro de que quieres borrar \"{{name}}\"?",
+      "messages": {
+        "deleted": "Motor eliminado correctamente"
+      },
+      "errors": {
+        "loadFailed": "Error al cargar motores",
+        "createFailed": "Error al crear el motor",
+        "deleteFailed": "Error al borrar el motor",
+        "regenerateFailed": "No se ha podido regenerar el testigo"
+      }
     }
   },
   "tunnel": {
@@ -1253,6 +1396,8 @@
     }
   },
   "servers": {
+    "addServerNote": "Haz clic con el botón derecho para añadir un nuevo servidor",
+    "searchPlaceholder": "Busca en",
     "time": {
       "justNow": "Ahora mismo",
       "minuteAgo": "{{count}} hace un minuto",
@@ -1291,6 +1436,8 @@
       "openSFTP": "Abrir SFTP",
       "forwardPort": "Puerto de reenvío",
       "runScript": "Ejecutar script",
+      "openNotes": "Notas abiertas",
+      "addNotes": "Añadir notas",
       "editServer": "Editar servidor",
       "editIntegration": "Editar Integración",
       "duplicateServer": "Servidor duplicado",
@@ -1302,6 +1449,21 @@
       "shutdown": "Apaga",
       "stop": "Para",
       "start": "Comienza"
+    },
+    "tabs": {
+      "contextMenu": {
+        "popOut": "Salir",
+        "startSharing": "Empezar a compartir",
+        "readOnly": "Sólo lectura",
+        "readWrite": "Leer y escribir",
+        "copyShareLink": "Copiar enlace para compartir",
+        "changePermissions": "Cambiar permisos",
+        "stopSharing": "Deja de compartir",
+        "duplicate": "Duplicar",
+        "openNotes": "Notas abiertas",
+        "hibernateSession": "Hibernar",
+        "closeSession": "Desconecta"
+      }
     },
     "wol": {
       "successDescription": "Paquete mágico enviado a {{name}}",
@@ -1340,7 +1502,8 @@
         "host": "Anfitrión",
         "nodeName": "Nombre del nodo",
         "vmid": "ID VM",
-        "macAddress": "Dirección MAC"
+        "macAddress": "Dirección MAC",
+        "engine": "Motor"
       },
       "placeholders": {
         "serverName": "Nombre del servidor",
@@ -1353,6 +1516,7 @@
         "vmid": "ID VM",
         "macAddress": "AA:BB:CC:DD:EE:FF"
       },
+      "engineOffline": "(sin conexión)",
       "settings": {
         "jumpHosts": {
           "title": "Anfitriones de salto",
@@ -1660,6 +1824,18 @@
       "fullScreen": "Pantalla completa",
       "exitFullScreen": "Salir del Modo Pantalla Completa",
       "badgeOn": "EN"
+    },
+    "notesPanel": {
+      "title": "Notas",
+      "placeholder": "Escribe notas para este servidor…",
+      "showInList": "Mostrar en lista",
+      "showInListTooltip": "Muestra la primera línea de estas notas bajo el nombre del servidor en la barra lateral.",
+      "status": {
+        "saving": "Guardar",
+        "saved": "Guardado",
+        "unsaved": "Sin guardar",
+        "error": "Guardar fallido"
+      }
     }
   },
   "support": {
@@ -1680,6 +1856,7 @@
     }
   },
   "welcome": {
+    "hello": "Hola",
     "subtitle": "Bienvenido a Nexterm. El gestor de servidores de código abierto para SSH, VNC y RDP.",
     "downloadApps": "Descargar aplicaciones",
     "connectDevice": "Conectar dispositivo",
