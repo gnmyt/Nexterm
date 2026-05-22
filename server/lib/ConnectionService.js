@@ -151,8 +151,7 @@ const createSFTPConnectionForSession = async (sessionId, entry, accountId) => {
 
         dataSocket.on("close", () => {
             logger.info("SFTP data connection closed", { sessionId });
-            SessionManager.markFailed(sessionId, "SFTP connection closed");
-            SessionManager.remove(sessionId, { code: 4017, reason: "SFTP connection closed" });
+            SessionManager.remove(sessionId);
         });
         dataSocket.on("error", (err) => {
             logger.error("SFTP data socket error", { sessionId, error: err.message });
@@ -194,8 +193,7 @@ const createSSHConnectionForSession = async (sessionId, entry, identity, organiz
         dataSocket.on("data", (data) => SessionManager.appendLog(sessionId, data.toString()));
         dataSocket.on("close", () => {
             logger.info("SSH data connection closed", { sessionId });
-            SessionManager.markFailed(sessionId, "SSH connection closed");
-            SessionManager.remove(sessionId, { code: 4017, reason: "SSH connection closed" });
+            SessionManager.remove(sessionId);
         });
         dataSocket.on("error", (err) => {
             logger.error("SSH data socket error", { sessionId, error: err.message });
@@ -245,8 +243,7 @@ const createTelnetConnectionForSession = async (sessionId, entry, organizationId
     dataSocket.on("data", (data) => SessionManager.appendLog(sessionId, data.toString()));
     dataSocket.on("close", () => {
         logger.info("Telnet data connection closed", { sessionId });
-        SessionManager.markFailed(sessionId, "Telnet connection closed");
-        SessionManager.remove(sessionId, { code: 4017, reason: "Telnet connection closed" });
+        SessionManager.remove(sessionId);
     });
     dataSocket.on("error", (err) => {
         logger.error("Telnet data socket error", { sessionId, error: err.message });
@@ -307,8 +304,7 @@ const createPveLxcConnectionForSession = async (sessionId, entry, organizationId
 
     dataSocket.on("close", () => {
         clearInterval(keepAliveTimer);
-        SessionManager.markFailed(sessionId, "PVE LXC connection closed");
-        SessionManager.remove(sessionId, { code: 4017, reason: "PVE LXC connection closed" });
+        SessionManager.remove(sessionId);
     });
 
     dataSocket.on("error", (err) => {

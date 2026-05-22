@@ -135,7 +135,6 @@ const GuacamoleRenderer = ({
         let isCleaningUp = false;
         const tunnelUrl = getWebSocketUrl("/api/ws/guac/", {});
         const tunnel = new Guacamole.WebSocketTunnel(tunnelUrl);
-        
         const client = new Guacamole.Client(tunnel);
         client.getDisplay().onresize = resizeHandler;
 
@@ -236,7 +235,7 @@ const GuacamoleRenderer = ({
     useEffect(() => {
         const cleanup = connect();
         return () => cleanup?.();
-    }, [sessionToken, session.id, isShared, t]);
+    }, [sessionToken, session.id, isShared]);
 
     useEffect(() => {
         window.addEventListener("resize", resizeHandler);

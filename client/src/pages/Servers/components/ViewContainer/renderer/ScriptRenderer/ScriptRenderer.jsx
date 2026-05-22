@@ -33,7 +33,7 @@ export const ScriptRenderer = ({ session, disconnectFromServer, updateProgress, 
     const fitAddonRef = useRef(null);
     const isAnyDialogOpenRef = useRef(false);
     const handlersRef = useRef({});
-    
+
     const { sendToast } = useToast();
     const { t } = useTranslation();
     const { sessionToken } = useContext(UserContext);
@@ -313,7 +313,7 @@ export const ScriptRenderer = ({ session, disconnectFromServer, updateProgress, 
             wsRef.current = null;
             fitAddonRef.current = null;
         };
-    }, [sessionToken, selectedFont, fontSize, cursorStyle, cursorBlink, selectedTheme, session.id, getCurrentTheme, theme, t]);
+    }, [sessionToken, selectedFont, fontSize, cursorStyle, cursorBlink, selectedTheme, session.id, getCurrentTheme, theme]);
 
     const sendInput = useCallback((value) => {
         if (dialogs.inputPrompt) {

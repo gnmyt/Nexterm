@@ -93,8 +93,12 @@ module.exports.onMasterConnectionClosed = (sessionId, reason = "closed") => {
     const session = module.exports.get(sessionId);
     if (!session) return;
     logger.info(`Master connection ${reason}, terminating session`, { sessionId });
-    module.exports.markFailed(sessionId, reason);
-    module.exports.remove(sessionId, { code: 4017, reason });
+    if (reason.startsWith("error:")) {
+        module.exports.markFailed(sessionId, reason);
+        module.exports.remove(sessionId, { code: 4017, reason });
+    } else {
+        module.exports.remove(sessionId);
+    }
 };
 
 module.exports.initRecording = async (sessionId, organizationId, cols = 80, rows = 24) => {

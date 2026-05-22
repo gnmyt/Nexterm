@@ -30,7 +30,7 @@ const XtermRenderer = ({ session, disconnectFromServer, markSessionErrored, getS
     const onBroadcastToggleRef = useRef(onBroadcastToggle);
     const onFullscreenToggleRef = useRef(onFullscreenToggle);
     const connectionLoaderRef = useRef(null);
-    
+
     const userContext = useContext(UserContext);
     const sessionToken = userContext?.sessionToken;
     const { theme, getCurrentTheme, selectedFont, fontSize, cursorStyle, cursorBlink, selectedTheme } = usePreferences();
@@ -410,7 +410,7 @@ const XtermRenderer = ({ session, disconnectFromServer, markSessionErrored, getS
             termRef.current = null;
             wsRef.current = null;
         };
-    }, [sessionToken, selectedFont, fontSize, cursorStyle, cursorBlink, selectedTheme, isShared, t, session.id, disconnectFromServer, markSessionErrored, getSessionError]);
+    }, [sessionToken, selectedFont, fontSize, cursorStyle, cursorBlink, selectedTheme, isShared]);
 
     return (
         <div className="xterm-container" onContextMenu={!isShared ? handleContextMenu : undefined}>
