@@ -3,8 +3,8 @@ const Joi = require('joi');
 module.exports.registerValidation = Joi.object({
     username: Joi.string().min(3).max(15).alphanum().required(),
     password: Joi.string().min(3).max(150).required(),
-    firstName: Joi.string().min(2).max(50).required(),
-    lastName: Joi.string().min(2).max(50).required(),
+    firstName: Joi.string().min(1).max(50).required(),
+    lastName: Joi.string().min(1).max(50).required(),
 });
 
 module.exports.totpSetup = Joi.object({
@@ -16,8 +16,8 @@ module.exports.passwordChangeValidation = Joi.object({
 });
 
 module.exports.updateNameValidation = Joi.object({
-    firstName: Joi.string().min(2).max(50),
-    lastName: Joi.string().min(2).max(50),
+    firstName: Joi.string().min(1).max(50),
+    lastName: Joi.string().min(1).max(50),
 }).or('firstName', 'lastName');
 
 module.exports.updateSessionSyncValidation = Joi.object({
