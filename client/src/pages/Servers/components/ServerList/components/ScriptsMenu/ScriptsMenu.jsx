@@ -6,6 +6,7 @@ import Icon from "@mdi/react";
 import { useTranslation } from "react-i18next";
 import { getRequest } from "@/common/utils/RequestUtil.js";
 import { matchesOsFilter, normalizeOsName } from "@/common/utils/osUtils.js";
+import { useScripts } from "@/common/contexts/ScriptContext.jsx";
 
 const KONAMI_CODE = ["ArrowUp", "ArrowUp", "ArrowDown", "ArrowDown", "ArrowLeft", "ArrowRight", "ArrowLeft", "ArrowRight", "b", "a"];
 
@@ -16,7 +17,7 @@ export const ScriptsMenu = ({ visible, onClose, scripts = [], server, serverOrga
     const [selectedScript, setSelectedScript] = useState(null);
     const [isPositioned, setIsPositioned] = useState(false);
     const [isVisible, setIsVisible] = useState(false);
-    const [sourceScripts, setSourceScripts] = useState([]);
+    const { sourceScripts } = useScripts();
     const [showSecrets, setShowSecrets] = useState(false);
     const [serverOsName, setServerOsName] = useState(null);
     const konamiIndexRef = useRef(0);
@@ -25,10 +26,6 @@ export const ScriptsMenu = ({ visible, onClose, scripts = [], server, serverOrga
     const scriptRefs = useRef([]);
 
     const isPveEntry = server?.type?.startsWith('pve-');
-
-    useEffect(() => {
-        getRequest("scripts/sources").then(setSourceScripts).catch(() => {});
-    }, []);
 
     useEffect(() => {
         if (!visible || !server?.id || isPveEntry) {

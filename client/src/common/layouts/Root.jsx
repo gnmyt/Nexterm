@@ -12,6 +12,7 @@ import { HTML5Backend } from "react-dnd-html5-backend";
 import { SessionProvider } from "@/common/contexts/SessionContext.jsx";
 import { SnippetProvider } from "@/common/contexts/SnippetContext.jsx";
 import { ScriptProvider } from "@/common/contexts/ScriptContext.jsx";
+import { TagProvider } from "@/common/contexts/TagContext.jsx";
 import { QuickActionProvider } from "@/common/contexts/QuickActionContext.jsx";
 import { Suspense, lazy, useState, useEffect, useContext, useRef } from "react";
 import { UserContext } from "@/common/contexts/UserContext.jsx";
@@ -92,6 +93,7 @@ const AppContent = () => {
                                 <IdentityProvider>
                                     <SnippetProvider>
                                         <ScriptProvider>
+                                            <TagProvider>
                                             <SessionProvider>
                                                 <QuickActionProvider>
                                                     <div className="app-wrapper">
@@ -121,6 +123,7 @@ const AppContent = () => {
                                                     </div>
                                                 </QuickActionProvider>
                                             </SessionProvider>
+                                            </TagProvider>
                                         </ScriptProvider>
                                     </SnippetProvider>
                                 </IdentityProvider>

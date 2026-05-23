@@ -1,9 +1,10 @@
-import { useContext, useEffect, useState } from "react";
+import { useContext, useState } from "react";
 import { mdiPlus, mdiCheck, mdiDotsVertical, mdiPencil, mdiDelete } from "@mdi/js";
 import Icon from "@mdi/react";
 import { useTranslation } from "react-i18next";
-import { getRequest, postRequest, deleteRequest, putRequest, patchRequest } from "@/common/utils/RequestUtil.js";
+import { postRequest, deleteRequest, putRequest, patchRequest } from "@/common/utils/RequestUtil.js";
 import { ServerContext } from "@/common/contexts/ServerContext.jsx";
+import { useTags } from "@/common/contexts/TagContext.jsx";
 import { ContextMenuItem } from "@/common/components/ContextMenu";
 import "./styles.sass";
 
@@ -25,7 +26,7 @@ const TAG_COLORS = [
 export const TagsSubmenu = ({ entryId, entryTags = [], onClose }) => {
     const { t } = useTranslation();
     const { loadServers } = useContext(ServerContext);
-    const [allTags, setAllTags] = useState([]);
+    const { tags: allTags, loadTags } = useTags();
     const [showCreateTag, setShowCreateTag] = useState(false);
     const [newTagName, setNewTagName] = useState("");
     const [selectedColor, setSelectedColor] = useState(TAG_COLORS[0]);
@@ -33,19 +34,6 @@ export const TagsSubmenu = ({ entryId, entryTags = [], onClose }) => {
     const [editTagName, setEditTagName] = useState("");
     const [editTagColor, setEditTagColor] = useState("");
     const [showTagMenu, setShowTagMenu] = useState(null);
-
-    useEffect(() => {
-        loadTags();
-    }, []);
-
-    const loadTags = async () => {
-        try {
-            const tags = await getRequest("tags/list");
-            setAllTags(tags);
-        } catch (error) {
-            console.error("Failed to load tags:", error);
-        }
-    };
 
     const createTag = async () => {
         if (!newTagName.trim()) return;

@@ -4,6 +4,7 @@ import { useContext, useEffect, useState, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import { ServerContext } from "@/common/contexts/ServerContext.jsx";
 import { IdentityContext } from "@/common/contexts/IdentityContext.jsx";
+import { useScripts } from "@/common/contexts/ScriptContext.jsx";
 import ServerEntries from "./components/ServerEntries.jsx";
 import Icon from "@mdi/react";
 import {
@@ -114,8 +115,7 @@ export const ServerList = ({
     const serversContainerRef = useRef(null);
     const scrollIntervalRef = useRef(null);
     const tagButtonRef = useRef(null);
-    const [scripts, setScripts] = useState([]);
-    const [sourceScripts, setSourceScripts] = useState([]);
+    const { allScripts: scripts, sourceScripts } = useScripts();
     const [scriptsMenuOpen, setScriptsMenuOpen] = useState(false);
     const [scriptsMenuServer, setScriptsMenuServer] = useState(null);
     const [isMobile, setIsMobile] = useState(false);
@@ -176,13 +176,6 @@ export const ServerList = ({
         }
         return null;
     };
-
-    useEffect(() => {
-        if (contextMenu.isOpen && contextClickedType === "server-object" && server?.protocol === "ssh") {
-            getRequest("scripts/all").then(setScripts).catch(() => setScripts([]));
-            getRequest("scripts/sources").then(setSourceScripts).catch(() => setSourceScripts([]));
-        }
-    }, [contextMenu.isOpen, contextClickedType, server?.protocol]);
 
     const openScriptsMenu = () => {
         if (server) {
