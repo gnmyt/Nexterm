@@ -138,6 +138,21 @@
           border-color: colors.$white
           box-shadow: 0 0 0 1px colors.$dark-gray
 
+      .custom-color
+        position: relative
+        background: linear-gradient(135deg, #ff6b6b, #ffa94d, #ffd43b, #51cf66, #4dabf7, #b197fc)
+        background-size: 140% 140%
+        background-position: center
+
+        input[type="color"]
+          position: absolute
+          inset: 0
+          opacity: 0
+          cursor: pointer
+          border: none
+          padding: 0
+          background: transparent
+
     .form-actions
       display: flex
       gap: 6px

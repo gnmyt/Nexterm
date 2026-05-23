@@ -11,7 +11,6 @@ import "./styles.sass";
 const TAG_COLORS = [
     "#ef4444", // red
     "#f97316", // orange
-    "#f59e0b", // amber
     "#eab308", // yellow
     "#84cc16", // lime
     "#22c55e", // green
@@ -154,6 +153,19 @@ export const TagsSubmenu = ({ entryId, entryTags = [], onClose }) => {
                                 }}
                             />
                         ))}
+                        <label
+                            className={`color-option custom-color ${!TAG_COLORS.includes(selectedColor) ? "selected" : ""}`}
+                            style={!TAG_COLORS.includes(selectedColor) ? { background: selectedColor } : undefined}
+                            onClick={(e) => e.stopPropagation()}
+                            title="Custom color"
+                        >
+                            <input
+                                type="color"
+                                value={selectedColor}
+                                onChange={(e) => setSelectedColor(e.target.value)}
+                                onClick={(e) => e.stopPropagation()}
+                            />
+                        </label>
                     </div>
                     <div className="form-actions">
                         <button onClick={(e) => {
@@ -212,6 +224,19 @@ export const TagsSubmenu = ({ entryId, entryTags = [], onClose }) => {
                                             }}
                                         />
                                     ))}
+                                    <label
+                                        className={`color-option custom-color ${!TAG_COLORS.includes(editTagColor) ? "selected" : ""}`}
+                                        style={!TAG_COLORS.includes(editTagColor) ? { background: editTagColor } : undefined}
+                                        onClick={(e) => e.stopPropagation()}
+                                        title="Custom color"
+                                    >
+                                        <input
+                                            type="color"
+                                            value={editTagColor}
+                                            onChange={(e) => setEditTagColor(e.target.value)}
+                                            onClick={(e) => e.stopPropagation()}
+                                        />
+                                    </label>
                                 </div>
                                 <div className="form-actions">
                                     <button onClick={(e) => {
