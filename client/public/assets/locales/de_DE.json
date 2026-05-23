@@ -850,6 +850,10 @@
         "fullscreen": {
           "title": "Vollbild",
           "description": "Umschalten des Vollbildmodus"
+        },
+        "pasteidentitypassword": {
+          "title": "Paste Identity Password",
+          "description": "Paste the password of the current SSH connection's identity"
         }
       },
       "recorder": {
