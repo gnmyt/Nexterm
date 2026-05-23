@@ -291,12 +291,12 @@ const pasteIdentityPassword = async (accountId, sessionId, ipAddress = null, use
     if (!password) return { code: 400, message: 'Identity does not contain a password' };
 
     const connection = SessionManager.getConnection(sessionId);
-    if (!connection || !connection.stream) return { code: 400, message: 'Session stream not available' };
+    if (!connection || !connection.dataSocket) return { code: 400, message: 'Session stream not available' };
 
     const entry = await Entry.findByPk(session.entryId);
 
     try {
-        connection.stream.write(password);
+        connection.dataSocket.write(password);
 
         await createAuditLog({
             accountId,
