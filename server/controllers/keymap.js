@@ -9,6 +9,7 @@ const DEFAULT_KEYMAPS = [
     { action: "broadcast", key: "ctrl+b" },
     { action: "copy", key: "ctrl+shift+c" },
     { action: "fullscreen", key: "f11" },
+    { action: "paste-identity-password", key: "ctrl+shift+p" },
 ];
 
 module.exports.getKeymaps = async (accountId) => {

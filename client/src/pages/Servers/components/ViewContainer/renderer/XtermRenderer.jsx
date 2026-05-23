@@ -30,6 +30,7 @@ const XtermRenderer = ({ session, disconnectFromServer, markSessionErrored, getS
     const onBroadcastToggleRef = useRef(onBroadcastToggle);
     const onFullscreenToggleRef = useRef(onFullscreenToggle);
     const connectionLoaderRef = useRef(null);
+    const canPasteIdentityRef = useRef(false);
 
     const userContext = useContext(UserContext);
     const sessionToken = userContext?.sessionToken;
@@ -59,6 +60,11 @@ const XtermRenderer = ({ session, disconnectFromServer, markSessionErrored, getS
     useEffect(() => {
         onFullscreenToggleRef.current = onFullscreenToggle;
     }, [onFullscreenToggle]);
+
+    useEffect(() => {
+        const identity = identities?.find(i => i.id === session.identity);
+        canPasteIdentityRef.current = !!(identity && ['password', 'both', 'password-only'].includes(identity.type));
+    }, [identities, session.identity]);
 
     useEffect(() => {
         if (updateProgress) {
@@ -356,6 +362,14 @@ const XtermRenderer = ({ session, disconnectFromServer, markSessionErrored, getS
                     event.preventDefault();
                     event.stopPropagation();
                     window.dispatchEvent(new CustomEvent('terminal-snippets-shortcut'));
+                    return false;
+                }
+
+                const pasteIdentityKeybind = getParsedKeybind("paste-identity-password");
+                if (pasteIdentityKeybind && canPasteIdentityRef.current && matchesKeybind(event, pasteIdentityKeybind)) {
+                    event.preventDefault();
+                    event.stopPropagation();
+                    handlePasteIdentity();
                     return false;
                 }
 
