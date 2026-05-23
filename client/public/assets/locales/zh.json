@@ -1,1876 +1,1876 @@
 {
   "common": {
-    "error": "错误",
+    "error": "錯誤",
     "success": "成功",
-    "loading": "加载中...",
-    "saving": "保存中...",
-    "close": "关闭",
+    "loading": "載入中...",
+    "saving": "節省...",
+    "close": "關閉",
     "cancel": "取消",
-    "save": "保存",
-    "download": "下载",
+    "save": "節省",
+    "download": "下載",
     "maximize": "最大化",
-    "restore": "恢复",
+    "restore": "還原",
     "actions": {
       "cancel": "取消",
-      "confirm": "确认",
-      "discard": "放弃",
-      "login": "登录",
-      "register": "注册",
-      "save": "保存",
-      "download": "下载",
-      "close": "关闭",
+      "confirm": "確認",
+      "discard": "丟棄",
+      "login": "登入",
+      "register": "註冊",
+      "save": "節省",
+      "download": "下載",
+      "close": "關閉",
       "maximize": "最大化",
-      "restore": "还原",
+      "restore": "還原",
       "back": "返回"
     },
     "iconChooser": {
-      "searchIcons": "搜索图标...",
-      "searchResults": "搜索结果",
-      "popularIcons": "图标",
-      "noResults": "未找到图标"
+      "searchIcons": "搜尋圖示...",
+      "searchResults": "搜尋結果",
+      "popularIcons": "熱門圖示",
+      "noResults": "未找到圖示"
     },
     "labels": {
-      "username": "用户名",
-      "password": "密码",
-      "firstName": "名字",
-      "lastName": "姓",
-      "code": "验证码",
-      "twoFACode": "双因素验证码"
+      "username": "帳號",
+      "password": "密碼",
+      "firstName": "姓名",
+      "lastName": "姓氏",
+      "code": "代碼",
+      "twoFACode": "2FA 代碼"
     },
     "placeholders": {
-      "username": "用户名",
-      "password": "密码",
+      "username": "使用者名稱",
+      "password": "密碼",
       "firstName": "名字",
-      "lastName": "姓",
-      "code": "验证码"
+      "lastName": "姓氏",
+      "code": "代碼"
     },
     "confirmDialog": {
-      "title": "确定吗？",
-      "defaultText": "此操作无法撤销。",
-      "unsavedChangesTitle": "未保存的更改",
-      "unsavedChangesText": "您有未保存的更改。您确定要关闭吗？"
+      "title": "你確定嗎？",
+      "defaultText": "此動作無法撤銷。",
+      "unsavedChangesTitle": "未儲存的變更",
+      "unsavedChangesText": "您有未儲存的變更。您確定要關閉？"
     },
     "loginDialog": {
-      "title": "登录",
-      "registrationTitle": "注册",
-      "ssoOrContinueWith": "或继续使用",
-      "noAuthMethodsAvailable": "无可用的身份验证方式。",
-      "signInWithPasskey": "使用密码登录",
-      "signInWithQrCode": "使用 QR 码登录",
-      "qrScanDescription": "使用 Nexterm 移动应用程序扫描此二维码，即可立即登录。",
-      "backToLogin": "返回登录",
-      "authenticating": "正在验证…"
+      "title": "下一頁",
+      "registrationTitle": "註冊",
+      "ssoOrContinueWith": "或繼續",
+      "noAuthMethodsAvailable": "沒有可用的驗證方法。",
+      "signInWithPasskey": "使用密碼登入",
+      "signInWithQrCode": "使用 QR 代碼登入",
+      "qrScanDescription": "使用 Nexterm 行動應用程式掃描此 QR 代碼，即可立即登入。",
+      "backToLogin": "返回登入",
+      "authenticating": "驗證..."
     },
     "deviceLink": {
-      "title": "链接设备",
-      "description": "输入设备上显示的代码，授权其访问您的账户。",
-      "qrTab": "QR 码",
-      "codeTab": "代码",
-      "qrDescription": "使用 Nexterm 移动应用程序扫描此 QR 代码，链接您的设备。",
-      "codeLabel": "设备代码",
-      "continue": "继续",
-      "verifying": "验证中...",
-      "confirmTitle": "授权设备",
-      "confirmDescription": "有设备请求访问您的账户。请验证以下详细信息。",
-      "deviceInfo": "设备信息",
-      "type": "类型",
-      "ipAddress": "IP 地址",
-      "userAgent": "设备",
-      "authorize": "授权设备",
-      "authorizing": "授权...",
-      "deny": "拒绝",
-      "invalidCode": "无效或过期代码",
-      "authorizationFailed": "授权失败",
-      "deviceAuthorized": "设备授权成功",
-      "successTitle": "设备授权",
-      "successMessage": "您可以关闭此选项卡并返回应用程序。",
+      "title": "連結裝置",
+      "description": "輸入裝置上顯示的驗證碼，授權裝置存取您的帳戶。",
+      "qrTab": "QR 代碼",
+      "codeTab": "代碼",
+      "qrDescription": "使用 Nexterm 行動應用程式掃描此 QR 代碼，即可連結您的裝置。",
+      "codeLabel": "裝置代碼",
+      "continue": "繼續",
+      "verifying": "驗證...",
+      "confirmTitle": "授權裝置",
+      "confirmDescription": "有裝置要求存取您的帳戶。請驗證以下詳細資訊。",
+      "deviceInfo": "裝置資訊",
+      "type": "類型",
+      "ipAddress": "IP 位址",
+      "userAgent": "裝置",
+      "authorize": "授權裝置",
+      "authorizing": "授權...",
+      "deny": "拒絕",
+      "invalidCode": "無效或過期的代碼",
+      "authorizationFailed": "授權失敗",
+      "deviceAuthorized": "裝置授權成功",
+      "successTitle": "裝置授權",
+      "successMessage": "您可以關閉此標籤並返回應用程式。",
       "clientTypes": {
-        "mobile": "移动应用程序",
-        "connector": "桌面连接器"
+        "mobile": "行動應用程式",
+        "connector": "桌上型電腦連接器"
       }
     },
     "connectorSetup": {
-      "title": "Nexterm 连接器",
-      "serverUrl": "服务器 URL",
-      "serverUrlDescription": "输入 Nexterm 服务器的 URL 以进行连接。",
-      "connect": "连接",
-      "connecting": "连接中...",
-      "enterServerUrl": "请输入服务器 URL",
-      "connectionFailed": "连接服务器失败。请检查 URL。",
-      "deviceLinkingNotSupported": "此服务器不支持设备链接。请更新您的 Nexterm 服务器。",
-      "authMethodDescription": "选择与服务器进行身份验证的方式。",
-      "showCode": "显示代码",
-      "showCodeDesc": "显示代码，以便在网络界面上手动输入",
-      "openBrowser": "授权",
-      "openBrowserDesc": "打开浏览器自动授权",
-      "enterCodeDescription": "在 Nexterm Web 界面上输入此代码以授权此设备。",
-      "copyCode": "复制代码",
-      "codeCopied": "代码复制到剪贴板",
-      "copyFailed": "复制代码失败",
-      "waitingForAuth": "等待授权...",
-      "codeCreationFailed": "创建设备代码失败",
-      "authSuccess": "验证成功！"
+      "title": "Nexterm 連接器",
+      "serverUrl": "伺服器 URL",
+      "serverUrlDescription": "輸入 Nexterm 伺服器的 URL 以連線。",
+      "connect": "連接",
+      "connecting": "連接...",
+      "enterServerUrl": "請輸入伺服器 URL",
+      "connectionFailed": "連接伺服器失敗。請檢查 URL。",
+      "deviceLinkingNotSupported": "此伺服器不支援裝置連結。請更新您的 Nexterm 伺服器。",
+      "authMethodDescription": "選擇與伺服器驗證的方式。",
+      "showCode": "顯示代碼",
+      "showCodeDesc": "顯示要在 Web 介面上手動輸入的代碼",
+      "openBrowser": "授權",
+      "openBrowserDesc": "開啟瀏覽器自動授權",
+      "enterCodeDescription": "在 Nexterm Web 介面上輸入此代碼，以授權此裝置。",
+      "copyCode": "複製代碼",
+      "codeCopied": "程式碼複製到剪貼簿",
+      "copyFailed": "複製代碼失敗",
+      "waitingForAuth": "等待授權...",
+      "codeCreationFailed": "建立裝置代碼失敗",
+      "authSuccess": "成功驗證！"
     },
     "serverSwitcher": {
-      "title": "服务器",
-      "addServer": "添加服务器",
-      "removeServer": "移除服务器",
-      "removeConfirmText": "这将删除与 {{server}}的连接。你确定吗？"
+      "title": "伺服器",
+      "addServer": "新增伺服器",
+      "removeServer": "移除伺服器",
+      "removeConfirmText": "這將移除與 {{server}}的連線。您確定嗎？"
     },
     "selectBox": {
-      "defaultOption": "选择选项...",
-      "search": "搜索中...",
-      "noResults": "未找到结果"
+      "defaultOption": "選擇選項...",
+      "search": "搜尋...",
+      "noResults": "未找到結果"
     },
     "userSearch": {
-      "placeholder": "搜索用户中..."
+      "placeholder": "搜尋使用者..."
     },
     "table": {
       "noData": {
-        "title": "未找到数据",
-        "subtitle": "没有要显示的项目。"
+        "title": "未找到資料",
+        "subtitle": "沒有要顯示的項目。"
       },
       "pagination": {
-        "showing": "显示 {{start}} 至 {{end}} 的 {{total}}",
-        "previous": "上一页",
-        "next": "下一页",
-        "pageInfo": "{{current}} of {{total}}"
+        "showing": "顯示 {{start}} 至 {{end}} 的 {{total}}",
+        "previous": "上一頁",
+        "next": "下一頁",
+        "pageInfo": "頁面 {{current}} of {{total}}"
       }
     },
     "sidebar": {
-      "settings": "设置",
-      "servers": "服务器",
-      "monitoring": "监控",
-      "snippets": "代码片段",
-      "audit": "审计",
-      "account": "账户",
-      "logout": "退出登录",
-      "collapseTitle": "折叠侧边栏",
-      "logoutConfirmText": "此操作将退出 {{username}} 账户。确定继续吗？",
-      "starOnGitHub": "在GitHub上点个star",
-      "support": "支持"
+      "settings": "設定",
+      "servers": "伺服器",
+      "monitoring": "監控",
+      "snippets": "片段",
+      "audit": "審計",
+      "account": "帳戶",
+      "logout": "登出",
+      "collapseTitle": "折疊側欄",
+      "logoutConfirmText": "這會讓您登出 {{username}} 帳戶。您確定嗎？",
+      "starOnGitHub": "GitHub 上的 Star",
+      "support": "支援"
     },
     "quickAction": {
-      "placeholder": "搜索服务器、片段或导航...",
-      "noResults": "未找到结果",
-      "navigation": "导航",
-      "settings": "设置",
-      "navigate": "导航",
-      "select": "选择",
-      "close": "关闭",
+      "placeholder": "搜尋伺服器、片段或瀏覽...",
+      "noResults": "未找到結果",
+      "navigation": "導航",
+      "settings": "設定",
+      "navigate": "導航",
+      "select": "選擇",
+      "close": "關閉",
       "types": {
-        "server": "服务器",
+        "server": "伺服器",
         "snippet": "片段",
-        "navigation": "转到",
-        "settings": "设置"
+        "navigation": "前往",
+        "settings": "設定"
       }
     },
     "errors": {
-      "loadingAuthProviders": "加载身份验证提供程序时出错：{{error}}",
+      "loadingAuthProviders": "載入驗證提供者時出錯: {{error}}",
       "webSocketConnection": {
-        "title": "WebSocket 连接失败",
-        "message": "连接不可用。这可能是由于反向代理未启用 WebSocket 或网络限制造成的。"
+        "title": "WebSocket 連線失敗",
+        "message": "連線無法使用。這可能是由於您的反向代理未啟用 WebSocket 或網路限制所致。"
       },
-      "generalError": "发生错误",
-      "invalidCredentials": "用户名或密码无效",
-      "invalidTwoFactor": "双因素验证码无效",
-      "internalAuthDisabled": "内部身份验证已禁用",
-      "ssoLoginFailed": "发起SSO登录失败",
-      "passkeyLoginFailed": "密码验证失败",
-      "passkeyCancelled": "密码验证已取消",
-      "qrCodeExpired": "QR 码已过期。请重试。",
+      "generalError": "發生錯誤",
+      "invalidCredentials": "無效的使用者名稱或密碼",
+      "invalidTwoFactor": "無效的雙重因素代碼",
+      "internalAuthDisabled": "內部認證已停用",
+      "ssoLoginFailed": "啟動 SSO 登入失敗",
+      "passkeyLoginFailed": "密碼匙驗證失敗",
+      "passkeyCancelled": "密碼匙認證已取消",
+      "qrCodeExpired": "QR 代碼已過期。請再試一次。",
       "connection": {
-        "title": "连接失败",
-        "close": "关闭选项卡",
-        "hostUnreachable": "远程主机无法连接",
-        "refused": "远程主机拒绝连接",
-        "timeout": "连接超时",
-        "authenticationFailed": "验证失败",
-        "permissionDenied": "拒绝许可",
-        "failed": "连接失败",
-        "closedUnexpectedly": "连接意外关闭",
-        "error": "出现连接错误",
-        "scriptClosedUnexpectedly": "脚本连接意外关闭",
-        "scriptError": "脚本连接发生错误"
+        "title": "連線失敗",
+        "close": "關閉標籤",
+        "hostUnreachable": "遠端主機無法連線",
+        "refused": "遠端主機拒絕連線",
+        "timeout": "連線超時",
+        "authenticationFailed": "驗證失敗",
+        "permissionDenied": "拒絕許可",
+        "failed": "連線失敗",
+        "closedUnexpectedly": "連線意外關閉",
+        "error": "發生連線錯誤",
+        "scriptClosedUnexpectedly": "腳本連線意外關閉",
+        "scriptError": "發生腳本連線錯誤"
       }
     },
     "messages": {
-      "invitationAccepted": "邀请已接受",
-      "invitationDeclined": "邀请已拒绝",
-      "invitationError": "处理邀请失败",
-      "organizationDeleted": "组织已成功删除",
-      "organizationDeleteError": "删除组织失败",
-      "leftOrganization": "您已离开该组织",
-      "leaveOrganizationError": "离开组织失败"
+      "invitationAccepted": "接受邀請",
+      "invitationDeclined": "拒絕邀請",
+      "invitationError": "處理邀請失敗",
+      "organizationDeleted": "組織已成功刪除",
+      "organizationDeleteError": "刪除組織失敗",
+      "leftOrganization": "您已離開組織",
+      "leaveOrganizationError": "未能離開組織"
     }
   },
   "audit": {
     "page": {
-      "title": "审计日志",
-      "subtitle": "跟踪和监控整个基础设施的所有活动"
+      "title": "稽核日誌",
+      "subtitle": "追蹤並監控基礎架構中的所有活動"
     },
     "errors": {
-      "failedToLoadData": "加载审计数据失败",
-      "failedToLoadLogs": "加载审计日志失败"
+      "failedToLoadData": "載入稽核資料失敗",
+      "failedToLoadLogs": "載入稽核記錄失敗"
     },
     "filters": {
-      "title": "筛选条件",
-      "activeCount": "{{count}} 个活跃",
-      "organization": "组织",
-      "action": "操作",
-      "resource": "资源",
-      "startDate": "开始日期",
-      "endDate": "结束日期",
-      "clearAll": "清除全部",
+      "title": "濾波器",
+      "activeCount": "{{count}} 活躍",
+      "organization": "組織架構",
+      "action": "行動",
+      "resource": "資源",
+      "startDate": "開始日期",
+      "endDate": "結束日期",
+      "clearAll": "全部清除",
       "options": {
-        "allActions": "所有操作",
-        "allResources": "所有资源",
-        "allOrganizations": "所有组织（个人+组织）",
-        "personalOnly": "仅个人",
-        "categoryAll": "{{category}}（全部）"
+        "allActions": "所有行動",
+        "allResources": "所有資源",
+        "allOrganizations": "所有組織 (個人 + 組織)",
+        "personalOnly": "僅限個人",
+        "categoryAll": "{{category}} (全部)"
       }
     },
     "table": {
       "headers": {
-        "timestamp": "时间戳",
-        "action": "操作",
-        "actor": "操作者",
-        "resource": "资源",
-        "organization": "组织",
-        "details": "详情"
+        "timestamp": "時間戳記",
+        "action": "行動",
+        "actor": "演員",
+        "resource": "資源",
+        "organization": "組織架構",
+        "details": "詳細資訊"
       },
       "noLogs": {
-        "title": "未找到审计日志",
-        "subtitle": "尝试调整筛选条件或稍后重试。"
+        "title": "未找到稽核記錄",
+        "subtitle": "請嘗試調整您的篩選條件或稍後再檢查。"
       },
-      "loading": "加载审计日志中...",
+      "loading": "載入稽核日誌...",
       "expandedDetails": {
-        "connectionReason": "连接原因",
-        "userAgent": "用户代理",
-        "additionalDetails": "附加详情"
+        "connectionReason": "連接原因",
+        "userAgent": "使用者代理",
+        "additionalDetails": "其他詳細資訊"
       },
       "badges": {
-        "personal": "个人",
-        "user": "用户 #{{id}}",
-        "organization": "组织 #{{id}}"
+        "personal": "個人",
+        "user": "使用者 #{{id}}",
+        "organization": "Org #{{id}}"
       },
       "durationUnits": {
-        "seconds": "秒钟",
-        "minutes": "分钟",
-        "hours": "时数"
+        "seconds": "秒",
+        "minutes": "分鐘",
+        "hours": "時數"
       }
     },
     "pagination": {
-      "showing": "显示 {{total}} 条日志中的第 {{start}} - {{end}} 条",
-      "previous": "上一页",
-      "next": "下一页",
-      "pageInfo": "第 {{current}} 页，共 {{total}} 页"
+      "showing": "顯示 {{start}} 至 {{end}} 的 {{total}} 日誌",
+      "previous": "上一頁",
+      "next": "下一頁",
+      "pageInfo": "頁面 {{current}} of {{total}}"
     }
   },
   "snippets": {
     "page": {
-      "title": "代码片段",
-      "subtitle": "管理终端中快速访问的命令片段",
-      "addSnippet": "添加代码片段",
-      "personal": "个人",
-      "selectOrganization": "选择组织",
+      "title": "片段",
+      "subtitle": "管理您的命令片段，以便在終端機中快速存取",
+      "addSnippet": "新增片段",
+      "personal": "個人",
+      "selectOrganization": "選擇機構",
       "tabs": {
-        "snippets": "代码片段",
-        "scripts": "脚本"
+        "snippets": "片段",
+        "scripts": "腳本"
       }
     },
     "list": {
-      "empty": "您还没有任何代码片段。创建您的第一个片段吧！",
+      "empty": "您還沒有任何片段。建立您的第一個片段！",
       "actions": {
-        "edit": "编辑代码片段",
-        "delete": "删除代码片段"
+        "edit": "編輯片段",
+        "delete": "刪除片段"
       }
     },
     "dialog": {
       "title": {
-        "create": "创建代码片段",
-        "edit": "编辑代码片段"
+        "create": "建立片段",
+        "edit": "編輯片段"
       },
       "fields": {
-        "name": "名称",
-        "description": "描述（可选）",
-        "command": "命令",
-        "osFilter": "兼容操作系统"
+        "name": "名稱",
+        "description": "說明（可選）",
+        "command": "指令",
+        "osFilter": "相容的作業系統"
       },
       "placeholders": {
-        "name": "代码片段名称",
-        "description": "此命令的作用？",
-        "command": "输入命令",
-        "osFilter": "所有操作系统"
+        "name": "片段名稱",
+        "description": "這命令是什麼？",
+        "command": "輸入您的指令",
+        "osFilter": "所有作業系統"
       },
       "actions": {
         "cancel": "取消",
-        "create": "创建",
-        "save": "保存",
-        "generateAI": "用 AI 生成",
-        "generating": "生成中..."
+        "create": "建立",
+        "save": "節省",
+        "generateAI": "使用 AI 生成",
+        "generating": "產生..."
       }
     },
     "messages": {
       "success": {
-        "created": "代码片段创建成功",
-        "updated": "代码片段更新成功",
-        "deleted": "代码片段删除成功"
+        "created": "成功建立片段",
+        "updated": "片段更新成功",
+        "deleted": "成功刪除片段"
       },
       "errors": {
-        "required": "名称和命令为必填项",
-        "loadFailed": "加载代码片段数据失败",
-        "saveFailed": "保存代码片段失败",
-        "deleteFailed": "删除代码片段失败",
-        "reorderFailed": "重新排序代码片段失败"
+        "required": "名稱和指令為必填項目",
+        "loadFailed": "載入片段資料失敗",
+        "saveFailed": "儲存片段失敗",
+        "deleteFailed": "刪除片段失敗",
+        "reorderFailed": "重新排列片段失敗"
       }
     }
   },
   "scripts": {
     "page": {
-      "title": "脚本",
-      "subtitle": "管理服务器任务的自动化脚本",
-      "addScript": "添加脚本",
-      "personal": "个人",
-      "selectOrganization": "选择组织",
+      "title": "腳本",
+      "subtitle": "管理伺服器任務的自動化指令碼",
+      "addScript": "新增腳本",
+      "personal": "個人",
+      "selectOrganization": "選擇機構",
       "tabs": {
-        "snippets": "代码片段",
-        "scripts": "脚本"
+        "snippets": "片段",
+        "scripts": "腳本"
       }
     },
     "execution": {
       "progressPanel": {
-        "title": "脚本执行",
-        "noSteps": "暂无步骤",
-        "noStepsDescription": "执行过程中的步骤将显示在此处",
-        "steps": "步骤"
+        "title": "腳本執行",
+        "noSteps": "尚未有步驟",
+        "noStepsDescription": "腳本執行時，這裡會顯示步驟",
+        "steps": "步驟"
       },
       "dialogs": {
-        "enterValue": "输入值",
-        "selectOption": "选择选项",
-        "confirm": "确认",
+        "enterValue": "輸入數值",
+        "selectOption": "選擇選項",
+        "confirm": "確認",
         "submit": "提交",
         "cancel": "取消",
-        "ok": "确定",
+        "ok": "確定",
         "yes": "是",
-        "no": "否",
-        "copyCell": "复制单元格",
-        "copyRow": "复制行",
-        "copyTable": "复制表格",
-        "close": "关闭"
+        "no": "沒有",
+        "copyCell": "複製單元",
+        "copyRow": "複製列",
+        "copyTable": "複製表格",
+        "close": "關閉"
       },
       "status": {
-        "running": "运行中",
+        "running": "運行",
         "completed": "已完成",
-        "error": "错误",
-        "pending": "等待中"
+        "error": "錯誤",
+        "pending": "待定"
       }
     },
     "list": {
-      "empty": "您还没有任何脚本。创建您的第一个脚本吧！",
+      "empty": "您還沒有任何腳本。建立您的第一個腳本！",
       "actions": {
-        "edit": "编辑脚本",
-        "delete": "删除脚本"
+        "edit": "編輯腳本",
+        "delete": "刪除腳本"
       }
     },
     "dialog": {
       "title": {
-        "create": "创建脚本",
-        "edit": "编辑脚本"
+        "create": "建立腳本",
+        "edit": "編輯腳本"
       },
-      "scriptDetails": "脚本详情",
-      "scriptContent": "脚本内容",
-      "helpTip": "使用 @NEXTERM: 指令实现交互功能",
+      "scriptDetails": "劇本詳細內容",
+      "scriptContent": "腳本內容",
+      "helpTip": "針對互動功能使用 @NEXTERM: 指令",
       "fields": {
-        "name": "名称",
-        "description": "描述",
-        "osFilter": "兼容操作系统"
+        "name": "名稱",
+        "description": "說明",
+        "osFilter": "相容的作業系統"
       },
       "placeholders": {
-        "name": "脚本名称",
-        "description": "此脚本的作用？",
-        "osFilter": "所有操作系统"
+        "name": "腳本名稱",
+        "description": "這個腳本是做什麼的？",
+        "osFilter": "所有作業系統"
       },
       "actions": {
         "cancel": "取消",
-        "create": "创建",
+        "create": "建立",
         "update": "更新",
-        "creating": "创建中...",
-        "updating": "更新中..."
+        "creating": "創造...",
+        "updating": "更新..."
       },
       "errors": {
-        "nameRequired": "脚本名称为必填项",
-        "descriptionRequired": "脚本描述为必填项",
-        "contentRequired": "脚本内容为必填项",
-        "createFailed": "创建脚本失败",
-        "updateFailed": "更新脚本失败"
+        "nameRequired": "必須填寫腳本名稱",
+        "descriptionRequired": "需要腳本說明",
+        "contentRequired": "需要腳本內容",
+        "createFailed": "建立腳本失敗",
+        "updateFailed": "更新腳本失敗"
       }
     },
     "messages": {
       "success": {
-        "created": "脚本创建成功",
-        "updated": "脚本更新成功",
-        "deleted": "脚本删除成功",
-        "reordered": "脚本重新排序成功"
+        "created": "成功建立腳本",
+        "updated": "腳本更新成功",
+        "deleted": "成功刪除腳本",
+        "reordered": "腳本重新排序成功"
       },
       "errors": {
-        "loadFailed": "加载脚本数据失败",
-        "deleteFailed": "删除脚本失败",
-        "reorderFailed": "重新排序脚本失败"
+        "loadFailed": "載入腳本資料失敗",
+        "deleteFailed": "刪除腳本失敗",
+        "reorderFailed": "重新排序腳本失敗"
       }
     },
     "menu": {
-      "searchPlaceholder": "搜索脚本...",
-      "noScripts": "无可用脚本。请在脚本部分创建。",
-      "noMatch": "没有匹配的脚本。",
-      "selectIdentity": "选择身份标识"
+      "searchPlaceholder": "搜尋腳本...",
+      "noScripts": "沒有可用的腳本。請在腳本區建立一些腳本。",
+      "noMatch": "沒有符合您搜尋的腳本。",
+      "selectIdentity": "選擇身分"
     }
   },
   "monitoring": {
     "page": {
-      "title": "服务器监控",
-      "subtitle": "服务器统计数据和健康状态实时监控",
-      "searchPlaceholder": "搜索服务器..."
+      "title": "伺服器監控",
+      "subtitle": "即時伺服器統計和健康監控",
+      "searchPlaceholder": "搜尋伺服器..."
     },
     "errors": {
-      "loadFailed": "加载监控数据失败"
+      "loadFailed": "載入監控資料失敗"
     },
     "grid": {
-      "loading": "加载监控数据...",
+      "loading": "載入監測資料...",
       "noServers": {
-        "title": "未找到服务器",
-        "subtitle": "无可用的SSH服务器进行监控。\n添加服务器以开始监控。"
+        "title": "找不到伺服器",
+        "subtitle": "沒有可用的 SSH 伺服器可供監控。\n新增一些伺服器以開始監控它們。"
       },
       "metrics": {
-        "cpuUsage": "CPU 使用率",
-        "memoryUsage": "内存使用率",
-        "loadAverage": "平均负载",
-        "processes": "进程",
-        "uptime": "运行时间",
-        "nodes": "节点",
-        "vms": "虚拟机/容器"
+        "cpuUsage": "CPU 使用量",
+        "memoryUsage": "記憶體使用量",
+        "loadAverage": "平均負載",
+        "processes": "製程",
+        "uptime": "正常運行時間",
+        "nodes": "節點",
+        "vms": "虛擬機器/容器"
       },
       "status": {
-        "serverOffline": "服务器离线",
-        "connectionError": "连接错误",
-        "statusUnknown": "状态未知",
-        "offlineMessage": "服务器当前未响应监控请求。",
-        "errorMessage": "无法建立服务器连接。",
-        "unknownMessage": "无法确定服务器状态。",
-        "lastSeen": "最后在线：{{time}}",
-        "noRecentActivity": "无近期活动"
+        "serverOffline": "伺服器離線",
+        "connectionError": "連線錯誤",
+        "statusUnknown": "狀態不明",
+        "offlineMessage": "伺服器目前未回應監控要求。",
+        "errorMessage": "無法與伺服器建立連線。",
+        "unknownMessage": "無法確定伺服器狀態。",
+        "lastSeen": "最近瀏覽: {{time}}",
+        "noRecentActivity": "最近沒有活動"
       },
       "uptime": {
         "unknown": "未知",
         "format": {
-          "days": "{{days}}天 {{hours}}小时 {{minutes}}分",
-          "hours": "{{hours}}小时 {{minutes}}分",
-          "minutes": "{{minutes}}分"
+          "days": "{{days}}d {{hours}}h {{minutes}}m",
+          "hours": "{{hours}}h {{minutes}}m",
+          "minutes": "{{minutes}}m"
         }
       }
     },
     "details": {
       "timeRanges": {
-        "1h": "1小时",
-        "6h": "6小时",
-        "24h": "24小时"
+        "1h": "1h",
+        "6h": "6h",
+        "24h": "24h"
       },
       "tabs": {
-        "overview": "概览",
-        "charts": "图表",
-        "storage": "存储",
-        "network": "网络",
-        "processes": "进程",
-        "nodes": "节点"
+        "overview": "概述",
+        "charts": "圖表",
+        "storage": "儲存",
+        "network": "網路",
+        "processes": "製程",
+        "nodes": "節點"
       },
       "overview": {
         "systemInfo": {
-          "title": "系统信息",
-          "hostname": "主机名",
-          "os": "操作系统",
+          "title": "系統資訊",
+          "hostname": "主機名稱",
+          "os": "OS",
           "version": "版本",
-          "kernel": "内核",
-          "architecture": "架构",
-          "uptime": "运行时间",
+          "kernel": "核心",
+          "architecture": "建築",
+          "uptime": "正常運行時間",
           "unknown": "未知",
-          "noData": "无可用系统信息"
+          "noData": "無系統資訊"
         },
         "performance": {
-          "title": "性能指标",
-          "cpuUsage": "CPU 使用率",
-          "memoryUsage": "内存使用率",
-          "loadAverage": "平均负载",
-          "processes": "活动进程",
-          "total": "总数: {{value}}",
-          "loadDetail": "5分钟: {{fiveMin}}, 15分钟: {{fifteenMin}}"
+          "title": "績效指標",
+          "cpuUsage": "CPU 使用量",
+          "memoryUsage": "記憶體使用量",
+          "loadAverage": "平均負載",
+          "processes": "主動製程",
+          "total": "總計： {{value}}",
+          "loadDetail": "5m: {{fiveMin}}, 15m: {{fifteenMin}}"
         },
         "uptime": {
           "format": {
-            "full": "{{days}} 天, {{hours}} 小时, {{minutes}} 分钟",
-            "hoursMinutes": "{{hours}} 小时, {{minutes}} 分钟",
-            "minutes": "{{minutes}} 分钟"
+            "full": "{{days}} 天、 {{hours}} 小時、 {{minutes}} 分鐘",
+            "hoursMinutes": "{{hours}} 小時， {{minutes}} 分鐘",
+            "minutes": "{{minutes}} 分鐘"
           }
         }
       },
       "charts": {
-        "cpuUsage": "CPU 使用率",
-        "memoryUsage": "内存使用率",
-        "processes": "活动进程",
-        "noData": "所选时间范围内无数据"
+        "cpuUsage": "CPU 使用量",
+        "memoryUsage": "記憶體使用量",
+        "processes": "主動製程",
+        "noData": "所選時間範圍內無可用資料"
       },
       "storage": {
-        "title": "磁盘使用情况",
-        "used": "已用: {{value}}",
+        "title": "磁碟使用量",
+        "used": "已使用： {{value}}",
         "available": "可用： {{value}}",
-        "total": "总计: {{value}}",
-        "type": "类型： {{value}}",
-        "noData": "无磁盘使用数据",
-        "noPartitions": "未挂载分区"
+        "total": "總計： {{value}}",
+        "type": "類型： {{value}}",
+        "noData": "沒有可用的磁碟使用量資料",
+        "noPartitions": "無安裝隔板"
       },
       "network": {
-        "title": "网络接口",
-        "rxBytes": "接收字节数",
-        "txBytes": "发送字节数",
-        "mac": "MAC地址",
+        "title": "網路介面",
+        "rxBytes": "RX 位元組",
+        "txBytes": "TX 位元組",
+        "mac": "MAC 位址",
         "speed": "速度",
-        "noData": "无网络接口数据"
+        "noData": "沒有可用的網路介面資料"
       },
       "processes": {
-        "title": "运行中进程",
-        "searchPlaceholder": "搜索进程...",
-        "showing": "显示 {{count}} of {{total}} 进程",
-        "noData": "没有可用的进程数据。进程数据将在下一个监测周期之后出现。",
-        "noResults": "没有符合搜索条件的进程。"
+        "title": "執行過程",
+        "searchPlaceholder": "搜尋流程...",
+        "showing": "顯示 {{count}} 的 {{total}} 程序",
+        "noData": "無製程資料可用。製程資料將在下一個監測週期後出現。",
+        "noResults": "沒有符合您搜尋條件的程序。"
       },
       "pve": {
-        "clusterInfo": "集群信息",
-        "resources": "资源占用",
-        "virtualMachines": "虚拟机",
-        "totalNodes": "节点数",
-        "onlineNodes": "在线节点",
-        "totalCPU": "总CPU",
-        "totalMemory": "总内存",
-        "totalStorage": "总存储",
-        "storageUsage": "存储使用",
+        "clusterInfo": "叢集資訊",
+        "resources": "資源使用",
+        "virtualMachines": "虛擬機器",
+        "totalNodes": "節點總數",
+        "onlineNodes": "線上節點",
+        "totalCPU": "總 CPU",
+        "totalMemory": "總記憶體",
+        "totalStorage": "總儲存空間",
+        "storageUsage": "儲存使用量",
         "cores": "核心",
-        "uptime": "开机时间",
-        "qemuVMs": "QEMU 虚拟机",
+        "uptime": "正常運行時間",
+        "qemuVMs": "QEMU 虛擬機器",
         "lxcContainers": "LXC 容器",
-        "running": "{{count}} 运行",
-        "vmContainerCount": "虚拟机/容器数量",
+        "running": "{{count}} 跑步",
+        "vmContainerCount": "虛擬機器/容器數量",
         "cpu": "CPU",
-        "memory": "内存",
-        "storage": "存储",
-        "nodeOffline": "此节点目前处于离线状态",
-        "noNodes": "无可用节点"
+        "memory": "記憶體",
+        "storage": "儲存",
+        "nodeOffline": "此節點目前離線",
+        "noNodes": "無可用節點"
       }
     }
   },
   "settings": {
-    "title": "设置",
-    "userSettings": "用户设置",
-    "adminSettings": "管理设置",
+    "title": "設定",
+    "userSettings": "使用者設定",
+    "adminSettings": "管理設定",
     "pages": {
-      "account": "账户",
-      "appearance": "外观",
-      "terminal": "终端",
-      "fileManager": "文件管理器",
-      "keymaps": "快捷键",
-      "identities": "身份标识",
-      "sessions": "会话",
-      "organizations": "组织",
-      "users": "用户",
-      "authentication": "身份验证",
-      "sources": "来源",
+      "account": "帳戶",
+      "appearance": "外觀",
+      "terminal": "終端",
+      "fileManager": "檔案管理員",
+      "keymaps": "關鍵圖",
+      "identities": "身份",
+      "sessions": "會議",
+      "organizations": "組織",
+      "users": "使用者",
+      "authentication": "驗證",
+      "sources": "來源",
       "ai": "AI",
-      "monitoring": "监控",
-      "backup": "存储",
-      "engines": "发动机"
+      "monitoring": "監控",
+      "backup": "儲存",
+      "engines": "引擎"
     },
     "account": {
-      "title": "账户",
-      "accountName": "账户名称",
+      "title": "帳戶",
+      "accountName": "帳戶名稱",
       "firstName": "名字",
-      "lastName": "姓",
-      "appearance": "外观",
-      "appearanceDescription": "选择您喜欢的主题。自动模式会跟随系统设置并根据时间调整。",
-      "themeAuto": "自动",
-      "themeLight": "浅色",
-      "themeDark": "深色",
-      "themeDarkHint": "按三次启用 OLED 模式。",
+      "lastName": "姓氏",
+      "appearance": "外觀",
+      "appearanceDescription": "選擇您喜愛的主題。自動遵循您的系統設定，並根據每天的時間進行調整。",
+      "themeAuto": "自動",
+      "themeLight": "燈光",
+      "themeDark": "黑暗",
+      "themeDarkHint": "按三次啟用 OLED 模式。",
       "themeOled": "OLED",
-      "oledEnabled": "启用 OLED 模式",
-      "oledDisabled": "禁用 OLED 模式",
-      "themeLabel": "主题",
-      "accentColor": "点缀色",
+      "oledEnabled": "啟用 OLED 模式",
+      "oledDisabled": "停用 OLED 模式",
+      "themeLabel": "主題",
+      "accentColor": "重點顏色",
       "sizeLabel": "尺寸",
       "sizeXS": "XS",
       "sizeS": "S",
       "sizeM": "M",
       "sizeL": "L",
       "sizeXL": "XL",
-      "twoFactor": "双因素认证",
-      "twoFactorActive": "已启用",
-      "twoFactorInactive": "未启用",
-      "twoFactorDescription": "启用双因素身份验证，为您的账户增加额外的安全保护。",
-      "enable2FA": "启用 2FA",
-      "disable2FA": "禁用 2FA",
-      "changePassword": "修改密码",
-      "changePasswordDescription": "在此选择新密码增强账户安全。",
-      "changePasswordButton": "修改密码",
-      "language": "语言",
-      "languageDescription": "选择界面显示语言。",
-      "currentLanguage": "当前语言",
-      "missingLanguage": "缺少您的语言？",
-      "helpTranslateLink": "帮助翻译 Nexterm",
-      "syncLoginRequired": "请登录同步设置",
-      "appearanceSyncEnabled": "外观设置现在将同步到您的账户",
-      "appearanceSyncDisabled": "外观设置不再同步",
-      "generalSyncEnabled": "常规设置现在将同步到您的账户",
-      "generalSyncDisabled": "常规设置将不再同步",
+      "twoFactor": "雙因素認證",
+      "twoFactorActive": "活躍",
+      "twoFactorInactive": "閒置",
+      "twoFactorDescription": "啟用雙重認證，為您的帳戶增加一層額外的安全性。",
+      "enable2FA": "啟用 2FA",
+      "disable2FA": "停用 2FA",
+      "changePassword": "變更密碼",
+      "changePasswordDescription": "在此為您的帳戶選擇新的安全密碼。",
+      "changePasswordButton": "變更密碼",
+      "language": "語言",
+      "languageDescription": "選擇您偏好的介面語言。",
+      "currentLanguage": "當前語言",
+      "missingLanguage": "想念您的語言？",
+      "helpTranslateLink": "協助翻譯 Nexterm",
+      "syncLoginRequired": "請登入以同步設定",
+      "appearanceSyncEnabled": "外觀設定現在會同步至您的帳戶",
+      "appearanceSyncDisabled": "外觀設定將不再同步",
+      "generalSyncEnabled": "一般設定現在會同步到您的帳戶",
+      "generalSyncDisabled": "一般設定將不再同步",
       "customThemes": {
-        "title": "自定义主题",
-        "description": "创建自定义 CSS 主题或从同步源主题中选择个性化界面。",
-        "newTheme": "新主题",
-        "noThemesYet": "尚无主题",
-        "noThemesDescription": "创建自定义主题或添加源代码即可开始使用。",
-        "editTheme": "编辑主题",
-        "createTheme": "创建主题",
-        "name": "名称",
-        "themeName": "主题名称",
-        "descriptionLabel": "说明",
-        "optionalDescription": "可选描述",
-        "saveChanges": "保存更改",
-        "fromSource": "资料来源",
-        "edit": "编辑",
-        "delete": "删除",
-        "deleteConfirm": "您确定要删除主题 \"{{name}} \" 吗？",
-        "failedToLoadTheme": "加载主题失败",
-        "nameAndCssRequired": "姓名和 CSS 是必填项",
-        "themeUpdated": "主题已更新",
-        "themeCreated": "创建主题",
-        "failedToSaveTheme": "保存主题失败",
-        "themeDeleted": "主题已删除",
-        "failedToDeleteTheme": "删除主题失败",
-        "failedToActivateTheme": "激活主题失败"
+        "title": "自訂主題",
+        "description": "建立自訂 CSS 主題或從同步來源主題中選擇，以個人化您的介面。",
+        "newTheme": "新主題",
+        "noThemesYet": "尚未有主題",
+        "noThemesDescription": "建立自訂主題或新增來源即可開始使用。",
+        "editTheme": "編輯主題",
+        "createTheme": "建立主題",
+        "name": "名稱",
+        "themeName": "主題名稱",
+        "descriptionLabel": "說明",
+        "optionalDescription": "可選描述",
+        "saveChanges": "儲存變更",
+        "fromSource": "來源",
+        "edit": "編輯",
+        "delete": "刪除",
+        "deleteConfirm": "您確定要刪除 \"{{name}} \" 主題嗎？",
+        "failedToLoadTheme": "載入主題失敗",
+        "nameAndCssRequired": "姓名和 CSS 為必填項目",
+        "themeUpdated": "主題已更新",
+        "themeCreated": "建立主題",
+        "failedToSaveTheme": "保存主題失敗",
+        "themeDeleted": "主題已刪除",
+        "failedToDeleteTheme": "刪除主題失敗",
+        "failedToActivateTheme": "啟動主題失敗"
       },
-      "sessionSynchronization": "会话同步方式",
-      "sessionSyncDescription": "控制服务器会话在不同设备和浏览器标签页之间的存储和同步方式。",
-      "sessionSyncAcrossDevices": "跨设备同步",
-      "sessionSyncSameBrowser": "同一浏览器",
-      "sessionSyncSameTab": "仅当前标签页",
-      "sessionSyncAcrossDevicesDesc": "会话在所有设备间同步，可随时随地访问",
-      "sessionSyncSameBrowserDesc": "会话仅在当前浏览器的所有标签页间同步",
-      "sessionSyncSameTabDesc": "会话仅保存在当前标签页，关闭后不保留",
+      "sessionSynchronization": "會話同步",
+      "sessionSyncDescription": "控制您的伺服器會話如何儲存，以及如何跨裝置和瀏覽器標籤進行同步。",
+      "sessionSyncAcrossDevices": "跨裝置",
+      "sessionSyncSameBrowser": "相同瀏覽器",
+      "sessionSyncSameTab": "相同的標籤",
+      "sessionSyncAcrossDevicesDesc": "會話可跨裝置使用並同步處理",
+      "sessionSyncSameBrowserDesc": "會話將同步處理目前使用者的會話",
+      "sessionSyncSameTabDesc": "會話會同步顯示在您的瀏覽器標籤中",
       "twoFactorDialog": {
-        "title": "启用 2FA",
-        "description": "使用身份验证应用扫描二维码，或手动输入密钥 <span class=\"totp-code\">{{secret}}</span>。",
-        "codePlaceholder": "输入 2FA 代码",
-        "enableButton": "启用",
+        "title": "啟用 2FA",
+        "description": "使用驗證器應用程式掃描驗證碼或手動輸入 <span class=\"totp-code\">{{secret}}</span>手動輸入。",
+        "codePlaceholder": "輸入 2FA 代碼",
+        "enableButton": "啟用",
         "messages": {
-          "setupFailed": "2FA 设置失败。请重试。"
+          "setupFailed": "2FA 設定失敗。請再試一次。"
         }
       },
       "passkeys": {
-        "sectionTitle": "密钥",
-        "sectionDescription": "使用密码匙，无需密码即可更快、更安全地登录。",
-        "addButton": "添加密钥",
-        "addDialogTitle": "添加密钥",
-        "addDialogDescription": "给您的密钥一个名称来帮助您以后识别它。",
-        "namePlaceholder": "密钥名称",
-        "enterName": "输入此密匙的名称：",
-        "defaultName": "我的密钥",
-        "confirmDelete": "您确定要删除此密钥吗？",
-        "createdAt": "创建时间：{{date}}",
-        "registerError": "注册密钥失败。请重试。",
-        "noPasskeys": "尚无密钥注册",
-        "rename": "重命名",
-        "delete": "删除"
+        "sectionTitle": "密碼",
+        "sectionDescription": "使用密碼匙可更快、更安全地登入，而無需密碼。",
+        "addButton": "新增密碼",
+        "addDialogTitle": "新增密碼",
+        "addDialogDescription": "為您的密碼起一個名字，以協助您稍後辨識它。",
+        "namePlaceholder": "密碼名稱",
+        "enterName": "輸入此密碼的名稱：",
+        "defaultName": "我的密碼",
+        "confirmDelete": "您確定要刪除此密碼嗎？",
+        "createdAt": "建立 {{date}}",
+        "registerError": "註冊密碼失敗。請再試一次。",
+        "noPasskeys": "尚未註冊通行鑰匙",
+        "rename": "重新命名",
+        "delete": "刪除"
       }
     },
     "passwordChange": {
-      "title": "修改密码",
-      "description": "强密码应包含特殊字符、数字及大小写字母。",
-      "newPassword": "新密码",
-      "confirmPassword": "确认新密码",
-      "changePasswordButton": "修改密码"
+      "title": "變更密碼",
+      "description": "強大的密碼包含特殊字符、數字和大小楷字母。",
+      "newPassword": "新密碼",
+      "confirmPassword": "確認新密碼",
+      "changePasswordButton": "變更密碼"
     },
     "organizations": {
-      "title": "您的组织",
-      "createOrganization": "创建组织",
-      "noOrganizations": "您还没有任何组织。",
-      "noOrganizationsDescription": "创建一个组织开始团队协作。",
-      "invite": "邀请",
-      "delete": "删除",
-      "leave": "离开",
-      "members": "成员",
+      "title": "您的組織",
+      "createOrganization": "建立組織",
+      "noOrganizations": "您還沒有任何組織。",
+      "noOrganizationsDescription": "建立一個，開始與您的團隊合作。",
+      "invite": "邀請",
+      "delete": "刪除",
+      "leave": "離開",
+      "members": "會員",
       "auditSettings": {
-        "auditSettingsTab": "审计设置",
-        "sessionRecordingHeading": "会议记录",
-        "sessionRecordingDescription": "录制终端和远程桌面会话以供回放",
-        "enableSessionRecordingLabel": "启用会话记录",
-        "enableSessionRecordingDescription": "记录 SSH、Telnet、RDP 和 VNC 会话，以便日后回放",
-        "recordingRetentionLabel": "记录保存（天数）",
-        "recordingRetentionDescription": "自动删除会话记录前的保留时间（1-365 天）",
-        "connectionRequirementsHeading": "连接要求",
-        "connectionRequirementsDescription": "控制连接行为和要求",
-        "requireConnectionReasonLabel": "要求连接原因",
-        "requireConnectionReasonDescription": "要求用户在连接服务器时提供理由",
-        "activityLoggingHeading": "活动记录",
-        "activityLoggingDescription": "选择要记录的活动类型",
-        "fileOperationsLabel": "文件操作",
-        "fileOperationsDescription": "通过 SFTP 记录文件的上传、下载、删除和重命名",
-        "serverConnectionsLabel": "服务器连接",
-        "serverConnectionsDescription": "记录 SSH、SFTP 和 PVE 连接和断开情况",
-        "identityManagementLabel": "身份管理",
-        "identityManagementDescription": "创建、修改和删除 SSH 身份的日志",
-        "passwordPasteLabel": "密码粘贴",
-        "passwordPasteDescription": "记录密码粘贴操作的使用情况",
-        "serverManagementLabel": "服务器管理",
-        "serverManagementDescription": "创建、修改和删除服务器配置日志",
-        "folderManagementLabel": "文件夹管理",
-        "folderManagementDescription": "记录文件夹的创建、修改和删除",
-        "scriptExecutionLabel": "脚本执行",
-        "scriptExecutionDescription": "记录脚本和自动化任务的执行情况",
+        "auditSettingsTab": "稽核設定",
+        "sessionRecordingHeading": "會議記錄",
+        "sessionRecordingDescription": "錄製終端與遠端桌面會話以供重播",
+        "enableSessionRecordingLabel": "啟用工作階段記錄",
+        "enableSessionRecordingDescription": "錄製 SSH、Telnet、RDP 和 VNC 會話，以便稍後重播",
+        "recordingRetentionLabel": "記錄保留天數",
+        "recordingRetentionDescription": "在自動刪除之前，會話記錄要保留多久 (1-365 天)",
+        "connectionRequirementsHeading": "連接要求",
+        "connectionRequirementsDescription": "控制連線行為和要求",
+        "requireConnectionReasonLabel": "要求連線原因",
+        "requireConnectionReasonDescription": "要求使用者在連線至伺服器時提供理由",
+        "activityLoggingHeading": "活動記錄",
+        "activityLoggingDescription": "選擇要記錄的活動類型",
+        "fileOperationsLabel": "檔案作業",
+        "fileOperationsDescription": "透過 SFTP 進行檔案上傳、下載、刪除及重新命名的記錄",
+        "serverConnectionsLabel": "伺服器連線",
+        "serverConnectionsDescription": "記錄 SSH、SFTP 和 PVE 連線和斷線情況",
+        "identityManagementLabel": "身分管理",
+        "identityManagementDescription": "記錄 SSH 身分的建立、修改和刪除",
+        "passwordPasteLabel": "密碼貼上",
+        "passwordPasteDescription": "密碼貼上動作的使用記錄",
+        "serverManagementLabel": "伺服器管理",
+        "serverManagementDescription": "伺服器組態的日誌建立、修改及刪除",
+        "folderManagementLabel": "資料夾管理",
+        "folderManagementDescription": "記錄資料夾的建立、修改和刪除",
+        "scriptExecutionLabel": "腳本執行",
+        "scriptExecutionDescription": "記錄腳本和自動化任務的執行",
         "actions": {
-          "save": "保存设置"
+          "save": "儲存設定"
         },
         "messages": {
-          "updated": "审核设置更新成功",
-          "updateFailed": "更新审核设置失败"
+          "updated": "稽核設定更新成功",
+          "updateFailed": "更新稽核設定失敗"
         }
       },
-      "pendingInvitations": "待处理邀请",
-      "invitedBy": "邀请人：{{name}}",
-      "deleteConfirmation": "此操作将永久删除组织并移除所有成员。此操作不可撤销。",
-      "leaveConfirmation": "确定要离开此组织吗？",
+      "pendingInvitations": "待定邀請",
+      "invitedBy": "受邀者： {{name}}",
+      "deleteConfirmation": "這將會永久刪除組織並移除所有成員。此動作無法撤銷。",
+      "leaveConfirmation": "您確定要離開這個組織嗎？",
       "dialog": {
-        "title": "创建组织",
+        "title": "建立組織",
         "fields": {
-          "name": "名称",
-          "namePlaceholder": "组织名称",
-          "description": "描述（可选）",
-          "descriptionPlaceholder": "组织简介"
+          "name": "名稱",
+          "namePlaceholder": "組織名稱",
+          "description": "說明（可選）",
+          "descriptionPlaceholder": "機構簡介"
         },
         "actions": {
           "cancel": "取消",
-          "create": "创建"
+          "create": "建立"
         },
         "messages": {
-          "nameRequired": "组织名称为必填项",
-          "createSuccess": "组织创建成功",
-          "createFailed": "创建组织失败"
+          "nameRequired": "必須填寫組織名稱",
+          "createSuccess": "成功建立組織",
+          "createFailed": "建立組織失敗"
         }
       }
     },
     "users": {
-      "title": "{{count}} 个用户",
-      "createNewUser": "创建新用户",
-      "searchPlaceholder": "搜索用户...",
-      "twoFactorEnabled": "2FA 已启用",
-      "twoFactorDisabled": "2FA 未启用",
-      "noUsers": "未找到用户",
-      "noUsersDescription": "创建新用户开始使用。",
-      "noSearchResults": "未找到用户",
-      "noSearchResultsDescription": "尝试调整搜索查询。",
+      "title": "{{count}} 使用者",
+      "createNewUser": "建立新使用者",
+      "searchPlaceholder": "搜尋使用者...",
+      "twoFactorEnabled": "已啟用 2FA",
+      "twoFactorDisabled": "2FA 已停用",
+      "noUsers": "未找到使用者",
+      "noUsersDescription": "建立新使用者即可開始使用。",
+      "noSearchResults": "未找到使用者",
+      "noSearchResultsDescription": "請嘗試調整您的搜尋查詢。",
       "table": {
-        "user": "用户",
+        "user": "使用者",
         "role": "角色",
         "twoFactor": "2FA"
       },
       "roles": {
-        "admin": "管理员",
-        "user": "用户"
+        "admin": "管理員",
+        "user": "使用者"
       },
       "contextMenu": {
-        "changePassword": "修改密码",
-        "promoteToAdmin": "提升为管理员",
-        "demoteToUser": "降级为普通用户",
-        "deleteUser": "删除用户",
-        "loginAsUser": "以该用户身份登录",
-        "deleteConfirm": "此操作将永久删除用户及其所有关联数据。",
-        "promoteConfirm": "此操作将把用户提升为管理员。",
-        "demoteConfirm": "此操作将把用户降级为普通用户。"
+        "changePassword": "變更密碼",
+        "promoteToAdmin": "晉升為管理員",
+        "demoteToUser": "降級為使用者",
+        "deleteUser": "刪除使用者",
+        "loginAsUser": "以使用者身分登入",
+        "deleteConfirm": "這將永久刪除使用者及所有相關資料。",
+        "promoteConfirm": "這將使使用者升級為管理員。",
+        "demoteConfirm": "這會將使用者降級為一般使用者。"
       }
     },
     "userDialog": {
-      "title": "创建新用户",
-      "firstName": "名字",
-      "lastName": "姓",
-      "username": "用户名",
-      "password": "密码",
+      "title": "建立新使用者",
+      "firstName": "姓名",
+      "lastName": "姓氏",
+      "username": "使用者名稱",
+      "password": "密碼",
       "firstNamePlaceholder": "名字",
-      "lastNamePlaceholder": "姓",
-      "usernamePlaceholder": "用户名",
-      "passwordPlaceholder": "密码",
-      "create": "创建",
-      "errorOccurred": "发生错误"
+      "lastNamePlaceholder": "姓氏",
+      "usernamePlaceholder": "使用者名稱",
+      "passwordPlaceholder": "密碼",
+      "create": "建立",
+      "errorOccurred": "發生錯誤"
     },
     "sessions": {
-      "title": "会话管理",
-      "lastActivity": "最后活动：{{date}}，来自 {{ip}}",
-      "currentSession": "当前会话",
-      "logout": "退出登录",
-      "revoke": "撤销",
-      "browserOn": "{{browser}} {{version}}，运行于 {{os}} {{osVersion}}"
+      "title": "會議",
+      "lastActivity": "最近活動: {{date}} 來自 {{ip}}",
+      "currentSession": "本屆會議",
+      "logout": "登出",
+      "revoke": "撤銷",
+      "browserOn": "{{browser}} {{version}} {{os}} {{osVersion}}"
     },
     "keymaps": {
-      "title": "快捷键设置",
-      "description": "自定义键盘快捷键以匹配工作流程。",
-      "resetAll": "重置全部",
+      "title": "關鍵圖",
+      "description": "自訂鍵盤捷徑以符合您的工作流程。",
+      "resetAll": "全部重設",
       "actions": {
         "search": {
-          "title": "搜索",
-          "description": "打开搜索输入框"
+          "title": "搜尋",
+          "description": "開啟搜尋輸入"
         },
         "quickaction": {
-          "title": "快速行动",
-          "description": "打开快速操作菜单"
+          "title": "快速行動",
+          "description": "開啟快速動作功能表"
         },
         "aimenu": {
-          "title": "AI 菜单",
-          "description": "打开 AI 命令菜单"
+          "title": "AI 選單",
+          "description": "開啟 AI 指令功能表"
         },
         "snippets": {
-          "title": "代码片段",
-          "description": "打开代码片段对话框"
+          "title": "片段",
+          "description": "開啟片段對話框"
         },
         "keyboardshortcuts": {
-          "title": "快捷键列表",
-          "description": "打开键盘快捷键菜单"
+          "title": "鍵盤捷徑",
+          "description": "開啟鍵盤捷徑功能表"
         },
         "broadcast": {
-          "title": "广播模式",
-          "description": "在分屏视图中切换广播模式"
+          "title": "廣播模式",
+          "description": "使用分割檢視時切換廣播模式"
         },
         "copy": {
-          "title": "复制",
-          "description": "将选中文本复制到剪贴板"
+          "title": "複製",
+          "description": "複製選取的文字到剪貼簿"
         },
         "fullscreen": {
-          "title": "全屏",
-          "description": "切换全屏模式"
+          "title": "全螢幕",
+          "description": "切換全螢幕模式"
         }
       },
       "recorder": {
-        "pressKeys": "按下按键...",
-        "save": "保存",
+        "pressKeys": "按鍵...",
+        "save": "節省",
         "cancel": "取消",
-        "reset": "重置"
+        "reset": "重設"
       },
       "messages": {
-        "updateSuccess": "快捷键更新成功",
-        "updateFailed": "更新快捷键失败",
-        "resetSuccess": "快捷键已重置为默认值",
-        "resetFailed": "重置快捷键失败",
-        "resetAllSuccess": "所有快捷键已重置为默认值",
-        "resetAllFailed": "重置快捷键失败"
+        "updateSuccess": "鍵盤綁定更新成功",
+        "updateFailed": "更新鍵盤綁定失敗",
+        "resetSuccess": "按鍵綁定重設為預設值",
+        "resetFailed": "重設按鍵綁定失敗",
+        "resetAllSuccess": "所有按鍵重設為預設值",
+        "resetAllFailed": "重設按鍵綁定失敗"
       }
     },
     "terminal": {
-      "title": "终端",
-      "syncLoginRequired": "请登录以同步终端设置",
+      "title": "終端",
+      "syncLoginRequired": "請登入以同步終端機設定",
       "font": {
-        "title": "字体",
-        "description": "自定义终端字体和字号。",
-        "fontFamily": "字体",
-        "fontSize": "字号",
-        "syncEnabled": "字体设置将同步到您的账户",
-        "syncDisabled": "字体设置不再同步"
+        "title": "字型",
+        "description": "為您的終端機自訂字體系列和大小。",
+        "fontFamily": "字型家族",
+        "fontSize": "字型大小",
+        "syncEnabled": "字型設定現在會同步到您的帳戶",
+        "syncDisabled": "字型設定將不再同步"
       },
       "cursor": {
-        "title": "光标",
-        "description": "自定义终端光标的外观和行为。",
-        "cursorStyle": "光标样式",
-        "cursorBlinking": "光标闪烁",
-        "enabled": "启用",
-        "disabled": "已禁用",
-        "syncEnabled": "光标设置现在将同步到您的账户",
-        "syncDisabled": "光标设置不再同步"
+        "title": "游標",
+        "description": "自訂終端游標的外觀和行為。",
+        "cursorStyle": "游標樣式",
+        "cursorBlinking": "游標閃爍",
+        "enabled": "已啟用",
+        "disabled": "殘障",
+        "syncEnabled": "游標設定現在會同步至您的帳戶",
+        "syncDisabled": "游標設定將不再同步"
       },
       "theme": {
-        "title": "主题",
-        "description": "为终端选择颜色主题。",
-        "syncEnabled": "现在，主题设置将同步到您的账户中",
-        "syncDisabled": "主题设置不再同步"
+        "title": "主題",
+        "description": "為您的終端機選擇顏色主題。",
+        "syncEnabled": "主題設定現在會同步至您的帳戶",
+        "syncDisabled": "主題設定將不再同步"
       },
       "preview": {
-        "text": "$ echo '你好，Nexterm!'\n你好，Nexterm!\n$ "
+        "text": "$ echo 'Hi, Nexterm!\n嗨，Nexterm\n$ "
       }
     },
     "fileManager": {
-      "title": "文件管理器",
-      "description": "配置文件和文件夹的显示和管理方式。",
-      "syncLoginRequired": "请登录同步文件管理器设置",
-      "syncEnabled": "文件管理器设置现在将同步到您的账户",
-      "syncDisabled": "文件管理器设置不再同步",
+      "title": "檔案管理員",
+      "description": "設定檔案和資料夾的顯示和管理方式。",
+      "syncLoginRequired": "請登入同步檔案管理員設定",
+      "syncEnabled": "檔案管理員設定現在會同步至您的帳戶",
+      "syncDisabled": "檔案管理員設定將不再同步",
       "defaultView": {
-        "title": "默认查看模式",
-        "description": "打开文件管理器时选择默认布局。",
-        "list": "列表查看",
-        "listDescription": "在详细列表中显示文件，包括文件大小和日期列",
-        "grid": "网格视图",
-        "gridDescription": "在带缩略图的网格布局中以图标形式显示文件"
+        "title": "預設檢視模式",
+        "description": "開啟檔案管理器時選擇預設版面。",
+        "list": "清單檢視",
+        "listDescription": "在詳細清單中顯示檔案，並包含大小和日期列",
+        "grid": "網格檢視",
+        "gridDescription": "在縮圖的網格佈局中以圖示顯示檔案"
       },
       "thumbnails": {
-        "title": "图像缩略图",
-        "description": "在网格视图中显示图像缩略图。这会占用额外的带宽来生成预览。",
-        "enabled": "显示缩略图",
-        "enabledDescription": "在网格视图中显示图像预览，以便快速进行视觉识别",
-        "disabled": "隐藏缩略图",
-        "disabledDescription": "只显示文件图标，以节省带宽并提高性能"
+        "title": "圖片縮圖",
+        "description": "在網格檢視中顯示影像縮圖。這會使用額外的頻寬來產生預覽。",
+        "enabled": "顯示縮圖",
+        "enabledDescription": "在網格檢視中顯示影像預覽，以便快速視覺辨識",
+        "disabled": "隱藏縮圖",
+        "disabledDescription": "只顯示檔案圖示，以節省頻寬並提昇效能"
       },
       "hiddenFiles": {
-        "title": "隐藏文件",
-        "description": "控制隐藏文件和文件夹（名称以点开头）的可见性。",
-        "show": "显示隐藏文件",
-        "showDescription": "显示所有文件，包括 .dotfiles 和系统目录",
-        "hide": "隐藏隐藏文件",
-        "hideDescription": "只显示常规文件和文件夹"
+        "title": "隱藏檔案",
+        "description": "控制隱藏檔案和資料夾（以點開頭的名稱）的顯示度。",
+        "show": "顯示隱藏檔案",
+        "showDescription": "顯示所有檔案，包括 .dotfiles 和系統目錄",
+        "hide": "隱藏隱藏檔案",
+        "hideDescription": "只顯示一般檔案和資料夾"
       },
       "deleteConfirmation": {
-        "title": "删除确认",
-        "description": "删除文件和文件夹前要求确认。",
-        "enabled": "确认删除",
-        "enabledDescription": "删除项目前显示确认对话框",
-        "disabled": "立即删除",
-        "disabledDescription": "无需确认即可删除文件"
+        "title": "刪除確認",
+        "description": "刪除檔案和資料夾前要求確認。",
+        "enabled": "確認刪除",
+        "enabledDescription": "刪除項目前會顯示確認對話框",
+        "disabled": "立即刪除",
+        "disabledDescription": "無需要求確認即可刪除檔案"
       },
       "dragDropAction": {
-        "title": "拖放操作",
-        "description": "拖动文件到新位置时的默认操作。",
-        "move": "移动",
-        "copy": "复制",
-        "ask": "询问"
+        "title": "拖曳動作",
+        "description": "將檔案拖曳到新位置時的預設動作。",
+        "move": "移動",
+        "copy": "複製",
+        "ask": "詢問"
       }
     },
     "authentication": {
-      "title": "{{count}} 个身份验证提供程序",
-      "internalProviderName": "内部认证",
-      "addProvider": "添加提供程序",
-      "addLdapProvider": "添加 LDAP",
-      "system": "系统",
-      "systemDescription": "用户名和密码身份验证",
-      "deleteConfirm": "此操作将永久删除此身份验证提供程序。",
+      "title": "{{count}} 驗證提供者",
+      "internalProviderName": "內部驗證",
+      "addProvider": "新增供應商",
+      "addLdapProvider": "新增 LDAP",
+      "system": "系統",
+      "systemDescription": "使用者名稱和密碼驗證",
+      "deleteConfirm": "這將會永久刪除此驗證提供者。",
       "errors": {
-        "deleteProvider": "删除提供程序时出错",
-        "toggleProvider": "切换提供程序状态时出错"
+        "deleteProvider": "刪除提供者出錯",
+        "toggleProvider": "切換提供者出錯"
       },
       "providerDialog": {
-        "createTitle": "添加身份验证提供程序",
-        "editTitle": "编辑身份验证提供程序",
+        "createTitle": "新增驗證提供者",
+        "editTitle": "編輯驗證供應商",
         "fields": {
-          "displayName": "显示名称",
+          "displayName": "顯示名稱",
           "displayNamePlaceholder": "例如：公司 SSO",
-          "issuerUrl": "颁发者 URL",
-          "issuerUrlPlaceholder": "https://auth.company.com  ",
-          "clientId": "客户端 ID",
-          "clientIdPlaceholder": "客户端 ID",
-          "clientSecret": "客户端密钥",
-          "clientSecretPlaceholder": "客户端密钥",
-          "clientSecretPlaceholderEdit": "留空表示保留现有密钥",
+          "issuerUrl": "發行人 URL",
+          "issuerUrlPlaceholder": "https://auth.company.com",
+          "clientId": "客戶 ID",
+          "clientIdPlaceholder": "客戶 ID",
+          "clientSecret": "客戶秘密",
+          "clientSecretPlaceholder": "客戶秘密",
+          "clientSecretPlaceholderEdit": "留空以保留現有",
           "redirectUri": "重定向 URI",
-          "redirectUriPlaceholder": "https://your-domain.com/api/oidc/callback  ",
-          "scope": "范围",
-          "scopePlaceholder": "openid profile",
-          "usernameAttribute": "用户名属性",
-          "usernameAttributePlaceholder": "preferred_username",
-          "firstNameAttribute": "名字属性",
-          "firstNameAttributePlaceholder": "given_name",
-          "lastNameAttribute": "姓氏属性",
-          "lastNameAttributePlaceholder": "family_name"
+          "redirectUriPlaceholder": "https://your-domain.com/api/oidc/callback",
+          "scope": "範圍",
+          "scopePlaceholder": "開放資料",
+          "usernameAttribute": "使用者名稱屬性",
+          "usernameAttributePlaceholder": "首選使用者名稱",
+          "firstNameAttribute": "名字屬性",
+          "firstNameAttributePlaceholder": "名字",
+          "lastNameAttribute": "姓氏屬性",
+          "lastNameAttributePlaceholder": "家族名稱"
         },
         "advanced": {
-          "show": "显示高级设置",
-          "hide": "隐藏高级设置"
+          "show": "顯示進階設定",
+          "hide": "隱藏進階設定"
         },
         "actions": {
-          "addProvider": "添加提供程序",
-          "saveChanges": "保存更改"
+          "addProvider": "新增供應商",
+          "saveChanges": "儲存變更"
         },
         "messages": {
-          "saveFailed": "保存提供程序失败"
+          "saveFailed": "無法儲存提供者"
         }
       },
       "ldapDialog": {
-        "createTitle": "添加 LDAP 提供程序",
-        "editTitle": "编辑 LDAP 提供程序",
+        "createTitle": "新增 LDAP 提供者",
+        "editTitle": "編輯 LDAP 提供者",
         "fields": {
-          "displayName": "显示名称",
+          "displayName": "顯示名稱",
           "displayNamePlaceholder": "例如：公司 LDAP",
-          "host": "主持人",
+          "host": "主機",
           "hostPlaceholder": "ldap.company.com",
           "port": "港口",
-          "bindDN": "绑定 DN",
+          "bindDN": "綁定 DN",
           "bindDNPlaceholder": "cn=admin,dc=company,dc=com",
-          "bindPassword": "绑定密码",
-          "bindPasswordPlaceholder": "绑定密码",
-          "bindPasswordPlaceholderEdit": "留空表示保留现有",
-          "baseDN": "基准 DN",
+          "bindPassword": "綁定密碼",
+          "bindPasswordPlaceholder": "綁定密碼",
+          "bindPasswordPlaceholderEdit": "留空以保留現有",
+          "baseDN": "基本 DN",
           "baseDNPlaceholder": "dc=company,dc=com",
-          "userSearchFilter": "用户搜索过滤器",
+          "userSearchFilter": "使用者搜尋篩選",
           "userSearchFilterPlaceholder": "(uid={{username}}) 或 (sAMAccountName={{username}})",
           "useTLS": "使用 TLS/SSL",
-          "usernameAttribute": "用户名属性",
+          "usernameAttribute": "使用者名稱屬性",
           "usernameAttributePlaceholder": "uid",
-          "emailAttribute": "电子邮件属性",
-          "emailAttributePlaceholder": "邮政",
-          "firstNameAttribute": "名字属性",
-          "firstNameAttributePlaceholder": "给定名称",
-          "lastNameAttribute": "姓氏属性",
-          "lastNameAttributePlaceholder": "嗅"
+          "emailAttribute": "電子郵件屬性",
+          "emailAttributePlaceholder": "信件",
+          "firstNameAttribute": "名字屬性",
+          "firstNameAttributePlaceholder": "暱稱",
+          "lastNameAttribute": "姓氏屬性",
+          "lastNameAttributePlaceholder": "sn"
         },
         "advanced": {
-          "show": "显示高级设置",
-          "hide": "隐藏高级设置"
+          "show": "顯示進階設定",
+          "hide": "隱藏進階設定"
         },
         "actions": {
-          "addProvider": "添加提供商",
-          "saveChanges": "保存更改",
-          "testConnection": "测试连接",
-          "testing": "测试..."
+          "addProvider": "新增供應商",
+          "saveChanges": "儲存變更",
+          "testConnection": "測試連接",
+          "testing": "測試..."
         },
         "messages": {
-          "saveFailed": "未能保存提供商",
-          "saveFirst": "先保存提供程序以测试连接",
-          "testSuccess": "连接测试成功",
-          "testFailed": "连接测试失败"
+          "saveFailed": "無法儲存提供者",
+          "saveFirst": "先儲存提供者以測試連線",
+          "testSuccess": "連線測試成功",
+          "testFailed": "連線測試失敗"
         }
       }
     },
     "ai": {
-      "title": "AI 助手配置",
-      "description": "配置 AI 驱动的命令生成功能，用于终端会话和代码片段。",
-      "loading": "加载 AI 设置中...",
+      "title": "AI 助理設定",
+      "description": "設定終端會話和片段建立的 AI 驅動指令產生。",
+      "loading": "載入 AI 設定...",
       "enable": {
-        "title": "启用 AI 助手",
-        "description": "允许用户使用 AI 生成命令"
+        "title": "啟用 AI 助理",
+        "description": "允許使用者使用 AI 產生指令"
       },
       "provider": {
-        "title": "AI 提供商",
-        "description": "选择 AI 服务提供商"
+        "title": "AI 供應商",
+        "description": "選擇您的 AI 服務供應商"
       },
       "model": {
-        "title": "AI 模型",
-        "description": "选择用于生成命令的 AI 模型"
+        "title": "型號",
+        "description": "選擇要用於指令產生的 AI 模型"
       },
       "apiKey": {
-        "title": "API 密钥",
-        "description": "您的 OpenAI API 密钥（用于身份验证）",
-        "placeholder": "输入您的 OpenAI API 密钥",
-        "setPlaceholder": "API 密钥已设置（留空表示保留当前值）"
+        "title": "API 金鑰",
+        "description": "您用於驗證的 OpenAI API 金鑰",
+        "placeholder": "輸入您的 OpenAI API 密鑰",
+        "setPlaceholder": "API 金鑰已設定 (留空以保持最新狀態)"
       },
       "ollamaUrl": {
-        "title": "Ollama 地址",
-        "description": "Ollama 实例的访问地址",
+        "title": "Ollama URL",
+        "description": "您的 Ollama 實例正在執行的 URL",
         "placeholder": "http://localhost:11434"
       },
-      "selectProvider": "选择服务提供商...",
-      "selectModel": "选择模型...",
-      "loadingModels": "加载模型中...",
-      "noModels": "无可用模型",
-      "saveSettings": "保存设置",
-      "testConnection": "测试连接",
-      "testing": "测试中...",
-      "saveSuccess": "AI 设置保存成功",
-      "testSuccess": "AI 连接测试成功",
+      "selectProvider": "選擇提供商...",
+      "selectModel": "選擇型號...",
+      "loadingModels": "正在載入模型...",
+      "noModels": "無可用機型",
+      "saveSettings": "儲存設定",
+      "testConnection": "測試連接",
+      "testing": "測試...",
+      "saveSuccess": "成功儲存 AI 設定",
+      "testSuccess": "AI 連線測試成功",
       "errors": {
-        "loadSettings": "加载 AI 设置失败",
-        "saveSettings": "保存 AI 设置失败",
-        "testConnection": "AI 连接测试失败"
+        "loadSettings": "載入 AI 設定失敗",
+        "saveSettings": "儲存 AI 設定失敗",
+        "testConnection": "AI 連線測試失敗"
       }
     },
     "monitoring": {
-      "loading": "加载监控数据中...",
-      "saveSettings": "保存设置",
-      "saveSuccess": "成功保存监控设置",
-      "seconds": "秒数",
-      "hours": "小时",
-      "servers": "服务器",
+      "loading": "載入監控設定...",
+      "saveSettings": "儲存設定",
+      "saveSuccess": "成功儲存監測設定",
+      "seconds": "秒",
+      "hours": "時數",
+      "servers": "伺服器",
       "statusChecker": {
-        "title": "状态检测",
-        "description": "配置如何检查服务器在线/离线状态。",
+        "title": "狀態檢查器",
+        "description": "設定 Nexterm 如何檢查伺服器的在線/離線狀態。",
         "enable": {
-          "title": "启用状态检查",
-          "description": "自动检查服务器是否在线或离线。禁用时，所有服务器都将标记为在线。"
+          "title": "啟用狀態檢查器",
+          "description": "自動檢查伺服器是否在線或離線。停用時，所有伺服器都會標記為線上。"
         },
         "interval": {
-          "title": "检查频率",
-          "description": "检查服务器状态的频率(10-300秒)"
+          "title": "檢查間隔",
+          "description": "檢查伺服器狀態的頻率 (10-300 秒)"
         }
       },
       "dataCollection": {
-        "title": "数据采集",
-        "description": "配置 CPU、内存、磁盘和网络指标的监控数据收集。",
+        "title": "資料收集",
+        "description": "設定 CPU、記憶體、磁碟和網路指標的監控資料收集。",
         "enable": {
-          "title": "启用监控",
-          "description": "从启用监控功能的服务器收集详细的性能指标。"
+          "title": "啟用監控",
+          "description": "從啟用監控的伺服器收集詳細的效能指標。"
         },
         "interval": {
-          "title": "收集间隔",
-          "description": "收集监测数据的频率（30-600 秒）"
+          "title": "收集間隔",
+          "description": "收集監控資料的頻率 (30-600 秒)"
         },
         "retention": {
-          "title": "数据保留",
-          "description": "保存数据的时间 (1-24小时)"
+          "title": "資料保留",
+          "description": "監測資料的保存時間 (1-24 小時)"
         }
       },
       "advanced": {
-        "title": "高级设置",
-        "description": "微调监控性能和资源使用情况。",
+        "title": "進階設定",
+        "description": "微調監控效能和資源使用。",
         "timeout": {
-          "title": "连接超时",
-          "description": "等待服务器响应的最长时间（5-120 秒）"
+          "title": "連線逾時",
+          "description": "等待伺服器回應的最長時間 (5-120 秒)"
         },
         "batchSize": {
-          "title": "批量大小",
-          "description": "同时检查的服务器数量（1-50）"
+          "title": "批次大小",
+          "description": "同時檢查的伺服器數量 (1-50)"
         }
       },
       "errors": {
-        "loadSettings": "加载监控设置失败",
-        "saveSettings": "保存监控设置失败"
+        "loadSettings": "載入監控設定失敗",
+        "saveSettings": "儲存監控設定失敗"
       }
     },
     "identities": {
-      "title": "SSH 密钥与凭据",
-      "description": "管理服务器连接的 SSH 密钥和登录凭据",
-      "createIdentity": "创建身份标识",
-      "personal": "个人",
-      "noUsername": "无用户名",
-      "sshKey": "SSH 密钥",
-      "password": "密码",
-      "editIdentity": "编辑身份标识",
-      "deleteIdentity": "删除身份标识",
-      "noIdentities": "未找到身份标识",
-      "noIdentitiesDescription": "创建首个身份标识以开始服务器连接",
-      "deleteConfirm": "确定要删除 \"{{name}}\" 吗？此操作不可撤销，且将从所有使用此身份标识的服务器中移除它。",
-      "deleteSuccess": "身份标识删除成功",
-      "deleteError": "删除身份标识失败",
+      "title": "SSH 金鑰與憑證",
+      "description": "管理用於伺服器連線的 SSH 金鑰和登入憑證",
+      "createIdentity": "建立身分",
+      "personal": "個人",
+      "noUsername": "無用戶名",
+      "sshKey": "SSH 金鑰",
+      "password": "密碼",
+      "editIdentity": "編輯身分",
+      "deleteIdentity": "刪除身分",
+      "noIdentities": "未找到身份資訊",
+      "noIdentitiesDescription": "建立您的第一個身分，開始使用伺服器連線",
+      "deleteConfirm": "您確定要刪除 \"{{name}}\" 嗎？此動作無法撤銷，並會從所有使用此身分的伺服器中移除此身分。",
+      "deleteSuccess": "身份已成功刪除",
+      "deleteError": "刪除身分失敗",
       "dialog": {
-        "createTitle": "创建新身份标识",
-        "editTitle": "编辑身份标识",
+        "createTitle": "建立新身分",
+        "editTitle": "編輯身分",
         "fields": {
-          "name": "身份标识名称",
-          "namePlaceholder": "输入身份标识名称",
-          "username": "用户名",
-          "usernamePlaceholder": "用户名（可选）",
-          "authType": "认证类型",
-          "password": "密码",
-          "passwordPlaceholder": "输入密码",
-          "passwordPlaceholderEdit": "留空表示保留当前密码",
-          "sshKey": "SSH 私钥",
-          "passphrase": "密码短语（可选）",
-          "passphrasePlaceholder": "输入密码短语（可选）",
-          "passphrasePlaceholderEdit": "留空表示保留当前密码短语"
+          "name": "身份名稱",
+          "namePlaceholder": "輸入身分名稱",
+          "username": "使用者名稱",
+          "usernamePlaceholder": "使用者名稱 (選用)",
+          "authType": "驗證類型",
+          "password": "密碼",
+          "passwordPlaceholder": "輸入密碼",
+          "passwordPlaceholderEdit": "保留空白以保持目前的密碼",
+          "sshKey": "SSH 私密金鑰",
+          "passphrase": "密碼（可選）",
+          "passphrasePlaceholder": "輸入密碼 (選用)",
+          "passphrasePlaceholderEdit": "保留空白以保持目前的密碼"
         },
         "authTypes": {
-          "password": "密码",
-          "password-only": "没有用户名",
-          "ssh": "SSH 密钥",
-          "both": "键+密钥"
+          "password": "密碼",
+          "password-only": "無用戶名",
+          "ssh": "SSH 金鑰",
+          "both": "鑰匙+密碼"
         },
         "actions": {
           "cancel": "取消",
-          "create": "创建身份标识",
-          "update": "更新身份标识"
+          "create": "建立身分",
+          "update": "更新身份"
         },
         "messages": {
-          "nameRequired": "身份标识名称为必填项",
-          "passwordRequired": "密码为必填项",
-          "sshKeyRequired": "SSH 密钥为必填项",
-          "createSuccess": "身份标识创建成功",
-          "updateSuccess": "身份标识更新成功",
-          "createFailed": "创建身份标识失败",
-          "updateFailed": "更新身份标识失败"
+          "nameRequired": "身份名稱為必填項目",
+          "passwordRequired": "需要輸入密碼",
+          "sshKeyRequired": "需要 SSH 金鑰",
+          "createSuccess": "身份已成功建立",
+          "updateSuccess": "身份已成功更新",
+          "createFailed": "建立身分失敗",
+          "updateFailed": "更新身分失敗"
         }
       }
     },
     "sources": {
-      "title": "脚本与代码片段来源",
-      "description": "配置外部来源以自动同步脚本和代码片段。",
-      "loading": "加载来源中...",
-      "noSources": "未配置来源",
-      "noSourcesDescription": "添加外部来源以自动同步脚本和代码片段。",
-      "addSource": "添加来源",
-      "snippets": "代码片段",
-      "scripts": "脚本",
-      "themes": "主题",
-      "neverSynced": "从未同步",
+      "title": "腳本與片段來源",
+      "description": "設定外部來源以自動同步腳本和片段。",
+      "loading": "載入來源...",
+      "noSources": "未設定來源",
+      "noSourcesDescription": "新增外部來源，自動同步腳本和片段。",
+      "addSource": "新增來源",
+      "snippets": "片段",
+      "scripts": "腳本",
+      "themes": "主題",
+      "neverSynced": "從未同步",
       "sync": "立即同步",
-      "edit": "编辑",
-      "delete": "删除",
-      "deleteConfirm": "确定要删除来源 \"{{name}}\" 吗？此来源同步的所有脚本和代码片段也将被删除。",
+      "edit": "編輯",
+      "delete": "刪除",
+      "deleteConfirm": "您確定要刪除來源 \"{{name}}\" 嗎？此來源的所有同步腳本和片段也會被刪除。",
       "status": {
-        "success": "已同步",
-        "error": "错误",
-        "pending": "等待中",
-        "disabled": "已禁用"
+        "success": "同步",
+        "error": "錯誤",
+        "pending": "待定",
+        "disabled": "殘障"
       },
       "dialog": {
-        "createTitle": "添加来源",
-        "editTitle": "编辑来源",
-        "name": "名称",
-        "namePlaceholder": "例如：公司脚本库",
-        "url": "来源 URL",
-        "urlPlaceholder": "https://scripts.example.com  ",
-        "enabled": "已启用",
-        "enabledDescription": "禁用时，此来源不会同步",
-        "validating": "验证 URL 中...",
-        "validationSuccess": "找到的有效源： {{snippets}} 片段、 {{scripts}} 脚本、 {{themes}} 主题",
-        "create": "创建"
+        "createTitle": "新增來源",
+        "editTitle": "編輯來源",
+        "name": "名稱",
+        "namePlaceholder": "例如：公司腳本",
+        "url": "來源 URL",
+        "urlPlaceholder": "https://scripts.example.com",
+        "enabled": "已啟用",
+        "enabledDescription": "停用時，不會同步處理此來源",
+        "validating": "驗證 URL...",
+        "validationSuccess": "找到有效來源： {{snippets}} 片段、 {{scripts}} 腳本、 {{themes}} 主題",
+        "create": "建立"
       },
       "messages": {
-        "created": "来源创建成功",
-        "updated": "来源更新成功",
-        "deleted": "来源删除成功",
-        "synced": "来源同步成功"
+        "created": "成功建立來源",
+        "updated": "來源已成功更新",
+        "deleted": "來源已成功刪除",
+        "synced": "來源成功同步"
       },
       "errors": {
-        "loadFailed": "加载来源失败",
-        "saveFailed": "保存来源失败",
-        "deleteFailed": "删除来源失败",
-        "syncFailed": "同步来源失败",
-        "validationFailed": "验证 URL 失败",
-        "requiredFields": "名称和 URL 为必填项"
+        "loadFailed": "載入來源失敗",
+        "saveFailed": "儲存來源失敗",
+        "deleteFailed": "刪除來源失敗",
+        "syncFailed": "同步來源失敗",
+        "validationFailed": "驗證 URL 失敗",
+        "requiredFields": "姓名和 URL 為必填項目"
       }
     },
     "backup": {
-      "loading": "加载存储设置...",
+      "loading": "載入儲存設定...",
       "storage": {
-        "title": "存储",
-        "description": "查看 Nexterm 数据的磁盘使用情况。",
-        "database": "数据库",
-        "recordings": "录制",
-        "logs": "日志",
-        "total": "总计"
+        "title": "儲存",
+        "description": "檢視 Nexterm 資料的磁碟使用量。",
+        "database": "資料庫",
+        "recordings": "錄音",
+        "logs": "日誌",
+        "total": "總計"
       },
       "backupsSection": {
-        "title": "备份",
-        "description": "配置备份提供商并安排自动备份。"
+        "title": "備份",
+        "description": "設定備份提供者和排程自動備份。"
       },
-      "addProvider": "添加提供商",
-      "editProvider": "编辑提供商",
-      "providerName": "提供方名称",
-      "providerNamePlaceholder": "我的备份",
-      "providerType": "类型",
+      "addProvider": "新增供應商",
+      "editProvider": "編輯提供者",
+      "providerName": "供應商名稱",
+      "providerNamePlaceholder": "我的備份",
+      "providerType": "類型",
       "providerTypes": {
-        "local": "本地",
-        "smb": "SMB共享",
+        "local": "當地",
+        "smb": "SMB 分享",
         "webdav": "WebDAV"
       },
-      "localPath": "备份路径",
+      "localPath": "備份路徑",
       "localPathPlaceholder": "/path/to/backups",
-      "smbShare": "SMB共享",
+      "smbShare": "SMB 分享",
       "smbSharePlaceholder": "\\\\共享",
-      "smbFolder": "文件夹（可选）",
-      "smbFolderPlaceholder": "备份",
-      "smbUsername": "用户名",
-      "smbUsernamePlaceholder": "用户",
-      "smbPassword": "密码",
-      "smbPasswordPlaceholder": "暗号",
-      "smbDomain": "域名（可选）",
-      "smbDomainPlaceholder": "工作组",
-      "webdavUrl": "服务器 URL",
+      "smbFolder": "資料夾 (選購)",
+      "smbFolderPlaceholder": "備份",
+      "smbUsername": "使用者名稱",
+      "smbUsernamePlaceholder": "使用者",
+      "smbPassword": "密碼",
+      "smbPasswordPlaceholder": "密碼",
+      "smbDomain": "網域 (選用)",
+      "smbDomainPlaceholder": "工作小組",
+      "webdavUrl": "伺服器 URL",
       "webdavUrlPlaceholder": "https://cloud.example.com/remote.php/dav/files/user",
-      "webdavFolder": "文件夹（可选）",
-      "webdavFolderPlaceholder": "备份",
-      "webdavUsername": "用户名",
-      "webdavUsernamePlaceholder": "用户",
-      "webdavPassword": "密码",
-      "webdavPasswordPlaceholder": "暗号",
-      "passwordUnchanged": "留空以保持最新",
+      "webdavFolder": "資料夾 (選購)",
+      "webdavFolderPlaceholder": "備份",
+      "webdavUsername": "使用者名稱",
+      "webdavUsernamePlaceholder": "使用者",
+      "webdavPassword": "密碼",
+      "webdavPasswordPlaceholder": "密碼",
+      "passwordUnchanged": "留空以保持最新狀態",
       "schedule": {
-        "title": "自动备份",
-        "disabled": "已禁用",
-        "hourly": "每小时",
-        "every6h": "每 6 小时",
-        "every12h": "每 12 小时",
+        "title": "自動備份",
+        "disabled": "殘障",
+        "hourly": "每小時",
+        "every6h": "每 6 小時",
+        "every12h": "每 12 小時",
         "daily": "每日",
-        "weekly": "每周"
+        "weekly": "每週"
       },
       "retention": {
         "title": "保留政策"
       },
-      "backups": "备份",
+      "backups": "備份",
       "includes": {
-        "title": "包括在备份中",
-        "database": "数据库",
-        "recordings": "录制",
-        "logs": "日志"
+        "title": "包含在備份中",
+        "database": "資料庫",
+        "recordings": "錄音",
+        "logs": "日誌"
       },
-      "providers": "提供商",
-      "saveSettings": "保存设置",
-      "noProviders": "无备份提供商",
-      "noProvidersDescription": "添加备份提供程序，开始创建备份。",
-      "backupList": "备份 - {{name}}",
-      "loadingBackups": "加载备份...",
-      "noBackups": "未找到备份",
-      "restoreConfirm": "您确定要恢复 \"{{name}}\" 吗？这将覆盖您当前的数据并重新启动服务器。",
-      "deleteProviderConfirm": "您确定要删除 \"{{name}}\" 吗？这不会删除现有备份。",
-      "providerCreated": "创建了备份提供程序",
-      "providerUpdated": "更新了备份提供商",
-      "providerDeleted": "删除备份提供程序",
-      "backupCreated": "成功创建备份",
-      "restoreStarted": "恢复已开始，服务器将重新启动",
-      "saveSuccess": "成功保存设置",
+      "providers": "供應商",
+      "saveSettings": "儲存設定",
+      "noProviders": "無備份提供者",
+      "noProvidersDescription": "新增備份提供者，開始建立備份。",
+      "backupList": "備份 - {{name}}",
+      "loadingBackups": "載入備份...",
+      "noBackups": "未找到備份",
+      "restoreConfirm": "您確定要還原 \"{{name}}\" 嗎？這將會覆蓋您目前的資料，並重新啟動伺服器。",
+      "deleteProviderConfirm": "您確定要刪除 \"{{name}}\" 嗎？這不會刪除現有的備份。",
+      "providerCreated": "建立備份提供者",
+      "providerUpdated": "備份提供者已更新",
+      "providerDeleted": "備份提供者已刪除",
+      "backupCreated": "成功建立備份",
+      "restoreStarted": "還原開始，伺服器將重新啟動",
+      "saveSuccess": "設定已成功儲存",
       "errors": {
-        "loadFailed": "加载备份设置失败",
-        "saveFailed": "保存设置失败",
-        "deleteFailed": "删除失败",
-        "backupFailed": "创建备份失败",
-        "loadBackupsFailed": "加载备份失败",
-        "restoreFailed": "恢复备份失败",
-        "exportFailed": "导出数据失败",
-        "nameRequired": "必须填写提供方名称"
+        "loadFailed": "載入備份設定失敗",
+        "saveFailed": "儲存設定失敗",
+        "deleteFailed": "刪除失敗",
+        "backupFailed": "建立備份失敗",
+        "loadBackupsFailed": "載入備份失敗",
+        "restoreFailed": "還原備份失敗",
+        "exportFailed": "匯出資料失敗",
+        "nameRequired": "必須填寫提供商名稱"
       },
-      "noFiles": "未找到文件"
+      "noFiles": "找不到檔案"
     },
     "engines": {
-      "title": "发动机",
-      "description": "管理处理远程连接的引擎实例。",
-      "addEngine": "添加发动机",
-      "noEngines": "无引擎",
-      "noEnginesDescription": "添加一个引擎，开始连接远程服务器。",
+      "title": "引擎",
+      "description": "管理處理遠端連線的引擎實體。",
+      "addEngine": "新增引擎",
+      "noEngines": "無引擎",
+      "noEnginesDescription": "新增引擎，開始連線至遠端伺服器。",
       "status": {
-        "connected": "已连接",
-        "disconnected": "断开"
+        "connected": "連接",
+        "disconnected": "斷線"
       },
-      "lastSeen": "最后一次见到 {{date}}",
-      "neverConnected": "从未连接",
-      "regenerateToken": "再生令牌",
-      "deleteEngine": "删除发动机",
+      "lastSeen": "最後看到 {{date}}",
+      "neverConnected": "從未連接",
+      "regenerateToken": "再生代幣",
+      "deleteEngine": "刪除引擎",
       "dismiss": "解散",
-      "copyToken": "复制令牌",
+      "copyToken": "複製令牌",
       "transport": {
         "encrypted": "加密",
         "unencrypted": "未加密"
       },
-      "tokenLabel": "的注册令牌 <strong>{{name}}</strong>",
-      "tokenHint": "在<code1>config.yaml</code1>或<code2>REGISTRATION_TOKEN</code2>环境变量中设置。",
+      "tokenLabel": "註冊代碼為 <strong>{{name}}</strong>",
+      "tokenHint": "在<code1>config.yaml</code1>或<code2>REGISTRATION_TOKEN</code2>環境變數中設定。",
       "dialog": {
-        "title": "添加发动机",
-        "engineName": "发动机名称",
-        "namePlaceholder": "例如：办公网络",
-        "create": "创建引擎"
+        "title": "新增引擎",
+        "engineName": "引擎名稱",
+        "namePlaceholder": "例如：辦公室網路",
+        "create": "建立引擎"
       },
-      "deleteConfirm": "您确定要删除 \"{{name}} \" 吗？",
+      "deleteConfirm": "您確定要刪除 \"{{name}} \" 嗎？",
       "messages": {
-        "deleted": "引擎已成功删除"
+        "deleted": "引擎已成功刪除"
       },
       "errors": {
-        "loadFailed": "加载引擎失败",
-        "createFailed": "创建引擎失败",
-        "deleteFailed": "删除引擎失败",
-        "regenerateFailed": "令牌再生失败"
+        "loadFailed": "載入引擎失敗",
+        "createFailed": "建立引擎失敗",
+        "deleteFailed": "刪除引擎失敗",
+        "regenerateFailed": "代幣再生失敗"
       }
     }
   },
   "tunnel": {
-    "title": "端口转发",
+    "title": "連接埠轉寄",
     "identity": "身份",
-    "remoteHost": "远程主机",
-    "remotePort": "远程端口",
-    "localPort": "本地端口",
-    "start": "起点隧道",
-    "stop": "停车隧道",
+    "remoteHost": "遠端主機",
+    "remotePort": "遠端連接埠",
+    "localPort": "當地港口",
+    "start": "啟動隧道",
+    "stop": "停車隧道",
     "status": {
-      "idle": "未连接",
-      "starting": "开始...",
-      "listening": "监听本地主机：{{port}}",
-      "error": "错误",
+      "idle": "未連接",
+      "starting": "開始...",
+      "listening": "在 localhost 上監聽:{{port}}",
+      "error": "錯誤",
       "stopped": "已停止"
     },
     "error": {
-      "fillAllFields": "请填写所有栏目"
+      "fillAllFields": "請填寫所有欄位"
     }
   },
   "share": {
     "errors": {
-      "unableToConnect": "无法连接",
-      "failedToJoin": "无法加入会话"
+      "unableToConnect": "無法連線",
+      "failedToJoin": "加入會話失敗"
     },
     "sessionEnded": {
-      "title": "本次会话结束",
-      "description": "共享会话已关闭"
+      "title": "會議結束",
+      "description": "共享會話已結束"
     }
   },
   "servers": {
-    "addServerNote": "右键单击添加新服务器",
-    "searchPlaceholder": "搜索",
+    "addServerNote": "按滑鼠右鍵新增伺服器",
+    "searchPlaceholder": "搜尋",
     "time": {
-      "justNow": "刚刚",
-      "minuteAgo": "{{count}} 分钟前",
-      "minutesAgo": "{{count}} 分钟前",
-      "hourAgo": "{{count}} 小时前",
-      "hoursAgo": "{{count}} 小时前",
-      "dayAgo": "{{count}} 天前",
+      "justNow": "現在",
+      "minuteAgo": "{{count}} 分鐘前",
+      "minutesAgo": "{{count}} 分鐘前",
+      "hourAgo": "{{count}} 一小時前",
+      "hoursAgo": "{{count}} 小時前",
+      "dayAgo": "{{count}} 日前",
       "daysAgo": "{{count}} 天前"
     },
     "tags": {
-      "title": "标签",
-      "createNewTag": "创建新标签",
-      "tagName": "标签名称",
-      "create": "创建",
-      "filterByTags": "按标签筛选",
-      "clearAll": "清除全部",
-      "noTagsCreated": "尚未创建标签",
-      "editTag": "编辑标签",
-      "deleteTag": "删除标签"
+      "title": "標籤",
+      "createNewTag": "建立新標籤",
+      "tagName": "標籤名稱",
+      "create": "建立",
+      "filterByTags": "依標籤篩選",
+      "clearAll": "清除所有",
+      "noTagsCreated": "尚未建立標籤",
+      "editTag": "編輯標籤",
+      "deleteTag": "刪除標籤"
     },
     "contextMenu": {
-      "createFolder": "创建文件夹",
-      "deleteFolder": "删除文件夹",
-      "renameFolder": "重命名文件夹",
-      "new": "新建",
-      "sshServer": "SSH 服务器",
-      "telnetServer": "Telnet 服务器",
-      "rdpServer": "RDP 服务器",
-      "vncServer": "VNC 服务器",
-      "createServer": "创建服务器",
-      "import": "导入",
+      "createFolder": "建立資料夾",
+      "deleteFolder": "刪除資料夾",
+      "renameFolder": "重新命名資料夾",
+      "new": "新款",
+      "sshServer": "SSH 伺服器",
+      "telnetServer": "Telnet 伺服器",
+      "rdpServer": "RDP 伺服器",
+      "vncServer": "VNC 伺服器",
+      "createServer": "建立伺服器",
+      "import": "進口",
       "pve": "PVE",
-      "sshConfig": "SSH 配置",
-      "connect": "连接",
-      "quickConnect": "快速连接",
-      "openSFTP": "打开 SFTP",
-      "forwardPort": "转发端口",
-      "runScript": "运行脚本",
-      "openNotes": "公开说明",
-      "addNotes": "添加注释",
-      "editServer": "编辑服务器",
-      "editIntegration": "编辑集成",
-      "duplicateServer": "复制服务器",
-      "pasteIdentityPassword": "粘贴密码",
-      "deleteServer": "删除服务器",
-      "wakeOnLan": "网络唤醒",
-      "editPVE": "编辑 PVE",
-      "deletePVE": "删除 PVE",
-      "shutdown": "关机",
+      "sshConfig": "SSH-Config",
+      "connect": "連接",
+      "quickConnect": "快速連接",
+      "openSFTP": "開啟 SFTP",
+      "forwardPort": "前進埠",
+      "runScript": "執行腳本",
+      "openNotes": "開啟筆記",
+      "addNotes": "新增備註",
+      "editServer": "編輯伺服器",
+      "editIntegration": "編輯整合",
+      "duplicateServer": "複製伺服器",
+      "pasteIdentityPassword": "貼上密碼",
+      "deleteServer": "刪除伺服器",
+      "wakeOnLan": "網路喚醒",
+      "editPVE": "編輯 PVE",
+      "deletePVE": "刪除 PVE",
+      "shutdown": "關機",
       "stop": "停止",
-      "start": "启动"
+      "start": "開始"
     },
     "tabs": {
       "contextMenu": {
-        "popOut": "弹出",
-        "startSharing": "开始分享",
-        "readOnly": "只读",
-        "readWrite": "读写",
-        "copyShareLink": "复制分享链接",
-        "changePermissions": "修改权限",
+        "popOut": "彈出",
+        "startSharing": "開始分享",
+        "readOnly": "唯讀",
+        "readWrite": "讀寫",
+        "copyShareLink": "複製分享連結",
+        "changePermissions": "變更權限",
         "stopSharing": "停止分享",
-        "duplicate": "复制",
-        "openNotes": "公开说明",
-        "hibernateSession": "休眠",
-        "closeSession": "断开连接"
+        "duplicate": "重複",
+        "openNotes": "開啟筆記",
+        "hibernateSession": "冬眠",
+        "closeSession": "斷開"
       }
     },
     "wol": {
-      "successDescription": "魔法数据包发送至 {{name}}",
-      "errorDescription": "发送魔法数据包失败"
+      "successDescription": "魔術封包已傳送到 {{name}}",
+      "errorDescription": "傳送魔法封包失敗"
     },
     "messages": {
-      "fillRequiredFields": "请填写所有必填字段",
-      "serverCreated": "服务器创建成功",
-      "serverUpdated": "服务器更新成功",
-      "createFailed": "创建服务器失败",
-      "updateFailed": "更新服务器失败",
-      "createIdentityFailed": "创建身份标识失败",
-      "updateIdentityFailed": "更新身份标识失败"
+      "fillRequiredFields": "請填寫所有必填欄位",
+      "serverCreated": "伺服器建立成功",
+      "serverUpdated": "伺服器更新成功",
+      "createFailed": "建立伺服器失敗",
+      "updateFailed": "更新伺服器失敗",
+      "createIdentityFailed": "建立身分失敗",
+      "updateIdentityFailed": "更新身分失敗"
     },
     "dialog": {
-      "addServer": "添加服务器",
-      "addProtocolServer": "添加 {{protocol}} 服务器",
-      "editServer": "编辑服务器",
+      "addServer": "新增伺服器",
+      "addProtocolServer": "新增 {{protocol}} 伺服器",
+      "editServer": "編輯伺服器",
       "tabs": {
-        "details": "详细信息",
-        "identities": "身份标识",
-        "settings": "设置"
+        "details": "詳細資訊",
+        "identities": "身份",
+        "settings": "設定"
       },
       "actions": {
-        "save": "保存",
-        "create": "创建"
+        "save": "節省",
+        "create": "建立"
       },
       "fields": {
-        "name": "名称",
-        "icon": "图标",
-        "serverIp": "服务器 IP",
-        "port": "端口",
-        "protocol": "协议",
-        "username": "用户名",
-        "password": "密码",
-        "host": "主机",
-        "nodeName": "节点名称",
-        "vmid": "虚拟机 ID",
-        "macAddress": "MAC 地址",
-        "engine": "发动机"
+        "name": "名稱",
+        "icon": "圖示",
+        "serverIp": "主機",
+        "port": "港口",
+        "protocol": "規範",
+        "username": "使用者名稱",
+        "password": "密碼",
+        "host": "主機",
+        "nodeName": "節點名稱",
+        "vmid": "VM ID",
+        "macAddress": "MAC 位址",
+        "engine": "引擎"
       },
       "placeholders": {
-        "serverName": "服务器名称",
-        "serverIp": "服务器 IP",
-        "port": "端口",
-        "username": "用户名",
-        "password": "密码",
-        "host": "主机",
-        "nodeName": "节点名称",
-        "vmid": "虚拟机 ID",
+        "serverName": "伺服器名稱",
+        "serverIp": "主機名稱或 IP",
+        "port": "港口",
+        "username": "使用者名稱",
+        "password": "密碼",
+        "host": "主機",
+        "nodeName": "節點名稱",
+        "vmid": "VM ID",
         "macAddress": "aa:bb:cc:dd:ee:ff"
       },
-      "engineOffline": "（离线）",
+      "engineOffline": "(離線)",
       "settings": {
         "jumpHosts": {
-          "title": "跳板机",
-          "description": "通过中间服务器连接此目标服务器",
-          "addButton": "添加跳板机",
-          "removeTooltip": "移除跳板机",
-          "noServersAvailable": "无可用的 SSH 服务器作为跳板机。请先创建 SSH 服务器。"
+          "title": "跳躍主機",
+          "description": "透過中間伺服器連線到此目標伺服器",
+          "addButton": "新增跳躍主機",
+          "removeTooltip": "移除跳轉主機",
+          "noServersAvailable": "跳躍主機沒有可用的 SSH 伺服器。請先建立 SSH 伺服器。"
         },
         "monitoring": {
-          "title": "启用性能监控",
-          "description": "收集此服务器的 CPU、内存、磁盘和网络指标"
+          "title": "啟用效能監控",
+          "description": "收集此伺服器的 CPU、記憶體、磁碟和網路指標"
         },
         "wakeOnLan": {
-          "title": "启用网络唤醒",
-          "description": "允许使用其 MAC 地址远程唤醒该服务器"
+          "title": "啟用網路喚醒功能",
+          "description": "允許使用其 MAC 位址遠端喚醒此伺服器"
         },
         "keyboardLayout": {
-          "title": "键盘布局",
-          "description": "选择此连接使用的键盘布局。"
+          "title": "鍵盤配置",
+          "description": "選擇此連線要使用的鍵盤配置。"
         },
         "display": {
-          "title": "显示设置",
-          "description": "配置远程显示的颜色深度和缩放行为",
+          "title": "顯示器設定",
+          "description": "設定遠端顯示器的色彩深度和調整大小行為",
           "colorDepth": "色彩深度",
-          "resizeMethod": "调整尺寸方法"
+          "resizeMethod": "調整大小方法"
         },
         "performance": {
-          "title": "性能设置",
-          "description": "切换可能影响较慢连接性能的视觉效果",
-          "enableWallpaper": "启用壁纸",
-          "enableWallpaperDesc": "在远程系统中显示桌面壁纸",
-          "enableTheming": "启用主题",
-          "enableThemingDesc": "在远程系统上使用主题窗口和控件",
-          "enableFontSmoothing": "启用字体平滑",
-          "enableFontSmoothingDesc": "渲染边缘平滑的文本，提高可读性",
-          "enableFullWindowDrag": "启用全窗口拖动",
-          "enableFullWindowDragDesc": "拖动窗口时显示窗口内容",
-          "enableDesktopComposition": "启用桌面集成",
-          "enableDesktopCompositionDesc": "启用透明窗口和视觉效果",
-          "enableMenuAnimations": "启用菜单动画",
-          "enableMenuAnimationsDesc": "启用菜单打开和关闭动画"
+          "title": "效能設定",
+          "description": "切換可能影響較慢連線效能的視覺效果",
+          "enableWallpaper": "啟用壁紙",
+          "enableWallpaperDesc": "顯示遠端系統的桌面桌布",
+          "enableTheming": "啟用 Theming",
+          "enableThemingDesc": "在遠端系統上使用主題視窗和控制項",
+          "enableFontSmoothing": "啟用字型平滑",
+          "enableFontSmoothingDesc": "渲染具有平滑邊緣的文字，以提高可讀性",
+          "enableFullWindowDrag": "啟用全視窗拖曳",
+          "enableFullWindowDragDesc": "拖曳視窗時顯示視窗內容",
+          "enableDesktopComposition": "啟用桌面合成",
+          "enableDesktopCompositionDesc": "啟用透明視窗和視覺效果",
+          "enableMenuAnimations": "啟用選單動畫",
+          "enableMenuAnimationsDesc": "啟用功能表開啟與關閉動畫"
         },
         "audio": {
-          "enableAudio": "开启音频",
-          "enableAudioDesc": "将音频从远程系统串流到浏览器"
+          "enableAudio": "啟用音訊",
+          "enableAudioDesc": "從遠端系統串流音訊至您的瀏覽器"
         },
         "terminal": {
-          "title": "终端兼容性",
-          "description": "针对不同终端类型调整按键行为",
+          "title": "終端相容性",
+          "description": "針對不同的終端類型調整按鍵行為",
           "backspace": "退格",
-          "delete": "删除",
-          "functionKeys": "功能键"
+          "delete": "刪除",
+          "functionKeys": "功能鍵"
         },
-        "noSettings": "此条目类型无可用附加设置。"
+        "noSettings": "此項目類型無其他可用設定。"
       },
       "identities": {
-        "organizationIdentities": "组织身份标识",
-        "personalIdentities": "个人身份标识",
-        "orgDescription": "与所有组织成员共享。所有人都可使用这些身份标识。",
-        "personalDescription": "仅对您可见。其他组织成员无法看到这些。",
-        "identityName": "身份标识名称",
-        "username": "用户名",
-        "authentication": "认证方式",
-        "passwordField": "密码",
-        "userPassword": "密码",
-        "passwordOnly": "无用户名",
-        "sshKey": "SSH 密钥",
-        "both": "键+密钥",
-        "sshPrivateKey": "SSH 私钥",
-        "passphrase": "密码短语（可选）",
-        "new": "新建",
-        "removeIdentity": "移除身份标识",
-        "unlinkIdentity": "解除身份标识关联",
-        "moveToOrg": "移至组织",
-        "selectOrganization": "选择组织",
-        "availableToLink": "可关联项",
-        "noUsername": "无用户名",
-        "noOrgIdentities": "无组织身份标识。创建一个以与所有成员共享。",
-        "noPersonalIdentities": "无个人身份标识。创建一个供私人使用。"
+        "organizationIdentities": "組織身分",
+        "personalIdentities": "個人身分",
+        "orgDescription": "與所有組織成員共用。每個人都可以使用這些身分。",
+        "personalDescription": "僅對您可見。其他組織成員無法看到。",
+        "identityName": "身份名稱",
+        "username": "使用者名稱",
+        "authentication": "驗證",
+        "passwordField": "密碼",
+        "userPassword": "密碼",
+        "passwordOnly": "無用戶名",
+        "sshKey": "SSH 金鑰",
+        "both": "鑰匙+密碼",
+        "sshPrivateKey": "SSH 私密金鑰",
+        "passphrase": "密碼（可選）",
+        "new": "新款",
+        "removeIdentity": "移除身分",
+        "unlinkIdentity": "解除連結身分",
+        "moveToOrg": "移至組織",
+        "selectOrganization": "選擇機構",
+        "availableToLink": "可連結",
+        "noUsername": "無用戶名",
+        "noOrgIdentities": "沒有組織識別。建立一個與所有成員分享。",
+        "noPersonalIdentities": "無個人身分。建立一個供您私人使用。"
       }
     },
     "proxmoxDialog": {
       "title": {
-        "import": "导入 Proxmox VE",
-        "edit": "编辑 Proxmox VE"
+        "import": "匯入 Proxmox VE",
+        "edit": "編輯 Proxmox VE"
       },
       "fields": {
-        "name": "名称",
-        "serverIp": "服务器 IP",
-        "port": "端口",
-        "username": "用户名",
-        "password": "密码",
-        "nodeName": "节点名称（可选）",
-        "monitoring": "性能监控"
+        "name": "名稱",
+        "serverIp": "伺服器 IP",
+        "port": "港口",
+        "username": "使用者名稱",
+        "password": "密碼",
+        "nodeName": "節點名稱（可選）",
+        "monitoring": "效能監控"
       },
-      "monitoringDescription": "收集整个集群的 CPU、内存和存储指标",
+      "monitoringDescription": "收集整個群集的 CPU、記憶體和儲存設備指標",
       "placeholders": {
-        "name": "名称",
-        "serverIp": "服务器 IP",
-        "port": "端口",
-        "username": "用户名（例如：root@pam）",
-        "password": "密码",
-        "specificNode": "特定节点名称"
+        "name": "名稱",
+        "serverIp": "伺服器 IP",
+        "port": "港口",
+        "username": "使用者名稱 (例如 root@pam)",
+        "password": "密碼",
+        "specificNode": "特定節點名稱"
       },
       "actions": {
-        "import": "导入",
-        "edit": "编辑"
+        "import": "進口",
+        "edit": "編輯"
       },
       "messages": {
-        "created": "成功创建 Proxmox 集成",
-        "updated": "Proxmox 集成更新成功",
-        "createFailed": "创建 Proxmox 集成失败",
-        "updateFailed": "更新 Proxmox 集成失败"
+        "created": "成功建立 Proxmox 整合",
+        "updated": "Proxmox 整合更新成功",
+        "createFailed": "建立 Proxmox 整合失敗",
+        "updateFailed": "更新 Proxmox 整合失敗"
       }
     },
     "connectionReasonDialog": {
-      "title": "需要连接原因",
-      "reasonLabel": "请提供连接到 <strong>{{serverName}}</strong> 的原因：",
-      "placeholder": "输入本次连接的原因...",
+      "title": "需要連接的原因",
+      "reasonLabel": "請提供連接至 <strong>{{serverName}}</strong>:",
+      "placeholder": "輸入您建立此連線的原因...",
       "characterCount": "{{count}}/500",
       "actions": {
         "cancel": "取消",
-        "connect": "连接"
+        "connect": "連接"
       }
     },
     "sshConfigImport": {
-      "title": "导入 SSH 配置",
+      "title": "匯入 SSH 配置",
       "configContent": {
-        "label": "SSH 配置内容",
-        "placeholder": "在此粘贴您的 SSH 配置内容..."
+        "label": "SSH 配置內容",
+        "placeholder": "在此貼上您的 SSH 設定內容..."
       },
       "keyFiles": {
-        "label": "SSH 密钥文件（找到 {{count}} 个）",
-        "userLabel": "用户：{{username}}",
-        "uploaded": "✓ 已上传",
-        "uploadButton": "上传"
+        "label": "SSH 金鑰檔案 ({{count}} found)",
+        "userLabel": "使用者: {{username}}",
+        "uploaded": "✓ 已上傳",
+        "uploadButton": "上傳"
       },
       "actions": {
         "cancel": "取消",
-        "import": "导入",
-        "importing": "导入中..."
+        "import": "進口",
+        "importing": "導入..."
       },
       "messages": {
-        "noContent": "请提供 SSH 配置内容",
-        "noFolder": "未选择文件夹",
-        "uploadSuccess": "密钥 {{name}} 上传成功",
-        "uploadFailed": "密钥 {{name}} 上传失败",
-        "importFailed": "导入 SSH 配置失败"
+        "noContent": "請提供 SSH 配置內容",
+        "noFolder": "未選擇資料夾",
+        "uploadSuccess": "關鍵 {{name}} 已成功上傳",
+        "uploadFailed": "上傳金鑰失敗 {{name}}",
+        "importFailed": "匯入 SSH 配置失敗"
       }
     },
     "fileManager": {
       "createFile": {
-        "title": "创建文件",
-        "placeholder": "文件名称",
-        "button": "创建文件"
+        "title": "建立檔案",
+        "placeholder": "檔案名稱",
+        "button": "建立檔案"
       },
       "createFolder": {
-        "title": "创建文件夹",
-        "placeholder": "文件夹名称",
-        "button": "创建文件夹"
+        "title": "建立資料夾",
+        "placeholder": "資料夾名稱",
+        "button": "建立資料夾"
       },
       "renameItem": {
-        "title": "重命名",
-        "placeholder": "新名称",
-        "button": "重命名"
+        "title": "重新命名",
+        "placeholder": "新名稱",
+        "button": "重新命名"
       },
       "fileEditor": {
-        "title": "文件编辑器",
-        "save": "保存",
+        "title": "檔案編輯器",
+        "save": "節省",
         "cancel": "取消",
-        "loading": "加载中...",
-        "saving": "保存中...",
-        "saveSuccess": "文件保存成功",
-        "saveFailed": "保存文件失败",
-        "loadFailed": "加载文件失败",
-        "unsavedChanges": "您有未保存的更改。确定要关闭此文件吗？"
+        "loading": "載入中...",
+        "saving": "節省...",
+        "saveSuccess": "檔案已成功儲存",
+        "saveFailed": "儲存檔案失敗",
+        "loadFailed": "載入檔案失敗",
+        "unsavedChanges": "您有未儲存的變更。您確定要關閉此檔案？"
       },
       "contextMenu": {
-        "open": "打开",
-        "download": "下载",
-        "rename": "重命名",
-        "delete": "删除",
-        "copy": "复制",
-        "cut": "剪切",
-        "paste": "粘贴",
-        "createFolder": "创建文件夹",
-        "upload": "上传文件",
-        "edit": "编辑",
-        "preview": "预览",
-        "moveHere": "搬到这里",
-        "copyHere": "在此复制",
-        "bigFileConfirm": "此文件大小为 {{size}} MB。确定要编辑吗？",
-        "deleteConfirm": "您确定要删除 \"{{name}}\" 吗？此操作无法撤销。",
-        "selectAll": "全选",
-        "insertSnippet": "插入代码片段",
-        "sendCtrlC": "发送 Ctrl+C",
-        "clearTerminal": "清除终端",
-        "properties": "属性",
-        "openTerminal": "在此打开终端",
-        "downloadFolder": "下载文件夹"
+        "open": "開啟",
+        "download": "下載",
+        "rename": "重新命名",
+        "delete": "刪除",
+        "copy": "複製",
+        "cut": "切割",
+        "paste": "貼上",
+        "createFolder": "建立資料夾",
+        "upload": "上傳檔案",
+        "edit": "編輯",
+        "preview": "預覽",
+        "moveHere": "移動到這裡",
+        "copyHere": "在此複製",
+        "bigFileConfirm": "此檔案為 {{size}} MB 大。您確定要編輯嗎？",
+        "deleteConfirm": "您確定要刪除 \"{{name}}\" 嗎？此動作無法撤銷。",
+        "selectAll": "全部選取",
+        "insertSnippet": "插入片段",
+        "sendCtrlC": "傳送 Ctrl+C",
+        "clearTerminal": "清除終端",
+        "properties": "屬性",
+        "openTerminal": "在此開啟終端機",
+        "downloadFolder": "下載資料夾"
       },
       "properties": {
-        "general": "一般情况",
-        "permissions": "权限",
-        "checksum": "校验和",
-        "folder": "文件夹",
-        "file": "文件",
-        "path": "地点",
+        "general": "一般",
+        "permissions": "權限",
+        "checksum": "校驗碼",
+        "folder": "資料夾",
+        "file": "檔案",
+        "path": "地點",
         "size": "尺寸",
-        "calculateSize": "计算",
-        "owner": "业主",
-        "group": "组别",
-        "modified": "改装",
-        "accessed": "已访问",
-        "calculating": "计算...",
-        "calculate": "计算"
+        "calculateSize": "計算",
+        "owner": "業主",
+        "group": "集團",
+        "modified": "已修改",
+        "accessed": "已存取",
+        "calculating": "計算...",
+        "calculate": "計算"
       },
       "permissions": {
-        "owner": "业主",
-        "group": "组别",
+        "owner": "業主",
+        "group": "集團",
         "others": "其他",
-        "read": "阅读",
-        "write": "写",
-        "execute": "执行",
-        "octal": "八进制",
-        "preview": "预览",
-        "apply": "申请"
+        "read": "閱讀",
+        "write": "撰寫",
+        "execute": "執行",
+        "octal": "八進制",
+        "preview": "預覽",
+        "apply": "申請"
       },
       "filePreview": {
-        "title": "文件预览",
-        "loading": "加载中...",
-        "cannotPreview": "无法预览文件",
-        "unsupportedFileType": "此文件类型不支持预览",
-        "videoNotSupported": "您的浏览器不支持视频播放",
-        "audioNotSupported": "您的浏览器不支持音频播放",
-        "download": "下载",
-        "close": "关闭"
+        "title": "檔案預覽",
+        "loading": "載入中...",
+        "cannotPreview": "無法預覽檔案",
+        "unsupportedFileType": "預覽不支援此檔案類型",
+        "videoNotSupported": "您的瀏覽器不支援視訊播放",
+        "audioNotSupported": "您的瀏覽器不支援音訊播放",
+        "download": "下載",
+        "close": "關閉"
       },
       "selection": {
-        "itemsSelected": "{{count}} 所选项目",
-        "filesSelected": "{{count}} 所选文件",
-        "foldersSelected": "{{count}} 所选文件夹",
-        "clearSelection": "清除选择",
-        "downloadSelected": "下载选定的",
-        "deleteSelected": "删除选定",
-        "download": "下载",
-        "delete": "删除",
-        "deleteConfirm": "您确定要删除 {{count}} 项目吗？"
+        "itemsSelected": "{{count}} 選取的項目",
+        "filesSelected": "{{count}} 選取的檔案",
+        "foldersSelected": "{{count}} 選取的資料夾",
+        "clearSelection": "清除選擇",
+        "downloadSelected": "下載選取",
+        "deleteSelected": "刪除選取的",
+        "download": "下載",
+        "delete": "刪除",
+        "deleteConfirm": "您確定要刪除 {{count}} 項目嗎？"
       },
       "header": {
-        "name": "名称",
+        "name": "名稱",
         "size": "尺寸",
-        "permissions": "权限",
-        "modified": "改装"
+        "permissions": "權限",
+        "modified": "已修改"
       },
       "actionBar": {
-        "enterDirectory": "输入目录路径...",
-        "hiddenDirectories": "{{count}} 隐藏目录",
-        "switchToGrid": "切换到网格视图",
-        "switchToList": "切换到列表视图"
+        "enterDirectory": "輸入目錄路徑...",
+        "hiddenDirectories": "{{count}} 隱藏目錄",
+        "switchToGrid": "切換至網格檢視",
+        "switchToList": "切換至清單檢視"
       },
       "item": {
-        "link": "链接"
+        "link": "連結"
       },
       "states": {
-        "loading": "加载文件...",
-        "accessDenied": "拒绝访问",
-        "emptyFolder": "该文件夹为空",
-        "dropFilesHint": "将文件放在此处上传"
+        "loading": "載入檔案...",
+        "accessDenied": "拒絕存取",
+        "emptyFolder": "此資料夾為空",
+        "dropFilesHint": "將檔案丟到這裡上傳"
       },
       "toast": {
-        "downloaded": "下载 {{name}}",
-        "downloadingItems": "下载 {{count}} 项目...",
-        "uploaded": "上传 {{name}}",
-        "uploadFailed": "上传失败： {{message}}",
-        "connectionLost": "SFTP 连接丢失。请重新连接。",
-        "error": "发生错误"
+        "downloaded": "下載 {{name}}",
+        "downloadingItems": "下載 {{count}} 項目...",
+        "uploaded": "上傳 {{name}}",
+        "uploadFailed": "上傳失敗: {{message}}",
+        "connectionLost": "SFTP 連線中斷。請重新連線。",
+        "error": "發生錯誤"
       }
     },
     "aiAssistant": {
-      "title": "AI 助手",
-      "placeholder": "描述您想要执行的操作...",
-      "hint": "按 Enter 生成 • 按 Esc 关闭",
-      "hintUse": "按 Enter 使用命令 - 按 Esc 关闭",
-      "closeLabel": "关闭 AI 助手",
-      "generate": "生成命令",
-      "generating": "生成命令...",
-      "generatedCommand": "生成命令",
-      "useCommand": "使用命令",
-      "tryAgain": "再试一次",
-      "copy": "复制到剪贴板",
-      "error": "生成命令失败。请重试。"
+      "title": "AI 助理",
+      "placeholder": "描述您想做的事...",
+      "hint": "按 Enter 生成 - 按 Esc 關閉",
+      "hintUse": "按 Enter 使用指令 - 按 Esc 關閉",
+      "closeLabel": "關閉 AI 助理",
+      "generate": "產生指令",
+      "generating": "產生指令...",
+      "generatedCommand": "產生指令",
+      "useCommand": "使用指令",
+      "tryAgain": "再試一次",
+      "copy": "複製到剪貼簿",
+      "error": "產生指令失敗。請再試一次。"
     },
     "snippets": {
-      "title": "代码片段",
-      "noSnippets": "无可用代码片段",
-      "searchPlaceholder": "搜索代码片段...",
-      "createNew": "创建新代码片段"
+      "title": "片段",
+      "noSnippets": "沒有可用的片段",
+      "searchPlaceholder": "搜尋片段...",
+      "createNew": "建立新片段"
     },
     "terminalActions": {
-      "menuTitle": "终端操作",
-      "snippets": "代码片段",
-      "keyboardShortcuts": "键盘快捷键",
-      "broadcasting": "广播模式",
-      "fullScreen": "全屏",
-      "exitFullScreen": "退出全屏模式",
-      "badgeOn": "开启"
+      "menuTitle": "終端行動",
+      "snippets": "片段",
+      "keyboardShortcuts": "鍵盤捷徑",
+      "broadcasting": "廣播",
+      "fullScreen": "全螢幕",
+      "exitFullScreen": "退出全螢幕模式",
+      "badgeOn": "開啟"
     },
     "notesPanel": {
-      "title": "说明",
-      "placeholder": "为该服务器撰写注释…",
-      "showInList": "在列表中显示",
-      "showInListTooltip": "在侧边栏的服务器名称下显示这些注释的第一行。",
+      "title": "注意事項",
+      "placeholder": "為此伺服器撰寫筆記…",
+      "showInList": "在清單中顯示",
+      "showInListTooltip": "在側邊列的伺服器名稱下顯示這些備注的第一行。",
       "status": {
-        "saving": "节约",
-        "saved": "已保存",
+        "saving": "節省",
+        "saved": "儲存",
         "unsaved": "未保存",
-        "error": "保存失败"
+        "error": "儲存失敗"
       }
     }
   },
   "support": {
-    "title": "获取支持",
-    "subtitle": "需要帮助或想作出贡献？",
-    "footer": "感谢您使用 Nexterm！",
+    "title": "取得支援",
+    "subtitle": "需要協助或想要貢獻心力？",
+    "footer": "感謝您使用 Nexterm！",
     "issues": {
-      "title": "报告问题",
-      "description": "发现错误或有功能请求？"
+      "title": "報告問題",
+      "description": "發現錯誤或有功能需求？"
     },
     "discord": {
-      "title": "加入讨论区",
-      "description": "与社区聊天并获得帮助。"
+      "title": "加入討論區",
+      "description": "與社群聊天並獲得協助。"
     },
     "github": {
-      "title": "在 GitHub 上查看",
-      "description": "浏览源代码并作出贡献。"
+      "title": "在 GitHub 上檢視",
+      "description": "瀏覽原始碼並貢獻心力。"
     }
   },
   "welcome": {
-    "hello": "你好",
-    "subtitle": "欢迎使用 Nexterm。用于 SSH、VNC 和 RDP 的开源服务器管理器。",
-    "downloadApps": "下载应用程序",
-    "connectDevice": "连接设备",
-    "recentConnections": "近期联系",
-    "getStarted": "开始",
-    "getStartedHint": "从侧边栏添加服务器，开始管理基础设施。"
+    "hello": "您好",
+    "subtitle": "歡迎來到 Nexterm。適用於 SSH、VNC 和 RDP 的開放原始碼伺服器管理程式。",
+    "downloadApps": "下載應用程式",
+    "connectDevice": "連接裝置",
+    "recentConnections": "近期連線",
+    "getStarted": "開始使用",
+    "getStartedHint": "從側邊欄新增伺服器，開始管理您的基礎架構。"
   },
   "downloadApps": {
-    "title": "下载应用程序",
-    "subtitle": "在您的设备上获取 Nexterm",
+    "title": "下載應用程式",
+    "subtitle": "在您的裝置上取得 Nexterm",
     "platforms": {
-      "windows": "视窗",
+      "windows": "視窗",
       "macos": "MacOS",
-      "linux": "利纳克斯",
+      "linux": "Linux",
       "android": "安卓",
       "ios": "iOS"
     }
