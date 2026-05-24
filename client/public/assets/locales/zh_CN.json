@@ -852,8 +852,8 @@
           "description": "切换全屏模式"
         },
         "pasteidentitypassword": {
-          "title": "Paste Identity Password",
-          "description": "Paste the password of the current SSH connection's identity"
+          "title": "粘贴身份密码",
+          "description": "粘贴当前 SSH 连接的身份密码"
         }
       },
       "recorder": {
