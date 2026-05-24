@@ -852,8 +852,8 @@
           "description": "Activar el modo de pantalla completa"
         },
         "pasteidentitypassword": {
-          "title": "Paste Identity Password",
-          "description": "Paste the password of the current SSH connection's identity"
+          "title": "Pegar contraseña de identidad",
+          "description": "Pega la contraseña de la identidad de la conexión SSH actual"
         }
       },
       "recorder": {
