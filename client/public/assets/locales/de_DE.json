@@ -852,8 +852,8 @@
           "description": "Umschalten des Vollbildmodus"
         },
         "pasteidentitypassword": {
-          "title": "Paste Identity Password",
-          "description": "Paste the password of the current SSH connection's identity"
+          "title": "Identitätskennwort einfügen",
+          "description": "Füge das Passwort für die Identität der aktuellen SSH-Verbindung ein"
         }
       },
       "recorder": {
