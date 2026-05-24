@@ -850,6 +850,10 @@
         "fullscreen": {
           "title": "全屏",
           "description": "切换全屏模式"
+        },
+        "pasteidentitypassword": {
+          "title": "粘贴身份密码",
+          "description": "粘贴当前 SSH 连接的身份密码"
         }
       },
       "recorder": {

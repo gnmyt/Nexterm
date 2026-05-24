@@ -850,6 +850,10 @@
         "fullscreen": {
           "title": "Tela Cheia",
           "description": "Alternar modo de tela cheia"
+        },
+        "pasteidentitypassword": {
+          "title": "Colar senha de identidade",
+          "description": "Cole a senha da identidade da conexão SSH atual"
         }
       },
       "recorder": {

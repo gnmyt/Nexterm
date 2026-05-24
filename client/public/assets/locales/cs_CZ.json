@@ -850,6 +850,10 @@
         "fullscreen": {
           "title": "Celá obrazovka",
           "description": "Přepnout režim celé obrazovky"
+        },
+        "pasteidentitypassword": {
+          "title": "Vložit heslo identity",
+          "description": "Vložení hesla identity aktuálního připojení SSH"
         }
       },
       "recorder": {

@@ -850,6 +850,10 @@
         "fullscreen": {
           "title": "Pantalla completa",
           "description": "Activar el modo de pantalla completa"
+        },
+        "pasteidentitypassword": {
+          "title": "Pegar contraseña de identidad",
+          "description": "Pega la contraseña de la identidad de la conexión SSH actual"
         }
       },
       "recorder": {

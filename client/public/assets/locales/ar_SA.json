@@ -850,6 +850,10 @@
         "fullscreen": {
           "title": "ملء الشاشة الكاملة",
           "description": "تبديل وضع ملء الشاشة"
+        },
+        "pasteidentitypassword": {
+          "title": "لصق كلمة مرور الهوية",
+          "description": "لصق كلمة المرور الخاصة بهوية اتصال SSH الحالية"
         }
       },
       "recorder": {

@@ -3,10 +3,10 @@
     "error": "錯誤",
     "success": "成功",
     "loading": "載入中...",
-    "saving": "節省...",
+    "saving": "儲存中...",
     "close": "關閉",
     "cancel": "取消",
-    "save": "節省",
+    "save": "儲存",
     "download": "下載",
     "maximize": "最大化",
     "restore": "還原",
@@ -16,7 +16,7 @@
       "discard": "丟棄",
       "login": "登入",
       "register": "註冊",
-      "save": "節省",
+      "save": "儲存",
       "download": "下載",
       "close": "關閉",
       "maximize": "最大化",
@@ -35,7 +35,7 @@
       "firstName": "姓名",
       "lastName": "姓氏",
       "code": "代碼",
-      "twoFACode": "2FA 代碼"
+      "twoFACode": "雙因素驗證碼"
     },
     "placeholders": {
       "username": "使用者名稱",
@@ -51,11 +51,11 @@
       "unsavedChangesText": "您有未儲存的變更。您確定要關閉？"
     },
     "loginDialog": {
-      "title": "下一頁",
+      "title": "Nexterm",
       "registrationTitle": "註冊",
-      "ssoOrContinueWith": "或繼續",
+      "ssoOrContinueWith": "或使用以下方式繼續",
       "noAuthMethodsAvailable": "沒有可用的驗證方法。",
-      "signInWithPasskey": "使用密碼登入",
+      "signInWithPasskey": "使用通行金鑰登入",
       "signInWithQrCode": "使用 QR 代碼登入",
       "qrScanDescription": "使用 Nexterm 行動應用程式掃描此 QR 代碼，即可立即登入。",
       "backToLogin": "返回登入",
@@ -69,21 +69,21 @@
       "qrDescription": "使用 Nexterm 行動應用程式掃描此 QR 代碼，即可連結您的裝置。",
       "codeLabel": "裝置代碼",
       "continue": "繼續",
-      "verifying": "驗證...",
+      "verifying": "驗證中...",
       "confirmTitle": "授權裝置",
-      "confirmDescription": "有裝置要求存取您的帳戶。請驗證以下詳細資訊。",
+      "confirmDescription": "有裝置正在要求存取您的帳戶。請驗證以下詳細資訊。",
       "deviceInfo": "裝置資訊",
       "type": "類型",
       "ipAddress": "IP 位址",
       "userAgent": "裝置",
       "authorize": "授權裝置",
-      "authorizing": "授權...",
+      "authorizing": "授權中...",
       "deny": "拒絕",
       "invalidCode": "無效或過期的代碼",
       "authorizationFailed": "授權失敗",
       "deviceAuthorized": "裝置授權成功",
-      "successTitle": "裝置授權",
-      "successMessage": "您可以關閉此標籤並返回應用程式。",
+      "successTitle": "裝置已授權",
+      "successMessage": "您可以關閉此分頁並返回應用程式。",
       "clientTypes": {
         "mobile": "行動應用程式",
         "connector": "桌上型電腦連接器"
@@ -93,19 +93,19 @@
       "title": "Nexterm 連接器",
       "serverUrl": "伺服器 URL",
       "serverUrlDescription": "輸入 Nexterm 伺服器的 URL 以連線。",
-      "connect": "連接",
-      "connecting": "連接...",
+      "connect": "連線",
+      "connecting": "連線中...",
       "enterServerUrl": "請輸入伺服器 URL",
-      "connectionFailed": "連接伺服器失敗。請檢查 URL。",
+      "connectionFailed": "連線到伺服器失敗。請檢查 URL。",
       "deviceLinkingNotSupported": "此伺服器不支援裝置連結。請更新您的 Nexterm 伺服器。",
       "authMethodDescription": "選擇與伺服器驗證的方式。",
       "showCode": "顯示代碼",
       "showCodeDesc": "顯示要在 Web 介面上手動輸入的代碼",
       "openBrowser": "授權",
-      "openBrowserDesc": "開啟瀏覽器自動授權",
+      "openBrowserDesc": "開啟瀏覽器以自動授權",
       "enterCodeDescription": "在 Nexterm Web 介面上輸入此代碼，以授權此裝置。",
       "copyCode": "複製代碼",
-      "codeCopied": "程式碼複製到剪貼簿",
+      "codeCopied": "代碼已複製到剪貼簿",
       "copyFailed": "複製代碼失敗",
       "waitingForAuth": "等待授權...",
       "codeCreationFailed": "建立裝置代碼失敗",
@@ -115,7 +115,7 @@
       "title": "伺服器",
       "addServer": "新增伺服器",
       "removeServer": "移除伺服器",
-      "removeConfirmText": "這將移除與 {{server}}的連線。您確定嗎？"
+      "removeConfirmText": "這將移除與 {{server}} 的連線。您確定嗎？"
     },
     "selectBox": {
       "defaultOption": "選擇選項...",
@@ -131,10 +131,10 @@
         "subtitle": "沒有要顯示的項目。"
       },
       "pagination": {
-        "showing": "顯示 {{start}} 至 {{end}} 的 {{total}}",
+        "showing": "顯示 {{total}} 之中的 {{start}} 至 {{end}}",
         "previous": "上一頁",
         "next": "下一頁",
-        "pageInfo": "頁面 {{current}} of {{total}}"
+        "pageInfo": "第 {{current}} 頁，共 {{total}} 頁"
       }
     },
     "sidebar": {
@@ -142,7 +142,7 @@
       "servers": "伺服器",
       "monitoring": "監控",
       "snippets": "片段",
-      "audit": "審計",
+      "audit": "稽核",
       "account": "帳戶",
       "logout": "登出",
       "collapseTitle": "折疊側欄",
@@ -264,7 +264,7 @@
       "showing": "顯示 {{start}} 至 {{end}} 的 {{total}} 日誌",
       "previous": "上一頁",
       "next": "下一頁",
-      "pageInfo": "頁面 {{current}} of {{total}}"
+      "pageInfo": "第 {{current}} 頁，共 {{total}} 頁"
     }
   },
   "snippets": {
@@ -445,7 +445,7 @@
         "cpuUsage": "CPU 使用量",
         "memoryUsage": "記憶體使用量",
         "loadAverage": "平均負載",
-        "processes": "製程",
+        "processes": "程序",
         "uptime": "正常運行時間",
         "nodes": "節點",
         "vms": "虛擬機器/容器"
@@ -463,9 +463,9 @@
       "uptime": {
         "unknown": "未知",
         "format": {
-          "days": "{{days}}d {{hours}}h {{minutes}}m",
-          "hours": "{{hours}}h {{minutes}}m",
-          "minutes": "{{minutes}}m"
+          "days": "{{days}}天 {{hours}}時 {{minutes}}分",
+          "hours": "{{hours}}時 {{minutes}}分",
+          "minutes": "{{minutes}}分"
         }
       }
     },
@@ -487,7 +487,7 @@
         "systemInfo": {
           "title": "系統資訊",
           "hostname": "主機名稱",
-          "os": "OS",
+          "os": "作業系統",
           "version": "版本",
           "kernel": "核心",
           "architecture": "建築",
@@ -515,7 +515,7 @@
       "charts": {
         "cpuUsage": "CPU 使用量",
         "memoryUsage": "記憶體使用量",
-        "processes": "主動製程",
+        "processes": "目前程序",
         "noData": "所選時間範圍內無可用資料"
       },
       "storage": {
@@ -850,6 +850,10 @@
         "fullscreen": {
           "title": "全螢幕",
           "description": "切換全螢幕模式"
+        },
+        "pasteidentitypassword": {
+          "title": "貼上身份密碼",
+          "description": "貼上目前 SSH 連線身份之密碼"
         }
       },
       "recorder": {
