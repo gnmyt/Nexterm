@@ -852,8 +852,8 @@
           "description": "تبديل وضع ملء الشاشة"
         },
         "pasteidentitypassword": {
-          "title": "Paste Identity Password",
-          "description": "Paste the password of the current SSH connection's identity"
+          "title": "لصق كلمة مرور الهوية",
+          "description": "لصق كلمة المرور الخاصة بهوية اتصال SSH الحالية"
         }
       },
       "recorder": {
