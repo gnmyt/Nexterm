@@ -1,6 +1,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
-import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+import 'package:flutter_material_design_icons/flutter_material_design_icons.dart';
 import '../models/server.dart';
 import '../models/server_folder.dart';
 import '../services/server_service.dart';
@@ -20,6 +20,14 @@ class ServersScreen extends StatefulWidget {
   @override
   State<ServersScreen> createState() => _ServersScreenState();
 }
+
+final Map<String, IconData> _mdiByCamelName = {
+  for (final icon in MdiIcons.values)
+    if (icon.mdiMetadata != null)
+      icon.mdiMetadata!.name.split('-').asMap().entries.map((e) =>
+        e.key == 0 ? e.value : e.value[0].toUpperCase() + e.value.substring(1)
+      ).join(): icon,
+};
 
 class _ServersScreenState extends State<ServersScreen> {
   List<dynamic> folders = [];
@@ -575,7 +583,8 @@ class _ServersScreenState extends State<ServersScreen> {
     if (p == 'vnc') return MdiIcons.remoteDesktop;
     final icon = server.icon;
     if (icon == null || !icon.startsWith('mdi')) return MdiIcons.server;
-    return MdiIcons.fromString(icon.substring(3, 4).toLowerCase() + icon.substring(4)) ?? MdiIcons.server;
+    final camel = icon.substring(3, 4).toLowerCase() + icon.substring(4);
+    return _mdiByCamelName[camel] ?? MdiIcons.server;
   }
 
   Color _parseColor(String c) {
