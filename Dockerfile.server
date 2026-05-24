@@ -1,4 +1,4 @@
-FROM node:22-alpine AS client-builder
+FROM node:26-alpine AS client-builder
 
 WORKDIR /app
 
@@ -13,7 +13,7 @@ COPY client/ .
 RUN yarn build
 
 
-FROM node:22-alpine AS schema-builder
+FROM node:26-alpine AS schema-builder
 
 WORKDIR /app
 
@@ -32,7 +32,7 @@ RUN mkdir -p server/lib/generated && \
     rm -rf server/lib/generated/nexterm
 
 
-FROM node:22-alpine AS server-builder
+FROM node:26-alpine AS server-builder
 
 ARG VERSION
 
