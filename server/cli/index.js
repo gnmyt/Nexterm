@@ -95,6 +95,10 @@ const groups = {
         commands: [
             ["status", "show migration state and user counts"],
             ["migrate", "apply pending migrations"],
+            ["tables", "list all tables"],
+            ["schema <table>", "describe table columns"],
+            ["query <sql>", "execute a SQL statement (use '-' to read from stdin)", "query",
+                (c) => c.option("--force", "skip confirmation for destructive statements")],
         ],
     },
 };
