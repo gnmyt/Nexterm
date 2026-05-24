@@ -2,13 +2,18 @@
   "name": "nexterm",
   "version": "1.2.0-BETA",
   "main": "server/index.js",
+  "bin": {
+    "ntctl": "server/cli/index.js"
+  },
   "repository": "https://github.com/gnmyt/Nexterm.git",
   "author": "Mathias Wagner",
   "license": "MIT",
   "dependencies": {
+    "@inquirer/password": "^5.0.13",
     "@simplewebauthn/server": "^13.3.0",
     "archiver": "^8.0.0",
     "bcrypt": "^6.0.0",
+    "commander": "^14.0.3",
     "decompress": "^4.2.1",
     "express": "^5.2.1",
     "express-jsdoc-swagger": "^1.8.0",

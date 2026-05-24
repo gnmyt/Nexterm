@@ -75,6 +75,9 @@ COPY --from=server-builder /app/package.json ./
 COPY docker-start.sh .
 RUN chmod +x docker-start.sh
 
+RUN printf '#!/bin/sh\nexec node /app/server/cli/index.js "$@"\n' > /usr/local/bin/ntctl \
+    && chmod +x /usr/local/bin/ntctl
+
 EXPOSE 6989
 
 CMD ["/bin/sh", "docker-start.sh"]

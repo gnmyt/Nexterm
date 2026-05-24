@@ -86,6 +86,7 @@ export default defineConfig({
                         ],
                     },
                     { text: "CLI", link: "/cli" },
+                    { text: "Server CLI", link: "/server-cli" },
                     { text: "Contributing", link: "/contributing" },
                     {
                         text: "API Reference",
