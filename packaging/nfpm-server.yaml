@@ -1,0 +1,47 @@
+name: nexterm-server
+arch: "${PKG_ARCH}"
+platform: linux
+version: "${PKG_VERSION}"
+section: net
+priority: optional
+maintainer: "Mathias Wagner <mathias@gnm.dev>"
+description: |
+  Nexterm server - Bundles web interface together with server
+vendor: "Nexterm"
+homepage: "https://github.com/gnmyt/Nexterm"
+license: "MIT"
+
+overrides:
+  deb:
+    depends:
+      - libc6
+  rpm:
+    depends:
+      - glibc
+
+contents:
+  - src: stage/server/nexterm-server
+    dst: /usr/bin/nexterm-server
+    file_info:
+      mode: 0755
+
+  - src: packaging/nexterm-server.service
+    dst: /lib/systemd/system/nexterm-server.service
+    file_info:
+      mode: 0644
+
+  - src: packaging/server.env
+    dst: /etc/nexterm-server/server.env
+    type: config|noreplace
+    file_info:
+      mode: 0640
+
+  - dst: /var/lib/nexterm-server
+    type: dir
+    file_info:
+      mode: 0750
+
+scripts:
+  postinstall: packaging/scripts/server-postinstall.sh
+  preremove: packaging/scripts/server-preremove.sh
+  postremove: packaging/scripts/server-postremove.sh

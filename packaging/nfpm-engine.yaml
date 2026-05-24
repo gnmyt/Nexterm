@@ -1,0 +1,81 @@
+name: nexterm-engine
+arch: "${PKG_ARCH}"
+platform: linux
+version: "${PKG_VERSION}"
+section: net
+priority: optional
+maintainer: "Mathias Wagner <mathias@gnm.dev>"
+description: |
+  Nexterm engine — Connection service for Nexterm
+vendor: "Nexterm"
+homepage: "https://github.com/gnmyt/Nexterm"
+license: "MIT"
+
+overrides:
+  deb:
+    depends:
+      - libc6
+      - libssl3 | libssl1.1
+      - libssh2-1
+      - libcurl4
+      - libcairo2
+      - libpng16-16
+      - libpango-1.0-0
+      - libpangocairo-1.0-0
+      - libwebp7 | libwebp6
+      - libossp-uuid16
+      - libpulse0
+      - libvorbisenc2
+      - libvorbis0a
+      - libogg0
+      - libvncclient1 | libvncserver1
+      - libfreerdp2-2 | libfreerdp-client2-2
+  rpm:
+    depends:
+      - openssl-libs
+      - libssh2
+      - libcurl
+      - cairo
+      - libpng
+      - pango
+      - libwebp
+      - uuid
+      - pulseaudio-libs
+      - libvorbis
+      - libogg
+      - libvncserver
+      - freerdp-libs
+
+contents:
+  - src: stage/engine/nexterm-engine
+    dst: /usr/lib/nexterm-engine/nexterm-engine
+    file_info:
+      mode: 0755
+  - src: /usr/lib/nexterm-engine/nexterm-engine
+    dst: /usr/bin/nexterm-engine
+    type: symlink
+
+  - src: stage/engine/lib/
+    dst: /usr/lib/nexterm-engine/
+    file_info:
+      mode: 0755
+
+  - src: stage/engine/freerdp2/
+    dst: /usr/lib/nexterm-engine/freerdp2/
+    file_info:
+      mode: 0755
+
+  - src: packaging/nexterm-engine.service
+    dst: /lib/systemd/system/nexterm-engine.service
+    file_info:
+      mode: 0644
+
+  - dst: /etc/nexterm-engine
+    type: dir
+    file_info:
+      mode: 0770
+
+scripts:
+  postinstall: packaging/scripts/engine-postinstall.sh
+  preremove: packaging/scripts/engine-preremove.sh
+  postremove: packaging/scripts/engine-postremove.sh
