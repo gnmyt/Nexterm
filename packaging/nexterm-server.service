@@ -1,0 +1,25 @@
+[Unit]
+Description=Nexterm Server
+Documentation=https://docs.nexterm.dev/
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=nexterm
+Group=nexterm
+WorkingDirectory=/var/lib/nexterm-server
+EnvironmentFile=-/etc/nexterm-server/server.env
+Environment=NODE_ENV=production
+ExecStart=/usr/bin/nexterm-server
+Restart=on-failure
+RestartSec=5
+
+NoNewPrivileges=yes
+PrivateTmp=yes
+ProtectSystem=full
+ProtectHome=yes
+ReadWritePaths=/var/lib/nexterm-server
+
+[Install]
+WantedBy=multi-user.target

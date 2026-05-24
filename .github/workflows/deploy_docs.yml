@@ -26,8 +26,9 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version: 22
-          cache: yarn
+          node-version: 26
+      - name: Install yarn
+        run: npm install -g yarn
       - name: Setup Pages
         uses: actions/configure-pages@v4
       - name: Install dependencies

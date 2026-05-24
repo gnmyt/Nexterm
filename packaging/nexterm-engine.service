@@ -1,0 +1,24 @@
+[Unit]
+Description=Nexterm Engine
+Documentation=https://docs.nexterm.dev/
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=nexterm
+Group=nexterm
+WorkingDirectory=/etc/nexterm-engine
+Environment=FREERDP_EXTENSION_PATH=/usr/lib/nexterm-engine/freerdp2
+ExecStart=/usr/bin/nexterm-engine
+Restart=on-failure
+RestartSec=5
+
+NoNewPrivileges=yes
+PrivateTmp=yes
+ProtectSystem=full
+ProtectHome=yes
+ReadWritePaths=/etc/nexterm-engine
+
+[Install]
+WantedBy=multi-user.target

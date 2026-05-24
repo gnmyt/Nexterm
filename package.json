@@ -53,6 +53,7 @@
     "schema:watch": "nodemon --watch schema -e fbs --exec 'yarn schema:generate'",
     "docs:dev": "yarn docs:openapi && vitepress dev docs",
     "docs:build": "yarn docs:openapi && vitepress build docs",
-    "docs:preview": "vitepress preview docs"
+    "docs:preview": "vitepress preview docs",
+    "build:sea": "./scripts/build-sea.sh"
   }
 }
