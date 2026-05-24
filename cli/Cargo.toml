@@ -1,6 +1,6 @@
 [package]
 name = "nt"
-version = "0.1.0"
+version = "1.2.1"
 edition = "2021"
 description = "CLI client for Nexterm"
 authors = ["Mathias Wagner"]
