@@ -19,9 +19,7 @@ FROM node:26-alpine AS schema-builder
 
 WORKDIR /app
 
-RUN apk add --no-cache unzip && \
-    wget -qO /tmp/flatc.zip https://github.com/google/flatbuffers/releases/download/v24.12.23/Linux.flatc.binary.g++-13.zip && \
-    unzip -o /tmp/flatc.zip -d /usr/local/bin && chmod +x /usr/local/bin/flatc && rm /tmp/flatc.zip
+RUN apk add --no-cache flatc
 RUN npm install -g esbuild
 
 COPY schema/ schema/
