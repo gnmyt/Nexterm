@@ -134,6 +134,13 @@ db.authenticate()
             SessionManager.remove(sessionId);
         });
 
+        controlPlane.on("engineDisconnected", ({ engineId, sessionIds }) => {
+            logger.warn(`Engine ${engineId} disconnected, cleaning up ${sessionIds.length} sessions`);
+            for (const sessionId of sessionIds) {
+                SessionManager.remove(sessionId);
+            }
+        });
+
         try {
             controlPlane.setTlsContext(await ensureCPCerts());
         } catch (err) {

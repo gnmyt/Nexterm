@@ -67,6 +67,8 @@ export const ServerDialog = ({ open, onClose, currentFolderId, currentOrganizati
             payload.organizationId = identity.organizationId;
         }
         
+        const hasPassphrase = typeof identity.passphrase === "string" && identity.passphrase.length > 0;
+
         if (identity.authType === 'password' || identity.authType === 'password-only') {
             if (identity.passwordTouched || identity.password) {
                 payload.password = identity.password;
@@ -76,12 +78,12 @@ export const ServerDialog = ({ open, onClose, currentFolderId, currentOrganizati
                 payload.password = identity.password;
             }
             payload.sshKey = identity.sshKey;
-            if (identity.passphraseTouched || identity.passphrase) {
+            if (hasPassphrase) {
                 payload.passphrase = identity.passphrase;
             }
         } else {
             payload.sshKey = identity.sshKey;
-            if (identity.passphraseTouched || identity.passphrase) {
+            if (hasPassphrase) {
                 payload.passphrase = identity.passphrase;
             }
         }

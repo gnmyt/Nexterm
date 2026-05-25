@@ -2,6 +2,9 @@
 #include "control_plane.h"
 #include "io.h"
 #include "log.h"
+#include "session.h"
+
+extern nexterm_session_manager_t g_session_manager;
 
 #include <errno.h>
 #include <poll.h>
@@ -179,19 +182,14 @@ static void* telnet_session_thread(void* arg) {
     if (data_fd < 0) {
         nexterm_cp_send_session_result(cp, session->session_id, false,
                                        "Failed to open data connection", NULL);
-        session->state = SESSION_STATE_CLOSED;
-        free(args);
-        return NULL;
+        goto cleanup;
     }
 
     telnet_fd = nexterm_tcp_connect(session->host, session->port);
     if (telnet_fd < 0) {
         nexterm_cp_send_session_result(cp, session->session_id, false,
                                        "Failed to connect to telnet host", NULL);
-        close(data_fd);
-        session->state = SESSION_STATE_CLOSED;
-        free(args);
-        return NULL;
+        goto cleanup;
     }
 
     session->telnet_sock = telnet_fd;
@@ -206,6 +204,7 @@ static void* telnet_session_thread(void* arg) {
 
     LOG_INFO("Telnet session %s ending", session->session_id);
 
+cleanup:
     session->telnet_sock = -1;
 
     if (telnet_fd >= 0)
@@ -214,7 +213,12 @@ static void* telnet_session_thread(void* arg) {
         close(data_fd);
 
     session->state = SESSION_STATE_CLOSED;
-    nexterm_cp_send_session_closed(cp, session->session_id, "session ended");
+    session->thread_active = false;
+
+    char sid[MAX_SESSION_ID_LEN];
+    snprintf(sid, sizeof(sid), "%s", session->session_id);
+    nexterm_cp_send_session_closed(cp, sid, "session ended");
+    nexterm_sm_remove(&g_session_manager, sid);
 
     free(args);
     return NULL;

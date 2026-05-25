@@ -1,6 +1,5 @@
 @use "@/common/styles/colors"
-
-$mobile: 768px
+@use "@/common/styles/breakpoints"
 
 .theme-editor-dialog
   display: flex
@@ -17,7 +16,7 @@ $mobile: 768px
     display: flex
     gap: 0.75rem
 
-    @media (max-width: $mobile)
+    @media (max-width: breakpoints.$mobile)
       flex-direction: column
 
     .form-group

@@ -1,6 +1,5 @@
 @use "@/common/styles/colors"
-
-$mobile: 768px
+@use "@/common/styles/breakpoints"
 
 .context-menu
   background-color: colors.$lighter-background
@@ -13,13 +12,13 @@ $mobile: 768px
   max-width: calc(100vw - 20px)
   max-height: calc(100vh - 20px)
   overflow: visible
-  box-shadow: 0 12px 48px rgba(0, 0, 0, 0.5), 0 4px 16px rgba(0, 0, 0, 0.3)
+  box-shadow: colors.$shadow-lg
   opacity: 0
   transform: scale(0.95) translateY(-8px)
   transition: opacity 0.12s cubic-bezier(0.4, 0, 0.2, 1), transform 0.12s cubic-bezier(0.4, 0, 0.2, 1)
   pointer-events: none
 
-  @media (max-width: $mobile)
+  @media (max-width: breakpoints.$mobile)
     min-width: 180px
     padding: 0.25rem
     overflow-y: auto
@@ -48,7 +47,7 @@ $mobile: 768px
     position: relative
     font-size: 0.9rem
 
-    @media (max-width: $mobile)
+    @media (max-width: breakpoints.$mobile)
       padding: 0.75rem
       font-size: 0.95rem
       gap: 0.625rem
@@ -60,7 +59,7 @@ $mobile: 768px
       flex-shrink: 0
       opacity: 0.9
 
-      @media (max-width: $mobile)
+      @media (max-width: breakpoints.$mobile)
         width: 1.25rem
         height: 1.25rem
 
@@ -154,7 +153,7 @@ $mobile: 768px
     max-height: calc(100vh - 100px)
     overflow-y: auto
     z-index: 10001
-    box-shadow: 0 12px 48px rgba(0, 0, 0, 0.5), 0 4px 16px rgba(0, 0, 0, 0.3)
+    box-shadow: colors.$shadow-lg
     animation: submenuFadeIn 0.15s cubic-bezier(0.4, 0, 0.2, 1)
 
     &.mobile

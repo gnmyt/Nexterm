@@ -1,26 +1,12 @@
-import { useEffect, useState } from "react";
 import { mdiCheck } from "@mdi/js";
 import Icon from "@mdi/react";
 import { useTranslation } from "react-i18next";
-import { getRequest } from "@/common/utils/RequestUtil.js";
+import { useTags } from "@/common/contexts/TagContext.jsx";
 import "./styles.sass";
 
 export const TagFilterMenu = ({ selectedTags, setSelectedTags }) => {
     const { t } = useTranslation();
-    const [allTags, setAllTags] = useState([]);
-
-    useEffect(() => {
-        loadTags();
-    }, []);
-
-    const loadTags = async () => {
-        try {
-            const tags = await getRequest("tags/list");
-            setAllTags(tags);
-        } catch (error) {
-            console.error("Failed to load tags:", error);
-        }
-    };
+    const { tags: allTags } = useTags();
 
     const toggleTag = (tagId) => {
         if (selectedTags.includes(tagId)) {

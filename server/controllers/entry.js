@@ -376,6 +376,8 @@ module.exports.listEntries = async (accountId) => {
                 ip: entry.config?.ip,
                 macAddress: entry.config?.macAddress,
                 wakeOnLanEnabled: entry.config?.wakeOnLanEnabled,
+                notes: entry.config?.notes || "",
+                showNoteInList: Boolean(entry.config?.showNoteInList),
             };
         }
 

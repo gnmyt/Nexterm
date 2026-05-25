@@ -1,0 +1,190 @@
+name: Build Server
+
+on:
+  workflow_call:
+    inputs:
+      version:
+        required: true
+        type: string
+      semver:
+        required: true
+        type: string
+      upload_url:
+        required: true
+        type: string
+
+jobs:
+  generate-schema:
+    name: "Generate Schema"
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "26"
+
+      - name: Install flatc
+        run: |
+          curl -sSL -o /tmp/flatc.zip https://github.com/google/flatbuffers/releases/download/v24.12.23/Linux.flatc.binary.g++-13.zip
+          sudo unzip -o /tmp/flatc.zip -d /usr/local/bin
+          sudo chmod +x /usr/local/bin/flatc
+
+      - name: Install esbuild
+        run: npm install -g esbuild
+
+      - name: Generate schema
+        run: |
+          mkdir -p server/lib/generated
+          flatc --ts --ts-flat-files -o server/lib/generated schema/control_plane.fbs schema/sftp_protocol.fbs
+          esbuild server/lib/generated/nexterm/control-plane.ts --bundle --format=cjs --outfile=server/lib/generated/control_plane_generated.js --allow-overwrite --platform=node --external:flatbuffers
+          esbuild server/lib/generated/nexterm/sftp-protocol.ts --bundle --format=cjs --outfile=server/lib/generated/sftp_protocol_generated.js --allow-overwrite --platform=node --external:flatbuffers
+          rm -rf server/lib/generated/nexterm
+
+      - name: Upload generated schema
+        uses: actions/upload-artifact@v4
+        with:
+          name: server-generated-schema
+          path: server/lib/generated/
+          retention-days: 1
+
+  build-server:
+    name: "Server (${{ matrix.name }})"
+    needs: generate-schema
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: linux-x64
+            os: ubuntu-22.04
+            artifact_name: nexterm-server-linux-x64
+            output_ext: ""
+            is_linux: true
+            deb_arch: amd64
+            rpm_arch: x86_64
+          - name: linux-arm64
+            os: ubuntu-22.04-arm
+            artifact_name: nexterm-server-linux-arm64
+            output_ext: ""
+            is_linux: true
+            deb_arch: arm64
+            rpm_arch: aarch64
+          - name: macos-arm64
+            os: macos-latest
+            artifact_name: nexterm-server-macos-arm64
+            output_ext: ""
+            is_linux: false
+          - name: windows-x64
+            os: windows-latest
+            artifact_name: nexterm-server-windows-x64.exe
+            output_ext: ".exe"
+            is_linux: false
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "26"
+
+      - name: Install yarn
+        shell: bash
+        run: npm install -g yarn
+
+      - name: Update server version
+        shell: bash
+        run: |
+          node -e "const f='package.json',p=require('./'+f);p.version='${{ inputs.version }}';require('fs').writeFileSync(f,JSON.stringify(p,null,2)+'\n')"
+
+      - name: Download generated schema
+        uses: actions/download-artifact@v4
+        with:
+          name: server-generated-schema
+          path: server/lib/generated/
+
+      - name: Install client dependencies
+        working-directory: client
+        run: yarn install --frozen-lockfile --ignore-engines
+
+      - name: Build client
+        working-directory: client
+        run: yarn build
+
+      - name: Build SEA binary
+        shell: bash
+        env:
+          BIN_NAME: nexterm-server${{ matrix.output_ext }}
+        run: ./scripts/build-sea.sh
+
+      - name: Upload to Release
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ inputs.upload_url }}
+          asset_path: build/sea/nexterm-server${{ matrix.output_ext }}
+          asset_name: ${{ matrix.artifact_name }}
+          asset_content_type: application/octet-stream
+
+      - name: Install nfpm
+        if: matrix.is_linux
+        shell: bash
+        run: |
+          NFPM_VERSION=2.43.0
+          case "$(uname -m)" in
+            x86_64) HOST=x86_64 ;;
+            aarch64|arm64) HOST=arm64 ;;
+          esac
+          TMP=$(mktemp -d)
+          curl -fsSL "https://github.com/goreleaser/nfpm/releases/download/v${NFPM_VERSION}/nfpm_${NFPM_VERSION}_Linux_${HOST}.tar.gz" -o "$TMP/nfpm.tar.gz"
+          tar -xzf "$TMP/nfpm.tar.gz" -C "$TMP" nfpm
+          sudo install -m 0755 "$TMP/nfpm" /usr/local/bin/nfpm
+          rm -rf "$TMP"
+          nfpm --version
+
+      - name: Stage server binary + build .deb / .rpm
+        if: matrix.is_linux
+        shell: bash
+        env:
+          PKG_VERSION: ${{ inputs.semver }}
+        run: |
+          mkdir -p stage/server dist
+          cp build/sea/nexterm-server stage/server/nexterm-server
+          chmod +x stage/server/nexterm-server
+
+          PKG_ARCH=${{ matrix.deb_arch }} nfpm pkg \
+            --config packaging/nfpm-server.yaml \
+            --packager deb \
+            --target "dist/nexterm-server_${PKG_VERSION}_${{ matrix.deb_arch }}.deb"
+
+          PKG_ARCH=${{ matrix.rpm_arch }} nfpm pkg \
+            --config packaging/nfpm-server.yaml \
+            --packager rpm \
+            --target "dist/nexterm-server-${PKG_VERSION}-1.${{ matrix.rpm_arch }}.rpm"
+
+          ls -la dist/
+
+      - name: Upload .deb
+        if: matrix.is_linux
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ inputs.upload_url }}
+          asset_path: dist/nexterm-server_${{ inputs.semver }}_${{ matrix.deb_arch }}.deb
+          asset_name: nexterm-server_${{ inputs.semver }}_${{ matrix.deb_arch }}.deb
+          asset_content_type: application/vnd.debian.binary-package
+
+      - name: Upload .rpm
+        if: matrix.is_linux
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ inputs.upload_url }}
+          asset_path: dist/nexterm-server-${{ inputs.semver }}-1.${{ matrix.rpm_arch }}.rpm
+          asset_name: nexterm-server-${{ inputs.semver }}-1.${{ matrix.rpm_arch }}.rpm
+          asset_content_type: application/x-rpm

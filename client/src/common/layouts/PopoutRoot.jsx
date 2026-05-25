@@ -12,6 +12,7 @@ import { HTML5Backend } from "react-dnd-html5-backend";
 import { SessionProvider } from "@/common/contexts/SessionContext.jsx";
 import { SnippetProvider } from "@/common/contexts/SnippetContext.jsx";
 import { ScriptProvider } from "@/common/contexts/ScriptContext.jsx";
+import { TagProvider } from "@/common/contexts/TagContext.jsx";
 import { Suspense, useContext } from "react";
 import { UserContext } from "@/common/contexts/UserContext.jsx";
 import Loading from "@/common/components/Loading";
@@ -42,11 +43,13 @@ export default () => {
                                             <IdentityProvider>
                                                 <SnippetProvider>
                                                     <ScriptProvider>
-                                                        <SessionProvider>
-                                                            <Suspense fallback={<Loading />}>
-                                                                <Outlet />
-                                                            </Suspense>
-                                                        </SessionProvider>
+                                                        <TagProvider>
+                                                            <SessionProvider>
+                                                                <Suspense fallback={<Loading />}>
+                                                                    <Outlet />
+                                                                </Suspense>
+                                                            </SessionProvider>
+                                                        </TagProvider>
                                                     </ScriptProvider>
                                                 </SnippetProvider>
                                             </IdentityProvider>

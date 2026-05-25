@@ -5,7 +5,7 @@ const telnetHook = require("../hooks/telnet");
 const logger = require("../utils/logger");
 const SessionManager = require("../lib/SessionManager");
 
-const waitForConnection = async (sessionId, timeoutMs = 5000) => {
+const waitForConnection = async (sessionId, timeoutMs = 30000) => {
     const start = Date.now();
     while (Date.now() - start < timeoutMs) {
         const session = SessionManager.get(sessionId);
@@ -33,12 +33,14 @@ module.exports = async (ws, req) => {
     if (!serverSession) return ws.close(4007, "Session required");
 
     SessionManager.resume(serverSession.sessionId);
-    const { conn, sessionRemoved } = await waitForConnection(serverSession.sessionId, 5000);
-    
+    const { conn, sessionRemoved } = await waitForConnection(serverSession.sessionId);
+
     if (!conn) {
-        if (!sessionRemoved) {
-            logger.warn("Connection timeout, removing session", { sessionId: serverSession.sessionId });
-            await SessionManager.remove(serverSession.sessionId);
+        if (sessionRemoved) {
+            const failedReason = SessionManager.consumeFailedReason(serverSession.sessionId);
+            if (failedReason) return ws.close(4017, failedReason);
+        } else {
+            logger.warn("Connection timeout", { sessionId: serverSession.sessionId });
         }
         return ws.close(4014, "Connection not available");
     }

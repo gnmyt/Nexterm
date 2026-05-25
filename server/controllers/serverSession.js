@@ -89,12 +89,13 @@ const createSession = async (accountId, entryId, identityId, connectionReason, t
             logger.info("Session connection established", { sessionId: session.sessionId, entryId, type: entry.type });
         })
         .catch((error) => {
-            logger.error("Failed to create connection for session", { 
-                sessionId: session.sessionId, 
+            logger.error("Failed to create connection for session", {
+                sessionId: session.sessionId,
                 error: error.message,
                 stack: error.stack
             });
-            SessionManager.remove(session.sessionId);
+            SessionManager.markFailed(session.sessionId, error.message);
+            SessionManager.remove(session.sessionId, { code: 4017, reason: error.message });
         });
 
     return { sessionId: session.sessionId };
@@ -139,6 +140,7 @@ const getSessions = async (accountId, tabId = null, browserId = null) => {
             osName: snapshotMap[session.entryId] || null,
             shareId: session.shareId || null,
             shareWritable: session.shareWritable || false,
+            sftpPath: session.sftpPath || null,
         };
     });
 };
@@ -289,12 +291,12 @@ const pasteIdentityPassword = async (accountId, sessionId, ipAddress = null, use
     if (!password) return { code: 400, message: 'Identity does not contain a password' };
 
     const connection = SessionManager.getConnection(sessionId);
-    if (!connection || !connection.stream) return { code: 400, message: 'Session stream not available' };
+    if (!connection || !connection.dataSocket) return { code: 400, message: 'Session stream not available' };
 
     const entry = await Entry.findByPk(session.entryId);
 
     try {
-        connection.stream.write(password);
+        connection.dataSocket.write(password);
 
         await createAuditLog({
             accountId,

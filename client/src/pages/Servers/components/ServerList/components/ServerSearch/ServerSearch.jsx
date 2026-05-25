@@ -2,11 +2,13 @@ import "./styles.sass";
 import Icon from "@mdi/react";
 import { mdiMagnify } from "@mdi/js";
 import { useEffect, useRef } from "react";
+import { useTranslation } from "react-i18next";
 import { useKeymaps, matchesKeybind } from "@/common/contexts/KeymapContext.jsx";
 
 export const ServerSearch = ({search, setSearch}) => {
 
     const inputRef = useRef(null);
+    const { t } = useTranslation();
     const { getParsedKeybind, formatKey } = useKeymaps();
     const searchKeybind = getParsedKeybind("search");
 
@@ -26,7 +28,7 @@ export const ServerSearch = ({search, setSearch}) => {
     return (
         <div className="server-search">
             <Icon path={mdiMagnify} className="search-icon" />
-            <input className="search-input" placeholder="Search" ref={inputRef}
+            <input className="search-input" placeholder={t("servers.searchPlaceholder")} ref={inputRef}
                 value={search} onChange={(e) => setSearch(e.target.value)} />
             <div className="info-container" onClick={() => inputRef.current.focus()}>
                 <p>{searchKeybind ? formatKey(searchKeybind.original) : "CTRL + S"}</p>

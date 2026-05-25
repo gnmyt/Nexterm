@@ -3,6 +3,9 @@
 #include "control_plane.h"
 #include "io.h"
 #include "log.h"
+#include "session.h"
+
+extern nexterm_session_manager_t g_session_manager;
 
 #include <libssh2.h>
 
@@ -170,9 +173,7 @@ static void* ssh_session_thread(void* arg) {
         LOG_ERROR("SSH session %s: missing username", session->session_id);
         nexterm_cp_send_session_result(cp, session->session_id, false,
                                        "Missing username", NULL);
-        session->state = SESSION_STATE_CLOSED;
-        free(args);
-        return NULL;
+        goto cleanup;
     }
 
     jump_host_t jump_hosts[MAX_JUMP_HOSTS];
@@ -185,9 +186,7 @@ static void* ssh_session_thread(void* arg) {
     if (data_fd < 0) {
         nexterm_cp_send_session_result(cp, session->session_id, false,
                                        "Failed to open data connection", NULL);
-        session->state = SESSION_STATE_CLOSED;
-        free(args);
-        return NULL;
+        goto cleanup;
     }
 
     if (nexterm_ssh_setup_with_jumphosts(session->host, session->port,
@@ -250,7 +249,12 @@ cleanup:
         close(data_fd);
 
     session->state = SESSION_STATE_CLOSED;
-    nexterm_cp_send_session_closed(cp, session->session_id, "session ended");
+    session->thread_active = false;
+
+    char sid[MAX_SESSION_ID_LEN];
+    snprintf(sid, sizeof(sid), "%s", session->session_id);
+    nexterm_cp_send_session_closed(cp, sid, "session ended");
+    nexterm_sm_remove(&g_session_manager, sid);
 
     free(args);
     return NULL;

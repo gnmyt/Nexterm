@@ -52,6 +52,7 @@ const archiveFolder = async (sftpClient, archive, dirPath, basePath) => {
             await archiveFolder(sftpClient, archive, fullPath, archivePath);
         } else {
             const { stream, totalSizePromise, done } = sftpClient.readFile(fullPath);
+            stream.on("error", (err) => logger.warn("Archive stream error", { error: err.message, path: fullPath }));
             await totalSizePromise;
             archive.append(stream, { name: archivePath });
             await done;
@@ -68,6 +69,7 @@ const archiveItems = async (sftpClient, archive, paths) => {
                 await archiveFolder(sftpClient, archive, remotePath, name);
             } else {
                 const { stream, totalSizePromise, done } = sftpClient.readFile(remotePath);
+                stream.on("error", (err) => logger.warn("Archive stream error", { error: err.message, path: remotePath }));
                 await totalSizePromise;
                 archive.append(stream, { name });
                 await done;
@@ -184,7 +186,11 @@ app.get("/", async (req, res) => {
             res.header("Content-Disposition", `attachment; filename="${safeFileName}.zip"`);
             res.header("Content-Type", "application/zip");
             const archive = archiver("zip", { zlib: { level: 1 } });
-            archive.on("error", () => archive.abort());
+            archive.on("error", (err) => {
+                logger.warn("Archive error", { error: err.message, path: remotePath });
+                archive.abort();
+            });
+            res.on("close", () => archive.abort());
             archive.pipe(res);
             await archiveFolder(sftpClient, archive, remotePath, safeFileName);
             archive.finalize();
@@ -197,7 +203,11 @@ app.get("/", async (req, res) => {
             res.header("Content-Type", "image/jpeg");
             res.header("Cache-Control", "public, max-age=3600");
             const { stream } = sftpClient.readFile(remotePath);
-            stream.pipe(sharp().resize(thumbSize, thumbSize, { fit: "cover" }).jpeg({ quality: 80 })).pipe(res);
+            const transform = sharp().resize(thumbSize, thumbSize, { fit: "cover" }).jpeg({ quality: 80 });
+            stream.on("error", (err) => { logger.warn("Thumbnail stream error", { error: err.message }); transform.destroy(); });
+            transform.on("error", (err) => { logger.warn("Thumbnail transform error", { error: err.message }); if (!res.headersSent) res.status(500).end(); });
+            res.on("close", () => { stream.destroy(); transform.destroy(); });
+            stream.pipe(transform).pipe(res);
             return;
         }
 
@@ -208,6 +218,8 @@ app.get("/", async (req, res) => {
         if (MIME_TYPES[ext]) res.header("Content-Type", MIME_TYPES[ext]);
 
         const { stream } = sftpClient.readFile(remotePath);
+        stream.on("error", (err) => { logger.warn("Download stream error", { error: err.message, path: remotePath }); if (!res.headersSent) res.status(500).end(); });
+        res.on("close", () => stream.destroy());
         stream.pipe(res);
         audit(ctx, req, AUDIT_ACTIONS.FILE_DOWNLOAD, RESOURCE_TYPES.FILE, { filePath: remotePath, fileSize: stats.size });
     } catch (err) {
@@ -254,7 +266,11 @@ app.post("/multi", express.urlencoded({ extended: true }), async (req, res) => {
         res.header("Content-Type", "application/zip");
 
         const archive = archiver("zip", { zlib: { level: 5 } });
-        archive.on("error", () => archive.abort());
+        archive.on("error", (err) => {
+            logger.warn("Multi-download archive error", { error: err.message });
+            archive.abort();
+        });
+        res.on("close", () => archive.abort());
         archive.pipe(res);
 
         await archiveItems(ctx.sftpClient, archive, paths);

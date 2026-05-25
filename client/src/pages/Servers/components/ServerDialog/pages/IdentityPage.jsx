@@ -43,8 +43,8 @@ const Identity = ({ identity, onUpdate, onDelete, onMoveToOrg, isOrgContext, org
             ...(authType === "password" || authType === "password-only"
                 ? { password, passwordTouched: pwTouched || isNew || password !== "" }
                 : authType === "both"
-                ? { password, passwordTouched: pwTouched || isNew || password !== "", sshKey, passphrase, passphraseTouched: ppTouched || isNew || passphrase !== "" }
-                : { sshKey, passphrase, passphraseTouched: ppTouched || isNew || passphrase !== "" }),
+                ? { password, passwordTouched: pwTouched || isNew || password !== "", sshKey, passphrase, passphraseTouched: ppTouched || passphrase !== "" }
+                : { sshKey, passphrase, passphraseTouched: ppTouched || passphrase !== "" }),
         });
     }, [name, username, authType, password, sshKey, passphrase, identity.id, pwTouched, ppTouched, isNew]);
 

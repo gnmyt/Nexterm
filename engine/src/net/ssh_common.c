@@ -24,6 +24,8 @@ int nexterm_ssh_setup(const char* host, uint16_t port,
         return -1;
     }
 
+    libssh2_session_set_timeout(session, 30000);
+
     if (libssh2_session_handshake(session, sock) != 0) {
         char* errmsg = NULL;
         libssh2_session_last_error(session, &errmsg, NULL, 0);
@@ -137,6 +139,8 @@ static int ssh_setup_on_channel(LIBSSH2_SESSION* parent_session,
         close(sv[0]);
         return -1;
     }
+
+    libssh2_session_set_timeout(session, 30000);
 
     if (libssh2_session_handshake(session, sv[0]) != 0) {
         char* errmsg = NULL;
@@ -274,6 +278,16 @@ void nexterm_ssh_teardown(LIBSSH2_SESSION* session, LIBSSH2_CHANNEL* channel,
 
 void nexterm_jump_chain_teardown(jump_chain_t* chain) {
     if (!chain) return;
+
+    for (int i = chain->count - 1; i >= 0; i--) {
+        if (chain->sockets[i] >= 0) {
+            close(chain->sockets[i]);
+            chain->sockets[i] = -1;
+        }
+    }
+
+    usleep(10000);
+
     for (int i = chain->count - 1; i >= 0; i--) {
         if (chain->channels[i]) {
             libssh2_channel_free(chain->channels[i]);
@@ -284,14 +298,6 @@ void nexterm_jump_chain_teardown(jump_chain_t* chain) {
             libssh2_session_free(chain->sessions[i]);
             chain->sessions[i] = NULL;
         }
-        if (chain->sockets[i] >= 0 && i > 0) {
-            close(chain->sockets[i]);
-            chain->sockets[i] = -1;
-        }
-    }
-    if (chain->sockets[0] >= 0) {
-        close(chain->sockets[0]);
-        chain->sockets[0] = -1;
     }
     chain->count = 0;
 }

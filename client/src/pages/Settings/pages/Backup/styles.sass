@@ -1,6 +1,5 @@
 @use "@/common/styles/colors"
-
-$mobile: 768px
+@use "@/common/styles/breakpoints"
 
 .backup-page
   display: flex
@@ -22,7 +21,7 @@ $mobile: 768px
     color: colors.$white
     font-size: 1.25rem
 
-    @media (max-width: $mobile)
+    @media (max-width: breakpoints.$mobile)
       font-size: 1.1rem
 
   > h3
@@ -37,7 +36,7 @@ $mobile: 768px
     align-items: flex-start
     margin-bottom: 1rem
 
-    @media (max-width: $mobile)
+    @media (max-width: breakpoints.$mobile)
       flex-direction: column
       gap: 0.75rem
 
@@ -46,14 +45,14 @@ $mobile: 768px
         margin: 0 0 0.5rem 0
         font-size: 1.3rem
 
-        @media (max-width: $mobile)
+        @media (max-width: breakpoints.$mobile)
           font-size: 1.15rem
 
       p
         margin: 0
         font-size: 0.9rem
 
-        @media (max-width: $mobile)
+        @media (max-width: breakpoints.$mobile)
           font-size: 0.85rem
 
 .storage-grid
@@ -61,7 +60,7 @@ $mobile: 768px
   grid-template-columns: repeat(auto-fill, minmax(180px, 1fr))
   gap: 0.75rem
 
-  @media (max-width: $mobile)
+  @media (max-width: breakpoints.$mobile)
     grid-template-columns: repeat(2, 1fr)
 
 .backup-options
@@ -69,7 +68,7 @@ $mobile: 768px
   gap: 1rem
   margin-bottom: 1rem
 
-  @media (max-width: $mobile)
+  @media (max-width: breakpoints.$mobile)
     flex-direction: column
 
   .option-group
@@ -164,7 +163,7 @@ $mobile: 768px
   padding: 1.25rem
   transition: border-color 0.1s ease
 
-  @media (max-width: $mobile)
+  @media (max-width: breakpoints.$mobile)
     flex-direction: column
     align-items: flex-start
     gap: 0.75rem
@@ -186,7 +185,7 @@ $mobile: 768px
     align-items: center
     gap: 1rem
 
-    @media (max-width: $mobile)
+    @media (max-width: breakpoints.$mobile)
       width: 100%
 
     .icon
@@ -223,7 +222,7 @@ $mobile: 768px
     align-items: center
     gap: 0.25rem
 
-    @media (max-width: $mobile)
+    @media (max-width: breakpoints.$mobile)
       width: 100%
       justify-content: flex-end
 
@@ -269,7 +268,7 @@ $mobile: 768px
     border: 1px solid colors.$dark-gray
     border-radius: 0.5rem
 
-    @media (max-width: $mobile)
+    @media (max-width: breakpoints.$mobile)
       flex-direction: column
       align-items: flex-start
       gap: 0.75rem
@@ -308,7 +307,7 @@ $mobile: 768px
         color: colors.$subtext
         font-size: 0.75rem
 
-    @media (max-width: $mobile)
+    @media (max-width: breakpoints.$mobile)
       .btn
         width: 100%
 
@@ -331,7 +330,7 @@ $mobile: 768px
   border: 1px solid colors.$dark-gray
   border-radius: 0.75rem
 
-  @media (max-width: $mobile)
+  @media (max-width: breakpoints.$mobile)
     padding: 2rem 1rem
 
   svg
@@ -353,7 +352,7 @@ $mobile: 768px
 .provider-dialog
   width: 26rem
 
-  @media (max-width: $mobile)
+  @media (max-width: breakpoints.$mobile)
     width: 100%
 
   h2

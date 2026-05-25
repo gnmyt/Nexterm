@@ -185,7 +185,7 @@ export const Organizations = () => {
                                     <TabSwitcher
                                         tabs={[
                                             { key: "members", label: t("settings.organizations.members"), icon: mdiDomain },
-                                            ...(org.isOwner ? [{ key: "audit", label: t("settings.organizations.auditSettings"), icon: mdiShieldCheckOutline }] : [])
+                                            ...(org.isOwner ? [{ key: "audit", label: t("settings.organizations.auditSettings.auditSettingsTab"), icon: mdiShieldCheckOutline }] : [])
                                         ]}
                                         activeTab={activeTab[org.id] || "members"}
                                         onTabChange={(tabKey) => setActiveTab(prev => ({ ...prev, [org.id]: tabKey }))}

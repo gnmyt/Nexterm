@@ -9,7 +9,8 @@ const {
 } = require("./generated/sftp_protocol_generated");
 const { sendFrame, createFrameParser } = require("./controlPlane/frameProtocol");
 
-const WRITE_CHUNK_SIZE = 32768;
+const WRITE_CHUNK_SIZE = 262144;
+const REQUEST_TIMEOUT = 30000;
 
 const MESSAGE_HANDLERS = {
     [SftpMsgType.Ok]: (_msg, rid, pending, self) => {
@@ -173,6 +174,7 @@ class EngineSftpClient extends EventEmitter {
     readFile(path) {
         const rid = this._nextId();
         const stream = new PassThrough();
+        stream.on("error", () => {});
 
         let sizeResolved = false;
         let resolveTotalSize;
@@ -190,7 +192,7 @@ class EngineSftpClient extends EventEmitter {
         this._pending.set(rid, {
             onFileData: (data, total) => {
                 emitSize(Number(total));
-                stream.write(Buffer.from(data));
+                stream.write(Buffer.from(data.buffer, data.byteOffset, data.byteLength));
             },
             onFileEnd: () => {
                 emitSize(0);
@@ -200,13 +202,16 @@ class EngineSftpClient extends EventEmitter {
             },
             onError: (msg) => {
                 emitSize(0);
-                stream.destroy(new Error(msg));
+                if (!stream.destroyed) {
+                    stream.destroy(new Error(msg));
+                }
                 this._pending.delete(rid);
                 rejectDone(new Error(msg));
             },
         });
 
         this._sendPathReq(rid, SftpMsgType.ReadFile, path);
+        done.catch(() => {});
         return { stream, totalSizePromise, done };
     }
 
@@ -229,7 +234,12 @@ class EngineSftpClient extends EventEmitter {
         } else {
             await new Promise((resolve, reject) => {
                 source.on("data", (chunk) => {
-                    this._sendWriteData(rid, Buffer.isBuffer(chunk) ? chunk : Buffer.from(chunk));
+                    const buf = Buffer.isBuffer(chunk) ? chunk : Buffer.from(chunk);
+                    this._sendWriteData(rid, buf);
+                    if (this._socket.writableLength > WRITE_CHUNK_SIZE * 4) {
+                        source.pause();
+                        this._socket.once("drain", () => source.resume());
+                    }
                 });
                 source.on("end", resolve);
                 source.on("error", reject);
@@ -308,7 +318,7 @@ class EngineSftpClient extends EventEmitter {
     }
 
     _sendWriteData(rid, chunk) {
-        const b = new flatbuffers.Builder(chunk.length + 128);
+        const b = new flatbuffers.Builder(chunk.length + 256);
         const dataOff = WriteDataReq.createDataVector(b, chunk);
         WriteDataReq.startWriteDataReq(b);
         WriteDataReq.addData(b, dataOff);
@@ -325,7 +335,14 @@ class EngineSftpClient extends EventEmitter {
 
     _waitResponse(rid) {
         return new Promise((resolve, reject) => {
-            this._pending.set(rid, { resolve, reject });
+            const timeout = setTimeout(() => {
+                this._pending.delete(rid);
+                reject(new Error("Request timeout"));
+            }, REQUEST_TIMEOUT);
+            this._pending.set(rid, {
+                resolve: (v) => { clearTimeout(timeout); resolve(v); },
+                reject: (e) => { clearTimeout(timeout); reject(e); },
+            });
         });
     }
 

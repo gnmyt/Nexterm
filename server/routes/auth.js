@@ -3,17 +3,35 @@ const rateLimit = require("express-rate-limit");
 const { login, logout } = require("../controllers/auth");
 const { loginValidation, tokenValidation } = require("../validations/auth");
 const { passkeyAuthenticationValidation, passkeyAuthOptionsValidation } = require("../validations/passkey");
-const { createDeviceCodeValidation, pollDeviceCodeValidation, authorizeDeviceCodeValidation, getDeviceCodeInfoValidation } = require("../validations/deviceCode");
+const { createDeviceCodeValidation, pollDeviceCodeValidation, authorizeDeviceCodeValidation, getDeviceCodeInfoValidation, checkLinkStatusValidation } = require("../validations/deviceCode");
 const { validateSchema } = require("../utils/schema");
 const { generateAuthenticationOptions, verifyAuthentication } = require("../controllers/passkey");
-const { createCode, pollToken, authorizeCode, getCodeInfo } = require("../controllers/deviceCode");
+const { createCode, pollToken, authorizeCode, getCodeInfo, checkLinkStatus } = require("../controllers/deviceCode");
 const { authenticate } = require("../middlewares/auth");
+const Session = require("../models/Session");
+const Account = require("../models/Account");
+
+const optionalAuth = async (req, res, next) => {
+    const authHeader = req.header("authorization");
+    if (!authHeader) return next();
+    const parts = authHeader.split(" ");
+    if (parts.length !== 2) return next();
+    try {
+        const session = await Session.findOne({ where: { token: parts[1] } });
+        if (session) {
+            req.session = session;
+            req.user = await Account.findByPk(session.accountId);
+        }
+    } catch (_) {}
+    next();
+};
 
 const app = Router();
 
 const deviceCodeRateLimiter = rateLimit({
     windowMs: 60 * 60 * 1000,
     max: 10,
+    skip: (req) => !!req.user,
     message: { code: 429, message: "Too many requests. Please try again later." },
     standardHeaders: true,
     legacyHeaders: false,
@@ -96,7 +114,7 @@ app.post("/passkey/verify", async (req, res) => {
  * @return {object} 200 - Device code and token for polling
  * @return {object} 429 - Rate limit exceeded
  */
-app.post("/device/create", deviceCodeRateLimiter, async (req, res) => {
+app.post("/device/create", optionalAuth, deviceCodeRateLimiter, async (req, res) => {
     if (validateSchema(res, createDeviceCodeValidation, req.body)) return;
     const result = await createCode({
         clientType: req.body.clientType,
@@ -158,6 +176,22 @@ app.post("/device/authorize", authenticate, async (req, res) => {
         accountId: req.user.id,
     });
     if (result?.code) return res.json(result);
+    res.json(result);
+});
+
+/**
+ * POST /auth/device/link/status
+ * @summary Check Device Link Status
+ * @description Checks whether a device code created for QR linking has been claimed by the mobile app. Returns claimed when the phone has polled and received the session token.
+ * @tags Device Authentication
+ * @produces application/json
+ * @security BearerAuth
+ * @param {DeviceCodeAuthorize} request.body.required - Device code to check
+ * @return {object} 200 - Status (pending, authorized, claimed, or expired)
+ */
+app.post("/device/link/status", authenticate, async (req, res) => {
+    if (validateSchema(res, checkLinkStatusValidation, req.body)) return;
+    const result = await checkLinkStatus({ code: req.body.code });
     res.json(result);
 });
 

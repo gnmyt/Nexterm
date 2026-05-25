@@ -1,0 +1,82 @@
+name: Publish to Buildkite Packages
+
+on:
+  workflow_call:
+    inputs:
+      version:
+        required: true
+        type: string
+
+concurrency:
+  group: deploy-repo
+  cancel-in-progress: false
+
+env:
+  BUILDKITE_ORG: nexterm
+  BUILDKITE_APT_REGISTRY: apt
+  BUILDKITE_RPM_REGISTRY: rpm
+
+jobs:
+  publish:
+    name: "Push .deb / .rpm to Buildkite Packages"
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Download .deb / .rpm assets for this release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TAG: "v${{ inputs.version }}"
+        run: |
+          mkdir -p assets
+          gh release download "$TAG" \
+            --dir assets \
+            --pattern '*.deb' \
+            --pattern '*.rpm'
+          ls -la assets/
+
+      - name: Push every package
+        env:
+          BUILDKITE_API_TOKEN: ${{ secrets.BUILDKITE_API_TOKEN }}
+        run: |
+          if [ -z "$BUILDKITE_API_TOKEN" ]; then
+              echo "::error::BUILDKITE_API_TOKEN secret must be set"
+              exit 1
+          fi
+
+          push() {
+              registry="$1"; file="$2"; name=$(basename "$file")
+              url="https://api.buildkite.com/v2/packages/organizations/${BUILDKITE_ORG}/registries/${registry}/packages"
+              echo "::group::Pushing $name → $registry"
+              code=$(curl -sS -o /tmp/bk.out -w '%{http_code}' \
+                  -X POST "$url" \
+                  -H "Authorization: Bearer ${BUILDKITE_API_TOKEN}" \
+                  -F "file=@${file}")
+              cat /tmp/bk.out; echo
+              echo "HTTP $code"
+              case "$code" in
+                  200|201) echo "✓ pushed" ;;
+                  409|422)
+                      if grep -qiE 'already (exists|present|uploaded)|duplicate|conflict' /tmp/bk.out; then
+                          echo "already present, skipping"
+                      else
+                          echo "$code with unexpected body"
+                          return 1
+                      fi
+                      ;;
+                  *) echo "unexpected status"; return 1 ;;
+              esac
+              echo "::endgroup::"
+          }
+
+          set +e
+          fail=0
+          for f in assets/*.deb; do
+              [ -f "$f" ] || continue
+              push "$BUILDKITE_APT_REGISTRY" "$f" || fail=1
+          done
+          for f in assets/*.rpm; do
+              [ -f "$f" ] || continue
+              push "$BUILDKITE_RPM_REGISTRY" "$f" || fail=1
+          done
+          exit $fail

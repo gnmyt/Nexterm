@@ -3,7 +3,9 @@ import Guacamole from "guacamole-common-js";
 import { UserContext } from "@/common/contexts/UserContext.jsx";
 import { useKeymaps, matchesKeybind } from "@/common/contexts/KeymapContext.jsx";
 import { useToast } from "@/common/contexts/ToastContext.jsx";
+import { useTranslation } from "react-i18next";
 import ConnectionLoader from "./components/ConnectionLoader";
+import ConnectionError, { mapConnectionError } from "./components/ConnectionError";
 import { getWebSocketUrl } from "@/common/utils/ConnectionUtil.js";
 import "./styles/guacamole.sass";
 
@@ -17,6 +19,8 @@ const resumeAudioContext = () => {
 const GuacamoleRenderer = ({
                                session,
                                disconnectFromServer,
+                               markSessionErrored,
+                               getSessionError,
                                registerGuacamoleRef,
                                onFullscreenToggle,
                                isShared = false,
@@ -28,15 +32,24 @@ const GuacamoleRenderer = ({
     const offsetRef = useRef({ x: 0, y: 0 });
     const { getParsedKeybind } = useKeymaps();
     const { sendToast } = useToast();
+    const { t } = useTranslation();
     const onFullscreenToggleRef = useRef(onFullscreenToggle);
     const sessionRef = useRef(session);
     const connectionLoaderRef = useRef(null);
     const audioPlayersRef = useRef([]);
     const [isDragOver, setIsDragOver] = useState(false);
-    const [reconnectTrigger, setReconnectTrigger] = useState(0);
-    const reconnectAttemptsRef = useRef(0);
-    const reconnectTimeoutRef = useRef(null);
     const clipboardIntervalRef = useRef(null);
+    const errorMessageRef = useRef(null);
+    const [connectionError, setConnectionError] = useState(() => getSessionError?.(session.id) || null);
+    const errorShownRef = useRef(!!connectionError);
+
+    const reportError = (rawMessage) => {
+        if (errorShownRef.current) return;
+        errorShownRef.current = true;
+        const mapped = mapConnectionError(rawMessage, t);
+        markSessionErrored?.(session.id, mapped);
+        setConnectionError(mapped);
+    };
 
     useEffect(() => {
         sessionRef.current = session;
@@ -247,6 +260,7 @@ const GuacamoleRenderer = ({
     };
 
     const connect = () => {
+        if (getSessionError?.(session.id)) return;
         if (isShared) {
             if (!session.shareId || clientRef.current) return;
         } else {
@@ -263,12 +277,12 @@ const GuacamoleRenderer = ({
         tunnel.oninstruction = (opcode, args) => {
             if (!loaderHidden && opcode === "blob") {
                 loaderHidden = true;
-                reconnectAttemptsRef.current = 0;
                 connectionLoaderRef.current?.hide();
             }
-            if (clientOnInstruction) {
-                clientOnInstruction(opcode, args);
+            if (opcode === "error" && args?.length) {
+                errorMessageRef.current = args[0] || "Connection failed";
             }
+            clientOnInstruction?.(opcode, args);
         };
 
         clientRef.current = client;
@@ -325,32 +339,27 @@ const GuacamoleRenderer = ({
         };
         keyboard.onkeyup = (k, sc) => client.sendKeyEvent(0, k, sc);
 
-        const doReconnect = () => {
-            if (isCleaningUp) return;
-            if (reconnectAttemptsRef.current < 3) {
-                reconnectAttemptsRef.current++;
-                connectionLoaderRef.current?.show?.();
-                reconnectTimeoutRef.current = setTimeout(() => {
-                    setReconnectTrigger(t => t + 1);
-                }, 2000);
-            } else {
-                disconnectFromServer(s.id);
-            }
-        };
-
         client.onstatechange = (st) => {
             if (isCleaningUp) return;
-            if (st === Guacamole.Client.State.DISCONNECTED || st === Guacamole.Client.State.ERROR) doReconnect();
+            if (st === Guacamole.Client.State.DISCONNECTED || st === Guacamole.Client.State.ERROR) {
+                if (errorShownRef.current) return;
+                if (errorMessageRef.current) reportError(errorMessageRef.current);
+                else disconnectFromServer(s.id);
+            }
         };
         tunnel.onstatechange = (st) => {
-            if (!isCleaningUp && st === Guacamole.Tunnel.State.CLOSED) doReconnect();
+            if (isCleaningUp || st !== Guacamole.Tunnel.State.CLOSED) return;
+            if (errorShownRef.current) return;
+            if (errorMessageRef.current) reportError(errorMessageRef.current);
+            else disconnectFromServer(s.id);
         };
-        tunnel.onerror = () => {
-            if (!isCleaningUp) doReconnect();
+        tunnel.onerror = (status) => {
+            if (isCleaningUp) return;
+            const message = status?.message || errorMessageRef.current || t("common.errors.connection.error");
+            reportError(message);
         };
         const cleanupClipboard = handleClipboardEvents();
 
-        // Handle file downloads from remote
         client.onfile = (stream, mimetype, filename) => {
             const reader = new Guacamole.BlobReader(stream, mimetype);
             reader.onend = () => {
@@ -369,10 +378,7 @@ const GuacamoleRenderer = ({
 
         return () => {
             isCleaningUp = true;
-            if (reconnectTimeoutRef.current) {
-                clearTimeout(reconnectTimeoutRef.current);
-                reconnectTimeoutRef.current = null;
-            }
+            errorShownRef.current = false;
             cleanupClipboard?.();
             ref.current?.removeEventListener("keydown", handleKeyDown, true);
             client.onstatechange = tunnel.onstatechange = tunnel.onerror = null;
@@ -385,7 +391,7 @@ const GuacamoleRenderer = ({
     useEffect(() => {
         const cleanup = connect();
         return () => cleanup?.();
-    }, [sessionToken, session.id, isShared, reconnectTrigger]);
+    }, [sessionToken, session.id, isShared]);
 
     useEffect(() => {
         window.addEventListener("resize", resizeHandler);
@@ -422,6 +428,9 @@ const GuacamoleRenderer = ({
             <ConnectionLoader onReady={(loader) => {
                 connectionLoaderRef.current = loader;
             }} />
+            {connectionError && (
+                <ConnectionError message={connectionError} onClose={() => disconnectFromServer(session.id)} />
+            )}
         </div>
     );
 };

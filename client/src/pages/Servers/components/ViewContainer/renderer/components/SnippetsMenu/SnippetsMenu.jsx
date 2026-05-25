@@ -4,34 +4,20 @@ import { createPortal } from "react-dom";
 import "./styles.sass";
 import { mdiMagnify, mdiCloudDownloadOutline, mdiLinux } from "@mdi/js";
 import Icon from "@mdi/react";
-import { getRequest } from "@/common/utils/RequestUtil.js";
 import { parseOsFilter, matchesOsFilter, normalizeOsName } from "@/common/utils/osUtils.js";
 
 export const SnippetsMenu = ({ onSelect, onClose, visible, activeSession }) => {
-    const { allSnippets } = useSnippets();
+    const { allSnippets, sourceSnippets } = useSnippets();
     const [search, setSearch] = useState("");
     const [highlightedIndex, setHighlightedIndex] = useState(-1);
     const [isPositioned, setIsPositioned] = useState(false);
     const [isVisible, setIsVisible] = useState(false);
-    const [sourceSnippets, setSourceSnippets] = useState([]);
     const searchRef = useRef(null);
     const menuRef = useRef(null);
     const snippetRefs = useRef([]);
 
     const serverOsName = normalizeOsName(activeSession?.osName);
     const isPveEntry = activeSession?.server?.type?.startsWith('pve-');
-
-    useEffect(() => {
-        const fetchSourceSnippets = async () => {
-            try {
-                const data = await getRequest("snippets/sources");
-                setSourceSnippets(data || []);
-            } catch (error) {
-                console.debug("Source snippets not available", error);
-            }
-        };
-        fetchSourceSnippets();
-    }, []);
 
     const availableSnippets = useMemo(() => {
         const userSnippets = allSnippets || [];

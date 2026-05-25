@@ -1,0 +1,77 @@
+name: Build Engine
+
+on:
+  workflow_call:
+    inputs:
+      version:
+        required: true
+        type: string
+      semver:
+        required: true
+        type: string
+      upload_url:
+        required: true
+        type: string
+
+jobs:
+  build-engine:
+    name: "Engine (${{ matrix.name }})"
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: linux-x64
+            os: ubuntu-22.04
+            arch: x64
+            deb_arch: amd64
+            rpm_arch: x86_64
+            tarball_name: nexterm-engine-linux-x64.tar.gz
+          - name: linux-arm64
+            os: ubuntu-22.04-arm
+            arch: arm64
+            deb_arch: arm64
+            rpm_arch: aarch64
+            tarball_name: nexterm-engine-linux-arm64.tar.gz
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build engine + tarball + deb + rpm (Debian bookworm container)
+        run: |
+          docker run --rm \
+            -v "$PWD":/work -w /work \
+            -e ARCH=${{ matrix.arch }} \
+            -e PKG_VERSION=${{ inputs.semver }} \
+            debian:bookworm-slim \
+            sh scripts/build-engine-release.sh all-with-pkg
+
+      - name: Upload tarball
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ inputs.upload_url }}
+          asset_path: dist/${{ matrix.tarball_name }}
+          asset_name: ${{ matrix.tarball_name }}
+          asset_content_type: application/gzip
+
+      - name: Upload .deb
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ inputs.upload_url }}
+          asset_path: dist/nexterm-engine_${{ inputs.semver }}_${{ matrix.deb_arch }}.deb
+          asset_name: nexterm-engine_${{ inputs.semver }}_${{ matrix.deb_arch }}.deb
+          asset_content_type: application/vnd.debian.binary-package
+
+      - name: Upload .rpm
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ inputs.upload_url }}
+          asset_path: dist/nexterm-engine-${{ inputs.semver }}-1.${{ matrix.rpm_arch }}.rpm
+          asset_name: nexterm-engine-${{ inputs.semver }}-1.${{ matrix.rpm_arch }}.rpm
+          asset_content_type: application/x-rpm

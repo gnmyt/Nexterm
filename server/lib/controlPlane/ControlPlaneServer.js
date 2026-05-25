@@ -570,11 +570,15 @@ class ControlPlaneServer extends EventEmitter {
             logger.system(`Engine disconnected: id=${engineId}`);
             this._engines.delete(engineId);
 
+            const affectedSessions = [];
             for (const [sid, eid] of this._sessionEngineMap) {
-                if (eid === engineId) this._sessionEngineMap.delete(sid);
+                if (eid === engineId) {
+                    affectedSessions.push(sid);
+                    this._sessionEngineMap.delete(sid);
+                }
             }
 
-            this.emit("engineDisconnected", { engineId });
+            this.emit("engineDisconnected", { engineId, sessionIds: affectedSessions });
             break;
         }
     }

@@ -44,6 +44,16 @@ export const Servers = () => {
 
     const [hibernatedSessions, setHibernatedSessions] = useState([]);
     const closingSessionsRef = useRef(new Set());
+    const erroredSessionsRef = useRef(new Map());
+
+    const markSessionErrored = useCallback((sessionId, message) => {
+        if (erroredSessionsRef.current.has(sessionId)) return;
+        erroredSessionsRef.current.set(sessionId, message);
+    }, []);
+
+    const getSessionError = useCallback((sessionId) => {
+        return erroredSessionsRef.current.get(sessionId) || null;
+    }, []);
 
     const visibleSessions = activeSessions.filter(s => !poppedOutSessions.includes(s.id));
 
@@ -90,21 +100,27 @@ export const Servers = () => {
         });
         
         const newActiveIds = new Set(activeMapped.map(s => s.id));
+        let mergedSessions = [];
 
         setActiveSessions(prev => {
             const prevMap = new Map(prev.map(s => [s.id, s]));
-            return activeMapped.map(newSession => {
+            const localOnly = prev.filter(s => s.type === "notes");
+            const merged = activeMapped.map(newSession => {
                 const existing = prevMap.get(newSession.id);
                 return existing ? { ...newSession, scriptId: existing.scriptId || newSession.scriptId, scriptName: existing.scriptName, osName: newSession.osName || existing.osName } : newSession;
             });
+            const mergedIds = new Set(merged.map(s => s.id));
+            const erroredPinned = prev.filter(s =>
+                erroredSessionsRef.current.has(s.id) && !mergedIds.has(s.id) && s.type !== "notes"
+            );
+            mergedSessions = [...merged, ...erroredPinned, ...localOnly];
+            return mergedSessions;
         });
         setHibernatedSessions(hibernatedMapped);
 
         setActiveSessionId(prev => {
-            if (!prev || !newActiveIds.has(prev)) {
-                return activeMapped.at(-1)?.id || null;
-            }
-            return prev;
+            if (prev && (newActiveIds.has(prev) || mergedSessions.some(s => s.id === prev))) return prev;
+            return mergedSessions.at(-1)?.id || null;
         });
     }, [servers, getServerById, setActiveSessions, setActiveSessionId]);
 
@@ -260,6 +276,7 @@ export const Servers = () => {
     };
 
     const disconnectFromServer = useCallback((sessionId) => {
+        erroredSessionsRef.current.delete(sessionId);
         setActiveSessions(prev => {
             const newSessions = prev.filter(session => session.id !== sessionId);
             setActiveSessionId(currentActiveId => {
@@ -272,11 +289,40 @@ export const Servers = () => {
     }, [setActiveSessions, setActiveSessionId]);
 
     const closeSession = (sessionId) => {
-        closingSessionsRef.current.add(sessionId);
-        deleteRequest(`/connections/${sessionId}`).catch(error => {
-            console.debug("Session deletion request failed:", error);
-        });
+        const session = activeSessions.find(s => s.id === sessionId);
+        if (session?.type !== "notes") {
+            closingSessionsRef.current.add(sessionId);
+            deleteRequest(`/connections/${sessionId}`).catch(error => {
+                console.debug("Session deletion request failed:", error);
+            });
+        }
         disconnectFromServer(sessionId);
+    };
+
+    const openNotes = (serverId) => {
+        const server = getServerById(serverId);
+        if (!server) return;
+
+        const notesId = `notes-${serverId}`;
+        const existing = activeSessions.find(s => s.id === notesId);
+        if (existing) {
+            setActiveSessionId(notesId);
+            return;
+        }
+
+        const organization = findOrganizationForServer(server.id, servers);
+        const organizationId = organization ? parseInt(organization.id.split("-")[1]) : null;
+
+        const sessionData = {
+            server,
+            id: notesId,
+            type: "notes",
+            organizationId,
+            organizationName: organization?.name || null,
+        };
+
+        setActiveSessions(prev => [...prev, sessionData]);
+        setActiveSessionId(notesId);
     };
 
     const hibernateSession = async (sessionId) => {
@@ -479,6 +525,7 @@ export const Servers = () => {
                             setEditServerId={setEditServerId} openSFTP={openSFTP}
                             hibernatedSessions={hibernatedSessions} resumeSession={resumeConnection}
                             openDirectConnect={openDirectConnect} runScript={runScript}
+                            openNotes={openNotes}
                             openPortForward={isTauri() ? openPortForward : undefined}
                             mobileOpen={mobileServerListOpen} setMobileOpen={setMobileServerListOpen} />,
                 leftPaneSlot
@@ -497,6 +544,9 @@ export const Servers = () => {
                                closeSession={closeSession}
                                activeSessionId={activeSessionId} setActiveSessionId={setActiveSessionId}
                                hibernateSession={hibernateSession} duplicateSession={duplicateSession}
+                               openNotes={openNotes}
+                               markSessionErrored={markSessionErrored}
+                               getSessionError={getSessionError}
                                setOpenFileEditors={setOpenFileEditors}
                                openTerminalFromFileManager={openTerminalFromFileManager} />}
             {openFileEditors.map((editor, index) => (

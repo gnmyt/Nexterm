@@ -1,41 +1,46 @@
 {
   "name": "nexterm",
-  "version": "1.2.0-BETA",
+  "version": "1.2.1-BETA",
   "main": "server/index.js",
+  "bin": {
+    "ntctl": "server/cli/index.js"
+  },
   "repository": "https://github.com/gnmyt/Nexterm.git",
   "author": "Mathias Wagner",
   "license": "MIT",
   "dependencies": {
+    "@inquirer/password": "^5.0.13",
     "@simplewebauthn/server": "^13.3.0",
-    "archiver": "^7.0.1",
+    "archiver": "^8.0.0",
     "bcrypt": "^6.0.0",
+    "commander": "^14.0.3",
     "decompress": "^4.2.1",
     "express": "^5.2.1",
     "express-jsdoc-swagger": "^1.8.0",
-    "express-rate-limit": "^8.3.1",
+    "express-rate-limit": "^8.5.2",
     "express-ws": "^5.0.2",
     "flatbuffers": "^25.9.23",
-    "joi": "^18.0.2",
+    "joi": "^18.2.1",
     "js-yaml": "^4.1.1",
-    "ldapts": "^8.1.7",
-    "openid-client": "^6.8.2",
+    "ldapts": "^8.1.8",
+    "openid-client": "^6.8.4",
     "selfsigned": "^5.5.0",
     "sequelize": "^6.37.8",
     "sharp": "^0.34.5",
     "speakeasy": "^2.0.0",
     "sqlite3": "^6.0.1",
-    "uuid": "^13.0.0",
-    "webdav": "^5.9.0",
+    "uuid": "^14.0.0",
+    "webdav": "^5.10.0",
     "winston": "^3.19.0",
-    "ws": "^8.20.0"
+    "ws": "^8.21.0"
   },
   "devDependencies": {
     "concurrently": "^9.2.1",
-    "dotenv": "^17.3.1",
-    "esbuild": "^0.27.4",
+    "dotenv": "^17.4.2",
+    "esbuild": "^0.28.0",
     "nodemon": "^3.1.11",
     "vitepress": "^1.6.4",
-    "vitepress-openapi": "^0.1.19"
+    "vitepress-openapi": "^0.2.0"
   },
   "scripts": {
     "dev:server": "nodemon --ignore docs --ignore vendor --ignore client --ignore mobile --ignore data server/index.js",
@@ -48,6 +53,7 @@
     "schema:watch": "nodemon --watch schema -e fbs --exec 'yarn schema:generate'",
     "docs:dev": "yarn docs:openapi && vitepress dev docs",
     "docs:build": "yarn docs:openapi && vitepress build docs",
-    "docs:preview": "vitepress preview docs"
+    "docs:preview": "vitepress preview docs",
+    "build:sea": "./scripts/build-sea.sh"
   }
 }

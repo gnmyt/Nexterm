@@ -260,8 +260,10 @@ static void handle_session_close(nexterm_control_plane_t* cp,
     nexterm_session_t* session = nexterm_sm_find(&g_session_manager, sid);
     if (session) {
         nexterm_connection_close(session);
-        nexterm_cp_send_session_closed(cp, sid, "closed by server");
-        nexterm_sm_remove(&g_session_manager, sid);
+        if (!session->thread_active) {
+            nexterm_cp_send_session_closed(cp, sid, "closed by server");
+            nexterm_sm_remove(&g_session_manager, sid);
+        }
     }
 }
 

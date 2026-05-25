@@ -1,16 +1,16 @@
-import { useContext, useEffect, useState } from "react";
+import { useContext, useState } from "react";
 import { mdiPlus, mdiCheck, mdiDotsVertical, mdiPencil, mdiDelete } from "@mdi/js";
 import Icon from "@mdi/react";
 import { useTranslation } from "react-i18next";
-import { getRequest, postRequest, deleteRequest, putRequest, patchRequest } from "@/common/utils/RequestUtil.js";
+import { postRequest, deleteRequest, putRequest, patchRequest } from "@/common/utils/RequestUtil.js";
 import { ServerContext } from "@/common/contexts/ServerContext.jsx";
+import { useTags } from "@/common/contexts/TagContext.jsx";
 import { ContextMenuItem } from "@/common/components/ContextMenu";
 import "./styles.sass";
 
 const TAG_COLORS = [
     "#ef4444", // red
     "#f97316", // orange
-    "#f59e0b", // amber
     "#eab308", // yellow
     "#84cc16", // lime
     "#22c55e", // green
@@ -25,7 +25,7 @@ const TAG_COLORS = [
 export const TagsSubmenu = ({ entryId, entryTags = [], onClose }) => {
     const { t } = useTranslation();
     const { loadServers } = useContext(ServerContext);
-    const [allTags, setAllTags] = useState([]);
+    const { tags: allTags, loadTags } = useTags();
     const [showCreateTag, setShowCreateTag] = useState(false);
     const [newTagName, setNewTagName] = useState("");
     const [selectedColor, setSelectedColor] = useState(TAG_COLORS[0]);
@@ -33,19 +33,6 @@ export const TagsSubmenu = ({ entryId, entryTags = [], onClose }) => {
     const [editTagName, setEditTagName] = useState("");
     const [editTagColor, setEditTagColor] = useState("");
     const [showTagMenu, setShowTagMenu] = useState(null);
-
-    useEffect(() => {
-        loadTags();
-    }, []);
-
-    const loadTags = async () => {
-        try {
-            const tags = await getRequest("tags/list");
-            setAllTags(tags);
-        } catch (error) {
-            console.error("Failed to load tags:", error);
-        }
-    };
 
     const createTag = async () => {
         if (!newTagName.trim()) return;
@@ -166,6 +153,19 @@ export const TagsSubmenu = ({ entryId, entryTags = [], onClose }) => {
                                 }}
                             />
                         ))}
+                        <label
+                            className={`color-option custom-color ${!TAG_COLORS.includes(selectedColor) ? "selected" : ""}`}
+                            style={!TAG_COLORS.includes(selectedColor) ? { background: selectedColor } : undefined}
+                            onClick={(e) => e.stopPropagation()}
+                            title="Custom color"
+                        >
+                            <input
+                                type="color"
+                                value={selectedColor}
+                                onChange={(e) => setSelectedColor(e.target.value)}
+                                onClick={(e) => e.stopPropagation()}
+                            />
+                        </label>
                     </div>
                     <div className="form-actions">
                         <button onClick={(e) => {
@@ -224,6 +224,19 @@ export const TagsSubmenu = ({ entryId, entryTags = [], onClose }) => {
                                             }}
                                         />
                                     ))}
+                                    <label
+                                        className={`color-option custom-color ${!TAG_COLORS.includes(editTagColor) ? "selected" : ""}`}
+                                        style={!TAG_COLORS.includes(editTagColor) ? { background: editTagColor } : undefined}
+                                        onClick={(e) => e.stopPropagation()}
+                                        title="Custom color"
+                                    >
+                                        <input
+                                            type="color"
+                                            value={editTagColor}
+                                            onChange={(e) => setEditTagColor(e.target.value)}
+                                            onClick={(e) => e.stopPropagation()}
+                                        />
+                                    </label>
                                 </div>
                                 <div className="form-actions">
                                     <button onClick={(e) => {
