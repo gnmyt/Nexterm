@@ -142,14 +142,15 @@ const GuacamoleRenderer = ({
             }
         }
         if (successCount > 0 && failCount === 0) {
-            sendToast("Success", successCount === 1
-                ? `Uploaded "${files[0].name}" to remote drive`
-                : `Uploaded ${successCount} files to remote drive`);
+            sendToast(t("common.success"), successCount === 1
+                ? t("servers.remoteDesktop.toast.uploadedSingle", { name: files[0].name })
+                : t("servers.remoteDesktop.toast.uploadedMultiple", { count: successCount }));
         } else if (failCount > 0) {
-            sendToast("Error", `${failCount} file(s) failed to upload`
-                + (successCount > 0 ? `, ${successCount} succeeded` : ""));
+            sendToast(t("common.error"), successCount > 0
+                ? t("servers.remoteDesktop.toast.uploadPartial", { failed: failCount, succeeded: successCount })
+                : t("servers.remoteDesktop.toast.uploadFailed", { count: failCount }));
         }
-    }, [uploadFileToRemote, sendToast]);
+    }, [uploadFileToRemote, sendToast, t]);
 
     const handleDragOver = useCallback((e) => {
         e.preventDefault();
@@ -372,7 +373,7 @@ const GuacamoleRenderer = ({
                 a.click();
                 document.body.removeChild(a);
                 URL.revokeObjectURL(url);
-                sendToast("Success", `Downloaded "${filename}" from remote`);
+                sendToast(t("common.success"), t("servers.remoteDesktop.toast.downloaded", { name: filename }));
             };
         };
 
@@ -421,7 +422,7 @@ const GuacamoleRenderer = ({
             {isDragOver && (
                 <div className="guac-drop-overlay">
                     <div className="guac-drop-overlay__content">
-                        <div className="guac-drop-overlay__text">Drop files to upload to remote</div>
+                        <div className="guac-drop-overlay__text">{t("servers.remoteDesktop.dropOverlay")}</div>
                     </div>
                 </div>
             )}

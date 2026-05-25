@@ -111,7 +111,7 @@ module.exports.authorizeGuacamole = async (req) => {
     switch (entry.config?.protocol) {
         case "rdp":
             connectionConfig = createRDPToken(entry.config.ip, entry.config.port, identity.username, credentials.password,
-                entry.config.keyboardLayout || "en-us-qwerty");
+                { keyboardLayout: entry.config.keyboardLayout || "en-us-qwerty", userId: req.user.id });
             break;
         case "vnc":
             connectionConfig = createVNCToken(entry.config.ip, entry.config.port, identity.username, credentials.password);

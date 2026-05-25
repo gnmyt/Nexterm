@@ -38,11 +38,12 @@ module.exports.createRDPToken = (hostname, port, username, password, options = {
     if (options.enableDesktopComposition === true) settings["enable-desktop-composition"] = true;
     if (options.enableMenuAnimations === true) settings["enable-menu-animations"] = true;
 
-    // Drive redirection for file transfer support
-    settings["enable-drive"] = "true";
-    settings["drive-name"] = "Nexterm";
-    settings["drive-path"] = "/app/data/rdpdrive";
-    settings["create-drive-path"] = "true";
+    if (options.userId !== undefined && options.userId !== null) {
+        settings["enable-drive"] = "true";
+        settings["drive-name"] = "Nexterm";
+        settings["drive-path"] = `/app/data/rdpdrive/${options.userId}`;
+        settings["create-drive-path"] = "true";
+    }
 
     return { connection: { type: "rdp", settings } };
 };

@@ -1798,6 +1798,16 @@
         "error": "An error occurred"
       }
     },
+    "remoteDesktop": {
+      "dropOverlay": "Drop files to upload to remote",
+      "toast": {
+        "uploadedSingle": "Uploaded \"{{name}}\" to remote drive",
+        "uploadedMultiple": "Uploaded {{count}} files to remote drive",
+        "uploadFailed": "{{count}} file(s) failed to upload",
+        "uploadPartial": "{{failed}} file(s) failed to upload, {{succeeded}} succeeded",
+        "downloaded": "Downloaded \"{{name}}\" from remote"
+      }
+    },
     "aiAssistant": {
       "title": "AI Assistant",
       "placeholder": "Describe what you want to do...",
