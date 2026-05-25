@@ -108,9 +108,13 @@ export const ServerList = ({
     const [contextClickedType, setContextClickedType] = useState(null);
     const [contextClickedId, setContextClickedId] = useState(null);
     const [renameStateId, setRenameStateId] = useState(null);
-    const [width, setWidth] = useState(288);
+    const [width, setWidth] = useState(() => {
+        const stored = localStorage.getItem("serverListWidth");
+        const parsed = stored !== null ? parseInt(stored, 10) : NaN;
+        return Number.isFinite(parsed) ? parsed : 288;
+    });
     const [isResizing, setIsResizing] = useState(false);
-    const [isCollapsed, setIsCollapsed] = useState(false);
+    const [isCollapsed, setIsCollapsed] = useState(() => localStorage.getItem("serverListCollapsed") === "true");
     const serverListRef = useRef(null);
     const serversContainerRef = useRef(null);
     const scrollIntervalRef = useRef(null);
@@ -388,6 +392,11 @@ export const ServerList = ({
             }
         }
     };
+
+    useEffect(() => {
+        if (!isCollapsed && width > 0) localStorage.setItem("serverListWidth", String(width));
+        localStorage.setItem("serverListCollapsed", String(isCollapsed));
+    }, [width, isCollapsed]);
 
     useEffect(() => {
         document.addEventListener("mousemove", resize);
