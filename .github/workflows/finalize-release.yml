@@ -88,13 +88,13 @@ jobs:
             body += `| **ARM64** | ${L('EXE', 'nexterm-connector-windows-arm64.exe')} | ${L('DMG', 'nexterm-connector-macos-arm64.dmg')} | | ${apk('arm64-v8a')} | |\n`;
             body += `| **ARM32** | | | | ${apk('armeabi-v7a')} | |\n`;
             body += `| **Universal** | | | | ${apk('universal')} | ${ipa()} |\n`;
+            const s = v.split('-')[0];
             body += `\n### CLI\n\n`;
             body += `| Platform | x86-64 | ARM64 |\n`;
             body += `| :-- | :-- | :-- |\n`;
             body += `| **Windows** | ${L('nt.exe', 'nt-windows-x64.exe')} | |\n`;
             body += `| **macOS** | | ${L('nt', 'nt-macos-arm64')} |\n`;
-            body += `| **Linux** | ${L('nt', 'nt-linux-x64')} | ${L('nt', 'nt-linux-arm64')} |\n`;
-            const s = v.split('-')[0];
+            body += `| **Linux** | ${L('nt', 'nt-linux-x64')} · ${L('DEB', `nexterm-cli_${s}_amd64.deb`)} · ${L('RPM', `nexterm-cli-${s}-1.x86_64.rpm`)} | ${L('nt', 'nt-linux-arm64')} · ${L('DEB', `nexterm-cli_${s}_arm64.deb`)} · ${L('RPM', `nexterm-cli-${s}-1.aarch64.rpm`)} |\n`;
             body += `\n### Server (Standalone)\n\n`;
             body += `| Platform / Architecture | Windows | macOS | Linux |\n`;
             body += `| :-- | :-- | :-- | :-- |\n`;

@@ -25,10 +25,16 @@ jobs:
             os: ubuntu-22.04
             target: x86_64-unknown-linux-gnu
             artifact_name: nt-linux-x64
+            is_linux: true
+            deb_arch: amd64
+            rpm_arch: x86_64
           - name: linux-arm64
             os: ubuntu-22.04-arm
             target: aarch64-unknown-linux-gnu
             artifact_name: nt-linux-arm64
+            is_linux: true
+            deb_arch: arm64
+            rpm_arch: aarch64
           - name: macos-arm64
             os: macos-latest
             target: aarch64-apple-darwin
@@ -75,3 +81,63 @@ jobs:
           asset_path: cli/target/${{ matrix.target }}/release/${{ runner.os == 'Windows' && 'nt.exe' || 'nt' }}
           asset_name: ${{ matrix.artifact_name }}
           asset_content_type: application/octet-stream
+
+      - name: Install nfpm
+        if: matrix.is_linux
+        shell: bash
+        run: |
+          NFPM_VERSION=2.43.0
+          case "$(uname -m)" in
+            x86_64) HOST=x86_64 ;;
+            aarch64|arm64) HOST=arm64 ;;
+          esac
+          TMP=$(mktemp -d)
+          curl -fsSL "https://github.com/goreleaser/nfpm/releases/download/v${NFPM_VERSION}/nfpm_${NFPM_VERSION}_Linux_${HOST}.tar.gz" -o "$TMP/nfpm.tar.gz"
+          tar -xzf "$TMP/nfpm.tar.gz" -C "$TMP" nfpm
+          sudo install -m 0755 "$TMP/nfpm" /usr/local/bin/nfpm
+          rm -rf "$TMP"
+          nfpm --version
+
+      - name: Stage CLI binary + build .deb / .rpm
+        if: matrix.is_linux
+        shell: bash
+        env:
+          PKG_VERSION: ${{ inputs.semver }}
+        run: |
+          mkdir -p stage/cli dist
+          cp cli/target/${{ matrix.target }}/release/nt stage/cli/nt
+          chmod +x stage/cli/nt
+
+          PKG_ARCH=${{ matrix.deb_arch }} nfpm pkg \
+            --config packaging/nfpm-cli.yaml \
+            --packager deb \
+            --target "dist/nexterm-cli_${PKG_VERSION}_${{ matrix.deb_arch }}.deb"
+
+          PKG_ARCH=${{ matrix.rpm_arch }} nfpm pkg \
+            --config packaging/nfpm-cli.yaml \
+            --packager rpm \
+            --target "dist/nexterm-cli-${PKG_VERSION}-1.${{ matrix.rpm_arch }}.rpm"
+
+          ls -la dist/
+
+      - name: Upload .deb
+        if: matrix.is_linux
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ inputs.upload_url }}
+          asset_path: dist/nexterm-cli_${{ inputs.semver }}_${{ matrix.deb_arch }}.deb
+          asset_name: nexterm-cli_${{ inputs.semver }}_${{ matrix.deb_arch }}.deb
+          asset_content_type: application/vnd.debian.binary-package
+
+      - name: Upload .rpm
+        if: matrix.is_linux
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ inputs.upload_url }}
+          asset_path: dist/nexterm-cli-${{ inputs.semver }}-1.${{ matrix.rpm_arch }}.rpm
+          asset_name: nexterm-cli-${{ inputs.semver }}-1.${{ matrix.rpm_arch }}.rpm
+          asset_content_type: application/x-rpm
