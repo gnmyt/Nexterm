@@ -166,7 +166,11 @@ BOOL guac_rdp_gdi_desktop_resize(rdpContext* context) {
      * `gdi_resize()`, so the current context should be NULL. If it is not
      * NULL, it means that the current context is still open, and therefore the
      * GDI buffer has not been flushed yet. */
-    GUAC_ASSERT(rdp_client->current_context == NULL);
+    if (rdp_client->current_context != NULL) {
+        guac_client_log(client, GUAC_LOG_WARNING,
+                "DesktopResize called with pending paint context; forcing EndPaint before resize");
+        guac_rdp_gdi_end_paint(context);
+    }
 #endif
 
     /* All potential drawing operations must occur while holding an open context */
