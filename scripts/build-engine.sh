@@ -71,8 +71,13 @@ start_engine() {
 
 build && start_engine
 
-echo "[engine] Watching for changes..."
-while inotifywait -r -e modify,create,delete "$ENGINE_SRC/src" "$PROJECT_ROOT/schema" 2>/dev/null; do
-    echo "[engine] Changes detected, rebuilding..."
-    build && start_engine
-done
+if command -v inotifywait >/dev/null 2>&1; then
+    echo "[engine] Watching for changes..."
+    while inotifywait -r -e modify,create,delete "$ENGINE_SRC/src" "$PROJECT_ROOT/schema" 2>/dev/null; do
+        echo "[engine] Changes detected, rebuilding..."
+        build && start_engine
+    done
+else
+    echo "[engine] inotifywait not found; running without rebuild watcher"
+    wait "$ENGINE_PID"
+fi
