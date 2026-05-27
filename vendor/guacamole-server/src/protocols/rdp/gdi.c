@@ -160,6 +160,8 @@ BOOL guac_rdp_gdi_desktop_resize(rdpContext* context) {
     int width = guac_rdp_get_width(context->instance);
     int height = guac_rdp_get_height(context->instance);
 
+    guac_display_layer* default_layer = guac_display_default_layer(rdp_client->display);
+
 #if (FREERDP_VERSION_MAJOR < 3) || \
     (FREERDP_VERSION_MAJOR == 3 && FREERDP_VERSION_MINOR < 8)
     /* For FreeRDP versions prior to 3.8.0, EndPaint will not be called in
@@ -174,7 +176,6 @@ BOOL guac_rdp_gdi_desktop_resize(rdpContext* context) {
 #endif
 
     /* All potential drawing operations must occur while holding an open context */
-    guac_display_layer* default_layer = guac_display_default_layer(rdp_client->display);
     guac_display_layer_raw_context* current_context = guac_display_layer_open_raw(default_layer);
 
     /* Resize FreeRDP's GDI buffer */

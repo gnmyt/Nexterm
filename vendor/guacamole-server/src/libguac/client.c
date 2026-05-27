@@ -47,6 +47,12 @@
 #include <stdlib.h>
 #include <string.h>
 
+#ifdef RTLD_NODELETE
+#define GUAC_PROTOCOL_DLOPEN_FLAGS (RTLD_LAZY | RTLD_NODELETE)
+#else
+#define GUAC_PROTOCOL_DLOPEN_FLAGS RTLD_LAZY
+#endif
+
 /**
  * The number of milliseconds between times that the pending users list will be
  * synchronized and emptied (250 milliseconds aka 1/4 second).
@@ -330,10 +336,8 @@ void guac_client_free(guac_client* client) {
     guac_rwlock_release_lock(&(client->__pending_users_lock));
 
     if (client->free_handler) {
-
         /* FIXME: Errors currently ignored... */
         client->free_handler(client);
-
     }
 
     /* Free sockets */
@@ -661,8 +665,12 @@ int guac_client_load_plugin(guac_client* client, const char* protocol) {
         return -1;
     }
 
-    /* Load client plugin */
-    client_plugin_handle = dlopen(protocol_lib, RTLD_LAZY);
+    /*
+     * Keep protocol modules resident when the platform supports it. Some
+     * protocol stacks maintain process-global state that is not safe to tear
+     * down and reload on every session close.
+     */
+    client_plugin_handle = dlopen(protocol_lib, GUAC_PROTOCOL_DLOPEN_FLAGS);
     if (!client_plugin_handle) {
         guac_error = GUAC_STATUS_NOT_FOUND;
         guac_error_message = dlerror();
