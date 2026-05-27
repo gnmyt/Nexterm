@@ -337,7 +337,6 @@ static void* guac_session_thread(void* arg) {
     guac_accept_joins(session, client, user_threads, &user_thread_count,
                       (int)(sizeof(user_threads) / sizeof(user_threads[0])));
 
-    /* All user threads must finish before guac_client_free to avoid teardown races. */
     for (int i = 0; i < user_thread_count; i++) {
         pthread_join(user_threads[i], NULL);
     }
@@ -348,8 +347,6 @@ static void* guac_session_thread(void* arg) {
     LOG_INFO("Guac session %s ending", session_id);
     guac_client_stop(client);
 
-    /* Clear the shared session pointer before free so concurrent close paths
-     * cannot observe a soon-to-be-freed client instance. */
     session->guac_client = NULL;
 
     guac_client_free(client);
