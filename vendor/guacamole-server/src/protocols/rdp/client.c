@@ -267,8 +267,9 @@ int guac_rdp_client_free_handler(guac_client* client) {
     CloseHandle(rdp_client->input_event_queued);
 
     /* Free parsed settings */
-    if (rdp_client->settings != NULL)
+    if (rdp_client->settings != NULL) {
         guac_rdp_settings_free(rdp_client->settings);
+    }
 
     /* Clean up clipboard */
     guac_rdp_clipboard_free(rdp_client->clipboard);
@@ -316,8 +317,9 @@ int guac_rdp_client_free_handler(guac_client* client) {
         guac_audio_stream_free(rdp_client->audio);
 
     /* Clean up audio input buffer, if allocated */
-    if (rdp_client->audio_input != NULL)
+    if (rdp_client->audio_input != NULL) {
         guac_rdp_audio_buffer_free(rdp_client->audio_input);
+    }
 
     guac_rwlock_destroy(&(rdp_client->lock));
     pthread_mutex_destroy(&(rdp_client->message_lock));
