@@ -5,6 +5,10 @@
 
 #include <libssh2.h>
 
+#ifdef __linux__
+#include <execinfo.h>
+#endif
+
 #include <getopt.h>
 #include <signal.h>
 #include <stdio.h>
@@ -24,6 +28,21 @@ static void signal_handler(int sig) {
     if (g_control_plane) {
         g_control_plane->running = false;
     }
+}
+
+static void crash_signal_handler(int sig) {
+#ifdef __linux__
+    void* frames[64];
+    int frame_count = backtrace(frames, 64);
+    static const char prefix[] = "\n[nexterm-crash] Fatal signal received. Backtrace follows:\n";
+    write(STDERR_FILENO, prefix, sizeof(prefix) - 1);
+    backtrace_symbols_fd(frames, frame_count, STDERR_FILENO);
+#else
+    (void)sig;
+#endif
+
+    signal(sig, SIG_DFL);
+    raise(sig);
 }
 
 static nexterm_log_level_t parse_log_level(const char* str) {
@@ -107,6 +126,15 @@ int main(int argc, char* argv[]) {
     sa.sa_flags = 0;
     sigaction(SIGINT, &sa, NULL);
     sigaction(SIGTERM, &sa, NULL);
+
+    struct sigaction crash_sa;
+    crash_sa.sa_handler = crash_signal_handler;
+    sigemptyset(&crash_sa.sa_mask);
+    crash_sa.sa_flags = SA_RESETHAND;
+    sigaction(SIGSEGV, &crash_sa, NULL);
+    sigaction(SIGABRT, &crash_sa, NULL);
+    sigaction(SIGBUS, &crash_sa, NULL);
+
     signal(SIGPIPE, SIG_IGN);
 
     nexterm_sm_init(&g_session_manager);
