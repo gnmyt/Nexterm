@@ -180,7 +180,19 @@ BOOL guac_rdp_gdi_desktop_resize(rdpContext* context) {
 
     /* Resize FreeRDP's GDI buffer */
     BOOL retval = gdi_resize(context->gdi, width, height);
-    GUAC_ASSERT(gdi->primary_buffer != NULL);
+    
+    /* If gdi_resize() failed, primary_buffer will be NULL. Treat this as a
+     * non-fatal resize failure: log an error, close the open context, and
+     * return FALSE so FreeRDP can handle it — rather than calling abort(). */
+    if (!retval || gdi->primary_buffer == NULL) {
+        guac_client_log(client, GUAC_LOG_ERROR,
+                "gdi_resize() failed for dimensions %ix%i; "
+                "DesktopResize cannot be applied (retval=%i, primary_buffer=%s)",
+                width, height, (int) retval,
+                gdi->primary_buffer == NULL ? "NULL" : "non-NULL");
+        guac_display_layer_close_raw(default_layer, current_context);
+        return FALSE;
+    }
 
     /* Update our reference to the GDI buffer, as well as any structural
      * details, which may now all be different */
