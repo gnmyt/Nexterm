@@ -21,7 +21,7 @@
     "express-ws": "^5.0.2",
     "flatbuffers": "^25.9.23",
     "joi": "^18.2.1",
-    "js-yaml": "^4.1.1",
+    "js-yaml": "^4.2.0",
     "ldapts": "^8.1.8",
     "openid-client": "^6.8.4",
     "selfsigned": "^5.5.0",
