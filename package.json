@@ -13,7 +13,7 @@
     "@simplewebauthn/server": "^13.3.1",
     "archiver": "^8.0.0",
     "bcrypt": "^6.0.0",
-    "commander": "^14.0.3",
+    "commander": "^15.0.0",
     "decompress": "^4.2.1",
     "express": "^5.2.1",
     "express-jsdoc-swagger": "^1.8.0",
