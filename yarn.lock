@@ -1934,10 +1934,10 @@ concat-map@0.0.1:
   resolved "https://registry.yarnpkg.com/concat-map/-/concat-map-0.0.1.tgz#d8a96bd77fd68df7793a73036a3ba0d5405d477b"
   integrity sha512-/Srv4dswyQNBfohGpz9o6Yb3Gz3SrUDqBH5rTuhGR7ahtlbYKnVxw2bCFMRljaA7EXHaXZ8wsHdodFvbkhKmqg==
 
-concurrently@^10.0.0:
-  version "10.0.0"
-  resolved "https://registry.yarnpkg.com/concurrently/-/concurrently-10.0.0.tgz#ceb3782d36a620ae7c05ff8085076c0d96323479"
-  integrity sha512-DRrk10z3sVPpguNe8od2cGNqZGqbT15rwAnxD4dG3b78mdNNb/gJyr8T834Oj518WcBmTktrt4FhdwZn09ZWSg==
+concurrently@^10.0.1:
+  version "10.0.1"
+  resolved "https://registry.yarnpkg.com/concurrently/-/concurrently-10.0.1.tgz#92eb2ed664257bd5d3c081bd12cc37d52c5a08b0"
+  integrity sha512-vN61cP9COzctyhBqKUOh9YHqU70hYPnaHqNpXdBzM9PcwIpfPAvNK06hjm4gEJEGuvy4GBairO6uU32+FKpS4g==
   dependencies:
     chalk "5.6.2"
     rxjs "7.8.2"
