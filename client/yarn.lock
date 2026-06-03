@@ -1369,10 +1369,10 @@ functions-have-names@^1.2.3:
   resolved "https://registry.yarnpkg.com/functions-have-names/-/functions-have-names-1.2.3.tgz#0404fe4ee2ba2f607f0e0ec3c80bae994133b834"
   integrity sha512-xckBUXyTIqT97tq2x2AMb+g163b5JFysYk0x4qxNFwbfQkmNZoiRHb6sPzI9/QV33WeuvVYBUIiD4NzNIyqaRQ==
 
-fuse.js@^7.4.0:
-  version "7.4.0"
-  resolved "https://registry.yarnpkg.com/fuse.js/-/fuse.js-7.4.0.tgz#4f39e13e8823a1b809ba76476b65a1a6b88a844e"
-  integrity sha512-3UqmoSFwzX1sNB1YSk+Co0EdH29XCW2p9g48OAiy93cjKqzuABsqw2VIgSN3CmsT/wo6pIJ3F0Jxeiiby8rhIQ==
+fuse.js@^7.4.1:
+  version "7.4.1"
+  resolved "https://registry.yarnpkg.com/fuse.js/-/fuse.js-7.4.1.tgz#f64c7710516a43ba7582e1d824c14063c00275cd"
+  integrity sha512-AY7lKAXK71hi3WgUvDy6oZL67UEHOOtvCAwVdOXHyJd6ZzftBy7QqxuXt4HxmmAhYjmp/YCuOELZtIvAdlZ+fw==
 
 generator-function@^2.0.0:
   version "2.0.1"
