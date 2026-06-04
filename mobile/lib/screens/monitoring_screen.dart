@@ -154,7 +154,11 @@ class MonitoringScreenState extends State<MonitoringScreen> {
       padding: const EdgeInsets.symmetric(vertical: 3),
       child: Material(
         color: cs.surfaceContainerHigh,
-        borderRadius: BorderRadius.circular(16),
+        clipBehavior: Clip.antiAlias,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(16),
+          side: BorderSide(color: cs.outlineVariant, width: 1),
+        ),
         child: InkWell(
           borderRadius: BorderRadius.circular(16),
           onTap: () => _loadDetails(s),
