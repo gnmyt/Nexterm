@@ -5,6 +5,7 @@ import {
     mdiChevronRight,
     mdiChevronUp,
     mdiFileUpload,
+    mdiFolderUpload,
     mdiFilePlus,
     mdiFolderPlus,
     mdiViewList,
@@ -23,6 +24,7 @@ export const ActionBar = ({
                               createFile,
                               createFolder,
                               uploadFile,
+                              uploadFolder,
                               goBack,
                               goForward,
                               historyIndex,
@@ -344,7 +346,8 @@ export const ActionBar = ({
                 <Icon path={viewMode === "list" ? mdiViewGrid : mdiViewList}
                       onClick={() => setViewMode(viewMode === "list" ? "grid" : "list")}
                       title={viewMode === "list" ? t("servers.fileManager.actionBar.switchToGrid") : t("servers.fileManager.actionBar.switchToList")} />
-                <Icon path={mdiFileUpload} onClick={uploadFile} />
+                <Icon path={mdiFileUpload} onClick={uploadFile} title={t("servers.fileManager.actionBar.uploadFile")} />
+                <Icon path={mdiFolderUpload} onClick={uploadFolder} title={t("servers.fileManager.actionBar.uploadFolder")} />
                 <Icon path={mdiFilePlus} onClick={createFile} />
                 <Icon path={mdiFolderPlus} onClick={createFolder} />
             </div>

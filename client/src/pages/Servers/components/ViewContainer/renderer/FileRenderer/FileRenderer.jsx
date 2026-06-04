@@ -14,11 +14,28 @@ import { uploadFile as uploadFileRequest, tauriDownload } from "@/common/utils/R
 import { isTauri } from "@/common/utils/TauriUtil.js";
 
 const OPERATIONS = {
-    READY: 0x0, LIST_FILES: 0x1, CREATE_FILE: 0x4, CREATE_FOLDER: 0x5, DELETE_FILE: 0x6, 
-    DELETE_FOLDER: 0x7, RENAME_FILE: 0x8, ERROR: 0x9, SEARCH_DIRECTORIES: 0xA, 
+    READY: 0x0, LIST_FILES: 0x1, CREATE_FILE: 0x4, CREATE_FOLDER: 0x5, DELETE_FILE: 0x6,
+    DELETE_FOLDER: 0x7, RENAME_FILE: 0x8, ERROR: 0x9, SEARCH_DIRECTORIES: 0xA,
     RESOLVE_SYMLINK: 0xB, MOVE_FILES: 0xC, COPY_FILES: 0xD, CHMOD: 0xE,
     STAT: 0xF, CHECKSUM: 0x10, FOLDER_SIZE: 0x11, PATH_SYNC: 0x12,
 };
+
+// Drains a FileSystemDirectoryReader into a flat array, batching readEntries calls
+// (the API returns at most 100 entries per call, so we keep reading until empty).
+const readAllEntries = (reader) => new Promise((resolve, reject) => {
+    const all = [];
+    const next = () => {
+        reader.readEntries(batch => {
+            if (batch.length) {
+                all.push(...batch);
+                next();
+            } else {
+                resolve(all);
+            }
+        }, reject);
+    };
+    next();
+});
 
 export const FileRenderer = ({ session, disconnectFromServer, setOpenFileEditors, isActive, onOpenTerminal }) => {
     const { t } = useTranslation();
@@ -48,6 +65,7 @@ export const FileRenderer = ({ session, disconnectFromServer, setOpenFileEditors
     const reconnectAttemptsRef = useRef(0);
     const fileListRef = useRef(null);
     const propertiesHandlerRef = useRef(null);
+    const uploadFolderEntryRef = useRef(null);
 
     const wsUrl = getWebSocketUrl("/api/ws/sftp", { sessionToken, sessionId: session.id });
 
@@ -144,6 +162,24 @@ export const FileRenderer = ({ session, disconnectFromServer, setOpenFileEditors
         if (uploadQueueRef.current.length === 1) processUploadQueue();
     };
 
+    // Recursively creates remote directories and queues file uploads for a dropped folder.
+    // Stored in a ref so it can call itself without a circular useCallback dependency.
+    uploadFolderEntryRef.current = async (entry, targetPath) => {
+        const remotePath = `${targetPath}/${entry.name}`.replace(/\/+/g, '/');
+        sendOperation(OPERATIONS.CREATE_FOLDER, { path: remotePath });
+        // Brief pause so the server processes mkdir before we write files into it.
+        await new Promise(r => setTimeout(r, 100));
+        const entries = await readAllEntries(entry.createReader());
+        for (const child of entries) {
+            if (child.isDirectory) {
+                await uploadFolderEntryRef.current(child, remotePath);
+            } else {
+                const file = await new Promise((res, rej) => child.file(res, rej));
+                queueUpload(file, remotePath);
+            }
+        }
+    };
+
     const uploadFile = async () => {
         const fileInput = document.createElement("input");
         fileInput.type = "file";
@@ -152,6 +188,42 @@ export const FileRenderer = ({ session, disconnectFromServer, setOpenFileEditors
             for (const file of fileInput.files) queueUpload(file, directory);
         };
         fileInput.click();
+    };
+
+    const doFolderUpload = async (files) => {
+        // Collect every unique directory path and create them in sorted order
+        // (explicit comparator required — sort guarantees parents before children).
+        const dirs = new Set();
+        for (const file of files) {
+            const parts = file.webkitRelativePath.split('/');
+            for (let i = 1; i < parts.length; i++) {
+                dirs.add(`${directory}/${parts.slice(0, i).join('/')}`);
+            }
+        }
+        for (const dir of [...dirs].sort((a, b) => a.localeCompare(b))) {
+            sendOperation(OPERATIONS.CREATE_FOLDER, { path: dir.replace(/\/+/g, '/') });
+        }
+        // Single delay after all mkdir operations before starting file uploads.
+        await new Promise(r => setTimeout(r, 200));
+        for (const file of files) {
+            const parts = file.webkitRelativePath.split('/');
+            const relDir = parts.slice(0, -1).join('/');
+            queueUpload(file, `${directory}/${relDir}`.replace(/\/+/g, '/'));
+        }
+    };
+
+    const uploadFolder = () => {
+        const input = document.createElement("input");
+        input.type = "file";
+        input.webkitdirectory = true;
+        input.onchange = () => {
+            const files = [...input.files];
+            if (!files.length) return;
+            doFolderUpload(files).catch(err =>
+                sendToast(t("common.error"), t("servers.fileManager.toast.uploadFailed", { message: err.message }))
+            );
+        };
+        input.click();
     };
 
     const processMessage = async (event) => {
@@ -272,7 +344,26 @@ export const FileRenderer = ({ session, disconnectFromServer, setOpenFileEditors
     const goBack = () => { if (historyIndex > 0) { setHistoryIndex(historyIndex - 1); const p = history[historyIndex - 1]; setDirectory(p); sendOperation(OPERATIONS.PATH_SYNC, { path: p }); } };
     const goForward = () => { if (historyIndex < history.length - 1) { setHistoryIndex(historyIndex + 1); const p = history[historyIndex + 1]; setDirectory(p); sendOperation(OPERATIONS.PATH_SYNC, { path: p }); } };
 
-    const handleDrag = async (e) => {
+    const handleFileDrop = async (dataTransfer) => {
+        const items = dataTransfer.items ? [...dataTransfer.items] : [];
+        if (items.length && typeof items[0].webkitGetAsEntry === "function") {
+            for (const item of items) {
+                if (item.kind !== "file") continue;
+                const entry = item.webkitGetAsEntry();
+                if (!entry) continue;
+                if (entry.isDirectory) {
+                    await uploadFolderEntryRef.current(entry, directory);
+                } else {
+                    const file = item.getAsFile();
+                    if (file) queueUpload(file, directory);
+                }
+            }
+        } else {
+            for (let i = 0; i < dataTransfer.files.length; i++) queueUpload(dataTransfer.files[i], directory);
+        }
+    };
+
+    const handleDrag = (e) => {
         if (e.dataTransfer.types.includes("application/x-sftp-files")) return;
         e.preventDefault();
         e.stopPropagation();
@@ -280,7 +371,9 @@ export const FileRenderer = ({ session, disconnectFromServer, setOpenFileEditors
         else if (e.type === "dragleave" && !dropZoneRef.current.contains(e.relatedTarget)) setDragging(false);
         else if (e.type === "drop") {
             setDragging(false);
-            for (let i = 0; i < e.dataTransfer.files.length; i++) queueUpload(e.dataTransfer.files[i], directory);
+            handleFileDrop(e.dataTransfer).catch(err =>
+                sendToast(t("common.error"), t("servers.fileManager.toast.uploadFailed", { message: err.message }))
+            );
         }
     };
 
@@ -311,7 +404,7 @@ export const FileRenderer = ({ session, disconnectFromServer, setOpenFileEditors
             </div>
             <div className="file-manager">
                 <ActionBar path={directory} updatePath={changeDirectory} createFile={() => fileListRef.current?.startCreateFile()}
-                    createFolder={() => fileListRef.current?.startCreateFolder()} uploadFile={uploadFile} goBack={goBack} goForward={goForward} historyIndex={historyIndex}
+                    createFolder={() => fileListRef.current?.startCreateFolder()} uploadFile={uploadFile} uploadFolder={uploadFolder} goBack={goBack} goForward={goForward} historyIndex={historyIndex}
                     historyLength={history.length} viewMode={viewMode} setViewMode={setViewMode} 
                     searchDirectories={searchDirectories} directorySuggestions={directorySuggestions} 
                     setDirectorySuggestions={setDirectorySuggestions} moveFiles={moveFiles} copyFiles={copyFiles} 

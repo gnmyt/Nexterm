@@ -1776,7 +1776,9 @@
         "enterDirectory": "Enter directory path...",
         "hiddenDirectories": "{{count}} hidden directories",
         "switchToGrid": "Switch to grid view",
-        "switchToList": "Switch to list view"
+        "switchToList": "Switch to list view",
+        "uploadFile": "Upload file(s)",
+        "uploadFolder": "Upload folder"
       },
       "item": {
         "link": "link"
