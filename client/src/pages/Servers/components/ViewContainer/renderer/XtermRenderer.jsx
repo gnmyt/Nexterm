@@ -31,6 +31,8 @@ const XtermRenderer = ({ session, disconnectFromServer, markSessionErrored, getS
     const onFullscreenToggleRef = useRef(onFullscreenToggle);
     const connectionLoaderRef = useRef(null);
     const canPasteIdentityRef = useRef(false);
+    const lastSelectionRef = useRef("");
+    const contextMenuSelectionRef = useRef("");
 
     const userContext = useContext(UserContext);
     const sessionToken = userContext?.sessionToken;
@@ -44,6 +46,7 @@ const XtermRenderer = ({ session, disconnectFromServer, markSessionErrored, getS
     const { identities } = useContext(IdentityContext);
     const [showSnippetsMenu, setShowSnippetsMenu] = useState(false);
     const [connectionError, setConnectionError] = useState(() => getSessionError?.(session.id) || null);
+    const [hasSelection, setHasSelection] = useState(false);
 
     useEffect(() => {
         broadcastModeRef.current = broadcastMode;
@@ -95,24 +98,33 @@ const XtermRenderer = ({ session, disconnectFromServer, markSessionErrored, getS
     const handleContextMenu = (e) => {
         e.preventDefault();
         e.stopPropagation();
+        const selection = termRef.current?.getSelection?.() || "";
+        contextMenuSelectionRef.current = selection || lastSelectionRef.current || "";
         contextMenu.open(e, { x: e.clientX, y: e.clientY });
     };
 
-    const copyToClipboard = (text) => {
-        navigator.clipboard.writeText(text).catch(() => {
+    const copyToClipboard = async (text) => {
+        try {
+            await navigator.clipboard.writeText(text);
+            return true;
+        } catch {
             const textArea = document.createElement('textarea');
             textArea.value = text;
             textArea.style.cssText = 'position:fixed;left:-9999px;top:-9999px';
             document.body.appendChild(textArea);
             textArea.select();
-            document.execCommand('copy');
+            const copied = document.execCommand('copy');
             document.body.removeChild(textArea);
-        });
+            return copied;
+        }
     };
 
-    const handleCopy = () => {
-        const selection = termRef.current?.getSelection();
-        if (selection) copyToClipboard(selection);
+    const handleCopy = async () => {
+        const selection = contextMenuSelectionRef.current || lastSelectionRef.current || termRef.current?.getSelection?.() || "";
+        if (selection) {
+            await copyToClipboard(selection);
+        }
+        contextMenuSelectionRef.current = "";
         contextMenu.close();
         termRef.current?.focus();
     };
@@ -140,6 +152,11 @@ const XtermRenderer = ({ session, disconnectFromServer, markSessionErrored, getS
 
     const handleSelectAll = () => {
         termRef.current?.selectAll();
+        const selection = termRef.current?.getSelection?.() || "";
+        setHasSelection(!!selection);
+        if (selection) {
+            lastSelectionRef.current = selection;
+        }
         contextMenu.close();
         termRef.current?.focus();
     };
@@ -215,6 +232,14 @@ const XtermRenderer = ({ session, disconnectFromServer, markSessionErrored, getS
         term.loadAddon(fitAddon);
         term.open(ref.current);
 
+        const selectionDisposable = term.onSelectionChange(() => {
+            const selection = term.getSelection() || "";
+            setHasSelection(!!selection);
+            if (selection) {
+                lastSelectionRef.current = selection;
+            }
+        });
+
         const handleResize = () => {
             fitAddon.fit();
             if (wsRef.current && wsRef.current.readyState === WebSocket.OPEN) {
@@ -235,7 +260,7 @@ const XtermRenderer = ({ session, disconnectFromServer, markSessionErrored, getS
 
         let ws;
 
-        const wsParams = isShared 
+        const wsParams = isShared
             ? { shareId: session.shareId || session.id.split('/').pop() }
             : { sessionToken, sessionId: session.id };
 
@@ -254,7 +279,7 @@ const XtermRenderer = ({ session, disconnectFromServer, markSessionErrored, getS
 
         ws.onopen = () => {
             ws.send(`\x01${term.cols},${term.rows}`);
-        }
+        };
 
         const reportError = (message) => {
             markSessionErrored?.(session.id, message);
@@ -340,7 +365,7 @@ const XtermRenderer = ({ session, disconnectFromServer, markSessionErrored, getS
             if (event.type === "keydown") {
                 const copyKeybind = getParsedKeybind("copy");
                 if (copyKeybind && matchesKeybind(event, copyKeybind)) {
-                    const selection = term.getSelection();
+                    const selection = term.getSelection() || lastSelectionRef.current || "";
                     if (selection) {
                         event.preventDefault();
                         event.stopPropagation();
@@ -412,6 +437,7 @@ const XtermRenderer = ({ session, disconnectFromServer, markSessionErrored, getS
             if (registerTerminalRef) {
                 registerTerminalRef(session.id, null);
             }
+            selectionDisposable.dispose();
             window.removeEventListener("resize", handleResize);
             ref.current?.removeEventListener('paste', handleNativePaste);
             if (ws) {
@@ -423,8 +449,15 @@ const XtermRenderer = ({ session, disconnectFromServer, markSessionErrored, getS
             clearInterval(interval);
             termRef.current = null;
             wsRef.current = null;
+            lastSelectionRef.current = "";
+            contextMenuSelectionRef.current = "";
+            setHasSelection(false);
         };
     }, [sessionToken, selectedFont, fontSize, cursorStyle, cursorBlink, selectedTheme, isShared]);
+
+    const canCopy = hasSelection || !!lastSelectionRef.current || !!contextMenuSelectionRef.current;
+    const selectedIdentity = identities?.find(i => i.id === session.identity);
+    const canPasteIdentity = !!(selectedIdentity && ['password', 'both', 'password-only'].includes(selectedIdentity.type));
 
     return (
         <div className="xterm-container" onContextMenu={!isShared ? handleContextMenu : undefined}>
@@ -455,7 +488,7 @@ const XtermRenderer = ({ session, disconnectFromServer, markSessionErrored, getS
                         icon={mdiContentCopy}
                         label={t('servers.fileManager.contextMenu.copy')}
                         onClick={handleCopy}
-                        disabled={!termRef.current?.getSelection()}
+                        disabled={!canCopy}
                     />
                     <ContextMenuItem
                         icon={mdiContentPaste}
@@ -473,12 +506,15 @@ const XtermRenderer = ({ session, disconnectFromServer, markSessionErrored, getS
                         label={t('servers.fileManager.contextMenu.insertSnippet')}
                         onClick={handleInsertSnippet}
                     />
-                    {(identities && session.identity && identities.find(i => i.id === session.identity) && ['password','both','password-only'].includes(identities.find(i => i.id === session.identity).type)) && (
-                        <ContextMenuItem
-                            icon={mdiKey}
-                            label={t('servers.contextMenu.pasteIdentityPassword')}
-                            onClick={handlePasteIdentity}
-                        />
+                    {canPasteIdentity && (
+                        <>
+                            <ContextMenuSeparator />
+                            <ContextMenuItem
+                                icon={mdiKey}
+                                label={t('servers.contextMenu.pasteIdentityPassword')}
+                                onClick={handlePasteIdentity}
+                            />
+                        </>
                     )}
                     <ContextMenuSeparator />
                     <ContextMenuItem
