@@ -99,7 +99,7 @@ const XtermRenderer = ({ session, disconnectFromServer, markSessionErrored, getS
         e.preventDefault();
         e.stopPropagation();
         const selection = termRef.current?.getSelection?.() || "";
-        contextMenuSelectionRef.current = selection || lastSelectionRef.current || "";
+        contextMenuSelectionRef.current = selection;
         contextMenu.open(e, { x: e.clientX, y: e.clientY });
     };
 
@@ -120,7 +120,7 @@ const XtermRenderer = ({ session, disconnectFromServer, markSessionErrored, getS
     };
 
     const handleCopy = async () => {
-        const selection = contextMenuSelectionRef.current || lastSelectionRef.current || termRef.current?.getSelection?.() || "";
+        const selection = contextMenuSelectionRef.current || termRef.current?.getSelection?.() || "";
         if (selection) {
             await copyToClipboard(selection);
         }
@@ -154,9 +154,7 @@ const XtermRenderer = ({ session, disconnectFromServer, markSessionErrored, getS
         termRef.current?.selectAll();
         const selection = termRef.current?.getSelection?.() || "";
         setHasSelection(!!selection);
-        if (selection) {
-            lastSelectionRef.current = selection;
-        }
+        lastSelectionRef.current = selection;
         contextMenu.close();
         termRef.current?.focus();
     };
@@ -235,9 +233,7 @@ const XtermRenderer = ({ session, disconnectFromServer, markSessionErrored, getS
         const selectionDisposable = term.onSelectionChange(() => {
             const selection = term.getSelection() || "";
             setHasSelection(!!selection);
-            if (selection) {
-                lastSelectionRef.current = selection;
-            }
+            lastSelectionRef.current = selection;
         });
 
         const handleResize = () => {
@@ -365,7 +361,7 @@ const XtermRenderer = ({ session, disconnectFromServer, markSessionErrored, getS
             if (event.type === "keydown") {
                 const copyKeybind = getParsedKeybind("copy");
                 if (copyKeybind && matchesKeybind(event, copyKeybind)) {
-                    const selection = term.getSelection() || lastSelectionRef.current || "";
+                    const selection = term.getSelection() || "";
                     if (selection) {
                         event.preventDefault();
                         event.stopPropagation();
@@ -455,7 +451,7 @@ const XtermRenderer = ({ session, disconnectFromServer, markSessionErrored, getS
         };
     }, [sessionToken, selectedFont, fontSize, cursorStyle, cursorBlink, selectedTheme, isShared]);
 
-    const canCopy = hasSelection || !!lastSelectionRef.current || !!contextMenuSelectionRef.current;
+    const canCopy = hasSelection || !!contextMenuSelectionRef.current;
     const selectedIdentity = identities?.find(i => i.id === session.identity);
     const canPasteIdentity = !!(selectedIdentity && ['password', 'both', 'password-only'].includes(selectedIdentity.type));
 
