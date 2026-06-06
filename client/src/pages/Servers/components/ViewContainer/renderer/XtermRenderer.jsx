@@ -103,26 +103,61 @@ const XtermRenderer = ({ session, disconnectFromServer, markSessionErrored, getS
         contextMenu.open(e, { x: e.clientX, y: e.clientY });
     };
 
-    const copyToClipboard = async (text) => {
+    const copySelectionToClipboard = (selection) => {
+        if (!selection) return false;
+
+        const hadFocus = document.activeElement;
+        const textArea = document.createElement('textarea');
+        textArea.value = selection;
+        textArea.setAttribute('readonly', 'readonly');
+        textArea.setAttribute('aria-hidden', 'true');
+        textArea.style.position = 'fixed';
+        textArea.style.top = '0';
+        textArea.style.left = '-9999px';
+        textArea.style.opacity = '0';
+        document.body.appendChild(textArea);
+
+        textArea.focus();
+        textArea.select();
+        textArea.setSelectionRange(0, textArea.value.length);
+
+        let copied = false;
         try {
-            await navigator.clipboard.writeText(text);
-            return true;
-        } catch {
-            const textArea = document.createElement('textarea');
-            textArea.value = text;
-            textArea.style.cssText = 'position:fixed;left:-9999px;top:-9999px';
-            document.body.appendChild(textArea);
-            textArea.select();
-            const copied = document.execCommand('copy');
-            document.body.removeChild(textArea);
-            return copied;
+            copied = document.execCommand('copy');
+        } catch (err) {
+            console.error('Failed to copy via execCommand:', err);
         }
+
+        document.body.removeChild(textArea);
+
+        if (hadFocus && typeof hadFocus.focus === 'function') {
+            hadFocus.focus();
+        }
+
+        return copied;
+    };
+
+    const copyToClipboard = async (text) => {
+        if (!text) return false;
+
+        const isSecureContextAvailable = typeof window !== 'undefined' && window.isSecureContext;
+        if (isSecureContextAvailable && navigator.clipboard?.writeText) {
+            try {
+                await navigator.clipboard.writeText(text);
+                return true;
+            } catch (err) {
+                console.error('Failed to copy via Clipboard API, falling back to execCommand:', err);
+            }
+        }
+
+        return copySelectionToClipboard(text);
     };
 
     const handleCopy = async () => {
         const selection = contextMenuSelectionRef.current || termRef.current?.getSelection?.() || "";
-        if (selection) {
-            await copyToClipboard(selection);
+        const copied = await copyToClipboard(selection);
+        if (!copied && selection) {
+            console.warn('Terminal copy failed. Browser may block clipboard access in this context.');
         }
         contextMenuSelectionRef.current = "";
         contextMenu.close();
@@ -365,7 +400,11 @@ const XtermRenderer = ({ session, disconnectFromServer, markSessionErrored, getS
                     if (selection) {
                         event.preventDefault();
                         event.stopPropagation();
-                        copyToClipboard(selection);
+                        copyToClipboard(selection).then((copied) => {
+                            if (!copied) {
+                                console.warn('Terminal copy failed. Browser may block clipboard access in this context.');
+                            }
+                        });
                         return false;
                     }
                 }
