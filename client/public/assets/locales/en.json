@@ -1197,6 +1197,7 @@
       "noSources": "No Sources Configured",
       "noSourcesDescription": "Add external sources to automatically sync scripts and snippets.",
       "addSource": "Add Source",
+      "addThirdParty": "Add 3rd Party",
       "snippets": "snippets",
       "scripts": "scripts",
       "themes": "themes",
@@ -1208,6 +1209,7 @@
       "status": {
         "success": "Synced",
         "error": "Error",
+        "syncing": "Syncing",
         "pending": "Pending",
         "disabled": "Disabled"
       },
@@ -1224,11 +1226,19 @@
         "validationSuccess": "Valid source found: {{snippets}} snippets, {{scripts}} scripts, {{themes}} themes",
         "create": "Create"
       },
+      "thirdParty": {
+        "title": "Add 3rd Party Source",
+        "description": "Choose a known third-party source to add to Nexterm.",
+        "add": "Add",
+        "enable": "Enable",
+        "added": "Added"
+      },
       "messages": {
         "created": "Source created successfully",
         "updated": "Source updated successfully",
         "deleted": "Source deleted successfully",
-        "synced": "Source synced successfully"
+        "synced": "Source synced successfully",
+        "thirdPartyAdded": "Third-party source added successfully"
       },
       "errors": {
         "loadFailed": "Failed to load sources",
@@ -1236,7 +1246,9 @@
         "deleteFailed": "Failed to delete source",
         "syncFailed": "Failed to sync source",
         "validationFailed": "Failed to validate URL",
-        "requiredFields": "Name and URL are required"
+        "requiredFields": "Name and URL are required",
+        "thirdPartyLoadFailed": "Failed to load third-party sources",
+        "thirdPartyAddFailed": "Failed to add third-party source"
       }
     },
     "backup": {
@@ -1474,9 +1486,13 @@
       "errorDescription": "Failed to send magic packet"
     },
     "messages": {
-      "usernameRequired": "Username is required",
-      "passwordRequired": "Password is required",
-      "sshKeyRequired": "SSH key is required"
+      "fillRequiredFields": "Please fill in all required fields",
+      "serverCreated": "Server created successfully",
+      "serverUpdated": "Server updated successfully",
+      "createFailed": "Failed to create server",
+      "updateFailed": "Failed to update server",
+      "createIdentityFailed": "Failed to create identity",
+      "updateIdentityFailed": "Failed to update identity"
     },
     "dialog": {
       "addServer": "Add server",
@@ -1836,15 +1852,6 @@
         "unsaved": "Unsaved",
         "error": "Save failed"
       }
-    },
-    "messages": {
-      "fillRequiredFields": "Please fill in all required fields",
-      "serverCreated": "Server created successfully",
-      "serverUpdated": "Server updated successfully",
-      "createFailed": "Failed to create server",
-      "updateFailed": "Failed to update server",
-      "createIdentityFailed": "Failed to create identity",
-      "updateIdentityFailed": "Failed to update identity"
     }
   },
   "support": {

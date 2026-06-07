@@ -4,6 +4,41 @@ const Script = require("../models/Script");
 const Theme = require("../models/Theme");
 const crypto = require("crypto");
 const logger = require("../utils/logger");
+const { Op } = require("sequelize");
+
+const DEFAULT_SOURCE = {
+    name: "Official",
+    url: "https://source.nexterm.dev",
+};
+
+const THIRD_PARTY_SOURCES = [
+    {
+        key: "nerdystore",
+        name: "NerdyStore",
+        url: "http://source.nerdytech.dev",
+    },
+];
+
+const syncingSources = new Set();
+
+const syncSourceInBackground = (sourceId) => {
+    module.exports.syncSource(sourceId).catch(error => {
+        logger.error("Background source sync failed", { sourceId, error: error.message });
+    });
+};
+
+const runWithConcurrency = async (items, limit, handler) => {
+    let index = 0;
+
+    const workers = Array.from({ length: Math.min(limit, items.length) }, async () => {
+        while (index < items.length) {
+            const item = items[index++];
+            await handler(item);
+        }
+    });
+
+    await Promise.all(workers);
+};
 
 module.exports.validateSourceUrl = async (url) => {
     try {
@@ -100,9 +135,14 @@ module.exports.createSource = async (sourceData) => {
         return { code: 400, message: `Invalid source URL: ${validation.error}` };
     }
 
-    const source = await Source.create({ name, url: normalizedUrl, enabled: true });
+    const source = await Source.create({
+        name,
+        url: normalizedUrl,
+        enabled: true,
+        lastSyncStatus: "syncing",
+    });
 
-    await module.exports.syncSource(source.id);
+    syncSourceInBackground(source.id);
 
     return source;
 };
@@ -135,7 +175,7 @@ module.exports.updateSource = async (sourceId, updates) => {
         const normalizedUrl = url.replace(/\/$/, "");
 
         const existingSource = await Source.findOne({
-            where: { url: normalizedUrl, id: { [require("sequelize").Op.ne]: sourceId } },
+            where: { url: normalizedUrl, id: { [Op.ne]: sourceId } },
         });
         if (existingSource) {
             return { code: 409, message: "A source with this URL already exists" };
@@ -151,8 +191,9 @@ module.exports.updateSource = async (sourceId, updates) => {
 
     await Source.update(updateData, { where: { id: sourceId } });
 
-    if (updateData.url) {
-        await module.exports.syncSource(sourceId);
+    if (updateData.url || (source.enabled === false && updateData.enabled === true)) {
+        await Source.update({ lastSyncStatus: "syncing" }, { where: { id: sourceId } });
+        syncSourceInBackground(sourceId);
     }
 
     return await Source.findByPk(sourceId);
@@ -176,6 +217,10 @@ module.exports.deleteSource = async (sourceId) => {
 };
 
 module.exports.syncSource = async (sourceId) => {
+    if (syncingSources.has(sourceId)) {
+        return { success: true, inProgress: true };
+    }
+
     const source = await Source.findByPk(sourceId);
     if (!source) {
         return { success: false, error: "Source not found" };
@@ -185,8 +230,13 @@ module.exports.syncSource = async (sourceId) => {
         return { success: false, error: "Source is disabled" };
     }
 
+    syncingSources.add(sourceId);
+
     try {
         logger.info(`Syncing source: ${source.name} (${source.url})`);
+        await Source.update({
+            lastSyncStatus: "syncing",
+        }, { where: { id: sourceId } });
 
         const validation = await module.exports.validateSourceUrl(source.url);
         if (!validation.valid) {
@@ -214,7 +264,7 @@ module.exports.syncSource = async (sourceId) => {
         const processedScriptNames = new Set();
         const processedThemeNames = new Set();
 
-        for (const indexSnippet of indexSnippets) {
+        await runWithConcurrency(indexSnippets, 12, async (indexSnippet) => {
             let existingByHash = null;
             for (const [name, snippet] of existingSnippetMap) {
                 const reconstructed = reconstructSnippetFile(snippet);
@@ -228,13 +278,13 @@ module.exports.syncSource = async (sourceId) => {
 
             if (existingByHash) {
                 snippetCount++;
-                continue;
+                return;
             }
 
             const content = await fetchSourceFile(source.url, indexSnippet.path);
             if (!content) {
                 logger.warn(`Failed to fetch snippet: ${indexSnippet.path}`);
-                continue;
+                return;
             }
 
             const fallbackName = indexSnippet.path.split("/").pop().replace(/\.[^.]+$/, "");
@@ -262,9 +312,9 @@ module.exports.syncSource = async (sourceId) => {
                 });
             }
             snippetCount++;
-        }
+        });
 
-        for (const indexScript of indexScripts) {
+        await runWithConcurrency(indexScripts, 12, async (indexScript) => {
             let existingByHash = null;
             for (const [name, script] of existingScriptMap) {
                 const existingHash = calculateContentHash(script.content);
@@ -277,13 +327,13 @@ module.exports.syncSource = async (sourceId) => {
 
             if (existingByHash) {
                 scriptCount++;
-                continue;
+                return;
             }
 
             const content = await fetchSourceFile(source.url, indexScript.path);
             if (!content) {
                 logger.warn(`Failed to fetch script: ${indexScript.path}`);
-                continue;
+                return;
             }
 
             const fallbackName = indexScript.path.split("/").pop().replace(/\.[^.]+$/, "");
@@ -311,9 +361,9 @@ module.exports.syncSource = async (sourceId) => {
                 });
             }
             scriptCount++;
-        }
+        });
 
-        for (const indexTheme of indexThemes) {
+        await runWithConcurrency(indexThemes, 12, async (indexTheme) => {
             let existingByHash = null;
             for (const [name, theme] of existingThemeMap) {
                 const existingHash = calculateContentHash(theme.css);
@@ -326,13 +376,13 @@ module.exports.syncSource = async (sourceId) => {
 
             if (existingByHash) {
                 themeCount++;
-                continue;
+                return;
             }
 
             const content = await fetchSourceFile(source.url, indexTheme.path);
             if (!content) {
                 logger.warn(`Failed to fetch theme: ${indexTheme.path}`);
-                continue;
+                return;
             }
 
             const parsed = parseThemeContent(content, indexTheme.path);
@@ -356,7 +406,7 @@ module.exports.syncSource = async (sourceId) => {
                 });
             }
             themeCount++;
-        }
+        });
 
         for (const [name, snippet] of existingSnippetMap) {
             if (!processedSnippetNames.has(name)) {
@@ -390,6 +440,8 @@ module.exports.syncSource = async (sourceId) => {
             lastSyncStatus: "error",
         }, { where: { id: sourceId } });
         return { success: false, error: error.message };
+    } finally {
+        syncingSources.delete(sourceId);
     }
 };
 
@@ -519,31 +571,89 @@ const parseThemeContent = (content, path) => {
 };
 
 module.exports.ensureDefaultSource = async () => {
-    const DEFAULT_SOURCE_URL = "https://source.nexterm.dev";
-    const DEFAULT_SOURCE_NAME = "Official";
-
     const existingDefault = await Source.findOne({ where: { isDefault: true } });
     if (existingDefault) {
-        if (existingDefault.url !== DEFAULT_SOURCE_URL) {
-            await Source.update({ url: DEFAULT_SOURCE_URL }, { where: { id: existingDefault.id } });
+        if (existingDefault.url !== DEFAULT_SOURCE.url) {
+            await Source.update({ url: DEFAULT_SOURCE.url }, { where: { id: existingDefault.id } });
         }
         return;
     }
 
-    const existingByUrl = await Source.findOne({ where: { url: DEFAULT_SOURCE_URL } });
+    const existingByUrl = await Source.findOne({ where: { url: DEFAULT_SOURCE.url } });
     if (existingByUrl) {
         await Source.update({ isDefault: true }, { where: { id: existingByUrl.id } });
         return;
     }
 
     await Source.create({
-        name: DEFAULT_SOURCE_NAME,
-        url: DEFAULT_SOURCE_URL,
+        name: DEFAULT_SOURCE.name,
+        url: DEFAULT_SOURCE.url,
         enabled: true,
         isDefault: true,
     });
 
     logger.info("Created default official source");
+};
+
+module.exports.ensureThirdPartySources = async () => {
+    logger.warn("ensureThirdPartySources is deprecated; third-party sources are now added explicitly by users");
+};
+
+module.exports.ensureConfiguredSources = async () => {
+    await module.exports.ensureDefaultSource();
+};
+
+module.exports.listThirdPartySources = async () => {
+    const urls = THIRD_PARTY_SOURCES.map(source => source.url.replace(/\/$/, ""));
+    const existingSources = await Source.findAll({ where: { url: { [Op.in]: urls } } });
+    const existingByUrl = new Map(existingSources.map(source => [source.url, source]));
+
+    return THIRD_PARTY_SOURCES.map(source => {
+        const normalizedUrl = source.url.replace(/\/$/, "");
+        const existingSource = existingByUrl.get(normalizedUrl);
+
+        return {
+            key: source.key,
+            name: source.name,
+            url: normalizedUrl,
+            added: !!existingSource,
+            enabled: existingSource?.enabled ?? false,
+            sourceId: existingSource?.id ?? null,
+        };
+    });
+};
+
+module.exports.addThirdPartySource = async (sourceKey) => {
+    const thirdPartySource = THIRD_PARTY_SOURCES.find(source => source.key === sourceKey);
+    if (!thirdPartySource) {
+        return { code: 404, message: "Third-party source not found" };
+    }
+
+    const normalizedUrl = thirdPartySource.url.replace(/\/$/, "");
+    let source = await Source.findOne({ where: { url: normalizedUrl } });
+
+    if (source) {
+        if (!source.enabled) {
+            await Source.update({
+                enabled: true,
+                name: source.name || thirdPartySource.name,
+                lastSyncStatus: "syncing",
+            }, { where: { id: source.id } });
+            source = await Source.findByPk(source.id);
+        }
+    } else {
+        source = await Source.create({
+            name: thirdPartySource.name,
+            url: normalizedUrl,
+            enabled: true,
+            isDefault: false,
+            lastSyncStatus: "syncing",
+        });
+    }
+
+    syncSourceInBackground(source.id);
+
+    return await Source.findByPk(source.id);
 };
 
 module.exports.parseNTINDEX = parseNTINDEX;

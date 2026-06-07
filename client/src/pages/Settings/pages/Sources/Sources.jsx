@@ -11,6 +11,7 @@ import Input from "@/common/components/IconInput";
 import Icon from "@mdi/react";
 import {
     mdiPlus,
+    mdiCloudPlus,
     mdiSync,
     mdiPencil,
     mdiTrashCan,
@@ -29,11 +30,14 @@ export const Sources = () => {
     const { t } = useTranslation();
     const [sources, setSources] = useState([]);
     const [dialogOpen, setDialogOpen] = useState(false);
+    const [thirdPartyDialogOpen, setThirdPartyDialogOpen] = useState(false);
     const [editSource, setEditSource] = useState(null);
     const [formData, setFormData] = useState({ name: "", url: "", enabled: true });
     const [validating, setValidating] = useState(false);
     const [validationResult, setValidationResult] = useState(null);
     const [saving, setSaving] = useState(false);
+    const [addingThirdParty, setAddingThirdParty] = useState({});
+    const [thirdPartySources, setThirdPartySources] = useState([]);
     const [syncing, setSyncing] = useState({});
     const [deleteConfirmDialog, setDeleteConfirmDialog] = useState({ open: false, source: null });
     const { sendToast } = useToast();
@@ -51,11 +55,41 @@ export const Sources = () => {
         loadSources();
     }, [loadSources]);
 
+    useEffect(() => {
+        if (!sources.some(source => source.enabled && source.lastSyncStatus === "syncing")) return;
+
+        const interval = setInterval(() => {
+            loadSources();
+            if (thirdPartyDialogOpen) loadThirdPartySources();
+        }, 2000);
+
+        return () => clearInterval(interval);
+    }, [sources, thirdPartyDialogOpen, loadSources]);
+
+    const loadThirdPartySources = async () => {
+        try {
+            const data = await getRequest("sources/third-party");
+            setThirdPartySources(data);
+        } catch (error) {
+            sendToast(t("common.errors.generalError"), t("settings.sources.errors.thirdPartyLoadFailed"));
+        }
+    };
+
     const openCreateDialog = () => {
         setEditSource(null);
         setFormData({ name: "", url: "", enabled: true });
         setValidationResult(null);
         setDialogOpen(true);
+    };
+
+    const openThirdPartyDialog = () => {
+        setThirdPartyDialogOpen(true);
+        loadThirdPartySources();
+    };
+
+    const closeThirdPartyDialog = () => {
+        setThirdPartyDialogOpen(false);
+        setThirdPartySources([]);
     };
 
     const openEditDialog = (source) => {
@@ -146,6 +180,20 @@ export const Sources = () => {
         }
     };
 
+    const handleAddThirdParty = async (source) => {
+        setAddingThirdParty(prev => ({ ...prev, [source.key]: true }));
+
+        try {
+            await postRequest(`sources/third-party/${source.key}`);
+            sendToast(t("settings.sources.messages.thirdPartyAdded"), "");
+            await Promise.all([loadSources(), loadThirdPartySources()]);
+        } catch (error) {
+            sendToast(t("common.errors.generalError"), error.message || t("settings.sources.errors.thirdPartyAddFailed"));
+        } finally {
+            setAddingThirdParty(prev => ({ ...prev, [source.key]: false }));
+        }
+    };
+
     const getStatusClass = (source) => {
         if (!source.enabled) return "disabled";
         if (!source.lastSyncStatus) return "pending";
@@ -154,6 +202,7 @@ export const Sources = () => {
 
     const getStatusLabel = (source) => {
         if (!source.enabled) return t("settings.sources.status.disabled");
+        if (source.lastSyncStatus === "syncing") return t("settings.sources.status.syncing");
         if (!source.lastSyncStatus) return t("settings.sources.status.pending");
         if (source.lastSyncStatus === "success") return t("settings.sources.status.success");
         return t("settings.sources.status.error");
@@ -167,7 +216,10 @@ export const Sources = () => {
                         <h2>{t("settings.sources.title")}</h2>
                         <p>{t("settings.sources.description")}</p>
                     </div>
-                    <Button text={t("settings.sources.addSource")} icon={mdiPlus} onClick={openCreateDialog} />
+                    <div className="source-header-actions">
+                        <Button text={t("settings.sources.addThirdParty")} icon={mdiCloudPlus} onClick={openThirdPartyDialog} type="secondary" />
+                        <Button text={t("settings.sources.addSource")} icon={mdiPlus} onClick={openCreateDialog} />
+                    </div>
                 </div>
 
                 <div className="sources-grid">
@@ -320,6 +372,35 @@ export const Sources = () => {
                             disabled={saving || !formData.name || !formData.url}
                         />
                     </div>
+                </div>
+            </DialogProvider>
+
+            <DialogProvider open={thirdPartyDialogOpen} onClose={closeThirdPartyDialog}>
+                <div className="third-party-dialog">
+                    <h2>{t("settings.sources.thirdParty.title")}</h2>
+                    <p>{t("settings.sources.thirdParty.description")}</p>
+
+                    <div className="third-party-list">
+                        {thirdPartySources.map(source => (
+                            <div key={source.key} className="third-party-source">
+                                <div className="third-party-source-info">
+                                    <Icon path={mdiCloudDownload} className="third-party-source-icon" />
+                                    <div>
+                                        <h3>{source.name}</h3>
+                                        <p>{source.url}</p>
+                                    </div>
+                                </div>
+                                <Button
+                                    text={source.enabled ? t("settings.sources.thirdParty.added") : source.added ? t("settings.sources.thirdParty.enable") : t("settings.sources.thirdParty.add")}
+                                    icon={addingThirdParty[source.key] ? mdiLoading : source.enabled ? mdiCheck : mdiCloudPlus}
+                                    onClick={() => handleAddThirdParty(source)}
+                                    disabled={addingThirdParty[source.key] || source.enabled}
+                                    type={source.enabled ? "secondary" : "primary"}
+                                />
+                            </div>
+                        ))}
+                    </div>
+
                 </div>
             </DialogProvider>
 

@@ -9,6 +9,8 @@ const {
     syncSource,
     syncAllSources,
     validateSourceUrl,
+    listThirdPartySources,
+    addThirdPartySource,
 } = require("../controllers/source");
 const {
     sourceCreationValidation,
@@ -31,6 +33,45 @@ app.get("/", async (req, res) => {
     try {
         const sources = await listSources();
         res.json(sources);
+    } catch (error) {
+        res.status(500).json({ code: 500, message: error.message });
+    }
+});
+
+/**
+ * GET /sources/third-party
+ * @summary List Third-Party Sources
+ * @description Retrieves known third-party sources that can be added explicitly
+ * @tags Sources
+ * @produces application/json
+ * @security BearerAuth
+ * @return {array} 200 - List of known third-party sources
+ */
+app.get("/third-party", async (req, res) => {
+    try {
+        const sources = await listThirdPartySources();
+        res.json(sources);
+    } catch (error) {
+        res.status(500).json({ code: 500, message: error.message });
+    }
+});
+
+/**
+ * POST /sources/third-party/:sourceKey
+ * @summary Add Third-Party Source
+ * @description Adds or enables a known third-party source and performs an initial sync
+ * @tags Sources
+ * @produces application/json
+ * @security BearerAuth
+ * @param {string} sourceKey.path.required - The third-party source key
+ * @return {object} 200 - Third-party source added successfully
+ * @return {object} 404 - Third-party source not found
+ */
+app.post("/third-party/:sourceKey", async (req, res) => {
+    try {
+        const source = await addThirdPartySource(req.params.sourceKey);
+        if (source?.code) return res.status(source.code).json(source);
+        res.json({ message: "Third-party source added successfully", source });
     } catch (error) {
         res.status(500).json({ code: 500, message: error.message });
     }

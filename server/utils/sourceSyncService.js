@@ -1,4 +1,4 @@
-const { syncAllSources, ensureDefaultSource } = require("../controllers/source");
+const { syncAllSources, ensureConfiguredSources } = require("../controllers/source");
 const logger = require("./logger");
 
 let syncInterval = null;
@@ -8,9 +8,9 @@ const startSourceSyncService = async () => {
     logger.system("Starting source sync service (hourly interval)");
 
     try {
-        await ensureDefaultSource();
+        await ensureConfiguredSources();
     } catch (error) {
-        logger.error("Failed to ensure default source", { error: error.message });
+        logger.error("Failed to ensure configured sources", { error: error.message });
     }
 
     setTimeout(async () => {

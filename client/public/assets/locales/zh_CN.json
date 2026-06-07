@@ -1208,6 +1208,7 @@
       "status": {
         "success": "已同步",
         "error": "错误",
+        "syncing": "同步中",
         "pending": "等待中",
         "disabled": "已禁用"
       },

@@ -1208,6 +1208,7 @@
       "status": {
         "success": "Sincronizzato",
         "error": "Errore",
+        "syncing": "Sincronizzazione",
         "pending": "In attesa",
         "disabled": "Disabili"
       },

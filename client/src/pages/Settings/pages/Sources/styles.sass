@@ -37,6 +37,15 @@
         p
           font-size: 0.9rem
 
+      .source-header-actions
+        display: flex
+        gap: 0.5rem
+        align-items: center
+        flex-wrap: wrap
+
+        @media (max-width: breakpoints.$mobile)
+          width: 100%
+
     .sources-grid
       display: grid
       grid-template-columns: repeat(auto-fill, minmax(380px, 1fr))
@@ -120,6 +129,10 @@
                 &.pending
                   background-color: colors.$warning-opacity
                   color: colors.$warning
+
+                &.syncing
+                  background-color: colors.$primary-opacity
+                  color: colors.$primary
 
                 &.disabled
                   background-color: colors.$gray
@@ -305,3 +318,66 @@
 
       button
         width: 100%
+
+.third-party-dialog
+  min-width: 520px
+
+  @media (max-width: breakpoints.$mobile)
+    min-width: unset
+    width: 100%
+
+  h2
+    margin: 0 0 0.5rem
+    font-size: 1.5rem
+    color: colors.$white
+
+    @media (max-width: breakpoints.$mobile)
+      font-size: 1.25rem
+
+  > p
+    margin: 0 0 1.25rem
+    color: colors.$subtext
+    font-size: 0.9rem
+
+  .third-party-list
+    display: flex
+    flex-direction: column
+    gap: 0.75rem
+
+  .third-party-source
+    display: flex
+    justify-content: space-between
+    align-items: center
+    gap: 1rem
+    padding: 1rem
+    border: 1px solid colors.$dark-gray
+    border-radius: 0.5rem
+    background-color: colors.$background
+
+    @media (max-width: breakpoints.$mobile)
+      align-items: flex-start
+      flex-direction: column
+
+    .third-party-source-info
+      display: flex
+      align-items: flex-start
+      gap: 0.75rem
+      min-width: 0
+
+      .third-party-source-icon
+        width: 1.5rem
+        height: 1.5rem
+        color: colors.$primary
+        flex-shrink: 0
+
+      h3
+        margin: 0 0 0.35rem
+        color: colors.$white
+        font-size: 0.95rem
+        font-weight: 600
+
+      p
+        margin: 0
+        color: colors.$subtext
+        font-size: 0.85rem
+        word-break: break-all

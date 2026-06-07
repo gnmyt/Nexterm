@@ -1208,6 +1208,7 @@
       "status": {
         "success": "مزامنة",
         "error": "خطأ",
+        "syncing": "جارٍ المزامنة",
         "pending": "قيد الانتظار",
         "disabled": "معاق"
       },
