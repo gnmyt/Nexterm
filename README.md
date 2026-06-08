@@ -117,6 +117,8 @@ The development server does not automatically start an engine. To connect to ser
 yarn dev:engine
 ```
 
+If using local engine registration, set `LOCAL_ENGINE_TOKEN` in the server environment and use the same value as `REGISTRATION_TOKEN` for the engine.
+
 ## 🔧 Configuration
 
 ### Docker Images
