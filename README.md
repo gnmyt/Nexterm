@@ -51,7 +51,16 @@ You can install Nexterm by clicking [here](https://docs.nexterm.dev/installation
 
 -   Node.js 18+
 -   Yarn
+-   FlatBuffers compiler (`flatc`)
 -   Docker (optional)
+
+Install FlatBuffers:
+
+| Platform | Command |
+|----------|---------|
+| macOS | `brew install flatbuffers` |
+| Ubuntu / Debian | `sudo apt install flatbuffers-compiler` |
+| Windows | `winget install Google.FlatBuffers` |
 
 ### Local Setup
 
@@ -62,6 +71,22 @@ git clone https://github.com/gnmyt/Nexterm.git
 cd Nexterm
 ```
 
+#### Configure environment
+
+Create a local environment file:
+
+```sh
+cp .env.example .env
+```
+
+Make sure `ENCRYPTION_KEY` is set in `.env`.
+
+You can generate a secure key using:
+
+| Platform | Command |
+|----------|---------|
+| macOS / Linux | `openssl rand -hex 32` |
+
 #### Install dependencies
 
 ```sh
@@ -70,10 +95,26 @@ cd client && yarn install
 cd ..
 ```
 
+#### Generate FlatBuffers schemas
+
+```sh
+yarn schema:generate
+```
+
+This step is required before starting the development server.
+
 #### Start development mode
 
 ```sh
 yarn dev
+```
+
+#### Start an engine
+
+The development server does not automatically start an engine. To connect to servers, an engine must be running separately:
+
+```sh
+yarn dev:engine
 ```
 
 ## 🔧 Configuration
