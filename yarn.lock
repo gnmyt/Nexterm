@@ -566,26 +566,26 @@
   resolved "https://registry.yarnpkg.com/@img/colour/-/colour-1.1.0.tgz#b0c2c2fa661adf75effd6b4964497cd80010bb9d"
   integrity sha512-Td76q7j57o/tLVdgS746cYARfSyxk8iEfRxewL9h4OMzYhbW4TAcppl0mT4eyqXddh6L/jwoM75mo7ixa/pCeQ==
 
-"@img/sharp-darwin-arm64@0.35.0":
-  version "0.35.0"
-  resolved "https://registry.yarnpkg.com/@img/sharp-darwin-arm64/-/sharp-darwin-arm64-0.35.0.tgz#2cca22066dc65366bb61189a637e031d7f68732a"
-  integrity sha512-ZgaYEwaj+lx/5n4W8GmZ2IYz0PQHjN5eqRcfijWGB+2Aq7ZInZGa0qJyAn6DEtyLuWHRSrmWOqT9q3qqTBvmUQ==
+"@img/sharp-darwin-arm64@0.35.1":
+  version "0.35.1"
+  resolved "https://registry.yarnpkg.com/@img/sharp-darwin-arm64/-/sharp-darwin-arm64-0.35.1.tgz#29978b6bf07a031858eb337c877887c0dea388b4"
+  integrity sha512-T15JRWOubQ3f5+GxnWeIvo47u5qV0M9HBgJhT+f2gE1e9e6OhR6K73Re52Hm80qWcu1DNb3GweKmpr/MnuP2Ow==
   optionalDependencies:
     "@img/sharp-libvips-darwin-arm64" "1.3.0"
 
-"@img/sharp-darwin-x64@0.35.0":
-  version "0.35.0"
-  resolved "https://registry.yarnpkg.com/@img/sharp-darwin-x64/-/sharp-darwin-x64-0.35.0.tgz#e07e467eb72b12c207927f1e711cd07626926b15"
-  integrity sha512-c1z9LFpKB0slQW3RchwBE8iSVzGp70TNjUUO9k4BZwwW4HH7JBGHeIy4b+kk4n/kcBASb9evKCE3/7Slmslgiw==
+"@img/sharp-darwin-x64@0.35.1":
+  version "0.35.1"
+  resolved "https://registry.yarnpkg.com/@img/sharp-darwin-x64/-/sharp-darwin-x64-0.35.1.tgz#18da6309048af13c312f0a63f040777c5112dcdf"
+  integrity sha512-t1CPD0cr7XCHjwUj6tQ5MC0pCi866I+gUW6zbUX4aFPnKd1DFBtk0M+gWcjX8VeEzgfCNiSiNTVFZ6b7kvdbnQ==
   optionalDependencies:
     "@img/sharp-libvips-darwin-x64" "1.3.0"
 
-"@img/sharp-freebsd-wasm32@0.35.0":
-  version "0.35.0"
-  resolved "https://registry.yarnpkg.com/@img/sharp-freebsd-wasm32/-/sharp-freebsd-wasm32-0.35.0.tgz#4abf58ef3d89e649e5ea70ecc6c3e89e2b885151"
-  integrity sha512-Li2KTev0H90kEtnJHkI9xQojXt1AqWmFBMXiPw5kqd1jQgP7gi5HVK/qC5Rmh/59NuAwUuPzzPITmX22NomYYQ==
+"@img/sharp-freebsd-wasm32@0.35.1":
+  version "0.35.1"
+  resolved "https://registry.yarnpkg.com/@img/sharp-freebsd-wasm32/-/sharp-freebsd-wasm32-0.35.1.tgz#c6a92cdcab28db8b044f580f5ab4502a1bd720b5"
+  integrity sha512-MBSQXqNPThW9EcZ905H6N4sEdX5EwZEYzGx5EBq9ncDCGJALMiY1xPFJxNdzuB1iBjLOpIfxajM6YxdvwmQSLA==
   dependencies:
-    "@img/sharp-wasm32" "0.35.0"
+    "@img/sharp-wasm32" "0.35.1"
 
 "@img/sharp-libvips-darwin-arm64@1.3.0":
   version "1.3.0"
@@ -637,90 +637,90 @@
   resolved "https://registry.yarnpkg.com/@img/sharp-libvips-linuxmusl-x64/-/sharp-libvips-linuxmusl-x64-1.3.0.tgz#4ae6551afd0777b67e6140366661584b45be4922"
   integrity sha512-LiYMhUZicB1QG//+RvmYZpXJO8fYRENfp+MZUCnG9aw+AKvGAy9gPaCnuwsPcBFs8EV66M0NNxj9VHcNklE8zw==
 
-"@img/sharp-linux-arm64@0.35.0":
-  version "0.35.0"
-  resolved "https://registry.yarnpkg.com/@img/sharp-linux-arm64/-/sharp-linux-arm64-0.35.0.tgz#910e3546637547be125fe502584a33da369216f0"
-  integrity sha512-4+4XHLNT5wDT0roYlHTEmH9lDKt0acf9Tv+3hM3iceOirkxrR404/3WjAYZ9F9CkHrxeRcGLJXbi4vluMZ9O+A==
+"@img/sharp-linux-arm64@0.35.1":
+  version "0.35.1"
+  resolved "https://registry.yarnpkg.com/@img/sharp-linux-arm64/-/sharp-linux-arm64-0.35.1.tgz#a421de6cc23e2e3b0c4c4b543e88ac273f2e6397"
+  integrity sha512-ErCRyGU7LeoaFBZ0xW8hhLlXzhAg80sc4vxePB86qvtEvW1jEhhmbiNBP4oEzZfPMnu6HwHXfzD2W2kBU+RnCw==
   optionalDependencies:
     "@img/sharp-libvips-linux-arm64" "1.3.0"
 
-"@img/sharp-linux-arm@0.35.0":
-  version "0.35.0"
-  resolved "https://registry.yarnpkg.com/@img/sharp-linux-arm/-/sharp-linux-arm-0.35.0.tgz#d428f7290ed5348f8867627c57620d6950ef6b65"
-  integrity sha512-VVlpEWwizEFIOom0zdoeKuO5nuTswzVE5uHcBNvHzmeHUpNFajY3HFfbQ+zIH4E2kVaZ/yVxmsShW56TtEy4uA==
+"@img/sharp-linux-arm@0.35.1":
+  version "0.35.1"
+  resolved "https://registry.yarnpkg.com/@img/sharp-linux-arm/-/sharp-linux-arm-0.35.1.tgz#3a015099b860c48691b7216e2230557bcbea172d"
+  integrity sha512-jygmR02PpCYypt7xB7nst1vqjZp/BpRA/Kf9nK7qRponJ/KrLPaZWEG4G15z1d2FZ6XqI+T0350ha3RSnKx24A==
   optionalDependencies:
     "@img/sharp-libvips-linux-arm" "1.3.0"
 
-"@img/sharp-linux-ppc64@0.35.0":
-  version "0.35.0"
-  resolved "https://registry.yarnpkg.com/@img/sharp-linux-ppc64/-/sharp-linux-ppc64-0.35.0.tgz#2e34fcff5b97c9d01fc4c7cacf6c0cfc508cb60e"
-  integrity sha512-N3hzbEpUTJC8pWpPVJvgzGxM+so/MAXc8O2s/53B0LL9ZGpfXpME7Wizkc5d/8fRBlBtkDjzoZGDCqqNDHqLEw==
+"@img/sharp-linux-ppc64@0.35.1":
+  version "0.35.1"
+  resolved "https://registry.yarnpkg.com/@img/sharp-linux-ppc64/-/sharp-linux-ppc64-0.35.1.tgz#dd1274c1513544022d50e30744a782279485a325"
+  integrity sha512-LUWZ2+r2UoLCd8j0RLCwQ4gL6w47+Y7igxtVnPIDXOOEjV86LpBkAHq5VpJeg+GHbw0KN/JWlPJOdZjyZnFqFQ==
   optionalDependencies:
     "@img/sharp-libvips-linux-ppc64" "1.3.0"
 
-"@img/sharp-linux-riscv64@0.35.0":
-  version "0.35.0"
-  resolved "https://registry.yarnpkg.com/@img/sharp-linux-riscv64/-/sharp-linux-riscv64-0.35.0.tgz#cedc3dd9051fa314a312b91b36221451d2a33bd8"
-  integrity sha512-l6vmKVPnbS0RhVMbyxP5meAARsbhCnBN4fy31qz0+3a6Rv4jEqfzDrT89y6ZPkCi0AJGnwp2En528yXo401Hpw==
+"@img/sharp-linux-riscv64@0.35.1":
+  version "0.35.1"
+  resolved "https://registry.yarnpkg.com/@img/sharp-linux-riscv64/-/sharp-linux-riscv64-0.35.1.tgz#8d66a773654b71670a8e7be481b5628b0792e803"
+  integrity sha512-i7x6J3mwF4JgT0sM4V4WlAWdJ0bucPtA9rzO1bTji1n5qgBq/W5nn87RvOQPleuuxahNoLdTngByD8/vDDLArw==
   optionalDependencies:
     "@img/sharp-libvips-linux-riscv64" "1.3.0"
 
-"@img/sharp-linux-s390x@0.35.0":
-  version "0.35.0"
-  resolved "https://registry.yarnpkg.com/@img/sharp-linux-s390x/-/sharp-linux-s390x-0.35.0.tgz#f78b151de2597247b0129dcfedf30fe22f4fa6de"
-  integrity sha512-MYlMiPFiv/EKPAHnp3yNZ9AAWFsxga9c5Bkc6wkar6bqzHLlkGVJHRm0u1ei+VXnZxp3Mz9MG9ZIsI8vSOf3sQ==
+"@img/sharp-linux-s390x@0.35.1":
+  version "0.35.1"
+  resolved "https://registry.yarnpkg.com/@img/sharp-linux-s390x/-/sharp-linux-s390x-0.35.1.tgz#0083f92a357caeea631c995f3dae2596be37430c"
+  integrity sha512-0zSaTUjTF0kIWTSYxD4EG/nvCU4jez53+3RdURtoY3HvbXtIQ98W90JnrGz/oLRFuEnfIy9+7xeq883euc0ZWw==
   optionalDependencies:
     "@img/sharp-libvips-linux-s390x" "1.3.0"
 
-"@img/sharp-linux-x64@0.35.0":
-  version "0.35.0"
-  resolved "https://registry.yarnpkg.com/@img/sharp-linux-x64/-/sharp-linux-x64-0.35.0.tgz#17961568b8700dc512b0c059a4e439bc76132f0f"
-  integrity sha512-TYaItB5oj1ioXjhyn2xrR208vf+YuIIcHptQWRRaBmFhvIvL9D72DXN8w75xup0KXA8UdEAhQ9Qb2S49FD/9Cw==
+"@img/sharp-linux-x64@0.35.1":
+  version "0.35.1"
+  resolved "https://registry.yarnpkg.com/@img/sharp-linux-x64/-/sharp-linux-x64-0.35.1.tgz#d918b0b7892955ecd122f64ada34668cae549390"
+  integrity sha512-NbJD4mWdeyrNQKluO/tR/wBDOelcowSVGNBWxI0e3ZtlXc6F/UOVKDj1MLD4zl3oHTuvKW3s+MA9N54YTldAYw==
   optionalDependencies:
     "@img/sharp-libvips-linux-x64" "1.3.0"
 
-"@img/sharp-linuxmusl-arm64@0.35.0":
-  version "0.35.0"
-  resolved "https://registry.yarnpkg.com/@img/sharp-linuxmusl-arm64/-/sharp-linuxmusl-arm64-0.35.0.tgz#7b44b0eb5b3f23f2923ad887756793d368216358"
-  integrity sha512-DSTb6ijQzqe6DdAaOBVqJ/SYf1vO8EW5bK6X6LRXufEBebf2722VCdvBUtZ3rtV0x2ApfPNDy/p7LrrjaWjiyQ==
+"@img/sharp-linuxmusl-arm64@0.35.1":
+  version "0.35.1"
+  resolved "https://registry.yarnpkg.com/@img/sharp-linuxmusl-arm64/-/sharp-linuxmusl-arm64-0.35.1.tgz#b87259b55958f20b6d3e71968f6bd6566778aa5f"
+  integrity sha512-VoW2sQCWI+0YIKQEmWJ8vzaQjTg9wIyfkFpvEfAS2h43X6iHu7GTk1hhOgB4IpSzCHe8UwQZIcx7b81VTaOrJA==
   optionalDependencies:
     "@img/sharp-libvips-linuxmusl-arm64" "1.3.0"
 
-"@img/sharp-linuxmusl-x64@0.35.0":
-  version "0.35.0"
-  resolved "https://registry.yarnpkg.com/@img/sharp-linuxmusl-x64/-/sharp-linuxmusl-x64-0.35.0.tgz#a76f6f7f9f1df483aa7552e71998202b4c8f82d2"
-  integrity sha512-K7ykQ+26Rt6+4BTU80AuGgTPIYX86UxiAKT4rcXX/WNTo7k1ZxpKz+TguHnwVpCqQK3B5PK0vZ0ZBe6nz/ib1w==
+"@img/sharp-linuxmusl-x64@0.35.1":
+  version "0.35.1"
+  resolved "https://registry.yarnpkg.com/@img/sharp-linuxmusl-x64/-/sharp-linuxmusl-x64-0.35.1.tgz#3a9d8ddd771619ee87659d3440ac0e321ed6c2ce"
+  integrity sha512-LjBoSd/c5JU0/K5MwzDMlgsSRP2bPn98JQGFFQAOLQ0bU/1z4ekxUdSKY9BmlwSh/cA+OrvpgsWqfZyYfVHBRw==
   optionalDependencies:
     "@img/sharp-libvips-linuxmusl-x64" "1.3.0"
 
-"@img/sharp-wasm32@0.35.0":
-  version "0.35.0"
-  resolved "https://registry.yarnpkg.com/@img/sharp-wasm32/-/sharp-wasm32-0.35.0.tgz#65fe355c0fb49066692290ecdc0da9064096e3e2"
-  integrity sha512-9woLIFORERCr+6cWu87dQ22J34EExkhc73U1kZW0c+RclQqWetoodByp4dWZ/hN8/KVmTRAx2HOnUwib8AwZdA==
+"@img/sharp-wasm32@0.35.1":
+  version "0.35.1"
+  resolved "https://registry.yarnpkg.com/@img/sharp-wasm32/-/sharp-wasm32-0.35.1.tgz#4fb3e5a9a21151d6e94216cf70d9e96b6f6ce975"
+  integrity sha512-PCQUoQdZyE8tp3HpbevuihfUmgSP4qWI0FGEPWoeXqaS+cUrFfemabHQiebUmUmlUhCuNnQMxGrQ+CPqK4hnxg==
   dependencies:
     "@emnapi/runtime" "^1.11.0"
 
-"@img/sharp-webcontainers-wasm32@0.35.0":
-  version "0.35.0"
-  resolved "https://registry.yarnpkg.com/@img/sharp-webcontainers-wasm32/-/sharp-webcontainers-wasm32-0.35.0.tgz#14dc68ce69966d0ab5d112057748c018660c8a85"
-  integrity sha512-t+kie1TOyaDM6Dho+f+y0VqIUNhYQaKCUahuZVi0E0frgdiaOaPsDxDW3wfKacUdaNBCnK/ZDBMg33ydvHj8uA==
+"@img/sharp-webcontainers-wasm32@0.35.1":
+  version "0.35.1"
+  resolved "https://registry.yarnpkg.com/@img/sharp-webcontainers-wasm32/-/sharp-webcontainers-wasm32-0.35.1.tgz#09ccb830b72122054fe6ed16998ad06e7899aee2"
+  integrity sha512-xU2ml2bU2OPxYVvW2A6ae4M1g5QKyhKG06P4FAt+YEaFQQO0919Qx+XxIZEUuWTMoDViLpMws2/dQwoe/VcA6A==
   dependencies:
-    "@img/sharp-wasm32" "0.35.0"
+    "@img/sharp-wasm32" "0.35.1"
 
-"@img/sharp-win32-arm64@0.35.0":
-  version "0.35.0"
-  resolved "https://registry.yarnpkg.com/@img/sharp-win32-arm64/-/sharp-win32-arm64-0.35.0.tgz#5ab4e00a2539b770428c6ae173b43de8b3c273ec"
-  integrity sha512-M5eKxug0dabbaWgFKvPa3odNs2OpaP+81NASfGKkt4GcYXpNhSu7CaeYxWkLNV6vHmUp4hnCxnxrUyhUJhXbKA==
+"@img/sharp-win32-arm64@0.35.1":
+  version "0.35.1"
+  resolved "https://registry.yarnpkg.com/@img/sharp-win32-arm64/-/sharp-win32-arm64-0.35.1.tgz#0dadfd4356c184ece2568a109573e466f8aac682"
+  integrity sha512-IkmHwuFhYpd3bTsN5SAahjwhiAcyXPooBt8vEUgxY3T0IP70sSJ0nU1xiPzZY8AH/OB1XpV3j8aZSVSOSfTbdA==
 
-"@img/sharp-win32-ia32@0.35.0":
-  version "0.35.0"
-  resolved "https://registry.yarnpkg.com/@img/sharp-win32-ia32/-/sharp-win32-ia32-0.35.0.tgz#d79096bc5b9522c59a6f8f3c423578ade7d433e7"
-  integrity sha512-z0+pZ03QCDvdVN0Ez9IX/yjWC19ikMlXrmdYMwYNLTh2BLPx3hXWPvyqWfquZ0BTO9O6GVOjIVoTcyyacMnWlQ==
+"@img/sharp-win32-ia32@0.35.1":
+  version "0.35.1"
+  resolved "https://registry.yarnpkg.com/@img/sharp-win32-ia32/-/sharp-win32-ia32-0.35.1.tgz#7f6222ee865e33efe5a7ed6fb62531e722594ad9"
+  integrity sha512-wQahqCi9MD8Yxzg4gVM4fNrZxh+r6vD55PyIg+WJPaM5ZRUyF35iQpwJCuma3r6viU9/8Pxlc+XHV+woVa6nCQ==
 
-"@img/sharp-win32-x64@0.35.0":
-  version "0.35.0"
-  resolved "https://registry.yarnpkg.com/@img/sharp-win32-x64/-/sharp-win32-x64-0.35.0.tgz#f47063a46e7501a3447201bfc0adc097bb283f14"
-  integrity sha512-feNnlz5ZHKr0MY1LPHvZQyJeBkbo4ctsn0D8FvA53VTw5TC63rfEL2UrWbkSBR19htSE7Mw78xYVwdJqoMWVHw==
+"@img/sharp-win32-x64@0.35.1":
+  version "0.35.1"
+  resolved "https://registry.yarnpkg.com/@img/sharp-win32-x64/-/sharp-win32-x64-0.35.1.tgz#22fa27b26ebe2eb52f81fb835b00b94472c5fcdd"
+  integrity sha512-WzBtkYtZHATLPe8XRharxZXxQ9cdLrQWHiwxt+BJ5rBsisQrKeeV86ErxPSVhcG6xCEuNhs0SqLpWr7XDa2k6w==
 
 "@inquirer/ansi@^2.0.6":
   version "2.0.6"
@@ -4057,18 +4057,18 @@ setprototypeof@1.2.0, setprototypeof@~1.2.0:
   resolved "https://registry.yarnpkg.com/setprototypeof/-/setprototypeof-1.2.0.tgz#66c9a24a73f9fc28cbe66b09fed3d33dcaf1b424"
   integrity sha512-E5LDX7Wrp85Kil5bhZv46j8jOeboKq5JMmYM3gVGdGH8xFpPWXUMsNrlODCrkoxMEeNi/XZIwuRvY4XNwYMJpw==
 
-sharp@^0.35.0:
-  version "0.35.0"
-  resolved "https://registry.yarnpkg.com/sharp/-/sharp-0.35.0.tgz#3c7b2de82bcf56b7e5a651c101947c3c6c9dd0cd"
-  integrity sha512-BqvG5XbwPZ4NV0DK90d86leEECMsoa8bO0nqnKWlBDYxri4GJ7c4EDInaF6q20lTh/mATmnDIKWJFfXnoVfH5g==
+sharp@^0.35.1:
+  version "0.35.1"
+  resolved "https://registry.yarnpkg.com/sharp/-/sharp-0.35.1.tgz#324abe42dfb904042fe43f5835dfb3fbb33c7ff5"
+  integrity sha512-lW979AMi+ESidzMv/Lnv+F9bknzLyxLqFI05Sm433vOeRcltgxQmXpnfOOFIAlKtwXU/ksupm2srQoFCkR214g==
   dependencies:
     "@img/colour" "^1.1.0"
     detect-libc "^2.1.2"
     semver "^7.8.4"
   optionalDependencies:
-    "@img/sharp-darwin-arm64" "0.35.0"
-    "@img/sharp-darwin-x64" "0.35.0"
-    "@img/sharp-freebsd-wasm32" "0.35.0"
+    "@img/sharp-darwin-arm64" "0.35.1"
+    "@img/sharp-darwin-x64" "0.35.1"
+    "@img/sharp-freebsd-wasm32" "0.35.1"
     "@img/sharp-libvips-darwin-arm64" "1.3.0"
     "@img/sharp-libvips-darwin-x64" "1.3.0"
     "@img/sharp-libvips-linux-arm" "1.3.0"
@@ -4079,18 +4079,18 @@ sharp@^0.35.0:
     "@img/sharp-libvips-linux-x64" "1.3.0"
     "@img/sharp-libvips-linuxmusl-arm64" "1.3.0"
     "@img/sharp-libvips-linuxmusl-x64" "1.3.0"
-    "@img/sharp-linux-arm" "0.35.0"
-    "@img/sharp-linux-arm64" "0.35.0"
-    "@img/sharp-linux-ppc64" "0.35.0"
-    "@img/sharp-linux-riscv64" "0.35.0"
-    "@img/sharp-linux-s390x" "0.35.0"
-    "@img/sharp-linux-x64" "0.35.0"
-    "@img/sharp-linuxmusl-arm64" "0.35.0"
-    "@img/sharp-linuxmusl-x64" "0.35.0"
-    "@img/sharp-webcontainers-wasm32" "0.35.0"
-    "@img/sharp-win32-arm64" "0.35.0"
-    "@img/sharp-win32-ia32" "0.35.0"
-    "@img/sharp-win32-x64" "0.35.0"
+    "@img/sharp-linux-arm" "0.35.1"
+    "@img/sharp-linux-arm64" "0.35.1"
+    "@img/sharp-linux-ppc64" "0.35.1"
+    "@img/sharp-linux-riscv64" "0.35.1"
+    "@img/sharp-linux-s390x" "0.35.1"
+    "@img/sharp-linux-x64" "0.35.1"
+    "@img/sharp-linuxmusl-arm64" "0.35.1"
+    "@img/sharp-linuxmusl-x64" "0.35.1"
+    "@img/sharp-webcontainers-wasm32" "0.35.1"
+    "@img/sharp-win32-arm64" "0.35.1"
+    "@img/sharp-win32-ia32" "0.35.1"
+    "@img/sharp-win32-x64" "0.35.1"
 
 shell-quote@1.8.4:
   version "1.8.4"
