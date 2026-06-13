@@ -139,7 +139,6 @@ static int start_user_thread(guac_client* client, int fd, int owner,
         return -1;
     }
 
-    pthread_detach(*out_thread);
     return 0;
 }
 
@@ -227,7 +226,9 @@ static int receive_join_fd(int pipe_fd) {
     return -1;
 }
 
-static void guac_accept_joins(nexterm_session_t* session, guac_client* client) {
+static void guac_accept_joins(nexterm_session_t* session, guac_client* client,
+                              pthread_t* user_threads, int* user_thread_count,
+                              int max_user_threads) {
     bool active = true;
     while (active && session->state == SESSION_STATE_ACTIVE) {
         struct pollfd pfd = { .fd = session->join_pipe[0], .events = POLLIN };
@@ -260,8 +261,18 @@ static void guac_accept_joins(nexterm_session_t* session, guac_client* client) {
         LOG_INFO("Join connection received for session %s (fd=%d)", session->session_id, join_fd);
 
         pthread_t join_thread;
-        if (start_user_thread(client, join_fd, 0, session->session_id, &join_thread) != 0)
+        if (start_user_thread(client, join_fd, 0, session->session_id, &join_thread) != 0) {
             close(join_fd);
+            continue;
+        }
+
+        if (*user_thread_count < max_user_threads) {
+            user_threads[(*user_thread_count)++] = join_thread;
+        } else {
+            LOG_WARN("Too many user threads for session %s, detaching overflow thread",
+                     session->session_id);
+            pthread_detach(join_thread);
+        }
     }
 }
 
@@ -274,6 +285,7 @@ static void* guac_session_thread(void* arg) {
     if (!protocol_name) {
         LOG_ERROR("Unsupported session type for guac: %d", session->type);
         session->state = SESSION_STATE_CLOSED;
+        session->thread_active = false;
         free(args);
         return NULL;
     }
@@ -284,6 +296,7 @@ static void* guac_session_thread(void* arg) {
     guac_client* client = guac_setup_client(session, cp, protocol_name);
     if (!client) {
         session->state = SESSION_STATE_CLOSED;
+        session->thread_active = false;
         free(args);
         return NULL;
     }
@@ -299,6 +312,9 @@ static void* guac_session_thread(void* arg) {
     LOG_INFO("Guac session %s active (connection_id=%s)",
              session->session_id, client->connection_id);
 
+    pthread_t user_threads[256];
+    int user_thread_count = 0;
+
     pthread_t owner_thread;
     if (start_user_thread(client, session->data_fd, 1, session->session_id, &owner_thread) != 0) {
         LOG_ERROR("Failed to start owner user thread for session %s", session->session_id);
@@ -309,35 +325,56 @@ static void* guac_session_thread(void* arg) {
         close(session->join_pipe[0]); session->join_pipe[0] = -1;
         close(session->join_pipe[1]); session->join_pipe[1] = -1;
         session->state = SESSION_STATE_CLOSED;
+        session->thread_active = false;
         nexterm_cp_send_session_closed(cp, session->session_id, "internal error");
         free(args);
         return NULL;
     }
+    user_threads[user_thread_count++] = owner_thread;
 
     session->data_fd = -1;
 
-    guac_accept_joins(session, client);
+    guac_accept_joins(session, client, user_threads, &user_thread_count,
+                      (int)(sizeof(user_threads) / sizeof(user_threads[0])));
 
-    LOG_INFO("Guac session %s ending", session->session_id);
+    for (int i = 0; i < user_thread_count; i++) {
+        pthread_join(user_threads[i], NULL);
+    }
+
+    char session_id[MAX_SESSION_ID_LEN];
+    snprintf(session_id, sizeof(session_id), "%s", session->session_id);
+
+    LOG_INFO("Guac session %s ending", session_id);
     guac_client_stop(client);
-    guac_client_free(client);
+
     session->guac_client = NULL;
+
+    guac_client_free(client);
 
     if (session->join_pipe[0] >= 0) { close(session->join_pipe[0]); session->join_pipe[0] = -1; }
     if (session->join_pipe[1] >= 0) { close(session->join_pipe[1]); session->join_pipe[1] = -1; }
 
     char rec_path[512];
-    snprintf(rec_path, sizeof(rec_path), "/tmp/nexterm-recordings/%s", session->session_id);
+    snprintf(rec_path, sizeof(rec_path), "/tmp/nexterm-recordings/%s", session_id);
     struct stat st;
     if (stat(rec_path, &st) == 0) {
-        if (st.st_size > 1024)
-            nexterm_cp_upload_recording(cp, session->session_id, rec_path);
+        LOG_INFO("Recording file found for session %s (%lld bytes)",
+                 session_id, (long long) st.st_size);
+        if (st.st_size > 1024) {
+            LOG_INFO("Uploading recording for session %s", session_id);
+            nexterm_cp_upload_recording(cp, session_id, rec_path);
+            LOG_INFO("Recording upload finished for session %s", session_id);
+        }
         else
             unlink(rec_path);
     }
+    else {
+        LOG_INFO("No recording file to upload for session %s", session_id);
+    }
 
     session->state = SESSION_STATE_CLOSED;
-    nexterm_cp_send_session_closed(cp, session->session_id, "session ended");
+    session->thread_active = false;
+    nexterm_cp_send_session_closed(cp, session_id, "session ended");
 
     free(args);
     return NULL;
