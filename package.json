@@ -20,7 +20,7 @@
     "express-rate-limit": "^8.5.2",
     "express-ws": "^5.0.2",
     "flatbuffers": "^25.9.23",
-    "joi": "^18.2.1",
+    "joi": "^18.2.3",
     "js-yaml": "^4.2.0",
     "ldapts": "^8.1.8",
     "openid-client": "^6.8.4",
