@@ -1780,10 +1780,19 @@
         "enterDirectory": "輸入目錄路徑...",
         "hiddenDirectories": "{{count}} 隱藏目錄",
         "switchToGrid": "切換至網格檢視",
-        "switchToList": "切換至清單檢視"
+        "switchToList": "切換至清單檢視",
+        "search": "Search files",
+        "closeSearch": "Close search"
       },
       "item": {
         "link": "連結"
+      },
+      "search": {
+        "placeholder": "Filter files in this folder...",
+        "results": "{{count}} result",
+        "results_plural": "{{count}} results",
+        "noResultsTitle": "No matches",
+        "noResults": "No files match \"{{query}}\""
       },
       "states": {
         "loading": "載入檔案...",
