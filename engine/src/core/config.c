@@ -5,6 +5,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <sys/stat.h>
 
 #define CONFIG_FILE "config.yaml"
 #define MAX_LINE 512
@@ -74,6 +75,9 @@ static int write_default_config(const nexterm_config_t* cfg) {
         LOG_ERROR("Failed to create %s: %s", CONFIG_FILE, strerror(errno));
         return -1;
     }
+
+    if (fchmod(fileno(f), S_IRUSR | S_IWUSR) != 0)
+        LOG_WARN("Could not restrict permissions on %s", CONFIG_FILE);
 
     fprintf(f, "registration_token: \"%s\"\n", cfg->registration_token);
     fprintf(f, "server_host: \"%s\"\n", cfg->server_host);
