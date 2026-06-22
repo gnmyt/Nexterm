@@ -173,37 +173,48 @@ const createSFTPConnectionForSession = async (sessionId, entry, accountId) => {
     return session._connecting;
 };
 
-const getSFTPTransferClient = async (sessionId, entry, accountId) => {
+const getAuxiliarySFTPClient = async (sessionId, entry, accountId, opts) => {
+    const { suffix, clientKey, connectingKey, label } = opts;
     const session = requireSession(sessionId);
     const conn = SessionManager.getConnection(sessionId);
     if (!conn) throw new Error("No active SFTP session");
-    if (conn.transferClient && !conn.transferClient._closed) return conn.transferClient;
-    if (conn._transferConnecting) return conn._transferConnecting;
+    if (conn[clientKey] && !conn[clientKey]._closed) return conn[clientKey];
+    if (conn[connectingKey]) return conn[connectingKey];
 
-    conn._transferConnecting = (async () => {
+    conn[connectingKey] = (async () => {
         requireEngine();
         const { identityId, directIdentity } = session.configuration;
         const { host, port, params } = await resolveSSHContext(entry, identityId, directIdentity, accountId);
         const jumpHosts = await resolveJumpHosts(entry);
 
         const dataSocket = await openEngineSession(
-            `${sessionId}-xfer`, SessionType.SFTP, host, port, params, jumpHosts, entry.config?.engineId
+            `${sessionId}-${suffix}`, SessionType.SFTP, host, port, params, jumpHosts, entry.config?.engineId
         );
 
-        const transferClient = new EngineSftpClient(dataSocket);
-        await transferClient.waitForReady();
+        const client = new EngineSftpClient(dataSocket);
+        await client.waitForReady();
 
-        const detach = () => { if (conn.transferClient === transferClient) conn.transferClient = null; };
+        const detach = () => { if (conn[clientKey] === client) conn[clientKey] = null; };
         dataSocket.on("close", detach);
         dataSocket.on("error", detach);
 
-        conn.transferClient = transferClient;
-        logger.info("SFTP transfer connection established", { sessionId, target: host, port });
-        return transferClient;
-    })().finally(() => { conn._transferConnecting = null; });
+        conn[clientKey] = client;
+        logger.info(`SFTP ${label} connection established`, { sessionId, target: host, port });
+        return client;
+    })().finally(() => { conn[connectingKey] = null; });
 
-    return conn._transferConnecting;
+    return conn[connectingKey];
 };
+
+const getSFTPTransferClient = (sessionId, entry, accountId) =>
+    getAuxiliarySFTPClient(sessionId, entry, accountId, {
+        suffix: "xfer", clientKey: "transferClient", connectingKey: "_transferConnecting", label: "transfer",
+    });
+
+const getSFTPBackgroundClient = (sessionId, entry, accountId) =>
+    getAuxiliarySFTPClient(sessionId, entry, accountId, {
+        suffix: "bg", clientKey: "backgroundClient", connectingKey: "_backgroundConnecting", label: "background",
+    });
 
 const createSSHConnectionForSession = async (sessionId, entry, identity, organizationId, script = null) => {
     const session = requireSession(sessionId);
@@ -429,6 +440,7 @@ module.exports = {
     createConnectionForSession,
     createSFTPConnectionForSession,
     getSFTPTransferClient,
+    getSFTPBackgroundClient,
     buildSSHParams,
     resolveJumpHosts,
 };

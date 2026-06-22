@@ -27,7 +27,6 @@ extern nexterm_session_manager_t g_session_manager;
 #define SFTP_WRITE_BUF     1048576
 #define SFTP_MAX_PATH      4096
 #define SFTP_MAX_FRAME     (16 * 1024 * 1024)
-#define SFTP_SEARCH_DEPTH  3
 #define SFTP_SEARCH_MAX    20
 #define SFTP_EXEC_BUF      (256 * 1024)
 #define SFTP_THUMB_MAX_BYTES (12 * 1024 * 1024)
@@ -209,29 +208,10 @@ static bool search_name_matches(const char* name, const char* search_term) {
     return true;
 }
 
-static void search_check_entry(const char* fullpath, const char* name,
-                                const char* current, const char* search_term,
-                                bool inside, const char* base_path,
-                                search_ctx_t* ctx) {
-    bool match = false;
-    if (inside)
-        match = (strcmp(current, base_path) == 0);
-    else
-        match = search_name_matches(name, search_term);
-
-    if (match && ctx->count < ctx->max_results) {
-        snprintf(ctx->paths[ctx->count], SFTP_MAX_PATH, "%s", fullpath);
-        ctx->count++;
-    }
-}
-
-static void search_recursive(LIBSSH2_SFTP* sftp, const char* current,
+static void search_list_level(LIBSSH2_SFTP* sftp, const char* base,
                               const char* search_term, bool inside,
-                              const char* base_path,
-                              search_ctx_t* ctx, int depth) {
-    if (depth > SFTP_SEARCH_DEPTH || ctx->count >= ctx->max_results) return;
-
-    LIBSSH2_SFTP_HANDLE* dir = libssh2_sftp_opendir(sftp, current);
+                              search_ctx_t* ctx) {
+    LIBSSH2_SFTP_HANDLE* dir = libssh2_sftp_opendir(sftp, base);
     if (!dir) return;
 
     char name[512];
@@ -244,18 +224,15 @@ static void search_recursive(LIBSSH2_SFTP* sftp, const char* current,
                                     longentry, sizeof(longentry), &attrs) > 0) {
         if (strcmp(name, ".") == 0 || strcmp(name, "..") == 0) continue;
         if (longentry[0] != 'd') continue;
+        if (!inside && !search_name_matches(name, search_term)) continue;
 
-        if (strcmp(current, "/") == 0)
+        if (strcmp(base, "/") == 0)
             snprintf(fullpath, sizeof(fullpath), "/%s", name);
         else
-            snprintf(fullpath, sizeof(fullpath), "%s/%s", current, name);
+            snprintf(fullpath, sizeof(fullpath), "%s/%s", base, name);
 
-        search_check_entry(fullpath, name, current, search_term,
-                           inside, base_path, ctx);
-
-        if (depth < SFTP_SEARCH_DEPTH && ctx->count < ctx->max_results)
-            search_recursive(sftp, fullpath, search_term, inside,
-                             base_path, ctx, depth + 1);
+        snprintf(ctx->paths[ctx->count], SFTP_MAX_PATH, "%s", fullpath);
+        ctx->count++;
     }
 
     libssh2_sftp_closedir(dir);
@@ -699,7 +676,7 @@ static void handle_search_dirs(LIBSSH2_SFTP* sftp, int fd, uint32_t rid,
     ctx.max_results = (int)max_results;
 
     const char* bp = base_path[0] ? base_path : "/";
-    search_recursive(sftp, bp, search_term, inside, bp, &ctx, 0);
+    search_list_level(sftp, bp, search_term, inside, &ctx);
 
     flatcc_builder_t b;
     flatcc_builder_init(&b);

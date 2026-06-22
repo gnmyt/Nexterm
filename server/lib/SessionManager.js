@@ -246,8 +246,10 @@ const cleanupConnection = async (conn, sessionId) => {
     try { conn.guacdClient?.close(); } catch {}
     try { conn.sftpClient?.close(); } catch {}
     try { conn.transferClient?.close(); } catch {}
+    try { conn.backgroundClient?.close(); } catch {}
     if (CONTROL_PLANE_TYPES.has(conn.type)) {
         try { require("./controlPlane/ControlPlaneServer").closeSession(`${sessionId}-xfer`); } catch {}
+        try { require("./controlPlane/ControlPlaneServer").closeSession(`${sessionId}-bg`); } catch {}
     }
 };
 
