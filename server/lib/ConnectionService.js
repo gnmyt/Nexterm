@@ -173,6 +173,49 @@ const createSFTPConnectionForSession = async (sessionId, entry, accountId) => {
     return session._connecting;
 };
 
+const getAuxiliarySFTPClient = async (sessionId, entry, accountId, opts) => {
+    const { suffix, clientKey, connectingKey, label } = opts;
+    const session = requireSession(sessionId);
+    const conn = SessionManager.getConnection(sessionId);
+    if (!conn) throw new Error("No active SFTP session");
+    if (conn[clientKey] && !conn[clientKey]._closed) return conn[clientKey];
+    if (conn[connectingKey]) return conn[connectingKey];
+
+    conn[connectingKey] = (async () => {
+        requireEngine();
+        const { identityId, directIdentity } = session.configuration;
+        const { host, port, params } = await resolveSSHContext(entry, identityId, directIdentity, accountId);
+        const jumpHosts = await resolveJumpHosts(entry);
+
+        const dataSocket = await openEngineSession(
+            `${sessionId}-${suffix}`, SessionType.SFTP, host, port, params, jumpHosts, entry.config?.engineId
+        );
+
+        const client = new EngineSftpClient(dataSocket);
+        await client.waitForReady();
+
+        const detach = () => { if (conn[clientKey] === client) conn[clientKey] = null; };
+        dataSocket.on("close", detach);
+        dataSocket.on("error", detach);
+
+        conn[clientKey] = client;
+        logger.info(`SFTP ${label} connection established`, { sessionId, target: host, port });
+        return client;
+    })().finally(() => { conn[connectingKey] = null; });
+
+    return conn[connectingKey];
+};
+
+const getSFTPTransferClient = (sessionId, entry, accountId) =>
+    getAuxiliarySFTPClient(sessionId, entry, accountId, {
+        suffix: "xfer", clientKey: "transferClient", connectingKey: "_transferConnecting", label: "transfer",
+    });
+
+const getSFTPBackgroundClient = (sessionId, entry, accountId) =>
+    getAuxiliarySFTPClient(sessionId, entry, accountId, {
+        suffix: "bg", clientKey: "backgroundClient", connectingKey: "_backgroundConnecting", label: "background",
+    });
+
 const createSSHConnectionForSession = async (sessionId, entry, identity, organizationId, script = null) => {
     const session = requireSession(sessionId);
     if (session._connecting) return session._connecting;
@@ -216,8 +259,13 @@ const createSSHConnectionForSession = async (sessionId, entry, identity, organiz
         });
 
         if (!script && session.configuration.startPath) {
-            const safePath = session.configuration.startPath.replace(/[`$\\]/g, '\\$&');
-            dataSocket.write(`cd ${safePath}\n`);
+            const raw = String(session.configuration.startPath);
+            if (/[\r\n\x00]/.test(raw)) {
+                logger.warn("Ignoring startPath containing control characters", { sessionId });
+            } else {
+                const quoted = `'${raw.replace(/'/g, `'\\''`)}'`;
+                dataSocket.write(`cd ${quoted}\n`);
+            }
         }
 
         logger.info("SSH connected", { sessionId, target: host, port });
@@ -391,6 +439,8 @@ const prepareGuacamoleSession = async (sessionId, entry, identity, organizationI
 module.exports = {
     createConnectionForSession,
     createSFTPConnectionForSession,
+    getSFTPTransferClient,
+    getSFTPBackgroundClient,
     buildSSHParams,
     resolveJumpHosts,
 };

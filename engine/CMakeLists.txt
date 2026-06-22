@@ -75,6 +75,7 @@ set(ENGINE_SOURCES
     src/net/ssh.c
     src/net/ssh_common.c
     src/net/sftp.c
+    src/net/thumbnail.c
     src/net/telnet.c
     src/net/http_fetch.c
     src/net/websocket.c
@@ -138,6 +139,16 @@ endif()
 
 find_package(OpenSSL REQUIRED)
 
+set(WEBP_FOUND FALSE)
+if(PkgConfig_FOUND)
+    pkg_check_modules(WEBP libwebp)
+endif()
+if(WEBP_FOUND)
+    message(STATUS "libwebp found - WebP thumbnails enabled")
+else()
+    message(STATUS "libwebp not found - WebP thumbnails disabled")
+endif()
+
 target_include_directories(nexterm-engine PRIVATE ${LIBSSH2_INCLUDE_DIRS})
 target_link_directories(nexterm-engine PRIVATE ${LIBSSH2_LIBRARY_DIRS})
 
@@ -154,6 +165,13 @@ target_link_libraries(nexterm-engine PRIVATE
 if(DEFINED FLATCC_LIB_DIR)
     target_link_directories(nexterm-engine PRIVATE ${FLATCC_LIB_DIR})
     target_link_libraries(nexterm-engine PRIVATE flatccrt)
+endif()
+
+if(WEBP_FOUND)
+    target_compile_definitions(nexterm-engine PRIVATE HAVE_WEBP=1)
+    target_include_directories(nexterm-engine PRIVATE ${WEBP_INCLUDE_DIRS})
+    target_link_directories(nexterm-engine PRIVATE ${WEBP_LIBRARY_DIRS})
+    target_link_libraries(nexterm-engine PRIVATE ${WEBP_LIBRARIES})
 endif()
 
 set_target_properties(nexterm-engine PROPERTIES

@@ -17,6 +17,7 @@ enum SftpMsgType : ubyte {
     WriteEnd = 12,
     Exec = 13,
     SearchDirs = 14,
+    Thumbnail = 15,
 
     DirList = 50,
     StatResult = 51,
@@ -27,6 +28,7 @@ enum SftpMsgType : ubyte {
     Ok = 56,
     Error = 57,
     SearchResult = 58,
+    ThumbnailResult = 59,
 }
 
 table DirEntry {
@@ -115,6 +117,17 @@ table SearchRes {
     directories: [string];
 }
 
+table ThumbnailReq {
+    path: string;
+    size: uint32;
+}
+
+table ThumbnailRes {
+    data: [ubyte];
+    width: uint32;
+    height: uint32;
+}
+
 table SftpMessage {
     msg_type: SftpMsgType;
     request_id: uint32;
@@ -127,6 +140,7 @@ table SftpMessage {
     write_data_req: WriteDataReq;
     exec_req: ExecReq;
     search_req: SearchReq;
+    thumbnail_req: ThumbnailReq;
 
     dir_list_res: DirListRes;
     stat_res: StatRes;
@@ -135,6 +149,7 @@ table SftpMessage {
     exec_res: ExecRes;
     error_res: ErrorRes;
     search_res: SearchRes;
+    thumbnail_res: ThumbnailRes;
 }
 
 root_type SftpMessage;

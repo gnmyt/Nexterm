@@ -4,6 +4,9 @@
 #include "telnet.h"
 #include "websocket.h"
 #include "log.h"
+#include "session.h"
+
+extern nexterm_session_manager_t g_session_manager;
 
 #include <guacamole/client.h>
 #include <guacamole/error.h>
@@ -286,6 +289,7 @@ static void* guac_session_thread(void* arg) {
         LOG_ERROR("Unsupported session type for guac: %d", session->type);
         session->state = SESSION_STATE_CLOSED;
         session->thread_active = false;
+        nexterm_sm_remove(&g_session_manager, session->session_id);
         free(args);
         return NULL;
     }
@@ -297,6 +301,7 @@ static void* guac_session_thread(void* arg) {
     if (!client) {
         session->state = SESSION_STATE_CLOSED;
         session->thread_active = false;
+        nexterm_sm_remove(&g_session_manager, session->session_id);
         free(args);
         return NULL;
     }
@@ -321,12 +326,10 @@ static void* guac_session_thread(void* arg) {
         guac_client_stop(client);
         guac_client_free(client);
         session->guac_client = NULL;
-        session->data_fd = -1;
-        close(session->join_pipe[0]); session->join_pipe[0] = -1;
-        close(session->join_pipe[1]); session->join_pipe[1] = -1;
         session->state = SESSION_STATE_CLOSED;
         session->thread_active = false;
         nexterm_cp_send_session_closed(cp, session->session_id, "internal error");
+        nexterm_sm_remove(&g_session_manager, session->session_id);
         free(args);
         return NULL;
     }
@@ -351,9 +354,6 @@ static void* guac_session_thread(void* arg) {
 
     guac_client_free(client);
 
-    if (session->join_pipe[0] >= 0) { close(session->join_pipe[0]); session->join_pipe[0] = -1; }
-    if (session->join_pipe[1] >= 0) { close(session->join_pipe[1]); session->join_pipe[1] = -1; }
-
     char rec_path[512];
     snprintf(rec_path, sizeof(rec_path), "/tmp/nexterm-recordings/%s", session_id);
     struct stat st;
@@ -367,6 +367,7 @@ static void* guac_session_thread(void* arg) {
     session->state = SESSION_STATE_CLOSED;
     session->thread_active = false;
     nexterm_cp_send_session_closed(cp, session_id, "session ended");
+    nexterm_sm_remove(&g_session_manager, session_id);
 
     free(args);
     return NULL;
@@ -403,14 +404,17 @@ int nexterm_connection_start_telnet(nexterm_session_t* session,
 
 int nexterm_connection_join_guac(nexterm_session_t* session,
                                  nexterm_control_plane_t* cp) {
-    if (session->state != SESSION_STATE_ACTIVE || session->join_pipe[1] < 0) {
-        LOG_WARN("Cannot join session %s: not active or pipe unavailable", session->session_id);
+    char sid[MAX_SESSION_ID_LEN];
+    snprintf(sid, sizeof(sid), "%s", session->session_id);
+
+    if (session->state != SESSION_STATE_ACTIVE) {
+        LOG_WARN("Cannot join session %s: not active", sid);
         return -1;
     }
 
-    int join_fd = nexterm_cp_open_data_connection(cp, session->session_id);
+    int join_fd = nexterm_cp_open_data_connection(cp, sid);
     if (join_fd < 0) {
-        LOG_ERROR("Failed to open join data connection for session %s", session->session_id);
+        LOG_ERROR("Failed to open join data connection for session %s", sid);
         return -1;
     }
 
@@ -432,45 +436,33 @@ int nexterm_connection_join_guac(nexterm_session_t* session,
     cmsg->cmsg_len = CMSG_LEN(sizeof(int));
     memcpy(CMSG_DATA(cmsg), &join_fd, sizeof(int));
 
-    ssize_t n = sendmsg(session->join_pipe[1], &msg, 0);
+    nexterm_sm_lock(&g_session_manager);
+    nexterm_session_t* live = nexterm_sm_find_locked(&g_session_manager, sid);
+    ssize_t n = -1;
+    if (live && live->state == SESSION_STATE_ACTIVE && live->join_pipe[1] >= 0)
+        n = sendmsg(live->join_pipe[1], &msg, 0);
+    nexterm_sm_unlock(&g_session_manager);
+
     if (n <= 0) {
-        LOG_ERROR("Failed to send join fd for session %s: %s",
-                  session->session_id, strerror(errno));
+        LOG_ERROR("Failed to send join fd for session %s: %s", sid, strerror(errno));
         close(join_fd);
         return -1;
     }
 
     close(join_fd);
-    LOG_INFO("Join fd sent to session %s", session->session_id);
+    LOG_INFO("Join fd sent to session %s", sid);
     return 0;
 }
 
 void nexterm_connection_close(nexterm_session_t* session) {
-    if (session->state == SESSION_STATE_CLOSED)
+    if (session->state == SESSION_STATE_CLOSED ||
+        session->state == SESSION_STATE_CLOSING)
         return;
 
     LOG_INFO("Closing connection for session %s", session->session_id);
-    session->state = SESSION_STATE_CLOSING;
 
-    if (session->join_pipe[1] >= 0) {
-        close(session->join_pipe[1]);
-        session->join_pipe[1] = -1;
-    }
+    session->state = SESSION_STATE_CLOSING;
 
     if (session->guac_client)
         guac_client_stop((guac_client*)session->guac_client);
-
-    if (session->telnet_sock >= 0) {
-        shutdown(session->telnet_sock, SHUT_RDWR);
-        close(session->telnet_sock);
-        session->telnet_sock = -1;
-    }
-
-    if (session->data_fd >= 0) {
-        shutdown(session->data_fd, SHUT_RDWR);
-        close(session->data_fd);
-        session->data_fd = -1;
-    }
-
-    session->state = SESSION_STATE_CLOSED;
 }

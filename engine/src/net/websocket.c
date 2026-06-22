@@ -250,8 +250,15 @@ static int ws_handshake(ws_conn_t* c, const char* host, const char* port,
     for (int i = 0; i < session->param_count; i++) {
         if (strncmp(session->params[i].key, "ws_header_", 10) == 0) {
             const char* hdr_name = session->params[i].key + 10;
+            const char* hdr_val = session->params[i].value;
+            if (strpbrk(hdr_name, "\r\n") ||
+                (hdr_val && strpbrk(hdr_val, "\r\n"))) {
+                LOG_WARN("WebSocket session %s: dropping header '%s' with CR/LF",
+                         session->session_id, hdr_name);
+                continue;
+            }
             off += snprintf(request + off, sizeof(request) - (size_t)off,
-                           "%s: %s\r\n", hdr_name, session->params[i].value);
+                           "%s: %s\r\n", hdr_name, hdr_val ? hdr_val : "");
         }
     }
 

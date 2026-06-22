@@ -106,13 +106,29 @@ static void ssh_drain_channel(LIBSSH2_CHANNEL* channel, int fd) {
     }
 }
 
-static bool ssh_bridge_poll(int data_fd, int ssh_sock,
+static void ssh_apply_pending_resize(nexterm_session_t* session,
+                                     LIBSSH2_CHANNEL* channel) {
+    if (!session->resize_pending) return;
+    uint16_t cols = session->pending_cols;
+    uint16_t rows = session->pending_rows;
+    session->resize_pending = false;
+
+    int rc = libssh2_channel_request_pty_size(channel, cols, rows);
+    if (rc && rc != LIBSSH2_ERROR_EAGAIN)
+        LOG_WARN("SSH session %s: PTY resize failed (rc=%d)", session->session_id, rc);
+    else
+        LOG_DEBUG("SSH session %s: resized to %ux%u", session->session_id, cols, rows);
+}
+
+static bool ssh_bridge_poll(nexterm_session_t* session, int data_fd, int ssh_sock,
                            LIBSSH2_CHANNEL* channel) {
     char buf[SSH_READ_BUF_SIZE];
     struct pollfd fds[2] = {
         { .fd = data_fd,  .events = POLLIN },
         { .fd = ssh_sock, .events = POLLIN },
     };
+
+    ssh_apply_pending_resize(session, channel);
 
     int ret = poll(fds, 2, 200);
     if (ret < 0)
@@ -149,7 +165,7 @@ static bool ssh_bridge_poll(int data_fd, int ssh_sock,
 static void ssh_bridge_data(const nexterm_session_t* session, int data_fd,
                             LIBSSH2_CHANNEL* channel, int ssh_sock) {
     while (session->state == SESSION_STATE_ACTIVE
-            && ssh_bridge_poll(data_fd, ssh_sock, channel));
+            && ssh_bridge_poll(session, data_fd, ssh_sock, channel));
 }
 
 static void* ssh_session_thread(void* arg) {
@@ -281,14 +297,7 @@ int nexterm_ssh_start(nexterm_session_t* session,
 
 void nexterm_ssh_resize(nexterm_session_t* session,
                         uint16_t cols, uint16_t rows) {
-    LIBSSH2_CHANNEL* channel = (LIBSSH2_CHANNEL*)session->ssh_channel;
-    if (!channel || session->state != SESSION_STATE_ACTIVE) return;
-
-    int rc = libssh2_channel_request_pty_size(channel, cols, rows);
-    if (rc && rc != LIBSSH2_ERROR_EAGAIN)
-        LOG_WARN("SSH session %s: PTY resize failed (rc=%d)", session->session_id, rc);
-    else
-        LOG_DEBUG("SSH session %s: resized to %ux%u", session->session_id, cols, rows);
+    nexterm_sm_request_resize(&g_session_manager, session->session_id, cols, rows);
 }
 
 static void* tunnel_session_thread(void* arg) {

@@ -2,6 +2,7 @@
 #define NEXTERM_IO_H
 
 #include <pthread.h>
+#include <stdbool.h>
 #include <stdint.h>
 #include <openssl/ssl.h>
 
@@ -12,7 +13,7 @@ int nexterm_write_exact(int fd, const uint8_t* buf, size_t len);
 
 int nexterm_tcp_connect(const char* host, uint16_t port);
 
-SSL_CTX* nexterm_tls_client_ctx_create(void);
+SSL_CTX* nexterm_tls_client_ctx_create(const char* ca_cert_path, bool skip_verify);
 SSL* nexterm_tls_handshake(SSL_CTX* ctx, int fd);
 void nexterm_tls_cleanup(SSL* ssl);
 
