@@ -13,7 +13,6 @@ ENGINE_LOG_LEVEL=${LOG_LEVEL:-info}
 ENGINE_HOST=${ENGINE_HOST:-127.0.0.1}
 ENGINE_PORT=${ENGINE_PORT:-7800}
 
-# Keep engine registration aligned with server local-engine registration in dev mode.
 if [ -n "$LOCAL_ENGINE_TOKEN" ] && [ -z "$REGISTRATION_TOKEN" ]; then
     export REGISTRATION_TOKEN="$LOCAL_ENGINE_TOKEN"
 fi

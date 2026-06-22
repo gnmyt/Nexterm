@@ -5,10 +5,6 @@
 
 #include <libssh2.h>
 
-#ifdef __linux__
-#include <execinfo.h>
-#endif
-
 #include <getopt.h>
 #include <signal.h>
 #include <stdio.h>
@@ -16,6 +12,10 @@
 #include <string.h>
 #include <time.h>
 #include <unistd.h>
+
+#ifdef __GLIBC__
+#include <execinfo.h>
+#endif
 
 nexterm_session_manager_t g_session_manager;
 
@@ -31,7 +31,7 @@ static void signal_handler(int sig) {
 }
 
 static void crash_signal_handler(int sig) {
-#ifdef __linux__
+#ifdef __GLIBC__
     void* frames[64];
     int frame_count = backtrace(frames, 64);
     static const char prefix[] = "\n[nexterm-crash] Fatal signal received. Backtrace follows:\n";

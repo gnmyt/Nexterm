@@ -358,18 +358,10 @@ static void* guac_session_thread(void* arg) {
     snprintf(rec_path, sizeof(rec_path), "/tmp/nexterm-recordings/%s", session_id);
     struct stat st;
     if (stat(rec_path, &st) == 0) {
-        LOG_INFO("Recording file found for session %s (%lld bytes)",
-                 session_id, (long long) st.st_size);
-        if (st.st_size > 1024) {
-            LOG_INFO("Uploading recording for session %s", session_id);
+        if (st.st_size > 1024)
             nexterm_cp_upload_recording(cp, session_id, rec_path);
-            LOG_INFO("Recording upload finished for session %s", session_id);
-        }
         else
             unlink(rec_path);
-    }
-    else {
-        LOG_INFO("No recording file to upload for session %s", session_id);
     }
 
     session->state = SESSION_STATE_CLOSED;

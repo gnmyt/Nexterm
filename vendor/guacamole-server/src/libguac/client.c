@@ -336,8 +336,10 @@ void guac_client_free(guac_client* client) {
     guac_rwlock_release_lock(&(client->__pending_users_lock));
 
     if (client->free_handler) {
+
         /* FIXME: Errors currently ignored... */
         client->free_handler(client);
+
     }
 
     /* Free sockets */
