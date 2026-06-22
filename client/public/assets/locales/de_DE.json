@@ -1780,10 +1780,19 @@
         "enterDirectory": "Verzeichnispfad eingeben...",
         "hiddenDirectories": "{{count}} versteckte Verzeichnisse",
         "switchToGrid": "Zur Rasteransicht wechseln",
-        "switchToList": "Zur Listenansicht wechseln"
+        "switchToList": "Zur Listenansicht wechseln",
+        "search": "Search files",
+        "closeSearch": "Close search"
       },
       "item": {
         "link": "Link"
+      },
+      "search": {
+        "placeholder": "Filter files in this folder...",
+        "results": "{{count}} result",
+        "results_plural": "{{count}} results",
+        "noResultsTitle": "No matches",
+        "noResults": "No files match \"{{query}}\""
       },
       "states": {
         "loading": "Dateien laden...",
