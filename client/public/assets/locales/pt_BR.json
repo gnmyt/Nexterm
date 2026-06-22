@@ -1780,10 +1780,19 @@
         "enterDirectory": "Digite o caminho do diretório...",
         "hiddenDirectories": "{{count}} pastas ocultas",
         "switchToGrid": "Mudar para visualização em grade",
-        "switchToList": "Mudar para visualização em lista"
+        "switchToList": "Mudar para visualização em lista",
+        "search": "Search files",
+        "closeSearch": "Close search"
       },
       "item": {
         "link": "link"
+      },
+      "search": {
+        "placeholder": "Filter files in this folder...",
+        "results": "{{count}} result",
+        "results_plural": "{{count}} results",
+        "noResultsTitle": "No matches",
+        "noResults": "No files match \"{{query}}\""
       },
       "states": {
         "loading": "Carregando arquivos...",
