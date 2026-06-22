@@ -81,6 +81,12 @@ nexterm_session_t* nexterm_sm_create(nexterm_session_manager_t* sm,
 nexterm_session_t* nexterm_sm_find(nexterm_session_manager_t* sm,
                                    const char* session_id);
 
+void nexterm_sm_lock(nexterm_session_manager_t* sm);
+void nexterm_sm_unlock(nexterm_session_manager_t* sm);
+
+nexterm_session_t* nexterm_sm_find_locked(nexterm_session_manager_t* sm,
+                                          const char* session_id);
+
 void nexterm_sm_remove(nexterm_session_manager_t* sm,
                        const char* session_id);
 

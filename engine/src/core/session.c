@@ -76,6 +76,24 @@ nexterm_session_t* nexterm_sm_find(nexterm_session_manager_t* sm,
     return NULL;
 }
 
+void nexterm_sm_lock(nexterm_session_manager_t* sm) {
+    pthread_mutex_lock(&sm->mutex);
+}
+
+void nexterm_sm_unlock(nexterm_session_manager_t* sm) {
+    pthread_mutex_unlock(&sm->mutex);
+}
+
+nexterm_session_t* nexterm_sm_find_locked(nexterm_session_manager_t* sm,
+                                          const char* session_id) {
+    for (int i = 0; i < MAX_SESSIONS; i++) {
+        if (sm->sessions[i].session_id[0] != '\0' &&
+            strcmp(sm->sessions[i].session_id, session_id) == 0)
+            return &sm->sessions[i];
+    }
+    return NULL;
+}
+
 static void session_cleanup_resources(nexterm_session_t* session) {
     for (int j = 0; j < session->param_count; j++) {
         free(session->params[j].value);

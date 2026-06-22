@@ -257,13 +257,19 @@ static void handle_session_close(nexterm_control_plane_t* cp,
     const char* sid = Nexterm_ControlPlane_SessionClose_session_id(close_msg);
     LOG_INFO("SessionClose: id=%s", sid);
 
-    nexterm_session_t* session = nexterm_sm_find(&g_session_manager, sid);
+    nexterm_sm_lock(&g_session_manager);
+    nexterm_session_t* session = nexterm_sm_find_locked(&g_session_manager, sid);
+    bool found = session != NULL;
+    bool thread_active = false;
     if (session) {
         nexterm_connection_close(session);
-        if (!session->thread_active) {
-            nexterm_cp_send_session_closed(cp, sid, "closed by server");
-            nexterm_sm_remove(&g_session_manager, sid);
-        }
+        thread_active = session->thread_active;
+    }
+    nexterm_sm_unlock(&g_session_manager);
+
+    if (found && !thread_active) {
+        nexterm_cp_send_session_closed(cp, sid, "closed by server");
+        nexterm_sm_remove(&g_session_manager, sid);
     }
 }
 
