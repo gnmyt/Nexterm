@@ -216,8 +216,13 @@ const createSSHConnectionForSession = async (sessionId, entry, identity, organiz
         });
 
         if (!script && session.configuration.startPath) {
-            const safePath = session.configuration.startPath.replace(/[`$\\]/g, '\\$&');
-            dataSocket.write(`cd ${safePath}\n`);
+            const raw = String(session.configuration.startPath);
+            if (/[\r\n\x00]/.test(raw)) {
+                logger.warn("Ignoring startPath containing control characters", { sessionId });
+            } else {
+                const quoted = `'${raw.replace(/'/g, `'\\''`)}'`;
+                dataSocket.write(`cd ${quoted}\n`);
+            }
         }
 
         logger.info("SSH connected", { sessionId, target: host, port });
