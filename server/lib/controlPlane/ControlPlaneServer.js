@@ -102,7 +102,7 @@ class ControlPlaneServer extends EventEmitter {
             if (!result.success) this._sessionEngineMap.delete(sessionId);
         }, () => {
             this._sendFrame(engine.socket, buildSessionOpen(sessionId, sessionType, host, port, params, jumpHosts));
-        });
+        }, null, engine.engineId);
     }
 
     closeSession(sessionId, engineId = null) {
@@ -119,7 +119,7 @@ class ControlPlaneServer extends EventEmitter {
         const key = `join:${sessionId}:${Date.now()}`;
         return this._createPendingRequest(key, null, () => {
             this._sendFrame(engine.socket, buildSessionJoin(sessionId));
-        }, sessionId);
+        }, sessionId, engine.engineId);
     }
 
     sendSessionResize(sessionId, cols, rows, engineId = null) {
@@ -135,7 +135,7 @@ class ControlPlaneServer extends EventEmitter {
         const requestId = `exec-${Date.now()}-${Math.random().toString(36).substring(2, 10)}`;
         return this._createPendingRequest(requestId, null, () => {
             this._sendFrame(engine.socket, buildExecCommand(requestId, host, port, params, command, jumpHosts));
-        });
+        }, null, engine.engineId);
     }
 
     portCheck(targets, timeoutMs = 2000, engineId = null) {
@@ -145,7 +145,7 @@ class ControlPlaneServer extends EventEmitter {
         const requestId = `portcheck-${Date.now()}-${Math.random().toString(36).substring(2, 10)}`;
         return this._createPendingRequest(requestId, null, () => {
             this._sendFrame(engine.socket, buildPortCheck(requestId, targets, timeoutMs));
-        });
+        }, null, engine.engineId);
     }
 
     httpFetch(method, url, headers = {}, body = null, timeoutMs = 30000, insecure = false, engineId = null) {
@@ -155,7 +155,7 @@ class ControlPlaneServer extends EventEmitter {
         const requestId = `fetch-${Date.now()}-${Math.random().toString(36).substring(2, 10)}`;
         return this._createPendingRequest(requestId, null, () => {
             this._sendFrame(engine.socket, buildHttpFetch(requestId, method, url, headers, body, timeoutMs, insecure));
-        });
+        }, null, engine.engineId);
     }
 
     hasEngine() {
@@ -196,21 +196,29 @@ class ControlPlaneServer extends EventEmitter {
         return true;
     }
 
-    _createPendingRequest(key, onResult, onSend, joinSessionId = null) {
+    _createPendingRequest(key, onResult, onSend, joinSessionId = null, ownerEngineId = null) {
         return new Promise((resolve, reject) => {
             const timeout = setTimeout(() => {
                 this._pending.delete(key);
                 reject(new Error("Request timeout"));
             }, SESSION_TIMEOUT);
 
-            this._pending.set(key, { resolve, reject, timeout, onResult, joinSessionId });
+            this._pending.set(key, { resolve, reject, timeout, onResult, joinSessionId, ownerEngineId });
             onSend();
         });
     }
 
-    _resolvePending(key, result) {
+    _pendingOwnedBy(entry, respondingEngineId) {
+        if (!entry.ownerEngineId || respondingEngineId == null) return true;
+        if (entry.ownerEngineId === respondingEngineId) return true;
+        logger.warn(`Control plane: engine ${respondingEngineId} tried to answer a request owned by ${entry.ownerEngineId}`);
+        return false;
+    }
+
+    _resolvePending(key, result, respondingEngineId) {
         const entry = this._pending.get(key);
         if (!entry) return false;
+        if (!this._pendingOwnedBy(entry, respondingEngineId)) return false;
         clearTimeout(entry.timeout);
         this._pending.delete(key);
         entry.onResult?.(result);
@@ -218,9 +226,10 @@ class ControlPlaneServer extends EventEmitter {
         return true;
     }
 
-    _rejectPending(key, error) {
+    _rejectPending(key, error, respondingEngineId) {
         const entry = this._pending.get(key);
         if (!entry) return false;
+        if (!this._pendingOwnedBy(entry, respondingEngineId)) return false;
         clearTimeout(entry.timeout);
         this._pending.delete(key);
         entry.reject(error);
@@ -511,6 +520,7 @@ class ControlPlaneServer extends EventEmitter {
     }
 
     _handleControlMessage(socket, envelope, msgType) {
+        const respondingEngineId = this._findEngineId(socket);
         switch (msgType) {
             case MessageType.Pong: {
                 const engineId = this._findEngineId(socket);
@@ -538,9 +548,9 @@ class ControlPlaneServer extends EventEmitter {
                 };
 
                 if (payload.success) {
-                    this._resolvePending(sessionId, payload);
+                    this._resolvePending(sessionId, payload, respondingEngineId);
                 } else {
-                    this._rejectPending(sessionId, new Error(payload.errorMessage || "Session open failed"));
+                    this._rejectPending(sessionId, new Error(payload.errorMessage || "Session open failed"), respondingEngineId);
                 }
 
                 this.emit("sessionOpenResult", payload);
@@ -565,7 +575,7 @@ class ControlPlaneServer extends EventEmitter {
                     stderr: result.stderrData() || "",
                     exitCode: result.exitCode(),
                     errorMessage: result.errorMessage(),
-                });
+                }, respondingEngineId);
                 break;
             }
 
@@ -581,7 +591,7 @@ class ControlPlaneServer extends EventEmitter {
                     entries.push({ id: entry.id(), online: entry.online() });
                 }
 
-                this._resolvePending(requestId, { entries });
+                this._resolvePending(requestId, { entries }, respondingEngineId);
                 break;
             }
 
@@ -607,9 +617,9 @@ class ControlPlaneServer extends EventEmitter {
                 };
 
                 if (payload.success) {
-                    this._resolvePending(requestId, payload);
+                    this._resolvePending(requestId, payload, respondingEngineId);
                 } else {
-                    this._rejectPending(requestId, Object.assign(new Error(payload.errorMessage || "HTTP fetch failed"), payload));
+                    this._rejectPending(requestId, Object.assign(new Error(payload.errorMessage || "HTTP fetch failed"), payload), respondingEngineId);
                 }
                 break;
             }
