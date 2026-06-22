@@ -453,17 +453,37 @@ class ControlPlaneServer extends EventEmitter {
             return;
         }
 
+        if (!Number.isInteger(auditLogId) || auditLogId <= 0) {
+            logger.warn(`Recording upload for session ${sessionId} has invalid auditLogId, discarding`);
+            socket.destroy();
+            return;
+        }
+
         if (!this._isKnownEngineAddress(socket.remoteAddress)) {
             logger.warn(`Recording upload for session ${sessionId} from untrusted ${remoteAddr}, discarding`);
             socket.destroy();
             return;
         }
 
+        const MAX_RECORDING_BYTES = 512 * 1024 * 1024;
+        const sizeLimit = Number.isFinite(fileSize) && fileSize > 0
+            ? Math.min(fileSize, MAX_RECORDING_BYTES)
+            : MAX_RECORDING_BYTES;
+
         logger.info(`Recording upload: session=${sessionId} auditLog=${auditLogId} size=${fileSize}`);
         ensureRecordingsDir();
         const rawPath = path.join(RECORDINGS_DIR, String(auditLogId));
 
         if (residualBuf?.length > 0) socket.unshift(residualBuf);
+
+        let received = 0;
+        socket.on("data", (chunk) => {
+            received += chunk.length;
+            if (received > sizeLimit) {
+                logger.warn(`Recording upload for session ${sessionId} exceeded ${sizeLimit} bytes, aborting`);
+                socket.destroy();
+            }
+        });
 
         pipeline(socket, fs.createWriteStream(rawPath), async (err) => {
             if (err) {
