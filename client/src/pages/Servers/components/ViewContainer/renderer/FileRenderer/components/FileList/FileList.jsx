@@ -4,7 +4,7 @@ import Icon from "@mdi/react";
 import {
     mdiFile, mdiFolder, mdiAlertCircle, mdiFormTextbox, mdiTextBoxEdit,
     mdiFileDownload, mdiTrashCan, mdiEye, mdiFileMove, mdiContentCopy,
-    mdiInformationOutline, mdiConsole,
+    mdiInformationOutline, mdiConsole, mdiFileSearchOutline,
 } from "@mdi/js";
 import { ContextMenu, ContextMenuItem, useContextMenu } from "@/common/components/ContextMenu";
 import { ActionConfirmDialog } from "@/common/components/ActionConfirmDialog/ActionConfirmDialog.jsx";
@@ -20,7 +20,7 @@ export const FileList = forwardRef(({
     items, updatePath, path, sendOperation, downloadFile, downloadMultipleFiles,
     setCurrentFile, setPreviewFile, loading, viewMode = "list", error,
     resolveSymlink, session, createFile, createFolder, moveFiles, copyFiles, isActive,
-    onOpenTerminal, onPropertiesMessage,
+    onOpenTerminal, onPropertiesMessage, searchQuery = "", onSearchResults,
 }, ref) => {
     const { t } = useTranslation();
     const { showThumbnails, showHiddenFiles, confirmBeforeDelete, dragDropAction } = usePreferences();
@@ -50,10 +50,15 @@ export const FileList = forwardRef(({
         startCreateFile: () => { setCreatingFile(true); setNewFileName(""); },
     }));
 
+    const query = searchQuery.trim().toLowerCase();
+
     const filteredItems = useMemo(() => {
-        const filtered = showHiddenFiles ? items : items.filter(item => !item.name.startsWith("."));
+        let filtered = showHiddenFiles ? items : items.filter(item => !item.name.startsWith("."));
+        if (query) filtered = filtered.filter(item => item.name.toLowerCase().includes(query));
         return [...filtered].sort((a, b) => b.type.localeCompare(a.type) || a.name.localeCompare(b.name));
-    }, [items, showHiddenFiles]);
+    }, [items, showHiddenFiles, query]);
+
+    useEffect(() => { if (query) onSearchResults?.(filteredItems.length); }, [filteredItems.length, query, onSearchResults]);
 
     useEffect(() => setSelectedItems([]), [path]);
 
@@ -192,9 +197,11 @@ export const FileList = forwardRef(({
                 </div>
             ) : filteredItems.length === 0 && !creatingFolder && !creatingFile ? (
                 <div className="empty-state">
-                    <Icon path={mdiFolder} />
-                    <h3>{t("servers.fileManager.states.emptyFolder")}</h3>
-                    <p>{t("servers.fileManager.states.dropFilesHint")}</p>
+                    <Icon path={query ? mdiFileSearchOutline : mdiFolder} />
+                    <h3>{t(query ? "servers.fileManager.search.noResultsTitle" : "servers.fileManager.states.emptyFolder")}</h3>
+                    <p>{query
+                        ? t("servers.fileManager.search.noResults", { query: searchQuery.trim() })
+                        : t("servers.fileManager.states.dropFilesHint")}</p>
                 </div>
             ) : (
                 <div
@@ -244,6 +251,7 @@ export const FileList = forwardRef(({
                             isDropTarget={dropTarget === item.name}
                             isCut={isItemCut(`${path}/${item.name}`)}
                             showThumbnails={showThumbnails}
+                            highlight={query}
                             renameValue={renameValue}
                             onRenameChange={(e) => setRenameValue(e.target.value)}
                             onRenameKeyDown={(e) => handleRenameKeyDown(e, item)}
