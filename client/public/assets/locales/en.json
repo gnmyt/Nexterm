@@ -1776,10 +1776,19 @@
         "enterDirectory": "Enter directory path...",
         "hiddenDirectories": "{{count}} hidden directories",
         "switchToGrid": "Switch to grid view",
-        "switchToList": "Switch to list view"
+        "switchToList": "Switch to list view",
+        "search": "Search files",
+        "closeSearch": "Close search"
       },
       "item": {
         "link": "link"
+      },
+      "search": {
+        "placeholder": "Filter files in this folder...",
+        "results": "{{count}} result",
+        "results_plural": "{{count}} results",
+        "noResultsTitle": "No matches",
+        "noResults": "No files match \"{{query}}\""
       },
       "states": {
         "loading": "Loading files...",

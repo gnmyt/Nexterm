@@ -39,6 +39,9 @@ export const FileRenderer = ({ session, disconnectFromServer, setOpenFileEditors
     const [directorySuggestions, setDirectorySuggestions] = useState([]);
     const [connectionError, setConnectionError] = useState(null);
     const [isReady, setIsReady] = useState(false);
+    const [searchQuery, setSearchQuery] = useState("");
+    const [searchOpen, setSearchOpen] = useState(false);
+    const [searchResultCount, setSearchResultCount] = useState(0);
     
     const directoryRef = useRef(directory);
     const skipNextPathSync = useRef(false);
@@ -292,6 +295,22 @@ export const FileRenderer = ({ session, disconnectFromServer, setOpenFileEditors
 
     useEffect(() => { directoryRef.current = directory; }, [directory]);
 
+    useEffect(() => { setSearchQuery(""); }, [directory]);
+
+    useEffect(() => {
+        if (!isActive) return;
+        const handler = (e) => {
+            if ((e.ctrlKey || e.metaKey) && (e.key === "f" || e.key === "F")) {
+                e.preventDefault();
+                setSearchOpen(true);
+            }
+        };
+        window.addEventListener("keydown", handler);
+        return () => window.removeEventListener("keydown", handler);
+    }, [isActive]);
+
+    const closeSearch = useCallback(() => { setSearchOpen(false); setSearchQuery(""); }, []);
+
     useEffect(() => {
         if (isReady) {
             if (skipNextPathSync.current) {
@@ -314,12 +333,14 @@ export const FileRenderer = ({ session, disconnectFromServer, setOpenFileEditors
                     createFolder={() => fileListRef.current?.startCreateFolder()} uploadFile={uploadFile} goBack={goBack} goForward={goForward} historyIndex={historyIndex}
                     historyLength={history.length} viewMode={viewMode} setViewMode={setViewMode} 
                     searchDirectories={searchDirectories} directorySuggestions={directorySuggestions} 
-                    setDirectorySuggestions={setDirectorySuggestions} moveFiles={moveFiles} copyFiles={copyFiles} 
-                    sessionId={session.id} />
+                    setDirectorySuggestions={setDirectorySuggestions} moveFiles={moveFiles} copyFiles={copyFiles}
+                    sessionId={session.id} searchQuery={searchQuery} setSearchQuery={setSearchQuery} searchOpen={searchOpen}
+                    setSearchOpen={setSearchOpen} closeSearch={closeSearch} searchResultCount={searchResultCount} />
                 <FileList ref={fileListRef} items={items} path={directory} updatePath={changeDirectory} sendOperation={sendOperation}
-                    downloadFile={downloadFile} downloadMultipleFiles={downloadMultipleFiles} setCurrentFile={handleOpenFile} setPreviewFile={handleOpenPreview} 
+                    downloadFile={downloadFile} downloadMultipleFiles={downloadMultipleFiles} setCurrentFile={handleOpenFile} setPreviewFile={handleOpenPreview}
                     loading={loading} viewMode={viewMode} error={error || connectionError} resolveSymlink={resolveSymlink} session={session}
                     createFile={createFile} createFolder={createFolder} moveFiles={moveFiles} copyFiles={copyFiles} isActive={isActive}
+                    searchQuery={searchQuery} onSearchResults={setSearchResultCount}
                     onOpenTerminal={onOpenTerminal} onPropertiesMessage={(handler) => { propertiesHandlerRef.current = handler; }} />
             </div>
             {isUploading && <div className="upload-progress" style={{ width: `${uploadProgress}%` }} />}
