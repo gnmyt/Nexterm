@@ -13,6 +13,14 @@ const RECORDINGS_DIR = path.join(DATA_DIR, "recordings");
 const LOGS_DIR = path.join(DATA_DIR, "logs");
 const TEMP_DIR = path.join(DATA_DIR, ".backup-temp");
 
+const BACKUP_NAME_RE = /^backup-[\w.-]+\.tar\.gz$/;
+const assertValidBackupName = (backupName) => {
+    if (typeof backupName !== "string" || !BACKUP_NAME_RE.test(backupName) ||
+        backupName.includes("/") || backupName.includes("\\") || backupName.includes("..")) {
+        throw new Error("Invalid backup name");
+    }
+};
+
 let scheduleInterval = null;
 
 const getSettings = async () => {
@@ -115,6 +123,7 @@ module.exports.listBackups = async (providerId) => {
 };
 
 module.exports.restoreBackup = async (providerId, backupName) => {
+    assertValidBackupName(backupName);
     const provider = await getProviderById(providerId);
     const buffer = await provider.download(backupName);
     const restorePath = path.join(TEMP_DIR, "restore");

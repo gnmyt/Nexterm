@@ -34,7 +34,8 @@ class ControlPlaneServer extends EventEmitter {
     constructor() {
         super();
         this.port = Number.parseInt(process.env.CONTROL_PLANE_PORT, 10) || 7800;
-        this.host = "0.0.0.0";
+        this.host = process.env.CONTROL_PLANE_HOST || "127.0.0.1";
+        this.requireTls = process.env.CONTROL_PLANE_REQUIRE_TLS === "true";
         this.server = null;
         this._engines = new Map();
         this._dataConnections = new Map();
@@ -101,7 +102,7 @@ class ControlPlaneServer extends EventEmitter {
             if (!result.success) this._sessionEngineMap.delete(sessionId);
         }, () => {
             this._sendFrame(engine.socket, buildSessionOpen(sessionId, sessionType, host, port, params, jumpHosts));
-        });
+        }, null, engine.engineId);
     }
 
     closeSession(sessionId, engineId = null) {
@@ -118,7 +119,7 @@ class ControlPlaneServer extends EventEmitter {
         const key = `join:${sessionId}:${Date.now()}`;
         return this._createPendingRequest(key, null, () => {
             this._sendFrame(engine.socket, buildSessionJoin(sessionId));
-        }, sessionId);
+        }, sessionId, engine.engineId);
     }
 
     sendSessionResize(sessionId, cols, rows, engineId = null) {
@@ -134,7 +135,7 @@ class ControlPlaneServer extends EventEmitter {
         const requestId = `exec-${Date.now()}-${Math.random().toString(36).substring(2, 10)}`;
         return this._createPendingRequest(requestId, null, () => {
             this._sendFrame(engine.socket, buildExecCommand(requestId, host, port, params, command, jumpHosts));
-        });
+        }, null, engine.engineId);
     }
 
     portCheck(targets, timeoutMs = 2000, engineId = null) {
@@ -144,7 +145,7 @@ class ControlPlaneServer extends EventEmitter {
         const requestId = `portcheck-${Date.now()}-${Math.random().toString(36).substring(2, 10)}`;
         return this._createPendingRequest(requestId, null, () => {
             this._sendFrame(engine.socket, buildPortCheck(requestId, targets, timeoutMs));
-        });
+        }, null, engine.engineId);
     }
 
     httpFetch(method, url, headers = {}, body = null, timeoutMs = 30000, insecure = false, engineId = null) {
@@ -154,7 +155,7 @@ class ControlPlaneServer extends EventEmitter {
         const requestId = `fetch-${Date.now()}-${Math.random().toString(36).substring(2, 10)}`;
         return this._createPendingRequest(requestId, null, () => {
             this._sendFrame(engine.socket, buildHttpFetch(requestId, method, url, headers, body, timeoutMs, insecure));
-        });
+        }, null, engine.engineId);
     }
 
     hasEngine() {
@@ -195,21 +196,29 @@ class ControlPlaneServer extends EventEmitter {
         return true;
     }
 
-    _createPendingRequest(key, onResult, onSend, joinSessionId = null) {
+    _createPendingRequest(key, onResult, onSend, joinSessionId = null, ownerEngineId = null) {
         return new Promise((resolve, reject) => {
             const timeout = setTimeout(() => {
                 this._pending.delete(key);
                 reject(new Error("Request timeout"));
             }, SESSION_TIMEOUT);
 
-            this._pending.set(key, { resolve, reject, timeout, onResult, joinSessionId });
+            this._pending.set(key, { resolve, reject, timeout, onResult, joinSessionId, ownerEngineId });
             onSend();
         });
     }
 
-    _resolvePending(key, result) {
+    _pendingOwnedBy(entry, respondingEngineId) {
+        if (!entry.ownerEngineId || respondingEngineId == null) return true;
+        if (entry.ownerEngineId === respondingEngineId) return true;
+        logger.warn(`Control plane: engine ${respondingEngineId} tried to answer a request owned by ${entry.ownerEngineId}`);
+        return false;
+    }
+
+    _resolvePending(key, result, respondingEngineId) {
         const entry = this._pending.get(key);
         if (!entry) return false;
+        if (!this._pendingOwnedBy(entry, respondingEngineId)) return false;
         clearTimeout(entry.timeout);
         this._pending.delete(key);
         entry.onResult?.(result);
@@ -217,9 +226,10 @@ class ControlPlaneServer extends EventEmitter {
         return true;
     }
 
-    _rejectPending(key, error) {
+    _rejectPending(key, error, respondingEngineId) {
         const entry = this._pending.get(key);
         if (!entry) return false;
+        if (!this._pendingOwnedBy(entry, respondingEngineId)) return false;
         clearTimeout(entry.timeout);
         this._pending.delete(key);
         entry.reject(error);
@@ -279,6 +289,14 @@ class ControlPlaneServer extends EventEmitter {
                     tlsSocket.destroy();
                 });
             } else {
+                const isLoopback = rawSocket.remoteAddress === "127.0.0.1" ||
+                    rawSocket.remoteAddress === "::1" ||
+                    rawSocket.remoteAddress === "::ffff:127.0.0.1";
+                if (this.requireTls || (this._tlsContext && !isLoopback)) {
+                    logger.warn(`Control plane: rejecting plaintext connection from ${remoteAddr} (TLS required)`);
+                    rawSocket.destroy();
+                    return;
+                }
                 rawSocket._encrypted = false;
                 this._handleConnection(rawSocket);
             }
@@ -293,6 +311,14 @@ class ControlPlaneServer extends EventEmitter {
         const remoteAddr = `${socket.remoteAddress}:${socket.remotePort}`;
         let identified = false;
 
+        const handshakeTimer = setTimeout(() => {
+            if (!identified) {
+                logger.warn(`Control plane: handshake timeout from ${remoteAddr}`);
+                socket.destroy();
+            }
+        }, 15000);
+        handshakeTimer.unref?.();
+
         const frameParser = createFrameParser(
             (payload) => {
                 const bb = new flatbuffers.ByteBuffer(new Uint8Array(payload));
@@ -305,6 +331,7 @@ class ControlPlaneServer extends EventEmitter {
                 }
 
                 identified = true;
+                clearTimeout(handshakeTimer);
                 if (msgType === MessageType.EngineHello) {
                     this._handleEngineHello(socket, envelope, remoteAddr);
                 } else if (msgType === MessageType.ConnectionReady) {
@@ -315,11 +342,13 @@ class ControlPlaneServer extends EventEmitter {
                     this._handleRecordingUpload(socket, envelope, remoteAddr, frameParser.drain());
                 } else {
                     logger.warn(`Control plane: unexpected first message type ${msgType} from ${remoteAddr}`);
+                    socket.removeListener("data", onData);
                     socket.destroy();
                 }
             },
-            (len) => {
-                logger.error(`Control plane: invalid frame length ${len} from ${remoteAddr}`);
+            (reason) => {
+                logger.error(`Control plane: protocol error from ${remoteAddr}: ${reason}`);
+                clearTimeout(handshakeTimer);
                 socket.destroy();
             }
         );
@@ -365,6 +394,7 @@ class ControlPlaneServer extends EventEmitter {
             engineId: dbEngineId,
             version,
             remoteAddr,
+            remoteHost: socket.remoteAddress,
             connectedAt: Date.now(),
             lastPong: Date.now(),
             encrypted: !!socket._encrypted,
@@ -383,6 +413,15 @@ class ControlPlaneServer extends EventEmitter {
         }
 
         const sessionId = ready.sessionId();
+
+        const ownerEngineId = this._sessionEngineMap.get(sessionId);
+        const ownerEngine = ownerEngineId ? this._engines.get(ownerEngineId) : null;
+        if (!ownerEngine || ownerEngine.remoteHost !== socket.remoteAddress) {
+            logger.warn(`Control plane: rejecting data connection for session ${sessionId} from ${remoteAddr} (no matching owner engine)`);
+            socket.destroy();
+            return;
+        }
+
         logger.info(`Data connection ready for session ${sessionId} from ${remoteAddr}`);
 
         if (!this._dataConnections.has(sessionId)) {
@@ -423,11 +462,37 @@ class ControlPlaneServer extends EventEmitter {
             return;
         }
 
+        if (!Number.isInteger(auditLogId) || auditLogId <= 0) {
+            logger.warn(`Recording upload for session ${sessionId} has invalid auditLogId, discarding`);
+            socket.destroy();
+            return;
+        }
+
+        if (!this._isKnownEngineAddress(socket.remoteAddress)) {
+            logger.warn(`Recording upload for session ${sessionId} from untrusted ${remoteAddr}, discarding`);
+            socket.destroy();
+            return;
+        }
+
+        const MAX_RECORDING_BYTES = 512 * 1024 * 1024;
+        const sizeLimit = Number.isFinite(fileSize) && fileSize > 0
+            ? Math.min(fileSize, MAX_RECORDING_BYTES)
+            : MAX_RECORDING_BYTES;
+
         logger.info(`Recording upload: session=${sessionId} auditLog=${auditLogId} size=${fileSize}`);
         ensureRecordingsDir();
         const rawPath = path.join(RECORDINGS_DIR, String(auditLogId));
 
         if (residualBuf?.length > 0) socket.unshift(residualBuf);
+
+        let received = 0;
+        socket.on("data", (chunk) => {
+            received += chunk.length;
+            if (received > sizeLimit) {
+                logger.warn(`Recording upload for session ${sessionId} exceeded ${sizeLimit} bytes, aborting`);
+                socket.destroy();
+            }
+        });
 
         pipeline(socket, fs.createWriteStream(rawPath), async (err) => {
             if (err) {
@@ -455,6 +520,7 @@ class ControlPlaneServer extends EventEmitter {
     }
 
     _handleControlMessage(socket, envelope, msgType) {
+        const respondingEngineId = this._findEngineId(socket);
         switch (msgType) {
             case MessageType.Pong: {
                 const engineId = this._findEngineId(socket);
@@ -482,9 +548,9 @@ class ControlPlaneServer extends EventEmitter {
                 };
 
                 if (payload.success) {
-                    this._resolvePending(sessionId, payload);
+                    this._resolvePending(sessionId, payload, respondingEngineId);
                 } else {
-                    this._rejectPending(sessionId, new Error(payload.errorMessage || "Session open failed"));
+                    this._rejectPending(sessionId, new Error(payload.errorMessage || "Session open failed"), respondingEngineId);
                 }
 
                 this.emit("sessionOpenResult", payload);
@@ -509,7 +575,7 @@ class ControlPlaneServer extends EventEmitter {
                     stderr: result.stderrData() || "",
                     exitCode: result.exitCode(),
                     errorMessage: result.errorMessage(),
-                });
+                }, respondingEngineId);
                 break;
             }
 
@@ -525,7 +591,7 @@ class ControlPlaneServer extends EventEmitter {
                     entries.push({ id: entry.id(), online: entry.online() });
                 }
 
-                this._resolvePending(requestId, { entries });
+                this._resolvePending(requestId, { entries }, respondingEngineId);
                 break;
             }
 
@@ -551,9 +617,9 @@ class ControlPlaneServer extends EventEmitter {
                 };
 
                 if (payload.success) {
-                    this._resolvePending(requestId, payload);
+                    this._resolvePending(requestId, payload, respondingEngineId);
                 } else {
-                    this._rejectPending(requestId, Object.assign(new Error(payload.errorMessage || "HTTP fetch failed"), payload));
+                    this._rejectPending(requestId, Object.assign(new Error(payload.errorMessage || "HTTP fetch failed"), payload), respondingEngineId);
                 }
                 break;
             }
@@ -585,6 +651,13 @@ class ControlPlaneServer extends EventEmitter {
 
     _sendFrame(socket, payload) {
         sendFrame(socket, payload);
+    }
+
+    _isKnownEngineAddress(addr) {
+        for (const [, engine] of this._engines) {
+            if (engine.remoteHost === addr) return true;
+        }
+        return false;
     }
 
     _findEngineId(socket) {

@@ -6,8 +6,9 @@ const {
     updateAuditLogWithSessionDuration,
 } = require("../controllers/audit");
 const SessionManager = require("../lib/SessionManager");
-const { createSFTPConnectionForSession } = require("../lib/ConnectionService");
+const { createSFTPConnectionForSession, getSFTPBackgroundClient } = require("../lib/ConnectionService");
 const Entry = require("../models/Entry");
+const logger = require("../utils/logger");
 
 const OP = {
     READY: 0x0, LIST_FILES: 0x1, CREATE_FILE: 0x4, CREATE_FOLDER: 0x5, DELETE_FILE: 0x6,
@@ -33,7 +34,7 @@ const requirePath = (p) => { if (!p?.path) throw new Error("Invalid path"); };
 const requirePaths = (p) => { if (!p?.path || !p?.newPath) throw new Error("Invalid paths"); };
 const requireMultiPaths = (p) => { if (!p?.sources?.length || !p?.destination) throw new Error("Invalid paths"); };
 
-const buildOperationHandlers = (sftp, ws, logAudit) => ({
+const buildOperationHandlers = (sftp, getBg, ws, logAudit) => ({
     [OP.LIST_FILES]: async (p) => {
         requirePath(p);
         sendResult(ws, OP.LIST_FILES, { files: await sftp.listDir(p.path) });
@@ -90,7 +91,8 @@ const buildOperationHandlers = (sftp, ws, logAudit) => ({
             const dest = `${p.destination}/${src.split("/").pop()}`;
             return `cp -r ${escapePath(src)} ${escapePath(dest)}`;
         }).join(" && ");
-        const result = await sftp.exec(cmds);
+        const bg = await getBg();
+        const result = await bg.exec(cmds);
         if (result.exitCode !== 0) throw new Error(result.stderr.trim() || "Failed to copy files");
         sendAck(ws, OP.COPY_FILES);
         logAudit(AUDIT_ACTIONS.FILE_CREATE, RESOURCE_TYPES.FILE, { sources: p.sources, destination: p.destination });
@@ -110,13 +112,15 @@ const buildOperationHandlers = (sftp, ws, logAudit) => ({
         const algo = p.algorithm.toLowerCase();
         const cmd = CHECKSUM_COMMANDS[algo];
         if (!cmd) throw new Error("Unsupported algorithm");
-        const result = await sftp.exec(`${cmd} ${escapePath(p.path)}`);
+        const bg = await getBg();
+        const result = await bg.exec(`${cmd} ${escapePath(p.path)}`);
         if (result.exitCode !== 0) throw new Error(result.stderr.trim() || "Checksum failed");
         sendResult(ws, OP.CHECKSUM, { hash: result.stdout.split(/\s+/)[0], algorithm: algo });
     },
     [OP.FOLDER_SIZE]: async (p) => {
         requirePath(p);
-        const result = await sftp.exec(`du -sb ${escapePath(p.path)} 2>/dev/null | cut -f1`);
+        const bg = await getBg();
+        const result = await bg.exec(`du -sb ${escapePath(p.path)} 2>/dev/null | cut -f1`);
         if (result.exitCode !== 0) throw new Error(result.stderr.trim() || "Failed to calculate size");
         sendResult(ws, OP.FOLDER_SIZE, { size: Number.parseInt(result.stdout.trim(), 10) || 0 });
     },
@@ -144,12 +148,23 @@ module.exports = async (ws, req) => {
     const startTime = Date.now();
 
     try {
-        const sftpClient = await resolveSftpClient(sessionId, serverSession?.entryId ?? entry.id, user.id);
+        const entryId = serverSession?.entryId ?? entry.id;
+        const sftpClient = await resolveSftpClient(sessionId, entryId, user.id);
         if (!sftpClient) {
             sendError(ws, "Failed to establish SFTP connection");
             ws.close(4002);
             return;
         }
+
+        const getBg = async () => {
+            const fullEntry = await Entry.findByPk(entryId);
+            try {
+                return await getSFTPBackgroundClient(sessionId, fullEntry, user.id);
+            } catch (err) {
+                logger.warn("Falling back to metadata SFTP client for background op", { sessionId, error: err.message });
+                return sftpClient;
+            }
+        };
 
         SessionManager.addWebSocket(sessionId, ws);
 
@@ -165,7 +180,7 @@ module.exports = async (ws, req) => {
         const logAudit = (action, resource, details) => {
             createAuditLog({ accountId: user.id, organizationId: entry.organizationId, action, resource, details, ipAddress, userAgent });
         };
-        const handlers = buildOperationHandlers(sftpClient, ws, logAudit);
+        const handlers = buildOperationHandlers(sftpClient, getBg, ws, logAudit);
 
         const messageHandler = async (msg) => {
             const opCode = msg[0];

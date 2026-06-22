@@ -13,6 +13,10 @@
 #include <time.h>
 #include <unistd.h>
 
+#ifdef __GLIBC__
+#include <execinfo.h>
+#endif
+
 nexterm_session_manager_t g_session_manager;
 
 static nexterm_control_plane_t* g_control_plane = NULL;
@@ -24,6 +28,21 @@ static void signal_handler(int sig) {
     if (g_control_plane) {
         g_control_plane->running = false;
     }
+}
+
+static void crash_signal_handler(int sig) {
+#ifdef __GLIBC__
+    void* frames[64];
+    int frame_count = backtrace(frames, 64);
+    static const char prefix[] = "\n[nexterm-crash] Fatal signal received. Backtrace follows:\n";
+    write(STDERR_FILENO, prefix, sizeof(prefix) - 1);
+    backtrace_symbols_fd(frames, frame_count, STDERR_FILENO);
+#else
+    (void)sig;
+#endif
+
+    signal(sig, SIG_DFL);
+    raise(sig);
 }
 
 static nexterm_log_level_t parse_log_level(const char* str) {
@@ -107,13 +126,24 @@ int main(int argc, char* argv[]) {
     sa.sa_flags = 0;
     sigaction(SIGINT, &sa, NULL);
     sigaction(SIGTERM, &sa, NULL);
+
+    struct sigaction crash_sa;
+    crash_sa.sa_handler = crash_signal_handler;
+    sigemptyset(&crash_sa.sa_mask);
+    crash_sa.sa_flags = SA_RESETHAND;
+    sigaction(SIGSEGV, &crash_sa, NULL);
+    sigaction(SIGABRT, &crash_sa, NULL);
+    sigaction(SIGBUS, &crash_sa, NULL);
+
     signal(SIGPIPE, SIG_IGN);
 
     nexterm_sm_init(&g_session_manager);
 
     nexterm_control_plane_t* cp = nexterm_cp_create(server_host, server_port,
                                                      config.registration_token,
-                                                     config.tls);
+                                                     config.tls,
+                                                     config.ca_cert_path,
+                                                     config.tls_skip_verify);
     if (!cp) {
         LOG_ERROR("Failed to create control plane client");
         return 1;

@@ -132,12 +132,26 @@ static int telnet_process_and_forward(int telnet_fd, int data_fd,
     return 0;
 }
 
-static bool telnet_bridge_poll(int data_fd, int telnet_fd) {
+static void telnet_apply_pending_resize(nexterm_session_t* session, int telnet_fd) {
+    if (!session->resize_pending) return;
+    uint16_t cols = session->pending_cols;
+    uint16_t rows = session->pending_rows;
+    session->resize_pending = false;
+
+    if (telnet_send_naws(telnet_fd, cols, rows) != 0)
+        LOG_WARN("Telnet session %s: NAWS resize failed", session->session_id);
+    else
+        LOG_DEBUG("Telnet session %s: resized to %ux%u", session->session_id, cols, rows);
+}
+
+static bool telnet_bridge_poll(nexterm_session_t* session, int data_fd, int telnet_fd) {
     uint8_t buf[TELNET_BUF_SIZE];
     struct pollfd fds[2] = {
         { .fd = data_fd,   .events = POLLIN },
         { .fd = telnet_fd, .events = POLLIN },
     };
+
+    telnet_apply_pending_resize(session, telnet_fd);
 
     int ret = poll(fds, 2, 200);
     if (ret < 0)
@@ -200,7 +214,7 @@ static void* telnet_session_thread(void* arg) {
              session->session_id, session->host, session->port);
 
     while (session->state == SESSION_STATE_ACTIVE
-            && telnet_bridge_poll(data_fd, telnet_fd));
+            && telnet_bridge_poll(session, data_fd, telnet_fd));
 
     LOG_INFO("Telnet session %s ending", session->session_id);
 
@@ -246,13 +260,5 @@ int nexterm_telnet_start(nexterm_session_t* session,
 
 void nexterm_telnet_resize(nexterm_session_t* session,
                            uint16_t cols, uint16_t rows) {
-    int fd = session->telnet_sock;
-    if (fd < 0 || session->state != SESSION_STATE_ACTIVE) return;
-
-    if (telnet_send_naws(fd, cols, rows) != 0)
-        LOG_WARN("Telnet session %s: NAWS resize failed",
-                 session->session_id);
-    else
-        LOG_DEBUG("Telnet session %s: resized to %ux%u",
-                  session->session_id, cols, rows);
+    nexterm_sm_request_resize(&g_session_manager, session->session_id, cols, rows);
 }

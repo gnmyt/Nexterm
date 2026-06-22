@@ -37,6 +37,14 @@ const deviceCodeRateLimiter = rateLimit({
     legacyHeaders: false,
 });
 
+const authRateLimiter = rateLimit({
+    windowMs: 15 * 60 * 1000,
+    max: 20,
+    message: { code: 429, message: "Too many authentication attempts. Please try again later." },
+    standardHeaders: true,
+    legacyHeaders: false,
+});
+
 /**
  * POST /auth/login
  * @summary User Authentication
@@ -47,7 +55,7 @@ const deviceCodeRateLimiter = rateLimit({
  * @return {object} 200 - Session token and success message
  * @return {object} 401 - Invalid credentials or TOTP code
  */
-app.post("/login", async (req, res) => {
+app.post("/login", authRateLimiter, async (req, res) => {
     if (validateSchema(res, loginValidation, req.body)) return;
     const session = await login(req.body, { ip: req.ip, userAgent: req.header("User-Agent") || "None" });
     if (session?.code) return res.json(session);
@@ -80,7 +88,7 @@ app.post("/logout", async (req, res) => {
  * @return {object} 200 - WebAuthn authentication options
  * @return {object} 400 - User not found or passkey not configured
  */
-app.post("/passkey/options", async (req, res) => {
+app.post("/passkey/options", authRateLimiter, async (req, res) => {
     if (validateSchema(res, passkeyAuthOptionsValidation, req.body)) return;
     const result = await generateAuthenticationOptions(req, req.body.username, req.body.origin);
     if (result?.code) return res.json(result);
@@ -97,7 +105,7 @@ app.post("/passkey/options", async (req, res) => {
  * @return {object} 200 - Session token on successful verification
  * @return {object} 401 - Passkey verification failed
  */
-app.post("/passkey/verify", async (req, res) => {
+app.post("/passkey/verify", authRateLimiter, async (req, res) => {
     if (validateSchema(res, passkeyAuthenticationValidation, req.body)) return;
     const result = await verifyAuthentication(req, req.body.response, { ip: req.ip, userAgent: req.header("User-Agent") || "None" }, req.body.origin);
     if (result?.code) return res.json(result);

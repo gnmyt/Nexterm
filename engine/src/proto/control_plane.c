@@ -257,13 +257,19 @@ static void handle_session_close(nexterm_control_plane_t* cp,
     const char* sid = Nexterm_ControlPlane_SessionClose_session_id(close_msg);
     LOG_INFO("SessionClose: id=%s", sid);
 
-    nexterm_session_t* session = nexterm_sm_find(&g_session_manager, sid);
+    nexterm_sm_lock(&g_session_manager);
+    nexterm_session_t* session = nexterm_sm_find_locked(&g_session_manager, sid);
+    bool found = session != NULL;
+    bool thread_active = false;
     if (session) {
         nexterm_connection_close(session);
-        if (!session->thread_active) {
-            nexterm_cp_send_session_closed(cp, sid, "closed by server");
-            nexterm_sm_remove(&g_session_manager, sid);
-        }
+        thread_active = session->thread_active;
+    }
+    nexterm_sm_unlock(&g_session_manager);
+
+    if (found && !thread_active) {
+        nexterm_cp_send_session_closed(cp, sid, "closed by server");
+        nexterm_sm_remove(&g_session_manager, sid);
     }
 }
 
@@ -278,11 +284,7 @@ static void handle_session_resize(Nexterm_ControlPlane_Envelope_table_t envelope
 
     LOG_DEBUG("SessionResize: id=%s cols=%u rows=%u", sid, cols, rows);
 
-    nexterm_session_t* session = nexterm_sm_find(&g_session_manager, sid);
-    if (session && session->type == SESSION_TYPE_SSH)
-        nexterm_ssh_resize(session, cols, rows);
-    else if (session && session->type == SESSION_TYPE_TELNET)
-        nexterm_telnet_resize(session, cols, rows);
+    nexterm_sm_request_resize(&g_session_manager, sid, cols, rows);
 }
 
 static void handle_session_join(nexterm_control_plane_t* cp,
@@ -649,7 +651,9 @@ static void* keepalive_loop(void* arg) {
 nexterm_control_plane_t* nexterm_cp_create(const char* server_host,
                                            uint16_t server_port,
                                            const char* registration_token,
-                                           bool use_tls) {
+                                           bool use_tls,
+                                           const char* ca_cert_path,
+                                           bool tls_skip_verify) {
     nexterm_control_plane_t* cp = calloc(1, sizeof(nexterm_control_plane_t));
     if (!cp) return NULL;
 
@@ -674,7 +678,7 @@ nexterm_control_plane_t* nexterm_cp_create(const char* server_host,
     cp->ssl = NULL;
 
     if (use_tls) {
-        cp->ssl_ctx = nexterm_tls_client_ctx_create();
+        cp->ssl_ctx = nexterm_tls_client_ctx_create(ca_cert_path, tls_skip_verify);
         if (!cp->ssl_ctx) {
             LOG_ERROR("Failed to create TLS context");
             free(cp->server_host);
