@@ -141,7 +141,9 @@ int main(int argc, char* argv[]) {
 
     nexterm_control_plane_t* cp = nexterm_cp_create(server_host, server_port,
                                                      config.registration_token,
-                                                     config.tls);
+                                                     config.tls,
+                                                     config.ca_cert_path,
+                                                     config.tls_skip_verify);
     if (!cp) {
         LOG_ERROR("Failed to create control plane client");
         return 1;

@@ -651,7 +651,9 @@ static void* keepalive_loop(void* arg) {
 nexterm_control_plane_t* nexterm_cp_create(const char* server_host,
                                            uint16_t server_port,
                                            const char* registration_token,
-                                           bool use_tls) {
+                                           bool use_tls,
+                                           const char* ca_cert_path,
+                                           bool tls_skip_verify) {
     nexterm_control_plane_t* cp = calloc(1, sizeof(nexterm_control_plane_t));
     if (!cp) return NULL;
 
@@ -676,7 +678,7 @@ nexterm_control_plane_t* nexterm_cp_create(const char* server_host,
     cp->ssl = NULL;
 
     if (use_tls) {
-        cp->ssl_ctx = nexterm_tls_client_ctx_create();
+        cp->ssl_ctx = nexterm_tls_client_ctx_create(ca_cert_path, tls_skip_verify);
         if (!cp->ssl_ctx) {
             LOG_ERROR("Failed to create TLS context");
             free(cp->server_host);

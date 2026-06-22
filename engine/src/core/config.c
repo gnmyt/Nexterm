@@ -57,6 +57,10 @@ static int parse_config_file(nexterm_config_t* cfg) {
                 cfg->server_port = (uint16_t)port;
         } else if (strcmp(key, "tls") == 0) {
             cfg->tls = (strcmp(value, "true") == 0 || strcmp(value, "1") == 0);
+        } else if (strcmp(key, "ca_cert_path") == 0) {
+            snprintf(cfg->ca_cert_path, sizeof(cfg->ca_cert_path), "%s", value);
+        } else if (strcmp(key, "tls_skip_verify") == 0) {
+            cfg->tls_skip_verify = (strcmp(value, "true") == 0 || strcmp(value, "1") == 0);
         }
     }
 
@@ -75,6 +79,8 @@ static int write_default_config(const nexterm_config_t* cfg) {
     fprintf(f, "server_host: \"%s\"\n", cfg->server_host);
     fprintf(f, "server_port: %u\n", cfg->server_port);
     fprintf(f, "tls: %s\n", cfg->tls ? "true" : "false");
+    fprintf(f, "ca_cert_path: \"%s\"\n", cfg->ca_cert_path);
+    fprintf(f, "tls_skip_verify: %s\n", cfg->tls_skip_verify ? "true" : "false");
 
     fclose(f);
     LOG_INFO("Created default config file: %s", CONFIG_FILE);
@@ -87,6 +93,8 @@ int nexterm_config_load(nexterm_config_t* cfg) {
     cfg->server_port = 7800;
     cfg->tls = false;
     cfg->registration_token[0] = '\0';
+    cfg->ca_cert_path[0] = '\0';
+    cfg->tls_skip_verify = false;
 
     if (parse_config_file(cfg) != 0) {
         LOG_INFO("No config file found, creating default %s", CONFIG_FILE);
@@ -99,6 +107,14 @@ int nexterm_config_load(nexterm_config_t* cfg) {
         snprintf(cfg->registration_token, sizeof(cfg->registration_token), "%s", env_token);
         LOG_INFO("Using REGISTRATION_TOKEN from environment variable");
     }
+
+    const char* env_ca = getenv("CONTROL_PLANE_CA_CERT");
+    if (env_ca && env_ca[0] != '\0')
+        snprintf(cfg->ca_cert_path, sizeof(cfg->ca_cert_path), "%s", env_ca);
+
+    const char* env_skip = getenv("TLS_SKIP_VERIFY");
+    if (env_skip && (strcmp(env_skip, "true") == 0 || strcmp(env_skip, "1") == 0))
+        cfg->tls_skip_verify = true;
 
     return 0;
 }

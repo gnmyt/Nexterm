@@ -70,7 +70,7 @@ int nexterm_tcp_connect(const char* host, uint16_t port) {
     return fd;
 }
 
-SSL_CTX* nexterm_tls_client_ctx_create(void) {
+SSL_CTX* nexterm_tls_client_ctx_create(const char* ca_cert_path, bool skip_verify) {
     const SSL_METHOD* method = TLS_client_method();
     SSL_CTX* ctx = SSL_CTX_new(method);
     if (!ctx) {
@@ -80,7 +80,30 @@ SSL_CTX* nexterm_tls_client_ctx_create(void) {
 
     SSL_CTX_set_min_proto_version(ctx, TLS1_2_VERSION);
 
-    SSL_CTX_set_verify(ctx, SSL_VERIFY_NONE, NULL);
+    if (skip_verify) {
+        LOG_WARN("Control plane TLS certificate verification is DISABLED "
+                 "(tls_skip_verify) - the connection is vulnerable to MITM and "
+                 "credential theft. Set ca_cert_path instead.");
+        SSL_CTX_set_verify(ctx, SSL_VERIFY_NONE, NULL);
+        return ctx;
+    }
+
+    SSL_CTX_set_verify(ctx, SSL_VERIFY_PEER, NULL);
+
+    if (ca_cert_path && ca_cert_path[0] != '\0') {
+        if (SSL_CTX_load_verify_locations(ctx, ca_cert_path, NULL) != 1) {
+            LOG_ERROR("Failed to load control plane CA cert from '%s'", ca_cert_path);
+            SSL_CTX_free(ctx);
+            return NULL;
+        }
+        LOG_INFO("Control plane TLS: verifying server certificate against %s", ca_cert_path);
+    } else {
+        if (SSL_CTX_set_default_verify_paths(ctx) != 1)
+            LOG_WARN("Failed to load default CA store");
+        LOG_WARN("Control plane TLS: no ca_cert_path set - verifying against the "
+                 "system CA store. For a self-signed server cert, set ca_cert_path "
+                 "to the server's cp-cert.pem or the handshake will fail.");
+    }
 
     return ctx;
 }

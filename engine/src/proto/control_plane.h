@@ -33,7 +33,9 @@ typedef struct nexterm_control_plane {
 nexterm_control_plane_t* nexterm_cp_create(const char* server_host,
                                            uint16_t server_port,
                                            const char* registration_token,
-                                           bool use_tls);
+                                           bool use_tls,
+                                           const char* ca_cert_path,
+                                           bool tls_skip_verify);
 
 int nexterm_cp_start(nexterm_control_plane_t* cp);
 
