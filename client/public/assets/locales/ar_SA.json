@@ -1780,10 +1780,19 @@
         "enterDirectory": "أدخل مسار الدليل...",
         "hiddenDirectories": "{{count}} الدلائل المخفية",
         "switchToGrid": "التبديل إلى عرض الشبكة",
-        "switchToList": "التبديل إلى عرض القائمة"
+        "switchToList": "التبديل إلى عرض القائمة",
+        "search": "Search files",
+        "closeSearch": "Close search"
       },
       "item": {
         "link": "الرابط"
+      },
+      "search": {
+        "placeholder": "Filter files in this folder...",
+        "results": "{{count}} result",
+        "results_plural": "{{count}} results",
+        "noResultsTitle": "No matches",
+        "noResults": "No files match \"{{query}}\""
       },
       "states": {
         "loading": "تحميل الملفات...",
