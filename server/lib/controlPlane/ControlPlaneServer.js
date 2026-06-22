@@ -374,6 +374,7 @@ class ControlPlaneServer extends EventEmitter {
             engineId: dbEngineId,
             version,
             remoteAddr,
+            remoteHost: socket.remoteAddress,
             connectedAt: Date.now(),
             lastPong: Date.now(),
             encrypted: !!socket._encrypted,
@@ -392,6 +393,15 @@ class ControlPlaneServer extends EventEmitter {
         }
 
         const sessionId = ready.sessionId();
+
+        const ownerEngineId = this._sessionEngineMap.get(sessionId);
+        const ownerEngine = ownerEngineId ? this._engines.get(ownerEngineId) : null;
+        if (!ownerEngine || ownerEngine.remoteHost !== socket.remoteAddress) {
+            logger.warn(`Control plane: rejecting data connection for session ${sessionId} from ${remoteAddr} (no matching owner engine)`);
+            socket.destroy();
+            return;
+        }
+
         logger.info(`Data connection ready for session ${sessionId} from ${remoteAddr}`);
 
         if (!this._dataConnections.has(sessionId)) {
@@ -428,6 +438,12 @@ class ControlPlaneServer extends EventEmitter {
 
         if (!auditLogId) {
             logger.warn(`Recording upload for unknown session ${sessionId}, discarding`);
+            socket.destroy();
+            return;
+        }
+
+        if (!this._isKnownEngineAddress(socket.remoteAddress)) {
+            logger.warn(`Recording upload for session ${sessionId} from untrusted ${remoteAddr}, discarding`);
             socket.destroy();
             return;
         }
@@ -594,6 +610,13 @@ class ControlPlaneServer extends EventEmitter {
 
     _sendFrame(socket, payload) {
         sendFrame(socket, payload);
+    }
+
+    _isKnownEngineAddress(addr) {
+        for (const [, engine] of this._engines) {
+            if (engine.remoteHost === addr) return true;
+        }
+        return false;
     }
 
     _findEngineId(socket) {
