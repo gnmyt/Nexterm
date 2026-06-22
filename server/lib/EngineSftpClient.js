@@ -4,7 +4,7 @@ const flatbuffers = require("flatbuffers");
 const {
     SftpMsgType,
     PathReq, RmdirReq, RenameReq, ChmodReq,
-    WriteBeginReq, WriteDataReq, ExecReq, SearchReq,
+    WriteBeginReq, WriteDataReq, ExecReq, SearchReq, ThumbnailReq,
     SftpMessage,
 } = require("./generated/sftp_protocol_generated");
 const { sendFrame, createFrameParser } = require("./controlPlane/frameProtocol");
@@ -88,6 +88,13 @@ const MESSAGE_HANDLERS = {
             for (let i = 0; i < res.directoriesLength(); i++) dirs.push(res.directories(i));
         }
         self._resolvePending(rid, pending, dirs);
+    },
+
+    [SftpMsgType.ThumbnailResult]: (msg, rid, pending, self) => {
+        const res = msg.thumbnailRes();
+        const data = res?.dataArray();
+        const buf = data ? Buffer.from(data.buffer, data.byteOffset, data.byteLength) : Buffer.alloc(0);
+        self._resolvePending(rid, pending, { data: buf, width: res?.width() || 0, height: res?.height() || 0 });
     },
 };
 
@@ -263,6 +270,16 @@ class EngineSftpClient extends EventEmitter {
             ExecReq.startExecReq(b);
             ExecReq.addCommand(b, cmdOff);
             return { execReq: ExecReq.endExecReq(b) };
+        });
+    }
+
+    thumbnail(path, size = 100) {
+        return this._requestWithPayload(SftpMsgType.Thumbnail, (b) => {
+            const pathOff = b.createString(path);
+            ThumbnailReq.startThumbnailReq(b);
+            ThumbnailReq.addPath(b, pathOff);
+            ThumbnailReq.addSize(b, size);
+            return { thumbnailReq: ThumbnailReq.endThumbnailReq(b) };
         });
     }
 

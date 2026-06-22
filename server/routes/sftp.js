@@ -3,11 +3,11 @@ const express = require("express");
 const Session = require("../models/Session");
 const Account = require("../models/Account");
 const SessionManager = require("../lib/SessionManager");
+const { getSFTPTransferClient } = require("../lib/ConnectionService");
 const Entry = require("../models/Entry");
 const { createAuditLog, AUDIT_ACTIONS, RESOURCE_TYPES } = require("../controllers/audit");
 const logger = require("../utils/logger");
 const archiver = require("archiver");
-const sharp = require("sharp");
 
 const app = Router();
 const THUMB_EXTS = new Set(["jpg", "jpeg", "png", "gif", "webp", "bmp"]);
@@ -99,7 +99,14 @@ const validateSession = async (sessionToken, sessionId) => {
     const conn = SessionManager.getConnection(sessionId);
     if (!conn?.sftpClient) return { error: "No active SFTP connection", status: 400 };
 
-    return { session, user, serverSession, entry, sftpClient: conn.sftpClient };
+    let sftpClient = conn.sftpClient;
+    try {
+        sftpClient = await getSFTPTransferClient(sessionId, entry, user.id);
+    } catch (err) {
+        logger.warn("Falling back to metadata SFTP client for transfer", { sessionId, error: err.message });
+    }
+
+    return { session, user, serverSession, entry, sftpClient };
 };
 
 const validateRequest = (query) => {
@@ -200,14 +207,10 @@ app.get("/", async (req, res) => {
 
         if (thumbnail === "true" && THUMB_EXTS.has(getExt(remotePath)) && stats.size <= MAX_THUMB_SIZE) {
             const thumbSize = Math.min(Math.max(Number.parseInt(size) || 100, 50), 300);
+            const { data } = await sftpClient.thumbnail(remotePath, thumbSize);
             res.header("Content-Type", "image/jpeg");
             res.header("Cache-Control", "public, max-age=3600");
-            const { stream } = sftpClient.readFile(remotePath);
-            const transform = sharp().resize(thumbSize, thumbSize, { fit: "cover" }).jpeg({ quality: 80 });
-            stream.on("error", (err) => { logger.warn("Thumbnail stream error", { error: err.message }); transform.destroy(); });
-            transform.on("error", (err) => { logger.warn("Thumbnail transform error", { error: err.message }); if (!res.headersSent) res.status(500).end(); });
-            res.on("close", () => { stream.destroy(); transform.destroy(); });
-            stream.pipe(transform).pipe(res);
+            res.end(data);
             return;
         }
 

@@ -214,9 +214,19 @@ typedef struct {
     int tls_fd;
 } tls_proxy_args_t;
 
+#define TLS_PROXY_BUF_SIZE (256 * 1024)
+
 static void* tls_proxy_thread(void* arg) {
     tls_proxy_args_t* a = (tls_proxy_args_t*)arg;
-    char buf[8192];
+    char* buf = malloc(TLS_PROXY_BUF_SIZE);
+    if (!buf) {
+        close(a->plain_fd);
+        SSL_shutdown(a->ssl);
+        SSL_free(a->ssl);
+        close(a->tls_fd);
+        free(a);
+        return NULL;
+    }
 
     int flags = fcntl(a->tls_fd, F_GETFL, 0);
     if (flags >= 0)
@@ -235,7 +245,7 @@ static void* tls_proxy_thread(void* arg) {
         if (ret < 0 && errno != EINTR) break;
 
         if (fds[0].revents & POLLIN) {
-            ssize_t n = read(a->plain_fd, buf, sizeof(buf));
+            ssize_t n = read(a->plain_fd, buf, TLS_PROXY_BUF_SIZE);
             if (n <= 0) break;
             size_t total = 0;
             while (total < (size_t)n) {
@@ -255,7 +265,7 @@ static void* tls_proxy_thread(void* arg) {
         }
 
         if ((fds[1].revents & POLLIN) || has_pending) {
-            int n = SSL_read(a->ssl, buf, sizeof(buf));
+            int n = SSL_read(a->ssl, buf, TLS_PROXY_BUF_SIZE);
             if (n <= 0) {
                 int err = SSL_get_error(a->ssl, n);
                 if (err == SSL_ERROR_WANT_READ || err == SSL_ERROR_WANT_WRITE)
@@ -271,6 +281,7 @@ static void* tls_proxy_thread(void* arg) {
     }
 done:
 
+    free(buf);
     close(a->plain_fd);
     SSL_shutdown(a->ssl);
     SSL_free(a->ssl);

@@ -173,6 +173,38 @@ const createSFTPConnectionForSession = async (sessionId, entry, accountId) => {
     return session._connecting;
 };
 
+const getSFTPTransferClient = async (sessionId, entry, accountId) => {
+    const session = requireSession(sessionId);
+    const conn = SessionManager.getConnection(sessionId);
+    if (!conn) throw new Error("No active SFTP session");
+    if (conn.transferClient && !conn.transferClient._closed) return conn.transferClient;
+    if (conn._transferConnecting) return conn._transferConnecting;
+
+    conn._transferConnecting = (async () => {
+        requireEngine();
+        const { identityId, directIdentity } = session.configuration;
+        const { host, port, params } = await resolveSSHContext(entry, identityId, directIdentity, accountId);
+        const jumpHosts = await resolveJumpHosts(entry);
+
+        const dataSocket = await openEngineSession(
+            `${sessionId}-xfer`, SessionType.SFTP, host, port, params, jumpHosts, entry.config?.engineId
+        );
+
+        const transferClient = new EngineSftpClient(dataSocket);
+        await transferClient.waitForReady();
+
+        const detach = () => { if (conn.transferClient === transferClient) conn.transferClient = null; };
+        dataSocket.on("close", detach);
+        dataSocket.on("error", detach);
+
+        conn.transferClient = transferClient;
+        logger.info("SFTP transfer connection established", { sessionId, target: host, port });
+        return transferClient;
+    })().finally(() => { conn._transferConnecting = null; });
+
+    return conn._transferConnecting;
+};
+
 const createSSHConnectionForSession = async (sessionId, entry, identity, organizationId, script = null) => {
     const session = requireSession(sessionId);
     if (session._connecting) return session._connecting;
@@ -396,6 +428,7 @@ const prepareGuacamoleSession = async (sessionId, entry, identity, organizationI
 module.exports = {
     createConnectionForSession,
     createSFTPConnectionForSession,
+    getSFTPTransferClient,
     buildSSHParams,
     resolveJumpHosts,
 };
