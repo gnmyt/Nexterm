@@ -43,6 +43,10 @@ typedef struct nexterm_session {
     session_param_t params[MAX_PARAMS];
     int param_count;
 
+    volatile uint16_t pending_cols;
+    volatile uint16_t pending_rows;
+    volatile bool resize_pending;
+
     char guac_connection_id[64];
 
     int data_fd;
@@ -79,6 +83,10 @@ nexterm_session_t* nexterm_sm_find(nexterm_session_manager_t* sm,
 
 void nexterm_sm_remove(nexterm_session_manager_t* sm,
                        const char* session_id);
+
+void nexterm_sm_request_resize(nexterm_session_manager_t* sm,
+                               const char* session_id,
+                               uint16_t cols, uint16_t rows);
 
 const char* nexterm_session_get_param(const nexterm_session_t* session,
                                       const char* key);

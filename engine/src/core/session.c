@@ -114,6 +114,24 @@ void nexterm_sm_remove(nexterm_session_manager_t* sm,
     pthread_mutex_unlock(&sm->mutex);
 }
 
+void nexterm_sm_request_resize(nexterm_session_manager_t* sm,
+                               const char* session_id,
+                               uint16_t cols, uint16_t rows) {
+    pthread_mutex_lock(&sm->mutex);
+
+    for (int i = 0; i < MAX_SESSIONS; i++) {
+        if (sm->sessions[i].session_id[0] != '\0' &&
+            strcmp(sm->sessions[i].session_id, session_id) == 0) {
+            sm->sessions[i].pending_cols = cols;
+            sm->sessions[i].pending_rows = rows;
+            sm->sessions[i].resize_pending = true;
+            break;
+        }
+    }
+
+    pthread_mutex_unlock(&sm->mutex);
+}
+
 const char* nexterm_session_get_param(const nexterm_session_t* session,
                                       const char* key) {
     for (int i = 0; i < session->param_count; i++) {
