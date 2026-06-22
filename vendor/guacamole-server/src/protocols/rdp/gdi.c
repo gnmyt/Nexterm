@@ -160,22 +160,39 @@ BOOL guac_rdp_gdi_desktop_resize(rdpContext* context) {
     int width = guac_rdp_get_width(context->instance);
     int height = guac_rdp_get_height(context->instance);
 
+    guac_display_layer* default_layer = guac_display_default_layer(rdp_client->display);
+
 #if (FREERDP_VERSION_MAJOR < 3) || \
     (FREERDP_VERSION_MAJOR == 3 && FREERDP_VERSION_MINOR < 8)
     /* For FreeRDP versions prior to 3.8.0, EndPaint will not be called in
      * `gdi_resize()`, so the current context should be NULL. If it is not
      * NULL, it means that the current context is still open, and therefore the
      * GDI buffer has not been flushed yet. */
-    GUAC_ASSERT(rdp_client->current_context == NULL);
+    if (rdp_client->current_context != NULL) {
+        guac_client_log(client, GUAC_LOG_WARNING,
+                "DesktopResize called with pending paint context; forcing EndPaint before resize");
+        guac_rdp_gdi_end_paint(context);
+    }
 #endif
 
     /* All potential drawing operations must occur while holding an open context */
-    guac_display_layer* default_layer = guac_display_default_layer(rdp_client->display);
     guac_display_layer_raw_context* current_context = guac_display_layer_open_raw(default_layer);
 
     /* Resize FreeRDP's GDI buffer */
     BOOL retval = gdi_resize(context->gdi, width, height);
-    GUAC_ASSERT(gdi->primary_buffer != NULL);
+
+    /* If gdi_resize() failed, primary_buffer will be NULL. Treat this as a
+     * non-fatal resize failure: log an error, close the open context, and
+     * return FALSE so FreeRDP can handle it — rather than calling abort(). */
+    if (!retval || gdi->primary_buffer == NULL) {
+        guac_client_log(client, GUAC_LOG_ERROR,
+                "gdi_resize() failed for dimensions %ix%i; "
+                "DesktopResize cannot be applied (retval=%i, primary_buffer=%s)",
+                width, height, (int) retval,
+                gdi->primary_buffer == NULL ? "NULL" : "non-NULL");
+        guac_display_layer_close_raw(default_layer, current_context);
+        return FALSE;
+    }
 
     /* Update our reference to the GDI buffer, as well as any structural
      * details, which may now all be different */

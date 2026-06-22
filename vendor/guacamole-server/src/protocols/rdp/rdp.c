@@ -665,6 +665,14 @@ static int guac_rdp_handle_connection(guac_client* client) {
         guac_rdp_print_job_free(rdp_client->active_job);
     }
 
+    /* Ensure any in-progress GDI paint is flushed and the raw context is
+     * closed before teardown manipulates the default layer or frees GDI. */
+    if (rdp_client->current_context != NULL) {
+        guac_client_log(client, GUAC_LOG_WARNING,
+                "Disconnecting with pending paint context; forcing EndPaint before teardown");
+        guac_rdp_gdi_end_paint(rdp_inst->context);
+    }
+
     /* Disconnect client and channels */
     pthread_mutex_lock(&(rdp_client->message_lock));
     freerdp_disconnect(rdp_inst);

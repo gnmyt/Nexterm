@@ -83,6 +83,12 @@ set(ENGINE_SOURCES
 
 add_executable(nexterm-engine ${ENGINE_SOURCES})
 
+include(CheckIncludeFile)
+check_include_file(execinfo.h HAVE_EXECINFO_H)
+if(UNIX AND NOT APPLE AND HAVE_EXECINFO_H)
+    target_link_options(nexterm-engine PRIVATE -rdynamic)
+endif()
+
 add_dependencies(nexterm-engine flatbuffers_gen)
 if(TARGET flatcc_project)
     add_dependencies(flatbuffers_gen flatcc_project)
