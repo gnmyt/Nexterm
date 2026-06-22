@@ -7,7 +7,7 @@ const { getSFTPTransferClient } = require("../lib/ConnectionService");
 const Entry = require("../models/Entry");
 const { createAuditLog, AUDIT_ACTIONS, RESOURCE_TYPES } = require("../controllers/audit");
 const logger = require("../utils/logger");
-const archiver = require("archiver");
+const { ZipArchive } = require("archiver");
 
 const app = Router();
 const THUMB_EXTS = new Set(["jpg", "jpeg", "png", "gif", "webp", "bmp"]);
@@ -192,7 +192,7 @@ app.get("/", async (req, res) => {
         if (stats.isDir) {
             res.header("Content-Disposition", `attachment; filename="${safeFileName}.zip"`);
             res.header("Content-Type", "application/zip");
-            const archive = archiver("zip", { zlib: { level: 1 } });
+            const archive = new ZipArchive({ zlib: { level: 1 } });
             archive.on("error", (err) => {
                 logger.warn("Archive error", { error: err.message, path: remotePath });
                 archive.abort();
@@ -268,7 +268,7 @@ app.post("/multi", express.urlencoded({ extended: true }), async (req, res) => {
         res.header("Content-Disposition", `attachment; filename="nexterm-download-${timestamp}.zip"`);
         res.header("Content-Type", "application/zip");
 
-        const archive = archiver("zip", { zlib: { level: 5 } });
+        const archive = new ZipArchive({ zlib: { level: 5 } });
         archive.on("error", (err) => {
             logger.warn("Multi-download archive error", { error: err.message });
             archive.abort();

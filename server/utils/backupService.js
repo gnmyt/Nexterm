@@ -1,6 +1,6 @@
 const fs = require("fs");
 const path = require("path");
-const archiver = require("archiver");
+const { TarArchive } = require("archiver");
 const decompress = require("decompress");
 const BackupSettings = require("../models/BackupSettings");
 const BackupProvider = require("../models/BackupProvider");
@@ -70,7 +70,7 @@ module.exports.createBackup = async (providerId) => {
 
     await new Promise((resolve, reject) => {
         const output = fs.createWriteStream(tempPath);
-        const archive = archiver("tar", { gzip: true });
+        const archive = new TarArchive({ gzip: true });
 
         output.on("close", resolve);
         output.on("error", reject);
