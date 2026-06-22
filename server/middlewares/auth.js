@@ -49,10 +49,10 @@ module.exports.authenticateDownload = async (req, res, next) => {
 
 
 module.exports.authorizeGuacamole = async (req) => {
-    const query = req.url.split("?")[1].split("&").map((x) => x.split("=")).reduce((acc, x) => {
-        acc[x[0]] = x[1];
-        return acc;
-    }, {});
+    const qIndex = req.url.indexOf("?");
+    if (qIndex === -1) return;
+    const params = new URLSearchParams(req.url.slice(qIndex + 1));
+    const query = Object.fromEntries(params.entries());
 
     if (Object.keys(query).length === 0) return;
 
