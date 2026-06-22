@@ -302,6 +302,14 @@ class ControlPlaneServer extends EventEmitter {
         const remoteAddr = `${socket.remoteAddress}:${socket.remotePort}`;
         let identified = false;
 
+        const handshakeTimer = setTimeout(() => {
+            if (!identified) {
+                logger.warn(`Control plane: handshake timeout from ${remoteAddr}`);
+                socket.destroy();
+            }
+        }, 15000);
+        handshakeTimer.unref?.();
+
         const frameParser = createFrameParser(
             (payload) => {
                 const bb = new flatbuffers.ByteBuffer(new Uint8Array(payload));
@@ -314,6 +322,7 @@ class ControlPlaneServer extends EventEmitter {
                 }
 
                 identified = true;
+                clearTimeout(handshakeTimer);
                 if (msgType === MessageType.EngineHello) {
                     this._handleEngineHello(socket, envelope, remoteAddr);
                 } else if (msgType === MessageType.ConnectionReady) {
@@ -324,11 +333,13 @@ class ControlPlaneServer extends EventEmitter {
                     this._handleRecordingUpload(socket, envelope, remoteAddr, frameParser.drain());
                 } else {
                     logger.warn(`Control plane: unexpected first message type ${msgType} from ${remoteAddr}`);
+                    socket.removeListener("data", onData);
                     socket.destroy();
                 }
             },
-            (len) => {
-                logger.error(`Control plane: invalid frame length ${len} from ${remoteAddr}`);
+            (reason) => {
+                logger.error(`Control plane: protocol error from ${remoteAddr}: ${reason}`);
+                clearTimeout(handshakeTimer);
                 socket.destroy();
             }
         );

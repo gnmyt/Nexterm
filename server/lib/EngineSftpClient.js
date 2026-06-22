@@ -8,6 +8,7 @@ const {
     SftpMessage,
 } = require("./generated/sftp_protocol_generated");
 const { sendFrame, createFrameParser } = require("./controlPlane/frameProtocol");
+const logger = require("../utils/logger");
 
 const WRITE_CHUNK_SIZE = 262144;
 const REQUEST_TIMEOUT = 30000;
@@ -103,7 +104,13 @@ class EngineSftpClient extends EventEmitter {
             this._readyReject = reject;
         });
 
-        const frameParser = createFrameParser((payload) => this._handleMessage(payload));
+        const frameParser = createFrameParser(
+            (payload) => this._handleMessage(payload),
+            (reason) => {
+                logger.warn(`EngineSftpClient: protocol error: ${reason}`);
+                this._socket.destroy();
+            }
+        );
         this._socket.on("data", (chunk) => frameParser(chunk));
         this._socket.on("error", (err) => this._abort(err));
         this._socket.on("close", () => this._abort(new Error("Connection closed"), true));
