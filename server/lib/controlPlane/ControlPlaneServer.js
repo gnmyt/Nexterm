@@ -34,7 +34,8 @@ class ControlPlaneServer extends EventEmitter {
     constructor() {
         super();
         this.port = Number.parseInt(process.env.CONTROL_PLANE_PORT, 10) || 7800;
-        this.host = "0.0.0.0";
+        this.host = process.env.CONTROL_PLANE_HOST || "127.0.0.1";
+        this.requireTls = process.env.CONTROL_PLANE_REQUIRE_TLS === "true";
         this.server = null;
         this._engines = new Map();
         this._dataConnections = new Map();
@@ -279,6 +280,14 @@ class ControlPlaneServer extends EventEmitter {
                     tlsSocket.destroy();
                 });
             } else {
+                const isLoopback = rawSocket.remoteAddress === "127.0.0.1" ||
+                    rawSocket.remoteAddress === "::1" ||
+                    rawSocket.remoteAddress === "::ffff:127.0.0.1";
+                if (this.requireTls || (this._tlsContext && !isLoopback)) {
+                    logger.warn(`Control plane: rejecting plaintext connection from ${remoteAddr} (TLS required)`);
+                    rawSocket.destroy();
+                    return;
+                }
                 rawSocket._encrypted = false;
                 this._handleConnection(rawSocket);
             }
