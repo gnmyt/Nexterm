@@ -149,7 +149,14 @@ static int exec_command(LIBSSH2_SESSION* ssh, const char* cmd,
     return 0;
 }
 
-static int recursive_rmdir(LIBSSH2_SFTP* sftp, const char* path) {
+#define SFTP_RMDIR_MAX_DEPTH 64
+
+static int recursive_rmdir_depth(LIBSSH2_SFTP* sftp, const char* path, int depth) {
+    if (depth > SFTP_RMDIR_MAX_DEPTH) {
+        LOG_WARN("SFTP: recursive delete exceeded max depth at %s", path);
+        return -1;
+    }
+
     LIBSSH2_SFTP_HANDLE* dir = libssh2_sftp_opendir(sftp, path);
     if (!dir) return -1;
 
@@ -168,13 +175,17 @@ static int recursive_rmdir(LIBSSH2_SFTP* sftp, const char* path) {
             snprintf(fullpath, sizeof(fullpath), "%s/%s", path, name);
 
         if (longentry[0] == 'd')
-            recursive_rmdir(sftp, fullpath);
+            recursive_rmdir_depth(sftp, fullpath, depth + 1);
         else
             libssh2_sftp_unlink(sftp, fullpath);
     }
 
     libssh2_sftp_closedir(dir);
     return libssh2_sftp_rmdir(sftp, path);
+}
+
+static int recursive_rmdir(LIBSSH2_SFTP* sftp, const char* path) {
+    return recursive_rmdir_depth(sftp, path, 0);
 }
 
 typedef struct {
