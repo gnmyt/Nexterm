@@ -6,7 +6,8 @@ const Entry = require("../models/Entry");
 const Identity = require("../models/Identity");
 const Folder = require("../models/Folder");
 const Script = require("../models/Script");
-const { hasOrganizationAccess } = require("../utils/permission");
+const { hasOrganizationAccess, hasOrganizationPermission } = require("../utils/permission");
+const { Permission } = require("../permissions/registry");
 const { Op } = require("sequelize");
 const logger = require("../utils/logger");
 const { getRecordingInfo } = require("../utils/recordingService");
@@ -305,10 +306,8 @@ module.exports.getOrganizationAuditSettings = async (accountId, organizationId) 
 
 module.exports.updateOrganizationAuditSettings = async (accountId, organizationId, settings) => {
     try {
-        const membership = await OrganizationMember.findOne({
-            where: { organizationId, accountId, status: "active", role: "owner" },
-        });
-        if (!membership) return { code: 403, message: "You don't have permission to update audit settings" };
+        if (!(await hasOrganizationPermission(accountId, organizationId, Permission.ORG_AUDIT_VIEW)))
+            return { code: 403, message: "You don't have permission to update audit settings" };
 
         const currentSettings = await getOrgAuditSettings(organizationId);
         const updatedSettings = { ...currentSettings, ...settings };
@@ -354,7 +353,7 @@ module.exports.getRecording = async (accountId, auditLogId) => {
         if (!auditLog) return { code: 404, message: "Audit log not found" };
 
         if (auditLog.organizationId) {
-            if (!(await hasOrganizationAccess(accountId, auditLog.organizationId))) 
+            if (!(await hasOrganizationPermission(accountId, auditLog.organizationId, Permission.ORG_AUDIT_RECORDINGS)))
                 return { code: 403, message: "You don't have access to this recording" };
         } else if (auditLog.accountId !== accountId) {
             return { code: 403, message: "You don't have access to this recording" };

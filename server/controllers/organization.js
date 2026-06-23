@@ -1,22 +1,17 @@
 const Organization = require("../models/Organization");
 const OrganizationMember = require("../models/OrganizationMember");
 const Account = require("../models/Account");
+const { hasSystemPermission } = require("../permissions/engine");
+const { Permission } = require("../permissions/registry");
 const { Op } = require("sequelize");
 
 const canActAsOwner = async (accountId, organizationId) => {
     const membership = await OrganizationMember.findOne({
         where: { organizationId, accountId, status: "active" },
     });
-    if (!membership) return false;
-    if (membership.role === "owner") return true;
+    if (membership && membership.role === "owner") return true;
 
-    const ownerExists = await OrganizationMember.findOne({
-        where: { organizationId, role: "owner", status: "active" },
-    });
-    if (ownerExists) return false;
-
-    const account = await Account.findByPk(accountId);
-    return account && account.role === "admin";
+    return await hasSystemPermission(accountId, Permission.ORGANIZATIONS_MANAGE_ALL);
 };
 
 module.exports.createOrganization = async (accountId, configuration) => {
@@ -90,18 +85,11 @@ module.exports.listOrganizations = async (accountId) => {
 
     const organizations = await Organization.findAll({ where: { id: { [Op.in]: organizationIds } } });
 
-    const account = await Account.findByPk(accountId);
-    const isSystemAdmin = account && account.role === "admin";
-
-    const owners = await OrganizationMember.findAll({
-        where: { organizationId: { [Op.in]: organizationIds }, role: "owner", status: "active" },
-    });
+    const isSystemAdmin = await hasSystemPermission(accountId, Permission.ORGANIZATIONS_MANAGE_ALL);
 
     return organizations.map(org => {
         const membership = memberships.find(m => m.organizationId === org.id);
-        const hasOwner = owners.some(o => o.organizationId === org.id);
-        const isOwner = membership.role === "owner" || (!hasOwner && isSystemAdmin);
-        return { ...org, isOwner };
+        return { ...org, isOwner: membership.role === "owner" || isSystemAdmin };
     });
 };
 
