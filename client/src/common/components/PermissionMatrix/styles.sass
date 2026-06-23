@@ -1,0 +1,103 @@
+@use "@/common/styles/colors"
+@use "@/common/styles/breakpoints"
+
+.permission-matrix
+  display: flex
+  flex-direction: column
+  gap: 1.25rem
+
+  .perm-category
+    display: flex
+    flex-direction: column
+    gap: 0.5rem
+
+    .category-header
+      display: flex
+      align-items: center
+      gap: 0.5rem
+      font-size: 0.8rem
+      font-weight: 600
+      text-transform: uppercase
+      letter-spacing: 0.04em
+      color: colors.$subtext
+
+      svg
+        width: 1rem
+        height: 1rem
+
+    .perm-rows
+      display: flex
+      flex-direction: column
+      background-color: colors.$lighter-background
+      border: 1px solid colors.$dark-gray
+      border-radius: 0.75rem
+      overflow: hidden
+
+    .perm-row
+      display: flex
+      align-items: center
+      justify-content: space-between
+      gap: 1rem
+      padding: 0.75rem 1rem
+      border-bottom: 1px solid colors.$dark-gray
+
+      &:last-child
+        border-bottom: none
+
+      &:hover
+        background-color: colors.$dark-gray
+
+      .perm-info
+        display: flex
+        flex-direction: column
+        gap: 0.15rem
+        min-width: 0
+
+        .perm-label
+          display: flex
+          align-items: center
+          gap: 0.375rem
+          font-size: 0.9rem
+          font-weight: 500
+          color: colors.$white
+
+          > div
+            display: inline-flex
+            align-items: center
+
+          .danger-icon
+            width: 0.95rem
+            height: 0.95rem
+            color: colors.$warning
+            cursor: help
+
+        .perm-description
+          font-size: 0.8rem
+          color: colors.$subtext
+
+      &.dangerous .perm-label
+        color: colors.$white
+
+      .perm-effective
+        display: flex
+        align-items: center
+        justify-content: center
+        width: 1.6rem
+        height: 1.6rem
+        flex-shrink: 0
+
+        &.on svg
+          width: 1.25rem
+          height: 1.25rem
+          color: colors.$success
+
+      .perm-control
+        display: flex
+        align-items: center
+        flex-shrink: 0
+
+    @media (max-width: breakpoints.$mobile)
+      .perm-row
+        align-items: flex-start
+        flex-direction: column
+        gap: 0.5rem
