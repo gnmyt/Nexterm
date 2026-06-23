@@ -23,10 +23,6 @@ module.exports = db.define("accounts", {
         type: Sequelize.BOOLEAN,
         defaultValue: false,
     },
-    role: {
-        type: Sequelize.STRING,
-        defaultValue: "user",
-    },
     totpSecret: {
         type: Sequelize.STRING,
         defaultValue: () => {
