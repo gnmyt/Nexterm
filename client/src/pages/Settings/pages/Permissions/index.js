@@ -1,0 +1,1 @@
+export { Permissions as default } from "./Permissions.jsx";
