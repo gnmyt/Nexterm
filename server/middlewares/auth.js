@@ -40,8 +40,13 @@ module.exports.authenticateDownload = async (req, res, next) => {
     if (!session) return res.status(401).json({ message: "Invalid token" });
     
     const user = await Account.findByPk(session.accountId);
-    if (!user || user.role !== "admin") return res.status(403).json({ message: "Admin access required" });
-    
+    if (!user) return res.status(401).json({ message: "Invalid token" });
+
+    const { hasSystemPermission } = require("../permissions/engine");
+    const { Permission } = require("../permissions/registry");
+    if (!(await hasSystemPermission(user.id, Permission.SETTINGS_BACKUP)))
+        return res.status(403).json({ message: "Insufficient permissions" });
+
     req.user = user;
     req.session = session;
     next();
