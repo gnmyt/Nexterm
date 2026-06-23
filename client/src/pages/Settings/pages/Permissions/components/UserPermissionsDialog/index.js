@@ -1,0 +1,1 @@
+export { UserPermissionsDialog as default } from "./UserPermissionsDialog.jsx";
