@@ -43,6 +43,8 @@ import TagsSubmenu from "./components/TagsSubmenu";
 import ScriptsMenu from "./components/ScriptsMenu";
 import Fuse from "fuse.js";
 import { useToast } from "@/common/contexts/ToastContext.jsx";
+import { UserContext } from "@/common/contexts/UserContext.jsx";
+import { Permission } from "@/common/utils/permissions.js";
 
 const flattenEntries = (entries, path = []) => entries.flatMap(entry =>
     entry.type === "folder" || entry.type === "organization"
@@ -101,6 +103,8 @@ export const ServerList = ({
     const { t } = useTranslation();
     const { servers, loadServers, getServerById } = useContext(ServerContext);
     const { identities } = useContext(IdentityContext);
+    const { hasPermission } = useContext(UserContext);
+    const canManageResources = hasPermission(Permission.RESOURCES_MANAGE);
     const { sendToast } = useToast();
     const [search, setSearch] = useState("");
     const [selectedTags, setSelectedTags] = useState([]);
@@ -506,7 +510,7 @@ export const ServerList = ({
                     >
                         {contextClickedType !== "server-object" && (
                             <>
-                                {(contextClickedType === null || contextClickedType === "folder-object" || isOrgFolder) && (
+                                {canManageResources && (contextClickedType === null || contextClickedType === "folder-object" || isOrgFolder) && (
                                     <ContextMenuItem
                                         icon={mdiPlusCircle}
                                         label={t("servers.contextMenu.new")}
@@ -533,7 +537,7 @@ export const ServerList = ({
                                         />
                                     </ContextMenuItem>
                                 )}
-                                {contextClickedType === "folder-object" && !isOrgFolder && (
+                                {canManageResources && contextClickedType === "folder-object" && !isOrgFolder && (
                                     <ContextMenuItem
                                         icon={mdiImport}
                                         label={t("servers.contextMenu.import")}
@@ -555,12 +559,16 @@ export const ServerList = ({
 
                         {contextClickedType === "folder-object" && !isOrgFolder && (
                             <>
-                                <ContextMenuItem
-                                    icon={mdiFolderPlus}
-                                    label={t("servers.contextMenu.createFolder")}
-                                    onClick={createFolder}
-                                />
-                                <ContextMenuSeparator />
+                                {canManageResources && (
+                                    <>
+                                        <ContextMenuItem
+                                            icon={mdiFolderPlus}
+                                            label={t("servers.contextMenu.createFolder")}
+                                            onClick={createFolder}
+                                        />
+                                        <ContextMenuSeparator />
+                                    </>
+                                )}
                                 <ContextMenuItem
                                     icon={mdiFormTextbox}
                                     label={t("servers.contextMenu.renameFolder")}
@@ -576,7 +584,7 @@ export const ServerList = ({
                             </>
                         )}
 
-                        {(contextClickedType === null || isOrgFolder) && (
+                        {canManageResources && (contextClickedType === null || isOrgFolder) && (
                             <ContextMenuItem
                                 icon={mdiFolderPlus}
                                 label={t("servers.contextMenu.createFolder")}

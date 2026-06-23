@@ -2,6 +2,8 @@ import { useEffect, useState, useContext } from "react";
 import { useToast } from "@/common/contexts/ToastContext.jsx";
 import { getRequest, postRequest, deleteRequest } from "@/common/utils/RequestUtil.js";
 import { ServerContext } from "@/common/contexts/ServerContext.jsx";
+import { UserContext } from "@/common/contexts/UserContext.jsx";
+import { Permission } from "@/common/utils/permissions.js";
 import Icon from "@mdi/react";
 import { mdiCheckCircleOutline, mdiCloseCircleOutline, mdiDomain, mdiPlus, mdiShieldCheckOutline } from "@mdi/js";
 import Button from "@/common/components/Button";
@@ -18,6 +20,7 @@ export const Organizations = () => {
     const { t } = useTranslation();
     const { sendToast } = useToast();
     const { loadServers } = useContext(ServerContext);
+    const { hasPermission } = useContext(UserContext);
 
     const [organizations, setOrganizations] = useState([]);
     const [pendingInvitations, setPendingInvitations] = useState([]);
@@ -143,7 +146,9 @@ export const Organizations = () => {
         <div className="organizations-page">
             <div className="org-header">
                 <h2>{t("settings.organizations.title")}</h2>
-                <Button text={t("settings.organizations.createOrganization")} icon={mdiPlus} onClick={() => setCreateDialogOpen(true)} />
+                {hasPermission(Permission.ORGANIZATIONS_CREATE) && (
+                    <Button text={t("settings.organizations.createOrganization")} icon={mdiPlus} onClick={() => setCreateDialogOpen(true)} />
+                )}
             </div>
 
             <div className="vertical-list">
@@ -199,7 +204,7 @@ export const Organizations = () => {
                                                         refreshMembers={() => fetchMembers(org.id)} />
                                         )}
 
-                                        {activeTab[org.id] === "audit" && org.isOwner && (
+                                        {activeTab[org.id] === "audit" && !!org.isOwner && (
                                             <OrganizationAuditSettings organizationId={org.id}
                                                                        isOwner={org.isOwner} />
                                         )}
