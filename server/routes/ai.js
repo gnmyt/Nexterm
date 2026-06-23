@@ -1,5 +1,6 @@
 const { Router } = require("express");
-const { isAdmin } = require("../middlewares/permission");
+const { requirePermission } = require("../middlewares/permission");
+const { Permission } = require("../permissions/registry");
 const { validateSchema } = require("../utils/schema");
 const { updateAISettingsValidation, generateCommandValidation } = require("../validations/ai");
 const {
@@ -43,7 +44,7 @@ app.get("/", async (req, res) => {
  * @return {object} 200 - Updated AI settings
  * @return {object} 403 - Admin access required
  */
-app.patch("/", isAdmin, async (req, res) => {
+app.patch("/", requirePermission(Permission.SETTINGS_AI), async (req, res) => {
     try {
         if (validateSchema(res, updateAISettingsValidation, req.body)) return;
 
@@ -65,7 +66,7 @@ app.patch("/", isAdmin, async (req, res) => {
  * @return {object} 400 - Connection test failed
  * @return {object} 403 - Admin access required
  */
-app.post("/test", isAdmin, async (req, res) => {
+app.post("/test", requirePermission(Permission.SETTINGS_AI), async (req, res) => {
     try {
         const result = await testAIConnection();
 

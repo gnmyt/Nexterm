@@ -6,6 +6,8 @@ const SessionManager = require("../lib/SessionManager");
 const { getSFTPTransferClient } = require("../lib/ConnectionService");
 const Entry = require("../models/Entry");
 const { createAuditLog, AUDIT_ACTIONS, RESOURCE_TYPES } = require("../controllers/audit");
+const { hasResourcePermission } = require("../utils/permission");
+const { Permission } = require("../permissions/registry");
 const logger = require("../utils/logger");
 const { ZipArchive } = require("archiver");
 
@@ -30,6 +32,9 @@ const handleError = (res, err) => {
     if (msg.includes("Permission denied")) return res.status(403).json({ error: "Permission denied" });
     res.status(500).json({ error: msg });
 };
+
+const checkFilePermission = (ctx, permission) =>
+    hasResourcePermission(ctx.user.id, ctx.entry.organizationId, permission);
 
 const audit = (ctx, req, action, resource, details) => {
     createAuditLog({
@@ -142,6 +147,9 @@ app.post("/upload", async (req, res) => {
         const ctx = await validateSession(sessionToken, sessionId);
         if (ctx.error) return res.status(ctx.status).json({ error: ctx.error });
 
+        if (!(await checkFilePermission(ctx, Permission.FILES_UPLOAD)))
+            return res.status(403).json({ error: "You don't have permission to upload files" });
+
         await ctx.sftpClient.writeFile(remotePath, req);
 
         const totalSize = Number.parseInt(req.headers["content-length"]) || 0;
@@ -183,6 +191,9 @@ app.get("/", async (req, res) => {
     try {
         const ctx = await validateSession(sessionToken, sessionId);
         if (ctx.error) return res.status(ctx.status).json({ error: ctx.error });
+
+        if (!(await checkFilePermission(ctx, Permission.FILES_DOWNLOAD)))
+            return res.status(403).json({ error: "You don't have permission to download files" });
 
         const { sftpClient } = ctx;
         const stats = await sftpClient.stat(remotePath);
@@ -263,6 +274,9 @@ app.post("/multi", express.urlencoded({ extended: true }), async (req, res) => {
     try {
         const ctx = await validateSession(sessionToken, sessionId);
         if (ctx.error) return res.status(ctx.status).json({ error: ctx.error });
+
+        if (!(await checkFilePermission(ctx, Permission.FILES_DOWNLOAD)))
+            return res.status(403).json({ error: "You don't have permission to download files" });
 
         const timestamp = new Date().toISOString().replaceAll(/[:.]/g, "-").slice(0, 19);
         res.header("Content-Disposition", `attachment; filename="nexterm-download-${timestamp}.zip"`);

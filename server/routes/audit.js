@@ -4,6 +4,8 @@ const logger = require("../utils/logger");
 const auditController = require("../controllers/audit");
 const { getAuditLogsValidation, updateOrganizationAuditSettingsValidation } = require("../validations/audit");
 const { validateSchema } = require("../utils/schema");
+const { requirePermission } = require("../middlewares/permission");
+const { Permission } = require("../permissions/registry");
 
 const app = Router();
 
@@ -24,7 +26,7 @@ const app = Router();
  * @return {object} 200 - Audit logs matching the specified criteria
  * @return {object} 400 - Invalid filter parameters
  */
-app.get("/logs", async (req, res) => {
+app.get("/logs", requirePermission(Permission.AUDIT_VIEW), async (req, res) => {
     try {
         if (validateSchema(res, getAuditLogsValidation, req.query)) return;
         const filters = {

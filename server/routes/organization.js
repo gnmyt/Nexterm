@@ -4,6 +4,10 @@ const app = express.Router();
 const { authenticate } = require("../middlewares/auth");
 const { validateSchema } = require("../utils/schema");
 const organizationController = require("../controllers/organization");
+const permissionController = require("../controllers/permission");
+const { requireOrgPermission, requirePermission } = require("../middlewares/permission");
+const { Permission } = require("../permissions/registry");
+const { setPermissionsValidation } = require("../validations/permission");
 const {
     createOrganizationSchema,
     updateOrganizationSchema,
@@ -22,7 +26,7 @@ const {
  * @return {object} 201 - Organization successfully created
  * @return {object} 400 - Invalid organization data
  */
-app.put("/", authenticate, async (req, res) => {
+app.put("/", authenticate, requirePermission(Permission.ORGANIZATIONS_CREATE), async (req, res) => {
     try {
         if (validateSchema(res, createOrganizationSchema, req.body)) return;
 
@@ -226,6 +230,54 @@ app.delete("/:id/members/:accountId", authenticate, async (req, res) => {
         res.status(500).json({ message: "An error occurred while removing the member" });
     }
 });
+
+/**
+ * GET /organization/{id}/members/{accountId}/permissions
+ * @summary Get Member Permissions
+ * @description Returns a member's organization permission overrides and their effective permissions. Requires the "org.members.manage" permission in the organization.
+ * @tags Organization
+ * @produces application/json
+ * @security BearerAuth
+ * @param {string} id.path.required - Organization id
+ * @param {string} accountId.path.required - Member account id
+ * @return {object} 200 - Member permission overrides and effective permissions
+ * @return {object} 403 - Insufficient permissions
+ */
+app.get("/:id/members/:accountId/permissions",
+    authenticate, requireOrgPermission(Permission.ORG_MEMBERS_MANAGE), async (req, res) => {
+        try {
+            res.json(await permissionController.getOrgMemberPermissions(req.params.id, req.params.accountId));
+        } catch (error) {
+            logger.error("Error getting member permissions", { error: error.message });
+            res.status(500).json({ message: "An error occurred while reading member permissions" });
+        }
+    });
+
+/**
+ * PUT /organization/{id}/members/{accountId}/permissions
+ * @summary Set Member Permissions
+ * @description Updates a member's organization permission overrides. Requires the "org.members.manage" permission in the organization.
+ * @tags Organization
+ * @produces application/json
+ * @security BearerAuth
+ * @param {string} id.path.required - Organization id
+ * @param {string} accountId.path.required - Member account id
+ * @param {object} request.body.required - { permissions: { permissionId: "allow"|"deny"|"neutral" } }
+ * @return {object} 200 - Updated member permissions
+ * @return {object} 403 - Insufficient permissions
+ */
+app.put("/:id/members/:accountId/permissions",
+    authenticate, requireOrgPermission(Permission.ORG_MEMBERS_MANAGE), async (req, res) => {
+        if (validateSchema(res, setPermissionsValidation, req.body)) return;
+        try {
+            const result = await permissionController.setOrgMemberPermissions(req.params.id, req.params.accountId, req.body.permissions);
+            if (result.code) return res.status(result.code).json(result);
+            res.json(result);
+        } catch (error) {
+            logger.error("Error setting member permissions", { error: error.message });
+            res.status(500).json({ message: "An error occurred while updating member permissions" });
+        }
+    });
 
 /**
  * GET /organization/invitations/pending

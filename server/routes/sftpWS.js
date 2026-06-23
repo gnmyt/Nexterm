@@ -7,6 +7,8 @@ const {
 } = require("../controllers/audit");
 const SessionManager = require("../lib/SessionManager");
 const { createSFTPConnectionForSession, getSFTPBackgroundClient } = require("../lib/ConnectionService");
+const { hasResourcePermission } = require("../utils/permission");
+const { Permission } = require("../permissions/registry");
 const Entry = require("../models/Entry");
 const logger = require("../utils/logger");
 
@@ -18,6 +20,11 @@ const OP = {
 };
 
 const CHECKSUM_COMMANDS = { md5: "md5sum", sha1: "sha1sum", sha256: "sha256sum", sha512: "sha512sum" };
+
+const MUTATING_OPS = new Set([
+    OP.CREATE_FILE, OP.CREATE_FOLDER, OP.DELETE_FILE, OP.DELETE_FOLDER,
+    OP.RENAME_FILE, OP.MOVE_FILES, OP.COPY_FILES, OP.CHMOD,
+]);
 
 const escapePath = (p) => `'${p.replaceAll("'", String.raw`'\''`)}'`;
 
@@ -141,6 +148,17 @@ module.exports = async (ws, req) => {
     if (!ctx) return;
 
     const { entry, user, ipAddress, userAgent, serverSession } = ctx;
+
+    const [canView, canModify] = await Promise.all([
+        hasResourcePermission(user.id, entry.organizationId, Permission.FILES_VIEW),
+        hasResourcePermission(user.id, entry.organizationId, Permission.FILES_MODIFY),
+    ]);
+    if (!canView) {
+        sendError(ws, "You don't have permission to browse files on this server");
+        ws.close(4403);
+        return;
+    }
+
     if (serverSession) SessionManager.resume(serverSession.sessionId);
 
     const sessionId = serverSession?.sessionId;
@@ -204,6 +222,10 @@ module.exports = async (ws, req) => {
 
             const handler = handlers[opCode];
             if (!handler) return;
+            if (MUTATING_OPS.has(opCode) && !canModify) {
+                sendError(ws, "You don't have permission to modify files on this server");
+                return;
+            }
             let payload;
             try { payload = JSON.parse(msg.slice(1).toString()); } catch {}
             try { await handler(payload); }

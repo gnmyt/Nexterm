@@ -6,6 +6,7 @@ const speakeasy = require("speakeasy");
 const { authenticate } = require("../middlewares/auth");
 const { validateSchema } = require("../utils/schema");
 const { sendError } = require("../utils/error");
+const { getSystemPermissions } = require("../permissions/engine");
 
 const app = Router();
 
@@ -40,9 +41,12 @@ app.get("/search", authenticate, async (req, res) => {
 app.get("/me", authenticate, async (req, res) => {
     if (!req.user) return sendError(res, 401, 205, "You are not authenticated.");
 
+    const { isAdmin, permissions } = await getSystemPermissions(req.user.id);
+
     res.json({
         id: req.user.id, username: req.user.username, totpEnabled: req.user.totpEnabled,
-        firstName: req.user.firstName, lastName: req.user.lastName, role: req.user.role,
+        firstName: req.user.firstName, lastName: req.user.lastName,
+        isAdmin, permissions,
         sessionSync: req.user.sessionSync, preferences: req.user.preferences || {},
         activeThemeId: req.user.activeThemeId || null,
     });
