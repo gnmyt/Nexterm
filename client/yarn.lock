@@ -1528,10 +1528,10 @@ i18next-http-backend@^4.0.0:
   resolved "https://registry.yarnpkg.com/i18next-http-backend/-/i18next-http-backend-4.0.0.tgz#6c5dc1245d122ab9036b6484ae559128ce21b227"
   integrity sha512-EgSjO3Q1G6f2Q5oy7u9mmxuesE0oSfzAD97NFBjC8EmkK4guBSYLljM0Fng3DarMWIIkU70jfo4+mUzmyVISTA==
 
-i18next@^26.3.1:
-  version "26.3.1"
-  resolved "https://registry.yarnpkg.com/i18next/-/i18next-26.3.1.tgz#94762857f5aae0c6282d87f8f0039cbbc9f7b42d"
-  integrity sha512-txQqd5EULsqEh9OJqRH15aCaOuy/nLJyhw5EHCSKLKJE1aBbb3Zve2+uQIxgWhPm1QqUQoWyQBm2kfmmIrzkcQ==
+i18next@^26.3.2:
+  version "26.3.2"
+  resolved "https://registry.yarnpkg.com/i18next/-/i18next-26.3.2.tgz#1800dd8cbeddd47ee87208c47aeb7f7816b51a6d"
+  integrity sha512-QQkXAM1sPDHqhxMQuBeHVMUn6mJchF+wdpOoQerciLAFqO3ZYdxO0EUbeEhruyutnNwpUQIITDVzLjwnNL0T1w==
 
 ignore@^5.2.0:
   version "5.3.2"
