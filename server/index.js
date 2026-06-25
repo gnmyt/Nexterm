@@ -26,7 +26,10 @@ const { ensureLocalEngine } = require("./controllers/engine");
 const { ensureCPCerts } = require("./utils/controlPlaneCerts");
 require("./utils/folder");
 
-process.on("uncaughtException", (err) => require("./utils/errorHandling")(err));
+process.on("uncaughtException", (err) => {
+    logger.error("Uncaught exception", { error: err.message });
+    process.exit(1);
+});
 
 const APP_PORT = process.env.SERVER_PORT || 6989;
 const HTTPS_PORT = process.env.HTTPS_PORT || 5878;
@@ -84,12 +87,12 @@ app.use("/api/share", require("./routes/share"));
 if (process.env.NODE_ENV === "production") {
     app.use(express.static(path.join(__dirname, "../dist")));
 
-    app.get("*name", (req, res) =>
+    app.get("*", (req, res) =>
         res.sendFile(path.join(__dirname, "../dist", "index.html"))
     );
 } else {
     require("dotenv").config({ quiet: true });
-    app.get("*name", (req, res) =>
+    app.get("*", (req, res) =>
         res.status(500).sendFile(path.join(__dirname, "templates", "env.html"))
     );
 }
