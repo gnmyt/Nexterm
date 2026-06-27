@@ -1,6 +1,9 @@
 const { genSalt, hash } = require("bcrypt");
+const { Op } = require("sequelize");
 const Account = require("../../models/Account");
+const GroupMember = require("../../models/GroupMember");
 const accountController = require("../../controllers/account");
+const { getAdminGroupIds, getAdminAccountIds, isAccountAdmin, countAdmins } = require("../../utils/permission");
 const { promptPassword, table, restartHint, throwOnControllerError, yn } = require("../utils");
 
 const resolvePassword = (opts) => opts.password || promptPassword("Password");
@@ -13,16 +16,20 @@ const findByUsername = async (username) => {
 
 module.exports.list = async () => {
     const accounts = await Account.findAll({
-        attributes: ["id", "username", "firstName", "lastName", "role", "totpEnabled"],
+        attributes: ["id", "username", "firstName", "lastName", "totpEnabled"],
         order: [["id", "ASC"]],
     });
-    table(accounts.map((a) => ({
+
+    const adminAccountIds = await getAdminAccountIds();
+
+    const rows = accounts.map((a) => ({
         id: a.id,
         username: a.username,
         name: `${a.firstName} ${a.lastName}`.trim(),
-        role: a.role,
+        role: adminAccountIds.has(a.id) ? "admin" : "user",
         totp: yn(a.totpEnabled),
-    })), ["id", "username", "name", "role", "totp"]);
+    }));
+    table(rows, ["id", "username", "name", "role", "totp"]);
 };
 
 module.exports.create = async (username, opts) => {
@@ -33,9 +40,14 @@ module.exports.create = async (username, opts) => {
         firstName: opts.firstName || username,
         lastName: opts.lastName || "",
         password,
-        role: opts.admin ? "admin" : "user",
     });
-    console.log(`created account ${account.username} (id=${account.id}, role=${account.role})`);
+
+    if (opts.admin) {
+        const [adminGroupId] = await getAdminGroupIds();
+        if (adminGroupId) await GroupMember.create({ groupId: adminGroupId, accountId: account.id });
+    }
+
+    console.log(`created account ${account.username} (id=${account.id}, role=${opts.admin ? "admin" : "user"})`);
 };
 
 module.exports.resetPassword = async (username, opts) => {
@@ -44,18 +56,28 @@ module.exports.resetPassword = async (username, opts) => {
     console.log(`password reset for ${username}`);
 };
 
-const setRole = async (username, role, alreadyMsg, lastAdminGuard) => {
+module.exports.promote = async (username) => {
     const account = await findByUsername(username);
-    if (account.role === role) { console.log(alreadyMsg); return; }
-    if (lastAdminGuard && await Account.count({ where: { role: "admin" } }) === 1)
-        throw new Error("cannot demote the last admin account");
-    await throwOnControllerError(accountController.updateRole(account.id, role));
-    console.log(`${role === "admin" ? "promoted" : "demoted"} ${username} to ${role}`);
+    if (await isAccountAdmin(account.id)) { console.log(`${username} is already admin`); return; }
+
+    const [adminGroupId] = await getAdminGroupIds();
+    if (!adminGroupId) throw new Error("no administrator group exists");
+    await GroupMember.findOrCreate({ where: { groupId: adminGroupId, accountId: account.id } });
+    console.log(`promoted ${username} to admin`);
     restartHint("role changed");
 };
 
-module.exports.promote = (username) => setRole(username, "admin", `${username} is already admin`, false);
-module.exports.demote = (username) => setRole(username, "user", `${username} is not an admin`, true);
+module.exports.demote = async (username) => {
+    const account = await findByUsername(username);
+    if (!(await isAccountAdmin(account.id))) { console.log(`${username} is not an admin`); return; }
+
+    if ((await countAdmins()) <= 1) throw new Error("cannot demote the last admin account");
+
+    const adminGroupIds = await getAdminGroupIds();
+    await GroupMember.destroy({ where: { groupId: { [Op.in]: adminGroupIds }, accountId: account.id } });
+    console.log(`demoted ${username} to user`);
+    restartHint("role changed");
+};
 
 module.exports.remove = async (username) => {
     const account = await findByUsername(username);

@@ -1,0 +1,66 @@
+@use "@/common/styles/colors"
+
+.role-members
+  display: flex
+  flex-direction: column
+  gap: 0.85rem
+
+  .member-list
+    display: flex
+    flex-direction: column
+    gap: 0.5rem
+
+    .empty
+      color: colors.$subtext
+      font-size: 0.85rem
+      margin: 0.25rem 0
+
+    .member-row
+      display: flex
+      align-items: center
+      gap: 0.75rem
+      padding: 0.75rem 1rem
+      background-color: colors.$lighter-background
+      border: 1px solid colors.$dark-gray
+      border-radius: 0.75rem
+
+      .member-icon
+        display: flex
+        align-items: center
+        justify-content: center
+        width: 2rem
+        height: 2rem
+        border-radius: 0.375rem
+        background-color: colors.$gray
+        flex-shrink: 0
+
+        svg
+          width: 1.1rem
+          height: 1.1rem
+          color: colors.$subtext
+
+      .member-info
+        display: flex
+        flex-direction: column
+        flex: 1
+        min-width: 0
+
+        .name
+          font-size: 0.9rem
+          font-weight: 500
+
+        .username
+          font-size: 0.8rem
+          color: colors.$subtext
+
+      .remove
+        width: 1.25rem
+        height: 1.25rem
+        color: colors.$subtext
+        cursor: pointer
+        border-radius: 0.25rem
+        transition: color 0.15s ease, background-color 0.15s ease
+
+        &:hover
+          color: colors.$error
+          background-color: colors.$error-opacity

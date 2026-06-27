@@ -1,7 +1,7 @@
 import "./styles.sass";
 import { useCallback, useContext, useEffect, useMemo, useState } from "react";
 import { UserContext } from "@/common/contexts/UserContext.jsx";
-import { getRequest, deleteRequest, patchRequest, postRequest } from "@/common/utils/RequestUtil.js";
+import { getRequest, deleteRequest, postRequest } from "@/common/utils/RequestUtil.js";
 import Button from "@/common/components/Button";
 import PaginatedTable from "@/common/components/PaginatedTable";
 import Icon from "@mdi/react";
@@ -11,19 +11,22 @@ import {
     mdiLock,
     mdiShieldAccount,
     mdiKey,
-    mdiSecurity,
+    mdiShieldKeyOutline,
     mdiAccountRemove,
     mdiLogin,
     mdiPlus,
     mdiMagnify,
     mdiAccountCircleOutline,
+    mdiAccountGroupOutline,
 } from "@mdi/js";
 import CreateUserDialog from "./components/CreateUserDialog";
+import UserPermissionsDialog from "@/pages/Settings/pages/Permissions/components/UserPermissionsDialog";
 import { ContextMenu, ContextMenuItem, useContextMenu } from "@/common/components/ContextMenu";
 import { ActionConfirmDialog } from "@/common/components/ActionConfirmDialog/ActionConfirmDialog.jsx";
 import PasswordChange from "@/pages/Settings/pages/Account/dialogs/PasswordChange";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
+import { Permission } from "@/common/utils/permissions.js";
 
 const ITEMS_PER_PAGE = 25;
 
@@ -35,14 +38,17 @@ export const Users = () => {
     const [searchQuery, setSearchQuery] = useState("");
     const [debouncedSearch, setDebouncedSearch] = useState("");
     const [currentPage, setCurrentPage] = useState(1);
-    const { user, overrideToken } = useContext(UserContext);
+    const { user, overrideToken, hasPermission } = useContext(UserContext);
     const navigate = useNavigate();
+
+    const [groups, setGroups] = useState([]);
+    const [catalog, setCatalog] = useState(null);
+    const canManagePermissions = hasPermission(Permission.PERMISSIONS_MANAGE);
 
     const [createUserDialogOpen, setCreateUserDialogOpen] = useState(false);
     const [contextUserId, setContextUserId] = useState(null);
     const [passwordChangeDialogOpen, setPasswordChangeDialogOpen] = useState(false);
-    const [promoteDialogOpen, setPromoteDialogOpen] = useState(false);
-    const [demoteDialogOpen, setDemoteDialogOpen] = useState(false);
+    const [permDialogOpen, setPermDialogOpen] = useState(false);
     const [confirmDeleteDialogOpen, setConfirmDeleteDialogOpen] = useState(false);
 
     const contextMenu = useContextMenu();
@@ -54,6 +60,12 @@ export const Users = () => {
         }, 300);
         return () => clearTimeout(timer);
     }, [searchQuery]);
+
+    useEffect(() => {
+        if (!canManagePermissions) return;
+        getRequest("permissions/groups").then(setGroups).catch(() => {});
+        getRequest("permissions/catalog").then((res) => setCatalog(res.system)).catch(() => {});
+    }, [canManagePermissions]);
 
     const loadUsers = useCallback(async () => {
         setLoading(true);
@@ -93,12 +105,6 @@ export const Users = () => {
         });
     };
 
-    const updateRole = (userId, role) => {
-        patchRequest(`users/${userId}/role`, { role: role }).then(() => {
-            loadUsers();
-        });
-    };
-
     const loginAsUser = (userId) => {
         postRequest(`users/${userId}/login`).then(response => {
             overrideToken(response.token);
@@ -116,8 +122,6 @@ export const Users = () => {
         itemsPerPage: ITEMS_PER_PAGE,
     }), [total, currentPage]);
 
-    const contextUser = users.find(u => u.id === contextUserId);
-
     const columns = useMemo(() => [
         {
             key: "user",
@@ -126,8 +130,8 @@ export const Users = () => {
             className: "user-cell-wrapper",
             render: (currentUser) => (
                 <div className="user-cell">
-                    <div className={`user-icon ${currentUser.role === "admin" ? "primary" : "default"}`}>
-                        <Icon path={currentUser.role === "admin" ? mdiShieldAccount : mdiAccount} />
+                    <div className={`user-icon ${currentUser.isAdmin ? "primary" : "default"}`}>
+                        <Icon path={currentUser.isAdmin ? mdiShieldAccount : mdiAccount} />
                     </div>
                     <div className="user-info">
                         <span className="name">{currentUser.firstName} {currentUser.lastName}</span>
@@ -137,14 +141,18 @@ export const Users = () => {
             ),
         },
         {
-            key: "role",
-            label: t("settings.users.table.role"),
-            icon: mdiShieldAccount,
-            mobileLabel: t("settings.users.table.role"),
+            key: "groups",
+            label: t("settings.users.table.roles"),
+            icon: mdiAccountGroupOutline,
+            mobileLabel: t("settings.users.table.roles"),
             render: (currentUser) => (
-                <span className={`role-badge ${currentUser.role}`}>
-                    {currentUser.role === "admin" ? t("settings.users.roles.admin") : t("settings.users.roles.user")}
-                </span>
+                <div className="group-badges">
+                    {(currentUser.groups || []).map((g) => (
+                        <span key={g.id} className="group-badge" style={{ backgroundColor: `${g.color}26`, color: g.color }}>
+                            {g.name}
+                        </span>
+                    ))}
+                </div>
             ),
         },
         {
@@ -178,15 +186,13 @@ export const Users = () => {
             <CreateUserDialog open={createUserDialogOpen} onClose={() => setCreateUserDialogOpen(false)}
                               loadUsers={loadUsers} />
 
+            <UserPermissionsDialog open={permDialogOpen} onClose={() => setPermDialogOpen(false)}
+                                   accountId={contextUserId} groups={groups} catalog={catalog}
+                                   onSaved={loadUsers} />
+
             <ActionConfirmDialog open={confirmDeleteDialogOpen} setOpen={setConfirmDeleteDialogOpen}
                                  onConfirm={() => deleteUser(contextUserId)}
                                  text={t("settings.users.contextMenu.deleteConfirm")} />
-            <ActionConfirmDialog open={promoteDialogOpen} setOpen={setPromoteDialogOpen}
-                                 onConfirm={() => updateRole(contextUserId, "admin")}
-                                 text={t("settings.users.contextMenu.promoteConfirm")} />
-            <ActionConfirmDialog open={demoteDialogOpen} setOpen={setDemoteDialogOpen}
-                                 onConfirm={() => updateRole(contextUserId, "user")}
-                                 text={t("settings.users.contextMenu.demoteConfirm")} />
 
             <PasswordChange open={passwordChangeDialogOpen} onClose={() => setPasswordChangeDialogOpen(false)}
                             accountId={contextUserId} />
@@ -233,19 +239,11 @@ export const Users = () => {
                     onClick={() => setPasswordChangeDialogOpen(true)}
                 />
 
-                {contextUser?.role === "user" && user?.id !== contextUserId && (
+                {canManagePermissions && (
                     <ContextMenuItem
-                        icon={mdiSecurity}
-                        label={t("settings.users.contextMenu.promoteToAdmin")}
-                        onClick={() => setPromoteDialogOpen(true)}
-                    />
-                )}
-
-                {contextUser?.role === "admin" && user?.id !== contextUserId && (
-                    <ContextMenuItem
-                        icon={mdiAccount}
-                        label={t("settings.users.contextMenu.demoteToUser")}
-                        onClick={() => setDemoteDialogOpen(true)}
+                        icon={mdiShieldKeyOutline}
+                        label={t("settings.users.contextMenu.managePermissions")}
+                        onClick={() => setPermDialogOpen(true)}
                     />
                 )}
 

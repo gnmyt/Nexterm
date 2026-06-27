@@ -17,6 +17,7 @@
       "login": "Login",
       "register": "Register",
       "save": "Save",
+      "saving": "Saving…",
       "download": "Download",
       "close": "Close",
       "maximize": "Maximize",
@@ -585,7 +586,8 @@
       "ai": "AI",
       "monitoring": "Monitoring",
       "backup": "Storage",
-      "engines": "Engines"
+      "engines": "Engines",
+      "permissions": "Roles & Permissions"
     },
     "account": {
       "title": "Account",
@@ -775,22 +777,15 @@
       "noSearchResultsDescription": "Try adjusting your search query.",
       "table": {
         "user": "User",
-        "role": "Role",
-        "twoFactor": "2FA"
-      },
-      "roles": {
-        "admin": "Admin",
-        "user": "User"
+        "twoFactor": "2FA",
+        "roles": "Roles"
       },
       "contextMenu": {
         "changePassword": "Change password",
-        "promoteToAdmin": "Promote to admin",
-        "demoteToUser": "Demote to user",
         "deleteUser": "Delete user",
         "loginAsUser": "Login as user",
         "deleteConfirm": "This will permanently delete the user and all associated data.",
-        "promoteConfirm": "This will promote the user to an admin.",
-        "demoteConfirm": "This will demote the user to a regular user."
+        "managePermissions": "Manage permissions"
       }
     },
     "userDialog": {
@@ -1368,6 +1363,36 @@
         "deleteFailed": "Failed to delete engine",
         "regenerateFailed": "Failed to regenerate token"
       }
+    },
+    "permissions": {
+      "subtitle": "Create roles with granular permissions or assign permissions to individual users. The Default role applies to everyone automatically.",
+      "createRole": "Create role",
+      "rolesTitle": "Roles",
+      "membersTitle": "Members",
+      "rolesTab": "Roles",
+      "overridesTab": "Direct permissions",
+      "permissionsTab": "Permissions",
+      "membersTab": "Members",
+      "settingsTab": "Settings",
+      "managePermissions": "Manage permissions",
+      "memberCount_one": "{{count}} member",
+      "memberCount_other": "{{count}} members",
+      "dangerousHint": "Granting this gives broad or destructive access. Assign it with care.",
+      "roleName": "Role name",
+      "roleNamePlaceholder": "e.g. Operators",
+      "roleColor": "Color",
+      "nameRequired": "Please enter a name for the role.",
+      "saveError": "Could not save your changes.",
+      "loadError": "Could not load permissions.",
+      "userSaved": "Permissions updated.",
+      "noAssignableRoles": "No roles available yet. Create one first.",
+      "noMembers": "This role has no members yet.",
+      "addMemberPlaceholder": "Search users to add…",
+      "deleteRole": "Delete role",
+      "deleteConfirm": "This will permanently delete the role \"{{name}}\" and remove it from all members.",
+      "searchUsers": "Search users…",
+      "inheritsAllow": "Inherits: Allowed",
+      "inheritsDeny": "Inherits: Denied"
     }
   },
   "tunnel": {
@@ -1474,9 +1499,13 @@
       "errorDescription": "Failed to send magic packet"
     },
     "messages": {
-      "usernameRequired": "Username is required",
-      "passwordRequired": "Password is required",
-      "sshKeyRequired": "SSH key is required"
+      "fillRequiredFields": "Please fill in all required fields",
+      "serverCreated": "Server created successfully",
+      "serverUpdated": "Server updated successfully",
+      "createFailed": "Failed to create server",
+      "updateFailed": "Failed to update server",
+      "createIdentityFailed": "Failed to create identity",
+      "updateIdentityFailed": "Failed to update identity"
     },
     "dialog": {
       "addServer": "Add server",
@@ -1785,8 +1814,8 @@
       },
       "search": {
         "placeholder": "Filter files in this folder...",
-        "results": "{{count}} result",
-        "results_plural": "{{count}} results",
+        "results_one": "{{count}} result",
+        "results_other": "{{count}} results",
         "noResultsTitle": "No matches",
         "noResults": "No files match \"{{query}}\""
       },
@@ -1845,15 +1874,6 @@
         "unsaved": "Unsaved",
         "error": "Save failed"
       }
-    },
-    "messages": {
-      "fillRequiredFields": "Please fill in all required fields",
-      "serverCreated": "Server created successfully",
-      "serverUpdated": "Server updated successfully",
-      "createFailed": "Failed to create server",
-      "updateFailed": "Failed to update server",
-      "createIdentityFailed": "Failed to create identity",
-      "updateIdentityFailed": "Failed to update identity"
     }
   },
   "support": {

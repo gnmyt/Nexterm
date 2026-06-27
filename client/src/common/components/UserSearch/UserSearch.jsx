@@ -209,14 +209,13 @@ export const UserSearch = ({
                             onClick={() => handleSelect(user)}
                             onMouseEnter={() => setHighlightedIndex(index)}
                         >
-                            <div className={`user-search__avatar ${user.role === "admin" ? "admin" : ""}`}>
-                                <Icon path={user.role === "admin" ? mdiShieldAccount : mdiAccount} />
+                            <div className="user-search__avatar">
+                                <Icon path={mdiAccount} />
                             </div>
                             <div className="user-search__user-info">
                                 <span className="user-search__name">{user.firstName} {user.lastName}</span>
                                 <span className="user-search__username">@{user.username}</span>
                             </div>
-                            {user.role === "admin" && <span className="user-search__role-badge">Admin</span>}
                         </div>
                     ))}
                 </div>,

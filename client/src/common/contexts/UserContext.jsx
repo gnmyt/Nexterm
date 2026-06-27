@@ -92,6 +92,9 @@ export const UserProvider = ({ children }) => {
         login();
     };
 
+    const hasPermission = (permission) =>
+        !!user && (user.isAdmin || (user.permissions || []).includes(permission));
+
     useEffect(() => {
         const searchParams = new URLSearchParams(location.search);
         const tokenFromUrl = searchParams.get('token');
@@ -112,7 +115,7 @@ export const UserProvider = ({ children }) => {
     }, [sessionToken]);
 
     return (
-        <UserContext.Provider value={{ updateSessionToken, user, sessionToken, firstTimeSetup, login, logout, overrideToken, isConnectorMode, addingServer, setAddingServer }}>
+        <UserContext.Provider value={{ updateSessionToken, user, sessionToken, firstTimeSetup, login, logout, overrideToken, hasPermission, isConnectorMode, addingServer, setAddingServer }}>
             {isConnectorMode ? (
                 <ConnectorSetup open={!sessionToken || addingServer} isAddMode={addingServer} onCancelAdd={() => setAddingServer(false)} />
             ) : (

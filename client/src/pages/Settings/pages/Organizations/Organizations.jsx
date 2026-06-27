@@ -2,6 +2,8 @@ import { useEffect, useState, useContext } from "react";
 import { useToast } from "@/common/contexts/ToastContext.jsx";
 import { getRequest, postRequest, deleteRequest } from "@/common/utils/RequestUtil.js";
 import { ServerContext } from "@/common/contexts/ServerContext.jsx";
+import { UserContext } from "@/common/contexts/UserContext.jsx";
+import { Permission } from "@/common/utils/permissions.js";
 import Icon from "@mdi/react";
 import { mdiCheckCircleOutline, mdiCloseCircleOutline, mdiDomain, mdiPlus, mdiShieldCheckOutline } from "@mdi/js";
 import Button from "@/common/components/Button";
@@ -18,6 +20,7 @@ export const Organizations = () => {
     const { t } = useTranslation();
     const { sendToast } = useToast();
     const { loadServers } = useContext(ServerContext);
+    const { hasPermission } = useContext(UserContext);
 
     const [organizations, setOrganizations] = useState([]);
     const [pendingInvitations, setPendingInvitations] = useState([]);
@@ -143,7 +146,9 @@ export const Organizations = () => {
         <div className="organizations-page">
             <div className="org-header">
                 <h2>{t("settings.organizations.title")}</h2>
-                <Button text={t("settings.organizations.createOrganization")} icon={mdiPlus} onClick={() => setCreateDialogOpen(true)} />
+                {hasPermission(Permission.ORGANIZATIONS_CREATE) && (
+                    <Button text={t("settings.organizations.createOrganization")} icon={mdiPlus} onClick={() => setCreateDialogOpen(true)} />
+                )}
             </div>
 
             <div className="vertical-list">
@@ -169,13 +174,14 @@ export const Organizations = () => {
                                 </div>
                             </div>
                                 <div className="right-section">
-                                    {org.isOwner ? (
-                                        <>
-                                            <Button text={t("settings.organizations.invite")} onClick={(e) => handleInviteMember(org, e)} />
-                                            <Button text={t("settings.organizations.delete")} type="danger"
-                                                    onClick={(e) => handleDeleteOrg(org.id, e)} />
-                                        </>
-                                    ) : (
+                                    {org.permissions?.includes(Permission.ORG_MEMBERS_MANAGE) && (
+                                        <Button text={t("settings.organizations.invite")} onClick={(e) => handleInviteMember(org, e)} />
+                                    )}
+                                    {org.permissions?.includes(Permission.ORG_DELETE) && (
+                                        <Button text={t("settings.organizations.delete")} type="danger"
+                                                onClick={(e) => handleDeleteOrg(org.id, e)} />
+                                    )}
+                                    {!org.isOwner && (
                                         <Button text={t("settings.organizations.leave")} type="danger" onClick={(e) => handleLeaveOrg(org.id, e)} />
                                     )}
                                 </div>
@@ -185,7 +191,7 @@ export const Organizations = () => {
                                     <TabSwitcher
                                         tabs={[
                                             { key: "members", label: t("settings.organizations.members"), icon: mdiDomain },
-                                            ...(org.isOwner ? [{ key: "audit", label: t("settings.organizations.auditSettings.auditSettingsTab"), icon: mdiShieldCheckOutline }] : [])
+                                            ...(org.permissions?.includes(Permission.ORG_AUDIT_VIEW) ? [{ key: "audit", label: t("settings.organizations.auditSettings.auditSettingsTab"), icon: mdiShieldCheckOutline }] : [])
                                         ]}
                                         activeTab={activeTab[org.id] || "members"}
                                         onTabChange={(tabKey) => setActiveTab(prev => ({ ...prev, [org.id]: tabKey }))}
@@ -195,13 +201,13 @@ export const Organizations = () => {
                                     <div className="tab-content">
                                         {(activeTab[org.id] || "members") === "members" && membersByOrgId[org.id] && (
                                             <MemberList members={membersByOrgId[org.id]} organizationId={org.id}
-                                                        isOwner={org.isOwner}
+                                                        isOwner={org.permissions?.includes(Permission.ORG_MEMBERS_MANAGE)}
                                                         refreshMembers={() => fetchMembers(org.id)} />
                                         )}
 
-                                        {activeTab[org.id] === "audit" && org.isOwner && (
+                                        {activeTab[org.id] === "audit" && org.permissions?.includes(Permission.ORG_AUDIT_VIEW) && (
                                             <OrganizationAuditSettings organizationId={org.id}
-                                                                       isOwner={org.isOwner} />
+                                                                       isOwner={org.permissions?.includes(Permission.ORG_AUDIT_VIEW)} />
                                         )}
                                     </div>
                                 </div>

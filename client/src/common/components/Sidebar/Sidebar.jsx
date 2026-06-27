@@ -20,7 +20,7 @@ export const Sidebar = ({ onToggleCollapse }) => {
     const { t } = useTranslation();
     const location = useLocation();
     const navigate = useNavigate();
-    const { logout, isConnectorMode, user, setAddingServer } = useContext(UserContext);
+    const { logout, isConnectorMode, user, setAddingServer, hasPermission } = useContext(UserContext);
     const { uiScale } = usePreferences();
     const [settingsDialogOpen, setSettingsDialogOpen] = useState(false);
     const [settingsTab, setSettingsTab] = useState("account");
@@ -45,7 +45,7 @@ export const Sidebar = ({ onToggleCollapse }) => {
         return () => window.removeEventListener("openSettings", handleOpenSettings);
     }, []);
 
-    const navigation = getSidebarNavigation(t);
+    const navigation = getSidebarNavigation(t).filter(item => !item.permission || hasPermission(item.permission));
 
     return (<>
         <div className="sidebar">

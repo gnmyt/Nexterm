@@ -13,6 +13,9 @@ import TabSwitcher from "@/common/components/TabSwitcher";
 import { mdiCodeBraces, mdiPlus, mdiScriptText, mdiCloudDownloadOutline, mdiAccount, mdiDomain } from "@mdi/js";
 import { useTranslation } from "react-i18next";
 import { getRequest } from "@/common/utils/RequestUtil.js";
+import { useContext } from "react";
+import { UserContext } from "@/common/contexts/UserContext.jsx";
+import { Permission } from "@/common/utils/permissions.js";
 
 export const Snippets = () => {
     const { t } = useTranslation();
@@ -29,6 +32,8 @@ export const Snippets = () => {
     const [sourceScripts, setSourceScripts] = useState([]);
     const { allSnippets } = useSnippets();
     const { scripts, loadScripts } = useScripts();
+    const { hasPermission } = useContext(UserContext);
+    const canAdd = hasPermission(activeTab === 0 ? Permission.SNIPPETS_MANAGE : Permission.SCRIPTS_MANAGE);
 
     const snippets = useMemo(() => {
         if (selectedSource !== null) {
@@ -185,7 +190,7 @@ export const Snippets = () => {
                 icon={activeTab === 0 ? mdiCodeBraces : mdiScriptText}
                 title={activeTab === 0 ? t("snippets.page.title") : t("scripts.page.title")}
                 subtitle={activeTab === 0 ? t("snippets.page.subtitle") : t("scripts.page.subtitle")}>
-                {!isSourceSelected && (
+                {!isSourceSelected && canAdd && (
                     <Button
                         text={activeTab === 0 ? t("snippets.page.addSnippet") : t("scripts.page.addScript")}
                         icon={mdiPlus}

@@ -1,6 +1,8 @@
 import { useContext, useEffect, useState, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { IdentityContext } from "@/common/contexts/IdentityContext.jsx";
+import { UserContext } from "@/common/contexts/UserContext.jsx";
+import { Permission } from "@/common/utils/permissions.js";
 import { deleteRequest, getRequest } from "@/common/utils/RequestUtil.js";
 import { useToast } from "@/common/contexts/ToastContext.jsx";
 import { mdiPlus, mdiTrashCan, mdiPencil, mdiKey, mdiAccount, mdiDomain } from "@mdi/js";
@@ -46,6 +48,7 @@ export const IdentityCard = ({ identity, onEdit, onDelete }) => {
 export const IdentitiesPage = () => {
     const { t } = useTranslation();
     const { identities, loadIdentities } = useContext(IdentityContext);
+    const { hasPermission } = useContext(UserContext);
     const { sendToast } = useToast();
 
     const [dialogOpen, setDialogOpen] = useState(false);
@@ -135,7 +138,9 @@ export const IdentitiesPage = () => {
                                 setSelected={setSelectedScope}
                             />
                         )}
-                        <Button text={t("settings.identities.createIdentity")} icon={mdiPlus} onClick={handleCreateNew} />
+                        {hasPermission(Permission.IDENTITIES_MANAGE) && (
+                            <Button text={t("settings.identities.createIdentity")} icon={mdiPlus} onClick={handleCreateNew} />
+                        )}
                     </div>
                 </div>
 
