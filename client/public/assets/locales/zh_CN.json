@@ -17,6 +17,7 @@
       "login": "登录",
       "register": "注册",
       "save": "保存",
+      "saving": "Saving…",
       "download": "下载",
       "close": "关闭",
       "maximize": "最大化",
@@ -585,7 +586,8 @@
       "ai": "AI",
       "monitoring": "监控",
       "backup": "存储",
-      "engines": "发动机"
+      "engines": "发动机",
+      "permissions": "Roles & Permissions"
     },
     "account": {
       "title": "账户",
@@ -775,22 +777,15 @@
       "noSearchResultsDescription": "尝试调整搜索查询。",
       "table": {
         "user": "用户",
-        "role": "角色",
-        "twoFactor": "2FA"
-      },
-      "roles": {
-        "admin": "管理员",
-        "user": "用户"
+        "twoFactor": "2FA",
+        "roles": "Roles"
       },
       "contextMenu": {
         "changePassword": "修改密码",
-        "promoteToAdmin": "提升为管理员",
-        "demoteToUser": "降级为普通用户",
         "deleteUser": "删除用户",
         "loginAsUser": "以该用户身份登录",
         "deleteConfirm": "此操作将永久删除用户及其所有关联数据。",
-        "promoteConfirm": "此操作将把用户提升为管理员。",
-        "demoteConfirm": "此操作将把用户降级为普通用户。"
+        "managePermissions": "Manage permissions"
       }
     },
     "userDialog": {
@@ -1368,6 +1363,36 @@
         "deleteFailed": "删除引擎失败",
         "regenerateFailed": "令牌再生失败"
       }
+    },
+    "permissions": {
+      "subtitle": "Create roles with granular permissions or assign permissions to individual users. The Default role applies to everyone automatically.",
+      "createRole": "Create role",
+      "rolesTitle": "Roles",
+      "membersTitle": "Members",
+      "rolesTab": "Roles",
+      "overridesTab": "Direct permissions",
+      "permissionsTab": "Permissions",
+      "membersTab": "Members",
+      "settingsTab": "Settings",
+      "managePermissions": "Manage permissions",
+      "memberCount_one": "{{count}} member",
+      "memberCount_other": "{{count}} members",
+      "dangerousHint": "Granting this gives broad or destructive access. Assign it with care.",
+      "roleName": "Role name",
+      "roleNamePlaceholder": "e.g. Operators",
+      "roleColor": "Color",
+      "nameRequired": "Please enter a name for the role.",
+      "saveError": "Could not save your changes.",
+      "loadError": "Could not load permissions.",
+      "userSaved": "Permissions updated.",
+      "noAssignableRoles": "No roles available yet. Create one first.",
+      "noMembers": "This role has no members yet.",
+      "addMemberPlaceholder": "Search users to add…",
+      "deleteRole": "Delete role",
+      "deleteConfirm": "This will permanently delete the role \"{{name}}\" and remove it from all members.",
+      "searchUsers": "Search users…",
+      "inheritsAllow": "Inherits: Allowed",
+      "inheritsDeny": "Inherits: Denied"
     }
   },
   "tunnel": {
@@ -1789,8 +1814,8 @@
       },
       "search": {
         "placeholder": "Filter files in this folder...",
-        "results": "{{count}} result",
-        "results_plural": "{{count}} results",
+        "results_one": "{{count}} result",
+        "results_other": "{{count}} results",
         "noResultsTitle": "No matches",
         "noResults": "No files match \"{{query}}\""
       },
