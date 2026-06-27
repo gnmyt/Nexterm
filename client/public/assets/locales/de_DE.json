@@ -17,7 +17,7 @@
       "login": "Einloggen",
       "register": "Registrieren",
       "save": "Speichern",
-      "saving": "Saving…",
+      "saving": "Wird gespeichert…",
       "download": "Herunterladen",
       "close": "Schließen",
       "maximize": "Maximieren",
@@ -587,7 +587,7 @@
       "monitoring": "Überwachung",
       "backup": "Speicher",
       "engines": "Motoren",
-      "permissions": "Roles & Permissions"
+      "permissions": "Benutzergruppen und Berechtigungen"
     },
     "account": {
       "title": "Account",
@@ -778,14 +778,14 @@
       "table": {
         "user": "Benutzer",
         "twoFactor": "2FA",
-        "roles": "Roles"
+        "roles": "Benutzergruppen"
       },
       "contextMenu": {
         "changePassword": "Passwort ändern",
         "deleteUser": "Benutzer löschen",
         "loginAsUser": "Anmeldung als Benutzer",
         "deleteConfirm": "Dadurch wird der Benutzer und alle zugehörigen Daten endgültig gelöscht.",
-        "managePermissions": "Manage permissions"
+        "managePermissions": "Berechtigungen verwalten"
       }
     },
     "userDialog": {
@@ -1365,34 +1365,34 @@
       }
     },
     "permissions": {
-      "subtitle": "Create roles with granular permissions or assign permissions to individual users. The Default role applies to everyone automatically.",
-      "createRole": "Create role",
-      "rolesTitle": "Roles",
-      "membersTitle": "Members",
-      "rolesTab": "Roles",
-      "overridesTab": "Direct permissions",
-      "permissionsTab": "Permissions",
-      "membersTab": "Members",
-      "settingsTab": "Settings",
-      "managePermissions": "Manage permissions",
-      "memberCount_one": "{{count}} member",
-      "memberCount_other": "{{count}} members",
-      "dangerousHint": "Granting this gives broad or destructive access. Assign it with care.",
-      "roleName": "Role name",
-      "roleNamePlaceholder": "e.g. Operators",
-      "roleColor": "Color",
-      "nameRequired": "Please enter a name for the role.",
-      "saveError": "Could not save your changes.",
-      "loadError": "Could not load permissions.",
-      "userSaved": "Permissions updated.",
-      "noAssignableRoles": "No roles available yet. Create one first.",
-      "noMembers": "This role has no members yet.",
-      "addMemberPlaceholder": "Search users to add…",
-      "deleteRole": "Delete role",
-      "deleteConfirm": "This will permanently delete the role \"{{name}}\" and remove it from all members.",
-      "searchUsers": "Search users…",
-      "inheritsAllow": "Inherits: Allowed",
-      "inheritsDeny": "Inherits: Denied"
+      "subtitle": "Erstelle Benutzergruppen mit fein abgestuften Berechtigungen oder weise Berechtigungen direkt einzelnen Benutzern zu. Die Standard-Benutzergruppe wird automatisch auf alle Benutzer angewendet.",
+      "createRole": "Benutzergruppe erstellen",
+      "rolesTitle": "Benutzergruppen",
+      "membersTitle": "Mitglieder",
+      "rolesTab": "Benutzergruppen",
+      "overridesTab": "Direkte Berechtigungen",
+      "permissionsTab": "Berechtigungen",
+      "membersTab": "Mitglieder",
+      "settingsTab": "Einstellungen",
+      "managePermissions": "Berechtigungen verwalten",
+      "memberCount_one": "{{count}} Mitglied",
+      "memberCount_other": "{{count}} Mitglieder",
+      "dangerousHint": "Diese Berechtigung gewährt weitreichende oder kritische Zugriffsrechte. Vergib sie nur mit Vorsicht.",
+      "roleName": "Benutzergruppen Name",
+      "roleNamePlaceholder": "z. B. Operatoren",
+      "roleColor": "Farbe",
+      "nameRequired": "Bitte gib einen Namen für die Benutzergruppe ein.",
+      "saveError": "Änderungen konnten nicht gespeichert werden.",
+      "loadError": "Berechtigungen konnten nicht geladen werden.",
+      "userSaved": "Berechtigungen wurden aktualisiert.",
+      "noAssignableRoles": "Noch keine Benutzergruppen verfügbar. Erstellen Sie die Erste.",
+      "noMembers": "Diese Benutzergruppe hat noch keine Mitglieder.",
+      "addMemberPlaceholder": "Suche Benutzer zum Hinzufügen…",
+      "deleteRole": "Benutzergruppe löschen",
+      "deleteConfirm": "Dadurch wird die Benutzergruppe „{{name}}“ endgültig gelöscht und von allen Mitgliedern entfernt.",
+      "searchUsers": "Nach Benutzer suchen…",
+      "inheritsAllow": "Vererbung: Erlaubt",
+      "inheritsDeny": "Vererbung: Verweigert"
     }
   },
   "tunnel": {
@@ -1806,18 +1806,18 @@
         "hiddenDirectories": "{{count}} versteckte Verzeichnisse",
         "switchToGrid": "Zur Rasteransicht wechseln",
         "switchToList": "Zur Listenansicht wechseln",
-        "search": "Search files",
-        "closeSearch": "Close search"
+        "search": "Durchsuche Dateien",
+        "closeSearch": "Suchfeld schließen"
       },
       "item": {
         "link": "Link"
       },
       "search": {
-        "placeholder": "Filter files in this folder...",
-        "results_one": "{{count}} result",
-        "results_other": "{{count}} results",
-        "noResultsTitle": "No matches",
-        "noResults": "No files match \"{{query}}\""
+        "placeholder": "Dateien in diesem Ordner filtern...",
+        "results_one": "{{count}} Ergebnis",
+        "results_other": "{{count}} Ergebnisse",
+        "noResultsTitle": "Keine Treffer",
+        "noResults": "Keine Dateien stimmen mit \"{{query}}\" überein"
       },
       "states": {
         "loading": "Dateien laden...",
