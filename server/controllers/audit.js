@@ -6,7 +6,7 @@ const Entry = require("../models/Entry");
 const Identity = require("../models/Identity");
 const Folder = require("../models/Folder");
 const Script = require("../models/Script");
-const { hasOrganizationAccess, hasOrganizationPermission } = require("../utils/permission");
+const { hasOrganizationPermission } = require("../utils/permission");
 const { Permission } = require("../permissions/registry");
 const { Op } = require("sequelize");
 const logger = require("../utils/logger");
@@ -185,16 +185,17 @@ const getAuditLogsInternal = async (accountId, filters = {}) => {
         whereClause.accountId = accountId;
         whereClause.organizationId = null;
     } else if (organizationId) {
-        const membership = await OrganizationMember.findOne({
-            where: { organizationId, accountId, status: "active" },
-        });
-        if (!membership) throw new Error("Access denied to organization audit logs");
+        if (!(await hasOrganizationPermission(accountId, organizationId, Permission.ORG_AUDIT_VIEW)))
+            throw new Error("Access denied to organization audit logs");
         whereClause.organizationId = organizationId;
     } else {
         const memberships = await OrganizationMember.findAll({
             where: { accountId, status: "active" },
         });
-        const accessibleOrgIds = memberships.map(m => m.organizationId);
+        const auditable = await Promise.all(memberships.map(async (m) =>
+            (await hasOrganizationPermission(accountId, m.organizationId, Permission.ORG_AUDIT_VIEW))
+                ? m.organizationId : null));
+        const accessibleOrgIds = auditable.filter((id) => id !== null);
         whereClause[Op.or] = [{ accountId }, { organizationId: { [Op.in]: accessibleOrgIds } }];
     }
 
@@ -278,7 +279,8 @@ const updateAuditLogWithSessionDuration = async (auditLogId, connectionStartTime
 module.exports.getAuditLogs = async (accountId, filters = {}) => {
     try {
         const { organizationId } = filters;
-        if (organizationId && organizationId !== "personal" && !(await hasOrganizationAccess(accountId, organizationId))) {
+        if (organizationId && organizationId !== "personal"
+            && !(await hasOrganizationPermission(accountId, organizationId, Permission.ORG_AUDIT_VIEW))) {
             return { code: 403, message: "You don't have access to this organization's audit logs" };
         }
 

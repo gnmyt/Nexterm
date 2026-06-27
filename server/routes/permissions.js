@@ -107,7 +107,7 @@ app.delete("/groups/:id", async (req, res) => handle(res, await controller.delet
  */
 app.put("/groups/:id/permissions", async (req, res) => {
     if (validateSchema(res, setPermissionsValidation, req.body)) return;
-    handle(res, await controller.setGroupPermissions(req.params.id, req.body.permissions));
+    handle(res, await controller.setGroupPermissions(req.params.id, req.body.permissions, req.permissions));
 });
 
 /**
@@ -121,7 +121,7 @@ app.put("/groups/:id/permissions", async (req, res) => {
  */
 app.post("/groups/:id/members", async (req, res) => {
     if (validateSchema(res, addMemberValidation, req.body)) return;
-    handle(res, await controller.addGroupMember(req.params.id, req.body.accountId));
+    handle(res, await controller.addGroupMember(req.params.id, req.body.accountId, req.permissions));
 });
 
 /**
@@ -134,7 +134,7 @@ app.post("/groups/:id/members", async (req, res) => {
  * @return {object} 200 - Success
  */
 app.delete("/groups/:id/members/:accountId", async (req, res) =>
-    handle(res, await controller.removeGroupMember(req.params.id, req.params.accountId)));
+    handle(res, await controller.removeGroupMember(req.params.id, req.params.accountId, req.permissions)));
 
 /**
  * GET /permissions/users/{accountId}
@@ -158,7 +158,7 @@ app.get("/users/:accountId", async (req, res) =>
  */
 app.put("/users/:accountId/groups", async (req, res) => {
     if (validateSchema(res, setGroupsValidation, req.body)) return;
-    handle(res, await controller.setUserGroups(req.params.accountId, req.body.groupIds));
+    handle(res, await controller.setUserGroups(req.params.accountId, req.body.groupIds, req.permissions));
 });
 
 /**
@@ -172,7 +172,7 @@ app.put("/users/:accountId/groups", async (req, res) => {
  */
 app.put("/users/:accountId/permissions", async (req, res) => {
     if (validateSchema(res, setPermissionsValidation, req.body)) return;
-    handle(res, await controller.setUserPermissions(req.params.accountId, req.body.permissions));
+    handle(res, await controller.setUserPermissions(req.params.accountId, req.body.permissions, req.permissions));
 });
 
 module.exports = app;

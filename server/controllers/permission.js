@@ -16,6 +16,13 @@ const TRI = ["allow", "deny", "neutral"];
 
 const isBuiltIn = (group) => group.isAdmin || group.isDefault;
 
+const grantsBeyondCaller = (caller, permissions) =>
+    !caller?.isAdmin && Object.entries(permissions || {})
+        .some(([permission, value]) => value === "allow" && !caller?.permissions?.includes(permission));
+
+const ADMIN_GROUP_FORBIDDEN = { code: 403, message: "Only administrators can manage the administrator group" };
+const GRANT_FORBIDDEN = { code: 403, message: "You can only grant permissions that you hold yourself" };
+
 const userView = (account) => ({
     id: account.id, username: account.username,
     firstName: account.firstName, lastName: account.lastName,
@@ -129,18 +136,20 @@ module.exports.deleteGroup = async (groupId) => {
     return { success: true };
 };
 
-module.exports.setGroupPermissions = async (groupId, permissions) => {
+module.exports.setGroupPermissions = async (groupId, permissions, caller) => {
     const group = await PermissionGroup.findByPk(groupId);
     if (!group) return { code: 404, message: "Group not found" };
     if (group.isAdmin) return { code: 400, message: "The administrator group already grants every permission" };
+    if (grantsBeyondCaller(caller, permissions)) return GRANT_FORBIDDEN;
 
     await applyTriState(GroupPermission, registry.SCOPES.SYSTEM, { groupId }, permissions);
     return await module.exports.getGroup(groupId);
 };
 
-module.exports.addGroupMember = async (groupId, accountId) => {
+module.exports.addGroupMember = async (groupId, accountId, caller) => {
     const group = await PermissionGroup.findByPk(groupId);
     if (!group) return { code: 404, message: "Group not found" };
+    if (group.isAdmin && !caller?.isAdmin) return ADMIN_GROUP_FORBIDDEN;
 
     const account = await Account.findByPk(accountId);
     if (!account) return { code: 404, message: "Account not found" };
@@ -149,9 +158,10 @@ module.exports.addGroupMember = async (groupId, accountId) => {
     return { success: true };
 };
 
-module.exports.removeGroupMember = async (groupId, accountId) => {
+module.exports.removeGroupMember = async (groupId, accountId, caller) => {
     const group = await PermissionGroup.findByPk(groupId);
     if (!group) return { code: 404, message: "Group not found" };
+    if (group.isAdmin && !caller?.isAdmin) return ADMIN_GROUP_FORBIDDEN;
 
     if (group.isAdmin && (await countAdmins()) <= 1)
         return { code: 400, message: "You cannot remove the last administrator" };
@@ -178,7 +188,7 @@ module.exports.getUserPermissions = async (accountId) => {
     };
 };
 
-module.exports.setUserGroups = async (accountId, groupIds) => {
+module.exports.setUserGroups = async (accountId, groupIds, caller) => {
     const account = await Account.findByPk(accountId);
     if (!account) return { code: 404, message: "Account not found" };
 
@@ -188,6 +198,9 @@ module.exports.setUserGroups = async (accountId, groupIds) => {
 
     const adminGroupIds = await getAdminGroupIds();
     const willBeAdmin = keepIds.some((id) => adminGroupIds.includes(id));
+
+    if (!caller?.isAdmin && (willBeAdmin || (await isAccountAdmin(accountId)))) return ADMIN_GROUP_FORBIDDEN;
+
     if (!willBeAdmin && (await isAccountAdmin(accountId)) && (await countAdmins()) <= 1)
         return { code: 400, message: "You cannot remove the last administrator" };
 
@@ -200,9 +213,10 @@ module.exports.setUserGroups = async (accountId, groupIds) => {
     return await module.exports.getUserPermissions(accountId);
 };
 
-module.exports.setUserPermissions = async (accountId, permissions) => {
+module.exports.setUserPermissions = async (accountId, permissions, caller) => {
     const account = await Account.findByPk(accountId);
     if (!account) return { code: 404, message: "Account not found" };
+    if (grantsBeyondCaller(caller, permissions)) return GRANT_FORBIDDEN;
 
     await applyTriState(AccountPermission, registry.SCOPES.SYSTEM, { accountId }, permissions);
     return await module.exports.getUserPermissions(accountId);
@@ -226,9 +240,14 @@ module.exports.getOrgMemberPermissions = async (organizationId, accountId) => {
     };
 };
 
-module.exports.setOrgMemberPermissions = async (organizationId, accountId, permissions) => {
+module.exports.setOrgMemberPermissions = async (organizationId, accountId, permissions, caller) => {
     const member = await OrganizationMember.findOne({ where: { organizationId, accountId, status: "active" } });
     if (!member) return { code: 404, message: "Member not found" };
+
+    const unrestricted = caller?.isOwner || caller?.isAdmin;
+    if (!unrestricted && Object.entries(permissions || {})
+        .some(([permission, value]) => value === "allow" && !caller?.permissions?.includes(permission)))
+        return GRANT_FORBIDDEN;
 
     await applyTriState(OrganizationMemberPermission, registry.SCOPES.ORGANIZATION, { organizationId, accountId }, permissions);
     return await module.exports.getOrgMemberPermissions(organizationId, accountId);

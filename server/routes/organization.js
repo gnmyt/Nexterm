@@ -270,7 +270,7 @@ app.put("/:id/members/:accountId/permissions",
     authenticate, requireOrgPermission(Permission.ORG_MEMBERS_MANAGE), async (req, res) => {
         if (validateSchema(res, setPermissionsValidation, req.body)) return;
         try {
-            const result = await permissionController.setOrgMemberPermissions(req.params.id, req.params.accountId, req.body.permissions);
+            const result = await permissionController.setOrgMemberPermissions(req.params.id, req.params.accountId, req.body.permissions, req.orgPermissions);
             if (result.code) return res.status(result.code).json(result);
             res.json(result);
         } catch (error) {
