@@ -17,6 +17,7 @@
       "login": "Войти",
       "register": "Регистрация",
       "save": "Сохранить",
+      "saving": "Saving…",
       "download": "Скачать",
       "close": "Закрыть",
       "maximize": "Развернуть",
@@ -585,7 +586,8 @@
       "ai": "ИИ",
       "monitoring": "Мониторинг",
       "backup": "Хранение",
-      "engines": "Двигатели"
+      "engines": "Двигатели",
+      "permissions": "Roles & Permissions"
     },
     "account": {
       "title": "Аккаунт",
@@ -775,22 +777,15 @@
       "noSearchResultsDescription": "Попробуй скорректировать свой поисковый запрос.",
       "table": {
         "user": "Пользователь",
-        "role": "Роль",
-        "twoFactor": "2FA"
-      },
-      "roles": {
-        "admin": "Админ",
-        "user": "Пользователь"
+        "twoFactor": "2FA",
+        "roles": "Roles"
       },
       "contextMenu": {
         "changePassword": "Изменить пароль",
-        "promoteToAdmin": "Назначить администратором",
-        "demoteToUser": "Понизить до пользователя",
         "deleteUser": "Удалить пользователя",
         "loginAsUser": "Войти как пользователь",
         "deleteConfirm": "Это действие безвозвратно удалит пользователя и все связанные с ним данные.",
-        "promoteConfirm": "Это действие назначит пользователя администратором.",
-        "demoteConfirm": "Это действие понизит пользователя до обычного."
+        "managePermissions": "Manage permissions"
       }
     },
     "userDialog": {
@@ -1368,6 +1363,36 @@
         "deleteFailed": "Не удалось удалить двигатель",
         "regenerateFailed": "Не удалось восстановить токен"
       }
+    },
+    "permissions": {
+      "subtitle": "Create roles with granular permissions or assign permissions to individual users. The Default role applies to everyone automatically.",
+      "createRole": "Create role",
+      "rolesTitle": "Roles",
+      "membersTitle": "Members",
+      "rolesTab": "Roles",
+      "overridesTab": "Direct permissions",
+      "permissionsTab": "Permissions",
+      "membersTab": "Members",
+      "settingsTab": "Settings",
+      "managePermissions": "Manage permissions",
+      "memberCount_one": "{{count}} member",
+      "memberCount_other": "{{count}} members",
+      "dangerousHint": "Granting this gives broad or destructive access. Assign it with care.",
+      "roleName": "Role name",
+      "roleNamePlaceholder": "e.g. Operators",
+      "roleColor": "Color",
+      "nameRequired": "Please enter a name for the role.",
+      "saveError": "Could not save your changes.",
+      "loadError": "Could not load permissions.",
+      "userSaved": "Permissions updated.",
+      "noAssignableRoles": "No roles available yet. Create one first.",
+      "noMembers": "This role has no members yet.",
+      "addMemberPlaceholder": "Search users to add…",
+      "deleteRole": "Delete role",
+      "deleteConfirm": "This will permanently delete the role \"{{name}}\" and remove it from all members.",
+      "searchUsers": "Search users…",
+      "inheritsAllow": "Inherits: Allowed",
+      "inheritsDeny": "Inherits: Denied"
     }
   },
   "tunnel": {
@@ -1780,10 +1805,19 @@
         "enterDirectory": "Введите путь к каталогу...",
         "hiddenDirectories": "{{count}} скрытые каталоги",
         "switchToGrid": "Переключись на вид сетки",
-        "switchToList": "Переключись в режим просмотра списка"
+        "switchToList": "Переключись в режим просмотра списка",
+        "search": "Search files",
+        "closeSearch": "Close search"
       },
       "item": {
         "link": "ссылка"
+      },
+      "search": {
+        "placeholder": "Filter files in this folder...",
+        "results_one": "{{count}} result",
+        "results_other": "{{count}} results",
+        "noResultsTitle": "No matches",
+        "noResults": "No files match \"{{query}}\""
       },
       "states": {
         "loading": "Загрузка файлов...",

@@ -17,6 +17,7 @@
       "login": "Einloggen",
       "register": "Registrieren",
       "save": "Speichern",
+      "saving": "Wird gespeichert…",
       "download": "Herunterladen",
       "close": "Schließen",
       "maximize": "Maximieren",
@@ -585,7 +586,8 @@
       "ai": "AI",
       "monitoring": "Überwachung",
       "backup": "Speicher",
-      "engines": "Motoren"
+      "engines": "Motoren",
+      "permissions": "Benutzergruppen und Berechtigungen"
     },
     "account": {
       "title": "Account",
@@ -775,22 +777,15 @@
       "noSearchResultsDescription": "Versuche, deine Suchanfrage anzupassen.",
       "table": {
         "user": "Benutzer",
-        "role": "Rolle",
-        "twoFactor": "2FA"
-      },
-      "roles": {
-        "admin": "Admin",
-        "user": "Benutzer"
+        "twoFactor": "2FA",
+        "roles": "Benutzergruppen"
       },
       "contextMenu": {
         "changePassword": "Passwort ändern",
-        "promoteToAdmin": "Zum Admin befördern",
-        "demoteToUser": "Zum Benutzer zurückstufen",
         "deleteUser": "Benutzer löschen",
         "loginAsUser": "Anmeldung als Benutzer",
         "deleteConfirm": "Dadurch wird der Benutzer und alle zugehörigen Daten endgültig gelöscht.",
-        "promoteConfirm": "Dadurch wird der Benutzer zum Administrator befördert.",
-        "demoteConfirm": "Dadurch wird der Benutzer zum normalen Benutzer herabgestuft."
+        "managePermissions": "Berechtigungen verwalten"
       }
     },
     "userDialog": {
@@ -1368,6 +1363,36 @@
         "deleteFailed": "Motor kann nicht gelöscht werden",
         "regenerateFailed": "Token konnte nicht regeneriert werden"
       }
+    },
+    "permissions": {
+      "subtitle": "Erstelle Benutzergruppen mit fein abgestuften Berechtigungen oder weise Berechtigungen direkt einzelnen Benutzern zu. Die Standard-Benutzergruppe wird automatisch auf alle Benutzer angewendet.",
+      "createRole": "Benutzergruppe erstellen",
+      "rolesTitle": "Benutzergruppen",
+      "membersTitle": "Mitglieder",
+      "rolesTab": "Benutzergruppen",
+      "overridesTab": "Direkte Berechtigungen",
+      "permissionsTab": "Berechtigungen",
+      "membersTab": "Mitglieder",
+      "settingsTab": "Einstellungen",
+      "managePermissions": "Berechtigungen verwalten",
+      "memberCount_one": "{{count}} Mitglied",
+      "memberCount_other": "{{count}} Mitglieder",
+      "dangerousHint": "Diese Berechtigung gewährt weitreichende oder kritische Zugriffsrechte. Vergib sie nur mit Vorsicht.",
+      "roleName": "Benutzergruppen Name",
+      "roleNamePlaceholder": "z. B. Operatoren",
+      "roleColor": "Farbe",
+      "nameRequired": "Bitte gib einen Namen für die Benutzergruppe ein.",
+      "saveError": "Änderungen konnten nicht gespeichert werden.",
+      "loadError": "Berechtigungen konnten nicht geladen werden.",
+      "userSaved": "Berechtigungen wurden aktualisiert.",
+      "noAssignableRoles": "Noch keine Benutzergruppen verfügbar. Erstellen Sie die Erste.",
+      "noMembers": "Diese Benutzergruppe hat noch keine Mitglieder.",
+      "addMemberPlaceholder": "Suche Benutzer zum Hinzufügen…",
+      "deleteRole": "Benutzergruppe löschen",
+      "deleteConfirm": "Dadurch wird die Benutzergruppe „{{name}}“ endgültig gelöscht und von allen Mitgliedern entfernt.",
+      "searchUsers": "Nach Benutzer suchen…",
+      "inheritsAllow": "Vererbung: Erlaubt",
+      "inheritsDeny": "Vererbung: Verweigert"
     }
   },
   "tunnel": {
@@ -1780,10 +1805,19 @@
         "enterDirectory": "Verzeichnispfad eingeben...",
         "hiddenDirectories": "{{count}} versteckte Verzeichnisse",
         "switchToGrid": "Zur Rasteransicht wechseln",
-        "switchToList": "Zur Listenansicht wechseln"
+        "switchToList": "Zur Listenansicht wechseln",
+        "search": "Durchsuche Dateien",
+        "closeSearch": "Suchfeld schließen"
       },
       "item": {
         "link": "Link"
+      },
+      "search": {
+        "placeholder": "Dateien in diesem Ordner filtern...",
+        "results_one": "{{count}} Ergebnis",
+        "results_other": "{{count}} Ergebnisse",
+        "noResultsTitle": "Keine Treffer",
+        "noResults": "Keine Dateien stimmen mit \"{{query}}\" überein"
       },
       "states": {
         "loading": "Dateien laden...",

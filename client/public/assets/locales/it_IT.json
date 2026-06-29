@@ -17,6 +17,7 @@
       "login": "Accesso",
       "register": "Registro",
       "save": "Salva",
+      "saving": "Saving…",
       "download": "Scarica",
       "close": "Chiudi",
       "maximize": "Massimizza",
@@ -585,7 +586,8 @@
       "ai": "AI",
       "monitoring": "Monitoraggio",
       "backup": "Immagazzinamento",
-      "engines": "Motori"
+      "engines": "Motori",
+      "permissions": "Roles & Permissions"
     },
     "account": {
       "title": "Conto",
@@ -775,22 +777,15 @@
       "noSearchResultsDescription": "Prova a modificare la tua query di ricerca.",
       "table": {
         "user": "Utente",
-        "role": "Ruolo",
-        "twoFactor": "2FA"
-      },
-      "roles": {
-        "admin": "Admin",
-        "user": "Utente"
+        "twoFactor": "2FA",
+        "roles": "Roles"
       },
       "contextMenu": {
         "changePassword": "Cambia la password",
-        "promoteToAdmin": "Promuovi ad amministratore",
-        "demoteToUser": "Retrocessione a utente",
         "deleteUser": "Elimina l'utente",
         "loginAsUser": "Accedi come utente",
         "deleteConfirm": "In questo modo l'utente e tutti i dati ad esso associati verranno eliminati in modo permanente.",
-        "promoteConfirm": "In questo modo l'utente verrà promosso ad amministratore.",
-        "demoteConfirm": "In questo modo l'utente verrà declassato a utente normale."
+        "managePermissions": "Manage permissions"
       }
     },
     "userDialog": {
@@ -1368,6 +1363,36 @@
         "deleteFailed": "Non è riuscito a cancellare il motore",
         "regenerateFailed": "Impossibile rigenerare il token"
       }
+    },
+    "permissions": {
+      "subtitle": "Create roles with granular permissions or assign permissions to individual users. The Default role applies to everyone automatically.",
+      "createRole": "Create role",
+      "rolesTitle": "Roles",
+      "membersTitle": "Members",
+      "rolesTab": "Roles",
+      "overridesTab": "Direct permissions",
+      "permissionsTab": "Permissions",
+      "membersTab": "Members",
+      "settingsTab": "Settings",
+      "managePermissions": "Manage permissions",
+      "memberCount_one": "{{count}} member",
+      "memberCount_other": "{{count}} members",
+      "dangerousHint": "Granting this gives broad or destructive access. Assign it with care.",
+      "roleName": "Role name",
+      "roleNamePlaceholder": "e.g. Operators",
+      "roleColor": "Color",
+      "nameRequired": "Please enter a name for the role.",
+      "saveError": "Could not save your changes.",
+      "loadError": "Could not load permissions.",
+      "userSaved": "Permissions updated.",
+      "noAssignableRoles": "No roles available yet. Create one first.",
+      "noMembers": "This role has no members yet.",
+      "addMemberPlaceholder": "Search users to add…",
+      "deleteRole": "Delete role",
+      "deleteConfirm": "This will permanently delete the role \"{{name}}\" and remove it from all members.",
+      "searchUsers": "Search users…",
+      "inheritsAllow": "Inherits: Allowed",
+      "inheritsDeny": "Inherits: Denied"
     }
   },
   "tunnel": {
@@ -1780,10 +1805,19 @@
         "enterDirectory": "Inserisci il percorso della directory...",
         "hiddenDirectories": "{{count}} directory nascoste",
         "switchToGrid": "Passa alla visualizzazione a griglia",
-        "switchToList": "Passa alla vista elenco"
+        "switchToList": "Passa alla vista elenco",
+        "search": "Search files",
+        "closeSearch": "Close search"
       },
       "item": {
         "link": "link"
+      },
+      "search": {
+        "placeholder": "Filter files in this folder...",
+        "results_one": "{{count}} result",
+        "results_other": "{{count}} results",
+        "noResultsTitle": "No matches",
+        "noResults": "No files match \"{{query}}\""
       },
       "states": {
         "loading": "Caricamento dei file...",

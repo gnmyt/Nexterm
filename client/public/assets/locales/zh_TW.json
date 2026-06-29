@@ -17,6 +17,7 @@
       "login": "登入",
       "register": "註冊",
       "save": "儲存",
+      "saving": "Saving…",
       "download": "下載",
       "close": "關閉",
       "maximize": "最大化",
@@ -585,7 +586,8 @@
       "ai": "AI",
       "monitoring": "監控",
       "backup": "儲存",
-      "engines": "引擎"
+      "engines": "引擎",
+      "permissions": "Roles & Permissions"
     },
     "account": {
       "title": "帳戶",
@@ -775,22 +777,15 @@
       "noSearchResultsDescription": "請嘗試調整您的搜尋查詢。",
       "table": {
         "user": "使用者",
-        "role": "角色",
-        "twoFactor": "2FA"
-      },
-      "roles": {
-        "admin": "管理員",
-        "user": "使用者"
+        "twoFactor": "2FA",
+        "roles": "Roles"
       },
       "contextMenu": {
         "changePassword": "變更密碼",
-        "promoteToAdmin": "晉升為管理員",
-        "demoteToUser": "降級為使用者",
         "deleteUser": "刪除使用者",
         "loginAsUser": "以使用者身分登入",
         "deleteConfirm": "這將永久刪除使用者及所有相關資料。",
-        "promoteConfirm": "這將使使用者升級為管理員。",
-        "demoteConfirm": "這會將使用者降級為一般使用者。"
+        "managePermissions": "Manage permissions"
       }
     },
     "userDialog": {
@@ -1368,6 +1363,36 @@
         "deleteFailed": "刪除引擎失敗",
         "regenerateFailed": "代幣再生失敗"
       }
+    },
+    "permissions": {
+      "subtitle": "Create roles with granular permissions or assign permissions to individual users. The Default role applies to everyone automatically.",
+      "createRole": "Create role",
+      "rolesTitle": "Roles",
+      "membersTitle": "Members",
+      "rolesTab": "Roles",
+      "overridesTab": "Direct permissions",
+      "permissionsTab": "Permissions",
+      "membersTab": "Members",
+      "settingsTab": "Settings",
+      "managePermissions": "Manage permissions",
+      "memberCount_one": "{{count}} member",
+      "memberCount_other": "{{count}} members",
+      "dangerousHint": "Granting this gives broad or destructive access. Assign it with care.",
+      "roleName": "Role name",
+      "roleNamePlaceholder": "e.g. Operators",
+      "roleColor": "Color",
+      "nameRequired": "Please enter a name for the role.",
+      "saveError": "Could not save your changes.",
+      "loadError": "Could not load permissions.",
+      "userSaved": "Permissions updated.",
+      "noAssignableRoles": "No roles available yet. Create one first.",
+      "noMembers": "This role has no members yet.",
+      "addMemberPlaceholder": "Search users to add…",
+      "deleteRole": "Delete role",
+      "deleteConfirm": "This will permanently delete the role \"{{name}}\" and remove it from all members.",
+      "searchUsers": "Search users…",
+      "inheritsAllow": "Inherits: Allowed",
+      "inheritsDeny": "Inherits: Denied"
     }
   },
   "tunnel": {
@@ -1780,10 +1805,19 @@
         "enterDirectory": "輸入目錄路徑...",
         "hiddenDirectories": "{{count}} 隱藏目錄",
         "switchToGrid": "切換至網格檢視",
-        "switchToList": "切換至清單檢視"
+        "switchToList": "切換至清單檢視",
+        "search": "Search files",
+        "closeSearch": "Close search"
       },
       "item": {
         "link": "連結"
+      },
+      "search": {
+        "placeholder": "Filter files in this folder...",
+        "results_one": "{{count}} result",
+        "results_other": "{{count}} results",
+        "noResultsTitle": "No matches",
+        "noResults": "No files match \"{{query}}\""
       },
       "states": {
         "loading": "載入檔案...",

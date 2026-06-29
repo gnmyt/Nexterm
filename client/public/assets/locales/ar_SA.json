@@ -17,6 +17,7 @@
       "login": "تسجيل الدخول",
       "register": "تسجيل",
       "save": "الحفظ",
+      "saving": "Saving…",
       "download": "تنزيل",
       "close": "إغلاق",
       "maximize": "تعظيم",
@@ -585,7 +586,8 @@
       "ai": "الذكاء الاصطناعي",
       "monitoring": "الرصد",
       "backup": "التخزين",
-      "engines": "المحركات"
+      "engines": "المحركات",
+      "permissions": "Roles & Permissions"
     },
     "account": {
       "title": "الحساب",
@@ -775,22 +777,15 @@
       "noSearchResultsDescription": "حاول تعديل استعلام البحث الخاص بك.",
       "table": {
         "user": "المستخدم",
-        "role": "الدور",
-        "twoFactor": "2FA"
-      },
-      "roles": {
-        "admin": "المسؤول",
-        "user": "المستخدم"
+        "twoFactor": "2FA",
+        "roles": "Roles"
       },
       "contextMenu": {
         "changePassword": "تغيير كلمة المرور",
-        "promoteToAdmin": "ترقية إلى مدير",
-        "demoteToUser": "خفض إلى مستخدم عادي",
         "deleteUser": "حذف المستخدم",
         "loginAsUser": "تسجيل الدخول كمستخدم",
         "deleteConfirm": "سيؤدي هذا إلى حذف المستخدم وبياناته المرتبطة نهائيًا.",
-        "promoteConfirm": "سيؤدي هذا إلى ترقية المستخدم إلى مدير.",
-        "demoteConfirm": "سيؤدي هذا إلى خفض المستخدم إلى مستخدم عادي."
+        "managePermissions": "Manage permissions"
       }
     },
     "userDialog": {
@@ -1368,6 +1363,36 @@
         "deleteFailed": "فشل في حذف المحرك",
         "regenerateFailed": "فشل في تجديد الرمز المميز"
       }
+    },
+    "permissions": {
+      "subtitle": "Create roles with granular permissions or assign permissions to individual users. The Default role applies to everyone automatically.",
+      "createRole": "Create role",
+      "rolesTitle": "Roles",
+      "membersTitle": "Members",
+      "rolesTab": "Roles",
+      "overridesTab": "Direct permissions",
+      "permissionsTab": "Permissions",
+      "membersTab": "Members",
+      "settingsTab": "Settings",
+      "managePermissions": "Manage permissions",
+      "memberCount_one": "{{count}} member",
+      "memberCount_other": "{{count}} members",
+      "dangerousHint": "Granting this gives broad or destructive access. Assign it with care.",
+      "roleName": "Role name",
+      "roleNamePlaceholder": "e.g. Operators",
+      "roleColor": "Color",
+      "nameRequired": "Please enter a name for the role.",
+      "saveError": "Could not save your changes.",
+      "loadError": "Could not load permissions.",
+      "userSaved": "Permissions updated.",
+      "noAssignableRoles": "No roles available yet. Create one first.",
+      "noMembers": "This role has no members yet.",
+      "addMemberPlaceholder": "Search users to add…",
+      "deleteRole": "Delete role",
+      "deleteConfirm": "This will permanently delete the role \"{{name}}\" and remove it from all members.",
+      "searchUsers": "Search users…",
+      "inheritsAllow": "Inherits: Allowed",
+      "inheritsDeny": "Inherits: Denied"
     }
   },
   "tunnel": {
@@ -1780,10 +1805,19 @@
         "enterDirectory": "أدخل مسار الدليل...",
         "hiddenDirectories": "{{count}} الدلائل المخفية",
         "switchToGrid": "التبديل إلى عرض الشبكة",
-        "switchToList": "التبديل إلى عرض القائمة"
+        "switchToList": "التبديل إلى عرض القائمة",
+        "search": "Search files",
+        "closeSearch": "Close search"
       },
       "item": {
         "link": "الرابط"
+      },
+      "search": {
+        "placeholder": "Filter files in this folder...",
+        "results_one": "{{count}} result",
+        "results_other": "{{count}} results",
+        "noResultsTitle": "No matches",
+        "noResults": "No files match \"{{query}}\""
       },
       "states": {
         "loading": "تحميل الملفات...",

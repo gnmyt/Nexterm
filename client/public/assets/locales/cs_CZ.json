@@ -17,6 +17,7 @@
       "login": "Přihlásit se",
       "register": "Registrovat",
       "save": "Uložit",
+      "saving": "Saving…",
       "download": "Stáhnout",
       "close": "Zavřít",
       "maximize": "Maximalizovat",
@@ -585,7 +586,8 @@
       "ai": "AI",
       "monitoring": "Monitorování",
       "backup": "Úložiště",
-      "engines": "Motory"
+      "engines": "Motory",
+      "permissions": "Roles & Permissions"
     },
     "account": {
       "title": "Účet",
@@ -775,22 +777,15 @@
       "noSearchResultsDescription": "Zkuste upravit vyhledávací dotaz.",
       "table": {
         "user": "Uživatel",
-        "role": "Role",
-        "twoFactor": "2FA"
-      },
-      "roles": {
-        "admin": "Admin",
-        "user": "Uživatel"
+        "twoFactor": "2FA",
+        "roles": "Roles"
       },
       "contextMenu": {
         "changePassword": "Změnit heslo",
-        "promoteToAdmin": "Povýšit na admina",
-        "demoteToUser": "Snížit na uživatele",
         "deleteUser": "Smazat uživatele",
         "loginAsUser": "Přihlásit se jako uživatel",
         "deleteConfirm": "Toto trvale smaže uživatele a všechna přidružená data.",
-        "promoteConfirm": "Toto povýší uživatele na administrátora.",
-        "demoteConfirm": "Toto sníží uživatele na běžného uživatele."
+        "managePermissions": "Manage permissions"
       }
     },
     "userDialog": {
@@ -1368,6 +1363,36 @@
         "deleteFailed": "Nepodařilo se odstranit motor",
         "regenerateFailed": "Nepodařilo se regenerovat token"
       }
+    },
+    "permissions": {
+      "subtitle": "Create roles with granular permissions or assign permissions to individual users. The Default role applies to everyone automatically.",
+      "createRole": "Create role",
+      "rolesTitle": "Roles",
+      "membersTitle": "Members",
+      "rolesTab": "Roles",
+      "overridesTab": "Direct permissions",
+      "permissionsTab": "Permissions",
+      "membersTab": "Members",
+      "settingsTab": "Settings",
+      "managePermissions": "Manage permissions",
+      "memberCount_one": "{{count}} member",
+      "memberCount_other": "{{count}} members",
+      "dangerousHint": "Granting this gives broad or destructive access. Assign it with care.",
+      "roleName": "Role name",
+      "roleNamePlaceholder": "e.g. Operators",
+      "roleColor": "Color",
+      "nameRequired": "Please enter a name for the role.",
+      "saveError": "Could not save your changes.",
+      "loadError": "Could not load permissions.",
+      "userSaved": "Permissions updated.",
+      "noAssignableRoles": "No roles available yet. Create one first.",
+      "noMembers": "This role has no members yet.",
+      "addMemberPlaceholder": "Search users to add…",
+      "deleteRole": "Delete role",
+      "deleteConfirm": "This will permanently delete the role \"{{name}}\" and remove it from all members.",
+      "searchUsers": "Search users…",
+      "inheritsAllow": "Inherits: Allowed",
+      "inheritsDeny": "Inherits: Denied"
     }
   },
   "tunnel": {
@@ -1780,10 +1805,19 @@
         "enterDirectory": "Zadejte cestu k adresáři...",
         "hiddenDirectories": "{{count}} skryté adresáře",
         "switchToGrid": "Přepnutí na zobrazení mřížky",
-        "switchToList": "Přepnutí na zobrazení seznamu"
+        "switchToList": "Přepnutí na zobrazení seznamu",
+        "search": "Search files",
+        "closeSearch": "Close search"
       },
       "item": {
         "link": "odkaz"
+      },
+      "search": {
+        "placeholder": "Filter files in this folder...",
+        "results_one": "{{count}} result",
+        "results_other": "{{count}} results",
+        "noResultsTitle": "No matches",
+        "noResults": "No files match \"{{query}}\""
       },
       "states": {
         "loading": "Načítání souborů...",
