@@ -1532,6 +1532,7 @@
         "nodeName": "Node Name",
         "vmid": "VM ID",
         "macAddress": "MAC Address",
+        "wolBroadcastAddress": "Broadcast Address",
         "engine": "Engine"
       },
       "placeholders": {
@@ -1543,7 +1544,8 @@
         "host": "Host",
         "nodeName": "Node name",
         "vmid": "VM ID",
-        "macAddress": "AA:BB:CC:DD:EE:FF"
+        "macAddress": "AA:BB:CC:DD:EE:FF",
+        "wolBroadcastAddress": "255.255.255.255"
       },
       "engineOffline": "(offline)",
       "settings": {
@@ -1832,6 +1834,16 @@
         "uploadFailed": "Upload failed: {{message}}",
         "connectionLost": "SFTP connection lost. Please reconnect.",
         "error": "An error occurred"
+      }
+    },
+    "remoteDesktop": {
+      "dropOverlay": "Drop files to upload to remote",
+      "toast": {
+        "uploadedSingle": "Uploaded \"{{name}}\" to remote drive",
+        "uploadedMultiple": "Uploaded {{count}} files to remote drive",
+        "uploadFailed": "{{count}} file(s) failed to upload",
+        "uploadPartial": "{{failed}} file(s) failed to upload, {{succeeded}} succeeded",
+        "downloaded": "Downloaded \"{{name}}\" from remote"
       }
     },
     "aiAssistant": {

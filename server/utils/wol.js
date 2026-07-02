@@ -21,7 +21,8 @@ const createMagicPacket = (macBuffer) => {
     return packet;
 };
 
-const sendWakeOnLan = (mac) => {
+const sendWakeOnLan = (mac, broadcastAddress) => {
+    const target = broadcastAddress || BROADCAST_ADDRESS;
     return new Promise((resolve, reject) => {
         const macBuffer = parseMacAddress(mac);
         const packet = createMagicPacket(macBuffer);
@@ -34,12 +35,12 @@ const sendWakeOnLan = (mac) => {
 
         socket.once("listening", () => {
             socket.setBroadcast(true);
-            socket.send(packet, WOL_PORT, BROADCAST_ADDRESS, (err) => {
+            socket.send(packet, WOL_PORT, target, (err) => {
                 socket.close();
                 if (err) {
                     reject(err);
                 } else {
-                    logger.info(`Wake-On-LAN packet sent to ${mac}`);
+                    logger.info(`Wake-On-LAN packet sent to ${mac} via ${target}`);
                     resolve();
                 }
             });
