@@ -8,17 +8,47 @@ run a one-off command on a remote server from a script or CI pipeline.
 
 ## Installation
 
-Build the CLI from source (requires Rust):
+### Step 1: Download/Build the CLI
+
+#### Recommended Option: Download the latest binary
+
+Download the file for your OS:
+
+| Platform | x86-64 | ARM64 |
+|----------|--------|-------|
+| Windows  | [nt.exe](https://github.com/gnmyt/Nexterm/releases/latest/download/nt-windows-x64.exe) | |
+| macOS    | | [nt](https://github.com/gnmyt/Nexterm/releases/latest/download/nt-macos-arm64) |
+| Linux    | [nt](https://github.com/gnmyt/Nexterm/releases/latest/download/nt-linux-x64) | [nt](https://github.com/gnmyt/Nexterm/releases/latest/download/nt-linux-arm64) |
+
+> Additional platforms may be supported by the time you read this. Check the [latest release](https://github.com/gnmyt/Nexterm/releases/latest) under the CLI section for the full list.
+
+#### Alternative Option: Build the CLI from source (requires [Rust](https://www.rust-lang.org/tools/install))
 
 ```sh
-cd cli
+git clone https://github.com/gnmyt/Nexterm.git
+cd Nexterm/cli
 cargo build --release
 ```
 
-The binary will be at `cli/target/release/nt`. Move it somewhere in your `$PATH`:
+The binary will be located at `cli/target/release/nt`.
+
+### Step 2: Add it to your PATH
+
+Move the binary to a folder that's included in your system's `PATH` (create the folder first if it doesn't exist yet), then make sure it's executable and available from anywhere.
+
+| OS | Recommended location | Commands |
+|----|----------------------|----------|
+| **Windows** | `C:\Tools` | ```powershell mkdir C:\Tools -Force; Move-Item nt.exe C:\Tools\nt.exe; setx PATH "$($env:PATH);C:\Tools"``` |
+| **macOS** | `/usr/local/bin` | ```sh chmod +x nt; sudo mv nt /usr/local/bin/nt``` |
+| **Linux (Ubuntu/Debian)** | `/usr/local/bin` | ```sh chmod +x nt; sudo mv nt /usr/local/bin/nt``` |
+
+> On Windows, `setx` only takes effect in **new** terminal sessions — restart your terminal (or your PC) afterward.
+> On macOS/Linux, `/usr/local/bin` is on `PATH` by default, so no manual `PATH` edit is needed there.
+
+Verify the installation:
 
 ```sh
-cp cli/target/release/nt /usr/local/bin/
+nt --version
 ```
 
 ## Getting Started
