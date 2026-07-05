@@ -1,7 +1,7 @@
 # 🚀 Installation
 
 > [!WARNING]
-> Nexterm is still in beta. Please back up your data regularly and report any issues on [GitHub](https://github.com/gnmyt/Nexterm/issues).
+> Nexterm and Nexterm Engine is still in beta. Please back up your data regularly and report any issues on [GitHub](https://github.com/gnmyt/Nexterm/issues).
 
 ## 🔐 Generate Encryption Key
 

@@ -36,16 +36,14 @@ The binary will be located at `cli/target/release/nt`.
 
 Move the binary to a folder that's included in your system's `PATH` (create the folder first if it doesn't exist yet), then make sure it's executable and available from anywhere.
 
-| OS | Recommended location | Commands |
-|----|----------------------|----------|
-| **Windows** | `C:\Tools` | ```powershell mkdir C:\Tools -Force; Move-Item nt.exe C:\Tools\nt.exe; setx PATH "$($env:PATH);C:\Tools"``` |
-| **macOS** | `/usr/local/bin` | ```sh chmod +x nt; sudo mv nt /usr/local/bin/nt``` |
-| **Linux (Ubuntu/Debian)** | `/usr/local/bin` | ```sh chmod +x nt; sudo mv nt /usr/local/bin/nt``` |
+| OS | Recommended location |
+|----|----------------------|
+| **Windows** | `C:\Tools` |
+| **Linux (Ubuntu/Debian)** | `/usr/local/bin` |
 
-> On Windows, `setx` only takes effect in **new** terminal sessions — restart your terminal (or your PC) afterward.
-> On macOS/Linux, `/usr/local/bin` is on `PATH` by default, so no manual `PATH` edit is needed there.
+### Step 3: Verify the installation:
 
-Verify the installation:
+Open a new terminal and execute the following command:
 
 ```sh
 nt --version
