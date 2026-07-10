@@ -226,13 +226,10 @@ cleanup:
     if (data_fd >= 0)
         close(data_fd);
 
-    session->state = SESSION_STATE_CLOSED;
-    session->thread_active = false;
-
     char sid[MAX_SESSION_ID_LEN];
     snprintf(sid, sizeof(sid), "%s", session->session_id);
     nexterm_cp_send_session_closed(cp, sid, "session ended");
-    nexterm_sm_remove(&g_session_manager, sid);
+    nexterm_sm_finish(&g_session_manager, sid);
 
     free(args);
     return NULL;

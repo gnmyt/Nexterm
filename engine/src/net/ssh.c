@@ -108,10 +108,15 @@ static void ssh_drain_channel(LIBSSH2_CHANNEL* channel, int fd) {
 
 static void ssh_apply_pending_resize(nexterm_session_t* session,
                                      LIBSSH2_CHANNEL* channel) {
-    if (!session->resize_pending) return;
-    uint16_t cols = session->pending_cols;
-    uint16_t rows = session->pending_rows;
+    uint16_t cols, rows;
+    nexterm_sm_lock(&g_session_manager);
+    bool pending = session->resize_pending;
+    cols = session->pending_cols;
+    rows = session->pending_rows;
     session->resize_pending = false;
+    nexterm_sm_unlock(&g_session_manager);
+
+    if (!pending) return;
 
     int rc = libssh2_channel_request_pty_size(channel, cols, rows);
     if (rc && rc != LIBSSH2_ERROR_EAGAIN)
@@ -264,13 +269,10 @@ cleanup:
     if (data_fd >= 0)
         close(data_fd);
 
-    session->state = SESSION_STATE_CLOSED;
-    session->thread_active = false;
-
     char sid[MAX_SESSION_ID_LEN];
     snprintf(sid, sizeof(sid), "%s", session->session_id);
     nexterm_cp_send_session_closed(cp, sid, "session ended");
-    nexterm_sm_remove(&g_session_manager, sid);
+    nexterm_sm_finish(&g_session_manager, sid);
 
     free(args);
     return NULL;
@@ -321,13 +323,13 @@ static void* tunnel_session_thread(void* arg) {
 
     if (!username || username[0] == '\0') {
         nexterm_cp_send_session_result(cp, session->session_id, false, "Missing username", NULL);
-        session->state = SESSION_STATE_CLOSED;
+        nexterm_sm_finish(&g_session_manager, session->session_id);
         free(args);
         return NULL;
     }
     if (!remote_host || !remote_port_str) {
         nexterm_cp_send_session_result(cp, session->session_id, false, "Missing remoteHost/remotePort", NULL);
-        session->state = SESSION_STATE_CLOSED;
+        nexterm_sm_finish(&g_session_manager, session->session_id);
         free(args);
         return NULL;
     }
@@ -336,7 +338,7 @@ static void* tunnel_session_thread(void* arg) {
     long remote_port = strtol(remote_port_str, &endptr, 10);
     if (*endptr != '\0' || remote_port <= 0 || remote_port > 65535) {
         nexterm_cp_send_session_result(cp, session->session_id, false, "Invalid remotePort", NULL);
-        session->state = SESSION_STATE_CLOSED;
+        nexterm_sm_finish(&g_session_manager, session->session_id);
         free(args);
         return NULL;
     }
@@ -351,7 +353,7 @@ static void* tunnel_session_thread(void* arg) {
     if (data_fd < 0) {
         nexterm_cp_send_session_result(cp, session->session_id, false,
                                        "Failed to open data connection", NULL);
-        session->state = SESSION_STATE_CLOSED;
+        nexterm_sm_finish(&g_session_manager, session->session_id);
         free(args);
         return NULL;
     }
@@ -405,8 +407,10 @@ cleanup:
     if (data_fd >= 0)
         close(data_fd);
 
-    session->state = SESSION_STATE_CLOSED;
-    nexterm_cp_send_session_closed(cp, session->session_id, "tunnel ended");
+    char sid[MAX_SESSION_ID_LEN];
+    snprintf(sid, sizeof(sid), "%s", session->session_id);
+    nexterm_cp_send_session_closed(cp, sid, "tunnel ended");
+    nexterm_sm_finish(&g_session_manager, sid);
 
     free(args);
     return NULL;

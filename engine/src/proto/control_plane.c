@@ -751,19 +751,21 @@ void nexterm_cp_stop(nexterm_control_plane_t* cp) {
     LOG_INFO("Stopping control plane client");
     cp->running = false;
 
+    if (cp->sock_fd >= 0)
+        shutdown(cp->sock_fd, SHUT_RDWR);
+
+    pthread_join(cp->read_thread, NULL);
+    pthread_join(cp->keepalive_thread, NULL);
+
     if (cp->ssl) {
         nexterm_tls_cleanup(cp->ssl);
         cp->ssl = NULL;
     }
 
     if (cp->sock_fd >= 0) {
-        shutdown(cp->sock_fd, SHUT_RDWR);
         close(cp->sock_fd);
         cp->sock_fd = -1;
     }
-
-    pthread_join(cp->read_thread, NULL);
-    pthread_join(cp->keepalive_thread, NULL);
 }
 
 void nexterm_cp_destroy(nexterm_control_plane_t* cp) {

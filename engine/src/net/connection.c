@@ -287,9 +287,7 @@ static void* guac_session_thread(void* arg) {
     const char* protocol_name = session_type_to_protocol(session->type);
     if (!protocol_name) {
         LOG_ERROR("Unsupported session type for guac: %d", session->type);
-        session->state = SESSION_STATE_CLOSED;
-        session->thread_active = false;
-        nexterm_sm_remove(&g_session_manager, session->session_id);
+        nexterm_sm_finish(&g_session_manager, session->session_id);
         free(args);
         return NULL;
     }
@@ -299,9 +297,7 @@ static void* guac_session_thread(void* arg) {
 
     guac_client* client = guac_setup_client(session, cp, protocol_name);
     if (!client) {
-        session->state = SESSION_STATE_CLOSED;
-        session->thread_active = false;
-        nexterm_sm_remove(&g_session_manager, session->session_id);
+        nexterm_sm_finish(&g_session_manager, session->session_id);
         free(args);
         return NULL;
     }
@@ -321,21 +317,23 @@ static void* guac_session_thread(void* arg) {
     int user_thread_count = 0;
 
     pthread_t owner_thread;
-    if (start_user_thread(client, session->data_fd, 1, session->session_id, &owner_thread) != 0) {
+    int owner_fd = session->data_fd;
+    session->data_fd = -1;
+    if (start_user_thread(client, owner_fd, 1, session->session_id, &owner_thread) != 0) {
         LOG_ERROR("Failed to start owner user thread for session %s", session->session_id);
+        close(owner_fd);
+        nexterm_sm_lock(&g_session_manager);
+        nexterm_session_t* failed = nexterm_sm_find_locked(&g_session_manager, session->session_id);
+        if (failed) failed->guac_client = NULL;
+        nexterm_sm_unlock(&g_session_manager);
         guac_client_stop(client);
         guac_client_free(client);
-        session->guac_client = NULL;
-        session->state = SESSION_STATE_CLOSED;
-        session->thread_active = false;
         nexterm_cp_send_session_closed(cp, session->session_id, "internal error");
-        nexterm_sm_remove(&g_session_manager, session->session_id);
+        nexterm_sm_finish(&g_session_manager, session->session_id);
         free(args);
         return NULL;
     }
     user_threads[user_thread_count++] = owner_thread;
-
-    session->data_fd = -1;
 
     guac_accept_joins(session, client, user_threads, &user_thread_count,
                       (int)(sizeof(user_threads) / sizeof(user_threads[0])));
@@ -348,10 +346,13 @@ static void* guac_session_thread(void* arg) {
     snprintf(session_id, sizeof(session_id), "%s", session->session_id);
 
     LOG_INFO("Guac session %s ending", session_id);
+
+    nexterm_sm_lock(&g_session_manager);
+    nexterm_session_t* live = nexterm_sm_find_locked(&g_session_manager, session_id);
+    if (live) live->guac_client = NULL;
+    nexterm_sm_unlock(&g_session_manager);
+
     guac_client_stop(client);
-
-    session->guac_client = NULL;
-
     guac_client_free(client);
 
     char rec_path[512];
@@ -364,10 +365,8 @@ static void* guac_session_thread(void* arg) {
             unlink(rec_path);
     }
 
-    session->state = SESSION_STATE_CLOSED;
-    session->thread_active = false;
     nexterm_cp_send_session_closed(cp, session_id, "session ended");
-    nexterm_sm_remove(&g_session_manager, session_id);
+    nexterm_sm_finish(&g_session_manager, session_id);
 
     free(args);
     return NULL;

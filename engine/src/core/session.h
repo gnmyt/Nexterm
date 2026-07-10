@@ -90,6 +90,9 @@ nexterm_session_t* nexterm_sm_find_locked(nexterm_session_manager_t* sm,
 void nexterm_sm_remove(nexterm_session_manager_t* sm,
                        const char* session_id);
 
+void nexterm_sm_finish(nexterm_session_manager_t* sm,
+                       const char* session_id);
+
 void nexterm_sm_request_resize(nexterm_session_manager_t* sm,
                                const char* session_id,
                                uint16_t cols, uint16_t rows);
