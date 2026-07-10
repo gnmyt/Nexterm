@@ -575,3 +575,211 @@ int nexterm_ssh_exec_command(nexterm_control_plane_t* cp,
     pthread_detach(thread);
     return 0;
 }
+
+typedef struct {
+    nexterm_control_plane_t* cp;
+    char request_id[128];
+    char host[256];
+    uint16_t port;
+    char* username;
+    char* password;
+    char* private_key;
+    char* passphrase;
+    char** ids;
+    char** commands;
+    int command_count;
+    jump_host_t jump_hosts[MAX_JUMP_HOSTS];
+    int jump_count;
+} exec_batch_args_t;
+
+static void exec_batch_free(exec_batch_args_t* args) {
+    free(args->username);
+    free(args->password);
+    free(args->private_key);
+    free(args->passphrase);
+    if (args->ids) {
+        for (int i = 0; i < args->command_count; i++) free(args->ids[i]);
+        free(args->ids);
+    }
+    if (args->commands) {
+        for (int i = 0; i < args->command_count; i++) free(args->commands[i]);
+        free(args->commands);
+    }
+    for (int i = 0; i < args->jump_count; i++) {
+        free(args->jump_hosts[i].password);
+        free(args->jump_hosts[i].private_key);
+        free(args->jump_hosts[i].passphrase);
+    }
+    free(args);
+}
+
+static void exec_batch_run_one(LIBSSH2_SESSION* ssh, const char* command,
+                               exec_batch_entry_t* entry,
+                               char** out_stdout, char** out_stderr) {
+    *out_stdout = NULL;
+    *out_stderr = NULL;
+    entry->success = false;
+    entry->exit_code = -1;
+
+    LIBSSH2_CHANNEL* channel = libssh2_channel_open_session(ssh);
+    if (!channel) {
+        entry->error_message = "Failed to open SSH channel";
+        return;
+    }
+
+    if (libssh2_channel_exec(channel, command) != 0) {
+        entry->error_message = "Failed to execute command";
+        libssh2_channel_free(channel);
+        return;
+    }
+
+    char* stdout_buf = malloc(SSH_EXEC_BUF_SIZE);
+    char* stderr_buf = malloc(SSH_EXEC_BUF_SIZE);
+    if (!stdout_buf || !stderr_buf) {
+        free(stdout_buf);
+        free(stderr_buf);
+        entry->error_message = "Out of memory";
+        libssh2_channel_free(channel);
+        return;
+    }
+
+    nexterm_ssh_read_stream(channel, stdout_buf, SSH_EXEC_BUF_SIZE, 0);
+    nexterm_ssh_read_stream(channel, stderr_buf, SSH_EXEC_BUF_SIZE, 1);
+
+    libssh2_channel_close(channel);
+    libssh2_channel_wait_closed(channel);
+    entry->exit_code = libssh2_channel_get_exit_status(channel);
+    libssh2_channel_free(channel);
+
+    *out_stdout = stdout_buf;
+    *out_stderr = stderr_buf;
+    entry->success = true;
+    entry->stdout_data = stdout_buf;
+    entry->stderr_data = stderr_buf;
+    entry->error_message = NULL;
+}
+
+static void* exec_batch_thread(void* arg) {
+    exec_batch_args_t* a = (exec_batch_args_t*)arg;
+    int ssh_sock = -1;
+    LIBSSH2_SESSION* ssh = NULL;
+    jump_chain_t jump_chain = {0};
+
+    if (nexterm_ssh_setup_with_jumphosts(a->host, a->port,
+            a->jump_hosts, a->jump_count, &ssh_sock, &ssh, &jump_chain) != 0) {
+        nexterm_cp_send_exec_batch_result(a->cp, a->request_id, false,
+                                          "Failed to connect to SSH host", NULL, 0);
+        exec_batch_free(a);
+        return NULL;
+    }
+
+    if (nexterm_ssh_auth(ssh, a->username, a->password,
+                         a->private_key, a->passphrase) != 0) {
+        nexterm_cp_send_exec_batch_result(a->cp, a->request_id, false,
+                                          "SSH authentication failed", NULL, 0);
+        nexterm_ssh_full_cleanup(ssh, NULL, ssh_sock, &jump_chain, "Auth failed");
+        exec_batch_free(a);
+        return NULL;
+    }
+
+    exec_batch_entry_t* entries = calloc(a->command_count, sizeof(exec_batch_entry_t));
+    char** outs = calloc(a->command_count, sizeof(char*));
+    char** errs = calloc(a->command_count, sizeof(char*));
+    if (!entries || !outs || !errs) {
+        free(entries);
+        free(outs);
+        free(errs);
+        nexterm_cp_send_exec_batch_result(a->cp, a->request_id, false,
+                                          "Out of memory", NULL, 0);
+        nexterm_ssh_full_cleanup(ssh, NULL, ssh_sock, &jump_chain, "OOM");
+        exec_batch_free(a);
+        return NULL;
+    }
+
+    for (int i = 0; i < a->command_count; i++) {
+        entries[i].id = a->ids[i];
+        exec_batch_run_one(ssh, a->commands[i], &entries[i], &outs[i], &errs[i]);
+    }
+
+    nexterm_cp_send_exec_batch_result(a->cp, a->request_id, true, NULL,
+                                      entries, (size_t)a->command_count);
+
+    for (int i = 0; i < a->command_count; i++) {
+        free(outs[i]);
+        free(errs[i]);
+    }
+    free(outs);
+    free(errs);
+    free(entries);
+
+    nexterm_ssh_full_cleanup(ssh, NULL, ssh_sock, &jump_chain, "Batch done");
+    exec_batch_free(a);
+    return NULL;
+}
+
+int nexterm_ssh_exec_batch(nexterm_control_plane_t* cp,
+                           const char* request_id,
+                           const char* host, uint16_t port,
+                           const ssh_credentials_t* creds,
+                           const char* const* ids,
+                           const char* const* commands,
+                           int command_count,
+                           const jump_host_t* jump_hosts,
+                           int jump_count) {
+    if (command_count <= 0) {
+        nexterm_cp_send_exec_batch_result(cp, request_id, false,
+                                          "No commands supplied", NULL, 0);
+        return -1;
+    }
+
+    exec_batch_args_t* args = calloc(1, sizeof(exec_batch_args_t));
+    if (!args) return -1;
+
+    args->cp = cp;
+    snprintf(args->request_id, sizeof(args->request_id), "%s", request_id);
+    snprintf(args->host, sizeof(args->host), "%s", host);
+    args->port = port;
+    args->username = strdup(creds->username ? creds->username : "");
+    args->password = strdup(creds->password ? creds->password : "");
+    args->private_key = strdup(creds->private_key ? creds->private_key : "");
+    args->passphrase = strdup(creds->passphrase ? creds->passphrase : "");
+
+    args->command_count = command_count;
+    args->ids = calloc(command_count, sizeof(char*));
+    args->commands = calloc(command_count, sizeof(char*));
+    if (!args->username || !args->password || !args->private_key ||
+        !args->passphrase || !args->ids || !args->commands) {
+        exec_batch_free(args);
+        nexterm_cp_send_exec_batch_result(cp, request_id, false, "Out of memory", NULL, 0);
+        return -1;
+    }
+
+    for (int i = 0; i < command_count; i++) {
+        args->ids[i] = strdup(ids[i] ? ids[i] : "");
+        args->commands[i] = strdup(commands[i] ? commands[i] : "");
+        if (!args->ids[i] || !args->commands[i]) {
+            exec_batch_free(args);
+            nexterm_cp_send_exec_batch_result(cp, request_id, false, "Out of memory", NULL, 0);
+            return -1;
+        }
+    }
+
+    args->jump_count = (jump_count > MAX_JUMP_HOSTS) ? MAX_JUMP_HOSTS : jump_count;
+    for (int i = 0; i < args->jump_count; i++) {
+        snprintf(args->jump_hosts[i].host, sizeof(args->jump_hosts[i].host), "%s", jump_hosts[i].host);
+        args->jump_hosts[i].port = jump_hosts[i].port;
+        snprintf(args->jump_hosts[i].username, sizeof(args->jump_hosts[i].username), "%s", jump_hosts[i].username);
+        args->jump_hosts[i].password = strdup(jump_hosts[i].password ? jump_hosts[i].password : "");
+        args->jump_hosts[i].private_key = strdup(jump_hosts[i].private_key ? jump_hosts[i].private_key : "");
+        args->jump_hosts[i].passphrase = strdup(jump_hosts[i].passphrase ? jump_hosts[i].passphrase : "");
+    }
+
+    pthread_t thread;
+    if (pthread_create(&thread, NULL, exec_batch_thread, args) != 0) {
+        LOG_ERROR("Failed to create exec batch thread for %s", request_id);
+        exec_batch_free(args);
+        return -1;
+    }
+    pthread_detach(thread);
+    return 0;
+}

@@ -72,6 +72,22 @@ int nexterm_cp_send_port_check_result(nexterm_control_plane_t* cp,
                                        const bool* online,
                                        size_t count);
 
+typedef struct {
+    const char* id;
+    bool success;
+    const char* stdout_data;
+    const char* stderr_data;
+    int32_t exit_code;
+    const char* error_message;
+} exec_batch_entry_t;
+
+int nexterm_cp_send_exec_batch_result(nexterm_control_plane_t* cp,
+                                      const char* request_id,
+                                      bool success,
+                                      const char* error_message,
+                                      const exec_batch_entry_t* entries,
+                                      size_t count);
+
 int nexterm_cp_upload_recording(nexterm_control_plane_t* cp,
                                 const char* session_id,
                                 const char* file_path);
