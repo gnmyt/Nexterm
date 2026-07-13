@@ -12,6 +12,7 @@ const logger = require("../utils/logger");
 
 const WRITE_CHUNK_SIZE = 262144;
 const REQUEST_TIMEOUT = 30000;
+const EXEC_TIMEOUT = 300000;
 
 const MESSAGE_HANDLERS = {
     [SftpMsgType.Ok]: (_msg, rid, pending, self) => {
@@ -264,13 +265,13 @@ class EngineSftpClient extends EventEmitter {
         return this._waitResponse(rid);
     }
 
-    exec(command) {
+    exec(command, timeoutMs = EXEC_TIMEOUT) {
         return this._requestWithPayload(SftpMsgType.Exec, (b) => {
             const cmdOff = b.createString(command);
             ExecReq.startExecReq(b);
             ExecReq.addCommand(b, cmdOff);
             return { execReq: ExecReq.endExecReq(b) };
-        });
+        }, timeoutMs);
     }
 
     thumbnail(path, size = 100) {
@@ -303,10 +304,10 @@ class EngineSftpClient extends EventEmitter {
         return this._waitResponse(rid);
     }
 
-    _requestWithPayload(msgType, buildPayload) {
+    _requestWithPayload(msgType, buildPayload, timeoutMs) {
         const rid = this._nextId();
         this._buildAndSend(rid, msgType, buildPayload);
-        return this._waitResponse(rid);
+        return this._waitResponse(rid, timeoutMs);
     }
 
     _buildAndSend(rid, msgType, buildPayload) {
@@ -357,15 +358,15 @@ class EngineSftpClient extends EventEmitter {
         this._sendFrame(b.asUint8Array());
     }
 
-    _waitResponse(rid) {
+    _waitResponse(rid, timeoutMs = REQUEST_TIMEOUT) {
         return new Promise((resolve, reject) => {
-            const timeout = setTimeout(() => {
+            const timeout = timeoutMs > 0 ? setTimeout(() => {
                 this._pending.delete(rid);
                 reject(new Error("Request timeout"));
-            }, REQUEST_TIMEOUT);
+            }, timeoutMs) : null;
             this._pending.set(rid, {
-                resolve: (v) => { clearTimeout(timeout); resolve(v); },
-                reject: (e) => { clearTimeout(timeout); reject(e); },
+                resolve: (v) => { if (timeout) clearTimeout(timeout); resolve(v); },
+                reject: (e) => { if (timeout) clearTimeout(timeout); reject(e); },
             });
         });
     }
