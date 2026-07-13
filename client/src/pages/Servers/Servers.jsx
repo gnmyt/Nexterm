@@ -556,7 +556,6 @@ export const Servers = () => {
                         file={editor.file}
                         session={editor.session}
                         onClose={() => setOpenFileEditors(prev => prev.filter(e => e.id !== editor.id))}
-                        zIndex={10000 + index}
                     />
                 ) : (
                     <FileEditorWindow
@@ -564,7 +563,6 @@ export const Servers = () => {
                         file={editor.file}
                         session={editor.session}
                         onClose={() => setOpenFileEditors(prev => prev.filter(e => e.id !== editor.id))}
-                        zIndex={10000 + index}
                     />
                 )
             ))}
