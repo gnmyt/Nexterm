@@ -11,38 +11,29 @@ export const useAI = () => {
 };
 
 export const AIProvider = ({ children }) => {
-    const [aiSettings, setAISettings] = useState({ enabled: false, provider: null, model: null, configured: false });
+    const [available, setAvailable] = useState(false);
     const [loading, setLoading] = useState(true);
 
     const loadAISettings = async () => {
         try {
             setLoading(true);
             const settings = await getRequest("ai");
-
-            const configured = settings.enabled && settings.provider && settings.model
-                && (settings.provider !== "openai" || settings.hasApiKey);
-
-            setAISettings({
-                enabled: settings.enabled,
-                provider: settings.provider,
-                model: settings.model,
-                configured,
-            });
+            setAvailable(Boolean(settings.isConfigured));
         } catch (error) {
-            setAISettings({ enabled: false, provider: null, model: null, configured: false });
+            setAvailable(false);
         } finally {
             setLoading(false);
         }
     };
 
-    const isAIAvailable = () => aiSettings.enabled && aiSettings.configured;
+    const isAIAvailable = () => available;
 
     useEffect(() => {
         loadAISettings();
     }, []);
 
     return (
-        <AIContext.Provider value={{ aiSettings, loading, isAIAvailable, loadAISettings }}>
+        <AIContext.Provider value={{ available, loading, isAIAvailable, loadAISettings }}>
             {children}
         </AIContext.Provider>
     );
