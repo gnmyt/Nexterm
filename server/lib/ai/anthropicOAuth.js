@@ -48,12 +48,12 @@ const parsePendingFlow = (stored) => {
 
 const persistTokens = async (settingsId, tokens) => {
     const expiresAt = tokens.expires_in ? Date.now() + tokens.expires_in * 1000 : null;
-    await AISettings.update({
+    await AISettings.update(AISettings.encryptSecrets({
         oauthAccessToken: tokens.access_token,
         oauthRefreshToken: tokens.refresh_token,
         oauthExpiresAt: expiresAt,
         oauthVerifier: null,
-    }, { where: { id: settingsId } });
+    }), { where: { id: settingsId } });
     return { accessToken: tokens.access_token, expiresAt };
 };
 
@@ -149,11 +149,11 @@ module.exports.buildHeaders = async (settings) => {
 
 module.exports.disconnect = async () => {
     const settings = await AISettings.getOrCreate();
-    await AISettings.update({
+    await AISettings.update(AISettings.encryptSecrets({
         oauthAccessToken: null,
         oauthRefreshToken: null,
         oauthExpiresAt: null,
         oauthVerifier: null,
-    }, { where: { id: settings.id } });
+    }), { where: { id: settings.id } });
     return { success: true };
 };
