@@ -1,0 +1,120 @@
+@use "@/common/styles/colors"
+
+.message-content
+  display: flex
+  flex-direction: column
+  gap: 0.4rem
+
+  .text-line
+    margin: 0
+    white-space: pre-wrap
+    word-break: break-word
+
+    &:empty
+      display: none
+
+  .inline-code
+    background: colors.$darker-gray
+    border: 1px solid colors.$gray
+    border-radius: 0.3rem
+    padding: 0.05rem 0.3rem
+    font-family: monospace
+    font-size: 0.82rem
+
+  .code-block
+    margin: 0
+    background: colors.$background
+    border: 1px solid colors.$gray
+    border-radius: 0.5rem
+    padding: 0.65rem 0.75rem
+    overflow-x: auto
+    font-family: monospace
+    font-size: 0.82rem
+    color: colors.$white
+    scrollbar-width: thin
+    scrollbar-color: colors.$gray transparent
+
+    &::-webkit-scrollbar
+      width: 4px
+      height: 4px
+
+    &::-webkit-scrollbar-thumb
+      background-color: colors.$gray
+      border-radius: 10px
+
+  .md-heading
+    margin: 0.2rem 0 0
+    font-weight: 600
+    line-height: 1.3
+    color: colors.$white
+
+    &:is(h1, h2)
+      font-size: 1rem
+
+    &:is(h3, h4, h5, h6)
+      font-size: 0.92rem
+
+  a
+    color: colors.$primary
+    text-decoration: none
+    word-break: break-word
+
+    &:hover
+      text-decoration: underline
+
+  .md-list
+    margin: 0
+    padding-left: 1.25rem
+    display: flex
+    flex-direction: column
+    gap: 0.2rem
+
+    li
+      white-space: normal
+      word-break: break-word
+
+    .md-list
+      margin-top: 0.2rem
+
+  .md-quote
+    margin: 0
+    padding: 0.1rem 0.75rem
+    border-left: 3px solid colors.$gray
+    color: colors.$subtext
+
+  .md-hr
+    margin: 0.2rem 0
+    border: none
+    border-top: 1px solid colors.$gray
+
+  .md-table-wrap
+    overflow-x: auto
+    scrollbar-width: thin
+    scrollbar-color: colors.$gray transparent
+
+    &::-webkit-scrollbar
+      width: 4px
+      height: 4px
+
+    &::-webkit-scrollbar-thumb
+      background-color: colors.$gray
+      border-radius: 10px
+
+  .md-table
+    border-collapse: collapse
+    width: 100%
+    font-size: 0.82rem
+
+    th, td
+      padding: 0.35rem 0.6rem
+      border: 1px solid colors.$gray
+      text-align: left
+      white-space: nowrap
+
+    th
+      background: colors.$darker-gray
+      font-weight: 600
+      color: colors.$white
+
+    td
+      color: colors.$subtext
