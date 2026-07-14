@@ -70,7 +70,7 @@ export const AI = () => {
             setLoadingModels(true);
             const response = await getRequest("ai/models");
             setAvailableModels(response.models || []);
-        } catch (error) {
+        } catch {
             setAvailableModels([]);
         } finally {
             setLoadingModels(false);
@@ -81,7 +81,7 @@ export const AI = () => {
         try {
             const response = await getRequest("ai/providers");
             setProviders(response.providers || []);
-        } catch (error) {
+        } catch {
             setProviders([]);
         }
     }, []);
@@ -91,7 +91,7 @@ export const AI = () => {
             setLoading(true);
             const response = await getRequest("ai");
             setSettings(prev => ({ ...prev, ...response }));
-        } catch (error) {
+        } catch {
             sendToast(t("common.error"), t("settings.ai.errors.loadSettings"));
         } finally {
             setLoading(false);
@@ -125,7 +125,7 @@ export const AI = () => {
             sendToast(t("common.success"), t("settings.ai.saveSuccess"));
 
             loadAISettings();
-        } catch (error) {
+        } catch {
             sendToast(t("common.error"), t("settings.ai.errors.saveSettings"));
         } finally {
             setSaving(false);
@@ -163,7 +163,7 @@ export const AI = () => {
             setConnecting(true);
             const response = await postRequest("ai/oauth/start");
             if (response.authUrl) window.open(response.authUrl, "_blank", "noopener,noreferrer");
-        } catch (error) {
+        } catch {
             sendToast(t("common.error"), t("settings.ai.subscription.startError"));
         } finally {
             setConnecting(false);
@@ -191,7 +191,7 @@ export const AI = () => {
             await postRequest("ai/oauth/disconnect");
             setSettings(prev => ({ ...prev, subscriptionConnected: false, model: "" }));
             setAvailableModels([]);
-        } catch (error) {
+        } catch {
             sendToast(t("common.error"), t("settings.ai.subscription.disconnectError"));
         }
     };

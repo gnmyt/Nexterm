@@ -1,7 +1,12 @@
 const AISettings = require("../../models/AISettings");
 const { ensureFreshToken, OAUTH_BETA, buildHeaders: buildAnthropicHeaders } = require("./anthropicOAuth");
 
-const normalizeUrl = (url) => url?.replace(/\/+$/, "") || "";
+const normalizeUrl = (url) => {
+    if (!url) return "";
+    let end = url.length;
+    while (end > 0 && url[end - 1] === "/") end--;
+    return url.slice(0, end);
+};
 
 const CHAT_MODEL_EXCLUDE = [
     "whisper", "tts", "dall-e", "embedding", "embed", "vision", "image", "audio",
@@ -9,7 +14,7 @@ const CHAT_MODEL_EXCLUDE = [
 ];
 const filterChatModels = (ids) => [...new Set(ids)]
     .filter((id) => !CHAT_MODEL_EXCLUDE.some((pattern) => id.toLowerCase().includes(pattern)))
-    .sort();
+    .sort((a, b) => a.localeCompare(b));
 
 const fetchOpenAICompatibleModels = async (baseUrl, apiKey) => {
     const headers = { "Content-Type": "application/json" };
@@ -56,7 +61,7 @@ const ollamaProvider = {
         const response = await fetch(`${ollamaBaseUrl(settings)}/api/tags`, { headers: { "Content-Type": "application/json" } });
         if (!response.ok) return { error: { code: 500, message: `Ollama API error: ${response.status}` } };
         const data = await response.json();
-        return { list: (data.models?.map((m) => m.name).filter(Boolean) || []).sort() };
+        return { list: (data.models?.map((m) => m.name).filter(Boolean) || []).sort((a, b) => a.localeCompare(b)) };
     },
 };
 
@@ -125,7 +130,7 @@ const anthropicProvider = {
         const response = await fetch(`${ANTHROPIC_BASE_URL}/models?limit=1000`, { headers });
         if (!response.ok) return { error: { code: 500, message: `Anthropic API error: ${response.status}` } };
         const data = await response.json();
-        return { list: (data.data?.map((m) => m.id).filter(Boolean) || []).sort() };
+        return { list: (data.data?.map((m) => m.id).filter(Boolean) || []).sort((a, b) => a.localeCompare(b)) };
     },
 };
 

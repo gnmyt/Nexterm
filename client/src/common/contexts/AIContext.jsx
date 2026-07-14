@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, useEffect } from "react";
+import { createContext, useContext, useState, useEffect, useCallback, useMemo } from "react";
 import { getRequest } from "@/common/utils/RequestUtil.js";
 
 export const AIContext = createContext({});
@@ -14,26 +14,31 @@ export const AIProvider = ({ children }) => {
     const [available, setAvailable] = useState(false);
     const [loading, setLoading] = useState(true);
 
-    const loadAISettings = async () => {
+    const loadAISettings = useCallback(async () => {
         try {
             setLoading(true);
             const settings = await getRequest("ai");
             setAvailable(Boolean(settings.isConfigured));
-        } catch (error) {
+        } catch {
             setAvailable(false);
         } finally {
             setLoading(false);
         }
-    };
+    }, []);
 
-    const isAIAvailable = () => available;
+    const isAIAvailable = useCallback(() => available, [available]);
 
     useEffect(() => {
         loadAISettings();
-    }, []);
+    }, [loadAISettings]);
+
+    const value = useMemo(
+        () => ({ available, loading, isAIAvailable, loadAISettings }),
+        [available, loading, isAIAvailable, loadAISettings],
+    );
 
     return (
-        <AIContext.Provider value={{ available, loading, isAIAvailable, loadAISettings }}>
+        <AIContext.Provider value={value}>
             {children}
         </AIContext.Provider>
     );

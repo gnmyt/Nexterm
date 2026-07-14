@@ -53,7 +53,7 @@ const ToolResult = ({ tool, result }) => {
         return (
             <div className="tool-result dir-list">
                 {(result.entries || []).map((e, i) => (
-                    <span key={i} className={`dir-entry ${e.type}`}>{e.name}{e.type === "folder" ? "/" : ""}</span>
+                    <span key={`${e.name}-${i}`} className={`dir-entry ${e.type}`}>{e.name}{e.type === "folder" ? "/" : ""}</span>
                 ))}
             </div>
         );
@@ -130,7 +130,7 @@ export const AIAssistant = ({ session, onClose }) => {
     const appendAssistant = (delta) => {
         setMessages((prev) => {
             const last = prev[prev.length - 1];
-            if (last && last.role === "assistant" && last.streaming) {
+            if (last?.role === "assistant" && last.streaming) {
                 return [...prev.slice(0, -1), { ...last, text: last.text + delta }];
             }
             return [...prev, { role: "assistant", text: delta, streaming: true }];
@@ -153,7 +153,7 @@ export const AIAssistant = ({ session, onClose }) => {
     const stopStreaming = () => {
         setMessages((prev) => {
             const last = prev[prev.length - 1];
-            if (last && last.role === "assistant" && last.streaming) {
+            if (last?.role === "assistant" && last.streaming) {
                 return [...prev.slice(0, -1), { ...last, streaming: false }];
             }
             return prev;
@@ -297,10 +297,11 @@ export const AIAssistant = ({ session, onClose }) => {
                 )}
 
                 {messages.map((message, i) => {
-                    if (message.role === "user") return <div key={i} className="message user"><MessageContent text={message.text} /></div>;
-                    if (message.role === "assistant") return <div key={i} className="message assistant"><MessageContent text={message.text} /></div>;
-                    if (message.role === "system") return <div key={i} className="message system">{message.text}</div>;
-                    return <ToolCard key={i} message={message} onConfirm={confirmTool} acceptHint={acceptHint} />;
+                    const key = `msg-${i}`;
+                    if (message.role === "user") return <div key={key} className="message user"><MessageContent text={message.text} /></div>;
+                    if (message.role === "assistant") return <div key={key} className="message assistant"><MessageContent text={message.text} /></div>;
+                    if (message.role === "system") return <div key={key} className="message system">{message.text}</div>;
+                    return <ToolCard key={key} message={message} onConfirm={confirmTool} acceptHint={acceptHint} />;
                 })}
 
                 {running && <div className="ai-typing"><span /><span /><span /></div>}

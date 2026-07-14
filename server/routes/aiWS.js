@@ -20,7 +20,7 @@ const waitForConnection = async (sessionId, timeoutMs = 30000) => {
     return false;
 };
 
-module.exports = async (ws, req) => {
+module.exports = async function handleAIConnection(ws, req) {
     const context = await wsAuth(ws, req);
     if (!context) return;
 
@@ -92,6 +92,40 @@ module.exports = async (ws, req) => {
 
     send({ type: "ready", requireConfirmation: settings.requireConfirmation });
 
+    const abortPendingApprovals = () => {
+        for (const callId of pendingApprovals.keys()) resolveApproval(callId, false);
+    };
+
+    const handleAbort = () => {
+        if (!controller) return;
+        controller.abort();
+        controller = null;
+        abortPendingApprovals();
+        send({ type: "aborted" });
+    };
+
+    const handlePrompt = async (message) => {
+        const content = typeof message.content === "string" ? message.content.trim() : "";
+        if (!content) return;
+        if (controller) return send({ type: "busy" });
+
+        const turn = new AbortController();
+        controller = turn;
+        SessionManager.updateActivity(sessionId);
+
+        try {
+            await agent.runTurn(content, turn.signal);
+            if (!turn.signal.aborted) send({ type: "done" });
+        } catch (err) {
+            if (!turn.signal.aborted) {
+                logger.error("AI assistant turn failed", { sessionId, error: err.message });
+                send({ type: "error", message: err.message });
+            }
+        } finally {
+            if (controller === turn) controller = null;
+        }
+    };
+
     ws.on("message", async (raw) => {
         let message;
         try {
@@ -100,45 +134,13 @@ module.exports = async (ws, req) => {
             return;
         }
 
-        if (message.type === "confirm") {
-            resolveApproval(message.callId, Boolean(message.allow));
-            return;
-        }
-
-        if (message.type === "abort") {
-            if (!controller) return;
-            controller.abort();
-            controller = null;
-            for (const callId of [...pendingApprovals.keys()]) resolveApproval(callId, false);
-            send({ type: "aborted" });
-            return;
-        }
-
-        if (message.type === "prompt") {
-            const content = typeof message.content === "string" ? message.content.trim() : "";
-            if (!content) return;
-            if (controller) return send({ type: "busy" });
-
-            const turn = new AbortController();
-            controller = turn;
-            SessionManager.updateActivity(sessionId);
-
-            try {
-                await agent.runTurn(content, turn.signal);
-                if (!turn.signal.aborted) send({ type: "done" });
-            } catch (err) {
-                if (!turn.signal.aborted) {
-                    logger.error("AI assistant turn failed", { sessionId, error: err.message });
-                    send({ type: "error", message: err.message });
-                }
-            } finally {
-                if (controller === turn) controller = null;
-            }
-        }
+        if (message.type === "confirm") resolveApproval(message.callId, Boolean(message.allow));
+        else if (message.type === "abort") handleAbort();
+        else if (message.type === "prompt") await handlePrompt(message);
     });
 
     ws.on("close", () => {
         controller?.abort();
-        for (const callId of [...pendingApprovals.keys()]) resolveApproval(callId, false);
+        abortPendingApprovals();
     });
 };

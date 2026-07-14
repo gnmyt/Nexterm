@@ -24,7 +24,7 @@ const buildServerContext = async (entry) => {
     try {
         const snapshot = entry ? await MonitoringSnapshot.findOne({ where: { entryId: entry.id } }) : null;
         const os = snapshot?.osInfo;
-        if (os?.name) parts.push(`distro: ${os.name}${os.version ? ` ${os.version}` : ""}`);
+        if (os?.name) parts.push(`distro: ${os.name}${os.version ? " " + os.version : ""}`);
         if (os?.kernel) parts.push(`kernel: ${os.kernel}`);
         if (os?.hostname) parts.push(`hostname: ${os.hostname}`);
     } catch (error) {

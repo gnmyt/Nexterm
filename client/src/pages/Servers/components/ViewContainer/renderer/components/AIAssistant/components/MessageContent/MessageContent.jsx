@@ -60,7 +60,7 @@ const renderBlock = (tokens, keyPrefix) =>
                 const start = tok.ordered && tok.start !== 1 ? tok.start : undefined;
                 return (
                     <Tag key={key} className="md-list" start={start}>
-                        {tok.items.map((item, j) => <li key={j}>{renderItem(item.tokens, `${key}-${j}`)}</li>)}
+                        {tok.items.map((item, j) => <li key={`${key}-${j}`}>{renderItem(item.tokens, `${key}-${j}`)}</li>)}
                     </Tag>
                 );
             }
@@ -71,15 +71,15 @@ const renderBlock = (tokens, keyPrefix) =>
                             <thead>
                                 <tr>
                                     {tok.header.map((cell, j) => (
-                                        <th key={j} style={alignStyle(tok.align[j])}>{renderInline(cell.tokens, `${key}-h-${j}`)}</th>
+                                        <th key={`${key}-h-${j}`} style={alignStyle(tok.align[j])}>{renderInline(cell.tokens, `${key}-h-${j}`)}</th>
                                     ))}
                                 </tr>
                             </thead>
                             <tbody>
                                 {tok.rows.map((row, r) => (
-                                    <tr key={r}>
+                                    <tr key={`${key}-r-${r}`}>
                                         {row.map((cell, j) => (
-                                            <td key={j} style={alignStyle(tok.align[j])}>{renderInline(cell.tokens, `${key}-${r}-${j}`)}</td>
+                                            <td key={`${key}-${r}-${j}`} style={alignStyle(tok.align[j])}>{renderInline(cell.tokens, `${key}-${r}-${j}`)}</td>
                                         ))}
                                     </tr>
                                 ))}
@@ -104,7 +104,7 @@ export const MessageContent = ({ text }) => {
         <div className="message-content">
             {tokens
                 ? renderBlock(tokens, "b")
-                : text.split("\n").map((line, i) => <p key={i} className="text-line">{line}</p>)}
+                : text.split("\n").map((line, i) => <p key={`line-${i}`} className="text-line">{line}</p>)}
         </div>
     );
 };

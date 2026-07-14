@@ -256,7 +256,7 @@ const buildTools = ({ sftp, canModify, requireConfirmation, requestApproval, log
                 mode: z.string().describe("Octal permission mode, e.g. \"644\" or \"755\"."),
             }),
             async ({ path, mode }) => {
-                const parsed = parseInt(mode, 8);
+                const parsed = Number.parseInt(mode, 8);
                 if (Number.isNaN(parsed)) throw new Error(`Invalid octal mode: ${mode}`);
                 await sftp.chmod(path, parsed);
                 return { path, mode };

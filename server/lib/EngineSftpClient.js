@@ -365,8 +365,8 @@ class EngineSftpClient extends EventEmitter {
                 reject(new Error("Request timeout"));
             }, timeoutMs) : null;
             this._pending.set(rid, {
-                resolve: (v) => { if (timeout) clearTimeout(timeout); resolve(v); },
-                reject: (e) => { if (timeout) clearTimeout(timeout); reject(e); },
+                resolve: (v) => { if (timeout) { clearTimeout(timeout); } resolve(v); },
+                reject: (e) => { if (timeout) { clearTimeout(timeout); } reject(e); },
             });
         });
     }

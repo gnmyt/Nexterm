@@ -1,4 +1,4 @@
-const crypto = require("crypto");
+const crypto = require("node:crypto");
 const AISettings = require("../../models/AISettings");
 const logger = require("../../utils/logger");
 
@@ -11,7 +11,7 @@ const SCOPES = "org:create_api_key user:profile user:inference";
 const OAUTH_BETA = "oauth-2025-04-20";
 const ANTHROPIC_VERSION = "2023-06-01";
 
-const base64Url = (buffer) => buffer.toString("base64").replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
+const base64Url = (buffer) => buffer.toString("base64").replaceAll("+", "-").replaceAll("/", "_").replaceAll("=", "");
 
 module.exports.OAUTH_BETA = OAUTH_BETA;
 

@@ -26,7 +26,7 @@ const app = Router();
 app.get("/", async (req, res) => {
     try {
         res.json(await getAISettings());
-    } catch (error) {
+    } catch {
         res.status(500).json({ error: "Internal server error" });
     }
 });
@@ -46,7 +46,7 @@ app.patch("/", requirePermission(Permission.SETTINGS_AI), async (req, res) => {
     try {
         if (validateSchema(res, updateAISettingsValidation, req.body)) return;
         res.json(await updateAISettings(req.body));
-    } catch (error) {
+    } catch {
         res.status(500).json({ error: "Internal server error" });
     }
 });
@@ -67,7 +67,7 @@ app.post("/test", requirePermission(Permission.SETTINGS_AI), async (req, res) =>
         const result = await testAIConnection();
         if (result.code) return res.status(result.code).json({ error: result.message });
         res.json(result);
-    } catch (error) {
+    } catch {
         res.status(500).json({ error: "Connection test failed" });
     }
 });
@@ -84,7 +84,7 @@ app.post("/test", requirePermission(Permission.SETTINGS_AI), async (req, res) =>
 app.get("/providers", async (req, res) => {
     try {
         res.json(getProviders());
-    } catch (error) {
+    } catch {
         res.status(500).json({ error: "Internal server error" });
     }
 });
@@ -105,7 +105,7 @@ app.get("/models", requirePermission(Permission.SETTINGS_AI), async (req, res) =
         const result = await getAvailableModels();
         if (result.code) return res.status(result.code).json({ error: result.message });
         res.json(result);
-    } catch (error) {
+    } catch {
         res.status(500).json({ error: "Internal server error" });
     }
 });
@@ -124,7 +124,7 @@ app.post("/oauth/start", requirePermission(Permission.SETTINGS_AI), async (req, 
     try {
         const authUrl = await generateAuthUrl();
         res.json({ authUrl });
-    } catch (error) {
+    } catch {
         res.status(500).json({ error: "Failed to start authorization" });
     }
 });
@@ -147,7 +147,7 @@ app.post("/oauth/exchange", requirePermission(Permission.SETTINGS_AI), async (re
         const result = await exchangeCode(req.body.code);
         if (result.code) return res.status(result.code).json({ error: result.message });
         res.json(result);
-    } catch (error) {
+    } catch {
         res.status(500).json({ error: "Failed to complete authorization" });
     }
 });
@@ -165,7 +165,7 @@ app.post("/oauth/exchange", requirePermission(Permission.SETTINGS_AI), async (re
 app.post("/oauth/disconnect", requirePermission(Permission.SETTINGS_AI), async (req, res) => {
     try {
         res.json(await disconnect());
-    } catch (error) {
+    } catch {
         res.status(500).json({ error: "Failed to disconnect" });
     }
 });

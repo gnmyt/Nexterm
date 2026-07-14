@@ -64,7 +64,7 @@ const resolveConfiguredProvider = (settings, { requireEnabled = true } = {}) => 
 
 module.exports.testAIConnection = async () => {
     const settings = await AISettings.findOne();
-    if (!settings || !settings.model) return { code: 400, message: "No AI model configured" };
+    if (!settings?.model) return { code: 400, message: "No AI model configured" };
 
     const { provider, error } = resolveConfiguredProvider(settings);
     if (error) return error;

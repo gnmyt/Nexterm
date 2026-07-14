@@ -7,7 +7,7 @@ import ResizeHandle from "@/common/components/ResizeHandle";
 import "./styles.sass";
 
 export const FloatingWindowAction = ({ className = "", ...props }) => (
-    <button type="button" className={`floating-window__action${className ? ` ${className}` : ""}`} {...props} />
+    <button type="button" className={`floating-window__action${className ? " " + className : ""}`} {...props} />
 );
 
 export const FloatingWindow = ({
@@ -20,7 +20,8 @@ export const FloatingWindow = ({
     } = useWindowControls(initialSize);
 
     return createPortal(
-        <div ref={windowRef} className={`${getWindowClasses("floating-window")}${className ? ` ${className}` : ""}`}
+        <div ref={windowRef} role="dialog" aria-modal="false" aria-label={title}
+             className={`${getWindowClasses("floating-window")}${className ? " " + className : ""}`}
              style={getWindowStyle()} onMouseDownCapture={focusWindow}
              onClick={(e) => e.stopPropagation()} onContextMenu={(e) => e.stopPropagation()}>
             <div ref={headerRef} className="floating-window__header" onMouseDown={handleMouseDown}>
