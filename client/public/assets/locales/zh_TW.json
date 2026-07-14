@@ -1779,7 +1779,9 @@
         "clearTerminal": "清除終端",
         "properties": "屬性",
         "openTerminal": "在此開啟終端機",
-        "downloadFolder": "下載資料夾"
+        "downloadFolder": "下載資料夾",
+        "newFile": "New File",
+        "newFolder": "New Folder"
       },
       "properties": {
         "general": "一般",
@@ -1841,7 +1843,8 @@
         "switchToGrid": "切換至網格檢視",
         "switchToList": "切換至清單檢視",
         "search": "搜尋檔案",
-        "closeSearch": "關閉搜尋"
+        "closeSearch": "關閉搜尋",
+        "refresh": "Refresh"
       },
       "item": {
         "link": "連結"
