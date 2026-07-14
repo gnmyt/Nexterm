@@ -61,7 +61,9 @@
       "signInWithQrCode": "Войти в систему с помощью QR-кода",
       "qrScanDescription": "Отсканируй этот QR-код с помощью мобильного приложения Nexterm, чтобы мгновенно войти в систему.",
       "backToLogin": "Назад к входу",
-      "authenticating": "Аутентификация..."
+      "authenticating": "Аутентификация...",
+      "noAccount": "Don't have an account?",
+      "haveAccount": "Already have an account?"
     },
     "deviceLink": {
       "title": "Привязать устройство",
@@ -955,6 +957,10 @@
       "addLdapProvider": "Добавь LDAP",
       "system": "Система",
       "systemDescription": "Аутентификация по логину и паролю",
+      "registration": {
+        "title": "Self-Registration",
+        "description": "Allow visitors to create their own account from the login screen"
+      },
       "deleteConfirm": "Это действие безвозвратно удалит провайдера аутентификации.",
       "errors": {
         "deleteProvider": "Ошибка удаления провайдера",
@@ -1398,7 +1404,6 @@
       "subtitle": "Создавай роли с детализированными правами доступа или назначай права отдельным пользователям. Роль «По умолчанию» автоматически применяется ко всем.",
       "createRole": "Создать роль",
       "rolesTitle": "Роли",
-      "membersTitle": "Участники",
       "rolesTab": "Роли",
       "overridesTab": "Прямые разрешения",
       "permissionsTab": "Права доступа",
@@ -1420,7 +1425,6 @@
       "addMemberPlaceholder": "Найди пользователей, чтобы добавить их в список «… »",
       "deleteRole": "Удалить роль",
       "deleteConfirm": "Это приведёт к окончательному удалению роли «{{name}}» и исключению из неё всех участников.",
-      "searchUsers": "Поиск пользователей…",
       "inheritsAllow": "Наследование: разрешено",
       "inheritsDeny": "Наследуется: Отклонено"
     }
