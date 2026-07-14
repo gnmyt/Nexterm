@@ -61,7 +61,9 @@
       "signInWithQrCode": "Přihlášení pomocí kódu QR",
       "qrScanDescription": "Naskenujte tento QR kód pomocí mobilní aplikace Nexterm a okamžitě se přihlaste.",
       "backToLogin": "Zpět na přihlášení",
-      "authenticating": "Probíhá ověření..."
+      "authenticating": "Probíhá ověření...",
+      "noAccount": "Don't have an account?",
+      "haveAccount": "Already have an account?"
     },
     "deviceLink": {
       "title": "Odkaz Zařízení",
@@ -955,6 +957,10 @@
       "addLdapProvider": "Přidání protokolu LDAP",
       "system": "Systém",
       "systemDescription": "Ověření uživatelským jménem a heslem",
+      "registration": {
+        "title": "Self-Registration",
+        "description": "Allow visitors to create their own account from the login screen"
+      },
       "deleteConfirm": "Toto trvale smaže tohoto poskytovatele ověření.",
       "errors": {
         "deleteProvider": "Chyba při mazání poskytovatele",
@@ -1398,7 +1404,6 @@
       "subtitle": "Vytvářejte role s podrobnými oprávněními nebo přiřazujte oprávnění jednotlivým uživatelům. Role „Výchozí“ se automaticky vztahuje na všechny uživatele.",
       "createRole": "Vytvořit roli",
       "rolesTitle": "Role",
-      "membersTitle": "Členové",
       "rolesTab": "Role",
       "overridesTab": "Přímá oprávnění",
       "permissionsTab": "Oprávnění",
@@ -1420,7 +1425,6 @@
       "addMemberPlaceholder": "Vyhledejte uživatele, kteří přidali…",
       "deleteRole": "Odstranit roli",
       "deleteConfirm": "Tím se role „{{name}}“ trvale smaže a odebere se všem členům.",
-      "searchUsers": "Vyhledat uživatele…",
       "inheritsAllow": "Dědí: Povoleno",
       "inheritsDeny": "Dědí: Zamítnuto"
     }
