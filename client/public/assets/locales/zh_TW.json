@@ -733,6 +733,8 @@
         "folderManagementDescription": "記錄資料夾的建立、修改和刪除",
         "scriptExecutionLabel": "腳本執行",
         "scriptExecutionDescription": "記錄腳本和自動化任務的執行",
+        "aiOperationsLabel": "AI Operations",
+        "aiOperationsDescription": "Log commands and file changes performed by the AI assistant",
         "actions": {
           "save": "儲存設定"
         },
