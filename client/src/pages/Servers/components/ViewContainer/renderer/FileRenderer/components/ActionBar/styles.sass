@@ -97,7 +97,7 @@
       max-height: 250px
       overflow-y: auto
       z-index: 1000
-      box-shadow: 0 12px 48px rgba(0, 0, 0, 0.5), 0 4px 16px rgba(0, 0, 0, 0.3)
+      box-shadow: colors.$shadow-lg
       scrollbar-width: thin
       scrollbar-color: colors.$gray transparent
       
@@ -183,11 +183,66 @@
           background-color: transparent
           opacity: 1
 
+  .file-search
+    display: flex
+    align-items: center
+    gap: 0.5rem
+    padding: 0 0.5rem 0 0.9rem
+    background-color: colors.$dark-gray
+    border: 1px solid colors.$gray
+    border-radius: 0.5rem
+    flex: 1 1 14rem
+    min-width: 0
+    max-width: 22rem
+    height: 2.4rem
+    transition: border-color 0.1s ease
+
+    &:focus-within
+      border-color: colors.$primary
+
+    .search-input
+      background: transparent
+      border: none
+      outline: none
+      color: colors.$white
+      font-family: inherit
+      font-size: 0.875rem
+      line-height: 2.4rem
+      flex: 1
+      min-width: 0
+      padding: 0
+      align-self: stretch
+
+      &::placeholder
+        color: colors.$subtext
+
+    .search-count
+      color: colors.$subtext
+      font-size: 0.75rem
+      white-space: nowrap
+      flex-shrink: 0
+
+    .search-close
+      width: 1.5rem
+      height: 1.5rem
+      padding: 0.3rem
+      border-radius: 0.375rem
+      flex-shrink: 0
+      color: colors.$subtext
+
+      &:hover
+        color: colors.$white
+        background-color: colors.$gray
+
   .file-actions
     display: flex
     gap: 0.5rem
     flex-shrink: 0
     margin-left: 0.5rem
+
+    svg.active
+      color: colors.$primary
+      background-color: colors.$gray
 
 @media (max-width: 768px)
   .action-bar

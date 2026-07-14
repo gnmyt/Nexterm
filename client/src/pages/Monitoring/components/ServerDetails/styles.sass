@@ -1,7 +1,5 @@
 @use "@/common/styles/colors"
-
-$mobile: 768px
-$tablet: 1024px
+@use "@/common/styles/breakpoints"
 
 .server-details
   padding: 2rem
@@ -9,10 +7,10 @@ $tablet: 1024px
   overflow-y: auto
   overflow-x: hidden
 
-  @media (max-width: $tablet)
+  @media (max-width: breakpoints.$tablet)
     padding: 1.5rem
 
-  @media (max-width: $mobile)
+  @media (max-width: breakpoints.$mobile)
     padding: 1rem
 
   &.loading
@@ -34,7 +32,7 @@ $tablet: 1024px
     &::-webkit-scrollbar
       display: none
 
-    @media (max-width: $mobile)
+    @media (max-width: breakpoints.$mobile)
       margin-bottom: 1.25rem
       gap: 0.375rem
       flex-wrap: nowrap
@@ -45,14 +43,14 @@ $tablet: 1024px
       margin-left: auto
       flex-shrink: 0
 
-      @media (max-width: $mobile)
+      @media (max-width: breakpoints.$mobile)
         gap: 0.25rem
 
       button
         padding: 0.5rem 1rem
         font-size: 0.85rem
 
-        @media (max-width: $mobile)
+        @media (max-width: breakpoints.$mobile)
           padding: 0.4rem 0.625rem
           font-size: 0.75rem
 
@@ -62,7 +60,7 @@ $tablet: 1024px
       flex-direction: column
       gap: 1.5rem
 
-      @media (max-width: $mobile)
+      @media (max-width: breakpoints.$mobile)
         gap: 1rem
 
 .stats-grid
@@ -70,10 +68,10 @@ $tablet: 1024px
   grid-template-columns: 1fr 1fr
   gap: 1.5rem
 
-  @media (max-width: $tablet)
+  @media (max-width: breakpoints.$tablet)
     gap: 1rem
 
-  @media (max-width: $mobile)
+  @media (max-width: breakpoints.$mobile)
     grid-template-columns: 1fr
     gap: 0.75rem
 
@@ -84,7 +82,7 @@ $tablet: 1024px
   padding: 1.5rem
   min-width: 0
 
-  @media (max-width: $mobile)
+  @media (max-width: breakpoints.$mobile)
     padding: 1rem
 
   &.full-width
@@ -95,7 +93,7 @@ $tablet: 1024px
     color: colors.$white
     font-size: 1.2rem
 
-    @media (max-width: $mobile)
+    @media (max-width: breakpoints.$mobile)
       font-size: 1rem
       margin-bottom: 0.75rem
 
@@ -104,7 +102,7 @@ $tablet: 1024px
     flex-direction: column
     gap: 0.75rem
 
-    @media (max-width: $mobile)
+    @media (max-width: breakpoints.$mobile)
       gap: 0.5rem
 
     .info-item
@@ -115,7 +113,7 @@ $tablet: 1024px
       border-bottom: 1px solid colors.$dark-gray
       gap: 0.5rem
 
-      @media (max-width: $mobile)
+      @media (max-width: breakpoints.$mobile)
         padding: 0.375rem 0
         flex-wrap: wrap
 
@@ -127,7 +125,7 @@ $tablet: 1024px
         font-weight: 500
         flex-shrink: 0
 
-        @media (max-width: $mobile)
+        @media (max-width: breakpoints.$mobile)
           font-size: 0.85rem
 
       .value
@@ -137,7 +135,7 @@ $tablet: 1024px
         word-break: break-word
         min-width: 0
 
-        @media (max-width: $mobile)
+        @media (max-width: breakpoints.$mobile)
           font-size: 0.85rem
 
   .metrics-grid
@@ -145,7 +143,7 @@ $tablet: 1024px
     grid-template-columns: 1fr 1fr
     gap: 1rem
 
-    @media (max-width: $mobile)
+    @media (max-width: breakpoints.$mobile)
       gap: 0.5rem
 
   .metric
@@ -156,7 +154,7 @@ $tablet: 1024px
     background-color: colors.$dark-gray
     border-radius: 0.5rem
 
-    @media (max-width: $mobile)
+    @media (max-width: breakpoints.$mobile)
       padding: 0.75rem
 
     .metric-label
@@ -165,7 +163,7 @@ $tablet: 1024px
       margin-bottom: 0.5rem
       text-align: center
 
-      @media (max-width: $mobile)
+      @media (max-width: breakpoints.$mobile)
         font-size: 0.75rem
         margin-bottom: 0.375rem
 
@@ -175,7 +173,7 @@ $tablet: 1024px
       color: colors.$white
       margin-bottom: 0.25rem
 
-      @media (max-width: $mobile)
+      @media (max-width: breakpoints.$mobile)
         font-size: 1.25rem
 
     .metric-avg, .metric-total, .metric-detail
@@ -183,7 +181,7 @@ $tablet: 1024px
       color: colors.$subtext
       text-align: center
 
-      @media (max-width: $mobile)
+      @media (max-width: breakpoints.$mobile)
         font-size: 0.7rem
 
 .disk-list, .network-list
@@ -191,7 +189,7 @@ $tablet: 1024px
   flex-direction: column
   gap: 1.5rem
 
-  @media (max-width: $mobile)
+  @media (max-width: breakpoints.$mobile)
     gap: 0.75rem
 
 .disk-card
@@ -204,7 +202,7 @@ $tablet: 1024px
     border-bottom: 1px solid colors.$gray
     gap: 0.75rem
 
-    @media (max-width: $mobile)
+    @media (max-width: breakpoints.$mobile)
       flex-direction: column
       align-items: flex-start
       gap: 0.5rem
@@ -218,7 +216,7 @@ $tablet: 1024px
       flex-wrap: wrap
       min-width: 0
 
-      @media (max-width: $mobile)
+      @media (max-width: breakpoints.$mobile)
         gap: 0.5rem
 
       .disk-name
@@ -227,14 +225,14 @@ $tablet: 1024px
         font-family: monospace
         word-break: break-all
 
-        @media (max-width: $mobile)
+        @media (max-width: breakpoints.$mobile)
           font-size: 0.9rem
 
       .disk-model
         color: colors.$subtext
         font-size: 0.9rem
 
-        @media (max-width: $mobile)
+        @media (max-width: breakpoints.$mobile)
           font-size: 0.8rem
 
       .disk-type
@@ -257,7 +255,7 @@ $tablet: 1024px
       font-size: 1.1rem
       flex-shrink: 0
 
-      @media (max-width: $mobile)
+      @media (max-width: breakpoints.$mobile)
         font-size: 1rem
 
 .partition-list
@@ -265,7 +263,7 @@ $tablet: 1024px
   flex-direction: column
   gap: 0.75rem
 
-  @media (max-width: $mobile)
+  @media (max-width: breakpoints.$mobile)
     gap: 0.5rem
 
 .partition-item
@@ -273,7 +271,7 @@ $tablet: 1024px
   background-color: colors.$dark-gray
   border-radius: 0.5rem
 
-  @media (max-width: $mobile)
+  @media (max-width: breakpoints.$mobile)
     padding: 0.625rem
 
   .partition-header
@@ -283,7 +281,7 @@ $tablet: 1024px
     margin-bottom: 0.5rem
     flex-wrap: wrap
 
-    @media (max-width: $mobile)
+    @media (max-width: breakpoints.$mobile)
       gap: 0.5rem
       margin-bottom: 0.375rem
 
@@ -292,7 +290,7 @@ $tablet: 1024px
       color: colors.$white
       font-family: monospace
 
-      @media (max-width: $mobile)
+      @media (max-width: breakpoints.$mobile)
         font-size: 0.85rem
 
     .partition-mount
@@ -300,7 +298,7 @@ $tablet: 1024px
       font-size: 0.9rem
       word-break: break-all
 
-      @media (max-width: $mobile)
+      @media (max-width: breakpoints.$mobile)
         font-size: 0.8rem
 
     .partition-type
@@ -315,7 +313,7 @@ $tablet: 1024px
       color: colors.$primary
       font-weight: 600
 
-      @media (max-width: $mobile)
+      @media (max-width: breakpoints.$mobile)
         font-size: 0.9rem
 
   .partition-bar
@@ -326,7 +324,7 @@ $tablet: 1024px
     margin-bottom: 0.5rem
     overflow: hidden
 
-    @media (max-width: $mobile)
+    @media (max-width: breakpoints.$mobile)
       margin-bottom: 0.375rem
 
     .partition-fill
@@ -341,7 +339,7 @@ $tablet: 1024px
     color: colors.$subtext
     gap: 0.5rem
 
-    @media (max-width: $mobile)
+    @media (max-width: breakpoints.$mobile)
       flex-direction: column
       gap: 0.25rem
       font-size: 0.75rem
@@ -357,7 +355,7 @@ $tablet: 1024px
   background-color: colors.$dark-gray
   border-radius: 0.5rem
 
-  @media (max-width: $mobile)
+  @media (max-width: breakpoints.$mobile)
     padding: 0.75rem
 
   .network-header
@@ -367,7 +365,7 @@ $tablet: 1024px
     margin-bottom: 0.5rem
     flex-wrap: wrap
 
-    @media (max-width: $mobile)
+    @media (max-width: breakpoints.$mobile)
       gap: 0.5rem
       margin-bottom: 0.375rem
 
@@ -375,7 +373,7 @@ $tablet: 1024px
       font-weight: 600
       color: colors.$white
 
-      @media (max-width: $mobile)
+      @media (max-width: breakpoints.$mobile)
         font-size: 0.9rem
 
     .network-mac
@@ -384,7 +382,7 @@ $tablet: 1024px
       font-family: monospace
       word-break: break-all
 
-      @media (max-width: $mobile)
+      @media (max-width: breakpoints.$mobile)
         font-size: 0.8rem
 
     .network-state
@@ -395,7 +393,7 @@ $tablet: 1024px
       font-weight: 600
       margin-left: auto
 
-      @media (max-width: $mobile)
+      @media (max-width: breakpoints.$mobile)
         margin-left: 0
 
       &.up
@@ -416,7 +414,7 @@ $tablet: 1024px
     gap: 0.5rem
     margin-bottom: 0.5rem
 
-    @media (max-width: $mobile)
+    @media (max-width: breakpoints.$mobile)
       gap: 0.375rem
       margin-bottom: 0.375rem
 
@@ -427,7 +425,7 @@ $tablet: 1024px
       font-family: monospace
       word-break: break-all
 
-      @media (max-width: $mobile)
+      @media (max-width: breakpoints.$mobile)
         font-size: 0.7rem
         padding: 0.2rem 0.4rem
 
@@ -447,7 +445,7 @@ $tablet: 1024px
     font-size: 0.85rem
     color: colors.$subtext
 
-    @media (max-width: $mobile)
+    @media (max-width: breakpoints.$mobile)
       flex-direction: column
       gap: 0.25rem
       font-size: 0.75rem
@@ -463,7 +461,7 @@ $tablet: 1024px
   flex-direction: column
   gap: 1.5rem
 
-  @media (max-width: $mobile)
+  @media (max-width: breakpoints.$mobile)
     gap: 0.75rem
 
 .node-card
@@ -476,7 +474,7 @@ $tablet: 1024px
     border-bottom: 1px solid colors.$gray
     gap: 0.5rem
 
-    @media (max-width: $mobile)
+    @media (max-width: breakpoints.$mobile)
       margin-bottom: 0.75rem
       padding-bottom: 0.75rem
 
@@ -486,7 +484,7 @@ $tablet: 1024px
       font-size: 1.1rem
       word-break: break-word
 
-      @media (max-width: $mobile)
+      @media (max-width: breakpoints.$mobile)
         font-size: 1rem
 
     .node-status
@@ -510,7 +508,7 @@ $tablet: 1024px
     flex-direction: column
     gap: 0.75rem
 
-    @media (max-width: $mobile)
+    @media (max-width: breakpoints.$mobile)
       gap: 0.5rem
 
     .node-metric
@@ -518,7 +516,7 @@ $tablet: 1024px
       align-items: center
       gap: 1rem
 
-      @media (max-width: $mobile)
+      @media (max-width: breakpoints.$mobile)
         flex-wrap: wrap
         gap: 0.5rem
 
@@ -529,7 +527,7 @@ $tablet: 1024px
         font-weight: 500
         flex-shrink: 0
 
-        @media (max-width: $mobile)
+        @media (max-width: breakpoints.$mobile)
           width: 60px
           font-size: 0.75rem
 
@@ -560,7 +558,7 @@ $tablet: 1024px
         color: colors.$white
         text-align: right
 
-        @media (max-width: $mobile)
+        @media (max-width: breakpoints.$mobile)
           min-width: 0
           width: 100%
           text-align: left
@@ -577,7 +575,7 @@ $tablet: 1024px
     color: colors.$subtext
     flex-wrap: wrap
 
-    @media (max-width: $mobile)
+    @media (max-width: breakpoints.$mobile)
       gap: 0.75rem
       margin-top: 0.75rem
       font-size: 0.75rem

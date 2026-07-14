@@ -2,10 +2,15 @@ const Tag = require("../models/Tag");
 const EntryTag = require("../models/EntryTag");
 const Entry = require("../models/Entry");
 const { validateEntryAccess } = require("./entry");
+const { hasAccountPermission } = require("../utils/permission");
+const { Permission } = require("../permissions/registry");
 const { Op } = require("sequelize");
+
+const canManageTags = (accountId) => hasAccountPermission(accountId, Permission.RESOURCES_MANAGE);
 
 module.exports.createTag = async (accountId, { name, color }) => {
     if (!name || !color) return { code: 400, message: "Name and color are required" };
+    if (!(await canManageTags(accountId))) return { code: 403, message: "You don't have permission to manage resources" };
 
     const existingTag = await Tag.findOne({ where: { accountId, name } });
     if (existingTag) return { code: 409, message: "A tag with this name already exists" };
@@ -22,6 +27,7 @@ module.exports.updateTag = async (accountId, tagId, { name, color }) => {
 
     if (!tag) return { code: 404, message: "Tag not found" };
     if (tag.accountId !== accountId) return { code: 403, message: "You don't have permission to modify this tag" };
+    if (!(await canManageTags(accountId))) return { code: 403, message: "You don't have permission to manage resources" };
 
 
     if (name && name !== tag.name) {
@@ -44,6 +50,7 @@ module.exports.deleteTag = async (accountId, tagId) => {
 
     if (!tag) return { code: 404, message: "Tag not found" };
     if (tag.accountId !== accountId) return { code: 403, message: "You don't have permission to delete this tag" };
+    if (!(await canManageTags(accountId))) return { code: 403, message: "You don't have permission to manage resources" };
 
     await EntryTag.destroy({ where: { tagId } });
 
@@ -54,7 +61,7 @@ module.exports.deleteTag = async (accountId, tagId) => {
 
 module.exports.assignTagToEntry = async (accountId, entryId, tagId) => {
     const entry = await Entry.findByPk(entryId);
-    const accessCheck = await validateEntryAccess(accountId, entry, "You don't have permission to tag this entry");
+    const accessCheck = await validateEntryAccess(accountId, entry, "You don't have permission to tag this entry", Permission.RESOURCES_MANAGE);
 
     if (!accessCheck.valid) return accessCheck;
 
@@ -76,7 +83,7 @@ module.exports.assignTagToEntry = async (accountId, entryId, tagId) => {
 
 module.exports.removeTagFromEntry = async (accountId, entryId, tagId) => {
     const entry = await Entry.findByPk(entryId);
-    const accessCheck = await validateEntryAccess(accountId, entry, "You don't have permission to untag this entry");
+    const accessCheck = await validateEntryAccess(accountId, entry, "You don't have permission to untag this entry", Permission.RESOURCES_MANAGE);
 
     if (!accessCheck.valid) return accessCheck;
 

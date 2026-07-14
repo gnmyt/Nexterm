@@ -40,8 +40,13 @@ module.exports.authenticateDownload = async (req, res, next) => {
     if (!session) return res.status(401).json({ message: "Invalid token" });
     
     const user = await Account.findByPk(session.accountId);
-    if (!user || user.role !== "admin") return res.status(403).json({ message: "Admin access required" });
-    
+    if (!user) return res.status(401).json({ message: "Invalid token" });
+
+    const { hasSystemPermission } = require("../permissions/engine");
+    const { Permission } = require("../permissions/registry");
+    if (!(await hasSystemPermission(user.id, Permission.SETTINGS_BACKUP)))
+        return res.status(403).json({ message: "Insufficient permissions" });
+
     req.user = user;
     req.session = session;
     next();
@@ -49,10 +54,10 @@ module.exports.authenticateDownload = async (req, res, next) => {
 
 
 module.exports.authorizeGuacamole = async (req) => {
-    const query = req.url.split("?")[1].split("&").map((x) => x.split("=")).reduce((acc, x) => {
-        acc[x[0]] = x[1];
-        return acc;
-    }, {});
+    const qIndex = req.url.indexOf("?");
+    if (qIndex === -1) return;
+    const params = new URLSearchParams(req.url.slice(qIndex + 1));
+    const query = Object.fromEntries(params.entries());
 
     if (Object.keys(query).length === 0) return;
 

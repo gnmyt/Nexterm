@@ -4,8 +4,9 @@ import { useTranslation } from "react-i18next";
 import { deleteRequest, getRequest, patchRequest } from "@/common/utils/RequestUtil.js";
 import Button from "@/common/components/Button";
 import ToggleSwitch from "@/common/components/ToggleSwitch";
+import { getProviderIcon } from "@/common/utils/iconUtils";
 import Icon from "@mdi/react";
-import { mdiPencil, mdiPlus, mdiShieldAccountOutline, mdiTrashCan, mdiLock, mdiServer } from "@mdi/js";
+import { mdiPencil, mdiPlus, mdiTrashCan, mdiLock, mdiServer } from "@mdi/js";
 import ProviderDialog from "./components/ProviderDialog";
 import LDAPProviderDialog from "./components/LDAPProviderDialog";
 import { ActionConfirmDialog } from "@/common/components/ActionConfirmDialog/ActionConfirmDialog.jsx";
@@ -74,7 +75,7 @@ export const Authentication = () => {
                     <div key={`oidc-${provider.id}`} className="item">
                         <div className="left-section">
                             <div className={`icon ${provider.isInternal ? "warning" : "primary"}`}>
-                                <Icon path={provider.isInternal ? mdiLock : mdiShieldAccountOutline} />
+                                <Icon path={provider.isInternal ? mdiLock : getProviderIcon(provider)} />
                             </div>
                             <div className="details">
                                 <h3>

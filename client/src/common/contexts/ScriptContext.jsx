@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, useState } from "react";
+import { createContext, useCallback, useContext, useEffect, useState } from "react";
 import { UserContext } from "@/common/contexts/UserContext.jsx";
 import { getRequest } from "@/common/utils/RequestUtil.js";
 
@@ -7,11 +7,12 @@ export const ScriptContext = createContext({});
 export const ScriptProvider = ({ children }) => {
     const [scripts, setScripts] = useState([]);
     const [allScripts, setAllScripts] = useState([]);
+    const [sourceScripts, setSourceScripts] = useState([]);
     const { user, sessionToken } = useContext(UserContext);
 
     const loadScripts = async (organizationId = null) => {
         try {
-            const url = organizationId 
+            const url = organizationId
                 ? `/scripts?organizationId=${organizationId}`
                 : "/scripts";
             const response = await getRequest(url);
@@ -21,27 +22,36 @@ export const ScriptProvider = ({ children }) => {
         }
     };
 
-    const loadAllScripts = async () => {
+    const loadAllScripts = useCallback(async () => {
         try {
-            const response = await getRequest("/scripts/all");
-            setAllScripts(response);
+            setAllScripts(await getRequest("/scripts/all"));
         } catch (error) {
             console.error("Failed to load all scripts", error.message);
         }
-    };
+    }, []);
+
+    const loadSourceScripts = useCallback(async () => {
+        try {
+            setSourceScripts(await getRequest("/scripts/sources"));
+        } catch (error) {
+            console.error("Failed to load source scripts", error.message);
+        }
+    }, []);
 
     useEffect(() => {
         if (user) {
             loadScripts();
             loadAllScripts();
+            loadSourceScripts();
         } else if (!sessionToken) {
             setScripts([]);
             setAllScripts([]);
+            setSourceScripts([]);
         }
-    }, [user]);
+    }, [user, sessionToken, loadAllScripts, loadSourceScripts]);
 
     return (
-        <ScriptContext.Provider value={{ scripts, allScripts, loadScripts, loadAllScripts }}>
+        <ScriptContext.Provider value={{ scripts, allScripts, sourceScripts, loadScripts, loadAllScripts, loadSourceScripts }}>
             {children}
         </ScriptContext.Provider>
     );

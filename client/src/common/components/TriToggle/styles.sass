@@ -1,0 +1,74 @@
+@use "@/common/styles/colors"
+
+.tri-toggle
+  display: inline-flex
+  align-items: center
+  gap: 0.25rem
+  padding: 0.25rem
+  background-color: colors.$lighter-background
+  border: 1px solid colors.$dark-gray
+  border-radius: 0.75rem
+  flex-shrink: 0
+  box-sizing: border-box
+  user-select: none
+  transition: opacity 0.15s ease
+
+  .tri-segment
+    display: flex
+    align-items: center
+    justify-content: center
+    width: 2rem
+    height: 1.6rem
+    padding: 0
+    border: none
+    border-radius: 0.5rem
+    background-color: transparent
+    color: colors.$subtext
+    cursor: pointer
+    transition: background-color 0.15s ease, color 0.15s ease, transform 0.1s ease
+
+    svg
+      width: 1.05rem
+      height: 1.05rem
+
+    &:hover:not(.active):not(.inherited)
+      color: colors.$white
+      background-color: colors.$dark-gray
+
+    &:focus-visible
+      outline: 2px solid colors.$primary
+      outline-offset: 2px
+
+    &:active
+      transform: scale(0.94)
+
+    &.active.deny
+      background-color: colors.$error-opacity
+      color: colors.$error
+
+    &.active.neutral
+      background-color: colors.$gray
+      color: colors.$white
+
+    &.active.allow
+      background-color: colors.$success-opacity
+      color: colors.$success
+
+    &.inherited
+      opacity: 0.5
+
+      &.deny
+        color: colors.$error
+
+      &.allow
+        color: colors.$success
+
+      &:hover
+        opacity: 0.8
+        background-color: colors.$dark-gray
+
+  &.disabled
+    opacity: 0.4
+
+    .tri-segment
+      cursor: not-allowed

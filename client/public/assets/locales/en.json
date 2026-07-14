@@ -10,6 +10,7 @@
     "download": "Download",
     "maximize": "Maximize",
     "restore": "Restore",
+    "resize": "Resize",
     "actions": {
       "cancel": "Cancel",
       "confirm": "Confirm",
@@ -17,6 +18,7 @@
       "login": "Login",
       "register": "Register",
       "save": "Save",
+      "saving": "Saving…",
       "download": "Download",
       "close": "Close",
       "maximize": "Maximize",
@@ -56,11 +58,17 @@
       "ssoOrContinueWith": "or continue with",
       "noAuthMethodsAvailable": "No authentication methods available.",
       "signInWithPasskey": "Sign in with Passkey",
+      "signInWithQrCode": "Sign in with QR Code",
+      "qrScanDescription": "Scan this QR code with the Nexterm mobile app to sign in instantly.",
+      "backToLogin": "Back to Login",
       "authenticating": "Authenticating..."
     },
     "deviceLink": {
       "title": "Link Device",
       "description": "Enter the code shown on your device to authorize it to access your account.",
+      "qrTab": "QR Code",
+      "codeTab": "Code",
+      "qrDescription": "Scan this QR code with the Nexterm mobile app to link your device.",
       "codeLabel": "Device Code",
       "continue": "Continue",
       "verifying": "Verifying...",
@@ -104,6 +112,12 @@
       "waitingForAuth": "Waiting for authorization...",
       "codeCreationFailed": "Failed to create device code",
       "authSuccess": "Successfully authenticated!"
+    },
+    "serverSwitcher": {
+      "title": "Servers",
+      "addServer": "Add Server",
+      "removeServer": "Remove Server",
+      "removeConfirmText": "This will remove the connection to {{server}}. Are you sure?"
     },
     "selectBox": {
       "defaultOption": "Select an option...",
@@ -165,7 +179,22 @@
       "internalAuthDisabled": "Internal authentication is disabled",
       "ssoLoginFailed": "Failed to initiate SSO login",
       "passkeyLoginFailed": "Passkey authentication failed",
-      "passkeyCancelled": "Passkey authentication was cancelled"
+      "passkeyCancelled": "Passkey authentication was cancelled",
+      "qrCodeExpired": "QR code expired. Please try again.",
+      "connection": {
+        "title": "Connection failed",
+        "close": "Close tab",
+        "hostUnreachable": "Remote host unreachable",
+        "refused": "Connection refused by remote host",
+        "timeout": "Connection timed out",
+        "authenticationFailed": "Authentication failed",
+        "permissionDenied": "Permission denied",
+        "failed": "Connection failed",
+        "closedUnexpectedly": "Connection closed unexpectedly",
+        "error": "Connection error occurred",
+        "scriptClosedUnexpectedly": "Script connection closed unexpectedly",
+        "scriptError": "Script connection error occurred"
+      }
     },
     "messages": {
       "invitationAccepted": "Invitation accepted",
@@ -226,6 +255,11 @@
         "personal": "Personal",
         "user": "User #{{id}}",
         "organization": "Org #{{id}}"
+      },
+      "durationUnits": {
+        "seconds": "seconds",
+        "minutes": "minutes",
+        "hours": "hours"
       }
     },
     "pagination": {
@@ -274,9 +308,7 @@
       "actions": {
         "cancel": "Cancel",
         "create": "Create",
-        "save": "Save",
-        "generateAI": "Generate with AI",
-        "generating": "Generating..."
+        "save": "Save"
       }
     },
     "messages": {
@@ -540,6 +572,7 @@
     "adminSettings": "ADMIN SETTINGS",
     "pages": {
       "account": "Account",
+      "appearance": "Appearance",
       "terminal": "Terminal",
       "fileManager": "File Manager",
       "keymaps": "Keymaps",
@@ -551,7 +584,9 @@
       "sources": "Sources",
       "ai": "AI",
       "monitoring": "Monitoring",
-      "backup": "Storage"
+      "backup": "Storage",
+      "engines": "Engines",
+      "permissions": "Roles & Permissions"
     },
     "account": {
       "title": "Account",
@@ -563,11 +598,18 @@
       "themeAuto": "Auto",
       "themeLight": "Light",
       "themeDark": "Dark",
+      "themeDarkHint": "Press three times to enable OLED mode.",
       "themeOled": "OLED",
       "oledEnabled": "OLED mode enabled",
       "oledDisabled": "OLED mode disabled",
       "themeLabel": "Theme",
       "accentColor": "Accent Color",
+      "sizeLabel": "Size",
+      "sizeXS": "XS",
+      "sizeS": "S",
+      "sizeM": "M",
+      "sizeL": "L",
+      "sizeXL": "XL",
       "twoFactor": "Two-factor authentication",
       "twoFactorActive": "Active",
       "twoFactorInactive": "Inactive",
@@ -587,6 +629,32 @@
       "appearanceSyncDisabled": "Appearance settings will no longer sync",
       "generalSyncEnabled": "General settings will now sync to your account",
       "generalSyncDisabled": "General settings will no longer sync",
+      "customThemes": {
+        "title": "Custom Themes",
+        "description": "Create custom CSS themes or choose from synced source themes to personalize your interface.",
+        "newTheme": "New Theme",
+        "noThemesYet": "No themes yet",
+        "noThemesDescription": "Create a custom theme or add a source to get started.",
+        "editTheme": "Edit Theme",
+        "createTheme": "Create Theme",
+        "name": "Name",
+        "themeName": "Theme name",
+        "descriptionLabel": "Description",
+        "optionalDescription": "Optional description",
+        "saveChanges": "Save Changes",
+        "fromSource": "From source",
+        "edit": "Edit",
+        "delete": "Delete",
+        "deleteConfirm": "Are you sure you want to delete the theme \"{{name}}\"?",
+        "failedToLoadTheme": "Failed to load theme",
+        "nameAndCssRequired": "Name and CSS are required",
+        "themeUpdated": "Theme updated",
+        "themeCreated": "Theme created",
+        "failedToSaveTheme": "Failed to save theme",
+        "themeDeleted": "Theme deleted",
+        "failedToDeleteTheme": "Failed to delete theme",
+        "failedToActivateTheme": "Failed to activate theme"
+      },
       "sessionSynchronization": "Session Synchronization",
       "sessionSyncDescription": "Control how your server sessions are stored and synchronized across devices and browser tabs.",
       "sessionSyncAcrossDevices": "Across devices",
@@ -637,7 +705,42 @@
       "delete": "Delete",
       "leave": "Leave",
       "members": "Members",
-      "auditSettings": "Audit Settings",
+      "auditSettings": {
+        "auditSettingsTab": "Audit Settings",
+        "sessionRecordingHeading": "Session Recording",
+        "sessionRecordingDescription": "Record terminal and remote desktop sessions for playback",
+        "enableSessionRecordingLabel": "Enable Session Recording",
+        "enableSessionRecordingDescription": "Record SSH, Telnet, RDP, and VNC sessions for later playback",
+        "recordingRetentionLabel": "Recording Retention (days)",
+        "recordingRetentionDescription": "How long to keep session recordings before automatic deletion (1-365 days)",
+        "connectionRequirementsHeading": "Connection Requirements",
+        "connectionRequirementsDescription": "Control connection behavior and requirements",
+        "requireConnectionReasonLabel": "Require Connection Reason",
+        "requireConnectionReasonDescription": "Require users to provide a reason when connecting to servers",
+        "activityLoggingHeading": "Activity Logging",
+        "activityLoggingDescription": "Choose which types of activities to log",
+        "fileOperationsLabel": "File Operations",
+        "fileOperationsDescription": "Log file uploads, downloads, deletions, and renames via SFTP",
+        "serverConnectionsLabel": "Server Connections",
+        "serverConnectionsDescription": "Log SSH, SFTP, and PVE connections and disconnections",
+        "identityManagementLabel": "Identity Management",
+        "identityManagementDescription": "Log creation, modification, and deletion of SSH identities",
+        "passwordPasteLabel": "Password Paste",
+        "passwordPasteDescription": "Log usage of the password paste action",
+        "serverManagementLabel": "Server Management",
+        "serverManagementDescription": "Log creation, modification, and deletion of server configurations",
+        "folderManagementLabel": "Folder Management",
+        "folderManagementDescription": "Log creation, modification, and deletion of folders",
+        "scriptExecutionLabel": "Script Execution",
+        "scriptExecutionDescription": "Log execution of scripts and automation tasks",
+        "actions": {
+          "save": "Save Settings"
+        },
+        "messages": {
+          "updated": "Audit settings updated successfully",
+          "updateFailed": "Failed to update audit settings"
+        }
+      },
       "pendingInvitations": "Pending Invitations",
       "invitedBy": "Invited by: {{name}}",
       "deleteConfirmation": "This will permanently delete the organization and remove all members. This action cannot be undone.",
@@ -673,22 +776,15 @@
       "noSearchResultsDescription": "Try adjusting your search query.",
       "table": {
         "user": "User",
-        "role": "Role",
-        "twoFactor": "2FA"
-      },
-      "roles": {
-        "admin": "Admin",
-        "user": "User"
+        "twoFactor": "2FA",
+        "roles": "Roles"
       },
       "contextMenu": {
         "changePassword": "Change password",
-        "promoteToAdmin": "Promote to admin",
-        "demoteToUser": "Demote to user",
         "deleteUser": "Delete user",
         "loginAsUser": "Login as user",
         "deleteConfirm": "This will permanently delete the user and all associated data.",
-        "promoteConfirm": "This will promote the user to an admin.",
-        "demoteConfirm": "This will demote the user to a regular user."
+        "managePermissions": "Manage permissions"
       }
     },
     "userDialog": {
@@ -729,6 +825,10 @@
           "title": "AI Menu",
           "description": "Open the AI command menu"
         },
+        "aiaccepttool": {
+          "title": "AI Accept Action",
+          "description": "Approve the pending AI tool action in the assistant"
+        },
         "snippets": {
           "title": "Snippets",
           "description": "Open the snippets dialog"
@@ -748,6 +848,10 @@
         "fullscreen": {
           "title": "Full-Screen",
           "description": "Toggle full-screen mode"
+        },
+        "pasteidentitypassword": {
+          "title": "Paste Identity Password",
+          "description": "Paste the password of the current SSH connection's identity"
         }
       },
       "recorder": {
@@ -938,11 +1042,11 @@
     },
     "ai": {
       "title": "AI Assistant Configuration",
-      "description": "Configure AI-powered command generation for terminal sessions and snippet creation.",
+      "description": "Configure the AI assistant that can run commands and manage files directly over your server sessions.",
       "loading": "Loading AI settings...",
       "enable": {
         "title": "Enable AI Assistant",
-        "description": "Allow users to generate commands using AI"
+        "description": "Allow users to open the AI assistant inside server sessions"
       },
       "provider": {
         "title": "AI Provider",
@@ -950,18 +1054,43 @@
       },
       "model": {
         "title": "Model",
-        "description": "Select the AI model to use for command generation"
+        "description": "Select the AI model the assistant should use"
+      },
+      "requireConfirmation": {
+        "title": "Confirm before each action",
+        "description": "Require users to approve every command and file change the assistant wants to make"
       },
       "apiKey": {
         "title": "API Key",
-        "description": "Your OpenAI API key for authentication",
-        "placeholder": "Enter your OpenAI API key",
-        "setPlaceholder": "API key is set (leave blank to keep current)"
+        "setPlaceholder": "API key is set (leave blank to keep current)",
+        "genericDescription": "API key used to authenticate with the selected provider",
+        "genericPlaceholder": "Enter your {{provider}} API key"
       },
-      "ollamaUrl": {
-        "title": "Ollama URL",
-        "description": "The URL where your Ollama instance is running",
-        "placeholder": "http://localhost:11434"
+      "authMethod": {
+        "title": "Authentication",
+        "description": "Authenticate with an API key or your provider subscription",
+        "apiKey": "API Key",
+        "subscription": "Subscription"
+      },
+      "subscription": {
+        "title": "{{provider}} Subscription",
+        "description": "Sign in with your {{provider}} subscription to use its models without an API key",
+        "connectedDescription": "Your {{provider}} subscription is connected",
+        "connect": "Connect",
+        "connecting": "Connecting...",
+        "complete": "Complete",
+        "disconnect": "Disconnect",
+        "codePlaceholder": "Paste the authorization code here",
+        "codePlaceholderUrl": "Paste the full callback URL (or code) here",
+        "connectSuccess": "{{provider}} subscription connected",
+        "startError": "Failed to start authorization",
+        "exchangeError": "Failed to connect subscription",
+        "disconnectError": "Failed to disconnect subscription"
+      },
+      "baseUrl": {
+        "title": "API URL",
+        "description": "Base URL of the provider's OpenAI-compatible endpoint",
+        "placeholder": "https://api.example.com/v1"
       },
       "selectProvider": "Select a provider...",
       "selectModel": "Select a model...",
@@ -1093,6 +1222,7 @@
       "addSource": "Add Source",
       "snippets": "snippets",
       "scripts": "scripts",
+      "themes": "themes",
       "neverSynced": "Never synced",
       "sync": "Sync now",
       "edit": "Edit",
@@ -1114,7 +1244,7 @@
         "enabled": "Enabled",
         "enabledDescription": "When disabled, this source will not be synced",
         "validating": "Validating URL...",
-        "validationSuccess": "Valid source found: {{snippets}} snippets, {{scripts}} scripts",
+        "validationSuccess": "Valid source found: {{snippets}} snippets, {{scripts}} scripts, {{themes}} themes",
         "create": "Create"
       },
       "messages": {
@@ -1222,6 +1352,75 @@
         "nameRequired": "Provider name is required"
       },
       "noFiles": "No files found"
+    },
+    "engines": {
+      "title": "Engines",
+      "description": "Manage engine instances that handle remote connections.",
+      "addEngine": "Add Engine",
+      "noEngines": "No Engines",
+      "noEnginesDescription": "Add an engine to start connecting to remote servers.",
+      "status": {
+        "connected": "Connected",
+        "disconnected": "Disconnected"
+      },
+      "lastSeen": "Last seen {{date}}",
+      "neverConnected": "Never connected",
+      "regenerateToken": "Regenerate token",
+      "deleteEngine": "Delete engine",
+      "dismiss": "Dismiss",
+      "copyToken": "Copy token",
+      "transport": {
+        "encrypted": "Encrypted",
+        "unencrypted": "Unencrypted"
+      },
+      "tokenLabel": "Registration token for <strong>{{name}}</strong>",
+      "tokenHint": "Set this in <code1>config.yaml</code1> or as <code2>REGISTRATION_TOKEN</code2> env variable.",
+      "dialog": {
+        "title": "Add Engine",
+        "engineName": "Engine Name",
+        "namePlaceholder": "e.g. Office Network",
+        "create": "Create Engine"
+      },
+      "deleteConfirm": "Are you sure you want to delete \"{{name}}\"?",
+      "messages": {
+        "deleted": "Engine deleted successfully"
+      },
+      "errors": {
+        "loadFailed": "Failed to load engines",
+        "createFailed": "Failed to create engine",
+        "deleteFailed": "Failed to delete engine",
+        "regenerateFailed": "Failed to regenerate token"
+      }
+    },
+    "permissions": {
+      "subtitle": "Create roles with granular permissions or assign permissions to individual users. The Default role applies to everyone automatically.",
+      "createRole": "Create role",
+      "rolesTitle": "Roles",
+      "membersTitle": "Members",
+      "rolesTab": "Roles",
+      "overridesTab": "Direct permissions",
+      "permissionsTab": "Permissions",
+      "membersTab": "Members",
+      "settingsTab": "Settings",
+      "managePermissions": "Manage permissions",
+      "memberCount_one": "{{count}} member",
+      "memberCount_other": "{{count}} members",
+      "dangerousHint": "Granting this gives broad or destructive access. Assign it with care.",
+      "roleName": "Role name",
+      "roleNamePlaceholder": "e.g. Operators",
+      "roleColor": "Color",
+      "nameRequired": "Please enter a name for the role.",
+      "saveError": "Could not save your changes.",
+      "loadError": "Could not load permissions.",
+      "userSaved": "Permissions updated.",
+      "noAssignableRoles": "No roles available yet. Create one first.",
+      "noMembers": "This role has no members yet.",
+      "addMemberPlaceholder": "Search users to add…",
+      "deleteRole": "Delete role",
+      "deleteConfirm": "This will permanently delete the role \"{{name}}\" and remove it from all members.",
+      "searchUsers": "Search users…",
+      "inheritsAllow": "Inherits: Allowed",
+      "inheritsDeny": "Inherits: Denied"
     }
   },
   "tunnel": {
@@ -1254,6 +1453,8 @@
     }
   },
   "servers": {
+    "addServerNote": "Right-click to add a new server",
+    "searchPlaceholder": "Search",
     "time": {
       "justNow": "Just now",
       "minuteAgo": "{{count}} min ago",
@@ -1292,6 +1493,8 @@
       "openSFTP": "Open SFTP",
       "forwardPort": "Forward Port",
       "runScript": "Run Script",
+      "openNotes": "Open Notes",
+      "addNotes": "Add Notes",
       "editServer": "Edit Server",
       "editIntegration": "Edit Integration",
       "duplicateServer": "Duplicate Server",
@@ -1314,6 +1517,7 @@
         "changePermissions": "Change Permissions",
         "stopSharing": "Stop Sharing",
         "duplicate": "Duplicate",
+        "openNotes": "Open Notes",
         "hibernateSession": "Hibernate",
         "closeSession": "Disconnect"
       }
@@ -1323,9 +1527,13 @@
       "errorDescription": "Failed to send magic packet"
     },
     "messages": {
-      "usernameRequired": "Username is required",
-      "passwordRequired": "Password is required",
-      "sshKeyRequired": "SSH key is required"
+      "fillRequiredFields": "Please fill in all required fields",
+      "serverCreated": "Server created successfully",
+      "serverUpdated": "Server updated successfully",
+      "createFailed": "Failed to create server",
+      "updateFailed": "Failed to update server",
+      "createIdentityFailed": "Failed to create identity",
+      "updateIdentityFailed": "Failed to update identity"
     },
     "dialog": {
       "addServer": "Add server",
@@ -1351,7 +1559,8 @@
         "host": "Host",
         "nodeName": "Node Name",
         "vmid": "VM ID",
-        "macAddress": "MAC Address"
+        "macAddress": "MAC Address",
+        "engine": "Engine"
       },
       "placeholders": {
         "serverName": "Server name",
@@ -1364,6 +1573,7 @@
         "vmid": "VM ID",
         "macAddress": "AA:BB:CC:DD:EE:FF"
       },
+      "engineOffline": "(offline)",
       "settings": {
         "jumpHosts": {
           "title": "Jump Hosts",
@@ -1623,10 +1833,19 @@
         "enterDirectory": "Enter directory path...",
         "hiddenDirectories": "{{count}} hidden directories",
         "switchToGrid": "Switch to grid view",
-        "switchToList": "Switch to list view"
+        "switchToList": "Switch to list view",
+        "search": "Search files",
+        "closeSearch": "Close search"
       },
       "item": {
         "link": "link"
+      },
+      "search": {
+        "placeholder": "Filter files in this folder...",
+        "results_one": "{{count}} result",
+        "results_other": "{{count}} results",
+        "noResultsTitle": "No matches",
+        "noResults": "No files match \"{{query}}\""
       },
       "states": {
         "loading": "Loading files...",
@@ -1645,17 +1864,33 @@
     },
     "aiAssistant": {
       "title": "AI Assistant",
-      "placeholder": "Describe what you want to do...",
-      "hint": "Press Enter to generate • Esc to close",
-      "hintUse": "Press Enter to use command • Esc to close",
-      "closeLabel": "Close AI Assistant",
-      "generate": "Generate command",
-      "generating": "Generating command...",
-      "generatedCommand": "Generated Command",
-      "useCommand": "Use Command",
-      "tryAgain": "Try Again",
-      "copy": "Copy to clipboard",
-      "error": "Failed to generate command. Please try again."
+      "open": "AI Assistant",
+      "empty": "Ask the assistant to inspect or change this server. It can run commands and read or edit files directly over the connection.",
+      "placeholder": "Message the assistant...",
+      "connecting": "Connecting...",
+      "send": "Send",
+      "stop": "Stop",
+      "connectionError": "Connection to the assistant was lost.",
+      "confirmPrompt": "Allow this action?",
+      "allow": "Allow",
+      "allowShortcut": "Allow ({{key}})",
+      "deny": "Deny",
+      "denied": "You denied this action.",
+      "stopped": "Stopped.",
+      "tools": {
+        "runCommand": "Run command",
+        "readFile": "Read file",
+        "writeFile": "Write file",
+        "editFile": "Edit file",
+        "listDirectory": "List directory",
+        "statPath": "Inspect path",
+        "makeDirectory": "Create directory",
+        "deleteFile": "Delete file",
+        "removeDirectory": "Remove directory",
+        "movePath": "Move",
+        "changePermissions": "Change permissions",
+        "findDirectories": "Find directories"
+      }
     },
     "snippets": {
       "title": "Snippets",
@@ -1672,14 +1907,17 @@
       "exitFullScreen": "Exit Full-Screen Mode",
       "badgeOn": "ON"
     },
-    "messages": {
-      "fillRequiredFields": "Please fill in all required fields",
-      "serverCreated": "Server created successfully",
-      "serverUpdated": "Server updated successfully",
-      "createFailed": "Failed to create server",
-      "updateFailed": "Failed to update server",
-      "createIdentityFailed": "Failed to create identity",
-      "updateIdentityFailed": "Failed to update identity"
+    "notesPanel": {
+      "title": "Notes",
+      "placeholder": "Write notes for this server…",
+      "showInList": "Show in list",
+      "showInListTooltip": "Display the first line of these notes under the server name in the sidebar.",
+      "status": {
+        "saving": "Saving",
+        "saved": "Saved",
+        "unsaved": "Unsaved",
+        "error": "Save failed"
+      }
     }
   },
   "support": {
@@ -1700,6 +1938,7 @@
     }
   },
   "welcome": {
+    "hello": "Hi",
     "subtitle": "Welcome to Nexterm. The open-source server manager for SSH, VNC and RDP.",
     "downloadApps": "Download Apps",
     "connectDevice": "Connect Device",

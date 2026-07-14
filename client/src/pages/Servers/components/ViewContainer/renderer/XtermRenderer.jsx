@@ -7,40 +7,46 @@ import { Terminal as Xterm } from "@xterm/xterm";
 import { usePreferences } from "@/common/contexts/PreferencesContext.jsx";
 import { FitAddon } from "@xterm/addon-fit";
 import { ContextMenu, ContextMenuItem, ContextMenuSeparator, useContextMenu } from "@/common/components/ContextMenu";
-import AICommandPopover from "./components/AICommandPopover";
+import AIAssistant from "./components/AIAssistant";
 import SnippetsMenu from "./components/SnippetsMenu";
 import { createProgressParser } from "../utils/progressParser";
-import { mdiContentCopy, mdiContentPaste, mdiCodeBrackets, mdiSelectAll, mdiDelete, mdiKeyboard, mdiKey } from "@mdi/js";
+import { mdiContentCopy, mdiContentPaste, mdiCodeBrackets, mdiSelectAll, mdiDelete, mdiKeyboard, mdiKey, mdiFolderOpen, mdiRobotHappyOutline } from "@mdi/js";
 import { useTranslation } from "react-i18next";
 import ConnectionLoader from "./components/ConnectionLoader";
+import ConnectionError, { mapConnectionError } from "./components/ConnectionError";
 import { getWebSocketUrl } from "@/common/utils/ConnectionUtil.js";
 import { postRequest } from "@/common/utils/RequestUtil.js";
 import "@xterm/xterm/css/xterm.css";
 import "./styles/xterm.sass";
 
-const XtermRenderer = ({ session, disconnectFromServer, registerTerminalRef, broadcastMode, terminalRefs, updateProgress, layoutMode, onBroadcastToggle, onFullscreenToggle, isShared = false }) => {
+const XtermRenderer = ({ session, disconnectFromServer, markSessionErrored, getSessionError, registerTerminalRef, broadcastMode, terminalRefs, updateProgress, layoutMode, onBroadcastToggle, onFullscreenToggle, isShared = false, onOpenSftp }) => {
     const ref = useRef(null);
     const termRef = useRef(null);
     const wsRef = useRef(null);
     const broadcastModeRef = useRef(broadcastMode);
     const progressParserRef = useRef(null);
-    const terminalBufferRef = useRef([]);
     const layoutModeRef = useRef(layoutMode);
     const onBroadcastToggleRef = useRef(onBroadcastToggle);
     const onFullscreenToggleRef = useRef(onFullscreenToggle);
     const connectionLoaderRef = useRef(null);
-    
+    const canPasteIdentityRef = useRef(false);
+
     const userContext = useContext(UserContext);
     const sessionToken = userContext?.sessionToken;
     const { theme, getCurrentTheme, selectedFont, fontSize, cursorStyle, cursorBlink, selectedTheme } = usePreferences();
     const aiContext = useContext(AIContext);
     const isAIAvailable = aiContext?.isAIAvailable || (() => false);
+    const aiAvailableRef = useRef(false);
+    useEffect(() => {
+        aiAvailableRef.current = isAIAvailable();
+    });
     const { getParsedKeybind } = useKeymaps();
     const { t } = useTranslation();
-    const [showAIPopover, setShowAIPopover] = useState(false);
+    const [showAIAssistant, setShowAIAssistant] = useState(false);
     const contextMenu = useContextMenu();
     const { identities } = useContext(IdentityContext);
     const [showSnippetsMenu, setShowSnippetsMenu] = useState(false);
+    const [connectionError, setConnectionError] = useState(() => getSessionError?.(session.id) || null);
 
     useEffect(() => {
         broadcastModeRef.current = broadcastMode;
@@ -59,6 +65,11 @@ const XtermRenderer = ({ session, disconnectFromServer, registerTerminalRef, bro
     }, [onFullscreenToggle]);
 
     useEffect(() => {
+        const identity = identities?.find(i => i.id === session.identity);
+        canPasteIdentityRef.current = !!(identity && ['password', 'both', 'password-only'].includes(identity.type));
+    }, [identities, session.identity]);
+
+    useEffect(() => {
         if (updateProgress) {
             progressParserRef.current = createProgressParser();
 
@@ -71,17 +82,11 @@ const XtermRenderer = ({ session, disconnectFromServer, registerTerminalRef, bro
         }
     }, [session.id, updateProgress]);
 
-    const toggleAIPopover = () => {
-        if (showAIPopover) {
-            setTimeout(() => termRef.current?.focus(), 0);
-        }
-        setShowAIPopover(!showAIPopover);
-    };
+    const toggleAIAssistant = () => setShowAIAssistant((visible) => !visible);
 
-    const handleAICommandGenerated = (command) => {
-        if (termRef.current && wsRef.current) {
-            wsRef.current.send(command);
-        }
+    const handleOpenAIAssistant = () => {
+        contextMenu.close();
+        setShowAIAssistant(true);
     };
 
     const handleContextMenu = (e) => {
@@ -165,8 +170,10 @@ const XtermRenderer = ({ session, disconnectFromServer, registerTerminalRef, bro
 
     useEffect(() => {
         if (!sessionToken && !isShared) return;
+        if (getSessionError?.(session.id)) return;
 
         let isCleaningUp = false;
+        setConnectionError(null);
 
         const terminalTheme = getCurrentTheme();
         const isLightTerminalTheme = selectedTheme === "light";
@@ -246,17 +253,28 @@ const XtermRenderer = ({ session, disconnectFromServer, registerTerminalRef, bro
             ws.send(`\x01${term.cols},${term.rows}`);
         }
 
-        ws.onclose = () => {
+        const reportError = (message) => {
+            markSessionErrored?.(session.id, message);
+            setConnectionError(message);
+        };
+
+        ws.onclose = (event) => {
             clearInterval(interval);
-            if (!isCleaningUp) {
+            if (isCleaningUp) return;
+
+            if (event.code >= 4000 && event.reason) {
+                reportError(mapConnectionError(event.reason, t));
+            } else if (event.code !== 1000 && event.code !== 1005) {
+                reportError(t("common.errors.connection.closedUnexpectedly"));
+            } else {
                 disconnectFromServer(session.id);
             }
         };
 
         ws.onerror = (error) => {
-            console.error('WebSocket error:', error);
+            console.error("WebSocket error:", error);
             if (!isCleaningUp) {
-                disconnectFromServer(session.id);
+                reportError(t("common.errors.connection.error"));
             }
         };
 
@@ -286,8 +304,6 @@ const XtermRenderer = ({ session, disconnectFromServer, registerTerminalRef, bro
                 });
             } else {
                 term.write(data);
-                terminalBufferRef.current.push(data);
-                if (terminalBufferRef.current.length > 50) terminalBufferRef.current.shift();
 
                 if (progressParserRef.current && updateProgress) {
                     const progress = progressParserRef.current.parseData(data);
@@ -329,10 +345,10 @@ const XtermRenderer = ({ session, disconnectFromServer, registerTerminalRef, bro
                 }
 
                 const aiKeybind = getParsedKeybind("ai-menu");
-                if (aiKeybind && isAIAvailable() && matchesKeybind(event, aiKeybind)) {
+                if (aiKeybind && aiAvailableRef.current && matchesKeybind(event, aiKeybind)) {
                     event.preventDefault();
                     event.stopPropagation();
-                    toggleAIPopover();
+                    toggleAIAssistant();
                     return false;
                 }
 
@@ -341,6 +357,14 @@ const XtermRenderer = ({ session, disconnectFromServer, registerTerminalRef, bro
                     event.preventDefault();
                     event.stopPropagation();
                     window.dispatchEvent(new CustomEvent('terminal-snippets-shortcut'));
+                    return false;
+                }
+
+                const pasteIdentityKeybind = getParsedKeybind("paste-identity-password");
+                if (pasteIdentityKeybind && canPasteIdentityRef.current && matchesKeybind(event, pasteIdentityKeybind)) {
+                    event.preventDefault();
+                    event.stopPropagation();
+                    handlePasteIdentity();
                     return false;
                 }
 
@@ -400,17 +424,12 @@ const XtermRenderer = ({ session, disconnectFromServer, registerTerminalRef, bro
     return (
         <div className="xterm-container" onContextMenu={!isShared ? handleContextMenu : undefined}>
             <ConnectionLoader onReady={(loader) => { connectionLoaderRef.current = loader; }} />
+            {connectionError && (
+                <ConnectionError message={connectionError} onClose={() => disconnectFromServer(session.id)} />
+            )}
             <div ref={ref} className="xterm-wrapper" />
-            {!isShared && isAIAvailable() && (
-                <AICommandPopover visible={showAIPopover} onClose={() => setShowAIPopover(false)}
-                    onCommandGenerated={handleAICommandGenerated} focusTerminal={() => termRef.current?.focus()}
-                    entryId={session.server?.id}
-                    recentOutput={terminalBufferRef.current.join('')
-                        .replace(/\x1B\[[0-9;]*[a-zA-Z]/g, '')
-                        .replace(/[\x00-\x1F\x7F]/g, ' ')
-                        .replace(/\s+/g, ' ')
-                        .trim()
-                        .slice(-1500)} />
+            {!isShared && isAIAvailable() && showAIAssistant && (
+                <AIAssistant session={session} onClose={() => setShowAIAssistant(false)} />
             )}
             {!isShared && (
                 <ContextMenu
@@ -441,6 +460,13 @@ const XtermRenderer = ({ session, disconnectFromServer, registerTerminalRef, bro
                         label={t('servers.fileManager.contextMenu.insertSnippet')}
                         onClick={handleInsertSnippet}
                     />
+                    {isAIAvailable() && (
+                        <ContextMenuItem
+                            icon={mdiRobotHappyOutline}
+                            label={t('servers.aiAssistant.open')}
+                            onClick={handleOpenAIAssistant}
+                        />
+                    )}
                     {(identities && session.identity && identities.find(i => i.id === session.identity) && ['password','both','password-only'].includes(identities.find(i => i.id === session.identity).type)) && (
                         <ContextMenuItem
                             icon={mdiKey}
@@ -459,6 +485,16 @@ const XtermRenderer = ({ session, disconnectFromServer, registerTerminalRef, bro
                         label={t('servers.fileManager.contextMenu.clearTerminal')}
                         onClick={handleClearTerminal}
                     />
+                    {onOpenSftp && (
+                        <>
+                            <ContextMenuSeparator />
+                            <ContextMenuItem
+                                icon={mdiFolderOpen}
+                                label={t('servers.tabs.contextMenu.openSftp')}
+                                onClick={() => { contextMenu.close(); onOpenSftp(); }}
+                            />
+                        </>
+                    )}
                 </ContextMenu>
             )}
             {!isShared && (

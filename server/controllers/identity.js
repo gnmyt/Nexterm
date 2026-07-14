@@ -1,7 +1,8 @@
 const Identity = require("../models/Identity");
 const Credential = require("../models/Credential");
 const EntryIdentity = require("../models/EntryIdentity");
-const { hasOrganizationAccess } = require("../utils/permission");
+const { hasOrganizationAccess, hasOrganizationPermission, hasAccountPermission } = require("../utils/permission");
+const { Permission } = require("../permissions/registry");
 const OrganizationMember = require("../models/OrganizationMember");
 const { Op } = require("sequelize");
 const logger = require("../utils/logger");
@@ -11,6 +12,19 @@ const validateAccess = async (accountId, identity) => {
     if (!identity) return { valid: false, error: { code: 501, message: "Identity does not exist" } };
     if (identity.accountId && identity.accountId !== accountId) return { valid: false, error: { code: 403, message: "No permission to access this identity" } };
     if (identity.organizationId && !(await hasOrganizationAccess(accountId, identity.organizationId))) return { valid: false, error: { code: 403, message: "No access to this organization's identity" } };
+    return { valid: true, identity };
+};
+
+const validateManageAccess = async (accountId, identity) => {
+    if (!identity) return { valid: false, error: { code: 501, message: "Identity does not exist" } };
+    if (identity.organizationId) {
+        if (!(await hasOrganizationPermission(accountId, identity.organizationId, Permission.IDENTITIES_MANAGE)))
+            return { valid: false, error: { code: 403, message: "You don't have permission to manage this organization's identities" } };
+        return { valid: true, identity };
+    }
+    if (identity.accountId !== accountId) return { valid: false, error: { code: 403, message: "No permission to access this identity" } };
+    if (!(await hasAccountPermission(accountId, Permission.IDENTITIES_MANAGE)))
+        return { valid: false, error: { code: 403, message: "You don't have permission to manage identities" } };
     return { valid: true, identity };
 };
 
@@ -55,8 +69,11 @@ module.exports.listIdentities = async (accountId) => {
 };
 
 module.exports.createIdentity = async (accountId, config) => {
-    if (config.organizationId && !(await hasOrganizationAccess(accountId, config.organizationId))) {
-        return { code: 403, message: "No access to this organization" };
+    if (config.organizationId) {
+        if (!(await hasOrganizationPermission(accountId, config.organizationId, Permission.IDENTITIES_MANAGE)))
+            return { code: 403, message: "You don't have permission to manage this organization's identities" };
+    } else if (!(await hasAccountPermission(accountId, Permission.IDENTITIES_MANAGE))) {
+        return { code: 403, message: "You don't have permission to manage identities" };
     }
     const identity = await Identity.create({
         ...config, accountId: config.organizationId ? null : accountId, organizationId: config.organizationId || null,
@@ -72,7 +89,7 @@ module.exports.createIdentity = async (accountId, config) => {
 
 module.exports.deleteIdentity = async (accountId, identityId) => {
     const identity = await Identity.findByPk(identityId);
-    const check = await validateAccess(accountId, identity);
+    const check = await validateManageAccess(accountId, identity);
     if (!check.valid) return check.error;
 
     await Credential.destroy({ where: { identityId } });
@@ -87,7 +104,7 @@ module.exports.deleteIdentity = async (accountId, identityId) => {
 
 module.exports.updateIdentity = async (accountId, identityId, config) => {
     const identity = await Identity.findByPk(identityId);
-    const check = await validateAccess(accountId, identity);
+    const check = await validateManageAccess(accountId, identity);
     if (!check.valid) return check.error;
 
     const { password, sshKey, passphrase, accountId: _, organizationId: __, ...updateConfig } = config;
@@ -106,7 +123,7 @@ module.exports.moveIdentityToOrganization = async (accountId, identityId, organi
     const identity = await Identity.findByPk(identityId);
     if (!identity) return { code: 501, message: "Identity does not exist" };
     if (identity.accountId !== accountId) return { code: 403, message: "Can only move your own personal identities" };
-    if (!(await hasOrganizationAccess(accountId, organizationId))) return { code: 403, message: "No access to this organization" };
+    if (!(await hasOrganizationPermission(accountId, organizationId, Permission.IDENTITIES_MANAGE))) return { code: 403, message: "You don't have permission to manage this organization's identities" };
 
     await Identity.update({ accountId: null, organizationId }, { where: { id: identityId } });
     logger.info("Identity moved to organization", { identityId, name: identity.name, organizationId });

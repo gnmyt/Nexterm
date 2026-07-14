@@ -186,7 +186,6 @@ module.exports.handleOIDCCallback = async (query, userInfo) => {
                 password: hashedPassword,
                 firstName: String(firstName),
                 lastName: String(lastName),
-                role: "user",
             });
         } else {
             await Account.update({
@@ -208,7 +207,6 @@ module.exports.handleOIDCCallback = async (query, userInfo) => {
                 username: account.username,
                 firstName: account.firstName,
                 lastName: account.lastName,
-                role: account.role,
             },
         };
     } catch (error) {

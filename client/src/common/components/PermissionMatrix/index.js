@@ -1,0 +1,1 @@
+export { PermissionMatrix as default } from "./PermissionMatrix.jsx";

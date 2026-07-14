@@ -10,6 +10,8 @@ import SummaryDialog from "./components/SummaryDialog";
 import TableDialog from "./components/TableDialog";
 import MessageBoxDialog from "./components/MessageBoxDialog";
 import { useToast } from "@/common/contexts/ToastContext.jsx";
+import { useTranslation } from "react-i18next";
+import ConnectionError, { mapConnectionError } from "../components/ConnectionError";
 import "@xterm/xterm/css/xterm.css";
 import "./styles.sass";
 
@@ -24,16 +26,18 @@ const MSG = {
 
 const DIALOG_TYPES = { input: "input", summary: "summary", table: "table", msgbox: "msgbox" };
 
-export const ScriptRenderer = ({ session, updateProgress, savedState, saveState }) => {
+export const ScriptRenderer = ({ session, disconnectFromServer, updateProgress, savedState, saveState, markSessionErrored, getSessionError }) => {
     const containerRef = useRef(null);
     const termRef = useRef(null);
     const wsRef = useRef(null);
     const fitAddonRef = useRef(null);
     const isAnyDialogOpenRef = useRef(false);
     const handlersRef = useRef({});
-    
+
     const { sendToast } = useToast();
+    const { t } = useTranslation();
     const { sessionToken } = useContext(UserContext);
+    const [connectionError, setConnectionError] = useState(() => getSessionError?.(session.id) || null);
     const { theme, getCurrentTheme, selectedFont, fontSize, cursorStyle, cursorBlink, selectedTheme } = usePreferences();
 
     const [state, setState] = useState({
@@ -178,6 +182,7 @@ export const ScriptRenderer = ({ session, updateProgress, savedState, saveState 
 
     useEffect(() => {
         if (!sessionToken || !containerRef.current) return;
+        if (getSessionError?.(session.id)) return;
 
         let isCleaningUp = false;
 
@@ -245,9 +250,22 @@ export const ScriptRenderer = ({ session, updateProgress, savedState, saveState 
             ws.send(`\x01${term.cols},${term.rows}`);
         };
 
-        ws.onclose = () => {
+        const reportError = (message) => {
+            markSessionErrored?.(session.id, message);
+            setConnectionError(message);
+        };
+
+        ws.onclose = (event) => {
             clearInterval(interval);
-            if (!isCleaningUp) {
+            if (isCleaningUp) return;
+
+            if (event.code >= 4000 && event.reason) {
+                reportError(mapConnectionError(event.reason, t));
+                setState(prev => ({ ...prev, failedStep: prev.currentStep, isCompleted: true }));
+            } else if (event.code !== 1000 && event.code !== 1005) {
+                reportError(t("common.errors.connection.scriptClosedUnexpectedly"));
+                setState(prev => ({ ...prev, failedStep: prev.currentStep, isCompleted: true }));
+            } else {
                 setState(prev => ({ ...prev, isCompleted: true }));
             }
         };
@@ -255,6 +273,7 @@ export const ScriptRenderer = ({ session, updateProgress, savedState, saveState 
         ws.onerror = (error) => {
             console.error("WebSocket error:", error);
             if (!isCleaningUp) {
+                reportError(t("common.errors.connection.scriptError"));
                 setState(prev => ({ ...prev, failedStep: prev.currentStep }));
             }
         };
@@ -328,6 +347,9 @@ export const ScriptRenderer = ({ session, updateProgress, savedState, saveState 
     return (
         <div className="script-renderer">
             <div ref={containerRef} className="script-terminal" />
+            {connectionError && (
+                <ConnectionError message={connectionError} onClose={() => disconnectFromServer(session.id)} />
+            )}
             <ScriptOverlay
                 scriptName={state.scriptName || session.scriptName || "Script"}
                 steps={state.steps}

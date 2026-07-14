@@ -7,6 +7,7 @@ const { validateEntryAccess } = require("./entry");
 const { getIdentityCredentials, getIdentity } = require("./identity");
 const { getOrganizationAuditSettingsInternal, createAuditLog, AUDIT_ACTIONS, RESOURCE_TYPES } = require("./audit");
 const { resolveIdentity } = require("../utils/identityResolver");
+const { Permission } = require("../permissions/registry");
 const Organization = require('../models/Organization');
 const logger = require("../utils/logger");
 const stateBroadcaster = require("../lib/StateBroadcaster");
@@ -21,10 +22,27 @@ const ENTRY_TYPE_TO_AUDIT_ACTION = {
     'pve-qemu': AUDIT_ACTIONS.PVE_CONNECT,
 };
 
+const ENTRY_TYPE_TO_CONNECT_PERMISSION = {
+    'ssh': Permission.CONNECT_SSH,
+    'telnet': Permission.CONNECT_SSH,
+    'rdp': Permission.CONNECT_RDP,
+    'vnc': Permission.CONNECT_VNC,
+    'pve-lxc': Permission.CONNECT_PROXMOX,
+    'pve-shell': Permission.CONNECT_PROXMOX,
+    'pve-qemu': Permission.CONNECT_PROXMOX,
+};
+
 const getAuditAction = (entry, scriptId) => {
     if (scriptId) return AUDIT_ACTIONS.SCRIPT_EXECUTE;
     const type = entry.type === 'server' ? entry.config?.protocol : entry.type;
     return ENTRY_TYPE_TO_AUDIT_ACTION[type] || AUDIT_ACTIONS.SSH_CONNECT;
+};
+
+const getRequiredConnectPermission = (entry, type, scriptId) => {
+    if (scriptId) return Permission.SCRIPTS_EXECUTE;
+    if (type === "sftp") return Permission.FILES_VIEW;
+    const entryType = entry.type === 'server' ? entry.config?.protocol : entry.type;
+    return ENTRY_TYPE_TO_CONNECT_PERMISSION[entryType] || Permission.CONNECT_SSH;
 };
 
 const createSession = async (accountId, entryId, identityId, connectionReason, type = null, directIdentity = null, tabId = null, browserId = null, scriptId = null, startPath = null, ipAddress = null, userAgent = null) => {
@@ -33,7 +51,8 @@ const createSession = async (accountId, entryId, identityId, connectionReason, t
         return { code: 404, message: "Entry not found" };
     }
 
-    const accessResult = await validateEntryAccess(accountId, entry);
+    const requiredPermission = getRequiredConnectPermission(entry, type, scriptId);
+    const accessResult = await validateEntryAccess(accountId, entry, "Access denied", requiredPermission);
     if (!accessResult.valid) {
         return { code: 403, message: "Access denied" };
     }
@@ -89,12 +108,13 @@ const createSession = async (accountId, entryId, identityId, connectionReason, t
             logger.info("Session connection established", { sessionId: session.sessionId, entryId, type: entry.type });
         })
         .catch((error) => {
-            logger.error("Failed to create connection for session", { 
-                sessionId: session.sessionId, 
+            logger.error("Failed to create connection for session", {
+                sessionId: session.sessionId,
                 error: error.message,
                 stack: error.stack
             });
-            SessionManager.remove(session.sessionId);
+            SessionManager.markFailed(session.sessionId, error.message);
+            SessionManager.remove(session.sessionId, { code: 4017, reason: error.message });
         });
 
     return { sessionId: session.sessionId };
@@ -139,6 +159,7 @@ const getSessions = async (accountId, tabId = null, browserId = null) => {
             osName: snapshotMap[session.entryId] || null,
             shareId: session.shareId || null,
             shareWritable: session.shareWritable || false,
+            sftpPath: session.sftpPath || null,
         };
     });
 };
@@ -289,12 +310,12 @@ const pasteIdentityPassword = async (accountId, sessionId, ipAddress = null, use
     if (!password) return { code: 400, message: 'Identity does not contain a password' };
 
     const connection = SessionManager.getConnection(sessionId);
-    if (!connection || !connection.stream) return { code: 400, message: 'Session stream not available' };
+    if (!connection || !connection.dataSocket) return { code: 400, message: 'Session stream not available' };
 
     const entry = await Entry.findByPk(session.entryId);
 
     try {
-        connection.stream.write(password);
+        connection.dataSocket.write(password);
 
         await createAuditLog({
             accountId,

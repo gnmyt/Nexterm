@@ -1,0 +1,46 @@
+FROM alpine:3.21 AS guac-builder
+
+WORKDIR /src
+
+COPY scripts/build-engine-release.sh ./scripts/build-engine-release.sh
+RUN sh scripts/build-engine-release.sh deps-guac
+
+COPY vendor/guacamole-server/ ./vendor/guacamole-server/
+
+RUN sh scripts/build-engine-release.sh guac
+
+
+FROM alpine:3.21 AS engine-builder
+
+WORKDIR /src
+
+COPY scripts/build-engine-release.sh ./scripts/build-engine-release.sh
+RUN sh scripts/build-engine-release.sh deps-engine
+
+COPY --from=guac-builder /src/vendor/guacamole-server/dist/ ./vendor/guacamole-server/dist/
+COPY schema/ ./schema/
+COPY engine/ ./engine/
+
+RUN sh scripts/build-engine-release.sh engine
+
+
+FROM alpine:3.21
+
+RUN apk add --no-cache \
+    cairo jpeg libpng ossp-uuid libuuid \
+    pango libwebp openssl \
+    libpulse libvorbis libogg libssh2 \
+    libvncserver freerdp-libs libcurl
+
+COPY --from=guac-builder /src/vendor/guacamole-server/dist/lib/ /usr/local/lib/
+
+COPY --from=engine-builder /src/engine/build/nexterm-engine /usr/local/bin/nexterm-engine
+
+RUN cp /usr/local/lib/freerdp2/*.so /usr/lib/freerdp2/ \
+    && ldconfig /usr/local/lib 2>/dev/null || true
+
+ENV LOG_LEVEL=info
+
+WORKDIR /etc/nexterm
+
+ENTRYPOINT ["nexterm-engine"]

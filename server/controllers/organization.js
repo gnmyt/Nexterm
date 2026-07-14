@@ -1,23 +1,10 @@
 const Organization = require("../models/Organization");
 const OrganizationMember = require("../models/OrganizationMember");
+const OrganizationMemberPermission = require("../models/OrganizationMemberPermission");
 const Account = require("../models/Account");
+const { hasOrganizationPermission, getOrganizationPermissions } = require("../permissions/engine");
+const { Permission } = require("../permissions/registry");
 const { Op } = require("sequelize");
-
-const canActAsOwner = async (accountId, organizationId) => {
-    const membership = await OrganizationMember.findOne({
-        where: { organizationId, accountId, status: "active" },
-    });
-    if (!membership) return false;
-    if (membership.role === "owner") return true;
-
-    const ownerExists = await OrganizationMember.findOne({
-        where: { organizationId, role: "owner", status: "active" },
-    });
-    if (ownerExists) return false;
-
-    const account = await Account.findByPk(accountId);
-    return account && account.role === "admin";
-};
 
 module.exports.createOrganization = async (accountId, configuration) => {
     const organization = await Organization.create({
@@ -42,12 +29,13 @@ module.exports.deleteOrganization = async (accountId, organizationId) => {
     const orgId = parseInt(organizationId, 10);
     if (isNaN(orgId) || orgId <= 0) return { code: 400, message: "Invalid organization ID" };
 
-    const canManage = await canActAsOwner(accountId, orgId);
+    const canManage = await hasOrganizationPermission(accountId, orgId, Permission.ORG_DELETE);
     if (!canManage) {
         return { code: 403, message: "You don't have permission to delete this organization or it doesn't exist" };
     }
 
     await OrganizationMember.destroy({ where: { organizationId } });
+    await OrganizationMemberPermission.destroy({ where: { organizationId } });
 
     await Organization.destroy({ where: { id: organizationId } });
 
@@ -60,7 +48,7 @@ module.exports.updateOrganization = async (accountId, organizationId, updates) =
         return { code: 400, message: "Invalid organization ID" };
     }
 
-    const canManage = await canActAsOwner(accountId, orgId);
+    const canManage = await hasOrganizationPermission(accountId, orgId, Permission.ORG_MANAGE);
     if (!canManage) {
         return { code: 403, message: "You don't have permission to update this organization" };
     }
@@ -90,19 +78,10 @@ module.exports.listOrganizations = async (accountId) => {
 
     const organizations = await Organization.findAll({ where: { id: { [Op.in]: organizationIds } } });
 
-    const account = await Account.findByPk(accountId);
-    const isSystemAdmin = account && account.role === "admin";
-
-    const owners = await OrganizationMember.findAll({
-        where: { organizationId: { [Op.in]: organizationIds }, role: "owner", status: "active" },
-    });
-
-    return organizations.map(org => {
-        const membership = memberships.find(m => m.organizationId === org.id);
-        const hasOwner = owners.some(o => o.organizationId === org.id);
-        const isOwner = membership.role === "owner" || (!hasOwner && isSystemAdmin);
-        return { ...org, isOwner };
-    });
+    return Promise.all(organizations.map(async (org) => {
+        const { isOwner, isAdmin, permissions } = await getOrganizationPermissions(accountId, org.id);
+        return { ...org, isOwner: isOwner || isAdmin, permissions };
+    }));
 };
 
 module.exports.listPendingInvitations = async (accountId) => {
@@ -139,7 +118,7 @@ module.exports.inviteUser = async (accountId, organizationId, username) => {
     const orgId = parseInt(organizationId, 10);
     if (isNaN(orgId) || orgId <= 0) return { code: 400, message: "Invalid organization ID" };
 
-    const canManage = await canActAsOwner(accountId, orgId);
+    const canManage = await hasOrganizationPermission(accountId, orgId, Permission.ORG_MEMBERS_MANAGE);
     if (!canManage) return { code: 403, message: "You don't have permission to invite users to this organization" };
     const invitedUser = await Account.findOne({ where: { username: username } });
 
@@ -189,7 +168,7 @@ module.exports.removeMember = async (accountId, organizationId, memberAccountId)
     if (isNaN(orgId) || orgId <= 0) return { code: 400, message: "Invalid organization ID" };
     if (isNaN(memberId) || memberId <= 0) return { code: 400, message: "Invalid member account ID" };
 
-    const canManage = await canActAsOwner(accountId, orgId);
+    const canManage = await hasOrganizationPermission(accountId, orgId, Permission.ORG_MEMBERS_MANAGE);
     if (!canManage) {
         return { code: 403, message: "You don't have permission to remove members from this organization" };
     }
@@ -206,6 +185,7 @@ module.exports.removeMember = async (accountId, organizationId, memberAccountId)
 
 
     await OrganizationMember.destroy({ where: { organizationId: orgId, accountId: memberId } });
+    await OrganizationMemberPermission.destroy({ where: { organizationId: orgId, accountId: memberId } });
 
     return { success: true, message: "Member removed successfully" };
 };

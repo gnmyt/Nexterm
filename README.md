@@ -51,7 +51,16 @@ You can install Nexterm by clicking [here](https://docs.nexterm.dev/installation
 
 -   Node.js 18+
 -   Yarn
+-   FlatBuffers compiler (`flatc`)
 -   Docker (optional)
+
+Install FlatBuffers:
+
+| Platform | Command |
+|----------|---------|
+| macOS | `brew install flatbuffers` |
+| Ubuntu / Debian | `sudo apt install flatbuffers-compiler` |
+| Windows | `winget install Google.FlatBuffers` |
 
 ### Local Setup
 
@@ -62,6 +71,22 @@ git clone https://github.com/gnmyt/Nexterm.git
 cd Nexterm
 ```
 
+#### Configure environment
+
+Create a local environment file:
+
+```sh
+cp .env.example .env
+```
+
+Make sure `ENCRYPTION_KEY` is set in `.env`.
+
+You can generate a secure key using:
+
+| Platform | Command |
+|----------|---------|
+| macOS / Linux | `openssl rand -hex 32` |
+
 #### Install dependencies
 
 ```sh
@@ -70,21 +95,49 @@ cd client && yarn install
 cd ..
 ```
 
+#### Generate FlatBuffers schemas
+
+```sh
+yarn schema:generate
+```
+
+This step is required before starting the development server.
+
 #### Start development mode
 
 ```sh
 yarn dev
 ```
 
+#### Start an engine
+
+The development server does not automatically start an engine. To connect to servers, an engine must be running separately:
+
+```sh
+yarn dev:engine
+```
+
+If using local engine registration, set `LOCAL_ENGINE_TOKEN` in the server environment and use the same value as `REGISTRATION_TOKEN` for the engine.
+
 ## 🔧 Configuration
+
+### Docker Images
+
+| Image            | Description                                              |
+|------------------|----------------------------------------------------------|
+| `nexterm/aio`    | All-In-One — server, client, and engine bundled together |
+| `nexterm/server` | Server + web client only (requires external engine)      |
+| `nexterm/engine` | Engine only                                              |
 
 The server listens on port 6989 by default. You can modify this behavior using environment variables:
 
--   `SERVER_PORT`: Server listening port (default: 6989)
--   `NODE_ENV`: Runtime environment (development/production)
--   `ENCRYPTION_KEY`: Encryption key for passwords, SSH keys and passphrases. Supports Docker secrets via /run/secrets/encryption_key`
--   `AI_SYSTEM_PROMPT`: System prompt for AI features (example: You are a Linux command generator assistant.)
--   `LOG_LEVEL`: Logging level for application and guacd (system/info/verbose/debug/warn/error, default: system)
+- `SERVER_PORT`: Server listening port (default: 6989)
+- `CONTROL_PLANE_PORT`: TCP port for engine communication (default: 7800)
+- `NODE_ENV`: Runtime environment (development/production)
+- `ENCRYPTION_KEY`: Encryption key for passwords, SSH keys and passphrases. Supports Docker secrets via
+  /run/secrets/encryption_key`
+- `AI_SYSTEM_PROMPT`: Extra instructions appended to the AI assistant's system prompt (example: Always explain destructive commands before running them.)
+- `LOG_LEVEL`: Logging level for application and engine (system/info/verbose/debug/warn/error, default: system)
 
 ## 🛡️ Security
 

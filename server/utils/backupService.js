@@ -1,6 +1,6 @@
 const fs = require("fs");
 const path = require("path");
-const archiver = require("archiver");
+const { TarArchive } = require("archiver");
 const decompress = require("decompress");
 const BackupSettings = require("../models/BackupSettings");
 const BackupProvider = require("../models/BackupProvider");
@@ -12,6 +12,14 @@ const DB_PATH = path.join(DATA_DIR, "nexterm.db");
 const RECORDINGS_DIR = path.join(DATA_DIR, "recordings");
 const LOGS_DIR = path.join(DATA_DIR, "logs");
 const TEMP_DIR = path.join(DATA_DIR, ".backup-temp");
+
+const BACKUP_NAME_RE = /^backup-[\w.-]+\.tar\.gz$/;
+const assertValidBackupName = (backupName) => {
+    if (typeof backupName !== "string" || !BACKUP_NAME_RE.test(backupName) ||
+        backupName.includes("/") || backupName.includes("\\") || backupName.includes("..")) {
+        throw new Error("Invalid backup name");
+    }
+};
 
 let scheduleInterval = null;
 
@@ -62,7 +70,7 @@ module.exports.createBackup = async (providerId) => {
 
     await new Promise((resolve, reject) => {
         const output = fs.createWriteStream(tempPath);
-        const archive = archiver("tar", { gzip: true });
+        const archive = new TarArchive({ gzip: true });
 
         output.on("close", resolve);
         output.on("error", reject);
@@ -115,6 +123,7 @@ module.exports.listBackups = async (providerId) => {
 };
 
 module.exports.restoreBackup = async (providerId, backupName) => {
+    assertValidBackupName(backupName);
     const provider = await getProviderById(providerId);
     const buffer = await provider.download(backupName);
     const restorePath = path.join(TEMP_DIR, "restore");

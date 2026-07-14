@@ -3,30 +3,35 @@ const logger = require("../utils/logger");
 const Folder = require("../models/Folder");
 const Credential = require("../models/Credential");
 const Entry = require("../models/Entry");
-const { hasOrganizationAccess, validateFolderAccess } = require("../utils/permission");
+const { hasOrganizationAccess, hasOrganizationPermission, hasAccountPermission, validateFolderAccess } = require("../utils/permission");
+const { Permission } = require("../permissions/registry");
 const { getAllResources } = require("./pve");
 
-const validateIntegrationAccess = async (accountId, integration) => {
+const validateIntegrationAccess = async (accountId, integration, requiredPermission = null) => {
     if (!integration) return { valid: false, error: { code: 401, message: "Integration does not exist" } };
 
     if (integration.organizationId) {
-        const hasAccess = await hasOrganizationAccess(accountId, integration.organizationId);
-        if (!hasAccess) {
+        const allowed = requiredPermission
+            ? await hasOrganizationPermission(accountId, integration.organizationId, requiredPermission)
+            : await hasOrganizationAccess(accountId, integration.organizationId);
+        if (!allowed) {
             return {
                 valid: false,
                 error: { code: 403, message: `You don't have access to this organization's integration` },
             };
         }
+    } else if (requiredPermission && !(await hasAccountPermission(accountId, requiredPermission))) {
+        return { valid: false, error: { code: 403, message: "You don't have permission to manage resources" } };
     }
     return { valid: true, integration };
 };
 
 module.exports.createIntegration = async (accountId, configuration) => {
     if (configuration.organizationId) {
-        const hasAccess = await hasOrganizationAccess(accountId, configuration.organizationId);
-        if (!hasAccess) {
-            return { code: 403, message: "You don't have access to this organization" };
-        }
+        if (!(await hasOrganizationPermission(accountId, configuration.organizationId, Permission.RESOURCES_MANAGE)))
+            return { code: 403, message: "You don't have permission to manage resources in this organization" };
+    } else if (!(await hasAccountPermission(accountId, Permission.RESOURCES_MANAGE))) {
+        return { code: 403, message: "You don't have permission to manage resources" };
     }
 
     let folder = null;
@@ -116,7 +121,7 @@ module.exports.createIntegration = async (accountId, configuration) => {
 
 module.exports.deleteIntegration = async (accountId, integrationId) => {
     const integration = await Integration.findByPk(integrationId);
-    const accessCheck = await validateIntegrationAccess(accountId, integration, "You don't have permission to delete this integration");
+    const accessCheck = await validateIntegrationAccess(accountId, integration, Permission.RESOURCES_MANAGE);
 
     if (!accessCheck.valid) return accessCheck.error;
 
@@ -134,7 +139,7 @@ module.exports.deleteIntegration = async (accountId, integrationId) => {
 
 module.exports.editIntegration = async (accountId, integrationId, configuration) => {
     const integration = await Integration.findByPk(integrationId);
-    const accessCheck = await validateIntegrationAccess(accountId, integration, "You don't have permission to edit this integration");
+    const accessCheck = await validateIntegrationAccess(accountId, integration, Permission.RESOURCES_MANAGE);
 
     if (!accessCheck.valid) return accessCheck.error;
 
@@ -228,7 +233,7 @@ module.exports.getIntegration = async (accountId, integrationId) => {
 
 module.exports.syncIntegration = async (accountId, integrationId) => {
     const integration = await Integration.findByPk(integrationId);
-    const accessCheck = await validateIntegrationAccess(accountId, integration);
+    const accessCheck = await validateIntegrationAccess(accountId, integration, Permission.RESOURCES_MANAGE);
 
     if (!accessCheck.valid) return accessCheck.error;
 

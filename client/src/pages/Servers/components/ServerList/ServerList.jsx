@@ -4,6 +4,7 @@ import { useContext, useEffect, useState, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import { ServerContext } from "@/common/contexts/ServerContext.jsx";
 import { IdentityContext } from "@/common/contexts/IdentityContext.jsx";
+import { useScripts } from "@/common/contexts/ScriptContext.jsx";
 import ServerEntries from "./components/ServerEntries.jsx";
 import Icon from "@mdi/react";
 import {
@@ -31,6 +32,7 @@ import {
     mdiPlay,
     mdiScript,
     mdiTunnel,
+    mdiNoteEditOutline,
 } from "@mdi/js";
 import { ContextMenu, ContextMenuItem, ContextMenuSeparator, useContextMenu } from "@/common/components/ContextMenu";
 import { useDrop, useDragLayer } from "react-dnd";
@@ -41,6 +43,8 @@ import TagsSubmenu from "./components/TagsSubmenu";
 import ScriptsMenu from "./components/ScriptsMenu";
 import Fuse from "fuse.js";
 import { useToast } from "@/common/contexts/ToastContext.jsx";
+import { UserContext } from "@/common/contexts/UserContext.jsx";
+import { Permission } from "@/common/utils/permissions.js";
 
 const flattenEntries = (entries, path = []) => entries.flatMap(entry =>
     entry.type === "folder" || entry.type === "organization"
@@ -91,6 +95,7 @@ export const ServerList = ({
     resumeSession,
     openDirectConnect,
     runScript,
+    openNotes,
     openPortForward,
     mobileOpen = false,
     setMobileOpen,
@@ -98,6 +103,8 @@ export const ServerList = ({
     const { t } = useTranslation();
     const { servers, loadServers, getServerById } = useContext(ServerContext);
     const { identities } = useContext(IdentityContext);
+    const { hasPermission } = useContext(UserContext);
+    const canManageResources = hasPermission(Permission.RESOURCES_MANAGE);
     const { sendToast } = useToast();
     const [search, setSearch] = useState("");
     const [selectedTags, setSelectedTags] = useState([]);
@@ -105,15 +112,18 @@ export const ServerList = ({
     const [contextClickedType, setContextClickedType] = useState(null);
     const [contextClickedId, setContextClickedId] = useState(null);
     const [renameStateId, setRenameStateId] = useState(null);
-    const [width, setWidth] = useState(288);
+    const [width, setWidth] = useState(() => {
+        const stored = localStorage.getItem("serverListWidth");
+        const parsed = stored !== null ? parseInt(stored, 10) : NaN;
+        return Number.isFinite(parsed) ? parsed : 288;
+    });
     const [isResizing, setIsResizing] = useState(false);
-    const [isCollapsed, setIsCollapsed] = useState(false);
+    const [isCollapsed, setIsCollapsed] = useState(() => localStorage.getItem("serverListCollapsed") === "true");
     const serverListRef = useRef(null);
     const serversContainerRef = useRef(null);
     const scrollIntervalRef = useRef(null);
     const tagButtonRef = useRef(null);
-    const [scripts, setScripts] = useState([]);
-    const [sourceScripts, setSourceScripts] = useState([]);
+    const { allScripts: scripts, sourceScripts } = useScripts();
     const [scriptsMenuOpen, setScriptsMenuOpen] = useState(false);
     const [scriptsMenuServer, setScriptsMenuServer] = useState(null);
     const [isMobile, setIsMobile] = useState(false);
@@ -174,13 +184,6 @@ export const ServerList = ({
         }
         return null;
     };
-
-    useEffect(() => {
-        if (contextMenu.isOpen && contextClickedType === "server-object" && server?.protocol === "ssh") {
-            getRequest("scripts/all").then(setScripts).catch(() => setScripts([]));
-            getRequest("scripts/sources").then(setSourceScripts).catch(() => setSourceScripts([]));
-        }
-    }, [contextMenu.isOpen, contextClickedType, server?.protocol]);
 
     const openScriptsMenu = () => {
         if (server) {
@@ -395,6 +398,11 @@ export const ServerList = ({
     };
 
     useEffect(() => {
+        if (!isCollapsed && width > 0) localStorage.setItem("serverListWidth", String(width));
+        localStorage.setItem("serverListCollapsed", String(isCollapsed));
+    }, [width, isCollapsed]);
+
+    useEffect(() => {
         document.addEventListener("mousemove", resize);
         document.addEventListener("mouseup", stopResizing);
 
@@ -490,7 +498,7 @@ export const ServerList = ({
                         <div className={`no-servers${isOver ? " drop-zone-active" : ""}`}
                             onContextMenu={handleContextMenu}>
                             <Icon path={mdiCursorDefaultClick} />
-                            <p>Right-click to add a new server</p>
+                            <p>{t("servers.addServerNote")}</p>
                         </div>
                     )}
 
@@ -502,7 +510,7 @@ export const ServerList = ({
                     >
                         {contextClickedType !== "server-object" && (
                             <>
-                                {(contextClickedType === null || contextClickedType === "folder-object" || isOrgFolder) && (
+                                {canManageResources && (contextClickedType === null || contextClickedType === "folder-object" || isOrgFolder) && (
                                     <ContextMenuItem
                                         icon={mdiPlusCircle}
                                         label={t("servers.contextMenu.new")}
@@ -529,7 +537,7 @@ export const ServerList = ({
                                         />
                                     </ContextMenuItem>
                                 )}
-                                {contextClickedType === "folder-object" && !isOrgFolder && (
+                                {canManageResources && contextClickedType === "folder-object" && !isOrgFolder && (
                                     <ContextMenuItem
                                         icon={mdiImport}
                                         label={t("servers.contextMenu.import")}
@@ -551,12 +559,16 @@ export const ServerList = ({
 
                         {contextClickedType === "folder-object" && !isOrgFolder && (
                             <>
-                                <ContextMenuItem
-                                    icon={mdiFolderPlus}
-                                    label={t("servers.contextMenu.createFolder")}
-                                    onClick={createFolder}
-                                />
-                                <ContextMenuSeparator />
+                                {canManageResources && (
+                                    <>
+                                        <ContextMenuItem
+                                            icon={mdiFolderPlus}
+                                            label={t("servers.contextMenu.createFolder")}
+                                            onClick={createFolder}
+                                        />
+                                        <ContextMenuSeparator />
+                                    </>
+                                )}
                                 <ContextMenuItem
                                     icon={mdiFormTextbox}
                                     label={t("servers.contextMenu.renameFolder")}
@@ -572,7 +584,7 @@ export const ServerList = ({
                             </>
                         )}
 
-                        {(contextClickedType === null || isOrgFolder) && (
+                        {canManageResources && (contextClickedType === null || isOrgFolder) && (
                             <ContextMenuItem
                                 icon={mdiFolderPlus}
                                 label={t("servers.contextMenu.createFolder")}
@@ -699,6 +711,14 @@ export const ServerList = ({
                                 )}
 
                                 <ContextMenuSeparator />
+
+                                <ContextMenuItem
+                                    icon={mdiNoteEditOutline}
+                                    label={server?.notes
+                                        ? t("servers.contextMenu.openNotes")
+                                        : t("servers.contextMenu.addNotes")}
+                                    onClick={() => openNotes?.(server.id)}
+                                />
 
                                 <ContextMenuItem
                                     icon={mdiPencil}
