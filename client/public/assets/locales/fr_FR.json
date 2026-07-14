@@ -61,7 +61,9 @@
       "signInWithQrCode": "S'identifier avec le code QR",
       "qrScanDescription": "Scanne ce code QR avec l'application mobile Nexterm pour te connecter instantanément.",
       "backToLogin": "Retour à la page d'accueil",
-      "authenticating": "Authentification..."
+      "authenticating": "Authentification...",
+      "noAccount": "Don't have an account?",
+      "haveAccount": "Already have an account?"
     },
     "deviceLink": {
       "title": "Dispositif de liaison",
@@ -955,6 +957,10 @@
       "addLdapProvider": "Ajouter LDAP",
       "system": "Système",
       "systemDescription": "Authentification par nom d'utilisateur et mot de passe",
+      "registration": {
+        "title": "Self-Registration",
+        "description": "Allow visitors to create their own account from the login screen"
+      },
       "deleteConfirm": "Cela supprimera définitivement ce fournisseur d'authentification.",
       "errors": {
         "deleteProvider": "Erreur de suppression du fournisseur",
@@ -1398,7 +1404,6 @@
       "subtitle": "Crée des rôles avec des autorisations détaillées ou attribue des autorisations à chaque utilisateur. Le rôle « Par défaut » s'applique automatiquement à tout le monde.",
       "createRole": "Créer un rôle",
       "rolesTitle": "Rôles",
-      "membersTitle": "Membres",
       "rolesTab": "Rôles",
       "overridesTab": "Autorisations directes",
       "permissionsTab": "Autorisations",
@@ -1420,7 +1425,6 @@
       "addMemberPlaceholder": "Rechercher des utilisateurs à ajouter…",
       "deleteRole": "Supprimer un rôle",
       "deleteConfirm": "Ça va supprimer définitivement le rôle «{{name}}» et le retirer de tous les membres.",
-      "searchUsers": "Rechercher des utilisateurs…",
       "inheritsAllow": "Hérédité : autorisée",
       "inheritsDeny": "Hérite de : Refusé"
     }
