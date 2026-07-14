@@ -733,6 +733,8 @@
         "folderManagementDescription": "Enregistre la création, la modification et la suppression des dossiers.",
         "scriptExecutionLabel": "Exécution du script",
         "scriptExecutionDescription": "Journal d'exécution des scripts et des tâches d'automatisation",
+        "aiOperationsLabel": "AI Operations",
+        "aiOperationsDescription": "Log commands and file changes performed by the AI assistant",
         "actions": {
           "save": "Sauvegarder les paramètres"
         },
