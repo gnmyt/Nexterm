@@ -122,7 +122,7 @@ export const FileRenderer = ({ session, disconnectFromServer, setOpenFileEditors
 
             setIsUploading(false);
             setUploadProgress(0);
-            listFiles();
+            listFiles(true);
             sendToast(t("common.success"), t("servers.fileManager.toast.uploaded", { name: file.name }));
             return true;
         } catch (err) {
@@ -191,7 +191,7 @@ export const FileRenderer = ({ session, disconnectFromServer, setOpenFileEditors
                 case OPERATIONS.MOVE_FILES:
                 case OPERATIONS.COPY_FILES:
                 case OPERATIONS.CHMOD:
-                    listFiles();
+                    listFiles(true);
                     break;
                 case OPERATIONS.ERROR:
                     sendToast(t("common.error"), payload?.message || t("servers.fileManager.toast.error"));
@@ -260,7 +260,7 @@ export const FileRenderer = ({ session, disconnectFromServer, setOpenFileEditors
 
     const createFile = (fileName) => sendOperation(OPERATIONS.CREATE_FILE, { path: `${directory}/${fileName}` });
     const createFolder = (folderName) => sendOperation(OPERATIONS.CREATE_FOLDER, { path: `${directory}/${folderName}` });
-    const listFiles = useCallback(() => { setLoading(true); setError(null); sendOperation(OPERATIONS.LIST_FILES, { path: directory }); }, [directory, sendOperation]);
+    const listFiles = useCallback((silent = false) => { if (!silent) setLoading(true); setError(null); sendOperation(OPERATIONS.LIST_FILES, { path: directory }); }, [directory, sendOperation]);
     const moveFiles = useCallback((sources, destination) => sendOperation(OPERATIONS.MOVE_FILES, { sources, destination }), [sendOperation]);
     const copyFiles = useCallback((sources, destination) => sendOperation(OPERATIONS.COPY_FILES, { sources, destination }), [sendOperation]);
 
@@ -330,7 +330,7 @@ export const FileRenderer = ({ session, disconnectFromServer, setOpenFileEditors
             </div>
             <div className="file-manager">
                 <ActionBar path={directory} updatePath={changeDirectory} createFile={() => fileListRef.current?.startCreateFile()}
-                    createFolder={() => fileListRef.current?.startCreateFolder()} uploadFile={uploadFile} goBack={goBack} goForward={goForward} historyIndex={historyIndex}
+                    createFolder={() => fileListRef.current?.startCreateFolder()} uploadFile={uploadFile} refreshFiles={() => listFiles(true)} goBack={goBack} goForward={goForward} historyIndex={historyIndex}
                     historyLength={history.length} viewMode={viewMode} setViewMode={setViewMode} 
                     searchDirectories={searchDirectories} directorySuggestions={directorySuggestions} 
                     setDirectorySuggestions={setDirectorySuggestions} moveFiles={moveFiles} copyFiles={copyFiles}
