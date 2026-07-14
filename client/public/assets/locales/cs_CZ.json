@@ -1779,7 +1779,9 @@
         "clearTerminal": "Vyčistit terminál",
         "properties": "Vlastnosti",
         "openTerminal": "Otevřete terminál zde",
-        "downloadFolder": "Složka ke stažení"
+        "downloadFolder": "Složka ke stažení",
+        "newFile": "New File",
+        "newFolder": "New Folder"
       },
       "properties": {
         "general": "Obecné",
@@ -1841,7 +1843,8 @@
         "switchToGrid": "Přepnutí na zobrazení mřížky",
         "switchToList": "Přepnutí na zobrazení seznamu",
         "search": "Vyhledat soubory",
-        "closeSearch": "Zavřít vyhledávání"
+        "closeSearch": "Zavřít vyhledávání",
+        "refresh": "Refresh"
       },
       "item": {
         "link": "odkaz"
