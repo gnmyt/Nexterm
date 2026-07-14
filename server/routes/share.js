@@ -2,6 +2,7 @@ const { Router } = require("express");
 const SessionManager = require("../lib/SessionManager");
 const Entry = require("../models/Entry");
 const Organization = require("../models/Organization");
+const Account = require("../models/Account");
 
 const app = Router();
 
@@ -28,6 +29,9 @@ app.get("/:shareId", async (req, res) => {
         ? (await Organization.findByPk(entry.organizationId, { attributes: ["name"] }))?.name
         : null;
 
+    const owner = await Account.findByPk(session.accountId, { attributes: ["preferences"] });
+    const ownerTerminal = owner?.preferences?.terminal || {};
+
     res.json({
         id: session.sessionId,
         server: {
@@ -42,6 +46,8 @@ app.get("/:shareId", async (req, res) => {
         type: session.configuration.type || undefined,
         organizationId: entry.organizationId || null,
         organizationName: orgName,
+        fontFamily: ownerTerminal.fontFamily || undefined,
+        fontSize: ownerTerminal.fontSize || undefined,
     });
 });
 

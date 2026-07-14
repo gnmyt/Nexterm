@@ -34,6 +34,9 @@ const XtermRenderer = ({ session, disconnectFromServer, markSessionErrored, getS
     const userContext = useContext(UserContext);
     const sessionToken = userContext?.sessionToken;
     const { theme, getCurrentTheme, selectedFont, fontSize, cursorStyle, cursorBlink, selectedTheme } = usePreferences();
+
+    const effectiveFont = (isShared && session.fontFamily) ? session.fontFamily : selectedFont;
+    const effectiveFontSize = (isShared && session.fontSize) ? session.fontSize : fontSize;
     const aiContext = useContext(AIContext);
     const isAIAvailable = aiContext?.isAIAvailable || (() => false);
     const aiAvailableRef = useRef(false);
@@ -181,8 +184,8 @@ const XtermRenderer = ({ session, disconnectFromServer, markSessionErrored, getS
         const term = new Xterm({
             cursorBlink: cursorBlink,
             cursorStyle: cursorStyle,
-            fontSize: fontSize,
-            fontFamily: selectedFont,
+            fontSize: effectiveFontSize,
+            fontFamily: effectiveFont,
             theme: {
                 background: (theme === "light" && isLightTerminalTheme) ? "#F3F3F3" : terminalTheme.background,
                 foreground: (theme === "light" && isLightTerminalTheme) ? "#000000" : terminalTheme.foreground,
@@ -419,7 +422,7 @@ const XtermRenderer = ({ session, disconnectFromServer, markSessionErrored, getS
             termRef.current = null;
             wsRef.current = null;
         };
-    }, [sessionToken, selectedFont, fontSize, cursorStyle, cursorBlink, selectedTheme, isShared]);
+    }, [sessionToken, effectiveFont, effectiveFontSize, cursorStyle, cursorBlink, selectedTheme, isShared]);
 
     return (
         <div className="xterm-container" onContextMenu={!isShared ? handleContextMenu : undefined}>
