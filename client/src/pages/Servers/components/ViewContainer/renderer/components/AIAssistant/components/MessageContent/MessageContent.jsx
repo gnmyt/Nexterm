@@ -104,7 +104,7 @@ export const MessageContent = ({ text }) => {
         <div className="message-content">
             {tokens
                 ? renderBlock(tokens, "b")
-                : text.split("\n").map((line, i) => <p key={`line-${i}`} className="text-line">{line}</p>)}
+                : <p className="text-line" style={{ whiteSpace: "pre-wrap" }}>{text}</p>}
         </div>
     );
 };
