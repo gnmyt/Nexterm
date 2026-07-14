@@ -45,6 +45,7 @@ typedef struct {
     LIBSSH2_CHANNEL* channel;
     int sockfd;
     int parent_sock;
+    volatile int* stop;
 } channel_proxy_ctx_t;
 
 static void* channel_proxy_thread(void* arg) {
@@ -53,13 +54,14 @@ static void* channel_proxy_thread(void* arg) {
     LIBSSH2_CHANNEL* channel = ctx->channel;
     int sockfd = ctx->sockfd;
     int parent_sock = ctx->parent_sock;
+    volatile int* stop = ctx->stop;
     free(ctx);
 
     char buf[16384];
     int was_blocking = libssh2_session_get_blocking(parent_session);
     libssh2_session_set_blocking(parent_session, 0);
 
-    while (1) {
+    while (!*stop) {
         for (;;) {
             ssize_t n = libssh2_channel_read(channel, buf, sizeof(buf));
             if (n > 0) {
@@ -83,7 +85,7 @@ static void* channel_proxy_thread(void* arg) {
             { .fd = sockfd,      .events = POLLIN, .revents = 0 },
             { .fd = parent_sock, .events = POLLIN, .revents = 0 },
         };
-        int ret = poll(fds, 2, 1000);
+        int ret = poll(fds, 2, 200);
         if (ret < 0) {
             if (errno == EINTR) continue;
             goto done;
@@ -127,7 +129,8 @@ done:
     return NULL;
 }
 
-static int ssh_setup_on_channel(LIBSSH2_SESSION* parent_session,
+static int ssh_setup_on_channel(jump_chain_t* chain,
+                                LIBSSH2_SESSION* parent_session,
                                 int parent_sock,
                                 LIBSSH2_CHANNEL* channel,
                                 LIBSSH2_SESSION** out_session,
@@ -148,6 +151,7 @@ static int ssh_setup_on_channel(LIBSSH2_SESSION* parent_session,
     ctx->channel = channel;
     ctx->sockfd = sv[1];
     ctx->parent_sock = parent_sock;
+    ctx->stop = &chain->stop_proxies;
 
     pthread_t tid;
     if (pthread_create(&tid, NULL, channel_proxy_thread, ctx) != 0) {
@@ -157,7 +161,7 @@ static int ssh_setup_on_channel(LIBSSH2_SESSION* parent_session,
         close(sv[1]);
         return -1;
     }
-    pthread_detach(tid);
+    chain->proxies[chain->proxy_count++] = tid;
 
     LIBSSH2_SESSION* session = libssh2_session_init();
     if (!session) {
@@ -226,7 +230,7 @@ int nexterm_ssh_setup_with_jumphosts(const char* target_host, uint16_t target_po
         chain->channels[i - 1] = fwd;
 
         int proxy_sock = -1;
-        if (ssh_setup_on_channel(chain->sessions[i - 1], chain->sockets[i - 1], fwd,
+        if (ssh_setup_on_channel(chain, chain->sessions[i - 1], chain->sockets[i - 1], fwd,
                                  &chain->sessions[i], &proxy_sock) != 0) {
             LOG_ERROR("Failed SSH handshake over tunnel to jump host %d", i + 1);
             nexterm_jump_chain_teardown(chain);
@@ -257,7 +261,7 @@ int nexterm_ssh_setup_with_jumphosts(const char* target_host, uint16_t target_po
     chain->channels[jump_count - 1] = target_fwd;
 
     int target_proxy_sock = -1;
-    if (ssh_setup_on_channel(chain->sessions[jump_count - 1], chain->sockets[jump_count - 1], target_fwd,
+    if (ssh_setup_on_channel(chain, chain->sessions[jump_count - 1], chain->sockets[jump_count - 1], target_fwd,
                              out_session, &target_proxy_sock) != 0) {
         LOG_ERROR("Failed SSH handshake to target over jump host chain");
         nexterm_jump_chain_teardown(chain);
@@ -304,6 +308,8 @@ void nexterm_ssh_teardown(LIBSSH2_SESSION* session, LIBSSH2_CHANNEL* channel,
 void nexterm_jump_chain_teardown(jump_chain_t* chain) {
     if (!chain) return;
 
+    chain->stop_proxies = 1;
+
     for (int i = chain->count - 1; i >= 0; i--) {
         if (chain->sockets[i] >= 0) {
             close(chain->sockets[i]);
@@ -311,7 +317,9 @@ void nexterm_jump_chain_teardown(jump_chain_t* chain) {
         }
     }
 
-    usleep(10000);
+    for (int i = 0; i < chain->proxy_count; i++)
+        pthread_join(chain->proxies[i], NULL);
+    chain->proxy_count = 0;
 
     for (int i = chain->count - 1; i >= 0; i--) {
         if (chain->channels[i]) {
@@ -331,8 +339,10 @@ void nexterm_ssh_full_cleanup(LIBSSH2_SESSION* session, LIBSSH2_CHANNEL* channel
                               int sock, jump_chain_t* chain, const char* reason) {
     nexterm_ssh_teardown(session, channel,
                          (chain && chain->count > 0) ? -1 : sock, reason);
-    if (chain && chain->count > 0)
+    if (chain && chain->count > 0) {
         nexterm_jump_chain_teardown(chain);
+        if (sock >= 0) close(sock);
+    }
 }
 
 void nexterm_ssh_read_stream(LIBSSH2_CHANNEL* channel, char* buf,
