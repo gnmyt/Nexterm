@@ -733,6 +733,8 @@
         "folderManagementDescription": "记录文件夹的创建、修改和删除",
         "scriptExecutionLabel": "脚本执行",
         "scriptExecutionDescription": "记录脚本和自动化任务的执行情况",
+        "aiOperationsLabel": "AI Operations",
+        "aiOperationsDescription": "Log commands and file changes performed by the AI assistant",
         "actions": {
           "save": "保存设置"
         },
