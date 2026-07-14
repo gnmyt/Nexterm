@@ -7,10 +7,10 @@ import { Terminal as Xterm } from "@xterm/xterm";
 import { usePreferences } from "@/common/contexts/PreferencesContext.jsx";
 import { FitAddon } from "@xterm/addon-fit";
 import { ContextMenu, ContextMenuItem, ContextMenuSeparator, useContextMenu } from "@/common/components/ContextMenu";
-import AICommandPopover from "./components/AICommandPopover";
+import AIAssistant from "./components/AIAssistant";
 import SnippetsMenu from "./components/SnippetsMenu";
 import { createProgressParser } from "../utils/progressParser";
-import { mdiContentCopy, mdiContentPaste, mdiCodeBrackets, mdiSelectAll, mdiDelete, mdiKeyboard, mdiKey, mdiFolderOpen } from "@mdi/js";
+import { mdiContentCopy, mdiContentPaste, mdiCodeBrackets, mdiSelectAll, mdiDelete, mdiKeyboard, mdiKey, mdiFolderOpen, mdiRobotHappyOutline } from "@mdi/js";
 import { useTranslation } from "react-i18next";
 import ConnectionLoader from "./components/ConnectionLoader";
 import ConnectionError, { mapConnectionError } from "./components/ConnectionError";
@@ -25,7 +25,6 @@ const XtermRenderer = ({ session, disconnectFromServer, markSessionErrored, getS
     const wsRef = useRef(null);
     const broadcastModeRef = useRef(broadcastMode);
     const progressParserRef = useRef(null);
-    const terminalBufferRef = useRef([]);
     const layoutModeRef = useRef(layoutMode);
     const onBroadcastToggleRef = useRef(onBroadcastToggle);
     const onFullscreenToggleRef = useRef(onFullscreenToggle);
@@ -37,9 +36,13 @@ const XtermRenderer = ({ session, disconnectFromServer, markSessionErrored, getS
     const { theme, getCurrentTheme, selectedFont, fontSize, cursorStyle, cursorBlink, selectedTheme } = usePreferences();
     const aiContext = useContext(AIContext);
     const isAIAvailable = aiContext?.isAIAvailable || (() => false);
+    const aiAvailableRef = useRef(false);
+    useEffect(() => {
+        aiAvailableRef.current = isAIAvailable();
+    });
     const { getParsedKeybind } = useKeymaps();
     const { t } = useTranslation();
-    const [showAIPopover, setShowAIPopover] = useState(false);
+    const [showAIAssistant, setShowAIAssistant] = useState(false);
     const contextMenu = useContextMenu();
     const { identities } = useContext(IdentityContext);
     const [showSnippetsMenu, setShowSnippetsMenu] = useState(false);
@@ -79,17 +82,11 @@ const XtermRenderer = ({ session, disconnectFromServer, markSessionErrored, getS
         }
     }, [session.id, updateProgress]);
 
-    const toggleAIPopover = () => {
-        if (showAIPopover) {
-            setTimeout(() => termRef.current?.focus(), 0);
-        }
-        setShowAIPopover(!showAIPopover);
-    };
+    const toggleAIAssistant = () => setShowAIAssistant((visible) => !visible);
 
-    const handleAICommandGenerated = (command) => {
-        if (termRef.current && wsRef.current) {
-            wsRef.current.send(command);
-        }
+    const handleOpenAIAssistant = () => {
+        contextMenu.close();
+        setShowAIAssistant(true);
     };
 
     const handleContextMenu = (e) => {
@@ -307,8 +304,6 @@ const XtermRenderer = ({ session, disconnectFromServer, markSessionErrored, getS
                 });
             } else {
                 term.write(data);
-                terminalBufferRef.current.push(data);
-                if (terminalBufferRef.current.length > 50) terminalBufferRef.current.shift();
 
                 if (progressParserRef.current && updateProgress) {
                     const progress = progressParserRef.current.parseData(data);
@@ -350,10 +345,10 @@ const XtermRenderer = ({ session, disconnectFromServer, markSessionErrored, getS
                 }
 
                 const aiKeybind = getParsedKeybind("ai-menu");
-                if (aiKeybind && isAIAvailable() && matchesKeybind(event, aiKeybind)) {
+                if (aiKeybind && aiAvailableRef.current && matchesKeybind(event, aiKeybind)) {
                     event.preventDefault();
                     event.stopPropagation();
-                    toggleAIPopover();
+                    toggleAIAssistant();
                     return false;
                 }
 
@@ -433,16 +428,8 @@ const XtermRenderer = ({ session, disconnectFromServer, markSessionErrored, getS
                 <ConnectionError message={connectionError} onClose={() => disconnectFromServer(session.id)} />
             )}
             <div ref={ref} className="xterm-wrapper" />
-            {!isShared && isAIAvailable() && (
-                <AICommandPopover visible={showAIPopover} onClose={() => setShowAIPopover(false)}
-                    onCommandGenerated={handleAICommandGenerated} focusTerminal={() => termRef.current?.focus()}
-                    entryId={session.server?.id}
-                    recentOutput={terminalBufferRef.current.join('')
-                        .replace(/\x1B\[[0-9;]*[a-zA-Z]/g, '')
-                        .replace(/[\x00-\x1F\x7F]/g, ' ')
-                        .replace(/\s+/g, ' ')
-                        .trim()
-                        .slice(-1500)} />
+            {!isShared && isAIAvailable() && showAIAssistant && (
+                <AIAssistant session={session} onClose={() => setShowAIAssistant(false)} />
             )}
             {!isShared && (
                 <ContextMenu
@@ -473,6 +460,13 @@ const XtermRenderer = ({ session, disconnectFromServer, markSessionErrored, getS
                         label={t('servers.fileManager.contextMenu.insertSnippet')}
                         onClick={handleInsertSnippet}
                     />
+                    {isAIAvailable() && (
+                        <ContextMenuItem
+                            icon={mdiRobotHappyOutline}
+                            label={t('servers.aiAssistant.open')}
+                            onClick={handleOpenAIAssistant}
+                        />
+                    )}
                     {(identities && session.identity && identities.find(i => i.id === session.identity) && ['password','both','password-only'].includes(identities.find(i => i.id === session.identity).type)) && (
                         <ContextMenuItem
                             icon={mdiKey}

@@ -8,9 +8,16 @@
   "repository": "https://github.com/gnmyt/Nexterm.git",
   "author": "Mathias Wagner",
   "license": "MIT",
+  "engines": {
+    "node": ">=22"
+  },
   "dependencies": {
+    "@ai-sdk/anthropic": "^4.0.12",
+    "@ai-sdk/openai": "^4.0.13",
+    "@ai-sdk/openai-compatible": "^3.0.7",
     "@inquirer/password": "^5.1.1",
-    "@simplewebauthn/server": "^13.3.1",
+    "@simplewebauthn/server": "^13.3.2",
+    "ai": "^7.0.22",
     "archiver": "^8.0.0",
     "bcrypt": "^6.0.0",
     "commander": "^15.0.0",
@@ -31,7 +38,8 @@
     "uuid": "^14.0.1",
     "webdav": "^5.10.0",
     "winston": "^3.19.0",
-    "ws": "^8.21.0"
+    "ws": "^8.21.0",
+    "zod": "^4.4.3"
   },
   "devDependencies": {
     "concurrently": "^10.0.3",

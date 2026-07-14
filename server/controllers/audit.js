@@ -51,6 +51,13 @@ const AUDIT_ACTIONS = {
     IDENTITY_CREDENTIALS_ACCESS: "identity.credentials_access",
 
     SCRIPT_EXECUTE: "script.execute",
+
+    AI_COMMAND: "ai.command",
+    AI_FILE_WRITE: "ai.file_write",
+    AI_FILE_DELETE: "ai.file_delete",
+    AI_FILE_RENAME: "ai.file_rename",
+    AI_FILE_CHMOD: "ai.file_chmod",
+    AI_FOLDER_CREATE: "ai.folder_create",
 };
 
 const RESOURCE_TYPES = {
@@ -92,6 +99,13 @@ const ACTION_LABELS = {
     "identity.credentials_access": "Identity credentials accessed",
 
     "script.execute": "Script executed",
+
+    "ai.command": "AI ran a command",
+    "ai.file_write": "AI wrote a file",
+    "ai.file_delete": "AI deleted a file or folder",
+    "ai.file_rename": "AI moved / renamed a path",
+    "ai.file_chmod": "AI changed permissions",
+    "ai.folder_create": "AI created a folder",
 };
 
 const ACTION_CATEGORIES = [
@@ -101,6 +115,7 @@ const ACTION_CATEGORIES = [
     { key: "folder_mgmt", label: "Folder Management", description: "Folder records management" },
     { key: "identity", label: "Identities", description: "Identity records and credential access" },
     { key: "script", label: "Scripts", description: "Script execution" },
+    { key: "ai", label: "AI Assistant", description: "Actions performed by the AI assistant on a server" },
 ];
 
 const RESOURCE_LABELS = {
@@ -124,6 +139,7 @@ const getOrgAuditSettings = async (organizationId) => {
         enableServerManagementAudit: true, 
         enableFolderManagementAudit: true,
         enableScriptExecutionAudit: true,
+        enableAIOperationAudit: true,
     };
 
     if (!org?.auditSettings) return defaults;
@@ -142,6 +158,7 @@ const shouldAudit = (action, settings) => {
         [action.includes("entry.create") || action.includes("entry.update") || action.includes("entry.delete"), settings.enableServerManagementAudit],
         [action.startsWith("folder_mgmt."), settings.enableFolderManagementAudit],
         [action.startsWith("script."), settings.enableScriptExecutionAudit],
+        [action.startsWith("ai."), settings.enableAIOperationAudit],
     ];
 
     for (const [condition, enabled] of checks) {
