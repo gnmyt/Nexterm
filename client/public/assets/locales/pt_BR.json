@@ -61,7 +61,9 @@
       "signInWithQrCode": "Faça login com o código QR",
       "qrScanDescription": "Escaneie este código QR com o aplicativo móvel Nexterm para fazer login instantaneamente.",
       "backToLogin": "Voltar para o login",
-      "authenticating": "Autenticando..."
+      "authenticating": "Autenticando...",
+      "noAccount": "Don't have an account?",
+      "haveAccount": "Already have an account?"
     },
     "deviceLink": {
       "title": "Vincular Dispositivo",
@@ -955,6 +957,10 @@
       "addLdapProvider": "Adicionar LDAP",
       "system": "Sistema",
       "systemDescription": "Autenticação por nome de usuário e senha",
+      "registration": {
+        "title": "Self-Registration",
+        "description": "Allow visitors to create their own account from the login screen"
+      },
       "deleteConfirm": "Isso excluirá permanentemente esse provedor de autenticação.",
       "errors": {
         "deleteProvider": "Erro ao excluir o provedor",
@@ -1398,7 +1404,6 @@
       "subtitle": "Crie funções com permissões detalhadas ou atribua permissões a usuários individuais. A função “Padrão” se aplica a todos automaticamente.",
       "createRole": "Criar função",
       "rolesTitle": "Funções",
-      "membersTitle": "Membros",
       "rolesTab": "Funções",
       "overridesTab": "Permissões diretas",
       "permissionsTab": "Permissões",
@@ -1420,7 +1425,6 @@
       "addMemberPlaceholder": "Pesquise usuários para adicionar…",
       "deleteRole": "Excluir função",
       "deleteConfirm": "Isso vai excluir definitivamente a função “{{name}}” e retirá-la de todos os membros.",
-      "searchUsers": "Pesquisar usuários…",
       "inheritsAllow": "Herdança: Permitida",
       "inheritsDeny": "Herdança: Negada"
     }
