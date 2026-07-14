@@ -61,7 +61,9 @@
       "signInWithQrCode": "Anmeldung mit QR-Code",
       "qrScanDescription": "Scanne diesen QR-Code mit der Nexterm Mobile App, um dich sofort anzumelden.",
       "backToLogin": "Zurück zu Login",
-      "authenticating": "Authentifiziere..."
+      "authenticating": "Authentifiziere...",
+      "noAccount": "Don't have an account?",
+      "haveAccount": "Already have an account?"
     },
     "deviceLink": {
       "title": "Gerät verbinden",
@@ -955,6 +957,10 @@
       "addLdapProvider": "LDAP hinzufügen",
       "system": "System",
       "systemDescription": "Authentifizierung mit Benutzername und Passwort",
+      "registration": {
+        "title": "Self-Registration",
+        "description": "Allow visitors to create their own account from the login screen"
+      },
       "deleteConfirm": "Dadurch wird dieser Authentifizierungsanbieter endgültig gelöscht.",
       "errors": {
         "deleteProvider": "Fehler beim Löschen des Anbieters",
@@ -1398,7 +1404,6 @@
       "subtitle": "Erstelle Benutzergruppen mit fein abgestuften Berechtigungen oder weise Berechtigungen direkt einzelnen Benutzern zu. Die Standard-Benutzergruppe wird automatisch auf alle Benutzer angewendet.",
       "createRole": "Benutzergruppe erstellen",
       "rolesTitle": "Benutzergruppen",
-      "membersTitle": "Mitglieder",
       "rolesTab": "Benutzergruppen",
       "overridesTab": "Direkte Berechtigungen",
       "permissionsTab": "Berechtigungen",
@@ -1420,7 +1425,6 @@
       "addMemberPlaceholder": "Suche Benutzer zum Hinzufügen…",
       "deleteRole": "Benutzergruppe löschen",
       "deleteConfirm": "Dadurch wird die Benutzergruppe „{{name}}“ endgültig gelöscht und von allen Mitgliedern entfernt.",
-      "searchUsers": "Nach Benutzer suchen…",
       "inheritsAllow": "Vererbung: Erlaubt",
       "inheritsDeny": "Vererbung: Verweigert"
     }
