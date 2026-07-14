@@ -1779,7 +1779,9 @@
         "clearTerminal": "Borrar terminal",
         "properties": "Propiedades",
         "openTerminal": "Abrir terminal aquí",
-        "downloadFolder": "Descargar carpeta"
+        "downloadFolder": "Descargar carpeta",
+        "newFile": "New File",
+        "newFolder": "New Folder"
       },
       "properties": {
         "general": "General",
@@ -1841,7 +1843,8 @@
         "switchToGrid": "Cambiar a vista de cuadrícula",
         "switchToList": "Cambiar a vista de lista",
         "search": "Buscar archivos",
-        "closeSearch": "Cerrar búsqueda"
+        "closeSearch": "Cerrar búsqueda",
+        "refresh": "Refresh"
       },
       "item": {
         "link": "enlace"
