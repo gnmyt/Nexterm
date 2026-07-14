@@ -10,6 +10,7 @@
     "download": "下载",
     "maximize": "最大化",
     "restore": "恢复",
+    "resize": "Resize",
     "actions": {
       "cancel": "取消",
       "confirm": "确认",
@@ -17,6 +18,7 @@
       "login": "登录",
       "register": "注册",
       "save": "保存",
+      "saving": "拯救…",
       "download": "下载",
       "close": "关闭",
       "maximize": "最大化",
@@ -306,9 +308,7 @@
       "actions": {
         "cancel": "取消",
         "create": "创建",
-        "save": "保存",
-        "generateAI": "用 AI 生成",
-        "generating": "生成中..."
+        "save": "保存"
       }
     },
     "messages": {
@@ -585,7 +585,8 @@
       "ai": "AI",
       "monitoring": "监控",
       "backup": "存储",
-      "engines": "发动机"
+      "engines": "发动机",
+      "permissions": "角色与权限"
     },
     "account": {
       "title": "账户",
@@ -775,22 +776,15 @@
       "noSearchResultsDescription": "尝试调整搜索查询。",
       "table": {
         "user": "用户",
-        "role": "角色",
-        "twoFactor": "2FA"
-      },
-      "roles": {
-        "admin": "管理员",
-        "user": "用户"
+        "twoFactor": "2FA",
+        "roles": "角色"
       },
       "contextMenu": {
         "changePassword": "修改密码",
-        "promoteToAdmin": "提升为管理员",
-        "demoteToUser": "降级为普通用户",
         "deleteUser": "删除用户",
         "loginAsUser": "以该用户身份登录",
         "deleteConfirm": "此操作将永久删除用户及其所有关联数据。",
-        "promoteConfirm": "此操作将把用户提升为管理员。",
-        "demoteConfirm": "此操作将把用户降级为普通用户。"
+        "managePermissions": "管理权限"
       }
     },
     "userDialog": {
@@ -830,6 +824,10 @@
         "aimenu": {
           "title": "AI 菜单",
           "description": "打开 AI 命令菜单"
+        },
+        "aiaccepttool": {
+          "title": "AI Accept Action",
+          "description": "Approve the pending AI tool action in the assistant"
         },
         "snippets": {
           "title": "代码片段",
@@ -1044,11 +1042,11 @@
     },
     "ai": {
       "title": "AI 助手配置",
-      "description": "配置 AI 驱动的命令生成功能，用于终端会话和代码片段。",
+      "description": "Configure the AI assistant that can run commands and manage files directly over your server sessions.",
       "loading": "加载 AI 设置中...",
       "enable": {
         "title": "启用 AI 助手",
-        "description": "允许用户使用 AI 生成命令"
+        "description": "Allow users to open the AI assistant inside server sessions"
       },
       "provider": {
         "title": "AI 提供商",
@@ -1056,18 +1054,43 @@
       },
       "model": {
         "title": "AI 模型",
-        "description": "选择用于生成命令的 AI 模型"
+        "description": "Select the AI model the assistant should use"
+      },
+      "requireConfirmation": {
+        "title": "Confirm before each action",
+        "description": "Require users to approve every command and file change the assistant wants to make"
       },
       "apiKey": {
         "title": "API 密钥",
-        "description": "您的 OpenAI API 密钥（用于身份验证）",
-        "placeholder": "输入您的 OpenAI API 密钥",
-        "setPlaceholder": "API 密钥已设置（留空表示保留当前值）"
+        "setPlaceholder": "API 密钥已设置（留空表示保留当前值）",
+        "genericDescription": "API key used to authenticate with the selected provider",
+        "genericPlaceholder": "Enter your {{provider}} API key"
       },
-      "ollamaUrl": {
-        "title": "Ollama 地址",
-        "description": "Ollama 实例的访问地址",
-        "placeholder": "http://localhost:11434"
+      "authMethod": {
+        "title": "Authentication",
+        "description": "Authenticate with an API key or your provider subscription",
+        "apiKey": "API Key",
+        "subscription": "Subscription"
+      },
+      "subscription": {
+        "title": "{{provider}} Subscription",
+        "description": "Sign in with your {{provider}} subscription to use its models without an API key",
+        "connectedDescription": "Your {{provider}} subscription is connected",
+        "connect": "Connect",
+        "connecting": "Connecting...",
+        "complete": "Complete",
+        "disconnect": "Disconnect",
+        "codePlaceholder": "Paste the authorization code here",
+        "codePlaceholderUrl": "Paste the full callback URL (or code) here",
+        "connectSuccess": "{{provider}} subscription connected",
+        "startError": "Failed to start authorization",
+        "exchangeError": "Failed to connect subscription",
+        "disconnectError": "Failed to disconnect subscription"
+      },
+      "baseUrl": {
+        "title": "API URL",
+        "description": "Base URL of the provider's OpenAI-compatible endpoint",
+        "placeholder": "https://api.example.com/v1"
       },
       "selectProvider": "选择服务提供商...",
       "selectModel": "选择模型...",
@@ -1368,6 +1391,36 @@
         "deleteFailed": "删除引擎失败",
         "regenerateFailed": "令牌再生失败"
       }
+    },
+    "permissions": {
+      "subtitle": "创建具有精细权限的角色，或为单个用户分配权限。“默认”角色会自动应用于所有人。",
+      "createRole": "创建角色",
+      "rolesTitle": "角色",
+      "membersTitle": "成员",
+      "rolesTab": "角色",
+      "overridesTab": "直接权限",
+      "permissionsTab": "权限",
+      "membersTab": "成员",
+      "settingsTab": "设置",
+      "managePermissions": "管理权限",
+      "memberCount_one": "{{count}} 成员",
+      "memberCount_other": "{{count}} 成员",
+      "dangerousHint": "授予此权限将导致广泛或破坏性的访问。请谨慎授予。",
+      "roleName": "角色名称",
+      "roleNamePlaceholder": "例如：运算符",
+      "roleColor": "颜色",
+      "nameRequired": "请为该角色输入一个名称。",
+      "saveError": "无法保存您的更改。",
+      "loadError": "无法加载权限。",
+      "userSaved": "权限已更新。",
+      "noAssignableRoles": "目前尚无角色。请先创建一个。",
+      "noMembers": "该角色目前尚无成员。",
+      "addMemberPlaceholder": "搜索用户以添加…",
+      "deleteRole": "删除角色",
+      "deleteConfirm": "这将永久删除角色“{{name}}”，并将其从所有成员中移除。",
+      "searchUsers": "搜索用户…",
+      "inheritsAllow": "继承：允许",
+      "inheritsDeny": "继承：被拒绝"
     }
   },
   "tunnel": {
@@ -1780,10 +1833,19 @@
         "enterDirectory": "输入目录路径...",
         "hiddenDirectories": "{{count}} 隐藏目录",
         "switchToGrid": "切换到网格视图",
-        "switchToList": "切换到列表视图"
+        "switchToList": "切换到列表视图",
+        "search": "搜索文件",
+        "closeSearch": "关闭搜索"
       },
       "item": {
         "link": "链接"
+      },
+      "search": {
+        "placeholder": "筛选此文件夹中的文件...",
+        "results_one": "{{count}} 结果",
+        "results_other": "{{count}} 结果",
+        "noResultsTitle": "没有匹配结果",
+        "noResults": "没有文件与“{{query}} ”匹配"
       },
       "states": {
         "loading": "加载文件...",
@@ -1802,17 +1864,33 @@
     },
     "aiAssistant": {
       "title": "AI 助手",
-      "placeholder": "描述您想要执行的操作...",
-      "hint": "按 Enter 生成 • 按 Esc 关闭",
-      "hintUse": "按 Enter 使用命令 - 按 Esc 关闭",
-      "closeLabel": "关闭 AI 助手",
-      "generate": "生成命令",
-      "generating": "生成命令...",
-      "generatedCommand": "生成命令",
-      "useCommand": "使用命令",
-      "tryAgain": "再试一次",
-      "copy": "复制到剪贴板",
-      "error": "生成命令失败。请重试。"
+      "open": "AI Assistant",
+      "empty": "Ask the assistant to inspect or change this server. It can run commands and read or edit files directly over the connection.",
+      "placeholder": "Message the assistant...",
+      "connecting": "Connecting...",
+      "send": "Send",
+      "stop": "Stop",
+      "connectionError": "Connection to the assistant was lost.",
+      "confirmPrompt": "Allow this action?",
+      "allow": "Allow",
+      "allowShortcut": "Allow ({{key}})",
+      "deny": "Deny",
+      "denied": "You denied this action.",
+      "stopped": "Stopped.",
+      "tools": {
+        "runCommand": "Run command",
+        "readFile": "Read file",
+        "writeFile": "Write file",
+        "editFile": "Edit file",
+        "listDirectory": "List directory",
+        "statPath": "Inspect path",
+        "makeDirectory": "Create directory",
+        "deleteFile": "Delete file",
+        "removeDirectory": "Remove directory",
+        "movePath": "Move",
+        "changePermissions": "Change permissions",
+        "findDirectories": "Find directories"
+      }
     },
     "snippets": {
       "title": "代码片段",
