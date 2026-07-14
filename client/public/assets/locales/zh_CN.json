@@ -1779,7 +1779,9 @@
         "clearTerminal": "清除终端",
         "properties": "属性",
         "openTerminal": "在此打开终端",
-        "downloadFolder": "下载文件夹"
+        "downloadFolder": "下载文件夹",
+        "newFile": "New File",
+        "newFolder": "New Folder"
       },
       "properties": {
         "general": "一般情况",
@@ -1841,7 +1843,8 @@
         "switchToGrid": "切换到网格视图",
         "switchToList": "切换到列表视图",
         "search": "搜索文件",
-        "closeSearch": "关闭搜索"
+        "closeSearch": "关闭搜索",
+        "refresh": "Refresh"
       },
       "item": {
         "link": "链接"
