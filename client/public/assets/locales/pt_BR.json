@@ -733,6 +733,8 @@
         "folderManagementDescription": "Criação de registros, modificação e exclusão de pastas",
         "scriptExecutionLabel": "Execução de scripts",
         "scriptExecutionDescription": "Registrar a execução de scripts e tarefas de automação",
+        "aiOperationsLabel": "AI Operations",
+        "aiOperationsDescription": "Log commands and file changes performed by the AI assistant",
         "actions": {
           "save": "Salvar configurações"
         },
