@@ -825,6 +825,10 @@
           "title": "AI Menu",
           "description": "Open the AI command menu"
         },
+        "aiaccepttool": {
+          "title": "AI Accept Action",
+          "description": "Approve the pending AI tool action in the assistant"
+        },
         "snippets": {
           "title": "Snippets",
           "description": "Open the snippets dialog"
@@ -1868,6 +1872,7 @@
       "connectionError": "Connection to the assistant was lost.",
       "confirmPrompt": "Allow this action?",
       "allow": "Allow",
+      "allowShortcut": "Allow ({{key}})",
       "deny": "Deny",
       "denied": "You denied this action.",
       "stopped": "Stopped.",

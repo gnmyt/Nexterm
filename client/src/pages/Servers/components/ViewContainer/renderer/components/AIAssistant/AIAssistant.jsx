@@ -7,6 +7,7 @@ import {
     mdiInformationOutline, mdiFolderPlusOutline, mdiTrashCanOutline, mdiFileMoveOutline, mdiLockOutline, mdiMagnify,
 } from "@mdi/js";
 import { UserContext } from "@/common/contexts/UserContext.jsx";
+import { useKeymaps, matchesKeybind } from "@/common/contexts/KeymapContext.jsx";
 import Button from "@/common/components/Button";
 import FloatingWindow from "@/common/components/FloatingWindow";
 import { getWebSocketUrl } from "@/common/utils/ConnectionUtil.js";
@@ -65,7 +66,7 @@ const ToolResult = ({ tool, result }) => {
     );
 };
 
-const ToolCard = ({ message, onConfirm }) => {
+const ToolCard = ({ message, onConfirm, acceptHint }) => {
     const { t } = useTranslation();
     const meta = TOOL_META[message.tool] || { icon: mdiConsoleLine, summary: () => "" };
     const summary = meta.summary(message.args || {});
@@ -98,8 +99,10 @@ const ToolCard = ({ message, onConfirm }) => {
                         <Button type="danger" icon={mdiCancel} text={t("servers.aiAssistant.deny")}
                                 onClick={() => onConfirm(message.callId, false)} />
                         <Button icon={mdiCheck} text={t("servers.aiAssistant.allow")}
+                                title={acceptHint ? t("servers.aiAssistant.allowShortcut", { key: acceptHint }) : undefined}
                                 onClick={() => onConfirm(message.callId, true)} />
                     </div>
+                    {acceptHint && <span className="confirm-hint">{t("servers.aiAssistant.allowShortcut", { key: acceptHint })}</span>}
                 </div>
             )}
 
@@ -114,6 +117,7 @@ const ToolCard = ({ message, onConfirm }) => {
 export const AIAssistant = ({ session, onClose }) => {
     const { t } = useTranslation();
     const { sessionToken } = useContext(UserContext);
+    const { getParsedKeybind, getKeybind, formatKey } = useKeymaps();
     const [messages, setMessages] = useState([]);
     const [input, setInput] = useState("");
     const [running, setRunning] = useState(false);
@@ -250,8 +254,26 @@ export const AIAssistant = ({ session, onClose }) => {
         upsertTool(callId, { status: allow ? "running" : "denied" });
     };
 
+    const pendingConfirmId = messages.find((m) => m.role === "tool" && m.status === "awaiting-confirm")?.callId ?? null;
+    const acceptKeybind = getParsedKeybind?.("ai-accept-tool");
+    const acceptHint = formatKey?.(getKeybind?.("ai-accept-tool"));
+
+    useEffect(() => {
+        if (!pendingConfirmId || !acceptKeybind) return;
+
+        const handleAcceptShortcut = (e) => {
+            if (!matchesKeybind(e, acceptKeybind)) return;
+            e.preventDefault();
+            e.stopPropagation();
+            confirmTool(pendingConfirmId, true);
+        };
+
+        document.addEventListener("keydown", handleAcceptShortcut);
+        return () => document.removeEventListener("keydown", handleAcceptShortcut);
+    }, [pendingConfirmId, acceptKeybind]);
+
     const handleKeyDown = (e) => {
-        if (e.key === "Enter" && !e.shiftKey) {
+        if (e.key === "Enter" && !e.shiftKey && !e.ctrlKey && !e.metaKey && !e.altKey) {
             e.preventDefault();
             sendPrompt();
         }
@@ -278,7 +300,7 @@ export const AIAssistant = ({ session, onClose }) => {
                     if (message.role === "user") return <div key={i} className="message user"><MessageContent text={message.text} /></div>;
                     if (message.role === "assistant") return <div key={i} className="message assistant"><MessageContent text={message.text} /></div>;
                     if (message.role === "system") return <div key={i} className="message system">{message.text}</div>;
-                    return <ToolCard key={i} message={message} onConfirm={confirmTool} />;
+                    return <ToolCard key={i} message={message} onConfirm={confirmTool} acceptHint={acceptHint} />;
                 })}
 
                 {running && <div className="ai-typing"><span /><span /><span /></div>}
