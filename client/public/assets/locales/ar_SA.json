@@ -61,7 +61,9 @@
       "signInWithQrCode": "تسجيل الدخول باستخدام رمز الاستجابة السريعة",
       "qrScanDescription": "امسح رمز الاستجابة السريعة هذا باستخدام تطبيق Nexterm للهاتف المحمول لتسجيل الدخول على الفور.",
       "backToLogin": "العودة إلى تسجيل الدخول",
-      "authenticating": "توثيق..."
+      "authenticating": "توثيق...",
+      "noAccount": "Don't have an account?",
+      "haveAccount": "Already have an account?"
     },
     "deviceLink": {
       "title": "جهاز الارتباط",
@@ -955,6 +957,10 @@
       "addLdapProvider": "إضافة LDAP",
       "system": "النظام",
       "systemDescription": "مصادقة اسم المستخدم وكلمة المرور",
+      "registration": {
+        "title": "Self-Registration",
+        "description": "Allow visitors to create their own account from the login screen"
+      },
       "deleteConfirm": "سيؤدي هذا إلى حذف موفر المصادقة هذا نهائيًا.",
       "errors": {
         "deleteProvider": "خطأ في حذف الموفر",
@@ -1398,7 +1404,6 @@
       "subtitle": "يمكنك إنشاء أدوار ذات أذونات محددة بدقة أو تعيين أذونات لمستخدمين فرديين. ويُطبق الدور «الافتراضي» على الجميع تلقائيًا.",
       "createRole": "إنشاء دور",
       "rolesTitle": "الأدوار",
-      "membersTitle": "الأعضاء",
       "rolesTab": "الأدوار",
       "overridesTab": "الأذونات المباشرة",
       "permissionsTab": "الأذونات",
@@ -1420,7 +1425,6 @@
       "addMemberPlaceholder": "ابحث عن المستخدمين لإضافة…",
       "deleteRole": "حذف الدور",
       "deleteConfirm": "سيؤدي هذا إلى حذف الدور «{{name}}» نهائيًا وإزالته من جميع الأعضاء.",
-      "searchUsers": "البحث عن مستخدمي…",
       "inheritsAllow": "الميراث: مسموح به",
       "inheritsDeny": "يرث: مرفوض"
     }
