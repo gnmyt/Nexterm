@@ -10,7 +10,7 @@ import '../../services/session_manager.dart';
 import '../../utils/ai_manager.dart';
 import '../../utils/snippet_manager.dart';
 import '../../utils/terminal_settings.dart';
-import '../widgets/ai_command_sheet.dart';
+import '../widgets/ai_assistant_sheet.dart';
 import '../widgets/connection_loader.dart';
 
 class TerminalRenderer extends StatefulWidget {
@@ -219,36 +219,20 @@ class _TerminalRendererState extends State<TerminalRenderer> {
     if (seq != null) _channel?.sink.add(seq);
   }
 
-  String _getRecentOutput() {
-    final buffer = _terminal.buffer;
-    final lines = <String>[];
-    final totalLines = buffer.lines.length;
-    final start = (totalLines - 50).clamp(0, totalLines);
-    for (int i = start; i < totalLines; i++) {
-      lines.add(buffer.lines[i].getText());
-    }
-    final output = lines.join('\n').trimRight();
-    return output.length > 1500 ? output.substring(output.length - 1500) : output;
-  }
-
   void _showAISheet() {
     if (!mounted) return;
-    final serverId = widget.session.server.id;
-    final entryId = serverId is int ? serverId : int.tryParse(serverId.toString());
 
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
+      useSafeArea: true,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
-      builder: (ctx) => AICommandSheet(
+      builder: (ctx) => AIAssistantSheet(
         token: widget.token,
-        entryId: entryId,
-        recentOutput: _getRecentOutput(),
-        onCommandAccepted: (command) {
-          _channel?.sink.add(command);
-        },
+        sessionId: widget.session.sessionId,
+        serverName: widget.session.server.name,
       ),
     );
   }

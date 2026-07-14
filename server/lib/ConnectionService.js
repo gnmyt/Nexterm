@@ -216,6 +216,11 @@ const getSFTPBackgroundClient = (sessionId, entry, accountId) =>
         suffix: "bg", clientKey: "backgroundClient", connectingKey: "_backgroundConnecting", label: "background",
     });
 
+const getSFTPAIClient = (sessionId, entry, accountId) =>
+    getAuxiliarySFTPClient(sessionId, entry, accountId, {
+        suffix: "ai", clientKey: "aiClient", connectingKey: "_aiConnecting", label: "ai",
+    });
+
 const createSSHConnectionForSession = async (sessionId, entry, identity, organizationId, script = null) => {
     const session = requireSession(sessionId);
     if (session._connecting) return session._connecting;
@@ -441,6 +446,7 @@ module.exports = {
     createSFTPConnectionForSession,
     getSFTPTransferClient,
     getSFTPBackgroundClient,
+    getSFTPAIClient,
     buildSSHParams,
     resolveJumpHosts,
 };

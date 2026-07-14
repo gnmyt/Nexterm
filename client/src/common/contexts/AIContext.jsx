@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, useEffect } from "react";
+import { createContext, useContext, useState, useEffect, useCallback, useMemo } from "react";
 import { getRequest } from "@/common/utils/RequestUtil.js";
 
 export const AIContext = createContext({});
@@ -11,38 +11,34 @@ export const useAI = () => {
 };
 
 export const AIProvider = ({ children }) => {
-    const [aiSettings, setAISettings] = useState({ enabled: false, provider: null, model: null, configured: false });
+    const [available, setAvailable] = useState(false);
     const [loading, setLoading] = useState(true);
 
-    const loadAISettings = async () => {
+    const loadAISettings = useCallback(async () => {
         try {
             setLoading(true);
             const settings = await getRequest("ai");
-
-            const configured = settings.enabled && settings.provider && settings.model
-                && (settings.provider !== "openai" || settings.hasApiKey);
-
-            setAISettings({
-                enabled: settings.enabled,
-                provider: settings.provider,
-                model: settings.model,
-                configured,
-            });
-        } catch (error) {
-            setAISettings({ enabled: false, provider: null, model: null, configured: false });
+            setAvailable(Boolean(settings.isConfigured));
+        } catch {
+            setAvailable(false);
         } finally {
             setLoading(false);
         }
-    };
+    }, []);
 
-    const isAIAvailable = () => aiSettings.enabled && aiSettings.configured;
+    const isAIAvailable = useCallback(() => available, [available]);
 
     useEffect(() => {
         loadAISettings();
-    }, []);
+    }, [loadAISettings]);
+
+    const value = useMemo(
+        () => ({ available, loading, isAIAvailable, loadAISettings }),
+        [available, loading, isAIAvailable, loadAISettings],
+    );
 
     return (
-        <AIContext.Provider value={{ aiSettings, loading, isAIAvailable, loadAISettings }}>
+        <AIContext.Provider value={value}>
             {children}
         </AIContext.Provider>
     );
