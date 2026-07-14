@@ -733,6 +733,8 @@
         "folderManagementDescription": "Protokollierung der Erstellung, Änderung und Löschung von Ordnern",
         "scriptExecutionLabel": "Skript-Ausführung",
         "scriptExecutionDescription": "Protokollierung der Ausführung von Skripten und Automatisierungsaufgaben",
+        "aiOperationsLabel": "AI Operations",
+        "aiOperationsDescription": "Log commands and file changes performed by the AI assistant",
         "actions": {
           "save": "Einstellungen speichern"
         },
