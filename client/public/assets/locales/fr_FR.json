@@ -10,6 +10,7 @@
     "download": "Télécharger",
     "maximize": "Maximiser",
     "restore": "Restaurer",
+    "resize": "Resize",
     "actions": {
       "cancel": "Annuler",
       "confirm": "Confirme",
@@ -17,6 +18,7 @@
       "login": "Connexion",
       "register": "S'inscrire",
       "save": "Sauvegarde",
+      "saving": "… de sauvegarde",
       "download": "Télécharger",
       "close": "Fermer",
       "maximize": "Maximiser",
@@ -306,9 +308,7 @@
       "actions": {
         "cancel": "Annuler",
         "create": "Créer",
-        "save": "Sauvegarde",
-        "generateAI": "Générer avec l'IA",
-        "generating": "Générer..."
+        "save": "Sauvegarde"
       }
     },
     "messages": {
@@ -585,7 +585,8 @@
       "ai": "AI",
       "monitoring": "Surveillance",
       "backup": "Stockage",
-      "engines": "Moteurs"
+      "engines": "Moteurs",
+      "permissions": "Rôles et autorisations"
     },
     "account": {
       "title": "Compte",
@@ -775,22 +776,15 @@
       "noSearchResultsDescription": "Essaie d'ajuster ta requête de recherche.",
       "table": {
         "user": "Utilisateur",
-        "role": "Rôle",
-        "twoFactor": "2FA"
-      },
-      "roles": {
-        "admin": "Admin",
-        "user": "Utilisateur"
+        "twoFactor": "2FA",
+        "roles": "Rôles"
       },
       "contextMenu": {
         "changePassword": "Modifier le mot de passe",
-        "promoteToAdmin": "Promouvoir à l'administration",
-        "demoteToUser": "Rétrograde à l'utilisateur",
         "deleteUser": "Supprimer l'utilisateur",
         "loginAsUser": "Connecte-toi en tant qu'utilisateur",
         "deleteConfirm": "Cela supprimera définitivement l'utilisateur et toutes les données associées.",
-        "promoteConfirm": "L'utilisateur sera ainsi promu au rang d'administrateur.",
-        "demoteConfirm": "Cela rétrogradera l'utilisateur à un utilisateur normal."
+        "managePermissions": "Gérer les autorisations"
       }
     },
     "userDialog": {
@@ -830,6 +824,10 @@
         "aimenu": {
           "title": "Menu IA",
           "description": "Ouvre le menu des commandes AI"
+        },
+        "aiaccepttool": {
+          "title": "AI Accept Action",
+          "description": "Approve the pending AI tool action in the assistant"
         },
         "snippets": {
           "title": "Bribes",
@@ -1044,11 +1042,11 @@
     },
     "ai": {
       "title": "Configuration de l'assistant AI",
-      "description": "Configurer la génération de commandes par IA pour les sessions terminales et la création de snippet.",
+      "description": "Configure the AI assistant that can run commands and manage files directly over your server sessions.",
       "loading": "Chargement des paramètres de l'IA...",
       "enable": {
         "title": "Activer l'assistant AI",
-        "description": "Permettre aux utilisateurs de générer des commandes à l'aide de l'IA"
+        "description": "Allow users to open the AI assistant inside server sessions"
       },
       "provider": {
         "title": "Fournisseur d'IA",
@@ -1056,18 +1054,43 @@
       },
       "model": {
         "title": "Modèle",
-        "description": "Sélectionne le modèle d'IA à utiliser pour la génération des commandes."
+        "description": "Select the AI model the assistant should use"
+      },
+      "requireConfirmation": {
+        "title": "Confirm before each action",
+        "description": "Require users to approve every command and file change the assistant wants to make"
       },
       "apiKey": {
         "title": "Clé API",
-        "description": "Votre clé API OpenAI pour l'authentification",
-        "placeholder": "Entrez votre clé API OpenAI",
-        "setPlaceholder": "La clé API est définie (laisser vide pour rester à jour)"
+        "setPlaceholder": "La clé API est définie (laisser vide pour rester à jour)",
+        "genericDescription": "API key used to authenticate with the selected provider",
+        "genericPlaceholder": "Enter your {{provider}} API key"
       },
-      "ollamaUrl": {
-        "title": "Ollama URL",
-        "description": "L'URL où ton instance d'Ollama est en cours d'exécution",
-        "placeholder": "http://localhost:11434"
+      "authMethod": {
+        "title": "Authentication",
+        "description": "Authenticate with an API key or your provider subscription",
+        "apiKey": "API Key",
+        "subscription": "Subscription"
+      },
+      "subscription": {
+        "title": "{{provider}} Subscription",
+        "description": "Sign in with your {{provider}} subscription to use its models without an API key",
+        "connectedDescription": "Your {{provider}} subscription is connected",
+        "connect": "Connect",
+        "connecting": "Connecting...",
+        "complete": "Complete",
+        "disconnect": "Disconnect",
+        "codePlaceholder": "Paste the authorization code here",
+        "codePlaceholderUrl": "Paste the full callback URL (or code) here",
+        "connectSuccess": "{{provider}} subscription connected",
+        "startError": "Failed to start authorization",
+        "exchangeError": "Failed to connect subscription",
+        "disconnectError": "Failed to disconnect subscription"
+      },
+      "baseUrl": {
+        "title": "API URL",
+        "description": "Base URL of the provider's OpenAI-compatible endpoint",
+        "placeholder": "https://api.example.com/v1"
       },
       "selectProvider": "Sélectionnez un fournisseur...",
       "selectModel": "Sélectionnez un modèle...",
@@ -1368,6 +1391,36 @@
         "deleteFailed": "Échec de la suppression du moteur",
         "regenerateFailed": "Échec de la régénération du jeton"
       }
+    },
+    "permissions": {
+      "subtitle": "Crée des rôles avec des autorisations détaillées ou attribue des autorisations à chaque utilisateur. Le rôle « Par défaut » s'applique automatiquement à tout le monde.",
+      "createRole": "Créer un rôle",
+      "rolesTitle": "Rôles",
+      "membersTitle": "Membres",
+      "rolesTab": "Rôles",
+      "overridesTab": "Autorisations directes",
+      "permissionsTab": "Autorisations",
+      "membersTab": "Membres",
+      "settingsTab": "Paramètres",
+      "managePermissions": "Gérer les autorisations",
+      "memberCount_one": "{{count}} membre",
+      "memberCount_other": "{{count}} membres",
+      "dangerousHint": "Accorder ce droit donne un accès trop large ou dangereux. Fais-le avec prudence.",
+      "roleName": "Nom du rôle",
+      "roleNamePlaceholder": "par ex. les opérateurs",
+      "roleColor": "Couleur",
+      "nameRequired": "Donne un nom à ce rôle.",
+      "saveError": "Impossible d'enregistrer tes modifications.",
+      "loadError": "Impossible de charger les autorisations.",
+      "userSaved": "Les autorisations ont été mises à jour.",
+      "noAssignableRoles": "Il n'y a pas encore de rôles disponibles. Commence par en créer un.",
+      "noMembers": "Ce groupe n'a encore aucun membre.",
+      "addMemberPlaceholder": "Rechercher des utilisateurs à ajouter…",
+      "deleteRole": "Supprimer un rôle",
+      "deleteConfirm": "Ça va supprimer définitivement le rôle «{{name}}» et le retirer de tous les membres.",
+      "searchUsers": "Rechercher des utilisateurs…",
+      "inheritsAllow": "Hérédité : autorisée",
+      "inheritsDeny": "Hérite de : Refusé"
     }
   },
   "tunnel": {
@@ -1780,10 +1833,19 @@
         "enterDirectory": "Saisis le chemin du répertoire...",
         "hiddenDirectories": "{{count}} répertoires cachés",
         "switchToGrid": "Passer à l'affichage en grille",
-        "switchToList": "Passer à l'affichage de la liste"
+        "switchToList": "Passer à l'affichage de la liste",
+        "search": "Rechercher des fichiers",
+        "closeSearch": "Fermer la recherche"
       },
       "item": {
         "link": "lien"
+      },
+      "search": {
+        "placeholder": "Filtrer les fichiers de ce dossier...",
+        "results_one": "{{count}} résultat",
+        "results_other": "{{count}} résultats",
+        "noResultsTitle": "Aucun résultat",
+        "noResults": "Aucun fichier ne correspond à «{{query}}»"
       },
       "states": {
         "loading": "Chargement des fichiers...",
@@ -1802,17 +1864,33 @@
     },
     "aiAssistant": {
       "title": "Assistant AI",
-      "placeholder": "Décris ce que tu veux faire...",
-      "hint": "Appuie sur Enter pour générer - Esc pour fermer",
-      "hintUse": "Appuyez sur Entrée pour utiliser la commande • Échap pour fermer",
-      "closeLabel": "Fermer l'assistant AI",
-      "generate": "Générer une commande",
-      "generating": "Génération de la commande...",
-      "generatedCommand": "Commande générée",
-      "useCommand": "Utiliser la commande",
-      "tryAgain": "Réessayer",
-      "copy": "Copier dans le Presse-papier",
-      "error": "Impossible de générer la commande. Veuillez réessayer."
+      "open": "AI Assistant",
+      "empty": "Ask the assistant to inspect or change this server. It can run commands and read or edit files directly over the connection.",
+      "placeholder": "Message the assistant...",
+      "connecting": "Connecting...",
+      "send": "Send",
+      "stop": "Stop",
+      "connectionError": "Connection to the assistant was lost.",
+      "confirmPrompt": "Allow this action?",
+      "allow": "Allow",
+      "allowShortcut": "Allow ({{key}})",
+      "deny": "Deny",
+      "denied": "You denied this action.",
+      "stopped": "Stopped.",
+      "tools": {
+        "runCommand": "Run command",
+        "readFile": "Read file",
+        "writeFile": "Write file",
+        "editFile": "Edit file",
+        "listDirectory": "List directory",
+        "statPath": "Inspect path",
+        "makeDirectory": "Create directory",
+        "deleteFile": "Delete file",
+        "removeDirectory": "Remove directory",
+        "movePath": "Move",
+        "changePermissions": "Change permissions",
+        "findDirectories": "Find directories"
+      }
     },
     "snippets": {
       "title": "Bribes",
