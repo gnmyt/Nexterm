@@ -10,6 +10,7 @@
     "download": "Scarica",
     "maximize": "Massimizza",
     "restore": "Ripristino",
+    "resize": "Resize",
     "actions": {
       "cancel": "Annullamento",
       "confirm": "Confermare",
@@ -17,6 +18,7 @@
       "login": "Accesso",
       "register": "Registro",
       "save": "Salva",
+      "saving": "Salva \"… \"",
       "download": "Scarica",
       "close": "Chiudi",
       "maximize": "Massimizza",
@@ -306,9 +308,7 @@
       "actions": {
         "cancel": "Annullamento",
         "create": "Crea",
-        "save": "Risparmia",
-        "generateAI": "Genera con l'intelligenza artificiale",
-        "generating": "Generare..."
+        "save": "Risparmia"
       }
     },
     "messages": {
@@ -585,7 +585,8 @@
       "ai": "AI",
       "monitoring": "Monitoraggio",
       "backup": "Immagazzinamento",
-      "engines": "Motori"
+      "engines": "Motori",
+      "permissions": "Ruoli e autorizzazioni"
     },
     "account": {
       "title": "Conto",
@@ -775,22 +776,15 @@
       "noSearchResultsDescription": "Prova a modificare la tua query di ricerca.",
       "table": {
         "user": "Utente",
-        "role": "Ruolo",
-        "twoFactor": "2FA"
-      },
-      "roles": {
-        "admin": "Admin",
-        "user": "Utente"
+        "twoFactor": "2FA",
+        "roles": "Ruoli"
       },
       "contextMenu": {
         "changePassword": "Cambia la password",
-        "promoteToAdmin": "Promuovi ad amministratore",
-        "demoteToUser": "Retrocessione a utente",
         "deleteUser": "Elimina l'utente",
         "loginAsUser": "Accedi come utente",
         "deleteConfirm": "In questo modo l'utente e tutti i dati ad esso associati verranno eliminati in modo permanente.",
-        "promoteConfirm": "In questo modo l'utente verrà promosso ad amministratore.",
-        "demoteConfirm": "In questo modo l'utente verrà declassato a utente normale."
+        "managePermissions": "Gestisci le autorizzazioni"
       }
     },
     "userDialog": {
@@ -830,6 +824,10 @@
         "aimenu": {
           "title": "Menu AI",
           "description": "Apri il menu dei comandi di AI"
+        },
+        "aiaccepttool": {
+          "title": "AI Accept Action",
+          "description": "Approve the pending AI tool action in the assistant"
         },
         "snippets": {
           "title": "Frammenti",
@@ -1044,11 +1042,11 @@
     },
     "ai": {
       "title": "Configurazione dell'assistente AI",
-      "description": "Configura la generazione di comandi AI per le sessioni di terminale e la creazione di snippet.",
+      "description": "Configure the AI assistant that can run commands and manage files directly over your server sessions.",
       "loading": "Caricamento impostazioni AI...",
       "enable": {
         "title": "Attiva l'assistente AI",
-        "description": "Consenti agli utenti di generare comandi utilizzando l'intelligenza artificiale"
+        "description": "Allow users to open the AI assistant inside server sessions"
       },
       "provider": {
         "title": "Fornitore di AI",
@@ -1056,18 +1054,43 @@
       },
       "model": {
         "title": "Modello",
-        "description": "Seleziona il modello di intelligenza artificiale da utilizzare per la generazione dei comandi"
+        "description": "Select the AI model the assistant should use"
+      },
+      "requireConfirmation": {
+        "title": "Confirm before each action",
+        "description": "Require users to approve every command and file change the assistant wants to make"
       },
       "apiKey": {
         "title": "Chiave API",
-        "description": "La tua chiave API OpenAI per l'autenticazione",
-        "placeholder": "Inserisci la tua chiave API OpenAI",
-        "setPlaceholder": "La chiave API è impostata (lasciare vuoto per mantenerla aggiornata)"
+        "setPlaceholder": "La chiave API è impostata (lasciare vuoto per mantenerla aggiornata)",
+        "genericDescription": "API key used to authenticate with the selected provider",
+        "genericPlaceholder": "Enter your {{provider}} API key"
       },
-      "ollamaUrl": {
-        "title": "URL Ollama",
-        "description": "L'URL in cui è in esecuzione l'istanza di Ollama",
-        "placeholder": "http://localhost:11434"
+      "authMethod": {
+        "title": "Authentication",
+        "description": "Authenticate with an API key or your provider subscription",
+        "apiKey": "API Key",
+        "subscription": "Subscription"
+      },
+      "subscription": {
+        "title": "{{provider}} Subscription",
+        "description": "Sign in with your {{provider}} subscription to use its models without an API key",
+        "connectedDescription": "Your {{provider}} subscription is connected",
+        "connect": "Connect",
+        "connecting": "Connecting...",
+        "complete": "Complete",
+        "disconnect": "Disconnect",
+        "codePlaceholder": "Paste the authorization code here",
+        "codePlaceholderUrl": "Paste the full callback URL (or code) here",
+        "connectSuccess": "{{provider}} subscription connected",
+        "startError": "Failed to start authorization",
+        "exchangeError": "Failed to connect subscription",
+        "disconnectError": "Failed to disconnect subscription"
+      },
+      "baseUrl": {
+        "title": "API URL",
+        "description": "Base URL of the provider's OpenAI-compatible endpoint",
+        "placeholder": "https://api.example.com/v1"
       },
       "selectProvider": "Seleziona un fornitore...",
       "selectModel": "Seleziona un modello...",
@@ -1368,6 +1391,36 @@
         "deleteFailed": "Non è riuscito a cancellare il motore",
         "regenerateFailed": "Impossibile rigenerare il token"
       }
+    },
+    "permissions": {
+      "subtitle": "Crea ruoli con autorizzazioni dettagliate oppure assegna le autorizzazioni ai singoli utenti. Il ruolo predefinito si applica automaticamente a tutti.",
+      "createRole": "Crea un ruolo",
+      "rolesTitle": "Ruoli",
+      "membersTitle": "Membri",
+      "rolesTab": "Ruoli",
+      "overridesTab": "Autorizzazioni dirette",
+      "permissionsTab": "Autorizzazioni",
+      "membersTab": "Membri",
+      "settingsTab": "Impostazioni",
+      "managePermissions": "Gestisci le autorizzazioni",
+      "memberCount_one": "{{count}} membro",
+      "memberCount_other": "{{count}} membri",
+      "dangerousHint": "Concedere questo diritto comporta un accesso illimitato o dannoso. Usalo con cautela.",
+      "roleName": "Nome del ruolo",
+      "roleNamePlaceholder": "ad es. Operatori",
+      "roleColor": "Colore",
+      "nameRequired": "Inserisci un nome per il ruolo.",
+      "saveError": "Non è stato possibile salvare le modifiche.",
+      "loadError": "Impossibile caricare i permessi.",
+      "userSaved": "Permessi aggiornati.",
+      "noAssignableRoles": "Non ci sono ancora ruoli disponibili. Creane uno prima.",
+      "noMembers": "Questo ruolo non ha ancora membri.",
+      "addMemberPlaceholder": "Cerca utenti da aggiungere su…",
+      "deleteRole": "Elimina ruolo",
+      "deleteConfirm": "Questo eliminerà definitivamente il ruolo \"{{name}}\" e lo rimuoverà da tutti i membri.",
+      "searchUsers": "Cerca utenti…",
+      "inheritsAllow": "Eredita: Consentito",
+      "inheritsDeny": "Eredita: Negato"
     }
   },
   "tunnel": {
@@ -1780,10 +1833,19 @@
         "enterDirectory": "Inserisci il percorso della directory...",
         "hiddenDirectories": "{{count}} directory nascoste",
         "switchToGrid": "Passa alla visualizzazione a griglia",
-        "switchToList": "Passa alla vista elenco"
+        "switchToList": "Passa alla vista elenco",
+        "search": "Cerca file",
+        "closeSearch": "Chiudi ricerca"
       },
       "item": {
         "link": "link"
+      },
+      "search": {
+        "placeholder": "Filtra i file in questa cartella...",
+        "results_one": "{{count}} risultato",
+        "results_other": "{{count}} risultati",
+        "noResultsTitle": "Nessun risultato",
+        "noResults": "Non ci sono file che corrispondono a \"{{query}}\""
       },
       "states": {
         "loading": "Caricamento dei file...",
@@ -1802,17 +1864,33 @@
     },
     "aiAssistant": {
       "title": "Assistente AI",
-      "placeholder": "Descrivi ciò che vuoi fare...",
-      "hint": "Premi Invio per generare - Esc per chiudere",
-      "hintUse": "Premi Invio per usare il comando - Esc per chiudere",
-      "closeLabel": "Chiudi l'assistente AI",
-      "generate": "Generare un comando",
-      "generating": "Generazione del comando...",
-      "generatedCommand": "Comando generato",
-      "useCommand": "Usa il comando",
-      "tryAgain": "Riprova",
-      "copy": "Copia negli appunti",
-      "error": "Il comando non è stato generato. Riprova."
+      "open": "AI Assistant",
+      "empty": "Ask the assistant to inspect or change this server. It can run commands and read or edit files directly over the connection.",
+      "placeholder": "Message the assistant...",
+      "connecting": "Connecting...",
+      "send": "Send",
+      "stop": "Stop",
+      "connectionError": "Connection to the assistant was lost.",
+      "confirmPrompt": "Allow this action?",
+      "allow": "Allow",
+      "allowShortcut": "Allow ({{key}})",
+      "deny": "Deny",
+      "denied": "You denied this action.",
+      "stopped": "Stopped.",
+      "tools": {
+        "runCommand": "Run command",
+        "readFile": "Read file",
+        "writeFile": "Write file",
+        "editFile": "Edit file",
+        "listDirectory": "List directory",
+        "statPath": "Inspect path",
+        "makeDirectory": "Create directory",
+        "deleteFile": "Delete file",
+        "removeDirectory": "Remove directory",
+        "movePath": "Move",
+        "changePermissions": "Change permissions",
+        "findDirectories": "Find directories"
+      }
     },
     "snippets": {
       "title": "Frammenti",
