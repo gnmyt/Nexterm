@@ -276,14 +276,12 @@ export const LoginDialog = ({ open }) => {
                     ) : null}
 
                     {totpRequired ? (
-                        <>
-                            <div className="form-group">
-                                <label htmlFor="code">{t('common.labels.twoFACode')}</label>
-                                <Input type="number" id="code" required icon={mdiKeyOutline}
-                                       placeholder={t('common.placeholders.code')} autoComplete="one-time-code"
-                                       value={code} setValue={setCode} />
-                            </div>
-                        </>
+                        <div className="form-group">
+                            <label htmlFor="code">{t('common.labels.twoFACode')}</label>
+                            <Input type="number" id="code" required icon={mdiKeyOutline}
+                                   placeholder={t('common.placeholders.code')} autoComplete="one-time-code"
+                                   value={code} setValue={setCode} />
+                        </div>
                     ) : null}
 
                     {isInternalAuthEnabled() ? <Button text={registrationView ? t('common.actions.register') : t('common.actions.login')} /> : null}
@@ -291,9 +289,9 @@ export const LoginDialog = ({ open }) => {
                     {(registrationEnabled && !firstTimeSetup && !totpRequired) ? (
                         <div className="register-switch">
                             <span>{registerMode ? t('common.loginDialog.haveAccount') : t('common.loginDialog.noAccount')}</span>
-                            <a role="button" onClick={() => setRegisterMode(!registerMode)}>
+                            <button type="button" onClick={() => setRegisterMode(!registerMode)}>
                                 {registerMode ? t('common.actions.login') : t('common.actions.register')}
-                            </a>
+                            </button>
                         </div>
                     ) : null}
 
