@@ -828,7 +828,7 @@
           "description": "Öffne das AI-Befehlsmenü"
         },
         "aiaccepttool": {
-          "title": "AI Accept Action",
+          "title": "KI Genehmigungs-Aktions",
           "description": "Approve the pending AI tool action in the assistant"
         },
         "snippets": {
