@@ -10,6 +10,7 @@
     "download": "Descarga",
     "maximize": "Maximiza",
     "restore": "Restaura",
+    "resize": "Resize",
     "actions": {
       "cancel": "Cancela",
       "confirm": "Confirma",
@@ -17,6 +18,7 @@
       "login": "Iniciar sesión",
       "register": "Regístrate en",
       "save": "Guardar",
+      "saving": "Salvar a «… »",
       "download": "Descarga",
       "close": "Cerrar",
       "maximize": "Maximizar",
@@ -306,9 +308,7 @@
       "actions": {
         "cancel": "Cancelar",
         "create": "Crea",
-        "save": "Guarda",
-        "generateAI": "Generar con IA",
-        "generating": "Generar..."
+        "save": "Guarda"
       }
     },
     "messages": {
@@ -585,7 +585,8 @@
       "ai": "AI",
       "monitoring": "Supervisión",
       "backup": "Almacenamiento",
-      "engines": "Motores"
+      "engines": "Motores",
+      "permissions": "Roles y permisos"
     },
     "account": {
       "title": "Cuenta",
@@ -775,22 +776,15 @@
       "noSearchResultsDescription": "Prueba a ajustar tu consulta de búsqueda.",
       "table": {
         "user": "Usuario",
-        "role": "Papel",
-        "twoFactor": "2FA"
-      },
-      "roles": {
-        "admin": "Admin",
-        "user": "Usuario"
+        "twoFactor": "2FA",
+        "roles": "Puestos"
       },
       "contextMenu": {
         "changePassword": "Cambiar contraseña",
-        "promoteToAdmin": "Ascender a admin",
-        "demoteToUser": "Degradar a usuario",
         "deleteUser": "Eliminar usuario",
         "loginAsUser": "Iniciar sesión como usuario",
         "deleteConfirm": "Esto eliminará permanentemente al usuario y todos los datos asociados.",
-        "promoteConfirm": "Esto ascenderá al usuario a administrador.",
-        "demoteConfirm": "Esto degradará al usuario a usuario normal."
+        "managePermissions": "Gestionar permisos"
       }
     },
     "userDialog": {
@@ -830,6 +824,10 @@
         "aimenu": {
           "title": "Menú AI",
           "description": "Abre el menú de comandos AI"
+        },
+        "aiaccepttool": {
+          "title": "AI Accept Action",
+          "description": "Approve the pending AI tool action in the assistant"
         },
         "snippets": {
           "title": "Fragmentos",
@@ -1044,11 +1042,11 @@
     },
     "ai": {
       "title": "Configuración del Asistente AI",
-      "description": "Configura la generación de comandos asistida por IA para las sesiones de terminal y la creación de fragmentos.",
+      "description": "Configure the AI assistant that can run commands and manage files directly over your server sessions.",
       "loading": "Cargando ajustes de IA...",
       "enable": {
         "title": "Activar el Asistente de IA",
-        "description": "Permitir a los usuarios generar comandos utilizando IA"
+        "description": "Allow users to open the AI assistant inside server sessions"
       },
       "provider": {
         "title": "Proveedor de IA",
@@ -1056,18 +1054,43 @@
       },
       "model": {
         "title": "Modelo",
-        "description": "Selecciona el modelo de IA que se utilizará para la generación de órdenes"
+        "description": "Select the AI model the assistant should use"
+      },
+      "requireConfirmation": {
+        "title": "Confirm before each action",
+        "description": "Require users to approve every command and file change the assistant wants to make"
       },
       "apiKey": {
         "title": "Clave API",
-        "description": "Tu clave API de OpenAI para la autenticación",
-        "placeholder": "Introduce tu clave API de OpenAI",
-        "setPlaceholder": "La clave API está configurada (déjala en blanco para mantenerla actualizada)"
+        "setPlaceholder": "La clave API está configurada (déjala en blanco para mantenerla actualizada)",
+        "genericDescription": "API key used to authenticate with the selected provider",
+        "genericPlaceholder": "Enter your {{provider}} API key"
       },
-      "ollamaUrl": {
-        "title": "URL de Ollama",
-        "description": "La URL donde se ejecuta tu instancia de Ollama",
-        "placeholder": "http://localhost:11434"
+      "authMethod": {
+        "title": "Authentication",
+        "description": "Authenticate with an API key or your provider subscription",
+        "apiKey": "API Key",
+        "subscription": "Subscription"
+      },
+      "subscription": {
+        "title": "{{provider}} Subscription",
+        "description": "Sign in with your {{provider}} subscription to use its models without an API key",
+        "connectedDescription": "Your {{provider}} subscription is connected",
+        "connect": "Connect",
+        "connecting": "Connecting...",
+        "complete": "Complete",
+        "disconnect": "Disconnect",
+        "codePlaceholder": "Paste the authorization code here",
+        "codePlaceholderUrl": "Paste the full callback URL (or code) here",
+        "connectSuccess": "{{provider}} subscription connected",
+        "startError": "Failed to start authorization",
+        "exchangeError": "Failed to connect subscription",
+        "disconnectError": "Failed to disconnect subscription"
+      },
+      "baseUrl": {
+        "title": "API URL",
+        "description": "Base URL of the provider's OpenAI-compatible endpoint",
+        "placeholder": "https://api.example.com/v1"
       },
       "selectProvider": "Selecciona un proveedor...",
       "selectModel": "Selecciona un modelo...",
@@ -1368,6 +1391,36 @@
         "deleteFailed": "Error al borrar el motor",
         "regenerateFailed": "No se ha podido regenerar el testigo"
       }
+    },
+    "permissions": {
+      "subtitle": "Crea roles con permisos detallados o asigna permisos a usuarios concretos. El rol «Predeterminado» se aplica automáticamente a todo el mundo.",
+      "createRole": "Crear rol",
+      "rolesTitle": "Puestos",
+      "membersTitle": "Miembros",
+      "rolesTab": "Puestos",
+      "overridesTab": "Permisos directos",
+      "permissionsTab": "Permisos",
+      "membersTab": "Miembros",
+      "settingsTab": "Configuración",
+      "managePermissions": "Gestionar permisos",
+      "memberCount_one": "{{count}} miembro",
+      "memberCount_other": "{{count}} miembros",
+      "dangerousHint": "Si concedes esto, el acceso será muy amplio o incluso destructivo. Úsalo con cuidado.",
+      "roleName": "Nombre del rol",
+      "roleNamePlaceholder": "p. ej., Operadores",
+      "roleColor": "Color",
+      "nameRequired": "Por favor, escribe un nombre para el rol.",
+      "saveError": "No se han podido guardar los cambios.",
+      "loadError": "No se han podido cargar los permisos.",
+      "userSaved": "Se han actualizado los permisos.",
+      "noAssignableRoles": "Aún no hay roles disponibles. Crea uno primero.",
+      "noMembers": "Este grupo aún no tiene miembros.",
+      "addMemberPlaceholder": "Busca usuarios a los que añadir…",
+      "deleteRole": "Eliminar rol",
+      "deleteConfirm": "Esto eliminará definitivamente el rol «{{name}}» y lo retirará de todos los miembros.",
+      "searchUsers": "Buscar usuarios…",
+      "inheritsAllow": "Heredancia: Permitida",
+      "inheritsDeny": "Heredado: Denegado"
     }
   },
   "tunnel": {
@@ -1780,10 +1833,19 @@
         "enterDirectory": "Introduce la ruta del directorio...",
         "hiddenDirectories": "{{count}} directorios ocultos",
         "switchToGrid": "Cambiar a vista de cuadrícula",
-        "switchToList": "Cambiar a vista de lista"
+        "switchToList": "Cambiar a vista de lista",
+        "search": "Buscar archivos",
+        "closeSearch": "Cerrar búsqueda"
       },
       "item": {
         "link": "enlace"
+      },
+      "search": {
+        "placeholder": "Filtrar los archivos de esta carpeta...",
+        "results_one": "{{count}} resultado",
+        "results_other": "{{count}} resultados",
+        "noResultsTitle": "No hay resultados",
+        "noResults": "No hay ningún archivo que coincida con «{{query}}»."
       },
       "states": {
         "loading": "Cargando archivos...",
@@ -1802,17 +1864,33 @@
     },
     "aiAssistant": {
       "title": "Asistente de IA",
-      "placeholder": "Describe lo que quieres hacer...",
-      "hint": "Pulsa Intro para generar - Esc para cerrar",
-      "hintUse": "Pulsa Intro para usar el comando - Esc para cerrar",
-      "closeLabel": "Cerrar Asistente AI",
-      "generate": "Generar comando",
-      "generating": "Generar comando...",
-      "generatedCommand": "Comando generado",
-      "useCommand": "Utiliza el comando",
-      "tryAgain": "Inténtalo de nuevo",
-      "copy": "Copiar al portapapeles",
-      "error": "No se ha podido generar el comando. Inténtalo de nuevo."
+      "open": "AI Assistant",
+      "empty": "Ask the assistant to inspect or change this server. It can run commands and read or edit files directly over the connection.",
+      "placeholder": "Message the assistant...",
+      "connecting": "Connecting...",
+      "send": "Send",
+      "stop": "Stop",
+      "connectionError": "Connection to the assistant was lost.",
+      "confirmPrompt": "Allow this action?",
+      "allow": "Allow",
+      "allowShortcut": "Allow ({{key}})",
+      "deny": "Deny",
+      "denied": "You denied this action.",
+      "stopped": "Stopped.",
+      "tools": {
+        "runCommand": "Run command",
+        "readFile": "Read file",
+        "writeFile": "Write file",
+        "editFile": "Edit file",
+        "listDirectory": "List directory",
+        "statPath": "Inspect path",
+        "makeDirectory": "Create directory",
+        "deleteFile": "Delete file",
+        "removeDirectory": "Remove directory",
+        "movePath": "Move",
+        "changePermissions": "Change permissions",
+        "findDirectories": "Find directories"
+      }
     },
     "snippets": {
       "title": "Fragmentos",
