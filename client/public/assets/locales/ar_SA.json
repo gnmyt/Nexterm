@@ -733,6 +733,8 @@
         "folderManagementDescription": "إنشاء سجلات إنشاء المجلدات وتعديلها وحذفها",
         "scriptExecutionLabel": "تنفيذ البرنامج النصي",
         "scriptExecutionDescription": "تسجيل تنفيذ البرامج النصية ومهام الأتمتة",
+        "aiOperationsLabel": "AI Operations",
+        "aiOperationsDescription": "Log commands and file changes performed by the AI assistant",
         "actions": {
           "save": "حفظ الإعدادات"
         },
