@@ -30,6 +30,16 @@ int nexterm_ssh_exec_command(struct nexterm_control_plane* cp,
                              const jump_host_t* jump_hosts,
                              int jump_count);
 
+int nexterm_ssh_exec_batch(struct nexterm_control_plane* cp,
+                           const char* request_id,
+                           const char* host, uint16_t port,
+                           const ssh_credentials_t* creds,
+                           const char* const* ids,
+                           const char* const* commands,
+                           int command_count,
+                           const jump_host_t* jump_hosts,
+                           int jump_count);
+
 int nexterm_extract_jump_hosts(const nexterm_session_t* session,
                                jump_host_t* jump_hosts,
                                int max_jump_hosts);

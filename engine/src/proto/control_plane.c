@@ -362,6 +362,70 @@ static void handle_exec_command(nexterm_control_plane_t* cp,
                              jump_hosts, jump_count);
 }
 
+static void handle_exec_batch(nexterm_control_plane_t* cp,
+                              Nexterm_ControlPlane_Envelope_table_t envelope) {
+    Nexterm_ControlPlane_ExecBatch_table_t batch_msg =
+        Nexterm_ControlPlane_Envelope_exec_batch(envelope);
+    if (!batch_msg) {
+        LOG_WARN("Invalid ExecBatch message");
+        return;
+    }
+
+    const char* req_id = Nexterm_ControlPlane_ExecBatch_request_id(batch_msg);
+    const char* host = Nexterm_ControlPlane_ExecBatch_host(batch_msg);
+    uint16_t port = Nexterm_ControlPlane_ExecBatch_port(batch_msg);
+
+    if (!req_id || !host) {
+        LOG_WARN("ExecBatch: missing required fields");
+        return;
+    }
+
+    Nexterm_ControlPlane_ExecBatchCommand_vec_t cmds =
+        Nexterm_ControlPlane_ExecBatch_commands(batch_msg);
+    size_t count = cmds ? Nexterm_ControlPlane_ExecBatchCommand_vec_len(cmds) : 0;
+    if (count == 0) {
+        LOG_WARN("ExecBatch: no commands (req=%s)", req_id);
+        nexterm_cp_send_exec_batch_result(cp, req_id, false,
+                                          "No commands supplied", NULL, 0);
+        return;
+    }
+
+    const char** ids = calloc(count, sizeof(char*));
+    const char** commands = calloc(count, sizeof(char*));
+    if (!ids || !commands) {
+        free(ids);
+        free(commands);
+        nexterm_cp_send_exec_batch_result(cp, req_id, false, "Out of memory", NULL, 0);
+        return;
+    }
+
+    for (size_t i = 0; i < count; i++) {
+        Nexterm_ControlPlane_ExecBatchCommand_table_t c =
+            Nexterm_ControlPlane_ExecBatchCommand_vec_at(cmds, i);
+        ids[i] = Nexterm_ControlPlane_ExecBatchCommand_id(c);
+        commands[i] = Nexterm_ControlPlane_ExecBatchCommand_command(c);
+    }
+
+    ssh_credentials_t creds;
+    extract_ssh_credentials(Nexterm_ControlPlane_ExecBatch_params(batch_msg), &creds);
+    if (!creds.username) creds.username = "";
+
+    jump_host_t jump_hosts[MAX_JUMP_HOSTS];
+    int jump_count = 0;
+    extract_jump_hosts_from_msg(
+        Nexterm_ControlPlane_ExecBatch_jump_hosts(batch_msg),
+        jump_hosts, &jump_count);
+
+    LOG_INFO("ExecBatch: req=%s host=%s:%u commands=%zu (jump_hosts=%d)",
+             req_id, host, port, count, jump_count);
+
+    nexterm_ssh_exec_batch(cp, req_id, host, port, &creds,
+                           ids, commands, (int)count, jump_hosts, jump_count);
+
+    free(ids);
+    free(commands);
+}
+
 static bool check_port_open(const char* host, uint16_t port, uint32_t timeout_ms) {
     struct addrinfo hints = {0};
     hints.ai_family = AF_UNSPEC;
@@ -575,6 +639,9 @@ static void handle_message(nexterm_control_plane_t* cp, const uint8_t* buf) {
         case Nexterm_ControlPlane_MessageType_ExecCommand:
             handle_exec_command(cp, envelope);
             break;
+        case Nexterm_ControlPlane_MessageType_ExecBatch:
+            handle_exec_batch(cp, envelope);
+            break;
         case Nexterm_ControlPlane_MessageType_PortCheck:
             handle_port_check(cp, envelope);
             break;
@@ -751,19 +818,21 @@ void nexterm_cp_stop(nexterm_control_plane_t* cp) {
     LOG_INFO("Stopping control plane client");
     cp->running = false;
 
+    if (cp->sock_fd >= 0)
+        shutdown(cp->sock_fd, SHUT_RDWR);
+
+    pthread_join(cp->read_thread, NULL);
+    pthread_join(cp->keepalive_thread, NULL);
+
     if (cp->ssl) {
         nexterm_tls_cleanup(cp->ssl);
         cp->ssl = NULL;
     }
 
     if (cp->sock_fd >= 0) {
-        shutdown(cp->sock_fd, SHUT_RDWR);
         close(cp->sock_fd);
         cp->sock_fd = -1;
     }
-
-    pthread_join(cp->read_thread, NULL);
-    pthread_join(cp->keepalive_thread, NULL);
 }
 
 void nexterm_cp_destroy(nexterm_control_plane_t* cp) {
@@ -921,6 +990,50 @@ int nexterm_cp_send_exec_result(nexterm_control_plane_t* cp,
         Nexterm_ControlPlane_ExecCommandResult_error_message_create_str(&builder, error_message);
 
     Nexterm_ControlPlane_Envelope_exec_command_result_end(&builder);
+    Nexterm_ControlPlane_Envelope_end_as_root(&builder);
+
+    return cp_send(cp, &builder);
+}
+
+int nexterm_cp_send_exec_batch_result(nexterm_control_plane_t* cp,
+                                      const char* request_id,
+                                      bool success,
+                                      const char* error_message,
+                                      const exec_batch_entry_t* entries,
+                                      size_t count) {
+    flatcc_builder_t builder;
+    flatcc_builder_init(&builder);
+
+    Nexterm_ControlPlane_Envelope_start_as_root(&builder);
+    Nexterm_ControlPlane_Envelope_msg_type_add(&builder,
+        Nexterm_ControlPlane_MessageType_ExecBatchResult);
+
+    Nexterm_ControlPlane_Envelope_exec_batch_result_start(&builder);
+    Nexterm_ControlPlane_ExecBatchResult_request_id_create_str(&builder, request_id);
+    Nexterm_ControlPlane_ExecBatchResult_success_add(&builder, success);
+    if (error_message)
+        Nexterm_ControlPlane_ExecBatchResult_error_message_create_str(&builder, error_message);
+
+    if (entries && count > 0) {
+        Nexterm_ControlPlane_ExecBatchResult_results_start(&builder);
+        for (size_t i = 0; i < count; i++) {
+            Nexterm_ControlPlane_ExecBatchResult_results_push_start(&builder);
+            Nexterm_ControlPlane_ExecBatchEntry_id_create_str(&builder,
+                entries[i].id ? entries[i].id : "");
+            Nexterm_ControlPlane_ExecBatchEntry_success_add(&builder, entries[i].success);
+            if (entries[i].stdout_data)
+                Nexterm_ControlPlane_ExecBatchEntry_stdout_data_create_str(&builder, entries[i].stdout_data);
+            if (entries[i].stderr_data)
+                Nexterm_ControlPlane_ExecBatchEntry_stderr_data_create_str(&builder, entries[i].stderr_data);
+            Nexterm_ControlPlane_ExecBatchEntry_exit_code_add(&builder, entries[i].exit_code);
+            if (entries[i].error_message)
+                Nexterm_ControlPlane_ExecBatchEntry_error_message_create_str(&builder, entries[i].error_message);
+            Nexterm_ControlPlane_ExecBatchResult_results_push_end(&builder);
+        }
+        Nexterm_ControlPlane_ExecBatchResult_results_end(&builder);
+    }
+
+    Nexterm_ControlPlane_Envelope_exec_batch_result_end(&builder);
     Nexterm_ControlPlane_Envelope_end_as_root(&builder);
 
     return cp_send(cp, &builder);

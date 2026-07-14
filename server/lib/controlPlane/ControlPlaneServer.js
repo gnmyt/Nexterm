@@ -18,6 +18,7 @@ const {
     buildSessionJoin,
     buildSessionResize,
     buildExecCommand,
+    buildExecBatch,
     buildPortCheck,
     buildHttpFetch,
 } = require("./messageBuilders");
@@ -135,6 +136,19 @@ class ControlPlaneServer extends EventEmitter {
         const requestId = `exec-${Date.now()}-${Math.random().toString(36).substring(2, 10)}`;
         return this._createPendingRequest(requestId, null, () => {
             this._sendFrame(engine.socket, buildExecCommand(requestId, host, port, params, command, jumpHosts));
+        }, null, engine.engineId);
+    }
+
+    execCommandBatch(host, port, params, commands, jumpHosts = [], engineId = null) {
+        const engine = this._resolveEngine(engineId);
+        if (!engine) return Promise.reject(new Error("No engine connected"));
+        if (!Array.isArray(commands) || commands.length === 0) {
+            return Promise.resolve({ success: true, errorMessage: null, results: [] });
+        }
+
+        const requestId = `execbatch-${Date.now()}-${Math.random().toString(36).substring(2, 10)}`;
+        return this._createPendingRequest(requestId, null, () => {
+            this._sendFrame(engine.socket, buildExecBatch(requestId, host, port, params, commands, jumpHosts));
         }, null, engine.engineId);
     }
 
@@ -575,6 +589,32 @@ class ControlPlaneServer extends EventEmitter {
                     stderr: result.stderrData() || "",
                     exitCode: result.exitCode(),
                     errorMessage: result.errorMessage(),
+                }, respondingEngineId);
+                break;
+            }
+
+            case MessageType.ExecBatchResult: {
+                const result = envelope.execBatchResult();
+                if (!result) break;
+
+                const resultsLen = result.resultsLength();
+                const results = [];
+                for (let i = 0; i < resultsLen; i++) {
+                    const e = result.results(i);
+                    results.push({
+                        id: e.id(),
+                        success: e.success(),
+                        stdout: e.stdoutData() || "",
+                        stderr: e.stderrData() || "",
+                        exitCode: e.exitCode(),
+                        errorMessage: e.errorMessage(),
+                    });
+                }
+
+                this._resolvePending(result.requestId(), {
+                    success: result.success(),
+                    errorMessage: result.errorMessage(),
+                    results,
                 }, respondingEngineId);
                 break;
             }
