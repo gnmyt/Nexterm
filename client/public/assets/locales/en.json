@@ -733,6 +733,8 @@
         "folderManagementDescription": "Log creation, modification, and deletion of folders",
         "scriptExecutionLabel": "Script Execution",
         "scriptExecutionDescription": "Log execution of scripts and automation tasks",
+        "aiOperationsLabel": "AI Operations",
+        "aiOperationsDescription": "Log commands and file changes performed by the AI assistant",
         "actions": {
           "save": "Save Settings"
         },
