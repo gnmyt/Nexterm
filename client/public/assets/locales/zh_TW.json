@@ -61,7 +61,9 @@
       "signInWithQrCode": "使用 QR 代碼登入",
       "qrScanDescription": "使用 Nexterm 行動應用程式掃描此 QR 代碼，即可立即登入。",
       "backToLogin": "返回登入",
-      "authenticating": "驗證..."
+      "authenticating": "驗證...",
+      "noAccount": "Don't have an account?",
+      "haveAccount": "Already have an account?"
     },
     "deviceLink": {
       "title": "連結裝置",
@@ -955,6 +957,10 @@
       "addLdapProvider": "新增 LDAP",
       "system": "系統",
       "systemDescription": "使用者名稱和密碼驗證",
+      "registration": {
+        "title": "Self-Registration",
+        "description": "Allow visitors to create their own account from the login screen"
+      },
       "deleteConfirm": "這將會永久刪除此驗證提供者。",
       "errors": {
         "deleteProvider": "刪除提供者出錯",
@@ -1398,7 +1404,6 @@
       "subtitle": "建立具有細粒度權限的角色，或將權限指派給個別使用者。「預設」角色會自動套用至所有使用者。",
       "createRole": "建立角色",
       "rolesTitle": "角色",
-      "membersTitle": "成員",
       "rolesTab": "角色",
       "overridesTab": "直接權限",
       "permissionsTab": "權限",
@@ -1420,7 +1425,6 @@
       "addMemberPlaceholder": "搜尋要新增的用戶：…",
       "deleteRole": "刪除角色",
       "deleteConfirm": "此操作將永久刪除角色「{{name}}」，並將其從所有成員中移除。",
-      "searchUsers": "搜尋使用者…",
       "inheritsAllow": "繼承：允許",
       "inheritsDeny": "繼承：駁回"
     }
