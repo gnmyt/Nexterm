@@ -19,8 +19,9 @@ export const AI = () => {
         apiKey: "",
         apiUrl: "http://localhost:11434",
         hasApiKey: false,
-        anthropicAuthMethod: "api_key",
+        authMethod: "api_key",
         subscriptionConnected: false,
+        subscriptionProvider: null,
         requireConfirmation: true,
     });
     const [loading, setLoading] = useState(true);
@@ -43,6 +44,23 @@ export const AI = () => {
     const currentProvider = useMemo(
         () => providers.find(p => p.id === settings.provider) || null,
         [providers, settings.provider]);
+
+    const providerFields = currentProvider?.fields || {};
+    const supportsApiKey = Boolean(providerFields.apiKey);
+    const supportsSubscription = Boolean(providerFields.subscription);
+    const showAuthToggle = supportsApiKey && supportsSubscription;
+    const subscriptionName = currentProvider?.subscriptionLabel || currentProvider?.label || "";
+
+    const effectiveAuthMethod = useMemo(() => {
+        if (supportsSubscription && !supportsApiKey) return "subscription";
+        if (supportsApiKey && !supportsSubscription) return "api_key";
+        return settings.authMethod === "subscription" ? "subscription" : "api_key";
+    }, [supportsSubscription, supportsApiKey, settings.authMethod]);
+
+    const subscriptionConnected = Boolean(settings.subscriptionProvider)
+        && settings.subscriptionProvider === settings.provider;
+
+    const isCodexProvider = settings.provider === "openai_codex";
 
     const authMethodOptions = [
         { value: "api_key", label: t("settings.ai.authMethod.apiKey") },
@@ -106,7 +124,7 @@ export const AI = () => {
                 provider: settings.provider || null,
                 model: settings.model || null,
                 apiUrl: settings.apiUrl || null,
-                anthropicAuthMethod: settings.anthropicAuthMethod,
+                authMethod: settings.authMethod,
                 requireConfirmation: settings.requireConfirmation,
             };
 
@@ -161,7 +179,7 @@ export const AI = () => {
     const startSubscriptionConnect = async () => {
         try {
             setConnecting(true);
-            const response = await postRequest("ai/oauth/start");
+            const response = await postRequest("ai/oauth/start", { provider: settings.provider });
             if (response.authUrl) window.open(response.authUrl, "_blank", "noopener,noreferrer");
         } catch {
             sendToast(t("common.error"), t("settings.ai.subscription.startError"));
@@ -174,10 +192,10 @@ export const AI = () => {
         if (!oauthCode.trim()) return;
         try {
             setConnecting(true);
-            await postRequest("ai/oauth/exchange", { code: oauthCode.trim() });
-            setSettings(prev => ({ ...prev, subscriptionConnected: true }));
+            await postRequest("ai/oauth/exchange", { code: oauthCode.trim(), provider: settings.provider });
+            setSettings(prev => ({ ...prev, subscriptionConnected: true, subscriptionProvider: prev.provider }));
             setOauthCode("");
-            sendToast(t("common.success"), t("settings.ai.subscription.connectSuccess"));
+            sendToast(t("common.success"), t("settings.ai.subscription.connectSuccess", { provider: subscriptionName }));
             loadModels();
         } catch (error) {
             sendToast(t("common.error"), error.message || t("settings.ai.subscription.exchangeError"));
@@ -188,8 +206,8 @@ export const AI = () => {
 
     const disconnectSubscription = async () => {
         try {
-            await postRequest("ai/oauth/disconnect");
-            setSettings(prev => ({ ...prev, subscriptionConnected: false, model: "" }));
+            await postRequest("ai/oauth/disconnect", { provider: settings.provider });
+            setSettings(prev => ({ ...prev, subscriptionConnected: false, subscriptionProvider: null, model: "" }));
             setAvailableModels([]);
         } catch {
             sendToast(t("common.error"), t("settings.ai.subscription.disconnectError"));
@@ -201,7 +219,7 @@ export const AI = () => {
         if (!currentProvider) return false;
 
         const { fields } = currentProvider;
-        if (fields.subscription && settings.anthropicAuthMethod === "subscription") return settings.subscriptionConnected;
+        if (effectiveAuthMethod === "subscription") return subscriptionConnected;
         if (fields.baseUrl && !settings.apiUrl && !fields.baseUrl.default) return false;
         if (fields.apiKey && !settings.apiKey && !settings.hasApiKey) return false;
         return true;
@@ -286,47 +304,49 @@ export const AI = () => {
                                     </div>
                                 </div>
 
-                                {currentProvider?.fields?.subscription ? (
-                                    <>
-                                        <div className="setting-item">
-                                            <div className="setting-label">
-                                                <h4>{t("settings.ai.authMethod.title")}</h4>
-                                                <p>{t("settings.ai.authMethod.description")}</p>
-                                            </div>
-                                            <div className="setting-input">
-                                                <SelectBox options={authMethodOptions}
-                                                           selected={settings.anthropicAuthMethod}
-                                                           setSelected={(value) => handleInputChange("anthropicAuthMethod", value)} />
-                                            </div>
+                                {showAuthToggle && (
+                                    <div className="setting-item">
+                                        <div className="setting-label">
+                                            <h4>{t("settings.ai.authMethod.title")}</h4>
+                                            <p>{t("settings.ai.authMethod.description")}</p>
                                         </div>
+                                        <div className="setting-input">
+                                            <SelectBox options={authMethodOptions}
+                                                       selected={effectiveAuthMethod}
+                                                       setSelected={(value) => handleInputChange("authMethod", value)} />
+                                        </div>
+                                    </div>
+                                )}
 
-                                        {settings.anthropicAuthMethod === "subscription" ? (
-                                            <div className="setting-item">
-                                                <div className="setting-label">
-                                                    <h4>{t("settings.ai.subscription.title")}</h4>
-                                                    <p>{settings.subscriptionConnected ? t("settings.ai.subscription.connectedDescription") : t("settings.ai.subscription.description")}</p>
-                                                </div>
-                                                <div className="setting-input subscription-connect">
-                                                    {settings.subscriptionConnected ? (
-                                                        <Button text={t("settings.ai.subscription.disconnect")} type="secondary"
-                                                                onClick={disconnectSubscription} />
-                                                    ) : (
-                                                        <>
-                                                            <Button text={connecting ? t("settings.ai.subscription.connecting") : t("settings.ai.subscription.connect")}
-                                                                    type="primary" disabled={connecting} onClick={startSubscriptionConnect} />
-                                                            <div className="code-row">
-                                                                <IconInput icon={mdiRobot} value={oauthCode}
-                                                                           setValue={setOauthCode}
-                                                                           placeholder={t("settings.ai.subscription.codePlaceholder")} />
-                                                                <Button text={t("settings.ai.subscription.complete")} type="secondary"
-                                                                        disabled={connecting || !oauthCode.trim()} onClick={completeSubscriptionConnect} />
-                                                            </div>
-                                                        </>
-                                                    )}
-                                                </div>
-                                            </div>
-                                        ) : renderApiKeyField()}
-                                    </>
+                                {effectiveAuthMethod === "subscription" ? (
+                                    <div className="setting-item">
+                                        <div className="setting-label">
+                                            <h4>{t("settings.ai.subscription.title", { provider: subscriptionName })}</h4>
+                                            <p>{subscriptionConnected
+                                                ? t("settings.ai.subscription.connectedDescription", { provider: subscriptionName })
+                                                : t("settings.ai.subscription.description", { provider: subscriptionName })}</p>
+                                        </div>
+                                        <div className="setting-input subscription-connect">
+                                            {subscriptionConnected ? (
+                                                <Button text={t("settings.ai.subscription.disconnect")} type="secondary"
+                                                        onClick={disconnectSubscription} />
+                                            ) : (
+                                                <>
+                                                    <Button text={connecting ? t("settings.ai.subscription.connecting") : t("settings.ai.subscription.connect")}
+                                                            type="primary" disabled={connecting} onClick={startSubscriptionConnect} />
+                                                    <div className="code-row">
+                                                        <IconInput icon={mdiRobot} value={oauthCode}
+                                                                   setValue={setOauthCode}
+                                                                   placeholder={isCodexProvider
+                                                                       ? t("settings.ai.subscription.codePlaceholderUrl")
+                                                                       : t("settings.ai.subscription.codePlaceholder")} />
+                                                        <Button text={t("settings.ai.subscription.complete")} type="secondary"
+                                                                disabled={connecting || !oauthCode.trim()} onClick={completeSubscriptionConnect} />
+                                                    </div>
+                                                </>
+                                            )}
+                                        </div>
+                                    </div>
                                 ) : (
                                     <>
                                         {currentProvider?.fields?.baseUrl && (

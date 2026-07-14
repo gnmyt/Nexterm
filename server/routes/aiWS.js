@@ -6,7 +6,7 @@ const { hasResourcePermission } = require("../utils/permission");
 const { Permission } = require("../permissions/registry");
 const { getRuntimeSettings, isConfigured } = require("../controllers/ai");
 const { createAuditLog } = require("../controllers/audit");
-const { buildModel } = require("../lib/ai/providers");
+const { buildModel, getModelProviderOptions } = require("../lib/ai/providers");
 const { buildSystemPrompt } = require("../lib/ai/systemPrompt");
 const { createAgent } = require("../lib/ai/agent");
 
@@ -75,6 +75,7 @@ module.exports = async function handleAIConnection(ws, req) {
     try {
         agent = await createAgent({
             model: await buildModel(settings),
+            providerOptions: getModelProviderOptions(settings),
             system: await buildSystemPrompt(entry),
             sftp,
             canModify,

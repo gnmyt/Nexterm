@@ -14,7 +14,9 @@ module.exports = {
         };
 
         await addColumn("requireConfirmation", { type: Sequelize.BOOLEAN, allowNull: false, defaultValue: true });
-        await addColumn("anthropicAuthMethod", { type: Sequelize.STRING, allowNull: false, defaultValue: "api_key" });
+        await addColumn("authMethod", { type: Sequelize.STRING, allowNull: false, defaultValue: "api_key" });
+        await addColumn("oauthProvider", { type: Sequelize.STRING, allowNull: true });
+        await addColumn("oauthAccountId", { type: Sequelize.STRING, allowNull: true });
         await addColumn("oauthExpiresAt", { type: Sequelize.BIGINT, allowNull: true });
         await addColumn("oauthVerifier", { type: Sequelize.TEXT, allowNull: true });
 

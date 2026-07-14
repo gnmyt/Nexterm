@@ -31,10 +31,18 @@ const AISettings = db.define("ai_settings", {
     oauthRefreshTokenEncrypted: { type: Sequelize.BLOB, allowNull: true },
     oauthRefreshTokenIV: { type: Sequelize.STRING, allowNull: true },
     oauthRefreshTokenAuthTag: { type: Sequelize.STRING, allowNull: true },
-    anthropicAuthMethod: {
+    authMethod: {
         type: Sequelize.STRING,
         allowNull: false,
         defaultValue: "api_key",
+    },
+    oauthProvider: {
+        type: Sequelize.STRING,
+        allowNull: true,
+    },
+    oauthAccountId: {
+        type: Sequelize.STRING,
+        allowNull: true,
     },
     oauthExpiresAt: {
         type: Sequelize.BIGINT,

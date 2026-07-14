@@ -9,8 +9,10 @@ const {
     testAIConnection,
     getAvailableModels,
     getProviders,
+    startOAuth,
+    exchangeOAuth,
+    disconnectOAuth,
 } = require("../controllers/ai");
-const { generateAuthUrl, exchangeCode, disconnect } = require("../lib/ai/anthropicOAuth");
 
 const app = Router();
 
@@ -112,18 +114,20 @@ app.get("/models", requirePermission(Permission.SETTINGS_AI), async (req, res) =
 
 /**
  * POST /ai/oauth/start
- * @summary Start Claude Subscription OAuth
- * @description Generates the Anthropic authorization URL for connecting a Claude Pro/Max subscription. Admin access required.
+ * @summary Start Subscription OAuth
+ * @description Generates the authorization URL for connecting a provider subscription (e.g. Claude Pro/Max or ChatGPT Plus/Pro). Admin access required.
  * @tags AI
  * @produces application/json
  * @security BearerAuth
+ * @param {OAuthStart} request.body - Optional provider id (defaults to the configured provider)
  * @return {object} 200 - Authorization URL
  * @return {object} 403 - Admin access required
  */
 app.post("/oauth/start", requirePermission(Permission.SETTINGS_AI), async (req, res) => {
     try {
-        const authUrl = await generateAuthUrl();
-        res.json({ authUrl });
+        const result = await startOAuth(req.body?.provider);
+        if (result.code) return res.status(result.code).json({ error: result.message });
+        res.json(result);
     } catch {
         res.status(500).json({ error: "Failed to start authorization" });
     }
@@ -131,12 +135,12 @@ app.post("/oauth/start", requirePermission(Permission.SETTINGS_AI), async (req, 
 
 /**
  * POST /ai/oauth/exchange
- * @summary Complete Claude Subscription OAuth
+ * @summary Complete Subscription OAuth
  * @description Exchanges the authorization code for tokens and stores the connected subscription. Admin access required.
  * @tags AI
  * @produces application/json
  * @security BearerAuth
- * @param {OAuthExchange} request.body.required - The authorization code
+ * @param {OAuthExchange} request.body.required - The authorization code and optional provider id
  * @return {object} 200 - Subscription connected
  * @return {object} 400 - Exchange failed
  * @return {object} 403 - Admin access required
@@ -144,7 +148,7 @@ app.post("/oauth/start", requirePermission(Permission.SETTINGS_AI), async (req, 
 app.post("/oauth/exchange", requirePermission(Permission.SETTINGS_AI), async (req, res) => {
     try {
         if (validateSchema(res, oauthExchangeValidation, req.body)) return;
-        const result = await exchangeCode(req.body.code);
+        const result = await exchangeOAuth(req.body.code, req.body.provider);
         if (result.code) return res.status(result.code).json({ error: result.message });
         res.json(result);
     } catch {
@@ -154,17 +158,20 @@ app.post("/oauth/exchange", requirePermission(Permission.SETTINGS_AI), async (re
 
 /**
  * POST /ai/oauth/disconnect
- * @summary Disconnect Claude Subscription
- * @description Removes the stored Claude subscription tokens. Admin access required.
+ * @summary Disconnect Subscription
+ * @description Removes the stored subscription tokens. Admin access required.
  * @tags AI
  * @produces application/json
  * @security BearerAuth
+ * @param {OAuthStart} request.body - Optional provider id (defaults to the configured provider)
  * @return {object} 200 - Subscription disconnected
  * @return {object} 403 - Admin access required
  */
 app.post("/oauth/disconnect", requirePermission(Permission.SETTINGS_AI), async (req, res) => {
     try {
-        res.json(await disconnect());
+        const result = await disconnectOAuth(req.body?.provider);
+        if (result.code) return res.status(result.code).json({ error: result.message });
+        res.json(result);
     } catch {
         res.status(500).json({ error: "Failed to disconnect" });
     }

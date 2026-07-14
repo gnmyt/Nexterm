@@ -1,6 +1,6 @@
 const AISettings = require("../models/AISettings");
 const logger = require("../utils/logger");
-const { getProvider, describeProviders } = require("../lib/ai/providers");
+const { getProvider, describeProviders, getProviderOAuth, isSubscriptionConnected } = require("../lib/ai/providers");
 
 const isConfigured = (settings) => {
     if (!settings?.enabled || !settings.provider || !settings.model) return false;
@@ -15,12 +15,25 @@ const sanitizeSettingsResponse = (settings) => ({
     provider: settings.provider,
     model: settings.model,
     apiUrl: settings.apiUrl,
-    anthropicAuthMethod: settings.anthropicAuthMethod,
+    authMethod: settings.authMethod,
     requireConfirmation: Boolean(settings.requireConfirmation),
     isConfigured: isConfigured(settings),
     hasApiKey: Boolean(settings.apiKey),
-    subscriptionConnected: Boolean(settings.oauthRefreshToken),
+    subscriptionConnected: isSubscriptionConnected(settings),
+    subscriptionProvider: settings.oauthRefreshToken ? settings.oauthProvider : null,
 });
+
+const resolveOAuthClient = async (providerId) => {
+    let id = providerId;
+    if (!id) {
+        const settings = await AISettings.findOne();
+        id = settings?.provider;
+    }
+    if (!id) return { error: { code: 400, message: "No AI provider selected" } };
+    const oauth = getProviderOAuth(id);
+    if (!oauth) return { error: { code: 400, message: "Selected provider does not support subscription login" } };
+    return { oauth };
+};
 
 module.exports.getRuntimeSettings = async () => AISettings.findOne();
 
@@ -34,7 +47,7 @@ module.exports.getAISettings = async () => {
 };
 
 module.exports.updateAISettings = async (updateData) => {
-    const { enabled, provider, model, apiKey, apiUrl, anthropicAuthMethod, requireConfirmation } = updateData;
+    const { enabled, provider, model, apiKey, apiUrl, authMethod, requireConfirmation } = updateData;
     const settings = await AISettings.getOrCreate();
 
     const payload = {};
@@ -42,13 +55,31 @@ module.exports.updateAISettings = async (updateData) => {
     if (provider !== undefined) payload.provider = provider;
     if (model !== undefined) payload.model = model;
     if (apiUrl !== undefined) payload.apiUrl = apiUrl;
-    if (anthropicAuthMethod !== undefined) payload.anthropicAuthMethod = anthropicAuthMethod;
+    if (authMethod !== undefined) payload.authMethod = authMethod;
     if (requireConfirmation !== undefined) payload.requireConfirmation = requireConfirmation;
     if (apiKey !== undefined) payload.apiKey = apiKey === "" ? null : apiKey;
 
     await AISettings.update(AISettings.encryptSecrets(payload), { where: { id: settings.id } });
 
     return sanitizeSettingsResponse(await AISettings.findOne());
+};
+
+module.exports.startOAuth = async (providerId) => {
+    const { oauth, error } = await resolveOAuthClient(providerId);
+    if (error) return error;
+    return { authUrl: await oauth.generateAuthUrl() };
+};
+
+module.exports.exchangeOAuth = async (code, providerId) => {
+    const { oauth, error } = await resolveOAuthClient(providerId);
+    if (error) return error;
+    return oauth.exchangeCode(code);
+};
+
+module.exports.disconnectOAuth = async (providerId) => {
+    const { oauth, error } = await resolveOAuthClient(providerId);
+    if (error) return error;
+    return oauth.disconnect();
 };
 
 const resolveConfiguredProvider = (settings, { requireEnabled = true } = {}) => {

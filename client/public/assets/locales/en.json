@@ -1068,20 +1068,21 @@
       },
       "authMethod": {
         "title": "Authentication",
-        "description": "Authenticate with an Anthropic API key or your Claude Pro/Max subscription",
+        "description": "Authenticate with an API key or your provider subscription",
         "apiKey": "API Key",
-        "subscription": "Claude Subscription"
+        "subscription": "Subscription"
       },
       "subscription": {
-        "title": "Claude Subscription",
-        "description": "Sign in with your Claude Pro or Max subscription to use Claude models without an API key",
-        "connectedDescription": "Your Claude subscription is connected",
+        "title": "{{provider}} Subscription",
+        "description": "Sign in with your {{provider}} subscription to use its models without an API key",
+        "connectedDescription": "Your {{provider}} subscription is connected",
         "connect": "Connect",
         "connecting": "Connecting...",
         "complete": "Complete",
         "disconnect": "Disconnect",
         "codePlaceholder": "Paste the authorization code here",
-        "connectSuccess": "Claude subscription connected",
+        "codePlaceholderUrl": "Paste the full callback URL (or code) here",
+        "connectSuccess": "{{provider}} subscription connected",
         "startError": "Failed to start authorization",
         "exchangeError": "Failed to connect subscription",
         "disconnectError": "Failed to disconnect subscription"

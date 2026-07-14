@@ -10,7 +10,7 @@ const trimHistory = (messages) => {
     messages.splice(0, start);
 };
 
-const createAgent = async ({ model, system, sftp, canModify, requireConfirmation, requestApproval, logAudit, emit }) => {
+const createAgent = async ({ model, providerOptions, system, sftp, canModify, requireConfirmation, requestApproval, logAudit, emit }) => {
     const { streamText, stepCountIs, tool } = await import("ai");
     const tools = buildTools({ sftp, canModify, requireConfirmation, requestApproval, logAudit, tool });
     const messages = [];
@@ -18,7 +18,7 @@ const createAgent = async ({ model, system, sftp, canModify, requireConfirmation
     const runTurn = async (content, abortSignal) => {
         const turnMessages = [...messages, { role: "user", content }];
 
-        const result = streamText({ model, system, messages: turnMessages, tools, stopWhen: stepCountIs(MAX_STEPS), abortSignal });
+        const result = streamText({ model, system, messages: turnMessages, tools, stopWhen: stepCountIs(MAX_STEPS), abortSignal, providerOptions });
 
         try {
             for await (const part of result.fullStream) {
