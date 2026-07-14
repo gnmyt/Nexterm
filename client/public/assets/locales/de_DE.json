@@ -1779,7 +1779,9 @@
         "clearTerminal": "Terminal leeren",
         "properties": "Eigenschaften",
         "openTerminal": "Terminal hier öffnen",
-        "downloadFolder": "Ordner herunterladen"
+        "downloadFolder": "Ordner herunterladen",
+        "newFile": "New File",
+        "newFolder": "New Folder"
       },
       "properties": {
         "general": "Allgemein",
@@ -1841,7 +1843,8 @@
         "switchToGrid": "Zur Rasteransicht wechseln",
         "switchToList": "Zur Listenansicht wechseln",
         "search": "Durchsuche Dateien",
-        "closeSearch": "Suchfeld schließen"
+        "closeSearch": "Suchfeld schließen",
+        "refresh": "Refresh"
       },
       "item": {
         "link": "Link"
