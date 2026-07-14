@@ -77,6 +77,9 @@
 #include <stdlib.h>
 #include <time.h>
 
+#define GUAC_RDP_EVENT_DRAIN_LIMIT 64
+#define GUAC_RDP_EVENT_DRAIN_BACKOFF 1
+
 /**
  * Initializes and loads the necessary FreeRDP plugins based on the current
  * RDP session settings. This function is designed to work in environments
@@ -618,13 +621,18 @@ static int guac_rdp_handle_connection(guac_client* client) {
         if (wait_result < 0)
             break;
 
-        int connection_closing;
+        int connection_closing = 0;
+        int drained_events = 0;
         do {
 
             /* Handle any queued FreeRDP events (this may result in RDP messages
              * being sent), aborting later if FreeRDP event handling fails */
-            if (!guac_rdp_handle_events(rdp_client))
+            if (!guac_rdp_handle_events(rdp_client)) {
                 wait_result = -1;
+                break;
+            }
+
+            drained_events++;
 
             /* Test whether the RDP server is closing the connection */
 #ifdef HAVE_DISCONNECT_CONTEXT
@@ -634,7 +642,11 @@ static int guac_rdp_handle_connection(guac_client* client) {
 #endif
 
         } while (!connection_closing &&
+                drained_events < GUAC_RDP_EVENT_DRAIN_LIMIT &&
                 (wait_result = rdp_guac_client_wait_for_events(client, 0)) > 0);
+
+        if (!connection_closing && wait_result > 0)
+            guac_timestamp_msleep(GUAC_RDP_EVENT_DRAIN_BACKOFF);
 
         /* Notify display of any changes to the GDI that may have occurred
          * while handling events/messages */
