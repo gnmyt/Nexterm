@@ -61,7 +61,9 @@
       "signInWithQrCode": "Sign in with QR Code",
       "qrScanDescription": "Scan this QR code with the Nexterm mobile app to sign in instantly.",
       "backToLogin": "Back to Login",
-      "authenticating": "Authenticating..."
+      "authenticating": "Authenticating...",
+      "noAccount": "Don't have an account?",
+      "haveAccount": "Already have an account?"
     },
     "deviceLink": {
       "title": "Link Device",
@@ -955,6 +957,10 @@
       "addLdapProvider": "Add LDAP",
       "system": "System",
       "systemDescription": "Username and password authentication",
+      "registration": {
+        "title": "Self-Registration",
+        "description": "Allow visitors to create their own account from the login screen"
+      },
       "deleteConfirm": "This will permanently delete this authentication provider.",
       "errors": {
         "deleteProvider": "Error deleting provider",
@@ -1398,7 +1404,6 @@
       "subtitle": "Create roles with granular permissions or assign permissions to individual users. The Default role applies to everyone automatically.",
       "createRole": "Create role",
       "rolesTitle": "Roles",
-      "membersTitle": "Members",
       "rolesTab": "Roles",
       "overridesTab": "Direct permissions",
       "permissionsTab": "Permissions",
@@ -1420,7 +1425,6 @@
       "addMemberPlaceholder": "Search users to add…",
       "deleteRole": "Delete role",
       "deleteConfirm": "This will permanently delete the role \"{{name}}\" and remove it from all members.",
-      "searchUsers": "Search users…",
       "inheritsAllow": "Inherits: Allowed",
       "inheritsDeny": "Inherits: Denied"
     }
