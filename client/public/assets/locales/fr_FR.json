@@ -1779,7 +1779,9 @@
         "clearTerminal": "Effacer le terminal",
         "properties": "Propriétés",
         "openTerminal": "Ouvre le terminal ici",
-        "downloadFolder": "Télécharger le dossier"
+        "downloadFolder": "Télécharger le dossier",
+        "newFile": "New File",
+        "newFolder": "New Folder"
       },
       "properties": {
         "general": "Généralités",
@@ -1841,7 +1843,8 @@
         "switchToGrid": "Passer à l'affichage en grille",
         "switchToList": "Passer à l'affichage de la liste",
         "search": "Rechercher des fichiers",
-        "closeSearch": "Fermer la recherche"
+        "closeSearch": "Fermer la recherche",
+        "refresh": "Refresh"
       },
       "item": {
         "link": "lien"
