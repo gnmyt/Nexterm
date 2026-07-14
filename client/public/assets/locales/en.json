@@ -1779,7 +1779,9 @@
         "clearTerminal": "Clear Terminal",
         "properties": "Properties",
         "openTerminal": "Open Terminal Here",
-        "downloadFolder": "Download Folder"
+        "downloadFolder": "Download Folder",
+        "newFile": "New File",
+        "newFolder": "New Folder"
       },
       "properties": {
         "general": "General",
@@ -1841,7 +1843,8 @@
         "switchToGrid": "Switch to grid view",
         "switchToList": "Switch to list view",
         "search": "Search files",
-        "closeSearch": "Close search"
+        "closeSearch": "Close search",
+        "refresh": "Refresh"
       },
       "item": {
         "link": "link"

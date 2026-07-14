@@ -13,6 +13,7 @@ import {
     mdiContentCopy,
     mdiMagnify,
     mdiClose,
+    mdiRefresh,
 } from "@mdi/js";
 import { Fragment, useState, useRef, useEffect, useCallback } from "react";
 import { ContextMenu, ContextMenuItem, useContextMenu } from "@/common/components/ContextMenu";
@@ -25,6 +26,7 @@ export const ActionBar = ({
                               createFile,
                               createFolder,
                               uploadFile,
+                              refreshFiles,
                               goBack,
                               goForward,
                               historyIndex,
@@ -72,7 +74,8 @@ export const ActionBar = ({
 
     const navigate = (displayIndex, isTruncated = false, originalIndex = null) => {
         const pathArray = getPathArray();
-        updatePath(`/${pathArray.slice(0, (isTruncated ? originalIndex : displayIndex) + 1).join("/")}`);
+        const target = `/${pathArray.slice(0, (isTruncated ? originalIndex : displayIndex) + 1).join("/")}`;
+        target === path ? refreshFiles?.() : updatePath(target);
     };
 
     const getTruncatedPathArray = () => {
@@ -284,7 +287,7 @@ export const ActionBar = ({
             <>
                 <div 
                     className={`path-part-divider root-drop ${dropTarget === "/" ? "drop-target" : ""}`}
-                    onClick={(e) => { e.stopPropagation(); updatePath("/"); }}
+                    onClick={(e) => { e.stopPropagation(); path === "/" ? refreshFiles?.() : updatePath("/"); }}
                     onDragOver={(e) => handlePathDragOver(e, "/")}
                     onDragLeave={handlePathDragLeave}
                     onDrop={(e) => handlePathDrop(e, "/")}
@@ -379,6 +382,7 @@ export const ActionBar = ({
                 <Icon path={viewMode === "list" ? mdiViewGrid : mdiViewList}
                       onClick={() => setViewMode(viewMode === "list" ? "grid" : "list")}
                       title={viewMode === "list" ? t("servers.fileManager.actionBar.switchToGrid") : t("servers.fileManager.actionBar.switchToList")} />
+                <Icon path={mdiRefresh} onClick={refreshFiles} title={t("servers.fileManager.actionBar.refresh")} />
                 <Icon path={mdiFileUpload} onClick={uploadFile} />
                 <Icon path={mdiFilePlus} onClick={createFile} />
                 <Icon path={mdiFolderPlus} onClick={createFolder} />
