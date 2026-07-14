@@ -10,6 +10,7 @@
     "download": "下載",
     "maximize": "最大化",
     "restore": "還原",
+    "resize": "Resize",
     "actions": {
       "cancel": "取消",
       "confirm": "確認",
@@ -17,6 +18,7 @@
       "login": "登入",
       "register": "註冊",
       "save": "儲存",
+      "saving": "拯救…",
       "download": "下載",
       "close": "關閉",
       "maximize": "最大化",
@@ -306,9 +308,7 @@
       "actions": {
         "cancel": "取消",
         "create": "建立",
-        "save": "節省",
-        "generateAI": "使用 AI 生成",
-        "generating": "產生..."
+        "save": "節省"
       }
     },
     "messages": {
@@ -585,7 +585,8 @@
       "ai": "AI",
       "monitoring": "監控",
       "backup": "儲存",
-      "engines": "引擎"
+      "engines": "引擎",
+      "permissions": "角色與權限"
     },
     "account": {
       "title": "帳戶",
@@ -775,22 +776,15 @@
       "noSearchResultsDescription": "請嘗試調整您的搜尋查詢。",
       "table": {
         "user": "使用者",
-        "role": "角色",
-        "twoFactor": "2FA"
-      },
-      "roles": {
-        "admin": "管理員",
-        "user": "使用者"
+        "twoFactor": "2FA",
+        "roles": "角色"
       },
       "contextMenu": {
         "changePassword": "變更密碼",
-        "promoteToAdmin": "晉升為管理員",
-        "demoteToUser": "降級為使用者",
         "deleteUser": "刪除使用者",
         "loginAsUser": "以使用者身分登入",
         "deleteConfirm": "這將永久刪除使用者及所有相關資料。",
-        "promoteConfirm": "這將使使用者升級為管理員。",
-        "demoteConfirm": "這會將使用者降級為一般使用者。"
+        "managePermissions": "管理權限"
       }
     },
     "userDialog": {
@@ -830,6 +824,10 @@
         "aimenu": {
           "title": "AI 選單",
           "description": "開啟 AI 指令功能表"
+        },
+        "aiaccepttool": {
+          "title": "AI Accept Action",
+          "description": "Approve the pending AI tool action in the assistant"
         },
         "snippets": {
           "title": "片段",
@@ -1044,11 +1042,11 @@
     },
     "ai": {
       "title": "AI 助理設定",
-      "description": "設定終端會話和片段建立的 AI 驅動指令產生。",
+      "description": "Configure the AI assistant that can run commands and manage files directly over your server sessions.",
       "loading": "載入 AI 設定...",
       "enable": {
         "title": "啟用 AI 助理",
-        "description": "允許使用者使用 AI 產生指令"
+        "description": "Allow users to open the AI assistant inside server sessions"
       },
       "provider": {
         "title": "AI 供應商",
@@ -1056,18 +1054,43 @@
       },
       "model": {
         "title": "型號",
-        "description": "選擇要用於指令產生的 AI 模型"
+        "description": "Select the AI model the assistant should use"
+      },
+      "requireConfirmation": {
+        "title": "Confirm before each action",
+        "description": "Require users to approve every command and file change the assistant wants to make"
       },
       "apiKey": {
         "title": "API 金鑰",
-        "description": "您用於驗證的 OpenAI API 金鑰",
-        "placeholder": "輸入您的 OpenAI API 密鑰",
-        "setPlaceholder": "API 金鑰已設定 (留空以保持最新狀態)"
+        "setPlaceholder": "API 金鑰已設定 (留空以保持最新狀態)",
+        "genericDescription": "API key used to authenticate with the selected provider",
+        "genericPlaceholder": "Enter your {{provider}} API key"
       },
-      "ollamaUrl": {
-        "title": "Ollama URL",
-        "description": "您的 Ollama 實例正在執行的 URL",
-        "placeholder": "http://localhost:11434"
+      "authMethod": {
+        "title": "Authentication",
+        "description": "Authenticate with an API key or your provider subscription",
+        "apiKey": "API Key",
+        "subscription": "Subscription"
+      },
+      "subscription": {
+        "title": "{{provider}} Subscription",
+        "description": "Sign in with your {{provider}} subscription to use its models without an API key",
+        "connectedDescription": "Your {{provider}} subscription is connected",
+        "connect": "Connect",
+        "connecting": "Connecting...",
+        "complete": "Complete",
+        "disconnect": "Disconnect",
+        "codePlaceholder": "Paste the authorization code here",
+        "codePlaceholderUrl": "Paste the full callback URL (or code) here",
+        "connectSuccess": "{{provider}} subscription connected",
+        "startError": "Failed to start authorization",
+        "exchangeError": "Failed to connect subscription",
+        "disconnectError": "Failed to disconnect subscription"
+      },
+      "baseUrl": {
+        "title": "API URL",
+        "description": "Base URL of the provider's OpenAI-compatible endpoint",
+        "placeholder": "https://api.example.com/v1"
       },
       "selectProvider": "選擇提供商...",
       "selectModel": "選擇型號...",
@@ -1368,6 +1391,36 @@
         "deleteFailed": "刪除引擎失敗",
         "regenerateFailed": "代幣再生失敗"
       }
+    },
+    "permissions": {
+      "subtitle": "建立具有細粒度權限的角色，或將權限指派給個別使用者。「預設」角色會自動套用至所有使用者。",
+      "createRole": "建立角色",
+      "rolesTitle": "角色",
+      "membersTitle": "成員",
+      "rolesTab": "角色",
+      "overridesTab": "直接權限",
+      "permissionsTab": "權限",
+      "membersTab": "成員",
+      "settingsTab": "設定",
+      "managePermissions": "管理權限",
+      "memberCount_one": "{{count}} 成員",
+      "memberCount_other": "{{count}} 成員",
+      "dangerousHint": "授予此權限將導致廣泛或破壞性的存取權限。請謹慎授予此權限。",
+      "roleName": "角色名稱",
+      "roleNamePlaceholder": "例如：運算子",
+      "roleColor": "顏色",
+      "nameRequired": "請為此角色輸入名稱。",
+      "saveError": "無法儲存您的變更。",
+      "loadError": "無法載入權限。",
+      "userSaved": "權限已更新。",
+      "noAssignableRoles": "目前尚無角色。請先建立一個。",
+      "noMembers": "此角色目前尚無成員。",
+      "addMemberPlaceholder": "搜尋要新增的用戶：…",
+      "deleteRole": "刪除角色",
+      "deleteConfirm": "此操作將永久刪除角色「{{name}}」，並將其從所有成員中移除。",
+      "searchUsers": "搜尋使用者…",
+      "inheritsAllow": "繼承：允許",
+      "inheritsDeny": "繼承：駁回"
     }
   },
   "tunnel": {
@@ -1780,10 +1833,19 @@
         "enterDirectory": "輸入目錄路徑...",
         "hiddenDirectories": "{{count}} 隱藏目錄",
         "switchToGrid": "切換至網格檢視",
-        "switchToList": "切換至清單檢視"
+        "switchToList": "切換至清單檢視",
+        "search": "搜尋檔案",
+        "closeSearch": "關閉搜尋"
       },
       "item": {
         "link": "連結"
+      },
+      "search": {
+        "placeholder": "篩選此資料夾中的檔案...",
+        "results_one": "{{count}} 結果",
+        "results_other": "{{count}} 結果",
+        "noResultsTitle": "沒有符合的結果",
+        "noResults": "沒有任何檔案符合「{{query}} 」的搜尋條件"
       },
       "states": {
         "loading": "載入檔案...",
@@ -1802,17 +1864,33 @@
     },
     "aiAssistant": {
       "title": "AI 助理",
-      "placeholder": "描述您想做的事...",
-      "hint": "按 Enter 生成 - 按 Esc 關閉",
-      "hintUse": "按 Enter 使用指令 - 按 Esc 關閉",
-      "closeLabel": "關閉 AI 助理",
-      "generate": "產生指令",
-      "generating": "產生指令...",
-      "generatedCommand": "產生指令",
-      "useCommand": "使用指令",
-      "tryAgain": "再試一次",
-      "copy": "複製到剪貼簿",
-      "error": "產生指令失敗。請再試一次。"
+      "open": "AI Assistant",
+      "empty": "Ask the assistant to inspect or change this server. It can run commands and read or edit files directly over the connection.",
+      "placeholder": "Message the assistant...",
+      "connecting": "Connecting...",
+      "send": "Send",
+      "stop": "Stop",
+      "connectionError": "Connection to the assistant was lost.",
+      "confirmPrompt": "Allow this action?",
+      "allow": "Allow",
+      "allowShortcut": "Allow ({{key}})",
+      "deny": "Deny",
+      "denied": "You denied this action.",
+      "stopped": "Stopped.",
+      "tools": {
+        "runCommand": "Run command",
+        "readFile": "Read file",
+        "writeFile": "Write file",
+        "editFile": "Edit file",
+        "listDirectory": "List directory",
+        "statPath": "Inspect path",
+        "makeDirectory": "Create directory",
+        "deleteFile": "Delete file",
+        "removeDirectory": "Remove directory",
+        "movePath": "Move",
+        "changePermissions": "Change permissions",
+        "findDirectories": "Find directories"
+      }
     },
     "snippets": {
       "title": "片段",
