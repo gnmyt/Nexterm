@@ -229,6 +229,21 @@ export const OrganizationAuditSettings = ({ organizationId, isOwner, onClose }) 
                                 disabled={!isOwner}
                             />
                         </div>
+
+                        <div className="setting-item">
+                            <div className="setting-info">
+                                <span className="setting-label">{t("settings.organizations.auditSettings.aiOperationsLabel")}</span>
+                                <span className="setting-description">
+                                    {t("settings.organizations.auditSettings.aiOperationsDescription")}
+                                </span>
+                            </div>
+                            <ToggleSwitch
+                                id="enableAIOperationAudit"
+                                checked={settings.enableAIOperationAudit}
+                                onChange={(value) => handleSettingChange("enableAIOperationAudit", value)}
+                                disabled={!isOwner}
+                            />
+                        </div>
                     </div>
                 </div>
             </div>

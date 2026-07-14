@@ -165,27 +165,11 @@ export const Servers = () => {
             return;
         }
 
-        const requiresReason = checkConnectionReasonRequired(serverId, servers);
-        if (requiresReason) {
-            setPendingConnection({ server: { ...server, renderer: overrideRenderer || server.renderer }, identity });
-            setConnectionReasonDialogOpen(true);
-            return;
-        }
-
-        performConnection({ ...server, renderer: overrideRenderer || server.renderer }, identity);
+        initiateConnection({ server: { ...server, renderer: overrideRenderer || server.renderer }, identity });
     };
 
     const openSFTP = async (server, identity) => {
-        const serverObj = getServerById(server);
-        const requiresReason = checkConnectionReasonRequired(server, servers);
-
-        if (requiresReason) {
-            setPendingConnection({ server: serverObj, identity, type: "sftp" });
-            setConnectionReasonDialogOpen(true);
-            return;
-        }
-
-        performConnection(serverObj, identity, null, "sftp");
+        initiateConnection({ server: getServerById(server), identity, type: "sftp" });
     };
 
     const performConnection = async (server, identity, connectionReason = null, type = null, directIdentity = null, scriptId = null, scriptName = null) => {
@@ -224,6 +208,27 @@ export const Servers = () => {
         }
     };
 
+    const initiateConnection = (options) => {
+        if (!options.server) return;
+
+        const requiresReason = checkConnectionReasonRequired(options.server.id, servers);
+        if (requiresReason) {
+            setPendingConnection(options);
+            setConnectionReasonDialogOpen(true);
+            return;
+        }
+
+        void performConnection(
+            options.server,
+            options.identity ?? null,
+            null,
+            options.type ?? null,
+            options.directIdentity ?? null,
+            options.scriptId ?? null,
+            options.scriptName ?? null,
+        );
+    };
+
     const runScript = async (serverId, identityId, scriptId) => {
         const server = getServerById(serverId);
         if (!server) {
@@ -231,16 +236,7 @@ export const Servers = () => {
             return;
         }
 
-        const identity = { id: identityId };
-        
-        const requiresReason = checkConnectionReasonRequired(serverId, servers);
-        if (requiresReason) {
-            setPendingConnection({ server, identity, scriptId });
-            setConnectionReasonDialogOpen(true);
-            return;
-        }
-
-        performConnection(server, identity, null, null, null, scriptId);
+        initiateConnection({ server, identity: { id: identityId }, scriptId });
     };
 
     const resumeConnection = async (sessionId) => {
@@ -257,13 +253,14 @@ export const Servers = () => {
 
     const handleConnectionReasonProvided = (reason) => {
         if (pendingConnection) {
-            performConnection(
+            void performConnection(
                 pendingConnection.server,
-                pendingConnection.identity,
+                pendingConnection.identity ?? null,
                 reason,
-                pendingConnection.type || null,
-                pendingConnection.directIdentity || null,
-                pendingConnection.scriptId || null,
+                pendingConnection.type ?? null,
+                pendingConnection.directIdentity ?? null,
+                pendingConnection.scriptId ?? null,
+                pendingConnection.scriptName ?? null,
             );
             setPendingConnection(null);
         }
@@ -417,6 +414,11 @@ export const Servers = () => {
     };
 
     const openDirectConnect = (server) => {
+        if (server?.protocol === "telnet") {
+            initiateConnection({ server });
+            return;
+        }
+
         setDirectConnectServer(server);
         setDirectConnectDialogOpen(true);
     };
@@ -440,19 +442,7 @@ export const Servers = () => {
     };
 
     const handleDirectConnect = (directIdentity) => {
-        if (!directConnectServer) return;
-
-        const requiresReason = checkConnectionReasonRequired(directConnectServer.id, servers);
-        if (requiresReason) {
-            setPendingConnection({
-                server: directConnectServer,
-                identity: null,
-                directIdentity,
-            });
-            setConnectionReasonDialogOpen(true);
-        } else {
-            performConnection(directConnectServer, null, null, null, directIdentity);
-        }
+        initiateConnection({ server: directConnectServer, directIdentity });
     };
 
     useEffect(() => {
@@ -470,18 +460,7 @@ export const Servers = () => {
                 const hasIdentities = server?.identities && server.identities.length > 0;
 
                 if (server && (isPveEntry || hasIdentities)) {
-                    const identity = isPveEntry ? null : server.identities[0];
-                    try {
-                        const requiresReason = checkConnectionReasonRequired(connectId, servers);
-                        if (requiresReason) {
-                            setPendingConnection({ server, identity });
-                            setConnectionReasonDialogOpen(true);
-                        } else {
-                            performConnection(server, identity);
-                        }
-                    } catch (error) {
-                        performConnection(server, identity);
-                    }
+                    initiateConnection({ server, identity: isPveEntry ? null : server.identities[0] });
                 }
             };
 
