@@ -1779,7 +1779,9 @@
         "clearTerminal": "Terminale libero",
         "properties": "Proprietà",
         "openTerminal": "Apri il terminale qui",
-        "downloadFolder": "Scarica la cartella"
+        "downloadFolder": "Scarica la cartella",
+        "newFile": "New File",
+        "newFolder": "New Folder"
       },
       "properties": {
         "general": "Generale",
@@ -1841,7 +1843,8 @@
         "switchToGrid": "Passa alla visualizzazione a griglia",
         "switchToList": "Passa alla vista elenco",
         "search": "Cerca file",
-        "closeSearch": "Chiudi ricerca"
+        "closeSearch": "Chiudi ricerca",
+        "refresh": "Refresh"
       },
       "item": {
         "link": "link"
