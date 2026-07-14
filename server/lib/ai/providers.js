@@ -81,7 +81,7 @@ const ollamaProvider = {
 const oauthTokenAccessor = (oauthClient, settings) => {
     let cache = null;
     return async () => {
-        if (cache && cache.accessToken && cache.expiresAt > Date.now() + TOKEN_REFRESH_MARGIN_MS) return cache;
+        if (cache?.accessToken && cache.expiresAt > Date.now() + TOKEN_REFRESH_MARGIN_MS) return cache;
         cache = await oauthClient.ensureFreshToken(cache ? await AISettings.findOne() : settings);
         return cache;
     };
