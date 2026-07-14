@@ -733,6 +733,8 @@
         "folderManagementDescription": "Záznamy o vytváření, úpravách a mazání složek",
         "scriptExecutionLabel": "Spuštění skriptu",
         "scriptExecutionDescription": "Protokolování provádění skriptů a automatizačních úloh",
+        "aiOperationsLabel": "AI Operations",
+        "aiOperationsDescription": "Log commands and file changes performed by the AI assistant",
         "actions": {
           "save": "Uložit nastavení"
         },
