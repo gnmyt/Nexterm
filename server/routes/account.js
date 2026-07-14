@@ -1,7 +1,7 @@
 const { Router } = require("express");
 const { registerValidation, totpSetup, passwordChangeValidation, updateNameValidation, updateSessionSyncValidation } = require("../validations/account");
 const { preferencesValidation } = require("../validations/preferences");
-const { createAccount, updateTOTP, updatePassword, updateName, updateSessionSync, updatePreferences, searchUsers } = require("../controllers/account");
+const { createAccount, selfRegister, getFTSStatus, updateTOTP, updatePassword, updateName, updateSessionSync, updatePreferences, searchUsers } = require("../controllers/account");
 const speakeasy = require("speakeasy");
 const { authenticate } = require("../middlewares/auth");
 const { validateSchema } = require("../utils/schema");
@@ -97,7 +97,7 @@ app.patch("/name", authenticate, async (req, res) => {
 /**
  * POST /account/register
  * @summary Register New Account
- * @description Creates a new user account during first-time setup or by administrators. Used for initial user registration.
+ * @description Creates a new user account. During first-time setup the first admin account is created. Afterwards, registration is only permitted when an administrator has enabled self-registration for the internal authentication provider.
  * @tags Account
  * @produces application/json
  * @param {Register} request.body.required - User registration information including username, password, and name details
@@ -106,7 +106,7 @@ app.patch("/name", authenticate, async (req, res) => {
 app.post("/register", async (req, res) => {
     if (validateSchema(res, registerValidation, req.body)) return;
 
-    const account = await createAccount(req.body);
+    const account = await getFTSStatus() ? await createAccount(req.body) : await selfRegister(req.body);
     if (account) return res.json(account);
 
     res.json({ message: "Your account has been successfully created." });
