@@ -1779,7 +1779,9 @@
         "clearTerminal": "مسح المحطة الطرفية",
         "properties": "الخصائص",
         "openTerminal": "افتح المحطة الطرفية هنا",
-        "downloadFolder": "تنزيل المجلد"
+        "downloadFolder": "تنزيل المجلد",
+        "newFile": "New File",
+        "newFolder": "New Folder"
       },
       "properties": {
         "general": "جنرال لواء",
@@ -1841,7 +1843,8 @@
         "switchToGrid": "التبديل إلى عرض الشبكة",
         "switchToList": "التبديل إلى عرض القائمة",
         "search": "البحث في الملفات",
-        "closeSearch": "إغلاق البحث"
+        "closeSearch": "إغلاق البحث",
+        "refresh": "Refresh"
       },
       "item": {
         "link": "الرابط"
