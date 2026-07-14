@@ -61,7 +61,9 @@
       "signInWithQrCode": "Iniciar sesión con código QR",
       "qrScanDescription": "Escanea este código QR con la aplicación móvil Nexterm para iniciar sesión al instante.",
       "backToLogin": "Volver al inicio de sesión",
-      "authenticating": "Autentificar..."
+      "authenticating": "Autentificar...",
+      "noAccount": "Don't have an account?",
+      "haveAccount": "Already have an account?"
     },
     "deviceLink": {
       "title": "Dispositivo de enlace",
@@ -955,6 +957,10 @@
       "addLdapProvider": "Añadir LDAP",
       "system": "Sistema",
       "systemDescription": "Autenticación por nombre de usuario y contraseña",
+      "registration": {
+        "title": "Self-Registration",
+        "description": "Allow visitors to create their own account from the login screen"
+      },
       "deleteConfirm": "Esto eliminará permanentemente este proveedor de autenticación.",
       "errors": {
         "deleteProvider": "Error al borrar el proveedor",
@@ -1398,7 +1404,6 @@
       "subtitle": "Crea roles con permisos detallados o asigna permisos a usuarios concretos. El rol «Predeterminado» se aplica automáticamente a todo el mundo.",
       "createRole": "Crear rol",
       "rolesTitle": "Puestos",
-      "membersTitle": "Miembros",
       "rolesTab": "Puestos",
       "overridesTab": "Permisos directos",
       "permissionsTab": "Permisos",
@@ -1420,7 +1425,6 @@
       "addMemberPlaceholder": "Busca usuarios a los que añadir…",
       "deleteRole": "Eliminar rol",
       "deleteConfirm": "Esto eliminará definitivamente el rol «{{name}}» y lo retirará de todos los miembros.",
-      "searchUsers": "Buscar usuarios…",
       "inheritsAllow": "Heredancia: Permitida",
       "inheritsDeny": "Heredado: Denegado"
     }
