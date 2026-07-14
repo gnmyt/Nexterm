@@ -1779,7 +1779,9 @@
         "clearTerminal": "Очистить терминал",
         "properties": "Свойства",
         "openTerminal": "Открыть терминал здесь",
-        "downloadFolder": "Скачать папку"
+        "downloadFolder": "Скачать папку",
+        "newFile": "New File",
+        "newFolder": "New Folder"
       },
       "properties": {
         "general": "Общий",
@@ -1841,7 +1843,8 @@
         "switchToGrid": "Переключись на вид сетки",
         "switchToList": "Переключись в режим просмотра списка",
         "search": "Поиск файлов",
-        "closeSearch": "Закрыть поиск"
+        "closeSearch": "Закрыть поиск",
+        "refresh": "Refresh"
       },
       "item": {
         "link": "ссылка"
