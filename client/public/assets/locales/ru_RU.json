@@ -733,6 +733,8 @@
         "folderManagementDescription": "Веди журнал создания, изменения и удаления папок",
         "scriptExecutionLabel": "Выполнение сценария",
         "scriptExecutionDescription": "Веди журнал выполнения скриптов и задач автоматизации",
+        "aiOperationsLabel": "AI Operations",
+        "aiOperationsDescription": "Log commands and file changes performed by the AI assistant",
         "actions": {
           "save": "Сохранить настройки"
         },
