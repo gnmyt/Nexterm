@@ -1779,7 +1779,9 @@
         "clearTerminal": "Limpar Terminal",
         "properties": "Propriedades",
         "openTerminal": "Abrir Terminal Aqui",
-        "downloadFolder": "Baixar Pasta"
+        "downloadFolder": "Baixar Pasta",
+        "newFile": "New File",
+        "newFolder": "New Folder"
       },
       "properties": {
         "general": "Geral",
@@ -1841,7 +1843,8 @@
         "switchToGrid": "Mudar para visualização em grade",
         "switchToList": "Mudar para visualização em lista",
         "search": "Pesquisar arquivos",
-        "closeSearch": "Fechar pesquisa"
+        "closeSearch": "Fechar pesquisa",
+        "refresh": "Refresh"
       },
       "item": {
         "link": "link"
