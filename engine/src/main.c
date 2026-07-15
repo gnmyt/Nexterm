@@ -3,6 +3,7 @@
 #include "config.h"
 #include "log.h"
 
+#include <curl/curl.h>
 #include <libssh2.h>
 
 #include <getopt.h>
@@ -167,6 +168,12 @@ int main(int argc, char* argv[]) {
         return 1;
     }
 
+    if (curl_global_init(CURL_GLOBAL_DEFAULT) != CURLE_OK) {
+        LOG_ERROR("Failed to initialize libcurl");
+        libssh2_exit();
+        return 1;
+    }
+
     struct sigaction sa;
     sa.sa_handler = signal_handler;
     sigemptyset(&sa.sa_mask);
@@ -221,6 +228,7 @@ int main(int argc, char* argv[]) {
     LOG_INFO("Shutting down engine");
     nexterm_sm_destroy(&g_session_manager);
     nexterm_cp_destroy(cp);
+    curl_global_cleanup();
     libssh2_exit();
 
     LOG_INFO("Engine stopped");

@@ -21,6 +21,7 @@ export const FileList = forwardRef(({
     setCurrentFile, setPreviewFile, loading, viewMode = "list", error,
     resolveSymlink, session, createFile, createFolder, moveFiles, copyFiles, isActive,
     onOpenTerminal, onPropertiesMessage, searchQuery = "", onSearchResults,
+    capabilities = { shell: true, terminal: true },
 }, ref) => {
     const { t } = useTranslation();
     const { showThumbnails, showHiddenFiles, confirmBeforeDelete, dragDropAction } = usePreferences();
@@ -284,6 +285,7 @@ export const FileList = forwardRef(({
                 sendOperation={sendOperation}
                 OPERATIONS={OPERATIONS}
                 onRegisterHandler={onPropertiesMessage}
+                capabilities={capabilities}
             />
 
             <ContextMenu isOpen={contextMenu.isOpen} position={contextMenu.position} onClose={contextMenu.close} trigger={contextMenu.triggerRef}>
@@ -296,7 +298,7 @@ export const FileList = forwardRef(({
                 )}
                 <ContextMenuItem icon={mdiFileDownload} label={t("servers.fileManager.contextMenu.download")} onClick={() => downloadFile(`${path}/${selectedItem?.name}`)} />
                 <ContextMenuItem icon={mdiInformationOutline} label={t("servers.fileManager.contextMenu.properties")} onClick={() => handlePropertiesClick(selectedItem)} />
-                {selectedItem?.type === "folder" && (
+                {selectedItem?.type === "folder" && capabilities.terminal && (
                     <ContextMenuItem icon={mdiConsole} label={t("servers.fileManager.contextMenu.openTerminal")} onClick={() => handleOpenTerminal(`${path}/${selectedItem.name}`)} />
                 )}
                 <ContextMenuItem icon={mdiTrashCan} label={t("servers.fileManager.contextMenu.delete")} onClick={handleDeleteClick} danger />
@@ -308,12 +310,12 @@ export const FileList = forwardRef(({
                 <ContextMenuSeparator />
                 <ContextMenuItem icon={mdiFileDownload} label={t("servers.fileManager.contextMenu.downloadFolder")} onClick={() => downloadFile(path)} />
                 <ContextMenuItem icon={mdiInformationOutline} label={t("servers.fileManager.contextMenu.properties")} onClick={() => handlePropertiesClick(null)} />
-                <ContextMenuItem icon={mdiConsole} label={t("servers.fileManager.contextMenu.openTerminal")} onClick={() => handleOpenTerminal()} />
+                {capabilities.terminal && <ContextMenuItem icon={mdiConsole} label={t("servers.fileManager.contextMenu.openTerminal")} onClick={() => handleOpenTerminal()} />}
             </ContextMenu>
 
             <ContextMenu isOpen={dropMenu.isOpen} position={dropMenu.position} onClose={() => { dropMenu.close(); setPendingDrop(null); }}>
                 <ContextMenuItem icon={mdiFileMove} label={t("servers.fileManager.contextMenu.moveHere")} onClick={() => handleDropAction("move", clearSelection, dropMenu.close)} />
-                <ContextMenuItem icon={mdiContentCopy} label={t("servers.fileManager.contextMenu.copyHere")} onClick={() => handleDropAction("copy", clearSelection, dropMenu.close)} />
+                {capabilities.shell && <ContextMenuItem icon={mdiContentCopy} label={t("servers.fileManager.contextMenu.copyHere")} onClick={() => handleDropAction("copy", clearSelection, dropMenu.close)} />}
             </ContextMenu>
 
             <div className="drag-preview" ref={dragImageRef}>

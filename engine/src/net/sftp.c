@@ -2,6 +2,7 @@
 #include "ssh.h"
 #include "ssh_common.h"
 #include "control_plane.h"
+#include "file_proto.h"
 #include "io.h"
 #include "log.h"
 #include "thumbnail.h"
@@ -11,40 +12,23 @@ extern nexterm_session_manager_t g_session_manager;
 #include <libssh2.h>
 #include <libssh2_sftp.h>
 
-#include "sftp_protocol_builder.h"
 #include "sftp_protocol_reader.h"
 
-#include <ctype.h>
 #include <errno.h>
 #include <poll.h>
 #include <pthread.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <time.h>
 #include <unistd.h>
 
-#define SFTP_CHUNK_SIZE    1048576
 #define SFTP_WRITE_BUF     1048576
-#define SFTP_MAX_PATH      4096
-#define SFTP_MAX_FRAME     (16 * 1024 * 1024)
-#define SFTP_SEARCH_MAX    20
 #define SFTP_EXEC_BUF      (256 * 1024)
-#define SFTP_THUMB_MAX_BYTES (12 * 1024 * 1024)
 
 typedef struct {
     nexterm_session_t* session;
     nexterm_control_plane_t* cp;
 } sftp_thread_args_t;
-
-static int sftp_finalize_and_send(flatcc_builder_t* b, int fd) {
-    size_t sz;
-    uint8_t* buf = (uint8_t*)flatcc_builder_finalize_buffer(b, &sz);
-    int ret = nexterm_send_frame(fd, buf, sz, NULL);
-    flatcc_builder_clear(b);
-    free(buf);
-    return ret;
-}
 
 static const char* sftp_strerror(unsigned long err) {
     switch (err) {
@@ -61,73 +45,9 @@ static const char* sftp_strerror(unsigned long err) {
     }
 }
 
-static int send_ready(int fd) {
-    flatcc_builder_t b;
-    flatcc_builder_init(&b);
-
-    Nexterm_SftpProtocol_SftpMessage_start_as_root(&b);
-    Nexterm_SftpProtocol_SftpMessage_msg_type_add(&b, Nexterm_SftpProtocol_SftpMsgType_Ready);
-    Nexterm_SftpProtocol_SftpMessage_request_id_add(&b, 0);
-    Nexterm_SftpProtocol_SftpMessage_end_as_root(&b);
-
-    return sftp_finalize_and_send(&b, fd);
-}
-
-static int send_ok(int fd, uint32_t rid) {
-    flatcc_builder_t b;
-    flatcc_builder_init(&b);
-
-    Nexterm_SftpProtocol_SftpMessage_start_as_root(&b);
-    Nexterm_SftpProtocol_SftpMessage_msg_type_add(&b, Nexterm_SftpProtocol_SftpMsgType_Ok);
-    Nexterm_SftpProtocol_SftpMessage_request_id_add(&b, rid);
-    Nexterm_SftpProtocol_SftpMessage_end_as_root(&b);
-
-    return sftp_finalize_and_send(&b, fd);
-}
-
-static int send_error(int fd, uint32_t rid, const char* message, int32_t code) {
-    flatcc_builder_t b;
-    flatcc_builder_init(&b);
-
-    Nexterm_SftpProtocol_SftpMessage_start_as_root(&b);
-    Nexterm_SftpProtocol_SftpMessage_msg_type_add(&b, Nexterm_SftpProtocol_SftpMsgType_Error);
-    Nexterm_SftpProtocol_SftpMessage_request_id_add(&b, rid);
-    Nexterm_SftpProtocol_SftpMessage_error_res_start(&b);
-    Nexterm_SftpProtocol_ErrorRes_message_create_str(&b, message);
-    Nexterm_SftpProtocol_ErrorRes_code_add(&b, code);
-    Nexterm_SftpProtocol_SftpMessage_error_res_end(&b);
-    Nexterm_SftpProtocol_SftpMessage_end_as_root(&b);
-
-    return sftp_finalize_and_send(&b, fd);
-}
-
-static int send_file_data(int fd, uint32_t rid, const uint8_t* data,
-                          size_t len, uint64_t total_size) {
-    flatcc_builder_t b;
-    flatcc_builder_init(&b);
-
-    Nexterm_SftpProtocol_SftpMessage_start_as_root(&b);
-    Nexterm_SftpProtocol_SftpMessage_msg_type_add(&b, Nexterm_SftpProtocol_SftpMsgType_FileData);
-    Nexterm_SftpProtocol_SftpMessage_request_id_add(&b, rid);
-    Nexterm_SftpProtocol_SftpMessage_file_data_res_start(&b);
-    Nexterm_SftpProtocol_FileDataRes_data_create(&b, data, len);
-    Nexterm_SftpProtocol_FileDataRes_total_size_add(&b, total_size);
-    Nexterm_SftpProtocol_SftpMessage_file_data_res_end(&b);
-    Nexterm_SftpProtocol_SftpMessage_end_as_root(&b);
-
-    return sftp_finalize_and_send(&b, fd);
-}
-
-static int send_file_end(int fd, uint32_t rid) {
-    flatcc_builder_t b;
-    flatcc_builder_init(&b);
-
-    Nexterm_SftpProtocol_SftpMessage_start_as_root(&b);
-    Nexterm_SftpProtocol_SftpMessage_msg_type_add(&b, Nexterm_SftpProtocol_SftpMsgType_FileEnd);
-    Nexterm_SftpProtocol_SftpMessage_request_id_add(&b, rid);
-    Nexterm_SftpProtocol_SftpMessage_end_as_root(&b);
-
-    return sftp_finalize_and_send(&b, fd);
+static void send_sftp_error(LIBSSH2_SFTP* sftp, int fd, uint32_t rid) {
+    unsigned long e = libssh2_sftp_last_error(sftp);
+    fp_send_error(fd, rid, sftp_strerror(e), (int32_t)e);
 }
 
 static void append_capped(char* dst, size_t cap, size_t* len,
@@ -137,12 +57,6 @@ static void append_capped(char* dst, size_t cap, size_t* len,
     size_t copy = (n <= remaining) ? n : remaining;
     memcpy(dst + *len, src, copy);
     *len += copy;
-}
-
-static int64_t monotonic_ms(void) {
-    struct timespec ts;
-    clock_gettime(CLOCK_MONOTONIC, &ts);
-    return (int64_t)ts.tv_sec * 1000 + ts.tv_nsec / 1000000;
 }
 
 static int exec_command(LIBSSH2_SESSION* ssh, const char* cmd,
@@ -158,7 +72,7 @@ static int exec_command(LIBSSH2_SESSION* ssh, const char* cmd,
         return -1;
     }
 
-    const int64_t deadline = monotonic_ms() + (int64_t)timeout_ms;
+    const int64_t deadline = fp_monotonic_ms() + (int64_t)timeout_ms;
     size_t out_len = 0, err_len = 0;
     char tmp[4096];
     *timed_out = false;
@@ -190,7 +104,7 @@ static int exec_command(LIBSSH2_SESSION* ssh, const char* cmd,
 
         if (failed) break;
         if (libssh2_channel_eof(ch)) break;
-        if (monotonic_ms() >= deadline) {
+        if (fp_monotonic_ms() >= deadline) {
             *timed_out = true;
             break;
         }
@@ -222,16 +136,13 @@ static int recursive_rmdir_depth(LIBSSH2_SFTP* sftp, const char* path, int depth
     char name[512];
     char longentry[512];
     LIBSSH2_SFTP_ATTRIBUTES attrs;
-    char fullpath[SFTP_MAX_PATH];
+    char fullpath[FP_MAX_PATH];
 
     while (libssh2_sftp_readdir_ex(dir, name, sizeof(name),
                                     longentry, sizeof(longentry), &attrs) > 0) {
         if (strcmp(name, ".") == 0 || strcmp(name, "..") == 0) continue;
 
-        if (strcmp(path, "/") == 0)
-            snprintf(fullpath, sizeof(fullpath), "/%s", name);
-        else
-            snprintf(fullpath, sizeof(fullpath), "%s/%s", path, name);
+        fp_join_path(path, name, fullpath, sizeof(fullpath));
 
         if (longentry[0] == 'd')
             recursive_rmdir_depth(sftp, fullpath, depth + 1);
@@ -247,39 +158,18 @@ static int recursive_rmdir(LIBSSH2_SFTP* sftp, const char* path) {
     return recursive_rmdir_depth(sftp, path, 0);
 }
 
-typedef struct {
-    char paths[SFTP_SEARCH_MAX][SFTP_MAX_PATH];
-    int count;
-    int max_results;
-    int64_t deadline;
-    bool timed_out;
-} search_ctx_t;
-
-static bool search_name_matches(const char* name, const char* search_term) {
-    size_t tlen = strlen(search_term);
-    if (tlen == 0) return true;
-    if (strlen(name) < tlen) return false;
-
-    for (size_t i = 0; i < tlen; i++) {
-        if (tolower((unsigned char)name[i]) != tolower((unsigned char)search_term[i]))
-            return false;
-    }
-    return true;
-}
-
 static void search_list_level(LIBSSH2_SFTP* sftp, const char* base,
                               const char* search_term, bool inside,
-                              search_ctx_t* ctx) {
+                              fp_search_t* ctx) {
     LIBSSH2_SFTP_HANDLE* dir = libssh2_sftp_opendir(sftp, base);
     if (!dir) return;
 
     char name[512];
     char longentry[512];
     LIBSSH2_SFTP_ATTRIBUTES attrs;
-    char fullpath[SFTP_MAX_PATH];
 
     while (ctx->count < ctx->max_results) {
-        if (monotonic_ms() >= ctx->deadline) {
+        if (fp_monotonic_ms() >= ctx->deadline) {
             ctx->timed_out = true;
             break;
         }
@@ -288,14 +178,9 @@ static void search_list_level(LIBSSH2_SFTP* sftp, const char* base,
             break;
         if (strcmp(name, ".") == 0 || strcmp(name, "..") == 0) continue;
         if (longentry[0] != 'd') continue;
-        if (!inside && !search_name_matches(name, search_term)) continue;
+        if (!inside && !fp_name_matches(name, search_term)) continue;
 
-        if (strcmp(base, "/") == 0)
-            snprintf(fullpath, sizeof(fullpath), "/%s", name);
-        else
-            snprintf(fullpath, sizeof(fullpath), "%s/%s", base, name);
-
-        snprintf(ctx->paths[ctx->count], SFTP_MAX_PATH, "%s", fullpath);
+        fp_join_path(base, name, ctx->paths[ctx->count], FP_MAX_PATH);
         ctx->count++;
     }
 
@@ -306,20 +191,11 @@ static void handle_list_dir(LIBSSH2_SFTP* sftp, int fd, uint32_t rid,
                             const char* path) {
     LIBSSH2_SFTP_HANDLE* dir = libssh2_sftp_opendir(sftp, path);
     if (!dir) {
-        unsigned long e = libssh2_sftp_last_error(sftp);
-        send_error(fd, rid, sftp_strerror(e), (int32_t)e);
+        send_sftp_error(sftp, fd, rid);
         return;
     }
 
-    flatcc_builder_t b;
-    flatcc_builder_init(&b);
-
-    Nexterm_SftpProtocol_SftpMessage_start_as_root(&b);
-    Nexterm_SftpProtocol_SftpMessage_msg_type_add(&b, Nexterm_SftpProtocol_SftpMsgType_DirList);
-    Nexterm_SftpProtocol_SftpMessage_request_id_add(&b, rid);
-    Nexterm_SftpProtocol_SftpMessage_dir_list_res_start(&b);
-    Nexterm_SftpProtocol_DirListRes_entries_start(&b);
-
+    fp_entries_t entries = {0};
     char name[512];
     char longentry[512];
     LIBSSH2_SFTP_ATTRIBUTES attrs;
@@ -328,22 +204,15 @@ static void handle_list_dir(LIBSSH2_SFTP* sftp, int fd, uint32_t rid,
                                     longentry, sizeof(longentry), &attrs) > 0) {
         if (strcmp(name, ".") == 0 || strcmp(name, "..") == 0) continue;
 
-        Nexterm_SftpProtocol_DirListRes_entries_push_start(&b);
-        Nexterm_SftpProtocol_DirEntry_name_create_str(&b, name);
-        Nexterm_SftpProtocol_DirEntry_is_dir_add(&b, longentry[0] == 'd');
-        Nexterm_SftpProtocol_DirEntry_is_symlink_add(&b, longentry[0] == 'l');
-        Nexterm_SftpProtocol_DirEntry_size_add(&b, attrs.filesize);
-        Nexterm_SftpProtocol_DirEntry_mtime_add(&b, (uint32_t)attrs.mtime);
-        Nexterm_SftpProtocol_DirEntry_mode_add(&b, (uint32_t)attrs.permissions);
-        Nexterm_SftpProtocol_DirListRes_entries_push_end(&b);
+        fp_entries_push(&entries, name, longentry[0] == 'd', longentry[0] == 'l',
+                        attrs.filesize, (uint32_t)attrs.mtime,
+                        (uint32_t)attrs.permissions);
     }
 
-    Nexterm_SftpProtocol_DirListRes_entries_end(&b);
-    Nexterm_SftpProtocol_SftpMessage_dir_list_res_end(&b);
-    Nexterm_SftpProtocol_SftpMessage_end_as_root(&b);
-
-    sftp_finalize_and_send(&b, fd);
     libssh2_sftp_closedir(dir);
+
+    fp_send_dir_list(fd, rid, &entries);
+    fp_entries_free(&entries);
 }
 
 static void shell_escape_path(const char* path, char* escaped, size_t escaped_sz) {
@@ -376,10 +245,10 @@ static void stat_get_owner_group(LIBSSH2_SESSION* ssh, const char* path,
     owner[0] = '\0';
     group[0] = '\0';
 
-    char escaped[SFTP_MAX_PATH * 2];
+    char escaped[FP_MAX_PATH * 2];
     shell_escape_path(path, escaped, sizeof(escaped));
 
-    char cmd[SFTP_MAX_PATH * 2 + 64];
+    char cmd[FP_MAX_PATH * 2 + 64];
     snprintf(cmd, sizeof(cmd), "stat -c '%%U:%%G' %s 2>/dev/null || echo ':'", escaped);
 
     char out[256];
@@ -404,68 +273,48 @@ static void handle_stat(LIBSSH2_SFTP* sftp, LIBSSH2_SESSION* ssh,
                         int fd, uint32_t rid, const char* path) {
     LIBSSH2_SFTP_ATTRIBUTES attrs;
     if (libssh2_sftp_stat(sftp, path, &attrs) != 0) {
-        unsigned long e = libssh2_sftp_last_error(sftp);
-        send_error(fd, rid, sftp_strerror(e), (int32_t)e);
+        send_sftp_error(sftp, fd, rid);
         return;
     }
 
-    bool is_dir = (attrs.permissions & LIBSSH2_SFTP_S_IFMT) == LIBSSH2_SFTP_S_IFDIR;
+    fp_stat_t st;
+    memset(&st, 0, sizeof(st));
+    st.size = attrs.filesize;
+    st.mode = (uint32_t)attrs.permissions;
+    st.uid = (uint32_t)attrs.uid;
+    st.gid = (uint32_t)attrs.gid;
+    st.atime = (uint32_t)attrs.atime;
+    st.mtime = (uint32_t)attrs.mtime;
+    st.is_dir = (attrs.permissions & LIBSSH2_SFTP_S_IFMT) == LIBSSH2_SFTP_S_IFDIR;
+    stat_get_owner_group(ssh, path, st.owner, sizeof(st.owner),
+                         st.group, sizeof(st.group));
 
-    char owner[128];
-    char group[128];
-    stat_get_owner_group(ssh, path, owner, sizeof(owner), group, sizeof(group));
-
-    flatcc_builder_t b;
-    flatcc_builder_init(&b);
-
-    Nexterm_SftpProtocol_SftpMessage_start_as_root(&b);
-    Nexterm_SftpProtocol_SftpMessage_msg_type_add(&b, Nexterm_SftpProtocol_SftpMsgType_StatResult);
-    Nexterm_SftpProtocol_SftpMessage_request_id_add(&b, rid);
-    Nexterm_SftpProtocol_SftpMessage_stat_res_start(&b);
-    Nexterm_SftpProtocol_StatRes_size_add(&b, attrs.filesize);
-    Nexterm_SftpProtocol_StatRes_mode_add(&b, (uint32_t)attrs.permissions);
-    Nexterm_SftpProtocol_StatRes_uid_add(&b, (uint32_t)attrs.uid);
-    Nexterm_SftpProtocol_StatRes_gid_add(&b, (uint32_t)attrs.gid);
-    Nexterm_SftpProtocol_StatRes_atime_add(&b, (uint32_t)attrs.atime);
-    Nexterm_SftpProtocol_StatRes_mtime_add(&b, (uint32_t)attrs.mtime);
-    Nexterm_SftpProtocol_StatRes_owner_create_str(&b, owner);
-    Nexterm_SftpProtocol_StatRes_group_create_str(&b, group);
-    Nexterm_SftpProtocol_StatRes_is_dir_add(&b, is_dir);
-    Nexterm_SftpProtocol_SftpMessage_stat_res_end(&b);
-    Nexterm_SftpProtocol_SftpMessage_end_as_root(&b);
-
-    sftp_finalize_and_send(&b, fd);
+    fp_send_stat(fd, rid, &st);
 }
 
 static void handle_mkdir(LIBSSH2_SFTP* sftp, int fd, uint32_t rid,
                          const char* path) {
-    if (libssh2_sftp_mkdir(sftp, path, 0755) != 0) {
-        unsigned long e = libssh2_sftp_last_error(sftp);
-        send_error(fd, rid, sftp_strerror(e), (int32_t)e);
-    } else {
-        send_ok(fd, rid);
-    }
+    if (libssh2_sftp_mkdir(sftp, path, 0755) != 0)
+        send_sftp_error(sftp, fd, rid);
+    else
+        fp_send_ok(fd, rid);
 }
 
 static void handle_rmdir(LIBSSH2_SFTP* sftp, int fd, uint32_t rid,
                          const char* path, bool recursive) {
     int rc = recursive ? recursive_rmdir(sftp, path) : libssh2_sftp_rmdir(sftp, path);
-    if (rc != 0) {
-        unsigned long e = libssh2_sftp_last_error(sftp);
-        send_error(fd, rid, sftp_strerror(e), (int32_t)e);
-    } else {
-        send_ok(fd, rid);
-    }
+    if (rc != 0)
+        send_sftp_error(sftp, fd, rid);
+    else
+        fp_send_ok(fd, rid);
 }
 
 static void handle_unlink(LIBSSH2_SFTP* sftp, int fd, uint32_t rid,
                           const char* path) {
-    if (libssh2_sftp_unlink(sftp, path) != 0) {
-        unsigned long e = libssh2_sftp_last_error(sftp);
-        send_error(fd, rid, sftp_strerror(e), (int32_t)e);
-    } else {
-        send_ok(fd, rid);
-    }
+    if (libssh2_sftp_unlink(sftp, path) != 0)
+        send_sftp_error(sftp, fd, rid);
+    else
+        fp_send_ok(fd, rid);
 }
 
 static void handle_rename(LIBSSH2_SFTP* sftp, int fd, uint32_t rid,
@@ -475,12 +324,10 @@ static void handle_rename(LIBSSH2_SFTP* sftp, int fd, uint32_t rid,
         new_path, (unsigned int)strlen(new_path),
         LIBSSH2_SFTP_RENAME_OVERWRITE | LIBSSH2_SFTP_RENAME_ATOMIC |
         LIBSSH2_SFTP_RENAME_NATIVE);
-    if (rc != 0) {
-        unsigned long e = libssh2_sftp_last_error(sftp);
-        send_error(fd, rid, sftp_strerror(e), (int32_t)e);
-    } else {
-        send_ok(fd, rid);
-    }
+    if (rc != 0)
+        send_sftp_error(sftp, fd, rid);
+    else
+        fp_send_ok(fd, rid);
 }
 
 static void handle_chmod(LIBSSH2_SFTP* sftp, int fd, uint32_t rid,
@@ -492,21 +339,18 @@ static void handle_chmod(LIBSSH2_SFTP* sftp, int fd, uint32_t rid,
 
     int rc = libssh2_sftp_stat_ex(sftp, path, (unsigned int)strlen(path),
                                    LIBSSH2_SFTP_SETSTAT, &attrs);
-    if (rc != 0) {
-        unsigned long e = libssh2_sftp_last_error(sftp);
-        send_error(fd, rid, sftp_strerror(e), (int32_t)e);
-    } else {
-        send_ok(fd, rid);
-    }
+    if (rc != 0)
+        send_sftp_error(sftp, fd, rid);
+    else
+        fp_send_ok(fd, rid);
 }
 
 static void handle_realpath(LIBSSH2_SFTP* sftp, int fd, uint32_t rid,
                             const char* path) {
-    char resolved[SFTP_MAX_PATH];
+    char resolved[FP_MAX_PATH];
     int rc = libssh2_sftp_realpath(sftp, path, resolved, sizeof(resolved) - 1);
     if (rc < 0) {
-        unsigned long e = libssh2_sftp_last_error(sftp);
-        send_error(fd, rid, sftp_strerror(e), (int32_t)e);
+        send_sftp_error(sftp, fd, rid);
         return;
     }
     resolved[rc] = '\0';
@@ -516,55 +360,40 @@ static void handle_realpath(LIBSSH2_SFTP* sftp, int fd, uint32_t rid,
     if (libssh2_sftp_stat(sftp, resolved, &attrs) == 0)
         is_dir = (attrs.permissions & LIBSSH2_SFTP_S_IFMT) == LIBSSH2_SFTP_S_IFDIR;
 
-    flatcc_builder_t b;
-    flatcc_builder_init(&b);
-
-    Nexterm_SftpProtocol_SftpMessage_start_as_root(&b);
-    Nexterm_SftpProtocol_SftpMessage_msg_type_add(&b, Nexterm_SftpProtocol_SftpMsgType_RealpathResult);
-    Nexterm_SftpProtocol_SftpMessage_request_id_add(&b, rid);
-    Nexterm_SftpProtocol_SftpMessage_realpath_res_start(&b);
-    Nexterm_SftpProtocol_RealpathRes_path_create_str(&b, resolved);
-    Nexterm_SftpProtocol_RealpathRes_is_dir_add(&b, is_dir);
-    Nexterm_SftpProtocol_SftpMessage_realpath_res_end(&b);
-    Nexterm_SftpProtocol_SftpMessage_end_as_root(&b);
-
-    sftp_finalize_and_send(&b, fd);
+    fp_send_realpath(fd, rid, resolved, is_dir);
 }
 
 static void handle_read_file(LIBSSH2_SFTP* sftp, int fd, uint32_t rid,
                              const char* path) {
     LIBSSH2_SFTP_ATTRIBUTES attrs;
     if (libssh2_sftp_stat(sftp, path, &attrs) != 0) {
-        unsigned long e = libssh2_sftp_last_error(sftp);
-        send_error(fd, rid, sftp_strerror(e), (int32_t)e);
+        send_sftp_error(sftp, fd, rid);
         return;
     }
     uint64_t total_size = attrs.filesize;
 
     LIBSSH2_SFTP_HANDLE* fh = libssh2_sftp_open(sftp, path, LIBSSH2_FXF_READ, 0);
     if (!fh) {
-        unsigned long e = libssh2_sftp_last_error(sftp);
-        send_error(fd, rid, sftp_strerror(e), (int32_t)e);
+        send_sftp_error(sftp, fd, rid);
         return;
     }
 
-    uint8_t* chunk = malloc(SFTP_CHUNK_SIZE);
+    uint8_t* chunk = malloc(FP_CHUNK_SIZE);
     if (!chunk) {
-        send_error(fd, rid, "Out of memory", -1);
+        fp_send_error(fd, rid, "Out of memory", -1);
         libssh2_sftp_close(fh);
         return;
     }
     for (;;) {
-        ssize_t n = libssh2_sftp_read(fh, (char*)chunk, SFTP_CHUNK_SIZE);
+        ssize_t n = libssh2_sftp_read(fh, (char*)chunk, FP_CHUNK_SIZE);
         if (n < 0) {
-            unsigned long e = libssh2_sftp_last_error(sftp);
-            send_error(fd, rid, sftp_strerror(e), (int32_t)e);
+            send_sftp_error(sftp, fd, rid);
             free(chunk);
             libssh2_sftp_close(fh);
             return;
         }
         if (n == 0) break;
-        if (send_file_data(fd, rid, chunk, (size_t)n, total_size) != 0) {
+        if (fp_send_file_data(fd, rid, chunk, (size_t)n, total_size) != 0) {
             LOG_WARN("SFTP: failed to send file data chunk");
             free(chunk);
             libssh2_sftp_close(fh);
@@ -574,48 +403,28 @@ static void handle_read_file(LIBSSH2_SFTP* sftp, int fd, uint32_t rid,
 
     free(chunk);
     libssh2_sftp_close(fh);
-    send_file_end(fd, rid);
-}
-
-static int send_thumbnail(int fd, uint32_t rid, const uint8_t* data,
-                          size_t len, uint32_t w, uint32_t h) {
-    flatcc_builder_t b;
-    flatcc_builder_init(&b);
-
-    Nexterm_SftpProtocol_SftpMessage_start_as_root(&b);
-    Nexterm_SftpProtocol_SftpMessage_msg_type_add(&b, Nexterm_SftpProtocol_SftpMsgType_ThumbnailResult);
-    Nexterm_SftpProtocol_SftpMessage_request_id_add(&b, rid);
-    Nexterm_SftpProtocol_SftpMessage_thumbnail_res_start(&b);
-    Nexterm_SftpProtocol_ThumbnailRes_data_create(&b, data, len);
-    Nexterm_SftpProtocol_ThumbnailRes_width_add(&b, w);
-    Nexterm_SftpProtocol_ThumbnailRes_height_add(&b, h);
-    Nexterm_SftpProtocol_SftpMessage_thumbnail_res_end(&b);
-    Nexterm_SftpProtocol_SftpMessage_end_as_root(&b);
-
-    return sftp_finalize_and_send(&b, fd);
+    fp_send_file_end(fd, rid);
 }
 
 static void handle_thumbnail(LIBSSH2_SFTP* sftp, int fd, uint32_t rid,
                              const char* path, uint32_t size) {
     LIBSSH2_SFTP_ATTRIBUTES attrs;
     if (libssh2_sftp_stat(sftp, path, &attrs) != 0) {
-        unsigned long e = libssh2_sftp_last_error(sftp);
-        send_error(fd, rid, sftp_strerror(e), (int32_t)e);
+        send_sftp_error(sftp, fd, rid);
         return;
     }
-    if (attrs.filesize == 0 || attrs.filesize > SFTP_THUMB_MAX_BYTES) {
-        send_error(fd, rid, "Image too large for thumbnail", -1);
+    if (attrs.filesize == 0 || attrs.filesize > FP_THUMB_MAX_BYTES) {
+        fp_send_error(fd, rid, "Image too large for thumbnail", -1);
         return;
     }
 
     size_t flen = (size_t)attrs.filesize;
     uint8_t* filebuf = malloc(flen);
-    if (!filebuf) { send_error(fd, rid, "Out of memory", -1); return; }
+    if (!filebuf) { fp_send_error(fd, rid, "Out of memory", -1); return; }
 
     LIBSSH2_SFTP_HANDLE* fh = libssh2_sftp_open(sftp, path, LIBSSH2_FXF_READ, 0);
     if (!fh) {
-        unsigned long e = libssh2_sftp_last_error(sftp);
-        send_error(fd, rid, sftp_strerror(e), (int32_t)e);
+        send_sftp_error(sftp, fd, rid);
         free(filebuf);
         return;
     }
@@ -624,8 +433,7 @@ static void handle_thumbnail(LIBSSH2_SFTP* sftp, int fd, uint32_t rid,
     while (got < flen) {
         ssize_t n = libssh2_sftp_read(fh, (char*)filebuf + got, flen - got);
         if (n < 0) {
-            unsigned long e = libssh2_sftp_last_error(sftp);
-            send_error(fd, rid, sftp_strerror(e), (int32_t)e);
+            send_sftp_error(sftp, fd, rid);
             libssh2_sftp_close(fh);
             free(filebuf);
             return;
@@ -640,12 +448,12 @@ static void handle_thumbnail(LIBSSH2_SFTP* sftp, int fd, uint32_t rid,
     int ow = 0, oh = 0;
     if (nexterm_make_thumbnail(filebuf, got, (int)size, &jpeg, &jpeg_len, &ow, &oh) != 0) {
         free(filebuf);
-        send_error(fd, rid, "Failed to generate thumbnail", -1);
+        fp_send_error(fd, rid, "Failed to generate thumbnail", -1);
         return;
     }
     free(filebuf);
 
-    send_thumbnail(fd, rid, jpeg, jpeg_len, (uint32_t)ow, (uint32_t)oh);
+    fp_send_thumbnail(fd, rid, jpeg, jpeg_len, (uint32_t)ow, (uint32_t)oh);
     free(jpeg);
 }
 
@@ -656,7 +464,7 @@ static void handle_exec(LIBSSH2_SESSION* ssh, int fd, uint32_t rid,
     if (!out || !err_buf) {
         free(out);
         free(err_buf);
-        send_error(fd, rid, "Out of memory", -1);
+        fp_send_error(fd, rid, "Out of memory", -1);
         return;
     }
 
@@ -666,7 +474,7 @@ static void handle_exec(LIBSSH2_SESSION* ssh, int fd, uint32_t rid,
                      err_buf, SFTP_EXEC_BUF, &exit_code, timeout_ms, &timed_out) != 0) {
         free(out);
         free(err_buf);
-        send_error(fd, rid, "Failed to execute command", -1);
+        fp_send_error(fd, rid, "Failed to execute command", -1);
         return;
     }
 
@@ -678,78 +486,27 @@ static void handle_exec(LIBSSH2_SESSION* ssh, int fd, uint32_t rid,
                  el ? "\n" : "", timeout_ms / 1000);
     }
 
-    flatcc_builder_t b;
-    flatcc_builder_init(&b);
-
-    Nexterm_SftpProtocol_SftpMessage_start_as_root(&b);
-    Nexterm_SftpProtocol_SftpMessage_msg_type_add(&b, Nexterm_SftpProtocol_SftpMsgType_ExecResult);
-    Nexterm_SftpProtocol_SftpMessage_request_id_add(&b, rid);
-    Nexterm_SftpProtocol_SftpMessage_exec_res_start(&b);
-    Nexterm_SftpProtocol_ExecRes_stdout_data_create_str(&b, out);
-    Nexterm_SftpProtocol_ExecRes_stderr_data_create_str(&b, err_buf);
-    Nexterm_SftpProtocol_ExecRes_exit_code_add(&b, exit_code);
-    Nexterm_SftpProtocol_SftpMessage_exec_res_end(&b);
-    Nexterm_SftpProtocol_SftpMessage_end_as_root(&b);
-
-    sftp_finalize_and_send(&b, fd);
+    fp_send_exec_result(fd, rid, out, err_buf, exit_code);
     free(out);
     free(err_buf);
-}
-
-static void parse_search_path(const char* search_path,
-                               char* base_path, size_t base_sz,
-                               char* search_term, size_t term_sz,
-                               bool* inside) {
-    size_t sp_len = strlen(search_path);
-    *inside = (sp_len > 0 && search_path[sp_len - 1] == '/');
-
-    if (*inside) {
-        if (sp_len == 1) {
-            snprintf(base_path, base_sz, "/");
-        } else {
-            snprintf(base_path, base_sz, "%s", search_path);
-            base_path[sp_len - 1] = '\0';
-        }
-        search_term[0] = '\0';
-    } else {
-        const char* last_slash = strrchr(search_path, '/');
-        if (!last_slash || last_slash == search_path) {
-            snprintf(base_path, base_sz, "/");
-            if (last_slash == search_path && sp_len > 1)
-                snprintf(search_term, term_sz, "%s", search_path + 1);
-            else if (!last_slash)
-                snprintf(search_term, term_sz, "%s", search_path);
-            else
-                search_term[0] = '\0';
-        } else {
-            size_t base_len = (size_t)(last_slash - search_path);
-            if (base_len >= base_sz) base_len = base_sz - 1;
-            memcpy(base_path, search_path, base_len);
-            base_path[base_len] = '\0';
-            snprintf(search_term, term_sz, "%s", last_slash + 1);
-        }
-    }
-
-    for (char* p = search_term; *p; p++)
-        *p = (char)tolower((unsigned char)*p);
 }
 
 static void handle_search_dirs(LIBSSH2_SFTP* sftp, int fd, uint32_t rid,
                                const char* search_path, uint32_t max_results,
                                uint32_t timeout_ms) {
-    if (max_results == 0 || max_results > SFTP_SEARCH_MAX)
-        max_results = SFTP_SEARCH_MAX;
+    if (max_results == 0 || max_results > FP_SEARCH_MAX)
+        max_results = FP_SEARCH_MAX;
 
-    char base_path[SFTP_MAX_PATH];
+    char base_path[FP_MAX_PATH];
     char search_term[256];
     bool inside;
-    parse_search_path(search_path, base_path, sizeof(base_path),
-                      search_term, sizeof(search_term), &inside);
+    fp_parse_search_path(search_path, base_path, sizeof(base_path),
+                         search_term, sizeof(search_term), &inside);
 
-    search_ctx_t ctx;
+    fp_search_t ctx;
     memset(&ctx, 0, sizeof(ctx));
     ctx.max_results = (int)max_results;
-    ctx.deadline = monotonic_ms() + (int64_t)timeout_ms;
+    ctx.deadline = fp_monotonic_ms() + (int64_t)timeout_ms;
 
     const char* bp = base_path[0] ? base_path : "/";
     search_list_level(sftp, bp, search_term, inside, &ctx);
@@ -758,21 +515,7 @@ static void handle_search_dirs(LIBSSH2_SFTP* sftp, int fd, uint32_t rid,
         LOG_WARN("SFTP: search timed out after %u ms, returning %d partial result(s)",
                  timeout_ms, ctx.count);
 
-    flatcc_builder_t b;
-    flatcc_builder_init(&b);
-
-    Nexterm_SftpProtocol_SftpMessage_start_as_root(&b);
-    Nexterm_SftpProtocol_SftpMessage_msg_type_add(&b, Nexterm_SftpProtocol_SftpMsgType_SearchResult);
-    Nexterm_SftpProtocol_SftpMessage_request_id_add(&b, rid);
-    Nexterm_SftpProtocol_SftpMessage_search_res_start(&b);
-    Nexterm_SftpProtocol_SearchRes_directories_start(&b);
-    for (int i = 0; i < ctx.count; i++)
-        Nexterm_SftpProtocol_SearchRes_directories_push_create_str(&b, ctx.paths[i]);
-    Nexterm_SftpProtocol_SearchRes_directories_end(&b);
-    Nexterm_SftpProtocol_SftpMessage_search_res_end(&b);
-    Nexterm_SftpProtocol_SftpMessage_end_as_root(&b);
-
-    sftp_finalize_and_send(&b, fd);
+    fp_send_search_result(fd, rid, &ctx);
 }
 
 typedef struct {
@@ -791,8 +534,7 @@ static int sftp_write_raw(LIBSSH2_SFTP* sftp, int data_fd,
         ssize_t n = libssh2_sftp_write(ws->handle,
             (const char*)data + written, dlen - written);
         if (n < 0) {
-            unsigned long e = libssh2_sftp_last_error(sftp);
-            send_error(data_fd, ws->rid, sftp_strerror(e), (int32_t)e);
+            send_sftp_error(sftp, data_fd, ws->rid);
             libssh2_sftp_close(ws->handle);
             ws->handle = NULL;
             return -1;
@@ -814,8 +556,8 @@ static int sftp_handle_write_data(LIBSSH2_SFTP* sftp, int data_fd,
                                    sftp_write_state_t* ws,
                                    Nexterm_SftpProtocol_SftpMessage_table_t msg) {
     if (!ws->handle) {
-        send_error(data_fd, Nexterm_SftpProtocol_SftpMessage_request_id(msg),
-                   "No write in progress", -1);
+        fp_send_error(data_fd, Nexterm_SftpProtocol_SftpMessage_request_id(msg),
+                      "No write in progress", -1);
         return 0;
     }
 
@@ -856,7 +598,7 @@ static void dispatch_path_op(Nexterm_SftpProtocol_SftpMsgType_enum_t mt,
                               int data_fd, uint32_t rid,
                               Nexterm_SftpProtocol_SftpMessage_table_t msg) {
     const char* path = extract_path_req(msg);
-    if (!path) { send_error(data_fd, rid, "Missing path", -1); return; }
+    if (!path) { fp_send_error(data_fd, rid, "Missing path", -1); return; }
 
     switch (mt) {
         case Nexterm_SftpProtocol_SftpMsgType_ListDir:
@@ -889,7 +631,7 @@ static void dispatch_write_op(Nexterm_SftpProtocol_SftpMsgType_enum_t mt,
             if (sftp_flush_write(sftp, data_fd, ws) != 0) return;
             libssh2_sftp_close(ws->handle);
             ws->handle = NULL;
-            send_ok(data_fd, ws->rid);
+            fp_send_ok(data_fd, ws->rid);
         }
         return;
     }
@@ -902,24 +644,23 @@ static void dispatch_write_op(Nexterm_SftpProtocol_SftpMsgType_enum_t mt,
     ws->buf_len = 0;
     if (!ws->buf) {
         ws->buf = malloc(SFTP_WRITE_BUF);
-        if (!ws->buf) { send_error(data_fd, rid, "Out of memory", -1); return; }
+        if (!ws->buf) { fp_send_error(data_fd, rid, "Out of memory", -1); return; }
         ws->buf_cap = SFTP_WRITE_BUF;
     }
     Nexterm_SftpProtocol_WriteBeginReq_table_t req =
         Nexterm_SftpProtocol_SftpMessage_write_begin_req(msg);
     const char* path = req ? Nexterm_SftpProtocol_WriteBeginReq_path(req) : NULL;
-    if (!path) { send_error(data_fd, rid, "Missing path", -1); return; }
+    if (!path) { fp_send_error(data_fd, rid, "Missing path", -1); return; }
 
     ws->handle = libssh2_sftp_open(sftp, path,
         LIBSSH2_FXF_WRITE | LIBSSH2_FXF_CREAT | LIBSSH2_FXF_TRUNC,
         LIBSSH2_SFTP_S_IRUSR | LIBSSH2_SFTP_S_IWUSR |
         LIBSSH2_SFTP_S_IRGRP | LIBSSH2_SFTP_S_IROTH);
     if (!ws->handle) {
-        unsigned long e = libssh2_sftp_last_error(sftp);
-        send_error(data_fd, rid, sftp_strerror(e), (int32_t)e);
+        send_sftp_error(sftp, data_fd, rid);
     } else {
         ws->rid = rid;
-        send_ok(data_fd, rid);
+        fp_send_ok(data_fd, rid);
     }
 }
 
@@ -928,7 +669,7 @@ static void dispatch_rmdir(LIBSSH2_SFTP* sftp, int data_fd, uint32_t rid,
     Nexterm_SftpProtocol_RmdirReq_table_t req = Nexterm_SftpProtocol_SftpMessage_rmdir_req(msg);
     const char* path = req ? Nexterm_SftpProtocol_RmdirReq_path(req) : NULL;
     bool rec = req ? Nexterm_SftpProtocol_RmdirReq_recursive(req) : false;
-    if (!path) { send_error(data_fd, rid, "Missing path", -1); return; }
+    if (!path) { fp_send_error(data_fd, rid, "Missing path", -1); return; }
     handle_rmdir(sftp, data_fd, rid, path, rec);
 }
 
@@ -937,7 +678,7 @@ static void dispatch_rename(LIBSSH2_SFTP* sftp, int data_fd, uint32_t rid,
     Nexterm_SftpProtocol_RenameReq_table_t req = Nexterm_SftpProtocol_SftpMessage_rename_req(msg);
     const char* old = req ? Nexterm_SftpProtocol_RenameReq_old_path(req) : NULL;
     const char* new_p = req ? Nexterm_SftpProtocol_RenameReq_new_path(req) : NULL;
-    if (!old || !new_p) { send_error(data_fd, rid, "Missing paths", -1); return; }
+    if (!old || !new_p) { fp_send_error(data_fd, rid, "Missing paths", -1); return; }
     handle_rename(sftp, data_fd, rid, old, new_p);
 }
 
@@ -946,7 +687,7 @@ static void dispatch_chmod(LIBSSH2_SFTP* sftp, int data_fd, uint32_t rid,
     Nexterm_SftpProtocol_ChmodReq_table_t req = Nexterm_SftpProtocol_SftpMessage_chmod_req(msg);
     const char* path = req ? Nexterm_SftpProtocol_ChmodReq_path(req) : NULL;
     uint32_t mode = req ? Nexterm_SftpProtocol_ChmodReq_mode(req) : 0;
-    if (!path) { send_error(data_fd, rid, "Missing path", -1); return; }
+    if (!path) { fp_send_error(data_fd, rid, "Missing path", -1); return; }
     handle_chmod(sftp, data_fd, rid, path, mode);
 }
 
@@ -955,7 +696,7 @@ static void dispatch_exec(LIBSSH2_SESSION* ssh, int data_fd, uint32_t rid,
     Nexterm_SftpProtocol_ExecReq_table_t req = Nexterm_SftpProtocol_SftpMessage_exec_req(msg);
     const char* command = req ? Nexterm_SftpProtocol_ExecReq_command(req) : NULL;
     uint32_t timeout_ms = req ? Nexterm_SftpProtocol_ExecReq_timeout_ms(req) : 0;
-    if (!command) { send_error(data_fd, rid, "Missing command", -1); return; }
+    if (!command) { fp_send_error(data_fd, rid, "Missing command", -1); return; }
     if (timeout_ms == 0) timeout_ms = 300000;
     handle_exec(ssh, data_fd, rid, command, timeout_ms);
 }
@@ -964,9 +705,9 @@ static void dispatch_search(LIBSSH2_SFTP* sftp, int data_fd, uint32_t rid,
                              Nexterm_SftpProtocol_SftpMessage_table_t msg) {
     Nexterm_SftpProtocol_SearchReq_table_t req = Nexterm_SftpProtocol_SftpMessage_search_req(msg);
     const char* sp = req ? Nexterm_SftpProtocol_SearchReq_search_path(req) : NULL;
-    uint32_t max = req ? Nexterm_SftpProtocol_SearchReq_max_results(req) : SFTP_SEARCH_MAX;
+    uint32_t max = req ? Nexterm_SftpProtocol_SearchReq_max_results(req) : FP_SEARCH_MAX;
     uint32_t timeout_ms = req ? Nexterm_SftpProtocol_SearchReq_timeout_ms(req) : 0;
-    if (!sp) { send_error(data_fd, rid, "Missing search path", -1); return; }
+    if (!sp) { fp_send_error(data_fd, rid, "Missing search path", -1); return; }
     if (timeout_ms == 0) timeout_ms = 30000;
     handle_search_dirs(sftp, data_fd, rid, sp, max, timeout_ms);
 }
@@ -976,7 +717,7 @@ static void dispatch_thumbnail(LIBSSH2_SFTP* sftp, int data_fd, uint32_t rid,
     Nexterm_SftpProtocol_ThumbnailReq_table_t req = Nexterm_SftpProtocol_SftpMessage_thumbnail_req(msg);
     const char* path = req ? Nexterm_SftpProtocol_ThumbnailReq_path(req) : NULL;
     uint32_t size = req ? Nexterm_SftpProtocol_ThumbnailReq_size(req) : 100;
-    if (!path) { send_error(data_fd, rid, "Missing path", -1); return; }
+    if (!path) { fp_send_error(data_fd, rid, "Missing path", -1); return; }
     handle_thumbnail(sftp, data_fd, rid, path, size);
 }
 
@@ -1019,7 +760,7 @@ static int sftp_dispatch_message(LIBSSH2_SFTP* sftp, LIBSSH2_SESSION* ssh,
 
         default:
             LOG_WARN("SFTP: unknown msg_type %d", mt);
-            send_error(data_fd, rid, "Unknown operation", -1);
+            fp_send_error(data_fd, rid, "Unknown operation", -1);
             return 0;
     }
 }
@@ -1038,7 +779,7 @@ static void sftp_request_loop(nexterm_session_t* session,
         if (pfd.revents & (POLLERR | POLLHUP | POLLNVAL)) break;
 
         uint32_t payload_len;
-        uint8_t* payload = nexterm_read_frame(data_fd, SFTP_MAX_FRAME, &payload_len);
+        uint8_t* payload = nexterm_read_frame(data_fd, FP_MAX_FRAME, &payload_len);
         if (!payload) {
             LOG_DEBUG("SFTP session %s: connection closed or read error",
                       session->session_id);
@@ -1130,7 +871,7 @@ static void* sftp_session_thread(void* arg) {
     session->state = SESSION_STATE_ACTIVE;
     nexterm_cp_send_session_result(cp, session->session_id, true, NULL, NULL);
 
-    if (send_ready(data_fd) != 0) {
+    if (fp_send_ready(data_fd) != 0) {
         LOG_ERROR("SFTP session %s: failed to send Ready", session->session_id);
         goto cleanup;
     }

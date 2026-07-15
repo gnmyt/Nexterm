@@ -47,7 +47,7 @@ export const GeneralTab = ({
                                     {convertUnits(folderSize)}
                                     <span className="size-bytes">({folderSize.toLocaleString()} bytes)</span>
                                 </span>
-                            ) : (
+                            ) : onCalculateFolderSize ? (
                                 <Button
                                     icon={loadingFolderSize ? mdiLoading : mdiCalculator}
                                     text={t("servers.fileManager.properties.calculateSize")}
@@ -55,6 +55,8 @@ export const GeneralTab = ({
                                     disabled={loadingFolderSize}
                                     type="secondary"
                                 />
+                            ) : (
+                                <span className="size-display">-</span>
                             )
                         ) : (
                             <span className="size-display">

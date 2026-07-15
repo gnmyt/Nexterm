@@ -41,7 +41,22 @@ const requirePath = (p) => { if (!p?.path) throw new Error("Invalid path"); };
 const requirePaths = (p) => { if (!p?.path || !p?.newPath) throw new Error("Invalid paths"); };
 const requireMultiPaths = (p) => { if (!p?.sources?.length || !p?.destination) throw new Error("Invalid paths"); };
 
-const buildOperationHandlers = (sftp, getBg, ws, logAudit) => ({
+const SHELL_LESS_PROTOCOLS = new Set(["ftp", "ftps"]);
+const TERMINAL_LESS_PROTOCOLS = new Set(["sftp", "ftp", "ftps"]);
+
+const getCapabilities = (entry) => {
+    const protocol = entry.type === "server" ? entry.config?.protocol : entry.type;
+    return {
+        shell: !SHELL_LESS_PROTOCOLS.has(protocol),
+        terminal: !TERMINAL_LESS_PROTOCOLS.has(protocol),
+    };
+};
+
+const requireShell = (capabilities) => {
+    if (!capabilities.shell) throw new Error("This operation is not supported over FTP");
+};
+
+const buildOperationHandlers = (sftp, getBg, ws, logAudit, capabilities) => ({
     [OP.LIST_FILES]: async (p) => {
         requirePath(p);
         sendResult(ws, OP.LIST_FILES, { files: await sftp.listDir(p.path) });
@@ -94,6 +109,7 @@ const buildOperationHandlers = (sftp, getBg, ws, logAudit) => ({
     },
     [OP.COPY_FILES]: async (p) => {
         requireMultiPaths(p);
+        requireShell(capabilities);
         const cmds = p.sources.map((src) => {
             const dest = `${p.destination}/${src.split("/").pop()}`;
             return `cp -r ${escapePath(src)} ${escapePath(dest)}`;
@@ -116,6 +132,7 @@ const buildOperationHandlers = (sftp, getBg, ws, logAudit) => ({
     },
     [OP.CHECKSUM]: async (p) => {
         if (!p?.path || !p?.algorithm) throw new Error("Invalid path or algorithm");
+        requireShell(capabilities);
         const algo = p.algorithm.toLowerCase();
         const cmd = CHECKSUM_COMMANDS[algo];
         if (!cmd) throw new Error("Unsupported algorithm");
@@ -126,6 +143,7 @@ const buildOperationHandlers = (sftp, getBg, ws, logAudit) => ({
     },
     [OP.FOLDER_SIZE]: async (p) => {
         requirePath(p);
+        requireShell(capabilities);
         const bg = await getBg();
         const result = await bg.exec(`du -sb ${escapePath(p.path)} 2>/dev/null | cut -f1`);
         if (result.exitCode !== 0) throw new Error(result.stderr.trim() || "Failed to calculate size");
@@ -192,13 +210,14 @@ module.exports = async (ws, req) => {
         };
         sftpClient.on("close", onSftpClose);
 
+        const capabilities = getCapabilities(entry);
         const storedPath = SessionManager.getSftpPath(sessionId);
-        sendResult(ws, OP.READY, { path: storedPath });
+        sendResult(ws, OP.READY, { path: storedPath, capabilities });
 
         const logAudit = (action, resource, details) => {
             createAuditLog({ accountId: user.id, organizationId: entry.organizationId, action, resource, details, ipAddress, userAgent });
         };
-        const handlers = buildOperationHandlers(sftpClient, getBg, ws, logAudit);
+        const handlers = buildOperationHandlers(sftpClient, getBg, ws, logAudit, capabilities);
 
         const messageHandler = async (msg) => {
             const opCode = msg[0];

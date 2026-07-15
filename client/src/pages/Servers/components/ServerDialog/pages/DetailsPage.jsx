@@ -10,7 +10,10 @@ const PROTOCOL_OPTIONS = [
     { label: "SSH", value: "ssh" },
     { label: "Telnet", value: "telnet" },
     { label: "RDP", value: "rdp" },
-    { label: "VNC", value: "vnc" }
+    { label: "VNC", value: "vnc" },
+    { label: "SFTP", value: "sftp" },
+    { label: "FTP", value: "ftp" },
+    { label: "FTPS", value: "ftps" }
 ];
 
 const DetailsPage = ({name, setName, icon, setIcon, config, setConfig, fieldConfig}) => {

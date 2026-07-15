@@ -53,6 +53,31 @@ export const getFieldConfig = (type, protocol) => {
                     allowedAuthTypes: ["password-only", "password"],
                     showWakeOnLan: true,
                 };
+            case "sftp":
+                return {
+                    showProtocol: false,
+                    showIpPort: true,
+                    showIdentities: true,
+                    showSettings: true,
+                    showMonitoring: false,
+                    showKeyboardLayout: false,
+                    showTerminalSettings: false,
+                    allowedAuthTypes: ["password", "ssh", "both"],
+                    showWakeOnLan: true,
+                };
+            case "ftp":
+            case "ftps":
+                return {
+                    showProtocol: false,
+                    showIpPort: true,
+                    showIdentities: true,
+                    showSettings: true,
+                    showMonitoring: false,
+                    showKeyboardLayout: false,
+                    showTerminalSettings: false,
+                    allowedAuthTypes: ["password"],
+                    showWakeOnLan: true,
+                };
             default:
                 return {
                     showProtocol: true,
