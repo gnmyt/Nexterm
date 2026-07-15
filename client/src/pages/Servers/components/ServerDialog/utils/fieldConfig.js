@@ -67,7 +67,7 @@ export const getFieldConfig = (type, protocol) => {
         }
     }
 
-    if (type === "pve-shell") {
+    if (type === "pve-shell" || type === "pve-lxc") {
         return {
             showProtocol: false,
             showIpPort: false,
@@ -75,21 +75,6 @@ export const getFieldConfig = (type, protocol) => {
             showSettings: false,
             showMonitoring: false,
             showKeyboardLayout: false,
-            showPveConfig: true,
-            pveFields: ["nodeName"],
-        };
-    }
-
-    if (type === "pve-lxc") {
-        return {
-            showProtocol: false,
-            showIpPort: false,
-            showIdentities: false,
-            showSettings: false,
-            showMonitoring: false,
-            showKeyboardLayout: false,
-            showPveConfig: true,
-            pveFields: ["nodeName", "vmid"],
         };
     }
 
@@ -103,8 +88,6 @@ export const getFieldConfig = (type, protocol) => {
             showKeyboardLayout: false,
             showDisplaySettings: true,
             showAudioSettings: true,
-            showPveConfig: true,
-            pveFields: ["nodeName", "vmid"],
         };
     }
 
@@ -143,12 +126,6 @@ export const validateRequiredFields = (type, protocol, name, config) => {
     if (fieldConfig.showIpPort && (!config.ip || !config.port)) return false;
 
     if (fieldConfig.showProtocol && !config.protocol) return false;
-
-    if (fieldConfig.showPveConfig && fieldConfig.pveFields) {
-        for (const field of fieldConfig.pveFields) {
-            if (field === "vmid" && !config[field]) return false;
-        }
-    }
 
     return true;
 };

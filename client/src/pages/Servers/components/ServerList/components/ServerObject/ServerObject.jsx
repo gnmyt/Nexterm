@@ -13,8 +13,10 @@ export const ServerObject = ({ id, name, position, folderId, organizationId, nes
     const [dropPlacement, setDropPlacement] = useState(null);
     const elementRef = useRef(null);
 
+    const isIntegrationEntry = Boolean(type?.startsWith("pve-"));
+
     const [{ opacity }, dragRef] = useDrag({
-        item: { type: "server", id, folderId, position },
+        item: { type: "server", id, folderId, position, isIntegrationEntry },
         type: "server",
         collect: monitor => ({
             opacity: monitor.isDragging() ? 0.5 : 1,
@@ -23,8 +25,9 @@ export const ServerObject = ({ id, name, position, folderId, organizationId, nes
 
     const [{ isOver }, dropRef] = useDrop({
         accept: "server",
+        canDrop: (item) => item.isIntegrationEntry ? item.folderId === folderId : !isIntegrationEntry,
         hover: (item, monitor) => {
-            if (!elementRef.current || item.id === id) return;
+            if (!elementRef.current || item.id === id || !monitor.canDrop()) return;
             
             const hoverBoundingRect = elementRef.current.getBoundingClientRect();
             const hoverMiddleY = (hoverBoundingRect.bottom - hoverBoundingRect.top) / 2;
@@ -54,7 +57,7 @@ export const ServerObject = ({ id, name, position, folderId, organizationId, nes
             return { id };
         },
         collect: (monitor) => ({
-            isOver: monitor.isOver(),
+            isOver: monitor.isOver() && monitor.canDrop(),
         }),
     });
 

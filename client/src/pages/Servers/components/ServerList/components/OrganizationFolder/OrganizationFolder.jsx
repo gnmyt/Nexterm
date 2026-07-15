@@ -20,6 +20,7 @@ const OrganizationFolder = ({ id, name, entries, nestedLevel, connectToServer, c
 
     const [{ isOver }, dropRef] = useDrop({
         accept: ["server", "folder"],
+        canDrop: (item) => !item.isIntegrationEntry,
         drop: async (item) => {
             try {
                 if (item.type === "server") {
@@ -46,7 +47,7 @@ const OrganizationFolder = ({ id, name, entries, nestedLevel, connectToServer, c
             }
         },
         collect: (monitor) => ({
-            isOver: monitor.isOver(),
+            isOver: monitor.isOver() && monitor.canDrop(),
         }),
     });
 
