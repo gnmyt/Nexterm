@@ -17,7 +17,7 @@
     "@ai-sdk/openai-compatible": "^3.0.7",
     "@inquirer/password": "^5.1.1",
     "@simplewebauthn/server": "^13.3.2",
-    "ai": "^7.0.22",
+    "ai": "^7.0.28",
     "archiver": "^8.0.0",
     "bcrypt": "^6.0.0",
     "commander": "^15.0.0",
