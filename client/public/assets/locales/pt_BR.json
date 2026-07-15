@@ -1880,6 +1880,7 @@
       "send": "Send",
       "stop": "Stop",
       "connectionError": "Connection to the assistant was lost.",
+      "reconnecting": "Connection lost. Reconnecting...",
       "confirmPrompt": "Allow this action?",
       "allow": "Allow",
       "allowShortcut": "Allow ({{key}})",
