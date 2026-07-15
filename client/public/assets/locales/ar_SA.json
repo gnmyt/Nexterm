@@ -894,6 +894,15 @@
         "syncEnabled": "ستتم مزامنة إعدادات المؤشر الآن مع حسابك",
         "syncDisabled": "لن تتم مزامنة إعدادات المؤشر بعد الآن"
       },
+      "input": {
+        "title": "Input",
+        "description": "Control how keyboard shortcuts behave inside the terminal.",
+        "smartCopyPaste": "Smart Ctrl+C",
+        "enabled": "Enabled",
+        "disabled": "Disabled",
+        "syncEnabled": "Input settings will now sync to your account",
+        "syncDisabled": "Input settings will no longer sync"
+      },
       "theme": {
         "title": "السمة",
         "description": "اختر سمة لونية للطرفية الخاصة بك.",
