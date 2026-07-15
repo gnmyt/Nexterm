@@ -5,6 +5,7 @@
 #include "ssh.h"
 #include "telnet.h"
 #include "sftp.h"
+#include "ftp.h"
 #include "http_fetch.h"
 #include "websocket.h"
 #include "log.h"
@@ -96,7 +97,9 @@ static int start_session_connection(nexterm_session_t* session,
         case SESSION_TYPE_TELNET:
             return nexterm_connection_start_telnet(session, cp);
         case SESSION_TYPE_SFTP:
-            return nexterm_sftp_start(session, cp);
+            return nexterm_ftp_is_ftp_session(session)
+                ? nexterm_ftp_start(session, cp)
+                : nexterm_sftp_start(session, cp);
         case SESSION_TYPE_TUNNEL:
             return nexterm_tunnel_start(session, cp);
         case SESSION_TYPE_WEBSOCKET:

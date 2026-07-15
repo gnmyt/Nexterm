@@ -75,6 +75,8 @@ set(ENGINE_SOURCES
     src/net/ssh.c
     src/net/ssh_common.c
     src/net/sftp.c
+    src/net/ftp.c
+    src/net/file_proto.c
     src/net/thumbnail.c
     src/net/telnet.c
     src/net/http_fetch.c
