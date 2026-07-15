@@ -5,25 +5,24 @@
 
 #include <libssh2.h>
 
-#ifdef __linux__
-#if defined(__has_include)
-#if __has_include(<execinfo.h>)
-#define NEXTERM_HAVE_EXECINFO 1
-#include <execinfo.h>
-#endif
-#else
-#define NEXTERM_HAVE_EXECINFO 1
-#include <execinfo.h>
-#endif
-#endif
-
 #include <getopt.h>
 #include <signal.h>
+#include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
 #include <unistd.h>
+
+#if defined(__has_include)
+#if __has_include(<execinfo.h>)
+#define NEXTERM_HAVE_EXECINFO 1
+#include <execinfo.h>
+#endif
+#elif defined(__GLIBC__)
+#define NEXTERM_HAVE_EXECINFO 1
+#include <execinfo.h>
+#endif
 
 nexterm_session_manager_t g_session_manager;
 
@@ -38,15 +37,55 @@ static void signal_handler(int sig) {
     }
 }
 
-static void crash_signal_handler(int sig) {
+static void crash_write(const char* s) {
+    size_t n = 0;
+    while (s[n]) n++;
+    ssize_t r = write(STDERR_FILENO, s, n);
+    (void)r;
+}
+
+static void crash_write_hex(uintptr_t v) {
+    static const char hex[] = "0123456789abcdef";
+    char buf[2 + sizeof(uintptr_t) * 2];
+    int i = (int)sizeof(buf);
+    if (v == 0) {
+        buf[--i] = '0';
+    } else {
+        while (v && i > 2) {
+            buf[--i] = hex[v & 0xf];
+            v >>= 4;
+        }
+    }
+    buf[--i] = 'x';
+    buf[--i] = '0';
+    ssize_t r = write(STDERR_FILENO, &buf[i], sizeof(buf) - (size_t)i);
+    (void)r;
+}
+
+static void crash_signal_handler(int sig, siginfo_t* info, void* ucontext) {
+    (void)ucontext;
+
+    crash_write("\n[nexterm-crash] Fatal signal ");
+    switch (sig) {
+        case SIGSEGV: crash_write("SIGSEGV"); break;
+        case SIGABRT: crash_write("SIGABRT"); break;
+        case SIGBUS:  crash_write("SIGBUS");  break;
+        default:      crash_write("signal");  break;
+    }
+    if ((sig == SIGSEGV || sig == SIGBUS) && info) {
+        crash_write(" fault_addr=");
+        crash_write_hex((uintptr_t)info->si_addr);
+    }
+    crash_write("\n");
+
 #ifdef NEXTERM_HAVE_EXECINFO
     void* frames[64];
     int frame_count = backtrace(frames, 64);
-    static const char prefix[] = "\n[nexterm-crash] Fatal signal received. Backtrace follows:\n";
-    write(STDERR_FILENO, prefix, sizeof(prefix) - 1);
+    crash_write("[nexterm-crash] Backtrace:\n");
     backtrace_symbols_fd(frames, frame_count, STDERR_FILENO);
 #else
-    (void)sig;
+    crash_write("[nexterm-crash] No in-process backtrace (no execinfo); "
+                "inspect the core dump under data/logs/crashes.\n");
 #endif
 
     signal(sig, SIG_DFL);
@@ -136,9 +175,10 @@ int main(int argc, char* argv[]) {
     sigaction(SIGTERM, &sa, NULL);
 
     struct sigaction crash_sa;
-    crash_sa.sa_handler = crash_signal_handler;
+    memset(&crash_sa, 0, sizeof(crash_sa));
+    crash_sa.sa_sigaction = crash_signal_handler;
     sigemptyset(&crash_sa.sa_mask);
-    crash_sa.sa_flags = SA_RESETHAND;
+    crash_sa.sa_flags = SA_RESETHAND | SA_SIGINFO;
     sigaction(SIGSEGV, &crash_sa, NULL);
     sigaction(SIGABRT, &crash_sa, NULL);
     sigaction(SIGBUS, &crash_sa, NULL);
@@ -149,7 +189,9 @@ int main(int argc, char* argv[]) {
 
     nexterm_control_plane_t* cp = nexterm_cp_create(server_host, server_port,
                                                      config.registration_token,
-                                                     config.tls);
+                                                     config.tls,
+                                                     config.ca_cert_path,
+                                                     config.tls_skip_verify);
     if (!cp) {
         LOG_ERROR("Failed to create control plane client");
         return 1;
