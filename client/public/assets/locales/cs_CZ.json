@@ -894,6 +894,15 @@
         "syncEnabled": "Nastavení kurzoru se nyní synchronizuje s vaším účtem.",
         "syncDisabled": "Nastavení kurzoru se již nesynchronizuje"
       },
+      "input": {
+        "title": "Input",
+        "description": "Control how keyboard shortcuts behave inside the terminal.",
+        "smartCopyPaste": "Smart Ctrl+C",
+        "enabled": "Enabled",
+        "disabled": "Disabled",
+        "syncEnabled": "Input settings will now sync to your account",
+        "syncDisabled": "Input settings will no longer sync"
+      },
       "theme": {
         "title": "Motiv",
         "description": "Vyberte barevný motiv pro váš terminál.",
