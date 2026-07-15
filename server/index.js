@@ -49,6 +49,7 @@ app.use(express.json());
 app.use("/api/service", require("./routes/service"));
 app.use("/api/accounts", require("./routes/account"));
 app.use("/api/accounts/passkeys", require("./routes/passkey"));
+app.use("/api/accounts/api-keys", require("./routes/apiKey"));
 app.use("/api/auth", require("./routes/auth"));
 app.use("/api/auth", require("./routes/authProviders"));
 
