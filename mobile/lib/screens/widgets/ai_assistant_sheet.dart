@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_material_design_icons/flutter_material_design_icons.dart';
@@ -80,6 +82,8 @@ class _AIAssistantSheetState extends State<AIAssistantSheet> with SingleTickerPr
 
   AIAssistantChannel? _channel;
   late final AnimationController _pulse;
+  Timer? _retryTimer;
+  int _retryAttempts = 0;
   bool _running = false;
   bool _ready = false;
   bool _hasInput = false;
@@ -103,20 +107,41 @@ class _AIAssistantSheetState extends State<AIAssistantSheet> with SingleTickerPr
       token: widget.token,
       sessionId: widget.sessionId,
       onEvent: _handleEvent,
-      onClosed: (reason) {
-        if (!mounted) return;
-        setState(() {
-          _ready = false;
-          _running = false;
-          _connectionError = reason ?? 'Connection to the assistant was lost.';
-        });
-      },
+      onClosed: _handleClosed,
     )..connect();
+  }
+
+  void _handleClosed(int? code, String? reason) {
+    if (!mounted) return;
+    setState(() {
+      _ready = false;
+      _running = false;
+      _endStreaming();
+      _abortRunningTools();
+
+      if (code != null && code >= 4000) {
+        _connectionError = (reason?.isNotEmpty ?? false) ? reason : 'Connection to the assistant was lost.';
+        return;
+      }
+      if (code == 1000 || code == 1005) return;
+
+      _retryAttempts += 1;
+      if (_retryAttempts <= 5) {
+        _connectionError = 'Connection lost. Reconnecting...';
+        final delayMs = (1000 * (1 << _retryAttempts)).clamp(0, 10000);
+        _retryTimer = Timer(Duration(milliseconds: delayMs), () {
+          if (mounted) _channel?.connect();
+        });
+      } else {
+        _connectionError = 'Connection to the assistant was lost.';
+      }
+    });
   }
 
   @override
   void dispose() {
     if (_listening) _speech.stop();
+    _retryTimer?.cancel();
     _channel?.dispose();
     _pulse.dispose();
     _input.dispose();
@@ -182,6 +207,7 @@ class _AIAssistantSheetState extends State<AIAssistantSheet> with SingleTickerPr
       switch (msg['type']) {
         case 'ready':
           _ready = true;
+          _retryAttempts = 0;
           _connectionError = null;
         case 'text-delta':
           _appendAssistant(msg['delta']?.toString() ?? '');

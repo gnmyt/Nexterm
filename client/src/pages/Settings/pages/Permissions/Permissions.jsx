@@ -4,7 +4,7 @@ import { useDrag, useDrop } from "react-dnd";
 import Icon from "@mdi/react";
 import {
     mdiAccountMultipleOutline, mdiChevronDown, mdiPlus, mdiShieldAccount, mdiShieldKeyOutline,
-    mdiShieldCrownOutline, mdiTrashCanOutline, mdiMagnify, mdiAccount, mdiCogOutline, mdiAccountGroup,
+    mdiShieldCrownOutline, mdiTrashCanOutline, mdiCogOutline, mdiAccountGroup,
     mdiDragVertical,
 } from "@mdi/js";
 import { getRequest, patchRequest, deleteRequest, putRequest } from "@/common/utils/RequestUtil.js";
@@ -16,7 +16,6 @@ import PermissionMatrix from "@/common/components/PermissionMatrix";
 import { ActionConfirmDialog } from "@/common/components/ActionConfirmDialog/ActionConfirmDialog.jsx";
 import CreateRoleDialog from "./components/CreateRoleDialog";
 import RoleMembers from "./components/RoleMembers";
-import UserPermissionsDialog from "./components/UserPermissionsDialog";
 import { PRESET_COLORS } from "./constants";
 
 const RoleRow = ({ group, draggable, onReorder, children }) => {
@@ -47,19 +46,12 @@ export const Permissions = () => {
 
     const [catalog, setCatalog] = useState(null);
     const [groups, setGroups] = useState([]);
-    const [activeTab, setActiveTab] = useState("roles");
 
     const [expandedId, setExpandedId] = useState(null);
     const [groupTab, setGroupTab] = useState({});
     const [details, setDetails] = useState({});
     const [createOpen, setCreateOpen] = useState(false);
     const [deleteTarget, setDeleteTarget] = useState(null);
-
-    const [users, setUsers] = useState([]);
-    const [userSearch, setUserSearch] = useState("");
-    const [debouncedSearch, setDebouncedSearch] = useState("");
-    const [permUserId, setPermUserId] = useState(null);
-    const [permDialogOpen, setPermDialogOpen] = useState(false);
 
     const loadGroups = useCallback(async () => {
         try {
@@ -73,26 +65,6 @@ export const Permissions = () => {
         getRequest("permissions/catalog").then((res) => setCatalog(res.system)).catch(() => {});
         loadGroups();
     }, [loadGroups]);
-
-    useEffect(() => {
-        const timer = setTimeout(() => setDebouncedSearch(userSearch), 300);
-        return () => clearTimeout(timer);
-    }, [userSearch]);
-
-    const loadUsers = useCallback(async () => {
-        try {
-            const params = new URLSearchParams({ limit: "100" });
-            if (debouncedSearch) params.set("search", debouncedSearch);
-            const res = await getRequest(`users/list?${params}`);
-            setUsers(res.users || []);
-        } catch {
-            setUsers([]);
-        }
-    }, [debouncedSearch]);
-
-    useEffect(() => {
-        if (activeTab === "members") loadUsers();
-    }, [activeTab, loadUsers]);
 
     const loadDetail = async (groupId) => {
         try {
@@ -185,11 +157,6 @@ export const Permissions = () => {
         }
     };
 
-    const tabs = useMemo(() => [
-        { key: "roles", label: t("settings.permissions.rolesTitle"), icon: mdiShieldKeyOutline },
-        { key: "members", label: t("settings.permissions.membersTitle"), icon: mdiAccountMultipleOutline },
-    ], [t]);
-
     return (
         <div className="permissions-page">
             <CreateRoleDialog open={createOpen} onClose={() => setCreateOpen(false)}
@@ -197,24 +164,16 @@ export const Permissions = () => {
             <ActionConfirmDialog open={!!deleteTarget} setOpen={(v) => !v && setDeleteTarget(null)}
                                  onConfirm={confirmDelete}
                                  text={t("settings.permissions.deleteConfirm", { name: deleteTarget?.name })} />
-            <UserPermissionsDialog open={permDialogOpen} onClose={() => setPermDialogOpen(false)}
-                                   accountId={permUserId} groups={groups} catalog={catalog}
-                                   onSaved={() => { loadUsers(); }} />
 
             <div className="permissions-header">
                 <div>
                     <h2>{t("settings.pages.permissions")}</h2>
                     <p>{t("settings.permissions.subtitle")}</p>
                 </div>
-                {activeTab === "roles" && (
-                    <Button text={t("settings.permissions.createRole")} icon={mdiPlus} onClick={() => setCreateOpen(true)} />
-                )}
+                <Button text={t("settings.permissions.createRole")} icon={mdiPlus} onClick={() => setCreateOpen(true)} />
             </div>
 
-            <TabSwitcher tabs={tabs} activeTab={activeTab} onTabChange={setActiveTab} variant="flat" />
-
-            {activeTab === "roles" && (
-                <div className="vertical-list">
+            <div className="vertical-list">
                     {orderedGroups.map((group) => {
                         const detail = details[group.id];
                         const subTab = groupTab[group.id] || "permissions";
@@ -300,42 +259,7 @@ export const Permissions = () => {
                             </RoleRow>
                         );
                     })}
-                </div>
-            )}
-
-            {activeTab === "members" && (
-                <>
-                    <div className="search-box">
-                        <Icon path={mdiMagnify} />
-                        <input type="text" placeholder={t("settings.permissions.searchUsers")}
-                               value={userSearch} onChange={(e) => setUserSearch(e.target.value)} />
-                    </div>
-
-                    <div className="vertical-list">
-                        {users.map((user) => (
-                            <div key={user.id} className="item clickable"
-                                 onClick={() => { setPermUserId(user.id); setPermDialogOpen(true); }}>
-                                <div className="left-section">
-                                    <div className={`role-icon ${user.isAdmin ? "is-admin" : ""}`}>
-                                        <Icon path={user.isAdmin ? mdiShieldAccount : mdiAccount} />
-                                    </div>
-                                    <div className="details">
-                                        <h3>{user.firstName} {user.lastName}</h3>
-                                        <p>@{user.username}</p>
-                                    </div>
-                                </div>
-                                <div className="right-section role-chips">
-                                    {(user.groups || []).map((g) => (
-                                        <span key={g.id} className="mini-chip" style={{ backgroundColor: `${g.color}26`, color: g.color }}>
-                                            {g.name}
-                                        </span>
-                                    ))}
-                                </div>
-                            </div>
-                        ))}
-                    </div>
-                </>
-            )}
+            </div>
         </div>
     );
 };

@@ -25,5 +25,6 @@ module.exports.oidcProviderUpdateValidation = Joi.object({
     firstNameAttribute: Joi.string(),
     lastNameAttribute: Joi.string(),
     usernameAttribute: Joi.string(),
-    isInternal: Joi.boolean()
+    isInternal: Joi.boolean(),
+    allowRegistration: Joi.boolean()
 });

@@ -69,11 +69,13 @@ table WriteDataReq {
 
 table ExecReq {
     command: string;
+    timeout_ms: uint32;
 }
 
 table SearchReq {
     search_path: string;
     max_results: uint32;
+    timeout_ms: uint32;
 }
 
 table DirListRes {

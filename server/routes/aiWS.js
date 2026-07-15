@@ -41,13 +41,16 @@ module.exports = async function handleAIConnection(ws, req) {
     SessionManager.resume(sessionId);
     if (!await waitForConnection(sessionId)) return ws.close(4014, "Connection not available");
 
+    const session = SessionManager.get(sessionId);
+    if (!session.aiHistory) session.aiHistory = [];
+
     const send = (payload) => {
         if (ws.readyState === ws.OPEN) ws.send(JSON.stringify(payload));
     };
 
-    let sftp;
+    const getSftp = () => getSFTPAIClient(sessionId, entry, user.id);
     try {
-        sftp = await getSFTPAIClient(sessionId, entry, user.id);
+        await getSftp();
     } catch (err) {
         logger.error("AI assistant failed to open SFTP channel", { sessionId, error: err.message });
         return ws.close(4021, "Failed to open server channel");
@@ -71,18 +74,26 @@ module.exports = async function handleAIConnection(ws, req) {
         resolver(allowed);
     };
 
+    const inFlightTools = new Set();
+    const emit = (payload) => {
+        if (payload.type === "tool-call") inFlightTools.add(payload.callId);
+        else if (payload.type === "tool-result" || payload.type === "tool-error") inFlightTools.delete(payload.callId);
+        send(payload);
+    };
+
     let agent;
     try {
         agent = await createAgent({
             model: await buildModel(settings),
             providerOptions: getModelProviderOptions(settings),
             system: await buildSystemPrompt(entry),
-            sftp,
+            history: session.aiHistory,
+            getSftp,
             canModify,
             requireConfirmation: settings.requireConfirmation,
             requestApproval,
             logAudit,
-            emit: send,
+            emit,
         });
     } catch (err) {
         logger.error("AI assistant failed to initialise", { sessionId, error: err.message });
@@ -90,6 +101,16 @@ module.exports = async function handleAIConnection(ws, req) {
     }
 
     let controller = null;
+    let lastTurn = Promise.resolve();
+
+    let alive = true;
+    ws.on("pong", () => { alive = true; });
+    const keepAlive = setInterval(() => {
+        if (ws.readyState !== ws.OPEN) return;
+        if (!alive) return ws.terminate();
+        alive = false;
+        try { ws.ping(); } catch {}
+    }, 30000);
 
     send({ type: "ready", requireConfirmation: settings.requireConfirmation });
 
@@ -97,11 +118,22 @@ module.exports = async function handleAIConnection(ws, req) {
         for (const callId of pendingApprovals.keys()) resolveApproval(callId, false);
     };
 
+    const resetSftpIfBusy = () => {
+        if (inFlightTools.size === 0) return;
+        inFlightTools.clear();
+        const conn = SessionManager.getConnection(sessionId);
+        if (conn?.aiClient) {
+            try { conn.aiClient.close(); } catch {}
+            conn.aiClient = null;
+        }
+    };
+
     const handleAbort = () => {
         if (!controller) return;
         controller.abort();
         controller = null;
         abortPendingApprovals();
+        resetSftpIfBusy();
         send({ type: "aborted" });
     };
 
@@ -112,19 +144,27 @@ module.exports = async function handleAIConnection(ws, req) {
 
         const turn = new AbortController();
         controller = turn;
+        inFlightTools.clear();
         SessionManager.updateActivity(sessionId);
 
-        try {
-            await agent.runTurn(content, turn.signal);
-            if (!turn.signal.aborted) send({ type: "done" });
-        } catch (err) {
-            if (!turn.signal.aborted) {
-                logger.error("AI assistant turn failed", { sessionId, error: err.message });
-                send({ type: "error", message: err.message });
+        const previous = lastTurn;
+        lastTurn = (async () => {
+            await previous;
+            try {
+                if (turn.signal.aborted) return;
+                await agent.runTurn(content, turn.signal);
+                if (!turn.signal.aborted) send({ type: "done" });
+            } catch (err) {
+                if (!turn.signal.aborted) {
+                    logger.error("AI assistant turn failed", { sessionId, error: err.message });
+                    send({ type: "error", message: err.message });
+                }
+            } finally {
+                SessionManager.updateActivity(sessionId);
+                if (controller === turn) controller = null;
             }
-        } finally {
-            if (controller === turn) controller = null;
-        }
+        })();
+        await lastTurn;
     };
 
     ws.on("message", async (raw) => {
@@ -141,7 +181,9 @@ module.exports = async function handleAIConnection(ws, req) {
     });
 
     ws.on("close", () => {
+        clearInterval(keepAlive);
         controller?.abort();
         abortPendingApprovals();
+        resetSftpIfBusy();
     });
 };

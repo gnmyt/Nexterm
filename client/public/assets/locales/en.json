@@ -61,7 +61,9 @@
       "signInWithQrCode": "Sign in with QR Code",
       "qrScanDescription": "Scan this QR code with the Nexterm mobile app to sign in instantly.",
       "backToLogin": "Back to Login",
-      "authenticating": "Authenticating..."
+      "authenticating": "Authenticating...",
+      "noAccount": "Don't have an account?",
+      "haveAccount": "Already have an account?"
     },
     "deviceLink": {
       "title": "Link Device",
@@ -733,6 +735,8 @@
         "folderManagementDescription": "Log creation, modification, and deletion of folders",
         "scriptExecutionLabel": "Script Execution",
         "scriptExecutionDescription": "Log execution of scripts and automation tasks",
+        "aiOperationsLabel": "AI Operations",
+        "aiOperationsDescription": "Log commands and file changes performed by the AI assistant",
         "actions": {
           "save": "Save Settings"
         },
@@ -953,6 +957,10 @@
       "addLdapProvider": "Add LDAP",
       "system": "System",
       "systemDescription": "Username and password authentication",
+      "registration": {
+        "title": "Self-Registration",
+        "description": "Allow visitors to create their own account from the login screen"
+      },
       "deleteConfirm": "This will permanently delete this authentication provider.",
       "errors": {
         "deleteProvider": "Error deleting provider",
@@ -1396,7 +1404,6 @@
       "subtitle": "Create roles with granular permissions or assign permissions to individual users. The Default role applies to everyone automatically.",
       "createRole": "Create role",
       "rolesTitle": "Roles",
-      "membersTitle": "Members",
       "rolesTab": "Roles",
       "overridesTab": "Direct permissions",
       "permissionsTab": "Permissions",
@@ -1418,7 +1425,6 @@
       "addMemberPlaceholder": "Search users to add…",
       "deleteRole": "Delete role",
       "deleteConfirm": "This will permanently delete the role \"{{name}}\" and remove it from all members.",
-      "searchUsers": "Search users…",
       "inheritsAllow": "Inherits: Allowed",
       "inheritsDeny": "Inherits: Denied"
     }
@@ -1773,7 +1779,9 @@
         "clearTerminal": "Clear Terminal",
         "properties": "Properties",
         "openTerminal": "Open Terminal Here",
-        "downloadFolder": "Download Folder"
+        "downloadFolder": "Download Folder",
+        "newFile": "New File",
+        "newFolder": "New Folder"
       },
       "properties": {
         "general": "General",
@@ -1835,7 +1843,8 @@
         "switchToGrid": "Switch to grid view",
         "switchToList": "Switch to list view",
         "search": "Search files",
-        "closeSearch": "Close search"
+        "closeSearch": "Close search",
+        "refresh": "Refresh"
       },
       "item": {
         "link": "link"
@@ -1871,6 +1880,7 @@
       "send": "Send",
       "stop": "Stop",
       "connectionError": "Connection to the assistant was lost.",
+      "reconnecting": "Connection lost. Reconnecting...",
       "confirmPrompt": "Allow this action?",
       "allow": "Allow",
       "allowShortcut": "Allow ({{key}})",

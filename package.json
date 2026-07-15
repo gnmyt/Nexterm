@@ -12,12 +12,12 @@
     "node": ">=22"
   },
   "dependencies": {
-    "@ai-sdk/anthropic": "^4.0.12",
-    "@ai-sdk/openai": "^4.0.13",
-    "@ai-sdk/openai-compatible": "^3.0.7",
+    "@ai-sdk/anthropic": "^4.0.15",
+    "@ai-sdk/openai": "^4.0.14",
+    "@ai-sdk/openai-compatible": "^3.0.10",
     "@inquirer/password": "^5.1.1",
     "@simplewebauthn/server": "^13.3.2",
-    "ai": "^7.0.22",
+    "ai": "^7.0.28",
     "archiver": "^8.0.0",
     "bcrypt": "^6.0.0",
     "commander": "^15.0.0",
@@ -29,7 +29,8 @@
     "flatbuffers": "^25.9.23",
     "joi": "^18.2.3",
     "js-yaml": "^5.2.1",
-    "ldapts": "^8.1.8",
+    "ldapts": "^9.0.0",
+    "mysql2": "^3.23.0",
     "openid-client": "^6.8.4",
     "selfsigned": "^5.5.0",
     "sequelize": "^6.37.8",
@@ -38,7 +39,7 @@
     "uuid": "^14.0.1",
     "webdav": "^5.10.0",
     "winston": "^3.19.0",
-    "ws": "^8.21.0",
+    "ws": "^8.21.1",
     "zod": "^4.4.3"
   },
   "devDependencies": {

@@ -1,6 +1,7 @@
 const { genSalt, hash } = require("bcrypt");
 const { Op } = require("sequelize");
 const Account = require("../models/Account");
+const OIDCProvider = require("../models/OIDCProvider");
 const Folder = require("../models/Folder");
 const Identity = require("../models/Identity");
 const Session = require("../models/Session");
@@ -40,6 +41,18 @@ module.exports.createAccount = async (configuration, firstTimeSetup = true) => {
         username: newAccount.username,
         firstTimeSetup,
     });
+};
+
+module.exports.isRegistrationEnabled = async () => {
+    const internalProvider = await OIDCProvider.findOne({ where: { isInternal: true } });
+    return !!(internalProvider?.enabled && internalProvider.allowRegistration);
+};
+
+module.exports.selfRegister = async (configuration) => {
+    if (!await module.exports.isRegistrationEnabled())
+        return { code: 107, message: "Self-registration is not enabled" };
+
+    return module.exports.createAccount(configuration, false);
 };
 
 module.exports.deleteAccount = async (id) => {

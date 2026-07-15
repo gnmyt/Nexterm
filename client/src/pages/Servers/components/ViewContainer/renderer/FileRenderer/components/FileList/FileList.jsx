@@ -4,9 +4,9 @@ import Icon from "@mdi/react";
 import {
     mdiFile, mdiFolder, mdiAlertCircle, mdiFormTextbox, mdiTextBoxEdit,
     mdiFileDownload, mdiTrashCan, mdiEye, mdiFileMove, mdiContentCopy,
-    mdiInformationOutline, mdiConsole, mdiFileSearchOutline,
+    mdiInformationOutline, mdiConsole, mdiFileSearchOutline, mdiFilePlus, mdiFolderPlus,
 } from "@mdi/js";
-import { ContextMenu, ContextMenuItem, useContextMenu } from "@/common/components/ContextMenu";
+import { ContextMenu, ContextMenuItem, ContextMenuSeparator, useContextMenu } from "@/common/components/ContextMenu";
 import { ActionConfirmDialog } from "@/common/components/ActionConfirmDialog/ActionConfirmDialog.jsx";
 import { useTranslation } from "react-i18next";
 import { usePreferences } from "@/common/contexts/PreferencesContext.jsx";
@@ -45,10 +45,10 @@ export const FileList = forwardRef(({
     const emptyContextMenu = useContextMenu();
     const dropMenu = useContextMenu();
 
-    useImperativeHandle(ref, () => ({
-        startCreateFolder: () => { setCreatingFolder(true); setNewFolderName(""); },
-        startCreateFile: () => { setCreatingFile(true); setNewFileName(""); },
-    }));
+    const startCreateFolder = useCallback(() => { setCreatingFolder(true); setNewFolderName(""); }, []);
+    const startCreateFile = useCallback(() => { setCreatingFile(true); setNewFileName(""); }, []);
+
+    useImperativeHandle(ref, () => ({ startCreateFolder, startCreateFile }));
 
     const query = searchQuery.trim().toLowerCase();
 
@@ -196,7 +196,7 @@ export const FileList = forwardRef(({
                     <p>{error}</p>
                 </div>
             ) : filteredItems.length === 0 && !creatingFolder && !creatingFile ? (
-                <div className="empty-state">
+                <div className="empty-state" onContextMenu={handleEmptyContextMenu}>
                     <Icon path={query ? mdiFileSearchOutline : mdiFolder} />
                     <h3>{t(query ? "servers.fileManager.search.noResultsTitle" : "servers.fileManager.states.emptyFolder")}</h3>
                     <p>{query
@@ -303,6 +303,9 @@ export const FileList = forwardRef(({
             </ContextMenu>
 
             <ContextMenu isOpen={emptyContextMenu.isOpen} position={emptyContextMenu.position} onClose={emptyContextMenu.close} trigger={emptyContextMenu.triggerRef}>
+                <ContextMenuItem icon={mdiFilePlus} label={t("servers.fileManager.contextMenu.newFile")} onClick={startCreateFile} />
+                <ContextMenuItem icon={mdiFolderPlus} label={t("servers.fileManager.contextMenu.newFolder")} onClick={startCreateFolder} />
+                <ContextMenuSeparator />
                 <ContextMenuItem icon={mdiFileDownload} label={t("servers.fileManager.contextMenu.downloadFolder")} onClick={() => downloadFile(path)} />
                 <ContextMenuItem icon={mdiInformationOutline} label={t("servers.fileManager.contextMenu.properties")} onClick={() => handlePropertiesClick(null)} />
                 <ContextMenuItem icon={mdiConsole} label={t("servers.fileManager.contextMenu.openTerminal")} onClick={() => handleOpenTerminal()} />
