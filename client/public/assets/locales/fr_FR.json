@@ -894,6 +894,15 @@
         "syncEnabled": "Les paramètres du curseur seront désormais synchronisés avec ton compte.",
         "syncDisabled": "Les paramètres du curseur ne seront plus synchronisés"
       },
+      "input": {
+        "title": "Input",
+        "description": "Control how keyboard shortcuts behave inside the terminal.",
+        "smartCopyPaste": "Smart Ctrl+C",
+        "enabled": "Enabled",
+        "disabled": "Disabled",
+        "syncEnabled": "Input settings will now sync to your account",
+        "syncDisabled": "Input settings will no longer sync"
+      },
       "theme": {
         "title": "Thème",
         "description": "Choisissez un thème de couleur pour votre terminal.",
