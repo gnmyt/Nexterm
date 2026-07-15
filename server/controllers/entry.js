@@ -17,6 +17,16 @@ const { sendWakeOnLan } = require("../utils/wol");
 const stateBroadcaster = require("../lib/StateBroadcaster");
 const SessionManager = require("../lib/SessionManager");
 
+const PROTOCOL_RENDERERS = {
+    ssh: "terminal",
+    telnet: "terminal",
+    rdp: "guac",
+    vnc: "guac",
+    sftp: "sftp",
+    ftp: "sftp",
+    ftps: "sftp",
+};
+
 const validateEntryAccess = async (accountId, entry, errorMessage = "You don't have permission to access this entry", requiredPermission = null) => {
     if (!entry) return { code: 401, message: "Entry does not exist" };
 
@@ -105,11 +115,7 @@ module.exports.createEntry = async (accountId, configuration) => {
     }
 
     if (!configuration.renderer && configuration.config?.protocol) {
-        if (configuration.config.protocol === "ssh" || configuration.config.protocol === "telnet") {
-            configuration.renderer = "terminal";
-        } else if (configuration.config.protocol === "rdp" || configuration.config.protocol === "vnc") {
-            configuration.renderer = "guac";
-        }
+        configuration.renderer = PROTOCOL_RENDERERS[configuration.config.protocol] ?? configuration.renderer;
     }
 
     if (configuration.identities && configuration.identities.length > 0) {
@@ -207,11 +213,7 @@ module.exports.editEntry = async (accountId, entryId, configuration) => {
     }
 
     if (configuration.config?.protocol) {
-        if (configuration.config.protocol === "ssh" || configuration.config.protocol === "telnet") {
-            configuration.renderer = "terminal";
-        } else if (configuration.config.protocol === "rdp" || configuration.config.protocol === "vnc") {
-            configuration.renderer = "guac";
-        }
+        configuration.renderer = PROTOCOL_RENDERERS[configuration.config.protocol] ?? configuration.renderer;
     }
 
     if (configuration.identities) {

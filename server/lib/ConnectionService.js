@@ -44,6 +44,10 @@ const extractIdentity = (identityResult) => {
     return identityResult?.identity === undefined ? identityResult : identityResult.identity;
 };
 
+const FILE_TRANSFER_PORTS = { sftp: 22, ftp: 21, ftps: 21 };
+
+const getEntryProtocol = (entry) => (entry.type === "server" ? entry.config?.protocol : entry.type);
+
 const getHostPort = (entry, defaultPort = 22) => {
     const host = entry.config?.ip;
     const port = entry.config?.port || defaultPort;
@@ -101,7 +105,7 @@ const createConnectionForSession = async (sessionId, accountId) => {
     const identityResult = await resolveIdentity(entry, identityId, directIdentity, accountId);
     const identity = extractIdentity(identityResult);
     const organizationId = entry.organizationId || null;
-    const protocol = entry.type === "server" ? entry.config?.protocol : entry.type;
+    const protocol = getEntryProtocol(entry);
 
     let script = null;
     if (scriptId) {
@@ -118,16 +122,21 @@ const createConnectionForSession = async (sessionId, accountId) => {
         case "pve-qemu":
         case "rdp":
         case "vnc": return prepareGuacamoleSession(sessionId, entry, identity, organizationId);
-        default: throw new Error(`Unsupported entry type: ${entry.type}`);
+        case "sftp":
+        case "ftp":
+        case "ftps": return { success: true, skipped: true };
+        default: throw new Error(`Unsupported protocol: ${protocol}`);
     }
 };
 
-const resolveSSHContext = async (entry, identityId, directIdentity, accountId) => {
+const resolveFileTransferContext = async (entry, identityId, directIdentity, accountId) => {
     const identityResult = await resolveIdentity(entry, identityId, directIdentity, accountId);
     const identity = extractIdentity(identityResult);
     const credentials = await resolveCredentials(identity);
-    const { host, port } = getHostPort(entry);
+    const protocol = getEntryProtocol(entry);
+    const { host, port } = getHostPort(entry, FILE_TRANSFER_PORTS[protocol] ?? 22);
     const params = buildSSHParams(identity, credentials);
+    if (protocol) params.protocol = protocol;
     return { identity, credentials, host, port, params };
 };
 
@@ -139,7 +148,7 @@ const createSFTPConnectionForSession = async (sessionId, entry, accountId) => {
     session._connecting = (async () => {
         requireEngine();
         const { identityId, directIdentity } = session.configuration;
-        const { host, port, params } = await resolveSSHContext(entry, identityId, directIdentity, accountId);
+        const { host, port, params } = await resolveFileTransferContext(entry, identityId, directIdentity, accountId);
         const jumpHosts = await resolveJumpHosts(entry);
 
         const dataSocket = await openEngineSession(
@@ -184,7 +193,7 @@ const getAuxiliarySFTPClient = async (sessionId, entry, accountId, opts) => {
     conn[connectingKey] = (async () => {
         requireEngine();
         const { identityId, directIdentity } = session.configuration;
-        const { host, port, params } = await resolveSSHContext(entry, identityId, directIdentity, accountId);
+        const { host, port, params } = await resolveFileTransferContext(entry, identityId, directIdentity, accountId);
         const jumpHosts = await resolveJumpHosts(entry);
 
         conn._auxGeneration = (conn._auxGeneration || 0) + 1;

@@ -20,6 +20,9 @@ const ENTRY_TYPE_TO_AUDIT_ACTION = {
     'pve-lxc': AUDIT_ACTIONS.PVE_CONNECT,
     'pve-shell': AUDIT_ACTIONS.PVE_CONNECT,
     'pve-qemu': AUDIT_ACTIONS.PVE_CONNECT,
+    'sftp': AUDIT_ACTIONS.SFTP_CONNECT,
+    'ftp': AUDIT_ACTIONS.SFTP_CONNECT,
+    'ftps': AUDIT_ACTIONS.SFTP_CONNECT,
 };
 
 const ENTRY_TYPE_TO_CONNECT_PERMISSION = {
@@ -30,6 +33,9 @@ const ENTRY_TYPE_TO_CONNECT_PERMISSION = {
     'pve-lxc': Permission.CONNECT_PROXMOX,
     'pve-shell': Permission.CONNECT_PROXMOX,
     'pve-qemu': Permission.CONNECT_PROXMOX,
+    'sftp': Permission.FILES_VIEW,
+    'ftp': Permission.FILES_VIEW,
+    'ftps': Permission.FILES_VIEW,
 };
 
 const getAuditAction = (entry, scriptId) => {
