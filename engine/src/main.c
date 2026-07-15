@@ -14,7 +14,13 @@
 #include <time.h>
 #include <unistd.h>
 
-#ifdef __GLIBC__
+#if defined(__has_include)
+#if __has_include(<execinfo.h>)
+#define NEXTERM_HAVE_EXECINFO 1
+#include <execinfo.h>
+#endif
+#elif defined(__GLIBC__)
+#define NEXTERM_HAVE_EXECINFO 1
 #include <execinfo.h>
 #endif
 
@@ -72,13 +78,13 @@ static void crash_signal_handler(int sig, siginfo_t* info, void* ucontext) {
     }
     crash_write("\n");
 
-#ifdef __GLIBC__
+#ifdef NEXTERM_HAVE_EXECINFO
     void* frames[64];
     int frame_count = backtrace(frames, 64);
     crash_write("[nexterm-crash] Backtrace:\n");
     backtrace_symbols_fd(frames, frame_count, STDERR_FILENO);
 #else
-    crash_write("[nexterm-crash] No in-process backtrace (musl build); "
+    crash_write("[nexterm-crash] No in-process backtrace (no execinfo); "
                 "inspect the core dump under data/logs/crashes.\n");
 #endif
 
