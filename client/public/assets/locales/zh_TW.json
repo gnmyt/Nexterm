@@ -894,6 +894,15 @@
         "syncEnabled": "游標設定現在會同步至您的帳戶",
         "syncDisabled": "游標設定將不再同步"
       },
+      "input": {
+        "title": "Input",
+        "description": "Control how keyboard shortcuts behave inside the terminal.",
+        "smartCopyPaste": "Smart Ctrl+C",
+        "enabled": "Enabled",
+        "disabled": "Disabled",
+        "syncEnabled": "Input settings will now sync to your account",
+        "syncDisabled": "Input settings will no longer sync"
+      },
       "theme": {
         "title": "主題",
         "description": "為您的終端機選擇顏色主題。",
