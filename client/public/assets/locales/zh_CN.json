@@ -894,6 +894,15 @@
         "syncEnabled": "光标设置现在将同步到您的账户",
         "syncDisabled": "光标设置不再同步"
       },
+      "input": {
+        "title": "Input",
+        "description": "Control how keyboard shortcuts behave inside the terminal.",
+        "smartCopyPaste": "Smart Ctrl+C",
+        "enabled": "Enabled",
+        "disabled": "Disabled",
+        "syncEnabled": "Input settings will now sync to your account",
+        "syncDisabled": "Input settings will no longer sync"
+      },
       "theme": {
         "title": "主题",
         "description": "为终端选择颜色主题。",
