@@ -45,6 +45,7 @@ export const ActionBar = ({
                               setSearchOpen,
                               closeSearch,
                               searchResultCount,
+                              capabilities = { shell: true },
                           }) => {
     const [isEditing, setIsEditing] = useState(false);
     const [editPath, setEditPath] = useState(path);
@@ -390,7 +391,7 @@ export const ActionBar = ({
 
             <ContextMenu isOpen={dropMenu.isOpen} position={dropMenu.position} onClose={() => { dropMenu.close(); setPendingDrop(null); }}>
                 <ContextMenuItem icon={mdiFileMove} label={t("servers.fileManager.contextMenu.moveHere")} onClick={() => handleDropAction("move")} />
-                <ContextMenuItem icon={mdiContentCopy} label={t("servers.fileManager.contextMenu.copyHere")} onClick={() => handleDropAction("copy")} />
+                {capabilities.shell && <ContextMenuItem icon={mdiContentCopy} label={t("servers.fileManager.contextMenu.copyHere")} onClick={() => handleDropAction("copy")} />}
             </ContextMenu>
         </div>
     );

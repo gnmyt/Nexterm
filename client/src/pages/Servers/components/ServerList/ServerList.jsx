@@ -28,6 +28,7 @@ import {
     mdiConsole,
     mdiMonitor,
     mdiDesktopClassic,
+    mdiFolderNetwork,
     mdiCog,
     mdiSync,
     mdiPlay,
@@ -577,6 +578,22 @@ export const ServerList = ({
                                         />
                                         <ContextMenuSeparator />
                                         <ContextMenuItem
+                                            icon={mdiFolderNetwork}
+                                            label={t("servers.contextMenu.sftpServer")}
+                                            onClick={() => createServer("sftp")}
+                                        />
+                                        <ContextMenuItem
+                                            icon={mdiFolderNetwork}
+                                            label={t("servers.contextMenu.ftpServer")}
+                                            onClick={() => createServer("ftp")}
+                                        />
+                                        <ContextMenuItem
+                                            icon={mdiFolderNetwork}
+                                            label={t("servers.contextMenu.ftpsServer")}
+                                            onClick={() => createServer("ftps")}
+                                        />
+                                        <ContextMenuSeparator />
+                                        <ContextMenuItem
                                             icon={<ProxmoxLogo />}
                                             label={t("servers.contextMenu.pve")}
                                             onClick={createPVEServer}
@@ -761,7 +778,7 @@ export const ServerList = ({
                                     />
                                 )}
 
-                                {server?.type === "server" && (server?.protocol === "ssh" || server?.protocol === "telnet" || server?.protocol === "rdp" || server?.protocol === "vnc") && (
+                                {server?.type === "server" && (server?.protocol === "ssh" || server?.protocol === "telnet" || server?.protocol === "rdp" || server?.protocol === "vnc" || server?.protocol === "sftp" || server?.protocol === "ftp" || server?.protocol === "ftps") && (
                                     <ContextMenuItem
                                         icon={mdiCursorDefaultClick}
                                         label={t("servers.contextMenu.quickConnect")}

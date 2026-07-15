@@ -51,6 +51,7 @@ export const FileRenderer = ({ session, disconnectFromServer, setOpenFileEditors
     const reconnectAttemptsRef = useRef(0);
     const fileListRef = useRef(null);
     const propertiesHandlerRef = useRef(null);
+    const [capabilities, setCapabilities] = useState({ shell: true, terminal: true });
 
     const wsUrl = getWebSocketUrl("/api/ws/sftp", { sessionToken, sessionId: session.id });
 
@@ -168,6 +169,7 @@ export const FileRenderer = ({ session, disconnectFromServer, setOpenFileEditors
                 case OPERATIONS.READY:
                     setIsReady(true);
                     setConnectionError(null);
+                    setCapabilities(payload?.capabilities ?? { shell: true, terminal: true });
                     reconnectAttemptsRef.current = 0;
                     if (payload?.path && payload.path !== directoryRef.current) {
                         skipNextPathSync.current = true;
@@ -334,12 +336,14 @@ export const FileRenderer = ({ session, disconnectFromServer, setOpenFileEditors
                     historyLength={history.length} viewMode={viewMode} setViewMode={setViewMode} 
                     searchDirectories={searchDirectories} directorySuggestions={directorySuggestions} 
                     setDirectorySuggestions={setDirectorySuggestions} moveFiles={moveFiles} copyFiles={copyFiles}
+                    capabilities={capabilities}
                     sessionId={session.id} searchQuery={searchQuery} setSearchQuery={setSearchQuery} searchOpen={searchOpen}
                     setSearchOpen={setSearchOpen} closeSearch={closeSearch} searchResultCount={searchResultCount} />
                 <FileList ref={fileListRef} items={items} path={directory} updatePath={changeDirectory} sendOperation={sendOperation}
                     downloadFile={downloadFile} downloadMultipleFiles={downloadMultipleFiles} setCurrentFile={handleOpenFile} setPreviewFile={handleOpenPreview}
                     loading={loading} viewMode={viewMode} error={error || connectionError} resolveSymlink={resolveSymlink} session={session}
                     createFile={createFile} createFolder={createFolder} moveFiles={moveFiles} copyFiles={copyFiles} isActive={isActive}
+                    capabilities={capabilities}
                     searchQuery={searchQuery} onSearchResults={setSearchResultCount}
                     onOpenTerminal={onOpenTerminal} onPropertiesMessage={(handler) => { propertiesHandlerRef.current = handler; }} />
             </div>
