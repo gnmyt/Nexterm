@@ -15,6 +15,7 @@ export const Terminal = () => {
     const {
         selectedTheme, setSelectedTheme, selectedFont, setSelectedFont,
         fontSize, setFontSize, cursorStyle, setCursorStyle, cursorBlink, setCursorBlink,
+        smartCopyPaste, setSmartCopyPaste,
         getAvailableThemes, getAvailableFonts, getTerminalTheme, getCursorStyles,
         isGroupSynced, toggleGroupSync,
     } = usePreferences();
@@ -54,6 +55,11 @@ export const Terminal = () => {
     const cursorBlinkOptions = [
         { label: t("settings.terminal.cursor.enabled"), value: "true" }, 
         { label: t("settings.terminal.cursor.disabled"), value: "false" }
+    ];
+
+    const smartCopyPasteOptions = [
+        { label: t("settings.terminal.input.enabled"), value: "true" },
+        { label: t("settings.terminal.input.disabled"), value: "false" }
     ];
 
     const fontStyle = { fontFamily: selectedFont, fontSize: `${fontSize}px` };
@@ -117,6 +123,12 @@ export const Terminal = () => {
                 <div className="cursor-settings">
                     {renderFontOption(t("settings.terminal.cursor.cursorStyle"), cursorStyleOptions, cursorStyle, setCursorStyle)}
                     {renderFontOption(t("settings.terminal.cursor.cursorBlinking"), cursorBlinkOptions, cursorBlink.toString(), (value) => setCursorBlink(value === "true"))}
+                </div>
+            ))}
+
+            {renderSection(t("settings.terminal.input.title"), t("settings.terminal.input.description"), "terminal.input", (
+                <div className="input-settings">
+                    {renderFontOption(t("settings.terminal.input.smartCopyPaste"), smartCopyPasteOptions, smartCopyPaste.toString(), (value) => setSmartCopyPaste(value === "true"))}
                 </div>
             ))}
 
