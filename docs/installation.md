@@ -11,7 +11,7 @@ Nexterm requires an encryption key to securely store your data. You can generate
 openssl rand -hex 32
 ```
 
-## Docker Images
+## 🐳 Docker Images
 
 Nexterm is distributed as three Docker images:
 
