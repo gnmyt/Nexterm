@@ -14,6 +14,7 @@ const { startStatusChecker, stopStatusChecker } = require("./utils/statusChecker
 const { ensureInternalProvider } = require("./controllers/oidc");
 const monitoringService = require("./utils/monitoringService");
 const pveMonitoringService = require("./utils/pveMonitoringService");
+const integrationSyncService = require("./utils/integrationSyncService");
 const recordingService = require("./utils/recordingService");
 const { generateOpenAPISpec } = require("./openapi");
 const { requirePermission } = require("./middlewares/permission");
@@ -121,6 +122,8 @@ db.authenticate()
 
         pveMonitoringService.start();
 
+        integrationSyncService.start();
+
         recordingService.start();
 
         startSourceSyncService();
@@ -180,6 +183,7 @@ process.on("SIGINT", async () => {
 
     monitoringService.stop();
     pveMonitoringService.stop();
+    integrationSyncService.stop();
     recordingService.stop();
     stopStatusChecker();
     stopSourceSyncService();

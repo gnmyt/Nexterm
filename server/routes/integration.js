@@ -1,9 +1,7 @@
 const { Router } = require("express");
 const { validateSchema } = require("../utils/schema");
-const { getIntegration, createIntegration, deleteIntegration, editIntegration, getIntegrationUnsafe, syncIntegration } = require("../controllers/integration");
+const { getIntegration, createIntegration, deleteIntegration, editIntegration, syncIntegration, performEntryAction } = require("../controllers/integration");
 const { createPVEServerValidation, updatePVEServerValidation } = require("../validations/pveServer");
-const { startPVEServer, shutdownPVEServer, stopPVEServer } = require("../controllers/pve");
-const Entry = require("../models/Entry");
 
 const app = Router();
 
@@ -105,27 +103,8 @@ app.post("/:integrationId/sync", async (req, res) => {
 });
 
 const handlePVEAction = async (req, res, action, actionName) => {
-    const entry = await Entry.findByPk(req.params.entryId);
-    if (!entry) return res.json({ code: 404, message: "Entry not found" });
-
-    if (!entry.type.startsWith("pve-")) return res.json({ code: 400, message: "Invalid entry type" });
-
-    const integration = await getIntegrationUnsafe(req.user.id, entry.integrationId);
-    if (integration?.code) return res.json(integration);
-
-    const vmId = entry.config?.vmid;
-    if (!vmId) return res.json({ code: 400, message: "Entry missing vmid" });
-
-    const type = entry.type === "pve-qemu" ? "qemu" : "lxc";
-
-    const server = { ...integration.config, ...entry.config, password: integration.password };
-
-    try {
-        const status = await action(server, vmId, type);
-        if (status?.code) return res.json(status);
-    } catch (e) {
-        return res.json({ code: 500, message: `Server could not get ${actionName}` });
-    }
+    const result = await performEntryAction(req.user.id, req.params.entryId, action);
+    if (result?.code) return res.json(result);
 
     res.json({ message: `Server got successfully ${actionName}` });
 };
@@ -143,8 +122,8 @@ const handlePVEAction = async (req, res, action, actionName) => {
  * @return {object} 404 - Entry not found
  * @return {object} 500 - Failed to start VM/container
  */
-app.post("/entry/:entryId/start", (req, res) => 
-    handlePVEAction(req, res, startPVEServer, "started")
+app.post("/entry/:entryId/start", (req, res) =>
+    handlePVEAction(req, res, "start", "started")
 );
 
 /**
@@ -160,8 +139,8 @@ app.post("/entry/:entryId/start", (req, res) =>
  * @return {object} 404 - Entry not found
  * @return {object} 500 - Failed to stop VM/container
  */
-app.post("/entry/:entryId/stop", (req, res) => 
-    handlePVEAction(req, res, stopPVEServer, "stopped")
+app.post("/entry/:entryId/stop", (req, res) =>
+    handlePVEAction(req, res, "stop", "stopped")
 );
 
 /**
@@ -177,8 +156,8 @@ app.post("/entry/:entryId/stop", (req, res) =>
  * @return {object} 404 - Entry not found
  * @return {object} 500 - Failed to shutdown VM/container
  */
-app.post("/entry/:entryId/shutdown", (req, res) => 
-    handlePVEAction(req, res, shutdownPVEServer, "shutdown")
+app.post("/entry/:entryId/shutdown", (req, res) =>
+    handlePVEAction(req, res, "shutdown", "shutdown")
 );
 
 module.exports = app;

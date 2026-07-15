@@ -1,4 +1,5 @@
 const Sequelize = require("sequelize");
+const logger = require("../utils/logger");
 const db = require("../utils/database");
 
 module.exports = db.define("folders", {
@@ -46,5 +47,33 @@ module.exports = db.define("folders", {
         type: Sequelize.STRING,
         allowNull: true,
         defaultValue: null,
+    },
+    config: {
+        type: Sequelize.JSON,
+        allowNull: true,
+        defaultValue: null,
     }
-}, { freezeTableName: true, createdAt: false, updatedAt: false });
+}, {
+    freezeTableName: true,
+    createdAt: false,
+    updatedAt: false,
+    hooks: {
+        afterFind: (folders) => {
+            const parseConfig = (folder) => {
+                if (folder && folder.config && typeof folder.config === 'string') {
+                    try {
+                        folder.config = JSON.parse(folder.config);
+                    } catch (e) {
+                        logger.error('Failed to parse Folder config', { folderId: folder.id, error: e.message });
+                    }
+                }
+            };
+
+            if (Array.isArray(folders)) {
+                folders.forEach(parseConfig);
+            } else if (folders) {
+                parseConfig(folders);
+            }
+        },
+    },
+});

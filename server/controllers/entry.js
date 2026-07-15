@@ -545,6 +545,10 @@ module.exports.repositionEntry = async (accountId, entryId, { targetId, placemen
 
     if (!accessCheck.valid) return accessCheck;
 
+    if (entry.integrationId && folderId !== undefined && folderId !== entry.folderId) {
+        return { code: 403, message: "Integration resources cannot be moved out of their node folder" };
+    }
+
     if (folderId !== undefined && folderId !== null) {
         const folderCheck = await validateFolderAccess(accountId, folderId, Permission.RESOURCES_MANAGE);
         if (!folderCheck.valid) return folderCheck.error;

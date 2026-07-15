@@ -2,7 +2,7 @@ const Joi = require('joi');
 
 module.exports.createPVEServerValidation = Joi.object({
     name: Joi.string().required(),
-    folderId: Joi.number().required(),
+    folderId: Joi.number().optional().allow(null),
     organizationId: Joi.number().optional().allow(null),
     ip: Joi.string().required(),
     port: Joi.number().required(),
