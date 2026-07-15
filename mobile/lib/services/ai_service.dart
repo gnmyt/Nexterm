@@ -43,7 +43,7 @@ class AIAssistantChannel {
   final String token;
   final String sessionId;
   final void Function(Map<String, dynamic> event) onEvent;
-  final void Function(String? reason) onClosed;
+  final void Function(int? code, String? reason) onClosed;
 
   IOWebSocketChannel? _channel;
   StreamSubscription? _subscription;
@@ -57,6 +57,9 @@ class AIAssistantChannel {
   });
 
   void connect() {
+    _subscription?.cancel();
+    _channel?.sink.close();
+
     final url = ApiClient.buildWebSocketUrl('/ws/ai', queryParams: {
       'sessionToken': token,
       'sessionId': sessionId,
@@ -77,14 +80,11 @@ class AIAssistantChannel {
         } catch (_) {}
       },
       onError: (_) {
-        if (!_closedByUs) onClosed(null);
+        if (!_closedByUs) onClosed(null, null);
       },
       onDone: () {
         if (_closedByUs) return;
-        final code = channel.closeCode;
-        final reason = channel.closeReason;
-        final hasReason = code != null && code >= 4000 && reason != null && reason.isNotEmpty;
-        onClosed(hasReason ? reason : null);
+        onClosed(channel.closeCode, channel.closeReason);
       },
     );
   }

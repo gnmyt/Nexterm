@@ -63,7 +63,7 @@ const readEntireFile = (sftp, path) => new Promise((resolve, reject) => {
     }).catch(reject);
 });
 
-const buildTools = ({ sftp, canModify, requireConfirmation, requestApproval, logAudit, tool }) => {
+const buildTools = ({ getSftp, canModify, requireConfirmation, requestApproval, logAudit, tool }) => {
     const define = (name, description, inputSchema, runner, { mutating = false, audit } = {}) => tool({
         description,
         inputSchema,
@@ -77,7 +77,8 @@ const buildTools = ({ sftp, canModify, requireConfirmation, requestApproval, log
                 if (!allowed) return { denied: true, message: "The user denied this action." };
             }
             throwIfAborted(abortSignal);
-            const result = await abortable(runner(input, abortSignal), abortSignal);
+            const sftp = await getSftp();
+            const result = await abortable(runner(sftp, input, abortSignal), abortSignal);
             if (audit && logAudit) {
                 const { action, details } = audit(input);
                 logAudit(action, RESOURCE_TYPES.FILE, details);
@@ -95,7 +96,7 @@ const buildTools = ({ sftp, canModify, requireConfirmation, requestApproval, log
                 timeoutSeconds: z.number().int().positive().max(1800).optional()
                     .describe("Seconds to wait for the command to finish before timing out. Increase for long-running commands like installs, builds or backups. Defaults to 300 (max 1800)."),
             }),
-            async ({ command, timeoutSeconds }) => {
+            async (sftp, { command, timeoutSeconds }) => {
                 const { stdout, stderr, exitCode } = await sftp.exec(command, (timeoutSeconds || 300) * 1000);
                 return { exitCode, stdout: truncate(stdout), stderr: truncate(stderr) };
             },
@@ -106,7 +107,7 @@ const buildTools = ({ sftp, canModify, requireConfirmation, requestApproval, log
             "readFile",
             "Read the contents of a text file on the server.",
             z.object({ path: z.string().describe("Absolute path to the file.") }),
-            async ({ path }) => {
+            async (sftp, { path }) => {
                 const { content, truncated } = await readEntireFile(sftp, path);
                 return { path, truncated, content };
             },
@@ -119,7 +120,7 @@ const buildTools = ({ sftp, canModify, requireConfirmation, requestApproval, log
                 path: z.string().describe("Absolute path to the file."),
                 content: z.string().describe("The full new contents of the file."),
             }),
-            async ({ path, content }) => {
+            async (sftp, { path, content }) => {
                 await sftp.writeFile(path, Buffer.from(content, "utf8"));
                 return { path, bytesWritten: Buffer.byteLength(content, "utf8") };
             },
@@ -138,7 +139,7 @@ const buildTools = ({ sftp, canModify, requireConfirmation, requestApproval, log
                 newString: z.string().describe("The text to replace it with."),
                 replaceAll: z.boolean().optional().describe("Replace every occurrence instead of requiring a single unique match."),
             }),
-            async ({ path, oldString, newString, replaceAll }) => {
+            async (sftp, { path, oldString, newString, replaceAll }) => {
                 if (oldString === newString) throw new Error("oldString and newString are identical.");
                 const { content, truncated } = await readEntireFile(sftp, path);
                 if (truncated) throw new Error("File is too large to edit safely; use runCommand for large files.");
@@ -167,7 +168,7 @@ const buildTools = ({ sftp, canModify, requireConfirmation, requestApproval, log
             "listDirectory",
             "List the entries of a directory on the server.",
             z.object({ path: z.string().describe("Absolute path to the directory.") }),
-            async ({ path }) => {
+            async (sftp, { path }) => {
                 const entries = await sftp.listDir(path);
                 return { path, entries };
             },
@@ -177,14 +178,14 @@ const buildTools = ({ sftp, canModify, requireConfirmation, requestApproval, log
             "statPath",
             "Get metadata (size, permissions, owner, type) for a file or directory.",
             z.object({ path: z.string().describe("Absolute path to inspect.") }),
-            async ({ path }) => ({ path, ...(await sftp.stat(path)) }),
+            async (sftp, { path }) => ({ path, ...(await sftp.stat(path)) }),
         ),
 
         makeDirectory: define(
             "makeDirectory",
             "Create a new directory on the server.",
             z.object({ path: z.string().describe("Absolute path of the directory to create.") }),
-            async ({ path }) => {
+            async (sftp, { path }) => {
                 await sftp.mkdir(path);
                 return { path, created: true };
             },
@@ -198,7 +199,7 @@ const buildTools = ({ sftp, canModify, requireConfirmation, requestApproval, log
             "deleteFile",
             "Delete a single file on the server.",
             z.object({ path: z.string().describe("Absolute path of the file to delete.") }),
-            async ({ path }) => {
+            async (sftp, { path }) => {
                 await sftp.unlink(path);
                 return { path, deleted: true };
             },
@@ -215,7 +216,7 @@ const buildTools = ({ sftp, canModify, requireConfirmation, requestApproval, log
                 path: z.string().describe("Absolute path of the directory to remove."),
                 recursive: z.boolean().optional().describe("Remove all contents recursively."),
             }),
-            async ({ path, recursive }) => {
+            async (sftp, { path, recursive }) => {
                 await sftp.rmdir(path, Boolean(recursive));
                 return { path, removed: true, recursive: Boolean(recursive) };
             },
@@ -235,7 +236,7 @@ const buildTools = ({ sftp, canModify, requireConfirmation, requestApproval, log
                 source: z.string().describe("Current absolute path."),
                 destination: z.string().describe("New absolute path."),
             }),
-            async ({ source, destination }) => {
+            async (sftp, { source, destination }) => {
                 await sftp.rename(source, destination);
                 return { source, destination, moved: true };
             },
@@ -255,7 +256,7 @@ const buildTools = ({ sftp, canModify, requireConfirmation, requestApproval, log
                 path: z.string().describe("Absolute path to modify."),
                 mode: z.string().describe("Octal permission mode, e.g. \"644\" or \"755\"."),
             }),
-            async ({ path, mode }) => {
+            async (sftp, { path, mode }) => {
                 const parsed = Number.parseInt(mode, 8);
                 if (Number.isNaN(parsed)) throw new Error(`Invalid octal mode: ${mode}`);
                 await sftp.chmod(path, parsed);
@@ -274,7 +275,7 @@ const buildTools = ({ sftp, canModify, requireConfirmation, requestApproval, log
                 query: z.string().describe("Partial path or name to search for."),
                 maxResults: z.number().int().positive().max(100).optional().describe("Maximum results to return."),
             }),
-            async ({ query, maxResults }) => ({ query, directories: await sftp.searchDirs(query, maxResults || 20) }),
+            async (sftp, { query, maxResults }) => ({ query, directories: await sftp.searchDirs(query, maxResults || 20, 120000) }),
         ),
     };
 };

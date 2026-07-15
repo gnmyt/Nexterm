@@ -10,19 +10,30 @@ const trimHistory = (messages) => {
     messages.splice(0, start);
 };
 
-const createAgent = async ({ model, providerOptions, system, sftp, canModify, requireConfirmation, requestApproval, logAudit, emit }) => {
+const createAgent = async ({ model, providerOptions, system, history, getSftp, canModify, requireConfirmation, requestApproval, logAudit, emit }) => {
     const { streamText, stepCountIs, tool } = await import("ai");
-    const tools = buildTools({ sftp, canModify, requireConfirmation, requestApproval, logAudit, tool });
-    const messages = [];
+    const tools = buildTools({ getSftp, canModify, requireConfirmation, requestApproval, logAudit, tool });
+    const messages = history || [];
 
     const runTurn = async (content, abortSignal) => {
         const turnMessages = [...messages, { role: "user", content }];
+        const stepMessages = [];
 
-        const result = streamText({ model, system, messages: turnMessages, tools, stopWhen: stepCountIs(MAX_STEPS), abortSignal, providerOptions });
+        const result = streamText({
+            model, system, messages: turnMessages, tools,
+            stopWhen: stepCountIs(MAX_STEPS), abortSignal, providerOptions,
+            onStepFinish: (step) => stepMessages.push(...step.response.messages),
+        });
+
+        const commit = (responseMessages) => {
+            if (!responseMessages.length) return;
+            messages.push({ role: "user", content }, ...responseMessages);
+            trimHistory(messages);
+        };
 
         try {
             for await (const part of result.fullStream) {
-                if (abortSignal?.aborted) return;
+                if (abortSignal?.aborted) break;
                 switch (part.type) {
                     case "text-delta":
                         emit({ type: "text-delta", delta: part.text });
@@ -41,15 +52,18 @@ const createAgent = async ({ model, providerOptions, system, sftp, canModify, re
                         break;
                 }
             }
+
+            if (!abortSignal?.aborted) {
+                commit(await result.responseMessages);
+                return;
+            }
         } catch (err) {
+            commit(stepMessages);
             if (abortSignal?.aborted) return;
             throw err;
         }
 
-        if (abortSignal?.aborted) return;
-
-        messages.push({ role: "user", content }, ...(await result.responseMessages));
-        trimHistory(messages);
+        commit(stepMessages);
     };
 
     return { runTurn };

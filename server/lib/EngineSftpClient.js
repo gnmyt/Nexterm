@@ -12,7 +12,9 @@ const logger = require("../utils/logger");
 
 const WRITE_CHUNK_SIZE = 262144;
 const REQUEST_TIMEOUT = 30000;
+const WRITE_END_TIMEOUT = 120000;
 const EXEC_TIMEOUT = 300000;
+const SEARCH_TIMEOUT_MARGIN = 35000;
 
 const MESSAGE_HANDLERS = {
     [SftpMsgType.Ok]: (_msg, rid, pending, self) => {
@@ -262,7 +264,7 @@ class EngineSftpClient extends EventEmitter {
         }
 
         this._buildAndSend(rid, SftpMsgType.WriteEnd, () => ({}));
-        return this._waitResponse(rid);
+        return this._waitResponse(rid, WRITE_END_TIMEOUT);
     }
 
     exec(command, timeoutMs = EXEC_TIMEOUT) {
@@ -270,8 +272,9 @@ class EngineSftpClient extends EventEmitter {
             const cmdOff = b.createString(command);
             ExecReq.startExecReq(b);
             ExecReq.addCommand(b, cmdOff);
+            ExecReq.addTimeoutMs(b, timeoutMs);
             return { execReq: ExecReq.endExecReq(b) };
-        }, timeoutMs);
+        }, timeoutMs + 15000);
     }
 
     thumbnail(path, size = 100) {
@@ -284,14 +287,15 @@ class EngineSftpClient extends EventEmitter {
         });
     }
 
-    searchDirs(searchPath, maxResults = 20) {
+    searchDirs(searchPath, maxResults = 20, timeoutMs = REQUEST_TIMEOUT) {
         return this._requestWithPayload(SftpMsgType.SearchDirs, (b) => {
             const spOff = b.createString(searchPath);
             SearchReq.startSearchReq(b);
             SearchReq.addSearchPath(b, spOff);
             SearchReq.addMaxResults(b, maxResults);
+            SearchReq.addTimeoutMs(b, timeoutMs);
             return { searchReq: SearchReq.endSearchReq(b) };
-        });
+        }, timeoutMs + SEARCH_TIMEOUT_MARGIN);
     }
 
     _nextId() {

@@ -21,6 +21,7 @@ extern nexterm_session_manager_t g_session_manager;
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <time.h>
 #include <unistd.h>
 
 #define SFTP_CHUNK_SIZE    1048576
@@ -129,10 +130,26 @@ static int send_file_end(int fd, uint32_t rid) {
     return sftp_finalize_and_send(&b, fd);
 }
 
+static void append_capped(char* dst, size_t cap, size_t* len,
+                          const char* src, size_t n) {
+    if (*len + 1 >= cap) return;
+    size_t remaining = cap - 1 - *len;
+    size_t copy = (n <= remaining) ? n : remaining;
+    memcpy(dst + *len, src, copy);
+    *len += copy;
+}
+
+static int64_t monotonic_ms(void) {
+    struct timespec ts;
+    clock_gettime(CLOCK_MONOTONIC, &ts);
+    return (int64_t)ts.tv_sec * 1000 + ts.tv_nsec / 1000000;
+}
+
 static int exec_command(LIBSSH2_SESSION* ssh, const char* cmd,
                         char* out, size_t out_sz,
                         char* err_buf, size_t err_sz,
-                        int* exit_code) {
+                        int* exit_code, uint32_t timeout_ms,
+                        bool* timed_out) {
     LIBSSH2_CHANNEL* ch = libssh2_channel_open_session(ssh);
     if (!ch) return -1;
 
@@ -141,12 +158,52 @@ static int exec_command(LIBSSH2_SESSION* ssh, const char* cmd,
         return -1;
     }
 
-    nexterm_ssh_read_stream(ch, out, out_sz, 0);
-    nexterm_ssh_read_stream(ch, err_buf, err_sz, 1);
+    const int64_t deadline = monotonic_ms() + (int64_t)timeout_ms;
+    size_t out_len = 0, err_len = 0;
+    char tmp[4096];
+    *timed_out = false;
 
+    libssh2_session_set_blocking(ssh, 0);
+
+    for (;;) {
+        bool got_data = false;
+        bool failed = false;
+
+        for (int stream = 0; stream <= 1 && !failed; stream++) {
+            for (;;) {
+                ssize_t n = stream
+                    ? libssh2_channel_read_stderr(ch, tmp, sizeof(tmp))
+                    : libssh2_channel_read(ch, tmp, sizeof(tmp));
+                if (n > 0) {
+                    got_data = true;
+                    if (stream)
+                        append_capped(err_buf, err_sz, &err_len, tmp, (size_t)n);
+                    else
+                        append_capped(out, out_sz, &out_len, tmp, (size_t)n);
+                    continue;
+                }
+                if (n < 0 && n != LIBSSH2_ERROR_EAGAIN && n != LIBSSH2_ERROR_TIMEOUT)
+                    failed = true;
+                break;
+            }
+        }
+
+        if (failed) break;
+        if (libssh2_channel_eof(ch)) break;
+        if (monotonic_ms() >= deadline) {
+            *timed_out = true;
+            break;
+        }
+        if (!got_data) usleep(100 * 1000);
+    }
+
+    out[out_len] = '\0';
+    err_buf[err_len] = '\0';
+
+    libssh2_session_set_blocking(ssh, 1);
     libssh2_channel_close(ch);
-    libssh2_channel_wait_closed(ch);
-    *exit_code = libssh2_channel_get_exit_status(ch);
+    if (!*timed_out) libssh2_channel_wait_closed(ch);
+    *exit_code = *timed_out ? 124 : libssh2_channel_get_exit_status(ch);
     libssh2_channel_free(ch);
     return 0;
 }
@@ -194,6 +251,8 @@ typedef struct {
     char paths[SFTP_SEARCH_MAX][SFTP_MAX_PATH];
     int count;
     int max_results;
+    int64_t deadline;
+    bool timed_out;
 } search_ctx_t;
 
 static bool search_name_matches(const char* name, const char* search_term) {
@@ -219,9 +278,14 @@ static void search_list_level(LIBSSH2_SFTP* sftp, const char* base,
     LIBSSH2_SFTP_ATTRIBUTES attrs;
     char fullpath[SFTP_MAX_PATH];
 
-    while (ctx->count < ctx->max_results &&
-           libssh2_sftp_readdir_ex(dir, name, sizeof(name),
-                                    longentry, sizeof(longentry), &attrs) > 0) {
+    while (ctx->count < ctx->max_results) {
+        if (monotonic_ms() >= ctx->deadline) {
+            ctx->timed_out = true;
+            break;
+        }
+        if (libssh2_sftp_readdir_ex(dir, name, sizeof(name),
+                                    longentry, sizeof(longentry), &attrs) <= 0)
+            break;
         if (strcmp(name, ".") == 0 || strcmp(name, "..") == 0) continue;
         if (longentry[0] != 'd') continue;
         if (!inside && !search_name_matches(name, search_term)) continue;
@@ -321,7 +385,8 @@ static void stat_get_owner_group(LIBSSH2_SESSION* ssh, const char* path,
     char out[256];
     char err[256];
     int ec;
-    if (exec_command(ssh, cmd, out, sizeof(out), err, sizeof(err), &ec) != 0)
+    bool timed_out = false;
+    if (exec_command(ssh, cmd, out, sizeof(out), err, sizeof(err), &ec, 30000, &timed_out) != 0)
         return;
 
     size_t len = strlen(out);
@@ -585,7 +650,7 @@ static void handle_thumbnail(LIBSSH2_SFTP* sftp, int fd, uint32_t rid,
 }
 
 static void handle_exec(LIBSSH2_SESSION* ssh, int fd, uint32_t rid,
-                        const char* command) {
+                        const char* command, uint32_t timeout_ms) {
     char* out = malloc(SFTP_EXEC_BUF);
     char* err_buf = malloc(SFTP_EXEC_BUF);
     if (!out || !err_buf) {
@@ -596,12 +661,21 @@ static void handle_exec(LIBSSH2_SESSION* ssh, int fd, uint32_t rid,
     }
 
     int exit_code = -1;
+    bool timed_out = false;
     if (exec_command(ssh, command, out, SFTP_EXEC_BUF,
-                     err_buf, SFTP_EXEC_BUF, &exit_code) != 0) {
+                     err_buf, SFTP_EXEC_BUF, &exit_code, timeout_ms, &timed_out) != 0) {
         free(out);
         free(err_buf);
         send_error(fd, rid, "Failed to execute command", -1);
         return;
+    }
+
+    if (timed_out) {
+        LOG_WARN("SFTP: exec timed out after %u ms", timeout_ms);
+        size_t el = strlen(err_buf);
+        snprintf(err_buf + el, SFTP_EXEC_BUF - el,
+                 "%s[command timed out after %u seconds]",
+                 el ? "\n" : "", timeout_ms / 1000);
     }
 
     flatcc_builder_t b;
@@ -661,7 +735,8 @@ static void parse_search_path(const char* search_path,
 }
 
 static void handle_search_dirs(LIBSSH2_SFTP* sftp, int fd, uint32_t rid,
-                               const char* search_path, uint32_t max_results) {
+                               const char* search_path, uint32_t max_results,
+                               uint32_t timeout_ms) {
     if (max_results == 0 || max_results > SFTP_SEARCH_MAX)
         max_results = SFTP_SEARCH_MAX;
 
@@ -674,9 +749,14 @@ static void handle_search_dirs(LIBSSH2_SFTP* sftp, int fd, uint32_t rid,
     search_ctx_t ctx;
     memset(&ctx, 0, sizeof(ctx));
     ctx.max_results = (int)max_results;
+    ctx.deadline = monotonic_ms() + (int64_t)timeout_ms;
 
     const char* bp = base_path[0] ? base_path : "/";
     search_list_level(sftp, bp, search_term, inside, &ctx);
+
+    if (ctx.timed_out)
+        LOG_WARN("SFTP: search timed out after %u ms, returning %d partial result(s)",
+                 timeout_ms, ctx.count);
 
     flatcc_builder_t b;
     flatcc_builder_init(&b);
@@ -874,8 +954,10 @@ static void dispatch_exec(LIBSSH2_SESSION* ssh, int data_fd, uint32_t rid,
                            Nexterm_SftpProtocol_SftpMessage_table_t msg) {
     Nexterm_SftpProtocol_ExecReq_table_t req = Nexterm_SftpProtocol_SftpMessage_exec_req(msg);
     const char* command = req ? Nexterm_SftpProtocol_ExecReq_command(req) : NULL;
+    uint32_t timeout_ms = req ? Nexterm_SftpProtocol_ExecReq_timeout_ms(req) : 0;
     if (!command) { send_error(data_fd, rid, "Missing command", -1); return; }
-    handle_exec(ssh, data_fd, rid, command);
+    if (timeout_ms == 0) timeout_ms = 300000;
+    handle_exec(ssh, data_fd, rid, command, timeout_ms);
 }
 
 static void dispatch_search(LIBSSH2_SFTP* sftp, int data_fd, uint32_t rid,
@@ -883,8 +965,10 @@ static void dispatch_search(LIBSSH2_SFTP* sftp, int data_fd, uint32_t rid,
     Nexterm_SftpProtocol_SearchReq_table_t req = Nexterm_SftpProtocol_SftpMessage_search_req(msg);
     const char* sp = req ? Nexterm_SftpProtocol_SearchReq_search_path(req) : NULL;
     uint32_t max = req ? Nexterm_SftpProtocol_SearchReq_max_results(req) : SFTP_SEARCH_MAX;
+    uint32_t timeout_ms = req ? Nexterm_SftpProtocol_SearchReq_timeout_ms(req) : 0;
     if (!sp) { send_error(data_fd, rid, "Missing search path", -1); return; }
-    handle_search_dirs(sftp, data_fd, rid, sp, max);
+    if (timeout_ms == 0) timeout_ms = 30000;
+    handle_search_dirs(sftp, data_fd, rid, sp, max, timeout_ms);
 }
 
 static void dispatch_thumbnail(LIBSSH2_SFTP* sftp, int data_fd, uint32_t rid,

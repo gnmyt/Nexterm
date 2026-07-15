@@ -187,8 +187,13 @@ const getAuxiliarySFTPClient = async (sessionId, entry, accountId, opts) => {
         const { host, port, params } = await resolveSSHContext(entry, identityId, directIdentity, accountId);
         const jumpHosts = await resolveJumpHosts(entry);
 
+        conn._auxGeneration = (conn._auxGeneration || 0) + 1;
+        const engineSessionId = `${sessionId}-${suffix}-${conn._auxGeneration}`;
+        if (!conn.auxSessionIds) conn.auxSessionIds = new Set();
+        conn.auxSessionIds.add(engineSessionId);
+
         const dataSocket = await openEngineSession(
-            `${sessionId}-${suffix}`, SessionType.SFTP, host, port, params, jumpHosts, entry.config?.engineId
+            engineSessionId, SessionType.SFTP, host, port, params, jumpHosts, entry.config?.engineId
         );
 
         const client = new EngineSftpClient(dataSocket);

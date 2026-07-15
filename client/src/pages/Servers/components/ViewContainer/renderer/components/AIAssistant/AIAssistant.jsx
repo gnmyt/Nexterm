@@ -171,57 +171,81 @@ export const AIAssistant = ({ session, onClose }) => {
         if (!sessionToken) return;
 
         let closedByUs = false;
+        let retryTimer = null;
+        let attempts = 0;
         setConnectionError(null);
 
-        const ws = new WebSocket(getWebSocketUrl("/api/ws/ai", { sessionToken, sessionId: session.id }));
-        wsRef.current = ws;
+        const connect = () => {
+            const ws = new WebSocket(getWebSocketUrl("/api/ws/ai", { sessionToken, sessionId: session.id }));
+            wsRef.current = ws;
 
-        ws.onmessage = (event) => {
-            const msg = JSON.parse(event.data);
-            switch (msg.type) {
-                case "ready": setReady(true); setConnectionError(null); break;
-                case "text-delta": appendAssistant(msg.delta); break;
-                case "tool-call":
-                    stopStreaming();
-                    upsertTool(msg.callId, {}, { tool: msg.tool, args: msg.args, status: "running" });
-                    break;
-                case "confirm-request":
-                    upsertTool(msg.callId, { status: "awaiting-confirm", tool: msg.tool, args: msg.args },
-                        { tool: msg.tool, args: msg.args, status: "awaiting-confirm" });
-                    break;
-                case "tool-result":
-                    upsertTool(msg.callId, { status: msg.result?.denied ? "denied" : "done", result: msg.result });
-                    break;
-                case "tool-error":
-                    upsertTool(msg.callId, { status: "error", error: msg.error });
-                    break;
-                case "done": stopStreaming(); setRunning(false); break;
-                case "aborted": stopStreaming(); finalizeRunningTools(); setRunning(false); break;
-                case "error":
-                    stopStreaming(); setRunning(false);
-                    setMessages((prev) => [...prev, { role: "system", text: msg.message }]);
-                    break;
-                default: break;
-            }
+            ws.onmessage = (event) => {
+                const msg = JSON.parse(event.data);
+                switch (msg.type) {
+                    case "ready": setReady(true); setConnectionError(null); attempts = 0; break;
+                    case "text-delta": appendAssistant(msg.delta); break;
+                    case "tool-call":
+                        stopStreaming();
+                        upsertTool(msg.callId, {}, { tool: msg.tool, args: msg.args, status: "running" });
+                        break;
+                    case "confirm-request":
+                        upsertTool(msg.callId, { status: "awaiting-confirm", tool: msg.tool, args: msg.args },
+                            { tool: msg.tool, args: msg.args, status: "awaiting-confirm" });
+                        break;
+                    case "tool-result":
+                        upsertTool(msg.callId, { status: msg.result?.denied ? "denied" : "done", result: msg.result });
+                        break;
+                    case "tool-error":
+                        upsertTool(msg.callId, { status: "error", error: msg.error });
+                        break;
+                    case "done": stopStreaming(); setRunning(false); break;
+                    case "aborted": stopStreaming(); finalizeRunningTools(); setRunning(false); break;
+                    case "error":
+                        stopStreaming(); setRunning(false);
+                        setMessages((prev) => [...prev, { role: "system", text: msg.message }]);
+                        break;
+                    default: break;
+                }
+            };
+
+            ws.onclose = (event) => {
+                if (closedByUs) return;
+                setReady(false);
+                setRunning(false);
+                stopStreaming();
+                finalizeRunningTools();
+
+                if (event.code >= 4000) {
+                    setConnectionError(event.reason || t("servers.aiAssistant.connectionError"));
+                    return;
+                }
+                if (event.code === 1000 || event.code === 1005) return;
+
+                attempts += 1;
+                if (attempts <= 5) {
+                    setConnectionError(t("servers.aiAssistant.reconnecting"));
+                    retryTimer = setTimeout(connect, Math.min(1000 * 2 ** attempts, 10000));
+                } else {
+                    setConnectionError(t("servers.aiAssistant.connectionError"));
+                }
+            };
+            ws.onerror = () => {
+                if (!closedByUs) setReady(false);
+            };
         };
 
-        ws.onclose = (event) => {
-            if (closedByUs) return;
-            setReady(false);
-            setRunning(false);
-            if (event.code >= 4000 && event.reason) setConnectionError(event.reason);
-            else if (event.code !== 1000 && event.code !== 1005) setConnectionError(t("servers.aiAssistant.connectionError"));
-        };
-        ws.onerror = () => {
-            if (!closedByUs) setReady(false);
-        };
+        connect();
 
         return () => {
             closedByUs = true;
-            ws.onmessage = null;
-            ws.onclose = null;
-            ws.onerror = null;
-            ws.close();
+            clearTimeout(retryTimer);
+            const ws = wsRef.current;
+            if (ws) {
+                ws.onmessage = null;
+                ws.onclose = null;
+                ws.onerror = null;
+                ws.close();
+            }
         };
     }, [sessionToken, session.id]);
 
