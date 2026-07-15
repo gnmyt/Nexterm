@@ -1501,8 +1501,12 @@
       "vncServer": "VNC Server",
       "createServer": "Create Server",
       "import": "Import",
-      "pve": "PVE",
+      "pve": "Proxmox VE",
       "sshConfig": "SSH-Config",
+      "syncIntegration": "Sync now",
+      "syncSuccess": "Integration synced",
+      "syncFailed": "Failed to sync integration",
+      "removeIntegration": "Remove Integration",
       "connect": "Connect",
       "quickConnect": "Quick Connect",
       "openSFTP": "Open SFTP",
@@ -1516,8 +1520,6 @@
       "pasteIdentityPassword": "Paste Password",
       "deleteServer": "Delete Server",
       "wakeOnLan": "Wake-On-LAN",
-      "editPVE": "Edit PVE",
-      "deletePVE": "Delete PVE",
       "shutdown": "Shutdown",
       "stop": "Stop",
       "start": "Start"
@@ -1572,8 +1574,6 @@
         "username": "Username",
         "password": "Password",
         "host": "Host",
-        "nodeName": "Node Name",
-        "vmid": "VM ID",
         "macAddress": "MAC Address",
         "engine": "Engine"
       },
@@ -1584,8 +1584,6 @@
         "username": "Username",
         "password": "Password",
         "host": "Host",
-        "nodeName": "Node name",
-        "vmid": "VM ID",
         "macAddress": "AA:BB:CC:DD:EE:FF"
       },
       "engineOffline": "(offline)",
@@ -1672,7 +1670,7 @@
     },
     "proxmoxDialog": {
       "title": {
-        "import": "Import Proxmox VE",
+        "import": "Add Proxmox VE",
         "edit": "Edit Proxmox VE"
       },
       "fields": {
@@ -1694,8 +1692,8 @@
         "specificNode": "Specific node name"
       },
       "actions": {
-        "import": "Import",
-        "edit": "Edit"
+        "import": "Add",
+        "edit": "Save"
       },
       "messages": {
         "created": "Proxmox integration created successfully",

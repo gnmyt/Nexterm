@@ -18,7 +18,7 @@ module.exports.createServerValidation = Joi.object({
     folderId: Joi.number().allow(null).optional(),
     organizationId: Joi.number().allow(null).optional(),
     icon: Joi.string().optional(),
-    type: Joi.string().valid("server", "pve-shell", "pve-lxc", "pve-qemu").optional().default("server"),
+    type: Joi.string().valid("server").optional().default("server"),
     renderer: Joi.string().optional(),
     identities: Joi.array().items(Joi.number()).optional(),
     config: configValidation.required()
