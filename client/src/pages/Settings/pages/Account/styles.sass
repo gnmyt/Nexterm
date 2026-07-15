@@ -101,12 +101,12 @@
         text-decoration: underline
         margin-left: 0.25rem
 
-  .passkeys-list
+  .settings-list
     display: flex
     flex-direction: column
     gap: 0.75rem
 
-    .passkey-item
+    .settings-list-item
       background-color: colors.$lighter-background
       border: 1px solid colors.$dark-gray
       border-radius: 0.5rem
@@ -114,6 +114,7 @@
       display: flex
       justify-content: space-between
       align-items: center
+      gap: 1rem
 
       @media (max-width: breakpoints.$mobile)
         flex-direction: column
@@ -123,15 +124,15 @@
       &:hover
         border-color: colors.$gray
 
-      .passkey-info
+      .item-info
         display: flex
         align-items: center
         gap: 0.75rem
-        .passkey-icon
+        .item-icon
           width: 1.25rem
           height: 1.25rem
           color: colors.$primary
-        .passkey-details
+        .item-details
           h3
             margin: 0
             font-size: 0.9rem
@@ -144,12 +145,20 @@
             font-size: 0.9rem
             padding: 0.25rem 0.5rem
             outline: none
-          .passkey-date
+          .item-meta
             margin: 0.25rem 0 0 0
             color: colors.$subtext
             font-size: 0.8rem
+          .api-key-meta
+            display: flex
+            flex-wrap: wrap
+            gap: 0.75rem
+            align-items: center
+            code
+              font-family: monospace
+              color: colors.$white
 
-      .passkey-actions
+      .item-actions
         display: flex
         gap: 0.375rem
 
@@ -174,7 +183,7 @@
             background-color: colors.$error-opacity
             color: colors.$error
 
-    .no-passkeys
+    .list-empty
       padding: 1.5rem
       text-align: center
       color: colors.$subtext
