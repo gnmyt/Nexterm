@@ -689,6 +689,34 @@
         "noPasskeys": "尚无密钥注册",
         "rename": "重命名",
         "delete": "删除"
+      },
+      "apiKeys": {
+        "sectionTitle": "API Keys",
+        "sectionDescription": "Create API keys to access Nexterm programmatically from scripts and integrations.",
+        "addButton": "Create API Key",
+        "createTitle": "Create API Key",
+        "createDescription": "Give your key a name. The token will be shown only once after creation.",
+        "nameLabel": "Name",
+        "namePlaceholder": "e.g. Deployment script",
+        "nameRequired": "Name is required",
+        "expiryLabel": "Expiration",
+        "expiryNever": "Never",
+        "expiry30": "30 days",
+        "expiry90": "90 days",
+        "expiry365": "1 year",
+        "createButton": "Create",
+        "createdTitle": "API Key Created",
+        "createdWarning": "Copy this token now. For security reasons you won't be able to see it again.",
+        "tokenLabel": "Token",
+        "doneButton": "Done",
+        "createError": "Failed to create API key.",
+        "copyError": "Failed to copy to clipboard.",
+        "confirmDelete": "Are you sure you want to revoke this API key? Any agent using it will lose access.",
+        "noKeys": "No API keys yet",
+        "lastUsed": "Last used {{date}}",
+        "neverUsed": "Never used",
+        "expires": "Expires {{date}}",
+        "delete": "Delete"
       }
     },
     "passwordChange": {
@@ -1501,8 +1529,12 @@
       "vncServer": "VNC 服务器",
       "createServer": "创建服务器",
       "import": "导入",
-      "pve": "PVE",
+      "pve": "Proxmox VE",
       "sshConfig": "SSH 配置",
+      "syncIntegration": "Sync now",
+      "syncSuccess": "Integration synced",
+      "syncFailed": "Failed to sync integration",
+      "removeIntegration": "Remove Integration",
       "connect": "连接",
       "quickConnect": "快速连接",
       "openSFTP": "打开 SFTP",
@@ -1516,8 +1548,6 @@
       "pasteIdentityPassword": "粘贴密码",
       "deleteServer": "删除服务器",
       "wakeOnLan": "网络唤醒",
-      "editPVE": "编辑 PVE",
-      "deletePVE": "删除 PVE",
       "shutdown": "关机",
       "stop": "停止",
       "start": "启动"
@@ -1572,8 +1602,6 @@
         "username": "用户名",
         "password": "密码",
         "host": "主机",
-        "nodeName": "节点名称",
-        "vmid": "虚拟机 ID",
         "macAddress": "MAC 地址",
         "engine": "发动机"
       },
@@ -1584,8 +1612,6 @@
         "username": "用户名",
         "password": "密码",
         "host": "主机",
-        "nodeName": "节点名称",
-        "vmid": "虚拟机 ID",
         "macAddress": "aa:bb:cc:dd:ee:ff"
       },
       "engineOffline": "（离线）",
@@ -1672,7 +1698,7 @@
     },
     "proxmoxDialog": {
       "title": {
-        "import": "导入 Proxmox VE",
+        "import": "Add Proxmox VE",
         "edit": "编辑 Proxmox VE"
       },
       "fields": {
@@ -1694,8 +1720,8 @@
         "specificNode": "特定节点名称"
       },
       "actions": {
-        "import": "导入",
-        "edit": "编辑"
+        "import": "Add",
+        "edit": "Save"
       },
       "messages": {
         "created": "成功创建 Proxmox 集成",
