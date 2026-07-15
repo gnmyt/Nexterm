@@ -2768,14 +2768,7 @@ https-proxy-agent@^7.0.1:
     agent-base "^7.1.2"
     debug "4"
 
-iconv-lite@^0.7.0, iconv-lite@~0.7.0:
-  version "0.7.1"
-  resolved "https://registry.yarnpkg.com/iconv-lite/-/iconv-lite-0.7.1.tgz#d4af1d2092f2bb05aab6296e5e7cd286d2f15432"
-  integrity sha512-2Tth85cXwGFHfvRgZWszZSvdo+0Xsqmw8k8ZwxScfcBneNUraK+dxRxRm24nszx80Y0TVio8kKLt5sLE7ZCLlw==
-  dependencies:
-    safer-buffer ">= 2.1.2 < 3.0.0"
-
-iconv-lite@^0.7.2:
+iconv-lite@^0.7.0, iconv-lite@^0.7.2, iconv-lite@~0.7.0:
   version "0.7.2"
   resolved "https://registry.yarnpkg.com/iconv-lite/-/iconv-lite-0.7.2.tgz#d0bdeac3f12b4835b7359c2ad89c422a4d1cc72e"
   integrity sha512-im9DjEDQ55s9fL4EYzOAv0yMqmMBSZp6G0VvFyTMPKWxiSBHUj9NW/qqLmXUwXrrM7AvqSlTCfvqRb0cM8yYqw==
@@ -3312,10 +3305,10 @@ mute-stream@^3.0.0:
   resolved "https://registry.yarnpkg.com/mute-stream/-/mute-stream-3.0.0.tgz#cd8014dd2acb72e1e91bb67c74f0019e620ba2d1"
   integrity sha512-dkEJPVvun4FryqBmZ5KhDo0K9iDXAwn08tMLDinNdRBNPcYEDiWYysLcc6k3mjTMlbP9KyylvRpd4wFtwrT9rw==
 
-mysql2@^3.17.4:
-  version "3.22.6"
-  resolved "https://registry.yarnpkg.com/mysql2/-/mysql2-3.22.6.tgz#9c9bfd1903d1c63dff888afcb6848ed945e13bf3"
-  integrity sha512-fPKmeDGUzvFP7bMD5SASlJ5zIgvCC4hbanTmhbUlEmhyrY1hR4Hi3xLOWgTd3luYjLVifx6uGvMNJ2m/LlqEpg==
+mysql2@^3.23.0:
+  version "3.23.0"
+  resolved "https://registry.yarnpkg.com/mysql2/-/mysql2-3.23.0.tgz#cf606d217ebd2771a29e1e8677e3f0b5ad5afe6d"
+  integrity sha512-ZwyGLoG9BRlL7hKNDcIy7q18hA6WTWGEpLAerGHXj5Xahemia4msZdwjIOUIzesjK3B5z5gWLktf+2tYSLAyTA==
   dependencies:
     aws-ssl-profiles "^1.1.2"
     denque "^2.1.0"
@@ -3324,7 +3317,7 @@ mysql2@^3.17.4:
     long "^5.3.2"
     lru.min "^1.1.4"
     named-placeholders "^1.1.6"
-    sql-escaper "^1.4.0"
+    sql-escaper "^1.5.1"
 
 named-placeholders@^1.1.6:
   version "1.1.6"
@@ -4160,7 +4153,7 @@ speakingurl@^14.0.1:
   resolved "https://registry.yarnpkg.com/speakingurl/-/speakingurl-14.0.1.tgz#f37ec8ddc4ab98e9600c1c9ec324a8c48d772a53"
   integrity sha512-1POYv7uv2gXoyGFpBCmpDVSNV74IfsWlDW216UPjbWufNf+bSU6GdbDsxdcxtfwb4xlI3yxzOTKClUosxARYrQ==
 
-sql-escaper@^1.4.0:
+sql-escaper@^1.5.1:
   version "1.5.1"
   resolved "https://registry.yarnpkg.com/sql-escaper/-/sql-escaper-1.5.1.tgz#fbaee511294d1f7da92fb68ca1faee2255839c7b"
   integrity sha512-4toX5E1fQbBrpfXidaHnF0669nkAdETeIPTs2SUjxxD7RRIs9ICG4gtpmfc68JCEKehsdwLFqBu9VlQqZ1P1gg==
