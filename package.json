@@ -12,7 +12,7 @@
     "node": ">=22"
   },
   "dependencies": {
-    "@ai-sdk/anthropic": "^4.0.12",
+    "@ai-sdk/anthropic": "^4.0.15",
     "@ai-sdk/openai": "^4.0.14",
     "@ai-sdk/openai-compatible": "^3.0.7",
     "@inquirer/password": "^5.1.1",
