@@ -689,6 +689,34 @@
         "noPasskeys": "Nenhuma chave de acesso registrada ainda",
         "rename": "Renomear",
         "delete": "Excluir"
+      },
+      "apiKeys": {
+        "sectionTitle": "API Keys",
+        "sectionDescription": "Create API keys to access Nexterm programmatically from scripts and integrations.",
+        "addButton": "Create API Key",
+        "createTitle": "Create API Key",
+        "createDescription": "Give your key a name. The token will be shown only once after creation.",
+        "nameLabel": "Name",
+        "namePlaceholder": "e.g. Deployment script",
+        "nameRequired": "Name is required",
+        "expiryLabel": "Expiration",
+        "expiryNever": "Never",
+        "expiry30": "30 days",
+        "expiry90": "90 days",
+        "expiry365": "1 year",
+        "createButton": "Create",
+        "createdTitle": "API Key Created",
+        "createdWarning": "Copy this token now. For security reasons you won't be able to see it again.",
+        "tokenLabel": "Token",
+        "doneButton": "Done",
+        "createError": "Failed to create API key.",
+        "copyError": "Failed to copy to clipboard.",
+        "confirmDelete": "Are you sure you want to revoke this API key? Any agent using it will lose access.",
+        "noKeys": "No API keys yet",
+        "lastUsed": "Last used {{date}}",
+        "neverUsed": "Never used",
+        "expires": "Expires {{date}}",
+        "delete": "Delete"
       }
     },
     "passwordChange": {
@@ -1501,8 +1529,12 @@
       "vncServer": "Servidor VNC",
       "createServer": "Criar Servidor",
       "import": "Importar",
-      "pve": "PVE",
+      "pve": "Proxmox VE",
       "sshConfig": "Configuração de SSH",
+      "syncIntegration": "Sync now",
+      "syncSuccess": "Integration synced",
+      "syncFailed": "Failed to sync integration",
+      "removeIntegration": "Remove Integration",
       "connect": "Conectar",
       "quickConnect": "Conexão Rápida",
       "openSFTP": "Abrir SFTP",
@@ -1516,8 +1548,6 @@
       "pasteIdentityPassword": "Colar Senha",
       "deleteServer": "Excluir Servidor",
       "wakeOnLan": "Wake-On-LAN",
-      "editPVE": "Editar PVE",
-      "deletePVE": "Excluir PVE",
       "shutdown": "Desligar",
       "stop": "Parar",
       "start": "Iniciar"
@@ -1572,8 +1602,6 @@
         "username": "Nome de Usuário",
         "password": "Senha",
         "host": "Anfitrião",
-        "nodeName": "Nome do Node",
-        "vmid": "ID da VM",
         "macAddress": "Endereço MAC",
         "engine": "Motor"
       },
@@ -1584,8 +1612,6 @@
         "username": "Nome de usuário",
         "password": "Senha",
         "host": "Anfitrião",
-        "nodeName": "Nome do node",
-        "vmid": "ID da VM",
         "macAddress": "AA:BB:CC:DD:EE:FF"
       },
       "engineOffline": "(off-line)",
@@ -1672,7 +1698,7 @@
     },
     "proxmoxDialog": {
       "title": {
-        "import": "Importar Proxmox VE",
+        "import": "Add Proxmox VE",
         "edit": "Editar Proxmox VE"
       },
       "fields": {
@@ -1694,8 +1720,8 @@
         "specificNode": "Nome específico do node"
       },
       "actions": {
-        "import": "Importar",
-        "edit": "Editar"
+        "import": "Add",
+        "edit": "Save"
       },
       "messages": {
         "created": "Integração Proxmox criada com sucesso",
