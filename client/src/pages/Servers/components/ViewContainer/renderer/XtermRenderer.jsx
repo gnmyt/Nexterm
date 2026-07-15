@@ -2,7 +2,7 @@ import { useEffect, useRef, useState, useContext } from "react";
 import { UserContext } from "@/common/contexts/UserContext.jsx";
 import { IdentityContext } from "@/common/contexts/IdentityContext.jsx";
 import { AIContext } from "@/common/contexts/AIContext.jsx";
-import { useKeymaps, matchesKeybind } from "@/common/contexts/KeymapContext.jsx";
+import { useKeymaps, matchesKeybind, isMac } from "@/common/contexts/KeymapContext.jsx";
 import { Terminal as Xterm } from "@xterm/xterm";
 import { usePreferences } from "@/common/contexts/PreferencesContext.jsx";
 import { FitAddon } from "@xterm/addon-fit";
@@ -30,10 +30,11 @@ const XtermRenderer = ({ session, disconnectFromServer, markSessionErrored, getS
     const onFullscreenToggleRef = useRef(onFullscreenToggle);
     const connectionLoaderRef = useRef(null);
     const canPasteIdentityRef = useRef(false);
+    const smartCopyPasteRef = useRef(false);
 
     const userContext = useContext(UserContext);
     const sessionToken = userContext?.sessionToken;
-    const { theme, getCurrentTheme, selectedFont, fontSize, cursorStyle, cursorBlink, selectedTheme } = usePreferences();
+    const { theme, getCurrentTheme, selectedFont, fontSize, cursorStyle, cursorBlink, selectedTheme, smartCopyPaste } = usePreferences();
 
     const effectiveFont = (isShared && session.fontFamily) ? session.fontFamily : selectedFont;
     const effectiveFontSize = (isShared && session.fontSize) ? session.fontSize : fontSize;
@@ -54,6 +55,10 @@ const XtermRenderer = ({ session, disconnectFromServer, markSessionErrored, getS
     useEffect(() => {
         broadcastModeRef.current = broadcastMode;
     }, [broadcastMode]);
+
+    useEffect(() => {
+        smartCopyPasteRef.current = smartCopyPaste;
+    }, [smartCopyPaste]);
 
     useEffect(() => {
         layoutModeRef.current = layoutMode;
@@ -343,6 +348,18 @@ const XtermRenderer = ({ session, disconnectFromServer, markSessionErrored, getS
                         event.preventDefault();
                         event.stopPropagation();
                         copyToClipboard(selection);
+                        return false;
+                    }
+                }
+
+                if (smartCopyPasteRef.current && !isMac() && event.key.toLowerCase() === "c"
+                    && event.ctrlKey && !event.shiftKey && !event.altKey && !event.metaKey) {
+                    const selection = term.getSelection();
+                    if (selection) {
+                        event.preventDefault();
+                        event.stopPropagation();
+                        copyToClipboard(selection);
+                        term.clearSelection();
                         return false;
                     }
                 }
