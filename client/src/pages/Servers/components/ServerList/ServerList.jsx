@@ -29,6 +29,7 @@ import {
     mdiMonitor,
     mdiDesktopClassic,
     mdiCog,
+    mdiSync,
     mdiPlay,
     mdiScript,
     mdiTunnel,
@@ -36,7 +37,7 @@ import {
 } from "@mdi/js";
 import { ContextMenu, ContextMenuItem, ContextMenuSeparator, useContextMenu } from "@/common/components/ContextMenu";
 import { useDrop, useDragLayer } from "react-dnd";
-import { deleteRequest, getRequest, patchRequest, postRequest, putRequest } from "@/common/utils/RequestUtil.js";
+import { deleteRequest, patchRequest, postRequest, putRequest } from "@/common/utils/RequestUtil.js";
 import TagFilterMenu from "./components/ServerSearch/components/TagFilterMenu";
 import ProxmoxLogo from "./assets/proxmox.jsx";
 import TagsSubmenu from "./components/TagsSubmenu";
@@ -161,6 +162,22 @@ export const ServerList = ({
     const server = contextClickedId ? (contextClickedType === "server-object" || contextClickedType?.startsWith("pve-")) ? getServerById(contextClickedId) : null : null;
     const isOrgFolder = contextClickedId && contextClickedId.toString().startsWith("org-");
 
+    const findFolderById = (entries, id) => {
+        for (const entry of entries || []) {
+            if (entry.type === "folder" && String(entry.id) === String(id)) return entry;
+            if (entry.entries) {
+                const found = findFolderById(entry.entries, id);
+                if (found) return found;
+            }
+        }
+        return null;
+    };
+
+    const contextFolder = (contextClickedType === "folder-object" && contextClickedId && !isOrgFolder)
+        ? findFolderById(servers, contextClickedId) : null;
+    const isIntegrationRoot = contextFolder?.folderType === "integration-root";
+    const isIntegrationManaged = isIntegrationRoot || contextFolder?.folderType === "integration-node";
+
     const findOrganizationForServer = (serverIdNum, entries, currentOrg = null) => {
         for (const entry of entries) {
             if ((entry.type === "server" || entry.type?.startsWith("pve-")) && entry.id === serverIdNum) {
@@ -216,6 +233,7 @@ export const ServerList = ({
 
     const [{ isOver }, dropRef] = useDrop({
         accept: ["server", "folder"],
+        canDrop: (item) => !item.isIntegrationEntry,
         drop: async (item, monitor) => {
             const didDrop = monitor.didDrop();
             if (didDrop) return;
@@ -241,7 +259,7 @@ export const ServerList = ({
             }
         },
         collect: (monitor) => ({
-            isOver: monitor.isOver({ shallow: true }),
+            isOver: monitor.isOver({ shallow: true }) && monitor.canDrop(),
         }),
     });
 
@@ -337,8 +355,30 @@ export const ServerList = ({
             .then(loadServers);
     };
 
-    const deletePVEServer = () => {
-        deleteRequest("integrations/" + contextClickedId.split("-")[1]).then(loadServers);
+    const syncIntegrationNow = () => {
+        const integrationId = contextFolder?.integrationId;
+        if (!integrationId) return;
+        postRequest(`integrations/${integrationId}/sync`).then((response) => {
+            if (response?.code) {
+                sendToast("Error", response.message);
+            } else {
+                sendToast("Success", t("servers.contextMenu.syncSuccess"));
+            }
+            loadServers();
+        }).catch(() => sendToast("Error", t("servers.contextMenu.syncFailed")));
+    };
+
+    const editIntegrationFolder = () => {
+        const integrationId = contextFolder?.integrationId;
+        if (!integrationId) return;
+        setEditServerId(integrationId);
+        setProxmoxDialogOpen();
+    };
+
+    const removeIntegration = () => {
+        const integrationId = contextFolder?.integrationId;
+        if (!integrationId) return;
+        deleteRequest(`integrations/${integrationId}`).then(loadServers);
     };
 
     const duplicateServer = async () => {
@@ -510,7 +550,7 @@ export const ServerList = ({
                     >
                         {contextClickedType !== "server-object" && (
                             <>
-                                {canManageResources && (contextClickedType === null || contextClickedType === "folder-object" || isOrgFolder) && (
+                                {canManageResources && !isIntegrationManaged && (contextClickedType === null || contextClickedType === "folder-object" || isOrgFolder) && (
                                     <ContextMenuItem
                                         icon={mdiPlusCircle}
                                         label={t("servers.contextMenu.new")}
@@ -535,18 +575,19 @@ export const ServerList = ({
                                             label={t("servers.contextMenu.vncServer")}
                                             onClick={() => createServer("vnc")}
                                         />
-                                    </ContextMenuItem>
-                                )}
-                                {canManageResources && contextClickedType === "folder-object" && !isOrgFolder && (
-                                    <ContextMenuItem
-                                        icon={mdiImport}
-                                        label={t("servers.contextMenu.import")}
-                                    >
+                                        <ContextMenuSeparator />
                                         <ContextMenuItem
                                             icon={<ProxmoxLogo />}
                                             label={t("servers.contextMenu.pve")}
                                             onClick={createPVEServer}
                                         />
+                                    </ContextMenuItem>
+                                )}
+                                {canManageResources && contextClickedType === "folder-object" && !isOrgFolder && !isIntegrationManaged && (
+                                    <ContextMenuItem
+                                        icon={mdiImport}
+                                        label={t("servers.contextMenu.import")}
+                                    >
                                         <ContextMenuItem
                                             icon={mdiFileDocumentOutline}
                                             label={t("servers.contextMenu.sshConfig")}
@@ -557,7 +598,33 @@ export const ServerList = ({
                             </>
                         )}
 
-                        {contextClickedType === "folder-object" && !isOrgFolder && (
+                        {contextClickedType === "folder-object" && !isOrgFolder && isIntegrationManaged && (
+                            <>
+                                <ContextMenuItem
+                                    icon={mdiSync}
+                                    label={t("servers.contextMenu.syncIntegration")}
+                                    onClick={syncIntegrationNow}
+                                />
+                                {isIntegrationRoot && canManageResources && (
+                                    <>
+                                        <ContextMenuItem
+                                            icon={mdiCog}
+                                            label={t("servers.contextMenu.editIntegration")}
+                                            onClick={editIntegrationFolder}
+                                        />
+                                        <ContextMenuSeparator />
+                                        <ContextMenuItem
+                                            icon={mdiServerMinus}
+                                            label={t("servers.contextMenu.removeIntegration")}
+                                            onClick={removeIntegration}
+                                            danger
+                                        />
+                                    </>
+                                )}
+                            </>
+                        )}
+
+                        {contextClickedType === "folder-object" && !isOrgFolder && !isIntegrationManaged && (
                             <>
                                 {canManageResources && (
                                     <>
