@@ -7,6 +7,7 @@ const { createRDPToken, createVNCToken } = require("../utils/tokenGenerator");
 const { validateEntryAccess } = require("../controllers/entry");
 const { getOrganizationAuditSettingsInternal } = require("../controllers/audit");
 const { getIdentityCredentials, listIdentities } = require("../controllers/identity");
+const { isApiKeyToken, validateApiKey } = require("../controllers/apiKey");
 const logger = require("../utils/logger");
 
 module.exports.authenticate = async (req, res, next) => {
@@ -18,7 +19,19 @@ module.exports.authenticate = async (req, res, next) => {
     if (headerTrimmed.length !== 2)
         return res.status(400).json({ message: "You need to provide the token in the 'authorization' header" });
 
-    req.session = await Session.findOne({ where: { token: headerTrimmed[1] } });
+    const token = headerTrimmed[1];
+
+    if (isApiKeyToken(token)) {
+        const result = await validateApiKey(token);
+        if (!result)
+            return res.status(401).json({ message: "The provided API key is not valid" });
+
+        req.apiKey = result.apiKey;
+        req.user = result.account;
+        return next();
+    }
+
+    req.session = await Session.findOne({ where: { token } });
 
     if (req.session === null)
         return res.status(401).json({ message: "The provided token is not valid" });
