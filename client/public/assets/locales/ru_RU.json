@@ -10,7 +10,7 @@
     "download": "Скачать",
     "maximize": "Развернуть",
     "restore": "Восстановить",
-    "resize": "Resize",
+    "resize": "Изменить размер",
     "actions": {
       "cancel": "Отмена",
       "confirm": "Подтвердить",
@@ -62,8 +62,8 @@
       "qrScanDescription": "Отсканируй этот QR-код с помощью мобильного приложения Nexterm, чтобы мгновенно войти в систему.",
       "backToLogin": "Назад к входу",
       "authenticating": "Аутентификация...",
-      "noAccount": "Don't have an account?",
-      "haveAccount": "Already have an account?"
+      "noAccount": "У тебя ещё нет аккаунта?",
+      "haveAccount": "У тебя уже есть аккаунт?"
     },
     "deviceLink": {
       "title": "Привязать устройство",
@@ -691,32 +691,32 @@
         "delete": "Удалить"
       },
       "apiKeys": {
-        "sectionTitle": "API Keys",
-        "sectionDescription": "Create API keys to access Nexterm programmatically from scripts and integrations.",
-        "addButton": "Create API Key",
-        "createTitle": "Create API Key",
-        "createDescription": "Give your key a name. The token will be shown only once after creation.",
-        "nameLabel": "Name",
-        "namePlaceholder": "e.g. Deployment script",
-        "nameRequired": "Name is required",
-        "expiryLabel": "Expiration",
-        "expiryNever": "Never",
-        "expiry30": "30 days",
-        "expiry90": "90 days",
-        "expiry365": "1 year",
-        "createButton": "Create",
-        "createdTitle": "API Key Created",
-        "createdWarning": "Copy this token now. For security reasons you won't be able to see it again.",
-        "tokenLabel": "Token",
-        "doneButton": "Done",
-        "createError": "Failed to create API key.",
-        "copyError": "Failed to copy to clipboard.",
-        "confirmDelete": "Are you sure you want to revoke this API key? Any agent using it will lose access.",
-        "noKeys": "No API keys yet",
-        "lastUsed": "Last used {{date}}",
-        "neverUsed": "Never used",
-        "expires": "Expires {{date}}",
-        "delete": "Delete"
+        "sectionTitle": "Ключи API",
+        "sectionDescription": "Создай API-ключи, чтобы получить программный доступ к Nexterm из скриптов и интеграций.",
+        "addButton": "Создать ключ API",
+        "createTitle": "Создать ключ API",
+        "createDescription": "Придумай имя для своего ключа. Токен отобразится только один раз после создания.",
+        "nameLabel": "Имя",
+        "namePlaceholder": "Например, скрипт развертывания",
+        "nameRequired": "Имя — обязательное поле",
+        "expiryLabel": "Срок действия",
+        "expiryNever": "Никогда",
+        "expiry30": "30 дней",
+        "expiry90": "90 дней",
+        "expiry365": "1 год",
+        "createButton": "Создать",
+        "createdTitle": "API-ключ создан",
+        "createdWarning": "Скопируй этот токен прямо сейчас. Из соображений безопасности ты больше не сможешь его увидеть.",
+        "tokenLabel": "Токен",
+        "doneButton": "Готово",
+        "createError": "Не удалось создать ключ API.",
+        "copyError": "Не удалось скопировать в буфер обмена.",
+        "confirmDelete": "Ты уверен, что хочешь отозвать этот ключ API? Все системы, которые его используют, потеряют доступ.",
+        "noKeys": "API-ключей пока нет",
+        "lastUsed": "Последнее использование {{date}}",
+        "neverUsed": "Никогда не пользовался",
+        "expires": "Срок действия истекает {{date}}",
+        "delete": "Удалить"
       }
     },
     "passwordChange": {
@@ -763,8 +763,8 @@
         "folderManagementDescription": "Веди журнал создания, изменения и удаления папок",
         "scriptExecutionLabel": "Выполнение сценария",
         "scriptExecutionDescription": "Веди журнал выполнения скриптов и задач автоматизации",
-        "aiOperationsLabel": "AI Operations",
-        "aiOperationsDescription": "Log commands and file changes performed by the AI assistant",
+        "aiOperationsLabel": "Операции с ИИ",
+        "aiOperationsDescription": "Регистрировать команды и изменения в файлах, выполненные ИИ-помощником",
         "actions": {
           "save": "Сохранить настройки"
         },
@@ -858,8 +858,8 @@
           "description": "Открыть меню команд ИИ"
         },
         "aiaccepttool": {
-          "title": "AI Accept Action",
-          "description": "Approve the pending AI tool action in the assistant"
+          "title": "ИИ: Принять действие",
+          "description": "Подтверди ожидающее выполнения действие с инструментом ИИ в помощнике"
         },
         "snippets": {
           "title": "Сниппеты",
@@ -923,13 +923,13 @@
         "syncDisabled": "Настройки курсора больше не будут синхронизироваться"
       },
       "input": {
-        "title": "Input",
-        "description": "Control how keyboard shortcuts behave inside the terminal.",
-        "smartCopyPaste": "Smart Ctrl+C",
-        "enabled": "Enabled",
-        "disabled": "Disabled",
-        "syncEnabled": "Input settings will now sync to your account",
-        "syncDisabled": "Input settings will no longer sync"
+        "title": "Ввод",
+        "description": "Настрой поведение горячих клавиш в терминале.",
+        "smartCopyPaste": "Умное Ctrl+C",
+        "enabled": "Включено",
+        "disabled": "Отключено",
+        "syncEnabled": "Настройки ввода теперь будут синхронизироваться с твоей учетной записью",
+        "syncDisabled": "Настройки ввода больше не будут синхронизироваться"
       },
       "theme": {
         "title": "Тема",
@@ -995,8 +995,8 @@
       "system": "Система",
       "systemDescription": "Аутентификация по логину и паролю",
       "registration": {
-        "title": "Self-Registration",
-        "description": "Allow visitors to create their own account from the login screen"
+        "title": "Самостоятельная регистрация",
+        "description": "Позволь посетителям создавать свои учетные записи прямо на странице входа"
       },
       "deleteConfirm": "Это действие безвозвратно удалит провайдера аутентификации.",
       "errors": {
@@ -1087,11 +1087,11 @@
     },
     "ai": {
       "title": "Настройка ИИ-ассистента",
-      "description": "Configure the AI assistant that can run commands and manage files directly over your server sessions.",
+      "description": "Настрой ИИ-помощника, который сможет выполнять команды и управлять файлами прямо в сессиях твоего сервера.",
       "loading": "Загрузка настроек ИИ...",
       "enable": {
         "title": "Включить ИИ-ассистента",
-        "description": "Allow users to open the AI assistant inside server sessions"
+        "description": "Разрешить пользователям запускать ИИ-помощника в рамках сеансов сервера"
       },
       "provider": {
         "title": "Провайдер ИИ",
@@ -1099,42 +1099,42 @@
       },
       "model": {
         "title": "Модель",
-        "description": "Select the AI model the assistant should use"
+        "description": "Выбери модель ИИ, которую должен использовать помощник"
       },
       "requireConfirmation": {
-        "title": "Confirm before each action",
-        "description": "Require users to approve every command and file change the assistant wants to make"
+        "title": "Подтверждай перед каждым действием",
+        "description": "Требовать, чтобы пользователи утверждали каждую команду и каждое изменение файла, которое хочет выполнить помощник"
       },
       "apiKey": {
         "title": "Ключ API",
         "setPlaceholder": "Ключ API задан (оставьте пустым, чтобы сохранить текущий)",
-        "genericDescription": "API key used to authenticate with the selected provider",
-        "genericPlaceholder": "Enter your {{provider}} API key"
+        "genericDescription": "API-ключ, используемый для аутентификации у выбранного провайдера",
+        "genericPlaceholder": "Введи свой ключ API для {{provider}}"
       },
       "authMethod": {
-        "title": "Authentication",
-        "description": "Authenticate with an API key or your provider subscription",
-        "apiKey": "API Key",
-        "subscription": "Subscription"
+        "title": "Аутентификация",
+        "description": "Пройди аутентификацию с помощью ключа API или подписки у твоего провайдера",
+        "apiKey": "Ключ API",
+        "subscription": "Подписка"
       },
       "subscription": {
-        "title": "{{provider}} Subscription",
-        "description": "Sign in with your {{provider}} subscription to use its models without an API key",
-        "connectedDescription": "Your {{provider}} subscription is connected",
-        "connect": "Connect",
-        "connecting": "Connecting...",
-        "complete": "Complete",
-        "disconnect": "Disconnect",
-        "codePlaceholder": "Paste the authorization code here",
-        "codePlaceholderUrl": "Paste the full callback URL (or code) here",
-        "connectSuccess": "{{provider}} subscription connected",
-        "startError": "Failed to start authorization",
-        "exchangeError": "Failed to connect subscription",
-        "disconnectError": "Failed to disconnect subscription"
+        "title": "{{provider}} Подписка",
+        "description": "Войди, используя свою подписку на {{provider}} , чтобы пользоваться их моделями без ключа API",
+        "connectedDescription": "Твоя подписка на {{provider}} активирована",
+        "connect": "Подключиться",
+        "connecting": "Подключение...",
+        "complete": "Готово",
+        "disconnect": "Отключиться",
+        "codePlaceholder": "Вставь код авторизации сюда",
+        "codePlaceholderUrl": "Вставь сюда полный URL-адрес (или код) обратного вызова",
+        "connectSuccess": "{{provider}} подписка подключена",
+        "startError": "Не удалось запустить авторизацию",
+        "exchangeError": "Не удалось подключить подписку",
+        "disconnectError": "Не удалось отписаться от подписки"
       },
       "baseUrl": {
-        "title": "API URL",
-        "description": "Base URL of the provider's OpenAI-compatible endpoint",
+        "title": "URL API",
+        "description": "Базовый URL-адрес конечной точки провайдера, совместимой с OpenAI",
         "placeholder": "https://api.example.com/v1"
       },
       "selectProvider": "Выберите провайдера...",
@@ -1527,18 +1527,18 @@
       "telnetServer": "Telnet-сервер",
       "rdpServer": "RDP-сервер",
       "vncServer": "VNC-сервер",
-      "demoServer": "Demo Connection",
-      "sftpServer": "SFTP Server",
-      "ftpServer": "FTP Server",
-      "ftpsServer": "FTPS Server",
+      "demoServer": "Демо-подключение",
+      "sftpServer": "SFTP-сервер",
+      "ftpServer": "FTP-сервер",
+      "ftpsServer": "FTPS-сервер",
       "createServer": "Создать сервер",
       "import": "Импорт",
       "pve": "Proxmox VE",
       "sshConfig": "SSH-Config",
-      "syncIntegration": "Sync now",
-      "syncSuccess": "Integration synced",
-      "syncFailed": "Failed to sync integration",
-      "removeIntegration": "Remove Integration",
+      "syncIntegration": "Синхронизировать сейчас",
+      "syncSuccess": "Интеграция синхронизирована",
+      "syncFailed": "Не удалось синхронизировать интеграцию",
+      "removeIntegration": "Отключить интеграцию",
       "connect": "Подключиться",
       "quickConnect": "Быстрое подключение",
       "openSFTP": "Открыть SFTP",
@@ -1607,7 +1607,7 @@
         "password": "Пароль",
         "host": "Хост",
         "macAddress": "MAC-адрес",
-        "wolBroadcastAddress": "Broadcast Address",
+        "wolBroadcastAddress": "Адрес широковещательной рассылки",
         "engine": "Двигатель"
       },
       "placeholders": {
@@ -1704,7 +1704,7 @@
     },
     "proxmoxDialog": {
       "title": {
-        "import": "Add Proxmox VE",
+        "import": "Добавить Proxmox VE",
         "edit": "Изменить Proxmox VE"
       },
       "fields": {
@@ -1726,8 +1726,8 @@
         "specificNode": "Имя конкретного узла"
       },
       "actions": {
-        "import": "Add",
-        "edit": "Save"
+        "import": "Добавить",
+        "edit": "Сохранить"
       },
       "messages": {
         "created": "Интеграция с Proxmox успешно создана",
@@ -1821,8 +1821,8 @@
         "properties": "Свойства",
         "openTerminal": "Открыть терминал здесь",
         "downloadFolder": "Скачать папку",
-        "newFile": "New File",
-        "newFolder": "New Folder"
+        "newFile": "Новый файл",
+        "newFolder": "Новая папка"
       },
       "properties": {
         "general": "Общий",
@@ -1885,7 +1885,7 @@
         "switchToList": "Переключись в режим просмотра списка",
         "search": "Поиск файлов",
         "closeSearch": "Закрыть поиск",
-        "refresh": "Refresh"
+        "refresh": "Обновить"
       },
       "item": {
         "link": "ссылка"
@@ -1913,44 +1913,44 @@
       }
     },
     "remoteDesktop": {
-      "dropOverlay": "Drop files to upload to remote",
+      "dropOverlay": "Перетащи файлы, чтобы загрузить их на удаленный сервер",
       "toast": {
-        "uploadedSingle": "Uploaded \"{{name}}\" to remote drive",
-        "uploadedMultiple": "Uploaded {{count}} files to remote drive",
-        "uploadFailed": "{{count}} file(s) failed to upload",
-        "uploadPartial": "{{failed}} file(s) failed to upload, {{succeeded}} succeeded",
-        "downloaded": "Downloaded \"{{name}}\" from remote"
+        "uploadedSingle": "Загрузил файл «{{name}}» на удалённый диск",
+        "uploadedMultiple": "Загрузил файлы с {{count}} на удалённый диск",
+        "uploadFailed": "{{count}} Не удалось загрузить файл(ы)",
+        "uploadPartial": "{{failed}} Файл(ы) не удалось загрузить, {{succeeded}} загрузился успешно",
+        "downloaded": "Скачал «{{name}}» с удаленного сервера"
       }
     },
     "aiAssistant": {
       "title": "ИИ-ассистент",
-      "open": "AI Assistant",
-      "empty": "Ask the assistant to inspect or change this server. It can run commands and read or edit files directly over the connection.",
-      "placeholder": "Message the assistant...",
-      "connecting": "Connecting...",
-      "send": "Send",
-      "stop": "Stop",
-      "connectionError": "Connection to the assistant was lost.",
-      "reconnecting": "Connection lost. Reconnecting...",
-      "confirmPrompt": "Allow this action?",
-      "allow": "Allow",
-      "allowShortcut": "Allow ({{key}})",
-      "deny": "Deny",
-      "denied": "You denied this action.",
-      "stopped": "Stopped.",
+      "open": "AI-помощник",
+      "empty": "Попроси помощника проверить или заменить этот сервер. Он может запускать команды, а также читать и редактировать файлы прямо через это соединение.",
+      "placeholder": "Напиши помощнику...",
+      "connecting": "Подключение...",
+      "send": "Отправить",
+      "stop": "Стоп",
+      "connectionError": "Связь с помощником прервалась.",
+      "reconnecting": "Соединение прервано. Попытка восстановить соединение...",
+      "confirmPrompt": "Разрешить это действие?",
+      "allow": "Разрешить",
+      "allowShortcut": "Разрешить ({{key}})",
+      "deny": "Отклонить",
+      "denied": "Ты отклонил это действие.",
+      "stopped": "Остановился.",
       "tools": {
-        "runCommand": "Run command",
-        "readFile": "Read file",
-        "writeFile": "Write file",
-        "editFile": "Edit file",
-        "listDirectory": "List directory",
-        "statPath": "Inspect path",
-        "makeDirectory": "Create directory",
-        "deleteFile": "Delete file",
-        "removeDirectory": "Remove directory",
-        "movePath": "Move",
-        "changePermissions": "Change permissions",
-        "findDirectories": "Find directories"
+        "runCommand": "Запустить команду",
+        "readFile": "Прочитать файл",
+        "writeFile": "Записать файл",
+        "editFile": "Редактировать файл",
+        "listDirectory": "Список каталогов",
+        "statPath": "Проверить путь",
+        "makeDirectory": "Создать папку",
+        "deleteFile": "Удалить файл",
+        "removeDirectory": "Удалить каталог",
+        "movePath": "Переместиться",
+        "changePermissions": "Изменить права доступа",
+        "findDirectories": "Найти каталоги"
       }
     },
     "snippets": {
@@ -1960,19 +1960,19 @@
       "createNew": "Создать новый сниппет"
     },
     "toolbar": {
-      "drag": "Drag to move",
-      "shortcuts": "Keyboard shortcuts",
-      "holdModifier": "Hold {{key}}",
-      "zoomIn": "Zoom in",
-      "zoomOut": "Zoom out",
-      "zoomReset": "Reset zoom to fit (drag with the middle mouse button to pan)"
+      "drag": "Перетащи, чтобы переместить",
+      "shortcuts": "Горячие клавиши",
+      "holdModifier": "Подожди {{key}}",
+      "zoomIn": "Увеличить",
+      "zoomOut": "Уменьшить масштаб",
+      "zoomReset": "Сбросить масштаб до полного экрана (перетаскивай, удерживая среднюю кнопку мыши, чтобы перемещаться по изображению)"
     },
     "monitors": {
-      "title": "Monitor {{number}}",
-      "select": "Switch to monitor {{number}}",
-      "selectOrPopOut": "Switch to monitor {{number}} (double-click to open in its own window)",
-      "add": "Add monitor",
-      "remove": "Remove last monitor"
+      "title": "Монитор {{number}}",
+      "select": "Переключиться на монитор {{number}}",
+      "selectOrPopOut": "Перейди на сайт {{number}} (дважды щелкни, чтобы открыть в отдельном окне)",
+      "add": "Добавить монитор",
+      "remove": "Убери последний монитор"
     },
     "terminalActions": {
       "menuTitle": "Действия терминала",
