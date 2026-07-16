@@ -78,8 +78,12 @@ const handleGuacJoin = async (ws, sessionId, isShared, shareWritable) => {
 
         if (isShared && !SessionManager.get(sessionId)?.shareWritable) return;
 
+        const sizedMonitor = msgStr.match(/\.size,\d+\.-?\d+,\d+\.-?\d+,\d+\.(-?\d+)/);
+        const managesMonitors = Number.parseInt(sizedMonitor?.[1], 10) > 0;
+
         const isInteraction = msgStr.includes(".key,") ||
-            (msgStr.match(/\.mouse,\d+\.\d+,\d+\.\d+,(\d+)\.(\d+);/)?.[2] > 0);
+            (msgStr.match(/\.mouse,\d+\.\d+,\d+\.\d+,(\d+)\.(\d+);/)?.[2] > 0) ||
+            managesMonitors;
         if (isInteraction) SessionManager.setActiveWs(sessionId, ws);
 
         if (msgStr.includes(".size,") && !SessionManager.isActiveWs(sessionId, ws)) {
