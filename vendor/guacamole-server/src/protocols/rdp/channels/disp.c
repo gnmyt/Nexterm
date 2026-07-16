@@ -416,8 +416,11 @@ void guac_rdp_disp_update_size(guac_rdp_disp* disp,
     }
 
     /* Send display update notification if display channel is connected */
-    else if (settings->resize_method == GUAC_RESIZE_DISPLAY_UPDATE
-                && disp->disp != NULL) {
+    else if (settings->resize_method == GUAC_RESIZE_DISPLAY_UPDATE) {
+
+        DispClientContext* disp_context = disp->disp;
+        if (disp_context == NULL)
+            return;
 
         /* Init monitors layout */
         DISPLAY_CONTROL_MONITOR_LAYOUT* monitors = guac_mem_alloc(
@@ -447,7 +450,7 @@ void guac_rdp_disp_update_size(guac_rdp_disp* disp,
         guac_rdp_client* rdp_client = (guac_rdp_client*) client->data;
 
         pthread_mutex_lock(&(rdp_client->message_lock));
-        disp->disp->SendMonitorLayout(disp->disp, monitors_count, monitors);
+        disp_context->SendMonitorLayout(disp_context, monitors_count, monitors);
         pthread_mutex_unlock(&(rdp_client->message_lock));
 
         guac_mem_free(monitors);
