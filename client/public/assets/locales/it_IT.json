@@ -1551,6 +1551,9 @@
       "duplicateServer": "Server duplicato",
       "pasteIdentityPassword": "Incolla la password",
       "deleteServer": "Elimina il server",
+      "deleteConfirm": "Are you sure you want to delete \"{{name}}\"? This action cannot be undone.",
+      "deleteFailServer": "Failed to delete \"{{name}}\".",
+      "deleteFailFolder": "Failed to delete the folder \"{{name}}\".",
       "wakeOnLan": "Wake-On-LAN",
       "shutdown": "Spegnimento",
       "stop": "Fermati",
@@ -1772,6 +1775,7 @@
       }
     },
     "fileManager": {
+      "dropOverlay": "Drop files or folders to upload",
       "createFile": {
         "title": "Crea file",
         "placeholder": "Nome del file",
@@ -1883,6 +1887,8 @@
         "hiddenDirectories": "{{count}} directory nascoste",
         "switchToGrid": "Passa alla visualizzazione a griglia",
         "switchToList": "Passa alla vista elenco",
+        "uploadFile": "Upload file(s)",
+        "uploadFolder": "Upload folder",
         "search": "Cerca file",
         "closeSearch": "Chiudi ricerca",
         "refresh": "Aggiorna"
@@ -1907,7 +1913,9 @@
         "downloaded": "Scaricato {{name}}",
         "downloadingItems": "Download degli articoli di {{count}} ...",
         "uploaded": "Caricato {{name}}",
+        "uploadedItems": "Uploaded {{count}} files",
         "uploadFailed": "Caricamento fallito: {{message}}",
+        "uploadFailedItems": "{{count}} files failed to upload: {{message}}",
         "connectionLost": "La connessione SFTP è stata persa. Si prega di riconnettersi.",
         "error": "Si è verificato un errore"
       }
