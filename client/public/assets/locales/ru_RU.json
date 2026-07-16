@@ -1607,6 +1607,7 @@
         "password": "Пароль",
         "host": "Хост",
         "macAddress": "MAC-адрес",
+        "wolBroadcastAddress": "Broadcast Address",
         "engine": "Двигатель"
       },
       "placeholders": {
@@ -1616,7 +1617,8 @@
         "username": "Имя пользователя",
         "password": "Пароль",
         "host": "Хост",
-        "macAddress": "AA:BB:CC:DD:EE:FF"
+        "macAddress": "AA:BB:CC:DD:EE:FF",
+        "wolBroadcastAddress": "255.255.255.255"
       },
       "engineOffline": "(Оффлайн)",
       "settings": {
@@ -1908,6 +1910,16 @@
         "uploadFailed": "Загрузка не удалась: {{message}}",
         "connectionLost": "SFTP-соединение потеряно. Пожалуйста, переподключись.",
         "error": "Произошла ошибка"
+      }
+    },
+    "remoteDesktop": {
+      "dropOverlay": "Drop files to upload to remote",
+      "toast": {
+        "uploadedSingle": "Uploaded \"{{name}}\" to remote drive",
+        "uploadedMultiple": "Uploaded {{count}} files to remote drive",
+        "uploadFailed": "{{count}} file(s) failed to upload",
+        "uploadPartial": "{{failed}} file(s) failed to upload, {{succeeded}} succeeded",
+        "downloaded": "Downloaded \"{{name}}\" from remote"
       }
     },
     "aiAssistant": {
