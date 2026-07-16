@@ -1,5 +1,7 @@
 import { useEffect, useRef, useContext, useState, useCallback } from "react";
 import Guacamole from "guacamole-common-js";
+import Icon from "@mdi/react";
+import { mdiCloudUpload } from "@mdi/js";
 import { UserContext } from "@/common/contexts/UserContext.jsx";
 import { useKeymaps, matchesKeybind } from "@/common/contexts/KeymapContext.jsx";
 import { useToast } from "@/common/contexts/ToastContext.jsx";
@@ -9,6 +11,8 @@ import ConnectionError, { mapConnectionError } from "./components/ConnectionErro
 import SessionToolbar from "./components/SessionToolbar";
 import { getWebSocketUrl } from "@/common/utils/ConnectionUtil.js";
 import { openPopout, onPopoutClosed } from "@/common/utils/PopoutUtil.js";
+import { createHostFsProvider } from "@/common/utils/HostFsProvider.js";
+import { createBrowserFsProvider } from "@/common/utils/BrowserFsProvider.js";
 import "./styles/guacamole.sass";
 
 const SIZE_RESEND_INTERVAL = 5000;
@@ -79,6 +83,7 @@ const GuacamoleRenderer = ({
     const connectionLoaderRef = useRef(null);
     const audioPlayersRef = useRef([]);
     const [isDragOver, setIsDragOver] = useState(false);
+    const browserFsRef = useRef(null);
     const clipboardIntervalRef = useRef(null);
     const errorMessageRef = useRef(null);
     const [connectionError, setConnectionError] = useState(() => getSessionError?.(session.id) || null);
@@ -325,6 +330,15 @@ const GuacamoleRenderer = ({
 
     const uploadFiles = useCallback(async (files) => {
         if (!files || files.length === 0) return;
+
+        if (browserFsRef.current) {
+            const added = browserFsRef.current.addFiles(files);
+            sendToast(t("common.success"), added.length === 1
+                ? t("servers.remoteDesktop.toast.uploadedSingle", { name: added[0] })
+                : t("servers.remoteDesktop.toast.uploadedMultiple", { count: added.length }));
+            return;
+        }
+
         let successCount = 0;
         let failCount = 0;
         for (const file of files) {
@@ -609,6 +623,10 @@ const GuacamoleRenderer = ({
         };
         const cleanupClipboard = handleClipboardEvents();
 
+        const hostFs = createHostFsProvider();
+        if (!hostFs) browserFsRef.current = createBrowserFsProvider();
+        client.filesystemProvider = hostFs || browserFsRef.current;
+
         client.onfile = (stream, mimetype, filename) => {
             const reader = new Guacamole.BlobReader(stream, mimetype);
             reader.onend = () => {
@@ -689,13 +707,14 @@ const GuacamoleRenderer = ({
                  backgroundColor: "#000",
                  cursor: "none",
              }}>
-            {isDragOver && (
-                <div className="guac-drop-overlay">
-                    <div className="guac-drop-overlay__content">
-                        <div className="guac-drop-overlay__text">{t("servers.remoteDesktop.dropOverlay")}</div>
+            <div className={`guac-drop-overlay ${isDragOver ? "active" : ""}`}>
+                <div className="guac-drop-overlay__content">
+                    <div className="guac-drop-overlay__icon">
+                        <Icon path={mdiCloudUpload} />
                     </div>
+                    <h2>{t("servers.remoteDesktop.dropOverlay")}</h2>
                 </div>
-            )}
+            </div>
             <ConnectionLoader onReady={(loader) => {
                 connectionLoaderRef.current = loader;
             }} />
