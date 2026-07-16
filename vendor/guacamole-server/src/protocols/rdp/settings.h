@@ -597,6 +597,11 @@ typedef struct guac_rdp_settings {
     guac_rdp_resize_method resize_method;
 
     /**
+     * The maximum allowed count of secondary monitors.
+     */
+    int max_secondary_monitors;
+
+    /**
      * Whether audio input (microphone) is enabled.
      */
     int enable_audio_input;

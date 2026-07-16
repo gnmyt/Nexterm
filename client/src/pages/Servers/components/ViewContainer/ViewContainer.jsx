@@ -119,11 +119,11 @@ export const ViewContainer = ({
             setIsDragging(false);
             try { localStorage.setItem(BTN_STORAGE_KEY, JSON.stringify(btnPosition)); } catch {}
         };
-        document.addEventListener("mousemove", onMove);
-        document.addEventListener("mouseup", onUp);
+        document.addEventListener("mousemove", onMove, true);
+        document.addEventListener("mouseup", onUp, true);
         return () => {
-            document.removeEventListener("mousemove", onMove);
-            document.removeEventListener("mouseup", onUp);
+            document.removeEventListener("mousemove", onMove, true);
+            document.removeEventListener("mouseup", onUp, true);
         };
     }, [isDragging, btnPosition]);
 
@@ -303,12 +303,12 @@ export const ViewContainer = ({
         const handleMouseUp = () => {
             setIsResizing(false);
             setResizingDirection(null);
-            document.removeEventListener("mousemove", handleMouseMove);
-            document.removeEventListener("mouseup", handleMouseUp);
+            document.removeEventListener("mousemove", handleMouseMove, true);
+            document.removeEventListener("mouseup", handleMouseUp, true);
         };
 
-        document.addEventListener("mousemove", handleMouseMove);
-        document.addEventListener("mouseup", handleMouseUp);
+        document.addEventListener("mousemove", handleMouseMove, true);
+        document.addEventListener("mouseup", handleMouseUp, true);
 
         resizeRef.current = { type, index, handleMouseMove, handleMouseUp };
     }, [cellSizes, rowSizes]);
@@ -377,6 +377,7 @@ export const ViewContainer = ({
                                           markSessionErrored={markSessionErrored}
                                           getSessionError={getSessionError}
                                           registerGuacamoleRef={registerGuacamoleRef}
+                                          fullscreenEnabled={fullscreenMode}
                                           onFullscreenToggle={toggleFullscreenMode} />;
             case "terminal":
                 return <XtermRenderer session={session} disconnectFromServer={disconnectFromServer}
@@ -487,8 +488,8 @@ export const ViewContainer = ({
 
     return (
         <div className={`view-container ${fullscreenMode ? "fullscreen" : ""}`}>
-            {fullscreenMode && (
-                <div 
+            {fullscreenMode && !hasGuacamole && (
+                <div
                     className={`exit-fullscreen-btn-container ${isDragging ? "dragging" : ""}`}
                     style={{ left: btnPosition.x, top: btnPosition.y }}
                     onMouseDown={onBtnMouseDown}

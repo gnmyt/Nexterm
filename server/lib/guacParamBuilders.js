@@ -34,6 +34,7 @@ const buildRdpParams = async (cfg, identity) => {
         "ignore-cert": "true",
         "server-layout": cfg.keyboardLayout || "en-us-qwerty",
         "resize-method": (cfg.resizeMethod && cfg.resizeMethod !== "none") ? cfg.resizeMethod : "display-update",
+        "secondary-monitors": 3,
     };
 
     if (identity) {

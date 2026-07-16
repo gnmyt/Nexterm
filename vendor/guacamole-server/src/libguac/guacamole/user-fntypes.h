@@ -226,12 +226,18 @@ typedef int guac_user_clipboard_handler(guac_user* user, guac_stream* stream,
  * @param height
  *     The desired height of the display, in pixels.
  *
+ * @param x_position
+ *     The position of the monitor to resize, relative to other monitors.
+ *
+ * @param top_offset
+ *     The offset of the monitor from the top of the screen, in pixels.
+ *
  * @return
  *     Zero if the size event has been successfully handled, non-zero
  *     otherwise.
  */
 typedef int guac_user_size_handler(guac_user* user,
-        int width, int height);
+        int width, int height, int x_position, int top_offset);
 
 /**
  * Handler for Guacamole file streams received from a user. Each such file

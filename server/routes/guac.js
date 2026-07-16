@@ -27,5 +27,8 @@ module.exports = async (ws, req) => {
         }
     }
 
-    await guacamoleHook(ws, { connectionConfig: { serverSession } });
+    const monitor = Number.parseInt(req.query?.monitor, 10);
+    const pinnedMonitor = Number.isInteger(monitor) && monitor >= 0 ? monitor : null;
+
+    await guacamoleHook(ws, { connectionConfig: { serverSession }, pinnedMonitor });
 };
