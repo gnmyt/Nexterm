@@ -1607,6 +1607,7 @@
         "password": "Password",
         "host": "Ospite",
         "macAddress": "Indirizzo MAC",
+        "wolBroadcastAddress": "Broadcast Address",
         "engine": "Motore"
       },
       "placeholders": {
@@ -1616,7 +1617,8 @@
         "username": "Nome utente",
         "password": "Password",
         "host": "Ospite",
-        "macAddress": "AA:BB:CC:DD:EE:FF"
+        "macAddress": "AA:BB:CC:DD:EE:FF",
+        "wolBroadcastAddress": "255.255.255.255"
       },
       "engineOffline": "(offline)",
       "settings": {
@@ -1908,6 +1910,16 @@
         "uploadFailed": "Caricamento fallito: {{message}}",
         "connectionLost": "La connessione SFTP è stata persa. Si prega di riconnettersi.",
         "error": "Si è verificato un errore"
+      }
+    },
+    "remoteDesktop": {
+      "dropOverlay": "Drop files to upload to remote",
+      "toast": {
+        "uploadedSingle": "Uploaded \"{{name}}\" to remote drive",
+        "uploadedMultiple": "Uploaded {{count}} files to remote drive",
+        "uploadFailed": "{{count}} file(s) failed to upload",
+        "uploadPartial": "{{failed}} file(s) failed to upload, {{succeeded}} succeeded",
+        "downloaded": "Downloaded \"{{name}}\" from remote"
       }
     },
     "aiAssistant": {
