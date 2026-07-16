@@ -10,7 +10,7 @@
     "download": "Télécharger",
     "maximize": "Maximiser",
     "restore": "Restaurer",
-    "resize": "Resize",
+    "resize": "Redimensionner",
     "actions": {
       "cancel": "Annuler",
       "confirm": "Confirme",
@@ -62,8 +62,8 @@
       "qrScanDescription": "Scanne ce code QR avec l'application mobile Nexterm pour te connecter instantanément.",
       "backToLogin": "Retour à la page d'accueil",
       "authenticating": "Authentification...",
-      "noAccount": "Don't have an account?",
-      "haveAccount": "Already have an account?"
+      "noAccount": "Tu n'as pas encore de compte ?",
+      "haveAccount": "Tu as déjà un compte ?"
     },
     "deviceLink": {
       "title": "Dispositif de liaison",
@@ -691,32 +691,32 @@
         "delete": "Supprimer"
       },
       "apiKeys": {
-        "sectionTitle": "API Keys",
-        "sectionDescription": "Create API keys to access Nexterm programmatically from scripts and integrations.",
-        "addButton": "Create API Key",
-        "createTitle": "Create API Key",
-        "createDescription": "Give your key a name. The token will be shown only once after creation.",
-        "nameLabel": "Name",
-        "namePlaceholder": "e.g. Deployment script",
-        "nameRequired": "Name is required",
-        "expiryLabel": "Expiration",
-        "expiryNever": "Never",
-        "expiry30": "30 days",
-        "expiry90": "90 days",
-        "expiry365": "1 year",
-        "createButton": "Create",
-        "createdTitle": "API Key Created",
-        "createdWarning": "Copy this token now. For security reasons you won't be able to see it again.",
-        "tokenLabel": "Token",
-        "doneButton": "Done",
-        "createError": "Failed to create API key.",
-        "copyError": "Failed to copy to clipboard.",
-        "confirmDelete": "Are you sure you want to revoke this API key? Any agent using it will lose access.",
-        "noKeys": "No API keys yet",
-        "lastUsed": "Last used {{date}}",
-        "neverUsed": "Never used",
-        "expires": "Expires {{date}}",
-        "delete": "Delete"
+        "sectionTitle": "Clés API",
+        "sectionDescription": "Crée des clés API pour accéder à Nexterm par programmation depuis des scripts et des intégrations.",
+        "addButton": "Créer une clé API",
+        "createTitle": "Créer une clé API",
+        "createDescription": "Donne un nom à ta clé. Le jeton ne s'affichera qu'une seule fois après sa création.",
+        "nameLabel": "Nom",
+        "namePlaceholder": "par ex. : script de déploiement",
+        "nameRequired": "Le nom est obligatoire",
+        "expiryLabel": "Date d'expiration",
+        "expiryNever": "Jamais",
+        "expiry30": "30 jours",
+        "expiry90": "90 jours",
+        "expiry365": "1 an",
+        "createButton": "Créer",
+        "createdTitle": "Clé API créée",
+        "createdWarning": "Copie ce jeton tout de suite. Pour des raisons de sécurité, tu ne pourras plus le voir par la suite.",
+        "tokenLabel": "Jeton",
+        "doneButton": "C'est fait",
+        "createError": "Échec de la création de la clé API.",
+        "copyError": "Échec de la copie dans le presse-papiers.",
+        "confirmDelete": "Tu es sûr de vouloir révoquer cette clé API ? Tous les systèmes qui l'utilisent perdront l'accès.",
+        "noKeys": "Pas encore de clés API",
+        "lastUsed": "Dernière utilisation {{date}}",
+        "neverUsed": "Jamais utilisé",
+        "expires": "Date d'expiration {{date}}",
+        "delete": "Supprimer"
       }
     },
     "passwordChange": {
@@ -763,8 +763,8 @@
         "folderManagementDescription": "Enregistre la création, la modification et la suppression des dossiers.",
         "scriptExecutionLabel": "Exécution du script",
         "scriptExecutionDescription": "Journal d'exécution des scripts et des tâches d'automatisation",
-        "aiOperationsLabel": "AI Operations",
-        "aiOperationsDescription": "Log commands and file changes performed by the AI assistant",
+        "aiOperationsLabel": "Opérations IA",
+        "aiOperationsDescription": "Enregistrer les commandes et les modifications de fichiers effectuées par l'assistant IA",
         "actions": {
           "save": "Sauvegarder les paramètres"
         },
@@ -858,8 +858,8 @@
           "description": "Ouvre le menu des commandes AI"
         },
         "aiaccepttool": {
-          "title": "AI Accept Action",
-          "description": "Approve the pending AI tool action in the assistant"
+          "title": "IA : Accepter l'action",
+          "description": "Valide l'action en attente liée à l'outil d'IA dans l'assistant"
         },
         "snippets": {
           "title": "Bribes",
@@ -923,13 +923,13 @@
         "syncDisabled": "Les paramètres du curseur ne seront plus synchronisés"
       },
       "input": {
-        "title": "Input",
-        "description": "Control how keyboard shortcuts behave inside the terminal.",
-        "smartCopyPaste": "Smart Ctrl+C",
-        "enabled": "Enabled",
-        "disabled": "Disabled",
-        "syncEnabled": "Input settings will now sync to your account",
-        "syncDisabled": "Input settings will no longer sync"
+        "title": "Saisie",
+        "description": "Gère le fonctionnement des raccourcis clavier dans le terminal.",
+        "smartCopyPaste": "Ctrl+C intelligent",
+        "enabled": "Activé",
+        "disabled": "Désactivé",
+        "syncEnabled": "Les paramètres de saisie vont désormais se synchroniser avec ton compte",
+        "syncDisabled": "Les paramètres de saisie ne seront plus synchronisés"
       },
       "theme": {
         "title": "Thème",
@@ -995,8 +995,8 @@
       "system": "Système",
       "systemDescription": "Authentification par nom d'utilisateur et mot de passe",
       "registration": {
-        "title": "Self-Registration",
-        "description": "Allow visitors to create their own account from the login screen"
+        "title": "Inscription en ligne",
+        "description": "Permets aux visiteurs de créer leur propre compte depuis la page de connexion"
       },
       "deleteConfirm": "Cela supprimera définitivement ce fournisseur d'authentification.",
       "errors": {
@@ -1087,11 +1087,11 @@
     },
     "ai": {
       "title": "Configuration de l'assistant AI",
-      "description": "Configure the AI assistant that can run commands and manage files directly over your server sessions.",
+      "description": "Configure l'assistant IA qui peut exécuter des commandes et gérer des fichiers directement depuis tes sessions sur le serveur.",
       "loading": "Chargement des paramètres de l'IA...",
       "enable": {
         "title": "Activer l'assistant AI",
-        "description": "Allow users to open the AI assistant inside server sessions"
+        "description": "Permettre aux utilisateurs d'ouvrir l'assistant IA pendant les sessions sur le serveur"
       },
       "provider": {
         "title": "Fournisseur d'IA",
@@ -1099,42 +1099,42 @@
       },
       "model": {
         "title": "Modèle",
-        "description": "Select the AI model the assistant should use"
+        "description": "Choisis le modèle d'IA que l'assistant doit utiliser"
       },
       "requireConfirmation": {
-        "title": "Confirm before each action",
-        "description": "Require users to approve every command and file change the assistant wants to make"
+        "title": "Confirme avant chaque action",
+        "description": "Demander aux utilisateurs de valider chaque commande et chaque modification de fichier que l'assistant souhaite effectuer"
       },
       "apiKey": {
         "title": "Clé API",
         "setPlaceholder": "La clé API est définie (laisser vide pour rester à jour)",
-        "genericDescription": "API key used to authenticate with the selected provider",
-        "genericPlaceholder": "Enter your {{provider}} API key"
+        "genericDescription": "Clé API utilisée pour s'authentifier auprès du fournisseur sélectionné",
+        "genericPlaceholder": "Saisis ta clé API « {{provider}}»"
       },
       "authMethod": {
-        "title": "Authentication",
-        "description": "Authenticate with an API key or your provider subscription",
-        "apiKey": "API Key",
-        "subscription": "Subscription"
+        "title": "Authentification",
+        "description": "Connecte-toi avec une clé API ou ton abonnement chez ton fournisseur",
+        "apiKey": "Clé API",
+        "subscription": "Abonnement"
       },
       "subscription": {
-        "title": "{{provider}} Subscription",
-        "description": "Sign in with your {{provider}} subscription to use its models without an API key",
-        "connectedDescription": "Your {{provider}} subscription is connected",
-        "connect": "Connect",
-        "connecting": "Connecting...",
-        "complete": "Complete",
-        "disconnect": "Disconnect",
-        "codePlaceholder": "Paste the authorization code here",
-        "codePlaceholderUrl": "Paste the full callback URL (or code) here",
-        "connectSuccess": "{{provider}} subscription connected",
-        "startError": "Failed to start authorization",
-        "exchangeError": "Failed to connect subscription",
-        "disconnectError": "Failed to disconnect subscription"
+        "title": "{{provider}} Abonnement",
+        "description": "Connecte-toi avec ton abonnement à {{provider}} pour utiliser ses modèles sans clé API",
+        "connectedDescription": "Ton abonnement à « {{provider}} » est activé",
+        "connect": "Se connecter",
+        "connecting": "Connexion en cours...",
+        "complete": "Terminer",
+        "disconnect": "Déconnecter",
+        "codePlaceholder": "Colle le code d'autorisation ici",
+        "codePlaceholderUrl": "Colle ici l'URL complète de rappel (ou le code)",
+        "connectSuccess": "{{provider}} abonnement activé",
+        "startError": "Échec du démarrage de l'autorisation",
+        "exchangeError": "Échec de la connexion à l'abonnement",
+        "disconnectError": "Échec de la résiliation de l'abonnement"
       },
       "baseUrl": {
-        "title": "API URL",
-        "description": "Base URL of the provider's OpenAI-compatible endpoint",
+        "title": "URL de l'API",
+        "description": "URL de base du point de terminaison compatible OpenAI du fournisseur",
         "placeholder": "https://api.example.com/v1"
       },
       "selectProvider": "Sélectionnez un fournisseur...",
@@ -1527,18 +1527,18 @@
       "telnetServer": "Serveur Telnet",
       "rdpServer": "Serveur RDP",
       "vncServer": "Serveur VNC",
-      "demoServer": "Demo Connection",
-      "sftpServer": "SFTP Server",
-      "ftpServer": "FTP Server",
-      "ftpsServer": "FTPS Server",
+      "demoServer": "Connexion à la démo",
+      "sftpServer": "Serveur SFTP",
+      "ftpServer": "Serveur FTP",
+      "ftpsServer": "Serveur FTPS",
       "createServer": "Créer un serveur",
       "import": "Importation",
       "pve": "Proxmox VE",
       "sshConfig": "SSH-Config",
-      "syncIntegration": "Sync now",
-      "syncSuccess": "Integration synced",
-      "syncFailed": "Failed to sync integration",
-      "removeIntegration": "Remove Integration",
+      "syncIntegration": "Synchroniser maintenant",
+      "syncSuccess": "Intégration synchronisée",
+      "syncFailed": "Échec de la synchronisation de l'intégration",
+      "removeIntegration": "Supprimer l'intégration",
       "connect": "Connecte-toi",
       "quickConnect": "Connexion rapide",
       "openSFTP": "Ouvrir SFTP",
@@ -1607,7 +1607,7 @@
         "password": "Mot de passe",
         "host": "Hôte",
         "macAddress": "Adresse MAC",
-        "wolBroadcastAddress": "Broadcast Address",
+        "wolBroadcastAddress": "Adresse de diffusion",
         "engine": "Moteur"
       },
       "placeholders": {
@@ -1704,7 +1704,7 @@
     },
     "proxmoxDialog": {
       "title": {
-        "import": "Add Proxmox VE",
+        "import": "Ajouter Proxmox VE",
         "edit": "Editer Proxmox VE"
       },
       "fields": {
@@ -1726,8 +1726,8 @@
         "specificNode": "Nom de nœud spécifique"
       },
       "actions": {
-        "import": "Add",
-        "edit": "Save"
+        "import": "Ajouter",
+        "edit": "Enregistrer"
       },
       "messages": {
         "created": "Intégration de Proxmox créée avec succès",
@@ -1821,8 +1821,8 @@
         "properties": "Propriétés",
         "openTerminal": "Ouvre le terminal ici",
         "downloadFolder": "Télécharger le dossier",
-        "newFile": "New File",
-        "newFolder": "New Folder"
+        "newFile": "Nouveau fichier",
+        "newFolder": "Nouveau dossier"
       },
       "properties": {
         "general": "Généralités",
@@ -1885,7 +1885,7 @@
         "switchToList": "Passer à l'affichage de la liste",
         "search": "Rechercher des fichiers",
         "closeSearch": "Fermer la recherche",
-        "refresh": "Refresh"
+        "refresh": "Actualiser"
       },
       "item": {
         "link": "lien"
@@ -1913,44 +1913,44 @@
       }
     },
     "remoteDesktop": {
-      "dropOverlay": "Drop files to upload to remote",
+      "dropOverlay": "Glisse-dépose les fichiers que tu veux transférer sur le serveur distant",
       "toast": {
-        "uploadedSingle": "Uploaded \"{{name}}\" to remote drive",
-        "uploadedMultiple": "Uploaded {{count}} files to remote drive",
-        "uploadFailed": "{{count}} file(s) failed to upload",
-        "uploadPartial": "{{failed}} file(s) failed to upload, {{succeeded}} succeeded",
-        "downloaded": "Downloaded \"{{name}}\" from remote"
+        "uploadedSingle": "J'ai mis en ligne «{{name}}» sur le disque distant",
+        "uploadedMultiple": "J'ai transféré les fichiers « {{count}} » sur le disque distant",
+        "uploadFailed": "{{count}} Le téléchargement du ou des fichiers a échoué",
+        "uploadPartial": "{{failed}} Le(s) fichier(s) n'a(ont) pas pu être téléchargé(s), {{succeeded}} a réussi",
+        "downloaded": "J'ai téléchargé «{{name}}» depuis un serveur distant"
       }
     },
     "aiAssistant": {
       "title": "Assistant AI",
-      "open": "AI Assistant",
-      "empty": "Ask the assistant to inspect or change this server. It can run commands and read or edit files directly over the connection.",
-      "placeholder": "Message the assistant...",
-      "connecting": "Connecting...",
-      "send": "Send",
-      "stop": "Stop",
-      "connectionError": "Connection to the assistant was lost.",
-      "reconnecting": "Connection lost. Reconnecting...",
-      "confirmPrompt": "Allow this action?",
-      "allow": "Allow",
-      "allowShortcut": "Allow ({{key}})",
-      "deny": "Deny",
-      "denied": "You denied this action.",
-      "stopped": "Stopped.",
+      "open": "Assistant IA",
+      "empty": "Demande à l'assistant de vérifier ou de changer ce serveur. Il peut exécuter des commandes et lire ou modifier des fichiers directement via la connexion.",
+      "placeholder": "Envoie un message à l'assistant...",
+      "connecting": "Connexion en cours...",
+      "send": "Envoyer",
+      "stop": "Arrête",
+      "connectionError": "La connexion avec l'assistant a été perdue.",
+      "reconnecting": "Connexion perdue. Je me reconnecte...",
+      "confirmPrompt": "Tu veux autoriser cette action ?",
+      "allow": "Autoriser",
+      "allowShortcut": "Autoriser ({{key}})",
+      "deny": "Refuser",
+      "denied": "Tu as refusé cette action.",
+      "stopped": "Arrêté.",
       "tools": {
-        "runCommand": "Run command",
-        "readFile": "Read file",
-        "writeFile": "Write file",
-        "editFile": "Edit file",
-        "listDirectory": "List directory",
-        "statPath": "Inspect path",
-        "makeDirectory": "Create directory",
-        "deleteFile": "Delete file",
-        "removeDirectory": "Remove directory",
-        "movePath": "Move",
-        "changePermissions": "Change permissions",
-        "findDirectories": "Find directories"
+        "runCommand": "Exécuter la commande",
+        "readFile": "Lire le fichier",
+        "writeFile": "Écrire dans un fichier",
+        "editFile": "Modifier le fichier",
+        "listDirectory": "Liste des répertoires",
+        "statPath": "Vérifier le chemin d'accès",
+        "makeDirectory": "Créer un répertoire",
+        "deleteFile": "Supprimer le fichier",
+        "removeDirectory": "Supprimer le répertoire",
+        "movePath": "Déplacer",
+        "changePermissions": "Modifier les droits d'accès",
+        "findDirectories": "Trouver des répertoires"
       }
     },
     "snippets": {
@@ -1960,19 +1960,19 @@
       "createNew": "Créer un nouvel extrait"
     },
     "toolbar": {
-      "drag": "Drag to move",
-      "shortcuts": "Keyboard shortcuts",
-      "holdModifier": "Hold {{key}}",
-      "zoomIn": "Zoom in",
-      "zoomOut": "Zoom out",
-      "zoomReset": "Reset zoom to fit (drag with the middle mouse button to pan)"
+      "drag": "Fais glisser pour déplacer",
+      "shortcuts": "Raccourcis clavier",
+      "holdModifier": "Attends {{key}}",
+      "zoomIn": "Agrandir",
+      "zoomOut": "Zoomer en arrière",
+      "zoomReset": "Réinitialiser le zoom pour ajuster l'image (fais glisser avec le bouton central de la souris pour faire un panoramique)"
     },
     "monitors": {
-      "title": "Monitor {{number}}",
-      "select": "Switch to monitor {{number}}",
-      "selectOrPopOut": "Switch to monitor {{number}} (double-click to open in its own window)",
-      "add": "Add monitor",
-      "remove": "Remove last monitor"
+      "title": "Moniteur {{number}}",
+      "select": "Passer au moniteur {{number}}",
+      "selectOrPopOut": "Passe sur le site {{number}} (double-clique pour l'ouvrir dans une nouvelle fenêtre)",
+      "add": "Ajouter un écran",
+      "remove": "Retirer le dernier écran"
     },
     "terminalActions": {
       "menuTitle": "Actions terminales",
