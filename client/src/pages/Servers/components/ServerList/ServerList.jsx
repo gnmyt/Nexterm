@@ -7,6 +7,7 @@ import { IdentityContext } from "@/common/contexts/IdentityContext.jsx";
 import { useScripts } from "@/common/contexts/ScriptContext.jsx";
 import ServerEntries from "./components/ServerEntries.jsx";
 import { isCredentiallessProtocol } from "@/common/utils/ConnectionUtil.js";
+import { useDevFeature } from "@/common/utils/devFeatures.js";
 import Icon from "@mdi/react";
 import {
     mdiCursorDefaultClick,
@@ -111,6 +112,8 @@ export const ServerList = ({
     const { hasPermission } = useContext(UserContext);
     const canManageResources = hasPermission(Permission.RESOURCES_MANAGE);
     const { sendToast } = useToast();
+    const demoEnabled = useDevFeature("demo", import.meta.env.DEV);
+
     const [search, setSearch] = useState("");
     const [selectedTags, setSelectedTags] = useState([]);
     const [showTagFilter, setShowTagFilter] = useState(false);
@@ -613,7 +616,7 @@ export const ServerList = ({
                                             label={t("servers.contextMenu.pve")}
                                             onClick={createPVEServer}
                                         />
-                                        {import.meta.env.DEV && (
+                                        {demoEnabled && (
                                             <>
                                                 <ContextMenuSeparator />
                                                 <ContextMenuItem
