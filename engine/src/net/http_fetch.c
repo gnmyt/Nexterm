@@ -183,6 +183,10 @@ static void* http_fetch_thread(void* arg) {
 
     struct curl_slist* headers = NULL;
     for (size_t i = 0; i < ctx->header_count; i++) {
+        if (strpbrk(ctx->header_names[i], "\r\n") ||
+            strpbrk(ctx->header_values[i], "\r\n")) {
+            continue;
+        }
         char header_line[4096];
         snprintf(header_line, sizeof(header_line), "%s: %s",
                  ctx->header_names[i], ctx->header_values[i]);

@@ -1,10 +1,16 @@
 const { genSalt, hash } = require("bcrypt");
 const { Op } = require("sequelize");
 const Account = require("../models/Account");
+const OIDCProvider = require("../models/OIDCProvider");
 const Folder = require("../models/Folder");
 const Identity = require("../models/Identity");
 const Session = require("../models/Session");
 const OrganizationMember = require("../models/OrganizationMember");
+const OrganizationMemberPermission = require("../models/OrganizationMemberPermission");
+const PermissionGroup = require("../models/PermissionGroup");
+const GroupMember = require("../models/GroupMember");
+const AccountPermission = require("../models/AccountPermission");
+const { isAccountAdmin, countAdmins } = require("../utils/permission");
 const logger = require("../utils/logger");
 const SessionManager = require("../lib/SessionManager");
 const stateBroadcaster = require("../lib/StateBroadcaster");
@@ -23,14 +29,30 @@ module.exports.createAccount = async (configuration, firstTimeSetup = true) => {
     const password = await hash(configuration.password, salt);
 
     // Create the account
-    const newAccount = await Account.create({ ...configuration, password, role: firstTimeSetup ? "admin" : "user" });
+    const newAccount = await Account.create({ ...configuration, password });
+
+    if (firstTimeSetup) {
+        const adminGroup = await PermissionGroup.findOne({ where: { isAdmin: true } });
+        if (adminGroup) await GroupMember.create({ groupId: adminGroup.id, accountId: newAccount.id });
+    }
 
     logger.system(`Account created`, {
         accountId: newAccount.id,
         username: newAccount.username,
-        role: newAccount.role,
         firstTimeSetup,
     });
+};
+
+module.exports.isRegistrationEnabled = async () => {
+    const internalProvider = await OIDCProvider.findOne({ where: { isInternal: true } });
+    return !!(internalProvider?.enabled && internalProvider.allowRegistration);
+};
+
+module.exports.selfRegister = async (configuration) => {
+    if (!await module.exports.isRegistrationEnabled())
+        return { code: 107, message: "Self-registration is not enabled" };
+
+    return module.exports.createAccount(configuration, false);
 };
 
 module.exports.deleteAccount = async (id) => {
@@ -39,8 +61,8 @@ module.exports.deleteAccount = async (id) => {
     if (account === null)
         return { code: 102, message: "The provided account does not exist" };
 
-    if (await Account.count({ where: { role: "admin" } }) === 1 && account.role === "admin")
-        return { code: 106, message: "You cannot delete the last admin account" };
+    if (await isAccountAdmin(id) && (await countAdmins()) <= 1)
+        return { code: 106, message: "You cannot delete the last administrator account" };
 
     stateBroadcaster.forceLogout(id);
     await SessionManager.removeAllByAccountId(id);
@@ -49,6 +71,9 @@ module.exports.deleteAccount = async (id) => {
     await Identity.destroy({ where: { accountId: id } });
     await Session.destroy({ where: { accountId: id } });
     await OrganizationMember.destroy({ where: { accountId: id } });
+    await GroupMember.destroy({ where: { accountId: id } });
+    await AccountPermission.destroy({ where: { accountId: id } });
+    await OrganizationMemberPermission.destroy({ where: { accountId: id } });
 
     await Account.destroy({ where: { id } });
 
@@ -79,28 +104,6 @@ module.exports.updatePassword = async (id, password) => {
     const hashedPassword = await hash(password, salt);
 
     await Account.update({ password: hashedPassword }, { where: { id } });
-};
-
-module.exports.updateRole = async (id, role) => {
-    const account = await Account.findByPk(id);
-
-    if (account === null)
-        return { code: 102, message: "The provided account does not exist" };
-
-    if (role === account.role)
-        return { code: 107, message: "The provided role is the same as the current role" };
-
-    if (role !== "admin" && role !== "user")
-        return { code: 108, message: "The provided role is invalid" };
-
-    await Account.update({ role }, { where: { id } });
-
-    logger.system(`Account role updated`, {
-        accountId: id,
-        username: account.username,
-        oldRole: account.role,
-        newRole: role,
-    });
 };
 
 module.exports.updateTOTP = async (id, status) => {
@@ -168,13 +171,41 @@ module.exports.searchUsers = async (search = "") => {
                 { lastName: { [Op.like]: searchTerm } },
             ],
         },
-        attributes: ["id", "username", "firstName", "lastName", "role"],
+        attributes: ["id", "username", "firstName", "lastName"],
         limit: 5,
         order: [["username", "ASC"]],
     });
 
     return { users };
 };
+
+const attachGroups = async (users) => {
+    if (!users.length) return users;
+
+    const userIds = users.map((u) => u.id);
+    const [memberships, groups] = await Promise.all([
+        GroupMember.findAll({ where: { accountId: { [Op.in]: userIds } } }),
+        PermissionGroup.findAll({ order: [["sortOrder", "ASC"], ["id", "ASC"]] }),
+    ]);
+
+    const groupById = new Map(groups.map((g) => [g.id, g]));
+    const defaultGroups = groups.filter((g) => g.isDefault);
+    const toView = (g) => ({ id: g.id, name: g.name, color: g.color, isAdmin: g.isAdmin, isDefault: g.isDefault });
+
+    return users.map((user) => {
+        const assigned = memberships
+            .filter((m) => m.accountId === user.id)
+            .map((m) => groupById.get(m.groupId))
+            .filter(Boolean);
+
+        const all = [...assigned];
+        for (const dg of defaultGroups) if (!all.some((g) => g.id === dg.id)) all.push(dg);
+        all.sort((a, b) => a.sortOrder - b.sortOrder || a.id - b.id);
+
+        return { ...user, groups: all.map(toView), isAdmin: all.some((g) => g.isAdmin) };
+    });
+};
+module.exports.attachGroups = attachGroups;
 
 module.exports.listUsers = async (options = {}) => {
     const { search = "", limit = 50, offset = 0 } = options;
@@ -201,5 +232,5 @@ module.exports.listUsers = async (options = {}) => {
         Account.count({ where: whereClause }),
     ]);
 
-    return { users, total };
+    return { users: await attachGroups(users), total };
 };

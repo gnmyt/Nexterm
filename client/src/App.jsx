@@ -70,7 +70,8 @@ const App = () => {
             element: <PopoutRoot />,
             errorElement: <RouteErrorPage />,
             children: [
-                { path: "/popout/:sessionId", element: <Popout /> }
+                { path: "/popout/:sessionId", element: <Popout /> },
+                { path: "/popout/:sessionId/:monitor", element: <Popout /> }
             ],
         },
         {

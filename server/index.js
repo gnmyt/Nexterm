@@ -14,9 +14,11 @@ const { startStatusChecker, stopStatusChecker } = require("./utils/statusChecker
 const { ensureInternalProvider } = require("./controllers/oidc");
 const monitoringService = require("./utils/monitoringService");
 const pveMonitoringService = require("./utils/pveMonitoringService");
+const integrationSyncService = require("./utils/integrationSyncService");
 const recordingService = require("./utils/recordingService");
 const { generateOpenAPISpec } = require("./openapi");
-const { isAdmin } = require("./middlewares/permission");
+const { requirePermission } = require("./middlewares/permission");
+const { Permission } = require("./permissions/registry");
 const logger = require("./utils/logger");
 const { startSourceSyncService, stopSourceSyncService } = require("./utils/sourceSyncService");
 const backupService = require("./utils/backupService");
@@ -47,19 +49,22 @@ app.use(express.json());
 app.use("/api/service", require("./routes/service"));
 app.use("/api/accounts", require("./routes/account"));
 app.use("/api/accounts/passkeys", require("./routes/passkey"));
+app.use("/api/accounts/api-keys", require("./routes/apiKey"));
 app.use("/api/auth", require("./routes/auth"));
 app.use("/api/auth", require("./routes/authProviders"));
 
 app.ws("/api/ws/term", require("./routes/term"));
 app.ws("/api/ws/guac", require("./routes/guac"));
 app.ws("/api/ws/sftp", require("./routes/sftpWS"));
+app.ws("/api/ws/ai", require("./routes/aiWS"));
 app.ws("/api/ws/tunnel", require("./routes/tunnel"));
 app.ws("/api/ws/state", require("./routes/state"));
 
 app.use("/api/entries/sftp", require("./routes/sftp"));
 
-app.use("/api/users", authenticate, isAdmin, require("./routes/users"));
-app.use("/api/sources", authenticate, isAdmin, require("./routes/source"));
+app.use("/api/users", authenticate, requirePermission(Permission.USERS_VIEW), require("./routes/users"));
+app.use("/api/permissions", authenticate, requirePermission(Permission.PERMISSIONS_MANAGE), require("./routes/permissions"));
+app.use("/api/sources", authenticate, requirePermission(Permission.SETTINGS_SOURCES), require("./routes/source"));
 app.use("/api/ai", authenticate, require("./routes/ai"));
 app.use("/api/sessions", authenticate, require("./routes/session"));
 app.use("/api/connections", authenticate, require("./routes/serverSession"));
@@ -74,8 +79,8 @@ app.use("/api/organizations", authenticate, require("./routes/organization"));
 app.use("/api/tags", authenticate, require("./routes/tag"));
 app.use("/api/keymaps", authenticate, require("./routes/keymap"));
 app.use("/api/backup/export", require("./routes/backupExport"));
-app.use("/api/backup", authenticate, isAdmin, require("./routes/backup"));
-app.use("/api/engines", authenticate, isAdmin, require("./routes/engine"));
+app.use("/api/backup", authenticate, requirePermission(Permission.SETTINGS_BACKUP), require("./routes/backup"));
+app.use("/api/engines", authenticate, requirePermission(Permission.SETTINGS_ENGINES), require("./routes/engine"));
 
 app.use("/api/scripts", authenticate, require("./routes/scripts"));
 app.use("/api/themes", authenticate, require("./routes/theme"));
@@ -117,6 +122,8 @@ db.authenticate()
         monitoringService.start();
 
         pveMonitoringService.start();
+
+        integrationSyncService.start();
 
         recordingService.start();
 
@@ -177,6 +184,7 @@ process.on("SIGINT", async () => {
 
     monitoringService.stop();
     pveMonitoringService.stop();
+    integrationSyncService.stop();
     recordingService.stop();
     stopStatusChecker();
     stopSourceSyncService();

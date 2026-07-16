@@ -23,6 +23,8 @@ export const LoginDialog = ({ open }) => {
     const [code, setCode] = useState("");
     const [providers, setProviders] = useState([]);
     const [internalAuthEnabled, setInternalAuthEnabled] = useState(true);
+    const [registrationEnabled, setRegistrationEnabled] = useState(false);
+    const [registerMode, setRegisterMode] = useState(false);
     const [passkeyLoading, setPasskeyLoading] = useState(false);
 
     const [qrMode, setQrMode] = useState(false);
@@ -36,8 +38,10 @@ export const LoginDialog = ({ open }) => {
 
     const { updateSessionToken, firstTimeSetup } = useContext(UserContext);
 
+    const registrationView = firstTimeSetup || registerMode;
+
     const isInternalAuthEnabled = () => {
-        if (firstTimeSetup) return true;
+        if (registrationView) return true;
         return internalAuthEnabled;
     };
 
@@ -50,6 +54,7 @@ export const LoginDialog = ({ open }) => {
             
             const internalAuthEnabled = internalProvider ? Boolean(internalProvider.enabled) : false;
             setInternalAuthEnabled(internalAuthEnabled);
+            setRegistrationEnabled(internalProvider ? Boolean(internalProvider.allowRegistration) : false);
             setProviders(externalProviders);
 
             if (!firstTimeSetup && externalProviders.length === 1 && !internalAuthEnabled) {
@@ -70,7 +75,11 @@ export const LoginDialog = ({ open }) => {
 
     const createAccountFirst = async () => {
         try {
-            await request("accounts/register", "POST", { username, password, firstName, lastName });
+            const result = await request("accounts/register", "POST", { username, password, firstName, lastName });
+            if (result?.code) {
+                sendToast("Error", result.message || t('common.errors.generalError'));
+                return false;
+            }
             return true;
         } catch (error) {
             sendToast("Error", error.message || t('common.errors.generalError'));
@@ -86,7 +95,7 @@ export const LoginDialog = ({ open }) => {
             return;
         }
 
-        if (firstTimeSetup && !await createAccountFirst()) return;
+        if (registrationView && !await createAccountFirst()) return;
 
         let resultObj;
         try {
@@ -203,7 +212,7 @@ export const LoginDialog = ({ open }) => {
             <div className={"login-dialog" + (qrMode ? " qr-mode" : "")}>
                 <div className="login-logo">
                     <NextermLogo size={48} />
-                    <h1>{firstTimeSetup ? t('common.loginDialog.registrationTitle') : t('common.loginDialog.title')}</h1>
+                    <h1>{registrationView ? t('common.loginDialog.registrationTitle') : t('common.loginDialog.title')}</h1>
                 </div>
 
                 {qrMode ? (
@@ -231,7 +240,7 @@ export const LoginDialog = ({ open }) => {
                     </div>
                 ) : (
                 <form className="login-form" onSubmit={submit}>
-                    {firstTimeSetup ? (
+                    {registrationView ? (
                         <div className="register-name-row">
                             <div className="form-group">
                                 <label htmlFor="firstName">{t('common.labels.firstName')}</label>
@@ -267,19 +276,26 @@ export const LoginDialog = ({ open }) => {
                     ) : null}
 
                     {totpRequired ? (
-                        <>
-                            <div className="form-group">
-                                <label htmlFor="code">{t('common.labels.twoFACode')}</label>
-                                <Input type="number" id="code" required icon={mdiKeyOutline}
-                                       placeholder={t('common.placeholders.code')} autoComplete="one-time-code"
-                                       value={code} setValue={setCode} />
-                            </div>
-                        </>
+                        <div className="form-group">
+                            <label htmlFor="code">{t('common.labels.twoFACode')}</label>
+                            <Input type="number" id="code" required icon={mdiKeyOutline}
+                                   placeholder={t('common.placeholders.code')} autoComplete="one-time-code"
+                                   value={code} setValue={setCode} />
+                        </div>
                     ) : null}
 
-                    {isInternalAuthEnabled() ? <Button text={firstTimeSetup ? t('common.actions.register') : t('common.actions.login')} /> : null}
+                    {isInternalAuthEnabled() ? <Button text={registrationView ? t('common.actions.register') : t('common.actions.login')} /> : null}
 
-                    {(!firstTimeSetup && !totpRequired) ? (
+                    {(registrationEnabled && !firstTimeSetup && !totpRequired) ? (
+                        <div className="register-switch">
+                            <span>{registerMode ? t('common.loginDialog.haveAccount') : t('common.loginDialog.noAccount')}</span>
+                            <button type="button" onClick={() => setRegisterMode(!registerMode)}>
+                                {registerMode ? t('common.actions.login') : t('common.actions.register')}
+                            </button>
+                        </div>
+                    ) : null}
+
+                    {(!registrationView && !totpRequired) ? (
                         <div className="sso-options">
                             {isInternalAuthEnabled() && (
                                 <div className="divider">
@@ -317,7 +333,7 @@ export const LoginDialog = ({ open }) => {
                         </div>
                     ) : null}
 
-                    {(!firstTimeSetup && !isInternalAuthEnabled() && providers.length === 0) ? (
+                    {(!registrationView && !isInternalAuthEnabled() && providers.length === 0) ? (
                         <p>{t('common.loginDialog.noAuthMethodsAvailable')}</p>
                     ) : null}
                 </form>

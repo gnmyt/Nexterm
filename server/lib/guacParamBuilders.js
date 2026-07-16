@@ -34,6 +34,7 @@ const buildRdpParams = async (cfg, identity, accountId) => {
         "ignore-cert": "true",
         "server-layout": cfg.keyboardLayout || "en-us-qwerty",
         "resize-method": (cfg.resizeMethod && cfg.resizeMethod !== "none") ? cfg.resizeMethod : "display-update",
+        "secondary-monitors": 3,
     };
 
     if (identity) {
@@ -84,4 +85,6 @@ const buildVncParams = async (cfg, identity) => {
     return params;
 };
 
-module.exports = { buildPveQemuParams, buildRdpParams, buildVncParams };
+const buildDemoParams = async () => ({});
+
+module.exports = { buildPveQemuParams, buildRdpParams, buildVncParams, buildDemoParams };

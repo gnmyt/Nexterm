@@ -10,7 +10,10 @@ const PROTOCOL_OPTIONS = [
     { label: "SSH", value: "ssh" },
     { label: "Telnet", value: "telnet" },
     { label: "RDP", value: "rdp" },
-    { label: "VNC", value: "vnc" }
+    { label: "VNC", value: "vnc" },
+    { label: "SFTP", value: "sftp" },
+    { label: "FTP", value: "ftp" },
+    { label: "FTPS", value: "ftps" }
 ];
 
 const DetailsPage = ({name, setName, icon, setIcon, config, setConfig, fieldConfig}) => {
@@ -93,27 +96,6 @@ const DetailsPage = ({name, setName, icon, setIcon, config, setConfig, fieldConf
                         </>
                     )}
                 </>
-            )}
-
-            {fieldConfig.showPveConfig && fieldConfig.pveFields && (
-                <div className="pve-config-row">
-                    {fieldConfig.pveFields.includes("nodeName") && (
-                        <div className="form-group">
-                            <label htmlFor="nodeName">{t("servers.dialog.fields.nodeName")}</label>
-                            <Input icon={mdiIp} type="text" placeholder={t("servers.dialog.placeholders.nodeName")} 
-                                   id="nodeName" autoComplete="off" value={config.nodeName || ""} 
-                                   setValue={(value) => setConfig(prev => ({ ...prev, nodeName: value }))} />
-                        </div>
-                    )}
-                    {fieldConfig.pveFields.includes("vmid") && (
-                        <div className="form-group">
-                            <label htmlFor="vmid">{t("servers.dialog.fields.vmid")}</label>
-                            <input type="text" placeholder={t("servers.dialog.placeholders.vmid")} 
-                                   value={config.vmid || ""} className="small-input" id="vmid"
-                                   onChange={(e) => setConfig(prev => ({ ...prev, vmid: e.target.value }))} />
-                        </div>
-                    )}
-                </div>
             )}
         </>
     );

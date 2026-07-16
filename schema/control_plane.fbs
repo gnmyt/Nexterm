@@ -19,6 +19,8 @@ enum MessageType : byte {
 
     ExecCommand = 30,
     ExecCommandResult = 31,
+    ExecBatch = 32,
+    ExecBatchResult = 33,
 
     PortCheck = 40,
     PortCheckResult = 41,
@@ -37,6 +39,7 @@ enum SessionType : byte {
     Telnet = 4,
     Tunnel = 5,
     WebSocket = 6,
+    Demo = 7,
 }
 
 enum ErrorCode : byte {
@@ -134,6 +137,36 @@ table ExecCommandResult {
     error_message: string;
 }
 
+table ExecBatchCommand {
+    id: string;
+    command: string;
+}
+
+table ExecBatch {
+    request_id: string;
+    host: string;
+    port: uint16;
+    params: [ConnectionParam];
+    commands: [ExecBatchCommand];
+    jump_hosts: [JumpHost];
+}
+
+table ExecBatchEntry {
+    id: string;
+    success: bool;
+    stdout_data: string;
+    stderr_data: string;
+    exit_code: int32;
+    error_message: string;
+}
+
+table ExecBatchResult {
+    request_id: string;
+    success: bool;
+    error_message: string;
+    results: [ExecBatchEntry];
+}
+
 table ConnectionReady {
     session_id: string;
     connection_id: string;
@@ -220,6 +253,8 @@ table Envelope {
     connection_error: ConnectionError;
     exec_command: ExecCommand;
     exec_command_result: ExecCommandResult;
+    exec_batch: ExecBatch;
+    exec_batch_result: ExecBatchResult;
     port_check: PortCheck;
     port_check_result: PortCheckResult;
     http_fetch: HttpFetch;

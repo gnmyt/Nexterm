@@ -161,24 +161,20 @@
         color: colors.$subtext
         font-size: 0.8rem
 
-  .role-badge
-    padding: 0.25rem 0.625rem
-    border-radius: 0.5rem
-    font-size: 0.75rem
-    font-weight: 500
-    text-transform: capitalize
+  .group-badges
+    display: flex
+    flex-wrap: wrap
+    gap: 0.35rem
 
-    @media (max-width: breakpoints.$mobile)
-      padding: 0.2rem 0.5rem
-      font-size: 0.7rem
+    .group-badge
+      padding: 0.2rem 0.55rem
+      border-radius: 0.5rem
+      font-size: 0.72rem
+      font-weight: 600
 
-    &.admin
-      background-color: colors.$primary-opacity
-      color: colors.$primary
-
-    &.user
-      background-color: colors.$gray
-      color: colors.$subtext
+      @media (max-width: breakpoints.$mobile)
+        padding: 0.18rem 0.45rem
+        font-size: 0.68rem
 
   .totp-badge
     display: flex

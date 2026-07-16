@@ -19,6 +19,10 @@ export const AI = () => {
         apiKey: "",
         apiUrl: "http://localhost:11434",
         hasApiKey: false,
+        authMethod: "api_key",
+        subscriptionConnected: false,
+        subscriptionProvider: null,
+        requireConfirmation: true,
     });
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
@@ -26,14 +30,41 @@ export const AI = () => {
     const [loadingModels, setLoadingModels] = useState(false);
     const [availableModels, setAvailableModels] = useState([]);
     const [showApiKey, setShowApiKey] = useState(false);
+    const [oauthCode, setOauthCode] = useState("");
+    const [connecting, setConnecting] = useState(false);
+    const [providers, setProviders] = useState([]);
     const { sendToast } = useToast();
     const { loadAISettings } = useAI();
 
-    const providerOptions = [
+    const providerOptions = useMemo(() => [
         { value: "", label: t("settings.ai.selectProvider") },
-        { value: "ollama", label: "Ollama" },
-        { value: "openai", label: "OpenAI" },
-        { value: "openai_compatible", label: "OpenAI Compatible" },
+        ...providers.map(p => ({ value: p.id, label: p.label })),
+    ], [providers, t]);
+
+    const currentProvider = useMemo(
+        () => providers.find(p => p.id === settings.provider) || null,
+        [providers, settings.provider]);
+
+    const providerFields = currentProvider?.fields || {};
+    const supportsApiKey = Boolean(providerFields.apiKey);
+    const supportsSubscription = Boolean(providerFields.subscription);
+    const showAuthToggle = supportsApiKey && supportsSubscription;
+    const subscriptionName = currentProvider?.subscriptionLabel || currentProvider?.label || "";
+
+    const effectiveAuthMethod = useMemo(() => {
+        if (supportsSubscription && !supportsApiKey) return "subscription";
+        if (supportsApiKey && !supportsSubscription) return "api_key";
+        return settings.authMethod === "subscription" ? "subscription" : "api_key";
+    }, [supportsSubscription, supportsApiKey, settings.authMethod]);
+
+    const subscriptionConnected = Boolean(settings.subscriptionProvider)
+        && settings.subscriptionProvider === settings.provider;
+
+    const isCodexProvider = settings.provider === "openai_codex";
+
+    const authMethodOptions = [
+        { value: "api_key", label: t("settings.ai.authMethod.apiKey") },
+        { value: "subscription", label: t("settings.ai.authMethod.subscription") },
     ];
 
     const modelOptions = useMemo(() => {
@@ -57,19 +88,28 @@ export const AI = () => {
             setLoadingModels(true);
             const response = await getRequest("ai/models");
             setAvailableModels(response.models || []);
-        } catch (error) {
+        } catch {
             setAvailableModels([]);
         } finally {
             setLoadingModels(false);
         }
     }, [settings.provider]);
 
+    const loadProviders = useCallback(async () => {
+        try {
+            const response = await getRequest("ai/providers");
+            setProviders(response.providers || []);
+        } catch {
+            setProviders([]);
+        }
+    }, []);
+
     const loadSettings = async () => {
         try {
             setLoading(true);
             const response = await getRequest("ai");
             setSettings(prev => ({ ...prev, ...response }));
-        } catch (error) {
+        } catch {
             sendToast(t("common.error"), t("settings.ai.errors.loadSettings"));
         } finally {
             setLoading(false);
@@ -84,6 +124,8 @@ export const AI = () => {
                 provider: settings.provider || null,
                 model: settings.model || null,
                 apiUrl: settings.apiUrl || null,
+                authMethod: settings.authMethod,
+                requireConfirmation: settings.requireConfirmation,
             };
 
             if (updateData.provider === "") updateData.provider = null;
@@ -101,7 +143,7 @@ export const AI = () => {
             sendToast(t("common.success"), t("settings.ai.saveSuccess"));
 
             loadAISettings();
-        } catch (error) {
+        } catch {
             sendToast(t("common.error"), t("settings.ai.errors.saveSettings"));
         } finally {
             setSaving(false);
@@ -125,31 +167,68 @@ export const AI = () => {
     }, []);
 
     const handleProviderChange = useCallback((provider) => {
+        const descriptor = providers.find(p => p.id === provider);
         setSettings(prev => ({
             ...prev,
             provider: provider,
             model: "",
-            apiUrl: provider === "ollama" ? "http://localhost:11434" : 
-                   provider === "openai_compatible" ? "" : prev.apiUrl,
+            apiUrl: descriptor?.fields?.baseUrl ? (descriptor.fields.baseUrl.default || "") : prev.apiUrl,
         }));
-    }, []);
+    }, [providers]);
+
+    const startSubscriptionConnect = async () => {
+        try {
+            setConnecting(true);
+            const response = await postRequest("ai/oauth/start", { provider: settings.provider });
+            if (response.authUrl) window.open(response.authUrl, "_blank", "noopener,noreferrer");
+        } catch {
+            sendToast(t("common.error"), t("settings.ai.subscription.startError"));
+        } finally {
+            setConnecting(false);
+        }
+    };
+
+    const completeSubscriptionConnect = async () => {
+        if (!oauthCode.trim()) return;
+        try {
+            setConnecting(true);
+            await postRequest("ai/oauth/exchange", { code: oauthCode.trim(), provider: settings.provider });
+            setSettings(prev => ({ ...prev, subscriptionConnected: true, subscriptionProvider: prev.provider }));
+            setOauthCode("");
+            sendToast(t("common.success"), t("settings.ai.subscription.connectSuccess", { provider: subscriptionName }));
+            loadModels();
+        } catch (error) {
+            sendToast(t("common.error"), error.message || t("settings.ai.subscription.exchangeError"));
+        } finally {
+            setConnecting(false);
+        }
+    };
+
+    const disconnectSubscription = async () => {
+        try {
+            await postRequest("ai/oauth/disconnect", { provider: settings.provider });
+            setSettings(prev => ({ ...prev, subscriptionConnected: false, subscriptionProvider: null, model: "" }));
+            setAvailableModels([]);
+        } catch {
+            sendToast(t("common.error"), t("settings.ai.subscription.disconnectError"));
+        }
+    };
 
     const isConfigurationValid = () => {
-        if (!settings.enabled) return false;
-        if (!settings.provider) return false;
-        if (!settings.model) return false;
+        if (!settings.enabled || !settings.provider || !settings.model) return false;
+        if (!currentProvider) return false;
 
-        if (settings.provider === "openai" && !settings.apiKey && !settings.hasApiKey) return false;
-        if (settings.provider === "openai_compatible") {
-            if (!settings.apiUrl) return false;
-            if (!settings.apiKey && !settings.hasApiKey) return false;
-        }
+        const { fields } = currentProvider;
+        if (effectiveAuthMethod === "subscription") return subscriptionConnected;
+        if (fields.baseUrl && !settings.apiUrl && !fields.baseUrl.default) return false;
+        if (fields.apiKey && !settings.apiKey && !settings.hasApiKey) return false;
         return true;
     };
 
     useEffect(() => {
         loadSettings();
-    }, []);
+        loadProviders();
+    }, [loadProviders]);
 
     useEffect(() => {
         if (settings.provider) {
@@ -158,6 +237,27 @@ export const AI = () => {
             setAvailableModels([]);
         }
     }, [settings.provider, loadModels]);
+
+    const renderApiKeyField = () => (
+        <div className="setting-item">
+            <div className="setting-label">
+                <h4>{t("settings.ai.apiKey.title")}</h4>
+                <p>{t("settings.ai.apiKey.genericDescription")}</p>
+            </div>
+            <div className="setting-input api-key-input">
+                <IconInput
+                    icon={showApiKey ? mdiEyeOff : mdiEye}
+                    type={showApiKey ? "text" : "password"}
+                    value={settings.apiKey}
+                    setValue={(value) => handleInputChange("apiKey", value)}
+                    placeholder={settings.hasApiKey
+                        ? t("settings.ai.apiKey.setPlaceholder")
+                        : t("settings.ai.apiKey.genericPlaceholder", { provider: currentProvider?.label || "" })}
+                    onIconClick={() => setShowApiKey(!showApiKey)}
+                />
+            </div>
+        </div>
+    );
 
     if (loading) return <div className="ai-settings-loading">{t("settings.ai.loading")}</div>;
 
@@ -204,65 +304,79 @@ export const AI = () => {
                                     </div>
                                 </div>
 
-                                {settings.provider === "openai" && (
+                                {showAuthToggle && (
                                     <div className="setting-item">
                                         <div className="setting-label">
-                                            <h4>{t("settings.ai.apiKey.title")}</h4>
-                                            <p>{t("settings.ai.apiKey.description")}</p>
+                                            <h4>{t("settings.ai.authMethod.title")}</h4>
+                                            <p>{t("settings.ai.authMethod.description")}</p>
                                         </div>
-                                        <div className="setting-input api-key-input">
-                                            <IconInput
-                                                icon={showApiKey ? mdiEyeOff : mdiEye}
-                                                type={showApiKey ? "text" : "password"}
-                                                value={settings.apiKey}
-                                                setValue={(value) => handleInputChange("apiKey", value)}
-                                                placeholder={settings.hasApiKey ? t("settings.ai.apiKey.setPlaceholder") : t("settings.ai.apiKey.placeholder")}
-                                                onIconClick={() => setShowApiKey(!showApiKey)}
-                                            />
+                                        <div className="setting-input">
+                                            <SelectBox options={authMethodOptions}
+                                                       selected={effectiveAuthMethod}
+                                                       setSelected={(value) => handleInputChange("authMethod", value)} />
                                         </div>
                                     </div>
                                 )}
 
-                                {settings.provider === "openai_compatible" && (
+                                {effectiveAuthMethod === "subscription" ? (
                                     <div className="setting-item">
                                         <div className="setting-label">
-                                            <h4>{t("settings.ai.apiKey.title")}</h4>
-                                            <p>{t("settings.ai.apiKey.description")}</p>
+                                            <h4>{t("settings.ai.subscription.title", { provider: subscriptionName })}</h4>
+                                            <p>{subscriptionConnected
+                                                ? t("settings.ai.subscription.connectedDescription", { provider: subscriptionName })
+                                                : t("settings.ai.subscription.description", { provider: subscriptionName })}</p>
                                         </div>
-                                        <div className="setting-input">
-                                            <IconInput icon={mdiRobot} value={settings.apiUrl}
-                                                       setValue={(value) => handleInputChange("apiUrl", value)}
-                                                       placeholder={`${t("settings.ai.ollamaUrl.placeholder")}/compatible-mode/v1`} />
-                                        </div>
-                                        <div className="setting-input api-key-input">
-                                            <IconInput
-                                                icon={showApiKey ? mdiEyeOff : mdiEye}
-                                                type={showApiKey ? "text" : "password"}
-                                                value={settings.apiKey}
-                                                setValue={(value) => handleInputChange("apiKey", value)}
-                                                placeholder={settings.hasApiKey ? t("settings.ai.apiKey.setPlaceholder") : t("settings.ai.apiKey.placeholder")}
-                                                onIconClick={() => setShowApiKey(!showApiKey)}
-                                            />
-                                        </div>
-                                    </div>
-                                )}
-
-
-                                {settings.provider === "ollama" && (
-                                    <div className="setting-item">
-                                        <div className="setting-label">
-                                            <h4>{t("settings.ai.ollamaUrl.title")}</h4>
-                                            <p>{t("settings.ai.ollamaUrl.description")}</p>
-                                        </div>
-                                        <div className="setting-input">
-                                            <IconInput icon={mdiRobot} value={settings.apiUrl}
-                                                       setValue={(value) => handleInputChange("apiUrl", value)}
-                                                       placeholder={t("settings.ai.ollamaUrl.placeholder")} />
+                                        <div className="setting-input subscription-connect">
+                                            {subscriptionConnected ? (
+                                                <Button text={t("settings.ai.subscription.disconnect")} type="secondary"
+                                                        onClick={disconnectSubscription} />
+                                            ) : (
+                                                <>
+                                                    <Button text={connecting ? t("settings.ai.subscription.connecting") : t("settings.ai.subscription.connect")}
+                                                            type="primary" disabled={connecting} onClick={startSubscriptionConnect} />
+                                                    <div className="code-row">
+                                                        <IconInput icon={mdiRobot} value={oauthCode}
+                                                                   setValue={setOauthCode}
+                                                                   placeholder={isCodexProvider
+                                                                       ? t("settings.ai.subscription.codePlaceholderUrl")
+                                                                       : t("settings.ai.subscription.codePlaceholder")} />
+                                                        <Button text={t("settings.ai.subscription.complete")} type="secondary"
+                                                                disabled={connecting || !oauthCode.trim()} onClick={completeSubscriptionConnect} />
+                                                    </div>
+                                                </>
+                                            )}
                                         </div>
                                     </div>
+                                ) : (
+                                    <>
+                                        {currentProvider?.fields?.baseUrl && (
+                                            <div className="setting-item">
+                                                <div className="setting-label">
+                                                    <h4>{t("settings.ai.baseUrl.title")}</h4>
+                                                    <p>{t("settings.ai.baseUrl.description")}</p>
+                                                </div>
+                                                <div className="setting-input">
+                                                    <IconInput icon={mdiRobot} value={settings.apiUrl}
+                                                               setValue={(value) => handleInputChange("apiUrl", value)}
+                                                               placeholder={currentProvider.fields.baseUrl.default || t("settings.ai.baseUrl.placeholder")} />
+                                                </div>
+                                            </div>
+                                        )}
+
+                                        {currentProvider?.fields?.apiKey && renderApiKeyField()}
+                                    </>
                                 )}
                             </>
                         )}
+
+                        <div className="setting-item">
+                            <div className="setting-label">
+                                <h4>{t("settings.ai.requireConfirmation.title")}</h4>
+                                <p>{t("settings.ai.requireConfirmation.description")}</p>
+                            </div>
+                            <ToggleSwitch onChange={(value) => handleInputChange("requireConfirmation", value)}
+                                          id="ai-require-confirmation" checked={settings.requireConfirmation} />
+                        </div>
                     </>
                 )}
             </div>

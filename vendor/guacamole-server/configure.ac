@@ -1391,6 +1391,18 @@ AM_CONDITIONAL([ENABLE_WEBSOCKETS],
 AC_SUBST(WEBSOCKETS_LIBS)
 
 #
+# Demo
+#
+
+AC_ARG_ENABLE([demo],
+              [AS_HELP_STRING([--disable-demo],
+                              [do not build support for the demo protocol])],
+              [],
+              [enable_demo=yes])
+
+AM_CONDITIONAL([ENABLE_DEMO], [test "x${enable_demo}" = "xyes"])
+
+#
 # Kubernetes
 #
 
@@ -1467,6 +1479,7 @@ AC_CONFIG_FILES([Makefile
                  src/guaclog/Makefile
                  src/guaclog/man/guaclog.1
                  src/pulse/Makefile
+                 src/protocols/demo/Makefile
                  src/protocols/kubernetes/Makefile
                  src/protocols/kubernetes/tests/Makefile
                  src/protocols/rdp/Makefile
@@ -1480,6 +1493,7 @@ AC_OUTPUT
 # Protocol build status
 #
 
+AM_COND_IF([ENABLE_DEMO],       [build_demo=yes],       [build_demo=no])
 AM_COND_IF([ENABLE_KUBERNETES], [build_kubernetes=yes], [build_kubernetes=no])
 AM_COND_IF([ENABLE_RDP],        [build_rdp=yes],        [build_rdp=no])
 AM_COND_IF([ENABLE_SSH],        [build_ssh=yes],        [build_ssh=no])
@@ -1541,6 +1555,7 @@ $PACKAGE_NAME version $PACKAGE_VERSION
 
    Protocol support:
 
+      Demo .......... ${build_demo}
       Kubernetes .... ${build_kubernetes}
       RDP ........... ${build_rdp}
       SSH ........... ${build_ssh}

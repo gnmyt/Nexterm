@@ -68,6 +68,11 @@ module.exports = db.define("oidc_providers", {
             allowNull: false,
             defaultValue: false,
         },
+        allowRegistration: {
+            type: Sequelize.BOOLEAN,
+            allowNull: false,
+            defaultValue: false,
+        },
     },
     {
         freezeTableName: true,

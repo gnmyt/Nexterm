@@ -1,11 +1,19 @@
 const Script = require("../models/Script");
 const { Op } = require("sequelize");
+const { hasResourcePermission } = require("../utils/permission");
+const { Permission } = require("../permissions/registry");
 
-const getWhereClause = (id, accountId, organizationId) => organizationId 
-    ? { id, organizationId } 
+const getWhereClause = (id, accountId, organizationId) => organizationId
+    ? { id, organizationId }
     : { id, accountId, organizationId: null };
 
+const canManage = (accountId, organizationId) =>
+    hasResourcePermission(accountId, organizationId, Permission.SCRIPTS_MANAGE);
+
 module.exports.createScript = async (accountId, configuration) => {
+    if (!(await canManage(accountId, configuration.organizationId)))
+        return { code: 403, message: "You don't have permission to manage scripts" };
+
     const maxSortOrder = await Script.max('sortOrder', {
         where: configuration.organizationId 
             ? { organizationId: configuration.organizationId }
@@ -19,6 +27,8 @@ module.exports.createScript = async (accountId, configuration) => {
 };
 
 module.exports.deleteScript = async (accountId, scriptId, organizationId = null) => {
+    if (!(await canManage(accountId, organizationId)))
+        return { code: 403, message: "You don't have permission to manage scripts" };
     const script = await Script.findOne({ where: getWhereClause(scriptId, accountId, organizationId) });
     if (!script) return { code: 404, message: "Script does not exist" };
     if (script.sourceId) return { code: 403, message: "Cannot delete source-synced scripts" };
@@ -26,6 +36,8 @@ module.exports.deleteScript = async (accountId, scriptId, organizationId = null)
 };
 
 module.exports.editScript = async (accountId, scriptId, configuration, organizationId = null) => {
+    if (!(await canManage(accountId, organizationId)))
+        return { code: 403, message: "You don't have permission to manage scripts" };
     const script = await Script.findOne({ where: getWhereClause(scriptId, accountId, organizationId) });
     if (!script) return { code: 404, message: "Script does not exist" };
     if (script.sourceId) return { code: 403, message: "Cannot edit source-synced scripts" };
@@ -35,7 +47,9 @@ module.exports.editScript = async (accountId, scriptId, configuration, organizat
 
 module.exports.repositionScript = async (accountId, scriptId, { targetId }, organizationId = null) => {
     if (!targetId || parseInt(scriptId) === parseInt(targetId)) return { success: true };
-    
+    if (!(await canManage(accountId, organizationId)))
+        return { code: 403, message: "You don't have permission to manage scripts" };
+
     const script = await Script.findOne({ where: getWhereClause(scriptId, accountId, organizationId) });
     if (!script) return { code: 404, message: "Script does not exist" };
     if (script.sourceId) return { code: 403, message: "Cannot reorder source-synced scripts" };

@@ -11,6 +11,9 @@ import {
     mdiViewGrid,
     mdiFileMove,
     mdiContentCopy,
+    mdiMagnify,
+    mdiClose,
+    mdiRefresh,
 } from "@mdi/js";
 import { Fragment, useState, useRef, useEffect, useCallback } from "react";
 import { ContextMenu, ContextMenuItem, useContextMenu } from "@/common/components/ContextMenu";
@@ -23,6 +26,7 @@ export const ActionBar = ({
                               createFile,
                               createFolder,
                               uploadFile,
+                              refreshFiles,
                               goBack,
                               goForward,
                               historyIndex,
@@ -35,6 +39,13 @@ export const ActionBar = ({
                               moveFiles,
                               copyFiles,
                               sessionId,
+                              searchQuery,
+                              setSearchQuery,
+                              searchOpen,
+                              setSearchOpen,
+                              closeSearch,
+                              searchResultCount,
+                              capabilities = { shell: true },
                           }) => {
     const [isEditing, setIsEditing] = useState(false);
     const [editPath, setEditPath] = useState(path);
@@ -46,6 +57,7 @@ export const ActionBar = ({
     const dropMenu = useContextMenu();
 
     const inputRef = useRef(null);
+    const searchInputRef = useRef(null);
     const suggestionsRef = useRef(null);
     const breadcrumbRef = useRef(null);
     const isNavigatingWithKeyboardRef = useRef(false);
@@ -63,7 +75,8 @@ export const ActionBar = ({
 
     const navigate = (displayIndex, isTruncated = false, originalIndex = null) => {
         const pathArray = getPathArray();
-        updatePath(`/${pathArray.slice(0, (isTruncated ? originalIndex : displayIndex) + 1).join("/")}`);
+        const target = `/${pathArray.slice(0, (isTruncated ? originalIndex : displayIndex) + 1).join("/")}`;
+        target === path ? refreshFiles?.() : updatePath(target);
     };
 
     const getTruncatedPathArray = () => {
@@ -97,6 +110,17 @@ export const ActionBar = ({
     useEffect(() => {
         setEditPath(path);
     }, [path]);
+
+    useEffect(() => {
+        if (searchOpen) searchInputRef.current?.focus();
+    }, [searchOpen]);
+
+    const handleSearchKeyDown = (e) => {
+        if (e.key === "Escape") {
+            e.preventDefault();
+            closeSearch?.();
+        }
+    };
 
     useEffect(() => {
         if (isEditing && inputRef.current) {
@@ -264,7 +288,7 @@ export const ActionBar = ({
             <>
                 <div 
                     className={`path-part-divider root-drop ${dropTarget === "/" ? "drop-target" : ""}`}
-                    onClick={(e) => { e.stopPropagation(); updatePath("/"); }}
+                    onClick={(e) => { e.stopPropagation(); path === "/" ? refreshFiles?.() : updatePath("/"); }}
                     onDragOver={(e) => handlePathDragOver(e, "/")}
                     onDragLeave={handlePathDragLeave}
                     onDrop={(e) => handlePathDrop(e, "/")}
@@ -340,10 +364,26 @@ export const ActionBar = ({
                 )}
             </div>
 
+            {searchOpen && (
+                <div className="file-search">
+                    <input ref={searchInputRef} className="search-input" type="text" value={searchQuery}
+                           onChange={(e) => setSearchQuery(e.target.value)} onKeyDown={handleSearchKeyDown}
+                           placeholder={t("servers.fileManager.search.placeholder")} autoComplete="off" spellCheck="false" />
+                    {searchQuery.trim() && (
+                        <span className="search-count">{t("servers.fileManager.search.results", { count: searchResultCount })}</span>
+                    )}
+                    <Icon path={mdiClose} className="search-close" onClick={closeSearch}
+                          title={t("servers.fileManager.actionBar.closeSearch")} />
+                </div>
+            )}
+
             <div className="file-actions">
+                <Icon path={mdiMagnify} onClick={() => searchOpen ? closeSearch?.() : setSearchOpen?.(true)}
+                      className={searchOpen ? "active" : ""} title={t("servers.fileManager.actionBar.search")} />
                 <Icon path={viewMode === "list" ? mdiViewGrid : mdiViewList}
                       onClick={() => setViewMode(viewMode === "list" ? "grid" : "list")}
                       title={viewMode === "list" ? t("servers.fileManager.actionBar.switchToGrid") : t("servers.fileManager.actionBar.switchToList")} />
+                <Icon path={mdiRefresh} onClick={refreshFiles} title={t("servers.fileManager.actionBar.refresh")} />
                 <Icon path={mdiFileUpload} onClick={uploadFile} />
                 <Icon path={mdiFilePlus} onClick={createFile} />
                 <Icon path={mdiFolderPlus} onClick={createFolder} />
@@ -351,7 +391,7 @@ export const ActionBar = ({
 
             <ContextMenu isOpen={dropMenu.isOpen} position={dropMenu.position} onClose={() => { dropMenu.close(); setPendingDrop(null); }}>
                 <ContextMenuItem icon={mdiFileMove} label={t("servers.fileManager.contextMenu.moveHere")} onClick={() => handleDropAction("move")} />
-                <ContextMenuItem icon={mdiContentCopy} label={t("servers.fileManager.contextMenu.copyHere")} onClick={() => handleDropAction("copy")} />
+                {capabilities.shell && <ContextMenuItem icon={mdiContentCopy} label={t("servers.fileManager.contextMenu.copyHere")} onClick={() => handleDropAction("copy")} />}
             </ContextMenu>
         </div>
     );

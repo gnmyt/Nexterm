@@ -10,7 +10,7 @@ export const useKeymaps = () => {
     return context;
 };
 
-const isMac = () =>
+export const isMac = () =>
     navigator.userAgentData
         ? navigator.userAgentData.platform === "macOS"
         : /Mac/i.test(navigator.userAgent);

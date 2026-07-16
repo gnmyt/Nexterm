@@ -98,9 +98,16 @@ build_engine() {
     cd "$ENGINE_SRC"
     mkdir -p build
     cd build
-    cmake .. -DCMAKE_BUILD_TYPE=Release
+    cmake .. -DCMAKE_BUILD_TYPE=RelWithDebInfo
     make -j"$(nproc)"
-    strip nexterm-engine 2>/dev/null || true
+    if command -v objcopy >/dev/null 2>&1; then
+        objcopy --only-keep-debug nexterm-engine nexterm-engine.debug 2>/dev/null || true
+        strip --strip-debug --keep-file-symbols nexterm-engine 2>/dev/null \
+            || strip --strip-debug nexterm-engine 2>/dev/null || true
+        objcopy --add-gnu-debuglink=nexterm-engine.debug nexterm-engine 2>/dev/null || true
+    else
+        strip --strip-debug nexterm-engine 2>/dev/null || true
+    fi
     file nexterm-engine || true
 }
 

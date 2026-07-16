@@ -324,14 +324,23 @@ Guacamole.Client = function(tunnel) {
      *
      * @param {!number} height
      *     The height of the screen.
+     *
+     * @param {number} [x_position=0]
+     *     The index of the monitor being sized, where 0 is the primary
+     *     monitor. Monitors are created on demand, and a monitor may be
+     *     removed by sending a width and height of zero.
+     *
+     * @param {number} [top_offset=0]
+     *     The offset of the monitor from the top of the layout, in pixels.
      */
-    this.sendSize = function(width, height) {
+    this.sendSize = function(width, height, x_position, top_offset) {
 
         // Do not send requests if not connected
         if (!isConnected())
             return;
 
-        tunnel.sendMessage("size", width, height);
+        tunnel.sendMessage("size", width, height,
+            x_position || 0, top_offset || 0);
 
     };
 
@@ -835,6 +844,19 @@ Guacamole.Client = function(tunnel) {
     this.onmultitouch = null;
 
     /**
+     * Fired when the remote client is explicitly declaring the layout of the
+     * monitors making up the display, if any. All monitors are rendered to a
+     * single display, and this layout describes the region of that display
+     * occupied by each monitor.
+     *
+     * @event
+     * @param {!Object.<string, {left: number, top: number, width: number, height: number}>} layout
+     *     An object mapping the index of each monitor to the region of the
+     *     display occupied by that monitor.
+     */
+    this.onmultimonlayout = null;
+
+    /**
      * Fired when the current value of a connection parameter is being exposed
      * by the server.
      *
@@ -1035,6 +1057,25 @@ Guacamole.Client = function(tunnel) {
             // Process "multi-touch" property only for true visible layers (not off-screen buffers)
             if (guac_client.onmultitouch && layer instanceof Guacamole.Display.VisibleLayer)
                 guac_client.onmultitouch(layer, parseInt(value));
+
+        },
+
+        "multimon-layout" : function layerMultimonLayout(layer, value) {
+
+            // Process "multimon-layout" property only for true visible layers (not off-screen buffers)
+            if (!guac_client.onmultimonlayout || !(layer instanceof Guacamole.Display.VisibleLayer))
+                return;
+
+            // Ignore malformed layouts rather than tearing down the connection
+            var layout;
+            try {
+                layout = JSON.parse(value);
+            }
+            catch (e) {
+                return;
+            }
+
+            guac_client.onmultimonlayout(layout);
 
         }
 

@@ -1,0 +1,24 @@
+@use "@/common/styles/colors"
+
+.resize-handle
+  position: absolute
+  right: 0
+  bottom: 0
+  box-sizing: border-box
+  width: 1.15rem
+  height: 1.15rem
+  padding: 0.28rem
+  display: flex
+  cursor: nwse-resize
+  color: colors.$subtext
+  touch-action: none
+
+  .resize-handle__grip
+    flex: 1
+    background: repeating-linear-gradient(135deg, currentColor 0 1.5px, transparent 1.5px 4px)
+    border-radius: 0 0 0.25rem 0
+    opacity: 0.4
+    transition: opacity 0.15s ease
+
+  &:hover .resize-handle__grip
+    opacity: 0.85

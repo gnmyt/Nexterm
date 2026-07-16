@@ -7,6 +7,7 @@ const { createRDPToken, createVNCToken } = require("../utils/tokenGenerator");
 const { validateEntryAccess } = require("../controllers/entry");
 const { getOrganizationAuditSettingsInternal } = require("../controllers/audit");
 const { getIdentityCredentials, listIdentities } = require("../controllers/identity");
+const { isApiKeyToken, validateApiKey } = require("../controllers/apiKey");
 const logger = require("../utils/logger");
 
 module.exports.authenticate = async (req, res, next) => {
@@ -18,7 +19,19 @@ module.exports.authenticate = async (req, res, next) => {
     if (headerTrimmed.length !== 2)
         return res.status(400).json({ message: "You need to provide the token in the 'authorization' header" });
 
-    req.session = await Session.findOne({ where: { token: headerTrimmed[1] } });
+    const token = headerTrimmed[1];
+
+    if (isApiKeyToken(token)) {
+        const result = await validateApiKey(token);
+        if (!result)
+            return res.status(401).json({ message: "The provided API key is not valid" });
+
+        req.apiKey = result.apiKey;
+        req.user = result.account;
+        return next();
+    }
+
+    req.session = await Session.findOne({ where: { token } });
 
     if (req.session === null)
         return res.status(401).json({ message: "The provided token is not valid" });
@@ -40,8 +53,13 @@ module.exports.authenticateDownload = async (req, res, next) => {
     if (!session) return res.status(401).json({ message: "Invalid token" });
     
     const user = await Account.findByPk(session.accountId);
-    if (!user || user.role !== "admin") return res.status(403).json({ message: "Admin access required" });
-    
+    if (!user) return res.status(401).json({ message: "Invalid token" });
+
+    const { hasSystemPermission } = require("../permissions/engine");
+    const { Permission } = require("../permissions/registry");
+    if (!(await hasSystemPermission(user.id, Permission.SETTINGS_BACKUP)))
+        return res.status(403).json({ message: "Insufficient permissions" });
+
     req.user = user;
     req.session = session;
     next();
@@ -49,10 +67,10 @@ module.exports.authenticateDownload = async (req, res, next) => {
 
 
 module.exports.authorizeGuacamole = async (req) => {
-    const query = req.url.split("?")[1].split("&").map((x) => x.split("=")).reduce((acc, x) => {
-        acc[x[0]] = x[1];
-        return acc;
-    }, {});
+    const qIndex = req.url.indexOf("?");
+    if (qIndex === -1) return;
+    const params = new URLSearchParams(req.url.slice(qIndex + 1));
+    const query = Object.fromEntries(params.entries());
 
     if (Object.keys(query).length === 0) return;
 

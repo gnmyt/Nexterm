@@ -10,6 +10,7 @@
     "download": "Download",
     "maximize": "Maximize",
     "restore": "Restore",
+    "resize": "Resize",
     "actions": {
       "cancel": "Cancel",
       "confirm": "Confirm",
@@ -17,6 +18,7 @@
       "login": "Login",
       "register": "Register",
       "save": "Save",
+      "saving": "Saving…",
       "download": "Download",
       "close": "Close",
       "maximize": "Maximize",
@@ -59,7 +61,9 @@
       "signInWithQrCode": "Sign in with QR Code",
       "qrScanDescription": "Scan this QR code with the Nexterm mobile app to sign in instantly.",
       "backToLogin": "Back to Login",
-      "authenticating": "Authenticating..."
+      "authenticating": "Authenticating...",
+      "noAccount": "Don't have an account?",
+      "haveAccount": "Already have an account?"
     },
     "deviceLink": {
       "title": "Link Device",
@@ -306,9 +310,7 @@
       "actions": {
         "cancel": "Cancel",
         "create": "Create",
-        "save": "Save",
-        "generateAI": "Generate with AI",
-        "generating": "Generating..."
+        "save": "Save"
       }
     },
     "messages": {
@@ -585,7 +587,8 @@
       "ai": "AI",
       "monitoring": "Monitoring",
       "backup": "Storage",
-      "engines": "Engines"
+      "engines": "Engines",
+      "permissions": "Roles & Permissions"
     },
     "account": {
       "title": "Account",
@@ -686,6 +689,34 @@
         "noPasskeys": "No passkeys registered yet",
         "rename": "Rename",
         "delete": "Delete"
+      },
+      "apiKeys": {
+        "sectionTitle": "API Keys",
+        "sectionDescription": "Create API keys to access Nexterm programmatically from scripts and integrations.",
+        "addButton": "Create API Key",
+        "createTitle": "Create API Key",
+        "createDescription": "Give your key a name. The token will be shown only once after creation.",
+        "nameLabel": "Name",
+        "namePlaceholder": "e.g. Deployment script",
+        "nameRequired": "Name is required",
+        "expiryLabel": "Expiration",
+        "expiryNever": "Never",
+        "expiry30": "30 days",
+        "expiry90": "90 days",
+        "expiry365": "1 year",
+        "createButton": "Create",
+        "createdTitle": "API Key Created",
+        "createdWarning": "Copy this token now. For security reasons you won't be able to see it again.",
+        "tokenLabel": "Token",
+        "doneButton": "Done",
+        "createError": "Failed to create API key.",
+        "copyError": "Failed to copy to clipboard.",
+        "confirmDelete": "Are you sure you want to revoke this API key? Any agent using it will lose access.",
+        "noKeys": "No API keys yet",
+        "lastUsed": "Last used {{date}}",
+        "neverUsed": "Never used",
+        "expires": "Expires {{date}}",
+        "delete": "Delete"
       }
     },
     "passwordChange": {
@@ -732,6 +763,8 @@
         "folderManagementDescription": "Log creation, modification, and deletion of folders",
         "scriptExecutionLabel": "Script Execution",
         "scriptExecutionDescription": "Log execution of scripts and automation tasks",
+        "aiOperationsLabel": "AI Operations",
+        "aiOperationsDescription": "Log commands and file changes performed by the AI assistant",
         "actions": {
           "save": "Save Settings"
         },
@@ -775,22 +808,15 @@
       "noSearchResultsDescription": "Try adjusting your search query.",
       "table": {
         "user": "User",
-        "role": "Role",
-        "twoFactor": "2FA"
-      },
-      "roles": {
-        "admin": "Admin",
-        "user": "User"
+        "twoFactor": "2FA",
+        "roles": "Roles"
       },
       "contextMenu": {
         "changePassword": "Change password",
-        "promoteToAdmin": "Promote to admin",
-        "demoteToUser": "Demote to user",
         "deleteUser": "Delete user",
         "loginAsUser": "Login as user",
         "deleteConfirm": "This will permanently delete the user and all associated data.",
-        "promoteConfirm": "This will promote the user to an admin.",
-        "demoteConfirm": "This will demote the user to a regular user."
+        "managePermissions": "Manage permissions"
       }
     },
     "userDialog": {
@@ -830,6 +856,10 @@
         "aimenu": {
           "title": "AI Menu",
           "description": "Open the AI command menu"
+        },
+        "aiaccepttool": {
+          "title": "AI Accept Action",
+          "description": "Approve the pending AI tool action in the assistant"
         },
         "snippets": {
           "title": "Snippets",
@@ -891,6 +921,15 @@
         "disabled": "Disabled",
         "syncEnabled": "Cursor settings will now sync to your account",
         "syncDisabled": "Cursor settings will no longer sync"
+      },
+      "input": {
+        "title": "Input",
+        "description": "Control how keyboard shortcuts behave inside the terminal.",
+        "smartCopyPaste": "Smart Ctrl+C",
+        "enabled": "Enabled",
+        "disabled": "Disabled",
+        "syncEnabled": "Input settings will now sync to your account",
+        "syncDisabled": "Input settings will no longer sync"
       },
       "theme": {
         "title": "Theme",
@@ -955,6 +994,10 @@
       "addLdapProvider": "Add LDAP",
       "system": "System",
       "systemDescription": "Username and password authentication",
+      "registration": {
+        "title": "Self-Registration",
+        "description": "Allow visitors to create their own account from the login screen"
+      },
       "deleteConfirm": "This will permanently delete this authentication provider.",
       "errors": {
         "deleteProvider": "Error deleting provider",
@@ -1044,11 +1087,11 @@
     },
     "ai": {
       "title": "AI Assistant Configuration",
-      "description": "Configure AI-powered command generation for terminal sessions and snippet creation.",
+      "description": "Configure the AI assistant that can run commands and manage files directly over your server sessions.",
       "loading": "Loading AI settings...",
       "enable": {
         "title": "Enable AI Assistant",
-        "description": "Allow users to generate commands using AI"
+        "description": "Allow users to open the AI assistant inside server sessions"
       },
       "provider": {
         "title": "AI Provider",
@@ -1056,18 +1099,43 @@
       },
       "model": {
         "title": "Model",
-        "description": "Select the AI model to use for command generation"
+        "description": "Select the AI model the assistant should use"
+      },
+      "requireConfirmation": {
+        "title": "Confirm before each action",
+        "description": "Require users to approve every command and file change the assistant wants to make"
       },
       "apiKey": {
         "title": "API Key",
-        "description": "Your OpenAI API key for authentication",
-        "placeholder": "Enter your OpenAI API key",
-        "setPlaceholder": "API key is set (leave blank to keep current)"
+        "setPlaceholder": "API key is set (leave blank to keep current)",
+        "genericDescription": "API key used to authenticate with the selected provider",
+        "genericPlaceholder": "Enter your {{provider}} API key"
       },
-      "ollamaUrl": {
-        "title": "Ollama URL",
-        "description": "The URL where your Ollama instance is running",
-        "placeholder": "http://localhost:11434"
+      "authMethod": {
+        "title": "Authentication",
+        "description": "Authenticate with an API key or your provider subscription",
+        "apiKey": "API Key",
+        "subscription": "Subscription"
+      },
+      "subscription": {
+        "title": "{{provider}} Subscription",
+        "description": "Sign in with your {{provider}} subscription to use its models without an API key",
+        "connectedDescription": "Your {{provider}} subscription is connected",
+        "connect": "Connect",
+        "connecting": "Connecting...",
+        "complete": "Complete",
+        "disconnect": "Disconnect",
+        "codePlaceholder": "Paste the authorization code here",
+        "codePlaceholderUrl": "Paste the full callback URL (or code) here",
+        "connectSuccess": "{{provider}} subscription connected",
+        "startError": "Failed to start authorization",
+        "exchangeError": "Failed to connect subscription",
+        "disconnectError": "Failed to disconnect subscription"
+      },
+      "baseUrl": {
+        "title": "API URL",
+        "description": "Base URL of the provider's OpenAI-compatible endpoint",
+        "placeholder": "https://api.example.com/v1"
       },
       "selectProvider": "Select a provider...",
       "selectModel": "Select a model...",
@@ -1368,6 +1436,34 @@
         "deleteFailed": "Failed to delete engine",
         "regenerateFailed": "Failed to regenerate token"
       }
+    },
+    "permissions": {
+      "subtitle": "Create roles with granular permissions or assign permissions to individual users. The Default role applies to everyone automatically.",
+      "createRole": "Create role",
+      "rolesTitle": "Roles",
+      "rolesTab": "Roles",
+      "overridesTab": "Direct permissions",
+      "permissionsTab": "Permissions",
+      "membersTab": "Members",
+      "settingsTab": "Settings",
+      "managePermissions": "Manage permissions",
+      "memberCount_one": "{{count}} member",
+      "memberCount_other": "{{count}} members",
+      "dangerousHint": "Granting this gives broad or destructive access. Assign it with care.",
+      "roleName": "Role name",
+      "roleNamePlaceholder": "e.g. Operators",
+      "roleColor": "Color",
+      "nameRequired": "Please enter a name for the role.",
+      "saveError": "Could not save your changes.",
+      "loadError": "Could not load permissions.",
+      "userSaved": "Permissions updated.",
+      "noAssignableRoles": "No roles available yet. Create one first.",
+      "noMembers": "This role has no members yet.",
+      "addMemberPlaceholder": "Search users to add…",
+      "deleteRole": "Delete role",
+      "deleteConfirm": "This will permanently delete the role \"{{name}}\" and remove it from all members.",
+      "inheritsAllow": "Inherits: Allowed",
+      "inheritsDeny": "Inherits: Denied"
     }
   },
   "tunnel": {
@@ -1431,10 +1527,18 @@
       "telnetServer": "Telnet Server",
       "rdpServer": "RDP Server",
       "vncServer": "VNC Server",
+      "demoServer": "Demo Connection",
+      "sftpServer": "SFTP Server",
+      "ftpServer": "FTP Server",
+      "ftpsServer": "FTPS Server",
       "createServer": "Create Server",
       "import": "Import",
-      "pve": "PVE",
+      "pve": "Proxmox VE",
       "sshConfig": "SSH-Config",
+      "syncIntegration": "Sync now",
+      "syncSuccess": "Integration synced",
+      "syncFailed": "Failed to sync integration",
+      "removeIntegration": "Remove Integration",
       "connect": "Connect",
       "quickConnect": "Quick Connect",
       "openSFTP": "Open SFTP",
@@ -1448,8 +1552,6 @@
       "pasteIdentityPassword": "Paste Password",
       "deleteServer": "Delete Server",
       "wakeOnLan": "Wake-On-LAN",
-      "editPVE": "Edit PVE",
-      "deletePVE": "Delete PVE",
       "shutdown": "Shutdown",
       "stop": "Stop",
       "start": "Start"
@@ -1474,9 +1576,13 @@
       "errorDescription": "Failed to send magic packet"
     },
     "messages": {
-      "usernameRequired": "Username is required",
-      "passwordRequired": "Password is required",
-      "sshKeyRequired": "SSH key is required"
+      "fillRequiredFields": "Please fill in all required fields",
+      "serverCreated": "Server created successfully",
+      "serverUpdated": "Server updated successfully",
+      "createFailed": "Failed to create server",
+      "updateFailed": "Failed to update server",
+      "createIdentityFailed": "Failed to create identity",
+      "updateIdentityFailed": "Failed to update identity"
     },
     "dialog": {
       "addServer": "Add server",
@@ -1500,8 +1606,6 @@
         "username": "Username",
         "password": "Password",
         "host": "Host",
-        "nodeName": "Node Name",
-        "vmid": "VM ID",
         "macAddress": "MAC Address",
         "wolBroadcastAddress": "Broadcast Address",
         "engine": "Engine"
@@ -1513,8 +1617,6 @@
         "username": "Username",
         "password": "Password",
         "host": "Host",
-        "nodeName": "Node name",
-        "vmid": "VM ID",
         "macAddress": "AA:BB:CC:DD:EE:FF",
         "wolBroadcastAddress": "255.255.255.255"
       },
@@ -1602,7 +1704,7 @@
     },
     "proxmoxDialog": {
       "title": {
-        "import": "Import Proxmox VE",
+        "import": "Add Proxmox VE",
         "edit": "Edit Proxmox VE"
       },
       "fields": {
@@ -1624,8 +1726,8 @@
         "specificNode": "Specific node name"
       },
       "actions": {
-        "import": "Import",
-        "edit": "Edit"
+        "import": "Add",
+        "edit": "Save"
       },
       "messages": {
         "created": "Proxmox integration created successfully",
@@ -1718,7 +1820,9 @@
         "clearTerminal": "Clear Terminal",
         "properties": "Properties",
         "openTerminal": "Open Terminal Here",
-        "downloadFolder": "Download Folder"
+        "downloadFolder": "Download Folder",
+        "newFile": "New File",
+        "newFolder": "New Folder"
       },
       "properties": {
         "general": "General",
@@ -1778,10 +1882,20 @@
         "enterDirectory": "Enter directory path...",
         "hiddenDirectories": "{{count}} hidden directories",
         "switchToGrid": "Switch to grid view",
-        "switchToList": "Switch to list view"
+        "switchToList": "Switch to list view",
+        "search": "Search files",
+        "closeSearch": "Close search",
+        "refresh": "Refresh"
       },
       "item": {
         "link": "link"
+      },
+      "search": {
+        "placeholder": "Filter files in this folder...",
+        "results_one": "{{count}} result",
+        "results_other": "{{count}} results",
+        "noResultsTitle": "No matches",
+        "noResults": "No files match \"{{query}}\""
       },
       "states": {
         "loading": "Loading files...",
@@ -1810,23 +1924,55 @@
     },
     "aiAssistant": {
       "title": "AI Assistant",
-      "placeholder": "Describe what you want to do...",
-      "hint": "Press Enter to generate • Esc to close",
-      "hintUse": "Press Enter to use command • Esc to close",
-      "closeLabel": "Close AI Assistant",
-      "generate": "Generate command",
-      "generating": "Generating command...",
-      "generatedCommand": "Generated Command",
-      "useCommand": "Use Command",
-      "tryAgain": "Try Again",
-      "copy": "Copy to clipboard",
-      "error": "Failed to generate command. Please try again."
+      "open": "AI Assistant",
+      "empty": "Ask the assistant to inspect or change this server. It can run commands and read or edit files directly over the connection.",
+      "placeholder": "Message the assistant...",
+      "connecting": "Connecting...",
+      "send": "Send",
+      "stop": "Stop",
+      "connectionError": "Connection to the assistant was lost.",
+      "reconnecting": "Connection lost. Reconnecting...",
+      "confirmPrompt": "Allow this action?",
+      "allow": "Allow",
+      "allowShortcut": "Allow ({{key}})",
+      "deny": "Deny",
+      "denied": "You denied this action.",
+      "stopped": "Stopped.",
+      "tools": {
+        "runCommand": "Run command",
+        "readFile": "Read file",
+        "writeFile": "Write file",
+        "editFile": "Edit file",
+        "listDirectory": "List directory",
+        "statPath": "Inspect path",
+        "makeDirectory": "Create directory",
+        "deleteFile": "Delete file",
+        "removeDirectory": "Remove directory",
+        "movePath": "Move",
+        "changePermissions": "Change permissions",
+        "findDirectories": "Find directories"
+      }
     },
     "snippets": {
       "title": "Snippets",
       "noSnippets": "No snippets available",
       "searchPlaceholder": "Search snippets...",
       "createNew": "Create New Snippet"
+    },
+    "toolbar": {
+      "drag": "Drag to move",
+      "shortcuts": "Keyboard shortcuts",
+      "holdModifier": "Hold {{key}}",
+      "zoomIn": "Zoom in",
+      "zoomOut": "Zoom out",
+      "zoomReset": "Reset zoom to fit (drag with the middle mouse button to pan)"
+    },
+    "monitors": {
+      "title": "Monitor {{number}}",
+      "select": "Switch to monitor {{number}}",
+      "selectOrPopOut": "Switch to monitor {{number}} (double-click to open in its own window)",
+      "add": "Add monitor",
+      "remove": "Remove last monitor"
     },
     "terminalActions": {
       "menuTitle": "Terminal Actions",
@@ -1848,15 +1994,6 @@
         "unsaved": "Unsaved",
         "error": "Save failed"
       }
-    },
-    "messages": {
-      "fillRequiredFields": "Please fill in all required fields",
-      "serverCreated": "Server created successfully",
-      "serverUpdated": "Server updated successfully",
-      "createFailed": "Failed to create server",
-      "updateFailed": "Failed to update server",
-      "createIdentityFailed": "Failed to create identity",
-      "updateIdentityFailed": "Failed to update identity"
     }
   },
   "support": {

@@ -18,11 +18,11 @@ module.exports = class LocalProvider {
 
     async upload(buffer, name) {
         if (!fs.existsSync(this.path)) fs.mkdirSync(this.path, { recursive: true });
-        fs.writeFileSync(path.join(this.path, name), buffer);
+        fs.writeFileSync(path.join(this.path, path.basename(name)), buffer);
     }
 
     async download(name) {
-        return fs.readFileSync(path.join(this.path, name));
+        return fs.readFileSync(path.join(this.path, path.basename(name)));
     }
 
     async list() {
@@ -37,7 +37,7 @@ module.exports = class LocalProvider {
     }
 
     async delete(name) {
-        const filePath = path.join(this.path, name);
+        const filePath = path.join(this.path, path.basename(name));
         if (fs.existsSync(filePath)) fs.unlinkSync(filePath);
     }
 };

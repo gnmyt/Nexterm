@@ -250,8 +250,15 @@ static int ws_handshake(ws_conn_t* c, const char* host, const char* port,
     for (int i = 0; i < session->param_count; i++) {
         if (strncmp(session->params[i].key, "ws_header_", 10) == 0) {
             const char* hdr_name = session->params[i].key + 10;
+            const char* hdr_val = session->params[i].value;
+            if (strpbrk(hdr_name, "\r\n") ||
+                (hdr_val && strpbrk(hdr_val, "\r\n"))) {
+                LOG_WARN("WebSocket session %s: dropping header '%s' with CR/LF",
+                         session->session_id, hdr_name);
+                continue;
+            }
             off += snprintf(request + off, sizeof(request) - (size_t)off,
-                           "%s: %s\r\n", hdr_name, session->params[i].value);
+                           "%s: %s\r\n", hdr_name, hdr_val ? hdr_val : "");
         }
     }
 
@@ -299,9 +306,7 @@ static void* websocket_session_thread(void* arg) {
         LOG_ERROR("WebSocket session %s: missing ws_url param", session->session_id);
         nexterm_cp_send_session_result(cp, session->session_id, false,
                                        "Missing ws_url parameter", NULL);
-        session->state = SESSION_STATE_CLOSED;
-        session->thread_active = false;
-        nexterm_sm_remove(&g_session_manager, session->session_id);
+        nexterm_sm_finish(&g_session_manager, session->session_id);
         free(args);
         return NULL;
     }
@@ -316,9 +321,7 @@ static void* websocket_session_thread(void* arg) {
         LOG_ERROR("WebSocket session %s: invalid URL: %s", session->session_id, url);
         nexterm_cp_send_session_result(cp, session->session_id, false,
                                        "Invalid WebSocket URL", NULL);
-        session->state = SESSION_STATE_CLOSED;
-        session->thread_active = false;
-        nexterm_sm_remove(&g_session_manager, session->session_id);
+        nexterm_sm_finish(&g_session_manager, session->session_id);
         free(args);
         return NULL;
     }
@@ -329,9 +332,7 @@ static void* websocket_session_thread(void* arg) {
     if (sock < 0) {
         nexterm_cp_send_session_result(cp, session->session_id, false,
                                        "Failed to connect to WebSocket server", NULL);
-        session->state = SESSION_STATE_CLOSED;
-        session->thread_active = false;
-        nexterm_sm_remove(&g_session_manager, session->session_id);
+        nexterm_sm_finish(&g_session_manager, session->session_id);
         free(args);
         return NULL;
     }
@@ -346,9 +347,7 @@ static void* websocket_session_thread(void* arg) {
             close(sock);
             nexterm_cp_send_session_result(cp, session->session_id, false,
                                            "TLS initialization failed", NULL);
-            session->state = SESSION_STATE_CLOSED;
-            session->thread_active = false;
-            nexterm_sm_remove(&g_session_manager, session->session_id);
+            nexterm_sm_finish(&g_session_manager, session->session_id);
             free(args);
             return NULL;
         }
@@ -367,9 +366,7 @@ static void* websocket_session_thread(void* arg) {
             close(sock);
             nexterm_cp_send_session_result(cp, session->session_id, false,
                                            "TLS handshake failed", NULL);
-            session->state = SESSION_STATE_CLOSED;
-            session->thread_active = false;
-            nexterm_sm_remove(&g_session_manager, session->session_id);
+            nexterm_sm_finish(&g_session_manager, session->session_id);
             free(args);
             return NULL;
         }
@@ -380,9 +377,7 @@ static void* websocket_session_thread(void* arg) {
         close(sock);
         nexterm_cp_send_session_result(cp, session->session_id, false,
                                        "WebSocket handshake failed", NULL);
-        session->state = SESSION_STATE_CLOSED;
-        session->thread_active = false;
-        nexterm_sm_remove(&g_session_manager, session->session_id);
+        nexterm_sm_finish(&g_session_manager, session->session_id);
         free(args);
         return NULL;
     }
@@ -393,9 +388,7 @@ static void* websocket_session_thread(void* arg) {
         close(sock);
         nexterm_cp_send_session_result(cp, session->session_id, false,
                                        "Failed to open data connection", NULL);
-        session->state = SESSION_STATE_CLOSED;
-        session->thread_active = false;
-        nexterm_sm_remove(&g_session_manager, session->session_id);
+        nexterm_sm_finish(&g_session_manager, session->session_id);
         free(args);
         return NULL;
     }
@@ -471,13 +464,10 @@ static void* websocket_session_thread(void* arg) {
     close(data_fd);
     session->data_fd = -1;
 
-    session->state = SESSION_STATE_CLOSED;
-    session->thread_active = false;
-
     char sid[MAX_SESSION_ID_LEN];
     snprintf(sid, sizeof(sid), "%s", session->session_id);
     nexterm_cp_send_session_closed(cp, sid, "websocket session ended");
-    nexterm_sm_remove(&g_session_manager, sid);
+    nexterm_sm_finish(&g_session_manager, sid);
 
     free(args);
     return NULL;
