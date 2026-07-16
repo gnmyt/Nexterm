@@ -1946,6 +1946,16 @@
       "searchPlaceholder": "Search snippets...",
       "createNew": "Create New Snippet"
     },
+    "toolbar": {
+      "drag": "Drag to move",
+      "shortcuts": "Keyboard shortcuts",
+      "holdModifier": "Hold {{key}}"
+    },
+    "monitors": {
+      "select": "Switch to monitor {{number}}",
+      "add": "Add monitor",
+      "remove": "Remove last monitor"
+    },
     "terminalActions": {
       "menuTitle": "Terminal Actions",
       "snippets": "Snippets",

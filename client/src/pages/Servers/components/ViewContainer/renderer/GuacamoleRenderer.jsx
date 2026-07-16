@@ -5,7 +5,12 @@ import { useKeymaps, matchesKeybind } from "@/common/contexts/KeymapContext.jsx"
 import { useTranslation } from "react-i18next";
 import ConnectionLoader from "./components/ConnectionLoader";
 import ConnectionError, { mapConnectionError } from "./components/ConnectionError";
+import SessionToolbar from "./components/SessionToolbar";
 import { getWebSocketUrl } from "@/common/utils/ConnectionUtil.js";
+
+const SIZE_RESEND_INTERVAL = 5000;
+
+const SHORTCUT_HOLD = 50;
 
 const resumeAudioContext = () => {
     const context = Guacamole.AudioContextFactory.getAudioContext();
@@ -28,6 +33,22 @@ const GuacamoleRenderer = ({
     const clientRef = useRef(null);
     const scaleRef = useRef(1);
     const offsetRef = useRef({ x: 0, y: 0 });
+
+    const [ready, setReady] = useState(false);
+
+    const [monitorCount, setMonitorCount] = useState(1);
+    const [activeMonitor, setActiveMonitor] = useState(0);
+    const [maxMonitors, setMaxMonitors] = useState(1);
+
+    const [heldModifiers, setHeldModifiers] = useState(() => new Set());
+    const heldModifiersRef = useRef(heldModifiers);
+    const draggingRef = useRef(false);
+
+    const monitorCountRef = useRef(1);
+    const activeMonitorRef = useRef(0);
+    const maxMonitorsRef = useRef(1);
+    const layoutRef = useRef(null);
+    const lastSentRef = useRef({ w: 0, h: 0, count: 0, at: 0 });
     const { getParsedKeybind } = useKeymaps();
     const { t } = useTranslation();
     const onFullscreenToggleRef = useRef(onFullscreenToggle);
@@ -58,23 +79,117 @@ const GuacamoleRenderer = ({
         return () => registerGuacamoleRef?.(session.id, null);
     }, [session.id, registerGuacamoleRef, clientRef.current]);
 
-    const applyDisplayStyles = (el, x, y, scale) => Object.assign(el.style, {
-        position: "absolute", width: el.clientWidth + "px", height: el.clientHeight + "px",
+    const applyDisplayStyles = (el, x, y, scale, width, height) => Object.assign(el.style, {
+        position: "absolute", width: width + "px", height: height + "px",
         transform: `translate(${x}px, ${y}px) scale(${scale})`, transformOrigin: "0 0",
         imageRendering: "crisp-edges", backfaceVisibility: "hidden", willChange: "transform",
     });
 
+    const applyViewport = () => {
+        if (!clientRef.current || !ref.current) return;
+        const display = clientRef.current.getDisplay();
+        const el = display.getElement();
+        const [cw, ch] = [ref.current.clientWidth, ref.current.clientHeight];
+        if (!cw || !ch) return;
+
+        const layout = layoutRef.current;
+        const monitor = layout?.length > 1
+            ? layout[Math.min(activeMonitorRef.current, layout.length - 1)]
+            : null;
+
+        const [mx, my] = [monitor?.left || 0, monitor?.top || 0];
+        const mw = monitor?.width || display.getWidth();
+        const mh = monitor?.height || display.getHeight();
+        if (!mw || !mh) return;
+
+        const scale = Math.min(cw / mw, ch / mh);
+        scaleRef.current = scale;
+        offsetRef.current = { x: (cw - mw * scale) / 2 - mx * scale, y: (ch - mh * scale) / 2 - my * scale };
+        applyDisplayStyles(el, offsetRef.current.x, offsetRef.current.y, scale,
+            display.getWidth(), display.getHeight());
+    };
+
     const resizeHandler = () => {
         if (!clientRef.current || !ref.current) return;
-        const display = clientRef.current.getDisplay().getElement();
         const [cw, ch] = [ref.current.clientWidth, ref.current.clientHeight];
-        clientRef.current.sendSize(cw, ch);
-        const scale = Math.min(cw / display.clientWidth, ch / display.clientHeight);
-        scaleRef.current = scale;
-        const offsetX = (cw - display.clientWidth * scale) / 2;
-        const offsetY = (ch - display.clientHeight * scale) / 2;
-        offsetRef.current = { x: offsetX, y: offsetY };
-        applyDisplayStyles(display, offsetX, offsetY, scale);
+
+        if (cw > 0 && ch > 0) {
+            const count = monitorCountRef.current;
+            const last = lastSentRef.current;
+            const changed = last.w !== cw || last.h !== ch || last.count !== count;
+
+            if (changed || Date.now() - last.at >= SIZE_RESEND_INTERVAL) {
+                clientRef.current.sendSize(cw, ch, 0, 0);
+                lastSentRef.current = { w: cw, h: ch, count, at: Date.now() };
+            }
+
+            if (changed) {
+                for (let i = 1; i < count; i++) clientRef.current.sendSize(cw, ch, i, 0);
+            }
+        }
+
+        applyViewport();
+    };
+
+    const toggleModifier = (keysym) => {
+        if (!clientRef.current) return;
+        const held = new Set(heldModifiersRef.current);
+
+        if (held.has(keysym)) {
+            clientRef.current.sendKeyEvent(0, keysym);
+            held.delete(keysym);
+        } else {
+            clientRef.current.sendKeyEvent(1, keysym);
+            held.add(keysym);
+        }
+
+        heldModifiersRef.current = held;
+        setHeldModifiers(held);
+    };
+
+    const releaseModifiers = () => {
+        if (!heldModifiersRef.current.size) return;
+        heldModifiersRef.current.forEach((keysym) => clientRef.current?.sendKeyEvent(0, keysym));
+        heldModifiersRef.current = new Set();
+        setHeldModifiers(new Set());
+    };
+
+    const sendShortcut = (keys) => {
+        if (!clientRef.current) return;
+        keys.forEach((key) => clientRef.current.sendKeyEvent(1, key));
+        setTimeout(() => {
+            [...keys].reverse().forEach((key) => clientRef.current?.sendKeyEvent(0, key));
+        }, SHORTCUT_HOLD);
+    };
+
+    const selectMonitor = (index) => {
+        activeMonitorRef.current = index;
+        setActiveMonitor(index);
+        applyViewport();
+    };
+
+    const addMonitor = () => {
+        if (isShared || !clientRef.current) return;
+        const count = monitorCountRef.current;
+        if (count >= maxMonitorsRef.current) return;
+
+        monitorCountRef.current = count + 1;
+        setMonitorCount(count + 1);
+        selectMonitor(count);
+        resizeHandler();
+    };
+
+    const removeMonitor = () => {
+        if (isShared || !clientRef.current) return;
+        const count = monitorCountRef.current;
+
+        if (count <= 1) return;
+
+        clientRef.current.sendSize(0, 0, count - 1, 0);
+        monitorCountRef.current = count - 1;
+        setMonitorCount(count - 1);
+        lastSentRef.current = { ...lastSentRef.current, count: count - 1 };
+        if (activeMonitorRef.current > count - 2) selectMonitor(count - 2);
     };
 
     const sendClipboardToServer = (text) => {
@@ -138,12 +253,44 @@ const GuacamoleRenderer = ({
         const client = new Guacamole.Client(tunnel);
         client.getDisplay().onresize = resizeHandler;
 
+        client.onmultimonlayout = (layout) => {
+            const monitors = Object.keys(layout)
+                .map(Number).filter(Number.isInteger).sort((a, b) => a - b)
+                .map((index) => layout[index]);
+            if (!monitors.length) return;
+
+            layoutRef.current = monitors;
+            monitorCountRef.current = monitors.length;
+            setMonitorCount(monitors.length);
+            lastSentRef.current = { ...lastSentRef.current, count: monitors.length };
+
+            if (activeMonitorRef.current > monitors.length - 1) selectMonitor(monitors.length - 1);
+            else applyViewport();
+        };
+
+        client.onargv = (stream, mimetype, name) => {
+            if (name !== "secondary-monitors" || mimetype !== "text/plain") return;
+
+            const reader = new Guacamole.StringReader(stream);
+            let data = "";
+            reader.ontext = (text) => data += text;
+            reader.onend = () => {
+                const secondary = Number.parseInt(data.trim(), 10);
+                if (!Number.isFinite(secondary)) return;
+
+                const max = secondary + 1;
+                maxMonitorsRef.current = max;
+                setMaxMonitors(max);
+            };
+        };
+
         let loaderHidden = false;
         const clientOnInstruction = tunnel.oninstruction;
         tunnel.oninstruction = (opcode, args) => {
             if (!loaderHidden && opcode === "blob") {
                 loaderHidden = true;
                 connectionLoaderRef.current?.hide();
+                setReady(true);
             }
             if (opcode === "error" && args?.length) {
                 errorMessageRef.current = args[0] || "Connection failed";
@@ -173,6 +320,9 @@ const GuacamoleRenderer = ({
         const mouse = new Guacamole.Mouse(display);
         mouse.onmousedown = mouse.onmouseup = mouse.onmousemove = (state) => {
             if (!scaleRef.current || !offsetRef.current) return;
+
+            if (draggingRef.current) return;
+
             resumeAudioContext();
             client.sendMouseState(new Guacamole.Mouse.State(
                 Math.round((state.x - offsetRef.current.x) / scaleRef.current),
@@ -229,6 +379,19 @@ const GuacamoleRenderer = ({
             audioPlayersRef.current = [];
             tunnel.disconnect();
             clientRef.current = null;
+
+            layoutRef.current = null;
+            lastSentRef.current = { w: 0, h: 0, count: 0, at: 0 };
+            monitorCountRef.current = 1;
+            activeMonitorRef.current = 0;
+            maxMonitorsRef.current = 1;
+            heldModifiersRef.current = new Set();
+            draggingRef.current = false;
+            setReady(false);
+            setMonitorCount(1);
+            setActiveMonitor(0);
+            setMaxMonitors(1);
+            setHeldModifiers(new Set());
         };
     };
 
@@ -236,6 +399,11 @@ const GuacamoleRenderer = ({
         const cleanup = connect();
         return () => cleanup?.();
     }, [sessionToken, session.id, isShared]);
+
+    useEffect(() => {
+        window.addEventListener("blur", releaseModifiers);
+        return () => window.removeEventListener("blur", releaseModifiers);
+    }, []);
 
     useEffect(() => {
         window.addEventListener("resize", resizeHandler);
@@ -264,6 +432,14 @@ const GuacamoleRenderer = ({
             <ConnectionLoader onReady={(loader) => {
                 connectionLoaderRef.current = loader;
             }} />
+            {ready && (
+                <SessionToolbar containerRef={ref} monitorCount={monitorCount} activeMonitor={activeMonitor}
+                                maxMonitors={maxMonitors} heldModifiers={heldModifiers} readOnly={isShared}
+                                onSelectMonitor={selectMonitor} onAddMonitor={addMonitor}
+                                onRemoveMonitor={removeMonitor} onToggleModifier={toggleModifier}
+                                onSendShortcut={sendShortcut}
+                                onDraggingChange={(dragging) => draggingRef.current = dragging} />
+            )}
             {connectionError && (
                 <ConnectionError message={connectionError} onClose={() => disconnectFromServer(session.id)} />
             )}
