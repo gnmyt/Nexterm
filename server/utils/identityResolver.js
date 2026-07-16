@@ -2,9 +2,11 @@ const Identity = require('../models/Identity');
 const EntryIdentity = require('../models/EntryIdentity');
 const { listIdentities } = require('../controllers/identity');
 
+const CREDENTIALLESS_PROTOCOLS = ['telnet', 'demo'];
+
 const resolveIdentity = async (entry, identityId, directIdentity = null, accountId = null) => {
-    const isPveEntry = entry.type?.startsWith('pve-');
-    const isTelnet = entry.type === 'telnet' || (entry.type === 'server' && entry.config?.protocol === 'telnet');
+    const protocol = entry.type === 'server' ? entry.config?.protocol : entry.type;
+    const requiresIdentity = !entry.type?.startsWith('pve-') && !CREDENTIALLESS_PROTOCOLS.includes(protocol);
 
     if (directIdentity) {
         return {
@@ -25,9 +27,9 @@ const resolveIdentity = async (entry, identityId, directIdentity = null, account
 
     if (identityId) {
         const identity = await Identity.findByPk(identityId);
-        if (!identity) return { identity: null, requiresIdentity: !isPveEntry && !isTelnet };
+        if (!identity) return { identity: null, requiresIdentity };
         if (accessibleIds && !accessibleIds.has(identity.id)) {
-            return { identity: null, requiresIdentity: !isPveEntry && !isTelnet, accessDenied: true };
+            return { identity: null, requiresIdentity, accessDenied: true };
         }
         return identity;
     }
@@ -43,7 +45,7 @@ const resolveIdentity = async (entry, identityId, directIdentity = null, account
         if (identity) return identity;
     }
 
-    return { identity: null, requiresIdentity: !isPveEntry && !isTelnet };
+    return { identity: null, requiresIdentity };
 };
 
 module.exports = { resolveIdentity };

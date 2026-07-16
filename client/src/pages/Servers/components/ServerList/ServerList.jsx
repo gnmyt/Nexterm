@@ -6,6 +6,7 @@ import { ServerContext } from "@/common/contexts/ServerContext.jsx";
 import { IdentityContext } from "@/common/contexts/IdentityContext.jsx";
 import { useScripts } from "@/common/contexts/ScriptContext.jsx";
 import ServerEntries from "./components/ServerEntries.jsx";
+import { isCredentiallessProtocol } from "@/common/utils/ConnectionUtil.js";
 import Icon from "@mdi/react";
 import {
     mdiCursorDefaultClick,
@@ -25,6 +26,7 @@ import {
     mdiImport,
     mdiFileDocumentOutline,
     mdiPlusCircle,
+    mdiFlaskOutline,
     mdiConsole,
     mdiMonitor,
     mdiDesktopClassic,
@@ -598,6 +600,16 @@ export const ServerList = ({
                                             label={t("servers.contextMenu.pve")}
                                             onClick={createPVEServer}
                                         />
+                                        {import.meta.env.DEV && (
+                                            <>
+                                                <ContextMenuSeparator />
+                                                <ContextMenuItem
+                                                    icon={mdiFlaskOutline}
+                                                    label={t("servers.contextMenu.demoServer")}
+                                                    onClick={() => createServer("demo")}
+                                                />
+                                            </>
+                                        )}
                                     </ContextMenuItem>
                                 )}
                                 {canManageResources && contextClickedType === "folder-object" && !isOrgFolder && !isIntegrationManaged && (
@@ -704,9 +716,9 @@ export const ServerList = ({
                                         <ContextMenuSeparator />
                                     </>
                                 )}
-                                {(server?.identities?.length > 0 || server?.protocol === "telnet") && (
+                                {(server?.identities?.length > 0 || isCredentiallessProtocol(server?.protocol)) && (
                                     <>
-                                        {server?.protocol === "telnet" ? (
+                                        {isCredentiallessProtocol(server?.protocol) ? (
                                             <ContextMenuItem
                                                 icon={mdiConnection}
                                                 label={t("servers.contextMenu.connect")}

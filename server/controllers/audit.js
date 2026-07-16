@@ -29,6 +29,7 @@ const AUDIT_ACTIONS = {
     PVE_CONNECT: "entry.pve_connect",
     RDP_CONNECT: "entry.rdp_connect",
     VNC_CONNECT: "entry.vnc_connect",
+    DEMO_CONNECT: "entry.demo_connect",
 
     FILE_CREATE: "file.create",
     FILE_UPLOAD: "file.upload",
@@ -77,6 +78,7 @@ const ACTION_LABELS = {
     "entry.pve_connect": "Proxmox connection",
     "entry.rdp_connect": "RDP connection",
     "entry.vnc_connect": "VNC connection",
+    "entry.demo_connect": "Demo connection",
 
     "file.create": "File created",
     "file.upload": "File uploaded",

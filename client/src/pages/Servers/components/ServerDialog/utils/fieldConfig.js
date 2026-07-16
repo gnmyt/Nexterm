@@ -53,6 +53,15 @@ export const getFieldConfig = (type, protocol) => {
                     allowedAuthTypes: ["password-only", "password"],
                     showWakeOnLan: true,
                 };
+            case "demo":
+                return {
+                    showProtocol: false,
+                    showIpPort: false,
+                    showIdentities: false,
+                    showSettings: false,
+                    showMonitoring: false,
+                    showKeyboardLayout: false,
+                };
             case "sftp":
                 return {
                     showProtocol: false,

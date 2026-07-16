@@ -14,7 +14,14 @@ const { SessionType } = require("./generated/control_plane_generated");
 const controlPlane = require("./controlPlane/ControlPlaneServer");
 const { isRecordingEnabled } = require("../utils/recordingService");
 const EngineSftpClient = require("./EngineSftpClient");
-const { buildPveQemuParams, buildRdpParams, buildVncParams } = require("./guacParamBuilders");
+const { buildPveQemuParams, buildRdpParams, buildVncParams, buildDemoParams } = require("./guacParamBuilders");
+
+const GUAC_PROTOCOLS = {
+    rdp: { sessionType: SessionType.RDP, defaultPort: 3389 },
+    vnc: { sessionType: SessionType.VNC, defaultPort: 5900 },
+    "pve-qemu": { sessionType: SessionType.VNC, defaultPort: 5900 },
+    demo: { sessionType: SessionType.Demo, defaultPort: 0 },
+};
 
 const requireEngine = () => {
     if (!controlPlane.hasEngine()) throw new Error("No engine connected");
@@ -121,7 +128,8 @@ const createConnectionForSession = async (sessionId, accountId) => {
         case "pve-shell": return createPveLxcConnectionForSession(sessionId, entry, organizationId);
         case "pve-qemu":
         case "rdp":
-        case "vnc": return prepareGuacamoleSession(sessionId, entry, identity, organizationId);
+        case "vnc":
+        case "demo": return prepareGuacamoleSession(sessionId, entry, identity, organizationId);
         case "sftp":
         case "ftp":
         case "ftps": return { success: true, skipped: true };
@@ -405,13 +413,15 @@ const prepareGuacamoleSession = async (sessionId, entry, identity, organizationI
         params = await buildRdpParams(cfg, identity);
     } else if (protocol === "vnc") {
         params = await buildVncParams(cfg, identity);
+    } else if (protocol === "demo") {
+        params = await buildDemoParams();
     } else {
         throw new Error(`Unsupported protocol: ${protocol}`);
     }
 
-    const host = params.hostname || cfg.ip;
-    const port = Number.parseInt(params.port || cfg.port || (protocol === "rdp" ? 3389 : 5900), 10);
-    const sessionType = protocol === "rdp" ? SessionType.RDP : SessionType.VNC;
+    const { sessionType, defaultPort } = GUAC_PROTOCOLS[protocol] ?? GUAC_PROTOCOLS.vnc;
+    const host = params.hostname || cfg.ip || "";
+    const port = Number.parseInt(params.port || cfg.port || defaultPort, 10);
     const jumpHosts = await resolveJumpHosts(entry);
 
     const dataSocket = await openEngineSession(

@@ -39,6 +39,7 @@ enum SessionType : byte {
     Telnet = 4,
     Tunnel = 5,
     WebSocket = 6,
+    Demo = 7,
 }
 
 enum ErrorCode : byte {

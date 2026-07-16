@@ -16,7 +16,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { ServerContext } from "@/common/contexts/ServerContext.jsx";
 import { StateStreamContext, STATE_TYPES } from "@/common/contexts/StateStreamContext.jsx";
 import { isTauri } from "@/common/utils/TauriUtil.js";
-import { getTabId, getBrowserId } from "@/common/utils/ConnectionUtil.js";
+import { getTabId, getBrowserId, requiresIdentity, canConnectWithoutPrompt } from "@/common/utils/ConnectionUtil.js";
 import { postRequest, deleteRequest } from "@/common/utils/RequestUtil";
 
 export const Servers = () => {
@@ -158,9 +158,7 @@ export const Servers = () => {
             return;
         }
 
-        const isPveEntry = server?.type?.startsWith("pve-");
-        const hasIdentities = server?.identities && server.identities.length > 0;
-        if (server && !isPveEntry && !hasIdentities) {
+        if (server && !canConnectWithoutPrompt(server)) {
             openDirectConnect(server);
             return;
         }
@@ -414,7 +412,7 @@ export const Servers = () => {
     };
 
     const openDirectConnect = (server) => {
-        if (server?.protocol === "telnet") {
+        if (!requiresIdentity(server)) {
             initiateConnection({ server });
             return;
         }
@@ -456,11 +454,9 @@ export const Servers = () => {
 
             const handleAutoConnect = async () => {
                 const server = getServerById(connectId);
-                const isPveEntry = server?.type?.startsWith("pve-");
-                const hasIdentities = server?.identities && server.identities.length > 0;
 
-                if (server && (isPveEntry || hasIdentities)) {
-                    initiateConnection({ server, identity: isPveEntry ? null : server.identities[0] });
+                if (server && canConnectWithoutPrompt(server)) {
+                    initiateConnection({ server, identity: server.identities?.[0] ?? null });
                 }
             };
 
