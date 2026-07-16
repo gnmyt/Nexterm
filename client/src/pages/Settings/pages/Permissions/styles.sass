@@ -1,0 +1,220 @@
+@use "@/common/styles/colors"
+@use "@/common/styles/breakpoints"
+
+.permissions-page
+  width: 100%
+  display: flex
+  flex-direction: column
+  gap: 1.25rem
+
+  .permissions-header
+    display: flex
+    align-items: flex-start
+    justify-content: space-between
+    gap: 1rem
+
+    h2
+      margin: 0
+      font-size: 1.3rem
+
+    p
+      margin: 0.25rem 0 0
+      font-size: 0.875rem
+      color: colors.$subtext
+      max-width: 46ch
+
+    @media (max-width: breakpoints.$mobile)
+      flex-direction: column
+      align-items: stretch
+
+      .button
+        width: 100%
+        justify-content: center
+
+  .vertical-list
+    display: flex
+    flex-direction: column
+    gap: 0.75rem
+
+  .role-item-wrapper
+    display: flex
+    flex-direction: column
+    background-color: colors.$lighter-background
+    border: 1px solid colors.$dark-gray
+    border-radius: 0.75rem
+    overflow: hidden
+
+    &.dragging
+      opacity: 0.5
+
+    &.drop-target
+      border-color: colors.$primary
+
+  .item
+    position: relative
+    display: flex
+    align-items: center
+    justify-content: space-between
+    gap: 1rem
+    padding: 0.85rem 1rem
+
+    &.clickable
+      cursor: pointer
+      transition: background-color 0.15s ease
+
+      &:hover
+        background-color: colors.$dark-gray
+
+    &.expanded
+      border-bottom: 1px solid colors.$dark-gray
+
+    &.draggable
+      cursor: grab
+
+      &:active
+        cursor: grabbing
+
+      &:hover .drag-handle
+        opacity: 0.65
+
+    .drag-handle
+      position: absolute
+      left: 0.15rem
+      top: 0
+      bottom: 0
+      display: flex
+      align-items: center
+      color: colors.$subtext
+      opacity: 0
+      pointer-events: none
+      transition: opacity 0.15s ease
+
+      svg
+        width: 0.95rem
+        height: 0.95rem
+
+    .left-section
+      display: flex
+      align-items: center
+      gap: 0.85rem
+      min-width: 0
+
+      .role-icon
+        display: flex
+        align-items: center
+        justify-content: center
+        width: 2.4rem
+        height: 2.4rem
+        border-radius: 0.5rem
+        background-color: colors.$gray
+        color: colors.$subtext
+        flex-shrink: 0
+
+        &.is-admin
+          background-color: colors.$primary-opacity
+          color: colors.$primary
+
+        svg
+          width: 1.3rem
+          height: 1.3rem
+
+      .details
+        min-width: 0
+
+        h3
+          display: flex
+          align-items: center
+          gap: 0.5rem
+          margin: 0
+          font-size: 1rem
+
+        p
+          margin: 0.15rem 0 0
+          font-size: 0.8rem
+          color: colors.$subtext
+
+    .right-section
+      display: flex
+      align-items: center
+      gap: 0.5rem
+
+      .chevron
+        width: 1.4rem
+        height: 1.4rem
+        color: colors.$subtext
+        transition: transform 0.2s ease
+
+        &.open
+          transform: rotate(180deg)
+
+    &:not(.clickable)
+      cursor: default
+
+  .vertical-list > .item
+    background-color: colors.$lighter-background
+    border: 1px solid colors.$dark-gray
+    border-radius: 0.75rem
+
+  .role-expanded
+    padding: 1rem
+    display: flex
+    flex-direction: column
+    gap: 1rem
+    background-color: colors.$background
+
+    .role-tab-content
+      display: flex
+      flex-direction: column
+
+    .role-settings
+      display: flex
+      flex-direction: column
+      gap: 1.5rem
+
+      .settings-field
+        display: flex
+        flex-direction: column
+        gap: 0.5rem
+        width: 100%
+        max-width: 360px
+
+        label
+          font-size: 0.85rem
+          font-weight: 500
+          color: colors.$subtext
+
+      .text-input
+        background-color: colors.$lighter-background
+        border: 1px solid colors.$dark-gray
+        border-radius: 0.5rem
+        padding: 0.6rem 0.75rem
+        color: colors.$white
+        font-size: 0.9rem
+        outline: none
+
+        &:focus
+          border-color: colors.$primary
+
+      .color-swatches
+        display: flex
+        flex-wrap: wrap
+        gap: 0.5rem
+
+        .swatch
+          width: 1.85rem
+          height: 1.85rem
+          border-radius: 0.5rem
+          border: 2px solid transparent
+          cursor: pointer
+          transition: transform 0.1s ease, border-color 0.15s ease
+
+          &:hover
+            transform: scale(1.08)
+
+          &.selected
+            border-color: colors.$white
+
+      .delete-row
+        display: flex
+        padding-top: 1.25rem
+        border-top: 1px solid colors.$dark-gray

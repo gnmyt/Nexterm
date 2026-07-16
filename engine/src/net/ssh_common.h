@@ -2,6 +2,7 @@
 #define NEXTERM_SSH_COMMON_H
 
 #include <libssh2.h>
+#include <pthread.h>
 #include <stdint.h>
 
 #define MAX_JUMP_HOSTS 8
@@ -18,7 +19,10 @@ typedef struct {
 typedef struct {
     LIBSSH2_SESSION* sessions[MAX_JUMP_HOSTS];
     LIBSSH2_CHANNEL* channels[MAX_JUMP_HOSTS];
-    int sockets[MAX_JUMP_HOSTS];        /* real TCP socket (index 0) + proxy sockets */
+    int sockets[MAX_JUMP_HOSTS];
+    pthread_t proxies[MAX_JUMP_HOSTS];
+    int proxy_count;
+    volatile int stop_proxies;
     int count;
 } jump_chain_t;
 

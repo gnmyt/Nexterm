@@ -10,6 +10,7 @@
     "download": "تنزيل",
     "maximize": "تعظيم",
     "restore": "الاستعادة",
+    "resize": "تغيير الحجم",
     "actions": {
       "cancel": "إلغاء",
       "confirm": "تأكيد",
@@ -17,6 +18,7 @@
       "login": "تسجيل الدخول",
       "register": "تسجيل",
       "save": "الحفظ",
+      "saving": "إنقاذ موقع…",
       "download": "تنزيل",
       "close": "إغلاق",
       "maximize": "تعظيم",
@@ -59,7 +61,9 @@
       "signInWithQrCode": "تسجيل الدخول باستخدام رمز الاستجابة السريعة",
       "qrScanDescription": "امسح رمز الاستجابة السريعة هذا باستخدام تطبيق Nexterm للهاتف المحمول لتسجيل الدخول على الفور.",
       "backToLogin": "العودة إلى تسجيل الدخول",
-      "authenticating": "توثيق..."
+      "authenticating": "توثيق...",
+      "noAccount": "ليس لديك حساب؟",
+      "haveAccount": "هل لديك حساب بالفعل؟"
     },
     "deviceLink": {
       "title": "جهاز الارتباط",
@@ -306,9 +310,7 @@
       "actions": {
         "cancel": "إلغاء",
         "create": "إنشاء",
-        "save": "حفظ",
-        "generateAI": "توليد باستخدام الذكاء الاصطناعي",
-        "generating": "جارٍ التوليد..."
+        "save": "حفظ"
       }
     },
     "messages": {
@@ -585,7 +587,8 @@
       "ai": "الذكاء الاصطناعي",
       "monitoring": "الرصد",
       "backup": "التخزين",
-      "engines": "المحركات"
+      "engines": "المحركات",
+      "permissions": "الأدوار والأذونات"
     },
     "account": {
       "title": "الحساب",
@@ -686,6 +689,34 @@
         "noPasskeys": "لم يتم تسجيل أي مفاتيح مرور حتى الآن",
         "rename": "إعادة التسمية",
         "delete": "حذف"
+      },
+      "apiKeys": {
+        "sectionTitle": "مفاتيح واجهة برمجة التطبيقات (API)",
+        "sectionDescription": "قم بإنشاء مفاتيح API للوصول إلى Nexterm برمجياً من خلال البرامج النصية وعمليات التكامل.",
+        "addButton": "إنشاء مفتاح API",
+        "createTitle": "إنشاء مفتاح API",
+        "createDescription": "قم بتسمية مفتاحك. لن يظهر الرمز المميز إلا مرة واحدة بعد إنشائه.",
+        "nameLabel": "الاسم",
+        "namePlaceholder": "على سبيل المثال: برنامج نصي للنشر",
+        "nameRequired": "الاسم مطلوب",
+        "expiryLabel": "تاريخ انتهاء الصلاحية",
+        "expiryNever": "أبدًا",
+        "expiry30": "30 يومًا",
+        "expiry90": "90 يومًا",
+        "expiry365": "سنة واحدة",
+        "createButton": "إنشاء",
+        "createdTitle": "تم إنشاء مفتاح API",
+        "createdWarning": "انسخ هذا الرمز الآن. ولأسباب أمنية، لن تتمكن من رؤيته مرة أخرى.",
+        "tokenLabel": "الرمز الرمزي",
+        "doneButton": "تم",
+        "createError": "فشل إنشاء مفتاح واجهة برمجة التطبيقات (API).",
+        "copyError": "فشل النسخ إلى الحافظة.",
+        "confirmDelete": "هل أنت متأكد من رغبتك في إلغاء مفتاح واجهة برمجة التطبيقات (API) هذا؟ سيُحرم أي نظام يستخدمه من الوصول.",
+        "noKeys": "لا توجد مفاتيح API حتى الآن",
+        "lastUsed": "آخر استخدام {{date}}",
+        "neverUsed": "لم تُستخدم قط",
+        "expires": "تاريخ انتهاء الصلاحية {{date}}",
+        "delete": "حذف"
       }
     },
     "passwordChange": {
@@ -732,6 +763,8 @@
         "folderManagementDescription": "إنشاء سجلات إنشاء المجلدات وتعديلها وحذفها",
         "scriptExecutionLabel": "تنفيذ البرنامج النصي",
         "scriptExecutionDescription": "تسجيل تنفيذ البرامج النصية ومهام الأتمتة",
+        "aiOperationsLabel": "عمليات الذكاء الاصطناعي",
+        "aiOperationsDescription": "تسجيل الأوامر والتغييرات التي أجراها المساعد الذكي على الملفات",
         "actions": {
           "save": "حفظ الإعدادات"
         },
@@ -775,22 +808,15 @@
       "noSearchResultsDescription": "حاول تعديل استعلام البحث الخاص بك.",
       "table": {
         "user": "المستخدم",
-        "role": "الدور",
-        "twoFactor": "2FA"
-      },
-      "roles": {
-        "admin": "المسؤول",
-        "user": "المستخدم"
+        "twoFactor": "2FA",
+        "roles": "الأدوار"
       },
       "contextMenu": {
         "changePassword": "تغيير كلمة المرور",
-        "promoteToAdmin": "ترقية إلى مدير",
-        "demoteToUser": "خفض إلى مستخدم عادي",
         "deleteUser": "حذف المستخدم",
         "loginAsUser": "تسجيل الدخول كمستخدم",
         "deleteConfirm": "سيؤدي هذا إلى حذف المستخدم وبياناته المرتبطة نهائيًا.",
-        "promoteConfirm": "سيؤدي هذا إلى ترقية المستخدم إلى مدير.",
-        "demoteConfirm": "سيؤدي هذا إلى خفض المستخدم إلى مستخدم عادي."
+        "managePermissions": "إدارة الأذونات"
       }
     },
     "userDialog": {
@@ -830,6 +856,10 @@
         "aimenu": {
           "title": "قائمة الذكاء الاصطناعي",
           "description": "افتح قائمة أوامر الذكاء الاصطناعي"
+        },
+        "aiaccepttool": {
+          "title": "الذكاء الاصطناعي: قبول الإجراء",
+          "description": "الموافقة على الإجراء المعلق المتعلق بأداة الذكاء الاصطناعي في المساعد"
         },
         "snippets": {
           "title": "مقتطفات",
@@ -891,6 +921,15 @@
         "disabled": "معطل",
         "syncEnabled": "ستتم مزامنة إعدادات المؤشر الآن مع حسابك",
         "syncDisabled": "لن تتم مزامنة إعدادات المؤشر بعد الآن"
+      },
+      "input": {
+        "title": "الإدخال",
+        "description": "تحكم في طريقة عمل اختصارات لوحة المفاتيح داخل المحطة الطرفية.",
+        "smartCopyPaste": "Ctrl+C الذكي",
+        "enabled": "ممكّن",
+        "disabled": "ذوو الإعاقة",
+        "syncEnabled": "ستتم الآن مزامنة إعدادات الإدخال مع حسابك",
+        "syncDisabled": "لن تتم مزامنة إعدادات الإدخال بعد الآن"
       },
       "theme": {
         "title": "السمة",
@@ -955,6 +994,10 @@
       "addLdapProvider": "إضافة LDAP",
       "system": "النظام",
       "systemDescription": "مصادقة اسم المستخدم وكلمة المرور",
+      "registration": {
+        "title": "التسجيل الذاتي",
+        "description": "السماح للزوار بإنشاء حساباتهم الخاصة من شاشة تسجيل الدخول"
+      },
       "deleteConfirm": "سيؤدي هذا إلى حذف موفر المصادقة هذا نهائيًا.",
       "errors": {
         "deleteProvider": "خطأ في حذف الموفر",
@@ -1044,11 +1087,11 @@
     },
     "ai": {
       "title": "إعداد مساعد الذكاء الاصطناعي",
-      "description": "إعداد توليد الأوامر المدعومة بالذكاء الاصطناعي لجلسات الطرفية وإنشاء القصاصات.",
+      "description": "قم بتكوين المساعد الذكي الذي يمكنه تنفيذ الأوامر وإدارة الملفات مباشرةً عبر جلسات الخادم الخاصة بك.",
       "loading": "جارٍ تحميل إعدادات الذكاء الاصطناعي...",
       "enable": {
         "title": "تمكين مساعد الذكاء الاصطناعي",
-        "description": "السماح للمستخدمين بتوليد الأوامر باستخدام الذكاء الاصطناعي"
+        "description": "السماح للمستخدمين بفتح المساعد الذكي داخل جلسات الخادم"
       },
       "provider": {
         "title": "موفر الذكاء الاصطناعي",
@@ -1056,18 +1099,43 @@
       },
       "model": {
         "title": "النموذج",
-        "description": "حدد نموذج الذكاء الاصطناعي المستخدم لتوليد الأوامر"
+        "description": "اختر نموذج الذكاء الاصطناعي الذي يجب أن يستخدمه المساعد"
+      },
+      "requireConfirmation": {
+        "title": "تأكد قبل كل إجراء",
+        "description": "إلزام المستخدمين بالموافقة على كل أمر وتغيير في الملف يرغب المساعد في إجرائه"
       },
       "apiKey": {
         "title": "مفتاح API",
-        "description": "مفتاح API الخاص بـ OpenAI للمصادقة",
-        "placeholder": "أدخل مفتاح API الخاص بـ OpenAI",
-        "setPlaceholder": "تم تعيين مفتاح API (اتركه فارغًا للحفاظ على الحالي)"
+        "setPlaceholder": "تم تعيين مفتاح API (اتركه فارغًا للحفاظ على الحالي)",
+        "genericDescription": "مفتاح واجهة برمجة التطبيقات (API) المستخدم للمصادقة لدى المزود المحدد",
+        "genericPlaceholder": "أدخل مفتاح واجهة برمجة التطبيقات (API) الخاص بـ {{provider}}"
       },
-      "ollamaUrl": {
-        "title": "رابط Ollama",
-        "description": "الرابط حيث يعمل مثيل Ollama الخاص بك",
-        "placeholder": "http://localhost:11434"
+      "authMethod": {
+        "title": "التوثيق",
+        "description": "قم بالمصادقة باستخدام مفتاح API أو اشتراك مزود الخدمة الخاص بك",
+        "apiKey": "مفتاح واجهة برمجة التطبيقات (API)",
+        "subscription": "الاشتراك"
+      },
+      "subscription": {
+        "title": "{{provider}} الاشتراك",
+        "description": "سجّل الدخول باستخدام اشتراكك في {{provider}} لاستخدام نماذجها دون الحاجة إلى مفتاح API",
+        "connectedDescription": "اشتراكك في موقع {{provider}} نشط الآن",
+        "connect": "اتصل",
+        "connecting": "جاري الاتصال...",
+        "complete": "كامل",
+        "disconnect": "قطع الاتصال",
+        "codePlaceholder": "الصق رمز التفويض هنا",
+        "codePlaceholderUrl": "الصق عنوان URL الكامل لخدمة الاستدعاء (أو الرمز) هنا",
+        "connectSuccess": "{{provider}} الاشتراك نشط",
+        "startError": "فشل بدء عملية التفويض",
+        "exchangeError": "فشل الاتصال بالاشتراك",
+        "disconnectError": "فشل إلغاء الاشتراك"
+      },
+      "baseUrl": {
+        "title": "عنوان URL لواجهة برمجة التطبيقات (API)",
+        "description": "عنوان URL الأساسي لنقطة النهاية الخاصة بالمزود والمتوافقة مع OpenAI",
+        "placeholder": "https://api.example.com/v1"
       },
       "selectProvider": "حدد موفرًا...",
       "selectModel": "حدد نموذجًا...",
@@ -1368,6 +1436,34 @@
         "deleteFailed": "فشل في حذف المحرك",
         "regenerateFailed": "فشل في تجديد الرمز المميز"
       }
+    },
+    "permissions": {
+      "subtitle": "يمكنك إنشاء أدوار ذات أذونات محددة بدقة أو تعيين أذونات لمستخدمين فرديين. ويُطبق الدور «الافتراضي» على الجميع تلقائيًا.",
+      "createRole": "إنشاء دور",
+      "rolesTitle": "الأدوار",
+      "rolesTab": "الأدوار",
+      "overridesTab": "الأذونات المباشرة",
+      "permissionsTab": "الأذونات",
+      "membersTab": "الأعضاء",
+      "settingsTab": "الإعدادات",
+      "managePermissions": "إدارة الأذونات",
+      "memberCount_one": "{{count}} عضو",
+      "memberCount_other": "{{count}} الأعضاء",
+      "dangerousHint": "يؤدي منح هذا الحق إلى وصول واسع النطاق أو مدمر. لذا، يجب توخي الحذر عند تخصيصه.",
+      "roleName": "اسم الدور",
+      "roleNamePlaceholder": "على سبيل المثال: المشغلون",
+      "roleColor": "اللون",
+      "nameRequired": "يرجى إدخال اسم للدور.",
+      "saveError": "تعذر حفظ التغييرات التي أجريتها.",
+      "loadError": "تعذر تحميل الأذونات.",
+      "userSaved": "تم تحديث الأذونات.",
+      "noAssignableRoles": "لا توجد أدوار متاحة حتى الآن. قم بإنشاء دور أولاً.",
+      "noMembers": "لا يوجد أعضاء في هذه المجموعة حتى الآن.",
+      "addMemberPlaceholder": "ابحث عن المستخدمين لإضافة…",
+      "deleteRole": "حذف الدور",
+      "deleteConfirm": "سيؤدي هذا إلى حذف الدور «{{name}}» نهائيًا وإزالته من جميع الأعضاء.",
+      "inheritsAllow": "الميراث: مسموح به",
+      "inheritsDeny": "يرث: مرفوض"
     }
   },
   "tunnel": {
@@ -1431,10 +1527,18 @@
       "telnetServer": "خادم Telnet",
       "rdpServer": "خادم RDP",
       "vncServer": "خادم VNC",
+      "demoServer": "اتصال تجريبي",
+      "sftpServer": "خادم SFTP",
+      "ftpServer": "خادم FTP",
+      "ftpsServer": "خادم FTPS",
       "createServer": "إنشاء خادم",
       "import": "استيراد",
-      "pve": "منع التطرف العنيف",
+      "pve": "Proxmox VE",
       "sshConfig": "SSH-كونفيج",
+      "syncIntegration": "المزامنة الآن",
+      "syncSuccess": "تمت مزامنة التكامل",
+      "syncFailed": "فشل مزامنة التكامل",
+      "removeIntegration": "إلغاء التكامل",
       "connect": "الاتصال",
       "quickConnect": "التوصيل السريع",
       "openSFTP": "فتح SFTP",
@@ -1448,8 +1552,6 @@
       "pasteIdentityPassword": "لصق كلمة المرور",
       "deleteServer": "حذف الخادم",
       "wakeOnLan": "استيقظ على الشبكة المحلية",
-      "editPVE": "تحرير PVE",
-      "deletePVE": "حذف PVE",
       "shutdown": "إغلاق",
       "stop": "إيقاف",
       "start": "بدء"
@@ -1504,9 +1606,8 @@
         "username": "اسم المستخدم",
         "password": "كلمة المرور",
         "host": "المضيف",
-        "nodeName": "اسم العقدة",
-        "vmid": "معرف الجهاز الافتراضي",
         "macAddress": "عنوان MAC",
+        "wolBroadcastAddress": "عنوان البث",
         "engine": "المحرك"
       },
       "placeholders": {
@@ -1516,9 +1617,8 @@
         "username": "اسم المستخدم",
         "password": "كلمة المرور",
         "host": "المضيف",
-        "nodeName": "اسم العقدة",
-        "vmid": "معرف الجهاز الافتراضي",
-        "macAddress": "aa:bb:bb:cc:dd:ee:ff"
+        "macAddress": "aa:bb:bb:cc:dd:ee:ff",
+        "wolBroadcastAddress": "255.255.255.255"
       },
       "engineOffline": "(غير متصل بالإنترنت)",
       "settings": {
@@ -1604,7 +1704,7 @@
     },
     "proxmoxDialog": {
       "title": {
-        "import": "استيراد Proxmox VE",
+        "import": "إضافة Proxmox VE",
         "edit": "تحرير Proxmox VE"
       },
       "fields": {
@@ -1626,8 +1726,8 @@
         "specificNode": "اسم عقدة محدد"
       },
       "actions": {
-        "import": "استيراد",
-        "edit": "تحرير"
+        "import": "إضافة",
+        "edit": "حفظ"
       },
       "messages": {
         "created": "تم إنشاء تكامل Proxmox بنجاح",
@@ -1720,7 +1820,9 @@
         "clearTerminal": "مسح المحطة الطرفية",
         "properties": "الخصائص",
         "openTerminal": "افتح المحطة الطرفية هنا",
-        "downloadFolder": "تنزيل المجلد"
+        "downloadFolder": "تنزيل المجلد",
+        "newFile": "ملف جديد",
+        "newFolder": "مجلد جديد"
       },
       "properties": {
         "general": "جنرال لواء",
@@ -1780,10 +1882,20 @@
         "enterDirectory": "أدخل مسار الدليل...",
         "hiddenDirectories": "{{count}} الدلائل المخفية",
         "switchToGrid": "التبديل إلى عرض الشبكة",
-        "switchToList": "التبديل إلى عرض القائمة"
+        "switchToList": "التبديل إلى عرض القائمة",
+        "search": "البحث في الملفات",
+        "closeSearch": "إغلاق البحث",
+        "refresh": "تحديث"
       },
       "item": {
         "link": "الرابط"
+      },
+      "search": {
+        "placeholder": "تصفية الملفات الموجودة في هذا المجلد...",
+        "results_one": "{{count}} النتيجة",
+        "results_other": "{{count}} النتائج",
+        "noResultsTitle": "لا توجد نتائج",
+        "noResults": "لا توجد ملفات تطابق \"{{query}}\""
       },
       "states": {
         "loading": "تحميل الملفات...",
@@ -1800,25 +1912,67 @@
         "error": "حدث خطأ"
       }
     },
+    "remoteDesktop": {
+      "dropOverlay": "اسحب الملفات لتحميلها إلى الخادم البعيد",
+      "toast": {
+        "uploadedSingle": "تم تحميل ملف «{{name}}» إلى محرك الأقراص البعيد",
+        "uploadedMultiple": "تم تحميل ملفات {{count}} إلى محرك الأقراص البعيد",
+        "uploadFailed": "{{count}} فشل تحميل الملف (الملفات)",
+        "uploadPartial": "{{failed}} فشل تحميل الملف (الملفات)، {{succeeded}} تم بنجاح",
+        "downloaded": "تم تنزيل ملف «{{name}}» من جهاز بعيد"
+      }
+    },
     "aiAssistant": {
       "title": "مساعد الذكاء الاصطناعي",
-      "placeholder": "صف ما تريد فعله...",
-      "hint": "اضغط Enter للتوليد • Esc للإغلاق",
-      "hintUse": "اضغط على Enter لاستخدام الأمر - Esc للإغلاق",
-      "closeLabel": "إغلاق مساعد الذكاء الاصطناعي",
-      "generate": "إنشاء الأمر",
-      "generating": "توليد الأوامر...",
-      "generatedCommand": "الأمر المُنشئ",
-      "useCommand": "استخدام الأمر",
-      "tryAgain": "حاول مرة أخرى",
-      "copy": "نسخ إلى الحافظة",
-      "error": "فشل إنشاء الأمر. يرجى المحاولة مرة أخرى."
+      "open": "المساعد الذكي",
+      "empty": "اطلب من المساعد فحص هذا الخادم أو استبداله. يمكنه تنفيذ الأوامر وقراءة الملفات أو تعديلها مباشرة عبر الاتصال.",
+      "placeholder": "أرسل رسالة إلى المساعد...",
+      "connecting": "جاري الاتصال...",
+      "send": "إرسال",
+      "stop": "توقف",
+      "connectionError": "انقطع الاتصال بالمساعد.",
+      "reconnecting": "انقطع الاتصال. يجري إعادة الاتصال...",
+      "confirmPrompt": "هل تريد السماح بهذا الإجراء؟",
+      "allow": "السماح بـ",
+      "allowShortcut": "السماح ({{key}})",
+      "deny": "رفض",
+      "denied": "لقد رفضت هذا الإجراء.",
+      "stopped": "توقف.",
+      "tools": {
+        "runCommand": "تشغيل الأمر",
+        "readFile": "قراءة الملف",
+        "writeFile": "كتابة ملف",
+        "editFile": "تحرير الملف",
+        "listDirectory": "قائمة الدليل",
+        "statPath": "فحص المسار",
+        "makeDirectory": "إنشاء مجلد",
+        "deleteFile": "حذف الملف",
+        "removeDirectory": "إزالة المجلد",
+        "movePath": "تحريك",
+        "changePermissions": "تغيير الأذونات",
+        "findDirectories": "البحث عن الدلائل"
+      }
     },
     "snippets": {
       "title": "القصاصات",
       "noSnippets": "لا توجد قصاصات متاحة",
       "searchPlaceholder": "البحث في القصاصات...",
       "createNew": "إنشاء قصاصة جديدة"
+    },
+    "toolbar": {
+      "drag": "اسحب للتحريك",
+      "shortcuts": "اختصارات لوحة المفاتيح",
+      "holdModifier": "انتظر {{key}}",
+      "zoomIn": "تكبير الصورة",
+      "zoomOut": "تصغير العرض",
+      "zoomReset": "إعادة ضبط التكبير/التصغير لملء الشاشة (اسحب باستخدام زر الفأرة الأوسط للتحريك)"
+    },
+    "monitors": {
+      "title": "شاشة {{number}}",
+      "select": "التبديل إلى الشاشة {{number}}",
+      "selectOrPopOut": "انتقل إلى صفحة {{number}} (انقر نقرًا مزدوجًا لفتحها في نافذة منفصلة)",
+      "add": "إضافة شاشة",
+      "remove": "إزالة الشاشة الأخيرة"
     },
     "terminalActions": {
       "menuTitle": "الإجراءات النهائية",

@@ -9,7 +9,7 @@ Type=simple
 User=nexterm
 Group=nexterm
 WorkingDirectory=/etc/nexterm-engine
-Environment=FREERDP_EXTENSION_PATH=/usr/lib/nexterm-engine/freerdp2
+Environment=FREERDP_EXTENSION_PATH=/usr/lib/nexterm-engine/freerdp3
 ExecStart=/usr/bin/nexterm-engine
 Restart=on-failure
 RestartSec=5

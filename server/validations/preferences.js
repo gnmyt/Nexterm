@@ -5,6 +5,7 @@ const terminalSchema = Joi.object({
     fontSize: Joi.number().integer().min(10).max(32),
     cursorStyle: Joi.string().valid('block', 'underline', 'bar'),
     cursorBlink: Joi.boolean(),
+    smartCopyPaste: Joi.boolean(),
     theme: Joi.string().max(50),
 }).unknown(false);
 

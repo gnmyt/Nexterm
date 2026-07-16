@@ -6,8 +6,11 @@ const {
     updateAuditLogWithSessionDuration,
 } = require("../controllers/audit");
 const SessionManager = require("../lib/SessionManager");
-const { createSFTPConnectionForSession } = require("../lib/ConnectionService");
+const { createSFTPConnectionForSession, getSFTPBackgroundClient } = require("../lib/ConnectionService");
+const { hasResourcePermission } = require("../utils/permission");
+const { Permission } = require("../permissions/registry");
 const Entry = require("../models/Entry");
+const logger = require("../utils/logger");
 
 const OP = {
     READY: 0x0, LIST_FILES: 0x1, CREATE_FILE: 0x4, CREATE_FOLDER: 0x5, DELETE_FILE: 0x6,
@@ -17,6 +20,11 @@ const OP = {
 };
 
 const CHECKSUM_COMMANDS = { md5: "md5sum", sha1: "sha1sum", sha256: "sha256sum", sha512: "sha512sum" };
+
+const MUTATING_OPS = new Set([
+    OP.CREATE_FILE, OP.CREATE_FOLDER, OP.DELETE_FILE, OP.DELETE_FOLDER,
+    OP.RENAME_FILE, OP.MOVE_FILES, OP.COPY_FILES, OP.CHMOD,
+]);
 
 const escapePath = (p) => `'${p.replaceAll("'", String.raw`'\''`)}'`;
 
@@ -33,7 +41,22 @@ const requirePath = (p) => { if (!p?.path) throw new Error("Invalid path"); };
 const requirePaths = (p) => { if (!p?.path || !p?.newPath) throw new Error("Invalid paths"); };
 const requireMultiPaths = (p) => { if (!p?.sources?.length || !p?.destination) throw new Error("Invalid paths"); };
 
-const buildOperationHandlers = (sftp, ws, logAudit) => ({
+const SHELL_LESS_PROTOCOLS = new Set(["ftp", "ftps"]);
+const TERMINAL_LESS_PROTOCOLS = new Set(["sftp", "ftp", "ftps"]);
+
+const getCapabilities = (entry) => {
+    const protocol = entry.type === "server" ? entry.config?.protocol : entry.type;
+    return {
+        shell: !SHELL_LESS_PROTOCOLS.has(protocol),
+        terminal: !TERMINAL_LESS_PROTOCOLS.has(protocol),
+    };
+};
+
+const requireShell = (capabilities) => {
+    if (!capabilities.shell) throw new Error("This operation is not supported over FTP");
+};
+
+const buildOperationHandlers = (sftp, getBg, ws, logAudit, capabilities) => ({
     [OP.LIST_FILES]: async (p) => {
         requirePath(p);
         sendResult(ws, OP.LIST_FILES, { files: await sftp.listDir(p.path) });
@@ -86,11 +109,13 @@ const buildOperationHandlers = (sftp, ws, logAudit) => ({
     },
     [OP.COPY_FILES]: async (p) => {
         requireMultiPaths(p);
+        requireShell(capabilities);
         const cmds = p.sources.map((src) => {
             const dest = `${p.destination}/${src.split("/").pop()}`;
             return `cp -r ${escapePath(src)} ${escapePath(dest)}`;
         }).join(" && ");
-        const result = await sftp.exec(cmds);
+        const bg = await getBg();
+        const result = await bg.exec(cmds);
         if (result.exitCode !== 0) throw new Error(result.stderr.trim() || "Failed to copy files");
         sendAck(ws, OP.COPY_FILES);
         logAudit(AUDIT_ACTIONS.FILE_CREATE, RESOURCE_TYPES.FILE, { sources: p.sources, destination: p.destination });
@@ -107,16 +132,20 @@ const buildOperationHandlers = (sftp, ws, logAudit) => ({
     },
     [OP.CHECKSUM]: async (p) => {
         if (!p?.path || !p?.algorithm) throw new Error("Invalid path or algorithm");
+        requireShell(capabilities);
         const algo = p.algorithm.toLowerCase();
         const cmd = CHECKSUM_COMMANDS[algo];
         if (!cmd) throw new Error("Unsupported algorithm");
-        const result = await sftp.exec(`${cmd} ${escapePath(p.path)}`);
+        const bg = await getBg();
+        const result = await bg.exec(`${cmd} ${escapePath(p.path)}`);
         if (result.exitCode !== 0) throw new Error(result.stderr.trim() || "Checksum failed");
         sendResult(ws, OP.CHECKSUM, { hash: result.stdout.split(/\s+/)[0], algorithm: algo });
     },
     [OP.FOLDER_SIZE]: async (p) => {
         requirePath(p);
-        const result = await sftp.exec(`du -sb ${escapePath(p.path)} 2>/dev/null | cut -f1`);
+        requireShell(capabilities);
+        const bg = await getBg();
+        const result = await bg.exec(`du -sb ${escapePath(p.path)} 2>/dev/null | cut -f1`);
         if (result.exitCode !== 0) throw new Error(result.stderr.trim() || "Failed to calculate size");
         sendResult(ws, OP.FOLDER_SIZE, { size: Number.parseInt(result.stdout.trim(), 10) || 0 });
     },
@@ -137,6 +166,17 @@ module.exports = async (ws, req) => {
     if (!ctx) return;
 
     const { entry, user, ipAddress, userAgent, serverSession } = ctx;
+
+    const [canView, canModify] = await Promise.all([
+        hasResourcePermission(user.id, entry.organizationId, Permission.FILES_VIEW),
+        hasResourcePermission(user.id, entry.organizationId, Permission.FILES_MODIFY),
+    ]);
+    if (!canView) {
+        sendError(ws, "You don't have permission to browse files on this server");
+        ws.close(4403);
+        return;
+    }
+
     if (serverSession) SessionManager.resume(serverSession.sessionId);
 
     const sessionId = serverSession?.sessionId;
@@ -144,12 +184,23 @@ module.exports = async (ws, req) => {
     const startTime = Date.now();
 
     try {
-        const sftpClient = await resolveSftpClient(sessionId, serverSession?.entryId ?? entry.id, user.id);
+        const entryId = serverSession?.entryId ?? entry.id;
+        const sftpClient = await resolveSftpClient(sessionId, entryId, user.id);
         if (!sftpClient) {
             sendError(ws, "Failed to establish SFTP connection");
             ws.close(4002);
             return;
         }
+
+        const getBg = async () => {
+            const fullEntry = await Entry.findByPk(entryId);
+            try {
+                return await getSFTPBackgroundClient(sessionId, fullEntry, user.id);
+            } catch (err) {
+                logger.warn("Falling back to metadata SFTP client for background op", { sessionId, error: err.message });
+                return sftpClient;
+            }
+        };
 
         SessionManager.addWebSocket(sessionId, ws);
 
@@ -159,13 +210,14 @@ module.exports = async (ws, req) => {
         };
         sftpClient.on("close", onSftpClose);
 
+        const capabilities = getCapabilities(entry);
         const storedPath = SessionManager.getSftpPath(sessionId);
-        sendResult(ws, OP.READY, { path: storedPath });
+        sendResult(ws, OP.READY, { path: storedPath, capabilities });
 
         const logAudit = (action, resource, details) => {
             createAuditLog({ accountId: user.id, organizationId: entry.organizationId, action, resource, details, ipAddress, userAgent });
         };
-        const handlers = buildOperationHandlers(sftpClient, ws, logAudit);
+        const handlers = buildOperationHandlers(sftpClient, getBg, ws, logAudit, capabilities);
 
         const messageHandler = async (msg) => {
             const opCode = msg[0];
@@ -189,6 +241,10 @@ module.exports = async (ws, req) => {
 
             const handler = handlers[opCode];
             if (!handler) return;
+            if (MUTATING_OPS.has(opCode) && !canModify) {
+                sendError(ws, "You don't have permission to modify files on this server");
+                return;
+            }
             let payload;
             try { payload = JSON.parse(msg.slice(1).toString()); } catch {}
             try { await handler(payload); }

@@ -1,16 +1,18 @@
 const { Router } = require("express");
-const { listUsers, createAccount, deleteAccount, updatePassword, updateRole } = require("../controllers/account");
+const { listUsers, createAccount, deleteAccount, updatePassword } = require("../controllers/account");
 const { validateSchema } = require("../utils/schema");
-const { createUserValidation, updateRoleValidation } = require("../validations/users");
+const { createUserValidation } = require("../validations/users");
 const { createSession } = require("../controllers/session");
 const { passwordChangeValidation } = require("../validations/account");
+const { requirePermission } = require("../middlewares/permission");
+const { Permission } = require("../permissions/registry");
 
 const app = Router();
 
 /**
  * GET /users/list
- * @summary List All Users (Admin)
- * @description Retrieves a paginated list of all user accounts in the system including their roles and status. Supports search by username, first name, or last name. Admin access required.
+ * @summary List All Users
+ * @description Retrieves a paginated list of all user accounts in the system including their permission groups. Supports search by username, first name, or last name. Requires the "users.view" permission.
  * @tags Users
  * @produces application/json
  * @security BearerAuth
@@ -18,7 +20,7 @@ const app = Router();
  * @param {number} limit.query - Maximum number of users to return (default: 50)
  * @param {number} offset.query - Number of users to skip for pagination (default: 0)
  * @return {object} 200 - Paginated list of user accounts with total count
- * @return {object} 403 - Admin access required
+ * @return {object} 403 - Insufficient permissions
  */
 app.get("/list", async (req, res) => {
     const { search, limit, offset } = req.query;
@@ -27,16 +29,16 @@ app.get("/list", async (req, res) => {
 
 /**
  * PUT /users
- * @summary Create User Account (Admin)
- * @description Creates a new user account with specified role and credentials. Admin access required.
+ * @summary Create User Account
+ * @description Creates a new user account. Requires the "users.manage" permission.
  * @tags Users
  * @produces application/json
  * @security BearerAuth
- * @param {CreateUser} request.body.required - User account details including username, password, name, and role
+ * @param {CreateUser} request.body.required - User account details including username, password and name
  * @return {object} 200 - Account successfully created
- * @return {object} 403 - Admin access required
+ * @return {object} 403 - Insufficient permissions
  */
-app.put("/", async (req, res) => {
+app.put("/", requirePermission(Permission.USERS_MANAGE), async (req, res) => {
     if (validateSchema(res, createUserValidation, req.body)) return;
 
     const account = await createAccount(req.body, false);
@@ -47,17 +49,17 @@ app.put("/", async (req, res) => {
 
 /**
  * POST /users/{accountId}/login
- * @summary Create User Session (Admin)
- * @description Creates a session token for a specific user account, allowing administrators to impersonate users for support purposes. Admin access required.
+ * @summary Impersonate User
+ * @description Creates a session token for a specific user account, allowing administrators to impersonate users for support purposes. Requires the "users.impersonate" permission.
  * @tags Users
  * @produces application/json
  * @security BearerAuth
  * @param {string} accountId.path.required - The unique identifier of the user account
  * @return {object} 200 - Session successfully created with token
  * @return {object} 404 - User account not found
- * @return {object} 403 - Admin access required
+ * @return {object} 403 - Insufficient permissions
  */
-app.post("/:accountId/login", async (req, res) => {
+app.post("/:accountId/login", requirePermission(Permission.USERS_IMPERSONATE), async (req, res) => {
     const account = await createSession(req.params.accountId, req.headers["user-agent"]);
     if (account?.code) return res.json(account);
 
@@ -66,17 +68,17 @@ app.post("/:accountId/login", async (req, res) => {
 
 /**
  * DELETE /users/{accountId}
- * @summary Delete User Account (Admin)
- * @description Permanently removes a user account and all associated data. This action cannot be undone. Admin access required.
+ * @summary Delete User Account
+ * @description Permanently removes a user account and all associated data. This action cannot be undone. Requires the "users.manage" permission.
  * @tags Users
  * @produces application/json
  * @security BearerAuth
  * @param {string} accountId.path.required - The unique identifier of the user account to delete
  * @return {object} 200 - Account successfully deleted
  * @return {object} 404 - User account not found
- * @return {object} 403 - Admin access required
+ * @return {object} 403 - Insufficient permissions
  */
-app.delete("/:accountId", async (req, res) => {
+app.delete("/:accountId", requirePermission(Permission.USERS_MANAGE), async (req, res) => {
     const account = await deleteAccount(req.params.accountId);
     if (account?.code) return res.json(account);
 
@@ -85,8 +87,8 @@ app.delete("/:accountId", async (req, res) => {
 
 /**
  * PATCH /users/{accountId}/password
- * @summary Update User Password (Admin)
- * @description Updates a user's password. Admin access required to modify other users' passwords.
+ * @summary Update User Password
+ * @description Updates a user's password. Requires the "users.manage" permission.
  * @tags Users
  * @produces application/json
  * @security BearerAuth
@@ -94,44 +96,15 @@ app.delete("/:accountId", async (req, res) => {
  * @param {PasswordChange} request.body.required - New password for the user account
  * @return {object} 200 - Password successfully updated
  * @return {object} 404 - User account not found
- * @return {object} 403 - Admin access required
+ * @return {object} 403 - Insufficient permissions
  */
-app.patch("/:accountId/password", async (req, res) => {
+app.patch("/:accountId/password", requirePermission(Permission.USERS_MANAGE), async (req, res) => {
     if (validateSchema(res, passwordChangeValidation, req.body)) return;
 
     const account = await updatePassword(req.params.accountId, req.body.password);
     if (account?.code) return res.json(account);
 
     res.json({ message: "Password got successfully updated" });
-});
-
-/**
- * PATCH /users/{accountId}/role
- * @summary Update User Role (Admin)
- * @description Updates a user's role in the system (e.g., admin, user). Administrators cannot change their own role. Admin access required.
- * @tags Users
- * @produces application/json
- * @security BearerAuth
- * @param {string} accountId.path.required - The unique identifier of the user account
- * @param {UpdateRole} request.body.required - New role for the user account
- * @return {object} 200 - Role successfully updated
- * @return {object} 400 - Cannot change your own role or invalid account ID
- * @return {object} 403 - Admin access required
- */
-app.patch("/:accountId/role", async (req, res) => {
-    try {
-        if (req.user.id === parseInt(req.params.accountId))
-            return res.status(400).json({ code: 107, message: "You cannot change your own role" });
-
-        if (validateSchema(res, updateRoleValidation, req.body)) return;
-
-        const account = await updateRole(req.params.accountId, req.body.role);
-        if (account?.code) return res.json(account);
-
-        res.json({ message: "Role got successfully updated" });
-    } catch (error) {
-        res.status(400).json({ code: 109, message: "You need to provide a correct id"});
-    }
 });
 
 module.exports = app;

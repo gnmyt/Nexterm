@@ -69,15 +69,19 @@ class SessionManager extends ChangeNotifier {
   Future<AppSession> createGuacSession({
     required String token,
     required Server server,
+    Map<String, dynamic>? directIdentity,
+    String? connectionReason,
   }) async {
-    final identityId = server.identities?.isNotEmpty == true
-        ? server.identities!.first
-        : null;
+    final identityId = directIdentity != null
+        ? null
+        : (server.identities?.isNotEmpty == true ? server.identities!.first : null);
 
     final cs = await ConnectionService.createSession(
       token: token,
       entryId: server.id is int ? server.id : int.parse(server.id.toString()),
       identityId: identityId ?? 0,
+      directIdentity: directIdentity,
+      connectionReason: connectionReason,
     );
 
     final tunnel = GuacWebSocketTunnel(ApiClient.buildWebSocketUrl('/ws/guac/'));
@@ -100,15 +104,19 @@ class SessionManager extends ChangeNotifier {
   Future<AppSession> createTerminalSession({
     required String token,
     required Server server,
+    Map<String, dynamic>? directIdentity,
+    String? connectionReason,
   }) async {
-    final identityId = server.identities?.isNotEmpty == true
-        ? server.identities!.first
-        : null;
+    final identityId = directIdentity != null
+        ? null
+        : (server.identities?.isNotEmpty == true ? server.identities!.first : null);
 
     final cs = await ConnectionService.createSession(
       token: token,
       entryId: server.id is int ? server.id : int.parse(server.id.toString()),
       identityId: identityId ?? 0,
+      directIdentity: directIdentity,
+      connectionReason: connectionReason,
     );
 
     final terminal = Terminal(maxLines: 10000);
@@ -142,16 +150,20 @@ class SessionManager extends ChangeNotifier {
   Future<AppSession> createSftpSession({
     required String token,
     required Server server,
+    Map<String, dynamic>? directIdentity,
+    String? connectionReason,
   }) async {
-    final identityId = server.identities?.isNotEmpty == true
-        ? server.identities!.first
-        : null;
+    final identityId = directIdentity != null
+        ? null
+        : (server.identities?.isNotEmpty == true ? server.identities!.first : null);
 
     final cs = await ConnectionService.createSession(
       token: token,
       entryId: server.id is int ? server.id : int.parse(server.id.toString()),
       identityId: identityId ?? 0,
       type: 'sftp',
+      directIdentity: directIdentity,
+      connectionReason: connectionReason,
     );
 
     final queryParams = <String, String>{

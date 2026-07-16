@@ -1,6 +1,7 @@
 const { Router } = require("express");
 const { getServerMonitoring, getAllServersMonitoring, getIntegrationMonitoring, getMonitoringSettings, updateMonitoringSettings } = require("../controllers/monitoring");
-const { isAdmin } = require("../middlewares/permission");
+const { requirePermission } = require("../middlewares/permission");
+const { Permission } = require("../permissions/registry");
 const { validateSchema } = require("../utils/schema");
 const { updateMonitoringSettingsValidation } = require("../validations/monitoring");
 
@@ -33,7 +34,7 @@ app.get("/", async (req, res) => {
  * @return {object} 200 - Monitoring settings configuration
  * @return {object} 403 - Admin access required
  */
-app.get("/settings/global", isAdmin, async (req, res) => {
+app.get("/settings/global", requirePermission(Permission.SETTINGS_MONITORING), async (req, res) => {
     try {
         const settings = await getMonitoringSettings();
         if (settings?.code) return res.status(settings.code).json(settings);
@@ -54,7 +55,7 @@ app.get("/settings/global", isAdmin, async (req, res) => {
  * @return {object} 200 - Updated monitoring settings
  * @return {object} 403 - Admin access required
  */
-app.patch("/settings/global", isAdmin, async (req, res) => {
+app.patch("/settings/global", requirePermission(Permission.SETTINGS_MONITORING), async (req, res) => {
     try {
         if (validateSchema(res, updateMonitoringSettingsValidation, req.body)) return;
         

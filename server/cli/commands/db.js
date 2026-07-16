@@ -4,6 +4,9 @@ const { QueryTypes } = require("sequelize");
 const db = require("../../utils/database");
 const MigrationRunner = require("../../utils/migrationRunner");
 const Account = require("../../models/Account");
+const PermissionGroup = require("../../models/PermissionGroup");
+const GroupMember = require("../../models/GroupMember");
+const { Op } = require("sequelize");
 const { table, requireConfirmation } = require("../utils");
 
 const isSelect = (sql) => /^\s*(select|pragma|show|explain|with)\b/i.test(sql);
@@ -36,7 +39,10 @@ module.exports.status = async () => {
     const files = await runner.getMigrationFiles();
     const pending = files.filter((f) => !executed.includes(f));
 
-    const adminCount = await Account.count({ where: { role: "admin" } });
+    const adminGroupIds = (await PermissionGroup.findAll({ where: { isAdmin: true }, attributes: ["id"] })).map((g) => g.id);
+    const adminCount = adminGroupIds.length
+        ? await GroupMember.count({ where: { groupId: { [Op.in]: adminGroupIds } }, distinct: true, col: "accountId" })
+        : 0;
     const userCount = await Account.count();
 
     console.log(`database:           ${process.env.DB_TYPE === "mysql" ? "mysql" : "sqlite"}`);

@@ -121,7 +121,7 @@ module.exports.authenticateUser = async (username, password, userInfo) => {
 
         if (!account) {
             const hashedPassword = await hash(crypto.randomBytes(16).toString("hex"), await genSalt(10));
-            account = await Account.create({ username: String(ldapUsername), password: hashedPassword, ...userData, role: "user" });
+            account = await Account.create({ username: String(ldapUsername), password: hashedPassword, ...userData });
         } else {
             await Account.update(userData, { where: { id: account.id } });
         }
@@ -129,7 +129,7 @@ module.exports.authenticateUser = async (username, password, userInfo) => {
         const session = await Session.create({ accountId: account.id, ip: userInfo.ip || "LDAP", userAgent: userInfo.userAgent || "LDAP" });
         logger.system(`User ${account.username} logged in via LDAP`, { accountId: account.id, ip: userInfo.ip });
 
-        return { token: session.token, user: { id: account.id, username: account.username, ...userData, role: account.role } };
+        return { token: session.token, user: { id: account.id, username: account.username, ...userData } };
     } catch (error) {
         logger.error("LDAP authentication failed", { error: error.message });
         try { await client.unbind(); } catch {}

@@ -64,5 +64,16 @@
  */
 #define GUAC_PROTOCOL_LAYER_PARAMETER_MULTI_TOUCH "multi-touch"
 
+/**
+ * The name of the layer parameter defining the multimonitor layout.
+ *
+ * This parameter contains a json string that describes the layout of the
+ * monitors, such as:
+ *    {"0": {"left":0,"top":0,"width":1920,"height":1080}}
+ *
+ * @see guac_protocol_send_set()
+ */
+#define GUAC_PROTOCOL_LAYER_PARAMETER_MULTIMON_LAYOUT "multimon-layout"
+
 #endif
 

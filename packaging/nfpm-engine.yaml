@@ -29,7 +29,7 @@ overrides:
       - libvorbis0a
       - libogg0
       - libvncclient1 | libvncserver1
-      - libfreerdp2-2 | libfreerdp-client2-2
+      - libfreerdp3-3 | libfreerdp-client3-3
   rpm:
     depends:
       - openssl-libs
@@ -60,8 +60,8 @@ contents:
     file_info:
       mode: 0755
 
-  - src: stage/engine/freerdp2/
-    dst: /usr/lib/nexterm-engine/freerdp2/
+  - src: stage/engine/freerdp3/
+    dst: /usr/lib/nexterm-engine/freerdp3/
     file_info:
       mode: 0755
 

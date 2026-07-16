@@ -4,13 +4,17 @@ const flatbuffers = require("flatbuffers");
 const {
     SftpMsgType,
     PathReq, RmdirReq, RenameReq, ChmodReq,
-    WriteBeginReq, WriteDataReq, ExecReq, SearchReq,
+    WriteBeginReq, WriteDataReq, ExecReq, SearchReq, ThumbnailReq,
     SftpMessage,
 } = require("./generated/sftp_protocol_generated");
 const { sendFrame, createFrameParser } = require("./controlPlane/frameProtocol");
+const logger = require("../utils/logger");
 
 const WRITE_CHUNK_SIZE = 262144;
 const REQUEST_TIMEOUT = 30000;
+const WRITE_END_TIMEOUT = 120000;
+const EXEC_TIMEOUT = 300000;
+const SEARCH_TIMEOUT_MARGIN = 35000;
 
 const MESSAGE_HANDLERS = {
     [SftpMsgType.Ok]: (_msg, rid, pending, self) => {
@@ -88,6 +92,13 @@ const MESSAGE_HANDLERS = {
         }
         self._resolvePending(rid, pending, dirs);
     },
+
+    [SftpMsgType.ThumbnailResult]: (msg, rid, pending, self) => {
+        const res = msg.thumbnailRes();
+        const data = res?.dataArray();
+        const buf = data ? Buffer.from(data.buffer, data.byteOffset, data.byteLength) : Buffer.alloc(0);
+        self._resolvePending(rid, pending, { data: buf, width: res?.width() || 0, height: res?.height() || 0 });
+    },
 };
 
 class EngineSftpClient extends EventEmitter {
@@ -103,7 +114,13 @@ class EngineSftpClient extends EventEmitter {
             this._readyReject = reject;
         });
 
-        const frameParser = createFrameParser((payload) => this._handleMessage(payload));
+        const frameParser = createFrameParser(
+            (payload) => this._handleMessage(payload),
+            (reason) => {
+                logger.warn(`EngineSftpClient: protocol error: ${reason}`);
+                this._socket.destroy();
+            }
+        );
         this._socket.on("data", (chunk) => frameParser(chunk));
         this._socket.on("error", (err) => this._abort(err));
         this._socket.on("close", () => this._abort(new Error("Connection closed"), true));
@@ -247,26 +264,38 @@ class EngineSftpClient extends EventEmitter {
         }
 
         this._buildAndSend(rid, SftpMsgType.WriteEnd, () => ({}));
-        return this._waitResponse(rid);
+        return this._waitResponse(rid, WRITE_END_TIMEOUT);
     }
 
-    exec(command) {
+    exec(command, timeoutMs = EXEC_TIMEOUT) {
         return this._requestWithPayload(SftpMsgType.Exec, (b) => {
             const cmdOff = b.createString(command);
             ExecReq.startExecReq(b);
             ExecReq.addCommand(b, cmdOff);
+            ExecReq.addTimeoutMs(b, timeoutMs);
             return { execReq: ExecReq.endExecReq(b) };
+        }, timeoutMs + 15000);
+    }
+
+    thumbnail(path, size = 100) {
+        return this._requestWithPayload(SftpMsgType.Thumbnail, (b) => {
+            const pathOff = b.createString(path);
+            ThumbnailReq.startThumbnailReq(b);
+            ThumbnailReq.addPath(b, pathOff);
+            ThumbnailReq.addSize(b, size);
+            return { thumbnailReq: ThumbnailReq.endThumbnailReq(b) };
         });
     }
 
-    searchDirs(searchPath, maxResults = 20) {
+    searchDirs(searchPath, maxResults = 20, timeoutMs = REQUEST_TIMEOUT) {
         return this._requestWithPayload(SftpMsgType.SearchDirs, (b) => {
             const spOff = b.createString(searchPath);
             SearchReq.startSearchReq(b);
             SearchReq.addSearchPath(b, spOff);
             SearchReq.addMaxResults(b, maxResults);
+            SearchReq.addTimeoutMs(b, timeoutMs);
             return { searchReq: SearchReq.endSearchReq(b) };
-        });
+        }, timeoutMs + SEARCH_TIMEOUT_MARGIN);
     }
 
     _nextId() {
@@ -279,10 +308,10 @@ class EngineSftpClient extends EventEmitter {
         return this._waitResponse(rid);
     }
 
-    _requestWithPayload(msgType, buildPayload) {
+    _requestWithPayload(msgType, buildPayload, timeoutMs) {
         const rid = this._nextId();
         this._buildAndSend(rid, msgType, buildPayload);
-        return this._waitResponse(rid);
+        return this._waitResponse(rid, timeoutMs);
     }
 
     _buildAndSend(rid, msgType, buildPayload) {
@@ -333,15 +362,15 @@ class EngineSftpClient extends EventEmitter {
         this._sendFrame(b.asUint8Array());
     }
 
-    _waitResponse(rid) {
+    _waitResponse(rid, timeoutMs = REQUEST_TIMEOUT) {
         return new Promise((resolve, reject) => {
-            const timeout = setTimeout(() => {
+            const timeout = timeoutMs > 0 ? setTimeout(() => {
                 this._pending.delete(rid);
                 reject(new Error("Request timeout"));
-            }, REQUEST_TIMEOUT);
+            }, timeoutMs) : null;
             this._pending.set(rid, {
-                resolve: (v) => { clearTimeout(timeout); resolve(v); },
-                reject: (e) => { clearTimeout(timeout); reject(e); },
+                resolve: (v) => { if (timeout) { clearTimeout(timeout); } resolve(v); },
+                reject: (e) => { if (timeout) { clearTimeout(timeout); } reject(e); },
             });
         });
     }

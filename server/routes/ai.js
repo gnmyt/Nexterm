@@ -1,23 +1,25 @@
 const { Router } = require("express");
-const { isAdmin } = require("../middlewares/permission");
+const { requirePermission } = require("../middlewares/permission");
+const { Permission } = require("../permissions/registry");
 const { validateSchema } = require("../utils/schema");
-const { updateAISettingsValidation, generateCommandValidation } = require("../validations/ai");
+const { updateAISettingsValidation, oauthExchangeValidation } = require("../validations/ai");
 const {
     getAISettings,
     updateAISettings,
     testAIConnection,
     getAvailableModels,
-    generateCommand
+    getProviders,
+    startOAuth,
+    exchangeOAuth,
+    disconnectOAuth,
 } = require("../controllers/ai");
-const { validateEntryAccess } = require("../controllers/entry");
-const Entry = require("../models/Entry");
 
 const app = Router();
 
 /**
  * GET /ai
  * @summary Get AI Settings
- * @description Retrieves the current AI configuration settings including API keys, models, and connection details. Admin access required.
+ * @description Retrieves the current AI assistant configuration.
  * @tags AI
  * @produces application/json
  * @security BearerAuth
@@ -25,9 +27,8 @@ const app = Router();
  */
 app.get("/", async (req, res) => {
     try {
-        const settings = await getAISettings();
-        res.json(settings);
-    } catch (error) {
+        res.json(await getAISettings());
+    } catch {
         res.status(500).json({ error: "Internal server error" });
     }
 });
@@ -35,7 +36,7 @@ app.get("/", async (req, res) => {
 /**
  * PATCH /ai
  * @summary Update AI Settings
- * @description Updates AI configuration settings such as API keys, model selection, and connection parameters. Admin access required.
+ * @description Updates the AI assistant configuration. Admin access required.
  * @tags AI
  * @produces application/json
  * @security BearerAuth
@@ -43,13 +44,11 @@ app.get("/", async (req, res) => {
  * @return {object} 200 - Updated AI settings
  * @return {object} 403 - Admin access required
  */
-app.patch("/", isAdmin, async (req, res) => {
+app.patch("/", requirePermission(Permission.SETTINGS_AI), async (req, res) => {
     try {
         if (validateSchema(res, updateAISettingsValidation, req.body)) return;
-
-        const updatedSettings = await updateAISettings(req.body);
-        res.json(updatedSettings);
-    } catch (error) {
+        res.json(await updateAISettings(req.body));
+    } catch {
         res.status(500).json({ error: "Internal server error" });
     }
 });
@@ -57,7 +56,7 @@ app.patch("/", isAdmin, async (req, res) => {
 /**
  * POST /ai/test
  * @summary Test AI Connection
- * @description Tests the connection to the configured AI service to verify settings and connectivity. Admin access required.
+ * @description Verifies connectivity to the configured AI provider. Admin access required.
  * @tags AI
  * @produces application/json
  * @security BearerAuth
@@ -65,71 +64,116 @@ app.patch("/", isAdmin, async (req, res) => {
  * @return {object} 400 - Connection test failed
  * @return {object} 403 - Admin access required
  */
-app.post("/test", isAdmin, async (req, res) => {
+app.post("/test", requirePermission(Permission.SETTINGS_AI), async (req, res) => {
     try {
         const result = await testAIConnection();
-
         if (result.code) return res.status(result.code).json({ error: result.message });
-
         res.json(result);
-    } catch (error) {
+    } catch {
         res.status(500).json({ error: "Connection test failed" });
+    }
+});
+
+/**
+ * GET /ai/providers
+ * @summary List Supported AI Providers
+ * @description Returns the available AI providers and the fields each one requires, for rendering the settings form.
+ * @tags AI
+ * @produces application/json
+ * @security BearerAuth
+ * @return {object} 200 - Supported providers
+ */
+app.get("/providers", async (req, res) => {
+    try {
+        res.json(getProviders());
+    } catch {
+        res.status(500).json({ error: "Internal server error" });
     }
 });
 
 /**
  * GET /ai/models
  * @summary Get Available AI Models
- * @description Retrieves a list of available AI models that can be used for command generation and assistance.
+ * @description Retrieves the list of models available from the configured provider. Admin access required.
  * @tags AI
  * @produces application/json
  * @security BearerAuth
  * @return {array} 200 - List of available AI models
  * @return {object} 400 - Failed to retrieve models
+ * @return {object} 403 - Admin access required
  */
-app.get("/models", async (req, res) => {
+app.get("/models", requirePermission(Permission.SETTINGS_AI), async (req, res) => {
     try {
         const result = await getAvailableModels();
-
         if (result.code) return res.status(result.code).json({ error: result.message });
-
         res.json(result);
-    } catch (error) {
+    } catch {
         res.status(500).json({ error: "Internal server error" });
     }
 });
 
 /**
- * POST /ai/generate
- * @summary Generate AI Command
- * @description Generates shell commands or scripts based on natural language prompts using AI assistance.
+ * POST /ai/oauth/start
+ * @summary Start Subscription OAuth
+ * @description Generates the authorization URL for connecting a provider subscription (e.g. Claude Pro/Max or ChatGPT Plus/Pro). Admin access required.
  * @tags AI
  * @produces application/json
  * @security BearerAuth
- * @param {GenerateCommand} request.body.required - Prompt text for command generation
- * @return {object} 200 - Generated command or script
- * @return {object} 400 - Failed to generate command
+ * @param {OAuthStart} request.body - Optional provider id (defaults to the configured provider)
+ * @return {object} 200 - Authorization URL
+ * @return {object} 403 - Admin access required
  */
-app.post("/generate", async (req, res) => {
+app.post("/oauth/start", requirePermission(Permission.SETTINGS_AI), async (req, res) => {
     try {
-        if (validateSchema(res, generateCommandValidation, req.body)) return;
-
-        const { prompt, entryId, recentOutput } = req.body;
-
-        if (entryId) {
-            const entry = await Entry.findByPk(entryId);
-            const accessCheck = await validateEntryAccess(req.user.id, entry);
-            if (accessCheck.code) {
-                return res.status(accessCheck.code).json({ error: accessCheck.message });
-            }
-        }
-
-        const result = await generateCommand(prompt, entryId, recentOutput);
+        const result = await startOAuth(req.body?.provider);
         if (result.code) return res.status(result.code).json({ error: result.message });
-
         res.json(result);
-    } catch (error) {
-        res.status(500).json({ error: "Failed to generate command" });
+    } catch {
+        res.status(500).json({ error: "Failed to start authorization" });
+    }
+});
+
+/**
+ * POST /ai/oauth/exchange
+ * @summary Complete Subscription OAuth
+ * @description Exchanges the authorization code for tokens and stores the connected subscription. Admin access required.
+ * @tags AI
+ * @produces application/json
+ * @security BearerAuth
+ * @param {OAuthExchange} request.body.required - The authorization code and optional provider id
+ * @return {object} 200 - Subscription connected
+ * @return {object} 400 - Exchange failed
+ * @return {object} 403 - Admin access required
+ */
+app.post("/oauth/exchange", requirePermission(Permission.SETTINGS_AI), async (req, res) => {
+    try {
+        if (validateSchema(res, oauthExchangeValidation, req.body)) return;
+        const result = await exchangeOAuth(req.body.code, req.body.provider);
+        if (result.code) return res.status(result.code).json({ error: result.message });
+        res.json(result);
+    } catch {
+        res.status(500).json({ error: "Failed to complete authorization" });
+    }
+});
+
+/**
+ * POST /ai/oauth/disconnect
+ * @summary Disconnect Subscription
+ * @description Removes the stored subscription tokens. Admin access required.
+ * @tags AI
+ * @produces application/json
+ * @security BearerAuth
+ * @param {OAuthStart} request.body - Optional provider id (defaults to the configured provider)
+ * @return {object} 200 - Subscription disconnected
+ * @return {object} 403 - Admin access required
+ */
+app.post("/oauth/disconnect", requirePermission(Permission.SETTINGS_AI), async (req, res) => {
+    try {
+        const result = await disconnectOAuth(req.body?.provider);
+        if (result.code) return res.status(result.code).json({ error: result.message });
+        res.json(result);
+    } catch {
+        res.status(500).json({ error: "Failed to disconnect" });
     }
 });
 

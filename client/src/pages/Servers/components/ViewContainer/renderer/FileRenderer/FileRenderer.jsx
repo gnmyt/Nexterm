@@ -56,7 +56,11 @@ export const FileRenderer = ({ session, disconnectFromServer, setOpenFileEditors
     const [directorySuggestions, setDirectorySuggestions] = useState([]);
     const [connectionError, setConnectionError] = useState(null);
     const [isReady, setIsReady] = useState(false);
-    
+    const [searchQuery, setSearchQuery] = useState("");
+    const [searchOpen, setSearchOpen] = useState(false);
+    const [searchResultCount, setSearchResultCount] = useState(0);
+    const [capabilities, setCapabilities] = useState({ shell: true, terminal: true });
+
     const directoryRef = useRef(directory);
     const skipNextPathSync = useRef(false);
     const symlinkCallbacks = useRef([]);
@@ -137,7 +141,7 @@ export const FileRenderer = ({ session, disconnectFromServer, setOpenFileEditors
 
             setIsUploading(false);
             setUploadProgress(0);
-            listFiles();
+            listFiles(true);
             sendToast(t("common.success"), t("servers.fileManager.toast.uploaded", { name: file.name }));
             return true;
         } catch (err) {
@@ -237,6 +241,7 @@ export const FileRenderer = ({ session, disconnectFromServer, setOpenFileEditors
                 case OPERATIONS.READY:
                     setIsReady(true);
                     setConnectionError(null);
+                    setCapabilities(payload?.capabilities ?? { shell: true, terminal: true });
                     reconnectAttemptsRef.current = 0;
                     if (payload?.path && payload.path !== directoryRef.current) {
                         skipNextPathSync.current = true;
@@ -260,7 +265,7 @@ export const FileRenderer = ({ session, disconnectFromServer, setOpenFileEditors
                 case OPERATIONS.MOVE_FILES:
                 case OPERATIONS.COPY_FILES:
                 case OPERATIONS.CHMOD:
-                    listFiles();
+                    listFiles(true);
                     break;
                 case OPERATIONS.ERROR:
                     sendToast(t("common.error"), payload?.message || t("servers.fileManager.toast.error"));
@@ -329,7 +334,7 @@ export const FileRenderer = ({ session, disconnectFromServer, setOpenFileEditors
 
     const createFile = (fileName) => sendOperation(OPERATIONS.CREATE_FILE, { path: `${directory}/${fileName}` });
     const createFolder = (folderName) => sendOperation(OPERATIONS.CREATE_FOLDER, { path: `${directory}/${folderName}` });
-    const listFiles = useCallback(() => { setLoading(true); setError(null); sendOperation(OPERATIONS.LIST_FILES, { path: directory }); }, [directory, sendOperation]);
+    const listFiles = useCallback((silent = false) => { if (!silent) setLoading(true); setError(null); sendOperation(OPERATIONS.LIST_FILES, { path: directory }); }, [directory, sendOperation]);
     const moveFiles = useCallback((sources, destination) => sendOperation(OPERATIONS.MOVE_FILES, { sources, destination }), [sendOperation]);
     const copyFiles = useCallback((sources, destination) => sendOperation(OPERATIONS.COPY_FILES, { sources, destination }), [sendOperation]);
 
@@ -385,6 +390,22 @@ export const FileRenderer = ({ session, disconnectFromServer, setOpenFileEditors
 
     useEffect(() => { directoryRef.current = directory; }, [directory]);
 
+    useEffect(() => { setSearchQuery(""); }, [directory]);
+
+    useEffect(() => {
+        if (!isActive) return;
+        const handler = (e) => {
+            if ((e.ctrlKey || e.metaKey) && (e.key === "f" || e.key === "F")) {
+                e.preventDefault();
+                setSearchOpen(true);
+            }
+        };
+        window.addEventListener("keydown", handler);
+        return () => window.removeEventListener("keydown", handler);
+    }, [isActive]);
+
+    const closeSearch = useCallback(() => { setSearchOpen(false); setSearchQuery(""); }, []);
+
     useEffect(() => {
         if (isReady) {
             if (skipNextPathSync.current) {
@@ -404,15 +425,20 @@ export const FileRenderer = ({ session, disconnectFromServer, setOpenFileEditors
             </div>
             <div className="file-manager">
                 <ActionBar path={directory} updatePath={changeDirectory} createFile={() => fileListRef.current?.startCreateFile()}
-                    createFolder={() => fileListRef.current?.startCreateFolder()} uploadFile={uploadFile} uploadFolder={uploadFolder} goBack={goBack} goForward={goForward} historyIndex={historyIndex}
+                    createFolder={() => fileListRef.current?.startCreateFolder()} uploadFile={uploadFile} uploadFolder={uploadFolder}
+                    refreshFiles={() => listFiles(true)} goBack={goBack} goForward={goForward} historyIndex={historyIndex}
                     historyLength={history.length} viewMode={viewMode} setViewMode={setViewMode} 
                     searchDirectories={searchDirectories} directorySuggestions={directorySuggestions} 
-                    setDirectorySuggestions={setDirectorySuggestions} moveFiles={moveFiles} copyFiles={copyFiles} 
-                    sessionId={session.id} />
+                    setDirectorySuggestions={setDirectorySuggestions} moveFiles={moveFiles} copyFiles={copyFiles}
+                    capabilities={capabilities}
+                    sessionId={session.id} searchQuery={searchQuery} setSearchQuery={setSearchQuery} searchOpen={searchOpen}
+                    setSearchOpen={setSearchOpen} closeSearch={closeSearch} searchResultCount={searchResultCount} />
                 <FileList ref={fileListRef} items={items} path={directory} updatePath={changeDirectory} sendOperation={sendOperation}
-                    downloadFile={downloadFile} downloadMultipleFiles={downloadMultipleFiles} setCurrentFile={handleOpenFile} setPreviewFile={handleOpenPreview} 
+                    downloadFile={downloadFile} downloadMultipleFiles={downloadMultipleFiles} setCurrentFile={handleOpenFile} setPreviewFile={handleOpenPreview}
                     loading={loading} viewMode={viewMode} error={error || connectionError} resolveSymlink={resolveSymlink} session={session}
                     createFile={createFile} createFolder={createFolder} moveFiles={moveFiles} copyFiles={copyFiles} isActive={isActive}
+                    capabilities={capabilities}
+                    searchQuery={searchQuery} onSearchResults={setSearchResultCount}
                     onOpenTerminal={onOpenTerminal} onPropertiesMessage={(handler) => { propertiesHandlerRef.current = handler; }} />
             </div>
             {isUploading && <div className="upload-progress" style={{ width: `${uploadProgress}%` }} />}

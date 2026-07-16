@@ -17,7 +17,7 @@ export const DirectConnectDialog = ({ open, onClose, onConnect, server }) => {
     const { t } = useTranslation();
     const { sendToast } = useToast();
 
-    const protocol = server?.config?.protocol;
+    const protocol = server?.protocol ?? server?.config?.protocol;
     const fieldConfig = useMemo(() => getFieldConfig("server", protocol), [protocol]);
     const allowedAuthTypes = fieldConfig.allowedAuthTypes || ["password", "ssh", "both"];
     const defaultAuthType = allowedAuthTypes[0] || "password";

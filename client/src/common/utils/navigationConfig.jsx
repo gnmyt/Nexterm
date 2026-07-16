@@ -1,4 +1,4 @@
-import { mdiServerOutline, mdiCodeBraces, mdiChartBoxOutline, mdiShieldCheckOutline, mdiAccountCircleOutline, mdiAccountGroup, mdiClockStarFourPointsOutline, mdiShieldAccountOutline, mdiDomain, mdiCreationOutline, mdiKeyVariant, mdiConsole, mdiKeyboardOutline, mdiCloudDownloadOutline, mdiChartLine, mdiHarddisk, mdiFolderOutline, mdiEngine, mdiPalette } from "@mdi/js";
+import { mdiServerOutline, mdiCodeBraces, mdiChartBoxOutline, mdiShieldCheckOutline, mdiAccountCircleOutline, mdiAccountGroup, mdiClockStarFourPointsOutline, mdiShieldAccountOutline, mdiDomain, mdiCreationOutline, mdiKeyVariant, mdiConsole, mdiKeyboardOutline, mdiCloudDownloadOutline, mdiChartLine, mdiHarddisk, mdiFolderOutline, mdiEngine, mdiPalette, mdiShieldKeyOutline } from "@mdi/js";
 import Account from "@/pages/Settings/pages/Account";
 import Appearance from "@/pages/Settings/pages/Appearance";
 import Terminal from "@/pages/Settings/pages/Terminal";
@@ -14,12 +14,14 @@ import Monitoring from "@/pages/Settings/pages/Monitoring";
 import Backup from "@/pages/Settings/pages/Backup";
 import AI from "@/pages/Settings/pages/AI";
 import Engines from "@/pages/Settings/pages/Engines";
+import Permissions from "@/pages/Settings/pages/Permissions";
+import { Permission } from "@/common/utils/permissions.js";
 
 export const getSidebarNavigation = t => [
     { title: t('common.sidebar.servers'), key: "servers", path: "/servers", icon: mdiServerOutline, toggleEvent: "toggleServerList" },
     { title: t('common.sidebar.monitoring'), key: "monitoring", path: "/monitoring", icon: mdiChartBoxOutline },
     { title: t('common.sidebar.snippets'), key: "snippets", path: "/snippets", icon: mdiCodeBraces },
-    { title: t('common.sidebar.audit'), key: "audit", path: "/audit", icon: mdiShieldCheckOutline },
+    { title: t('common.sidebar.audit'), key: "audit", path: "/audit", icon: mdiShieldCheckOutline, permission: Permission.AUDIT_VIEW },
 ];
 
 export const getSettingsUserPages = t => [
@@ -34,13 +36,14 @@ export const getSettingsUserPages = t => [
 ];
 
 export const getSettingsAdminPages = t => [
-    { title: t("settings.pages.users"), key: "users", icon: mdiAccountGroup, content: <Users /> },
-    { title: t("settings.pages.authentication"), key: "authentication", icon: mdiShieldAccountOutline, content: <Authentication /> },
-    { title: t("settings.pages.sources"), key: "sources", icon: mdiCloudDownloadOutline, content: <Sources /> },
-    { title: t("settings.pages.monitoring"), key: "monitoring", icon: mdiChartLine, content: <Monitoring /> },
-    { title: t("settings.pages.engines"), key: "engines", icon: mdiEngine, content: <Engines /> },
-    { title: t("settings.pages.backup"), key: "backup", icon: mdiHarddisk, content: <Backup /> },
-    { title: t("settings.pages.ai"), key: "ai", icon: mdiCreationOutline, content: <AI /> },
+    { title: t("settings.pages.users"), key: "users", icon: mdiAccountGroup, permission: Permission.USERS_VIEW, content: <Users /> },
+    { title: t("settings.pages.permissions"), key: "permissions", icon: mdiShieldKeyOutline, permission: Permission.PERMISSIONS_MANAGE, content: <Permissions /> },
+    { title: t("settings.pages.authentication"), key: "authentication", icon: mdiShieldAccountOutline, permission: Permission.SETTINGS_AUTH_PROVIDERS, content: <Authentication /> },
+    { title: t("settings.pages.sources"), key: "sources", icon: mdiCloudDownloadOutline, permission: Permission.SETTINGS_SOURCES, content: <Sources /> },
+    { title: t("settings.pages.monitoring"), key: "monitoring", icon: mdiChartLine, permission: Permission.SETTINGS_MONITORING, content: <Monitoring /> },
+    { title: t("settings.pages.engines"), key: "engines", icon: mdiEngine, permission: Permission.SETTINGS_ENGINES, content: <Engines /> },
+    { title: t("settings.pages.backup"), key: "backup", icon: mdiHarddisk, permission: Permission.SETTINGS_BACKUP, content: <Backup /> },
+    { title: t("settings.pages.ai"), key: "ai", icon: mdiCreationOutline, permission: Permission.SETTINGS_AI, content: <AI /> },
 ];
 
 export const getAllSettingsPages = t => [...getSettingsUserPages(t), ...getSettingsAdminPages(t)];

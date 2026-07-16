@@ -129,6 +129,13 @@ void guac_rect_shrink(guac_rect* rect, int max_width, int max_height) {
         scale_denominator = original_height;
     }
 
+    /* Cannot divide by zero */
+    if (!scale_denominator) {
+        rect->right = 0;
+        rect->bottom = 0;
+        return;
+    }
+
     rect->right = rect->left + original_width * scale_numerator / scale_denominator;
     rect->bottom = rect->top + original_height * scale_numerator / scale_denominator;
 

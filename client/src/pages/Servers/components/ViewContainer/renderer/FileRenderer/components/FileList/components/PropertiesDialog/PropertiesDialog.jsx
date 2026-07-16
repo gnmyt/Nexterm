@@ -11,7 +11,7 @@ import { PermissionsTab } from "./tabs/PermissionsTab.jsx";
 import { ChecksumTab } from "./tabs/ChecksumTab.jsx";
 import "./styles.sass";
 
-export const PropertiesDialog = ({ open, onClose, item, path, sendOperation, OPERATIONS, onRegisterHandler }) => {
+export const PropertiesDialog = ({ open, onClose, item, path, sendOperation, OPERATIONS, onRegisterHandler, capabilities = { shell: true } }) => {
     const { t } = useTranslation();
     const [activeTab, setActiveTab] = useState("general");
     const [stats, setStats] = useState(null);
@@ -103,7 +103,7 @@ export const PropertiesDialog = ({ open, onClose, item, path, sendOperation, OPE
     const tabs = [
         { key: "general", label: t("servers.fileManager.properties.general") },
         { key: "permissions", label: t("servers.fileManager.properties.permissions") },
-        ...(!isFolder ? [{ key: "checksum", label: t("servers.fileManager.properties.checksum") }] : []),
+        ...(!isFolder && capabilities.shell ? [{ key: "checksum", label: t("servers.fileManager.properties.checksum") }] : []),
     ];
 
     return (
@@ -132,7 +132,7 @@ export const PropertiesDialog = ({ open, onClose, item, path, sendOperation, OPE
                         item={item}
                         copied={copied}
                         onCopy={copyToClipboard}
-                        onCalculateFolderSize={calculateFolderSize}
+                        onCalculateFolderSize={capabilities.shell ? calculateFolderSize : null}
                     />
                 )}
 
@@ -148,7 +148,7 @@ export const PropertiesDialog = ({ open, onClose, item, path, sendOperation, OPE
                     />
                 )}
 
-                {activeTab === "checksum" && !isFolder && (
+                {activeTab === "checksum" && !isFolder && capabilities.shell && (
                     <ChecksumTab
                         checksums={checksums}
                         loadingChecksum={loadingChecksum}

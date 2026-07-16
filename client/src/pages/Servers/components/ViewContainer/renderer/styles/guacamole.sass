@@ -1,0 +1,60 @@
+@use "@/common/styles/colors"
+
+.guac-drop-overlay
+  position: absolute
+  inset: 0
+  z-index: 200
+  display: flex
+  justify-content: center
+  align-items: center
+  background-color: rgba(0, 0, 0, 0.6)
+  backdrop-filter: blur(0.3rem)
+  pointer-events: none
+  opacity: 0
+  transition: opacity 0.2s
+
+  &.active
+    opacity: 1
+    pointer-events: auto
+
+  .guac-drop-overlay__content
+    position: relative
+    padding: 2.5rem 3rem
+    max-width: 24rem
+    border-radius: 0.75rem
+    background-color: colors.$lighter-background
+    border: 1px solid colors.$dark-gray
+    box-shadow: colors.$shadow-lg
+    display: flex
+    flex-direction: column
+    align-items: center
+    gap: 1rem
+
+    &::before
+      content: ""
+      position: absolute
+      inset: 0.375rem
+      border: 2px dashed colors.$primary
+      border-radius: 0.5rem
+      pointer-events: none
+
+    .guac-drop-overlay__icon
+      display: flex
+      align-items: center
+      justify-content: center
+      width: 4rem
+      height: 4rem
+      border-radius: 50%
+      background-color: colors.$primary-opacity
+      color: colors.$primary
+
+      svg
+        width: 2.25rem
+        height: 2.25rem
+
+    h2
+      margin: 0
+      font-weight: 600
+      font-size: 1.125rem
+      text-align: center
+      color: colors.$white

@@ -10,6 +10,7 @@
     "download": "下載",
     "maximize": "最大化",
     "restore": "還原",
+    "resize": "調整大小",
     "actions": {
       "cancel": "取消",
       "confirm": "確認",
@@ -17,6 +18,7 @@
       "login": "登入",
       "register": "註冊",
       "save": "儲存",
+      "saving": "拯救…",
       "download": "下載",
       "close": "關閉",
       "maximize": "最大化",
@@ -59,7 +61,9 @@
       "signInWithQrCode": "使用 QR 代碼登入",
       "qrScanDescription": "使用 Nexterm 行動應用程式掃描此 QR 代碼，即可立即登入。",
       "backToLogin": "返回登入",
-      "authenticating": "驗證..."
+      "authenticating": "驗證...",
+      "noAccount": "還沒有帳號嗎？",
+      "haveAccount": "已經有帳號了嗎？"
     },
     "deviceLink": {
       "title": "連結裝置",
@@ -306,9 +310,7 @@
       "actions": {
         "cancel": "取消",
         "create": "建立",
-        "save": "節省",
-        "generateAI": "使用 AI 生成",
-        "generating": "產生..."
+        "save": "節省"
       }
     },
     "messages": {
@@ -585,7 +587,8 @@
       "ai": "AI",
       "monitoring": "監控",
       "backup": "儲存",
-      "engines": "引擎"
+      "engines": "引擎",
+      "permissions": "角色與權限"
     },
     "account": {
       "title": "帳戶",
@@ -686,6 +689,34 @@
         "noPasskeys": "尚未註冊通行鑰匙",
         "rename": "重新命名",
         "delete": "刪除"
+      },
+      "apiKeys": {
+        "sectionTitle": "API 金鑰",
+        "sectionDescription": "建立 API 金鑰，以便透過腳本和整合功能以程式化方式存取 Nexterm。",
+        "addButton": "建立 API 金鑰",
+        "createTitle": "建立 API 金鑰",
+        "createDescription": "為您的金鑰命名。該金鑰在建立後僅會顯示一次。",
+        "nameLabel": "姓名",
+        "namePlaceholder": "例如：部署腳本",
+        "nameRequired": "姓名為必填欄位",
+        "expiryLabel": "到期日",
+        "expiryNever": "絕不",
+        "expiry30": "30 天",
+        "expiry90": "90 天",
+        "expiry365": "1 年",
+        "createButton": "建立",
+        "createdTitle": "API 金鑰已建立",
+        "createdWarning": "請立即複製此代碼。基於安全考量，您之後將無法再次查看此代碼。",
+        "tokenLabel": "代幣",
+        "doneButton": "完成",
+        "createError": "無法建立 API 金鑰。",
+        "copyError": "無法複製到剪貼簿。",
+        "confirmDelete": "您確定要撤銷此 API 金鑰嗎？任何使用此金鑰的系統都將失去存取權限。",
+        "noKeys": "目前尚無 API 金鑰",
+        "lastUsed": "最後使用時間 {{date}}",
+        "neverUsed": "從未使用過",
+        "expires": "有效期至 {{date}}",
+        "delete": "刪除"
       }
     },
     "passwordChange": {
@@ -732,6 +763,8 @@
         "folderManagementDescription": "記錄資料夾的建立、修改和刪除",
         "scriptExecutionLabel": "腳本執行",
         "scriptExecutionDescription": "記錄腳本和自動化任務的執行",
+        "aiOperationsLabel": "AI 運維",
+        "aiOperationsDescription": "記錄 AI 助理執行的指令及檔案變更",
         "actions": {
           "save": "儲存設定"
         },
@@ -775,22 +808,15 @@
       "noSearchResultsDescription": "請嘗試調整您的搜尋查詢。",
       "table": {
         "user": "使用者",
-        "role": "角色",
-        "twoFactor": "2FA"
-      },
-      "roles": {
-        "admin": "管理員",
-        "user": "使用者"
+        "twoFactor": "2FA",
+        "roles": "角色"
       },
       "contextMenu": {
         "changePassword": "變更密碼",
-        "promoteToAdmin": "晉升為管理員",
-        "demoteToUser": "降級為使用者",
         "deleteUser": "刪除使用者",
         "loginAsUser": "以使用者身分登入",
         "deleteConfirm": "這將永久刪除使用者及所有相關資料。",
-        "promoteConfirm": "這將使使用者升級為管理員。",
-        "demoteConfirm": "這會將使用者降級為一般使用者。"
+        "managePermissions": "管理權限"
       }
     },
     "userDialog": {
@@ -830,6 +856,10 @@
         "aimenu": {
           "title": "AI 選單",
           "description": "開啟 AI 指令功能表"
+        },
+        "aiaccepttool": {
+          "title": "AI 接受操作",
+          "description": "在助理中核准待處理的 AI 工具操作"
         },
         "snippets": {
           "title": "片段",
@@ -891,6 +921,15 @@
         "disabled": "殘障",
         "syncEnabled": "游標設定現在會同步至您的帳戶",
         "syncDisabled": "游標設定將不再同步"
+      },
+      "input": {
+        "title": "輸入",
+        "description": "控制鍵盤快捷鍵在終端機內的運作方式。",
+        "smartCopyPaste": "智慧型 Ctrl+C",
+        "enabled": "已啟用",
+        "disabled": "已停用",
+        "syncEnabled": "輸入設定現在將同步至您的帳戶",
+        "syncDisabled": "輸入設定將不再同步"
       },
       "theme": {
         "title": "主題",
@@ -955,6 +994,10 @@
       "addLdapProvider": "新增 LDAP",
       "system": "系統",
       "systemDescription": "使用者名稱和密碼驗證",
+      "registration": {
+        "title": "自行註冊",
+        "description": "允許訪客直接從登入畫面建立自己的帳號"
+      },
       "deleteConfirm": "這將會永久刪除此驗證提供者。",
       "errors": {
         "deleteProvider": "刪除提供者出錯",
@@ -1044,11 +1087,11 @@
     },
     "ai": {
       "title": "AI 助理設定",
-      "description": "設定終端會話和片段建立的 AI 驅動指令產生。",
+      "description": "設定這款 AI 助理，使其能直接透過您的伺服器連線執行指令並管理檔案。",
       "loading": "載入 AI 設定...",
       "enable": {
         "title": "啟用 AI 助理",
-        "description": "允許使用者使用 AI 產生指令"
+        "description": "允許使用者在伺服器會話中開啟 AI 助理"
       },
       "provider": {
         "title": "AI 供應商",
@@ -1056,18 +1099,43 @@
       },
       "model": {
         "title": "型號",
-        "description": "選擇要用於指令產生的 AI 模型"
+        "description": "選擇助理應使用的 AI 模型"
+      },
+      "requireConfirmation": {
+        "title": "每次執行動作前請先確認",
+        "description": "要求使用者必須核准助理欲執行的每項指令及檔案變更"
       },
       "apiKey": {
         "title": "API 金鑰",
-        "description": "您用於驗證的 OpenAI API 金鑰",
-        "placeholder": "輸入您的 OpenAI API 密鑰",
-        "setPlaceholder": "API 金鑰已設定 (留空以保持最新狀態)"
+        "setPlaceholder": "API 金鑰已設定 (留空以保持最新狀態)",
+        "genericDescription": "用於向所選服務供應商進行身份驗證的 API 金鑰",
+        "genericPlaceholder": "請輸入您的 {{provider}} API 金鑰"
       },
-      "ollamaUrl": {
-        "title": "Ollama URL",
-        "description": "您的 Ollama 實例正在執行的 URL",
-        "placeholder": "http://localhost:11434"
+      "authMethod": {
+        "title": "驗證",
+        "description": "使用 API 金鑰或您的服務供應商訂閱進行驗證",
+        "apiKey": "API 金鑰",
+        "subscription": "訂閱"
+      },
+      "subscription": {
+        "title": "{{provider}} 訂閱",
+        "description": "請使用您的 {{provider}} 訂閱帳戶登入，即可無需 API 金鑰即可使用其模型",
+        "connectedDescription": "您的 {{provider}} 訂閱已連結",
+        "connect": "連線",
+        "connecting": "正在連線中...",
+        "complete": "完成",
+        "disconnect": "斷開連接",
+        "codePlaceholder": "請將授權碼貼在此處",
+        "codePlaceholderUrl": "請在此處貼上完整的回呼網址（或代碼）",
+        "connectSuccess": "{{provider}} 訂閱已連線",
+        "startError": "無法啟動授權",
+        "exchangeError": "無法連線至訂閱",
+        "disconnectError": "無法解除訂閱"
+      },
+      "baseUrl": {
+        "title": "API URL",
+        "description": "該供應商 OpenAI 相容端點的基礎 URL",
+        "placeholder": "https://api.example.com/v1"
       },
       "selectProvider": "選擇提供商...",
       "selectModel": "選擇型號...",
@@ -1368,6 +1436,34 @@
         "deleteFailed": "刪除引擎失敗",
         "regenerateFailed": "代幣再生失敗"
       }
+    },
+    "permissions": {
+      "subtitle": "建立具有細粒度權限的角色，或將權限指派給個別使用者。「預設」角色會自動套用至所有使用者。",
+      "createRole": "建立角色",
+      "rolesTitle": "角色",
+      "rolesTab": "角色",
+      "overridesTab": "直接權限",
+      "permissionsTab": "權限",
+      "membersTab": "成員",
+      "settingsTab": "設定",
+      "managePermissions": "管理權限",
+      "memberCount_one": "{{count}} 成員",
+      "memberCount_other": "{{count}} 成員",
+      "dangerousHint": "授予此權限將導致廣泛或破壞性的存取權限。請謹慎授予此權限。",
+      "roleName": "角色名稱",
+      "roleNamePlaceholder": "例如：運算子",
+      "roleColor": "顏色",
+      "nameRequired": "請為此角色輸入名稱。",
+      "saveError": "無法儲存您的變更。",
+      "loadError": "無法載入權限。",
+      "userSaved": "權限已更新。",
+      "noAssignableRoles": "目前尚無角色。請先建立一個。",
+      "noMembers": "此角色目前尚無成員。",
+      "addMemberPlaceholder": "搜尋要新增的用戶：…",
+      "deleteRole": "刪除角色",
+      "deleteConfirm": "此操作將永久刪除角色「{{name}}」，並將其從所有成員中移除。",
+      "inheritsAllow": "繼承：允許",
+      "inheritsDeny": "繼承：駁回"
     }
   },
   "tunnel": {
@@ -1431,10 +1527,18 @@
       "telnetServer": "Telnet 伺服器",
       "rdpServer": "RDP 伺服器",
       "vncServer": "VNC 伺服器",
+      "demoServer": "示範連線",
+      "sftpServer": "SFTP 伺服器",
+      "ftpServer": "FTP 伺服器",
+      "ftpsServer": "FTPS 伺服器",
       "createServer": "建立伺服器",
       "import": "進口",
-      "pve": "PVE",
+      "pve": "Proxmox VE",
       "sshConfig": "SSH-Config",
+      "syncIntegration": "立即同步",
+      "syncSuccess": "整合已同步",
+      "syncFailed": "整合同步失敗",
+      "removeIntegration": "移除整合",
       "connect": "連接",
       "quickConnect": "快速連接",
       "openSFTP": "開啟 SFTP",
@@ -1448,8 +1552,6 @@
       "pasteIdentityPassword": "貼上密碼",
       "deleteServer": "刪除伺服器",
       "wakeOnLan": "網路喚醒",
-      "editPVE": "編輯 PVE",
-      "deletePVE": "刪除 PVE",
       "shutdown": "關機",
       "stop": "停止",
       "start": "開始"
@@ -1504,9 +1606,8 @@
         "username": "使用者名稱",
         "password": "密碼",
         "host": "主機",
-        "nodeName": "節點名稱",
-        "vmid": "VM ID",
         "macAddress": "MAC 位址",
+        "wolBroadcastAddress": "廣播地址",
         "engine": "引擎"
       },
       "placeholders": {
@@ -1516,9 +1617,8 @@
         "username": "使用者名稱",
         "password": "密碼",
         "host": "主機",
-        "nodeName": "節點名稱",
-        "vmid": "VM ID",
-        "macAddress": "aa:bb:cc:dd:ee:ff"
+        "macAddress": "aa:bb:cc:dd:ee:ff",
+        "wolBroadcastAddress": "255.255.255.255"
       },
       "engineOffline": "(離線)",
       "settings": {
@@ -1604,7 +1704,7 @@
     },
     "proxmoxDialog": {
       "title": {
-        "import": "匯入 Proxmox VE",
+        "import": "新增 Proxmox VE",
         "edit": "編輯 Proxmox VE"
       },
       "fields": {
@@ -1626,8 +1726,8 @@
         "specificNode": "特定節點名稱"
       },
       "actions": {
-        "import": "進口",
-        "edit": "編輯"
+        "import": "新增",
+        "edit": "儲存"
       },
       "messages": {
         "created": "成功建立 Proxmox 整合",
@@ -1720,7 +1820,9 @@
         "clearTerminal": "清除終端",
         "properties": "屬性",
         "openTerminal": "在此開啟終端機",
-        "downloadFolder": "下載資料夾"
+        "downloadFolder": "下載資料夾",
+        "newFile": "新檔案",
+        "newFolder": "新資料夾"
       },
       "properties": {
         "general": "一般",
@@ -1780,10 +1882,20 @@
         "enterDirectory": "輸入目錄路徑...",
         "hiddenDirectories": "{{count}} 隱藏目錄",
         "switchToGrid": "切換至網格檢視",
-        "switchToList": "切換至清單檢視"
+        "switchToList": "切換至清單檢視",
+        "search": "搜尋檔案",
+        "closeSearch": "關閉搜尋",
+        "refresh": "重新整理"
       },
       "item": {
         "link": "連結"
+      },
+      "search": {
+        "placeholder": "篩選此資料夾中的檔案...",
+        "results_one": "{{count}} 結果",
+        "results_other": "{{count}} 結果",
+        "noResultsTitle": "沒有符合的結果",
+        "noResults": "沒有任何檔案符合「{{query}} 」的搜尋條件"
       },
       "states": {
         "loading": "載入檔案...",
@@ -1800,25 +1912,67 @@
         "error": "發生錯誤"
       }
     },
+    "remoteDesktop": {
+      "dropOverlay": "將檔案拖放至此處以上傳至遠端",
+      "toast": {
+        "uploadedSingle": "已將「{{name}}」上傳至遠端磁碟機",
+        "uploadedMultiple": "已將 {{count}} 個檔案上傳至遠端磁碟機",
+        "uploadFailed": "{{count}} 無法上傳檔案",
+        "uploadPartial": "{{failed}} 檔案上傳失敗， {{succeeded}} 上傳成功",
+        "downloaded": "從遠端下載了「{{name}}」"
+      }
+    },
     "aiAssistant": {
       "title": "AI 助理",
-      "placeholder": "描述您想做的事...",
-      "hint": "按 Enter 生成 - 按 Esc 關閉",
-      "hintUse": "按 Enter 使用指令 - 按 Esc 關閉",
-      "closeLabel": "關閉 AI 助理",
-      "generate": "產生指令",
-      "generating": "產生指令...",
-      "generatedCommand": "產生指令",
-      "useCommand": "使用指令",
-      "tryAgain": "再試一次",
-      "copy": "複製到剪貼簿",
-      "error": "產生指令失敗。請再試一次。"
+      "open": "AI 助理",
+      "empty": "請請助理檢查或更換這台伺服器。它可透過此連線直接執行指令，並讀取或編輯檔案。",
+      "placeholder": "傳訊給助理……",
+      "connecting": "正在連線中...",
+      "send": "傳送",
+      "stop": "停止",
+      "connectionError": "與助理的連線已中斷。",
+      "reconnecting": "連線中斷。正在重新連線...",
+      "confirmPrompt": "要允許此操作嗎？",
+      "allow": "允許",
+      "allowShortcut": "允許 ({{key}})",
+      "deny": "拒絕",
+      "denied": "您已拒絕此操作。",
+      "stopped": "停了。",
+      "tools": {
+        "runCommand": "執行指令",
+        "readFile": "讀取檔案",
+        "writeFile": "寫入檔案",
+        "editFile": "編輯檔案",
+        "listDirectory": "列出目錄",
+        "statPath": "檢查路徑",
+        "makeDirectory": "建立目錄",
+        "deleteFile": "刪除檔案",
+        "removeDirectory": "刪除目錄",
+        "movePath": "移動",
+        "changePermissions": "變更權限",
+        "findDirectories": "尋找目錄"
+      }
     },
     "snippets": {
       "title": "片段",
       "noSnippets": "沒有可用的片段",
       "searchPlaceholder": "搜尋片段...",
       "createNew": "建立新片段"
+    },
+    "toolbar": {
+      "drag": "拖曳以移動",
+      "shortcuts": "鍵盤快捷鍵",
+      "holdModifier": "暫停 {{key}}",
+      "zoomIn": "放大",
+      "zoomOut": "縮小",
+      "zoomReset": "將縮放比例重設為「自動適應」（按住滑鼠中鍵拖曳以平移畫面）"
+    },
+    "monitors": {
+      "title": "監視器 {{number}}",
+      "select": "切換至螢幕 {{number}}",
+      "selectOrPopOut": "切換至螢幕 {{number}} （雙擊以在獨立視窗中開啟）",
+      "add": "新增顯示器",
+      "remove": "移除最後一台顯示器"
     },
     "terminalActions": {
       "menuTitle": "終端行動",

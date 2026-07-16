@@ -60,7 +60,7 @@ COPY server/ server/
 COPY --from=schema-builder /app/server/lib/generated/ server/lib/generated/
 
 
-FROM alpine:3.21
+FROM alpine:3.22
 
 RUN apk add --no-cache nodejs
 

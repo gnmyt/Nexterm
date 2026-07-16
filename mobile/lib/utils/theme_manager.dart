@@ -97,18 +97,21 @@ class ThemeManager extends ChangeNotifier {
     },
   );
 
+  ColorScheme _buildScheme(ColorScheme? dynamicColorScheme, Brightness brightness) {
+    final seed = (_useDynamicColor && dynamicColorScheme != null)
+        ? dynamicColorScheme.primary
+        : _accentColor;
+    return ColorScheme.fromSeed(seedColor: seed, brightness: brightness);
+  }
+
   ThemeData lightTheme({ColorScheme? dynamicColorScheme}) => ThemeData(
-    colorScheme: (_useDynamicColor && dynamicColorScheme != null)
-        ? dynamicColorScheme
-        : ColorScheme.fromSeed(seedColor: _accentColor),
+    colorScheme: _buildScheme(dynamicColorScheme, Brightness.light),
     useMaterial3: true,
     pageTransitionsTheme: _pageTransitions,
   );
 
   ThemeData darkTheme({ColorScheme? dynamicColorScheme}) => ThemeData(
-    colorScheme: (_useDynamicColor && dynamicColorScheme != null)
-        ? dynamicColorScheme
-        : ColorScheme.fromSeed(seedColor: _accentColor, brightness: Brightness.dark),
+    colorScheme: _buildScheme(dynamicColorScheme, Brightness.dark),
     useMaterial3: true,
     pageTransitionsTheme: _pageTransitions,
   );

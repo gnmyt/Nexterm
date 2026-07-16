@@ -34,7 +34,7 @@ APK_ENGINE="
 APT_GUAC="
     build-essential autoconf automake libtool pkg-config
     libcairo2-dev libjpeg-dev libpng-dev libossp-uuid-dev
-    libpango1.0-dev libvncserver-dev libwebp-dev libssl-dev freerdp2-dev
+    libpango1.0-dev libvncserver-dev libwebp-dev libssl-dev freerdp-dev
     libpulse-dev libvorbis-dev libogg-dev libssh2-1-dev
 "
 APT_ENGINE="
@@ -76,9 +76,10 @@ deps_all() {
 build_guac() {
     cd "$GUAC_SRC"
     autoreconf -fi
+    CFLAGS="${CFLAGS:-} -Wno-error=deprecated-declarations" \
     ./configure \
         --prefix="$GUAC_DIST" \
-        --with-freerdp-plugin-dir="$GUAC_DIST/lib/freerdp2" \
+        --with-freerdp-plugin-dir="$GUAC_DIST/lib/freerdp3" \
         --disable-guacenc \
         --disable-guaclog \
         --without-libavcodec \
@@ -90,7 +91,7 @@ build_guac() {
     rm -f "$GUAC_DIST/lib"/*.a
     rm -f "$GUAC_DIST/lib"/*.la
     strip "$GUAC_DIST/lib"/*.so.* 2>/dev/null || true
-    strip "$GUAC_DIST/lib/freerdp2"/*.so 2>/dev/null || true
+    strip "$GUAC_DIST/lib/freerdp3"/*.so 2>/dev/null || true
     strip "$GUAC_DIST/sbin"/* 2>/dev/null || true
 }
 
@@ -98,9 +99,16 @@ build_engine() {
     cd "$ENGINE_SRC"
     mkdir -p build
     cd build
-    cmake .. -DCMAKE_BUILD_TYPE=Release
+    cmake .. -DCMAKE_BUILD_TYPE=RelWithDebInfo
     make -j"$(nproc)"
-    strip nexterm-engine 2>/dev/null || true
+    if command -v objcopy >/dev/null 2>&1; then
+        objcopy --only-keep-debug nexterm-engine nexterm-engine.debug 2>/dev/null || true
+        strip --strip-debug --keep-file-symbols nexterm-engine 2>/dev/null \
+            || strip --strip-debug nexterm-engine 2>/dev/null || true
+        objcopy --add-gnu-debuglink=nexterm-engine.debug nexterm-engine 2>/dev/null || true
+    else
+        strip --strip-debug nexterm-engine 2>/dev/null || true
+    fi
     file nexterm-engine || true
 }
 
@@ -132,8 +140,8 @@ package() {
 
     cp "$ENGINE_SRC/build/nexterm-engine" "$STAGE/nexterm-engine"
     cp -P "$GUAC_DIST/lib"/*.so* "$STAGE/lib/" 2>/dev/null || true
-    if [ -d "$GUAC_DIST/lib/freerdp2" ]; then
-        cp -rP "$GUAC_DIST/lib/freerdp2" "$STAGE/lib/"
+    if [ -d "$GUAC_DIST/lib/freerdp3" ]; then
+        cp -rP "$GUAC_DIST/lib/freerdp3" "$STAGE/lib/"
     fi
 
     pass=0
@@ -148,12 +156,12 @@ package() {
         pass=$((pass + 1))
     done
 
-    patchelf --set-rpath '$ORIGIN/lib:$ORIGIN/lib/freerdp2' "$STAGE/nexterm-engine"
+    patchelf --set-rpath '$ORIGIN/lib:$ORIGIN/lib/freerdp3' "$STAGE/nexterm-engine"
     find "$STAGE/lib" -maxdepth 1 -name '*.so*' -type f | while read -r so; do
-        patchelf --set-rpath '$ORIGIN:$ORIGIN/freerdp2' "$so" || true
+        patchelf --set-rpath '$ORIGIN:$ORIGIN/freerdp3' "$so" || true
     done
-    if [ -d "$STAGE/lib/freerdp2" ]; then
-        find "$STAGE/lib/freerdp2" -name '*.so*' -type f | while read -r so; do
+    if [ -d "$STAGE/lib/freerdp3" ]; then
+        find "$STAGE/lib/freerdp3" -name '*.so*' -type f | while read -r so; do
             patchelf --set-rpath '$ORIGIN:$ORIGIN/..' "$so" || true
         done
     fi
@@ -179,7 +187,7 @@ pkg() {
 
     PKG_STAGE="$REPO_ROOT/stage/engine"
     rm -rf "$REPO_ROOT/stage"
-    mkdir -p "$PKG_STAGE/lib" "$PKG_STAGE/freerdp2"
+    mkdir -p "$PKG_STAGE/lib" "$PKG_STAGE/freerdp3"
 
     cp "$ENGINE_SRC/build/nexterm-engine" "$PKG_STAGE/nexterm-engine"
     patchelf --set-rpath '/usr/lib/nexterm-engine' "$PKG_STAGE/nexterm-engine"
@@ -202,9 +210,9 @@ pkg() {
         patchelf --set-rpath '$ORIGIN' "$so" || true
     done
 
-    if [ -d "$GUAC_DIST/lib/freerdp2" ]; then
-        cp -L "$GUAC_DIST/lib/freerdp2"/*.so "$PKG_STAGE/freerdp2/" 2>/dev/null || true
-        find "$PKG_STAGE/freerdp2" -name '*.so*' -type f | while read -r so; do
+    if [ -d "$GUAC_DIST/lib/freerdp3" ]; then
+        cp -L "$GUAC_DIST/lib/freerdp3"/*.so "$PKG_STAGE/freerdp3/" 2>/dev/null || true
+        find "$PKG_STAGE/freerdp3" -name '*.so*' -type f | while read -r so; do
             patchelf --set-rpath '/usr/lib/nexterm-engine' "$so" || true
         done
     fi

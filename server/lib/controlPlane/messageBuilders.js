@@ -11,6 +11,8 @@ const {
     SessionResize,
     ConnectionParam,
     ExecCommand,
+    ExecBatch,
+    ExecBatchCommand,
     PortCheck,
     PortCheckTarget,
     JumpHost,
@@ -186,6 +188,39 @@ const buildExecCommand = (requestId, host, port, params, command, jumpHosts) => 
     return finishEnvelope(builder, Envelope.endEnvelope(builder));
 };
 
+const buildExecBatch = (requestId, host, port, params, commands, jumpHosts) => {
+    const builder = new flatbuffers.Builder(2048);
+    const reqIdOff = builder.createString(requestId);
+    const hostOff = builder.createString(host);
+
+    const cmdOffsets = commands.map(({ id, command }) => {
+        const idOff = builder.createString(String(id));
+        const cmdOff = builder.createString(String(command));
+        ExecBatchCommand.startExecBatchCommand(builder);
+        ExecBatchCommand.addId(builder, idOff);
+        ExecBatchCommand.addCommand(builder, cmdOff);
+        return ExecBatchCommand.endExecBatchCommand(builder);
+    });
+    const cmdsVecOff = ExecBatch.createCommandsVector(builder, cmdOffsets);
+
+    const paramsVecOff = buildConnectionParams(builder, params, ExecBatch);
+    const jumpHostsVecOff = buildJumpHostsVector(builder, jumpHosts, ExecBatch);
+
+    ExecBatch.startExecBatch(builder);
+    ExecBatch.addRequestId(builder, reqIdOff);
+    ExecBatch.addHost(builder, hostOff);
+    ExecBatch.addPort(builder, port);
+    if (paramsVecOff) ExecBatch.addParams(builder, paramsVecOff);
+    ExecBatch.addCommands(builder, cmdsVecOff);
+    if (jumpHostsVecOff) ExecBatch.addJumpHosts(builder, jumpHostsVecOff);
+    const batchOff = ExecBatch.endExecBatch(builder);
+
+    Envelope.startEnvelope(builder);
+    Envelope.addMsgType(builder, MessageType.ExecBatch);
+    Envelope.addExecBatch(builder, batchOff);
+    return finishEnvelope(builder, Envelope.endEnvelope(builder));
+};
+
 const buildPortCheck = (requestId, targets, timeoutMs) => {
     const builder = new flatbuffers.Builder(512);
     const reqIdOff = builder.createString(requestId);
@@ -256,6 +291,7 @@ module.exports = {
     buildSessionJoin,
     buildSessionResize,
     buildExecCommand,
+    buildExecBatch,
     buildPortCheck,
     buildHttpFetch,
 };

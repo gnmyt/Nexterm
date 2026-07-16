@@ -6,7 +6,8 @@ const Entry = require("../models/Entry");
 const Identity = require("../models/Identity");
 const Folder = require("../models/Folder");
 const Script = require("../models/Script");
-const { hasOrganizationAccess } = require("../utils/permission");
+const { hasOrganizationPermission } = require("../utils/permission");
+const { Permission } = require("../permissions/registry");
 const { Op } = require("sequelize");
 const logger = require("../utils/logger");
 const { getRecordingInfo } = require("../utils/recordingService");
@@ -28,6 +29,7 @@ const AUDIT_ACTIONS = {
     PVE_CONNECT: "entry.pve_connect",
     RDP_CONNECT: "entry.rdp_connect",
     VNC_CONNECT: "entry.vnc_connect",
+    DEMO_CONNECT: "entry.demo_connect",
 
     FILE_CREATE: "file.create",
     FILE_UPLOAD: "file.upload",
@@ -50,6 +52,13 @@ const AUDIT_ACTIONS = {
     IDENTITY_CREDENTIALS_ACCESS: "identity.credentials_access",
 
     SCRIPT_EXECUTE: "script.execute",
+
+    AI_COMMAND: "ai.command",
+    AI_FILE_WRITE: "ai.file_write",
+    AI_FILE_DELETE: "ai.file_delete",
+    AI_FILE_RENAME: "ai.file_rename",
+    AI_FILE_CHMOD: "ai.file_chmod",
+    AI_FOLDER_CREATE: "ai.folder_create",
 };
 
 const RESOURCE_TYPES = {
@@ -69,6 +78,7 @@ const ACTION_LABELS = {
     "entry.pve_connect": "Proxmox connection",
     "entry.rdp_connect": "RDP connection",
     "entry.vnc_connect": "VNC connection",
+    "entry.demo_connect": "Demo connection",
 
     "file.create": "File created",
     "file.upload": "File uploaded",
@@ -91,6 +101,13 @@ const ACTION_LABELS = {
     "identity.credentials_access": "Identity credentials accessed",
 
     "script.execute": "Script executed",
+
+    "ai.command": "AI ran a command",
+    "ai.file_write": "AI wrote a file",
+    "ai.file_delete": "AI deleted a file or folder",
+    "ai.file_rename": "AI moved / renamed a path",
+    "ai.file_chmod": "AI changed permissions",
+    "ai.folder_create": "AI created a folder",
 };
 
 const ACTION_CATEGORIES = [
@@ -100,6 +117,7 @@ const ACTION_CATEGORIES = [
     { key: "folder_mgmt", label: "Folder Management", description: "Folder records management" },
     { key: "identity", label: "Identities", description: "Identity records and credential access" },
     { key: "script", label: "Scripts", description: "Script execution" },
+    { key: "ai", label: "AI Assistant", description: "Actions performed by the AI assistant on a server" },
 ];
 
 const RESOURCE_LABELS = {
@@ -123,6 +141,7 @@ const getOrgAuditSettings = async (organizationId) => {
         enableServerManagementAudit: true, 
         enableFolderManagementAudit: true,
         enableScriptExecutionAudit: true,
+        enableAIOperationAudit: true,
     };
 
     if (!org?.auditSettings) return defaults;
@@ -141,6 +160,7 @@ const shouldAudit = (action, settings) => {
         [action.includes("entry.create") || action.includes("entry.update") || action.includes("entry.delete"), settings.enableServerManagementAudit],
         [action.startsWith("folder_mgmt."), settings.enableFolderManagementAudit],
         [action.startsWith("script."), settings.enableScriptExecutionAudit],
+        [action.startsWith("ai."), settings.enableAIOperationAudit],
     ];
 
     for (const [condition, enabled] of checks) {
@@ -184,16 +204,17 @@ const getAuditLogsInternal = async (accountId, filters = {}) => {
         whereClause.accountId = accountId;
         whereClause.organizationId = null;
     } else if (organizationId) {
-        const membership = await OrganizationMember.findOne({
-            where: { organizationId, accountId, status: "active" },
-        });
-        if (!membership) throw new Error("Access denied to organization audit logs");
+        if (!(await hasOrganizationPermission(accountId, organizationId, Permission.ORG_AUDIT_VIEW)))
+            throw new Error("Access denied to organization audit logs");
         whereClause.organizationId = organizationId;
     } else {
         const memberships = await OrganizationMember.findAll({
             where: { accountId, status: "active" },
         });
-        const accessibleOrgIds = memberships.map(m => m.organizationId);
+        const auditable = await Promise.all(memberships.map(async (m) =>
+            (await hasOrganizationPermission(accountId, m.organizationId, Permission.ORG_AUDIT_VIEW))
+                ? m.organizationId : null));
+        const accessibleOrgIds = auditable.filter((id) => id !== null);
         whereClause[Op.or] = [{ accountId }, { organizationId: { [Op.in]: accessibleOrgIds } }];
     }
 
@@ -277,7 +298,8 @@ const updateAuditLogWithSessionDuration = async (auditLogId, connectionStartTime
 module.exports.getAuditLogs = async (accountId, filters = {}) => {
     try {
         const { organizationId } = filters;
-        if (organizationId && organizationId !== "personal" && !(await hasOrganizationAccess(accountId, organizationId))) {
+        if (organizationId && organizationId !== "personal"
+            && !(await hasOrganizationPermission(accountId, organizationId, Permission.ORG_AUDIT_VIEW))) {
             return { code: 403, message: "You don't have access to this organization's audit logs" };
         }
 
@@ -305,10 +327,8 @@ module.exports.getOrganizationAuditSettings = async (accountId, organizationId) 
 
 module.exports.updateOrganizationAuditSettings = async (accountId, organizationId, settings) => {
     try {
-        const membership = await OrganizationMember.findOne({
-            where: { organizationId, accountId, status: "active", role: "owner" },
-        });
-        if (!membership) return { code: 403, message: "You don't have permission to update audit settings" };
+        if (!(await hasOrganizationPermission(accountId, organizationId, Permission.ORG_AUDIT_VIEW)))
+            return { code: 403, message: "You don't have permission to update audit settings" };
 
         const currentSettings = await getOrgAuditSettings(organizationId);
         const updatedSettings = { ...currentSettings, ...settings };
@@ -354,7 +374,7 @@ module.exports.getRecording = async (accountId, auditLogId) => {
         if (!auditLog) return { code: 404, message: "Audit log not found" };
 
         if (auditLog.organizationId) {
-            if (!(await hasOrganizationAccess(accountId, auditLog.organizationId))) 
+            if (!(await hasOrganizationPermission(accountId, auditLog.organizationId, Permission.ORG_AUDIT_RECORDINGS)))
                 return { code: 403, message: "You don't have access to this recording" };
         } else if (auditLog.accountId !== accountId) {
             return { code: 403, message: "You don't have access to this recording" };

@@ -5,12 +5,19 @@ const { getIdentityCredentials } = require("../controllers/identity");
 const { SessionType } = require("../lib/generated/control_plane_generated");
 const controlPlane = require("../lib/controlPlane/ControlPlaneServer");
 const { buildSSHParams, resolveJumpHosts } = require("../lib/ConnectionService");
+const { hasResourcePermission } = require("../utils/permission");
+const { Permission } = require("../permissions/registry");
 
 module.exports = async (ws, req) => {
     const context = await wsAuth(ws, req);
     if (!context) return;
 
     const { entry, identity, user } = context;
+
+    if (!(await hasResourcePermission(user.id, entry.organizationId, Permission.CONNECT_TUNNEL))) {
+        ws.close(4403, "You don't have permission to create tunnels for this server");
+        return;
+    }
     const remoteHost = req.query.remoteHost || "127.0.0.1";
     const remotePort = Number.parseInt(req.query.remotePort, 10);
 

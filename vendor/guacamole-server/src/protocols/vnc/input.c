@@ -80,7 +80,8 @@ int guac_vnc_user_key_handler_ext(guac_user* user, int keysym, int pressed, int 
 #endif
 
 #ifdef LIBVNC_HAS_RESIZE_SUPPORT
-int guac_vnc_user_size_handler(guac_user* user, int width, int height) {
+int guac_vnc_user_size_handler(guac_user* user, int width, int height,
+        int x_position, int top_offset) {
 
     guac_user_log(user, GUAC_LOG_TRACE, "Running user size handler.");
 

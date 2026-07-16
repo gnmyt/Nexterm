@@ -1,0 +1,164 @@
+@use "@/common/styles/colors"
+
+.session-toolbar
+  position: absolute
+  top: 1rem
+  left: 50%
+  transform: translateX(-50%)
+  z-index: 100
+  display: flex
+  align-items: center
+  padding: 0.3rem
+  border: 1px solid colors.$dark-gray
+  border-radius: 0.6rem
+  background-color: color-mix(in srgb, colors.$lighter-background 78%, transparent)
+  -webkit-backdrop-filter: blur(12px)
+  backdrop-filter: blur(12px)
+  box-shadow: colors.$shadow-lg
+  animation: session-toolbar-in 0.2s ease-out
+  cursor: default
+
+  @supports not ((backdrop-filter: blur(12px)) or (-webkit-backdrop-filter: blur(12px)))
+    background-color: colors.$lighter-background
+
+  &__handle
+    display: flex
+    align-items: center
+    justify-content: center
+    width: 1.5rem
+    height: 1.75rem
+    color: colors.$subtext
+    cursor: grab
+    user-select: none
+    transition: color 0.1s ease-out
+
+    &:hover
+      color: colors.$white
+
+    &:active
+      cursor: grabbing
+
+  &__body
+    display: grid
+    grid-template-columns: 0fr
+    opacity: 0
+    transition: grid-template-columns 0.22s ease, opacity 0.18s ease
+
+  &__body-inner
+    display: flex
+    align-items: center
+    gap: 0.25rem
+    min-width: 0
+    overflow: hidden
+    white-space: nowrap
+
+  &:hover &__body, &--pinned &__body
+    grid-template-columns: 1fr
+    opacity: 1
+
+  &__divider
+    align-self: stretch
+    width: 1px
+    margin: 0.15rem 0.1rem
+    background-color: colors.$dark-gray
+
+  &__icon
+    margin: 0 0.15rem
+    color: colors.$subtext
+
+  &__group
+    display: flex
+    align-items: center
+    gap: 0.25rem
+
+  &__key
+    height: 1.75rem
+    padding: 0 0.5rem
+    border: none
+    border-radius: 0.4rem
+    background-color: transparent
+    color: colors.$subtext
+    font-size: 0.75rem
+    font-weight: 600
+    cursor: pointer
+    transition: background-color 0.1s ease-out, color 0.1s ease-out
+
+    &:hover
+      background-color: colors.$gray
+      color: colors.$white
+
+    &--held
+      background-color: colors.$primary
+      color: colors.$white
+
+      &:hover
+        background-color: colors.$primary
+
+  &__chip
+    min-width: 1.75rem
+    height: 1.75rem
+    padding: 0 0.4rem
+    border: none
+    border-radius: 0.4rem
+    background-color: transparent
+    color: colors.$subtext
+    font-size: 0.8rem
+    font-weight: 600
+    cursor: pointer
+    transition: background-color 0.1s ease-out, color 0.1s ease-out
+
+    &:hover
+      background-color: colors.$gray
+      color: colors.$white
+
+    &--active
+      background-color: colors.$primary
+      color: colors.$white
+
+      &:hover
+        background-color: colors.$primary
+
+  &__zoom
+    min-width: 2.9rem
+    height: 1.75rem
+    padding: 0 0.35rem
+    border: none
+    border-radius: 0.4rem
+    background-color: transparent
+    color: colors.$subtext
+    font-size: 0.75rem
+    font-weight: 600
+    font-variant-numeric: tabular-nums
+    cursor: pointer
+    transition: background-color 0.1s ease-out, color 0.1s ease-out
+
+    &:hover
+      background-color: colors.$gray
+      color: colors.$white
+
+  &__action
+    display: flex
+    align-items: center
+    justify-content: center
+    width: 1.75rem
+    height: 1.75rem
+    border: none
+    border-radius: 0.4rem
+    background-color: transparent
+    color: colors.$subtext
+    cursor: pointer
+    transition: background-color 0.1s ease-out, color 0.1s ease-out
+
+    &:hover:not(:disabled)
+      background-color: colors.$gray
+      color: colors.$white
+
+    &:disabled
+      opacity: 0.35
+      cursor: not-allowed
+
+@keyframes session-toolbar-in
+  from
+    opacity: 0
+  to
+    opacity: 1

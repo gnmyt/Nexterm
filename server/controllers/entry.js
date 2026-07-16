@@ -5,7 +5,8 @@ const EntryTag = require("../models/EntryTag");
 const Tag = require("../models/Tag");
 const AuditLog = require("../models/AuditLog");
 const { listFolders } = require("./folder");
-const { hasOrganizationAccess, validateFolderAccess } = require("../utils/permission");
+const { hasOrganizationAccess, hasOrganizationPermission, hasAccountPermission, validateFolderAccess } = require("../utils/permission");
+const { Permission } = require("../permissions/registry");
 const { Op } = require("sequelize");
 const Identity = require("../models/Identity");
 const OrganizationMember = require("../models/OrganizationMember");
@@ -16,26 +17,35 @@ const { sendWakeOnLan } = require("../utils/wol");
 const stateBroadcaster = require("../lib/StateBroadcaster");
 const SessionManager = require("../lib/SessionManager");
 
-const validateEntryAccess = async (accountId, entry, errorMessage = "You don't have permission to access this entry") => {
+const PROTOCOL_RENDERERS = {
+    ssh: "terminal",
+    telnet: "terminal",
+    rdp: "guac",
+    vnc: "guac",
+    demo: "guac",
+    sftp: "sftp",
+    ftp: "sftp",
+    ftps: "sftp",
+};
+
+const validateEntryAccess = async (accountId, entry, errorMessage = "You don't have permission to access this entry", requiredPermission = null) => {
     if (!entry) return { code: 401, message: "Entry does not exist" };
 
+    let { organizationId, accountId: ownerAccountId } = entry;
     if (entry.folderId) {
         const folder = await Folder.findByPk(entry.folderId);
-        if (folder) {
-            if (folder.accountId && folder.accountId !== accountId) {
-                return { code: 403, message: errorMessage };
-            } else if (folder.organizationId) {
-                const hasAccess = await hasOrganizationAccess(accountId, folder.organizationId);
-                if (!hasAccess) {
-                    return { code: 403, message: `You don't have access to this organization's entry` };
-                }
-            }
-        }
-    } else if (entry.organizationId) {
-        const hasAccess = await hasOrganizationAccess(accountId, entry.organizationId);
-        if (!hasAccess) {
-            return { code: 403, message: `You don't have access to this organization's entry` };
-        }
+        if (folder) ({ organizationId, accountId: ownerAccountId } = folder);
+    }
+
+    if (organizationId) {
+        const allowed = requiredPermission
+            ? await hasOrganizationPermission(accountId, organizationId, requiredPermission)
+            : await hasOrganizationAccess(accountId, organizationId);
+        if (!allowed) return { code: 403, message: `You don't have access to this organization's entry` };
+    } else if (ownerAccountId && ownerAccountId !== accountId) {
+        return { code: 403, message: errorMessage };
+    } else if (requiredPermission && !(await hasAccountPermission(accountId, requiredPermission))) {
+        return { code: 403, message: errorMessage };
     }
     return { valid: true, entry };
 };
@@ -97,7 +107,7 @@ const validateJumpHosts = async (accountId, jumpHosts) => {
 module.exports.createEntry = async (accountId, configuration) => {
     let folder = null;
     if (configuration.folderId) {
-        folder = await validateFolderAccess(accountId, configuration.folderId);
+        folder = await validateFolderAccess(accountId, configuration.folderId, Permission.RESOURCES_MANAGE);
         if (!folder.valid) return folder.error;
     }
 
@@ -106,11 +116,7 @@ module.exports.createEntry = async (accountId, configuration) => {
     }
 
     if (!configuration.renderer && configuration.config?.protocol) {
-        if (configuration.config.protocol === "ssh" || configuration.config.protocol === "telnet") {
-            configuration.renderer = "terminal";
-        } else if (configuration.config.protocol === "rdp" || configuration.config.protocol === "vnc") {
-            configuration.renderer = "guac";
-        }
+        configuration.renderer = PROTOCOL_RENDERERS[configuration.config.protocol] ?? configuration.renderer;
     }
 
     if (configuration.identities && configuration.identities.length > 0) {
@@ -124,6 +130,15 @@ module.exports.createEntry = async (accountId, configuration) => {
     }
 
     const organizationId = folder?.folder?.organizationId || configuration.organizationId || null;
+
+    if (organizationId && organizationId !== folder?.folder?.organizationId
+        && !(await hasOrganizationPermission(accountId, organizationId, Permission.RESOURCES_MANAGE))) {
+        return { code: 403, message: "You don't have permission to manage resources in this organization" };
+    }
+
+    if (!organizationId && !(await hasAccountPermission(accountId, Permission.RESOURCES_MANAGE))) {
+        return { code: 403, message: "You don't have permission to manage resources" };
+    }
 
     const entry = await Entry.create({
         ...configuration,
@@ -165,7 +180,7 @@ module.exports.createEntry = async (accountId, configuration) => {
 
 module.exports.deleteEntry = async (accountId, entryId) => {
     const entry = await Entry.findByPk(entryId);
-    const accessCheck = await validateEntryAccess(accountId, entry, "You don't have permission to delete this entry");
+    const accessCheck = await validateEntryAccess(accountId, entry, "You don't have permission to delete this entry", Permission.RESOURCES_MANAGE);
 
     if (!accessCheck.valid) return accessCheck;
 
@@ -189,21 +204,17 @@ module.exports.deleteEntry = async (accountId, entryId) => {
 
 module.exports.editEntry = async (accountId, entryId, configuration) => {
     const entry = await Entry.findByPk(entryId);
-    const accessCheck = await validateEntryAccess(accountId, entry, "You don't have permission to edit this entry");
+    const accessCheck = await validateEntryAccess(accountId, entry, "You don't have permission to edit this entry", Permission.RESOURCES_MANAGE);
 
     if (!accessCheck.valid) return accessCheck;
 
     if (configuration.folderId !== undefined && configuration.folderId !== null) {
-        const folderCheck = await validateFolderAccess(accountId, configuration.folderId);
+        const folderCheck = await validateFolderAccess(accountId, configuration.folderId, Permission.RESOURCES_MANAGE);
         if (!folderCheck.valid) return folderCheck.error;
     }
 
     if (configuration.config?.protocol) {
-        if (configuration.config.protocol === "ssh" || configuration.config.protocol === "telnet") {
-            configuration.renderer = "terminal";
-        } else if (configuration.config.protocol === "rdp" || configuration.config.protocol === "vnc") {
-            configuration.renderer = "guac";
-        }
+        configuration.renderer = PROTOCOL_RENDERERS[configuration.config.protocol] ?? configuration.renderer;
     }
 
     if (configuration.identities) {
@@ -417,7 +428,7 @@ module.exports.duplicateEntry = async (accountId, entryId) => {
     const entry = await Entry.findByPk(entryId);
     if (!entry) return { code: 404, message: "Entry not found" };
 
-    const accessCheck = await validateEntryAccess(accountId, entry);
+    const accessCheck = await validateEntryAccess(accountId, entry, "You don't have permission to duplicate this entry", Permission.RESOURCES_MANAGE);
     if (!accessCheck.valid) return accessCheck;
 
     const identities = await EntryIdentity.findAll({ where: { entryId }, order: [['isDefault', 'DESC']] });
@@ -454,7 +465,7 @@ module.exports.duplicateEntry = async (accountId, entryId) => {
 
 module.exports.importSSHConfig = async (accountId, configuration) => {
     const { servers, folderId } = configuration;
-    const folderCheck = await validateFolderAccess(accountId, folderId);
+    const folderCheck = await validateFolderAccess(accountId, folderId, Permission.RESOURCES_MANAGE);
     if (!folderCheck.valid) return folderCheck.error;
 
     const results = { imported: 0, skipped: 0, errors: 0, details: [] };
@@ -533,12 +544,16 @@ module.exports.repositionEntry = async (accountId, entryId, { targetId, placemen
     const entryIdNum = parseInt(entryId);
 
     const entry = await Entry.findByPk(entryIdNum);
-    const accessCheck = await validateEntryAccess(accountId, entry, "You don't have permission to reposition this entry");
+    const accessCheck = await validateEntryAccess(accountId, entry, "You don't have permission to reposition this entry", Permission.RESOURCES_MANAGE);
 
     if (!accessCheck.valid) return accessCheck;
 
+    if (entry.integrationId && folderId !== undefined && folderId !== entry.folderId) {
+        return { code: 403, message: "Integration resources cannot be moved out of their node folder" };
+    }
+
     if (folderId !== undefined && folderId !== null) {
-        const folderCheck = await validateFolderAccess(accountId, folderId);
+        const folderCheck = await validateFolderAccess(accountId, folderId, Permission.RESOURCES_MANAGE);
         if (!folderCheck.valid) return folderCheck.error;
     }
 
@@ -554,9 +569,9 @@ module.exports.repositionEntry = async (accountId, entryId, { targetId, placemen
         }
     } else {
         if (targetOrganizationId) {
-            const hasAccess = await hasOrganizationAccess(accountId, targetOrganizationId);
+            const hasAccess = await hasOrganizationPermission(accountId, targetOrganizationId, Permission.RESOURCES_MANAGE);
             if (!hasAccess) {
-                return { code: 403, message: "You don't have access to this organization" };
+                return { code: 403, message: "You don't have permission to manage resources in this organization" };
             }
             targetAccountId = null;
         } else {
@@ -663,7 +678,7 @@ module.exports.wakeEntry = async (accountId, entryId) => {
     }
 
     try {
-        await sendWakeOnLan(macAddress);
+        await sendWakeOnLan(macAddress, config.wolBroadcastAddress);
         return { success: true };
     } catch (error) {
         logger.error(`Failed to send Wake-On-LAN packet to ${macAddress}: ${error.message}`);
@@ -686,6 +701,7 @@ module.exports.getRecentConnections = async (accountId, limit = 5) => {
             AUDIT_ACTIONS.PVE_CONNECT,
             AUDIT_ACTIONS.RDP_CONNECT,
             AUDIT_ACTIONS.VNC_CONNECT,
+            AUDIT_ACTIONS.DEMO_CONNECT,
         ];
 
         const logs = await AuditLog.findAll({

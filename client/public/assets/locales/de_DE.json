@@ -10,6 +10,7 @@
     "download": "Herunterladen",
     "maximize": "Maximieren",
     "restore": "Wiederherstellen",
+    "resize": "Größe ändern",
     "actions": {
       "cancel": "Abbrechen",
       "confirm": "Bestätigen",
@@ -17,6 +18,7 @@
       "login": "Einloggen",
       "register": "Registrieren",
       "save": "Speichern",
+      "saving": "Wird gespeichert…",
       "download": "Herunterladen",
       "close": "Schließen",
       "maximize": "Maximieren",
@@ -59,7 +61,9 @@
       "signInWithQrCode": "Anmeldung mit QR-Code",
       "qrScanDescription": "Scanne diesen QR-Code mit der Nexterm Mobile App, um dich sofort anzumelden.",
       "backToLogin": "Zurück zu Login",
-      "authenticating": "Authentifiziere..."
+      "authenticating": "Authentifiziere...",
+      "noAccount": "Hast du noch kein Konto?",
+      "haveAccount": "Hast du schon ein Konto?"
     },
     "deviceLink": {
       "title": "Gerät verbinden",
@@ -306,9 +310,7 @@
       "actions": {
         "cancel": "Abbrechen",
         "create": "erstellen",
-        "save": "Speichern",
-        "generateAI": "Mit KI generieren",
-        "generating": "Wird generiert..."
+        "save": "Speichern"
       }
     },
     "messages": {
@@ -585,7 +587,8 @@
       "ai": "AI",
       "monitoring": "Überwachung",
       "backup": "Speicher",
-      "engines": "Motoren"
+      "engines": "Motoren",
+      "permissions": "Benutzergruppen und Berechtigungen"
     },
     "account": {
       "title": "Account",
@@ -686,6 +689,34 @@
         "noPasskeys": "Noch keine Passkeys registriert",
         "rename": "umbenennen",
         "delete": "löschen"
+      },
+      "apiKeys": {
+        "sectionTitle": "API-Schlüssel",
+        "sectionDescription": "Erstelle API-Schlüssel, um programmgesteuert über Skripte und Integrationen auf Nexterm zuzugreifen.",
+        "addButton": "API-Schlüssel erstellen",
+        "createTitle": "API-Schlüssel erstellen",
+        "createDescription": "Gib deinem Schlüssel einen Namen. Das Token wird nach der Erstellung nur einmal angezeigt.",
+        "nameLabel": "Name",
+        "namePlaceholder": "z. B. Bereitstellungsskript",
+        "nameRequired": "Der Name ist Pflicht",
+        "expiryLabel": "Ablauf",
+        "expiryNever": "Niemals",
+        "expiry30": "30 Tage",
+        "expiry90": "90 Tage",
+        "expiry365": "1 Jahr",
+        "createButton": "Erstellen",
+        "createdTitle": "API-Schlüssel erstellt",
+        "createdWarning": "Kopiere dieses Token jetzt. Aus Sicherheitsgründen wirst du es danach nicht mehr sehen können.",
+        "tokenLabel": "Token",
+        "doneButton": "Fertig",
+        "createError": "API-Schlüssel konnte nicht erstellt werden.",
+        "copyError": "Das Kopieren in die Zwischenablage ist fehlgeschlagen.",
+        "confirmDelete": "Bist du sicher, dass du diesen API-Schlüssel widerrufen möchtest? Alle Systeme, die ihn verwenden, verlieren dadurch den Zugriff.",
+        "noKeys": "Noch keine API-Schlüssel",
+        "lastUsed": "Zuletzt verwendet {{date}}",
+        "neverUsed": "Noch nie benutzt",
+        "expires": "Läuft ab {{date}}",
+        "delete": "Löschen"
       }
     },
     "passwordChange": {
@@ -732,6 +763,8 @@
         "folderManagementDescription": "Protokollierung der Erstellung, Änderung und Löschung von Ordnern",
         "scriptExecutionLabel": "Skript-Ausführung",
         "scriptExecutionDescription": "Protokollierung der Ausführung von Skripten und Automatisierungsaufgaben",
+        "aiOperationsLabel": "KI-Betrieb",
+        "aiOperationsDescription": "Befehle und Dateiänderungen protokollieren, die vom KI-Assistenten durchgeführt wurden",
         "actions": {
           "save": "Einstellungen speichern"
         },
@@ -775,22 +808,15 @@
       "noSearchResultsDescription": "Versuche, deine Suchanfrage anzupassen.",
       "table": {
         "user": "Benutzer",
-        "role": "Rolle",
-        "twoFactor": "2FA"
-      },
-      "roles": {
-        "admin": "Admin",
-        "user": "Benutzer"
+        "twoFactor": "2FA",
+        "roles": "Benutzergruppen"
       },
       "contextMenu": {
         "changePassword": "Passwort ändern",
-        "promoteToAdmin": "Zum Admin befördern",
-        "demoteToUser": "Zum Benutzer zurückstufen",
         "deleteUser": "Benutzer löschen",
         "loginAsUser": "Anmeldung als Benutzer",
         "deleteConfirm": "Dadurch wird der Benutzer und alle zugehörigen Daten endgültig gelöscht.",
-        "promoteConfirm": "Dadurch wird der Benutzer zum Administrator befördert.",
-        "demoteConfirm": "Dadurch wird der Benutzer zum normalen Benutzer herabgestuft."
+        "managePermissions": "Berechtigungen verwalten"
       }
     },
     "userDialog": {
@@ -830,6 +856,10 @@
         "aimenu": {
           "title": "AI-Menü",
           "description": "Öffne das AI-Befehlsmenü"
+        },
+        "aiaccepttool": {
+          "title": "KI Genehmigungs-Aktions",
+          "description": "Bestätige die ausstehende Aktion des KI-Tools im Assistenten"
         },
         "snippets": {
           "title": "Snippets",
@@ -891,6 +921,15 @@
         "disabled": "Deaktiviert",
         "syncEnabled": "Die Cursor-Einstellungen werden jetzt mit deinem Konto synchronisiert",
         "syncDisabled": "Die Cursor-Einstellungen werden nicht mehr synchronisiert"
+      },
+      "input": {
+        "title": "Eingabe",
+        "description": "Lege fest, wie sich Tastenkombinationen im Terminal verhalten.",
+        "smartCopyPaste": "Smart Strg+C",
+        "enabled": "Aktiviert",
+        "disabled": "Deaktiviert",
+        "syncEnabled": "Die Eingabeeinstellungen werden nun mit deinem Konto synchronisiert",
+        "syncDisabled": "Die Eingabeeinstellungen werden nicht mehr synchronisiert"
       },
       "theme": {
         "title": "Theme",
@@ -955,6 +994,10 @@
       "addLdapProvider": "LDAP hinzufügen",
       "system": "System",
       "systemDescription": "Authentifizierung mit Benutzername und Passwort",
+      "registration": {
+        "title": "Selbstregistrierung",
+        "description": "Besuchern ermöglichen, sich über die Anmeldeseite ein eigenes Konto anzulegen"
+      },
       "deleteConfirm": "Dadurch wird dieser Authentifizierungsanbieter endgültig gelöscht.",
       "errors": {
         "deleteProvider": "Fehler beim Löschen des Anbieters",
@@ -1044,11 +1087,11 @@
     },
     "ai": {
       "title": "KI-Assistent Konfiguration",
-      "description": "Konfiguriere die KI-gestützte Befehlsgenerierung für Terminalsitzungen und die Erstellung von Snippets.",
+      "description": "Konfiguriere den KI-Assistenten, der Befehle ausführen und Dateien direkt über deine Server-Sitzungen verwalten kann.",
       "loading": "AI-Einstellungen laden...",
       "enable": {
         "title": "KI-Assistent aktivieren",
-        "description": "Erlaube den Nutzern, Befehle mithilfe von KI zu generieren"
+        "description": "Benutzern ermöglichen, den KI-Assistenten innerhalb von Server-Sitzungen zu öffnen"
       },
       "provider": {
         "title": "KI-Anbieter",
@@ -1056,18 +1099,43 @@
       },
       "model": {
         "title": "Modell",
-        "description": "Wähle das KI-Modell aus, das für die Befehlsgenerierung verwendet werden soll"
+        "description": "Wähle das KI-Modell aus, das der Assistent verwenden soll"
+      },
+      "requireConfirmation": {
+        "title": "Vor jeder Aktion bestätigen",
+        "description": "Benutzer müssen jeden Befehl und jede Dateiänderung, die der Assistent vornehmen möchte, bestätigen"
       },
       "apiKey": {
         "title": "API-Schlüssel",
-        "description": "Dein OpenAI API-Schlüssel für die Authentifizierung",
-        "placeholder": "Gib deinen OpenAI API Schlüssel ein",
-        "setPlaceholder": "API-Schlüssel ist gesetzt (leer lassen, um aktuell zu bleiben)"
+        "setPlaceholder": "API-Schlüssel ist gesetzt (leer lassen, um aktuell zu bleiben)",
+        "genericDescription": "API-Schlüssel zur Authentifizierung beim ausgewählten Anbieter",
+        "genericPlaceholder": "Gib deinen API-Schlüssel für „ {{provider}} “ ein"
       },
-      "ollamaUrl": {
-        "title": "Ollama URL",
-        "description": "Die URL, unter der deine Ollama-Instanz läuft",
-        "placeholder": "http://localhost:11434"
+      "authMethod": {
+        "title": "Authentifizierung",
+        "description": "Melde dich mit einem API-Schlüssel oder deinem Anbieter-Abonnement an",
+        "apiKey": "API-Schlüssel",
+        "subscription": "Abonnement"
+      },
+      "subscription": {
+        "title": "{{provider}} Abonnement",
+        "description": "Melde dich mit deinem „ {{provider}} “-Abonnement an, um die Modelle ohne API-Schlüssel zu nutzen",
+        "connectedDescription": "Dein Abonnement bei „ {{provider}} “ ist aktiviert",
+        "connect": "Verbinden",
+        "connecting": "Wird verbunden...",
+        "complete": "Fertig",
+        "disconnect": "Trennen",
+        "codePlaceholder": "Füge den Autorisierungscode hier ein",
+        "codePlaceholderUrl": "Füge hier die vollständige Callback-URL (oder den Code) ein",
+        "connectSuccess": "{{provider}} Abonnement aktiviert",
+        "startError": "Die Autorisierung konnte nicht gestartet werden",
+        "exchangeError": "Das Abonnement konnte nicht verbunden werden",
+        "disconnectError": "Das Abmelden vom Abonnement ist fehlgeschlagen"
+      },
+      "baseUrl": {
+        "title": "API-URL",
+        "description": "Basis-URL des OpenAI-kompatiblen Endpunkts des Anbieters",
+        "placeholder": "https://api.example.com/v1"
       },
       "selectProvider": "Wähle einen Anbieter...",
       "selectModel": "Wähle ein Modell...",
@@ -1368,6 +1436,34 @@
         "deleteFailed": "Motor kann nicht gelöscht werden",
         "regenerateFailed": "Token konnte nicht regeneriert werden"
       }
+    },
+    "permissions": {
+      "subtitle": "Erstelle Benutzergruppen mit fein abgestuften Berechtigungen oder weise Berechtigungen direkt einzelnen Benutzern zu. Die Standard-Benutzergruppe wird automatisch auf alle Benutzer angewendet.",
+      "createRole": "Benutzergruppe erstellen",
+      "rolesTitle": "Benutzergruppen",
+      "rolesTab": "Benutzergruppen",
+      "overridesTab": "Direkte Berechtigungen",
+      "permissionsTab": "Berechtigungen",
+      "membersTab": "Mitglieder",
+      "settingsTab": "Einstellungen",
+      "managePermissions": "Berechtigungen verwalten",
+      "memberCount_one": "{{count}} Mitglied",
+      "memberCount_other": "{{count}} Mitglieder",
+      "dangerousHint": "Diese Berechtigung gewährt weitreichende oder kritische Zugriffsrechte. Vergib sie nur mit Vorsicht.",
+      "roleName": "Benutzergruppen Name",
+      "roleNamePlaceholder": "z. B. Operatoren",
+      "roleColor": "Farbe",
+      "nameRequired": "Bitte gib einen Namen für die Benutzergruppe ein.",
+      "saveError": "Änderungen konnten nicht gespeichert werden.",
+      "loadError": "Berechtigungen konnten nicht geladen werden.",
+      "userSaved": "Berechtigungen wurden aktualisiert.",
+      "noAssignableRoles": "Noch keine Benutzergruppen verfügbar. Erstellen Sie die Erste.",
+      "noMembers": "Diese Benutzergruppe hat noch keine Mitglieder.",
+      "addMemberPlaceholder": "Suche Benutzer zum Hinzufügen…",
+      "deleteRole": "Benutzergruppe löschen",
+      "deleteConfirm": "Dadurch wird die Benutzergruppe „{{name}}“ endgültig gelöscht und von allen Mitgliedern entfernt.",
+      "inheritsAllow": "Vererbung: Erlaubt",
+      "inheritsDeny": "Vererbung: Verweigert"
     }
   },
   "tunnel": {
@@ -1431,10 +1527,18 @@
       "telnetServer": "Telnet Server",
       "rdpServer": "RDP Server",
       "vncServer": "VNC Server",
+      "demoServer": "Demo-Verbindung",
+      "sftpServer": "SFTP-Server",
+      "ftpServer": "FTP-Server",
+      "ftpsServer": "FTPS-Server",
       "createServer": "Server erstellen",
       "import": "Importieren",
-      "pve": "PVE",
+      "pve": "Proxmox VE",
       "sshConfig": "SSH-Konfiguration",
+      "syncIntegration": "Jetzt synchronisieren",
+      "syncSuccess": "Integration synchronisiert",
+      "syncFailed": "Die Synchronisierung der Integration ist fehlgeschlagen",
+      "removeIntegration": "Integration entfernen",
       "connect": "Verbinden",
       "quickConnect": "Schnellverbindung",
       "openSFTP": "SFTP öffnen",
@@ -1448,8 +1552,6 @@
       "pasteIdentityPassword": "Passwort einfügen",
       "deleteServer": "Server löschen",
       "wakeOnLan": "Wake-On-LAN",
-      "editPVE": "PVE bearbeiten",
-      "deletePVE": "PVE löschen",
       "shutdown": "Herunterfahren",
       "stop": "Stop",
       "start": "Start"
@@ -1504,9 +1606,8 @@
         "username": "Benutzername",
         "password": "Passwort",
         "host": "Host",
-        "nodeName": "Node Name",
-        "vmid": "VM ID",
         "macAddress": "MAC-Adresse",
+        "wolBroadcastAddress": "Broadcast-Adresse",
         "engine": "Motor"
       },
       "placeholders": {
@@ -1516,9 +1617,8 @@
         "username": "Benutzername",
         "password": "Passwort",
         "host": "Host",
-        "nodeName": "Name der Node",
-        "vmid": "VM ID",
-        "macAddress": "AA:BB:CC:DD:EE:FF"
+        "macAddress": "AA:BB:CC:DD:EE:FF",
+        "wolBroadcastAddress": "255.255.255.255"
       },
       "engineOffline": "(offline)",
       "settings": {
@@ -1604,7 +1704,7 @@
     },
     "proxmoxDialog": {
       "title": {
-        "import": "Proxmox VE importieren",
+        "import": "Proxmox VE hinzufügen",
         "edit": "Proxmox VE bearbeiten"
       },
       "fields": {
@@ -1626,8 +1726,8 @@
         "specificNode": "Spezifischer Node-Name"
       },
       "actions": {
-        "import": "Importieren",
-        "edit": "Bearbeiten"
+        "import": "Hinzufügen",
+        "edit": "Speichern"
       },
       "messages": {
         "created": "Proxmox-Integration erfolgreich erstellt",
@@ -1720,7 +1820,9 @@
         "clearTerminal": "Terminal leeren",
         "properties": "Eigenschaften",
         "openTerminal": "Terminal hier öffnen",
-        "downloadFolder": "Ordner herunterladen"
+        "downloadFolder": "Ordner herunterladen",
+        "newFile": "Neue Datei",
+        "newFolder": "Neuer Ordner"
       },
       "properties": {
         "general": "Allgemein",
@@ -1780,10 +1882,20 @@
         "enterDirectory": "Verzeichnispfad eingeben...",
         "hiddenDirectories": "{{count}} versteckte Verzeichnisse",
         "switchToGrid": "Zur Rasteransicht wechseln",
-        "switchToList": "Zur Listenansicht wechseln"
+        "switchToList": "Zur Listenansicht wechseln",
+        "search": "Durchsuche Dateien",
+        "closeSearch": "Suchfeld schließen",
+        "refresh": "Aktualisieren"
       },
       "item": {
         "link": "Link"
+      },
+      "search": {
+        "placeholder": "Dateien in diesem Ordner filtern...",
+        "results_one": "{{count}} Ergebnis",
+        "results_other": "{{count}} Ergebnisse",
+        "noResultsTitle": "Keine Treffer",
+        "noResults": "Keine Dateien stimmen mit \"{{query}}\" überein"
       },
       "states": {
         "loading": "Dateien laden...",
@@ -1800,25 +1912,67 @@
         "error": "Ein Fehler ist aufgetreten"
       }
     },
+    "remoteDesktop": {
+      "dropOverlay": "Zieh die Dateien per Drag & Drop auf den Server, um sie hochzuladen",
+      "toast": {
+        "uploadedSingle": "„{{name}}“ auf das Remote-Laufwerk hochgeladen",
+        "uploadedMultiple": "Habe die Dateien „ {{count}} “ auf das Remote-Laufwerk hochgeladen",
+        "uploadFailed": "{{count}} Das Hochladen der Datei(en) ist fehlgeschlagen",
+        "uploadPartial": "{{failed}} Datei(en) konnten nicht hochgeladen werden, {{succeeded}} war erfolgreich",
+        "downloaded": "Habe „{{name}}“ von einem Remote-Server heruntergeladen"
+      }
+    },
     "aiAssistant": {
       "title": "KI-Assistent",
-      "placeholder": "Beschreibe, was du tun möchtest...",
-      "hint": "Drücke Enter zum Erstellen - Esc zum Schließen",
-      "hintUse": "Drücke Enter, um den Befehl auszuführen • Esc zum Schließen",
-      "closeLabel": "KI-Assistent schließen",
-      "generate": "Befehl generieren",
-      "generating": "Generiere Befehl...",
-      "generatedCommand": "Generierter Befehl",
-      "useCommand": "Befehl verwenden",
-      "tryAgain": "Nochmal versuchen",
-      "copy": "In die Zwischenablage kopieren",
-      "error": "Der Befehl konnte nicht erstellt werden. Bitte versuche es erneut."
+      "open": "KI-Assistent",
+      "empty": "Bitte den Mitarbeiter, diesen Server zu überprüfen oder auszutauschen. Er kann über die Verbindung direkt Befehle ausführen und Dateien lesen oder bearbeiten.",
+      "placeholder": "Schreib dem Assistenten eine Nachricht...",
+      "connecting": "Wird verbunden...",
+      "send": "Senden",
+      "stop": "Stopp",
+      "connectionError": "Die Verbindung zum Assistenten wurde unterbrochen.",
+      "reconnecting": "Verbindung unterbrochen. Wird neu verbunden...",
+      "confirmPrompt": "Diese Aktion zulassen?",
+      "allow": "Zulassen",
+      "allowShortcut": "Zulassen ({{key}})",
+      "deny": "Ablehnen",
+      "denied": "Du hast diese Aktion abgelehnt.",
+      "stopped": "Halt.",
+      "tools": {
+        "runCommand": "Befehl ausführen",
+        "readFile": "Datei lesen",
+        "writeFile": "Datei schreiben",
+        "editFile": "Datei bearbeiten",
+        "listDirectory": "Verzeichnis auflisten",
+        "statPath": "Pfad prüfen",
+        "makeDirectory": "Verzeichnis erstellen",
+        "deleteFile": "Datei löschen",
+        "removeDirectory": "Verzeichnis löschen",
+        "movePath": "Verschieben",
+        "changePermissions": "Berechtigungen ändern",
+        "findDirectories": "Verzeichnisse suchen"
+      }
     },
     "snippets": {
       "title": "Snippets",
       "noSnippets": "Keine Snippets verfügbar",
       "searchPlaceholder": "Snippets suchen...",
       "createNew": "Neuen Snippet erstellen"
+    },
+    "toolbar": {
+      "drag": "Zum Verschieben ziehen",
+      "shortcuts": "Tastaturkürzel",
+      "holdModifier": "Warten {{key}}",
+      "zoomIn": "Vergrößern",
+      "zoomOut": "Verkleinern",
+      "zoomReset": "Zoom auf „Anpassen“ zurücksetzen (zum Verschieben mit der mittleren Maustaste ziehen)"
+    },
+    "monitors": {
+      "title": "Monitor {{number}}",
+      "select": "Zum Monitor wechseln {{number}}",
+      "selectOrPopOut": "Zum Monitor wechseln: {{number}} (Doppelklick, um in einem eigenen Fenster zu öffnen)",
+      "add": "Monitor hinzufügen",
+      "remove": "Letzten Monitor entfernen"
     },
     "terminalActions": {
       "menuTitle": "Terminal-Aktionen",

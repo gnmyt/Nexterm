@@ -298,7 +298,8 @@ struct guac_user {
      *
      * Example:
      * @code
-     *     int size_handler(guac_user* user, int width, int height);
+     *     int size_handler(guac_user* user, int width, int height,
+     *          int x_position, int top_offset);
      *
      *     int guac_user_init(guac_user* user, int argc, char** argv) {
      *         user->size_handler = size_handler;
@@ -400,6 +401,13 @@ struct guac_user {
      * @endcode
      */
     guac_user_end_handler* end_handler;
+
+    /**
+     * Handler for "nfs-resp" events sent by the user in response to nfs-*
+     * filesystem requests issued by the server. Used by the RDP client-relay
+     * filesystem backend; left NULL for other protocols.
+     */
+    guac_user_nfs_resp_handler* nfs_resp_handler;
 
     /**
      * Handler for sync events sent by the Guacamole web-client. Sync events

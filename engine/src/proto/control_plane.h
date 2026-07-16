@@ -33,7 +33,9 @@ typedef struct nexterm_control_plane {
 nexterm_control_plane_t* nexterm_cp_create(const char* server_host,
                                            uint16_t server_port,
                                            const char* registration_token,
-                                           bool use_tls);
+                                           bool use_tls,
+                                           const char* ca_cert_path,
+                                           bool tls_skip_verify);
 
 int nexterm_cp_start(nexterm_control_plane_t* cp);
 
@@ -69,6 +71,22 @@ int nexterm_cp_send_port_check_result(nexterm_control_plane_t* cp,
                                        const char** ids,
                                        const bool* online,
                                        size_t count);
+
+typedef struct {
+    const char* id;
+    bool success;
+    const char* stdout_data;
+    const char* stderr_data;
+    int32_t exit_code;
+    const char* error_message;
+} exec_batch_entry_t;
+
+int nexterm_cp_send_exec_batch_result(nexterm_control_plane_t* cp,
+                                      const char* request_id,
+                                      bool success,
+                                      const char* error_message,
+                                      const exec_batch_entry_t* entries,
+                                      size_t count);
 
 int nexterm_cp_upload_recording(nexterm_control_plane_t* cp,
                                 const char* session_id,

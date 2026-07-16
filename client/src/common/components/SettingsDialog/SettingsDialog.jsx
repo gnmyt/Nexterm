@@ -10,16 +10,19 @@ import "./styles.sass";
 
 export const SettingsDialog = ({ open, onClose, initialTab = "account" }) => {
     const { t } = useTranslation();
-    const { user, logout } = useContext(UserContext);
+    const { user, logout, hasPermission } = useContext(UserContext);
     const [activeTab, setActiveTab] = useState(initialTab);
     const [isVisible, setIsVisible] = useState(false);
     const [isClosing, setIsClosing] = useState(false);
     const [logoutDialogOpen, setLogoutDialogOpen] = useState(false);
 
     const userPages = useMemo(() => getSettingsUserPages(t), [t]);
-    const adminPages = useMemo(() => getSettingsAdminPages(t), [t]);
+    const adminPages = useMemo(
+        () => getSettingsAdminPages(t).filter(p => !p.permission || hasPermission(p.permission)),
+        [t, user],
+    );
 
-    const allPages = [...userPages, ...(user?.role === "admin" ? adminPages : [])];
+    const allPages = [...userPages, ...adminPages];
     const currentPage = allPages.find(p => p.key === activeTab) || userPages[0];
     const handleClose = useCallback(() => setIsClosing(true), []);
 
@@ -73,7 +76,7 @@ export const SettingsDialog = ({ open, onClose, initialTab = "account" }) => {
                         <div className="settings-dialog-nav">
                             <p className="nav-section-title">{t("settings.userSettings")}</p>
                             <div className="nav-group">{userPages.map(renderNavItem)}</div>
-                            {user?.role === "admin" && (
+                            {adminPages.length > 0 && (
                                 <>
                                     <p className="nav-section-title">{t("settings.adminSettings")}</p>
                                     <div className="nav-group">{adminPages.map(renderNavItem)}</div>

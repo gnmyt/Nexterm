@@ -3,11 +3,13 @@ const express = require("express");
 const Session = require("../models/Session");
 const Account = require("../models/Account");
 const SessionManager = require("../lib/SessionManager");
+const { getSFTPTransferClient } = require("../lib/ConnectionService");
 const Entry = require("../models/Entry");
 const { createAuditLog, AUDIT_ACTIONS, RESOURCE_TYPES } = require("../controllers/audit");
+const { hasResourcePermission } = require("../utils/permission");
+const { Permission } = require("../permissions/registry");
 const logger = require("../utils/logger");
-const archiver = require("archiver");
-const sharp = require("sharp");
+const { ZipArchive } = require("archiver");
 
 const app = Router();
 const THUMB_EXTS = new Set(["jpg", "jpeg", "png", "gif", "webp", "bmp"]);
@@ -30,6 +32,9 @@ const handleError = (res, err) => {
     if (msg.includes("Permission denied")) return res.status(403).json({ error: "Permission denied" });
     res.status(500).json({ error: msg });
 };
+
+const checkFilePermission = (ctx, permission) =>
+    hasResourcePermission(ctx.user.id, ctx.entry.organizationId, permission);
 
 const audit = (ctx, req, action, resource, details) => {
     createAuditLog({
@@ -99,7 +104,14 @@ const validateSession = async (sessionToken, sessionId) => {
     const conn = SessionManager.getConnection(sessionId);
     if (!conn?.sftpClient) return { error: "No active SFTP connection", status: 400 };
 
-    return { session, user, serverSession, entry, sftpClient: conn.sftpClient };
+    let sftpClient = conn.sftpClient;
+    try {
+        sftpClient = await getSFTPTransferClient(sessionId, entry, user.id);
+    } catch (err) {
+        logger.warn("Falling back to metadata SFTP client for transfer", { sessionId, error: err.message });
+    }
+
+    return { session, user, serverSession, entry, sftpClient };
 };
 
 const validateRequest = (query) => {
@@ -134,6 +146,9 @@ app.post("/upload", async (req, res) => {
     try {
         const ctx = await validateSession(sessionToken, sessionId);
         if (ctx.error) return res.status(ctx.status).json({ error: ctx.error });
+
+        if (!(await checkFilePermission(ctx, Permission.FILES_UPLOAD)))
+            return res.status(403).json({ error: "You don't have permission to upload files" });
 
         await ctx.sftpClient.writeFile(remotePath, req);
 
@@ -177,6 +192,9 @@ app.get("/", async (req, res) => {
         const ctx = await validateSession(sessionToken, sessionId);
         if (ctx.error) return res.status(ctx.status).json({ error: ctx.error });
 
+        if (!(await checkFilePermission(ctx, Permission.FILES_DOWNLOAD)))
+            return res.status(403).json({ error: "You don't have permission to download files" });
+
         const { sftpClient } = ctx;
         const stats = await sftpClient.stat(remotePath);
         const fileName = getFileName(remotePath);
@@ -185,7 +203,7 @@ app.get("/", async (req, res) => {
         if (stats.isDir) {
             res.header("Content-Disposition", `attachment; filename="${safeFileName}.zip"`);
             res.header("Content-Type", "application/zip");
-            const archive = archiver("zip", { zlib: { level: 1 } });
+            const archive = new ZipArchive({ zlib: { level: 1 } });
             archive.on("error", (err) => {
                 logger.warn("Archive error", { error: err.message, path: remotePath });
                 archive.abort();
@@ -200,14 +218,10 @@ app.get("/", async (req, res) => {
 
         if (thumbnail === "true" && THUMB_EXTS.has(getExt(remotePath)) && stats.size <= MAX_THUMB_SIZE) {
             const thumbSize = Math.min(Math.max(Number.parseInt(size) || 100, 50), 300);
+            const { data } = await sftpClient.thumbnail(remotePath, thumbSize);
             res.header("Content-Type", "image/jpeg");
             res.header("Cache-Control", "public, max-age=3600");
-            const { stream } = sftpClient.readFile(remotePath);
-            const transform = sharp().resize(thumbSize, thumbSize, { fit: "cover" }).jpeg({ quality: 80 });
-            stream.on("error", (err) => { logger.warn("Thumbnail stream error", { error: err.message }); transform.destroy(); });
-            transform.on("error", (err) => { logger.warn("Thumbnail transform error", { error: err.message }); if (!res.headersSent) res.status(500).end(); });
-            res.on("close", () => { stream.destroy(); transform.destroy(); });
-            stream.pipe(transform).pipe(res);
+            res.end(data);
             return;
         }
 
@@ -261,11 +275,14 @@ app.post("/multi", express.urlencoded({ extended: true }), async (req, res) => {
         const ctx = await validateSession(sessionToken, sessionId);
         if (ctx.error) return res.status(ctx.status).json({ error: ctx.error });
 
+        if (!(await checkFilePermission(ctx, Permission.FILES_DOWNLOAD)))
+            return res.status(403).json({ error: "You don't have permission to download files" });
+
         const timestamp = new Date().toISOString().replaceAll(/[:.]/g, "-").slice(0, 19);
         res.header("Content-Disposition", `attachment; filename="nexterm-download-${timestamp}.zip"`);
         res.header("Content-Type", "application/zip");
 
-        const archive = archiver("zip", { zlib: { level: 5 } });
+        const archive = new ZipArchive({ zlib: { level: 5 } });
         archive.on("error", (err) => {
             logger.warn("Multi-download archive error", { error: err.message });
             archive.abort();

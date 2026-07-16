@@ -3,15 +3,27 @@
 #include "config.h"
 #include "log.h"
 
+#include <curl/curl.h>
 #include <libssh2.h>
 
 #include <getopt.h>
 #include <signal.h>
+#include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
 #include <unistd.h>
+
+#if defined(__has_include)
+#if __has_include(<execinfo.h>)
+#define NEXTERM_HAVE_EXECINFO 1
+#include <execinfo.h>
+#endif
+#elif defined(__GLIBC__)
+#define NEXTERM_HAVE_EXECINFO 1
+#include <execinfo.h>
+#endif
 
 nexterm_session_manager_t g_session_manager;
 
@@ -24,6 +36,61 @@ static void signal_handler(int sig) {
     if (g_control_plane) {
         g_control_plane->running = false;
     }
+}
+
+static void crash_write(const char* s) {
+    size_t n = 0;
+    while (s[n]) n++;
+    ssize_t r = write(STDERR_FILENO, s, n);
+    (void)r;
+}
+
+static void crash_write_hex(uintptr_t v) {
+    static const char hex[] = "0123456789abcdef";
+    char buf[2 + sizeof(uintptr_t) * 2];
+    int i = (int)sizeof(buf);
+    if (v == 0) {
+        buf[--i] = '0';
+    } else {
+        while (v && i > 2) {
+            buf[--i] = hex[v & 0xf];
+            v >>= 4;
+        }
+    }
+    buf[--i] = 'x';
+    buf[--i] = '0';
+    ssize_t r = write(STDERR_FILENO, &buf[i], sizeof(buf) - (size_t)i);
+    (void)r;
+}
+
+static void crash_signal_handler(int sig, siginfo_t* info, void* ucontext) {
+    (void)ucontext;
+
+    crash_write("\n[nexterm-crash] Fatal signal ");
+    switch (sig) {
+        case SIGSEGV: crash_write("SIGSEGV"); break;
+        case SIGABRT: crash_write("SIGABRT"); break;
+        case SIGBUS:  crash_write("SIGBUS");  break;
+        default:      crash_write("signal");  break;
+    }
+    if ((sig == SIGSEGV || sig == SIGBUS) && info) {
+        crash_write(" fault_addr=");
+        crash_write_hex((uintptr_t)info->si_addr);
+    }
+    crash_write("\n");
+
+#ifdef NEXTERM_HAVE_EXECINFO
+    void* frames[64];
+    int frame_count = backtrace(frames, 64);
+    crash_write("[nexterm-crash] Backtrace:\n");
+    backtrace_symbols_fd(frames, frame_count, STDERR_FILENO);
+#else
+    crash_write("[nexterm-crash] No in-process backtrace (no execinfo); "
+                "inspect the core dump under data/logs/crashes.\n");
+#endif
+
+    signal(sig, SIG_DFL);
+    raise(sig);
 }
 
 static nexterm_log_level_t parse_log_level(const char* str) {
@@ -101,19 +168,37 @@ int main(int argc, char* argv[]) {
         return 1;
     }
 
+    if (curl_global_init(CURL_GLOBAL_DEFAULT) != CURLE_OK) {
+        LOG_ERROR("Failed to initialize libcurl");
+        libssh2_exit();
+        return 1;
+    }
+
     struct sigaction sa;
     sa.sa_handler = signal_handler;
     sigemptyset(&sa.sa_mask);
     sa.sa_flags = 0;
     sigaction(SIGINT, &sa, NULL);
     sigaction(SIGTERM, &sa, NULL);
+
+    struct sigaction crash_sa;
+    memset(&crash_sa, 0, sizeof(crash_sa));
+    crash_sa.sa_sigaction = crash_signal_handler;
+    sigemptyset(&crash_sa.sa_mask);
+    crash_sa.sa_flags = SA_RESETHAND | SA_SIGINFO;
+    sigaction(SIGSEGV, &crash_sa, NULL);
+    sigaction(SIGABRT, &crash_sa, NULL);
+    sigaction(SIGBUS, &crash_sa, NULL);
+
     signal(SIGPIPE, SIG_IGN);
 
     nexterm_sm_init(&g_session_manager);
 
     nexterm_control_plane_t* cp = nexterm_cp_create(server_host, server_port,
                                                      config.registration_token,
-                                                     config.tls);
+                                                     config.tls,
+                                                     config.ca_cert_path,
+                                                     config.tls_skip_verify);
     if (!cp) {
         LOG_ERROR("Failed to create control plane client");
         return 1;
@@ -143,6 +228,7 @@ int main(int argc, char* argv[]) {
     LOG_INFO("Shutting down engine");
     nexterm_sm_destroy(&g_session_manager);
     nexterm_cp_destroy(cp);
+    curl_global_cleanup();
     libssh2_exit();
 
     LOG_INFO("Engine stopped");

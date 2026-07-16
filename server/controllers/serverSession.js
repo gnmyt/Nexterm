@@ -7,6 +7,7 @@ const { validateEntryAccess } = require("./entry");
 const { getIdentityCredentials, getIdentity } = require("./identity");
 const { getOrganizationAuditSettingsInternal, createAuditLog, AUDIT_ACTIONS, RESOURCE_TYPES } = require("./audit");
 const { resolveIdentity } = require("../utils/identityResolver");
+const { Permission } = require("../permissions/registry");
 const Organization = require('../models/Organization');
 const logger = require("../utils/logger");
 const stateBroadcaster = require("../lib/StateBroadcaster");
@@ -16,9 +17,27 @@ const ENTRY_TYPE_TO_AUDIT_ACTION = {
     'telnet': AUDIT_ACTIONS.SSH_CONNECT,
     'rdp': AUDIT_ACTIONS.RDP_CONNECT,
     'vnc': AUDIT_ACTIONS.VNC_CONNECT,
+    'demo': AUDIT_ACTIONS.DEMO_CONNECT,
     'pve-lxc': AUDIT_ACTIONS.PVE_CONNECT,
     'pve-shell': AUDIT_ACTIONS.PVE_CONNECT,
     'pve-qemu': AUDIT_ACTIONS.PVE_CONNECT,
+    'sftp': AUDIT_ACTIONS.SFTP_CONNECT,
+    'ftp': AUDIT_ACTIONS.SFTP_CONNECT,
+    'ftps': AUDIT_ACTIONS.SFTP_CONNECT,
+};
+
+const ENTRY_TYPE_TO_CONNECT_PERMISSION = {
+    'ssh': Permission.CONNECT_SSH,
+    'telnet': Permission.CONNECT_SSH,
+    'rdp': Permission.CONNECT_RDP,
+    'vnc': Permission.CONNECT_VNC,
+    'demo': Permission.CONNECT_VNC,
+    'pve-lxc': Permission.CONNECT_PROXMOX,
+    'pve-shell': Permission.CONNECT_PROXMOX,
+    'pve-qemu': Permission.CONNECT_PROXMOX,
+    'sftp': Permission.FILES_VIEW,
+    'ftp': Permission.FILES_VIEW,
+    'ftps': Permission.FILES_VIEW,
 };
 
 const getAuditAction = (entry, scriptId) => {
@@ -27,13 +46,21 @@ const getAuditAction = (entry, scriptId) => {
     return ENTRY_TYPE_TO_AUDIT_ACTION[type] || AUDIT_ACTIONS.SSH_CONNECT;
 };
 
+const getRequiredConnectPermission = (entry, type, scriptId) => {
+    if (scriptId) return Permission.SCRIPTS_EXECUTE;
+    if (type === "sftp") return Permission.FILES_VIEW;
+    const entryType = entry.type === 'server' ? entry.config?.protocol : entry.type;
+    return ENTRY_TYPE_TO_CONNECT_PERMISSION[entryType] || Permission.CONNECT_SSH;
+};
+
 const createSession = async (accountId, entryId, identityId, connectionReason, type = null, directIdentity = null, tabId = null, browserId = null, scriptId = null, startPath = null, ipAddress = null, userAgent = null) => {
     const entry = await Entry.findByPk(entryId);
     if (!entry) {
         return { code: 404, message: "Entry not found" };
     }
 
-    const accessResult = await validateEntryAccess(accountId, entry);
+    const requiredPermission = getRequiredConnectPermission(entry, type, scriptId);
+    const accessResult = await validateEntryAccess(accountId, entry, "Access denied", requiredPermission);
     if (!accessResult.valid) {
         return { code: 403, message: "Access denied" };
     }

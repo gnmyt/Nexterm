@@ -27,13 +27,14 @@ const buildPveQemuParams = async (entry) => {
     };
 };
 
-const buildRdpParams = async (cfg, identity) => {
+const buildRdpParams = async (cfg, identity, accountId) => {
     const params = {
         hostname: cfg.ip,
         port: String(cfg.port || 3389),
         "ignore-cert": "true",
         "server-layout": cfg.keyboardLayout || "en-us-qwerty",
         "resize-method": (cfg.resizeMethod && cfg.resizeMethod !== "none") ? cfg.resizeMethod : "display-update",
+        "secondary-monitors": 3,
     };
 
     if (identity) {
@@ -55,6 +56,12 @@ const buildRdpParams = async (cfg, identity) => {
     if (cfg.enableFullWindowDrag === true) params["enable-full-window-drag"] = "true";
     if (cfg.enableDesktopComposition === true) params["enable-desktop-composition"] = "true";
     if (cfg.enableMenuAnimations === true) params["enable-menu-animations"] = "true";
+
+    if (accountId !== undefined && accountId !== null) {
+        params["enable-drive"] = "true";
+        params["drive-name"] = "Shared";
+        params["drive-backend"] = "client";
+    }
 
     return params;
 };
@@ -78,4 +85,6 @@ const buildVncParams = async (cfg, identity) => {
     return params;
 };
 
-module.exports = { buildPveQemuParams, buildRdpParams, buildVncParams };
+const buildDemoParams = async () => ({});
+
+module.exports = { buildPveQemuParams, buildRdpParams, buildVncParams, buildDemoParams };

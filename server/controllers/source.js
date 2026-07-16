@@ -4,11 +4,14 @@ const Script = require("../models/Script");
 const Theme = require("../models/Theme");
 const crypto = require("crypto");
 const logger = require("../utils/logger");
+const { assertPublicUrl } = require("../utils/ssrf");
 
 module.exports.validateSourceUrl = async (url) => {
     try {
         const baseUrl = url.replace(/\/$/, "");
         const indexUrl = `${baseUrl}/NTINDEX`;
+
+        await assertPublicUrl(indexUrl);
 
         const response = await fetch(indexUrl, {
             method: "GET",
@@ -73,7 +76,6 @@ const parseNTINDEX = (content) => {
 };
 
 const calculateContentHash = (content) => crypto.createHash("md5").update(content).digest("hex");
-
 
 const reconstructSnippetFile = (snippet) => {
     let content = "";
@@ -404,6 +406,7 @@ module.exports.syncAllSources = async () => {
 const fetchSourceFile = async (baseUrl, path) => {
     try {
         const url = `${baseUrl}/${path}`;
+        await assertPublicUrl(url);
         const response = await fetch(url, {
             method: "GET",
             headers: {

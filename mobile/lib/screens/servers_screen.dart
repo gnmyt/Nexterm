@@ -8,6 +8,8 @@ import '../services/session_manager.dart';
 import '../utils/auth_manager.dart';
 import '../utils/snippet_manager.dart';
 import '../utils/folder_state_manager.dart';
+import 'widgets/quick_connect_sheet.dart';
+import 'widgets/connection_reason_dialog.dart';
 
 class ServersScreen extends StatefulWidget {
   final AuthManager authManager;
@@ -437,6 +439,7 @@ class _ServersScreenState extends State<ServersScreen> {
         color: Colors.transparent,
         child: InkWell(
           onTap: () => _connectToServer(server),
+          onLongPress: () => _showServerMenu(server),
           borderRadius: BorderRadius.circular(14),
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
@@ -466,37 +469,132 @@ class _ServersScreenState extends State<ServersScreen> {
     );
   }
 
-  Future<void> _connectGuacamole(Server server) async {
+  Future<void> _initiateConnection(Server server,
+      {ConnectionType type = ConnectionType.terminal, Map<String, dynamic>? directIdentity}) async {
     final token = widget.authManager.sessionToken;
     if (token == null) return;
+
+    String? connectionReason;
+    if (_requiresConnectionReason(server)) {
+      connectionReason = await showConnectionReasonDialog(context, server.name);
+      if (connectionReason == null || !mounted) return;
+    }
+
     try {
-      await widget.sessionManager.createGuacSession(token: token, server: server);
+      switch (type) {
+        case ConnectionType.guacamole:
+          await widget.sessionManager.createGuacSession(
+            token: token, server: server, directIdentity: directIdentity, connectionReason: connectionReason);
+        case ConnectionType.terminal:
+          await widget.sessionManager.createTerminalSession(
+            token: token, server: server, directIdentity: directIdentity, connectionReason: connectionReason);
+        case ConnectionType.sftp:
+          await widget.sessionManager.createSftpSession(
+            token: token, server: server, directIdentity: directIdentity, connectionReason: connectionReason);
+      }
       if (mounted) widget.onSwitchToSessions?.call();
     } catch (e) {
       if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Failed to connect: $e'), behavior: SnackBarBehavior.floating));
     }
   }
 
-  Future<void> _connectTerminal(Server server) async {
-    final token = widget.authManager.sessionToken;
-    if (token == null) return;
-    try {
-      await widget.sessionManager.createTerminalSession(token: token, server: server);
-      if (mounted) widget.onSwitchToSessions?.call();
-    } catch (e) {
-      if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Failed to connect: $e'), behavior: SnackBarBehavior.floating));
-    }
+  bool _requiresConnectionReason(Server server) {
+    final id = _serverIdInt(server.id);
+    if (id == null) return false;
+    return _findOrganizationForServer(id, folders)?.requireConnectionReason ?? false;
   }
 
-  Future<void> _connectSftp(Server server) async {
-    final token = widget.authManager.sessionToken;
-    if (token == null) return;
-    try {
-      await widget.sessionManager.createSftpSession(token: token, server: server);
-      if (mounted) widget.onSwitchToSessions?.call();
-    } catch (e) {
-      if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Failed to connect: $e'), behavior: SnackBarBehavior.floating));
+  ServerFolder? _findOrganizationForServer(int serverId, List<dynamic> items, [ServerFolder? currentOrg]) {
+    for (final item in items) {
+      if (item is Server) {
+        if (_serverIdInt(item.id) == serverId) return currentOrg;
+      } else if (item is ServerFolder) {
+        final org = item.isOrganization ? item : currentOrg;
+        final found = _findOrganizationForServer(serverId, [...item.allServers, ...item.allFolders], org);
+        if (found != null) return found;
+      }
     }
+    return null;
+  }
+
+  int? _serverIdInt(dynamic id) => id is int ? id : int.tryParse(id.toString());
+
+  void _showServerMenu(Server server) {
+    final cs = Theme.of(context).colorScheme;
+    final showQuick = server.isServer && !server.isPve;
+
+    showModalBottomSheet(
+      context: context,
+      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
+      builder: (ctx) => SafeArea(child: Column(mainAxisSize: MainAxisSize.min, children: [
+        Center(child: Container(
+          margin: const EdgeInsets.only(top: 12, bottom: 4), width: 36, height: 4,
+          decoration: BoxDecoration(color: cs.outlineVariant, borderRadius: BorderRadius.circular(2)),
+        )),
+        Padding(
+          padding: const EdgeInsets.fromLTRB(20, 12, 20, 4),
+          child: Row(children: [
+            Container(
+              padding: const EdgeInsets.all(8),
+              decoration: BoxDecoration(color: cs.primaryContainer, borderRadius: BorderRadius.circular(10)),
+              child: Icon(_serverIcon(server), color: cs.onPrimaryContainer, size: 18),
+            ),
+            const SizedBox(width: 12),
+            Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+              Text(server.name, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600), overflow: TextOverflow.ellipsis),
+              if (server.ip.isNotEmpty && server.ip != 'N/A')
+                Text(server.ip, style: TextStyle(fontSize: 12, color: cs.outline)),
+            ])),
+          ]),
+        ),
+        const SizedBox(height: 8),
+        _menuItem(ctx, MdiIcons.connection, 'Connect', cs, () {
+          Navigator.pop(ctx); _connectToServer(server);
+        }),
+        if (showQuick)
+          _menuItem(ctx, MdiIcons.cursorDefaultClick, 'Quick Connect', cs, () {
+            Navigator.pop(ctx); _quickConnect(server);
+          }),
+        const SizedBox(height: 12),
+      ])),
+    );
+  }
+
+  Widget _menuItem(BuildContext ctx, IconData icon, String title, ColorScheme cs, VoidCallback onTap) => Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: onTap,
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
+            child: Row(children: [
+              Icon(icon, size: 22, color: cs.primary),
+              const SizedBox(width: 16),
+              Text(title, style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w500)),
+            ]),
+          ),
+        ),
+      );
+
+  Future<void> _quickConnect(Server server) async {
+    if (server.isPve) {
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+        content: Text('Quick Connect is not supported for Proxmox entries'), behavior: SnackBarBehavior.floating));
+      return;
+    }
+
+    if (server.protocol?.toLowerCase() == 'telnet') {
+      _initiateConnection(server);
+      return;
+    }
+
+    final directIdentity = await showQuickConnectSheet(context, server);
+    if (directIdentity == null || !mounted) return;
+
+    _initiateConnection(
+      server,
+      type: ServerService.isGuacamoleProtocol(server.protocol) ? ConnectionType.guacamole : ConnectionType.terminal,
+      directIdentity: directIdentity,
+    );
   }
 
   void _connectToServer(Server server) {
@@ -506,13 +604,18 @@ class _ServersScreenState extends State<ServersScreen> {
         content: Text('${server.name} is ${server.isPve ? "not running" : "offline"}'), behavior: SnackBarBehavior.floating));
       return;
     }
+    final hasIdentities = server.identities?.isNotEmpty == true;
+    if (!server.isPve && !hasIdentities) {
+      _quickConnect(server);
+      return;
+    }
     if (ServerService.isGuacamoleProtocol(server.protocol) || server.type == 'pve-qemu') {
-      _connectGuacamole(server);
+      _initiateConnection(server, type: ConnectionType.guacamole);
       return;
     }
     final isSSH = server.protocol?.toLowerCase() == 'ssh' && !server.isPve;
     if (!isSSH) {
-      _connectTerminal(server);
+      _initiateConnection(server);
       return;
     }
     showModalBottomSheet(
@@ -542,11 +645,11 @@ class _ServersScreenState extends State<ServersScreen> {
         const SizedBox(height: 8),
         Padding(padding: const EdgeInsets.symmetric(horizontal: 16), child: Row(children: [
           Expanded(child: _connectionOption(ctx, MdiIcons.consoleLine, 'Terminal', 'SSH session', cs, () {
-            Navigator.pop(ctx); _connectTerminal(server);
+            Navigator.pop(ctx); _initiateConnection(server);
           })),
           const SizedBox(width: 10),
           Expanded(child: _connectionOption(ctx, MdiIcons.folderOutline, 'SFTP', 'File manager', cs, () {
-            Navigator.pop(ctx); _connectSftp(server);
+            Navigator.pop(ctx); _initiateConnection(server, type: ConnectionType.sftp);
           })),
         ])),
         const SizedBox(height: 16),
