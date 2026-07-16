@@ -1772,6 +1772,7 @@
       }
     },
     "fileManager": {
+      "dropOverlay": "Drop files or folders to upload",
       "createFile": {
         "title": "Create File",
         "placeholder": "File Name",
@@ -1883,6 +1884,8 @@
         "hiddenDirectories": "{{count}} hidden directories",
         "switchToGrid": "Switch to grid view",
         "switchToList": "Switch to list view",
+        "uploadFile": "Upload file(s)",
+        "uploadFolder": "Upload folder",
         "search": "Search files",
         "closeSearch": "Close search",
         "refresh": "Refresh"
@@ -1907,7 +1910,9 @@
         "downloaded": "Downloaded {{name}}",
         "downloadingItems": "Downloading {{count}} item(s)...",
         "uploaded": "Uploaded {{name}}",
+        "uploadedItems": "Uploaded {{count}} files",
         "uploadFailed": "Upload failed: {{message}}",
+        "uploadFailedItems": "{{count}} files failed to upload: {{message}}",
         "connectionLost": "SFTP connection lost. Please reconnect.",
         "error": "An error occurred"
       }

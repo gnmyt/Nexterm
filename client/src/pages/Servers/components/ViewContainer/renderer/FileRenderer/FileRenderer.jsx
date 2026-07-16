@@ -14,10 +14,59 @@ import { uploadFile as uploadFileRequest, tauriDownload } from "@/common/utils/R
 import { isTauri } from "@/common/utils/TauriUtil.js";
 
 const OPERATIONS = {
-    READY: 0x0, LIST_FILES: 0x1, CREATE_FILE: 0x4, CREATE_FOLDER: 0x5, DELETE_FILE: 0x6, 
-    DELETE_FOLDER: 0x7, RENAME_FILE: 0x8, ERROR: 0x9, SEARCH_DIRECTORIES: 0xA, 
+    READY: 0x0, LIST_FILES: 0x1, CREATE_FILE: 0x4, CREATE_FOLDER: 0x5, DELETE_FILE: 0x6,
+    DELETE_FOLDER: 0x7, RENAME_FILE: 0x8, ERROR: 0x9, SEARCH_DIRECTORIES: 0xA,
     RESOLVE_SYMLINK: 0xB, MOVE_FILES: 0xC, COPY_FILES: 0xD, CHMOD: 0xE,
     STAT: 0xF, CHECKSUM: 0x10, FOLDER_SIZE: 0x11, PATH_SYNC: 0x12,
+};
+
+const REFRESH_DEBOUNCE = 150;
+
+const joinPath = (...parts) => parts.join("/").replace(/\/+/g, "/");
+
+const createUploadStats = () => ({ uploaded: 0, failed: 0, sentBytes: 0, totalBytes: 0, firstError: null, lastName: "" });
+
+const readAllEntries = (reader) => new Promise((resolve, reject) => {
+    const all = [];
+    const next = () => {
+        reader.readEntries(batch => {
+            if (batch.length) {
+                all.push(...batch);
+                next();
+            } else {
+                resolve(all);
+            }
+        }, reject);
+    };
+    next();
+});
+
+const takeDroppedEntries = (dataTransfer) => [...(dataTransfer.items ?? [])]
+    .filter(item => item.kind === "file")
+    .map(item => item.webkitGetAsEntry?.())
+    .filter(Boolean);
+
+const collectDroppedEntries = async (entries, targetDir) => {
+    const files = [];
+    const emptyDirs = [];
+
+    const walk = async (entry, dir) => {
+        if (entry.isFile) {
+            files.push({ file: await new Promise((resolve, reject) => entry.file(resolve, reject)), targetDir: dir });
+            return;
+        }
+
+        const path = joinPath(dir, entry.name);
+        const children = await readAllEntries(entry.createReader());
+        if (!children.length) {
+            emptyDirs.push(path);
+            return;
+        }
+        for (const child of children) await walk(child, path);
+    };
+
+    for (const entry of entries) await walk(entry, targetDir);
+    return { files, emptyDirs };
 };
 
 export const FileRenderer = ({ session, disconnectFromServer, setOpenFileEditors, isActive, onOpenTerminal }) => {
@@ -42,7 +91,8 @@ export const FileRenderer = ({ session, disconnectFromServer, setOpenFileEditors
     const [searchQuery, setSearchQuery] = useState("");
     const [searchOpen, setSearchOpen] = useState(false);
     const [searchResultCount, setSearchResultCount] = useState(0);
-    
+    const [capabilities, setCapabilities] = useState({ shell: true, terminal: true });
+
     const directoryRef = useRef(directory);
     const skipNextPathSync = useRef(false);
     const symlinkCallbacks = useRef([]);
@@ -51,7 +101,8 @@ export const FileRenderer = ({ session, disconnectFromServer, setOpenFileEditors
     const reconnectAttemptsRef = useRef(0);
     const fileListRef = useRef(null);
     const propertiesHandlerRef = useRef(null);
-    const [capabilities, setCapabilities] = useState({ shell: true, terminal: true });
+    const uploadStatsRef = useRef(createUploadStats());
+    const refreshTimerRef = useRef(null);
 
     const wsUrl = getWebSocketUrl("/api/ws/sftp", { sessionToken, sessionId: session.id });
 
@@ -110,52 +161,86 @@ export const FileRenderer = ({ session, disconnectFromServer, setOpenFileEditors
     };
 
     const uploadFileHttp = async (file, targetDir) => {
-        const filePath = `${targetDir}/${file.name}`.replace(/\/+/g, '/');
-        setIsUploading(true);
-        setUploadProgress(0);
+        const filePath = joinPath(targetDir, file.name);
+        const stats = uploadStatsRef.current;
 
         try {
             const url = `/api/entries/sftp/upload?sessionId=${session.id}&path=${encodeURIComponent(filePath)}&sessionToken=${sessionToken}`;
             await uploadFileRequest(url, file, {
-                onProgress: setUploadProgress,
+                onProgress: (progress) => setUploadProgress(stats.totalBytes
+                    ? Math.round(((stats.sentBytes + (progress / 100) * file.size) / stats.totalBytes) * 100)
+                    : progress),
                 timeout: 5 * 60 * 1000,
             });
-
-            setIsUploading(false);
-            setUploadProgress(0);
-            listFiles(true);
-            sendToast(t("common.success"), t("servers.fileManager.toast.uploaded", { name: file.name }));
-            return true;
+            stats.uploaded++;
+            stats.lastName = file.name;
         } catch (err) {
             console.error("Upload error:", err);
-            sendToast(t("common.error"), t("servers.fileManager.toast.uploadFailed", { message: err.message }));
-            setIsUploading(false);
-            setUploadProgress(0);
-            return false;
+            stats.failed++;
+            stats.firstError ??= err.message;
+        } finally {
+            stats.sentBytes += file.size;
+        }
+    };
+
+    const reportUploadResult = ({ uploaded, failed, firstError, lastName }) => {
+        if (uploaded) {
+            sendToast(t("common.success"), uploaded === 1
+                ? t("servers.fileManager.toast.uploaded", { name: lastName })
+                : t("servers.fileManager.toast.uploadedItems", { count: uploaded }));
+        }
+        if (failed) {
+            sendToast(t("common.error"), failed === 1
+                ? t("servers.fileManager.toast.uploadFailed", { message: firstError })
+                : t("servers.fileManager.toast.uploadFailedItems", { count: failed, message: firstError }));
         }
     };
 
     const processUploadQueue = async () => {
+        setIsUploading(true);
         while (uploadQueueRef.current.length > 0) {
             const { file, targetDir } = uploadQueueRef.current[0];
             await uploadFileHttp(file, targetDir);
             uploadQueueRef.current.shift();
         }
+        setIsUploading(false);
+        setUploadProgress(0);
+        listFiles(true);
+
+        const stats = uploadStatsRef.current;
+        uploadStatsRef.current = createUploadStats();
+        reportUploadResult(stats);
     };
 
-    const queueUpload = (file, targetDir) => {
-        uploadQueueRef.current.push({ file, targetDir });
-        if (uploadQueueRef.current.length === 1) processUploadQueue();
+    const queueUploads = (uploads) => {
+        if (!uploads.length) return;
+        const idle = uploadQueueRef.current.length === 0;
+        for (const upload of uploads) uploadStatsRef.current.totalBytes += upload.file.size;
+        uploadQueueRef.current.push(...uploads);
+        if (idle) processUploadQueue();
     };
 
     const uploadFile = async () => {
         const fileInput = document.createElement("input");
         fileInput.type = "file";
         fileInput.multiple = true;
-        fileInput.onchange = async () => {
-            for (const file of fileInput.files) queueUpload(file, directory);
+        fileInput.onchange = () => {
+            queueUploads([...fileInput.files].map(file => ({ file, targetDir: directory })));
         };
         fileInput.click();
+    };
+
+    const uploadFolder = () => {
+        const input = document.createElement("input");
+        input.type = "file";
+        input.webkitdirectory = true;
+        input.onchange = () => {
+            queueUploads([...input.files].map(file => ({
+                file,
+                targetDir: joinPath(directory, file.webkitRelativePath.split("/").slice(0, -1).join("/")),
+            })));
+        };
+        input.click();
     };
 
     const processMessage = async (event) => {
@@ -193,7 +278,7 @@ export const FileRenderer = ({ session, disconnectFromServer, setOpenFileEditors
                 case OPERATIONS.MOVE_FILES:
                 case OPERATIONS.COPY_FILES:
                 case OPERATIONS.CHMOD:
-                    listFiles(true);
+                    scheduleRefresh();
                     break;
                 case OPERATIONS.ERROR:
                     sendToast(t("common.error"), payload?.message || t("servers.fileManager.toast.error"));
@@ -263,6 +348,10 @@ export const FileRenderer = ({ session, disconnectFromServer, setOpenFileEditors
     const createFile = (fileName) => sendOperation(OPERATIONS.CREATE_FILE, { path: `${directory}/${fileName}` });
     const createFolder = (folderName) => sendOperation(OPERATIONS.CREATE_FOLDER, { path: `${directory}/${folderName}` });
     const listFiles = useCallback((silent = false) => { if (!silent) setLoading(true); setError(null); sendOperation(OPERATIONS.LIST_FILES, { path: directory }); }, [directory, sendOperation]);
+    const scheduleRefresh = () => {
+        clearTimeout(refreshTimerRef.current);
+        refreshTimerRef.current = setTimeout(() => listFiles(true), REFRESH_DEBOUNCE);
+    };
     const moveFiles = useCallback((sources, destination) => sendOperation(OPERATIONS.MOVE_FILES, { sources, destination }), [sendOperation]);
     const copyFiles = useCallback((sources, destination) => sendOperation(OPERATIONS.COPY_FILES, { sources, destination }), [sendOperation]);
 
@@ -277,7 +366,18 @@ export const FileRenderer = ({ session, disconnectFromServer, setOpenFileEditors
     const goBack = () => { if (historyIndex > 0) { setHistoryIndex(historyIndex - 1); const p = history[historyIndex - 1]; setDirectory(p); sendOperation(OPERATIONS.PATH_SYNC, { path: p }); } };
     const goForward = () => { if (historyIndex < history.length - 1) { setHistoryIndex(historyIndex + 1); const p = history[historyIndex + 1]; setDirectory(p); sendOperation(OPERATIONS.PATH_SYNC, { path: p }); } };
 
-    const handleDrag = async (e) => {
+    const handleFileDrop = async (entries, files, targetDir) => {
+        if (!entries.length) {
+            queueUploads(files.map(file => ({ file, targetDir })));
+            return;
+        }
+
+        const { files: collected, emptyDirs } = await collectDroppedEntries(entries, targetDir);
+        for (const path of emptyDirs) sendOperation(OPERATIONS.CREATE_FOLDER, { path, recursive: true });
+        queueUploads(collected);
+    };
+
+    const handleDrag = (e) => {
         if (e.dataTransfer.types.includes("application/x-sftp-files")) return;
         e.preventDefault();
         e.stopPropagation();
@@ -285,7 +385,9 @@ export const FileRenderer = ({ session, disconnectFromServer, setOpenFileEditors
         else if (e.type === "dragleave" && !dropZoneRef.current.contains(e.relatedTarget)) setDragging(false);
         else if (e.type === "drop") {
             setDragging(false);
-            for (let i = 0; i < e.dataTransfer.files.length; i++) queueUpload(e.dataTransfer.files[i], directory);
+            handleFileDrop(takeDroppedEntries(e.dataTransfer), [...e.dataTransfer.files], directory).catch(err =>
+                sendToast(t("common.error"), t("servers.fileManager.toast.uploadFailed", { message: err.message }))
+            );
         }
     };
 
@@ -296,6 +398,8 @@ export const FileRenderer = ({ session, disconnectFromServer, setOpenFileEditors
     const handleOpenPreview = (filePath) => setOpenFileEditors(prev => [...prev, { id: `${session.id}-${filePath}-${Date.now()}`, file: filePath, session, type: 'preview' }]);
 
     useEffect(() => { directoryRef.current = directory; }, [directory]);
+
+    useEffect(() => () => clearTimeout(refreshTimerRef.current), []);
 
     useEffect(() => { setSearchQuery(""); }, [directory]);
 
@@ -327,12 +431,13 @@ export const FileRenderer = ({ session, disconnectFromServer, setOpenFileEditors
             <div className={`drag-overlay ${dragging ? "active" : ""}`}>
                 <div className="drag-item">
                     <Icon path={mdiCloudUpload} />
-                    <h2>Drop files to upload</h2>
+                    <h2>{t("servers.fileManager.dropOverlay")}</h2>
                 </div>
             </div>
             <div className="file-manager">
                 <ActionBar path={directory} updatePath={changeDirectory} createFile={() => fileListRef.current?.startCreateFile()}
-                    createFolder={() => fileListRef.current?.startCreateFolder()} uploadFile={uploadFile} refreshFiles={() => listFiles(true)} goBack={goBack} goForward={goForward} historyIndex={historyIndex}
+                    createFolder={() => fileListRef.current?.startCreateFolder()} uploadFile={uploadFile} uploadFolder={uploadFolder}
+                    refreshFiles={() => listFiles(true)} goBack={goBack} goForward={goForward} historyIndex={historyIndex}
                     historyLength={history.length} viewMode={viewMode} setViewMode={setViewMode} 
                     searchDirectories={searchDirectories} directorySuggestions={directorySuggestions} 
                     setDirectorySuggestions={setDirectorySuggestions} moveFiles={moveFiles} copyFiles={copyFiles}

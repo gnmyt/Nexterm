@@ -117,14 +117,14 @@ const validateSession = async (sessionToken, sessionId) => {
 const validateRequest = (query) => {
     const { sessionToken, sessionId, path: remotePath } = query;
     if (!sessionToken || !sessionId || !remotePath) return "Missing parameters";
-    if (remotePath.includes("..")) return "Invalid path";
+    if (remotePath.split("/").includes("..")) return "Invalid path";
     return null;
 };
 
 /**
  * POST /sftp/upload
  * @summary Upload File via SFTP
- * @description Uploads a file to a remote server via SFTP. The file content should be sent as the raw request body. Requires an active session with SFTP capabilities.
+ * @description Uploads a file to a remote server via SFTP. The file content should be sent as the raw request body. Missing parent directories are created when the user is allowed to modify files. Requires an active session with SFTP capabilities.
  * @tags SFTP
  * @produces application/json
  * @param {string} sessionToken.query.required - Session authentication token
@@ -149,6 +149,13 @@ app.post("/upload", async (req, res) => {
 
         if (!(await checkFilePermission(ctx, Permission.FILES_UPLOAD)))
             return res.status(403).json({ error: "You don't have permission to upload files" });
+
+        const parentPath = remotePath.substring(0, remotePath.lastIndexOf("/"));
+        if (parentPath && await checkFilePermission(ctx, Permission.FILES_MODIFY)) {
+            const created = await ctx.sftpClient.mkdirRecursive(parentPath);
+            for (const folderPath of created)
+                audit(ctx, req, AUDIT_ACTIONS.FOLDER_CREATE, RESOURCE_TYPES.FOLDER, { folderPath });
+        }
 
         await ctx.sftpClient.writeFile(remotePath, req);
 
