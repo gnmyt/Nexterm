@@ -143,6 +143,12 @@ static int guac_rdp_join_pending_handler(guac_client* client) {
     /* Synchronize with current display */
     if (rdp_client->display != NULL) {
         guac_display_dup(rdp_client->display, broadcast_socket);
+
+        /* The monitor layout cannot be derived from the display, so joining
+         * users would otherwise see every monitor as one combined display */
+        guac_rdp_disp_send_multimon_layout(client, rdp_client->disp,
+                broadcast_socket);
+
         guac_socket_flush(broadcast_socket);
     }
 

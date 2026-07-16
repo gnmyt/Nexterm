@@ -28,11 +28,20 @@
 #include <freerdp/event.h>
 #include <guacamole/client.h>
 #include <guacamole/mem.h>
+#include <guacamole/protocol.h>
+#include <guacamole/protocol-constants.h>
 #include <guacamole/rect.h>
 #include <guacamole/timestamp.h>
 
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+
+/**
+ * The maximum size of the JSON string describing the layout of all monitors,
+ * in bytes, including the null terminator.
+ */
+#define GUAC_RDP_MULTIMON_LAYOUT_MAX_LENGTH 2048
 
 guac_rdp_disp* guac_rdp_disp_alloc(guac_client* client) {
 
@@ -466,5 +475,56 @@ int guac_rdp_disp_reconnect_needed(guac_rdp_disp* disp) {
 void guac_rdp_disp_reconnect_complete(guac_rdp_disp* disp) {
     disp->reconnect_needed = 0;
     disp->last_request = guac_timestamp_current();
+}
+
+void guac_rdp_disp_send_multimon_layout(guac_client* client,
+        guac_rdp_disp* disp, guac_socket* socket) {
+
+    char json[GUAC_RDP_MULTIMON_LAYOUT_MAX_LENGTH];
+    int pos = 0;
+    bool first = true;
+
+    json[pos++] = '{';
+
+    for (int i = 0; i < disp->monitors_count; i++) {
+
+        /* Skip monitors that have not been initialized yet */
+        if (disp->monitors[i].requested_width == 0
+                || disp->monitors[i].requested_height == 0)
+            continue;
+
+        /* Reserve one byte for the closing brace */
+        int remaining = GUAC_RDP_MULTIMON_LAYOUT_MAX_LENGTH - pos - 1;
+
+        int written = snprintf(json + pos, remaining,
+                "%s\"%i\":{\"left\":%i,\"top\":%i,\"width\":%i,\"height\":%i}",
+                first ? "" : ",", i,
+                disp->monitors[i].left_offset,
+                disp->monitors[i].top_offset,
+                disp->monitors[i].requested_width,
+                disp->monitors[i].requested_height);
+
+        /* Abandon the layout entirely if it would not fit, rather than send
+         * truncated JSON that the client cannot parse */
+        if (written < 0 || written >= remaining) {
+            guac_client_log(client, GUAC_LOG_WARNING, "Layout of %i monitor(s) "
+                    "does not fit within %i bytes and will not be sent.",
+                    disp->monitors_count, GUAC_RDP_MULTIMON_LAYOUT_MAX_LENGTH);
+            return;
+        }
+
+        pos += written;
+        first = false;
+
+    }
+
+    json[pos++] = '}';
+    json[pos] = '\0';
+
+    /* The combined display is always rendered to the default layer (see
+     * guac_display_default_layer()) */
+    guac_protocol_send_set(socket, GUAC_DEFAULT_LAYER,
+            GUAC_PROTOCOL_LAYER_PARAMETER_MULTIMON_LAYOUT, json);
+
 }
 

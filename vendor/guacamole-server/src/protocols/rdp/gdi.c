@@ -160,74 +160,6 @@ paint_complete:
 
 }
 
-/**
- * Sends the layout of all currently-attached monitors to the client as a JSON
- * string, assigned to the default layer via the "multimon-layout" parameter.
- * Each monitor is rendered into a single, combined display, and this layout
- * describes where within that display each monitor resides.
- *
- * If the layout does not fit within GUAC_RDP_MULTIMON_LAYOUT_MAX_LENGTH bytes,
- * nothing is sent, as partial JSON cannot be parsed by the client.
- *
- * @param client
- *     The guac_client associated with the RDP session.
- *
- * @param rdp_client
- *     The guac_rdp_client associated with the RDP session.
- */
-static void guac_rdp_gdi_send_multimon_layout(guac_client* client,
-        guac_rdp_client* rdp_client) {
-
-    guac_rdp_disp* disp = rdp_client->disp;
-
-    char json[GUAC_RDP_MULTIMON_LAYOUT_MAX_LENGTH];
-    int pos = 0;
-    bool first = true;
-
-    json[pos++] = '{';
-
-    for (int i = 0; i < disp->monitors_count; i++) {
-
-        /* Skip monitors that have not been initialized yet */
-        if (disp->monitors[i].requested_width == 0
-                || disp->monitors[i].requested_height == 0)
-            continue;
-
-        /* Reserve one byte for the closing brace */
-        int remaining = GUAC_RDP_MULTIMON_LAYOUT_MAX_LENGTH - pos - 1;
-
-        int written = snprintf(json + pos, remaining,
-                "%s\"%i\":{\"left\":%i,\"top\":%i,\"width\":%i,\"height\":%i}",
-                first ? "" : ",", i,
-                disp->monitors[i].left_offset,
-                disp->monitors[i].top_offset,
-                disp->monitors[i].requested_width,
-                disp->monitors[i].requested_height);
-
-        /* Abandon the layout entirely if it would not fit, rather than send
-         * truncated JSON that the client cannot parse */
-        if (written < 0 || written >= remaining) {
-            guac_client_log(client, GUAC_LOG_WARNING, "Layout of %i monitor(s) "
-                    "does not fit within %i bytes and will not be sent.",
-                    disp->monitors_count, GUAC_RDP_MULTIMON_LAYOUT_MAX_LENGTH);
-            return;
-        }
-
-        pos += written;
-        first = false;
-
-    }
-
-    json[pos++] = '}';
-    json[pos] = '\0';
-
-    /* The combined display is always rendered to the default layer (see
-     * guac_display_default_layer()) */
-    guac_protocol_send_set(client->socket, GUAC_DEFAULT_LAYER,
-            GUAC_PROTOCOL_LAYER_PARAMETER_MULTIMON_LAYOUT, json);
-
-}
-
 BOOL guac_rdp_gdi_desktop_resize(rdpContext* context) {
 
     guac_client* client = ((rdp_freerdp_context*) context)->client;
@@ -284,9 +216,9 @@ BOOL guac_rdp_gdi_desktop_resize(rdpContext* context) {
 
     guac_display_layer_close_raw(default_layer, current_context);
 
-    /* Inform the client of where each monitor resides within the single,
+    /* Inform all users of where each monitor resides within the single,
      * combined display sent over the wire */
-    guac_rdp_gdi_send_multimon_layout(client, rdp_client);
+    guac_rdp_disp_send_multimon_layout(client, rdp_client->disp, client->socket);
 
     /* Set default pointer after resizing to ensure it is visible when adding
      * a new monitor */

@@ -250,5 +250,29 @@ void guac_rdp_disp_reconnect_complete(guac_rdp_disp* disp);
  */
 int guac_rdp_disp_reconnect_needed(guac_rdp_disp* disp);
 
+/**
+ * Sends the layout of all currently-attached monitors as a JSON string,
+ * assigned to the default layer via the "multimon-layout" parameter. All
+ * monitors are rendered into a single, combined display, and this layout
+ * describes where within that display each monitor resides.
+ *
+ * This must be sent whenever the layout changes, and to any user joining the
+ * connection, as the layout cannot be derived from the display itself.
+ *
+ * If the layout does not fit within the maximum length of the parameter,
+ * nothing is sent, as partial JSON cannot be parsed by the client.
+ *
+ * @param client
+ *     The guac_client associated with the RDP session.
+ *
+ * @param disp
+ *     The display update module whose monitor layout should be sent.
+ *
+ * @param socket
+ *     The socket that the layout should be sent over.
+ */
+void guac_rdp_disp_send_multimon_layout(guac_client* client,
+        guac_rdp_disp* disp, guac_socket* socket);
+
 #endif
 
