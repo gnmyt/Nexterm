@@ -1551,6 +1551,9 @@
       "duplicateServer": "Дублировать сервер",
       "pasteIdentityPassword": "Вставить пароль",
       "deleteServer": "Удалить сервер",
+      "deleteConfirm": "Are you sure you want to delete \"{{name}}\"? This action cannot be undone.",
+      "deleteFailServer": "Failed to delete \"{{name}}\".",
+      "deleteFailFolder": "Failed to delete the folder \"{{name}}\".",
       "wakeOnLan": "Wake-On-LAN",
       "shutdown": "Выключить",
       "stop": "Остановить",
@@ -1772,6 +1775,7 @@
       }
     },
     "fileManager": {
+      "dropOverlay": "Drop files or folders to upload",
       "createFile": {
         "title": "Создать файл",
         "placeholder": "Имя файла",
@@ -1883,6 +1887,8 @@
         "hiddenDirectories": "{{count}} скрытые каталоги",
         "switchToGrid": "Переключись на вид сетки",
         "switchToList": "Переключись в режим просмотра списка",
+        "uploadFile": "Upload file(s)",
+        "uploadFolder": "Upload folder",
         "search": "Поиск файлов",
         "closeSearch": "Закрыть поиск",
         "refresh": "Обновить"
@@ -1907,7 +1913,9 @@
         "downloaded": "Скачал {{name}}",
         "downloadingItems": "Загрузка {{count}} ...",
         "uploaded": "Загружено {{name}}",
+        "uploadedItems": "Uploaded {{count}} files",
         "uploadFailed": "Загрузка не удалась: {{message}}",
+        "uploadFailedItems": "{{count}} files failed to upload: {{message}}",
         "connectionLost": "SFTP-соединение потеряно. Пожалуйста, переподключись.",
         "error": "Произошла ошибка"
       }
