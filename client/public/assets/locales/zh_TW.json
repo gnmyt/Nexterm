@@ -1607,6 +1607,7 @@
         "password": "密碼",
         "host": "主機",
         "macAddress": "MAC 位址",
+        "wolBroadcastAddress": "Broadcast Address",
         "engine": "引擎"
       },
       "placeholders": {
@@ -1616,7 +1617,8 @@
         "username": "使用者名稱",
         "password": "密碼",
         "host": "主機",
-        "macAddress": "aa:bb:cc:dd:ee:ff"
+        "macAddress": "aa:bb:cc:dd:ee:ff",
+        "wolBroadcastAddress": "255.255.255.255"
       },
       "engineOffline": "(離線)",
       "settings": {
@@ -1908,6 +1910,16 @@
         "uploadFailed": "上傳失敗: {{message}}",
         "connectionLost": "SFTP 連線中斷。請重新連線。",
         "error": "發生錯誤"
+      }
+    },
+    "remoteDesktop": {
+      "dropOverlay": "Drop files to upload to remote",
+      "toast": {
+        "uploadedSingle": "Uploaded \"{{name}}\" to remote drive",
+        "uploadedMultiple": "Uploaded {{count}} files to remote drive",
+        "uploadFailed": "{{count}} file(s) failed to upload",
+        "uploadPartial": "{{failed}} file(s) failed to upload, {{succeeded}} succeeded",
+        "downloaded": "Downloaded \"{{name}}\" from remote"
       }
     },
     "aiAssistant": {
