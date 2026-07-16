@@ -1551,6 +1551,9 @@
       "duplicateServer": "Duplikovat server",
       "pasteIdentityPassword": "Vložit heslo",
       "deleteServer": "Smazat server",
+      "deleteConfirm": "Are you sure you want to delete \"{{name}}\"? This action cannot be undone.",
+      "deleteFailServer": "Failed to delete \"{{name}}\".",
+      "deleteFailFolder": "Failed to delete the folder \"{{name}}\".",
       "wakeOnLan": "Wake-On-LAN",
       "shutdown": "Vypnout",
       "stop": "Zastavit",
@@ -1772,6 +1775,7 @@
       }
     },
     "fileManager": {
+      "dropOverlay": "Drop files or folders to upload",
       "createFile": {
         "title": "Vytvořit soubor",
         "placeholder": "Název souboru",
@@ -1883,6 +1887,8 @@
         "hiddenDirectories": "{{count}} skryté adresáře",
         "switchToGrid": "Přepnutí na zobrazení mřížky",
         "switchToList": "Přepnutí na zobrazení seznamu",
+        "uploadFile": "Upload file(s)",
+        "uploadFolder": "Upload folder",
         "search": "Vyhledat soubory",
         "closeSearch": "Zavřít vyhledávání",
         "refresh": "Obnovit"
@@ -1907,7 +1913,9 @@
         "downloaded": "Staženo {{name}}",
         "downloadingItems": "Stahování položek {{count}} ...",
         "uploaded": "Nahráno {{name}}",
+        "uploadedItems": "Uploaded {{count}} files",
         "uploadFailed": "Nahrávání se nezdařilo: {{message}}",
+        "uploadFailedItems": "{{count}} files failed to upload: {{message}}",
         "connectionLost": "Ztráta připojení SFTP. Znovu se připojte.",
         "error": "Došlo k chybě"
       }
