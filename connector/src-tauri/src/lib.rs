@@ -5,6 +5,9 @@ use std::sync::Arc;
 mod tunnel;
 use tunnel::{TunnelConfig, TunnelManager, TunnelStatus};
 
+mod host_fs;
+use host_fs::HostFsState;
+
 const APP_VERSION: &str = env!("CARGO_PKG_VERSION");
 
 #[tauri::command]
@@ -127,7 +130,8 @@ pub mod urlencoding {
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     let tunnel_manager = Arc::new(TunnelManager::new());
-    
+    let host_fs = HostFsState::default();
+
     tauri::Builder::default()
         .plugin(tauri_plugin_http::init())
         .plugin(tauri_plugin_dialog::init())
@@ -135,6 +139,7 @@ pub fn run() {
         .plugin(tauri_plugin_shell::init())
         .plugin(tauri_plugin_opener::init())
         .manage(tunnel_manager)
+        .manage(host_fs)
         .invoke_handler(tauri::generate_handler![
             open_popout,
             open_tunnel_window,
@@ -143,7 +148,16 @@ pub fn run() {
             stop_tunnel,
             list_tunnels,
             get_tunnel_status,
-            get_user_agent
+            get_user_agent,
+            host_fs::host_fs_open,
+            host_fs::host_fs_read,
+            host_fs::host_fs_write,
+            host_fs::host_fs_close,
+            host_fs::host_fs_readdir,
+            host_fs::host_fs_stat,
+            host_fs::host_fs_unlink,
+            host_fs::host_fs_rename,
+            host_fs::host_fs_truncate
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
