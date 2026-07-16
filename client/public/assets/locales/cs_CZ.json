@@ -10,6 +10,7 @@
     "download": "Stáhnout",
     "maximize": "Maximalizujte",
     "restore": "Obnovení",
+    "resize": "Změnit velikost",
     "actions": {
       "cancel": "Zrušit",
       "confirm": "Potvrdit",
@@ -17,6 +18,7 @@
       "login": "Přihlásit se",
       "register": "Registrovat",
       "save": "Uložit",
+      "saving": "Záchran…",
       "download": "Stáhnout",
       "close": "Zavřít",
       "maximize": "Maximalizovat",
@@ -59,7 +61,9 @@
       "signInWithQrCode": "Přihlášení pomocí kódu QR",
       "qrScanDescription": "Naskenujte tento QR kód pomocí mobilní aplikace Nexterm a okamžitě se přihlaste.",
       "backToLogin": "Zpět na přihlášení",
-      "authenticating": "Probíhá ověření..."
+      "authenticating": "Probíhá ověření...",
+      "noAccount": "Ještě nemáte účet?",
+      "haveAccount": "Už máte účet?"
     },
     "deviceLink": {
       "title": "Odkaz Zařízení",
@@ -306,9 +310,7 @@
       "actions": {
         "cancel": "Zrušit",
         "create": "Vytvořit",
-        "save": "Uložit",
-        "generateAI": "Generovat pomocí AI",
-        "generating": "Generuji..."
+        "save": "Uložit"
       }
     },
     "messages": {
@@ -585,7 +587,8 @@
       "ai": "AI",
       "monitoring": "Monitorování",
       "backup": "Úložiště",
-      "engines": "Motory"
+      "engines": "Motory",
+      "permissions": "Role a oprávnění"
     },
     "account": {
       "title": "Účet",
@@ -686,6 +689,34 @@
         "noPasskeys": "Zatím nejsou zaregistrovány žádné passkeys",
         "rename": "Přejmenovat",
         "delete": "Smazat"
+      },
+      "apiKeys": {
+        "sectionTitle": "Klíče API",
+        "sectionDescription": "Vytvořte si klíče API, abyste mohli programově přistupovat k Nextermu ze skriptů a integrací.",
+        "addButton": "Vytvořit klíč API",
+        "createTitle": "Vytvořit klíč API",
+        "createDescription": "Pojmenujte svůj klíč. Token se po vytvoření zobrazí pouze jednou.",
+        "nameLabel": "Jméno",
+        "namePlaceholder": "např. skript pro nasazení",
+        "nameRequired": "Jméno je povinné",
+        "expiryLabel": "Platnost",
+        "expiryNever": "Nikdy",
+        "expiry30": "30 dní",
+        "expiry90": "90 dní",
+        "expiry365": "1 rok",
+        "createButton": "Vytvořit",
+        "createdTitle": "API klíč byl vytvořen",
+        "createdWarning": "Zkopírujte si tento token hned teď. Z bezpečnostních důvodů se vám již nebude zobrazovat.",
+        "tokenLabel": "Token",
+        "doneButton": "Hotovo",
+        "createError": "Vytvoření klíče API se nezdařilo.",
+        "copyError": "Kopírování do schránky se nezdařilo.",
+        "confirmDelete": "Opravdu chcete tento klíč API zrušit? Všechny systémy, které jej používají, ztratí přístup.",
+        "noKeys": "Zatím žádné klíče API",
+        "lastUsed": "Naposledy použito {{date}}",
+        "neverUsed": "Nikdy nepoužívané",
+        "expires": "Platnost končí {{date}}",
+        "delete": "Odstranit"
       }
     },
     "passwordChange": {
@@ -732,6 +763,8 @@
         "folderManagementDescription": "Záznamy o vytváření, úpravách a mazání složek",
         "scriptExecutionLabel": "Spuštění skriptu",
         "scriptExecutionDescription": "Protokolování provádění skriptů a automatizačních úloh",
+        "aiOperationsLabel": "Operace v oblasti umělé inteligence",
+        "aiOperationsDescription": "Zaznamenávat příkazy a změny souborů provedené asistentem AI",
         "actions": {
           "save": "Uložit nastavení"
         },
@@ -775,22 +808,15 @@
       "noSearchResultsDescription": "Zkuste upravit vyhledávací dotaz.",
       "table": {
         "user": "Uživatel",
-        "role": "Role",
-        "twoFactor": "2FA"
-      },
-      "roles": {
-        "admin": "Admin",
-        "user": "Uživatel"
+        "twoFactor": "2FA",
+        "roles": "Role"
       },
       "contextMenu": {
         "changePassword": "Změnit heslo",
-        "promoteToAdmin": "Povýšit na admina",
-        "demoteToUser": "Snížit na uživatele",
         "deleteUser": "Smazat uživatele",
         "loginAsUser": "Přihlásit se jako uživatel",
         "deleteConfirm": "Toto trvale smaže uživatele a všechna přidružená data.",
-        "promoteConfirm": "Toto povýší uživatele na administrátora.",
-        "demoteConfirm": "Toto sníží uživatele na běžného uživatele."
+        "managePermissions": "Správa oprávnění"
       }
     },
     "userDialog": {
@@ -830,6 +856,10 @@
         "aimenu": {
           "title": "Nabídka AI",
           "description": "Otevřít menu AI příkazů"
+        },
+        "aiaccepttool": {
+          "title": "AI – Potvrdit akci",
+          "description": "Schválit čekající akci nástroje AI v asistentovi"
         },
         "snippets": {
           "title": "Snippety",
@@ -891,6 +921,15 @@
         "disabled": "Zakázáno",
         "syncEnabled": "Nastavení kurzoru se nyní synchronizuje s vaším účtem.",
         "syncDisabled": "Nastavení kurzoru se již nesynchronizuje"
+      },
+      "input": {
+        "title": "Vstup",
+        "description": "Nastavte chování klávesových zkratek v terminálu.",
+        "smartCopyPaste": "Chytré Ctrl+C",
+        "enabled": "Zapnuto",
+        "disabled": "Znevýhodnění",
+        "syncEnabled": "Nastavení vstupů se nyní synchronizují s vaším účtem",
+        "syncDisabled": "Nastavení vstupů se již nebudou synchronizovat"
       },
       "theme": {
         "title": "Motiv",
@@ -955,6 +994,10 @@
       "addLdapProvider": "Přidání protokolu LDAP",
       "system": "Systém",
       "systemDescription": "Ověření uživatelským jménem a heslem",
+      "registration": {
+        "title": "Samostatná registrace",
+        "description": "Umožnit návštěvníkům vytvořit si vlastní účet přímo na přihlašovací obrazovce"
+      },
       "deleteConfirm": "Toto trvale smaže tohoto poskytovatele ověření.",
       "errors": {
         "deleteProvider": "Chyba při mazání poskytovatele",
@@ -1044,11 +1087,11 @@
     },
     "ai": {
       "title": "Konfigurace AI asistenta",
-      "description": "Nakonfigurujte generování příkazů pomocí AI pro terminálové relace a tvorbu snippetů.",
+      "description": "Nakonfigurujte asistenta s umělou inteligencí, který dokáže spouštět příkazy a spravovat soubory přímo v rámci vašich serverových relací.",
       "loading": "Načítání nastavení AI...",
       "enable": {
         "title": "Povolit AI asistenta",
-        "description": "Umožnit uživatelům generovat příkazy pomocí AI"
+        "description": "Umožnit uživatelům spouštět AI asistenta v rámci relací na serveru"
       },
       "provider": {
         "title": "Poskytovatel AI",
@@ -1056,18 +1099,43 @@
       },
       "model": {
         "title": "Model",
-        "description": "Vyberte AI model pro generování příkazů"
+        "description": "Vyberte model umělé inteligence, který má asistent používat"
+      },
+      "requireConfirmation": {
+        "title": "Před každým úkonem potvrďte",
+        "description": "Vyžadovat, aby uživatelé schvalovali každý příkaz a každou změnu souboru, kterou chce asistent provést"
       },
       "apiKey": {
         "title": "API klíč",
-        "description": "Váš OpenAI API klíč pro ověření",
-        "placeholder": "Zadejte svůj OpenAI API klíč",
-        "setPlaceholder": "API klíč je nastaven (ponechte prázdné pro zachování)"
+        "setPlaceholder": "API klíč je nastaven (ponechte prázdné pro zachování)",
+        "genericDescription": "API klíč používaný k ověření u vybraného poskytovatele",
+        "genericPlaceholder": "Zadejte svůj API klíč pro službu {{provider}}"
       },
-      "ollamaUrl": {
-        "title": "Adresa URL společnosti Ollama",
-        "description": "URL, kde běží vaše instance Ollama",
-        "placeholder": "http://localhost:11434"
+      "authMethod": {
+        "title": "Ověření",
+        "description": "Ověřte se pomocí klíče API nebo předplatného u svého poskytovatele",
+        "apiKey": "Klíč API",
+        "subscription": "Předplatné"
+      },
+      "subscription": {
+        "title": "{{provider}} Předplatné",
+        "description": "Přihlaste se pomocí svého předplatného služby {{provider}} , abyste mohli využívat její modely bez API klíče",
+        "connectedDescription": "Vaše předplatné na adrese {{provider}} je aktivní",
+        "connect": "Připojit se",
+        "connecting": "Připojuji se...",
+        "complete": "Dokončit",
+        "disconnect": "Odpojit",
+        "codePlaceholder": "Zadejte sem autorizační kód",
+        "codePlaceholderUrl": "Zde vložte úplnou adresu URL (nebo kód) zpětného volání",
+        "connectSuccess": "{{provider}} předplatné je aktivní",
+        "startError": "Nepodařilo se zahájit autorizaci",
+        "exchangeError": "Nepodařilo se připojit k předplatnému",
+        "disconnectError": "Nepodařilo se odhlásit z předplatného"
+      },
+      "baseUrl": {
+        "title": "URL rozhraní API",
+        "description": "Základní URL koncového bodu poskytovatele kompatibilního s OpenAI",
+        "placeholder": "https://api.example.com/v1"
       },
       "selectProvider": "Vyberte poskytovatele...",
       "selectModel": "Vyberte model...",
@@ -1368,6 +1436,34 @@
         "deleteFailed": "Nepodařilo se odstranit motor",
         "regenerateFailed": "Nepodařilo se regenerovat token"
       }
+    },
+    "permissions": {
+      "subtitle": "Vytvářejte role s podrobnými oprávněními nebo přiřazujte oprávnění jednotlivým uživatelům. Role „Výchozí“ se automaticky vztahuje na všechny uživatele.",
+      "createRole": "Vytvořit roli",
+      "rolesTitle": "Role",
+      "rolesTab": "Role",
+      "overridesTab": "Přímá oprávnění",
+      "permissionsTab": "Oprávnění",
+      "membersTab": "Členové",
+      "settingsTab": "Nastavení",
+      "managePermissions": "Správa oprávnění",
+      "memberCount_one": "{{count}} člen",
+      "memberCount_other": "{{count}} členové",
+      "dangerousHint": "Udělení tohoto oprávnění umožňuje rozsáhlý nebo destruktivní přístup. Přiřazujte jej s opatrností.",
+      "roleName": "Název role",
+      "roleNamePlaceholder": "např. operátoři",
+      "roleColor": "Barva",
+      "nameRequired": "Zadejte prosím název role.",
+      "saveError": "Změny se nepodařilo uložit.",
+      "loadError": "Nepodařilo se načíst oprávnění.",
+      "userSaved": "Oprávnění byla aktualizována.",
+      "noAssignableRoles": "Zatím nejsou k dispozici žádné role. Nejprve nějakou vytvořte.",
+      "noMembers": "Tato role zatím nemá žádné členy.",
+      "addMemberPlaceholder": "Vyhledejte uživatele, kteří přidali…",
+      "deleteRole": "Odstranit roli",
+      "deleteConfirm": "Tím se role „{{name}}“ trvale smaže a odebere se všem členům.",
+      "inheritsAllow": "Dědí: Povoleno",
+      "inheritsDeny": "Dědí: Zamítnuto"
     }
   },
   "tunnel": {
@@ -1431,10 +1527,18 @@
       "telnetServer": "Telnet server",
       "rdpServer": "RDP server",
       "vncServer": "VNC server",
+      "demoServer": "Ukážkové připojení",
+      "sftpServer": "SFTP server",
+      "ftpServer": "FTP server",
+      "ftpsServer": "Server FTPS",
       "createServer": "Vytvořit server",
       "import": "Importovat",
-      "pve": "PVE",
+      "pve": "Proxmox VE",
       "sshConfig": "SSH-Config",
+      "syncIntegration": "Synchronizovat nyní",
+      "syncSuccess": "Integrace synchronizována",
+      "syncFailed": "Synchronizace integrace se nezdařila",
+      "removeIntegration": "Odstranit integraci",
       "connect": "Připojit",
       "quickConnect": "Rychlé připojení",
       "openSFTP": "Otevřít SFTP",
@@ -1448,8 +1552,6 @@
       "pasteIdentityPassword": "Vložit heslo",
       "deleteServer": "Smazat server",
       "wakeOnLan": "Wake-On-LAN",
-      "editPVE": "Upravit PVE",
-      "deletePVE": "Smazat PVE",
       "shutdown": "Vypnout",
       "stop": "Zastavit",
       "start": "Spustit"
@@ -1504,9 +1606,8 @@
         "username": "Uživatelské jméno",
         "password": "Heslo",
         "host": "Hostitel",
-        "nodeName": "Název uzlu",
-        "vmid": "ID VIRTUÁLNÍHO POČÍTAČE",
         "macAddress": "MAC adresa",
+        "wolBroadcastAddress": "Adresa vysílání",
         "engine": "Motor"
       },
       "placeholders": {
@@ -1516,9 +1617,8 @@
         "username": "Uživatelské jméno",
         "password": "Heslo",
         "host": "Hostitel",
-        "nodeName": "Název uzlu",
-        "vmid": "ID VIRTUÁLNÍHO POČÍTAČE",
-        "macAddress": "AA:BB:CC:DD:EE:FF"
+        "macAddress": "AA:BB:CC:DD:EE:FF",
+        "wolBroadcastAddress": "255.255.255.255"
       },
       "engineOffline": "(offline)",
       "settings": {
@@ -1604,7 +1704,7 @@
     },
     "proxmoxDialog": {
       "title": {
-        "import": "Importovat Proxmox VE",
+        "import": "Přidat Proxmox VE",
         "edit": "Upravit Proxmox VE"
       },
       "fields": {
@@ -1626,8 +1726,8 @@
         "specificNode": "Konkrétní název uzlu"
       },
       "actions": {
-        "import": "Importovat",
-        "edit": "Upravit"
+        "import": "Přidat",
+        "edit": "Uložit"
       },
       "messages": {
         "created": "Integrace Proxmox úspěšně vytvořena",
@@ -1720,7 +1820,9 @@
         "clearTerminal": "Vyčistit terminál",
         "properties": "Vlastnosti",
         "openTerminal": "Otevřete terminál zde",
-        "downloadFolder": "Složka ke stažení"
+        "downloadFolder": "Složka ke stažení",
+        "newFile": "Nový soubor",
+        "newFolder": "Nová složka"
       },
       "properties": {
         "general": "Obecné",
@@ -1780,10 +1882,20 @@
         "enterDirectory": "Zadejte cestu k adresáři...",
         "hiddenDirectories": "{{count}} skryté adresáře",
         "switchToGrid": "Přepnutí na zobrazení mřížky",
-        "switchToList": "Přepnutí na zobrazení seznamu"
+        "switchToList": "Přepnutí na zobrazení seznamu",
+        "search": "Vyhledat soubory",
+        "closeSearch": "Zavřít vyhledávání",
+        "refresh": "Obnovit"
       },
       "item": {
         "link": "odkaz"
+      },
+      "search": {
+        "placeholder": "Filtrovat soubory v této složce...",
+        "results_one": "{{count}} výsledek",
+        "results_other": "{{count}} výsledky",
+        "noResultsTitle": "Žádné výsledky",
+        "noResults": "Žádný soubor neodpovídá výrazu „{{query}}“"
       },
       "states": {
         "loading": "Načítání souborů...",
@@ -1800,25 +1912,67 @@
         "error": "Došlo k chybě"
       }
     },
+    "remoteDesktop": {
+      "dropOverlay": "Přetáhněte soubory, které chcete nahrát na vzdálený server",
+      "toast": {
+        "uploadedSingle": "Nahrál jsem soubor „{{name}}“ na vzdálený disk",
+        "uploadedMultiple": "Nahráno soubory {{count}} na vzdálený disk",
+        "uploadFailed": "{{count}} Nahrání souboru (souborů) se nezdařilo",
+        "uploadPartial": "{{failed}} Nahrání souboru (souborů) se nezdařilo, {{succeeded}} se nahrál(y) úspěšně",
+        "downloaded": "Stáhl jsem si soubor „{{name}}“ ze vzdáleného serveru"
+      }
+    },
     "aiAssistant": {
       "title": "AI asistent",
-      "placeholder": "Popište, co chcete udělat...",
-      "hint": "Stiskněte Enter pro generování, Esc pro zavření",
-      "hintUse": "Stiskněte Enter pro použití příkazu, Esc pro zavření",
-      "closeLabel": "Zavřít AI asistenta",
-      "generate": "Generovat příkaz",
-      "generating": "Generuji příkaz...",
-      "generatedCommand": "Vygenerovaný příkaz",
-      "useCommand": "Použít příkaz",
-      "tryAgain": "Zkusit znovu",
-      "copy": "Kopírovat do schránky",
-      "error": "Nepodařilo se vygenerovat příkaz. Prosím zkuste to znovu."
+      "open": "AI asistent",
+      "empty": "Požádejte asistenta, aby tento server zkontroloval nebo vyměnil. Může přes toto připojení spouštět příkazy a přímo číst či upravovat soubory.",
+      "placeholder": "Napište asistentovi...",
+      "connecting": "Připojuji se...",
+      "send": "Odeslat",
+      "stop": "Zastavit",
+      "connectionError": "Došlo ke ztrátě spojení s asistentem.",
+      "reconnecting": "Připojení bylo přerušeno. Probíhá opětovné připojení...",
+      "confirmPrompt": "Chcete tuto akci povolit?",
+      "allow": "Povolit",
+      "allowShortcut": "Povolit ({{key}})",
+      "deny": "Odmítnout",
+      "denied": "Tuto akci jste zamítli.",
+      "stopped": "Zastavil se.",
+      "tools": {
+        "runCommand": "Spustit příkaz",
+        "readFile": "Načíst soubor",
+        "writeFile": "Zapsat soubor",
+        "editFile": "Upravit soubor",
+        "listDirectory": "Seznam adresářů",
+        "statPath": "Zkontrolovat cestu",
+        "makeDirectory": "Vytvořit adresář",
+        "deleteFile": "Odstranit soubor",
+        "removeDirectory": "Odstranit adresář",
+        "movePath": "Přesunout",
+        "changePermissions": "Změnit oprávnění",
+        "findDirectories": "Najít adresáře"
+      }
     },
     "snippets": {
       "title": "Snippety",
       "noSnippets": "Žádné snippety k dispozici",
       "searchPlaceholder": "Hledat snippety...",
       "createNew": "Vytvořit nový snippet"
+    },
+    "toolbar": {
+      "drag": "Přetažením přesuňte",
+      "shortcuts": "Klávesové zkratky",
+      "holdModifier": "Podržte {{key}}",
+      "zoomIn": "Přiblížit",
+      "zoomOut": "Zmenšit zobrazení",
+      "zoomReset": "Obnovit přizpůsobení velikosti (posunem pomocí prostředního tlačítka myši)"
+    },
+    "monitors": {
+      "title": "Monitor {{number}}",
+      "select": "Přepnout na monitor {{number}}",
+      "selectOrPopOut": "Přejít na stránku {{number}} (dvojitým kliknutím otevřete v samostatném okně)",
+      "add": "Přidat monitor",
+      "remove": "Odstranit poslední monitor"
     },
     "terminalActions": {
       "menuTitle": "Akce terminálu",
