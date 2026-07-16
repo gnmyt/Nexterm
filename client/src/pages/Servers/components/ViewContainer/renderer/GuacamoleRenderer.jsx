@@ -176,13 +176,17 @@ const GuacamoleRenderer = ({
         const [cw, ch] = [ref.current.clientWidth, ref.current.clientHeight];
 
         if (cw > 0 && ch > 0) {
+            const density = window.devicePixelRatio || 1;
+            const dw = Math.round(cw * density);
+            const dh = Math.round(ch * density);
+
             const monitor = activeMonitorRef.current;
             const last = lastSentRef.current;
-            const changed = last.w !== cw || last.h !== ch || last.monitor !== monitor;
+            const changed = last.w !== dw || last.h !== dh || last.monitor !== monitor;
 
             if (changed || Date.now() - last.at >= SIZE_RESEND_INTERVAL) {
-                clientRef.current.sendSize(cw, ch, monitor, 0);
-                lastSentRef.current = { w: cw, h: ch, monitor, at: Date.now() };
+                clientRef.current.sendSize(dw, dh, monitor, 0);
+                lastSentRef.current = { w: dw, h: dh, monitor, at: Date.now() };
             }
         }
 
