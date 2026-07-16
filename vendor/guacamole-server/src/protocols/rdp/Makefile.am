@@ -65,6 +65,7 @@ libguac_client_rdp_la_SOURCES =                  \
     download.c                                   \
     error.c                                      \
     fs.c                                         \
+    fs_client_relay.c                            \
     gdi.c                                        \
     input.c                                      \
     input-queue.c                                \
@@ -111,6 +112,7 @@ noinst_HEADERS =                                 \
     download.h                                   \
     error.h                                      \
     fs.h                                         \
+    fs_client_relay.h                            \
     gdi.h                                        \
     input.h                                      \
     keyboard.h                                   \

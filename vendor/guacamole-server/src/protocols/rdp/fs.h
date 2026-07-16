@@ -115,6 +115,65 @@
 #define WINDOWS_TIME(t) ((t + ((uint64_t) 11644473600)) * 10000000)
 
 /**
+ * Storage backend selectable at fs alloc time. POSIX is the upstream
+ * local-disk backend; CLIENT_RELAY forwards every op to the connected
+ * Guacamole client via nfs-*.
+ */
+typedef enum guac_rdp_fs_backend_type {
+    GUAC_RDP_FS_BACKEND_POSIX = 0,
+    GUAC_RDP_FS_BACKEND_CLIENT_RELAY = 1
+} guac_rdp_fs_backend_type;
+
+struct guac_rdp_fs;
+struct guac_rdp_fs_file;
+struct guac_rdp_fs_info;
+
+/**
+ * Storage vtable. The public guac_rdp_fs_* layer handles path normalization,
+ * file-id allocation and the open-files counter; backends just implement
+ * storage. open() receives a guac_rdp_fs_file with id and absolute_path
+ * filled in and must populate size/ctime/mtime/atime/attributes before
+ * returning 0; negative GUAC_RDP_FS_* on error. read/write return bytes
+ * transferred (>=0) or negative error; everything else returns 0 / negative.
+ */
+typedef struct guac_rdp_fs_backend {
+
+    guac_rdp_fs_backend_type type;
+
+    /** Optional one-time init called from guac_rdp_fs_alloc. */
+    int (*init)(struct guac_rdp_fs* fs, const char* drive_path,
+            int create_drive_path);
+
+    void (*free_)(struct guac_rdp_fs* fs);
+
+    int (*open)(struct guac_rdp_fs* fs, struct guac_rdp_fs_file* file,
+            const char* normalized_path, int access, int file_attributes,
+            int create_disposition, int create_options);
+
+    int (*read)(struct guac_rdp_fs* fs, struct guac_rdp_fs_file* file,
+            uint64_t offset, void* buffer, int length);
+
+    int (*write)(struct guac_rdp_fs* fs, struct guac_rdp_fs_file* file,
+            uint64_t offset, void* buffer, int length);
+
+    int (*rename)(struct guac_rdp_fs* fs, struct guac_rdp_fs_file* file,
+            const char* new_normalized_path);
+
+    int (*delete_)(struct guac_rdp_fs* fs, struct guac_rdp_fs_file* file);
+
+    int (*truncate)(struct guac_rdp_fs* fs, struct guac_rdp_fs_file* file,
+            int length);
+
+    void (*close)(struct guac_rdp_fs* fs, struct guac_rdp_fs_file* file);
+
+    const char* (*read_dir)(struct guac_rdp_fs* fs,
+            struct guac_rdp_fs_file* file);
+
+    int (*get_info)(struct guac_rdp_fs* fs, struct guac_rdp_fs_info* info);
+
+} guac_rdp_fs_backend;
+
+/**
  * An arbitrary file on the virtual filesystem of the Guacamole drive.
  */
 typedef struct guac_rdp_fs_file {
@@ -180,6 +239,12 @@ typedef struct guac_rdp_fs_file {
      */
     uint64_t bytes_written;
 
+    /**
+     * Backend-private per-file state. POSIX leaves this NULL and uses fd/dir
+     * above; client-relay stores its remote-handle record here.
+     */
+    void* backend_data;
+
 } guac_rdp_fs_file;
 
 /**
@@ -221,6 +286,15 @@ typedef struct guac_rdp_fs {
      * If uploads from the browser to the remote server should be disabled.
      */
     int disable_upload;
+
+    /** Storage backend; fixed for the lifetime of the fs. */
+    const guac_rdp_fs_backend* backend;
+
+    /**
+     * Backend-private per-fs state. NULL for POSIX; the client-relay backend
+     * stores its pending-request table and condvars here.
+     */
+    void* backend_data;
 
 } guac_rdp_fs;
 
@@ -269,11 +343,19 @@ typedef struct guac_rdp_fs_info {
  *     Non-zero if uploads from the browser to the remote server should be
  *     disabled.
  *
+ * @param backend_type
+ *     The storage backend to use. POSIX stores files under drive_path on the
+ *     guacd host; CLIENT_RELAY forwards every operation to the client.
+ *
  * @return
  *     The newly-allocated filesystem.
  */
 guac_rdp_fs* guac_rdp_fs_alloc(guac_client* client, const char* drive_path,
-        int create_drive_path, int disable_download, int disable_upload);
+        int create_drive_path, int disable_download, int disable_upload,
+        guac_rdp_fs_backend_type backend_type);
+
+extern const guac_rdp_fs_backend guac_rdp_fs_backend_posix;
+extern const guac_rdp_fs_backend guac_rdp_fs_backend_client_relay;
 
 /**
  * Frees the given filesystem.

@@ -403,6 +403,13 @@ struct guac_user {
     guac_user_end_handler* end_handler;
 
     /**
+     * Handler for "nfs-resp" events sent by the user in response to nfs-*
+     * filesystem requests issued by the server. Used by the RDP client-relay
+     * filesystem backend; left NULL for other protocols.
+     */
+    guac_user_nfs_resp_handler* nfs_resp_handler;
+
+    /**
      * Handler for sync events sent by the Guacamole web-client. Sync events
      * are used to track per-user latency.
      *
