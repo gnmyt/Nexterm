@@ -15,7 +15,7 @@ COPY --from=engine /usr/local/lib/ /usr/local/lib/
 
 COPY --from=engine /usr/local/bin/nexterm-engine /usr/local/bin/nexterm-engine
 
-COPY --from=engine /usr/local/lib/freerdp2/ /usr/lib/freerdp2/
+COPY --from=engine /usr/local/lib/freerdp3/ /usr/lib/freerdp3/
 
 RUN ldconfig /usr/local/lib 2>/dev/null || true
 
