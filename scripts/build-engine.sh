@@ -41,10 +41,10 @@ ensure_guacd_built() {
     if [ "$NEEDS_BUILD" -eq 1 ]; then
         echo "[engine] Building guacamole-server first..."
         cd "$GUACD_SRC"
-        CONFIGURE_OPTS="--prefix=$DIST_DIR --with-freerdp-plugin-dir=$DIST_DIR/lib/freerdp2"
+        CONFIGURE_OPTS="--prefix=$DIST_DIR --with-freerdp-plugin-dir=$DIST_DIR/lib/freerdp3"
 
         if [ ! -f Makefile ]; then
-            autoreconf -fi && ./configure $CONFIGURE_OPTS
+            autoreconf -fi && CFLAGS="${CFLAGS:-} -Wno-error=deprecated-declarations" ./configure $CONFIGURE_OPTS
         fi
 
         make -j$(nproc)
@@ -72,7 +72,7 @@ start_engine() {
     [ -n "$ENGINE_PID" ] && kill $ENGINE_PID 2>/dev/null && sleep 1
     echo "[engine] Starting (log level: $ENGINE_LOG_LEVEL, server: $ENGINE_HOST:$ENGINE_PORT)..."
 
-    export LD_LIBRARY_PATH="$GUACD_SRC/dist/lib:$LD_LIBRARY_PATH"
+    export LD_LIBRARY_PATH="$GUACD_SRC/dist/lib:$GUACD_SRC/dist/lib/freerdp3:$LD_LIBRARY_PATH"
 
     "$ENGINE_BUILD/nexterm-engine" \
         --host "$ENGINE_HOST" \
