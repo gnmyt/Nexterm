@@ -1551,6 +1551,9 @@
       "duplicateServer": "تكرار الخادم",
       "pasteIdentityPassword": "لصق كلمة المرور",
       "deleteServer": "حذف الخادم",
+      "deleteConfirm": "Are you sure you want to delete \"{{name}}\"? This action cannot be undone.",
+      "deleteFailServer": "Failed to delete \"{{name}}\".",
+      "deleteFailFolder": "Failed to delete the folder \"{{name}}\".",
       "wakeOnLan": "استيقظ على الشبكة المحلية",
       "shutdown": "إغلاق",
       "stop": "إيقاف",
@@ -1772,6 +1775,7 @@
       }
     },
     "fileManager": {
+      "dropOverlay": "Drop files or folders to upload",
       "createFile": {
         "title": "إنشاء ملف",
         "placeholder": "اسم الملف",
@@ -1883,6 +1887,8 @@
         "hiddenDirectories": "{{count}} الدلائل المخفية",
         "switchToGrid": "التبديل إلى عرض الشبكة",
         "switchToList": "التبديل إلى عرض القائمة",
+        "uploadFile": "Upload file(s)",
+        "uploadFolder": "Upload folder",
         "search": "البحث في الملفات",
         "closeSearch": "إغلاق البحث",
         "refresh": "تحديث"
@@ -1907,7 +1913,9 @@
         "downloaded": "تم التحميل {{name}}",
         "downloadingItems": "تنزيل {{count}} عنصر (عناصر) ...",
         "uploaded": "تم التحميل {{name}}",
+        "uploadedItems": "Uploaded {{count}} files",
         "uploadFailed": "فشل التحميل: {{message}}",
+        "uploadFailedItems": "{{count}} files failed to upload: {{message}}",
         "connectionLost": "فُقد اتصال SFTP. الرجاء إعادة الاتصال.",
         "error": "حدث خطأ"
       }
