@@ -1527,6 +1527,7 @@
       "telnetServer": "Servidor Telnet",
       "rdpServer": "Servidor RDP",
       "vncServer": "Servidor VNC",
+      "demoServer": "Demo Connection",
       "sftpServer": "SFTP Server",
       "ftpServer": "FTP Server",
       "ftpsServer": "FTPS Server",
@@ -1945,6 +1946,21 @@
       "noSnippets": "No hay fragmentos disponibles",
       "searchPlaceholder": "Buscar fragmentos...",
       "createNew": "Crear nuevo fragmento"
+    },
+    "toolbar": {
+      "drag": "Drag to move",
+      "shortcuts": "Keyboard shortcuts",
+      "holdModifier": "Hold {{key}}",
+      "zoomIn": "Zoom in",
+      "zoomOut": "Zoom out",
+      "zoomReset": "Reset zoom to fit (drag with the middle mouse button to pan)"
+    },
+    "monitors": {
+      "title": "Monitor {{number}}",
+      "select": "Switch to monitor {{number}}",
+      "selectOrPopOut": "Switch to monitor {{number}} (double-click to open in its own window)",
+      "add": "Add monitor",
+      "remove": "Remove last monitor"
     },
     "terminalActions": {
       "menuTitle": "Acciones terminales",
