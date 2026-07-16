@@ -1607,6 +1607,7 @@
         "password": "密码",
         "host": "主机",
         "macAddress": "MAC 地址",
+        "wolBroadcastAddress": "Broadcast Address",
         "engine": "发动机"
       },
       "placeholders": {
@@ -1616,7 +1617,8 @@
         "username": "用户名",
         "password": "密码",
         "host": "主机",
-        "macAddress": "aa:bb:cc:dd:ee:ff"
+        "macAddress": "aa:bb:cc:dd:ee:ff",
+        "wolBroadcastAddress": "255.255.255.255"
       },
       "engineOffline": "（离线）",
       "settings": {
@@ -1908,6 +1910,16 @@
         "uploadFailed": "上传失败： {{message}}",
         "connectionLost": "SFTP 连接丢失。请重新连接。",
         "error": "发生错误"
+      }
+    },
+    "remoteDesktop": {
+      "dropOverlay": "Drop files to upload to remote",
+      "toast": {
+        "uploadedSingle": "Uploaded \"{{name}}\" to remote drive",
+        "uploadedMultiple": "Uploaded {{count}} files to remote drive",
+        "uploadFailed": "{{count}} file(s) failed to upload",
+        "uploadPartial": "{{failed}} file(s) failed to upload, {{succeeded}} succeeded",
+        "downloaded": "Downloaded \"{{name}}\" from remote"
       }
     },
     "aiAssistant": {
