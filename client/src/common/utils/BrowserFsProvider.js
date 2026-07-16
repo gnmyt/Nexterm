@@ -1,11 +1,7 @@
+import { FsError, E_NOENT, E_ACCES, E_EXIST, E_INVAL, E_NOSYS, E_IO } from "@/common/utils/FsError.js";
+
 const ATTR_DIRECTORY = 0x0010;
 const ATTR_NORMAL    = 0x0080;
-
-const E_NOENT = 1;
-const E_ACCES = 2;
-const E_EXIST = 3;
-const E_INVAL = 7;
-const E_NOSYS = 8;
 
 const stripLeading = (p) => (p || "").replace(/^[\\/]+/, "");
 const isRoot = (p) => stripLeading(p) === "";
@@ -23,8 +19,8 @@ export const createBrowserFsProvider = () => {
     const ensureOpfsScope = () => {
         if (opfsScopePromise) return opfsScopePromise;
         if (!opfsAvailable())
-            return Promise.reject({ code: E_NOSYS,
-                    message: "OPFS not available in this browser" });
+            return Promise.reject(
+                    new FsError(E_NOSYS, "OPFS not available in this browser"));
         opfsScopePromise = navigator.storage.getDirectory()
                 .then(root => root.getDirectoryHandle(
                         `nexterm-rdp-${Date.now()}`, { create: true }));
@@ -57,7 +53,7 @@ export const createBrowserFsProvider = () => {
         open: (path, flags, disposition, isDirectory) => {
             if (isRoot(path)) {
                 if (disposition === "create")
-                    return Promise.reject({ code: E_EXIST, message: "root exists" });
+                    return Promise.reject(new FsError(E_EXIST, "root exists"));
                 const h = nextHandle++;
                 handles.set(h, { kind: "dir" });
                 return Promise.resolve({
@@ -70,13 +66,13 @@ export const createBrowserFsProvider = () => {
             const existing = files.get(name);
 
             if (isDirectory) {
-                return Promise.reject({ code: E_NOSYS,
-                        message: "nested directories not supported" });
+                return Promise.reject(
+                        new FsError(E_NOSYS, "nested directories not supported"));
             }
 
             if (!existing) {
                 if (disposition === "open" || disposition === "overwrite")
-                    return Promise.reject({ code: E_NOENT, message: name });
+                    return Promise.reject(new FsError(E_NOENT, name));
                 if (disposition === "create" || disposition === "open-or-create"
                         || disposition === "overwrite-or-create"
                         || disposition === "supersede") {
@@ -99,11 +95,11 @@ export const createBrowserFsProvider = () => {
                             };
                         }));
                 }
-                return Promise.reject({ code: E_INVAL, message: disposition });
+                return Promise.reject(new FsError(E_INVAL, disposition));
             }
 
             if (disposition === "create")
-                return Promise.reject({ code: E_EXIST, message: name });
+                return Promise.reject(new FsError(E_EXIST, name));
 
             const h = nextHandle++;
             handles.set(h, { kind: "file", file: existing, name });
@@ -116,7 +112,7 @@ export const createBrowserFsProvider = () => {
 
         read: async (handle, offset, length) => {
             const h = handles.get(handle);
-            if (!h || h.kind !== "file")
+            if (h?.kind !== "file")
                 return { data: new ArrayBuffer(0) };
             const slice = h.file.slice(offset, offset + length);
             const buf = await slice.arrayBuffer();
@@ -125,8 +121,8 @@ export const createBrowserFsProvider = () => {
 
         write: async (handle, offset, dataBuffer) => {
             const h = handles.get(handle);
-            if (!h || h.kind !== "opfs-write")
-                return Promise.reject({ code: E_ACCES, message: "not writable" });
+            if (h?.kind !== "opfs-write")
+                throw new FsError(E_ACCES, "not writable");
             const bytes = dataBuffer instanceof Uint8Array
                     ? dataBuffer : new Uint8Array(dataBuffer);
             await h.writable.write({
@@ -140,7 +136,7 @@ export const createBrowserFsProvider = () => {
         close: async (handle) => {
             const h = handles.get(handle);
             handles.delete(handle);
-            if (!h || h.kind !== "opfs-write") return;
+            if (h?.kind !== "opfs-write") return;
             try { await h.writable.close(); } catch { /* ignored */ }
             if (!h.dirty) return;
 
@@ -152,7 +148,7 @@ export const createBrowserFsProvider = () => {
                 a.download = h.name;
                 document.body.appendChild(a);
                 a.click();
-                document.body.removeChild(a);
+                a.remove();
                 URL.revokeObjectURL(url);
             } catch (err) {
                 console.error("Failed to download OPFS file:", err);
@@ -170,12 +166,12 @@ export const createBrowserFsProvider = () => {
                     return fileToEntry(name, await opfsHandle.getFile());
                 } catch { /* fall through to ENOENT */ }
             }
-            return Promise.reject({ code: E_NOENT, message: name });
+            throw new FsError(E_NOENT, name);
         },
 
         readdir: async (handle, offset, limit) => {
             const h = handles.get(handle);
-            if (!h || h.kind !== "dir") return [];
+            if (h?.kind !== "dir") return [];
             const entries = [];
             for (const [name, file] of files)
                 entries.push(fileToEntry(name, file));
@@ -210,11 +206,11 @@ export const createBrowserFsProvider = () => {
 
         rename: (handle, newPath) => {
             const h = handles.get(handle);
-            if (!h) return Promise.reject({ code: E_NOENT, message: "bad handle" });
+            if (!h) return Promise.reject(new FsError(E_NOENT, "bad handle"));
             const newName = stripLeading(newPath);
             if (h.kind === "file" && h.name) {
                 const f = files.get(h.name);
-                if (!f) return Promise.reject({ code: E_NOENT, message: h.name });
+                if (!f) return Promise.reject(new FsError(E_NOENT, h.name));
                 files.delete(h.name);
                 files.set(newName, f);
                 h.name = newName;
@@ -227,18 +223,19 @@ export const createBrowserFsProvider = () => {
                 opfsFiles.set(newName, h.fileHandle);
                 return Promise.resolve();
             }
-            return Promise.reject({ code: E_NOSYS, message: "rename unsupported on this handle" });
+            return Promise.reject(
+                    new FsError(E_NOSYS, "rename unsupported on this handle"));
         },
 
         truncate: async (handle, length) => {
             const h = handles.get(handle);
-            if (!h || h.kind !== "opfs-write")
-                return Promise.reject({ code: E_NOSYS, message: "truncate requires writable handle" });
+            if (h?.kind !== "opfs-write")
+                throw new FsError(E_NOSYS, "truncate requires writable handle");
             try {
                 await h.writable.truncate(Math.max(0, length));
                 h.size = Math.max(0, length);
             } catch (err) {
-                return Promise.reject({ code: 9, message: String(err) });
+                throw new FsError(E_IO, String(err));
             }
         },
 

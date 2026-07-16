@@ -1,4 +1,5 @@
 import { isTauri } from "@/common/utils/TauriUtil.js";
+import { FsError, E_IO } from "@/common/utils/FsError.js";
 
 const bytesToBase64 = (bytes) => {
     const CHUNK = 32768;
@@ -21,8 +22,8 @@ const invoke = async (cmd, args) => {
         return await invoke(cmd, args);
     } catch (err) {
         if (err && typeof err === "object" && typeof err.code === "number")
-            throw err;
-        throw { code: 9, message: String(err) };
+            throw new FsError(err.code, err.message);
+        throw new FsError(E_IO, String(err));
     }
 };
 
