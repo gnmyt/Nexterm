@@ -711,7 +711,7 @@
         "doneButton": "Done",
         "createError": "Failed to create API key.",
         "copyError": "Failed to copy to clipboard.",
-        "confirmDelete": "Are you sure you want to revoke this API key? Any agent using it will lose access.",
+        "confirmDelete": "Are you sure you want to revoke this API key? Any system using it will lose access.",
         "noKeys": "No API keys yet",
         "lastUsed": "Last used {{date}}",
         "neverUsed": "Never used",
