@@ -1551,6 +1551,9 @@
       "duplicateServer": "複製伺服器",
       "pasteIdentityPassword": "貼上密碼",
       "deleteServer": "刪除伺服器",
+      "deleteConfirm": "Are you sure you want to delete \"{{name}}\"? This action cannot be undone.",
+      "deleteFailServer": "Failed to delete \"{{name}}\".",
+      "deleteFailFolder": "Failed to delete the folder \"{{name}}\".",
       "wakeOnLan": "網路喚醒",
       "shutdown": "關機",
       "stop": "停止",
@@ -1772,6 +1775,7 @@
       }
     },
     "fileManager": {
+      "dropOverlay": "Drop files or folders to upload",
       "createFile": {
         "title": "建立檔案",
         "placeholder": "檔案名稱",
@@ -1883,6 +1887,8 @@
         "hiddenDirectories": "{{count}} 隱藏目錄",
         "switchToGrid": "切換至網格檢視",
         "switchToList": "切換至清單檢視",
+        "uploadFile": "Upload file(s)",
+        "uploadFolder": "Upload folder",
         "search": "搜尋檔案",
         "closeSearch": "關閉搜尋",
         "refresh": "重新整理"
@@ -1907,7 +1913,9 @@
         "downloaded": "下載 {{name}}",
         "downloadingItems": "下載 {{count}} 項目...",
         "uploaded": "上傳 {{name}}",
+        "uploadedItems": "Uploaded {{count}} files",
         "uploadFailed": "上傳失敗: {{message}}",
+        "uploadFailedItems": "{{count}} files failed to upload: {{message}}",
         "connectionLost": "SFTP 連線中斷。請重新連線。",
         "error": "發生錯誤"
       }
