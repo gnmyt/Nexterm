@@ -10,7 +10,7 @@
     "download": "تنزيل",
     "maximize": "تعظيم",
     "restore": "الاستعادة",
-    "resize": "Resize",
+    "resize": "تغيير الحجم",
     "actions": {
       "cancel": "إلغاء",
       "confirm": "تأكيد",
@@ -62,8 +62,8 @@
       "qrScanDescription": "امسح رمز الاستجابة السريعة هذا باستخدام تطبيق Nexterm للهاتف المحمول لتسجيل الدخول على الفور.",
       "backToLogin": "العودة إلى تسجيل الدخول",
       "authenticating": "توثيق...",
-      "noAccount": "Don't have an account?",
-      "haveAccount": "Already have an account?"
+      "noAccount": "ليس لديك حساب؟",
+      "haveAccount": "هل لديك حساب بالفعل؟"
     },
     "deviceLink": {
       "title": "جهاز الارتباط",
@@ -691,32 +691,32 @@
         "delete": "حذف"
       },
       "apiKeys": {
-        "sectionTitle": "API Keys",
-        "sectionDescription": "Create API keys to access Nexterm programmatically from scripts and integrations.",
-        "addButton": "Create API Key",
-        "createTitle": "Create API Key",
-        "createDescription": "Give your key a name. The token will be shown only once after creation.",
-        "nameLabel": "Name",
-        "namePlaceholder": "e.g. Deployment script",
-        "nameRequired": "Name is required",
-        "expiryLabel": "Expiration",
-        "expiryNever": "Never",
-        "expiry30": "30 days",
-        "expiry90": "90 days",
-        "expiry365": "1 year",
-        "createButton": "Create",
-        "createdTitle": "API Key Created",
-        "createdWarning": "Copy this token now. For security reasons you won't be able to see it again.",
-        "tokenLabel": "Token",
-        "doneButton": "Done",
-        "createError": "Failed to create API key.",
-        "copyError": "Failed to copy to clipboard.",
-        "confirmDelete": "Are you sure you want to revoke this API key? Any agent using it will lose access.",
-        "noKeys": "No API keys yet",
-        "lastUsed": "Last used {{date}}",
-        "neverUsed": "Never used",
-        "expires": "Expires {{date}}",
-        "delete": "Delete"
+        "sectionTitle": "مفاتيح واجهة برمجة التطبيقات (API)",
+        "sectionDescription": "قم بإنشاء مفاتيح API للوصول إلى Nexterm برمجياً من خلال البرامج النصية وعمليات التكامل.",
+        "addButton": "إنشاء مفتاح API",
+        "createTitle": "إنشاء مفتاح API",
+        "createDescription": "قم بتسمية مفتاحك. لن يظهر الرمز المميز إلا مرة واحدة بعد إنشائه.",
+        "nameLabel": "الاسم",
+        "namePlaceholder": "على سبيل المثال: برنامج نصي للنشر",
+        "nameRequired": "الاسم مطلوب",
+        "expiryLabel": "تاريخ انتهاء الصلاحية",
+        "expiryNever": "أبدًا",
+        "expiry30": "30 يومًا",
+        "expiry90": "90 يومًا",
+        "expiry365": "سنة واحدة",
+        "createButton": "إنشاء",
+        "createdTitle": "تم إنشاء مفتاح API",
+        "createdWarning": "انسخ هذا الرمز الآن. ولأسباب أمنية، لن تتمكن من رؤيته مرة أخرى.",
+        "tokenLabel": "الرمز الرمزي",
+        "doneButton": "تم",
+        "createError": "فشل إنشاء مفتاح واجهة برمجة التطبيقات (API).",
+        "copyError": "فشل النسخ إلى الحافظة.",
+        "confirmDelete": "هل أنت متأكد من رغبتك في إلغاء مفتاح واجهة برمجة التطبيقات (API) هذا؟ سيُحرم أي نظام يستخدمه من الوصول.",
+        "noKeys": "لا توجد مفاتيح API حتى الآن",
+        "lastUsed": "آخر استخدام {{date}}",
+        "neverUsed": "لم تُستخدم قط",
+        "expires": "تاريخ انتهاء الصلاحية {{date}}",
+        "delete": "حذف"
       }
     },
     "passwordChange": {
@@ -763,8 +763,8 @@
         "folderManagementDescription": "إنشاء سجلات إنشاء المجلدات وتعديلها وحذفها",
         "scriptExecutionLabel": "تنفيذ البرنامج النصي",
         "scriptExecutionDescription": "تسجيل تنفيذ البرامج النصية ومهام الأتمتة",
-        "aiOperationsLabel": "AI Operations",
-        "aiOperationsDescription": "Log commands and file changes performed by the AI assistant",
+        "aiOperationsLabel": "عمليات الذكاء الاصطناعي",
+        "aiOperationsDescription": "تسجيل الأوامر والتغييرات التي أجراها المساعد الذكي على الملفات",
         "actions": {
           "save": "حفظ الإعدادات"
         },
@@ -858,8 +858,8 @@
           "description": "افتح قائمة أوامر الذكاء الاصطناعي"
         },
         "aiaccepttool": {
-          "title": "AI Accept Action",
-          "description": "Approve the pending AI tool action in the assistant"
+          "title": "الذكاء الاصطناعي: قبول الإجراء",
+          "description": "الموافقة على الإجراء المعلق المتعلق بأداة الذكاء الاصطناعي في المساعد"
         },
         "snippets": {
           "title": "مقتطفات",
@@ -923,13 +923,13 @@
         "syncDisabled": "لن تتم مزامنة إعدادات المؤشر بعد الآن"
       },
       "input": {
-        "title": "Input",
-        "description": "Control how keyboard shortcuts behave inside the terminal.",
-        "smartCopyPaste": "Smart Ctrl+C",
-        "enabled": "Enabled",
-        "disabled": "Disabled",
-        "syncEnabled": "Input settings will now sync to your account",
-        "syncDisabled": "Input settings will no longer sync"
+        "title": "الإدخال",
+        "description": "تحكم في طريقة عمل اختصارات لوحة المفاتيح داخل المحطة الطرفية.",
+        "smartCopyPaste": "Ctrl+C الذكي",
+        "enabled": "ممكّن",
+        "disabled": "ذوو الإعاقة",
+        "syncEnabled": "ستتم الآن مزامنة إعدادات الإدخال مع حسابك",
+        "syncDisabled": "لن تتم مزامنة إعدادات الإدخال بعد الآن"
       },
       "theme": {
         "title": "السمة",
@@ -995,8 +995,8 @@
       "system": "النظام",
       "systemDescription": "مصادقة اسم المستخدم وكلمة المرور",
       "registration": {
-        "title": "Self-Registration",
-        "description": "Allow visitors to create their own account from the login screen"
+        "title": "التسجيل الذاتي",
+        "description": "السماح للزوار بإنشاء حساباتهم الخاصة من شاشة تسجيل الدخول"
       },
       "deleteConfirm": "سيؤدي هذا إلى حذف موفر المصادقة هذا نهائيًا.",
       "errors": {
@@ -1087,11 +1087,11 @@
     },
     "ai": {
       "title": "إعداد مساعد الذكاء الاصطناعي",
-      "description": "Configure the AI assistant that can run commands and manage files directly over your server sessions.",
+      "description": "قم بتكوين المساعد الذكي الذي يمكنه تنفيذ الأوامر وإدارة الملفات مباشرةً عبر جلسات الخادم الخاصة بك.",
       "loading": "جارٍ تحميل إعدادات الذكاء الاصطناعي...",
       "enable": {
         "title": "تمكين مساعد الذكاء الاصطناعي",
-        "description": "Allow users to open the AI assistant inside server sessions"
+        "description": "السماح للمستخدمين بفتح المساعد الذكي داخل جلسات الخادم"
       },
       "provider": {
         "title": "موفر الذكاء الاصطناعي",
@@ -1099,42 +1099,42 @@
       },
       "model": {
         "title": "النموذج",
-        "description": "Select the AI model the assistant should use"
+        "description": "اختر نموذج الذكاء الاصطناعي الذي يجب أن يستخدمه المساعد"
       },
       "requireConfirmation": {
-        "title": "Confirm before each action",
-        "description": "Require users to approve every command and file change the assistant wants to make"
+        "title": "تأكد قبل كل إجراء",
+        "description": "إلزام المستخدمين بالموافقة على كل أمر وتغيير في الملف يرغب المساعد في إجرائه"
       },
       "apiKey": {
         "title": "مفتاح API",
         "setPlaceholder": "تم تعيين مفتاح API (اتركه فارغًا للحفاظ على الحالي)",
-        "genericDescription": "API key used to authenticate with the selected provider",
-        "genericPlaceholder": "Enter your {{provider}} API key"
+        "genericDescription": "مفتاح واجهة برمجة التطبيقات (API) المستخدم للمصادقة لدى المزود المحدد",
+        "genericPlaceholder": "أدخل مفتاح واجهة برمجة التطبيقات (API) الخاص بـ {{provider}}"
       },
       "authMethod": {
-        "title": "Authentication",
-        "description": "Authenticate with an API key or your provider subscription",
-        "apiKey": "API Key",
-        "subscription": "Subscription"
+        "title": "التوثيق",
+        "description": "قم بالمصادقة باستخدام مفتاح API أو اشتراك مزود الخدمة الخاص بك",
+        "apiKey": "مفتاح واجهة برمجة التطبيقات (API)",
+        "subscription": "الاشتراك"
       },
       "subscription": {
-        "title": "{{provider}} Subscription",
-        "description": "Sign in with your {{provider}} subscription to use its models without an API key",
-        "connectedDescription": "Your {{provider}} subscription is connected",
-        "connect": "Connect",
-        "connecting": "Connecting...",
-        "complete": "Complete",
-        "disconnect": "Disconnect",
-        "codePlaceholder": "Paste the authorization code here",
-        "codePlaceholderUrl": "Paste the full callback URL (or code) here",
-        "connectSuccess": "{{provider}} subscription connected",
-        "startError": "Failed to start authorization",
-        "exchangeError": "Failed to connect subscription",
-        "disconnectError": "Failed to disconnect subscription"
+        "title": "{{provider}} الاشتراك",
+        "description": "سجّل الدخول باستخدام اشتراكك في {{provider}} لاستخدام نماذجها دون الحاجة إلى مفتاح API",
+        "connectedDescription": "اشتراكك في موقع {{provider}} نشط الآن",
+        "connect": "اتصل",
+        "connecting": "جاري الاتصال...",
+        "complete": "كامل",
+        "disconnect": "قطع الاتصال",
+        "codePlaceholder": "الصق رمز التفويض هنا",
+        "codePlaceholderUrl": "الصق عنوان URL الكامل لخدمة الاستدعاء (أو الرمز) هنا",
+        "connectSuccess": "{{provider}} الاشتراك نشط",
+        "startError": "فشل بدء عملية التفويض",
+        "exchangeError": "فشل الاتصال بالاشتراك",
+        "disconnectError": "فشل إلغاء الاشتراك"
       },
       "baseUrl": {
-        "title": "API URL",
-        "description": "Base URL of the provider's OpenAI-compatible endpoint",
+        "title": "عنوان URL لواجهة برمجة التطبيقات (API)",
+        "description": "عنوان URL الأساسي لنقطة النهاية الخاصة بالمزود والمتوافقة مع OpenAI",
         "placeholder": "https://api.example.com/v1"
       },
       "selectProvider": "حدد موفرًا...",
@@ -1527,18 +1527,18 @@
       "telnetServer": "خادم Telnet",
       "rdpServer": "خادم RDP",
       "vncServer": "خادم VNC",
-      "demoServer": "Demo Connection",
-      "sftpServer": "SFTP Server",
-      "ftpServer": "FTP Server",
-      "ftpsServer": "FTPS Server",
+      "demoServer": "اتصال تجريبي",
+      "sftpServer": "خادم SFTP",
+      "ftpServer": "خادم FTP",
+      "ftpsServer": "خادم FTPS",
       "createServer": "إنشاء خادم",
       "import": "استيراد",
       "pve": "Proxmox VE",
       "sshConfig": "SSH-كونفيج",
-      "syncIntegration": "Sync now",
-      "syncSuccess": "Integration synced",
-      "syncFailed": "Failed to sync integration",
-      "removeIntegration": "Remove Integration",
+      "syncIntegration": "المزامنة الآن",
+      "syncSuccess": "تمت مزامنة التكامل",
+      "syncFailed": "فشل مزامنة التكامل",
+      "removeIntegration": "إلغاء التكامل",
       "connect": "الاتصال",
       "quickConnect": "التوصيل السريع",
       "openSFTP": "فتح SFTP",
@@ -1607,7 +1607,7 @@
         "password": "كلمة المرور",
         "host": "المضيف",
         "macAddress": "عنوان MAC",
-        "wolBroadcastAddress": "Broadcast Address",
+        "wolBroadcastAddress": "عنوان البث",
         "engine": "المحرك"
       },
       "placeholders": {
@@ -1704,7 +1704,7 @@
     },
     "proxmoxDialog": {
       "title": {
-        "import": "Add Proxmox VE",
+        "import": "إضافة Proxmox VE",
         "edit": "تحرير Proxmox VE"
       },
       "fields": {
@@ -1726,8 +1726,8 @@
         "specificNode": "اسم عقدة محدد"
       },
       "actions": {
-        "import": "Add",
-        "edit": "Save"
+        "import": "إضافة",
+        "edit": "حفظ"
       },
       "messages": {
         "created": "تم إنشاء تكامل Proxmox بنجاح",
@@ -1821,8 +1821,8 @@
         "properties": "الخصائص",
         "openTerminal": "افتح المحطة الطرفية هنا",
         "downloadFolder": "تنزيل المجلد",
-        "newFile": "New File",
-        "newFolder": "New Folder"
+        "newFile": "ملف جديد",
+        "newFolder": "مجلد جديد"
       },
       "properties": {
         "general": "جنرال لواء",
@@ -1885,7 +1885,7 @@
         "switchToList": "التبديل إلى عرض القائمة",
         "search": "البحث في الملفات",
         "closeSearch": "إغلاق البحث",
-        "refresh": "Refresh"
+        "refresh": "تحديث"
       },
       "item": {
         "link": "الرابط"
@@ -1913,44 +1913,44 @@
       }
     },
     "remoteDesktop": {
-      "dropOverlay": "Drop files to upload to remote",
+      "dropOverlay": "اسحب الملفات لتحميلها إلى الخادم البعيد",
       "toast": {
-        "uploadedSingle": "Uploaded \"{{name}}\" to remote drive",
-        "uploadedMultiple": "Uploaded {{count}} files to remote drive",
-        "uploadFailed": "{{count}} file(s) failed to upload",
-        "uploadPartial": "{{failed}} file(s) failed to upload, {{succeeded}} succeeded",
-        "downloaded": "Downloaded \"{{name}}\" from remote"
+        "uploadedSingle": "تم تحميل ملف «{{name}}» إلى محرك الأقراص البعيد",
+        "uploadedMultiple": "تم تحميل ملفات {{count}} إلى محرك الأقراص البعيد",
+        "uploadFailed": "{{count}} فشل تحميل الملف (الملفات)",
+        "uploadPartial": "{{failed}} فشل تحميل الملف (الملفات)، {{succeeded}} تم بنجاح",
+        "downloaded": "تم تنزيل ملف «{{name}}» من جهاز بعيد"
       }
     },
     "aiAssistant": {
       "title": "مساعد الذكاء الاصطناعي",
-      "open": "AI Assistant",
-      "empty": "Ask the assistant to inspect or change this server. It can run commands and read or edit files directly over the connection.",
-      "placeholder": "Message the assistant...",
-      "connecting": "Connecting...",
-      "send": "Send",
-      "stop": "Stop",
-      "connectionError": "Connection to the assistant was lost.",
-      "reconnecting": "Connection lost. Reconnecting...",
-      "confirmPrompt": "Allow this action?",
-      "allow": "Allow",
-      "allowShortcut": "Allow ({{key}})",
-      "deny": "Deny",
-      "denied": "You denied this action.",
-      "stopped": "Stopped.",
+      "open": "المساعد الذكي",
+      "empty": "اطلب من المساعد فحص هذا الخادم أو استبداله. يمكنه تنفيذ الأوامر وقراءة الملفات أو تعديلها مباشرة عبر الاتصال.",
+      "placeholder": "أرسل رسالة إلى المساعد...",
+      "connecting": "جاري الاتصال...",
+      "send": "إرسال",
+      "stop": "توقف",
+      "connectionError": "انقطع الاتصال بالمساعد.",
+      "reconnecting": "انقطع الاتصال. يجري إعادة الاتصال...",
+      "confirmPrompt": "هل تريد السماح بهذا الإجراء؟",
+      "allow": "السماح بـ",
+      "allowShortcut": "السماح ({{key}})",
+      "deny": "رفض",
+      "denied": "لقد رفضت هذا الإجراء.",
+      "stopped": "توقف.",
       "tools": {
-        "runCommand": "Run command",
-        "readFile": "Read file",
-        "writeFile": "Write file",
-        "editFile": "Edit file",
-        "listDirectory": "List directory",
-        "statPath": "Inspect path",
-        "makeDirectory": "Create directory",
-        "deleteFile": "Delete file",
-        "removeDirectory": "Remove directory",
-        "movePath": "Move",
-        "changePermissions": "Change permissions",
-        "findDirectories": "Find directories"
+        "runCommand": "تشغيل الأمر",
+        "readFile": "قراءة الملف",
+        "writeFile": "كتابة ملف",
+        "editFile": "تحرير الملف",
+        "listDirectory": "قائمة الدليل",
+        "statPath": "فحص المسار",
+        "makeDirectory": "إنشاء مجلد",
+        "deleteFile": "حذف الملف",
+        "removeDirectory": "إزالة المجلد",
+        "movePath": "تحريك",
+        "changePermissions": "تغيير الأذونات",
+        "findDirectories": "البحث عن الدلائل"
       }
     },
     "snippets": {
@@ -1960,19 +1960,19 @@
       "createNew": "إنشاء قصاصة جديدة"
     },
     "toolbar": {
-      "drag": "Drag to move",
-      "shortcuts": "Keyboard shortcuts",
-      "holdModifier": "Hold {{key}}",
-      "zoomIn": "Zoom in",
-      "zoomOut": "Zoom out",
-      "zoomReset": "Reset zoom to fit (drag with the middle mouse button to pan)"
+      "drag": "اسحب للتحريك",
+      "shortcuts": "اختصارات لوحة المفاتيح",
+      "holdModifier": "انتظر {{key}}",
+      "zoomIn": "تكبير الصورة",
+      "zoomOut": "تصغير العرض",
+      "zoomReset": "إعادة ضبط التكبير/التصغير لملء الشاشة (اسحب باستخدام زر الفأرة الأوسط للتحريك)"
     },
     "monitors": {
-      "title": "Monitor {{number}}",
-      "select": "Switch to monitor {{number}}",
-      "selectOrPopOut": "Switch to monitor {{number}} (double-click to open in its own window)",
-      "add": "Add monitor",
-      "remove": "Remove last monitor"
+      "title": "شاشة {{number}}",
+      "select": "التبديل إلى الشاشة {{number}}",
+      "selectOrPopOut": "انتقل إلى صفحة {{number}} (انقر نقرًا مزدوجًا لفتحها في نافذة منفصلة)",
+      "add": "إضافة شاشة",
+      "remove": "إزالة الشاشة الأخيرة"
     },
     "terminalActions": {
       "menuTitle": "الإجراءات النهائية",
