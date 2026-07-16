@@ -28,13 +28,28 @@ async fn open_external_url(app: tauri::AppHandle, url: String) -> Result<(), Str
         .map_err(|e| e.to_string())
 }
 
+#[derive(Clone, serde::Serialize)]
+struct PopoutClosed {
+    #[serde(rename = "sessionId")]
+    session_id: String,
+    monitor: Option<u32>,
+}
+
 #[tauri::command]
-async fn open_popout(app: tauri::AppHandle, session_id: String) -> Result<(), String> {
-    let window_label = format!("popout_{}", session_id);
-    let url = format!("/popout/{}", session_id);
-    let session_id_clone = session_id.clone();
+async fn open_popout(app: tauri::AppHandle, session_id: String, monitor: Option<u32>)
+        -> Result<(), String> {
+
+    let (window_label, url) = match monitor {
+        Some(monitor) => (
+            format!("popout_{}_m{}", session_id, monitor),
+            format!("/popout/{}/{}", session_id, monitor),
+        ),
+        None => (format!("popout_{}", session_id), format!("/popout/{}", session_id)),
+    };
+
+    let closed = PopoutClosed { session_id, monitor };
     let app_clone = app.clone();
-    
+
     let window = WebviewWindowBuilder::new(&app, &window_label, WebviewUrl::App(url.into()))
         .title("Nexterm - Session")
         .inner_size(1024.0, 768.0)
@@ -42,13 +57,13 @@ async fn open_popout(app: tauri::AppHandle, session_id: String) -> Result<(), St
         .decorations(false)
         .build()
         .map_err(|e| e.to_string())?;
-    
+
     window.on_window_event(move |event| {
         if let tauri::WindowEvent::Destroyed = event {
-            let _ = app_clone.emit_to("main", "popout_closed", &session_id_clone);
+            let _ = app_clone.emit_to("main", "popout_closed", closed.clone());
         }
     });
-    
+
     Ok(())
 }
 

@@ -7,6 +7,7 @@ import ConnectionLoader from "./components/ConnectionLoader";
 import ConnectionError, { mapConnectionError } from "./components/ConnectionError";
 import SessionToolbar from "./components/SessionToolbar";
 import { getWebSocketUrl } from "@/common/utils/ConnectionUtil.js";
+import { openPopout, onPopoutClosed } from "@/common/utils/PopoutUtil.js";
 
 const SIZE_RESEND_INTERVAL = 5000;
 
@@ -27,6 +28,7 @@ const GuacamoleRenderer = ({
                                registerGuacamoleRef,
                                onFullscreenToggle,
                                isShared = false,
+                               pinnedMonitor = null,
                            }) => {
     const ref = useRef(null);
     const { sessionToken } = useContext(UserContext);
@@ -34,21 +36,27 @@ const GuacamoleRenderer = ({
     const scaleRef = useRef(1);
     const offsetRef = useRef({ x: 0, y: 0 });
 
+    const ownsSession = !isShared && pinnedMonitor === null;
+    const initialMonitor = pinnedMonitor ?? 0;
+
     const [ready, setReady] = useState(false);
 
     const [monitorCount, setMonitorCount] = useState(1);
-    const [activeMonitor, setActiveMonitor] = useState(0);
+    const [activeMonitor, setActiveMonitor] = useState(initialMonitor);
     const [maxMonitors, setMaxMonitors] = useState(1);
+
+    const [poppedOutMonitors, setPoppedOutMonitors] = useState(() => new Set());
+    const poppedOutMonitorsRef = useRef(poppedOutMonitors);
 
     const [heldModifiers, setHeldModifiers] = useState(() => new Set());
     const heldModifiersRef = useRef(heldModifiers);
     const draggingRef = useRef(false);
 
     const monitorCountRef = useRef(1);
-    const activeMonitorRef = useRef(0);
+    const activeMonitorRef = useRef(initialMonitor);
     const maxMonitorsRef = useRef(1);
     const layoutRef = useRef(null);
-    const lastSentRef = useRef({ w: 0, h: 0, count: 0, at: 0 });
+    const lastSentRef = useRef({ w: 0, h: 0, monitor: -1, at: 0 });
     const { getParsedKeybind } = useKeymaps();
     const { t } = useTranslation();
     const onFullscreenToggleRef = useRef(onFullscreenToggle);
@@ -114,17 +122,13 @@ const GuacamoleRenderer = ({
         const [cw, ch] = [ref.current.clientWidth, ref.current.clientHeight];
 
         if (cw > 0 && ch > 0) {
-            const count = monitorCountRef.current;
+            const monitor = activeMonitorRef.current;
             const last = lastSentRef.current;
-            const changed = last.w !== cw || last.h !== ch || last.count !== count;
+            const changed = last.w !== cw || last.h !== ch || last.monitor !== monitor;
 
             if (changed || Date.now() - last.at >= SIZE_RESEND_INTERVAL) {
-                clientRef.current.sendSize(cw, ch, 0, 0);
-                lastSentRef.current = { w: cw, h: ch, count, at: Date.now() };
-            }
-
-            if (changed) {
-                for (let i = 1; i < count; i++) clientRef.current.sendSize(cw, ch, i, 0);
+                clientRef.current.sendSize(cw, ch, monitor, 0);
+                lastSentRef.current = { w: cw, h: ch, monitor, at: Date.now() };
             }
         }
 
@@ -188,9 +192,39 @@ const GuacamoleRenderer = ({
         clientRef.current.sendSize(0, 0, count - 1, 0);
         monitorCountRef.current = count - 1;
         setMonitorCount(count - 1);
-        lastSentRef.current = { ...lastSentRef.current, count: count - 1 };
         if (activeMonitorRef.current > count - 2) selectMonitor(count - 2);
     };
+
+    const updatePoppedOutMonitors = (monitors) => {
+        poppedOutMonitorsRef.current = monitors;
+        setPoppedOutMonitors(monitors);
+    };
+
+    const popOutMonitor = (index) => {
+        if (!ownsSession || index < 0 || index >= monitorCountRef.current) return;
+
+        const poppedOut = new Set(poppedOutMonitorsRef.current).add(index);
+        updatePoppedOutMonitors(poppedOut);
+
+        if (activeMonitorRef.current === index) {
+            const remaining = Array.from({ length: monitorCountRef.current }, (_, i) => i)
+                .find((i) => !poppedOut.has(i));
+            selectMonitor(remaining ?? 0);
+        }
+
+        openPopout(session.id, index);
+    };
+
+    useEffect(() => {
+        if (!ownsSession) return;
+
+        return onPopoutClosed((sessionId, monitor) => {
+            if (sessionId !== session.id || monitor === null) return;
+
+            const poppedOut = new Set(poppedOutMonitorsRef.current);
+            if (poppedOut.delete(monitor)) updatePoppedOutMonitors(poppedOut);
+        });
+    }, [session.id, ownsSession]);
 
     const sendClipboardToServer = (text) => {
         if (!clientRef.current || !text) return;
@@ -262,7 +296,6 @@ const GuacamoleRenderer = ({
             layoutRef.current = monitors;
             monitorCountRef.current = monitors.length;
             setMonitorCount(monitors.length);
-            lastSentRef.current = { ...lastSentRef.current, count: monitors.length };
 
             if (activeMonitorRef.current > monitors.length - 1) selectMonitor(monitors.length - 1);
             else applyViewport();
@@ -314,7 +347,9 @@ const GuacamoleRenderer = ({
         };
 
         const s = sessionRef.current;
-        const params = isShared ? `shareId=${session.shareId}` : `sessionToken=${sessionToken}&sessionId=${s.id}`;
+        let params = isShared ? `shareId=${session.shareId}` : `sessionToken=${sessionToken}&sessionId=${s.id}`;
+        if (!isShared && pinnedMonitor !== null) params += `&monitor=${pinnedMonitor}`;
+
         client.connect(params);
 
         const mouse = new Guacamole.Mouse(display);
@@ -381,15 +416,15 @@ const GuacamoleRenderer = ({
             clientRef.current = null;
 
             layoutRef.current = null;
-            lastSentRef.current = { w: 0, h: 0, count: 0, at: 0 };
+            lastSentRef.current = { w: 0, h: 0, monitor: -1, at: 0 };
             monitorCountRef.current = 1;
-            activeMonitorRef.current = 0;
+            activeMonitorRef.current = initialMonitor;
             maxMonitorsRef.current = 1;
             heldModifiersRef.current = new Set();
             draggingRef.current = false;
             setReady(false);
             setMonitorCount(1);
-            setActiveMonitor(0);
+            setActiveMonitor(initialMonitor);
             setMaxMonitors(1);
             setHeldModifiers(new Set());
         };
@@ -435,9 +470,10 @@ const GuacamoleRenderer = ({
             {ready && (
                 <SessionToolbar containerRef={ref} monitorCount={monitorCount} activeMonitor={activeMonitor}
                                 maxMonitors={maxMonitors} heldModifiers={heldModifiers} readOnly={isShared}
+                                poppedOutMonitors={poppedOutMonitors} allowMonitors={pinnedMonitor === null}
                                 onSelectMonitor={selectMonitor} onAddMonitor={addMonitor}
-                                onRemoveMonitor={removeMonitor} onToggleModifier={toggleModifier}
-                                onSendShortcut={sendShortcut}
+                                onRemoveMonitor={removeMonitor} onPopOutMonitor={popOutMonitor}
+                                onToggleModifier={toggleModifier} onSendShortcut={sendShortcut}
                                 onDraggingChange={(dragging) => draggingRef.current = dragging} />
             )}
             {connectionError && (

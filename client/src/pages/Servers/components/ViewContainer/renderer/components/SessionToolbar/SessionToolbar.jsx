@@ -19,9 +19,12 @@ export const SessionToolbar = ({
                                    maxMonitors,
                                    heldModifiers,
                                    readOnly,
+                                   poppedOutMonitors,
+                                   allowMonitors = true,
                                    onSelectMonitor,
                                    onAddMonitor,
                                    onRemoveMonitor,
+                                   onPopOutMonitor,
                                    onToggleModifier,
                                    onSendShortcut,
                                    onDraggingChange,
@@ -33,7 +36,12 @@ export const SessionToolbar = ({
     const toolbarRef = useRef(null);
     const dragState = useRef(null);
 
-    const showsMonitors = maxMonitors > 1;
+    const showsMonitors = allowMonitors && maxMonitors > 1;
+
+    const monitors = Array.from({ length: monitorCount }, (_, index) => index)
+        .filter((index) => !poppedOutMonitors?.has(index));
+
+    const canRemove = monitorCount > 1 && !poppedOutMonitors?.has(monitorCount - 1);
 
     const pinned = shortcutsOpen || dragging || heldModifiers.size > 0;
 
@@ -130,12 +138,15 @@ export const SessionToolbar = ({
                                 <div className="session-toolbar__divider" />
                                 <Icon path={mdiMonitorMultiple} size={0.8} className="session-toolbar__icon" />
 
-                                {Array.from({ length: monitorCount }, (_, index) => (
+                                {monitors.map((index) => (
                                     <button key={index} type="button"
                                             className={`session-toolbar__chip ${index === activeMonitor ? "session-toolbar__chip--active" : ""}`}
-                                            title={t("servers.monitors.select", { number: index + 1 })}
+                                            title={readOnly
+                                                ? t("servers.monitors.select", { number: index + 1 })
+                                                : t("servers.monitors.selectOrPopOut", { number: index + 1 })}
                                             onMouseDown={(event) => event.preventDefault()}
-                                            onClick={act(() => onSelectMonitor(index))}>
+                                            onClick={act(() => onSelectMonitor(index))}
+                                            onDoubleClick={readOnly ? undefined : act(() => onPopOutMonitor(index))}>
                                         {index + 1}
                                     </button>
                                 ))}
@@ -143,7 +154,7 @@ export const SessionToolbar = ({
                                 {!readOnly && (
                                     <>
                                         <button type="button" className="session-toolbar__action"
-                                                disabled={monitorCount <= 1}
+                                                disabled={!canRemove}
                                                 title={t("servers.monitors.remove")}
                                                 onMouseDown={(event) => event.preventDefault()}
                                                 onClick={act(onRemoveMonitor)}>

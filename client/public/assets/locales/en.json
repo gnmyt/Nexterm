@@ -1952,7 +1952,9 @@
       "holdModifier": "Hold {{key}}"
     },
     "monitors": {
+      "title": "Monitor {{number}}",
       "select": "Switch to monitor {{number}}",
+      "selectOrPopOut": "Switch to monitor {{number}} (double-click to open in its own window)",
       "add": "Add monitor",
       "remove": "Remove last monitor"
     },
