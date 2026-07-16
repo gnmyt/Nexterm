@@ -938,6 +938,163 @@ int guac_protocol_send_nop(guac_socket* socket) {
 
 }
 
+int guac_protocol_send_nfs_open(guac_socket* socket, int req_id,
+        const char* path, int flags, const char* disposition,
+        int is_directory) {
+
+    int ret_val;
+    guac_socket_instruction_begin(socket);
+    ret_val =
+           guac_socket_write_string(socket, "8.nfs-open,")
+        || __guac_socket_write_length_int(socket, req_id)
+        || guac_socket_write_string(socket, ",")
+        || __guac_socket_write_length_string(socket, path)
+        || guac_socket_write_string(socket, ",")
+        || __guac_socket_write_length_int(socket, flags)
+        || guac_socket_write_string(socket, ",")
+        || __guac_socket_write_length_string(socket, disposition)
+        || guac_socket_write_string(socket, ",")
+        || __guac_socket_write_length_int(socket, is_directory)
+        || guac_socket_write_string(socket, ";");
+    guac_socket_instruction_end(socket);
+    return ret_val;
+}
+
+int guac_protocol_send_nfs_read(guac_socket* socket, int req_id,
+        int handle, uint64_t offset, int length) {
+
+    int ret_val;
+    guac_socket_instruction_begin(socket);
+    ret_val =
+           guac_socket_write_string(socket, "8.nfs-read,")
+        || __guac_socket_write_length_int(socket, req_id)
+        || guac_socket_write_string(socket, ",")
+        || __guac_socket_write_length_int(socket, handle)
+        || guac_socket_write_string(socket, ",")
+        || __guac_socket_write_length_int(socket, (int64_t) offset)
+        || guac_socket_write_string(socket, ",")
+        || __guac_socket_write_length_int(socket, length)
+        || guac_socket_write_string(socket, ";");
+    guac_socket_instruction_end(socket);
+    return ret_val;
+}
+
+int guac_protocol_send_nfs_write(guac_socket* socket, int req_id,
+        int handle, uint64_t offset, int length, int stream_index) {
+
+    int ret_val;
+    guac_socket_instruction_begin(socket);
+    ret_val =
+           guac_socket_write_string(socket, "9.nfs-write,")
+        || __guac_socket_write_length_int(socket, req_id)
+        || guac_socket_write_string(socket, ",")
+        || __guac_socket_write_length_int(socket, handle)
+        || guac_socket_write_string(socket, ",")
+        || __guac_socket_write_length_int(socket, (int64_t) offset)
+        || guac_socket_write_string(socket, ",")
+        || __guac_socket_write_length_int(socket, length)
+        || guac_socket_write_string(socket, ",")
+        || __guac_socket_write_length_int(socket, stream_index)
+        || guac_socket_write_string(socket, ";");
+    guac_socket_instruction_end(socket);
+    return ret_val;
+}
+
+int guac_protocol_send_nfs_close(guac_socket* socket, int req_id,
+        int handle) {
+
+    int ret_val;
+    guac_socket_instruction_begin(socket);
+    ret_val =
+           guac_socket_write_string(socket, "9.nfs-close,")
+        || __guac_socket_write_length_int(socket, req_id)
+        || guac_socket_write_string(socket, ",")
+        || __guac_socket_write_length_int(socket, handle)
+        || guac_socket_write_string(socket, ";");
+    guac_socket_instruction_end(socket);
+    return ret_val;
+}
+
+int guac_protocol_send_nfs_stat(guac_socket* socket, int req_id,
+        const char* path) {
+
+    int ret_val;
+    guac_socket_instruction_begin(socket);
+    ret_val =
+           guac_socket_write_string(socket, "8.nfs-stat,")
+        || __guac_socket_write_length_int(socket, req_id)
+        || guac_socket_write_string(socket, ",")
+        || __guac_socket_write_length_string(socket, path)
+        || guac_socket_write_string(socket, ";");
+    guac_socket_instruction_end(socket);
+    return ret_val;
+}
+
+int guac_protocol_send_nfs_unlink(guac_socket* socket, int req_id,
+        int handle, int is_directory) {
+    int ret_val;
+    guac_socket_instruction_begin(socket);
+    ret_val =
+           guac_socket_write_string(socket, "10.nfs-unlink,")
+        || __guac_socket_write_length_int(socket, req_id)
+        || guac_socket_write_string(socket, ",")
+        || __guac_socket_write_length_int(socket, handle)
+        || guac_socket_write_string(socket, ",")
+        || __guac_socket_write_length_int(socket, is_directory)
+        || guac_socket_write_string(socket, ";");
+    guac_socket_instruction_end(socket);
+    return ret_val;
+}
+
+int guac_protocol_send_nfs_rename(guac_socket* socket, int req_id,
+        int handle, const char* new_path) {
+    int ret_val;
+    guac_socket_instruction_begin(socket);
+    ret_val =
+           guac_socket_write_string(socket, "10.nfs-rename,")
+        || __guac_socket_write_length_int(socket, req_id)
+        || guac_socket_write_string(socket, ",")
+        || __guac_socket_write_length_int(socket, handle)
+        || guac_socket_write_string(socket, ",")
+        || __guac_socket_write_length_string(socket, new_path)
+        || guac_socket_write_string(socket, ";");
+    guac_socket_instruction_end(socket);
+    return ret_val;
+}
+
+int guac_protocol_send_nfs_truncate(guac_socket* socket, int req_id,
+        int handle, int length) {
+    int ret_val;
+    guac_socket_instruction_begin(socket);
+    ret_val =
+           guac_socket_write_string(socket, "12.nfs-truncate,")
+        || __guac_socket_write_length_int(socket, req_id)
+        || guac_socket_write_string(socket, ",")
+        || __guac_socket_write_length_int(socket, handle)
+        || guac_socket_write_string(socket, ",")
+        || __guac_socket_write_length_int(socket, length)
+        || guac_socket_write_string(socket, ";");
+    guac_socket_instruction_end(socket);
+    return ret_val;
+}
+
+int guac_protocol_send_nfs_readdir(guac_socket* socket, int req_id,
+        int handle, int offset) {
+
+    int ret_val;
+    guac_socket_instruction_begin(socket);
+    ret_val =
+           guac_socket_write_string(socket, "11.nfs-readdir,")
+        || __guac_socket_write_length_int(socket, req_id)
+        || guac_socket_write_string(socket, ",")
+        || __guac_socket_write_length_int(socket, handle)
+        || guac_socket_write_string(socket, ",")
+        || __guac_socket_write_length_int(socket, offset)
+        || guac_socket_write_string(socket, ";");
+    guac_socket_instruction_end(socket);
+    return ret_val;
+}
+
 int guac_protocol_send_pipe(guac_socket* socket, const guac_stream* stream,
         const char* mimetype, const char* name) {
 

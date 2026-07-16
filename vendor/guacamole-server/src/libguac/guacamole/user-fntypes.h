@@ -393,6 +393,20 @@ typedef int guac_user_ack_handler(guac_user* user, guac_stream* stream,
 typedef int guac_user_end_handler(guac_user* user, guac_stream* stream);
 
 /**
+ * Handler for Guacamole "nfs-resp" instructions, sent by the user (browser
+ * virtual FS or Tauri connector) to complete a previously issued nfs-*
+ * request as part of the RDP client-relay filesystem protocol. The req_id
+ * echoes an outstanding guac_protocol_send_nfs_* request and status is the
+ * client's result (0 = OK).
+ *
+ * Decoding is left to the implementation: argv holds the raw payload
+ * elements past the status slot, to be interpreted positionally according to
+ * the request type req_id refers to. Returns zero on success.
+ */
+typedef int guac_user_nfs_resp_handler(guac_user* user, int req_id,
+        int status, int argc, char** argv);
+
+/**
  * Handler for Guacamole join events. A join event is fired by the
  * guac_client whenever a guac_user joins the connection. There is no
  * instruction associated with a join event.

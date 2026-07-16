@@ -21,6 +21,7 @@
 #define GUAC_RDP_SETTINGS_H
 
 #include "config.h"
+#include "fs.h"
 #include "keymap.h"
 
 #include <freerdp/freerdp.h>
@@ -248,6 +249,12 @@ typedef struct guac_rdp_settings {
      * virtual drive.
      */
     char* drive_path;
+
+    /**
+     * The storage backend for the virtual drive. Selected via the
+     * "drive-backend" connection argument.
+     */
+    guac_rdp_fs_backend_type drive_backend;
 
     /**
      * Whether to automatically create the local system path if it does not

@@ -410,7 +410,7 @@ const prepareGuacamoleSession = async (sessionId, entry, identity, organizationI
     if (entry.type === "pve-qemu") {
         params = await buildPveQemuParams(entry);
     } else if (protocol === "rdp") {
-        params = await buildRdpParams(cfg, identity);
+        params = await buildRdpParams(cfg, identity, session.accountId);
     } else if (protocol === "vnc") {
         params = await buildVncParams(cfg, identity);
     } else if (protocol === "demo") {

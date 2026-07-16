@@ -38,6 +38,7 @@
 
 #include <cairo/cairo.h>
 #include <stdarg.h>
+#include <stdint.h>
 
 /* CONTROL INSTRUCTIONS */
 
@@ -311,6 +312,48 @@ int guac_protocol_send_nest(guac_socket* socket, int index,
  * @return Zero on success, non-zero on error.
  */
 int guac_protocol_send_nop(guac_socket* socket);
+
+/**
+ * Sends the "nfs-*" instructions, which request that the peer perform an
+ * operation on the filesystem it exposes as part of the RDP client-relay
+ * drive. Each request carries a req_id which the peer echoes back in the
+ * corresponding "nfs-resp"; paths are Windows-style, absolute under the
+ * virtual root. All return zero on success, non-zero on error.
+ *
+ * The bytes for nfs-write do not ride on the instruction itself: the caller
+ * allocates an output stream via guac_user_alloc_stream() and sends them as
+ * blob/end on stream_index, which sidesteps the per-element length cap and
+ * so allows multi-MB writes per request. nfs-unlink's is_directory is only a
+ * hint that rmdir semantics are expected; peers may instead rely on the
+ * actual file type. nfs-truncate may extend the file with zeros.
+ */
+int guac_protocol_send_nfs_open(guac_socket* socket, int req_id,
+        const char* path, int flags, const char* disposition,
+        int is_directory);
+
+int guac_protocol_send_nfs_read(guac_socket* socket, int req_id,
+        int handle, uint64_t offset, int length);
+
+int guac_protocol_send_nfs_write(guac_socket* socket, int req_id,
+        int handle, uint64_t offset, int length, int stream_index);
+
+int guac_protocol_send_nfs_close(guac_socket* socket, int req_id,
+        int handle);
+
+int guac_protocol_send_nfs_stat(guac_socket* socket, int req_id,
+        const char* path);
+
+int guac_protocol_send_nfs_readdir(guac_socket* socket, int req_id,
+        int handle, int offset);
+
+int guac_protocol_send_nfs_unlink(guac_socket* socket, int req_id,
+        int handle, int is_directory);
+
+int guac_protocol_send_nfs_rename(guac_socket* socket, int req_id,
+        int handle, const char* new_path);
+
+int guac_protocol_send_nfs_truncate(guac_socket* socket, int req_id,
+        int handle, int length);
 
 /**
  * Sends a ready instruction over the given guac_socket connection.

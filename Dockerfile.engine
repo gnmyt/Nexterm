@@ -1,4 +1,4 @@
-FROM alpine:3.21 AS guac-builder
+FROM alpine:3.22 AS guac-builder
 
 WORKDIR /src
 
@@ -10,7 +10,7 @@ COPY vendor/guacamole-server/ ./vendor/guacamole-server/
 RUN sh scripts/build-engine-release.sh guac
 
 
-FROM alpine:3.21 AS engine-builder
+FROM alpine:3.22 AS engine-builder
 
 WORKDIR /src
 
@@ -24,7 +24,7 @@ COPY engine/ ./engine/
 RUN sh scripts/build-engine-release.sh engine
 
 
-FROM alpine:3.21
+FROM alpine:3.22
 
 RUN apk add --no-cache \
     cairo jpeg libpng ossp-uuid libuuid \
@@ -36,7 +36,7 @@ COPY --from=guac-builder /src/vendor/guacamole-server/dist/lib/ /usr/local/lib/
 
 COPY --from=engine-builder /src/engine/build/nexterm-engine /usr/local/bin/nexterm-engine
 
-RUN cp /usr/local/lib/freerdp2/*.so /usr/lib/freerdp2/ \
+RUN cp /usr/local/lib/freerdp3/*.so /usr/lib/freerdp3/ \
     && ldconfig /usr/local/lib 2>/dev/null || true
 
 ENV LOG_LEVEL=info

@@ -916,6 +916,16 @@ Guacamole.Client = function(tunnel) {
     this.onfilesystem = null;
 
     /**
+     * Filesystem provider backing the RDP "client-relay" drive. Methods may
+     * return a value or a Promise; reject/resolve with `{ code }` to report
+     * a protocol error.
+     * When null, nfs-* requests are answered with ENOSYS.
+     *
+     * @type {Object}
+     */
+    this.filesystemProvider = null;
+
+    /**
      * Fired when a pipe stream is created. The stream provided to this event
      * handler will contain its own event handlers for received data;
      * 
@@ -1038,6 +1048,192 @@ Guacamole.Client = function(tunnel) {
 
         return parser;
 
+    }
+
+    function nfsSendResp(reqId, status /*, ...args */) {
+        if (!isConnected()) return;
+        var args = ["nfs-resp", reqId, status];
+        for (var i = 2; i < arguments.length; i++)
+            args.push(arguments[i]);
+        tunnel.sendMessage.apply(tunnel, args);
+    }
+
+    function nfsStatusFromError(err) {
+        if (err == null) return 9;
+        if (typeof err === "number") return err;
+        if (typeof err.code === "number") return err.code;
+        return 9;
+    }
+
+    function handleNfsRequest(op, parameters) {
+
+        var reqId = parseInt(parameters[0]);
+        var provider = guac_client.filesystemProvider;
+
+        if (!provider || typeof provider[op] !== "function") {
+            nfsSendResp(reqId, 8);
+            return;
+        }
+
+        var pending;
+        try {
+            switch (op) {
+
+                case "open":
+                    pending = Promise.resolve(provider.open(
+                            parameters[1],
+                            parseInt(parameters[2]),
+                            parameters[3],
+                            parseInt(parameters[4]) === 1))
+                        .then(function(r) {
+                            nfsSendResp(reqId, 0,
+                                    r.handle,
+                                    String(r.size || 0),
+                                    r.attributes || 0,
+                                    String(r.ctime || 0),
+                                    String(r.mtime || 0),
+                                    String(r.atime || 0));
+                        });
+                    break;
+
+                case "read":
+                    pending = Promise.resolve(provider.read(
+                            parseInt(parameters[1]),
+                            parseInt(parameters[2]),
+                            parseInt(parameters[3])))
+                        .then(function(r) {
+                            var data = r && r.data ? r.data : new ArrayBuffer(0);
+                            var bytes = data instanceof Uint8Array
+                                    ? data : new Uint8Array(data);
+                            var stream = guac_client.createFileStream(
+                                    "application/x-nexterm-fs", String(reqId));
+                            var CHUNK = 6 * 1024;
+                            for (var off = 0; off < bytes.length; off += CHUNK) {
+                                var end = Math.min(off + CHUNK, bytes.length);
+                                var bin = String.fromCharCode.apply(
+                                        null, bytes.subarray(off, end));
+                                guac_client.sendBlob(stream.index, btoa(bin));
+                            }
+                            guac_client.endStream(stream.index);
+                        });
+                    break;
+
+                case "write":
+                    var wrHandle = parseInt(parameters[1]);
+                    var wrOffset = parseInt(parameters[2]);
+
+                    var wrStreamIdx = parseInt(parameters[4]);
+                    var chunks = [];
+                    var totalBytes = 0;
+                    var inStream = streams[wrStreamIdx] = new Guacamole.InputStream(
+                            guac_client, wrStreamIdx);
+                    inStream.onblob = function(b64) {
+                        var bin = atob(b64);
+                        var arr = Uint8Array.from(bin, function(c) {
+                            return c.charCodeAt(0);
+                        });
+                        chunks.push(arr);
+                        totalBytes += arr.length;
+                    };
+                    inStream.onend = function() {
+                        delete streams[wrStreamIdx];
+                        var merged = new Uint8Array(totalBytes);
+                        var pos = 0;
+                        for (var i = 0; i < chunks.length; i++) {
+                            merged.set(chunks[i], pos);
+                            pos += chunks[i].length;
+                        }
+                        Promise.resolve(provider.write(wrHandle, wrOffset, merged))
+                            .then(function(r) {
+                                var n = (r && typeof r.bytesWritten === "number")
+                                        ? r.bytesWritten : merged.length;
+                                nfsSendResp(reqId, 0, n);
+                            })
+                            .catch(function(err) {
+                                nfsSendResp(reqId, nfsStatusFromError(err));
+                            });
+                    };
+                    pending = Promise.resolve();
+                    break;
+
+                case "close":
+                    pending = Promise.resolve(provider.close(
+                            parseInt(parameters[1])))
+                        .then(function() { nfsSendResp(reqId, 0); });
+                    break;
+
+                case "stat":
+                    pending = Promise.resolve(provider.stat(parameters[1]))
+                        .then(function(r) {
+                            nfsSendResp(reqId, 0,
+                                    String(r.size || 0),
+                                    r.attributes || 0,
+                                    String(r.ctime || 0),
+                                    String(r.mtime || 0),
+                                    String(r.atime || 0));
+                        });
+                    break;
+
+                case "unlink":
+                    pending = Promise.resolve(provider.unlink(
+                            parseInt(parameters[1]),
+                            parseInt(parameters[2]) === 1))
+                        .then(function() { nfsSendResp(reqId, 0); });
+                    break;
+
+                case "rename":
+                    pending = Promise.resolve(provider.rename(
+                            parseInt(parameters[1]),
+                            parameters[2]))
+                        .then(function() { nfsSendResp(reqId, 0); });
+                    break;
+
+                case "truncate":
+                    pending = Promise.resolve(provider.truncate(
+                            parseInt(parameters[1]),
+                            parseInt(parameters[2])))
+                        .then(function() { nfsSendResp(reqId, 0); });
+                    break;
+
+                case "readdir":
+                    var rdHandle = parseInt(parameters[1]);
+                    var rdOffset = parseInt(parameters[2]) || 0;
+                    var RD_BATCH = 100;
+                    pending = Promise.resolve(provider.readdir(
+                            rdHandle, rdOffset, RD_BATCH))
+                        .then(function(entries) {
+                            entries = entries || [];
+                            if (entries.length > RD_BATCH)
+                                entries = entries.slice(0, RD_BATCH);
+                            var args = [reqId, 0, entries.length];
+                            for (var i = 0; i < entries.length; i++) {
+                                var e = entries[i];
+                                args.push([
+                                    e.name || "",
+                                    String(e.size || 0),
+                                    String(e.attributes || 0),
+                                    String(e.ctime || 0),
+                                    String(e.mtime || 0),
+                                    String(e.atime || 0)
+                                ].join(""));
+                            }
+                            nfsSendResp.apply(null, args);
+                        });
+                    break;
+
+                default:
+                    nfsSendResp(reqId, 8);
+                    return;
+            }
+        }
+        catch (err) {
+            nfsSendResp(reqId, nfsStatusFromError(err));
+            return;
+        }
+
+        pending.catch(function(err) {
+            nfsSendResp(reqId, nfsStatusFromError(err));
+        });
     }
 
     /**
@@ -1582,6 +1778,16 @@ Guacamole.Client = function(tunnel) {
             var parser = getParser(parseInt(parameters[0]));
             parser.receive(parameters[1]);
         },
+
+        "nfs-open":     function(parameters) { handleNfsRequest("open", parameters); },
+        "nfs-read":     function(parameters) { handleNfsRequest("read", parameters); },
+        "nfs-write":    function(parameters) { handleNfsRequest("write", parameters); },
+        "nfs-close":    function(parameters) { handleNfsRequest("close", parameters); },
+        "nfs-stat":     function(parameters) { handleNfsRequest("stat", parameters); },
+        "nfs-readdir":  function(parameters) { handleNfsRequest("readdir", parameters); },
+        "nfs-unlink":   function(parameters) { handleNfsRequest("unlink", parameters); },
+        "nfs-rename":   function(parameters) { handleNfsRequest("rename", parameters); },
+        "nfs-truncate": function(parameters) { handleNfsRequest("truncate", parameters); },
 
         "pipe": function(parameters) {
 

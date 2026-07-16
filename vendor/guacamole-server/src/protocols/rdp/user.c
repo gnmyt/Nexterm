@@ -21,6 +21,8 @@
 #include "channels/cliprdr.h"
 #include "channels/pipe-svc.h"
 #include "config.h"
+#include "fs.h"
+#include "fs_client_relay.h"
 #include "input.h"
 #include "rdp.h"
 #include "settings.h"
@@ -42,6 +44,7 @@
 
 #include <pthread.h>
 #include <stddef.h>
+#include <string.h>
 
 int guac_rdp_user_join_handler(guac_user* user, int argc, char** argv) {
 
@@ -111,6 +114,9 @@ int guac_rdp_user_join_handler(guac_user* user, int argc, char** argv) {
 
     }
 
+    if (!user->owner && rdp_client->filesystem != NULL)
+        guac_rdp_fs_client_relay_attach_owner(rdp_client->filesystem, user);
+
     return 0;
 
 }
@@ -120,6 +126,12 @@ int guac_rdp_user_file_handler(guac_user* user, guac_stream* stream,
 
     guac_rdp_client* rdp_client = (guac_rdp_client*) user->client->data;
     guac_rdp_settings* settings = rdp_client->settings;
+
+    if (rdp_client->filesystem != NULL && mimetype != NULL
+            && strcmp(mimetype, "application/x-nexterm-fs") == 0) {
+        return guac_rdp_fs_client_relay_attach_read_stream(
+                rdp_client->filesystem, stream, filename);
+    }
 
 #ifdef ENABLE_COMMON_SSH
 
@@ -151,6 +163,9 @@ int guac_rdp_user_leave_handler(guac_user* user) {
     /* Update shared cursor state if the display still exists */
     if (rdp_client->display != NULL)
         guac_display_notify_user_left(rdp_client->display, user);
+
+    if (rdp_client->filesystem != NULL)
+        guac_rdp_fs_client_relay_detach_owner(rdp_client->filesystem, user);
 
     /* Free settings if not owner (owner settings will be freed with client) */
     if (!user->owner) {

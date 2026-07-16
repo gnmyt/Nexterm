@@ -27,7 +27,7 @@ const buildPveQemuParams = async (entry) => {
     };
 };
 
-const buildRdpParams = async (cfg, identity) => {
+const buildRdpParams = async (cfg, identity, accountId) => {
     const params = {
         hostname: cfg.ip,
         port: String(cfg.port || 3389),
@@ -56,6 +56,12 @@ const buildRdpParams = async (cfg, identity) => {
     if (cfg.enableFullWindowDrag === true) params["enable-full-window-drag"] = "true";
     if (cfg.enableDesktopComposition === true) params["enable-desktop-composition"] = "true";
     if (cfg.enableMenuAnimations === true) params["enable-menu-animations"] = "true";
+
+    if (accountId !== undefined && accountId !== null) {
+        params["enable-drive"] = "true";
+        params["drive-name"] = "Shared";
+        params["drive-backend"] = "client";
+    }
 
     return params;
 };

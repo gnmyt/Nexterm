@@ -191,6 +191,12 @@ __guac_instruction_handler __guac_handle_disconnect;
 __guac_instruction_handler __guac_handle_nop;
 
 /**
+ * Internal handler for "nfs-resp" instructions, dispatching to
+ * user->nfs_resp_handler if set.
+ */
+__guac_instruction_handler __guac_handle_nfs_resp;
+
+/**
  * Internal handler function that is called when the size instruction is
  * received during the handshake process.
  */
