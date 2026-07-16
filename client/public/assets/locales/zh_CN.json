@@ -1551,6 +1551,9 @@
       "duplicateServer": "复制服务器",
       "pasteIdentityPassword": "粘贴密码",
       "deleteServer": "删除服务器",
+      "deleteConfirm": "Are you sure you want to delete \"{{name}}\"? This action cannot be undone.",
+      "deleteFailServer": "Failed to delete \"{{name}}\".",
+      "deleteFailFolder": "Failed to delete the folder \"{{name}}\".",
       "wakeOnLan": "网络唤醒",
       "shutdown": "关机",
       "stop": "停止",
@@ -1772,6 +1775,7 @@
       }
     },
     "fileManager": {
+      "dropOverlay": "Drop files or folders to upload",
       "createFile": {
         "title": "创建文件",
         "placeholder": "文件名称",
@@ -1883,6 +1887,8 @@
         "hiddenDirectories": "{{count}} 隐藏目录",
         "switchToGrid": "切换到网格视图",
         "switchToList": "切换到列表视图",
+        "uploadFile": "Upload file(s)",
+        "uploadFolder": "Upload folder",
         "search": "搜索文件",
         "closeSearch": "关闭搜索",
         "refresh": "刷新"
@@ -1907,7 +1913,9 @@
         "downloaded": "下载 {{name}}",
         "downloadingItems": "下载 {{count}} 项目...",
         "uploaded": "上传 {{name}}",
+        "uploadedItems": "Uploaded {{count}} files",
         "uploadFailed": "上传失败： {{message}}",
+        "uploadFailedItems": "{{count}} files failed to upload: {{message}}",
         "connectionLost": "SFTP 连接丢失。请重新连接。",
         "error": "发生错误"
       }
