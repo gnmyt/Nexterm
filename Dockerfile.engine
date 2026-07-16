@@ -17,9 +17,15 @@ WORKDIR /src
 COPY scripts/build-engine-release.sh ./scripts/build-engine-release.sh
 RUN sh scripts/build-engine-release.sh deps-engine
 
+ARG VERSION
+
 COPY --from=guac-builder /src/vendor/guacamole-server/dist/ ./vendor/guacamole-server/dist/
 COPY schema/ ./schema/
 COPY engine/ ./engine/
+
+RUN if [ -n "$VERSION" ]; then \
+        sed -i "s/^#define NEXTERM_ENGINE_VERSION \".*\"/#define NEXTERM_ENGINE_VERSION \"$VERSION\"/" engine/src/proto/control_plane.h; \
+    fi
 
 RUN sh scripts/build-engine-release.sh engine
 

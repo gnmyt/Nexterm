@@ -32,6 +32,7 @@ jobs:
           sed -i "s/^version = \".*\"/version = \"$S\"/" connector/src-tauri/Cargo.toml
           sed -i "s/^version = \".*\"/version = \"$S\"/" cli/Cargo.toml
           sed -i "s/^version: .*/version: $S+${{ github.run_number }}/" mobile/pubspec.yaml
+          sed -i "s/^#define NEXTERM_ENGINE_VERSION \".*\"/#define NEXTERM_ENGINE_VERSION \"$V\"/" engine/src/proto/control_plane.h
 
       - name: Commit & push
         run: |

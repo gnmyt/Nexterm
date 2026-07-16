@@ -62,13 +62,15 @@ const buildJumpHostsVector = (builder, jumpHosts, vectorOwner = SessionOpen) => 
     return vectorOwner.createJumpHostsVector(builder, offsets);
 };
 
-const buildEngineHelloAck = (accepted) => {
+const buildEngineHelloAck = (accepted, reason) => {
     const builder = new flatbuffers.Builder(256);
     const versionOff = builder.createString(packageJson.version);
+    const reasonOff = reason ? builder.createString(reason) : null;
 
     EngineHelloAck.startEngineHelloAck(builder);
     EngineHelloAck.addAccepted(builder, accepted);
     EngineHelloAck.addServerVersion(builder, versionOff);
+    if (reasonOff !== null) EngineHelloAck.addReason(builder, reasonOff);
     const ackOff = EngineHelloAck.endEngineHelloAck(builder);
 
     Envelope.startEnvelope(builder);

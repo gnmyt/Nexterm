@@ -121,7 +121,9 @@ static void handle_engine_hello_ack(nexterm_control_plane_t* cp,
                  Nexterm_ControlPlane_EngineHelloAck_server_version(ack));
         cp->connected = true;
     } else {
-        LOG_ERROR("Server rejected engine connection");
+        const char* reason = ack ? Nexterm_ControlPlane_EngineHelloAck_reason(ack) : NULL;
+        LOG_ERROR("Server rejected engine connection: %s",
+                  reason && *reason ? reason : "no reason given");
         cp->running = false;
     }
 }

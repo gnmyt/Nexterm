@@ -59,6 +59,7 @@ table EngineHello {
 table EngineHelloAck {
     accepted: bool;
     server_version: string;
+    reason: string;
 }
 
 table Ping {

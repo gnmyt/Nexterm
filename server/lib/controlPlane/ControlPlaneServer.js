@@ -23,6 +23,7 @@ const {
     buildHttpFetch,
 } = require("./messageBuilders");
 const logger = require("../../utils/logger");
+const packageJson = require("../../../package.json");
 const { findByToken, updateLastConnected } = require("../../controllers/engine");
 const { sendFrame, createFrameParser } = require("./frameProtocol");
 const { RECORDINGS_DIR, ensureRecordingsDir, compressRecording, getRecordingPath } = require("../../utils/recordingService");
@@ -387,7 +388,15 @@ class ControlPlaneServer extends EventEmitter {
         const registrationToken = hello.registrationToken();
 
         if (!registrationToken) {
-            this._sendFrame(socket, buildEngineHelloAck(false));
+            this._sendFrame(socket, buildEngineHelloAck(false, "Missing registration token"));
+            socket.destroy();
+            return;
+        }
+
+        if (version !== packageJson.version) {
+            const reason = `Engine version ${version || "unknown"} does not match server version ${packageJson.version}`;
+            logger.warn(`Control plane: rejected engine from ${remoteAddr}: ${reason}`);
+            this._sendFrame(socket, buildEngineHelloAck(false, reason));
             socket.destroy();
             return;
         }
@@ -395,7 +404,7 @@ class ControlPlaneServer extends EventEmitter {
         const engineRecord = await findByToken(registrationToken);
         if (!engineRecord) {
             logger.warn(`Control plane: invalid registration token from ${remoteAddr}`);
-            this._sendFrame(socket, buildEngineHelloAck(false));
+            this._sendFrame(socket, buildEngineHelloAck(false, "Invalid registration token"));
             socket.destroy();
             return;
         }

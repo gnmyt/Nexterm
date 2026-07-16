@@ -37,6 +37,11 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Update engine version
+        shell: bash
+        run: |
+          sed -i "s/^#define NEXTERM_ENGINE_VERSION \".*\"/#define NEXTERM_ENGINE_VERSION \"${{ inputs.version }}\"/" engine/src/proto/control_plane.h
+
       - name: Build engine + tarball + deb + rpm (Debian bookworm container)
         run: |
           docker run --rm \

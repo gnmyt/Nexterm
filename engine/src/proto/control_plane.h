@@ -6,7 +6,7 @@
 #include <pthread.h>
 #include <openssl/ssl.h>
 
-#define NEXTERM_ENGINE_VERSION "0.1.0"
+#define NEXTERM_ENGINE_VERSION "1.2.1-BETA"
 
 typedef struct nexterm_control_plane {
     int sock_fd;
