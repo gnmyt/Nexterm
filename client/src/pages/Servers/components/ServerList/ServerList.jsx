@@ -82,18 +82,6 @@ const filterEntries = (entries, searchTerm, selectedTags = []) => {
     return rebuild(entries);
 };
 
-const findEntryById = (entries, id) => {
-    for (const entry of entries) {
-        if (Number(entry.id) === Number(id)) return entry;
-        // If this entry is a folder or organization with nested entries
-        if (entry.entries) {
-            const found = findEntryById(entry.entries, id);
-            if (found) return found;
-        }
-    }
-    return null;
-};
-
 const applyRenameState = folderId => entry =>
     entry.type === "folder" && entry.id === parseInt(folderId)
         ? { ...entry, renameState: true }
@@ -144,7 +132,7 @@ export const ServerList = ({
     const [scriptsMenuOpen, setScriptsMenuOpen] = useState(false);
     const [scriptsMenuServer, setScriptsMenuServer] = useState(null);
     const [isMobile, setIsMobile] = useState(false);
-    const [deleteConfirmDialog, setDeleteConfirmDialog] = useState({ open: false, entryName: null, entryId: null });
+    const [deleteConfirmDialog, setDeleteConfirmDialog] = useState({ open: false, name: "", id: null, isFolder: false });
 
     const contextMenu = useContextMenu();
 
@@ -325,33 +313,19 @@ export const ServerList = ({
         });
     };
 
-    const openDeleteEntryConfirm = () => {
-        const entry = findEntryById(servers, contextClickedId);
-        setDeleteConfirmDialog({
-            open: true,
-            entryName: entry?.name ?? "",
-            entryId: entry?.id,
-            entryType: entry?.type ?? ""
-        });
+    const openDeleteConfirm = () => {
+        const entry = contextFolder ?? server;
+        if (!entry) return;
+        setDeleteConfirmDialog({ open: true, name: entry.name, id: entry.id, isFolder: entry === contextFolder });
     };
 
     const handleDeleteConfirm = () => {
-        if (deleteConfirmDialog.entryType === "folder" && deleteConfirmDialog.entryId) {
-            deleteRequest("folders/" + deleteConfirmDialog.entryId)
+        const { id, name, isFolder } = deleteConfirmDialog;
+        deleteRequest(`${isFolder ? "folders" : "entries"}/${id}`)
             .then(loadServers)
-            .catch(() => sendToast(
-                "Error",
-                t("servers.contextMenu.deleteFailFolder", { name: deleteConfirmDialog.entryName })
-            ));
-        } else if (deleteConfirmDialog.entryId) {
-            deleteRequest("entries/" + deleteConfirmDialog.entryId)
-            .then(loadServers)
-            .catch(() => sendToast(
-                "Error",
-                t("servers.fileManager.contextMenu.deleteFailFile", { name: deleteConfirmDialog.entryName })
-            ));
-        }
-        setDeleteConfirmDialog({ open: false, entryName: null, entryId: null, entryType: null });
+            .catch(() => sendToast("Error", t(isFolder
+                ? "servers.contextMenu.deleteFailFolder"
+                : "servers.contextMenu.deleteFailServer", { name })));
     };
 
     const setFolderContext = () => {
@@ -713,7 +687,7 @@ export const ServerList = ({
                                 <ContextMenuItem
                                     icon={mdiFolderRemove}
                                     label={t("servers.contextMenu.deleteFolder")}
-                                    onClick={openDeleteEntryConfirm}
+                                    onClick={openDeleteConfirm}
                                     danger
                                 />
                             </>
@@ -878,7 +852,7 @@ export const ServerList = ({
                                 <ContextMenuItem
                                     icon={mdiServerMinus}
                                     label={t("servers.contextMenu.deleteServer")}
-                                    onClick={openDeleteEntryConfirm}
+                                    onClick={openDeleteConfirm}
                                     danger
                                 />
                             </>
@@ -967,7 +941,7 @@ export const ServerList = ({
                                 <ContextMenuItem
                                     icon={mdiServerMinus}
                                     label={t("servers.contextMenu.deleteServer")}
-                                    onClick={openDeleteEntryConfirm}
+                                    onClick={openDeleteConfirm}
                                     danger
                                 />
                             </>
@@ -978,7 +952,7 @@ export const ServerList = ({
                         open={deleteConfirmDialog.open}
                         setOpen={(open) => setDeleteConfirmDialog(prev => ({ ...prev, open }))}
                         onConfirm={handleDeleteConfirm}
-                        text={t("servers.fileManager.contextMenu.deleteConfirm", { name: deleteConfirmDialog.entryName })}
+                        text={t("servers.contextMenu.deleteConfirm", { name: deleteConfirmDialog.name })}
                     />
 
                     <ScriptsMenu
