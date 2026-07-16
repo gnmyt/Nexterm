@@ -27,6 +27,8 @@
 #include <guacamole/client.h>
 #include <guacamole/timestamp.h>
 
+#include <stdbool.h>
+
 /**
  * The minimum value for width or height, in pixels.
  */
@@ -42,6 +44,38 @@
  * in milliseconds.
  */
 #define GUAC_RDP_DISP_UPDATE_INTERVAL 500
+
+/**
+ * Monitor properties (size, position).
+ */
+typedef struct guac_rdp_disp_monitor {
+
+    /**
+     * The last requested screen width, in pixels.
+     */
+    int requested_width;
+
+    /**
+     * The last requested screen height, in pixels.
+     */
+    int requested_height;
+
+    /**
+     * The position of the monitor relative to the other monitors.
+     */
+    int x_position;
+
+    /**
+     * The offset of the monitor from the top of the layout, in pixels.
+     */
+    int top_offset;
+
+    /**
+     * The offset of the monitor from the left of the layout, in pixels.
+     */
+    int left_offset;
+
+} guac_rdp_disp_monitor;
 
 /**
  * Display size update module.
@@ -65,20 +99,26 @@ typedef struct guac_rdp_disp {
     guac_timestamp last_request;
 
     /**
-     * The last requested screen width, in pixels.
+     * Monitor properties (size, position).
      */
-    int requested_width;
+    guac_rdp_disp_monitor* monitors;
 
     /**
-     * The last requested screen height, in pixels.
+     * The number of monitors.
      */
-    int requested_height;
+    int monitors_count;
 
     /**
      * Whether the size has changed and the RDP connection must be closed and
      * reestablished.
      */
     int reconnect_needed;
+
+    /**
+     * At least one monitor has been resized or moved and the display must be
+     * resized.
+     */
+    bool resize_needed;
 
 } guac_rdp_disp;
 
@@ -154,9 +194,16 @@ void guac_rdp_disp_load_plugin(rdpContext* context);
  *     The desired display height, in pixels. Due to the restrictions of the
  *     RDP display update channel, this will be constrained to the range of 200
  *     through 8192 inclusive.
+ *
+ * @param x_position
+ *     The position of the monitor to resize, relative to other monitors.
+ *
+ * @param top_offset
+ *     The offset of the monitor from the top of the screen, in pixels.
  */
 void guac_rdp_disp_set_size(guac_rdp_disp* disp, guac_rdp_settings* settings,
-        freerdp* rdp_inst, int width, int height);
+        freerdp* rdp_inst, int width, int height, int x_position,
+        int top_offset);
 
 /**
  * Sends an actual display update request to the RDP server based on previous
