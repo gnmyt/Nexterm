@@ -118,6 +118,24 @@
       &:hover
         background-color: colors.$primary
 
+  &__zoom
+    min-width: 2.9rem
+    height: 1.75rem
+    padding: 0 0.35rem
+    border: none
+    border-radius: 0.4rem
+    background-color: transparent
+    color: colors.$subtext
+    font-size: 0.75rem
+    font-weight: 600
+    font-variant-numeric: tabular-nums
+    cursor: pointer
+    transition: background-color 0.1s ease-out, color 0.1s ease-out
+
+    &:hover
+      background-color: colors.$gray
+      color: colors.$white
+
   &__action
     display: flex
     align-items: center

@@ -1,6 +1,14 @@
 import { useEffect, useRef, useState } from "react";
 import Icon from "@mdi/react";
-import { mdiDragVertical, mdiKeyboardOutline, mdiMonitorMultiple, mdiPlus, mdiMinus } from "@mdi/js";
+import {
+    mdiDragVertical,
+    mdiKeyboardOutline,
+    mdiMagnifyMinusOutline,
+    mdiMagnifyPlusOutline,
+    mdiMonitorMultiple,
+    mdiPlus,
+    mdiMinus,
+} from "@mdi/js";
 import { useTranslation } from "react-i18next";
 import KeyboardShortcutsMenu from "../../../components/TerminalActionsMenu/components/KeyboardShortcutsMenu";
 import "./styles.sass";
@@ -21,12 +29,18 @@ export const SessionToolbar = ({
                                    readOnly,
                                    poppedOutMonitors,
                                    allowMonitors = true,
+                                   zoom,
+                                   minZoom,
+                                   maxZoom,
                                    onSelectMonitor,
                                    onAddMonitor,
                                    onRemoveMonitor,
                                    onPopOutMonitor,
                                    onToggleModifier,
                                    onSendShortcut,
+                                   onZoomIn,
+                                   onZoomOut,
+                                   onResetZoom,
                                    onDraggingChange,
                                }) => {
     const { t } = useTranslation();
@@ -132,6 +146,31 @@ export const SessionToolbar = ({
                                 onClick={act(() => setShortcutsOpen(true))}>
                             <Icon path={mdiKeyboardOutline} size={0.7} />
                         </button>
+
+                        <div className="session-toolbar__group">
+                            <div className="session-toolbar__divider" />
+
+                            <button type="button" className="session-toolbar__action" disabled={zoom <= minZoom}
+                                    title={t("servers.toolbar.zoomOut")}
+                                    onMouseDown={(event) => event.preventDefault()}
+                                    onClick={act(onZoomOut)}>
+                                <Icon path={mdiMagnifyMinusOutline} size={0.7} />
+                            </button>
+
+                            <button type="button" className="session-toolbar__zoom"
+                                    title={t("servers.toolbar.zoomReset")}
+                                    onMouseDown={(event) => event.preventDefault()}
+                                    onClick={act(onResetZoom)}>
+                                {Math.round(zoom * 100)}%
+                            </button>
+
+                            <button type="button" className="session-toolbar__action" disabled={zoom >= maxZoom}
+                                    title={t("servers.toolbar.zoomIn")}
+                                    onMouseDown={(event) => event.preventDefault()}
+                                    onClick={act(onZoomIn)}>
+                                <Icon path={mdiMagnifyPlusOutline} size={0.7} />
+                            </button>
+                        </div>
 
                         {showsMonitors && (
                             <div className="session-toolbar__group">

@@ -13,6 +13,12 @@ const SIZE_RESEND_INTERVAL = 5000;
 
 const SHORTCUT_HOLD = 50;
 
+const ZOOM_MIN = 1;
+
+const ZOOM_MAX = 4;
+
+const ZOOM_STEP = 0.25;
+
 const resumeAudioContext = () => {
     const context = Guacamole.AudioContextFactory.getAudioContext();
     if (context && context.state === "suspended") {
@@ -51,6 +57,11 @@ const GuacamoleRenderer = ({
     const [heldModifiers, setHeldModifiers] = useState(() => new Set());
     const heldModifiersRef = useRef(heldModifiers);
     const draggingRef = useRef(false);
+
+    const [zoom, setZoom] = useState(ZOOM_MIN);
+    const zoomRef = useRef(ZOOM_MIN);
+    const panRef = useRef({ x: 0, y: 0 });
+    const panDragRef = useRef(null);
 
     const monitorCountRef = useRef(1);
     const activeMonitorRef = useRef(initialMonitor);
@@ -93,6 +104,11 @@ const GuacamoleRenderer = ({
         imageRendering: "crisp-edges", backfaceVisibility: "hidden", willChange: "transform",
     });
 
+    const clampPan = (pan, visible, scaled) => {
+        const limit = Math.max((scaled - visible) / 2, 0);
+        return Math.min(Math.max(pan, -limit), limit);
+    };
+
     const applyViewport = () => {
         if (!clientRef.current || !ref.current) return;
         const display = clientRef.current.getDisplay();
@@ -110,12 +126,39 @@ const GuacamoleRenderer = ({
         const mh = monitor?.height || display.getHeight();
         if (!mw || !mh) return;
 
-        const scale = Math.min(cw / mw, ch / mh);
+        const scale = Math.min(cw / mw, ch / mh) * zoomRef.current;
         scaleRef.current = scale;
-        offsetRef.current = { x: (cw - mw * scale) / 2 - mx * scale, y: (ch - mh * scale) / 2 - my * scale };
+
+        panRef.current = {
+            x: clampPan(panRef.current.x, cw, mw * scale),
+            y: clampPan(panRef.current.y, ch, mh * scale),
+        };
+
+        offsetRef.current = {
+            x: (cw - mw * scale) / 2 - mx * scale + panRef.current.x,
+            y: (ch - mh * scale) / 2 - my * scale + panRef.current.y,
+        };
+
         applyDisplayStyles(el, offsetRef.current.x, offsetRef.current.y, scale,
             display.getWidth(), display.getHeight());
     };
+
+    const applyZoom = (level) => {
+        const next = Math.min(Math.max(level, ZOOM_MIN), ZOOM_MAX);
+        if (next === zoomRef.current) return;
+
+        if (next === ZOOM_MIN) panRef.current = { x: 0, y: 0 };
+
+        zoomRef.current = next;
+        setZoom(next);
+        applyViewport();
+    };
+
+    const zoomIn = () => applyZoom(zoomRef.current + ZOOM_STEP);
+
+    const zoomOut = () => applyZoom(zoomRef.current - ZOOM_STEP);
+
+    const resetZoom = () => applyZoom(ZOOM_MIN);
 
     const resizeHandler = () => {
         if (!clientRef.current || !ref.current) return;
@@ -169,6 +212,8 @@ const GuacamoleRenderer = ({
     const selectMonitor = (index) => {
         activeMonitorRef.current = index;
         setActiveMonitor(index);
+
+        panRef.current = { x: 0, y: 0 };
         applyViewport();
     };
 
@@ -358,6 +403,23 @@ const GuacamoleRenderer = ({
 
             if (draggingRef.current) return;
 
+            if (zoomRef.current > ZOOM_MIN && state.middle) {
+                const previous = panDragRef.current;
+                panDragRef.current = { x: state.x, y: state.y };
+
+                if (previous) {
+                    panRef.current = {
+                        x: panRef.current.x + state.x - previous.x,
+                        y: panRef.current.y + state.y - previous.y,
+                    };
+                    applyViewport();
+                }
+
+                return;
+            }
+
+            panDragRef.current = null;
+
             resumeAudioContext();
             client.sendMouseState(new Guacamole.Mouse.State(
                 Math.round((state.x - offsetRef.current.x) / scaleRef.current),
@@ -422,11 +484,15 @@ const GuacamoleRenderer = ({
             maxMonitorsRef.current = 1;
             heldModifiersRef.current = new Set();
             draggingRef.current = false;
+            zoomRef.current = ZOOM_MIN;
+            panRef.current = { x: 0, y: 0 };
+            panDragRef.current = null;
             setReady(false);
             setMonitorCount(1);
             setActiveMonitor(initialMonitor);
             setMaxMonitors(1);
             setHeldModifiers(new Set());
+            setZoom(ZOOM_MIN);
         };
     };
 
@@ -474,6 +540,8 @@ const GuacamoleRenderer = ({
                                 onSelectMonitor={selectMonitor} onAddMonitor={addMonitor}
                                 onRemoveMonitor={removeMonitor} onPopOutMonitor={popOutMonitor}
                                 onToggleModifier={toggleModifier} onSendShortcut={sendShortcut}
+                                zoom={zoom} minZoom={ZOOM_MIN} maxZoom={ZOOM_MAX}
+                                onZoomIn={zoomIn} onZoomOut={zoomOut} onResetZoom={resetZoom}
                                 onDraggingChange={(dragging) => draggingRef.current = dragging} />
             )}
             {connectionError && (

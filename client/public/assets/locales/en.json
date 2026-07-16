@@ -1949,7 +1949,10 @@
     "toolbar": {
       "drag": "Drag to move",
       "shortcuts": "Keyboard shortcuts",
-      "holdModifier": "Hold {{key}}"
+      "holdModifier": "Hold {{key}}",
+      "zoomIn": "Zoom in",
+      "zoomOut": "Zoom out",
+      "zoomReset": "Reset zoom to fit (drag with the middle mouse button to pan)"
     },
     "monitors": {
       "title": "Monitor {{number}}",
