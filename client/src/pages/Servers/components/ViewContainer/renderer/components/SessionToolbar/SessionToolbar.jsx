@@ -2,6 +2,8 @@ import { useEffect, useRef, useState } from "react";
 import Icon from "@mdi/react";
 import {
     mdiDragVertical,
+    mdiFullscreen,
+    mdiFullscreenExit,
     mdiKeyboardOutline,
     mdiMagnifyMinusOutline,
     mdiMagnifyPlusOutline,
@@ -32,6 +34,8 @@ export const SessionToolbar = ({
                                    zoom,
                                    minZoom,
                                    maxZoom,
+                                   fullscreenEnabled,
+                                   onFullscreenToggle,
                                    onSelectMonitor,
                                    onAddMonitor,
                                    onRemoveMonitor,
@@ -171,6 +175,21 @@ export const SessionToolbar = ({
                                 <Icon path={mdiMagnifyPlusOutline} size={0.7} />
                             </button>
                         </div>
+
+                        {onFullscreenToggle && (
+                            <div className="session-toolbar__group">
+                                <div className="session-toolbar__divider" />
+
+                                <button type="button" className="session-toolbar__action"
+                                        title={fullscreenEnabled
+                                            ? t("servers.terminalActions.exitFullScreen")
+                                            : t("servers.terminalActions.fullScreen")}
+                                        onMouseDown={(event) => event.preventDefault()}
+                                        onClick={act(onFullscreenToggle)}>
+                                    <Icon path={fullscreenEnabled ? mdiFullscreenExit : mdiFullscreen} size={0.7} />
+                                </button>
+                            </div>
+                        )}
 
                         {showsMonitors && (
                             <div className="session-toolbar__group">

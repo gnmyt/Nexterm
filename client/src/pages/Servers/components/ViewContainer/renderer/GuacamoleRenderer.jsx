@@ -32,6 +32,7 @@ const GuacamoleRenderer = ({
                                markSessionErrored,
                                getSessionError,
                                registerGuacamoleRef,
+                               fullscreenEnabled,
                                onFullscreenToggle,
                                isShared = false,
                                pinnedMonitor = null,
@@ -542,6 +543,7 @@ const GuacamoleRenderer = ({
                                 onToggleModifier={toggleModifier} onSendShortcut={sendShortcut}
                                 zoom={zoom} minZoom={ZOOM_MIN} maxZoom={ZOOM_MAX}
                                 onZoomIn={zoomIn} onZoomOut={zoomOut} onResetZoom={resetZoom}
+                                fullscreenEnabled={fullscreenEnabled} onFullscreenToggle={onFullscreenToggle}
                                 onDraggingChange={(dragging) => draggingRef.current = dragging} />
             )}
             {connectionError && (
