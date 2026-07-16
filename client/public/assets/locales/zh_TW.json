@@ -10,7 +10,7 @@
     "download": "下載",
     "maximize": "最大化",
     "restore": "還原",
-    "resize": "Resize",
+    "resize": "調整大小",
     "actions": {
       "cancel": "取消",
       "confirm": "確認",
@@ -62,8 +62,8 @@
       "qrScanDescription": "使用 Nexterm 行動應用程式掃描此 QR 代碼，即可立即登入。",
       "backToLogin": "返回登入",
       "authenticating": "驗證...",
-      "noAccount": "Don't have an account?",
-      "haveAccount": "Already have an account?"
+      "noAccount": "還沒有帳號嗎？",
+      "haveAccount": "已經有帳號了嗎？"
     },
     "deviceLink": {
       "title": "連結裝置",
@@ -691,32 +691,32 @@
         "delete": "刪除"
       },
       "apiKeys": {
-        "sectionTitle": "API Keys",
-        "sectionDescription": "Create API keys to access Nexterm programmatically from scripts and integrations.",
-        "addButton": "Create API Key",
-        "createTitle": "Create API Key",
-        "createDescription": "Give your key a name. The token will be shown only once after creation.",
-        "nameLabel": "Name",
-        "namePlaceholder": "e.g. Deployment script",
-        "nameRequired": "Name is required",
-        "expiryLabel": "Expiration",
-        "expiryNever": "Never",
-        "expiry30": "30 days",
-        "expiry90": "90 days",
-        "expiry365": "1 year",
-        "createButton": "Create",
-        "createdTitle": "API Key Created",
-        "createdWarning": "Copy this token now. For security reasons you won't be able to see it again.",
-        "tokenLabel": "Token",
-        "doneButton": "Done",
-        "createError": "Failed to create API key.",
-        "copyError": "Failed to copy to clipboard.",
-        "confirmDelete": "Are you sure you want to revoke this API key? Any agent using it will lose access.",
-        "noKeys": "No API keys yet",
-        "lastUsed": "Last used {{date}}",
-        "neverUsed": "Never used",
-        "expires": "Expires {{date}}",
-        "delete": "Delete"
+        "sectionTitle": "API 金鑰",
+        "sectionDescription": "建立 API 金鑰，以便透過腳本和整合功能以程式化方式存取 Nexterm。",
+        "addButton": "建立 API 金鑰",
+        "createTitle": "建立 API 金鑰",
+        "createDescription": "為您的金鑰命名。該金鑰在建立後僅會顯示一次。",
+        "nameLabel": "姓名",
+        "namePlaceholder": "例如：部署腳本",
+        "nameRequired": "姓名為必填欄位",
+        "expiryLabel": "到期日",
+        "expiryNever": "絕不",
+        "expiry30": "30 天",
+        "expiry90": "90 天",
+        "expiry365": "1 年",
+        "createButton": "建立",
+        "createdTitle": "API 金鑰已建立",
+        "createdWarning": "請立即複製此代碼。基於安全考量，您之後將無法再次查看此代碼。",
+        "tokenLabel": "代幣",
+        "doneButton": "完成",
+        "createError": "無法建立 API 金鑰。",
+        "copyError": "無法複製到剪貼簿。",
+        "confirmDelete": "您確定要撤銷此 API 金鑰嗎？任何使用此金鑰的系統都將失去存取權限。",
+        "noKeys": "目前尚無 API 金鑰",
+        "lastUsed": "最後使用時間 {{date}}",
+        "neverUsed": "從未使用過",
+        "expires": "有效期至 {{date}}",
+        "delete": "刪除"
       }
     },
     "passwordChange": {
@@ -763,8 +763,8 @@
         "folderManagementDescription": "記錄資料夾的建立、修改和刪除",
         "scriptExecutionLabel": "腳本執行",
         "scriptExecutionDescription": "記錄腳本和自動化任務的執行",
-        "aiOperationsLabel": "AI Operations",
-        "aiOperationsDescription": "Log commands and file changes performed by the AI assistant",
+        "aiOperationsLabel": "AI 運維",
+        "aiOperationsDescription": "記錄 AI 助理執行的指令及檔案變更",
         "actions": {
           "save": "儲存設定"
         },
@@ -858,8 +858,8 @@
           "description": "開啟 AI 指令功能表"
         },
         "aiaccepttool": {
-          "title": "AI Accept Action",
-          "description": "Approve the pending AI tool action in the assistant"
+          "title": "AI 接受操作",
+          "description": "在助理中核准待處理的 AI 工具操作"
         },
         "snippets": {
           "title": "片段",
@@ -923,13 +923,13 @@
         "syncDisabled": "游標設定將不再同步"
       },
       "input": {
-        "title": "Input",
-        "description": "Control how keyboard shortcuts behave inside the terminal.",
-        "smartCopyPaste": "Smart Ctrl+C",
-        "enabled": "Enabled",
-        "disabled": "Disabled",
-        "syncEnabled": "Input settings will now sync to your account",
-        "syncDisabled": "Input settings will no longer sync"
+        "title": "輸入",
+        "description": "控制鍵盤快捷鍵在終端機內的運作方式。",
+        "smartCopyPaste": "智慧型 Ctrl+C",
+        "enabled": "已啟用",
+        "disabled": "已停用",
+        "syncEnabled": "輸入設定現在將同步至您的帳戶",
+        "syncDisabled": "輸入設定將不再同步"
       },
       "theme": {
         "title": "主題",
@@ -995,8 +995,8 @@
       "system": "系統",
       "systemDescription": "使用者名稱和密碼驗證",
       "registration": {
-        "title": "Self-Registration",
-        "description": "Allow visitors to create their own account from the login screen"
+        "title": "自行註冊",
+        "description": "允許訪客直接從登入畫面建立自己的帳號"
       },
       "deleteConfirm": "這將會永久刪除此驗證提供者。",
       "errors": {
@@ -1087,11 +1087,11 @@
     },
     "ai": {
       "title": "AI 助理設定",
-      "description": "Configure the AI assistant that can run commands and manage files directly over your server sessions.",
+      "description": "設定這款 AI 助理，使其能直接透過您的伺服器連線執行指令並管理檔案。",
       "loading": "載入 AI 設定...",
       "enable": {
         "title": "啟用 AI 助理",
-        "description": "Allow users to open the AI assistant inside server sessions"
+        "description": "允許使用者在伺服器會話中開啟 AI 助理"
       },
       "provider": {
         "title": "AI 供應商",
@@ -1099,42 +1099,42 @@
       },
       "model": {
         "title": "型號",
-        "description": "Select the AI model the assistant should use"
+        "description": "選擇助理應使用的 AI 模型"
       },
       "requireConfirmation": {
-        "title": "Confirm before each action",
-        "description": "Require users to approve every command and file change the assistant wants to make"
+        "title": "每次執行動作前請先確認",
+        "description": "要求使用者必須核准助理欲執行的每項指令及檔案變更"
       },
       "apiKey": {
         "title": "API 金鑰",
         "setPlaceholder": "API 金鑰已設定 (留空以保持最新狀態)",
-        "genericDescription": "API key used to authenticate with the selected provider",
-        "genericPlaceholder": "Enter your {{provider}} API key"
+        "genericDescription": "用於向所選服務供應商進行身份驗證的 API 金鑰",
+        "genericPlaceholder": "請輸入您的 {{provider}} API 金鑰"
       },
       "authMethod": {
-        "title": "Authentication",
-        "description": "Authenticate with an API key or your provider subscription",
-        "apiKey": "API Key",
-        "subscription": "Subscription"
+        "title": "驗證",
+        "description": "使用 API 金鑰或您的服務供應商訂閱進行驗證",
+        "apiKey": "API 金鑰",
+        "subscription": "訂閱"
       },
       "subscription": {
-        "title": "{{provider}} Subscription",
-        "description": "Sign in with your {{provider}} subscription to use its models without an API key",
-        "connectedDescription": "Your {{provider}} subscription is connected",
-        "connect": "Connect",
-        "connecting": "Connecting...",
-        "complete": "Complete",
-        "disconnect": "Disconnect",
-        "codePlaceholder": "Paste the authorization code here",
-        "codePlaceholderUrl": "Paste the full callback URL (or code) here",
-        "connectSuccess": "{{provider}} subscription connected",
-        "startError": "Failed to start authorization",
-        "exchangeError": "Failed to connect subscription",
-        "disconnectError": "Failed to disconnect subscription"
+        "title": "{{provider}} 訂閱",
+        "description": "請使用您的 {{provider}} 訂閱帳戶登入，即可無需 API 金鑰即可使用其模型",
+        "connectedDescription": "您的 {{provider}} 訂閱已連結",
+        "connect": "連線",
+        "connecting": "正在連線中...",
+        "complete": "完成",
+        "disconnect": "斷開連接",
+        "codePlaceholder": "請將授權碼貼在此處",
+        "codePlaceholderUrl": "請在此處貼上完整的回呼網址（或代碼）",
+        "connectSuccess": "{{provider}} 訂閱已連線",
+        "startError": "無法啟動授權",
+        "exchangeError": "無法連線至訂閱",
+        "disconnectError": "無法解除訂閱"
       },
       "baseUrl": {
         "title": "API URL",
-        "description": "Base URL of the provider's OpenAI-compatible endpoint",
+        "description": "該供應商 OpenAI 相容端點的基礎 URL",
         "placeholder": "https://api.example.com/v1"
       },
       "selectProvider": "選擇提供商...",
@@ -1527,18 +1527,18 @@
       "telnetServer": "Telnet 伺服器",
       "rdpServer": "RDP 伺服器",
       "vncServer": "VNC 伺服器",
-      "demoServer": "Demo Connection",
-      "sftpServer": "SFTP Server",
-      "ftpServer": "FTP Server",
-      "ftpsServer": "FTPS Server",
+      "demoServer": "示範連線",
+      "sftpServer": "SFTP 伺服器",
+      "ftpServer": "FTP 伺服器",
+      "ftpsServer": "FTPS 伺服器",
       "createServer": "建立伺服器",
       "import": "進口",
       "pve": "Proxmox VE",
       "sshConfig": "SSH-Config",
-      "syncIntegration": "Sync now",
-      "syncSuccess": "Integration synced",
-      "syncFailed": "Failed to sync integration",
-      "removeIntegration": "Remove Integration",
+      "syncIntegration": "立即同步",
+      "syncSuccess": "整合已同步",
+      "syncFailed": "整合同步失敗",
+      "removeIntegration": "移除整合",
       "connect": "連接",
       "quickConnect": "快速連接",
       "openSFTP": "開啟 SFTP",
@@ -1607,7 +1607,7 @@
         "password": "密碼",
         "host": "主機",
         "macAddress": "MAC 位址",
-        "wolBroadcastAddress": "Broadcast Address",
+        "wolBroadcastAddress": "廣播地址",
         "engine": "引擎"
       },
       "placeholders": {
@@ -1704,7 +1704,7 @@
     },
     "proxmoxDialog": {
       "title": {
-        "import": "Add Proxmox VE",
+        "import": "新增 Proxmox VE",
         "edit": "編輯 Proxmox VE"
       },
       "fields": {
@@ -1726,8 +1726,8 @@
         "specificNode": "特定節點名稱"
       },
       "actions": {
-        "import": "Add",
-        "edit": "Save"
+        "import": "新增",
+        "edit": "儲存"
       },
       "messages": {
         "created": "成功建立 Proxmox 整合",
@@ -1821,8 +1821,8 @@
         "properties": "屬性",
         "openTerminal": "在此開啟終端機",
         "downloadFolder": "下載資料夾",
-        "newFile": "New File",
-        "newFolder": "New Folder"
+        "newFile": "新檔案",
+        "newFolder": "新資料夾"
       },
       "properties": {
         "general": "一般",
@@ -1885,7 +1885,7 @@
         "switchToList": "切換至清單檢視",
         "search": "搜尋檔案",
         "closeSearch": "關閉搜尋",
-        "refresh": "Refresh"
+        "refresh": "重新整理"
       },
       "item": {
         "link": "連結"
@@ -1913,44 +1913,44 @@
       }
     },
     "remoteDesktop": {
-      "dropOverlay": "Drop files to upload to remote",
+      "dropOverlay": "將檔案拖放至此處以上傳至遠端",
       "toast": {
-        "uploadedSingle": "Uploaded \"{{name}}\" to remote drive",
-        "uploadedMultiple": "Uploaded {{count}} files to remote drive",
-        "uploadFailed": "{{count}} file(s) failed to upload",
-        "uploadPartial": "{{failed}} file(s) failed to upload, {{succeeded}} succeeded",
-        "downloaded": "Downloaded \"{{name}}\" from remote"
+        "uploadedSingle": "已將「{{name}}」上傳至遠端磁碟機",
+        "uploadedMultiple": "已將 {{count}} 個檔案上傳至遠端磁碟機",
+        "uploadFailed": "{{count}} 無法上傳檔案",
+        "uploadPartial": "{{failed}} 檔案上傳失敗， {{succeeded}} 上傳成功",
+        "downloaded": "從遠端下載了「{{name}}」"
       }
     },
     "aiAssistant": {
       "title": "AI 助理",
-      "open": "AI Assistant",
-      "empty": "Ask the assistant to inspect or change this server. It can run commands and read or edit files directly over the connection.",
-      "placeholder": "Message the assistant...",
-      "connecting": "Connecting...",
-      "send": "Send",
-      "stop": "Stop",
-      "connectionError": "Connection to the assistant was lost.",
-      "reconnecting": "Connection lost. Reconnecting...",
-      "confirmPrompt": "Allow this action?",
-      "allow": "Allow",
-      "allowShortcut": "Allow ({{key}})",
-      "deny": "Deny",
-      "denied": "You denied this action.",
-      "stopped": "Stopped.",
+      "open": "AI 助理",
+      "empty": "請請助理檢查或更換這台伺服器。它可透過此連線直接執行指令，並讀取或編輯檔案。",
+      "placeholder": "傳訊給助理……",
+      "connecting": "正在連線中...",
+      "send": "傳送",
+      "stop": "停止",
+      "connectionError": "與助理的連線已中斷。",
+      "reconnecting": "連線中斷。正在重新連線...",
+      "confirmPrompt": "要允許此操作嗎？",
+      "allow": "允許",
+      "allowShortcut": "允許 ({{key}})",
+      "deny": "拒絕",
+      "denied": "您已拒絕此操作。",
+      "stopped": "停了。",
       "tools": {
-        "runCommand": "Run command",
-        "readFile": "Read file",
-        "writeFile": "Write file",
-        "editFile": "Edit file",
-        "listDirectory": "List directory",
-        "statPath": "Inspect path",
-        "makeDirectory": "Create directory",
-        "deleteFile": "Delete file",
-        "removeDirectory": "Remove directory",
-        "movePath": "Move",
-        "changePermissions": "Change permissions",
-        "findDirectories": "Find directories"
+        "runCommand": "執行指令",
+        "readFile": "讀取檔案",
+        "writeFile": "寫入檔案",
+        "editFile": "編輯檔案",
+        "listDirectory": "列出目錄",
+        "statPath": "檢查路徑",
+        "makeDirectory": "建立目錄",
+        "deleteFile": "刪除檔案",
+        "removeDirectory": "刪除目錄",
+        "movePath": "移動",
+        "changePermissions": "變更權限",
+        "findDirectories": "尋找目錄"
       }
     },
     "snippets": {
@@ -1960,19 +1960,19 @@
       "createNew": "建立新片段"
     },
     "toolbar": {
-      "drag": "Drag to move",
-      "shortcuts": "Keyboard shortcuts",
-      "holdModifier": "Hold {{key}}",
-      "zoomIn": "Zoom in",
-      "zoomOut": "Zoom out",
-      "zoomReset": "Reset zoom to fit (drag with the middle mouse button to pan)"
+      "drag": "拖曳以移動",
+      "shortcuts": "鍵盤快捷鍵",
+      "holdModifier": "暫停 {{key}}",
+      "zoomIn": "放大",
+      "zoomOut": "縮小",
+      "zoomReset": "將縮放比例重設為「自動適應」（按住滑鼠中鍵拖曳以平移畫面）"
     },
     "monitors": {
-      "title": "Monitor {{number}}",
-      "select": "Switch to monitor {{number}}",
-      "selectOrPopOut": "Switch to monitor {{number}} (double-click to open in its own window)",
-      "add": "Add monitor",
-      "remove": "Remove last monitor"
+      "title": "監視器 {{number}}",
+      "select": "切換至螢幕 {{number}}",
+      "selectOrPopOut": "切換至螢幕 {{number}} （雙擊以在獨立視窗中開啟）",
+      "add": "新增顯示器",
+      "remove": "移除最後一台顯示器"
     },
     "terminalActions": {
       "menuTitle": "終端行動",
