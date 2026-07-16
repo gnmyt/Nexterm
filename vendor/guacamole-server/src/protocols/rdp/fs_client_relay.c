@@ -734,11 +734,21 @@ void guac_rdp_fs_client_relay_attach_owner(guac_rdp_fs* fs, guac_user* user) {
         return;
     relay_fs_data* data = (relay_fs_data*) fs->backend_data;
     if (data == NULL) return;
+
     pthread_mutex_lock(&data->lock);
-    data->owner = user;
+    int claimed = (data->owner == NULL);
+    if (claimed)
+        data->owner = user;
     pthread_mutex_unlock(&data->lock);
 
+    if (!claimed) {
+        guac_user_log(user, GUAC_LOG_DEBUG, "Filesystem relay already held by "
+                "another user; not serving files from this one.");
+        return;
+    }
+
     user->nfs_resp_handler = relay_handle_resp;
+    guac_user_log(user, GUAC_LOG_DEBUG, "Serving RDP filesystem from this user.");
 }
 
 static relay_fs_data* relay_data_for(guac_user* user) {
@@ -813,9 +823,13 @@ void guac_rdp_fs_client_relay_detach_owner(guac_rdp_fs* fs, guac_user* user) {
     relay_fs_data* data = (relay_fs_data*) fs->backend_data;
     if (data == NULL) return;
     pthread_mutex_lock(&data->lock);
-    if (data->owner == user)
+    int was_owner = (data->owner == user);
+    if (was_owner)
         data->owner = NULL;
     pthread_mutex_unlock(&data->lock);
+
+    if (!was_owner)
+        return;
 
     user->nfs_resp_handler = NULL;
     pending_abort_all(data);
