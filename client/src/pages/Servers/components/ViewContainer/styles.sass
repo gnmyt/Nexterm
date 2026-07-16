@@ -1,7 +1,5 @@
 @use "@/common/styles/colors"
-
-$mobile: 768px
-$tablet: 1024px
+@use "@/common/styles/breakpoints"
 
 .view-container
   display: flex
@@ -12,7 +10,7 @@ $tablet: 1024px
   overflow: hidden
   transition: all 0.3s ease
 
-  @media (max-width: $mobile)
+  @media (max-width: breakpoints.$mobile)
     min-height: 0
 
   &.fullscreen
@@ -25,48 +23,49 @@ $tablet: 1024px
   z-index: 1001
   touch-action: none
   user-select: none
+  display: flex
+  align-items: center
+  padding: 0.3rem
+  border: 1px solid colors.$dark-gray
+  border-radius: 0.6rem
+  background-color: colors.$lighter-background
+  box-shadow: colors.$shadow-lg
+  cursor: grab
 
-  @media (max-width: $mobile)
+  @media (max-width: breakpoints.$mobile)
     .exit-fullscreen-btn
-      padding: 0.75rem
-      
+      width: 2.5rem
+      height: 2.5rem
+
       svg
-        width: 1.75rem
-        height: 1.75rem
+        width: 1.5rem
+        height: 1.5rem
 
   &.dragging
     cursor: grabbing
 
-    .exit-fullscreen-btn
-      cursor: grabbing
-      transform: scale(1.1)
-      background-color: rgba(0, 0, 0, 0.9)
-      border-color: colors.$primary
-
 .exit-fullscreen-btn
-  background-color: rgba(0, 0, 0, 0.7)
-  border: 1px solid colors.$darker-gray
-  border-radius: 8px
-  padding: 0.5rem
-  cursor: grab
   display: flex
   align-items: center
   justify-content: center
-  transition: background-color 0.2s ease, border-color 0.2s ease, transform 0.15s ease
-  backdrop-filter: blur(10px)
+  width: 1.75rem
+  height: 1.75rem
+  padding: 0
+  border: none
+  border-radius: 0.4rem
+  background-color: transparent
+  color: colors.$subtext
+  cursor: inherit
+  transition: background-color 0.1s ease-out, color 0.1s ease-out
 
   svg
-    width: 1.5rem
-    height: 1.5rem
-    color: colors.$white
+    width: 1.15rem
+    height: 1.15rem
     pointer-events: none
 
   &:hover
-    background-color: rgba(0, 0, 0, 0.9)
-    border-color: colors.$primary
-
-    svg
-      color: colors.$primary
+    background-color: colors.$gray
+    color: colors.$white
 
 .view-layouter
   position: relative
@@ -74,10 +73,10 @@ $tablet: 1024px
   width: 100%
   overflow: hidden
 
-  @media (max-width: $tablet)
+  @media (max-width: breakpoints.$tablet)
     height: calc(100% - 3rem)
 
-  @media (max-width: $mobile)
+  @media (max-width: breakpoints.$mobile)
     height: calc(100% - 2.5rem)
 
   .view-container.fullscreen &
@@ -100,7 +99,7 @@ $tablet: 1024px
     gap: 0
     background-color: colors.$darker-gray
 
-    @media (max-width: $mobile)
+    @media (max-width: breakpoints.$mobile)
       .session-renderer
         position: absolute !important
         top: 0 !important
@@ -141,7 +140,7 @@ $tablet: 1024px
   touch-action: none
   opacity: 0.1
 
-  @media (max-width: $tablet)
+  @media (max-width: breakpoints.$tablet)
     &.vertical
       width: 12px !important
       margin-left: -6px
@@ -150,7 +149,7 @@ $tablet: 1024px
       height: 12px !important
       margin-top: -6px
 
-  @media (max-width: $mobile)
+  @media (max-width: breakpoints.$mobile)
     display: none
 
   &:hover

@@ -4,8 +4,9 @@ import { useTranslation } from "react-i18next";
 import { deleteRequest, getRequest, patchRequest } from "@/common/utils/RequestUtil.js";
 import Button from "@/common/components/Button";
 import ToggleSwitch from "@/common/components/ToggleSwitch";
+import { getProviderIcon } from "@/common/utils/iconUtils";
 import Icon from "@mdi/react";
-import { mdiPencil, mdiPlus, mdiShieldAccountOutline, mdiTrashCan, mdiLock, mdiServer } from "@mdi/js";
+import { mdiPencil, mdiPlus, mdiTrashCan, mdiLock, mdiServer } from "@mdi/js";
 import ProviderDialog from "./components/ProviderDialog";
 import LDAPProviderDialog from "./components/LDAPProviderDialog";
 import { ActionConfirmDialog } from "@/common/components/ActionConfirmDialog/ActionConfirmDialog.jsx";
@@ -55,6 +56,15 @@ export const Authentication = () => {
         }
     };
 
+    const toggleRegistration = async (providerId, allowRegistration) => {
+        try {
+            await patchRequest(`auth/providers/admin/oidc/${providerId}`, { allowRegistration });
+            await loadProviders();
+        } catch (error) {
+            sendToast(t("common.error"), error.message || t("settings.authentication.errors.toggleProvider"));
+        }
+    };
+
     useEffect(() => {
         loadProviders();
     }, []);
@@ -70,54 +80,79 @@ export const Authentication = () => {
             </div>
 
             <div className="vertical-list">
-                {providers.map(provider => (
-                    <div key={`oidc-${provider.id}`} className="item">
-                        <div className="left-section">
-                            <div className={`icon ${provider.isInternal ? "warning" : "primary"}`}>
-                                <Icon path={provider.isInternal ? mdiLock : mdiShieldAccountOutline} />
+                {providers.map(provider => {
+                    const row = (
+                        <>
+                            <div className="left-section">
+                                <div className={`icon ${provider.isInternal ? "warning" : "primary"}`}>
+                                    <Icon path={provider.isInternal ? mdiLock : getProviderIcon(provider)} />
+                                </div>
+                                <div className="details">
+                                    <h3>
+                                        {provider.isInternal ? t("settings.authentication.internalProviderName") : provider.name}
+                                        {!!provider.isInternal && (
+                                            <span className="system-badge">{t("settings.authentication.system")}</span>
+                                        )}
+                                    </h3>
+                                    <p>{provider.isInternal ? t("settings.authentication.systemDescription") : provider.issuer}</p>
+                                </div>
                             </div>
-                            <div className="details">
-                                <h3>
-                                    {provider.isInternal ? t("settings.authentication.internalProviderName") : provider.name}
-                                    {!!provider.isInternal && (
-                                        <span className="system-badge">{t("settings.authentication.system")}</span>
-                                    )}
-                                </h3>
-                                <p>{provider.isInternal ? t("settings.authentication.systemDescription") : provider.issuer}</p>
+
+                            <div className="right-section">
+                                <ToggleSwitch
+                                    checked={provider.enabled}
+                                    onChange={(checked) => toggleProvider(provider.id, checked, "oidc")}
+                                    id={`provider-toggle-${provider.id}`}
+                                />
+
+                                {!provider.isInternal && (
+                                    <>
+                                        <Icon
+                                            path={mdiPencil}
+                                            className="action-icon"
+                                            onClick={() => {
+                                                setEditProvider(provider);
+                                                setCreateDialogOpen(true);
+                                            }}
+                                        />
+                                        <Icon
+                                            path={mdiTrashCan}
+                                            className="action-icon danger"
+                                            onClick={() => {
+                                                setSelectedProviderId(provider.id);
+                                                setSelectedProviderType("oidc");
+                                                setDeleteDialogOpen(true);
+                                            }}
+                                        />
+                                    </>
+                                )}
                             </div>
-                        </div>
+                        </>
+                    );
 
-                        <div className="right-section">
-                            <ToggleSwitch 
-                                checked={provider.enabled}
-                                onChange={(checked) => toggleProvider(provider.id, checked, "oidc")}
-                                id={`provider-toggle-${provider.id}`}
-                            />
+                    if (!provider.isInternal)
+                        return <div key={`oidc-${provider.id}`} className="item">{row}</div>;
 
-                            {!provider.isInternal && (
-                                <>
-                                    <Icon 
-                                        path={mdiPencil} 
-                                        className="action-icon"
-                                        onClick={() => {
-                                            setEditProvider(provider);
-                                            setCreateDialogOpen(true);
-                                        }}
+                    return (
+                        <div key={`oidc-${provider.id}`} className={`item${provider.enabled ? " has-sub-option" : ""}`}>
+                            {provider.enabled ? <div className="item-row">{row}</div> : row}
+
+                            {provider.enabled && (
+                                <div className="item-sub-option">
+                                    <div className="sub-label">
+                                        <h4>{t("settings.authentication.registration.title")}</h4>
+                                        <p>{t("settings.authentication.registration.description")}</p>
+                                    </div>
+                                    <ToggleSwitch
+                                        checked={provider.allowRegistration}
+                                        onChange={(checked) => toggleRegistration(provider.id, checked)}
+                                        id="registration-toggle"
                                     />
-                                    <Icon 
-                                        path={mdiTrashCan} 
-                                        className="action-icon danger"
-                                        onClick={() => {
-                                            setSelectedProviderId(provider.id);
-                                            setSelectedProviderType("oidc");
-                                            setDeleteDialogOpen(true);
-                                        }}
-                                    />
-                                </>
+                                </div>
                             )}
                         </div>
-                    </div>
-                ))}
+                    );
+                })}
 
                 {ldapProviders.map(provider => (
                     <div key={`ldap-${provider.id}`} className="item">

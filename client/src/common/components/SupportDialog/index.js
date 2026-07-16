@@ -1,1 +1,1 @@
-export { SupportDialog as default } from './SupportDialog';
+export { SupportDialog as default } from "./SupportDialog";

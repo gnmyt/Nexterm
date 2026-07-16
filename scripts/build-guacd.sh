@@ -28,18 +28,18 @@ build() {
     cd "$GUACD_SRC"
     
     DIST_DIR="$GUACD_SRC/dist"
-    CONFIGURE_OPTS="--prefix=$DIST_DIR --with-freerdp-plugin-dir=$DIST_DIR/lib/freerdp2"
+    CONFIGURE_OPTS="--prefix=$DIST_DIR --with-freerdp-plugin-dir=$DIST_DIR/lib/freerdp3"
     
     if [ -f Makefile ]; then
         CURRENT_PREFIX=$(grep "^prefix = " Makefile | sed 's/prefix = //')
         CURRENT_FREERDP_DIR=$(grep "^FREERDP_PLUGIN_DIR = " src/protocols/rdp/Makefile 2>/dev/null | sed 's/FREERDP_PLUGIN_DIR = //' || echo "")
-        if [ "$CURRENT_PREFIX" != "$DIST_DIR" ] || [ "$CURRENT_FREERDP_DIR" != "$DIST_DIR/lib/freerdp2" ]; then
+        if [ "$CURRENT_PREFIX" != "$DIST_DIR" ] || [ "$CURRENT_FREERDP_DIR" != "$DIST_DIR/lib/freerdp3" ]; then
             echo "[guacd] Configuration mismatch, reconfiguring..."
             make distclean 2>/dev/null || true
-            autoreconf -fi && ./configure $CONFIGURE_OPTS
+            autoreconf -fi && CFLAGS="${CFLAGS:-} -Wno-error=deprecated-declarations" ./configure $CONFIGURE_OPTS
         fi
     else
-        autoreconf -fi && ./configure $CONFIGURE_OPTS
+        autoreconf -fi && CFLAGS="${CFLAGS:-} -Wno-error=deprecated-declarations" ./configure $CONFIGURE_OPTS
     fi
     
     make -j$(nproc)
@@ -51,7 +51,7 @@ start_guacd() {
     [ -n "$GUACD_PID" ] && kill $GUACD_PID 2>/dev/null && sleep 1
     echo "[guacd] Starting (log level: $GUACD_LOG_LEVEL)..."
 
-    export LD_LIBRARY_PATH="$GUACD_SRC/dist/lib:$LD_LIBRARY_PATH"
+    export LD_LIBRARY_PATH="$GUACD_SRC/dist/lib:$GUACD_SRC/dist/lib/freerdp3:$LD_LIBRARY_PATH"
     export GUACD_HOME="$GUACD_SRC/dist"
     
     "$GUACD_SRC/src/guacd/guacd" -b 0.0.0.0 -f $GUACD_ARGS &

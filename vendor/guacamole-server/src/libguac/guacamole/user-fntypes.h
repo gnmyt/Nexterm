@@ -226,12 +226,18 @@ typedef int guac_user_clipboard_handler(guac_user* user, guac_stream* stream,
  * @param height
  *     The desired height of the display, in pixels.
  *
+ * @param x_position
+ *     The position of the monitor to resize, relative to other monitors.
+ *
+ * @param top_offset
+ *     The offset of the monitor from the top of the screen, in pixels.
+ *
  * @return
  *     Zero if the size event has been successfully handled, non-zero
  *     otherwise.
  */
 typedef int guac_user_size_handler(guac_user* user,
-        int width, int height);
+        int width, int height, int x_position, int top_offset);
 
 /**
  * Handler for Guacamole file streams received from a user. Each such file
@@ -385,6 +391,20 @@ typedef int guac_user_ack_handler(guac_user* user, guac_stream* stream,
  *     non-zero otherwise.
  */
 typedef int guac_user_end_handler(guac_user* user, guac_stream* stream);
+
+/**
+ * Handler for Guacamole "nfs-resp" instructions, sent by the user (browser
+ * virtual FS or Tauri connector) to complete a previously issued nfs-*
+ * request as part of the RDP client-relay filesystem protocol. The req_id
+ * echoes an outstanding guac_protocol_send_nfs_* request and status is the
+ * client's result (0 = OK).
+ *
+ * Decoding is left to the implementation: argv holds the raw payload
+ * elements past the status slot, to be interpreted positionally according to
+ * the request type req_id refers to. Returns zero on success.
+ */
+typedef int guac_user_nfs_resp_handler(guac_user* user, int req_id,
+        int status, int argc, char** argv);
 
 /**
  * Handler for Guacamole join events. A join event is fired by the

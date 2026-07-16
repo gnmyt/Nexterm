@@ -1,4 +1,3 @@
-const { Client } = require("ssh2");
 const logger = require("./logger");
 const Entry = require("../models/Entry");
 const EntryIdentity = require("../models/EntryIdentity");
@@ -6,9 +5,10 @@ const MonitoringData = require("../models/MonitoringData");
 const MonitoringSnapshot = require("../models/MonitoringSnapshot");
 const Identity = require("../models/Identity");
 const { Op } = require("sequelize");
-const { createSSH } = require("./createSSH");
 const { getIdentityCredentials } = require("../controllers/identity");
 const { getMonitoringSettingsInternal } = require("../controllers/monitoring");
+const controlPlane = require("../lib/controlPlane/ControlPlaneServer");
+const { buildSSHParams, resolveJumpHosts } = require("../lib/ConnectionService");
 
 let monitoringInterval = null;
 let isRunning = false;
@@ -20,9 +20,9 @@ const start = async () => {
 
     currentSettings = await getMonitoringSettingsInternal();
     const interval = currentSettings?.monitoringInterval ? currentSettings.monitoringInterval * 1000 : 60000;
-    
-    logger.system(`Starting monitoring service`, { interval });
-    
+
+    logger.system("Starting monitoring service", { interval });
+
     runMonitoring();
     monitoringInterval = setInterval(runMonitoring, interval);
 };
@@ -37,11 +37,11 @@ const runMonitoring = async () => {
     try {
         currentSettings = await getMonitoringSettingsInternal();
 
-        if (!currentSettings || !currentSettings.monitoringEnabled) {
+        if (!currentSettings?.monitoringEnabled) {
             logger.verbose("Monitoring is disabled, skipping cycle");
             return;
         }
-        
+
         const entries = await Entry.findAll({ where: { type: "server" } });
         const toMonitor = entries.filter(e => e.config?.protocol === "ssh" && e.config?.monitoringEnabled);
         if (toMonitor.length) await Promise.allSettled(toMonitor.map(monitorEntry));
@@ -67,99 +67,107 @@ const monitorEntry = async (entry) => {
     }
 };
 
-const collectServerData = async (entry, identity) => {
-    return new Promise((resolve) => {
-        const conn = new Client();
-        let data = { status: "offline", timestamp: new Date() };
+const IFACE_DETAIL_CMD =
+    'for d in /sys/class/net/*; do n=$(basename "$d"); ' +
+    'printf "%s\\t%s\\t%s\\t%s\\t%s\\t%s\\t%s\\n" "$n" ' +
+    '"$(cat "$d/address" 2>/dev/null)" ' +
+    '"$(cat "$d/operstate" 2>/dev/null)" ' +
+    '"$(cat "$d/mtu" 2>/dev/null)" ' +
+    '"$(cat "$d/speed" 2>/dev/null)" ' +
+    '"$(cat "$d/statistics/rx_bytes" 2>/dev/null)" ' +
+    '"$(cat "$d/statistics/tx_bytes" 2>/dev/null)"; done';
 
-        const timeout = setTimeout(() => {
-            conn.end();
-            conn._jumpConnections?.forEach(c => c.ssh.end());
-            resolve({ ...data, errorMessage: "Connection timeout" });
-        }, 30000);
-
-        conn.on("ready", async () => {
-            clearTimeout(timeout);
-            try {
-                const [cpu, mem, uptime, load, processes] = await Promise.all([
-                    getCPUUsage(conn), getMemoryUsage(conn), getUptime(conn), getLoadAverage(conn), getProcessCount(conn)
-                ]);
-                const [disk, os, network] = await Promise.all([getDiskUsage(conn), getOSInfo(conn), getNetworkInterfaces(conn)]);
-                const processList = await getProcessList(conn);
-                
-                data = {
-                    status: "online", timestamp: new Date(), cpuUsage: cpu,
-                    memoryUsage: mem.usage, memoryTotal: mem.total, disk, uptime,
-                    loadAverage: load, processes, processList, osInfo: os, network
-                };
-            } catch (error) {
-                logger.error("Error during data collection", { error: error.message });
-                data = { ...data, status: "error", errorMessage: error.message };
-            }
-            conn.end();
-            conn._jumpConnections?.forEach(c => c.ssh.end());
-            resolve(data);
-        });
-
-        conn.on("error", (err) => {
-            clearTimeout(timeout);
-            conn._jumpConnections?.forEach(c => c.ssh.end());
-            resolve({ ...data, status: "offline", errorMessage: err.message });
-        });
-
-        createSSH(entry, identity).then(({ ssh, sshOptions }) => {
-            if (ssh._jumpConnections) conn._jumpConnections = ssh._jumpConnections;
-            conn.connect(sshOptions);
-        }).catch((error) => {
-            clearTimeout(timeout);
-            resolve({ ...data, status: "error", errorMessage: error.message });
-        });
-    });
+const COMMANDS = {
+    cpu: "grep 'cpu ' /proc/stat",
+    memory: "free -b",
+    uptime: "cat /proc/uptime",
+    loadAverage: "cat /proc/loadavg",
+    processCount: "ps -e --no-headers | wc -l",
+    processList: "ps aux --sort=-%cpu | head -51",
+    lsblk: "lsblk -b -o NAME,TYPE,SIZE,MODEL,SERIAL,ROTA,MOUNTPOINT -J",
+    df: "df -B1 --output=source,fstype,size,used,avail,pcent,target | grep -E '^/dev'",
+    osRelease: "cat /etc/os-release",
+    kernel: "uname -r",
+    arch: "uname -m",
+    hostname: "hostname",
+    ipAddr: "ip -o addr show",
+    ifaceDetails: IFACE_DETAIL_CMD,
 };
 
-const executeCommand = (conn, cmd) => new Promise((resolve, reject) => {
-    conn.exec(cmd, (err, stream) => {
-        if (err) return reject(err);
-        let output = "";
-        stream.on("data", d => output += d.toString());
-        stream.on("close", code => code === 0 ? resolve(output.trim()) : reject(new Error(`Command failed: ${code}`)));
-    });
-});
+const collectServerData = async (entry, identity, credentials) => {
+    if (!controlPlane.hasEngine()) {
+        return { status: "error", timestamp: new Date(), errorMessage: "No engine connected. Monitoring requires the Nexterm Engine." };
+    }
 
-const getCPUUsage = async (conn) => {
+    const host = entry.config?.ip;
+    const port = entry.config?.port || 22;
+    if (!host) {
+        return { status: "error", timestamp: new Date(), errorMessage: "Missing host configuration" };
+    }
+
+    const params = buildSSHParams(identity, credentials);
+    const jumpHosts = await resolveJumpHosts(entry);
+
     try {
-        const output = await executeCommand(conn, "grep 'cpu ' /proc/stat");
+        const commands = Object.entries(COMMANDS).map(([id, command]) => ({ id, command }));
+        const batch = await controlPlane.execCommandBatch(host, port, params, commands, jumpHosts);
+        if (!batch.success) {
+            throw new Error(batch.errorMessage || "Failed to connect to SSH host");
+        }
+
+        const out = {};
+        for (const r of batch.results || []) {
+            out[r.id] = r.success ? (r.stdout || "").trim() : "";
+        }
+
+        const memory = parseMemoryUsage(out.memory);
+        return {
+            status: "online",
+            timestamp: new Date(),
+            cpuUsage: parseCPUUsage(out.cpu),
+            memoryUsage: memory.usage,
+            memoryTotal: memory.total,
+            disk: parseDiskUsage(out.lsblk, out.df),
+            uptime: parseUptime(out.uptime),
+            loadAverage: parseLoadAverage(out.loadAverage),
+            processes: parseProcessCount(out.processCount),
+            processList: parseProcessList(out.processList),
+            osInfo: parseOSInfo(out.osRelease, out.kernel, out.arch, out.hostname),
+            network: parseNetworkInterfaces(out.ifaceDetails, out.ipAddr),
+        };
+    } catch (error) {
+        logger.error("Error during monitoring data collection", { error: error.message, host });
+        return { status: "offline", timestamp: new Date(), errorMessage: error.message };
+    }
+};
+
+const parseCPUUsage = (output) => {
+    try {
         const vals = output.split(" ").filter(Boolean).slice(1).map(Number);
         return Math.round(((vals.reduce((a, b) => a + b, 0) - vals[3]) / vals.reduce((a, b) => a + b, 0)) * 100);
     } catch { return null; }
 };
 
-const getMemoryUsage = async (conn) => {
+const parseMemoryUsage = (output) => {
     try {
-        const lines = (await executeCommand(conn, "free -b")).split("\n");
-        const parts = lines[1].split(/\s+/);
-        const total = parseInt(parts[1]), available = parseInt(parts[6] || parts[3]);
+        const parts = output.split("\n")[1].split(/\s+/);
+        const total = Number.parseInt(parts[1]), available = Number.parseInt(parts[6] || parts[3]);
         return { usage: Math.round(((total - available) / total) * 100), total };
     } catch { return { usage: null, total: null }; }
 };
 
-const getDiskUsage = async (conn) => {
+const parseDiskUsage = (lsblkOutput, dfOutput) => {
     try {
-        const [lsblkOutput, dfOutput] = await Promise.all([
-            executeCommand(conn, "lsblk -b -o NAME,TYPE,SIZE,MODEL,SERIAL,ROTA,MOUNTPOINT -J").catch(() => ""),
-            executeCommand(conn, "df -B1 --output=source,fstype,size,used,avail,pcent,target | grep -E '^/dev'").catch(() => ""),
-        ]);
-
         const usageMap = {};
         for (const line of dfOutput.split("\n").filter(Boolean)) {
             const p = line.trim().split(/\s+/);
             usageMap[p[0]] = {
                 filesystem: p[0],
                 type: p[1],
-                size: parseInt(p[2], 10) || 0,
-                used: parseInt(p[3], 10) || 0,
-                available: parseInt(p[4], 10) || 0,
-                usagePercent: parseInt(p[5], 10) || 0,
+                size: Number.parseInt(p[2], 10) || 0,
+                used: Number.parseInt(p[3], 10) || 0,
+                available: Number.parseInt(p[4], 10) || 0,
+                usagePercent: Number.parseInt(p[5], 10) || 0,
                 mountPoint: p[6] || "",
             };
         }
@@ -171,7 +179,7 @@ const getDiskUsage = async (conn) => {
                 if (device.type !== "disk") continue;
                 const disk = {
                     name: device.name,
-                    size: parseInt(device.size, 10) || 0,
+                    size: Number.parseInt(device.size, 10) || 0,
                     model: device.model?.trim() || null,
                     serial: device.serial?.trim() || null,
                     rotational: device.rota === true || device.rota === "1",
@@ -183,7 +191,7 @@ const getDiskUsage = async (conn) => {
                     const usage = usageMap[devPath] || {};
                     disk.partitions.push({
                         name: child.name,
-                        size: parseInt(child.size, 10) || 0,
+                        size: Number.parseInt(child.size, 10) || 0,
                         mountPoint: child.mountpoint || usage.mountPoint || null,
                         type: usage.type || null,
                         used: usage.used || 0,
@@ -197,7 +205,7 @@ const getDiskUsage = async (conn) => {
                         const usage = usageMap[devPath] || {};
                         disk.partitions.push({
                             name: device.name,
-                            size: parseInt(device.size, 10) || 0,
+                            size: Number.parseInt(device.size, 10) || 0,
                             mountPoint: device.mountpoint || usage.mountPoint || null,
                             type: usage.type || null,
                             used: usage.used || 0,
@@ -230,102 +238,75 @@ const getDiskUsage = async (conn) => {
     } catch { return []; }
 };
 
-const getUptime = async (conn) => {
-    try { return Math.floor(parseFloat((await executeCommand(conn, "cat /proc/uptime")).split(" ")[0])); }
+const parseUptime = (output) => {
+    try { return Math.floor(Number.parseFloat(output.split(" ")[0])) || null; }
     catch { return null; }
 };
 
-const getLoadAverage = async (conn) => {
-    try { return (await executeCommand(conn, "cat /proc/loadavg")).split(" ").slice(0, 3).map(parseFloat); }
+const parseLoadAverage = (output) => {
+    try { return output ? output.split(" ").slice(0, 3).map(parseFloat) : null; }
     catch { return null; }
 };
 
-const getProcessCount = async (conn) => {
-    try { return parseInt(await executeCommand(conn, "ps -e --no-headers | wc -l")); }
+const parseProcessCount = (output) => {
+    try { return Number.parseInt(output) || null; }
     catch { return null; }
 };
 
-const getProcessList = async (conn) => {
+const parseProcessList = (output) => {
     try {
-        return (await executeCommand(conn, "ps aux --sort=-%cpu | head -51")).split("\n").slice(1, 51)
+        return output.split("\n").slice(1, 51)
             .filter(Boolean).map(line => {
                 const p = line.trim().split(/\s+/);
                 return p.length >= 11 ? {
-                    user: p[0], pid: parseInt(p[1]), cpu: parseFloat(p[2]), mem: parseFloat(p[3]),
-                    vsz: parseInt(p[4]), rss: parseInt(p[5]), tty: p[6], stat: p[7],
+                    user: p[0], pid: Number.parseInt(p[1]), cpu: Number.parseFloat(p[2]), mem: Number.parseFloat(p[3]),
+                    vsz: Number.parseInt(p[4]), rss: Number.parseInt(p[5]), tty: p[6], stat: p[7],
                     start: p[8], time: p[9], command: p.slice(10).join(" ")
                 } : null;
             }).filter(Boolean);
     } catch { return []; }
 };
 
-const getOSInfo = async (conn) => {
+const parseOSInfo = (osRelease, kernel, arch, hostname) => {
     try {
-        const [osRelease, kernel, arch, hostname] = await Promise.all([
-            executeCommand(conn, "cat /etc/os-release").catch(() => ""),
-            executeCommand(conn, "uname -r").catch(() => ""),
-            executeCommand(conn, "uname -m").catch(() => ""),
-            executeCommand(conn, "hostname").catch(() => ""),
-        ]);
-        const info = { kernel, architecture: arch, hostname: hostname.trim() };
+        const info = { kernel, architecture: arch, hostname };
         osRelease.split("\n").forEach(line => {
-            if (line.startsWith("NAME=")) info.name = line.split("=")[1].replace(/"/g, "");
-            if (line.startsWith("VERSION=")) info.version = line.split("=")[1].replace(/"/g, "");
+            if (line.startsWith("NAME=")) info.name = line.split("=")[1].replaceAll('"', "");
+            if (line.startsWith("VERSION=")) info.version = line.split("=")[1].replaceAll('"', "");
         });
         return info;
     } catch { return {}; }
 };
 
-const getNetworkInterfaces = async (conn) => {
+const parseNetworkInterfaces = (ifaceDetails, ipOutput) => {
     try {
-        const [procNetDev, ipOutput] = await Promise.all([
-            executeCommand(conn, "cat /proc/net/dev"),
-            executeCommand(conn, "ip -o addr show").catch(() => ""),
-        ]);
-        
-        const trafficMap = {};
-        for (const line of procNetDev.split("\n").slice(2).filter(Boolean)) {
-            const match = line.match(/^\s*([^:]+):\s*(\d+)\s+\d+\s+\d+\s+\d+\s+\d+\s+\d+\s+\d+\s+\d+\s+(\d+)/);
-            if (match && match[1] !== "lo") {
-                trafficMap[match[1].trim()] = { rxBytes: parseInt(match[2], 10) || 0, txBytes: parseInt(match[3], 10) || 0 };
-            }
-        }
-        
         const ifaceMap = {};
+        for (const line of ifaceDetails.split("\n").filter(Boolean)) {
+            const [name, mac, state, mtu, speed, rxBytes, txBytes] = line.split("\t");
+            if (!name || name === "lo") continue;
+            ifaceMap[name] = {
+                name, ipv4: [], ipv6: [],
+                rxBytes: Number.parseInt(rxBytes, 10) || 0,
+                txBytes: Number.parseInt(txBytes, 10) || 0,
+                mac: mac?.trim() || null,
+                state: state?.trim() || null,
+                mtu: Number.parseInt(mtu, 10) || null,
+                speed: Number.parseInt(speed, 10) || null,
+            };
+        }
+
         for (const line of ipOutput.split("\n").filter(Boolean)) {
             const match = line.match(/^\d+:\s+(\S+)\s+inet6?\s+(\S+)/);
-            if (match) {
-                const name = match[1].replace(/@.*$/, "");
-                if (name === "lo") continue;
-                if (!ifaceMap[name]) ifaceMap[name] = { name, ipv4: [], ipv6: [], ...trafficMap[name] };
-                const addr = match[2];
-                if (addr.includes(":")) ifaceMap[name].ipv6.push(addr);
-                else ifaceMap[name].ipv4.push(addr);
-            }
+            if (!match) continue;
+            const name = match[1].replace(/@.*$/, "");
+            if (name === "lo") continue;
+            if (!ifaceMap[name]) ifaceMap[name] = { name, ipv4: [], ipv6: [], rxBytes: 0, txBytes: 0 };
+            const addr = match[2];
+            if (addr.includes(":")) ifaceMap[name].ipv6.push(addr);
+            else ifaceMap[name].ipv4.push(addr);
         }
-        
-        for (const name of Object.keys(trafficMap)) {
-            if (!ifaceMap[name]) ifaceMap[name] = { name, ipv4: [], ipv6: [], ...trafficMap[name] };
-        }
-        
-        const interfaces = Object.values(ifaceMap);
-        
-        await Promise.all(interfaces.map(async (iface) => {
-            try {
-                const [mac, state, mtu, speed] = await Promise.all([
-                    executeCommand(conn, `cat /sys/class/net/${iface.name}/address`).catch(() => ""),
-                    executeCommand(conn, `cat /sys/class/net/${iface.name}/operstate`).catch(() => ""),
-                    executeCommand(conn, `cat /sys/class/net/${iface.name}/mtu`).catch(() => ""),
-                    executeCommand(conn, `cat /sys/class/net/${iface.name}/speed`).catch(() => ""),
-                ]);
-                iface.mac = mac.trim() || null;
-                iface.state = state.trim() || null;
-                iface.mtu = parseInt(mtu.trim(), 10) || null;
-                iface.speed = parseInt(speed.trim(), 10) || null;
-            } catch {}
-        }));
-        
-        return interfaces;
+
+        return Object.values(ifaceMap);
     } catch (error) {
         logger.error("Error getting network interfaces", { error: error.message });
         return [];
@@ -338,8 +319,8 @@ const saveMonitoringData = async (entryId, data) => {
             entryId,
             timestamp: data.timestamp || new Date(),
             status: data.status,
-            cpuUsage: data.cpuUsage != null ? Math.round(data.cpuUsage) : null,
-            memoryUsage: data.memoryUsage != null ? Math.round(data.memoryUsage) : null,
+            cpuUsage: data.cpuUsage == null ? null : Math.round(data.cpuUsage),
+            memoryUsage: data.memoryUsage == null ? null : Math.round(data.memoryUsage),
             uptime: data.uptime,
             loadAverage: data.loadAverage,
             processes: data.processes,
@@ -366,7 +347,7 @@ const cleanupOldData = async () => {
         const settings = await getMonitoringSettingsInternal();
         const retentionHours = settings?.dataRetentionHours || 24;
         const retentionMs = retentionHours * 60 * 60 * 1000;
-        
+
         await MonitoringData.destroy({ where: { timestamp: { [Op.lt]: new Date(Date.now() - retentionMs) } } });
         logger.verbose("Cleaned up old monitoring data", { retentionHours });
     } catch (error) {
@@ -376,9 +357,4 @@ const cleanupOldData = async () => {
 
 setInterval(cleanupOldData, 60 * 60 * 1000);
 
-module.exports = {
-    start, stop, runMonitoring, monitorEntry, collectServerData, executeCommand,
-    getCPUUsage, getMemoryUsage, getDiskUsage, getUptime, getLoadAverage,
-    getProcessCount, getProcessList, getOSInfo, getNetworkInterfaces, saveMonitoringData, cleanupOldData,
-    MonitoringSnapshot: require("../models/MonitoringSnapshot"),
-};
+module.exports = { start, stop };

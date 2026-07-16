@@ -1,7 +1,5 @@
 @use "@/common/styles/colors"
-
-$mobile: 768px
-$tablet: 1024px
+@use "@/common/styles/breakpoints"
 
 .ai-settings
   display: flex
@@ -9,7 +7,7 @@ $tablet: 1024px
   margin-top: 1rem
   gap: 2rem
 
-  @media (max-width: $mobile)
+  @media (max-width: breakpoints.$mobile)
     gap: 1.5rem
 
   .ai-settings-loading
@@ -23,7 +21,7 @@ $tablet: 1024px
       color: colors.$white
       font-size: 1.5rem
 
-      @media (max-width: $mobile)
+      @media (max-width: breakpoints.$mobile)
         font-size: 1.25rem
 
     p
@@ -31,7 +29,7 @@ $tablet: 1024px
       color: colors.$subtext
       font-size: 0.9rem
 
-      @media (max-width: $mobile)
+      @media (max-width: breakpoints.$mobile)
         margin-bottom: 1rem
         font-size: 0.85rem
 
@@ -43,7 +41,7 @@ $tablet: 1024px
       border-bottom: 1px solid colors.$gray
       gap: 1rem
 
-      @media (max-width: $mobile)
+      @media (max-width: breakpoints.$mobile)
         flex-direction: column
         gap: 0.75rem
 
@@ -54,7 +52,7 @@ $tablet: 1024px
         flex: 1
         margin-right: 2rem
 
-        @media (max-width: $mobile)
+        @media (max-width: breakpoints.$mobile)
           margin-right: 0
 
         h4
@@ -63,7 +61,7 @@ $tablet: 1024px
           font-size: 1rem
           font-weight: 600
 
-          @media (max-width: $mobile)
+          @media (max-width: breakpoints.$mobile)
             font-size: 0.9rem
 
         p
@@ -72,85 +70,52 @@ $tablet: 1024px
           font-size: 0.85rem
           line-height: 1.4
 
-          @media (max-width: $mobile)
+          @media (max-width: breakpoints.$mobile)
             font-size: 0.8rem
 
       .setting-input
         min-width: 250px
 
-        @media (max-width: $mobile)
+        @media (max-width: breakpoints.$mobile)
           min-width: 100%
           width: 100%
 
         &.api-key-input
           min-width: 300px
 
-          @media (max-width: $mobile)
+          @media (max-width: breakpoints.$mobile)
             min-width: 100%
 
-        &.number-input
-          min-width: 120px
+        &.subscription-connect
+          min-width: 320px
+          display: flex
+          flex-direction: column
+          gap: 0.75rem
 
-          @media (max-width: $mobile)
+          @media (max-width: breakpoints.$mobile)
             min-width: 100%
 
-          input
+          > .btn
             width: 100%
-            padding: 0.8rem
-            background: colors.$lighter-background
-            border: 1px solid colors.$gray
-            border-radius: 0.7rem
-            color: colors.$white
-            font-size: 14pt
-            outline: none
 
-            @media (max-width: $mobile)
-              padding: 0.625rem
-              font-size: 12pt
+          .code-row
+            display: flex
+            align-items: center
+            gap: 0.75rem
 
-            &:focus
-              border-color: colors.$primary
-              background-color: colors.$dark-gray
+            .input-container
+              flex: 1
 
-  .advanced-settings
-    margin-top: 2rem
-    padding: 1.5rem
-    background: colors.$dark-gray
-    border-radius: 0.7rem
-    border: 1px solid colors.$gray
+            .btn
+              flex-shrink: 0
+              white-space: nowrap
 
-    @media (max-width: $mobile)
-      margin-top: 1.5rem
-      padding: 1rem
+            @media (max-width: breakpoints.$mobile)
+              flex-direction: column
+              align-items: stretch
 
-    h4
-      margin: 0 0 1.5rem 0
-      color: colors.$white
-      font-size: 1rem
-      font-weight: 600
-
-      @media (max-width: $mobile)
-        margin-bottom: 1rem
-        font-size: 0.9rem
-
-    .setting-row
-      display: grid
-      grid-template-columns: 1fr 1fr
-      gap: 2rem
-
-      @media (max-width: $tablet)
-        grid-template-columns: 1fr
-        gap: 1rem
-
-      .setting-item
-        padding: 0
-        border-bottom: none
-
-        .setting-label
-          margin-right: 1rem
-
-          @media (max-width: $mobile)
-            margin-right: 0
+              .btn
+                width: 100%
 
   .settings-actions
     display: flex
@@ -160,7 +125,7 @@ $tablet: 1024px
     padding-top: 2rem
     border-top: 1px solid colors.$gray
 
-    @media (max-width: $mobile)
+    @media (max-width: breakpoints.$mobile)
       flex-direction: column
       margin-top: 1.5rem
       padding-top: 1.5rem
@@ -169,5 +134,5 @@ $tablet: 1024px
     button
       min-width: 150px
 
-      @media (max-width: $mobile)
+      @media (max-width: breakpoints.$mobile)
         min-width: 100%

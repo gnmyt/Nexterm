@@ -21,6 +21,7 @@
 #define GUAC_RDP_SETTINGS_H
 
 #include "config.h"
+#include "fs.h"
 #include "keymap.h"
 
 #include <freerdp/freerdp.h>
@@ -248,6 +249,12 @@ typedef struct guac_rdp_settings {
      * virtual drive.
      */
     char* drive_path;
+
+    /**
+     * The storage backend for the virtual drive. Selected via the
+     * "drive-backend" connection argument.
+     */
+    guac_rdp_fs_backend_type drive_backend;
 
     /**
      * Whether to automatically create the local system path if it does not
@@ -595,6 +602,11 @@ typedef struct guac_rdp_settings {
      * The method to apply when the user's display changes size.
      */
     guac_rdp_resize_method resize_method;
+
+    /**
+     * The maximum allowed count of secondary monitors.
+     */
+    int max_secondary_monitors;
 
     /**
      * Whether audio input (microphone) is enabled.

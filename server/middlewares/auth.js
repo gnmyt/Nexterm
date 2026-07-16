@@ -1,13 +1,6 @@
 const Account = require("../models/Account");
 const Session = require("../models/Session");
-const Entry = require("../models/Entry");
-const EntryIdentity = require("../models/EntryIdentity");
-const Identity = require("../models/Identity");
-const { createRDPToken, createVNCToken } = require("../utils/tokenGenerator");
-const { validateEntryAccess } = require("../controllers/entry");
-const { getOrganizationAuditSettingsInternal } = require("../controllers/audit");
-const { getIdentityCredentials, listIdentities } = require("../controllers/identity");
-const logger = require("../utils/logger");
+const { isApiKeyToken, validateApiKey } = require("../controllers/apiKey");
 
 module.exports.authenticate = async (req, res, next) => {
     const authHeader = req.header("authorization");
@@ -18,7 +11,19 @@ module.exports.authenticate = async (req, res, next) => {
     if (headerTrimmed.length !== 2)
         return res.status(400).json({ message: "You need to provide the token in the 'authorization' header" });
 
-    req.session = await Session.findOne({ where: { token: headerTrimmed[1] } });
+    const token = headerTrimmed[1];
+
+    if (isApiKeyToken(token)) {
+        const result = await validateApiKey(token);
+        if (!result)
+            return res.status(401).json({ message: "The provided API key is not valid" });
+
+        req.apiKey = result.apiKey;
+        req.user = result.account;
+        return next();
+    }
+
+    req.session = await Session.findOne({ where: { token } });
 
     if (req.session === null)
         return res.status(401).json({ message: "The provided token is not valid" });
@@ -40,94 +45,15 @@ module.exports.authenticateDownload = async (req, res, next) => {
     if (!session) return res.status(401).json({ message: "Invalid token" });
     
     const user = await Account.findByPk(session.accountId);
-    if (!user || user.role !== "admin") return res.status(403).json({ message: "Admin access required" });
-    
+    if (!user) return res.status(401).json({ message: "Invalid token" });
+
+    const { hasSystemPermission } = require("../permissions/engine");
+    const { Permission } = require("../permissions/registry");
+    if (!(await hasSystemPermission(user.id, Permission.SETTINGS_BACKUP)))
+        return res.status(403).json({ message: "Insufficient permissions" });
+
     req.user = user;
     req.session = session;
     next();
 };
 
-
-module.exports.authorizeGuacamole = async (req) => {
-    const query = req.url.split("?")[1].split("&").map((x) => x.split("=")).reduce((acc, x) => {
-        acc[x[0]] = x[1];
-        return acc;
-    }, {});
-
-    if (Object.keys(query).length === 0) return;
-
-    req.session = await Session.findOne({ where: { token: query?.sessionToken } });
-
-    if (req.session === null) return;
-
-    await Session.update({ lastActivity: new Date() }, { where: { id: req.session.id } });
-
-    req.user = await Account.findByPk(req.session.accountId);
-    if (req.user === null) return;
-
-    if (!query.serverId) return;
-
-    const entry = await Entry.findByPk(query.serverId);
-    if (entry === null) return;
-
-    if (!((await validateEntryAccess(req.user.id, entry)).valid)) return;
-
-    const accessibleIds = new Set((await listIdentities(req.user.id)).map(i => i.id));
-    const entryIdentities = await EntryIdentity.findAll({ where: { entryId: entry.id }, order: [['isDefault', 'DESC']] });
-    
-    if (entryIdentities.length === 0 && query.identity) return;
-
-    let identityId = null;
-    if (query.identity) {
-        const requestedId = parseInt(query.identity, 10);
-        if (!accessibleIds.has(requestedId)) return;
-        identityId = requestedId;
-    } else {
-        for (const ei of entryIdentities) {
-            if (accessibleIds.has(ei.identityId)) {
-                identityId = ei.identityId;
-                break;
-            }
-        }
-    }
-
-    const identity = identityId ? await Identity.findByPk(identityId) : null;
-    if (identity === null) return;
-
-    const credentials = await getIdentityCredentials(identityId);
-
-    if (entry.organizationId) {
-        const auditSettings = await getOrganizationAuditSettingsInternal(entry.organizationId);
-        if (auditSettings?.requireConnectionReason && !query.connectionReason) return;
-    }
-
-    logger.system(`Authorized connection to ${entry.config?.ip} with identity ${identity.name}`, { 
-        entryId: entry.id, 
-        identityId: identity.id, 
-        username: req.user.username 
-    });
-
-    let connectionConfig;
-    switch (entry.config?.protocol) {
-        case "rdp":
-            connectionConfig = createRDPToken(entry.config.ip, entry.config.port, identity.username, credentials.password,
-                entry.config.keyboardLayout || "en-us-qwerty");
-            break;
-        case "vnc":
-            connectionConfig = createVNCToken(entry.config.ip, entry.config.port, identity.username, credentials.password);
-            break;
-        default:
-            return;
-    }
-
-    if (connectionConfig) {
-        connectionConfig.user = req.user;
-        connectionConfig.server = entry;
-        connectionConfig.identity = identity;
-        connectionConfig.ipAddress = req.ip || req.socket?.remoteAddress || 'unknown';
-        connectionConfig.userAgent = req.headers?.['user-agent'] || 'unknown';
-        connectionConfig.connectionReason = query.connectionReason || null;
-    }
-
-    return connectionConfig;
-};

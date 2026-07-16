@@ -246,6 +246,12 @@
         text-overflow: ellipsis
         letter-spacing: -0.01em
 
+        .search-highlight
+          background-color: colors.$primary
+          color: colors.$white
+          border-radius: 0.2rem
+          padding: 0 0.05rem
+
       .rename-input
         flex: 1
         min-width: 0
@@ -459,7 +465,7 @@
     display: flex
     align-items: center
     justify-content: center
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4), 0 1px 2px rgba(0, 0, 0, 0.3)
+    box-shadow: colors.$shadow-sm
 
     svg
       width: 1.5rem

@@ -1,7 +1,7 @@
 const Joi = require("joi");
 
 const configValidation = Joi.object({
-    protocol: Joi.string().valid("ssh", "telnet", "rdp", "vnc").optional(),
+    protocol: Joi.string().valid("ssh", "telnet", "rdp", "vnc", "sftp", "ftp", "ftps", "demo").optional(),
     ip: Joi.string().optional(),
     port: Joi.alternatives().try(Joi.string(), Joi.number()).optional(),
     keyboardLayout: Joi.string().optional(),
@@ -11,6 +11,7 @@ const configValidation = Joi.object({
     jumpHosts: Joi.array().items(Joi.number()).optional(),
     macAddress: Joi.string().pattern(/^([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2})$/).allow("").optional(),
     wakeOnLanEnabled: Joi.boolean().optional(),
+    wolBroadcastAddress: Joi.string().ip({ version: ['ipv4'] }).allow("").optional(),
 }).unknown(true);
 
 module.exports.createServerValidation = Joi.object({
@@ -18,7 +19,7 @@ module.exports.createServerValidation = Joi.object({
     folderId: Joi.number().allow(null).optional(),
     organizationId: Joi.number().allow(null).optional(),
     icon: Joi.string().optional(),
-    type: Joi.string().valid("server", "pve-shell", "pve-lxc", "pve-qemu").optional().default("server"),
+    type: Joi.string().valid("server").optional().default("server"),
     renderer: Joi.string().optional(),
     identities: Joi.array().items(Joi.number()).optional(),
     config: configValidation.required()

@@ -5,12 +5,14 @@ const terminalSchema = Joi.object({
     fontSize: Joi.number().integer().min(10).max(32),
     cursorStyle: Joi.string().valid('block', 'underline', 'bar'),
     cursorBlink: Joi.boolean(),
+    smartCopyPaste: Joi.boolean(),
     theme: Joi.string().max(50),
 }).unknown(false);
 
 const themeSchema = Joi.object({
     mode: Joi.string().valid('light', 'dark', 'auto', 'oled'),
     accentColor: Joi.string().pattern(/^#[0-9A-Fa-f]{6}$/),
+    uiScale: Joi.number().min(0.7).max(1.3),
 }).unknown(false);
 
 const filesSchema = Joi.object({

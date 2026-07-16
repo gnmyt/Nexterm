@@ -85,6 +85,8 @@ export default defineConfig({
                             { text: "Scripting Variables & Directives", link: "/ScriptingVariables" },
                         ],
                     },
+                    { text: "CLI", link: "/cli" },
+                    { text: "Server CLI", link: "/server-cli" },
                     { text: "Contributing", link: "/contributing" },
                     {
                         text: "API Reference",

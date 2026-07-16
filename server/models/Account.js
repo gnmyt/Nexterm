@@ -23,10 +23,6 @@ module.exports = db.define("accounts", {
         type: Sequelize.BOOLEAN,
         defaultValue: false,
     },
-    role: {
-        type: Sequelize.STRING,
-        defaultValue: "user",
-    },
     totpSecret: {
         type: Sequelize.STRING,
         defaultValue: () => {
@@ -40,6 +36,12 @@ module.exports = db.define("accounts", {
     preferences: {
         type: Sequelize.JSON,
         defaultValue: {},
+    },
+    activeThemeId: {
+        type: Sequelize.INTEGER,
+        allowNull: true,
+        references: { model: "themes", key: "id" },
+        onDelete: "SET NULL",
     },
 }, { 
     freezeTableName: true, 

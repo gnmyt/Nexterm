@@ -28,6 +28,7 @@ class ConnectionService {
 
   static Future<ConnectionSession> createSession({
     required String token, required int entryId, int? identityId, String? connectionReason, String? type,
+    Map<String, dynamic>? directIdentity,
   }) async {
     final body = <String, dynamic>{
       'entryId': entryId,
@@ -36,6 +37,7 @@ class ConnectionService {
       if (identityId != null && identityId > 0) 'identityId': identityId,
       if (connectionReason != null) 'connectionReason': connectionReason,
       if (type != null) 'type': type,
+      if (directIdentity != null) 'directIdentity': directIdentity,
     };
 
     final response = await ApiClient.post('/connections', body: body, token: token);
@@ -50,6 +52,20 @@ class ConnectionService {
     try {
       await ApiClient.delete('/connections/$sessionId', token: token);
     } catch (_) {}
+  }
+
+  static Future<List<Map<String, dynamic>>> listSessions({required String token}) async {
+    final browserId = await _getDeviceId();
+    final tabId = _getAppInstanceId();
+    final response = await ApiClient.get(
+      '/connections?tabId=${Uri.encodeComponent(tabId)}&browserId=${Uri.encodeComponent(browserId)}',
+      token: token,
+    );
+    if (response.statusCode == 200) {
+      final List<dynamic> data = json.decode(response.body);
+      return data.cast<Map<String, dynamic>>();
+    }
+    return [];
   }
 
   static Future<void> hibernateSession({required String token, required String sessionId}) async {

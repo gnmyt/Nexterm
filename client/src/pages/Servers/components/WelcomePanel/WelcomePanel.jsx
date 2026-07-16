@@ -22,7 +22,8 @@ const formatTimeAgo = (timestamp) => {
 
 const PROTOCOL_LABELS = {
     "entry.ssh_connect": "SSH", "entry.sftp_connect": "SFTP", "entry.rdp_connect": "RDP",
-    "entry.vnc_connect": "VNC", "entry.pve_connect": "PVE",
+    "entry.vnc_connect": "VNC",
+    "entry.demo_connect": "Demo", "entry.pve_connect": "PVE",
 };
 
 export const WelcomePanel = ({
@@ -84,7 +85,7 @@ export const WelcomePanel = ({
     return (
         <div className="welcome-panel">
             <div className="welcome-left">
-                <h1>Hi, <span>{user?.firstName || "User"} {user?.lastName || ""}</span>!</h1>
+                <h1>{t("welcome.hello")}, <span>{user?.firstName || "User"} {user?.lastName || ""}</span>!</h1>
                 <p>{t("welcome.subtitle")}</p>
                 <div className="welcome-buttons">
                     <Button icon={mdiDownload} text={t("welcome.downloadApps")} onClick={() => setDownloadDialogOpen(true)} />

@@ -1,7 +1,5 @@
 @use "@/common/styles/colors"
-
-$mobile: 768px
-$tablet: 1024px
+@use "@/common/styles/breakpoints"
 
 .create-script-dialog
   display: flex
@@ -14,7 +12,7 @@ $tablet: 1024px
   gap: 1rem
   box-sizing: border-box
 
-  @media (max-width: $mobile)
+  @media (max-width: breakpoints.$mobile)
     width: 100%
     max-height: 85vh
     gap: 0.75rem
@@ -34,7 +32,7 @@ $tablet: 1024px
       align-items: center
       gap: 0.625rem
 
-      @media (max-width: $mobile)
+      @media (max-width: breakpoints.$mobile)
         font-size: 1rem
 
       svg
@@ -43,7 +41,7 @@ $tablet: 1024px
         color: colors.$primary
         opacity: 0.95
 
-        @media (max-width: $mobile)
+        @media (max-width: breakpoints.$mobile)
           width: 1.125rem
           height: 1.125rem
     
@@ -53,7 +51,7 @@ $tablet: 1024px
       font-size: 0.85rem
       line-height: 1.4
 
-      @media (max-width: $mobile)
+      @media (max-width: breakpoints.$mobile)
         font-size: 0.8rem
 
   .dialog-body
@@ -70,7 +68,7 @@ $tablet: 1024px
     scrollbar-width: thin
     scrollbar-color: colors.$gray transparent
 
-    @media (max-width: $mobile)
+    @media (max-width: breakpoints.$mobile)
       gap: 0.75rem
 
     &::-webkit-scrollbar
@@ -93,7 +91,7 @@ $tablet: 1024px
     border-radius: 0.75rem
     padding: 1rem
 
-    @media (max-width: $mobile)
+    @media (max-width: breakpoints.$mobile)
       padding: 0.75rem
       gap: 0.75rem
       border-radius: 0.625rem
@@ -110,7 +108,7 @@ $tablet: 1024px
       padding-bottom: 0.75rem
       border-bottom: 1px solid rgba(255, 255, 255, 0.1)
 
-      @media (max-width: $mobile)
+      @media (max-width: breakpoints.$mobile)
         font-size: 0.85rem
         padding-bottom: 0.625rem
 
@@ -129,7 +127,7 @@ $tablet: 1024px
         color: colors.$subtext
         font-weight: 500
 
-        @media (max-width: $mobile)
+        @media (max-width: breakpoints.$mobile)
           display: none
 
         svg
@@ -142,10 +140,10 @@ $tablet: 1024px
     grid-template-columns: 1fr 1fr
     gap: 1rem
 
-    @media (max-width: $tablet)
+    @media (max-width: breakpoints.$tablet)
       grid-template-columns: 1fr
 
-    @media (max-width: $mobile)
+    @media (max-width: breakpoints.$mobile)
       gap: 0.75rem
 
   .form-group
@@ -160,7 +158,7 @@ $tablet: 1024px
       letter-spacing: 0.01em
       opacity: 0.9
 
-      @media (max-width: $mobile)
+      @media (max-width: breakpoints.$mobile)
         font-size: 0.8rem
 
   .code-editor-container
@@ -185,6 +183,6 @@ $tablet: 1024px
     border-top: 1px solid colors.$dark-gray
     flex-shrink: 0
 
-    @media (max-width: $mobile)
+    @media (max-width: breakpoints.$mobile)
       gap: 0.5rem
       padding-top: 0.625rem

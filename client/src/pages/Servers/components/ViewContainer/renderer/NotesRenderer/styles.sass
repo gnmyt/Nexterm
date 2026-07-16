@@ -1,0 +1,154 @@
+@use "@/common/styles/colors"
+@use "@/common/styles/breakpoints"
+
+.notes-renderer
+  display: flex
+  flex-direction: column
+  height: 100%
+  width: 100%
+  background-color: colors.$terminal
+  overflow: hidden
+
+  .notes-header
+    display: flex
+    align-items: center
+    justify-content: space-between
+    gap: 1rem
+    padding: 0.65rem 1rem
+    border-bottom: 1px solid colors.$gray
+    background-color: colors.$lighter-background
+    flex-shrink: 0
+
+    @media (max-width: breakpoints.$mobile)
+      padding: 0.5rem 0.75rem
+
+    .notes-title
+      display: flex
+      align-items: center
+      gap: 0.5rem
+      color: colors.$white
+      min-width: 0
+
+      svg
+        width: 1.1rem
+        height: 1.1rem
+        color: colors.$primary
+        flex-shrink: 0
+
+      h3
+        margin: 0
+        font-size: 0.95rem
+        font-weight: 700
+        letter-spacing: -0.01em
+        white-space: nowrap
+        overflow: hidden
+        text-overflow: ellipsis
+
+    .notes-actions
+      display: flex
+      align-items: center
+      gap: 0.75rem
+      flex-shrink: 0
+
+      @media (max-width: breakpoints.$mobile)
+        gap: 0.5rem
+
+    .notes-toggle
+      display: inline-flex
+      align-items: center
+      gap: 0.5rem
+      cursor: pointer
+      user-select: none
+      padding: 0.15rem 0.4rem 0.15rem 0.6rem
+      border-radius: 0.375rem
+      transition: background-color 0.15s ease
+
+      &:hover
+        background-color: colors.$dark-gray
+
+      .notes-toggle-label
+        font-size: 0.78rem
+        font-weight: 600
+        letter-spacing: 0.02em
+        color: colors.$subtext
+        white-space: nowrap
+
+        @media (max-width: breakpoints.$mobile)
+          display: none
+
+    .notes-status
+      display: inline-flex
+      align-items: center
+      gap: 0.3rem
+      font-size: 0.72rem
+      font-weight: 600
+      letter-spacing: 0.04em
+      text-transform: uppercase
+      padding: 0.2rem 0.5rem
+      border-radius: 0.375rem
+      flex-shrink: 0
+      user-select: none
+
+      svg
+        width: 0.9rem
+        height: 0.9rem
+
+      &.saving
+        color: colors.$subtext
+        background-color: colors.$dark-gray
+
+        svg
+          animation: notes-spin 0.9s linear infinite
+
+      &.saved
+        color: colors.$success
+        background-color: colors.$success-opacity
+
+      &.dirty
+        color: colors.$subtext
+        background-color: colors.$dark-gray
+
+      &.error
+        color: colors.$error
+        background-color: colors.$error-opacity
+
+  .notes-textarea
+    flex: 1
+    width: 100%
+    min-height: 0
+    box-sizing: border-box
+    padding: 1rem 1.25rem
+    border: none
+    outline: none
+    resize: none
+    background-color: transparent
+    color: colors.$white
+    font-family: "Plus Jakarta Sans", system-ui, sans-serif
+    font-size: 0.95rem
+    font-weight: 500
+    line-height: 1.55
+    letter-spacing: 0.01em
+
+    @media (max-width: breakpoints.$mobile)
+      padding: 0.75rem 0.85rem
+      font-size: 0.9rem
+
+    &::placeholder
+      color: colors.$subtext
+      opacity: 0.55
+
+    &::-webkit-scrollbar
+      width: 8px
+
+    &::-webkit-scrollbar-thumb
+      background-color: colors.$gray
+      border-radius: 4px
+
+    &::-webkit-scrollbar-track
+      background: transparent
+
+@keyframes notes-spin
+  from
+    transform: rotate(0deg)
+  to
+    transform: rotate(360deg)

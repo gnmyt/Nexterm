@@ -42,6 +42,7 @@
 #include <guacamole/mem.h>
 #include <guacamole/recording.h>
 #include <guacamole/rwlock.h>
+#include <guacamole/string.h>
 
 #include <dirent.h>
 #include <errno.h>
@@ -130,9 +131,24 @@ static int guac_rdp_join_pending_handler(guac_client* client) {
     /* Bring user up to date with any registered static channels */
     guac_rdp_pipe_svc_send_pipes(client, broadcast_socket);
 
+    /* Get max secondary monitors */
+    char max_monitors[12];
+    guac_itoa(max_monitors,
+            (unsigned int) rdp_client->settings->max_secondary_monitors);
+
+    /* Send current max allowed secondary monitors */
+    guac_client_stream_argv(client, broadcast_socket, "text/plain",
+            "secondary-monitors", max_monitors);
+
     /* Synchronize with current display */
     if (rdp_client->display != NULL) {
         guac_display_dup(rdp_client->display, broadcast_socket);
+
+        /* The monitor layout cannot be derived from the display, so joining
+         * users would otherwise see every monitor as one combined display */
+        guac_rdp_disp_send_multimon_layout(client, rdp_client->disp,
+                broadcast_socket);
+
         guac_socket_flush(broadcast_socket);
     }
 

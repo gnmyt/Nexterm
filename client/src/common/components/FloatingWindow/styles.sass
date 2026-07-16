@@ -1,0 +1,106 @@
+@use "@/common/styles/colors"
+
+.floating-window
+  position: fixed
+  display: flex
+  flex-direction: column
+  min-width: 20rem
+  min-height: 16rem
+  background-color: colors.$lighter-background
+  border: 1px solid colors.$gray
+  border-radius: 0.75rem
+  box-shadow: colors.$shadow-lg
+  overflow: hidden
+  animation: floatingWindowIn 0.2s cubic-bezier(0.4, 0, 0.2, 1)
+  transition: box-shadow 0.2s ease
+
+  &.dragging
+    cursor: move
+    box-shadow: colors.$shadow-xl
+
+  &.maximized
+    border-radius: 0
+    animation: none
+
+  &__header
+    display: flex
+    align-items: center
+    justify-content: space-between
+    gap: 0.75rem
+    padding: 0.85rem 1.25rem
+    background-color: colors.$terminal
+    border-bottom: 1px solid colors.$gray
+    flex-shrink: 0
+    cursor: move
+    user-select: none
+
+  &__title
+    display: flex
+    align-items: center
+    gap: 0.6rem
+    min-width: 0
+    flex: 1
+
+    svg
+      width: 1.3rem
+      height: 1.3rem
+      color: colors.$primary
+      flex-shrink: 0
+
+    h2
+      margin: 0
+      font-size: 0.95rem
+      font-weight: 600
+      color: colors.$white
+      letter-spacing: -0.01em
+      overflow: hidden
+      text-overflow: ellipsis
+      white-space: nowrap
+
+  &__actions
+    display: flex
+    align-items: center
+    gap: 0.35rem
+    flex-shrink: 0
+
+  &__action
+    display: flex
+    align-items: center
+    justify-content: center
+    width: 2rem
+    height: 2rem
+    background: transparent
+    border: none
+    border-radius: 0.5rem
+    cursor: pointer
+    transition: all 0.1s ease
+    color: colors.$white
+    opacity: 0.9
+    padding: 0
+
+    svg
+      width: 1.125rem
+      height: 1.125rem
+
+    &:hover:not(:disabled)
+      background-color: colors.$gray
+      color: colors.$primary
+
+    &:active:not(:disabled)
+      transform: scale(0.95)
+
+    &:disabled
+      opacity: 0.4
+      cursor: not-allowed
+
+    &--close:hover:not(:disabled)
+      background-color: colors.$error-opacity
+      color: colors.$error
+
+@keyframes floatingWindowIn
+  from
+    opacity: 0
+    transform: translateY(0.5rem) scale(0.98)
+  to
+    opacity: 1
+    transform: translateY(0) scale(1)

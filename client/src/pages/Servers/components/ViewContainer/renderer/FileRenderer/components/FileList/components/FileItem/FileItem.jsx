@@ -21,6 +21,7 @@ export const FileItem = memo(({
                                   isDropTarget,
                                   isCut,
                                   showThumbnails,
+                                  highlight,
                                   renameValue,
                                   onRenameChange,
                                   onRenameKeyDown,
@@ -41,6 +42,18 @@ export const FileItem = memo(({
 
     const canShowThumbnail = viewMode === "grid" && showThumbnails && item.type === "file"
         && isThumbnailSupported(item.name) && !thumbnailError;
+
+    const renderName = () => {
+        const index = highlight ? item.name.toLowerCase().indexOf(highlight) : -1;
+        if (index === -1) return item.name;
+        return (
+            <>
+                {item.name.slice(0, index)}
+                <span className="search-highlight">{item.name.slice(index, index + highlight.length)}</span>
+                {item.name.slice(index + highlight.length)}
+            </>
+        );
+    };
 
     const getThumbnailUrl = () => {
         const fullPath = `${path.endsWith("/") ? path : path + "/"}${item.name}`;
@@ -101,7 +114,7 @@ export const FileItem = memo(({
                         autoFocus
                     />
                 ) : (
-                    <h2 title={item.name}>{item.name}</h2>
+                    <h2 title={item.name}>{renderName()}</h2>
                 )}
                 {item.isSymlink && <span className="symlink-badge"><Icon path={mdiLinkVariant} />{t("servers.fileManager.item.link")}</span>}
             </div>

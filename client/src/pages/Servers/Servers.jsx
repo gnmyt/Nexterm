@@ -16,7 +16,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { ServerContext } from "@/common/contexts/ServerContext.jsx";
 import { StateStreamContext, STATE_TYPES } from "@/common/contexts/StateStreamContext.jsx";
 import { isTauri } from "@/common/utils/TauriUtil.js";
-import { getTabId, getBrowserId } from "@/common/utils/ConnectionUtil.js";
+import { getTabId, getBrowserId, requiresIdentity, canConnectWithoutPrompt } from "@/common/utils/ConnectionUtil.js";
 import { postRequest, deleteRequest } from "@/common/utils/RequestUtil";
 
 export const Servers = () => {
@@ -44,6 +44,16 @@ export const Servers = () => {
 
     const [hibernatedSessions, setHibernatedSessions] = useState([]);
     const closingSessionsRef = useRef(new Set());
+    const erroredSessionsRef = useRef(new Map());
+
+    const markSessionErrored = useCallback((sessionId, message) => {
+        if (erroredSessionsRef.current.has(sessionId)) return;
+        erroredSessionsRef.current.set(sessionId, message);
+    }, []);
+
+    const getSessionError = useCallback((sessionId) => {
+        return erroredSessionsRef.current.get(sessionId) || null;
+    }, []);
 
     const visibleSessions = activeSessions.filter(s => !poppedOutSessions.includes(s.id));
 
@@ -90,21 +100,27 @@ export const Servers = () => {
         });
         
         const newActiveIds = new Set(activeMapped.map(s => s.id));
+        let mergedSessions = [];
 
         setActiveSessions(prev => {
             const prevMap = new Map(prev.map(s => [s.id, s]));
-            return activeMapped.map(newSession => {
+            const localOnly = prev.filter(s => s.type === "notes");
+            const merged = activeMapped.map(newSession => {
                 const existing = prevMap.get(newSession.id);
                 return existing ? { ...newSession, scriptId: existing.scriptId || newSession.scriptId, scriptName: existing.scriptName, osName: newSession.osName || existing.osName } : newSession;
             });
+            const mergedIds = new Set(merged.map(s => s.id));
+            const erroredPinned = prev.filter(s =>
+                erroredSessionsRef.current.has(s.id) && !mergedIds.has(s.id) && s.type !== "notes"
+            );
+            mergedSessions = [...merged, ...erroredPinned, ...localOnly];
+            return mergedSessions;
         });
         setHibernatedSessions(hibernatedMapped);
 
         setActiveSessionId(prev => {
-            if (!prev || !newActiveIds.has(prev)) {
-                return activeMapped.at(-1)?.id || null;
-            }
-            return prev;
+            if (prev && (newActiveIds.has(prev) || mergedSessions.some(s => s.id === prev))) return prev;
+            return mergedSessions.at(-1)?.id || null;
         });
     }, [servers, getServerById, setActiveSessions, setActiveSessionId]);
 
@@ -142,27 +158,16 @@ export const Servers = () => {
             return;
         }
 
-        const requiresReason = checkConnectionReasonRequired(serverId, servers);
-        if (requiresReason) {
-            setPendingConnection({ server: { ...server, renderer: overrideRenderer || server.renderer }, identity });
-            setConnectionReasonDialogOpen(true);
+        if (server && !canConnectWithoutPrompt(server)) {
+            openDirectConnect(server);
             return;
         }
 
-        performConnection({ ...server, renderer: overrideRenderer || server.renderer }, identity);
+        initiateConnection({ server: { ...server, renderer: overrideRenderer || server.renderer }, identity });
     };
 
     const openSFTP = async (server, identity) => {
-        const serverObj = getServerById(server);
-        const requiresReason = checkConnectionReasonRequired(server, servers);
-
-        if (requiresReason) {
-            setPendingConnection({ server: serverObj, identity, type: "sftp" });
-            setConnectionReasonDialogOpen(true);
-            return;
-        }
-
-        performConnection(serverObj, identity, null, "sftp");
+        initiateConnection({ server: getServerById(server), identity, type: "sftp" });
     };
 
     const performConnection = async (server, identity, connectionReason = null, type = null, directIdentity = null, scriptId = null, scriptName = null) => {
@@ -201,6 +206,27 @@ export const Servers = () => {
         }
     };
 
+    const initiateConnection = (options) => {
+        if (!options.server) return;
+
+        const requiresReason = checkConnectionReasonRequired(options.server.id, servers);
+        if (requiresReason) {
+            setPendingConnection(options);
+            setConnectionReasonDialogOpen(true);
+            return;
+        }
+
+        void performConnection(
+            options.server,
+            options.identity ?? null,
+            null,
+            options.type ?? null,
+            options.directIdentity ?? null,
+            options.scriptId ?? null,
+            options.scriptName ?? null,
+        );
+    };
+
     const runScript = async (serverId, identityId, scriptId) => {
         const server = getServerById(serverId);
         if (!server) {
@@ -208,16 +234,7 @@ export const Servers = () => {
             return;
         }
 
-        const identity = { id: identityId };
-        
-        const requiresReason = checkConnectionReasonRequired(serverId, servers);
-        if (requiresReason) {
-            setPendingConnection({ server, identity, scriptId });
-            setConnectionReasonDialogOpen(true);
-            return;
-        }
-
-        performConnection(server, identity, null, null, null, scriptId);
+        initiateConnection({ server, identity: { id: identityId }, scriptId });
     };
 
     const resumeConnection = async (sessionId) => {
@@ -234,13 +251,14 @@ export const Servers = () => {
 
     const handleConnectionReasonProvided = (reason) => {
         if (pendingConnection) {
-            performConnection(
+            void performConnection(
                 pendingConnection.server,
-                pendingConnection.identity,
+                pendingConnection.identity ?? null,
                 reason,
-                pendingConnection.type || null,
-                pendingConnection.directIdentity || null,
-                pendingConnection.scriptId || null,
+                pendingConnection.type ?? null,
+                pendingConnection.directIdentity ?? null,
+                pendingConnection.scriptId ?? null,
+                pendingConnection.scriptName ?? null,
             );
             setPendingConnection(null);
         }
@@ -253,6 +271,7 @@ export const Servers = () => {
     };
 
     const disconnectFromServer = useCallback((sessionId) => {
+        erroredSessionsRef.current.delete(sessionId);
         setActiveSessions(prev => {
             const newSessions = prev.filter(session => session.id !== sessionId);
             setActiveSessionId(currentActiveId => {
@@ -265,11 +284,40 @@ export const Servers = () => {
     }, [setActiveSessions, setActiveSessionId]);
 
     const closeSession = (sessionId) => {
-        closingSessionsRef.current.add(sessionId);
-        deleteRequest(`/connections/${sessionId}`).catch(error => {
-            console.debug("Session deletion request failed:", error);
-        });
+        const session = activeSessions.find(s => s.id === sessionId);
+        if (session?.type !== "notes") {
+            closingSessionsRef.current.add(sessionId);
+            deleteRequest(`/connections/${sessionId}`).catch(error => {
+                console.debug("Session deletion request failed:", error);
+            });
+        }
         disconnectFromServer(sessionId);
+    };
+
+    const openNotes = (serverId) => {
+        const server = getServerById(serverId);
+        if (!server) return;
+
+        const notesId = `notes-${serverId}`;
+        const existing = activeSessions.find(s => s.id === notesId);
+        if (existing) {
+            setActiveSessionId(notesId);
+            return;
+        }
+
+        const organization = findOrganizationForServer(server.id, servers);
+        const organizationId = organization ? parseInt(organization.id.split("-")[1]) : null;
+
+        const sessionData = {
+            server,
+            id: notesId,
+            type: "notes",
+            organizationId,
+            organizationName: organization?.name || null,
+        };
+
+        setActiveSessions(prev => [...prev, sessionData]);
+        setActiveSessionId(notesId);
     };
 
     const hibernateSession = async (sessionId) => {
@@ -364,6 +412,11 @@ export const Servers = () => {
     };
 
     const openDirectConnect = (server) => {
+        if (!requiresIdentity(server)) {
+            initiateConnection({ server });
+            return;
+        }
+
         setDirectConnectServer(server);
         setDirectConnectDialogOpen(true);
     };
@@ -387,19 +440,7 @@ export const Servers = () => {
     };
 
     const handleDirectConnect = (directIdentity) => {
-        if (!directConnectServer) return;
-
-        const requiresReason = checkConnectionReasonRequired(directConnectServer.id, servers);
-        if (requiresReason) {
-            setPendingConnection({
-                server: directConnectServer,
-                identity: null,
-                directIdentity,
-            });
-            setConnectionReasonDialogOpen(true);
-        } else {
-            performConnection(directConnectServer, null, null, null, directIdentity);
-        }
+        initiateConnection({ server: directConnectServer, directIdentity });
     };
 
     useEffect(() => {
@@ -413,22 +454,9 @@ export const Servers = () => {
 
             const handleAutoConnect = async () => {
                 const server = getServerById(connectId);
-                const isPveEntry = server?.type?.startsWith("pve-");
-                const hasIdentities = server?.identities && server.identities.length > 0;
 
-                if (server && (isPveEntry || hasIdentities)) {
-                    const identity = isPveEntry ? null : server.identities[0];
-                    try {
-                        const requiresReason = checkConnectionReasonRequired(connectId, servers);
-                        if (requiresReason) {
-                            setPendingConnection({ server, identity });
-                            setConnectionReasonDialogOpen(true);
-                        } else {
-                            performConnection(server, identity);
-                        }
-                    } catch (error) {
-                        performConnection(server, identity);
-                    }
+                if (server && canConnectWithoutPrompt(server)) {
+                    initiateConnection({ server, identity: server.identities?.[0] ?? null });
                 }
             };
 
@@ -472,6 +500,7 @@ export const Servers = () => {
                             setEditServerId={setEditServerId} openSFTP={openSFTP}
                             hibernatedSessions={hibernatedSessions} resumeSession={resumeConnection}
                             openDirectConnect={openDirectConnect} runScript={runScript}
+                            openNotes={openNotes}
                             openPortForward={isTauri() ? openPortForward : undefined}
                             mobileOpen={mobileServerListOpen} setMobileOpen={setMobileServerListOpen} />,
                 leftPaneSlot
@@ -490,6 +519,9 @@ export const Servers = () => {
                                closeSession={closeSession}
                                activeSessionId={activeSessionId} setActiveSessionId={setActiveSessionId}
                                hibernateSession={hibernateSession} duplicateSession={duplicateSession}
+                               openNotes={openNotes}
+                               markSessionErrored={markSessionErrored}
+                               getSessionError={getSessionError}
                                setOpenFileEditors={setOpenFileEditors}
                                openTerminalFromFileManager={openTerminalFromFileManager} />}
             {openFileEditors.map((editor, index) => (
@@ -499,7 +531,6 @@ export const Servers = () => {
                         file={editor.file}
                         session={editor.session}
                         onClose={() => setOpenFileEditors(prev => prev.filter(e => e.id !== editor.id))}
-                        zIndex={10000 + index}
                     />
                 ) : (
                     <FileEditorWindow
@@ -507,7 +538,6 @@ export const Servers = () => {
                         file={editor.file}
                         session={editor.session}
                         onClose={() => setOpenFileEditors(prev => prev.filter(e => e.id !== editor.id))}
-                        zIndex={10000 + index}
                     />
                 )
             ))}

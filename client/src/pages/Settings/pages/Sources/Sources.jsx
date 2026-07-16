@@ -17,6 +17,7 @@ import {
     mdiCloudDownload,
     mdiCodeBraces,
     mdiScriptText,
+    mdiPalette,
     mdiCheck,
     mdiClose,
     mdiLoading,
@@ -198,6 +199,10 @@ export const Sources = () => {
                                                 <Icon path={mdiScriptText} />
                                                 {source.scriptCount} {t("settings.sources.scripts")}
                                             </span>
+                                            <span className="meta-item">
+                                                <Icon path={mdiPalette} />
+                                                {source.themeCount} {t("settings.sources.themes")}
+                                            </span>
                                         </div>
                                     </div>
                                 </div>
@@ -280,6 +285,7 @@ export const Sources = () => {
                                 t("settings.sources.dialog.validationSuccess", {
                                     snippets: validationResult.snippetCount,
                                     scripts: validationResult.scriptCount,
+                                    themes: validationResult.themeCount,
                                 })
                             ) : (
                                 validationResult.error

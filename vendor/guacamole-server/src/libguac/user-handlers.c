@@ -55,6 +55,7 @@ __guac_instruction_handler_mapping __guac_instruction_handler_map[] = {
    {"audio",      __guac_handle_audio},
    {"argv",       __guac_handle_argv},
    {"nop",        __guac_handle_nop},
+   {"nfs-resp",   __guac_handle_nfs_resp},
    {NULL,         NULL}
 };
 
@@ -373,7 +374,9 @@ int __guac_handle_size(guac_user* user, int argc, char** argv) {
         return user->size_handler(
             user,
             atoi(argv[0]), /* width */
-            atoi(argv[1])  /* height */
+            atoi(argv[1]), /* height */
+            (argc >= 3 ? atoi(argv[2]) : 0), /* Monitor x-position */
+            (argc >= 4 ? atoi(argv[3]) : 0)  /* Top offset */
         );
     return 0;
 }
@@ -621,6 +624,26 @@ int __guac_handle_nop(guac_user* user, int argc, char** argv) {
     guac_user_log(user, GUAC_LOG_TRACE,
             "Received nop instruction");
     return 0;
+}
+
+int __guac_handle_nfs_resp(guac_user* user, int argc, char** argv) {
+
+    /* Need at least req-id and status. */
+    if (argc < 2)
+        return 0;
+
+    int req_id = atoi(argv[0]);
+    int status = atoi(argv[1]);
+
+    if (user->nfs_resp_handler == NULL) {
+        guac_user_log(user, GUAC_LOG_DEBUG,
+                "nfs-resp received but no handler registered (req-id=%d)",
+                req_id);
+        return 0;
+    }
+
+    return user->nfs_resp_handler(user, req_id, status,
+            argc - 2, argv + 2);
 }
 
 int __guac_handle_disconnect(guac_user* user, int argc, char** argv) {

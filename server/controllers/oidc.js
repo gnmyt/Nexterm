@@ -34,6 +34,7 @@ module.exports.listProviders = async (includeSecret = false, forPublic = false) 
             usernameAttribute: provider.usernameAttribute,
             firstNameAttribute: provider.firstNameAttribute, lastNameAttribute: provider.lastNameAttribute,
             isInternal: provider.isInternal,
+            allowRegistration: provider.isInternal ? (forPublic ? (provider.enabled && provider.allowRegistration) : provider.allowRegistration) : undefined,
         }));
     }
 
@@ -59,7 +60,8 @@ module.exports.updateProvider = async (providerId, data) => {
     }
 
     if (provider.isInternal) {
-        if (Object.keys(data).length !== 1 || !data.hasOwnProperty("enabled")) {
+        const allowedKeys = ["enabled", "allowRegistration"];
+        if (Object.keys(data).length === 0 || Object.keys(data).some(key => !allowedKeys.includes(key))) {
             return { code: 400, message: "Internal authentication provider can only be enabled or disabled" };
         }
 
@@ -186,7 +188,6 @@ module.exports.handleOIDCCallback = async (query, userInfo) => {
                 password: hashedPassword,
                 firstName: String(firstName),
                 lastName: String(lastName),
-                role: "user",
             });
         } else {
             await Account.update({
@@ -208,7 +209,6 @@ module.exports.handleOIDCCallback = async (query, userInfo) => {
                 username: account.username,
                 firstName: account.firstName,
                 lastName: account.lastName,
-                role: account.role,
             },
         };
     } catch (error) {

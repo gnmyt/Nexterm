@@ -4,9 +4,9 @@ import Icon from "@mdi/react";
 import {
     mdiFile, mdiFolder, mdiAlertCircle, mdiFormTextbox, mdiTextBoxEdit,
     mdiFileDownload, mdiTrashCan, mdiEye, mdiFileMove, mdiContentCopy,
-    mdiInformationOutline, mdiConsole,
+    mdiInformationOutline, mdiConsole, mdiFileSearchOutline, mdiFilePlus, mdiFolderPlus,
 } from "@mdi/js";
-import { ContextMenu, ContextMenuItem, useContextMenu } from "@/common/components/ContextMenu";
+import { ContextMenu, ContextMenuItem, ContextMenuSeparator, useContextMenu } from "@/common/components/ContextMenu";
 import { ActionConfirmDialog } from "@/common/components/ActionConfirmDialog/ActionConfirmDialog.jsx";
 import { useTranslation } from "react-i18next";
 import { usePreferences } from "@/common/contexts/PreferencesContext.jsx";
@@ -20,7 +20,8 @@ export const FileList = forwardRef(({
     items, updatePath, path, sendOperation, downloadFile, downloadMultipleFiles,
     setCurrentFile, setPreviewFile, loading, viewMode = "list", error,
     resolveSymlink, session, createFile, createFolder, moveFiles, copyFiles, isActive,
-    onOpenTerminal, onPropertiesMessage,
+    onOpenTerminal, onPropertiesMessage, searchQuery = "", onSearchResults,
+    capabilities = { shell: true, terminal: true },
 }, ref) => {
     const { t } = useTranslation();
     const { showThumbnails, showHiddenFiles, confirmBeforeDelete, dragDropAction } = usePreferences();
@@ -45,15 +46,20 @@ export const FileList = forwardRef(({
     const emptyContextMenu = useContextMenu();
     const dropMenu = useContextMenu();
 
-    useImperativeHandle(ref, () => ({
-        startCreateFolder: () => { setCreatingFolder(true); setNewFolderName(""); },
-        startCreateFile: () => { setCreatingFile(true); setNewFileName(""); },
-    }));
+    const startCreateFolder = useCallback(() => { setCreatingFolder(true); setNewFolderName(""); }, []);
+    const startCreateFile = useCallback(() => { setCreatingFile(true); setNewFileName(""); }, []);
+
+    useImperativeHandle(ref, () => ({ startCreateFolder, startCreateFile }));
+
+    const query = searchQuery.trim().toLowerCase();
 
     const filteredItems = useMemo(() => {
-        const filtered = showHiddenFiles ? items : items.filter(item => !item.name.startsWith("."));
+        let filtered = showHiddenFiles ? items : items.filter(item => !item.name.startsWith("."));
+        if (query) filtered = filtered.filter(item => item.name.toLowerCase().includes(query));
         return [...filtered].sort((a, b) => b.type.localeCompare(a.type) || a.name.localeCompare(b.name));
-    }, [items, showHiddenFiles]);
+    }, [items, showHiddenFiles, query]);
+
+    useEffect(() => { if (query) onSearchResults?.(filteredItems.length); }, [filteredItems.length, query, onSearchResults]);
 
     useEffect(() => setSelectedItems([]), [path]);
 
@@ -191,10 +197,12 @@ export const FileList = forwardRef(({
                     <p>{error}</p>
                 </div>
             ) : filteredItems.length === 0 && !creatingFolder && !creatingFile ? (
-                <div className="empty-state">
-                    <Icon path={mdiFolder} />
-                    <h3>{t("servers.fileManager.states.emptyFolder")}</h3>
-                    <p>{t("servers.fileManager.states.dropFilesHint")}</p>
+                <div className="empty-state" onContextMenu={handleEmptyContextMenu}>
+                    <Icon path={query ? mdiFileSearchOutline : mdiFolder} />
+                    <h3>{t(query ? "servers.fileManager.search.noResultsTitle" : "servers.fileManager.states.emptyFolder")}</h3>
+                    <p>{query
+                        ? t("servers.fileManager.search.noResults", { query: searchQuery.trim() })
+                        : t("servers.fileManager.states.dropFilesHint")}</p>
                 </div>
             ) : (
                 <div
@@ -244,6 +252,7 @@ export const FileList = forwardRef(({
                             isDropTarget={dropTarget === item.name}
                             isCut={isItemCut(`${path}/${item.name}`)}
                             showThumbnails={showThumbnails}
+                            highlight={query}
                             renameValue={renameValue}
                             onRenameChange={(e) => setRenameValue(e.target.value)}
                             onRenameKeyDown={(e) => handleRenameKeyDown(e, item)}
@@ -276,6 +285,7 @@ export const FileList = forwardRef(({
                 sendOperation={sendOperation}
                 OPERATIONS={OPERATIONS}
                 onRegisterHandler={onPropertiesMessage}
+                capabilities={capabilities}
             />
 
             <ContextMenu isOpen={contextMenu.isOpen} position={contextMenu.position} onClose={contextMenu.close} trigger={contextMenu.triggerRef}>
@@ -288,21 +298,24 @@ export const FileList = forwardRef(({
                 )}
                 <ContextMenuItem icon={mdiFileDownload} label={t("servers.fileManager.contextMenu.download")} onClick={() => downloadFile(`${path}/${selectedItem?.name}`)} />
                 <ContextMenuItem icon={mdiInformationOutline} label={t("servers.fileManager.contextMenu.properties")} onClick={() => handlePropertiesClick(selectedItem)} />
-                {selectedItem?.type === "folder" && (
+                {selectedItem?.type === "folder" && capabilities.terminal && (
                     <ContextMenuItem icon={mdiConsole} label={t("servers.fileManager.contextMenu.openTerminal")} onClick={() => handleOpenTerminal(`${path}/${selectedItem.name}`)} />
                 )}
                 <ContextMenuItem icon={mdiTrashCan} label={t("servers.fileManager.contextMenu.delete")} onClick={handleDeleteClick} danger />
             </ContextMenu>
 
             <ContextMenu isOpen={emptyContextMenu.isOpen} position={emptyContextMenu.position} onClose={emptyContextMenu.close} trigger={emptyContextMenu.triggerRef}>
+                <ContextMenuItem icon={mdiFilePlus} label={t("servers.fileManager.contextMenu.newFile")} onClick={startCreateFile} />
+                <ContextMenuItem icon={mdiFolderPlus} label={t("servers.fileManager.contextMenu.newFolder")} onClick={startCreateFolder} />
+                <ContextMenuSeparator />
                 <ContextMenuItem icon={mdiFileDownload} label={t("servers.fileManager.contextMenu.downloadFolder")} onClick={() => downloadFile(path)} />
                 <ContextMenuItem icon={mdiInformationOutline} label={t("servers.fileManager.contextMenu.properties")} onClick={() => handlePropertiesClick(null)} />
-                <ContextMenuItem icon={mdiConsole} label={t("servers.fileManager.contextMenu.openTerminal")} onClick={() => handleOpenTerminal()} />
+                {capabilities.terminal && <ContextMenuItem icon={mdiConsole} label={t("servers.fileManager.contextMenu.openTerminal")} onClick={() => handleOpenTerminal()} />}
             </ContextMenu>
 
             <ContextMenu isOpen={dropMenu.isOpen} position={dropMenu.position} onClose={() => { dropMenu.close(); setPendingDrop(null); }}>
                 <ContextMenuItem icon={mdiFileMove} label={t("servers.fileManager.contextMenu.moveHere")} onClick={() => handleDropAction("move", clearSelection, dropMenu.close)} />
-                <ContextMenuItem icon={mdiContentCopy} label={t("servers.fileManager.contextMenu.copyHere")} onClick={() => handleDropAction("copy", clearSelection, dropMenu.close)} />
+                {capabilities.shell && <ContextMenuItem icon={mdiContentCopy} label={t("servers.fileManager.contextMenu.copyHere")} onClick={() => handleDropAction("copy", clearSelection, dropMenu.close)} />}
             </ContextMenu>
 
             <div className="drag-preview" ref={dragImageRef}>

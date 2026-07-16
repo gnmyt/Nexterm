@@ -3,16 +3,33 @@ import Input from "@/common/components/IconInput";
 import SelectBox from "@/common/components/SelectBox";
 import IconChooser from "../components/IconChooser";
 import { useTranslation } from "react-i18next";
+import { useEffect, useState } from "react";
+import { getRequest } from "@/common/utils/RequestUtil.js";
 
 const PROTOCOL_OPTIONS = [
     { label: "SSH", value: "ssh" },
     { label: "Telnet", value: "telnet" },
     { label: "RDP", value: "rdp" },
-    { label: "VNC", value: "vnc" }
+    { label: "VNC", value: "vnc" },
+    { label: "SFTP", value: "sftp" },
+    { label: "FTP", value: "ftp" },
+    { label: "FTPS", value: "ftps" }
 ];
 
 const DetailsPage = ({name, setName, icon, setIcon, config, setConfig, fieldConfig}) => {
     const { t } = useTranslation();
+    const [engines, setEngines] = useState([]);
+
+    useEffect(() => {
+        getRequest("engines").then(data => setEngines(data || [])).catch(() => {});
+    }, []);
+
+    const engineOptions = engines.map(e => ({
+        label: `${e.name}${e.connected ? "" : " " + t("servers.dialog.engineOffline")}`,
+        value: String(e.id),
+    }));
+
+    const showEngineSelect = engines.length > 1;
     
     return (
         <>
@@ -27,6 +44,17 @@ const DetailsPage = ({name, setName, icon, setIcon, config, setConfig, fieldConf
                     <IconChooser selected={icon} setSelected={setIcon} />
                 </div>
             </div>
+
+            {showEngineSelect && (
+                <div className="form-group">
+                    <label>{t("servers.dialog.fields.engine")}</label>
+                    <SelectBox
+                        options={engineOptions}
+                        selected={config.engineId ? String(config.engineId) : engineOptions[0]?.value}
+                        setSelected={(value) => setConfig(prev => ({ ...prev, engineId: value }))}
+                    />
+                </div>
+            )}
             
             {fieldConfig.showIpPort && (
                 <>
@@ -52,35 +80,22 @@ const DetailsPage = ({name, setName, icon, setIcon, config, setConfig, fieldConf
                         </div>
                     )}
                     {config.wakeOnLanEnabled && (
-                        <div className="form-group">
-                            <label htmlFor="macAddress">{t("servers.dialog.fields.macAddress")}</label>
-                            <Input icon={mdiEthernet} type="text" placeholder={t("servers.dialog.placeholders.macAddress")} 
-                                   id="macAddress" autoComplete="off" value={config.macAddress || ""} 
-                                   setValue={(value) => setConfig(prev => ({ ...prev, macAddress: value }))} />
-                        </div>
+                        <>
+                            <div className="form-group">
+                                <label htmlFor="macAddress">{t("servers.dialog.fields.macAddress")}</label>
+                                <Input icon={mdiEthernet} type="text" placeholder={t("servers.dialog.placeholders.macAddress")}
+                                       id="macAddress" autoComplete="off" value={config.macAddress || ""}
+                                       setValue={(value) => setConfig(prev => ({ ...prev, macAddress: value }))} />
+                            </div>
+                            <div className="form-group">
+                                <label htmlFor="wolBroadcastAddress">{t("servers.dialog.fields.wolBroadcastAddress")}</label>
+                                <Input icon={mdiIp} type="text" placeholder={t("servers.dialog.placeholders.wolBroadcastAddress")}
+                                       id="wolBroadcastAddress" autoComplete="off" value={config.wolBroadcastAddress || ""}
+                                       setValue={(value) => setConfig(prev => ({ ...prev, wolBroadcastAddress: value }))} />
+                            </div>
+                        </>
                     )}
                 </>
-            )}
-
-            {fieldConfig.showPveConfig && fieldConfig.pveFields && (
-                <div className="pve-config-row">
-                    {fieldConfig.pveFields.includes("nodeName") && (
-                        <div className="form-group">
-                            <label htmlFor="nodeName">{t("servers.dialog.fields.nodeName")}</label>
-                            <Input icon={mdiIp} type="text" placeholder={t("servers.dialog.placeholders.nodeName")} 
-                                   id="nodeName" autoComplete="off" value={config.nodeName || ""} 
-                                   setValue={(value) => setConfig(prev => ({ ...prev, nodeName: value }))} />
-                        </div>
-                    )}
-                    {fieldConfig.pveFields.includes("vmid") && (
-                        <div className="form-group">
-                            <label htmlFor="vmid">{t("servers.dialog.fields.vmid")}</label>
-                            <input type="text" placeholder={t("servers.dialog.placeholders.vmid")} 
-                                   value={config.vmid || ""} className="small-input" id="vmid"
-                                   onChange={(e) => setConfig(prev => ({ ...prev, vmid: e.target.value }))} />
-                        </div>
-                    )}
-                </div>
             )}
         </>
     );

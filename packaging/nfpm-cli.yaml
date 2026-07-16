@@ -1,0 +1,28 @@
+name: nexterm-cli
+arch: "${PKG_ARCH}"
+platform: linux
+version: "${PKG_VERSION}"
+section: net
+priority: optional
+maintainer: "Mathias Wagner <mathias@gnm.dev>"
+description: |
+  Nexterm CLI — Command-line client for Nexterm (nt)
+vendor: "Nexterm"
+homepage: "https://github.com/gnmyt/Nexterm"
+license: "MIT"
+
+overrides:
+  deb:
+    depends:
+      - libc6
+      - libssl3 | libssl1.1
+  rpm:
+    depends:
+      - glibc
+      - openssl-libs
+
+contents:
+  - src: stage/cli/nt
+    dst: /usr/bin/nt
+    file_info:
+      mode: 0755

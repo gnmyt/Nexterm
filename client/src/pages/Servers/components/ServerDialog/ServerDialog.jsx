@@ -15,7 +15,7 @@ import { getAvailableTabs, validateRequiredFields, getFieldConfig } from "./util
 import Icon from "@mdi/react";
 import * as mdiIcons from "@mdi/js";
 
-const PROTOCOL_DEFAULT_ICONS = { ssh: "mdiConsole", telnet: "mdiConsole", rdp: "mdiMicrosoftWindows", vnc: "mdiMonitor" };
+const PROTOCOL_DEFAULT_ICONS = { ssh: "mdiConsole", telnet: "mdiConsole", rdp: "mdiMicrosoftWindows", vnc: "mdiMonitor", sftp: "mdiFolderNetwork", ftp: "mdiFolderNetwork", ftps: "mdiFolderNetwork", demo: "mdiFlaskOutline" };
 
 export const ServerDialog = ({ open, onClose, currentFolderId, currentOrganizationId, editServerId, initialProtocol }) => {
     const { t } = useTranslation();
@@ -26,7 +26,7 @@ export const ServerDialog = ({ open, onClose, currentFolderId, currentOrganizati
 
     const getProtocolIcon = (protocol, type) => {
         if (type?.startsWith('pve')) return "mdiServerNetwork";
-        return { ssh: "mdiConsole", telnet: "mdiConsole", rdp: "mdiMonitor", vnc: "mdiDesktopClassic" }[protocol] || "mdiServerNetwork";
+        return { ssh: "mdiConsole", telnet: "mdiConsole", rdp: "mdiMonitor", vnc: "mdiDesktopClassic", sftp: "mdiFolderNetwork", ftp: "mdiFolderNetwork", ftps: "mdiFolderNetwork", demo: "mdiFlaskOutline" }[protocol] || "mdiServerNetwork";
     };
 
     const [name, setName] = useState("");
@@ -67,6 +67,8 @@ export const ServerDialog = ({ open, onClose, currentFolderId, currentOrganizati
             payload.organizationId = identity.organizationId;
         }
         
+        const hasPassphrase = typeof identity.passphrase === "string" && identity.passphrase.length > 0;
+
         if (identity.authType === 'password' || identity.authType === 'password-only') {
             if (identity.passwordTouched || identity.password) {
                 payload.password = identity.password;
@@ -76,12 +78,12 @@ export const ServerDialog = ({ open, onClose, currentFolderId, currentOrganizati
                 payload.password = identity.password;
             }
             payload.sshKey = identity.sshKey;
-            if (identity.passphraseTouched || identity.passphrase) {
+            if (hasPassphrase) {
                 payload.passphrase = identity.passphrase;
             }
         } else {
             payload.sshKey = identity.sshKey;
-            if (identity.passphraseTouched || identity.passphrase) {
+            if (hasPassphrase) {
                 payload.passphrase = identity.passphrase;
             }
         }
@@ -137,9 +139,12 @@ export const ServerDialog = ({ open, onClose, currentFolderId, currentOrganizati
         if (!fieldConfig.showIpPort) {
             delete finalConfig.ip;
             delete finalConfig.port;
+        }
+
+        if (entryType !== "server") {
             delete finalConfig.protocol;
         }
-        
+
         if (!fieldConfig.showKeyboardLayout) {
             delete finalConfig.keyboardLayout;
         }
@@ -230,13 +235,20 @@ export const ServerDialog = ({ open, onClose, currentFolderId, currentOrganizati
             setEntryType("server");
             
             if (initialProtocol) {
-                setConfig({ protocol: initialProtocol });
+                const portMap = { ssh: "22", telnet: "23", rdp: "3389", vnc: "5900", sftp: "22", ftp: "21", ftps: "21" };
+
+                let initialConfig = { protocol: initialProtocol };
+                if (getFieldConfig("server", initialProtocol).showIpPort) {
+                    initialConfig.port = portMap[initialProtocol] || "";
+                }
+
+                setConfig(initialConfig);
                 const defaultIcon = PROTOCOL_DEFAULT_ICONS[initialProtocol] || null;
                 setIcon(defaultIcon);
                 initialValues.current = { 
                     name: '', 
                     icon: defaultIcon, 
-                    config: JSON.stringify({ protocol: initialProtocol }), 
+                    config: JSON.stringify(initialConfig), 
                     monitoringEnabled: false 
                 };
             } else {
@@ -248,7 +260,7 @@ export const ServerDialog = ({ open, onClose, currentFolderId, currentOrganizati
 
         setIdentityUpdates({});
         setActiveTab(0);
-    }, [open, editServerId, initialProtocol]);
+    }, [open, editServerId, initialProtocol, fieldConfig.showIpPort]);
 
     useEffect(() => {
         if (!open) return;
@@ -270,18 +282,6 @@ export const ServerDialog = ({ open, onClose, currentFolderId, currentOrganizati
         if (!editServerId) return;
         getRequest("servers/" + editServerId).then((server) => setIdentities(server.identities));
     };
-
-    useEffect(() => {
-        if (!open || !fieldConfig.showIpPort || editServerId) return;
-
-        const portMap = { ssh: "22", telnet: "23", rdp: "3389", vnc: "5900" };
-        const currentPort = config.port;
-        const expectedPort = portMap[config.protocol];
-
-        if (expectedPort && !currentPort) {
-            setConfig(prev => ({ ...prev, port: expectedPort }));
-        }
-    }, [config.protocol, open, fieldConfig.showIpPort, editServerId]);
 
     const isDirty = name !== initialValues.current.name || 
                      icon !== initialValues.current.icon ||
@@ -343,7 +343,8 @@ export const ServerDialog = ({ open, onClose, currentFolderId, currentOrganizati
                     {activeTab === 1 && tabs[1]?.key === "identities" &&
                         <IdentityPage serverIdentities={identities} setIdentityUpdates={setIdentityUpdates}
                                       identityUpdates={identityUpdates} setIdentities={setIdentities}
-                                      currentOrganizationId={currentOrganizationId} allowedAuthTypes={fieldConfig.allowedAuthTypes} />}
+                                      currentOrganizationId={currentOrganizationId} allowedAuthTypes={fieldConfig.allowedAuthTypes}
+                                      serverName={name} />}
                     {tabs.find((tab, idx) => idx === activeTab && tab.key === "settings") && 
                         <SettingsPage config={config} setConfig={setConfig}
                                       monitoringEnabled={monitoringEnabled} setMonitoringEnabled={setMonitoringEnabled}

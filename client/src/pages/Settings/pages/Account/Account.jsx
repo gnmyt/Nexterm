@@ -1,7 +1,7 @@
 import IconInput from "@/common/components/IconInput";
 import "./styles.sass";
-import { mdiAccountCircleOutline, mdiWhiteBalanceSunny, mdiAccountEdit, mdiPalette, mdiShieldCheck, mdiLockReset, mdiTranslate, mdiSync, mdiCloudSync, mdiCloudOffOutline, mdiWeb, mdiTabUnselected, mdiWeatherNight, mdiFingerprint, mdiKeyVariant, mdiPencil, mdiTrashCan, mdiPlus, mdiCheck } from "@mdi/js";
-import { useContext, useEffect, useRef, useState } from "react";
+import { mdiAccountCircleOutline, mdiAccountEdit, mdiShieldCheck, mdiLockReset, mdiTranslate, mdiSync, mdiCloudSync, mdiCloudOffOutline, mdiWeb, mdiTabUnselected, mdiFingerprint, mdiKeyVariant, mdiPencil, mdiTrashCan, mdiPlus, mdiApi } from "@mdi/js";
+import { useContext, useEffect, useState } from "react";
 import { UserContext } from "@/common/contexts/UserContext.jsx";
 import { usePreferences } from "@/common/contexts/PreferencesContext.jsx";
 import Button from "@/common/components/Button";
@@ -9,6 +9,7 @@ import { patchRequest, postRequest, getRequest, deleteRequest } from "@/common/u
 import TwoFactorAuthentication from "@/pages/Settings/pages/Account/dialogs/TwoFactorAuthentication";
 import PasswordChange from "@/pages/Settings/pages/Account/dialogs/PasswordChange";
 import AddPasskeyDialog from "@/pages/Settings/pages/Account/dialogs/AddPasskeyDialog";
+import AddApiKeyDialog from "@/pages/Settings/pages/Account/dialogs/AddApiKeyDialog";
 import ActionConfirmDialog from "@/common/components/ActionConfirmDialog";
 import { useToast } from "@/common/contexts/ToastContext.jsx";
 import { startRegistration } from "@simplewebauthn/browser";
@@ -29,11 +30,13 @@ export const Account = () => {
     const [passkeys, setPasskeys] = useState([]);
     const [editingPasskeyId, setEditingPasskeyId] = useState(null);
     const [editingPasskeyName, setEditingPasskeyName] = useState("");
-    const [darkClickCount, setDarkClickCount] = useState(0);
-    const darkClickTimeout = useRef(null);
+    const [addApiKeyOpen, setAddApiKeyOpen] = useState(false);
+    const [apiKeys, setApiKeys] = useState([]);
+    const [deleteApiKeyOpen, setDeleteApiKeyOpen] = useState(false);
+    const [apiKeyToDelete, setApiKeyToDelete] = useState(null);
 
     const { user, login } = useContext(UserContext);
-    const { themeMode, setTheme, accentColor, setAccentColor, accentColors, isGroupSynced, toggleGroupSync, language, setLanguage } = usePreferences();
+    const { isGroupSynced, toggleGroupSync, language, setLanguage } = usePreferences();
     const { sendToast } = useToast();
 
     const [updatedField, setUpdatedField] = useState(null);
@@ -156,12 +159,38 @@ export const Account = () => {
         setEditingPasskeyName("");
     };
 
+    const loadApiKeys = async () => {
+        try {
+            const result = await getRequest("accounts/api-keys");
+            setApiKeys(result);
+        } catch (err) {
+            console.error("Failed to load API keys:", err);
+        }
+    };
+
+    const confirmDeleteApiKey = (apiKey) => {
+        setApiKeyToDelete(apiKey);
+        setDeleteApiKeyOpen(true);
+    };
+
+    const deleteApiKey = async () => {
+        if (!apiKeyToDelete) return;
+        try {
+            await deleteRequest(`accounts/api-keys/${apiKeyToDelete.id}`);
+            loadApiKeys();
+        } catch (err) {
+            console.error("Failed to delete API key:", err);
+        }
+        setApiKeyToDelete(null);
+    };
+
     useEffect(() => {
         if (user) {
             setFirstName(user.firstName);
             setLastName(user.lastName);
             setSessionSync(user.sessionSync || "same_browser");
             loadPasskeys();
+            loadApiKeys();
         }
     }, [user]);
 
@@ -174,11 +203,22 @@ export const Account = () => {
                 onClose={() => setAddPasskeyOpen(false)} 
                 onSubmit={addPasskey} 
             />
-            <ActionConfirmDialog 
-                open={deletePasskeyOpen} 
-                setOpen={setDeletePasskeyOpen} 
+            <ActionConfirmDialog
+                open={deletePasskeyOpen}
+                setOpen={setDeletePasskeyOpen}
                 onConfirm={deletePasskey}
                 text={t("settings.account.passkeys.confirmDelete")}
+            />
+            <AddApiKeyDialog
+                open={addApiKeyOpen}
+                onClose={() => setAddApiKeyOpen(false)}
+                onCreated={loadApiKeys}
+            />
+            <ActionConfirmDialog
+                open={deleteApiKeyOpen}
+                setOpen={setDeleteApiKeyOpen}
+                onConfirm={deleteApiKey}
+                text={t("settings.account.apiKeys.confirmDelete")}
             />
             <div className="account-section">
                 <h2><Icon path={mdiAccountEdit} size={0.8} style={{marginRight: '8px'}} />{t("settings.account.accountName")}</h2>
@@ -198,108 +238,6 @@ export const Account = () => {
                                    value={lastName} setValue={setLastName}
                                    customClass={updatedField === "lastName" ? " fd-updated" : ""}
                                    onBlur={(event) => updateName({ lastName: event.target.value })} />
-                    </div>
-                </div>
-            </div>
-
-            <div className="account-section">
-                <div className="section-header">
-                    <h2><Icon path={mdiPalette} size={0.8} style={{marginRight: '8px'}} />{t("settings.account.appearance")}</h2>
-                    <Button
-                        icon={isGroupSynced("appearance") ? mdiCloudSync : mdiCloudOffOutline}
-                        onClick={() => {
-                            if (!user) {
-                                sendToast(t("common.error"), t("settings.account.syncLoginRequired"));
-                                return;
-                            }
-                            const wasSynced = isGroupSynced("appearance");
-                            toggleGroupSync("appearance");
-                            sendToast(
-                                t("common.success"), 
-                                wasSynced ? t("settings.account.appearanceSyncDisabled") : t("settings.account.appearanceSyncEnabled")
-                            );
-                        }}
-                        type={isGroupSynced("appearance") ? "primary" : undefined}
-                    />
-                </div>
-                <div className="section-inner appearance-section">
-                    <p style={{ maxWidth: "25rem" }}>{t("settings.account.appearanceDescription")}</p>
-                    <div className="appearance-content">
-                        <div className="theme-selector">
-                            <span className="theme-label">{t("settings.account.themeLabel")}</span>
-                            <div className="theme-boxes">
-                                <div 
-                                    className={`theme-box ${themeMode === 'light' ? 'active' : ''}`}
-                                    onClick={() => setTheme('light')}
-                                >
-                                    <div className="theme-icon">
-                                        <Icon path={mdiWhiteBalanceSunny} size={1} />
-                                    </div>
-                                    <span className="theme-name">{t("settings.account.themeLight")}</span>
-                                </div>
-                                <div 
-                                    className={`theme-box ${themeMode === 'dark' ? 'active' : ''} ${themeMode === 'oled' ? 'active oled-active' : ''}`}
-                                    onClick={() => {
-                                        if (themeMode === 'oled') {
-                                            setTheme('dark');
-                                            setDarkClickCount(0);
-                                            sendToast(t("common.success"), t("settings.account.oledDisabled"));
-                                        } else if (themeMode === 'dark') {
-                                            clearTimeout(darkClickTimeout.current);
-                                            const newCount = darkClickCount + 1;
-                                            setDarkClickCount(newCount);
-                                            if (newCount >= 3) {
-                                                setTheme('oled');
-                                                setDarkClickCount(0);
-                                                sendToast(t("common.success"), t("settings.account.oledEnabled"));
-                                            } else {
-                                                darkClickTimeout.current = setTimeout(() => setDarkClickCount(0), 1000);
-                                            }
-                                        } else {
-                                            setTheme('dark');
-                                            setDarkClickCount(0);
-                                        }
-                                    }}
-                                >
-                                    <div className="theme-icon">
-                                        <Icon path={mdiWeatherNight} size={1} />
-                                    </div>
-                                    <span className="theme-name">{themeMode === 'oled' ? t("settings.account.themeOled") : t("settings.account.themeDark")}</span>
-                                </div>
-                                <div 
-                                    className={`theme-box ${themeMode === 'auto' ? 'active' : ''}`}
-                                    onClick={() => setTheme('auto')}
-                                >
-                                    <div className="theme-icon auto-icon">
-                                        <span className="light-half">
-                                            <Icon path={mdiWhiteBalanceSunny} size={0.4} />
-                                        </span>
-                                        <span className="dark-half">
-                                            <Icon path={mdiWeatherNight} size={0.4} />
-                                        </span>
-                                    </div>
-                                    <span className="theme-name">{t("settings.account.themeAuto")}</span>
-                                </div>
-                            </div>
-                        </div>
-                        <div className="accent-selector">
-                            <span className="accent-label">{t("settings.account.accentColor")}</span>
-                            <div className="accent-colors">
-                                {accentColors.map((color) => (
-                                    <div
-                                        key={color.value}
-                                        className={`accent-color ${accentColor === color.value ? 'active' : ''}`}
-                                        style={{ backgroundColor: color.value }}
-                                        onClick={() => setAccentColor(color.value)}
-                                        title={color.name}
-                                    >
-                                        {accentColor === color.value && (
-                                            <Icon path={mdiCheck} size={0.6} className="check-icon" />
-                                        )}
-                                    </div>
-                                ))}
-                            </div>
-                        </div>
                     </div>
                 </div>
             </div>
@@ -383,13 +321,13 @@ export const Account = () => {
                     </div>
                     <Button text={t("settings.account.passkeys.addButton")} icon={mdiPlus} onClick={() => setAddPasskeyOpen(true)} />
                 </div>
-                <div className="passkeys-list">
+                <div className="settings-list">
                     {passkeys.length > 0 ? (
                         passkeys.map(passkey => (
-                            <div className="passkey-item" key={passkey.id}>
-                                <div className="passkey-info">
-                                    <Icon path={mdiKeyVariant} className="passkey-icon" />
-                                    <div className="passkey-details">
+                            <div className="settings-list-item" key={passkey.id}>
+                                <div className="item-info">
+                                    <Icon path={mdiKeyVariant} className="item-icon" />
+                                    <div className="item-details">
                                         {editingPasskeyId === passkey.id ? (
                                             <input 
                                                 type="text" 
@@ -406,15 +344,15 @@ export const Account = () => {
                                         ) : (
                                             <h3>{passkey.name}</h3>
                                         )}
-                                        <p className="passkey-date">
-                                            {t("settings.account.passkeys.createdAt", { 
+                                        <p className="item-meta">
+                                            {t("settings.account.passkeys.createdAt", {
                                                 date: new Date(passkey.createdAt).toLocaleDateString(),
                                                 interpolation: { escapeValue: false }
                                             })}
                                         </p>
                                     </div>
                                 </div>
-                                <div className="passkey-actions">
+                                <div className="item-actions">
                                     <button className="action-btn edit-btn" onClick={() => startEditPasskey(passkey)} title={t("settings.account.passkeys.rename")}>
                                         <Icon path={mdiPencil} size={0.8} />
                                     </button>
@@ -425,8 +363,52 @@ export const Account = () => {
                             </div>
                         ))
                     ) : (
-                        <div className="no-passkeys">
+                        <div className="list-empty">
                             <p>{t("settings.account.passkeys.noPasskeys")}</p>
+                        </div>
+                    )}
+                </div>
+            </div>
+
+            <div className="account-section">
+                <div className="section-header">
+                    <div className="header-content">
+                        <h2><Icon path={mdiApi} size={0.8} style={{marginRight: '8px'}} />{t("settings.account.apiKeys.sectionTitle")}</h2>
+                        <p>{t("settings.account.apiKeys.sectionDescription")}</p>
+                    </div>
+                    <Button text={t("settings.account.apiKeys.addButton")} icon={mdiPlus} onClick={() => setAddApiKeyOpen(true)} />
+                </div>
+                <div className="settings-list">
+                    {apiKeys.length > 0 ? (
+                        apiKeys.map(apiKey => (
+                            <div className="settings-list-item" key={apiKey.id}>
+                                <div className="item-info">
+                                    <Icon path={mdiKeyVariant} className="item-icon" />
+                                    <div className="item-details">
+                                        <h3>{apiKey.name}</h3>
+                                        <p className="item-meta api-key-meta">
+                                            <code>{apiKey.prefix}</code>
+                                            <span>
+                                                {apiKey.lastUsedAt
+                                                    ? t("settings.account.apiKeys.lastUsed", { date: new Date(apiKey.lastUsedAt).toLocaleDateString(), interpolation: { escapeValue: false } })
+                                                    : t("settings.account.apiKeys.neverUsed")}
+                                            </span>
+                                            {apiKey.expiresAt && (
+                                                <span>{t("settings.account.apiKeys.expires", { date: new Date(apiKey.expiresAt).toLocaleDateString(), interpolation: { escapeValue: false } })}</span>
+                                            )}
+                                        </p>
+                                    </div>
+                                </div>
+                                <div className="item-actions">
+                                    <button className="action-btn delete-btn" onClick={() => confirmDeleteApiKey(apiKey)} title={t("settings.account.apiKeys.delete")}>
+                                        <Icon path={mdiTrashCan} size={0.8} />
+                                    </button>
+                                </div>
+                            </div>
+                        ))
+                    ) : (
+                        <div className="list-empty">
+                            <p>{t("settings.account.apiKeys.noKeys")}</p>
                         </div>
                     )}
                 </div>

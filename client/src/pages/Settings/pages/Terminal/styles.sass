@@ -1,7 +1,5 @@
 @use "@/common/styles/colors"
-
-$mobile: 768px
-$tablet: 1024px
+@use "@/common/styles/breakpoints"
 
 .terminal-settings-page
   display: flex
@@ -9,7 +7,7 @@ $tablet: 1024px
   margin-top: 1rem
   gap: 2rem
 
-  @media (max-width: $mobile)
+  @media (max-width: breakpoints.$mobile)
     gap: 1.5rem
 
 .terminal-section
@@ -21,14 +19,14 @@ $tablet: 1024px
   h2
     margin: 0
 
-    @media (max-width: $mobile)
+    @media (max-width: breakpoints.$mobile)
       font-size: 1.25rem
 
   p
     color: colors.$subtext
     margin: 0 0 1rem 0
 
-    @media (max-width: $mobile)
+    @media (max-width: breakpoints.$mobile)
       font-size: 0.85rem
 
   .section-inner
@@ -39,7 +37,7 @@ $tablet: 1024px
   grid-template-columns: repeat(auto-fit, minmax(280px, 1fr))
   gap: 0.75rem
 
-  @media (max-width: $mobile)
+  @media (max-width: breakpoints.$mobile)
     grid-template-columns: 1fr
 
 .theme-card
@@ -51,7 +49,7 @@ $tablet: 1024px
   background-color: colors.$lighter-background
   user-select: none
   outline: none
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2)
+  box-shadow: colors.$shadow-sm
 
   &:hover
     background-color: colors.$gray
@@ -64,7 +62,7 @@ $tablet: 1024px
   &.selected
     border-color: colors.$primary
     background-color: colors.$gray
-    box-shadow: 0 12px 48px rgba(0, 0, 0, 0.5), 0 4px 16px rgba(0, 0, 0, 0.3)
+    box-shadow: colors.$shadow-lg
 
   .theme-header
     display: flex
@@ -129,13 +127,13 @@ $tablet: 1024px
   51%, 100%
     opacity: 0
 
-.font-settings, .cursor-settings
+.font-settings, .cursor-settings, .input-settings
   display: flex
   gap: 2rem
   margin-bottom: 2rem
   flex-wrap: wrap
 
-  @media (max-width: $mobile)
+  @media (max-width: breakpoints.$mobile)
     flex-direction: column
     gap: 1rem
 
@@ -145,12 +143,12 @@ $tablet: 1024px
     gap: 0.5rem
     min-width: 200px
 
-    @media (max-width: $mobile)
+    @media (max-width: breakpoints.$mobile)
       min-width: 100%
 
     label
       color: colors.$subtext
       font-weight: 600
 
-      @media (max-width: $mobile)
+      @media (max-width: breakpoints.$mobile)
         font-size: 0.9rem

@@ -5,6 +5,7 @@ import GuacamoleRenderer from "@/pages/Servers/components/ViewContainer/renderer
 import XtermRenderer from "@/pages/Servers/components/ViewContainer/renderer/XtermRenderer.jsx";
 import FileRenderer from "@/pages/Servers/components/ViewContainer/renderer/FileRenderer";
 import ScriptRenderer from "@/pages/Servers/components/ViewContainer/renderer/ScriptRenderer";
+import NotesRenderer from "@/pages/Servers/components/ViewContainer/renderer/NotesRenderer";
 import Icon from "@mdi/react";
 import { mdiFullscreenExit } from "@mdi/js";
 import { useTranslation } from "react-i18next";
@@ -35,10 +36,12 @@ export const ViewContainer = ({
                                   closeSession,
                                   hibernateSession,
                                   duplicateSession,
+                                  openNotes,
+                                  markSessionErrored,
+                                  getSessionError,
                                   setOpenFileEditors,
                                   openTerminalFromFileManager,
                               }) => {
-
     const [layoutMode, setLayoutMode] = useState("single");
     const [gridSessions, setGridSessions] = useState([]);
     const sessionRefs = useRef({});
@@ -116,11 +119,11 @@ export const ViewContainer = ({
             setIsDragging(false);
             try { localStorage.setItem(BTN_STORAGE_KEY, JSON.stringify(btnPosition)); } catch {}
         };
-        document.addEventListener("mousemove", onMove);
-        document.addEventListener("mouseup", onUp);
+        document.addEventListener("mousemove", onMove, true);
+        document.addEventListener("mouseup", onUp, true);
         return () => {
-            document.removeEventListener("mousemove", onMove);
-            document.removeEventListener("mouseup", onUp);
+            document.removeEventListener("mousemove", onMove, true);
+            document.removeEventListener("mouseup", onUp, true);
         };
     }, [isDragging, btnPosition]);
 
@@ -300,12 +303,12 @@ export const ViewContainer = ({
         const handleMouseUp = () => {
             setIsResizing(false);
             setResizingDirection(null);
-            document.removeEventListener("mousemove", handleMouseMove);
-            document.removeEventListener("mouseup", handleMouseUp);
+            document.removeEventListener("mousemove", handleMouseMove, true);
+            document.removeEventListener("mouseup", handleMouseUp, true);
         };
 
-        document.addEventListener("mousemove", handleMouseMove);
-        document.addEventListener("mouseup", handleMouseUp);
+        document.addEventListener("mousemove", handleMouseMove, true);
+        document.addEventListener("mouseup", handleMouseUp, true);
 
         resizeRef.current = { type, index, handleMouseMove, handleMouseUp };
     }, [cellSizes, rowSizes]);
@@ -351,10 +354,16 @@ export const ViewContainer = ({
     }, [activeSessions.length, activeSessionId, focusSession]);
 
     const renderRenderer = (session) => {
+        if (session.type === "notes") {
+            return <NotesRenderer session={session} />;
+        }
+
         if (session.scriptId) {
             return <ScriptRenderer
                 session={session}
                 disconnectFromServer={disconnectFromServer}
+                markSessionErrored={markSessionErrored}
+                getSessionError={getSessionError}
                 updateProgress={updateSessionProgress}
                 savedState={getScriptState(session.id)}
                 saveState={(state) => updateScriptState(session.id, state)} />;
@@ -365,10 +374,15 @@ export const ViewContainer = ({
         switch (renderer) {
             case "guac":
                 return <GuacamoleRenderer session={session} disconnectFromServer={disconnectFromServer}
+                                          markSessionErrored={markSessionErrored}
+                                          getSessionError={getSessionError}
                                           registerGuacamoleRef={registerGuacamoleRef}
+                                          fullscreenEnabled={fullscreenMode}
                                           onFullscreenToggle={toggleFullscreenMode} />;
             case "terminal":
                 return <XtermRenderer session={session} disconnectFromServer={disconnectFromServer}
+                                      markSessionErrored={markSessionErrored}
+                                      getSessionError={getSessionError}
                                       registerTerminalRef={registerTerminalRef} broadcastMode={broadcastMode}
                                       terminalRefs={terminalRefs} updateProgress={updateSessionProgress}
                                       layoutMode={layoutMode} onBroadcastToggle={toggleBroadcastMode}
@@ -474,8 +488,8 @@ export const ViewContainer = ({
 
     return (
         <div className={`view-container ${fullscreenMode ? "fullscreen" : ""}`}>
-            {fullscreenMode && (
-                <div 
+            {fullscreenMode && !hasGuacamole && (
+                <div
                     className={`exit-fullscreen-btn-container ${isDragging ? "dragging" : ""}`}
                     style={{ left: btnPosition.x, top: btnPosition.y }}
                     onMouseDown={onBtnMouseDown}
@@ -497,6 +511,7 @@ export const ViewContainer = ({
                                             onKeyboardShortcut={handleKeyboardShortcut} hasGuacamole={hasGuacamole}
                                             sessionProgress={sessionProgress} fullscreenEnabled={fullscreenMode}
                                             onFullscreenToggle={toggleFullscreenMode}
+                                            openNotes={openNotes}
                                             hibernateSession={hibernateSession} duplicateSession={duplicateSession} />}
 
             <div ref={layoutRef}

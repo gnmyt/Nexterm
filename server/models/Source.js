@@ -34,4 +34,9 @@ module.exports = db.define("sources", {
         allowNull: false,
         defaultValue: 0,
     },
+    themeCount: {
+        type: Sequelize.INTEGER,
+        allowNull: false,
+        defaultValue: 0,
+    },
 }, { freezeTableName: true, createdAt: true, updatedAt: true });

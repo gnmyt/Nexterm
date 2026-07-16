@@ -1,6 +1,7 @@
 const { Router } = require("express");
 const { authenticate } = require("../middlewares/auth");
-const { isAdmin } = require("../middlewares/permission");
+const { requirePermission } = require("../middlewares/permission");
+const { Permission } = require("../permissions/registry");
 const oidc = require("../controllers/oidc");
 const ldap = require("../controllers/ldap");
 const { validateSchema } = require("../utils/schema");
@@ -37,7 +38,7 @@ app.get("/providers", async (req, res) => {
  * @return {object} 401 - User is not authenticated
  * @return {object} 403 - User is not an administrator
  */
-app.get("/providers/admin", authenticate, isAdmin, async (req, res) => {
+app.get("/providers/admin", authenticate, requirePermission(Permission.SETTINGS_AUTH_PROVIDERS), async (req, res) => {
     try {
         const [oidcProviders, ldapProviders] = await Promise.all([
             oidc.listProviders(false),
@@ -62,7 +63,7 @@ app.get("/providers/admin", authenticate, isAdmin, async (req, res) => {
  * @return {object} 403 - User is not an administrator
  * @return {object} 404 - Provider not found
  */
-app.get("/providers/admin/oidc/:id", authenticate, isAdmin, async (req, res) => {
+app.get("/providers/admin/oidc/:id", authenticate, requirePermission(Permission.SETTINGS_AUTH_PROVIDERS), async (req, res) => {
     try {
         const provider = await oidc.getProvider(req.params.id);
         if (!provider) return res.status(404).json({ message: "Provider not found" });
@@ -86,7 +87,7 @@ app.get("/providers/admin/oidc/:id", authenticate, isAdmin, async (req, res) => 
  * @return {object} 401 - User is not authenticated
  * @return {object} 403 - User is not an administrator
  */
-app.put("/providers/admin/oidc", authenticate, isAdmin, async (req, res) => {
+app.put("/providers/admin/oidc", authenticate, requirePermission(Permission.SETTINGS_AUTH_PROVIDERS), async (req, res) => {
     try {
         if (validateSchema(res, oidcProviderValidation, req.body)) return;
         const provider = await oidc.createProvider(req.body);
@@ -111,7 +112,7 @@ app.put("/providers/admin/oidc", authenticate, isAdmin, async (req, res) => {
  * @return {object} 403 - User is not an administrator
  * @return {object} 404 - Provider not found
  */
-app.patch("/providers/admin/oidc/:id", authenticate, isAdmin, async (req, res) => {
+app.patch("/providers/admin/oidc/:id", authenticate, requirePermission(Permission.SETTINGS_AUTH_PROVIDERS), async (req, res) => {
     try {
         if (validateSchema(res, oidcProviderUpdateValidation, req.body)) return;
         const result = await oidc.updateProvider(req.params.id, req.body);
@@ -136,7 +137,7 @@ app.patch("/providers/admin/oidc/:id", authenticate, isAdmin, async (req, res) =
  * @return {object} 403 - User is not an administrator
  * @return {object} 404 - Provider not found
  */
-app.delete("/providers/admin/oidc/:id", authenticate, isAdmin, async (req, res) => {
+app.delete("/providers/admin/oidc/:id", authenticate, requirePermission(Permission.SETTINGS_AUTH_PROVIDERS), async (req, res) => {
     try {
         const result = await oidc.deleteProvider(req.params.id);
         if (result.code) return res.status(result.code).json({ message: result.message });
@@ -159,7 +160,7 @@ app.delete("/providers/admin/oidc/:id", authenticate, isAdmin, async (req, res) 
  * @return {object} 403 - User is not an administrator
  * @return {object} 404 - Provider not found
  */
-app.get("/providers/admin/ldap/:id", authenticate, isAdmin, async (req, res) => {
+app.get("/providers/admin/ldap/:id", authenticate, requirePermission(Permission.SETTINGS_AUTH_PROVIDERS), async (req, res) => {
     try {
         const provider = await ldap.getProvider(req.params.id);
         if (!provider) return res.status(404).json({ message: "Provider not found" });
@@ -183,7 +184,7 @@ app.get("/providers/admin/ldap/:id", authenticate, isAdmin, async (req, res) => 
  * @return {object} 401 - User is not authenticated
  * @return {object} 403 - User is not an administrator
  */
-app.put("/providers/admin/ldap", authenticate, isAdmin, async (req, res) => {
+app.put("/providers/admin/ldap", authenticate, requirePermission(Permission.SETTINGS_AUTH_PROVIDERS), async (req, res) => {
     try {
         if (validateSchema(res, ldapProviderValidation, req.body)) return;
         const provider = await ldap.createProvider(req.body);
@@ -208,7 +209,7 @@ app.put("/providers/admin/ldap", authenticate, isAdmin, async (req, res) => {
  * @return {object} 403 - User is not an administrator
  * @return {object} 404 - Provider not found
  */
-app.patch("/providers/admin/ldap/:id", authenticate, isAdmin, async (req, res) => {
+app.patch("/providers/admin/ldap/:id", authenticate, requirePermission(Permission.SETTINGS_AUTH_PROVIDERS), async (req, res) => {
     try {
         if (validateSchema(res, ldapProviderUpdateValidation, req.body)) return;
         const result = await ldap.updateProvider(req.params.id, req.body);
@@ -233,7 +234,7 @@ app.patch("/providers/admin/ldap/:id", authenticate, isAdmin, async (req, res) =
  * @return {object} 403 - User is not an administrator
  * @return {object} 404 - Provider not found
  */
-app.delete("/providers/admin/ldap/:id", authenticate, isAdmin, async (req, res) => {
+app.delete("/providers/admin/ldap/:id", authenticate, requirePermission(Permission.SETTINGS_AUTH_PROVIDERS), async (req, res) => {
     try {
         const result = await ldap.deleteProvider(req.params.id);
         if (result.code) return res.status(result.code).json({ message: result.message });
@@ -257,7 +258,7 @@ app.delete("/providers/admin/ldap/:id", authenticate, isAdmin, async (req, res) 
  * @return {object} 403 - User is not an administrator
  * @return {object} 404 - Provider not found
  */
-app.post("/providers/admin/ldap/:id/test", authenticate, isAdmin, async (req, res) => {
+app.post("/providers/admin/ldap/:id/test", authenticate, requirePermission(Permission.SETTINGS_AUTH_PROVIDERS), async (req, res) => {
     try {
         const result = await ldap.testConnection(req.params.id);
         if (result.code) return res.status(result.code).json({ message: result.message });

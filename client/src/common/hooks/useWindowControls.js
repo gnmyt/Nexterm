@@ -1,8 +1,12 @@
 import { useState, useEffect, useRef } from "react";
 
+let zCounter = 1000;
+const nextZ = () => ++zCounter;
+
 export const useWindowControls = (initialSize = { width: 800, height: 600 }, initialPosition = null) => {
     const windowRef = useRef(null);
     const headerRef = useRef(null);
+    const [zIndex, setZIndex] = useState(nextZ);
 
     const [isDragging, setIsDragging] = useState(false);
     const [isResizing, setIsResizing] = useState(false);
@@ -52,6 +56,10 @@ export const useWindowControls = (initialSize = { width: 800, height: 600 }, ini
         setIsMaximized(!isMaximized);
     };
 
+    const focusWindow = () => {
+        setZIndex((current) => (current === zCounter ? current : nextZ()));
+    };
+
     useEffect(() => {
         const handleMouseMove = (e) => {
             if (isDragging && !isMaximized) {
@@ -83,7 +91,7 @@ export const useWindowControls = (initialSize = { width: 800, height: 600 }, ini
         };
     }, [isDragging, isResizing, dragOffset, position, size, resizeStart, isMaximized]);
 
-    const getWindowStyle = (zIndex = 9999) => {
+    const getWindowStyle = () => {
         return isMaximized
             ? { top: 0, left: 0, width: "100vw", height: "100vh", zIndex }
             : {
@@ -105,11 +113,8 @@ export const useWindowControls = (initialSize = { width: 800, height: 600 }, ini
     return {
         windowRef,
         headerRef,
-        isDragging,
-        isResizing,
         isMaximized,
-        position,
-        size,
+        focusWindow,
         handleMouseDown,
         handleResizeStart,
         toggleMaximize,

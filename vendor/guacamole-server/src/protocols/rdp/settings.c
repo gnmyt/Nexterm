@@ -71,6 +71,7 @@ const char* GUAC_RDP_CLIENT_ARGS[] = {
     "enable-drive",
     "drive-name",
     "drive-path",
+    "drive-backend",
     "create-drive-path",
     "disable-download",
     "disable-upload",
@@ -128,6 +129,7 @@ const char* GUAC_RDP_CLIENT_ARGS[] = {
     "create-recording-path",
     "recording-write-existing",
     "resize-method",
+    "secondary-monitors",
     "enable-audio-input",
     "enable-touch",
     "read-only",
@@ -251,6 +253,13 @@ enum RDP_ARGS_IDX {
      * virtual drive. This must be specified if the virtual drive is enabled.
      */
     IDX_DRIVE_PATH,
+
+    /**
+     * Virtual-drive storage: "local" (default; uses IDX_DRIVE_PATH on the
+     * guacd host) or "client" (forwards FS ops to the connected Guacamole
+     * client via nfs-*).
+     */
+    IDX_DRIVE_BACKEND,
 
     /**
      * "true" to automatically create the local system path used by the virtual
@@ -599,6 +608,12 @@ enum RDP_ARGS_IDX {
     IDX_RESIZE_METHOD,
 
     /**
+     * The maximum allowed count of secondary monitors.
+     * 0 to disable.
+     */
+    IDX_SECONDARY_MONITORS,
+
+    /**
      * "true" if audio input (microphone) should be enabled for the RDP
      * connection, "false" or blank otherwise.
      */
@@ -921,7 +936,7 @@ guac_rdp_settings* guac_rdp_parse_args(guac_user* user,
     /* Client name */
     settings->client_name =
         guac_user_parse_args_string(user, GUAC_RDP_CLIENT_ARGS, argv,
-                IDX_CLIENT_NAME, "Guacamole RDP");
+                IDX_CLIENT_NAME, "Nexterm");
 
     /* Initial program */
     settings->initial_program =
@@ -1060,6 +1075,16 @@ guac_rdp_settings* guac_rdp_parse_args(guac_user* user,
     settings->drive_path =
         guac_user_parse_args_string(user, GUAC_RDP_CLIENT_ARGS, argv,
                 IDX_DRIVE_PATH, "");
+
+    {
+        char* backend_str = guac_user_parse_args_string(user,
+                GUAC_RDP_CLIENT_ARGS, argv, IDX_DRIVE_BACKEND, "local");
+        if (backend_str != NULL && strcmp(backend_str, "client") == 0)
+            settings->drive_backend = GUAC_RDP_FS_BACKEND_CLIENT_RELAY;
+        else
+            settings->drive_backend = GUAC_RDP_FS_BACKEND_POSIX;
+        guac_mem_free(backend_str);
+    }
 
     /* If the server path should be created if it doesn't already exist. */
     settings->create_drive_path =
@@ -1233,6 +1258,16 @@ guac_rdp_settings* guac_rdp_parse_args(guac_user* user,
                 "Defaulting to no resize method.", argv[IDX_RESIZE_METHOD]);
         settings->resize_method = GUAC_RESIZE_NONE;
     }
+
+    /* Maximum secondary monitors (default 0 = disabled) */
+    settings->max_secondary_monitors =
+        guac_user_parse_args_int(user, GUAC_RDP_CLIENT_ARGS, argv,
+                IDX_SECONDARY_MONITORS, 0);
+
+    /* A negative monitor count is meaningless, and would allow the guards in
+     * guac_rdp_disp_set_size() to be bypassed */
+    if (settings->max_secondary_monitors < 0)
+        settings->max_secondary_monitors = 0;
 
     /* RDP Graphics Pipeline enable/disable */
     settings->enable_gfx =
@@ -1734,6 +1769,7 @@ void guac_rdp_push_settings(guac_client* client,
     freerdp_settings_set_uint32(rdp_settings, FreeRDP_OsMajorType, OSMAJORTYPE_UNSPECIFIED);
     freerdp_settings_set_uint32(rdp_settings, FreeRDP_OsMinorType, OSMINORTYPE_UNSPECIFIED);
     freerdp_settings_set_bool(rdp_settings, FreeRDP_DesktopResize, TRUE);
+    freerdp_settings_set_bool(rdp_settings, FreeRDP_UseMultimon, TRUE);
 
 #ifdef HAVE_RDPSETTINGS_ALLOWUNANOUNCEDORDERSFROMSERVER
     /* Do not consider server use of unannounced orders to be a fatal error */
@@ -1968,6 +2004,7 @@ void guac_rdp_push_settings(guac_client* client,
     rdp_settings->OsMajorType = OSMAJORTYPE_UNSPECIFIED;
     rdp_settings->OsMinorType = OSMINORTYPE_UNSPECIFIED;
     rdp_settings->DesktopResize = TRUE;
+    rdp_settings->UseMultimon = TRUE;
 
 #ifdef HAVE_RDPSETTINGS_ALLOWUNANOUNCEDORDERSFROMSERVER
     /* Do not consider server use of unannounced orders to be a fatal error */
