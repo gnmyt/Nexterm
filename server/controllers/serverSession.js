@@ -17,9 +17,13 @@ const ENTRY_TYPE_TO_AUDIT_ACTION = {
     'telnet': AUDIT_ACTIONS.SSH_CONNECT,
     'rdp': AUDIT_ACTIONS.RDP_CONNECT,
     'vnc': AUDIT_ACTIONS.VNC_CONNECT,
+    'demo': AUDIT_ACTIONS.DEMO_CONNECT,
     'pve-lxc': AUDIT_ACTIONS.PVE_CONNECT,
     'pve-shell': AUDIT_ACTIONS.PVE_CONNECT,
     'pve-qemu': AUDIT_ACTIONS.PVE_CONNECT,
+    'sftp': AUDIT_ACTIONS.SFTP_CONNECT,
+    'ftp': AUDIT_ACTIONS.SFTP_CONNECT,
+    'ftps': AUDIT_ACTIONS.SFTP_CONNECT,
 };
 
 const ENTRY_TYPE_TO_CONNECT_PERMISSION = {
@@ -27,9 +31,13 @@ const ENTRY_TYPE_TO_CONNECT_PERMISSION = {
     'telnet': Permission.CONNECT_SSH,
     'rdp': Permission.CONNECT_RDP,
     'vnc': Permission.CONNECT_VNC,
+    'demo': Permission.CONNECT_VNC,
     'pve-lxc': Permission.CONNECT_PROXMOX,
     'pve-shell': Permission.CONNECT_PROXMOX,
     'pve-qemu': Permission.CONNECT_PROXMOX,
+    'sftp': Permission.FILES_VIEW,
+    'ftp': Permission.FILES_VIEW,
+    'ftps': Permission.FILES_VIEW,
 };
 
 const getAuditAction = (entry, scriptId) => {

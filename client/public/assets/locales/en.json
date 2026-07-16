@@ -689,6 +689,34 @@
         "noPasskeys": "No passkeys registered yet",
         "rename": "Rename",
         "delete": "Delete"
+      },
+      "apiKeys": {
+        "sectionTitle": "API Keys",
+        "sectionDescription": "Create API keys to access Nexterm programmatically from scripts and integrations.",
+        "addButton": "Create API Key",
+        "createTitle": "Create API Key",
+        "createDescription": "Give your key a name. The token will be shown only once after creation.",
+        "nameLabel": "Name",
+        "namePlaceholder": "e.g. Deployment script",
+        "nameRequired": "Name is required",
+        "expiryLabel": "Expiration",
+        "expiryNever": "Never",
+        "expiry30": "30 days",
+        "expiry90": "90 days",
+        "expiry365": "1 year",
+        "createButton": "Create",
+        "createdTitle": "API Key Created",
+        "createdWarning": "Copy this token now. For security reasons you won't be able to see it again.",
+        "tokenLabel": "Token",
+        "doneButton": "Done",
+        "createError": "Failed to create API key.",
+        "copyError": "Failed to copy to clipboard.",
+        "confirmDelete": "Are you sure you want to revoke this API key? Any agent using it will lose access.",
+        "noKeys": "No API keys yet",
+        "lastUsed": "Last used {{date}}",
+        "neverUsed": "Never used",
+        "expires": "Expires {{date}}",
+        "delete": "Delete"
       }
     },
     "passwordChange": {
@@ -893,6 +921,15 @@
         "disabled": "Disabled",
         "syncEnabled": "Cursor settings will now sync to your account",
         "syncDisabled": "Cursor settings will no longer sync"
+      },
+      "input": {
+        "title": "Input",
+        "description": "Control how keyboard shortcuts behave inside the terminal.",
+        "smartCopyPaste": "Smart Ctrl+C",
+        "enabled": "Enabled",
+        "disabled": "Disabled",
+        "syncEnabled": "Input settings will now sync to your account",
+        "syncDisabled": "Input settings will no longer sync"
       },
       "theme": {
         "title": "Theme",
@@ -1490,10 +1527,18 @@
       "telnetServer": "Telnet Server",
       "rdpServer": "RDP Server",
       "vncServer": "VNC Server",
+      "demoServer": "Demo Connection",
+      "sftpServer": "SFTP Server",
+      "ftpServer": "FTP Server",
+      "ftpsServer": "FTPS Server",
       "createServer": "Create Server",
       "import": "Import",
-      "pve": "PVE",
+      "pve": "Proxmox VE",
       "sshConfig": "SSH-Config",
+      "syncIntegration": "Sync now",
+      "syncSuccess": "Integration synced",
+      "syncFailed": "Failed to sync integration",
+      "removeIntegration": "Remove Integration",
       "connect": "Connect",
       "quickConnect": "Quick Connect",
       "openSFTP": "Open SFTP",
@@ -1507,8 +1552,6 @@
       "pasteIdentityPassword": "Paste Password",
       "deleteServer": "Delete Server",
       "wakeOnLan": "Wake-On-LAN",
-      "editPVE": "Edit PVE",
-      "deletePVE": "Delete PVE",
       "shutdown": "Shutdown",
       "stop": "Stop",
       "start": "Start"
@@ -1563,8 +1606,6 @@
         "username": "Username",
         "password": "Password",
         "host": "Host",
-        "nodeName": "Node Name",
-        "vmid": "VM ID",
         "macAddress": "MAC Address",
         "engine": "Engine"
       },
@@ -1575,8 +1616,6 @@
         "username": "Username",
         "password": "Password",
         "host": "Host",
-        "nodeName": "Node name",
-        "vmid": "VM ID",
         "macAddress": "AA:BB:CC:DD:EE:FF"
       },
       "engineOffline": "(offline)",
@@ -1663,7 +1702,7 @@
     },
     "proxmoxDialog": {
       "title": {
-        "import": "Import Proxmox VE",
+        "import": "Add Proxmox VE",
         "edit": "Edit Proxmox VE"
       },
       "fields": {
@@ -1685,8 +1724,8 @@
         "specificNode": "Specific node name"
       },
       "actions": {
-        "import": "Import",
-        "edit": "Edit"
+        "import": "Add",
+        "edit": "Save"
       },
       "messages": {
         "created": "Proxmox integration created successfully",
@@ -1907,6 +1946,21 @@
       "noSnippets": "No snippets available",
       "searchPlaceholder": "Search snippets...",
       "createNew": "Create New Snippet"
+    },
+    "toolbar": {
+      "drag": "Drag to move",
+      "shortcuts": "Keyboard shortcuts",
+      "holdModifier": "Hold {{key}}",
+      "zoomIn": "Zoom in",
+      "zoomOut": "Zoom out",
+      "zoomReset": "Reset zoom to fit (drag with the middle mouse button to pan)"
+    },
+    "monitors": {
+      "title": "Monitor {{number}}",
+      "select": "Switch to monitor {{number}}",
+      "selectOrPopOut": "Switch to monitor {{number}} (double-click to open in its own window)",
+      "add": "Add monitor",
+      "remove": "Remove last monitor"
     },
     "terminalActions": {
       "menuTitle": "Terminal Actions",

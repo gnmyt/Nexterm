@@ -164,6 +164,24 @@ module.exports.setActiveWs = (sessionId, ws) => {
 
 module.exports.isActiveWs = (sessionId, ws) => module.exports.get(sessionId)?.activeWs === ws;
 
+module.exports.pinMonitor = (sessionId, ws, monitor) => {
+    const session = module.exports.get(sessionId);
+    if (!session) return;
+    session.pinnedMonitors ??= new Map();
+    session.pinnedMonitors.set(ws, monitor);
+};
+
+module.exports.unpinMonitor = (sessionId, ws) => {
+    module.exports.get(sessionId)?.pinnedMonitors?.delete(ws);
+};
+
+module.exports.isMonitorPinnedByOther = (sessionId, ws, monitor) => {
+    for (const [pinnedWs, pinnedMonitor] of module.exports.get(sessionId)?.pinnedMonitors ?? [])
+        if (pinnedWs !== ws && pinnedMonitor === monitor) return true;
+
+    return false;
+};
+
 module.exports.addWebSocket = (sessionId, ws, isShared = false) => {
     const session = module.exports.get(sessionId);
     if (!session) return;

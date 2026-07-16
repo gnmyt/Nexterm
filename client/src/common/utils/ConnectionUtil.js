@@ -42,3 +42,16 @@ export const getBrowserId = () => {
     if (!id) localStorage.setItem("nexterm_browser_id", id = `browser_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`);
     return id;
 };
+
+const CREDENTIALLESS_PROTOCOLS = ["telnet", "demo"];
+
+export const isCredentiallessProtocol = (protocol) => CREDENTIALLESS_PROTOCOLS.includes(protocol);
+
+export const requiresIdentity = (server) => {
+    if (!server) return false;
+    if (server.type?.startsWith("pve-")) return false;
+    return !isCredentiallessProtocol(server.protocol);
+};
+
+export const canConnectWithoutPrompt = (server) =>
+    !requiresIdentity(server) || server?.identities?.length > 0;

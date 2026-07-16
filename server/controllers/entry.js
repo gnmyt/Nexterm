@@ -17,6 +17,17 @@ const { sendWakeOnLan } = require("../utils/wol");
 const stateBroadcaster = require("../lib/StateBroadcaster");
 const SessionManager = require("../lib/SessionManager");
 
+const PROTOCOL_RENDERERS = {
+    ssh: "terminal",
+    telnet: "terminal",
+    rdp: "guac",
+    vnc: "guac",
+    demo: "guac",
+    sftp: "sftp",
+    ftp: "sftp",
+    ftps: "sftp",
+};
+
 const validateEntryAccess = async (accountId, entry, errorMessage = "You don't have permission to access this entry", requiredPermission = null) => {
     if (!entry) return { code: 401, message: "Entry does not exist" };
 
@@ -105,11 +116,7 @@ module.exports.createEntry = async (accountId, configuration) => {
     }
 
     if (!configuration.renderer && configuration.config?.protocol) {
-        if (configuration.config.protocol === "ssh" || configuration.config.protocol === "telnet") {
-            configuration.renderer = "terminal";
-        } else if (configuration.config.protocol === "rdp" || configuration.config.protocol === "vnc") {
-            configuration.renderer = "guac";
-        }
+        configuration.renderer = PROTOCOL_RENDERERS[configuration.config.protocol] ?? configuration.renderer;
     }
 
     if (configuration.identities && configuration.identities.length > 0) {
@@ -207,11 +214,7 @@ module.exports.editEntry = async (accountId, entryId, configuration) => {
     }
 
     if (configuration.config?.protocol) {
-        if (configuration.config.protocol === "ssh" || configuration.config.protocol === "telnet") {
-            configuration.renderer = "terminal";
-        } else if (configuration.config.protocol === "rdp" || configuration.config.protocol === "vnc") {
-            configuration.renderer = "guac";
-        }
+        configuration.renderer = PROTOCOL_RENDERERS[configuration.config.protocol] ?? configuration.renderer;
     }
 
     if (configuration.identities) {
@@ -545,6 +548,10 @@ module.exports.repositionEntry = async (accountId, entryId, { targetId, placemen
 
     if (!accessCheck.valid) return accessCheck;
 
+    if (entry.integrationId && folderId !== undefined && folderId !== entry.folderId) {
+        return { code: 403, message: "Integration resources cannot be moved out of their node folder" };
+    }
+
     if (folderId !== undefined && folderId !== null) {
         const folderCheck = await validateFolderAccess(accountId, folderId, Permission.RESOURCES_MANAGE);
         if (!folderCheck.valid) return folderCheck.error;
@@ -694,6 +701,7 @@ module.exports.getRecentConnections = async (accountId, limit = 5) => {
             AUDIT_ACTIONS.PVE_CONNECT,
             AUDIT_ACTIONS.RDP_CONNECT,
             AUDIT_ACTIONS.VNC_CONNECT,
+            AUDIT_ACTIONS.DEMO_CONNECT,
         ];
 
         const logs = await AuditLog.findAll({

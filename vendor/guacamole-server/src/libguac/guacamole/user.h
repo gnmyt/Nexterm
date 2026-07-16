@@ -298,7 +298,8 @@ struct guac_user {
      *
      * Example:
      * @code
-     *     int size_handler(guac_user* user, int width, int height);
+     *     int size_handler(guac_user* user, int width, int height,
+     *          int x_position, int top_offset);
      *
      *     int guac_user_init(guac_user* user, int argc, char** argv) {
      *         user->size_handler = size_handler;

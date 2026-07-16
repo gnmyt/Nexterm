@@ -1,26 +1,11 @@
 import { createContext, useContext, useCallback, useMemo, useRef, useEffect } from "react";
 import { UserContext } from "@/common/contexts/UserContext.jsx";
-import { useStateStream, STATE_TYPES } from "@/common/hooks/useStateStream.js";
-import { isTauri } from "@/common/utils/TauriUtil.js";
+import { useStateStream, STATE_TYPES, forceLogoutClient } from "@/common/hooks/useStateStream.js";
 
 export const StateStreamContext = createContext({});
 export { STATE_TYPES };
 
-const popoutChannel = typeof BroadcastChannel !== "undefined" ? new BroadcastChannel("nexterm_popout") : null;
 const stateTypes = Object.values(STATE_TYPES).filter(t => t !== "LOGOUT");
-
-const forceLogoutClient = async () => {
-    popoutChannel?.postMessage({ type: "force_close" });
-    if (isTauri()) {
-        try {
-            const { getAllWindows } = await import("@tauri-apps/api/window");
-            (await getAllWindows()).filter(w => w.label.startsWith("popout_")).forEach(w => w.close());
-        } catch {}
-    }
-    localStorage.removeItem("sessionToken");
-    localStorage.removeItem("overrideToken");
-    window.location.reload();
-};
 
 export const StateStreamProvider = ({ children }) => {
     const { sessionToken } = useContext(UserContext);

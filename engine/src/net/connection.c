@@ -151,6 +151,7 @@ static const char* session_type_to_protocol(session_type_t type) {
         case SESSION_TYPE_RDP:    return "rdp";
         case SESSION_TYPE_SSH:    return "ssh";
         case SESSION_TYPE_TELNET: return "telnet";
+        case SESSION_TYPE_DEMO:   return "demo";
         default:                  return NULL;
     }
 }

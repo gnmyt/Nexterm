@@ -14,7 +14,14 @@ const { SessionType } = require("./generated/control_plane_generated");
 const controlPlane = require("./controlPlane/ControlPlaneServer");
 const { isRecordingEnabled } = require("../utils/recordingService");
 const EngineSftpClient = require("./EngineSftpClient");
-const { buildPveQemuParams, buildRdpParams, buildVncParams } = require("./guacParamBuilders");
+const { buildPveQemuParams, buildRdpParams, buildVncParams, buildDemoParams } = require("./guacParamBuilders");
+
+const GUAC_PROTOCOLS = {
+    rdp: { sessionType: SessionType.RDP, defaultPort: 3389 },
+    vnc: { sessionType: SessionType.VNC, defaultPort: 5900 },
+    "pve-qemu": { sessionType: SessionType.VNC, defaultPort: 5900 },
+    demo: { sessionType: SessionType.Demo, defaultPort: 0 },
+};
 
 const requireEngine = () => {
     if (!controlPlane.hasEngine()) throw new Error("No engine connected");
@@ -43,6 +50,10 @@ const buildSSHParams = (identity, credentials) => {
 const extractIdentity = (identityResult) => {
     return identityResult?.identity === undefined ? identityResult : identityResult.identity;
 };
+
+const FILE_TRANSFER_PORTS = { sftp: 22, ftp: 21, ftps: 21 };
+
+const getEntryProtocol = (entry) => (entry.type === "server" ? entry.config?.protocol : entry.type);
 
 const getHostPort = (entry, defaultPort = 22) => {
     const host = entry.config?.ip;
@@ -101,7 +112,7 @@ const createConnectionForSession = async (sessionId, accountId) => {
     const identityResult = await resolveIdentity(entry, identityId, directIdentity, accountId);
     const identity = extractIdentity(identityResult);
     const organizationId = entry.organizationId || null;
-    const protocol = entry.type === "server" ? entry.config?.protocol : entry.type;
+    const protocol = getEntryProtocol(entry);
 
     let script = null;
     if (scriptId) {
@@ -117,17 +128,23 @@ const createConnectionForSession = async (sessionId, accountId) => {
         case "pve-shell": return createPveLxcConnectionForSession(sessionId, entry, organizationId);
         case "pve-qemu":
         case "rdp":
-        case "vnc": return prepareGuacamoleSession(sessionId, entry, identity, organizationId);
-        default: throw new Error(`Unsupported entry type: ${entry.type}`);
+        case "vnc":
+        case "demo": return prepareGuacamoleSession(sessionId, entry, identity, organizationId);
+        case "sftp":
+        case "ftp":
+        case "ftps": return { success: true, skipped: true };
+        default: throw new Error(`Unsupported protocol: ${protocol}`);
     }
 };
 
-const resolveSSHContext = async (entry, identityId, directIdentity, accountId) => {
+const resolveFileTransferContext = async (entry, identityId, directIdentity, accountId) => {
     const identityResult = await resolveIdentity(entry, identityId, directIdentity, accountId);
     const identity = extractIdentity(identityResult);
     const credentials = await resolveCredentials(identity);
-    const { host, port } = getHostPort(entry);
+    const protocol = getEntryProtocol(entry);
+    const { host, port } = getHostPort(entry, FILE_TRANSFER_PORTS[protocol] ?? 22);
     const params = buildSSHParams(identity, credentials);
+    if (protocol) params.protocol = protocol;
     return { identity, credentials, host, port, params };
 };
 
@@ -139,7 +156,7 @@ const createSFTPConnectionForSession = async (sessionId, entry, accountId) => {
     session._connecting = (async () => {
         requireEngine();
         const { identityId, directIdentity } = session.configuration;
-        const { host, port, params } = await resolveSSHContext(entry, identityId, directIdentity, accountId);
+        const { host, port, params } = await resolveFileTransferContext(entry, identityId, directIdentity, accountId);
         const jumpHosts = await resolveJumpHosts(entry);
 
         const dataSocket = await openEngineSession(
@@ -184,7 +201,7 @@ const getAuxiliarySFTPClient = async (sessionId, entry, accountId, opts) => {
     conn[connectingKey] = (async () => {
         requireEngine();
         const { identityId, directIdentity } = session.configuration;
-        const { host, port, params } = await resolveSSHContext(entry, identityId, directIdentity, accountId);
+        const { host, port, params } = await resolveFileTransferContext(entry, identityId, directIdentity, accountId);
         const jumpHosts = await resolveJumpHosts(entry);
 
         conn._auxGeneration = (conn._auxGeneration || 0) + 1;
@@ -396,13 +413,15 @@ const prepareGuacamoleSession = async (sessionId, entry, identity, organizationI
         params = await buildRdpParams(cfg, identity);
     } else if (protocol === "vnc") {
         params = await buildVncParams(cfg, identity);
+    } else if (protocol === "demo") {
+        params = await buildDemoParams();
     } else {
         throw new Error(`Unsupported protocol: ${protocol}`);
     }
 
-    const host = params.hostname || cfg.ip;
-    const port = Number.parseInt(params.port || cfg.port || (protocol === "rdp" ? 3389 : 5900), 10);
-    const sessionType = protocol === "rdp" ? SessionType.RDP : SessionType.VNC;
+    const { sessionType, defaultPort } = GUAC_PROTOCOLS[protocol] ?? GUAC_PROTOCOLS.vnc;
+    const host = params.hostname || cfg.ip || "";
+    const port = Number.parseInt(params.port || cfg.port || defaultPort, 10);
     const jumpHosts = await resolveJumpHosts(entry);
 
     const dataSocket = await openEngineSession(

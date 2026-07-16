@@ -19,18 +19,24 @@ export const FolderObject = ({ id, name, nestedLevel, position, onClick, isOpen,
         }
     }, [name, renameState]);
 
+    const isIntegrationNode = folderType === "integration-node";
+    const isIntegrationManaged = isIntegrationNode || folderType === "integration-root";
+
     const [{ opacity }, dragRef] = useDrag({
         type: "folder",
         item: { type: "folder", id, position },
+        canDrag: () => !isIntegrationNode,
         collect: monitor => ({
             opacity: monitor.isDragging() ? 0.5 : 1,
         }),
     });
 
+    const acceptsDrop = (item) => !isIntegrationManaged && !item.isIntegrationEntry;
+
     const [{ isOver }, dropRef] = useDrop({
         accept: ["server", "folder"],
         drop: async (item) => {
-            if (item.id === id) return;
+            if (item.id === id || !acceptsDrop(item)) return { id };
             try {
                 if (item.type === "server") {
                     await patchRequest(`entries/${item.id}/reposition`, { 
@@ -53,7 +59,7 @@ export const FolderObject = ({ id, name, nestedLevel, position, onClick, isOpen,
             return { id };
         },
         collect: (monitor) => ({
-            isOver: monitor.isOver(),
+            isOver: monitor.isOver() && monitor.getItem() != null && acceptsDrop(monitor.getItem()),
         }),
     });
 
@@ -85,7 +91,7 @@ export const FolderObject = ({ id, name, nestedLevel, position, onClick, isOpen,
         <div className={"folder-object" + (isOver ? " folder-is-over" : "")} data-id={id}
              ref={(node) => dragRef(dropRef(node))} onClick={renameState ? (e) => e.stopPropagation() : onClick}
              style={{ paddingLeft: `${10 + (nestedLevel * 15)}px`, opacity }}>
-            {folderType === 'pve-node' ? (
+            {(folderType === 'integration-node' || folderType === 'integration-root') ? (
                 <img src={ProxmoxIcon} alt="Proxmox" style={{ width: '1.5rem', height: '1.5rem' }} />
             ) : (
                 <Icon path={isOpen ? mdiFolderOpenOutline : mdiFolderOutline} />

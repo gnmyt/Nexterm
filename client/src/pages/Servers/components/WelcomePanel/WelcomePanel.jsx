@@ -22,7 +22,8 @@ const formatTimeAgo = (timestamp) => {
 
 const PROTOCOL_LABELS = {
     "entry.ssh_connect": "SSH", "entry.sftp_connect": "SFTP", "entry.rdp_connect": "RDP",
-    "entry.vnc_connect": "VNC", "entry.pve_connect": "PVE",
+    "entry.vnc_connect": "VNC",
+    "entry.demo_connect": "Demo", "entry.pve_connect": "PVE",
 };
 
 export const WelcomePanel = ({

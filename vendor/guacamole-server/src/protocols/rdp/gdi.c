@@ -31,9 +31,18 @@
 #include <guacamole/client.h>
 #include <guacamole/display.h>
 #include <guacamole/protocol.h>
+#include <guacamole/protocol-constants.h>
 #include <winpr/wtypes.h>
 
+#include <stdbool.h>
 #include <stddef.h>
+#include <stdio.h>
+
+/**
+ * The maximum size of the JSON string describing the layout of all monitors,
+ * in bytes, including the null terminator.
+ */
+#define GUAC_RDP_MULTIMON_LAYOUT_MAX_LENGTH 2048
 
 void guac_rdp_gdi_mark_frame(rdpContext* context, int starting) {
 
@@ -206,6 +215,14 @@ BOOL guac_rdp_gdi_desktop_resize(rdpContext* context) {
             gdi->width, gdi->height);
 
     guac_display_layer_close_raw(default_layer, current_context);
+
+    /* Inform all users of where each monitor resides within the single,
+     * combined display sent over the wire */
+    guac_rdp_disp_send_multimon_layout(client, rdp_client->disp, client->socket);
+
+    /* Set default pointer after resizing to ensure it is visible when adding
+     * a new monitor */
+    guac_display_set_cursor(rdp_client->display, GUAC_DISPLAY_CURSOR_POINTER);
 
     return retval;
 

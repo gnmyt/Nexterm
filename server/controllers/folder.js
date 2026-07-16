@@ -183,6 +183,10 @@ module.exports.editFolder = async (accountId, folderId, configuration) => {
         return { code: 403, message: "You don't have permission to manage resources" };
     }
 
+    if (configuration.parentId !== undefined && folder.type === "integration-node") {
+        return { code: 403, message: "Integration nodes cannot be moved out of their integration folder" };
+    }
+
     if (configuration.parentId !== undefined) {
         if (configuration.parentId === null) {
             if (configuration.organizationId !== undefined) {
@@ -309,6 +313,7 @@ module.exports.listFolders = async (accountId) => {
             name: folder.name,
             type: "folder",
             folderType: folder.type,
+            integrationId: folder.integrationId,
             position: folder.position,
             organizationId: folder.organizationId,
             entries: [],

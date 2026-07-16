@@ -14,6 +14,7 @@ const { startStatusChecker, stopStatusChecker } = require("./utils/statusChecker
 const { ensureInternalProvider } = require("./controllers/oidc");
 const monitoringService = require("./utils/monitoringService");
 const pveMonitoringService = require("./utils/pveMonitoringService");
+const integrationSyncService = require("./utils/integrationSyncService");
 const recordingService = require("./utils/recordingService");
 const { generateOpenAPISpec } = require("./openapi");
 const { requirePermission } = require("./middlewares/permission");
@@ -48,6 +49,7 @@ app.use(express.json());
 app.use("/api/service", require("./routes/service"));
 app.use("/api/accounts", require("./routes/account"));
 app.use("/api/accounts/passkeys", require("./routes/passkey"));
+app.use("/api/accounts/api-keys", require("./routes/apiKey"));
 app.use("/api/auth", require("./routes/auth"));
 app.use("/api/auth", require("./routes/authProviders"));
 
@@ -121,6 +123,8 @@ db.authenticate()
 
         pveMonitoringService.start();
 
+        integrationSyncService.start();
+
         recordingService.start();
 
         startSourceSyncService();
@@ -180,6 +184,7 @@ process.on("SIGINT", async () => {
 
     monitoringService.stop();
     pveMonitoringService.stop();
+    integrationSyncService.stop();
     recordingService.stop();
     stopStatusChecker();
     stopSourceSyncService();

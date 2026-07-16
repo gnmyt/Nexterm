@@ -70,7 +70,8 @@ int guac_kubernetes_user_key_handler(guac_user* user, int keysym, int pressed) {
 
 }
 
-int guac_kubernetes_user_size_handler(guac_user* user, int width, int height) {
+int guac_kubernetes_user_size_handler(guac_user* user, int width, int height,
+        int x_position, int top_offset) {
 
     /* Get terminal */
     guac_client* client = user->client;

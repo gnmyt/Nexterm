@@ -1,13 +1,12 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import useWebSocket, { ReadyState } from "react-use-websocket";
 import { getWebSocketUrl, getTabId, getBrowserId } from "@/common/utils/ConnectionUtil.js";
+import { closeAllPopouts } from "@/common/utils/PopoutUtil.js";
 
 export const STATE_TYPES = { ENTRIES: "ENTRIES", IDENTITIES: "IDENTITIES", SNIPPETS: "SNIPPETS", CONNECTIONS: "CONNECTIONS", LOGOUT: "LOGOUT" };
 
-const popoutChannel = typeof BroadcastChannel !== "undefined" ? new BroadcastChannel("nexterm_popout") : null;
-
-const forceLogoutClient = () => {
-    popoutChannel?.postMessage({ type: "force_close" });
+export const forceLogoutClient = async () => {
+    await closeAllPopouts();
     localStorage.removeItem("sessionToken");
     localStorage.removeItem("overrideToken");
     window.location.reload();

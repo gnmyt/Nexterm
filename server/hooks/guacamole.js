@@ -3,7 +3,16 @@ const GuacdClient = require("../lib/GuacdClient");
 const controlPlane = require("../lib/controlPlane/ControlPlaneServer");
 const logger = require("../utils/logger");
 
-const handleGuacJoin = async (ws, sessionId, isShared, shareWritable) => {
+const SIZED_MONITOR = /\.size,\d+\.-?\d+,\d+\.-?\d+,\d+\.(-?\d+)/;
+const MOUSE_BUTTONS = /\.mouse,\d+\.\d+,\d+\.\d+,(\d+)\.(\d+);/;
+
+const sizedMonitorOf = (msgStr) => {
+    if (!msgStr.includes(".size,")) return null;
+    const match = msgStr.match(SIZED_MONITOR);
+    return match ? Number.parseInt(match[1], 10) : 0;
+};
+
+const handleGuacJoin = async (ws, sessionId, isShared, shareWritable, pinnedMonitor = null) => {
     const conn = SessionManager.getConnection(sessionId);
     if (!conn?.guacdClient) {
         logger.debug("handleGuacJoin: no master connection", { sessionId });
@@ -65,9 +74,9 @@ const handleGuacJoin = async (ws, sessionId, isShared, shareWritable) => {
     joinClient.connect();
 
     SessionManager.addWebSocket(sessionId, ws, isShared);
-    if (!isShared || shareWritable) {
-        SessionManager.setActiveWs(sessionId, ws);
-    }
+
+    if (pinnedMonitor !== null) SessionManager.pinMonitor(sessionId, ws, pinnedMonitor);
+    else if (!isShared || shareWritable) SessionManager.setActiveWs(sessionId, ws);
 
     const pingInterval = setInterval(() => {
         if (ws.readyState === ws.OPEN) ws.ping();
@@ -78,12 +87,18 @@ const handleGuacJoin = async (ws, sessionId, isShared, shareWritable) => {
 
         if (isShared && !SessionManager.get(sessionId)?.shareWritable) return;
 
-        const isInteraction = msgStr.includes(".key,") ||
-            (msgStr.match(/\.mouse,\d+\.\d+,\d+\.\d+,(\d+)\.(\d+);/)?.[2] > 0);
-        if (isInteraction) SessionManager.setActiveWs(sessionId, ws);
+        const sizedMonitor = sizedMonitorOf(msgStr);
 
-        if (msgStr.includes(".size,") && !SessionManager.isActiveWs(sessionId, ws)) {
-            return;
+        if (pinnedMonitor !== null) {
+            if (sizedMonitor !== null && sizedMonitor !== pinnedMonitor) return;
+        } else {
+            const isInteraction = msgStr.includes(".key,")
+                || msgStr.match(MOUSE_BUTTONS)?.[2] > 0
+                || sizedMonitor > 0;
+            if (isInteraction) SessionManager.setActiveWs(sessionId, ws);
+
+            if (sizedMonitor !== null && (!SessionManager.isActiveWs(sessionId, ws)
+                || SessionManager.isMonitorPinnedByOther(sessionId, ws, sizedMonitor))) return;
         }
 
         SessionManager.updateActivity(sessionId);
@@ -93,12 +108,14 @@ const handleGuacJoin = async (ws, sessionId, isShared, shareWritable) => {
     ws.on("close", () => {
         clearInterval(pingInterval);
         joinClient.close();
+        SessionManager.unpinMonitor(sessionId, ws);
         SessionManager.removeWebSocket(sessionId, ws, isShared);
     });
 
     ws.on("error", () => {
         clearInterval(pingInterval);
         joinClient.close();
+        SessionManager.unpinMonitor(sessionId, ws);
         SessionManager.removeWebSocket(sessionId, ws, isShared);
     });
 };
@@ -116,5 +133,5 @@ module.exports = async (ws, context) => {
     const sessionId = context.connectionConfig?.serverSession?.sessionId;
     if (!sessionId) return ws.close(4014, "Session not found");
 
-    return handleGuacJoin(ws, sessionId, false, false);
+    return handleGuacJoin(ws, sessionId, false, false, context.pinnedMonitor ?? null);
 };

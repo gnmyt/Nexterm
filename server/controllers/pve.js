@@ -35,6 +35,10 @@ module.exports.getAllNodes = async (server = { ip: "", port: 0 }, ticket) => {
     return pveRequest(server, "GET", "/nodes", ticket);
 };
 
+module.exports.getClusterResources = async (server = { ip: "", port: 0 }, ticket) => {
+    return pveRequest(server, "GET", "/cluster/resources", ticket);
+};
+
 module.exports.openLXCConsole = async (server = { ip: "", port: 0 }, node, vmid, ticket) => {
     const containerPart = vmid === 0 || vmid === "0" ? "" : `lxc/${vmid}`;
     return pveRequest(server, "POST", `/nodes/${node}/${containerPart}/termproxy`, ticket, {});
