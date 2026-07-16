@@ -20,8 +20,12 @@ const OPERATIONS = {
     STAT: 0xF, CHECKSUM: 0x10, FOLDER_SIZE: 0x11, PATH_SYNC: 0x12,
 };
 
-// Drains a FileSystemDirectoryReader into a flat array, batching readEntries calls
-// (the API returns at most 100 entries per call, so we keep reading until empty).
+const REFRESH_DEBOUNCE = 150;
+
+const joinPath = (...parts) => parts.join("/").replace(/\/+/g, "/");
+
+const createUploadStats = () => ({ uploaded: 0, failed: 0, sentBytes: 0, totalBytes: 0, firstError: null, lastName: "" });
+
 const readAllEntries = (reader) => new Promise((resolve, reject) => {
     const all = [];
     const next = () => {
@@ -36,6 +40,34 @@ const readAllEntries = (reader) => new Promise((resolve, reject) => {
     };
     next();
 });
+
+const takeDroppedEntries = (dataTransfer) => [...(dataTransfer.items ?? [])]
+    .filter(item => item.kind === "file")
+    .map(item => item.webkitGetAsEntry?.())
+    .filter(Boolean);
+
+const collectDroppedEntries = async (entries, targetDir) => {
+    const files = [];
+    const emptyDirs = [];
+
+    const walk = async (entry, dir) => {
+        if (entry.isFile) {
+            files.push({ file: await new Promise((resolve, reject) => entry.file(resolve, reject)), targetDir: dir });
+            return;
+        }
+
+        const path = joinPath(dir, entry.name);
+        const children = await readAllEntries(entry.createReader());
+        if (!children.length) {
+            emptyDirs.push(path);
+            return;
+        }
+        for (const child of children) await walk(child, path);
+    };
+
+    for (const entry of entries) await walk(entry, targetDir);
+    return { files, emptyDirs };
+};
 
 export const FileRenderer = ({ session, disconnectFromServer, setOpenFileEditors, isActive, onOpenTerminal }) => {
     const { t } = useTranslation();
@@ -69,7 +101,8 @@ export const FileRenderer = ({ session, disconnectFromServer, setOpenFileEditors
     const reconnectAttemptsRef = useRef(0);
     const fileListRef = useRef(null);
     const propertiesHandlerRef = useRef(null);
-    const uploadFolderEntryRef = useRef(null);
+    const uploadStatsRef = useRef(createUploadStats());
+    const refreshTimerRef = useRef(null);
 
     const wsUrl = getWebSocketUrl("/api/ws/sftp", { sessionToken, sessionId: session.id });
 
@@ -128,92 +161,73 @@ export const FileRenderer = ({ session, disconnectFromServer, setOpenFileEditors
     };
 
     const uploadFileHttp = async (file, targetDir) => {
-        const filePath = `${targetDir}/${file.name}`.replace(/\/+/g, '/');
-        setIsUploading(true);
-        setUploadProgress(0);
+        const filePath = joinPath(targetDir, file.name);
+        const stats = uploadStatsRef.current;
 
         try {
             const url = `/api/entries/sftp/upload?sessionId=${session.id}&path=${encodeURIComponent(filePath)}&sessionToken=${sessionToken}`;
             await uploadFileRequest(url, file, {
-                onProgress: setUploadProgress,
+                onProgress: (progress) => setUploadProgress(stats.totalBytes
+                    ? Math.round(((stats.sentBytes + (progress / 100) * file.size) / stats.totalBytes) * 100)
+                    : progress),
                 timeout: 5 * 60 * 1000,
             });
-
-            setIsUploading(false);
-            setUploadProgress(0);
-            listFiles(true);
-            sendToast(t("common.success"), t("servers.fileManager.toast.uploaded", { name: file.name }));
-            return true;
+            stats.uploaded++;
+            stats.lastName = file.name;
         } catch (err) {
             console.error("Upload error:", err);
-            sendToast(t("common.error"), t("servers.fileManager.toast.uploadFailed", { message: err.message }));
-            setIsUploading(false);
-            setUploadProgress(0);
-            return false;
+            stats.failed++;
+            stats.firstError ??= err.message;
+        } finally {
+            stats.sentBytes += file.size;
+        }
+    };
+
+    const reportUploadResult = ({ uploaded, failed, firstError, lastName }) => {
+        if (uploaded) {
+            sendToast(t("common.success"), uploaded === 1
+                ? t("servers.fileManager.toast.uploaded", { name: lastName })
+                : t("servers.fileManager.toast.uploadedItems", { count: uploaded }));
+        }
+        if (failed) {
+            sendToast(t("common.error"), failed === 1
+                ? t("servers.fileManager.toast.uploadFailed", { message: firstError })
+                : t("servers.fileManager.toast.uploadFailedItems", { count: failed, message: firstError }));
         }
     };
 
     const processUploadQueue = async () => {
+        setIsUploading(true);
         while (uploadQueueRef.current.length > 0) {
             const { file, targetDir } = uploadQueueRef.current[0];
             await uploadFileHttp(file, targetDir);
             uploadQueueRef.current.shift();
         }
+        setIsUploading(false);
+        setUploadProgress(0);
+        listFiles(true);
+
+        const stats = uploadStatsRef.current;
+        uploadStatsRef.current = createUploadStats();
+        reportUploadResult(stats);
     };
 
-    const queueUpload = (file, targetDir) => {
-        uploadQueueRef.current.push({ file, targetDir });
-        if (uploadQueueRef.current.length === 1) processUploadQueue();
-    };
-
-    // Recursively creates remote directories and queues file uploads for a dropped folder.
-    // Stored in a ref so it can call itself without a circular useCallback dependency.
-    uploadFolderEntryRef.current = async (entry, targetPath) => {
-        const remotePath = `${targetPath}/${entry.name}`.replace(/\/+/g, '/');
-        sendOperation(OPERATIONS.CREATE_FOLDER, { path: remotePath });
-        // Brief pause so the server processes mkdir before we write files into it.
-        await new Promise(r => setTimeout(r, 100));
-        const entries = await readAllEntries(entry.createReader());
-        for (const child of entries) {
-            if (child.isDirectory) {
-                await uploadFolderEntryRef.current(child, remotePath);
-            } else {
-                const file = await new Promise((res, rej) => child.file(res, rej));
-                queueUpload(file, remotePath);
-            }
-        }
+    const queueUploads = (uploads) => {
+        if (!uploads.length) return;
+        const idle = uploadQueueRef.current.length === 0;
+        for (const upload of uploads) uploadStatsRef.current.totalBytes += upload.file.size;
+        uploadQueueRef.current.push(...uploads);
+        if (idle) processUploadQueue();
     };
 
     const uploadFile = async () => {
         const fileInput = document.createElement("input");
         fileInput.type = "file";
         fileInput.multiple = true;
-        fileInput.onchange = async () => {
-            for (const file of fileInput.files) queueUpload(file, directory);
+        fileInput.onchange = () => {
+            queueUploads([...fileInput.files].map(file => ({ file, targetDir: directory })));
         };
         fileInput.click();
-    };
-
-    const doFolderUpload = async (files) => {
-        // Collect every unique directory path and create them in sorted order
-        // (explicit comparator required — sort guarantees parents before children).
-        const dirs = new Set();
-        for (const file of files) {
-            const parts = file.webkitRelativePath.split('/');
-            for (let i = 1; i < parts.length; i++) {
-                dirs.add(`${directory}/${parts.slice(0, i).join('/')}`);
-            }
-        }
-        for (const dir of [...dirs].sort((a, b) => a.localeCompare(b))) {
-            sendOperation(OPERATIONS.CREATE_FOLDER, { path: dir.replace(/\/+/g, '/') });
-        }
-        // Single delay after all mkdir operations before starting file uploads.
-        await new Promise(r => setTimeout(r, 200));
-        for (const file of files) {
-            const parts = file.webkitRelativePath.split('/');
-            const relDir = parts.slice(0, -1).join('/');
-            queueUpload(file, `${directory}/${relDir}`.replace(/\/+/g, '/'));
-        }
     };
 
     const uploadFolder = () => {
@@ -221,11 +235,10 @@ export const FileRenderer = ({ session, disconnectFromServer, setOpenFileEditors
         input.type = "file";
         input.webkitdirectory = true;
         input.onchange = () => {
-            const files = [...input.files];
-            if (!files.length) return;
-            doFolderUpload(files).catch(err =>
-                sendToast(t("common.error"), t("servers.fileManager.toast.uploadFailed", { message: err.message }))
-            );
+            queueUploads([...input.files].map(file => ({
+                file,
+                targetDir: joinPath(directory, file.webkitRelativePath.split("/").slice(0, -1).join("/")),
+            })));
         };
         input.click();
     };
@@ -265,7 +278,7 @@ export const FileRenderer = ({ session, disconnectFromServer, setOpenFileEditors
                 case OPERATIONS.MOVE_FILES:
                 case OPERATIONS.COPY_FILES:
                 case OPERATIONS.CHMOD:
-                    listFiles(true);
+                    scheduleRefresh();
                     break;
                 case OPERATIONS.ERROR:
                     sendToast(t("common.error"), payload?.message || t("servers.fileManager.toast.error"));
@@ -335,6 +348,10 @@ export const FileRenderer = ({ session, disconnectFromServer, setOpenFileEditors
     const createFile = (fileName) => sendOperation(OPERATIONS.CREATE_FILE, { path: `${directory}/${fileName}` });
     const createFolder = (folderName) => sendOperation(OPERATIONS.CREATE_FOLDER, { path: `${directory}/${folderName}` });
     const listFiles = useCallback((silent = false) => { if (!silent) setLoading(true); setError(null); sendOperation(OPERATIONS.LIST_FILES, { path: directory }); }, [directory, sendOperation]);
+    const scheduleRefresh = () => {
+        clearTimeout(refreshTimerRef.current);
+        refreshTimerRef.current = setTimeout(() => listFiles(true), REFRESH_DEBOUNCE);
+    };
     const moveFiles = useCallback((sources, destination) => sendOperation(OPERATIONS.MOVE_FILES, { sources, destination }), [sendOperation]);
     const copyFiles = useCallback((sources, destination) => sendOperation(OPERATIONS.COPY_FILES, { sources, destination }), [sendOperation]);
 
@@ -349,23 +366,15 @@ export const FileRenderer = ({ session, disconnectFromServer, setOpenFileEditors
     const goBack = () => { if (historyIndex > 0) { setHistoryIndex(historyIndex - 1); const p = history[historyIndex - 1]; setDirectory(p); sendOperation(OPERATIONS.PATH_SYNC, { path: p }); } };
     const goForward = () => { if (historyIndex < history.length - 1) { setHistoryIndex(historyIndex + 1); const p = history[historyIndex + 1]; setDirectory(p); sendOperation(OPERATIONS.PATH_SYNC, { path: p }); } };
 
-    const handleFileDrop = async (dataTransfer) => {
-        const items = dataTransfer.items ? [...dataTransfer.items] : [];
-        if (items.length && typeof items[0].webkitGetAsEntry === "function") {
-            for (const item of items) {
-                if (item.kind !== "file") continue;
-                const entry = item.webkitGetAsEntry();
-                if (!entry) continue;
-                if (entry.isDirectory) {
-                    await uploadFolderEntryRef.current(entry, directory);
-                } else {
-                    const file = item.getAsFile();
-                    if (file) queueUpload(file, directory);
-                }
-            }
-        } else {
-            for (let i = 0; i < dataTransfer.files.length; i++) queueUpload(dataTransfer.files[i], directory);
+    const handleFileDrop = async (entries, files, targetDir) => {
+        if (!entries.length) {
+            queueUploads(files.map(file => ({ file, targetDir })));
+            return;
         }
+
+        const { files: collected, emptyDirs } = await collectDroppedEntries(entries, targetDir);
+        for (const path of emptyDirs) sendOperation(OPERATIONS.CREATE_FOLDER, { path, recursive: true });
+        queueUploads(collected);
     };
 
     const handleDrag = (e) => {
@@ -376,7 +385,7 @@ export const FileRenderer = ({ session, disconnectFromServer, setOpenFileEditors
         else if (e.type === "dragleave" && !dropZoneRef.current.contains(e.relatedTarget)) setDragging(false);
         else if (e.type === "drop") {
             setDragging(false);
-            handleFileDrop(e.dataTransfer).catch(err =>
+            handleFileDrop(takeDroppedEntries(e.dataTransfer), [...e.dataTransfer.files], directory).catch(err =>
                 sendToast(t("common.error"), t("servers.fileManager.toast.uploadFailed", { message: err.message }))
             );
         }
@@ -389,6 +398,8 @@ export const FileRenderer = ({ session, disconnectFromServer, setOpenFileEditors
     const handleOpenPreview = (filePath) => setOpenFileEditors(prev => [...prev, { id: `${session.id}-${filePath}-${Date.now()}`, file: filePath, session, type: 'preview' }]);
 
     useEffect(() => { directoryRef.current = directory; }, [directory]);
+
+    useEffect(() => () => clearTimeout(refreshTimerRef.current), []);
 
     useEffect(() => { setSearchQuery(""); }, [directory]);
 
@@ -420,7 +431,7 @@ export const FileRenderer = ({ session, disconnectFromServer, setOpenFileEditors
             <div className={`drag-overlay ${dragging ? "active" : ""}`}>
                 <div className="drag-item">
                     <Icon path={mdiCloudUpload} />
-                    <h2>Drop files to upload</h2>
+                    <h2>{t("servers.fileManager.dropOverlay")}</h2>
                 </div>
             </div>
             <div className="file-manager">

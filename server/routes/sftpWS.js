@@ -69,7 +69,8 @@ const buildOperationHandlers = (sftp, getBg, ws, logAudit, capabilities) => ({
     },
     [OP.CREATE_FOLDER]: async (p) => {
         requirePath(p);
-        await sftp.mkdir(p.path);
+        if (p.recursive) await sftp.mkdirRecursive(p.path);
+        else await sftp.mkdir(p.path);
         sendAck(ws, OP.CREATE_FOLDER);
         logAudit(AUDIT_ACTIONS.FOLDER_CREATE, RESOURCE_TYPES.FOLDER, { folderPath: p.path });
     },

@@ -149,6 +149,27 @@ class EngineSftpClient extends EventEmitter {
         return this._pathRequest(SftpMsgType.Mkdir, path);
     }
 
+    async mkdirRecursive(path) {
+        if ((await this.stat(path).catch(() => null))?.isDir) return [];
+
+        const segments = path.split("/").filter(Boolean);
+        const created = [];
+        let current = path.startsWith("/") ? "" : ".";
+
+        for (const segment of segments) {
+            current = `${current}/${segment}`;
+            if ((await this.stat(current).catch(() => null))?.isDir) continue;
+            try {
+                await this.mkdir(current);
+                created.push(current);
+            } catch (err) {
+                if (!(await this.stat(current).catch(() => null))?.isDir) throw err;
+            }
+        }
+
+        return created;
+    }
+
     unlink(path) {
         return this._pathRequest(SftpMsgType.Unlink, path);
     }
