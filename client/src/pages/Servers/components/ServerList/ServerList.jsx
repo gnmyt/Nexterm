@@ -47,6 +47,7 @@ import TagsSubmenu from "./components/TagsSubmenu";
 import ScriptsMenu from "./components/ScriptsMenu";
 import Fuse from "fuse.js";
 import { useToast } from "@/common/contexts/ToastContext.jsx";
+import ActionConfirmDialog from "@/common/components/ActionConfirmDialog";
 import { UserContext } from "@/common/contexts/UserContext.jsx";
 import { Permission } from "@/common/utils/permissions.js";
 
@@ -131,6 +132,7 @@ export const ServerList = ({
     const [scriptsMenuOpen, setScriptsMenuOpen] = useState(false);
     const [scriptsMenuServer, setScriptsMenuServer] = useState(null);
     const [isMobile, setIsMobile] = useState(false);
+    const [deleteConfirmDialog, setDeleteConfirmDialog] = useState({ open: false, name: "", id: null, isFolder: false });
 
     const contextMenu = useContextMenu();
 
@@ -311,9 +313,20 @@ export const ServerList = ({
         });
     };
 
-    const deleteFolder = () => deleteRequest("folders/" + contextClickedId).then(loadServers);
+    const openDeleteConfirm = () => {
+        const entry = contextFolder ?? server;
+        if (!entry) return;
+        setDeleteConfirmDialog({ open: true, name: entry.name, id: entry.id, isFolder: entry === contextFolder });
+    };
 
-    const deleteServer = () => deleteRequest("entries/" + contextClickedId).then(loadServers);
+    const handleDeleteConfirm = () => {
+        const { id, name, isFolder } = deleteConfirmDialog;
+        deleteRequest(`${isFolder ? "folders" : "entries"}/${id}`)
+            .then(loadServers)
+            .catch(() => sendToast("Error", t(isFolder
+                ? "servers.contextMenu.deleteFailFolder"
+                : "servers.contextMenu.deleteFailServer", { name })));
+    };
 
     const setFolderContext = () => {
         if (isOrgFolder) {
@@ -674,7 +687,7 @@ export const ServerList = ({
                                 <ContextMenuItem
                                     icon={mdiFolderRemove}
                                     label={t("servers.contextMenu.deleteFolder")}
-                                    onClick={deleteFolder}
+                                    onClick={openDeleteConfirm}
                                     danger
                                 />
                             </>
@@ -839,7 +852,7 @@ export const ServerList = ({
                                 <ContextMenuItem
                                     icon={mdiServerMinus}
                                     label={t("servers.contextMenu.deleteServer")}
-                                    onClick={deleteServer}
+                                    onClick={openDeleteConfirm}
                                     danger
                                 />
                             </>
@@ -928,12 +941,20 @@ export const ServerList = ({
                                 <ContextMenuItem
                                     icon={mdiServerMinus}
                                     label={t("servers.contextMenu.deleteServer")}
-                                    onClick={deleteServer}
+                                    onClick={openDeleteConfirm}
                                     danger
                                 />
                             </>
                         )}
                     </ContextMenu>
+
+                    <ActionConfirmDialog
+                        open={deleteConfirmDialog.open}
+                        setOpen={(open) => setDeleteConfirmDialog(prev => ({ ...prev, open }))}
+                        onConfirm={handleDeleteConfirm}
+                        text={t("servers.contextMenu.deleteConfirm", { name: deleteConfirmDialog.name })}
+                    />
+
                     <ScriptsMenu
                         visible={scriptsMenuOpen}
                         onClose={closeScriptsMenu}
