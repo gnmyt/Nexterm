@@ -79,4 +79,6 @@ const buildVncParams = async (cfg, identity) => {
     return params;
 };
 
-module.exports = { buildPveQemuParams, buildRdpParams, buildVncParams };
+const buildDemoParams = async () => ({});
+
+module.exports = { buildPveQemuParams, buildRdpParams, buildVncParams, buildDemoParams };
