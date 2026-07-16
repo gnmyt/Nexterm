@@ -10,7 +10,7 @@
     "download": "下载",
     "maximize": "最大化",
     "restore": "恢复",
-    "resize": "Resize",
+    "resize": "调整大小",
     "actions": {
       "cancel": "取消",
       "confirm": "确认",
@@ -62,8 +62,8 @@
       "qrScanDescription": "使用 Nexterm 移动应用程序扫描此二维码，即可立即登录。",
       "backToLogin": "返回登录",
       "authenticating": "正在验证…",
-      "noAccount": "Don't have an account?",
-      "haveAccount": "Already have an account?"
+      "noAccount": "还没有账号吗？",
+      "haveAccount": "已有账户吗？"
     },
     "deviceLink": {
       "title": "链接设备",
@@ -691,32 +691,32 @@
         "delete": "删除"
       },
       "apiKeys": {
-        "sectionTitle": "API Keys",
-        "sectionDescription": "Create API keys to access Nexterm programmatically from scripts and integrations.",
-        "addButton": "Create API Key",
-        "createTitle": "Create API Key",
-        "createDescription": "Give your key a name. The token will be shown only once after creation.",
-        "nameLabel": "Name",
-        "namePlaceholder": "e.g. Deployment script",
-        "nameRequired": "Name is required",
-        "expiryLabel": "Expiration",
-        "expiryNever": "Never",
-        "expiry30": "30 days",
-        "expiry90": "90 days",
-        "expiry365": "1 year",
-        "createButton": "Create",
-        "createdTitle": "API Key Created",
-        "createdWarning": "Copy this token now. For security reasons you won't be able to see it again.",
-        "tokenLabel": "Token",
-        "doneButton": "Done",
-        "createError": "Failed to create API key.",
-        "copyError": "Failed to copy to clipboard.",
-        "confirmDelete": "Are you sure you want to revoke this API key? Any agent using it will lose access.",
-        "noKeys": "No API keys yet",
-        "lastUsed": "Last used {{date}}",
-        "neverUsed": "Never used",
-        "expires": "Expires {{date}}",
-        "delete": "Delete"
+        "sectionTitle": "API密钥",
+        "sectionDescription": "创建 API 密钥，以便通过脚本和集成以编程方式访问 Nexterm。",
+        "addButton": "创建 API 密钥",
+        "createTitle": "创建 API 密钥",
+        "createDescription": "为您的密钥命名。该令牌在创建后仅显示一次。",
+        "nameLabel": "姓名",
+        "namePlaceholder": "例如：部署脚本",
+        "nameRequired": "姓名为必填项",
+        "expiryLabel": "到期日",
+        "expiryNever": "绝不",
+        "expiry30": "30天",
+        "expiry90": "90天",
+        "expiry365": "1年",
+        "createButton": "创建",
+        "createdTitle": "API密钥已创建",
+        "createdWarning": "请立即复制此验证码。出于安全考虑，您将无法再次查看该验证码。",
+        "tokenLabel": "代币",
+        "doneButton": "完成",
+        "createError": "无法创建 API 密钥。",
+        "copyError": "无法复制到剪贴板。",
+        "confirmDelete": "您确定要撤销此 API 密钥吗？任何使用该密钥的系统都将失去访问权限。",
+        "noKeys": "尚未获取 API 密钥",
+        "lastUsed": "最后使用时间 {{date}}",
+        "neverUsed": "从未使用过",
+        "expires": "有效期至 {{date}}",
+        "delete": "删除"
       }
     },
     "passwordChange": {
@@ -763,8 +763,8 @@
         "folderManagementDescription": "记录文件夹的创建、修改和删除",
         "scriptExecutionLabel": "脚本执行",
         "scriptExecutionDescription": "记录脚本和自动化任务的执行情况",
-        "aiOperationsLabel": "AI Operations",
-        "aiOperationsDescription": "Log commands and file changes performed by the AI assistant",
+        "aiOperationsLabel": "AI 运维",
+        "aiOperationsDescription": "记录 AI 助手执行的命令和文件更改",
         "actions": {
           "save": "保存设置"
         },
@@ -858,8 +858,8 @@
           "description": "打开 AI 命令菜单"
         },
         "aiaccepttool": {
-          "title": "AI Accept Action",
-          "description": "Approve the pending AI tool action in the assistant"
+          "title": "AI 接受操作",
+          "description": "在助手中批准待处理的 AI 工具操作"
         },
         "snippets": {
           "title": "代码片段",
@@ -923,13 +923,13 @@
         "syncDisabled": "光标设置不再同步"
       },
       "input": {
-        "title": "Input",
-        "description": "Control how keyboard shortcuts behave inside the terminal.",
-        "smartCopyPaste": "Smart Ctrl+C",
-        "enabled": "Enabled",
-        "disabled": "Disabled",
-        "syncEnabled": "Input settings will now sync to your account",
-        "syncDisabled": "Input settings will no longer sync"
+        "title": "输入",
+        "description": "控制键盘快捷键在终端中的行为。",
+        "smartCopyPaste": "智能 Ctrl+C",
+        "enabled": "已启用",
+        "disabled": "已禁用",
+        "syncEnabled": "输入设置现已同步到您的账户",
+        "syncDisabled": "输入设置将不再同步"
       },
       "theme": {
         "title": "主题",
@@ -995,8 +995,8 @@
       "system": "系统",
       "systemDescription": "用户名和密码身份验证",
       "registration": {
-        "title": "Self-Registration",
-        "description": "Allow visitors to create their own account from the login screen"
+        "title": "自助注册",
+        "description": "允许访客在登录页面上创建自己的账户"
       },
       "deleteConfirm": "此操作将永久删除此身份验证提供程序。",
       "errors": {
@@ -1087,11 +1087,11 @@
     },
     "ai": {
       "title": "AI 助手配置",
-      "description": "Configure the AI assistant that can run commands and manage files directly over your server sessions.",
+      "description": "配置该 AI 助手，使其能够直接通过您的服务器会话执行命令并管理文件。",
       "loading": "加载 AI 设置中...",
       "enable": {
         "title": "启用 AI 助手",
-        "description": "Allow users to open the AI assistant inside server sessions"
+        "description": "允许用户在服务器会话中打开 AI 助手"
       },
       "provider": {
         "title": "AI 提供商",
@@ -1099,42 +1099,42 @@
       },
       "model": {
         "title": "AI 模型",
-        "description": "Select the AI model the assistant should use"
+        "description": "选择助手应使用的 AI 模型"
       },
       "requireConfirmation": {
-        "title": "Confirm before each action",
-        "description": "Require users to approve every command and file change the assistant wants to make"
+        "title": "每次操作前请确认",
+        "description": "要求用户批准助手想要执行的每一条命令和文件更改"
       },
       "apiKey": {
         "title": "API 密钥",
         "setPlaceholder": "API 密钥已设置（留空表示保留当前值）",
-        "genericDescription": "API key used to authenticate with the selected provider",
-        "genericPlaceholder": "Enter your {{provider}} API key"
+        "genericDescription": "用于与所选提供商进行身份验证的 API 密钥",
+        "genericPlaceholder": "请输入您的 {{provider}} API 密钥"
       },
       "authMethod": {
-        "title": "Authentication",
-        "description": "Authenticate with an API key or your provider subscription",
-        "apiKey": "API Key",
-        "subscription": "Subscription"
+        "title": "身份验证",
+        "description": "使用 API 密钥或您的服务提供商订阅进行身份验证",
+        "apiKey": "API密钥",
+        "subscription": "订阅"
       },
       "subscription": {
-        "title": "{{provider}} Subscription",
-        "description": "Sign in with your {{provider}} subscription to use its models without an API key",
-        "connectedDescription": "Your {{provider}} subscription is connected",
-        "connect": "Connect",
-        "connecting": "Connecting...",
-        "complete": "Complete",
-        "disconnect": "Disconnect",
-        "codePlaceholder": "Paste the authorization code here",
-        "codePlaceholderUrl": "Paste the full callback URL (or code) here",
-        "connectSuccess": "{{provider}} subscription connected",
-        "startError": "Failed to start authorization",
-        "exchangeError": "Failed to connect subscription",
-        "disconnectError": "Failed to disconnect subscription"
+        "title": "{{provider}} 订阅",
+        "description": "使用您的 {{provider}} 订阅登录，即可无需 API 密钥直接使用其模型",
+        "connectedDescription": "您的 {{provider}} 订阅已连接",
+        "connect": "连接",
+        "connecting": "正在连接...",
+        "complete": "完成",
+        "disconnect": "断开连接",
+        "codePlaceholder": "请将授权码粘贴在此处",
+        "codePlaceholderUrl": "请将完整的回调网址（或代码）粘贴在此处",
+        "connectSuccess": "{{provider}} 订阅已连接",
+        "startError": "授权启动失败",
+        "exchangeError": "无法连接订阅",
+        "disconnectError": "无法取消订阅"
       },
       "baseUrl": {
         "title": "API URL",
-        "description": "Base URL of the provider's OpenAI-compatible endpoint",
+        "description": "提供商 OpenAI 兼容端点的基准 URL",
         "placeholder": "https://api.example.com/v1"
       },
       "selectProvider": "选择服务提供商...",
@@ -1527,18 +1527,18 @@
       "telnetServer": "Telnet 服务器",
       "rdpServer": "RDP 服务器",
       "vncServer": "VNC 服务器",
-      "demoServer": "Demo Connection",
-      "sftpServer": "SFTP Server",
-      "ftpServer": "FTP Server",
-      "ftpsServer": "FTPS Server",
+      "demoServer": "演示连接",
+      "sftpServer": "SFTP 服务器",
+      "ftpServer": "FTP 服务器",
+      "ftpsServer": "FTPS 服务器",
       "createServer": "创建服务器",
       "import": "导入",
       "pve": "Proxmox VE",
       "sshConfig": "SSH 配置",
-      "syncIntegration": "Sync now",
-      "syncSuccess": "Integration synced",
-      "syncFailed": "Failed to sync integration",
-      "removeIntegration": "Remove Integration",
+      "syncIntegration": "立即同步",
+      "syncSuccess": "集成已同步",
+      "syncFailed": "集成同步失败",
+      "removeIntegration": "移除集成",
       "connect": "连接",
       "quickConnect": "快速连接",
       "openSFTP": "打开 SFTP",
@@ -1607,7 +1607,7 @@
         "password": "密码",
         "host": "主机",
         "macAddress": "MAC 地址",
-        "wolBroadcastAddress": "Broadcast Address",
+        "wolBroadcastAddress": "广播地址",
         "engine": "发动机"
       },
       "placeholders": {
@@ -1704,7 +1704,7 @@
     },
     "proxmoxDialog": {
       "title": {
-        "import": "Add Proxmox VE",
+        "import": "添加 Proxmox VE",
         "edit": "编辑 Proxmox VE"
       },
       "fields": {
@@ -1726,8 +1726,8 @@
         "specificNode": "特定节点名称"
       },
       "actions": {
-        "import": "Add",
-        "edit": "Save"
+        "import": "添加",
+        "edit": "保存"
       },
       "messages": {
         "created": "成功创建 Proxmox 集成",
@@ -1821,8 +1821,8 @@
         "properties": "属性",
         "openTerminal": "在此打开终端",
         "downloadFolder": "下载文件夹",
-        "newFile": "New File",
-        "newFolder": "New Folder"
+        "newFile": "新建文件",
+        "newFolder": "新建文件夹"
       },
       "properties": {
         "general": "一般情况",
@@ -1885,7 +1885,7 @@
         "switchToList": "切换到列表视图",
         "search": "搜索文件",
         "closeSearch": "关闭搜索",
-        "refresh": "Refresh"
+        "refresh": "刷新"
       },
       "item": {
         "link": "链接"
@@ -1913,44 +1913,44 @@
       }
     },
     "remoteDesktop": {
-      "dropOverlay": "Drop files to upload to remote",
+      "dropOverlay": "将文件拖放到此处以上传至远程服务器",
       "toast": {
-        "uploadedSingle": "Uploaded \"{{name}}\" to remote drive",
-        "uploadedMultiple": "Uploaded {{count}} files to remote drive",
-        "uploadFailed": "{{count}} file(s) failed to upload",
-        "uploadPartial": "{{failed}} file(s) failed to upload, {{succeeded}} succeeded",
-        "downloaded": "Downloaded \"{{name}}\" from remote"
+        "uploadedSingle": "已将“{{name}}”上传至远程驱动器",
+        "uploadedMultiple": "已将 {{count}} 个文件上传至远程驱动器",
+        "uploadFailed": "{{count}} 文件上传失败",
+        "uploadPartial": "{{failed}} 文件上传失败， {{succeeded}} 上传成功",
+        "downloaded": "从远程服务器下载了“{{name}}”"
       }
     },
     "aiAssistant": {
       "title": "AI 助手",
-      "open": "AI Assistant",
-      "empty": "Ask the assistant to inspect or change this server. It can run commands and read or edit files directly over the connection.",
-      "placeholder": "Message the assistant...",
-      "connecting": "Connecting...",
-      "send": "Send",
-      "stop": "Stop",
-      "connectionError": "Connection to the assistant was lost.",
-      "reconnecting": "Connection lost. Reconnecting...",
-      "confirmPrompt": "Allow this action?",
-      "allow": "Allow",
-      "allowShortcut": "Allow ({{key}})",
-      "deny": "Deny",
-      "denied": "You denied this action.",
-      "stopped": "Stopped.",
+      "open": "AI助手",
+      "empty": "请让助理检查或更换这台服务器。它可以通过该连接直接执行命令，以及读取或编辑文件。",
+      "placeholder": "给助理发消息……",
+      "connecting": "正在连接...",
+      "send": "发送",
+      "stop": "停止",
+      "connectionError": "与助手的连接已中断。",
+      "reconnecting": "连接已断开。正在重新连接...",
+      "confirmPrompt": "允许执行此操作吗？",
+      "allow": "允许",
+      "allowShortcut": "允许 ({{key}})",
+      "deny": "拒绝",
+      "denied": "你拒绝了此操作。",
+      "stopped": "停下了。",
       "tools": {
-        "runCommand": "Run command",
-        "readFile": "Read file",
-        "writeFile": "Write file",
-        "editFile": "Edit file",
-        "listDirectory": "List directory",
-        "statPath": "Inspect path",
-        "makeDirectory": "Create directory",
-        "deleteFile": "Delete file",
-        "removeDirectory": "Remove directory",
-        "movePath": "Move",
-        "changePermissions": "Change permissions",
-        "findDirectories": "Find directories"
+        "runCommand": "运行命令",
+        "readFile": "读取文件",
+        "writeFile": "写入文件",
+        "editFile": "编辑文件",
+        "listDirectory": "列出目录",
+        "statPath": "检查路径",
+        "makeDirectory": "创建目录",
+        "deleteFile": "删除文件",
+        "removeDirectory": "删除目录",
+        "movePath": "移动",
+        "changePermissions": "更改权限",
+        "findDirectories": "查找目录"
       }
     },
     "snippets": {
@@ -1960,19 +1960,19 @@
       "createNew": "创建新代码片段"
     },
     "toolbar": {
-      "drag": "Drag to move",
-      "shortcuts": "Keyboard shortcuts",
-      "holdModifier": "Hold {{key}}",
-      "zoomIn": "Zoom in",
-      "zoomOut": "Zoom out",
-      "zoomReset": "Reset zoom to fit (drag with the middle mouse button to pan)"
+      "drag": "拖动以移动",
+      "shortcuts": "键盘快捷键",
+      "holdModifier": "保持 {{key}}",
+      "zoomIn": "放大",
+      "zoomOut": "缩小",
+      "zoomReset": "将缩放比例重置为“适应视图”（按住鼠标中键拖动可平移）"
     },
     "monitors": {
-      "title": "Monitor {{number}}",
-      "select": "Switch to monitor {{number}}",
-      "selectOrPopOut": "Switch to monitor {{number}} (double-click to open in its own window)",
-      "add": "Add monitor",
-      "remove": "Remove last monitor"
+      "title": "显示器 {{number}}",
+      "select": "切换到显示器 {{number}}",
+      "selectOrPopOut": "切换到显示器 {{number}} （双击可在新窗口中打开）",
+      "add": "添加显示器",
+      "remove": "移除最后一台显示器"
     },
     "terminalActions": {
       "menuTitle": "终端操作",
