@@ -926,6 +926,7 @@
         "title": "Input",
         "description": "Control how keyboard shortcuts behave inside the terminal.",
         "smartCopyPaste": "Smart Ctrl+C",
+        "passwordPromptDetection": "Password input detection",
         "enabled": "Enabled",
         "disabled": "Disabled",
         "syncEnabled": "Input settings will now sync to your account",

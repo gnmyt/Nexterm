@@ -1,6 +1,7 @@
 const SessionManager = require("../lib/SessionManager");
 const { createConnectionForSession } = require("../lib/ConnectionService");
 const Entry = require("../models/Entry");
+const EntryIdentity = require("../models/EntryIdentity");
 const Account = require("../models/Account");
 const MonitoringSnapshot = require("../models/MonitoringSnapshot");
 const { validateEntryAccess } = require("./entry");
@@ -303,11 +304,16 @@ const duplicateSession = async (accountId, sessionId, tabId = null, browserId = 
     );
 };
 
-const pasteIdentityPassword = async (accountId, sessionId, ipAddress = null, userAgent = null) => {
+const pasteIdentityPassword = async (accountId, sessionId, ipAddress = null, userAgent = null, requestedIdentityId = null) => {
     const { session, error } = validateSessionOwnership(accountId, sessionId);
     if (error) return error;
 
-    const identityId = session.configuration?.identityId;
+    let identityId = session.configuration?.identityId;
+    if (requestedIdentityId && requestedIdentityId !== identityId) {
+        const attached = await EntryIdentity.findOne({ where: { entryId: session.entryId, identityId: requestedIdentityId } });
+        if (!attached) return { code: 403, message: 'Identity is not attached to this server' };
+        identityId = requestedIdentityId;
+    }
     if (!identityId) return { code: 400, message: 'No identity attached to session' };
 
     const identity = await getIdentity(accountId, identityId);
