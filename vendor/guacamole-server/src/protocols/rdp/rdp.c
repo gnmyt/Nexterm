@@ -544,6 +544,10 @@ static int guac_rdp_handle_connection(guac_client* client) {
     /* Init client */
     freerdp* rdp_inst = freerdp_new();
 
+    /* Whether freerdp_context_new() succeeded, and the context therefore still
+     * needs to be freed if the connection attempt fails */
+    int context_created = 0;
+
     /*
      * If the freerdp instance has a LoadChannels callback for loading plugins
      * we use that instead of the PreConnect callback to load plugins.
@@ -570,6 +574,8 @@ static int guac_rdp_handle_connection(guac_client* client) {
                 "debug-level logging for guacd.");
         goto fail;
     }
+
+    context_created = 1;
 
     ((rdp_freerdp_context*) GUAC_RDP_CONTEXT(rdp_inst))->client = client;
 
@@ -737,6 +743,61 @@ static int guac_rdp_handle_connection(guac_client* client) {
     return 0;
 
 fail:
+
+    /* A failed connection attempt has still allocated the guac_display (and
+     * its encoding worker threads), the FreeRDP instance and context (and its
+     * WinPR thread pool), the SVC list, and possibly the keyboard. None of
+     * these are reachable through rdp_client->rdp_inst (which is assigned only
+     * after a successful connect) and none are reclaimed by
+     * guac_rdp_client_free_handler, so they must be freed here or they leak for
+     * the remaining lifetime of the process. */
+
+    /* Take the write lock for exclusive access while freeing, as the connect
+     * failure path may still hold only a read lock */
+    guac_rwlock_release_lock(&(rdp_client->lock));
+    guac_rwlock_acquire_write_lock(&(rdp_client->lock));
+
+    /* Stop background rendering before any teardown, but do NOT free the
+     * guac_display yet: FreeRDP's GDI may still reference its layers. */
+    if (rdp_client->display != NULL)
+        guac_display_stop(rdp_client->display);
+
+    /* Drop the guac_display's reference to FreeRDP's GDI buffer before that
+     * buffer is freed along with the context */
+    if (context_created && default_layer != NULL) {
+        guac_display_layer_raw_context* fail_context =
+            guac_display_layer_open_raw(default_layer);
+        fail_context->buffer = NULL;
+        guac_display_layer_close_raw(default_layer, fail_context);
+    }
+
+    /* Tear FreeRDP down FIRST and completely, so that nothing owned by FreeRDP
+     * (rdpPointer, GDI, and friends) can reference the guac_display afterwards.
+     * The GDI itself is deliberately not freed here: the connection never
+     * completed, so FreeRDP still owns it and releases it with the context.
+     * Calling gdi_free() here double-frees and corrupts the heap. */
+    if (context_created)
+        freerdp_context_free(rdp_inst);
+
+    if (rdp_inst != NULL)
+        freerdp_free(rdp_inst);
+
+    /* Only now is it safe to free the display */
+    if (rdp_client->display != NULL) {
+        guac_display_free(rdp_client->display);
+        rdp_client->display = NULL;
+    }
+
+    if (rdp_client->available_svc != NULL) {
+        guac_common_list_free(rdp_client->available_svc, NULL);
+        rdp_client->available_svc = NULL;
+    }
+
+    if (rdp_client->keyboard != NULL) {
+        guac_rdp_keyboard_free(rdp_client->keyboard);
+        rdp_client->keyboard = NULL;
+    }
+
     guac_rwlock_release_lock(&(rdp_client->lock));
     return 1;
 
