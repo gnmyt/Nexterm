@@ -70,6 +70,8 @@ int guac_vnc_user_join_handler(guac_user* user, int argc, char** argv) {
             return 1;
         }
 
+        vnc_client->client_thread_started = 1;
+
     }
 
     /* Only handle events if not read-only */

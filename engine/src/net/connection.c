@@ -114,7 +114,6 @@ static void* guac_user_thread(void* arg) {
     int result = guac_user_handle_connection(user, GUAC_HANDSHAKE_TIMEOUT_US);
     if (result != 0 && owner) {
         LOG_WARN("Guac handshake failed for session %s (code=%d)", params->session_id, result);
-        client->free_handler = NULL;
     }
 
     LOG_INFO("User disconnected from session %s (owner=%d, remaining=%d)",

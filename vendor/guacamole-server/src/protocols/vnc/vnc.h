@@ -62,6 +62,14 @@ typedef struct guac_vnc_client {
      */
     pthread_t client_thread;
 
+    /**
+     * Non-zero if client_thread was successfully created and must therefore be
+     * joined before this client is freed, zero otherwise. This is tracked
+     * separately from rfb_client, as the thread exists (and may still be
+     * attempting to connect) long before rfb_client is assigned.
+     */
+    int client_thread_started;
+
 #ifdef ENABLE_VNC_TLS_LOCKING
     /**
      * The TLS mutex lock for the client.

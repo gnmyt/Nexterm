@@ -413,7 +413,8 @@ void* guac_vnc_client_thread(void* data) {
     int retries_remaining = settings->retries;
 
     /* If unsuccessful, retry as many times as specified */
-    while (!rfb_client && retries_remaining > 0) {
+    while (!rfb_client && retries_remaining > 0
+            && client->state == GUAC_CLIENT_RUNNING) {
 
         guac_client_log(client, GUAC_LOG_INFO,
                 "Connect failed. Waiting %ims before retrying...",
@@ -424,6 +425,14 @@ void* guac_vnc_client_thread(void* data) {
         rfb_client = guac_vnc_get_client(client);
         retries_remaining--;
 
+    }
+
+    /* Abandon the connection attempt if the client is already shutting down,
+     * leaving teardown to the stopping party */
+    if (client->state != GUAC_CLIENT_RUNNING) {
+        guac_client_log(client, GUAC_LOG_DEBUG,
+                "Aborted connecting to VNC server: client is shutting down.");
+        return NULL;
     }
 
     /* If the final connect attempt fails, return error */

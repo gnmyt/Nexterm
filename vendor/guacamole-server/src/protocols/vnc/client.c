@@ -137,12 +137,16 @@ int guac_vnc_client_free_handler(guac_client* client) {
     if (vnc_client->display != NULL)
         guac_display_stop(vnc_client->display);
 
+    /* Wait for client thread to finish. This must happen regardless of whether
+     * a connection was ever established, as the thread still references the
+     * guac_client (aborting through it on connection failure) while it is
+     * connecting or retrying, long before rfb_client is assigned. */
+    if (vnc_client->client_thread_started)
+        pthread_join(vnc_client->client_thread, NULL);
+
     /* Clean up VNC client*/
     rfbClient* rfb_client = vnc_client->rfb_client;
     if (rfb_client != NULL) {
-
-        /* Wait for client thread to finish */
-        pthread_join(vnc_client->client_thread, NULL);
 
         /* Free memory that may not be free'd by libvncclient's
          * rfbClientCleanup() prior to libvncclient 0.9.12 */
