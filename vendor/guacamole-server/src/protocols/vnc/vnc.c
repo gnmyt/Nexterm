@@ -137,6 +137,11 @@ rfbClient* guac_vnc_get_client(guac_client* client) {
     /* Store Guac client in rfb client */
     rfbClientSetClientData(rfb_client, GUAC_VNC_CLIENT_KEY, client);
 
+    /* Bound reads from the server. Without this, libvncclient leaves timeout
+     * detection disabled, and a server which accepts TCP but never responds
+     * blocks the handshake (and this thread) forever. */
+    rfb_client->readTimeout = GUAC_VNC_READ_TIMEOUT;
+
     /* Framebuffer update handler */
     rfb_client->GotFrameBufferUpdate = guac_vnc_update;
     vnc_client->rfb_GotCopyRect = rfb_client->GotCopyRect;

@@ -31,5 +31,16 @@
  */
 void guac_rdp_redirect_wlog(guac_client* client);
 
+/**
+ * Stops FreeRDP log messages from being routed to the given guac_client, if
+ * they currently are. This MUST be called before the given guac_client is
+ * freed: FreeRDP's WLog root logger is global to the process, and would
+ * otherwise continue to log through the freed client from any thread.
+ *
+ * @param client
+ *     The guac_client which should no longer receive FreeRDP log messages.
+ */
+void guac_rdp_unredirect_wlog(guac_client* client);
+
 #endif
 

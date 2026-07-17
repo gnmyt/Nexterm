@@ -21,20 +21,33 @@
 #include <winpr/wlog.h>
 #include <winpr/wtypes.h>
 
+#include <pthread.h>
 #include <stddef.h>
 
 /**
- * The guac_client that should be used within this process for FreeRDP log
- * messages. As all Guacamole connections are isolated at the process level,
- * this will only ever be set to the guac_client of the current process'
- * connection.
+ * The guac_client that should be used for FreeRDP log messages.
+ *
+ * FreeRDP's WLog root logger is global to the process, so this necessarily is
+ * too. Where guacd isolates each connection in its own process, this is simply
+ * the guac_client of that process' one connection. Embedders which run several
+ * connections within a single process (such as the Nexterm engine) instead
+ * share this between all of them: it refers to whichever connection most
+ * recently redirected the log.
+ *
+ * Access is guarded by current_client_lock.
  */
 static guac_client* current_client = NULL;
 
 /**
+ * Mutex guarding current_client. This ensures a message which is already being
+ * logged cannot have its guac_client freed out from under it: unredirecting
+ * blocks until any in-progress message completes.
+ */
+static pthread_mutex_t current_client_lock = PTHREAD_MUTEX_INITIALIZER;
+
+/**
  * Logs the text data within the given message to the logging facilities of the
- * guac_client currently stored under current_client (the guac_client of the
- * current process).
+ * guac_client currently stored under current_client.
  *
  * @param message
  *     The message to log.
@@ -44,23 +57,39 @@ static guac_client* current_client = NULL;
  */
 static BOOL guac_rdp_wlog_text_message(const wLogMessage* message) {
 
-    /* Fail if log not yet redirected */
-    if (current_client == NULL)
-        return FALSE;
+    BOOL logged = FALSE;
 
-    /* Log all received messages at the debug level */
-    guac_client_log(current_client, GUAC_LOG_DEBUG, "%s", message->TextString);
-    return TRUE;
+    pthread_mutex_lock(&current_client_lock);
+
+    /* Fail if log not yet redirected, or if the client it referred to has since
+     * been freed */
+    if (current_client != NULL) {
+        /* Log all received messages at the debug level */
+        guac_client_log(current_client, GUAC_LOG_DEBUG, "%s", message->TextString);
+        logged = TRUE;
+    }
+
+    pthread_mutex_unlock(&current_client_lock);
+    return logged;
 
 }
 
-void guac_rdp_redirect_wlog(guac_client* client) {
+void guac_rdp_unredirect_wlog(guac_client* client) {
+
+    pthread_mutex_lock(&current_client_lock);
+
+    if (current_client == client)
+        current_client = NULL;
+
+    pthread_mutex_unlock(&current_client_lock);
+
+}
+
+static void guac_rdp_init_wlog(void) {
 
     wLogCallbacks callbacks = {
         .message = guac_rdp_wlog_text_message
     };
-
-    current_client = client;
 
     /* Reconfigure root logger to use callback appender */
     wLog* root = WLog_GetRoot();
@@ -69,6 +98,33 @@ void guac_rdp_redirect_wlog(guac_client* client) {
     /* Set appender callbacks to our own */
     wLogAppender* appender = WLog_GetLogAppender(root);
     WLog_ConfigureAppender(appender, "callbacks", &callbacks);
+
+}
+
+/**
+ * Guarantees the root logger is configured exactly once per process.
+ */
+static pthread_once_t wlog_init_once = PTHREAD_ONCE_INIT;
+
+void guac_rdp_redirect_wlog(guac_client* client) {
+
+    pthread_mutex_lock(&current_client_lock);
+    current_client = client;
+    pthread_mutex_unlock(&current_client_lock);
+
+    /* Configure the root logger exactly once per process.
+     *
+     * WinPR's root logger and its appender are global. Reconfiguring them for
+     * every connection is safe under guacd, where each process serves exactly
+     * one connection, but not where several connections share a process (such
+     * as the Nexterm engine): WLog_SetLogAppenderType() frees and reallocates
+     * the appender, so a connection starting up will pull the appender out from
+     * under any other thread currently logging through it, corrupting the heap.
+     *
+     * The configuration is identical for every connection, so doing it once is
+     * sufficient. Which guac_client the messages are routed to is handled
+     * separately, by current_client above. */
+    pthread_once(&wlog_init_once, guac_rdp_init_wlog);
 
 }
 

@@ -38,6 +38,20 @@
 #define GUAC_VNC_CONNECT_INTERVAL 1000
 
 /**
+ * The number of seconds to wait for data from the VNC server before treating a
+ * stalled read as a dead connection.
+ *
+ * libvncclient disables this detection entirely when readTimeout is left at its
+ * default of zero, which allows a server that accepts TCP but never sends the
+ * RFB banner to block rfbInitClient() (and therefore the VNC client thread, and
+ * the teardown which joins it) indefinitely.
+ *
+ * This is deliberately generous: it only takes effect when a read makes no
+ * progress at all, which should never happen against a healthy server.
+ */
+#define GUAC_VNC_READ_TIMEOUT 30
+
+/**
  * Handler which frees all data associated with the guac_client.
  */
 guac_client_free_handler guac_vnc_client_free_handler;

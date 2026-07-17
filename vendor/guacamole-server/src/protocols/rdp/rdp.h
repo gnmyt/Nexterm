@@ -88,6 +88,23 @@ typedef struct guac_rdp_client {
     freerdp* rdp_inst;
 
     /**
+     * The FreeRDP instance for a connection attempt that is currently in
+     * progress, or NULL if no connection attempt is in progress.
+     *
+     * Unlike rdp_inst, which is assigned only once a connection has been fully
+     * established, this is assigned before freerdp_connect() is called. It
+     * exists so that an in-progress connection attempt can be aborted during
+     * teardown: without it, a server which accepts TCP but never completes the
+     * RDP negotiation blocks the client thread (and therefore the
+     * pthread_join() in guac_rdp_client_free_handler()) indefinitely.
+     *
+     * This must only be accessed while holding lock. It is deliberately NOT
+     * merged with rdp_inst, as the input and keyboard handlers treat a non-NULL
+     * rdp_inst as meaning "connected and safe to send to".
+     */
+    freerdp* connecting_inst;
+
+    /**
      * All settings associated with the current or pending RDP connection.
      */
     guac_rdp_settings* settings;

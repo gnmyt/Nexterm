@@ -586,7 +586,12 @@ static int guac_rdp_handle_connection(guac_client* client) {
     /* Set default pointer */
     guac_display_set_cursor(rdp_client->display, GUAC_DISPLAY_CURSOR_POINTER);
 
-    /* 
+    /* Expose the instance so that teardown can interrupt the connection attempt
+     * below (see guac_rdp_client_free_handler()). Assigned while the write lock
+     * is still held. */
+    rdp_client->connecting_inst = rdp_inst;
+
+    /*
      * Downgrade the lock to allow for concurrent read access.
      * Access to read locks needs to be made available for other processes such
      * as the join_pending_handler to use while we await credentials from the user.
@@ -603,6 +608,10 @@ static int guac_rdp_handle_connection(guac_client* client) {
     /* Upgrade to write lock again for further exclusive operations */
     guac_rwlock_release_lock(&(rdp_client->lock));
     guac_rwlock_acquire_write_lock(&(rdp_client->lock));
+
+    /* The connection attempt is over and rdp_inst is about to become the
+     * established instance */
+    rdp_client->connecting_inst = NULL;
 
     /* Connection complete */
     rdp_client->rdp_inst = rdp_inst;
@@ -744,23 +753,14 @@ static int guac_rdp_handle_connection(guac_client* client) {
 
 fail:
 
-    /* A failed connection attempt has still allocated the guac_display (and
-     * its encoding worker threads), the FreeRDP instance and context (and its
-     * WinPR thread pool), the SVC list, and possibly the keyboard. None of
-     * these are reachable through rdp_client->rdp_inst (which is assigned only
-     * after a successful connect) and none are reclaimed by
-     * guac_rdp_client_free_handler, so they must be freed here or they leak for
-     * the remaining lifetime of the process. */
-
-    /* Take the write lock for exclusive access while freeing, as the connect
-     * failure path may still hold only a read lock */
+    /* Take the write lock for exclusive access while tearing down, as the
+     * connect failure path may still hold only a read lock */
     guac_rwlock_release_lock(&(rdp_client->lock));
     guac_rwlock_acquire_write_lock(&(rdp_client->lock));
 
-    /* Stop background rendering before any teardown, but do NOT free the
-     * guac_display yet: FreeRDP's GDI may still reference its layers. */
-    if (rdp_client->display != NULL)
-        guac_display_stop(rdp_client->display);
+    /* The connection attempt is over. Clear this before rdp_inst is freed below
+     * so that teardown can never abort through a dangling instance. */
+    rdp_client->connecting_inst = NULL;
 
     /* Drop the guac_display's reference to FreeRDP's GDI buffer before that
      * buffer is freed along with the context */
@@ -771,32 +771,27 @@ fail:
         guac_display_layer_close_raw(default_layer, fail_context);
     }
 
-    /* Tear FreeRDP down FIRST and completely, so that nothing owned by FreeRDP
-     * (rdpPointer, GDI, and friends) can reference the guac_display afterwards.
-     * The GDI itself is deliberately not freed here: the connection never
-     * completed, so FreeRDP still owns it and releases it with the context.
-     * Calling gdi_free() here double-frees and corrupts the heap. */
+    /* Free the FreeRDP instance and its context, including its WinPR thread
+     * pool. This is safe to do here because rdp_inst was never published to
+     * rdp_client->rdp_inst, so no other thread can reach it.
+     *
+     * The GDI is deliberately NOT freed: the connection never completed, so
+     * FreeRDP still owns whatever GDI state it created and releases it as part
+     * of freerdp_context_free(). Calling gdi_free() here double-frees and
+     * corrupts the heap. */
     if (context_created)
         freerdp_context_free(rdp_inst);
 
     if (rdp_inst != NULL)
         freerdp_free(rdp_inst);
 
-    /* Only now is it safe to free the display */
-    if (rdp_client->display != NULL) {
-        guac_display_free(rdp_client->display);
-        rdp_client->display = NULL;
-    }
-
-    if (rdp_client->available_svc != NULL) {
-        guac_common_list_free(rdp_client->available_svc, NULL);
-        rdp_client->available_svc = NULL;
-    }
-
-    if (rdp_client->keyboard != NULL) {
-        guac_rdp_keyboard_free(rdp_client->keyboard);
-        rdp_client->keyboard = NULL;
-    }
+    /* NOTE: the guac_display, the keyboard, and the SVC list are deliberately
+     * NOT freed here, even though a failed attempt allocated them. Users may
+     * still be joined to this client and may touch them concurrently from their
+     * own threads (e.g. guac_rdp_user_leave_handler ->
+     * guac_display_notify_user_left). They are freed instead by
+     * guac_rdp_client_free_handler, which runs only once every user has been
+     * removed. */
 
     guac_rwlock_release_lock(&(rdp_client->lock));
     return 1;
