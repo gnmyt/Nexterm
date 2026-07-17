@@ -11,7 +11,7 @@ import AIAssistant from "./components/AIAssistant";
 import SnippetsMenu from "./components/SnippetsMenu";
 import PasswordFillMenu from "./components/PasswordFillMenu";
 import { createProgressParser } from "../utils/progressParser";
-import { mdiContentCopy, mdiContentPaste, mdiCodeBrackets, mdiSelectAll, mdiDelete, mdiKeyboard, mdiKey, mdiFolderOpen, mdiRobotHappyOutline } from "@mdi/js";
+import { mdiContentCopy, mdiContentPaste, mdiCodeBrackets, mdiSelectAll, mdiDelete, mdiKeyboard, mdiFolderOpen, mdiRobotHappyOutline } from "@mdi/js";
 import { useTranslation } from "react-i18next";
 import ConnectionLoader from "./components/ConnectionLoader";
 import ConnectionError, { mapConnectionError } from "./components/ConnectionError";
@@ -36,7 +36,6 @@ const XtermRenderer = ({ session, disconnectFromServer, markSessionErrored, getS
     const onBroadcastToggleRef = useRef(onBroadcastToggle);
     const onFullscreenToggleRef = useRef(onFullscreenToggle);
     const connectionLoaderRef = useRef(null);
-    const canPasteIdentityRef = useRef(false);
     const smartCopyPasteRef = useRef(false);
 
     const userContext = useContext(UserContext);
@@ -127,9 +126,6 @@ const XtermRenderer = ({ session, disconnectFromServer, markSessionErrored, getS
     }, [onFullscreenToggle]);
 
     useEffect(() => {
-        const identity = identities?.find(i => i.id === session.identity);
-        canPasteIdentityRef.current = !!(identity && ['password', 'both', 'password-only'].includes(identity.type));
-
         const serverIdentityIds = session.server?.identities?.length ? [...session.server.identities] : [];
         if (session.identity != null && !serverIdentityIds.includes(session.identity)) {
             serverIdentityIds.unshift(session.identity);
@@ -192,16 +188,6 @@ const XtermRenderer = ({ session, disconnectFromServer, markSessionErrored, getS
             if (text) termRef.current?.paste(text);
         } catch (err) {
             console.error('Failed to paste:', err);
-        }
-        contextMenu.close();
-        termRef.current?.focus();
-    };
-
-    const handlePasteIdentity = async () => {
-        try {
-            await postRequest(`connections/${session.id}/paste-password`);
-        } catch (err) {
-            console.error('Failed to paste identity password via API:', err);
         }
         contextMenu.close();
         termRef.current?.focus();
@@ -501,14 +487,6 @@ const XtermRenderer = ({ session, disconnectFromServer, markSessionErrored, getS
                     return false;
                 }
 
-                const pasteIdentityKeybind = getParsedKeybind("paste-identity-password");
-                if (pasteIdentityKeybind && canPasteIdentityRef.current && matchesKeybind(event, pasteIdentityKeybind)) {
-                    event.preventDefault();
-                    event.stopPropagation();
-                    handlePasteIdentity();
-                    return false;
-                }
-
                 const keyboardShortcutsKeybind = getParsedKeybind("keyboard-shortcuts");
                 if (keyboardShortcutsKeybind && matchesKeybind(event, keyboardShortcutsKeybind)) {
                     event.preventDefault();
@@ -627,13 +605,6 @@ const XtermRenderer = ({ session, disconnectFromServer, markSessionErrored, getS
                             icon={mdiRobotHappyOutline}
                             label={t('servers.aiAssistant.open')}
                             onClick={handleOpenAIAssistant}
-                        />
-                    )}
-                    {(identities && session.identity && identities.find(i => i.id === session.identity) && ['password','both','password-only'].includes(identities.find(i => i.id === session.identity).type)) && (
-                        <ContextMenuItem
-                            icon={mdiKey}
-                            label={t('servers.contextMenu.pasteIdentityPassword')}
-                            onClick={handlePasteIdentity}
                         />
                     )}
                     <ContextMenuSeparator />
