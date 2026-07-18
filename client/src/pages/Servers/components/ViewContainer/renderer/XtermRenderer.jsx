@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, useContext, useCallback, useMemo } from "react";
+import { useEffect, useRef, useState, useContext, useCallback } from "react";
 import { UserContext } from "@/common/contexts/UserContext.jsx";
 import { IdentityContext } from "@/common/contexts/IdentityContext.jsx";
 import { AIContext } from "@/common/contexts/AIContext.jsx";
@@ -9,7 +9,7 @@ import { FitAddon } from "@xterm/addon-fit";
 import { ContextMenu, ContextMenuItem, ContextMenuSeparator, useContextMenu } from "@/common/components/ContextMenu";
 import AIAssistant from "./components/AIAssistant";
 import SnippetsMenu from "./components/SnippetsMenu";
-import PasswordFillMenu from "./components/PasswordFillMenu";
+import PasswordFillHint from "./components/PasswordFillHint";
 import { createProgressParser } from "../utils/progressParser";
 import { mdiContentCopy, mdiContentPaste, mdiCodeBrackets, mdiSelectAll, mdiDelete, mdiKeyboard, mdiKey, mdiFolderOpen, mdiRobotHappyOutline } from "@mdi/js";
 import { useTranslation } from "react-i18next";
@@ -44,6 +44,7 @@ const XtermRenderer = ({ session, disconnectFromServer, markSessionErrored, getS
 
     const effectiveFont = (isShared && session.fontFamily) ? session.fontFamily : selectedFont;
     const effectiveFontSize = (isShared && session.fontSize) ? session.fontSize : fontSize;
+    const hintForeground = (theme === "light" && selectedTheme === "light") ? "#000000" : getCurrentTheme().foreground;
     const aiContext = useContext(AIContext);
     const isAIAvailable = aiContext?.isAIAvailable || (() => false);
     const aiAvailableRef = useRef(false);
@@ -58,64 +59,65 @@ const XtermRenderer = ({ session, disconnectFromServer, markSessionErrored, getS
     const [showSnippetsMenu, setShowSnippetsMenu] = useState(false);
     const [connectionError, setConnectionError] = useState(() => getSessionError?.(session.id) || null);
     const [passwordPrompt, setPasswordPrompt] = useState(null);
-    const [passwordMenuIndex, setPasswordMenuIndex] = useState(-1);
+    const [passwordHintIndex, setPasswordHintIndex] = useState(-1);
     const [passwordIdentities, setPasswordIdentities] = useState([]);
     const passwordPromptRef = useRef(null);
-    const passwordMenuIndexRef = useRef(-1);
+    const passwordHintIndexRef = useRef(-1);
     const passwordIdentitiesRef = useRef([]);
     const passwordDetectionRef = useRef(passwordPromptDetection);
     const promptLineRef = useRef("");
 
-    const updatePasswordMenuIndex = useCallback((index) => {
-        passwordMenuIndexRef.current = index;
-        setPasswordMenuIndex(index);
+    const updatePasswordHintIndex = useCallback((index) => {
+        passwordHintIndexRef.current = index;
+        setPasswordHintIndex(index);
     }, []);
 
-    const showPasswordMenu = useCallback((anchor) => {
+    const cyclePasswordHint = useCallback((offset) => {
+        const count = passwordIdentitiesRef.current.length;
+        if (count < 2) return;
+        updatePasswordHintIndex((passwordHintIndexRef.current + offset + count) % count);
+    }, [updatePasswordHintIndex]);
+
+    const showPasswordHint = useCallback((anchor) => {
         passwordPromptRef.current = anchor;
         setPasswordPrompt(anchor);
-        updatePasswordMenuIndex(0);
-    }, [updatePasswordMenuIndex]);
+        updatePasswordHintIndex(0);
+    }, [updatePasswordHintIndex]);
 
-    const movePasswordMenu = useCallback((anchor) => {
+    const movePasswordHint = useCallback((anchor) => {
         const current = passwordPromptRef.current;
         if (!current) return;
-        if (current.left === anchor.left && current.top === anchor.top && current.bottom === anchor.bottom) return;
+        if (current.left === anchor.left && current.top === anchor.top && current.height === anchor.height) return;
         passwordPromptRef.current = anchor;
         setPasswordPrompt(anchor);
     }, []);
 
-    const hidePasswordMenu = useCallback(() => {
+    const hidePasswordHint = useCallback(() => {
         if (!passwordPromptRef.current) return;
         passwordPromptRef.current = null;
         setPasswordPrompt(null);
-        updatePasswordMenuIndex(-1);
-    }, [updatePasswordMenuIndex]);
+        updatePasswordHintIndex(-1);
+    }, [updatePasswordHintIndex]);
 
     const fillIdentityPassword = useCallback(async (identityId) => {
-        hidePasswordMenu();
+        hidePasswordHint();
         try {
             await postRequest(`connections/${session.id}/paste-password`, identityId ? { identityId } : undefined);
         } catch (err) {
             console.error("Failed to fill identity password:", err);
         }
         termRef.current?.focus();
-    }, [hidePasswordMenu, session.id]);
-
-    const passwordMenuTheme = useMemo(() => {
-        const terminalTheme = getCurrentTheme();
-        const isLightTerminalTheme = selectedTheme === "light";
-        return {
-            background: (theme === "light" && isLightTerminalTheme) ? "#F3F3F3" : terminalTheme.background,
-            foreground: (theme === "light" && isLightTerminalTheme) ? "#000000" : terminalTheme.foreground,
-            dim: terminalTheme.brightBlack,
-        };
-    }, [getCurrentTheme, selectedTheme, theme]);
+    }, [hidePasswordHint, session.id]);
 
     const fillIdentityPasswordRef = useRef(fillIdentityPassword);
     useEffect(() => {
         fillIdentityPasswordRef.current = fillIdentityPassword;
     }, [fillIdentityPassword]);
+
+    const cyclePasswordHintRef = useRef(cyclePasswordHint);
+    useEffect(() => {
+        cyclePasswordHintRef.current = cyclePasswordHint;
+    }, [cyclePasswordHint]);
 
     useEffect(() => {
         broadcastModeRef.current = broadcastMode;
@@ -128,10 +130,10 @@ const XtermRenderer = ({ session, disconnectFromServer, markSessionErrored, getS
     useEffect(() => {
         passwordDetectionRef.current = passwordPromptDetection;
         if (!passwordPromptDetection) {
-            hidePasswordMenu();
+            hidePasswordHint();
             promptLineRef.current = "";
         }
-    }, [passwordPromptDetection, hidePasswordMenu]);
+    }, [passwordPromptDetection, hidePasswordHint]);
 
     useEffect(() => {
         layoutModeRef.current = layoutMode;
@@ -153,7 +155,7 @@ const XtermRenderer = ({ session, disconnectFromServer, markSessionErrored, getS
         passwordIdentitiesRef.current = serverIdentityIds
             .map(id => identities?.find(i => i.id === id))
             .filter(i => i && ['password', 'both', 'password-only'].includes(i.type))
-            .map(i => ({ id: i.id, label: i.username ? `${i.name}: ${i.username}` : i.name }));
+            .map(i => ({ id: i.id, username: i.username }));
         setPasswordIdentities(passwordIdentitiesRef.current);
     }, [identities, session.identity, session.server]);
 
@@ -295,17 +297,16 @@ const XtermRenderer = ({ session, disconnectFromServer, markSessionErrored, getS
         term.loadAddon(fitAddon);
         term.open(ref.current);
 
-        const computePasswordMenuPosition = () => {
-            const width = ref.current?.clientWidth || 0;
-            const height = ref.current?.clientHeight || 0;
-            const cellWidth = width / (term.cols || 1);
-            const cellHeight = height / (term.rows || 1);
-            const cursorX = term.buffer.active.cursorX;
-            const cursorY = term.buffer.active.cursorY;
-            const left = cursorX * cellWidth;
+        const computePasswordHintPosition = () => {
+            const cell = term._core?._renderService?.dimensions?.css?.cell;
+            const cellWidth = cell?.width || (ref.current?.clientWidth || 0) / (term.cols || 1);
+            const cellHeight = cell?.height || (ref.current?.clientHeight || 0) / (term.rows || 1);
 
-            if (cursorY < 4) return { left, top: (cursorY + 1) * cellHeight + 8 };
-            return { left, bottom: height - cursorY * cellHeight + 8 };
+            return {
+                left: term.buffer.active.cursorX * cellWidth,
+                top: term.buffer.active.cursorY * cellHeight,
+                height: cellHeight,
+            };
         };
 
         const handleResize = () => {
@@ -313,7 +314,7 @@ const XtermRenderer = ({ session, disconnectFromServer, markSessionErrored, getS
             if (wsRef.current && wsRef.current.readyState === WebSocket.OPEN) {
                 wsRef.current.send(`\x01${term.cols},${term.rows}`);
             }
-            if (passwordPromptRef.current) movePasswordMenu(computePasswordMenuPosition());
+            if (passwordPromptRef.current) movePasswordHint(computePasswordHintPosition());
         };
 
         window.addEventListener("resize", handleResize);
@@ -362,9 +363,9 @@ const XtermRenderer = ({ session, disconnectFromServer, markSessionErrored, getS
             promptLineRef.current = (promptLineRef.current + cleaned).split(/[\r\n]/).pop().slice(-256);
 
             if (PASSWORD_PROMPT_REGEX.test(promptLineRef.current)) {
-                if (!passwordPromptRef.current) showPasswordMenu(computePasswordMenuPosition());
+                if (!passwordPromptRef.current) showPasswordHint(computePasswordHintPosition());
             } else {
-                hidePasswordMenu();
+                hidePasswordHint();
             }
         };
 
@@ -429,10 +430,10 @@ const XtermRenderer = ({ session, disconnectFromServer, markSessionErrored, getS
             }
         };
 
-        term.onScroll(() => hidePasswordMenu());
+        term.onScroll(() => hidePasswordHint());
 
         term.onData((data) => {
-            if (passwordPromptRef.current) hidePasswordMenu();
+            if (passwordPromptRef.current) hidePasswordHint();
             ws.send(data);
 
             if (broadcastModeRef.current && terminalRefs?.current) {
@@ -447,31 +448,25 @@ const XtermRenderer = ({ session, disconnectFromServer, markSessionErrored, getS
         term.attachCustomKeyEventHandler((event) => {
             if (event.type === "keydown") {
                 if (passwordPromptRef.current) {
-                    const menuItems = passwordIdentitiesRef.current;
-                    const menuIndex = passwordMenuIndexRef.current;
+                    const hintItems = passwordIdentitiesRef.current;
+                    const hintIndex = passwordHintIndexRef.current;
 
-                    if (event.key === "ArrowUp") {
+                    if (event.key === "Tab") {
                         event.preventDefault();
                         event.stopPropagation();
-                        updatePasswordMenuIndex(Math.max(0, menuIndex - 1));
-                        return false;
-                    }
-                    if (event.key === "ArrowDown") {
-                        event.preventDefault();
-                        event.stopPropagation();
-                        updatePasswordMenuIndex(Math.min(menuItems.length - 1, menuIndex + 1));
-                        return false;
-                    }
-                    if (event.key === "Enter") {
-                        event.preventDefault();
-                        event.stopPropagation();
-                        fillIdentityPasswordRef.current(menuItems[menuIndex]?.id);
+                        fillIdentityPasswordRef.current(hintItems[hintIndex]?.id);
                         return false;
                     }
                     if (event.key === "Escape") {
                         event.preventDefault();
                         event.stopPropagation();
-                        hidePasswordMenu();
+                        hidePasswordHint();
+                        return false;
+                    }
+                    if (hintItems.length > 1 && (event.key === "ArrowUp" || event.key === "ArrowDown")) {
+                        event.preventDefault();
+                        event.stopPropagation();
+                        cyclePasswordHintRef.current(event.key === "ArrowUp" ? -1 : 1);
                         return false;
                     }
                 }
@@ -560,7 +555,7 @@ const XtermRenderer = ({ session, disconnectFromServer, markSessionErrored, getS
         return () => {
             isCleaningUp = true;
             passwordPromptRef.current = null;
-            passwordMenuIndexRef.current = -1;
+            passwordHintIndexRef.current = -1;
             promptLineRef.current = "";
             if (registerTerminalRef) {
                 registerTerminalRef(session.id, null);
@@ -587,13 +582,14 @@ const XtermRenderer = ({ session, disconnectFromServer, markSessionErrored, getS
             )}
             <div ref={ref} className="xterm-wrapper" />
             {!isShared && passwordPrompt && passwordIdentities.length > 0 && (
-                <PasswordFillMenu
+                <PasswordFillHint
                     anchor={passwordPrompt}
                     items={passwordIdentities}
-                    selectedIndex={passwordMenuIndex}
+                    selectedIndex={passwordHintIndex}
                     onFill={fillIdentityPassword}
-                    onSelect={updatePasswordMenuIndex}
-                    terminalTheme={passwordMenuTheme}
+                    onCycle={cyclePasswordHint}
+                    foreground={hintForeground}
+                    fontFamily={effectiveFont}
                     fontSize={effectiveFontSize}
                 />
             )}
