@@ -926,6 +926,7 @@
         "title": "Entrada",
         "description": "Controle como os atalhos de teclado funcionam dentro do terminal.",
         "smartCopyPaste": "Ctrl+C inteligente",
+        "passwordPromptDetection": "Password input detection",
         "enabled": "Ativado",
         "disabled": "Desativado",
         "syncEnabled": "As configurações de entrada agora vão ser sincronizadas com a sua conta",
@@ -1559,6 +1560,11 @@
       "stop": "Parar",
       "start": "Iniciar"
     },
+    "passwordHint": {
+      "paste": "paste password",
+      "pasteFor": "paste {{username}} password",
+      "cycle": "Use the arrow keys to switch identity"
+    },
     "tabs": {
       "contextMenu": {
         "popOut": "Abrir em Janela Pop-Up",
@@ -1639,6 +1645,11 @@
         "wakeOnLan": {
           "title": "Habilitar Wake-On-LAN",
           "description": "Permitir acordar este servidor remotamente usando seu endereço MAC"
+        },
+        "rdpSecurity": {
+          "title": "Security",
+          "description": "Authentication method used to connect to the remote Windows machine. Use NLA for environments where NTLM is disabled (e.g. Protected Users group).",
+          "method": "Security Method"
         },
         "keyboardLayout": {
           "title": "Layout do Teclado",
