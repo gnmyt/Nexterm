@@ -21,9 +21,7 @@ import "@xterm/xterm/css/xterm.css";
 import "./styles/xterm.sass";
 
 const PASSWORD_PROMPT_REGEX = /^[^$#%>]*(password|passphrase)[^:\r\n]*:\s?$/i;
-// eslint-disable-next-line no-control-regex
 const ANSI_ESCAPE_REGEX = /\x1b(?:\[[0-9;?]*[a-zA-Z]|\][^\x07\x1b]*(?:\x07|\x1b\\)?|[()][0-9A-B]|[a-zA-Z=><])/g;
-// eslint-disable-next-line no-control-regex
 const CONTROL_CHAR_REGEX = /[\x00-\x08\x0b\x0c\x0e-\x1f\x7f]/g;
 
 const XtermRenderer = ({ session, disconnectFromServer, markSessionErrored, getSessionError, registerTerminalRef, broadcastMode, terminalRefs, updateProgress, layoutMode, onBroadcastToggle, onFullscreenToggle, isShared = false, onOpenSftp }) => {

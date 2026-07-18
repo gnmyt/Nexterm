@@ -23,20 +23,21 @@ export const PasswordFillHint = ({ anchor, items, selectedIndex, onFill, onCycle
     const hintStyle = { ...anchor, maxWidth, color: foreground, fontFamily, fontSize: `${fontSize}px` };
 
     return (
-        <div ref={hintRef} className="password-fill-hint" style={hintStyle} onClick={() => onFill(item.id)}
-             role="status" aria-live="polite">
-            <Icon path={mdiKeyboardTab} className="password-fill-hint__key" />
-            <span className="password-fill-hint__label">
-                {item.username
-                    ? t("servers.passwordHint.pasteFor", { username: item.username })
-                    : t("servers.passwordHint.paste")}
-            </span>
+        <div ref={hintRef} className="password-fill-hint" style={hintStyle} role="status" aria-live="polite">
+            <button type="button" className="password-fill-hint__fill" onClick={() => onFill(item.id)}>
+                <Icon path={mdiKeyboardTab} className="password-fill-hint__key" />
+                <span className="password-fill-hint__label">
+                    {item.username
+                        ? t("servers.passwordHint.pasteFor", { username: item.username })
+                        : t("servers.passwordHint.paste")}
+                </span>
+            </button>
             {items.length > 1 && (
-                <span className="password-fill-hint__cycle" onClick={(e) => { e.stopPropagation(); onCycle(1); }}
-                      title={t("servers.passwordHint.cycle")}>
+                <button type="button" className="password-fill-hint__cycle" onClick={() => onCycle(1)}
+                        title={t("servers.passwordHint.cycle")} aria-label={t("servers.passwordHint.cycle")}>
                     <Icon path={mdiUnfoldMoreHorizontal} className="password-fill-hint__cycle-icon" />
                     <span className="password-fill-hint__counter">{selectedIndex + 1}/{items.length}</span>
-                </span>
+                </button>
             )}
         </div>
     );

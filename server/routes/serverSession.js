@@ -230,8 +230,8 @@ app.post("/:id/paste-password", async (req, res) => {
 
     let identityId = null;
     if (req.body?.identityId !== undefined && req.body?.identityId !== null) {
-        identityId = parseInt(req.body.identityId, 10);
-        if (isNaN(identityId)) return res.status(400).json({ error: "Invalid identity ID" });
+        identityId = Number.parseInt(req.body.identityId, 10);
+        if (Number.isNaN(identityId)) return res.status(400).json({ error: "Invalid identity ID" });
     }
 
     try {
