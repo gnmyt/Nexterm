@@ -926,6 +926,7 @@
         "title": "輸入",
         "description": "控制鍵盤快捷鍵在終端機內的運作方式。",
         "smartCopyPaste": "智慧型 Ctrl+C",
+        "passwordPromptDetection": "Password input detection",
         "enabled": "已啟用",
         "disabled": "已停用",
         "syncEnabled": "輸入設定現在將同步至您的帳戶",
@@ -1559,6 +1560,11 @@
       "stop": "停止",
       "start": "開始"
     },
+    "passwordHint": {
+      "paste": "paste password",
+      "pasteFor": "paste {{username}} password",
+      "cycle": "Use the arrow keys to switch identity"
+    },
     "tabs": {
       "contextMenu": {
         "popOut": "彈出",
@@ -1639,6 +1645,11 @@
         "wakeOnLan": {
           "title": "啟用網路喚醒功能",
           "description": "允許使用其 MAC 位址遠端喚醒此伺服器"
+        },
+        "rdpSecurity": {
+          "title": "Security",
+          "description": "Authentication method used to connect to the remote Windows machine. Use NLA for environments where NTLM is disabled (e.g. Protected Users group).",
+          "method": "Security Method"
         },
         "keyboardLayout": {
           "title": "鍵盤配置",
