@@ -926,6 +926,7 @@
         "title": "Vstup",
         "description": "Nastavte chování klávesových zkratek v terminálu.",
         "smartCopyPaste": "Chytré Ctrl+C",
+        "passwordPromptDetection": "Password input detection",
         "enabled": "Zapnuto",
         "disabled": "Znevýhodnění",
         "syncEnabled": "Nastavení vstupů se nyní synchronizují s vaším účtem",
@@ -1559,6 +1560,11 @@
       "stop": "Zastavit",
       "start": "Spustit"
     },
+    "passwordHint": {
+      "paste": "paste password",
+      "pasteFor": "paste {{username}} password",
+      "cycle": "Use the arrow keys to switch identity"
+    },
     "tabs": {
       "contextMenu": {
         "popOut": "Pop Out",
@@ -1639,6 +1645,11 @@
         "wakeOnLan": {
           "title": "Povolit Wake-On-LAN",
           "description": "Umožnit vzdálené probuzení tohoto serveru pomocí jeho MAC adresy"
+        },
+        "rdpSecurity": {
+          "title": "Security",
+          "description": "Authentication method used to connect to the remote Windows machine. Use NLA for environments where NTLM is disabled (e.g. Protected Users group).",
+          "method": "Security Method"
         },
         "keyboardLayout": {
           "title": "Rozložení klávesnice",
