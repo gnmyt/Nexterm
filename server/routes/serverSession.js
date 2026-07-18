@@ -219,7 +219,7 @@ app.post("/:id/duplicate", async (req, res) => {
 /**
  * POST /connections/{id}/paste-password
  * @summary Paste identity password into session
- * @description Inserts the password of the identity attached to the session into the active session stream.
+ * @description Inserts the password of an identity attached to the session's server into the active session stream. Defaults to the session's identity; an optional identityId in the body selects another identity attached to the same server.
  * @tags Connection
  * @produces application/json
  * @security BearerAuth
@@ -228,8 +228,14 @@ app.post("/:id/duplicate", async (req, res) => {
 app.post("/:id/paste-password", async (req, res) => {
     if (validateSchema(res, sessionIdValidation, req.params)) return;
 
+    let identityId = null;
+    if (req.body?.identityId !== undefined && req.body?.identityId !== null) {
+        identityId = Number.parseInt(req.body.identityId, 10);
+        if (Number.isNaN(identityId)) return res.status(400).json({ error: "Invalid identity ID" });
+    }
+
     try {
-        const result = await pasteIdentityPassword(req.user.id, req.params.id, req.ip, req.headers?.["user-agent"]);
+        const result = await pasteIdentityPassword(req.user.id, req.params.id, req.ip, req.headers?.["user-agent"], identityId);
         if (result?.code) return res.status(result.code).json({ error: result.message });
         res.json(result);
     } catch (error) {

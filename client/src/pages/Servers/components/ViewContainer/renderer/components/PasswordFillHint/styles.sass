@@ -1,0 +1,57 @@
+.password-fill-hint
+  position: absolute
+  z-index: 20
+  display: flex
+  align-items: center
+  gap: 1ch
+  line-height: 1
+  white-space: nowrap
+  overflow: hidden
+  user-select: none
+  opacity: 0.45
+  transition: opacity 0.1s ease
+
+  &:hover
+    opacity: 0.75
+
+  button
+    display: flex
+    align-items: center
+    min-width: 0
+    padding: 0
+    border: none
+    background: none
+    color: inherit
+    font: inherit
+    line-height: inherit
+    cursor: pointer
+
+  &__fill
+    gap: 1ch
+    min-width: 0
+
+  &__label
+    overflow: hidden
+    text-overflow: ellipsis
+
+  &__cycle
+    gap: 0.25ch
+    flex-shrink: 0
+    opacity: 0.7
+    transition: opacity 0.1s ease
+
+    &:hover
+      opacity: 1
+
+  &__cycle-icon
+    width: 1.15em
+    height: 1.15em
+
+  &__counter
+    font-size: 0.85em
+
+  &__key
+    flex-shrink: 0
+    width: 1.15em
+    height: 1.15em
+    opacity: 0.7

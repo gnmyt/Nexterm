@@ -16,6 +16,7 @@ export const Terminal = () => {
         selectedTheme, setSelectedTheme, selectedFont, setSelectedFont,
         fontSize, setFontSize, cursorStyle, setCursorStyle, cursorBlink, setCursorBlink,
         smartCopyPaste, setSmartCopyPaste,
+        passwordPromptDetection, setPasswordPromptDetection,
         getAvailableThemes, getAvailableFonts, getTerminalTheme, getCursorStyles,
         isGroupSynced, toggleGroupSync,
     } = usePreferences();
@@ -57,7 +58,7 @@ export const Terminal = () => {
         { label: t("settings.terminal.cursor.disabled"), value: "false" }
     ];
 
-    const smartCopyPasteOptions = [
+    const toggleOptions = [
         { label: t("settings.terminal.input.enabled"), value: "true" },
         { label: t("settings.terminal.input.disabled"), value: "false" }
     ];
@@ -128,7 +129,8 @@ export const Terminal = () => {
 
             {renderSection(t("settings.terminal.input.title"), t("settings.terminal.input.description"), "terminal.input", (
                 <div className="input-settings">
-                    {renderFontOption(t("settings.terminal.input.smartCopyPaste"), smartCopyPasteOptions, smartCopyPaste.toString(), (value) => setSmartCopyPaste(value === "true"))}
+                    {renderFontOption(t("settings.terminal.input.smartCopyPaste"), toggleOptions, smartCopyPaste.toString(), (value) => setSmartCopyPaste(value === "true"))}
+                    {renderFontOption(t("settings.terminal.input.passwordPromptDetection"), toggleOptions, passwordPromptDetection.toString(), (value) => setPasswordPromptDetection(value === "true"))}
                 </div>
             ))}
 

@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, useContext } from "react";
+import { useEffect, useRef, useState, useContext, useCallback } from "react";
 import { UserContext } from "@/common/contexts/UserContext.jsx";
 import { IdentityContext } from "@/common/contexts/IdentityContext.jsx";
 import { AIContext } from "@/common/contexts/AIContext.jsx";
@@ -9,6 +9,7 @@ import { FitAddon } from "@xterm/addon-fit";
 import { ContextMenu, ContextMenuItem, ContextMenuSeparator, useContextMenu } from "@/common/components/ContextMenu";
 import AIAssistant from "./components/AIAssistant";
 import SnippetsMenu from "./components/SnippetsMenu";
+import PasswordFillHint from "./components/PasswordFillHint";
 import { createProgressParser } from "../utils/progressParser";
 import { mdiContentCopy, mdiContentPaste, mdiCodeBrackets, mdiSelectAll, mdiDelete, mdiKeyboard, mdiKey, mdiFolderOpen, mdiRobotHappyOutline } from "@mdi/js";
 import { useTranslation } from "react-i18next";
@@ -18,6 +19,10 @@ import { getWebSocketUrl } from "@/common/utils/ConnectionUtil.js";
 import { postRequest } from "@/common/utils/RequestUtil.js";
 import "@xterm/xterm/css/xterm.css";
 import "./styles/xterm.sass";
+
+const PASSWORD_PROMPT_REGEX = /^[^$#%>]*(password|passphrase)[^:\r\n]*:\s?$/i;
+const ANSI_ESCAPE_REGEX = /\x1b(?:\[[0-9;?]*[a-zA-Z]|\][^\x07\x1b]*(?:\x07|\x1b\\)?|[()][0-9A-B]|[a-zA-Z=><])/g;
+const CONTROL_CHAR_REGEX = /[\x00-\x08\x0b\x0c\x0e-\x1f\x7f]/g;
 
 const XtermRenderer = ({ session, disconnectFromServer, markSessionErrored, getSessionError, registerTerminalRef, broadcastMode, terminalRefs, updateProgress, layoutMode, onBroadcastToggle, onFullscreenToggle, isShared = false, onOpenSftp }) => {
     const ref = useRef(null);
@@ -29,15 +34,15 @@ const XtermRenderer = ({ session, disconnectFromServer, markSessionErrored, getS
     const onBroadcastToggleRef = useRef(onBroadcastToggle);
     const onFullscreenToggleRef = useRef(onFullscreenToggle);
     const connectionLoaderRef = useRef(null);
-    const canPasteIdentityRef = useRef(false);
     const smartCopyPasteRef = useRef(false);
 
     const userContext = useContext(UserContext);
     const sessionToken = userContext?.sessionToken;
-    const { theme, getCurrentTheme, selectedFont, fontSize, cursorStyle, cursorBlink, selectedTheme, smartCopyPaste } = usePreferences();
+    const { theme, getCurrentTheme, selectedFont, fontSize, cursorStyle, cursorBlink, selectedTheme, smartCopyPaste, passwordPromptDetection } = usePreferences();
 
     const effectiveFont = (isShared && session.fontFamily) ? session.fontFamily : selectedFont;
     const effectiveFontSize = (isShared && session.fontSize) ? session.fontSize : fontSize;
+    const hintForeground = (theme === "light" && selectedTheme === "light") ? "#000000" : getCurrentTheme().foreground;
     const aiContext = useContext(AIContext);
     const isAIAvailable = aiContext?.isAIAvailable || (() => false);
     const aiAvailableRef = useRef(false);
@@ -51,6 +56,66 @@ const XtermRenderer = ({ session, disconnectFromServer, markSessionErrored, getS
     const { identities } = useContext(IdentityContext);
     const [showSnippetsMenu, setShowSnippetsMenu] = useState(false);
     const [connectionError, setConnectionError] = useState(() => getSessionError?.(session.id) || null);
+    const [passwordPrompt, setPasswordPrompt] = useState(null);
+    const [passwordHintIndex, setPasswordHintIndex] = useState(-1);
+    const [passwordIdentities, setPasswordIdentities] = useState([]);
+    const passwordPromptRef = useRef(null);
+    const passwordHintIndexRef = useRef(-1);
+    const passwordIdentitiesRef = useRef([]);
+    const passwordDetectionRef = useRef(passwordPromptDetection);
+    const promptLineRef = useRef("");
+
+    const updatePasswordHintIndex = useCallback((index) => {
+        passwordHintIndexRef.current = index;
+        setPasswordHintIndex(index);
+    }, []);
+
+    const cyclePasswordHint = useCallback((offset) => {
+        const count = passwordIdentitiesRef.current.length;
+        if (count < 2) return;
+        updatePasswordHintIndex((passwordHintIndexRef.current + offset + count) % count);
+    }, [updatePasswordHintIndex]);
+
+    const showPasswordHint = useCallback((anchor) => {
+        passwordPromptRef.current = anchor;
+        setPasswordPrompt(anchor);
+        updatePasswordHintIndex(0);
+    }, [updatePasswordHintIndex]);
+
+    const movePasswordHint = useCallback((anchor) => {
+        const current = passwordPromptRef.current;
+        if (!current) return;
+        if (current.left === anchor.left && current.top === anchor.top && current.height === anchor.height) return;
+        passwordPromptRef.current = anchor;
+        setPasswordPrompt(anchor);
+    }, []);
+
+    const hidePasswordHint = useCallback(() => {
+        if (!passwordPromptRef.current) return;
+        passwordPromptRef.current = null;
+        setPasswordPrompt(null);
+        updatePasswordHintIndex(-1);
+    }, [updatePasswordHintIndex]);
+
+    const fillIdentityPassword = useCallback(async (identityId) => {
+        hidePasswordHint();
+        try {
+            await postRequest(`connections/${session.id}/paste-password`, identityId ? { identityId } : undefined);
+        } catch (err) {
+            console.error("Failed to fill identity password:", err);
+        }
+        termRef.current?.focus();
+    }, [hidePasswordHint, session.id]);
+
+    const fillIdentityPasswordRef = useRef(fillIdentityPassword);
+    useEffect(() => {
+        fillIdentityPasswordRef.current = fillIdentityPassword;
+    }, [fillIdentityPassword]);
+
+    const cyclePasswordHintRef = useRef(cyclePasswordHint);
+    useEffect(() => {
+        cyclePasswordHintRef.current = cyclePasswordHint;
+    }, [cyclePasswordHint]);
 
     useEffect(() => {
         broadcastModeRef.current = broadcastMode;
@@ -59,6 +124,14 @@ const XtermRenderer = ({ session, disconnectFromServer, markSessionErrored, getS
     useEffect(() => {
         smartCopyPasteRef.current = smartCopyPaste;
     }, [smartCopyPaste]);
+
+    useEffect(() => {
+        passwordDetectionRef.current = passwordPromptDetection;
+        if (!passwordPromptDetection) {
+            hidePasswordHint();
+            promptLineRef.current = "";
+        }
+    }, [passwordPromptDetection, hidePasswordHint]);
 
     useEffect(() => {
         layoutModeRef.current = layoutMode;
@@ -73,9 +146,16 @@ const XtermRenderer = ({ session, disconnectFromServer, markSessionErrored, getS
     }, [onFullscreenToggle]);
 
     useEffect(() => {
-        const identity = identities?.find(i => i.id === session.identity);
-        canPasteIdentityRef.current = !!(identity && ['password', 'both', 'password-only'].includes(identity.type));
-    }, [identities, session.identity]);
+        const serverIdentityIds = session.server?.identities?.length ? [...session.server.identities] : [];
+        if (session.identity != null && !serverIdentityIds.includes(session.identity)) {
+            serverIdentityIds.unshift(session.identity);
+        }
+        passwordIdentitiesRef.current = serverIdentityIds
+            .map(id => identities?.find(i => i.id === id))
+            .filter(i => i && ['password', 'both', 'password-only'].includes(i.type))
+            .map(i => ({ id: i.id, username: i.username }));
+        setPasswordIdentities(passwordIdentitiesRef.current);
+    }, [identities, session.identity, session.server]);
 
     useEffect(() => {
         if (updateProgress) {
@@ -134,13 +214,8 @@ const XtermRenderer = ({ session, disconnectFromServer, markSessionErrored, getS
     };
 
     const handlePasteIdentity = async () => {
-        try {
-            await postRequest(`connections/${session.id}/paste-password`);
-        } catch (err) {
-            console.error('Failed to paste identity password via API:', err);
-        }
         contextMenu.close();
-        termRef.current?.focus();
+        await fillIdentityPassword(null);
     };
 
     const handleSelectAll = () => {
@@ -220,11 +295,24 @@ const XtermRenderer = ({ session, disconnectFromServer, markSessionErrored, getS
         term.loadAddon(fitAddon);
         term.open(ref.current);
 
+        const computePasswordHintPosition = () => {
+            const cell = term._core?._renderService?.dimensions?.css?.cell;
+            const cellWidth = cell?.width || (ref.current?.clientWidth || 0) / (term.cols || 1);
+            const cellHeight = cell?.height || (ref.current?.clientHeight || 0) / (term.rows || 1);
+
+            return {
+                left: term.buffer.active.cursorX * cellWidth,
+                top: term.buffer.active.cursorY * cellHeight,
+                height: cellHeight,
+            };
+        };
+
         const handleResize = () => {
             fitAddon.fit();
             if (wsRef.current && wsRef.current.readyState === WebSocket.OPEN) {
                 wsRef.current.send(`\x01${term.cols},${term.rows}`);
             }
+            if (passwordPromptRef.current) movePasswordHint(computePasswordHintPosition());
         };
 
         window.addEventListener("resize", handleResize);
@@ -264,6 +352,19 @@ const XtermRenderer = ({ session, disconnectFromServer, markSessionErrored, getS
         const reportError = (message) => {
             markSessionErrored?.(session.id, message);
             setConnectionError(message);
+        };
+
+        const trackPasswordPrompt = (data) => {
+            if (isShared || !passwordDetectionRef.current || passwordIdentitiesRef.current.length === 0) return;
+
+            const cleaned = data.replace(ANSI_ESCAPE_REGEX, "").replace(CONTROL_CHAR_REGEX, "");
+            promptLineRef.current = (promptLineRef.current + cleaned).split(/[\r\n]/).pop().slice(-256);
+
+            if (PASSWORD_PROMPT_REGEX.test(promptLineRef.current)) {
+                if (!passwordPromptRef.current) showPasswordHint(computePasswordHintPosition());
+            } else {
+                hidePasswordHint();
+            }
         };
 
         ws.onclose = (event) => {
@@ -311,7 +412,7 @@ const XtermRenderer = ({ session, disconnectFromServer, markSessionErrored, getS
                     }
                 });
             } else {
-                term.write(data);
+                term.write(data, () => trackPasswordPrompt(data));
 
                 if (progressParserRef.current && updateProgress) {
                     const progress = progressParserRef.current.parseData(data);
@@ -327,7 +428,10 @@ const XtermRenderer = ({ session, disconnectFromServer, markSessionErrored, getS
             }
         };
 
+        term.onScroll(() => hidePasswordHint());
+
         term.onData((data) => {
+            if (passwordPromptRef.current) hidePasswordHint();
             ws.send(data);
 
             if (broadcastModeRef.current && terminalRefs?.current) {
@@ -341,6 +445,30 @@ const XtermRenderer = ({ session, disconnectFromServer, markSessionErrored, getS
 
         term.attachCustomKeyEventHandler((event) => {
             if (event.type === "keydown") {
+                if (passwordPromptRef.current) {
+                    const hintItems = passwordIdentitiesRef.current;
+                    const hintIndex = passwordHintIndexRef.current;
+
+                    if (event.key === "Tab") {
+                        event.preventDefault();
+                        event.stopPropagation();
+                        fillIdentityPasswordRef.current(hintItems[hintIndex]?.id);
+                        return false;
+                    }
+                    if (event.key === "Escape") {
+                        event.preventDefault();
+                        event.stopPropagation();
+                        hidePasswordHint();
+                        return false;
+                    }
+                    if (hintItems.length > 1 && (event.key === "ArrowUp" || event.key === "ArrowDown")) {
+                        event.preventDefault();
+                        event.stopPropagation();
+                        cyclePasswordHintRef.current(event.key === "ArrowUp" ? -1 : 1);
+                        return false;
+                    }
+                }
+
                 const copyKeybind = getParsedKeybind("copy");
                 if (copyKeybind && matchesKeybind(event, copyKeybind)) {
                     const selection = term.getSelection();
@@ -381,10 +509,10 @@ const XtermRenderer = ({ session, disconnectFromServer, markSessionErrored, getS
                 }
 
                 const pasteIdentityKeybind = getParsedKeybind("paste-identity-password");
-                if (pasteIdentityKeybind && canPasteIdentityRef.current && matchesKeybind(event, pasteIdentityKeybind)) {
+                if (pasteIdentityKeybind && passwordIdentitiesRef.current.length > 0 && matchesKeybind(event, pasteIdentityKeybind)) {
                     event.preventDefault();
                     event.stopPropagation();
-                    handlePasteIdentity();
+                    fillIdentityPasswordRef.current(null);
                     return false;
                 }
 
@@ -424,6 +552,9 @@ const XtermRenderer = ({ session, disconnectFromServer, markSessionErrored, getS
 
         return () => {
             isCleaningUp = true;
+            passwordPromptRef.current = null;
+            passwordHintIndexRef.current = -1;
+            promptLineRef.current = "";
             if (registerTerminalRef) {
                 registerTerminalRef(session.id, null);
             }
@@ -448,6 +579,18 @@ const XtermRenderer = ({ session, disconnectFromServer, markSessionErrored, getS
                 <ConnectionError message={connectionError} onClose={() => disconnectFromServer(session.id)} />
             )}
             <div ref={ref} className="xterm-wrapper" />
+            {!isShared && passwordPrompt && passwordIdentities.length > 0 && (
+                <PasswordFillHint
+                    anchor={passwordPrompt}
+                    items={passwordIdentities}
+                    selectedIndex={passwordHintIndex}
+                    onFill={fillIdentityPassword}
+                    onCycle={cyclePasswordHint}
+                    foreground={hintForeground}
+                    fontFamily={effectiveFont}
+                    fontSize={effectiveFontSize}
+                />
+            )}
             {!isShared && isAIAvailable() && showAIAssistant && (
                 <AIAssistant session={session} onClose={() => setShowAIAssistant(false)} />
             )}
@@ -487,7 +630,7 @@ const XtermRenderer = ({ session, disconnectFromServer, markSessionErrored, getS
                             onClick={handleOpenAIAssistant}
                         />
                     )}
-                    {(identities && session.identity && identities.find(i => i.id === session.identity) && ['password','both','password-only'].includes(identities.find(i => i.id === session.identity).type)) && (
+                    {passwordIdentities.length > 0 && (
                         <ContextMenuItem
                             icon={mdiKey}
                             label={t('servers.contextMenu.pasteIdentityPassword')}
