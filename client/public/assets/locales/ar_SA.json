@@ -926,6 +926,7 @@
         "title": "الإدخال",
         "description": "تحكم في طريقة عمل اختصارات لوحة المفاتيح داخل المحطة الطرفية.",
         "smartCopyPaste": "Ctrl+C الذكي",
+        "passwordPromptDetection": "Password input detection",
         "enabled": "ممكّن",
         "disabled": "ذوو الإعاقة",
         "syncEnabled": "ستتم الآن مزامنة إعدادات الإدخال مع حسابك",
@@ -1559,6 +1560,11 @@
       "stop": "إيقاف",
       "start": "بدء"
     },
+    "passwordHint": {
+      "paste": "paste password",
+      "pasteFor": "paste {{username}} password",
+      "cycle": "Use the arrow keys to switch identity"
+    },
     "tabs": {
       "contextMenu": {
         "popOut": "بوب آوت",
@@ -1639,6 +1645,11 @@
         "wakeOnLan": {
           "title": "تمكين الاستيقاظ على الشبكة المحلية",
           "description": "السماح بإيقاظ هذا الخادم عن بُعد باستخدام عنوان MAC الخاص به"
+        },
+        "rdpSecurity": {
+          "title": "Security",
+          "description": "Authentication method used to connect to the remote Windows machine. Use NLA for environments where NTLM is disabled (e.g. Protected Users group).",
+          "method": "Security Method"
         },
         "keyboardLayout": {
           "title": "تخطيط لوحة المفاتيح",
