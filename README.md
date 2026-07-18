@@ -138,6 +138,9 @@ The server listens on port 6989 by default. You can modify this behavior using e
   /run/secrets/encryption_key`
 - `AI_SYSTEM_PROMPT`: Extra instructions appended to the AI assistant's system prompt (example: Always explain destructive commands before running them.)
 - `LOG_LEVEL`: Logging level for application and engine (system/info/verbose/debug/warn/error, default: system)
+- `TRUST_PROXY`: Number of reverse proxies in front of Nexterm, so logs and audits show the real client IP instead of the
+  proxy's (default: disabled). Use `1` for a single Nginx/Traefik, or pass trusted addresses (`10.10.10.10,192.168.0.0/16`).
+  Only enable this if your proxy sets `X-Forwarded-For`, otherwise clients can spoof their IP.
 
 ## 🛡️ Security
 

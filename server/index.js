@@ -39,11 +39,26 @@ const KEY_PATH = path.join(CERTS_DIR, "key.pem");
 
 const hasSSLCerts = () => fs.existsSync(CERT_PATH) && fs.existsSync(KEY_PATH);
 
+const parseTrustProxy = value => {
+    if (!value) return false;
+
+    const trimmed = value.trim();
+    if (trimmed === "false") return false;
+    if (trimmed === "true") {
+        logger.warn("TRUST_PROXY=true trusts X-Forwarded-For from any source. Prefer a hop count or address list.");
+        return true;
+    }
+    if (/^\d+$/.test(trimmed)) return Number(trimmed);
+
+    return trimmed;
+};
+
 const app = expressWs(express()).app;
 
 generateOpenAPISpec(app);
 
 app.disable("x-powered-by");
+app.set("trust proxy", parseTrustProxy(process.env.TRUST_PROXY));
 app.use(express.json());
 
 app.use("/api/service", require("./routes/service"));
