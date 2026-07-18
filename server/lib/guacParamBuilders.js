@@ -49,6 +49,8 @@ const buildRdpParams = async (cfg, identity, accountId) => {
         if (credentials?.password) params.password = credentials.password;
     }
 
+    if (cfg.rdpSecurity) params["security"] = cfg.rdpSecurity;
+
     if (cfg.colorDepth) params["color-depth"] = String(cfg.colorDepth);
     if (cfg.enableWallpaper !== false) params["enable-wallpaper"] = "true";
     if (cfg.enableTheming !== false) params["enable-theming"] = "true";

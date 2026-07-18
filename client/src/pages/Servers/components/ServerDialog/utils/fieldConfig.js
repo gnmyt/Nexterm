@@ -37,6 +37,7 @@ export const getFieldConfig = (type, protocol) => {
                     showDisplaySettings: true,
                     showPerformanceSettings: true,
                     showAudioSettings: true,
+                    showRdpSecurity: true,
                     allowedAuthTypes: ["password-only", "password"],
                     showWakeOnLan: true,
                 };
