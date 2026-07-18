@@ -19,7 +19,7 @@
     gap: 1ch
     padding: 1px 8px
     font-size: 0.9em
-    font-weight: 400 // body sets 700 globally; rows must start regular so the selected one can stand out
+    font-weight: 400
     cursor: pointer
     white-space: nowrap
 
@@ -39,8 +39,6 @@
     &.selected > span
       font-weight: 700
 
-    // invisible bold clone stacked in the same grid cell reserves the bold
-    // width up front so selection never changes the panel size
     &::after
       content: attr(data-text)
       grid-area: 1 / 1

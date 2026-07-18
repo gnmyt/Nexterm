@@ -2,7 +2,7 @@ import "./styles.sass";
 import { useKeymaps } from "@/common/contexts/KeymapContext.jsx";
 import { useEffect, useState } from "react";
 import Button from "@/common/components/Button";
-import { mdiRestore, mdiMagnify, mdiRobotOutline, mdiCodeArray, mdiKeyboard, mdiBroadcast, mdiContentCopy, mdiFullscreen, mdiFlash, mdiCheckCircleOutline } from "@mdi/js";
+import { mdiRestore, mdiMagnify, mdiRobotOutline, mdiCodeArray, mdiKeyboard, mdiBroadcast, mdiContentCopy, mdiFullscreen, mdiFlash, mdiKey, mdiCheckCircleOutline } from "@mdi/js";
 import Icon from "@mdi/react";
 import { useTranslation } from "react-i18next";
 import { useToast } from "@/common/contexts/ToastContext.jsx";
@@ -17,6 +17,7 @@ const KEYMAP_ICONS = {
     "broadcast": mdiBroadcast,
     "copy": mdiContentCopy,
     "fullscreen": mdiFullscreen,
+    "paste-identity-password": mdiKey,
 };
 
 const KeybindRecorder = ({ action, currentKey, onUpdate, onReset }) => {

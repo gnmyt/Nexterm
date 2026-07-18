@@ -10,26 +10,17 @@ const DEFAULT_KEYMAPS = [
     { action: "broadcast", key: "ctrl+b" },
     { action: "copy", key: "ctrl+shift+c" },
     { action: "fullscreen", key: "f11" },
+    { action: "paste-identity-password", key: "ctrl+shift+p" },
 ];
 
 module.exports.getKeymaps = async (accountId) => {
     let keymaps = await Keymap.findAll({ where: { accountId } });
-
-    const defaultActions = DEFAULT_KEYMAPS.map(dk => dk.action);
-    const staleActions = keymaps.filter(k => !defaultActions.includes(k.action)).map(k => k.action);
 
     const existingActions = keymaps.map(k => k.action);
     const missingKeymaps = DEFAULT_KEYMAPS.filter(dk => !existingActions.includes(dk.action));
 
     if (missingKeymaps.length > 0) {
         await Keymap.bulkCreate(missingKeymaps.map(keymap => ({ ...keymap, accountId, enabled: true })));
-    }
-
-    if (staleActions.length > 0) {
-        await Keymap.destroy({ where: { accountId, action: staleActions } });
-    }
-
-    if (missingKeymaps.length > 0 || staleActions.length > 0) {
         keymaps = await Keymap.findAll({ where: { accountId } });
     }
 
