@@ -926,6 +926,7 @@
         "title": "输入",
         "description": "控制键盘快捷键在终端中的行为。",
         "smartCopyPaste": "智能 Ctrl+C",
+        "passwordPromptDetection": "Password input detection",
         "enabled": "已启用",
         "disabled": "已禁用",
         "syncEnabled": "输入设置现已同步到您的账户",
@@ -1559,6 +1560,11 @@
       "stop": "停止",
       "start": "启动"
     },
+    "passwordHint": {
+      "paste": "paste password",
+      "pasteFor": "paste {{username}} password",
+      "cycle": "Use the arrow keys to switch identity"
+    },
     "tabs": {
       "contextMenu": {
         "popOut": "弹出",
@@ -1639,6 +1645,11 @@
         "wakeOnLan": {
           "title": "启用网络唤醒",
           "description": "允许使用其 MAC 地址远程唤醒该服务器"
+        },
+        "rdpSecurity": {
+          "title": "Security",
+          "description": "Authentication method used to connect to the remote Windows machine. Use NLA for environments where NTLM is disabled (e.g. Protected Users group).",
+          "method": "Security Method"
         },
         "keyboardLayout": {
           "title": "键盘布局",
