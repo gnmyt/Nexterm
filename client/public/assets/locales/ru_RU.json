@@ -926,6 +926,7 @@
         "title": "Ввод",
         "description": "Настрой поведение горячих клавиш в терминале.",
         "smartCopyPaste": "Умное Ctrl+C",
+        "passwordPromptDetection": "Password input detection",
         "enabled": "Включено",
         "disabled": "Отключено",
         "syncEnabled": "Настройки ввода теперь будут синхронизироваться с твоей учетной записью",
@@ -1559,6 +1560,11 @@
       "stop": "Остановить",
       "start": "Запустить"
     },
+    "passwordHint": {
+      "paste": "paste password",
+      "pasteFor": "paste {{username}} password",
+      "cycle": "Use the arrow keys to switch identity"
+    },
     "tabs": {
       "contextMenu": {
         "popOut": "В отдельном окне",
@@ -1639,6 +1645,11 @@
         "wakeOnLan": {
           "title": "Включить Wake-On-LAN",
           "description": "Разреши разбудить этот сервер удаленно, используя его MAC-адрес"
+        },
+        "rdpSecurity": {
+          "title": "Security",
+          "description": "Authentication method used to connect to the remote Windows machine. Use NLA for environments where NTLM is disabled (e.g. Protected Users group).",
+          "method": "Security Method"
         },
         "keyboardLayout": {
           "title": "Раскладка клавиатуры",
