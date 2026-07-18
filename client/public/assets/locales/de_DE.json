@@ -926,6 +926,7 @@
         "title": "Eingabe",
         "description": "Lege fest, wie sich Tastenkombinationen im Terminal verhalten.",
         "smartCopyPaste": "Smart Strg+C",
+        "passwordPromptDetection": "Password input detection",
         "enabled": "Aktiviert",
         "disabled": "Deaktiviert",
         "syncEnabled": "Die Eingabeeinstellungen werden nun mit deinem Konto synchronisiert",
@@ -1559,6 +1560,11 @@
       "stop": "Stop",
       "start": "Start"
     },
+    "passwordHint": {
+      "paste": "paste password",
+      "pasteFor": "paste {{username}} password",
+      "cycle": "Use the arrow keys to switch identity"
+    },
     "tabs": {
       "contextMenu": {
         "popOut": "In eigenem Fenster öffnen",
@@ -1639,6 +1645,11 @@
         "wakeOnLan": {
           "title": "Wake-On-LAN einschalten",
           "description": "Erlaube es, diesen Server aus der Ferne über seine MAC-Adresse zu wecken"
+        },
+        "rdpSecurity": {
+          "title": "Security",
+          "description": "Authentication method used to connect to the remote Windows machine. Use NLA for environments where NTLM is disabled (e.g. Protected Users group).",
+          "method": "Security Method"
         },
         "keyboardLayout": {
           "title": "Tastaturlayout",
