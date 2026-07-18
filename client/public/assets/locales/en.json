@@ -1640,6 +1640,11 @@
           "title": "Enable Wake-On-LAN",
           "description": "Allow waking this server remotely using its MAC address"
         },
+        "rdpSecurity": {
+          "title": "Security",
+          "description": "Authentication method used to connect to the remote Windows machine. Use NLA for environments where NTLM is disabled (e.g. Protected Users group).",
+          "method": "Security Method"
+        },
         "keyboardLayout": {
           "title": "Keyboard Layout",
           "description": "Select the keyboard layout to use for this connection."

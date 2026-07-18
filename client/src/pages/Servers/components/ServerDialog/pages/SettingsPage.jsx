@@ -3,7 +3,7 @@ import SelectBox from "@/common/components/SelectBox";
 import ToggleSwitch from "@/common/components/ToggleSwitch";
 import { ServerContext } from "@/common/contexts/ServerContext.jsx";
 import Icon from "@mdi/react";
-import { mdiServerNetwork, mdiClose, mdiPlus, mdiChartLine, mdiMonitor, mdiPalette, mdiVolumeHigh, mdiPowerPlug, mdiKeyboardOutline } from "@mdi/js";
+import { mdiServerNetwork, mdiClose, mdiPlus, mdiChartLine, mdiMonitor, mdiPalette, mdiVolumeHigh, mdiPowerPlug, mdiKeyboardOutline, mdiShieldLock } from "@mdi/js";
 import { useTranslation } from "react-i18next";
 
 const COLOR_DEPTHS = [
@@ -34,6 +34,15 @@ const FUNCTION_KEY_MODES = [
     { label: "Xterm", value: "xterm" },
     { label: "VT", value: "vt" },
     { label: "Linux", value: "linux" },
+];
+
+const RDP_SECURITY_METHODS = [
+    { label: "Auto (negotiate best)", value: "" },
+    { label: "Any (highest available)", value: "any" },
+    { label: "NLA (Kerberos / CredSSP)", value: "nla" },
+    { label: "TLS (SSL)", value: "tls" },
+    { label: "RDP (NTLM)", value: "rdp" },
+    { label: "Hyper-V (vmconnect)", value: "vmconnect" },
 ];
 
 const KEYBOARD_LAYOUTS = [
@@ -74,6 +83,7 @@ const SettingsPage = ({ config, setConfig, monitoringEnabled, setMonitoringEnabl
     const [enableDesktopComposition, setEnableDesktopComposition] = useState(config?.enableDesktopComposition === true);
     const [enableMenuAnimations, setEnableMenuAnimations] = useState(config?.enableMenuAnimations === true);
     const [wakeOnLanEnabled, setWakeOnLanEnabled] = useState(config?.wakeOnLanEnabled === true);
+    const [rdpSecurity, setRdpSecurity] = useState(config?.rdpSecurity || "");
     const [backspaceMode, setBackspaceMode] = useState(config?.backspaceMode || "del");
     const [deleteMode, setDeleteMode] = useState(config?.deleteMode || "vt");
     const [functionKeyMode, setFunctionKeyMode] = useState(config?.functionKeyMode || "xterm");
@@ -103,6 +113,7 @@ const SettingsPage = ({ config, setConfig, monitoringEnabled, setMonitoringEnabl
         if (config?.enableDesktopComposition !== undefined) setEnableDesktopComposition(config.enableDesktopComposition);
         if (config?.enableMenuAnimations !== undefined) setEnableMenuAnimations(config.enableMenuAnimations);
         if (config?.wakeOnLanEnabled !== undefined) setWakeOnLanEnabled(config.wakeOnLanEnabled);
+        if (config?.rdpSecurity !== undefined) setRdpSecurity(config.rdpSecurity);
         if (config?.backspaceMode !== undefined) setBackspaceMode(config.backspaceMode);
         if (config?.deleteMode !== undefined) setDeleteMode(config.deleteMode);
         if (config?.functionKeyMode !== undefined) setFunctionKeyMode(config.functionKeyMode);
@@ -298,6 +309,30 @@ const SettingsPage = ({ config, setConfig, monitoringEnabled, setMonitoringEnabl
                                 setSelected={(val) => handleDisplaySettingChange('functionKeyMode', val, setFunctionKeyMode)} 
                             />
                         </div>
+                    </div>
+                </div>
+            )}
+
+            {fieldConfig.showRdpSecurity && (
+                <div className="jump-hosts-section">
+                    <div className="jump-hosts-header">
+                        <div className="jump-hosts-info">
+                            <span className="jump-hosts-label">
+                                <Icon path={mdiShieldLock} size={0.8} style={{ marginRight: '8px', verticalAlign: 'middle' }} />
+                                {t('servers.dialog.settings.rdpSecurity.title')}
+                            </span>
+                            <span className="jump-hosts-description">
+                                {t('servers.dialog.settings.rdpSecurity.description')}
+                            </span>
+                        </div>
+                    </div>
+                    <div className="form-group">
+                        <label>{t('servers.dialog.settings.rdpSecurity.method')}</label>
+                        <SelectBox
+                            options={RDP_SECURITY_METHODS}
+                            selected={rdpSecurity}
+                            setSelected={(val) => handleDisplaySettingChange('rdpSecurity', val, setRdpSecurity)}
+                        />
                     </div>
                 </div>
             )}
