@@ -926,6 +926,7 @@
         "title": "Saisie",
         "description": "Gère le fonctionnement des raccourcis clavier dans le terminal.",
         "smartCopyPaste": "Ctrl+C intelligent",
+        "passwordPromptDetection": "Password input detection",
         "enabled": "Activé",
         "disabled": "Désactivé",
         "syncEnabled": "Les paramètres de saisie vont désormais se synchroniser avec ton compte",
@@ -1559,6 +1560,11 @@
       "stop": "Arrêter",
       "start": "Démarrer"
     },
+    "passwordHint": {
+      "paste": "paste password",
+      "pasteFor": "paste {{username}} password",
+      "cycle": "Use the arrow keys to switch identity"
+    },
     "tabs": {
       "contextMenu": {
         "popOut": "Pop Out",
@@ -1639,6 +1645,11 @@
         "wakeOnLan": {
           "title": "Activer le Wake-On-LAN",
           "description": "Permet de réveiller ce serveur à distance en utilisant son adresse MAC"
+        },
+        "rdpSecurity": {
+          "title": "Security",
+          "description": "Authentication method used to connect to the remote Windows machine. Use NLA for environments where NTLM is disabled (e.g. Protected Users group).",
+          "method": "Security Method"
         },
         "keyboardLayout": {
           "title": "Disposition du clavier",
