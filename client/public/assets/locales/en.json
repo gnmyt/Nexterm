@@ -602,7 +602,7 @@
         "uploadFailed": "The profile picture could not be uploaded",
         "removeFailed": "The profile picture could not be removed"
       },
-      "accountName": "Account name",
+      "accountDetails": "Account details",
       "firstName": "First name",
       "lastName": "Last name",
       "appearance": "Appearance",

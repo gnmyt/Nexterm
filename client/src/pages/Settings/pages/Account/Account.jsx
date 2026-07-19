@@ -259,7 +259,7 @@ export const Account = () => {
                 text={t("settings.account.apiKeys.confirmDelete")}
             />
             <div className="account-section">
-                <h2><Icon path={mdiAccountEdit} size={0.8} style={{marginRight: '8px'}} />{t("settings.account.accountName")}</h2>
+                <h2><Icon path={mdiAccountEdit} size={0.8} style={{marginRight: '8px'}} />{t("settings.account.accountDetails")}</h2>
                 <div className="section-inner">
                     <div className="form-group avatar-group">
                         <label htmlFor="avatar">{t("settings.account.avatar.label")}</label>
