@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io' show Platform;
 
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -333,6 +334,7 @@ class _TerminalRendererState extends State<TerminalRenderer> {
                         padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                         focusNode: _terminalFocusNode,
                         autofocus: true,
+                        deleteDetection: Platform.isIOS,
                       ),
                     ),
                   ),
