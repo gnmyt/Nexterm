@@ -592,7 +592,17 @@
     },
     "account": {
       "title": "Účet",
-      "accountName": "Název účtu",
+      "avatar": {
+        "label": "Picture",
+        "upload": "Change profile picture",
+        "remove": "Remove",
+        "updated": "Your profile picture has been updated",
+        "removed": "Your profile picture has been removed",
+        "tooLarge": "The selected image is larger than 10 MB",
+        "uploadFailed": "The profile picture could not be uploaded",
+        "removeFailed": "The profile picture could not be removed"
+      },
+      "accountDetails": "Account details",
       "firstName": "Jméno",
       "lastName": "Příjmení",
       "appearance": "Vzhled",
@@ -793,6 +803,20 @@
           "nameRequired": "Název organizace je povinný",
           "createSuccess": "Organizace úspěšně vytvořena",
           "createFailed": "Nepodařilo se vytvořit organizaci"
+        }
+      },
+      "sessionSettings": {
+        "sessionSettingsTab": "Live Sessions",
+        "liveSharingHeading": "Live Session Sharing",
+        "liveSharingDescription": "Control how running sessions are shared in this organization.",
+        "enableLiveSessionSharingLabel": "Enable live session sharing",
+        "enableLiveSessionSharingDescription": "Members need the View or Control Live Sessions permission.",
+        "actions": {
+          "save": "Save Settings"
+        },
+        "messages": {
+          "updated": "Live session settings updated successfully",
+          "updateFailed": "Failed to update live session settings"
         }
       }
     },
@@ -1558,7 +1582,9 @@
       "wakeOnLan": "Wake-On-LAN",
       "shutdown": "Vypnout",
       "stop": "Zastavit",
-      "start": "Spustit"
+      "start": "Spustit",
+      "joinSession": "Join Session",
+      "joinSessionOf": "Join session of {{user}}"
     },
     "passwordHint": {
       "paste": "paste password",
@@ -2013,6 +2039,10 @@
         "unsaved": "Neuložené",
         "error": "Uložení se nezdařilo"
       }
+    },
+    "liveSessions": {
+      "activeOn": "Live sessions: {{users}}",
+      "unknownUser": "Unknown user"
     }
   },
   "support": {
@@ -2034,6 +2064,7 @@
   },
   "welcome": {
     "hello": "Ahoj",
+    "defaultName": "User",
     "subtitle": "Vítejte na Nextermu. Správce serverů s otevřeným zdrojovým kódem pro SSH, VNC a RDP.",
     "downloadApps": "Aplikace ke stažení",
     "connectDevice": "Připojení zařízení",
