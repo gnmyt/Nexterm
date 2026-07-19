@@ -592,7 +592,17 @@
     },
     "account": {
       "title": "Account",
-      "accountName": "Benutzername",
+      "avatar": {
+        "label": "Bild",
+        "upload": "Profilbild ändern",
+        "remove": "Entfernen",
+        "updated": "Dein Profilbild wurde aktualisiert",
+        "removed": "Dein Profilbild wurde entfernt",
+        "tooLarge": "Das ausgewählte Bild ist größer als 10 MB",
+        "uploadFailed": "Das Profilbild konnte nicht hochgeladen werden",
+        "removeFailed": "Das Profilbild konnte nicht gelöscht werden"
+      },
+      "accountDetails": "Kontoangaben",
       "firstName": "Vorname",
       "lastName": "Nachname",
       "appearance": "Erscheinungsbild",
@@ -794,6 +804,20 @@
           "createSuccess": "Organisation erfolgreich erstellt",
           "createFailed": "Organisation konnte nicht erstellt werden"
         }
+      },
+      "sessionSettings": {
+        "sessionSettingsTab": "Live-Sessions",
+        "liveSharingHeading": "Live-Sitzung teilen",
+        "liveSharingDescription": "Lege fest, wie laufende Sitzungen in dieser Organisation freigegeben werden.",
+        "enableLiveSessionSharingLabel": "Live-Sitzungsfreigabe aktivieren",
+        "enableLiveSessionSharingDescription": "Mitglieder benötigen die Berechtigung „Live-Sitzungen anzeigen oder steuern“.",
+        "actions": {
+          "save": "Einstellungen speichern"
+        },
+        "messages": {
+          "updated": "Die Einstellungen für die Live-Sitzung wurden erfolgreich aktualisiert",
+          "updateFailed": "Die Einstellungen der Live-Sitzung konnten nicht aktualisiert werden"
+        }
       }
     },
     "users": {
@@ -861,6 +885,10 @@
           "title": "KI Genehmigungs-Aktions",
           "description": "Bestätige die ausstehende Aktion des KI-Tools im Assistenten"
         },
+        "aicommand": {
+          "title": "Befehl generieren",
+          "description": "Frag im Terminal nach einem Befehlsvorschlag"
+        },
         "snippets": {
           "title": "Snippets",
           "description": "Öffne den Snippet-Dialog"
@@ -926,6 +954,7 @@
         "title": "Eingabe",
         "description": "Lege fest, wie sich Tastenkombinationen im Terminal verhalten.",
         "smartCopyPaste": "Smart Strg+C",
+        "passwordPromptDetection": "Erkennung der Passworteingabe",
         "enabled": "Aktiviert",
         "disabled": "Deaktiviert",
         "syncEnabled": "Die Eingabeeinstellungen werden nun mit deinem Konto synchronisiert",
@@ -1551,10 +1580,20 @@
       "duplicateServer": "Server duplizieren",
       "pasteIdentityPassword": "Passwort einfügen",
       "deleteServer": "Server löschen",
+      "deleteConfirm": "Bist du sicher, dass du „{{name}}“ löschen möchtest? Diese Aktion kann nicht rückgängig gemacht werden.",
+      "deleteFailServer": "Das Löschen von „{{name}} “ ist fehlgeschlagen.",
+      "deleteFailFolder": "Der Ordner „{{name}} “ konnte nicht gelöscht werden.",
       "wakeOnLan": "Wake-On-LAN",
       "shutdown": "Herunterfahren",
       "stop": "Stop",
-      "start": "Start"
+      "start": "Start",
+      "joinSession": "An der Sitzung teilnehmen",
+      "joinSessionOf": "An der Sitzung von {{user}}"
+    },
+    "passwordHint": {
+      "paste": "Passwort einfügen",
+      "pasteFor": "Einfügen {{username}} Passwort",
+      "cycle": "Verwende die Pfeiltasten, um die Identität zu wechseln"
     },
     "tabs": {
       "contextMenu": {
@@ -1636,6 +1675,11 @@
         "wakeOnLan": {
           "title": "Wake-On-LAN einschalten",
           "description": "Erlaube es, diesen Server aus der Ferne über seine MAC-Adresse zu wecken"
+        },
+        "rdpSecurity": {
+          "title": "Sicherheit",
+          "description": "Authentifizierungsmethode für die Verbindung zum entfernten Windows-Rechner. Verwende NLA in Umgebungen, in denen NTLM deaktiviert ist (z. B. bei der Gruppe „Geschützte Benutzer“).",
+          "method": "Sicherheitsmethode"
         },
         "keyboardLayout": {
           "title": "Tastaturlayout",
@@ -1772,6 +1816,7 @@
       }
     },
     "fileManager": {
+      "dropOverlay": "Zieh Dateien oder Ordner per Drag & Drop hinein, um sie hochzuladen",
       "createFile": {
         "title": "Datei erstellen",
         "placeholder": "Datei Name",
@@ -1883,6 +1928,8 @@
         "hiddenDirectories": "{{count}} versteckte Verzeichnisse",
         "switchToGrid": "Zur Rasteransicht wechseln",
         "switchToList": "Zur Listenansicht wechseln",
+        "uploadFile": "Datei(en) hochladen",
+        "uploadFolder": "Upload-Ordner",
         "search": "Durchsuche Dateien",
         "closeSearch": "Suchfeld schließen",
         "refresh": "Aktualisieren"
@@ -1907,7 +1954,9 @@
         "downloaded": "{{name}} heruntergeladen",
         "downloadingItems": "Herunterladen von {{count}} item(s)...",
         "uploaded": "{{name}} hochgeladen",
+        "uploadedItems": "{{count}} -Dateien hochgeladen",
         "uploadFailed": "Upload fehlgeschlagen: {{message}}",
+        "uploadFailedItems": "{{count}} Dateien konnten nicht hochgeladen werden: {{message}}",
         "connectionLost": "SFTP-Verbindung verloren. Bitte stelle die Verbindung wieder her.",
         "error": "Ein Fehler ist aufgetreten"
       }
@@ -1938,6 +1987,9 @@
       "deny": "Ablehnen",
       "denied": "Du hast diese Aktion abgelehnt.",
       "stopped": "Halt.",
+      "continuePrompt": "Der Assistent hielt nach einer langen Treppenstufe inne. Weiter?",
+      "continue": "Weiter",
+      "compacted": "Frühere Nachrichten wurden zusammengefasst, um Platz für den Kontext zu schaffen.",
       "tools": {
         "runCommand": "Befehl ausführen",
         "readFile": "Datei lesen",
@@ -1952,6 +2004,14 @@
         "changePermissions": "Berechtigungen ändern",
         "findDirectories": "Verzeichnisse suchen"
       }
+    },
+    "commandSuggestion": {
+      "open": "Befehl generieren",
+      "placeholder": "Beschreibe den Befehl...",
+      "generating": "Wird generiert...",
+      "accept": "Befehl „Akzeptieren“",
+      "cycle": "Vorschläge für Radtouren",
+      "error": "Die Befehlsgenerierung ist fehlgeschlagen."
     },
     "snippets": {
       "title": "Snippets",
@@ -1994,6 +2054,10 @@
         "unsaved": "Nicht gerettet",
         "error": "Speichern fehlgeschlagen"
       }
+    },
+    "liveSessions": {
+      "activeOn": "Live-Sessions: {{users}}",
+      "unknownUser": "Unbekannter Nutzer"
     }
   },
   "support": {
@@ -2015,6 +2079,7 @@
   },
   "welcome": {
     "hello": "Hallo",
+    "defaultName": "Benutzer",
     "subtitle": "Willkommen bei Nexterm. Der Open-Source-Server-Manager für SSH, VNC und RDP.",
     "downloadApps": "Apps herunterladen",
     "connectDevice": "Gerät verbinden",

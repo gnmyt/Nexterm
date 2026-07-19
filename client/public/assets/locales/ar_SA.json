@@ -592,7 +592,17 @@
     },
     "account": {
       "title": "الحساب",
-      "accountName": "اسم الحساب",
+      "avatar": {
+        "label": "صورة",
+        "upload": "تغيير صورة الملف الشخصي",
+        "remove": "إزالة",
+        "updated": "تم تحديث صورة ملفك الشخصي",
+        "removed": "تمت إزالة صورة ملفك الشخصي",
+        "tooLarge": "حجم الصورة المحددة أكبر من 10 ميغابايت",
+        "uploadFailed": "تعذر تحميل صورة الملف الشخصي",
+        "removeFailed": "تعذر إزالة صورة الملف الشخصي"
+      },
+      "accountDetails": "تفاصيل الحساب",
       "firstName": "الاسم الأول",
       "lastName": "اسم العائلة",
       "appearance": "المظهر",
@@ -794,6 +804,20 @@
           "createSuccess": "تم إنشاء المؤسسة بنجاح",
           "createFailed": "فشل في إنشاء المؤسسة"
         }
+      },
+      "sessionSettings": {
+        "sessionSettingsTab": "الجلسات المباشرة",
+        "liveSharingHeading": "مشاركة الجلسات المباشرة",
+        "liveSharingDescription": "التحكم في كيفية مشاركة الجلسات الجارية في هذه المؤسسة.",
+        "enableLiveSessionSharingLabel": "تمكين مشاركة الجلسة المباشرة",
+        "enableLiveSessionSharingDescription": "يحتاج الأعضاء إلى إذن «عرض الجلسات المباشرة» أو «التحكم فيها».",
+        "actions": {
+          "save": "حفظ الإعدادات"
+        },
+        "messages": {
+          "updated": "تم تحديث إعدادات الجلسة المباشرة بنجاح",
+          "updateFailed": "فشل تحديث إعدادات الجلسة المباشرة"
+        }
       }
     },
     "users": {
@@ -861,6 +885,10 @@
           "title": "الذكاء الاصطناعي: قبول الإجراء",
           "description": "الموافقة على الإجراء المعلق المتعلق بأداة الذكاء الاصطناعي في المساعد"
         },
+        "aicommand": {
+          "title": "إنشاء أمر",
+          "description": "اطلب اقتراح أمر داخل المحطة الطرفية"
+        },
         "snippets": {
           "title": "مقتطفات",
           "description": "افتح مربع حوار المقتطفات"
@@ -926,6 +954,7 @@
         "title": "الإدخال",
         "description": "تحكم في طريقة عمل اختصارات لوحة المفاتيح داخل المحطة الطرفية.",
         "smartCopyPaste": "Ctrl+C الذكي",
+        "passwordPromptDetection": "الكشف عن إدخال كلمة المرور",
         "enabled": "ممكّن",
         "disabled": "ذوو الإعاقة",
         "syncEnabled": "ستتم الآن مزامنة إعدادات الإدخال مع حسابك",
@@ -1551,10 +1580,20 @@
       "duplicateServer": "تكرار الخادم",
       "pasteIdentityPassword": "لصق كلمة المرور",
       "deleteServer": "حذف الخادم",
+      "deleteConfirm": "هل أنت متأكد من رغبتك في حذف \"{{name}}\"؟ لا يمكن التراجع عن هذا الإجراء.",
+      "deleteFailServer": "فشل حذف \"{{name}}\".",
+      "deleteFailFolder": "فشل حذف المجلد \"{{name}}\".",
       "wakeOnLan": "استيقظ على الشبكة المحلية",
       "shutdown": "إغلاق",
       "stop": "إيقاف",
-      "start": "بدء"
+      "start": "بدء",
+      "joinSession": "الانضمام إلى الجلسة",
+      "joinSessionOf": "انضم إلى جلسة {{user}}"
+    },
+    "passwordHint": {
+      "paste": "لصق كلمة المرور",
+      "pasteFor": "لصق {{username}} كلمة المرور",
+      "cycle": "استخدم مفاتيح الأسهم لتغيير الهوية"
     },
     "tabs": {
       "contextMenu": {
@@ -1636,6 +1675,11 @@
         "wakeOnLan": {
           "title": "تمكين الاستيقاظ على الشبكة المحلية",
           "description": "السماح بإيقاظ هذا الخادم عن بُعد باستخدام عنوان MAC الخاص به"
+        },
+        "rdpSecurity": {
+          "title": "الأمن",
+          "description": "طريقة المصادقة المستخدمة للاتصال بجهاز Windows البعيد. استخدم NLA في البيئات التي يكون فيها NTLM معطلاً (مثل مجموعة «المستخدمين المحميين»).",
+          "method": "طريقة الأمان"
         },
         "keyboardLayout": {
           "title": "تخطيط لوحة المفاتيح",
@@ -1772,6 +1816,7 @@
       }
     },
     "fileManager": {
+      "dropOverlay": "اسحب الملفات أو المجلدات لتحميلها",
       "createFile": {
         "title": "إنشاء ملف",
         "placeholder": "اسم الملف",
@@ -1883,6 +1928,8 @@
         "hiddenDirectories": "{{count}} الدلائل المخفية",
         "switchToGrid": "التبديل إلى عرض الشبكة",
         "switchToList": "التبديل إلى عرض القائمة",
+        "uploadFile": "تحميل الملفات",
+        "uploadFolder": "مجلد التحميل",
         "search": "البحث في الملفات",
         "closeSearch": "إغلاق البحث",
         "refresh": "تحديث"
@@ -1907,7 +1954,9 @@
         "downloaded": "تم التحميل {{name}}",
         "downloadingItems": "تنزيل {{count}} عنصر (عناصر) ...",
         "uploaded": "تم التحميل {{name}}",
+        "uploadedItems": "تم تحميل ملفات {{count}}",
         "uploadFailed": "فشل التحميل: {{message}}",
+        "uploadFailedItems": "{{count}} فشل تحميل الملفات: {{message}}",
         "connectionLost": "فُقد اتصال SFTP. الرجاء إعادة الاتصال.",
         "error": "حدث خطأ"
       }
@@ -1938,6 +1987,9 @@
       "deny": "رفض",
       "denied": "لقد رفضت هذا الإجراء.",
       "stopped": "توقف.",
+      "continuePrompt": "توقف المساعد بعد سلسلة طويلة من الخطوات. هل نواصل؟",
+      "continue": "تابع",
+      "compacted": "تم تلخيص الرسائل السابقة لتوضيح السياق.",
       "tools": {
         "runCommand": "تشغيل الأمر",
         "readFile": "قراءة الملف",
@@ -1952,6 +2004,14 @@
         "changePermissions": "تغيير الأذونات",
         "findDirectories": "البحث عن الدلائل"
       }
+    },
+    "commandSuggestion": {
+      "open": "إنشاء أمر",
+      "placeholder": "صف الأمر...",
+      "generating": "جاري الإنشاء...",
+      "accept": "أمر \"قبول\"",
+      "cycle": "اقتراحات الدورات",
+      "error": "فشل إنشاء الأمر."
     },
     "snippets": {
       "title": "القصاصات",
@@ -1994,6 +2054,10 @@
         "unsaved": "غير محفوظ",
         "error": "فشل الحفظ"
       }
+    },
+    "liveSessions": {
+      "activeOn": "الجلسات المباشرة: {{users}}",
+      "unknownUser": "مستخدم مجهول"
     }
   },
   "support": {
@@ -2015,6 +2079,7 @@
   },
   "welcome": {
     "hello": "مرحباً",
+    "defaultName": "المستخدم",
     "subtitle": "مرحبًا بك في Nexterm. مدير الخادم مفتوح المصدر لخوادم SSH و VNC و RDP.",
     "downloadApps": "تنزيل التطبيقات",
     "connectDevice": "توصيل الجهاز",
