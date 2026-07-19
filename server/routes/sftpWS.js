@@ -6,6 +6,7 @@ const {
     updateAuditLogWithSessionDuration,
 } = require("../controllers/audit");
 const SessionManager = require("../lib/SessionManager");
+const { buildParticipant } = require("../utils/sessionParticipant");
 const { createSFTPConnectionForSession, getSFTPBackgroundClient } = require("../lib/ConnectionService");
 const { hasResourcePermission } = require("../utils/permission");
 const { Permission } = require("../permissions/registry");
@@ -203,7 +204,7 @@ module.exports = async (ws, req) => {
             }
         };
 
-        SessionManager.addWebSocket(sessionId, ws);
+        SessionManager.addWebSocket(sessionId, ws, false, buildParticipant(ctx));
 
         const onSftpClose = () => {
             sendError(ws, "SFTP connection lost");

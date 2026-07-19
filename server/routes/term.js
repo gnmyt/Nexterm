@@ -26,6 +26,7 @@ module.exports = async (ws, req) => {
 
     if (context.isShared) {
         if (protocol === "ssh") return sshHook(ws, context);
+        if (protocol === "telnet") return telnetHook(ws, context);
         if (protocol === "pve-lxc" || protocol === "pve-shell") return pveLxcHook(ws, context);
         return ws.close(4015, "Sharing not supported");
     }
