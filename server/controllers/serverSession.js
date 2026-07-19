@@ -108,9 +108,10 @@ const createSession = async (accountId, entryId, identityId, connectionReason, t
         renderer: type === "sftp" ? "sftp" : entry.renderer,
     };
 
-    const session = SessionManager.create(accountId, entryId, configuration, connectionReason, tabId, browserId, auditLogId);
+    const session = SessionManager.create(accountId, entryId, configuration, connectionReason, tabId, browserId, auditLogId, entry.organizationId);
 
     stateBroadcaster.broadcast("CONNECTIONS", { accountId });
+    if (entry.organizationId) stateBroadcaster.broadcast("LIVE_SESSIONS", { organizationId: entry.organizationId });
 
     createConnectionForSession(session.sessionId, accountId)
         .then(() => {
@@ -169,6 +170,7 @@ const getSessions = async (accountId, tabId = null, browserId = null) => {
             shareId: session.shareId || null,
             shareWritable: session.shareWritable || false,
             sftpPath: session.sftpPath || null,
+            participants: SessionManager.getParticipants(session.sessionId),
         };
     });
 };

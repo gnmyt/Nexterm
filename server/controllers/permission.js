@@ -10,6 +10,7 @@ const sequelize = require("../utils/database");
 const registry = require("../permissions/registry");
 const { getSystemPermissions, getOrganizationPermissions } = require("../permissions/engine");
 const { getAdminGroupIds, countAdmins, isAccountAdmin } = require("../utils/permission");
+const { revokeLiveSessionAccess } = require("./liveSession");
 const logger = require("../utils/logger");
 
 const TRI = ["allow", "deny", "neutral"];
@@ -250,5 +251,8 @@ module.exports.setOrgMemberPermissions = async (organizationId, accountId, permi
         return GRANT_FORBIDDEN;
 
     await applyTriState(OrganizationMemberPermission, registry.SCOPES.ORGANIZATION, { organizationId, accountId }, permissions);
+
+    revokeLiveSessionAccess(organizationId, accountId);
+
     return await module.exports.getOrgMemberPermissions(organizationId, accountId);
 };

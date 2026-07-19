@@ -4,6 +4,8 @@ const OrganizationMemberPermission = require("../models/OrganizationMemberPermis
 const Account = require("../models/Account");
 const { hasOrganizationPermission, getOrganizationPermissions } = require("../permissions/engine");
 const { Permission } = require("../permissions/registry");
+const stateBroadcaster = require("../lib/StateBroadcaster");
+const { revokeLiveSessionAccess } = require("./liveSession");
 const { Op } = require("sequelize");
 
 module.exports.createOrganization = async (accountId, configuration) => {
@@ -187,6 +189,8 @@ module.exports.removeMember = async (accountId, organizationId, memberAccountId)
     await OrganizationMember.destroy({ where: { organizationId: orgId, accountId: memberId } });
     await OrganizationMemberPermission.destroy({ where: { organizationId: orgId, accountId: memberId } });
 
+    revokeLiveSessionAccess(orgId, memberId);
+
     return { success: true, message: "Member removed successfully" };
 };
 
@@ -235,5 +239,30 @@ module.exports.leaveOrganization = async (accountId, organizationId) => {
 
     await OrganizationMember.destroy({ where: { organizationId: orgId, accountId } });
 
+    revokeLiveSessionAccess(orgId, accountId);
+
     return { success: true, message: "You have left the organization" };
+};
+
+const getSessionSettings = async (organizationId) => {
+    const organization = await Organization.findByPk(parseInt(organizationId, 10));
+    return { ...Organization.DEFAULT_SESSION_SETTINGS, ...(organization?.sessionSettings || {}) };
+};
+
+module.exports.getSessionSettings = getSessionSettings;
+
+module.exports.updateSessionSettings = async (organizationId, settings) => {
+    const orgId = parseInt(organizationId, 10);
+    const current = await getSessionSettings(orgId);
+    const updated = { ...current, ...settings };
+
+    await Organization.update({ sessionSettings: updated }, { where: { id: orgId } });
+
+    if (current.enableLiveSessionSharing && !updated.enableLiveSessionSharing) {
+        revokeLiveSessionAccess(orgId);
+    } else {
+        stateBroadcaster.broadcast("LIVE_SESSIONS", { organizationId: orgId });
+    }
+
+    return updated;
 };
