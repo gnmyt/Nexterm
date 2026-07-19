@@ -592,7 +592,17 @@
     },
     "account": {
       "title": "Cuenta",
-      "accountName": "Nombre de la cuenta",
+      "avatar": {
+        "label": "Picture",
+        "upload": "Change profile picture",
+        "remove": "Remove",
+        "updated": "Your profile picture has been updated",
+        "removed": "Your profile picture has been removed",
+        "tooLarge": "The selected image is larger than 10 MB",
+        "uploadFailed": "The profile picture could not be uploaded",
+        "removeFailed": "The profile picture could not be removed"
+      },
+      "accountDetails": "Account details",
       "firstName": "Nombre",
       "lastName": "Apellidos",
       "appearance": "Apariencia",
@@ -793,6 +803,20 @@
           "nameRequired": "Se requiere el nombre de la organización",
           "createSuccess": "Organización creada con éxito",
           "createFailed": "No se ha podido crear la organización"
+        }
+      },
+      "sessionSettings": {
+        "sessionSettingsTab": "Live Sessions",
+        "liveSharingHeading": "Live Session Sharing",
+        "liveSharingDescription": "Control how running sessions are shared in this organization.",
+        "enableLiveSessionSharingLabel": "Enable live session sharing",
+        "enableLiveSessionSharingDescription": "Members need the View or Control Live Sessions permission.",
+        "actions": {
+          "save": "Save Settings"
+        },
+        "messages": {
+          "updated": "Live session settings updated successfully",
+          "updateFailed": "Failed to update live session settings"
         }
       }
     },
@@ -1558,7 +1582,9 @@
       "wakeOnLan": "Wake-On-LAN",
       "shutdown": "Apaga",
       "stop": "Para",
-      "start": "Comienza"
+      "start": "Comienza",
+      "joinSession": "Join Session",
+      "joinSessionOf": "Join session of {{user}}"
     },
     "passwordHint": {
       "paste": "paste password",
@@ -2013,6 +2039,10 @@
         "unsaved": "Sin guardar",
         "error": "Guardar fallido"
       }
+    },
+    "liveSessions": {
+      "activeOn": "Live sessions: {{users}}",
+      "unknownUser": "Unknown user"
     }
   },
   "support": {
@@ -2034,6 +2064,7 @@
   },
   "welcome": {
     "hello": "Hola",
+    "defaultName": "User",
     "subtitle": "Bienvenido a Nexterm. El gestor de servidores de código abierto para SSH, VNC y RDP.",
     "downloadApps": "Descargar aplicaciones",
     "connectDevice": "Conectar dispositivo",
