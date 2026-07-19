@@ -593,16 +593,16 @@
     "account": {
       "title": "账户",
       "avatar": {
-        "label": "Picture",
-        "upload": "Change profile picture",
-        "remove": "Remove",
-        "updated": "Your profile picture has been updated",
-        "removed": "Your profile picture has been removed",
-        "tooLarge": "The selected image is larger than 10 MB",
-        "uploadFailed": "The profile picture could not be uploaded",
-        "removeFailed": "The profile picture could not be removed"
+        "label": "图片",
+        "upload": "更改个人头像",
+        "remove": "删除",
+        "updated": "您的头像已更新",
+        "removed": "您的头像已被删除",
+        "tooLarge": "所选图片的大小超过 10 MB",
+        "uploadFailed": "无法上传头像",
+        "removeFailed": "无法删除头像"
       },
-      "accountDetails": "Account details",
+      "accountDetails": "账户详情",
       "firstName": "名字",
       "lastName": "姓",
       "appearance": "外观",
@@ -806,17 +806,17 @@
         }
       },
       "sessionSettings": {
-        "sessionSettingsTab": "Live Sessions",
-        "liveSharingHeading": "Live Session Sharing",
-        "liveSharingDescription": "Control how running sessions are shared in this organization.",
-        "enableLiveSessionSharingLabel": "Enable live session sharing",
-        "enableLiveSessionSharingDescription": "Members need the View or Control Live Sessions permission.",
+        "sessionSettingsTab": "直播环节",
+        "liveSharingHeading": "实时会话共享",
+        "liveSharingDescription": "控制该组织中跑步活动分享的方式。",
+        "enableLiveSessionSharingLabel": "启用实时会话共享",
+        "enableLiveSessionSharingDescription": "成员需要“查看”或“控制实时会话”权限。",
         "actions": {
-          "save": "Save Settings"
+          "save": "保存设置"
         },
         "messages": {
-          "updated": "Live session settings updated successfully",
-          "updateFailed": "Failed to update live session settings"
+          "updated": "实时会话设置已成功更新",
+          "updateFailed": "无法更新实时会话设置"
         }
       }
     },
@@ -886,8 +886,8 @@
           "description": "在助手中批准待处理的 AI 工具操作"
         },
         "aicommand": {
-          "title": "Generate Command",
-          "description": "Ask for a command suggestion inside the terminal"
+          "title": "生成命令",
+          "description": "在终端中请求命令建议"
         },
         "snippets": {
           "title": "代码片段",
@@ -954,7 +954,7 @@
         "title": "输入",
         "description": "控制键盘快捷键在终端中的行为。",
         "smartCopyPaste": "智能 Ctrl+C",
-        "passwordPromptDetection": "Password input detection",
+        "passwordPromptDetection": "密码输入检测",
         "enabled": "已启用",
         "disabled": "已禁用",
         "syncEnabled": "输入设置现已同步到您的账户",
@@ -1580,20 +1580,20 @@
       "duplicateServer": "复制服务器",
       "pasteIdentityPassword": "粘贴密码",
       "deleteServer": "删除服务器",
-      "deleteConfirm": "Are you sure you want to delete \"{{name}}\"? This action cannot be undone.",
-      "deleteFailServer": "Failed to delete \"{{name}}\".",
-      "deleteFailFolder": "Failed to delete the folder \"{{name}}\".",
+      "deleteConfirm": "您确定要删除“{{name}}”吗？此操作无法撤销。",
+      "deleteFailServer": "无法删除“{{name}}”。",
+      "deleteFailFolder": "无法删除文件夹“{{name}}”。",
       "wakeOnLan": "网络唤醒",
       "shutdown": "关机",
       "stop": "停止",
       "start": "启动",
-      "joinSession": "Join Session",
-      "joinSessionOf": "Join session of {{user}}"
+      "joinSession": "加入会议",
+      "joinSessionOf": "加入会议 {{user}}"
     },
     "passwordHint": {
-      "paste": "paste password",
-      "pasteFor": "paste {{username}} password",
-      "cycle": "Use the arrow keys to switch identity"
+      "paste": "粘贴密码",
+      "pasteFor": "粘贴 {{username}} 密码",
+      "cycle": "使用方向键切换角色"
     },
     "tabs": {
       "contextMenu": {
@@ -1677,9 +1677,9 @@
           "description": "允许使用其 MAC 地址远程唤醒该服务器"
         },
         "rdpSecurity": {
-          "title": "Security",
-          "description": "Authentication method used to connect to the remote Windows machine. Use NLA for environments where NTLM is disabled (e.g. Protected Users group).",
-          "method": "Security Method"
+          "title": "安全",
+          "description": "用于连接远程 Windows 计算机的身份验证方法。在禁用了 NTLM 的环境中（例如“受保护的用户”组），请使用 NLA。",
+          "method": "安全方法"
         },
         "keyboardLayout": {
           "title": "键盘布局",
@@ -1816,7 +1816,7 @@
       }
     },
     "fileManager": {
-      "dropOverlay": "Drop files or folders to upload",
+      "dropOverlay": "将文件或文件夹拖放到此处进行上传",
       "createFile": {
         "title": "创建文件",
         "placeholder": "文件名称",
@@ -1928,8 +1928,8 @@
         "hiddenDirectories": "{{count}} 隐藏目录",
         "switchToGrid": "切换到网格视图",
         "switchToList": "切换到列表视图",
-        "uploadFile": "Upload file(s)",
-        "uploadFolder": "Upload folder",
+        "uploadFile": "上传文件",
+        "uploadFolder": "上传文件夹",
         "search": "搜索文件",
         "closeSearch": "关闭搜索",
         "refresh": "刷新"
@@ -1954,9 +1954,9 @@
         "downloaded": "下载 {{name}}",
         "downloadingItems": "下载 {{count}} 项目...",
         "uploaded": "上传 {{name}}",
-        "uploadedItems": "Uploaded {{count}} files",
+        "uploadedItems": "已上传 {{count}} 个文件",
         "uploadFailed": "上传失败： {{message}}",
-        "uploadFailedItems": "{{count}} files failed to upload: {{message}}",
+        "uploadFailedItems": "{{count}} 文件上传失败： {{message}}",
         "connectionLost": "SFTP 连接丢失。请重新连接。",
         "error": "发生错误"
       }
@@ -1987,9 +1987,9 @@
       "deny": "拒绝",
       "denied": "你拒绝了此操作。",
       "stopped": "停下了。",
-      "continuePrompt": "The assistant paused after a long run of steps. Continue?",
-      "continue": "Continue",
-      "compacted": "Earlier messages were summarised to free up context.",
+      "continuePrompt": "助理在连续跑了一段台阶后停了下来。继续吗？",
+      "continue": "继续",
+      "compacted": "为节省篇幅，已对之前的消息进行了总结。",
       "tools": {
         "runCommand": "运行命令",
         "readFile": "读取文件",
@@ -2006,12 +2006,12 @@
       }
     },
     "commandSuggestion": {
-      "open": "Generate Command",
-      "placeholder": "Describe the command...",
-      "generating": "Generating...",
-      "accept": "Accept command",
-      "cycle": "Cycle suggestions",
-      "error": "Failed to generate a command."
+      "open": "生成命令",
+      "placeholder": "描述该命令……",
+      "generating": "正在生成...",
+      "accept": "接受命令",
+      "cycle": "骑行建议",
+      "error": "无法生成命令。"
     },
     "snippets": {
       "title": "代码片段",
@@ -2056,8 +2056,8 @@
       }
     },
     "liveSessions": {
-      "activeOn": "Live sessions: {{users}}",
-      "unknownUser": "Unknown user"
+      "activeOn": "直播环节： {{users}}",
+      "unknownUser": "未知用户"
     }
   },
   "support": {
@@ -2079,7 +2079,7 @@
   },
   "welcome": {
     "hello": "你好",
-    "defaultName": "User",
+    "defaultName": "用户",
     "subtitle": "欢迎使用 Nexterm。用于 SSH、VNC 和 RDP 的开源服务器管理器。",
     "downloadApps": "下载应用程序",
     "connectDevice": "连接设备",
