@@ -34,7 +34,7 @@ APK_ENGINE="
 APT_GUAC="
     build-essential autoconf automake libtool pkg-config
     libcairo2-dev libjpeg-dev libpng-dev libossp-uuid-dev
-    libpango1.0-dev libvncserver-dev libwebp-dev libssl-dev freerdp-dev
+    libpango1.0-dev libvncserver-dev libwebp-dev libssl-dev freerdp3-dev
     libpulse-dev libvorbis-dev libogg-dev libssh2-1-dev
 "
 APT_ENGINE="
@@ -46,11 +46,22 @@ APT_ENGINE="
     file
 "
 
+apt_setup_repos() {
+    [ -f /etc/apt/sources.list.d/backports.list ] && return 0
+    [ -r /etc/os-release ] || return 0
+    . /etc/os-release
+    [ "${ID:-}" = "debian" ] || return 0
+    [ "${VERSION_CODENAME:-}" = "bookworm" ] || return 0
+    echo "deb http://deb.debian.org/debian bookworm-backports main" \
+        > /etc/apt/sources.list.d/backports.list
+}
+
 pkg_install() {
     if [ "$PKG_MGR" = "apk" ]; then
         apk add --no-cache $1
     else
         export DEBIAN_FRONTEND=noninteractive
+        apt_setup_repos
         apt-get update
         apt-get install -y --no-install-recommends $1
     fi
