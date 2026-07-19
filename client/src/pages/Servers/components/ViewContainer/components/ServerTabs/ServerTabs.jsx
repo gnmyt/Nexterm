@@ -279,32 +279,48 @@ export const ServerTabs = ({
 
     useEffect(() => {
         checkScrollPosition();
-        const handleResize = () => checkScrollPosition();
-        window.addEventListener('resize', handleResize);
-        return () => window.removeEventListener('resize', handleResize);
+
+        const tabs = tabsRef.current;
+        if (!tabs) return;
+
+        const observer = new ResizeObserver(() => checkScrollPosition());
+        observer.observe(tabs);
+        for (const child of tabs.children) observer.observe(child);
+
+        return () => observer.disconnect();
     }, [activeSessions, tabOrder]);
 
-    const handleWheel = (e) => {
-        e.preventDefault();
+    useEffect(() => {
+        const tabs = tabsRef.current;
+        if (!tabs) return;
 
-        if (tabsRef.current) {
-            tabsRef.current.scrollLeft += e.deltaY;
-            checkScrollPosition();
-        }
-    };
+        const handleWheel = (e) => {
+            if (Math.abs(e.deltaX) > Math.abs(e.deltaY)) return;
+            if (tabs.scrollWidth <= tabs.clientWidth) return;
+
+            e.preventDefault();
+            tabs.scrollLeft += e.deltaY;
+        };
+
+        tabs.addEventListener('wheel', handleWheel, { passive: false });
+        return () => tabs.removeEventListener('wheel', handleWheel);
+    }, []);
+
+    useEffect(() => {
+        const activeTab = tabsRef.current?.querySelector('.server-tab-active');
+        activeTab?.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'nearest' });
+    }, [activeSessionId, tabOrder]);
 
     const scrollTabs = (direction) => {
         if (!tabsRef.current) return;
 
-        const scrollAmount = 200;
+        const scrollAmount = Math.max(120, tabsRef.current.clientWidth * 0.8);
         const targetScroll = tabsRef.current.scrollLeft + (direction === 'left' ? -scrollAmount : scrollAmount);
 
         tabsRef.current.scrollTo({
             left: targetScroll,
             behavior: 'smooth'
         });
-
-        setTimeout(checkScrollPosition, 300);
     };
 
     const moveTab = (fromIndex, toIndex) => {
@@ -343,11 +359,13 @@ export const ServerTabs = ({
             </div>
             <div className="tabs-container">
                 {showLeftArrow && (
-                    <div className="scroll-indicator left" onClick={() => scrollTabs('left')}>
-                        <Icon path={mdiChevronLeft} />
+                    <div className="scroll-indicator left">
+                        <button type="button" aria-label="Scroll tabs left" onClick={() => scrollTabs('left')}>
+                            <Icon path={mdiChevronLeft} />
+                        </button>
                     </div>
                 )}
-                <div className="tabs" ref={tabsRef} onWheel={handleWheel} onScroll={checkScrollPosition}>
+                <div className="tabs" ref={tabsRef} onScroll={checkScrollPosition}>
                     {orderedSessions.map((session, index) => {
                         return (
                             <DraggableTab key={session.id} session={session} server={session.server} index={index} moveTab={moveTab}
@@ -359,8 +377,10 @@ export const ServerTabs = ({
                     })}
                 </div>
                 {showRightArrow && (
-                    <div className="scroll-indicator right" onClick={() => scrollTabs('right')}>
-                        <Icon path={mdiChevronRight} />
+                    <div className="scroll-indicator right">
+                        <button type="button" aria-label="Scroll tabs right" onClick={() => scrollTabs('right')}>
+                            <Icon path={mdiChevronRight} />
+                        </button>
                     </div>
                 )}
             </div>
