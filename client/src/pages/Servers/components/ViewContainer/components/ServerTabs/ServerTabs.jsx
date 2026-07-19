@@ -1,4 +1,4 @@
-import { useRef, useState, useEffect, useCallback } from "react";
+import { useRef, useState, useEffect, useCallback, useContext } from "react";
 import { useTranslation } from "react-i18next";
 import Icon from "@mdi/react";
 import { mdiClose, mdiViewSplitVertical, mdiChevronLeft, mdiChevronRight, mdiSleep, mdiOpenInNew, mdiShareVariant, mdiLinkVariant, mdiPencil, mdiEye, mdiCloseCircle, mdiContentDuplicate, mdiNoteEditOutline } from "@mdi/js";
@@ -6,6 +6,9 @@ import { useDrag, useDrop } from "react-dnd";
 import TerminalActionsMenu from "../TerminalActionsMenu";
 import { ContextMenu, ContextMenuItem, ContextMenuSeparator, useContextMenu } from "@/common/components/ContextMenu";
 import { useActiveSessions } from "@/common/contexts/SessionContext.jsx";
+import { useLiveSessions } from "@/common/contexts/LiveSessionContext.jsx";
+import { UserContext } from "@/common/contexts/UserContext.jsx";
+import AvatarStack from "@/common/components/AvatarStack";
 import { postRequest, deleteRequest, patchRequest } from "@/common/utils/RequestUtil";
 import { getBaseUrl } from "@/common/utils/ConnectionUtil.js";
 import { getIconPath } from "@/common/utils/iconUtils.js";
@@ -26,14 +29,20 @@ const DraggableTab = ({
 }) => {
     const contextMenu = useContextMenu();
     const { popOutSession } = useActiveSessions();
+    const { getParticipants } = useLiveSessions();
+    const { user } = useContext(UserContext);
     const { t } = useTranslation();
 
+    const otherParticipants = getParticipants(session.joinSessionId || session.id)
+        .filter(participant => participant.accountId !== user?.id);
+
     const isNotes = session.type === "notes";
-    const canPopOut = !session.scriptId && session.type !== "sftp" && !isNotes;
+    const isJoined = !!session.isJoined;
+    const canPopOut = !session.scriptId && session.type !== "sftp" && !isNotes && !isJoined;
     const canShare = canPopOut;
-    const canHibernate = !isNotes;
-    const canDuplicate = !isNotes;
-    const canOpenNotes = !isNotes && !!server?.id && !session.scriptId;
+    const canHibernate = !isNotes && !isJoined;
+    const canDuplicate = !isNotes && !isJoined;
+    const canOpenNotes = !isNotes && !isJoined && !!server?.id && !session.scriptId;
     const isSharing = !!session.shareId;
 
     const handleShare = useCallback(async (writable) => {
@@ -127,6 +136,8 @@ const DraggableTab = ({
                     <Icon path={isNotes ? mdiNoteEditOutline : getIconPath(server.icon)} className="progress-icon" />
                 </div>
                 <h2>{server?.name} {session.type === "sftp" ? " (SFTP)" : ""}{isNotes ? ` (${t("servers.notesPanel.title")})` : ""}</h2>
+                <AvatarStack className="tab-participants" users={otherParticipants} max={2}
+                             getKey={participant => participant.viewerId} />
                 <div className="tab-actions">
                     <Icon path={mdiClose} className="close-btn" title="Close Session" onClick={(e) => {
                         e.stopPropagation();

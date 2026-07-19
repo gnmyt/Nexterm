@@ -3,6 +3,10 @@ import { mdiSleep } from "@mdi/js";
 import { getIconPath } from "@/common/utils/iconUtils.js";
 import "./styles.sass";
 import { ServerContext } from "@/common/contexts/ServerContext.jsx";
+import { useLiveSessions } from "@/common/contexts/LiveSessionContext.jsx";
+import AvatarStack from "@/common/components/AvatarStack";
+import { getSessionOwnerLabel } from "@/common/utils/avatar.js";
+import { useTranslation } from "react-i18next";
 import { useContext, useRef, useState } from "react";
 import { useDrag, useDrop } from "react-dnd";
 import { patchRequest } from "@/common/utils/RequestUtil.js";
@@ -10,6 +14,8 @@ import { DropIndicator } from "../DropIndicator";
 
 export const ServerObject = ({ id, name, position, folderId, organizationId, nestedLevel, icon, type, connectToServer, status, tags = [], hibernatedSessionCount = 0 }) => {
     const { loadServers, getServerById } = useContext(ServerContext);
+    const { getLiveSessionsForEntry } = useLiveSessions();
+    const { t } = useTranslation();
     const [dropPlacement, setDropPlacement] = useState(null);
     const elementRef = useRef(null);
 
@@ -63,6 +69,17 @@ export const ServerObject = ({ id, name, position, folderId, organizationId, nes
 
     const server = getServerById(id);
 
+    const liveSessions = getLiveSessionsForEntry(id);
+    const liveSessionOwners = liveSessions.map(session => ({
+        ...session.owner,
+        sessionId: session.id,
+    }));
+    const liveSessionsTitle = liveSessions.length
+        ? t("servers.liveSessions.activeOn", {
+            users: [...new Set(liveSessions.map(s => getSessionOwnerLabel(s, t)))].join(", "),
+        })
+        : undefined;
+
     const connect = () => {
         connectToServer(server.id, server.identities?.[0]);
     };
@@ -100,6 +117,8 @@ export const ServerObject = ({ id, name, position, folderId, organizationId, nes
                     <span>{hibernatedSessionCount}</span>
                 </div>
             )}
+            <AvatarStack className="live-session-avatars" users={liveSessionOwners} max={2}
+                         title={liveSessionsTitle} getKey={owner => owner.sessionId} />
             {tags && tags.length > 0 && (
                 <div className="tag-circles">
                     {tags.map(tag => (
