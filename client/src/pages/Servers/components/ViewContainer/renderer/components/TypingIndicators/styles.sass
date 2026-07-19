@@ -1,0 +1,61 @@
+@use "@/common/styles/colors"
+
+.typing-indicators
+  position: absolute
+  display: flex
+  flex-direction: column
+  align-items: center
+  margin-top: 6px
+  pointer-events: none
+  user-select: none
+  z-index: 21
+  transform: translateX(-50%)
+  animation: typing-indicators-in 0.12s ease-out both
+
+  .typing-indicators-pointer
+    width: 0
+    height: 0
+    border-left: 6px solid transparent
+    border-right: 6px solid transparent
+    border-bottom: 8px solid var(--typing-color)
+    margin-bottom: -1px
+
+  .typing-indicators-badges
+    display: flex
+    align-items: center
+    gap: 4px
+
+  .typing-indicators-badge
+    display: flex
+    padding: 3px
+    border: 2px solid var(--typing-color, colors.$gray)
+    border-radius: 0.625rem
+    background-color: colors.$terminal
+
+  &.typing-indicators-flipped
+    flex-direction: column-reverse
+    margin-top: -6px
+    transform: translate(-50%, -100%)
+    animation-name: typing-indicators-in-flipped
+
+    .typing-indicators-pointer
+      border-bottom: none
+      border-top: 8px solid var(--typing-color)
+      margin-bottom: 0
+      margin-top: -1px
+
+@keyframes typing-indicators-in
+  from
+    opacity: 0
+    transform: translateX(-50%) scale(0.85)
+  to
+    opacity: 1
+    transform: translateX(-50%) scale(1)
+
+@keyframes typing-indicators-in-flipped
+  from
+    opacity: 0
+    transform: translate(-50%, -100%) scale(0.85)
+  to
+    opacity: 1
+    transform: translate(-50%, -100%) scale(1)
