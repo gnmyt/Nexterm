@@ -28,6 +28,8 @@
 	<true/>
 	<key>NSCameraUsageDescription</key>
 	<string>Camera access is needed to scan QR codes for quick login authorization.</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>Photo library access is needed to select and upload files to your servers.</string>
 	<key>NSMicrophoneUsageDescription</key>
 	<string>Microphone access is needed for voice-to-command AI input.</string>
 	<key>NSSpeechRecognitionUsageDescription</key>
