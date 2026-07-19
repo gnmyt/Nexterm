@@ -6,13 +6,13 @@ import Tooltip from "@/common/components/Tooltip";
 import {
     mdiAccountGroup, mdiShieldKeyOutline, mdiDomain, mdiCogOutline,
     mdiAccountMultipleOutline, mdiServerOutline, mdiShieldCheckOutline, mdiCheckCircle, mdiAlertOutline,
-    mdiConsoleNetworkOutline, mdiFolderNetworkOutline,
+    mdiConsoleNetworkOutline, mdiFolderNetworkOutline, mdiMonitorShare,
 } from "@mdi/js";
 
 const ICONS = {
     mdiAccountGroup, mdiShieldKeyOutline, mdiDomain, mdiCogOutline,
     mdiAccountMultipleOutline, mdiServerOutline, mdiShieldCheckOutline,
-    mdiConsoleNetworkOutline, mdiFolderNetworkOutline,
+    mdiConsoleNetworkOutline, mdiFolderNetworkOutline, mdiMonitorShare,
 };
 
 export const PermissionMatrix = ({ catalog, values = {}, onChange, disabled = false, readOnly = false, granted = [], inherited = null }) => {
