@@ -1,8 +1,8 @@
 const OrganizationMember = require("../models/OrganizationMember");
 const logger = require("../utils/logger");
 
-const STATE_TYPES = { ENTRIES: "ENTRIES", IDENTITIES: "IDENTITIES", SNIPPETS: "SNIPPETS", CONNECTIONS: "CONNECTIONS", LOGOUT: "LOGOUT" };
-const BROADCASTABLE_TYPES = [STATE_TYPES.ENTRIES, STATE_TYPES.IDENTITIES, STATE_TYPES.SNIPPETS, STATE_TYPES.CONNECTIONS];
+const STATE_TYPES = { ENTRIES: "ENTRIES", IDENTITIES: "IDENTITIES", SNIPPETS: "SNIPPETS", CONNECTIONS: "CONNECTIONS", LIVE_SESSIONS: "LIVE_SESSIONS", SESSION_PRESENCE: "SESSION_PRESENCE", LOGOUT: "LOGOUT" };
+const BROADCASTABLE_TYPES = [STATE_TYPES.ENTRIES, STATE_TYPES.IDENTITIES, STATE_TYPES.SNIPPETS, STATE_TYPES.CONNECTIONS, STATE_TYPES.LIVE_SESSIONS];
 
 class StateBroadcaster {
     constructor() {
@@ -49,6 +49,8 @@ class StateBroadcaster {
                 return require("../controllers/snippet").listAllAccessibleSnippets(accountId, memberships.map(m => m.organizationId));
             case STATE_TYPES.CONNECTIONS:
                 return require("../controllers/serverSession").getSessions(accountId, tabId, browserId);
+            case STATE_TYPES.LIVE_SESSIONS:
+                return require("../controllers/liveSession").listLiveSessions(accountId);
             default:
                 return null;
         }
@@ -78,6 +80,21 @@ class StateBroadcaster {
         const conns = this.connections.get(accountId);
         if (!conns?.size) return;
         for (const conn of conns) await this.sendAllStateToConnection(accountId, conn);
+    }
+
+    push(accountIds, stateType, data) {
+        for (const accountId of accountIds) {
+            const conns = this.connections.get(accountId);
+            if (!conns?.size) continue;
+            for (const conn of conns) {
+                if (conn.ws.readyState !== 1) continue;
+                try {
+                    conn.ws.send(JSON.stringify({ type: stateType, data }));
+                } catch (error) {
+                    logger.error(`StateBroadcaster: failed to push ${stateType}`, { accountId, error: error.message });
+                }
+            }
+        }
     }
 
     broadcast(stateType, { accountId, organizationId } = {}) {

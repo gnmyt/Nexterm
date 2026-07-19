@@ -10,11 +10,14 @@ const sessions = new Map();
 const shareIndex = new Map();
 const CONTROL_PLANE_TYPES = new Set(["ssh", "sftp", "guac", "pve-lxc"]);
 
-module.exports.create = (accountId, entryId, configuration, connectionReason = null, tabId = null, browserId = null, auditLogId = null) => {
+const TYPING_DURATION_MS = 1500;
+const PRESENCE_THROTTLE_MS = 250;
+
+module.exports.create = (accountId, entryId, configuration, connectionReason = null, tabId = null, browserId = null, auditLogId = null, organizationId = null) => {
     const sessionId = uuidv4();
     const session = {
         sessionId, accountId, entryId, configuration, connectionReason,
-        tabId, browserId, auditLogId,
+        tabId, browserId, auditLogId, organizationId,
         isHibernated: false,
         createdAt: new Date(),
         lastActivity: new Date(),
@@ -23,11 +26,12 @@ module.exports.create = (accountId, entryId, configuration, connectionReason = n
         activeWs: null,
         connectedWs: new Set(),
         sharedWs: new Set(),
+        participants: new Map(),
         shareId: null,
         shareWritable: false,
     };
     sessions.set(sessionId, session);
-    logger.info(`Session created`, { sessionId, accountId, entryId });
+    logger.info(`Session created`, { sessionId, accountId, entryId, organizationId });
     return session;
 };
 
@@ -43,6 +47,23 @@ module.exports.getAll = (accountId, tabId = undefined, browserId = undefined) =>
         }
         if (tabId !== undefined && session.tabId !== tabId) continue;
         if (browserId !== undefined && session.browserId !== browserId) continue;
+        results.push(session);
+    }
+    return results;
+};
+
+const sessionsOfOrganization = function* (organizationId) {
+    const numericOrgId = Number(organizationId);
+    for (const session of sessions.values()) {
+        if (Number(session.organizationId) === numericOrgId) yield session;
+    }
+};
+
+module.exports.getOrganizationSessions = (organizationId, excludeAccountId = null) => {
+    const results = [];
+    for (const session of sessionsOfOrganization(organizationId)) {
+        if (session.isHibernated) continue;
+        if (excludeAccountId !== null && session.accountId === excludeAccountId) continue;
         results.push(session);
     }
     return results;
@@ -182,11 +203,93 @@ module.exports.isMonitorPinnedByOther = (sessionId, ws, monitor) => {
     return false;
 };
 
-module.exports.addWebSocket = (sessionId, ws, isShared = false) => {
+const collectParticipants = (session) => {
+    const now = Date.now();
+    const byKey = new Map();
+    for (const participant of session.participants.values()) {
+        const key = participant.accountId ? `a:${participant.accountId}` : `w:${participant.viewerId}`;
+        const typing = participant.typingUntil > now;
+        const existing = byKey.get(key);
+        if (existing) {
+            existing.typing ||= typing;
+            existing.writable ||= participant.writable;
+            continue;
+        }
+        byKey.set(key, {
+            viewerId: participant.viewerId,
+            accountId: participant.accountId,
+            username: participant.username,
+            firstName: participant.firstName,
+            lastName: participant.lastName,
+            kind: participant.kind,
+            writable: participant.writable,
+            typing,
+        });
+    }
+    return [...byKey.values()];
+};
+
+module.exports.getParticipants = (sessionId) => {
+    const session = module.exports.get(sessionId);
+    return session ? collectParticipants(session) : [];
+};
+
+const emitPresence = (session) => {
+    const participants = collectParticipants(session);
+    const accountIds = new Set([session.accountId, ...participants.map(p => p.accountId).filter(Boolean)]);
+    stateBroadcaster.push([...accountIds], "SESSION_PRESENCE", { sessionId: session.sessionId, participants });
+};
+
+const schedulePresence = (session, immediate = false) => {
+    if (immediate) {
+        if (session._presenceTimer) {
+            clearTimeout(session._presenceTimer);
+            session._presenceTimer = null;
+        }
+        emitPresence(session);
+        return;
+    }
+    if (session._presenceTimer) return;
+    session._presenceTimer = setTimeout(() => {
+        session._presenceTimer = null;
+        if (sessions.has(session.sessionId)) emitPresence(session);
+    }, PRESENCE_THROTTLE_MS);
+};
+
+module.exports.markTyping = (sessionId, ws) => {
+    const session = module.exports.get(sessionId);
+    const participant = session?.participants.get(ws);
+    if (!participant) return;
+    const wasTyping = participant.typingUntil > Date.now();
+    participant.typingUntil = Date.now() + TYPING_DURATION_MS;
+    if (!wasTyping) schedulePresence(session);
+
+    clearTimeout(participant.typingTimer);
+    participant.typingTimer = setTimeout(() => {
+        if (sessions.has(sessionId)) schedulePresence(session, true);
+    }, TYPING_DURATION_MS + 50);
+};
+
+module.exports.addWebSocket = (sessionId, ws, isShared = false, participant = null) => {
     const session = module.exports.get(sessionId);
     if (!session) return;
     if (isShared) session.sharedWs.add(ws);
     else session.connectedWs.add(ws);
+
+    if (participant) {
+        session.participants.set(ws, {
+            viewerId: uuidv4(),
+            accountId: participant.accountId || null,
+            username: participant.username || null,
+            firstName: participant.firstName || null,
+            lastName: participant.lastName || null,
+            kind: participant.kind || (isShared ? "link" : "owner"),
+            writable: participant.writable !== false,
+            typingUntil: 0,
+            typingTimer: null,
+        });
+        schedulePresence(session, true);
+    }
 };
 
 module.exports.removeWebSocket = (sessionId, ws, isShared = false) => {
@@ -195,6 +298,13 @@ module.exports.removeWebSocket = (sessionId, ws, isShared = false) => {
     if (isShared) session.sharedWs.delete(ws);
     else session.connectedWs.delete(ws);
     if (session.activeWs === ws) session.activeWs = null;
+
+    const participant = session.participants.get(ws);
+    if (participant) {
+        clearTimeout(participant.typingTimer);
+        session.participants.delete(ws);
+        schedulePresence(session, true);
+    }
 };
 
 const closeAllWebSockets = (sessionId, code = 1000, reason = "Session terminated") => {
@@ -287,10 +397,15 @@ module.exports.remove = async (sessionId, options = {}) => {
     }
     if (session.shareId) shareIndex.delete(session.shareId);
 
-    const accountId = session.accountId;
+    if (session._presenceTimer) clearTimeout(session._presenceTimer);
+    for (const participant of session.participants.values()) clearTimeout(participant.typingTimer);
+    session.participants.clear();
+
+    const { accountId, organizationId } = session;
     sessions.delete(sessionId);
     logger.info("Session removed", { sessionId });
     stateBroadcaster.broadcast("CONNECTIONS", { accountId });
+    if (organizationId) stateBroadcaster.broadcast("LIVE_SESSIONS", { organizationId });
     return true;
 };
 
@@ -341,7 +456,25 @@ module.exports.updateSharePermissions = (sessionId, writable) => {
     const session = module.exports.get(sessionId);
     if (!session?.shareId) return false;
     session.shareWritable = writable;
+    for (const participant of session.participants.values()) {
+        if (participant.kind === "link") participant.writable = writable;
+    }
+    schedulePresence(session, true);
     return true;
+};
+
+module.exports.disconnectOrganizationViewers = (organizationId, accountId = null) => {
+    let disconnected = 0;
+    for (const session of sessionsOfOrganization(organizationId)) {
+        for (const [ws, participant] of session.participants) {
+            if (participant.kind !== "organization") continue;
+            if (accountId !== null && participant.accountId !== accountId) continue;
+            try { ws.close(4016, "Live session sharing disabled"); } catch {}
+            disconnected++;
+        }
+    }
+    if (disconnected > 0) logger.info("Disconnected organization session viewers", { organizationId, disconnected });
+    return disconnected;
 };
 
 module.exports.getByShareId = (shareId) => {
