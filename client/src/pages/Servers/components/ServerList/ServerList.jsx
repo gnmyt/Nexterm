@@ -10,6 +10,7 @@ import { useScripts } from "@/common/contexts/ScriptContext.jsx";
 import ServerEntries from "./components/ServerEntries.jsx";
 import { isCredentiallessProtocol } from "@/common/utils/ConnectionUtil.js";
 import { useDevFeature } from "@/common/utils/devFeatures.js";
+import { useBodyClass } from "@/common/hooks/useBodyClass.js";
 import Icon from "@mdi/react";
 import {
     mdiCursorDefaultClick,
@@ -494,13 +495,17 @@ export const ServerList = ({
         localStorage.setItem("serverListCollapsed", String(isCollapsed));
     }, [width, isCollapsed]);
 
+    useBodyClass("sidebar-resizing", isResizing);
+
     useEffect(() => {
-        document.addEventListener("mousemove", resize);
-        document.addEventListener("mouseup", stopResizing);
+        if (!isResizing) return;
+
+        document.addEventListener("mousemove", resize, true);
+        document.addEventListener("mouseup", stopResizing, true);
 
         return () => {
-            document.removeEventListener("mousemove", resize);
-            document.removeEventListener("mouseup", stopResizing);
+            document.removeEventListener("mousemove", resize, true);
+            document.removeEventListener("mouseup", stopResizing, true);
         };
     }, [isResizing]);
 

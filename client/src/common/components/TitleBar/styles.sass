@@ -1,4 +1,28 @@
 @use "@/common/styles/colors"
+@use "@/common/styles/breakpoints"
+
+.title-bar-reveal-zone
+  position: fixed
+  top: 0
+  left: 0
+  right: 0
+  height: 8px
+  z-index: 8999
+  pointer-events: none
+
+body.session-fullscreen
+  .title-bar-reveal-zone
+    pointer-events: auto
+
+  .title-bar
+    transform: translateY(-100%)
+    opacity: 0
+    transition: transform 0.2s ease, opacity 0.2s ease
+
+  .title-bar-reveal-zone:hover ~ .title-bar,
+  .title-bar:hover
+    transform: translateY(0)
+    opacity: 1
 
 .title-bar
   position: fixed
@@ -8,13 +32,14 @@
   display: flex
   justify-content: space-between
   align-items: center
-  height: 32px
+  height: var(--title-bar-height)
+  box-sizing: border-box
   padding-left: 0.75rem
   background-color: colors.$lighter-background
   border-bottom: 1px solid colors.$dark-gray
   user-select: none
   -webkit-app-region: drag
-  z-index: 100000
+  z-index: 9000
 
   .title-bar-left
     display: flex
@@ -27,6 +52,40 @@
 
   &.inactive .title-bar-left
     color: colors.$subtext
+
+  &.with-tabs
+    padding-left: 0.5rem
+    align-items: stretch
+
+    .title-bar-left
+      flex: 0 1 auto
+      min-width: 0
+      margin-right: 0.75rem
+
+      svg
+        flex-shrink: 0
+
+      span
+        white-space: nowrap
+        overflow: hidden
+        text-overflow: ellipsis
+
+      @media (max-width: breakpoints.$tablet)
+        span
+          display: none
+
+  .title-bar-tabs
+    display: flex
+    align-items: center
+    height: 100%
+    min-width: 0
+    flex: 0 1 auto
+    -webkit-app-region: no-drag
+
+  .title-bar-drag-space
+    flex: 1 1 auto
+    align-self: stretch
+    min-width: 1rem
 
   .title-bar-controls
     display: flex

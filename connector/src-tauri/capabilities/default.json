@@ -12,6 +12,8 @@
     "core:window:allow-close",
     "core:window:allow-destroy",
     "core:window:allow-is-maximized",
+    "core:window:allow-set-fullscreen",
+    "core:window:allow-is-fullscreen",
     "core:window:allow-create",
     "core:webview:allow-create-webview",
     "core:webview:allow-create-webview-window",

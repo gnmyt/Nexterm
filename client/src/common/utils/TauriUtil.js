@@ -34,7 +34,7 @@ export const waitForTauri = () => {
 export const isTauri = () => _isTauri ?? checkTauri();
 
 export const getTitleBarHeight = () => {
-    const value = getComputedStyle(document.documentElement).getPropertyValue("--title-bar-height");
+    const value = getComputedStyle(document.body).getPropertyValue("--title-bar-height");
     return parseInt(value) || 0;
 };
 

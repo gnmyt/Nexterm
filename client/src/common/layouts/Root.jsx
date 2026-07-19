@@ -99,7 +99,7 @@ const AppContent = () => {
                                             <SessionProvider>
                                                 <QuickActionProvider>
                                                     <div className="app-wrapper">
-                                                        <TitleBar />
+                                                        <TitleBar showTabs />
                                                         <ConnectionErrorBanner />
                                                         <div className="content-wrapper">
                                                             <div

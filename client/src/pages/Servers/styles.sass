@@ -1,6 +1,13 @@
 @use "@/common/styles/colors"
 @use "@/common/styles/breakpoints"
 
+body.sidebar-resizing
+  user-select: none
+  cursor: col-resize
+
+  .view-container
+    pointer-events: none
+
 .server-page
   display: flex
   width: 100%

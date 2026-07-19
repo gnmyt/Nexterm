@@ -267,3 +267,53 @@
       &:hover
         background-color: colors.$gray
         border-bottom: 2px solid colors.$primary
+
+.title-bar .server-tabs
+  max-width: 100%
+  padding: 0 0.5rem
+  border-left: 1px solid colors.$dark-gray
+
+  .layout-controls
+    margin-right: 0.5rem
+    padding-right: 0.5rem
+
+    .layout-btn, .actions-menu-btn
+      width: 1.45rem
+      height: 1.45rem
+      padding: 0.25rem
+
+  .tabs-container .scroll-indicator
+    &.left
+      background: linear-gradient(to right, colors.$lighter-background 50%, transparent)
+
+    &.right
+      background: linear-gradient(to left, colors.$lighter-background 50%, transparent)
+
+  .tabs
+    gap: 0.3rem
+
+    .server-tab
+      padding: 0.2rem 0.55rem
+      gap: 0.4rem
+
+      svg
+        width: 1.05rem
+        height: 1.05rem
+
+      h2
+        font-size: 0.9rem
+
+      .tab-actions .close-btn
+        padding: 0.2rem
+
+      .progress-circle
+        width: 24px
+        height: 24px
+
+        svg
+          width: 24px
+          height: 24px
+
+        &.no-progress .progress-icon
+          width: 1.05rem
+          height: 1.05rem

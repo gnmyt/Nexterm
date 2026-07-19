@@ -1,6 +1,7 @@
 import "./styles.sass";
 import ServerTabs from "./components/ServerTabs";
 import { useState, useRef, useCallback, useEffect } from "react";
+import { createPortal } from "react-dom";
 import GuacamoleRenderer from "@/pages/Servers/components/ViewContainer/renderer/GuacamoleRenderer.jsx";
 import XtermRenderer from "@/pages/Servers/components/ViewContainer/renderer/XtermRenderer.jsx";
 import FileRenderer from "@/pages/Servers/components/ViewContainer/renderer/FileRenderer";
@@ -10,6 +11,8 @@ import Icon from "@mdi/react";
 import { mdiFullscreenExit } from "@mdi/js";
 import { useTranslation } from "react-i18next";
 import { getTitleBarHeight } from "@/common/utils/TauriUtil.js";
+import { useTauriWindow } from "@/common/hooks/useTauriWindow.js";
+import { useBodyClass } from "@/common/hooks/useBodyClass.js";
 
 const BTN_SIZE = 44;
 const BTN_STORAGE_KEY = "fullscreen-btn-position";
@@ -52,7 +55,46 @@ export const ViewContainer = ({
     const [broadcastMode, setBroadcastMode] = useState(false);
     const [sessionProgress, setSessionProgress] = useState({});
     const [fullscreenMode, setFullscreenMode] = useState(false);
+    const [titleBarTabsSlot, setTitleBarTabsSlot] = useState(null);
+    const appWindow = useTauriWindow();
     const { t } = useTranslation();
+
+    useEffect(() => {
+        setTitleBarTabsSlot(document.getElementById("titlebar-tabs-slot"));
+    }, []);
+
+    useBodyClass("session-fullscreen", fullscreenMode);
+
+    useEffect(() => {
+        if (!appWindow) return;
+
+        let cancelled = false, unlistenResized;
+        (async () => {
+            const syncFullscreen = async () => {
+                const active = await appWindow.isFullscreen();
+                if (!cancelled) setFullscreenMode(active);
+            };
+            await syncFullscreen();
+            const unlisten = await appWindow.onResized(syncFullscreen);
+            cancelled ? unlisten() : unlistenResized = unlisten;
+        })();
+
+        return () => {
+            cancelled = true;
+            unlistenResized?.();
+        };
+    }, [appWindow]);
+
+    useEffect(() => {
+        if (!appWindow) return;
+
+        let cancelled = false;
+        appWindow.isFullscreen().then(active => {
+            if (!cancelled && active !== fullscreenMode) appWindow.setFullscreen(fullscreenMode);
+        });
+
+        return () => cancelled = true;
+    }, [appWindow, fullscreenMode]);
 
     const [btnPosition, setBtnPosition] = useState(loadBtnPosition);
     const [isDragging, setIsDragging] = useState(false);
@@ -488,9 +530,24 @@ export const ViewContainer = ({
         );
     });
 
+    const serverTabs = fullscreenMode && !titleBarTabsSlot ? null : (
+        <ServerTabs activeSessions={activeSessions} setActiveSessionId={focusSession}
+                    activeSessionId={activeSessionId}
+                    closeSession={closeSession}
+                    layoutMode={layoutMode} onToggleSplit={toggleSplitMode}
+                    orderRef={tabOrderRef}
+                    onTabOrderChange={onTabOrderChange} onBroadcastToggle={toggleBroadcastMode}
+                    onSnippetSelected={handleSnippetSelected} broadcastEnabled={broadcastMode}
+                    onKeyboardShortcut={handleKeyboardShortcut} hasGuacamole={hasGuacamole}
+                    sessionProgress={sessionProgress} fullscreenEnabled={fullscreenMode}
+                    onFullscreenToggle={toggleFullscreenMode}
+                    openNotes={openNotes}
+                    hibernateSession={hibernateSession} duplicateSession={duplicateSession} />
+    );
+
     return (
         <div className={`view-container ${fullscreenMode ? "fullscreen" : ""}`}>
-            {fullscreenMode && !hasGuacamole && (
+            {fullscreenMode && !hasGuacamole && !titleBarTabsSlot && (
                 <div
                     className={`exit-fullscreen-btn-container ${isDragging ? "dragging" : ""}`}
                     style={{ left: btnPosition.x, top: btnPosition.y }}
@@ -503,18 +560,7 @@ export const ViewContainer = ({
                     </button>
                 </div>
             )}
-            {!fullscreenMode && <ServerTabs activeSessions={activeSessions} setActiveSessionId={focusSession}
-                                            activeSessionId={activeSessionId}
-                                            closeSession={closeSession}
-                                            layoutMode={layoutMode} onToggleSplit={toggleSplitMode}
-                                            orderRef={tabOrderRef}
-                                            onTabOrderChange={onTabOrderChange} onBroadcastToggle={toggleBroadcastMode}
-                                            onSnippetSelected={handleSnippetSelected} broadcastEnabled={broadcastMode}
-                                            onKeyboardShortcut={handleKeyboardShortcut} hasGuacamole={hasGuacamole}
-                                            sessionProgress={sessionProgress} fullscreenEnabled={fullscreenMode}
-                                            onFullscreenToggle={toggleFullscreenMode}
-                                            openNotes={openNotes}
-                                            hibernateSession={hibernateSession} duplicateSession={duplicateSession} />}
+            {titleBarTabsSlot ? createPortal(serverTabs, titleBarTabsSlot) : serverTabs}
 
             <div ref={layoutRef}
                  className={`view-layouter ${layoutMode} ${isResizing ? "resizing" : ""} ${isResizing && resizingDirection ? `resizing-${resizingDirection}` : ""}`}
