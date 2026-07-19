@@ -593,16 +593,16 @@
     "account": {
       "title": "Аккаунт",
       "avatar": {
-        "label": "Picture",
-        "upload": "Change profile picture",
-        "remove": "Remove",
-        "updated": "Your profile picture has been updated",
-        "removed": "Your profile picture has been removed",
-        "tooLarge": "The selected image is larger than 10 MB",
-        "uploadFailed": "The profile picture could not be uploaded",
-        "removeFailed": "The profile picture could not be removed"
+        "label": "Картинка",
+        "upload": "Изменить аватарку",
+        "remove": "Удалить",
+        "updated": "Твоя аватарка обновилась",
+        "removed": "Твоя аватарка была удалена",
+        "tooLarge": "Размер выбранного изображения превышает 10 МБ",
+        "uploadFailed": "Не удалось загрузить аватарку",
+        "removeFailed": "Не удалось удалить аватарку"
       },
-      "accountDetails": "Account details",
+      "accountDetails": "Данные счёта",
       "firstName": "Имя",
       "lastName": "Фамилия",
       "appearance": "Внешний вид",
@@ -806,17 +806,17 @@
         }
       },
       "sessionSettings": {
-        "sessionSettingsTab": "Live Sessions",
-        "liveSharingHeading": "Live Session Sharing",
-        "liveSharingDescription": "Control how running sessions are shared in this organization.",
-        "enableLiveSessionSharingLabel": "Enable live session sharing",
-        "enableLiveSessionSharingDescription": "Members need the View or Control Live Sessions permission.",
+        "sessionSettingsTab": "Прямые эфиры",
+        "liveSharingHeading": "Совместный доступ к сеансу в реальном времени",
+        "liveSharingDescription": "Управляй тем, как в этой организации происходит обмен данными о текущих сессиях.",
+        "enableLiveSessionSharingLabel": "Включить совместный просмотр сеанса в реальном времени",
+        "enableLiveSessionSharingDescription": "Участникам нужно право «Просмотр» или «Управление прямыми трансляциями».",
         "actions": {
-          "save": "Save Settings"
+          "save": "Сохранить настройки"
         },
         "messages": {
-          "updated": "Live session settings updated successfully",
-          "updateFailed": "Failed to update live session settings"
+          "updated": "Настройки сеанса в реальном времени успешно обновлены",
+          "updateFailed": "Не удалось обновить настройки сеанса в реальном времени"
         }
       }
     },
@@ -886,8 +886,8 @@
           "description": "Подтверди ожидающее выполнения действие с инструментом ИИ в помощнике"
         },
         "aicommand": {
-          "title": "Generate Command",
-          "description": "Ask for a command suggestion inside the terminal"
+          "title": "Команда «Generate»",
+          "description": "Попроси подсказку по команде прямо в терминале"
         },
         "snippets": {
           "title": "Сниппеты",
@@ -954,7 +954,7 @@
         "title": "Ввод",
         "description": "Настрой поведение горячих клавиш в терминале.",
         "smartCopyPaste": "Умное Ctrl+C",
-        "passwordPromptDetection": "Password input detection",
+        "passwordPromptDetection": "Обнаружение ввода пароля",
         "enabled": "Включено",
         "disabled": "Отключено",
         "syncEnabled": "Настройки ввода теперь будут синхронизироваться с твоей учетной записью",
@@ -1580,20 +1580,20 @@
       "duplicateServer": "Дублировать сервер",
       "pasteIdentityPassword": "Вставить пароль",
       "deleteServer": "Удалить сервер",
-      "deleteConfirm": "Are you sure you want to delete \"{{name}}\"? This action cannot be undone.",
-      "deleteFailServer": "Failed to delete \"{{name}}\".",
-      "deleteFailFolder": "Failed to delete the folder \"{{name}}\".",
+      "deleteConfirm": "Ты уверен, что хочешь удалить «{{name}}»? Это действие нельзя отменить.",
+      "deleteFailServer": "Не удалось удалить «{{name}}».",
+      "deleteFailFolder": "Не удалось удалить папку «{{name}}».",
       "wakeOnLan": "Wake-On-LAN",
       "shutdown": "Выключить",
       "stop": "Остановить",
       "start": "Запустить",
-      "joinSession": "Join Session",
-      "joinSessionOf": "Join session of {{user}}"
+      "joinSession": "Присоединиться к сессии",
+      "joinSessionOf": "Присоединяйся к сессии {{user}}"
     },
     "passwordHint": {
-      "paste": "paste password",
-      "pasteFor": "paste {{username}} password",
-      "cycle": "Use the arrow keys to switch identity"
+      "paste": "вставить пароль",
+      "pasteFor": "вставь {{username}} пароль",
+      "cycle": "Используй клавиши со стрелками, чтобы сменить персонажа"
     },
     "tabs": {
       "contextMenu": {
@@ -1677,9 +1677,9 @@
           "description": "Разреши разбудить этот сервер удаленно, используя его MAC-адрес"
         },
         "rdpSecurity": {
-          "title": "Security",
-          "description": "Authentication method used to connect to the remote Windows machine. Use NLA for environments where NTLM is disabled (e.g. Protected Users group).",
-          "method": "Security Method"
+          "title": "Безопасность",
+          "description": "Метод аутентификации, используемый для подключения к удалённому компьютеру под управлением Windows. Используй NLA в тех случаях, когда NTLM отключен (например, в группе «Защищённые пользователи»).",
+          "method": "Метод обеспечения безопасности"
         },
         "keyboardLayout": {
           "title": "Раскладка клавиатуры",
@@ -1816,7 +1816,7 @@
       }
     },
     "fileManager": {
-      "dropOverlay": "Drop files or folders to upload",
+      "dropOverlay": "Перетащи файлы или папки, чтобы загрузить их",
       "createFile": {
         "title": "Создать файл",
         "placeholder": "Имя файла",
@@ -1928,8 +1928,8 @@
         "hiddenDirectories": "{{count}} скрытые каталоги",
         "switchToGrid": "Переключись на вид сетки",
         "switchToList": "Переключись в режим просмотра списка",
-        "uploadFile": "Upload file(s)",
-        "uploadFolder": "Upload folder",
+        "uploadFile": "Загрузи файл(ы)",
+        "uploadFolder": "Папка для загрузки",
         "search": "Поиск файлов",
         "closeSearch": "Закрыть поиск",
         "refresh": "Обновить"
@@ -1954,9 +1954,9 @@
         "downloaded": "Скачал {{name}}",
         "downloadingItems": "Загрузка {{count}} ...",
         "uploaded": "Загружено {{name}}",
-        "uploadedItems": "Uploaded {{count}} files",
+        "uploadedItems": "Загружено  файлы с сайта {{count}}",
         "uploadFailed": "Загрузка не удалась: {{message}}",
-        "uploadFailedItems": "{{count}} files failed to upload: {{message}}",
+        "uploadFailedItems": "{{count}} Файлы не удалось загрузить: {{message}}",
         "connectionLost": "SFTP-соединение потеряно. Пожалуйста, переподключись.",
         "error": "Произошла ошибка"
       }
@@ -1987,9 +1987,9 @@
       "deny": "Отклонить",
       "denied": "Ты отклонил это действие.",
       "stopped": "Остановился.",
-      "continuePrompt": "The assistant paused after a long run of steps. Continue?",
-      "continue": "Continue",
-      "compacted": "Earlier messages were summarised to free up context.",
+      "continuePrompt": "Помощник сделал паузу после длинной череды шагов. Продолжить?",
+      "continue": "Продолжить",
+      "compacted": "Предыдущие сообщения были сжаты, чтобы освободить место для контекста.",
       "tools": {
         "runCommand": "Запустить команду",
         "readFile": "Прочитать файл",
@@ -2006,12 +2006,12 @@
       }
     },
     "commandSuggestion": {
-      "open": "Generate Command",
-      "placeholder": "Describe the command...",
-      "generating": "Generating...",
-      "accept": "Accept command",
-      "cycle": "Cycle suggestions",
-      "error": "Failed to generate a command."
+      "open": "Команда «Generate»",
+      "placeholder": "Опиши эту команду...",
+      "generating": "Генерирую...",
+      "accept": "Команда «Принять»",
+      "cycle": "Рекомендации по маршрутам",
+      "error": "Не удалось сгенерировать команду."
     },
     "snippets": {
       "title": "Сниппеты",
@@ -2056,8 +2056,8 @@
       }
     },
     "liveSessions": {
-      "activeOn": "Live sessions: {{users}}",
-      "unknownUser": "Unknown user"
+      "activeOn": "Прямые эфиры: {{users}}",
+      "unknownUser": "Неизвестный пользователь"
     }
   },
   "support": {
@@ -2079,7 +2079,7 @@
   },
   "welcome": {
     "hello": "Привет",
-    "defaultName": "User",
+    "defaultName": "Пользователь",
     "subtitle": "Добро пожаловать в Nexterm. Менеджер серверов с открытым исходным кодом для SSH, VNC и RDP.",
     "downloadApps": "Скачать приложения",
     "connectDevice": "Подключи устройство",
