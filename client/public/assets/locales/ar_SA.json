@@ -885,6 +885,10 @@
           "title": "الذكاء الاصطناعي: قبول الإجراء",
           "description": "الموافقة على الإجراء المعلق المتعلق بأداة الذكاء الاصطناعي في المساعد"
         },
+        "aicommand": {
+          "title": "Generate Command",
+          "description": "Ask for a command suggestion inside the terminal"
+        },
         "snippets": {
           "title": "مقتطفات",
           "description": "افتح مربع حوار المقتطفات"
@@ -2000,6 +2004,14 @@
         "changePermissions": "تغيير الأذونات",
         "findDirectories": "البحث عن الدلائل"
       }
+    },
+    "commandSuggestion": {
+      "open": "Generate Command",
+      "placeholder": "Describe the command...",
+      "generating": "Generating...",
+      "accept": "Accept command",
+      "cycle": "Cycle suggestions",
+      "error": "Failed to generate a command."
     },
     "snippets": {
       "title": "القصاصات",
