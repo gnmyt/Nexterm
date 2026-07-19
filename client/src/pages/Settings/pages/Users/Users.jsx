@@ -27,6 +27,7 @@ import PasswordChange from "@/pages/Settings/pages/Account/dialogs/PasswordChang
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { Permission } from "@/common/utils/permissions.js";
+import { getFullName } from "@/common/utils/avatar.js";
 
 const ITEMS_PER_PAGE = 25;
 
@@ -134,7 +135,7 @@ export const Users = () => {
                         <Icon path={currentUser.isAdmin ? mdiShieldAccount : mdiAccount} />
                     </div>
                     <div className="user-info">
-                        <span className="name">{currentUser.firstName} {currentUser.lastName}</span>
+                        {getFullName(currentUser) && <span className="name">{getFullName(currentUser)}</span>}
                         <span className="username">@{currentUser.username}</span>
                     </div>
                 </div>

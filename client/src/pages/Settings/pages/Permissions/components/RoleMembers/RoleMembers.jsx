@@ -6,6 +6,7 @@ import UserSearch from "@/common/components/UserSearch";
 import { postRequest, deleteRequest } from "@/common/utils/RequestUtil.js";
 import { useToast } from "@/common/contexts/ToastContext.jsx";
 import { useTranslation } from "react-i18next";
+import { getFullName } from "@/common/utils/avatar.js";
 
 export const RoleMembers = ({ groupId, members = [], onChanged }) => {
     const { t } = useTranslation();
@@ -45,7 +46,7 @@ export const RoleMembers = ({ groupId, members = [], onChanged }) => {
                     <div className="member-row" key={member.id}>
                         <div className="member-icon"><Icon path={mdiAccount} /></div>
                         <div className="member-info">
-                            <span className="name">{member.firstName} {member.lastName}</span>
+                            {getFullName(member) && <span className="name">{getFullName(member)}</span>}
                             <span className="username">@{member.username}</span>
                         </div>
                         <Icon path={mdiClose} className="remove" onClick={() => removeMember(member.id)} />
