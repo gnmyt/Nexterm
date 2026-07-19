@@ -1983,6 +1983,9 @@
       "deny": "Odmítnout",
       "denied": "Tuto akci jste zamítli.",
       "stopped": "Zastavil se.",
+      "continuePrompt": "The assistant paused after a long run of steps. Continue?",
+      "continue": "Continue",
+      "compacted": "Earlier messages were summarised to free up context.",
       "tools": {
         "runCommand": "Spustit příkaz",
         "readFile": "Načíst soubor",
