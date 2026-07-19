@@ -885,6 +885,10 @@
           "title": "AI Accept Action",
           "description": "Approve the pending AI tool action in the assistant"
         },
+        "aicommand": {
+          "title": "Generate Command",
+          "description": "Ask for a command suggestion inside the terminal"
+        },
         "snippets": {
           "title": "Snippets",
           "description": "Open the snippets dialog"
@@ -2000,6 +2004,14 @@
         "changePermissions": "Change permissions",
         "findDirectories": "Find directories"
       }
+    },
+    "commandSuggestion": {
+      "open": "Generate Command",
+      "placeholder": "Describe the command...",
+      "generating": "Generating...",
+      "accept": "Accept command",
+      "cycle": "Cycle suggestions",
+      "error": "Failed to generate a command."
     },
     "snippets": {
       "title": "Snippets",

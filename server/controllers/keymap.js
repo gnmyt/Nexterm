@@ -5,6 +5,7 @@ const DEFAULT_KEYMAPS = [
     { action: "quick-action", key: "ctrl+p" },
     { action: "ai-menu", key: "ctrl+k" },
     { action: "ai-accept-tool", key: "ctrl+enter" },
+    { action: "ai-command", key: "ctrl+shift+g" },
     { action: "snippets", key: "ctrl+shift+s" },
     { action: "keyboard-shortcuts", key: "ctrl+shift+k" },
     { action: "broadcast", key: "ctrl+b" },

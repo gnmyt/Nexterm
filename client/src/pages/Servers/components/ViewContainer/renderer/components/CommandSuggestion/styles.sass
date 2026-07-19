@@ -1,0 +1,100 @@
+@use "@/common/styles/colors"
+
+.command-suggestion
+  position: absolute
+  z-index: 20
+  display: flex
+  align-items: center
+  gap: 1ch
+  line-height: 1
+  white-space: nowrap
+  overflow: hidden
+  user-select: none
+  opacity: 0.45
+  transition: opacity 0.1s ease
+
+  &:hover
+    opacity: 0.75
+
+  &.loading
+    opacity: 0.35
+
+  &.asking
+    opacity: 0.9
+
+  &__label.placeholder
+    opacity: 0.5
+
+  &__caret
+    flex-shrink: 0
+    width: 0.5em
+    height: 1.05em
+    background: currentColor
+    animation: commandSuggestionBlink 1.1s step-end infinite
+
+  &.error
+    color: colors.$error !important
+    opacity: 0.75
+
+  button, &__pending
+    display: flex
+    align-items: center
+    min-width: 0
+    padding: 0
+    border: none
+    background: none
+    color: inherit
+    font: inherit
+    line-height: inherit
+
+  button
+    cursor: pointer
+
+  &__accept
+    gap: 1ch
+    min-width: 0
+
+  &__pending
+    gap: 1ch
+    min-width: 0
+
+  &__label
+    overflow: hidden
+    text-overflow: ellipsis
+
+  &__cycle
+    gap: 0.25ch
+    flex-shrink: 0
+    opacity: 0.7
+    transition: opacity 0.1s ease
+
+    &:hover
+      opacity: 1
+
+  &__cycle-icon
+    width: 1.15em
+    height: 1.15em
+
+  &__counter
+    font-size: 0.85em
+
+  &__key
+    flex-shrink: 0
+    width: 1.15em
+    height: 1.15em
+    opacity: 0.7
+
+  &.loading &__key
+    animation: commandSuggestionPulse 1.1s ease-in-out infinite
+
+@keyframes commandSuggestionBlink
+  0%, 49%
+    opacity: 1
+  50%, 100%
+    opacity: 0
+
+@keyframes commandSuggestionPulse
+  0%, 100%
+    opacity: 0.3
+  50%
+    opacity: 0.9

@@ -8,12 +8,13 @@ import { usePreferences } from "@/common/contexts/PreferencesContext.jsx";
 import { FitAddon } from "@xterm/addon-fit";
 import { ContextMenu, ContextMenuItem, ContextMenuSeparator, useContextMenu } from "@/common/components/ContextMenu";
 import AIAssistant from "./components/AIAssistant";
+import CommandSuggestion from "./components/CommandSuggestion";
 import SnippetsMenu from "./components/SnippetsMenu";
 import PasswordFillHint from "./components/PasswordFillHint";
 import TypingIndicators from "./components/TypingIndicators";
 import { useLiveSessions } from "@/common/contexts/LiveSessionContext.jsx";
 import { createProgressParser } from "../utils/progressParser";
-import { mdiContentCopy, mdiContentPaste, mdiCodeBrackets, mdiSelectAll, mdiDelete, mdiKeyboard, mdiKey, mdiFolderOpen, mdiRobotHappyOutline } from "@mdi/js";
+import { mdiContentCopy, mdiContentPaste, mdiCodeBrackets, mdiSelectAll, mdiDelete, mdiKeyboard, mdiKey, mdiFolderOpen, mdiRobotHappyOutline, mdiAutoFix } from "@mdi/js";
 import { useTranslation } from "react-i18next";
 import ConnectionLoader from "./components/ConnectionLoader";
 import ConnectionError, { mapConnectionError } from "./components/ConnectionError";
@@ -54,6 +55,12 @@ const XtermRenderer = ({ session, disconnectFromServer, markSessionErrored, getS
     const { getParsedKeybind } = useKeymaps();
     const { t } = useTranslation();
     const [showAIAssistant, setShowAIAssistant] = useState(false);
+    const [suggestion, setSuggestion] = useState(null);
+    const [suggestionAnchor, setSuggestionAnchor] = useState(null);
+    const suggestionRef = useRef(null);
+    const suggestionSeqRef = useRef(0);
+    const rejectedCommandsRef = useRef([]);
+    const computeAnchorRef = useRef(null);
     const contextMenu = useContextMenu();
     const { identities } = useContext(IdentityContext);
     const { getParticipants } = useLiveSessions();
@@ -183,6 +190,101 @@ const XtermRenderer = ({ session, disconnectFromServer, markSessionErrored, getS
         contextMenu.close();
         setShowAIAssistant(true);
     };
+
+    const updateSuggestion = useCallback((value) => {
+        suggestionRef.current = value;
+        setSuggestion(value);
+    }, []);
+
+    const hideSuggestion = useCallback(() => {
+        if (!suggestionRef.current) return;
+        suggestionSeqRef.current += 1;
+        rejectedCommandsRef.current = [];
+        updateSuggestion(null);
+    }, [updateSuggestion]);
+
+    const openSuggestionPrompt = useCallback(() => {
+        if (suggestionRef.current) return;
+
+        suggestionSeqRef.current += 1;
+        rejectedCommandsRef.current = [];
+        const anchor = computeAnchorRef.current?.();
+        if (anchor) setSuggestionAnchor(anchor);
+        updateSuggestion({ query: "", commands: [], index: 0, loading: false, error: null });
+    }, [updateSuggestion]);
+
+    const editSuggestionQuery = useCallback((transform) => {
+        const current = suggestionRef.current;
+        if (!current) return;
+
+        suggestionSeqRef.current += 1;
+        rejectedCommandsRef.current = [];
+        updateSuggestion({
+            query: transform(current.query), commands: [], index: 0, loading: false, error: null,
+        });
+    }, [updateSuggestion]);
+
+    const requestSuggestions = useCallback(async (query, rejected) => {
+        const prompt = query.trim();
+        if (!prompt) return;
+
+        const seq = ++suggestionSeqRef.current;
+        updateSuggestion({ query, commands: [], index: 0, loading: true, error: null });
+
+        try {
+            const response = await postRequest("ai/command", {
+                sessionId: session.id,
+                prompt,
+                ...(rejected.length ? { rejected } : {}),
+            });
+            if (seq !== suggestionSeqRef.current) return;
+
+            rejectedCommandsRef.current = [...rejected, ...response.commands].slice(-12);
+            updateSuggestion({ query, commands: response.commands, index: 0, loading: false, error: null });
+        } catch (err) {
+            if (seq !== suggestionSeqRef.current) return;
+            updateSuggestion({
+                query, commands: [], index: 0, loading: false,
+                error: err?.error || err?.message || t("servers.commandSuggestion.error"),
+            });
+        }
+    }, [session.id, t, updateSuggestion]);
+
+    const submitSuggestionQuery = useCallback(() => {
+        const current = suggestionRef.current;
+        if (!current || current.loading) return;
+
+        requestSuggestions(current.query, current.commands.length ? rejectedCommandsRef.current : []);
+    }, [requestSuggestions]);
+
+    const acceptSuggestion = useCallback((command) => {
+        hideSuggestion();
+
+        if (wsRef.current?.readyState === WebSocket.OPEN) wsRef.current.send(command);
+        termRef.current?.focus();
+    }, [hideSuggestion]);
+
+    const cycleSuggestion = useCallback((offset) => {
+        const current = suggestionRef.current;
+        if (!current || current.commands.length < 2) return;
+
+        const count = current.commands.length;
+        updateSuggestion({ ...current, index: (current.index + offset + count) % count });
+    }, [updateSuggestion]);
+
+    const handleGenerateCommand = () => {
+        contextMenu.close();
+        termRef.current?.focus();
+        openSuggestionPrompt();
+    };
+
+    const suggestionActionsRef = useRef({});
+    useEffect(() => {
+        suggestionActionsRef.current = {
+            openSuggestionPrompt, editSuggestionQuery, submitSuggestionQuery,
+            acceptSuggestion, cycleSuggestion, hideSuggestion,
+        };
+    }, [openSuggestionPrompt, editSuggestionQuery, submitSuggestionQuery, acceptSuggestion, cycleSuggestion, hideSuggestion]);
 
     const handleContextMenu = (e) => {
         e.preventDefault();
@@ -316,11 +418,14 @@ const XtermRenderer = ({ session, disconnectFromServer, markSessionErrored, getS
             };
         };
 
+        computeAnchorRef.current = computePasswordHintPosition;
+
         const syncCursorAnchor = () => {
             const anchor = computePasswordHintPosition();
             setCursorAnchor(current => (current && current.left === anchor.left && current.top === anchor.top
                 && current.width === anchor.width && current.height === anchor.height
                 && current.spaceBelow === anchor.spaceBelow) ? current : anchor);
+            if (suggestionRef.current) setSuggestionAnchor(anchor);
         };
 
         const handleResize = () => {
@@ -329,6 +434,7 @@ const XtermRenderer = ({ session, disconnectFromServer, markSessionErrored, getS
                 wsRef.current.send(`\x01${term.cols},${term.rows}`);
             }
             if (passwordPromptRef.current) movePasswordHint(computePasswordHintPosition());
+            if (suggestionRef.current) setSuggestionAnchor(computePasswordHintPosition());
             syncCursorAnchor();
         };
 
@@ -449,7 +555,10 @@ const XtermRenderer = ({ session, disconnectFromServer, markSessionErrored, getS
             }
         };
 
-        term.onScroll(() => hidePasswordHint());
+        term.onScroll(() => {
+            hidePasswordHint();
+            suggestionActionsRef.current.hideSuggestion?.();
+        });
 
         term.onData((data) => {
             if (passwordPromptRef.current) hidePasswordHint();
@@ -490,6 +599,37 @@ const XtermRenderer = ({ session, disconnectFromServer, markSessionErrored, getS
                     }
                 }
 
+                const activeSuggestion = suggestionRef.current;
+                if (activeSuggestion) {
+                    const actions = suggestionActionsRef.current;
+                    const commands = activeSuggestion.commands;
+
+                    event.preventDefault();
+                    event.stopPropagation();
+
+                    const retryKeybind = getParsedKeybind("ai-command");
+                    if (retryKeybind && matchesKeybind(event, retryKeybind)) {
+                        actions.submitSuggestionQuery?.();
+                        return false;
+                    }
+
+                    if (event.key === "Escape") {
+                        actions.hideSuggestion?.();
+                    } else if (event.key === "Tab") {
+                        if (commands.length) actions.acceptSuggestion?.(commands[activeSuggestion.index]);
+                    } else if (event.key === "Enter") {
+                        actions.submitSuggestionQuery?.();
+                    } else if (event.key === "ArrowUp" || event.key === "ArrowDown") {
+                        if (commands.length > 1) actions.cycleSuggestion?.(event.key === "ArrowUp" ? -1 : 1);
+                    } else if (event.key === "Backspace") {
+                        actions.editSuggestionQuery?.((query) => query.slice(0, -1));
+                    } else if (event.key.length === 1 && !event.ctrlKey && !event.metaKey && !event.altKey) {
+                        actions.editSuggestionQuery?.((query) => query + event.key);
+                    }
+
+                    return false;
+                }
+
                 const copyKeybind = getParsedKeybind("copy");
                 if (copyKeybind && matchesKeybind(event, copyKeybind)) {
                     const selection = term.getSelection();
@@ -518,6 +658,14 @@ const XtermRenderer = ({ session, disconnectFromServer, markSessionErrored, getS
                     event.preventDefault();
                     event.stopPropagation();
                     toggleAIAssistant();
+                    return false;
+                }
+
+                const aiCommandKeybind = getParsedKeybind("ai-command");
+                if (aiCommandKeybind && aiAvailableRef.current && matchesKeybind(event, aiCommandKeybind)) {
+                    event.preventDefault();
+                    event.stopPropagation();
+                    suggestionActionsRef.current.openSuggestionPrompt?.();
                     return false;
                 }
 
@@ -617,6 +765,21 @@ const XtermRenderer = ({ session, disconnectFromServer, markSessionErrored, getS
             {!isShared && isAIAvailable() && showAIAssistant && (
                 <AIAssistant session={session} onClose={() => setShowAIAssistant(false)} />
             )}
+            {!isShared && isAIAvailable() && suggestion && suggestionAnchor && (
+                <CommandSuggestion
+                    anchor={suggestionAnchor}
+                    commands={suggestion.commands}
+                    selectedIndex={suggestion.index}
+                    query={suggestion.query}
+                    loading={suggestion.loading}
+                    error={suggestion.error}
+                    onAccept={acceptSuggestion}
+                    onCycle={cycleSuggestion}
+                    foreground={hintForeground}
+                    fontFamily={effectiveFont}
+                    fontSize={effectiveFontSize}
+                />
+            )}
             {!isShared && (
                 <ContextMenu
                     isOpen={contextMenu.isOpen}
@@ -646,6 +809,13 @@ const XtermRenderer = ({ session, disconnectFromServer, markSessionErrored, getS
                         label={t('servers.fileManager.contextMenu.insertSnippet')}
                         onClick={handleInsertSnippet}
                     />
+                    {isAIAvailable() && (
+                        <ContextMenuItem
+                            icon={mdiAutoFix}
+                            label={t('servers.commandSuggestion.open')}
+                            onClick={handleGenerateCommand}
+                        />
+                    )}
                     {isAIAvailable() && (
                         <ContextMenuItem
                             icon={mdiRobotHappyOutline}

@@ -1,6 +1,9 @@
 const AISettings = require("../models/AISettings");
 const logger = require("../utils/logger");
 const { getProvider, describeProviders, getProviderOAuth, isSubscriptionConnected } = require("../lib/ai/providers");
+const { generateCommand } = require("../lib/ai/commandGen");
+const SessionManager = require("../lib/SessionManager");
+const Entry = require("../models/Entry");
 
 const isConfigured = (settings) => {
     if (!settings?.enabled || !settings.provider || !settings.model) return false;
@@ -127,5 +130,23 @@ module.exports.getAvailableModels = async () => {
     } catch (error) {
         logger.error(`Error fetching models for ${settings.provider}`, { error: error.message });
         return { models: [] };
+    }
+};
+
+module.exports.generateSessionCommand = async (accountId, { sessionId, prompt, shell, rejected }) => {
+    const settings = await AISettings.findOne();
+    if (!isConfigured(settings)) return { code: 400, message: "AI assistant is not configured" };
+
+    const session = SessionManager.get(sessionId);
+    if (!session) return { code: 404, message: "Session not found" };
+    if (session.accountId !== accountId) return { code: 403, message: "Access denied" };
+
+    const entry = await Entry.findByPk(session.entryId);
+
+    try {
+        return await generateCommand({ settings, entry, prompt, shell, rejected });
+    } catch (error) {
+        logger.error("AI command generation failed", { error: error.message });
+        return { code: 500, message: `Command generation failed: ${error.message}` };
     }
 };

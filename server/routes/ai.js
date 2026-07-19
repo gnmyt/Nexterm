@@ -2,7 +2,7 @@ const { Router } = require("express");
 const { requirePermission } = require("../middlewares/permission");
 const { Permission } = require("../permissions/registry");
 const { validateSchema } = require("../utils/schema");
-const { updateAISettingsValidation, oauthExchangeValidation } = require("../validations/ai");
+const { updateAISettingsValidation, oauthExchangeValidation, generateCommandValidation } = require("../validations/ai");
 const {
     getAISettings,
     updateAISettings,
@@ -12,6 +12,7 @@ const {
     startOAuth,
     exchangeOAuth,
     disconnectOAuth,
+    generateSessionCommand,
 } = require("../controllers/ai");
 
 const app = Router();
@@ -71,6 +72,30 @@ app.post("/test", requirePermission(Permission.SETTINGS_AI), async (req, res) =>
         res.json(result);
     } catch {
         res.status(500).json({ error: "Connection test failed" });
+    }
+});
+
+/**
+ * POST /ai/command
+ * @summary Generate a Terminal Command
+ * @description Turns a natural language request into shell command suggestions for the given session, without executing any of them.
+ * @tags AI
+ * @produces application/json
+ * @security BearerAuth
+ * @param {GenerateCommand} request.body.required - The request and the target session
+ * @return {object} 200 - The generated command suggestions
+ * @return {object} 400 - AI assistant is not configured
+ * @return {object} 403 - Access denied
+ * @return {object} 404 - Session not found
+ */
+app.post("/command", async (req, res) => {
+    try {
+        if (validateSchema(res, generateCommandValidation, req.body)) return;
+        const result = await generateSessionCommand(req.user.id, req.body);
+        if (result.code) return res.status(result.code).json({ error: result.message });
+        res.json(result);
+    } catch {
+        res.status(500).json({ error: "Internal server error" });
     }
 });
 
