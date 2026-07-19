@@ -1,7 +1,7 @@
 name: nexterm
 description: "The open source server management software for SSH, VNC & RDP"
 publish_to: 'none'
-version: 1.2.1+12
+version: 1.2.2+15
 
 environment:
   sdk: ^3.9.2
