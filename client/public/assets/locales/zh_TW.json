@@ -593,16 +593,16 @@
     "account": {
       "title": "帳戶",
       "avatar": {
-        "label": "Picture",
-        "upload": "Change profile picture",
-        "remove": "Remove",
-        "updated": "Your profile picture has been updated",
-        "removed": "Your profile picture has been removed",
-        "tooLarge": "The selected image is larger than 10 MB",
-        "uploadFailed": "The profile picture could not be uploaded",
-        "removeFailed": "The profile picture could not be removed"
+        "label": "圖片",
+        "upload": "變更個人頭像",
+        "remove": "移除",
+        "updated": "您的個人頭像已更新",
+        "removed": "您的個人頭像已被移除",
+        "tooLarge": "所選圖片的大小超過 10 MB",
+        "uploadFailed": "無法上傳個人頭像",
+        "removeFailed": "無法移除大頭貼"
       },
-      "accountDetails": "Account details",
+      "accountDetails": "帳戶詳情",
       "firstName": "名字",
       "lastName": "姓氏",
       "appearance": "外觀",
@@ -806,17 +806,17 @@
         }
       },
       "sessionSettings": {
-        "sessionSettingsTab": "Live Sessions",
-        "liveSharingHeading": "Live Session Sharing",
-        "liveSharingDescription": "Control how running sessions are shared in this organization.",
-        "enableLiveSessionSharingLabel": "Enable live session sharing",
-        "enableLiveSessionSharingDescription": "Members need the View or Control Live Sessions permission.",
+        "sessionSettingsTab": "現場直播",
+        "liveSharingHeading": "即時會議分享",
+        "liveSharingDescription": "控制本組織中跑步活動的分享方式。",
+        "enableLiveSessionSharingLabel": "啟用即時會議共享",
+        "enableLiveSessionSharingDescription": "成員需要「檢視」或「控制即時會議」的權限。",
         "actions": {
-          "save": "Save Settings"
+          "save": "儲存設定"
         },
         "messages": {
-          "updated": "Live session settings updated successfully",
-          "updateFailed": "Failed to update live session settings"
+          "updated": "即時會議設定已成功更新",
+          "updateFailed": "無法更新即時會話設定"
         }
       }
     },
@@ -886,8 +886,8 @@
           "description": "在助理中核准待處理的 AI 工具操作"
         },
         "aicommand": {
-          "title": "Generate Command",
-          "description": "Ask for a command suggestion inside the terminal"
+          "title": "產生指令",
+          "description": "在終端機內請求指令建議"
         },
         "snippets": {
           "title": "片段",
@@ -954,7 +954,7 @@
         "title": "輸入",
         "description": "控制鍵盤快捷鍵在終端機內的運作方式。",
         "smartCopyPaste": "智慧型 Ctrl+C",
-        "passwordPromptDetection": "Password input detection",
+        "passwordPromptDetection": "密碼輸入偵測",
         "enabled": "已啟用",
         "disabled": "已停用",
         "syncEnabled": "輸入設定現在將同步至您的帳戶",
@@ -1580,20 +1580,20 @@
       "duplicateServer": "複製伺服器",
       "pasteIdentityPassword": "貼上密碼",
       "deleteServer": "刪除伺服器",
-      "deleteConfirm": "Are you sure you want to delete \"{{name}}\"? This action cannot be undone.",
-      "deleteFailServer": "Failed to delete \"{{name}}\".",
-      "deleteFailFolder": "Failed to delete the folder \"{{name}}\".",
+      "deleteConfirm": "您確定要刪除「{{name}}」嗎？此操作無法撤銷。",
+      "deleteFailServer": "無法刪除「{{name}}」。",
+      "deleteFailFolder": "無法刪除資料夾「{{name}}」。",
       "wakeOnLan": "網路喚醒",
       "shutdown": "關機",
       "stop": "停止",
       "start": "開始",
-      "joinSession": "Join Session",
-      "joinSessionOf": "Join session of {{user}}"
+      "joinSession": "加入會議",
+      "joinSessionOf": "參加會議 {{user}}"
     },
     "passwordHint": {
-      "paste": "paste password",
-      "pasteFor": "paste {{username}} password",
-      "cycle": "Use the arrow keys to switch identity"
+      "paste": "貼上密碼",
+      "pasteFor": "貼上 {{username}} 密碼",
+      "cycle": "使用方向鍵切換角色"
     },
     "tabs": {
       "contextMenu": {
@@ -1677,9 +1677,9 @@
           "description": "允許使用其 MAC 位址遠端喚醒此伺服器"
         },
         "rdpSecurity": {
-          "title": "Security",
-          "description": "Authentication method used to connect to the remote Windows machine. Use NLA for environments where NTLM is disabled (e.g. Protected Users group).",
-          "method": "Security Method"
+          "title": "安全",
+          "description": "用於連線至遠端 Windows 電腦的驗證方法。若 NTLM 已停用（例如「受保護的使用者」群組），請使用 NLA。",
+          "method": "安全方法"
         },
         "keyboardLayout": {
           "title": "鍵盤配置",
@@ -1816,7 +1816,7 @@
       }
     },
     "fileManager": {
-      "dropOverlay": "Drop files or folders to upload",
+      "dropOverlay": "將檔案或資料夾拖放至此處即可上傳",
       "createFile": {
         "title": "建立檔案",
         "placeholder": "檔案名稱",
@@ -1928,8 +1928,8 @@
         "hiddenDirectories": "{{count}} 隱藏目錄",
         "switchToGrid": "切換至網格檢視",
         "switchToList": "切換至清單檢視",
-        "uploadFile": "Upload file(s)",
-        "uploadFolder": "Upload folder",
+        "uploadFile": "上傳檔案",
+        "uploadFolder": "上傳資料夾",
         "search": "搜尋檔案",
         "closeSearch": "關閉搜尋",
         "refresh": "重新整理"
@@ -1954,9 +1954,9 @@
         "downloaded": "下載 {{name}}",
         "downloadingItems": "下載 {{count}} 項目...",
         "uploaded": "上傳 {{name}}",
-        "uploadedItems": "Uploaded {{count}} files",
+        "uploadedItems": "已上傳 {{count}} 個檔案",
         "uploadFailed": "上傳失敗: {{message}}",
-        "uploadFailedItems": "{{count}} files failed to upload: {{message}}",
+        "uploadFailedItems": "{{count}} 檔案上傳失敗： {{message}}",
         "connectionLost": "SFTP 連線中斷。請重新連線。",
         "error": "發生錯誤"
       }
@@ -1987,9 +1987,9 @@
       "deny": "拒絕",
       "denied": "您已拒絕此操作。",
       "stopped": "停了。",
-      "continuePrompt": "The assistant paused after a long run of steps. Continue?",
-      "continue": "Continue",
-      "compacted": "Earlier messages were summarised to free up context.",
+      "continuePrompt": "助理在跑了一長串台階後停了下來。要繼續嗎？",
+      "continue": "繼續",
+      "compacted": "為節省篇幅，已將先前訊息進行彙整。",
       "tools": {
         "runCommand": "執行指令",
         "readFile": "讀取檔案",
@@ -2006,12 +2006,12 @@
       }
     },
     "commandSuggestion": {
-      "open": "Generate Command",
-      "placeholder": "Describe the command...",
-      "generating": "Generating...",
-      "accept": "Accept command",
-      "cycle": "Cycle suggestions",
-      "error": "Failed to generate a command."
+      "open": "產生指令",
+      "placeholder": "請說明該指令……",
+      "generating": "正在生成中...",
+      "accept": "接受指令",
+      "cycle": "騎行路線建議",
+      "error": "無法產生指令。"
     },
     "snippets": {
       "title": "片段",
@@ -2056,8 +2056,8 @@
       }
     },
     "liveSessions": {
-      "activeOn": "Live sessions: {{users}}",
-      "unknownUser": "Unknown user"
+      "activeOn": "現場直播： {{users}}",
+      "unknownUser": "未知使用者"
     }
   },
   "support": {
@@ -2079,7 +2079,7 @@
   },
   "welcome": {
     "hello": "您好",
-    "defaultName": "User",
+    "defaultName": "使用者",
     "subtitle": "歡迎來到 Nexterm。適用於 SSH、VNC 和 RDP 的開放原始碼伺服器管理程式。",
     "downloadApps": "下載應用程式",
     "connectDevice": "連接裝置",
