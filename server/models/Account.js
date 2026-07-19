@@ -37,6 +37,10 @@ module.exports = db.define("accounts", {
         type: Sequelize.JSON,
         defaultValue: {},
     },
+    avatarHash: {
+        type: Sequelize.STRING,
+        allowNull: true,
+    },
     activeThemeId: {
         type: Sequelize.INTEGER,
         allowNull: true,

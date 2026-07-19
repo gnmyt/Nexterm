@@ -1,9 +1,11 @@
 const { Router } = require("express");
 const { registerValidation, totpSetup, passwordChangeValidation, updateNameValidation, updateSessionSyncValidation } = require("../validations/account");
 const { preferencesValidation } = require("../validations/preferences");
-const { createAccount, selfRegister, getFTSStatus, updateTOTP, updatePassword, updateName, updateSessionSync, updatePreferences, searchUsers } = require("../controllers/account");
+const { createAccount, selfRegister, getFTSStatus, updateTOTP, updatePassword, updateName, updateSessionSync, updatePreferences, searchUsers, updateAvatar, removeAvatar } = require("../controllers/account");
 const speakeasy = require("speakeasy");
-const { authenticate } = require("../middlewares/auth");
+const express = require("express");
+const { authenticate, authenticateQuery } = require("../middlewares/auth");
+const { getAvatarPath, avatarExists, MAX_AVATAR_UPLOAD_SIZE, AVATAR_CONTENT_TYPE } = require("../utils/avatarService");
 const { validateSchema } = require("../utils/schema");
 const { sendError } = require("../utils/error");
 const { getSystemPermissions } = require("../permissions/engine");
@@ -49,7 +51,81 @@ app.get("/me", authenticate, async (req, res) => {
         isAdmin, permissions,
         sessionSync: req.user.sessionSync, preferences: req.user.preferences || {},
         activeThemeId: req.user.activeThemeId || null,
+        avatarHash: req.user.avatarHash || null,
     });
+});
+
+/**
+ * POST /account/me/avatar
+ * @summary Upload Profile Picture
+ * @description Uploads a profile picture for the authenticated user. The body must be the raw image bytes in the WebP format, cropped and resized by the client.
+ * @tags Account
+ * @produces application/json
+ * @security BearerAuth
+ * @param {string} request.body.required - Raw WebP image data - application/octet-stream
+ * @return {object} 200 - Profile picture successfully updated
+ * @return {object} 400 - The image is missing, too large or not a WebP image
+ * @return {object} 401 - User is not authenticated
+ */
+const avatarBody = express.raw({ type: "*/*", limit: MAX_AVATAR_UPLOAD_SIZE });
+
+const readAvatarBody = (req, res, next) => avatarBody(req, res, (err) => {
+    if (err?.type === "entity.too.large")
+        return sendError(res, 413, 109, "The provided image is too large.");
+    next(err);
+});
+
+app.post("/me/avatar", authenticate, readAvatarBody, async (req, res) => {
+    if (!req.user) return sendError(res, 401, 205, "You are not authenticated.");
+
+    if (!Buffer.isBuffer(req.body) || req.body.length === 0)
+        return sendError(res, 400, 107, "You need to provide the image data in the request body.");
+
+    const result = await updateAvatar(req.user.id, req.body);
+    if (result?.code) return res.json(result);
+
+    res.json({ message: "Your profile picture has been successfully updated.", avatarHash: result.avatarHash });
+});
+
+/**
+ * DELETE /account/me/avatar
+ * @summary Remove Profile Picture
+ * @description Removes the authenticated user's profile picture, falling back to the generated letter avatar.
+ * @tags Account
+ * @produces application/json
+ * @security BearerAuth
+ * @return {object} 200 - Profile picture successfully removed
+ * @return {object} 401 - User is not authenticated
+ */
+app.delete("/me/avatar", authenticate, async (req, res) => {
+    if (!req.user) return sendError(res, 401, 205, "You are not authenticated.");
+
+    const error = await removeAvatar(req.user.id);
+    if (error) return res.json(error);
+
+    res.json({ message: "Your profile picture has been successfully removed." });
+});
+
+/**
+ * GET /account/{accountId}/avatar
+ * @summary Get Profile Picture
+ * @description Returns the profile picture of the requested account as a WebP image. Authenticated through a session token in the query string so the URL can be used directly as an image source.
+ * @tags Account
+ * @produces image/webp
+ * @param {integer} accountId.path.required - Id of the account
+ * @param {string} token.query.required - Session token
+ * @return {file} 200 - The profile picture
+ * @return {object} 401 - Token is missing or invalid
+ * @return {object} 404 - The account has no profile picture
+ */
+app.get("/:accountId/avatar", authenticateQuery, async (req, res) => {
+    const accountId = Number(req.params.accountId);
+    if (!Number.isInteger(accountId) || !avatarExists(accountId))
+        return sendError(res, 404, 102, "The requested profile picture does not exist.");
+
+    res.setHeader("Content-Type", AVATAR_CONTENT_TYPE);
+    res.setHeader("Cache-Control", "private, max-age=31536000, immutable");
+    res.sendFile(getAvatarPath(accountId));
 });
 
 /**

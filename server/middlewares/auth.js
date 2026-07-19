@@ -37,6 +37,21 @@ module.exports.authenticate = async (req, res, next) => {
     next();
 };
 
+module.exports.authenticateQuery = async (req, res, next) => {
+    const token = req.query.token;
+    if (!token) return res.status(401).json({ message: "Token required" });
+
+    const session = await Session.findOne({ where: { token } });
+    if (!session) return res.status(401).json({ message: "Invalid token" });
+
+    const user = await Account.findByPk(session.accountId);
+    if (!user) return res.status(401).json({ message: "Invalid token" });
+
+    req.user = user;
+    req.session = session;
+    next();
+};
+
 module.exports.authenticateDownload = async (req, res, next) => {
     const token = req.query.token;
     if (!token) return res.status(401).json({ message: "Token required" });

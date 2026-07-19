@@ -7,6 +7,7 @@ const { Permission } = require("../permissions/registry");
 const stateBroadcaster = require("../lib/StateBroadcaster");
 const { revokeLiveSessionAccess } = require("./liveSession");
 const { Op } = require("sequelize");
+const { ACCOUNT_VIEW_ATTRIBUTES, toAccountView } = require("../utils/accountView");
 
 module.exports.createOrganization = async (accountId, configuration) => {
     const organization = await Organization.create({
@@ -96,7 +97,7 @@ module.exports.listPendingInvitations = async (accountId) => {
     const inviterIds = [...new Set(pendingInvites.map(invite => invite.invitedBy))];
     const inviters = await Account.findAll({
         where: { id: { [Op.in]: inviterIds } },
-        attributes: ["id", "firstName", "lastName", "username"],
+        attributes: ACCOUNT_VIEW_ATTRIBUTES,
     });
 
     return pendingInvites.map(invite => {
@@ -107,9 +108,8 @@ module.exports.listPendingInvitations = async (accountId) => {
             id: invite.id,
             organization: { id: org.id, name: org.name, description: org.description },
             invitedBy: {
-                id: inviter.id,
+                ...toAccountView(inviter),
                 name: `${inviter.firstName} ${inviter.lastName}`,
-                username: inviter.username,
             },
             createdAt: invite.createdAt,
         };
@@ -208,7 +208,7 @@ module.exports.listMembers = async (accountId, organizationId) => {
     const memberAccountIds = members.map(m => m.accountId);
     const accounts = await Account.findAll({
         where: { id: { [Op.in]: memberAccountIds } },
-        attributes: ["id", "firstName", "lastName", "username"],
+        attributes: ACCOUNT_VIEW_ATTRIBUTES,
     });
 
     return members
@@ -216,8 +216,9 @@ module.exports.listMembers = async (accountId, organizationId) => {
             const account = accounts.find(a => a.id === member.accountId);
             if (!account) return null;
             return {
+                ...toAccountView(account),
                 id: member.id, accountId: account.id, name: `${account.firstName} ${account.lastName}`,
-                username: account.username, role: member.role, status: member.status,
+                role: member.role, status: member.status,
             };
         })
         .filter(Boolean);

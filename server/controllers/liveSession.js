@@ -4,6 +4,7 @@ const Organization = require("../models/Organization");
 const OrganizationMember = require("../models/OrganizationMember");
 const SessionManager = require("../lib/SessionManager");
 const stateBroadcaster = require("../lib/StateBroadcaster");
+const { ACCOUNT_VIEW_ATTRIBUTES, toAccountView } = require("../utils/accountView");
 const { Permission } = require("../permissions/registry");
 const { hasOrganizationPermission } = require("../utils/permission");
 
@@ -38,9 +39,7 @@ const serializeSession = (session, entry, owner, organization, writable) => ({
     protocol: entry?.type || null,
     icon: entry?.icon || null,
     startedAt: session.createdAt,
-    owner: owner
-        ? { id: owner.id, username: owner.username, firstName: owner.firstName, lastName: owner.lastName }
-        : null,
+    owner: toAccountView(owner),
     participants: SessionManager.getParticipants(session.sessionId),
     writable,
 });
@@ -64,7 +63,7 @@ const listLiveSessions = async (accountId) => {
         }),
         Account.findAll({
             where: { id: [...new Set(sessions.map(s => s.session.accountId))] },
-            attributes: ["id", "username", "firstName", "lastName"],
+            attributes: ACCOUNT_VIEW_ATTRIBUTES,
         }),
     ]);
 
