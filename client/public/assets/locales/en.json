@@ -592,6 +592,16 @@
     },
     "account": {
       "title": "Account",
+      "avatar": {
+        "label": "Picture",
+        "upload": "Change profile picture",
+        "remove": "Remove",
+        "updated": "Your profile picture has been updated",
+        "removed": "Your profile picture has been removed",
+        "tooLarge": "The selected image is larger than 10 MB",
+        "uploadFailed": "The profile picture could not be uploaded",
+        "removeFailed": "The profile picture could not be removed"
+      },
       "accountName": "Account name",
       "firstName": "First name",
       "lastName": "Last name",
