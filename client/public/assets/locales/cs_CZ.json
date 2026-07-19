@@ -885,6 +885,10 @@
           "title": "AI – Potvrdit akci",
           "description": "Schválit čekající akci nástroje AI v asistentovi"
         },
+        "aicommand": {
+          "title": "Generate Command",
+          "description": "Ask for a command suggestion inside the terminal"
+        },
         "snippets": {
           "title": "Snippety",
           "description": "Otevřít dialog snippetů"
@@ -2000,6 +2004,14 @@
         "changePermissions": "Změnit oprávnění",
         "findDirectories": "Najít adresáře"
       }
+    },
+    "commandSuggestion": {
+      "open": "Generate Command",
+      "placeholder": "Describe the command...",
+      "generating": "Generating...",
+      "accept": "Accept command",
+      "cycle": "Cycle suggestions",
+      "error": "Failed to generate a command."
     },
     "snippets": {
       "title": "Snippety",
