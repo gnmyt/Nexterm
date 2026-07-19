@@ -8,6 +8,7 @@ import { UserContext } from "@/common/contexts/UserContext.jsx";
 import { ActionConfirmDialog } from "@/common/components/ActionConfirmDialog/ActionConfirmDialog.jsx";
 import SupportDialog from "@/common/components/SupportDialog";
 import Tooltip from "@/common/components/Tooltip";
+import LetterAvatar from "@/common/components/LetterAvatar";
 import { useTranslation } from "react-i18next";
 import { SettingsDialog } from "@/common/components/SettingsDialog/SettingsDialog.jsx";
 import { getSidebarNavigation } from "@/common/utils/navigationConfig.jsx";
@@ -15,6 +16,7 @@ import { GITHUB_URL } from "@/App.jsx";
 import { openExternalUrl } from "@/common/utils/TauriUtil.js";
 import { usePreferences } from "@/common/contexts/PreferencesContext.jsx";
 import { getServers, getActiveServerId, getServerDisplayName, switchServer, removeServer } from "@/common/utils/ConnectorServers.js";
+import { getAvatarLabel } from "@/common/utils/avatar.js";
 
 export const Sidebar = ({ onToggleCollapse }) => {
     const { t } = useTranslation();
@@ -34,7 +36,6 @@ export const Sidebar = ({ onToggleCollapse }) => {
     const servers = isConnectorMode ? getServers() : [];
     const activeServerId = isConnectorMode ? getActiveServerId() : null;
 
-    const getUserInitials = () => user?.firstName && user?.lastName ? `${user.firstName[0]}${user.lastName[0]}`.toUpperCase() : user?.username?.slice(0, 2).toUpperCase() || "??";
     const handleMouseEnter = () => { clearTimeout(hoverTimeoutRef.current); setUserMenuOpen(true); };
     const handleMouseLeave = () => { hoverTimeoutRef.current = setTimeout(() => setUserMenuOpen(false), 150); };
 
@@ -76,9 +77,9 @@ export const Sidebar = ({ onToggleCollapse }) => {
                     </Tooltip>
                     <div className={`user-menu ${userMenuOpen ? 'open' : ''}`}>
                         <div className="user-menu-header">
-                            <div className="user-avatar"><span>{getUserInitials()}</span></div>
+                            <LetterAvatar user={user} size="md" showTooltip={false} />
                             <div className="user-info">
-                                <span className="user-name">{user?.firstName && user?.lastName ? `${user.firstName} ${user.lastName}` : user?.username || t('common.sidebar.account')}</span>
+                                <span className="user-name">{getAvatarLabel(user, t('common.sidebar.account'))}</span>
                                 <span className="user-username">@{user?.username}</span>
                             </div>
                         </div>

@@ -5,6 +5,7 @@ import { mdiAccount, mdiMagnify, mdiClose, mdiShieldAccount } from "@mdi/js";
 import { getRequest } from "@/common/utils/RequestUtil.js";
 import { useTranslation } from "react-i18next";
 import "./styles.sass";
+import { getFullName } from "@/common/utils/avatar.js";
 
 export const UserSearch = ({
     value = "",
@@ -213,7 +214,7 @@ export const UserSearch = ({
                                 <Icon path={mdiAccount} />
                             </div>
                             <div className="user-search__user-info">
-                                <span className="user-search__name">{user.firstName} {user.lastName}</span>
+                                {getFullName(user) && <span className="user-search__name">{getFullName(user)}</span>}
                                 <span className="user-search__username">@{user.username}</span>
                             </div>
                         </div>
