@@ -593,16 +593,16 @@
     "account": {
       "title": "Account",
       "avatar": {
-        "label": "Picture",
-        "upload": "Change profile picture",
-        "remove": "Remove",
-        "updated": "Your profile picture has been updated",
-        "removed": "Your profile picture has been removed",
-        "tooLarge": "The selected image is larger than 10 MB",
-        "uploadFailed": "The profile picture could not be uploaded",
-        "removeFailed": "The profile picture could not be removed"
+        "label": "Bild",
+        "upload": "Profilbild ändern",
+        "remove": "Entfernen",
+        "updated": "Dein Profilbild wurde aktualisiert",
+        "removed": "Dein Profilbild wurde entfernt",
+        "tooLarge": "Das ausgewählte Bild ist größer als 10 MB",
+        "uploadFailed": "Das Profilbild konnte nicht hochgeladen werden",
+        "removeFailed": "Das Profilbild konnte nicht gelöscht werden"
       },
-      "accountDetails": "Account details",
+      "accountDetails": "Kontoangaben",
       "firstName": "Vorname",
       "lastName": "Nachname",
       "appearance": "Erscheinungsbild",
@@ -806,17 +806,17 @@
         }
       },
       "sessionSettings": {
-        "sessionSettingsTab": "Live Sessions",
-        "liveSharingHeading": "Live Session Sharing",
-        "liveSharingDescription": "Control how running sessions are shared in this organization.",
-        "enableLiveSessionSharingLabel": "Enable live session sharing",
-        "enableLiveSessionSharingDescription": "Members need the View or Control Live Sessions permission.",
+        "sessionSettingsTab": "Live-Sessions",
+        "liveSharingHeading": "Live-Sitzung teilen",
+        "liveSharingDescription": "Lege fest, wie laufende Sitzungen in dieser Organisation freigegeben werden.",
+        "enableLiveSessionSharingLabel": "Live-Sitzungsfreigabe aktivieren",
+        "enableLiveSessionSharingDescription": "Mitglieder benötigen die Berechtigung „Live-Sitzungen anzeigen oder steuern“.",
         "actions": {
-          "save": "Save Settings"
+          "save": "Einstellungen speichern"
         },
         "messages": {
-          "updated": "Live session settings updated successfully",
-          "updateFailed": "Failed to update live session settings"
+          "updated": "Die Einstellungen für die Live-Sitzung wurden erfolgreich aktualisiert",
+          "updateFailed": "Die Einstellungen der Live-Sitzung konnten nicht aktualisiert werden"
         }
       }
     },
@@ -886,8 +886,8 @@
           "description": "Bestätige die ausstehende Aktion des KI-Tools im Assistenten"
         },
         "aicommand": {
-          "title": "Generate Command",
-          "description": "Ask for a command suggestion inside the terminal"
+          "title": "Befehl generieren",
+          "description": "Frag im Terminal nach einem Befehlsvorschlag"
         },
         "snippets": {
           "title": "Snippets",
@@ -954,7 +954,7 @@
         "title": "Eingabe",
         "description": "Lege fest, wie sich Tastenkombinationen im Terminal verhalten.",
         "smartCopyPaste": "Smart Strg+C",
-        "passwordPromptDetection": "Password input detection",
+        "passwordPromptDetection": "Erkennung der Passworteingabe",
         "enabled": "Aktiviert",
         "disabled": "Deaktiviert",
         "syncEnabled": "Die Eingabeeinstellungen werden nun mit deinem Konto synchronisiert",
@@ -1580,20 +1580,20 @@
       "duplicateServer": "Server duplizieren",
       "pasteIdentityPassword": "Passwort einfügen",
       "deleteServer": "Server löschen",
-      "deleteConfirm": "Are you sure you want to delete \"{{name}}\"? This action cannot be undone.",
-      "deleteFailServer": "Failed to delete \"{{name}}\".",
-      "deleteFailFolder": "Failed to delete the folder \"{{name}}\".",
+      "deleteConfirm": "Bist du sicher, dass du „{{name}}“ löschen möchtest? Diese Aktion kann nicht rückgängig gemacht werden.",
+      "deleteFailServer": "Das Löschen von „{{name}} “ ist fehlgeschlagen.",
+      "deleteFailFolder": "Der Ordner „{{name}} “ konnte nicht gelöscht werden.",
       "wakeOnLan": "Wake-On-LAN",
       "shutdown": "Herunterfahren",
       "stop": "Stop",
       "start": "Start",
-      "joinSession": "Join Session",
-      "joinSessionOf": "Join session of {{user}}"
+      "joinSession": "An der Sitzung teilnehmen",
+      "joinSessionOf": "An der Sitzung von {{user}}"
     },
     "passwordHint": {
-      "paste": "paste password",
-      "pasteFor": "paste {{username}} password",
-      "cycle": "Use the arrow keys to switch identity"
+      "paste": "Passwort einfügen",
+      "pasteFor": "Einfügen {{username}} Passwort",
+      "cycle": "Verwende die Pfeiltasten, um die Identität zu wechseln"
     },
     "tabs": {
       "contextMenu": {
@@ -1677,9 +1677,9 @@
           "description": "Erlaube es, diesen Server aus der Ferne über seine MAC-Adresse zu wecken"
         },
         "rdpSecurity": {
-          "title": "Security",
-          "description": "Authentication method used to connect to the remote Windows machine. Use NLA for environments where NTLM is disabled (e.g. Protected Users group).",
-          "method": "Security Method"
+          "title": "Sicherheit",
+          "description": "Authentifizierungsmethode für die Verbindung zum entfernten Windows-Rechner. Verwende NLA in Umgebungen, in denen NTLM deaktiviert ist (z. B. bei der Gruppe „Geschützte Benutzer“).",
+          "method": "Sicherheitsmethode"
         },
         "keyboardLayout": {
           "title": "Tastaturlayout",
@@ -1816,7 +1816,7 @@
       }
     },
     "fileManager": {
-      "dropOverlay": "Drop files or folders to upload",
+      "dropOverlay": "Zieh Dateien oder Ordner per Drag & Drop hinein, um sie hochzuladen",
       "createFile": {
         "title": "Datei erstellen",
         "placeholder": "Datei Name",
@@ -1928,8 +1928,8 @@
         "hiddenDirectories": "{{count}} versteckte Verzeichnisse",
         "switchToGrid": "Zur Rasteransicht wechseln",
         "switchToList": "Zur Listenansicht wechseln",
-        "uploadFile": "Upload file(s)",
-        "uploadFolder": "Upload folder",
+        "uploadFile": "Datei(en) hochladen",
+        "uploadFolder": "Upload-Ordner",
         "search": "Durchsuche Dateien",
         "closeSearch": "Suchfeld schließen",
         "refresh": "Aktualisieren"
@@ -1954,9 +1954,9 @@
         "downloaded": "{{name}} heruntergeladen",
         "downloadingItems": "Herunterladen von {{count}} item(s)...",
         "uploaded": "{{name}} hochgeladen",
-        "uploadedItems": "Uploaded {{count}} files",
+        "uploadedItems": "{{count}} -Dateien hochgeladen",
         "uploadFailed": "Upload fehlgeschlagen: {{message}}",
-        "uploadFailedItems": "{{count}} files failed to upload: {{message}}",
+        "uploadFailedItems": "{{count}} Dateien konnten nicht hochgeladen werden: {{message}}",
         "connectionLost": "SFTP-Verbindung verloren. Bitte stelle die Verbindung wieder her.",
         "error": "Ein Fehler ist aufgetreten"
       }
@@ -1987,9 +1987,9 @@
       "deny": "Ablehnen",
       "denied": "Du hast diese Aktion abgelehnt.",
       "stopped": "Halt.",
-      "continuePrompt": "The assistant paused after a long run of steps. Continue?",
-      "continue": "Continue",
-      "compacted": "Earlier messages were summarised to free up context.",
+      "continuePrompt": "Der Assistent hielt nach einer langen Treppenstufe inne. Weiter?",
+      "continue": "Weiter",
+      "compacted": "Frühere Nachrichten wurden zusammengefasst, um Platz für den Kontext zu schaffen.",
       "tools": {
         "runCommand": "Befehl ausführen",
         "readFile": "Datei lesen",
@@ -2006,12 +2006,12 @@
       }
     },
     "commandSuggestion": {
-      "open": "Generate Command",
-      "placeholder": "Describe the command...",
-      "generating": "Generating...",
-      "accept": "Accept command",
-      "cycle": "Cycle suggestions",
-      "error": "Failed to generate a command."
+      "open": "Befehl generieren",
+      "placeholder": "Beschreibe den Befehl...",
+      "generating": "Wird generiert...",
+      "accept": "Befehl „Akzeptieren“",
+      "cycle": "Vorschläge für Radtouren",
+      "error": "Die Befehlsgenerierung ist fehlgeschlagen."
     },
     "snippets": {
       "title": "Snippets",
@@ -2056,8 +2056,8 @@
       }
     },
     "liveSessions": {
-      "activeOn": "Live sessions: {{users}}",
-      "unknownUser": "Unknown user"
+      "activeOn": "Live-Sessions: {{users}}",
+      "unknownUser": "Unbekannter Nutzer"
     }
   },
   "support": {
@@ -2079,7 +2079,7 @@
   },
   "welcome": {
     "hello": "Hallo",
-    "defaultName": "User",
+    "defaultName": "Benutzer",
     "subtitle": "Willkommen bei Nexterm. Der Open-Source-Server-Manager für SSH, VNC und RDP.",
     "downloadApps": "Apps herunterladen",
     "connectDevice": "Gerät verbinden",
