@@ -1,7 +1,10 @@
 import IconInput from "@/common/components/IconInput";
 import "./styles.sass";
-import { mdiAccountCircleOutline, mdiAccountEdit, mdiShieldCheck, mdiLockReset, mdiTranslate, mdiSync, mdiCloudSync, mdiCloudOffOutline, mdiWeb, mdiTabUnselected, mdiFingerprint, mdiKeyVariant, mdiPencil, mdiTrashCan, mdiPlus, mdiApi } from "@mdi/js";
-import { useContext, useEffect, useState } from "react";
+import { mdiAccountCircleOutline, mdiAccountEdit, mdiCameraOutline, mdiClose, mdiShieldCheck, mdiLockReset, mdiTranslate, mdiSync, mdiCloudSync, mdiCloudOffOutline, mdiWeb, mdiTabUnselected, mdiFingerprint, mdiKeyVariant, mdiPencil, mdiTrashCan, mdiPlus, mdiApi } from "@mdi/js";
+import { useContext, useEffect, useRef, useState } from "react";
+import LetterAvatar from "@/common/components/LetterAvatar";
+import { createSquareAvatar, MAX_AVATAR_INPUT_SIZE } from "@/common/utils/imageUtils.js";
+import { uploadFile } from "@/common/utils/RequestUtil.js";
 import { UserContext } from "@/common/contexts/UserContext.jsx";
 import { usePreferences } from "@/common/contexts/PreferencesContext.jsx";
 import Button from "@/common/components/Button";
@@ -35,11 +38,46 @@ export const Account = () => {
     const [deleteApiKeyOpen, setDeleteApiKeyOpen] = useState(false);
     const [apiKeyToDelete, setApiKeyToDelete] = useState(null);
 
-    const { user, login } = useContext(UserContext);
+    const { user, login, sessionToken } = useContext(UserContext);
     const { isGroupSynced, toggleGroupSync, language, setLanguage } = usePreferences();
     const { sendToast } = useToast();
 
     const [updatedField, setUpdatedField] = useState(null);
+    const [avatarUploading, setAvatarUploading] = useState(false);
+    const avatarInputRef = useRef(null);
+
+    const uploadAvatar = async (event) => {
+        const file = event.target.files?.[0];
+        event.target.value = "";
+        if (!file) return;
+
+        if (file.size > MAX_AVATAR_INPUT_SIZE)
+            return sendToast("Error", t("settings.account.avatar.tooLarge"));
+
+        setAvatarUploading(true);
+        try {
+            const avatar = await createSquareAvatar(file);
+            await uploadFile("/api/accounts/me/avatar", avatar, {
+                headers: { "Authorization": `Bearer ${sessionToken}` },
+            });
+            await login();
+            sendToast("Success", t("settings.account.avatar.updated"));
+        } catch (error) {
+            sendToast("Error", error.message || t("settings.account.avatar.uploadFailed"));
+        } finally {
+            setAvatarUploading(false);
+        }
+    };
+
+    const removeAvatar = async () => {
+        try {
+            await deleteRequest("accounts/me/avatar");
+            await login();
+            sendToast("Success", t("settings.account.avatar.removed"));
+        } catch (error) {
+            sendToast("Error", error.message || t("settings.account.avatar.removeFailed"));
+        }
+    };
 
     const [firstName, setFirstName] = useState("");
     const [lastName, setLastName] = useState("");
@@ -223,6 +261,25 @@ export const Account = () => {
             <div className="account-section">
                 <h2><Icon path={mdiAccountEdit} size={0.8} style={{marginRight: '8px'}} />{t("settings.account.accountName")}</h2>
                 <div className="section-inner">
+                    <div className="form-group avatar-group">
+                        <label htmlFor="avatar">{t("settings.account.avatar.label")}</label>
+                        <div className="avatar-edit">
+                            <button type="button" id="avatar" className="avatar-button"
+                                    onClick={() => avatarInputRef.current?.click()}
+                                    disabled={avatarUploading} title={t("settings.account.avatar.upload")}>
+                                <LetterAvatar user={user} size="lg" showTooltip={false} />
+                                <span className="avatar-overlay"><Icon path={mdiCameraOutline} size={0.9} /></span>
+                            </button>
+                            {user?.avatarHash && <button type="button" className="avatar-remove" onClick={removeAvatar}
+                                                         disabled={avatarUploading}
+                                                         title={t("settings.account.avatar.remove")}>
+                                <Icon path={mdiClose} size={0.6} />
+                            </button>}
+                            <input type="file" ref={avatarInputRef} accept="image/png,image/jpeg,image/webp,image/gif"
+                                   style={{ display: "none" }} onChange={uploadAvatar} />
+                        </div>
+                    </div>
+
                     <div className="form-group">
                         <label htmlFor="firstName">{t("settings.account.firstName")}</label>
                         <IconInput icon={mdiAccountCircleOutline} placeholder={t("settings.account.firstName")}
