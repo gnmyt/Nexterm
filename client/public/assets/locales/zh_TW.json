@@ -1983,6 +1983,9 @@
       "deny": "拒絕",
       "denied": "您已拒絕此操作。",
       "stopped": "停了。",
+      "continuePrompt": "The assistant paused after a long run of steps. Continue?",
+      "continue": "Continue",
+      "compacted": "Earlier messages were summarised to free up context.",
       "tools": {
         "runCommand": "執行指令",
         "readFile": "讀取檔案",
