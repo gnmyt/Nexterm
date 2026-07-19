@@ -301,6 +301,7 @@ const duplicateSession = async (accountId, sessionId, tabId = null, browserId = 
         tabId,
         browserId,
         config.scriptId,
+        config.startPath || null,
         ipAddress,
         userAgent
     );
