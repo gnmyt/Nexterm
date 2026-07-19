@@ -17,3 +17,7 @@ module.exports.inviteUserSchema = Joi.object({
 module.exports.respondToInvitationSchema = Joi.object({
     accept: Joi.boolean().required(),
 });
+
+module.exports.updateSessionSettingsSchema = Joi.object({
+    enableLiveSessionSharing: Joi.boolean(),
+});
