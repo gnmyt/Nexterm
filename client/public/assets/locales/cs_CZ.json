@@ -593,16 +593,16 @@
     "account": {
       "title": "Účet",
       "avatar": {
-        "label": "Picture",
-        "upload": "Change profile picture",
-        "remove": "Remove",
-        "updated": "Your profile picture has been updated",
-        "removed": "Your profile picture has been removed",
-        "tooLarge": "The selected image is larger than 10 MB",
-        "uploadFailed": "The profile picture could not be uploaded",
-        "removeFailed": "The profile picture could not be removed"
+        "label": "Obrázek",
+        "upload": "Změnit profilový obrázek",
+        "remove": "Odebrat",
+        "updated": "Tvůj profilový obrázek byl aktualizován",
+        "removed": "Vaše profilová fotka byla odstraněna",
+        "tooLarge": "Vybraný obrázek je větší než 10 MB",
+        "uploadFailed": "Profilovou fotku se nepodařilo nahrát",
+        "removeFailed": "Profilovou fotku se nepodařilo odstranit"
       },
-      "accountDetails": "Account details",
+      "accountDetails": "Údaje o účtu",
       "firstName": "Jméno",
       "lastName": "Příjmení",
       "appearance": "Vzhled",
@@ -806,17 +806,17 @@
         }
       },
       "sessionSettings": {
-        "sessionSettingsTab": "Live Sessions",
-        "liveSharingHeading": "Live Session Sharing",
-        "liveSharingDescription": "Control how running sessions are shared in this organization.",
-        "enableLiveSessionSharingLabel": "Enable live session sharing",
-        "enableLiveSessionSharingDescription": "Members need the View or Control Live Sessions permission.",
+        "sessionSettingsTab": "Živé relace",
+        "liveSharingHeading": "Sdílení živé relace",
+        "liveSharingDescription": "Nastavte, jakým způsobem se v této organizaci sdílejí probíhající relace.",
+        "enableLiveSessionSharingLabel": "Povolit sdílení živé relace",
+        "enableLiveSessionSharingDescription": "Členové potřebují oprávnění „Zobrazit“ nebo „Ovládat živé relace“.",
         "actions": {
-          "save": "Save Settings"
+          "save": "Uložit nastavení"
         },
         "messages": {
-          "updated": "Live session settings updated successfully",
-          "updateFailed": "Failed to update live session settings"
+          "updated": "Nastavení živého vysílání bylo úspěšně aktualizováno",
+          "updateFailed": "Nepodařilo se aktualizovat nastavení živé relace"
         }
       }
     },
@@ -886,8 +886,8 @@
           "description": "Schválit čekající akci nástroje AI v asistentovi"
         },
         "aicommand": {
-          "title": "Generate Command",
-          "description": "Ask for a command suggestion inside the terminal"
+          "title": "Vygenerovat příkaz",
+          "description": "Požádejte o návrh příkazu v terminálu"
         },
         "snippets": {
           "title": "Snippety",
@@ -954,7 +954,7 @@
         "title": "Vstup",
         "description": "Nastavte chování klávesových zkratek v terminálu.",
         "smartCopyPaste": "Chytré Ctrl+C",
-        "passwordPromptDetection": "Password input detection",
+        "passwordPromptDetection": "Detekce zadávání hesla",
         "enabled": "Zapnuto",
         "disabled": "Znevýhodnění",
         "syncEnabled": "Nastavení vstupů se nyní synchronizují s vaším účtem",
@@ -1580,20 +1580,20 @@
       "duplicateServer": "Duplikovat server",
       "pasteIdentityPassword": "Vložit heslo",
       "deleteServer": "Smazat server",
-      "deleteConfirm": "Are you sure you want to delete \"{{name}}\"? This action cannot be undone.",
-      "deleteFailServer": "Failed to delete \"{{name}}\".",
-      "deleteFailFolder": "Failed to delete the folder \"{{name}}\".",
+      "deleteConfirm": "Opravdu chcete odstranit „{{name}}“? Tuto akci nelze vrátit zpět.",
+      "deleteFailServer": "Nepodařilo se odstranit „{{name}}“.",
+      "deleteFailFolder": "Nepodařilo se odstranit složku „{{name}}“.",
       "wakeOnLan": "Wake-On-LAN",
       "shutdown": "Vypnout",
       "stop": "Zastavit",
       "start": "Spustit",
-      "joinSession": "Join Session",
-      "joinSessionOf": "Join session of {{user}}"
+      "joinSession": "Připojit se k relaci",
+      "joinSessionOf": "Zúčastněte se zasedání {{user}}"
     },
     "passwordHint": {
-      "paste": "paste password",
-      "pasteFor": "paste {{username}} password",
-      "cycle": "Use the arrow keys to switch identity"
+      "paste": "vložit heslo",
+      "pasteFor": "vložit {{username}} heslo",
+      "cycle": "K přepínání identity použijte šipky"
     },
     "tabs": {
       "contextMenu": {
@@ -1677,9 +1677,9 @@
           "description": "Umožnit vzdálené probuzení tohoto serveru pomocí jeho MAC adresy"
         },
         "rdpSecurity": {
-          "title": "Security",
-          "description": "Authentication method used to connect to the remote Windows machine. Use NLA for environments where NTLM is disabled (e.g. Protected Users group).",
-          "method": "Security Method"
+          "title": "Bezpečnost",
+          "description": "Metoda ověřování používaná pro připojení ke vzdálenému počítači se systémem Windows. V prostředích, kde je protokol NTLM deaktivován (např. ve skupině „Chránění uživatelé“), použijte protokol NLA.",
+          "method": "Způsob zabezpečení"
         },
         "keyboardLayout": {
           "title": "Rozložení klávesnice",
@@ -1816,7 +1816,7 @@
       }
     },
     "fileManager": {
-      "dropOverlay": "Drop files or folders to upload",
+      "dropOverlay": "Chcete-li soubory nebo složky nahrát, přetáhněte je sem",
       "createFile": {
         "title": "Vytvořit soubor",
         "placeholder": "Název souboru",
@@ -1928,8 +1928,8 @@
         "hiddenDirectories": "{{count}} skryté adresáře",
         "switchToGrid": "Přepnutí na zobrazení mřížky",
         "switchToList": "Přepnutí na zobrazení seznamu",
-        "uploadFile": "Upload file(s)",
-        "uploadFolder": "Upload folder",
+        "uploadFile": "Nahrát soubor(y)",
+        "uploadFolder": "Složka pro nahrávání",
         "search": "Vyhledat soubory",
         "closeSearch": "Zavřít vyhledávání",
         "refresh": "Obnovit"
@@ -1954,9 +1954,9 @@
         "downloaded": "Staženo {{name}}",
         "downloadingItems": "Stahování položek {{count}} ...",
         "uploaded": "Nahráno {{name}}",
-        "uploadedItems": "Uploaded {{count}} files",
+        "uploadedItems": "Nahrané soubory {{count}}",
         "uploadFailed": "Nahrávání se nezdařilo: {{message}}",
-        "uploadFailedItems": "{{count}} files failed to upload: {{message}}",
+        "uploadFailedItems": "{{count}} Nahrání souborů se nezdařilo: {{message}}",
         "connectionLost": "Ztráta připojení SFTP. Znovu se připojte.",
         "error": "Došlo k chybě"
       }
@@ -1987,9 +1987,9 @@
       "deny": "Odmítnout",
       "denied": "Tuto akci jste zamítli.",
       "stopped": "Zastavil se.",
-      "continuePrompt": "The assistant paused after a long run of steps. Continue?",
-      "continue": "Continue",
-      "compacted": "Earlier messages were summarised to free up context.",
+      "continuePrompt": "Asistent se po dlouhém úseku schodů na chvíli zastavil. Mám pokračovat?",
+      "continue": "Pokračovat",
+      "compacted": "Předchozí zprávy byly zkráceny, aby se uvolnilo místo pro kontext.",
       "tools": {
         "runCommand": "Spustit příkaz",
         "readFile": "Načíst soubor",
@@ -2006,12 +2006,12 @@
       }
     },
     "commandSuggestion": {
-      "open": "Generate Command",
-      "placeholder": "Describe the command...",
-      "generating": "Generating...",
-      "accept": "Accept command",
-      "cycle": "Cycle suggestions",
-      "error": "Failed to generate a command."
+      "open": "Vygenerovat příkaz",
+      "placeholder": "Popište tento příkaz...",
+      "generating": "Vytváření...",
+      "accept": "Příkaz „Accept“",
+      "cycle": "Návrhy cyklotras",
+      "error": "Nepodařilo se vygenerovat příkaz."
     },
     "snippets": {
       "title": "Snippety",
@@ -2056,8 +2056,8 @@
       }
     },
     "liveSessions": {
-      "activeOn": "Live sessions: {{users}}",
-      "unknownUser": "Unknown user"
+      "activeOn": "Živé přenosy: {{users}}",
+      "unknownUser": "Neznámý uživatel"
     }
   },
   "support": {
@@ -2079,7 +2079,7 @@
   },
   "welcome": {
     "hello": "Ahoj",
-    "defaultName": "User",
+    "defaultName": "Uživatel",
     "subtitle": "Vítejte na Nextermu. Správce serverů s otevřeným zdrojovým kódem pro SSH, VNC a RDP.",
     "downloadApps": "Aplikace ke stažení",
     "connectDevice": "Připojení zařízení",
