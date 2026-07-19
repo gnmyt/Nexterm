@@ -53,7 +53,7 @@ export const tauriFetch = async (url, options = {}) => {
     return fetch(url, options);
 };
 
-export const uploadFile = async (url, file, { onProgress, timeout = 300000 } = {}) => {
+export const uploadFile = async (url, file, { onProgress, timeout = 300000, headers = {} } = {}) => {
     const baseUrl = getBaseUrl();
     const fullUrl = baseUrl ? `${baseUrl}${url}` : url;
 
@@ -64,7 +64,7 @@ export const uploadFile = async (url, file, { onProgress, timeout = 300000 } = {
             
             const response = await tauriFetchApi(fullUrl, {
                 method: "POST",
-                headers: { "Content-Type": "application/octet-stream", "User-Agent": userAgent },
+                headers: { "Content-Type": "application/octet-stream", "User-Agent": userAgent, ...headers },
                 body: arrayBuffer,
             });
 
@@ -110,6 +110,7 @@ export const uploadFile = async (url, file, { onProgress, timeout = 300000 } = {
 
         xhr.open("POST", fullUrl, true);
         xhr.setRequestHeader("Content-Type", "application/octet-stream");
+        Object.entries(headers).forEach(([key, value]) => xhr.setRequestHeader(key, value));
         xhr.send(file);
     });
 };
@@ -156,7 +157,7 @@ export const downloadRequest = async (url) => {
     return blob;
 }
 
-const getToken = () => {
+export const getToken = () => {
     return localStorage.getItem("overrideToken") || localStorage.getItem("sessionToken");
 }
 
