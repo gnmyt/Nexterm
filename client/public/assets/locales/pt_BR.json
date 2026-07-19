@@ -1983,6 +1983,9 @@
       "deny": "Negar",
       "denied": "Você rejeitou essa ação.",
       "stopped": "Parei.",
+      "continuePrompt": "The assistant paused after a long run of steps. Continue?",
+      "continue": "Continue",
+      "compacted": "Earlier messages were summarised to free up context.",
       "tools": {
         "runCommand": "Executar comando",
         "readFile": "Ler arquivo",
