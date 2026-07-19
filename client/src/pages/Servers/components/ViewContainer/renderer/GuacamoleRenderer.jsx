@@ -16,6 +16,8 @@ import { createBrowserFsProvider } from "@/common/utils/BrowserFsProvider.js";
 import "./styles/guacamole.sass";
 
 const SIZE_RESEND_INTERVAL = 5000;
+const SIZE_CONFIRM_INTERVAL = 500;
+const SIZE_CONFIRM_ATTEMPTS = 6;
 
 const SHORTCUT_HOLD = 50;
 
@@ -75,6 +77,7 @@ const GuacamoleRenderer = ({
     const maxMonitorsRef = useRef(1);
     const layoutRef = useRef(null);
     const lastSentRef = useRef({ w: 0, h: 0, monitor: -1, at: 0 });
+    const confirmAttemptsRef = useRef(0);
     const { getParsedKeybind } = useKeymaps();
     const { sendToast } = useToast();
     const { t } = useTranslation();
@@ -184,9 +187,15 @@ const GuacamoleRenderer = ({
             const last = lastSentRef.current;
             const changed = last.w !== dw || last.h !== dh || last.monitor !== monitor;
 
-            if (changed || Date.now() - last.at >= SIZE_RESEND_INTERVAL) {
+            const display = clientRef.current.getDisplay();
+            const applied = display.getWidth() === dw && display.getHeight() === dh;
+            const retrying = !applied && confirmAttemptsRef.current < SIZE_CONFIRM_ATTEMPTS;
+            const elapsed = Date.now() - last.at;
+
+            if (changed || elapsed >= (retrying ? SIZE_CONFIRM_INTERVAL : SIZE_RESEND_INTERVAL)) {
                 clientRef.current.sendSize(dw, dh, monitor, 0);
                 lastSentRef.current = { w: dw, h: dh, monitor, at: Date.now() };
+                confirmAttemptsRef.current = changed ? 0 : confirmAttemptsRef.current + 1;
             }
         }
 
@@ -611,6 +620,11 @@ const GuacamoleRenderer = ({
 
         client.onstatechange = (st) => {
             if (isCleaningUp) return;
+            if (st === Guacamole.Client.State.CONNECTED) {
+                lastSentRef.current = { w: 0, h: 0, monitor: -1, at: 0 };
+                confirmAttemptsRef.current = 0;
+                resizeHandler();
+            }
             if (st === Guacamole.Client.State.DISCONNECTED || st === Guacamole.Client.State.ERROR) {
                 if (errorShownRef.current) return;
                 if (errorMessageRef.current) reportError(errorMessageRef.current);
@@ -662,6 +676,7 @@ const GuacamoleRenderer = ({
 
             layoutRef.current = null;
             lastSentRef.current = { w: 0, h: 0, monitor: -1, at: 0 };
+            confirmAttemptsRef.current = 0;
             monitorCountRef.current = 1;
             activeMonitorRef.current = initialMonitor;
             maxMonitorsRef.current = 1;
