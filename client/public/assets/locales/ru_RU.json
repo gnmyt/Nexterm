@@ -1983,6 +1983,9 @@
       "deny": "Отклонить",
       "denied": "Ты отклонил это действие.",
       "stopped": "Остановился.",
+      "continuePrompt": "The assistant paused after a long run of steps. Continue?",
+      "continue": "Continue",
+      "compacted": "Earlier messages were summarised to free up context.",
       "tools": {
         "runCommand": "Запустить команду",
         "readFile": "Прочитать файл",
