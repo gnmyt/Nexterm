@@ -52,7 +52,7 @@ const PLATFORMS = [
         icon: mdiAppleIos,
         useVersionInFilename: true,
         downloads: [
-            { label: "App Store", arch: "Soon", icon: mdiApple, disabled: true },
+            { label: "App Store", arch: "Recommended", url: "https://apps.apple.com/app/nexterm/id6761635144", icon: mdiApple },
             { label: "IPA", arch: "Universal", file: "ipa" },
         ],
     },
