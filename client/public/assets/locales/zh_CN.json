@@ -592,7 +592,17 @@
     },
     "account": {
       "title": "账户",
-      "accountName": "账户名称",
+      "avatar": {
+        "label": "Picture",
+        "upload": "Change profile picture",
+        "remove": "Remove",
+        "updated": "Your profile picture has been updated",
+        "removed": "Your profile picture has been removed",
+        "tooLarge": "The selected image is larger than 10 MB",
+        "uploadFailed": "The profile picture could not be uploaded",
+        "removeFailed": "The profile picture could not be removed"
+      },
+      "accountDetails": "Account details",
       "firstName": "名字",
       "lastName": "姓",
       "appearance": "外观",
@@ -793,6 +803,20 @@
           "nameRequired": "组织名称为必填项",
           "createSuccess": "组织创建成功",
           "createFailed": "创建组织失败"
+        }
+      },
+      "sessionSettings": {
+        "sessionSettingsTab": "Live Sessions",
+        "liveSharingHeading": "Live Session Sharing",
+        "liveSharingDescription": "Control how running sessions are shared in this organization.",
+        "enableLiveSessionSharingLabel": "Enable live session sharing",
+        "enableLiveSessionSharingDescription": "Members need the View or Control Live Sessions permission.",
+        "actions": {
+          "save": "Save Settings"
+        },
+        "messages": {
+          "updated": "Live session settings updated successfully",
+          "updateFailed": "Failed to update live session settings"
         }
       }
     },
@@ -1558,7 +1582,9 @@
       "wakeOnLan": "网络唤醒",
       "shutdown": "关机",
       "stop": "停止",
-      "start": "启动"
+      "start": "启动",
+      "joinSession": "Join Session",
+      "joinSessionOf": "Join session of {{user}}"
     },
     "passwordHint": {
       "paste": "paste password",
@@ -2013,6 +2039,10 @@
         "unsaved": "未保存",
         "error": "保存失败"
       }
+    },
+    "liveSessions": {
+      "activeOn": "Live sessions: {{users}}",
+      "unknownUser": "Unknown user"
     }
   },
   "support": {
@@ -2034,6 +2064,7 @@
   },
   "welcome": {
     "hello": "你好",
+    "defaultName": "User",
     "subtitle": "欢迎使用 Nexterm。用于 SSH、VNC 和 RDP 的开源服务器管理器。",
     "downloadApps": "下载应用程序",
     "connectDevice": "连接设备",
