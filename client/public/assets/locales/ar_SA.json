@@ -593,16 +593,16 @@
     "account": {
       "title": "الحساب",
       "avatar": {
-        "label": "Picture",
-        "upload": "Change profile picture",
-        "remove": "Remove",
-        "updated": "Your profile picture has been updated",
-        "removed": "Your profile picture has been removed",
-        "tooLarge": "The selected image is larger than 10 MB",
-        "uploadFailed": "The profile picture could not be uploaded",
-        "removeFailed": "The profile picture could not be removed"
+        "label": "صورة",
+        "upload": "تغيير صورة الملف الشخصي",
+        "remove": "إزالة",
+        "updated": "تم تحديث صورة ملفك الشخصي",
+        "removed": "تمت إزالة صورة ملفك الشخصي",
+        "tooLarge": "حجم الصورة المحددة أكبر من 10 ميغابايت",
+        "uploadFailed": "تعذر تحميل صورة الملف الشخصي",
+        "removeFailed": "تعذر إزالة صورة الملف الشخصي"
       },
-      "accountDetails": "Account details",
+      "accountDetails": "تفاصيل الحساب",
       "firstName": "الاسم الأول",
       "lastName": "اسم العائلة",
       "appearance": "المظهر",
@@ -806,17 +806,17 @@
         }
       },
       "sessionSettings": {
-        "sessionSettingsTab": "Live Sessions",
-        "liveSharingHeading": "Live Session Sharing",
-        "liveSharingDescription": "Control how running sessions are shared in this organization.",
-        "enableLiveSessionSharingLabel": "Enable live session sharing",
-        "enableLiveSessionSharingDescription": "Members need the View or Control Live Sessions permission.",
+        "sessionSettingsTab": "الجلسات المباشرة",
+        "liveSharingHeading": "مشاركة الجلسات المباشرة",
+        "liveSharingDescription": "التحكم في كيفية مشاركة الجلسات الجارية في هذه المؤسسة.",
+        "enableLiveSessionSharingLabel": "تمكين مشاركة الجلسة المباشرة",
+        "enableLiveSessionSharingDescription": "يحتاج الأعضاء إلى إذن «عرض الجلسات المباشرة» أو «التحكم فيها».",
         "actions": {
-          "save": "Save Settings"
+          "save": "حفظ الإعدادات"
         },
         "messages": {
-          "updated": "Live session settings updated successfully",
-          "updateFailed": "Failed to update live session settings"
+          "updated": "تم تحديث إعدادات الجلسة المباشرة بنجاح",
+          "updateFailed": "فشل تحديث إعدادات الجلسة المباشرة"
         }
       }
     },
@@ -886,8 +886,8 @@
           "description": "الموافقة على الإجراء المعلق المتعلق بأداة الذكاء الاصطناعي في المساعد"
         },
         "aicommand": {
-          "title": "Generate Command",
-          "description": "Ask for a command suggestion inside the terminal"
+          "title": "إنشاء أمر",
+          "description": "اطلب اقتراح أمر داخل المحطة الطرفية"
         },
         "snippets": {
           "title": "مقتطفات",
@@ -954,7 +954,7 @@
         "title": "الإدخال",
         "description": "تحكم في طريقة عمل اختصارات لوحة المفاتيح داخل المحطة الطرفية.",
         "smartCopyPaste": "Ctrl+C الذكي",
-        "passwordPromptDetection": "Password input detection",
+        "passwordPromptDetection": "الكشف عن إدخال كلمة المرور",
         "enabled": "ممكّن",
         "disabled": "ذوو الإعاقة",
         "syncEnabled": "ستتم الآن مزامنة إعدادات الإدخال مع حسابك",
@@ -1580,20 +1580,20 @@
       "duplicateServer": "تكرار الخادم",
       "pasteIdentityPassword": "لصق كلمة المرور",
       "deleteServer": "حذف الخادم",
-      "deleteConfirm": "Are you sure you want to delete \"{{name}}\"? This action cannot be undone.",
-      "deleteFailServer": "Failed to delete \"{{name}}\".",
-      "deleteFailFolder": "Failed to delete the folder \"{{name}}\".",
+      "deleteConfirm": "هل أنت متأكد من رغبتك في حذف \"{{name}}\"؟ لا يمكن التراجع عن هذا الإجراء.",
+      "deleteFailServer": "فشل حذف \"{{name}}\".",
+      "deleteFailFolder": "فشل حذف المجلد \"{{name}}\".",
       "wakeOnLan": "استيقظ على الشبكة المحلية",
       "shutdown": "إغلاق",
       "stop": "إيقاف",
       "start": "بدء",
-      "joinSession": "Join Session",
-      "joinSessionOf": "Join session of {{user}}"
+      "joinSession": "الانضمام إلى الجلسة",
+      "joinSessionOf": "انضم إلى جلسة {{user}}"
     },
     "passwordHint": {
-      "paste": "paste password",
-      "pasteFor": "paste {{username}} password",
-      "cycle": "Use the arrow keys to switch identity"
+      "paste": "لصق كلمة المرور",
+      "pasteFor": "لصق {{username}} كلمة المرور",
+      "cycle": "استخدم مفاتيح الأسهم لتغيير الهوية"
     },
     "tabs": {
       "contextMenu": {
@@ -1677,9 +1677,9 @@
           "description": "السماح بإيقاظ هذا الخادم عن بُعد باستخدام عنوان MAC الخاص به"
         },
         "rdpSecurity": {
-          "title": "Security",
-          "description": "Authentication method used to connect to the remote Windows machine. Use NLA for environments where NTLM is disabled (e.g. Protected Users group).",
-          "method": "Security Method"
+          "title": "الأمن",
+          "description": "طريقة المصادقة المستخدمة للاتصال بجهاز Windows البعيد. استخدم NLA في البيئات التي يكون فيها NTLM معطلاً (مثل مجموعة «المستخدمين المحميين»).",
+          "method": "طريقة الأمان"
         },
         "keyboardLayout": {
           "title": "تخطيط لوحة المفاتيح",
@@ -1816,7 +1816,7 @@
       }
     },
     "fileManager": {
-      "dropOverlay": "Drop files or folders to upload",
+      "dropOverlay": "اسحب الملفات أو المجلدات لتحميلها",
       "createFile": {
         "title": "إنشاء ملف",
         "placeholder": "اسم الملف",
@@ -1928,8 +1928,8 @@
         "hiddenDirectories": "{{count}} الدلائل المخفية",
         "switchToGrid": "التبديل إلى عرض الشبكة",
         "switchToList": "التبديل إلى عرض القائمة",
-        "uploadFile": "Upload file(s)",
-        "uploadFolder": "Upload folder",
+        "uploadFile": "تحميل الملفات",
+        "uploadFolder": "مجلد التحميل",
         "search": "البحث في الملفات",
         "closeSearch": "إغلاق البحث",
         "refresh": "تحديث"
@@ -1954,9 +1954,9 @@
         "downloaded": "تم التحميل {{name}}",
         "downloadingItems": "تنزيل {{count}} عنصر (عناصر) ...",
         "uploaded": "تم التحميل {{name}}",
-        "uploadedItems": "Uploaded {{count}} files",
+        "uploadedItems": "تم تحميل ملفات {{count}}",
         "uploadFailed": "فشل التحميل: {{message}}",
-        "uploadFailedItems": "{{count}} files failed to upload: {{message}}",
+        "uploadFailedItems": "{{count}} فشل تحميل الملفات: {{message}}",
         "connectionLost": "فُقد اتصال SFTP. الرجاء إعادة الاتصال.",
         "error": "حدث خطأ"
       }
@@ -1987,9 +1987,9 @@
       "deny": "رفض",
       "denied": "لقد رفضت هذا الإجراء.",
       "stopped": "توقف.",
-      "continuePrompt": "The assistant paused after a long run of steps. Continue?",
-      "continue": "Continue",
-      "compacted": "Earlier messages were summarised to free up context.",
+      "continuePrompt": "توقف المساعد بعد سلسلة طويلة من الخطوات. هل نواصل؟",
+      "continue": "تابع",
+      "compacted": "تم تلخيص الرسائل السابقة لتوضيح السياق.",
       "tools": {
         "runCommand": "تشغيل الأمر",
         "readFile": "قراءة الملف",
@@ -2006,12 +2006,12 @@
       }
     },
     "commandSuggestion": {
-      "open": "Generate Command",
-      "placeholder": "Describe the command...",
-      "generating": "Generating...",
-      "accept": "Accept command",
-      "cycle": "Cycle suggestions",
-      "error": "Failed to generate a command."
+      "open": "إنشاء أمر",
+      "placeholder": "صف الأمر...",
+      "generating": "جاري الإنشاء...",
+      "accept": "أمر \"قبول\"",
+      "cycle": "اقتراحات الدورات",
+      "error": "فشل إنشاء الأمر."
     },
     "snippets": {
       "title": "القصاصات",
@@ -2056,8 +2056,8 @@
       }
     },
     "liveSessions": {
-      "activeOn": "Live sessions: {{users}}",
-      "unknownUser": "Unknown user"
+      "activeOn": "الجلسات المباشرة: {{users}}",
+      "unknownUser": "مستخدم مجهول"
     }
   },
   "support": {
@@ -2079,7 +2079,7 @@
   },
   "welcome": {
     "hello": "مرحباً",
-    "defaultName": "User",
+    "defaultName": "المستخدم",
     "subtitle": "مرحبًا بك في Nexterm. مدير الخادم مفتوح المصدر لخوادم SSH و VNC و RDP.",
     "downloadApps": "تنزيل التطبيقات",
     "connectDevice": "توصيل الجهاز",
