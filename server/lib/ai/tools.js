@@ -63,7 +63,20 @@ const readEntireFile = (sftp, path) => new Promise((resolve, reject) => {
     }).catch(reject);
 });
 
-const buildTools = ({ getSftp, canModify, requireConfirmation, requestApproval, logAudit, tool }) => {
+const usesSudo = (command) => /(^|[\n|&;(`]|\$\()\s*sudo\s/.test(command);
+
+const SUDO_SHIM = [
+    "IFS= read -r __NX_SUDO_PW && export __NX_SUDO_PW",
+    "export SUDO_ASKPASS=\"${HOME:-/tmp}/.nexterm-askpass.$$\"",
+    "trap 'rm -f \"$SUDO_ASKPASS\"' EXIT INT TERM",
+    "cat > \"$SUDO_ASKPASS\" <<'__NX_EOF__' && chmod 700 \"$SUDO_ASKPASS\"",
+    "#!/bin/sh",
+    "printf '%s\\n' \"$__NX_SUDO_PW\"",
+    "__NX_EOF__",
+    "sudo() { command sudo -A \"$@\"; }",
+].join("\n");
+
+const buildTools = ({ getSftp, getPassword, canModify, requireConfirmation, requestApproval, logAudit, tool }) => {
     const define = (name, description, inputSchema, runner, { mutating = false, audit } = {}) => tool({
         description,
         inputSchema,
@@ -97,7 +110,12 @@ const buildTools = ({ getSftp, canModify, requireConfirmation, requestApproval, 
                     .describe("Seconds to wait for the command to finish before timing out. Increase for long-running commands like installs, builds or backups. Defaults to 300 (max 1800)."),
             }),
             async (sftp, { command, timeoutSeconds }) => {
-                const { stdout, stderr, exitCode } = await sftp.exec(command, (timeoutSeconds || 300) * 1000);
+                const password = usesSudo(command) && getPassword ? await getPassword() : null;
+                const { stdout, stderr, exitCode } = await sftp.exec(
+                    password ? `${SUDO_SHIM}\n${command}` : command,
+                    (timeoutSeconds || 300) * 1000,
+                    password ? `${password}\n` : null,
+                );
                 return { exitCode, stdout: truncate(stdout), stderr: truncate(stderr) };
             },
             { mutating: true, audit: ({ command }) => ({ action: AUDIT_ACTIONS.AI_COMMAND, details: { command } }) },

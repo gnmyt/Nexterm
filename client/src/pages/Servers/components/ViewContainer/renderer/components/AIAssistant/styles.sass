@@ -80,6 +80,13 @@
   &.status-error, &.status-denied, &.exit-failed
     border-color: colors.$error-opacity
 
+  &.settled > .tool-head
+    cursor: pointer
+    outline: none
+
+    &:hover, &:focus-visible
+      background: colors.$darker-gray
+
   .tool-head
     display: flex
     align-items: center
@@ -93,16 +100,33 @@
       flex-shrink: 0
 
     .tool-name
-      flex: 1
+      flex-shrink: 0
       min-width: 0
       font-size: 0.82rem
       font-weight: 600
       color: colors.$white
 
+    .tool-summary
+      flex: 1
+      min-width: 0
+      overflow: hidden
+      white-space: nowrap
+      text-overflow: ellipsis
+      font-family: monospace
+      font-size: 0.75rem
+      color: colors.$subtext
+
+    .tool-chevron
+      width: 0.9rem
+      height: 0.9rem
+      flex-shrink: 0
+      color: colors.$subtext
+
     .tool-status
       display: flex
       align-items: center
       flex-shrink: 0
+      margin-left: auto
 
       svg
         width: 1rem
@@ -240,6 +264,19 @@
 
     &.folder
       color: colors.$primary
+
+.ai-continue
+  display: flex
+  align-items: center
+  justify-content: space-between
+  gap: 0.5rem
+  padding: 0.6rem 0.75rem
+  border: 1px solid colors.$gray
+  border-radius: 0.5rem
+  background: colors.$darker-gray
+  font-size: 0.8rem
+  color: colors.$white
+  flex-wrap: wrap
 
 .ai-typing
   display: flex

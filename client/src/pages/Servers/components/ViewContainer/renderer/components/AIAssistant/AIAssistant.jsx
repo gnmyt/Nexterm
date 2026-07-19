@@ -1,10 +1,11 @@
-import { useContext, useEffect, useRef, useState } from "react";
+import { memo, useCallback, useContext, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import Icon from "@mdi/react";
 import {
     mdiRobotHappyOutline, mdiSend, mdiStop, mdiClose,
     mdiCheck, mdiCancel, mdiConsoleLine, mdiFileDocumentOutline, mdiFileEditOutline, mdiFolderOutline,
     mdiInformationOutline, mdiFolderPlusOutline, mdiTrashCanOutline, mdiFileMoveOutline, mdiLockOutline, mdiMagnify,
+    mdiPlay, mdiChevronDown, mdiChevronUp,
 } from "@mdi/js";
 import { UserContext } from "@/common/contexts/UserContext.jsx";
 import { useKeymaps, matchesKeybind } from "@/common/contexts/KeymapContext.jsx";
@@ -28,6 +29,9 @@ const TOOL_META = {
     changePermissions: { icon: mdiLockOutline, summary: (a) => `${a.path} → ${a.mode}` },
     findDirectories: { icon: mdiMagnify, summary: (a) => a.query },
 };
+
+const newConversationId = () => globalThis.crypto?.randomUUID?.()
+    ?? `c-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 10)}`;
 
 const ToolResult = ({ tool, result }) => {
     if (!result || result.denied) return null;
@@ -66,19 +70,27 @@ const ToolResult = ({ tool, result }) => {
     );
 };
 
-const ToolCard = ({ message, onConfirm, acceptHint }) => {
+const ToolCard = memo(({ message, onConfirm, acceptHint }) => {
     const { t } = useTranslation();
+    const [expanded, setExpanded] = useState(false);
     const meta = TOOL_META[message.tool] || { icon: mdiConsoleLine, summary: () => "" };
     const summary = meta.summary(message.args || {});
     const exitCode = message.tool === "runCommand" && message.status === "done" && message.result && !message.result.denied
         ? message.result.exitCode : null;
     const failed = exitCode !== null && exitCode !== 0;
 
+    const settled = message.status !== "running" && message.status !== "awaiting-confirm";
+    const open = !settled || expanded;
+    const toggle = () => settled && setExpanded((prev) => !prev);
+
     return (
-        <div className={`tool-card status-${message.status}${failed ? " exit-failed" : ""}`}>
-            <div className="tool-head">
+        <div className={`tool-card status-${message.status}${failed ? " exit-failed" : ""}${settled ? " settled" : ""}`}>
+            <div className="tool-head" onClick={toggle} role={settled ? "button" : undefined}
+                 tabIndex={settled ? 0 : undefined} aria-expanded={settled ? open : undefined}
+                 onKeyDown={(e) => { if (settled && (e.key === "Enter" || e.key === " ")) { e.preventDefault(); toggle(); } }}>
                 <Icon path={meta.icon} />
                 <span className="tool-name">{t(`servers.aiAssistant.tools.${message.tool}`)}</span>
+                {!open && summary && <span className="tool-summary">{summary}</span>}
                 <span className="tool-status">
                     {message.status === "running" && <span className="ai-spinner" />}
                     {message.status === "done" && (failed
@@ -88,9 +100,10 @@ const ToolCard = ({ message, onConfirm, acceptHint }) => {
                     {message.status === "aborted" && <Icon path={mdiStop} />}
                     {message.status === "error" && <Icon path={mdiClose} />}
                 </span>
+                {settled && <Icon className="tool-chevron" path={open ? mdiChevronUp : mdiChevronDown} />}
             </div>
 
-            {summary && <div className="tool-target">{summary}</div>}
+            {open && summary && <div className="tool-target">{summary}</div>}
 
             {message.status === "awaiting-confirm" && (
                 <div className="tool-confirm">
@@ -106,13 +119,13 @@ const ToolCard = ({ message, onConfirm, acceptHint }) => {
                 </div>
             )}
 
-            {message.status === "denied" && <div className="tool-note">{t("servers.aiAssistant.denied")}</div>}
-            {message.status === "aborted" && <div className="tool-note">{t("servers.aiAssistant.stopped")}</div>}
-            {message.status === "error" && <div className="tool-note error">{message.error}</div>}
-            {(message.status === "done") && <ToolResult tool={message.tool} result={message.result} />}
+            {open && message.status === "denied" && <div className="tool-note">{t("servers.aiAssistant.denied")}</div>}
+            {open && message.status === "aborted" && <div className="tool-note">{t("servers.aiAssistant.stopped")}</div>}
+            {open && message.status === "error" && <div className="tool-note error">{message.error}</div>}
+            {open && message.status === "done" && <ToolResult tool={message.tool} result={message.result} />}
         </div>
     );
-};
+});
 
 export const AIAssistant = ({ session, onClose }) => {
     const { t } = useTranslation();
@@ -122,6 +135,7 @@ export const AIAssistant = ({ session, onClose }) => {
     const [input, setInput] = useState("");
     const [running, setRunning] = useState(false);
     const [ready, setReady] = useState(false);
+    const [needsContinue, setNeedsContinue] = useState(false);
     const [connectionError, setConnectionError] = useState(null);
     const wsRef = useRef(null);
     const messagesRef = useRef(null);
@@ -137,7 +151,7 @@ export const AIAssistant = ({ session, onClose }) => {
         });
     };
 
-    const upsertTool = (callId, patch, base) => {
+    const upsertTool = useCallback((callId, patch, base) => {
         setMessages((prev) => {
             const idx = prev.findIndex((m) => m.role === "tool" && m.callId === callId);
             if (idx === -1) {
@@ -148,7 +162,7 @@ export const AIAssistant = ({ session, onClose }) => {
             next[idx] = { ...next[idx], ...patch };
             return next;
         });
-    };
+    }, []);
 
     const stopStreaming = () => {
         setMessages((prev) => {
@@ -175,8 +189,11 @@ export const AIAssistant = ({ session, onClose }) => {
         let attempts = 0;
         setConnectionError(null);
 
+        const conversationId = newConversationId();
+
         const connect = () => {
-            const ws = new WebSocket(getWebSocketUrl("/api/ws/ai", { sessionToken, sessionId: session.id }));
+            const ws = new WebSocket(getWebSocketUrl("/api/ws/ai",
+                { sessionToken, sessionId: session.id, conversationId }));
             wsRef.current = ws;
 
             ws.onmessage = (event) => {
@@ -198,10 +215,14 @@ export const AIAssistant = ({ session, onClose }) => {
                     case "tool-error":
                         upsertTool(msg.callId, { status: "error", error: msg.error });
                         break;
+                    case "step-limit": stopStreaming(); setNeedsContinue(true); break;
+                    case "compacted":
+                        setMessages((prev) => [...prev, { role: "system", text: t("servers.aiAssistant.compacted") }]);
+                        break;
                     case "done": stopStreaming(); setRunning(false); break;
-                    case "aborted": stopStreaming(); finalizeRunningTools(); setRunning(false); break;
+                    case "aborted": stopStreaming(); finalizeRunningTools(); setRunning(false); setNeedsContinue(false); break;
                     case "error":
-                        stopStreaming(); setRunning(false);
+                        stopStreaming(); setRunning(false); setNeedsContinue(false);
                         setMessages((prev) => [...prev, { role: "system", text: msg.message }]);
                         break;
                     default: break;
@@ -244,13 +265,20 @@ export const AIAssistant = ({ session, onClose }) => {
                 ws.onmessage = null;
                 ws.onclose = null;
                 ws.onerror = null;
+                if (ws.readyState === WebSocket.OPEN) ws.send(JSON.stringify({ type: "close" }));
                 ws.close();
             }
         };
     }, [sessionToken, session.id]);
 
+    const stickToBottom = useRef(true);
+    const onScroll = () => {
+        const el = messagesRef.current;
+        if (el) stickToBottom.current = el.scrollHeight - el.scrollTop - el.clientHeight < 40;
+    };
+
     useEffect(() => {
-        messagesRef.current?.scrollTo({ top: messagesRef.current.scrollHeight });
+        if (stickToBottom.current) messagesRef.current?.scrollTo({ top: messagesRef.current.scrollHeight });
     }, [messages]);
 
     useEffect(() => {
@@ -263,6 +291,14 @@ export const AIAssistant = ({ session, onClose }) => {
         wsRef.current?.send(JSON.stringify({ type: "prompt", content }));
         setMessages((prev) => [...prev, { role: "user", text: content }]);
         setInput("");
+        setNeedsContinue(false);
+        setRunning(true);
+    };
+
+    const continueRun = () => {
+        if (running || !ready) return;
+        wsRef.current?.send(JSON.stringify({ type: "continue" }));
+        setNeedsContinue(false);
         setRunning(true);
     };
 
@@ -271,12 +307,13 @@ export const AIAssistant = ({ session, onClose }) => {
         stopStreaming();
         finalizeRunningTools();
         setRunning(false);
+        setNeedsContinue(false);
     };
 
-    const confirmTool = (callId, allow) => {
+    const confirmTool = useCallback((callId, allow) => {
         wsRef.current?.send(JSON.stringify({ type: "confirm", callId, allow }));
         upsertTool(callId, { status: allow ? "running" : "denied" });
-    };
+    }, [upsertTool]);
 
     const pendingConfirmId = messages.find((m) => m.role === "tool" && m.status === "awaiting-confirm")?.callId ?? null;
     const acceptKeybind = getParsedKeybind?.("ai-accept-tool");
@@ -312,7 +349,7 @@ export const AIAssistant = ({ session, onClose }) => {
             onClose={onClose}
             initialSize={{ width: 460, height: 620 }}
         >
-            <div className="ai-assistant-messages" ref={messagesRef}>
+            <div className="ai-assistant-messages" ref={messagesRef} onScroll={onScroll}>
                 {messages.length === 0 && !connectionError && (
                     <div className="ai-assistant-empty">
                         <Icon path={mdiRobotHappyOutline} />
@@ -321,12 +358,23 @@ export const AIAssistant = ({ session, onClose }) => {
                 )}
 
                 {messages.map((message, i) => {
+                    if (message.role === "tool") {
+                        return <ToolCard key={message.callId} message={message} onConfirm={confirmTool}
+                                         acceptHint={acceptHint} />;
+                    }
                     const key = `msg-${i}`;
                     if (message.role === "user") return <div key={key} className="message user"><MessageContent text={message.text} /></div>;
                     if (message.role === "assistant") return <div key={key} className="message assistant"><MessageContent text={message.text} /></div>;
-                    if (message.role === "system") return <div key={key} className="message system">{message.text}</div>;
-                    return <ToolCard key={key} message={message} onConfirm={confirmTool} acceptHint={acceptHint} />;
+                    return <div key={key} className="message system">{message.text}</div>;
                 })}
+
+                {needsContinue && !running && (
+                    <div className="ai-continue">
+                        <span>{t("servers.aiAssistant.continuePrompt")}</span>
+                        <Button icon={mdiPlay} text={t("servers.aiAssistant.continue")} onClick={continueRun}
+                                disabled={!ready} />
+                    </div>
+                )}
 
                 {running && <div className="ai-typing"><span /><span /><span /></div>}
                 {connectionError && <div className="message system error">{connectionError}</div>}

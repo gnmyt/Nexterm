@@ -1,7 +1,7 @@
 const wsAuth = require("../middlewares/wsAuth");
 const logger = require("../utils/logger");
 const SessionManager = require("../lib/SessionManager");
-const { getSFTPAIClient } = require("../lib/ConnectionService");
+const { getSFTPAIClient, getSessionPassword } = require("../lib/ConnectionService");
 const { hasResourcePermission } = require("../utils/permission");
 const { Permission } = require("../permissions/registry");
 const { getRuntimeSettings, isConfigured } = require("../controllers/ai");
@@ -9,6 +9,38 @@ const { createAuditLog } = require("../controllers/audit");
 const { buildModel, getModelProviderOptions } = require("../lib/ai/providers");
 const { buildSystemPrompt } = require("../lib/ai/systemPrompt");
 const { createAgent } = require("../lib/ai/agent");
+
+const CONVERSATION_GRACE_MS = 5 * 60 * 1000;
+
+const takeConversation = (session, conversationId) => {
+    if (!session.aiConversations) session.aiConversations = new Map();
+    let conversation = session.aiConversations.get(conversationId);
+    if (!conversation) {
+        conversation = { messages: [], reapTimer: null };
+        session.aiConversations.set(conversationId, conversation);
+    }
+    if (conversation.reapTimer) {
+        clearTimeout(conversation.reapTimer);
+        conversation.reapTimer = null;
+    }
+    return conversation;
+};
+
+const dropConversation = (session, conversationId) => {
+    const conversation = session.aiConversations?.get(conversationId);
+    if (!conversation) return;
+    if (conversation.reapTimer) clearTimeout(conversation.reapTimer);
+    session.aiConversations.delete(conversationId);
+};
+
+const scheduleReap = (session, conversationId) => {
+    const conversation = session.aiConversations?.get(conversationId);
+    if (!conversation || conversation.reapTimer) return;
+    conversation.reapTimer = setTimeout(() => {
+        session.aiConversations?.delete(conversationId);
+    }, CONVERSATION_GRACE_MS);
+    conversation.reapTimer.unref?.();
+};
 
 const waitForConnection = async (sessionId, timeoutMs = 30000) => {
     const start = Date.now();
@@ -42,7 +74,9 @@ module.exports = async function handleAIConnection(ws, req) {
     if (!await waitForConnection(sessionId)) return ws.close(4014, "Connection not available");
 
     const session = SessionManager.get(sessionId);
-    if (!session.aiHistory) session.aiHistory = [];
+    const conversationId = typeof req.query.conversationId === "string" && req.query.conversationId
+        ? req.query.conversationId : `session-${sessionId}`;
+    const conversation = takeConversation(session, conversationId);
 
     const send = (payload) => {
         if (ws.readyState === ws.OPEN) ws.send(JSON.stringify(payload));
@@ -55,6 +89,17 @@ module.exports = async function handleAIConnection(ws, req) {
         logger.error("AI assistant failed to open SFTP channel", { sessionId, error: err.message });
         return ws.close(4021, "Failed to open server channel");
     }
+
+    let passwordPromise = null;
+    const getPassword = () => {
+        if (!passwordPromise) {
+            passwordPromise = getSessionPassword(sessionId, entry, user.id).catch((err) => {
+                logger.error("AI assistant failed to resolve the session password", { sessionId, error: err.message });
+                return null;
+            });
+        }
+        return passwordPromise;
+    };
 
     const pendingApprovals = new Map();
     const requestApproval = (tool, args, callId) => new Promise((resolve) => {
@@ -87,8 +132,9 @@ module.exports = async function handleAIConnection(ws, req) {
             model: await buildModel(settings),
             providerOptions: getModelProviderOptions(settings),
             system: await buildSystemPrompt(entry),
-            history: session.aiHistory,
+            history: conversation.messages,
             getSftp,
+            getPassword,
             canModify,
             requireConfirmation: settings.requireConfirmation,
             requestApproval,
@@ -102,6 +148,7 @@ module.exports = async function handleAIConnection(ws, req) {
 
     let controller = null;
     let lastTurn = Promise.resolve();
+    let windowClosed = false;
 
     let alive = true;
     ws.on("pong", () => { alive = true; });
@@ -137,9 +184,7 @@ module.exports = async function handleAIConnection(ws, req) {
         send({ type: "aborted" });
     };
 
-    const handlePrompt = async (message) => {
-        const content = typeof message.content === "string" ? message.content.trim() : "";
-        if (!content) return;
+    const startTurn = async (run) => {
         if (controller) return send({ type: "busy" });
 
         const turn = new AbortController();
@@ -152,7 +197,7 @@ module.exports = async function handleAIConnection(ws, req) {
             await previous;
             try {
                 if (turn.signal.aborted) return;
-                await agent.runTurn(content, turn.signal);
+                await run(turn.signal);
                 if (!turn.signal.aborted) send({ type: "done" });
             } catch (err) {
                 if (!turn.signal.aborted) {
@@ -177,7 +222,17 @@ module.exports = async function handleAIConnection(ws, req) {
 
         if (message.type === "confirm") resolveApproval(message.callId, Boolean(message.allow));
         else if (message.type === "abort") handleAbort();
-        else if (message.type === "prompt") await handlePrompt(message);
+        else if (message.type === "close") {
+            windowClosed = true;
+            handleAbort();
+            dropConversation(session, conversationId);
+            ws.close(1000, "Window closed");
+        }
+        else if (message.type === "continue") await startTurn((signal) => agent.continueTurn(signal));
+        else if (message.type === "prompt") {
+            const content = typeof message.content === "string" ? message.content.trim() : "";
+            if (content) await startTurn((signal) => agent.runTurn(content, signal));
+        }
     });
 
     ws.on("close", () => {
@@ -185,5 +240,7 @@ module.exports = async function handleAIConnection(ws, req) {
         controller?.abort();
         abortPendingApprovals();
         resetSftpIfBusy();
+        if (windowClosed) dropConversation(session, conversationId);
+        else scheduleReap(session, conversationId);
     });
 };

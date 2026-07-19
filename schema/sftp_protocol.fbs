@@ -70,6 +70,7 @@ table WriteDataReq {
 table ExecReq {
     command: string;
     timeout_ms: uint32;
+    stdin_data: string;
 }
 
 table SearchReq {

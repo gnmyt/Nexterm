@@ -60,6 +60,7 @@ static void append_capped(char* dst, size_t cap, size_t* len,
 }
 
 static int exec_command(LIBSSH2_SESSION* ssh, const char* cmd,
+                        const char* stdin_data,
                         char* out, size_t out_sz,
                         char* err_buf, size_t err_sz,
                         int* exit_code, uint32_t timeout_ms,
@@ -71,6 +72,21 @@ static int exec_command(LIBSSH2_SESSION* ssh, const char* cmd,
         libssh2_channel_free(ch);
         return -1;
     }
+
+
+    if (stdin_data && *stdin_data) {
+        size_t total = strlen(stdin_data), written = 0;
+        while (written < total) {
+            ssize_t n = libssh2_channel_write(ch, stdin_data + written, total - written);
+            if (n <= 0) {
+                libssh2_channel_close(ch);
+                libssh2_channel_free(ch);
+                return -1;
+            }
+            written += (size_t)n;
+        }
+    }
+    libssh2_channel_send_eof(ch);
 
     const int64_t deadline = fp_monotonic_ms() + (int64_t)timeout_ms;
     size_t out_len = 0, err_len = 0;
@@ -255,7 +271,7 @@ static void stat_get_owner_group(LIBSSH2_SESSION* ssh, const char* path,
     char err[256];
     int ec;
     bool timed_out = false;
-    if (exec_command(ssh, cmd, out, sizeof(out), err, sizeof(err), &ec, 30000, &timed_out) != 0)
+    if (exec_command(ssh, cmd, NULL, out, sizeof(out), err, sizeof(err), &ec, 30000, &timed_out) != 0)
         return;
 
     size_t len = strlen(out);
@@ -458,7 +474,8 @@ static void handle_thumbnail(LIBSSH2_SFTP* sftp, int fd, uint32_t rid,
 }
 
 static void handle_exec(LIBSSH2_SESSION* ssh, int fd, uint32_t rid,
-                        const char* command, uint32_t timeout_ms) {
+                        const char* command, const char* stdin_data,
+                        uint32_t timeout_ms) {
     char* out = malloc(SFTP_EXEC_BUF);
     char* err_buf = malloc(SFTP_EXEC_BUF);
     if (!out || !err_buf) {
@@ -470,7 +487,7 @@ static void handle_exec(LIBSSH2_SESSION* ssh, int fd, uint32_t rid,
 
     int exit_code = -1;
     bool timed_out = false;
-    if (exec_command(ssh, command, out, SFTP_EXEC_BUF,
+    if (exec_command(ssh, command, stdin_data, out, SFTP_EXEC_BUF,
                      err_buf, SFTP_EXEC_BUF, &exit_code, timeout_ms, &timed_out) != 0) {
         free(out);
         free(err_buf);
@@ -695,10 +712,11 @@ static void dispatch_exec(LIBSSH2_SESSION* ssh, int data_fd, uint32_t rid,
                            Nexterm_SftpProtocol_SftpMessage_table_t msg) {
     Nexterm_SftpProtocol_ExecReq_table_t req = Nexterm_SftpProtocol_SftpMessage_exec_req(msg);
     const char* command = req ? Nexterm_SftpProtocol_ExecReq_command(req) : NULL;
+    const char* stdin_data = req ? Nexterm_SftpProtocol_ExecReq_stdin_data(req) : NULL;
     uint32_t timeout_ms = req ? Nexterm_SftpProtocol_ExecReq_timeout_ms(req) : 0;
     if (!command) { fp_send_error(data_fd, rid, "Missing command", -1); return; }
     if (timeout_ms == 0) timeout_ms = 300000;
-    handle_exec(ssh, data_fd, rid, command, timeout_ms);
+    handle_exec(ssh, data_fd, rid, command, stdin_data, timeout_ms);
 }
 
 static void dispatch_search(LIBSSH2_SFTP* sftp, int data_fd, uint32_t rid,

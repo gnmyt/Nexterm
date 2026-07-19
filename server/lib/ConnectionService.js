@@ -243,6 +243,13 @@ const getSFTPAIClient = (sessionId, entry, accountId) =>
         suffix: "ai", clientKey: "aiClient", connectingKey: "_aiConnecting", label: "ai",
     });
 
+const getSessionPassword = async (sessionId, entry, accountId) => {
+    const session = requireSession(sessionId);
+    const { identityId, directIdentity } = session.configuration;
+    const { params } = await resolveFileTransferContext(entry, identityId, directIdentity, accountId);
+    return params.password || null;
+};
+
 const createSSHConnectionForSession = async (sessionId, entry, identity, organizationId, script = null) => {
     const session = requireSession(sessionId);
     if (session._connecting) return session._connecting;
@@ -471,6 +478,7 @@ module.exports = {
     getSFTPTransferClient,
     getSFTPBackgroundClient,
     getSFTPAIClient,
+    getSessionPassword,
     buildSSHParams,
     resolveJumpHosts,
 };

@@ -288,12 +288,14 @@ class EngineSftpClient extends EventEmitter {
         return this._waitResponse(rid, WRITE_END_TIMEOUT);
     }
 
-    exec(command, timeoutMs = EXEC_TIMEOUT) {
+    exec(command, timeoutMs = EXEC_TIMEOUT, stdinData = null) {
         return this._requestWithPayload(SftpMsgType.Exec, (b) => {
             const cmdOff = b.createString(command);
+            const stdinOff = stdinData ? b.createString(stdinData) : null;
             ExecReq.startExecReq(b);
             ExecReq.addCommand(b, cmdOff);
             ExecReq.addTimeoutMs(b, timeoutMs);
+            if (stdinOff !== null) ExecReq.addStdinData(b, stdinOff);
             return { execReq: ExecReq.endExecReq(b) };
         }, timeoutMs + 15000);
     }
