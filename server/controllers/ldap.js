@@ -26,7 +26,7 @@ const mapProvider = (p) => ({
     id: p.id, name: p.name, host: p.host, port: p.port, bindDN: p.bindDN, baseDN: p.baseDN,
     userSearchFilter: p.userSearchFilter, usernameAttribute: p.usernameAttribute,
     firstNameAttribute: p.firstNameAttribute, lastNameAttribute: p.lastNameAttribute,
-    enabled: p.enabled, useTLS: p.useTLS,
+    enabled: Boolean(p.enabled), useTLS: Boolean(p.useTLS),
 });
 
 module.exports.listProviders = async (includeSecret = false) => {

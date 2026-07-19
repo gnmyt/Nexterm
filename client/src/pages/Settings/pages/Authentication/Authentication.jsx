@@ -137,7 +137,7 @@ export const Authentication = () => {
                         <div key={`oidc-${provider.id}`} className={`item${provider.enabled ? " has-sub-option" : ""}`}>
                             {provider.enabled ? <div className="item-row">{row}</div> : row}
 
-                            {provider.enabled && (
+                            {!!provider.enabled && (
                                 <div className="item-sub-option">
                                     <div className="sub-label">
                                         <h4>{t("settings.authentication.registration.title")}</h4>
