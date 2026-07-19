@@ -475,11 +475,12 @@ const GuacamoleRenderer = ({
 
     const connect = () => {
         if (getSessionError?.(session.id)) return;
-        if (isShared) {
-            if (!session.shareId || clientRef.current) return;
-        } else {
-            if (!sessionToken || clientRef.current) return;
-        }
+        if (clientRef.current) return;
+        if (session.joinSessionId) {
+            if (!sessionToken) return;
+        } else if (isShared) {
+            if (!session.shareId) return;
+        } else if (!sessionToken) return;
         let isCleaningUp = false;
         const tunnelUrl = getWebSocketUrl("/api/ws/guac/", {});
         const tunnel = new Guacamole.WebSocketTunnel(tunnelUrl);
@@ -546,7 +547,9 @@ const GuacamoleRenderer = ({
         };
 
         const s = sessionRef.current;
-        let params = isShared ? `shareId=${session.shareId}` : `sessionToken=${sessionToken}&sessionId=${s.id}`;
+        let params = session.joinSessionId
+            ? `sessionToken=${sessionToken}&joinSessionId=${session.joinSessionId}`
+            : isShared ? `shareId=${session.shareId}` : `sessionToken=${sessionToken}&sessionId=${s.id}`;
         if (!isShared && pinnedMonitor !== null) params += `&monitor=${pinnedMonitor}`;
 
         client.connect(params);

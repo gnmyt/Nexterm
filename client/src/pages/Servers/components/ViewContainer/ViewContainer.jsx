@@ -377,10 +377,12 @@ export const ViewContainer = ({
                                           markSessionErrored={markSessionErrored}
                                           getSessionError={getSessionError}
                                           registerGuacamoleRef={registerGuacamoleRef}
+                                          isShared={!!session.isJoined}
                                           fullscreenEnabled={fullscreenMode}
                                           onFullscreenToggle={toggleFullscreenMode} />;
             case "terminal":
                 return <XtermRenderer session={session} disconnectFromServer={disconnectFromServer}
+                                      isShared={!!session.isJoined}
                                       markSessionErrored={markSessionErrored}
                                       getSessionError={getSessionError}
                                       registerTerminalRef={registerTerminalRef} broadcastMode={broadcastMode}

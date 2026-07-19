@@ -12,6 +12,7 @@ import DirectConnectDialog from "@/pages/Servers/components/DirectConnectDialog"
 import FileEditorWindow from "@/common/components/FileEditorWindow";
 import FilePreviewWindow from "@/common/components/FilePreviewWindow";
 import { useActiveSessions } from "@/common/contexts/SessionContext.jsx";
+import { useLiveSessions } from "@/common/contexts/LiveSessionContext.jsx";
 import { useLocation, useNavigate } from "react-router-dom";
 import { ServerContext } from "@/common/contexts/ServerContext.jsx";
 import { StateStreamContext, STATE_TYPES } from "@/common/contexts/StateStreamContext.jsx";
@@ -37,6 +38,7 @@ export const Servers = () => {
     const [currentOrganizationId, setCurrentOrganizationId] = useState(null);
     const [editServerId, setEditServerId] = useState(null);
     const { activeSessions, setActiveSessions, activeSessionId, setActiveSessionId, poppedOutSessions } = useActiveSessions();
+    const { liveSessions } = useLiveSessions();
     const { getServerById, servers } = useContext(ServerContext);
     const { registerHandler } = useContext(StateStreamContext);
     const location = useLocation();
@@ -85,6 +87,7 @@ export const Servers = () => {
                 scriptId: session.configuration.scriptId || undefined,
                 shareId: session.shareId || null,
                 shareWritable: session.shareWritable || false,
+                participants: session.participants || [],
             };
         }).filter(Boolean);
 
@@ -104,7 +107,7 @@ export const Servers = () => {
 
         setActiveSessions(prev => {
             const prevMap = new Map(prev.map(s => [s.id, s]));
-            const localOnly = prev.filter(s => s.type === "notes");
+            const localOnly = prev.filter(s => s.type === "notes" || s.isJoined);
             const merged = activeMapped.map(newSession => {
                 const existing = prevMap.get(newSession.id);
                 return existing ? { ...newSession, scriptId: existing.scriptId || newSession.scriptId, scriptName: existing.scriptName, osName: newSession.osName || existing.osName } : newSession;
@@ -164,6 +167,44 @@ export const Servers = () => {
         }
 
         initiateConnection({ server: { ...server, renderer: overrideRenderer || server.renderer }, identity });
+    };
+
+    useEffect(() => {
+        const liveIds = new Set(liveSessions.map(session => session.id));
+        const staleIds = new Set(activeSessions
+            .filter(s => s.isJoined && !liveIds.has(s.joinSessionId))
+            .map(s => s.id));
+        if (!staleIds.size) return;
+
+        const remaining = activeSessions.filter(s => !staleIds.has(s.id));
+        setActiveSessions(remaining);
+        setActiveSessionId(current => staleIds.has(current) ? remaining.at(-1)?.id || null : current);
+    }, [liveSessions, activeSessions, setActiveSessions, setActiveSessionId]);
+
+    const joinLiveSession = (liveSession) => {
+        const tabId = `join-${liveSession.id}`;
+
+        setActiveSessions(prevSessions => {
+            if (prevSessions.some(s => s.id === tabId)) return prevSessions;
+            return [...prevSessions, {
+                id: tabId,
+                joinSessionId: liveSession.id,
+                isJoined: true,
+                writable: liveSession.writable,
+                owner: liveSession.owner,
+                server: {
+                    id: liveSession.entryId,
+                    name: liveSession.entryName,
+                    icon: liveSession.icon,
+                    type: liveSession.protocol,
+                    renderer: liveSession.renderer,
+                },
+                type: liveSession.type || undefined,
+                organizationId: liveSession.organizationId,
+                organizationName: liveSession.organizationName,
+            }];
+        });
+        setActiveSessionId(tabId);
     };
 
     const openSFTP = async (server, identity) => {
@@ -285,7 +326,7 @@ export const Servers = () => {
 
     const closeSession = (sessionId) => {
         const session = activeSessions.find(s => s.id === sessionId);
-        if (session?.type !== "notes") {
+        if (session?.type !== "notes" && !session?.isJoined) {
             closingSessionsRef.current.add(sessionId);
             deleteRequest(`/connections/${sessionId}`).catch(error => {
                 console.debug("Session deletion request failed:", error);
@@ -499,6 +540,7 @@ export const Servers = () => {
                             setCurrentFolderId={setCurrentFolderId} setCurrentOrganizationId={setCurrentOrganizationId}
                             setEditServerId={setEditServerId} openSFTP={openSFTP}
                             hibernatedSessions={hibernatedSessions} resumeSession={resumeConnection}
+                            joinLiveSession={joinLiveSession}
                             openDirectConnect={openDirectConnect} runScript={runScript}
                             openNotes={openNotes}
                             openPortForward={isTauri() ? openPortForward : undefined}
