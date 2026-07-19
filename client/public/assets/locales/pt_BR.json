@@ -592,7 +592,17 @@
     },
     "account": {
       "title": "Conta",
-      "accountName": "Nome da conta",
+      "avatar": {
+        "label": "Foto",
+        "upload": "Alterar foto do perfil",
+        "remove": "Remover",
+        "updated": "Sua foto de perfil foi atualizada",
+        "removed": "Sua foto de perfil foi removida",
+        "tooLarge": "A imagem selecionada tem mais de 10 MB",
+        "uploadFailed": "Não foi possível enviar a foto de perfil",
+        "removeFailed": "Não foi possível remover a foto de perfil"
+      },
+      "accountDetails": "Detalhes da conta",
       "firstName": "Nome",
       "lastName": "Sobrenome",
       "appearance": "Aparência",
@@ -794,6 +804,20 @@
           "createSuccess": "Organização criada com sucesso",
           "createFailed": "Não foi possível criar a organização"
         }
+      },
+      "sessionSettings": {
+        "sessionSettingsTab": "Sessões ao vivo",
+        "liveSharingHeading": "Compartilhamento de sessões ao vivo",
+        "liveSharingDescription": "Controle como as sessões em andamento são compartilhadas nesta organização.",
+        "enableLiveSessionSharingLabel": "Ativar o compartilhamento de sessões ao vivo",
+        "enableLiveSessionSharingDescription": "Os membros precisam da permissão “Visualizar ou controlar sessões ao vivo”.",
+        "actions": {
+          "save": "Salvar configurações"
+        },
+        "messages": {
+          "updated": "As configurações da sessão ao vivo foram atualizadas com sucesso",
+          "updateFailed": "Não foi possível atualizar as configurações da sessão ao vivo"
+        }
       }
     },
     "users": {
@@ -861,6 +885,10 @@
           "title": "IA: Aceitar ação",
           "description": "Aprova a ação pendente da ferramenta de IA no assistente"
         },
+        "aicommand": {
+          "title": "Gerar comando",
+          "description": "Pede uma sugestão de comando no terminal"
+        },
         "snippets": {
           "title": "Trechos",
           "description": "Abrir a caixa de diálogo de snippets"
@@ -926,6 +954,7 @@
         "title": "Entrada",
         "description": "Controle como os atalhos de teclado funcionam dentro do terminal.",
         "smartCopyPaste": "Ctrl+C inteligente",
+        "passwordPromptDetection": "Detecção de digitação de senha",
         "enabled": "Ativado",
         "disabled": "Desativado",
         "syncEnabled": "As configurações de entrada agora vão ser sincronizadas com a sua conta",
@@ -1551,10 +1580,20 @@
       "duplicateServer": "Duplicar Servidor",
       "pasteIdentityPassword": "Colar Senha",
       "deleteServer": "Excluir Servidor",
+      "deleteConfirm": "Tem certeza de que quer excluir “{{name}}”? Essa ação não pode ser desfeita.",
+      "deleteFailServer": "Não foi possível excluir “{{name}}”.",
+      "deleteFailFolder": "Não foi possível excluir a pasta “{{name}}”.",
       "wakeOnLan": "Wake-On-LAN",
       "shutdown": "Desligar",
       "stop": "Parar",
-      "start": "Iniciar"
+      "start": "Iniciar",
+      "joinSession": "Entrar na sessão",
+      "joinSessionOf": "Participa da sessão de {{user}}"
+    },
+    "passwordHint": {
+      "paste": "colar a senha",
+      "pasteFor": "colar {{username}} senha",
+      "cycle": "Use as setas do teclado para trocar de identidade"
     },
     "tabs": {
       "contextMenu": {
@@ -1636,6 +1675,11 @@
         "wakeOnLan": {
           "title": "Habilitar Wake-On-LAN",
           "description": "Permitir acordar este servidor remotamente usando seu endereço MAC"
+        },
+        "rdpSecurity": {
+          "title": "Segurança",
+          "description": "Método de autenticação usado para se conectar ao computador Windows remoto. Use o NLA em ambientes onde o NTLM está desativado (por exemplo, no grupo “Usuários Protegidos”).",
+          "method": "Método de segurança"
         },
         "keyboardLayout": {
           "title": "Layout do Teclado",
@@ -1772,6 +1816,7 @@
       }
     },
     "fileManager": {
+      "dropOverlay": "Arraste e solte arquivos ou pastas para fazer o upload",
       "createFile": {
         "title": "Criar Arquivo",
         "placeholder": "Nome do Arquivo",
@@ -1883,6 +1928,8 @@
         "hiddenDirectories": "{{count}} pastas ocultas",
         "switchToGrid": "Mudar para visualização em grade",
         "switchToList": "Mudar para visualização em lista",
+        "uploadFile": "Carregar arquivo(s)",
+        "uploadFolder": "Pasta de upload",
         "search": "Pesquisar arquivos",
         "closeSearch": "Fechar pesquisa",
         "refresh": "Atualizar"
@@ -1907,7 +1954,9 @@
         "downloaded": "Baixado {{name}}",
         "downloadingItems": "Baixando {{count}} item(s)...",
         "uploaded": "Enviado {{name}}",
+        "uploadedItems": "Arquivos enviados em {{count}}",
         "uploadFailed": "Falha no envio: {{message}}",
+        "uploadFailedItems": "{{count}} Não foi possível enviar os arquivos: {{message}}",
         "connectionLost": "Conexão SFTP perdida. Por favor, reconecte-se.",
         "error": "Ocorreu um erro"
       }
@@ -1938,6 +1987,9 @@
       "deny": "Negar",
       "denied": "Você rejeitou essa ação.",
       "stopped": "Parei.",
+      "continuePrompt": "O assistente fez uma pausa depois de subir uma longa escadaria. Continuamos?",
+      "continue": "Continua",
+      "compacted": "As mensagens anteriores foram resumidas para deixar o contexto mais claro.",
       "tools": {
         "runCommand": "Executar comando",
         "readFile": "Ler arquivo",
@@ -1952,6 +2004,14 @@
         "changePermissions": "Alterar permissões",
         "findDirectories": "Encontrar diretórios"
       }
+    },
+    "commandSuggestion": {
+      "open": "Gerar comando",
+      "placeholder": "Descreve o comando...",
+      "generating": "Gerando...",
+      "accept": "Comando “Aceitar”",
+      "cycle": "Sugestões de percursos",
+      "error": "Não foi possível gerar um comando."
     },
     "snippets": {
       "title": "Trechos",
@@ -1994,6 +2054,10 @@
         "unsaved": "Não salvo",
         "error": "Falha ao salvar"
       }
+    },
+    "liveSessions": {
+      "activeOn": "Sessões ao vivo: {{users}}",
+      "unknownUser": "Usuário desconhecido"
     }
   },
   "support": {
@@ -2015,6 +2079,7 @@
   },
   "welcome": {
     "hello": "Hi",
+    "defaultName": "Usuário",
     "subtitle": "Bem-vindo ao Nexterm. O gerenciador de servidores open-source para SSH, VNC e RDP.",
     "downloadApps": "Baixar Aplicativos",
     "connectDevice": "Conectar Dispositivo",
