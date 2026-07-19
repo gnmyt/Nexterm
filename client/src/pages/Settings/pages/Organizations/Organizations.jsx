@@ -5,13 +5,14 @@ import { ServerContext } from "@/common/contexts/ServerContext.jsx";
 import { UserContext } from "@/common/contexts/UserContext.jsx";
 import { Permission } from "@/common/utils/permissions.js";
 import Icon from "@mdi/react";
-import { mdiCheckCircleOutline, mdiCloseCircleOutline, mdiDomain, mdiPlus, mdiShieldCheckOutline } from "@mdi/js";
+import { mdiCheckCircleOutline, mdiCloseCircleOutline, mdiDomain, mdiMonitorShare, mdiPlus, mdiShieldCheckOutline } from "@mdi/js";
 import Button from "@/common/components/Button";
 import TabSwitcher from "@/common/components/TabSwitcher";
 import OrganizationDialog from "./components/OrganizationDialog";
 import InviteMemberDialog from "./components/InviteMemberDialog";
 import MemberList from "./components/MemberList";
 import OrganizationAuditSettings from "./components/OrganizationAuditSettings";
+import OrganizationSessionSettings from "./components/OrganizationSessionSettings";
 import ActionConfirmDialog from "@/common/components/ActionConfirmDialog";
 import { useTranslation } from "react-i18next";
 import "./styles.sass";
@@ -191,7 +192,8 @@ export const Organizations = () => {
                                     <TabSwitcher
                                         tabs={[
                                             { key: "members", label: t("settings.organizations.members"), icon: mdiDomain },
-                                            ...(org.permissions?.includes(Permission.ORG_AUDIT_VIEW) ? [{ key: "audit", label: t("settings.organizations.auditSettings.auditSettingsTab"), icon: mdiShieldCheckOutline }] : [])
+                                            ...(org.permissions?.includes(Permission.ORG_AUDIT_VIEW) ? [{ key: "audit", label: t("settings.organizations.auditSettings.auditSettingsTab"), icon: mdiShieldCheckOutline }] : []),
+                                            ...(org.permissions?.includes(Permission.ORG_MANAGE) ? [{ key: "sessions", label: t("settings.organizations.sessionSettings.sessionSettingsTab"), icon: mdiMonitorShare }] : [])
                                         ]}
                                         activeTab={activeTab[org.id] || "members"}
                                         onTabChange={(tabKey) => setActiveTab(prev => ({ ...prev, [org.id]: tabKey }))}
@@ -208,6 +210,10 @@ export const Organizations = () => {
                                         {activeTab[org.id] === "audit" && org.permissions?.includes(Permission.ORG_AUDIT_VIEW) && (
                                             <OrganizationAuditSettings organizationId={org.id}
                                                                        isOwner={org.permissions?.includes(Permission.ORG_AUDIT_VIEW)} />
+                                        )}
+
+                                        {activeTab[org.id] === "sessions" && org.permissions?.includes(Permission.ORG_MANAGE) && (
+                                            <OrganizationSessionSettings organizationId={org.id} canManage />
                                         )}
                                     </div>
                                 </div>
