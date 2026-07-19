@@ -885,6 +885,10 @@
           "title": "AI 接受操作",
           "description": "在助手中批准待处理的 AI 工具操作"
         },
+        "aicommand": {
+          "title": "Generate Command",
+          "description": "Ask for a command suggestion inside the terminal"
+        },
         "snippets": {
           "title": "代码片段",
           "description": "打开代码片段对话框"
@@ -2000,6 +2004,14 @@
         "changePermissions": "更改权限",
         "findDirectories": "查找目录"
       }
+    },
+    "commandSuggestion": {
+      "open": "Generate Command",
+      "placeholder": "Describe the command...",
+      "generating": "Generating...",
+      "accept": "Accept command",
+      "cycle": "Cycle suggestions",
+      "error": "Failed to generate a command."
     },
     "snippets": {
       "title": "代码片段",
