@@ -592,7 +592,17 @@
     },
     "account": {
       "title": "Compte",
-      "accountName": "Nom du compte",
+      "avatar": {
+        "label": "Photo",
+        "upload": "Changer la photo de profil",
+        "remove": "Supprimer",
+        "updated": "Ta photo de profil a été mise à jour",
+        "removed": "Ta photo de profil a été supprimée",
+        "tooLarge": "L'image sélectionnée fait plus de 10 Mo",
+        "uploadFailed": "Impossible de télécharger la photo de profil",
+        "removeFailed": "Je n'ai pas réussi à supprimer la photo de profil"
+      },
+      "accountDetails": "Détails du compte",
       "firstName": "Prénom",
       "lastName": "Nom de famille",
       "appearance": "Apparence",
@@ -794,6 +804,20 @@
           "createSuccess": "Organisation créée avec succès",
           "createFailed": "Échec de la création d'une organisation"
         }
+      },
+      "sessionSettings": {
+        "sessionSettingsTab": "Sessions en direct",
+        "liveSharingHeading": "Partage de session en direct",
+        "liveSharingDescription": "Gère la façon dont les sessions en cours sont partagées au sein de cette organisation.",
+        "enableLiveSessionSharingLabel": "Activer le partage de session en direct",
+        "enableLiveSessionSharingDescription": "Les membres doivent disposer de l'autorisation « Afficher ou contrôler les sessions en direct ».",
+        "actions": {
+          "save": "Enregistrer les paramètres"
+        },
+        "messages": {
+          "updated": "Les paramètres de la session en direct ont été mis à jour avec succès",
+          "updateFailed": "Échec de la mise à jour des paramètres de la session en direct"
+        }
       }
     },
     "users": {
@@ -861,6 +885,10 @@
           "title": "IA : Accepter l'action",
           "description": "Valide l'action en attente liée à l'outil d'IA dans l'assistant"
         },
+        "aicommand": {
+          "title": "Commande « Générer »",
+          "description": "Demande une suggestion de commande dans le terminal"
+        },
         "snippets": {
           "title": "Bribes",
           "description": "Ouvre la boîte de dialogue des snippets"
@@ -926,6 +954,7 @@
         "title": "Saisie",
         "description": "Gère le fonctionnement des raccourcis clavier dans le terminal.",
         "smartCopyPaste": "Ctrl+C intelligent",
+        "passwordPromptDetection": "Détection de la saisie d'un mot de passe",
         "enabled": "Activé",
         "disabled": "Désactivé",
         "syncEnabled": "Les paramètres de saisie vont désormais se synchroniser avec ton compte",
@@ -1551,10 +1580,20 @@
       "duplicateServer": "Serveur de duplication",
       "pasteIdentityPassword": "Coller le mot de passe",
       "deleteServer": "Supprimer le serveur",
+      "deleteConfirm": "Tu es sûr de vouloir supprimer «{{name}}» ? Cette action est irréversible.",
+      "deleteFailServer": "Impossible de supprimer «{{name}}».",
+      "deleteFailFolder": "Impossible de supprimer le dossier «{{name}}».",
       "wakeOnLan": "Wake-On-LAN",
       "shutdown": "Arrêt",
       "stop": "Arrêter",
-      "start": "Démarrer"
+      "start": "Démarrer",
+      "joinSession": "Rejoindre la session",
+      "joinSessionOf": "Rejoins la session de {{user}}"
+    },
+    "passwordHint": {
+      "paste": "coller le mot de passe",
+      "pasteFor": "copier-coller {{username}} mot de passe",
+      "cycle": "Utilise les touches fléchées pour changer d'identité"
     },
     "tabs": {
       "contextMenu": {
@@ -1636,6 +1675,11 @@
         "wakeOnLan": {
           "title": "Activer le Wake-On-LAN",
           "description": "Permet de réveiller ce serveur à distance en utilisant son adresse MAC"
+        },
+        "rdpSecurity": {
+          "title": "Sécurité",
+          "description": "Méthode d'authentification utilisée pour se connecter à la machine Windows distante. Utilise NLA dans les environnements où NTLM est désactivé (par exemple, le groupe « Utilisateurs protégés »).",
+          "method": "Méthode de sécurité"
         },
         "keyboardLayout": {
           "title": "Disposition du clavier",
@@ -1772,6 +1816,7 @@
       }
     },
     "fileManager": {
+      "dropOverlay": "Glisse-dépose tes fichiers ou dossiers pour les mettre en ligne",
       "createFile": {
         "title": "Créer un fichier",
         "placeholder": "Nom du fichier",
@@ -1883,6 +1928,8 @@
         "hiddenDirectories": "{{count}} répertoires cachés",
         "switchToGrid": "Passer à l'affichage en grille",
         "switchToList": "Passer à l'affichage de la liste",
+        "uploadFile": "Télécharger un ou plusieurs fichiers",
+        "uploadFolder": "Dossier de téléchargement",
         "search": "Rechercher des fichiers",
         "closeSearch": "Fermer la recherche",
         "refresh": "Actualiser"
@@ -1907,7 +1954,9 @@
         "downloaded": "Téléchargé {{name}}",
         "downloadingItems": "Téléchargement de {{count}} item(s)...",
         "uploaded": "Téléchargé {{name}}",
+        "uploadedItems": "Fichiers mis en ligne sur {{count}}",
         "uploadFailed": "Le téléchargement a échoué : {{message}}",
+        "uploadFailedItems": "{{count}} Les fichiers n'ont pas pu être téléchargés : {{message}}",
         "connectionLost": "Connexion SFTP perdue. Reconnecte-toi s'il te plaît.",
         "error": "Une erreur s'est produite"
       }
@@ -1938,6 +1987,9 @@
       "deny": "Refuser",
       "denied": "Tu as refusé cette action.",
       "stopped": "Arrêté.",
+      "continuePrompt": "L'assistant a marqué une pause après une longue série de marches. Tu veux qu'il continue ?",
+      "continue": "Continuer",
+      "compacted": "Les messages précédents ont été résumés pour gagner de la place.",
       "tools": {
         "runCommand": "Exécuter la commande",
         "readFile": "Lire le fichier",
@@ -1952,6 +2004,14 @@
         "changePermissions": "Modifier les droits d'accès",
         "findDirectories": "Trouver des répertoires"
       }
+    },
+    "commandSuggestion": {
+      "open": "Commande « Générer »",
+      "placeholder": "Décris la commande...",
+      "generating": "Génération en cours...",
+      "accept": "Commande « Accepter »",
+      "cycle": "Suggestions d'itinéraires à vélo",
+      "error": "Impossible de générer une commande."
     },
     "snippets": {
       "title": "Bribes",
@@ -1994,6 +2054,10 @@
         "unsaved": "Non sauvegardé",
         "error": "L'enregistrement a échoué"
       }
+    },
+    "liveSessions": {
+      "activeOn": "Sessions en direct : {{users}}",
+      "unknownUser": "Utilisateur inconnu"
     }
   },
   "support": {
@@ -2015,6 +2079,7 @@
   },
   "welcome": {
     "hello": "Bonjour",
+    "defaultName": "Utilisateur",
     "subtitle": "Bienvenue à Nexterm. Le gestionnaire de serveur open-source pour SSH, VNC et RDP.",
     "downloadApps": "Télécharger les applications",
     "connectDevice": "Connecter l'appareil",
