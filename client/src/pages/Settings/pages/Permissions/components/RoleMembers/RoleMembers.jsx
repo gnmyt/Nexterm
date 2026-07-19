@@ -1,12 +1,13 @@
 import "./styles.sass";
 import { useState } from "react";
 import Icon from "@mdi/react";
-import { mdiAccount, mdiClose } from "@mdi/js";
+import { mdiClose } from "@mdi/js";
 import UserSearch from "@/common/components/UserSearch";
 import { postRequest, deleteRequest } from "@/common/utils/RequestUtil.js";
 import { useToast } from "@/common/contexts/ToastContext.jsx";
 import { useTranslation } from "react-i18next";
 import { getFullName } from "@/common/utils/avatar.js";
+import LetterAvatar from "@/common/components/LetterAvatar";
 
 export const RoleMembers = ({ groupId, members = [], onChanged }) => {
     const { t } = useTranslation();
@@ -44,7 +45,7 @@ export const RoleMembers = ({ groupId, members = [], onChanged }) => {
                     <p className="empty">{t("settings.permissions.noMembers")}</p>
                 ) : members.map((member) => (
                     <div className="member-row" key={member.id}>
-                        <div className="member-icon"><Icon path={mdiAccount} /></div>
+                        <LetterAvatar user={member} size="md" showTooltip={false} />
                         <div className="member-info">
                             {getFullName(member) && <span className="name">{getFullName(member)}</span>}
                             <span className="username">@{member.username}</span>

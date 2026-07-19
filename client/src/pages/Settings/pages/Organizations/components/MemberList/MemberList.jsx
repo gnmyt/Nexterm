@@ -1,12 +1,13 @@
 import Icon from "@mdi/react";
 import { useState } from "react";
-import { mdiAccount, mdiShieldAccount, mdiShieldKeyOutline } from "@mdi/js";
+import { mdiShieldKeyOutline } from "@mdi/js";
 import { deleteRequest } from "@/common/utils/RequestUtil.js";
 import { useToast } from "@/common/contexts/ToastContext.jsx";
 import { useTranslation } from "react-i18next";
 import "./styles.sass";
 import Button from "@/common/components/Button";
 import MemberPermissionsDialog from "../MemberPermissionsDialog";
+import LetterAvatar from "@/common/components/LetterAvatar";
 
 export const MemberList = ({ members, organizationId, isOwner, refreshMembers }) => {
     const { sendToast } = useToast();
@@ -31,8 +32,7 @@ export const MemberList = ({ members, organizationId, isOwner, refreshMembers })
             {members.map((member) => (
                 <div key={member.accountId} className="member-item">
                     <div className="member-info">
-                        <Icon
-                            path={member.role === "owner" || member.role === "admin" ? mdiShieldAccount : mdiAccount} />
+                        <LetterAvatar user={member} size="md" showTooltip={false} />
                         <div className="member-details">
                             <h3>{member.name}</h3>
                             <p>{member.username}</p>
