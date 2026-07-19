@@ -4,12 +4,13 @@ const { parseResizeMessage } = require("../utils/sshEventHandlers");
 const { translateKeys } = require("../utils/keyTranslation");
 const controlPlane = require("../lib/controlPlane/ControlPlaneServer");
 const { SCRIPT_MAGIC } = require("../lib/ScriptLayer");
+const { buildParticipant, createWriteGuard } = require("../utils/sessionParticipant");
 
-const bindHandlers = (ws, conn, sessionId, config, isShared) => {
+const bindHandlers = (ws, conn, sessionId, config, isShared, canWrite) => {
     const { dataSocket, scriptLayer } = conn;
 
     const msgHandler = (data) => {
-        if (isShared && !SessionManager.get(sessionId)?.shareWritable) return;
+        if (isShared && !canWrite()) return;
         const msg = data.toString();
 
         if (scriptLayer && msg.startsWith(SCRIPT_MAGIC)) return;
@@ -23,6 +24,7 @@ const bindHandlers = (ws, conn, sessionId, config, isShared) => {
             return;
         }
         SessionManager.setActiveWs(sessionId, ws);
+        SessionManager.markTyping(sessionId, ws);
         dataSocket.write(translateKeys(data, config));
     };
     ws.on("message", msgHandler);
@@ -50,10 +52,12 @@ const handleSession = (ws, ctx, isShared) => {
         if (logs && ws.readyState === ws.OPEN) ws.send(logs);
     }
 
-    SessionManager.addWebSocket(sessionId, ws, isShared);
-    if (!isShared || serverSession.shareWritable) SessionManager.setActiveWs(sessionId, ws);
+    const canWrite = createWriteGuard(ctx, sessionId);
 
-    const { msgHandler, dataHandler } = bindHandlers(ws, conn, sessionId, entry?.config, isShared);
+    SessionManager.addWebSocket(sessionId, ws, isShared, buildParticipant(ctx));
+    if (!isShared || canWrite()) SessionManager.setActiveWs(sessionId, ws);
+
+    const { msgHandler, dataHandler } = bindHandlers(ws, conn, sessionId, entry?.config, isShared, canWrite);
 
     if (conn.scriptLayer) {
         conn.scriptLayer.createMessageHandler(ws);
