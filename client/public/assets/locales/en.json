@@ -794,6 +794,20 @@
           "createSuccess": "Organization created successfully",
           "createFailed": "Failed to create organization"
         }
+      },
+      "sessionSettings": {
+        "sessionSettingsTab": "Live Sessions",
+        "liveSharingHeading": "Live Session Sharing",
+        "liveSharingDescription": "Control how running sessions are shared in this organization.",
+        "enableLiveSessionSharingLabel": "Enable live session sharing",
+        "enableLiveSessionSharingDescription": "Members need the View or Control Live Sessions permission.",
+        "actions": {
+          "save": "Save Settings"
+        },
+        "messages": {
+          "updated": "Live session settings updated successfully",
+          "updateFailed": "Failed to update live session settings"
+        }
       }
     },
     "users": {
@@ -1558,7 +1572,9 @@
       "wakeOnLan": "Wake-On-LAN",
       "shutdown": "Shutdown",
       "stop": "Stop",
-      "start": "Start"
+      "start": "Start",
+      "joinSession": "Join Session",
+      "joinSessionOf": "Join session of {{user}}"
     },
     "passwordHint": {
       "paste": "paste password",
@@ -2013,6 +2029,10 @@
         "unsaved": "Unsaved",
         "error": "Save failed"
       }
+    },
+    "liveSessions": {
+      "activeOn": "Live sessions: {{users}}",
+      "unknownUser": "Unknown user"
     }
   },
   "support": {
@@ -2034,6 +2054,7 @@
   },
   "welcome": {
     "hello": "Hi",
+    "defaultName": "User",
     "subtitle": "Welcome to Nexterm. The open-source server manager for SSH, VNC and RDP.",
     "downloadApps": "Download Apps",
     "connectDevice": "Connect Device",
