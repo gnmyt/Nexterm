@@ -4,7 +4,10 @@ const OrganizationMemberPermission = require("../models/OrganizationMemberPermis
 const Account = require("../models/Account");
 const { hasOrganizationPermission, getOrganizationPermissions } = require("../permissions/engine");
 const { Permission } = require("../permissions/registry");
+const stateBroadcaster = require("../lib/StateBroadcaster");
+const { revokeLiveSessionAccess } = require("./liveSession");
 const { Op } = require("sequelize");
+const { ACCOUNT_VIEW_ATTRIBUTES, toAccountView } = require("../utils/accountView");
 
 module.exports.createOrganization = async (accountId, configuration) => {
     const organization = await Organization.create({
@@ -94,7 +97,7 @@ module.exports.listPendingInvitations = async (accountId) => {
     const inviterIds = [...new Set(pendingInvites.map(invite => invite.invitedBy))];
     const inviters = await Account.findAll({
         where: { id: { [Op.in]: inviterIds } },
-        attributes: ["id", "firstName", "lastName", "username"],
+        attributes: ACCOUNT_VIEW_ATTRIBUTES,
     });
 
     return pendingInvites.map(invite => {
@@ -105,9 +108,8 @@ module.exports.listPendingInvitations = async (accountId) => {
             id: invite.id,
             organization: { id: org.id, name: org.name, description: org.description },
             invitedBy: {
-                id: inviter.id,
+                ...toAccountView(inviter),
                 name: `${inviter.firstName} ${inviter.lastName}`,
-                username: inviter.username,
             },
             createdAt: invite.createdAt,
         };
@@ -187,6 +189,8 @@ module.exports.removeMember = async (accountId, organizationId, memberAccountId)
     await OrganizationMember.destroy({ where: { organizationId: orgId, accountId: memberId } });
     await OrganizationMemberPermission.destroy({ where: { organizationId: orgId, accountId: memberId } });
 
+    revokeLiveSessionAccess(orgId, memberId);
+
     return { success: true, message: "Member removed successfully" };
 };
 
@@ -204,7 +208,7 @@ module.exports.listMembers = async (accountId, organizationId) => {
     const memberAccountIds = members.map(m => m.accountId);
     const accounts = await Account.findAll({
         where: { id: { [Op.in]: memberAccountIds } },
-        attributes: ["id", "firstName", "lastName", "username"],
+        attributes: ACCOUNT_VIEW_ATTRIBUTES,
     });
 
     return members
@@ -212,8 +216,9 @@ module.exports.listMembers = async (accountId, organizationId) => {
             const account = accounts.find(a => a.id === member.accountId);
             if (!account) return null;
             return {
+                ...toAccountView(account),
                 id: member.id, accountId: account.id, name: `${account.firstName} ${account.lastName}`,
-                username: account.username, role: member.role, status: member.status,
+                role: member.role, status: member.status,
             };
         })
         .filter(Boolean);
@@ -235,5 +240,30 @@ module.exports.leaveOrganization = async (accountId, organizationId) => {
 
     await OrganizationMember.destroy({ where: { organizationId: orgId, accountId } });
 
+    revokeLiveSessionAccess(orgId, accountId);
+
     return { success: true, message: "You have left the organization" };
+};
+
+const getSessionSettings = async (organizationId) => {
+    const organization = await Organization.findByPk(parseInt(organizationId, 10));
+    return { ...Organization.DEFAULT_SESSION_SETTINGS, ...(organization?.sessionSettings || {}) };
+};
+
+module.exports.getSessionSettings = getSessionSettings;
+
+module.exports.updateSessionSettings = async (organizationId, settings) => {
+    const orgId = parseInt(organizationId, 10);
+    const current = await getSessionSettings(orgId);
+    const updated = { ...current, ...settings };
+
+    await Organization.update({ sessionSettings: updated }, { where: { id: orgId } });
+
+    if (current.enableLiveSessionSharing && !updated.enableLiveSessionSharing) {
+        revokeLiveSessionAccess(orgId);
+    } else {
+        stateBroadcaster.broadcast("LIVE_SESSIONS", { organizationId: orgId });
+    }
+
+    return updated;
 };

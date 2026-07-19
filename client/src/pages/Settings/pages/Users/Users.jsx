@@ -9,7 +9,6 @@ import {
     mdiAccount,
     mdiDotsVertical,
     mdiLock,
-    mdiShieldAccount,
     mdiKey,
     mdiShieldKeyOutline,
     mdiAccountRemove,
@@ -27,6 +26,8 @@ import PasswordChange from "@/pages/Settings/pages/Account/dialogs/PasswordChang
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { Permission } from "@/common/utils/permissions.js";
+import { getFullName } from "@/common/utils/avatar.js";
+import LetterAvatar from "@/common/components/LetterAvatar";
 
 const ITEMS_PER_PAGE = 25;
 
@@ -130,11 +131,9 @@ export const Users = () => {
             className: "user-cell-wrapper",
             render: (currentUser) => (
                 <div className="user-cell">
-                    <div className={`user-icon ${currentUser.isAdmin ? "primary" : "default"}`}>
-                        <Icon path={currentUser.isAdmin ? mdiShieldAccount : mdiAccount} />
-                    </div>
+                    <LetterAvatar user={currentUser} size="md" showTooltip={false} />
                     <div className="user-info">
-                        <span className="name">{currentUser.firstName} {currentUser.lastName}</span>
+                        {getFullName(currentUser) && <span className="name">{getFullName(currentUser)}</span>}
                         <span className="username">@{currentUser.username}</span>
                     </div>
                 </div>

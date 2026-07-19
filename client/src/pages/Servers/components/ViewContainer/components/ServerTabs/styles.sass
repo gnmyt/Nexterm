@@ -46,12 +46,12 @@
 
     .layout-btn
       cursor: pointer
-      padding: 0.5rem
-      border-radius: 4px
+      padding: 0.35rem
+      border-radius: 8px
       transition: all 0.2s ease
       color: colors.$subtext
-      width: 1.8rem
-      height: 1.8rem
+      width: 1.6rem
+      height: 1.6rem
 
       @media (max-width: breakpoints.$mobile)
         display: none
@@ -130,7 +130,7 @@
     .server-tab
       display: flex
       gap: 0.5rem
-      padding: 0.25rem 0.5rem;
+      padding: 0.25rem 0.5rem
       align-items: center
       border-radius: 0.5rem 0.5rem 0 0
       border-bottom: 2px solid transparent
@@ -226,6 +226,10 @@
         margin: 0
         font-size: 1.15rem
         flex: 1
+        min-width: 0
+        white-space: nowrap
+        overflow: hidden
+        text-overflow: ellipsis
 
         @media (max-width: breakpoints.$tablet)
           font-size: 1.1rem
@@ -233,8 +237,9 @@
         @media (max-width: breakpoints.$mobile)
           font-size: 0.9rem
           max-width: 100px
-          overflow: hidden
-          text-overflow: ellipsis
+
+      .tab-participants
+        margin-right: 0.25rem
 
       .tab-actions
         display: flex

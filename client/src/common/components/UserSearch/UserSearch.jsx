@@ -1,10 +1,12 @@
 import { useState, useEffect, useRef, useCallback, useMemo } from "react";
 import { createPortal } from "react-dom";
 import Icon from "@mdi/react";
-import { mdiAccount, mdiMagnify, mdiClose, mdiShieldAccount } from "@mdi/js";
+import { mdiMagnify, mdiClose } from "@mdi/js";
 import { getRequest } from "@/common/utils/RequestUtil.js";
 import { useTranslation } from "react-i18next";
 import "./styles.sass";
+import { getFullName } from "@/common/utils/avatar.js";
+import LetterAvatar from "@/common/components/LetterAvatar";
 
 export const UserSearch = ({
     value = "",
@@ -209,11 +211,9 @@ export const UserSearch = ({
                             onClick={() => handleSelect(user)}
                             onMouseEnter={() => setHighlightedIndex(index)}
                         >
-                            <div className="user-search__avatar">
-                                <Icon path={mdiAccount} />
-                            </div>
+                            <LetterAvatar user={user} size="md" showTooltip={false} />
                             <div className="user-search__user-info">
-                                <span className="user-search__name">{user.firstName} {user.lastName}</span>
+                                {getFullName(user) && <span className="user-search__name">{getFullName(user)}</span>}
                                 <span className="user-search__username">@{user.username}</span>
                             </div>
                         </div>

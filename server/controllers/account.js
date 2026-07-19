@@ -11,6 +11,8 @@ const PermissionGroup = require("../models/PermissionGroup");
 const GroupMember = require("../models/GroupMember");
 const AccountPermission = require("../models/AccountPermission");
 const { isAccountAdmin, countAdmins } = require("../utils/permission");
+const { saveAvatar, deleteAvatar, isWebP } = require("../utils/avatarService");
+const { ACCOUNT_VIEW_ATTRIBUTES } = require("../utils/accountView");
 const logger = require("../utils/logger");
 const SessionManager = require("../lib/SessionManager");
 const stateBroadcaster = require("../lib/StateBroadcaster");
@@ -75,6 +77,8 @@ module.exports.deleteAccount = async (id) => {
     await AccountPermission.destroy({ where: { accountId: id } });
     await OrganizationMemberPermission.destroy({ where: { accountId: id } });
 
+    deleteAvatar(id);
+
     await Account.destroy({ where: { id } });
 
     logger.system(`Account deleted`, { accountId: id, username: account.username });
@@ -92,6 +96,31 @@ module.exports.updateName = async (id, configuration) => {
         return { code: 102, message: "The provided account does not exist" };
 
     await Account.update({ firstName, lastName }, { where: { id } });
+};
+
+module.exports.updateAvatar = async (id, buffer) => {
+    const account = await Account.findByPk(id);
+
+    if (account === null)
+        return { code: 102, message: "The provided account does not exist" };
+
+    if (!isWebP(buffer))
+        return { code: 108, message: "The provided image must be in the WebP format" };
+
+    const avatarHash = saveAvatar(id, buffer);
+    await Account.update({ avatarHash }, { where: { id } });
+
+    return { avatarHash };
+};
+
+module.exports.removeAvatar = async (id) => {
+    const account = await Account.findByPk(id);
+
+    if (account === null)
+        return { code: 102, message: "The provided account does not exist" };
+
+    deleteAvatar(id);
+    await Account.update({ avatarHash: null }, { where: { id } });
 };
 
 module.exports.updatePassword = async (id, password) => {
@@ -171,7 +200,7 @@ module.exports.searchUsers = async (search = "") => {
                 { lastName: { [Op.like]: searchTerm } },
             ],
         },
-        attributes: ["id", "username", "firstName", "lastName"],
+        attributes: ACCOUNT_VIEW_ATTRIBUTES,
         limit: 5,
         order: [["username", "ASC"]],
     });
@@ -202,7 +231,7 @@ const attachGroups = async (users) => {
         for (const dg of defaultGroups) if (!all.some((g) => g.id === dg.id)) all.push(dg);
         all.sort((a, b) => a.sortOrder - b.sortOrder || a.id - b.id);
 
-        return { ...user, groups: all.map(toView), isAdmin: all.some((g) => g.isAdmin) };
+        return { ...user, groups: all.map(toView) };
     });
 };
 module.exports.attachGroups = attachGroups;

@@ -10,6 +10,8 @@ import { ContextMenu, ContextMenuItem, ContextMenuSeparator, useContextMenu } fr
 import AIAssistant from "./components/AIAssistant";
 import SnippetsMenu from "./components/SnippetsMenu";
 import PasswordFillHint from "./components/PasswordFillHint";
+import TypingIndicators from "./components/TypingIndicators";
+import { useLiveSessions } from "@/common/contexts/LiveSessionContext.jsx";
 import { createProgressParser } from "../utils/progressParser";
 import { mdiContentCopy, mdiContentPaste, mdiCodeBrackets, mdiSelectAll, mdiDelete, mdiKeyboard, mdiKey, mdiFolderOpen, mdiRobotHappyOutline } from "@mdi/js";
 import { useTranslation } from "react-i18next";
@@ -54,11 +56,16 @@ const XtermRenderer = ({ session, disconnectFromServer, markSessionErrored, getS
     const [showAIAssistant, setShowAIAssistant] = useState(false);
     const contextMenu = useContextMenu();
     const { identities } = useContext(IdentityContext);
+    const { getParticipants } = useLiveSessions();
+
+    const typingParticipants = getParticipants(session.joinSessionId || session.id)
+        .filter(participant => participant.typing && participant.accountId !== userContext?.user?.id);
     const [showSnippetsMenu, setShowSnippetsMenu] = useState(false);
     const [connectionError, setConnectionError] = useState(() => getSessionError?.(session.id) || null);
     const [passwordPrompt, setPasswordPrompt] = useState(null);
     const [passwordHintIndex, setPasswordHintIndex] = useState(-1);
     const [passwordIdentities, setPasswordIdentities] = useState([]);
+    const [cursorAnchor, setCursorAnchor] = useState(null);
     const passwordPromptRef = useRef(null);
     const passwordHintIndexRef = useRef(-1);
     const passwordIdentitiesRef = useRef([]);
@@ -303,8 +310,17 @@ const XtermRenderer = ({ session, disconnectFromServer, markSessionErrored, getS
             return {
                 left: term.buffer.active.cursorX * cellWidth,
                 top: term.buffer.active.cursorY * cellHeight,
+                width: cellWidth,
                 height: cellHeight,
+                spaceBelow: (term.rows - term.buffer.active.cursorY - 1) * cellHeight,
             };
+        };
+
+        const syncCursorAnchor = () => {
+            const anchor = computePasswordHintPosition();
+            setCursorAnchor(current => (current && current.left === anchor.left && current.top === anchor.top
+                && current.width === anchor.width && current.height === anchor.height
+                && current.spaceBelow === anchor.spaceBelow) ? current : anchor);
         };
 
         const handleResize = () => {
@@ -313,6 +329,7 @@ const XtermRenderer = ({ session, disconnectFromServer, markSessionErrored, getS
                 wsRef.current.send(`\x01${term.cols},${term.rows}`);
             }
             if (passwordPromptRef.current) movePasswordHint(computePasswordHintPosition());
+            syncCursorAnchor();
         };
 
         window.addEventListener("resize", handleResize);
@@ -328,9 +345,11 @@ const XtermRenderer = ({ session, disconnectFromServer, markSessionErrored, getS
 
         let ws;
 
-        const wsParams = isShared 
-            ? { shareId: session.shareId || session.id.split('/').pop() }
-            : { sessionToken, sessionId: session.id };
+        const wsParams = session.joinSessionId
+            ? { sessionToken, joinSessionId: session.joinSessionId }
+            : isShared
+                ? { shareId: session.shareId || session.id.split('/').pop() }
+                : { sessionToken, sessionId: session.id };
 
         const wsUrl = getWebSocketUrl("/api/ws/term", wsParams);
 
@@ -353,6 +372,8 @@ const XtermRenderer = ({ session, disconnectFromServer, markSessionErrored, getS
             markSessionErrored?.(session.id, message);
             setConnectionError(message);
         };
+
+        const cursorSyncDisposable = term.onCursorMove(syncCursorAnchor);
 
         const trackPasswordPrompt = (data) => {
             if (isShared || !passwordDetectionRef.current || passwordIdentitiesRef.current.length === 0) return;
@@ -565,6 +586,7 @@ const XtermRenderer = ({ session, disconnectFromServer, markSessionErrored, getS
                 ws.onerror = null;
                 ws.close();
             }
+            cursorSyncDisposable.dispose();
             term.dispose();
             clearInterval(interval);
             termRef.current = null;
@@ -579,6 +601,7 @@ const XtermRenderer = ({ session, disconnectFromServer, markSessionErrored, getS
                 <ConnectionError message={connectionError} onClose={() => disconnectFromServer(session.id)} />
             )}
             <div ref={ref} className="xterm-wrapper" />
+            <TypingIndicators anchor={cursorAnchor} participants={typingParticipants} />
             {!isShared && passwordPrompt && passwordIdentities.length > 0 && (
                 <PasswordFillHint
                     anchor={passwordPrompt}

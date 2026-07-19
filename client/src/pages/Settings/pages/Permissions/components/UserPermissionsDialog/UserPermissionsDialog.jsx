@@ -10,6 +10,7 @@ import TabSwitcher from "@/common/components/TabSwitcher";
 import Checkbox from "@/common/components/Checkbox";
 import PermissionMatrix from "@/common/components/PermissionMatrix";
 import { useTranslation } from "react-i18next";
+import { getFullName } from "@/common/utils/avatar.js";
 
 export const UserPermissionsDialog = ({ open, onClose, accountId, groups = [], catalog, onSaved }) => {
     const { t } = useTranslation();
@@ -61,7 +62,7 @@ export const UserPermissionsDialog = ({ open, onClose, accountId, groups = [], c
             <div className="user-permissions-dialog">
                 <div className="upd-header">
                     <h2>{t("settings.permissions.managePermissions")}</h2>
-                    {data && <p>{data.firstName} {data.lastName} <span>@{data.username}</span></p>}
+                    {data && <p>{getFullName(data)} <span>@{data.username}</span></p>}
                 </div>
 
                 <TabSwitcher

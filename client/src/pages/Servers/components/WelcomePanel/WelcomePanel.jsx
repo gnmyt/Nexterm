@@ -11,6 +11,7 @@ import { getIconPath } from "@/common/utils/iconUtils.js";
 import Button from "@/common/components/Button";
 import DownloadAppsDialog from "@/common/components/DownloadAppsDialog";
 import { DeviceLinkDialog } from "@/common/components/DeviceLinkDialog/DeviceLinkDialog.jsx";
+import { getAvatarLabel } from "@/common/utils/avatar.js";
 
 const formatTimeAgo = (timestamp) => {
     const diffMins = Math.floor((Date.now() - new Date(timestamp)) / 60000);
@@ -85,7 +86,7 @@ export const WelcomePanel = ({
     return (
         <div className="welcome-panel">
             <div className="welcome-left">
-                <h1>{t("welcome.hello")}, <span>{user?.firstName || "User"} {user?.lastName || ""}</span>!</h1>
+                <h1>{t("welcome.hello")}, <span>{getAvatarLabel(user, t("welcome.defaultName"))}</span>!</h1>
                 <p>{t("welcome.subtitle")}</p>
                 <div className="welcome-buttons">
                     <Button icon={mdiDownload} text={t("welcome.downloadApps")} onClick={() => setDownloadDialogOpen(true)} />

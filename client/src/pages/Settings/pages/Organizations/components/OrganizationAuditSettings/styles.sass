@@ -42,21 +42,27 @@
           background-color: colors.$dark-gray
 
         .setting-info
+          display: flex
+          align-items: baseline
+          gap: 0.75rem
+          min-width: 0
           flex: 1
           margin-right: 1rem
 
           .setting-label
-            display: block
+            flex: 0 0 auto
+            margin-right: 0
+            white-space: nowrap
             color: colors.$white
             font-weight: 600
             font-size: 0.875rem
 
           .setting-description
-            display: block
+            flex: 1
+            min-width: 0
             color: colors.$subtext
             font-size: 0.75rem
             line-height: 1.4
-            margin-top: 0.125rem
 
         .retention-input
           width: 5rem

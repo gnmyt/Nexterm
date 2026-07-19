@@ -2,6 +2,7 @@ const SessionManager = require("../lib/SessionManager");
 const GuacdClient = require("../lib/GuacdClient");
 const controlPlane = require("../lib/controlPlane/ControlPlaneServer");
 const logger = require("../utils/logger");
+const { buildParticipant, createWriteGuard } = require("../utils/sessionParticipant");
 
 const SIZED_MONITOR = /\.size,\d+\.-?\d+,\d+\.-?\d+,\d+\.(-?\d+)/;
 const MOUSE_BUTTONS = /\.mouse,\d+\.\d+,\d+\.\d+,(\d+)\.(\d+);/;
@@ -12,7 +13,9 @@ const sizedMonitorOf = (msgStr) => {
     return match ? Number.parseInt(match[1], 10) : 0;
 };
 
-const handleGuacJoin = async (ws, sessionId, isShared, shareWritable, pinnedMonitor = null) => {
+const handleGuacJoin = async (ws, sessionId, ctx, pinnedMonitor = null) => {
+    const isShared = !!ctx.isShared;
+    const canWrite = createWriteGuard(ctx, sessionId);
     const conn = SessionManager.getConnection(sessionId);
     if (!conn?.guacdClient) {
         logger.debug("handleGuacJoin: no master connection", { sessionId });
@@ -73,10 +76,10 @@ const handleGuacJoin = async (ws, sessionId, isShared, shareWritable, pinnedMoni
     });
     joinClient.connect();
 
-    SessionManager.addWebSocket(sessionId, ws, isShared);
+    SessionManager.addWebSocket(sessionId, ws, isShared, buildParticipant(ctx));
 
     if (pinnedMonitor !== null) SessionManager.pinMonitor(sessionId, ws, pinnedMonitor);
-    else if (!isShared || shareWritable) SessionManager.setActiveWs(sessionId, ws);
+    else if (!isShared || canWrite()) SessionManager.setActiveWs(sessionId, ws);
 
     const pingInterval = setInterval(() => {
         if (ws.readyState === ws.OPEN) ws.ping();
@@ -85,9 +88,10 @@ const handleGuacJoin = async (ws, sessionId, isShared, shareWritable, pinnedMoni
     ws.on("message", (msg) => {
         const msgStr = msg.toString();
 
-        if (isShared && !SessionManager.get(sessionId)?.shareWritable) return;
+        if (isShared && !canWrite()) return;
 
         const sizedMonitor = sizedMonitorOf(msgStr);
+        if (msgStr.includes(".key,")) SessionManager.markTyping(sessionId, ws);
 
         if (pinnedMonitor !== null) {
             if (sizedMonitor !== null && sizedMonitor !== pinnedMonitor) return;
@@ -121,17 +125,8 @@ const handleGuacJoin = async (ws, sessionId, isShared, shareWritable, pinnedMoni
 };
 
 module.exports = async (ws, context) => {
-    if (context.isShared) {
-        const { serverSession } = context;
-        const sessionId = serverSession.sessionId;
-        const session = SessionManager.get(sessionId);
-        if (!session) return ws.close(4014, "Session not found");
+    const sessionId = context.serverSession?.sessionId;
+    if (!sessionId || !SessionManager.get(sessionId)) return ws.close(4014, "Session not found");
 
-        return handleGuacJoin(ws, sessionId, true, serverSession.shareWritable);
-    }
-
-    const sessionId = context.connectionConfig?.serverSession?.sessionId;
-    if (!sessionId) return ws.close(4014, "Session not found");
-
-    return handleGuacJoin(ws, sessionId, false, false, context.pinnedMonitor ?? null);
+    return handleGuacJoin(ws, sessionId, context, context.pinnedMonitor ?? null);
 };

@@ -1,7 +1,9 @@
 const { updateAuditLogWithSessionDuration } = require("../controllers/audit");
 const SessionManager = require("../lib/SessionManager");
+const { buildParticipant, createWriteGuard } = require("../utils/sessionParticipant");
 
-const handleShared = (ws, { serverSession }) => {
+const handleShared = (ws, ctx) => {
+    const { serverSession } = ctx;
     const sessionId = serverSession.sessionId;
     const { dataSocket } = SessionManager.getConnection(sessionId) || {};
     if (!dataSocket || dataSocket.destroyed) return ws.close(4014, "Session not connected");
@@ -9,8 +11,10 @@ const handleShared = (ws, { serverSession }) => {
     const logs = SessionManager.getLogBuffer(sessionId);
     if (logs && ws.readyState === ws.OPEN) ws.send(logs);
 
-    SessionManager.addWebSocket(sessionId, ws, true);
-    if (serverSession.shareWritable) SessionManager.setActiveWs(sessionId, ws);
+    const canWrite = createWriteGuard(ctx, sessionId);
+
+    SessionManager.addWebSocket(sessionId, ws, true, buildParticipant(ctx));
+    if (canWrite()) SessionManager.setActiveWs(sessionId, ws);
 
     const onData = (data) => { const text = data.toString(); if (text !== "OK" && ws.readyState === ws.OPEN) ws.send(text); };
     const onClose = () => ws.readyState === ws.OPEN && ws.close(4014, "Session ended");
@@ -21,7 +25,7 @@ const handleShared = (ws, { serverSession }) => {
     dataSocket.on("error", onErr);
 
     ws.on("message", (data) => {
-        if (!SessionManager.get(sessionId)?.shareWritable || dataSocket.destroyed) return;
+        if (!canWrite() || dataSocket.destroyed) return;
         data = data.toString();
         if (data.startsWith("\x01")) {
             const [w, h] = data.substring(1).split(",").map(Number);
@@ -29,6 +33,7 @@ const handleShared = (ws, { serverSession }) => {
             return;
         }
         SessionManager.setActiveWs(sessionId, ws);
+        SessionManager.markTyping(sessionId, ws);
         dataSocket.write(`0:${data.length}:${data}`);
     });
 
@@ -52,7 +57,10 @@ const setupHandler = (ws, dataSocket, sessionId) => {
             }
             return;
         }
-        if (sessionId) SessionManager.setActiveWs(sessionId, ws);
+        if (sessionId) {
+            SessionManager.setActiveWs(sessionId, ws);
+            SessionManager.markTyping(sessionId, ws);
+        }
         dataSocket.write(`0:${data.length}:${data}`);
     });
 };
@@ -72,7 +80,7 @@ module.exports = async (ws, context) => {
     const logs = SessionManager.getLogBuffer(serverSession.sessionId);
     if (logs && ws.readyState === ws.OPEN) ws.send(logs);
 
-    SessionManager.addWebSocket(serverSession.sessionId, ws);
+    SessionManager.addWebSocket(serverSession.sessionId, ws, false, buildParticipant(context));
     SessionManager.setActiveWs(serverSession.sessionId, ws);
     setupHandler(ws, dataSocket, serverSession.sessionId);
 

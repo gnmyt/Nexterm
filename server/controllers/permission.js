@@ -10,6 +10,8 @@ const sequelize = require("../utils/database");
 const registry = require("../permissions/registry");
 const { getSystemPermissions, getOrganizationPermissions } = require("../permissions/engine");
 const { getAdminGroupIds, countAdmins, isAccountAdmin } = require("../utils/permission");
+const { ACCOUNT_VIEW_ATTRIBUTES, toAccountView } = require("../utils/accountView");
+const { revokeLiveSessionAccess } = require("./liveSession");
 const logger = require("../utils/logger");
 
 const TRI = ["allow", "deny", "neutral"];
@@ -23,10 +25,7 @@ const grantsBeyondCaller = (caller, permissions) =>
 const ADMIN_GROUP_FORBIDDEN = { code: 403, message: "Only administrators can manage the administrator group" };
 const GRANT_FORBIDDEN = { code: 403, message: "You can only grant permissions that you hold yourself" };
 
-const userView = (account) => ({
-    id: account.id, username: account.username,
-    firstName: account.firstName, lastName: account.lastName,
-});
+const userView = toAccountView;
 
 const applyTriState = async (Model, scope, baseWhere, permissions) => {
     for (const [permission, value] of Object.entries(permissions || {})) {
@@ -88,7 +87,7 @@ module.exports.getGroup = async (groupId) => {
 
     const accounts = await Account.findAll({
         where: { id: { [Op.in]: members.map((m) => m.accountId) } },
-        attributes: ["id", "username", "firstName", "lastName"],
+        attributes: ACCOUNT_VIEW_ATTRIBUTES,
     });
 
     return {
@@ -250,5 +249,8 @@ module.exports.setOrgMemberPermissions = async (organizationId, accountId, permi
         return GRANT_FORBIDDEN;
 
     await applyTriState(OrganizationMemberPermission, registry.SCOPES.ORGANIZATION, { organizationId, accountId }, permissions);
+
+    revokeLiveSessionAccess(organizationId, accountId);
+
     return await module.exports.getOrgMemberPermissions(organizationId, accountId);
 };

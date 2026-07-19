@@ -30,11 +30,13 @@ module.exports.listProviders = async (includeSecret = false, forPublic = false) 
         return providers.map(provider => ({
             id: provider.id, name: provider.name, issuer: provider.issuer,
             clientId: provider.clientId, redirectUri: provider.redirectUri, scope: provider.scope,
-            enabled: (forPublic && provider.isInternal) ? (provider.enabled || ldapEnabled) : provider.enabled,
+            enabled: Boolean((forPublic && provider.isInternal) ? (provider.enabled || ldapEnabled) : provider.enabled),
             usernameAttribute: provider.usernameAttribute,
             firstNameAttribute: provider.firstNameAttribute, lastNameAttribute: provider.lastNameAttribute,
-            isInternal: provider.isInternal,
-            allowRegistration: provider.isInternal ? (forPublic ? (provider.enabled && provider.allowRegistration) : provider.allowRegistration) : undefined,
+            isInternal: Boolean(provider.isInternal),
+            allowRegistration: provider.isInternal
+                ? Boolean(forPublic ? (provider.enabled && provider.allowRegistration) : provider.allowRegistration)
+                : undefined,
         }));
     }
 

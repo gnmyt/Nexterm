@@ -1,0 +1,72 @@
+@use "@/common/styles/colors"
+
+.organization-session-settings
+  padding: 0.25rem
+
+  .settings-content
+    display: flex
+    flex-direction: column
+    gap: 1.25rem
+
+    .setting-section
+      .section-header
+        margin-bottom: 0.625rem
+
+        h4
+          margin: 0
+          color: colors.$white
+          font-size: 0.875rem
+          font-weight: 600
+
+        p
+          margin: 0.125rem 0 0 0
+          color: colors.$subtext
+          font-size: 0.75rem
+
+      .settings-list
+        display: flex
+        flex-direction: column
+        gap: 0.375rem
+
+      .setting-item
+        display: flex
+        justify-content: space-between
+        align-items: center
+        padding: 0.625rem 0.75rem
+        background-color: transparent
+        border: 1px solid colors.$gray
+        border-radius: 0.5rem
+        transition: background-color 0.1s ease
+
+        &:hover
+          background-color: colors.$dark-gray
+
+        .setting-info
+          display: flex
+          align-items: baseline
+          gap: 0.75rem
+          min-width: 0
+          flex: 1
+          margin-right: 1rem
+
+          .setting-label
+            flex: 0 0 auto
+            margin-right: 0
+            white-space: nowrap
+            color: colors.$white
+            font-weight: 600
+            font-size: 0.875rem
+
+          .setting-description
+            flex: 1
+            min-width: 0
+            color: colors.$subtext
+            font-size: 0.75rem
+            line-height: 1.4
+
+  .settings-actions
+    margin-top: 1.25rem
+    padding-top: 1rem
+    border-top: 1px solid colors.$gray
+    display: flex
+    justify-content: flex-end

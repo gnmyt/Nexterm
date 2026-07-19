@@ -40,6 +40,8 @@ const Permission = Object.freeze({
     ORG_MEMBERS_MANAGE: "org.members.manage",
     ORG_AUDIT_VIEW: "org.audit.view",
     ORG_AUDIT_RECORDINGS: "org.audit.recordings",
+    ORG_SESSIONS_VIEW: "org.sessions.view",
+    ORG_SESSIONS_CONTROL: "org.sessions.control",
 });
 
 const CATEGORIES = [
@@ -54,6 +56,7 @@ const CATEGORIES = [
     { key: "general", label: "Organization", icon: "mdiDomain" },
     { key: "members", label: "Members", icon: "mdiAccountMultipleOutline" },
     { key: "audit", label: "Auditing", icon: "mdiShieldCheckOutline" },
+    { key: "sessions", label: "Live Sessions", icon: "mdiMonitorShare" },
 ];
 
 const P = Permission;
@@ -99,6 +102,9 @@ const PERMISSIONS = [
 
     { id: P.ORG_AUDIT_VIEW, scopes: [ORGANIZATION], category: "audit", label: "View Audit Logs", description: "View audit logs and configure auditing for this organization." },
     { id: P.ORG_AUDIT_RECORDINGS, scopes: [ORGANIZATION], category: "audit", label: "Play Session Recordings", description: "Download and play back recorded sessions.", dangerous: true },
+
+    { id: P.ORG_SESSIONS_VIEW, scopes: [ORGANIZATION], category: "sessions", label: "View Live Sessions", description: "See the running sessions of other members and join them read-only." },
+    { id: P.ORG_SESSIONS_CONTROL, scopes: [ORGANIZATION], category: "sessions", label: "Control Live Sessions", description: "Send input to the sessions of other members after joining them.", dangerous: true },
 ];
 
 const byId = new Map(PERMISSIONS.map((p) => [p.id, p]));

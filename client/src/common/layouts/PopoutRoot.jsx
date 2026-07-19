@@ -1,6 +1,7 @@
 import { Outlet } from "react-router-dom";
 import { UserProvider } from "@/common/contexts/UserContext.jsx";
 import { StateStreamProvider } from "@/common/contexts/StateStreamContext.jsx";
+import { LiveSessionProvider } from "@/common/contexts/LiveSessionContext.jsx";
 import { ServerProvider } from "@/common/contexts/ServerContext.jsx";
 import { IdentityProvider } from "@/common/contexts/IdentityContext.jsx";
 import { ToastProvider } from "@/common/contexts/ToastContext.jsx";
@@ -37,6 +38,7 @@ export default () => {
                         <PreferencesWrapper>
                             <ThemeLoader />
                             <StateStreamProvider>
+                                <LiveSessionProvider>
                                 <KeymapProvider>
                                     <AIProvider>
                                         <ServerProvider>
@@ -56,6 +58,7 @@ export default () => {
                                         </ServerProvider>
                                     </AIProvider>
                                 </KeymapProvider>
+                                </LiveSessionProvider>
                             </StateStreamProvider>
                         </PreferencesWrapper>
                     </UserProvider>

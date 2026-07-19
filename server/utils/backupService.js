@@ -11,6 +11,7 @@ const DATA_DIR = path.join(__dirname, "../../data");
 const DB_PATH = path.join(DATA_DIR, "nexterm.db");
 const RECORDINGS_DIR = path.join(DATA_DIR, "recordings");
 const LOGS_DIR = path.join(DATA_DIR, "logs");
+const AVATARS_DIR = path.join(DATA_DIR, "avatars");
 const TEMP_DIR = path.join(DATA_DIR, ".backup-temp");
 
 const BACKUP_NAME_RE = /^backup-[\w.-]+\.tar\.gz$/;
@@ -83,6 +84,9 @@ module.exports.createBackup = async (providerId) => {
         if (settings.includeDatabase && fs.existsSync(DB_PATH)) {
             archive.file(DB_PATH, { name: "nexterm.db" });
         }
+        if (settings.includeDatabase && fs.existsSync(AVATARS_DIR)) {
+            archive.directory(AVATARS_DIR, "avatars");
+        }
         if (settings.includeRecordings && fs.existsSync(RECORDINGS_DIR)) {
             archive.directory(RECORDINGS_DIR, "recordings");
         }
@@ -139,9 +143,14 @@ module.exports.restoreBackup = async (providerId, backupName) => {
     const restoredDb = path.join(restorePath, "nexterm.db");
     const restoredRecordings = path.join(restorePath, "recordings");
     const restoredLogs = path.join(restorePath, "logs");
+    const restoredAvatars = path.join(restorePath, "avatars");
 
     if (fs.existsSync(restoredDb)) {
         fs.copyFileSync(restoredDb, DB_PATH);
+    }
+    if (fs.existsSync(restoredAvatars)) {
+        if (fs.existsSync(AVATARS_DIR)) fs.rmSync(AVATARS_DIR, { recursive: true });
+        fs.renameSync(restoredAvatars, AVATARS_DIR);
     }
     if (fs.existsSync(restoredRecordings)) {
         if (fs.existsSync(RECORDINGS_DIR)) fs.rmSync(RECORDINGS_DIR, { recursive: true });

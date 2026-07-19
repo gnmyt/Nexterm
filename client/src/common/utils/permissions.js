@@ -33,4 +33,6 @@ export const Permission = Object.freeze({
     ORG_MEMBERS_MANAGE: "org.members.manage",
     ORG_AUDIT_VIEW: "org.audit.view",
     ORG_AUDIT_RECORDINGS: "org.audit.recordings",
+    ORG_SESSIONS_VIEW: "org.sessions.view",
+    ORG_SESSIONS_CONTROL: "org.sessions.control",
 });

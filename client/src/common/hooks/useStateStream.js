@@ -3,7 +3,7 @@ import useWebSocket, { ReadyState } from "react-use-websocket";
 import { getWebSocketUrl, getTabId, getBrowserId } from "@/common/utils/ConnectionUtil.js";
 import { closeAllPopouts } from "@/common/utils/PopoutUtil.js";
 
-export const STATE_TYPES = { ENTRIES: "ENTRIES", IDENTITIES: "IDENTITIES", SNIPPETS: "SNIPPETS", CONNECTIONS: "CONNECTIONS", LOGOUT: "LOGOUT" };
+export const STATE_TYPES = { ENTRIES: "ENTRIES", IDENTITIES: "IDENTITIES", SNIPPETS: "SNIPPETS", CONNECTIONS: "CONNECTIONS", LIVE_SESSIONS: "LIVE_SESSIONS", SESSION_PRESENCE: "SESSION_PRESENCE", LOGOUT: "LOGOUT" };
 
 export const forceLogoutClient = async () => {
     await closeAllPopouts();

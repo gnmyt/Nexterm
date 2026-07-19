@@ -3,6 +3,8 @@ import ServerSearch from "./components/ServerSearch";
 import { useContext, useEffect, useState, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import { ServerContext } from "@/common/contexts/ServerContext.jsx";
+import { useLiveSessions } from "@/common/contexts/LiveSessionContext.jsx";
+import { getSessionOwnerLabel } from "@/common/utils/avatar.js";
 import { IdentityContext } from "@/common/contexts/IdentityContext.jsx";
 import { useScripts } from "@/common/contexts/ScriptContext.jsx";
 import ServerEntries from "./components/ServerEntries.jsx";
@@ -26,6 +28,7 @@ import {
     mdiAccountCircle,
     mdiImport,
     mdiFileDocumentOutline,
+    mdiBroadcast,
     mdiPlusCircle,
     mdiFlaskOutline,
     mdiConsole,
@@ -98,6 +101,7 @@ export const ServerList = ({
     openSFTP,
     setCurrentOrganizationId,
     hibernatedSessions = [],
+    joinLiveSession,
     resumeSession,
     openDirectConnect,
     runScript,
@@ -108,6 +112,7 @@ export const ServerList = ({
 }) => {
     const { t } = useTranslation();
     const { servers, loadServers, getServerById } = useContext(ServerContext);
+    const { getLiveSessionsForEntry } = useLiveSessions();
     const { identities } = useContext(IdentityContext);
     const { hasPermission } = useContext(UserContext);
     const canManageResources = hasPermission(Permission.RESOURCES_MANAGE);
@@ -289,6 +294,34 @@ export const ServerList = ({
 
         contextMenu.open(e, { x: e.clientX, y: e.clientY });
     };
+
+    const liveSessionsForServer = server ? getLiveSessionsForEntry(server.id) : [];
+
+    const ownerLabel = (session) => getSessionOwnerLabel(session, t);
+
+    const liveSessionMenu = liveSessionsForServer.length > 0 && (
+        <>
+            {liveSessionsForServer.length === 1 ? (
+                <ContextMenuItem
+                    icon={mdiBroadcast}
+                    label={t("servers.contextMenu.joinSessionOf", { user: ownerLabel(liveSessionsForServer[0]) })}
+                    onClick={() => joinLiveSession(liveSessionsForServer[0])}
+                />
+            ) : (
+                <ContextMenuItem icon={mdiBroadcast} label={t("servers.contextMenu.joinSession")}>
+                    {liveSessionsForServer.map(session => (
+                        <ContextMenuItem
+                            key={session.id}
+                            icon={mdiBroadcast}
+                            label={ownerLabel(session)}
+                            onClick={() => joinLiveSession(session)}
+                        />
+                    ))}
+                </ContextMenuItem>
+            )}
+            <ContextMenuSeparator />
+        </>
+    );
 
     const hibernatedSessionsForServer = server ? hibernatedSessions.filter(s => s.server.id == server.id) : [];
     
@@ -706,6 +739,7 @@ export const ServerList = ({
 
                         {contextClickedType === "server-object" && server?.type === "server" && (
                             <>
+                                {liveSessionMenu}
                                 {hibernatedSessionsForServer.length > 0 && (
                                     <>
                                         {hibernatedSessionsForServer.length === 1 ? (
@@ -863,6 +897,7 @@ export const ServerList = ({
 
                         {contextClickedType === "server-object" && server?.type?.startsWith("pve-") && (
                             <>
+                                {liveSessionMenu}
                                 {hibernatedSessionsForServer.length > 0 && (
                                     <>
                                         {hibernatedSessionsForServer.length === 1 ? (

@@ -13,6 +13,7 @@ const {
     updateOrganizationSchema,
     inviteUserSchema,
     respondToInvitationSchema,
+    updateSessionSettingsSchema,
 } = require("../validations/organization");
 
 /**
@@ -278,6 +279,48 @@ app.put("/:id/members/:accountId/permissions",
             res.status(500).json({ message: "An error occurred while updating member permissions" });
         }
     });
+
+/**
+ * GET /organization/{id}/session-settings
+ * @summary Get Live Session Settings
+ * @description Returns the live session sharing configuration of an organization.
+ * @tags Organization
+ * @produces application/json
+ * @security BearerAuth
+ * @param {string} id.path.required - Organization id
+ * @return {object} 200 - Live session settings
+ * @return {object} 403 - Insufficient permissions
+ */
+app.get("/:id/session-settings", authenticate, requireOrgPermission(Permission.ORG_MANAGE), async (req, res) => {
+    try {
+        res.json(await organizationController.getSessionSettings(req.params.id));
+    } catch (error) {
+        logger.error("Error getting session settings", { error: error.message });
+        res.status(500).json({ message: "An error occurred while reading the session settings" });
+    }
+});
+
+/**
+ * PATCH /organization/{id}/session-settings
+ * @summary Update Live Session Settings
+ * @description Updates the live session sharing configuration of an organization. Requires the "org.manage" permission.
+ * @tags Organization
+ * @produces application/json
+ * @security BearerAuth
+ * @param {string} id.path.required - Organization id
+ * @param {UpdateSessionSettings} request.body.required - Updated session settings
+ * @return {object} 200 - Updated session settings
+ * @return {object} 403 - Insufficient permissions
+ */
+app.patch("/:id/session-settings", authenticate, requireOrgPermission(Permission.ORG_MANAGE), async (req, res) => {
+    if (validateSchema(res, updateSessionSettingsSchema, req.body)) return;
+    try {
+        res.json(await organizationController.updateSessionSettings(req.params.id, req.body));
+    } catch (error) {
+        logger.error("Error updating session settings", { error: error.message });
+        res.status(500).json({ message: "An error occurred while updating the session settings" });
+    }
+});
 
 /**
  * GET /organization/invitations/pending
