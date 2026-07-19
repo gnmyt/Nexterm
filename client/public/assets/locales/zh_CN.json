@@ -592,7 +592,17 @@
     },
     "account": {
       "title": "账户",
-      "accountName": "账户名称",
+      "avatar": {
+        "label": "图片",
+        "upload": "更改个人头像",
+        "remove": "删除",
+        "updated": "您的头像已更新",
+        "removed": "您的头像已被删除",
+        "tooLarge": "所选图片的大小超过 10 MB",
+        "uploadFailed": "无法上传头像",
+        "removeFailed": "无法删除头像"
+      },
+      "accountDetails": "账户详情",
       "firstName": "名字",
       "lastName": "姓",
       "appearance": "外观",
@@ -794,6 +804,20 @@
           "createSuccess": "组织创建成功",
           "createFailed": "创建组织失败"
         }
+      },
+      "sessionSettings": {
+        "sessionSettingsTab": "直播环节",
+        "liveSharingHeading": "实时会话共享",
+        "liveSharingDescription": "控制该组织中跑步活动分享的方式。",
+        "enableLiveSessionSharingLabel": "启用实时会话共享",
+        "enableLiveSessionSharingDescription": "成员需要“查看”或“控制实时会话”权限。",
+        "actions": {
+          "save": "保存设置"
+        },
+        "messages": {
+          "updated": "实时会话设置已成功更新",
+          "updateFailed": "无法更新实时会话设置"
+        }
       }
     },
     "users": {
@@ -861,6 +885,10 @@
           "title": "AI 接受操作",
           "description": "在助手中批准待处理的 AI 工具操作"
         },
+        "aicommand": {
+          "title": "生成命令",
+          "description": "在终端中请求命令建议"
+        },
         "snippets": {
           "title": "代码片段",
           "description": "打开代码片段对话框"
@@ -926,6 +954,7 @@
         "title": "输入",
         "description": "控制键盘快捷键在终端中的行为。",
         "smartCopyPaste": "智能 Ctrl+C",
+        "passwordPromptDetection": "密码输入检测",
         "enabled": "已启用",
         "disabled": "已禁用",
         "syncEnabled": "输入设置现已同步到您的账户",
@@ -1551,10 +1580,20 @@
       "duplicateServer": "复制服务器",
       "pasteIdentityPassword": "粘贴密码",
       "deleteServer": "删除服务器",
+      "deleteConfirm": "您确定要删除“{{name}}”吗？此操作无法撤销。",
+      "deleteFailServer": "无法删除“{{name}}”。",
+      "deleteFailFolder": "无法删除文件夹“{{name}}”。",
       "wakeOnLan": "网络唤醒",
       "shutdown": "关机",
       "stop": "停止",
-      "start": "启动"
+      "start": "启动",
+      "joinSession": "加入会议",
+      "joinSessionOf": "加入会议 {{user}}"
+    },
+    "passwordHint": {
+      "paste": "粘贴密码",
+      "pasteFor": "粘贴 {{username}} 密码",
+      "cycle": "使用方向键切换角色"
     },
     "tabs": {
       "contextMenu": {
@@ -1636,6 +1675,11 @@
         "wakeOnLan": {
           "title": "启用网络唤醒",
           "description": "允许使用其 MAC 地址远程唤醒该服务器"
+        },
+        "rdpSecurity": {
+          "title": "安全",
+          "description": "用于连接远程 Windows 计算机的身份验证方法。在禁用了 NTLM 的环境中（例如“受保护的用户”组），请使用 NLA。",
+          "method": "安全方法"
         },
         "keyboardLayout": {
           "title": "键盘布局",
@@ -1772,6 +1816,7 @@
       }
     },
     "fileManager": {
+      "dropOverlay": "将文件或文件夹拖放到此处进行上传",
       "createFile": {
         "title": "创建文件",
         "placeholder": "文件名称",
@@ -1883,6 +1928,8 @@
         "hiddenDirectories": "{{count}} 隐藏目录",
         "switchToGrid": "切换到网格视图",
         "switchToList": "切换到列表视图",
+        "uploadFile": "上传文件",
+        "uploadFolder": "上传文件夹",
         "search": "搜索文件",
         "closeSearch": "关闭搜索",
         "refresh": "刷新"
@@ -1907,7 +1954,9 @@
         "downloaded": "下载 {{name}}",
         "downloadingItems": "下载 {{count}} 项目...",
         "uploaded": "上传 {{name}}",
+        "uploadedItems": "已上传 {{count}} 个文件",
         "uploadFailed": "上传失败： {{message}}",
+        "uploadFailedItems": "{{count}} 文件上传失败： {{message}}",
         "connectionLost": "SFTP 连接丢失。请重新连接。",
         "error": "发生错误"
       }
@@ -1938,6 +1987,9 @@
       "deny": "拒绝",
       "denied": "你拒绝了此操作。",
       "stopped": "停下了。",
+      "continuePrompt": "助理在连续跑了一段台阶后停了下来。继续吗？",
+      "continue": "继续",
+      "compacted": "为节省篇幅，已对之前的消息进行了总结。",
       "tools": {
         "runCommand": "运行命令",
         "readFile": "读取文件",
@@ -1952,6 +2004,14 @@
         "changePermissions": "更改权限",
         "findDirectories": "查找目录"
       }
+    },
+    "commandSuggestion": {
+      "open": "生成命令",
+      "placeholder": "描述该命令……",
+      "generating": "正在生成...",
+      "accept": "接受命令",
+      "cycle": "骑行建议",
+      "error": "无法生成命令。"
     },
     "snippets": {
       "title": "代码片段",
@@ -1994,6 +2054,10 @@
         "unsaved": "未保存",
         "error": "保存失败"
       }
+    },
+    "liveSessions": {
+      "activeOn": "直播环节： {{users}}",
+      "unknownUser": "未知用户"
     }
   },
   "support": {
@@ -2015,6 +2079,7 @@
   },
   "welcome": {
     "hello": "你好",
+    "defaultName": "用户",
     "subtitle": "欢迎使用 Nexterm。用于 SSH、VNC 和 RDP 的开源服务器管理器。",
     "downloadApps": "下载应用程序",
     "connectDevice": "连接设备",
