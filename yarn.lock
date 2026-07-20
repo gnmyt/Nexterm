@@ -19,13 +19,13 @@
     "@ai-sdk/provider-utils" "5.0.11"
     "@vercel/oidc" "3.2.0"
 
-"@ai-sdk/openai-compatible@^3.0.11":
-  version "3.0.11"
-  resolved "https://registry.yarnpkg.com/@ai-sdk/openai-compatible/-/openai-compatible-3.0.11.tgz#6a0a1499cd4794c73a6516e99e5704d4381b1178"
-  integrity sha512-PKLyt5PfjV2maWJPZpm3W29vCc+BbyqSPAcghXhl+iIxzFNjpGPa6UD/8J0b9l7w/lJCZKuhcef9q+Gp5WqUvw==
+"@ai-sdk/openai-compatible@^3.0.12":
+  version "3.0.12"
+  resolved "https://registry.yarnpkg.com/@ai-sdk/openai-compatible/-/openai-compatible-3.0.12.tgz#30e318692f1fb93c816b9acce4645bba4999c548"
+  integrity sha512-tN9BUb4jUGjqtbRPUsziLxASfogLNICcq/Qrwr55vpnzKvprV6Ukl8ynED2lZaNrAHU5U4zlGnyU/iuYrjQK6g==
   dependencies:
     "@ai-sdk/provider" "4.0.3"
-    "@ai-sdk/provider-utils" "5.0.10"
+    "@ai-sdk/provider-utils" "5.0.11"
 
 "@ai-sdk/openai@^4.0.16":
   version "4.0.16"
@@ -34,16 +34,6 @@
   dependencies:
     "@ai-sdk/provider" "4.0.3"
     "@ai-sdk/provider-utils" "5.0.11"
-
-"@ai-sdk/provider-utils@5.0.10":
-  version "5.0.10"
-  resolved "https://registry.yarnpkg.com/@ai-sdk/provider-utils/-/provider-utils-5.0.10.tgz#d2868e7a74d75134e64e3e001512d32c2dc77a09"
-  integrity sha512-uPyec0+85dwxZYXtb8qe8gCjhjDfxP4LCDo/uRQS/iG+FIgYbHPRhr/ys281udG90bTaE18+5cxWraYaf8oHCw==
-  dependencies:
-    "@ai-sdk/provider" "4.0.3"
-    "@standard-schema/spec" "^1.1.0"
-    "@workflow/serde" "4.1.0"
-    eventsource-parser "^3.0.8"
 
 "@ai-sdk/provider-utils@5.0.11":
   version "5.0.11"
