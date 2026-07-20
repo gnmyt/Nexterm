@@ -48,7 +48,7 @@
     "esbuild": "^0.28.1",
     "nodemon": "^3.1.11",
     "vitepress": "^1.6.4",
-    "vitepress-openapi": "^0.2.1"
+    "vitepress-openapi": "^0.2.2"
   },
   "scripts": {
     "dev:server": "nodemon --ignore docs --ignore vendor --ignore client --ignore mobile --ignore data server/index.js",
