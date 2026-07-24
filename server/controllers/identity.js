@@ -75,6 +75,29 @@ module.exports.createIdentity = async (accountId, config) => {
     } else if (!(await hasAccountPermission(accountId, Permission.IDENTITIES_MANAGE))) {
         return { code: 403, message: "You don't have permission to manage identities" };
     }
+
+    // Validation block
+    if (!config.name?.trim()) {
+        return { code: 400, message: "settings.identities.dialog.messages.nameRequired" };
+    }
+    if (!config.username?.trim()) {
+        return { code: 400, message: "settings.identities.dialog.messages.usernameRequired" };
+    }
+    if (
+        (config.type === "password" ||
+            config.type === "password-only" ||
+            config.type === "both") &&
+        (!config.password?.trim())
+    ) {
+        return { code: 400, message: "settings.identities.dialog.messages.passwordRequired" };
+    }
+    if (
+        (config.type === "ssh" || config.type === "both") &&
+        (!config.sshKey || typeof config.sshKey !== "string" || !config.sshKey.trim())
+    ) {
+        return { code: 400, message: "settings.identities.dialog.messages.sshKeyRequired" };
+    }
+
     const identity = await Identity.create({
         ...config, accountId: config.organizationId ? null : accountId, organizationId: config.organizationId || null,
         password: undefined, sshKey: undefined, passphrase: undefined,
