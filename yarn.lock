@@ -10,10 +10,10 @@
     "@ai-sdk/provider" "4.0.3"
     "@ai-sdk/provider-utils" "5.0.12"
 
-"@ai-sdk/gateway@4.0.27":
-  version "4.0.27"
-  resolved "https://registry.yarnpkg.com/@ai-sdk/gateway/-/gateway-4.0.27.tgz#67afef0fb2750f63885fcb9ea9d4f726a490f6b7"
-  integrity sha512-gqTMvV0N8/JirIZ3OzwjSZRYxzwZu/PeOFCKb8NB9fstWH39tI+L6CkeMNVou5/HCKEYAw6RCOHW59Vhquv8vA==
+"@ai-sdk/gateway@4.0.28":
+  version "4.0.28"
+  resolved "https://registry.yarnpkg.com/@ai-sdk/gateway/-/gateway-4.0.28.tgz#79d17539f05e411574203bbb8452868bbe2fee10"
+  integrity sha512-ee9TsNO3mkgHDWmTmJ8Fvltr6PFh52zhrV2+FaKJY3F3iu7kWZi5tCRJCR1HVhhlpj6lHniUb28nLQdPHkA/1Q==
   dependencies:
     "@ai-sdk/provider" "4.0.3"
     "@ai-sdk/provider-utils" "5.0.12"
@@ -1348,12 +1348,12 @@ agent-base@^7.1.0, agent-base@^7.1.2:
   resolved "https://registry.yarnpkg.com/agent-base/-/agent-base-7.1.4.tgz#e3cd76d4c548ee895d3c3fd8dc1f6c5b9032e7a8"
   integrity sha512-MnA+YT8fwfJPgBx3m60MNqakm30XOkyIoH1y6huTQvC0PwZG7ki8NacLBcrPbNoo8vEZy7Jpuk7+jMO+CUovTQ==
 
-ai@^7.0.35:
-  version "7.0.35"
-  resolved "https://registry.yarnpkg.com/ai/-/ai-7.0.35.tgz#d163f9b741fa259cbfef9a18c36ff24316d3b72e"
-  integrity sha512-en8xnTNoVJVWk/Y7TsXuTkc463ehuQUqrofjPs/TAd4O3h14QKmq4rWWG3/Eb05r3f2MvvxfCuXNnvhTdzyoTg==
+ai@^7.0.37:
+  version "7.0.37"
+  resolved "https://registry.yarnpkg.com/ai/-/ai-7.0.37.tgz#d4fcef5f63de3e22c841e445bfa35e0dd4494498"
+  integrity sha512-stF+SEQJgKY3Qfe3FwNzqUrehHviOp2l7LemoI8YMOa0Zk5PxKsRNgUk3cHXz0RAue9RRyCAis2fz6LSCP6EKw==
   dependencies:
-    "@ai-sdk/gateway" "4.0.27"
+    "@ai-sdk/gateway" "4.0.28"
     "@ai-sdk/provider" "4.0.3"
     "@ai-sdk/provider-utils" "5.0.12"
 
