@@ -1,7 +1,7 @@
 # 🚀 Installation
 
 > [!WARNING]
-> Nexterm is still in beta. Please back up your data regularly and report any issues on [GitHub](https://github.com/gnmyt/Nexterm/issues).
+> Nexterm and Nexterm Engine is still in beta. Please back up your data regularly and report any issues on [GitHub](https://github.com/gnmyt/Nexterm/issues).
 
 ## 🔐 Generate Encryption Key
 
@@ -11,7 +11,7 @@ Nexterm requires an encryption key to securely store your data. You can generate
 openssl rand -hex 32
 ```
 
-## Docker Images
+## 🐳 Docker Images
 
 Nexterm is distributed as three Docker images:
 
