@@ -19,13 +19,13 @@
     "@ai-sdk/provider-utils" "5.0.14"
     "@vercel/oidc" "3.2.0"
 
-"@ai-sdk/openai-compatible@^3.0.14":
-  version "3.0.14"
-  resolved "https://registry.yarnpkg.com/@ai-sdk/openai-compatible/-/openai-compatible-3.0.14.tgz#e2126d6b49f61e394c88b335cab2d512c481d847"
-  integrity sha512-nUl7dBHUDTqcnuWGnEbKMwDDqL94BxRfibLwYv8uWp+kZn8Zqdxy7tUBt4sv2hpHQi+S2P6bUyqW18xmbykErw==
+"@ai-sdk/openai-compatible@^3.0.16":
+  version "3.0.16"
+  resolved "https://registry.yarnpkg.com/@ai-sdk/openai-compatible/-/openai-compatible-3.0.16.tgz#baa74d80c9bea2ee47a8b99b1cfba23a2a0b7d7a"
+  integrity sha512-beXoYtlCnI02BYZU6oGfOPI40xC8MJx+Ek0SM8XZ8RcBBP7SaQ0qIV5DO3Y1euHMLMD92zE7nNHM0WcnnnX58A==
   dependencies:
-    "@ai-sdk/provider" "4.0.3"
-    "@ai-sdk/provider-utils" "5.0.12"
+    "@ai-sdk/provider" "4.0.4"
+    "@ai-sdk/provider-utils" "5.0.14"
 
 "@ai-sdk/openai@^4.0.20":
   version "4.0.20"
