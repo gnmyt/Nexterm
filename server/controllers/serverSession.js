@@ -175,7 +175,17 @@ const getSessions = async (accountId, tabId = null, browserId = null) => {
     });
 };
 
-const hibernateSession = (sessionId) => {
+const validateSessionOwnership = (accountId, sessionId) => {
+    const session = SessionManager.get(sessionId);
+    if (!session) return { error: { code: 404, message: "Session not found" } };
+    if (session.accountId !== accountId) return { error: { code: 403, message: "Access denied" } };
+    return { session };
+};
+
+const hibernateSession = (accountId, sessionId) => {
+    const { error } = validateSessionOwnership(accountId, sessionId);
+    if (error) return error;
+
     const success = SessionManager.hibernate(sessionId);
     if (success) {
         return { message: "Session hibernated" };
@@ -183,7 +193,10 @@ const hibernateSession = (sessionId) => {
     return { code: 404, message: "Session not found" };
 };
 
-const resumeSession = (sessionId, tabId = null, browserId = null) => {
+const resumeSession = (accountId, sessionId, tabId = null, browserId = null) => {
+    const { error } = validateSessionOwnership(accountId, sessionId);
+    if (error) return error;
+
     const success = SessionManager.resume(sessionId, tabId, browserId);
     if (success) {
         return { message: "Session resumed" };
@@ -191,8 +204,11 @@ const resumeSession = (sessionId, tabId = null, browserId = null) => {
     return { code: 404, message: "Session not found" };
 };
 
-const deleteSession = (sessionId) => {
-    const success = SessionManager.remove(sessionId);
+const deleteSession = async (accountId, sessionId) => {
+    const { error } = validateSessionOwnership(accountId, sessionId);
+    if (error) return error;
+
+    const success = await SessionManager.remove(sessionId);
     if (success) {
         return { message: "Session deleted" };
     }
@@ -244,13 +260,6 @@ const getSession = async (accountId, sessionId) => {
         shareId: session.shareId || null,
         shareWritable: session.shareWritable || false,
     };
-};
-
-const validateSessionOwnership = (accountId, sessionId) => {
-    const session = SessionManager.get(sessionId);
-    if (!session) return { error: { code: 404, message: "Session not found" } };
-    if (session.accountId !== accountId) return { error: { code: 403, message: "Access denied" } };
-    return { session };
 };
 
 const startSharing = (accountId, sessionId, writable = false) => {
