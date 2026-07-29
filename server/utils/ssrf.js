@@ -31,41 +31,57 @@ const isBlockedIPv6 = (ip) => {
 const isBlockedAddress = (ip) =>
     net.isIPv6(ip) ? isBlockedIPv6(ip) : isBlockedIPv4(ip);
 
+const parseHttpUrl = (rawUrl) => {
+    try {
+        return new URL(rawUrl);
+    } catch {
+        throw new Error("Invalid URL");
+    }
+};
+
+const assertAllowedProtocol = (url, allowInsecureProtocols) => {
+    if (allowInsecureProtocols) return;
+    if (url.protocol === "http:" || url.protocol === "https:") return;
+    throw new Error(`Blocked URL protocol: ${url.protocol}`);
+};
+
+const assertPublicHostname = async (host) => {
+    if (net.isIP(host)) {
+        if (isBlockedAddress(host)) throw new Error("Blocked private/loopback address");
+        return;
+    }
+
+    let addresses;
+    try {
+        addresses = await dns.lookup(host, { all: true });
+    } catch {
+        throw new Error(`Could not resolve host: ${host}`);
+    }
+    if (!addresses.length) throw new Error(`Could not resolve host: ${host}`);
+
+    for (const { address } of addresses) {
+        if (isBlockedAddress(address))
+            throw new Error("Blocked private/loopback address");
+    }
+};
+
 /**
  * Validate that a URL is http(s) and does not resolve to a private/loopback
  * address, then return a normalized href built from parsed URL parts.
  */
 module.exports.assertPublicUrl = async (rawUrl, { allowInsecureProtocols = false } = {}) => {
-    let url;
-    try {
-        url = new URL(rawUrl);
-    } catch {
-        throw new Error("Invalid URL");
-    }
-
-    if (!allowInsecureProtocols && url.protocol !== "http:" && url.protocol !== "https:")
-        throw new Error(`Blocked URL protocol: ${url.protocol}`);
-
-    const host = url.hostname;
-
-    if (net.isIP(host)) {
-        if (isBlockedAddress(host)) throw new Error("Blocked private/loopback address");
-    } else {
-        let addresses;
-        try {
-            addresses = await dns.lookup(host, { all: true });
-        } catch {
-            throw new Error(`Could not resolve host: ${host}`);
-        }
-        if (!addresses.length) throw new Error(`Could not resolve host: ${host}`);
-        for (const { address } of addresses) {
-            if (isBlockedAddress(address))
-                throw new Error("Blocked private/loopback address");
-        }
-    }
-
-    // Rebuild from parsed components so callers use a normalized public URL.
+    const url = parseHttpUrl(rawUrl);
+    assertAllowedProtocol(url, allowInsecureProtocols);
+    await assertPublicHostname(url.hostname);
     return url.href;
+};
+
+const resolveRedirectUrl = (location, baseUrl) => {
+    try {
+        return new URL(location, baseUrl).href;
+    } catch {
+        throw new Error("Invalid redirect Location URL");
+    }
 };
 
 /**
@@ -91,8 +107,7 @@ module.exports.fetchPublicUrl = async (rawUrl, options = {}) => {
             redirect: "manual",
         });
 
-        const isRedirect = response.status >= 300 && response.status < 400;
-        if (!isRedirect) {
+        if (!(response.status >= 300 && response.status < 400)) {
             return response;
         }
 
@@ -101,11 +116,7 @@ module.exports.fetchPublicUrl = async (rawUrl, options = {}) => {
             throw new Error("Redirect response missing Location header");
         }
 
-        try {
-            currentUrl = new URL(location, safeUrl).href;
-        } catch {
-            throw new Error("Invalid redirect Location URL");
-        }
+        currentUrl = resolveRedirectUrl(location, safeUrl);
     }
 
     throw new Error(`Too many redirects (max ${maxRedirects})`);
