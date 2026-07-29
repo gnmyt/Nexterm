@@ -1,6 +1,8 @@
 const dns = require("node:dns").promises;
 const net = require("node:net");
 
+const DEFAULT_MAX_REDIRECTS = 5;
+
 const isBlockedIPv4 = (ip) => {
     const p = ip.split(".").map(Number);
     if (p.length !== 4 || p.some((n) => Number.isNaN(n))) return true;
@@ -58,6 +60,47 @@ module.exports.assertPublicUrl = async (rawUrl, { allowInsecureProtocols = false
         if (isBlockedAddress(address))
             throw new Error("Blocked private/loopback address");
     }
+};
+
+/**
+ * Fetch a URL after SSRF checks, without trusting Node's automatic redirect
+ * following. Each redirect target is re-validated with assertPublicUrl.
+ */
+module.exports.fetchPublicUrl = async (rawUrl, options = {}) => {
+    const {
+        allowInsecureProtocols = false,
+        maxRedirects = DEFAULT_MAX_REDIRECTS,
+        ...fetchOptions
+    } = options;
+
+    let currentUrl = rawUrl;
+
+    for (let hop = 0; hop <= maxRedirects; hop++) {
+        await module.exports.assertPublicUrl(currentUrl, { allowInsecureProtocols });
+
+        const response = await fetch(currentUrl, {
+            ...fetchOptions,
+            redirect: "manual",
+        });
+
+        const isRedirect = response.status >= 300 && response.status < 400;
+        if (!isRedirect) {
+            return response;
+        }
+
+        const location = response.headers.get("location");
+        if (!location) {
+            throw new Error("Redirect response missing Location header");
+        }
+
+        try {
+            currentUrl = new URL(location, currentUrl).toString();
+        } catch {
+            throw new Error("Invalid redirect Location URL");
+        }
+    }
+
+    throw new Error(`Too many redirects (max ${maxRedirects})`);
 };
 
 module.exports.isBlockedAddress = isBlockedAddress;
