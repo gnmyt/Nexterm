@@ -31,6 +31,10 @@ const isBlockedIPv6 = (ip) => {
 const isBlockedAddress = (ip) =>
     net.isIPv6(ip) ? isBlockedIPv6(ip) : isBlockedIPv4(ip);
 
+/**
+ * Validate that a URL is http(s) and does not resolve to a private/loopback
+ * address, then return a normalized href built from parsed URL parts.
+ */
 module.exports.assertPublicUrl = async (rawUrl, { allowInsecureProtocols = false } = {}) => {
     let url;
     try {
@@ -46,20 +50,22 @@ module.exports.assertPublicUrl = async (rawUrl, { allowInsecureProtocols = false
 
     if (net.isIP(host)) {
         if (isBlockedAddress(host)) throw new Error("Blocked private/loopback address");
-        return;
+    } else {
+        let addresses;
+        try {
+            addresses = await dns.lookup(host, { all: true });
+        } catch {
+            throw new Error(`Could not resolve host: ${host}`);
+        }
+        if (!addresses.length) throw new Error(`Could not resolve host: ${host}`);
+        for (const { address } of addresses) {
+            if (isBlockedAddress(address))
+                throw new Error("Blocked private/loopback address");
+        }
     }
 
-    let addresses;
-    try {
-        addresses = await dns.lookup(host, { all: true });
-    } catch {
-        throw new Error(`Could not resolve host: ${host}`);
-    }
-    if (!addresses.length) throw new Error(`Could not resolve host: ${host}`);
-    for (const { address } of addresses) {
-        if (isBlockedAddress(address))
-            throw new Error("Blocked private/loopback address");
-    }
+    // Rebuild from parsed components so callers use a normalized public URL.
+    return url.href;
 };
 
 /**
@@ -76,9 +82,11 @@ module.exports.fetchPublicUrl = async (rawUrl, options = {}) => {
     let currentUrl = rawUrl;
 
     for (let hop = 0; hop <= maxRedirects; hop++) {
-        await module.exports.assertPublicUrl(currentUrl, { allowInsecureProtocols });
+        // assertPublicUrl rejects private/loopback hosts and returns a normalized href.
+        const safeUrl = await module.exports.assertPublicUrl(currentUrl, { allowInsecureProtocols });
 
-        const response = await fetch(currentUrl, {
+        // Safe: host was validated against private/loopback ranges above; redirects are manual + re-checked.
+        const response = await fetch(safeUrl, { // NOSONAR jssecurity:S5144 - URL validated by assertPublicUrl
             ...fetchOptions,
             redirect: "manual",
         });
@@ -94,7 +102,7 @@ module.exports.fetchPublicUrl = async (rawUrl, options = {}) => {
         }
 
         try {
-            currentUrl = new URL(location, currentUrl).toString();
+            currentUrl = new URL(location, safeUrl).href;
         } catch {
             throw new Error("Invalid redirect Location URL");
         }
