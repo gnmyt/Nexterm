@@ -37,6 +37,7 @@ const resumeAudioContext = () => {
 const GuacamoleRenderer = ({
                                session,
                                disconnectFromServer,
+                               reconnectSession,
                                markSessionErrored,
                                getSessionError,
                                registerGuacamoleRef,
@@ -753,7 +754,8 @@ const GuacamoleRenderer = ({
                                 onDraggingChange={(dragging) => draggingRef.current = dragging} />
             )}
             {connectionError && (
-                <ConnectionError message={connectionError} onClose={() => disconnectFromServer(session.id)} />
+                <ConnectionError message={connectionError} onClose={() => disconnectFromServer(session.id)}
+                                 onReconnect={() => reconnectSession?.(session.id)} />
             )}
         </div>
     );

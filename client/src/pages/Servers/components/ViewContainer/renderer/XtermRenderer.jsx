@@ -27,7 +27,7 @@ const PASSWORD_PROMPT_REGEX = /^[^$#%>]*(password|passphrase)[^:\r\n]*:\s?$/i;
 const ANSI_ESCAPE_REGEX = /\x1b(?:\[[0-9;?]*[a-zA-Z]|\][^\x07\x1b]*(?:\x07|\x1b\\)?|[()][0-9A-B]|[a-zA-Z=><])/g;
 const CONTROL_CHAR_REGEX = /[\x00-\x08\x0b\x0c\x0e-\x1f\x7f]/g;
 
-const XtermRenderer = ({ session, disconnectFromServer, markSessionErrored, getSessionError, registerTerminalRef, broadcastMode, terminalRefs, updateProgress, layoutMode, onBroadcastToggle, onFullscreenToggle, isShared = false, onOpenSftp }) => {
+const XtermRenderer = ({ session, disconnectFromServer, reconnectSession, markSessionErrored, getSessionError, registerTerminalRef, broadcastMode, terminalRefs, updateProgress, layoutMode, onBroadcastToggle, onFullscreenToggle, isShared = false, onOpenSftp }) => {
     const ref = useRef(null);
     const termRef = useRef(null);
     const wsRef = useRef(null);
@@ -746,7 +746,8 @@ const XtermRenderer = ({ session, disconnectFromServer, markSessionErrored, getS
         <div className="xterm-container" onContextMenu={!isShared ? handleContextMenu : undefined}>
             <ConnectionLoader onReady={(loader) => { connectionLoaderRef.current = loader; }} />
             {connectionError && (
-                <ConnectionError message={connectionError} onClose={() => disconnectFromServer(session.id)} />
+                <ConnectionError message={connectionError} onClose={() => disconnectFromServer(session.id)}
+                                 onReconnect={() => reconnectSession?.(session.id)} />
             )}
             <div ref={ref} className="xterm-wrapper" />
             <TypingIndicators anchor={cursorAnchor} participants={typingParticipants} />

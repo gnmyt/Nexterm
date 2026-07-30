@@ -47,6 +47,7 @@ export const Servers = () => {
     const [hibernatedSessions, setHibernatedSessions] = useState([]);
     const closingSessionsRef = useRef(new Set());
     const erroredSessionsRef = useRef(new Map());
+    const reconnectReplacementsRef = useRef(new Map());
 
     const markSessionErrored = useCallback((sessionId, message) => {
         if (erroredSessionsRef.current.has(sessionId)) return;
@@ -211,7 +212,7 @@ export const Servers = () => {
         initiateConnection({ server: getServerById(server), identity, type: "sftp" });
     };
 
-    const performConnection = async (server, identity, connectionReason = null, type = null, directIdentity = null, scriptId = null, scriptName = null) => {
+    const performConnection = async (server, identity, connectionReason = null, type = null, directIdentity = null, scriptId = null, scriptName = null, replaceSessionId = null) => {
         try {
             const payload = {
                 entryId: server.id,
@@ -240,7 +241,23 @@ export const Servers = () => {
                 scriptName: scriptName || undefined,
             };
 
-            setActiveSessions(prevSessions => [...prevSessions, sessionData]);
+            if (replaceSessionId) {
+                closingSessionsRef.current.add(replaceSessionId);
+                erroredSessionsRef.current.delete(replaceSessionId);
+                reconnectReplacementsRef.current.set(session.sessionId, replaceSessionId);
+                deleteRequest(`/connections/${replaceSessionId}`).catch(error => {
+                    console.debug("Old session deletion request failed:", error);
+                });
+                setActiveSessions(prevSessions => {
+                    const idx = prevSessions.findIndex(s => s.id === replaceSessionId);
+                    if (idx === -1) return [...prevSessions, sessionData];
+                    const next = [...prevSessions];
+                    next.splice(idx, 1, sessionData);
+                    return next;
+                });
+            } else {
+                setActiveSessions(prevSessions => [...prevSessions, sessionData]);
+            }
             setActiveSessionId(session.sessionId);
         } catch (error) {
             console.error("Failed to create session", error);
@@ -265,6 +282,7 @@ export const Servers = () => {
             options.directIdentity ?? null,
             options.scriptId ?? null,
             options.scriptName ?? null,
+            options.replaceSessionId ?? null,
         );
     };
 
@@ -300,6 +318,7 @@ export const Servers = () => {
                 pendingConnection.directIdentity ?? null,
                 pendingConnection.scriptId ?? null,
                 pendingConnection.scriptName ?? null,
+                pendingConnection.replaceSessionId ?? null,
             );
             setPendingConnection(null);
         }
@@ -333,6 +352,20 @@ export const Servers = () => {
             });
         }
         disconnectFromServer(sessionId);
+    };
+
+    const reconnectSession = (sessionId) => {
+        const session = activeSessions.find(s => s.id === sessionId);
+        if (!session || session.type === "notes" || session.isJoined) return;
+
+        initiateConnection({
+            server: session.server,
+            identity: session.identity ? { id: session.identity } : null,
+            type: session.type ?? null,
+            scriptId: session.scriptId ?? null,
+            scriptName: session.scriptName ?? null,
+            replaceSessionId: sessionId,
+        });
     };
 
     const openNotes = (serverId) => {
@@ -558,7 +591,8 @@ export const Servers = () => {
             }
             {visibleSessions.length > 0 &&
                 <ViewContainer activeSessions={visibleSessions} disconnectFromServer={disconnectFromServer}
-                               closeSession={closeSession}
+                               closeSession={closeSession} reconnectSession={reconnectSession}
+                               reconnectReplacements={reconnectReplacementsRef}
                                activeSessionId={activeSessionId} setActiveSessionId={setActiveSessionId}
                                hibernateSession={hibernateSession} duplicateSession={duplicateSession}
                                openNotes={openNotes}

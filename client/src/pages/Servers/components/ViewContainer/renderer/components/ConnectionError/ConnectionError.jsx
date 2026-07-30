@@ -1,6 +1,6 @@
 import { memo } from "react";
 import Icon from "@mdi/react";
-import { mdiLaptop, mdiServer, mdiClose, mdiAlertCircle } from "@mdi/js";
+import { mdiLaptop, mdiServer, mdiClose, mdiAlertCircle, mdiRefresh } from "@mdi/js";
 import { useTranslation } from "react-i18next";
 import "./styles.sass";
 
@@ -35,7 +35,7 @@ export const mapConnectionError = (rawMessage, t) => {
     return cleaned.replace(/\(see logs\)/gi, "").trim() || t("common.errors.connection.failed");
 };
 
-export const ConnectionError = memo(({ message, onClose }) => {
+export const ConnectionError = memo(({ message, onClose, onReconnect }) => {
     const { t } = useTranslation();
 
     return (
@@ -60,11 +60,22 @@ export const ConnectionError = memo(({ message, onClose }) => {
                 <h2 className="connection-error__title">{t("common.errors.connection.title")}</h2>
                 <p className="connection-error__message">{message}</p>
             </div>
-            {onClose && (
-                <button type="button" className="connection-error__action" onClick={onClose}>
-                    <Icon path={mdiClose} />
-                    <span>{t("common.errors.connection.close")}</span>
-                </button>
+            {(onClose || onReconnect) && (
+                <div className="connection-error__actions">
+                    {onClose && (
+                        <button type="button" className="connection-error__action" onClick={onClose}>
+                            <Icon path={mdiClose} />
+                            <span>{t("common.errors.connection.close")}</span>
+                        </button>
+                    )}
+                    {onReconnect && (
+                        <button type="button" className="connection-error__action connection-error__action--primary"
+                                onClick={onReconnect}>
+                            <Icon path={mdiRefresh} />
+                            <span>{t("common.errors.connection.reconnect")}</span>
+                        </button>
+                    )}
+                </div>
             )}
         </div>
     );

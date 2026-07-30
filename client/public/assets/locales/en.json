@@ -186,6 +186,7 @@
       "connection": {
         "title": "Connection failed",
         "close": "Close tab",
+        "reconnect": "Reconnect",
         "hostUnreachable": "Remote host unreachable",
         "refused": "Connection refused by remote host",
         "timeout": "Connection timed out",
@@ -1607,6 +1608,7 @@
         "duplicate": "Duplicate",
         "openNotes": "Open Notes",
         "hibernateSession": "Hibernate",
+        "reconnect": "Reconnect",
         "closeSession": "Disconnect"
       }
     },
