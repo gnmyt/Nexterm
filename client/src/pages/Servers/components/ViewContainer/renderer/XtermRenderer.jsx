@@ -27,7 +27,7 @@ const PASSWORD_PROMPT_REGEX = /^[^$#%>]*(password|passphrase)[^:\r\n]*:\s?$/i;
 const ANSI_ESCAPE_REGEX = /\x1b(?:\[[0-9;?]*[a-zA-Z]|\][^\x07\x1b]*(?:\x07|\x1b\\)?|[()][0-9A-B]|[a-zA-Z=><])/g;
 const CONTROL_CHAR_REGEX = /[\x00-\x08\x0b\x0c\x0e-\x1f\x7f]/g;
 
-const XtermRenderer = ({ session, disconnectFromServer, reconnectSession, markSessionErrored, getSessionError, registerTerminalRef, broadcastMode, terminalRefs, updateProgress, layoutMode, onBroadcastToggle, onFullscreenToggle, isShared = false, onOpenSftp }) => {
+const XtermRenderer = ({ session, disconnectFromServer, reconnectSession, reconnectNow, markSessionConnected, reconnectInfo, markSessionErrored, getSessionError, registerTerminalRef, broadcastMode, terminalRefs, updateProgress, layoutMode, onBroadcastToggle, onFullscreenToggle, isShared = false, onOpenSftp }) => {
     const ref = useRef(null);
     const termRef = useRef(null);
     const wsRef = useRef(null);
@@ -38,6 +38,7 @@ const XtermRenderer = ({ session, disconnectFromServer, reconnectSession, markSe
     const onFullscreenToggleRef = useRef(onFullscreenToggle);
     const connectionLoaderRef = useRef(null);
     const smartCopyPasteRef = useRef(false);
+    const hasNotifiedConnectedRef = useRef(false);
 
     const userContext = useContext(UserContext);
     const sessionToken = userContext?.sessionToken;
@@ -519,6 +520,11 @@ const XtermRenderer = ({ session, disconnectFromServer, reconnectSession, markSe
 
             connectionLoaderRef.current?.hide();
 
+            if (!hasNotifiedConnectedRef.current) {
+                hasNotifiedConnectedRef.current = true;
+                markSessionConnected?.(session.id);
+            }
+
             if (data.startsWith("\x02")) {
                 const prompt = data.substring(1);
                 term.write(prompt);
@@ -747,7 +753,8 @@ const XtermRenderer = ({ session, disconnectFromServer, reconnectSession, markSe
             <ConnectionLoader onReady={(loader) => { connectionLoaderRef.current = loader; }} />
             {connectionError && (
                 <ConnectionError message={connectionError} onClose={() => disconnectFromServer(session.id)}
-                                 onReconnect={() => reconnectSession?.(session.id)} />
+                                 onReconnect={() => (reconnectNow || reconnectSession)?.(session.id)}
+                                 reconnectInfo={reconnectInfo} />
             )}
             <div ref={ref} className="xterm-wrapper" />
             <TypingIndicators anchor={cursorAnchor} participants={typingParticipants} />

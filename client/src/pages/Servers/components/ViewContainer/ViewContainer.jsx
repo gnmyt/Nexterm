@@ -44,6 +44,9 @@ export const ViewContainer = ({
                                   openNotes,
                                   markSessionErrored,
                                   getSessionError,
+                                  markSessionConnected,
+                                  reconnectNow,
+                                  reconnectStates,
                                   setOpenFileEditors,
                                   openTerminalFromFileManager,
                               }) => {
@@ -420,6 +423,9 @@ export const ViewContainer = ({
             case "guac":
                 return <GuacamoleRenderer session={session} disconnectFromServer={disconnectFromServer}
                                           reconnectSession={reconnectSession}
+                                          reconnectNow={reconnectNow}
+                                          markSessionConnected={markSessionConnected}
+                                          reconnectInfo={reconnectStates?.[session.reconnectKey]}
                                           markSessionErrored={markSessionErrored}
                                           getSessionError={getSessionError}
                                           registerGuacamoleRef={registerGuacamoleRef}
@@ -429,6 +435,9 @@ export const ViewContainer = ({
             case "terminal":
                 return <XtermRenderer session={session} disconnectFromServer={disconnectFromServer}
                                       reconnectSession={reconnectSession}
+                                      reconnectNow={reconnectNow}
+                                      markSessionConnected={markSessionConnected}
+                                      reconnectInfo={reconnectStates?.[session.reconnectKey]}
                                       isShared={!!session.isJoined}
                                       markSessionErrored={markSessionErrored}
                                       getSessionError={getSessionError}
