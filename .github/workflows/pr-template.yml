@@ -38,7 +38,7 @@ jobs:
           else
             description=$(section "Description" | grep -v '^\s*$' \
               | grep -vF 'Please include a summary of the changes and the related issue.' \
-              | grep -vF 'necessary context.')
+              | grep -vF 'necessary context.' || true)
             if [ -z "$description" ]; then
               add "the description is empty"
             fi
