@@ -1,0 +1,98 @@
+name: PR template guard
+
+on:
+  pull_request_target:
+    types: [opened, reopened, edited, synchronize]
+
+permissions:
+  contents: read
+  pull-requests: write
+  issues: write
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    if: >
+      github.repository == 'gnmyt/Nexterm' &&
+      !endsWith(github.event.pull_request.user.login, '[bot]')
+    steps:
+      - name: Check pull request body
+        id: check
+        env:
+          BODY: ${{ github.event.pull_request.body }}
+        run: |
+          printf '%s' "$BODY" | tr -d '\r' > body.md
+
+          section() {
+            awk -v want="$1" '
+              /^#{1,6} / { keep = (index(tolower($0), tolower(want)) > 0); next }
+              keep { print }
+            ' body.md
+          }
+
+          problems=""
+          add() { problems="${problems}- $1"$'\n'; }
+
+          if ! grep -qi '^#\{1,6\} .*Changes made to' body.md || ! grep -qi '^#\{1,6\} .*Checklist' body.md; then
+            add "the pull request template was not used"
+          else
+            description=$(section "Description" | grep -v '^\s*$' \
+              | grep -vF 'Please include a summary of the changes and the related issue.' \
+              | grep -vF 'necessary context.')
+            if [ -z "$description" ]; then
+              add "the description is empty"
+            fi
+
+            if ! section "Changes made to" | grep -qi '^\s*- \[x\]'; then
+              add "no option is selected under \"Changes made to ...\""
+            fi
+
+            if section "Checklist" | grep -q '^\s*- \[ \]'; then
+              add "not every item in the checklist is checked"
+            fi
+          fi
+
+          {
+            echo "problems<<EOF"
+            printf '%s' "$problems"
+            echo "EOF"
+          } >> "$GITHUB_OUTPUT"
+
+      - name: Update comment
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PR: ${{ github.event.pull_request.number }}
+          REPO: ${{ github.repository }}
+          AUTHOR: ${{ github.event.pull_request.user.login }}
+          PROBLEMS: ${{ steps.check.outputs.problems }}
+          MARKER: "<!-- pr-template-guard -->"
+        run: |
+          comment_id=$(gh api --paginate "repos/$REPO/issues/$PR/comments" \
+            --jq ".[] | select(.body | contains(\"$MARKER\")) | .id" | head -n1)
+
+          if [ -z "$PROBLEMS" ]; then
+            if [ -n "$comment_id" ]; then
+              gh api -X DELETE "repos/$REPO/issues/comments/$comment_id"
+            fi
+            gh pr edit "$PR" --repo "$REPO" --remove-label "incomplete template" || true
+            exit 0
+          fi
+
+          {
+            echo "$MARKER"
+            echo "Hey @$AUTHOR, thanks for the pull request!"
+            echo
+            echo "Before we can review it, could you complete the pull request template? Right now:"
+            echo
+            printf '%s' "$PROBLEMS"
+            echo
+            echo "You can edit the description at any time, this comment disappears once everything is filled in."
+          } > comment.md
+
+          if [ -n "$comment_id" ]; then
+            gh api -X PATCH "repos/$REPO/issues/comments/$comment_id" -F body=@comment.md >/dev/null
+          else
+            gh pr comment "$PR" --repo "$REPO" --body-file comment.md
+          fi
+
+          gh pr edit "$PR" --repo "$REPO" --add-label "incomplete template" || true
