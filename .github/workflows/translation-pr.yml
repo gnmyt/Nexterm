@@ -1,0 +1,67 @@
+name: Translation PR guard
+
+on:
+  pull_request_target:
+    types: [opened, reopened, synchronize]
+    paths:
+      - "client/public/assets/locales/**"
+
+permissions:
+  contents: read
+  pull-requests: write
+  issues: write
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    if: >
+      github.repository == 'gnmyt/Nexterm' &&
+      !endsWith(github.event.pull_request.user.login, '[bot]') &&
+      github.event.pull_request.user.login != 'crowdin' &&
+      !startsWith(github.event.pull_request.head.ref, 'l10n')
+    steps:
+      - name: Inspect changed files
+        id: files
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PR: ${{ github.event.pull_request.number }}
+          REPO: ${{ github.repository }}
+        run: |
+          gh api --paginate "repos/$REPO/pulls/$PR/files" --jq '.[].filename' \
+            | grep -E '^client/public/assets/locales/.+\.json$' \
+            | grep -v '^client/public/assets/locales/en\.json$' > translations.txt || true
+
+          echo "count=$(wc -l < translations.txt)" >> "$GITHUB_OUTPUT"
+
+      - name: Comment and close
+        if: steps.files.outputs.count != '0'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PR: ${{ github.event.pull_request.number }}
+          REPO: ${{ github.repository }}
+          AUTHOR: ${{ github.event.pull_request.user.login }}
+          MARKER: "<!-- translation-pr-guard -->"
+        run: |
+          if gh api --paginate "repos/$REPO/issues/$PR/comments" --jq '.[].body' | grep -qF "$MARKER"; then
+            echo "Already commented, skipping."
+            exit 0
+          fi
+
+          {
+            echo "$MARKER"
+            echo "Hey @$AUTHOR, thanks for helping out with Nexterm's translations!"
+            echo
+            echo "All of our translations live on Crowdin: https://crowdin.com/project/nexterm"
+            echo
+            echo "Changes to the locale files are overwritten on the next sync, so we can't merge them."
+            echo "Only \`en.json\` is edited in this repository."
+            echo
+            echo "Closing this pull request. Please submit your changes on Crowdin instead, or remove the"
+            echo "translation files and reopen if this pull request also contains other changes."
+            echo
+            echo "Your contribution is appreciated, we'd just like to keep it all in one place."
+          } > comment.md
+
+          gh pr comment "$PR" --repo "$REPO" --body-file comment.md
+          gh pr edit "$PR" --repo "$REPO" --add-label "translations" || true
+          gh pr close "$PR" --repo "$REPO"
