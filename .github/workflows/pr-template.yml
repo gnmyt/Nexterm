@@ -46,6 +46,12 @@ jobs:
               | grep -v 'other:' | sort || true
           }
 
+          headings() {
+            grep -E '^#{1,6} ' "$1" \
+              | sed -E -e 's/^#{1,6}[[:space:]]*//' -e 's/[[:space:]]+$//' \
+              | tr -s ' ' | tr '[:upper:]' '[:lower:]' | sort || true
+          }
+
           problems=""
           add() { problems="${problems}- $1"$'\n'; }
 
@@ -58,9 +64,17 @@ jobs:
           if ! grep -qi '^#\{1,6\} .*Changes made to' body.md || ! grep -qi '^#\{1,6\} .*Checklist' body.md; then
             add "the pull request template was not used"
           else
-            description=$(section body.md "Description" | grep -v '^\s*$' || true)
-            if [ -z "$description" ]; then
-              add "the description is empty"
+            headings template.md > canonical_headings.txt
+            headings body.md > given_headings.txt
+            if [ -n "$(comm -3 canonical_headings.txt given_headings.txt || true)" ]; then
+              add "the section headings were edited, please leave them as they are"
+            fi
+
+            if grep -qi '^#\{1,6\} .*Description' body.md; then
+              description=$(section body.md "Description" | grep -v '^\s*$' || true)
+              if [ -z "$description" ]; then
+                add "the description is empty"
+              fi
             fi
 
             if tampered "Changes made to"; then
