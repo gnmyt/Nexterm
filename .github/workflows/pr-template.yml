@@ -20,34 +20,58 @@ jobs:
         id: check
         env:
           BODY: ${{ github.event.pull_request.body }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REPO: ${{ github.repository }}
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
         run: |
-          printf '%s' "$BODY" | tr -d '\r' > body.md
+          strip() { tr -d '\r' | sed -e 's/<!--.*-->//g' -e '/<!--/,/-->/d'; }
+
+          printf '%s' "$BODY" | strip > body.md
+
+          gh api "repos/$REPO/contents/.github/PULL_REQUEST_TEMPLATE.md?ref=$BASE_SHA" \
+            --jq '.content' | base64 -d | strip > template.md
 
           section() {
-            awk -v want="$1" '
+            awk -v want="$2" '
               /^#{1,6} / { keep = (index(tolower($0), tolower(want)) > 0); next }
               keep { print }
-            ' body.md
+            ' "$1"
+          }
+
+          items() {
+            section "$1" "$2" \
+              | grep -E '^[[:space:]]*- \[[ xX]\]' \
+              | sed -E -e 's/^[[:space:]]*- \[[ xX]\][[:space:]]*//' -e 's/[[:space:]]+$//' \
+              | tr -s ' ' | tr '[:upper:]' '[:lower:]' \
+              | grep -v 'other:' | sort || true
           }
 
           problems=""
           add() { problems="${problems}- $1"$'\n'; }
 
+          tampered() {
+            items template.md "$1" > canonical.txt
+            items body.md "$1" > given.txt
+            [ -n "$(comm -3 canonical.txt given.txt || true)" ]
+          }
+
           if ! grep -qi '^#\{1,6\} .*Changes made to' body.md || ! grep -qi '^#\{1,6\} .*Checklist' body.md; then
             add "the pull request template was not used"
           else
-            description=$(section "Description" | grep -v '^\s*$' \
-              | grep -vF 'Please include a summary of the changes and the related issue.' \
-              | grep -vF 'necessary context.' || true)
+            description=$(section body.md "Description" | grep -v '^\s*$' || true)
             if [ -z "$description" ]; then
               add "the description is empty"
             fi
 
-            if ! section "Changes made to" | grep -qi '^\s*- \[x\]'; then
+            if tampered "Changes made to"; then
+              add "the options under \"Changes made to ...\" were edited, please leave them as they are"
+            elif ! section body.md "Changes made to" | grep -qi '^\s*- \[x\]'; then
               add "no option is selected under \"Changes made to ...\""
             fi
 
-            if section "Checklist" | grep -q '^\s*- \[ \]'; then
+            if tampered "Checklist"; then
+              add "the checklist was edited, please leave the items as they are"
+            elif section body.md "Checklist" | grep -q '^\s*- \[ \]'; then
               add "not every item in the checklist is checked"
             fi
           fi
