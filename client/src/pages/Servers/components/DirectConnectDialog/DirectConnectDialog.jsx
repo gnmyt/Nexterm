@@ -128,8 +128,10 @@ export const DirectConnectDialog = ({ open, onClose, onConnect, server }) => {
                         <div className={`name-row ${!showUsername ? 'single-column' : ''}`}>
                             {showUsername && (
                                 <div className="form-group">
-                                    <label htmlFor="username">{t("servers.dialog.fields.username")}</label>
+                                    <label htmlFor="direct-connect-username">{t("servers.dialog.fields.username")}</label>
                                     <Input
+                                        id="direct-connect-username"
+                                        name="direct-connect-username"
                                         icon={mdiAccountCircleOutline}
                                         type="text"
                                         placeholder={t("servers.dialog.placeholders.username")}
@@ -152,12 +154,16 @@ export const DirectConnectDialog = ({ open, onClose, onConnect, server }) => {
 
                         {(authType === "password" || authType === "password-only" || authType === "both") && (
                             <div className="form-group">
-                                <label htmlFor="password">{t("servers.dialog.fields.password")}</label>
+                                <label htmlFor="direct-connect-password">{t("servers.dialog.fields.password")}</label>
+                                {/* Chrome/Firefox ignore autoComplete="off" on password fields and fill
+                                    the saved Nexterm login instead; "new-password" is the value they honor. */}
                                 <Input
+                                    id="direct-connect-password"
+                                    name="direct-connect-password"
                                     icon={mdiLockOutline}
                                     type="password"
                                     placeholder={t("servers.dialog.placeholders.password")}
-                                    autoComplete="off"
+                                    autoComplete="new-password"
                                     value={password}
                                     setValue={setPassword}
                                 />
@@ -167,8 +173,9 @@ export const DirectConnectDialog = ({ open, onClose, onConnect, server }) => {
                         {(authType === "ssh" || authType === "both") && (
                             <>
                                 <div className="form-group">
-                                    <label htmlFor="keyfile">{t("servers.dialog.identities.sshPrivateKey")}</label>
+                                    <label htmlFor="direct-connect-keyfile">{t("servers.dialog.identities.sshPrivateKey")}</label>
                                     <Input
+                                        id="direct-connect-keyfile"
                                         icon={mdiFileUploadOutline}
                                         type="file"
                                         autoComplete="off"
@@ -177,12 +184,16 @@ export const DirectConnectDialog = ({ open, onClose, onConnect, server }) => {
                                 </div>
 
                                 <div className="form-group">
-                                    <label htmlFor="passphrase">{t("servers.dialog.identities.passphrase")}</label>
+                                    <label htmlFor="direct-connect-passphrase">{t("servers.dialog.identities.passphrase")}</label>
+                                    {/* Same reasoning as the password field above: "off" is ignored on
+                                        password-type inputs by modern browsers. */}
                                     <Input
+                                        id="direct-connect-passphrase"
+                                        name="direct-connect-passphrase"
                                         icon={mdiLockOutline}
                                         type="password"
                                         placeholder={t("servers.dialog.identities.passphrase")}
-                                        autoComplete="off"
+                                        autoComplete="new-password"
                                         value={passphrase}
                                         setValue={setPassphrase}
                                     />
