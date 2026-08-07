@@ -13,12 +13,19 @@ import FileEditorWindow from "@/common/components/FileEditorWindow";
 import FilePreviewWindow from "@/common/components/FilePreviewWindow";
 import { useActiveSessions } from "@/common/contexts/SessionContext.jsx";
 import { useLiveSessions } from "@/common/contexts/LiveSessionContext.jsx";
+import { usePreferences } from "@/common/contexts/PreferencesContext.jsx";
+import { useAutoReconnect } from "@/common/hooks/useAutoReconnect.js";
 import { useLocation, useNavigate } from "react-router-dom";
 import { ServerContext } from "@/common/contexts/ServerContext.jsx";
 import { StateStreamContext, STATE_TYPES } from "@/common/contexts/StateStreamContext.jsx";
 import { isTauri } from "@/common/utils/TauriUtil.js";
 import { getTabId, getBrowserId, requiresIdentity, canConnectWithoutPrompt } from "@/common/utils/ConnectionUtil.js";
 import { postRequest, deleteRequest } from "@/common/utils/RequestUtil";
+
+let reconnectKeySeq = 0;
+// Stable per-tab key that survives the session-id change on each reconnect.
+// Avoids crypto.randomUUID (unavailable in non-secure http contexts, e.g. LAN IP).
+const makeReconnectKey = () => `rk-${Date.now().toString(36)}-${(reconnectKeySeq++).toString(36)}-${Math.random().toString(36).slice(2, 8)}`;
 
 export const Servers = () => {
 
@@ -40,17 +47,21 @@ export const Servers = () => {
     const { activeSessions, setActiveSessions, activeSessionId, setActiveSessionId, poppedOutSessions } = useActiveSessions();
     const { liveSessions } = useLiveSessions();
     const { getServerById, servers } = useContext(ServerContext);
-    const { registerHandler } = useContext(StateStreamContext);
+    const { registerHandler, isConnected } = useContext(StateStreamContext);
+    const { autoReconnect } = usePreferences();
     const location = useLocation();
     const navigate = useNavigate();
 
     const [hibernatedSessions, setHibernatedSessions] = useState([]);
     const closingSessionsRef = useRef(new Set());
     const erroredSessionsRef = useRef(new Map());
+    const reconnectReplacementsRef = useRef(new Map());
+    const autoReconnectRef = useRef(null);
 
     const markSessionErrored = useCallback((sessionId, message) => {
         if (erroredSessionsRef.current.has(sessionId)) return;
         erroredSessionsRef.current.set(sessionId, message);
+        autoReconnectRef.current?.handleSessionErrored(sessionId);
     }, []);
 
     const getSessionError = useCallback((sessionId) => {
@@ -110,7 +121,10 @@ export const Servers = () => {
             const localOnly = prev.filter(s => s.type === "notes" || s.isJoined);
             const merged = activeMapped.map(newSession => {
                 const existing = prevMap.get(newSession.id);
-                return existing ? { ...newSession, scriptId: existing.scriptId || newSession.scriptId, scriptName: existing.scriptName, osName: newSession.osName || existing.osName } : newSession;
+                const reconnectKey = existing?.reconnectKey || makeReconnectKey();
+                return existing
+                    ? { ...newSession, reconnectKey, scriptId: existing.scriptId || newSession.scriptId, scriptName: existing.scriptName, osName: newSession.osName || existing.osName }
+                    : { ...newSession, reconnectKey };
             });
             const mergedIds = new Set(merged.map(s => s.id));
             const erroredPinned = prev.filter(s =>
@@ -211,7 +225,7 @@ export const Servers = () => {
         initiateConnection({ server: getServerById(server), identity, type: "sftp" });
     };
 
-    const performConnection = async (server, identity, connectionReason = null, type = null, directIdentity = null, scriptId = null, scriptName = null) => {
+    const performConnection = async (server, identity, connectionReason = null, type = null, directIdentity = null, scriptId = null, scriptName = null, replaceSessionId = null) => {
         try {
             const payload = {
                 entryId: server.id,
@@ -229,6 +243,10 @@ export const Servers = () => {
             const organization = findOrganizationForServer(server.id, servers);
             const organizationId = organization ? parseInt(organization.id.split("-")[1]) : null;
 
+            const reconnectKey = (replaceSessionId
+                ? activeSessions.find(s => s.id === replaceSessionId)?.reconnectKey
+                : null) || makeReconnectKey();
+
             const sessionData = {
                 server,
                 identity: identity?.id,
@@ -238,9 +256,26 @@ export const Servers = () => {
                 organizationName: organization?.name || null,
                 scriptId: scriptId || undefined,
                 scriptName: scriptName || undefined,
+                reconnectKey,
             };
 
-            setActiveSessions(prevSessions => [...prevSessions, sessionData]);
+            if (replaceSessionId) {
+                closingSessionsRef.current.add(replaceSessionId);
+                erroredSessionsRef.current.delete(replaceSessionId);
+                reconnectReplacementsRef.current.set(session.sessionId, replaceSessionId);
+                deleteRequest(`/connections/${replaceSessionId}`).catch(error => {
+                    console.debug("Old session deletion request failed:", error);
+                });
+                setActiveSessions(prevSessions => {
+                    const idx = prevSessions.findIndex(s => s.id === replaceSessionId);
+                    if (idx === -1) return [...prevSessions, sessionData];
+                    const next = [...prevSessions];
+                    next.splice(idx, 1, sessionData);
+                    return next;
+                });
+            } else {
+                setActiveSessions(prevSessions => [...prevSessions, sessionData]);
+            }
             setActiveSessionId(session.sessionId);
         } catch (error) {
             console.error("Failed to create session", error);
@@ -265,6 +300,7 @@ export const Servers = () => {
             options.directIdentity ?? null,
             options.scriptId ?? null,
             options.scriptName ?? null,
+            options.replaceSessionId ?? null,
         );
     };
 
@@ -300,6 +336,7 @@ export const Servers = () => {
                 pendingConnection.directIdentity ?? null,
                 pendingConnection.scriptId ?? null,
                 pendingConnection.scriptName ?? null,
+                pendingConnection.replaceSessionId ?? null,
             );
             setPendingConnection(null);
         }
@@ -334,6 +371,31 @@ export const Servers = () => {
         }
         disconnectFromServer(sessionId);
     };
+
+    const reconnectSession = (sessionId) => {
+        const session = activeSessions.find(s => s.id === sessionId);
+        if (!session || session.type === "notes" || session.isJoined) return;
+
+        initiateConnection({
+            server: session.server,
+            identity: session.identity ? { id: session.identity } : null,
+            type: session.type ?? null,
+            scriptId: session.scriptId ?? null,
+            scriptName: session.scriptName ?? null,
+            replaceSessionId: sessionId,
+        });
+    };
+
+    const autoReconnectApi = useAutoReconnect({
+        activeSessions,
+        reconnectSession,
+        getSessionError,
+        enabled: autoReconnect,
+        serverConnected: isConnected,
+    });
+    useEffect(() => {
+        autoReconnectRef.current = autoReconnectApi;
+    });
 
     const openNotes = (serverId) => {
         const server = getServerById(serverId);
@@ -558,12 +620,16 @@ export const Servers = () => {
             }
             {visibleSessions.length > 0 &&
                 <ViewContainer activeSessions={visibleSessions} disconnectFromServer={disconnectFromServer}
-                               closeSession={closeSession}
+                               closeSession={closeSession} reconnectSession={reconnectSession}
+                               reconnectReplacements={reconnectReplacementsRef}
                                activeSessionId={activeSessionId} setActiveSessionId={setActiveSessionId}
                                hibernateSession={hibernateSession} duplicateSession={duplicateSession}
                                openNotes={openNotes}
                                markSessionErrored={markSessionErrored}
                                getSessionError={getSessionError}
+                               markSessionConnected={autoReconnectApi.markSessionConnected}
+                               reconnectNow={autoReconnectApi.reconnectNow}
+                               reconnectStates={autoReconnectApi.reconnectStates}
                                setOpenFileEditors={setOpenFileEditors}
                                openTerminalFromFileManager={openTerminalFromFileManager} />}
             {openFileEditors.map((editor, index) => (
