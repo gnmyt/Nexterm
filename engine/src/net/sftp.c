@@ -839,6 +839,7 @@ static void* sftp_session_thread(void* arg) {
     const char* password   = nexterm_session_get_param(session, "password");
     const char* priv_key   = nexterm_session_get_param(session, "privateKey");
     const char* passphrase = nexterm_session_get_param(session, "passphrase");
+    const char* certificate = nexterm_session_get_param(session, "certificate");
 
     if (!username || strlen(username) == 0) {
         LOG_ERROR("SFTP session %s: missing username", session->session_id);
@@ -867,7 +868,7 @@ static void* sftp_session_thread(void* arg) {
         goto cleanup;
     }
 
-    if (nexterm_ssh_auth(ssh, username, password, priv_key, passphrase) != 0) {
+    if (nexterm_ssh_auth(ssh, username, password, priv_key, passphrase, certificate) != 0) {
         nexterm_cp_send_session_result(cp, session->session_id, false,
                                        "SSH authentication failed", NULL);
         goto cleanup;

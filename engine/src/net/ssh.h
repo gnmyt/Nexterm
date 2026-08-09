@@ -11,6 +11,7 @@ typedef struct {
     const char* password;
     const char* private_key;
     const char* passphrase;
+    const char* certificate;
 } ssh_credentials_t;
 
 int nexterm_ssh_start(nexterm_session_t* session,

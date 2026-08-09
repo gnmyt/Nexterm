@@ -44,6 +44,7 @@ const buildSSHParams = (identity, credentials) => {
     if (credentials.password) params.password = credentials.password;
     if (credentials.privateKey || credentials["ssh-key"]) params.privateKey = credentials.privateKey || credentials["ssh-key"];
     if (credentials.passphrase) params.passphrase = credentials.passphrase;
+    if (credentials.sshCertificate || credentials["ssh-cert"]) params.certificate = credentials.sshCertificate || credentials["ssh-cert"];
     return params;
 };
 
@@ -84,6 +85,7 @@ const resolveJumpHosts = async (entry) => {
             password: credentials.password || null,
             privateKey: credentials.privateKey || credentials["ssh-key"] || null,
             passphrase: credentials.passphrase || null,
+            certificate: credentials.sshCertificate || credentials["ssh-cert"] || null,
         });
     }
     return jumpHosts;

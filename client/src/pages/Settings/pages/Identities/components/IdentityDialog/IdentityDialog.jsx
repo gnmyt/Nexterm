@@ -25,10 +25,11 @@ export const IdentityDialog = ({ open, onClose, identity, organizationId }) => {
     const [authType, setAuthType] = useState("password");
     const [password, setPassword] = useState("");
     const [sshKey, setSshKey] = useState(null);
+    const [sshCertificate, setSshCertificate] = useState(null);
     const [passphrase, setPassphrase] = useState("");
     const [isLoading, setIsLoading] = useState(false);
     
-    const initialValues = useRef({ name: '', username: '', authType: 'password', password: '', sshKey: null, passphrase: '' });
+    const initialValues = useRef({ name: '', username: '', authType: 'password', password: '', sshKey: null, sshCertificate: null, passphrase: '' });
 
     useEffect(() => {
         if (open) {
@@ -38,6 +39,7 @@ export const IdentityDialog = ({ open, onClose, identity, organizationId }) => {
                 setAuthType(identity.type || "password");
                 setPassword("********");
                 setSshKey(identity.sshKey || null);
+                setSshCertificate(identity.sshCertificate || null);
                 setPassphrase("********");
                 initialValues.current = {
                     name: identity.name || '',
@@ -45,6 +47,7 @@ export const IdentityDialog = ({ open, onClose, identity, organizationId }) => {
                     authType: identity.type || 'password',
                     password: '********',
                     sshKey: identity.sshKey || null,
+                    sshCertificate: identity.sshCertificate || null,
                     passphrase: '********'
                 };
             } else {
@@ -59,8 +62,9 @@ export const IdentityDialog = ({ open, onClose, identity, organizationId }) => {
         setAuthType("password");
         setPassword("");
         setSshKey(null);
+        setSshCertificate(null);
         setPassphrase("");
-        initialValues.current = { name: '', username: '', authType: 'password', password: '', sshKey: null, passphrase: '' };
+        initialValues.current = { name: '', username: '', authType: 'password', password: '', sshKey: null, sshCertificate: null, passphrase: '' };
     };
 
     const readFile = (event) => {
@@ -71,6 +75,15 @@ export const IdentityDialog = ({ open, onClose, identity, organizationId }) => {
         reader.onload = (e) => {
             setSshKey(e.target.result);
         };
+        reader.readAsText(file);
+    };
+
+    const readCertificate = (event) => {
+        const file = event.target.files[0];
+        if (!file) return;
+
+        const reader = new FileReader();
+        reader.onload = (e) => setSshCertificate(e.target.result);
         reader.readAsText(file);
     };
 
@@ -105,10 +118,12 @@ export const IdentityDialog = ({ open, onClose, identity, organizationId }) => {
                         ? {
                             password: password === "********" ? undefined : password,
                             sshKey: sshKey || undefined,
+                            sshCertificate: sshCertificate || undefined,
                             ...(passphrase && passphrase !== "********" ? { passphrase } : {}),
                         }
                         : {
                             sshKey: sshKey || undefined,
+                            sshCertificate: sshCertificate || undefined,
                             ...(passphrase && passphrase !== "********" ? { passphrase } : {}),
                         }
                 ),
@@ -143,6 +158,7 @@ export const IdentityDialog = ({ open, onClose, identity, organizationId }) => {
                      authType !== initialValues.current.authType ||
                      password !== initialValues.current.password || 
                      sshKey !== initialValues.current.sshKey || 
+                     sshCertificate !== initialValues.current.sshCertificate ||
                      passphrase !== initialValues.current.passphrase;
 
     return (
@@ -197,6 +213,12 @@ export const IdentityDialog = ({ open, onClose, identity, organizationId }) => {
                                     <label htmlFor="sshKey">{t('settings.identities.dialog.fields.sshKey')}</label>
                                     <IconInput icon={mdiFileUploadOutline} type="file" onChange={readFile} id="sshKey"
                                                required={!isEditing} />
+                                </div>
+
+                                <div className="form-group">
+                                    <label htmlFor="sshCertificate">{t('settings.identities.dialog.fields.sshCertificate')}</label>
+                                    <IconInput icon={mdiFileUploadOutline} type="file" onChange={readCertificate} id="sshCertificate"
+                                               accept=".pub,.crt,.cert,text/plain" />
                                 </div>
 
                                 <div className="form-group">

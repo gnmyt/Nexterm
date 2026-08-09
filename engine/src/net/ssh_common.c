@@ -206,7 +206,8 @@ int nexterm_ssh_setup_with_jumphosts(const char* target_host, uint16_t target_po
     }
 
     if (nexterm_ssh_auth(chain->sessions[0], jh->username,
-                         jh->password, jh->private_key, jh->passphrase) != 0) {
+                         jh->password, jh->private_key, jh->passphrase,
+                         jh->certificate) != 0) {
         LOG_ERROR("Failed to authenticate to jump host 1 (%s:%u)", jh->host, jh->port);
         nexterm_jump_chain_teardown(chain);
         return -1;
@@ -239,7 +240,8 @@ int nexterm_ssh_setup_with_jumphosts(const char* target_host, uint16_t target_po
         chain->sockets[i] = proxy_sock;
 
         if (nexterm_ssh_auth(chain->sessions[i], next_jh->username,
-                             next_jh->password, next_jh->private_key, next_jh->passphrase) != 0) {
+                             next_jh->password, next_jh->private_key,
+                             next_jh->passphrase, next_jh->certificate) != 0) {
             LOG_ERROR("Failed to authenticate to jump host %d (%s:%u)", i + 1, next_jh->host, next_jh->port);
             nexterm_jump_chain_teardown(chain);
             return -1;
@@ -274,12 +276,14 @@ int nexterm_ssh_setup_with_jumphosts(const char* target_host, uint16_t target_po
 
 int nexterm_ssh_auth(LIBSSH2_SESSION* session, const char* username,
                      const char* password, const char* private_key,
-                     const char* passphrase) {
+                     const char* passphrase, const char* certificate) {
     if (private_key && private_key[0] != '\0') {
         const char* pp = (passphrase && passphrase[0] != '\0') ? passphrase : NULL;
+        const char* cert = (certificate && certificate[0] != '\0') ? certificate : NULL;
         if (libssh2_userauth_publickey_frommemory(
-                session, username, strlen(username),
-                NULL, 0, private_key, strlen(private_key), pp) == 0)
+            session, username, strlen(username),
+                cert, cert ? strlen(cert) : 0,
+                private_key, strlen(private_key), pp) == 0)
             return 0;
     }
 

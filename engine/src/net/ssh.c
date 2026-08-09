@@ -54,6 +54,9 @@ int nexterm_extract_jump_hosts(const nexterm_session_t* session,
 
         snprintf(key, sizeof(key), "jumpHost%d_passphrase", i);
         jump_hosts[i].passphrase = (char*)nexterm_session_get_param(session, key);
+
+        snprintf(key, sizeof(key), "jumpHost%d_certificate", i);
+        jump_hosts[i].certificate = (char*)nexterm_session_get_param(session, key);
     }
     return count;
 }
@@ -189,6 +192,7 @@ static void* ssh_session_thread(void* arg) {
     const char* password = nexterm_session_get_param(session, "password");
     const char* private_key = nexterm_session_get_param(session, "privateKey");
     const char* passphrase = nexterm_session_get_param(session, "passphrase");
+    const char* certificate = nexterm_session_get_param(session, "certificate");
 
     if (!username || username[0] == '\0') {
         LOG_ERROR("SSH session %s: missing username", session->session_id);
@@ -217,7 +221,7 @@ static void* ssh_session_thread(void* arg) {
         goto cleanup;
     }
 
-    if (nexterm_ssh_auth(ssh_session, username, password, private_key, passphrase) != 0) {
+    if (nexterm_ssh_auth(ssh_session, username, password, private_key, passphrase, certificate) != 0) {
         nexterm_cp_send_session_result(cp, session->session_id, false,
                                        "SSH authentication failed", NULL);
         goto cleanup;
@@ -318,6 +322,7 @@ static void* tunnel_session_thread(void* arg) {
     const char* password = nexterm_session_get_param(session, "password");
     const char* private_key = nexterm_session_get_param(session, "privateKey");
     const char* passphrase = nexterm_session_get_param(session, "passphrase");
+    const char* certificate = nexterm_session_get_param(session, "certificate");
     const char* remote_host = nexterm_session_get_param(session, "remoteHost");
     const char* remote_port_str = nexterm_session_get_param(session, "remotePort");
 
@@ -365,7 +370,7 @@ static void* tunnel_session_thread(void* arg) {
         goto cleanup;
     }
 
-    if (nexterm_ssh_auth(ssh_session, username, password, private_key, passphrase) != 0) {
+    if (nexterm_ssh_auth(ssh_session, username, password, private_key, passphrase, certificate) != 0) {
         nexterm_cp_send_session_result(cp, session->session_id, false,
                                        "SSH authentication failed", NULL);
         goto cleanup;
@@ -444,6 +449,7 @@ typedef struct {
     char* password;
     char* private_key;
     char* passphrase;
+    char* certificate;
     char* command;
     jump_host_t jump_hosts[MAX_JUMP_HOSTS];
     int jump_count;
@@ -454,11 +460,13 @@ static void exec_cmd_free(exec_cmd_args_t* args) {
     free(args->password);
     free(args->private_key);
     free(args->passphrase);
+    free(args->certificate);
     free(args->command);
     for (int i = 0; i < args->jump_count; i++) {
         free(args->jump_hosts[i].password);
         free(args->jump_hosts[i].private_key);
         free(args->jump_hosts[i].passphrase);
+        free(args->jump_hosts[i].certificate);
     }
     free(args);
 }
@@ -479,7 +487,8 @@ static void* exec_command_thread(void* arg) {
     }
 
     if (nexterm_ssh_auth(ssh, args->username, args->password,
-                         args->private_key, args->passphrase) != 0) {
+                         args->private_key, args->passphrase,
+                         args->certificate) != 0) {
         nexterm_cp_send_exec_result(args->cp, args->request_id, false,
                                     NULL, NULL, -1, "SSH authentication failed");
         goto cleanup;
@@ -548,10 +557,11 @@ int nexterm_ssh_exec_command(nexterm_control_plane_t* cp,
     args->password = strdup(creds->password ? creds->password : "");
     args->private_key = strdup(creds->private_key ? creds->private_key : "");
     args->passphrase = strdup(creds->passphrase ? creds->passphrase : "");
+    args->certificate = strdup(creds->certificate ? creds->certificate : "");
     args->command = strdup(command ? command : "");
 
     if (!args->username || !args->password || !args->private_key ||
-        !args->passphrase || !args->command) {
+        !args->passphrase || !args->certificate || !args->command) {
         exec_cmd_free(args);
         return -1;
     }
@@ -564,6 +574,7 @@ int nexterm_ssh_exec_command(nexterm_control_plane_t* cp,
         args->jump_hosts[i].password = strdup(jump_hosts[i].password ? jump_hosts[i].password : "");
         args->jump_hosts[i].private_key = strdup(jump_hosts[i].private_key ? jump_hosts[i].private_key : "");
         args->jump_hosts[i].passphrase = strdup(jump_hosts[i].passphrase ? jump_hosts[i].passphrase : "");
+        args->jump_hosts[i].certificate = strdup(jump_hosts[i].certificate ? jump_hosts[i].certificate : "");
     }
 
     pthread_t thread;
@@ -585,6 +596,7 @@ typedef struct {
     char* password;
     char* private_key;
     char* passphrase;
+    char* certificate;
     char** ids;
     char** commands;
     int command_count;
@@ -597,6 +609,7 @@ static void exec_batch_free(exec_batch_args_t* args) {
     free(args->password);
     free(args->private_key);
     free(args->passphrase);
+    free(args->certificate);
     if (args->ids) {
         for (int i = 0; i < args->command_count; i++) free(args->ids[i]);
         free(args->ids);
@@ -609,6 +622,7 @@ static void exec_batch_free(exec_batch_args_t* args) {
         free(args->jump_hosts[i].password);
         free(args->jump_hosts[i].private_key);
         free(args->jump_hosts[i].passphrase);
+        free(args->jump_hosts[i].certificate);
     }
     free(args);
 }
@@ -674,7 +688,8 @@ static void* exec_batch_thread(void* arg) {
     }
 
     if (nexterm_ssh_auth(ssh, a->username, a->password,
-                         a->private_key, a->passphrase) != 0) {
+                         a->private_key, a->passphrase,
+                         a->certificate) != 0) {
         nexterm_cp_send_exec_batch_result(a->cp, a->request_id, false,
                                           "SSH authentication failed", NULL, 0);
         nexterm_ssh_full_cleanup(ssh, NULL, ssh_sock, &jump_chain, "Auth failed");
@@ -743,12 +758,13 @@ int nexterm_ssh_exec_batch(nexterm_control_plane_t* cp,
     args->password = strdup(creds->password ? creds->password : "");
     args->private_key = strdup(creds->private_key ? creds->private_key : "");
     args->passphrase = strdup(creds->passphrase ? creds->passphrase : "");
+    args->certificate = strdup(creds->certificate ? creds->certificate : "");
 
     args->command_count = command_count;
     args->ids = calloc(command_count, sizeof(char*));
     args->commands = calloc(command_count, sizeof(char*));
     if (!args->username || !args->password || !args->private_key ||
-        !args->passphrase || !args->ids || !args->commands) {
+        !args->passphrase || !args->certificate || !args->ids || !args->commands) {
         exec_batch_free(args);
         nexterm_cp_send_exec_batch_result(cp, request_id, false, "Out of memory", NULL, 0);
         return -1;
@@ -772,6 +788,7 @@ int nexterm_ssh_exec_batch(nexterm_control_plane_t* cp,
         args->jump_hosts[i].password = strdup(jump_hosts[i].password ? jump_hosts[i].password : "");
         args->jump_hosts[i].private_key = strdup(jump_hosts[i].private_key ? jump_hosts[i].private_key : "");
         args->jump_hosts[i].passphrase = strdup(jump_hosts[i].passphrase ? jump_hosts[i].passphrase : "");
+        args->jump_hosts[i].certificate = strdup(jump_hosts[i].certificate ? jump_hosts[i].certificate : "");
     }
 
     pthread_t thread;

@@ -68,6 +68,7 @@ export default defineConfig({
                     { text: "Install", link: "/installation" },
                     { text: "SSL/HTTPS", link: "/ssl" },
                     { text: "Reverse Proxy", link: "/reverse-proxy" },
+                    { text: "SSH Client Certificates", link: "/ssh-certificates" },
                     {
                         text: "Authentication",
                         collapsed: true,

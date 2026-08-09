@@ -33,22 +33,26 @@ const upsertCredential = async (identityId, type, secret) => {
     existing ? (existing.secret = secret, await existing.save()) : await Credential.create({ identityId, type, secret });
 };
 
-const syncCredentials = async (identityId, type, password, sshKey, passphrase) => {
+const syncCredentials = async (identityId, type, password, sshKey, passphrase, sshCertificate) => {
     if (type === "password" && password) {
         await upsertCredential(identityId, "password", password);
-        await Credential.destroy({ where: { identityId, type: { [Op.in]: ["ssh-key", "passphrase"] } } });
+        await Credential.destroy({ where: { identityId, type: { [Op.in]: ["ssh-key", "passphrase", "ssh-cert"] } } });
     } else if (type === "password-only" && password) {
         await upsertCredential(identityId, "password", password);
-        await Credential.destroy({ where: { identityId, type: { [Op.in]: ["ssh-key", "passphrase"] } } });
+        await Credential.destroy({ where: { identityId, type: { [Op.in]: ["ssh-key", "passphrase", "ssh-cert"] } } });
     } else if (type === "both") {
         if (password) await upsertCredential(identityId, "password", password);
         if (sshKey) {
             await upsertCredential(identityId, "ssh-key", sshKey);
             passphrase ? await upsertCredential(identityId, "passphrase", passphrase) : await Credential.destroy({ where: { identityId, type: "passphrase" } });
         }
-    } else if (type === "ssh" && sshKey) {
-        await upsertCredential(identityId, "ssh-key", sshKey);
-        passphrase ? await upsertCredential(identityId, "passphrase", passphrase) : await Credential.destroy({ where: { identityId, type: "passphrase" } });
+        if (sshCertificate) await upsertCredential(identityId, "ssh-cert", sshCertificate);
+    } else if (type === "ssh" && (sshKey || sshCertificate)) {
+        if (sshKey) {
+            await upsertCredential(identityId, "ssh-key", sshKey);
+            passphrase ? await upsertCredential(identityId, "passphrase", passphrase) : await Credential.destroy({ where: { identityId, type: "passphrase" } });
+        }
+        if (sshCertificate) await upsertCredential(identityId, "ssh-cert", sshCertificate);
         await Credential.destroy({ where: { identityId, type: "password" } });
     }
 };
@@ -77,9 +81,9 @@ module.exports.createIdentity = async (accountId, config) => {
     }
     const identity = await Identity.create({
         ...config, accountId: config.organizationId ? null : accountId, organizationId: config.organizationId || null,
-        password: undefined, sshKey: undefined, passphrase: undefined,
+        password: undefined, sshKey: undefined, passphrase: undefined, sshCertificate: undefined,
     });
-    await syncCredentials(identity.id, config.type, config.password, config.sshKey, config.passphrase);
+    await syncCredentials(identity.id, config.type, config.password, config.sshKey, config.passphrase, config.sshCertificate);
     logger.info("Identity created", { identityId: identity.id, name: identity.name, scope: config.organizationId ? 'organization' : 'personal' });
 
     stateBroadcaster.broadcast("IDENTITIES", { accountId, organizationId: config.organizationId });
@@ -107,11 +111,11 @@ module.exports.updateIdentity = async (accountId, identityId, config) => {
     const check = await validateManageAccess(accountId, identity);
     if (!check.valid) return check.error;
 
-    const { password, sshKey, passphrase, accountId: _, organizationId: __, ...updateConfig } = config;
+    const { password, sshKey, passphrase, sshCertificate, accountId: _, organizationId: __, ...updateConfig } = config;
     await Identity.update(updateConfig, { where: { id: identityId, ...(identity.organizationId ? { organizationId: identity.organizationId } : { accountId }) } });
 
     const effectiveType = config.type || identity.type;
-    await syncCredentials(identityId, effectiveType, password, sshKey, passphrase);
+    await syncCredentials(identityId, effectiveType, password, sshKey, passphrase, sshCertificate);
     logger.info("Identity updated", { identityId, name: identity.name });
 
     stateBroadcaster.broadcast("IDENTITIES", { accountId, organizationId: identity.organizationId });

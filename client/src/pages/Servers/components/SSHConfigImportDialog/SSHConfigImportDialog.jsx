@@ -6,9 +6,100 @@ import { ServerContext } from "@/common/contexts/ServerContext.jsx";
 import { IdentityContext } from "@/common/contexts/IdentityContext.jsx";
 import { mdiFileDocumentOutline, mdiKey, mdiFileUploadOutline } from "@mdi/js";
 import Button from "@/common/components/Button";
-import { postRequest, putRequest } from "@/common/utils/RequestUtil.js";
+import { patchRequest, postRequest, putRequest } from "@/common/utils/RequestUtil.js";
 import { useToast } from "@/common/contexts/ToastContext.jsx";
 import Icon from "@mdi/react";
+
+const parseSSHConfig = (content) => {
+    const hosts = [];
+    const keyMappings = new Map();
+    let currentHost = null;
+
+    const finishHost = () => {
+        if (currentHost) hosts.push(currentHost);
+        currentHost = null;
+    };
+
+    content.split("\n").forEach(line => {
+        line = line.trim();
+        if (!line || line.startsWith("#")) return;
+
+        const hostMatch = line.match(/^Host\s+(.+)$/i);
+        if (hostMatch) {
+            finishHost();
+            const hostPattern = hostMatch[1].trim();
+            if (hostPattern === "*" || hostPattern.includes("*")) return;
+            currentHost = {
+                name: hostPattern,
+                hostname: hostPattern,
+                port: 22,
+                user: null,
+                identityFiles: [],
+                certificateFiles: [],
+                config: {},
+            };
+            return;
+        }
+
+        if (!currentHost) return;
+        const configMatch = line.match(/^(\w+)\s+(.+)$/);
+        if (!configMatch) return;
+
+        const [, key, rawValue] = configMatch;
+        const normalizedKey = key.toLowerCase();
+        const value = rawValue.trim().replace(/^['"]|['"]$/g, "");
+
+        if (normalizedKey === "hostname") currentHost.hostname = value;
+        else if (normalizedKey === "port") currentHost.port = parseInt(value) || 22;
+        else if (normalizedKey === "user") currentHost.user = value;
+        else if (normalizedKey === "identityfile" && value && !value.includes("*")) currentHost.identityFiles.push(value);
+        else if (normalizedKey === "certificatefile" && value && !value.includes("*")) currentHost.certificateFiles.push(value);
+        else if (normalizedKey !== "identityfile" && normalizedKey !== "certificatefile") currentHost.config[key] = value;
+    });
+
+    finishHost();
+
+    hosts.forEach(host => {
+        host.identityFiles.forEach((path, index) => {
+            const uniqueKey = `${path}|${host.user || "no-user"}`;
+            const certificatePath = host.certificateFiles[index] || host.certificateFiles[0] || null;
+            if (!keyMappings.has(uniqueKey)) {
+                keyMappings.set(uniqueKey, {
+                    path,
+                    username: host.user || null,
+                    name: path.split("/").pop() || path,
+                    certificatePath,
+                });
+            } else if (!keyMappings.get(uniqueKey).certificatePath) {
+                keyMappings.get(uniqueKey).certificatePath = certificatePath;
+            }
+        });
+    });
+
+    const pathGroups = new Map();
+    keyMappings.forEach((keyInfo, uniqueKey) => {
+        if (!pathGroups.has(keyInfo.path)) pathGroups.set(keyInfo.path, []);
+        pathGroups.get(keyInfo.path).push({ uniqueKey, keyInfo });
+    });
+
+    const keyFiles = {};
+    keyMappings.forEach((keyInfo, uniqueKey) => {
+        const pathGroup = pathGroups.get(keyInfo.path);
+        const name = pathGroup.length > 1 && keyInfo.username
+            ? `${keyInfo.name} (${keyInfo.username})`
+            : keyInfo.name;
+        keyFiles[uniqueKey] = {
+            ...keyInfo,
+            name,
+            identityId: null,
+            uploaded: false,
+            certificateContent: null,
+            certificateUploaded: false,
+        };
+    });
+
+    return { hosts, keyFiles };
+};
 
 export const SSHConfigImportDialog = ({ open, onClose, currentFolderId, currentOrganizationId }) => {
     const { t } = useTranslation();
@@ -21,66 +112,7 @@ export const SSHConfigImportDialog = ({ open, onClose, currentFolderId, currentO
     const { sendToast } = useToast();
 
     const parseKeyFiles = (content) => {
-        if (!content.trim()) return setKeyFiles({});
-
-        const keyMappings = new Map();
-        const lines = content.split('\n');
-        let currentHost = null;
-
-        lines.forEach(line => {
-            line = line.trim();
-            if (!line || line.startsWith('#')) return;
-
-            const hostMatch = line.match(/^Host\s+(.+)$/i);
-            if (hostMatch) {
-                const hostPattern = hostMatch[1].trim();
-                currentHost = (hostPattern === '*' || hostPattern.includes('*')) ? null : { name: hostPattern, user: null };
-                return;
-            }
-
-            if (!currentHost) return;
-
-            const configMatch = line.match(/^(\w+)\s+(.+)$/);
-            if (!configMatch) return;
-
-            const [, key, value] = configMatch;
-            const normalizedKey = key.toLowerCase();
-            
-            if (normalizedKey === 'user') {
-                currentHost.user = value;
-            } else if (normalizedKey === 'identityfile') {
-                const keyPath = value.trim().replace(/^["']|["']$/g, '');
-                if (keyPath && !keyPath.includes('*')) {
-                    const uniqueKey = `${keyPath}|${currentHost.user || 'no-user'}`;
-                    if (!keyMappings.has(uniqueKey)) {
-                        keyMappings.set(uniqueKey, {
-                            path: keyPath,
-                            username: currentHost.user || null,
-                            name: keyPath.split('/').pop() || keyPath
-                        });
-                    }
-                }
-            }
-        });
-
-        const pathGroups = new Map();
-        keyMappings.forEach((keyInfo, uniqueKey) => {
-            const path = keyInfo.path;
-            if (!pathGroups.has(path)) pathGroups.set(path, []);
-            pathGroups.get(path).push({ uniqueKey, keyInfo });
-        });
-
-        const newKeyFiles = {};
-        keyMappings.forEach((keyInfo, uniqueKey) => {
-            const pathGroup = pathGroups.get(keyInfo.path);
-            const finalName = (pathGroup.length > 1 && keyInfo.username) 
-                ? `${keyInfo.name} (${keyInfo.username})` 
-                : keyInfo.name;
-            
-            newKeyFiles[uniqueKey] = { ...keyInfo, name: finalName, identityId: null, uploaded: false };
-        });
-
-        setKeyFiles(newKeyFiles);
+        setKeyFiles(parseSSHConfig(content).keyFiles);
     };
 
     const handleKeyUpload = async (uniqueKey) => {
@@ -98,6 +130,7 @@ export const SSHConfigImportDialog = ({ open, onClose, currentFolderId, currentO
                         name: keyInfo.name,
                         type: "ssh",
                         sshKey: e.target.result,
+                        ...(keyInfo.certificateContent && { sshCertificate: keyInfo.certificateContent }),
                         ...(keyInfo.username && { username: keyInfo.username })
                     };
 
@@ -105,13 +138,47 @@ export const SSHConfigImportDialog = ({ open, onClose, currentFolderId, currentO
                     if (result.id) {
                         setKeyFiles(prev => ({
                             ...prev,
-                            [uniqueKey]: { ...prev[uniqueKey], identityId: result.id, uploaded: true }
+                            [uniqueKey]: {
+                                ...prev[uniqueKey],
+                                identityId: result.id,
+                                uploaded: true,
+                                certificateUploaded: !!keyInfo.certificateContent,
+                            }
                         }));
                         await loadIdentities();
                         sendToast("Success", t('servers.sshConfigImport.messages.uploadSuccess', { name: keyInfo.name }));
                     }
                 } catch (error) {
                     sendToast("Error", t('servers.sshConfigImport.messages.uploadFailed', { name: keyFiles[uniqueKey].name }));
+                }
+            };
+            reader.readAsText(file);
+        };
+        fileInput.click();
+    };
+
+    const handleCertificateUpload = async (uniqueKey) => {
+        const fileInput = document.createElement("input");
+        fileInput.type = "file";
+        fileInput.accept = ".pub,.crt,.cert,text/plain";
+        fileInput.onchange = async () => {
+            const file = fileInput.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = async (e) => {
+                try {
+                    const certificate = e.target.result;
+                    const keyInfo = keyFiles[uniqueKey];
+                    if (keyInfo.identityId) await patchRequest(`identities/${keyInfo.identityId}`, { sshCertificate: certificate });
+                    setKeyFiles(prev => ({
+                        ...prev,
+                        [uniqueKey]: { ...prev[uniqueKey], certificateContent: certificate, certificateUploaded: true },
+                    }));
+                    if (keyInfo.identityId) await loadIdentities();
+                    sendToast("Success", t("servers.sshConfigImport.messages.certificateUploadSuccess", { name: keyInfo.name }));
+                } catch (error) {
+                    sendToast("Error", t("servers.sshConfigImport.messages.certificateUploadFailed", { name: keyFiles[uniqueKey].name }));
                 }
             };
             reader.readAsText(file);
@@ -126,43 +193,9 @@ export const SSHConfigImportDialog = ({ open, onClose, currentFolderId, currentO
         setIsImporting(true);
 
         try {
-            const servers = [];
-            const lines = configContent.split('\n');
-            let currentHost = null;
+            const { hosts } = parseSSHConfig(configContent);
 
-            lines.forEach(line => {
-                line = line.trim();
-                if (!line || line.startsWith('#')) return;
-
-                const hostMatch = line.match(/^Host\s+(.+)$/i);
-                if (hostMatch) {
-                    if (currentHost) servers.push(currentHost);
-                    const hostPattern = hostMatch[1].trim();
-                    currentHost = (hostPattern === '*' || hostPattern.includes('*')) ? null : 
-                        { name: hostPattern, hostname: hostPattern, port: 22, user: null, identityFiles: [], config: {} };
-                    return;
-                }
-
-                if (!currentHost) return;
-                const configMatch = line.match(/^(\w+)\s+(.+)$/);
-                if (!configMatch) return;
-
-                const [, key, value] = configMatch;
-                const normalizedKey = key.toLowerCase();
-                if (normalizedKey === 'hostname') currentHost.hostname = value;
-                else if (normalizedKey === 'port') currentHost.port = parseInt(value) || 22;
-                else if (normalizedKey === 'user') currentHost.user = value;
-                else if (normalizedKey === 'identityfile') {
-                    const keyPath = value.trim().replace(/^["']|["']$/g, '');
-                    if (keyPath && !keyPath.includes('*')) currentHost.identityFiles.push(keyPath);
-                } else if (normalizedKey !== 'user' && normalizedKey !== 'identityfile') {
-                    currentHost.config[key] = value;
-                }
-            });
-
-            if (currentHost) servers.push(currentHost);
-
-            const serverData = servers.map(host => {
+            const serverData = hosts.map(host => {
                 const identities = [];
                 host.identityFiles.forEach(keyPath => {
                     const uniqueKey = `${keyPath}|${host.user || 'no-user'}`;
@@ -242,6 +275,9 @@ export const SSHConfigImportDialog = ({ open, onClose, currentFolderId, currentO
                                             {keyInfo.username && (
                                                 <span className="key-username">{t('servers.sshConfigImport.keyFiles.userLabel', { username: keyInfo.username })}</span>
                                             )}
+                                            {keyInfo.certificatePath && (
+                                                <span className="key-path">{t('servers.sshConfigImport.keyFiles.certificateLabel', { path: keyInfo.certificatePath })}</span>
+                                            )}
                                         </div>
                                     </div>
                                     <div className="key-actions">
@@ -256,6 +292,17 @@ export const SSHConfigImportDialog = ({ open, onClose, currentFolderId, currentO
                                                 size="small"
                                             />
                                         )}
+                                        {keyInfo.certificatePath && (keyInfo.certificateUploaded ? (
+                                            <span className="uploaded-indicator">{t('servers.sshConfigImport.keyFiles.certificateUploaded')}</span>
+                                        ) : (
+                                            <Button
+                                                text={t('servers.sshConfigImport.keyFiles.certificateUploadButton')}
+                                                icon={mdiFileUploadOutline}
+                                                onClick={() => handleCertificateUpload(uniqueKey)}
+                                                variant="secondary"
+                                                size="small"
+                                            />
+                                        ))}
                                     </div>
                                 </div>
                             ))}

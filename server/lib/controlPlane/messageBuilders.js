@@ -50,6 +50,7 @@ const buildJumpHostsVector = (builder, jumpHosts, vectorOwner = SessionOpen) => 
         const passwordOff = jh.password ? builder.createString(jh.password) : 0;
         const privateKeyOff = jh.privateKey ? builder.createString(jh.privateKey) : 0;
         const passphraseOff = jh.passphrase ? builder.createString(jh.passphrase) : 0;
+        const certificateOff = jh.certificate ? builder.createString(jh.certificate) : 0;
         JumpHost.startJumpHost(builder);
         JumpHost.addHost(builder, hostOff);
         JumpHost.addPort(builder, jh.port || 22);
@@ -57,6 +58,7 @@ const buildJumpHostsVector = (builder, jumpHosts, vectorOwner = SessionOpen) => 
         if (passwordOff) JumpHost.addPassword(builder, passwordOff);
         if (privateKeyOff) JumpHost.addPrivateKey(builder, privateKeyOff);
         if (passphraseOff) JumpHost.addPassphrase(builder, passphraseOff);
+        if (certificateOff) JumpHost.addCertificate(builder, certificateOff);
         return JumpHost.endJumpHost(builder);
     });
     return vectorOwner.createJumpHostsVector(builder, offsets);
