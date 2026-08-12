@@ -12,19 +12,19 @@
     "node": ">=22"
   },
   "dependencies": {
-    "@ai-sdk/anthropic": "^4.0.29",
-    "@ai-sdk/openai": "^4.0.29",
-    "@ai-sdk/openai-compatible": "^3.0.22",
+    "@ai-sdk/anthropic": "^4.0.36",
+    "@ai-sdk/openai": "^4.0.36",
+    "@ai-sdk/openai-compatible": "^3.0.27",
     "@inquirer/password": "^5.1.1",
     "@simplewebauthn/server": "^13.3.2",
-    "ai": "^7.0.51",
+    "ai": "^7.0.58",
     "archiver": "^8.0.0",
     "bcrypt": "^6.0.0",
     "commander": "^15.0.0",
     "decompress": "^4.2.1",
     "express": "^5.2.1",
     "express-jsdoc-swagger": "^1.8.0",
-    "express-rate-limit": "^8.6.1",
+    "express-rate-limit": "^8.6.2",
     "express-ws": "^5.0.2",
     "flatbuffers": "^25.9.23",
     "joi": "^18.2.3",
@@ -39,16 +39,16 @@
     "uuid": "^14.0.1",
     "webdav": "^5.10.0",
     "winston": "^3.19.0",
-    "ws": "^8.21.2",
+    "ws": "^8.21.3",
     "zod": "^4.4.3"
   },
   "devDependencies": {
     "concurrently": "^10.0.4",
     "dotenv": "^17.4.2",
-    "esbuild": "^0.28.1",
+    "esbuild": "^0.28.2",
     "nodemon": "^3.1.11",
     "vitepress": "^1.6.4",
-    "vitepress-openapi": "^0.2.2"
+    "vitepress-openapi": "^0.2.3"
   },
   "scripts": {
     "dev:server": "nodemon --ignore docs --ignore vendor --ignore client --ignore mobile --ignore data server/index.js",
