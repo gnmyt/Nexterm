@@ -19,10 +19,10 @@
     "@ai-sdk/provider-utils" "5.0.25"
     "@vercel/oidc" "3.2.0"
 
-"@ai-sdk/openai-compatible@^3.0.27":
-  version "3.0.27"
-  resolved "https://registry.yarnpkg.com/@ai-sdk/openai-compatible/-/openai-compatible-3.0.27.tgz#779f21370e203493fdf11829d5ddc7e55c81306c"
-  integrity sha512-icGSoBDbFKZotUwehg7h/JjtD7arweeKfeDcsT9UsPY+YdwiT94JciD59bqAOAdNA3wlS+klW2vsaVLxTUUhbA==
+"@ai-sdk/openai-compatible@^3.0.28":
+  version "3.0.28"
+  resolved "https://registry.yarnpkg.com/@ai-sdk/openai-compatible/-/openai-compatible-3.0.28.tgz#3ef914c095e38d636a2d65c61122e7dca8d1b618"
+  integrity sha512-vF/852mCFiASq2fAPE1mA0E0w78NH68/X2Gukuh4TeJrMIp+CJfoR5QLuY2+pTx7UiLmuYWDpCQhWaupuM7+Xg==
   dependencies:
     "@ai-sdk/provider" "4.0.7"
     "@ai-sdk/provider-utils" "5.0.25"
@@ -4604,10 +4604,10 @@ vite@^5.4.14:
   optionalDependencies:
     fsevents "~2.3.3"
 
-vitepress-openapi@^0.2.3:
-  version "0.2.3"
-  resolved "https://registry.yarnpkg.com/vitepress-openapi/-/vitepress-openapi-0.2.3.tgz#bda10700314082e59c1cf906340b13a181f965f6"
-  integrity sha512-aLACSalFW6KOCKDMdDp5/63K95YYCCmKe+p1UMi0C3JYZyIuXFQLSa+Ugmn4DThByFJ8wO83t7caHhdNjUdEFQ==
+vitepress-openapi@^0.2.4:
+  version "0.2.4"
+  resolved "https://registry.yarnpkg.com/vitepress-openapi/-/vitepress-openapi-0.2.4.tgz#5e97f3e90e8ed2b1cb3022324e79ae075ea2fb4a"
+  integrity sha512-wzZ4n++Ais5nUG9X7h5V0wF+uvfu17xEb2RpK8Mdp0blGHU56E7WbSzBY8yr3/K2k0164XxVn/r+zYZIvqBKYQ==
   dependencies:
     "@vueuse/core" "^14.2.1"
     class-variance-authority "^0.7.1"

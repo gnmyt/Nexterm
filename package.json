@@ -14,7 +14,7 @@
   "dependencies": {
     "@ai-sdk/anthropic": "^4.0.36",
     "@ai-sdk/openai": "^4.0.36",
-    "@ai-sdk/openai-compatible": "^3.0.27",
+    "@ai-sdk/openai-compatible": "^3.0.28",
     "@inquirer/password": "^5.1.1",
     "@simplewebauthn/server": "^13.3.2",
     "ai": "^7.0.58",
@@ -48,7 +48,7 @@
     "esbuild": "^0.28.2",
     "nodemon": "^3.1.11",
     "vitepress": "^1.6.4",
-    "vitepress-openapi": "^0.2.3"
+    "vitepress-openapi": "^0.2.4"
   },
   "scripts": {
     "dev:server": "nodemon --ignore docs --ignore vendor --ignore client --ignore mobile --ignore data server/index.js",
