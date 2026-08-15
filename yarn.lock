@@ -2,43 +2,43 @@
 # yarn lockfile v1
 
 
-"@ai-sdk/anthropic@^4.0.36":
-  version "4.0.36"
-  resolved "https://registry.yarnpkg.com/@ai-sdk/anthropic/-/anthropic-4.0.36.tgz#d825cff4e25b0cbcf3d6135f61e7e750ad757385"
-  integrity sha512-Wg5jfray0X4+qkrr73GZ7U7K2JNGx+S+rNY9LorVlXhkhTqnvtNLYWRA1WxSxlCDCw3yjRCJdL9kyc+b7naAog==
+"@ai-sdk/anthropic@^4.0.37":
+  version "4.0.37"
+  resolved "https://registry.yarnpkg.com/@ai-sdk/anthropic/-/anthropic-4.0.37.tgz#38eead043618c9f7f577faed3bf57aad4fe13bd7"
+  integrity sha512-3JVFoPkuVyW/TkUrsNpugQDwJa5RUnExK/J3LKhKece+qFv7MRR33URvmLbND/5yg2qXZ9rf+Wf97adGMltn0g==
   dependencies:
     "@ai-sdk/provider" "4.0.7"
-    "@ai-sdk/provider-utils" "5.0.25"
+    "@ai-sdk/provider-utils" "5.0.26"
 
-"@ai-sdk/gateway@4.0.46":
-  version "4.0.46"
-  resolved "https://registry.yarnpkg.com/@ai-sdk/gateway/-/gateway-4.0.46.tgz#47be423d62be65e8755de94e5aaa184ef57998c4"
-  integrity sha512-LIAO6kAG8fpXQb9L0iwPk1FIbXftvqnyC56v5NEAzeWTeL8fUsy/Hx86VPBTWEDFdwbVprjWifJOAqS6AOj3mA==
+"@ai-sdk/gateway@4.0.47":
+  version "4.0.47"
+  resolved "https://registry.yarnpkg.com/@ai-sdk/gateway/-/gateway-4.0.47.tgz#5bc3771ce32f1b77ee3e5ff558295820635fca11"
+  integrity sha512-BuWWlA8atWEnEJzN4eamCpGZWkoK9V3TCyNaMwgRIazhqkgWkA1Wp36si3j2JeVYzlvlEAOWrJ92dr92j/Vkqg==
   dependencies:
     "@ai-sdk/provider" "4.0.7"
-    "@ai-sdk/provider-utils" "5.0.25"
+    "@ai-sdk/provider-utils" "5.0.26"
     "@vercel/oidc" "3.2.0"
 
-"@ai-sdk/openai-compatible@^3.0.28":
-  version "3.0.28"
-  resolved "https://registry.yarnpkg.com/@ai-sdk/openai-compatible/-/openai-compatible-3.0.28.tgz#3ef914c095e38d636a2d65c61122e7dca8d1b618"
-  integrity sha512-vF/852mCFiASq2fAPE1mA0E0w78NH68/X2Gukuh4TeJrMIp+CJfoR5QLuY2+pTx7UiLmuYWDpCQhWaupuM7+Xg==
+"@ai-sdk/openai-compatible@^3.0.29":
+  version "3.0.29"
+  resolved "https://registry.yarnpkg.com/@ai-sdk/openai-compatible/-/openai-compatible-3.0.29.tgz#c03e623c973b3ee1612cc208f3f8ff9e5a61ab5c"
+  integrity sha512-mkTkrdpfkV93ihTV3cRIhLpYxQ+cXzBGnrGXXfuQj4wfesCZxYbbyPnCsxYv1ssDt7pGDnrz8RQmpeOqDlAy0g==
   dependencies:
     "@ai-sdk/provider" "4.0.7"
-    "@ai-sdk/provider-utils" "5.0.25"
+    "@ai-sdk/provider-utils" "5.0.26"
 
-"@ai-sdk/openai@^4.0.36":
-  version "4.0.36"
-  resolved "https://registry.yarnpkg.com/@ai-sdk/openai/-/openai-4.0.36.tgz#b1ca11a9a66fbbba46150f1795373f7dc44c9376"
-  integrity sha512-wHJNArBdjJPXb8GXcA+FslbRt+7qIE1KoHSAVi+CeBFidinVrTVBZKFMJz3mNZMj8YILBMl/VIvTD/oGFjX6/g==
+"@ai-sdk/openai@^4.0.37":
+  version "4.0.37"
+  resolved "https://registry.yarnpkg.com/@ai-sdk/openai/-/openai-4.0.37.tgz#9bf2be5d782db9001fed3261ae7cfab2b252e89b"
+  integrity sha512-rQIdkvqHaqyu94zMJKkhucRwsyTpYUmI+vrH/Dm1Erc6ypURikOV+9e51Pni6RL8IxFlu2bv6y8hA1ghzCy7Gw==
   dependencies:
     "@ai-sdk/provider" "4.0.7"
-    "@ai-sdk/provider-utils" "5.0.25"
+    "@ai-sdk/provider-utils" "5.0.26"
 
-"@ai-sdk/provider-utils@5.0.25":
-  version "5.0.25"
-  resolved "https://registry.yarnpkg.com/@ai-sdk/provider-utils/-/provider-utils-5.0.25.tgz#48e3cf76dd78757217be387abcd89b608b7522e1"
-  integrity sha512-xscPPHCSjCHWrdhai25sbHCJeKNLW/3D1uSpUZa4cEtTKXA8OnPQ3+Rfu1SmM5Ea/Mf8Dfn3cllw9zeMzo/zFA==
+"@ai-sdk/provider-utils@5.0.26":
+  version "5.0.26"
+  resolved "https://registry.yarnpkg.com/@ai-sdk/provider-utils/-/provider-utils-5.0.26.tgz#a318a7872e994774b60ae15196c05e97c4d6baed"
+  integrity sha512-0mqhqx+Dcv+msI84+zkbLXmnCHb/mpkYJ9DU3HBvB1px+UjFQss4lLZqRCSzJ0w3NxwQk4Ishk7cP0r8wEQD5w==
   dependencies:
     "@ai-sdk/provider" "4.0.7"
     "@standard-schema/spec" "^1.1.0"
@@ -1349,14 +1349,14 @@ agent-base@^7.1.0, agent-base@^7.1.2:
   resolved "https://registry.yarnpkg.com/agent-base/-/agent-base-7.1.4.tgz#e3cd76d4c548ee895d3c3fd8dc1f6c5b9032e7a8"
   integrity sha512-MnA+YT8fwfJPgBx3m60MNqakm30XOkyIoH1y6huTQvC0PwZG7ki8NacLBcrPbNoo8vEZy7Jpuk7+jMO+CUovTQ==
 
-ai@^7.0.58:
-  version "7.0.58"
-  resolved "https://registry.yarnpkg.com/ai/-/ai-7.0.58.tgz#95dffd740002e28a4d9c82313bbb9c85c8d690cb"
-  integrity sha512-GfgO90CQQ0yYuoxJAUOeQ6tviyYw1BUIDygSZ1q3Ce6kSc93tYmB5eltKY/NxC0YOouAax7JvDqVnYxvIAr04Q==
+ai@^7.0.59:
+  version "7.0.59"
+  resolved "https://registry.yarnpkg.com/ai/-/ai-7.0.59.tgz#4369d4ff2295b83477e19cf87655b7bb6ec6e553"
+  integrity sha512-p10cqg8KvLIZi7Gk+XsQjoYoLENoDdEYvehP0rSo6Wg15nbCmP+nwIy1rOIX+WGIDWGdI+jmhjVx5fXShBVC3w==
   dependencies:
-    "@ai-sdk/gateway" "4.0.46"
+    "@ai-sdk/gateway" "4.0.47"
     "@ai-sdk/provider" "4.0.7"
-    "@ai-sdk/provider-utils" "5.0.25"
+    "@ai-sdk/provider-utils" "5.0.26"
 
 algoliasearch@^5.14.2:
   version "5.46.2"
@@ -2031,11 +2031,6 @@ defu@^6.1.5:
   version "6.1.7"
   resolved "https://registry.yarnpkg.com/defu/-/defu-6.1.7.tgz#72543567c8e9f97ff13ce402b6dbe09ac5ae4d23"
   integrity sha512-7z22QmUWiQ/2d0KkdYmANbRUVABpZ9SNYyH5vx6PZ+nE5bcC0l7uFvEfHlyld/HcGBFTL536ClDt3DEcSlEJAQ==
-
-denque@^2.1.0:
-  version "2.1.0"
-  resolved "https://registry.yarnpkg.com/denque/-/denque-2.1.0.tgz#e93e1a6569fb5e66f16a3c2a2964617d349d6ab1"
-  integrity sha512-HVQE3AAb/pxF8fQAoiqpvg9i3evqug3hoiwakOyZAwJm+6vZehbkYXZ0l4JxS+I3QxM97v5aaRNhj8v5oBhekw==
 
 depd@2.0.0, depd@^2.0.0, depd@~2.0.0:
   version "2.0.0"
@@ -2760,10 +2755,10 @@ https-proxy-agent@^7.0.1:
     agent-base "^7.1.2"
     debug "4"
 
-iconv-lite@^0.7.0, iconv-lite@^0.7.2, iconv-lite@~0.7.0:
-  version "0.7.2"
-  resolved "https://registry.yarnpkg.com/iconv-lite/-/iconv-lite-0.7.2.tgz#d0bdeac3f12b4835b7359c2ad89c422a4d1cc72e"
-  integrity sha512-im9DjEDQ55s9fL4EYzOAv0yMqmMBSZp6G0VvFyTMPKWxiSBHUj9NW/qqLmXUwXrrM7AvqSlTCfvqRb0cM8yYqw==
+iconv-lite@^0.7.0, iconv-lite@^0.7.2, iconv-lite@^0.7.3, iconv-lite@~0.7.0:
+  version "0.7.3"
+  resolved "https://registry.yarnpkg.com/iconv-lite/-/iconv-lite-0.7.3.tgz#84ee12f963e7de50bc01a13e160a078b3b0f415f"
+  integrity sha512-IKXpvIzjnC9XTAUbVBcMfGS0EPaIXtW6v+zr+RRp+hqULEpo0owZax6wyRwPOJbWbzjYspQwusTsfVr0ifh4uQ==
   dependencies:
     safer-buffer ">= 2.1.2 < 3.0.0"
 
@@ -2926,10 +2921,10 @@ jose@^6.2.2:
   resolved "https://registry.yarnpkg.com/jose/-/jose-6.2.2.tgz#d6b5279b89b3e88d531c202e3fbe351f39a44aac"
   integrity sha512-d7kPDd34KO/YnzaDOlikGpOurfF0ByC2sEV4cANCtdqLlTfBlw2p14O/5d/zv40gJPbIQxfES3nSx1/oYNyuZQ==
 
-js-yaml@^5.2.2:
-  version "5.2.2"
-  resolved "https://registry.yarnpkg.com/js-yaml/-/js-yaml-5.2.2.tgz#497bfe63f0b0db11c7bbc5ce8bc568e836c8b08c"
-  integrity sha512-dayzUzKkJ1MkuUtZglSebU43utNXH0OWQByK9rKOOuYIO8M5TV1y+n8ALMdG0rdzBnfNkOmZEqrURepb0ejqBw==
+js-yaml@^5.2.3:
+  version "5.2.3"
+  resolved "https://registry.yarnpkg.com/js-yaml/-/js-yaml-5.2.3.tgz#0942ae8f507e22eb0e54624871789cd477106e54"
+  integrity sha512-n+mUVyUX5bVv7G/G2zyIHOhdxfuU1dY2NOFzTQUWiMUbFss8b57NFlgCCaggU78wSw5KVS9cllzeLyzyR+n5nw==
   dependencies:
     argparse "^2.0.1"
 
@@ -3297,15 +3292,14 @@ mute-stream@^3.0.0:
   resolved "https://registry.yarnpkg.com/mute-stream/-/mute-stream-3.0.0.tgz#cd8014dd2acb72e1e91bb67c74f0019e620ba2d1"
   integrity sha512-dkEJPVvun4FryqBmZ5KhDo0K9iDXAwn08tMLDinNdRBNPcYEDiWYysLcc6k3mjTMlbP9KyylvRpd4wFtwrT9rw==
 
-mysql2@^3.23.2:
-  version "3.23.2"
-  resolved "https://registry.yarnpkg.com/mysql2/-/mysql2-3.23.2.tgz#30d108672482fee8f0a467886991134f0befa011"
-  integrity sha512-fxh3HpQ8vJtu/Mmnd4Xsur19jGjHGzRLMxptiDtOkbX7EVBgnafGSGDx1WGGVmJLClVh2LeeBMMo24IFv8wCyQ==
+mysql2@^3.23.3:
+  version "3.23.3"
+  resolved "https://registry.yarnpkg.com/mysql2/-/mysql2-3.23.3.tgz#85247f36f35bd180d3ba18b1f60fa7d553960ee2"
+  integrity sha512-ehp9HEKr4wVJaBOUVxNFa+CNrsCCCZ6363/jbGhb7WpEmSRNIXjHBjFs5K2s2cXn7j/RhDieejsQJ6nfUwD6vQ==
   dependencies:
     aws-ssl-profiles "^1.1.2"
-    denque "^2.1.0"
     generate-function "^2.3.1"
-    iconv-lite "^0.7.2"
+    iconv-lite "^0.7.3"
     long "^5.3.2"
     lru.min "^1.1.4"
     named-placeholders "^1.1.6"
