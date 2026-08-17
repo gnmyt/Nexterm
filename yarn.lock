@@ -2916,10 +2916,10 @@ joi@^18.2.3:
     "@hapi/topo" "^6.0.2"
     "@standard-schema/spec" "^1.1.0"
 
-jose@^6.2.2:
-  version "6.2.2"
-  resolved "https://registry.yarnpkg.com/jose/-/jose-6.2.2.tgz#d6b5279b89b3e88d531c202e3fbe351f39a44aac"
-  integrity sha512-d7kPDd34KO/YnzaDOlikGpOurfF0ByC2sEV4cANCtdqLlTfBlw2p14O/5d/zv40gJPbIQxfES3nSx1/oYNyuZQ==
+jose@^6.2.8:
+  version "6.2.9"
+  resolved "https://registry.yarnpkg.com/jose/-/jose-6.2.9.tgz#344fa11af928f8000a4f81972c4d567d587170f0"
+  integrity sha512-XrchZOFZUl/T3vTwRe8XK+cJrGtMF4th1ARnDfwbBXFKThGhlsxEE4Zu03AD/bjJSt/9jT/mxrOCkJWOg77aPA==
 
 js-yaml@^5.2.3:
   version "5.2.3"
@@ -3417,10 +3417,10 @@ normalize-path@^3.0.0, normalize-path@~3.0.0:
   resolved "https://registry.yarnpkg.com/normalize-path/-/normalize-path-3.0.0.tgz#0dcd69ff23a1c9b11fd0978316644a0388216a65"
   integrity sha512-6eZs5Ls3WtCisHWp9S2GUy8dqkpGi4BVSz3GaqiE6ezub0512ESztXUwUB6C6IKbQkY2Pnb/mD4WYojCRwcwLA==
 
-oauth4webapi@^3.8.5:
-  version "3.8.5"
-  resolved "https://registry.yarnpkg.com/oauth4webapi/-/oauth4webapi-3.8.5.tgz#4aa8a73f5c4644daf674a7c40497be910db99d3f"
-  integrity sha512-A8jmyUckVhRJj5lspguklcl90Ydqk61H3dcU0oLhH3Yv13KpAliKTt5hknpGGPZSSfOwGyraNEFmofDYH+1kSg==
+oauth4webapi@^3.8.7:
+  version "3.8.7"
+  resolved "https://registry.yarnpkg.com/oauth4webapi/-/oauth4webapi-3.8.7.tgz#e9ba31b5fd21d0f7b531293971ce0f55aabdfb6d"
+  integrity sha512-4RxcKxXjuItDFZ20RRPf4YTw3kpeXJyCgJFxVzJ068A7PNJ18st2Dg90tlC1LkSDS0GecroagCLHYEIVUhCAkw==
 
 object-assign@^4.0.1:
   version "4.1.1"
@@ -3467,13 +3467,13 @@ oniguruma-to-es@^3.1.0:
     regex "^6.0.1"
     regex-recursion "^6.0.2"
 
-openid-client@^6.8.4:
-  version "6.8.4"
-  resolved "https://registry.yarnpkg.com/openid-client/-/openid-client-6.8.4.tgz#573e852a9c6ea3fcfe180956da6aaf979c4e4724"
-  integrity sha512-QSw0BA08piujetEwfZsHoTrDpMEha7GDZDicQqVwX4u0ChCjefvjDB++TZ8BTg76UpwhzIQgdvvfgfl3HpCSAw==
+openid-client@^6.8.5:
+  version "6.8.5"
+  resolved "https://registry.yarnpkg.com/openid-client/-/openid-client-6.8.5.tgz#99ba03960a618a8955dad7d2b60432bf328d95c4"
+  integrity sha512-jNGC/5wnTYwCcEUe2ss0IRUmVRQcgxM0A1nLb3eX/9llqNbMWOQd2xd+qDAgfVCpA5Qh96Y1cdnkfbva6+bSdA==
   dependencies:
-    jose "^6.2.2"
-    oauth4webapi "^3.8.5"
+    jose "^6.2.8"
+    oauth4webapi "^3.8.7"
 
 p-map@^7.0.2:
   version "7.0.4"

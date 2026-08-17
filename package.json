@@ -31,7 +31,7 @@
     "js-yaml": "^5.2.3",
     "ldapts": "^9.0.0",
     "mysql2": "^3.23.3",
-    "openid-client": "^6.8.4",
+    "openid-client": "^6.8.5",
     "selfsigned": "^5.5.0",
     "sequelize": "^6.37.8",
     "speakeasy": "^2.0.0",
