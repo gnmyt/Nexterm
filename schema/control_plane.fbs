@@ -99,6 +99,7 @@ table SessionOpenResult {
     error_code: ErrorCode;
     error_message: string;
     connection_id: string;
+    local_port: uint16;
 }
 
 table SessionClose {

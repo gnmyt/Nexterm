@@ -26,6 +26,18 @@ typedef struct {
     int count;
 } jump_chain_t;
 
+typedef struct {
+    jump_chain_t chain;
+    char target_host[256];
+    uint16_t target_port;
+    LIBSSH2_CHANNEL* pending_channel;
+    int listen_fd;
+    uint16_t local_port;
+    pthread_t thread;
+    int thread_started;
+    volatile int stop;
+} jump_tunnel_t;
+
 int nexterm_ssh_setup(const char* host, uint16_t port,
                       int* out_sock, LIBSSH2_SESSION** out_session);
 
@@ -42,6 +54,12 @@ void nexterm_ssh_teardown(LIBSSH2_SESSION* session, LIBSSH2_CHANNEL* channel,
                           int sock, const char* reason);
 
 void nexterm_jump_chain_teardown(jump_chain_t* chain);
+
+int nexterm_jump_tunnel_start(jump_tunnel_t* tunnel,
+                              const char* target_host, uint16_t target_port,
+                              const jump_host_t* jump_hosts, int jump_count);
+
+void nexterm_jump_tunnel_stop(jump_tunnel_t* tunnel);
 
 void nexterm_ssh_full_cleanup(LIBSSH2_SESSION* session, LIBSSH2_CHANNEL* channel,
                              int sock, jump_chain_t* chain, const char* reason);

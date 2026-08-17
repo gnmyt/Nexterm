@@ -302,14 +302,40 @@ static void* guac_session_thread(void* arg) {
         return NULL;
     }
 
+    jump_host_t jump_hosts[MAX_JUMP_HOSTS];
+    int jump_count = nexterm_extract_jump_hosts(session, jump_hosts, MAX_JUMP_HOSTS);
+    jump_tunnel_t* tunnel = NULL;
+
+    if (jump_count > 0) {
+        tunnel = calloc(1, sizeof(jump_tunnel_t));
+        if (!tunnel || nexterm_jump_tunnel_start(tunnel, session->host, session->port,
+                                                 jump_hosts, jump_count) != 0) {
+            LOG_ERROR("Failed to establish jump host tunnel for session %s",
+                      session->session_id);
+            nexterm_cp_send_session_result(cp, session->session_id, false,
+                                           "Failed to establish jump host tunnel", NULL);
+            free(tunnel);
+            guac_client_free(client);
+            close(session->data_fd); session->data_fd = -1;
+            close(session->join_pipe[0]); session->join_pipe[0] = -1;
+            close(session->join_pipe[1]); session->join_pipe[1] = -1;
+            nexterm_sm_finish(&g_session_manager, session->session_id);
+            free(args);
+            return NULL;
+        }
+        LOG_INFO("Guac session %s tunnelled via %d jump host(s) (local port %u)",
+                 session->session_id, jump_count, tunnel->local_port);
+    }
+
     session->guac_client = client;
     snprintf(session->guac_connection_id, sizeof(session->guac_connection_id),
              "%s", client->connection_id);
     guac_socket_require_keep_alive(client->socket);
 
     session->state = SESSION_STATE_ACTIVE;
-    nexterm_cp_send_session_result(cp, session->session_id, true,
-                                   NULL, client->connection_id);
+    nexterm_cp_send_session_result_ex(cp, session->session_id, true,
+                                      NULL, client->connection_id,
+                                      tunnel ? tunnel->local_port : 0);
     LOG_INFO("Guac session %s active (connection_id=%s)",
              session->session_id, client->connection_id);
 
@@ -328,6 +354,10 @@ static void* guac_session_thread(void* arg) {
         nexterm_sm_unlock(&g_session_manager);
         guac_client_stop(client);
         guac_client_free(client);
+        if (tunnel) {
+            nexterm_jump_tunnel_stop(tunnel);
+            free(tunnel);
+        }
         nexterm_cp_send_session_closed(cp, session->session_id, "internal error");
         nexterm_sm_finish(&g_session_manager, session->session_id);
         free(args);
@@ -354,6 +384,11 @@ static void* guac_session_thread(void* arg) {
 
     guac_client_stop(client);
     guac_client_free(client);
+
+    if (tunnel) {
+        nexterm_jump_tunnel_stop(tunnel);
+        free(tunnel);
+    }
 
     char rec_path[512];
     snprintf(rec_path, sizeof(rec_path), "/tmp/nexterm-recordings/%s", session_id);

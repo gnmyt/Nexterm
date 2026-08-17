@@ -91,13 +91,15 @@ const resolveJumpHosts = async (entry) => {
 
 const openEngineSession = async (sessionId, sessionType, host, port, params, jumpHosts = [], engineId) => {
     const dataSocketPromise = controlPlane.waitForDataConnection(sessionId);
+    let openResult;
     try {
-        await controlPlane.openSession(sessionId, sessionType, host, port, params, jumpHosts, engineId || null);
+        openResult = await controlPlane.openSession(sessionId, sessionType, host, port, params, jumpHosts, engineId || null);
     } catch (err) {
         dataSocketPromise.catch(() => {});
         throw err;
     }
-    return dataSocketPromise;
+    const dataSocket = await dataSocketPromise;
+    return { dataSocket, openResult };
 };
 
 const createConnectionForSession = async (sessionId, accountId) => {
@@ -159,7 +161,7 @@ const createSFTPConnectionForSession = async (sessionId, entry, accountId) => {
         const { host, port, params } = await resolveFileTransferContext(entry, identityId, directIdentity, accountId);
         const jumpHosts = await resolveJumpHosts(entry);
 
-        const dataSocket = await openEngineSession(
+        const { dataSocket } = await openEngineSession(
             sessionId, SessionType.SFTP, host, port, params, jumpHosts, entry.config?.engineId
         );
 
@@ -209,7 +211,7 @@ const getAuxiliarySFTPClient = async (sessionId, entry, accountId, opts) => {
         if (!conn.auxSessionIds) conn.auxSessionIds = new Set();
         conn.auxSessionIds.add(engineSessionId);
 
-        const dataSocket = await openEngineSession(
+        const { dataSocket } = await openEngineSession(
             engineSessionId, SessionType.SFTP, host, port, params, jumpHosts, entry.config?.engineId
         );
 
@@ -261,7 +263,7 @@ const createSSHConnectionForSession = async (sessionId, entry, identity, organiz
         const params = buildSSHParams(identity, credentials);
         const jumpHosts = await resolveJumpHosts(entry);
 
-        const dataSocket = await openEngineSession(
+        const { dataSocket } = await openEngineSession(
             sessionId, SessionType.SSH, host, port, params, jumpHosts, entry.config?.engineId
         );
 
@@ -316,8 +318,8 @@ const createTelnetConnectionForSession = async (sessionId, entry, organizationId
 
     if (!ip) throw new Error("Missing host configuration");
 
-    const dataSocket = await openEngineSession(
-        sessionId, SessionType.Telnet, ip, port, {}, entry.config?.engineId
+    const { dataSocket } = await openEngineSession(
+        sessionId, SessionType.Telnet, ip, port, {}, [], entry.config?.engineId
     );
 
     await SessionManager.initRecording(sessionId, organizationId);
@@ -367,7 +369,7 @@ const createPveLxcConnectionForSession = async (sessionId, entry, organizationId
         ws_header_Cookie: `PVEAuthCookie=${ticket.ticket}`,
     };
 
-    const dataSocket = await openEngineSession(
+    const { dataSocket } = await openEngineSession(
         sessionId, SessionType.WebSocket, server.ip, Number(server.port) || 8006, params, [], entry.config?.engineId
     );
 
@@ -431,9 +433,22 @@ const prepareGuacamoleSession = async (sessionId, entry, identity, organizationI
     const port = Number.parseInt(params.port || cfg.port || defaultPort, 10);
     const jumpHosts = await resolveJumpHosts(entry);
 
-    const dataSocket = await openEngineSession(
+    const { dataSocket, openResult } = await openEngineSession(
         sessionId, sessionType, host, port, params, jumpHosts, entry.config?.engineId
     );
+
+    if (jumpHosts.length > 0) {
+        if (!openResult?.localPort) {
+            dataSocket.destroy();
+            controlPlane.closeSession(sessionId);
+            throw new Error("Engine did not provide a jump host tunnel; please update the engine");
+        }
+        params.hostname = "127.0.0.1";
+        params.port = String(openResult.localPort);
+        logger.info("Guacamole session routed through jump host tunnel", {
+            sessionId, target: `${host}:${port}`, localPort: openResult.localPort,
+        });
+    }
 
     const recordingEnabled = await isRecordingEnabled(organizationId);
 
