@@ -1,7 +1,7 @@
 import "./styles.sass";
 import Icon from "@mdi/react";
 
-export const IconInput = ({ type, id, name, required, icon, placeholder, customClass,
+export const IconInput = ({ type, id, name, required, icon, placeholder, customClass, accept,
                               autoComplete, value, setValue, onChange, onBlur, onKeyDown, autoFocus, disabled }) => {
     const handleChange = (event) => {
         if (setValue) {
@@ -19,6 +19,7 @@ export const IconInput = ({ type, id, name, required, icon, placeholder, customC
                 type={type} 
                 id={id} 
                 name={name} 
+                accept={accept}
                 required={required} 
                 className={"input" + (customClass ? " " + customClass : "")}
                 placeholder={placeholder} 

@@ -176,6 +176,10 @@ static void store_jump_hosts_as_params(nexterm_session_t* session,
         const char* passphrase = Nexterm_ControlPlane_JumpHost_passphrase(jh);
         snprintf(key, sizeof(key), "jumpHost%zu_passphrase", i);
         nexterm_session_add_param(session, key, passphrase ? passphrase : "");
+
+        const char* certificate = Nexterm_ControlPlane_JumpHost_certificate(jh);
+        snprintf(key, sizeof(key), "jumpHost%zu_certificate", i);
+        nexterm_session_add_param(session, key, certificate ? certificate : "");
     }
 }
 
@@ -202,6 +206,7 @@ static void extract_jump_hosts_from_msg(Nexterm_ControlPlane_JumpHost_vec_t jh_v
         jump_hosts[i].password = (char*)Nexterm_ControlPlane_JumpHost_password(jh);
         jump_hosts[i].private_key = (char*)Nexterm_ControlPlane_JumpHost_private_key(jh);
         jump_hosts[i].passphrase = (char*)Nexterm_ControlPlane_JumpHost_passphrase(jh);
+        jump_hosts[i].certificate = (char*)Nexterm_ControlPlane_JumpHost_certificate(jh);
     }
     *jump_count = (int)count;
 }
@@ -318,6 +323,7 @@ static void extract_ssh_credentials(Nexterm_ControlPlane_ConnectionParam_vec_t p
     creds->password = NULL;
     creds->private_key = NULL;
     creds->passphrase = NULL;
+    creds->certificate = NULL;
     if (!params) return;
 
     size_t n = Nexterm_ControlPlane_ConnectionParam_vec_len(params);
@@ -330,6 +336,7 @@ static void extract_ssh_credentials(Nexterm_ControlPlane_ConnectionParam_vec_t p
         else if (strcmp(key, "password") == 0) creds->password = val;
         else if (strcmp(key, "privateKey") == 0) creds->private_key = val;
         else if (strcmp(key, "passphrase") == 0) creds->passphrase = val;
+        else if (strcmp(key, "certificate") == 0) creds->certificate = val;
     }
 }
 

@@ -113,7 +113,7 @@ app.patch("/:identityId", async (req, res) => {
         details: {
             identityName: result.identity?.name,
             identityType: result.identity?.type,
-            updatedFields: Object.keys(req.body).filter(key => !['password', 'sshKey', 'passphrase'].includes(key)),
+            updatedFields: Object.keys(req.body).filter(key => !['password', 'sshKey', 'passphrase', 'sshCertificate'].includes(key)),
         },
         ipAddress: req.ip,
         userAgent: req.headers?.["user-agent"],

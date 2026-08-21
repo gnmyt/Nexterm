@@ -51,6 +51,7 @@ export const ServerDialog = ({ open, onClose, currentFolderId, currentOrganizati
 
         if (!identity.passwordTouched && normalized.password === "") normalized.password = undefined;
         if (!identity.passphraseTouched && normalized.passphrase === "") normalized.passphrase = undefined;
+        if (normalized.sshCertificate === null) normalized.sshCertificate = undefined;
         
         if (normalized.sshKey === null) normalized.sshKey = undefined;
         return normalized;
@@ -78,11 +79,13 @@ export const ServerDialog = ({ open, onClose, currentFolderId, currentOrganizati
                 payload.password = identity.password;
             }
             payload.sshKey = identity.sshKey;
+            payload.sshCertificate = identity.sshCertificate;
             if (hasPassphrase) {
                 payload.passphrase = identity.passphrase;
             }
         } else {
             payload.sshKey = identity.sshKey;
+            payload.sshCertificate = identity.sshCertificate;
             if (hasPassphrase) {
                 payload.passphrase = identity.passphrase;
             }
