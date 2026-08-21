@@ -9,6 +9,7 @@
 #include <unistd.h>
 #include <pthread.h>
 #include <sys/socket.h>
+#include <netinet/in.h>
 #include <poll.h>
 #include <errno.h>
 #include <stdlib.h>
@@ -48,15 +49,10 @@ typedef struct {
     volatile int* stop;
 } channel_proxy_ctx_t;
 
-static void* channel_proxy_thread(void* arg) {
-    channel_proxy_ctx_t* ctx = (channel_proxy_ctx_t*)arg;
-    LIBSSH2_SESSION* parent_session = ctx->parent_session;
-    LIBSSH2_CHANNEL* channel = ctx->channel;
-    int sockfd = ctx->sockfd;
-    int parent_sock = ctx->parent_sock;
-    volatile int* stop = ctx->stop;
-    free(ctx);
-
+static void bridge_channel_socket(LIBSSH2_SESSION* parent_session,
+                                  LIBSSH2_CHANNEL* channel,
+                                  int sockfd, int parent_sock,
+                                  volatile int* stop) {
     char buf[16384];
     int was_blocking = libssh2_session_get_blocking(parent_session);
     libssh2_session_set_blocking(parent_session, 0);
@@ -126,6 +122,18 @@ static void* channel_proxy_thread(void* arg) {
 done:
     libssh2_session_set_blocking(parent_session, was_blocking);
     close(sockfd);
+}
+
+static void* channel_proxy_thread(void* arg) {
+    channel_proxy_ctx_t* ctx = (channel_proxy_ctx_t*)arg;
+    LIBSSH2_SESSION* parent_session = ctx->parent_session;
+    LIBSSH2_CHANNEL* channel = ctx->channel;
+    int sockfd = ctx->sockfd;
+    int parent_sock = ctx->parent_sock;
+    volatile int* stop = ctx->stop;
+    free(ctx);
+
+    bridge_channel_socket(parent_session, channel, sockfd, parent_sock, stop);
     return NULL;
 }
 
@@ -185,17 +193,8 @@ static int ssh_setup_on_channel(jump_chain_t* chain,
     return 0;
 }
 
-int nexterm_ssh_setup_with_jumphosts(const char* target_host, uint16_t target_port,
-                                     const jump_host_t* jump_hosts, int jump_count,
-                                     int* out_sock, LIBSSH2_SESSION** out_session,
-                                     jump_chain_t* chain) {
-    memset(chain, 0, sizeof(jump_chain_t));
-    for (int i = 0; i < MAX_JUMP_HOSTS; i++)
-        chain->sockets[i] = -1;
-
-    if (jump_count <= 0 || jump_count > MAX_JUMP_HOSTS)
-        return nexterm_ssh_setup(target_host, target_port, out_sock, out_session);
-
+static int build_jump_chain(const jump_host_t* jump_hosts, int jump_count,
+                            jump_chain_t* chain) {
     const jump_host_t* jh = &jump_hosts[0];
     LOG_INFO("Jump host chain: connecting to hop 1 (%s:%u)", jh->host, jh->port);
 
@@ -246,6 +245,23 @@ int nexterm_ssh_setup_with_jumphosts(const char* target_host, uint16_t target_po
         }
         chain->count = i + 1;
     }
+
+    return 0;
+}
+
+int nexterm_ssh_setup_with_jumphosts(const char* target_host, uint16_t target_port,
+                                     const jump_host_t* jump_hosts, int jump_count,
+                                     int* out_sock, LIBSSH2_SESSION** out_session,
+                                     jump_chain_t* chain) {
+    memset(chain, 0, sizeof(jump_chain_t));
+    for (int i = 0; i < MAX_JUMP_HOSTS; i++)
+        chain->sockets[i] = -1;
+
+    if (jump_count <= 0 || jump_count > MAX_JUMP_HOSTS)
+        return nexterm_ssh_setup(target_host, target_port, out_sock, out_session);
+
+    if (build_jump_chain(jump_hosts, jump_count, chain) != 0)
+        return -1;
 
     LOG_INFO("Jump host chain: forwarding to target %s:%u", target_host, target_port);
     LIBSSH2_CHANNEL* target_fwd = libssh2_channel_direct_tcpip(
@@ -333,6 +349,154 @@ void nexterm_jump_chain_teardown(jump_chain_t* chain) {
         }
     }
     chain->count = 0;
+}
+
+static void* jump_tunnel_thread(void* arg) {
+    jump_tunnel_t* tunnel = (jump_tunnel_t*)arg;
+    LIBSSH2_SESSION* last_session = tunnel->chain.sessions[tunnel->chain.count - 1];
+    int parent_sock = tunnel->chain.sockets[tunnel->chain.count - 1];
+
+    while (!tunnel->stop) {
+        struct pollfd pfd = { .fd = tunnel->listen_fd, .events = POLLIN, .revents = 0 };
+        int ret = poll(&pfd, 1, 500);
+        if (ret < 0) {
+            if (errno == EINTR) continue;
+            break;
+        }
+        if (ret == 0) continue;
+        if (pfd.revents & (POLLERR | POLLHUP | POLLNVAL)) break;
+
+        int client_fd = accept(tunnel->listen_fd, NULL, NULL);
+        if (client_fd < 0) {
+            if (errno == EINTR) continue;
+            break;
+        }
+
+        LIBSSH2_CHANNEL* channel = tunnel->pending_channel;
+        tunnel->pending_channel = NULL;
+        if (!channel)
+            channel = libssh2_channel_direct_tcpip(last_session,
+                                                   tunnel->target_host,
+                                                   tunnel->target_port);
+        if (!channel) {
+            char* errmsg = NULL;
+            libssh2_session_last_error(last_session, &errmsg, NULL, 0);
+            LOG_ERROR("Jump tunnel: forward to %s:%u failed: %s",
+                      tunnel->target_host, tunnel->target_port,
+                      errmsg ? errmsg : "unknown");
+            close(client_fd);
+            continue;
+        }
+
+        bridge_channel_socket(last_session, channel, client_fd, parent_sock,
+                              &tunnel->stop);
+
+        libssh2_channel_close(channel);
+        libssh2_channel_free(channel);
+    }
+
+    return NULL;
+}
+
+int nexterm_jump_tunnel_start(jump_tunnel_t* tunnel,
+                              const char* target_host, uint16_t target_port,
+                              const jump_host_t* jump_hosts, int jump_count) {
+    memset(tunnel, 0, sizeof(jump_tunnel_t));
+    tunnel->listen_fd = -1;
+    for (int i = 0; i < MAX_JUMP_HOSTS; i++)
+        tunnel->chain.sockets[i] = -1;
+
+    if (jump_count <= 0 || jump_count > MAX_JUMP_HOSTS) {
+        LOG_ERROR("Jump tunnel: invalid jump host count %d", jump_count);
+        return -1;
+    }
+
+    snprintf(tunnel->target_host, sizeof(tunnel->target_host), "%s", target_host);
+    tunnel->target_port = target_port;
+
+    if (build_jump_chain(jump_hosts, jump_count, &tunnel->chain) != 0)
+        return -1;
+
+    tunnel->pending_channel = libssh2_channel_direct_tcpip(
+        tunnel->chain.sessions[jump_count - 1], tunnel->target_host, tunnel->target_port);
+    if (!tunnel->pending_channel) {
+        char* errmsg = NULL;
+        libssh2_session_last_error(tunnel->chain.sessions[jump_count - 1], &errmsg, NULL, 0);
+        LOG_ERROR("Jump tunnel: forward to target %s:%u failed: %s",
+                  tunnel->target_host, tunnel->target_port, errmsg ? errmsg : "unknown");
+        nexterm_jump_chain_teardown(&tunnel->chain);
+        return -1;
+    }
+
+    tunnel->listen_fd = socket(AF_INET, SOCK_STREAM, 0);
+    if (tunnel->listen_fd < 0) {
+        LOG_ERROR("Jump tunnel: failed to create listener socket: %s", strerror(errno));
+        goto fail;
+    }
+
+    struct sockaddr_in addr;
+    memset(&addr, 0, sizeof(addr));
+    addr.sin_family = AF_INET;
+    addr.sin_addr.s_addr = htonl(INADDR_LOOPBACK);
+    addr.sin_port = 0;
+
+    if (bind(tunnel->listen_fd, (struct sockaddr*)&addr, sizeof(addr)) != 0 ||
+        listen(tunnel->listen_fd, 4) != 0) {
+        LOG_ERROR("Jump tunnel: failed to bind loopback listener: %s", strerror(errno));
+        goto fail;
+    }
+
+    socklen_t addr_len = sizeof(addr);
+    if (getsockname(tunnel->listen_fd, (struct sockaddr*)&addr, &addr_len) != 0) {
+        LOG_ERROR("Jump tunnel: getsockname failed: %s", strerror(errno));
+        goto fail;
+    }
+    tunnel->local_port = ntohs(addr.sin_port);
+
+    if (pthread_create(&tunnel->thread, NULL, jump_tunnel_thread, tunnel) != 0) {
+        LOG_ERROR("Jump tunnel: failed to create tunnel thread");
+        goto fail;
+    }
+    tunnel->thread_started = 1;
+
+    LOG_INFO("Jump tunnel: 127.0.0.1:%u -> %s:%u via %d jump host(s)",
+             tunnel->local_port, tunnel->target_host, tunnel->target_port, jump_count);
+    return 0;
+
+fail:
+    if (tunnel->listen_fd >= 0) {
+        close(tunnel->listen_fd);
+        tunnel->listen_fd = -1;
+    }
+    if (tunnel->pending_channel) {
+        libssh2_channel_free(tunnel->pending_channel);
+        tunnel->pending_channel = NULL;
+    }
+    nexterm_jump_chain_teardown(&tunnel->chain);
+    return -1;
+}
+
+void nexterm_jump_tunnel_stop(jump_tunnel_t* tunnel) {
+    if (!tunnel) return;
+    tunnel->stop = 1;
+
+    if (tunnel->thread_started) {
+        pthread_join(tunnel->thread, NULL);
+        tunnel->thread_started = 0;
+    }
+
+    if (tunnel->listen_fd >= 0) {
+        close(tunnel->listen_fd);
+        tunnel->listen_fd = -1;
+    }
+
+    if (tunnel->pending_channel) {
+        libssh2_channel_close(tunnel->pending_channel);
+        libssh2_channel_free(tunnel->pending_channel);
+        tunnel->pending_channel = NULL;
+    }
+
+    nexterm_jump_chain_teardown(&tunnel->chain);
 }
 
 void nexterm_ssh_full_cleanup(LIBSSH2_SESSION* session, LIBSSH2_CHANNEL* channel,

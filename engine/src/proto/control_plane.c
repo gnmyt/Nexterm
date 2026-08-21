@@ -865,6 +865,16 @@ int nexterm_cp_send_session_result(nexterm_control_plane_t* cp,
                                    bool success,
                                    const char* error_message,
                                    const char* connection_id) {
+    return nexterm_cp_send_session_result_ex(cp, session_id, success,
+                                             error_message, connection_id, 0);
+}
+
+int nexterm_cp_send_session_result_ex(nexterm_control_plane_t* cp,
+                                      const char* session_id,
+                                      bool success,
+                                      const char* error_message,
+                                      const char* connection_id,
+                                      uint16_t local_port) {
     flatcc_builder_t builder;
     flatcc_builder_init(&builder);
 
@@ -884,6 +894,9 @@ int nexterm_cp_send_session_result(nexterm_control_plane_t* cp,
 
     if (connection_id)
         Nexterm_ControlPlane_SessionOpenResult_connection_id_create_str(&builder, connection_id);
+
+    if (local_port)
+        Nexterm_ControlPlane_SessionOpenResult_local_port_add(&builder, local_port);
 
     Nexterm_ControlPlane_Envelope_session_open_result_end(&builder);
     Nexterm_ControlPlane_Envelope_end_as_root(&builder);
