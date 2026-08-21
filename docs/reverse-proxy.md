@@ -30,6 +30,22 @@ server {
 
 With SSL, add a redirect block and use `listen 443 ssl http2` with your cert paths.
 
+### Nginx Proxy Manager
+
+With Nginx Proxy Manager (NPM for short) you can set up Nexterm behind a reverse proxy **very easily** — no manual config files needed.
+
+1. Open your NPM dashboard and create a new **Proxy Host**.
+2. Enter the **domain(s)** that should point to Nexterm.
+3. Set the **Forward Hostname/IP** to your Nexterm server and the **Forward Port** to `6989` (default).
+4. Make sure **Websockets Support** is **enabled** — this is required for Nexterm.
+5. Under the **Advanced** tab (settings icon), add the following:
+    ```nginx
+    proxy_read_timeout 86400;
+    ```
+6. Optionally, request or attach an **SSL Certificate** under the **SSL** tab and enable **Force SSL**.
+7. Save your Proxy Host.
+
+
 ## Apache
 
 Enable modules first:
