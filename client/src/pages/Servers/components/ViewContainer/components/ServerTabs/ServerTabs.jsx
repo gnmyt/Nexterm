@@ -1,7 +1,7 @@
 import { useRef, useState, useEffect, useCallback, useContext } from "react";
 import { useTranslation } from "react-i18next";
 import Icon from "@mdi/react";
-import { mdiClose, mdiViewSplitVertical, mdiChevronLeft, mdiChevronRight, mdiSleep, mdiOpenInNew, mdiShareVariant, mdiLinkVariant, mdiPencil, mdiEye, mdiCloseCircle, mdiContentDuplicate, mdiNoteEditOutline } from "@mdi/js";
+import { mdiClose, mdiViewSplitVertical, mdiChevronLeft, mdiChevronRight, mdiSleep, mdiOpenInNew, mdiShareVariant, mdiLinkVariant, mdiPencil, mdiEye, mdiCloseCircle, mdiContentDuplicate, mdiNoteEditOutline, mdiRefresh } from "@mdi/js";
 import { useDrag, useDrop } from "react-dnd";
 import TerminalActionsMenu from "../TerminalActionsMenu";
 import { ContextMenu, ContextMenuItem, ContextMenuSeparator, useContextMenu } from "@/common/components/ContextMenu";
@@ -20,6 +20,7 @@ const DraggableTab = ({
     activeSessionId,
     setActiveSessionId,
     closeSession,
+    reconnectSession,
     hibernateSession,
     duplicateSession,
     openNotes,
@@ -43,6 +44,7 @@ const DraggableTab = ({
     const canHibernate = !isNotes && !isJoined;
     const canDuplicate = !isNotes && !isJoined;
     const canOpenNotes = !isNotes && !isJoined && !!server?.id && !session.scriptId;
+    const canReconnect = !isNotes && !isJoined;
     const isSharing = !!session.shareId;
 
     const handleShare = useCallback(async (writable) => {
@@ -199,6 +201,13 @@ const DraggableTab = ({
                         onClick={() => hibernateSession(session.id)}
                     />
                 )}
+                {canReconnect && (
+                    <ContextMenuItem
+                        icon={mdiRefresh}
+                        label={t("servers.tabs.contextMenu.reconnect")}
+                        onClick={() => reconnectSession(session.id)}
+                    />
+                )}
                 <ContextMenuItem
                     icon={mdiClose}
                     label={t("servers.tabs.contextMenu.closeSession")}
@@ -215,6 +224,8 @@ export const ServerTabs = ({
     setActiveSessionId,
     activeSessionId,
     closeSession,
+    reconnectSession,
+    reconnectReplacements,
     hibernateSession,
     duplicateSession,
     openNotes,
@@ -248,11 +259,19 @@ export const ServerTabs = ({
             orderSessionIds.some(id => !currentSessionIds.includes(id));
 
         if (sessionsChanged) {
-            const newOrder = [];
+            const replacements = reconnectReplacements?.current;
+            const oldToNew = new Map();
+            if (replacements?.size) {
+                for (const [newId, oldId] of replacements) {
+                    if (currentSessionIds.includes(newId)) {
+                        oldToNew.set(oldId, newId);
+                        replacements.delete(newId);
+                    }
+                }
+            }
 
-            tabOrder.forEach(sessionId => {
-                if (currentSessionIds.includes(sessionId)) newOrder.push(sessionId);
-            });
+            let newOrder = tabOrder.map(sessionId => oldToNew.get(sessionId) ?? sessionId)
+                .filter(sessionId => currentSessionIds.includes(sessionId));
 
             currentSessionIds.forEach(sessionId => {
                 if (!newOrder.includes(sessionId)) newOrder.push(sessionId);
@@ -370,7 +389,8 @@ export const ServerTabs = ({
                         return (
                             <DraggableTab key={session.id} session={session} server={session.server} index={index} moveTab={moveTab}
                                 activeSessionId={activeSessionId} setActiveSessionId={setActiveSessionId}
-                                closeSession={closeSession} hibernateSession={hibernateSession} duplicateSession={duplicateSession}
+                                closeSession={closeSession} reconnectSession={reconnectSession}
+                                hibernateSession={hibernateSession} duplicateSession={duplicateSession}
                                 openNotes={openNotes}
                                 progress={sessionProgress[session.id] || 0} />
                         );

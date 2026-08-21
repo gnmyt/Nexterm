@@ -26,7 +26,7 @@ const MSG = {
 
 const DIALOG_TYPES = { input: "input", summary: "summary", table: "table", msgbox: "msgbox" };
 
-export const ScriptRenderer = ({ session, disconnectFromServer, updateProgress, savedState, saveState, markSessionErrored, getSessionError }) => {
+export const ScriptRenderer = ({ session, disconnectFromServer, reconnectSession, updateProgress, savedState, saveState, markSessionErrored, getSessionError }) => {
     const containerRef = useRef(null);
     const termRef = useRef(null);
     const wsRef = useRef(null);
@@ -348,7 +348,8 @@ export const ScriptRenderer = ({ session, disconnectFromServer, updateProgress, 
         <div className="script-renderer">
             <div ref={containerRef} className="script-terminal" />
             {connectionError && (
-                <ConnectionError message={connectionError} onClose={() => disconnectFromServer(session.id)} />
+                <ConnectionError message={connectionError} onClose={() => disconnectFromServer(session.id)}
+                                 onReconnect={() => reconnectSession?.(session.id)} />
             )}
             <ScriptOverlay
                 scriptName={state.scriptName || session.scriptName || "Script"}
