@@ -27,7 +27,7 @@
     "express-rate-limit": "^8.6.2",
     "express-ws": "^5.0.2",
     "flatbuffers": "^25.9.23",
-    "joi": "^18.2.3",
+    "joi": "^18.2.5",
     "js-yaml": "^5.3.0",
     "ldapts": "^9.0.0",
     "mysql2": "^3.23.3",
