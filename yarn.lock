@@ -3292,10 +3292,10 @@ mute-stream@^3.0.0:
   resolved "https://registry.yarnpkg.com/mute-stream/-/mute-stream-3.0.0.tgz#cd8014dd2acb72e1e91bb67c74f0019e620ba2d1"
   integrity sha512-dkEJPVvun4FryqBmZ5KhDo0K9iDXAwn08tMLDinNdRBNPcYEDiWYysLcc6k3mjTMlbP9KyylvRpd4wFtwrT9rw==
 
-mysql2@^3.23.4:
-  version "3.23.4"
-  resolved "https://registry.yarnpkg.com/mysql2/-/mysql2-3.23.4.tgz#33550efbf42f05f8b1ecea98b214010680766112"
-  integrity sha512-J1Rgl8Oy5iw3mOBjKeTMQ3cJNjMYtJYavQVXShsMtSj9rKV8Q1+QaGKNJqDVQFcNINqYYp6Vxd90r69cCoBxBA==
+mysql2@^3.24.1:
+  version "3.24.1"
+  resolved "https://registry.yarnpkg.com/mysql2/-/mysql2-3.24.1.tgz#ae2b3d0164062aa479fcea851709ee6f0fbe77ab"
+  integrity sha512-zhab6WaWL9mCp74DegK/IS9PW9ydKav6BBY7JZU8SqjQGBBmz2FlsY62mNKTofY1a0pWA2N/9IZAbb6lQpUDEg==
   dependencies:
     aws-ssl-profiles "^1.1.2"
     generate-function "^2.3.1"
