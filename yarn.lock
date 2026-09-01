@@ -2,13 +2,13 @@
 # yarn lockfile v1
 
 
-"@ai-sdk/anthropic@^4.0.44":
-  version "4.0.44"
-  resolved "https://registry.yarnpkg.com/@ai-sdk/anthropic/-/anthropic-4.0.44.tgz#7a573623dacead6ebec9f8803e939943edf544c0"
-  integrity sha512-PZT62FpNvilIeyyk09+BxYnWmmqRWFLe7ers25OPI8SnQxwDSeXtUTxiZNSbZt4ywj53op/INhLR1z5uyL6tHA==
+"@ai-sdk/anthropic@^4.0.45":
+  version "4.0.45"
+  resolved "https://registry.yarnpkg.com/@ai-sdk/anthropic/-/anthropic-4.0.45.tgz#09a48859d05dfa1104cad771a0d0a6d8b8ca1e68"
+  integrity sha512-2h1WYU1VdfkI6CU3mLes7Vh4Ua3jq5LDE1ciMgUymLNS7ZbtqhgVzBBPhnOdg83lnkYTAOeApCgkGOdwJHxdkA==
   dependencies:
     "@ai-sdk/provider" "4.0.8"
-    "@ai-sdk/provider-utils" "5.0.32"
+    "@ai-sdk/provider-utils" "5.0.33"
 
 "@ai-sdk/gateway@4.0.67":
   version "4.0.67"
@@ -39,6 +39,17 @@
   version "5.0.32"
   resolved "https://registry.yarnpkg.com/@ai-sdk/provider-utils/-/provider-utils-5.0.32.tgz#4d0fad3facecf79fce1ed411698aefdae058be22"
   integrity sha512-MZUhlINn6FzKIWuX3T36h+yM9d7bG+yatH+kC99ZCe0DHxXfP73KwaoLiLcZDPQDamFyO3umPPBLJieZJyG4DQ==
+  dependencies:
+    "@ai-sdk/provider" "4.0.8"
+    "@standard-schema/spec" "^1.1.0"
+    "@workflow/serde" "4.1.0"
+    eventsource-parser "^3.0.8"
+    undici "^7.28.0"
+
+"@ai-sdk/provider-utils@5.0.33":
+  version "5.0.33"
+  resolved "https://registry.yarnpkg.com/@ai-sdk/provider-utils/-/provider-utils-5.0.33.tgz#c0b14308fa4d1a1dcbf302c1638c845379ea347e"
+  integrity sha512-TfjJqJmRsQyxAlb+3hGmP1o1xLUIT79yhOgtJuTF4hqsB37IC3CufGsuFhU04EeTOg7R9iptQ6Bzm0MW0n/c3g==
   dependencies:
     "@ai-sdk/provider" "4.0.8"
     "@standard-schema/spec" "^1.1.0"
