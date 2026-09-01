@@ -10,13 +10,13 @@
     "@ai-sdk/provider" "4.0.8"
     "@ai-sdk/provider-utils" "5.0.33"
 
-"@ai-sdk/gateway@4.0.67":
-  version "4.0.67"
-  resolved "https://registry.yarnpkg.com/@ai-sdk/gateway/-/gateway-4.0.67.tgz#d8997cc6ae366052d198f4ea624e3b6a78344ba4"
-  integrity sha512-LtyxLkg7dZ2iz8Ouh1806BJbA+q+FKc/mXUCl4v/wdNNIGtbfk80dNtlhqjhqOZa4dnfc3caVafRL7ocxzoegA==
+"@ai-sdk/gateway@4.0.68":
+  version "4.0.68"
+  resolved "https://registry.yarnpkg.com/@ai-sdk/gateway/-/gateway-4.0.68.tgz#4ac8f9fb6c11555cc44907461f5ec14177f38f84"
+  integrity sha512-XKvZv6HFoMOWK64zXMaQatk4SxBzBDkGg7enXPWsCkxqPP4zDhFewOoBKasf3FPnZP9ceE+Yj3BgW925blAWtw==
   dependencies:
     "@ai-sdk/provider" "4.0.8"
-    "@ai-sdk/provider-utils" "5.0.32"
+    "@ai-sdk/provider-utils" "5.0.33"
     "@vercel/oidc" "3.2.0"
 
 "@ai-sdk/openai-compatible@^3.0.40":
@@ -1360,14 +1360,14 @@ agent-base@^7.1.0, agent-base@^7.1.2:
   resolved "https://registry.yarnpkg.com/agent-base/-/agent-base-7.1.4.tgz#e3cd76d4c548ee895d3c3fd8dc1f6c5b9032e7a8"
   integrity sha512-MnA+YT8fwfJPgBx3m60MNqakm30XOkyIoH1y6huTQvC0PwZG7ki8NacLBcrPbNoo8vEZy7Jpuk7+jMO+CUovTQ==
 
-ai@^7.0.83:
-  version "7.0.83"
-  resolved "https://registry.yarnpkg.com/ai/-/ai-7.0.83.tgz#a7ecbda28a9a7516fd3828c339e477526fec6629"
-  integrity sha512-bg7+SopUwqA7DeQ2O8I9qELyQTHCeeI/0RuNUlT/gGz+LqWrIl5vbYRQv3eMBEnUsVFaM33n6SA8Vqe9gi8L1w==
+ai@^7.0.84:
+  version "7.0.84"
+  resolved "https://registry.yarnpkg.com/ai/-/ai-7.0.84.tgz#29eb57d4bdfadd6d39a1255ef3b2128c35bb150b"
+  integrity sha512-znHNBWADOy79k8EK7636kDm5LmnjF4tMzegC2TfmlLDobDZbs0z0OXD2sxtH3eDTp5Re+pJQESvjinWJ6+kadQ==
   dependencies:
-    "@ai-sdk/gateway" "4.0.67"
+    "@ai-sdk/gateway" "4.0.68"
     "@ai-sdk/provider" "4.0.8"
-    "@ai-sdk/provider-utils" "5.0.32"
+    "@ai-sdk/provider-utils" "5.0.33"
 
 algoliasearch@^5.14.2:
   version "5.46.2"
