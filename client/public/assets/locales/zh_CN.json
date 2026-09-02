@@ -1571,6 +1571,7 @@
       "connect": "连接",
       "quickConnect": "快速连接",
       "openSFTP": "打开 SFTP",
+      "openBrowser": "Open Browser",
       "forwardPort": "转发端口",
       "runScript": "运行脚本",
       "openNotes": "公开说明",
@@ -1960,6 +1961,14 @@
         "connectionLost": "SFTP 连接丢失。请重新连接。",
         "error": "发生错误"
       }
+    },
+    "browser": {
+      "back": "Back",
+      "forward": "Forward",
+      "reload": "Reload",
+      "stop": "Stop",
+      "address": "Address",
+      "addressPlaceholder": "Enter an address"
     },
     "remoteDesktop": {
       "dropOverlay": "将文件拖放到此处以上传至远程服务器",
