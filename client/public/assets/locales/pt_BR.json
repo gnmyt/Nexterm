@@ -1608,8 +1608,16 @@
         "duplicate": "Duplicar",
         "openNotes": "Notas abertas",
         "hibernateSession": "Hibernar",
-        "closeSession": "Desconectar"
-      }
+        "closeSession": "Desconectar",
+        "splitRight": "Split Right",
+        "splitDown": "Split Down",
+        "sendShortcut": "Send Shortcut…",
+        "zoom": "Zoom ({{zoom}}%)",
+        "zoomReset": "Reset Zoom"
+      },
+      "enableSplitView": "Enable Split View",
+      "disableSplitView": "Disable Split View",
+      "sessionMenu": "Session Menu"
     },
     "wol": {
       "successDescription": "Pacote mágico enviado para {{name}}",
@@ -2034,7 +2042,7 @@
       "holdModifier": "Aguarda {{key}}",
       "zoomIn": "Ampliar",
       "zoomOut": "Amenizar o zoom",
-      "zoomReset": "Redefinir o zoom para ajustar à tela (arraste com o botão do meio do mouse para deslocar a imagem)"
+      "zoomReset": "Reset zoom (drag with the middle mouse button to pan)"
     },
     "monitors": {
       "title": "Monitor {{number}}",
