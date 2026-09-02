@@ -275,7 +275,7 @@ const createSSHConnectionForSession = async (sessionId, entry, identity, organiz
         dataSocket.on("error", (err) => {
             logger.error("SSH data socket error", { sessionId, error: err.message });
             SessionManager.markFailed(sessionId, err.message);
-            SessionManager.remove(sessionId, { code: 4017, reason: err.message });
+            SessionManager.remove(sessionId, { code: 4017, reason: "Connection lost" });
         });
 
         let scriptLayer = null;

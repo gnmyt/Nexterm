@@ -125,7 +125,13 @@ static void ssh_apply_pending_resize(nexterm_session_t* session,
         LOG_DEBUG("SSH session %s: resized to %ux%u", session->session_id, cols, rows);
 }
 
-static bool ssh_bridge_poll(nexterm_session_t* session, int data_fd, int ssh_sock,
+typedef enum {
+    SSH_END_CONTINUE = 0,   // keep bridging
+    SSH_END_NORMAL,         // clean end: shell exit or client/backend closed the connection
+    SSH_END_DISCONNECTED,   // abnormal: the SSH transport dropped (e.g. the server restarting)
+} ssh_end_reason_t;
+
+static ssh_end_reason_t ssh_bridge_poll(nexterm_session_t* session, int data_fd, int ssh_sock,
                            LIBSSH2_CHANNEL* channel) {
     char buf[SSH_READ_BUF_SIZE];
     struct pollfd fds[2] = {
@@ -137,40 +143,46 @@ static bool ssh_bridge_poll(nexterm_session_t* session, int data_fd, int ssh_soc
 
     int ret = poll(fds, 2, 200);
     if (ret < 0)
-        return errno == EINTR;
+        return errno == EINTR ? SSH_END_CONTINUE : SSH_END_DISCONNECTED;
     if (ret == 0)
-        return true;
+        return SSH_END_CONTINUE;
 
     if (fds[0].revents & POLLIN) {
         ssize_t n = read(data_fd, buf, sizeof(buf));
-        if (n <= 0) return false;
-        if (ssh_write_to_channel(channel, buf, (size_t)n) != 0) return false;
+        if (n <= 0) return SSH_END_NORMAL;                                   // backend/client closed the data connection
+        if (ssh_write_to_channel(channel, buf, (size_t)n) != 0) return SSH_END_DISCONNECTED;
     }
 
     if ((fds[1].revents & POLLIN)
             && ssh_read_channel_to_fd(channel, data_fd) != 0)
-        return false;
+        return SSH_END_DISCONNECTED;                                         // SSH channel read failed
+
+    // Check the SSH transport hang-up before channel-EOF: a dropped transport
+    // (server restart / network loss) must not be misread as a clean shell exit.
+    if (fds[1].revents & (POLLERR | POLLHUP)) {
+        ssh_drain_channel(channel, data_fd);
+        return SSH_END_DISCONNECTED;
+    }
 
     if (fds[0].revents & (POLLERR | POLLHUP))
-        return false;
+        return SSH_END_NORMAL;                                               // client-side data connection gone
 
     if (libssh2_channel_eof(channel)) {
         ssh_drain_channel(channel, data_fd);
-        return false;
+        return SSH_END_NORMAL;                                               // normal shell exit
     }
 
-    if (fds[1].revents & (POLLERR | POLLHUP)) {
-        ssh_drain_channel(channel, data_fd);
-        return false;
-    }
-
-    return true;
+    return SSH_END_CONTINUE;
 }
 
-static void ssh_bridge_data(const nexterm_session_t* session, int data_fd,
+static ssh_end_reason_t ssh_bridge_data(nexterm_session_t* session, int data_fd,
                             LIBSSH2_CHANNEL* channel, int ssh_sock) {
-    while (session->state == SESSION_STATE_ACTIVE
-            && ssh_bridge_poll(session, data_fd, ssh_sock, channel));
+    ssh_end_reason_t reason = SSH_END_NORMAL;
+    while (session->state == SESSION_STATE_ACTIVE) {
+        ssh_end_reason_t r = ssh_bridge_poll(session, data_fd, ssh_sock, channel);
+        if (r != SSH_END_CONTINUE) { reason = r; break; }
+    }
+    return reason;
 }
 
 static void* ssh_session_thread(void* arg) {
@@ -182,6 +194,7 @@ static void* ssh_session_thread(void* arg) {
     LIBSSH2_SESSION* ssh_session = NULL;
     LIBSSH2_CHANNEL* channel = NULL;
     jump_chain_t jump_chain = {0};
+    ssh_end_reason_t end_reason = SSH_END_NORMAL;
 
     session->state = SESSION_STATE_CONNECTING;
 
@@ -255,9 +268,10 @@ static void* ssh_session_thread(void* arg) {
     LOG_INFO("SSH session %s active (target=%s:%d, user=%s)",
              session->session_id, session->host, session->port, username);
 
-    ssh_bridge_data(session, data_fd, channel, ssh_sock);
+    end_reason = ssh_bridge_data(session, data_fd, channel, ssh_sock);
 
-    LOG_INFO("SSH session %s ending", session->session_id);
+    LOG_INFO("SSH session %s ending (reason=%s)", session->session_id,
+        end_reason == SSH_END_DISCONNECTED ? "disconnected" : "normal");
 
 cleanup:
     session->ssh_session = NULL;
@@ -266,12 +280,14 @@ cleanup:
 
     nexterm_ssh_full_cleanup(ssh_session, channel, ssh_sock, &jump_chain, "Session ended");
 
+    char sid[MAX_SESSION_ID_LEN];
+    snprintf(sid, sizeof(sid), "%s", session->session_id);
+    nexterm_cp_send_session_closed(cp, sid,
+        end_reason == SSH_END_DISCONNECTED ? "connection lost" : "session ended");
+
     if (data_fd >= 0)
         close(data_fd);
 
-    char sid[MAX_SESSION_ID_LEN];
-    snprintf(sid, sizeof(sid), "%s", session->session_id);
-    nexterm_cp_send_session_closed(cp, sid, "session ended");
     nexterm_sm_finish(&g_session_manager, sid);
 
     free(args);
