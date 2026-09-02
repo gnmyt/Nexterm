@@ -30,6 +30,10 @@ overrides:
       - libogg0
       - libvncclient1 | libvncserver1
       - libfreerdp3-3 | libfreerdp-client3-3
+    recommends:
+      - libwebkitgtk-6.0-4
+      - libgtk-4-1
+      - tigervnc-standalone-server
   rpm:
     depends:
       - openssl-libs
@@ -45,6 +49,10 @@ overrides:
       - libogg
       - libvncserver
       - freerdp-libs
+    recommends:
+      - webkitgtk6.0
+      - gtk4
+      - tigervnc-server
 
 contents:
   - src: stage/engine/nexterm-engine
@@ -54,6 +62,11 @@ contents:
   - src: /usr/lib/nexterm-engine/nexterm-engine
     dst: /usr/bin/nexterm-engine
     type: symlink
+
+  - src: stage/engine/nexterm-webview
+    dst: /usr/lib/nexterm-engine/nexterm-webview
+    file_info:
+      mode: 0755
 
   - src: stage/engine/lib/
     dst: /usr/lib/nexterm-engine/
