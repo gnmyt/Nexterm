@@ -1608,8 +1608,16 @@
         "duplicate": "مكررة",
         "openNotes": "فتح الملاحظات",
         "hibernateSession": "السبات",
-        "closeSession": "قطع الاتصال"
-      }
+        "closeSession": "قطع الاتصال",
+        "splitRight": "Split Right",
+        "splitDown": "Split Down",
+        "sendShortcut": "Send Shortcut…",
+        "zoom": "Zoom ({{zoom}}%)",
+        "zoomReset": "Reset Zoom"
+      },
+      "enableSplitView": "Enable Split View",
+      "disableSplitView": "Disable Split View",
+      "sessionMenu": "Session Menu"
     },
     "wol": {
       "successDescription": "الحزمة السحرية المرسلة إلى {{name}}",
@@ -2034,7 +2042,7 @@
       "holdModifier": "انتظر {{key}}",
       "zoomIn": "تكبير الصورة",
       "zoomOut": "تصغير العرض",
-      "zoomReset": "إعادة ضبط التكبير/التصغير لملء الشاشة (اسحب باستخدام زر الفأرة الأوسط للتحريك)"
+      "zoomReset": "Reset zoom (drag with the middle mouse button to pan)"
     },
     "monitors": {
       "title": "شاشة {{number}}",
