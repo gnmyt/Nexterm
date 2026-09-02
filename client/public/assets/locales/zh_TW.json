@@ -1608,8 +1608,16 @@
         "duplicate": "重複",
         "openNotes": "開啟筆記",
         "hibernateSession": "冬眠",
-        "closeSession": "斷開"
-      }
+        "closeSession": "斷開",
+        "splitRight": "Split Right",
+        "splitDown": "Split Down",
+        "sendShortcut": "Send Shortcut…",
+        "zoom": "Zoom ({{zoom}}%)",
+        "zoomReset": "Reset Zoom"
+      },
+      "enableSplitView": "Enable Split View",
+      "disableSplitView": "Disable Split View",
+      "sessionMenu": "Session Menu"
     },
     "wol": {
       "successDescription": "魔術封包已傳送到 {{name}}",
@@ -2034,7 +2042,7 @@
       "holdModifier": "暫停 {{key}}",
       "zoomIn": "放大",
       "zoomOut": "縮小",
-      "zoomReset": "將縮放比例重設為「自動適應」（按住滑鼠中鍵拖曳以平移畫面）"
+      "zoomReset": "Reset zoom (drag with the middle mouse button to pan)"
     },
     "monitors": {
       "title": "監視器 {{number}}",
