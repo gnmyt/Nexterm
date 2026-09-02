@@ -1571,6 +1571,7 @@
       "connect": "Conectar",
       "quickConnect": "Conexão Rápida",
       "openSFTP": "Abrir SFTP",
+      "openBrowser": "Open Browser",
       "forwardPort": "Tunelar Porta",
       "runScript": "Executar Script",
       "openNotes": "Notas abertas",
@@ -1960,6 +1961,14 @@
         "connectionLost": "Conexão SFTP perdida. Por favor, reconecte-se.",
         "error": "Ocorreu um erro"
       }
+    },
+    "browser": {
+      "back": "Back",
+      "forward": "Forward",
+      "reload": "Reload",
+      "stop": "Stop",
+      "address": "Address",
+      "addressPlaceholder": "Enter an address"
     },
     "remoteDesktop": {
       "dropOverlay": "Arraste os arquivos para fazer o upload para o servidor remoto",
