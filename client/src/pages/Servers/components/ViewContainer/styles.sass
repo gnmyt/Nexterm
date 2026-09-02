@@ -86,38 +86,32 @@
     height: var(--content-height)
 
 .view-layouter
-  &.single
-    .session-renderer
-      &.visible
-        opacity: 1
-        pointer-events: auto
-
-      &.hidden
-        opacity: 0
-        pointer-events: none
-
-  &:not(.single)
-    display: flex
-    flex-direction: column
-    gap: 0
+  &.split
     background-color: colors.$darker-gray
 
     @media (max-width: breakpoints.$mobile)
       .session-renderer
-        position: absolute !important
         top: 0 !important
         left: 0 !important
         width: 100% !important
         height: 100% !important
 
+        &:not(.active)
+          opacity: 0
+          pointer-events: none
+
   &.resizing
     .session-renderer
       pointer-events: none
 
-.grid-row
-  display: flex
-  gap: 0
-  overflow: hidden
+    *
+      user-select: none !important
+
+    &.resizing-horizontal, &.resizing-horizontal *
+      cursor: col-resize !important
+
+    &.resizing-vertical, &.resizing-vertical *
+      cursor: row-resize !important
 
 .session-renderer
   background-color: colors.$terminal
@@ -135,53 +129,36 @@
     opacity: 0
     pointer-events: none
 
-.grid-resizer
-  background: colors.$gray
-  transition: opacity 0.2s ease
-  user-select: none
-  flex-shrink: 0
-  touch-action: none
+.layout-sash
+  position: absolute
+  z-index: 10
+  background-color: colors.$gray
   opacity: 0.1
+  user-select: none
+  touch-action: none
+  transition: opacity 0.15s ease, background-color 0.15s ease
+
+  &::before
+    content: ""
+    position: absolute
+    inset: -4px
 
   @media (max-width: breakpoints.$tablet)
-    &.vertical
-      width: 12px !important
-      margin-left: -6px
-
-    &.horizontal
-      height: 12px !important
-      margin-top: -6px
+    &::before
+      inset: -6px
 
   @media (max-width: breakpoints.$mobile)
     display: none
 
+  &.columns
+    cursor: col-resize
+
+  &.rows
+    cursor: row-resize
+
   &:hover
     opacity: 0.6
 
-  &:active, .view-layouter.resizing &
+  .view-layouter.resizing &
     opacity: 1
-
-  &.vertical
-    cursor: col-resize
-
-  &.horizontal
-    cursor: row-resize
-
-.view-layouter.resizing
-  *
-    user-select: none !important
-
-  .grid-resizer
-    pointer-events: auto !important
-
-  &.resizing-vertical
-    cursor: col-resize !important
-
-    *
-      cursor: col-resize !important
-
-  &.resizing-horizontal
-    cursor: row-resize !important
-
-    *
-      cursor: row-resize !important
+    background-color: colors.$primary

@@ -1608,8 +1608,12 @@
         "duplicate": "Duplicate",
         "openNotes": "Open Notes",
         "hibernateSession": "Hibernate",
-        "closeSession": "Disconnect"
-      }
+        "closeSession": "Disconnect",
+        "splitRight": "Split Right",
+        "splitDown": "Split Down"
+      },
+      "enableSplitView": "Enable Split View",
+      "disableSplitView": "Disable Split View"
     },
     "wol": {
       "successDescription": "Magic packet sent to {{name}}",

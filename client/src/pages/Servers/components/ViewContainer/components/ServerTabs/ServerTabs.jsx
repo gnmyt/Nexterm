@@ -1,7 +1,7 @@
 import { useRef, useState, useEffect, useCallback, useContext } from "react";
 import { useTranslation } from "react-i18next";
 import Icon from "@mdi/react";
-import { mdiClose, mdiViewSplitVertical, mdiChevronLeft, mdiChevronRight, mdiSleep, mdiOpenInNew, mdiShareVariant, mdiLinkVariant, mdiPencil, mdiEye, mdiCloseCircle, mdiContentDuplicate, mdiNoteEditOutline } from "@mdi/js";
+import { mdiClose, mdiViewSplitVertical, mdiViewSplitHorizontal, mdiChevronLeft, mdiChevronRight, mdiSleep, mdiOpenInNew, mdiShareVariant, mdiLinkVariant, mdiPencil, mdiEye, mdiCloseCircle, mdiContentDuplicate, mdiNoteEditOutline } from "@mdi/js";
 import { useDrag, useDrop } from "react-dnd";
 import TerminalActionsMenu from "../TerminalActionsMenu";
 import { ContextMenu, ContextMenuItem, ContextMenuSeparator, useContextMenu } from "@/common/components/ContextMenu";
@@ -23,6 +23,8 @@ const DraggableTab = ({
     hibernateSession,
     duplicateSession,
     openNotes,
+    onSplitSession,
+    canSplit,
     index,
     moveTab,
     progress = 0,
@@ -181,6 +183,21 @@ const DraggableTab = ({
                         <ContextMenuSeparator />
                     </>
                 )}
+                {canSplit && (
+                    <>
+                        <ContextMenuItem
+                            icon={mdiViewSplitVertical}
+                            label={t("servers.tabs.contextMenu.splitRight")}
+                            onClick={() => onSplitSession(session.id, "right")}
+                        />
+                        <ContextMenuItem
+                            icon={mdiViewSplitHorizontal}
+                            label={t("servers.tabs.contextMenu.splitDown")}
+                            onClick={() => onSplitSession(session.id, "bottom")}
+                        />
+                        <ContextMenuSeparator />
+                    </>
+                )}
                 {canOpenNotes && (
                     <ContextMenuItem
                         icon={mdiNoteEditOutline}
@@ -223,8 +240,8 @@ export const ServerTabs = ({
     openNotes,
     layoutMode,
     onToggleSplit,
+    onSplitSession,
     orderRef,
-    onTabOrderChange,
     onBroadcastToggle,
     onSnippetSelected,
     broadcastEnabled,
@@ -237,6 +254,7 @@ export const ServerTabs = ({
 }) => {
 
     const tabsRef = useRef(null);
+    const { t } = useTranslation();
 
     const [tabOrder, setTabOrder] = useState([]);
     const [showLeftArrow, setShowLeftArrow] = useState(false);
@@ -265,7 +283,6 @@ export const ServerTabs = ({
             setTabOrder(newOrder);
 
             if (orderRef) orderRef.current = newOrder;
-            if (onTabOrderChange) onTabOrderChange(newOrder);
         }
     }, [activeSessions, tabOrder, orderRef]);
 
@@ -338,7 +355,6 @@ export const ServerTabs = ({
         setTabOrder(newOrder);
 
         if (orderRef) orderRef.current = newOrder;
-        if (onTabOrderChange) onTabOrderChange(newOrder);
     };
 
     const orderedSessions = tabOrder.map(sessionId => activeSessions.find(session => session.id === sessionId)).filter(Boolean);
@@ -358,7 +374,7 @@ export const ServerTabs = ({
                     activeSession={activeSession}
                 />
                 <Icon path={mdiViewSplitVertical} className={`layout-btn ${layoutMode !== "single" ? "active" : ""}`}
-                    title={layoutMode === "single" ? "Enable Split View" : "Disable Split View"}
+                    title={layoutMode === "single" ? t("servers.tabs.enableSplitView") : t("servers.tabs.disableSplitView")}
                     onClick={onToggleSplit} />
             </div>
             <div className="tabs-container">
@@ -376,6 +392,8 @@ export const ServerTabs = ({
                                 activeSessionId={activeSessionId} setActiveSessionId={setActiveSessionId}
                                 closeSession={closeSession} hibernateSession={hibernateSession} duplicateSession={duplicateSession}
                                 openNotes={openNotes}
+                                onSplitSession={onSplitSession}
+                                canSplit={activeSessions.length > 1 && session.id !== activeSessionId}
                                 progress={sessionProgress[session.id] || 0}
                                 pageInfo={sessionPageInfo[session.id] || null} />
                         );

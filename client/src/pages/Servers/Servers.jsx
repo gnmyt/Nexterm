@@ -11,6 +11,7 @@ import ConnectionReasonDialog from "@/pages/Servers/components/ConnectionReasonD
 import DirectConnectDialog from "@/pages/Servers/components/DirectConnectDialog";
 import FileEditorWindow from "@/common/components/FileEditorWindow";
 import FilePreviewWindow from "@/common/components/FilePreviewWindow";
+import { useSessionLayout } from "@/pages/Servers/components/ViewContainer/hooks/useSessionLayout.js";
 import { useActiveSessions } from "@/common/contexts/SessionContext.jsx";
 import { useLiveSessions } from "@/common/contexts/LiveSessionContext.jsx";
 import { useLocation, useNavigate } from "react-router-dom";
@@ -29,6 +30,7 @@ export const Servers = () => {
     const [connectionReasonDialogOpen, setConnectionReasonDialogOpen] = useState(false);
     const [directConnectDialogOpen, setDirectConnectDialogOpen] = useState(false);
     const [directConnectServer, setDirectConnectServer] = useState(null);
+    const [directConnectPlacement, setDirectConnectPlacement] = useState(null);
     const [pendingConnection, setPendingConnection] = useState(null);
     const [openFileEditors, setOpenFileEditors] = useState([]);
     const [mobileServerListOpen, setMobileServerListOpen] = useState(false);
@@ -41,6 +43,7 @@ export const Servers = () => {
     const { liveSessions } = useLiveSessions();
     const { getServerById, servers } = useContext(ServerContext);
     const { registerHandler } = useContext(StateStreamContext);
+    const sessionLayout = useSessionLayout();
     const location = useLocation();
     const navigate = useNavigate();
 
@@ -152,21 +155,28 @@ export const Servers = () => {
         return findOrganizationForServer(parseInt(serverId), servers)?.requireConnectionReason || false;
     };
 
-    const connectToServer = async (serverId, identity, overrideRenderer) => {
+    const connectToServer = async (serverId, identity, overrideRenderer, placement = null) => {
         const server = getServerById(serverId);
 
         const hibernated = hibernatedSessions.find(s => s.server.id === serverId && s.identity === identity?.id);
         if (hibernated) {
+            sessionLayout.placeSession(hibernated.id, placement);
             resumeConnection(hibernated.id);
             return;
         }
 
         if (server && !canConnectWithoutPrompt(server)) {
-            openDirectConnect(server);
+            openDirectConnect(server, placement);
             return;
         }
 
-        initiateConnection({ server: { ...server, renderer: overrideRenderer || server.renderer }, identity });
+        initiateConnection({ server: { ...server, renderer: overrideRenderer || server.renderer }, identity, placement });
+    };
+
+    const connectFromDrop = (serverId, placement) => {
+        const server = getServerById(serverId);
+        if (!server) return;
+        connectToServer(server.id, server.identities?.[0], undefined, placement);
     };
 
     useEffect(() => {
@@ -215,7 +225,8 @@ export const Servers = () => {
         initiateConnection({ server: getServerById(server), identity, type: "web" });
     };
 
-    const performConnection = async (server, identity, connectionReason = null, type = null, directIdentity = null, scriptId = null, scriptName = null) => {
+    const performConnection = async (options, connectionReason = null) => {
+        const { server, identity = null, type = null, directIdentity = null, scriptId = null, scriptName = null, placement = null } = options;
         try {
             const payload = {
                 entryId: server.id,
@@ -244,6 +255,7 @@ export const Servers = () => {
                 scriptName: scriptName || undefined,
             };
 
+            sessionLayout.placeSession(session.sessionId, placement);
             setActiveSessions(prevSessions => [...prevSessions, sessionData]);
             setActiveSessionId(session.sessionId);
         } catch (error) {
@@ -261,15 +273,7 @@ export const Servers = () => {
             return;
         }
 
-        void performConnection(
-            options.server,
-            options.identity ?? null,
-            null,
-            options.type ?? null,
-            options.directIdentity ?? null,
-            options.scriptId ?? null,
-            options.scriptName ?? null,
-        );
+        void performConnection(options);
     };
 
     const runScript = async (serverId, identityId, scriptId) => {
@@ -296,15 +300,7 @@ export const Servers = () => {
 
     const handleConnectionReasonProvided = (reason) => {
         if (pendingConnection) {
-            void performConnection(
-                pendingConnection.server,
-                pendingConnection.identity ?? null,
-                reason,
-                pendingConnection.type ?? null,
-                pendingConnection.directIdentity ?? null,
-                pendingConnection.scriptId ?? null,
-                pendingConnection.scriptName ?? null,
-            );
+            void performConnection(pendingConnection, reason);
             setPendingConnection(null);
         }
         setConnectionReasonDialogOpen(false);
@@ -368,11 +364,6 @@ export const Servers = () => {
     const hibernateSession = async (sessionId) => {
         try {
             await postRequest(`/connections/${sessionId}/hibernate`);
-
-            if (sessionId === activeSessionId) {
-                const otherSessions = activeSessions.filter(s => s.id !== sessionId);
-                setActiveSessionId(otherSessions.at(-1)?.id || null);
-            }
         } catch (error) {
             console.error("Failed to hibernate session", error);
         }
@@ -456,13 +447,14 @@ export const Servers = () => {
         setCurrentFolderId(null);
     };
 
-    const openDirectConnect = (server) => {
+    const openDirectConnect = (server, placement = null) => {
         if (!requiresIdentity(server)) {
-            initiateConnection({ server });
+            initiateConnection({ server, placement });
             return;
         }
 
         setDirectConnectServer(server);
+        setDirectConnectPlacement(placement);
         setDirectConnectDialogOpen(true);
     };
 
@@ -482,10 +474,11 @@ export const Servers = () => {
     const closeDirectConnectDialog = () => {
         setDirectConnectDialogOpen(false);
         setDirectConnectServer(null);
+        setDirectConnectPlacement(null);
     };
 
     const handleDirectConnect = (directIdentity) => {
-        initiateConnection({ server: directConnectServer, directIdentity });
+        initiateConnection({ server: directConnectServer, directIdentity, placement: directConnectPlacement });
     };
 
     useEffect(() => {
@@ -570,7 +563,9 @@ export const Servers = () => {
                                markSessionErrored={markSessionErrored}
                                getSessionError={getSessionError}
                                setOpenFileEditors={setOpenFileEditors}
-                               openTerminalFromFileManager={openTerminalFromFileManager} />}
+                               openTerminalFromFileManager={openTerminalFromFileManager}
+                               sessionLayout={sessionLayout}
+                               connectFromDrop={connectFromDrop} />}
             {openFileEditors.map((editor, index) => (
                 editor.type === "preview" ? (
                     <FilePreviewWindow

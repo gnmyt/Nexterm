@@ -449,6 +449,10 @@ const XtermRenderer = ({ session, disconnectFromServer, markSessionErrored, getS
         };
 
         window.addEventListener("resize", handleResize);
+        const resizeObserver = new ResizeObserver(() => {
+            if (ws.readyState === ws.OPEN) handleResize();
+        });
+        resizeObserver.observe(ref.current);
 
         const applyFontSize = (size) => {
             const next = clampFontSize(size);
@@ -772,6 +776,7 @@ const XtermRenderer = ({ session, disconnectFromServer, markSessionErrored, getS
                 registerTerminalRef(session.id, null);
             }
             window.removeEventListener("resize", handleResize);
+            resizeObserver.disconnect();
             ref.current?.removeEventListener('paste', handleNativePaste);
             ref.current?.removeEventListener("wheel", handleWheelZoom, { capture: true });
             if (ws) {
