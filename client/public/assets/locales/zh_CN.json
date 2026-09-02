@@ -1608,8 +1608,16 @@
         "duplicate": "复制",
         "openNotes": "公开说明",
         "hibernateSession": "休眠",
-        "closeSession": "断开连接"
-      }
+        "closeSession": "断开连接",
+        "splitRight": "Split Right",
+        "splitDown": "Split Down",
+        "sendShortcut": "Send Shortcut…",
+        "zoom": "Zoom ({{zoom}}%)",
+        "zoomReset": "Reset Zoom"
+      },
+      "enableSplitView": "Enable Split View",
+      "disableSplitView": "Disable Split View",
+      "sessionMenu": "Session Menu"
     },
     "wol": {
       "successDescription": "魔法数据包发送至 {{name}}",
@@ -2034,7 +2042,7 @@
       "holdModifier": "保持 {{key}}",
       "zoomIn": "放大",
       "zoomOut": "缩小",
-      "zoomReset": "将缩放比例重置为“适应视图”（按住鼠标中键拖动可平移）"
+      "zoomReset": "Reset zoom (drag with the middle mouse button to pan)"
     },
     "monitors": {
       "title": "显示器 {{number}}",
