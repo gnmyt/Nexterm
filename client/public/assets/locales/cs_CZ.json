@@ -1608,8 +1608,16 @@
         "duplicate": "Duplikát",
         "openNotes": "Otevřené poznámky",
         "hibernateSession": "Hibernace",
-        "closeSession": "Odpojení"
-      }
+        "closeSession": "Odpojení",
+        "splitRight": "Split Right",
+        "splitDown": "Split Down",
+        "sendShortcut": "Send Shortcut…",
+        "zoom": "Zoom ({{zoom}}%)",
+        "zoomReset": "Reset Zoom"
+      },
+      "enableSplitView": "Enable Split View",
+      "disableSplitView": "Disable Split View",
+      "sessionMenu": "Session Menu"
     },
     "wol": {
       "successDescription": "Magic packet odeslán na {{name}}",
@@ -2034,7 +2042,7 @@
       "holdModifier": "Podržte {{key}}",
       "zoomIn": "Přiblížit",
       "zoomOut": "Zmenšit zobrazení",
-      "zoomReset": "Obnovit přizpůsobení velikosti (posunem pomocí prostředního tlačítka myši)"
+      "zoomReset": "Reset zoom (drag with the middle mouse button to pan)"
     },
     "monitors": {
       "title": "Monitor {{number}}",
