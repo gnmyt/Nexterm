@@ -14,7 +14,7 @@ const { SessionType } = require("./generated/control_plane_generated");
 const controlPlane = require("./controlPlane/ControlPlaneServer");
 const { isRecordingEnabled } = require("../utils/recordingService");
 const EngineSftpClient = require("./EngineSftpClient");
-const { buildPveQemuParams, buildRdpParams, buildVncParams, buildDemoParams } = require("./guacParamBuilders");
+const { buildPveQemuParams, buildRdpParams, buildVncParams, buildWebParams, buildDemoParams } = require("./guacParamBuilders");
 
 const GUAC_PROTOCOLS = {
     rdp: { sessionType: SessionType.RDP, defaultPort: 3389 },
@@ -89,16 +89,15 @@ const resolveJumpHosts = async (entry) => {
     return jumpHosts;
 };
 
-const openEngineSession = async (sessionId, sessionType, host, port, params, jumpHosts = [], engineId) => {
+const openEngineSessionWithResult = async (sessionId, sessionType, host, port, params, jumpHosts = [], engineId) => {
     const dataSocketPromise = controlPlane.waitForDataConnection(sessionId);
-    try {
-        await controlPlane.openSession(sessionId, sessionType, host, port, params, jumpHosts, engineId || null);
-    } catch (err) {
-        dataSocketPromise.catch(() => {});
-        throw err;
-    }
-    return dataSocketPromise;
+    dataSocketPromise.catch(() => {});
+
+    const result = await controlPlane.openSession(sessionId, sessionType, host, port, params, jumpHosts, engineId || null);
+    return { dataSocket: await dataSocketPromise, result };
 };
+
+const openEngineSession = async (...args) => (await openEngineSessionWithResult(...args)).dataSocket;
 
 const createConnectionForSession = async (sessionId, accountId) => {
     const session = requireSession(sessionId);
@@ -120,6 +119,8 @@ const createConnectionForSession = async (sessionId, accountId) => {
         script = await getScript(accountId, scriptId, null, memberships.map(m => m.organizationId));
         if (!script) throw new Error("Script not found");
     }
+
+    if (type === "web") return prepareWebSession(sessionId, entry, identity, organizationId);
 
     switch (protocol) {
         case "ssh": return createSSHConnectionForSession(sessionId, entry, identity, organizationId, script);
@@ -404,6 +405,67 @@ const createPveLxcConnectionForSession = async (sessionId, entry, organizationId
     });
 
     logger.info("PVE LXC connected via engine", { sessionId, vmid });
+    return { success: true };
+}
+
+const prepareWebSession = async (sessionId, entry, identity, organizationId) => {
+    const session = requireSession(sessionId);
+    requireEngine();
+
+    const credentials = await resolveCredentials(identity);
+    const { host, port } = getHostPort(entry);
+    const params = buildSSHParams(identity, credentials);
+    const jumpHosts = await resolveJumpHosts(entry);
+
+    const { dataSocket, result } = await openEngineSessionWithResult(
+        sessionId, SessionType.Web, host, port, params, jumpHosts, entry.config?.engineId
+    );
+
+    let vncPort = null;
+    try {
+        vncPort = JSON.parse(result?.metadata || "{}").vncPort;
+    } catch {
+        vncPort = null;
+    }
+
+    if (!vncPort) {
+        dataSocket.destroy();
+        throw new Error("Engine did not report a browser display port");
+    }
+
+    const recordingEnabled = await isRecordingEnabled(organizationId);
+    if (recordingEnabled && session.auditLogId) {
+        controlPlane.registerRecordingSession(sessionId, session.auditLogId);
+    }
+
+    const masterClient = new GuacdClient({
+        sessionId,
+        connectionSettings: {
+            connection: { type: "vnc", width: 1280, height: 720, dpi: 96, ...buildWebParams(vncPort) },
+            enableAudio: false,
+        },
+        recordingEnabled,
+        auditLogId: session.auditLogId,
+        existingSocket: dataSocket,
+    });
+
+    await new Promise((resolve, reject) => {
+        const timeout = setTimeout(() => reject(new Error("Master handshake timeout")), 15000);
+        masterClient.onReadyCallback = (connectionId) => { clearTimeout(timeout); resolve(connectionId); };
+        masterClient.onCloseCallback = (reason) => { clearTimeout(timeout); reject(new Error("Master connection failed: " + reason)); };
+        masterClient.connect();
+    });
+
+    SessionManager.setGuacReady(sessionId);
+
+    SessionManager.setConnection(sessionId, {
+        guacdClient: masterClient,
+        dataSocket,
+        type: "guac",
+        auditLogId: session.auditLogId,
+    });
+
+    logger.info("Web session prepared", { sessionId, sshHost: host, sshPort: port, vncPort });
     return { success: true };
 }
 
