@@ -55,7 +55,7 @@ ensure_guacd_built() {
 }
 
 ensure_libvnc_built() {
-    [ -f "$LIBVNC_LIB/libvncclient.so.1" ] && return 0
+    [[ -f "$LIBVNC_LIB/libvncclient.so.1" ]] && return 0
 
     echo "[engine] Building patched libvncclient (one time)..."
     if ! REPO_ROOT="$PROJECT_ROOT" sh "$SCRIPT_DIR/build-engine-release.sh" libvnc \
@@ -90,11 +90,11 @@ start_engine() {
 
     export LD_LIBRARY_PATH="$GUACD_SRC/dist/lib:$GUACD_SRC/dist/lib/freerdp3:$LD_LIBRARY_PATH"
 
-    if [ -f "$LIBVNC_LIB/libvncclient.so.1" ]; then
+    if [[ -f "$LIBVNC_LIB/libvncclient.so.1" ]]; then
         export LD_LIBRARY_PATH="$LIBVNC_LIB:$LD_LIBRARY_PATH"
     fi
 
-    if [ -x "$ENGINE_BUILD/nexterm-webview" ]; then
+    if [[ -x "$ENGINE_BUILD/nexterm-webview" ]]; then
         export NEXTERM_WEBVIEW_BIN="${NEXTERM_WEBVIEW_BIN:-$ENGINE_BUILD/nexterm-webview}"
     fi
 

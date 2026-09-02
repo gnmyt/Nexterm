@@ -103,13 +103,15 @@ const createSession = async (accountId, entryId, identityId, connectionReason, t
         userAgent,
     });
 
+    const renderer = type === "sftp" || type === "web" ? type : entry.renderer;
+
     const configuration = {
         identityId: identity ? identity.id : null,
         type: type || null,
         directIdentity: directIdentity || null,
         scriptId: scriptId || null,
         startPath: startPath || null,
-        renderer: type === "sftp" ? "sftp" : type === "web" ? "web" : entry.renderer,
+        renderer,
     };
 
     const session = SessionManager.create(accountId, entryId, configuration, connectionReason, tabId, browserId, auditLogId, entry.organizationId);

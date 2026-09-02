@@ -34,34 +34,35 @@ RUN sh scripts/build-engine-release.sh engine
 FROM alpine:3.22 AS mesa-builder
 
 RUN apk add --no-cache \
-    build-base meson ninja python3 py3-mako py3-packaging py3-yaml flex bison \
-    libdrm-dev expat-dev zlib-dev libxext-dev libxfixes-dev libxdamage-dev \
-    libxshmfence-dev libxrandr-dev libxxf86vm-dev libx11-dev xorgproto \
-    zstd-dev
+    bison build-base expat-dev flex libdrm-dev libx11-dev libxdamage-dev \
+    libxext-dev libxfixes-dev libxrandr-dev libxshmfence-dev libxxf86vm-dev \
+    meson ninja py3-mako py3-packaging py3-yaml python3 xorgproto \
+    zlib-dev zstd-dev
 
 ARG MESA_VERSION=25.1.9
 ARG MESA_SHA256=412df33a1bb3c785ed698555a3972118a37c458e7accf6ae53f4bb87b3db454a
 
-RUN wget -q https://archive.mesa3d.org/mesa-${MESA_VERSION}.tar.xz \
+RUN wget -q "https://archive.mesa3d.org/mesa-${MESA_VERSION}.tar.xz" \
     && echo "${MESA_SHA256}  mesa-${MESA_VERSION}.tar.xz" | sha256sum -c - \
-    && tar xf mesa-${MESA_VERSION}.tar.xz
+    && tar xf "mesa-${MESA_VERSION}.tar.xz"
 
-RUN cd mesa-${MESA_VERSION} \
-    && meson setup build \
-        --prefix=/usr/local \
-        --buildtype=release \
-        -Dllvm=disabled \
-        -Dgallium-drivers=softpipe \
-        -Dvulkan-drivers= \
-        -Dplatforms=x11 \
-        -Dglx=dri \
-        -Degl=enabled \
-        -Dgles1=disabled \
-        -Dgles2=enabled \
-        -Dgbm=enabled \
-        -Dshared-glapi=enabled \
-        -Dgallium-extra-hud=false \
-        -Dbuild-tests=false \
+WORKDIR /mesa-${MESA_VERSION}
+
+RUN meson setup build \
+    --prefix=/usr/local \
+    --buildtype=release \
+    -Dllvm=disabled \
+    -Dgallium-drivers=softpipe \
+    -Dvulkan-drivers= \
+    -Dplatforms=x11 \
+    -Dglx=dri \
+    -Degl=enabled \
+    -Dgles1=disabled \
+    -Dgles2=enabled \
+    -Dgbm=enabled \
+    -Dshared-glapi=enabled \
+    -Dgallium-extra-hud=false \
+    -Dbuild-tests=false \
     && ninja -C build \
     && ninja -C build install \
     && rm -rf /usr/local/lib/pkgconfig /usr/local/include /usr/local/share
