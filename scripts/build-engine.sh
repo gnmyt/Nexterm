@@ -7,6 +7,7 @@ PROJECT_ROOT="$(dirname "$SCRIPT_DIR")"
 ENGINE_SRC="$PROJECT_ROOT/engine"
 ENGINE_BUILD="$ENGINE_SRC/build"
 GUACD_SRC="$PROJECT_ROOT/vendor/guacamole-server"
+LIBVNC_LIB="$PROJECT_ROOT/vendor/libvncserver/dist/lib"
 ENGINE_PID=""
 
 ENGINE_LOG_LEVEL=${LOG_LEVEL:-info}
@@ -53,10 +54,25 @@ ensure_guacd_built() {
     fi
 }
 
+ensure_libvnc_built() {
+    [ -f "$LIBVNC_LIB/libvncclient.so.1" ] && return 0
+
+    echo "[engine] Building patched libvncclient (one time)..."
+    if ! REPO_ROOT="$PROJECT_ROOT" sh "$SCRIPT_DIR/build-engine-release.sh" libvnc \
+            > "$PROJECT_ROOT/vendor/libvncserver-build.log" 2>&1; then
+        echo "[engine] libvncclient build failed, using the system library instead."
+        echo "[engine] Remote displays will not resize on TigerVNC 1.14+."
+        echo "[engine] See vendor/libvncserver-build.log"
+        return 0
+    fi
+    echo "[engine] Patched libvncclient built"
+}
+
 build() {
     echo "[engine] Building nexterm-engine..."
 
     ensure_guacd_built
+    ensure_libvnc_built
 
     mkdir -p "$ENGINE_BUILD"
     cd "$ENGINE_BUILD"
@@ -73,6 +89,14 @@ start_engine() {
     echo "[engine] Starting (log level: $ENGINE_LOG_LEVEL, server: $ENGINE_HOST:$ENGINE_PORT)..."
 
     export LD_LIBRARY_PATH="$GUACD_SRC/dist/lib:$GUACD_SRC/dist/lib/freerdp3:$LD_LIBRARY_PATH"
+
+    if [ -f "$LIBVNC_LIB/libvncclient.so.1" ]; then
+        export LD_LIBRARY_PATH="$LIBVNC_LIB:$LD_LIBRARY_PATH"
+    fi
+
+    if [ -x "$ENGINE_BUILD/nexterm-webview" ]; then
+        export NEXTERM_WEBVIEW_BIN="${NEXTERM_WEBVIEW_BIN:-$ENGINE_BUILD/nexterm-webview}"
+    fi
 
     "$ENGINE_BUILD/nexterm-engine" \
         --host "$ENGINE_HOST" \

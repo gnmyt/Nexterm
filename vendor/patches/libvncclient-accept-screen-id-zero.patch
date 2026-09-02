@@ -1,0 +1,13 @@
+Accept an ExtendedDesktopSize screen with ID 0. We don't need this anymore if they push a new update.
+
+--- a/src/libvncclient/rfbclient.c
++++ b/src/libvncclient/rfbclient.c
+@@ -2162,7 +2162,7 @@
+           if (!ReadFromRFBServer(client, ((char *)&screen), sz_rfbExtDesktopScreen)) {
+             return FALSE;
+           }
+-          if (screen.id != 0 && screen.width && screen.height) {
++          if (screen.width && screen.height) {
+             client->screen = screen;
+           } else {
+             invalidScreen = TRUE;
