@@ -1571,6 +1571,7 @@
       "connect": "الاتصال",
       "quickConnect": "التوصيل السريع",
       "openSFTP": "فتح SFTP",
+      "openBrowser": "Open Browser",
       "forwardPort": "المنفذ الأمامي",
       "runScript": "تشغيل البرنامج النصي",
       "openNotes": "فتح الملاحظات",
@@ -1960,6 +1961,14 @@
         "connectionLost": "فُقد اتصال SFTP. الرجاء إعادة الاتصال.",
         "error": "حدث خطأ"
       }
+    },
+    "browser": {
+      "back": "Back",
+      "forward": "Forward",
+      "reload": "Reload",
+      "stop": "Stop",
+      "address": "Address",
+      "addressPlaceholder": "Enter an address"
     },
     "remoteDesktop": {
       "dropOverlay": "اسحب الملفات لتحميلها إلى الخادم البعيد",
