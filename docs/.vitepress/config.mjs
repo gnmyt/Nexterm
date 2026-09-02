@@ -65,9 +65,23 @@ export default defineConfig({
                 items: [
                     { text: "Home", link: "/" },
                     { text: "Screenshots", link: "/screenshots" },
-                    { text: "Install", link: "/installation" },
-                    { text: "SSL/HTTPS", link: "/ssl" },
-                    { text: "Reverse Proxy", link: "/reverse-proxy" },
+                    {
+                        text: "Installation",
+                        collapsed: true,
+                        items: [
+                            { text: "Install", link: "/installation" },
+                            { text: "SSL/HTTPS", link: "/ssl" },
+                            { text: "Reverse Proxy", link: "/reverse-proxy" },
+                        ],
+                    },
+                    {
+                        text: "Settings",
+                        collapsed: true,
+                        items: [
+                            { text: "User Settings", link: "/user-settings" },
+                            { text: "Admin Settings", link: "/admin-settings" },
+                        ],
+                    },
                     {
                         text: "Authentication",
                         collapsed: true,
