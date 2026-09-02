@@ -44,6 +44,9 @@ const GuacamoleRenderer = ({
                                onFullscreenToggle,
                                isShared = false,
                                pinnedMonitor = null,
+                               interceptPaste = true,
+                               sendScancodes = true,
+                               onClientReady = null,
                            }) => {
     const ref = useRef(null);
     const { sessionToken } = useContext(UserContext);
@@ -112,11 +115,18 @@ const GuacamoleRenderer = ({
         return () => registerGuacamoleRef?.(session.id, null);
     }, [session.id, registerGuacamoleRef, clientRef.current]);
 
+    const samplingFor = (scale) => Math.abs(scale - 1) < 0.001 ? "pixelated" : "auto";
+
     const applyDisplayStyles = (el, x, y, scale, width, height) => Object.assign(el.style, {
         position: "absolute", width: width + "px", height: height + "px",
         transform: `translate(${x}px, ${y}px) scale(${scale})`, transformOrigin: "0 0",
-        imageRendering: "crisp-edges", backfaceVisibility: "hidden", willChange: "transform",
+        imageRendering: samplingFor(scale), backfaceVisibility: "hidden", willChange: "transform",
     });
+
+    const snapToDevicePixel = (value) => {
+        const density = window.devicePixelRatio || 1;
+        return Math.round(value * density) / density;
+    };
 
     const clampPan = (pan, visible, scaled) => {
         const limit = Math.max((scaled - visible) / 2, 0);
@@ -149,8 +159,8 @@ const GuacamoleRenderer = ({
         };
 
         offsetRef.current = {
-            x: (cw - mw * scale) / 2 - mx * scale + panRef.current.x,
-            y: (ch - mh * scale) / 2 - my * scale + panRef.current.y,
+            x: snapToDevicePixel((cw - mw * scale) / 2 - mx * scale + panRef.current.x),
+            y: snapToDevicePixel((ch - mh * scale) / 2 - my * scale + panRef.current.y),
         };
 
         applyDisplayStyles(el, offsetRef.current.x, offsetRef.current.y, scale,
@@ -420,7 +430,6 @@ const GuacamoleRenderer = ({
             if (status.state === "granted") {
                 startClipboardPolling();
             } else if (status.state === "prompt") {
-                // Calling readText() triggers the browser permission dialog
                 try {
                     startClipboardPolling(await navigator.clipboard.readText());
                 } catch {
@@ -428,7 +437,6 @@ const GuacamoleRenderer = ({
                 }
             }
         } catch {
-            // permissions API not supported — try readText() directly to prompt
             try {
                 startClipboardPolling(await navigator.clipboard.readText());
             } catch {
@@ -459,10 +467,11 @@ const GuacamoleRenderer = ({
                 uploadFiles(Array.from(e.clipboardData.files));
                 return;
             }
+            if (!interceptPaste) return;
             const text = e.clipboardData?.getData("text");
             if (text) {
                 sendClipboardToServer(text);
-                // After clipboard syncs, send V key to RDP (Ctrl is already held)
+
                 setTimeout(() => {
                     if (clientRef.current) {
                         clientRef.current.sendKeyEvent(1, 0x0076);
@@ -494,6 +503,7 @@ const GuacamoleRenderer = ({
         const tunnelUrl = getWebSocketUrl("/api/ws/guac/", {});
         const tunnel = new Guacamole.WebSocketTunnel(tunnelUrl);
         const client = new Guacamole.Client(tunnel);
+        onClientReady?.(client);
         client.getDisplay().onresize = resizeHandler;
 
         client.onmultimonlayout = (layout) => {
@@ -543,7 +553,7 @@ const GuacamoleRenderer = ({
         clientRef.current = client;
         const display = client.getDisplay().getElement();
         display.style.position = "absolute";
-        display.style.imageRendering = "crisp-edges";
+        display.style.imageRendering = samplingFor(scaleRef.current);
         ref.current.appendChild(display);
 
         client.onaudio = (stream, mimetype) => {
@@ -603,9 +613,8 @@ const GuacamoleRenderer = ({
                 onFullscreenToggleRef.current?.();
                 return false;
             }
-            // Intercept Ctrl+V so the browser fires the paste event
-            // (Guacamole.Keyboard's preventDefault blocks it otherwise)
-            if ((e.ctrlKey || e.metaKey) && (e.key === "v" || e.key === "V")) {
+
+            if (interceptPaste && (e.ctrlKey || e.metaKey) && (e.key === "v" || e.key === "V")) {
                 e.stopImmediatePropagation();
             }
         };
@@ -614,9 +623,9 @@ const GuacamoleRenderer = ({
         const keyboard = new Guacamole.Keyboard(ref.current);
         keyboard.onkeydown = (k, sc) => {
             resumeAudioContext();
-            client.sendKeyEvent(1, k, sc);
+            client.sendKeyEvent(1, k, sendScancodes ? sc : 0);
         };
-        keyboard.onkeyup = (k, sc) => client.sendKeyEvent(0, k, sc);
+        keyboard.onkeyup = (k, sc) => client.sendKeyEvent(0, k, sendScancodes ? sc : 0);
 
         client.onstatechange = (st) => {
             if (isCleaningUp) return;
