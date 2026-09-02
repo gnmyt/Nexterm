@@ -5,6 +5,7 @@ import { useTranslation } from "react-i18next";
 import Icon from "@mdi/react";
 import { mdiLinkOff, mdiAlertCircle } from "@mdi/js";
 import GuacamoleRenderer from "@/pages/Servers/components/ViewContainer/renderer/GuacamoleRenderer.jsx";
+import BrowserRenderer from "@/pages/Servers/components/ViewContainer/renderer/BrowserRenderer.jsx";
 import XtermRenderer from "@/pages/Servers/components/ViewContainer/renderer/XtermRenderer.jsx";
 import Loading from "@/common/components/Loading";
 import { request } from "@/common/utils/RequestUtil";
@@ -62,6 +63,7 @@ export const Share = () => {
     return (
         <div className="share-container">
             {renderer === "guac" && <GuacamoleRenderer session={session} disconnectFromServer={handleDisconnect} registerGuacamoleRef={noop} onFullscreenToggle={fullscreen} isShared />}
+            {renderer === "web" && <BrowserRenderer session={session} disconnectFromServer={handleDisconnect} registerGuacamoleRef={noop} onFullscreenToggle={fullscreen} isShared canControl={!!session.writable} />}
             {renderer === "terminal" && <XtermRenderer session={session} disconnectFromServer={handleDisconnect} registerTerminalRef={noop} broadcastMode={false} terminalRefs={refs} updateProgress={noop} layoutMode="single" onBroadcastToggle={noop} onFullscreenToggle={fullscreen} isShared />}
         </div>
     );

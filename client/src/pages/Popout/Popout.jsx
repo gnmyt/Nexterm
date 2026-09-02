@@ -5,6 +5,7 @@ import { useTranslation } from "react-i18next";
 import { UserContext } from "@/common/contexts/UserContext.jsx";
 import { getRequest } from "@/common/utils/RequestUtil";
 import GuacamoleRenderer from "@/pages/Servers/components/ViewContainer/renderer/GuacamoleRenderer.jsx";
+import BrowserRenderer from "@/pages/Servers/components/ViewContainer/renderer/BrowserRenderer.jsx";
 import XtermRenderer from "@/pages/Servers/components/ViewContainer/renderer/XtermRenderer.jsx";
 import Loading from "@/common/components/Loading";
 import TitleBar from "@/common/components/TitleBar";
@@ -60,6 +61,8 @@ export const Popout = () => {
             {renderer === "guac" && <GuacamoleRenderer session={session} disconnectFromServer={closeWindow}
                                                       registerGuacamoleRef={noop} onFullscreenToggle={fullscreen}
                                                       pinnedMonitor={pinnedMonitor} />}
+            {renderer === "web" && <BrowserRenderer session={session} disconnectFromServer={closeWindow}
+                                                    registerGuacamoleRef={noop} onFullscreenToggle={fullscreen} />}
             {renderer === "terminal" && <XtermRenderer session={session} disconnectFromServer={closeWindow} registerTerminalRef={noop} broadcastMode={false} terminalRefs={refs} updateProgress={noop} layoutMode="single" onBroadcastToggle={noop} onFullscreenToggle={fullscreen} />}
         </div>
     );
