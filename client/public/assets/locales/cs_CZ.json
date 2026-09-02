@@ -1571,6 +1571,7 @@
       "connect": "Připojit",
       "quickConnect": "Rychlé připojení",
       "openSFTP": "Otevřít SFTP",
+      "openBrowser": "Open Browser",
       "forwardPort": "Přesměrovat port",
       "runScript": "Spustit skript",
       "openNotes": "Otevřené poznámky",
@@ -1960,6 +1961,14 @@
         "connectionLost": "Ztráta připojení SFTP. Znovu se připojte.",
         "error": "Došlo k chybě"
       }
+    },
+    "browser": {
+      "back": "Back",
+      "forward": "Forward",
+      "reload": "Reload",
+      "stop": "Stop",
+      "address": "Address",
+      "addressPlaceholder": "Enter an address"
     },
     "remoteDesktop": {
       "dropOverlay": "Přetáhněte soubory, které chcete nahrát na vzdálený server",
