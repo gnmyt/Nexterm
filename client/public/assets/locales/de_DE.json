@@ -1571,6 +1571,7 @@
       "connect": "Verbinden",
       "quickConnect": "Schnellverbindung",
       "openSFTP": "SFTP öffnen",
+      "openBrowser": "Open Browser",
       "forwardPort": "Port weiterleiten",
       "runScript": "Skript ausführen",
       "openNotes": "Offene Noten",
@@ -1960,6 +1961,14 @@
         "connectionLost": "SFTP-Verbindung verloren. Bitte stelle die Verbindung wieder her.",
         "error": "Ein Fehler ist aufgetreten"
       }
+    },
+    "browser": {
+      "back": "Back",
+      "forward": "Forward",
+      "reload": "Reload",
+      "stop": "Stop",
+      "address": "Address",
+      "addressPlaceholder": "Enter an address"
     },
     "remoteDesktop": {
       "dropOverlay": "Zieh die Dateien per Drag & Drop auf den Server, um sie hochzuladen",
