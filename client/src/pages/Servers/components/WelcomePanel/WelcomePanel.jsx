@@ -3,7 +3,7 @@ import { useContext, useEffect, useState } from "react";
 import { UserContext } from "@/common/contexts/UserContext.jsx";
 import { ServerContext } from "@/common/contexts/ServerContext.jsx";
 import Icon from "@mdi/react";
-import { mdiHistory, mdiPower, mdiPlay, mdiServerNetwork, mdiConnection, mdiFolderOpen, mdiCursorDefaultClick, mdiDownload, mdiLinkVariant } from "@mdi/js";
+import { mdiHistory, mdiPower, mdiPlay, mdiServerNetwork, mdiConnection, mdiFolderOpen, mdiCursorDefaultClick, mdiDownload, mdiLinkVariant, mdiWeb } from "@mdi/js";
 import { getRequest } from "@/common/utils/RequestUtil";
 import { useTranslation } from "react-i18next";
 import { ContextMenu, ContextMenuItem, useContextMenu } from "@/common/components/ContextMenu";
@@ -32,6 +32,7 @@ export const WelcomePanel = ({
                                  hibernatedSessions = [],
                                  resumeSession,
                                  openSFTP,
+                                 openBrowser,
                                  openDirectConnect,
                              }) => {
     const { user } = useContext(UserContext);
@@ -73,6 +74,12 @@ export const WelcomePanel = ({
     const connectSftp = () => {
         if (server && openSFTP) {
             openSFTP(server.id, server.identities?.[0] ? { id: server.identities[0] } : null);
+            contextMenu.close();
+        }
+    };
+    const connectBrowser = () => {
+        if (server && openBrowser) {
+            openBrowser(server.id, server.identities?.[0] ? { id: server.identities[0] } : null);
             contextMenu.close();
         }
     };
@@ -149,6 +156,10 @@ export const WelcomePanel = ({
                         {server.protocol === "ssh" && openSFTP && (
                             <ContextMenuItem icon={mdiFolderOpen} label={t("servers.contextMenu.openSFTP")}
                                              onClick={connectSftp} />
+                        )}
+                        {server.protocol === "ssh" && openBrowser && (
+                            <ContextMenuItem icon={mdiWeb} label={t("servers.contextMenu.openBrowser")}
+                                             onClick={connectBrowser} />
                         )}
                         {openDirectConnect && (
                             <ContextMenuItem icon={mdiCursorDefaultClick} label={t("servers.contextMenu.quickConnect")}
