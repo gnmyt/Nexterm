@@ -1,0 +1,111 @@
+@use "@/common/styles/colors"
+@use "@/common/styles/breakpoints"
+
+.browser-renderer
+  display: flex
+  flex-direction: column
+  width: 100%
+  height: 100%
+  overflow: hidden
+  background-color: colors.$background
+
+  &__view
+    position: relative
+    flex: 1
+    min-height: 0
+
+.browser-toolbar
+  display: flex
+  align-items: center
+  gap: 0.25rem
+  flex-shrink: 0
+  height: 2.5rem
+  padding: 0 0.5rem
+  border-bottom: 1px solid colors.$gray
+  background-color: colors.$lighter-background
+  user-select: none
+
+  @media (max-width: breakpoints.$mobile)
+    height: 2.75rem
+    padding: 0 0.4rem
+
+  &__action
+    display: flex
+    align-items: center
+    justify-content: center
+    flex-shrink: 0
+    width: 1.75rem
+    height: 1.75rem
+    border: none
+    border-radius: 0.4rem
+    background-color: transparent
+    color: colors.$subtext
+    cursor: pointer
+    transition: background-color 0.1s ease-out, color 0.1s ease-out
+
+    &:hover:not(:disabled)
+      background-color: colors.$gray
+      color: colors.$white
+
+    &:focus-visible
+      outline: none
+      background-color: colors.$gray
+      color: colors.$white
+      box-shadow: 0 0 0 2px colors.$primary-opacity
+
+    &:disabled
+      opacity: 0.35
+      cursor: default
+
+  &__address
+    position: relative
+    display: flex
+    align-items: center
+    flex: 1
+    min-width: 0
+    height: 1.9rem
+    margin-left: 0.25rem
+    overflow: hidden
+    border: 1px solid colors.$gray
+    border-radius: 0.5rem
+    background-color: colors.$dark-gray
+    transition: border-color 0.1s ease-out, background-color 0.1s ease-out
+
+    &:focus-within
+      border-color: colors.$primary
+      background-color: colors.$gray
+
+    input
+      width: 100%
+      height: 100%
+      padding: 0 0.7rem
+      border: none
+      outline: none
+      background-color: transparent
+      color: colors.$white
+      font-family: inherit
+      font-size: 0.8rem
+      font-weight: 600
+      text-overflow: ellipsis
+
+      &::placeholder
+        color: colors.$subtext
+        font-weight: 500
+
+      &:read-only
+        cursor: default
+
+  &__progress
+    position: absolute
+    bottom: 0
+    left: 0
+    width: 35%
+    height: 2px
+    background: linear-gradient(90deg, transparent, colors.$primary, transparent)
+    animation: browser-toolbar-progress 1.1s ease-in-out infinite
+
+@keyframes browser-toolbar-progress
+  0%
+    transform: translateX(-100%)
+  100%
+    transform: translateX(300%)
