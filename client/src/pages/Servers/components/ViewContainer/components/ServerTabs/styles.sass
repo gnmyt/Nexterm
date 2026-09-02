@@ -1,6 +1,14 @@
 @use "@/common/styles/colors"
 @use "@/common/styles/breakpoints"
 
+.server-tabs-reveal-zone
+  position: absolute
+  top: 0
+  left: 0
+  right: 0
+  height: 8px
+  z-index: 1001
+
 .server-tabs
   display: flex
   padding: 0.3rem .5rem 0 .5rem
@@ -9,6 +17,24 @@
   user-select: none
   overflow: visible
   position: relative
+
+  &.revealed
+    position: absolute
+    top: 0
+    left: 0
+    right: 0
+    z-index: 1002
+    padding-bottom: 0.3rem
+    background-color: colors.$background
+    border-bottom: 1px solid colors.$dark-gray
+    box-shadow: colors.$shadow-lg
+    transform: translateY(-100%)
+    opacity: 0
+    transition: transform 0.2s ease, opacity 0.2s ease
+
+    .server-tabs-reveal-zone:hover + &, &:hover, &.pinned
+      transform: translateY(0)
+      opacity: 1
 
   @media (max-width: breakpoints.$tablet)
     padding: 0.5rem 0.75rem 0 0.75rem
@@ -54,7 +80,12 @@
       height: 1.6rem
 
       @media (max-width: breakpoints.$mobile)
-        display: none
+        width: 1.4rem
+        height: 1.4rem
+        padding: 0.3rem
+
+        &.split-btn, &.fullscreen-btn
+          display: none
 
       &:hover
         background-color: colors.$gray
@@ -280,6 +311,8 @@
         border-bottom: 2px solid colors.$primary
 
 .title-bar .server-tabs
+  flex: 1
+  min-width: 0
   max-width: 100%
   padding: 0 0.5rem
   border-left: 1px solid colors.$dark-gray
@@ -288,7 +321,7 @@
     margin-right: 0.5rem
     padding-right: 0.5rem
 
-    .layout-btn, .actions-menu-btn
+    .layout-btn
       width: 1.45rem
       height: 1.45rem
       padding: 0.25rem

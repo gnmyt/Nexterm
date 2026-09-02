@@ -8,7 +8,6 @@ import { useToast } from "@/common/contexts/ToastContext.jsx";
 import { useTranslation } from "react-i18next";
 import ConnectionLoader from "./components/ConnectionLoader";
 import ConnectionError, { mapConnectionError } from "./components/ConnectionError";
-import SessionToolbar from "./components/SessionToolbar";
 import { getWebSocketUrl } from "@/common/utils/ConnectionUtil.js";
 import { openPopout, onPopoutClosed } from "@/common/utils/PopoutUtil.js";
 import { createHostFsProvider } from "@/common/utils/HostFsProvider.js";
@@ -40,8 +39,8 @@ const GuacamoleRenderer = ({
                                markSessionErrored,
                                getSessionError,
                                registerGuacamoleRef,
-                               fullscreenEnabled,
                                onFullscreenToggle,
+                               onControlsChange = null,
                                isShared = false,
                                pinnedMonitor = null,
                                interceptPaste = true,
@@ -68,7 +67,6 @@ const GuacamoleRenderer = ({
 
     const [heldModifiers, setHeldModifiers] = useState(() => new Set());
     const heldModifiersRef = useRef(heldModifiers);
-    const draggingRef = useRef(false);
 
     const [zoom, setZoom] = useState(ZOOM_MIN);
     const zoomRef = useRef(ZOOM_MIN);
@@ -577,8 +575,6 @@ const GuacamoleRenderer = ({
         mouse.onmousedown = mouse.onmouseup = mouse.onmousemove = (state) => {
             if (!scaleRef.current || !offsetRef.current) return;
 
-            if (draggingRef.current) return;
-
             if (zoomRef.current > ZOOM_MIN && state.middle) {
                 const previous = panDragRef.current;
                 panDragRef.current = { x: state.x, y: state.y };
@@ -690,7 +686,6 @@ const GuacamoleRenderer = ({
             activeMonitorRef.current = initialMonitor;
             maxMonitorsRef.current = 1;
             heldModifiersRef.current = new Set();
-            draggingRef.current = false;
             zoomRef.current = ZOOM_MIN;
             panRef.current = { x: 0, y: 0 };
             panDragRef.current = null;
@@ -712,6 +707,34 @@ const GuacamoleRenderer = ({
         window.addEventListener("blur", releaseModifiers);
         return () => window.removeEventListener("blur", releaseModifiers);
     }, []);
+
+    useEffect(() => {
+        if (!onControlsChange) return;
+        onControlsChange(ready ? {
+            monitorCount,
+            activeMonitor,
+            maxMonitors,
+            heldModifiers,
+            poppedOutMonitors,
+            zoom,
+            minZoom: ZOOM_MIN,
+            maxZoom: ZOOM_MAX,
+            readOnly: isShared,
+            allowMonitors: pinnedMonitor === null,
+            selectMonitor,
+            addMonitor,
+            removeMonitor,
+            popOutMonitor,
+            toggleModifier,
+            sendShortcut,
+            zoomIn,
+            zoomOut,
+            resetZoom,
+            focus: () => ref.current?.focus(),
+        } : null);
+    }, [ready, monitorCount, activeMonitor, maxMonitors, heldModifiers, poppedOutMonitors, zoom, isShared, pinnedMonitor]);
+
+    useEffect(() => () => onControlsChange?.(null), []);
 
     useEffect(() => {
         window.addEventListener("resize", resizeHandler);
@@ -749,18 +772,6 @@ const GuacamoleRenderer = ({
             <ConnectionLoader onReady={(loader) => {
                 connectionLoaderRef.current = loader;
             }} />
-            {ready && (
-                <SessionToolbar containerRef={ref} monitorCount={monitorCount} activeMonitor={activeMonitor}
-                                maxMonitors={maxMonitors} heldModifiers={heldModifiers} readOnly={isShared}
-                                poppedOutMonitors={poppedOutMonitors} allowMonitors={pinnedMonitor === null}
-                                onSelectMonitor={selectMonitor} onAddMonitor={addMonitor}
-                                onRemoveMonitor={removeMonitor} onPopOutMonitor={popOutMonitor}
-                                onToggleModifier={toggleModifier} onSendShortcut={sendShortcut}
-                                zoom={zoom} minZoom={ZOOM_MIN} maxZoom={ZOOM_MAX}
-                                onZoomIn={zoomIn} onZoomOut={zoomOut} onResetZoom={resetZoom}
-                                fullscreenEnabled={fullscreenEnabled} onFullscreenToggle={onFullscreenToggle}
-                                onDraggingChange={(dragging) => draggingRef.current = dragging} />
-            )}
             {connectionError && (
                 <ConnectionError message={connectionError} onClose={() => disconnectFromServer(session.id)} />
             )}

@@ -1,5 +1,6 @@
 import "./styles.sass";
 import { useEffect, useState, useRef } from "react";
+import SessionOverlayBar from "@/pages/Servers/components/ViewContainer/components/SessionOverlayBar";
 import { useParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import Icon from "@mdi/react";
@@ -20,6 +21,14 @@ export const Share = () => {
     const [error, setError] = useState(null);
     const [disconnected, setDisconnected] = useState(false);
     const refs = useRef({});
+    const [controls, setControls] = useState(null);
+    const [fullscreenEnabled, setFullscreenEnabled] = useState(false);
+
+    useEffect(() => {
+        const sync = () => setFullscreenEnabled(!!document.fullscreenElement);
+        document.addEventListener("fullscreenchange", sync);
+        return () => document.removeEventListener("fullscreenchange", sync);
+    }, []);
 
     const handleDisconnect = () => {
         setDisconnected(true);
@@ -62,7 +71,14 @@ export const Share = () => {
 
     return (
         <div className="share-container">
-            {renderer === "guac" && <GuacamoleRenderer session={session} disconnectFromServer={handleDisconnect} registerGuacamoleRef={noop} onFullscreenToggle={fullscreen} isShared />}
+            {renderer === "guac" && (
+                <>
+                    <SessionOverlayBar session={session} controls={controls}
+                                       fullscreenEnabled={fullscreenEnabled} onFullscreenToggle={fullscreen} />
+                    <GuacamoleRenderer session={session} disconnectFromServer={handleDisconnect} registerGuacamoleRef={noop}
+                                       onFullscreenToggle={fullscreen} onControlsChange={setControls} isShared />
+                </>
+            )}
             {renderer === "web" && <BrowserRenderer session={session} disconnectFromServer={handleDisconnect} registerGuacamoleRef={noop} onFullscreenToggle={fullscreen} isShared canControl={!!session.writable} />}
             {renderer === "terminal" && <XtermRenderer session={session} disconnectFromServer={handleDisconnect} registerTerminalRef={noop} broadcastMode={false} terminalRefs={refs} updateProgress={noop} layoutMode="single" onBroadcastToggle={noop} onFullscreenToggle={fullscreen} isShared />}
         </div>

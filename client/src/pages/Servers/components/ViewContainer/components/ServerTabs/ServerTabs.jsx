@@ -1,17 +1,19 @@
-import { useRef, useState, useEffect, useCallback, useContext } from "react";
+import { useRef, useState, useEffect, useContext } from "react";
 import { useTranslation } from "react-i18next";
 import Icon from "@mdi/react";
-import { mdiClose, mdiViewSplitVertical, mdiViewSplitHorizontal, mdiChevronLeft, mdiChevronRight, mdiSleep, mdiOpenInNew, mdiShareVariant, mdiLinkVariant, mdiPencil, mdiEye, mdiCloseCircle, mdiContentDuplicate, mdiNoteEditOutline } from "@mdi/js";
+import { mdiClose, mdiViewSplitVertical, mdiChevronLeft, mdiChevronRight, mdiMenu, mdiFullscreen, mdiFullscreenExit, mdiNoteEditOutline } from "@mdi/js";
 import { useDrag, useDrop } from "react-dnd";
-import TerminalActionsMenu from "../TerminalActionsMenu";
-import { ContextMenu, ContextMenuItem, ContextMenuSeparator, useContextMenu } from "@/common/components/ContextMenu";
+import { useContextMenu } from "@/common/components/ContextMenu";
 import { useActiveSessions } from "@/common/contexts/SessionContext.jsx";
 import { useLiveSessions } from "@/common/contexts/LiveSessionContext.jsx";
 import { UserContext } from "@/common/contexts/UserContext.jsx";
+import { useKeymaps, matchesKeybind } from "@/common/contexts/KeymapContext.jsx";
 import AvatarStack from "@/common/components/AvatarStack";
-import { postRequest, deleteRequest, patchRequest } from "@/common/utils/RequestUtil";
-import { getBaseUrl } from "@/common/utils/ConnectionUtil.js";
 import { getIconPath } from "@/common/utils/iconUtils.js";
+import SessionMenu from "../SessionMenu";
+import RemoteSessionStrip from "../RemoteSessionStrip";
+import KeyboardShortcutsMenu from "../KeyboardShortcutsMenu";
+import SnippetsMenu from "../../renderer/components/SnippetsMenu";
 import "./styles.sass";
 
 const DraggableTab = ({
@@ -20,18 +22,12 @@ const DraggableTab = ({
     activeSessionId,
     setActiveSessionId,
     closeSession,
-    hibernateSession,
-    duplicateSession,
-    openNotes,
-    onSplitSession,
-    canSplit,
+    onOpenMenu,
     index,
     moveTab,
     progress = 0,
     pageInfo = null,
 }) => {
-    const contextMenu = useContextMenu();
-    const { popOutSession } = useActiveSessions();
     const { getParticipants } = useLiveSessions();
     const { user } = useContext(UserContext);
     const { t } = useTranslation();
@@ -40,35 +36,7 @@ const DraggableTab = ({
         .filter(participant => participant.accountId !== user?.id);
 
     const isNotes = session.type === "notes";
-    const isJoined = !!session.isJoined;
-    const canPopOut = !session.scriptId && session.type !== "sftp" && !isNotes && !isJoined;
-    const canShare = canPopOut;
-    const canHibernate = !isNotes && !isJoined;
-    const canDuplicate = !isNotes && !isJoined;
-    const canOpenNotes = !isNotes && !isJoined && !!server?.id && !session.scriptId;
-    const isSharing = !!session.shareId;
 
-    const handleShare = useCallback(async (writable) => {
-        const result = await postRequest(`connections/${session.id}/share`, { writable });
-        if (result?.shareId) {
-            const baseUrl = getBaseUrl() || window.location.origin;
-            navigator.clipboard.writeText(`${baseUrl}/share/${result.shareId}`);
-        }
-    }, [session.id]);
-
-    const handleStopSharing = useCallback(async () => {
-        await deleteRequest(`connections/${session.id}/share`);
-    }, [session.id]);
-
-    const handleCopyLink = useCallback(() => {
-        const baseUrl = getBaseUrl() || window.location.origin;
-        navigator.clipboard.writeText(`${baseUrl}/share/${session.shareId}`);
-    }, [session.shareId]);
-
-    const handlePermissionChange = useCallback(async (writable) => {
-        await patchRequest(`connections/${session.id}/share`, { writable });
-    }, [session.id]);
-    
     const [{ isDragging }, drag] = useDrag({
         type: "TAB",
         item: { index, sessionId: session.id },
@@ -87,11 +55,11 @@ const DraggableTab = ({
     const circumference = 2 * Math.PI * radius;
     const offset = circumference - (progress / 100) * circumference;
     const showProgress = progress > 0 && progress < 100;
-    
+
     const handleContextMenu = (e) => {
         e.preventDefault();
         e.stopPropagation();
-        contextMenu.open(e, { x: e.clientX, y: e.clientY });
+        onOpenMenu(e, session.id, { x: e.clientX, y: e.clientY });
     };
 
     const handleAuxClick = (e) => {
@@ -103,130 +71,52 @@ const DraggableTab = ({
     };
 
     return (
-        <>
-            <div ref={(node) => drag(drop(node))} onClick={() => setActiveSessionId(session.id)}
-                onContextMenu={handleContextMenu}
-                onAuxClick={handleAuxClick}
-                className={`server-tab ${session.id === activeSessionId ? "server-tab-active" : ""} ${isDragging ? "dragging" : ""} ${isOver ? "drop-target" : ""}`}
-                style={{ opacity: isDragging ? 0.5 : 1 }}>
-                <div className={`progress-circle ${!showProgress ? "no-progress" : ""}`}>
-                    {showProgress && (
-                        <svg width="24" height="24" viewBox="0 0 24 24">
-                            <circle
-                                cx="12"
-                                cy="12"
-                                r={radius}
-                                fill="none"
-                                stroke="currentColor"
-                                strokeWidth="1.5"
-                                className="progress-bg"
-                            />
-                            <circle
-                                cx="12"
-                                cy="12"
-                                r={radius}
-                                fill="none"
-                                stroke="currentColor"
-                                strokeWidth="2"
-                                strokeDasharray={circumference}
-                                strokeDashoffset={offset}
-                                strokeLinecap="round"
-                                className="progress-bar"
-                                transform="rotate(-90 12 12)"
-                            />
-                        </svg>
-                    )}
-                    {pageInfo?.icon
-                        ? <img src={pageInfo.icon} className="progress-icon page-favicon" alt="" />
-                        : <Icon path={isNotes ? mdiNoteEditOutline : getIconPath(server.icon)} className="progress-icon" />}
-                </div>
-                <h2>{pageInfo?.title || server?.name} {session.type === "sftp" ? " (SFTP)" : ""}{isNotes ? ` (${t("servers.notesPanel.title")})` : ""}</h2>
-                <AvatarStack className="tab-participants" users={otherParticipants} max={2}
-                             getKey={participant => participant.viewerId} />
-                <div className="tab-actions">
-                    <Icon path={mdiClose} className="close-btn" title="Close Session" onClick={(e) => {
-                        e.stopPropagation();
-                        closeSession(session.id);
-                    }} />
-                </div>
+        <div ref={(node) => drag(drop(node))} onClick={() => setActiveSessionId(session.id)}
+            onContextMenu={handleContextMenu}
+            onAuxClick={handleAuxClick}
+            className={`server-tab ${session.id === activeSessionId ? "server-tab-active" : ""} ${isDragging ? "dragging" : ""} ${isOver ? "drop-target" : ""}`}
+            style={{ opacity: isDragging ? 0.5 : 1 }}>
+            <div className={`progress-circle ${!showProgress ? "no-progress" : ""}`}>
+                {showProgress && (
+                    <svg width="24" height="24" viewBox="0 0 24 24">
+                        <circle
+                            cx="12"
+                            cy="12"
+                            r={radius}
+                            fill="none"
+                            stroke="currentColor"
+                            strokeWidth="1.5"
+                            className="progress-bg"
+                        />
+                        <circle
+                            cx="12"
+                            cy="12"
+                            r={radius}
+                            fill="none"
+                            stroke="currentColor"
+                            strokeWidth="2"
+                            strokeDasharray={circumference}
+                            strokeDashoffset={offset}
+                            strokeLinecap="round"
+                            className="progress-bar"
+                            transform="rotate(-90 12 12)"
+                        />
+                    </svg>
+                )}
+                {pageInfo?.icon
+                    ? <img src={pageInfo.icon} className="progress-icon page-favicon" alt="" />
+                    : <Icon path={isNotes ? mdiNoteEditOutline : getIconPath(server.icon)} className="progress-icon" />}
             </div>
-            <ContextMenu
-                isOpen={contextMenu.isOpen}
-                position={contextMenu.position}
-                onClose={contextMenu.close}
-                trigger={contextMenu.triggerRef}
-            >
-                {canPopOut && (
-                    <>
-                        <ContextMenuItem
-                            icon={mdiOpenInNew}
-                            label={t("servers.tabs.contextMenu.popOut")}
-                            onClick={() => popOutSession(session.id)}
-                        />
-                        <ContextMenuSeparator />
-                    </>
-                )}
-                {canShare && !isSharing && (
-                    <ContextMenuItem icon={mdiShareVariant} label={t("servers.tabs.contextMenu.startSharing")}>
-                        <ContextMenuItem icon={mdiEye} label={t("servers.tabs.contextMenu.readOnly")} onClick={() => handleShare(false)} />
-                        <ContextMenuItem icon={mdiPencil} label={t("servers.tabs.contextMenu.readWrite")} onClick={() => handleShare(true)} />
-                    </ContextMenuItem>
-                )}
-                {canShare && isSharing && (
-                    <>
-                        <ContextMenuItem icon={mdiLinkVariant} label={t("servers.tabs.contextMenu.copyShareLink")} onClick={handleCopyLink} />
-                        <ContextMenuItem icon={mdiShareVariant} label={t("servers.tabs.contextMenu.changePermissions")}>
-                            <ContextMenuItem icon={mdiEye} label={t("servers.tabs.contextMenu.readOnly")} onClick={() => handlePermissionChange(false)} disabled={!session.shareWritable} />
-                            <ContextMenuItem icon={mdiPencil} label={t("servers.tabs.contextMenu.readWrite")} onClick={() => handlePermissionChange(true)} disabled={session.shareWritable} />
-                        </ContextMenuItem>
-                        <ContextMenuItem icon={mdiCloseCircle} label={t("servers.tabs.contextMenu.stopSharing")} onClick={handleStopSharing} danger />
-                        <ContextMenuSeparator />
-                    </>
-                )}
-                {canSplit && (
-                    <>
-                        <ContextMenuItem
-                            icon={mdiViewSplitVertical}
-                            label={t("servers.tabs.contextMenu.splitRight")}
-                            onClick={() => onSplitSession(session.id, "right")}
-                        />
-                        <ContextMenuItem
-                            icon={mdiViewSplitHorizontal}
-                            label={t("servers.tabs.contextMenu.splitDown")}
-                            onClick={() => onSplitSession(session.id, "bottom")}
-                        />
-                        <ContextMenuSeparator />
-                    </>
-                )}
-                {canOpenNotes && (
-                    <ContextMenuItem
-                        icon={mdiNoteEditOutline}
-                        label={t("servers.tabs.contextMenu.openNotes")}
-                        onClick={() => openNotes?.(server.id)}
-                    />
-                )}
-                {canDuplicate && (
-                    <ContextMenuItem
-                        icon={mdiContentDuplicate}
-                        label={t("servers.tabs.contextMenu.duplicate")}
-                        onClick={() => duplicateSession(session.id)}
-                    />
-                )}
-                {canHibernate && (
-                    <ContextMenuItem
-                        icon={mdiSleep}
-                        label={t("servers.tabs.contextMenu.hibernateSession")}
-                        onClick={() => hibernateSession(session.id)}
-                    />
-                )}
-                <ContextMenuItem
-                    icon={mdiClose}
-                    label={t("servers.tabs.contextMenu.closeSession")}
-                    onClick={() => closeSession(session.id)}
-                    danger
-                />
-            </ContextMenu>
-        </>
+            <h2>{pageInfo?.title || server?.name} {session.type === "sftp" ? " (SFTP)" : ""}{isNotes ? ` (${t("servers.notesPanel.title")})` : ""}</h2>
+            <AvatarStack className="tab-participants" users={otherParticipants} max={2}
+                         getKey={participant => participant.viewerId} />
+            <div className="tab-actions">
+                <Icon path={mdiClose} className="close-btn" title="Close Session" onClick={(e) => {
+                    e.stopPropagation();
+                    closeSession(session.id);
+                }} />
+            </div>
+        </div>
     );
 };
 
@@ -245,22 +135,83 @@ export const ServerTabs = ({
     onBroadcastToggle,
     onSnippetSelected,
     broadcastEnabled,
-    onKeyboardShortcut,
-    hasGuacamole,
+    activeControls,
     sessionProgress = {},
     sessionPageInfo = {},
     fullscreenEnabled,
     onFullscreenToggle,
+    reveal = false,
 }) => {
 
     const tabsRef = useRef(null);
     const { t } = useTranslation();
+    const { popOutSession } = useActiveSessions();
+    const { getParsedKeybind } = useKeymaps();
+    const menu = useContextMenu();
 
     const [tabOrder, setTabOrder] = useState([]);
     const [showLeftArrow, setShowLeftArrow] = useState(false);
     const [showRightArrow, setShowRightArrow] = useState(false);
+    const [menuSessionId, setMenuSessionId] = useState(null);
+    const [showSnippets, setShowSnippets] = useState(false);
+    const [showShortcuts, setShowShortcuts] = useState(false);
 
     const activeSession = activeSessions.find(session => session.id === activeSessionId);
+    const menuSession = activeSessions.find(session => session.id === menuSessionId) || null;
+    const pinned = menu.isOpen || showSnippets || showShortcuts || (activeControls?.heldModifiers.size ?? 0) > 0;
+
+    const openMenu = (event, sessionId, position) => {
+        setMenuSessionId(sessionId);
+        menu.open(event, position);
+    };
+
+    const openActiveMenu = (event) => {
+        if (!activeSession) return;
+        event.stopPropagation();
+        const bounds = event.currentTarget.getBoundingClientRect();
+        openMenu(event, activeSession.id, { x: bounds.left, y: bounds.bottom + 6 });
+    };
+
+    useEffect(() => {
+        const handleKeyDown = (event) => {
+            const snippetsKeybind = getParsedKeybind("snippets");
+            if (snippetsKeybind && matchesKeybind(event, snippetsKeybind)) {
+                event.preventDefault();
+                setShowSnippets(true);
+                return;
+            }
+
+            const shortcutsKeybind = getParsedKeybind("keyboard-shortcuts");
+            if (activeControls && shortcutsKeybind && matchesKeybind(event, shortcutsKeybind)) {
+                event.preventDefault();
+                setShowShortcuts(true);
+                return;
+            }
+
+            const fullscreenKeybind = getParsedKeybind("fullscreen");
+            if (fullscreenKeybind && matchesKeybind(event, fullscreenKeybind)) {
+                event.preventDefault();
+                onFullscreenToggle?.();
+            }
+        };
+
+        const handleSnippetsEvent = () => setShowSnippets(true);
+        const handleShortcutsEvent = () => activeControls && setShowShortcuts(true);
+
+        document.addEventListener("keydown", handleKeyDown);
+        window.addEventListener("terminal-snippets-shortcut", handleSnippetsEvent);
+        window.addEventListener("terminal-keyboard-shortcuts-shortcut", handleShortcutsEvent);
+        return () => {
+            document.removeEventListener("keydown", handleKeyDown);
+            window.removeEventListener("terminal-snippets-shortcut", handleSnippetsEvent);
+            window.removeEventListener("terminal-keyboard-shortcuts-shortcut", handleShortcutsEvent);
+        };
+    }, [getParsedKeybind, activeControls, onFullscreenToggle]);
+
+    const handleSnippetSelect = (command) => {
+        setShowSnippets(false);
+        setTimeout(() => onSnippetSelected?.(command), 50);
+    };
 
     useEffect(() => {
         const currentSessionIds = activeSessions.map(session => session.id);
@@ -359,54 +310,69 @@ export const ServerTabs = ({
 
     const orderedSessions = tabOrder.map(sessionId => activeSessions.find(session => session.id === sessionId)).filter(Boolean);
 
+    const canSplitSession = (session) => activeSessions.length > 1 && session.id !== activeSessionId;
+
     return (
-        <div className="server-tabs">
-            <div className="layout-controls">
-                <TerminalActionsMenu
-                    layoutMode={layoutMode}
-                    onBroadcastToggle={onBroadcastToggle}
-                    onSnippetSelected={onSnippetSelected}
-                    broadcastEnabled={broadcastEnabled}
-                    onKeyboardShortcut={onKeyboardShortcut}
-                    hasGuacamole={hasGuacamole}
-                    fullscreenEnabled={fullscreenEnabled}
-                    onFullscreenToggle={onFullscreenToggle}
-                    activeSession={activeSession}
-                />
-                <Icon path={mdiViewSplitVertical} className={`layout-btn ${layoutMode !== "single" ? "active" : ""}`}
-                    title={layoutMode === "single" ? t("servers.tabs.enableSplitView") : t("servers.tabs.disableSplitView")}
-                    onClick={onToggleSplit} />
-            </div>
-            <div className="tabs-container">
-                {showLeftArrow && (
-                    <div className="scroll-indicator left">
-                        <button type="button" aria-label="Scroll tabs left" onClick={() => scrollTabs('left')}>
-                            <Icon path={mdiChevronLeft} />
-                        </button>
-                    </div>
-                )}
-                <div className="tabs" ref={tabsRef} onScroll={checkScrollPosition}>
-                    {orderedSessions.map((session, index) => {
-                        return (
+        <>
+            {reveal && <div className="server-tabs-reveal-zone" />}
+            <div className={`server-tabs${reveal ? " revealed" : ""}${pinned ? " pinned" : ""}`}>
+                <div className="layout-controls">
+                    <Icon path={mdiMenu} className={`layout-btn ${menu.isOpen ? "active" : ""}`}
+                        title={t("servers.tabs.sessionMenu")}
+                        onClick={openActiveMenu} />
+                    <Icon path={mdiViewSplitVertical} className={`layout-btn split-btn ${layoutMode !== "single" ? "active" : ""}`}
+                        title={layoutMode === "single" ? t("servers.tabs.enableSplitView") : t("servers.tabs.disableSplitView")}
+                        onClick={onToggleSplit} />
+                    <Icon path={fullscreenEnabled ? mdiFullscreenExit : mdiFullscreen}
+                        className={`layout-btn fullscreen-btn ${fullscreenEnabled ? "active" : ""}`}
+                        title={fullscreenEnabled ? t("servers.terminalActions.exitFullScreen") : t("servers.terminalActions.fullScreen")}
+                        onClick={onFullscreenToggle} />
+                </div>
+                <div className="tabs-container">
+                    {showLeftArrow && (
+                        <div className="scroll-indicator left">
+                            <button type="button" aria-label="Scroll tabs left" onClick={() => scrollTabs('left')}>
+                                <Icon path={mdiChevronLeft} />
+                            </button>
+                        </div>
+                    )}
+                    <div className="tabs" ref={tabsRef} onScroll={checkScrollPosition} data-tauri-drag-region>
+                        {orderedSessions.map((session, index) => (
                             <DraggableTab key={session.id} session={session} server={session.server} index={index} moveTab={moveTab}
                                 activeSessionId={activeSessionId} setActiveSessionId={setActiveSessionId}
-                                closeSession={closeSession} hibernateSession={hibernateSession} duplicateSession={duplicateSession}
-                                openNotes={openNotes}
-                                onSplitSession={onSplitSession}
-                                canSplit={activeSessions.length > 1 && session.id !== activeSessionId}
+                                closeSession={closeSession} onOpenMenu={openMenu}
                                 progress={sessionProgress[session.id] || 0}
                                 pageInfo={sessionPageInfo[session.id] || null} />
-                        );
-                    })}
-                </div>
-                {showRightArrow && (
-                    <div className="scroll-indicator right">
-                        <button type="button" aria-label="Scroll tabs right" onClick={() => scrollTabs('right')}>
-                            <Icon path={mdiChevronRight} />
-                        </button>
+                        ))}
                     </div>
-                )}
+                    {showRightArrow && (
+                        <div className="scroll-indicator right">
+                            <button type="button" aria-label="Scroll tabs right" onClick={() => scrollTabs('right')}>
+                                <Icon path={mdiChevronRight} />
+                            </button>
+                        </div>
+                    )}
+                </div>
+                {activeControls && <RemoteSessionStrip controls={activeControls} />}
             </div>
-        </div>
+
+            <SessionMenu menu={menu} session={menuSession} controls={activeControls}
+                         isActive={menuSession?.id === activeSessionId}
+                         canSplit={!!menuSession && canSplitSession(menuSession)}
+                         layoutMode={layoutMode} broadcastEnabled={broadcastEnabled}
+                         fullscreenEnabled={fullscreenEnabled} onFullscreenToggle={onFullscreenToggle}
+                         onBroadcastToggle={onBroadcastToggle}
+                         onOpenSnippets={() => setShowSnippets(true)}
+                         onOpenShortcuts={() => setShowShortcuts(true)}
+                         onSplitSession={onSplitSession} onPopOut={popOutSession}
+                         onOpenNotes={openNotes} onDuplicate={duplicateSession}
+                         onHibernate={hibernateSession} onCloseSession={closeSession} />
+
+            <SnippetsMenu visible={showSnippets} onClose={() => setShowSnippets(false)}
+                          onSelect={handleSnippetSelect} activeSession={activeSession} />
+
+            <KeyboardShortcutsMenu visible={showShortcuts} onClose={() => setShowShortcuts(false)}
+                                   onSelect={(keys) => activeControls?.sendShortcut(keys)} />
+        </>
     );
 };

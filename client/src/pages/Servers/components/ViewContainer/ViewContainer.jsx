@@ -11,32 +11,12 @@ import XtermRenderer from "@/pages/Servers/components/ViewContainer/renderer/Xte
 import FileRenderer from "@/pages/Servers/components/ViewContainer/renderer/FileRenderer";
 import ScriptRenderer from "@/pages/Servers/components/ViewContainer/renderer/ScriptRenderer";
 import NotesRenderer from "@/pages/Servers/components/ViewContainer/renderer/NotesRenderer";
-import Icon from "@mdi/react";
-import { mdiFullscreenExit } from "@mdi/js";
-import { useTranslation } from "react-i18next";
-import { getTitleBarHeight } from "@/common/utils/TauriUtil.js";
 import { useTauriWindow } from "@/common/hooks/useTauriWindow.js";
 import { useBodyClass } from "@/common/hooks/useBodyClass.js";
 
-const BTN_SIZE = 44;
-const BTN_STORAGE_KEY = "fullscreen-btn-position";
 const SASH_SIZE = 4;
 const MIN_PANE_SIZE = 96;
 const FULL_SIZE_STYLE = { position: "absolute", top: 0, left: 0, width: "100%", height: "100%" };
-
-const getMinY = () => getTitleBarHeight() + 16;
-const clampPosition = (x, y) => ({
-    x: Math.max(0, Math.min(window.innerWidth - BTN_SIZE, x)),
-    y: Math.max(getMinY(), Math.min(window.innerHeight - BTN_SIZE, y))
-});
-
-const loadBtnPosition = () => {
-    try {
-        const saved = JSON.parse(localStorage.getItem(BTN_STORAGE_KEY));
-        if (saved) return clampPosition(saved.x, saved.y);
-    } catch {}
-    return { x: window.innerWidth - 60, y: getMinY() };
-};
 
 export const ViewContainer = ({
                                   activeSessions,
@@ -64,10 +44,10 @@ export const ViewContainer = ({
     const [broadcastMode, setBroadcastMode] = useState(false);
     const [sessionProgress, setSessionProgress] = useState({});
     const [sessionPageInfo, setSessionPageInfo] = useState({});
+    const [sessionControls, setSessionControls] = useState({});
     const [fullscreenMode, setFullscreenMode] = useState(false);
     const [titleBarTabsSlot, setTitleBarTabsSlot] = useState(null);
     const appWindow = useTauriWindow();
-    const { t } = useTranslation();
 
     useEffect(() => {
         setTitleBarTabsSlot(document.getElementById("titlebar-tabs-slot"));
@@ -106,10 +86,6 @@ export const ViewContainer = ({
         return () => cancelled = true;
     }, [appWindow, fullscreenMode]);
 
-    const [btnPosition, setBtnPosition] = useState(loadBtnPosition);
-    const [isDragging, setIsDragging] = useState(false);
-    const dragRef = useRef({ startX: 0, startY: 0, btnX: 0, btnY: 0 });
-
     const [resizingOrientation, setResizingOrientation] = useState(null);
     const [layoutSize, setLayoutSize] = useState({ width: 0, height: 0 });
     const layoutRef = useRef(null);
@@ -120,8 +96,7 @@ export const ViewContainer = ({
     }));
     const showDropZones = dragItemType === "TAB" || dragItemType === "server";
 
-    const activeSession = activeSessions.find(session => session.id === activeSessionId);
-    const hasGuacamole = activeSession?.server?.renderer === "guac";
+    const activeControls = sessionControls[activeSessionId] || null;
 
     const registerTerminalRef = useCallback((sessionId, refs) => {
         refs ? terminalRefs.current[sessionId] = refs : delete terminalRefs.current[sessionId];
@@ -129,6 +104,16 @@ export const ViewContainer = ({
 
     const registerGuacamoleRef = useCallback((sessionId, refs) => {
         refs ? guacamoleRefs.current[sessionId] = refs : delete guacamoleRefs.current[sessionId];
+    }, []);
+
+    const registerSessionControls = useCallback((sessionId, controls) => {
+        setSessionControls(prev => {
+            if (controls) return { ...prev, [sessionId]: controls };
+            if (!(sessionId in prev)) return prev;
+            const next = { ...prev };
+            delete next[sessionId];
+            return next;
+        });
     }, []);
 
     const updateSessionProgress = useCallback((sessionId, progress) => {
@@ -164,51 +149,6 @@ export const ViewContainer = ({
     const toggleFullscreenMode = useCallback(() => {
         setFullscreenMode(prev => !prev);
     }, []);
-
-    const onBtnMouseDown = useCallback((e) => {
-        e.preventDefault();
-        dragRef.current = { startX: e.clientX, startY: e.clientY, btnX: btnPosition.x, btnY: btnPosition.y };
-        setIsDragging(true);
-    }, [btnPosition]);
-
-    useEffect(() => {
-        if (!isDragging) return;
-        const onMove = (e) => {
-            const { startX, startY, btnX, btnY } = dragRef.current;
-            setBtnPosition(clampPosition(btnX + e.clientX - startX, btnY + e.clientY - startY));
-        };
-        const onUp = () => {
-            setIsDragging(false);
-            try { localStorage.setItem(BTN_STORAGE_KEY, JSON.stringify(btnPosition)); } catch {}
-        };
-        document.addEventListener("mousemove", onMove, true);
-        document.addEventListener("mouseup", onUp, true);
-        return () => {
-            document.removeEventListener("mousemove", onMove, true);
-            document.removeEventListener("mouseup", onUp, true);
-        };
-    }, [isDragging, btnPosition]);
-
-    useEffect(() => {
-        const onResize = () => setBtnPosition(prev => clampPosition(prev.x, prev.y));
-        window.addEventListener("resize", onResize);
-        return () => window.removeEventListener("resize", onResize);
-    }, []);
-
-    const onBtnClick = useCallback((e) => {
-        const { startX, startY } = dragRef.current;
-        if (Math.abs(e.clientX - startX) < 5 && Math.abs(e.clientY - startY) < 5) toggleFullscreenMode();
-    }, [toggleFullscreenMode]);
-
-    const handleKeyboardShortcut = useCallback((keys) => {
-        const activeGuacamole = guacamoleRefs.current[activeSessionId];
-        if (activeGuacamole && activeGuacamole.client) {
-            keys.forEach(key => activeGuacamole.client.sendKeyEvent(1, key));
-            setTimeout(() => {
-                [...keys].reverse().forEach(key => activeGuacamole.client.sendKeyEvent(0, key));
-            }, 50);
-        }
-    }, [activeSessionId]);
 
     const handleSnippetSelected = useCallback((command) => {
         const commandWithNewline = command.endsWith("\n") ? command : command + "\n";
@@ -426,8 +366,8 @@ export const ViewContainer = ({
                                           markSessionErrored={markSessionErrored}
                                           getSessionError={getSessionError}
                                           registerGuacamoleRef={registerGuacamoleRef}
+                                          onControlsChange={(controls) => registerSessionControls(session.id, controls)}
                                           isShared={!!session.isJoined}
-                                          fullscreenEnabled={fullscreenMode}
                                           onFullscreenToggle={toggleFullscreenMode} />;
             case "web":
                 return <BrowserRenderer session={session} disconnectFromServer={disconnectFromServer}
@@ -513,7 +453,7 @@ export const ViewContainer = ({
         });
     };
 
-    const serverTabs = fullscreenMode && !titleBarTabsSlot ? null : (
+    const serverTabs = (
         <ServerTabs activeSessions={activeSessions} setActiveSessionId={focusSession}
                     activeSessionId={activeSessionId}
                     closeSession={closeSession}
@@ -521,7 +461,8 @@ export const ViewContainer = ({
                     onSplitSession={splitActiveWith}
                     orderRef={tabOrderRef} onBroadcastToggle={toggleBroadcastMode}
                     onSnippetSelected={handleSnippetSelected} broadcastEnabled={broadcastMode}
-                    onKeyboardShortcut={handleKeyboardShortcut} hasGuacamole={hasGuacamole}
+                    activeControls={activeControls}
+                    reveal={fullscreenMode && !titleBarTabsSlot}
                     sessionProgress={sessionProgress} sessionPageInfo={sessionPageInfo}
                     fullscreenEnabled={fullscreenMode}
                     onFullscreenToggle={toggleFullscreenMode}
@@ -531,19 +472,6 @@ export const ViewContainer = ({
 
     return (
         <div className={`view-container ${fullscreenMode ? "fullscreen" : ""}`}>
-            {fullscreenMode && !hasGuacamole && !titleBarTabsSlot && (
-                <div
-                    className={`exit-fullscreen-btn-container ${isDragging ? "dragging" : ""}`}
-                    style={{ left: btnPosition.x, top: btnPosition.y }}
-                    onMouseDown={onBtnMouseDown}
-                    onClick={onBtnClick}
-                    title={t("servers.terminalActions.exitFullScreen")}
-                >
-                    <button className="exit-fullscreen-btn">
-                        <Icon path={mdiFullscreenExit} />
-                    </button>
-                </div>
-            )}
             {titleBarTabsSlot ? createPortal(serverTabs, titleBarTabsSlot) : serverTabs}
 
             <div ref={layoutRef}
