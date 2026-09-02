@@ -1608,8 +1608,16 @@
         "duplicate": "Дублировать",
         "openNotes": "Открытые заметки",
         "hibernateSession": "Гибернация",
-        "closeSession": "Отключиться"
-      }
+        "closeSession": "Отключиться",
+        "splitRight": "Split Right",
+        "splitDown": "Split Down",
+        "sendShortcut": "Send Shortcut…",
+        "zoom": "Zoom ({{zoom}}%)",
+        "zoomReset": "Reset Zoom"
+      },
+      "enableSplitView": "Enable Split View",
+      "disableSplitView": "Disable Split View",
+      "sessionMenu": "Session Menu"
     },
     "wol": {
       "successDescription": "Волшебный пакет, отправленный на {{name}}",
@@ -2034,7 +2042,7 @@
       "holdModifier": "Подожди {{key}}",
       "zoomIn": "Увеличить",
       "zoomOut": "Уменьшить масштаб",
-      "zoomReset": "Сбросить масштаб до полного экрана (перетаскивай, удерживая среднюю кнопку мыши, чтобы перемещаться по изображению)"
+      "zoomReset": "Reset zoom (drag with the middle mouse button to pan)"
     },
     "monitors": {
       "title": "Монитор {{number}}",
