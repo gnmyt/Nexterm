@@ -1571,6 +1571,7 @@
       "connect": "Подключиться",
       "quickConnect": "Быстрое подключение",
       "openSFTP": "Открыть SFTP",
+      "openBrowser": "Open Browser",
       "forwardPort": "Передовой порт",
       "runScript": "Запустить скрипт",
       "openNotes": "Открытые заметки",
@@ -1960,6 +1961,14 @@
         "connectionLost": "SFTP-соединение потеряно. Пожалуйста, переподключись.",
         "error": "Произошла ошибка"
       }
+    },
+    "browser": {
+      "back": "Back",
+      "forward": "Forward",
+      "reload": "Reload",
+      "stop": "Stop",
+      "address": "Address",
+      "addressPlaceholder": "Enter an address"
     },
     "remoteDesktop": {
       "dropOverlay": "Перетащи файлы, чтобы загрузить их на удаленный сервер",
