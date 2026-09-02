@@ -1608,8 +1608,16 @@
         "duplicate": "Duplizieren",
         "openNotes": "Offene Noten",
         "hibernateSession": "Ruhezustand aktivieren",
-        "closeSession": "Trennen"
-      }
+        "closeSession": "Trennen",
+        "splitRight": "Split Right",
+        "splitDown": "Split Down",
+        "sendShortcut": "Send Shortcut…",
+        "zoom": "Zoom ({{zoom}}%)",
+        "zoomReset": "Reset Zoom"
+      },
+      "enableSplitView": "Enable Split View",
+      "disableSplitView": "Disable Split View",
+      "sessionMenu": "Session Menu"
     },
     "wol": {
       "successDescription": "Magic-Paket an {{name}} gesendet",
@@ -2034,7 +2042,7 @@
       "holdModifier": "Warten {{key}}",
       "zoomIn": "Vergrößern",
       "zoomOut": "Verkleinern",
-      "zoomReset": "Zoom auf „Anpassen“ zurücksetzen (zum Verschieben mit der mittleren Maustaste ziehen)"
+      "zoomReset": "Reset zoom (drag with the middle mouse button to pan)"
     },
     "monitors": {
       "title": "Monitor {{number}}",
