@@ -1,20 +1,6 @@
 import { isTauri } from "@/common/utils/TauriUtil.js";
 import { FsError, E_IO } from "@/common/utils/FsError.js";
-
-const bytesToBase64 = (bytes) => {
-    const CHUNK = 32768;
-    const parts = [];
-    for (let i = 0; i < bytes.length; i += CHUNK) {
-        parts.push(String.fromCharCode.apply(
-                null, bytes.subarray(i, Math.min(i + CHUNK, bytes.length))));
-    }
-    return btoa(parts.join(""));
-};
-
-const base64ToBytes = (b64) => {
-    const binary = atob(b64);
-    return Uint8Array.from(binary, c => c.charCodeAt(0));
-};
+import { bytesToBase64, base64ToBytes } from "@/common/utils/base64.js";
 
 const invoke = async (cmd, args) => {
     const { invoke } = await import("@tauri-apps/api/core");

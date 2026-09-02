@@ -18,6 +18,7 @@ const ENTRY_TYPE_TO_AUDIT_ACTION = {
     'telnet': AUDIT_ACTIONS.SSH_CONNECT,
     'rdp': AUDIT_ACTIONS.RDP_CONNECT,
     'vnc': AUDIT_ACTIONS.VNC_CONNECT,
+    'web': AUDIT_ACTIONS.WEB_CONNECT,
     'demo': AUDIT_ACTIONS.DEMO_CONNECT,
     'pve-lxc': AUDIT_ACTIONS.PVE_CONNECT,
     'pve-shell': AUDIT_ACTIONS.PVE_CONNECT,
@@ -32,6 +33,7 @@ const ENTRY_TYPE_TO_CONNECT_PERMISSION = {
     'telnet': Permission.CONNECT_SSH,
     'rdp': Permission.CONNECT_RDP,
     'vnc': Permission.CONNECT_VNC,
+    'web': Permission.CONNECT_WEB,
     'demo': Permission.CONNECT_VNC,
     'pve-lxc': Permission.CONNECT_PROXMOX,
     'pve-shell': Permission.CONNECT_PROXMOX,
@@ -41,15 +43,17 @@ const ENTRY_TYPE_TO_CONNECT_PERMISSION = {
     'ftps': Permission.FILES_VIEW,
 };
 
-const getAuditAction = (entry, scriptId) => {
+const getAuditAction = (entry, type, scriptId) => {
     if (scriptId) return AUDIT_ACTIONS.SCRIPT_EXECUTE;
-    const type = entry.type === 'server' ? entry.config?.protocol : entry.type;
-    return ENTRY_TYPE_TO_AUDIT_ACTION[type] || AUDIT_ACTIONS.SSH_CONNECT;
+    if (type === "web") return AUDIT_ACTIONS.WEB_CONNECT;
+    const entryType = entry.type === 'server' ? entry.config?.protocol : entry.type;
+    return ENTRY_TYPE_TO_AUDIT_ACTION[entryType] || AUDIT_ACTIONS.SSH_CONNECT;
 };
 
 const getRequiredConnectPermission = (entry, type, scriptId) => {
     if (scriptId) return Permission.SCRIPTS_EXECUTE;
     if (type === "sftp") return Permission.FILES_VIEW;
+    if (type === "web") return Permission.CONNECT_WEB;
     const entryType = entry.type === 'server' ? entry.config?.protocol : entry.type;
     return ENTRY_TYPE_TO_CONNECT_PERMISSION[entryType] || Permission.CONNECT_SSH;
 };
@@ -91,7 +95,7 @@ const createSession = async (accountId, entryId, identityId, connectionReason, t
     const auditLogId = await createAuditLog({
         accountId,
         organizationId: entry.organizationId,
-        action: getAuditAction(entry, scriptId),
+        action: getAuditAction(entry, type, scriptId),
         resource: scriptId ? RESOURCE_TYPES.SCRIPT : RESOURCE_TYPES.ENTRY,
         resourceId: scriptId || entry.id,
         details: { connectionReason, ...(scriptId && { serverId: entry.id }) },
@@ -99,13 +103,15 @@ const createSession = async (accountId, entryId, identityId, connectionReason, t
         userAgent,
     });
 
+    const renderer = type === "sftp" || type === "web" ? type : entry.renderer;
+
     const configuration = {
         identityId: identity ? identity.id : null,
         type: type || null,
         directIdentity: directIdentity || null,
         scriptId: scriptId || null,
         startPath: startPath || null,
-        renderer: type === "sftp" ? "sftp" : entry.renderer,
+        renderer,
     };
 
     const session = SessionManager.create(accountId, entryId, configuration, connectionReason, tabId, browserId, auditLogId, entry.organizationId);

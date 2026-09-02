@@ -211,6 +211,10 @@ export const Servers = () => {
         initiateConnection({ server: getServerById(server), identity, type: "sftp" });
     };
 
+    const openBrowser = async (server, identity) => {
+        initiateConnection({ server: getServerById(server), identity, type: "web" });
+    };
+
     const performConnection = async (server, identity, connectionReason = null, type = null, directIdentity = null, scriptId = null, scriptName = null) => {
         try {
             const payload = {
@@ -538,7 +542,7 @@ export const Servers = () => {
                             setProxmoxDialogOpen={() => setProxmoxDialogOpen(true)}
                             setSSHConfigImportDialogOpen={() => setSSHConfigImportDialogOpen(true)}
                             setCurrentFolderId={setCurrentFolderId} setCurrentOrganizationId={setCurrentOrganizationId}
-                            setEditServerId={setEditServerId} openSFTP={openSFTP}
+                            setEditServerId={setEditServerId} openSFTP={openSFTP} openBrowser={openBrowser}
                             hibernatedSessions={hibernatedSessions} resumeSession={resumeConnection}
                             joinLiveSession={joinLiveSession}
                             openDirectConnect={openDirectConnect} runScript={runScript}
@@ -553,6 +557,7 @@ export const Servers = () => {
                     hibernatedSessions={hibernatedSessions} 
                     resumeSession={resumeConnection}
                     openSFTP={openSFTP}
+                    openBrowser={openBrowser}
                     openDirectConnect={openDirectConnect}
                 />
             }

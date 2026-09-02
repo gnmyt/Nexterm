@@ -3,6 +3,7 @@ import ServerTabs from "./components/ServerTabs";
 import { useState, useRef, useCallback, useEffect } from "react";
 import { createPortal } from "react-dom";
 import GuacamoleRenderer from "@/pages/Servers/components/ViewContainer/renderer/GuacamoleRenderer.jsx";
+import BrowserRenderer from "@/pages/Servers/components/ViewContainer/renderer/BrowserRenderer.jsx";
 import XtermRenderer from "@/pages/Servers/components/ViewContainer/renderer/XtermRenderer.jsx";
 import FileRenderer from "@/pages/Servers/components/ViewContainer/renderer/FileRenderer";
 import ScriptRenderer from "@/pages/Servers/components/ViewContainer/renderer/ScriptRenderer";
@@ -54,6 +55,7 @@ export const ViewContainer = ({
     const tabOrderRef = useRef([]);
     const [broadcastMode, setBroadcastMode] = useState(false);
     const [sessionProgress, setSessionProgress] = useState({});
+    const [sessionPageInfo, setSessionPageInfo] = useState({});
     const [fullscreenMode, setFullscreenMode] = useState(false);
     const [titleBarTabsSlot, setTitleBarTabsSlot] = useState(null);
     const appWindow = useTauriWindow();
@@ -124,6 +126,14 @@ export const ViewContainer = ({
             ...prev,
             [sessionId]: progress,
         }));
+    }, []);
+
+    const updatePageInfo = useCallback((sessionId, info) => {
+        setSessionPageInfo(prev => {
+            const current = prev[sessionId];
+            if (current?.title === info.title && current?.icon === info.icon) return prev;
+            return { ...prev, [sessionId]: { ...current, ...info } };
+        });
     }, []);
 
     const updateScriptState = useCallback((sessionId, state) => {
@@ -422,6 +432,15 @@ export const ViewContainer = ({
                                           isShared={!!session.isJoined}
                                           fullscreenEnabled={fullscreenMode}
                                           onFullscreenToggle={toggleFullscreenMode} />;
+            case "web":
+                return <BrowserRenderer session={session} disconnectFromServer={disconnectFromServer}
+                                        onPageInfo={(info) => updatePageInfo(session.id, info)}
+                                        markSessionErrored={markSessionErrored}
+                                        getSessionError={getSessionError}
+                                        registerGuacamoleRef={registerGuacamoleRef}
+                                        isShared={!!session.isJoined}
+                                        fullscreenEnabled={fullscreenMode}
+                                        onFullscreenToggle={toggleFullscreenMode} />;
             case "terminal":
                 return <XtermRenderer session={session} disconnectFromServer={disconnectFromServer}
                                       isShared={!!session.isJoined}
@@ -539,7 +558,8 @@ export const ViewContainer = ({
                     onTabOrderChange={onTabOrderChange} onBroadcastToggle={toggleBroadcastMode}
                     onSnippetSelected={handleSnippetSelected} broadcastEnabled={broadcastMode}
                     onKeyboardShortcut={handleKeyboardShortcut} hasGuacamole={hasGuacamole}
-                    sessionProgress={sessionProgress} fullscreenEnabled={fullscreenMode}
+                    sessionProgress={sessionProgress} sessionPageInfo={sessionPageInfo}
+                    fullscreenEnabled={fullscreenMode}
                     onFullscreenToggle={toggleFullscreenMode}
                     openNotes={openNotes}
                     hibernateSession={hibernateSession} duplicateSession={duplicateSession} />

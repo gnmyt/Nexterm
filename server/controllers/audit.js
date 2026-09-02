@@ -28,6 +28,7 @@ const AUDIT_ACTIONS = {
     SFTP_CONNECT: "entry.sftp_connect",
     PVE_CONNECT: "entry.pve_connect",
     RDP_CONNECT: "entry.rdp_connect",
+    WEB_CONNECT: "entry.web_connect",
     VNC_CONNECT: "entry.vnc_connect",
     DEMO_CONNECT: "entry.demo_connect",
 
