@@ -12,6 +12,7 @@ import Button from "@/common/components/Button";
 import DownloadAppsDialog from "@/common/components/DownloadAppsDialog";
 import { DeviceLinkDialog } from "@/common/components/DeviceLinkDialog/DeviceLinkDialog.jsx";
 import { getAvatarLabel } from "@/common/utils/avatar.js";
+import { useDrop } from "react-dnd";
 
 const formatTimeAgo = (timestamp) => {
     const diffMins = Math.floor((Date.now() - new Date(timestamp)) / 60000);
@@ -44,6 +45,16 @@ export const WelcomePanel = ({
     const [downloadDialogOpen, setDownloadDialogOpen] = useState(false);
     const [deviceLinkDialogOpen, setDeviceLinkDialogOpen] = useState(false);
     const contextMenu = useContextMenu();
+
+    const [{ isServerOver }, dropRef] = useDrop({
+        accept: "server",
+        drop: (item) => {
+            const droppedServer = getServerById(item.id);
+            if (droppedServer) connectToServer(droppedServer.id, droppedServer.identities?.[0]);
+            return { handled: true };
+        },
+        collect: (monitor) => ({ isServerOver: monitor.isOver() }),
+    });
 
     useEffect(() => {
         getRequest("/entries/recent?limit=5").then(data => setRecentConnections(data || [])).catch(() => {
@@ -91,7 +102,7 @@ export const WelcomePanel = ({
     };
 
     return (
-        <div className="welcome-panel">
+        <div className={`welcome-panel${isServerOver ? " drop-target" : ""}`} ref={dropRef}>
             <div className="welcome-left">
                 <h1>{t("welcome.hello")}, <span>{getAvatarLabel(user, t("welcome.defaultName"))}</span>!</h1>
                 <p>{t("welcome.subtitle")}</p>

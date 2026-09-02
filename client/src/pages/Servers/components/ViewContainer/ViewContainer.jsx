@@ -1,36 +1,22 @@
 import "./styles.sass";
 import ServerTabs from "./components/ServerTabs";
-import { useState, useRef, useCallback, useEffect } from "react";
+import SessionDropZone from "./components/SessionDropZone";
+import { useState, useRef, useCallback, useEffect, useMemo } from "react";
 import { createPortal } from "react-dom";
+import { useDragLayer } from "react-dnd";
+import { collectLeaves, computeGeometry, findNodeById } from "./utils/layoutTree.js";
 import GuacamoleRenderer from "@/pages/Servers/components/ViewContainer/renderer/GuacamoleRenderer.jsx";
 import BrowserRenderer from "@/pages/Servers/components/ViewContainer/renderer/BrowserRenderer.jsx";
 import XtermRenderer from "@/pages/Servers/components/ViewContainer/renderer/XtermRenderer.jsx";
 import FileRenderer from "@/pages/Servers/components/ViewContainer/renderer/FileRenderer";
 import ScriptRenderer from "@/pages/Servers/components/ViewContainer/renderer/ScriptRenderer";
 import NotesRenderer from "@/pages/Servers/components/ViewContainer/renderer/NotesRenderer";
-import Icon from "@mdi/react";
-import { mdiFullscreenExit } from "@mdi/js";
-import { useTranslation } from "react-i18next";
-import { getTitleBarHeight } from "@/common/utils/TauriUtil.js";
 import { useTauriWindow } from "@/common/hooks/useTauriWindow.js";
 import { useBodyClass } from "@/common/hooks/useBodyClass.js";
 
-const BTN_SIZE = 44;
-const BTN_STORAGE_KEY = "fullscreen-btn-position";
-
-const getMinY = () => getTitleBarHeight() + 16;
-const clampPosition = (x, y) => ({
-    x: Math.max(0, Math.min(window.innerWidth - BTN_SIZE, x)),
-    y: Math.max(getMinY(), Math.min(window.innerHeight - BTN_SIZE, y))
-});
-
-const loadBtnPosition = () => {
-    try {
-        const saved = JSON.parse(localStorage.getItem(BTN_STORAGE_KEY));
-        if (saved) return clampPosition(saved.x, saved.y);
-    } catch {}
-    return { x: window.innerWidth - 60, y: getMinY() };
-};
+const SASH_SIZE = 4;
+const MIN_PANE_SIZE = 96;
+const FULL_SIZE_STYLE = { position: "absolute", top: 0, left: 0, width: "100%", height: "100%" };
 
 export const ViewContainer = ({
                                   activeSessions,
@@ -45,9 +31,11 @@ export const ViewContainer = ({
                                   getSessionError,
                                   setOpenFileEditors,
                                   openTerminalFromFileManager,
+                                  sessionLayout,
+                                  connectFromDrop,
                               }) => {
-    const [layoutMode, setLayoutMode] = useState("single");
-    const [gridSessions, setGridSessions] = useState([]);
+    const { tree } = sessionLayout;
+    const layoutMode = tree ? "split" : "single";
     const sessionRefs = useRef({});
     const terminalRefs = useRef({});
     const guacamoleRefs = useRef({});
@@ -56,10 +44,10 @@ export const ViewContainer = ({
     const [broadcastMode, setBroadcastMode] = useState(false);
     const [sessionProgress, setSessionProgress] = useState({});
     const [sessionPageInfo, setSessionPageInfo] = useState({});
+    const [sessionControls, setSessionControls] = useState({});
     const [fullscreenMode, setFullscreenMode] = useState(false);
     const [titleBarTabsSlot, setTitleBarTabsSlot] = useState(null);
     const appWindow = useTauriWindow();
-    const { t } = useTranslation();
 
     useEffect(() => {
         setTitleBarTabsSlot(document.getElementById("titlebar-tabs-slot"));
@@ -98,20 +86,17 @@ export const ViewContainer = ({
         return () => cancelled = true;
     }, [appWindow, fullscreenMode]);
 
-    const [btnPosition, setBtnPosition] = useState(loadBtnPosition);
-    const [isDragging, setIsDragging] = useState(false);
-    const dragRef = useRef({ startX: 0, startY: 0, btnX: 0, btnY: 0 });
-
-    const [columnSizes, setColumnSizes] = useState([]);
-    const [rowSizes, setRowSizes] = useState([]);
-    const [cellSizes, setCellSizes] = useState([]);
-    const [isResizing, setIsResizing] = useState(false);
-    const [resizingDirection, setResizingDirection] = useState(null);
-    const resizeRef = useRef(null);
+    const [resizingOrientation, setResizingOrientation] = useState(null);
+    const [layoutSize, setLayoutSize] = useState({ width: 0, height: 0 });
     const layoutRef = useRef(null);
+    const previousSessionIdsRef = useRef(new Set());
 
-    const activeSession = activeSessions.find(session => session.id === activeSessionId);
-    const hasGuacamole = activeSession?.server?.renderer === "guac";
+    const { dragItemType } = useDragLayer((monitor) => ({
+        dragItemType: monitor.isDragging() ? monitor.getItemType() : null,
+    }));
+    const showDropZones = dragItemType === "TAB" || dragItemType === "server";
+
+    const activeControls = sessionControls[activeSessionId] || null;
 
     const registerTerminalRef = useCallback((sessionId, refs) => {
         refs ? terminalRefs.current[sessionId] = refs : delete terminalRefs.current[sessionId];
@@ -119,6 +104,16 @@ export const ViewContainer = ({
 
     const registerGuacamoleRef = useCallback((sessionId, refs) => {
         refs ? guacamoleRefs.current[sessionId] = refs : delete guacamoleRefs.current[sessionId];
+    }, []);
+
+    const registerSessionControls = useCallback((sessionId, controls) => {
+        setSessionControls(prev => {
+            if (controls) return { ...prev, [sessionId]: controls };
+            if (!(sessionId in prev)) return prev;
+            const next = { ...prev };
+            delete next[sessionId];
+            return next;
+        });
     }, []);
 
     const updateSessionProgress = useCallback((sessionId, progress) => {
@@ -154,51 +149,6 @@ export const ViewContainer = ({
     const toggleFullscreenMode = useCallback(() => {
         setFullscreenMode(prev => !prev);
     }, []);
-
-    const onBtnMouseDown = useCallback((e) => {
-        e.preventDefault();
-        dragRef.current = { startX: e.clientX, startY: e.clientY, btnX: btnPosition.x, btnY: btnPosition.y };
-        setIsDragging(true);
-    }, [btnPosition]);
-
-    useEffect(() => {
-        if (!isDragging) return;
-        const onMove = (e) => {
-            const { startX, startY, btnX, btnY } = dragRef.current;
-            setBtnPosition(clampPosition(btnX + e.clientX - startX, btnY + e.clientY - startY));
-        };
-        const onUp = () => {
-            setIsDragging(false);
-            try { localStorage.setItem(BTN_STORAGE_KEY, JSON.stringify(btnPosition)); } catch {}
-        };
-        document.addEventListener("mousemove", onMove, true);
-        document.addEventListener("mouseup", onUp, true);
-        return () => {
-            document.removeEventListener("mousemove", onMove, true);
-            document.removeEventListener("mouseup", onUp, true);
-        };
-    }, [isDragging, btnPosition]);
-
-    useEffect(() => {
-        const onResize = () => setBtnPosition(prev => clampPosition(prev.x, prev.y));
-        window.addEventListener("resize", onResize);
-        return () => window.removeEventListener("resize", onResize);
-    }, []);
-
-    const onBtnClick = useCallback((e) => {
-        const { startX, startY } = dragRef.current;
-        if (Math.abs(e.clientX - startX) < 5 && Math.abs(e.clientY - startY) < 5) toggleFullscreenMode();
-    }, [toggleFullscreenMode]);
-
-    const handleKeyboardShortcut = useCallback((keys) => {
-        const activeGuacamole = guacamoleRefs.current[activeSessionId];
-        if (activeGuacamole && activeGuacamole.client) {
-            keys.forEach(key => activeGuacamole.client.sendKeyEvent(1, key));
-            setTimeout(() => {
-                [...keys].reverse().forEach(key => activeGuacamole.client.sendKeyEvent(0, key));
-            }, 50);
-        }
-    }, [activeSessionId]);
 
     const handleSnippetSelected = useCallback((command) => {
         const commandWithNewline = command.endsWith("\n") ? command : command + "\n";
@@ -265,17 +215,7 @@ export const ViewContainer = ({
         }
     }, [layoutMode]);
 
-    const onTabOrderChange = useCallback((newOrder) => {
-        tabOrderRef.current = newOrder;
-        if (layoutMode !== "single") {
-            const filteredOrder = newOrder.filter(id => activeSessions.some(session => session.id === id));
-            if (filteredOrder.length > 0) setGridSessions(filteredOrder);
-        }
-    }, [layoutMode, activeSessions]);
-
-    const focusSession = useCallback((sessionId) => {
-        setActiveSessionId(sessionId);
-
+    const focusSessionElement = useCallback((sessionId) => {
         setTimeout(() => {
             const sessionElement = sessionRefs.current[sessionId];
             if (sessionElement) {
@@ -288,122 +228,119 @@ export const ViewContainer = ({
                 }
             }
         }, 100);
-    }, [setActiveSessionId]);
-
-    const initializeGridSizes = useCallback(({ rows, cols }) => {
-        setColumnSizes(Array(cols).fill(1));
-        setRowSizes(Array(rows).fill(1));
-        setCellSizes(Array.from({ length: rows }, () => Array.from({ length: cols }, () => ({ width: 1, height: 1 }))));
     }, []);
 
-    const handleResizerMouseDown = useCallback((e, type, index, rowIndex = null) => {
-        e.preventDefault();
-        e.stopPropagation();
-        setIsResizing(true);
-        setResizingDirection(type);
-
-        const layoutElement = layoutRef.current;
-        if (!layoutElement) return;
-
-        const layoutRect = layoutElement.getBoundingClientRect();
-        const totalSize = type === "vertical" ? layoutRect.width : layoutRect.height;
-        const layoutStart = type === "vertical" ? layoutRect.left : layoutRect.top;
-
-        const isSegmentResize = rowIndex !== null && type === "vertical";
-        const initialCellSizes = cellSizes.map(row => row.map(cell => ({ ...cell })));
-        const initialRowSizes = [...rowSizes];
-        const totalRowSize = initialRowSizes.reduce((sum, size) => sum + size, 0) || 1;
-
-        const handleMouseMove = (moveEvent) => {
-            const currentPos = type === "vertical" ? moveEvent.clientX : moveEvent.clientY;
-            const relativePos = Math.max(0, Math.min(totalSize, currentPos - layoutStart));
-            const mouseRatio = relativePos / totalSize;
-
-            if (type === "vertical" && isSegmentResize && initialCellSizes[rowIndex]) {
-                setCellSizes(prev => {
-                    const newSizes = prev.map(row => row.map(cell => ({ ...cell })));
-                    if (newSizes[rowIndex] && index < newSizes[rowIndex].length - 1) {
-                        const rowCells = initialCellSizes[rowIndex];
-                        const totalRowWidth = rowCells.reduce((sum, cell) => sum + cell.width, 0);
-                        const widthsBefore = rowCells.slice(0, index).reduce((sum, cell) => sum + cell.width, 0);
-                        const twoCellWidth = rowCells[index].width + rowCells[index + 1].width;
-
-                        const targetWidth = (mouseRatio * totalRowWidth) - widthsBefore;
-                        const clampedWidth = Math.max(0.15, Math.min(twoCellWidth - 0.15, targetWidth));
-
-                        newSizes[rowIndex][index].width = clampedWidth;
-                        newSizes[rowIndex][index + 1].width = twoCellWidth - clampedWidth;
-                    }
-                    return newSizes;
-                });
-            } else if (type === "horizontal") {
-                setRowSizes(prev => {
-                    const newSizes = [...prev];
-                    if (index < newSizes.length - 1) {
-                        const heightsBefore = initialRowSizes.slice(0, index).reduce((sum, size) => sum + size, 0);
-                        const twoRowTotal = initialRowSizes[index] + initialRowSizes[index + 1];
-                        const targetFirstRow = (mouseRatio * totalRowSize) - heightsBefore;
-                        const clampedFirstRow = Math.max(0.15, Math.min(twoRowTotal - 0.15, targetFirstRow));
-                        newSizes[index] = clampedFirstRow;
-                        newSizes[index + 1] = twoRowTotal - clampedFirstRow;
-                    }
-                    return newSizes;
-                });
-            }
-        };
-
-        const handleMouseUp = () => {
-            setIsResizing(false);
-            setResizingDirection(null);
-            document.removeEventListener("mousemove", handleMouseMove, true);
-            document.removeEventListener("mouseup", handleMouseUp, true);
-        };
-
-        document.addEventListener("mousemove", handleMouseMove, true);
-        document.addEventListener("mouseup", handleMouseUp, true);
-
-        resizeRef.current = { type, index, handleMouseMove, handleMouseUp };
-    }, [cellSizes, rowSizes]);
-
-    const getDynamicLayout = (n) => {
-        const layouts = { 1: [1,1], 2: [1,2], 3: [2,2], 4: [2,2], 5: [3,2], 6: [2,3] };
-        const [rows, cols] = layouts[n] || [Math.ceil(n / Math.ceil(Math.sqrt(n))), Math.ceil(Math.sqrt(n))];
-        return { mode: n <= 1 ? "single" : `grid-${rows}x${cols}`, rows, cols };
-    };
-
-    const toggleSplitMode = () => {
-        if (layoutMode === "single") {
-            const layout = getDynamicLayout(activeSessions.length);
-            setLayoutMode(layout.mode);
-            setGridSessions(tabOrderRef.current?.length ? tabOrderRef.current : activeSessions.map(s => s.id));
-            initializeGridSizes(layout);
-        } else {
-            setLayoutMode("single");
-            setGridSessions([]);
-            setColumnSizes([]);
-            setRowSizes([]);
-            setCellSizes([]);
-        }
-    };
-
-    const prevSessionCountRef = useRef(activeSessions.length);
+    const focusSession = useCallback((sessionId) => {
+        sessionLayout.showSession(sessionId);
+        setActiveSessionId(sessionId);
+        focusSessionElement(sessionId);
+    }, [sessionLayout, setActiveSessionId, focusSessionElement]);
 
     useEffect(() => {
-        if (layoutMode === "single") return;
-        const layout = getDynamicLayout(activeSessions.length);
-        if (layout.mode !== layoutMode) setLayoutMode(layout.mode);
-        setGridSessions(tabOrderRef.current?.length ? tabOrderRef.current : activeSessions.map(s => s.id));
-        if (prevSessionCountRef.current !== activeSessions.length) {
-            initializeGridSizes(layout);
-            prevSessionCountRef.current = activeSessions.length;
+        const element = layoutRef.current;
+        if (!element) return;
+        const observer = new ResizeObserver(([entry]) => {
+            const { width, height } = entry.contentRect;
+            setLayoutSize(current => (current.width === width && current.height === height) ? current : { width, height });
+        });
+        observer.observe(element);
+        return () => observer.disconnect();
+    }, []);
+
+    const geometry = useMemo(() => {
+        if (!tree || layoutSize.width === 0 || layoutSize.height === 0) return null;
+        return computeGeometry(tree, { x: 0, y: 0, width: layoutSize.width, height: layoutSize.height }, SASH_SIZE);
+    }, [tree, layoutSize]);
+
+    const startSashDrag = useCallback((event, sash) => {
+        event.preventDefault();
+        event.stopPropagation();
+        const branch = findNodeById(tree, sash.branchId);
+        const branchRect = geometry?.branches.get(sash.branchId);
+        if (!branch || !branchRect) return;
+
+        const horizontal = branch.orientation === "horizontal";
+        const available = (horizontal ? branchRect.width : branchRect.height) - SASH_SIZE * (branch.children.length - 1);
+        if (available <= 0) return;
+
+        const startPosition = horizontal ? event.clientX : event.clientY;
+        const initialSizes = [...branch.sizes];
+        const pairTotal = initialSizes[sash.index] + initialSizes[sash.index + 1];
+        const minimumFraction = Math.min(MIN_PANE_SIZE / available, pairTotal / 2);
+        setResizingOrientation(branch.orientation);
+
+        const handleMove = (moveEvent) => {
+            const delta = ((horizontal ? moveEvent.clientX : moveEvent.clientY) - startPosition) / available;
+            const first = Math.max(minimumFraction, Math.min(pairTotal - minimumFraction, initialSizes[sash.index] + delta));
+            const sizes = [...initialSizes];
+            sizes[sash.index] = first;
+            sizes[sash.index + 1] = pairTotal - first;
+            sessionLayout.resizeBranch(sash.branchId, sizes);
+        };
+
+        const handleUp = () => {
+            setResizingOrientation(null);
+            document.removeEventListener("pointermove", handleMove, true);
+            document.removeEventListener("pointerup", handleUp, true);
+            document.removeEventListener("pointercancel", handleUp, true);
+        };
+
+        document.addEventListener("pointermove", handleMove, true);
+        document.addEventListener("pointerup", handleUp, true);
+        document.addEventListener("pointercancel", handleUp, true);
+    }, [tree, geometry, sessionLayout]);
+
+    const toggleSplitMode = () => {
+        if (tree) {
+            sessionLayout.clearLayout();
+            return;
         }
-    }, [activeSessions, layoutMode, initializeGridSizes]);
+        const orderedIds = tabOrderRef.current.filter(id => activeSessions.some(session => session.id === id));
+        const remainingIds = activeSessions.map(session => session.id).filter(id => !orderedIds.includes(id));
+        sessionLayout.splitAll([...orderedIds, ...remainingIds]);
+    };
+
+    const splitActiveWith = useCallback((sessionId, edge) => {
+        if (!activeSessionId || activeSessionId === sessionId) return;
+        sessionLayout.splitWithSession(activeSessionId, edge, sessionId);
+        setActiveSessionId(sessionId);
+        focusSessionElement(sessionId);
+    }, [activeSessionId, sessionLayout, setActiveSessionId, focusSessionElement]);
+
+    const handlePaneDrop = useCallback((pane, itemType, item, edge) => {
+        if (itemType === "server") {
+            connectFromDrop(item.id, edge === "center" ? null : { targetSessionId: pane.sessionId, edge });
+            return;
+        }
+
+        if (edge === "center") {
+            if (tree) sessionLayout.showSessionInPane(pane.id, item.sessionId);
+            focusSession(item.sessionId);
+            return;
+        }
+
+        if (pane.sessionId === item.sessionId) return;
+        sessionLayout.splitWithSession(pane.sessionId, edge, item.sessionId);
+        setActiveSessionId(item.sessionId);
+        focusSessionElement(item.sessionId);
+    }, [tree, sessionLayout, connectFromDrop, focusSession, setActiveSessionId, focusSessionElement]);
+
+    useEffect(() => {
+        const visibleIds = new Set(activeSessions.map(session => session.id));
+        const previousIds = previousSessionIdsRef.current;
+        const addedIds = new Set([...visibleIds].filter(id => !previousIds.has(id)));
+        const removedAny = [...previousIds].some(id => !visibleIds.has(id));
+        previousSessionIdsRef.current = visibleIds;
+
+        const nextActiveId = sessionLayout.reconcile({ visibleIds, activeSessionId, addedIds, removedAny });
+        if (nextActiveId !== activeSessionId) setActiveSessionId(nextActiveId);
+    }, [activeSessions, activeSessionId, sessionLayout, setActiveSessionId]);
 
     useEffect(() => {
         if (activeSessionId && activeSessions.some(session => session.id === activeSessionId)) {
-            focusSession(activeSessionId);
+            focusSessionElement(activeSessionId);
         }
-    }, [activeSessions.length, activeSessionId, focusSession]);
+    }, [activeSessions.length, activeSessionId, focusSessionElement]);
 
     const renderRenderer = (session) => {
         if (session.type === "notes") {
@@ -429,8 +366,8 @@ export const ViewContainer = ({
                                           markSessionErrored={markSessionErrored}
                                           getSessionError={getSessionError}
                                           registerGuacamoleRef={registerGuacamoleRef}
+                                          onControlsChange={(controls) => registerSessionControls(session.id, controls)}
                                           isShared={!!session.isJoined}
-                                          fullscreenEnabled={fullscreenMode}
                                           onFullscreenToggle={toggleFullscreenMode} />;
             case "web":
                 return <BrowserRenderer session={session} disconnectFromServer={disconnectFromServer}
@@ -459,105 +396,73 @@ export const ViewContainer = ({
         }
     };
 
-    const renderFlexLayout = () => {
-        const { rows, cols } = getDynamicLayout(gridSessions.length);
-        const totalRowHeight = rowSizes.reduce((sum, s) => sum + s, 0) || rows;
-        const resizers = [];
-        const dividerSize = 3;
-        const halfDivider = dividerSize / 2;
-
-        let cumHeight = 0;
-        for (let r = 0; r < rows - 1; r++) {
-            cumHeight += (rowSizes[r] || 1) / totalRowHeight;
-            resizers.push(
-                <div key={`h-${r}`} className="grid-resizer horizontal"
-                     style={{ position: 'absolute', top: `calc(${cumHeight * 100}% - ${halfDivider}px)`, left: 0, height: dividerSize, width: "100%", cursor: "row-resize", zIndex: 10 }}
-                     onMouseDown={(e) => handleResizerMouseDown(e, "horizontal", r, null)} />
-            );
-        }
-
-        for (let r = 0; r < rows; r++) {
-            const sessionsInRow = Math.min(cols, gridSessions.length - r * cols);
-            const rowCellWidths = (cellSizes[r] || columnSizes).slice(0, sessionsInRow).map(c => c?.width ?? 1);
-            const totalRowWidth = rowCellWidths.reduce((sum, w) => sum + w, 0) || cols;
-            const rowStart = r > 0 ? rowSizes.slice(0, r).reduce((sum, s) => sum + s, 0) / totalRowHeight : 0;
-            const rowHeight = (rowSizes[r] || 1) / totalRowHeight;
-            let cumWidth = 0;
-            for (let c = 0; c < sessionsInRow - 1; c++) {
-                cumWidth += (rowCellWidths[c] || 1) / totalRowWidth;
-                resizers.push(
-                    <div key={`v-${r}-${c}`} className="grid-resizer vertical"
-                         style={{ position: 'absolute', left: `calc(${cumWidth * 100}% - ${halfDivider}px)`, top: `${rowStart * 100}%`, width: dividerSize, height: `${rowHeight * 100}%`, cursor: "col-resize", zIndex: 10 }}
-                         onMouseDown={(e) => handleResizerMouseDown(e, "vertical", c, r)} />
-                );
-            }
-        }
-        return resizers;
-    };
+    const leafBySession = useMemo(() => {
+        const map = new Map();
+        collectLeaves(tree).forEach(leaf => map.set(leaf.sessionId, leaf));
+        return map;
+    }, [tree]);
 
     const getSessionStyle = (session) => {
-        if (layoutMode === "single") {
-            const v = session.id === activeSessionId;
-            return { position: "absolute", top: 0, left: 0, width: "100%", height: "100%", zIndex: v ? 1 : -1, opacity: v ? 1 : 0, pointerEvents: v ? "auto" : "none" };
+        if (!tree) {
+            const visible = session.id === activeSessionId;
+            return { ...FULL_SIZE_STYLE, zIndex: visible ? 1 : -1, opacity: visible ? 1 : 0, pointerEvents: visible ? "auto" : "none" };
         }
-        const gridIndex = gridSessions.indexOf(session.id);
-        if (gridIndex === -1) return { position: "absolute", opacity: 0, pointerEvents: "none", zIndex: -1 };
 
-        const { rows, cols } = getDynamicLayout(gridSessions.length);
-        const rowIdx = Math.floor(gridIndex / cols), colIdx = gridIndex % cols;
-        const totalRowHeight = rowSizes.reduce((sum, s) => sum + s, 0) || rows;
-        const rowStart = rowIdx > 0 ? rowSizes.slice(0, rowIdx).reduce((sum, s) => sum + s, 0) / totalRowHeight * 100 : 0;
-        const rowHeight = (rowSizes[rowIdx] || 1) / totalRowHeight * 100;
-        const sessionsInRow = Math.min(cols, gridSessions.length - rowIdx * cols);
-        const rowCellWidths = (cellSizes[rowIdx] || Array(sessionsInRow).fill({ width: 1 })).slice(0, sessionsInRow).map(c => c?.width ?? 1);
-        const totalRowWidth = rowCellWidths.reduce((sum, w) => sum + w, 0) || sessionsInRow;
-        const colStart = colIdx > 0 ? rowCellWidths.slice(0, colIdx).reduce((sum, w) => sum + w, 0) / totalRowWidth * 100 : 0;
-        const spanFull = gridIndex === gridSessions.length - 1 && rowIdx === rows - 1 && gridSessions.length - (rows - 1) * cols === 1;
-        const colWidth = spanFull ? 100 : (rowCellWidths[colIdx] || 1) / totalRowWidth * 100;
-
-        const gapSize = 3;
-        const isFirstRow = rowIdx === 0;
-        const isLastRow = rowIdx === rows - 1;
-        const isFirstCol = colIdx === 0;
-        const isLastCol = spanFull || colIdx === sessionsInRow - 1;
-
-        const topAdjust = isFirstRow ? 0 : gapSize / 2;
-        const bottomAdjust = isLastRow ? 0 : gapSize / 2;
-        const leftAdjust = isFirstCol ? 0 : gapSize / 2;
-        const rightAdjust = isLastCol ? 0 : gapSize / 2;
-
-        return { 
-            position: "absolute", 
-            top: `calc(${rowStart}% + ${topAdjust}px)`, 
-            left: spanFull ? 0 : `calc(${colStart}% + ${leftAdjust}px)`, 
-            width: spanFull ? '100%' : `calc(${colWidth}% - ${leftAdjust + rightAdjust}px)`, 
-            height: `calc(${rowHeight}% - ${topAdjust + bottomAdjust}px)`, 
-            zIndex: 1 
-        };
+        const rect = geometry?.leaves.get(leafBySession.get(session.id)?.id);
+        if (!rect) return { ...FULL_SIZE_STYLE, zIndex: -1, opacity: 0, pointerEvents: "none" };
+        return { position: "absolute", left: rect.x, top: rect.y, width: rect.width, height: rect.height, zIndex: 1 };
     };
 
     const renderAllSessions = () => activeSessions.map(session => {
         if (!session?.server) return null;
-        const isVisible = layoutMode === "single" ? session.id === activeSessionId : gridSessions.includes(session.id);
+        const isVisible = tree ? leafBySession.has(session.id) : session.id === activeSessionId;
+        const isActive = session.id === activeSessionId;
         return (
             <div key={session.id} ref={el => sessionRefs.current[session.id] = el}
-                 className={`session-renderer ${isVisible ? "visible" : "hidden"}`}
-                 onClick={() => session.id !== activeSessionId && focusSession(session.id)}
+                 className={`session-renderer ${isVisible ? "visible" : "hidden"}${isActive ? " active" : ""}`}
+                 onClick={() => !isActive && focusSession(session.id)}
                  style={getSessionStyle(session)}>
                 {renderRenderer(session)}
             </div>
         );
     });
 
-    const serverTabs = fullscreenMode && !titleBarTabsSlot ? null : (
+    const renderSashes = () => geometry?.sashes.map(sash => (
+        <div key={sash.id}
+             className={`layout-sash ${sash.orientation === "horizontal" ? "columns" : "rows"}`}
+             style={{ left: sash.rect.x, top: sash.rect.y, width: sash.rect.width, height: sash.rect.height }}
+             onPointerDown={(event) => startSashDrag(event, sash)} />
+    ));
+
+    const renderDropZones = () => {
+        if (!showDropZones) return null;
+
+        if (!tree) {
+            if (!activeSessionId) return null;
+            const fullRect = { x: 0, y: 0, width: layoutSize.width, height: layoutSize.height };
+            const pane = { id: null, sessionId: activeSessionId };
+            return <SessionDropZone rect={fullRect} sessionId={activeSessionId}
+                                    onDrop={(itemType, item, edge) => handlePaneDrop(pane, itemType, item, edge)} />;
+        }
+
+        return collectLeaves(tree).map(leaf => {
+            const rect = geometry?.leaves.get(leaf.id);
+            if (!rect) return null;
+            return <SessionDropZone key={leaf.id} rect={rect} sessionId={leaf.sessionId}
+                                    onDrop={(itemType, item, edge) => handlePaneDrop(leaf, itemType, item, edge)} />;
+        });
+    };
+
+    const serverTabs = (
         <ServerTabs activeSessions={activeSessions} setActiveSessionId={focusSession}
                     activeSessionId={activeSessionId}
                     closeSession={closeSession}
                     layoutMode={layoutMode} onToggleSplit={toggleSplitMode}
-                    orderRef={tabOrderRef}
-                    onTabOrderChange={onTabOrderChange} onBroadcastToggle={toggleBroadcastMode}
+                    onSplitSession={splitActiveWith}
+                    orderRef={tabOrderRef} onBroadcastToggle={toggleBroadcastMode}
                     onSnippetSelected={handleSnippetSelected} broadcastEnabled={broadcastMode}
-                    onKeyboardShortcut={handleKeyboardShortcut} hasGuacamole={hasGuacamole}
+                    activeControls={activeControls}
+                    reveal={fullscreenMode && !titleBarTabsSlot}
                     sessionProgress={sessionProgress} sessionPageInfo={sessionPageInfo}
                     fullscreenEnabled={fullscreenMode}
                     onFullscreenToggle={toggleFullscreenMode}
@@ -567,26 +472,13 @@ export const ViewContainer = ({
 
     return (
         <div className={`view-container ${fullscreenMode ? "fullscreen" : ""}`}>
-            {fullscreenMode && !hasGuacamole && !titleBarTabsSlot && (
-                <div
-                    className={`exit-fullscreen-btn-container ${isDragging ? "dragging" : ""}`}
-                    style={{ left: btnPosition.x, top: btnPosition.y }}
-                    onMouseDown={onBtnMouseDown}
-                    onClick={onBtnClick}
-                    title={t("servers.terminalActions.exitFullScreen")}
-                >
-                    <button className="exit-fullscreen-btn">
-                        <Icon path={mdiFullscreenExit} />
-                    </button>
-                </div>
-            )}
             {titleBarTabsSlot ? createPortal(serverTabs, titleBarTabsSlot) : serverTabs}
 
             <div ref={layoutRef}
-                 className={`view-layouter ${layoutMode} ${isResizing ? "resizing" : ""} ${isResizing && resizingDirection ? `resizing-${resizingDirection}` : ""}`}
-                 style={{ position: "relative", width: "100%", height: "100%" }}>
+                 className={`view-layouter ${layoutMode}${resizingOrientation ? ` resizing resizing-${resizingOrientation}` : ""}`}>
                 {renderAllSessions()}
-                {layoutMode !== "single" && renderFlexLayout()}
+                {renderSashes()}
+                {renderDropZones()}
             </div>
         </div>
     );

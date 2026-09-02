@@ -27,6 +27,11 @@ const PASSWORD_PROMPT_REGEX = /^[^$#%>]*(password|passphrase)[^:\r\n]*:\s?$/i;
 const ANSI_ESCAPE_REGEX = /\x1b(?:\[[0-9;?]*[a-zA-Z]|\][^\x07\x1b]*(?:\x07|\x1b\\)?|[()][0-9A-B]|[a-zA-Z=><])/g;
 const CONTROL_CHAR_REGEX = /[\x00-\x08\x0b\x0c\x0e-\x1f\x7f]/g;
 
+const MIN_ZOOM_FONT_SIZE = 6;
+const MAX_ZOOM_FONT_SIZE = 40;
+
+const clampFontSize = (size) => Math.min(MAX_ZOOM_FONT_SIZE, Math.max(MIN_ZOOM_FONT_SIZE, size));
+
 const XtermRenderer = ({ session, disconnectFromServer, markSessionErrored, getSessionError, registerTerminalRef, broadcastMode, terminalRefs, updateProgress, layoutMode, onBroadcastToggle, onFullscreenToggle, isShared = false, onOpenSftp }) => {
     const ref = useRef(null);
     const termRef = useRef(null);
@@ -38,6 +43,7 @@ const XtermRenderer = ({ session, disconnectFromServer, markSessionErrored, getS
     const onFullscreenToggleRef = useRef(onFullscreenToggle);
     const connectionLoaderRef = useRef(null);
     const smartCopyPasteRef = useRef(false);
+    const zoomOffsetRef = useRef(0);
 
     const userContext = useContext(UserContext);
     const sessionToken = userContext?.sessionToken;
@@ -46,6 +52,10 @@ const XtermRenderer = ({ session, disconnectFromServer, markSessionErrored, getS
     const effectiveFont = (isShared && session.fontFamily) ? session.fontFamily : selectedFont;
     const effectiveFontSize = (isShared && session.fontSize) ? session.fontSize : fontSize;
     const hintForeground = (theme === "light" && selectedTheme === "light") ? "#000000" : getCurrentTheme().foreground;
+
+    useEffect(() => {
+        zoomOffsetRef.current = 0;
+    }, [effectiveFontSize]);
     const aiContext = useContext(AIContext);
     const isAIAvailable = aiContext?.isAIAvailable || (() => false);
     const aiAvailableRef = useRef(false);
@@ -373,7 +383,7 @@ const XtermRenderer = ({ session, disconnectFromServer, markSessionErrored, getS
         const term = new Xterm({
             cursorBlink: cursorBlink,
             cursorStyle: cursorStyle,
-            fontSize: effectiveFontSize,
+            fontSize: clampFontSize(effectiveFontSize + zoomOffsetRef.current),
             fontFamily: effectiveFont,
             theme: {
                 background: (theme === "light" && isLightTerminalTheme) ? "#F3F3F3" : terminalTheme.background,
@@ -439,6 +449,31 @@ const XtermRenderer = ({ session, disconnectFromServer, markSessionErrored, getS
         };
 
         window.addEventListener("resize", handleResize);
+        const resizeObserver = new ResizeObserver(() => {
+            if (ws.readyState === ws.OPEN) handleResize();
+        });
+        resizeObserver.observe(ref.current);
+
+        const applyFontSize = (size) => {
+            const next = clampFontSize(size);
+            if (next === term.options.fontSize) return;
+            term.options.fontSize = next;
+            zoomOffsetRef.current = next - effectiveFontSize;
+            handleResize();
+        };
+
+        const zoomBy = (delta) => applyFontSize(term.options.fontSize + delta);
+        const resetZoom = () => applyFontSize(effectiveFontSize);
+
+        const handleWheelZoom = (event) => {
+            if (!event.ctrlKey && !event.metaKey) return;
+            event.preventDefault();
+            event.stopPropagation();
+            if (event.deltaY === 0) return;
+            zoomBy(event.deltaY < 0 ? 1 : -1);
+        };
+
+        ref.current?.addEventListener("wheel", handleWheelZoom, { passive: false, capture: true });
 
         const handleNativePaste = (e) => {
             const text = e.clipboardData?.getData('text');
@@ -575,6 +610,19 @@ const XtermRenderer = ({ session, disconnectFromServer, markSessionErrored, getS
 
         term.attachCustomKeyEventHandler((event) => {
             if (event.type === "keydown") {
+                if ((event.ctrlKey || event.metaKey) && !event.altKey) {
+                    const zoomInKey = event.key === "+" || event.key === "=" || event.code === "NumpadAdd";
+                    const zoomOutKey = event.key === "-" || event.code === "NumpadSubtract";
+                    const zoomResetKey = event.key === "0" || event.code === "Numpad0";
+
+                    if (zoomInKey || zoomOutKey || zoomResetKey) {
+                        event.preventDefault();
+                        event.stopPropagation();
+                        if (zoomResetKey) resetZoom(); else zoomBy(zoomInKey ? 1 : -1);
+                        return false;
+                    }
+                }
+
                 if (passwordPromptRef.current) {
                     const hintItems = passwordIdentitiesRef.current;
                     const hintIndex = passwordHintIndexRef.current;
@@ -728,7 +776,9 @@ const XtermRenderer = ({ session, disconnectFromServer, markSessionErrored, getS
                 registerTerminalRef(session.id, null);
             }
             window.removeEventListener("resize", handleResize);
+            resizeObserver.disconnect();
             ref.current?.removeEventListener('paste', handleNativePaste);
+            ref.current?.removeEventListener("wheel", handleWheelZoom, { capture: true });
             if (ws) {
                 ws.onclose = null;
                 ws.onerror = null;

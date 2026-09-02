@@ -84,13 +84,13 @@ export const ContextMenu = ({
             if (e.key === "ArrowUp") navigate(-1);
         };
 
-        document.addEventListener("mousedown", handleClickOutside);
+        document.addEventListener("mousedown", handleClickOutside, true);
         document.addEventListener("keydown", handleKeyDown);
 
         setTimeout(() => menuRef.current?.querySelector('.context-menu-item:not(.disabled):not(.custom)')?.focus(), 50);
 
         return () => {
-            document.removeEventListener("mousedown", handleClickOutside);
+            document.removeEventListener("mousedown", handleClickOutside, true);
             document.removeEventListener("keydown", handleKeyDown);
         };
     }, [isOpen, onClose, trigger]);
