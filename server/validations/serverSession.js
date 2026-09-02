@@ -15,6 +15,7 @@ module.exports.createSessionValidation = Joi.object({
         password: Joi.string().optional(),
         sshKey: Joi.string().optional(),
         passphrase: Joi.string().optional(),
+        sshCertificate: Joi.string().optional(),
     }).optional()
 });
 

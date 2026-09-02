@@ -1261,6 +1261,7 @@
           "passwordPlaceholder": "Enter password",
           "passwordPlaceholderEdit": "Leave blank to keep current password",
           "sshKey": "SSH Private Key",
+          "sshCertificate": "SSH Client Certificate (optional)",
           "passphrase": "Passphrase (optional)",
           "passphrasePlaceholder": "Enter passphrase (optional)",
           "passphrasePlaceholderEdit": "Leave blank to keep current passphrase"
@@ -1734,6 +1735,7 @@
         "sshKey": "SSH Key",
         "both": "Key+Pass",
         "sshPrivateKey": "SSH Private Key",
+        "sshCertificate": "SSH Client Certificate (optional)",
         "passphrase": "Passphrase (optional)",
         "new": "New",
         "removeIdentity": "Remove identity",
@@ -1799,8 +1801,11 @@
       "keyFiles": {
         "label": "SSH Key Files ({{count}} found)",
         "userLabel": "User: {{username}}",
+        "certificateLabel": "Certificate: {{path}}",
         "uploaded": "✓ Uploaded",
-        "uploadButton": "Upload"
+        "uploadButton": "Upload key",
+        "certificateUploaded": "✓ Certificate uploaded",
+        "certificateUploadButton": "Upload certificate"
       },
       "actions": {
         "cancel": "Cancel",
@@ -1812,6 +1817,8 @@
         "noFolder": "No folder selected",
         "uploadSuccess": "Key {{name}} uploaded successfully",
         "uploadFailed": "Failed to upload key {{name}}",
+        "certificateUploadSuccess": "Certificate for {{name}} uploaded successfully",
+        "certificateUploadFailed": "Failed to upload certificate for {{name}}",
         "importFailed": "Failed to import SSH config"
       }
     },

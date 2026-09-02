@@ -13,6 +13,15 @@ import Input from "@/common/components/IconInput";
 import SelectBox from "@/common/components/SelectBox";
 import { getFieldConfig } from "@/pages/Servers/components/ServerDialog/utils/fieldConfig.js";
 
+const readTextFile = (event, setValue) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = (fileEvent) => setValue(fileEvent.target.result);
+    reader.readAsText(file);
+};
+
 export const DirectConnectDialog = ({ open, onClose, onConnect, server }) => {
     const { t } = useTranslation();
     const { sendToast } = useToast();
@@ -26,6 +35,7 @@ export const DirectConnectDialog = ({ open, onClose, onConnect, server }) => {
     const [authType, setAuthType] = useState(defaultAuthType);
     const [password, setPassword] = useState("");
     const [sshKey, setSshKey] = useState(null);
+    const [sshCertificate, setSshCertificate] = useState(null);
     const [passphrase, setPassphrase] = useState("");
 
     const allAuthOptions = [
@@ -34,21 +44,18 @@ export const DirectConnectDialog = ({ open, onClose, onConnect, server }) => {
         { label: t("servers.dialog.identities.sshKey"), value: "ssh" },
         { label: t("servers.dialog.identities.both"), value: "both" },
     ];
-    
-    const authOptions = useMemo(() => 
+
+    const authOptions = useMemo(() =>
         allAuthOptions.filter(opt => allowedAuthTypes.includes(opt.value)),
         [allowedAuthTypes, t]
     );
 
     const readFile = (event) => {
-        const file = event.target.files[0];
-        if (!file) return;
-        
-        const reader = new FileReader();
-        reader.onload = (e) => {
-            setSshKey(e.target.result);
-        };
-        reader.readAsText(file);
+        readTextFile(event, setSshKey);
+    };
+
+    const readCertificate = (event) => {
+        readTextFile(event, setSshCertificate);
     };
 
     const validateFields = () => {
@@ -84,9 +91,11 @@ export const DirectConnectDialog = ({ open, onClose, onConnect, server }) => {
             ),
         };
 
+        if (authType === "ssh" || authType === "both") directIdentity.sshCertificate = sshCertificate || undefined;
+
         onConnect(directIdentity);
         onClose();
-    }, [username, authType, password, sshKey, passphrase, onConnect, onClose]);
+    }, [username, authType, password, sshKey, sshCertificate, passphrase, onConnect, onClose]);
 
     useEffect(() => {
         if (!open) return;
@@ -95,6 +104,7 @@ export const DirectConnectDialog = ({ open, onClose, onConnect, server }) => {
         setAuthType(defaultAuthType);
         setPassword("");
         setSshKey(null);
+        setSshCertificate(null);
         setPassphrase("");
     }, [open, defaultAuthType]);
 
@@ -173,6 +183,17 @@ export const DirectConnectDialog = ({ open, onClose, onConnect, server }) => {
                                         type="file"
                                         autoComplete="off"
                                         onChange={readFile}
+                                    />
+                                </div>
+
+                                <div className="form-group">
+                                    <label htmlFor="certificatefile">{t("servers.dialog.identities.sshCertificate")}</label>
+                                    <Input
+                                        icon={mdiFileUploadOutline}
+                                        type="file"
+                                        accept=".pub,.crt,.cert,text/plain"
+                                        autoComplete="off"
+                                        onChange={readCertificate}
                                     />
                                 </div>
 
