@@ -26,6 +26,7 @@ const DraggableTab = ({
     index,
     moveTab,
     progress = 0,
+    pageInfo = null,
 }) => {
     const contextMenu = useContextMenu();
     const { popOutSession } = useActiveSessions();
@@ -133,9 +134,11 @@ const DraggableTab = ({
                             />
                         </svg>
                     )}
-                    <Icon path={isNotes ? mdiNoteEditOutline : getIconPath(server.icon)} className="progress-icon" />
+                    {pageInfo?.icon
+                        ? <img src={pageInfo.icon} className="progress-icon page-favicon" alt="" />
+                        : <Icon path={isNotes ? mdiNoteEditOutline : getIconPath(server.icon)} className="progress-icon" />}
                 </div>
-                <h2>{server?.name} {session.type === "sftp" ? " (SFTP)" : ""}{isNotes ? ` (${t("servers.notesPanel.title")})` : ""}</h2>
+                <h2>{pageInfo?.title || server?.name} {session.type === "sftp" ? " (SFTP)" : ""}{isNotes ? ` (${t("servers.notesPanel.title")})` : ""}</h2>
                 <AvatarStack className="tab-participants" users={otherParticipants} max={2}
                              getKey={participant => participant.viewerId} />
                 <div className="tab-actions">
@@ -228,6 +231,7 @@ export const ServerTabs = ({
     onKeyboardShortcut,
     hasGuacamole,
     sessionProgress = {},
+    sessionPageInfo = {},
     fullscreenEnabled,
     onFullscreenToggle,
 }) => {
@@ -372,7 +376,8 @@ export const ServerTabs = ({
                                 activeSessionId={activeSessionId} setActiveSessionId={setActiveSessionId}
                                 closeSession={closeSession} hibernateSession={hibernateSession} duplicateSession={duplicateSession}
                                 openNotes={openNotes}
-                                progress={sessionProgress[session.id] || 0} />
+                                progress={sessionProgress[session.id] || 0}
+                                pageInfo={sessionPageInfo[session.id] || null} />
                         );
                     })}
                 </div>
