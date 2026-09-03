@@ -13,7 +13,10 @@ const isValidTransferId = (id) => typeof id === "string" && TRANSFER_ID_PATTERN.
 const serialize = (transfer) => ({
     id: transfer.id,
     name: transfer.name,
+    count: transfer.count,
     direction: transfer.direction,
+    action: transfer.action,
+    sessionIds: transfer.sessionIds,
     total: transfer.total,
     transferred: transfer.transferred,
     state: transfer.state,
@@ -21,12 +24,14 @@ const serialize = (transfer) => ({
 });
 
 const broadcast = (transfer) => {
-    const session = SessionManager.get(transfer.sessionId);
-    if (!session) return;
     const frame = Buffer.concat([Buffer.from([OP_TRANSFER_PROGRESS]), Buffer.from(JSON.stringify(serialize(transfer)))]);
-    for (const ws of session.connectedWs) {
-        if (!ws.isSftp || ws.readyState !== 1) continue;
-        try { ws.send(frame); } catch {}
+    for (const sessionId of transfer.sessionIds) {
+        const session = SessionManager.get(sessionId);
+        if (!session) continue;
+        for (const ws of session.connectedWs) {
+            if (!ws.isSftp || ws.readyState !== 1) continue;
+            try { ws.send(frame); } catch {}
+        }
     }
 };
 
@@ -37,12 +42,13 @@ const flush = (transfer) => {
     broadcast(transfer);
 };
 
-const register = ({ id, sessionId, name, direction, total, cancel }) => {
+const register = ({ id, sessionId, sessionIds, name, count = 1, direction, action = null, total, cancel }) => {
     if (id === null) return null;
     if (!isValidTransferId(id)) throw new Error("Invalid transfer id");
     if (transfers.has(id)) throw new Error("Transfer id already in use");
     const transfer = {
-        id, sessionId, name, direction, cancel,
+        id, name, count, direction, action, cancel,
+        sessionIds: sessionIds ?? [sessionId],
         total: total || 0,
         transferred: 0,
         state: "active",
@@ -67,6 +73,13 @@ const progress = (id, transferred) => {
     else transfer.flushTimer = setTimeout(() => flush(transfer), PROGRESS_INTERVAL_MS - elapsed);
 };
 
+const setTotal = (id, total) => {
+    const transfer = transfers.get(id);
+    if (!transfer || transfer.state !== "active") return;
+    transfer.total = total;
+    flush(transfer);
+};
+
 const finish = (id, { error = null, cancelled = false } = {}) => {
     if (id === null) return;
     const transfer = transfers.get(id);
@@ -80,14 +93,14 @@ const finish = (id, { error = null, cancelled = false } = {}) => {
 
 const cancel = (id, sessionId) => {
     const transfer = transfers.get(id);
-    if (!transfer || transfer.sessionId !== sessionId || transfer.state !== "active") return false;
+    if (!transfer || !transfer.sessionIds.includes(sessionId) || transfer.state !== "active") return false;
     logger.info("Transfer cancelled by client", { id, sessionId, name: transfer.name });
     try { transfer.cancel(); } catch (err) { logger.warn("Transfer cancel failed", { id, error: err.message }); }
     return true;
 };
 
 const list = (sessionId) => [...transfers.values()]
-    .filter((transfer) => transfer.sessionId === sessionId && transfer.state === "active")
+    .filter((transfer) => transfer.sessionIds.includes(sessionId) && transfer.state === "active")
     .map(serialize);
 
-module.exports = { OP_TRANSFER_PROGRESS, isValidTransferId, register, progress, finish, cancel, list };
+module.exports = { OP_TRANSFER_PROGRESS, isValidTransferId, register, progress, setTotal, finish, cancel, list };

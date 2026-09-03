@@ -3,9 +3,9 @@ import { useTranslation } from "react-i18next";
 import Icon from "@mdi/react";
 import {
     mdiAlertCircleOutline, mdiBroom, mdiCancel, mdiCheckCircleOutline, mdiChevronDown, mdiChevronUp,
-    mdiClose, mdiCloudDownloadOutline, mdiCloudUploadOutline, mdiSwapVertical,
+    mdiClose, mdiCloudDownloadOutline, mdiCloudUploadOutline, mdiSwapHorizontal, mdiSwapVertical,
 } from "@mdi/js";
-import { useTransfers, isTransferFinished } from "@/common/contexts/TransferContext.jsx";
+import { useTransfers, isTransferFinished, transferBelongsToSession } from "@/common/contexts/TransferContext.jsx";
 import "./styles.sass";
 
 const UNITS = ["B", "KB", "MB", "GB", "TB"];
@@ -47,13 +47,16 @@ const TransferRow = ({ transfer, onCancel, onDismiss }) => {
 
     const stateIcon = transfer.state === "done" ? mdiCheckCircleOutline
         : transfer.state === "error" || transfer.state === "cancelled" ? mdiAlertCircleOutline
-            : transfer.direction === "upload" ? mdiCloudUploadOutline : mdiCloudDownloadOutline;
+            : transfer.direction === "upload" ? mdiCloudUploadOutline
+                : transfer.direction === "transfer" ? mdiSwapHorizontal : mdiCloudDownloadOutline;
+
+    const displayName = transfer.count > 1 ? `${transfer.name} +${transfer.count - 1}` : transfer.name;
 
     return (
         <div className={`transfer-row ${transfer.state}`}>
             <Icon path={stateIcon} className="transfer-icon" />
             <div className="transfer-body">
-                <div className="transfer-name" title={transfer.name}>{transfer.name}</div>
+                <div className="transfer-name" title={displayName}>{displayName}</div>
                 <div className="transfer-status" title={statusText()}>{statusText()}</div>
                 <div className={`transfer-bar ${indeterminate ? "indeterminate" : ""}`}>
                     <div className="transfer-bar-fill" style={{ width: `${finished ? 100 : percent ?? 0}%` }} />
@@ -72,7 +75,7 @@ export const TransferPanel = ({ sessionId }) => {
     const [collapsed, setCollapsed] = useState(false);
 
     const sessionTransfers = useMemo(() => transfers
-        .filter((transfer) => transfer.sessionId === sessionId)
+        .filter((transfer) => transferBelongsToSession(transfer, sessionId))
         .sort((a, b) => Number(isTransferFinished(a)) - Number(isTransferFinished(b)) || a.startedAt - b.startedAt),
     [transfers, sessionId]);
 

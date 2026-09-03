@@ -1,5 +1,6 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
 import { isTauri } from "@/common/utils/TauriUtil.js";
+import { tauriFetch } from "@/common/utils/RequestUtil.js";
 import {
     browserDownload, browserFormDownload, browserUpload, createTransferId, isCancelledError,
     nativeCancel, nativeDownload, nativeUpload, pickSavePath,
@@ -18,6 +19,10 @@ const FINAL_STATES = new Set(["done", "error", "cancelled"]);
 const joinPath = (...parts) => parts.join("/").replace(/\/+/g, "/");
 
 export const isTransferFinished = (transfer) => FINAL_STATES.has(transfer.state);
+
+export const transferSessionIds = (transfer) => transfer.sessionIds ?? [transfer.sessionId];
+
+export const transferBelongsToSession = (transfer, sessionId) => transferSessionIds(transfer).includes(sessionId);
 
 export const TransferProvider = ({ children }) => {
     const [transfers, setTransfers] = useState([]);
@@ -203,6 +208,37 @@ export const TransferProvider = ({ children }) => {
         processUploadQueue(sessionId);
     }, [addTransfer, processUploadQueue]);
 
+    const refreshSessions = useCallback((sessionIds) => {
+        for (const sessionId of sessionIds) sessionHandlersRef.current.get(sessionId)?.refresh?.();
+    }, []);
+
+    const startCrossSessionTransfer = useCallback(async ({ sourceSessionId, targetSessionId, sessionToken, baseUrl, paths, destination, action }) => {
+        if (!paths?.length) return null;
+        const id = createTransferId();
+        const sessionIds = [sourceSessionId, targetSessionId];
+        addTransfer({
+            id, sessionId: targetSessionId, sessionIds, name: paths[0].split("/").pop(), count: paths.length,
+            direction: "transfer", action, source: "server",
+        });
+
+        const url = `${baseUrl}/api/entries/sftp/transfer?sessionToken=${encodeURIComponent(sessionToken)}&transferId=${id}`;
+        try {
+            const response = await tauriFetch(url, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ sourceSessionId, targetSessionId, sources: paths, destination, action }),
+            });
+            if (!response.ok) {
+                let message = `Transfer failed (${response.status})`;
+                try { message = (await response.json()).error || message; } catch { /* body was not JSON */ }
+                throw new Error(message);
+            }
+        } catch (error) {
+            finishTransfer(id, { error: error.message });
+        }
+        return id;
+    }, [addTransfer, finishTransfer]);
+
     const applyServerProgress = useCallback((sessionId, payload) => {
         if (!payload?.id) return;
         const existing = transfersRef.current.find((transfer) => transfer.id === payload.id);
@@ -213,7 +249,8 @@ export const TransferProvider = ({ children }) => {
         if (!existing) {
             if (final) return;
             addTransfer({
-                id: payload.id, sessionId, name: payload.name, direction: payload.direction, source: "server",
+                id: payload.id, sessionId, sessionIds: payload.sessionIds ?? [sessionId], name: payload.name, count: payload.count,
+                direction: payload.direction, action: payload.action, source: "server",
                 total: payload.total, transferred: payload.transferred,
             });
             return;
@@ -226,7 +263,8 @@ export const TransferProvider = ({ children }) => {
         }
 
         finishTransfer(payload.id, { error: payload.error, cancelled: payload.state === "cancelled" });
-    }, [addTransfer, updateTransfer, reportProgress, finishTransfer]);
+        if (payload.direction === "transfer") refreshSessions(transferSessionIds(existing));
+    }, [addTransfer, updateTransfer, reportProgress, finishTransfer, refreshSessions]);
 
     const cancelTransfer = useCallback((id) => {
         const transfer = transfersRef.current.find((entry) => entry.id === id);
@@ -250,13 +288,13 @@ export const TransferProvider = ({ children }) => {
     }, [updateTransfer, finishTransfer]);
 
     const clearFinished = useCallback((sessionId) => {
-        setTransfers((prev) => prev.filter((transfer) => transfer.sessionId !== sessionId || !isTransferFinished(transfer)));
+        setTransfers((prev) => prev.filter((transfer) => !transferBelongsToSession(transfer, sessionId) || !isTransferFinished(transfer)));
     }, []);
 
     const value = useMemo(() => ({
-        transfers, registerSession, startDownload, startMultiDownload, queueUploads,
+        transfers, registerSession, startDownload, startMultiDownload, queueUploads, startCrossSessionTransfer,
         applyServerProgress, cancelTransfer, dismissTransfer: removeTransfer, clearFinished,
-    }), [transfers, registerSession, startDownload, startMultiDownload, queueUploads, applyServerProgress, cancelTransfer, removeTransfer, clearFinished]);
+    }), [transfers, registerSession, startDownload, startMultiDownload, queueUploads, startCrossSessionTransfer, applyServerProgress, cancelTransfer, removeTransfer, clearFinished]);
 
     return <TransferContext.Provider value={value}>{children}</TransferContext.Provider>;
 };

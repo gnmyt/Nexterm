@@ -73,7 +73,7 @@ export const FileRenderer = ({ session, disconnectFromServer, setOpenFileEditors
     const { sessionToken } = useContext(UserContext);
     const { defaultViewMode } = usePreferences();
     const { sendToast } = useToast();
-    const { startDownload, startMultiDownload, queueUploads, applyServerProgress, registerSession } = useTransfers();
+    const { startDownload, startMultiDownload, queueUploads, startCrossSessionTransfer, applyServerProgress, registerSession } = useTransfers();
 
     const [dragging, setDragging] = useState(false);
     const [directory, setDirectory] = useState("/");
@@ -109,6 +109,10 @@ export const FileRenderer = ({ session, disconnectFromServer, setOpenFileEditors
     const downloadMultipleFiles = (paths) => startMultiDownload({ ...transferTarget(), paths });
 
     const queueSessionUploads = (uploads) => queueUploads({ ...transferTarget(), uploads });
+
+    const transferFromSession = (paths, sourceSessionId, destination, action) => startCrossSessionTransfer({
+        sourceSessionId, targetSessionId: session.id, sessionToken, baseUrl: getBaseUrl(), paths, destination, action,
+    });
 
     const uploadFile = async () => {
         const fileInput = document.createElement("input");
@@ -293,8 +297,10 @@ export const FileRenderer = ({ session, disconnectFromServer, setOpenFileEditors
 
     useEffect(() => { directoryRef.current = directory; }, [directory]);
 
-    sessionHandlersRef.current.send = sendOperation;
-    sessionHandlersRef.current.refresh = () => listFiles(true);
+    useEffect(() => {
+        sessionHandlersRef.current.send = sendOperation;
+        sessionHandlersRef.current.refresh = () => listFiles(true);
+    }, [sendOperation, listFiles]);
 
     useEffect(() => registerSession(session.id, {
         send: (operation, payload) => sessionHandlersRef.current.send(operation, payload),
@@ -349,7 +355,8 @@ export const FileRenderer = ({ session, disconnectFromServer, setOpenFileEditors
                 <FileList ref={fileListRef} items={items} path={directory} updatePath={changeDirectory} sendOperation={sendOperation}
                     downloadFile={downloadFile} downloadMultipleFiles={downloadMultipleFiles} setCurrentFile={handleOpenFile} setPreviewFile={handleOpenPreview}
                     loading={loading} viewMode={viewMode} error={error || connectionError} resolveSymlink={resolveSymlink} session={session}
-                    createFile={createFile} createFolder={createFolder} moveFiles={moveFiles} copyFiles={copyFiles} isActive={isActive}
+                    createFile={createFile} createFolder={createFolder} moveFiles={moveFiles} copyFiles={copyFiles}
+                    transferFromSession={transferFromSession} isActive={isActive}
                     capabilities={capabilities}
                     searchQuery={searchQuery} onSearchResults={setSearchResultCount}
                     onOpenTerminal={onOpenTerminal} onPropertiesMessage={(handler) => { propertiesHandlerRef.current = handler; }} />

@@ -19,7 +19,7 @@ import { isPreviewable, getFullPath, OPERATIONS } from "./utils/fileUtils";
 export const FileList = forwardRef(({
     items, updatePath, path, sendOperation, downloadFile, downloadMultipleFiles,
     setCurrentFile, setPreviewFile, loading, viewMode = "list", error,
-    resolveSymlink, session, createFile, createFolder, moveFiles, copyFiles, isActive,
+    resolveSymlink, session, createFile, createFolder, moveFiles, copyFiles, transferFromSession, isActive,
     onOpenTerminal, onPropertiesMessage, searchQuery = "", onSearchResults,
     capabilities = { shell: true, terminal: true },
 }, ref) => {
@@ -113,13 +113,14 @@ export const FileList = forwardRef(({
     });
 
     const {
-        draggedItems, dropTarget, dragImageRef,
+        draggedItems, dropTarget, dragImageRef, pendingDrop,
         handleDragStart, handleDragEnd, handleDragOver, handleDragLeave,
         handleDrop, handleContainerDrop, handleDropAction, setPendingDrop,
     } = useDragDrop({
         path, sessionId: session.id, selectedItems, isItemSelected,
-        moveFiles, copyFiles, dragDropAction, updatePath,
+        moveFiles, copyFiles, transferFromSession, dragDropAction, updatePath,
     });
+    const pendingDropFromOtherSession = !!pendingDrop && pendingDrop.sourceSessionId !== session.id;
 
     const handleItemClick = useCallback((event, item) => {
         if (event.ctrlKey || event.metaKey) {
@@ -325,7 +326,7 @@ export const FileList = forwardRef(({
 
             <ContextMenu isOpen={dropMenu.isOpen} position={dropMenu.position} onClose={() => { dropMenu.close(); setPendingDrop(null); }}>
                 <ContextMenuItem icon={mdiFileMove} label={t("servers.fileManager.contextMenu.moveHere")} onClick={() => handleDropAction("move", clearSelection, dropMenu.close)} />
-                {capabilities.shell && <ContextMenuItem icon={mdiContentCopy} label={t("servers.fileManager.contextMenu.copyHere")} onClick={() => handleDropAction("copy", clearSelection, dropMenu.close)} />}
+                {(capabilities.shell || pendingDropFromOtherSession) && <ContextMenuItem icon={mdiContentCopy} label={t("servers.fileManager.contextMenu.copyHere")} onClick={() => handleDropAction("copy", clearSelection, dropMenu.close)} />}
             </ContextMenu>
 
             <div className="drag-preview" ref={dragImageRef}>

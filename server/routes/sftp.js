@@ -6,6 +6,7 @@ const Session = require("../models/Session");
 const Account = require("../models/Account");
 const SessionManager = require("../lib/SessionManager");
 const TransferRegistry = require("../lib/TransferRegistry");
+const { runCrossSessionTransfer } = require("../lib/CrossSessionTransfer");
 const { isCancelled } = require("../lib/EngineSftpClient");
 const { getSFTPTransferClient, getSFTPBackgroundClient } = require("../lib/ConnectionService");
 const Entry = require("../models/Entry");
@@ -438,6 +439,70 @@ app.post("/multi", express.urlencoded({ extended: true }), async (req, res) => {
             count: paths.length,
             connectionReason: ctx.serverSession.connectionReason || null,
         });
+    } catch (err) {
+        handleError(res, err);
+    }
+});
+
+const TRANSFER_ACTIONS = new Set(["copy", "move"]);
+
+/**
+ * POST /sftp/transfer
+ * @summary Copy or Move Files Between Two Sessions
+ * @description Streams files or folders from one active file session to another through the server, regardless of the protocols or jump hosts involved. Runs in the background; progress and completion are pushed to both sessions' SFTP websockets under the given transferId.
+ * @tags SFTP
+ * @consumes application/json
+ * @produces application/json
+ * @param {string} sessionToken.query.required - Session authentication token
+ * @param {string} transferId.query.required - Client-chosen identifier used for progress reporting and cancellation
+ * @param {object} request.body.required - { sourceSessionId, targetSessionId, sources: string[], destination, action: "copy" | "move" }
+ * @return {object} 202 - Transfer started
+ * @return {object} 400 - Invalid parameters
+ * @return {object} 401 - Invalid session token
+ * @return {object} 403 - Permission denied
+ * @return {object} 404 - Session or entry not found
+ */
+app.post("/transfer", async (req, res) => {
+    const { sessionToken, transferId } = req.query;
+    const { sourceSessionId, targetSessionId, sources, destination, action } = req.body ?? {};
+
+    if (!sessionToken || !sourceSessionId || !targetSessionId) return res.status(400).json({ error: "Missing session parameters" });
+    if (!TransferRegistry.isValidTransferId(transferId)) return res.status(400).json({ error: "Invalid transfer id" });
+    if (sourceSessionId === targetSessionId) return res.status(400).json({ error: "Source and target session must differ" });
+    if (!Array.isArray(sources) || sources.length === 0 || sources.some(isUnsafePath)) return res.status(400).json({ error: "Invalid sources" });
+    if (isUnsafePath(destination)) return res.status(400).json({ error: "Invalid destination" });
+    if (!TRANSFER_ACTIONS.has(action)) return res.status(400).json({ error: "Invalid action" });
+
+    try {
+        const [sourceCtx, targetCtx] = await Promise.all([
+            validateSession(sessionToken, sourceSessionId),
+            validateSession(sessionToken, targetSessionId),
+        ]);
+        if (sourceCtx.error) return res.status(sourceCtx.status).json({ error: `Source: ${sourceCtx.error}` });
+        if (targetCtx.error) return res.status(targetCtx.status).json({ error: `Target: ${targetCtx.error}` });
+
+        if (!(await checkFilePermission(sourceCtx, Permission.FILES_DOWNLOAD)))
+            return res.status(403).json({ error: "You don't have permission to read files on the source server" });
+        if (!(await checkFilePermission(targetCtx, Permission.FILES_UPLOAD)))
+            return res.status(403).json({ error: "You don't have permission to upload files to the target server" });
+        if (action === "move" && !(await checkFilePermission(sourceCtx, Permission.FILES_MODIFY)))
+            return res.status(403).json({ error: "You don't have permission to delete files on the source server" });
+
+        const [sourceClient, targetClient] = await Promise.all([resolveTransferClient(sourceCtx), resolveTransferClient(targetCtx)]);
+
+        runCrossSessionTransfer({
+            id: transferId, sessionIds: [sourceSessionId, targetSessionId],
+            sourceClient, targetClient, sources, destination, action,
+            onFinished: (err) => {
+                if (err) return;
+                const details = { sources, destination, action, sourceSessionId, targetSessionId };
+                audit(sourceCtx, req, AUDIT_ACTIONS.FILE_DOWNLOAD, RESOURCE_TYPES.FILE, details);
+                audit(targetCtx, req, AUDIT_ACTIONS.FILE_UPLOAD, RESOURCE_TYPES.FILE, details);
+                if (action === "move") audit(sourceCtx, req, AUDIT_ACTIONS.FILE_DELETE, RESOURCE_TYPES.FILE, details);
+            },
+        });
+
+        res.status(202).json({ id: transferId });
     } catch (err) {
         handleError(res, err);
     }
