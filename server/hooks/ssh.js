@@ -8,6 +8,8 @@ const { buildParticipant, createWriteGuard } = require("../utils/sessionParticip
 
 const bindHandlers = (ws, conn, sessionId, config, isShared, canWrite) => {
     const { dataSocket, scriptLayer } = conn;
+    let termCols = 80;
+    let termRows = 24;
 
     const msgHandler = (data) => {
         if (isShared && !canWrite()) return;
@@ -21,6 +23,8 @@ const bindHandlers = (ws, conn, sessionId, config, isShared, canWrite) => {
                 controlPlane.sendSessionResize(conn.sessionId, resize.width, resize.height);
                 SessionManager.recordResize(sessionId, resize.width, resize.height);
             }
+            termCols = resize.width;
+            termRows = resize.height;
             return;
         }
         SessionManager.setActiveWs(sessionId, ws);
@@ -31,7 +35,20 @@ const bindHandlers = (ws, conn, sessionId, config, isShared, canWrite) => {
 
     const dataHandler = (data) => {
         if (scriptLayer?.suppressOutput) return;
-        ws.readyState === ws.OPEN && ws.send(data.toString());
+        let str = data.toString();
+
+        // PSReadLine sends \033[6n (DSR) to query the cursor position. Over WebSocket
+        // the round-trip delay causes the CPR response to arrive after PSReadLine has
+        // already timed out waiting for it. PSReadLine then treats the late \033[row;colR
+        // as an unknown key sequence, consuming the \033[ prefix and echoing the remainder
+        // ("56;13R") as literal text into the terminal. Intercept the query here and reply
+        // immediately so the response reaches PSReadLine before its timeout expires.
+        if (str.includes('\x1b[6n')) {
+            str = str.replaceAll('\x1b[6n', '');
+            dataSocket.write(`\x1b[${termRows};${termCols}R`);
+        }
+
+        if (str && ws.readyState === ws.OPEN) ws.send(str);
     };
     dataSocket.on("data", dataHandler);
 
