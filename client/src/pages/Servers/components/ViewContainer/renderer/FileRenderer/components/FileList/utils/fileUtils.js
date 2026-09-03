@@ -49,6 +49,16 @@ export const convertUnits = (bytes) => {
     return Math.round(bytes / Math.pow(1024, i)) + " " + sizes[i];
 };
 
+const SIX_MONTHS_SECONDS = 182 * 24 * 60 * 60;
+
+export const formatModified = (unixSeconds) => {
+    const date = new Date(unixSeconds * 1000);
+    const isRecent = Date.now() / 1000 - unixSeconds < SIX_MONTHS_SECONDS;
+    return isRecent
+        ? date.toLocaleString(undefined, { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" })
+        : date.toLocaleDateString(undefined, { day: "numeric", month: "short", year: "numeric" });
+};
+
 export const getFullPath = (path, name) => `${path.endsWith("/") ? path : path + "/"}${name}`;
 
 export const parsePermissions = (mode) => {

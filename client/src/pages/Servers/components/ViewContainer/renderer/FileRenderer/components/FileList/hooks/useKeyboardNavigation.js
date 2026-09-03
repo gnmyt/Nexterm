@@ -20,7 +20,7 @@ export const useKeyboardNavigation = ({
     const scrollItemIntoView = useCallback((index) => {
         if (index < 0 || index >= filteredItems.length) return;
         const item = filteredItems[index];
-        const itemEl = itemRefs.current[item.name];
+        const itemEl = itemRefs.current[item.id];
         if (itemEl) {
             itemEl.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
         }
@@ -28,9 +28,9 @@ export const useKeyboardNavigation = ({
 
     const toggleSelection = useCallback((item) => {
         setSelectedItems(prev => {
-            const isSelected = prev.some(s => s.name === item.name);
+            const isSelected = prev.some(s => s.id === item.id);
             if (isSelected) {
-                return prev.filter(s => s.name !== item.name);
+                return prev.filter(s => s.id !== item.id);
             }
             return [...prev, item];
         });
@@ -66,7 +66,7 @@ export const useKeyboardNavigation = ({
                     : Math.max(0, Math.min(filteredItems.length - 1, focusedIndex + (event.key === 'ArrowDown' ? 1 : -1)));
                 setFocusedIndex(newIndex);
                 scrollItemIntoView(newIndex);
-                if (event.shiftKey && !selectedItems.some(s => s.name === filteredItems[newIndex].name)) {
+                if (event.shiftKey && !selectedItems.some(s => s.id === filteredItems[newIndex].id)) {
                     setSelectedItems(prev => [...prev, filteredItems[newIndex]]);
                 }
                 return;

@@ -3,7 +3,7 @@ import { usePreferences } from "@/common/contexts/PreferencesContext.jsx";
 import { useTranslation } from "react-i18next";
 import { useContext } from "react";
 import Icon from "@mdi/react";
-import { mdiViewGrid, mdiViewList, mdiImage, mdiEyeOff, mdiShieldCheck, mdiCursorMove, mdiFileMove, mdiContentCopy, mdiHelpCircle, mdiCloudSync, mdiCloudOffOutline } from "@mdi/js";
+import { mdiViewGrid, mdiViewList, mdiViewSequential, mdiImage, mdiEyeOff, mdiShieldCheck, mdiCursorMove, mdiFileMove, mdiContentCopy, mdiHelpCircle, mdiCloudSync, mdiCloudOffOutline } from "@mdi/js";
 import ToggleSwitch from "@/common/components/ToggleSwitch";
 import Button from "@/common/components/Button";
 import { UserContext } from "@/common/contexts/UserContext.jsx";
@@ -90,6 +90,12 @@ export const FileManager = () => {
                             label={t("settings.fileManager.defaultView.list")} 
                             selected={defaultViewMode === "list"}
                             onClick={() => setDefaultViewMode("list")}
+                        />
+                        <ViewOption 
+                            icon={mdiViewSequential} 
+                            label={t("settings.fileManager.defaultView.compact")} 
+                            selected={defaultViewMode === "compact"}
+                            onClick={() => setDefaultViewMode("compact")}
                         />
                     </div>
                 </SettingItem>

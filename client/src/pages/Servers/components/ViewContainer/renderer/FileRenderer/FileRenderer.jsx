@@ -7,6 +7,7 @@ import useWebSocket from "react-use-websocket";
 import ActionBar from "@/pages/Servers/components/ViewContainer/renderer/FileRenderer/components/ActionBar";
 import FileList from "@/pages/Servers/components/ViewContainer/renderer/FileRenderer/components/FileList";
 import TransferPanel from "@/pages/Servers/components/ViewContainer/renderer/FileRenderer/components/TransferPanel";
+import StatusBar from "@/pages/Servers/components/ViewContainer/renderer/FileRenderer/components/StatusBar";
 import "./styles.sass";
 import Icon from "@mdi/react";
 import { mdiCloudUpload } from "@mdi/js";
@@ -71,7 +72,7 @@ const collectDroppedEntries = async (entries, targetDir) => {
 export const FileRenderer = ({ session, disconnectFromServer, setOpenFileEditors, isActive, onOpenTerminal }) => {
     const { t } = useTranslation();
     const { sessionToken } = useContext(UserContext);
-    const { defaultViewMode } = usePreferences();
+    const { defaultViewMode, showHiddenFiles, toggleHiddenFiles } = usePreferences();
     const { sendToast } = useToast();
     const { startDownload, startMultiDownload, queueUploads, startCrossSessionTransfer, applyServerProgress, registerSession } = useTransfers();
 
@@ -90,6 +91,15 @@ export const FileRenderer = ({ session, disconnectFromServer, setOpenFileEditors
     const [searchOpen, setSearchOpen] = useState(false);
     const [searchResultCount, setSearchResultCount] = useState(0);
     const [capabilities, setCapabilities] = useState({ shell: true, terminal: true });
+    const [selectedCount, setSelectedCount] = useState(0);
+    const [homePath, setHomePath] = useState(null);
+
+    const handleSelectionChange = useCallback((selectedItems) => setSelectedCount(selectedItems.length), []);
+
+    const visibleItems = showHiddenFiles ? items : items.filter(item => !item.name.startsWith("."));
+    const folderCount = visibleItems.filter(item => item.type === "folder").length;
+    const fileCount = visibleItems.length - folderCount;
+    const hiddenCount = items.length - visibleItems.length;
 
     const directoryRef = useRef(directory);
     const skipNextPathSync = useRef(false);
@@ -98,6 +108,7 @@ export const FileRenderer = ({ session, disconnectFromServer, setOpenFileEditors
     const reconnectAttemptsRef = useRef(0);
     const fileListRef = useRef(null);
     const propertiesHandlerRef = useRef(null);
+    const treeHandlerRef = useRef(null);
     const refreshTimerRef = useRef(null);
     const sessionHandlersRef = useRef({ send: () => false, refresh: () => {} });
 
@@ -149,6 +160,7 @@ export const FileRenderer = ({ session, disconnectFromServer, setOpenFileEditors
                     setIsReady(true);
                     setConnectionError(null);
                     setCapabilities(payload?.capabilities ?? { shell: true, terminal: true });
+                    setHomePath(payload?.home ?? null);
                     reconnectAttemptsRef.current = 0;
                     for (const transfer of payload?.transfers ?? []) applyServerProgress(session.id, transfer);
                     if (payload?.path && payload.path !== directoryRef.current) {
@@ -161,6 +173,10 @@ export const FileRenderer = ({ session, disconnectFromServer, setOpenFileEditors
                     }
                     break;
                 case OPERATIONS.LIST_FILES:
+                    if (payload?.path && payload.path !== directoryRef.current) {
+                        treeHandlerRef.current?.(payload);
+                        break;
+                    }
                     if (payload?.files) { setItems(payload.files); setError(null); } 
                     else { setError("Failed to load directory contents"); setItems([]); }
                     setLoading(false);
@@ -346,8 +362,9 @@ export const FileRenderer = ({ session, disconnectFromServer, setOpenFileEditors
                 <ActionBar path={directory} updatePath={changeDirectory} createFile={() => fileListRef.current?.startCreateFile()}
                     createFolder={() => fileListRef.current?.startCreateFolder()} uploadFile={uploadFile} uploadFolder={uploadFolder}
                     refreshFiles={() => listFiles(true)} goBack={goBack} goForward={goForward} historyIndex={historyIndex}
-                    historyLength={history.length} viewMode={viewMode} setViewMode={setViewMode} 
-                    searchDirectories={searchDirectories} directorySuggestions={directorySuggestions} 
+                    homePath={homePath}
+                    historyLength={history.length}
+                    searchDirectories={searchDirectories} directorySuggestions={directorySuggestions}
                     setDirectorySuggestions={setDirectorySuggestions} moveFiles={moveFiles} copyFiles={copyFiles}
                     capabilities={capabilities}
                     sessionId={session.id} searchQuery={searchQuery} setSearchQuery={setSearchQuery} searchOpen={searchOpen}
@@ -358,9 +375,13 @@ export const FileRenderer = ({ session, disconnectFromServer, setOpenFileEditors
                     createFile={createFile} createFolder={createFolder} moveFiles={moveFiles} copyFiles={copyFiles}
                     transferFromSession={transferFromSession} isActive={isActive}
                     capabilities={capabilities}
-                    searchQuery={searchQuery} onSearchResults={setSearchResultCount}
-                    onOpenTerminal={onOpenTerminal} onPropertiesMessage={(handler) => { propertiesHandlerRef.current = handler; }} />
+                    searchQuery={searchQuery} onSearchResults={setSearchResultCount} onSelectionChange={handleSelectionChange}
+                    onOpenTerminal={onOpenTerminal} onPropertiesMessage={(handler) => { propertiesHandlerRef.current = handler; }}
+                    onTreeListing={(handler) => { treeHandlerRef.current = handler; }} />
                 <TransferPanel sessionId={session.id} />
+                <StatusBar folderCount={folderCount} fileCount={fileCount} hiddenCount={hiddenCount} selectedCount={selectedCount}
+                    showHiddenFiles={showHiddenFiles} onToggleHiddenFiles={toggleHiddenFiles}
+                    viewMode={viewMode} setViewMode={setViewMode} />
             </div>
         </div>
     );

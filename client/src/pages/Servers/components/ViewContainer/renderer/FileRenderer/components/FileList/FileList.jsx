@@ -5,6 +5,7 @@ import {
     mdiFile, mdiFolder, mdiAlertCircle, mdiFormTextbox, mdiTextBoxEdit,
     mdiFileDownload, mdiTrashCan, mdiEye, mdiFileMove, mdiContentCopy,
     mdiInformationOutline, mdiConsole, mdiFileSearchOutline, mdiFilePlus, mdiFolderPlus,
+    mdiChevronUp, mdiChevronDown, mdiFolderOpenOutline,
 } from "@mdi/js";
 import { ContextMenu, ContextMenuItem, ContextMenuSeparator, useContextMenu } from "@/common/components/ContextMenu";
 import { ActionConfirmDialog } from "@/common/components/ActionConfirmDialog/ActionConfirmDialog.jsx";
@@ -16,11 +17,18 @@ import PropertiesDialog from "./components/PropertiesDialog";
 import { useBoxSelection, useDragDrop, useKeyboardNavigation, useClipboard } from "./hooks";
 import { isPreviewable, getFullPath, OPERATIONS } from "./utils/fileUtils";
 
+const SORT_COMPARATORS = {
+    name: (a, b) => a.name.localeCompare(b.name, undefined, { numeric: true, sensitivity: "base" }),
+    size: (a, b) => (a.size ?? 0) - (b.size ?? 0),
+    modified: (a, b) => (a.last_modified ?? 0) - (b.last_modified ?? 0),
+    permissions: (a, b) => (a.mode ?? 0) - (b.mode ?? 0),
+};
+
 export const FileList = forwardRef(({
     items, updatePath, path, sendOperation, downloadFile, downloadMultipleFiles,
     setCurrentFile, setPreviewFile, loading, viewMode = "list", error,
     resolveSymlink, session, createFile, createFolder, moveFiles, copyFiles, transferFromSession, isActive,
-    onOpenTerminal, onPropertiesMessage, searchQuery = "", onSearchResults,
+    onOpenTerminal, onPropertiesMessage, onTreeListing, searchQuery = "", onSearchResults, onSelectionChange,
     capabilities = { shell: true, terminal: true },
 }, ref) => {
     const { t } = useTranslation();
@@ -39,7 +47,9 @@ export const FileList = forwardRef(({
     const [selectedItems, setSelectedItems] = useState([]);
     const [propertiesDialogOpen, setPropertiesDialogOpen] = useState(false);
     const [propertiesItem, setPropertiesItem] = useState(null);
-    
+    const [sort, setSort] = useState({ key: "name", direction: "asc" });
+    const [expanded, setExpanded] = useState({});
+
     const containerRef = useRef(null);
     const itemRefs = useRef({});
     const contextMenu = useContextMenu();
@@ -53,31 +63,76 @@ export const FileList = forwardRef(({
 
     const query = searchQuery.trim().toLowerCase();
 
+    const treeEnabled = viewMode === "list";
+
     const filteredItems = useMemo(() => {
-        let filtered = showHiddenFiles ? items : items.filter(item => !item.name.startsWith("."));
-        if (query) filtered = filtered.filter(item => item.name.toLowerCase().includes(query));
-        return [...filtered].sort((a, b) => b.type.localeCompare(a.type) || a.name.localeCompare(b.name));
-    }, [items, showHiddenFiles, query]);
+        const compare = SORT_COMPARATORS[sort.key];
+        const sign = sort.direction === "asc" ? 1 : -1;
+        const prepare = (entries, parentPath, depth) => {
+            let filtered = showHiddenFiles ? entries : entries.filter(item => !item.name.startsWith("."));
+            if (query) filtered = filtered.filter(item => item.name.toLowerCase().includes(query));
+            return [...filtered]
+                .sort((a, b) => b.type.localeCompare(a.type) || sign * compare(a, b) || SORT_COMPARATORS.name(a, b))
+                .map(item => ({ ...item, id: getFullPath(parentPath, item.name), parentPath, depth }));
+        };
+        const flatten = (entries, parentPath, depth) => entries.flatMap(item => {
+            const children = treeEnabled && item.type === "folder" ? expanded[item.id]?.items : null;
+            return children ? [item, ...flatten(prepare(children, item.id, depth + 1), item.id, depth + 1)] : [item];
+        });
+        return flatten(prepare(items, path, 0), path, 0);
+    }, [items, path, showHiddenFiles, query, sort, expanded, treeEnabled]);
+
+    const isExpanded = useCallback((item) => !!expanded[item.id]?.items, [expanded]);
+    const isExpandLoading = useCallback((item) => !!expanded[item.id] && !expanded[item.id].items, [expanded]);
+
+    const toggleExpand = useCallback((item) => {
+        if (expanded[item.id]) {
+            setExpanded(prev => Object.fromEntries(Object.entries(prev)
+                .filter(([key]) => key !== item.id && !key.startsWith(`${item.id}/`))));
+            return;
+        }
+        setExpanded(prev => ({ ...prev, [item.id]: { items: null } }));
+        sendOperation(OPERATIONS.LIST_FILES, { path: item.id });
+    }, [expanded, sendOperation]);
+
+    useEffect(() => {
+        onTreeListing?.((payload) => setExpanded(prev => (
+            prev[payload.path] ? { ...prev, [payload.path]: { items: payload.files ?? [] } } : prev
+        )));
+    }, [onTreeListing]);
+
+    useEffect(() => setExpanded({}), [path, treeEnabled]);
+
+    useEffect(() => {
+        for (const expandedPath of Object.keys(expanded)) sendOperation(OPERATIONS.LIST_FILES, { path: expandedPath });
+    }, [items]);
+
+    const toggleSort = (key) => setSort(prev => ({
+        key,
+        direction: prev.key === key && prev.direction === "asc" ? "desc" : "asc",
+    }));
 
     useEffect(() => { if (query) onSearchResults?.(filteredItems.length); }, [filteredItems.length, query, onSearchResults]);
 
     useEffect(() => setSelectedItems([]), [path]);
 
+    useEffect(() => { onSelectionChange?.(selectedItems); }, [selectedItems, onSelectionChange]);
+
     useEffect(() => {
         if (selectedItem) {
-            const updated = items.find(i => i.name === selectedItem.name && i.type === selectedItem.type);
+            const updated = filteredItems.find(i => i.id === selectedItem.id);
             if (updated && updated.mode !== selectedItem.mode) {
                 setSelectedItem(updated);
             }
         }
-    }, [items, selectedItem]);
+    }, [filteredItems, selectedItem]);
 
     const isItemSelected = useCallback((item) => (
-        selectedItems.some(s => s.name === item.name && s.type === item.type)
+        selectedItems.some(s => s.id === item.id)
     ), [selectedItems]);
 
     const handleClick = useCallback((item) => {
-        const fullPath = getFullPath(path, item.name);
+        const fullPath = item.id;
         if (item.isSymlink) {
             resolveSymlink?.(fullPath, (result) => {
                 if (result.isDirectory) updatePath(result.path);
@@ -125,8 +180,8 @@ export const FileList = forwardRef(({
     const handleItemClick = useCallback((event, item) => {
         if (event.ctrlKey || event.metaKey) {
             event.preventDefault();
-            setSelectedItems(prev => prev.some(s => s.name === item.name)
-                ? prev.filter(s => s.name !== item.name)
+            setSelectedItems(prev => prev.some(s => s.id === item.id)
+                ? prev.filter(s => s.id !== item.id)
                 : [...prev, item]
             );
             return;
@@ -137,12 +192,12 @@ export const FileList = forwardRef(({
 
     const handleMassDownload = useCallback(() => {
         if (selectedItems.length === 0) return;
-        downloadMultipleFiles?.(selectedItems.map(item => `${path}/${item.name}`));
+        downloadMultipleFiles?.(selectedItems.map(item => item.id));
     }, [selectedItems, path, downloadMultipleFiles]);
 
     const executeMassDelete = useCallback(() => {
         selectedItems.forEach(item => {
-            sendOperation(item.type === "folder" ? OPERATIONS.DELETE_FOLDER : OPERATIONS.DELETE_FILE, { path: `${path}/${item.name}` });
+            sendOperation(item.type === "folder" ? OPERATIONS.DELETE_FOLDER : OPERATIONS.DELETE_FILE, { path: item.id });
         });
         setSelectedItems([]);
     }, [selectedItems, path, sendOperation]);
@@ -169,29 +224,41 @@ export const FileList = forwardRef(({
         handleContextMenu(event, item, true);
     };
 
-    const handleDelete = () => sendOperation(selectedItem.type === "folder" ? OPERATIONS.DELETE_FOLDER : OPERATIONS.DELETE_FILE, { path: `${path}/${selectedItem?.name}` });
+    const handleDelete = () => sendOperation(selectedItem.type === "folder" ? OPERATIONS.DELETE_FOLDER : OPERATIONS.DELETE_FILE, { path: selectedItem.id });
     const handleDeleteClick = () => confirmBeforeDelete ? setDeleteDialogOpen(true) : handleDelete();
-    const handleRename = (item, newName) => { if (newName && newName !== item.name) sendOperation(OPERATIONS.RENAME_FILE, { path: `${path}/${item.name}`, newPath: `${path}/${newName}` }); setRenamingItem(null); };
+    const handleRename = (item, newName) => { if (newName && newName !== item.name) sendOperation(OPERATIONS.RENAME_FILE, { path: item.id, newPath: getFullPath(item.parentPath, newName) }); setRenamingItem(null); };
     const startRename = (item) => { setRenamingItem(item); setRenameValue(item.name); };
     const handleRenameKeyDown = (e, item) => e.key === 'Enter' ? (e.preventDefault(), handleRename(item, renameValue)) : e.key === 'Escape' && setRenamingItem(null);
     const handleCreateFolder = () => { if (newFolderName.trim()) createFolder(newFolderName.trim()); setCreatingFolder(false); };
     const handleCreateFolderKeyDown = (e) => e.key === 'Enter' ? (e.preventDefault(), handleCreateFolder()) : e.key === 'Escape' && setCreatingFolder(false);
     const handleCreateFile = () => { if (newFileName.trim()) createFile(newFileName.trim()); setCreatingFile(false); };
     const handleCreateFileKeyDown = (e) => e.key === 'Enter' ? (e.preventDefault(), handleCreateFile()) : e.key === 'Escape' && setCreatingFile(false);
-    const openFile = () => selectedItem?.size >= 1024 * 1024 ? setBigFileDialogOpen(true) : setCurrentFile(`${path}/${selectedItem?.name}`);
+    const openFile = () => selectedItem?.size >= 1024 * 1024 ? setBigFileDialogOpen(true) : setCurrentFile(selectedItem.id);
     const handlePropertiesClick = (item = null) => { setPropertiesItem(item); setPropertiesDialogOpen(true); };
     const handleEmptyContextMenu = (e) => { if (e.target.closest('.file-item')) return; e.preventDefault(); emptyContextMenu.open(e, { x: e.pageX, y: e.pageY }); };
     const handleOpenTerminal = (targetPath = null) => onOpenTerminal?.(targetPath || path);
+
+    const renderHeaderCell = (key, className, label, alignRight = false) => {
+        const sorted = sort.key === key;
+        return (
+            <div className={`header-cell ${className} ${sorted ? "sorted" : ""} ${alignRight ? "align-right" : ""}`}
+                 onClick={() => toggleSort(key)}>
+                {alignRight && sorted && <Icon path={sort.direction === "asc" ? mdiChevronUp : mdiChevronDown} className="sort-icon" />}
+                <span>{label}</span>
+                {!alignRight && sorted && <Icon path={sort.direction === "asc" ? mdiChevronUp : mdiChevronDown} className="sort-icon" />}
+            </div>
+        );
+    };
 
     return (
         <div className={`file-list ${viewMode}`}>
             {viewMode === "list" && (
                 <div className="file-list-header">
-                    <div className="header-name">{t("servers.fileManager.header.name")}</div>
-                    <div className="header-size">{t("servers.fileManager.header.size")}</div>
-                    <div className="header-permissions">{t("servers.fileManager.header.permissions")}</div>
-                    <div className="header-date">{t("servers.fileManager.header.modified")}</div>
-                    <div className="header-actions"></div>
+                    {renderHeaderCell("name", "header-name", t("servers.fileManager.header.name"))}
+                    {renderHeaderCell("size", "header-size", t("servers.fileManager.header.size"), true)}
+                    {renderHeaderCell("permissions", "header-permissions", t("servers.fileManager.header.permissions"), true)}
+                    {renderHeaderCell("modified", "header-date", t("servers.fileManager.header.modified"), true)}
+                    <div className="header-cell header-actions"></div>
                 </div>
             )}
             {loading ? (
@@ -207,7 +274,7 @@ export const FileList = forwardRef(({
                 </div>
             ) : filteredItems.length === 0 && !creatingFolder && !creatingFile ? (
                 <div className="empty-state" onContextMenu={handleEmptyContextMenu}>
-                    <Icon path={query ? mdiFileSearchOutline : mdiFolder} />
+                    <Icon path={query ? mdiFileSearchOutline : mdiFolderOpenOutline} />
                     <h3>{t(query ? "servers.fileManager.search.noResultsTitle" : "servers.fileManager.states.emptyFolder")}</h3>
                     <p>{query
                         ? t("servers.fileManager.search.noResults", { query: searchQuery.trim() })
@@ -232,42 +299,48 @@ export const FileList = forwardRef(({
                     {creatingFile && (
                         <div className={`file-item ${viewMode} new-file`} onMouseDown={(e) => e.stopPropagation()}>
                             <div className="file-name">
+                                {viewMode === "list" && <span className="expand-spacer" />}
                                 <Icon path={mdiFile} />
                                 <input type="text" className="rename-input" value={newFileName} onChange={(e) => setNewFileName(e.target.value)} onKeyDown={handleCreateFileKeyDown} onBlur={handleCreateFile} placeholder={t("servers.fileManager.createFile.placeholder")} autoFocus />
                             </div>
-                            {viewMode === "list" && <><p className="file-size"></p><p className="file-date"></p></>}
+                            {viewMode === "list" && <><p className="file-size"></p><p className="file-permissions"></p><p className="file-date"></p></>}
                         </div>
                     )}
                     {creatingFolder && (
                         <div className={`file-item ${viewMode} new-folder`} onMouseDown={(e) => e.stopPropagation()}>
                             <div className="file-name">
+                                {viewMode === "list" && <span className="expand-spacer" />}
                                 <Icon path={mdiFolder} />
                                 <input type="text" className="rename-input" value={newFolderName} onChange={(e) => setNewFolderName(e.target.value)} onKeyDown={handleCreateFolderKeyDown} onBlur={handleCreateFolder} placeholder={t("servers.fileManager.createFolder.placeholder")} autoFocus />
                             </div>
-                            {viewMode === "list" && <><p className="file-size"></p><p className="file-date"></p></>}
+                            {viewMode === "list" && <><p className="file-size"></p><p className="file-permissions"></p><p className="file-date"></p></>}
                         </div>
                     )}
                     {filteredItems.map((item, index) => (
                         <FileItem
-                            key={item.name}
+                            key={item.id}
                             item={item}
                             viewMode={viewMode}
-                            path={path}
+                            path={item.parentPath}
                             session={session}
                             isSelected={isItemSelected(item)}
                             isFocused={focusedIndex === index}
-                            isRenaming={renamingItem?.name === item.name}
-                            isBeingDragged={draggedItems.some(d => d.name === item.name)}
-                            isDropTarget={dropTarget === item.name}
-                            isCut={isItemCut(`${path}/${item.name}`)}
+                            isRenaming={renamingItem?.id === item.id}
+                            isBeingDragged={draggedItems.some(d => d.id === item.id)}
+                            isDropTarget={dropTarget === item.id}
+                            isCut={isItemCut(item.id)}
                             isDimmed={showHiddenFiles && item.name.startsWith(".")}
+                            isExpandable={treeEnabled && item.type === "folder" && !item.isSymlink}
+                            isExpanded={isExpanded(item)}
+                            isExpandLoading={isExpandLoading(item)}
+                            onToggleExpand={(e) => { e.stopPropagation(); toggleExpand(item); }}
                             showThumbnails={showThumbnails}
                             highlight={query}
                             renameValue={renameValue}
                             onRenameChange={(e) => setRenameValue(e.target.value)}
                             onRenameKeyDown={(e) => handleRenameKeyDown(e, item)}
                             onRenameBlur={() => handleRename(item, renameValue)}
-                            onClick={(e) => renamingItem?.name !== item.name && handleItemClick(e, item)}
+                            onClick={(e) => renamingItem?.id !== item.id && handleItemClick(e, item)}
                             onContextMenu={(e) => handleContextMenu(e, item)}
                             onDotsClick={(e) => { e.stopPropagation(); handleContextMenu(e, item, true); }}
                             onDotsPointerDown={(e) => handleDotsPointerDown(e, item)}
@@ -276,7 +349,7 @@ export const FileList = forwardRef(({
                             onDragOver={(e) => handleDragOver(e, item)}
                             onDragLeave={handleDragLeave}
                             onDrop={(e) => handleDrop(e, item, clearSelection, (ev) => dropMenu.open(ev, { x: ev.clientX, y: ev.clientY }))}
-                            itemRef={(el) => itemRefs.current[item.name] = el}
+                            itemRef={(el) => itemRefs.current[item.id] = el}
                         />
                     ))}
                 </div>
@@ -284,7 +357,7 @@ export const FileList = forwardRef(({
 
             <SelectionActionBar selectedItems={selectedItems} onClearSelection={clearSelection} onDownload={handleMassDownload} onDelete={handleMassDelete} containerRef={containerRef} />
 
-            <ActionConfirmDialog open={bigFileDialogOpen} setOpen={setBigFileDialogOpen} onConfirm={() => setCurrentFile(`${path}/${selectedItem?.name}`)} text={t("servers.fileManager.contextMenu.bigFileConfirm", { size: Math.round(selectedItem?.size / 1024 / 1024) })} />
+            <ActionConfirmDialog open={bigFileDialogOpen} setOpen={setBigFileDialogOpen} onConfirm={() => setCurrentFile(selectedItem.id)} text={t("servers.fileManager.contextMenu.bigFileConfirm", { size: Math.round(selectedItem?.size / 1024 / 1024) })} />
             <ActionConfirmDialog open={deleteDialogOpen} setOpen={setDeleteDialogOpen} onConfirm={handleDelete} text={t("servers.fileManager.contextMenu.deleteConfirm", { name: selectedItem?.name })} />
             <ActionConfirmDialog open={massDeleteDialogOpen} setOpen={setMassDeleteDialogOpen} onConfirm={executeMassDelete} text={t("servers.fileManager.selection.deleteConfirm", { count: selectedItems.length })} />
 
@@ -292,7 +365,7 @@ export const FileList = forwardRef(({
                 open={propertiesDialogOpen}
                 onClose={() => setPropertiesDialogOpen(false)}
                 item={propertiesItem}
-                path={path}
+                path={propertiesItem?.parentPath ?? path}
                 sendOperation={sendOperation}
                 OPERATIONS={OPERATIONS}
                 onRegisterHandler={onPropertiesMessage}
@@ -303,14 +376,14 @@ export const FileList = forwardRef(({
                 <ContextMenuItem icon={mdiFormTextbox} label={t("servers.fileManager.contextMenu.rename")} onClick={() => startRename(selectedItem)} />
                 {selectedItem?.type === "file" && (
                     <>
-                        {isPreviewable(selectedItem.name) && <ContextMenuItem icon={mdiEye} label={t("servers.fileManager.contextMenu.preview")} onClick={() => setPreviewFile?.(`${path}/${selectedItem.name}`)} />}
+                        {isPreviewable(selectedItem.name) && <ContextMenuItem icon={mdiEye} label={t("servers.fileManager.contextMenu.preview")} onClick={() => setPreviewFile?.(selectedItem.id)} />}
                         <ContextMenuItem icon={mdiTextBoxEdit} label={t("servers.fileManager.contextMenu.edit")} onClick={openFile} />
                     </>
                 )}
-                <ContextMenuItem icon={mdiFileDownload} label={t("servers.fileManager.contextMenu.download")} onClick={() => downloadFile(`${path}/${selectedItem?.name}`)} />
+                <ContextMenuItem icon={mdiFileDownload} label={t("servers.fileManager.contextMenu.download")} onClick={() => downloadFile(selectedItem.id)} />
                 <ContextMenuItem icon={mdiInformationOutline} label={t("servers.fileManager.contextMenu.properties")} onClick={() => handlePropertiesClick(selectedItem)} />
                 {selectedItem?.type === "folder" && capabilities.terminal && (
-                    <ContextMenuItem icon={mdiConsole} label={t("servers.fileManager.contextMenu.openTerminal")} onClick={() => handleOpenTerminal(`${path}/${selectedItem.name}`)} />
+                    <ContextMenuItem icon={mdiConsole} label={t("servers.fileManager.contextMenu.openTerminal")} onClick={() => handleOpenTerminal(selectedItem.id)} />
                 )}
                 <ContextMenuItem icon={mdiTrashCan} label={t("servers.fileManager.contextMenu.delete")} onClick={handleDeleteClick} danger />
             </ContextMenu>

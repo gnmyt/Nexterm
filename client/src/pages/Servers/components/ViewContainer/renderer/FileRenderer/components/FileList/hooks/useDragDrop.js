@@ -21,7 +21,7 @@ export const useDragDrop = ({ path, sessionId, selectedItems, isItemSelected, mo
     const handleDragStart = useCallback((event, item) => {
         const itemsToDrag = isItemSelected(item) ? selectedItems : [item];
         setDraggedItems(itemsToDrag);
-        const paths = itemsToDrag.map(i => `${path}/${i.name}`);
+        const paths = itemsToDrag.map(i => i.id);
         const dragData = { paths, items: itemsToDrag, sessionId };
         event.dataTransfer.setData("text/plain", JSON.stringify(dragData));
         event.dataTransfer.setData(DRAG_MIME, JSON.stringify(dragData));
@@ -58,11 +58,11 @@ export const useDragDrop = ({ path, sessionId, selectedItems, isItemSelected, mo
         if (item.type !== "folder" || !event.dataTransfer.types.includes(DRAG_MIME)) return;
         event.preventDefault();
         event.stopPropagation();
-        if (dropTarget !== item.name) {
-            setDropTarget(item.name);
+        if (dropTarget !== item.id) {
+            setDropTarget(item.id);
             clearHoverTimer();
             hoverTimerRef.current = setTimeout(() => {
-                updatePath(`${withTrailingSlash(path)}${item.name}`);
+                updatePath(item.id);
                 setDropTarget(null);
             }, 800);
         }
@@ -111,8 +111,8 @@ export const useDragDrop = ({ path, sessionId, selectedItems, isItemSelected, mo
         const data = readDragData(event);
         if (!data) return;
         const sameSession = data.sessionId === sessionId;
-        if (sameSession && data.items?.some(d => d.name === item.name)) return;
-        const destination = `${withTrailingSlash(path)}${item.name}`;
+        if (sameSession && data.items?.some(d => d.id === item.id || item.id.startsWith(withTrailingSlash(d.id)))) return;
+        const destination = item.id;
         settleDrop(event, { paths: data.paths, sourceSessionId: data.sessionId, destination }, onClearSelection, openDropMenu);
     }, [path, sessionId, settleDrop]);
 
