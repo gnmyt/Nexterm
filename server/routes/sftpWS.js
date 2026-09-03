@@ -62,7 +62,7 @@ const requireShell = (capabilities) => {
 const buildOperationHandlers = (sftp, getBg, ws, logAudit, capabilities) => ({
     [OP.LIST_FILES]: async (p) => {
         requirePath(p);
-        sendResult(ws, OP.LIST_FILES, { files: await sftp.listDir(p.path) });
+        sendResult(ws, OP.LIST_FILES, { path: p.path, files: await sftp.listDir(p.path) });
     },
     [OP.CREATE_FILE]: async (p) => {
         requirePath(p);
@@ -219,7 +219,8 @@ module.exports = async (ws, req) => {
 
         const capabilities = getCapabilities(entry);
         const storedPath = SessionManager.getSftpPath(sessionId);
-        sendResult(ws, OP.READY, { path: storedPath, capabilities, transfers: TransferRegistry.list(sessionId) });
+        const home = await sftpClient.realpath(".").then((resolved) => resolved.path).catch(() => null);
+        sendResult(ws, OP.READY, { path: storedPath, home, capabilities, transfers: TransferRegistry.list(sessionId) });
 
         const logAudit = (action, resource, details) => {
             createAuditLog({ accountId: user.id, organizationId: entry.organizationId, action, resource, details, ipAddress, userAgent });

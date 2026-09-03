@@ -1012,7 +1012,9 @@
         "list": "List View",
         "listDescription": "Show files in a detailed list with size and date columns",
         "grid": "Grid View",
-        "gridDescription": "Show files as icons in a grid layout with thumbnails"
+        "gridDescription": "Show files as icons in a grid layout with thumbnails",
+        "compact": "Compact View",
+        "compactDescription": "Show only names in dense columns to fit many files on screen"
       },
       "thumbnails": {
         "title": "Image Thumbnails",
@@ -2016,10 +2018,17 @@
         "uploadFolder": "Upload folder",
         "search": "Search files",
         "closeSearch": "Close search",
-        "refresh": "Refresh"
+        "refresh": "Refresh",
+        "back": "Back",
+        "forward": "Forward",
+        "up": "Parent directory",
+        "home": "Home directory",
+        "switchToCompact": "Switch to compact view"
       },
       "item": {
-        "link": "link"
+        "link": "link",
+        "expand": "Expand folder",
+        "collapse": "Collapse folder"
       },
       "search": {
         "placeholder": "Filter files in this folder...",
@@ -2051,6 +2060,17 @@
         "cancelled": "Cancelled",
         "failed": "Failed: {{message}}",
         "dismiss": "Dismiss"
+      },
+      "status": {
+        "folders_one": "{{count}} folder",
+        "folders_other": "{{count}} folders",
+        "files_one": "{{count}} file",
+        "files_other": "{{count}} files",
+        "hidden_one": "{{count}} hidden",
+        "hidden_other": "{{count}} hidden",
+        "selected": "{{count}} selected",
+        "showHidden": "Show hidden files",
+        "hideHidden": "Hide hidden files"
       }
     },
     "browser": {
