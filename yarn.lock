@@ -27,24 +27,13 @@
     "@ai-sdk/provider" "4.0.9"
     "@ai-sdk/provider-utils" "5.0.34"
 
-"@ai-sdk/openai@^4.0.51":
-  version "4.0.51"
-  resolved "https://registry.yarnpkg.com/@ai-sdk/openai/-/openai-4.0.51.tgz#7439c618ec2c9efbb41282c3e6b8deacad7f7261"
-  integrity sha512-ByLpf4FrmiAFFV/hI2f3EwtuRR+e0AWttik2UsUgTpS10KIGEOvdO6RSMcMcDINQyqIQh8iCb9V7MC/6RtmDsg==
+"@ai-sdk/openai@^4.0.52":
+  version "4.0.52"
+  resolved "https://registry.yarnpkg.com/@ai-sdk/openai/-/openai-4.0.52.tgz#dbe2b0f4ee28cba1750f8f7761134d1d40afe96e"
+  integrity sha512-I44DlHmBe8Sv5HVOaxAQEX3IbeG8Voz78z9abg6QJtWpL/oz42/ytGNWGAJPvKOJ9jFQ4ofalySFviUCRQk9MA==
   dependencies:
-    "@ai-sdk/provider" "4.0.8"
-    "@ai-sdk/provider-utils" "5.0.33"
-
-"@ai-sdk/provider-utils@5.0.33":
-  version "5.0.33"
-  resolved "https://registry.yarnpkg.com/@ai-sdk/provider-utils/-/provider-utils-5.0.33.tgz#c0b14308fa4d1a1dcbf302c1638c845379ea347e"
-  integrity sha512-TfjJqJmRsQyxAlb+3hGmP1o1xLUIT79yhOgtJuTF4hqsB37IC3CufGsuFhU04EeTOg7R9iptQ6Bzm0MW0n/c3g==
-  dependencies:
-    "@ai-sdk/provider" "4.0.8"
-    "@standard-schema/spec" "^1.1.0"
-    "@workflow/serde" "4.1.0"
-    eventsource-parser "^3.0.8"
-    undici "^7.28.0"
+    "@ai-sdk/provider" "4.0.9"
+    "@ai-sdk/provider-utils" "5.0.34"
 
 "@ai-sdk/provider-utils@5.0.34":
   version "5.0.34"
@@ -56,13 +45,6 @@
     "@workflow/serde" "4.1.0"
     eventsource-parser "^3.0.8"
     undici "^7.28.0"
-
-"@ai-sdk/provider@4.0.8":
-  version "4.0.8"
-  resolved "https://registry.yarnpkg.com/@ai-sdk/provider/-/provider-4.0.8.tgz#d3f6c72db71098363e18c2e384945fbc7a983c19"
-  integrity sha512-aWO7iwhFUGf347tCwNGggggfmZigaSu7TF739IZSrWWABUp7zkb4Cr3fMqvBe5EIS7ABJJu3Cadn0g/zs1G0QQ==
-  dependencies:
-    json-schema "^0.4.0"
 
 "@ai-sdk/provider@4.0.9":
   version "4.0.9"
