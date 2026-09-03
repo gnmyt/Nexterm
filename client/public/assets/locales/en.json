@@ -1255,7 +1255,7 @@
           "name": "Identity Name",
           "namePlaceholder": "Enter identity name",
           "username": "Username",
-          "usernamePlaceholder": "Username (optional)",
+          "usernamePlaceholder": "Username",
           "authType": "Authentication Type",
           "password": "Password",
           "passwordPlaceholder": "Enter password",
@@ -1278,6 +1278,7 @@
         },
         "messages": {
           "nameRequired": "Identity name is required",
+          "usernameRequired": "Username is required",
           "passwordRequired": "Password is required",
           "sshKeyRequired": "SSH key is required",
           "createSuccess": "Identity created successfully",
