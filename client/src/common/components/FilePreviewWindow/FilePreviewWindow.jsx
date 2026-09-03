@@ -1,10 +1,8 @@
 import { useContext, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { UserContext } from "@/common/contexts/UserContext.jsx";
-import { useToast } from "@/common/contexts/ToastContext.jsx";
 import { getBaseUrl } from "@/common/utils/ConnectionUtil.js";
-import { isTauri } from "@/common/utils/TauriUtil.js";
-import { tauriDownload } from "@/common/utils/RequestUtil.js";
+import { useTransfers } from "@/common/contexts/TransferContext.jsx";
 import Icon from "@mdi/react";
 import { mdiImage, mdiFileDownload } from "@mdi/js";
 import FloatingWindow, { FloatingWindowAction } from "@/common/components/FloatingWindow";
@@ -13,7 +11,7 @@ import "./styles.sass";
 export const FilePreviewWindow = ({ file, session, onClose }) => {
     const { t } = useTranslation();
     const { sessionToken } = useContext(UserContext);
-    const { sendToast } = useToast();
+    const { startDownload } = useTransfers();
     const [fileUrl, setFileUrl] = useState(null);
     const [fileType, setFileType] = useState(null);
 
@@ -26,7 +24,7 @@ export const FilePreviewWindow = ({ file, session, onClose }) => {
 
         const extension = file.split(".").pop()?.toLowerCase();
         const baseUrl = getBaseUrl();
-        const url = `${baseUrl}/api/entries/sftp?sessionId=${session.id}&path=${file}&sessionToken=${sessionToken}&preview=true`;
+        const url = `${baseUrl}/api/entries/sftp?sessionId=${session.id}&path=${encodeURIComponent(file)}&sessionToken=${sessionToken}&preview=true`;
 
         setFileUrl(url);
 
@@ -39,24 +37,7 @@ export const FilePreviewWindow = ({ file, session, onClose }) => {
         setFileType(Object.entries(typeMap).find(([, exts]) => exts.includes(extension))?.[0] || "unknown");
     }, [file, session.id, sessionToken]);
 
-    const downloadFile = async () => {
-        const fileName = file.split("/").pop();
-        if (isTauri()) {
-            try {
-                await tauriDownload(fileUrl, fileName);
-                sendToast(t("common.success"), t("servers.fileManager.toast.downloaded", { name: fileName }));
-            } catch (e) {
-                if (e) sendToast(t("common.error"), e.message);
-            }
-            return;
-        }
-        const link = document.createElement("a");
-        link.href = fileUrl;
-        link.download = fileName;
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-    };
+    const downloadFile = () => startDownload({ sessionId: session.id, sessionToken, baseUrl: getBaseUrl(), path: file });
 
     const renderPreview = () => {
         switch (fileType) {

@@ -6,25 +6,24 @@ import { useToast } from "@/common/contexts/ToastContext.jsx";
 import useWebSocket from "react-use-websocket";
 import ActionBar from "@/pages/Servers/components/ViewContainer/renderer/FileRenderer/components/ActionBar";
 import FileList from "@/pages/Servers/components/ViewContainer/renderer/FileRenderer/components/FileList";
+import TransferPanel from "@/pages/Servers/components/ViewContainer/renderer/FileRenderer/components/TransferPanel";
 import "./styles.sass";
 import Icon from "@mdi/react";
 import { mdiCloudUpload } from "@mdi/js";
 import { getWebSocketUrl, getBaseUrl } from "@/common/utils/ConnectionUtil.js";
-import { uploadFile as uploadFileRequest, tauriDownload } from "@/common/utils/RequestUtil.js";
-import { isTauri } from "@/common/utils/TauriUtil.js";
+import { useTransfers, TRANSFER_OPERATIONS } from "@/common/contexts/TransferContext.jsx";
 
 const OPERATIONS = {
     READY: 0x0, LIST_FILES: 0x1, CREATE_FILE: 0x4, CREATE_FOLDER: 0x5, DELETE_FILE: 0x6,
     DELETE_FOLDER: 0x7, RENAME_FILE: 0x8, ERROR: 0x9, SEARCH_DIRECTORIES: 0xA,
     RESOLVE_SYMLINK: 0xB, MOVE_FILES: 0xC, COPY_FILES: 0xD, CHMOD: 0xE,
     STAT: 0xF, CHECKSUM: 0x10, FOLDER_SIZE: 0x11, PATH_SYNC: 0x12,
+    ...TRANSFER_OPERATIONS,
 };
 
 const REFRESH_DEBOUNCE = 150;
 
 const joinPath = (...parts) => parts.join("/").replace(/\/+/g, "/");
-
-const createUploadStats = () => ({ uploaded: 0, failed: 0, sentBytes: 0, totalBytes: 0, firstError: null, lastName: "" });
 
 const readAllEntries = (reader) => new Promise((resolve, reject) => {
     const all = [];
@@ -74,10 +73,9 @@ export const FileRenderer = ({ session, disconnectFromServer, setOpenFileEditors
     const { sessionToken } = useContext(UserContext);
     const { defaultViewMode } = usePreferences();
     const { sendToast } = useToast();
+    const { startDownload, startMultiDownload, queueUploads, applyServerProgress, registerSession } = useTransfers();
 
     const [dragging, setDragging] = useState(false);
-    const [uploadProgress, setUploadProgress] = useState(0);
-    const [isUploading, setIsUploading] = useState(false);
     const [directory, setDirectory] = useState("/");
     const [items, setItems] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -97,135 +95,27 @@ export const FileRenderer = ({ session, disconnectFromServer, setOpenFileEditors
     const skipNextPathSync = useRef(false);
     const symlinkCallbacks = useRef([]);
     const dropZoneRef = useRef(null);
-    const uploadQueueRef = useRef([]);
     const reconnectAttemptsRef = useRef(0);
     const fileListRef = useRef(null);
     const propertiesHandlerRef = useRef(null);
-    const uploadStatsRef = useRef(createUploadStats());
     const refreshTimerRef = useRef(null);
+    const sessionHandlersRef = useRef({ send: () => false, refresh: () => {} });
 
     const wsUrl = getWebSocketUrl("/api/ws/sftp", { sessionToken, sessionId: session.id });
+    const transferTarget = () => ({ sessionId: session.id, sessionToken, baseUrl: getBaseUrl() });
 
-    const downloadFile = async (path) => {
-        const baseUrl = getBaseUrl();
-        const fileName = path.split("/").pop();
-        const url = `${baseUrl}/api/entries/sftp?sessionId=${session.id}&path=${path}&sessionToken=${sessionToken}`;
-        
-        if (isTauri()) {
-            try {
-                await tauriDownload(url, fileName);
-                sendToast(t("common.success"), t("servers.fileManager.toast.downloaded", { name: fileName }));
-            } catch (e) {
-                if (e) sendToast(t("common.error"), e.message);
-            }
-            return;
-        }
-        const link = document.createElement("a");
-        link.href = url;
-        link.download = fileName;
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-    };
+    const downloadFile = (path) => startDownload({ ...transferTarget(), path });
 
-    const downloadMultipleFiles = async (paths) => {
-        if (!paths?.length) return;
-        const baseUrl = getBaseUrl();
-        const url = `${baseUrl}/api/entries/sftp/multi?sessionId=${session.id}&sessionToken=${sessionToken}`;
-        const defaultFileName = paths.length === 1 ? `${paths[0].split("/").pop()}.zip` : "files.zip";
-        
-        if (isTauri()) {
-            try {
-                await tauriDownload(url, defaultFileName, {
-                    filters: [{ name: "ZIP Archive", extensions: ["zip"] }],
-                    fetchOptions: { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ paths }) }
-                });
-                sendToast(t("common.success"), t("servers.fileManager.toast.downloadingItems", { count: paths.length }));
-            } catch (e) {
-                if (e) sendToast(t("common.error"), e.message);
-            }
-            return;
-        }
-        const form = document.createElement("form");
-        form.method = "POST";
-        form.action = url;
-        const input = document.createElement("input");
-        input.type = "hidden";
-        input.name = "paths";
-        input.value = JSON.stringify(paths);
-        form.appendChild(input);
-        document.body.appendChild(form);
-        form.submit();
-        document.body.removeChild(form);
-        sendToast(t("common.success"), t("servers.fileManager.toast.downloadingItems", { count: paths.length }));
-    };
+    const downloadMultipleFiles = (paths) => startMultiDownload({ ...transferTarget(), paths });
 
-    const uploadFileHttp = async (file, targetDir) => {
-        const filePath = joinPath(targetDir, file.name);
-        const stats = uploadStatsRef.current;
-
-        try {
-            const url = `/api/entries/sftp/upload?sessionId=${session.id}&path=${encodeURIComponent(filePath)}&sessionToken=${sessionToken}`;
-            await uploadFileRequest(url, file, {
-                onProgress: (progress) => setUploadProgress(stats.totalBytes
-                    ? Math.round(((stats.sentBytes + (progress / 100) * file.size) / stats.totalBytes) * 100)
-                    : progress),
-                timeout: 5 * 60 * 1000,
-            });
-            stats.uploaded++;
-            stats.lastName = file.name;
-        } catch (err) {
-            console.error("Upload error:", err);
-            stats.failed++;
-            stats.firstError ??= err.message;
-        } finally {
-            stats.sentBytes += file.size;
-        }
-    };
-
-    const reportUploadResult = ({ uploaded, failed, firstError, lastName }) => {
-        if (uploaded) {
-            sendToast(t("common.success"), uploaded === 1
-                ? t("servers.fileManager.toast.uploaded", { name: lastName })
-                : t("servers.fileManager.toast.uploadedItems", { count: uploaded }));
-        }
-        if (failed) {
-            sendToast(t("common.error"), failed === 1
-                ? t("servers.fileManager.toast.uploadFailed", { message: firstError })
-                : t("servers.fileManager.toast.uploadFailedItems", { count: failed, message: firstError }));
-        }
-    };
-
-    const processUploadQueue = async () => {
-        setIsUploading(true);
-        while (uploadQueueRef.current.length > 0) {
-            const { file, targetDir } = uploadQueueRef.current[0];
-            await uploadFileHttp(file, targetDir);
-            uploadQueueRef.current.shift();
-        }
-        setIsUploading(false);
-        setUploadProgress(0);
-        listFiles(true);
-
-        const stats = uploadStatsRef.current;
-        uploadStatsRef.current = createUploadStats();
-        reportUploadResult(stats);
-    };
-
-    const queueUploads = (uploads) => {
-        if (!uploads.length) return;
-        const idle = uploadQueueRef.current.length === 0;
-        for (const upload of uploads) uploadStatsRef.current.totalBytes += upload.file.size;
-        uploadQueueRef.current.push(...uploads);
-        if (idle) processUploadQueue();
-    };
+    const queueSessionUploads = (uploads) => queueUploads({ ...transferTarget(), uploads });
 
     const uploadFile = async () => {
         const fileInput = document.createElement("input");
         fileInput.type = "file";
         fileInput.multiple = true;
         fileInput.onchange = () => {
-            queueUploads([...fileInput.files].map(file => ({ file, targetDir: directory })));
+            queueSessionUploads([...fileInput.files].map(file => ({ file, targetDir: directory })));
         };
         fileInput.click();
     };
@@ -235,7 +125,7 @@ export const FileRenderer = ({ session, disconnectFromServer, setOpenFileEditors
         input.type = "file";
         input.webkitdirectory = true;
         input.onchange = () => {
-            queueUploads([...input.files].map(file => ({
+            queueSessionUploads([...input.files].map(file => ({
                 file,
                 targetDir: joinPath(directory, file.webkitRelativePath.split("/").slice(0, -1).join("/")),
             })));
@@ -256,6 +146,7 @@ export const FileRenderer = ({ session, disconnectFromServer, setOpenFileEditors
                     setConnectionError(null);
                     setCapabilities(payload?.capabilities ?? { shell: true, terminal: true });
                     reconnectAttemptsRef.current = 0;
+                    for (const transfer of payload?.transfers ?? []) applyServerProgress(session.id, transfer);
                     if (payload?.path && payload.path !== directoryRef.current) {
                         skipNextPathSync.current = true;
                         setDirectory(payload.path);
@@ -302,6 +193,9 @@ export const FileRenderer = ({ session, disconnectFromServer, setOpenFileEditors
                 case OPERATIONS.CHECKSUM:
                 case OPERATIONS.FOLDER_SIZE:
                     propertiesHandlerRef.current?.({ operation, payload });
+                    break;
+                case OPERATIONS.TRANSFER_PROGRESS:
+                    applyServerProgress(session.id, payload);
                     break;
             }
         } catch (err) { console.error("Error processing SFTP message:", err); }
@@ -368,13 +262,13 @@ export const FileRenderer = ({ session, disconnectFromServer, setOpenFileEditors
 
     const handleFileDrop = async (entries, files, targetDir) => {
         if (!entries.length) {
-            queueUploads(files.map(file => ({ file, targetDir })));
+            queueSessionUploads(files.map(file => ({ file, targetDir })));
             return;
         }
 
         const { files: collected, emptyDirs } = await collectDroppedEntries(entries, targetDir);
         for (const path of emptyDirs) sendOperation(OPERATIONS.CREATE_FOLDER, { path, recursive: true });
-        queueUploads(collected);
+        queueSessionUploads(collected);
     };
 
     const handleDrag = (e) => {
@@ -398,6 +292,14 @@ export const FileRenderer = ({ session, disconnectFromServer, setOpenFileEditors
     const handleOpenPreview = (filePath) => setOpenFileEditors(prev => [...prev, { id: `${session.id}-${filePath}-${Date.now()}`, file: filePath, session, type: 'preview' }]);
 
     useEffect(() => { directoryRef.current = directory; }, [directory]);
+
+    sessionHandlersRef.current.send = sendOperation;
+    sessionHandlersRef.current.refresh = () => listFiles(true);
+
+    useEffect(() => registerSession(session.id, {
+        send: (operation, payload) => sessionHandlersRef.current.send(operation, payload),
+        refresh: () => sessionHandlersRef.current.refresh(),
+    }), [registerSession, session.id]);
 
     useEffect(() => () => clearTimeout(refreshTimerRef.current), []);
 
@@ -451,8 +353,8 @@ export const FileRenderer = ({ session, disconnectFromServer, setOpenFileEditors
                     capabilities={capabilities}
                     searchQuery={searchQuery} onSearchResults={setSearchResultCount}
                     onOpenTerminal={onOpenTerminal} onPropertiesMessage={(handler) => { propertiesHandlerRef.current = handler; }} />
+                <TransferPanel sessionId={session.id} />
             </div>
-            {isUploading && <div className="upload-progress" style={{ width: `${uploadProgress}%` }} />}
         </div>
     );
 };

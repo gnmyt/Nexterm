@@ -2035,14 +2035,22 @@
         "dropFilesHint": "Drop files here to upload them"
       },
       "toast": {
-        "downloaded": "Downloaded {{name}}",
-        "downloadingItems": "Downloading {{count}} item(s)...",
-        "uploaded": "Uploaded {{name}}",
-        "uploadedItems": "Uploaded {{count}} files",
         "uploadFailed": "Upload failed: {{message}}",
-        "uploadFailedItems": "{{count}} files failed to upload: {{message}}",
         "connectionLost": "SFTP connection lost. Please reconnect.",
         "error": "An error occurred"
+      },
+      "transfers": {
+        "title": "Transfers",
+        "activeCount": "{{count}} active",
+        "allDone": "All done",
+        "clearFinished": "Clear finished",
+        "queued": "Queued",
+        "cancelling": "Cancelling...",
+        "completed": "Completed",
+        "savedTo": "Saved to {{path}}",
+        "cancelled": "Cancelled",
+        "failed": "Failed: {{message}}",
+        "dismiss": "Dismiss"
       }
     },
     "browser": {
