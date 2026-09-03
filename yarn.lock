@@ -19,13 +19,13 @@
     "@ai-sdk/provider-utils" "5.0.33"
     "@vercel/oidc" "3.2.0"
 
-"@ai-sdk/openai-compatible@^3.0.40":
-  version "3.0.40"
-  resolved "https://registry.yarnpkg.com/@ai-sdk/openai-compatible/-/openai-compatible-3.0.40.tgz#045b26179bdc235435794be8f5ee5f45d9fde497"
-  integrity sha512-4YvVykS7XfZEJMCe4gjxsT3CbCWXCONIK2QSVjEr+Xc4wbJcAxAM5xIWpx4x8ysFLlImhZc4OP4iTzeeGv76dA==
+"@ai-sdk/openai-compatible@^3.0.41":
+  version "3.0.41"
+  resolved "https://registry.yarnpkg.com/@ai-sdk/openai-compatible/-/openai-compatible-3.0.41.tgz#b7b780b699b28cca850c48d229749918c77bf53f"
+  integrity sha512-djOLRg4WOq5EINvWLfw2dniO14vBrf0iMRs/aXAQqsp4a67Wi49aMpZuvC7C7L3VpL43rnFzS1fWw7T6vpzgUQ==
   dependencies:
-    "@ai-sdk/provider" "4.0.8"
-    "@ai-sdk/provider-utils" "5.0.33"
+    "@ai-sdk/provider" "4.0.9"
+    "@ai-sdk/provider-utils" "5.0.34"
 
 "@ai-sdk/openai@^4.0.51":
   version "4.0.51"
@@ -46,10 +46,28 @@
     eventsource-parser "^3.0.8"
     undici "^7.28.0"
 
+"@ai-sdk/provider-utils@5.0.34":
+  version "5.0.34"
+  resolved "https://registry.yarnpkg.com/@ai-sdk/provider-utils/-/provider-utils-5.0.34.tgz#b1b695707da5e81ba5a7d279d78d9922cf3d7069"
+  integrity sha512-tRBdgRcys/4d8wyQdOdyYScq1AxfMdMd0hIlwolxJKVIbBwXUgClZuQT0VIsz4e7pylY8FE6utYCCZ494UAMJQ==
+  dependencies:
+    "@ai-sdk/provider" "4.0.9"
+    "@standard-schema/spec" "^1.1.0"
+    "@workflow/serde" "4.1.0"
+    eventsource-parser "^3.0.8"
+    undici "^7.28.0"
+
 "@ai-sdk/provider@4.0.8":
   version "4.0.8"
   resolved "https://registry.yarnpkg.com/@ai-sdk/provider/-/provider-4.0.8.tgz#d3f6c72db71098363e18c2e384945fbc7a983c19"
   integrity sha512-aWO7iwhFUGf347tCwNGggggfmZigaSu7TF739IZSrWWABUp7zkb4Cr3fMqvBe5EIS7ABJJu3Cadn0g/zs1G0QQ==
+  dependencies:
+    json-schema "^0.4.0"
+
+"@ai-sdk/provider@4.0.9":
+  version "4.0.9"
+  resolved "https://registry.yarnpkg.com/@ai-sdk/provider/-/provider-4.0.9.tgz#460ebb9770d0539eb7b325c266216cd33b7ae892"
+  integrity sha512-XnGXPWiBIfqjsVEud5pOaVneRByJQOu2sYNwlSVJTPCvakdCDkVuYKKfNuStkIpMUYl7JIkBZGBx+B5YfNeVjA==
   dependencies:
     json-schema "^0.4.0"
 
