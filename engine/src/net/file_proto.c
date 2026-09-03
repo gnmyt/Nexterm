@@ -3,8 +3,10 @@
 #include "log.h"
 
 #include "sftp_protocol_builder.h"
+#include "sftp_protocol_reader.h"
 
 #include <ctype.h>
+#include <poll.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -193,6 +195,36 @@ int fp_send_search_result(int fd, uint32_t rid, const fp_search_t* ctx) {
     Nexterm_SftpProtocol_SftpMessage_search_res_end(&b);
     Nexterm_SftpProtocol_SftpMessage_end_as_root(&b);
     return fp_finalize_and_send(&b, fd);
+}
+
+fp_cancel_state_t fp_poll_cancel(int fd, uint32_t rid) {
+    struct pollfd pfd = { .fd = fd, .events = POLLIN, .revents = 0 };
+    int ret = poll(&pfd, 1, 0);
+    if (ret == 0) return FP_CANCEL_NONE;
+    if (ret < 0) return FP_CANCEL_NONE;
+    if (pfd.revents & (POLLERR | POLLHUP | POLLNVAL)) return FP_CANCEL_CONNECTION_LOST;
+
+    uint32_t payload_len;
+    uint8_t* payload = nexterm_read_frame(fd, FP_MAX_FRAME, &payload_len);
+    if (!payload) return FP_CANCEL_CONNECTION_LOST;
+
+    fp_cancel_state_t state = FP_CANCEL_NONE;
+    Nexterm_SftpProtocol_SftpMessage_table_t msg =
+        Nexterm_SftpProtocol_SftpMessage_as_root(payload);
+    if (msg) {
+        Nexterm_SftpProtocol_SftpMsgType_enum_t mt =
+            Nexterm_SftpProtocol_SftpMessage_msg_type(msg);
+        uint32_t incoming_rid = Nexterm_SftpProtocol_SftpMessage_request_id(msg);
+        if (mt == Nexterm_SftpProtocol_SftpMsgType_CancelRead && incoming_rid == rid) {
+            state = FP_CANCEL_REQUESTED;
+        } else {
+            LOG_WARN("File transfer: rejected msg_type %d (rid=%u) while read %u is in progress",
+                     mt, incoming_rid, rid);
+            fp_send_error(fd, incoming_rid, "A file read is in progress", -1);
+        }
+    }
+    free(payload);
+    return state;
 }
 
 int64_t fp_monotonic_ms(void) {

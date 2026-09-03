@@ -11,6 +11,7 @@ const { createSFTPConnectionForSession, getSFTPBackgroundClient } = require("../
 const { hasResourcePermission } = require("../utils/permission");
 const { Permission } = require("../permissions/registry");
 const Entry = require("../models/Entry");
+const TransferRegistry = require("../lib/TransferRegistry");
 const logger = require("../utils/logger");
 
 const OP = {
@@ -18,6 +19,7 @@ const OP = {
     DELETE_FOLDER: 0x7, RENAME_FILE: 0x8, ERROR: 0x9, SEARCH_DIRECTORIES: 0xA,
     RESOLVE_SYMLINK: 0xB, MOVE_FILES: 0xC, COPY_FILES: 0xD, CHMOD: 0xE,
     STAT: 0xF, CHECKSUM: 0x10, FOLDER_SIZE: 0x11, PATH_SYNC: 0x12,
+    TRANSFER_PROGRESS: TransferRegistry.OP_TRANSFER_PROGRESS, CANCEL_TRANSFER: 0x14,
 };
 
 const CHECKSUM_COMMANDS = { md5: "md5sum", sha1: "sha1sum", sha256: "sha256sum", sha512: "sha512sum" };
@@ -99,7 +101,9 @@ const buildOperationHandlers = (sftp, getBg, ws, logAudit, capabilities) => ({
     },
     [OP.RESOLVE_SYMLINK]: async (p) => {
         requirePath(p);
-        sendResult(ws, OP.RESOLVE_SYMLINK, await sftp.realpath(p.path));
+        const resolved = await sftp.realpath(p.path);
+        const size = resolved.isDirectory ? 0 : (await sftp.stat(resolved.path)).size;
+        sendResult(ws, OP.RESOLVE_SYMLINK, { ...resolved, size });
     },
     [OP.MOVE_FILES]: async (p) => {
         requireMultiPaths(p);
@@ -204,6 +208,7 @@ module.exports = async (ws, req) => {
             }
         };
 
+        ws.isSftp = true;
         SessionManager.addWebSocket(sessionId, ws, false, buildParticipant(ctx));
 
         const onSftpClose = () => {
@@ -214,7 +219,7 @@ module.exports = async (ws, req) => {
 
         const capabilities = getCapabilities(entry);
         const storedPath = SessionManager.getSftpPath(sessionId);
-        sendResult(ws, OP.READY, { path: storedPath, capabilities });
+        sendResult(ws, OP.READY, { path: storedPath, capabilities, transfers: TransferRegistry.list(sessionId) });
 
         const logAudit = (action, resource, details) => {
             createAuditLog({ accountId: user.id, organizationId: entry.organizationId, action, resource, details, ipAddress, userAgent });
@@ -238,6 +243,13 @@ module.exports = async (ws, req) => {
                         }
                     }
                 }
+                return;
+            }
+
+            if (opCode === OP.CANCEL_TRANSFER) {
+                let payload;
+                try { payload = JSON.parse(msg.slice(1).toString()); } catch {}
+                if (TransferRegistry.isValidTransferId(payload?.id)) TransferRegistry.cancel(payload.id, sessionId);
                 return;
             }
 

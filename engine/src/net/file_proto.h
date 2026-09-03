@@ -65,6 +65,17 @@ int fp_send_exec_result(int fd, uint32_t rid, const char* stdout_data,
                         const char* stderr_data, int32_t exit_code);
 int fp_send_search_result(int fd, uint32_t rid, const fp_search_t* ctx);
 
+#define FP_ERR_CANCELLED (-2)
+#define FP_TRANSFER_CANCELLED_MSG "Transfer cancelled"
+
+typedef enum {
+    FP_CANCEL_NONE = 0,
+    FP_CANCEL_REQUESTED = 1,
+    FP_CANCEL_CONNECTION_LOST = -1,
+} fp_cancel_state_t;
+
+fp_cancel_state_t fp_poll_cancel(int fd, uint32_t rid);
+
 int64_t fp_monotonic_ms(void);
 bool fp_name_matches(const char* name, const char* search_term);
 void fp_parse_search_path(const char* search_path, char* base_path, size_t base_sz,

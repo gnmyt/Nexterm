@@ -415,6 +415,16 @@ static void handle_read_file(LIBSSH2_SFTP* sftp, int fd, uint32_t rid,
             libssh2_sftp_close(fh);
             return;
         }
+        fp_cancel_state_t cancel = fp_poll_cancel(fd, rid);
+        if (cancel != FP_CANCEL_NONE) {
+            free(chunk);
+            libssh2_sftp_close(fh);
+            if (cancel == FP_CANCEL_REQUESTED) {
+                LOG_INFO("SFTP: read of %.200s cancelled by client", path);
+                fp_send_error(fd, rid, FP_TRANSFER_CANCELLED_MSG, FP_ERR_CANCELLED);
+            }
+            return;
+        }
     }
 
     free(chunk);
@@ -541,7 +551,17 @@ typedef struct {
     uint8_t* buf;
     size_t buf_len;
     size_t buf_cap;
+    char path[FP_MAX_PATH];
 } sftp_write_state_t;
+
+static void sftp_discard_write(LIBSSH2_SFTP* sftp, sftp_write_state_t* ws) {
+    if (!ws->handle) return;
+    libssh2_sftp_close(ws->handle);
+    ws->handle = NULL;
+    ws->buf_len = 0;
+    if (libssh2_sftp_unlink(sftp, ws->path) != 0)
+        LOG_WARN("SFTP: failed to remove aborted upload %.200s", ws->path);
+}
 
 static int sftp_write_raw(LIBSSH2_SFTP* sftp, int data_fd,
                           sftp_write_state_t* ws,
@@ -644,19 +664,27 @@ static void dispatch_write_op(Nexterm_SftpProtocol_SftpMsgType_enum_t mt,
     }
 
     if (mt == Nexterm_SftpProtocol_SftpMsgType_WriteEnd) {
-        if (ws->handle) {
-            if (sftp_flush_write(sftp, data_fd, ws) != 0) return;
-            libssh2_sftp_close(ws->handle);
-            ws->handle = NULL;
-            fp_send_ok(data_fd, ws->rid);
+        if (!ws->handle) {
+            fp_send_error(data_fd, rid, "No write in progress", -1);
+            return;
         }
+        if (sftp_flush_write(sftp, data_fd, ws) != 0) return;
+        libssh2_sftp_close(ws->handle);
+        ws->handle = NULL;
+        fp_send_ok(data_fd, ws->rid);
+        return;
+    }
+
+    if (mt == Nexterm_SftpProtocol_SftpMsgType_WriteAbort) {
+        LOG_INFO("SFTP: write of %.200s aborted by client", ws->path);
+        sftp_discard_write(sftp, ws);
+        fp_send_ok(data_fd, rid);
         return;
     }
 
     if (ws->handle) {
-        sftp_flush_write(sftp, data_fd, ws);
-        libssh2_sftp_close(ws->handle);
-        ws->handle = NULL;
+        LOG_WARN("SFTP: WriteBegin while a write is in progress, discarding %.200s", ws->path);
+        sftp_discard_write(sftp, ws);
     }
     ws->buf_len = 0;
     if (!ws->buf) {
@@ -677,6 +705,7 @@ static void dispatch_write_op(Nexterm_SftpProtocol_SftpMsgType_enum_t mt,
         send_sftp_error(sftp, data_fd, rid);
     } else {
         ws->rid = rid;
+        snprintf(ws->path, sizeof(ws->path), "%s", path);
         fp_send_ok(data_fd, rid);
     }
 }
@@ -760,7 +789,11 @@ static int sftp_dispatch_message(LIBSSH2_SFTP* sftp, LIBSSH2_SESSION* ssh,
         case Nexterm_SftpProtocol_SftpMsgType_WriteBegin:
         case Nexterm_SftpProtocol_SftpMsgType_WriteData:
         case Nexterm_SftpProtocol_SftpMsgType_WriteEnd:
+        case Nexterm_SftpProtocol_SftpMsgType_WriteAbort:
             dispatch_write_op(mt, sftp, data_fd, rid, msg, ws);
+            return 0;
+
+        case Nexterm_SftpProtocol_SftpMsgType_CancelRead:
             return 0;
 
         case Nexterm_SftpProtocol_SftpMsgType_Rmdir:
@@ -787,7 +820,8 @@ static void sftp_request_loop(nexterm_session_t* session,
                                LIBSSH2_SFTP* sftp, LIBSSH2_SESSION* ssh,
                                int data_fd) {
     sftp_write_state_t ws = { .handle = NULL, .rid = 0,
-                              .buf = NULL, .buf_len = 0, .buf_cap = 0 };
+                              .buf = NULL, .buf_len = 0, .buf_cap = 0,
+                              .path = "" };
 
     while (session->state == SESSION_STATE_ACTIVE) {
         struct pollfd pfd = { .fd = data_fd, .events = POLLIN };
@@ -817,8 +851,8 @@ static void sftp_request_loop(nexterm_session_t* session,
     }
 
     if (ws.handle) {
-        sftp_flush_write(sftp, data_fd, &ws);
-        libssh2_sftp_close(ws.handle);
+        LOG_WARN("SFTP: connection ended with write of %.200s in progress, discarding", ws.path);
+        sftp_discard_write(sftp, &ws);
     }
     free(ws.buf);
 }
