@@ -25,6 +25,7 @@ const filesSchema = Joi.object({
 
 const generalSchema = Joi.object({
     language: Joi.string().max(10),
+    sidebarCollapsed: Joi.boolean(),
 }).unknown(false);
 
 module.exports.preferencesValidation = Joi.object({
