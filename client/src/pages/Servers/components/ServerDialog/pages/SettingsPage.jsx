@@ -171,8 +171,9 @@ const SettingsPage = ({ config, setConfig, monitoringEnabled, setMonitoringEnabl
     };
 
     const showJumpHosts = config?.protocol === 'ssh';
+    const showTelnetAutoLogin = config?.protocol === 'telnet';
 
-    if (!fieldConfig.showMonitoring && !fieldConfig.showKeyboardLayout && !fieldConfig.showDisplaySettings && !fieldConfig.showAudioSettings && !fieldConfig.showWakeOnLan && !fieldConfig.showTerminalSettings && !showJumpHosts) {
+    if (!fieldConfig.showMonitoring && !fieldConfig.showKeyboardLayout && !fieldConfig.showDisplaySettings && !fieldConfig.showAudioSettings && !fieldConfig.showWakeOnLan && !fieldConfig.showTerminalSettings && !showJumpHosts && !showTelnetAutoLogin) {
         return <p className="text-center">{t('servers.dialog.settings.noSettings')}</p>;
     }
 
@@ -237,6 +238,33 @@ const SettingsPage = ({ config, setConfig, monitoringEnabled, setMonitoringEnabl
                             {t('servers.dialog.settings.jumpHosts.noServersAvailable')}
                         </p>
                     )}
+                </div>
+            )}
+
+            {showTelnetAutoLogin && (
+                <div className="jump-hosts-section">
+                    <div className="jump-hosts-header">
+                        <div className="jump-hosts-info">
+                            <span className="jump-hosts-label">{t('servers.dialog.settings.telnetAutoLogin.title')}</span>
+                            <span className="jump-hosts-description">{t('servers.dialog.settings.telnetAutoLogin.description')}</span>
+                        </div>
+                    </div>
+                    <div className="form-group">
+                        <label>{t('servers.dialog.settings.telnetAutoLogin.usernamePrompt')}</label>
+                        <input
+                            className="form-input"
+                            value={config?.telnetUsernamePrompt || ''}
+                            onChange={(event) => setConfig(prev => ({ ...prev, telnetUsernamePrompt: event.target.value }))}
+                        />
+                    </div>
+                    <div className="form-group">
+                        <label>{t('servers.dialog.settings.telnetAutoLogin.passwordPrompt')}</label>
+                        <input
+                            className="form-input"
+                            value={config?.telnetPasswordPrompt || ''}
+                            onChange={(event) => setConfig(prev => ({ ...prev, telnetPasswordPrompt: event.target.value }))}
+                        />
+                    </div>
                 </div>
             )}
 

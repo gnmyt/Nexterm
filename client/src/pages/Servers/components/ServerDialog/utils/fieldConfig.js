@@ -19,11 +19,12 @@ export const getFieldConfig = (type, protocol) => {
                 return {
                     showProtocol: false,
                     showIpPort: true,
-                    showIdentities: false,
+                    showIdentities: true,
                     showSettings: true,
                     showMonitoring: false,
                     showKeyboardLayout: false,
                     showTerminalSettings: true,
+                    allowedAuthTypes: ["password", "password-only"],
                     showWakeOnLan: true,
                 };
             case "rdp":

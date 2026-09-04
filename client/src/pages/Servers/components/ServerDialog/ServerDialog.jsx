@@ -148,6 +148,11 @@ export const ServerDialog = ({ open, onClose, currentFolderId, currentOrganizati
         if (!fieldConfig.showKeyboardLayout) {
             delete finalConfig.keyboardLayout;
         }
+
+        if (finalConfig.protocol !== "telnet") {
+            delete finalConfig.telnetUsernamePrompt;
+            delete finalConfig.telnetPasswordPrompt;
+        }
         
         return finalConfig;
     };
