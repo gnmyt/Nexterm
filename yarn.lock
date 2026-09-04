@@ -2279,10 +2279,10 @@ express-jsdoc-swagger@^1.8.0:
     merge "^2.1.1"
     swagger-ui-express "^4.3.0"
 
-express-rate-limit@^8.6.2:
-  version "8.6.2"
-  resolved "https://registry.yarnpkg.com/express-rate-limit/-/express-rate-limit-8.6.2.tgz#1a6c7fb6c5f5a83883c14f1d198fcdff60087c5d"
-  integrity sha512-YH4ru+eOJxQABscKFfRCy9R7x9QFGdezclVMwwgFFndzS2Xnm0uo6B0ABZsLhcpeptGv2qvuJVWlQr9gQZoC3A==
+express-rate-limit@^8.7.0:
+  version "8.7.0"
+  resolved "https://registry.yarnpkg.com/express-rate-limit/-/express-rate-limit-8.7.0.tgz#87739a3535e7db3ca87b4a77b1ec5cc2c0a711e4"
+  integrity sha512-hOwV7WOxXfjRpAM1DSJWZDXx3GhplwD8IfwuwvogD8i1Qnkgosw/H45s4ZnFAUHDAhPjlY9hLBvJhKmGMyY26g==
   dependencies:
     debug "^4.4.3"
     ip-address "^10.2.0"
