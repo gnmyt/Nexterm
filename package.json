@@ -12,12 +12,12 @@
     "node": ">=22"
   },
   "dependencies": {
-    "@ai-sdk/anthropic": "^4.0.45",
-    "@ai-sdk/openai": "^4.0.51",
-    "@ai-sdk/openai-compatible": "^3.0.40",
+    "@ai-sdk/anthropic": "^4.0.46",
+    "@ai-sdk/openai": "^4.0.53",
+    "@ai-sdk/openai-compatible": "^3.0.41",
     "@inquirer/password": "^5.2.0",
     "@simplewebauthn/server": "^13.3.3",
-    "ai": "^7.0.84",
+    "ai": "^7.0.87",
     "archiver": "^8.0.0",
     "bcrypt": "^6.0.0",
     "commander": "^15.0.0",
