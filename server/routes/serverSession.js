@@ -84,7 +84,7 @@ app.get("/:id", async (req, res) => {
 app.post("/:id/hibernate", async (req, res) => {
     if (validateSchema(res, sessionIdValidation, req.params)) return;
     
-    const result = await hibernateSession(req.params.id);
+    const result = await hibernateSession(req.user.id, req.params.id);
     if (result?.code) {
         return res.status(result.code).json({ error: result.message });
     }
@@ -107,7 +107,7 @@ app.post("/:id/resume", async (req, res) => {
     if (validateSchema(res, resumeSessionValidation, req.body)) return;
     
     const { tabId, browserId } = req.body;
-    const result = await resumeSession(req.params.id, tabId, browserId);
+    const result = await resumeSession(req.user.id, req.params.id, tabId, browserId);
     if (result?.code) {
         return res.status(result.code).json({ error: result.message });
     }
@@ -128,7 +128,7 @@ app.post("/:id/resume", async (req, res) => {
 app.delete("/:id", async (req, res) => {
     if (validateSchema(res, sessionIdValidation, req.params)) return;
     
-    const result = await deleteSession(req.params.id);
+    const result = await deleteSession(req.user.id, req.params.id);
     if (result?.code) {
         return res.status(result.code).json({ error: result.message });
     }
