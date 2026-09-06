@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, useEffect, useCallback } from "react";
+import { createContext, useContext, useState, useEffect, useCallback, useMemo } from "react";
 import { openPopout, onPopoutClosed } from "@/common/utils/PopoutUtil.js";
 
 export const SessionContext = createContext({});
@@ -28,8 +28,14 @@ export const SessionProvider = ({ children }) => {
         if (activeSessions.some(s => s.id === sessionId)) setActiveSessionId(sessionId);
     }), [activeSessions]);
 
+    const value = useMemo(() => ({
+        activeSessions, setActiveSessions, activeSessionId, setActiveSessionId,
+        poppedOutSessions, popOutSession, sessionGroups, setSessionGroups,
+        activeGroupId, setActiveGroupId,
+    }), [activeSessions, activeSessionId, poppedOutSessions, popOutSession, sessionGroups, activeGroupId]);
+
     return (
-        <SessionContext.Provider value={{ activeSessions, setActiveSessions, activeSessionId, setActiveSessionId, poppedOutSessions, popOutSession, sessionGroups, setSessionGroups, activeGroupId, setActiveGroupId }}>
+        <SessionContext.Provider value={value}>
             {children}
         </SessionContext.Provider>
     );

@@ -27,6 +27,10 @@ const dropInfo = (monitor, node) => {
     return { zone: "reorder", side: ratio < 0.5 ? "left" : "right" };
 };
 
+const onActivateKey = (handler) => (e) => {
+    if (e.key === "Enter" || e.key === " ") { e.preventDefault(); handler(e); }
+};
+
 const DraggableTab = ({
     session,
     server,
@@ -93,9 +97,10 @@ const DraggableTab = ({
 
     return (
         <div ref={(node) => { nodeRef.current = node; drag(drop(node)); }} onClick={() => setActiveSessionId(session.id)}
+            role="button" tabIndex={0} onKeyDown={onActivateKey(() => setActiveSessionId(session.id))}
             onContextMenu={handleContextMenu}
             onAuxClick={handleAuxClick}
-            className={`server-tab ${session.id === activeSessionId ? "server-tab-active" : ""} ${isDragging ? "dragging" : ""} ${isOver && zone === "merge" ? "drop-merge" : ""} ${isOver && zone === "reorder" ? `drop-reorder drop-reorder-${side}` : ""}`}
+            className={`server-tab ${session.id === activeSessionId ? "server-tab-active" : ""} ${isDragging ? "dragging" : ""} ${isOver && zone === "merge" ? "drop-merge" : ""} ${isOver && zone === "reorder" ? "drop-reorder drop-reorder-" + side : ""}`}
             style={{ opacity: isDragging ? 0.5 : 1 }}>
             <div className={`progress-circle ${!showProgress ? "no-progress" : ""}`}>
                 {showProgress && (
@@ -203,6 +208,7 @@ const GroupTab = ({ group, members, active, activeSessionId, onActivate, onRenam
         <>
             <div ref={(node) => { nodeRef.current = node; drop(node); }}
                  onClick={() => { if (!editing) onActivate?.(); }}
+                 role="button" tabIndex={0} onKeyDown={onActivateKey(() => { if (!editing) onActivate?.(); })}
                  onContextMenu={(e) => { e.preventDefault(); e.stopPropagation(); onOpenMenu?.(e); }}
                  onMouseEnter={openPopover} onMouseLeave={scheduleClose}
                  className={`server-tab server-group-tab ${active ? "server-tab-active" : ""} ${isOver ? "drop-target drop-merge" : ""}`}>
@@ -235,7 +241,9 @@ const GroupTab = ({ group, members, active, activeSessionId, onActivate, onRenam
                     {members.map(member => (
                         <div key={member.id}
                              className={`group-popover-item ${member.id === activeSessionId ? "active" : ""}`}
+                             role="button" tabIndex={0}
                              onClick={() => { onFocusMember?.(member.id); setPopover(null); }}
+                             onKeyDown={onActivateKey(() => { onFocusMember?.(member.id); setPopover(null); })}
                              onContextMenu={(e) => { e.preventDefault(); e.stopPropagation(); setPopover(null); onMemberMenu?.(e, member.id); }}>
                             <Icon path={getIconPath(member.server?.icon)} className="group-popover-icon" />
                             <span className="group-popover-name">{member.server?.name || "?"}</span>

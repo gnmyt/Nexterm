@@ -14,11 +14,11 @@ const CONTROL_PLANE_TYPES = new Set(["ssh", "sftp", "guac", "pve-lxc"]);
 const TYPING_DURATION_MS = 1500;
 const PRESENCE_THROTTLE_MS = 250;
 
-module.exports.create = (accountId, entryId, configuration, connectionReason = null, tabId = null, browserId = null, auditLogId = null, organizationId = null, groupId = null) => {
+module.exports.create = (accountId, entryId, configuration, connectionReason = null, tabId = null, browserId = null, auditLogId = null, organizationId = null) => {
     const sessionId = uuidv4();
     const session = {
         sessionId, accountId, entryId, configuration, connectionReason,
-        tabId, browserId, auditLogId, organizationId, groupId,
+        tabId, browserId, auditLogId, organizationId, groupId: null,
         isHibernated: false,
         createdAt: new Date(),
         lastActivity: new Date(),

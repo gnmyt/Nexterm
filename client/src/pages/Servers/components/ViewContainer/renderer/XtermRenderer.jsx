@@ -609,7 +609,7 @@ const XtermRenderer = ({ session, disconnectFromServer, markSessionErrored, getS
                 Object.entries(terminalRefs.current).forEach(([sessionId, refs]) => {
                     if (sessionId === session.id) return;
                     if (groupIds && !groupIds.has(sessionId)) return;
-                    if (refs.ws && refs.ws.readyState === WebSocket.OPEN) {
+                    if (refs.ws?.readyState === WebSocket.OPEN) {
                         refs.ws.send(data);
                     }
                 });
