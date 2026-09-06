@@ -292,24 +292,38 @@ module.exports.editFolder = async (accountId, folderId, configuration) => {
     return { success: true };
 };
 
-const resolveRepositionScope = async (accountId, folder, { targetId, parentId, organizationId }) => {
-    let targetParentId, targetOrganizationId;
+const isDescendantFolder = async (ancestorId, folderId) => {
+    let current = await Folder.findByPk(ancestorId);
+    while (current) {
+        if (current.id === folderId) return true;
+        if (current.parentId === null) return false;
+        current = await Folder.findByPk(current.parentId);
+    }
+    return false;
+};
 
+const resolveTargetLocation = async (folder, { targetId, parentId, organizationId }) => {
     if (targetId !== null && targetId !== undefined) {
         const target = await Folder.findByPk(Number.parseInt(targetId));
         if (!target) return { error: { code: 302, message: "Target folder does not exist" } };
-        targetParentId = target.parentId;
-        targetOrganizationId = target.organizationId || null;
-    } else if (parentId !== undefined && parentId !== null) {
+        return { targetParentId: target.parentId, targetOrganizationId: target.organizationId || null };
+    }
+    if (parentId !== undefined && parentId !== null) {
         const parent = await Folder.findByPk(Number.parseInt(parentId));
         if (!parent) return { error: { code: 302, message: "Target parent folder does not exist" } };
-        targetParentId = parent.id;
-        targetOrganizationId = parent.organizationId || null;
-    } else {
-        targetParentId = null;
-        targetOrganizationId = organizationId !== undefined ? organizationId : (folder.organizationId || null);
+        return { targetParentId: parent.id, targetOrganizationId: parent.organizationId || null };
     }
+    return {
+        targetParentId: null,
+        targetOrganizationId: organizationId !== undefined ? organizationId : (folder.organizationId || null),
+    };
+};
 
+const resolveRepositionScope = async (accountId, folder, params) => {
+    const location = await resolveTargetLocation(folder, params);
+    if (location.error) return location;
+
+    const { targetParentId, targetOrganizationId } = location;
     const targetAccountId = targetOrganizationId ? null : accountId;
     const parentChanged = (folder.parentId || null) !== (targetParentId || null);
 
@@ -322,13 +336,8 @@ const resolveRepositionScope = async (accountId, folder, { targetId, parentId, o
         return { error: { code: 403, message: "You don't have permission to manage resources in the target organization" } };
     }
 
-    if (parentChanged && targetParentId) {
-        let current = await Folder.findByPk(targetParentId);
-        while (current) {
-            if (current.id === folder.id) return { error: { code: 303, message: "Cannot move folder to its own subfolder" } };
-            if (current.parentId === null) break;
-            current = await Folder.findByPk(current.parentId);
-        }
+    if (parentChanged && targetParentId && await isDescendantFolder(targetParentId, folder.id)) {
+        return { error: { code: 303, message: "Cannot move folder to its own subfolder" } };
     }
 
     return { targetParentId, targetOrganizationId, targetAccountId };
