@@ -11,6 +11,19 @@ const { createAuditLog, AUDIT_ACTIONS, RESOURCE_TYPES } = require("./audit");
 const stateBroadcaster = require("../lib/StateBroadcaster");
 const logger = require("../utils/logger");
 const SessionManager = require("../lib/SessionManager");
+const { reorderSiblings } = require("../utils/reposition");
+
+const checkFolderManageAccess = async (accountId, folder) => {
+    if (folder.organizationId) {
+        if (!(await hasOrganizationPermission(accountId, folder.organizationId, Permission.RESOURCES_MANAGE)))
+            return { code: 403, message: "You don't have permission to manage resources in this organization" };
+    } else if (folder.accountId !== accountId) {
+        return { code: 403, message: "You don't have permission to edit this folder" };
+    } else if (!(await hasAccountPermission(accountId, Permission.RESOURCES_MANAGE))) {
+        return { code: 403, message: "You don't have permission to manage resources" };
+    }
+    return null;
+};
 
 const cleanupOrganizationIdentities = async (entryIds, oldOrganizationId) => {
     if (!entryIds.length || !oldOrganizationId) return;
@@ -174,14 +187,8 @@ module.exports.editFolder = async (accountId, folderId, configuration) => {
         return { code: 301, message: "Folder does not exist" };
     }
 
-    if (folder.organizationId) {
-        if (!(await hasOrganizationPermission(accountId, folder.organizationId, Permission.RESOURCES_MANAGE)))
-            return { code: 403, message: "You don't have permission to manage resources in this organization" };
-    } else if (folder.accountId !== accountId) {
-        return { code: 403, message: "You don't have permission to edit this folder" };
-    } else if (!(await hasAccountPermission(accountId, Permission.RESOURCES_MANAGE))) {
-        return { code: 403, message: "You don't have permission to manage resources" };
-    }
+    const accessError = await checkFolderManageAccess(accountId, folder);
+    if (accessError) return accessError;
 
     if (configuration.parentId !== undefined && folder.type === "integration-node") {
         return { code: 403, message: "Integration nodes cannot be moved out of their integration folder" };
@@ -285,61 +292,59 @@ module.exports.editFolder = async (accountId, folderId, configuration) => {
     return { success: true };
 };
 
-module.exports.repositionFolder = async (accountId, folderId, { targetId, placement, parentId, organizationId }) => {
-    const folderIdNum = parseInt(folderId);
-    const folder = await Folder.findByPk(folderIdNum);
+const resolveRepositionScope = async (accountId, folder, { targetId, parentId, organizationId }) => {
+    let targetParentId, targetOrganizationId;
 
-    if (folder === null) {
-        return { code: 301, message: "Folder does not exist" };
-    }
-
-    if (folder.organizationId) {
-        if (!(await hasOrganizationPermission(accountId, folder.organizationId, Permission.RESOURCES_MANAGE)))
-            return { code: 403, message: "You don't have permission to manage resources in this organization" };
-    } else if (folder.accountId !== accountId) {
-        return { code: 403, message: "You don't have permission to edit this folder" };
-    } else if (!(await hasAccountPermission(accountId, Permission.RESOURCES_MANAGE))) {
-        return { code: 403, message: "You don't have permission to manage resources" };
-    }
-
-    let targetParentId, targetOrganizationId, targetAccountId;
     if (targetId !== null && targetId !== undefined) {
-        const target = await Folder.findByPk(parseInt(targetId));
-        if (!target) return { code: 302, message: "Target folder does not exist" };
+        const target = await Folder.findByPk(Number.parseInt(targetId));
+        if (!target) return { error: { code: 302, message: "Target folder does not exist" } };
         targetParentId = target.parentId;
         targetOrganizationId = target.organizationId || null;
-        targetAccountId = target.organizationId ? null : accountId;
     } else if (parentId !== undefined && parentId !== null) {
-        const parent = await Folder.findByPk(parseInt(parentId));
-        if (!parent) return { code: 302, message: "Target parent folder does not exist" };
+        const parent = await Folder.findByPk(Number.parseInt(parentId));
+        if (!parent) return { error: { code: 302, message: "Target parent folder does not exist" } };
         targetParentId = parent.id;
         targetOrganizationId = parent.organizationId || null;
-        targetAccountId = parent.organizationId ? null : accountId;
     } else {
         targetParentId = null;
         targetOrganizationId = organizationId !== undefined ? organizationId : (folder.organizationId || null);
-        targetAccountId = targetOrganizationId ? null : accountId;
     }
 
+    const targetAccountId = targetOrganizationId ? null : accountId;
     const parentChanged = (folder.parentId || null) !== (targetParentId || null);
 
     if (parentChanged && folder.type === "integration-node") {
-        return { code: 403, message: "Integration nodes cannot be moved out of their integration folder" };
+        return { error: { code: 403, message: "Integration nodes cannot be moved out of their integration folder" } };
     }
 
-    if (targetOrganizationId && targetOrganizationId !== folder.organizationId) {
-        if (!(await hasOrganizationPermission(accountId, targetOrganizationId, Permission.RESOURCES_MANAGE)))
-            return { code: 403, message: "You don't have permission to manage resources in the target organization" };
+    if (targetOrganizationId && targetOrganizationId !== folder.organizationId
+        && !(await hasOrganizationPermission(accountId, targetOrganizationId, Permission.RESOURCES_MANAGE))) {
+        return { error: { code: 403, message: "You don't have permission to manage resources in the target organization" } };
     }
 
     if (parentChanged && targetParentId) {
         let current = await Folder.findByPk(targetParentId);
         while (current) {
-            if (current.id === folderIdNum) return { code: 303, message: "Cannot move folder to its own subfolder" };
+            if (current.id === folder.id) return { error: { code: 303, message: "Cannot move folder to its own subfolder" } };
             if (current.parentId === null) break;
             current = await Folder.findByPk(current.parentId);
         }
     }
+
+    return { targetParentId, targetOrganizationId, targetAccountId };
+};
+
+module.exports.repositionFolder = async (accountId, folderId, { targetId, placement, parentId, organizationId }) => {
+    const folderIdNum = Number.parseInt(folderId);
+    const folder = await Folder.findByPk(folderIdNum);
+    if (folder === null) return { code: 301, message: "Folder does not exist" };
+
+    const accessError = await checkFolderManageAccess(accountId, folder);
+    if (accessError) return accessError;
+
+    const scope = await resolveRepositionScope(accountId, folder, { targetId, parentId, organizationId });
+    if (scope.error) return scope.error;
+    const { targetParentId, targetOrganizationId, targetAccountId } = scope;
 
     if (folder.organizationId !== targetOrganizationId) {
         await updateFolderContext(folderIdNum, targetOrganizationId, targetAccountId, folder.organizationId);
@@ -349,29 +354,9 @@ module.exports.repositionFolder = async (accountId, folderId, { targetId, placem
         where: { parentId: targetParentId, organizationId: targetOrganizationId, accountId: targetAccountId },
         order: [["position", "ASC"]],
     });
-
-    const normalized = siblings.filter(f => f.id !== folderIdNum);
-
-    let targetIndex;
-    if (targetId === null || targetId === undefined) {
-        targetIndex = normalized.length;
-    } else {
-        targetIndex = normalized.findIndex(f => f.id === parseInt(targetId));
-        if (targetIndex === -1) targetIndex = normalized.length;
-        else if (placement === "after") targetIndex += 1;
-    }
-
-    normalized.splice(targetIndex, 0, folder);
-
-    for (let i = 0; i < normalized.length; i++) {
-        const updateData = { position: i };
-        if (normalized[i].id === folderIdNum) {
-            updateData.parentId = targetParentId;
-            updateData.organizationId = targetOrganizationId;
-            updateData.accountId = targetAccountId;
-        }
-        await Folder.update(updateData, { where: { id: normalized[i].id } });
-    }
+    await reorderSiblings(Folder, siblings, folder, targetId, placement, {
+        parentId: targetParentId, organizationId: targetOrganizationId, accountId: targetAccountId,
+    });
 
     await createAuditLog({
         action: AUDIT_ACTIONS.FOLDER_MGMT_UPDATE,

@@ -43,7 +43,9 @@ export const FolderObject = ({ id, name, nestedLevel, position, onClick, isOpen,
             if (!offset) return;
             const rect = elementRef.current.getBoundingClientRect();
             const y = offset.y - rect.top;
-            const zone = y < rect.height * 0.3 ? "before" : y > rect.height * 0.7 ? "after" : "nest";
+            let zone = "nest";
+            if (y < rect.height * 0.3) zone = "before";
+            else if (y > rect.height * 0.7) zone = "after";
             setDropZone(prev => prev === zone ? prev : zone);
         },
         drop: async (item) => {
@@ -65,7 +67,7 @@ export const FolderObject = ({ id, name, nestedLevel, position, onClick, isOpen,
                         organizationId: organizationId
                     });
                 } else {
-                    await patchRequest(`folders/${item.id}`, { parentId: id });
+                    await patchRequest(`folders/${item.id}/reposition`, { parentId: id });
                 }
                 loadServers();
             } catch (error) {
@@ -79,9 +81,8 @@ export const FolderObject = ({ id, name, nestedLevel, position, onClick, isOpen,
         }),
     });
 
-    const dropZoneClass = isOver
-        ? (dropZone === "before" ? " folder-drop-before" : dropZone === "after" ? " folder-drop-after" : " folder-is-over")
-        : "";
+    const zoneClasses = { before: " folder-drop-before", after: " folder-drop-after" };
+    const dropZoneClass = isOver ? (zoneClasses[dropZone] || " folder-is-over") : "";
 
     const changeName = () => {
         setNameState(name => {
