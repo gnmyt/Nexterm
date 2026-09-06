@@ -31,3 +31,25 @@ module.exports.duplicateSessionValidation = Joi.object({
     tabId: Joi.string().allow(null).optional(),
     browserId: Joi.string().allow(null).optional()
 });
+
+module.exports.groupIdValidation = Joi.object({
+    id: Joi.string().uuid().required()
+});
+
+module.exports.createGroupValidation = Joi.object({
+    name: Joi.string().max(255).allow(null, '').optional(),
+    order: Joi.number().optional(),
+    tabId: Joi.string().allow(null).optional(),
+    browserId: Joi.string().allow(null).optional(),
+    sessionIds: Joi.array().items(Joi.string().uuid()).optional()
+});
+
+module.exports.updateGroupValidation = Joi.object({
+    name: Joi.string().max(255).optional(),
+    order: Joi.number().optional(),
+    layout: Joi.object().unknown(true).allow(null).optional()
+}).min(1);
+
+module.exports.moveToGroupValidation = Joi.object({
+    groupId: Joi.string().uuid().allow(null).required()
+});

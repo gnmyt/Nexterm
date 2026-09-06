@@ -1,7 +1,8 @@
 import { useRef, useState, useEffect, useContext } from "react";
+import { createPortal } from "react-dom";
 import { useTranslation } from "react-i18next";
 import Icon from "@mdi/react";
-import { mdiClose, mdiViewSplitVertical, mdiChevronLeft, mdiChevronRight, mdiMenu, mdiFullscreen, mdiFullscreenExit, mdiNoteEditOutline } from "@mdi/js";
+import { mdiClose, mdiViewSplitVertical, mdiChevronLeft, mdiChevronRight, mdiMenu, mdiFullscreen, mdiFullscreenExit, mdiNoteEditOutline, mdiViewGridOutline, mdiDotsVertical } from "@mdi/js";
 import { useDrag, useDrop } from "react-dnd";
 import { useContextMenu } from "@/common/components/ContextMenu";
 import { useActiveSessions } from "@/common/contexts/SessionContext.jsx";
@@ -16,6 +17,16 @@ import KeyboardShortcutsMenu from "../KeyboardShortcutsMenu";
 import SnippetsMenu from "../../renderer/components/SnippetsMenu";
 import "./styles.sass";
 
+const dropInfo = (monitor, node) => {
+    if (!node) return { zone: "reorder", side: "left" };
+    const rect = node.getBoundingClientRect();
+    const offset = monitor.getClientOffset();
+    if (!offset) return { zone: "reorder", side: "left" };
+    const ratio = (offset.x - rect.left) / rect.width;
+    if (ratio > 0.34 && ratio < 0.66) return { zone: "merge", side: null };
+    return { zone: "reorder", side: ratio < 0.5 ? "left" : "right" };
+};
+
 const DraggableTab = ({
     session,
     server,
@@ -25,12 +36,14 @@ const DraggableTab = ({
     onOpenMenu,
     index,
     moveTab,
+    onMergeTab,
     progress = 0,
     pageInfo = null,
 }) => {
     const { getParticipants } = useLiveSessions();
     const { user } = useContext(UserContext);
     const { t } = useTranslation();
+    const nodeRef = useRef(null);
 
     const otherParticipants = getParticipants(session.joinSessionId || session.id)
         .filter(participant => participant.accountId !== user?.id);
@@ -43,12 +56,20 @@ const DraggableTab = ({
         collect: (monitor) => ({ isDragging: monitor.isDragging() }),
     });
 
-    const [{ isOver }, drop] = useDrop({
+    const [{ isOver, zone, side }, drop] = useDrop({
         accept: "TAB",
-        drop: (draggedItem) => {
-            if (draggedItem.index !== index) moveTab(draggedItem.index, index);
+        drop: (draggedItem, monitor) => {
+            if (draggedItem.sessionId === session.id) return;
+            if (dropInfo(monitor, nodeRef.current).zone === "merge") {
+                onMergeTab?.(draggedItem.sessionId, session.id);
+            } else if (draggedItem.index !== index) {
+                moveTab(draggedItem.index, index);
+            }
         },
-        collect: (monitor) => ({ isOver: monitor.isOver() }),
+        collect: (monitor) => {
+            const info = monitor.isOver() ? dropInfo(monitor, nodeRef.current) : {};
+            return { isOver: monitor.isOver(), zone: info.zone || null, side: info.side || null };
+        },
     });
 
     const radius = 10;
@@ -71,10 +92,10 @@ const DraggableTab = ({
     };
 
     return (
-        <div ref={(node) => drag(drop(node))} onClick={() => setActiveSessionId(session.id)}
+        <div ref={(node) => { nodeRef.current = node; drag(drop(node)); }} onClick={() => setActiveSessionId(session.id)}
             onContextMenu={handleContextMenu}
             onAuxClick={handleAuxClick}
-            className={`server-tab ${session.id === activeSessionId ? "server-tab-active" : ""} ${isDragging ? "dragging" : ""} ${isOver ? "drop-target" : ""}`}
+            className={`server-tab ${session.id === activeSessionId ? "server-tab-active" : ""} ${isDragging ? "dragging" : ""} ${isOver && zone === "merge" ? "drop-merge" : ""} ${isOver && zone === "reorder" ? `drop-reorder drop-reorder-${side}` : ""}`}
             style={{ opacity: isDragging ? 0.5 : 1 }}>
             <div className={`progress-circle ${!showProgress ? "no-progress" : ""}`}>
                 {showProgress && (
@@ -120,6 +141,117 @@ const DraggableTab = ({
     );
 };
 
+const MAX_GROUP_NAME = 32;
+
+const GroupTab = ({ group, members, active, activeSessionId, onActivate, onRename, onDissolve, onDropToGroup, onOpenMenu, onFocusMember, onRemoveMember, onMemberMenu }) => {
+    const { t } = useTranslation();
+    const nodeRef = useRef(null);
+    const inputRef = useRef(null);
+    const openedAtRef = useRef(0);
+    const closeTimerRef = useRef(null);
+    const [editing, setEditing] = useState(false);
+    const [name, setName] = useState(group?.name || "");
+    const [popover, setPopover] = useState(null);
+
+    useEffect(() => { if (!editing) setName(group?.name || ""); }, [group?.name, editing]);
+    useEffect(() => () => clearTimeout(closeTimerRef.current), []);
+
+    const [{ isOver }, drop] = useDrop({
+        accept: "TAB",
+        drop: (dragged) => {
+            if (members.some(member => member.id === dragged.sessionId)) return;
+            onDropToGroup?.(dragged.sessionId);
+        },
+        collect: (monitor) => ({ isOver: monitor.isOver() }),
+    });
+
+    const startEdit = (e) => {
+        e.stopPropagation();
+        setPopover(null);
+        openedAtRef.current = Date.now();
+        setEditing(true);
+    };
+
+    const commitRename = () => {
+        setEditing(false);
+        const trimmed = name.trim().slice(0, MAX_GROUP_NAME);
+        if (trimmed && trimmed !== group.name) onRename?.(trimmed);
+        else setName(group?.name || "");
+    };
+
+    const handleBlur = () => {
+        // Activating the tab steals focus to the terminal ~100ms later; ignore that
+        // transient blur so the rename input stays open until the user is done.
+        if (Date.now() - openedAtRef.current < 350) {
+            inputRef.current?.focus();
+            return;
+        }
+        commitRename();
+    };
+
+    const openPopover = () => {
+        clearTimeout(closeTimerRef.current);
+        const rect = nodeRef.current?.getBoundingClientRect();
+        if (rect) setPopover({ left: rect.left, top: rect.bottom + 2 });
+    };
+    const scheduleClose = () => {
+        clearTimeout(closeTimerRef.current);
+        closeTimerRef.current = setTimeout(() => setPopover(null), 160);
+    };
+
+    return (
+        <>
+            <div ref={(node) => { nodeRef.current = node; drop(node); }}
+                 onClick={() => { if (!editing) onActivate?.(); }}
+                 onContextMenu={(e) => { e.preventDefault(); e.stopPropagation(); onOpenMenu?.(e); }}
+                 onMouseEnter={openPopover} onMouseLeave={scheduleClose}
+                 className={`server-tab server-group-tab ${active ? "server-tab-active" : ""} ${isOver ? "drop-target drop-merge" : ""}`}>
+                <div className="progress-circle no-progress">
+                    <Icon path={mdiViewGridOutline} className="progress-icon" />
+                </div>
+                {editing ? (
+                    <input ref={inputRef} className="group-name-input" autoFocus value={name} maxLength={MAX_GROUP_NAME}
+                           onChange={(e) => setName(e.target.value)}
+                           onClick={(e) => e.stopPropagation()}
+                           onBlur={handleBlur}
+                           onKeyDown={(e) => {
+                               if (e.key === "Enter") { e.stopPropagation(); commitRename(); }
+                               if (e.key === "Escape") { e.stopPropagation(); setEditing(false); setName(group?.name || ""); }
+                           }} />
+                ) : (
+                    <h2 onDoubleClick={startEdit}>
+                        {group?.name || t("servers.tabs.group")}
+                        <span className="tab-group-count">{members.length}</span>
+                    </h2>
+                )}
+                <div className="tab-actions">
+                    <Icon path={mdiClose} className="close-btn" title={t("servers.tabs.dissolveGroup")}
+                          onClick={(e) => { e.stopPropagation(); onDissolve?.(); }} />
+                </div>
+            </div>
+            {popover && !editing && createPortal(
+                <div className="group-popover" style={{ left: popover.left, top: popover.top }}
+                     onMouseEnter={openPopover} onMouseLeave={scheduleClose}>
+                    {members.map(member => (
+                        <div key={member.id}
+                             className={`group-popover-item ${member.id === activeSessionId ? "active" : ""}`}
+                             onClick={() => { onFocusMember?.(member.id); setPopover(null); }}
+                             onContextMenu={(e) => { e.preventDefault(); e.stopPropagation(); setPopover(null); onMemberMenu?.(e, member.id); }}>
+                            <Icon path={getIconPath(member.server?.icon)} className="group-popover-icon" />
+                            <span className="group-popover-name">{member.server?.name || "?"}</span>
+                            <Icon path={mdiDotsVertical} className="group-popover-menu"
+                                  title={t("servers.tabs.sessionMenu")}
+                                  onClick={(e) => { e.stopPropagation(); setPopover(null); onMemberMenu?.(e, member.id); }} />
+                            <Icon path={mdiClose} className="group-popover-remove"
+                                  title={t("servers.tabs.contextMenu.removeFromGroup")}
+                                  onClick={(e) => { e.stopPropagation(); onRemoveMember?.(member.id); }} />
+                        </div>
+                    ))}
+                </div>, document.body)}
+        </>
+    );
+};
+
 export const ServerTabs = ({
     activeSessions,
     setActiveSessionId,
@@ -141,6 +273,12 @@ export const ServerTabs = ({
     fullscreenEnabled,
     onFullscreenToggle,
     reveal = false,
+    activeGroupId = null,
+    sessionGroups = [],
+    createGroupFrom,
+    moveSessionToGroup,
+    renameGroup,
+    dissolveGroup,
 }) => {
 
     const tabsRef = useRef(null);
@@ -312,6 +450,34 @@ export const ServerTabs = ({
 
     const canSplitSession = (session) => activeSessions.length > 1 && session.id !== activeSessionId;
 
+    const handleMergeTab = (draggedId, targetSessionId) => {
+        const target = activeSessions.find(session => session.id === targetSessionId);
+        if (!target || draggedId === targetSessionId) return;
+        const targetGroupId = target.groupId ?? null;
+        if (targetGroupId) moveSessionToGroup?.(draggedId, targetGroupId);
+        else createGroupFrom?.([targetSessionId, draggedId]);
+    };
+
+    const activateGroup = (members) => {
+        if (!members.length) return;
+        const memberActive = members.find(member => member.id === activeSessionId);
+        setActiveSessionId((memberActive || members[0]).id);
+    };
+
+    const tabItems = [];
+    const seenGroups = new Set();
+    orderedSessions.forEach((session, index) => {
+        const groupId = session.groupId ?? null;
+        if (groupId == null) {
+            tabItems.push({ kind: "session", session, index });
+        } else if (!seenGroups.has(groupId)) {
+            seenGroups.add(groupId);
+            const group = sessionGroups.find(g => g.groupId === groupId) || { groupId, name: null };
+            const members = orderedSessions.filter(s => (s.groupId ?? null) === groupId);
+            tabItems.push({ kind: "group", group, members, index });
+        }
+    });
+
     return (
         <>
             {reveal && <div className="server-tabs-reveal-zone" />}
@@ -337,12 +503,27 @@ export const ServerTabs = ({
                         </div>
                     )}
                     <div className="tabs" ref={tabsRef} onScroll={checkScrollPosition} data-tauri-drag-region>
-                        {orderedSessions.map((session, index) => (
-                            <DraggableTab key={session.id} session={session} server={session.server} index={index} moveTab={moveTab}
+                        {tabItems.map((item) => item.kind === "session" ? (
+                            <DraggableTab key={item.session.id} session={item.session} server={item.session.server}
+                                index={item.index} moveTab={moveTab} onMergeTab={handleMergeTab}
                                 activeSessionId={activeSessionId} setActiveSessionId={setActiveSessionId}
                                 closeSession={closeSession} onOpenMenu={openMenu}
-                                progress={sessionProgress[session.id] || 0}
-                                pageInfo={sessionPageInfo[session.id] || null} />
+                                progress={sessionProgress[item.session.id] || 0}
+                                pageInfo={sessionPageInfo[item.session.id] || null} />
+                        ) : (
+                            <GroupTab key={item.group.groupId} group={item.group} members={item.members}
+                                active={activeGroupId === item.group.groupId} activeSessionId={activeSessionId}
+                                onActivate={() => activateGroup(item.members)}
+                                onRename={(name) => renameGroup?.(item.group.groupId, name)}
+                                onDissolve={() => dissolveGroup?.(item.group.groupId)}
+                                onDropToGroup={(draggedId) => moveSessionToGroup?.(draggedId, item.group.groupId)}
+                                onFocusMember={(id) => setActiveSessionId(id)}
+                                onRemoveMember={(id) => moveSessionToGroup?.(id, null)}
+                                onMemberMenu={(e, id) => openMenu(e, id, { x: e.clientX, y: e.clientY })}
+                                onOpenMenu={(e) => {
+                                    const rep = item.members.find(m => m.id === activeSessionId) || item.members[0];
+                                    if (rep) openMenu(e, rep.id, { x: e.clientX, y: e.clientY });
+                                }} />
                         ))}
                     </div>
                     {showRightArrow && (
@@ -366,7 +547,12 @@ export const ServerTabs = ({
                          onOpenShortcuts={() => setShowShortcuts(true)}
                          onSplitSession={onSplitSession} onPopOut={popOutSession}
                          onOpenNotes={openNotes} onDuplicate={duplicateSession}
-                         onHibernate={hibernateSession} onCloseSession={closeSession} />
+                         onHibernate={hibernateSession} onCloseSession={closeSession}
+                         groups={sessionGroups}
+                         onCreateGroup={createGroupFrom}
+                         onMoveToGroup={moveSessionToGroup}
+                         onRemoveFromGroup={(sessionId) => moveSessionToGroup?.(sessionId, null)}
+                         onDissolveGroup={dissolveGroup} />
 
             <SnippetsMenu visible={showSnippets} onClose={() => setShowSnippets(false)}
                           onSelect={handleSnippetSelect} activeSession={activeSession} />

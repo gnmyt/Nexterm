@@ -8,6 +8,8 @@ export const SessionProvider = ({ children }) => {
     const [activeSessions, setActiveSessions] = useState([]);
     const [activeSessionId, setActiveSessionId] = useState(null);
     const [poppedOutSessions, setPoppedOutSessions] = useState([]);
+    const [sessionGroups, setSessionGroups] = useState([]);
+    const [activeGroupId, setActiveGroupId] = useState(null);
 
     const popOutSession = useCallback(async (id) => {
         setPoppedOutSessions(p => p.includes(id) ? p : [...p, id]);
@@ -27,7 +29,7 @@ export const SessionProvider = ({ children }) => {
     }), [activeSessions]);
 
     return (
-        <SessionContext.Provider value={{ activeSessions, setActiveSessions, activeSessionId, setActiveSessionId, poppedOutSessions, popOutSession }}>
+        <SessionContext.Provider value={{ activeSessions, setActiveSessions, activeSessionId, setActiveSessionId, poppedOutSessions, popOutSession, sessionGroups, setSessionGroups, activeGroupId, setActiveGroupId }}>
             {children}
         </SessionContext.Provider>
     );
