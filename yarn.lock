@@ -19,13 +19,13 @@
     "@ai-sdk/provider-utils" "5.0.36"
     "@vercel/oidc" "3.2.0"
 
-"@ai-sdk/openai-compatible@^3.0.41":
-  version "3.0.41"
-  resolved "https://registry.yarnpkg.com/@ai-sdk/openai-compatible/-/openai-compatible-3.0.41.tgz#b7b780b699b28cca850c48d229749918c77bf53f"
-  integrity sha512-djOLRg4WOq5EINvWLfw2dniO14vBrf0iMRs/aXAQqsp4a67Wi49aMpZuvC7C7L3VpL43rnFzS1fWw7T6vpzgUQ==
+"@ai-sdk/openai-compatible@^3.0.43":
+  version "3.0.43"
+  resolved "https://registry.yarnpkg.com/@ai-sdk/openai-compatible/-/openai-compatible-3.0.43.tgz#b122c2184fb78328262721699da15714d72b59d4"
+  integrity sha512-QurboftQF0jGshbNM5KHNNpttp7huKSV7rN+C7ylcT5XsLZPud1eCMqyX0zlYFxm6pE4MEc/1PgFX12tm85yqg==
   dependencies:
-    "@ai-sdk/provider" "4.0.9"
-    "@ai-sdk/provider-utils" "5.0.34"
+    "@ai-sdk/provider" "4.0.10"
+    "@ai-sdk/provider-utils" "5.0.36"
 
 "@ai-sdk/openai@^4.0.58":
   version "4.0.58"
@@ -34,17 +34,6 @@
   dependencies:
     "@ai-sdk/provider" "4.0.10"
     "@ai-sdk/provider-utils" "5.0.36"
-
-"@ai-sdk/provider-utils@5.0.34":
-  version "5.0.34"
-  resolved "https://registry.yarnpkg.com/@ai-sdk/provider-utils/-/provider-utils-5.0.34.tgz#b1b695707da5e81ba5a7d279d78d9922cf3d7069"
-  integrity sha512-tRBdgRcys/4d8wyQdOdyYScq1AxfMdMd0hIlwolxJKVIbBwXUgClZuQT0VIsz4e7pylY8FE6utYCCZ494UAMJQ==
-  dependencies:
-    "@ai-sdk/provider" "4.0.9"
-    "@standard-schema/spec" "^1.1.0"
-    "@workflow/serde" "4.1.0"
-    eventsource-parser "^3.0.8"
-    undici "^7.28.0"
 
 "@ai-sdk/provider-utils@5.0.36":
   version "5.0.36"
@@ -61,13 +50,6 @@
   version "4.0.10"
   resolved "https://registry.yarnpkg.com/@ai-sdk/provider/-/provider-4.0.10.tgz#1c51d4e0991dea5773c8a74f9da16c52527bef8c"
   integrity sha512-fX2ENAc7iDpZ+Wp4+Rk06Usn/Ys7dI9uAkGv0jlF6XVrW13NkRWx5Ou+U6lIM2E1fTLkCs16GGrUAaVvroag7A==
-  dependencies:
-    json-schema "^0.4.0"
-
-"@ai-sdk/provider@4.0.9":
-  version "4.0.9"
-  resolved "https://registry.yarnpkg.com/@ai-sdk/provider/-/provider-4.0.9.tgz#460ebb9770d0539eb7b325c266216cd33b7ae892"
-  integrity sha512-XnGXPWiBIfqjsVEud5pOaVneRByJQOu2sYNwlSVJTPCvakdCDkVuYKKfNuStkIpMUYl7JIkBZGBx+B5YfNeVjA==
   dependencies:
     json-schema "^0.4.0"
 
@@ -4497,11 +4479,6 @@ undici-types@~7.16.0:
   version "7.16.0"
   resolved "https://registry.yarnpkg.com/undici-types/-/undici-types-7.16.0.tgz#ffccdff36aea4884cbfce9a750a0580224f58a46"
   integrity sha512-Zz+aZWSj8LE6zoxD+xrjh4VfkIG8Ya6LvYkZqtUQGJPZjYl53ypCaUwWqo7eI0x66KBGeRo+mlBEkMSeSZ38Nw==
-
-undici@^7.28.0:
-  version "7.29.0"
-  resolved "https://registry.yarnpkg.com/undici/-/undici-7.29.0.tgz#ae0f6f62e06e057a9cbb7b2b5fde2bb74f791b8f"
-  integrity sha512-IDxfleLmmbSskfWSUATiN1nfn2rDuvnMOqb5CWR92iIfojA0Ud+ulOAAEQ57LPr9rWmsreUyf5lwyao+7GNNVw==
 
 undici@^7.29.0:
   version "7.29.1"
