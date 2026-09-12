@@ -266,7 +266,7 @@ export const ServerList = ({
                 }
 
                 if (item.type === "folder") {
-                    await patchRequest(`folders/${item.id}`, { parentId: null });
+                    await patchRequest(`folders/${item.id}/reposition`, { parentId: null, organizationId: null });
                     loadServers();
                     return {};
                 }
