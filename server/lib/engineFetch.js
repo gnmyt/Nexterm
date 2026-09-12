@@ -31,8 +31,8 @@ const nativeFetch = async (url, options = {}) => {
     };
 
     if (options.insecure) {
-        const { Agent } = require("node:https");
-        fetchOptions.dispatcher = new Agent({ rejectUnauthorized: false });
+        const { Agent } = require("undici");
+        fetchOptions.dispatcher = new Agent({ connect: { rejectUnauthorized: false } });
     }
 
     if (options.body) {

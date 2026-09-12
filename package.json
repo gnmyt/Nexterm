@@ -36,6 +36,7 @@
     "sequelize": "^6.37.8",
     "speakeasy": "^2.0.0",
     "sqlite3": "^6.0.1",
+    "undici": "^7.28.0",
     "uuid": "^14.0.2",
     "webdav": "^5.10.0",
     "winston": "^3.19.0",
