@@ -177,8 +177,73 @@ const getSessions = async (accountId, tabId = null, browserId = null) => {
             shareWritable: session.shareWritable || false,
             sftpPath: session.sftpPath || null,
             participants: SessionManager.getParticipants(session.sessionId),
+            groupId: session.groupId || null,
         };
     });
+};
+
+const resolveSyncFilter = async (accountId, tabId, browserId) => {
+    const account = await Account.findByPk(accountId);
+    const sessionSync = account?.sessionSync || 'same_browser';
+    if (sessionSync === 'same_tab') return { filterTabId: tabId, filterBrowserId: undefined };
+    if (sessionSync === 'same_browser') return { filterTabId: undefined, filterBrowserId: browserId };
+    return { filterTabId: undefined, filterBrowserId: undefined };
+};
+
+const getGroups = async (accountId, tabId = null, browserId = null) => {
+    const { filterTabId, filterBrowserId } = await resolveSyncFilter(accountId, tabId, browserId);
+    return SessionManager.getGroups(accountId, filterTabId, filterBrowserId).map(group => ({
+        groupId: group.groupId,
+        name: group.name,
+        order: group.order,
+        layout: group.layout || null,
+    }));
+};
+
+const getConnectionsState = async (accountId, tabId = null, browserId = null) => ({
+    sessions: await getSessions(accountId, tabId, browserId),
+    groups: await getGroups(accountId, tabId, browserId),
+});
+
+const createGroup = (accountId, { name, order, tabId, browserId, sessionIds } = {}) => {
+    const memberIds = Array.isArray(sessionIds) ? sessionIds : [];
+    for (const sessionId of memberIds) {
+        const { error } = validateSessionOwnership(accountId, sessionId);
+        if (error) return error;
+    }
+    const group = SessionManager.createGroup(accountId, { name, order, tabId, browserId });
+    for (const sessionId of memberIds) SessionManager.assignSessionToGroup(sessionId, group.groupId);
+    return { groupId: group.groupId, name: group.name, order: group.order };
+};
+
+const updateGroup = (accountId, groupId, { name, order, layout } = {}) => {
+    const group = SessionManager.getGroup(groupId);
+    if (!group) return { code: 404, message: "Group not found" };
+    if (group.accountId !== accountId) return { code: 403, message: "Access denied" };
+    SessionManager.updateGroup(groupId, { name, order, layout });
+    return { message: "Group updated" };
+};
+
+const deleteGroup = (accountId, groupId) => {
+    const group = SessionManager.getGroup(groupId);
+    if (!group) return { code: 404, message: "Group not found" };
+    if (group.accountId !== accountId) return { code: 403, message: "Access denied" };
+    SessionManager.deleteGroup(groupId);
+    return { message: "Group deleted" };
+};
+
+const moveSessionToGroup = (accountId, sessionId, groupId) => {
+    const { error } = validateSessionOwnership(accountId, sessionId);
+    if (error) return error;
+    if (groupId !== null) {
+        const group = SessionManager.getGroup(groupId);
+        if (!group) return { code: 404, message: "Group not found" };
+        if (group.accountId !== accountId) return { code: 403, message: "Access denied" };
+    }
+    if (!SessionManager.assignSessionToGroup(sessionId, groupId)) {
+        return { code: 404, message: "Session not found" };
+    }
+    return { message: "Session moved" };
 };
 
 const hibernateSession = (sessionId) => {
@@ -358,4 +423,4 @@ const pasteIdentityPassword = async (accountId, sessionId, ipAddress = null, use
     }
 };
 
-module.exports = { createSession, getSessions, getSession, hibernateSession, resumeSession, deleteSession, startSharing, stopSharing, updateSharePermissions, duplicateSession, pasteIdentityPassword };
+module.exports = { createSession, getSessions, getGroups, getConnectionsState, getSession, hibernateSession, resumeSession, deleteSession, startSharing, stopSharing, updateSharePermissions, duplicateSession, pasteIdentityPassword, createGroup, updateGroup, deleteGroup, moveSessionToGroup };

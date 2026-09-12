@@ -32,10 +32,26 @@ export const ViewContainer = ({
                                   setOpenFileEditors,
                                   openTerminalFromFileManager,
                                   sessionLayout,
+                                  activeGroupId = null,
+                                  sessionGroups = [],
+                                  createGroupFrom,
+                                  moveSessionToGroup,
+                                  renameGroup,
+                                  dissolveGroup,
                                   connectFromDrop,
                               }) => {
     const { tree } = sessionLayout;
     const layoutMode = tree ? "split" : "single";
+
+    const activeGroupSessions = useMemo(() => {
+        if (activeGroupId == null) {
+            const active = activeSessions.find(s => s.id === activeSessionId);
+            return active ? [active] : [];
+        }
+        return activeSessions.filter(s => (s.groupId ?? null) === activeGroupId);
+    }, [activeSessions, activeGroupId, activeSessionId]);
+
+    const activeGroupSessionIds = useMemo(() => new Set(activeGroupSessions.map(s => s.id)), [activeGroupSessions]);
     const sessionRefs = useRef({});
     const terminalRefs = useRef({});
     const guacamoleRefs = useRef({});
@@ -154,13 +170,15 @@ export const ViewContainer = ({
         const commandWithNewline = command.endsWith("\n") ? command : command + "\n";
 
         if (broadcastMode && layoutMode !== "single") {
-            Object.entries(terminalRefs.current).forEach(([, { ws }]) => {
+            Object.entries(terminalRefs.current).forEach(([sid, { ws }]) => {
+                if (!activeGroupSessionIds.has(sid)) return;
                 if (ws && ws.readyState === WebSocket.OPEN) {
                     ws.send(commandWithNewline);
                 }
             });
 
-            Object.entries(guacamoleRefs.current).forEach(([, { client }]) => {
+            Object.entries(guacamoleRefs.current).forEach(([sid, { client }]) => {
+                if (!activeGroupSessionIds.has(sid)) return;
                 if (client) {
                     for (let i = 0; i < command.length; i++) {
                         const char = command.charCodeAt(i);
@@ -207,7 +225,7 @@ export const ViewContainer = ({
                 }
             }
         }
-    }, [layoutMode, activeSessionId, broadcastMode, activeSessions]);
+    }, [layoutMode, activeSessionId, broadcastMode, activeSessions, activeGroupSessionIds]);
 
     useEffect(() => {
         if (layoutMode === "single") {
@@ -231,10 +249,11 @@ export const ViewContainer = ({
     }, []);
 
     const focusSession = useCallback((sessionId) => {
-        sessionLayout.showSession(sessionId);
+        const targetGroupId = activeSessions.find(s => s.id === sessionId)?.groupId ?? null;
+        if (targetGroupId != null && targetGroupId === activeGroupId) sessionLayout.showSession(sessionId);
         setActiveSessionId(sessionId);
         focusSessionElement(sessionId);
-    }, [sessionLayout, setActiveSessionId, focusSessionElement]);
+    }, [activeSessions, activeGroupId, sessionLayout, setActiveSessionId, focusSessionElement]);
 
     useEffect(() => {
         const element = layoutRef.current;
@@ -291,25 +310,55 @@ export const ViewContainer = ({
     }, [tree, geometry, sessionLayout]);
 
     const toggleSplitMode = () => {
+        if (activeGroupId == null) {
+            const orderedIds = tabOrderRef.current.filter(id => activeSessions.some(session => session.id === id));
+            const remainingIds = activeSessions.map(session => session.id).filter(id => !orderedIds.includes(id));
+            const allIds = [...orderedIds, ...remainingIds];
+            if (allIds.length >= 2) createGroupFrom?.(allIds);
+            return;
+        }
         if (tree) {
             sessionLayout.clearLayout();
             return;
         }
-        const orderedIds = tabOrderRef.current.filter(id => activeSessions.some(session => session.id === id));
-        const remainingIds = activeSessions.map(session => session.id).filter(id => !orderedIds.includes(id));
-        sessionLayout.splitAll([...orderedIds, ...remainingIds]);
+        sessionLayout.splitAll(activeGroupSessions.map(session => session.id));
     };
 
     const splitActiveWith = useCallback((sessionId, edge) => {
         if (!activeSessionId || activeSessionId === sessionId) return;
+        if (activeGroupId == null) {
+            createGroupFrom?.([activeSessionId, sessionId]);
+            return;
+        }
+        const targetGroupId = activeSessions.find(s => s.id === sessionId)?.groupId ?? null;
+        if (targetGroupId !== activeGroupId) {
+            moveSessionToGroup?.(sessionId, activeGroupId);
+            return;
+        }
         sessionLayout.splitWithSession(activeSessionId, edge, sessionId);
         setActiveSessionId(sessionId);
         focusSessionElement(sessionId);
-    }, [activeSessionId, sessionLayout, setActiveSessionId, focusSessionElement]);
+    }, [activeSessionId, activeGroupId, activeSessions, createGroupFrom, moveSessionToGroup, sessionLayout, setActiveSessionId, focusSessionElement]);
 
     const handlePaneDrop = useCallback((pane, itemType, item, edge) => {
         if (itemType === "server") {
             connectFromDrop(item.id, edge === "center" ? null : { targetSessionId: pane.sessionId, edge });
+            return;
+        }
+
+        if (pane.sessionId === item.sessionId) return;
+
+        const droppedGroupId = activeSessions.find(s => s.id === item.sessionId)?.groupId ?? null;
+
+        // Dropping a session onto a standalone view forms a new group.
+        if (activeGroupId == null) {
+            createGroupFrom?.([pane.sessionId, item.sessionId]);
+            return;
+        }
+
+        // Dropping a session from another group moves it into the active group.
+        if (droppedGroupId !== activeGroupId) {
+            moveSessionToGroup?.(item.sessionId, activeGroupId);
             return;
         }
 
@@ -319,22 +368,21 @@ export const ViewContainer = ({
             return;
         }
 
-        if (pane.sessionId === item.sessionId) return;
         sessionLayout.splitWithSession(pane.sessionId, edge, item.sessionId);
         setActiveSessionId(item.sessionId);
         focusSessionElement(item.sessionId);
-    }, [tree, sessionLayout, connectFromDrop, focusSession, setActiveSessionId, focusSessionElement]);
+    }, [tree, activeSessions, activeGroupId, createGroupFrom, moveSessionToGroup, sessionLayout, connectFromDrop, focusSession, setActiveSessionId, focusSessionElement]);
 
     useEffect(() => {
-        const visibleIds = new Set(activeSessions.map(session => session.id));
+        const visibleIds = activeGroupSessionIds;
         const previousIds = previousSessionIdsRef.current;
         const addedIds = new Set([...visibleIds].filter(id => !previousIds.has(id)));
         const removedAny = [...previousIds].some(id => !visibleIds.has(id));
         previousSessionIdsRef.current = visibleIds;
 
         const nextActiveId = sessionLayout.reconcile({ visibleIds, activeSessionId, addedIds, removedAny });
-        if (nextActiveId !== activeSessionId) setActiveSessionId(nextActiveId);
-    }, [activeSessions, activeSessionId, sessionLayout, setActiveSessionId]);
+        if (nextActiveId && nextActiveId !== activeSessionId) setActiveSessionId(nextActiveId);
+    }, [activeGroupSessionIds, activeSessionId, sessionLayout, setActiveSessionId]);
 
     useEffect(() => {
         if (activeSessionId && activeSessions.some(session => session.id === activeSessionId)) {
@@ -384,7 +432,8 @@ export const ViewContainer = ({
                                       markSessionErrored={markSessionErrored}
                                       getSessionError={getSessionError}
                                       registerTerminalRef={registerTerminalRef} broadcastMode={broadcastMode}
-                                      terminalRefs={terminalRefs} updateProgress={updateSessionProgress}
+                                      terminalRefs={terminalRefs} broadcastSessionIds={activeGroupSessionIds}
+                                      updateProgress={updateSessionProgress}
                                       layoutMode={layoutMode} onBroadcastToggle={toggleBroadcastMode}
                                       onFullscreenToggle={toggleFullscreenMode} />;
             case "sftp":
@@ -467,6 +516,9 @@ export const ViewContainer = ({
                     fullscreenEnabled={fullscreenMode}
                     onFullscreenToggle={toggleFullscreenMode}
                     openNotes={openNotes}
+                    activeGroupId={activeGroupId} sessionGroups={sessionGroups}
+                    createGroupFrom={createGroupFrom} moveSessionToGroup={moveSessionToGroup}
+                    renameGroup={renameGroup} dissolveGroup={dissolveGroup}
                     hibernateSession={hibernateSession} duplicateSession={duplicateSession} />
     );
 

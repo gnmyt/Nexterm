@@ -1613,11 +1613,17 @@
         "splitDown": "Split Down",
         "sendShortcut": "Send Shortcut…",
         "zoom": "Zoom ({{zoom}}%)",
-        "zoomReset": "Reset Zoom"
+        "zoomReset": "Reset Zoom",
+        "group": "Group",
+        "newGroup": "New Group",
+        "removeFromGroup": "Remove from Group",
+        "dissolveGroup": "Dissolve Group"
       },
       "enableSplitView": "Enable Split View",
       "disableSplitView": "Disable Split View",
-      "sessionMenu": "Session Menu"
+      "sessionMenu": "Session Menu",
+      "group": "Group",
+      "dissolveGroup": "Dissolve Group"
     },
     "wol": {
       "successDescription": "Magic packet sent to {{name}}",
