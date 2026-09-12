@@ -20,7 +20,15 @@ export const PasswordFillHint = ({ anchor, items, selectedIndex, onFill, onCycle
 
     if (!item) return null;
 
-    const hintStyle = { ...anchor, maxWidth, color: foreground, fontFamily, fontSize: `${fontSize}px` };
+    const hintStyle = {
+        left: anchor.left,
+        top: anchor.top,
+        height: anchor.height,
+        maxWidth,
+        color: foreground,
+        fontFamily,
+        fontSize: `${fontSize}px`,
+    };
 
     return (
         <div ref={hintRef} className="password-fill-hint" style={hintStyle} role="status" aria-live="polite">
