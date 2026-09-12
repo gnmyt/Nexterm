@@ -1677,6 +1677,12 @@
           "removeTooltip": "Remove jump host",
           "noServersAvailable": "No SSH servers available for jump hosts. Create SSH servers first."
         },
+        "telnetAutoLogin": {
+          "title": "Telnet automatic login",
+          "description": "Attach a saved password identity and enter the exact prompts emitted by the device. Credentials are sent only after their matching prompt appears. Telnet transmits credentials unencrypted.",
+          "usernamePrompt": "Username prompt",
+          "passwordPrompt": "Password prompt"
+        },
         "monitoring": {
           "title": "Enable Performance Monitoring",
           "description": "Collect CPU, memory, disk, and network metrics for this server"

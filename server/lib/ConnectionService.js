@@ -47,6 +47,47 @@ const buildSSHParams = (identity, credentials) => {
     return params;
 };
 
+// Telnet has no authentication handshake. Credentials are sent only after the
+// explicitly configured prompts appear in the terminal stream. Entries without
+// prompts (or without an identity) remain manual Telnet sessions.
+const buildTelnetParams = (identity, credentials, serverConfig = null) => {
+    if (!identity) return {};
+
+    const params = { username: identity.username || credentials.username || "" };
+    if (credentials.password) params.password = credentials.password;
+    const usernamePrompt = serverConfig?.telnetUsernamePrompt?.trim();
+    const passwordPrompt = serverConfig?.telnetPasswordPrompt?.trim();
+    if (usernamePrompt) params.usernamePrompt = usernamePrompt;
+    if (passwordPrompt) params.passwordPrompt = passwordPrompt;
+    return params;
+};
+
+const createTelnetPromptLoginHandler = (dataSocket, params, context) => {
+    if (!params.username || !params.password || !params.usernamePrompt || !params.passwordPrompt) return null;
+
+    let buffer = "";
+    let state = "username";
+    const { sessionId, ip, port } = context;
+
+    return (data) => {
+        if (state === "complete") return;
+        buffer = `${buffer}${data.toString()}`.slice(-8192);
+
+        if (state === "username" && buffer.includes(params.usernamePrompt)) {
+            dataSocket.write(`${params.username}\r\n`);
+            state = "password";
+            logger.info("Telnet username prompt matched", { sessionId, target: ip, port });
+            return;
+        }
+
+        if (state === "password" && buffer.includes(params.passwordPrompt)) {
+            dataSocket.write(`${params.password}\r\n`);
+            state = "complete";
+            logger.info("Telnet password prompt matched", { sessionId, target: ip, port });
+        }
+    };
+};
+
 const extractIdentity = (identityResult) => {
     return identityResult?.identity === undefined ? identityResult : identityResult.identity;
 };
@@ -124,7 +165,7 @@ const createConnectionForSession = async (sessionId, accountId) => {
 
     switch (protocol) {
         case "ssh": return createSSHConnectionForSession(sessionId, entry, identity, organizationId, script);
-        case "telnet": return createTelnetConnectionForSession(sessionId, entry, organizationId);
+        case "telnet": return createTelnetConnectionForSession(sessionId, entry, identity, organizationId);
         case "pve-lxc":
         case "pve-shell": return createPveLxcConnectionForSession(sessionId, entry, organizationId);
         case "pve-qemu":
@@ -310,20 +351,26 @@ const createSSHConnectionForSession = async (sessionId, entry, identity, organiz
     return session._connecting;
 };
 
-const createTelnetConnectionForSession = async (sessionId, entry, organizationId) => {
+const createTelnetConnectionForSession = async (sessionId, entry, identity, organizationId) => {
     requireEngine();
     const session = requireSession(sessionId);
     const { ip, port = 23 } = entry.config || {};
 
     if (!ip) throw new Error("Missing host configuration");
 
+    const credentials = identity ? await resolveCredentials(identity) : {};
+    const params = buildTelnetParams(identity, credentials, entry.config);
     const dataSocket = await openEngineSession(
-        sessionId, SessionType.Telnet, ip, port, {}, entry.config?.engineId
+        sessionId, SessionType.Telnet, ip, port, params, [], entry.config?.engineId
     );
 
     await SessionManager.initRecording(sessionId, organizationId);
 
-    dataSocket.on("data", (data) => SessionManager.appendLog(sessionId, data.toString()));
+    const promptLoginHandler = createTelnetPromptLoginHandler(dataSocket, params, { sessionId, ip, port });
+    dataSocket.on("data", (data) => {
+        SessionManager.appendLog(sessionId, data.toString());
+        promptLoginHandler?.(data);
+    });
     dataSocket.on("close", () => {
         logger.info("Telnet data connection closed", { sessionId });
         SessionManager.remove(sessionId);
@@ -341,7 +388,12 @@ const createTelnetConnectionForSession = async (sessionId, entry, organizationId
         auditLogId: session.auditLogId,
     });
 
-    logger.info("Telnet connected", { sessionId, ip, port });
+    logger.info("Telnet connected", {
+        sessionId,
+        ip,
+        port,
+        autoLogin: Boolean(promptLoginHandler),
+    });
     return { success: true };
 }
 
@@ -542,5 +594,7 @@ module.exports = {
     getSFTPAIClient,
     getSessionPassword,
     buildSSHParams,
+    buildTelnetParams,
+    createTelnetPromptLoginHandler,
     resolveJumpHosts,
 };
