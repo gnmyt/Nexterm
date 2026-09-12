@@ -6,6 +6,7 @@ const Session = require("../models/Session");
 const { genSalt, hash } = require("bcrypt");
 const crypto = require("crypto");
 const logger = require("../utils/logger");
+const { encrypt } = require("../utils/encryption");
 
 const createLdapClient = (provider) => {
     const url = `${provider.useTLS ? "ldaps" : "ldap"}://${provider.host}:${provider.port}`;
@@ -53,6 +54,19 @@ module.exports.updateProvider = async (id, data) => {
             OIDCProvider.update({ enabled: false }, { where: { isInternal: true } }),
             LDAPProvider.update({ enabled: false }, { where: {} }),
         ]);
+    }
+
+    // LDAPProvider.update() is a bulk operation that bypasses the beforeUpdate
+    // instance hook, so bindPassword would be stored plain-text. Handle it here.
+    if (!data.bindPassword || data.bindPassword === "********") {
+        delete data.bindPassword;
+        delete data.bindPasswordIV;
+        delete data.bindPasswordAuthTag;
+    } else {
+        const { encrypted, iv, authTag } = encrypt(data.bindPassword);
+        data.bindPassword = encrypted;
+        data.bindPasswordIV = iv;
+        data.bindPasswordAuthTag = authTag;
     }
 
     await LDAPProvider.update(data, { where: { id } });
