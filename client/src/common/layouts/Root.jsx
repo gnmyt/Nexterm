@@ -24,6 +24,7 @@ import ConnectionErrorBanner from "@/common/components/ConnectionErrorBanner";
 import { waitForTauri } from "@/common/utils/TauriUtil.js";
 import MobileNav from "@/common/components/MobileNav";
 import ThemeLoader from "@/common/components/ThemeLoader";
+import { patchRequest } from "@/common/utils/RequestUtil.js";
 
 const Sidebar = lazy(() => import("@/common/components/Sidebar"));
 
@@ -37,11 +38,19 @@ const PreferencesWrapper = ({ children }) => {
 };
 
 const AppContent = () => {
+    const { user } = useContext(UserContext);
     const [tauriReady, setTauriReady] = useState(false);
     const [isLeftPaneCollapsed, setIsLeftPaneCollapsed] = useState(false);
     const [isLeftPaneHovering, setIsLeftPaneHovering] = useState(false);
     const leftPaneRef = useRef(null);
-    const hoverBarRef = useRef(null);
+
+    const toggleLeftPane = () => {
+        const nextCollapsed = !isLeftPaneCollapsed;
+        setIsLeftPaneHovering(false);
+        setIsLeftPaneCollapsed(nextCollapsed);
+        patchRequest("accounts/me/preferences", { general: { sidebarCollapsed: nextCollapsed } })
+            .catch(error => console.error("Failed to save sidebar preference:", error));
+    };
 
     useEffect(() => {
         waitForTauri().then(() => {
@@ -49,29 +58,23 @@ const AppContent = () => {
         });
     }, []);
     useEffect(() => {
+        setIsLeftPaneCollapsed(user?.preferences?.general?.sidebarCollapsed === true);
+    }, [user?.id]);
+    useEffect(() => {
         if (!isLeftPaneCollapsed) return;
-        const isPointInRect = (rect, x, y) => rect && x >= rect.left && x <= rect.right && y >= rect.top && y <= rect.bottom;
+
+        const containsPoint = (rect, x, y) => rect && x >= rect.left && x <= rect.right && y >= rect.top && y <= rect.bottom;
         const handleMouseMove = (event) => {
             const leftPaneRect = leftPaneRef.current?.getBoundingClientRect();
-            const hoverBarRect = hoverBarRef.current?.getBoundingClientRect();
-            const isOverLeftPane = isPointInRect(leftPaneRect, event.clientX, event.clientY);
-            const isOverHoverBar = isPointInRect(hoverBarRect, event.clientX, event.clientY);
-            const nextHovering = Boolean(isOverLeftPane || isOverHoverBar);
-            setIsLeftPaneHovering(prev => (prev === nextHovering ? prev : nextHovering));
+            const serverListRect = document.querySelector(".server-list")?.getBoundingClientRect();
+            const hovering = containsPoint(leftPaneRect, event.clientX, event.clientY)
+                || containsPoint(serverListRect, event.clientX, event.clientY);
+            setIsLeftPaneHovering(current => current === hovering ? current : hovering);
         };
-        const handleMouseOut = (event) => {
-            if (!event.relatedTarget) {
-                setIsLeftPaneHovering(false);
-            }
-        };
-        document.addEventListener("mousemove", handleMouseMove);
-        window.addEventListener("mouseout", handleMouseOut);
-        return () => {
-            document.removeEventListener("mousemove", handleMouseMove);
-            window.removeEventListener("mouseout", handleMouseOut);
-        };
-    }, [isLeftPaneCollapsed]);
 
+        document.addEventListener("mousemove", handleMouseMove);
+        return () => document.removeEventListener("mousemove", handleMouseMove);
+    }, [isLeftPaneCollapsed]);
     if (!tauriReady) {
         return (
             <div className="app-wrapper">
@@ -84,8 +87,7 @@ const AppContent = () => {
     const isLeftPaneVisible = !isLeftPaneCollapsed || isLeftPaneHovering;
 
     return (
-        <UserProvider>
-            <PreferencesWrapper>
+        <PreferencesWrapper>
                 <ThemeLoader />
                 <StateStreamProvider>
                     <LiveSessionProvider>
@@ -107,14 +109,13 @@ const AppContent = () => {
                                                                 ref={leftPaneRef}
                                                             >
                                                                 <Suspense fallback={<Loading />}>
-                                                                    <Sidebar onToggleCollapse={() => setIsLeftPaneCollapsed(prev => !prev)} />
+                                                                    <Sidebar onToggleCollapse={toggleLeftPane} />
                                                                 </Suspense>
-                                                                <div className="left-pane-slot" id="left-pane-slot" />
+                                                                <div
+                                                                    className="left-pane-slot"
+                                                                    id="left-pane-slot"
+                                                                />
                                                             </div>
-                                                            <div
-                                                                className={`left-pane-hover-bar${isLeftPaneCollapsed ? " active" : ""}`}
-                                                                ref={hoverBarRef}
-                                                            />
                                                             <div className="main-content">
                                                                 <Suspense fallback={<Loading />}>
                                                                     <Outlet />
@@ -134,8 +135,7 @@ const AppContent = () => {
                     </KeymapProvider>
                     </LiveSessionProvider>
                 </StateStreamProvider>
-            </PreferencesWrapper>
-        </UserProvider>
+        </PreferencesWrapper>
     );
 };
 
@@ -144,7 +144,9 @@ export default () => {
         <ErrorBoundary>
             <DndProvider backend={HTML5Backend}>
                 <ToastProvider>
-                    <AppContent />
+                    <UserProvider>
+                        <AppContent />
+                    </UserProvider>
                 </ToastProvider>
             </DndProvider>
         </ErrorBoundary>
