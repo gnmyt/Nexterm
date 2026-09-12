@@ -155,3 +155,7 @@ cli/target/
 # VNC server
 vendor/libvncserver/
 vendor/libvncserver-build.log
+
+# Nix
+/result
+/result-*
