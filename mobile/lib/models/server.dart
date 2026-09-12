@@ -11,10 +11,13 @@ class Server {
   final String? status;
   final int? integrationId;
   final List<Tag>? tags;
+  final bool? wakeOnLanEnabled;
+  final String? macAddress;
 
   const Server({
     this.id, required this.name, required this.ip, this.icon, this.protocol,
     this.type, this.position, this.identities, this.online, this.status, this.integrationId, this.tags,
+    this.wakeOnLanEnabled, this.macAddress,
   });
 
   factory Server.fromJson(Map<String, dynamic> json) => Server(
@@ -30,16 +33,21 @@ class Server {
     status: json['status'] as String?,
     integrationId: json['integrationId'] as int?,
     tags: (json['tags'] as List<dynamic>?)?.map((t) => Tag.fromJson(t as Map<String, dynamic>)).toList(),
+    wakeOnLanEnabled: json['wakeOnLanEnabled'] as bool?,
+    macAddress: json['macAddress'] as String?,
   );
 
   Map<String, dynamic> toJson() => {
     'id': id, 'name': name, 'ip': ip, 'icon': icon, 'protocol': protocol, 'type': type,
     'position': position, 'identities': identities, 'online': online, 'status': status,
     'integrationId': integrationId, 'tags': tags?.map((t) => t.toJson()).toList(),
+    'wakeOnLanEnabled': wakeOnLanEnabled, 'macAddress': macAddress,
   };
 
   bool get isPve => type?.startsWith('pve-') == true;
   bool get isServer => type == 'server';
+  bool get canWakeOnLan =>
+      wakeOnLanEnabled == true && (macAddress?.trim().isNotEmpty == true);
   bool get isRunning => status != null ? (status == 'running' || status == 'online') : online != false;
   bool get isStopped => status != null ? (status == 'stopped' || status == 'offline') : online == false;
 }
