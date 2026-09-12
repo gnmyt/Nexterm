@@ -4,16 +4,14 @@ const Script = require("../models/Script");
 const Theme = require("../models/Theme");
 const crypto = require("crypto");
 const logger = require("../utils/logger");
-const { assertPublicUrl } = require("../utils/ssrf");
+const { fetchPublicUrl } = require("../utils/ssrf");
 
 module.exports.validateSourceUrl = async (url) => {
     try {
         const baseUrl = url.replace(/\/$/, "");
         const indexUrl = `${baseUrl}/NTINDEX`;
 
-        await assertPublicUrl(indexUrl);
-
-        const response = await fetch(indexUrl, {
+        const response = await fetchPublicUrl(indexUrl, {
             method: "GET",
             headers: {
                 "User-Agent": "Nexterm/1.0",
@@ -406,8 +404,7 @@ module.exports.syncAllSources = async () => {
 const fetchSourceFile = async (baseUrl, path) => {
     try {
         const url = `${baseUrl}/${path}`;
-        await assertPublicUrl(url);
-        const response = await fetch(url, {
+        const response = await fetchPublicUrl(url, {
             method: "GET",
             headers: {
                 "User-Agent": "Nexterm/1.0",
