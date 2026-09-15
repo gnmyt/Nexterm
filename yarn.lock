@@ -27,13 +27,13 @@
     "@ai-sdk/provider" "4.0.13"
     "@ai-sdk/provider-utils" "5.0.39"
 
-"@ai-sdk/openai@^4.0.65":
-  version "4.0.65"
-  resolved "https://registry.yarnpkg.com/@ai-sdk/openai/-/openai-4.0.65.tgz#f7b4da6e2deebc64294c1eded343de86ea3b7648"
-  integrity sha512-rpk1Tv7TR0H338zTKmSVMxv4yo++HDOxioiuvBySb8cWkx2fS10tWl/5cEwL0diJbcV/+p3+9gpIOre52UoQJA==
+"@ai-sdk/openai@^4.0.66":
+  version "4.0.66"
+  resolved "https://registry.yarnpkg.com/@ai-sdk/openai/-/openai-4.0.66.tgz#df178beb894b372618169dcae17b6bf26728bd10"
+  integrity sha512-W4GooZjROdOmf7dfjWlRWNVs+Vvr7ZwfDZbyAJRPo1bgQbpRoDd9ZcCwy/PX1X0s2G7B/dhN2RWOORsHtr0wGg==
   dependencies:
-    "@ai-sdk/provider" "4.0.13"
-    "@ai-sdk/provider-utils" "5.0.39"
+    "@ai-sdk/provider" "4.0.14"
+    "@ai-sdk/provider-utils" "5.0.40"
 
 "@ai-sdk/provider-utils@5.0.39":
   version "5.0.39"
@@ -46,10 +46,28 @@
     eventsource-parser "^3.0.8"
     undici "^7.29.0"
 
+"@ai-sdk/provider-utils@5.0.40":
+  version "5.0.40"
+  resolved "https://registry.yarnpkg.com/@ai-sdk/provider-utils/-/provider-utils-5.0.40.tgz#357dcc61f46b05672d5388e94bf2b5d79560a212"
+  integrity sha512-zsXPwSAQ9mRJ2hvyITaLOYUyuGrBmzFhJXOg4mllGmla1PfNxZcm4GwqMiV2xQaDgcgBMdUGxXkp9xekZZNIkg==
+  dependencies:
+    "@ai-sdk/provider" "4.0.14"
+    "@standard-schema/spec" "^1.1.0"
+    "@workflow/serde" "4.1.0"
+    eventsource-parser "^3.0.8"
+    undici "^7.29.0"
+
 "@ai-sdk/provider@4.0.13":
   version "4.0.13"
   resolved "https://registry.yarnpkg.com/@ai-sdk/provider/-/provider-4.0.13.tgz#455b0575daa7b1bb1d4e9196e1b0150cffcd4294"
   integrity sha512-sJvnbFIFLzmKFXIjfwS8XCOAj6puHCawItwvA9PBZgk2f/l/TiC4OSfK3ueDbUVXfRCOn5eJN97EIF10toIOmQ==
+  dependencies:
+    json-schema "^0.4.0"
+
+"@ai-sdk/provider@4.0.14":
+  version "4.0.14"
+  resolved "https://registry.yarnpkg.com/@ai-sdk/provider/-/provider-4.0.14.tgz#41fd8208c42e14931cafb4d47d84551de41ea435"
+  integrity sha512-yukP2tbcQQErG5gLCMBGvpvb/rM3D3KlTKG6eKKOdNHLHqtNNDEeBxdYrY/JL+O76B2ig5dXY19H/f1HFSvRiQ==
   dependencies:
     json-schema "^0.4.0"
 
