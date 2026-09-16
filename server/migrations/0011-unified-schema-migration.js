@@ -6,14 +6,27 @@ module.exports = {
     async up(queryInterface) {
         const tableNames = await queryInterface.showAllTables();
 
-        await queryInterface.sequelize.query("PRAGMA foreign_keys = OFF");
+        const isMysql = queryInterface.sequelize.options.dialect === 'mysql';
+        const nowFunc = isMysql ? "NOW()" : "datetime('now')";
+        const lastIdQuery = isMysql ? "SELECT LAST_INSERT_ID() as id" : "SELECT last_insert_rowid() as id";
+
+        if (isMysql) {
+            await queryInterface.sequelize.query("SET FOREIGN_KEY_CHECKS = 0");
+        } else {
+            await queryInterface.sequelize.query("PRAGMA foreign_keys = OFF");
+        }
 
         const serverToEntryMap = {};
 
         if (tableNames.includes("folders")) {
-            const [columns] = await queryInterface.sequelize.query(
-                "PRAGMA table_info(folders);"
-            );
+            let columns;
+            if (isMysql) {
+                [columns] = await queryInterface.sequelize.query("SHOW COLUMNS FROM folders");
+                columns = columns.map(col => ({ name: col.Field }));
+            } else {
+                [columns] = await queryInterface.sequelize.query("PRAGMA table_info(folders);");
+            }
+            
             const hasTypeColumn = columns.some(col => col.name === 'type');
             const hasIntegrationIdColumn = columns.some(col => col.name === 'integrationId');
             
@@ -23,9 +36,12 @@ module.exports = {
                 );
             }
             if (!hasIntegrationIdColumn) {
-                await queryInterface.sequelize.query(
-                    "ALTER TABLE folders ADD COLUMN integrationId INTEGER DEFAULT NULL REFERENCES integrations(id) ON DELETE CASCADE"
-                );
+                // MariaDB requires specific syntax for adding columns with foreign keys in a single statement
+                const fkSyntax = isMysql 
+                    ? "ADD COLUMN integrationId INTEGER DEFAULT NULL, ADD CONSTRAINT fk_folders_integrations FOREIGN KEY (integrationId) REFERENCES integrations(id) ON DELETE CASCADE"
+                    : "ADD COLUMN integrationId INTEGER DEFAULT NULL REFERENCES integrations(id) ON DELETE CASCADE";
+                
+                await queryInterface.sequelize.query(`ALTER TABLE folders ${fkSyntax}`);
             }
         }
 
@@ -184,7 +200,7 @@ module.exports = {
                 await queryInterface.sequelize.query(
                     `INSERT INTO entries (accountId, organizationId, folderId, type, renderer, name, icon, position, config,
                                           createdAt, updatedAt)
-                     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, datetime('now'), datetime('now'))`,
+                     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ${nowFunc}, ${nowFunc})`,
                     {
                         replacements: [server.organizationId ? null : (server.accountId || null), 
                             server.organizationId || null, server.folderId || null, type, renderer,
@@ -192,7 +208,7 @@ module.exports = {
                     },
                 );
 
-                const [newEntry] = await queryInterface.sequelize.query("SELECT last_insert_rowid() as id",
+                const [newEntry] = await queryInterface.sequelize.query(lastIdQuery,
                     { type: queryInterface.sequelize.QueryTypes.SELECT });
                 serverToEntryMap[server.id] = newEntry.id;
 
@@ -214,7 +230,7 @@ module.exports = {
                         if (identities[i]) {
                             await queryInterface.sequelize.query(
                                 `INSERT INTO entries_identities (entryId, identityId, isDefault, createdAt)
-                                 VALUES (?, ?, ?, datetime('now'))`,
+                                 VALUES (?, ?, ?, ${nowFunc})`,
                                 { replacements: [newEntry.id, identities[i], i === 0 ? 1 : 0] },
                             );
                         }
@@ -235,21 +251,21 @@ module.exports = {
 
                 await queryInterface.sequelize.query(
                     `INSERT INTO integrations (organizationId, type, name, config, status, createdAt, updatedAt)
-                     VALUES (?, ?, ?, ?, ?, datetime('now'), datetime('now'))`,
+                     VALUES (?, ?, ?, ?, ?, ${nowFunc}, ${nowFunc})`,
                     {
                         replacements: [pveServer.organizationId, "proxmox", pveServer.name,
                             JSON.stringify(integrationConfig), pveServer.online ? "online" : "offline"],
                     },
                 );
 
-                const [newIntegration] = await queryInterface.sequelize.query("SELECT last_insert_rowid() as id",
+                const [newIntegration] = await queryInterface.sequelize.query(lastIdQuery,
                     { type: queryInterface.sequelize.QueryTypes.SELECT });
 
                 const { encrypted, iv, authTag } = encrypt(pveServer.password);
                 await queryInterface.sequelize.query(
                     `INSERT INTO credentials (integrationId, type, secretEncrypted, secretIV, secretAuthTag, createdAt,
                                               updatedAt)
-                     VALUES (?, ?, ?, ?, ?, datetime('now'), datetime('now'))`,
+                     VALUES (?, ?, ?, ?, ?, ${nowFunc}, ${nowFunc})`,
                     { replacements: [newIntegration.id, "password", encrypted, iv, authTag] },
                 );
 
@@ -259,7 +275,7 @@ module.exports = {
                     { replacements: [pveServer.organizationId, pveServer.accountId || null, pveServer.folderId, newIntegration.id, pveServer.name, 0, 'pve-node'] },
                 );
 
-                const [newFolder] = await queryInterface.sequelize.query("SELECT last_insert_rowid() as id",
+                const [newFolder] = await queryInterface.sequelize.query(lastIdQuery,
                     { type: queryInterface.sequelize.QueryTypes.SELECT });
 
                 let resources = [];
@@ -292,7 +308,7 @@ module.exports = {
                         await queryInterface.sequelize.query(
                             `INSERT INTO entries (accountId, organizationId, folderId, integrationId, type, renderer, name, icon,
                                                   position, status, config, createdAt, updatedAt)
-                             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, datetime('now'), datetime('now'))`,
+                             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ${nowFunc}, ${nowFunc})`,
                             {
                                 replacements: [pveServer.organizationId ? null : (pveServer.accountId || null),
                                     pveServer.organizationId, newFolder.id, newIntegration.id, resource.type,
@@ -334,7 +350,7 @@ module.exports = {
                     await queryInterface.sequelize.query(
                         `INSERT INTO credentials (identityId, type, secretEncrypted, secretIV, secretAuthTag, createdAt,
                                                   updatedAt)
-                         VALUES (?, ?, ?, ?, ?, datetime('now'), datetime('now'))`,
+                         VALUES (?, ?, ?, ?, ?, ${nowFunc}, ${nowFunc})`,
                         { replacements: [identity.id, "password", identity.password, identity.passwordIV, identity.passwordAuthTag] },
                     );
                 }
@@ -342,7 +358,7 @@ module.exports = {
                     await queryInterface.sequelize.query(
                         `INSERT INTO credentials (identityId, type, secretEncrypted, secretIV, secretAuthTag, createdAt,
                                                   updatedAt)
-                         VALUES (?, ?, ?, ?, ?, datetime('now'), datetime('now'))`,
+                         VALUES (?, ?, ?, ?, ?, ${nowFunc}, ${nowFunc})`,
                         { replacements: [identity.id, "ssh-key", identity.sshKey, identity.sshKeyIV, identity.sshKeyAuthTag] },
                     );
                 }
@@ -350,7 +366,7 @@ module.exports = {
                     await queryInterface.sequelize.query(
                         `INSERT INTO credentials (identityId, type, secretEncrypted, secretIV, secretAuthTag, createdAt,
                                                   updatedAt)
-                         VALUES (?, ?, ?, ?, ?, datetime('now'), datetime('now'))`,
+                         VALUES (?, ?, ?, ?, ?, ${nowFunc}, ${nowFunc})`,
                         { replacements: [identity.id, "passphrase", identity.passphrase, identity.passphraseIV, identity.passphraseAuthTag] },
                     );
                 }
@@ -378,15 +394,20 @@ module.exports = {
         if (!identitiesTableInfo.createdAt) {
             await queryInterface.addColumn("identities", "createdAt",
                 { type: DataTypes.DATE, allowNull: true, defaultValue: DataTypes.NOW });
-            await queryInterface.sequelize.query("UPDATE identities SET createdAt = datetime('now') WHERE createdAt IS NULL");
+            await queryInterface.sequelize.query(`UPDATE identities SET createdAt = ${nowFunc} WHERE createdAt IS NULL`);
         }
         if (!identitiesTableInfo.updatedAt) {
             await queryInterface.addColumn("identities", "updatedAt",
                 { type: DataTypes.DATE, allowNull: true, defaultValue: DataTypes.NOW });
-            await queryInterface.sequelize.query("UPDATE identities SET updatedAt = datetime('now') WHERE updatedAt IS NULL");
+            await queryInterface.sequelize.query(`UPDATE identities SET updatedAt = ${nowFunc} WHERE updatedAt IS NULL`);
         }
 
-        await queryInterface.sequelize.query("PRAGMA foreign_keys = ON");
+        // Restore Foreign Key Checks
+        if (isMysql) {
+            await queryInterface.sequelize.query("SET FOREIGN_KEY_CHECKS = 1");
+        } else {
+            await queryInterface.sequelize.query("PRAGMA foreign_keys = ON");
+        }
 
         if (tableNames.includes("servers")) await queryInterface.dropTable("servers");
         if (tableNames.includes("pve_servers")) await queryInterface.dropTable("pve_servers");
