@@ -1130,10 +1130,10 @@
   resolved "https://registry.yarnpkg.com/@shikijs/vscode-textmate/-/vscode-textmate-10.0.2.tgz#a90ab31d0cc1dfb54c66a69e515bf624fa7b2224"
   integrity sha512-83yeghZ2xxin3Nj8z1NMd/NCuca+gsYXswywDy5bHvwlWL8tpTQmzGeUuHd9FC3E/SBEMvzJRwWEOz5gGes9Qg==
 
-"@simplewebauthn/server@^14.0.1":
-  version "14.0.1"
-  resolved "https://registry.yarnpkg.com/@simplewebauthn/server/-/server-14.0.1.tgz#37891e3520bae827ac184bc66fc62740565e42e7"
-  integrity sha512-kjWgcm9NdSv+Tobo4Swxd1WnEawsBogpYFMjg9pKsVLPN3FdCmR6BipkL+DcPDgmQ7UKbbBZqRqn3E3YaA7NBw==
+"@simplewebauthn/server@^14.0.2":
+  version "14.0.2"
+  resolved "https://registry.yarnpkg.com/@simplewebauthn/server/-/server-14.0.2.tgz#e58b8c933365fe3b03ed9f1eec5a1177ff9c7bc1"
+  integrity sha512-g+m/xv9/8FRWsDY22CwsTYRzt3WwS9fJrR3P7eY3Ti01FXH5FQ36Xn55v6D+5tb6VajlqOj4hywP/Vxsb6a3Sg==
   dependencies:
     "@hexagon/base64" "^1.1.27"
     "@levischuck/tiny-cbor" "^0.2.2"
