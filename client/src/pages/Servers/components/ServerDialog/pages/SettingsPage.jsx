@@ -61,6 +61,7 @@ const KEYBOARD_LAYOUTS = [
     { label: "Hungarian (Qwertz)", value: "hu-hu-qwertz" },
     { label: "Italian (Qwerty)", value: "it-it-qwerty" },
     { label: "Japanese (Qwerty)", value: "ja-jp-qwerty" },
+    { label: "Portuguese (PT) (Qwerty)", value: "pt-pt-qwerty" },
     { label: "Portuguese-Brazil (BR) (Qwerty)", value: "pt-br-qwerty" },
     { label: "Swedish (Qwerty)", value: "sv-se-qwerty" },
     { label: "Turkish (Qwerty)", value: "tr-tr-qwerty" }
