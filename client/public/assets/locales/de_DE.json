@@ -1120,7 +1120,7 @@
       "loading": "AI-Einstellungen laden...",
       "enable": {
         "title": "KI-Assistent aktivieren",
-        "description": "Benutzern ermöglichen, den KI-Assistenten innerhalb von Server-Sitzungen zu öffnen"
+        "description": "Erlaube Benutzern den KI-Assistenten in einer Serversitzungzu öffnen"
       },
       "provider": {
         "title": "KI-Anbieter",
@@ -1128,36 +1128,36 @@
       },
       "model": {
         "title": "Modell",
-        "description": "Wähle das KI-Modell aus, das der Assistent verwenden soll"
+        "description": "Wähle ein KI-Model, das der Assistent verwenden soll"
       },
       "requireConfirmation": {
-        "title": "Vor jeder Aktion bestätigen",
-        "description": "Benutzer müssen jeden Befehl und jede Dateiänderung, die der Assistent vornehmen möchte, bestätigen"
+        "title": "Bestätigung vor jeder Aktion",
+        "description": "Erfordert Benutzer, um jeden Befehl und jede Datei-Änderung, die der Assistent ausführen will, zu bestätigen"
       },
       "apiKey": {
         "title": "API-Schlüssel",
         "setPlaceholder": "API-Schlüssel ist gesetzt (leer lassen, um aktuell zu bleiben)",
-        "genericDescription": "API-Schlüssel zur Authentifizierung beim ausgewählten Anbieter",
+        "genericDescription": "API Key wird zur Authentifizierung des ausgewählten KI-Anbieters genutzt",
         "genericPlaceholder": "Gib deinen API-Schlüssel für „ {{provider}} “ ein"
       },
       "authMethod": {
         "title": "Authentifizierung",
-        "description": "Melde dich mit einem API-Schlüssel oder deinem Anbieter-Abonnement an",
-        "apiKey": "API-Schlüssel",
+        "description": "Authentifizierung mit API Key oder deinem Anbieter-Abonnement",
+        "apiKey": "API Key",
         "subscription": "Abonnement"
       },
       "subscription": {
         "title": "{{provider}} Abonnement",
-        "description": "Melde dich mit deinem „ {{provider}} “-Abonnement an, um die Modelle ohne API-Schlüssel zu nutzen",
-        "connectedDescription": "Dein Abonnement bei „ {{provider}} “ ist aktiviert",
+        "description": "Melden dich mit deinem {{provider}} Abonnement an, um Modelle ohne API Key zu nutzen",
+        "connectedDescription": "Dein {{provider}} Abonnement ist aktiv",
         "connect": "Verbinden",
-        "connecting": "Wird verbunden...",
-        "complete": "Fertig",
+        "connecting": "Verbinde …",
+        "complete": "Abgeschlossen",
         "disconnect": "Trennen",
-        "codePlaceholder": "Füge den Autorisierungscode hier ein",
-        "codePlaceholderUrl": "Füge hier die vollständige Callback-URL (oder den Code) ein",
-        "connectSuccess": "{{provider}} Abonnement aktiviert",
-        "startError": "Die Autorisierung konnte nicht gestartet werden",
+        "codePlaceholder": "Füge deinen Autorisierungscode hier ein",
+        "codePlaceholderUrl": "Füge die vollständige Callback-URL (oder den Code) hier ein",
+        "connectSuccess": "{{provider}} Abonnement aktiv",
+        "startError": "Autorisierung konnte nicht gestartet werden",
         "exchangeError": "Das Abonnement konnte nicht verbunden werden",
         "disconnectError": "Das Abmelden vom Abonnement ist fehlgeschlagen"
       },
@@ -1571,11 +1571,11 @@
       "connect": "Verbinden",
       "quickConnect": "Schnellverbindung",
       "openSFTP": "SFTP öffnen",
-      "openBrowser": "Open Browser",
+      "openBrowser": "Browser öffnen",
       "forwardPort": "Port weiterleiten",
       "runScript": "Skript ausführen",
-      "openNotes": "Offene Noten",
-      "addNotes": "Anmerkungen hinzufügen",
+      "openNotes": "Notizen anzeigen",
+      "addNotes": "Notizen anzeigen",
       "editServer": "Server bearbeiten",
       "editIntegration": "Integration bearbeiten",
       "duplicateServer": "Server duplizieren",
@@ -1599,25 +1599,25 @@
     "tabs": {
       "contextMenu": {
         "popOut": "In eigenem Fenster öffnen",
-        "startSharing": "Teilen beginnen",
+        "startSharing": "Sitzung teilen",
         "readOnly": "Read-only",
         "readWrite": "Read & Write",
         "copyShareLink": "Link zum Teilen kopieren",
         "changePermissions": "Berechtigungen ändern",
         "stopSharing": "Teilen beenden",
-        "duplicate": "Duplizieren",
-        "openNotes": "Offene Noten",
+        "duplicate": "Sitzung duplizieren",
+        "openNotes": "Notizen anzeigen",
         "hibernateSession": "Ruhezustand aktivieren",
-        "closeSession": "Trennen",
-        "splitRight": "Split Right",
-        "splitDown": "Split Down",
-        "sendShortcut": "Send Shortcut…",
+        "closeSession": "Verbindung trennen",
+        "splitRight": "Nach rechts aufteilen",
+        "splitDown": "Nach unten aufteilen",
+        "sendShortcut": "Tastenkürzel senden…",
         "zoom": "Zoom ({{zoom}}%)",
-        "zoomReset": "Reset Zoom"
+        "zoomReset": "Zoom zurücksetzen"
       },
-      "enableSplitView": "Enable Split View",
-      "disableSplitView": "Disable Split View",
-      "sessionMenu": "Session Menu"
+      "enableSplitView": "Geteilte Ansicht aktivieren",
+      "disableSplitView": "Geteilte Ansicht deaktivieren",
+      "sessionMenu": "Sitzungsmenü"
     },
     "wol": {
       "successDescription": "Magic-Paket an {{name}} gesendet",
@@ -1971,12 +1971,12 @@
       }
     },
     "browser": {
-      "back": "Back",
-      "forward": "Forward",
-      "reload": "Reload",
-      "stop": "Stop",
-      "address": "Address",
-      "addressPlaceholder": "Enter an address"
+      "back": "Zurück",
+      "forward": "Vorwärts",
+      "reload": "Aktuelle Seite neu laden",
+      "stop": "Laden dieser Seite stoppen",
+      "address": "Adresse",
+      "addressPlaceholder": "Adresse eingeben..."
     },
     "remoteDesktop": {
       "dropOverlay": "Zieh die Dateien per Drag & Drop auf den Server, um sie hochzuladen",
@@ -2042,7 +2042,7 @@
       "holdModifier": "Warten {{key}}",
       "zoomIn": "Vergrößern",
       "zoomOut": "Verkleinern",
-      "zoomReset": "Reset zoom (drag with the middle mouse button to pan)"
+      "zoomReset": "Zoom zurücksetzen (mit der mittleren Maustaste ziehen zum Verschieben)"
     },
     "monitors": {
       "title": "Monitor {{number}}",
@@ -2061,14 +2061,14 @@
       "badgeOn": "ON"
     },
     "notesPanel": {
-      "title": "Anmerkungen",
+      "title": "Notizen",
       "placeholder": "Schreibe Notizen für diesen Server…",
-      "showInList": "In Liste anzeigen",
-      "showInListTooltip": "Zeige die erste Zeile dieser Notizen unter dem Servernamen in der Seitenleiste an.",
+      "showInList": "In Server Liste anzeigen",
+      "showInListTooltip": "Zeigt die erste Zeile dieser Notizen unter dem Servernamen in der Server Liste an.",
       "status": {
-        "saving": "Sparen",
-        "saved": "Gerettet",
-        "unsaved": "Nicht gerettet",
+        "saving": "Speichern…",
+        "saved": "Gespeichert",
+        "unsaved": "Ungespeichert",
         "error": "Speichern fehlgeschlagen"
       }
     },
