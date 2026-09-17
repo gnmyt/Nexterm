@@ -51,6 +51,25 @@ app.get("/providers/admin", authenticate, requirePermission(Permission.SETTINGS_
 });
 
 /**
+ * GET /auth/providers/admin/organizations
+ * @summary List Organizations For Group Mapping
+ * @description Retrieves a lightweight list of every organization, used to configure OIDC group-to-organization mappings.
+ * @tags Auth Providers
+ * @produces application/json
+ * @security BearerAuth
+ * @return {array} 200 - List of organizations with id and name
+ * @return {object} 401 - User is not authenticated
+ * @return {object} 403 - User is not an administrator
+ */
+app.get("/providers/admin/organizations", authenticate, requirePermission(Permission.SETTINGS_AUTH_PROVIDERS), async (req, res) => {
+    try {
+        res.json(await oidc.listOrganizationsForMapping());
+    } catch (error) {
+        res.status(500).json({ message: "Internal server error" });
+    }
+});
+
+/**
  * GET /auth/providers/admin/oidc/{id}
  * @summary Get OIDC Provider
  * @description Retrieves a specific OIDC provider by ID with its configuration. Client secret is masked.

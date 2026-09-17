@@ -3,6 +3,10 @@ const OIDCProvider = require("../models/OIDCProvider");
 const LDAPProvider = require("../models/LDAPProvider");
 const Account = require("../models/Account");
 const Session = require("../models/Session");
+const Organization = require("../models/Organization");
+const OrganizationMember = require("../models/OrganizationMember");
+const OrganizationMemberPermission = require("../models/OrganizationMemberPermission");
+const { revokeLiveSessionAccess } = require("./liveSession");
 const { genSalt, hash } = require("bcrypt");
 const crypto = require("crypto");
 const { Op } = require("sequelize");
@@ -16,6 +20,64 @@ const hasOtherEnabledProvider = async (excludeOidcId = null) => {
         LDAPProvider.findOne({ where: { enabled: true } }),
     ]);
     return !!(oidc || ldap);
+};
+
+const extractGroupClaim = (userinfo, attribute) => {
+    if (!attribute) return [];
+
+    const raw = userinfo[attribute];
+    if (!raw) return [];
+
+    if (Array.isArray(raw)) return raw.map(String);
+    if (typeof raw === "string") return raw.split(/[,\s]+/).filter(Boolean);
+
+    return [];
+};
+
+const syncOrganizationMemberships = async (accountId, groups, provider) => {
+    const mappings = Array.isArray(provider.groupMappings) ? provider.groupMappings : [];
+    if (!mappings.length) return;
+
+    const matchedOrgIds = new Set();
+
+    for (const mapping of mappings) {
+        if (!groups.includes(mapping.value)) continue;
+
+        const organization = await Organization.findByPk(mapping.organizationId);
+        if (!organization) continue;
+
+        matchedOrgIds.add(organization.id);
+        const role = mapping.role === "owner" ? "owner" : "member";
+
+        const [membership, created] = await OrganizationMember.findOrCreate({
+            where: { organizationId: organization.id, accountId },
+            defaults: { role, status: "active", invitedBy: accountId, managedByOidc: true },
+        });
+
+        if (!created && membership.managedByOidc && membership.role !== role) {
+            await OrganizationMember.update({ role }, { where: { organizationId: organization.id, accountId } });
+        }
+    }
+
+    const managedMemberships = await OrganizationMember.findAll({ where: { accountId, managedByOidc: true } });
+
+    for (const membership of managedMemberships) {
+        if (matchedOrgIds.has(membership.organizationId)) continue;
+        if (membership.role === "owner") continue;
+
+        await OrganizationMember.destroy({ where: { organizationId: membership.organizationId, accountId } });
+        await OrganizationMemberPermission.destroy({ where: { organizationId: membership.organizationId, accountId } });
+        revokeLiveSessionAccess(membership.organizationId, accountId);
+
+        logger.system("Removed OIDC-managed organization membership no longer matched by group claims", {
+            accountId, organizationId: membership.organizationId,
+        });
+    }
+};
+
+module.exports.listOrganizationsForMapping = async () => {
+    const organizations = await Organization.findAll({ attributes: ["id", "name"], order: [["name", "ASC"]] });
+    return organizations.map((organization) => ({ id: organization.id, name: organization.name }));
 };
 
 module.exports.listProviders = async (includeSecret = false, forPublic = false) => {
@@ -178,6 +240,15 @@ module.exports.handleOIDCCallback = async (query, userInfo) => {
         const firstName = userinfo[provider.firstNameAttribute] || userinfo.given_name || "";
         const lastName = userinfo[provider.lastNameAttribute] || userinfo.family_name || "";
 
+        const groups = extractGroupClaim(userinfo, provider.groupsAttribute);
+
+        if (provider.requiredGroup && !groups.includes(provider.requiredGroup)) {
+            logger.warn("OIDC login denied: account is missing the required group claim", {
+                username: String(username), provider: provider.id,
+            });
+            return { code: 403, message: "Your account is not authorized to access this application" };
+        }
+
         let account = await Account.findOne({ where: { username: String(username) } });
 
         if (!account) {
@@ -196,6 +267,10 @@ module.exports.handleOIDCCallback = async (query, userInfo) => {
                 firstName: String(firstName),
                 lastName: String(lastName),
             }, { where: { id: account.id } });
+        }
+
+        if (provider.groupsAttribute) {
+            await syncOrganizationMemberships(account.id, groups, provider);
         }
 
         const session = await Session.create({
