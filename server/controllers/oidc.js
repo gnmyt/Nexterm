@@ -38,16 +38,24 @@ const syncOrganizationMemberships = async (accountId, groups, provider) => {
     const mappings = Array.isArray(provider.groupMappings) ? provider.groupMappings : [];
     if (!mappings.length) return;
 
-    const matchedOrgIds = new Set();
+    const roleByOrgId = new Map();
 
     for (const mapping of mappings) {
         if (!groups.includes(mapping.value)) continue;
 
-        const organization = await Organization.findByPk(mapping.organizationId);
+        const role = mapping.role === "owner" ? "owner" : "member";
+        if (role === "owner" || !roleByOrgId.has(mapping.organizationId)) {
+            roleByOrgId.set(mapping.organizationId, role);
+        }
+    }
+
+    const matchedOrgIds = new Set();
+
+    for (const [organizationId, role] of roleByOrgId) {
+        const organization = await Organization.findByPk(organizationId);
         if (!organization) continue;
 
         matchedOrgIds.add(organization.id);
-        const role = mapping.role === "owner" ? "owner" : "member";
 
         const [membership, created] = await OrganizationMember.findOrCreate({
             where: { organizationId: organization.id, accountId },
