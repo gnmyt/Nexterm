@@ -119,7 +119,7 @@
       "title": "Server",
       "addServer": "Server hinzufügen",
       "removeServer": "Server entfernen",
-      "removeConfirmText": "Dadurch wird die Verbindung zu {{server}}entfernt. Bist du sicher?"
+      "removeConfirmText": "Dadurch wird die Verbindung zu {{server}} entfernt. Bist du sicher?"
     },
     "selectBox": {
       "defaultOption": "Wähle eine Option aus...",
@@ -1120,7 +1120,7 @@
       "loading": "AI-Einstellungen laden...",
       "enable": {
         "title": "KI-Assistent aktivieren",
-        "description": "Erlaube Benutzern den KI-Assistenten in einer Serversitzungzu öffnen"
+        "description": "Erlaube Benutzern den KI-Assistenten in Server Sitzungen zu öffnen"
       },
       "provider": {
         "title": "KI-Anbieter",
@@ -1193,11 +1193,11 @@
         "description": "Lege fest, wie Nexterm den Online-/Offline-Status deiner Server überprüft.",
         "enable": {
           "title": "Status Checker einschalten",
-          "description": "Überprüfe automatisch, ob die Server online oder offline sind. Wenn diese Funktion deaktiviert ist, werden alle Server als online markiert."
+          "description": "Überprüft automatisch, ob die Server online oder offline sind. Wenn diese Option deaktiviert ist, werden alle Server als online markiert."
         },
         "interval": {
           "title": "Intervall prüfen",
-          "description": "Wie oft der Serverstatus überprüft werden soll (10-300 Sekunden)"
+          "description": "Wie oft soll der Serverstatus überprüft werden (10-300 Sekunden)"
         }
       },
       "dataCollection": {
@@ -1372,7 +1372,7 @@
       "smbPasswordPlaceholder": "Passwort",
       "smbDomain": "Domäne (optional)",
       "smbDomainPlaceholder": "ARBEITSGRUPPE",
-      "webdavUrl": "Server URL",
+      "webdavUrl": "WebDAV Server URL",
       "webdavUrlPlaceholder": "https://cloud.example.com/remote.php/dav/files/user",
       "webdavFolder": "Ordner (optional)",
       "webdavFolderPlaceholder": "Backups",
