@@ -585,10 +585,10 @@
       "authentication": "Authentifizierung",
       "sources": "Quellen",
       "ai": "AI",
-      "monitoring": "Überwachung",
+      "monitoring": "Monitoring",
       "backup": "Speicher",
-      "engines": "Motoren",
-      "permissions": "Benutzergruppen und Berechtigungen"
+      "engines": "Engines",
+      "permissions": "Benutzergruppen & Berechtigungen"
     },
     "account": {
       "title": "Account",
@@ -1428,10 +1428,10 @@
       "noFiles": "Keine Dateien gefunden"
     },
     "engines": {
-      "title": "Motoren",
+      "title": "Engines",
       "description": "Verwalte Engine-Instanzen, die Fernverbindungen verarbeiten.",
-      "addEngine": "Motor hinzufügen",
-      "noEngines": "Keine Motoren",
+      "addEngine": "Engine hinzufügen",
+      "noEngines": "Keine Engine vorhanden",
       "noEnginesDescription": "Füge eine Engine hinzu, um eine Verbindung zu entfernten Servern herzustellen.",
       "status": {
         "connected": "Verbunden",
@@ -1440,7 +1440,7 @@
       "lastSeen": "Zuletzt gesehen {{date}}",
       "neverConnected": "Nie verbunden",
       "regenerateToken": "Token neu generieren",
-      "deleteEngine": "Motor löschen",
+      "deleteEngine": "Engine entfernen",
       "dismiss": "Ablehnen",
       "copyToken": "Token kopieren",
       "transport": {
@@ -1450,19 +1450,19 @@
       "tokenLabel": "Registrierungs-Token für <strong>{{name}}</strong>",
       "tokenHint": "Setze dies in <code1>config.yaml</code1> oder als <code2>REGISTRATION_TOKEN</code2> env-Variable.",
       "dialog": {
-        "title": "Motor hinzufügen",
-        "engineName": "Motor Name",
+        "title": "Engine hinzufügen",
+        "engineName": "Name der Engine",
         "namePlaceholder": "z.B. Büronetzwerk",
-        "create": "Motor erstellen"
+        "create": "Engine erstellen"
       },
       "deleteConfirm": "Bist du sicher, dass du \"{{name}} \" löschen willst?",
       "messages": {
-        "deleted": "Motor erfolgreich gelöscht"
+        "deleted": "Engine erfolgreich entfernt"
       },
       "errors": {
-        "loadFailed": "Motoren konnten nicht geladen werden",
-        "createFailed": "Motor kann nicht erstellt werden",
-        "deleteFailed": "Motor kann nicht gelöscht werden",
+        "loadFailed": "Engines konnten nicht geladen werden",
+        "createFailed": "Engine kann nicht erstellt werden",
+        "deleteFailed": "Engine kann nicht entfernt werden",
         "regenerateFailed": "Token konnte nicht regeneriert werden"
       }
     },
@@ -1656,7 +1656,7 @@
         "host": "Host",
         "macAddress": "MAC-Adresse",
         "wolBroadcastAddress": "Broadcast-Adresse",
-        "engine": "Motor"
+        "engine": "Engine"
       },
       "placeholders": {
         "serverName": "Server Name",
