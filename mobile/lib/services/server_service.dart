@@ -52,6 +52,25 @@ class ServerService {
     return filtered;
   }
 
+  static Future<void> wakeServer({required String token, required dynamic entryId}) async {
+    final response = await ApiClient.post('/entries/$entryId/wake', token: token);
+    if (response.statusCode != 200 && response.statusCode != 201) {
+      throw Exception('Failed to send Wake-On-LAN packet: ${response.statusCode} - ${response.body}');
+    }
+    if (response.body.isNotEmpty) {
+      try {
+        final data = json.decode(response.body);
+        if (data is Map<String, dynamic>) {
+          final code = data['code'];
+          if (code is int && code >= 300) {
+            throw Exception(data['message'] ?? 'Failed to send Wake-On-LAN packet');
+          }
+        }
+      } on FormatException {
+      }
+    }
+  }
+
   static bool _isSupportedServer(Map<String, dynamic> entry) {
     return entry['type'] == 'server';
   }
