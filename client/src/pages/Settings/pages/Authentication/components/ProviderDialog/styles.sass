@@ -36,3 +36,35 @@
       background-color: $dark-gray
       border-radius: 0.75rem
       border: 1px solid $gray
+
+      .field-hint
+        font-size: 0.8rem
+        color: $subtext
+
+      .group-sync
+        display: flex
+        flex-direction: column
+        gap: 1rem
+        margin-top: 0.5rem
+        padding-top: 1rem
+        border-top: 1px solid $gray
+
+        h3
+          margin: 0
+          font-size: 1rem
+
+        .group-sync-hint
+          margin: -0.5rem 0 0
+          font-size: 0.85rem
+          color: $subtext
+
+        .group-mappings
+          display: flex
+          flex-direction: column
+          gap: 0.5rem
+
+        .group-mapping-row
+          display: grid
+          grid-template-columns: 1fr 1fr 100px auto
+          gap: 0.5rem
+          align-items: center

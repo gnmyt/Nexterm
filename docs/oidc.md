@@ -78,6 +78,27 @@ Defaults in **Advanced Settings**:
 | First Name | `given_name`         |
 | Last Name  | `family_name`        |
 
+## Group Sync
+
+In **Advanced Settings**, under **Group Sync**, you can map group claims from your identity provider to Nexterm organizations and
+restrict access to specific users.
+
+| Field                | Description                                                                                             |
+|----------------------|-----------------------------------------------------------------------------------------------------------|
+| Groups Claim          | The claim in the userinfo/ID token response that contains the user's groups, e.g. `groups`. Accepts a JSON array or a space/comma separated string. Leave empty to disable group sync. |
+| Required Group        | If set, only users whose groups claim contains this value are allowed to log in. Useful when your identity provider has many users who shouldn't have access to Nexterm. |
+| Organization Mappings | A list of `group value → organization (+ role)` mappings. On every login, Nexterm adds the user as a member (or owner) of every mapped organization whose group value is present in their claim, and removes them from any organization that was previously granted this way but is no longer matched. |
+
+Memberships created through group sync are tracked separately from manually invited members, so removing a group mapping — or a
+user losing a group in your IdP — never touches memberships that were added by hand. Organization owners added by manual
+invitation are never removed by sync.
+
+### Keycloak Example
+
+1. In your realm, create a **Client Scope** (e.g. `groups`) with a **Group Membership** mapper, add it to your client.
+2. Set **Groups Claim** to `groups`.
+3. Add mappings such as `/devops → DevOps Team` or set **Required Group** to `/nexterm-users` to gate access.
+
 ## Troubleshooting
 
 **Redirect URI mismatch** - Must match exactly. Check trailing slashes, http vs https.
