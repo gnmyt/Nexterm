@@ -1,6 +1,6 @@
 const { Router } = require("express");
-const { folderCreationValidation, folderEditValidation } = require("../validations/folder");
-const { createFolder, deleteFolder, listFolders, editFolder } = require("../controllers/folder");
+const { folderCreationValidation, folderEditValidation, folderRepositionValidation } = require("../validations/folder");
+const { createFolder, deleteFolder, listFolders, editFolder, repositionFolder } = require("../controllers/folder");
 const { validateSchema } = require("../utils/schema");
 
 const app = Router();
@@ -36,6 +36,25 @@ app.put("/", async (req, res) => {
     if (folder?.code) return res.json(folder);
 
     res.json({ message: "Folder has been successfully created", id: folder.id });
+});
+
+/**
+ * PATCH /folder/{folderId}/reposition
+ * @summary Reposition Folder
+ * @description Reorders a folder relative to a sibling folder, or moves it to another parent/root, recomputing sibling positions server-side.
+ * @tags Folder
+ * @produces application/json
+ * @security BearerAuth
+ * @param {string} folderId.path.required - The unique identifier of the folder to reposition
+ * @return {object} 200 - Folder successfully repositioned
+ */
+app.patch("/:folderId/reposition", async (req, res) => {
+    if (validateSchema(res, folderRepositionValidation, req.body)) return;
+
+    const result = await repositionFolder(req.user.id, req.params.folderId, req.body);
+    if (result?.code) return res.json(result);
+
+    res.json({ message: "Folder has been successfully repositioned" });
 });
 
 /**
