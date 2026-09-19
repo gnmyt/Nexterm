@@ -590,9 +590,14 @@ class _ServersScreenState extends State<ServersScreen> {
     final directIdentity = await showQuickConnectSheet(context, server);
     if (directIdentity == null || !mounted) return;
 
+    final isFileProtocolForQuickConnect = const {'sftp', 'ftp', 'ftps'}.contains(server.protocol?.toLowerCase());
     _initiateConnection(
       server,
-      type: ServerService.isGuacamoleProtocol(server.protocol) ? ConnectionType.guacamole : ConnectionType.terminal,
+      type: ServerService.isGuacamoleProtocol(server.protocol)
+          ? ConnectionType.guacamole
+          : isFileProtocolForQuickConnect
+              ? ConnectionType.sftp
+              : ConnectionType.terminal,
       directIdentity: directIdentity,
     );
   }
@@ -613,7 +618,13 @@ class _ServersScreenState extends State<ServersScreen> {
       _initiateConnection(server, type: ConnectionType.guacamole);
       return;
     }
-    final isSSH = server.protocol?.toLowerCase() == 'ssh' && !server.isPve;
+    final protocolLower = server.protocol?.toLowerCase();
+    final isFileProtocol = protocolLower == 'sftp' || protocolLower == 'ftp' || protocolLower == 'ftps';
+    if (isFileProtocol) {
+      _initiateConnection(server, type: ConnectionType.sftp);
+      return;
+    }
+    final isSSH = protocolLower == 'ssh' && !server.isPve;
     if (!isSSH) {
       _initiateConnection(server);
       return;
