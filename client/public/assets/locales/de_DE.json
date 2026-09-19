@@ -395,8 +395,8 @@
       },
       "actions": {
         "cancel": "Abbrechen",
-        "create": "erstellen",
-        "update": "Update",
+        "create": "Erstellen",
+        "update": "Updaten",
         "creating": "Erstellen...",
         "updating": "Aktualisieren..."
       },
@@ -2100,7 +2100,7 @@
     "subtitle": "Willkommen bei Nexterm. Der Open-Source-Server-Manager für SSH, VNC und RDP.",
     "downloadApps": "Apps herunterladen",
     "connectDevice": "Gerät verbinden",
-    "recentConnections": "Neueste Verbindungen",
+    "recentConnections": "Letzte Verbindungen",
     "getStarted": "Erste Schritte",
     "getStartedHint": "Füge einen Server in der Seitenleiste hinzu, um mit der Verwaltung deiner Infrastruktur zu beginnen."
   },
