@@ -18,6 +18,8 @@ import {
     mdiPencil,
     mdiShareVariant,
     mdiSleep,
+    mdiViewGridOutline,
+    mdiViewGridPlusOutline,
     mdiViewSplitHorizontal,
     mdiViewSplitVertical,
 } from "@mdi/js";
@@ -62,6 +64,11 @@ export const SessionMenu = ({
     onDuplicate,
     onHibernate,
     onCloseSession,
+    groups = [],
+    onCreateGroup,
+    onMoveToGroup,
+    onRemoveFromGroup,
+    onDissolveGroup,
 }) => {
     const { t } = useTranslation();
 
@@ -76,6 +83,9 @@ export const SessionMenu = ({
     const canOpenNotes = !isNotes && !isJoined && !!server?.id && !session?.scriptId;
     const isSharing = !!session?.shareId;
     const showBroadcast = isTerminal && isActive && layoutMode !== "single";
+    const canGroup = !isNotes && !isJoined;
+    const sessionGroupId = session?.groupId ?? null;
+    const otherGroups = groups.filter(group => group.groupId !== sessionGroupId);
 
     const shareLink = (shareId) => `${getBaseUrl() || window.location.origin}/share/${shareId}`;
 
@@ -156,6 +166,26 @@ export const SessionMenu = ({
                     {canHibernate && (
                         <ContextMenuItem icon={mdiSleep} label={t("servers.tabs.contextMenu.hibernateSession")}
                                          onClick={() => onHibernate(session.id)} />
+                    )}
+                    {canGroup && (
+                        <ContextMenuItem icon={mdiViewGridOutline} label={t("servers.tabs.contextMenu.group")}>
+                            <ContextMenuItem icon={mdiViewGridPlusOutline} label={t("servers.tabs.contextMenu.newGroup")}
+                                             onClick={() => onCreateGroup?.([session.id])} />
+                            {otherGroups.map(group => (
+                                <ContextMenuItem key={group.groupId} icon={mdiViewGridOutline}
+                                                 label={group.name || t("servers.tabs.group")}
+                                                 onClick={() => onMoveToGroup?.(session.id, group.groupId)} />
+                            ))}
+                            {sessionGroupId && (
+                                <>
+                                    <ContextMenuSeparator />
+                                    <ContextMenuItem icon={mdiClose} label={t("servers.tabs.contextMenu.removeFromGroup")}
+                                                     onClick={() => onRemoveFromGroup?.(session.id)} />
+                                    <ContextMenuItem icon={mdiCloseCircle} label={t("servers.tabs.contextMenu.dissolveGroup")}
+                                                     onClick={() => onDissolveGroup?.(sessionGroupId)} danger />
+                                </>
+                            )}
+                        </ContextMenuItem>
                     )}
                     <ContextMenuItem icon={mdiClose} label={t("servers.tabs.contextMenu.closeSession")}
                                      onClick={() => onCloseSession(session.id)} danger />

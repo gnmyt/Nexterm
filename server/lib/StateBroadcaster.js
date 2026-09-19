@@ -48,7 +48,7 @@ class StateBroadcaster {
                 const memberships = await OrganizationMember.findAll({ where: { accountId, status: "active" } });
                 return require("../controllers/snippet").listAllAccessibleSnippets(accountId, memberships.map(m => m.organizationId));
             case STATE_TYPES.CONNECTIONS:
-                return require("../controllers/serverSession").getSessions(accountId, tabId, browserId);
+                return require("../controllers/serverSession").getConnectionsState(accountId, tabId, browserId);
             case STATE_TYPES.LIVE_SESSIONS:
                 return require("../controllers/liveSession").listLiveSessions(accountId);
             default:

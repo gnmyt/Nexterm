@@ -32,11 +32,12 @@ const MAX_ZOOM_FONT_SIZE = 40;
 
 const clampFontSize = (size) => Math.min(MAX_ZOOM_FONT_SIZE, Math.max(MIN_ZOOM_FONT_SIZE, size));
 
-const XtermRenderer = ({ session, disconnectFromServer, markSessionErrored, getSessionError, registerTerminalRef, broadcastMode, terminalRefs, updateProgress, layoutMode, onBroadcastToggle, onFullscreenToggle, isShared = false, onOpenSftp }) => {
+const XtermRenderer = ({ session, disconnectFromServer, markSessionErrored, getSessionError, registerTerminalRef, broadcastMode, terminalRefs, broadcastSessionIds, updateProgress, layoutMode, onBroadcastToggle, onFullscreenToggle, isShared = false, onOpenSftp }) => {
     const ref = useRef(null);
     const termRef = useRef(null);
     const wsRef = useRef(null);
     const broadcastModeRef = useRef(broadcastMode);
+    const broadcastSessionIdsRef = useRef(broadcastSessionIds);
     const progressParserRef = useRef(null);
     const layoutModeRef = useRef(layoutMode);
     const onBroadcastToggleRef = useRef(onBroadcastToggle);
@@ -144,6 +145,10 @@ const XtermRenderer = ({ session, disconnectFromServer, markSessionErrored, getS
     useEffect(() => {
         broadcastModeRef.current = broadcastMode;
     }, [broadcastMode]);
+
+    useEffect(() => {
+        broadcastSessionIdsRef.current = broadcastSessionIds;
+    }, [broadcastSessionIds]);
 
     useEffect(() => {
         smartCopyPasteRef.current = smartCopyPaste;
@@ -600,8 +605,11 @@ const XtermRenderer = ({ session, disconnectFromServer, markSessionErrored, getS
             ws.send(data);
 
             if (broadcastModeRef.current && terminalRefs?.current) {
+                const groupIds = broadcastSessionIdsRef.current;
                 Object.entries(terminalRefs.current).forEach(([sessionId, refs]) => {
-                    if (sessionId !== session.id && refs.ws && refs.ws.readyState === WebSocket.OPEN) {
+                    if (sessionId === session.id) return;
+                    if (groupIds && !groupIds.has(sessionId)) return;
+                    if (refs.ws?.readyState === WebSocket.OPEN) {
                         refs.ws.send(data);
                     }
                 });

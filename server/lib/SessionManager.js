@@ -7,6 +7,7 @@ const stateBroadcaster = require("./StateBroadcaster");
 
 const MAX_LOG_BUFFER_SIZE = 200 * 1024;
 const sessions = new Map();
+const groups = new Map();
 const shareIndex = new Map();
 const CONTROL_PLANE_TYPES = new Set(["ssh", "sftp", "guac", "pve-lxc"]);
 
@@ -17,7 +18,7 @@ module.exports.create = (accountId, entryId, configuration, connectionReason = n
     const sessionId = uuidv4();
     const session = {
         sessionId, accountId, entryId, configuration, connectionReason,
-        tabId, browserId, auditLogId, organizationId,
+        tabId, browserId, auditLogId, organizationId, groupId: null,
         isHibernated: false,
         createdAt: new Date(),
         lastActivity: new Date(),
@@ -50,6 +51,71 @@ module.exports.getAll = (accountId, tabId = undefined, browserId = undefined) =>
         results.push(session);
     }
     return results;
+};
+
+const sessionCountInGroup = (groupId) => {
+    let count = 0;
+    for (const session of sessions.values()) if (session.groupId === groupId) count++;
+    return count;
+};
+
+const pruneGroupIfEmpty = (groupId) => {
+    if (!groupId) return;
+    if (sessionCountInGroup(groupId) === 0 && groups.delete(groupId)) {
+        logger.info("Session group removed (empty)", { groupId });
+    }
+};
+
+module.exports.getGroup = (groupId) => groups.get(groupId) || null;
+
+module.exports.getGroups = (accountId, tabId = undefined, browserId = undefined) => {
+    const results = [];
+    for (const group of groups.values()) {
+        if (group.accountId !== accountId) continue;
+        if (tabId !== undefined && group.tabId !== tabId) continue;
+        if (browserId !== undefined && group.browserId !== browserId) continue;
+        results.push(group);
+    }
+    return results;
+};
+
+module.exports.createGroup = (accountId, { name, order = 0, tabId = null, browserId = null, organizationId = null } = {}) => {
+    const groupId = uuidv4();
+    const group = { groupId, accountId, name: name || "Group", order, tabId, browserId, organizationId, layout: null, createdAt: new Date() };
+    groups.set(groupId, group);
+    logger.info("Session group created", { groupId, accountId });
+    return group;
+};
+
+module.exports.updateGroup = (groupId, { name, order, layout } = {}) => {
+    const group = groups.get(groupId);
+    if (!group) return null;
+    if (name !== undefined) group.name = name;
+    if (order !== undefined) group.order = order;
+    if (layout !== undefined) group.layout = layout;
+    return group;
+};
+
+module.exports.deleteGroup = (groupId) => {
+    const group = groups.get(groupId);
+    if (!group) return false;
+    for (const session of sessions.values()) {
+        if (session.groupId === groupId) session.groupId = null;
+    }
+    groups.delete(groupId);
+    logger.info("Session group deleted", { groupId });
+    return true;
+};
+
+module.exports.assignSessionToGroup = (sessionId, groupId) => {
+    const session = module.exports.get(sessionId);
+    if (!session) return false;
+    if (groupId !== null && !groups.has(groupId)) return false;
+    const previousGroupId = session.groupId;
+    if (previousGroupId === groupId) return true;
+    session.groupId = groupId;
+    if (previousGroupId) pruneGroupIfEmpty(previousGroupId);
+    return true;
 };
 
 const sessionsOfOrganization = function* (organizationId) {
@@ -403,8 +469,9 @@ module.exports.remove = async (sessionId, options = {}) => {
     for (const participant of session.participants.values()) clearTimeout(participant.typingTimer);
     session.participants.clear();
 
-    const { accountId, organizationId } = session;
+    const { accountId, organizationId, groupId } = session;
     sessions.delete(sessionId);
+    pruneGroupIfEmpty(groupId);
     logger.info("Session removed", { sessionId });
     stateBroadcaster.broadcast("CONNECTIONS", { accountId });
     if (organizationId) stateBroadcaster.broadcast("LIVE_SESSIONS", { organizationId });
